@@ -25,12 +25,10 @@ const zeroBalance = new ValueView({
 
 const validatorInfo = new ValidatorInfo({ validator: {} });
 
-let MOCK_STAKING_TOKENS_AND_FILTER:
-  | {
-      unstakedTokensByAccount: Map<number, ValueView | undefined>;
-      accountSwitcherFilter: number[];
-    }
-  | undefined;
+let MOCK_STAKING_TOKENS_AND_FILTER: {
+  unstakedTokensByAccount: Map<number, ValueView | undefined>;
+  accountSwitcherFilter: number[];
+} | null = vi.hoisted(() => null);
 
 vi.mock('../../../../../state/staking', async () => ({
   ...(await vi.importActual('../../../../../state/staking')),
@@ -53,7 +51,7 @@ vi.mock('../../../../../utils/use-store-shallow', async () => ({
 
 describe('<StakingActions />', () => {
   beforeEach(() => {
-    MOCK_STAKING_TOKENS_AND_FILTER = undefined;
+    MOCK_STAKING_TOKENS_AND_FILTER = null;
   });
 
   it('renders an enabled Delegate button there is a non-zero balance of unstaked tokens', () => {
@@ -91,7 +89,7 @@ describe('<StakingActions />', () => {
   });
 
   it('renders a disabled Delegate button when unstaked tokens are undefined', () => {
-    MOCK_STAKING_TOKENS_AND_FILTER = undefined;
+    MOCK_STAKING_TOKENS_AND_FILTER = null;
 
     const { getByText } = render(
       <StakingActions delegationTokens={nonZeroBalance} validatorInfo={validatorInfo} />,

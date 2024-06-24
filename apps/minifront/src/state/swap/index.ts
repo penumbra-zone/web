@@ -4,20 +4,72 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { SwapExecution_Trace } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { AllSlices, SliceCreator } from '..';
+import { AllSlices, SliceCreator, useStore } from '..';
 import { DurationOption } from './constants';
 import {
-  DutchAuctionSlice,
   createDutchAuctionSlice,
+  DutchAuctionSlice,
   dutchAuctionSubmitButtonDisabledSelector,
 } from './dutch-auction';
 import {
-  InstantSwapSlice,
   createInstantSwapSlice,
+  InstantSwapSlice,
   instantSwapSubmitButtonDisabledSelector,
 } from './instant-swap';
-import { PriceHistorySlice, createPriceHistorySlice } from './price-history';
+import { createPriceHistorySlice, PriceHistorySlice } from './price-history';
 import { getMetadata } from '@penumbra-zone/getters/value-view';
+import { createZQuery, ZQueryState } from '@penumbra-zone/zquery';
+import { getSwappableBalancesResponses, isSwappable } from '../../components/swap/helpers';
+import { getAllAssets } from '../../fetchers/assets';
+import { emptyBalanceResponse } from '../../utils/empty-balance-response';
+import { isValidAmount } from '../helpers';
+
+// When both `balancesResponses` and `swappableAssets` are loaded, set initial assetIn and assetOut
+const setInitialAssets = (state: SwapSlice) => {
+  if (state.swappableAssets.loading || state.balancesResponses.loading) return;
+
+  const firstBalancesResponse = state.balancesResponses.data?.[0];
+  const firstMetadata = state.swappableAssets.data?.[0];
+  const secondMetadata = state.swappableAssets.data?.[0];
+  if (firstBalancesResponse) {
+    state.setAssetIn(firstBalancesResponse);
+    state.setAssetOut(firstMetadata);
+  } else if (firstMetadata) {
+    state.setAssetIn(emptyBalanceResponse(firstMetadata));
+    state.setAssetOut(secondMetadata);
+  }
+};
+
+export const { balancesResponses, useBalancesResponses } = createZQuery({
+  name: 'balancesResponses',
+  fetch: () => getSwappableBalancesResponses(),
+  getUseStore: () => useStore,
+  get: state => state.swap.balancesResponses,
+  set: setter => {
+    const newState = setter(useStore.getState().swap.balancesResponses);
+    useStore.setState(state => {
+      state.swap.balancesResponses = newState;
+    });
+    setInitialAssets(useStore.getState().swap);
+  },
+});
+
+export const { swappableAssets, useSwappableAssets } = createZQuery({
+  name: 'swappableAssets',
+  fetch: async () => {
+    const allAssets = await getAllAssets();
+    return allAssets.filter(isSwappable);
+  },
+  getUseStore: () => useStore,
+  get: state => state.swap.swappableAssets,
+  set: setter => {
+    const newState = setter(useStore.getState().swap.swappableAssets);
+    useStore.setState(state => {
+      state.swap.swappableAssets = newState;
+    });
+    setInitialAssets(useStore.getState().swap);
+  },
+});
 
 export interface SimulateSwapResult {
   metadataByAssetId: Record<string, Metadata>;
@@ -28,20 +80,16 @@ export interface SimulateSwapResult {
 }
 
 interface Actions {
-  setBalancesResponses: (balancesResponses: BalancesResponse[]) => void;
-  setStakingAssetMetadata: (metadata: Metadata) => void;
-  setSwappableAssets: (assets: Metadata[]) => void;
   setAssetIn: (asset: BalancesResponse) => void;
   setAmount: (amount: string) => void;
-  setAssetOut: (metadata: Metadata) => void;
+  setAssetOut: (metadata?: Metadata) => void;
   setDuration: (duration: DurationOption) => void;
   resetSubslices: VoidFunction;
 }
 
 interface State {
-  balancesResponses: BalancesResponse[];
-  stakingAssetMetadata: Metadata;
-  swappableAssets: Metadata[];
+  balancesResponses: ZQueryState<BalancesResponse[]>;
+  swappableAssets: ZQueryState<Metadata[]>;
   assetIn?: BalancesResponse;
   amount: string;
   assetOut?: Metadata;
@@ -57,11 +105,10 @@ interface Subslices {
 
 const INITIAL_STATE: State = {
   amount: '',
-  swappableAssets: [],
-  balancesResponses: [],
+  swappableAssets,
+  balancesResponses,
   duration: 'instant',
   txInProgress: false,
-  stakingAssetMetadata: new Metadata(),
 };
 
 export type SwapSlice = Actions & State & Subslices;
@@ -90,21 +137,6 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
   dutchAuction: createDutchAuctionSlice()(set, get, store),
   instantSwap: createInstantSwapSlice()(set, get, store),
   priceHistory: createPriceHistorySlice()(set, get, store),
-  setBalancesResponses: balancesResponses => {
-    set(state => {
-      state.swap.balancesResponses = balancesResponses;
-    });
-  },
-  setStakingAssetMetadata: stakingAssetMetadata => {
-    set(state => {
-      state.swap.stakingAssetMetadata = stakingAssetMetadata;
-    });
-  },
-  setSwappableAssets: swappableAssets => {
-    set(state => {
-      state.swap.swappableAssets = swappableAssets;
-    });
-  },
   setAssetIn: asset => {
     get().swap.resetSubslices();
     set(({ swap }) => {
@@ -112,7 +144,7 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
 
       if (balancesResponseAndMetadataAreSameAsset(asset, get().swap.assetOut)) {
         swap.assetOut = getFirstMetadataNotMatchingBalancesResponse(
-          get().swap.swappableAssets,
+          get().swap.swappableAssets.data ?? [],
           asset,
         );
       }
@@ -125,7 +157,7 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
 
       if (balancesResponseAndMetadataAreSameAsset(get().swap.assetIn, metadata)) {
         swap.assetIn = getFirstBalancesResponseNotMatchingMetadata(
-          get().swap.balancesResponses,
+          get().swap.balancesResponses.data ?? [],
           metadata,
         );
       }
@@ -151,5 +183,6 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
 
 export const submitButtonDisabledSelector = (state: AllSlices) =>
   !state.swap.amount ||
+  !isValidAmount(state.swap.amount, state.swap.assetIn) ||
   dutchAuctionSubmitButtonDisabledSelector(state) ||
   instantSwapSubmitButtonDisabledSelector(state);

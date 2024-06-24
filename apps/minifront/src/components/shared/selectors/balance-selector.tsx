@@ -1,27 +1,22 @@
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { useId, useState } from 'react';
 import { IconInput } from '@repo/ui/components/ui/icon-input';
-import { Dialog, DialogClose, DialogContent, DialogHeader } from '@repo/ui/components/ui/dialog';
-import { cn } from '@repo/ui/lib/utils';
+import { Dialog, DialogContent, DialogHeader } from '@repo/ui/components/ui/dialog';
 import { ValueViewComponent } from '@repo/ui/components/ui/value';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { getAddressIndex } from '@penumbra-zone/getters/address-view';
-import { getDisplayDenomFromView, getSymbolFromValueView } from '@penumbra-zone/getters/value-view';
 import { Box } from '@repo/ui/components/ui/box';
 import { motion } from 'framer-motion';
-
-const bySearch = (search: string) => (balancesResponse: BalancesResponse) =>
-  getDisplayDenomFromView(balancesResponse.balanceView)
-    .toLocaleLowerCase()
-    .includes(search.toLocaleLowerCase()) ||
-  getSymbolFromValueView(balancesResponse.balanceView)
-    .toLocaleLowerCase()
-    .includes(search.toLocaleLowerCase());
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { emptyBalanceResponse } from '../../../utils/empty-balance-response';
+import { bySearch } from './search-filters';
+import { BalanceOrMetadata, isMetadata, mergeBalancesAndAssets } from './helpers';
+import { BalanceItem } from './balance-item';
 
 interface BalanceSelectorProps {
   value: BalancesResponse | undefined;
   onChange: (selection: BalancesResponse) => void;
-  balances: BalancesResponse[];
+  balances?: BalancesResponse[];
+  assets?: Metadata[];
 }
 
 /**
@@ -32,11 +27,26 @@ interface BalanceSelectorProps {
  * Use `<AssetSelector />` if you want to render assets that aren't tied to any
  * balance.
  */
-export default function BalanceSelector({ value, balances, onChange }: BalanceSelectorProps) {
+export default function BalanceSelector({
+  value,
+  balances,
+  onChange,
+  assets,
+}: BalanceSelectorProps) {
   const [search, setSearch] = useState('');
   const [isOpen, setIsOpen] = useState(false);
-  const filteredBalances = search ? balances.filter(bySearch(search)) : balances;
   const layoutId = useId();
+
+  const allAssets = mergeBalancesAndAssets(balances, assets);
+  const filteredBalances = search ? allAssets.filter(bySearch(search)) : allAssets;
+
+  const onSelect = (asset: BalanceOrMetadata) => {
+    if (!isMetadata(asset)) {
+      onChange(asset);
+      return;
+    }
+    onChange(emptyBalanceResponse(asset));
+  };
 
   return (
     <>
@@ -62,7 +72,7 @@ export default function BalanceSelector({ value, balances, onChange }: BalanceSe
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent layoutId={layoutId}>
-          <div className='flex max-h-screen flex-col'>
+          <div className='flex max-h-[90dvh] flex-col'>
             <DialogHeader>Select asset</DialogHeader>
             <div className='flex shrink flex-col gap-4 overflow-auto p-4'>
               <Box spacing='compact'>
@@ -70,38 +80,19 @@ export default function BalanceSelector({ value, balances, onChange }: BalanceSe
                   icon={<MagnifyingGlassIcon className='size-5 text-muted-foreground' />}
                   value={search}
                   onChange={setSearch}
+                  autoFocus
                   placeholder='Search assets...'
                 />
               </Box>
-              <div className='mt-2 grid grid-cols-4 font-headline text-base font-semibold'>
-                <p className='flex justify-start'>Account</p>
-                <p className='col-span-3 flex justify-start'>Asset</p>
+              <div className='mt-2 grid grid-cols-4 gap-3 font-headline text-base font-semibold'>
+                <p className='col-span-2 flex justify-start'>Asset</p>
+                <p className='flex justify-end'>Balance</p>
+                <p className='flex justify-center'>Account</p>
               </div>
               <div className='flex flex-col gap-2'>
-                {filteredBalances.map((b, i) => {
-                  const index = getAddressIndex(b.accountAddress).account;
-
-                  return (
-                    <div key={i} className='flex flex-col'>
-                      <DialogClose>
-                        <div
-                          className={cn(
-                            'grid grid-cols-4 py-[10px] cursor-pointer hover:bg-light-brown hover:px-4 hover:-mx-4 font-bold text-muted-foreground',
-                            value?.balanceView?.equals(b.balanceView) &&
-                              value.accountAddress?.equals(b.accountAddress) &&
-                              'bg-light-brown px-4 -mx-4',
-                          )}
-                          onClick={() => onChange(b)}
-                        >
-                          <p className='flex justify-start'>{index}</p>
-                          <div className='col-span-3 flex justify-start'>
-                            <ValueViewComponent view={b.balanceView} />
-                          </div>
-                        </div>
-                      </DialogClose>
-                    </div>
-                  );
-                })}
+                {filteredBalances.map((asset, i) => (
+                  <BalanceItem key={i} asset={asset} value={value} onSelect={onSelect} />
+                ))}
               </div>
             </div>
           </div>

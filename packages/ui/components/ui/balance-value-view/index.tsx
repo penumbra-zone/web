@@ -11,9 +11,11 @@ import { cn } from '../../../lib/utils';
  */
 export const BalanceValueView = ({
   valueView,
+  error,
   onClick,
 }: {
   valueView: ValueView;
+  error?: boolean;
   onClick?: (valueView: ValueView) => void;
 }) => {
   const exponent = getDisplayDenomExponentFromValueView.optional()(valueView);
@@ -24,6 +26,7 @@ export const BalanceValueView = ({
     <div
       className={cn(
         'flex items-start gap-1 truncate select-none text-muted-foreground hover:text-white transition-all',
+        error && 'text-red-400',
         onClick && 'cursor-pointer',
       )}
       onClick={onClick ? () => onClick(valueView) : undefined}

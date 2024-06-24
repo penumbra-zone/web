@@ -10,7 +10,6 @@ import { SendForm } from './send/send-form';
 import { Receive } from './send/receive';
 import { ErrorBoundary } from './shared/error-boundary';
 import { SwapLayout } from './swap/layout';
-import { SwapLoader } from './swap/swap-loader';
 import { StakingLayout } from './staking/layout';
 import { IbcLoader } from './ibc/ibc-loader';
 import { IbcLayout } from './ibc/layout';
@@ -56,7 +55,7 @@ export const rootRouter: Router = createHashRouter([
       },
       {
         path: PagePath.SWAP,
-        loader: SwapLoader,
+        loader: abortLoader,
         element: <SwapLayout />,
       },
       {

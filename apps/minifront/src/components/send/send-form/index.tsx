@@ -7,13 +7,13 @@ import {
   useTransferableBalancesResponses,
 } from '../../../state/send';
 import { InputBlock } from '../../shared/input-block';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { penumbraAddrValidation } from '../helpers';
 import InputToken from '../../shared/input-token';
 import { useRefreshFee } from './use-refresh-fee';
 import { GasFee } from '../../shared/gas-fee';
-import { hasStakingToken } from '../../../fetchers/staking-token';
 import { useStakingTokenMetadata } from '../../../state/shared';
+import { NonNativeFeeWarning } from '../../shared/non-native-fee-warning';
 
 export const SendForm = () => {
   const stakingTokenMetadata = useStakingTokenMetadata();
@@ -33,14 +33,6 @@ export const SendForm = () => {
     sendTx,
     txInProgress,
   } = useStore(sendSelector);
-  // State to manage privacy warning display
-  const [showNonNativeFeeWarning, setshowNonNativeFeeWarning] = useState(false);
-
-  // Check if the user has native staking tokens
-  const stakingToken = hasStakingToken(
-    transferableBalancesResponses.data,
-    stakingTokenMetadata.data,
-  );
 
   useRefreshFee();
 
@@ -80,8 +72,6 @@ export const SendForm = () => {
         onInputChange={amount => {
           if (Number(amount) < 0) return;
           setAmount(amount);
-          // Conditionally prompt a privacy warning about non-native fee tokens
-          setshowNonNativeFeeWarning(Number(amount) > 0 && !stakingToken);
         }}
         validations={[
           {
@@ -92,15 +82,11 @@ export const SendForm = () => {
         ]}
         balances={transferableBalancesResponses.data ?? []}
       />
-      {showNonNativeFeeWarning && (
-        <div className='rounded border border-yellow-500 bg-gray-800 p-4 text-yellow-500'>
-          <strong>Privacy Warning:</strong>
-          <span className='block'>
-            Using non-native tokens for transaction fees may pose a privacy risk. It is recommended
-            to use the native token (UM) for better privacy and security.
-          </span>
-        </div>
-      )}
+
+      <NonNativeFeeWarning
+        balancesResponses={transferableBalancesResponses.data}
+        amount={Number(amount)}
+      />
 
       <GasFee
         fee={fee}
