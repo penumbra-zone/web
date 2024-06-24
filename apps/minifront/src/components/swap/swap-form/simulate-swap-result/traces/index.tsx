@@ -18,7 +18,9 @@ export const Traces = ({
   input: ValueView;
   output: ValueView;
 }) => {
-  if (!traces?.length) return null;
+  if (!traces?.length) {
+    return null;
+  }
 
   return (
     <div>

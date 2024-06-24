@@ -14,7 +14,9 @@ export class AppQuerier implements AppQuerierInterface {
 
   async appParams(): Promise<AppParameters> {
     const { appParameters } = await this.client.appParameters({});
-    if (!appParameters) throw new Error('no app parameters in response');
+    if (!appParameters) {
+      throw new Error('no app parameters in response');
+    }
     return appParameters;
   }
 
@@ -22,10 +24,11 @@ export class AppQuerier implements AppQuerierInterface {
     const { blockHeight: responseHeight, transactions } = await this.client.transactionsByHeight({
       blockHeight,
     });
-    if (responseHeight !== blockHeight)
+    if (responseHeight !== blockHeight) {
       throw new Error(
         `block height mismatch: requested ${blockHeight}, received ${responseHeight}`,
       );
+    }
     return transactions;
   }
 }

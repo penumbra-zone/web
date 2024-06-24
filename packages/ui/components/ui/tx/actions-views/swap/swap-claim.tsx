@@ -17,8 +17,12 @@ const getClaimLabel = (
   output1Amount?: Amount,
   output2Amount?: Amount,
 ): 'Claimed Amount' | 'Claimed Amounts' => {
-  if (!output1Amount || !output2Amount) return 'Claimed Amount';
-  if (isZero(output1Amount) || isZero(output2Amount)) return 'Claimed Amount';
+  if (!output1Amount || !output2Amount) {
+    return 'Claimed Amount';
+  }
+  if (isZero(output1Amount) || isZero(output2Amount)) {
+    return 'Claimed Amount';
+  }
 
   return 'Claimed Amounts';
 };

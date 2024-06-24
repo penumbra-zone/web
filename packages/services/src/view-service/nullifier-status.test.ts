@@ -43,8 +43,12 @@ describe('nullifierStatus', () => {
       getSpendableNoteByNullifier: vi.fn(),
       getSwapByNullifier: vi.fn(),
       subscribe: (table: string) => {
-        if (table === 'SPENDABLE_NOTES') return mockNoteSubscription;
-        if (table === 'SWAPS') return mockSwapSubscription;
+        if (table === 'SPENDABLE_NOTES') {
+          return mockNoteSubscription;
+        }
+        if (table === 'SWAPS') {
+          return mockSwapSubscription;
+        }
         throw new Error('Table not supported');
       },
     };

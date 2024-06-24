@@ -6,7 +6,9 @@ import { SyncInfo as SyncInfoProto } from '@buf/penumbra-zone_penumbra.bufbuild_
 
 const getFormattedTime = (syncInfo: SyncInfoProto): { date?: string; time?: string } => {
   const dateObj = syncInfo.latestBlockTime?.toDate();
-  if (!dateObj) return {};
+  if (!dateObj) {
+    return {};
+  }
 
   const date = format(dateObj, 'EEE MMM dd yyyy');
   const time = format(dateObj, "HH:mm:ss 'GMT'x");
@@ -20,7 +22,9 @@ export const SyncInfo = () => {
     latestBlockHash,
     latestAppHash,
   } = useLoaderData() as IndexLoaderResponse;
-  if (!syncInfo) return <></>;
+  if (!syncInfo) {
+    return <></>;
+  }
 
   const { date, time } = getFormattedTime(syncInfo);
 

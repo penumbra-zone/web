@@ -3,9 +3,13 @@ import { Translator } from './types';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 
 export const asOpaqueOutputView: Translator<OutputView> = outputView => {
-  if (!outputView) return new OutputView();
+  if (!outputView) {
+    return new OutputView();
+  }
 
-  if (outputView.outputView.case === 'opaque') return outputView;
+  if (outputView.outputView.case === 'opaque') {
+    return outputView;
+  }
 
   return new OutputView({
     outputView: {
@@ -24,9 +28,13 @@ export const asReceiverOutputView: Translator<
   Promise<OutputView>,
   { isControlledAddress: (address: Address) => Promise<boolean> }
 > = async (outputView, { isControlledAddress }) => {
-  if (!outputView) return new OutputView();
+  if (!outputView) {
+    return new OutputView();
+  }
 
-  if (outputView.outputView.case === 'opaque') return outputView;
+  if (outputView.outputView.case === 'opaque') {
+    return outputView;
+  }
 
   const addressViewCase = outputView.outputView.value?.note?.address?.addressView.case;
   const address = outputView.outputView.value?.note?.address?.addressView.value?.address;

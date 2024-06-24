@@ -103,7 +103,9 @@ export class BlockProcessor implements BlockProcessorInterface {
       numOfAttempts: Infinity,
       maxDelay: 20_000, // 20 seconds
       retry: async (e, attemptNumber) => {
-        if (globalThis.__DEV__) console.debug('Sync failure', attemptNumber, e);
+        if (globalThis.__DEV__) {
+          console.debug('Sync failure', attemptNumber, e);
+        }
         await this.viewServer.resetTreeToStored();
         return !this.abortController.signal.aborted;
       },
@@ -128,7 +130,9 @@ export class BlockProcessor implements BlockProcessorInterface {
     let latestKnownBlockHeight = await backOff(
       async () => {
         const latest = await this.querier.tendermint.latestBlockHeight();
-        if (!latest) throw new Error('Unknown latest block height');
+        if (!latest) {
+          throw new Error('Unknown latest block height');
+        }
         return latest;
       },
       { retry: () => true },
@@ -207,10 +211,12 @@ export class BlockProcessor implements BlockProcessorInterface {
         // - update idb
         await this.identifyNewAssets(flush.newNotes);
 
-        for (const spendableNoteRecord of flush.newNotes)
+        for (const spendableNoteRecord of flush.newNotes) {
           recordsByCommitment.set(spendableNoteRecord.noteCommitment!, spendableNoteRecord);
-        for (const swapRecord of flush.newSwaps)
+        }
+        for (const swapRecord of flush.newSwaps) {
           recordsByCommitment.set(swapRecord.swapCommitment!, swapRecord);
+        }
       }
 
       // nullifiers on this block may match notes or swaps from db
@@ -340,16 +346,23 @@ export class BlockProcessor implements BlockProcessorInterface {
   }
 
   private async saveRecoveredCommitmentSources(recovered: (SpendableNoteRecord | SwapRecord)[]) {
-    for (const record of recovered)
-      if (record instanceof SpendableNoteRecord) await this.indexedDb.saveSpendableNote(record);
-      else if (record instanceof SwapRecord) await this.indexedDb.saveSwap(record);
-      else throw new Error('Unexpected record type');
+    for (const record of recovered) {
+      if (record instanceof SpendableNoteRecord) {
+        await this.indexedDb.saveSpendableNote(record);
+      } else if (record instanceof SwapRecord) {
+        await this.indexedDb.saveSwap(record);
+      } else {
+        throw new Error('Unexpected record type');
+      }
+    }
   }
 
   private async identifyNewAssets(notes: SpendableNoteRecord[]) {
     for (const note of notes) {
       const assetId = note.note?.value?.assetId;
-      if (!assetId) continue;
+      if (!assetId) {
+        continue;
+      }
 
       await this.saveAndReturnMetadata(assetId);
     }
@@ -415,7 +428,9 @@ export class BlockProcessor implements BlockProcessorInterface {
 
   private async saveAndReturnMetadata(assetId: AssetId): Promise<Metadata | undefined> {
     const metadataAlreadyInDb = await this.indexedDb.getAssetsMetadata(assetId);
-    if (metadataAlreadyInDb) return metadataAlreadyInDb;
+    if (metadataAlreadyInDb) {
+      return metadataAlreadyInDb;
+    }
 
     const metadataFromNode = await this.querier.shieldedPool.assetMetadataById(assetId);
 
@@ -438,7 +453,9 @@ export class BlockProcessor implements BlockProcessorInterface {
       const record =
         (await this.indexedDb.getSpendableNoteByNullifier(nullifier)) ??
         (await this.indexedDb.getSwapByNullifier(nullifier));
-      if (!record) continue;
+      if (!record) {
+        continue;
+      }
 
       spentNullifiers.add(nullifier);
 
@@ -527,11 +544,15 @@ export class BlockProcessor implements BlockProcessorInterface {
 
   private async maybeUpsertAuctionWithNoteCommitment(spendableNoteRecord: SpendableNoteRecord) {
     const assetId = spendableNoteRecord.note?.value?.assetId;
-    if (!assetId) return;
+    if (!assetId) {
+      return;
+    }
 
     const metadata = await this.indexedDb.getAssetsMetadata(assetId);
     const captureGroups = assetPatterns.auctionNft.capture(metadata?.display ?? '');
-    if (!captureGroups) return;
+    if (!captureGroups) {
+      return;
+    }
 
     const auctionId = new AuctionId(auctionIdFromBech32(captureGroups.auctionId));
 
@@ -563,12 +584,16 @@ export class BlockProcessor implements BlockProcessorInterface {
     // unnecessary calls to the RPC node for validator infos. Instead, we'll
     // only get updated validator infos once we're within the latest known
     // epoch.
-    if (nextEpochIsLatestKnownEpoch) void this.updateValidatorInfos(nextEpochStartHeight);
+    if (nextEpochIsLatestKnownEpoch) {
+      void this.updateValidatorInfos(nextEpochStartHeight);
+    }
   }
 
   private async updateValidatorInfos(nextEpochStartHeight: bigint): Promise<void> {
     for await (const validatorInfoResponse of this.querier.stake.allValidatorInfos()) {
-      if (!validatorInfoResponse.validatorInfo) continue;
+      if (!validatorInfoResponse.validatorInfo) {
+        continue;
+      }
 
       // Await the upsert. This makes it possible for users of this method to
       // await the entire method, if they want to block all other code until all

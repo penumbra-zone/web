@@ -42,6 +42,8 @@ export const Price = ({
     }
   }
 
-  if (!price) return null;
+  if (!price) {
+    return null;
+  }
   return <span className='text-xs text-muted-foreground'>{price}</span>;
 };

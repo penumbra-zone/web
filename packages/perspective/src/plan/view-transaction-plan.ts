@@ -27,7 +27,9 @@ export const viewTransactionPlan = async (
 ): Promise<TransactionView> => {
   const returnAddress = txPlan.memo?.plaintext?.returnAddress;
   const transactionParameters = txPlan.transactionParameters;
-  if (!transactionParameters?.fee) throw new Error('No fee found in transaction plan');
+  if (!transactionParameters?.fee) {
+    throw new Error('No fee found in transaction plan');
+  }
 
   return new TransactionView({
     bodyView: {

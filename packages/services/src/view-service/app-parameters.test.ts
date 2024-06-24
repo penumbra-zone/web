@@ -30,7 +30,9 @@ describe('AppParameters request handler', () => {
     mockIndexedDb = {
       getAppParams: vi.fn(),
       subscribe: (table: string) => {
-        if (table === 'APP_PARAMETERS') return mockAppParametersSubscription;
+        if (table === 'APP_PARAMETERS') {
+          return mockAppParametersSubscription;
+        }
         throw new Error('Table not supported');
       },
     };

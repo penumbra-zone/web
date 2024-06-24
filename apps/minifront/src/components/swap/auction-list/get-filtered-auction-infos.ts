@@ -33,12 +33,20 @@ export const getFilteredAuctionInfos = (
   filter: Filter,
   fullSyncHeight?: bigint,
 ): AuctionInfo[] => {
-  if (filter === 'all') return auctionInfos;
+  if (filter === 'all') {
+    return auctionInfos;
+  }
 
   return auctionInfos.filter(auctionInfo => {
-    if (!fullSyncHeight) return false;
-    if (!haveEnoughDataToDetermineIfAuctionMatchesFilter(auctionInfo)) return false;
-    if (filter === 'active') return auctionIsActive(auctionInfo, fullSyncHeight);
+    if (!fullSyncHeight) {
+      return false;
+    }
+    if (!haveEnoughDataToDetermineIfAuctionMatchesFilter(auctionInfo)) {
+      return false;
+    }
+    if (filter === 'active') {
+      return auctionIsActive(auctionInfo, fullSyncHeight);
+    }
     return auctionIsUpcoming(auctionInfo, fullSyncHeight);
   });
 };

@@ -17,13 +17,14 @@ export class PortStreamSource implements UnderlyingDefaultSource<JsonValue> {
       cont.error(new ConnectError('Source disconnected', Code.Aborted, undefined, undefined, port)),
     );
     this.incoming.onMessage.addListener(chunk => {
-      if (isStreamAbort(chunk))
+      if (isStreamAbort(chunk)) {
         cont.error(errorFromJson(chunk.abort, undefined, ConnectError.from(chunk.abort)));
-      else if (isStreamValue(chunk)) cont.enqueue(chunk.value);
-      else if (isStreamEnd(chunk)) {
+      } else if (isStreamValue(chunk)) {
+        cont.enqueue(chunk.value);
+      } else if (isStreamEnd(chunk)) {
         this.incoming.disconnect();
         cont.close();
-      } else
+      } else {
         cont.error(
           new ConnectError(
             'Unexpected subchannel transport',
@@ -33,6 +34,7 @@ export class PortStreamSource implements UnderlyingDefaultSource<JsonValue> {
             chunk,
           ),
         );
+      }
     });
   }
 

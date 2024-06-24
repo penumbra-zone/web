@@ -147,7 +147,9 @@ export class IndexedDb implements IndexedDbInterface {
     await instance.saveRegistryAssets(registryClient, chainId); // Pre-load asset metadata from registry
 
     const existing0thEpoch = await instance.getEpochByHeight(0n);
-    if (!existing0thEpoch) await instance.addEpoch(0n); // Create first epoch
+    if (!existing0thEpoch) {
+      await instance.addEpoch(0n);
+    } // Create first epoch
 
     return instance;
   }
@@ -201,7 +203,9 @@ export class IndexedDb implements IndexedDbInterface {
   ): Promise<SpendableNoteRecord | undefined> {
     const key = uint8ArrayToBase64(nullifier.inner);
     const json = await this.db.getFromIndex('SPENDABLE_NOTES', 'nullifier', key);
-    if (!json) return undefined;
+    if (!json) {
+      return undefined;
+    }
     return SpendableNoteRecord.fromJson(json);
   }
 
@@ -210,7 +214,9 @@ export class IndexedDb implements IndexedDbInterface {
   ): Promise<SpendableNoteRecord | undefined> {
     const key = uint8ArrayToBase64(commitment.inner);
     const json = await this.db.get('SPENDABLE_NOTES', key);
-    if (!json) return undefined;
+    if (!json) {
+      return undefined;
+    }
     return SpendableNoteRecord.fromJson(json);
   }
 
@@ -231,12 +237,16 @@ export class IndexedDb implements IndexedDbInterface {
    * metadata in the `ASSETS` table until it finds a match.
    */
   async getAssetsMetadata(assetId: AssetId): Promise<Metadata | undefined> {
-    if (!assetId.inner.length && !assetId.altBaseDenom && !assetId.altBech32m) return undefined;
+    if (!assetId.inner.length && !assetId.altBaseDenom && !assetId.altBech32m) {
+      return undefined;
+    }
 
     if (assetId.inner.length) {
       const key = uint8ArrayToBase64(assetId.inner);
       const json = await this.db.get('ASSETS', key);
-      if (!json) return undefined;
+      if (!json) {
+        return undefined;
+      }
       return Metadata.fromJson(json);
     }
 
@@ -244,7 +254,9 @@ export class IndexedDb implements IndexedDbInterface {
       for await (const cursor of this.db.transaction('ASSETS').store) {
         const metadata = Metadata.fromJson(cursor.value);
 
-        if (metadata.base === assetId.altBaseDenom) return metadata;
+        if (metadata.base === assetId.altBaseDenom) {
+          return metadata;
+        }
 
         if (
           metadata.penumbraAssetId &&
@@ -274,7 +286,9 @@ export class IndexedDb implements IndexedDbInterface {
     const lastPosition = await this.db.get('REGISTRY_VERSION', 'commit');
 
     // Registry version already saved
-    if (lastPosition === commit) return;
+    if (lastPosition === commit) {
+      return;
+    }
 
     const assets = registryClient.get(chainId).getAllAssets();
     const saveLocalMetadata = assets.map(m => this.saveAssetsMetadata(m));
@@ -312,13 +326,17 @@ export class IndexedDb implements IndexedDbInterface {
   async getTransaction(txId: TransactionId): Promise<TransactionInfo | undefined> {
     const key = uint8ArrayToBase64(txId.inner);
     const jsonRecord = await this.db.get('TRANSACTIONS', key);
-    if (!jsonRecord) return undefined;
+    if (!jsonRecord) {
+      return undefined;
+    }
     return TransactionInfo.fromJson(jsonRecord);
   }
 
   async getFmdParams(): Promise<FmdParameters | undefined> {
     const json = await this.db.get('FMD_PARAMETERS', 'params');
-    if (!json) return undefined;
+    if (!json) {
+      return undefined;
+    }
     return FmdParameters.fromJson(json);
   }
 
@@ -332,9 +350,13 @@ export class IndexedDb implements IndexedDbInterface {
 
   async getAppParams(): Promise<AppParameters | undefined> {
     const json = await this.db.get('APP_PARAMETERS', 'params');
-    if (!json) return undefined;
+    if (!json) {
+      return undefined;
+    }
     const appParams = AppParameters.fromJson(json);
-    if (!appParams.chainId) return undefined;
+    if (!appParams.chainId) {
+      return undefined;
+    }
     return appParams;
   }
 
@@ -366,7 +388,9 @@ export class IndexedDb implements IndexedDbInterface {
   async getSwapByNullifier(nullifier: Nullifier): Promise<SwapRecord | undefined> {
     const key = uint8ArrayToBase64(nullifier.inner);
     const json = await this.db.getFromIndex('SWAPS', 'nullifier', key);
-    if (!json) return undefined;
+    if (!json) {
+      return undefined;
+    }
     return SwapRecord.fromJson(json);
   }
 
@@ -377,7 +401,9 @@ export class IndexedDb implements IndexedDbInterface {
   async getSwapByCommitment(commitment: StateCommitment): Promise<SwapRecord | undefined> {
     const key = uint8ArrayToBase64(commitment.inner);
     const json = await this.db.get('SWAPS', key);
-    if (!json) return undefined;
+    if (!json) {
+      return undefined;
+    }
     return SwapRecord.fromJson(json);
   }
 
@@ -385,7 +411,9 @@ export class IndexedDb implements IndexedDbInterface {
   async getGasPrices(): Promise<GasPrices | undefined> {
     // TODO #1310 use this.stakingTokenAssetId as the key for the query
     const jsonGasPrices = await this.db.get('GAS_PRICES', 'gas_prices');
-    if (!jsonGasPrices) return undefined;
+    if (!jsonGasPrices) {
+      return undefined;
+    }
     return GasPrices.fromJson(jsonGasPrices);
   }
 
@@ -452,7 +480,9 @@ export class IndexedDb implements IndexedDbInterface {
         // For example, in denom 'delegation_penumbravalid12s9lanucncnyasrsqgy6z532q7nwsw3aqzzeqqas55kkpyf6lhsqs2w0zar'
         // 'penumbravalid12s9lanucncnyasrsqgy6z532q7nwsw3aqzzeqas55kkpyf6lhsqs2w0zar' is  validator identity key.
         const regexResult = assetPatterns.delegationToken.capture(asset?.display ?? '');
-        if (!regexResult) throw new Error('expected delegation token identity key not present');
+        if (!regexResult) {
+          throw new Error('expected delegation token identity key not present');
+        }
 
         notesForVoting.push(
           new NotesForVotingResponse({
@@ -477,8 +507,9 @@ export class IndexedDb implements IndexedDbInterface {
           if (
             (!positionState || positionState.equals(position.state)) &&
             (!tradingPair || tradingPair.equals(position.phi?.pair))
-          )
+          ) {
             cont.enqueue(PositionId.fromJson(cursor.value.id));
+          }
           cursor = await cursor.continue();
         }
         cont.close();
@@ -498,7 +529,9 @@ export class IndexedDb implements IndexedDbInterface {
     const key = uint8ArrayToBase64(positionId.inner);
     const positionRecord = await this.db.get('POSITIONS', key);
 
-    if (!positionRecord) throw new Error('Position not found when trying to change its state');
+    if (!positionRecord) {
+      throw new Error('Position not found when trying to change its state');
+    }
 
     const position = Position.fromJson(positionRecord.position);
     position.state = newState;
@@ -522,7 +555,9 @@ export class IndexedDb implements IndexedDbInterface {
     const index = previousEpoch?.index !== undefined ? previousEpoch.index + 1n : 0n;
 
     // avoid saving the same epoch twice
-    if (previousEpoch?.startHeight === startHeight) return;
+    if (previousEpoch?.startHeight === startHeight) {
+      return;
+    }
 
     const newEpoch = {
       startHeight: startHeight.toString(),
@@ -562,8 +597,11 @@ export class IndexedDb implements IndexedDbInterface {
     for await (const cursor of this.db.transaction('EPOCHS', 'readonly').store) {
       const currentEpoch = Epoch.fromJson(cursor.value);
 
-      if (currentEpoch.startHeight <= height) epoch = currentEpoch;
-      else if (currentEpoch.startHeight > height) break;
+      if (currentEpoch.startHeight <= height) {
+        epoch = currentEpoch;
+      } else if (currentEpoch.startHeight > height) {
+        break;
+      }
     }
 
     return epoch;
@@ -595,7 +633,9 @@ export class IndexedDb implements IndexedDbInterface {
   async getValidatorInfo(identityKey: IdentityKey): Promise<ValidatorInfo | undefined> {
     const key = bech32mIdentityKey(identityKey);
     const json = await this.db.get('VALIDATOR_INFOS', key);
-    if (!json) return undefined;
+    if (!json) {
+      return undefined;
+    }
     return ValidatorInfo.fromJson(json);
   }
 
@@ -715,13 +755,17 @@ export class IndexedDb implements IndexedDbInterface {
     swaps: SwapRecord[],
     blockHeight: bigint,
   ): Promise<void> {
-    if (!swaps.length) return;
+    if (!swaps.length) {
+      return;
+    }
 
     const epoch =
       (await this.getEpochByHeight(blockHeight)) ?? new Epoch({ startHeight: 0n, index: 0n });
 
     for (const n of swaps) {
-      if (!n.outputData) throw new Error('No output data in swap record');
+      if (!n.outputData) {
+        throw new Error('No output data in swap record');
+      }
 
       // Adds position prefix to swap record. Needed to make swap claims.
       n.outputData.sctPositionPrefix = sctPosition(blockHeight, epoch);
@@ -803,7 +847,9 @@ export class IndexedDb implements IndexedDbInterface {
       uint8ArrayToBase64(auctionId.inner),
     );
 
-    if (!result) return undefined;
+    if (!result) {
+      return undefined;
+    }
 
     return {
       input: Value.fromJson(result.input),

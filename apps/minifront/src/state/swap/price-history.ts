@@ -33,12 +33,13 @@ export const createPriceHistorySlice = (): SliceCreator<PriceHistorySlice> => (s
       2500n,
       ac.signal,
     ).then(data => {
-      if (data)
+      if (data) {
         set(({ swap }) => {
           swap.priceHistory.startMetadata = startMetadata;
           swap.priceHistory.endMetadata = endMetadata;
           swap.priceHistory.candles = data;
         });
+      }
     });
 
     return () => ac.abort('Returned slice abort');

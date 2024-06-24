@@ -24,7 +24,9 @@ export class ShieldedPoolQuerier implements ShieldedPoolQuerierInterface {
       const { denomMetadata } = await this.client.assetMetadataById({ assetId });
       return denomMetadata;
     } catch (e) {
-      if (globalThis.__DEV__) console.debug(e);
+      if (globalThis.__DEV__) {
+        console.debug(e);
+      }
       return undefined;
     }
   }

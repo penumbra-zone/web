@@ -22,7 +22,9 @@ export class TendermintQuerier implements TendermintQuerierInterface {
       const { syncInfo } = await this.client.getStatus({});
       return syncInfo?.latestBlockHeight;
     } catch (e) {
-      if (globalThis.__DEV__) console.debug(e);
+      if (globalThis.__DEV__) {
+        console.debug(e);
+      }
       return undefined;
     }
   }

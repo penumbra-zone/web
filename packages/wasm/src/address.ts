@@ -16,7 +16,9 @@ export const getAddressIndexByAddress = (
 
 // Only an address controlled by the FVK can view its index
 export const isControlledAddress = (fullViewingKey: FullViewingKey, address?: Address): boolean => {
-  if (!address) return false;
+  if (!address) {
+    return false;
+  }
 
   const viewableIndex = get_index_by_address(
     fullViewingKey.toBinary(),

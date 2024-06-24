@@ -86,8 +86,11 @@ const Option = <T,>({ label, secondary, isSelected, image, ...rest }: OptionProp
     role='button'
     aria-selected={isSelected}
     onClick={() => {
-      if ('value' in rest && 'onSelect' in rest) rest.onSelect(rest.value);
-      else if (rest.onSelect) rest.onSelect();
+      if ('value' in rest && 'onSelect' in rest) {
+        rest.onSelect(rest.value);
+      } else if (rest.onSelect) {
+        rest.onSelect();
+      }
     }}
   >
     {image && <div className='flex size-8 shrink-0 items-center justify-center'>{image}</div>}

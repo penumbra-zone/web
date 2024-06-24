@@ -21,12 +21,16 @@ import { identityKeyFromBech32m } from '@penumbra-zone/bech32m/penumbravalid';
 export const unbondingTokensByAddressIndex: Impl['unbondingTokensByAddressIndex'] =
   async function* (req, ctx) {
     const stakeClient = ctx.values.get(stakeClientCtx);
-    if (!stakeClient) throw new Error('Staking context not found');
+    if (!stakeClient) {
+      throw new Error('Staking context not found');
+    }
     for await (const balancesResponse of balances(
       new BalancesRequest({ accountFilter: req.addressIndex }),
       ctx,
     )) {
-      if (!isUnbondingTokenBalance(balancesResponse)) continue;
+      if (!isUnbondingTokenBalance(balancesResponse)) {
+        continue;
+      }
       const claimable = await getIsClaimable(balancesResponse, ctx);
 
       // See https://github.com/typescript-eslint/typescript-eslint/issues/7114
@@ -47,7 +51,9 @@ export const unbondingTokensByAddressIndex: Impl['unbondingTokensByAddressIndex'
       const regexResult = assetPatterns.unbondingToken.capture(
         getDisplayFromBalancesResponse(new BalancesResponse(balancesResponse)) ?? '',
       );
-      if (!regexResult) throw new Error('expected delegation token identity key not present');
+      if (!regexResult) {
+        throw new Error('expected delegation token identity key not present');
+      }
 
       const validatorInfoResponse = await stakeClient.getValidatorInfo({
         identityKey: identityKeyFromBech32m(regexResult.idKey),
@@ -59,8 +65,9 @@ export const unbondingTokensByAddressIndex: Impl['unbondingTokensByAddressIndex'
       });
 
       const withValidatorInfo = getBalanceView(new BalancesResponse(balancesResponse));
-      if (withValidatorInfo.valueView.case !== 'knownAssetId')
+      if (withValidatorInfo.valueView.case !== 'knownAssetId') {
         throw new Error(`Unexpected ValueView case: ${withValidatorInfo.valueView.case}`);
+      }
 
       withValidatorInfo.valueView.value.extendedMetadata = extendedMetadata;
 

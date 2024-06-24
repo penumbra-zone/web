@@ -48,7 +48,9 @@ export class CRSessionManager {
     private prefix: string,
     private handler: ChannelHandlerFn,
   ) {
-    if (CRSessionManager.singleton) throw new Error('Already constructed');
+    if (CRSessionManager.singleton) {
+      throw new Error('Already constructed');
+    }
     chrome.runtime.onConnect.addListener(this.transportConnection);
   }
 
@@ -71,23 +73,33 @@ export class CRSessionManager {
   private transportConnection = (port: chrome.runtime.Port) => {
     // require an identified origin
     const sender = port.sender;
-    if (!sender?.origin) return;
+    if (!sender?.origin) {
+      return;
+    }
 
     // fast and simple name test, parse later
-    if (!port.name.startsWith(this.prefix)) return;
+    if (!port.name.startsWith(this.prefix)) {
+      return;
+    }
 
     // origin restrictions
     const fromThisExtension = sender.id === chrome.runtime.id;
     // frameId == 0 for top-level documents
     const fromPageHttps = !sender.frameId && sender.tab?.id && sender.origin.startsWith('https://');
-    if (!(fromThisExtension || fromPageHttps)) return;
+    if (!(fromThisExtension || fromPageHttps)) {
+      return;
+    }
 
     // parse the name
     const { label: channelLabel, uuid: clientId } =
       parseConnectionName(this.prefix, port.name) ?? {};
-    if (channelLabel !== ChannelLabel.TRANSPORT || !clientId) return;
+    if (channelLabel !== ChannelLabel.TRANSPORT || !clientId) {
+      return;
+    }
 
-    if (this.sessions.has(clientId)) throw new Error(`Session collision: ${clientId}`);
+    if (this.sessions.has(clientId)) {
+      throw new Error(`Session collision: ${clientId}`);
+    }
     const session = {
       clientId,
       acont: new AbortController(),
@@ -160,7 +172,9 @@ export class CRSessionManager {
   ): TransportInitChannel {
     const channel = nameConnection(this.prefix, ChannelLabel.STREAM);
     const sinkListener = (p: chrome.runtime.Port) => {
-      if (p.name !== channel) return;
+      if (p.name !== channel) {
+        return;
+      }
       chrome.runtime.onConnect.removeListener(sinkListener);
       void stream.pipeTo(new WritableStream(new PortStreamSink(p)), { signal }).catch(() => null);
     };

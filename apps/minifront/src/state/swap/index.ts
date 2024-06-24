@@ -26,7 +26,9 @@ import { isValidAmount } from '../helpers';
 
 // When both `balancesResponses` and `swappableAssets` are loaded, set initial assetIn and assetOut
 const setInitialAssets = (state: SwapSlice) => {
-  if (state.swappableAssets.loading || state.balancesResponses.loading) return;
+  if (state.swappableAssets.loading || state.balancesResponses.loading) {
+    return;
+  }
 
   const firstBalancesResponse = state.balancesResponses.data?.[0];
   const firstMetadata = state.swappableAssets.data?.[0];

@@ -32,13 +32,15 @@ export const isPraxInstalled = async () => {
 };
 
 export const throwIfPraxNotConnected = () => {
-  if (!isPraxConnected())
+  if (!isPraxConnected()) {
     throw new PenumbraNotConnectedError('Prax not connected', { cause: prax_origin });
+  }
 };
 
 export const throwIfPraxNotInstalled = async () => {
-  if (!(await isPraxInstalled()))
+  if (!(await isPraxInstalled())) {
     throw new PenumbraNotInstalledError('Prax not installed', { cause: prax_origin });
+  }
 };
 
 export const getPraxPort = async () => {

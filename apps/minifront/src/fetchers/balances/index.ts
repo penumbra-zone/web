@@ -15,8 +15,12 @@ export const getBalances = ({ accountFilter, assetIdFilter }: BalancesProps = {}
   BalancesResponse[]
 > => {
   const req = new BalancesRequest();
-  if (accountFilter) req.accountFilter = accountFilter;
-  if (assetIdFilter) req.assetIdFilter = assetIdFilter;
+  if (accountFilter) {
+    req.accountFilter = accountFilter;
+  }
+  if (assetIdFilter) {
+    req.assetIdFilter = assetIdFilter;
+  }
 
   const iterable = viewClient.balances(req);
   return Array.fromAsync(iterable);
