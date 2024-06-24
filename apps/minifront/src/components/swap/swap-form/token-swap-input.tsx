@@ -25,7 +25,10 @@ import { NonNativeFeeWarning } from '../../shared/non-native-fee-warning';
 import { NumberInput } from '../../shared/number-input';
 import { useBalancesResponses, useAssets } from '../../../state/shared';
 import { FadeIn } from '@repo/ui/components/ui/fade-in';
-import { swappableAssetsSelector, swappableBalancesResponsesSelector } from '../helpers';
+import {
+  swappableAssetsSelector,
+  swappableBalancesResponsesSelector,
+} from '../../../state/swap/helpers';
 
 const getAssetOutBalance = (
   balancesResponses: BalancesResponse[] = [],

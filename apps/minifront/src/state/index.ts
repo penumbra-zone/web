@@ -1,7 +1,7 @@
 import { create, StateCreator } from 'zustand';
 import { enableMapSet } from 'immer';
 import { immer } from 'zustand/middleware/immer';
-import { createSwapSlice, SwapSlice } from './swap';
+import { createSwapSlice, swapAssetsMiddleware, swapBalancesMiddleware, SwapSlice } from './swap';
 import { createIbcOutSlice, IbcOutSlice } from './ibc-out';
 import { createSendSlice, SendSlice } from './send';
 import { createStakingSlice, StakingSlice } from './staking';
@@ -43,19 +43,30 @@ export type SliceCreator<SliceInterface> = StateCreator<
   SliceInterface
 >;
 
+export type Middleware = (
+  f: StateCreator<AllSlices, [['zustand/immer', never]]>,
+) => StateCreator<AllSlices, [['zustand/immer', never]]>;
+
 export const initializeStore = () => {
-  return immer((setState, getState: () => AllSlices, store) => ({
-    balances: createBalancesSlice()(setState, getState, store),
-    ibcIn: createIbcInSlice()(setState, getState, store),
-    ibcOut: createIbcOutSlice()(setState, getState, store),
-    send: createSendSlice()(setState, getState, store),
-    shared: createSharedSlice()(setState, getState, store),
-    staking: createStakingSlice()(setState, getState, store),
-    status: createStatusSlice()(setState, getState, store),
-    swap: createSwapSlice()(setState, getState, store),
-    transactions: createTransactionsSlice()(setState, getState, store),
-    unclaimedSwaps: createUnclaimedSwapsSlice()(setState, getState, store),
-  }));
+  // N.B.: For Typings Reasons™, immer needs to be the outermost (i.e., last)
+  // middleware call. Thus, all other middlewares can't use immer's syntax in
+  // their setters.
+  return immer(
+    swapBalancesMiddleware(
+      swapAssetsMiddleware((setState, getState: () => AllSlices, store) => ({
+        balances: createBalancesSlice()(setState, getState, store),
+        ibcIn: createIbcInSlice()(setState, getState, store),
+        ibcOut: createIbcOutSlice()(setState, getState, store),
+        send: createSendSlice()(setState, getState, store),
+        shared: createSharedSlice()(setState, getState, store),
+        staking: createStakingSlice()(setState, getState, store),
+        status: createStatusSlice()(setState, getState, store),
+        swap: createSwapSlice()(setState, getState, store),
+        transactions: createTransactionsSlice()(setState, getState, store),
+        unclaimedSwaps: createUnclaimedSwapsSlice()(setState, getState, store),
+      })),
+    ),
+  );
 };
 
 export const useStore = create<AllSlices>()(initializeStore());

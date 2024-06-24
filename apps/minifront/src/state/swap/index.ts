@@ -4,7 +4,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { SwapExecution_Trace } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { AllSlices, SliceCreator } from '..';
+import { AllSlices, Middleware, SliceCreator } from '..';
 import { DurationOption } from './constants';
 import {
   createDutchAuctionSlice,
@@ -20,11 +20,9 @@ import { createPriceHistorySlice, PriceHistorySlice } from './price-history';
 import { getMetadata } from '@penumbra-zone/getters/value-view';
 import { isValidAmount } from '../helpers';
 
-import {
-  swappableBalancesResponsesSelector,
-  swappableAssetsSelector,
-} from '../../components/swap/helpers';
 import { setSwapQueryParams } from './query-params';
+import { swappableBalancesResponsesSelector, swappableAssetsSelector } from './helpers';
+import { getMetadataFromBalancesResponse } from '@penumbra-zone/getters/balances-response';
 
 export interface SimulateSwapResult {
   metadataByAssetId: Record<string, Metadata>;
@@ -139,3 +137,66 @@ export const submitButtonDisabledSelector = (state: AllSlices) =>
   !isValidAmount(state.swap.amount, state.swap.assetIn) ||
   dutchAuctionSubmitButtonDisabledSelector(state) ||
   instantSwapSubmitButtonDisabledSelector(state);
+
+export const swapBalancesMiddleware: Middleware = f => (set, get, store) => {
+  const modifiedSetter: typeof set = (...args) => {
+    const before = swappableBalancesResponsesSelector(get().shared.balancesResponses).data;
+    set(...args);
+    const after = swappableBalancesResponsesSelector(get().shared.balancesResponses).data;
+
+    const balancesResponsesWereJustSet = !before?.length && !!after?.length;
+    const assetInNotYetSelected = !get().swap.assetIn;
+
+    if (balancesResponsesWereJustSet && assetInNotYetSelected) {
+      const firstBalanceDifferentFromAssetOut = after.find(
+        balancesResponse =>
+          getMetadataFromBalancesResponse
+            .optional()(balancesResponse)
+            ?.equals(get().swap.assetOut) === false,
+      );
+
+      set(state => ({
+        ...state,
+        swap: {
+          ...state.swap,
+          assetIn: firstBalanceDifferentFromAssetOut,
+        },
+      }));
+    }
+  };
+
+  store.setState = modifiedSetter;
+
+  return f(modifiedSetter, get, store);
+};
+
+export const swapAssetsMiddleware: Middleware = f => (set, get, store) => {
+  const modifiedSetter: typeof set = (...args) => {
+    const before = swappableAssetsSelector(get().shared.assets).data;
+
+    set(...args);
+    const after = swappableAssetsSelector(get().shared.assets).data;
+
+    const assetsWereJustSet = !before?.length && !!after?.length;
+    const assetOutNotYetSelected = !get().swap.assetOut;
+
+    if (assetsWereJustSet && assetOutNotYetSelected) {
+      const firstAssetDifferentFromAssetIn = after.find(
+        metadata =>
+          !metadata.equals(getMetadataFromBalancesResponse.optional()(get().swap.assetIn)),
+      );
+
+      set(state => ({
+        ...state,
+        swap: {
+          ...state.swap,
+          assetOut: firstAssetDifferentFromAssetIn,
+        },
+      }));
+    }
+  };
+
+  store.setState = modifiedSetter;
+
+  return f(modifiedSetter, get, store);
+};
