@@ -1,4 +1,4 @@
-import { AllSlices, SliceCreator, useStore } from '.';
+import { AllSlices, Middleware, SliceCreator, useStore } from '.';
 import {
   BalancesResponse,
   TransactionPlannerRequest,
@@ -262,4 +262,54 @@ export const filterBalancesPerChain = (
   return allBalances.filter(({ balanceView }) => {
     return assetIdsToCheck.some(assetId => assetId?.equals(getAssetIdFromValueView(balanceView)));
   });
+};
+
+export const ibcOutMiddleware: Middleware = f => (set, get, store) => {
+  const modifiedSetter: typeof set = (...args) => {
+    set(...args);
+
+    const initialChain = get().ibcOut.chains.data?.[0];
+    const shouldSetInitialChain = !!initialChain && !get().ibcOut.chain;
+    if (shouldSetInitialChain) {
+      set(state => ({
+        ...state,
+        ibcOut: {
+          ...state.ibcOut,
+          chain: initialChain,
+        },
+      }));
+    }
+
+    const assets = get().shared.assets.data;
+    const balancesResponses = get().shared.balancesResponses.data;
+    const stakingTokenMetadata = get().shared.stakingTokenMetadata.data;
+    const shouldSetInitialSelection =
+      !!initialChain &&
+      !!assets?.length &&
+      !!balancesResponses?.length &&
+      !!stakingTokenMetadata &&
+      !get().ibcOut.selection;
+
+    if (shouldSetInitialSelection) {
+      const initialSelection = filterBalancesPerChain(
+        balancesResponses,
+        initialChain,
+        assets,
+        stakingTokenMetadata,
+      )[0];
+
+      // set initial account if accounts exist and asset if account has asset list
+      set(state => ({
+        ...state,
+        ibcOut: {
+          ...state.ibcOut,
+          selection: initialSelection,
+        },
+      }));
+    }
+  };
+
+  store.setState = modifiedSetter;
+
+  return f(modifiedSetter, get, store);
 };
