@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { itemStyle, triggerStyle, dropdownStyle, linkStyle } from './nav-style';
 import { Link1Icon } from '@radix-ui/react-icons';
 import { getPraxManifest, getPraxOrigin } from '../../../prax';
+import { PenumbraSymbol } from '@penumbra-zone/client';
 
 export const ProviderMenu = () => {
   const [chainId, setChainId] = useState<string | undefined>();
@@ -14,8 +15,9 @@ export const ProviderMenu = () => {
   const [manifestIconUnavailable, setManifestIconUnavailable] = useState<boolean>();
 
   const disconnect = useCallback(() => {
-    console.log('unimplemented');
-    //window[Symbol.for('penumbra')][providerOrigin].disconnect(),
+    void window[PenumbraSymbol]?.[providerOrigin]
+      ?.disconnect()
+      .then(() => window.location.reload());
   }, [providerOrigin]);
 
   useEffect(() => {
@@ -60,7 +62,7 @@ export const ProviderMenu = () => {
             </NavigationMenu.Link>
           </NavigationMenu.Item>
           <NavigationMenu.Item className={cn(...itemStyle)}>
-            <NavigationMenu.Link hidden className={cn(...linkStyle)} onSelect={disconnect}>
+            <NavigationMenu.Link className={cn(...linkStyle)} onSelect={disconnect}>
               Disconnect
             </NavigationMenu.Link>
           </NavigationMenu.Item>
