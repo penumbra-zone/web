@@ -1,23 +1,22 @@
 import { Button } from '@repo/ui/components/ui/button';
 import { Input } from '@repo/ui/components/ui/input';
 import { useStore } from '../../../state';
-import {
-  sendSelector,
-  sendValidationErrors,
-  useTransferableBalancesResponses,
-} from '../../../state/send';
+import { sendSelector, sendValidationErrors } from '../../../state/send';
 import { InputBlock } from '../../shared/input-block';
 import { useMemo } from 'react';
 import { penumbraAddrValidation } from '../helpers';
 import InputToken from '../../shared/input-token';
 import { useRefreshFee } from './use-refresh-fee';
 import { GasFee } from '../../shared/gas-fee';
-import { useStakingTokenMetadata } from '../../../state/shared';
+import { useBalancesResponses, useStakingTokenMetadata } from '../../../state/shared';
 import { NonNativeFeeWarning } from '../../shared/non-native-fee-warning';
+import { transferableBalancesResponsesSelector } from '../../../state/send/helpers';
 
 export const SendForm = () => {
   const stakingTokenMetadata = useStakingTokenMetadata();
-  const transferableBalancesResponses = useTransferableBalancesResponses();
+  const transferableBalancesResponses = useBalancesResponses({
+    select: transferableBalancesResponsesSelector,
+  });
   const {
     selection,
     amount,
