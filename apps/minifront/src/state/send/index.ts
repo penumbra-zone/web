@@ -1,4 +1,4 @@
-import { AllSlices, SliceCreator, useStore } from '.';
+import { AllSlices, Middleware, SliceCreator, useStore } from '..';
 
 import {
   BalancesResponse,
@@ -6,7 +6,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { BigNumber } from 'bignumber.js';
 import { MemoPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import { amountMoreThanBalance, plan, planBuildBroadcast } from './helpers';
+import { amountMoreThanBalance, plan, planBuildBroadcast } from '../helpers';
 
 import {
   Fee,
@@ -19,34 +19,9 @@ import {
 import { getAddress, getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { toBaseUnit } from '@penumbra-zone/types/lo-hi';
 import { isAddress } from '@penumbra-zone/bech32m/penumbra';
-import { ZQueryState, createZQuery } from '@penumbra-zone/zquery';
-import { getTransferableBalancesResponses } from '../components/send/helpers';
-
-export const { transferableBalancesResponses, useTransferableBalancesResponses } = createZQuery({
-  name: 'transferableBalancesResponses',
-  fetch: async () => {
-    const balancesResponses = await getTransferableBalancesResponses();
-
-    if (balancesResponses[0] && !useStore.getState().send.selection) {
-      useStore.setState(state => {
-        state.send.selection = balancesResponses[0];
-      });
-    }
-
-    return balancesResponses;
-  },
-  getUseStore: () => useStore,
-  get: state => state.send.transferableBalancesResponses,
-  set: setter => {
-    const newState = setter(useStore.getState().send.transferableBalancesResponses);
-    useStore.setState(state => {
-      state.send.transferableBalancesResponses = newState;
-    });
-  },
-});
+import { transferableBalancesResponsesSelector } from './helpers';
 
 export interface SendSlice {
-  transferableBalancesResponses: ZQueryState<BalancesResponse[]>;
   selection: BalancesResponse | undefined;
   setSelection: (selection: BalancesResponse) => void;
   amount: string;
@@ -65,7 +40,6 @@ export interface SendSlice {
 
 export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
   return {
-    transferableBalancesResponses,
     selection: undefined,
     amount: '',
     recipient: '',
@@ -193,3 +167,24 @@ export const sendValidationErrors = (
 };
 
 export const sendSelector = (state: AllSlices) => state.send;
+
+export const sendSelectionMiddleware: Middleware = f => (set, get, store) => {
+  const modifiedSetter: typeof set = (...args) => {
+    const before = transferableBalancesResponsesSelector(get().shared.balancesResponses).data;
+    set(...args);
+    const after = transferableBalancesResponsesSelector(get().shared.balancesResponses).data;
+
+    const balancesResponsesWereJustSet = !before?.length && !!after?.length;
+    const balancesResponseNotYetSelected = !get().send.selection;
+
+    if (balancesResponsesWereJustSet && balancesResponseNotYetSelected) {
+      useStore.setState(state => {
+        state.send.selection = after[0];
+      });
+    }
+  };
+
+  store.setState = modifiedSetter;
+
+  return f(modifiedSetter, get, store);
+};
