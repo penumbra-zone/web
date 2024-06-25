@@ -1,5 +1,5 @@
 ---
-'@penumbra-zone/ui': major
+'@repo/ui': major
 'node-status': patch
 'minifront': patch
 ---
