@@ -12,6 +12,27 @@ export interface ZQueryState<DataType, FetchArgs extends unknown[] = []> {
   };
 }
 
+export type UseHookProps<
+  ResolvedDataType,
+  FetchArgs extends unknown[],
+  SelectorReturnType,
+  SelectorType extends
+    | ((
+        zQueryState: Pick<ZQueryState<ResolvedDataType, FetchArgs>, 'data' | 'error' | 'loading'>,
+      ) => SelectorReturnType)
+    | undefined = undefined,
+> = SelectorType extends undefined
+  ? { select?: undefined; shouldReselect?: undefined } | undefined
+  : {
+      select: SelectorType;
+      shouldReselect?: (
+        before:
+          | Pick<ZQueryState<ResolvedDataType, FetchArgs>, 'data' | 'error' | 'loading'>
+          | undefined,
+        after: Pick<ZQueryState<ResolvedDataType, FetchArgs>, 'data' | 'error' | 'loading'>,
+      ) => boolean;
+    };
+
 interface CreateZQueryCommonProps<Name extends string, State> {
   /** The name of this property in the state/slice. */
   name: Name;
@@ -306,13 +327,19 @@ export type UseStore<State> = (<T>(selector: (state: State) => T) => T) & { getS
 
 export type ZQuery<Name extends string, DataType, FetchArgs extends unknown[]> = {
   [key in `use${Capitalize<Name>}`]: <
-    SelectedDataType = { data?: DataType; loading: boolean; error?: unknown },
+    ReturnType = { data?: DataType; loading: boolean; error?: unknown },
   >(
     options?: {
-      select?: (zQueryState: ZQueryState<DataType, FetchArgs>) => SelectedDataType;
+      select?: (zQueryState: ZQueryState<DataType, FetchArgs>) => ReturnType;
+      shouldReselect?: (
+        before: Pick<ZQueryState<DataType, FetchArgs>, 'data' | 'error' | 'loading'> | undefined,
+        after: Pick<ZQueryState<DataType, FetchArgs>, 'data' | 'error' | 'loading'>,
+      ) => boolean;
     },
     ...fetchArgs: FetchArgs
-  ) => SelectedDataType;
+    // Must include `| undefined` in the return type because the first pass
+    // through `useStore` doesn't return a value at all.
+  ) => ReturnType | undefined;
 } & {
   [key in `useRevalidate${Capitalize<Name>}`]: () => (...fetchArgs: FetchArgs) => void;
 } & Record<Name, ZQueryState<DataType, FetchArgs>>;

@@ -5,6 +5,8 @@ import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/
 import { getBalances } from '../fetchers/balances';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { getAllAssets } from '../fetchers/assets';
+import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import { getAddress, getAddressIndex } from '@penumbra-zone/getters/address-view';
 
 export const { stakingTokenMetadata, useStakingTokenMetadata } = createZQuery({
   name: 'stakingTokenMetadata',
@@ -56,3 +58,30 @@ export const createSharedSlice = (): SliceCreator<SharedSlice> => () => ({
   balancesResponses,
   stakingTokenMetadata,
 });
+
+export interface BalancesByAccount {
+  account: number;
+  address: Address;
+  balances: BalancesResponse[];
+}
+
+const groupByAccount = (acc: BalancesByAccount[], curr: BalancesResponse): BalancesByAccount[] => {
+  const index = getAddressIndex(curr.accountAddress);
+  const grouping = acc.find(a => a.account === index.account);
+
+  if (grouping) {
+    grouping.balances.push(curr);
+  } else {
+    acc.push({
+      account: index.account,
+      address: getAddress(curr.accountAddress),
+      balances: [curr],
+    });
+  }
+
+  return acc;
+};
+
+export const balancesByAccountSelector = (
+  zQueryState: ZQueryState<BalancesResponse[]>,
+): BalancesByAccount[] => zQueryState.data?.reduce(groupByAccount, []) ?? [];
