@@ -1,6 +1,12 @@
-import { useEffect } from 'react';
-import { CreateZQueryStreamingProps, CreateZQueryUnaryProps, ZQueryState } from './types';
-import { useShallow } from 'zustand/react/shallow';
+import { useEffect, useRef } from 'react';
+import {
+  CreateZQueryStreamingProps,
+  CreateZQueryUnaryProps,
+  UseHookProps,
+  ZQueryState,
+} from './types';
+
+const objectsAreNotEqual = (before: unknown, after: unknown) => !Object.is(before, after);
 
 /**
  * Returns a hook that can be used via `use[Name]()` to access the ZQuery state.
@@ -56,17 +62,23 @@ export const getUseHook = <
     return newReferenceCount;
   };
 
-  const useHook = (
-    {
-      select,
-    }: {
-      select?: <SelectedDataType>(
-        zQueryState: Pick<
-          ZQueryState<ProcessedDataType | DataType, FetchArgs>,
-          'data' | 'error' | 'loading'
-        >,
-      ) => SelectedDataType;
-    } = {},
+  const useHook = <
+    SelectorReturnType,
+    SelectorType extends
+      | ((
+          zQueryState: Pick<
+            ZQueryState<DataType | ProcessedDataType, FetchArgs>,
+            'data' | 'error' | 'loading'
+          >,
+        ) => SelectorReturnType)
+      | undefined,
+  >(
+    useHookProps?: UseHookProps<
+      DataType | ProcessedDataType,
+      FetchArgs,
+      SelectorReturnType,
+      SelectorType
+    >,
     ...fetchArgs: FetchArgs
   ) => {
     const useStore = props.getUseStore();
@@ -95,19 +107,33 @@ export const getUseHook = <
       return onUnmount;
     }, [fetch]);
 
-    const returnValue = useStore(
-      useShallow(state => {
-        const { data, loading, error } = props.get(state);
+    const prevState = useRef<ZQueryState<DataType | ProcessedDataType, FetchArgs> | undefined>();
+    const prevSelectedState =
+      useRef<
+        SelectorType extends undefined
+          ? { data?: ProcessedDataType | DataType; error: unknown; loading: boolean }
+          : ReturnType<NonNullable<SelectorType>>
+      >();
 
-        return select
-          ? select({
-              data,
-              loading,
-              error,
-            })
-          : { data, loading, error };
-      }),
-    );
+    const returnValue = useStore(state => {
+      const newState: ZQueryState<DataType | ProcessedDataType, FetchArgs> = props.get(state);
+
+      if (objectsAreNotEqual(newState, prevState.current)) {
+        const { data, loading, error } = newState;
+
+        if (
+          useHookProps?.select &&
+          (!useHookProps.shouldReselect || useHookProps.shouldReselect(prevState.current, newState))
+        ) {
+          prevSelectedState.current = useHookProps.select({ data, loading, error });
+        } else if (useHookProps?.select === undefined) {
+          prevSelectedState.current = { data, loading, error };
+        }
+        prevState.current = newState;
+      }
+
+      return prevSelectedState.current;
+    });
 
     return returnValue;
   };

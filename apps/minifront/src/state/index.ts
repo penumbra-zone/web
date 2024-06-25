@@ -9,7 +9,6 @@ import { createStatusSlice, StatusSlice } from './status';
 import { createUnclaimedSwapsSlice, UnclaimedSwapsSlice } from './unclaimed-swaps';
 import { createTransactionsSlice, TransactionsSlice } from './transactions';
 import { createIbcInSlice, IbcInSlice } from './ibc-in';
-import { createBalancesSlice, BalancesSlice } from './balances';
 import { createSharedSlice, SharedSlice } from './shared';
 
 /**
@@ -24,7 +23,6 @@ enableMapSet();
  * specific set of concerns.
  */
 export interface AllSlices {
-  balances: BalancesSlice;
   ibcIn: IbcInSlice;
   ibcOut: IbcOutSlice;
   send: SendSlice;
@@ -56,7 +54,6 @@ export const initializeStore = () => {
       sendSelectionMiddleware(
         swapBalancesMiddleware(
           swapAssetsMiddleware((setState, getState: () => AllSlices, store) => ({
-            balances: createBalancesSlice()(setState, getState, store),
             ibcIn: createIbcInSlice()(setState, getState, store),
             ibcOut: createIbcOutSlice()(setState, getState, store),
             send: createSendSlice()(setState, getState, store),

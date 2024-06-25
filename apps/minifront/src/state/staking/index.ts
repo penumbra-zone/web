@@ -5,7 +5,7 @@ import {
   Metadata,
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { BalancesByAccount, getBalancesByAccount } from '../../fetchers/balances/by-account';
+import { BalancesByAccount } from '../../fetchers/balances/by-account';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { planBuildBroadcast } from '../helpers';
 import {
@@ -40,6 +40,7 @@ import { getStakingTokenMetadata } from '../../fetchers/registry';
 import { zeroValueView } from '../../utils/zero-value-view';
 import { assetPatterns } from '@penumbra-zone/types/assets';
 import { ZQueryState, createZQuery } from '@penumbra-zone/zquery';
+import { balancesByAccountSelector } from '../shared';
 
 interface UnbondingTokensForAccount {
   claimable: {
@@ -169,7 +170,10 @@ const byBalanceAndVotingPower = (valueViewA: ValueView, valueViewB: ValueView): 
 export const { stakingTokensAndFilter, useStakingTokensAndFilter } = createZQuery({
   name: 'stakingTokensAndFilter',
   fetch: async () => {
-    const balancesByAccount = await getBalancesByAccount();
+    /** @todo: Add `dependsOn` feature to ZQuery */
+    const balancesByAccount = balancesByAccountSelector(
+      useStore.getState().shared.balancesResponses,
+    );
 
     const stakingTokenMetadata = await getStakingTokenMetadata();
 
@@ -177,8 +181,8 @@ export const { stakingTokensAndFilter, useStakingTokensAndFilter } = createZQuer
     // combining the reducers into one. But this is much more readable; and
     // anyway, `balancesByAccount` will be a single-item array for the vast
     // majority of users.
-    const unstakedTokensByAccount = balancesByAccount.reduce(
-      (acc: Map<number, ValueView>, cur: BalancesByAccount) =>
+    const unstakedTokensByAccount: Map<number, ValueView | undefined> = balancesByAccount.reduce(
+      (acc: Map<number, ValueView | undefined>, cur: BalancesByAccount) =>
         toUnstakedTokensByAccount(acc, cur, stakingTokenMetadata),
       new Map(),
     );
@@ -460,7 +464,7 @@ const assembleUndelegateRequest = ({
  * Returns a map of accounts to `ValueView`s of the staking token.
  */
 const toUnstakedTokensByAccount = (
-  unstakedTokensByAccount: Map<number, ValueView>,
+  unstakedTokensByAccount: Map<number, ValueView | undefined>,
   curr: BalancesByAccount,
   stakingTokenMetadata: Metadata,
 ) => {
