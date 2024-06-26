@@ -3,7 +3,7 @@ import {
   AbridgedZQueryState,
   CreateZQueryStreamingProps,
   CreateZQueryUnaryProps,
-  UseHookProps,
+  UseHookOptions,
   ZQueryState,
 } from './types';
 
@@ -69,7 +69,7 @@ export const getUseHook = <
       | ((zQueryState: AbridgedZQueryState<ProcessedDataType | DataType>) => SelectorReturnType)
       | undefined,
   >(
-    useHookProps?: UseHookProps<DataType | ProcessedDataType, SelectorReturnType, SelectorType>,
+    useHookOptions?: UseHookOptions<DataType | ProcessedDataType, SelectorType>,
     ...fetchArgs: FetchArgs
   ) => {
     const useStore = props.getUseStore();
@@ -110,11 +110,12 @@ export const getUseHook = <
         const { data, loading, error } = newState;
 
         if (
-          useHookProps?.select &&
-          (!useHookProps.shouldReselect || useHookProps.shouldReselect(prevState.current, newState))
+          useHookOptions?.select &&
+          (!useHookOptions.shouldReselect ||
+            useHookOptions.shouldReselect(prevState.current, newState))
         ) {
-          prevSelectedState.current = useHookProps.select({ data, loading, error });
-        } else if (useHookProps?.select === undefined) {
+          prevSelectedState.current = useHookOptions.select({ data, loading, error });
+        } else if (useHookOptions?.select === undefined) {
           prevSelectedState.current = { data, loading, error };
         }
         prevState.current = newState;
