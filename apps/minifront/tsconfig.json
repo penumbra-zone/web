@@ -1,5 +1,5 @@
 {
   "extends": "@repo/tsconfig/vite.json",
-  "include": ["src", "tests-setup.ts", "__mocks__"],
+  "include": ["src", "tests-setup.ts", "__mocks__", "promise.withresolvers.d.ts"],
   "exclude": ["node_modules"]
 }
