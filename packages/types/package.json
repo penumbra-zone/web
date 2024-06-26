@@ -37,8 +37,8 @@
     "zod": "^3.23.8"
   },
   "peerDependencies": {
-    "@buf/cosmos_ibc.bufbuild_es": "1.10.0-20240606104028-442292b00c16.1",
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240616005217-ca45ca80333e.1",
+    "@buf/cosmos_ibc.bufbuild_es": "1.10.0-20240625204953-f66a294d94c4.1",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240625233123-429cb316aa7c.1",
     "@bufbuild/protobuf": "^1.10.0",
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/getters": "workspace:*"

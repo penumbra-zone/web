@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-defaultKeysVersion="v0.77.0"
+defaultKeysVersion="v0.77.4"
 
 scriptDir=$(dirname "$(readlink -f -- "$0")")
 cacheDir="$scriptDir/keys"
