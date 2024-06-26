@@ -72,7 +72,7 @@ export const TokenSwapInput = () => {
   const swappableAssets = useAssets({ select: swappableAssetsSelector });
   const { amount, setAmount, assetIn, setAssetIn, assetOut, setAssetOut, priceHistory } =
     useStoreShallow(tokenSwapInputSelector);
-  const assetOutBalance = getAssetOutBalance(balancesResponses.data, assetIn, assetOut);
+  const assetOutBalance = getAssetOutBalance(balancesResponses?.data, assetIn, assetOut);
 
   useEffect(() => {
     if (!assetIn || !assetOut) return;
@@ -119,20 +119,20 @@ export const TokenSwapInput = () => {
             </div>
           )}
 
-          <FadeIn condition={!!balancesResponses.error || !!swappableAssets.error}>
+          <FadeIn condition={!!balancesResponses?.error || !!swappableAssets?.error}>
             <div className='flex gap-4 text-red'>
-              {balancesResponses.error instanceof Error && balancesResponses.error.toString()}
-              {swappableAssets.error instanceof Error && swappableAssets.error.toString()}
+              {balancesResponses?.error instanceof Error && balancesResponses.error.toString()}
+              {swappableAssets?.error instanceof Error && swappableAssets.error.toString()}
             </div>
           </FadeIn>
 
-          <FadeIn condition={!!balancesResponses.data && !!swappableAssets.data}>
+          <FadeIn condition={!!balancesResponses?.data && !!swappableAssets?.data}>
             <div className='flex gap-4'>
               <div className='flex h-full flex-col gap-2'>
-                {balancesResponses.data && (
+                {balancesResponses?.data && (
                   <BalanceSelector
                     value={assetIn}
-                    assets={swappableAssets.data}
+                    assets={swappableAssets?.data}
                     balances={balancesResponses.data}
                     onChange={setAssetIn}
                   />
@@ -151,7 +151,7 @@ export const TokenSwapInput = () => {
               </div>
 
               <div className='flex h-full flex-col gap-2'>
-                {swappableAssets.data && (
+                {swappableAssets?.data && (
                   <AssetSelector
                     assets={swappableAssets.data}
                     value={assetOut}
@@ -177,7 +177,7 @@ export const TokenSwapInput = () => {
       </div>
 
       <NonNativeFeeWarning
-        balancesResponses={balancesResponses.data}
+        balancesResponses={balancesResponses?.data}
         amount={Number(amount)}
         wrap={children => (
           <>

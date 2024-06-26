@@ -3,8 +3,8 @@ import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumb
 import { getDisplay } from '@penumbra-zone/getters/metadata';
 import { getMetadata } from '@penumbra-zone/getters/value-view';
 import { assetPatterns } from '@penumbra-zone/types/assets';
-import { ZQueryState } from '@penumbra-zone/zquery';
 import { isKnown } from '../helpers';
+import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
 
 const nonTransferableAssetPatterns = [
   assetPatterns.proposalNft,
@@ -16,7 +16,7 @@ const isTransferable = (metadata: Metadata) =>
   nonTransferableAssetPatterns.every(pattern => !pattern.matches(getDisplay(metadata)));
 
 export const transferableBalancesResponsesSelector = (
-  zQueryState: ZQueryState<BalancesResponse[]>,
+  zQueryState: AbridgedZQueryState<BalancesResponse[]>,
 ) => ({
   loading: zQueryState.loading,
   error: zQueryState.error,

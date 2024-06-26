@@ -7,6 +7,7 @@ import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumb
 import { getAllAssets } from '../fetchers/assets';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { getAddress, getAddressIndex } from '@penumbra-zone/getters/address-view';
+import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
 
 export const { stakingTokenMetadata, useStakingTokenMetadata } = createZQuery({
   name: 'stakingTokenMetadata',
@@ -83,5 +84,5 @@ const groupByAccount = (acc: BalancesByAccount[], curr: BalancesResponse): Balan
 };
 
 export const balancesByAccountSelector = (
-  zQueryState: ZQueryState<BalancesResponse[]>,
+  zQueryState: AbridgedZQueryState<BalancesResponse[]>,
 ): BalancesByAccount[] => zQueryState.data?.reduce(groupByAccount, []) ?? [];
