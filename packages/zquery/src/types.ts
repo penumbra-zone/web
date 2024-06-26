@@ -1,8 +1,10 @@
-export interface ZQueryState<DataType, FetchArgs extends unknown[] = []> {
+export interface AbridgedZQueryState<DataType> {
   data?: DataType | undefined;
   loading: boolean;
   error?: unknown;
-
+}
+export interface ZQueryState<DataType, FetchArgs extends unknown[] = []>
+  extends AbridgedZQueryState<DataType> {
   revalidate: (...args: FetchArgs) => void;
 
   _zQueryInternal: {
@@ -14,22 +16,17 @@ export interface ZQueryState<DataType, FetchArgs extends unknown[] = []> {
 
 export type UseHookProps<
   ResolvedDataType,
-  FetchArgs extends unknown[],
   SelectorReturnType,
   SelectorType extends
-    | ((
-        zQueryState: Pick<ZQueryState<ResolvedDataType, FetchArgs>, 'data' | 'error' | 'loading'>,
-      ) => SelectorReturnType)
+    | ((zQueryState: AbridgedZQueryState<ResolvedDataType>) => SelectorReturnType)
     | undefined = undefined,
 > = SelectorType extends undefined
   ? { select?: undefined; shouldReselect?: undefined } | undefined
   : {
       select: SelectorType;
       shouldReselect?: (
-        before:
-          | Pick<ZQueryState<ResolvedDataType, FetchArgs>, 'data' | 'error' | 'loading'>
-          | undefined,
-        after: Pick<ZQueryState<ResolvedDataType, FetchArgs>, 'data' | 'error' | 'loading'>,
+        before: AbridgedZQueryState<ResolvedDataType> | undefined,
+        after: AbridgedZQueryState<ResolvedDataType>,
       ) => boolean;
     };
 
@@ -326,14 +323,12 @@ export interface CreateZQueryStreamingProps<
 export type UseStore<State> = (<T>(selector: (state: State) => T) => T) & { getState(): State };
 
 export type ZQuery<Name extends string, DataType, FetchArgs extends unknown[]> = {
-  [key in `use${Capitalize<Name>}`]: <
-    ReturnType = { data?: DataType; loading: boolean; error?: unknown },
-  >(
+  [key in `use${Capitalize<Name>}`]: <ReturnType = AbridgedZQueryState<DataType>>(
     options?: {
       select?: (zQueryState: ZQueryState<DataType, FetchArgs>) => ReturnType;
       shouldReselect?: (
-        before: Pick<ZQueryState<DataType, FetchArgs>, 'data' | 'error' | 'loading'> | undefined,
-        after: Pick<ZQueryState<DataType, FetchArgs>, 'data' | 'error' | 'loading'>,
+        before: AbridgedZQueryState<DataType> | undefined,
+        after: AbridgedZQueryState<DataType>,
       ) => boolean;
     },
     ...fetchArgs: FetchArgs

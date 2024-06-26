@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import {
+  AbridgedZQueryState,
   CreateZQueryStreamingProps,
   CreateZQueryUnaryProps,
   UseHookProps,
@@ -65,20 +66,10 @@ export const getUseHook = <
   const useHook = <
     SelectorReturnType,
     SelectorType extends
-      | ((
-          zQueryState: Pick<
-            ZQueryState<DataType | ProcessedDataType, FetchArgs>,
-            'data' | 'error' | 'loading'
-          >,
-        ) => SelectorReturnType)
+      | ((zQueryState: AbridgedZQueryState<ProcessedDataType | DataType>) => SelectorReturnType)
       | undefined,
   >(
-    useHookProps?: UseHookProps<
-      DataType | ProcessedDataType,
-      FetchArgs,
-      SelectorReturnType,
-      SelectorType
-    >,
+    useHookProps?: UseHookProps<DataType | ProcessedDataType, SelectorReturnType, SelectorType>,
     ...fetchArgs: FetchArgs
   ) => {
     const useStore = props.getUseStore();
@@ -111,7 +102,7 @@ export const getUseHook = <
     const prevSelectedState =
       useRef<
         SelectorType extends undefined
-          ? { data?: ProcessedDataType | DataType; error: unknown; loading: boolean }
+          ? AbridgedZQueryState<ProcessedDataType | DataType>
           : ReturnType<NonNullable<SelectorType>>
       >();
 
