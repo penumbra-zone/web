@@ -1,4 +1,5 @@
 ---
+'@penumbra-zone/keys': minor
 '@penumbra-zone/perspective': minor
 '@penumbra-zone/protobuf': minor
 '@penumbra-zone/services': minor
