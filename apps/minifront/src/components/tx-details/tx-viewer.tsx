@@ -1,6 +1,5 @@
 import { JsonViewer } from '@repo/ui/components/ui/json-viewer';
-import { TransactionViewComponent } from '@repo/ui/components/ui/tx/view/transaction';
-import { TxDetailsLoaderResult } from '.';
+import { TransactionViewComponent } from '@repo/ui/components/ui/tx';
 import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import type { Jsonified } from '@penumbra-zone/types/jsonified';
 import { useState } from 'react';
@@ -10,6 +9,7 @@ import { typeRegistry } from '@penumbra-zone/protobuf';
 import { useQuery } from '@tanstack/react-query';
 import fetchReceiverView from './hooks';
 import { classifyTransaction } from '@penumbra-zone/perspective/transaction/classify';
+import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 
 export enum TxDetailsTab {
   PUBLIC = 'public',
@@ -23,11 +23,11 @@ const OPTIONS = [
   { label: 'Reciever View', value: TxDetailsTab.RECIEVER },
 ];
 
-export const TxViewer = ({ txInfo, hash }: TxDetailsLoaderResult) => {
+export const TxViewer = ({ txInfo }: { txInfo?: TransactionInfo }) => {
   const [option, setOption] = useState(TxDetailsTab.PRIVATE);
 
   // classify the transaction type
-  const transactionClassification = classifyTransaction(txInfo.view);
+  const transactionClassification = classifyTransaction(txInfo?.view);
 
   // filter for reciever view
   const showReceiverTransactionView = transactionClassification === 'send';
@@ -38,7 +38,7 @@ export const TxViewer = ({ txInfo, hash }: TxDetailsLoaderResult) => {
   // use React-Query to invoke custom hooks that call async translators.
   const { data: receiverView } = useQuery(
     ['receiverView', txInfo, option],
-    () => fetchReceiverView(txInfo),
+    () => fetchReceiverView(txInfo!),
     {
       enabled: option === TxDetailsTab.RECIEVER && !!txInfo,
     },
@@ -47,7 +47,9 @@ export const TxViewer = ({ txInfo, hash }: TxDetailsLoaderResult) => {
   return (
     <div>
       <div className='text-xl font-bold'>Transaction View</div>
-      <div className='mb-8 break-all font-mono italic text-muted-foreground'>{hash}</div>
+      <div className='mb-8 break-all font-mono italic text-muted-foreground'>
+        {txInfo?.id && uint8ArrayToHex(txInfo.id.inner)}
+      </div>
 
       <div className='mx-auto mb-4 max-w-[70%]'>
         <SegmentedPicker
@@ -58,7 +60,7 @@ export const TxViewer = ({ txInfo, hash }: TxDetailsLoaderResult) => {
           size='lg'
         />
       </div>
-      {option === TxDetailsTab.PRIVATE && (
+      {option === TxDetailsTab.PRIVATE && txInfo && (
         <>
           <TransactionViewComponent txv={txInfo.view!} />
           <div className='mt-8'>
@@ -70,7 +72,7 @@ export const TxViewer = ({ txInfo, hash }: TxDetailsLoaderResult) => {
       {option === TxDetailsTab.RECIEVER && receiverView && showReceiverTransactionView && (
         <TransactionViewComponent txv={receiverView} />
       )}
-      {option === TxDetailsTab.PUBLIC && (
+      {option === TxDetailsTab.PUBLIC && txInfo && (
         <TransactionViewComponent txv={asPublicTransactionView(txInfo.view)} />
       )}
     </div>

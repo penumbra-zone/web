@@ -13,7 +13,7 @@ import {
 } from '@penumbra-zone/getters/validator-info';
 import { calculateCommissionAsPercentage } from '@penumbra-zone/types/staking';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { AssetIcon } from '@repo/ui/components/ui/tx/view/asset-icon';
+import { AssetIcon } from '@repo/ui/components/ui/asset-icon';
 
 /**
  * Renders a single `ValidatorInfo`: its name and identity key,

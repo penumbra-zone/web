@@ -1,4 +1,4 @@
-import { AllSlices, SliceCreator } from '.';
+import { AllSlices, SliceCreator, useStore } from '.';
 
 import {
   BalancesResponse,
@@ -6,7 +6,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { BigNumber } from 'bignumber.js';
 import { MemoPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import { plan, planBuildBroadcast } from './helpers';
+import { amountMoreThanBalance, plan, planBuildBroadcast } from './helpers';
 
 import {
   Fee,
@@ -18,10 +18,35 @@ import {
 } from '@penumbra-zone/getters/value-view';
 import { getAddress, getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { toBaseUnit } from '@penumbra-zone/types/lo-hi';
-import { fromValueView } from '@penumbra-zone/types/amount';
 import { isAddress } from '@penumbra-zone/bech32m/penumbra';
+import { ZQueryState, createZQuery } from '@penumbra-zone/zquery';
+import { getTransferableBalancesResponses } from '../components/send/helpers';
+
+export const { transferableBalancesResponses, useTransferableBalancesResponses } = createZQuery({
+  name: 'transferableBalancesResponses',
+  fetch: async () => {
+    const balancesResponses = await getTransferableBalancesResponses();
+
+    if (balancesResponses[0] && !useStore.getState().send.selection) {
+      useStore.setState(state => {
+        state.send.selection = balancesResponses[0];
+      });
+    }
+
+    return balancesResponses;
+  },
+  getUseStore: () => useStore,
+  get: state => state.send.transferableBalancesResponses,
+  set: setter => {
+    const newState = setter(useStore.getState().send.transferableBalancesResponses);
+    useStore.setState(state => {
+      state.send.transferableBalancesResponses = newState;
+    });
+  },
+});
 
 export interface SendSlice {
+  transferableBalancesResponses: ZQueryState<BalancesResponse[]>;
   selection: BalancesResponse | undefined;
   setSelection: (selection: BalancesResponse) => void;
   amount: string;
@@ -42,6 +67,7 @@ export interface SendSlice {
 
 export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
   return {
+    transferableBalancesResponses,
     selection: undefined,
     amount: '',
     recipient: '',
@@ -136,7 +162,7 @@ const assembleRequest = ({
         value: {
           amount: toBaseUnit(
             BigNumber(amount),
-            getDisplayDenomExponentFromValueView(selection?.balanceView),
+            getDisplayDenomExponentFromValueView.optional()(selection?.balanceView),
           ),
           assetId: getAssetIdFromValueView(selection?.balanceView),
         },
@@ -159,22 +185,6 @@ const assembleRequest = ({
       text: memo,
     }),
   });
-};
-
-export const amountMoreThanBalance = (
-  asset: BalancesResponse,
-  /**
-   * The amount that a user types into the interface will always be in the
-   * display denomination -- e.g., in `penumbra`, not in `upenumbra`.
-   */
-  amountInDisplayDenom: string,
-): boolean => {
-  if (!asset.balanceView) {
-    throw new Error('Missing balanceView');
-  }
-
-  const balanceAmt = fromValueView(asset.balanceView);
-  return Boolean(amountInDisplayDenom) && BigNumber(amountInDisplayDenom).gt(balanceAmt);
 };
 
 export interface SendValidationFields {

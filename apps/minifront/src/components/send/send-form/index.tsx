@@ -1,42 +1,23 @@
 import { Button } from '@repo/ui/components/ui/button';
 import { Input } from '@repo/ui/components/ui/input';
 import { useStore } from '../../../state';
-import { sendSelector, sendValidationErrors } from '../../../state/send';
+import {
+  sendSelector,
+  sendValidationErrors,
+  useTransferableBalancesResponses,
+} from '../../../state/send';
 import { InputBlock } from '../../shared/input-block';
-import { LoaderFunction, useLoaderData } from 'react-router-dom';
-import { useMemo, useState } from 'react';
-import { getTransferableBalancesResponses, penumbraAddrValidation } from '../helpers';
-import { abortLoader } from '../../../abort-loader';
+import { useMemo } from 'react';
+import { penumbraAddrValidation } from '../helpers';
 import InputToken from '../../shared/input-token';
 import { useRefreshFee } from './use-refresh-fee';
 import { GasFee } from '../../shared/gas-fee';
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { getStakingTokenMetadata } from '../../../fetchers/registry';
-import { hasStakingToken } from '../../../fetchers/staking-token';
-
-export interface SendLoaderResponse {
-  assetBalances: BalancesResponse[];
-  stakingAssetMetadata: Metadata;
-}
-
-export const SendAssetBalanceLoader: LoaderFunction = async (): Promise<SendLoaderResponse> => {
-  await abortLoader();
-  const assetBalances = await getTransferableBalancesResponses();
-
-  if (assetBalances[0]) {
-    // set initial account if accounts exist and asset if account has asset list
-    useStore.setState(state => {
-      state.send.selection = assetBalances[0];
-    });
-  }
-  const stakingAssetMetadata = await getStakingTokenMetadata();
-
-  return { assetBalances, stakingAssetMetadata };
-};
+import { useStakingTokenMetadata } from '../../../state/shared';
+import { NonNativeFeeWarning } from '../../shared/non-native-fee-warning';
 
 export const SendForm = () => {
-  const { assetBalances, stakingAssetMetadata } = useLoaderData() as SendLoaderResponse;
+  const stakingTokenMetadata = useStakingTokenMetadata();
+  const transferableBalancesResponses = useTransferableBalancesResponses();
   const {
     selection,
     amount,
@@ -53,11 +34,6 @@ export const SendForm = () => {
     SetIsSendingMax,
     txInProgress,
   } = useStore(sendSelector);
-  // State to manage privacy warning display
-  const [showNonNativeFeeWarning, setshowNonNativeFeeWarning] = useState(false);
-
-  // Check if the user has native staking tokens
-  const stakingToken = hasStakingToken(assetBalances, stakingAssetMetadata);
 
   useRefreshFee();
 
@@ -98,8 +74,6 @@ export const SendForm = () => {
         onInputChange={amount => {
           if (Number(amount) < 0) return;
           setAmount(amount);
-          // Conditionally prompt a privacy warning about non-native fee tokens
-          setshowNonNativeFeeWarning(Number(amount) > 0 && !stakingToken);
         }}
         validations={[
           {
@@ -108,22 +82,18 @@ export const SendForm = () => {
             checkFn: () => validationErrors.amountErr,
           },
         ]}
-        balances={assetBalances}
+        balances={transferableBalancesResponses.data ?? []}
       />
-      {showNonNativeFeeWarning && (
-        <div className='rounded border border-yellow-500 bg-gray-800 p-4 text-yellow-500'>
-          <strong>Privacy Warning:</strong>
-          <span className='block'>
-            Using non-native tokens for transaction fees may pose a privacy risk. It is recommended
-            to use the native token (UM) for better privacy and security.
-          </span>
-        </div>
-      )}
+
+      <NonNativeFeeWarning
+        balancesResponses={transferableBalancesResponses.data}
+        amount={Number(amount)}
+      />
 
       <GasFee
         fee={fee}
         feeTier={feeTier}
-        stakingAssetMetadata={stakingAssetMetadata}
+        stakingAssetMetadata={stakingTokenMetadata.data}
         setFeeTier={setFeeTier}
       />
 

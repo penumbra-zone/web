@@ -28,21 +28,8 @@ export const IbcChainProvider = ({ registry, children }: IbcProviderProps) => {
     <ChainProvider
       chains={chainsToDisplay}
       assetLists={assets}
-      wallets={wallets}
-      walletConnectOptions={{
-        signClient: {
-          projectId: 'a8510432ebb71e6948cfd6cde54b70f7', // TODO: get penumbra project id
-          relayUrl: 'wss://relay.walletconnect.org',
-          metadata: {
-            name: 'IBC into Penumbra',
-            description: 'Penumbra is a cosmos IBC-connected zk privacy chain',
-            url: 'https://penumbra.zone/',
-            icons: [
-              'https://raw.githubusercontent.com/prax-wallet/registry/main/images/penumbra-favicon.png',
-            ],
-          },
-        },
-      }}
+      // Not using mobile wallets as WalletConnect is a centralized service that requires an account
+      wallets={wallets.extension}
       signerOptions={signerOptions}
       modalTheme={{ defaultTheme: 'light' }}
     >

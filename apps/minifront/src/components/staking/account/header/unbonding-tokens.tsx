@@ -9,7 +9,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from '@repo/ui/components/ui/tooltip';
-import { ValueViewComponent } from '@repo/ui/components/ui/tx/view/value';
+import { ValueViewComponent } from '@repo/ui/components/ui/value';
 import { ReactNode } from 'react';
 import { zeroValueView } from '../../../../utils/zero-value-view';
 
@@ -24,7 +24,7 @@ export const UnbondingTokens = ({
   tokens?: ValueView[];
   helpText: string;
   children?: ReactNode;
-  stakingTokenMetadata: Metadata;
+  stakingTokenMetadata?: Metadata;
 }) => {
   return (
     <TooltipProvider>

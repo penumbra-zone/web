@@ -1,4 +1,4 @@
-import { SelectAccount } from '@repo/ui/components/ui/select-account';
+import { SelectAccount } from '@repo/ui/components/ui/select';
 import { getAddrByIndex } from '../../fetchers/address';
 
 export const Receive = () => {

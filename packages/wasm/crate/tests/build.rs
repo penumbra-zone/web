@@ -2,6 +2,8 @@ extern crate penumbra_wasm;
 
 #[cfg(test)]
 mod tests {
+    use std::str::FromStr;
+
     use indexed_db_futures::prelude::{
         IdbDatabase, IdbObjectStore, IdbQuerySource, IdbTransaction, IdbTransactionMode,
     };
@@ -30,7 +32,6 @@ mod tests {
     };
     use prost::Message;
     use serde::{Deserialize, Serialize};
-    use std::str::FromStr;
     use wasm_bindgen::JsValue;
     use wasm_bindgen_test::*;
 
@@ -120,6 +121,7 @@ mod tests {
             is_enabled: true,
             max_hops: 5u32,
             max_positions_per_pair: 0,
+            max_execution_budget: 0u32,
         };
 
         let app_params = AppParameters {
@@ -408,6 +410,7 @@ mod tests {
                 address: Some(address),
                 value: Some(value),
             }],
+            spends: vec![],
             swaps: vec![],
             swap_claims: vec![],
             delegations: vec![],

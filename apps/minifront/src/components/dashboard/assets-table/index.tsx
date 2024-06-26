@@ -1,7 +1,4 @@
-import { LoaderFunction, useLoaderData } from 'react-router-dom';
-import { AddressIcon } from '@repo/ui/components/ui/address-icon';
-import { AddressComponent } from '@repo/ui/components/ui/address-component';
-import { BalancesByAccount, getBalancesByAccount } from '../../../fetchers/balances/by-account';
+import { AddressComponent, AddressIcon } from '@repo/ui/components/ui/address';
 import {
   Table,
   TableBody,
@@ -10,21 +7,16 @@ import {
   TableHeader,
   TableRow,
 } from '@repo/ui/components/ui/table';
-import { ValueViewComponent } from '@repo/ui/components/ui/tx/view/value';
-import { abortLoader } from '../../../abort-loader';
+import { ValueViewComponent } from '@repo/ui/components/ui/value';
 import { EquivalentValues } from './equivalent-values';
 import { Fragment } from 'react';
 import { shouldDisplay } from './helpers';
-
-export const AssetsLoader: LoaderFunction = async (): Promise<BalancesByAccount[]> => {
-  await abortLoader();
-  return await getBalancesByAccount();
-};
+import { useBalancesByAccount } from '../../../state/balances';
 
 export default function AssetsTable() {
-  const balancesByAccount = useLoaderData() as BalancesByAccount[];
+  const balancesByAccount = useBalancesByAccount();
 
-  if (balancesByAccount.length === 0) {
+  if (balancesByAccount.data?.length === 0) {
     return (
       <div className='flex flex-col gap-6'>
         <p>
@@ -40,7 +32,7 @@ export default function AssetsTable() {
 
   return (
     <Table>
-      {balancesByAccount.map(account => (
+      {balancesByAccount.data?.map(account => (
         <Fragment key={account.account}>
           <TableHeader className='group'>
             <TableRow>

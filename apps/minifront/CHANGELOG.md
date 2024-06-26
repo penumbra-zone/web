@@ -1,5 +1,29 @@
 # minifront
 
+## 6.1.0
+
+### Minor Changes
+
+- d8825f9: UI: add `compact` prop to render a minimalistic version of the AccountSwitcher component.
+
+  Minifront: use AccountSwitcher in the IBC-in form
+
+### Patch Changes
+
+- f5c511e: Fix a few layout issues with the header
+- Updated dependencies [9b3f561]
+- Updated dependencies [d8825f9]
+- Updated dependencies [f5c511e]
+  - @penumbra-zone/transport-dom@7.1.0
+  - @penumbra-zone/perspective@6.0.0
+  - @penumbra-zone/protobuf@5.1.0
+  - @penumbra-zone/bech32m@6.1.0
+  - @penumbra-zone/getters@8.0.0
+  - @penumbra-zone/client@8.0.0
+  - @penumbra-zone/crypto-web@5.0.0
+  - @penumbra-zone/types@9.0.0
+  - @repo/ui@5.0.0
+
 ## 6.0.0
 
 ### Major Changes

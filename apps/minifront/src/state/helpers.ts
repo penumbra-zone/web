@@ -1,6 +1,7 @@
 import {
   AuthorizeAndBuildRequest,
   AuthorizeAndBuildResponse,
+  BalancesResponse,
   BroadcastTransactionRequest,
   BroadcastTransactionResponse,
   TransactionPlannerRequest,
@@ -18,6 +19,8 @@ import { PartialMessage } from '@bufbuild/protobuf';
 import { TransactionToast } from '@repo/ui/lib/toast/transaction-toast';
 import { TransactionClassification } from '@penumbra-zone/perspective/transaction/classification';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
+import { fromValueView } from '@penumbra-zone/types/amount';
+import { BigNumber } from 'bignumber.js';
 
 /**
  * Handles the common use case of planning, building, and broadcasting a
@@ -156,3 +159,22 @@ export const userDeniedTransaction = (e: unknown): boolean =>
 
 export const unauthenticated = (e: unknown): boolean =>
   e instanceof Error && e.message.startsWith('[unauthenticated]');
+
+export const amountMoreThanBalance = (
+  asset: BalancesResponse,
+  /**
+   * The amount that a user types into the interface will always be in the
+   * display denomination -- e.g., in `penumbra`, not in `upenumbra`.
+   */
+  amountInDisplayDenom: string,
+): boolean => {
+  if (!asset.balanceView) {
+    throw new Error('Missing balanceView');
+  }
+
+  const balanceAmt = fromValueView(asset.balanceView);
+  return Boolean(amountInDisplayDenom) && BigNumber(amountInDisplayDenom).gt(balanceAmt);
+};
+
+export const isValidAmount = (amount: string, assetIn?: BalancesResponse) =>
+  Number(amount) >= 0 && (!assetIn || !amountMoreThanBalance(assetIn, amount));

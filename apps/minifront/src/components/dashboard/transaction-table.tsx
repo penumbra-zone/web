@@ -8,14 +8,11 @@ import {
 } from '@repo/ui/components/ui/table';
 import { Link } from 'react-router-dom';
 import { shorten } from '@penumbra-zone/types/string';
-import { useStore } from '../../state';
-import { memo, useEffect } from 'react';
-import { TransactionSummary } from '../../state/transactions';
+import { memo } from 'react';
+import { TransactionSummary, useSummaries } from '../../state/transactions';
 
 export default function TransactionTable() {
-  const { summaries, loadSummaries } = useStore(store => store.transactions);
-
-  useEffect(() => void loadSummaries(), [loadSummaries]);
+  const summaries = useSummaries();
 
   return (
     <Table className='md:table'>
@@ -28,9 +25,7 @@ export default function TransactionTable() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {summaries.map(summary => (
-          <Row key={summary.hash} summary={summary} />
-        ))}
+        {summaries.data?.map(summary => <Row key={summary.hash} summary={summary} />)}
       </TableBody>
     </Table>
   );

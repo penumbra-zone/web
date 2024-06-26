@@ -12,9 +12,11 @@ import InputToken from '../../shared/input-token';
 import { InputBlock } from '../../shared/input-block';
 import { IbcLoaderResponse } from '../ibc-loader';
 import { LockOpen2Icon } from '@radix-ui/react-icons';
+import { useStakingTokenMetadata } from '../../../state/shared';
 
 export const IbcOutForm = () => {
-  const { balances, stakingTokenMetadata, assets } = useLoaderData() as IbcLoaderResponse;
+  const stakingTokenMetadata = useStakingTokenMetadata();
+  const { balances, assets } = useLoaderData() as IbcLoaderResponse;
   const {
     sendIbcWithdraw,
     destinationChainAddress,
@@ -25,7 +27,12 @@ export const IbcOutForm = () => {
     setSelection,
     chain,
   } = useStore(ibcOutSelector);
-  const filteredBalances = filterBalancesPerChain(balances, chain, stakingTokenMetadata, assets);
+  const filteredBalances = filterBalancesPerChain(
+    balances,
+    chain,
+    assets,
+    stakingTokenMetadata.data,
+  );
   const validationErrors = useStore(ibcValidationErrors);
 
   return (

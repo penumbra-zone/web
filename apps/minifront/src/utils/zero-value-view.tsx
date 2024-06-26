@@ -6,7 +6,7 @@ import {
  * A default `ValueView` to render when we don't have any balance data for a
  * particular token.
  */
-export const zeroValueView = (metadata: Metadata) =>
+export const zeroValueView = (metadata?: Metadata) =>
   new ValueView({
     valueView: {
       case: 'knownAssetId',

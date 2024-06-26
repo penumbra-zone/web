@@ -10,16 +10,15 @@ import {
 } from '@repo/ui/components/ui/select';
 import { Avatar, AvatarImage } from '@repo/ui/components/ui/avatar';
 import { Identicon } from '@repo/ui/components/ui/identicon';
-import { Input } from '@repo/ui/components/ui/input';
 import { DestinationAddr } from './destination-addr';
 import { Button } from '@repo/ui/components/ui/button';
 import { LockClosedIcon } from '@radix-ui/react-icons';
+import { NumberInput } from '../../shared/number-input';
 
 const isReadySelector = (state: AllSlices) => {
-  const { amount, coin, selectedChain, penumbraAddrs } = state.ibcIn;
+  const { amount, coin, selectedChain } = state.ibcIn;
   const errorsPresent = Object.values(ibcErrorSelector(state)).some(Boolean);
-  const formsFilled =
-    Boolean(amount) && Boolean(coin) && Boolean(selectedChain) && Boolean(penumbraAddrs);
+  const formsFilled = Boolean(amount) && Boolean(coin) && Boolean(selectedChain);
   return !errorsPresent && formsFilled;
 };
 
@@ -82,9 +81,8 @@ const AmountInput = () => {
   const { amountErr } = useStore(ibcErrorSelector);
 
   return (
-    <Input
+    <NumberInput
       disabled={!coin}
-      type='number'
       step='any'
       placeholder='Enter amount'
       className='bg-white text-stone-700'

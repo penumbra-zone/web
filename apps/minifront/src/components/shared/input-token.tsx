@@ -1,11 +1,11 @@
-import { Input } from '@repo/ui/components/ui/input';
 import { cn } from '@repo/ui/lib/utils';
-import BalanceSelector from './balance-selector';
+import BalanceSelector from './selectors/balance-selector';
 import { Validation } from './validation-result';
 import { InputBlock } from './input-block';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { BalanceValueView } from '@repo/ui/components/ui/balance-value-view';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
+import { NumberInput } from './number-input';
 
 interface InputTokenProps {
   label: string;
@@ -47,10 +47,9 @@ export default function InputToken({
   return (
     <InputBlock label={label} value={value} validations={validations} className={className}>
       <div className='flex items-center justify-between gap-4'>
-        <Input
+        <NumberInput
           variant='transparent'
           placeholder={placeholder}
-          type='number'
           className={cn(
             'md:h-8 xl:h-10 md:w-[calc(100%-80px)] xl:w-[calc(100%-160px)] md:text-xl  xl:text-3xl font-bold leading-10',
             inputClassName,

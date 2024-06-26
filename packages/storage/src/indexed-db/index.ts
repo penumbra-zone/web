@@ -66,9 +66,9 @@ import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { PartialMessage } from '@bufbuild/protobuf';
 import { getAmountFromRecord } from '@penumbra-zone/getters/spendable-note-record';
 import { isZero } from '@penumbra-zone/types/amount';
+import { IDB_VERSION } from './config';
 
 interface IndexedDbProps {
-  idbVersion: number; // Incremented during schema changes
   chainId: string;
   walletId: WalletId;
   registryClient: ChainRegistryClient;
@@ -84,7 +84,6 @@ export class IndexedDb implements IndexedDbInterface {
   ) {}
 
   static async initialize({
-    idbVersion,
     walletId,
     chainId,
     registryClient,
@@ -92,7 +91,7 @@ export class IndexedDb implements IndexedDbInterface {
     const bech32Id = bech32mWalletId(walletId);
     const idbName = `viewdata/${chainId}/${bech32Id}`;
 
-    const db = await openDB<PenumbraDb>(idbName, idbVersion, {
+    const db = await openDB<PenumbraDb>(idbName, IDB_VERSION, {
       upgrade(db: IDBPDatabase<PenumbraDb>) {
         // delete existing ObjectStores before re-creating them
         // all existing indexed-db data will be deleted when version is increased
@@ -134,7 +133,7 @@ export class IndexedDb implements IndexedDbInterface {
     });
     const constants = {
       name: idbName,
-      version: idbVersion,
+      version: IDB_VERSION,
       tables: IDB_TABLES,
     } satisfies IdbConstants;
 

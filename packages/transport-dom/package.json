@@ -1,13 +1,13 @@
 {
   "name": "@penumbra-zone/transport-dom",
-  "version": "7.0.0",
+  "version": "7.1.0",
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "engine": {
     "node": ">=22"
   },
   "scripts": {
-    "build": "tsc --build",
+    "build": "tsc --build && tsc-alias",
     "clean": "rm -rfv dist package penumbra-zone-transport-dom-*.tgz",
     "lint": "eslint src",
     "test": "vitest run"

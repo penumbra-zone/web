@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/client",
-  "version": "7.0.0",
+  "version": "8.0.0",
   "license": "(MIT OR Apache-2.0)",
   "description": "Package for connecting to any Penumbra extension, including Prax.",
   "type": "module",
@@ -8,8 +8,8 @@
     "node": ">=22"
   },
   "scripts": {
-    "build": "tsc --build",
-    "clean": "rm -rfv dist package penumbra-zone-*.tgz tsconfig.tsbuildinfo",
+    "build": "tsc --build && tsc-alias",
+    "clean": "rm -rfv dist package penumbra-zone-*.tgz",
     "lint": "eslint src"
   },
   "files": [
