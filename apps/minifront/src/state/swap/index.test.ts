@@ -48,12 +48,6 @@ describe('Swap Slice', () => {
     expect(useStore.getState().swap.amount).toBe('');
     expect(useStore.getState().swap.assetIn).toBeUndefined();
     expect(useStore.getState().swap.assetOut).toBeUndefined();
-    expect(useStore.getState().swap.swappableAssets).toEqual(
-      expect.objectContaining({ data: undefined, error: undefined, loading: false }),
-    );
-    expect(useStore.getState().swap.balancesResponses).toEqual(
-      expect.objectContaining({ data: undefined, error: undefined, loading: false }),
-    );
     expect(useStore.getState().swap.duration).toBe('instant');
     expect(useStore.getState().swap.txInProgress).toBe(false);
   });
@@ -106,11 +100,6 @@ describe('Swap Slice', () => {
         });
 
         useStore.setState(state => {
-          state.swap.swappableAssets.data = [metadata1, metadata2];
-          state.swap.balancesResponses.data = [
-            balancesResponseWithMetadata1,
-            balancesResponseWithMetadata2,
-          ];
           state.swap.assetIn = balancesResponseWithMetadata1;
           state.swap.assetOut = metadata2;
           return state;
@@ -148,16 +137,8 @@ describe('Swap Slice', () => {
         const balancesResponseWithMetadata1 = new BalancesResponse({
           balanceView: { valueView: { case: 'knownAssetId', value: { metadata: metadata1 } } },
         });
-        const balancesResponseWithMetadata2 = new BalancesResponse({
-          balanceView: { valueView: { case: 'knownAssetId', value: { metadata: metadata2 } } },
-        });
 
         useStore.setState(state => {
-          state.swap.swappableAssets.data = [metadata1, metadata2];
-          state.swap.balancesResponses.data = [
-            balancesResponseWithMetadata1,
-            balancesResponseWithMetadata2,
-          ];
           state.swap.assetIn = balancesResponseWithMetadata1;
           state.swap.assetOut = metadata2;
           return state;

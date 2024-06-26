@@ -20,8 +20,8 @@ import { fromBaseUnitAmount } from '@penumbra-zone/types/amount';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { getDisplay } from '@penumbra-zone/getters/metadata';
-import { ZQueryState } from '@penumbra-zone/zquery';
 import { getValueViewCaseFromBalancesResponse } from '@penumbra-zone/getters/balances-response';
+import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
 
 export const sendSimulateTradeRequest = ({
   assetIn,
@@ -100,7 +100,7 @@ const isKnown = (balancesResponse: BalancesResponse) =>
   getValueViewCaseFromBalancesResponse.optional()(balancesResponse) === 'knownAssetId';
 
 export const swappableBalancesResponsesSelector = (
-  zQueryState: ZQueryState<BalancesResponse[]>,
+  zQueryState: AbridgedZQueryState<BalancesResponse[]>,
 ) => ({
   loading: zQueryState.loading,
   error: zQueryState.error,
@@ -110,7 +110,7 @@ export const swappableBalancesResponsesSelector = (
     .sort(byBalanceDescending),
 });
 
-export const swappableAssetsSelector = (zQueryState: ZQueryState<Metadata[]>) => ({
+export const swappableAssetsSelector = (zQueryState: AbridgedZQueryState<Metadata[]>) => ({
   loading: zQueryState.loading,
   error: zQueryState.error,
   data: zQueryState.data?.filter(isSwappable),

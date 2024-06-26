@@ -79,11 +79,11 @@ export const SendForm = () => {
             checkFn: () => validationErrors.amountErr,
           },
         ]}
-        balances={transferableBalancesResponses.data ?? []}
+        balances={transferableBalancesResponses?.data ?? []}
       />
 
       <NonNativeFeeWarning
-        balancesResponses={transferableBalancesResponses.data}
+        balancesResponses={transferableBalancesResponses?.data}
         amount={Number(amount)}
       />
 
