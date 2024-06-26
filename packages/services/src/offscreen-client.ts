@@ -21,7 +21,7 @@ const activateOffscreen = async () => {
     })
     .then(offscreenContexts => !offscreenContexts.length);
 
-  if (!active++ || (await noOffscreen))
+  if (!active++ || (await noOffscreen)) {
     await chrome.offscreen
       .createDocument({
         url: chrome.runtime.getURL(OFFSCREEN_DOCUMENT_PATH),
@@ -33,18 +33,23 @@ const activateOffscreen = async () => {
         // TODO: other failures?
         console.warn('Failed to create offscreen window', e);
       });
+  }
 };
 
 /**
  * Decrement and close if there is no remaining activity.
  */
 const releaseOffscreen = async () => {
-  if (!--active) await chrome.offscreen.closeDocument();
+  if (!--active) {
+    await chrome.offscreen.closeDocument();
+  }
 };
 
 const sendOffscreenMessage = async <T extends OffscreenMessage>(req: InternalRequest<T>) =>
   chrome.runtime.sendMessage<InternalRequest<T>, InternalResponse<T>>(req).then(res => {
-    if ('error' in res) throw errorFromJson(res.error, undefined, ConnectError.from(res));
+    if ('error' in res) {
+      throw errorFromJson(res.error, undefined, ConnectError.from(res));
+    }
     return res.data;
   });
 

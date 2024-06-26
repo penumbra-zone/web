@@ -42,7 +42,9 @@ export const assembleUndelegateClaimRequest = async ({
   const { fullSyncHeight } = await viewClient.status({});
   const { epoch } = await sctClient.epochByHeight({ height: fullSyncHeight });
   const endEpochIndex = epoch?.index;
-  if (!endEpochIndex) return;
+  if (!endEpochIndex) {
+    return;
+  }
 
   return new TransactionPlannerRequest({
     undelegationClaims: await Promise.all(

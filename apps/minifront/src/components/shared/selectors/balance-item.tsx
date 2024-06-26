@@ -18,7 +18,9 @@ export const BalanceItem = ({ asset, value, onSelect }: BalanceItemProps) => {
   const metadata = isMetadata(asset) ? asset : getMetadataFromBalancesResponseOptional(asset);
 
   const isSelected = useMemo(() => {
-    if (!value) return false;
+    if (!value) {
+      return false;
+    }
     if (isMetadata(value) && isMetadata(asset)) {
       return value.equals(asset);
     }

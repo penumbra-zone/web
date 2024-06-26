@@ -9,8 +9,9 @@ import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 export const broadcastTransaction: Impl['broadcastTransaction'] = async function* (req, ctx) {
   const services = await ctx.values.get(servicesCtx)();
   const { indexedDb, querier } = await services.getWalletServices();
-  if (!req.transaction)
+  if (!req.transaction) {
     throw new ConnectError('No transaction provided in request', Code.InvalidArgument);
+  }
 
   // start subscription early to prevent race condition
   const subscription = indexedDb.subscribe('TRANSACTIONS');
@@ -32,7 +33,9 @@ export const broadcastTransaction: Impl['broadcastTransaction'] = async function
     },
   };
 
-  if (!req.awaitDetection) return;
+  if (!req.awaitDetection) {
+    return;
+  }
 
   // Wait until DB records a new transaction with this id
   for await (const { value } of subscription) {

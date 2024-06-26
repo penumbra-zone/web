@@ -34,7 +34,9 @@ export class CRSessionClient {
     private prefix: string,
     private clientPort: MessagePort,
   ) {
-    if (CRSessionClient.singleton) throw new Error('Already constructed');
+    if (CRSessionClient.singleton) {
+      throw new Error('Already constructed');
+    }
 
     this.servicePort = chrome.runtime.connect({
       includeTlsChannelId: true,
@@ -69,10 +71,13 @@ export class CRSessionClient {
 
   private clientListener = (ev: MessageEvent<unknown>) => {
     try {
-      if (isTransportMessage(ev.data)) this.servicePort.postMessage(ev.data);
-      else if (isTransportStream(ev.data))
+      if (isTransportMessage(ev.data)) {
+        this.servicePort.postMessage(ev.data);
+      } else if (isTransportStream(ev.data)) {
         this.servicePort.postMessage(this.requestChannelStream(ev.data));
-      else console.warn('Unknown item from client', ev.data);
+      } else {
+        console.warn('Unknown item from client', ev.data);
+      }
     } catch (e) {
       this.clientPort.postMessage({ error: errorToJson(ConnectError.from(e), undefined) });
     }
@@ -80,10 +85,13 @@ export class CRSessionClient {
 
   private serviceListener = (m: unknown) => {
     try {
-      if (isTransportError(m) || isTransportMessage(m)) this.clientPort.postMessage(m);
-      else if (isTransportInitChannel(m))
+      if (isTransportError(m) || isTransportMessage(m)) {
+        this.clientPort.postMessage(m);
+      } else if (isTransportInitChannel(m)) {
         this.clientPort.postMessage(...this.acceptChannelStreamResponse(m));
-      else console.warn('Unknown item from service', m);
+      } else {
+        console.warn('Unknown item from service', m);
+      }
     } catch (e) {
       this.clientPort.postMessage({ error: errorToJson(ConnectError.from(e), undefined) });
     }
@@ -97,7 +105,9 @@ export class CRSessionClient {
   private requestChannelStream = ({ requestId, stream }: TransportStream) => {
     const channel = nameConnection(this.prefix, ChannelLabel.STREAM);
     const sinkListener = (p: chrome.runtime.Port) => {
-      if (p.name !== channel) return;
+      if (p.name !== channel) {
+        return;
+      }
       chrome.runtime.onConnect.removeListener(sinkListener);
       void stream.pipeTo(new WritableStream(new PortStreamSink(p))).catch(() => null);
     };

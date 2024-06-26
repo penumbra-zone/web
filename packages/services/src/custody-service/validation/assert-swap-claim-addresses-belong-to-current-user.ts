@@ -7,7 +7,9 @@ export const assertSwapClaimAddressesBelongToCurrentUser = (
   isControlledAddress: (address?: Address) => boolean,
 ): void => {
   plan.actions.forEach(action => {
-    if (action.action.case !== 'swap') return;
+    if (action.action.case !== 'swap') {
+      return;
+    }
 
     if (!isControlledAddress(action.action.value.swapPlaintext?.claimAddress)) {
       throw new ConnectError(

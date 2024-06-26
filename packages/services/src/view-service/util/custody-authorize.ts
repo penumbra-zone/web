@@ -10,9 +10,12 @@ export const custodyAuthorize = async (
   plan: TransactionPlan,
 ): Promise<AuthorizationData> => {
   const custodyClient = ctx.values.get(custodyClientCtx);
-  if (!custodyClient)
+  if (!custodyClient) {
     throw new ConnectError('Cannot access custody service', Code.FailedPrecondition);
+  }
   const { data } = await custodyClient.authorize({ plan });
-  if (!data) throw new ConnectError('No authorization data', Code.PermissionDenied);
+  if (!data) {
+    throw new ConnectError('No authorization data', Code.PermissionDenied);
+  }
   return data;
 };

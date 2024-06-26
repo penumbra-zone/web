@@ -23,13 +23,17 @@ import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/c
 const getBech32mAuctionId = (
   balancesResponse: PartialMessage<BalancesResponse>,
 ): string | undefined => {
-  if (!balancesResponse.balanceView) return;
+  if (!balancesResponse.balanceView) {
+    return;
+  }
 
   const captureGroups = assetPatterns.auctionNft.capture(
     getDisplayDenomFromView(new ValueView(balancesResponse.balanceView)),
   );
 
-  if (!captureGroups) return;
+  if (!captureGroups) {
+    return;
+  }
 
   return captureGroups.auctionId;
 };
@@ -42,7 +46,9 @@ const iterateAuctionsThisUserControls = async function* (
 ) {
   for await (const balancesResponse of balances(new BalancesRequest({ accountFilter }), ctx)) {
     const auctionId = getBech32mAuctionId(balancesResponse);
-    if (auctionId) yield auctionId;
+    if (auctionId) {
+      yield auctionId;
+    }
   }
 };
 
@@ -55,7 +61,9 @@ export const auctions: Impl['auctions'] = async function* (req, ctx) {
   for await (const auctionId of iterateAuctionsThisUserControls(ctx, accountFilter)) {
     const id = new AuctionId(auctionIdFromBech32(auctionId));
     const value = await indexedDb.getAuction(id);
-    if (!includeInactive && isInactive(value.seqNum)) continue;
+    if (!includeInactive && isInactive(value.seqNum)) {
+      continue;
+    }
 
     let noteRecord: SpendableNoteRecord | undefined;
     if (value.noteCommitment) {

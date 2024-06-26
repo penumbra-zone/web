@@ -36,10 +36,14 @@ export const getIsClaimable = async (
     appParameters(new AppParametersRequest(), ctx),
   ]);
 
-  if (!fullSyncHeight || !parameters?.stakeParams?.unbondingDelay) return false;
+  if (!fullSyncHeight || !parameters?.stakeParams?.unbondingDelay) {
+    return false;
+  }
 
   const display = getDisplayFromBalancesResponse(new BalancesResponse(balancesResponse));
-  if (!display) return false;
+  if (!display) {
+    return false;
+  }
 
   const unbondingStartHeight = assetPatterns.unbondingToken.capture(display);
 

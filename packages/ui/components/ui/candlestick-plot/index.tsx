@@ -24,9 +24,13 @@ const midPrice = (d: CandlestickData) => (openPrice(d) + closePrice(d)) / 2;
 const priceMovement = (d: CandlestickData) => closePrice(d) - openPrice(d);
 const priceMovementColor = (d: CandlestickData) => {
   const movement = priceMovement(d);
-  if (movement > 0) return 'green';
-  else if (movement < 0) return 'red';
-  else return 'white';
+  if (movement > 0) {
+    return 'green';
+  } else if (movement < 0) {
+    return 'red';
+  } else {
+    return 'white';
+  }
 };
 
 type GetBlockDateFn = (h: bigint, s?: AbortSignal) => Promise<Date | undefined>;
@@ -104,7 +108,9 @@ export const CandlestickPlot = withTooltip<CandlestickPlotProps, CandlestickData
       [],
     );
 
-    if (!candles.length) return null;
+    if (!candles.length) {
+      return null;
+    }
 
     // assertions here okay because we've just checked length
     const startBlock = blockHeight(candles[0]!);

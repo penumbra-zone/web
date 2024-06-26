@@ -46,7 +46,9 @@ export const createUnclaimedSwapsSlice = (): SliceCreator<UnclaimedSwapsSlice> =
   },
   setProgressStatus: (action, id) => {
     if (action === 'add') {
-      if (get().unclaimedSwaps.isInProgress(id)) return;
+      if (get().unclaimedSwaps.isInProgress(id)) {
+        return;
+      }
       set(({ unclaimedSwaps: { inProgress } }) => {
         inProgress.push(id);
       });

@@ -8,7 +8,9 @@ export const NodeInfo = () => {
   const {
     status: { nodeInfo },
   } = useLoaderData() as IndexLoaderResponse;
-  if (!nodeInfo) return <></>;
+  if (!nodeInfo) {
+    return <></>;
+  }
 
   return (
     <Card gradient className='flex flex-col gap-1'>

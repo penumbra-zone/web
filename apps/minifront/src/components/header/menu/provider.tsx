@@ -23,7 +23,9 @@ export const ProviderMenu = () => {
     void getChainId().then(setChainId);
   }, []);
 
-  if (!providerManifest) return null;
+  if (!providerManifest) {
+    return null;
+  }
 
   return (
     <NavigationMenu.Root className='max-w-96'>

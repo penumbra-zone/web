@@ -12,7 +12,9 @@ interface AddressViewProps {
 // Renders an address or an address view.
 // If the view is given and is "visible", the account information will be displayed instead.
 export const AddressViewComponent = ({ view, copyable = true }: AddressViewProps) => {
-  if (!view?.addressView.value?.address) return <></>;
+  if (!view?.addressView.value?.address) {
+    return <></>;
+  }
 
   const encodedAddress = bech32mAddress(view.addressView.value.address);
 

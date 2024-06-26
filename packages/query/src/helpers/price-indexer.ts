@@ -90,7 +90,9 @@ export const deriveAndSavePriceFromBSOD = async (
       );
     }
 
-    if (pricedAsset === undefined || numerairePerUnit === 0) continue;
+    if (pricedAsset === undefined || numerairePerUnit === 0) {
+      continue;
+    }
 
     await indexedDb.updatePrice(pricedAsset, numeraireAssetId, numerairePerUnit, height);
   }

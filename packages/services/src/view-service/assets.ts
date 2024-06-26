@@ -47,7 +47,9 @@ export const assets: Impl['assets'] = async function* (req, ctx) {
   ].filter(i => i.includeReq);
 
   for await (const metadata of indexedDb.iterateAssetsMetadata()) {
-    if (filtered && !patterns.find(p => p.pattern.matches(metadata.display))) continue;
+    if (filtered && !patterns.find(p => p.pattern.matches(metadata.display))) {
+      continue;
+    }
     yield { denomMetadata: metadata };
   }
 };

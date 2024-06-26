@@ -90,7 +90,9 @@ export const createChannelTransport = ({
       // may contain a requestId we don't know about.  the response may be
       // successful, or contain an error conveyed only to the caller.
       const respond = pending.get(data.requestId);
-      if (respond) respond(data);
+      if (respond) {
+        respond(data);
+      }
     } else if (isTransportError(data)) {
       // this is a channel-level error, corresponding to no specific request.
       // this will fail this transport, and every client using this transport.
@@ -98,7 +100,7 @@ export const createChannelTransport = ({
       listenerError.reject(
         errorFromJson(data.error, data.metadata, new ConnectError('Transport failed')),
       );
-    } else
+    } else {
       listenerError.reject(
         new ConnectError(
           'Unknown item in transport',
@@ -108,6 +110,7 @@ export const createChannelTransport = ({
           data,
         ),
       );
+    }
   };
 
   return {
@@ -124,10 +127,13 @@ export const createChannelTransport = ({
       const requestId = crypto.randomUUID();
       const { promise: response, resolve, reject } = Promise.withResolvers<TransportMessage>();
       pending.set(requestId, (tev: TransportEvent) => {
-        if (isTransportMessage(tev, requestId)) resolve(tev);
-        else if (isTransportError(tev))
+        if (isTransportMessage(tev, requestId)) {
+          resolve(tev);
+        } else if (isTransportError(tev)) {
           reject(errorFromJson(tev.error, tev.metadata, new ConnectError('Unary failed')));
-        else reject(ConnectError.from(tev));
+        } else {
+          reject(ConnectError.from(tev));
+        }
       });
 
       const message = Any.pack(new method.I(input)).toJson(jsonOptions);
@@ -162,10 +168,13 @@ export const createChannelTransport = ({
       const requestId = crypto.randomUUID();
       const { promise: response, resolve, reject } = Promise.withResolvers<TransportStream>();
       pending.set(requestId, (tev: TransportEvent) => {
-        if (isTransportStream(tev, requestId)) resolve(tev);
-        else if (isTransportError(tev))
+        if (isTransportStream(tev, requestId)) {
+          resolve(tev);
+        } else if (isTransportError(tev)) {
           reject(errorFromJson(tev.error, tev.metadata, new ConnectError('Stream failed')));
-        else reject(ConnectError.from(tev));
+        } else {
+          reject(ConnectError.from(tev));
+        }
       });
 
       if (method.kind === MethodKind.ServerStreaming) {
@@ -174,11 +183,12 @@ export const createChannelTransport = ({
         if (done && typeof value === 'object' && value != null) {
           const message = Any.pack(new method.I(value as object)).toJson(jsonOptions);
           port.postMessage({ requestId, message, header } satisfies TransportMessage);
-        } else
+        } else {
           throw new ConnectError(
             'MethodKind.ServerStreaming expects a single request message',
             Code.OutOfRange,
           );
+        }
       } else {
         const stream: ReadableStream<JsonValue> = ReadableStream.from(input).pipeThrough(
           new TransformStream({

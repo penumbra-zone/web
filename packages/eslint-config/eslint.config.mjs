@@ -94,5 +94,6 @@ export const penumbraEslintConfig = {
         ],
       },
     ],
+    curly: ['error', 'all'],
   },
 };

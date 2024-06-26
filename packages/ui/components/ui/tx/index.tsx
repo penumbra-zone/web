@@ -7,8 +7,12 @@ import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core
 import { ValueViewComponent } from '../value';
 
 export const TransactionViewComponent = ({ txv }: { txv: TransactionView }) => {
-  if (!txv.bodyView) throw new Error('transaction view missing body view');
-  if (!txv.bodyView.transactionParameters?.fee?.amount) throw new Error('Missing fee amount');
+  if (!txv.bodyView) {
+    throw new Error('transaction view missing body view');
+  }
+  if (!txv.bodyView.transactionParameters?.fee?.amount) {
+    throw new Error('Missing fee amount');
+  }
 
   // Request the fee 'Metadata' and construct a 'ValueView' object
   const chainId = txv.bodyView.transactionParameters.chainId;

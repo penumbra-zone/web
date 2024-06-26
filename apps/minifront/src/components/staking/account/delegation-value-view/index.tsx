@@ -43,7 +43,9 @@ export const DelegationValueView = memo(
         ),
       );
 
-      if (equivalentValue) return asValueView(equivalentValue);
+      if (equivalentValue) {
+        return asValueView(equivalentValue);
+      }
       return undefined;
     }, [valueView, stakingTokenMetadata.data?.penumbraAssetId]);
 

@@ -20,7 +20,9 @@ export const sendSimulateTradeRequest = ({
   assetOut,
   amount,
 }: Pick<SwapSlice, 'assetIn' | 'assetOut' | 'amount'>): Promise<SimulateTradeResponse> => {
-  if (!assetIn || !assetOut) throw new Error('Both asset in and out need to be set');
+  if (!assetIn || !assetOut) {
+    throw new Error('Both asset in and out need to be set');
+  }
 
   const swapInValue = new Value({
     assetId: getAssetIdFromValueView(assetIn.balanceView),
@@ -46,8 +48,12 @@ export const sendCandlestickDataRequest = async (
   const start = startMetadata?.penumbraAssetId;
   const end = endMetadata?.penumbraAssetId;
 
-  if (!start || !end) throw new Error('Asset pair incomplete');
-  if (start.equals(end)) throw new Error('Asset pair equivalent');
+  if (!start || !end) {
+    throw new Error('Asset pair incomplete');
+  }
+  if (start.equals(end)) {
+    throw new Error('Asset pair equivalent');
+  }
 
   try {
     const { data } = await dexClient.candlestickData(
@@ -59,7 +65,10 @@ export const sendCandlestickDataRequest = async (
     );
     return data;
   } catch (err) {
-    if (err instanceof Error && err.name === 'AbortError') return;
-    else throw err;
+    if (err instanceof Error && err.name === 'AbortError') {
+      return;
+    } else {
+      throw err;
+    }
   }
 };

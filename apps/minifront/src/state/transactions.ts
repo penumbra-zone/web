@@ -39,8 +39,11 @@ export const { summaries, useSummaries } = createZQuery({
 
         // Update existing transactions in place, rather than appending
         // duplicates.
-        if (existingIndex >= 0) return prevState.toSpliced(existingIndex, 1, summary);
-        else return [...prevState, summary].sort(byHeight);
+        if (existingIndex >= 0) {
+          return prevState.toSpliced(existingIndex, 1, summary);
+        } else {
+          return [...prevState, summary].sort(byHeight);
+        }
       },
 
       onEnd: (prevState: TransactionSummary[] | undefined = []) =>

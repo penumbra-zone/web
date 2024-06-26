@@ -3,7 +3,9 @@ import { Filter } from '../../../state/swap/dutch-auction';
 
 const byStartHeight =
   (direction: 'ascending' | 'descending') => (a: AuctionInfo, b: AuctionInfo) => {
-    if (!a.auction.description?.startHeight || !b.auction.description?.startHeight) return 0;
+    if (!a.auction.description?.startHeight || !b.auction.description?.startHeight) {
+      return 0;
+    }
     if (direction === 'ascending') {
       return Number(a.auction.description.startHeight - b.auction.description.startHeight);
     }
