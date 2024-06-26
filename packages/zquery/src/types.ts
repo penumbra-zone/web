@@ -14,11 +14,10 @@ export interface ZQueryState<DataType, FetchArgs extends unknown[] = []>
   };
 }
 
-export type UseHookProps<
+export type UseHookOptions<
   ResolvedDataType,
-  SelectorReturnType,
   SelectorType extends
-    | ((zQueryState: AbridgedZQueryState<ResolvedDataType>) => SelectorReturnType)
+    | ((zQueryState: AbridgedZQueryState<ResolvedDataType>) => unknown)
     | undefined = undefined,
 > = SelectorType extends undefined
   ? { select?: undefined; shouldReselect?: undefined } | undefined
@@ -323,18 +322,18 @@ export interface CreateZQueryStreamingProps<
 export type UseStore<State> = (<T>(selector: (state: State) => T) => T) & { getState(): State };
 
 export type ZQuery<Name extends string, DataType, FetchArgs extends unknown[]> = {
-  [key in `use${Capitalize<Name>}`]: <ReturnType = AbridgedZQueryState<DataType>>(
-    options?: {
-      select?: (zQueryState: ZQueryState<DataType, FetchArgs>) => ReturnType;
-      shouldReselect?: (
-        before: AbridgedZQueryState<DataType> | undefined,
-        after: AbridgedZQueryState<DataType>,
-      ) => boolean;
-    },
+  [key in `use${Capitalize<Name>}`]: <
+    SelectorType extends
+      | ((zQueryState: AbridgedZQueryState<DataType>) => unknown)
+      | undefined = undefined,
+  >(
+    options?: UseHookOptions<DataType, SelectorType>,
     ...fetchArgs: FetchArgs
     // Must include `| undefined` in the return type because the first pass
     // through `useStore` doesn't return a value at all.
-  ) => ReturnType | undefined;
+  ) => SelectorType extends (zQueryState: AbridgedZQueryState<DataType>) => infer ReturnType
+    ? ReturnType | undefined
+    : AbridgedZQueryState<DataType>;
 } & {
   [key in `useRevalidate${Capitalize<Name>}`]: () => (...fetchArgs: FetchArgs) => void;
 } & Record<Name, ZQueryState<DataType, FetchArgs>>;
