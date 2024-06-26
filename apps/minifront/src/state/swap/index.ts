@@ -21,22 +21,47 @@ import { getMetadata } from '@penumbra-zone/getters/value-view';
 import { createZQuery, ZQueryState } from '@penumbra-zone/zquery';
 import { getSwappableBalancesResponses, isSwappable } from '../../components/swap/helpers';
 import { getAllAssets } from '../../fetchers/assets';
-import { emptyBalanceResponse } from '../../utils/empty-balance-response';
 import { isValidAmount } from '../helpers';
+import { getMetadataFromBalancesResponseOptional } from '@penumbra-zone/getters/balances-response';
+import { emptyBalanceResponse } from '../../utils/empty-balance-response';
 
 // When both `balancesResponses` and `swappableAssets` are loaded, set initial assetIn and assetOut
 const setInitialAssets = (state: SwapSlice) => {
   if (state.swappableAssets.loading || state.balancesResponses.loading) return;
 
-  const firstBalancesResponse = state.balancesResponses.data?.[0];
+  // Get the `from` and `to` query params and match them to the balances and metadata
+  const searchParams = new URLSearchParams(window.location.hash.split('?')[1] ?? '');
+  const from = searchParams.get('from');
+  const to = searchParams.get('to');
+  let balanceFrom = from
+    ? state.balancesResponses.data?.find(
+        balance => getMetadataFromBalancesResponseOptional(balance)?.symbol === from,
+      )
+    : undefined;
+  if (!balanceFrom) {
+    const matchingMetadata = state.swappableAssets.data?.find(metadata => metadata.symbol === from);
+    balanceFrom = matchingMetadata ? emptyBalanceResponse(matchingMetadata) : undefined;
+  }
+  const metadataTo = to
+    ? state.swappableAssets.data?.find(metadata => metadata.symbol === to)
+    : undefined;
+
   const firstMetadata = state.swappableAssets.data?.[0];
-  const secondMetadata = state.swappableAssets.data?.[0];
-  if (firstBalancesResponse) {
+  const secondMetadata = state.swappableAssets.data?.[1];
+  const firstBalancesResponse = state.balancesResponses.data?.[0];
+
+  if (balanceFrom) {
+    state.setAssetIn(balanceFrom);
+  } else if (firstBalancesResponse) {
     state.setAssetIn(firstBalancesResponse);
-    state.setAssetOut(firstMetadata);
   } else if (firstMetadata) {
     state.setAssetIn(emptyBalanceResponse(firstMetadata));
-    state.setAssetOut(secondMetadata);
+  }
+
+  if (metadataTo) {
+    state.setAssetOut(metadataTo);
+  } else {
+    state.setAssetOut(firstBalancesResponse ? firstMetadata : secondMetadata);
   }
 };
 
