@@ -121,6 +121,7 @@ mod tests {
             is_enabled: true,
             max_hops: 5u32,
             max_positions_per_pair: 0,
+            max_execution_budget: 0u32,
         };
 
         let app_params = AppParameters {
