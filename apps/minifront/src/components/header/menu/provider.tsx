@@ -3,8 +3,9 @@ import * as NavigationMenu from '@radix-ui/react-navigation-menu';
 import { getChainId } from '../../../fetchers/chain-id';
 import { useCallback, useEffect, useState } from 'react';
 import { itemStyle, triggerStyle, dropdownStyle, linkStyle } from './nav-style';
-import { Link1Icon } from '@radix-ui/react-icons';
+import { Link1Icon, LinkBreak1Icon } from '@radix-ui/react-icons';
 import { getPraxManifest, getPraxOrigin } from '../../../prax';
+import { PenumbraSymbol } from '@penumbra-zone/client';
 
 export const ProviderMenu = () => {
   const [chainId, setChainId] = useState<string | undefined>();
@@ -14,8 +15,9 @@ export const ProviderMenu = () => {
   const [manifestIconUnavailable, setManifestIconUnavailable] = useState<boolean>();
 
   const disconnect = useCallback(() => {
-    console.log('unimplemented');
-    //window[Symbol.for('penumbra')][providerOrigin].disconnect(),
+    void window[PenumbraSymbol]?.[providerOrigin]
+      ?.disconnect()
+      .then(() => window.location.reload());
   }, [providerOrigin]);
 
   useEffect(() => {
@@ -59,9 +61,18 @@ export const ProviderMenu = () => {
               </div>
             </NavigationMenu.Link>
           </NavigationMenu.Item>
-          <NavigationMenu.Item className={cn(...itemStyle)}>
-            <NavigationMenu.Link hidden className={cn(...linkStyle)} onSelect={disconnect}>
-              Disconnect
+          <NavigationMenu.Item
+            hidden={
+              // hide if injection does not contain disconnect
+              !window[PenumbraSymbol]?.[providerOrigin]?.disconnect
+            }
+            className={cn(...itemStyle)}
+          >
+            <NavigationMenu.Link className={cn(...linkStyle)} onSelect={disconnect}>
+              <span>
+                <LinkBreak1Icon className={cn('size-[1em]', 'inline-block')} />
+                &nbsp;Disconnect
+              </span>
             </NavigationMenu.Link>
           </NavigationMenu.Item>
         </NavigationMenu.Content>

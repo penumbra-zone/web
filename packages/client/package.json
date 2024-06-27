@@ -17,17 +17,22 @@
   ],
   "exports": {
     ".": "./src/index.ts",
-    "./prax": "./src/prax.ts"
+    "./create": "./src/create.ts"
   },
   "publishConfig": {
     "exports": {
       ".": {
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
+      },
+      "./create": {
+        "types": "./dist/create.d.ts",
+        "default": "./dist/create.js"
       }
     }
   },
   "peerDependencies": {
+    "@connectrpc/connect": "^1.4.0",
     "@penumbra-zone/protobuf": "workspace:*",
     "@penumbra-zone/transport-dom": "workspace:*"
   }
