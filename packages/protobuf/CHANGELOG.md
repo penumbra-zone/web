@@ -1,5 +1,11 @@
 # @penumbra-zone/protobuf
 
+## 5.2.0
+
+### Minor Changes
+
+- 4161587: Update to latest bufbuild deps (v0.77.4)
+
 ## 5.1.0
 
 ### Minor Changes

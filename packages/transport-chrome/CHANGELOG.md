@@ -1,5 +1,16 @@
 # @penumbra-zone/transport-chrome
 
+## 5.0.0
+
+### Minor Changes
+
+- 47c6bc0: support disconnection
+
+### Patch Changes
+
+- Updated dependencies [47c6bc0]
+  - @penumbra-zone/transport-dom@7.2.0
+
 ## 4.0.0
 
 ### Minor Changes

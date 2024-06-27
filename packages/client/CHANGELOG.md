@@ -1,5 +1,18 @@
 # @penumbra-zone/client
 
+## 9.0.0
+
+### Major Changes
+
+- 47c6bc0: add disconnect method, add `create` module
+
+### Patch Changes
+
+- Updated dependencies [4161587]
+- Updated dependencies [47c6bc0]
+  - @penumbra-zone/protobuf@5.2.0
+  - @penumbra-zone/transport-dom@7.2.0
+
 ## 8.0.0
 
 ### Minor Changes

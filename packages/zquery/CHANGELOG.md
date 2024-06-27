@@ -1,5 +1,11 @@
 # @penumbra-zone/zquery
 
+## 2.0.1
+
+### Patch Changes
+
+- 733d62a: Stop using loader functions for most routes; fix typings issue in ZQuery
+
 ## 2.0.0
 
 ### Major Changes

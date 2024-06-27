@@ -1,5 +1,12 @@
 # @penumbra-zone/keys
 
+## 4.2.0
+
+### Minor Changes
+
+- 4161587: Update to latest bufbuild deps (v0.77.4)
+- e207faa: finalize ceremony proving keys and update crate deps (v0.78.0)
+
 ## 4.1.0
 
 ### Minor Changes
