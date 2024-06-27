@@ -158,7 +158,7 @@ pub async fn plan_transaction(
     let fvk: FullViewingKey = FullViewingKey::decode(full_viewing_key)?;
 
     // Compute the change address for this transaction.
-    let (change_address, _) = fvk
+    let (mut change_address, _) = fvk
         .incoming()
         .payment_address(source_address_index.account.into());
 
@@ -226,6 +226,8 @@ pub async fn plan_transaction(
     transaction_parameters.fee.0.asset_id = alt_gas;
 
     let mut actions_list = ActionList::default();
+
+    let mut notes_by_asset_id: BTreeMap<Id, Vec<SpendableNoteRecord>> = BTreeMap::new();
 
     // Phase 1: process all of the user-supplied intents into complete action plans.
 
@@ -482,6 +484,37 @@ pub async fn plan_transaction(
         ));
     }
 
+    for tpr::Spend { value, address } in request.spends {
+        let value = value.ok_or_else(|| anyhow!("missing value in spend"))?;
+        let address = address.ok_or_else(|| anyhow!("missing address in spend"))?;
+        let asset_id = value
+            .asset_id
+            .ok_or_else(|| anyhow!("missing asset_id in spend"))?;
+
+        // Find all the notes of this asset in the source account.
+        let records = storage
+            .get_notes(NotesRequest {
+                include_spent: false,
+                asset_id: Some(asset_id.clone().into()),
+                address_index: Some(source_address_index.into()),
+                amount_to_spend: None,
+            })
+            .await?;
+        notes_by_asset_id.insert(
+            asset_id.try_into()?,
+            prioritize_and_filter_spendable_notes(records.clone()),
+        );
+
+        for record in records {
+            let spend: SpendPlan =
+                SpendPlan::new(&mut OsRng, record.clone().note, record.clone().position);
+            actions_list.push(spend);
+        }
+
+        // Change address is overwritten to the recipient.
+        change_address = address.try_into()?;
+    }
+
     // Phase 2: balance the transaction with information from the view service.
     //
     // It's possible that adding spends could increase the gas, increasing
@@ -492,7 +525,6 @@ pub async fn plan_transaction(
     // Compute an initial fee estimate based on the actions we have so far.
     actions_list.refresh_fee_and_change(OsRng, &gas_prices, &fee_tier, &change_address);
 
-    let mut notes_by_asset_id = BTreeMap::new();
     for required in actions_list.balance_with_fee().required() {
         // Find all the notes of this asset in the source account.
         let records = storage

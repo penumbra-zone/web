@@ -153,7 +153,33 @@ const assembleRequest = ({
   memo,
   isSendingMax,
 }: SendSlice) => {
-  // TODO: switch planner request on `isSendingMax`
+  if (isSendingMax) {
+    return new TransactionPlannerRequest({
+      spends: [
+        {
+          address: { altBech32m: recipient },
+          value: {
+            amount: toBaseUnit(
+              BigNumber(amount),
+              getDisplayDenomExponentFromValueView.optional()(selection?.balanceView),
+            ),
+            assetId: getAssetIdFromValueView(selection?.balanceView),
+          },
+        },
+      ],
+      source: getAddressIndex(selection?.accountAddress),
+
+      // Note: we currently don't provide a UI for setting the fee manually. Thus,
+      // a `feeMode` of `manualFee` is not supported here.
+      feeMode:
+        typeof feeTier === 'undefined'
+          ? { case: undefined }
+          : {
+              case: 'autoFee',
+              value: { feeTier },
+            },
+    });
+  }
 
   return new TransactionPlannerRequest({
     outputs: [
