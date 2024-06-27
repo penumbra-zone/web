@@ -35,7 +35,7 @@ export const { balancesResponses, useBalancesResponses } = createZQuery({
     useStore.setState(state => {
       state.swap.balancesResponses = newState;
     });
-    setInitialAssets();
+    setInitialAssets(useStore);
   },
 });
 
@@ -52,7 +52,7 @@ export const { swappableAssets, useSwappableAssets } = createZQuery({
     useStore.setState(state => {
       state.swap.swappableAssets = newState;
     });
-    setInitialAssets();
+    setInitialAssets(useStore);
   },
 });
 

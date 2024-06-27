@@ -4,15 +4,14 @@ import {
 } from '@penumbra-zone/getters/balances-response';
 import { emptyBalanceResponse } from '../../utils/empty-balance-response';
 import { getSwapQueryParams } from './query-params';
-import { useStore } from '..';
+import type { useStore } from '..';
 
 /**
  * When both `balancesResponses` and `swappableAssets` are loaded, set initial assetIn and assetOut
  */
-export const setInitialAssets = () => {
-  useStore.setState(state => {
-    const swap = useStore.getState().swap;
-
+export const setInitialAssets = (store: typeof useStore) => {
+  const swap = store.getState().swap;
+  store.setState(state => {
     if (swap.swappableAssets.loading || swap.balancesResponses.loading) return;
 
     const { from, to, account } = getSwapQueryParams();
@@ -59,5 +58,7 @@ export const setInitialAssets = () => {
     } else {
       state.swap.assetOut = firstBalancesResponse ? firstMetadata : secondMetadata;
     }
+
+    return state;
   });
 };
