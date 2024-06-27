@@ -76,7 +76,7 @@ export const assertProviderManifest = async (
  */
 export const getPenumbraPort = async (requireProvider?: string) => {
   const provider = await assertProviderManifest(requireProvider ?? availableOrigin());
-  if (provider.isConnected() === undefined) await provider.request();
+  if (!provider.isConnected()) await provider.request();
   return provider.connect();
 };
 
