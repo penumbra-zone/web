@@ -1,5 +1,11 @@
 # @penumbra-zone/client
 
+## 9.0.1
+
+### Patch Changes
+
+- 09b935b: emit approval request upon `false` isConnected state
+
 ## 9.0.0
 
 ### Major Changes
