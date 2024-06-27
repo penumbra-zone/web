@@ -1,7 +1,7 @@
 # Minifront
 
 A minimal frontend for interacting with the [Penumbra](https://penumbra.zone/) chain.
-Every Penumbra rpc endpoint will be hosting this static frontend as it is embedded into the node software.
+Every Penumbra RPC endpoint will be hosting this static frontend as it is embedded into the node software.
 
 **Note**: A Penumbra wallet extension is required for full functionality.
 
