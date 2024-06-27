@@ -73,7 +73,7 @@ export default function AssetsTable() {
             </TableHeader>
             <TableBody>
               {account.balances.filter(shouldDisplay).map((assetBalance, index) => (
-                <TableRow key={index}>
+                <TableRow className='group' key={index}>
                   <TableCell>
                     <ValueViewComponent view={assetBalance.balanceView} />
                   </TableCell>
@@ -81,8 +81,13 @@ export default function AssetsTable() {
                     <EquivalentValues valueView={assetBalance.balanceView} />
                   </TableCell>
                   <TableCell>
-                    <Link to={getTradeLink(assetBalance)}>
-                      <Button>Trade</Button>
+                    <Link
+                      className='transition group-hover:opacity-100 md:opacity-0'
+                      to={getTradeLink(assetBalance)}
+                    >
+                      <Button variant='secondary' size='md'>
+                        Trade
+                      </Button>
                     </Link>
                   </TableCell>
                 </TableRow>

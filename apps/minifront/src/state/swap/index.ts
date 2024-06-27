@@ -23,6 +23,7 @@ import { getSwappableBalancesResponses, isSwappable } from '../../components/swa
 import { getAllAssets } from '../../fetchers/assets';
 import { isValidAmount } from '../helpers';
 import { setInitialAssets } from './set-initial-assets';
+import { setSwapQueryParams } from './query-params';
 
 export const { balancesResponses, useBalancesResponses } = createZQuery({
   name: 'balancesResponses',
@@ -34,7 +35,7 @@ export const { balancesResponses, useBalancesResponses } = createZQuery({
     useStore.setState(state => {
       state.swap.balancesResponses = newState;
     });
-    setInitialAssets(useStore.getState().swap);
+    setInitialAssets();
   },
 });
 
@@ -51,7 +52,7 @@ export const { swappableAssets, useSwappableAssets } = createZQuery({
     useStore.setState(state => {
       state.swap.swappableAssets = newState;
     });
-    setInitialAssets(useStore.getState().swap);
+    setInitialAssets();
   },
 });
 
@@ -133,6 +134,7 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
         );
       }
     });
+    setSwapQueryParams(get());
   },
   setAssetOut: metadata => {
     get().swap.resetSubslices();
@@ -146,6 +148,7 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
         );
       }
     });
+    setSwapQueryParams(get());
   },
   setAmount: amount => {
     get().swap.resetSubslices();
