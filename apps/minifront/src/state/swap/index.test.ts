@@ -1,6 +1,6 @@
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '..';
-import { beforeEach, describe, expect, it, test } from 'vitest';
+import { beforeEach, describe, expect, it, test, vi } from 'vitest';
 import {
   Metadata,
   ValueView,
@@ -11,6 +11,36 @@ import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumb
 import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
 
 describe('Swap Slice', () => {
+  const metadata1 = new Metadata({
+    base: 'uasset1',
+    display: 'asset1',
+    penumbraAssetId: { inner: new Uint8Array([1]) },
+    denomUnits: [{ denom: 'uasset1' }, { denom: 'asset1', exponent: 6 }],
+  });
+  const metadata2 = new Metadata({
+    base: 'uasset2',
+    display: 'asset2',
+    penumbraAssetId: { inner: new Uint8Array([2]) },
+    denomUnits: [{ denom: 'uasset2' }, { denom: 'asset2', exponent: 6 }],
+  });
+
+  const balancesResponseWithMetadata1 = new BalancesResponse({
+    balanceView: {
+      valueView: {
+        case: 'knownAssetId',
+        value: { amount: { hi: 0n, lo: 2n }, metadata: metadata1 },
+      },
+    },
+  });
+  const balancesResponseWithMetadata2 = new BalancesResponse({
+    balanceView: {
+      valueView: {
+        case: 'knownAssetId',
+        value: { amount: { hi: 0n, lo: 2n }, metadata: metadata2 },
+      },
+    },
+  });
+
   const selectionExample = new BalancesResponse({
     balanceView: new ValueView({
       valueView: {
@@ -89,17 +119,25 @@ describe('Swap Slice', () => {
 
     describe('when the new assetIn is the same asset as assetOut', () => {
       it('changes the assetOut to the next available asset', () => {
-        const metadata1 = new Metadata({ penumbraAssetId: { inner: new Uint8Array([1]) } });
-        const metadata2 = new Metadata({ penumbraAssetId: { inner: new Uint8Array([2]) } });
-
-        const balancesResponseWithMetadata1 = new BalancesResponse({
-          balanceView: { valueView: { case: 'knownAssetId', value: { metadata: metadata1 } } },
-        });
-        const balancesResponseWithMetadata2 = new BalancesResponse({
-          balanceView: { valueView: { case: 'knownAssetId', value: { metadata: metadata2 } } },
-        });
-
         useStore.setState(state => {
+          state.shared.assets = {
+            data: [metadata1, metadata2],
+            loading: false,
+            revalidate: vi.fn(),
+            _zQueryInternal: {
+              fetch: vi.fn(),
+              referenceCount: 0,
+            },
+          };
+          state.shared.balancesResponses = {
+            data: [balancesResponseWithMetadata1, balancesResponseWithMetadata2],
+            loading: false,
+            revalidate: vi.fn(),
+            _zQueryInternal: {
+              fetch: vi.fn(),
+              referenceCount: 0,
+            },
+          };
           state.swap.assetIn = balancesResponseWithMetadata1;
           state.swap.assetOut = metadata2;
           return state;
@@ -131,14 +169,25 @@ describe('Swap Slice', () => {
 
     describe('when the new assetOut is the same asset as assetIn', () => {
       it('changes the assetIn to the next available asset', () => {
-        const metadata1 = new Metadata({ penumbraAssetId: { inner: new Uint8Array([1]) } });
-        const metadata2 = new Metadata({ penumbraAssetId: { inner: new Uint8Array([2]) } });
-
-        const balancesResponseWithMetadata1 = new BalancesResponse({
-          balanceView: { valueView: { case: 'knownAssetId', value: { metadata: metadata1 } } },
-        });
-
         useStore.setState(state => {
+          state.shared.assets = {
+            data: [metadata1, metadata2],
+            loading: false,
+            revalidate: vi.fn(),
+            _zQueryInternal: {
+              fetch: vi.fn(),
+              referenceCount: 0,
+            },
+          };
+          state.shared.balancesResponses = {
+            data: [balancesResponseWithMetadata1, balancesResponseWithMetadata2],
+            loading: false,
+            revalidate: vi.fn(),
+            _zQueryInternal: {
+              fetch: vi.fn(),
+              referenceCount: 0,
+            },
+          };
           state.swap.assetIn = balancesResponseWithMetadata1;
           state.swap.assetOut = metadata2;
           return state;
