@@ -1,5 +1,41 @@
 # minifront
 
+## 6.2.0
+
+### Minor Changes
+
+- 97b7231: Minifront:
+
+  - extend `BalanceSelector` to show not only assets with balances but all available assets
+  - fix the issues with empty wallets not rendering a swap block correctly
+  - reduce the height of `BalanceSelecor` and `AssetSelector` to `90dvh`
+  - autofocus the search inputs in `BalanceSelecor` and `AssetSelector`
+  - change validations of the swap input to allow entering any possible values
+
+  UI: allow passing `autoFocus` attribute to the `IconInput` component
+
+- 0d78031: fixed bugs related to unknown assets
+
+### Patch Changes
+
+- 733d62a: Stop using loader functions for most routes; fix typings issue in ZQuery
+- 24d9bfa: UI: refactor the package to provide better and more clear exports. Includes a readme with setting up the UI package and more storybook stories.
+- Updated dependencies [733d62a]
+- Updated dependencies [4161587]
+- Updated dependencies [97b7231]
+- Updated dependencies [47c6bc0]
+- Updated dependencies [47c6bc0]
+- Updated dependencies [24d9bfa]
+  - @penumbra-zone/zquery@2.0.1
+  - @penumbra-zone/perspective@7.0.0
+  - @penumbra-zone/protobuf@5.2.0
+  - @penumbra-zone/getters@9.0.0
+  - @penumbra-zone/types@10.0.0
+  - @repo/ui@6.0.0
+  - @penumbra-zone/client@9.0.0
+  - @penumbra-zone/transport-dom@7.2.0
+  - @penumbra-zone/crypto-web@6.0.0
+
 ## 6.1.0
 
 ### Minor Changes

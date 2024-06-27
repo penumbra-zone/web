@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/protobuf",
-  "version": "5.1.0",
+  "version": "5.2.0",
   "license": "(MIT OR Apache-2.0)",
   "description": "Exports a `@bufbuild/protobuf` type registry with all message types necessary to communicate with a Penumbra extension",
   "type": "module",

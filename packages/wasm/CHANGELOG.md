@@ -1,5 +1,18 @@
 # @penumbra-zone/wasm
 
+## 10.0.0
+
+### Minor Changes
+
+- 4161587: Update to latest bufbuild deps (v0.77.4)
+- e207faa: finalize ceremony proving keys and update crate deps (v0.78.0)
+
+### Patch Changes
+
+- Updated dependencies [4161587]
+  - @penumbra-zone/protobuf@5.2.0
+  - @penumbra-zone/types@10.0.0
+
 ## 9.0.0
 
 ### Minor Changes

@@ -1,5 +1,30 @@
 # @penumbra-zone/ui
 
+## 6.0.0
+
+### Major Changes
+
+- 24d9bfa: UI: refactor the package to provide better and more clear exports. Includes a readme with setting up the UI package and more storybook stories.
+
+### Minor Changes
+
+- 4161587: Update to latest bufbuild deps (v0.77.4)
+
+### Patch Changes
+
+- 97b7231: Minifront:
+
+  - extend `BalanceSelector` to show not only assets with balances but all available assets
+  - fix the issues with empty wallets not rendering a swap block correctly
+  - reduce the height of `BalanceSelecor` and `AssetSelector` to `90dvh`
+  - autofocus the search inputs in `BalanceSelecor` and `AssetSelector`
+  - change validations of the swap input to allow entering any possible values
+
+  UI: allow passing `autoFocus` attribute to the `IconInput` component
+
+- Updated dependencies [4161587]
+  - @penumbra-zone/types@10.0.0
+
 ## 5.0.0
 
 ### Minor Changes

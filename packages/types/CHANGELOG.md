@@ -1,5 +1,16 @@
 # @penumbra-zone/types
 
+## 10.0.0
+
+### Minor Changes
+
+- 4161587: Update to latest bufbuild deps (v0.77.4)
+
+### Patch Changes
+
+- Updated dependencies [4161587]
+  - @penumbra-zone/getters@9.0.0
+
 ## 9.0.0
 
 ### Minor Changes

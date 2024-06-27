@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/keys",
-  "version": "4.1.0",
+  "version": "4.2.0",
   "license": "(MIT OR Apache-2.0)",
   "description": "Tool to download proving keys for Penumbra",
   "type": "module",
