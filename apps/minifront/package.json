@@ -1,6 +1,6 @@
 {
   "name": "minifront",
-  "version": "6.2.0",
+  "version": "6.2.1",
   "private": true,
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
