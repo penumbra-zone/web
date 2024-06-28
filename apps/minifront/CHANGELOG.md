@@ -1,5 +1,11 @@
 # minifront
 
+## 6.5.0
+
+### Minor Changes
+
+- 7ab06b7: Add query parameters to the swap page to allow pre-setting swap assets
+
 ## 6.4.0
 
 ### Minor Changes
