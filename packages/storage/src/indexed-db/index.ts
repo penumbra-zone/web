@@ -106,7 +106,10 @@ export class IndexedDb implements IndexedDbInterface {
         });
         spendableNoteStore.createIndex('nullifier', 'nullifier.inner');
         spendableNoteStore.createIndex('assetId', 'note.value.assetId.inner');
-        db.createObjectStore('TRANSACTIONS', { keyPath: 'id.inner' });
+        db.createObjectStore('TRANSACTIONS', { keyPath: 'id.inner' }).createIndex(
+          'height',
+          'height',
+        );
         db.createObjectStore('TREE_LAST_POSITION');
         db.createObjectStore('TREE_LAST_FORGOTTEN');
         db.createObjectStore('TREE_COMMITMENTS', { keyPath: 'commitment.inner' });
@@ -291,9 +294,31 @@ export class IndexedDb implements IndexedDbInterface {
     );
   }
 
-  async *iterateTransactions() {
+  async *iterateTransactions(startHeight?: bigint, endHeight?: bigint) {
+    console.log('iterateTransactions', { startHeight, endHeight });
+
+    let cursorBounds: IDBKeyRange | undefined;
+    if (startHeight != null && endHeight != null)
+      cursorBounds = IDBKeyRange.bound(String(startHeight), String(endHeight));
+    else if (startHeight != null && endHeight == null)
+      cursorBounds = IDBKeyRange.lowerBound(String(startHeight));
+    else if (startHeight == null && endHeight != null)
+      cursorBounds = IDBKeyRange.upperBound(String(endHeight));
+    else cursorBounds = undefined;
+
+    console.log('cursorBounds', cursorBounds);
+
+    // work from the highest height to the lowest
+    const cursorDirection = 'prev';
+
     yield* new ReadableStream(
-      new IdbCursorSource(this.db.transaction('TRANSACTIONS').store.openCursor(), TransactionInfo),
+      new IdbCursorSource(
+        this.db
+          .transaction('TRANSACTIONS')
+          .store.index('height')
+          .openCursor(cursorBounds, cursorDirection),
+        TransactionInfo,
+      ),
     );
   }
 

@@ -72,7 +72,10 @@ export interface IndexedDbInterface {
   iterateSpendableNotes(): AsyncGenerator<SpendableNoteRecord, void>;
   saveTransaction(id: TransactionId, height: bigint, tx: Transaction): Promise<void>;
   getTransaction(txId: TransactionId): Promise<TransactionInfo | undefined>;
-  iterateTransactions(): AsyncGenerator<TransactionInfo, void>;
+  iterateTransactions(
+    startHeight?: bigint,
+    endHeight?: bigint,
+  ): AsyncGenerator<TransactionInfo, void>;
   getAssetsMetadata(assetId: AssetId): Promise<Metadata | undefined>;
   saveAssetsMetadata(metadata: Metadata): Promise<void>;
   iterateAssetsMetadata(): AsyncGenerator<Metadata, void>;
@@ -181,6 +184,9 @@ export interface PenumbraDb extends DBSchema {
   TRANSACTIONS: {
     key: string; // base64 TransactionInfo['id']['inner'];
     value: Jsonified<TransactionInfo>; // TransactionInfo with undefined view and perspective
+    indexes: {
+      height: Jsonified<TransactionInfo['height']>;
+    };
   };
   REGISTRY_VERSION: {
     key: 'commit';
