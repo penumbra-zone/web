@@ -30,7 +30,7 @@ describe('TransactionPlanner request handler', () => {
       getAppParams: vi.fn(),
       getGasPrices: vi.fn(),
       constants: vi.fn(),
-      fetchStakingTokenId: vi.fn(),
+      stakingTokenAssetId: vi.fn(),
       hasStakingAssetBalance: vi.fn(),
     };
 
@@ -80,7 +80,7 @@ describe('TransactionPlanner request handler', () => {
       }),
     );
 
-    mockIndexedDb.fetchStakingTokenId?.mockResolvedValueOnce(true);
+    mockIndexedDb.stakingTokenAssetId?.mockResolvedValueOnce(true);
     mockIndexedDb.hasStakingAssetBalance?.mockResolvedValueOnce(true);
     await transactionPlanner(req, mockCtx);
 

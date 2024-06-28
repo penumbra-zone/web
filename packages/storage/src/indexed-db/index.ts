@@ -80,7 +80,7 @@ export class IndexedDb implements IndexedDbInterface {
     private readonly u: IbdUpdater,
     private readonly c: IdbConstants,
     private readonly chainId: string,
-    private readonly stakingTokenAssetId: AssetId,
+    readonly stakingTokenAssetId: AssetId,
   ) {}
 
   static async initialize({
@@ -815,15 +815,11 @@ export class IndexedDb implements IndexedDbInterface {
     };
   }
 
-  fetchStakingTokenId(): AssetId {
-    return this.stakingTokenAssetId;
-  }
-
-  async hasStakingAssetBalance(assetId: AssetId): Promise<boolean> {
+  async hasStakingAssetBalance(): Promise<boolean> {
     const spendableUMNotes = await this.db.getAllFromIndex(
       'SPENDABLE_NOTES',
       'assetId',
-      uint8ArrayToBase64(assetId.inner),
+      uint8ArrayToBase64(this.stakingTokenAssetId.inner),
     );
 
     return spendableUMNotes.some(note => {

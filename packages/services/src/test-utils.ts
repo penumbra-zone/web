@@ -33,7 +33,7 @@ export interface IndexedDbMock {
   getAuction?: Mock;
   getAuctionOutstandingReserves?: Mock;
   hasStakingAssetBalance?: Mock;
-  fetchStakingTokenId?: Mock;
+  stakingTokenAssetId?: Mock;
 }
 
 export interface AuctionMock {
