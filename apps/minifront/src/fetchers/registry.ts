@@ -23,7 +23,7 @@ export const getStakingTokenMetadata = async () => {
     throw new Error('Could not fetch chain id');
   }
 
-  const { stakingAssetId } = chainRegistryClient.get(chainId);
+  const stakingAssetId = chainRegistryClient.globals().stakingAssetId;
   const stakingAssetsMetadata = await getAssetMetadataById(stakingAssetId);
 
   if (!stakingAssetsMetadata) {

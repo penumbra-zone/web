@@ -1,5 +1,17 @@
 # minifront
 
+## 6.3.0
+
+### Minor Changes
+
+- Bump registry
+
+### Patch Changes
+
+- bce49fe: Update revision number parsing logic
+- Updated dependencies
+  - @repo/ui@6.1.0
+
 ## 6.2.1
 
 ### Patch Changes

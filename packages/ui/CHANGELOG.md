@@ -1,5 +1,11 @@
 # @penumbra-zone/ui
 
+## 6.1.0
+
+### Minor Changes
+
+- Bump registry
+
 ## 6.0.0
 
 ### Major Changes

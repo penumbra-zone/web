@@ -142,7 +142,7 @@ export class IndexedDb implements IndexedDbInterface {
       new IbdUpdater(db),
       constants,
       chainId,
-      registryClient.get(chainId).stakingAssetId,
+      registryClient.globals().stakingAssetId,
     );
     await instance.saveRegistryAssets(registryClient, chainId); // Pre-load asset metadata from registry
 
@@ -276,10 +276,14 @@ export class IndexedDb implements IndexedDbInterface {
     // Registry version already saved
     if (lastPosition === commit) return;
 
-    const assets = registryClient.get(chainId).getAllAssets();
-    const saveLocalMetadata = assets.map(m => this.saveAssetsMetadata(m));
-    await Promise.all(saveLocalMetadata);
-    await this.u.update({ table: 'REGISTRY_VERSION', key: 'commit', value: commit });
+    try {
+      const assets = registryClient.get(chainId).getAllAssets();
+      const saveLocalMetadata = assets.map(m => this.saveAssetsMetadata(m));
+      await Promise.all(saveLocalMetadata);
+      await this.u.update({ table: 'REGISTRY_VERSION', key: 'commit', value: commit });
+    } catch (error) {
+      console.error('Failed pre-population of assets from the registry', error);
+    }
   }
 
   async *iterateSpendableNotes() {
@@ -812,11 +816,7 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   fetchStakingTokenId(): AssetId {
-    const registryClient = new ChainRegistryClient();
-    const registry = registryClient.get(this.chainId);
-    const stakingToken = registry.stakingAssetId;
-
-    return stakingToken;
+    return this.stakingTokenAssetId;
   }
 
   async hasStakingAssetBalance(assetId: AssetId): Promise<boolean> {

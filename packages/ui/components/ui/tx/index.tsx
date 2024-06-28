@@ -2,7 +2,7 @@ import { TransactionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbr
 import { MemoViewComponent } from './memo-view';
 import { ActionViewComponent } from './action-view';
 import { ViewBox, ViewSection } from './viewbox';
-import { getStakingTokenMetaData } from './registry';
+import { getFeeAssetMetadataOrDefault } from './registry';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { ValueViewComponent } from '../value';
 
@@ -13,13 +13,23 @@ export const TransactionViewComponent = ({ txv }: { txv: TransactionView }) => {
   // Request the fee 'Metadata' and construct a 'ValueView' object
   const chainId = txv.bodyView.transactionParameters.chainId;
   const assetId = txv.bodyView.transactionParameters.fee.assetId;
-  const feeAssetMetadata = getStakingTokenMetaData(chainId, assetId);
-  const feeValueView = new ValueView({
-    valueView: {
-      case: 'knownAssetId',
-      value: { amount: txv.bodyView.transactionParameters.fee.amount, metadata: feeAssetMetadata },
-    },
-  });
+  const feeAssetMetadata = getFeeAssetMetadataOrDefault(chainId, assetId);
+  const feeValueView = feeAssetMetadata
+    ? new ValueView({
+        valueView: {
+          case: 'knownAssetId',
+          value: {
+            amount: txv.bodyView.transactionParameters.fee.amount,
+            metadata: feeAssetMetadata,
+          },
+        },
+      })
+    : new ValueView({
+        valueView: {
+          case: 'unknownAssetId',
+          value: { amount: txv.bodyView.transactionParameters.fee.amount },
+        },
+      });
 
   return (
     <div className='flex flex-col gap-8'>

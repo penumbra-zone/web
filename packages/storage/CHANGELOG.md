@@ -1,5 +1,11 @@
 # @penumbra-zone/storage
 
+## 7.1.0
+
+### Minor Changes
+
+- Bump registry
+
 ## 7.0.0
 
 ### Major Changes
