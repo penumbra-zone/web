@@ -4,30 +4,29 @@ import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbr
 import { generateTransactionInfo } from '@penumbra-zone/wasm/transaction';
 import { fvkCtx } from '../ctx/full-viewing-key';
 
-export const transactionInfo: Impl['transactionInfo'] = async function* (req, ctx) {
+export const transactionInfo: Impl['transactionInfo'] = async function* (
+  { startHeight, endHeight },
+  ctx,
+) {
   const services = await ctx.values.get(servicesCtx)();
   const { indexedDb } = await services.getWalletServices();
 
-  const fvk = ctx.values.get(fvkCtx);
+  const fullViewingKey = await ctx.values.get(fvkCtx)();
 
-  for await (const txRecord of indexedDb.iterateTransactions()) {
-    // filter transactions between startHeight and endHeight, inclusive
-    if (
-      !txRecord.transaction ||
-      txRecord.height < req.startHeight ||
-      (req.endHeight && txRecord.height > req.endHeight)
-    )
-      continue;
-
+  for await (const { height, id, transaction } of indexedDb.iterateTransactions(
+    startHeight,
+    endHeight || undefined,
+  )) {
+    if (!transaction) continue;
     const { txp: perspective, txv: view } = await generateTransactionInfo(
-      await fvk(),
-      txRecord.transaction,
+      fullViewingKey,
+      transaction,
       indexedDb.constants(),
     );
     const txInfo = new TransactionInfo({
-      height: txRecord.height,
-      id: txRecord.id,
-      transaction: txRecord.transaction,
+      height: height,
+      id: id,
+      transaction: transaction,
       perspective,
       view,
     });
