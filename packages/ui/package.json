@@ -1,6 +1,6 @@
 {
   "name": "@repo/ui",
-  "version": "6.0.0",
+  "version": "6.2.0",
   "private": true,
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
@@ -59,7 +59,7 @@
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
     "@mui/material": "^5.15.18",
-    "@penumbra-labs/registry": "8.0.1",
+    "@penumbra-labs/registry": "9.1.0",
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
     "@radix-ui/react-avatar": "^1.0.4",

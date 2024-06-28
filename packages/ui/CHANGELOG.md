@@ -1,5 +1,22 @@
 # @penumbra-zone/ui
 
+## 6.2.0
+
+### Minor Changes
+
+- bump registry
+
+### Patch Changes
+
+- Updated dependencies
+  - @penumbra-zone/types@11.0.0
+
+## 6.1.0
+
+### Minor Changes
+
+- Bump registry
+
 ## 6.0.0
 
 ### Major Changes

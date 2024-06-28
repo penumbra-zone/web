@@ -1,5 +1,23 @@
 # @penumbra-zone/storage
 
+## 8.0.0
+
+### Major Changes
+
+- bump registry
+
+### Patch Changes
+
+- Updated dependencies
+  - @penumbra-zone/types@11.0.0
+  - @penumbra-zone/wasm@11.0.0
+
+## 7.1.0
+
+### Minor Changes
+
+- Bump registry
+
 ## 7.0.0
 
 ### Major Changes

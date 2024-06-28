@@ -1,5 +1,31 @@
 # minifront
 
+## 6.4.0
+
+### Minor Changes
+
+- bump registry
+
+### Patch Changes
+
+- Updated dependencies
+  - @penumbra-zone/types@11.0.0
+  - @repo/ui@6.2.0
+  - @penumbra-zone/crypto-web@7.0.0
+  - @penumbra-zone/perspective@8.0.0
+
+## 6.3.0
+
+### Minor Changes
+
+- Bump registry
+
+### Patch Changes
+
+- bce49fe: Update revision number parsing logic
+- Updated dependencies
+  - @repo/ui@6.1.0
+
 ## 6.2.1
 
 ### Patch Changes

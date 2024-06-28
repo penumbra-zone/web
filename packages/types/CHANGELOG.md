@@ -1,5 +1,11 @@
 # @penumbra-zone/types
 
+## 11.0.0
+
+### Major Changes
+
+- bump registry
+
 ## 10.0.0
 
 ### Minor Changes

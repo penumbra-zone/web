@@ -1,5 +1,28 @@
 # @penumbra-zone/router
 
+## 9.0.0
+
+### Minor Changes
+
+- bump registry
+
+### Patch Changes
+
+- Updated dependencies
+  - @penumbra-zone/storage@8.0.0
+  - @penumbra-zone/types@11.0.0
+  - @penumbra-zone/crypto-web@7.0.0
+  - @penumbra-zone/query@8.0.0
+  - @penumbra-zone/wasm@11.0.0
+  - @penumbra-zone/perspective@8.0.0
+
+## 8.0.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @penumbra-zone/storage@7.1.0
+
 ## 7.0.0
 
 ### Minor Changes
