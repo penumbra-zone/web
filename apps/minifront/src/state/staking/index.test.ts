@@ -260,7 +260,6 @@ describe('Staking Slice', () => {
       error: undefined,
       loading: false,
       votingPowerByValidatorInfo: {},
-      stakingTokensAndFilter: expect.objectContaining({ data: undefined }) as unknown,
     });
   });
 

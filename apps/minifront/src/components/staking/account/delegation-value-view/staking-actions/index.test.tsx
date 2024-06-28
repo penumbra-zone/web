@@ -26,17 +26,15 @@ const zeroBalance = new ValueView({
 const validatorInfo = new ValidatorInfo({ validator: {} });
 
 let MOCK_STAKING_TOKENS_AND_FILTER: {
-  stakingTokensByAccount: Map<number, ValueView | undefined>;
+  stakingTokens: ValueView | undefined;
   accountSwitcherFilter: number[];
-} | null = vi.hoisted(() => null);
+} = vi.hoisted(() => ({
+  stakingTokens: undefined,
+  accountSwitcherFilter: [],
+}));
 
-vi.mock('../../../../../state/staking', async () => ({
-  ...(await vi.importActual('../../../../../state/staking')),
-  useStakingTokensAndFilter: () => ({
-    data: MOCK_STAKING_TOKENS_AND_FILTER,
-    error: undefined,
-    loading: false,
-  }),
+vi.mock('../../use-staking-tokens-and-filter', () => ({
+  useStakingTokensAndFilter: () => MOCK_STAKING_TOKENS_AND_FILTER,
 }));
 
 type RecursivePartial<T> = {
@@ -51,12 +49,15 @@ vi.mock('../../../../../utils/use-store-shallow', async () => ({
 
 describe('<StakingActions />', () => {
   beforeEach(() => {
-    MOCK_STAKING_TOKENS_AND_FILTER = null;
+    MOCK_STAKING_TOKENS_AND_FILTER = {
+      stakingTokens: undefined,
+      accountSwitcherFilter: [],
+    };
   });
 
   it('renders an enabled Delegate button there is a non-zero balance of unstaked tokens', () => {
     MOCK_STAKING_TOKENS_AND_FILTER = {
-      stakingTokensByAccount: new Map([[0, nonZeroBalance]]),
+      stakingTokens: nonZeroBalance,
       accountSwitcherFilter: [],
     };
 
@@ -77,7 +78,7 @@ describe('<StakingActions />', () => {
 
   it('renders a disabled Delegate button when there is a zero balance of unstaked tokens', () => {
     MOCK_STAKING_TOKENS_AND_FILTER = {
-      stakingTokensByAccount: new Map([[0, zeroBalance]]),
+      stakingTokens: zeroBalance,
       accountSwitcherFilter: [],
     };
 
@@ -88,9 +89,7 @@ describe('<StakingActions />', () => {
     expect(getByText('Delegate')).toBeDisabled();
   });
 
-  it('renders a disabled Delegate button when unstaked tokens are undefined', () => {
-    MOCK_STAKING_TOKENS_AND_FILTER = null;
-
+  it('renders a disabled Delegate button when staking tokens are undefined', () => {
     const { getByText } = render(
       <StakingActions delegationTokens={nonZeroBalance} validatorInfo={validatorInfo} />,
     );
@@ -100,7 +99,7 @@ describe('<StakingActions />', () => {
 
   it('renders a disabled Undelegate button when there is a zero balance of delegation tokens', () => {
     MOCK_STAKING_TOKENS_AND_FILTER = {
-      stakingTokensByAccount: new Map([[0, nonZeroBalance]]),
+      stakingTokens: nonZeroBalance,
       accountSwitcherFilter: [],
     };
 
