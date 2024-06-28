@@ -66,10 +66,7 @@ export interface BalancesByAccount {
   balances: BalancesResponse[];
 }
 
-export const groupByAccount = (
-  acc: BalancesByAccount[],
-  curr: BalancesResponse,
-): BalancesByAccount[] => {
+const groupByAccount = (acc: BalancesByAccount[], curr: BalancesResponse): BalancesByAccount[] => {
   const index = getAddressIndex(curr.accountAddress);
   const grouping = acc.find(a => a.account === index.account);
 

@@ -7,8 +7,6 @@ import {
   ZQueryState,
 } from './types';
 
-const objectsAreNotEqual = (before: unknown, after: unknown) => !Object.is(before, after);
-
 /**
  * Returns a hook that can be used via `use[Name]()` to access the ZQuery state.
  */
@@ -106,16 +104,15 @@ export const getUseHook = <
     const returnValue = useStore(state => {
       const newState: ZQueryState<DataType | ProcessedDataType, FetchArgs> = props.get(state);
 
-      if (objectsAreNotEqual(newState, prevState.current)) {
+      if (!Object.is(newState, prevState.current)) {
         const { data, loading, error } = newState;
 
-        if (
-          useHookOptions?.select &&
-          (!useHookOptions.shouldReselect ||
-            useHookOptions.shouldReselect(prevState.current, newState))
-        ) {
+        const shouldReselect =
+          useHookOptions?.shouldReselect?.(prevState.current, newState) ?? true;
+
+        if (useHookOptions?.select && shouldReselect) {
           prevSelectedState.current = useHookOptions.select({ data, loading, error });
-        } else if (useHookOptions?.select === undefined) {
+        } else if (!useHookOptions?.select) {
           prevSelectedState.current = { data, loading, error };
         }
         prevState.current = newState;
