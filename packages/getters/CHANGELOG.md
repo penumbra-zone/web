@@ -1,5 +1,16 @@
 # @penumbra-zone/getters
 
+## 10.0.0
+
+### Minor Changes
+
+- Synchronize published @buf deps
+
+### Patch Changes
+
+- Updated dependencies
+  - @penumbra-zone/protobuf@5.3.0
+
 ## 9.0.0
 
 ### Minor Changes

@@ -1,5 +1,17 @@
 # @penumbra-zone/wasm
 
+## 12.0.0
+
+### Minor Changes
+
+- Synchronize published @buf deps
+
+### Patch Changes
+
+- Updated dependencies
+  - @penumbra-zone/protobuf@5.3.0
+  - @penumbra-zone/types@12.0.0
+
 ## 11.0.0
 
 ### Patch Changes

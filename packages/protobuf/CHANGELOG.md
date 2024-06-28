@@ -1,5 +1,11 @@
 # @penumbra-zone/protobuf
 
+## 5.3.0
+
+### Minor Changes
+
+- Synchronize published @buf deps
+
 ## 5.2.0
 
 ### Minor Changes

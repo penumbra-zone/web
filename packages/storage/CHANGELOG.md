@@ -1,5 +1,18 @@
 # @penumbra-zone/storage
 
+## 9.0.0
+
+### Minor Changes
+
+- Synchronize published @buf deps
+
+### Patch Changes
+
+- Updated dependencies
+  - @penumbra-zone/getters@10.0.0
+  - @penumbra-zone/types@12.0.0
+  - @penumbra-zone/wasm@12.0.0
+
 ## 8.0.0
 
 ### Major Changes

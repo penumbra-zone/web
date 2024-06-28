@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/client",
-  "version": "9.0.1",
+  "version": "10.0.0",
   "license": "(MIT OR Apache-2.0)",
   "description": "Package for connecting to any Penumbra extension, including Prax.",
   "type": "module",
