@@ -1,5 +1,12 @@
 # @penumbra-zone/ui
 
+## 6.2.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @penumbra-zone/types@12.0.0
+
 ## 6.2.0
 
 ### Minor Changes

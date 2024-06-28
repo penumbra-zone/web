@@ -1,5 +1,16 @@
 # @penumbra-zone/types
 
+## 12.0.0
+
+### Minor Changes
+
+- Synchronize published @buf deps
+
+### Patch Changes
+
+- Updated dependencies
+  - @penumbra-zone/getters@10.0.0
+
 ## 11.0.0
 
 ### Major Changes
