@@ -21,9 +21,46 @@ export type UseHookOptions<
     | ((zQueryState: AbridgedZQueryState<ResolvedDataType>) => unknown)
     | undefined = undefined,
 > = SelectorType extends undefined
-  ? { select?: undefined; shouldReselect?: undefined } | undefined
+  ?
+      | {
+          /**
+           * A selector to pass the `AbridgedZQueryState` to before returning
+           * the value to the hook caller. Useful if your component needs data
+           * of a different shape than that returned by the fetcher.
+           */
+          select?: undefined;
+          /**
+           * Will be called with the `before` and `after` of the
+           * `AbridgedZQueryState`, and should return a boolean to determine
+           * whether the selector (defined in `select`) should be re-run. If
+           * left undefined, the selector (if defined) will be re-run anytime
+           * the entire `ZQueryState` object changes. But if your selector is
+           * expensive, you may only want it to re-run when, for example, the
+           * `data` property changes (but not when `loading` or `error`
+           * changes). In that case, you could pass a `shouldReselect` function
+           * like this: `(before, after) => before?.data !== after.data`.
+           */
+          shouldReselect?: undefined;
+        }
+      | undefined
   : {
+      /**
+       * A selector to pass the `AbridgedZQueryState` to before returning the
+       * value to the hook caller. Useful if your component needs data of a
+       * different shape than that returned by the fetcher.
+       */
       select: SelectorType;
+      /**
+       * Will be called with the `before` and `after` of the
+       * `AbridgedZQueryState`, and should return a boolean to determine whether
+       * the selector (defined in `select`) should be re-run. If left undefined,
+       * the selector (if defined) will be re-run anytime the entire
+       * `ZQueryState` object changes. But if your selector is expensive, you
+       * may only want it to re-run when, for example, the `data` property
+       * changes (but not when `loading` or `error` changes). In that case, you
+       * could pass a `shouldReselect` function like this: `(before, after) =>
+       * before?.data !== after.data`.
+       */
       shouldReselect?: (
         before: AbridgedZQueryState<ResolvedDataType> | undefined,
         after: AbridgedZQueryState<ResolvedDataType>,
