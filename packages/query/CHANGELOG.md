@@ -1,5 +1,11 @@
 # @penumbra-zone/query
 
+## 10.0.0
+
+### Major Changes
+
+- remove staking token metadata parameter for block processor
+
 ## 9.0.0
 
 ### Minor Changes

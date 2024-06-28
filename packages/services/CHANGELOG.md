@@ -1,5 +1,12 @@
 # @penumbra-zone/router
 
+## 11.0.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @penumbra-zone/query@10.0.0
+
 ## 10.0.0
 
 ### Minor Changes
