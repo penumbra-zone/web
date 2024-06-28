@@ -21,24 +21,9 @@ import { getMetadata } from '@penumbra-zone/getters/value-view';
 import { createZQuery, ZQueryState } from '@penumbra-zone/zquery';
 import { getSwappableBalancesResponses, isSwappable } from '../../components/swap/helpers';
 import { getAllAssets } from '../../fetchers/assets';
-import { emptyBalanceResponse } from '../../utils/empty-balance-response';
 import { isValidAmount } from '../helpers';
-
-// When both `balancesResponses` and `swappableAssets` are loaded, set initial assetIn and assetOut
-const setInitialAssets = (state: SwapSlice) => {
-  if (state.swappableAssets.loading || state.balancesResponses.loading) return;
-
-  const firstBalancesResponse = state.balancesResponses.data?.[0];
-  const firstMetadata = state.swappableAssets.data?.[0];
-  const secondMetadata = state.swappableAssets.data?.[0];
-  if (firstBalancesResponse) {
-    state.setAssetIn(firstBalancesResponse);
-    state.setAssetOut(firstMetadata);
-  } else if (firstMetadata) {
-    state.setAssetIn(emptyBalanceResponse(firstMetadata));
-    state.setAssetOut(secondMetadata);
-  }
-};
+import { setInitialAssets } from './set-initial-assets';
+import { setSwapQueryParams } from './query-params';
 
 export const { balancesResponses, useBalancesResponses } = createZQuery({
   name: 'balancesResponses',
@@ -50,7 +35,7 @@ export const { balancesResponses, useBalancesResponses } = createZQuery({
     useStore.setState(state => {
       state.swap.balancesResponses = newState;
     });
-    setInitialAssets(useStore.getState().swap);
+    setInitialAssets(useStore);
   },
 });
 
@@ -67,7 +52,7 @@ export const { swappableAssets, useSwappableAssets } = createZQuery({
     useStore.setState(state => {
       state.swap.swappableAssets = newState;
     });
-    setInitialAssets(useStore.getState().swap);
+    setInitialAssets(useStore);
   },
 });
 
@@ -149,6 +134,7 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
         );
       }
     });
+    setSwapQueryParams(get());
   },
   setAssetOut: metadata => {
     get().swap.resetSubslices();
@@ -162,6 +148,7 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
         );
       }
     });
+    setSwapQueryParams(get());
   },
   setAmount: amount => {
     get().swap.resetSubslices();

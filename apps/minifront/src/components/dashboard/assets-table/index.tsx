@@ -1,4 +1,6 @@
+import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { AddressComponent, AddressIcon } from '@repo/ui/components/ui/address';
+import { Button } from '@repo/ui/components/ui/button';
 import {
   Table,
   TableBody,
@@ -12,6 +14,17 @@ import { EquivalentValues } from './equivalent-values';
 import { Fragment } from 'react';
 import { shouldDisplay } from './helpers';
 import { useBalancesByAccount } from '../../../state/balances';
+import { PagePath } from '../../metadata/paths';
+import { Link } from 'react-router-dom';
+import { getMetadataFromBalancesResponseOptional } from '@penumbra-zone/getters/balances-response';
+import { getAddressIndex } from '@penumbra-zone/getters/address-view';
+
+const getTradeLink = (balance: BalancesResponse): string => {
+  const metadata = getMetadataFromBalancesResponseOptional(balance);
+  const accountIndex = getAddressIndex(balance.accountAddress).account;
+  const accountQuery = accountIndex ? `&account=${accountIndex}` : '';
+  return metadata ? `${PagePath.SWAP}?from=${metadata.symbol}${accountQuery}` : PagePath.SWAP;
+};
 
 export default function AssetsTable() {
   const balancesByAccount = useBalancesByAccount();
@@ -31,45 +44,58 @@ export default function AssetsTable() {
   }
 
   return (
-    <Table>
-      {balancesByAccount.data?.map(account => (
-        <Fragment key={account.account}>
-          <TableHeader className='group'>
-            <TableRow>
-              <TableHead colSpan={2}>
-                <div className='flex max-w-full flex-col justify-center gap-2 pt-8 group-[:first-of-type]:pt-0 md:flex-row'>
-                  <div className='flex items-center justify-center gap-2'>
-                    <AddressIcon address={account.address} size={20} />
-                    <h2 className='whitespace-nowrap font-bold md:text-base xl:text-xl'>
-                      Account #{account.account}
-                    </h2>
-                  </div>
+    <div className='w-full overflow-x-auto'>
+      <Table>
+        {balancesByAccount.data?.map(account => (
+          <Fragment key={account.account}>
+            <TableHeader className='group'>
+              <TableRow>
+                <TableHead colSpan={2}>
+                  <div className='flex max-w-full flex-col justify-center gap-2 pt-8 group-[:first-of-type]:pt-0 md:flex-row'>
+                    <div className='flex items-center justify-center gap-2'>
+                      <AddressIcon address={account.address} size={20} />
+                      <h2 className='whitespace-nowrap font-bold md:text-base xl:text-xl'>
+                        Account #{account.account}
+                      </h2>
+                    </div>
 
-                  <div className='max-w-72 truncate'>
-                    <AddressComponent address={account.address} />
+                    <div className='max-w-72 truncate'>
+                      <AddressComponent address={account.address} />
+                    </div>
                   </div>
-                </div>
-              </TableHead>
-            </TableRow>
-            <TableRow>
-              <TableHead>Balance</TableHead>
-              <TableHead>Estimated equivalent(s)</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {account.balances.filter(shouldDisplay).map((assetBalance, index) => (
-              <TableRow key={index}>
-                <TableCell>
-                  <ValueViewComponent view={assetBalance.balanceView} />
-                </TableCell>
-                <TableCell>
-                  <EquivalentValues valueView={assetBalance.balanceView} />
-                </TableCell>
+                </TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Fragment>
-      ))}
-    </Table>
+              <TableRow>
+                <TableHead>Balance</TableHead>
+                <TableHead>Value</TableHead>
+                <TableHead />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {account.balances.filter(shouldDisplay).map((assetBalance, index) => (
+                <TableRow className='group' key={index}>
+                  <TableCell>
+                    <ValueViewComponent view={assetBalance.balanceView} />
+                  </TableCell>
+                  <TableCell>
+                    <EquivalentValues valueView={assetBalance.balanceView} />
+                  </TableCell>
+                  <TableCell>
+                    <Link
+                      className='transition group-hover:opacity-100 md:opacity-0'
+                      to={getTradeLink(assetBalance)}
+                    >
+                      <Button variant='secondary' size='md'>
+                        Trade
+                      </Button>
+                    </Link>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Fragment>
+        ))}
+      </Table>
+    </div>
   );
 }

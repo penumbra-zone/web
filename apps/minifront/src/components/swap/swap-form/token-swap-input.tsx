@@ -37,7 +37,8 @@ const getAssetOutBalance = (
     const balanceViewMetadata = getMetadataFromBalancesResponse(balance);
 
     return (
-      balance.accountAddress?.equals(assetIn.accountAddress) && assetOut.equals(balanceViewMetadata)
+      getAddressIndex(balance.accountAddress).equals(getAddressIndex(assetIn.accountAddress)) &&
+      assetOut.equals(balanceViewMetadata)
     );
   });
   const matchedBalance = getBalanceView.optional()(match);
