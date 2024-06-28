@@ -284,10 +284,10 @@ export const ibcOutMiddleware: Middleware = f => (set, get, store) => {
     const balancesResponses = get().shared.balancesResponses.data;
     const stakingTokenMetadata = get().shared.stakingTokenMetadata.data;
     const shouldSetInitialSelection =
-      !!initialChain &&
-      !!assets?.length &&
-      !!balancesResponses?.length &&
-      !!stakingTokenMetadata &&
+      initialChain &&
+      assets?.length &&
+      balancesResponses?.length &&
+      stakingTokenMetadata &&
       !get().ibcOut.selection;
 
     if (shouldSetInitialSelection) {

@@ -3,6 +3,7 @@ export interface AbridgedZQueryState<DataType> {
   loading: boolean;
   error?: unknown;
 }
+
 export interface ZQueryState<DataType, FetchArgs extends unknown[] = []>
   extends AbridgedZQueryState<DataType> {
   revalidate: (...args: FetchArgs) => void;
@@ -329,10 +330,10 @@ export type ZQuery<Name extends string, DataType, FetchArgs extends unknown[]> =
   >(
     options?: UseHookOptions<DataType, SelectorType>,
     ...fetchArgs: FetchArgs
-    // Must include `| undefined` in the return type because the first pass
-    // through `useStore` doesn't return a value at all.
   ) => SelectorType extends (zQueryState: AbridgedZQueryState<DataType>) => infer ReturnType
-    ? ReturnType | undefined
+    ? // Must include `| undefined` in the return type because the first pass
+      // through `useStore` doesn't return a value at all.
+      ReturnType | undefined
     : AbridgedZQueryState<DataType>;
 } & {
   [key in `useRevalidate${Capitalize<Name>}`]: () => (...fetchArgs: FetchArgs) => void;

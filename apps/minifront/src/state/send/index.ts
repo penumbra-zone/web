@@ -175,9 +175,9 @@ export const sendSelectionMiddleware: Middleware = f => (set, get, store) => {
     const after = transferableBalancesResponsesSelector(get().shared.balancesResponses).data;
 
     const balancesResponsesWereJustSet = !before?.length && !!after?.length;
-    const balancesResponseNotYetSelected = !get().send.selection;
+    const selectionNotYetSet = !get().send.selection;
 
-    if (balancesResponsesWereJustSet && balancesResponseNotYetSelected) {
+    if (balancesResponsesWereJustSet && selectionNotYetSet) {
       useStore.setState(state => {
         state.send.selection = after[0];
       });
