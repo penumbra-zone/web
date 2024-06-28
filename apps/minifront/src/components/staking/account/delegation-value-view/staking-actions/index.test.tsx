@@ -26,7 +26,7 @@ const zeroBalance = new ValueView({
 const validatorInfo = new ValidatorInfo({ validator: {} });
 
 let MOCK_STAKING_TOKENS_AND_FILTER: {
-  unstakedTokensByAccount: Map<number, ValueView | undefined>;
+  stakingTokensByAccount: Map<number, ValueView | undefined>;
   accountSwitcherFilter: number[];
 } | null = vi.hoisted(() => null);
 
@@ -56,7 +56,7 @@ describe('<StakingActions />', () => {
 
   it('renders an enabled Delegate button there is a non-zero balance of unstaked tokens', () => {
     MOCK_STAKING_TOKENS_AND_FILTER = {
-      unstakedTokensByAccount: new Map([[0, nonZeroBalance]]),
+      stakingTokensByAccount: new Map([[0, nonZeroBalance]]),
       accountSwitcherFilter: [],
     };
 
@@ -77,7 +77,7 @@ describe('<StakingActions />', () => {
 
   it('renders a disabled Delegate button when there is a zero balance of unstaked tokens', () => {
     MOCK_STAKING_TOKENS_AND_FILTER = {
-      unstakedTokensByAccount: new Map([[0, zeroBalance]]),
+      stakingTokensByAccount: new Map([[0, zeroBalance]]),
       accountSwitcherFilter: [],
     };
 
@@ -100,7 +100,7 @@ describe('<StakingActions />', () => {
 
   it('renders a disabled Undelegate button when there is a zero balance of delegation tokens', () => {
     MOCK_STAKING_TOKENS_AND_FILTER = {
-      unstakedTokensByAccount: new Map([[0, nonZeroBalance]]),
+      stakingTokensByAccount: new Map([[0, nonZeroBalance]]),
       accountSwitcherFilter: [],
     };
 

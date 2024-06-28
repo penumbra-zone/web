@@ -22,7 +22,7 @@ export const FormDialog = ({
   validator,
   amount,
   delegationTokens,
-  unstakedTokens,
+  stakingTokens,
   open,
   onChangeAmount,
   onClose,
@@ -42,7 +42,7 @@ export const FormDialog = ({
    * A `ValueView` representing the address's balance of staking (UM) tokens.
    * Used to show the user how many tokens they have available to delegate.
    */
-  unstakedTokens?: ValueView;
+  stakingTokens?: ValueView;
   /**
    * Whether the form is open.
    */
@@ -61,7 +61,7 @@ export const FormDialog = ({
   };
 
   const setInputToBalanceMax = () => {
-    const type = action === 'delegate' ? unstakedTokens : delegationTokens;
+    const type = action === 'delegate' ? stakingTokens : delegationTokens;
     if (type) {
       const formattedAmt = getFormattedAmtFromValueView(type);
       onChangeAmount(formattedAmt);
@@ -98,8 +98,8 @@ export const FormDialog = ({
                 />
 
                 <div className='flex'>
-                  {action === 'delegate' && unstakedTokens && (
-                    <BalanceValueView valueView={unstakedTokens} onClick={setInputToBalanceMax} />
+                  {action === 'delegate' && stakingTokens && (
+                    <BalanceValueView valueView={stakingTokens} onClick={setInputToBalanceMax} />
                   )}
 
                   {action === 'undelegate' && (

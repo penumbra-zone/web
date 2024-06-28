@@ -8,7 +8,7 @@ import { useStoreShallow } from '../../../../../utils/use-store-shallow';
 import { getValidator } from '@penumbra-zone/getters/validator-info';
 import { getAmount } from '@penumbra-zone/getters/value-view';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
-import { useStakingTokensAndFilter } from '../../../../../state/staking';
+import { useStakingTokensAndFilter } from '../../use-staking-tokens-and-filter';
 
 const stakingActionsSelector = (state: AllSlices) => ({
   account: state.staking.account,
@@ -41,17 +41,11 @@ export const StakingActions = ({
   const state = useStoreShallow(stakingActionsSelector);
   const validator = getValidator(validatorInfo);
 
-  const stakingTokensAndFilter = useStakingTokensAndFilter();
-  const unstakedTokensForThisAccount = stakingTokensAndFilter.data?.unstakedTokensByAccount.get(
-    state.account,
-  );
+  const { stakingTokens } = useStakingTokensAndFilter(state.account);
 
   const canDelegate = useMemo(
-    () =>
-      unstakedTokensForThisAccount
-        ? !!joinLoHiAmount(getAmount(unstakedTokensForThisAccount))
-        : false,
-    [unstakedTokensForThisAccount],
+    () => (stakingTokens ? !!joinLoHiAmount(getAmount(stakingTokens)) : false),
+    [stakingTokens],
   );
   const canUndelegate = useMemo(
     () => !!joinLoHiAmount(getAmount(delegationTokens)),
@@ -91,7 +85,7 @@ export const StakingActions = ({
         validator={validator}
         amount={state.amount}
         delegationTokens={delegationTokens}
-        unstakedTokens={unstakedTokensForThisAccount}
+        stakingTokens={stakingTokens}
         onChangeAmount={state.setAmount}
         onClose={state.onClose}
         onSubmit={handleSubmit}
