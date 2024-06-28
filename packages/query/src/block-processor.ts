@@ -58,7 +58,7 @@ interface QueryClientProps {
   indexedDb: IndexedDbInterface;
   viewServer: ViewServerInterface;
   numeraires: AssetId[];
-  stakingTokenMetadata: Metadata;
+  stakingAssetId: AssetId;
 }
 
 const BLANK_TX_SOURCE = new CommitmentSource({
@@ -77,21 +77,15 @@ export class BlockProcessor implements BlockProcessorInterface {
   private readonly viewServer: ViewServerInterface;
   private readonly abortController: AbortController = new AbortController();
   private numeraires: AssetId[];
-  private readonly stakingTokenMetadata: Metadata;
+  private readonly stakingAssetId: AssetId;
   private syncPromise: Promise<void> | undefined;
 
-  constructor({
-    indexedDb,
-    viewServer,
-    querier,
-    numeraires,
-    stakingTokenMetadata,
-  }: QueryClientProps) {
+  constructor({ indexedDb, viewServer, querier, numeraires, stakingAssetId }: QueryClientProps) {
     this.indexedDb = indexedDb;
     this.viewServer = viewServer;
     this.querier = querier;
     this.numeraires = numeraires;
-    this.stakingTokenMetadata = stakingTokenMetadata;
+    this.stakingAssetId = stakingAssetId;
   }
 
   // If sync() is called multiple times concurrently, they'll all wait for
@@ -594,12 +588,11 @@ export class BlockProcessor implements BlockProcessorInterface {
 
     if (metadata) {
       const assetId = getAssetId(metadata);
-      const stakingAssetId = getAssetId(this.stakingTokenMetadata);
       const exchangeRate = getExchangeRateFromValidatorInfoResponse(validatorInfoResponse);
 
       await this.indexedDb.updatePrice(
         assetId,
-        stakingAssetId,
+        this.stakingAssetId,
         toDecimalExchangeRate(exchangeRate),
         nextEpochStartHeight,
       );
