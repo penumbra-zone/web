@@ -86,7 +86,6 @@ export const createChannelTransport = ({
 
   const transportListener = ({ data }: MessageEvent<unknown>) => {
     if (!data) {
-      console.warn(data);
       // likely 'false' indicating a disconnect
       listenerError.reject(new ConnectError('Connection closed', Code.Unavailable));
     } else if (isTransportEvent(data)) {
