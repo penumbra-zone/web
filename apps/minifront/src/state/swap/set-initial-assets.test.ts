@@ -12,12 +12,24 @@ import { emptyBalanceResponse } from '../../utils/empty-balance-response';
 import { setInitialAssets } from './set-initial-assets';
 
 describe('set-initial-assets', () => {
-  const umToken = new Metadata({ symbol: 'UM', penumbraAssetId: { inner: new Uint8Array([1]) } });
+  const umToken = new Metadata({
+    base: 'upenumbra',
+    display: 'penumbra',
+    denomUnits: [{ denom: 'upenumbra' }, { denom: 'penumbra', exponent: 6 }],
+    symbol: 'UM',
+    penumbraAssetId: { inner: new Uint8Array([1]) },
+  });
   const usdcToken = new Metadata({
+    base: 'uusdc',
+    display: 'usdc',
+    denomUnits: [{ denom: 'uusdc' }, { denom: 'usdc', exponent: 6 }],
     symbol: 'USDC',
     penumbraAssetId: { inner: new Uint8Array([2]) },
   });
   const osmoToken = new Metadata({
+    base: 'uosmo',
+    display: 'osmo',
+    denomUnits: [{ denom: 'uosmo' }, { denom: 'osmo', exponent: 6 }],
     symbol: 'OSMO',
     penumbraAssetId: { inner: new Uint8Array([3]) },
   });
@@ -68,10 +80,10 @@ describe('set-initial-assets', () => {
     vi.stubGlobal('location', { hash: '#swap' });
   });
 
-  it(`doesn't set data if balancesResponses or swappableAssets are empty`, () => {
+  it("doesn't set data if `shared.balancesResponses` or `shared.assets` are empty", () => {
     useStore.setState(state => {
-      state.swap.balancesResponses = emptyBalancesResponses;
-      state.swap.swappableAssets = emptySwappableAssets;
+      state.shared.balancesResponses = emptyBalancesResponses;
+      state.shared.assets = emptySwappableAssets;
       return state;
     });
 
@@ -81,10 +93,10 @@ describe('set-initial-assets', () => {
     expect(useStore.getState().swap.assetOut).toBeUndefined();
   });
 
-  it('uses swappableAssets[0] to set assetIn and swappableAssets[1] to set assetOut when balancesResponses are empty', () => {
+  it('sets assetIn and assetOut to the first two swappable assets when balancesResponses are empty', () => {
     useStore.setState(state => {
-      state.swap.balancesResponses = emptyBalancesResponses;
-      state.swap.swappableAssets = swappableAssets;
+      state.shared.balancesResponses = emptyBalancesResponses;
+      state.shared.assets = swappableAssets;
       return state;
     });
 
@@ -96,8 +108,8 @@ describe('set-initial-assets', () => {
 
   it('uses balancesResponses[0] to set assetIn and swappableAssets[0] to set assetOut', () => {
     useStore.setState(state => {
-      state.swap.balancesResponses = balancesResponses;
-      state.swap.swappableAssets = swappableAssets;
+      state.shared.balancesResponses = balancesResponses;
+      state.shared.assets = swappableAssets;
       return state;
     });
 
@@ -111,8 +123,8 @@ describe('set-initial-assets', () => {
     vi.stubGlobal('location', { hash: '#swap?from=USDC&to=OSMO&account=1' });
 
     useStore.setState(state => {
-      state.swap.balancesResponses = balancesResponses;
-      state.swap.swappableAssets = swappableAssets;
+      state.shared.balancesResponses = balancesResponses;
+      state.shared.assets = swappableAssets;
       return state;
     });
 
