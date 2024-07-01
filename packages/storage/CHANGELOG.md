@@ -1,5 +1,11 @@
 # @penumbra-zone/storage
 
+## 9.1.0
+
+### Minor Changes
+
+- bump @penumbra-labs/registry
+
 ## 9.0.0
 
 ### Minor Changes

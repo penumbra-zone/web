@@ -1,5 +1,16 @@
 # minifront
 
+## 6.6.0
+
+### Minor Changes
+
+- bump @penumbra-labs/registry
+
+### Patch Changes
+
+- Updated dependencies
+  - @repo/ui@6.3.0
+
 ## 6.5.1
 
 ### Patch Changes

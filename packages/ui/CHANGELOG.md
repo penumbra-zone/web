@@ -1,5 +1,11 @@
 # @penumbra-zone/ui
 
+## 6.3.0
+
+### Minor Changes
+
+- bump @penumbra-labs/registry
+
 ## 6.2.1
 
 ### Patch Changes
