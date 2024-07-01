@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/storage",
-  "version": "9.0.0",
+  "version": "9.1.0",
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "engine": {
@@ -28,7 +28,7 @@
     }
   },
   "dependencies": {
-    "@penumbra-labs/registry": "9.1.0",
+    "@penumbra-labs/registry": "9.2.0",
     "idb": "^8.0.0"
   },
   "peerDependencies": {
