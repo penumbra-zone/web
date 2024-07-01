@@ -13,6 +13,12 @@ export const UndelegateComponent = ({ value }: { value: Undelegate }) => {
       label='Undelegate'
       visibleContent={
         <ActionDetails>
+          {!!value.fromEpoch && (
+            <ActionDetails.Row label='Epoch index'>
+              {value.fromEpoch.index.toString()}
+            </ActionDetails.Row>
+          )}
+
           {!!value.delegationAmount && (
             <ActionDetails.Row label='Delegation amount'>
               {joinLoHiAmount(value.delegationAmount).toString()}
