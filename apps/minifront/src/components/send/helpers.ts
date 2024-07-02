@@ -6,7 +6,7 @@ import { getDisplay } from '@penumbra-zone/getters/metadata';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { getBalances } from '../../fetchers/balances';
 import { getMetadata } from '@penumbra-zone/getters/value-view';
-import { isUnknown } from '../dashboard/assets-table/helpers';
+import { isKnown } from '../swap/helpers';
 
 export const penumbraAddrValidation = (): Validation => {
   return {
@@ -28,6 +28,6 @@ export const isTransferable = (metadata: Metadata) =>
 export const getTransferableBalancesResponses = async (): Promise<BalancesResponse[]> => {
   const balancesResponses = await getBalances();
   return balancesResponses.filter(
-    balance => isUnknown(balance) || isTransferable(getMetadata(balance.balanceView)),
+    balance => isKnown(balance) && isTransferable(getMetadata(balance.balanceView)),
   );
 };
