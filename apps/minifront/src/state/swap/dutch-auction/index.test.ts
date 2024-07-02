@@ -162,6 +162,12 @@ describe('Dutch auction slice', () => {
       );
     });
 
+    it('allows updating `maxOutput` to an empty string', () => {
+      useStore.getState().swap.dutchAuction.setMaxOutput('');
+
+      expect(useStore.getState().swap.dutchAuction.maxOutput).toBe('');
+    });
+
     describe('when passed `0`', () => {
       it("updates `maxOutput` to the smallest possible value above 0 for the given asset's display denom exponent", () => {
         useStore.getState().swap.dutchAuction.setMaxOutput('0');
@@ -214,6 +220,12 @@ describe('Dutch auction slice', () => {
       expect(useStore.getState().swap.dutchAuction.minOutput).toBe(
         outputLimitDividedByExponent.toString(),
       );
+    });
+
+    it('allows updating `minOutput` to an empty string', () => {
+      useStore.getState().swap.dutchAuction.setMinOutput('');
+
+      expect(useStore.getState().swap.dutchAuction.minOutput).toBe('');
     });
 
     describe('when passed `0`', () => {
