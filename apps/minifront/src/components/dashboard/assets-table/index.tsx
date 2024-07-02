@@ -12,11 +12,12 @@ import {
 import { ValueViewComponent } from '@repo/ui/components/ui/value';
 import { EquivalentValues } from './equivalent-values';
 import { Fragment } from 'react';
-import { useBalancesByAccount } from '../../../state/balances';
+import { shouldDisplay } from './helpers';
 import { PagePath } from '../../metadata/paths';
 import { Link } from 'react-router-dom';
 import { getMetadataFromBalancesResponseOptional } from '@penumbra-zone/getters/balances-response';
 import { getAddressIndex } from '@penumbra-zone/getters/address-view';
+import { balancesByAccountSelector, useBalancesResponses } from '../../../state/shared';
 
 const getTradeLink = (balance: BalancesResponse): string => {
   const metadata = getMetadataFromBalancesResponseOptional(balance);
@@ -26,9 +27,12 @@ const getTradeLink = (balance: BalancesResponse): string => {
 };
 
 export default function AssetsTable() {
-  const balancesByAccount = useBalancesByAccount();
+  const balancesByAccount = useBalancesResponses({
+    select: balancesByAccountSelector,
+    shouldReselect: (before, after) => before?.data !== after.data,
+  });
 
-  if (balancesByAccount.data?.length === 0) {
+  if (balancesByAccount?.length === 0) {
     return (
       <div className='flex flex-col gap-6'>
         <p>
@@ -45,7 +49,7 @@ export default function AssetsTable() {
   return (
     <div className='w-full overflow-x-auto'>
       <Table>
-        {balancesByAccount.data?.map(account => (
+        {balancesByAccount?.map(account => (
           <Fragment key={account.account}>
             <TableHeader className='group'>
               <TableRow>
@@ -71,7 +75,7 @@ export default function AssetsTable() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {account.balances.map((assetBalance, index) => (
+              {account.balances.filter(shouldDisplay).map((assetBalance, index) => (
                 <TableRow className='group' key={index}>
                   <TableCell>
                     <ValueViewComponent view={assetBalance.balanceView} />

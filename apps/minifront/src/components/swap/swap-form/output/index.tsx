@@ -20,6 +20,8 @@ const outputSelector = (state: AllSlices) => ({
     ? 1 / 10 ** getDisplayDenomExponent(state.swap.assetOut)
     : 'any',
   error:
+    !!state.swap.dutchAuction.minOutput.length &&
+    !!state.swap.dutchAuction.maxOutput.length &&
     Number(state.swap.dutchAuction.minOutput) >= Number(state.swap.dutchAuction.maxOutput)
       ? 'The maximum output must be greater than the minimum output.'
       : undefined,
@@ -59,6 +61,7 @@ export const Output = ({ layoutId }: { layoutId: string }) => {
               onChange={e => setMaxOutput(e.target.value)}
               inputMode='decimal'
               step={outputStepSize}
+              placeholder='0'
               className='text-right'
             />
 
@@ -78,6 +81,7 @@ export const Output = ({ layoutId }: { layoutId: string }) => {
               onChange={e => setMinOutput(e.target.value)}
               inputMode='decimal'
               step={outputStepSize}
+              placeholder='0'
               className='text-right'
             />
 

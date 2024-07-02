@@ -21,6 +21,7 @@ import { TransactionClassification } from '@penumbra-zone/perspective/transactio
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import { fromValueView } from '@penumbra-zone/types/amount';
 import { BigNumber } from 'bignumber.js';
+import { getValueViewCaseFromBalancesResponse } from '@penumbra-zone/getters/balances-response';
 
 /**
  * Handles the common use case of planning, building, and broadcasting a
@@ -178,3 +179,6 @@ export const amountMoreThanBalance = (
 
 export const isValidAmount = (amount: string, assetIn?: BalancesResponse) =>
   Number(amount) >= 0 && (!assetIn || !amountMoreThanBalance(assetIn, amount));
+
+export const isKnown = (balancesResponse: BalancesResponse) =>
+  getValueViewCaseFromBalancesResponse.optional()(balancesResponse) === 'knownAssetId';

@@ -1,4 +1,4 @@
-import { AllSlices, SliceCreator } from '.';
+import { AllSlices, Middleware, SliceCreator, useStore } from '.';
 import {
   BalancesResponse,
   TransactionPlannerRequest,
@@ -23,6 +23,21 @@ import { Chain } from '@penumbra-labs/registry';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { Channel } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/channel/v1/channel_pb';
 import { BLOCKS_PER_HOUR } from './constants';
+import { ZQueryState, createZQuery } from '@penumbra-zone/zquery';
+import { getChains } from '../fetchers/registry';
+
+export const { chains, useChains } = createZQuery({
+  name: 'chains',
+  fetch: getChains,
+  getUseStore: () => useStore,
+  get: state => state.ibcOut.chains,
+  set: setter => {
+    const newState = setter(useStore.getState().ibcOut.chains);
+    useStore.setState(state => {
+      state.ibcOut.chains = newState;
+    });
+  },
+});
 
 export interface IbcOutSlice {
   selection: BalancesResponse | undefined;
@@ -30,6 +45,7 @@ export interface IbcOutSlice {
   amount: string;
   setAmount: (amount: string) => void;
   chain: Chain | undefined;
+  chains: ZQueryState<Chain[]>;
   destinationChainAddress: string;
   setDestinationChainAddress: (addr: string) => void;
   setChain: (chain: Chain | undefined) => void;
@@ -42,6 +58,7 @@ export const createIbcOutSlice = (): SliceCreator<IbcOutSlice> => (set, get) => 
     amount: '',
     selection: undefined,
     chain: undefined,
+    chains,
     destinationChainAddress: '',
     txInProgress: false,
     setSelection: selection => {
@@ -245,4 +262,53 @@ export const filterBalancesPerChain = (
   return allBalances.filter(({ balanceView }) => {
     return assetIdsToCheck.some(assetId => assetId?.equals(getAssetIdFromValueView(balanceView)));
   });
+};
+
+export const ibcOutMiddleware: Middleware = f => (set, get, store) => {
+  const modifiedSetter: typeof set = (...args) => {
+    set(...args);
+
+    const initialChain = get().ibcOut.chains.data?.[0];
+    const shouldSetInitialChain = !!initialChain && !get().ibcOut.chain;
+    if (shouldSetInitialChain) {
+      set(state => ({
+        ...state,
+        ibcOut: {
+          ...state.ibcOut,
+          chain: initialChain,
+        },
+      }));
+    }
+
+    const assets = get().shared.assets.data;
+    const balancesResponses = get().shared.balancesResponses.data;
+    const stakingTokenMetadata = get().shared.stakingTokenMetadata.data;
+    const shouldSetInitialSelection =
+      initialChain &&
+      assets?.length &&
+      balancesResponses?.length &&
+      stakingTokenMetadata &&
+      !get().ibcOut.selection;
+
+    if (shouldSetInitialSelection) {
+      const initialSelection = filterBalancesPerChain(
+        balancesResponses,
+        initialChain,
+        assets,
+        stakingTokenMetadata,
+      )[0];
+
+      set(state => ({
+        ...state,
+        ibcOut: {
+          ...state.ibcOut,
+          selection: initialSelection,
+        },
+      }));
+    }
+  };
+
+  store.setState = modifiedSetter;
+
+  return f(modifiedSetter, get, store);
 };

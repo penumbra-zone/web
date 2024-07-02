@@ -11,10 +11,13 @@ import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { Box } from '@repo/ui/components/ui/box';
 import { motion } from 'framer-motion';
 import { metadataBySearch } from './search-filters';
+import { cn } from '@repo/ui/lib/utils';
+import { LoadingIndicator } from './loading-indicator';
 
 interface AssetSelectorProps {
   assets: Metadata[];
   value?: Metadata;
+  loading?: boolean;
   onChange: (metadata: Metadata) => void;
   /**
    * If passed, this function will be called for every asset that
@@ -71,7 +74,7 @@ const useFilteredAssets = ({ assets, value, onChange, filter }: AssetSelectorPro
  * For an asset selector that picks from the user's balances, use
  * `<BalanceSelector />`.
  */
-export const AssetSelector = ({ assets, onChange, value, filter }: AssetSelectorProps) => {
+export const AssetSelector = ({ assets, loading, onChange, value, filter }: AssetSelectorProps) => {
   const { filteredAssets, search, setSearch } = useFilteredAssets({
     assets,
     value,
@@ -97,10 +100,17 @@ export const AssetSelector = ({ assets, onChange, value, filter }: AssetSelector
         <motion.div
           layout
           layoutId={layoutId}
-          className='flex min-w-[100px] max-w-[200px] cursor-pointer items-center justify-center rounded-lg bg-light-brown px-2'
+          className={cn(
+            'flex min-w-[100px] max-w-[200px] cursor-pointer items-center justify-center rounded-lg px-2',
+            !loading && 'bg-light-brown',
+          )}
           onClick={() => setIsOpen(true)}
         >
-          <ValueViewComponent view={valueView} showValue={false} />
+          {loading ? (
+            <LoadingIndicator />
+          ) : (
+            <ValueViewComponent view={valueView} showValue={false} />
+          )}
         </motion.div>
       )}
 

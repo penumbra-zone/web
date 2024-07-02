@@ -88,8 +88,8 @@ export const { auctionInfos, useAuctionInfos, useRevalidateAuctionInfos } = crea
 export type DutchAuctionSlice = Actions & State;
 
 const INITIAL_STATE: State = {
-  minOutput: '1',
-  maxOutput: '1000',
+  minOutput: '',
+  maxOutput: '',
   txInProgress: false,
   auctionInfos,
   filter: 'active',
@@ -104,17 +104,21 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
   ...INITIAL_STATE,
   setMinOutput: minOutput => {
     set(({ swap }) => {
-      const minMinOutput = getSmallestPossibleAmountAboveZero(get().swap.assetOut);
-      const exponent = getDisplayDenomExponent.optional()(get().swap.assetOut) ?? 0;
-      const minOutputAsBaseUnit = Number(minOutput) * 10 ** exponent;
-      const outputLimitAsDisplayUnit = (OUTPUT_LIMIT / 10 ** exponent).toString();
-
-      if (minOutputAsBaseUnit > OUTPUT_LIMIT) {
-        swap.dutchAuction.minOutput = outputLimitAsDisplayUnit;
-      } else if (Number(minOutput) > 0) {
-        swap.dutchAuction.minOutput = minOutput;
+      if (minOutput === '') {
+        swap.dutchAuction.minOutput = '';
       } else {
-        swap.dutchAuction.minOutput = minMinOutput.toString();
+        const minMinOutput = getSmallestPossibleAmountAboveZero(get().swap.assetOut);
+        const exponent = getDisplayDenomExponent.optional()(get().swap.assetOut) ?? 0;
+        const minOutputAsBaseUnit = Number(minOutput) * 10 ** exponent;
+        const outputLimitAsDisplayUnit = (OUTPUT_LIMIT / 10 ** exponent).toString();
+
+        if (minOutputAsBaseUnit > OUTPUT_LIMIT) {
+          swap.dutchAuction.minOutput = outputLimitAsDisplayUnit;
+        } else if (Number(minOutput) > 0) {
+          swap.dutchAuction.minOutput = minOutput;
+        } else {
+          swap.dutchAuction.minOutput = minMinOutput.toString();
+        }
       }
 
       swap.dutchAuction.estimatedOutput = undefined;
@@ -122,17 +126,21 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
   },
   setMaxOutput: maxOutput => {
     set(({ swap }) => {
-      const minMaxOutput = getSmallestPossibleAmountAboveZero(get().swap.assetOut);
-      const exponent = getDisplayDenomExponent.optional()(get().swap.assetOut) ?? 0;
-      const maxOutputAsBaseUnit = Number(maxOutput) * 10 ** exponent;
-      const outputLimitAsDisplayUnit = (OUTPUT_LIMIT / 10 ** exponent).toString();
-
-      if (maxOutputAsBaseUnit > OUTPUT_LIMIT) {
-        swap.dutchAuction.maxOutput = outputLimitAsDisplayUnit;
-      } else if (Number(maxOutput) > 0) {
-        swap.dutchAuction.maxOutput = maxOutput;
+      if (maxOutput === '') {
+        swap.dutchAuction.maxOutput = '';
       } else {
-        swap.dutchAuction.maxOutput = minMaxOutput.toString();
+        const minMaxOutput = getSmallestPossibleAmountAboveZero(get().swap.assetOut);
+        const exponent = getDisplayDenomExponent.optional()(get().swap.assetOut) ?? 0;
+        const maxOutputAsBaseUnit = Number(maxOutput) * 10 ** exponent;
+        const outputLimitAsDisplayUnit = (OUTPUT_LIMIT / 10 ** exponent).toString();
+
+        if (maxOutputAsBaseUnit > OUTPUT_LIMIT) {
+          swap.dutchAuction.maxOutput = outputLimitAsDisplayUnit;
+        } else if (Number(maxOutput) > 0) {
+          swap.dutchAuction.maxOutput = maxOutput;
+        } else {
+          swap.dutchAuction.maxOutput = minMaxOutput.toString();
+        }
       }
 
       swap.dutchAuction.estimatedOutput = undefined;
