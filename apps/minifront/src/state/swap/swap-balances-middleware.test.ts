@@ -219,6 +219,12 @@ describe('swapBalancesMiddleware()', () => {
 
         it('sets `swap.assetOut` to the first swappable asset', () => {
           useStore.setState(state => {
+            // Avoid triggering the mechanism that ensures that assetIn and
+            // assetOut are different
+            state.swap.assetIn = usdcBalance;
+          });
+
+          useStore.setState(state => {
             state.shared.assets = swappableAssets;
           });
 
@@ -230,6 +236,12 @@ describe('swapBalancesMiddleware()', () => {
     describe('when the `to` query param is not set', () => {
       describe('when `shared.assets` is not empty', () => {
         it('sets `swap.assetOut` to the first swappable asset', () => {
+          useStore.setState(state => {
+            // Avoid triggering the mechanism that ensures that assetIn and
+            // assetOut are different
+            state.swap.assetIn = usdcBalance;
+          });
+
           useStore.setState(state => {
             state.shared.assets = swappableAssets;
           });
@@ -254,6 +266,20 @@ describe('swapBalancesMiddleware()', () => {
             state.swap.assetOut = usdcToken;
           });
           expect(useStore.getState().swap.assetOut).toBe(usdcToken);
+
+          useStore.setState(state => {
+            state.shared.assets = swappableAssets;
+          });
+
+          expect(useStore.getState().swap.assetOut).toBe(usdcToken);
+        });
+      });
+
+      describe('when `swap.assetIn` is the same metadata as that the first swappable asset', () => {
+        it('sets `swap.assetOut` to the second swappable asset', () => {
+          useStore.setState(state => {
+            state.swap.assetIn = umBalance;
+          });
 
           useStore.setState(state => {
             state.shared.assets = swappableAssets;

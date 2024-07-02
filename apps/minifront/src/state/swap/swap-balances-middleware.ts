@@ -53,7 +53,7 @@ const getAssetIn = (state: AllSlices, from?: string, account?: number) => {
  * the third step, because a `to` query string parameter should override this.)
  * 3. Otherwise, simply return the first swappable asset, if it exists.
  */
-const getAssetOut = (state: AllSlices, to?: string) => {
+const getAssetOut = (state: AllSlices, to?: string, assetIn?: BalancesResponse) => {
   const swappableAssets = swappableAssetsSelector(state.shared.assets).data ?? [];
 
   if (to) {
@@ -62,6 +62,10 @@ const getAssetOut = (state: AllSlices, to?: string) => {
   }
 
   if (state.swap.assetOut) return state.swap.assetOut;
+
+  if (getMetadataFromBalancesResponse.optional()(assetIn)?.equals(swappableAssets[0])) {
+    return swappableAssets[1];
+  }
 
   return swappableAssets[0];
 };
@@ -88,7 +92,7 @@ export const swapBalancesMiddleware: Middleware = f => (set, get, store) => {
     const { from, to, account } = getSwapQueryParams();
 
     const assetIn = getAssetIn(after, from, account);
-    const assetOut = getAssetOut(after, to);
+    const assetOut = getAssetOut(after, to, assetIn);
 
     set(state => ({
       ...state,
