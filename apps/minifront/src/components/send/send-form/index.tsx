@@ -80,6 +80,7 @@ export const SendForm = () => {
           },
         ]}
         balances={transferableBalancesResponses?.data ?? []}
+        loading={transferableBalancesResponses?.loading}
       />
 
       <NonNativeFeeWarning

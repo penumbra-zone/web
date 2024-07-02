@@ -126,43 +126,40 @@ export const TokenSwapInput = () => {
             </div>
           </FadeIn>
 
-          <FadeIn condition={!!balancesResponses?.data && !!swappableAssets?.data}>
-            <div className='flex gap-4'>
-              <div className='flex h-full flex-col gap-2'>
-                {balancesResponses?.data && (
-                  <BalanceSelector
-                    value={assetIn}
-                    assets={swappableAssets?.data}
-                    balances={balancesResponses.data}
-                    onChange={setAssetIn}
-                  />
-                )}
-                {assetIn?.balanceView && (
-                  <BalanceValueView
-                    error={!isValidAmount(amount, assetIn)}
-                    valueView={assetIn.balanceView}
-                    onClick={setInputToBalanceMax}
-                  />
-                )}
-              </div>
+          <div className='flex gap-4'>
+            <div className='flex h-full flex-col justify-end gap-2'>
+              <BalanceSelector
+                value={assetIn}
+                loading={balancesResponses?.loading}
+                assets={swappableAssets?.data}
+                balances={balancesResponses?.data}
+                onChange={setAssetIn}
+              />
 
-              <div className='size-4 pt-2'>
-                <ArrowRight size={16} className='text-muted-foreground' />
-              </div>
-
-              <div className='flex h-full flex-col gap-2'>
-                {swappableAssets?.data && (
-                  <AssetSelector
-                    assets={swappableAssets.data}
-                    value={assetOut}
-                    onChange={setAssetOut}
-                  />
-                )}
-
-                {assetOut && <BalanceValueView valueView={assetOutBalance} />}
-              </div>
+              {assetIn?.balanceView && (
+                <BalanceValueView
+                  error={!isValidAmount(amount, assetIn)}
+                  valueView={assetIn.balanceView}
+                  onClick={setInputToBalanceMax}
+                />
+              )}
             </div>
-          </FadeIn>
+
+            <div className='size-4 pt-2'>
+              <ArrowRight size={16} className='text-muted-foreground' />
+            </div>
+
+            <div className='flex h-full flex-col justify-end gap-2'>
+              <AssetSelector
+                loading={swappableAssets?.loading}
+                assets={swappableAssets?.data ?? []}
+                value={assetOut}
+                onChange={setAssetOut}
+              />
+
+              {assetOut && <BalanceValueView valueView={assetOutBalance} />}
+            </div>
+          </div>
         </div>
         {priceHistory.startMetadata && priceHistory.endMetadata && priceHistory.candles.length ? (
           <CandlestickPlot
