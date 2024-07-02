@@ -18,6 +18,7 @@ interface InputTokenProps {
   validations?: Validation[];
   balances: BalancesResponse[];
   onInputChange: (amount: string) => void;
+  loading?: boolean;
 }
 
 export default function InputToken({
@@ -31,6 +32,7 @@ export default function InputToken({
   setSelection,
   balances,
   onInputChange,
+  loading,
 }: InputTokenProps) {
   const setInputToBalanceMax = () => {
     const match = balances.find(b => b.balanceView?.equals(selection?.balanceView));
@@ -53,7 +55,12 @@ export default function InputToken({
           value={value}
           onChange={e => onInputChange(e.target.value)}
         />
-        <BalanceSelector value={selection} onChange={setSelection} balances={balances} />
+        <BalanceSelector
+          value={selection}
+          onChange={setSelection}
+          balances={balances}
+          loading={loading}
+        />
       </div>
 
       <div className='mt-[6px] flex items-center justify-between gap-2'>
