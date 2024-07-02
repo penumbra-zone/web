@@ -11,9 +11,13 @@ import { emptyBalanceResponse } from '../../../utils/empty-balance-response';
 import { bySearch } from './search-filters';
 import { BalanceOrMetadata, isMetadata, mergeBalancesAndAssets } from './helpers';
 import { BalanceItem } from './balance-item';
+import { LineWave } from 'react-loader-spinner';
+import { cn } from '@repo/ui/lib/utils';
+import { RESOLVED_TAILWIND_CONFIG } from '@repo/tailwind-config/resolved-tailwind-config';
 
 interface BalanceSelectorProps {
   value: BalancesResponse | undefined;
+  loading?: boolean;
   onChange: (selection: BalancesResponse) => void;
   balances?: BalancesResponse[];
   assets?: Metadata[];
@@ -29,6 +33,7 @@ interface BalanceSelectorProps {
  */
 export default function BalanceSelector({
   value,
+  loading,
   balances,
   onChange,
   assets,
@@ -54,10 +59,22 @@ export default function BalanceSelector({
         <motion.div
           layout
           layoutId={layoutId}
-          className='flex min-w-[100px] max-w-[200px] cursor-pointer items-center justify-center rounded-lg bg-light-brown px-2'
+          className={cn(
+            'flex min-w-[100px] max-w-[200px] cursor-pointer items-center justify-center rounded-lg px-2',
+            !loading && 'bg-light-brown',
+          )}
           onClick={() => setIsOpen(true)}
         >
-          <ValueViewComponent view={value?.balanceView} showValue={false} />
+          {loading ? (
+            <LineWave
+              visible
+              height='30'
+              width='30'
+              color={RESOLVED_TAILWIND_CONFIG.theme.colors['light-grey'].DEFAULT}
+            />
+          ) : (
+            <ValueViewComponent view={value?.balanceView} showValue={false} />
+          )}
         </motion.div>
       )}
 
