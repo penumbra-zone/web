@@ -1,5 +1,8 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import {
+  TransactionPlannerRequest,
+  TransactionPlannerRequest_Swap,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../../ctx/prax';
@@ -11,6 +14,10 @@ import { SctParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
 import { transactionPlanner } from '.';
 import { fvkCtx } from '../../ctx/full-viewing-key';
+import {
+  AssetId,
+  Value,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
 const mockPlanTransaction = vi.hoisted(() => vi.fn());
 vi.mock('@penumbra-zone/wasm/planner', () => ({
@@ -54,6 +61,20 @@ describe('TransactionPlanner request handler', () => {
     });
 
     req = new TransactionPlannerRequest({});
+  });
+
+  test('should throw if request is not valid', async () => {
+    // Swap assets are the same
+    const assetAbc = new AssetId({ altBaseDenom: 'UM' });
+    req.swaps = [
+      new TransactionPlannerRequest_Swap({
+        value: new Value({ assetId: assetAbc }),
+        targetAsset: assetAbc,
+      }),
+    ];
+    await expect(transactionPlanner(req, mockCtx)).rejects.toThrow(
+      '[invalid_argument] Attempted to make a swap in which both assets were of the same type. A swap must be between two different asset types.',
+    );
   });
 
   test('should create a transaction plan if all necessary data exists in indexed-db', async () => {

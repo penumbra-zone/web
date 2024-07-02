@@ -6,38 +6,34 @@ import { assertSwapAssetsAreNotTheSame } from './assert-swap-assets-are-not-the-
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { fvkCtx } from '../../ctx/full-viewing-key';
 import { extractAltFee } from '../fees';
-import { TransactionPlan } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 
 export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) => {
+  assertValidRequest(req);
+
   const services = await ctx.values.get(servicesCtx)();
   const { indexedDb } = await services.getWalletServices();
 
   // Query IndexedDB directly to check for the existence of staking token
   const nativeToken = await indexedDb.hasStakingAssetBalance();
 
-  // Initialize the gas fee token using an native staking token's asset ID
-  let gasFeeToken = indexedDb.stakingTokenAssetId;
-
+  // Initialize the gas fee token using the native staking token's asset ID
   // If there is no native token balance, extract and use an alternate gas fee token
-  if (!nativeToken) {
-    gasFeeToken = extractAltFee(req)!;
-  }
-
-  const fvk = ctx.values.get(fvkCtx);
-
-  assertValidRequest(req);
+  const gasFeeToken = nativeToken ? indexedDb.stakingTokenAssetId : extractAltFee(req);
 
   const fmdParams = await indexedDb.getFmdParams();
   if (!fmdParams) throw new ConnectError('FmdParameters not available', Code.FailedPrecondition);
+
   const { chainId, sctParams } = (await indexedDb.getAppParams()) ?? {};
   if (!sctParams) throw new ConnectError('SctParameters not available', Code.FailedPrecondition);
   if (!chainId) throw new ConnectError('ChainId not available', Code.FailedPrecondition);
+
+  // Wasm planner needs the presence of gas prices in the db to work
   const gasPrices = await indexedDb.getGasPrices();
   if (!gasPrices) throw new ConnectError('Gas prices is not available', Code.FailedPrecondition);
 
   const idbConstants = indexedDb.constants();
-
-  const plan: TransactionPlan = await planTransaction(idbConstants, req, await fvk(), gasFeeToken);
+  const fvk = await ctx.values.get(fvkCtx)();
+  const plan = await planTransaction(idbConstants, req, fvk, gasFeeToken);
 
   return { plan };
 };
