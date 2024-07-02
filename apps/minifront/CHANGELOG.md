@@ -1,5 +1,12 @@
 # minifront
 
+## 6.6.1
+
+### Patch Changes
+
+- Updated dependencies [248300c]
+  - @repo/ui@6.3.1
+
 ## 6.6.0
 
 ### Minor Changes

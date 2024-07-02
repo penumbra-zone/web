@@ -1,5 +1,11 @@
 # @penumbra-zone/ui
 
+## 6.3.1
+
+### Patch Changes
+
+- 248300c: Display epoch index in undelegate TX action
+
 ## 6.3.0
 
 ### Minor Changes
