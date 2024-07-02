@@ -61,6 +61,7 @@ export const Output = ({ layoutId }: { layoutId: string }) => {
               onChange={e => setMaxOutput(e.target.value)}
               inputMode='decimal'
               step={outputStepSize}
+              placeholder='0'
               className='text-right'
             />
 
@@ -80,6 +81,7 @@ export const Output = ({ layoutId }: { layoutId: string }) => {
               onChange={e => setMinOutput(e.target.value)}
               inputMode='decimal'
               step={outputStepSize}
+              placeholder='0'
               className='text-right'
             />
 
