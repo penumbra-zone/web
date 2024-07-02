@@ -1,49 +1,31 @@
 import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import {
-  TransactionPlannerRequest,
-  TransactionPlannerRequest_ActionDutchAuctionEnd,
-  TransactionPlannerRequest_ActionDutchAuctionSchedule,
-  TransactionPlannerRequest_ActionDutchAuctionWithdraw,
-  TransactionPlannerRequest_Output,
-  TransactionPlannerRequest_Swap,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { Code, ConnectError } from '@connectrpc/connect';
+import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
-export const extractAltFee = (request: TransactionPlannerRequest): AssetId | undefined => {
-  // Note: expand the possible types as we expand our support to more actions in the future.
-  const fields = [
-    { name: 'outputs', value: request.outputs },
-    { name: 'swaps', value: request.swaps },
-    { name: 'dutchAuctionScheduleActions', value: request.dutchAuctionScheduleActions },
-    { name: 'dutchAuctionEndActions', value: request.dutchAuctionEndActions },
-    { name: 'dutchAuctionWithdrawActions', value: request.dutchAuctionWithdrawActions },
-  ];
+// Attempts to extract a fee token from the assets used in the actions of the planner request
+// Priority in descending order
+export const extractAltFee = (request: TransactionPlannerRequest): AssetId => {
+  const outputAsset = request.outputs.map(o => o.value?.assetId).find(Boolean);
+  if (outputAsset) return outputAsset;
 
-  const nonEmptyField = fields.find(field => field.value.length > 0);
+  const swapAsset = request.swaps.map(assetIn => assetIn.value?.assetId).find(Boolean);
+  if (swapAsset) return swapAsset;
 
-  if (!nonEmptyField) {
-    throw new ConnectError('No non-empty field found in the request.', Code.InvalidArgument);
+  const auctionScheduleAsset = request.dutchAuctionScheduleActions
+    .map(a => a.description?.outputId)
+    .find(Boolean);
+  if (auctionScheduleAsset) return auctionScheduleAsset;
+
+  const auctionEndAsset = request.dutchAuctionEndActions.map(a => a.auctionId?.inner).find(Boolean);
+  if (auctionEndAsset) {
+    return new AssetId({ inner: auctionEndAsset });
   }
 
-  const action = nonEmptyField.value[0]!;
-
-  switch (nonEmptyField.name) {
-    case 'outputs':
-      return (action as TransactionPlannerRequest_Output).value?.assetId;
-    case 'swaps':
-      return (action as TransactionPlannerRequest_Swap).value?.assetId;
-    case 'dutchAuctionScheduleActions':
-      return (action as TransactionPlannerRequest_ActionDutchAuctionSchedule).description?.outputId;
-    case 'dutchAuctionEndActions':
-      return new AssetId({
-        inner: (action as TransactionPlannerRequest_ActionDutchAuctionEnd).auctionId?.inner,
-      });
-    case 'dutchAuctionWithdrawActions':
-      return new AssetId({
-        inner: (action as TransactionPlannerRequest_ActionDutchAuctionWithdraw).auctionId?.inner,
-      });
-    default:
-      console.warn('Unsupported action type.');
-      throw new ConnectError('Unsupported action type.', Code.InvalidArgument);
+  const auctionWithdrawAsset = request.dutchAuctionWithdrawActions
+    .map(a => a.auctionId?.inner)
+    .find(Boolean);
+  if (auctionWithdrawAsset) {
+    return new AssetId({ inner: auctionWithdrawAsset });
   }
+
+  throw new Error('Could not extract alternative fee assetId from TransactionPlannerRequest');
 };
