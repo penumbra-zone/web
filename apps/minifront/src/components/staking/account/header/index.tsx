@@ -8,7 +8,7 @@ import { UnbondingTokens } from './unbonding-tokens';
 import { useStoreShallow } from '../../../../utils/use-store-shallow';
 import { zeroValueView } from '../../../../utils/zero-value-view';
 import { useStakingTokenMetadata } from '../../../../state/shared';
-import { useStakingTokensAndFilter } from '../../../../state/staking';
+import { useStakingTokensAndFilter } from '../use-staking-tokens-and-filter';
 
 const headerSelector = (state: AllSlices) => ({
   account: state.staking.account,
@@ -24,9 +24,7 @@ const headerSelector = (state: AllSlices) => ({
 export const Header = () => {
   const { account, setAccount, unbondingTokensByAccount, undelegateClaim } =
     useStoreShallow(headerSelector);
-  const stakingTokensAndFilter = useStakingTokensAndFilter();
-  const { accountSwitcherFilter, unstakedTokensByAccount } = stakingTokensAndFilter.data ?? {};
-  const unstakedTokens = unstakedTokensByAccount?.get(account);
+  const { accountSwitcherFilter, stakingTokens } = useStakingTokensAndFilter(account);
   const unbondingTokens = unbondingTokensByAccount.get(account);
   const stakingTokenMetadata = useStakingTokenMetadata();
 
@@ -38,9 +36,9 @@ export const Header = () => {
 
           <div className='flex items-start justify-center gap-8'>
             <Stat label='Available to delegate'>
-              {(unstakedTokens ?? stakingTokenMetadata.data) && (
+              {(stakingTokens ?? stakingTokenMetadata.data) && (
                 <ValueViewComponent
-                  view={unstakedTokens ?? zeroValueView(stakingTokenMetadata.data)}
+                  view={stakingTokens ?? zeroValueView(stakingTokenMetadata.data)}
                 />
               )}
             </Stat>

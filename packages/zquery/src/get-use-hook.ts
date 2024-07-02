@@ -1,6 +1,11 @@
-import { useEffect } from 'react';
-import { CreateZQueryStreamingProps, CreateZQueryUnaryProps } from './types';
-import { useShallow } from 'zustand/react/shallow';
+import { useEffect, useRef } from 'react';
+import {
+  AbridgedZQueryState,
+  CreateZQueryStreamingProps,
+  CreateZQueryUnaryProps,
+  UseHookOptions,
+  ZQueryState,
+} from './types';
 
 /**
  * Returns a hook that can be used via `use[Name]()` to access the ZQuery state.
@@ -56,7 +61,15 @@ export const getUseHook = <
     return newReferenceCount;
   };
 
-  const useHook = (...args: FetchArgs) => {
+  const useHook = <
+    SelectorReturnType,
+    SelectorType extends
+      | ((zQueryState: AbridgedZQueryState<ProcessedDataType | DataType>) => SelectorReturnType)
+      | undefined,
+  >(
+    useHookOptions?: UseHookOptions<DataType | ProcessedDataType, SelectorType>,
+    ...fetchArgs: FetchArgs
+  ) => {
     const useStore = props.getUseStore();
 
     useEffect(() => {
@@ -67,7 +80,7 @@ export const getUseHook = <
 
         if (newReferenceCount === 1) {
           setAbortController(new AbortController());
-          void fetch(...args);
+          void fetch(...fetchArgs);
         }
       }
 
@@ -83,17 +96,30 @@ export const getUseHook = <
       return onUnmount;
     }, [fetch]);
 
-    const returnValue = useStore(
-      useShallow(state => {
-        const zQuery = props.get(state);
+    const prevState = useRef<ZQueryState<DataType | ProcessedDataType, FetchArgs> | undefined>();
+    const prevSelectedState = useRef<
+      AbridgedZQueryState<ProcessedDataType | DataType> | SelectorReturnType
+    >();
 
-        return {
-          data: zQuery.data,
-          loading: zQuery.loading,
-          error: zQuery.error,
-        };
-      }),
-    );
+    const returnValue = useStore(state => {
+      const newState: ZQueryState<DataType | ProcessedDataType, FetchArgs> = props.get(state);
+
+      if (!Object.is(newState, prevState.current)) {
+        const { data, loading, error } = newState;
+
+        const shouldReselect =
+          useHookOptions?.shouldReselect?.(prevState.current, newState) ?? true;
+
+        if (useHookOptions?.select && shouldReselect) {
+          prevSelectedState.current = useHookOptions.select({ data, loading, error });
+        } else if (!useHookOptions?.select) {
+          prevSelectedState.current = { data, loading, error };
+        }
+        prevState.current = newState;
+      }
+
+      return prevSelectedState.current;
+    });
 
     return returnValue;
   };

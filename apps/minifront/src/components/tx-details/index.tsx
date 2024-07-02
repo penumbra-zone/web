@@ -16,7 +16,7 @@ export const TxDetailsErrorBoundary = () => {
 export const TxDetails = () => {
   const { hash } = useParams<{ hash: string }>();
 
-  const txInfo = useTransactionInfo(hash!);
+  const txInfo = useTransactionInfo(undefined, hash!);
 
   if (
     !txInfo.data?.id ||

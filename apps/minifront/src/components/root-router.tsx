@@ -11,7 +11,6 @@ import { Receive } from './send/receive';
 import { ErrorBoundary } from './shared/error-boundary';
 import { SwapLayout } from './swap/layout';
 import { StakingLayout } from './staking/layout';
-import { IbcLoader } from './ibc/ibc-loader';
 import { IbcLayout } from './ibc/layout';
 import { abortLoader } from '../abort-loader';
 import type { Router } from '@remix-run/router';
@@ -71,7 +70,7 @@ export const rootRouter: Router = createHashRouter([
       },
       {
         path: PagePath.IBC,
-        loader: IbcLoader,
+        loader: abortLoader,
         element: <IbcLayout />,
       },
     ],
