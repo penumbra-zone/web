@@ -12,12 +12,12 @@ import {
 import { ValueViewComponent } from '@repo/ui/components/ui/value';
 import { EquivalentValues } from './equivalent-values';
 import { Fragment } from 'react';
-import { shouldDisplay } from './helpers';
 import { PagePath } from '../../metadata/paths';
 import { Link } from 'react-router-dom';
 import { getMetadataFromBalancesResponseOptional } from '@penumbra-zone/getters/balances-response';
 import { getAddressIndex } from '@penumbra-zone/getters/address-view';
-import { balancesByAccountSelector, useBalancesResponses } from '../../../state/shared';
+import { filteredBalancesByAccountSelector, useBalancesResponses } from '../../../state/shared';
+import { useAssetIds } from '../../../fetchers/registry';
 
 const getTradeLink = (balance: BalancesResponse): string => {
   const metadata = getMetadataFromBalancesResponseOptional(balance);
@@ -27,8 +27,9 @@ const getTradeLink = (balance: BalancesResponse): string => {
 };
 
 export default function AssetsTable() {
+  const registryAssetIds = useAssetIds();
   const balancesByAccount = useBalancesResponses({
-    select: balancesByAccountSelector,
+    select: filteredBalancesByAccountSelector(registryAssetIds),
     shouldReselect: (before, after) => before?.data !== after.data,
   });
 
@@ -75,7 +76,7 @@ export default function AssetsTable() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {account.balances.filter(shouldDisplay).map((assetBalance, index) => (
+              {account.balances.map((assetBalance, index) => (
                 <TableRow className='group' key={index}>
                   <TableCell>
                     <ValueViewComponent view={assetBalance.balanceView} />

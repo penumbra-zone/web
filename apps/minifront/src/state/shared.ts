@@ -8,6 +8,8 @@ import { getAllAssets } from '../fetchers/assets';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { getAddress, getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
+import { shouldDisplay } from '../fetchers/balances/should-display';
+import { sortByPriorityScore } from '../fetchers/balances/by-priority-score';
 
 export const { stakingTokenMetadata, useStakingTokenMetadata } = createZQuery({
   name: 'stakingTokenMetadata',
@@ -86,3 +88,11 @@ const groupByAccount = (acc: BalancesByAccount[], curr: BalancesResponse): Balan
 export const balancesByAccountSelector = (
   zQueryState: AbridgedZQueryState<BalancesResponse[]>,
 ): BalancesByAccount[] => zQueryState.data?.reduce(groupByAccount, []) ?? [];
+
+export const filteredBalancesByAccountSelector =
+  (registryAssetIds: Set<string>) =>
+  (zQueryState: AbridgedZQueryState<BalancesResponse[]>): BalancesByAccount[] =>
+    zQueryState.data
+      ?.filter(shouldDisplay)
+      .sort(sortByPriorityScore(registryAssetIds))
+      .reduce(groupByAccount, []) ?? [];

@@ -42,11 +42,14 @@ export const getChains = async (): Promise<Chain[]> => {
 };
 
 // Gets a unique set of asset ids to quickly compare metadata to it
-export const getAssetIds = async (): Promise<Set<string>> => {
-  const chainId = await getChainId();
-  if (!chainId) throw new Error('Could not fetch chain id');
+export const useAssetIds = (): Set<string> => {
+  const { data } = useRegistry();
 
-  const assets = chainRegistryClient.get(chainId).getAllAssets();
+  if (!data) {
+    return new Set();
+  }
+
+  const assets = chainRegistryClient.get(data.chainId).getAllAssets();
 
   return new Set(
     assets.map(asset => uint8ArrayToBase64(asset.penumbraAssetId?.inner ?? new Uint8Array())),
