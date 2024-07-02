@@ -49,7 +49,7 @@ export default function InputToken({
           variant='transparent'
           placeholder={placeholder}
           className={cn(
-            'md:h-8 xl:h-10 md:w-[calc(100%-80px)] xl:w-[calc(100%-160px)] md:text-xl  xl:text-3xl font-bold leading-10',
+            'md:h-8 xl:h-10 md:w-[calc(100%-80px)] xl:w-[calc(100%-160px)] md:text-xl xl:text-3xl font-bold leading-10',
             inputClassName,
           )}
           value={value}
