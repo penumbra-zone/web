@@ -13,6 +13,7 @@ import {
 import { MsgUpdateClient } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/tx_pb';
 import { MsgRecvPacket } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/channel/v1/tx_pb';
 import { DutchAuction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
+import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 
 /**
  * This type registry is for JSON serialization of protobuf messages.
@@ -48,6 +49,9 @@ export const typeRegistry: IMessageTypeRegistry = createRegistry(
 
   // @buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb
   DutchAuction,
+
+  // @buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb
+  ValidatorInfo,
 );
 
 /**
