@@ -38,7 +38,8 @@ export const getFilteredAuctionInfos = (
   return auctionInfos.filter(auctionInfo => {
     if (!fullSyncHeight) return false;
     if (!haveEnoughDataToDetermineIfAuctionMatchesFilter(auctionInfo)) return false;
-    if (filter === 'active') return auctionIsActive(auctionInfo, fullSyncHeight);
-    return auctionIsUpcoming(auctionInfo, fullSyncHeight);
+    return (
+      auctionIsActive(auctionInfo, fullSyncHeight) || auctionIsUpcoming(auctionInfo, fullSyncHeight)
+    );
   });
 };
