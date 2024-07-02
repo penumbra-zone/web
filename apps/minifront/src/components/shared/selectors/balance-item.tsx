@@ -37,12 +37,12 @@ export const BalanceItem = ({ asset, value, onSelect }: BalanceItemProps) => {
             isSelected && 'bg-light-brown px-4 -mx-4',
           )}
         >
-          {metadata && (
-            <div className='col-span-2 flex items-center justify-start gap-1'>
-              <AssetIcon metadata={metadata} />
-              <p className='truncate'>{metadata.symbol || 'Unknown asset'}</p>
-            </div>
-          )}
+          <div className='col-span-2 flex items-center justify-start gap-1'>
+            <AssetIcon metadata={metadata} />
+            <p className='truncate'>
+              {metadata && metadata.symbol ? metadata.symbol : 'Unknown asset'}
+            </p>
+          </div>
 
           <div className='col-span-2 flex justify-end'>
             {isBalance(asset) && (
