@@ -1,8 +1,11 @@
-export interface ZQueryState<DataType, FetchArgs extends unknown[] = []> {
+export interface AbridgedZQueryState<DataType> {
   data?: DataType | undefined;
   loading: boolean;
   error?: unknown;
+}
 
+export interface ZQueryState<DataType, FetchArgs extends unknown[] = []>
+  extends AbridgedZQueryState<DataType> {
   revalidate: (...args: FetchArgs) => void;
 
   _zQueryInternal: {
@@ -11,6 +14,58 @@ export interface ZQueryState<DataType, FetchArgs extends unknown[] = []> {
     abortController?: AbortController;
   };
 }
+
+export type UseHookOptions<
+  ResolvedDataType,
+  SelectorType extends
+    | ((zQueryState: AbridgedZQueryState<ResolvedDataType>) => unknown)
+    | undefined = undefined,
+> = SelectorType extends undefined
+  ?
+      | {
+          /**
+           * A selector to pass the `AbridgedZQueryState` to before returning
+           * the value to the hook caller. Useful if your component needs data
+           * of a different shape than that returned by the fetcher.
+           */
+          select?: undefined;
+          /**
+           * Will be called with the `before` and `after` of the
+           * `AbridgedZQueryState`, and should return a boolean to determine
+           * whether the selector (defined in `select`) should be re-run. If
+           * left undefined, the selector (if defined) will be re-run anytime
+           * the entire `ZQueryState` object changes. But if your selector is
+           * expensive, you may only want it to re-run when, for example, the
+           * `data` property changes (but not when `loading` or `error`
+           * changes). In that case, you could pass a `shouldReselect` function
+           * like this: `(before, after) => before?.data !== after.data`.
+           */
+          shouldReselect?: undefined;
+        }
+      | undefined
+  : {
+      /**
+       * A selector to pass the `AbridgedZQueryState` to before returning the
+       * value to the hook caller. Useful if your component needs data of a
+       * different shape than that returned by the fetcher.
+       */
+      select: SelectorType;
+      /**
+       * Will be called with the `before` and `after` of the
+       * `AbridgedZQueryState`, and should return a boolean to determine whether
+       * the selector (defined in `select`) should be re-run. If left undefined,
+       * the selector (if defined) will be re-run anytime the entire
+       * `ZQueryState` object changes. But if your selector is expensive, you
+       * may only want it to re-run when, for example, the `data` property
+       * changes (but not when `loading` or `error` changes). In that case, you
+       * could pass a `shouldReselect` function like this: `(before, after) =>
+       * before?.data !== after.data`.
+       */
+      shouldReselect?: (
+        before: AbridgedZQueryState<ResolvedDataType> | undefined,
+        after: AbridgedZQueryState<ResolvedDataType>,
+      ) => boolean;
+    };
 
 interface CreateZQueryCommonProps<Name extends string, State> {
   /** The name of this property in the state/slice. */
@@ -305,11 +360,18 @@ export interface CreateZQueryStreamingProps<
 export type UseStore<State> = (<T>(selector: (state: State) => T) => T) & { getState(): State };
 
 export type ZQuery<Name extends string, DataType, FetchArgs extends unknown[]> = {
-  [key in `use${Capitalize<Name>}`]: (...args: FetchArgs) => {
-    data?: DataType;
-    loading: boolean;
-    error?: unknown;
-  };
+  [key in `use${Capitalize<Name>}`]: <
+    SelectorType extends
+      | ((zQueryState: AbridgedZQueryState<DataType>) => unknown)
+      | undefined = undefined,
+  >(
+    options?: UseHookOptions<DataType, SelectorType>,
+    ...fetchArgs: FetchArgs
+  ) => SelectorType extends (zQueryState: AbridgedZQueryState<DataType>) => infer ReturnType
+    ? // Must include `| undefined` in the return type because the first pass
+      // through `useStore` doesn't return a value at all.
+      ReturnType | undefined
+    : AbridgedZQueryState<DataType>;
 } & {
-  [key in `useRevalidate${Capitalize<Name>}`]: () => (...args: FetchArgs) => void;
+  [key in `useRevalidate${Capitalize<Name>}`]: () => (...fetchArgs: FetchArgs) => void;
 } & Record<Name, ZQueryState<DataType, FetchArgs>>;
