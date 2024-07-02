@@ -12,7 +12,6 @@ import {
 import { ValueViewComponent } from '@repo/ui/components/ui/value';
 import { EquivalentValues } from './equivalent-values';
 import { Fragment } from 'react';
-import { shouldDisplay } from './helpers';
 import { useBalancesByAccount } from '../../../state/balances';
 import { PagePath } from '../../metadata/paths';
 import { Link } from 'react-router-dom';
@@ -72,7 +71,7 @@ export default function AssetsTable() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {account.balances.filter(shouldDisplay).map((assetBalance, index) => (
+              {account.balances.map((assetBalance, index) => (
                 <TableRow className='group' key={index}>
                   <TableCell>
                     <ValueViewComponent view={assetBalance.balanceView} />

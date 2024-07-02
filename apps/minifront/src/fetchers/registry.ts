@@ -2,6 +2,7 @@ import { ChainRegistryClient, Registry } from '@penumbra-labs/registry';
 import { useQuery } from '@tanstack/react-query';
 import { getChainId } from './chain-id';
 import { getAssetMetadataById } from './assets';
+import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 
 export const chainRegistryClient = new ChainRegistryClient();
 
@@ -36,7 +37,18 @@ export const getIbcConnections = async () => {
   const chainId = await getChainId();
   if (!chainId) throw new Error('Could not fetch chain id');
 
-  const registryClient = new ChainRegistryClient();
-  const { ibcConnections } = registryClient.get(chainId);
+  const { ibcConnections } = chainRegistryClient.get(chainId);
   return ibcConnections;
+};
+
+// Gets a unique set of asset ids to quickly compare metadata to it
+export const getAssetIds = async (): Promise<Set<string>> => {
+  const chainId = await getChainId();
+  if (!chainId) throw new Error('Could not fetch chain id');
+
+  const assets = chainRegistryClient.get(chainId).getAllAssets();
+
+  return new Set(
+    assets.map(asset => uint8ArrayToBase64(asset.penumbraAssetId?.inner ?? new Uint8Array())),
+  );
 };

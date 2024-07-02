@@ -1,10 +1,10 @@
 import { SliceCreator, useStore } from '.';
 import { ZQueryState, createZQuery } from '@penumbra-zone/zquery';
-import { BalancesByAccount, getBalancesByAccount } from '../fetchers/balances/by-account';
+import { BalancesByAccount, getFilteredBalancesByAccount } from '../fetchers/balances/by-account';
 
 export const { balancesByAccount, useBalancesByAccount } = createZQuery({
   name: 'balancesByAccount',
-  fetch: getBalancesByAccount,
+  fetch: getFilteredBalancesByAccount,
   getUseStore: () => useStore,
   get: state => state.balances.balancesByAccount,
   set: setter => {

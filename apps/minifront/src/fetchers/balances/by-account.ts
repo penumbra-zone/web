@@ -2,6 +2,9 @@ import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/k
 import { getBalances } from '.';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { getAddress, getAddressIndex } from '@penumbra-zone/getters/address-view';
+import { sortByPriorityScore } from './by-priority-score';
+import { shouldDisplay } from './should-display';
+import { getAssetIds } from '../registry';
 
 export interface BalancesByAccount {
   account: number;
@@ -29,4 +32,12 @@ const groupByAccount = (acc: BalancesByAccount[], curr: BalancesResponse): Balan
 export const getBalancesByAccount = async (): Promise<BalancesByAccount[]> => {
   const balances = await getBalances();
   return balances.reduce(groupByAccount, []);
+};
+
+export const getFilteredBalancesByAccount = async (): Promise<BalancesByAccount[]> => {
+  const [balances, assetIds] = await Promise.all([getBalances(), getAssetIds()]);
+  return balances
+    .filter(shouldDisplay)
+    .sort(sortByPriorityScore(assetIds))
+    .reduce(groupByAccount, []);
 };
