@@ -128,29 +128,17 @@ export class BlockProcessor implements BlockProcessorInterface {
       { retry: () => true },
     );
 
-    if (currentHeight === -1n) {
-      // In the `for` loop below, we only update validator infos once we've
-      // reached the latest known epoch. This means that, if a user is syncing
-      // for the first time, they could experience a broken UI until the latest
-      // known epoch is reached, since they may have delegation tokens but no
-      // validator info to go with them. So we'll update validator infos at the
-      // beginning of sync as well, and force the rest of sync to wait until
-      // it's done.
-      await this.updateValidatorInfos(0n);
-    }
-
     // this is an indefinite stream of the (compact) chain from the network
     // intended to run continuously
-    for await (const compactBlock of this.querier.compactBlock.compactBlockRange({
-      startHeight: currentHeight + 1n,
-      keepAlive: true,
-      abortSignal: this.abortController.signal,
-    })) {
+    for await (const { compactBlock } of this.querier.compactBlock.compactBlockRange(
+      { startHeight: currentHeight + 1n, keepAlive: true },
+      { signal: this.abortController.signal },
+    )) {
       // confirm block height to prevent corruption of local state
-      if (compactBlock.height === currentHeight + 1n) {
+      if (compactBlock?.height === currentHeight + 1n) {
         currentHeight = compactBlock.height;
       } else {
-        throw new Error(`Unexpected block height: ${compactBlock.height} at ${currentHeight}`);
+        throw new Error(`Unexpected block height: ${compactBlock?.height} at ${currentHeight}`);
       }
 
       if (compactBlock.appParametersUpdated) {

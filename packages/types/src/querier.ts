@@ -38,14 +38,11 @@ export interface AppQuerierInterface {
   txsByHeight(blockHeight: bigint): Promise<Transaction[]>;
 }
 
-export interface CompactBlockRangeParams {
-  startHeight: bigint;
-  keepAlive: boolean; // Will continuously receive blocks as long as service worker is running
-  abortSignal: AbortSignal;
-}
-
 export interface CompactBlockQuerierInterface {
-  compactBlockRange(params: CompactBlockRangeParams): AsyncIterable<CompactBlock>;
+  compactBlockRange(
+    req: { startHeight?: bigint; keepAlive?: boolean },
+    opt?: { signal?: AbortSignal },
+  ): AsyncIterable<{ compactBlock?: CompactBlock }>;
 }
 
 export interface TendermintQuerierInterface {
