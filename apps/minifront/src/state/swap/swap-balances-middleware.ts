@@ -18,7 +18,8 @@ const byAccount = (account: number) => (balancesResponse: BalancesResponse) =>
  * balance of that asset but we do have metadata for that asset, create and
  * return a zero-balance `BalancesResponse` referring to that asset.
  * 3. If there's already a `swap.assetIn` set, return that. (Note that this is
- * the step 3, because a `from` query string parameter should override this.)
+ * the third step, because a `from` query string parameter should override
+ * this.)
  * 4. Otherwise, simply return a zero-balance `BalancesResponse` referring to
  * the first available swappable asset.
  */
@@ -45,6 +46,13 @@ const getAssetIn = (state: AllSlices, from?: string, account?: number) => {
   return firstSwappableAsset ? emptyBalanceResponse(firstSwappableAsset, account) : undefined;
 };
 
+/**
+ * 1. If there's a `to` query string parameter, and we have a `Metadata` with
+ * that symbol, return that `Metadata`.
+ * 2. If there's already a `swap.assetOut` set, return that. (Note that this is
+ * the third step, because a `to` query string parameter should override this.)
+ * 3. Otherwise, simply return the first swappable asset, if it exists.
+ */
 const getAssetOut = (state: AllSlices, to?: string) => {
   const swappableAssets = swappableAssetsSelector(state.shared.assets).data ?? [];
 
