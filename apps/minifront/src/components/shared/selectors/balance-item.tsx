@@ -39,9 +39,7 @@ export const BalanceItem = ({ asset, value, onSelect }: BalanceItemProps) => {
         >
           <div className='col-span-2 flex items-center justify-start gap-1'>
             <AssetIcon metadata={metadata} />
-            <p className='truncate'>
-              {metadata && metadata.symbol ? metadata.symbol : 'Unknown asset'}
-            </p>
+            <p className='truncate'>{metadata?.symbol ? metadata.symbol : 'Unknown asset'}</p>
           </div>
 
           <div className='col-span-2 flex justify-end'>
