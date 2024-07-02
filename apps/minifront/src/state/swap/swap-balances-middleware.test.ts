@@ -92,7 +92,6 @@ describe('swapBalancesMiddleware()', () => {
         useStore.setState(state => {
           state.shared.balancesResponses = balancesResponses;
           state.shared.assets = swappableAssets;
-          return state;
         });
 
         expect(useStore.getState().swap.assetIn).toStrictEqual(balancesResponses.data![1]);
@@ -108,7 +107,6 @@ describe('swapBalancesMiddleware()', () => {
           useStore.setState(state => {
             state.shared.balancesResponses = balancesResponses;
             state.shared.assets = swappableAssets;
-            return state;
           });
 
           expect(useStore.getState().swap.assetIn).toBe(usdcBalance);
@@ -120,7 +118,6 @@ describe('swapBalancesMiddleware()', () => {
           useStore.setState(state => {
             state.shared.balancesResponses = emptyBalancesResponses;
             state.shared.assets = swappableAssets;
-            return state;
           });
 
           expect(useStore.getState().swap.assetIn).toStrictEqual(
@@ -138,7 +135,6 @@ describe('swapBalancesMiddleware()', () => {
           useStore.setState(state => {
             state.shared.balancesResponses = emptyBalancesResponses;
             state.shared.assets = swappableAssets;
-            return state;
           });
 
           expect(useStore.getState().swap.assetIn).toStrictEqual(emptyBalanceResponse(umToken, 0));
@@ -152,7 +148,6 @@ describe('swapBalancesMiddleware()', () => {
           useStore.setState(state => {
             state.shared.balancesResponses = emptyBalancesResponses;
             state.shared.assets = swappableAssets;
-            return state;
           });
 
           expect(useStore.getState().swap.assetIn).toStrictEqual(emptyBalanceResponse(umToken, 0));
@@ -168,7 +163,6 @@ describe('swapBalancesMiddleware()', () => {
             useStore.setState(state => {
               state.shared.balancesResponses = balancesResponses;
               state.shared.assets = swappableAssets;
-              return state;
             });
 
             expect(useStore.getState().swap.assetIn).toBe(usdcBalance);
@@ -181,7 +175,6 @@ describe('swapBalancesMiddleware()', () => {
           useStore.setState(state => {
             state.shared.balancesResponses = emptyBalancesResponses;
             state.shared.assets = emptySwappableAssets;
-            return state;
           });
 
           expect(useStore.getState().swap.assetIn).toBeUndefined();
@@ -199,7 +192,6 @@ describe('swapBalancesMiddleware()', () => {
       it('sets `swap.assetOut` to the first asset matching `to`', () => {
         useStore.setState(state => {
           state.shared.assets = swappableAssets;
-          return state;
         });
 
         expect(useStore.getState().swap.assetOut).toStrictEqual(swappableAssets.data![1]);
@@ -214,7 +206,6 @@ describe('swapBalancesMiddleware()', () => {
 
           useStore.setState(state => {
             state.shared.assets = swappableAssets;
-            return state;
           });
 
           expect(useStore.getState().swap.assetOut).toBe(usdcToken);
@@ -229,7 +220,6 @@ describe('swapBalancesMiddleware()', () => {
         it('sets `swap.assetOut` to the first swappable asset', () => {
           useStore.setState(state => {
             state.shared.assets = swappableAssets;
-            return state;
           });
 
           expect(useStore.getState().swap.assetOut).toStrictEqual(umToken);
@@ -242,7 +232,6 @@ describe('swapBalancesMiddleware()', () => {
         it('sets `swap.assetOut` to the first swappable asset', () => {
           useStore.setState(state => {
             state.shared.assets = swappableAssets;
-            return state;
           });
 
           expect(useStore.getState().swap.assetOut).toStrictEqual(umToken);
@@ -253,7 +242,6 @@ describe('swapBalancesMiddleware()', () => {
         it("doesn't set `swap.assetOut`", () => {
           useStore.setState(state => {
             state.shared.assets = emptySwappableAssets;
-            return state;
           });
 
           expect(useStore.getState().swap.assetOut).toBeUndefined();
@@ -269,7 +257,6 @@ describe('swapBalancesMiddleware()', () => {
 
           useStore.setState(state => {
             state.shared.assets = swappableAssets;
-            return state;
           });
 
           expect(useStore.getState().swap.assetOut).toBe(usdcToken);
