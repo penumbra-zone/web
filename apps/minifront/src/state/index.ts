@@ -1,7 +1,7 @@
 import { create, StateCreator } from 'zustand';
 import { enableMapSet } from 'immer';
 import { immer } from 'zustand/middleware/immer';
-import { createSwapSlice, swapAssetsMiddleware, swapBalancesMiddleware, SwapSlice } from './swap';
+import { createSwapSlice, SwapSlice } from './swap';
 import { createIbcOutSlice, ibcOutMiddleware, IbcOutSlice } from './ibc-out';
 import { createSendSlice, sendSelectionMiddleware, SendSlice } from './send';
 import { createStakingSlice, StakingSlice } from './staking';
@@ -10,6 +10,7 @@ import { createUnclaimedSwapsSlice, UnclaimedSwapsSlice } from './unclaimed-swap
 import { createTransactionsSlice, TransactionsSlice } from './transactions';
 import { createIbcInSlice, IbcInSlice } from './ibc-in';
 import { createSharedSlice, SharedSlice } from './shared';
+import { swapBalancesMiddleware } from './swap/swap-balances-middleware';
 
 /**
  * Required to enable use of `Map`s in Zustand state when using Immer
@@ -52,19 +53,17 @@ export const initializeStore = () => {
   return immer(
     ibcOutMiddleware(
       sendSelectionMiddleware(
-        swapBalancesMiddleware(
-          swapAssetsMiddleware((setState, getState: () => AllSlices, store) => ({
-            ibcIn: createIbcInSlice()(setState, getState, store),
-            ibcOut: createIbcOutSlice()(setState, getState, store),
-            send: createSendSlice()(setState, getState, store),
-            shared: createSharedSlice()(setState, getState, store),
-            staking: createStakingSlice()(setState, getState, store),
-            status: createStatusSlice()(setState, getState, store),
-            swap: createSwapSlice()(setState, getState, store),
-            transactions: createTransactionsSlice()(setState, getState, store),
-            unclaimedSwaps: createUnclaimedSwapsSlice()(setState, getState, store),
-          })),
-        ),
+        swapBalancesMiddleware((setState, getState: () => AllSlices, store) => ({
+          ibcIn: createIbcInSlice()(setState, getState, store),
+          ibcOut: createIbcOutSlice()(setState, getState, store),
+          send: createSendSlice()(setState, getState, store),
+          shared: createSharedSlice()(setState, getState, store),
+          staking: createStakingSlice()(setState, getState, store),
+          status: createStatusSlice()(setState, getState, store),
+          swap: createSwapSlice()(setState, getState, store),
+          transactions: createTransactionsSlice()(setState, getState, store),
+          unclaimedSwaps: createUnclaimedSwapsSlice()(setState, getState, store),
+        })),
       ),
     ),
   );
