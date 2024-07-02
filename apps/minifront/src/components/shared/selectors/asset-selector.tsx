@@ -11,9 +11,8 @@ import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { Box } from '@repo/ui/components/ui/box';
 import { motion } from 'framer-motion';
 import { metadataBySearch } from './search-filters';
-import { LineWave } from 'react-loader-spinner';
-import { RESOLVED_TAILWIND_CONFIG } from '@repo/tailwind-config/resolved-tailwind-config';
 import { cn } from '@repo/ui/lib/utils';
+import { LoadingIndicator } from './loading-indicator';
 
 interface AssetSelectorProps {
   assets: Metadata[];
@@ -108,12 +107,7 @@ export const AssetSelector = ({ assets, loading, onChange, value, filter }: Asse
           onClick={() => setIsOpen(true)}
         >
           {loading ? (
-            <LineWave
-              visible
-              height='30'
-              width='30'
-              color={RESOLVED_TAILWIND_CONFIG.theme.colors['light-grey'].DEFAULT}
-            />
+            <LoadingIndicator />
           ) : (
             <ValueViewComponent view={valueView} showValue={false} />
           )}
