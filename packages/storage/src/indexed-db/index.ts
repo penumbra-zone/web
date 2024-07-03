@@ -385,10 +385,8 @@ export class IndexedDb implements IndexedDbInterface {
     return SwapRecord.fromJson(json);
   }
 
-  // TODO #1310 'getGasPrices()' should be renamed to 'getNativeGasPrice()'
-  async getGasPrices(): Promise<GasPrices | undefined> {
-    // TODO #1310 use this.stakingTokenAssetId as the key for the query
-    const jsonGasPrices = await this.db.get('GAS_PRICES', 'gas_prices');
+  async getNativeGasPrices(): Promise<GasPrices | undefined> {
+    const jsonGasPrices = await this.db.get('GAS_PRICES', uint8ArrayToBase64(this.stakingTokenAssetId.inner));
     if (!jsonGasPrices) return undefined;
     return GasPrices.fromJson(jsonGasPrices);
   }

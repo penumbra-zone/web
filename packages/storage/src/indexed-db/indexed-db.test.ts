@@ -399,7 +399,7 @@ describe('IndexedDb', () => {
         executionPrice: 0n,
       });
       await db.saveGasPrices(gasPrices);
-      const savedPrices = await db.getGasPrices();
+      const savedPrices = await db.getNativeGasPrices();
 
       expect(gasPrices.equals(savedPrices)).toBeTruthy();
     });
