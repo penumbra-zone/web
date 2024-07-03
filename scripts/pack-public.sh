@@ -1,5 +1,8 @@
 #!/bin/sh
 
+repoRootDir="$(readlink -f -- "$(dirname "$0")/../")"
+cd $repoRootDir
+
 # pnpm doesn't like to recurse for the pack command, and turbo doesn't
 # understand it as a script.  this script should pack every non-private package.
 

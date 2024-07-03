@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc && vite build",
     "clean": "rm -rfv dist",
-    "dev": "vite --port 5174",
+    "dev:app": "vite --port 5174",
     "lint": "eslint src",
     "preview": "vite preview"
   },

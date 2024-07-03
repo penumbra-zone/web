@@ -10,6 +10,7 @@
   "scripts": {
     "build": "tsc --build && tsc-alias",
     "clean": "rm -rfv dist package penumbra-zone-*.tgz",
+    "dev:pack": "tsc-watch --onCompilationComplete \"tsc-alias\" --onSuccess \"$npm_execpath pack\"",
     "lint": "eslint src"
   },
   "files": [
@@ -30,6 +31,11 @@
         "default": "./dist/create.js"
       }
     }
+  },
+  "devDependencies": {
+    "@connectrpc/connect": "^1.4.0",
+    "@penumbra-zone/protobuf": "workspace:*",
+    "@penumbra-zone/transport-dom": "workspace:*"
   },
   "peerDependencies": {
     "@connectrpc/connect": "^1.4.0",

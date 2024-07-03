@@ -10,6 +10,7 @@
   "scripts": {
     "build": "tsc --build && tsc-alias",
     "clean": "rm -rfv dist package penumbra-zone-*.tgz",
+    "dev:pack": "tsc-watch --onCompilationComplete \"tsc-alias\" --onSuccess \"$npm_execpath pack\"",
     "lint": "eslint src",
     "test": "vitest run"
   },
@@ -39,7 +40,10 @@
     }
   },
   "devDependencies": {
-    "@penumbra-zone/bech32m": "workspace:*"
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240625233123-429cb316aa7c.1",
+    "@penumbra-zone/bech32m": "workspace:*",
+    "@penumbra-zone/getters": "workspace:*",
+    "@penumbra-zone/wasm": "workspace:*"
   },
   "peerDependencies": {
     "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240625233123-429cb316aa7c.1",

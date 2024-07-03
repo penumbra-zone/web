@@ -9,6 +9,7 @@
   "scripts": {
     "build": "tsc --build && tsc-alias",
     "clean": "rm -rfv dist package penumbra-zone-*.tgz",
+    "dev:pack": "tsc-watch --onCompilationComplete \"tsc-alias\" --onSuccess \"$npm_execpath pack\"",
     "lint": "eslint src",
     "test": "vitest run"
   },
@@ -32,6 +33,7 @@
     "crypto-js": "^4.2.0"
   },
   "devDependencies": {
+    "@penumbra-zone/types": "workspace:*",
     "@types/crypto-js": "^4.2.2"
   },
   "peerDependencies": {

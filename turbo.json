@@ -28,12 +28,20 @@
       "dependsOn": ["//#clean:vitest-mjs"]
     },
     "compile": {
+      "dependsOn": ["^build"],
       "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock"],
       "outputs": ["wasm/**"]
     },
-    "dev": {
-      "cache": false,
-      "dependsOn": ["^compile"],
+    "dev:compile": {
+      "dependsOn": ["compile"],
+      "persistent": true
+    },
+    "dev:pack": {
+      "dependsOn": ["compile"],
+      "persistent": true
+    },
+    "dev:app": {
+      "dependsOn": ["compile"],
       "persistent": true
     },
     "format": {
