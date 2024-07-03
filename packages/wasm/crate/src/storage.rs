@@ -10,7 +10,6 @@ use penumbra_asset::asset::{self, Id, Metadata};
 use penumbra_auction::auction::AuctionId;
 use penumbra_keys::keys::AddressIndex;
 use penumbra_num::Amount;
-use penumbra_proto::core::asset::v1::AssetId;
 use penumbra_proto::{
     core::{app::v1::AppParameters, asset::v1::Value, component::sct::v1::Epoch},
     crypto::tct::v1::StateCommitment,

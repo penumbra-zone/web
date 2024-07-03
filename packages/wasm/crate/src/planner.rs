@@ -1,13 +1,11 @@
-use crate::metadata::customize_symbol_inner;
-use crate::note_record::SpendableNoteRecord;
-use crate::storage::{IndexedDBStorage, OutstandingReserves};
-use crate::utils;
-use crate::{error::WasmResult, swap_record::SwapRecord};
+use std::collections::BTreeMap;
+use std::mem;
+
 use anyhow::anyhow;
 use ark_ff::UniformRand;
 use decaf377::{Fq, Fr};
 use penumbra_asset::asset::{Id, Metadata};
-use penumbra_asset::{Value, STAKING_TOKEN_ASSET_ID};
+use penumbra_asset::Value;
 use penumbra_auction::auction::dutch::actions::ActionDutchAuctionWithdrawPlan;
 use penumbra_auction::auction::dutch::{
     ActionDutchAuctionEnd, ActionDutchAuctionSchedule, DutchAuctionDescription,
@@ -38,10 +36,14 @@ use penumbra_transaction::ActionList;
 use penumbra_transaction::{plan::MemoPlan, ActionPlan, TransactionParameters};
 use prost::Message;
 use rand_core::{OsRng, RngCore};
-use std::collections::BTreeMap;
-use std::mem;
 use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::JsValue;
+
+use crate::metadata::customize_symbol_inner;
+use crate::note_record::SpendableNoteRecord;
+use crate::storage::{IndexedDBStorage, OutstandingReserves};
+use crate::utils;
+use crate::{error::WasmResult, swap_record::SwapRecord};
 
 /// Prioritize notes to spend to release value of a specific transaction.
 ///
@@ -185,7 +187,7 @@ pub async fn plan_transaction(
     let fee_asset_id: Id = Id::decode(gas_fee_token)?;
 
     // Request information about current gas prices
-    let mut gas_prices: GasPrices = {
+    let gas_prices: GasPrices = {
         let gas_prices: penumbra_proto::core::component::fee::v1::GasPrices =
             serde_wasm_bindgen::from_value(
                 storage
