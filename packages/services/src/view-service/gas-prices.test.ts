@@ -20,7 +20,8 @@ describe('GasPrices request handler', () => {
     vi.resetAllMocks();
 
     mockIndexedDb = {
-      getGasPrices: vi.fn(),
+      getNativeGasPrices: vi.fn(),
+      getAltGasPrices: vi.fn(),
     };
     mockServices = {
       getWalletServices: vi.fn(() =>
@@ -40,7 +41,7 @@ describe('GasPrices request handler', () => {
   });
 
   test('should successfully get gas prices when idb has them', async () => {
-    mockIndexedDb.getGasPrices?.mockResolvedValue(testData);
+    mockIndexedDb.getNativeGasPrices?.mockResolvedValue(testData);
     const gasPricesResponse = new GasPricesResponse(
       await gasPrices(new GasPricesRequest(), mockCtx),
     );
@@ -48,7 +49,7 @@ describe('GasPrices request handler', () => {
   });
 
   test('should fail to get gas prices when idb has none', async () => {
-    mockIndexedDb.getGasPrices?.mockResolvedValue(undefined);
+    mockIndexedDb.getNativeGasPrices?.mockResolvedValue(undefined);
     await expect(gasPrices(new GasPricesRequest(), mockCtx)).rejects.toThrow(
       'Gas prices is not available',
     );
