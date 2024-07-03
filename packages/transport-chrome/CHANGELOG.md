@@ -1,5 +1,13 @@
 # @penumbra-zone/transport-chrome
 
+## 5.0.1
+
+### Patch Changes
+
+- 3708e2c: include peer deps as dev deps
+- Updated dependencies [3708e2c]
+  - @penumbra-zone/transport-dom@7.2.1
+
 ## 5.0.0
 
 ### Minor Changes

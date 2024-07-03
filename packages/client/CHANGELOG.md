@@ -1,5 +1,15 @@
 # @penumbra-zone/client
 
+## 10.0.1
+
+### Patch Changes
+
+- 3708e2c: include peer deps as dev deps
+- Updated dependencies [e9e1320]
+- Updated dependencies [3708e2c]
+  - @penumbra-zone/protobuf@5.3.1
+  - @penumbra-zone/transport-dom@7.2.1
+
 ## 10.0.0
 
 ### Patch Changes

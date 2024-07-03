@@ -1,5 +1,30 @@
 # @penumbra-zone/router
 
+## 13.0.0
+
+### Minor Changes
+
+- 2f1c39f: Alt token fee extraction refactor + tests
+
+### Patch Changes
+
+- 3708e2c: include peer deps as dev deps
+- Updated dependencies [e9e1320]
+- Updated dependencies [3708e2c]
+- Updated dependencies [e9e1320]
+- Updated dependencies [af2d6b6]
+- Updated dependencies [2f1c39f]
+  - @penumbra-zone/protobuf@5.3.1
+  - @penumbra-zone/transport-dom@7.2.1
+  - @penumbra-zone/perspective@10.0.0
+  - @penumbra-zone/bech32m@6.1.1
+  - @penumbra-zone/getters@10.1.0
+  - @penumbra-zone/storage@10.0.0
+  - @penumbra-zone/crypto-web@9.0.0
+  - @penumbra-zone/query@11.0.0
+  - @penumbra-zone/types@13.0.0
+  - @penumbra-zone/wasm@13.0.0
+
 ## 12.0.0
 
 ### Patch Changes

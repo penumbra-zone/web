@@ -1,5 +1,33 @@
 # minifront
 
+## 6.7.0
+
+### Minor Changes
+
+- af2d6b6: Update ZQuery to accept selectors; update minifront to take advantage of this feature
+
+  ZQuery's `use[Name]()` hooks now accept an optional options object as their first argument, then pass any remaining arguments to the `fetch` function.
+
+### Patch Changes
+
+- 0cd4e87: Combine active + upcoming auctions
+- 44de1cf: Fix issue where the connect page wasn't rendered right on some routes.
+- 773f936: Tweak max/min outputs
+- Updated dependencies [248300c]
+- Updated dependencies [e9e1320]
+- Updated dependencies [3708e2c]
+- Updated dependencies [af2d6b6]
+  - @repo/ui@6.3.1
+  - @penumbra-zone/protobuf@5.3.1
+  - @penumbra-zone/transport-dom@7.2.1
+  - @penumbra-zone/perspective@10.0.0
+  - @penumbra-zone/bech32m@6.1.1
+  - @penumbra-zone/getters@10.1.0
+  - @penumbra-zone/client@10.0.1
+  - @penumbra-zone/crypto-web@9.0.0
+  - @penumbra-zone/types@13.0.0
+  - @penumbra-zone/zquery@3.0.0
+
 ## 6.6.0
 
 ### Minor Changes
