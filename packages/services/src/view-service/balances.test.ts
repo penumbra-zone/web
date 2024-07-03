@@ -197,7 +197,7 @@ describe('Balances request handler', () => {
       expect(getEquivalentValues(response.balanceView)).toEqual([
         new EquivalentValue({
           asOfHeight: 123n,
-          numeraire: { penumbraAssetId: numeraire },
+          numeraire: { penumbraAssetId: numeraire, priorityScore: 40n },
           equivalentAmount,
         }),
       ]);

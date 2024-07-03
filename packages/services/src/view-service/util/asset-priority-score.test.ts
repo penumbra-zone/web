@@ -1,27 +1,19 @@
 import { describe, expect, it } from 'vitest';
 import { getAssetPriorityScore } from './asset-priority-score';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import {
+  AssetId,
+  Metadata,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 
 describe('getAssetPriorityScore', () => {
   const umTokenId = 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=';
+  const umToken = new AssetId({ inner: base64ToUint8Array(umTokenId) });
   const delegationTokenId = '/5AHh95RAybBbUhQ5zXMWCvstH4rRK/5KMVIVGQltAw=';
   const usdcTokenId = 'A/8PdbaWqFds9NiYzmAN75SehGpkLwr7tgoVmwaIVgg=';
-  const registryAssets = new Set<string>([umTokenId, delegationTokenId, usdcTokenId]);
 
   it('returns 0 for the undefined metadata', () => {
-    expect(getAssetPriorityScore(undefined, registryAssets)).toBe(0);
-  });
-
-  it('returns 0 for an unknown asset', () => {
-    const metadata = new Metadata({
-      display: 'transfer/channel-7/random',
-      penumbraAssetId: {
-        inner: new Uint8Array([1, 2, 3]),
-      },
-    });
-
-    expect(getAssetPriorityScore(metadata, registryAssets)).toBe(0);
+    expect(getAssetPriorityScore(undefined, umToken)).toBe(0n);
   });
 
   it('returns 10 for an unbonding token', () => {
@@ -29,7 +21,7 @@ describe('getAssetPriorityScore', () => {
       display: 'unbonding_start_at_100_penumbravalid1abc123',
     });
 
-    expect(getAssetPriorityScore(metadata, registryAssets)).toBe(10);
+    expect(getAssetPriorityScore(metadata, umToken)).toBe(10n);
   });
 
   it('returns 20 for a delegation token', () => {
@@ -41,7 +33,7 @@ describe('getAssetPriorityScore', () => {
       },
     });
 
-    expect(getAssetPriorityScore(metadata, registryAssets)).toBe(20);
+    expect(getAssetPriorityScore(metadata, umToken)).toBe(20n);
   });
 
   it('returns 30 for an auction token', () => {
@@ -49,7 +41,7 @@ describe('getAssetPriorityScore', () => {
       display: 'auctionnft_0_pauctid1abc123',
     });
 
-    expect(getAssetPriorityScore(metadata, registryAssets)).toBe(30);
+    expect(getAssetPriorityScore(metadata, umToken)).toBe(30n);
   });
 
   it('returns 40 for an token within registry', () => {
@@ -60,7 +52,7 @@ describe('getAssetPriorityScore', () => {
       },
     });
 
-    expect(getAssetPriorityScore(metadata, registryAssets)).toBe(40);
+    expect(getAssetPriorityScore(metadata, umToken)).toBe(40n);
   });
 
   it('returns 50 for the UM token', () => {
@@ -70,6 +62,6 @@ describe('getAssetPriorityScore', () => {
       },
     });
 
-    expect(getAssetPriorityScore(metadata, registryAssets)).toBe(50);
+    expect(getAssetPriorityScore(metadata, umToken)).toBe(50n);
   });
 });

@@ -16,8 +16,10 @@ import { PagePath } from '../../metadata/paths';
 import { Link } from 'react-router-dom';
 import { getMetadataFromBalancesResponseOptional } from '@penumbra-zone/getters/balances-response';
 import { getAddressIndex } from '@penumbra-zone/getters/address-view';
-import { filteredBalancesByAccountSelector, useBalancesResponses } from '../../../state/shared';
-import { useAssetIds } from '../../../fetchers/registry';
+import { BalancesByAccount, groupByAccount, useBalancesResponses } from '../../../state/shared';
+import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
+import { shouldDisplay } from '../../../fetchers/balances/should-display';
+import { sortByPriorityScore } from '../../../fetchers/balances/by-priority-score';
 
 const getTradeLink = (balance: BalancesResponse): string => {
   const metadata = getMetadataFromBalancesResponseOptional(balance);
@@ -26,10 +28,15 @@ const getTradeLink = (balance: BalancesResponse): string => {
   return metadata ? `${PagePath.SWAP}?from=${metadata.symbol}${accountQuery}` : PagePath.SWAP;
 };
 
+const filteredBalancesByAccountSelector = (
+  zQueryState: AbridgedZQueryState<BalancesResponse[]>,
+): BalancesByAccount[] =>
+  zQueryState.data?.filter(shouldDisplay).sort(sortByPriorityScore).reduce(groupByAccount, []) ??
+  [];
+
 export default function AssetsTable() {
-  const registryAssetIds = useAssetIds();
   const balancesByAccount = useBalancesResponses({
-    select: filteredBalancesByAccountSelector(registryAssetIds),
+    select: filteredBalancesByAccountSelector,
     shouldReselect: (before, after) => before?.data !== after.data,
   });
 

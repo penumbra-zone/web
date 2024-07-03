@@ -3,28 +3,26 @@ import {
   getMetadataFromBalancesResponseOptional,
   getAmount,
 } from '@penumbra-zone/getters/balances-response';
-import { getAssetPriorityScore } from './asset-priority-score';
 import { multiplyAmountByNumber, joinLoHiAmount } from '@penumbra-zone/types/amount';
 
-export const sortByPriorityScore =
-  (assetIds: Set<string>) => (a: BalancesResponse, b: BalancesResponse) => {
-    const aMetadata = getMetadataFromBalancesResponseOptional(a);
-    const bMetadata = getMetadataFromBalancesResponseOptional(b);
+export const sortByPriorityScore = (a: BalancesResponse, b: BalancesResponse) => {
+  const aMetadata = getMetadataFromBalancesResponseOptional(a);
+  const bMetadata = getMetadataFromBalancesResponseOptional(b);
 
-    const aScore = getAssetPriorityScore(aMetadata, assetIds);
-    const bScore = getAssetPriorityScore(bMetadata, assetIds);
-    if (aMetadata) aMetadata.priorityScore = BigInt(aScore);
-    if (bMetadata) bMetadata.priorityScore = BigInt(bScore);
+  const aScore = aMetadata?.priorityScore ?? 1n;
+  const bScore = bMetadata?.priorityScore ?? 1n;
+  if (aMetadata) aMetadata.priorityScore = BigInt(aScore);
+  if (bMetadata) bMetadata.priorityScore = BigInt(bScore);
 
-    const aAmount = getAmount.optional()(a);
-    const bAmount = getAmount.optional()(b);
+  const aAmount = getAmount.optional()(a);
+  const bAmount = getAmount.optional()(b);
 
-    const aPriority = aAmount
-      ? joinLoHiAmount(multiplyAmountByNumber(aAmount, aScore))
-      : BigInt(aScore);
-    const bPriority = bAmount
-      ? joinLoHiAmount(multiplyAmountByNumber(bAmount, bScore))
-      : BigInt(bScore);
+  const aPriority = aAmount
+    ? joinLoHiAmount(multiplyAmountByNumber(aAmount, Number(aScore)))
+    : aScore;
+  const bPriority = bAmount
+    ? joinLoHiAmount(multiplyAmountByNumber(bAmount, Number(bScore)))
+    : bScore;
 
-    return Number(bPriority - aPriority);
-  };
+  return Number(bPriority - aPriority);
+};
