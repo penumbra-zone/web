@@ -13,6 +13,7 @@ import { BalanceOrMetadata, isMetadata, mergeBalancesAndAssets } from './helpers
 import { BalanceItem } from './balance-item';
 import { cn } from '@repo/ui/lib/utils';
 import { LoadingIndicator } from './loading-indicator';
+import { Table, TableBody, TableHead, TableHeader, TableRow } from '@repo/ui/components/ui/table';
 
 interface BalanceSelectorProps {
   value: BalancesResponse | undefined;
@@ -95,16 +96,20 @@ export default function BalanceSelector({
                   placeholder='Search assets...'
                 />
               </Box>
-              <div className='mt-2 grid grid-cols-4 gap-3 font-headline text-base font-semibold'>
-                <p className='col-span-2 flex justify-start'>Asset</p>
-                <p className='flex justify-end'>Balance</p>
-                <p className='flex justify-center'>Account</p>
-              </div>
-              <div className='flex flex-col gap-2'>
-                {filteredBalances.map((asset, i) => (
-                  <BalanceItem key={i} asset={asset} value={value} onSelect={onSelect} />
-                ))}
-              </div>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Account</TableHead>
+                    <TableHead>Asset</TableHead>
+                    <TableHead className='text-right'>Balance</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredBalances.map((asset, i) => (
+                    <BalanceItem key={i} asset={asset} value={value} onSelect={onSelect} />
+                  ))}
+                </TableBody>
+              </Table>
             </div>
           </div>
         </DialogContent>

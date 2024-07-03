@@ -27,7 +27,7 @@ const MIN_OUTPUT_ESTIMATE_MULTIPLIER = 0.5;
  */
 export const OUTPUT_LIMIT = 2 ** 52 - 1;
 
-export type Filter = 'active' | 'upcoming' | 'all';
+export type Filter = 'active' | 'all';
 
 interface Actions {
   setMinOutput: (minOutput: string) => void;

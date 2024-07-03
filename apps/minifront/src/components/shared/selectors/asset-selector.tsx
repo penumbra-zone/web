@@ -5,7 +5,7 @@ import {
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { ValueViewComponent } from '@repo/ui/components/ui/value';
-import { useEffect, useId, useMemo, useState } from 'react';
+import { useCallback, useEffect, useId, useMemo, useState } from 'react';
 import { IconInput } from '@repo/ui/components/ui/icon-input';
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { Box } from '@repo/ui/components/ui/box';
@@ -13,6 +13,7 @@ import { motion } from 'framer-motion';
 import { metadataBySearch } from './search-filters';
 import { cn } from '@repo/ui/lib/utils';
 import { LoadingIndicator } from './loading-indicator';
+import { Table, TableBody, TableCell, TableRow } from '@repo/ui/components/ui/table';
 
 interface AssetSelectorProps {
   assets: Metadata[];
@@ -94,6 +95,13 @@ export const AssetSelector = ({ assets, loading, onChange, value, filter }: Asse
     [value],
   );
 
+  const isSelected = useCallback(
+    (metadata: Metadata) => {
+      return value?.equals(metadata);
+    },
+    [value],
+  );
+
   return (
     <>
       {!isOpen && (
@@ -139,21 +147,31 @@ export const AssetSelector = ({ assets, loading, onChange, value, filter }: Asse
                 />
               </Box>
 
-              {filteredAssets.map(metadata => (
-                <div key={metadata.display} className='flex flex-col'>
-                  <DialogClose>
-                    <div
-                      className={
-                        'flex cursor-pointer justify-start gap-[6px] overflow-hidden py-[10px] font-bold text-muted-foreground hover:-mx-4 hover:bg-light-brown hover:px-4'
-                      }
-                      onClick={() => onChange(metadata)}
-                    >
-                      <AssetIcon metadata={metadata} />
-                      <p className='truncate'>{metadata.symbol || 'Unknown asset'}</p>
-                    </div>
-                  </DialogClose>
-                </div>
-              ))}
+              <Table>
+                <TableBody>
+                  {filteredAssets.map(metadata => (
+                    <DialogClose asChild key={metadata.display}>
+                      <TableRow
+                        className='cursor-pointer justify-start overflow-hidden font-bold text-muted-foreground'
+                        onClick={() => onChange(metadata)}
+                        role='button'
+                      >
+                        <TableCell className='p-0'>
+                          <div
+                            className={cn(
+                              '-mx-4 flex h-full gap-[6px] p-4 hover:bg-light-brown',
+                              isSelected(metadata) && 'bg-light-brown',
+                            )}
+                          >
+                            <AssetIcon metadata={metadata} />
+                            <p className='truncate'>{metadata.symbol || 'Unknown asset'}</p>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    </DialogClose>
+                  ))}
+                </TableBody>
+              </Table>
             </div>
           </div>
         </DialogContent>
