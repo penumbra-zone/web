@@ -231,9 +231,8 @@ export interface PenumbraDb extends DBSchema {
       nullifier: Jsonified<Required<SwapRecord>['nullifier']['inner']>; // base64
     };
   };
-  // TODO #1310 use the assetId as key
   GAS_PRICES: {
-    key: 'gas_prices';
+    key:  Jsonified<Required<GasPrices>['assetId']['inner']>; // base64
     value: Jsonified<GasPrices>;
   };
   POSITIONS: {
