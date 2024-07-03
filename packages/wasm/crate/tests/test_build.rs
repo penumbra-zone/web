@@ -9,40 +9,40 @@ mod tests {
     };
     use penumbra_asset::STAKING_TOKEN_ASSET_ID;
     use penumbra_dex::DexParameters;
-    use penumbra_keys::keys::SpendKey;
     use penumbra_keys::FullViewingKey;
-    use penumbra_proto::core::app::v1::AppParameters;
-    use penumbra_proto::core::component::fee::v1::GasPrices;
-    use penumbra_proto::core::transaction::v1;
-    use penumbra_proto::view::v1::transaction_planner_request::Output;
-    use penumbra_proto::view::v1::TransactionPlannerRequest;
+    use penumbra_keys::keys::SpendKey;
     use penumbra_proto::{
         core::{
             asset::v1::Value, component::shielded_pool::v1::FmdParameters, keys::v1::Address,
             transaction::v1::MemoPlaintext,
         },
-        view::v1::SpendableNoteRecord,
         DomainType,
+        view::v1::SpendableNoteRecord,
     };
+    use penumbra_proto::core::app::v1::AppParameters;
+    use penumbra_proto::core::component::fee::v1::GasPrices;
+    use penumbra_proto::core::transaction::v1;
+    use penumbra_proto::view::v1::transaction_planner_request::Output;
+    use penumbra_proto::view::v1::TransactionPlannerRequest;
     use penumbra_sct::params::SctParameters;
-    use penumbra_tct::{structure::Hash, Forgotten};
+    use penumbra_tct::{Forgotten, structure::Hash};
     use penumbra_transaction::{
-        plan::{ActionPlan, TransactionPlan},
-        Action, Transaction,
+        Action,
+        plan::{ActionPlan, TransactionPlan}, Transaction,
     };
     use prost::Message;
     use serde::{Deserialize, Serialize};
     use wasm_bindgen::JsValue;
     use wasm_bindgen_test::*;
 
-    use penumbra_wasm::planner::plan_transaction;
-    use penumbra_wasm::storage::byte_array_to_base64;
     use penumbra_wasm::{
         build::build_action,
         keys::load_proving_key,
-        storage::IndexedDBStorage,
         tx::{authorize, build, build_parallel, witness},
     };
+    use penumbra_wasm::planner::plan_transaction;
+    use penumbra_wasm::storage::byte_array_to_base64;
+    use penumbra_wasm::storage::init_idb_storage;
 
     wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
     #[wasm_bindgen_test]
@@ -236,11 +236,9 @@ mod tests {
         };
 
         // Retrieve private database handle with public getters.
-        let storage = IndexedDBStorage::new(
-            serde_wasm_bindgen::from_value(js_constants_params_value.clone()).unwrap(),
-        )
-        .await
-        .unwrap();
+        let constants = serde_wasm_bindgen::from_value(js_constants_params_value.clone()).unwrap();
+        let storage = init_idb_storage(constants).await.unwrap();
+
         // let storage_ref: &IndexedDBStorage = unsafe { &*storage };
         let database: *const IdbDatabase = storage.get_database();
         let database_ref: &IdbDatabase = unsafe { &*database };
@@ -428,6 +426,7 @@ mod tests {
             dutch_auction_schedule_actions: vec![],
             dutch_auction_end_actions: vec![],
             dutch_auction_withdraw_actions: vec![],
+            delegator_votes: vec![],
         };
 
         // Viewing key to reveal asset balances and transactions.

@@ -4,46 +4,49 @@ use std::mem;
 use anyhow::anyhow;
 use ark_ff::UniformRand;
 use decaf377::{Fq, Fr};
+use indexed_db_futures::IdbDatabase;
 use penumbra_asset::asset::{Id, Metadata};
 use penumbra_asset::Value;
-use penumbra_auction::auction::dutch::actions::ActionDutchAuctionWithdrawPlan;
+use penumbra_auction::auction::{AuctionId, AuctionNft};
 use penumbra_auction::auction::dutch::{
     ActionDutchAuctionEnd, ActionDutchAuctionSchedule, DutchAuctionDescription,
 };
-use penumbra_auction::auction::{AuctionId, AuctionNft};
-use penumbra_dex::swap_claim::SwapClaimPlan;
+use penumbra_auction::auction::dutch::actions::ActionDutchAuctionWithdrawPlan;
 use penumbra_dex::{
     swap::{SwapPlaintext, SwapPlan},
     TradingPair,
 };
-use penumbra_fee::{FeeTier, GasPrices};
-use penumbra_keys::keys::AddressIndex;
+use penumbra_dex::swap_claim::SwapClaimPlan;
+use penumbra_fee::FeeTier;
+use penumbra_governance::DelegatorVotePlan;
 use penumbra_keys::FullViewingKey;
+use penumbra_keys::keys::AddressIndex;
 use penumbra_num::Amount;
 use penumbra_proto::core::app::v1::AppParameters;
 use penumbra_proto::core::component::ibc;
-use penumbra_proto::view::v1::{
-    transaction_planner_request as tpr, NotesRequest, TransactionPlannerRequest,
-};
 use penumbra_proto::DomainType;
+use penumbra_proto::view::v1::{
+    NotesRequest, transaction_planner_request as tpr, TransactionPlannerRequest,
+};
 use penumbra_sct::params::SctParameters;
 use penumbra_shielded_pool::{fmd, OutputPlan, SpendPlan};
-use penumbra_stake::rate::RateData;
 use penumbra_stake::{IdentityKey, Penalty, Undelegate, UndelegateClaimPlan};
+use penumbra_stake::rate::RateData;
+use penumbra_transaction::{ActionPlan, plan::MemoPlan, TransactionParameters};
+use penumbra_transaction::ActionList;
 use penumbra_transaction::gas::swap_claim_gas_cost;
 use penumbra_transaction::memo::MemoPlaintext;
-use penumbra_transaction::ActionList;
-use penumbra_transaction::{plan::MemoPlan, ActionPlan, TransactionParameters};
 use prost::Message;
 use rand_core::{OsRng, RngCore};
-use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::JsValue;
+use wasm_bindgen::prelude::wasm_bindgen;
 
+use crate::{error::WasmResult, swap_record::SwapRecord};
+use crate::error::WasmError;
 use crate::metadata::customize_symbol_inner;
 use crate::note_record::SpendableNoteRecord;
-use crate::storage::{IndexedDBStorage, OutstandingReserves};
+use crate::storage::{init_idb_storage, OutstandingReserves, Storage};
 use crate::utils;
-use crate::{error::WasmResult, swap_record::SwapRecord};
 
 /// Prioritize notes to spend to release value of a specific transaction.
 ///
@@ -96,7 +99,7 @@ fn prioritize_and_filter_spendable_notes(
 /// action renders correctly in the transaction approval dialog.
 async fn save_unbonding_token_metadata_if_needed(
     undelegate: &Undelegate,
-    storage: &IndexedDBStorage,
+    storage: &Storage<IdbDatabase>,
 ) -> WasmResult<()> {
     let metadata = undelegate.unbonding_token().denom();
 
@@ -112,7 +115,7 @@ async fn save_unbonding_token_metadata_if_needed(
 /// action renders correctly in the transaction approval dialog.
 async fn save_auction_nft_metadata_if_needed(
     id: AuctionId,
-    storage: &IndexedDBStorage,
+    storage: &Storage<IdbDatabase>,
     seq: u64,
 ) -> WasmResult<()> {
     let nft = AuctionNft::new(id, seq);
@@ -121,7 +124,10 @@ async fn save_auction_nft_metadata_if_needed(
     save_metadata_if_needed(metadata, storage).await
 }
 
-async fn save_metadata_if_needed(metadata: Metadata, storage: &IndexedDBStorage) -> WasmResult<()> {
+async fn save_metadata_if_needed(
+    metadata: Metadata,
+    storage: &Storage<IdbDatabase>,
+) -> WasmResult<()> {
     if storage.get_asset(&metadata.id()).await?.is_none() {
         let metadata_proto = metadata.to_proto();
         let customized_metadata_proto = customize_symbol_inner(metadata_proto)?;
@@ -148,6 +154,7 @@ pub async fn plan_transaction(
 
     let mut source_address_index: AddressIndex = request
         .source
+        .clone()
         .map(TryInto::try_into)
         .transpose()?
         .unwrap_or_default();
@@ -164,7 +171,8 @@ pub async fn plan_transaction(
         .incoming()
         .payment_address(source_address_index.account.into());
 
-    let storage = IndexedDBStorage::new(serde_wasm_bindgen::from_value(idb_constants)?).await?;
+    let constants = serde_wasm_bindgen::from_value(idb_constants)?;
+    let storage = init_idb_storage(constants).await?;
 
     let fmd_params: fmd::Parameters = storage
         .get_fmd_params()
@@ -187,16 +195,10 @@ pub async fn plan_transaction(
     let fee_asset_id: Id = Id::decode(gas_fee_token)?;
 
     // Request information about current gas prices
-    let gas_prices: GasPrices = {
-        let gas_prices: penumbra_proto::core::component::fee::v1::GasPrices =
-            serde_wasm_bindgen::from_value(
-                storage
-                    .get_gas_prices_by_asset_id(fee_asset_id)
-                    .await?
-                    .ok_or_else(|| anyhow!("GasPrices not available"))?,
-            )?;
-        gas_prices.try_into()?
-    };
+    let gas_prices = storage
+        .get_gas_prices_by_asset_id(&fee_asset_id)
+        .await?
+        .ok_or_else(|| anyhow!("GasPrices not available"))?;
 
     let fee_tier = match request.fee_mode {
         None => FeeTier::default(),
@@ -458,7 +460,7 @@ pub async fn plan_transaction(
 
         save_auction_nft_metadata_if_needed(auction_id, &storage, seq).await?;
         let outstanding_reserves: OutstandingReserves =
-            storage.get_auction_oustanding_reserves(auction_id).await?;
+            storage.get_auction_outstanding_reserves(auction_id).await?;
 
         actions_list.push(ActionPlan::ActionDutchAuctionWithdraw(
             ActionDutchAuctionWithdrawPlan {
@@ -468,6 +470,62 @@ pub async fn plan_transaction(
                 reserves_output: outstanding_reserves.output.try_into()?,
             },
         ));
+    }
+
+    for tpr::DelegatorVote {
+        proposal,
+        vote,
+        start_block_height,
+        start_position,
+        rate_data,
+    } in request.delegator_votes
+    {
+        let voting_notes = storage
+            .get_notes_for_voting(request.source.clone(), start_block_height)
+            .await?;
+
+        if voting_notes.is_empty() {
+            return Err(WasmError::Anyhow(anyhow::anyhow!(
+                "no notes were found for voting on proposal {proposal}"
+            )));
+        }
+
+        // Collect RateData into a map so it's easier to check without looping
+        let rate_data_map: BTreeMap<IdentityKey, RateData> = rate_data
+            .into_iter()
+            .map(|r| r.try_into())
+            .collect::<Result<Vec<RateData>, _>>()?
+            .into_iter()
+            .map(|data| (data.identity_key, data))
+            .collect();
+
+        // For each voting note, see if there are any matches with the domain_rate_data vec
+        // If so, add a DelegatorVotePlan to the action_list
+        for (record, identity_key) in &voting_notes {
+            let Some(validator_start_rate_data) = rate_data_map.get(identity_key) else {
+                continue;
+            };
+
+            let voting_power_at_vote_start =
+                validator_start_rate_data.unbonded_amount(record.note.amount());
+
+            let domain_vote = vote
+                .clone()
+                .map(TryInto::try_into)
+                .transpose()?
+                .ok_or_else(|| anyhow::anyhow!("missing vote param"))?;
+
+            let vote_plan = DelegatorVotePlan::new(
+                &mut OsRng,
+                proposal,
+                start_position.into(),
+                domain_vote,
+                record.note.clone(),
+                record.position,
+                voting_power_at_vote_start,
+            );
+            actions_list.push(ActionPlan::DelegatorVote(vote_plan));
+        }
     }
 
     // Phase 2: balance the transaction with information from the view service.

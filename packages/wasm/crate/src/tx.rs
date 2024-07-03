@@ -2,28 +2,29 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::convert::TryInto;
 
 use anyhow::anyhow;
+use indexed_db_futures::IdbDatabase;
 use penumbra_auction::auction::dutch::actions::view::{
     ActionDutchAuctionScheduleView, ActionDutchAuctionWithdrawView,
 };
 use penumbra_dex::BatchSwapOutputData;
-use penumbra_keys::keys::SpendKey;
 use penumbra_keys::FullViewingKey;
+use penumbra_keys::keys::SpendKey;
 use penumbra_proto::core::transaction::v1::{TransactionPerspective, TransactionView};
 use penumbra_proto::DomainType;
 use penumbra_sct::{CommitmentSource, Nullifier};
 use penumbra_tct::{Position, Proof, StateCommitment};
+use penumbra_transaction::{AuthorizationData, Transaction, WitnessData};
+use penumbra_transaction::Action;
 use penumbra_transaction::plan::TransactionPlan;
 use penumbra_transaction::txhash::TransactionId;
-use penumbra_transaction::Action;
-use penumbra_transaction::{AuthorizationData, Transaction, WitnessData};
 use prost::Message;
 use rand_core::OsRng;
-use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::JsValue;
+use wasm_bindgen::prelude::wasm_bindgen;
 
 use crate::error::{WasmError, WasmResult};
-use crate::storage::IndexedDBStorage;
-use crate::storage::IndexedDbConstants;
+use crate::storage::{DbConstants, init_idb_storage};
+use crate::storage::Storage;
 use crate::utils;
 use crate::view_server::{load_tree, StoredTree};
 
@@ -195,9 +196,9 @@ pub async fn transaction_perspective_and_view(
 async fn transaction_info_inner(
     fvk: FullViewingKey,
     tx: Transaction,
-    idb_constants: IndexedDbConstants,
+    idb_constants: DbConstants,
 ) -> Result<(TransactionPerspective, TransactionView), WasmError> {
-    let storage = IndexedDBStorage::new(idb_constants).await?;
+    let storage = init_idb_storage(idb_constants).await?;
 
     // First, create a TxP with the payload keys visible to our FVK and no other data.
     let mut txp = penumbra_transaction::TransactionPerspective {
@@ -379,7 +380,7 @@ async fn transaction_info_inner(
 }
 
 async fn add_swap_claim_txn_to_perspective(
-    storage: &IndexedDBStorage,
+    storage: &Storage<IdbDatabase>,
     fvk: &FullViewingKey,
     txp: &mut penumbra_transaction::TransactionPerspective,
     commitment: &StateCommitment,
