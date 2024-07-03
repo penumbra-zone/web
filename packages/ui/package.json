@@ -27,7 +27,8 @@
     "./lib/toast/transaction-toast": "./lib/toast/transaction-toast.tsx",
     "./lib/utils": "./lib/utils.ts",
     "./postcss.config.js": "./postcss.config.js",
-    "./styles/*": "./styles/*"
+    "./styles/*": "./styles/*",
+    "./*": "./components/v2/*/index.tsx"
   },
   "publishConfig": {
     "exports": {
