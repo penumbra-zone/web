@@ -20,6 +20,7 @@ export const rootRouter: Router = createHashRouter([
     path: '/',
     element: <Layout />,
     errorElement: <ErrorBoundary />,
+    loader: abortLoader,
     children: [
       { index: true, loader: () => redirect(PagePath.DASHBOARD) },
       {
@@ -28,7 +29,6 @@ export const rootRouter: Router = createHashRouter([
         children: [
           {
             index: true,
-            loader: abortLoader,
             element: <AssetsTable />,
           },
           {
@@ -43,7 +43,6 @@ export const rootRouter: Router = createHashRouter([
         children: [
           {
             index: true,
-            loader: abortLoader,
             element: <SendForm />,
           },
           {
@@ -54,23 +53,19 @@ export const rootRouter: Router = createHashRouter([
       },
       {
         path: PagePath.SWAP,
-        loader: abortLoader,
         element: <SwapLayout />,
       },
       {
         path: PagePath.TRANSACTION_DETAILS,
-        loader: abortLoader,
         element: <TxDetails />,
         errorElement: <TxDetailsErrorBoundary />,
       },
       {
         path: PagePath.STAKING,
-        loader: abortLoader,
         element: <StakingLayout />,
       },
       {
         path: PagePath.IBC,
-        loader: abortLoader,
         element: <IbcLayout />,
       },
     ],
