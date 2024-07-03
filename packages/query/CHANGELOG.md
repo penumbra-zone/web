@@ -1,5 +1,22 @@
 # @penumbra-zone/query
 
+## 11.0.0
+
+### Patch Changes
+
+- 3708e2c: include peer deps as dev deps
+- e9e1320: ratelimit validator init, and don't await it.
+- Updated dependencies [e9e1320]
+- Updated dependencies [3708e2c]
+- Updated dependencies [af2d6b6]
+- Updated dependencies [2f1c39f]
+  - @penumbra-zone/protobuf@5.3.1
+  - @penumbra-zone/bech32m@6.1.1
+  - @penumbra-zone/getters@10.1.0
+  - @penumbra-zone/crypto-web@9.0.0
+  - @penumbra-zone/types@13.0.0
+  - @penumbra-zone/wasm@13.0.0
+
 ## 10.0.0
 
 ### Major Changes

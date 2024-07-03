@@ -1,5 +1,13 @@
 # @penumbra-zone/zquery
 
+## 3.0.0
+
+### Major Changes
+
+- af2d6b6: Update ZQuery to accept selectors; update minifront to take advantage of this feature
+
+  ZQuery's `use[Name]()` hooks now accept an optional options object as their first argument, then pass any remaining arguments to the `fetch` function.
+
 ## 2.0.1
 
 ### Patch Changes

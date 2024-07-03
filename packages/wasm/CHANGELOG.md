@@ -1,5 +1,17 @@
 # @penumbra-zone/wasm
 
+## 13.0.0
+
+### Patch Changes
+
+- 3708e2c: include peer deps as dev deps
+- 2f1c39f: Alt token fee extraction refactor + tests
+- Updated dependencies [e9e1320]
+- Updated dependencies [3708e2c]
+  - @penumbra-zone/protobuf@5.3.1
+  - @penumbra-zone/bech32m@6.1.1
+  - @penumbra-zone/types@13.0.0
+
 ## 12.0.0
 
 ### Minor Changes

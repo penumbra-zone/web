@@ -1,5 +1,17 @@
 # @penumbra-zone/perspective
 
+## 10.0.0
+
+### Patch Changes
+
+- 3708e2c: include peer deps as dev deps
+- Updated dependencies [3708e2c]
+- Updated dependencies [af2d6b6]
+- Updated dependencies [2f1c39f]
+  - @penumbra-zone/bech32m@6.1.1
+  - @penumbra-zone/getters@10.1.0
+  - @penumbra-zone/wasm@13.0.0
+
 ## 9.0.0
 
 ### Minor Changes

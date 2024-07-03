@@ -1,5 +1,14 @@
 # @penumbra-zone/ui
 
+## 6.3.1
+
+### Patch Changes
+
+- 248300c: Display epoch index in undelegate TX action
+- Updated dependencies [3708e2c]
+  - @penumbra-zone/bech32m@6.1.1
+  - @penumbra-zone/types@13.0.0
+
 ## 6.3.0
 
 ### Minor Changes

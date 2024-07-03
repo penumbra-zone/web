@@ -1,5 +1,11 @@
 # @penumbra-zone/transport-dom
 
+## 7.2.1
+
+### Patch Changes
+
+- 3708e2c: include peer deps as dev deps
+
 ## 7.2.0
 
 ### Minor Changes
