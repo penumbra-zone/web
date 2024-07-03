@@ -495,7 +495,7 @@ pub async fn plan_transaction(
         let records = storage
             .get_notes(NotesRequest {
                 include_spent: false,
-                asset_id: Some(asset_id.clone().into()),
+                asset_id: Some(asset_id.clone()),
                 address_index: Some(source_address_index.into()),
                 amount_to_spend: None,
             })
