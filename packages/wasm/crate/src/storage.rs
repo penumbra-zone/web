@@ -388,7 +388,7 @@ impl IndexedDBStorage {
     }
 }
 
-fn byte_array_to_base64(byte_array: &Vec<u8>) -> String {
+pub fn byte_array_to_base64(byte_array: &Vec<u8>) -> String {
     base64::Engine::encode(&base64::engine::general_purpose::STANDARD, byte_array)
 }
 

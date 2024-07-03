@@ -36,6 +36,7 @@ mod tests {
     use wasm_bindgen_test::*;
 
     use penumbra_wasm::planner::plan_transaction;
+    use penumbra_wasm::storage::byte_array_to_base64;
     use penumbra_wasm::{
         build::build_action,
         keys::load_proving_key,
@@ -372,7 +373,9 @@ mod tests {
             serde_wasm_bindgen::to_value(&"last_forgotten").unwrap();
         let fmd_json_key: JsValue = serde_wasm_bindgen::to_value(&"params").unwrap();
         let app_json_key: JsValue = serde_wasm_bindgen::to_value(&"params").unwrap();
-        let gas_json_key: JsValue = serde_wasm_bindgen::to_value(&"gas_prices").unwrap();
+        let gas_json_key: JsValue = JsValue::from_str(&byte_array_to_base64(
+            &STAKING_TOKEN_ASSET_ID.to_proto().inner,
+        ));
 
         store_note.put_val(&spendable_note_json).unwrap();
         store_tree_commitments
