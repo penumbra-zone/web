@@ -207,7 +207,9 @@ Storybook stories should be located next to the component they apply to, and hav
 
 When writing stories, make sure to tag your stories with [`autodocs`](https://storybook.js.org/docs/react/writing-docs/autodocs). This is a Storybook feature that analyzes your component code to auto-generate documentation for your component, including a code sample, controls for each of the props, etc.
 
-Also, be sure to add [JSDoc](https://jsdoc.app/about-getting-started.html#adding-documentation-comments-to-your-code)-style comments (`/** ... */`) before any props that need to be documented. Storybook will automatically pull these into the Storybook UI as documentation.
+### Documentation of component props should be written with JSDoc syntax.
+
+[JSDoc-style comments](https://jsdoc.app/about-getting-started.html#adding-documentation-comments-to-your-code) (`/** ... */`) should be written before any props that need to be documented so that A) IDEs can pull them in for tooltips, and B) Storybook can use them in the Storybook UI.
 
 ### Components built for Protobuf types must be suffixed with `Component` to avoid naming collisions.
 
