@@ -26,14 +26,16 @@ export const assetMetadataById: Impl['assetMetadataById'] = async ({ assetId }, 
   }
 
   const remoteMetadata = await querier.shieldedPool.assetMetadataById(assetId);
-
-  const isIbcAsset = remoteMetadata && assetPatterns.ibc.matches(remoteMetadata.display);
-
-  if (remoteMetadata && !isIbcAsset) {
+  if (remoteMetadata && !remoteMetadata.priorityScore) {
     remoteMetadata.priorityScore = getAssetPriorityScore(
       remoteMetadata,
       indexedDb.stakingTokenAssetId,
     );
+  }
+
+  const isIbcAsset = remoteMetadata && assetPatterns.ibc.matches(remoteMetadata.display);
+
+  if (remoteMetadata && !isIbcAsset) {
     void indexedDb.saveAssetsMetadata(remoteMetadata);
     return { denomMetadata: remoteMetadata };
   }
