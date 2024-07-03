@@ -119,7 +119,7 @@ export class IndexedDb implements IndexedDbInterface {
         db.createObjectStore('SWAPS', {
           keyPath: 'swapCommitment.inner',
         }).createIndex('nullifier', 'nullifier.inner');
-        db.createObjectStore('GAS_PRICES');
+        db.createObjectStore('GAS_PRICES', { keyPath: 'assetId.inner' });
         db.createObjectStore('POSITIONS', { keyPath: 'id.inner' });
         db.createObjectStore('EPOCHS', { autoIncrement: true });
         db.createObjectStore('VALIDATOR_INFOS');
@@ -405,7 +405,6 @@ export class IndexedDb implements IndexedDbInterface {
     await this.u.update({
       table: 'GAS_PRICES',
       value: new GasPrices(value).toJson() as Jsonified<GasPrices>,
-      key: 'gas_prices',
     });
   }
 
