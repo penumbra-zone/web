@@ -89,7 +89,7 @@ export interface IndexedDbInterface {
   saveSwap(note: SwapRecord): Promise<void>;
   getSwapByCommitment(commitment: StateCommitment): Promise<SwapRecord | undefined>;
   getNativeGasPrices(): Promise<GasPrices | undefined>;
-  getAltGasPrices() : Promise<GasPrices[]>;
+  getAltGasPrices(): Promise<GasPrices[]>;
   saveGasPrices(value: PartialMessage<GasPrices>): Promise<void>;
   getNotesForVoting(
     addressIndex: AddressIndex | undefined,
@@ -232,7 +232,7 @@ export interface PenumbraDb extends DBSchema {
     };
   };
   GAS_PRICES: {
-    key:  Jsonified<Required<GasPrices>['assetId']['inner']>; // base64
+    key: Jsonified<Required<GasPrices>['assetId']['inner']>; // base64
     value: Jsonified<GasPrices>;
   };
   POSITIONS: {

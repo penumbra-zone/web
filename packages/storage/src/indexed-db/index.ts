@@ -386,12 +386,20 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async getNativeGasPrices(): Promise<GasPrices | undefined> {
-    const jsonGasPrices = await this.db.get('GAS_PRICES', uint8ArrayToBase64(this.stakingTokenAssetId.inner));
+    const jsonGasPrices = await this.db.get(
+      'GAS_PRICES',
+      uint8ArrayToBase64(this.stakingTokenAssetId.inner),
+    );
     if (!jsonGasPrices) return undefined;
     return GasPrices.fromJson(jsonGasPrices);
   }
 
-  // TODO #1310 implement getAltGasPrices()
+  async getAltGasPrices(): Promise<GasPrices[]> {
+    const allGasPrices = await this.db.getAll('GAS_PRICES');
+    return allGasPrices
+      .map(gp => GasPrices.fromJson(gp))
+      .filter(gp => !gp.assetId?.equals(this.stakingTokenAssetId));
+  }
 
   async saveGasPrices(value: PartialMessage<GasPrices>): Promise<void> {
     await this.u.update({

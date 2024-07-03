@@ -10,6 +10,7 @@ use penumbra_asset::asset::{self, Id, Metadata};
 use penumbra_auction::auction::AuctionId;
 use penumbra_keys::keys::AddressIndex;
 use penumbra_num::Amount;
+use penumbra_proto::core::asset::v1::AssetId;
 use penumbra_proto::{
     core::{app::v1::AppParameters, asset::v1::Value, component::sct::v1::Epoch},
     crypto::tct::v1::StateCommitment,
@@ -323,14 +324,15 @@ impl IndexedDBStorage {
             .transpose()?)
     }
 
-    // TODO #1310 should be changed to get GasPrices by assetId
-    pub async fn get_gas_prices(&self) -> WasmResult<Option<JsValue>> {
+    pub async fn get_gas_prices_by_asset_id(&self, asset_is: Id) -> WasmResult<Option<JsValue>> {
         let tx = self
             .db
             .transaction_on_one(&self.constants.tables.gas_prices)?;
         let store = tx.object_store(&self.constants.tables.gas_prices)?;
 
-        Ok(store.get_owned("gas_prices")?.await?)
+        Ok(store
+            .get_owned(byte_array_to_base64(&asset_is.to_proto().inner))?
+            .await?)
         // TODO GasPrices is missing domain type impl, requiring this
         // .map(serde_wasm_bindgen::from_value)
         // .transpose()?)

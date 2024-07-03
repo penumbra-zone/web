@@ -45,7 +45,7 @@ import { processActionDutchAuctionEnd } from './helpers/process-action-dutch-auc
 import { processActionDutchAuctionSchedule } from './helpers/process-action-dutch-auction-schedule';
 import { processActionDutchAuctionWithdraw } from './helpers/process-action-dutch-auction-withdraw';
 import { RootQuerier } from './root-querier';
-import {GasPrices} from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb";
+import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
 
 declare global {
   // eslint-disable-next-line no-var
@@ -163,10 +163,12 @@ export class BlockProcessor implements BlockProcessorInterface {
         await this.indexedDb.saveFmdParams(compactBlock.fmdParameters);
       }
       if (compactBlock.gasPrices) {
-        await this.indexedDb.saveGasPrices(new GasPrices({
-          assetId: this.stakingAssetId,
-          ...compactBlock.gasPrices,
-        }));
+        await this.indexedDb.saveGasPrices(
+          new GasPrices({
+            assetId: this.stakingAssetId,
+            ...compactBlock.gasPrices,
+          }),
+        );
       }
       if (compactBlock.altGasPrices.length) {
         for (const gasPrice of compactBlock.altGasPrices) {
