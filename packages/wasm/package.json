@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/wasm",
-  "version": "9.0.0",
+  "version": "12.0.0",
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "engine": {
@@ -8,10 +8,11 @@
   },
   "scripts": {
     "build": "tsc --build && tsc-alias",
-    "clean": "rm -rfv dist wasm package penumbra-zone-wasm-*.tgz",
+    "clean": "rm -rfv dist wasm package penumbra-zone-*.tgz",
     "clean:rust": "cargo clean --manifest-path ./crate/Cargo.toml",
     "compile": "cd crate && wasm-pack build --no-pack --target bundler --out-name index --out-dir ../wasm",
-    "dev": "cargo watch -C ./crate --postpone -- pnpm turbo run compile",
+    "dev:compile": "cargo watch -C ./crate --postpone -- $npm_execpath run compile",
+    "dev:pack": "tsc-watch --onCompilationComplete \"tsc-alias\" --onSuccess \"$npm_execpath pack\"",
     "format:rust": "cd crate && cargo fmt --all",
     "lint": "eslint src",
     "lint:rust": "cd crate && cargo fmt --all -- --check && cargo clippy -- -D warnings && cargo clippy --tests -- -D warnings",
@@ -36,6 +37,11 @@
     }
   },
   "devDependencies": {
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240625233123-429cb316aa7c.1",
+    "@bufbuild/protobuf": "^1.10.0",
+    "@penumbra-zone/bech32m": "workspace:*",
+    "@penumbra-zone/protobuf": "workspace:*",
+    "@penumbra-zone/types": "workspace:*",
     "fake-indexeddb": "^6.0.0"
   },
   "optionalDependencies": {

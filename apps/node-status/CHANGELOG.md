@@ -1,5 +1,49 @@
 # node-status
 
+## 4.1.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @repo/ui@6.3.0
+
+## 4.1.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @penumbra-zone/protobuf@5.3.0
+  - @repo/ui@6.2.1
+
+## 4.1.0
+
+### Minor Changes
+
+- bump registry
+
+### Patch Changes
+
+- Updated dependencies
+  - @repo/ui@6.2.0
+
+## 4.0.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @repo/ui@6.1.0
+
+## 4.0.2
+
+### Patch Changes
+
+- 24d9bfa: UI: refactor the package to provide better and more clear exports. Includes a readme with setting up the UI package and more storybook stories.
+- Updated dependencies [4161587]
+- Updated dependencies [97b7231]
+- Updated dependencies [24d9bfa]
+  - @penumbra-zone/protobuf@5.2.0
+  - @repo/ui@6.0.0
+
 ## 4.0.1
 
 ### Patch Changes

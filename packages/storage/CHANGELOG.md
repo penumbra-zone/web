@@ -1,5 +1,60 @@
 # @penumbra-zone/storage
 
+## 9.1.0
+
+### Minor Changes
+
+- bump @penumbra-labs/registry
+
+## 9.0.0
+
+### Minor Changes
+
+- Synchronize published @buf deps
+
+### Patch Changes
+
+- Updated dependencies
+  - @penumbra-zone/getters@10.0.0
+  - @penumbra-zone/types@12.0.0
+  - @penumbra-zone/wasm@12.0.0
+
+## 8.0.0
+
+### Major Changes
+
+- bump registry
+
+### Patch Changes
+
+- Updated dependencies
+  - @penumbra-zone/types@11.0.0
+  - @penumbra-zone/wasm@11.0.0
+
+## 7.1.0
+
+### Minor Changes
+
+- Bump registry
+
+## 7.0.0
+
+### Major Changes
+
+- c555df7: switch to using IDB_VERSION defined inside the package
+
+### Minor Changes
+
+- 4161587: Update to latest bufbuild deps (v0.77.4)
+
+### Patch Changes
+
+- Updated dependencies [4161587]
+- Updated dependencies [e207faa]
+  - @penumbra-zone/getters@9.0.0
+  - @penumbra-zone/types@10.0.0
+  - @penumbra-zone/wasm@10.0.0
+
 ## 6.0.0
 
 ### Minor Changes

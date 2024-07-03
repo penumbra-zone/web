@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/client",
-  "version": "8.0.0",
+  "version": "10.0.0",
   "license": "(MIT OR Apache-2.0)",
   "description": "Package for connecting to any Penumbra extension, including Prax.",
   "type": "module",
@@ -10,6 +10,7 @@
   "scripts": {
     "build": "tsc --build && tsc-alias",
     "clean": "rm -rfv dist package penumbra-zone-*.tgz",
+    "dev:pack": "tsc-watch --onCompilationComplete \"tsc-alias\" --onSuccess \"$npm_execpath pack\"",
     "lint": "eslint src"
   },
   "files": [
@@ -17,17 +18,27 @@
   ],
   "exports": {
     ".": "./src/index.ts",
-    "./prax": "./src/prax.ts"
+    "./create": "./src/create.ts"
   },
   "publishConfig": {
     "exports": {
       ".": {
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
+      },
+      "./create": {
+        "types": "./dist/create.d.ts",
+        "default": "./dist/create.js"
       }
     }
   },
+  "devDependencies": {
+    "@connectrpc/connect": "^1.4.0",
+    "@penumbra-zone/protobuf": "workspace:*",
+    "@penumbra-zone/transport-dom": "workspace:*"
+  },
   "peerDependencies": {
+    "@connectrpc/connect": "^1.4.0",
     "@penumbra-zone/protobuf": "workspace:*",
     "@penumbra-zone/transport-dom": "workspace:*"
   }

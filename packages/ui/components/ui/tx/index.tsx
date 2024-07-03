@@ -14,12 +14,22 @@ export const TransactionViewComponent = ({ txv }: { txv: TransactionView }) => {
   const chainId = txv.bodyView.transactionParameters.chainId;
   const assetId = txv.bodyView.transactionParameters.fee.assetId;
   const feeAssetMetadata = getFeeAssetMetadataOrDefault(chainId, assetId);
-  const feeValueView = new ValueView({
-    valueView: {
-      case: 'knownAssetId',
-      value: { amount: txv.bodyView.transactionParameters.fee.amount, metadata: feeAssetMetadata },
-    },
-  });
+  const feeValueView = feeAssetMetadata
+    ? new ValueView({
+        valueView: {
+          case: 'knownAssetId',
+          value: {
+            amount: txv.bodyView.transactionParameters.fee.amount,
+            metadata: feeAssetMetadata,
+          },
+        },
+      })
+    : new ValueView({
+        valueView: {
+          case: 'unknownAssetId',
+          value: { amount: txv.bodyView.transactionParameters.fee.amount },
+        },
+      });
 
   return (
     <div className='flex flex-col gap-8'>

@@ -23,8 +23,35 @@ import {
 import { ChannelLabel, nameConnection } from './channel-names';
 import { isTransportInitChannel, TransportInitChannel } from './message';
 import { PortStreamSink, PortStreamSource } from './stream';
-import { Code, ConnectError } from '@connectrpc/connect';
-import { errorToJson } from '@connectrpc/connect/protocol-connect';
+
+const localErrorJson = (err: unknown, relevantMessage?: unknown) =>
+  err instanceof Error
+    ? {
+        message: err.message,
+        details: [
+          {
+            type: err.name,
+            value: err.cause,
+          },
+          relevantMessage,
+        ],
+      }
+    : {
+        message: String(err),
+        details: [
+          {
+            type: String(
+              typeof err === 'function'
+                ? err.name
+                : typeof err === 'object'
+                  ? (Object.getPrototypeOf(err) as unknown)?.constructor?.name ?? String(err)
+                  : typeof err,
+            ),
+            value: err,
+          },
+          relevantMessage,
+        ],
+      };
 
 export class CRSessionClient {
   private static singleton?: CRSessionClient;
@@ -42,7 +69,7 @@ export class CRSessionClient {
     });
 
     this.servicePort.onMessage.addListener(this.serviceListener);
-    this.servicePort.onDisconnect.addListener(this.disconnect);
+    this.servicePort.onDisconnect.addListener(this.disconnectClient);
     this.clientPort.addEventListener('message', this.clientListener);
     this.clientPort.start();
   }
@@ -59,33 +86,37 @@ export class CRSessionClient {
     return port2;
   }
 
-  private disconnect = () => {
+  private disconnectClient = () => {
     this.clientPort.removeEventListener('message', this.clientListener);
-    this.clientPort.postMessage({
-      error: errorToJson(new ConnectError('Connection closed', Code.Unavailable), undefined),
-    });
+    this.clientPort.postMessage(false);
     this.clientPort.close();
+  };
+
+  private disconnectService = () => {
+    this.servicePort.disconnect();
   };
 
   private clientListener = (ev: MessageEvent<unknown>) => {
     try {
-      if (isTransportMessage(ev.data)) this.servicePort.postMessage(ev.data);
+      if (ev.data === false) this.disconnectService();
+      else if (isTransportMessage(ev.data)) this.servicePort.postMessage(ev.data);
       else if (isTransportStream(ev.data))
         this.servicePort.postMessage(this.requestChannelStream(ev.data));
       else console.warn('Unknown item from client', ev.data);
     } catch (e) {
-      this.clientPort.postMessage({ error: errorToJson(ConnectError.from(e), undefined) });
+      this.clientPort.postMessage({ error: localErrorJson(e, ev.data) });
     }
   };
 
-  private serviceListener = (m: unknown) => {
+  private serviceListener = (msg: unknown) => {
     try {
-      if (isTransportError(m) || isTransportMessage(m)) this.clientPort.postMessage(m);
-      else if (isTransportInitChannel(m))
-        this.clientPort.postMessage(...this.acceptChannelStreamResponse(m));
-      else console.warn('Unknown item from service', m);
+      if (msg === true) this.clientPort.postMessage(true);
+      else if (isTransportError(msg) || isTransportMessage(msg)) this.clientPort.postMessage(msg);
+      else if (isTransportInitChannel(msg))
+        this.clientPort.postMessage(...this.acceptChannelStreamResponse(msg));
+      else console.warn('Unknown item from service', msg);
     } catch (e) {
-      this.clientPort.postMessage({ error: errorToJson(ConnectError.from(e), undefined) });
+      this.clientPort.postMessage({ error: localErrorJson(e, msg) });
     }
   };
 

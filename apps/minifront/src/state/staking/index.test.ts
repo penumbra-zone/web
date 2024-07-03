@@ -66,7 +66,8 @@ const validatorInfo4 = new ValidatorInfo({
   },
 });
 
-vi.mock('../../fetchers/registry', () => ({
+vi.mock('../../fetchers/registry', async () => ({
+  ...(await vi.importActual('../../fetchers/registry')),
   getStakingTokenMetadata: vi.fn(async () => Promise.resolve(new Metadata())),
 }));
 
@@ -259,7 +260,6 @@ describe('Staking Slice', () => {
       error: undefined,
       loading: false,
       votingPowerByValidatorInfo: {},
-      stakingTokensAndFilter: expect.objectContaining({ data: undefined }) as unknown,
     });
   });
 

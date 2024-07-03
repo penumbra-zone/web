@@ -1,5 +1,104 @@
 # minifront
 
+## 6.6.0
+
+### Minor Changes
+
+- bump @penumbra-labs/registry
+
+### Patch Changes
+
+- Updated dependencies
+  - @repo/ui@6.3.0
+
+## 6.5.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @penumbra-zone/getters@10.0.0
+  - @penumbra-zone/perspective@9.0.0
+  - @penumbra-zone/protobuf@5.3.0
+  - @penumbra-zone/types@12.0.0
+  - @repo/ui@6.2.1
+  - @penumbra-zone/client@10.0.0
+  - @penumbra-zone/crypto-web@8.0.0
+
+## 6.5.0
+
+### Minor Changes
+
+- 7ab06b7: Add query parameters to the swap page to allow pre-setting swap assets
+
+## 6.4.0
+
+### Minor Changes
+
+- bump registry
+
+### Patch Changes
+
+- Updated dependencies
+  - @penumbra-zone/types@11.0.0
+  - @repo/ui@6.2.0
+  - @penumbra-zone/crypto-web@7.0.0
+  - @penumbra-zone/perspective@8.0.0
+
+## 6.3.0
+
+### Minor Changes
+
+- Bump registry
+
+### Patch Changes
+
+- bce49fe: Update revision number parsing logic
+- Updated dependencies
+  - @repo/ui@6.1.0
+
+## 6.2.1
+
+### Patch Changes
+
+- Updated dependencies [09b935b]
+  - @penumbra-zone/client@9.0.1
+
+## 6.2.0
+
+### Minor Changes
+
+- 97b7231: Minifront:
+
+  - extend `BalanceSelector` to show not only assets with balances but all available assets
+  - fix the issues with empty wallets not rendering a swap block correctly
+  - reduce the height of `BalanceSelecor` and `AssetSelector` to `90dvh`
+  - autofocus the search inputs in `BalanceSelecor` and `AssetSelector`
+  - change validations of the swap input to allow entering any possible values
+
+  UI: allow passing `autoFocus` attribute to the `IconInput` component
+
+- 0d78031: fixed bugs related to unknown assets
+
+### Patch Changes
+
+- 733d62a: Stop using loader functions for most routes; fix typings issue in ZQuery
+- 24d9bfa: UI: refactor the package to provide better and more clear exports. Includes a readme with setting up the UI package and more storybook stories.
+- Updated dependencies [733d62a]
+- Updated dependencies [4161587]
+- Updated dependencies [97b7231]
+- Updated dependencies [47c6bc0]
+- Updated dependencies [47c6bc0]
+- Updated dependencies [24d9bfa]
+  - @penumbra-zone/zquery@2.0.1
+  - @penumbra-zone/perspective@7.0.0
+  - @penumbra-zone/protobuf@5.2.0
+  - @penumbra-zone/getters@9.0.0
+  - @penumbra-zone/types@10.0.0
+  - @repo/ui@6.0.0
+  - @penumbra-zone/client@9.0.0
+  - @penumbra-zone/transport-dom@7.2.0
+  - @penumbra-zone/crypto-web@6.0.0
+
 ## 6.1.0
 
 ### Minor Changes

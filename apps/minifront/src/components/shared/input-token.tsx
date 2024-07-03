@@ -19,6 +19,7 @@ interface InputTokenProps {
   balances: BalancesResponse[];
   SetIsSendingMax: (isSendingMax: boolean) => void;
   onInputChange: (amount: string) => void;
+  loading?: boolean;
 }
 
 export default function InputToken({
@@ -33,6 +34,7 @@ export default function InputToken({
   balances,
   SetIsSendingMax,
   onInputChange,
+  loading,
 }: InputTokenProps) {
   const setInputToBalanceMax = () => {
     const match = balances.find(b => b.balanceView?.equals(selection?.balanceView));
@@ -51,13 +53,18 @@ export default function InputToken({
           variant='transparent'
           placeholder={placeholder}
           className={cn(
-            'md:h-8 xl:h-10 md:w-[calc(100%-80px)] xl:w-[calc(100%-160px)] md:text-xl  xl:text-3xl font-bold leading-10',
+            'md:h-8 xl:h-10 md:w-[calc(100%-80px)] xl:w-[calc(100%-160px)] md:text-xl xl:text-3xl font-bold leading-10',
             inputClassName,
           )}
           value={value}
           onChange={e => onInputChange(e.target.value)}
         />
-        <BalanceSelector value={selection} onChange={setSelection} balances={balances} />
+        <BalanceSelector
+          value={selection}
+          onChange={setSelection}
+          balances={balances}
+          loading={loading}
+        />
       </div>
 
       <div className='mt-[6px] flex items-center justify-between gap-2'>

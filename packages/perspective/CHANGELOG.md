@@ -1,5 +1,36 @@
 # @penumbra-zone/perspective
 
+## 9.0.0
+
+### Minor Changes
+
+- Synchronize published @buf deps
+
+### Patch Changes
+
+- Updated dependencies
+  - @penumbra-zone/getters@10.0.0
+  - @penumbra-zone/wasm@12.0.0
+
+## 8.0.0
+
+### Patch Changes
+
+- @penumbra-zone/wasm@11.0.0
+
+## 7.0.0
+
+### Minor Changes
+
+- 4161587: Update to latest bufbuild deps (v0.77.4)
+
+### Patch Changes
+
+- Updated dependencies [4161587]
+- Updated dependencies [e207faa]
+  - @penumbra-zone/getters@9.0.0
+  - @penumbra-zone/wasm@10.0.0
+
 ## 6.0.0
 
 ### Minor Changes

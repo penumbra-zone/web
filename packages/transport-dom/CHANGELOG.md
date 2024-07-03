@@ -1,5 +1,11 @@
 # @penumbra-zone/transport-dom
 
+## 7.2.0
+
+### Minor Changes
+
+- 47c6bc0: support disconnection
+
 ## 7.1.0
 
 ### Minor Changes

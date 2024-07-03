@@ -1,5 +1,82 @@
 # @penumbra-zone/router
 
+## 12.0.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @penumbra-zone/storage@9.1.0
+
+## 11.0.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @penumbra-zone/query@10.0.0
+
+## 10.0.0
+
+### Minor Changes
+
+- Synchronize published @buf deps
+
+### Patch Changes
+
+- Updated dependencies
+  - @penumbra-zone/getters@10.0.0
+  - @penumbra-zone/perspective@9.0.0
+  - @penumbra-zone/protobuf@5.3.0
+  - @penumbra-zone/query@9.0.0
+  - @penumbra-zone/storage@9.0.0
+  - @penumbra-zone/types@12.0.0
+  - @penumbra-zone/wasm@12.0.0
+  - @penumbra-zone/crypto-web@8.0.0
+
+## 9.0.0
+
+### Minor Changes
+
+- bump registry
+
+### Patch Changes
+
+- Updated dependencies
+  - @penumbra-zone/storage@8.0.0
+  - @penumbra-zone/types@11.0.0
+  - @penumbra-zone/crypto-web@7.0.0
+  - @penumbra-zone/query@8.0.0
+  - @penumbra-zone/wasm@11.0.0
+  - @penumbra-zone/perspective@8.0.0
+
+## 8.0.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @penumbra-zone/storage@7.1.0
+
+## 7.0.0
+
+### Minor Changes
+
+- 4161587: Update to latest bufbuild deps (v0.77.4)
+
+### Patch Changes
+
+- Updated dependencies [c555df7]
+- Updated dependencies [4161587]
+- Updated dependencies [e207faa]
+- Updated dependencies [47c6bc0]
+  - @penumbra-zone/storage@7.0.0
+  - @penumbra-zone/perspective@7.0.0
+  - @penumbra-zone/protobuf@5.2.0
+  - @penumbra-zone/getters@9.0.0
+  - @penumbra-zone/query@7.0.0
+  - @penumbra-zone/types@10.0.0
+  - @penumbra-zone/wasm@10.0.0
+  - @penumbra-zone/transport-dom@7.2.0
+  - @penumbra-zone/crypto-web@6.0.0
+
 ## 6.0.0
 
 ### Minor Changes

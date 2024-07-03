@@ -58,6 +58,8 @@ export interface IdbUpdate<DBTypes extends PenumbraDb, StoreName extends StoreNa
 }
 
 export interface IndexedDbInterface {
+  stakingTokenAssetId: AssetId;
+
   subscribe<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>>(
     table: StoreName,
   ): AsyncGenerator<IdbUpdate<DBTypes, StoreName>, void>;
@@ -144,9 +146,7 @@ export interface IndexedDbInterface {
     auctionId: AuctionId,
   ): Promise<{ input: Value; output: Value } | undefined>;
 
-  hasStakingAssetBalance(assetId: AssetId): Promise<boolean>;
-
-  fetchStakingTokenId(): AssetId;
+  hasStakingAssetBalance(): Promise<boolean>;
 }
 
 export interface PenumbraDb extends DBSchema {

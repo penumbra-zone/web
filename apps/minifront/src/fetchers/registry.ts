@@ -1,4 +1,4 @@
-import { ChainRegistryClient, Registry } from '@penumbra-labs/registry';
+import { Chain, ChainRegistryClient, Registry } from '@penumbra-labs/registry';
 import { useQuery } from '@tanstack/react-query';
 import { getChainId } from './chain-id';
 import { getAssetMetadataById } from './assets';
@@ -23,7 +23,7 @@ export const getStakingTokenMetadata = async () => {
     throw new Error('Could not fetch chain id');
   }
 
-  const { stakingAssetId } = chainRegistryClient.get(chainId);
+  const stakingAssetId = chainRegistryClient.globals().stakingAssetId;
   const stakingAssetsMetadata = await getAssetMetadataById(stakingAssetId);
 
   if (!stakingAssetsMetadata) {
@@ -32,7 +32,7 @@ export const getStakingTokenMetadata = async () => {
   return stakingAssetsMetadata;
 };
 
-export const getIbcConnections = async () => {
+export const getChains = async (): Promise<Chain[]> => {
   const chainId = await getChainId();
   if (!chainId) throw new Error('Could not fetch chain id');
 

@@ -1,35 +1,21 @@
-import { describe, expect, test } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { parseRevisionNumberFromChainId } from './parse-revision-number-from-chain-id';
 
 describe('parseRevisionNumberFromChainId', () => {
-  test('should extract the number at the end of a well-formatted string as a BigInt', () => {
-    expect(parseRevisionNumberFromChainId('grand-1')).toEqual(1n);
-    expect(parseRevisionNumberFromChainId('osmo-test-5')).toEqual(5n);
-    expect(parseRevisionNumberFromChainId('penumbra-testnet-deimos-7')).toEqual(7n);
+  it('should return 0 for non-epoch formatted chain IDs', () => {
+    expect(parseRevisionNumberFromChainId('chain--a-0')).toBe(0n);
+    expect(parseRevisionNumberFromChainId('chainA')).toBe(0n);
+    expect(parseRevisionNumberFromChainId('plainid-')).toBe(0n);
   });
 
-  test('should throw an error if there is no number at the end', () => {
-    expect(() => parseRevisionNumberFromChainId('grand')).toThrow(
-      'No revision number found within chain id: grand',
-    );
-    expect(() => parseRevisionNumberFromChainId('osmo-test-beta')).toThrow(
-      'No revision number found within chain id: osmo-test-beta',
-    );
+  it('should parse the revision number correctly from epoch formatted chain IDs', () => {
+    expect(parseRevisionNumberFromChainId('ibc-10')).toBe(10n);
+    expect(parseRevisionNumberFromChainId('cosmos-hub-97')).toBe(97n);
+    expect(parseRevisionNumberFromChainId('testnet-helloworld-2')).toBe(2n);
   });
 
-  test('should throw an error if the string ends with a hyphen', () => {
-    expect(() => parseRevisionNumberFromChainId('test-chain-')).toThrow(
-      'No revision number found within chain id: test-chain-',
-    );
-  });
-
-  test('should throw an error if the string does not contain any hyphens', () => {
-    expect(() => parseRevisionNumberFromChainId('testchain5')).toThrow(
-      'No revision number found within chain id: testchain5',
-    );
-  });
-
-  test('should handle cases with multiple hyphens correctly', () => {
-    expect(parseRevisionNumberFromChainId('multi-part-chain-id-123')).toEqual(123n);
+  it('should handle chain IDs with multiple dashes correctly', () => {
+    expect(parseRevisionNumberFromChainId('my-chain-id-45')).toBe(45n);
+    expect(parseRevisionNumberFromChainId('another-test-100')).toBe(100n);
   });
 });

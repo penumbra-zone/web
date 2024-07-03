@@ -12,32 +12,41 @@ export class PenumbraNotAvailableError extends Error {
     this.name = 'PenumbraNotAvailableError';
   }
 }
-
-export class PenumbraNotConnectedError extends Error {
+export class PenumbraProviderNotAvailableError extends Error {
   constructor(
-    message = 'Penumbra extension not connected',
+    providerOrigin?: string,
     public opts?: ErrorOptions,
   ) {
-    super(message, opts);
+    super(`Penumbra provider ${providerOrigin} is not available`, opts);
+    this.name = 'PenumbraNotAvailableError';
+  }
+}
+
+export class PenumbraProviderNotConnectedError extends Error {
+  constructor(
+    providerOrigin?: string,
+    public opts?: ErrorOptions,
+  ) {
+    super(`Penumbra provider ${providerOrigin} is not connected`, opts);
     this.name = 'PenumbraNotConnectedError';
   }
 }
 
-export class PenumbraRequestError extends Error {
+export class PenumbraProviderRequestError extends Error {
   constructor(
-    message = 'Penumbra request failed',
+    providerOrigin?: string,
     public opts?: ErrorOptions & { cause: PenumbraRequestFailure },
   ) {
-    super(message, opts);
+    super(`Penumbra provider ${providerOrigin} did not approve request`, opts);
     this.name = 'PenumbraRequestError';
   }
 }
-export class PenumbraNotInstalledError extends Error {
+export class PenumbraProviderNotInstalledError extends Error {
   constructor(
-    message = 'Penumbra not installed',
+    providerOrigin?: string,
     public opts?: ErrorOptions,
   ) {
-    super(message, opts);
+    super(`Penumbra provider ${providerOrigin} is not installed`, opts);
     this.name = 'PenumbraNotInstalledError';
   }
 }

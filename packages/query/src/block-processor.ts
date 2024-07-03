@@ -58,7 +58,7 @@ interface QueryClientProps {
   indexedDb: IndexedDbInterface;
   viewServer: ViewServerInterface;
   numeraires: AssetId[];
-  stakingTokenMetadata: Metadata;
+  stakingAssetId: AssetId;
 }
 
 const BLANK_TX_SOURCE = new CommitmentSource({
@@ -77,21 +77,15 @@ export class BlockProcessor implements BlockProcessorInterface {
   private readonly viewServer: ViewServerInterface;
   private readonly abortController: AbortController = new AbortController();
   private numeraires: AssetId[];
-  private readonly stakingTokenMetadata: Metadata;
+  private readonly stakingAssetId: AssetId;
   private syncPromise: Promise<void> | undefined;
 
-  constructor({
-    indexedDb,
-    viewServer,
-    querier,
-    numeraires,
-    stakingTokenMetadata,
-  }: QueryClientProps) {
+  constructor({ indexedDb, viewServer, querier, numeraires, stakingAssetId }: QueryClientProps) {
     this.indexedDb = indexedDb;
     this.viewServer = viewServer;
     this.querier = querier;
     this.numeraires = numeraires;
-    this.stakingTokenMetadata = stakingTokenMetadata;
+    this.stakingAssetId = stakingAssetId;
   }
 
   // If sync() is called multiple times concurrently, they'll all wait for
@@ -134,6 +128,8 @@ export class BlockProcessor implements BlockProcessorInterface {
       { retry: () => true },
     );
 
+    // TODO: init validator info in a better way, possibly after batch endpoint
+    // implemented https://github.com/penumbra-zone/penumbra/issues/4688
     if (currentHeight === -1n) {
       // In the `for` loop below, we only update validator infos once we've
       // reached the latest known epoch. This means that, if a user is syncing
@@ -142,7 +138,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       // validator info to go with them. So we'll update validator infos at the
       // beginning of sync as well, and force the rest of sync to wait until
       // it's done.
-      await this.updateValidatorInfos(0n);
+      void this.updateValidatorInfos(0n);
     }
 
     // this is an indefinite stream of the (compact) chain from the network
@@ -413,6 +409,8 @@ export class BlockProcessor implements BlockProcessorInterface {
     return { relevantTx, recordsWithSources };
   }
 
+  // TODO: refactor. there is definitely a better way to do this.  batch
+  // endpoint issue https://github.com/penumbra-zone/penumbra/issues/4688
   private async saveAndReturnMetadata(assetId: AssetId): Promise<Metadata | undefined> {
     const metadataAlreadyInDb = await this.indexedDb.getAssetsMetadata(assetId);
     if (metadataAlreadyInDb) return metadataAlreadyInDb;
@@ -566,18 +564,29 @@ export class BlockProcessor implements BlockProcessorInterface {
     if (nextEpochIsLatestKnownEpoch) void this.updateValidatorInfos(nextEpochStartHeight);
   }
 
+  // TODO: refactor. there is definitely a better way to do this.  batch
+  // endpoint issue https://github.com/penumbra-zone/penumbra/issues/4688
   private async updateValidatorInfos(nextEpochStartHeight: bigint): Promise<void> {
     for await (const validatorInfoResponse of this.querier.stake.allValidatorInfos()) {
       if (!validatorInfoResponse.validatorInfo) continue;
 
-      // Await the upsert. This makes it possible for users of this method to
-      // await the entire method, if they want to block all other code until all
-      // validator infos have been upserted.
       await this.indexedDb.upsertValidatorInfo(validatorInfoResponse.validatorInfo);
 
-      // Don't await this, though -- price equivalents for delegation tokens are
-      // non-critical, and shouldn't block the rest of the block processor.
-      void this.updatePriceForValidatorDelegationToken(validatorInfoResponse, nextEpochStartHeight);
+      await this.updatePriceForValidatorDelegationToken(
+        validatorInfoResponse,
+        nextEpochStartHeight,
+      );
+
+      // this loop requests delegation token metadata for each validator
+      // individually. there may be very many, so we must artificially delay
+      // this loop or the RPC may hard-ratelimit us.
+      await new Promise(resolve =>
+        setTimeout(
+          resolve,
+          // an entire second
+          1000,
+        ),
+      );
     }
   }
 
@@ -594,12 +603,11 @@ export class BlockProcessor implements BlockProcessorInterface {
 
     if (metadata) {
       const assetId = getAssetId(metadata);
-      const stakingAssetId = getAssetId(this.stakingTokenMetadata);
       const exchangeRate = getExchangeRateFromValidatorInfoResponse(validatorInfoResponse);
 
       await this.indexedDb.updatePrice(
         assetId,
-        stakingAssetId,
+        this.stakingAssetId,
         toDecimalExchangeRate(exchangeRate),
         nextEpochStartHeight,
       );

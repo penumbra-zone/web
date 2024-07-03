@@ -6,11 +6,10 @@ import {
 
 export function getFeeAssetMetadataOrDefault(
   chainId: string,
-  assetId: AssetId | undefined,
+  assetId?: AssetId,
 ): Metadata | undefined {
   const registryClient = new ChainRegistryClient();
   const registry = registryClient.get(chainId);
-  const feeAssetId = assetId ?? registry.stakingAssetId;
-
+  const feeAssetId = assetId ?? registryClient.globals().stakingAssetId;
   return registry.getMetadata(feeAssetId);
 }

@@ -7,15 +7,19 @@ import {
 } from '@repo/ui/components/ui/select';
 import { cn } from '@repo/ui/lib/utils';
 import { useState } from 'react';
-import { useStore } from '../../../state';
-import { ibcOutSelector } from '../../../state/ibc-out';
-import { useLoaderData } from 'react-router-dom';
-import { IbcLoaderResponse } from '../ibc-loader';
+import { AllSlices } from '../../../state';
 import { Chain } from '@penumbra-labs/registry';
+import { useStoreShallow } from '../../../utils/use-store-shallow';
+import { useChains } from '../../../state/ibc-out';
+
+const chainSelectorSelector = (state: AllSlices) => ({
+  chain: state.ibcOut.chain,
+  setChain: state.ibcOut.setChain,
+});
 
 export const ChainSelector = () => {
-  const { chain, setChain } = useStore(ibcOutSelector);
-  const { chains: ibcConnections } = useLoaderData() as IbcLoaderResponse;
+  const { chain, setChain } = useStoreShallow(chainSelectorSelector);
+  const chains = useChains();
   const [openSelect, setOpenSelect] = useState(false);
 
   return (
@@ -23,7 +27,7 @@ export const ChainSelector = () => {
       <p className='text-base font-bold'>Chain</p>
       <Select
         value={chain?.displayName ?? ''}
-        onValueChange={v => setChain(ibcConnections.find(i => i.displayName === v))}
+        onValueChange={v => setChain(chains.data?.find(i => i.displayName === v))}
         open={openSelect}
         onOpenChange={open => setOpenSelect(open)}
       >
@@ -38,7 +42,7 @@ export const ChainSelector = () => {
           </SelectValue>
         </SelectTrigger>
         <SelectContent className='left-[-17px]'>
-          {ibcConnections.map((i, index) => (
+          {chains.data?.map((i, index) => (
             <SelectItem
               key={index}
               value={i.displayName}

@@ -1,5 +1,33 @@
 # @penumbra-zone/types
 
+## 12.0.0
+
+### Minor Changes
+
+- Synchronize published @buf deps
+
+### Patch Changes
+
+- Updated dependencies
+  - @penumbra-zone/getters@10.0.0
+
+## 11.0.0
+
+### Major Changes
+
+- bump registry
+
+## 10.0.0
+
+### Minor Changes
+
+- 4161587: Update to latest bufbuild deps (v0.77.4)
+
+### Patch Changes
+
+- Updated dependencies [4161587]
+  - @penumbra-zone/getters@9.0.0
+
 ## 9.0.0
 
 ### Minor Changes
