@@ -208,3 +208,21 @@ Storybook stories should be located next to the component they apply to, and hav
 When writing stories, make sure to tag your stories with [`autodocs`](https://storybook.js.org/docs/react/writing-docs/autodocs). This is a Storybook feature that analyzes your component code to auto-generate documentation for your component, including a code sample, controls for each of the props, etc.
 
 Also, be sure to add [JSDoc](https://jsdoc.app/about-getting-started.html#adding-documentation-comments-to-your-code)-style comments (`/** ... */`) before any props that need to be documented. Storybook will automatically pull these into the Storybook UI as documentation.
+
+### Components built for Protobuf types must be suffixed with `Component` to avoid naming collisions.
+
+For example, a component designed to render a `ValueView` must be named `ValueViewComponent`, rather than `ValueView`, to avoid awkward naming collisions for consumers:
+
+```tsx
+// ValueViewComponent/index.tsx
+import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+
+export default function ValueViewComponent({ valueView }: { valueView: ValueView }) {
+  // ...
+}
+
+// SomeConsumer.tsx
+// ✅ Now, there is no naming conflict between these two imports.
+import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import ValueViewComponent from '@penumbra-zone/ui/ValueViewComponent';
+```
