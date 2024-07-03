@@ -35,7 +35,7 @@ describe('TransactionPlanner request handler', () => {
     mockIndexedDb = {
       getFmdParams: vi.fn(),
       getAppParams: vi.fn(),
-      getGasPrices: vi.fn(),
+      getNativeGasPrices: vi.fn(),
       constants: vi.fn(),
       stakingTokenAssetId: vi.fn(),
       hasStakingAssetBalance: vi.fn(),
@@ -92,7 +92,7 @@ describe('TransactionPlanner request handler', () => {
         }),
       }),
     );
-    mockIndexedDb.getGasPrices?.mockResolvedValueOnce(
+    mockIndexedDb.getNativeGasPrices?.mockResolvedValueOnce(
       new GasPrices({
         verificationPrice: 22n,
         executionPrice: 222n,
