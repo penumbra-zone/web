@@ -506,9 +506,12 @@ pub async fn plan_transaction(
         );
 
         for record in records {
-            let spend: SpendPlan =
-                SpendPlan::new(&mut OsRng, record.clone().note, record.clone().position);
-            actions_list.push(spend);
+            // filter zero-valued notes from SNR set
+            if record.clone().note.amount() != 0u64.into() {
+                let spend: SpendPlan =
+                    SpendPlan::new(&mut OsRng, record.clone().note, record.clone().position);
+                actions_list.push(spend);
+            }
         }
 
         // Change address is overwritten to the recipient.

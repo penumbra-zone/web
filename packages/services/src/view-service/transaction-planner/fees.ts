@@ -7,6 +7,9 @@ export const extractAltFee = (request: TransactionPlannerRequest): AssetId => {
   const outputAsset = request.outputs.map(o => o.value?.assetId).find(Boolean);
   if (outputAsset) return outputAsset;
 
+  const spendAsset = request.spends.map(o => o.value?.assetId).find(Boolean);
+  if (spendAsset) return spendAsset;
+
   const swapAsset = request.swaps.map(assetIn => assetIn.value?.assetId).find(Boolean);
   if (swapAsset) return swapAsset;
 
