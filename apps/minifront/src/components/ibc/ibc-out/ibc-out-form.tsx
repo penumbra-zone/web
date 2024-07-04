@@ -24,7 +24,7 @@ export const IbcOutForm = () => {
     setAmount,
     selection,
     setSelection,
-    SetIsSendingMax,
+    setIsSendingMax,
     chain,
   } = useStore(ibcOutSelector);
   const filteredBalances = filterBalancesPerChain(
@@ -50,7 +50,7 @@ export const IbcOutForm = () => {
         className='mb-1'
         selection={selection}
         setSelection={setSelection}
-        SetIsSendingMax={SetIsSendingMax}
+        setIsSendingMax={setIsSendingMax}
         value={amount}
         onInputChange={amount => {
           if (Number(amount) < 0) return;

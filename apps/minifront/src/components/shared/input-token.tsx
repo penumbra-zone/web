@@ -17,7 +17,7 @@ interface InputTokenProps {
   setSelection: (selection: BalancesResponse) => void;
   validations?: Validation[];
   balances: BalancesResponse[];
-  SetIsSendingMax: (isSendingMax: boolean) => void;
+  setIsSendingMax: (isSendingMax: boolean) => void;
   onInputChange: (amount: string) => void;
   loading?: boolean;
 }
@@ -32,7 +32,7 @@ export default function InputToken({
   inputClassName,
   setSelection,
   balances,
-  SetIsSendingMax,
+  setIsSendingMax,
   onInputChange,
   loading,
 }: InputTokenProps) {
@@ -42,7 +42,7 @@ export default function InputToken({
       const formattedAmt = getFormattedAmtFromValueView(match.balanceView);
       onInputChange(formattedAmt);
       // Track internal state for sending the maximum balance
-      SetIsSendingMax(true);
+      setIsSendingMax(true);
     }
   };
 

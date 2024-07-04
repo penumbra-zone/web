@@ -3,6 +3,8 @@ import { AllSlices, Middleware, SliceCreator, useStore } from '..';
 import {
   BalancesResponse,
   TransactionPlannerRequest,
+  TransactionPlannerRequest_Output,
+  TransactionPlannerRequest_Spend,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { BigNumber } from 'bignumber.js';
 import { MemoPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
@@ -20,6 +22,7 @@ import { getAddress, getAddressIndex } from '@penumbra-zone/getters/address-view
 import { toBaseUnit } from '@penumbra-zone/types/lo-hi';
 import { isAddress } from '@penumbra-zone/bech32m/penumbra';
 import { transferableBalancesResponsesSelector } from './helpers';
+import { PartialMessage } from '@bufbuild/protobuf';
 
 export interface SendSlice {
   selection: BalancesResponse | undefined;
@@ -37,7 +40,7 @@ export interface SendSlice {
   sendTx: () => Promise<void>;
   txInProgress: boolean;
   isSendingMax: boolean;
-  SetIsSendingMax: (isSendingMax: boolean) => void;
+  setIsSendingMax: (isSendingMax: boolean) => void;
 }
 
 export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
@@ -55,7 +58,7 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
         state.send.amount = amount;
       });
     },
-    SetIsSendingMax: isSendingMax => {
+    setIsSendingMax: isSendingMax => {
       set(state => {
         state.send.isSendingMax = isSendingMax;
       });
@@ -127,49 +130,21 @@ const assembleRequest = ({
   memo,
   isSendingMax,
 }: SendSlice) => {
-  if (isSendingMax) {
-    return new TransactionPlannerRequest({
-      spends: [
-        {
-          address: { altBech32m: recipient },
-          value: {
-            amount: toBaseUnit(
-              BigNumber(amount),
-              getDisplayDenomExponentFromValueView.optional()(selection?.balanceView),
-            ),
-            assetId: getAssetIdFromValueView(selection?.balanceView),
-          },
-        },
-      ],
-      source: getAddressIndex(selection?.accountAddress),
-
-      // Note: we currently don't provide a UI for setting the fee manually. Thus,
-      // a `feeMode` of `manualFee` is not supported here.
-      feeMode:
-        typeof feeTier === 'undefined'
-          ? { case: undefined }
-          : {
-              case: 'autoFee',
-              value: { feeTier },
-            },
-    });
-  }
-
+  const spendOrOutput:
+    | PartialMessage<TransactionPlannerRequest_Spend>
+    | PartialMessage<TransactionPlannerRequest_Output> = {
+    address: { altBech32m: recipient },
+    value: {
+      amount: toBaseUnit(
+        BigNumber(amount),
+        getDisplayDenomExponentFromValueView.optional()(selection?.balanceView),
+      ),
+      assetId: getAssetIdFromValueView(selection?.balanceView),
+    },
+  };
   return new TransactionPlannerRequest({
-    outputs: [
-      {
-        address: { altBech32m: recipient },
-        value: {
-          amount: toBaseUnit(
-            BigNumber(amount),
-            getDisplayDenomExponentFromValueView.optional()(selection?.balanceView),
-          ),
-          assetId: getAssetIdFromValueView(selection?.balanceView),
-        },
-      },
-    ],
+    ...(isSendingMax ? { spends: [spendOrOutput] } : { outputs: [spendOrOutput] }),
     source: getAddressIndex(selection?.accountAddress),
-
     // Note: we currently don't provide a UI for setting the fee manually. Thus,
     // a `feeMode` of `manualFee` is not supported here.
     feeMode:
@@ -179,7 +154,6 @@ const assembleRequest = ({
             case: 'autoFee',
             value: { feeTier },
           },
-
     memo: new MemoPlaintext({
       returnAddress: getAddress(selection?.accountAddress),
       text: memo,

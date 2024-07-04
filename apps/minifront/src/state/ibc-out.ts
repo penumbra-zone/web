@@ -51,7 +51,7 @@ export interface IbcOutSlice {
   setChain: (chain: Chain | undefined) => void;
   sendIbcWithdraw: () => Promise<void>;
   txInProgress: boolean;
-  SetIsSendingMax: (isSendingMax: boolean) => void;
+  setIsSendingMax: (isSendingMax: boolean) => void;
 }
 
 export const createIbcOutSlice = (): SliceCreator<IbcOutSlice> => (set, get) => {
@@ -67,7 +67,7 @@ export const createIbcOutSlice = (): SliceCreator<IbcOutSlice> => (set, get) => 
         state.ibcOut.selection = selection;
       });
     },
-    SetIsSendingMax: isSendingMax => {
+    setIsSendingMax: isSendingMax => {
       set(state => {
         state.send.isSendingMax = isSendingMax;
       });

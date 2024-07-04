@@ -5,7 +5,7 @@ import { Code, ConnectError } from '@connectrpc/connect';
 import { assertSwapAssetsAreNotTheSame } from './assert-swap-assets-are-not-the-same';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { fvkCtx } from '../../ctx/full-viewing-key';
-import { extractAltFee } from './fees';
+import { extractAltFee } from '../fees';
 
 export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) => {
   assertValidRequest(req);

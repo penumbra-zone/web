@@ -30,7 +30,7 @@ export const SendForm = () => {
     setFeeTier,
     setMemo,
     sendTx,
-    SetIsSendingMax,
+    setIsSendingMax,
     txInProgress,
   } = useStore(sendSelector);
 
@@ -68,7 +68,7 @@ export const SendForm = () => {
         className='mb-1'
         selection={selection}
         setSelection={setSelection}
-        SetIsSendingMax={SetIsSendingMax}
+        setIsSendingMax={setIsSendingMax}
         value={amount}
         onInputChange={amount => {
           if (Number(amount) < 0) return;
