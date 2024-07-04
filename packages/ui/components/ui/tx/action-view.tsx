@@ -11,6 +11,7 @@ import { SwapViewComponent } from './actions-views/swap';
 import { ActionDutchAuctionScheduleViewComponent } from './actions-views/action-dutch-auction-schedule-view';
 import { ActionDutchAuctionEndComponent } from './actions-views/action-dutch-auction-end';
 import { ActionDutchAuctionWithdrawViewComponent } from './actions-views/action-dutch-auction-withdraw-view';
+import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
 const CASE_TO_LABEL: Record<string, string> = {
   daoDeposit: 'DAO Deposit',
@@ -44,7 +45,13 @@ const getLabelForActionCase = (actionCase: string | undefined): string => {
   return String(actionCase);
 };
 
-export const ActionViewComponent = ({ av: { actionView } }: { av: ActionView }) => {
+export const ActionViewComponent = ({
+  av: { actionView },
+  feeValueView,
+}: {
+  av: ActionView;
+  feeValueView: ValueView;
+}) => {
   switch (actionView.case) {
     case 'spend':
       return <SpendViewComponent value={actionView.value} />;
@@ -53,7 +60,7 @@ export const ActionViewComponent = ({ av: { actionView } }: { av: ActionView }) 
       return <OutputViewComponent value={actionView.value} />;
 
     case 'swap':
-      return <SwapViewComponent value={actionView.value} />;
+      return <SwapViewComponent value={actionView.value} feeValueView={feeValueView} />;
 
     case 'swapClaim':
       return <SwapClaimViewComponent value={actionView.value} />;
