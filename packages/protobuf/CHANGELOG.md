@@ -1,5 +1,12 @@
 # @penumbra-zone/protobuf
 
+## 5.3.1
+
+### Patch Changes
+
+- e9e1320: add ValidatorInfo to registry
+- 3708e2c: include peer deps as dev deps
+
 ## 5.3.0
 
 ### Minor Changes

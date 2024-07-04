@@ -9,12 +9,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - id: compiled
-        uses: buildjet/cache@v3
+        uses: buildjet/cache@v4
         with:
           path: .turbo
           key: ${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-compiled
           restore-keys: ${{ hashFiles('**/Cargo.lock') }}
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v4
       - uses: buildjet/setup-node@v4
         with:
           node-version: '22'

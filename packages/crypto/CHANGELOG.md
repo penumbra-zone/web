@@ -1,5 +1,13 @@
 # @penumbra-zone/crypto-web
 
+## 9.0.0
+
+### Patch Changes
+
+- 3708e2c: include peer deps as dev deps
+- Updated dependencies [3708e2c]
+  - @penumbra-zone/types@13.0.0
+
 ## 8.0.0
 
 ### Patch Changes

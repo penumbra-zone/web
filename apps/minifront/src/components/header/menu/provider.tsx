@@ -51,30 +51,32 @@ export const ProviderMenu = () => {
           {chainId}
         </NavigationMenu.Trigger>
         <NavigationMenu.Content className={cn(...dropdownStyle, 'w-64')}>
-          <NavigationMenu.Item className={cn(...itemStyle)}>
-            <NavigationMenu.Link className={cn(...linkStyle, 'p-0', 'leading-normal')}>
-              <div className='ml-4 text-muted-foreground'>
-                <span className='font-headline text-muted'>
-                  {providerManifest.name} {providerManifest.version}
+          <ul>
+            <NavigationMenu.Item className={cn(...itemStyle)}>
+              <NavigationMenu.Link className={cn(...linkStyle, 'p-0', 'leading-normal')}>
+                <div className='ml-4 text-muted-foreground'>
+                  <span className='font-headline text-muted'>
+                    {providerManifest.name} {providerManifest.version}
+                  </span>
+                  <p>{providerManifest.description}</p>
+                </div>
+              </NavigationMenu.Link>
+            </NavigationMenu.Item>
+            <NavigationMenu.Item
+              hidden={
+                // hide if injection does not contain disconnect
+                !window[PenumbraSymbol]?.[providerOrigin]?.disconnect
+              }
+              className={cn(...itemStyle)}
+            >
+              <NavigationMenu.Link className={cn(...linkStyle)} onSelect={disconnect}>
+                <span>
+                  <LinkBreak1Icon className={cn('size-[1em]', 'inline-block')} />
+                  &nbsp;Disconnect
                 </span>
-                <p>{providerManifest.description}</p>
-              </div>
-            </NavigationMenu.Link>
-          </NavigationMenu.Item>
-          <NavigationMenu.Item
-            hidden={
-              // hide if injection does not contain disconnect
-              !window[PenumbraSymbol]?.[providerOrigin]?.disconnect
-            }
-            className={cn(...itemStyle)}
-          >
-            <NavigationMenu.Link className={cn(...linkStyle)} onSelect={disconnect}>
-              <span>
-                <LinkBreak1Icon className={cn('size-[1em]', 'inline-block')} />
-                &nbsp;Disconnect
-              </span>
-            </NavigationMenu.Link>
-          </NavigationMenu.Item>
+              </NavigationMenu.Link>
+            </NavigationMenu.Item>
+          </ul>
         </NavigationMenu.Content>
       </NavigationMenu.Item>
       <NavigationMenu.Viewport className='absolute z-50' />

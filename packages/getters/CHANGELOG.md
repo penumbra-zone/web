@@ -1,5 +1,21 @@
 # @penumbra-zone/getters
 
+## 10.1.0
+
+### Minor Changes
+
+- af2d6b6: Update ZQuery to accept selectors; update minifront to take advantage of this feature
+
+  ZQuery's `use[Name]()` hooks now accept an optional options object as their first argument, then pass any remaining arguments to the `fetch` function.
+
+### Patch Changes
+
+- 3708e2c: include peer deps as dev deps
+- Updated dependencies [e9e1320]
+- Updated dependencies [3708e2c]
+  - @penumbra-zone/protobuf@5.3.1
+  - @penumbra-zone/bech32m@6.1.1
+
 ## 10.0.0
 
 ### Minor Changes

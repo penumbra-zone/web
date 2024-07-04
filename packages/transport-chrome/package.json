@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/transport-chrome",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "license": "(MIT OR Apache-2.0)",
   "description": "Tools for adapting `@penumbra-zone/transport` to Chrome's extension runtime messaging API",
   "type": "module",
@@ -10,6 +10,7 @@
   "scripts": {
     "build": "tsc --build && tsc-alias",
     "clean": "rm -rfv dist package penumbra-zone-*.tgz",
+    "dev:pack": "tsc-watch --onCompilationComplete \"tsc-alias\" --onSuccess \"$npm_execpath pack\"",
     "lint": "eslint src",
     "test": "vitest run"
   },
@@ -29,6 +30,9 @@
     }
   },
   "devDependencies": {
+    "@bufbuild/protobuf": "^1.10.0",
+    "@connectrpc/connect": "^1.4.0",
+    "@penumbra-zone/transport-dom": "workspace:*",
     "@types/chrome": "^0.0.268"
   },
   "peerDependencies": {

@@ -1,5 +1,15 @@
 # @penumbra-zone/types
 
+## 13.0.0
+
+### Patch Changes
+
+- 3708e2c: include peer deps as dev deps
+- Updated dependencies [3708e2c]
+- Updated dependencies [af2d6b6]
+  - @penumbra-zone/bech32m@6.1.1
+  - @penumbra-zone/getters@10.1.0
+
 ## 12.0.0
 
 ### Minor Changes

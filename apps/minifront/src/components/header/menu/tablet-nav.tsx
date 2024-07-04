@@ -19,13 +19,15 @@ export const TabletNav = () => {
           <CaretDownIcon className='inline-block text-right align-middle transition duration-200 group-data-[state=open]:-scale-y-100' />
         </NavigationMenu.Trigger>
         <NavigationMenu.Content className={cn('w-[138px]', ...dropdownStyle)}>
-          {[dashboardLink, ...headerLinks].map(({ href, label }) => (
-            <NavigationMenu.Item key={href} className={cn(...itemStyle)}>
-              <NavigationMenu.Link className={cn(...linkStyle)} onSelect={() => navigate(href)}>
-                {label}
-              </NavigationMenu.Link>
-            </NavigationMenu.Item>
-          ))}
+          <ul>
+            {[dashboardLink, ...headerLinks].map(({ href, label }) => (
+              <NavigationMenu.Item key={href} className={cn(...itemStyle)}>
+                <NavigationMenu.Link className={cn(...linkStyle)} onSelect={() => navigate(href)}>
+                  {label}
+                </NavigationMenu.Link>
+              </NavigationMenu.Item>
+            ))}
+          </ul>
         </NavigationMenu.Content>
       </NavigationMenu.Item>
       <NavigationMenu.Viewport className='absolute z-50' />

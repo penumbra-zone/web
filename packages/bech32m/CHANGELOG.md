@@ -1,5 +1,11 @@
 # @penumbra-zone/bech32
 
+## 6.1.1
+
+### Patch Changes
+
+- 3708e2c: include peer deps as dev deps
+
 ## 6.1.0
 
 ### Minor Changes

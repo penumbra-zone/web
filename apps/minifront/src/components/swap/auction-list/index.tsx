@@ -11,7 +11,7 @@ import { getFilteredAuctionInfos } from './get-filtered-auction-infos';
 import { LayoutGroup, motion } from 'framer-motion';
 import { useAuctionInfos } from '../../../state/swap/dutch-auction';
 import { useStatus } from '../../../state/status';
-import { SORT_FUNCTIONS } from './helpers';
+import { byStartHeightAscending } from './helpers';
 import { Filters } from './filters';
 
 const auctionListSelector = (state: AllSlices) => ({
@@ -47,7 +47,7 @@ export const AuctionList = () => {
   const filteredAuctionInfos = useMemo(
     () =>
       [...getFilteredAuctionInfos(auctionInfos.data ?? [], filter, status?.fullSyncHeight)].sort(
-        SORT_FUNCTIONS[filter],
+        byStartHeightAscending,
       ),
     [auctionInfos.data, filter, status?.fullSyncHeight],
   );

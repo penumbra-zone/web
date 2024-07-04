@@ -1,13 +1,13 @@
 {
   "name": "minifront",
-  "version": "6.6.0",
+  "version": "6.7.0",
   "private": true,
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "scripts": {
     "build": "tsc && vite build",
     "clean": "rm -rfv dist",
-    "dev": "vite --port 5173",
+    "dev:app": "vite --port 5173",
     "lint": "eslint src",
     "preview": "vite preview",
     "test": "vitest run"
