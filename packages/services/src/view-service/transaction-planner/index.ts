@@ -14,7 +14,7 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
   const { indexedDb } = await services.getWalletServices();
 
   // Query IndexedDB directly to check for the existence of staking token
-  const nativeToken = await indexedDb.hasStakingAssetBalance();
+  const nativeToken = await indexedDb.hasStakingAssetBalance(req.source);
 
   // Initialize the gas fee token using the native staking token's asset ID
   // If there is no native token balance, extract and use an alternate gas fee token
