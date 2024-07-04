@@ -399,7 +399,6 @@ describe('IndexedDb', () => {
         verificationPrice: 0n,
         executionPrice: 0n,
       });
-      console.log(gasPrices);
       await db.saveGasPrices(gasPrices);
       const savedPrices = await db.getNativeGasPrices();
 
