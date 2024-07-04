@@ -2,14 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import {
   TransactionPlannerRequest,
-  TransactionPlannerRequest_ActionDutchAuctionEnd,
-  TransactionPlannerRequest_ActionDutchAuctionSchedule,
-  TransactionPlannerRequest_ActionDutchAuctionWithdraw,
   TransactionPlannerRequest_Output,
   TransactionPlannerRequest_Swap,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { extractAltFee } from './fees';
-import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 
 describe('extractAltFee', () => {
   it('extracts the fee from outputs', () => {
