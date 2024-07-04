@@ -88,8 +88,8 @@ export interface IndexedDbInterface {
   getSwapByNullifier(nullifier: Nullifier): Promise<SwapRecord | undefined>;
   saveSwap(note: SwapRecord): Promise<void>;
   getSwapByCommitment(commitment: StateCommitment): Promise<SwapRecord | undefined>;
-  getGasPrices(): Promise<GasPrices | undefined>;
-  // TODO #1310 add getAltGasPrices()
+  getNativeGasPrices(): Promise<GasPrices | undefined>;
+  getAltGasPrices(): Promise<GasPrices[]>;
   saveGasPrices(value: PartialMessage<GasPrices>): Promise<void>;
   getNotesForVoting(
     addressIndex: AddressIndex | undefined,
@@ -146,7 +146,7 @@ export interface IndexedDbInterface {
     auctionId: AuctionId,
   ): Promise<{ input: Value; output: Value } | undefined>;
 
-  hasStakingAssetBalance(): Promise<boolean>;
+  hasStakingAssetBalance(addressIndex: AddressIndex | undefined): Promise<boolean>;
 }
 
 export interface PenumbraDb extends DBSchema {
@@ -231,9 +231,8 @@ export interface PenumbraDb extends DBSchema {
       nullifier: Jsonified<Required<SwapRecord>['nullifier']['inner']>; // base64
     };
   };
-  // TODO #1310 use the assetId as key
   GAS_PRICES: {
-    key: 'gas_prices';
+    key: Jsonified<Required<GasPrices>['assetId']['inner']>; // base64
     value: Jsonified<GasPrices>;
   };
   POSITIONS: {

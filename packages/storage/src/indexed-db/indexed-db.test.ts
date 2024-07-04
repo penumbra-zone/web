@@ -393,13 +393,14 @@ describe('IndexedDb', () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
       const gasPrices = new GasPrices({
+        assetId: db.stakingTokenAssetId,
         blockSpacePrice: 0n,
         compactBlockSpacePrice: 0n,
         verificationPrice: 0n,
         executionPrice: 0n,
       });
       await db.saveGasPrices(gasPrices);
-      const savedPrices = await db.getGasPrices();
+      const savedPrices = await db.getNativeGasPrices();
 
       expect(gasPrices.equals(savedPrices)).toBeTruthy();
     });

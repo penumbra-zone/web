@@ -23,11 +23,12 @@ import { Code, ConnectError } from '@connectrpc/connect';
 export const gasPrices: Impl['gasPrices'] = async (_, ctx) => {
   const services = await ctx.values.get(servicesCtx)();
   const { indexedDb } = await services.getWalletServices();
-  const gasPrices = await indexedDb.getGasPrices();
+  const gasPrices = await indexedDb.getNativeGasPrices();
+  const altGasPRices = await indexedDb.getAltGasPrices();
   if (!gasPrices) throw new ConnectError('Gas prices is not available', Code.NotFound);
 
   return {
     gasPrices,
-    // TODO #1310 add altGasPrices
+    altGasPRices,
   };
 };

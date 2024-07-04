@@ -14,7 +14,7 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
   const { indexedDb } = await services.getWalletServices();
 
   // Query IndexedDB directly to check for the existence of staking token
-  const nativeToken = await indexedDb.hasStakingAssetBalance();
+  const nativeToken = await indexedDb.hasStakingAssetBalance(req.source);
 
   // Initialize the gas fee token using the native staking token's asset ID
   // If there is no native token balance, extract and use an alternate gas fee token
@@ -28,7 +28,7 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
   if (!chainId) throw new ConnectError('ChainId not available', Code.FailedPrecondition);
 
   // Wasm planner needs the presence of gas prices in the db to work
-  const gasPrices = await indexedDb.getGasPrices();
+  const gasPrices = await indexedDb.getNativeGasPrices();
   if (!gasPrices) throw new ConnectError('Gas prices is not available', Code.FailedPrecondition);
 
   const idbConstants = indexedDb.constants();

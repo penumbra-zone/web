@@ -119,7 +119,7 @@ export class IndexedDb implements IndexedDbInterface {
         db.createObjectStore('SWAPS', {
           keyPath: 'swapCommitment.inner',
         }).createIndex('nullifier', 'nullifier.inner');
-        db.createObjectStore('GAS_PRICES');
+        db.createObjectStore('GAS_PRICES', { keyPath: 'assetId.inner' });
         db.createObjectStore('POSITIONS', { keyPath: 'id.inner' });
         db.createObjectStore('EPOCHS', { autoIncrement: true });
         db.createObjectStore('VALIDATOR_INFOS');
@@ -385,21 +385,26 @@ export class IndexedDb implements IndexedDbInterface {
     return SwapRecord.fromJson(json);
   }
 
-  // TODO #1310 'getGasPrices()' should be renamed to 'getNativeGasPrice()'
-  async getGasPrices(): Promise<GasPrices | undefined> {
-    // TODO #1310 use this.stakingTokenAssetId as the key for the query
-    const jsonGasPrices = await this.db.get('GAS_PRICES', 'gas_prices');
+  async getNativeGasPrices(): Promise<GasPrices | undefined> {
+    const jsonGasPrices = await this.db.get(
+      'GAS_PRICES',
+      uint8ArrayToBase64(this.stakingTokenAssetId.inner),
+    );
     if (!jsonGasPrices) return undefined;
     return GasPrices.fromJson(jsonGasPrices);
   }
 
-  // TODO #1310 implement getAltGasPrices()
+  async getAltGasPrices(): Promise<GasPrices[]> {
+    const allGasPrices = await this.db.getAll('GAS_PRICES');
+    return allGasPrices
+      .map(gp => GasPrices.fromJson(gp))
+      .filter(gp => !gp.assetId?.equals(this.stakingTokenAssetId));
+  }
 
   async saveGasPrices(value: PartialMessage<GasPrices>): Promise<void> {
     await this.u.update({
       table: 'GAS_PRICES',
       value: new GasPrices(value).toJson() as Jsonified<GasPrices>,
-      key: 'gas_prices',
     });
   }
 
@@ -815,7 +820,7 @@ export class IndexedDb implements IndexedDbInterface {
     };
   }
 
-  async hasStakingAssetBalance(): Promise<boolean> {
+  async hasStakingAssetBalance(addressIndex: AddressIndex | undefined): Promise<boolean> {
     const spendableUMNotes = await this.db.getAllFromIndex(
       'SPENDABLE_NOTES',
       'assetId',
@@ -824,7 +829,11 @@ export class IndexedDb implements IndexedDbInterface {
 
     return spendableUMNotes.some(note => {
       const umNote = SpendableNoteRecord.fromJson(note);
-      return umNote.heightSpent === 0n && !isZero(getAmountFromRecord(umNote));
+      return (
+        umNote.heightSpent === 0n &&
+        !isZero(getAmountFromRecord(umNote)) &&
+        umNote.addressIndex?.equals(addressIndex)
+      );
     });
   }
 }

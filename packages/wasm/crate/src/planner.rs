@@ -1,13 +1,11 @@
-use crate::metadata::customize_symbol_inner;
-use crate::note_record::SpendableNoteRecord;
-use crate::storage::{IndexedDBStorage, OutstandingReserves};
-use crate::utils;
-use crate::{error::WasmResult, swap_record::SwapRecord};
+use std::collections::BTreeMap;
+use std::mem;
+
 use anyhow::anyhow;
 use ark_ff::UniformRand;
 use decaf377::{Fq, Fr};
 use penumbra_asset::asset::{Id, Metadata};
-use penumbra_asset::{Value, STAKING_TOKEN_ASSET_ID};
+use penumbra_asset::Value;
 use penumbra_auction::auction::dutch::actions::ActionDutchAuctionWithdrawPlan;
 use penumbra_auction::auction::dutch::{
     ActionDutchAuctionEnd, ActionDutchAuctionSchedule, DutchAuctionDescription,
@@ -38,10 +36,14 @@ use penumbra_transaction::ActionList;
 use penumbra_transaction::{plan::MemoPlan, ActionPlan, TransactionParameters};
 use prost::Message;
 use rand_core::{OsRng, RngCore};
-use std::collections::BTreeMap;
-use std::mem;
 use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::JsValue;
+
+use crate::metadata::customize_symbol_inner;
+use crate::note_record::SpendableNoteRecord;
+use crate::storage::{IndexedDBStorage, OutstandingReserves};
+use crate::utils;
+use crate::{error::WasmResult, swap_record::SwapRecord};
 
 /// Prioritize notes to spend to release value of a specific transaction.
 ///
@@ -181,13 +183,15 @@ pub async fn plan_transaction(
 
     let chain_id: String = app_parameters.chain_id;
 
+    // Decode the gas fee token into an `Id` type
+    let fee_asset_id: Id = Id::decode(gas_fee_token)?;
+
     // Request information about current gas prices
-    // TODO #1310 GasPrices record may not exist for alternative fee assets
-    let mut gas_prices: GasPrices = {
+    let gas_prices: GasPrices = {
         let gas_prices: penumbra_proto::core::component::fee::v1::GasPrices =
             serde_wasm_bindgen::from_value(
                 storage
-                    .get_gas_prices()
+                    .get_gas_prices_by_asset_id(fee_asset_id)
                     .await?
                     .ok_or_else(|| anyhow!("GasPrices not available"))?,
             )?;
@@ -202,28 +206,12 @@ pub async fn plan_transaction(
         }
     };
 
-    // Decode the gas fee token into an `Id` type
-    let alt_gas: Id = Id::decode(gas_fee_token)?;
-
-    // Check if the decoded gas fee token is different from the staking token asset ID.
-    // If the gas fee token is different, use the alternative gas fee token with a 10x
-    // multiplier.
-    if alt_gas != *STAKING_TOKEN_ASSET_ID {
-        gas_prices = GasPrices {
-            asset_id: alt_gas,
-            block_space_price: gas_prices.block_space_price * 10,
-            compact_block_space_price: gas_prices.compact_block_space_price * 10,
-            verification_price: gas_prices.verification_price * 10,
-            execution_price: gas_prices.execution_price * 10,
-        };
-    };
-
     let mut transaction_parameters = TransactionParameters {
         chain_id,
         expiry_height,
         ..Default::default()
     };
-    transaction_parameters.fee.0.asset_id = alt_gas;
+    transaction_parameters.fee.0.asset_id = fee_asset_id;
 
     let mut actions_list = ActionList::default();
 

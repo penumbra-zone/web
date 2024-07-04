@@ -9,7 +9,8 @@ export interface IndexedDbMock {
   constants?: Mock;
   getAppParams?: Mock;
   getAssetsMetadata?: Mock;
-  getGasPrices?: Mock;
+  getNativeGasPrices?: Mock;
+  getAltGasPrices?: Mock;
   getFmdParams?: Mock;
   getFullSyncHeight?: Mock;
   getNotesForVoting?: Mock;

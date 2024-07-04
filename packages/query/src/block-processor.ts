@@ -45,6 +45,7 @@ import { processActionDutchAuctionEnd } from './helpers/process-action-dutch-auc
 import { processActionDutchAuctionSchedule } from './helpers/process-action-dutch-auction-schedule';
 import { processActionDutchAuctionWithdraw } from './helpers/process-action-dutch-auction-withdraw';
 import { RootQuerier } from './root-querier';
+import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
 
 declare global {
   // eslint-disable-next-line no-var
@@ -162,12 +163,18 @@ export class BlockProcessor implements BlockProcessorInterface {
         await this.indexedDb.saveFmdParams(compactBlock.fmdParameters);
       }
       if (compactBlock.gasPrices) {
-        // TODO #1310 pre-populate assetId for native GasPrices using stakingTokenAssetId
-        await this.indexedDb.saveGasPrices(compactBlock.gasPrices);
+        await this.indexedDb.saveGasPrices(
+          new GasPrices({
+            assetId: this.stakingAssetId,
+            ...compactBlock.gasPrices,
+          }),
+        );
       }
-      // if (compactBlock.altGasPrices) {
-      // TODO #1310 save altGasPrices to indexed-db
-      // }
+      if (compactBlock.altGasPrices.length) {
+        for (const gasPrice of compactBlock.altGasPrices) {
+          await this.indexedDb.saveGasPrices(gasPrice);
+        }
+      }
 
       // wasm view server scan
       // - decrypts new notes
