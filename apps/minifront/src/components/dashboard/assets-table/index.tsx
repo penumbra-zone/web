@@ -12,12 +12,14 @@ import {
 import { ValueViewComponent } from '@repo/ui/components/ui/value';
 import { EquivalentValues } from './equivalent-values';
 import { Fragment } from 'react';
-import { shouldDisplay } from './helpers';
 import { PagePath } from '../../metadata/paths';
 import { Link } from 'react-router-dom';
 import { getMetadataFromBalancesResponseOptional } from '@penumbra-zone/getters/balances-response';
 import { getAddressIndex } from '@penumbra-zone/getters/address-view';
-import { balancesByAccountSelector, useBalancesResponses } from '../../../state/shared';
+import { BalancesByAccount, groupByAccount, useBalancesResponses } from '../../../state/shared';
+import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
+import { shouldDisplay } from '../../../fetchers/balances/should-display';
+import { sortByPriorityScore } from '../../../fetchers/balances/by-priority-score';
 
 const getTradeLink = (balance: BalancesResponse): string => {
   const metadata = getMetadataFromBalancesResponseOptional(balance);
@@ -26,9 +28,15 @@ const getTradeLink = (balance: BalancesResponse): string => {
   return metadata ? `${PagePath.SWAP}?from=${metadata.symbol}${accountQuery}` : PagePath.SWAP;
 };
 
+const filteredBalancesByAccountSelector = (
+  zQueryState: AbridgedZQueryState<BalancesResponse[]>,
+): BalancesByAccount[] =>
+  zQueryState.data?.filter(shouldDisplay).sort(sortByPriorityScore).reduce(groupByAccount, []) ??
+  [];
+
 export default function AssetsTable() {
   const balancesByAccount = useBalancesResponses({
-    select: balancesByAccountSelector,
+    select: filteredBalancesByAccountSelector,
     shouldReselect: (before, after) => before?.data !== after.data,
   });
 
@@ -75,7 +83,7 @@ export default function AssetsTable() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {account.balances.filter(shouldDisplay).map((assetBalance, index) => (
+              {account.balances.map((assetBalance, index) => (
                 <TableRow className='group' key={index}>
                   <TableCell>
                     <ValueViewComponent view={assetBalance.balanceView} />

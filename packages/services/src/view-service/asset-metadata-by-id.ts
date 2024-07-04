@@ -1,6 +1,7 @@
 import type { Impl } from '.';
 import { servicesCtx } from '../ctx/prax';
 import { assetPatterns } from '@penumbra-zone/types/assets';
+import { getAssetPriorityScore } from './util/asset-priority-score';
 
 export const assetMetadataById: Impl['assetMetadataById'] = async ({ assetId }, ctx) => {
   if (!assetId) throw new Error('No asset id passed in request');
@@ -14,9 +15,23 @@ export const assetMetadataById: Impl['assetMetadataById'] = async ({ assetId }, 
   const { indexedDb, querier } = await services.getWalletServices();
 
   const localMetadata = await indexedDb.getAssetsMetadata(assetId);
-  if (localMetadata) return { denomMetadata: localMetadata };
+  if (localMetadata) {
+    if (!localMetadata.priorityScore) {
+      localMetadata.priorityScore = getAssetPriorityScore(
+        localMetadata,
+        indexedDb.stakingTokenAssetId,
+      );
+    }
+    return { denomMetadata: localMetadata };
+  }
 
   const remoteMetadata = await querier.shieldedPool.assetMetadataById(assetId);
+  if (remoteMetadata && !remoteMetadata.priorityScore) {
+    remoteMetadata.priorityScore = getAssetPriorityScore(
+      remoteMetadata,
+      indexedDb.stakingTokenAssetId,
+    );
+  }
 
   const isIbcAsset = remoteMetadata && assetPatterns.ibc.matches(remoteMetadata.display);
 

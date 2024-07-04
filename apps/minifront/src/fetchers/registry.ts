@@ -36,7 +36,6 @@ export const getChains = async (): Promise<Chain[]> => {
   const chainId = await getChainId();
   if (!chainId) throw new Error('Could not fetch chain id');
 
-  const registryClient = new ChainRegistryClient();
-  const { ibcConnections } = registryClient.get(chainId);
+  const { ibcConnections } = chainRegistryClient.get(chainId);
   return ibcConnections;
 };
