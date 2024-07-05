@@ -31,7 +31,7 @@
   "dependencies": {
     "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240625233123-429cb316aa7c.1",
     "@bufbuild/protobuf": "^1.10.0",
-    "@penumbra-labs/registry": "9.2.0",
+    "@penumbra-labs/registry": "9.3.0",
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
@@ -41,7 +41,7 @@
   "peerDependencies": {
     "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240625233123-429cb316aa7c.1",
     "@bufbuild/protobuf": "^1.10.0",
-    "@penumbra-labs/registry": "9.2.0",
+    "@penumbra-labs/registry": "9.3.0",
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
