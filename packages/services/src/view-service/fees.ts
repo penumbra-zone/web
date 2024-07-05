@@ -29,6 +29,6 @@ export const extractAltFee = async (
     // Use native staking token if asset id for the claim fee is undefined.
     return stakingTokenAssetId;
   }
-  
+
   throw new Error('Could not extract alternative fee assetId from TransactionPlannerRequest');
 };
