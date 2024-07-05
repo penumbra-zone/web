@@ -12,8 +12,9 @@ import { extractAltFee } from './fees';
 import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 
 describe('extractAltFee', () => {
+  const umAssetId = new AssetId({ altBaseDenom: 'UM' });
+
   it('extracts the fee from outputs', () => {
-    const umAssetId = new AssetId({ altBaseDenom: 'UM' });
     const request = new TransactionPlannerRequest({
       outputs: [
         new TransactionPlannerRequest_Output({
@@ -21,7 +22,7 @@ describe('extractAltFee', () => {
         }),
       ],
     });
-    const result = extractAltFee(request);
+    const result = extractAltFee(request, umAssetId);
     expect(result.equals(umAssetId)).toBeTruthy();
   });
 
@@ -35,7 +36,7 @@ describe('extractAltFee', () => {
         }),
       ],
     });
-    const result = extractAltFee(request);
+    const result = extractAltFee(request, umAssetId);
     expect(result.equals(umAssetId)).toBeTruthy();
   });
 
@@ -74,7 +75,7 @@ describe('extractAltFee', () => {
       ],
     });
 
-    const result = extractAltFee(request);
+    const result = extractAltFee(request, umAssetId);
     expect(result.equals(outputAssetId)).toBeTruthy();
   });
 
@@ -88,7 +89,7 @@ describe('extractAltFee', () => {
       ],
     });
 
-    const result = extractAltFee(request);
+    const result = extractAltFee(request, umAssetId);
     expect(result.equals(swapAssetId)).toBeTruthy();
   });
 
@@ -103,7 +104,7 @@ describe('extractAltFee', () => {
       ],
     });
 
-    const result = extractAltFee(request);
+    const result = extractAltFee(request, umAssetId);
     expect(result.equals(auctionScheduleAssetId)).toBeTruthy();
   });
 
@@ -117,7 +118,7 @@ describe('extractAltFee', () => {
       ],
     });
 
-    const result = extractAltFee(request);
+    const result = extractAltFee(request, umAssetId);
     expect(result.inner).toEqual(auctionEndAuctionId.inner);
   });
 
@@ -131,14 +132,14 @@ describe('extractAltFee', () => {
       ],
     });
 
-    const result = extractAltFee(request);
+    const result = extractAltFee(request, umAssetId);
     expect(result.inner).toEqual(auctionWithdrawAuctiontId.inner);
   });
 
   it('throws an error when no asset ID is found', () => {
     const request = new TransactionPlannerRequest({});
 
-    expect(() => extractAltFee(request)).toThrow(
+    expect(() => extractAltFee(request, umAssetId)).toThrow(
       'Could not extract alternative fee assetId from TransactionPlannerRequest',
     );
   });
