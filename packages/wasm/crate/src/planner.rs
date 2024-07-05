@@ -17,6 +17,7 @@ use penumbra_dex::{
     TradingPair,
 };
 use penumbra_fee::{FeeTier, GasPrices};
+use penumbra_governance::DelegatorVotePlan;
 use penumbra_keys::keys::AddressIndex;
 use penumbra_keys::FullViewingKey;
 use penumbra_num::Amount;
@@ -39,6 +40,7 @@ use rand_core::{OsRng, RngCore};
 use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::JsValue;
 
+use crate::error::WasmError;
 use crate::metadata::customize_symbol_inner;
 use crate::note_record::SpendableNoteRecord;
 use crate::storage::{IndexedDBStorage, OutstandingReserves};
@@ -148,6 +150,7 @@ pub async fn plan_transaction(
 
     let mut source_address_index: AddressIndex = request
         .source
+        .clone()
         .map(TryInto::try_into)
         .transpose()?
         .unwrap_or_default();
@@ -504,6 +507,62 @@ pub async fn plan_transaction(
 
         // Change address is overwritten to the recipient.
         change_address = address.try_into()?;
+    }
+
+    for tpr::DelegatorVote {
+        proposal,
+        vote,
+        start_block_height,
+        start_position,
+        rate_data,
+    } in request.delegator_votes
+    {
+        let voting_notes = storage
+            .get_notes_for_voting(request.source.clone(), start_block_height)
+            .await?;
+
+        if voting_notes.is_empty() {
+            return Err(WasmError::Anyhow(anyhow::anyhow!(
+                "no notes were found for voting on proposal {proposal}"
+            )));
+        }
+
+        // Collect RateData into a map so it's easier to check without looping
+        let rate_data_map: BTreeMap<IdentityKey, RateData> = rate_data
+            .into_iter()
+            .map(|r| r.try_into())
+            .collect::<Result<Vec<RateData>, _>>()?
+            .into_iter()
+            .map(|data| (data.identity_key, data))
+            .collect();
+
+        // For each voting note, see if there are any matches with the domain_rate_data vec
+        // If so, add a DelegatorVotePlan to the action_list
+        for (record, identity_key) in &voting_notes {
+            let Some(validator_start_rate_data) = rate_data_map.get(identity_key) else {
+                continue;
+            };
+
+            let voting_power_at_vote_start =
+                validator_start_rate_data.unbonded_amount(record.note.amount());
+
+            let domain_vote = vote
+                .clone()
+                .map(TryInto::try_into)
+                .transpose()?
+                .ok_or_else(|| anyhow::anyhow!("missing vote param"))?;
+
+            let vote_plan = DelegatorVotePlan::new(
+                &mut OsRng,
+                proposal,
+                start_position.into(),
+                domain_vote,
+                record.note.clone(),
+                record.position,
+                voting_power_at_vote_start,
+            );
+            actions_list.push(ActionPlan::DelegatorVote(vote_plan));
+        }
     }
 
     // Phase 2: balance the transaction with information from the view service.

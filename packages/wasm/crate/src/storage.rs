@@ -1,3 +1,4 @@
+use std::collections::BTreeMap;
 #[allow(unused_imports)]
 use std::future::IntoFuture;
 
@@ -10,6 +11,7 @@ use penumbra_asset::asset::{self, Id, Metadata};
 use penumbra_auction::auction::AuctionId;
 use penumbra_keys::keys::AddressIndex;
 use penumbra_num::Amount;
+use penumbra_proto::core::keys;
 use penumbra_proto::{
     core::{app::v1::AppParameters, asset::v1::Value, component::sct::v1::Epoch},
     crypto::tct::v1::StateCommitment,
@@ -18,6 +20,7 @@ use penumbra_proto::{
 };
 use penumbra_sct::Nullifier;
 use penumbra_shielded_pool::{fmd, note, Note};
+use penumbra_stake::{DelegationToken, IdentityKey};
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::JsValue;
 use web_sys::IdbTransactionMode::Readwrite;
@@ -385,6 +388,63 @@ impl IndexedDBStorage {
         } else {
             Err(WasmError::Anyhow(Error::msg("could not find reserves")))
         }
+    }
+
+    pub async fn get_delegation_assets(&self) -> WasmResult<BTreeMap<Id, DelegationToken>> {
+        let idb_tx = self.db.transaction_on_one(&self.constants.tables.assets)?;
+        let store = idb_tx.object_store(&self.constants.tables.assets)?;
+        let all_metadata = store
+            .get_all()?
+            .await?
+            .into_iter()
+            .map(serde_wasm_bindgen::from_value)
+            .collect::<Result<Vec<Metadata>, _>>()?;
+
+        let mut assets: BTreeMap<Id, DelegationToken> = BTreeMap::new();
+
+        for metadata in all_metadata {
+            if let Ok(token) = DelegationToken::try_from(metadata.clone()) {
+                assets.insert(metadata.id(), token);
+            }
+        }
+
+        Ok(assets)
+    }
+
+    pub async fn get_notes_for_voting(
+        &self,
+        address_index: Option<keys::v1::AddressIndex>,
+        votable_at_height: u64,
+    ) -> WasmResult<Vec<(SpendableNoteRecord, IdentityKey)>> {
+        let delegation_assets = self.get_delegation_assets().await?;
+
+        let all_notes = self
+            .get_notes(NotesRequest {
+                include_spent: true,
+                address_index,
+                asset_id: None,
+                amount_to_spend: None,
+            })
+            .await?;
+
+        let mut notes_for_voting: Vec<(SpendableNoteRecord, IdentityKey)> = vec![];
+
+        for record in all_notes {
+            let Some(delegation_token) = delegation_assets.get(&record.note.asset_id()) else {
+                continue;
+            };
+
+            // Ensure if it's been spent, it is later than votable vote height
+            if let Some(height_spent) = record.height_spent {
+                if height_spent < votable_at_height {
+                    continue;
+                }
+            }
+
+            notes_for_voting.push((record, delegation_token.validator()));
+        }
+
+        Ok(notes_for_voting)
     }
 }
 
