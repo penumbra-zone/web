@@ -21,7 +21,6 @@ export const SwapViewComponent = ({
   feeValueView: ValueView;
 }) => {
   if (value.swapView.case === 'visible') {
-    const claimFee = getClaimFeeFromSwapView(value);
     const claimTx = getClaimTx.optional()(value);
     const addressView = getAddressView.optional()(value);
     const oneWaySwap = isOneWaySwap(value) ? getOneWaySwapValues(value) : undefined;
@@ -31,9 +30,9 @@ export const SwapViewComponent = ({
     // and pass it to the ActionViewComponent for swaps to render the prepaid claim fee.
     // A deep clone of the `feeValueView` object is necessary because objects in TypeScript
     // are passed by reference, meaning they point to the same object in memory.
-    const prepaidClaimFee = structuredClone(feeValueView);
+    const prepaidClaimFee = feeValueView.clone();
     if (prepaidClaimFee.valueView.value) {
-      prepaidClaimFee.valueView.value.amount = claimFee.amount;
+      prepaidClaimFee.valueView.value.amount = getClaimFeeFromSwapView(value).amount;
     }
 
     return (
