@@ -2,8 +2,11 @@ import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/a
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
 
+// Attempts to extract a fee token, with priority in descending order, from the assets used
+// in the actions of the planner request.
 export const extractAltFee = async (
   request: TransactionPlannerRequest,
+  stakingTokenAssetId: AssetId,
   indexedDb: IndexedDbInterface,
 ): Promise<AssetId> => {
   const outputAsset = request.outputs.map(o => o.value?.assetId).find(Boolean);
@@ -14,12 +17,14 @@ export const extractAltFee = async (
 
   const swapCommitment = request.swapClaims
     .map(swapClaim => swapClaim.swapCommitment)
-    .find(commitment => commitment !== undefined);
+    .find(Boolean);
   if (swapCommitment) {
     const swaps = await indexedDb.getSwapByCommitment(swapCommitment);
-    if (swaps?.swap?.tradingPair?.asset1) {
-      return swaps.swap.tradingPair.asset1;
+    if (swaps?.swap?.claimFee?.assetId) {
+      return swaps.swap.claimFee.assetId;
     }
+    // Use native staking token if asset id for the claim fee is undefined.
+    return stakingTokenAssetId;
   }
 
   const auctionScheduleAsset = request.dutchAuctionScheduleActions
