@@ -2,9 +2,10 @@ import { SliceCreator, useStore } from '.';
 import { SwapRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { issueSwapClaim } from './swap/instant-swap';
 import { getSwapRecordCommitment } from '@penumbra-zone/getters/swap-record';
-import { ZQueryState, createZQuery } from '@penumbra-zone/zquery';
+import { createZQuery, ZQueryState } from '@penumbra-zone/zquery';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { fetchUnclaimedSwaps } from '../fetchers/unclaimed-swaps';
+import { viewClient } from '../clients';
 
 type SwapCommitmentId = string;
 
@@ -62,7 +63,9 @@ export const createUnclaimedSwapsSlice = (): SliceCreator<UnclaimedSwapsSlice> =
     setStatus('add', id);
 
     const commitment = getSwapRecordCommitment(swap);
-    await issueSwapClaim(commitment);
+
+    const { addressIndex } = await viewClient.indexByAddress({ address: swap.swap?.claimAddress });
+    await issueSwapClaim(commitment, addressIndex);
     setStatus('remove', id);
     get().unclaimedSwaps.unclaimedSwaps.revalidate();
   },

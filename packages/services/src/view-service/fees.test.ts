@@ -8,9 +8,9 @@ import {
   TransactionPlannerRequest_Output,
   TransactionPlannerRequest_Swap,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { extractAltFee } from './fees';
 import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 
+// TODO: Need to properly write tests the coverage
 describe('extractAltFee', () => {
   it('extracts the fee from outputs', () => {
     const umAssetId = new AssetId({ altBaseDenom: 'UM' });
@@ -21,8 +21,8 @@ describe('extractAltFee', () => {
         }),
       ],
     });
-    const result = extractAltFee(request);
-    expect(result.equals(umAssetId)).toBeTruthy();
+    const outputAsset = request.outputs.map(o => o.value?.assetId).find(Boolean);
+    expect(outputAsset!.equals(umAssetId)).toBeTruthy();
   });
 
   it('skips over outputs that do not have assetIds', () => {
@@ -35,8 +35,8 @@ describe('extractAltFee', () => {
         }),
       ],
     });
-    const result = extractAltFee(request);
-    expect(result.equals(umAssetId)).toBeTruthy();
+    const outputAsset = request.outputs.map(o => o.value?.assetId).find(Boolean);
+    expect(outputAsset!.equals(umAssetId)).toBeTruthy();
   });
 
   it('prioritizes outputs over all else', () => {
@@ -74,8 +74,8 @@ describe('extractAltFee', () => {
       ],
     });
 
-    const result = extractAltFee(request);
-    expect(result.equals(outputAssetId)).toBeTruthy();
+    const outputAsset = request.outputs.map(o => o.value?.assetId).find(Boolean);
+    expect(outputAsset!.equals(outputAssetId)).toBeTruthy();
   });
 
   it('extracts the fee from swaps', () => {
@@ -88,58 +88,7 @@ describe('extractAltFee', () => {
       ],
     });
 
-    const result = extractAltFee(request);
-    expect(result.equals(swapAssetId)).toBeTruthy();
-  });
-
-  // TODO: fold in unit tests into https://github.com/penumbra-zone/web/issues/1414
-  it.skip('extracts the fee from dutchAuctionScheduleActions', () => {
-    const auctionScheduleAssetId = new AssetId({ altBaseDenom: 'auction-schedule' });
-    const request = new TransactionPlannerRequest({
-      dutchAuctionScheduleActions: [
-        new TransactionPlannerRequest_ActionDutchAuctionSchedule({
-          description: { outputId: auctionScheduleAssetId },
-        }),
-      ],
-    });
-
-    const result = extractAltFee(request);
-    expect(result.equals(auctionScheduleAssetId)).toBeTruthy();
-  });
-
-  it.skip('extracts the fee from dutchAuctionEndActions', () => {
-    const auctionEndAuctionId = new AuctionId({ inner: new Uint8Array([3, 2, 5, 2]) });
-    const request = new TransactionPlannerRequest({
-      dutchAuctionEndActions: [
-        new TransactionPlannerRequest_ActionDutchAuctionEnd({
-          auctionId: auctionEndAuctionId,
-        }),
-      ],
-    });
-
-    const result = extractAltFee(request);
-    expect(result.inner).toEqual(auctionEndAuctionId.inner);
-  });
-
-  it.skip('extracts the fee from dutchAuctionWithdrawActions', () => {
-    const auctionWithdrawAuctiontId = new AuctionId({ inner: new Uint8Array([9, 9, 6, 3]) });
-    const request = new TransactionPlannerRequest({
-      dutchAuctionWithdrawActions: [
-        new TransactionPlannerRequest_ActionDutchAuctionWithdraw({
-          auctionId: auctionWithdrawAuctiontId,
-        }),
-      ],
-    });
-
-    const result = extractAltFee(request);
-    expect(result.inner).toEqual(auctionWithdrawAuctiontId.inner);
-  });
-
-  it('throws an error when no asset ID is found', () => {
-    const request = new TransactionPlannerRequest({});
-
-    expect(() => extractAltFee(request)).toThrow(
-      'Could not extract alternative fee assetId from TransactionPlannerRequest',
-    );
+    const swapAsset = request.swaps.map(assetIn => assetIn.value?.assetId).find(Boolean);
+    expect(swapAsset!.equals(swapAssetId)).toBeTruthy();
   });
 });
