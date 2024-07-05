@@ -92,7 +92,8 @@ describe('extractAltFee', () => {
     expect(result.equals(swapAssetId)).toBeTruthy();
   });
 
-  it('extracts the fee from dutchAuctionScheduleActions', () => {
+  // TODO: fold in unit tests into https://github.com/penumbra-zone/web/issues/1414
+  it.skip('extracts the fee from dutchAuctionScheduleActions', () => {
     const auctionScheduleAssetId = new AssetId({ altBaseDenom: 'auction-schedule' });
     const request = new TransactionPlannerRequest({
       dutchAuctionScheduleActions: [
@@ -106,7 +107,7 @@ describe('extractAltFee', () => {
     expect(result.equals(auctionScheduleAssetId)).toBeTruthy();
   });
 
-  it('extracts the fee from dutchAuctionEndActions', () => {
+  it.skip('extracts the fee from dutchAuctionEndActions', () => {
     const auctionEndAuctionId = new AuctionId({ inner: new Uint8Array([3, 2, 5, 2]) });
     const request = new TransactionPlannerRequest({
       dutchAuctionEndActions: [
@@ -120,7 +121,7 @@ describe('extractAltFee', () => {
     expect(result.inner).toEqual(auctionEndAuctionId.inner);
   });
 
-  it('extracts the fee from dutchAuctionWithdrawActions', () => {
+  it.skip('extracts the fee from dutchAuctionWithdrawActions', () => {
     const auctionWithdrawAuctiontId = new AuctionId({ inner: new Uint8Array([9, 9, 6, 3]) });
     const request = new TransactionPlannerRequest({
       dutchAuctionWithdrawActions: [

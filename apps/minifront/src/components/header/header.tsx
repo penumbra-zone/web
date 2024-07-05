@@ -16,14 +16,14 @@ export const Header = () => {
   }, []);
 
   return (
-    <header className='w-full overflow-hidden bg-gradient-to-t from-transparent to-black to-40% pb-[3em]'>
+    <header className='w-full bg-gradient-to-t from-transparent to-black to-40% pb-[3em]'>
       <TestnetBanner chainId={chainId} />
       <CondensedBlockSyncStatus
         fullSyncHeight={data?.fullSyncHeight}
         latestKnownBlockHeight={data?.latestKnownBlockHeight}
         error={error}
       />
-      <div className='flex w-full flex-col items-center justify-between overflow-hidden px-6 md:h-[82px] md:flex-row md:gap-12 md:px-12'>
+      <div className='flex w-full flex-col items-center justify-between px-6 md:h-[82px] md:flex-row md:gap-12 md:px-12'>
         <HeaderLogo />
         <MenuBar />
       </div>
