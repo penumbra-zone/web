@@ -24,11 +24,11 @@ export const extractAltFee = async (
   const swapCommitment = request.swapClaims
     .map(swapClaim => swapClaim.swapCommitment)
     .find(Boolean);
+
   if (swapCommitment) {
     const swaps = await indexedDb.getSwapByCommitment(swapCommitment);
-    if (swaps?.swap?.claimFee?.assetId) {
-      return swaps.swap.claimFee.assetId;
-    }
+    // If the claimFee assetId is undefined, it means the swap was made with the stakingTokenAsset
+    return swaps?.swap?.claimFee?.assetId ?? indexedDb.stakingTokenAssetId;
   }
 
   throw new Error('Could not extract alternative fee assetId from TransactionPlannerRequest');
