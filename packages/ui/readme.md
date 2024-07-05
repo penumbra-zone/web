@@ -28,7 +28,9 @@ This ensures that the Penumbra UI `package.json` `exports` field works as intend
 
 Note that `<ComponentName>` should be replaced with the `UpperCamelCase` component name — e.g., `./components/v2/LoadingIndicator/index.tsx`.
 
-### Components that are only used within a parent component must sit in the parent component's directory, rather than be a sibling of the parent directory.
+### Internal-use components that are only used within a parent component must sit in the parent component's directory, rather than be a sibling of the parent directory.
+
+This guideline only applies to components that are _not_ intended to be used externally, but are only to be used as dependencies of other Penumbra UI library components.
 
 ```
 - src/components/
@@ -46,7 +48,9 @@ Note that `<ComponentName>` should be replaced with the `UpperCamelCase` compone
 
 (One exception to this rule: if you're developing a component that will eventually be used by multiple other components, and just happens to be a child of only a single component at the moment, you can leave it as a sibling of its parent.)
 
-### Components should be located at the most specific possible directory level.
+### Internal-use components should be located at the most specific possible directory level.
+
+This guideline only applies to components that are _not_ intended to be used externally, but are only to be used as dependencies of other Penumbra UI library components.
 
 For example, if the `Dropdown` component is used by both `HeaderWithDropdown` and `Menu` components, `Dropdown` should be placed in the lowest-level directory that contains both `HeaderWithDropdown` and `Menu`:
 
@@ -78,7 +82,7 @@ This, as opposed to e.g., placing it inside the `HeaderWithDropdown` directory (
       - index.test.tsx
 ```
 
-### Component props should be exported from the component file as `<ComponentName>Props`.
+### Component props must be exported from the component file as `<ComponentName>Props`.
 
 For example:
 
