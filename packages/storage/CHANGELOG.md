@@ -1,5 +1,21 @@
 # @penumbra-zone/storage
 
+## 11.0.0
+
+### Major Changes
+
+- 43ccd96: Modify GasPrices storage to support multi-asset fees
+
+### Minor Changes
+
+- 8e68481: Update to v9.3.0 registry
+
+### Patch Changes
+
+- Updated dependencies [43ccd96]
+  - @penumbra-zone/types@13.1.0
+  - @penumbra-zone/wasm@14.0.0
+
 ## 10.0.0
 
 ### Patch Changes
