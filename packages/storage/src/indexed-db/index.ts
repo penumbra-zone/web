@@ -820,7 +820,7 @@ export class IndexedDb implements IndexedDbInterface {
     };
   }
 
-  async hasStakingAssetBalance(addressIndex: AddressIndex | undefined): Promise<boolean> {
+  async hasStakingAssetBalance(): Promise<boolean> {
     const spendableUMNotes = await this.db.getAllFromIndex(
       'SPENDABLE_NOTES',
       'assetId',
@@ -829,11 +829,7 @@ export class IndexedDb implements IndexedDbInterface {
 
     return spendableUMNotes.some(note => {
       const umNote = SpendableNoteRecord.fromJson(note);
-      return (
-        umNote.heightSpent === 0n &&
-        !isZero(getAmountFromRecord(umNote)) &&
-        umNote.addressIndex?.equals(addressIndex)
-      );
+      return umNote.heightSpent === 0n && !isZero(getAmountFromRecord(umNote));
     });
   }
 }

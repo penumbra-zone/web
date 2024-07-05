@@ -14,11 +14,13 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
   const { indexedDb } = await services.getWalletServices();
 
   // Query IndexedDB directly to check for the existence of staking token
-  const nativeToken = await indexedDb.hasStakingAssetBalance(req.source);
+  const nativeToken = await indexedDb.hasStakingAssetBalance();
 
   // Initialize the gas fee token using the native staking token's asset ID
   // If there is no native token balance, extract and use an alternate gas fee token
-  const gasFeeToken = nativeToken ? indexedDb.stakingTokenAssetId : extractAltFee(req);
+  const gasFeeToken = nativeToken
+    ? indexedDb.stakingTokenAssetId
+    : await extractAltFee(req, indexedDb);
 
   const fmdParams = await indexedDb.getFmdParams();
   if (!fmdParams) throw new ConnectError('FmdParameters not available', Code.FailedPrecondition);

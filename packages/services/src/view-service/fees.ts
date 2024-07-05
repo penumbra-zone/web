@@ -1,14 +1,26 @@
 import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
 
-// Attempts to extract a fee token from the assets used in the actions of the planner request
-// Priority in descending order
-export const extractAltFee = (request: TransactionPlannerRequest): AssetId => {
+export const extractAltFee = async (
+  request: TransactionPlannerRequest,
+  indexedDb: IndexedDbInterface,
+): Promise<AssetId> => {
   const outputAsset = request.outputs.map(o => o.value?.assetId).find(Boolean);
   if (outputAsset) return outputAsset;
 
   const swapAsset = request.swaps.map(assetIn => assetIn.value?.assetId).find(Boolean);
   if (swapAsset) return swapAsset;
+
+  const swapCommitment = request.swapClaims
+    .map(swapClaim => swapClaim.swapCommitment)
+    .find(commitment => commitment !== undefined);
+  if (swapCommitment) {
+    const swaps = await indexedDb.getSwapByCommitment(swapCommitment);
+    if (swaps?.swap?.tradingPair?.asset1) {
+      return swaps.swap.tradingPair.asset1;
+    }
+  }
 
   const auctionScheduleAsset = request.dutchAuctionScheduleActions
     .map(a => a.description?.outputId)
