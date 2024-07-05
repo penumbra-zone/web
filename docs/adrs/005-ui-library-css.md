@@ -25,6 +25,7 @@ The new UI library will not only be consumed by minifront (and possibly Prax); i
   - We _definitely_ don't want that. For example, they could redefine the `spacing` values so that `px-1` creates horizontal padding of `6px` instead of `4px`, which would screw up our designs throughout the library.
 - Consumers will expect to be able to pass Tailwind classes to our UI components.
   - This relates to the first point: if consumers are required to _install and configure_ Tailwind just to use our library, they won't be happy about having to install a dependency they can't actually use.
+- Consumers have to import `.css` files alongside our component files.
 - Even if we figured out a way to compile our Tailwind CSS with our components so that consumers didn't need to install Tailwind, the resultant CSS would be inefficiently big.
   - For example, if three different Penumbra UI library components use `bg-card-radial`, then either A) for each component that uses that class, the class will need to be defined in that component's CSS file (resulting in code duplication), or B) we'll export a single kitchen-sink CSS file containing all the styles for _all_ the Penumbra UI library components, including all of those that the consumer doesn't use. Both of these result in overhead.
   - Counterpoint: The same will be true even if we use CSS modules or native CSS.
