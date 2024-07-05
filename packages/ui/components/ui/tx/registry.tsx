@@ -10,7 +10,6 @@ export function getFeeAssetMetadataOrDefault(
 ): Metadata | undefined {
   const registryClient = new ChainRegistryClient();
   const registry = registryClient.get(chainId);
-
   const feeAssetId = assetId ?? registryClient.globals().stakingAssetId;
   return registry.getMetadata(feeAssetId);
 }
