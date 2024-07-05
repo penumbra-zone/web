@@ -78,19 +78,19 @@ This, as opposed to e.g., placing it inside the `HeaderWithDropdown` directory (
       - index.test.tsx
 ```
 
-### Component props should be typed inline in the component function definition.
+### Component props should be exported from the component file as `<ComponentName>Props`.
 
 For example:
 
 ```tsx
-export function MyComponent({ color }: { color: Color }) {
+export interface MyComponentProps {
+  color: Color;
+}
+
+export function MyComponent({ color }: MyComponentProps) {
   // ...
 }
 ```
-
-This makes component code easy to read. An exception to this may be made when props are especially complex, such as when they are conditional.
-
-There is no need to export the props interface, since consumers can simply use `React.ComponentProps<typeof ComponentName>` to extract the props interface from the component.
 
 ### Components must not accept `className` or `style` props.
 
@@ -150,12 +150,22 @@ export function SplashPage() {
 
 ```tsx
 // AssetIcon/index.tsx
-export function AssetIcon({ display, src }: { display: string; src: string }) {
+export interface AssetIconProps {
+  display: string;
+  src: string;
+}
+
+export function AssetIcon({ display, src }: AssetIconProps) {
   return <img src={src} alt={`Icon for the ${display} asset`} />;
 }
 
 // ValueComponent/index.tsx
-export function ValueComponent({ value, metadata }: { value: Value; metadata: Metadata }) {
+export interface ValueComponentProps {
+  value: Value;
+  metadata: Metadata;
+}
+
+export function ValueComponent({ value, metadata }: ValueComponentProps) {
   return (
     <Pill>
       // ✅ CORRECT: define space around components using wrapper divs
@@ -173,7 +183,12 @@ export function ValueComponent({ value, metadata }: { value: Value; metadata: Me
 
 ```tsx
 // AssetIcon/index.tsx
-export function AssetIcon({ display, src }: { display: string; src: string }) {
+export interface AssetIconProps {
+  display: string;
+  src: string;
+}
+
+export function AssetIcon({ display, src }: AssetIconProps) {
   return (
     <img
       src={src}
@@ -185,7 +200,12 @@ export function AssetIcon({ display, src }: { display: string; src: string }) {
 }
 
 // ValueComponent/index.tsx
-export function ValueComponent({ value, metadata }: { value: Value; metadata: Metadata }) {
+export interface ValueComponentProps {
+  value: Value;
+  metadata: Metadata;
+}
+
+export function ValueComponent({ value, metadata }: ValueComponentProps) {
   return (
     <Pill>
       <AssetIcon display={metadata.display} src='./icon.png' />
@@ -215,7 +235,11 @@ For example, a component designed to render a `ValueView` must be named `ValueVi
 // ValueViewComponent/index.tsx
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
-export function ValueViewComponent({ valueView }: { valueView: ValueView }) {
+export interface ValueViewComponentProps {
+  valueView: ValueView;
+}
+
+export function ValueViewComponent({ valueView }: ValueViewComponentProps) {
   // ...
 }
 
