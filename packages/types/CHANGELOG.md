@@ -1,5 +1,11 @@
 # @penumbra-zone/types
 
+## 14.0.0
+
+### Major Changes
+
+- 28a48d7: Fixes for multi-asset fees
+
 ## 13.1.0
 
 ### Minor Changes

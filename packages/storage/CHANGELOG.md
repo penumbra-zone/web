@@ -1,5 +1,18 @@
 # @penumbra-zone/storage
 
+## 12.0.0
+
+### Major Changes
+
+- 28a48d7: Fixes for multi-asset fees
+
+### Patch Changes
+
+- Updated dependencies [28a48d7]
+- Updated dependencies [28a48d7]
+  - @penumbra-zone/wasm@15.0.0
+  - @penumbra-zone/types@14.0.0
+
 ## 11.0.0
 
 ### Major Changes

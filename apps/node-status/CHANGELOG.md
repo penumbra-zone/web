@@ -1,5 +1,12 @@
 # node-status
 
+## 4.1.5
+
+### Patch Changes
+
+- Updated dependencies [28a48d7]
+  - @repo/ui@6.5.0
+
 ## 4.1.4
 
 ### Patch Changes

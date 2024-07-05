@@ -1,5 +1,21 @@
 # minifront
 
+## 6.9.0
+
+### Minor Changes
+
+- 28a48d7: Send max support
+
+### Patch Changes
+
+- dc77a52: Services: add priority scores to the `assets` service. Minifront: fix rendering issues
+- Updated dependencies [28a48d7]
+- Updated dependencies [28a48d7]
+  - @penumbra-zone/types@14.0.0
+  - @repo/ui@6.5.0
+  - @penumbra-zone/perspective@12.0.0
+  - @penumbra-zone/crypto-web@11.0.0
+
 ## 6.8.0
 
 ### Minor Changes
