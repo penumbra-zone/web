@@ -1,5 +1,17 @@
 # @penumbra-zone/ui
 
+## 6.4.0
+
+### Minor Changes
+
+- 8e68481: Update to v9.3.0 registry
+
+### Patch Changes
+
+- 1ae30d8: Render the timeout time in withdrawal transactions in UTC format
+- Updated dependencies [43ccd96]
+  - @penumbra-zone/types@13.1.0
+
 ## 6.3.1
 
 ### Patch Changes
