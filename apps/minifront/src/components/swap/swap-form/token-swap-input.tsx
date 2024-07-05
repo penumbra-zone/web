@@ -37,15 +37,13 @@ const getAssetOutBalance = (
 ) => {
   if (!assetIn || !assetOut) return zeroValueView();
 
-  const assetOutMetadata = new Metadata(assetOut);
-
   const match = balancesResponses.find(balance => {
     const balanceViewMetadata = getMetadataFromBalancesResponse(balance);
 
     return (
       getAddressIndex(balance.accountAddress).account ===
         getAddressIndex(assetIn.accountAddress).account &&
-      assetOutMetadata.penumbraAssetId?.equals(balanceViewMetadata.penumbraAssetId)
+      assetOut.penumbraAssetId?.equals(balanceViewMetadata.penumbraAssetId)
     );
   });
   const matchedBalance = getBalanceView.optional()(match);
