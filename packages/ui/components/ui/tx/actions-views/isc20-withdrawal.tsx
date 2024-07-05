@@ -4,6 +4,16 @@ import { ActionDetails } from './action-details';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
 import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 
+const getUtcTime = (time: bigint) => {
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    dateStyle: 'medium',
+    timeStyle: 'long',
+    timeZone: 'UTC',
+  });
+  const date = new Date(Number(time / 1_000_000n));
+  return formatter.format(date);
+};
+
 export const Ics20WithdrawalComponent = ({ value }: { value: Ics20Withdrawal }) => {
   return (
     <ViewBox
@@ -42,7 +52,7 @@ export const Ics20WithdrawalComponent = ({ value }: { value: Ics20Withdrawal }) 
           )}
 
           <ActionDetails.Row label='Timeout Time'>
-            {new Date(Number(BigInt(value.timeoutTime) / 1_000_000n)).toString()}
+            {getUtcTime(value.timeoutTime)}
           </ActionDetails.Row>
         </ActionDetails>
       }

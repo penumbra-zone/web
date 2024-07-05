@@ -12,6 +12,9 @@ export const extractAltFee = async (
   const outputAsset = request.outputs.map(o => o.value?.assetId).find(Boolean);
   if (outputAsset) return outputAsset;
 
+  const spendAsset = request.spends.map(o => o.value?.assetId).find(Boolean);
+  if (spendAsset) return spendAsset;
+
   const swapAsset = request.swaps.map(assetIn => assetIn.value?.assetId).find(Boolean);
   if (swapAsset) return swapAsset;
 
@@ -26,23 +29,6 @@ export const extractAltFee = async (
     // Use native staking token if asset id for the claim fee is undefined.
     return stakingTokenAssetId;
   }
-
-  const auctionScheduleAsset = request.dutchAuctionScheduleActions
-    .map(a => a.description?.outputId)
-    .find(Boolean);
-  if (auctionScheduleAsset) return auctionScheduleAsset;
-
-  const auctionEndAsset = request.dutchAuctionEndActions.map(a => a.auctionId?.inner).find(Boolean);
-  if (auctionEndAsset) {
-    return new AssetId({ inner: auctionEndAsset });
-  }
-
-  const auctionWithdrawAsset = request.dutchAuctionWithdrawActions
-    .map(a => a.auctionId?.inner)
-    .find(Boolean);
-  if (auctionWithdrawAsset) {
-    return new AssetId({ inner: auctionWithdrawAsset });
-  }
-
+  
   throw new Error('Could not extract alternative fee assetId from TransactionPlannerRequest');
 };

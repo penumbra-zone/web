@@ -36,11 +36,18 @@ export const TransactionViewComponent = ({ txv }: { txv: TransactionView }) => {
       {txv.bodyView.memoView?.memoView && <MemoViewComponent memo={txv.bodyView.memoView} />}
       <ViewSection heading='Actions'>
         {txv.bodyView.actionViews.map((av, i) => (
-          <ActionViewComponent av={av} key={i} />
+          <ActionViewComponent av={av} feeValueView={feeValueView} key={i} />
         ))}
       </ViewSection>
       <ViewSection heading='Parameters'>
-        <ViewBox label='Fee' visibleContent={<ValueViewComponent view={feeValueView} />} />
+        <ViewBox
+          label='Transaction Fee'
+          visibleContent={
+            <div className='font-mono'>
+              <ValueViewComponent view={feeValueView} />
+            </div>
+          }
+        />
         <ViewBox
           label='Chain ID'
           visibleContent={

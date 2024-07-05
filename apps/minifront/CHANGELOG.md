@@ -1,5 +1,22 @@
 # minifront
 
+## 6.8.0
+
+### Minor Changes
+
+- 8e68481: Update to v9.3.0 registry
+
+### Patch Changes
+
+- 066aabb: Add priority sorting to the assets table
+- Updated dependencies [43ccd96]
+- Updated dependencies [8e68481]
+- Updated dependencies [1ae30d8]
+  - @penumbra-zone/types@13.1.0
+  - @repo/ui@6.4.0
+  - @penumbra-zone/crypto-web@10.0.0
+  - @penumbra-zone/perspective@11.0.0
+
 ## 6.7.0
 
 ### Minor Changes

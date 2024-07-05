@@ -1,5 +1,23 @@
 # @penumbra-zone/router
 
+## 14.0.0
+
+### Minor Changes
+
+- 43ccd96: Modify GasPrices storage to support multi-asset fees
+- 066aabb: Add priority scores to the asset metadata
+
+### Patch Changes
+
+- Updated dependencies [43ccd96]
+- Updated dependencies [8e68481]
+  - @penumbra-zone/storage@11.0.0
+  - @penumbra-zone/query@12.0.0
+  - @penumbra-zone/types@13.1.0
+  - @penumbra-zone/wasm@14.0.0
+  - @penumbra-zone/crypto-web@10.0.0
+  - @penumbra-zone/perspective@11.0.0
+
 ## 13.0.0
 
 ### Minor Changes

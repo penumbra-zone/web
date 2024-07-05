@@ -1,5 +1,11 @@
 # @penumbra-zone/types
 
+## 13.1.0
+
+### Minor Changes
+
+- 43ccd96: Modify GasPrices storage to support multi-asset fees
+
 ## 13.0.0
 
 ### Patch Changes

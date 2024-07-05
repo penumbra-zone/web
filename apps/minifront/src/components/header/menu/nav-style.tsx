@@ -11,6 +11,7 @@ export const triggerStyle = [
   'font-bold text-[15px]',
   'rounded-lg border border-light-brown',
   'data-[state=open]:rounded-b-none',
+  'data-[state=open]:border-b-0',
   'data-[state=open]:backdrop-blur-lg',
   'data-[state=open]:bg-amber-950/[.10]',
 ];
@@ -25,5 +26,7 @@ export const dropdownStyle = [
   'transition',
   'animate-expand-down',
 ];
+
+export const viewportStyle = ['absolute', 'right-0', 'z-50'];
 
 export const linkStyle = ['cursor-pointer', 'mx-4'];

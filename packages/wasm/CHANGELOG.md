@@ -1,5 +1,16 @@
 # @penumbra-zone/wasm
 
+## 14.0.0
+
+### Minor Changes
+
+- 43ccd96: Modify GasPrices storage to support multi-asset fees
+
+### Patch Changes
+
+- Updated dependencies [43ccd96]
+  - @penumbra-zone/types@13.1.0
+
 ## 13.0.0
 
 ### Patch Changes
