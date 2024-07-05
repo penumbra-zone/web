@@ -3,12 +3,18 @@ import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_
 
 // Attempts to extract a fee token from the assets used in the actions of the planner request
 // Priority in descending order
-export const extractAltFee = (request: TransactionPlannerRequest): AssetId => {
+export const extractAltFee = (
+  request: TransactionPlannerRequest,
+  stakingTokenAssetId: AssetId,
+): AssetId => {
   const outputAsset = request.outputs.map(o => o.value?.assetId).find(Boolean);
   if (outputAsset) return outputAsset;
 
   const swapAsset = request.swaps.map(assetIn => assetIn.value?.assetId).find(Boolean);
   if (swapAsset) return swapAsset;
+
+  const ics20Withdrawl = request.ics20Withdrawals.find(Boolean);
+  if (ics20Withdrawl) return stakingTokenAssetId;
 
   const auctionScheduleAsset = request.dutchAuctionScheduleActions
     .map(a => a.description?.outputId)
