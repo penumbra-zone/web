@@ -1,5 +1,20 @@
 # @penumbra-zone/router
 
+## 15.0.0
+
+### Patch Changes
+
+- 28a48d7: Fixes for multi-asset fees
+- dc77a52: Services: add priority scores to the `assets` service. Minifront: fix rendering issues
+- Updated dependencies [28a48d7]
+- Updated dependencies [28a48d7]
+  - @penumbra-zone/wasm@15.0.0
+  - @penumbra-zone/storage@12.0.0
+  - @penumbra-zone/types@14.0.0
+  - @penumbra-zone/perspective@12.0.0
+  - @penumbra-zone/query@13.0.0
+  - @penumbra-zone/crypto-web@11.0.0
+
 ## 14.0.0
 
 ### Minor Changes

@@ -1,5 +1,16 @@
 # @penumbra-zone/ui
 
+## 6.5.0
+
+### Minor Changes
+
+- 28a48d7: Updated ActionViewComponent to support FeeView
+
+### Patch Changes
+
+- Updated dependencies [28a48d7]
+  - @penumbra-zone/types@14.0.0
+
 ## 6.4.0
 
 ### Minor Changes

@@ -1,5 +1,16 @@
 # @penumbra-zone/wasm
 
+## 15.0.0
+
+### Minor Changes
+
+- 28a48d7: Send max support
+
+### Patch Changes
+
+- Updated dependencies [28a48d7]
+  - @penumbra-zone/types@14.0.0
+
 ## 14.0.0
 
 ### Minor Changes
