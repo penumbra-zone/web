@@ -1,5 +1,6 @@
 import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { assetIdFromBaseDenom } from '@penumbra-zone/wasm/asset';
 import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
 
 // Attempts to extract a fee token, with priority in descending order, from the assets used
@@ -17,6 +18,9 @@ export const extractAltFee = async (
 
   const swapAsset = request.swaps.map(assetIn => assetIn.value?.assetId).find(Boolean);
   if (swapAsset) return swapAsset;
+
+  const ics20WithdrawAsset = request.ics20Withdrawals.map(w => w.denom).find(Boolean);
+  if (ics20WithdrawAsset) return assetIdFromBaseDenom(ics20WithdrawAsset.denom);
 
   const swapCommitment = request.swapClaims
     .map(swapClaim => swapClaim.swapCommitment)
