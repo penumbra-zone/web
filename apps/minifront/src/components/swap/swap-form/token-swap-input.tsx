@@ -37,12 +37,15 @@ const getAssetOutBalance = (
 ) => {
   if (!assetIn || !assetOut) return zeroValueView();
 
+  const assetOutMetadata = new Metadata(assetOut);
+
   const match = balancesResponses.find(balance => {
     const balanceViewMetadata = getMetadataFromBalancesResponse(balance);
 
     return (
-      getAddressIndex(balance.accountAddress).equals(getAddressIndex(assetIn.accountAddress)) &&
-      assetOut.equals(balanceViewMetadata)
+      getAddressIndex(balance.accountAddress).account ===
+        getAddressIndex(assetIn.accountAddress).account &&
+      assetOutMetadata.penumbraAssetId?.equals(balanceViewMetadata.penumbraAssetId)
     );
   });
   const matchedBalance = getBalanceView.optional()(match);
@@ -161,6 +164,9 @@ export const TokenSwapInput = () => {
             </div>
           </div>
         </div>
+      </div>
+
+      <div className='pt-2'>
         {priceHistory.startMetadata && priceHistory.endMetadata && priceHistory.candles.length ? (
           <CandlestickPlot
             className='h-[480px] w-full bg-charcoal'
