@@ -5,7 +5,7 @@ import { dashboardLink, headerLinks } from '../constants';
 import { CaretDownIcon } from '@radix-ui/react-icons';
 import { useNavigate } from 'react-router-dom';
 import { metadata } from '../../metadata/content';
-import { itemStyle, linkStyle, triggerStyle, dropdownStyle } from './nav-style';
+import { itemStyle, linkStyle, triggerStyle, dropdownStyle, viewportStyle } from './nav-style';
 
 export const TabletNav = () => {
   const pathname = usePagePath();
@@ -30,7 +30,7 @@ export const TabletNav = () => {
           </ul>
         </NavigationMenu.Content>
       </NavigationMenu.Item>
-      <NavigationMenu.Viewport className='absolute z-50' />
+      <NavigationMenu.Viewport className={cn(...viewportStyle)} />
     </NavigationMenu.Root>
   );
 };

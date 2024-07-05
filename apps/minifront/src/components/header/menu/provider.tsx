@@ -2,7 +2,7 @@ import { cn } from '@repo/ui/lib/utils';
 import * as NavigationMenu from '@radix-ui/react-navigation-menu';
 import { getChainId } from '../../../fetchers/chain-id';
 import { useCallback, useEffect, useState } from 'react';
-import { itemStyle, triggerStyle, dropdownStyle, linkStyle } from './nav-style';
+import { itemStyle, triggerStyle, dropdownStyle, linkStyle, viewportStyle } from './nav-style';
 import { Link1Icon, LinkBreak1Icon } from '@radix-ui/react-icons';
 import { getPraxManifest, getPraxOrigin } from '../../../prax';
 import { PenumbraSymbol } from '@penumbra-zone/client';
@@ -28,13 +28,13 @@ export const ProviderMenu = () => {
   if (!providerManifest) return null;
 
   return (
-    <NavigationMenu.Root className='max-w-96'>
+    <NavigationMenu.Root className='relative max-w-96'>
       <NavigationMenu.Item className={cn(...itemStyle)}>
         <NavigationMenu.Trigger
           className={cn(
             'group',
             ...triggerStyle,
-            'flex flex-row gap-2 place-items-center justify-evenly whitespace-nowrap',
+            'h-[42px] flex flex-row gap-2 place-items-center justify-evenly whitespace-nowrap',
           )}
         >
           {manifestIconUnavailable ? (
@@ -50,7 +50,7 @@ export const ProviderMenu = () => {
           )}
           {chainId}
         </NavigationMenu.Trigger>
-        <NavigationMenu.Content className={cn(...dropdownStyle, 'w-64')}>
+        <NavigationMenu.Content className={cn(...dropdownStyle, 'min-w-60 w-full')}>
           <ul>
             <NavigationMenu.Item className={cn(...itemStyle)}>
               <NavigationMenu.Link className={cn(...linkStyle, 'p-0', 'leading-normal')}>
@@ -79,7 +79,7 @@ export const ProviderMenu = () => {
           </ul>
         </NavigationMenu.Content>
       </NavigationMenu.Item>
-      <NavigationMenu.Viewport className='absolute z-50' />
+      <NavigationMenu.Viewport className={cn(...viewportStyle)} />
     </NavigationMenu.Root>
   );
 };
