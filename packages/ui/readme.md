@@ -13,7 +13,7 @@ npm install @penumbra-zone/ui
 Then, use components by importing them from their specific files:
 
 ```tsx
-import ValueViewComponent from '@penumbra-zone/ui/ValueViewComponent';
+import { ValueViewComponent } from '@penumbra-zone/ui/ValueViewComponent';
 ```
 
 Deprecated components can be imported from `@penumbra-zone/ui/components/ui/<component-name>`, where `<component-name>` should be replaced with the kebab-cased component name.
@@ -78,16 +78,12 @@ This, as opposed to e.g., placing it inside the `HeaderWithDropdown` directory (
       - index.test.tsx
 ```
 
-### Components must be the default export of the component file.
-
-This allows them to be imported as the default, rather than destructuring an object. It also encourages UI library maintainers to only export one component per file.
-
 ### Component props should be typed inline in the component function definition.
 
 For example:
 
 ```tsx
-export default function MyComponent({ color }: { color: Color }) {
+export function MyComponent({ color }: { color: Color }) {
   // ...
 }
 ```
@@ -114,12 +110,12 @@ External spacing and positioning is the responsibility of parent components, and
 
 ```tsx
 // BackgroundAnimation/index.tsx
-export default function BackgroundAnimation() {
+export function BackgroundAnimation() {
   return <img src='./animation.gif' />;
 }
 
 // SplashPage/index.tsx
-export default function SplashPage() {
+export function SplashPage() {
   return (
     // ✅ CORRECT: position the background animation in the center of the screen
     // using a wrapper div in the parent
@@ -134,7 +130,7 @@ export default function SplashPage() {
 
 ```tsx
 // BackgroundAnimation/index.tsx
-export default function BackgroundAnimation() {
+export function BackgroundAnimation() {
   return (
     // ❌ INCORRECT: do not absolute-position elements in a non-page-level
     // component
@@ -145,7 +141,7 @@ export default function BackgroundAnimation() {
 }
 
 // SplashPage/index.tsx
-export default function SplashPage() {
+export function SplashPage() {
   return <BackgroundAnimation />;
 }
 ```
@@ -154,12 +150,12 @@ export default function SplashPage() {
 
 ```tsx
 // AssetIcon/index.tsx
-export default function AssetIcon({ display, src }: { display: string; src: string }) {
+export function AssetIcon({ display, src }: { display: string; src: string }) {
   return <img src={src} alt={`Icon for the ${display} asset`} />;
 }
 
 // ValueComponent/index.tsx
-export default function ValueComponent({ value, metadata }: { value: Value; metadata: Metadata }) {
+export function ValueComponent({ value, metadata }: { value: Value; metadata: Metadata }) {
   return (
     <Pill>
       // ✅ CORRECT: define space around components using wrapper divs
@@ -177,7 +173,7 @@ export default function ValueComponent({ value, metadata }: { value: Value; meta
 
 ```tsx
 // AssetIcon/index.tsx
-export default function AssetIcon({ display, src }: { display: string; src: string }) {
+export function AssetIcon({ display, src }: { display: string; src: string }) {
   return (
     <img
       src={src}
@@ -189,7 +185,7 @@ export default function AssetIcon({ display, src }: { display: string; src: stri
 }
 
 // ValueComponent/index.tsx
-export default function ValueComponent({ value, metadata }: { value: Value; metadata: Metadata }) {
+export function ValueComponent({ value, metadata }: { value: Value; metadata: Metadata }) {
   return (
     <Pill>
       <AssetIcon display={metadata.display} src='./icon.png' />
@@ -219,12 +215,12 @@ For example, a component designed to render a `ValueView` must be named `ValueVi
 // ValueViewComponent/index.tsx
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
-export default function ValueViewComponent({ valueView }: { valueView: ValueView }) {
+export function ValueViewComponent({ valueView }: { valueView: ValueView }) {
   // ...
 }
 
 // SomeConsumer.tsx
 // ✅ Now, there is no naming conflict between these two imports.
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import ValueViewComponent from '@penumbra-zone/ui/ValueViewComponent';
+import { ValueViewComponent } from '@penumbra-zone/ui/ValueViewComponent';
 ```
