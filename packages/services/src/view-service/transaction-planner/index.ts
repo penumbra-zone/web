@@ -6,7 +6,6 @@ import { assertSwapAssetsAreNotTheSame } from './assert-swap-assets-are-not-the-
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { fvkCtx } from '../../ctx/full-viewing-key';
 import { extractAltFee } from '../fees';
-import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
 export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) => {
   assertValidRequest(req);
@@ -18,14 +17,11 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
   const nativeToken = await indexedDb.hasStakingAssetBalance();
 
   // Check if we should use the native token or extract an alternate gas fee token.
-  // Special cased for swap claims to avoid edge cases.
+  // Special cased for swap claims as gas fee needs to match the claimFee on the corresponding swap.
   const needsAltFeeToken = !nativeToken || req.swapClaims.length > 0;
-  let gasFeeToken: AssetId;
-  if (needsAltFeeToken) {
-    gasFeeToken = await extractAltFee(req, indexedDb.stakingTokenAssetId, indexedDb);
-  } else {
-    gasFeeToken = indexedDb.stakingTokenAssetId;
-  }
+  const gasFeeToken = needsAltFeeToken
+    ? await extractAltFee(req, indexedDb)
+    : indexedDb.stakingTokenAssetId;
 
   const fmdParams = await indexedDb.getFmdParams();
   if (!fmdParams) throw new ConnectError('FmdParameters not available', Code.FailedPrecondition);

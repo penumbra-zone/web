@@ -7,7 +7,6 @@ import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
 // in the actions of the planner request.
 export const extractAltFee = async (
   request: TransactionPlannerRequest,
-  stakingTokenAssetId: AssetId,
   indexedDb: IndexedDbInterface,
 ): Promise<AssetId> => {
   const outputAsset = request.outputs.map(o => o.value?.assetId).find(Boolean);
@@ -30,8 +29,6 @@ export const extractAltFee = async (
     if (swaps?.swap?.claimFee?.assetId) {
       return swaps.swap.claimFee.assetId;
     }
-    // Use native staking token if asset id for the claim fee is undefined.
-    return stakingTokenAssetId;
   }
 
   throw new Error('Could not extract alternative fee assetId from TransactionPlannerRequest');

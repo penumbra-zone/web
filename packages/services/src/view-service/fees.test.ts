@@ -10,6 +10,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 
+// TODO: Need to properly write tests the coverage
 describe('extractAltFee', () => {
   it('extracts the fee from outputs', () => {
     const umAssetId = new AssetId({ altBaseDenom: 'UM' });
