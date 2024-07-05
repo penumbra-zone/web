@@ -252,3 +252,41 @@ export function ValueViewComponent({ valueView }: ValueViewComponentProps) {
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueViewComponent';
 ```
+
+### Components' rendering logic should be covered via unit tests.
+
+```tsx
+// FooBarAndMaybeBaz/index.tsx
+export interface FooBarAndMaybeBazProps {
+  baz?: boolean;
+}
+
+export function FooBarAndMaybeBaz({ baz }: FooBarAndMaybeBazProps) {
+  return (
+    <ul>
+      <li>Foo</li>
+      <li>Bar</li>
+      {baz && <li>Baz</li>}
+    </ul>
+  );
+}
+
+// FooBarAndMaybeBaz/index.test.tsx
+import { render } from '@testing-library/react';
+
+describe('<FooBarAndMaybeBaz />', () => {
+  it('renders `baz` when the `baz` prop is `true`', () => {
+    const { queryByText } = render(<FooBarAndMaybeBaz baz />);
+
+    expect(queryByText('Baz')).not.toBeNull();
+  });
+
+  it('does not render `baz` when the `baz` prop is falsy', () => {
+    const { queryByText } = render(<FooBarAndMaybeBaz />);
+
+    expect(queryByText('Baz')).toBeNull();
+  });
+});
+```
+
+Note that we do not use unit tests to test the visual appearance of components; that's a job better suited to screenshot testing, which we may implement in the future.
