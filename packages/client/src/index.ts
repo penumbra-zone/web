@@ -14,7 +14,7 @@ export const PenumbraSymbol = Symbol.for('penumbra');
  * - `false`: no connection available. calls to `connect` or `request` will fail
  * - `undefined`: a call may be pending, or no call has been made
  *
- * Each injection may should also track state-changing actions, so calling
+ * Each injection should also track state-changing actions, so calling
  * `.state()` should provide more detail including currently pending state,
  * enumerated by `PenumbraInjectionState`.
  *
