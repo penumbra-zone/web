@@ -1,16 +1,15 @@
 import { createPromiseClient, type Transport } from '@connectrpc/connect';
-import type { PenumbraService } from '@penumbra-zone/protobuf';
-import { jsonOptions } from '@penumbra-zone/protobuf';
+import { jsonOptions, type PenumbraService } from '@penumbra-zone/protobuf';
 import {
   createChannelTransport,
   type ChannelTransportOptions,
 } from '@penumbra-zone/transport-dom/create';
+import { PenumbraSymbol, type PenumbraInjection } from '.';
 import {
+  PenumbraNotInstalledError,
   PenumbraProviderNotAvailableError,
   PenumbraProviderNotConnectedError,
-  PenumbraNotInstalledError,
 } from './error';
-import { PenumbraSymbol, type PenumbraInjection } from '.';
 
 // Naively return the first available provider origin, or `undefined`.
 const availableOrigin = () => Object.keys(window[PenumbraSymbol] ?? {})[0];

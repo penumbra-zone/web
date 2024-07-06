@@ -1,4 +1,5 @@
 export * from './error';
+export * from './event';
 
 export const PenumbraSymbol = Symbol.for('penumbra');
 
@@ -67,12 +68,6 @@ export interface PenumbraInjection {
    * `PenumbraInjectionState` value. */
   readonly addEventListener: EventTarget['addEventListener'];
   readonly removeEventListener: EventTarget['removeEventListener'];
-}
-
-export class PenumbraInjectionStateEvent extends CustomEvent<PenumbraInjectionState> {
-  constructor(override readonly detail: PenumbraInjectionState) {
-    super('penumbrastate', { detail });
-  }
 }
 
 export enum PenumbraInjectionState {
