@@ -428,6 +428,7 @@ mod tests {
             dutch_auction_schedule_actions: vec![],
             dutch_auction_end_actions: vec![],
             dutch_auction_withdraw_actions: vec![],
+            delegator_votes: vec![],
         };
 
         // Viewing key to reveal asset balances and transactions.
