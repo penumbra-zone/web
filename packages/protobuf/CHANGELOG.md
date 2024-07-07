@@ -1,5 +1,11 @@
 # @penumbra-zone/protobuf
 
+## 5.4.0
+
+### Minor Changes
+
+- fa798d9: Bufbuild + registry dep update
+
 ## 5.3.1
 
 ### Patch Changes

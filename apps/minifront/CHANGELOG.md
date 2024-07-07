@@ -1,5 +1,23 @@
 # minifront
 
+## 6.10.0
+
+### Minor Changes
+
+- fa798d9: Bufbuild + registry dep update
+
+### Patch Changes
+
+- Updated dependencies [fa798d9]
+- Updated dependencies [4a31a09]
+  - @penumbra-zone/perspective@13.0.0
+  - @penumbra-zone/protobuf@5.4.0
+  - @penumbra-zone/getters@11.0.0
+  - @penumbra-zone/types@15.0.0
+  - @repo/ui@6.6.0
+  - @penumbra-zone/client@11.0.0
+  - @penumbra-zone/crypto-web@12.0.0
+
 ## 6.9.0
 
 ### Minor Changes
