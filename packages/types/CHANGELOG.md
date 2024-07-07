@@ -1,5 +1,16 @@
 # @penumbra-zone/types
 
+## 15.0.0
+
+### Minor Changes
+
+- fa798d9: Bufbuild + registry dep update
+
+### Patch Changes
+
+- Updated dependencies [fa798d9]
+  - @penumbra-zone/getters@11.0.0
+
 ## 14.0.0
 
 ### Major Changes

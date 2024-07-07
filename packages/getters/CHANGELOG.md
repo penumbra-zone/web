@@ -1,5 +1,16 @@
 # @penumbra-zone/getters
 
+## 11.0.0
+
+### Minor Changes
+
+- fa798d9: Bufbuild + registry dep update
+
+### Patch Changes
+
+- Updated dependencies [fa798d9]
+  - @penumbra-zone/protobuf@5.4.0
+
 ## 10.1.0
 
 ### Minor Changes

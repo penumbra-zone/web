@@ -1,5 +1,16 @@
 # @penumbra-zone/client
 
+## 11.0.0
+
+### Minor Changes
+
+- 4a31a09: add injection state method and events
+
+### Patch Changes
+
+- Updated dependencies [fa798d9]
+  - @penumbra-zone/protobuf@5.4.0
+
 ## 10.0.1
 
 ### Patch Changes
