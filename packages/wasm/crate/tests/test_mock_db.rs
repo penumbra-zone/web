@@ -1,4 +1,3 @@
-use futures::executor::block_on;
 use penumbra_keys::keys::AddressIndex;
 use wasm_bindgen_test::wasm_bindgen_test;
 
@@ -8,21 +7,21 @@ use penumbra_wasm::database::mock::MockDb;
 wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
 
 #[wasm_bindgen_test]
-fn test_get_and_put() {
+async fn test_get_and_put() {
     let db = MockDb::new();
     let table_name = "test_table";
 
     let key = "test_key";
     let value = AddressIndex::new(1);
 
-    block_on(db.put_with_key(table_name, key, &value)).unwrap();
-    let retrieved: Option<AddressIndex> = block_on(db.get(table_name, key)).unwrap();
+    db.put_with_key(table_name, key, &value).await.unwrap();
+    let retrieved: Option<AddressIndex> = db.get(table_name, key).await.unwrap();
 
     assert_eq!(value, retrieved.unwrap());
 }
 
 #[wasm_bindgen_test]
-fn test_get_all() {
+async fn test_get_all() {
     let db = MockDb::new();
     let table_name = "test_table_all";
 
@@ -34,10 +33,10 @@ fn test_get_all() {
 
     for (i, value) in values.iter().enumerate() {
         let key = format!("test_key_{}", i);
-        block_on(db.put_with_key(table_name, &key, value)).unwrap();
+        db.put_with_key(table_name, &key, value).await.unwrap();
     }
 
-    let retrieved: Vec<AddressIndex> = block_on(db.get_all::<AddressIndex>(table_name)).unwrap();
+    let retrieved: Vec<AddressIndex> = db.get_all::<AddressIndex>(table_name).await.unwrap();
 
     // Check every element in 'values' is present in 'retrieved' and vice versa
     assert_eq!(retrieved.len(), values.len());
@@ -50,7 +49,7 @@ fn test_get_all() {
 }
 
 #[wasm_bindgen_test]
-fn test_multiple_tables() {
+async fn test_multiple_tables() {
     let db = MockDb::new();
     let table1 = "table1";
     let table2 = "table2";
@@ -61,11 +60,11 @@ fn test_multiple_tables() {
     let key2 = "key2";
     let value2 = AddressIndex::new(202);
 
-    block_on(db.put_with_key(table1, key1, &value1)).unwrap();
-    block_on(db.put_with_key(table2, key2, &value2)).unwrap();
+    db.put_with_key(table1, key1, &value1).await.unwrap();
+    db.put_with_key(table2, key2, &value2).await.unwrap();
 
-    let retrieved1: Option<AddressIndex> = block_on(db.get(table1, key1)).unwrap();
-    let retrieved2: Option<AddressIndex> = block_on(db.get(table2, key2)).unwrap();
+    let retrieved1: Option<AddressIndex> = db.get(table1, key1).await.unwrap();
+    let retrieved2: Option<AddressIndex> = db.get(table2, key2).await.unwrap();
 
     assert_eq!(value1, retrieved1.unwrap());
     assert_eq!(value2, retrieved2.unwrap());

@@ -77,6 +77,7 @@ impl Database for MockDb {
         T: DeserializeOwned,
         K: Into<JsValue>,
     {
+        // TODO: Implement mock method when test suite requires it
         unimplemented!()
     }
 
@@ -84,6 +85,7 @@ impl Database for MockDb {
     where
         T: DeserializeOwned,
     {
+        // TODO: Implement mock method when test suite requires it
         unimplemented!()
     }
 
@@ -105,6 +107,7 @@ impl Database for MockDb {
     where
         V: Serialize + ?Sized,
     {
+        // TODO: Implement mock method when test suite requires it
         unimplemented!()
     }
 
