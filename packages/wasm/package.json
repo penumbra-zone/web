@@ -19,7 +19,7 @@
     "postcompile": "touch ./wasm/.npmignore",
     "prebuild": "tsc --build --clean",
     "test": "vitest run",
-    "test:rust": "cd crate && wasm-pack test --headless --firefox -- --test build --target wasm32-unknown-unknown --release --features 'mock-database'"
+    "test:rust": "cd crate && wasm-pack test --headless --firefox -- --target wasm32-unknown-unknown --release --features 'mock-database'"
   },
   "files": [
     "wasm",

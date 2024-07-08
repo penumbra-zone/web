@@ -4,6 +4,7 @@ use std::mem;
 use anyhow::anyhow;
 use ark_ff::UniformRand;
 use decaf377::{Fq, Fr};
+use indexed_db_futures::IdbDatabase;
 use penumbra_asset::asset::{Id, Metadata};
 use penumbra_asset::Value;
 use penumbra_auction::auction::dutch::actions::ActionDutchAuctionWithdrawPlan;
@@ -16,7 +17,7 @@ use penumbra_dex::{
     swap::{SwapPlaintext, SwapPlan},
     TradingPair,
 };
-use penumbra_fee::{FeeTier, GasPrices};
+use penumbra_fee::FeeTier;
 use penumbra_governance::DelegatorVotePlan;
 use penumbra_keys::keys::AddressIndex;
 use penumbra_keys::FullViewingKey;
@@ -43,7 +44,7 @@ use wasm_bindgen::JsValue;
 use crate::error::WasmError;
 use crate::metadata::customize_symbol_inner;
 use crate::note_record::SpendableNoteRecord;
-use crate::storage::{IndexedDBStorage, OutstandingReserves};
+use crate::storage::{init_idb_storage, OutstandingReserves, Storage};
 use crate::utils;
 use crate::{error::WasmResult, swap_record::SwapRecord};
 
@@ -98,7 +99,7 @@ fn prioritize_and_filter_spendable_notes(
 /// action renders correctly in the transaction approval dialog.
 async fn save_unbonding_token_metadata_if_needed(
     undelegate: &Undelegate,
-    storage: &IndexedDBStorage,
+    storage: &Storage<IdbDatabase>,
 ) -> WasmResult<()> {
     let metadata = undelegate.unbonding_token().denom();
 
@@ -114,7 +115,7 @@ async fn save_unbonding_token_metadata_if_needed(
 /// action renders correctly in the transaction approval dialog.
 async fn save_auction_nft_metadata_if_needed(
     id: AuctionId,
-    storage: &IndexedDBStorage,
+    storage: &Storage<IdbDatabase>,
     seq: u64,
 ) -> WasmResult<()> {
     let nft = AuctionNft::new(id, seq);
@@ -123,7 +124,10 @@ async fn save_auction_nft_metadata_if_needed(
     save_metadata_if_needed(metadata, storage).await
 }
 
-async fn save_metadata_if_needed(metadata: Metadata, storage: &IndexedDBStorage) -> WasmResult<()> {
+async fn save_metadata_if_needed(
+    metadata: Metadata,
+    storage: &Storage<IdbDatabase>,
+) -> WasmResult<()> {
     if storage.get_asset(&metadata.id()).await?.is_none() {
         let metadata_proto = metadata.to_proto();
         let customized_metadata_proto = customize_symbol_inner(metadata_proto)?;
@@ -167,7 +171,8 @@ pub async fn plan_transaction(
         .incoming()
         .payment_address(source_address_index.account.into());
 
-    let storage = IndexedDBStorage::new(serde_wasm_bindgen::from_value(idb_constants)?).await?;
+    let constants = serde_wasm_bindgen::from_value(idb_constants)?;
+    let storage = init_idb_storage(constants).await?;
 
     let fmd_params: fmd::Parameters = storage
         .get_fmd_params()
@@ -190,16 +195,10 @@ pub async fn plan_transaction(
     let fee_asset_id: Id = Id::decode(gas_fee_token)?;
 
     // Request information about current gas prices
-    let gas_prices: GasPrices = {
-        let gas_prices: penumbra_proto::core::component::fee::v1::GasPrices =
-            serde_wasm_bindgen::from_value(
-                storage
-                    .get_gas_prices_by_asset_id(fee_asset_id)
-                    .await?
-                    .ok_or_else(|| anyhow!("GasPrices not available"))?,
-            )?;
-        gas_prices.try_into()?
-    };
+    let gas_prices = storage
+        .get_gas_prices_by_asset_id(&fee_asset_id)
+        .await?
+        .ok_or_else(|| anyhow!("GasPrices not available"))?;
 
     let fee_tier = match request.fee_mode {
         None => FeeTier::default(),
@@ -463,7 +462,7 @@ pub async fn plan_transaction(
 
         save_auction_nft_metadata_if_needed(auction_id, &storage, seq).await?;
         let outstanding_reserves: OutstandingReserves =
-            storage.get_auction_oustanding_reserves(auction_id).await?;
+            storage.get_auction_outstanding_reserves(auction_id).await?;
 
         actions_list.push(ActionPlan::ActionDutchAuctionWithdraw(
             ActionDutchAuctionWithdrawPlan {
