@@ -1,24 +1,25 @@
 'use client';
 
-import * as React from 'react';
-import { useState } from 'react';
+import type { ReactNode, ButtonHTMLAttributes } from 'react';
+import { useState, forwardRef } from 'react';
 import { CheckCircledIcon } from '@radix-ui/react-icons';
 import { Button } from '../button';
 import { cn } from '../../../lib/utils';
 
-export interface CopyToClipboardProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface CopyToClipboardProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   text: string;
   labelType?: 'text' | 'icon';
-  label: React.ReactElement;
-  isSuccessCopyText?: boolean;
+  label: ReactNode;
+  successLabel?: ReactNode;
 }
 
-const CopyToClipboard = React.forwardRef<HTMLButtonElement, CopyToClipboardProps>(
-  ({ text, className, label, isSuccessCopyText, ...props }, ref) => {
+const CopyToClipboard = forwardRef<HTMLButtonElement, CopyToClipboardProps>(
+  ({ text, className, label, successLabel, ...props }, ref) => {
     const [copied, setCopied] = useState(false);
 
     return (
       <Button
+        type='button'
         className={cn(
           copied && 'cursor-default text-teal-500 hover:no-underline',
           'block',
@@ -37,8 +38,8 @@ const CopyToClipboard = React.forwardRef<HTMLButtonElement, CopyToClipboardProps
         {...props}
       >
         {copied ? (
-          <span className={cn(isSuccessCopyText && 'flex items-center gap-2')}>
-            {isSuccessCopyText && <span>Copied</span>}
+          <span className={cn(successLabel && 'flex items-center gap-2')}>
+            {successLabel ?? <span>Copied</span>}
             <CheckCircledIcon />
           </span>
         ) : (
