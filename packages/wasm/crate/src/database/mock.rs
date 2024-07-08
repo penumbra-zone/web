@@ -3,7 +3,8 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 use serde::de::DeserializeOwned;
-use wasm_bindgen::{JsCast, JsValue};
+use serde::Serialize;
+use wasm_bindgen::JsValue;
 
 use crate::database::interface::Database;
 use crate::error::WasmResult;
@@ -55,7 +56,7 @@ impl MockDb {
 }
 
 impl Database for MockDb {
-    async fn get<T, K>(&self, table: &str, key: K, _index: Option<&str>) -> WasmResult<Option<T>>
+    async fn get<T, K>(&self, table: &str, key: K) -> WasmResult<Option<T>>
     where
         T: DeserializeOwned,
         K: Into<JsValue>,
@@ -69,6 +70,14 @@ impl Database for MockDb {
             .and_then(|js_value| serde_wasm_bindgen::from_value(js_value.clone()).ok());
 
         Ok(result)
+    }
+
+    async fn get_with_index<T, K>(&self, _: &str, _: K, _: &str) -> WasmResult<Option<T>>
+    where
+        T: DeserializeOwned,
+        K: Into<JsValue>,
+    {
+        unimplemented!()
     }
 
     async fn get_latest<T>(&self, _table: &str) -> WasmResult<Option<T>>
@@ -92,9 +101,9 @@ impl Database for MockDb {
         Ok(results)
     }
 
-    async fn put<V>(&self, _table: &str, _value: V) -> WasmResult<()>
+    async fn put<V>(&self, _table: &str, _value: &V) -> WasmResult<()>
     where
-        V: Into<JsValue>,
+        V: Serialize + ?Sized,
     {
         unimplemented!()
     }
@@ -102,12 +111,12 @@ impl Database for MockDb {
     async fn put_with_key<K, V>(&self, table: &str, key: K, value: &V) -> WasmResult<()>
     where
         K: Into<JsValue>,
-        V: JsCast,
+        V: Serialize + ?Sized,
     {
         let table = self.get_table(table);
         let key = key.into().as_string().unwrap_or_default();
-
-        table.borrow_mut().insert(key, value.into());
+        let serialized = serde_wasm_bindgen::to_value(value)?;
+        table.borrow_mut().insert(key, serialized);
 
         Ok(())
     }

@@ -120,21 +120,17 @@ impl<T: Database> Storage<T> {
 
     pub async fn get_asset(&self, id: &Id) -> WasmResult<Option<Metadata>> {
         let key = byte_array_to_base64(&id.to_proto().inner);
-        let result: Option<Metadata> = self.db.get(&self.tables.assets, key, None).await?;
+        let result: Option<Metadata> = self.db.get(&self.tables.assets, key).await?;
         Ok(result)
     }
 
     pub async fn add_asset(&self, metadata: &Metadata) -> WasmResult<()> {
-        let metadata_js = serde_wasm_bindgen::to_value(&metadata.to_proto())?;
-        self.db.put(&self.tables.assets, &metadata_js).await?;
+        self.db.put(&self.tables.assets, metadata).await?;
         Ok(())
     }
 
     pub async fn get_full_sync_height(&self) -> WasmResult<Option<u64>> {
-        let result = self
-            .db
-            .get(&self.tables.full_sync_height, "height", None)
-            .await?;
+        let result = self.db.get(&self.tables.full_sync_height, "height").await?;
         Ok(result)
     }
 
@@ -143,7 +139,7 @@ impl<T: Database> Storage<T> {
         commitment: &note::StateCommitment,
     ) -> WasmResult<Option<SpendableNoteRecord>> {
         let key = byte_array_to_base64(&commitment.to_proto().inner);
-        let result = self.db.get(&self.tables.spendable_notes, key, None).await?;
+        let result = self.db.get(&self.tables.spendable_notes, key).await?;
         Ok(result)
     }
 
@@ -154,25 +150,22 @@ impl<T: Database> Storage<T> {
         let key = byte_array_to_base64(&nullifier.to_proto().inner);
         let result = self
             .db
-            .get(&self.tables.spendable_notes, key, Some("nullifier"))
+            .get_with_index(&self.tables.spendable_notes, key, "nullifier")
             .await?;
         Ok(result)
     }
 
     pub async fn store_advice(&self, note: Note) -> WasmResult<()> {
-        let note_proto: penumbra_proto::core::component::shielded_pool::v1::Note =
-            note.clone().into();
-        let note_js = serde_wasm_bindgen::to_value(&note_proto)?;
         let key = byte_array_to_base64(&note.commit().to_proto().inner);
         self.db
-            .put_with_key(&self.tables.advice_notes, key, &note_js)
+            .put_with_key(&self.tables.advice_notes, key, &note)
             .await?;
         Ok(())
     }
 
     pub async fn read_advice(&self, commitment: note::StateCommitment) -> WasmResult<Option<Note>> {
         let key = byte_array_to_base64(&commitment.to_proto().inner);
-        let result = self.db.get(&self.tables.advice_notes, key, None).await?;
+        let result = self.db.get(&self.tables.advice_notes, key).await?;
         Ok(result)
     }
 
@@ -181,7 +174,7 @@ impl<T: Database> Storage<T> {
         swap_commitment: StateCommitment,
     ) -> WasmResult<Option<SwapRecord>> {
         let key = byte_array_to_base64(&swap_commitment.inner);
-        let result = self.db.get(&self.tables.advice_notes, key, None).await?;
+        let result = self.db.get(&self.tables.advice_notes, key).await?;
         Ok(result)
     }
 
@@ -192,30 +185,24 @@ impl<T: Database> Storage<T> {
         let key = byte_array_to_base64(&nullifier.to_proto().inner);
         let result = self
             .db
-            .get(&self.tables.swaps, key, Some("nullifier"))
+            .get_with_index(&self.tables.swaps, key, "nullifier")
             .await?;
         Ok(result)
     }
 
     pub async fn get_fmd_params(&self) -> WasmResult<Option<fmd::Parameters>> {
-        let result = self
-            .db
-            .get(&self.tables.fmd_parameters, "params", None)
-            .await?;
+        let result = self.db.get(&self.tables.fmd_parameters, "params").await?;
         Ok(result)
     }
 
     pub async fn get_app_params(&self) -> WasmResult<Option<AppParameters>> {
-        let result = self
-            .db
-            .get(&self.tables.app_parameters, "params", None)
-            .await?;
+        let result = self.db.get(&self.tables.app_parameters, "params").await?;
         Ok(result)
     }
 
     pub async fn get_gas_prices_by_asset_id(&self, asset_id: &Id) -> WasmResult<Option<GasPrices>> {
         let key = byte_array_to_base64(&asset_id.to_proto().inner);
-        let result = self.db.get(&self.tables.gas_prices, key, None).await?;
+        let result = self.db.get(&self.tables.gas_prices, key).await?;
         Ok(result)
     }
 
@@ -239,7 +226,7 @@ impl<T: Database> Storage<T> {
         let key = byte_array_to_base64(&auction_id.to_proto().inner);
         let result: Option<OutstandingReserves> = self
             .db
-            .get(&self.tables.auction_outstanding_reserves, key, None)
+            .get(&self.tables.auction_outstanding_reserves, key)
             .await?;
 
         result.ok_or_else(|| WasmError::Anyhow(anyhow!("could not find reserves")))

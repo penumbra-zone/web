@@ -4,7 +4,8 @@ use indexed_db_futures::idb_object_store::IdbObjectStoreParameters;
 use indexed_db_futures::prelude::{IdbOpenDbRequestLike, OpenDbRequest};
 use indexed_db_futures::{IdbDatabase, IdbKeyPath, IdbQuerySource, IdbVersionChangeEvent};
 use serde::de::DeserializeOwned;
-use wasm_bindgen::{JsCast, JsValue};
+use serde::Serialize;
+use wasm_bindgen::JsValue;
 use web_sys::IdbTransactionMode::Readwrite;
 
 use crate::database::interface::Database;
@@ -23,7 +24,8 @@ pub async fn open_idb_database(constants: &DbConstants) -> WasmResult<IdbDatabas
     Ok(db)
 }
 
-// TODO: Code comment for context
+// Previous method of testing that requires features in prod code to seed indexed db for tests
+// TODO: Swap out with new MockDb utility for testing
 async fn mock_test_database(mut db_req: OpenDbRequest) -> OpenDbRequest {
     db_req.set_on_upgrade_needed(Some(|evt: &IdbVersionChangeEvent| -> Result<(), JsValue> {
         // Check if the object store exists; create it if it doesn't
@@ -65,21 +67,27 @@ async fn mock_test_database(mut db_req: OpenDbRequest) -> OpenDbRequest {
 }
 
 impl Database for IdbDatabase {
-    async fn get<T, K>(&self, table: &str, key: K, index: Option<&str>) -> WasmResult<Option<T>>
+    async fn get<T, K>(&self, table: &str, key: K) -> WasmResult<Option<T>>
     where
         T: DeserializeOwned,
         K: Into<JsValue>,
     {
         let tx = self.transaction_on_one(table)?;
         let store = tx.object_store(table)?;
-
-        let js_value = match index {
-            Some(i) => store.index(i)?.get_owned(key)?.await?,
-            None => store.get_owned(key)?.await?,
-        };
-
+        let js_value = store.get_owned(key)?.await?;
         let result = js_value.map(serde_wasm_bindgen::from_value).transpose()?;
+        Ok(result)
+    }
 
+    async fn get_with_index<T, K>(&self, table: &str, key: K, index: &str) -> WasmResult<Option<T>>
+    where
+        T: DeserializeOwned,
+        K: Into<JsValue>,
+    {
+        let tx = self.transaction_on_one(table)?;
+        let store = tx.object_store(table)?;
+        let js_value = store.index(index)?.get_owned(key)?.await?;
+        let result = js_value.map(serde_wasm_bindgen::from_value).transpose()?;
         Ok(result)
     }
 
@@ -107,24 +115,26 @@ impl Database for IdbDatabase {
         Ok(serialized)
     }
 
-    async fn put<V>(&self, table: &str, value: V) -> WasmResult<()>
+    async fn put<V>(&self, table: &str, value: &V) -> WasmResult<()>
     where
-        V: Into<JsValue>,
+        V: Serialize + ?Sized,
     {
         let tx = self.transaction_on_one_with_mode(table, Readwrite)?;
         let store = tx.object_store(table)?;
-        store.put_val_owned(value)?;
+        let serialized = serde_wasm_bindgen::to_value(value)?;
+        store.put_val_owned(serialized)?;
         Ok(())
     }
 
     async fn put_with_key<K, V>(&self, table: &str, key: K, value: &V) -> WasmResult<()>
     where
         K: Into<JsValue>,
-        V: JsCast,
+        V: Serialize + ?Sized,
     {
         let tx = self.transaction_on_one_with_mode(table, Readwrite)?;
         let store = tx.object_store(table)?;
-        store.put_key_val_owned(key, value)?;
+        let serialized = serde_wasm_bindgen::to_value(value)?;
+        store.put_key_val_owned(key, &serialized)?;
         Ok(())
     }
 }

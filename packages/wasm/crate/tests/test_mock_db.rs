@@ -15,10 +15,8 @@ fn test_get_and_put() {
     let key = "test_key";
     let value = AddressIndex::new(1);
 
-    let serialized = serde_wasm_bindgen::to_value(&value).unwrap();
-
-    block_on(db.put_with_key(table_name, key, &serialized)).unwrap();
-    let retrieved: Option<AddressIndex> = block_on(db.get(table_name, key, None)).unwrap();
+    block_on(db.put_with_key(table_name, key, &value)).unwrap();
+    let retrieved: Option<AddressIndex> = block_on(db.get(table_name, key)).unwrap();
 
     assert_eq!(value, retrieved.unwrap());
 }
@@ -36,8 +34,7 @@ fn test_get_all() {
 
     for (i, value) in values.iter().enumerate() {
         let key = format!("test_key_{}", i);
-        let serialized = serde_wasm_bindgen::to_value(value).unwrap();
-        block_on(db.put_with_key(table_name, &key, &serialized)).unwrap();
+        block_on(db.put_with_key(table_name, &key, value)).unwrap();
     }
 
     let retrieved: Vec<AddressIndex> = block_on(db.get_all::<AddressIndex>(table_name)).unwrap();
@@ -64,14 +61,11 @@ fn test_multiple_tables() {
     let key2 = "key2";
     let value2 = AddressIndex::new(202);
 
-    let serialized1 = serde_wasm_bindgen::to_value(&value1).unwrap();
-    let serialized2 = serde_wasm_bindgen::to_value(&value2).unwrap();
+    block_on(db.put_with_key(table1, key1, &value1)).unwrap();
+    block_on(db.put_with_key(table2, key2, &value2)).unwrap();
 
-    block_on(db.put_with_key(table1, key1, &serialized1)).unwrap();
-    block_on(db.put_with_key(table2, key2, &serialized2)).unwrap();
-
-    let retrieved1: Option<AddressIndex> = block_on(db.get(table1, key1, None)).unwrap();
-    let retrieved2: Option<AddressIndex> = block_on(db.get(table2, key2, None)).unwrap();
+    let retrieved1: Option<AddressIndex> = block_on(db.get(table1, key1)).unwrap();
+    let retrieved2: Option<AddressIndex> = block_on(db.get(table2, key2)).unwrap();
 
     assert_eq!(value1, retrieved1.unwrap());
     assert_eq!(value2, retrieved2.unwrap());
