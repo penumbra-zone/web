@@ -174,7 +174,7 @@ impl<T: Database> Storage<T> {
         swap_commitment: StateCommitment,
     ) -> WasmResult<Option<SwapRecord>> {
         let key = byte_array_to_base64(&swap_commitment.inner);
-        let result = self.db.get(&self.tables.advice_notes, key).await?;
+        let result = self.db.get(&self.tables.swaps, key).await?;
         Ok(result)
     }
 
@@ -233,10 +233,7 @@ impl<T: Database> Storage<T> {
     }
 
     pub async fn get_delegation_assets(&self) -> WasmResult<BTreeMap<Id, DelegationToken>> {
-        let all_metadata = self
-            .db
-            .get_all::<Metadata>(&self.tables.transactions)
-            .await?;
+        let all_metadata = self.db.get_all::<Metadata>(&self.tables.assets).await?;
 
         let mut assets: BTreeMap<Id, DelegationToken> = BTreeMap::new();
 
