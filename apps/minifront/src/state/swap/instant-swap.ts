@@ -31,6 +31,7 @@ import { divideAmounts } from '@penumbra-zone/types/amount';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { SwapSlice } from '.';
 import { sendSimulateTradeRequest } from './helpers';
+import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 
 const getMetadataByAssetId = async (
   traces: SwapExecution_Trace[] = [],
@@ -141,7 +142,7 @@ export const createInstantSwapSlice = (): SliceCreator<InstantSwapSlice> => (set
         const swapReq = await assembleSwapRequest(get().swap);
         const swapTx = await planBuildBroadcast('swap', swapReq);
         const swapCommitment = getSwapCommitmentFromTx(swapTx);
-        await issueSwapClaim(swapCommitment);
+        await issueSwapClaim(swapCommitment, swapReq.source);
 
         set(state => {
           state.swap.amount = '';
@@ -195,8 +196,11 @@ const assembleSwapRequest = async ({
 // Swap claims don't need authenticationData, so `witnessAndBuild` is used.
 // This way it won't trigger a second, unnecessary approval popup.
 // @see https://protocol.penumbra.zone/main/zswap/swap.html#claiming-swap-outputs
-export const issueSwapClaim = async (swapCommitment: StateCommitment) => {
-  const req = new TransactionPlannerRequest({ swapClaims: [{ swapCommitment }] });
+export const issueSwapClaim = async (
+  swapCommitment: StateCommitment,
+  source: AddressIndex | undefined,
+) => {
+  const req = new TransactionPlannerRequest({ swapClaims: [{ swapCommitment }], source });
   await planBuildBroadcast('swapClaim', req, { skipAuth: true });
 };
 

@@ -1,5 +1,39 @@
 # minifront
 
+## 6.10.0
+
+### Minor Changes
+
+- fa798d9: Bufbuild + registry dep update
+
+### Patch Changes
+
+- Updated dependencies [fa798d9]
+- Updated dependencies [4a31a09]
+  - @penumbra-zone/perspective@13.0.0
+  - @penumbra-zone/protobuf@5.4.0
+  - @penumbra-zone/getters@11.0.0
+  - @penumbra-zone/types@15.0.0
+  - @repo/ui@6.6.0
+  - @penumbra-zone/client@11.0.0
+  - @penumbra-zone/crypto-web@12.0.0
+
+## 6.9.0
+
+### Minor Changes
+
+- 28a48d7: Send max support
+
+### Patch Changes
+
+- dc77a52: Services: add priority scores to the `assets` service. Minifront: fix rendering issues
+- Updated dependencies [28a48d7]
+- Updated dependencies [28a48d7]
+  - @penumbra-zone/types@14.0.0
+  - @repo/ui@6.5.0
+  - @penumbra-zone/perspective@12.0.0
+  - @penumbra-zone/crypto-web@11.0.0
+
 ## 6.8.0
 
 ### Minor Changes

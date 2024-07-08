@@ -1,5 +1,29 @@
 # @penumbra-zone/wasm
 
+## 16.0.0
+
+### Minor Changes
+
+- fa798d9: Update deps to v0.79.0
+- fa798d9: Bufbuild + registry dep update
+
+### Patch Changes
+
+- Updated dependencies [fa798d9]
+  - @penumbra-zone/protobuf@5.4.0
+  - @penumbra-zone/types@15.0.0
+
+## 15.0.0
+
+### Minor Changes
+
+- 28a48d7: Send max support
+
+### Patch Changes
+
+- Updated dependencies [28a48d7]
+  - @penumbra-zone/types@14.0.0
+
 ## 14.0.0
 
 ### Minor Changes

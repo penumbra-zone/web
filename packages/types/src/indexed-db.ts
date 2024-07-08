@@ -16,6 +16,10 @@ import {
   Value,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import {
+  AuctionId,
+  DutchAuctionDescription,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
+import {
   Position,
   PositionId,
   PositionState,
@@ -44,12 +48,8 @@ import {
   SwapRecord,
   TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import type { Jsonified } from './jsonified';
-import {
-  AuctionId,
-  DutchAuctionDescription,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { PartialMessage } from '@bufbuild/protobuf';
+import type { Jsonified } from './jsonified';
 
 export interface IdbUpdate<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>> {
   table: StoreName;

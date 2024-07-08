@@ -16,9 +16,12 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
   // Query IndexedDB directly to check for the existence of staking token
   const nativeToken = await indexedDb.hasStakingAssetBalance(req.source);
 
-  // Initialize the gas fee token using the native staking token's asset ID
-  // If there is no native token balance, extract and use an alternate gas fee token
-  const gasFeeToken = nativeToken ? indexedDb.stakingTokenAssetId : extractAltFee(req);
+  // Check if we should use the native token or extract an alternate gas fee token.
+  // Special cased for swap claims as gas fee needs to match the claimFee on the corresponding swap.
+  const needsAltFeeToken = !nativeToken || req.swapClaims.length > 0;
+  const gasFeeToken = needsAltFeeToken
+    ? await extractAltFee(req, indexedDb)
+    : indexedDb.stakingTokenAssetId;
 
   const fmdParams = await indexedDb.getFmdParams();
   if (!fmdParams) throw new ConnectError('FmdParameters not available', Code.FailedPrecondition);

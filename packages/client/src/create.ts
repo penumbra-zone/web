@@ -1,26 +1,30 @@
 import { createPromiseClient, type Transport } from '@connectrpc/connect';
-import type { PenumbraService } from '@penumbra-zone/protobuf';
-import { jsonOptions } from '@penumbra-zone/protobuf';
+import { jsonOptions, type PenumbraService } from '@penumbra-zone/protobuf';
 import {
   createChannelTransport,
   type ChannelTransportOptions,
 } from '@penumbra-zone/transport-dom/create';
+import { PenumbraSymbol, type PenumbraInjection } from '.';
 import {
+  PenumbraNotInstalledError,
   PenumbraProviderNotAvailableError,
   PenumbraProviderNotConnectedError,
-  PenumbraProviderNotInstalledError,
 } from './error';
-import { PenumbraSymbol, type PenumbraInjection } from '.';
 
 // Naively return the first available provider origin, or `undefined`.
 const availableOrigin = () => Object.keys(window[PenumbraSymbol] ?? {})[0];
+
+export const assertGlobalPresent = () => {
+  if (!window[PenumbraSymbol]) throw new PenumbraNotInstalledError();
+  return window[PenumbraSymbol];
+};
 
 /**
  * Given a specific origin, identify the relevant injection or throw.  An
  * `undefined` origin is accepted but will throw.
  */
 export const assertProvider = (providerOrigin?: string): PenumbraInjection => {
-  const provider = providerOrigin && window[PenumbraSymbol]?.[providerOrigin];
+  const provider = providerOrigin && assertGlobalPresent()[providerOrigin];
   if (!provider) throw new PenumbraProviderNotAvailableError(providerOrigin);
   return provider;
 };
@@ -56,10 +60,10 @@ export const assertProviderManifest = async (
     const req = await fetch(provider.manifest);
     const manifest: unknown = await req.json();
 
-    if (!manifest) throw new Error('Empty manifest');
+    if (!manifest) throw new Error(`Cannot confirm ${providerOrigin} is real.`);
   } catch (e) {
     console.warn(e);
-    throw new PenumbraProviderNotInstalledError(providerOrigin);
+    throw new PenumbraProviderNotAvailableError(providerOrigin);
   }
 
   return provider;

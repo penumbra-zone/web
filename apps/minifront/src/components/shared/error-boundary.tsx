@@ -1,6 +1,6 @@
 import { isRouteErrorResponse, useRouteError } from 'react-router-dom';
 import {
-  PenumbraProviderNotInstalledError,
+  PenumbraNotInstalledError,
   PenumbraProviderNotConnectedError,
 } from '@penumbra-zone/client';
 import { ExtensionNotConnected } from '../extension-not-connected';
@@ -15,7 +15,7 @@ export const ErrorBoundary = () => {
 
   if (error instanceof ConnectError && error.code === Code.Unavailable)
     return <ExtensionTransportDisconnected />;
-  if (error instanceof PenumbraProviderNotInstalledError) return <ExtensionNotInstalled />;
+  if (error instanceof PenumbraNotInstalledError) return <ExtensionNotInstalled />;
   if (error instanceof PenumbraProviderNotConnectedError) return <ExtensionNotConnected />;
   if (isRouteErrorResponse(error) && error.status === 404) return <NotFound />;
 
