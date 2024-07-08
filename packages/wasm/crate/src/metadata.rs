@@ -11,7 +11,6 @@ pub static DELEGATION_TOKEN_REGEX: &str =
     "^udelegation_(?P<data>penumbravalid1(?P<id>[a-zA-HJ-NP-Z0-9]+))$";
 pub static AUCTION_NFT_REGEX: &str =
     "^auctionnft_(?P<data>(?<seq_num>[a-z_0-9]+)_pauctid1(?P<id>[a-zA-HJ-NP-Z0-9]+))$";
-pub static SHORTENED_ID_LENGTH: usize = 8;
 
 /// Given a binary-encoded `Metadata`, returns a new binary-encoded `Metadata`
 /// with the symbol customized if the token is one of several specific types
@@ -37,29 +36,29 @@ pub fn customize_symbol_inner(metadata: Metadata) -> WasmResult<Metadata> {
     let auction_re = Regex::new(AUCTION_NFT_REGEX)?;
 
     if let Some(captures) = unbonding_re.captures(&metadata.base) {
-        let shortened_id = shorten_id(&captures)?;
+        let asset_id = collect_id(&captures)?;
         let start_match = captures
             .name("start")
             .ok_or_else(|| anyhow!("<start> not matched in unbonding token regex"))?
             .as_str();
 
         return Ok(Metadata {
-            symbol: format!("unbondUMat{start_match}({shortened_id}…)"),
+            symbol: format!("unbondUMat{start_match}({asset_id})"),
             ..metadata
         });
     } else if let Some(captures) = delegation_re.captures(&metadata.base) {
-        let shortened_id = shorten_id(&captures)?;
+        let asset_id = collect_id(&captures)?;
 
         return Ok(Metadata {
-            symbol: format!("delUM({shortened_id}…)"),
+            symbol: format!("delUM({asset_id})"),
             ..metadata
         });
     } else if let Some(captures) = auction_re.captures(&metadata.base) {
-        let shortened_id = shorten_id(&captures)?;
+        let asset_id = collect_id(&captures)?;
         let seq_num = get_seq_num(&captures)?;
 
         return Ok(Metadata {
-            symbol: format!("auction@{seq_num}({shortened_id}…)"),
+            symbol: format!("auction@{seq_num}({asset_id})"),
             ..metadata
         });
     }
@@ -67,15 +66,11 @@ pub fn customize_symbol_inner(metadata: Metadata) -> WasmResult<Metadata> {
     Ok(metadata)
 }
 
-fn shorten_id(captures: &regex::Captures) -> WasmResult<String> {
+fn collect_id(captures: &regex::Captures) -> WasmResult<String> {
     let id_match = captures
         .name("id")
         .ok_or_else(|| anyhow!("<id> not matched in token regex"))?;
-    Ok(id_match
-        .as_str()
-        .chars()
-        .take(SHORTENED_ID_LENGTH)
-        .collect())
+    Ok(id_match.as_str().to_string())
 }
 
 fn get_seq_num(captures: &regex::Captures) -> WasmResult<String> {
