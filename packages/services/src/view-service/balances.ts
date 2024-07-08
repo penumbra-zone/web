@@ -44,7 +44,14 @@ export const balances: Impl['balances'] = async function* (req, ctx) {
   const latestKnownBlockHeight =
     (await querier.tendermint.latestBlockHeight()) ?? (await indexedDb.getFullSyncHeight()) ?? 0n;
 
-  const aggregator = new BalancesAggregator(ctx, indexedDb, latestKnownBlockHeight);
+  const appParameters = await indexedDb.getAppParams();
+
+  const aggregator = new BalancesAggregator(
+    ctx,
+    indexedDb,
+    latestKnownBlockHeight,
+    appParameters?.sctParams?.epochDuration,
+  );
 
   for await (const noteRecord of indexedDb.iterateSpendableNotes()) {
     if (noteRecord.heightSpent !== 0n) continue;
@@ -82,6 +89,7 @@ class BalancesAggregator {
     private readonly ctx: HandlerContext,
     private readonly indexedDb: IndexedDbInterface,
     private readonly latestBlockHeight: bigint,
+    private readonly epochDuration: bigint | undefined,
   ) {}
 
   async add(n: SpendableNoteRecord) {
@@ -184,10 +192,14 @@ class BalancesAggregator {
         valueView: { case: 'unknownAssetId', value: { assetId, amount: new Amount() } },
       });
     } else {
-      if (!this.estimatedPriceByPricedAsset[uint8ArrayToBase64(assetId.inner)]) {
+      if (
+        !this.estimatedPriceByPricedAsset[uint8ArrayToBase64(assetId.inner)] &&
+        this.epochDuration
+      ) {
         const prices = await this.indexedDb.getPricesForAsset(
           denomMetadata as Metadata,
           this.latestBlockHeight,
+          this.epochDuration,
         );
         this.estimatedPriceByPricedAsset[uint8ArrayToBase64(assetId.inner)] = prices;
       }

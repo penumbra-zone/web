@@ -112,7 +112,11 @@ export interface IndexedDbInterface {
     numerairePerUnit: number,
     height: bigint,
   ): Promise<void>;
-  getPricesForAsset(assetMetadata: Metadata, latestBlockHeight: bigint): Promise<EstimatedPrice[]>;
+  getPricesForAsset(
+    assetMetadata: Metadata,
+    latestBlockHeight: bigint,
+    epochDuration: bigint,
+  ): Promise<EstimatedPrice[]>;
   clearSwapBasedPrices(): Promise<void>;
 
   // Add more auction union types as they are created

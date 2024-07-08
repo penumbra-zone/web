@@ -3,8 +3,7 @@ import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/
 // PRICE_RELEVANCE_THRESHOLDS defines how long prices for different asset types remain relevant (in blocks)
 // 1 block = 5 seconds, 200 blocks approximately equals 17 minutes
 export const PRICE_RELEVANCE_THRESHOLDS = {
-  delegationToken: 719,
-  default: 200,
+  default: 200n,
 };
 
 export interface AuctionNftCaptureGroups {
