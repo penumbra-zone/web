@@ -430,18 +430,20 @@ impl IndexedDBStorage {
         let mut notes_for_voting: Vec<(SpendableNoteRecord, IdentityKey)> = vec![];
 
         for record in all_notes {
+            // Ensure note is a delegation asset
             let Some(delegation_token) = delegation_assets.get(&record.note.asset_id()) else {
                 continue;
             };
 
-            // Ensure if it's been spent, it is later than votable vote height
-            if let Some(height_spent) = record.height_spent {
-                if height_spent < votable_at_height {
-                    continue;
-                }
-            }
+            // Determine if the note can be used for voting
+            let not_spent_before_vote = record
+                .height_spent
+                .map_or(true, |height_spent| height_spent >= votable_at_height);
+            let created_before_vote = record.height_created < votable_at_height;
 
-            notes_for_voting.push((record, delegation_token.validator()));
+            if created_before_vote && not_spent_before_vote {
+                notes_for_voting.push((record, delegation_token.validator()));
+            }
         }
 
         Ok(notes_for_voting)
