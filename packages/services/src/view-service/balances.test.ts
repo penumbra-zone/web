@@ -30,6 +30,7 @@ import { getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 import { multiplyAmountByNumber } from '@penumbra-zone/types/amount';
 import { fvkCtx } from '../ctx/full-viewing-key';
+import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb';
 
 const assertOnlyUniqueAssetIds = (responses: BalancesResponse[], accountId: number) => {
   const account0Res = responses.filter(
@@ -59,6 +60,7 @@ describe('Balances request handler', () => {
     };
 
     mockIndexedDb = {
+      getAppParams: vi.fn(),
       getAssetsMetadata: vi.fn(),
       getPricesForAsset: vi.fn(),
       getFullSyncHeight: vi.fn(() => Promise.resolve()),
@@ -173,6 +175,13 @@ describe('Balances request handler', () => {
     const pricedAsset = new AssetId({ inner: new Uint8Array([5, 6, 7, 8]) });
     const mockNumerairePerUnit = 2.5;
 
+    mockIndexedDb.getAppParams?.mockResolvedValue(
+      new AppParameters({
+        sctParams: {
+          epochDuration: 719n,
+        },
+      }),
+    );
     // We'll just mock the same response for every call -- we're just testing
     // that the equivalent prices get included in the RPC response.
     mockIndexedDb.getPricesForAsset?.mockResolvedValue([

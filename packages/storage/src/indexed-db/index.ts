@@ -651,12 +651,16 @@ export class IndexedDb implements IndexedDbInterface {
   async getPricesForAsset(
     assetMetadata: Metadata,
     latestBlockHeight: bigint,
+    epochDuration: bigint,
   ): Promise<EstimatedPrice[]> {
     const base64AssetId = uint8ArrayToBase64(getAssetId(assetMetadata).inner);
     const results = await this.db.getAllFromIndex('PRICES', 'pricedAsset', base64AssetId);
 
-    const priceRelevanceThreshold = this.determinePriceRelevanceThresholdForAsset(assetMetadata);
-    const minHeight = latestBlockHeight - BigInt(priceRelevanceThreshold);
+    const priceRelevanceThreshold = this.determinePriceRelevanceThresholdForAsset(
+      assetMetadata,
+      epochDuration,
+    );
+    const minHeight = latestBlockHeight - priceRelevanceThreshold;
 
     return results
       .map(price => EstimatedPrice.fromJson(price))
@@ -678,9 +682,12 @@ export class IndexedDb implements IndexedDbInterface {
     await tx.done;
   }
 
-  private determinePriceRelevanceThresholdForAsset(assetMetadata: Metadata): number {
+  private determinePriceRelevanceThresholdForAsset(
+    assetMetadata: Metadata,
+    epochDuration: bigint,
+  ): bigint {
     if (assetPatterns.delegationToken.capture(assetMetadata.display)) {
-      return PRICE_RELEVANCE_THRESHOLDS.delegationToken;
+      return epochDuration;
     }
     return PRICE_RELEVANCE_THRESHOLDS.default;
   }
