@@ -46,12 +46,12 @@ export const balances: Impl['balances'] = async function* (req, ctx) {
 
   const appParameters = await indexedDb.getAppParams();
 
-  const aggregator = new BalancesAggregator(
+  const aggregator = new BalancesAggregator({
     ctx,
     indexedDb,
     latestKnownBlockHeight,
-    appParameters?.sctParams?.epochDuration,
-  );
+    epochDuration: appParameters?.sctParams?.epochDuration,
+  });
 
   for await (const noteRecord of indexedDb.iterateSpendableNotes()) {
     if (noteRecord.heightSpent !== 0n) continue;
@@ -78,19 +78,30 @@ export const balances: Impl['balances'] = async function* (req, ctx) {
 type BalancesMap = Record<Base64Str, BalancesResponse>;
 type AccountMap = Record<AddressIndex['account'], BalancesMap>;
 
+interface BalancesAggregatorProps {
+  ctx: HandlerContext;
+  indexedDb: IndexedDbInterface;
+  latestKnownBlockHeight: bigint;
+  epochDuration?: bigint | undefined;
+}
+
 class BalancesAggregator {
+  private readonly ctx: HandlerContext;
+  private readonly indexedDb: IndexedDbInterface;
+  private readonly latestBlockHeight: bigint;
+  private readonly epochDuration: bigint | undefined;
   readonly accounts: AccountMap = {};
   private readonly estimatedPriceByPricedAsset: Record<
     Stringified<AssetId['inner']>,
     EstimatedPrice[]
   > = {};
 
-  constructor(
-    private readonly ctx: HandlerContext,
-    private readonly indexedDb: IndexedDbInterface,
-    private readonly latestBlockHeight: bigint,
-    private readonly epochDuration: bigint | undefined,
-  ) {}
+  constructor({ ctx, indexedDb, latestKnownBlockHeight, epochDuration }: BalancesAggregatorProps) {
+    this.ctx = ctx;
+    this.indexedDb = indexedDb;
+    this.latestBlockHeight = latestKnownBlockHeight;
+    this.epochDuration = epochDuration;
+  }
 
   async add(n: SpendableNoteRecord) {
     const accountNumber = n.addressIndex?.account ?? 0;
