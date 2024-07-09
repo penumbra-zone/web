@@ -21,8 +21,11 @@ BigInt.prototype.toJSON = function () {
 export const useChainConnector = () => {
   const { selectedChain } = useStore(ibcInSelector);
   const { chainRecords } = useManager();
-  const defaultChain = chainRecords[0]!.name;
-  return useChain(selectedChain?.chainName ?? defaultChain);
+  const selectedOrDefaultChain = selectedChain?.chainName ?? chainRecords[0]?.name;
+  if (!selectedOrDefaultChain) {
+    throw new Error('No chain available');
+  }
+  return useChain(selectedOrDefaultChain);
 };
 
 const useCosmosQueryHooks = () => {
