@@ -12,7 +12,7 @@ export const TabletNav = () => {
   const navigate = useNavigate();
 
   return (
-    <NavigationMenu.Root delayDuration={0}>
+    <NavigationMenu.Root delayDuration={0} className='relative'>
       <NavigationMenu.Item className={cn('w-[138px]', ...itemStyle, 'hidden md:block xl:hidden')}>
         <NavigationMenu.Trigger className={cn('group', 'text-left', 'text-muted', ...triggerStyle)}>
           {metadata[pathname].title}
