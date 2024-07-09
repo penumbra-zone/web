@@ -29,10 +29,10 @@ export const UnclaimedSwaps = () => {
           <div key={id} className='mt-4 flex items-center gap-4 rounded-md border p-2'>
             <div className='flex items-center gap-2'>
               <AssetIcon metadata={asset1} />
-              <p className='truncate'>{asset1.symbol || 'Unknown asset'}</p>
+              <p className='max-w-40 truncate'>{asset1.symbol || 'Unknown asset'}</p>
               <span>↔</span>
               <AssetIcon metadata={asset2} />
-              <p className='truncate'>{asset2.symbol || 'Unknown asset'}</p>
+              <p className='max-w-40 truncate'>{asset2.symbol || 'Unknown asset'}</p>
             </div>
 
             <div className='hidden sm:block'>Block Height: {Number(swap.outputData?.height)}</div>
