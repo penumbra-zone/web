@@ -1,4 +1,5 @@
 import '../styles/globals.css';
+import penumbraTheme from './penumbraTheme';
 
 /** @type { import('@storybook/react').Preview } */
 const preview = {
@@ -9,6 +10,9 @@ const preview = {
         color: /(background|color)$/i,
         date: /Date$/i,
       },
+    },
+    docs: {
+      theme: penumbraTheme,
     },
   },
 };
