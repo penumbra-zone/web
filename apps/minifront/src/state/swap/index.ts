@@ -17,11 +17,20 @@ import {
   instantSwapSubmitButtonDisabledSelector,
 } from './instant-swap';
 import { createPriceHistorySlice, PriceHistorySlice } from './price-history';
-import { getMetadata } from '@penumbra-zone/getters/value-view';
 import { isValidAmount } from '../helpers';
 
 import { setSwapQueryParams } from './query-params';
 import { swappableBalancesResponsesSelector, swappableAssetsSelector } from './helpers';
+import { getMetadataFromBalancesResponse } from '@penumbra-zone/getters/balances-response';
+import { getAddressIndex } from '@penumbra-zone/getters/address-view';
+import { emptyBalanceResponse } from '../../utils/empty-balance-response';
+import {
+  balancesResponseAndMetadataAreSameAsset,
+  getFirstBalancesResponseMatchingMetadata,
+  getFirstBalancesResponseNotMatchingMetadata,
+  getFirstMetadataNotMatchingBalancesResponse,
+  getBalanceByMatchingMetadataAndAddressIndex,
+} from './getters';
 
 export interface SimulateSwapResult {
   metadataByAssetId: Record<string, Metadata>;
@@ -35,6 +44,7 @@ interface Actions {
   setAssetIn: (asset: BalancesResponse) => void;
   setAmount: (amount: string) => void;
   setAssetOut: (metadata?: Metadata) => void;
+  reverse: () => void;
   setDuration: (duration: DurationOption) => void;
   resetSubslices: VoidFunction;
 }
@@ -60,25 +70,6 @@ const INITIAL_STATE: State = {
 };
 
 export type SwapSlice = Actions & State & Subslices;
-
-const balancesResponseAndMetadataAreSameAsset = (
-  balancesResponse?: BalancesResponse,
-  metadata?: Metadata,
-) => getMetadata.optional()(balancesResponse?.balanceView)?.equals(metadata);
-
-const getFirstBalancesResponseNotMatchingMetadata = (
-  balancesResponses: BalancesResponse[],
-  metadata?: Metadata,
-) =>
-  balancesResponses.find(
-    balancesResponse => !balancesResponseAndMetadataAreSameAsset(balancesResponse, metadata),
-  );
-
-const getFirstMetadataNotMatchingBalancesResponse = (
-  metadatas: Metadata[],
-  balancesResponse: BalancesResponse,
-) =>
-  metadatas.find(metadata => !balancesResponseAndMetadataAreSameAsset(balancesResponse, metadata));
 
 export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) => ({
   ...INITIAL_STATE,
@@ -110,6 +101,26 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
           metadata,
         );
       }
+    });
+    setSwapQueryParams(get());
+  },
+  reverse: () => {
+    get().swap.resetSubslices();
+    set(({ swap }) => {
+      const balances = get().shared.balancesResponses.data ?? [];
+      const assetIn = get().swap.assetIn;
+      const assetOut = get().swap.assetOut;
+      if (!assetIn || !assetOut) return;
+
+      swap.assetIn =
+        getBalanceByMatchingMetadataAndAddressIndex(
+          balances,
+          getAddressIndex(assetIn.accountAddress),
+          assetOut,
+        ) ??
+        getFirstBalancesResponseMatchingMetadata(balances, assetOut) ??
+        emptyBalanceResponse(assetOut);
+      swap.assetOut = getMetadataFromBalancesResponse(get().swap.assetIn);
     });
     setSwapQueryParams(get());
   },
