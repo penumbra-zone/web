@@ -11,7 +11,7 @@ import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
 
 const meta: Meta<typeof AddressViewComponent> = {
   component: AddressViewComponent,
-  title: 'AddressViewComponent',
+  title: 'Deprecated/AddressViewComponent',
   tags: ['autodocs'],
 };
 export default meta;
