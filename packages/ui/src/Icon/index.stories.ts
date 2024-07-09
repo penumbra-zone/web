@@ -6,13 +6,6 @@ import { Icon } from '.';
 const meta: Meta<typeof Icon> = {
   component: Icon,
   tags: ['autodocs'],
-  decorators: [
-    Story => (
-      <div className='text-rust'>
-        <Story />
-      </div>
-    ),
-  ],
   argTypes: {
     IconComponent: {
       options: ['ArrowRightLeft', 'Send', 'Wallet'],
