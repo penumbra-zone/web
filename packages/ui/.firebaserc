@@ -1,0 +1,19 @@
+{
+  "projects": {
+    "default": "penumbra-ui"
+  },
+  "targets": {
+    "penumbra-ui": {
+      "hosting": {
+        "preview": [
+          "penumbra-ui-preview"
+        ],
+        "stable": [
+          "penumbra-ui"
+        ]
+      }
+    }
+  },
+  "etags": {},
+  "dataconnectEmulatorConfig": {}
+}
