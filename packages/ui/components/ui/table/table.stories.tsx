@@ -4,7 +4,7 @@ import { Table, TableBody, TableHead, TableHeader, TableRow, TableCell } from '.
 
 const meta: Meta<typeof Table> = {
   component: Table,
-  title: 'Deprecated/Table',
+  title: 'Table',
   tags: ['autodocs'],
 };
 export default meta;

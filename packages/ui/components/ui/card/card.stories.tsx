@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter }
 
 const meta: Meta<typeof Card> = {
   component: Card,
-  title: 'Deprecated/Card',
+  title: 'Card',
   tags: ['autodocs'],
 };
 export default meta;

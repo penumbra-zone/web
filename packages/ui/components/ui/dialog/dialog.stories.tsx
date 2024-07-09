@@ -5,7 +5,7 @@ import { Button } from '../button';
 
 const meta: Meta<typeof Dialog> = {
   component: Dialog,
-  title: 'Deprecated/Dialog',
+  title: 'Dialog',
   tags: ['autodocs'],
 };
 export default meta;

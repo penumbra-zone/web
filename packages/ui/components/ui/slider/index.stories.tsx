@@ -5,7 +5,7 @@ import { Slider } from '.';
 
 const meta: Meta<typeof Slider> = {
   component: Slider,
-  title: 'Deprecated/Slider',
+  title: 'Slider',
   tags: ['autodocs'],
   argTypes: {
     thumbTooltip: { control: false },
