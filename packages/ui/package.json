@@ -68,6 +68,7 @@
     "react-loader-spinner": "^6.1.6",
     "react-router-dom": "^6.23.1",
     "sonner": "1.4.3",
+    "styled-components": "^6.1.11",
     "tailwind-merge": "^2.3.0",
     "tinycolor2": "^1.6.0"
   },
