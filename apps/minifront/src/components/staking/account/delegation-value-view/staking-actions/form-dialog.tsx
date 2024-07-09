@@ -70,7 +70,7 @@ export const FormDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent size='sm'>
+      <DialogContent>
         {!!open && !!action && (
           <>
             <DialogHeader>{getCapitalizedAction(action)}</DialogHeader>
