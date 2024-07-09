@@ -6,7 +6,7 @@ import { Button } from '../button';
 
 const meta: Meta<typeof PopoverMenu> = {
   component: PopoverMenu,
-  title: 'Deprecated/PopoverMenu',
+  title: 'PopoverMenu',
   tags: ['autodocs'],
   argTypes: {
     trigger: { control: false },

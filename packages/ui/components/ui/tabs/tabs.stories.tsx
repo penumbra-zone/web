@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 const meta: Meta<typeof Tabs> = {
   component: Tabs,
-  title: 'Deprecated/Tabs',
+  title: 'Tabs',
   tags: ['autodocs'],
 };
 export default meta;

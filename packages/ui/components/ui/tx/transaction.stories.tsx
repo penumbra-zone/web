@@ -5,7 +5,7 @@ import { TransactionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbr
 
 const meta: Meta<typeof TransactionViewComponent> = {
   component: TransactionViewComponent,
-  title: 'Deprecated/TransactionViewComponent',
+  title: 'TransactionViewComponent',
   tags: ['autodocs'],
 };
 export default meta;

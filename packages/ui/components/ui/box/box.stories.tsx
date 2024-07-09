@@ -4,7 +4,7 @@ import { Box } from '.';
 
 const meta: Meta<typeof Box> = {
   component: Box,
-  title: 'Deprecated/Box',
+  title: 'Box',
   tags: ['autodocs'],
 };
 export default meta;
