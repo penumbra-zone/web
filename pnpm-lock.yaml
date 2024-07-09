@@ -794,6 +794,9 @@ importers:
       '@storybook/blocks':
         specifier: ^8.1.1
         version: 8.1.11(@types/react-dom@18.3.0)(@types/react@18.3.3)(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@storybook/manager-api':
+        specifier: ^8.1.11
+        version: 8.1.11(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@storybook/preview-api':
         specifier: ^8.1.1
         version: 8.1.11
@@ -803,6 +806,9 @@ importers:
       '@storybook/react-vite':
         specifier: 8.1.1
         version: 8.1.1(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rollup@4.18.1)(typescript@5.5.3)(vite@5.3.3(@types/node@20.14.10)(terser@5.31.1))
+      '@storybook/theming':
+        specifier: ^8.1.11
+        version: 8.1.11(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@types/humanize-duration':
         specifier: ^3.27.4
         version: 3.27.4
