@@ -7,7 +7,7 @@ import { Network } from 'lucide-react';
 
 const meta: Meta<typeof SelectList> = {
   component: SelectList,
-  title: 'SelectList',
+  title: 'Deprecated/SelectList',
   tags: ['autodocs'],
 };
 export default meta;

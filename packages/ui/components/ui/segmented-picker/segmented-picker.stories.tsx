@@ -5,7 +5,7 @@ import { SegmentedPicker } from '.';
 
 const meta: Meta<typeof SegmentedPicker> = {
   component: SegmentedPicker,
-  title: 'SegmentedPicker',
+  title: 'Deprecated/SegmentedPicker',
   tags: ['autodocs'],
   argTypes: {
     options: {

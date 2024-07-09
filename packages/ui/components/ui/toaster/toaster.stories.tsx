@@ -6,7 +6,7 @@ import { Button } from '../button';
 
 const meta: Meta<typeof Toaster> = {
   component: Toaster,
-  title: 'Toaster',
+  title: 'Deprecated/Toaster',
   tags: ['autodocs'],
   decorators: [
     Story => (

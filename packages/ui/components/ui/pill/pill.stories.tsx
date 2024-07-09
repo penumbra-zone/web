@@ -4,7 +4,7 @@ import { Pill } from '.';
 
 const meta: Meta<typeof Pill> = {
   component: Pill,
-  title: 'Pill',
+  title: 'Deprecated/Pill',
   tags: ['autodocs'],
 };
 export default meta;

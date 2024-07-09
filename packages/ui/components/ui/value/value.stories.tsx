@@ -9,7 +9,7 @@ import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/nu
 
 const meta: Meta<typeof ValueViewComponent> = {
   component: ValueViewComponent,
-  title: 'ValueViewComponent',
+  title: 'Deprecated/ValueViewComponent',
   tags: ['autodocs'],
 };
 export default meta;

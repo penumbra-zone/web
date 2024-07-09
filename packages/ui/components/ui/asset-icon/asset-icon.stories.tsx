@@ -5,7 +5,7 @@ import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/
 
 const meta: Meta<typeof AssetIcon> = {
   component: AssetIcon,
-  title: 'AssetIcon',
+  title: 'Deprecated/AssetIcon',
   tags: ['autodocs'],
 };
 export default meta;
