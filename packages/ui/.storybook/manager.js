@@ -5,7 +5,6 @@ addons.setConfig({
   showToolbar: true,
   theme: penumbraTheme,
   sidebar: {
-    showRoots: false,
-    collapsedRoots: ['other'],
+    collapsedRoots: ['Deprecated'],
   },
 });
