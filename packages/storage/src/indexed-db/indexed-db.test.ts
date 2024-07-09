@@ -606,7 +606,7 @@ describe('IndexedDb', () => {
     it('saves and gets a price in the database', async () => {
       // This effectively tests both the save and the get, since we saved via
       // `updatePrice()` in the `beforeEach` above.
-      await expect(db.getPricesForAsset(delegationMetadataA, 50n)).resolves.toEqual([
+      await expect(db.getPricesForAsset(delegationMetadataA, 50n, 719n)).resolves.toEqual([
         new EstimatedPrice({
           pricedAsset: delegationMetadataA.penumbraAssetId!,
           numeraire: stakingAssetId,
@@ -617,12 +617,12 @@ describe('IndexedDb', () => {
     });
 
     it('should not return too old price', async () => {
-      await expect(db.getPricesForAsset(metadataA, 241n)).resolves.toEqual([]);
+      await expect(db.getPricesForAsset(metadataA, 241n, 719n)).resolves.toEqual([]);
     });
 
     it('different types of assets should have different price relevance thresholds', async () => {
-      await expect(db.getPricesForAsset(metadataA, 241n)).resolves.toEqual([]);
-      await expect(db.getPricesForAsset(delegationMetadataA, 241n)).resolves.toEqual([
+      await expect(db.getPricesForAsset(metadataA, 241n, 719n)).resolves.toEqual([]);
+      await expect(db.getPricesForAsset(delegationMetadataA, 241n, 719n)).resolves.toEqual([
         new EstimatedPrice({
           pricedAsset: delegationMetadataA.penumbraAssetId!,
           numeraire: stakingAssetId,
@@ -634,7 +634,7 @@ describe('IndexedDb', () => {
 
     it('should delete only prices with a numeraires different from the staking token', async () => {
       await db.clearSwapBasedPrices();
-      await expect(db.getPricesForAsset(metadataA, 50n)).resolves.toEqual([]);
+      await expect(db.getPricesForAsset(metadataA, 50n, 719n)).resolves.toEqual([]);
     });
   });
 

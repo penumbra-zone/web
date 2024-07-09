@@ -2,13 +2,11 @@ use std::collections::BTreeMap;
 #[allow(unused_imports)]
 use std::future::IntoFuture;
 
-use anyhow::Error;
-use indexed_db_futures::{
-    prelude::{IdbObjectStoreParameters, IdbOpenDbRequestLike, OpenDbRequest},
-    IdbDatabase, IdbKeyPath, IdbQuerySource, IdbVersionChangeEvent,
-};
-use penumbra_asset::asset::{self, Id, Metadata};
+use anyhow::anyhow;
+use indexed_db_futures::IdbDatabase;
+use penumbra_asset::asset::{Id, Metadata};
 use penumbra_auction::auction::AuctionId;
+use penumbra_fee::GasPrices;
 use penumbra_keys::keys::AddressIndex;
 use penumbra_num::Amount;
 use penumbra_proto::core::keys;
@@ -22,14 +20,14 @@ use penumbra_sct::Nullifier;
 use penumbra_shielded_pool::{fmd, note, Note};
 use penumbra_stake::{DelegationToken, IdentityKey};
 use serde::{Deserialize, Serialize};
-use wasm_bindgen::JsValue;
-use web_sys::IdbTransactionMode::Readwrite;
 
+use crate::database::indexed_db::open_idb_database;
+use crate::database::interface::Database;
 use crate::error::{WasmError, WasmResult};
 use crate::note_record::SpendableNoteRecord;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct IndexedDbConstants {
+pub struct DbConstants {
     pub name: String,
     pub version: u32,
     pub tables: Tables,
@@ -51,79 +49,27 @@ pub struct Tables {
     pub auction_outstanding_reserves: String,
 }
 
-pub struct IndexedDBStorage {
-    db: IdbDatabase,
-    constants: IndexedDbConstants,
+pub async fn init_idb_storage(constants: DbConstants) -> WasmResult<Storage<IdbDatabase>> {
+    let db = open_idb_database(&constants).await?;
+    Storage::new(db, constants.tables)
 }
 
-impl IndexedDBStorage {
-    pub async fn new(constants: IndexedDbConstants) -> WasmResult<Self> {
-        #[allow(unused_mut)]
-        let mut db_req: OpenDbRequest = IdbDatabase::open_u32(&constants.name, constants.version)?;
+pub struct Storage<T: Database> {
+    db: T,
+    tables: Tables,
+}
 
-        // Conditionally mock sample `IdbDatabase` database for testing purposes
-        #[cfg(feature = "mock-database")]
-        let db_req = IndexedDBStorage::mock_test_database(db_req)
-            .into_future()
-            .await;
-
-        let db: IdbDatabase = db_req.into_future().await?;
-
-        Ok(IndexedDBStorage { db, constants })
+impl<T: Database> Storage<T> {
+    pub fn new(db: T, tables: Tables) -> WasmResult<Self> {
+        Ok(Storage { db, tables })
     }
 
-    pub async fn mock_test_database(mut db_req: OpenDbRequest) -> OpenDbRequest {
-        db_req.set_on_upgrade_needed(Some(|evt: &IdbVersionChangeEvent| -> Result<(), JsValue> {
-            // Check if the object store exists; create it if it doesn't
-            if evt.db().name() == "penumbra-db-wasm-test" {
-                let note_key: JsValue = serde_wasm_bindgen::to_value("noteCommitment.inner")?;
-                let note_object_store_params = IdbObjectStoreParameters::new()
-                    .key_path(Some(&IdbKeyPath::new(note_key)))
-                    .to_owned();
-                let note_object_store = evt.db().create_object_store_with_params(
-                    "SPENDABLE_NOTES",
-                    &note_object_store_params,
-                )?;
-
-                let nullifier_key: JsValue = serde_wasm_bindgen::to_value("nullifier.inner")?;
-                note_object_store.create_index_with_params(
-                    "nullifier",
-                    &IdbKeyPath::new(nullifier_key),
-                    web_sys::IdbIndexParameters::new().unique(false),
-                )?;
-                evt.db().create_object_store("TREE_LAST_POSITION")?;
-                evt.db().create_object_store("TREE_LAST_FORGOTTEN")?;
-
-                let commitment_key: JsValue = serde_wasm_bindgen::to_value("commitment.inner")?;
-                let commitment_object_store_params = IdbObjectStoreParameters::new()
-                    .key_path(Some(&IdbKeyPath::new(commitment_key)))
-                    .to_owned();
-                evt.db().create_object_store_with_params(
-                    "TREE_COMMITMENTS",
-                    &commitment_object_store_params,
-                )?;
-                evt.db().create_object_store("TREE_HASHES")?;
-                evt.db().create_object_store("FMD_PARAMETERS")?;
-                evt.db().create_object_store("APP_PARAMETERS")?;
-                evt.db().create_object_store("GAS_PRICES")?;
-            }
-            Ok(())
-        }));
-
-        db_req
-    }
-
-    pub fn get_database(&self) -> *const IdbDatabase {
+    pub fn get_database(&self) -> *const T {
         &self.db
     }
 
     pub async fn get_notes(&self, request: NotesRequest) -> WasmResult<Vec<SpendableNoteRecord>> {
-        let idb_tx = self
-            .db
-            .transaction_on_one(&self.constants.tables.spendable_notes)?;
-        let store = idb_tx.object_store(&self.constants.tables.spendable_notes)?;
-
-        let asset_id: Option<asset::Id> = request.asset_id.map(TryInto::try_into).transpose()?;
+        let asset_id: Option<Id> = request.asset_id.map(TryInto::try_into).transpose()?;
         let address_index: Option<AddressIndex> =
             request.address_index.map(TryInto::try_into).transpose()?;
         let amount_to_spend: Option<Amount> =
@@ -135,13 +81,15 @@ impl IndexedDBStorage {
             );
         }
 
-        let mut records = Vec::new();
+        let mut filtered_records = Vec::new();
         let mut total = Amount::zero();
 
-        let raw_values = store.get_all()?.await?;
-        for raw_record in raw_values {
-            let record: SpendableNoteRecord = serde_wasm_bindgen::from_value(raw_record)?;
+        let all_records = self
+            .db
+            .get_all::<SpendableNoteRecord>(&self.tables.spendable_notes)
+            .await?;
 
+        for record in all_records {
             if !request.include_spent && record.height_spent.is_some() {
                 continue;
             }
@@ -158,7 +106,7 @@ impl IndexedDBStorage {
             }
 
             total += record.note.amount();
-            records.push(record);
+            filtered_records.push(record);
 
             if let Some(amount_to_spend) = amount_to_spend {
                 if total >= amount_to_spend {
@@ -167,238 +115,125 @@ impl IndexedDBStorage {
             }
         }
 
-        Ok(records)
+        Ok(filtered_records)
     }
 
     pub async fn get_asset(&self, id: &Id) -> WasmResult<Option<Metadata>> {
-        let tx = self.db.transaction_on_one(&self.constants.tables.assets)?;
-        let store = tx.object_store(&self.constants.tables.assets)?;
-
-        Ok(store
-            .get_owned(byte_array_to_base64(&id.to_proto().inner))?
-            .await?
-            .map(serde_wasm_bindgen::from_value)
-            .transpose()?)
+        let key = byte_array_to_base64(&id.to_proto().inner);
+        let result: Option<Metadata> = self.db.get(&self.tables.assets, key).await?;
+        Ok(result)
     }
 
     pub async fn add_asset(&self, metadata: &Metadata) -> WasmResult<()> {
-        let tx = self
-            .db
-            .transaction_on_one_with_mode(&self.constants.tables.assets, Readwrite)?;
-        let store = tx.object_store(&self.constants.tables.assets)?;
-        let metadata_js = serde_wasm_bindgen::to_value(&metadata.to_proto())?;
-
-        store.put_val_owned(&metadata_js)?;
-
+        self.db.put(&self.tables.assets, metadata).await?;
         Ok(())
     }
 
     pub async fn get_full_sync_height(&self) -> WasmResult<Option<u64>> {
-        let tx = self
-            .db
-            .transaction_on_one(&self.constants.tables.full_sync_height)?;
-        let store = tx.object_store(&self.constants.tables.full_sync_height)?;
-
-        Ok(store
-            .get_owned("height")?
-            .await?
-            .map(serde_wasm_bindgen::from_value)
-            .transpose()?)
+        let result = self.db.get(&self.tables.full_sync_height, "height").await?;
+        Ok(result)
     }
 
     pub async fn get_note(
         &self,
         commitment: &note::StateCommitment,
     ) -> WasmResult<Option<SpendableNoteRecord>> {
-        let tx = self
-            .db
-            .transaction_on_one(&self.constants.tables.spendable_notes)?;
-        let store = tx.object_store(&self.constants.tables.spendable_notes)?;
-
-        Ok(store
-            .get_owned(byte_array_to_base64(&commitment.to_proto().inner))?
-            .await?
-            .map(serde_wasm_bindgen::from_value)
-            .transpose()?)
+        let key = byte_array_to_base64(&commitment.to_proto().inner);
+        let result = self.db.get(&self.tables.spendable_notes, key).await?;
+        Ok(result)
     }
 
     pub async fn get_note_by_nullifier(
         &self,
         nullifier: &Nullifier,
     ) -> WasmResult<Option<SpendableNoteRecord>> {
-        let tx = self
+        let key = byte_array_to_base64(&nullifier.to_proto().inner);
+        let result = self
             .db
-            .transaction_on_one(&self.constants.tables.spendable_notes)?;
-        let store = tx.object_store(&self.constants.tables.spendable_notes)?;
-
-        Ok(store
-            .index("nullifier")?
-            .get_owned(byte_array_to_base64(&nullifier.to_proto().inner))?
-            .await?
-            .map(serde_wasm_bindgen::from_value)
-            .transpose()?)
+            .get_with_index(&self.tables.spendable_notes, key, "nullifier")
+            .await?;
+        Ok(result)
     }
 
     pub async fn store_advice(&self, note: Note) -> WasmResult<()> {
-        let tx = self
-            .db
-            .transaction_on_one_with_mode(&self.constants.tables.advice_notes, Readwrite)?;
-        let store = tx.object_store(&self.constants.tables.advice_notes)?;
-
-        let note_proto: penumbra_proto::core::component::shielded_pool::v1::Note =
-            note.clone().into();
-        let note_js = serde_wasm_bindgen::to_value(&note_proto)?;
-
-        let commitment_proto = note.commit().to_proto();
-
-        store.put_key_val_owned(byte_array_to_base64(&commitment_proto.inner), &note_js)?;
-
+        let key = byte_array_to_base64(&note.commit().to_proto().inner);
+        self.db
+            .put_with_key(&self.tables.advice_notes, key, &note)
+            .await?;
         Ok(())
     }
 
     pub async fn read_advice(&self, commitment: note::StateCommitment) -> WasmResult<Option<Note>> {
-        let tx = self
-            .db
-            .transaction_on_one(&self.constants.tables.advice_notes)?;
-        let store = tx.object_store(&self.constants.tables.advice_notes)?;
-
-        let commitment_proto = commitment.to_proto();
-
-        Ok(store
-            .get_owned(byte_array_to_base64(&commitment_proto.inner))?
-            .await?
-            .map(serde_wasm_bindgen::from_value)
-            .transpose()?)
+        let key = byte_array_to_base64(&commitment.to_proto().inner);
+        let result = self.db.get(&self.tables.advice_notes, key).await?;
+        Ok(result)
     }
 
     pub async fn get_swap_by_commitment(
         &self,
         swap_commitment: StateCommitment,
     ) -> WasmResult<Option<SwapRecord>> {
-        let tx = self.db.transaction_on_one(&self.constants.tables.swaps)?;
-        let store = tx.object_store(&self.constants.tables.swaps)?;
-
-        Ok(store
-            .get_owned(byte_array_to_base64(&swap_commitment.inner))?
-            .await?
-            .map(serde_wasm_bindgen::from_value)
-            .transpose()?)
+        let key = byte_array_to_base64(&swap_commitment.inner);
+        let result = self.db.get(&self.tables.swaps, key).await?;
+        Ok(result)
     }
 
     pub async fn get_swap_by_nullifier(
         &self,
         nullifier: &Nullifier,
     ) -> WasmResult<Option<SwapRecord>> {
-        let tx = self.db.transaction_on_one(&self.constants.tables.swaps)?;
-        let store = tx.object_store(&self.constants.tables.swaps)?;
-
-        Ok(store
-            .index("nullifier")?
-            .get_owned(byte_array_to_base64(&nullifier.to_proto().inner))?
-            .await?
-            .map(serde_wasm_bindgen::from_value)
-            .transpose()?)
+        let key = byte_array_to_base64(&nullifier.to_proto().inner);
+        let result = self
+            .db
+            .get_with_index(&self.tables.swaps, key, "nullifier")
+            .await?;
+        Ok(result)
     }
 
     pub async fn get_fmd_params(&self) -> WasmResult<Option<fmd::Parameters>> {
-        let tx = self
-            .db
-            .transaction_on_one(&self.constants.tables.fmd_parameters)?;
-        let store = tx.object_store(&self.constants.tables.fmd_parameters)?;
-
-        Ok(store
-            .get_owned("params")?
-            .await?
-            .map(serde_wasm_bindgen::from_value)
-            .transpose()?)
+        let result = self.db.get(&self.tables.fmd_parameters, "params").await?;
+        Ok(result)
     }
 
     pub async fn get_app_params(&self) -> WasmResult<Option<AppParameters>> {
-        let tx = self
-            .db
-            .transaction_on_one(&self.constants.tables.app_parameters)?;
-        let store = tx.object_store(&self.constants.tables.app_parameters)?;
-
-        Ok(store
-            .get_owned("params")?
-            .await?
-            .map(serde_wasm_bindgen::from_value)
-            .transpose()?)
+        let result = self.db.get(&self.tables.app_parameters, "params").await?;
+        Ok(result)
     }
 
-    pub async fn get_gas_prices_by_asset_id(&self, asset_id: Id) -> WasmResult<Option<JsValue>> {
-        let tx = self
-            .db
-            .transaction_on_one(&self.constants.tables.gas_prices)?;
-        let store = tx.object_store(&self.constants.tables.gas_prices)?;
-
-        Ok(store
-            .get_owned(byte_array_to_base64(&asset_id.to_proto().inner))?
-            .await?)
-        // TODO GasPrices is missing domain type impl, requiring this
-        // .map(serde_wasm_bindgen::from_value)
-        // .transpose()?)
+    pub async fn get_gas_prices_by_asset_id(&self, asset_id: &Id) -> WasmResult<Option<GasPrices>> {
+        let key = byte_array_to_base64(&asset_id.to_proto().inner);
+        let result = self.db.get(&self.tables.gas_prices, key).await?;
+        Ok(result)
     }
 
     pub async fn get_latest_known_epoch(&self) -> WasmResult<Option<Epoch>> {
-        let tx = self.db.transaction_on_one(&self.constants.tables.epochs)?;
-        let store = tx.object_store(&self.constants.tables.epochs)?;
-
-        Ok(store
-            .open_cursor_with_direction(web_sys::IdbCursorDirection::Prev)?
-            .await?
-            .and_then(|cursor| serde_wasm_bindgen::from_value(cursor.value()).ok()))
+        let result = self.db.get_latest(&self.tables.epochs).await?;
+        Ok(result)
     }
 
     pub async fn get_transaction_infos(&self) -> WasmResult<Vec<TransactionInfo>> {
-        let tx = self
+        let all_txs = self
             .db
-            .transaction_on_one(&self.constants.tables.transactions)?;
-        let store = tx.object_store(&self.constants.tables.transactions)?;
-
-        let mut records = Vec::new();
-        let raw_values = store.get_all()?.await?;
-
-        for raw_value in raw_values {
-            let record: TransactionInfo = serde_wasm_bindgen::from_value(raw_value)?;
-            records.push(record);
-        }
-
-        Ok(records)
+            .get_all::<TransactionInfo>(&self.tables.transactions)
+            .await?;
+        Ok(all_txs)
     }
 
-    pub async fn get_auction_oustanding_reserves(
+    pub async fn get_auction_outstanding_reserves(
         &self,
         auction_id: AuctionId,
     ) -> WasmResult<OutstandingReserves> {
-        let result = self
+        let key = byte_array_to_base64(&auction_id.to_proto().inner);
+        let result: Option<OutstandingReserves> = self
             .db
-            .transaction_on_one(&self.constants.tables.auction_outstanding_reserves)?
-            .object_store(&self.constants.tables.auction_outstanding_reserves)?
-            .get::<JsValue>(&byte_array_to_base64(&auction_id.to_proto().inner).into())?
-            .await?
-            .map(serde_wasm_bindgen::from_value::<OutstandingReserves>)
-            .unwrap_or(Err(WasmError::Anyhow(Error::msg(
-                "could not find reserves",
-            ))
-            .into()));
+            .get(&self.tables.auction_outstanding_reserves, key)
+            .await?;
 
-        if let Ok(outstanding_reserves) = result {
-            Ok(outstanding_reserves)
-        } else {
-            Err(WasmError::Anyhow(Error::msg("could not find reserves")))
-        }
+        result.ok_or_else(|| WasmError::Anyhow(anyhow!("could not find reserves")))
     }
 
     pub async fn get_delegation_assets(&self) -> WasmResult<BTreeMap<Id, DelegationToken>> {
-        let idb_tx = self.db.transaction_on_one(&self.constants.tables.assets)?;
-        let store = idb_tx.object_store(&self.constants.tables.assets)?;
-        let all_metadata = store
-            .get_all()?
-            .await?
-            .into_iter()
-            .map(serde_wasm_bindgen::from_value)
-            .collect::<Result<Vec<Metadata>, _>>()?;
+        let all_metadata = self.db.get_all::<Metadata>(&self.tables.assets).await?;
 
         let mut assets: BTreeMap<Id, DelegationToken> = BTreeMap::new();
 

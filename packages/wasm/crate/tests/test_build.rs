@@ -37,10 +37,10 @@ mod tests {
 
     use penumbra_wasm::planner::plan_transaction;
     use penumbra_wasm::storage::byte_array_to_base64;
+    use penumbra_wasm::storage::init_idb_storage;
     use penumbra_wasm::{
         build::build_action,
         keys::load_proving_key,
-        storage::IndexedDBStorage,
         tx::{authorize, build, build_parallel, witness},
     };
 
@@ -236,11 +236,9 @@ mod tests {
         };
 
         // Retrieve private database handle with public getters.
-        let storage = IndexedDBStorage::new(
-            serde_wasm_bindgen::from_value(js_constants_params_value.clone()).unwrap(),
-        )
-        .await
-        .unwrap();
+        let constants = serde_wasm_bindgen::from_value(js_constants_params_value.clone()).unwrap();
+        let storage = init_idb_storage(constants).await.unwrap();
+
         // let storage_ref: &IndexedDBStorage = unsafe { &*storage };
         let database: *const IdbDatabase = storage.get_database();
         let database_ref: &IdbDatabase = unsafe { &*database };

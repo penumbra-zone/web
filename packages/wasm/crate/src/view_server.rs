@@ -1,3 +1,6 @@
+use std::collections::BTreeMap;
+
+use indexed_db_futures::IdbDatabase;
 use penumbra_asset::asset::{Id, Metadata};
 use penumbra_compact_block::{CompactBlock, StatePayload};
 use penumbra_keys::FullViewingKey;
@@ -8,7 +11,6 @@ use penumbra_tct as tct;
 use penumbra_tct::Witness::*;
 use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen::Serializer;
-use std::collections::BTreeMap;
 use tct::storage::{StoreCommitment, StoreHash, StoredPosition, Updates};
 use tct::{Forgotten, Tree};
 use wasm_bindgen::prelude::wasm_bindgen;
@@ -16,7 +18,7 @@ use wasm_bindgen::JsValue;
 
 use crate::error::WasmResult;
 use crate::note_record::SpendableNoteRecord;
-use crate::storage::IndexedDBStorage;
+use crate::storage::{init_idb_storage, Storage};
 use crate::swap_record::SwapRecord;
 use crate::utils;
 
@@ -61,7 +63,7 @@ pub struct ViewServer {
     swaps: BTreeMap<tct::StateCommitment, SwapRecord>,
     denoms: BTreeMap<Id, Metadata>,
     sct: Tree,
-    storage: IndexedDBStorage,
+    storage: Storage<IdbDatabase>,
     last_position: Option<StoredPosition>,
     last_forgotten: Option<Forgotten>,
 }
@@ -97,7 +99,7 @@ impl ViewServer {
             denoms: Default::default(),
             sct: tree,
             swaps: Default::default(),
-            storage: IndexedDBStorage::new(constants).await?,
+            storage: init_idb_storage(constants).await?,
             last_position: None,
             last_forgotten: None,
         };

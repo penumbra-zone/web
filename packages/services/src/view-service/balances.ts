@@ -44,7 +44,14 @@ export const balances: Impl['balances'] = async function* (req, ctx) {
   const latestKnownBlockHeight =
     (await querier.tendermint.latestBlockHeight()) ?? (await indexedDb.getFullSyncHeight()) ?? 0n;
 
-  const aggregator = new BalancesAggregator(ctx, indexedDb, latestKnownBlockHeight);
+  const appParameters = await indexedDb.getAppParams();
+
+  const aggregator = new BalancesAggregator({
+    ctx,
+    indexedDb,
+    latestKnownBlockHeight,
+    epochDuration: appParameters?.sctParams?.epochDuration,
+  });
 
   for await (const noteRecord of indexedDb.iterateSpendableNotes()) {
     if (noteRecord.heightSpent !== 0n) continue;
@@ -71,18 +78,30 @@ export const balances: Impl['balances'] = async function* (req, ctx) {
 type BalancesMap = Record<Base64Str, BalancesResponse>;
 type AccountMap = Record<AddressIndex['account'], BalancesMap>;
 
+interface BalancesAggregatorProps {
+  ctx: HandlerContext;
+  indexedDb: IndexedDbInterface;
+  latestKnownBlockHeight: bigint;
+  epochDuration?: bigint | undefined;
+}
+
 class BalancesAggregator {
+  private readonly ctx: HandlerContext;
+  private readonly indexedDb: IndexedDbInterface;
+  private readonly latestBlockHeight: bigint;
+  private readonly epochDuration: bigint | undefined;
   readonly accounts: AccountMap = {};
   private readonly estimatedPriceByPricedAsset: Record<
     Stringified<AssetId['inner']>,
     EstimatedPrice[]
   > = {};
 
-  constructor(
-    private readonly ctx: HandlerContext,
-    private readonly indexedDb: IndexedDbInterface,
-    private readonly latestBlockHeight: bigint,
-  ) {}
+  constructor({ ctx, indexedDb, latestKnownBlockHeight, epochDuration }: BalancesAggregatorProps) {
+    this.ctx = ctx;
+    this.indexedDb = indexedDb;
+    this.latestBlockHeight = latestKnownBlockHeight;
+    this.epochDuration = epochDuration;
+  }
 
   async add(n: SpendableNoteRecord) {
     const accountNumber = n.addressIndex?.account ?? 0;
@@ -184,10 +203,14 @@ class BalancesAggregator {
         valueView: { case: 'unknownAssetId', value: { assetId, amount: new Amount() } },
       });
     } else {
-      if (!this.estimatedPriceByPricedAsset[uint8ArrayToBase64(assetId.inner)]) {
+      if (
+        !this.estimatedPriceByPricedAsset[uint8ArrayToBase64(assetId.inner)] &&
+        this.epochDuration
+      ) {
         const prices = await this.indexedDb.getPricesForAsset(
           denomMetadata as Metadata,
           this.latestBlockHeight,
+          this.epochDuration,
         );
         this.estimatedPriceByPricedAsset[uint8ArrayToBase64(assetId.inner)] = prices;
       }
