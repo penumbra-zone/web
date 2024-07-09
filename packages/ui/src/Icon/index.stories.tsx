@@ -27,5 +27,6 @@ export const Basic: StoryObj<typeof Icon> = {
   args: {
     IconComponent: ArrowRightLeft,
     size: 'sm',
+    color: 'var(--rust)',
   },
 };
