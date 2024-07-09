@@ -70,6 +70,7 @@ export const penumbraEslintConfig = {
     '@typescript-eslint/no-unnecessary-condition': ['error', { allowConstantLoopConditions: true }],
     '@typescript-eslint/no-invalid-void-type': 'off',
     '@typescript-eslint/restrict-template-expressions': ['error', { allowNumber: true }],
+    '@typescript-eslint/no-non-null-assertion': 'warn',
     'react/react-in-jsx-scope': 'off',
     'react/prop-types': 'off',
     // Catches untyped let declarations

@@ -20,7 +20,7 @@
     "format": "turbo format",
     "format:prettier": "prettier --write .",
     "format:syncpack": "syncpack format",
-    "lint": "turbo lint -- --max-warnings 0",
+    "lint": "turbo lint",
     "lint:fix": "turbo lint -- --fix",
     "lint:prettier": "prettier --check .",
     "lint:rust": "turbo lint:rust",
