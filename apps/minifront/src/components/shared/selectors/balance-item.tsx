@@ -45,7 +45,10 @@ export const BalanceItem = ({ asset, value, onSelect }: BalanceItemProps) => {
         <TableCell>
           <div className='col-span-2 flex items-center justify-start gap-1'>
             <AssetIcon metadata={metadataFromAsset} />
-            <p className='truncate'>
+            <p
+              title={metadataFromAsset?.symbol ? metadataFromAsset.symbol : 'Unknown asset'}
+              className='max-w-20 truncate lg:max-w-60'
+            >
               {metadataFromAsset?.symbol ? metadataFromAsset.symbol : 'Unknown asset'}
             </p>
           </div>

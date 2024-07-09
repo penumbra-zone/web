@@ -38,7 +38,9 @@ export const ValueComponent = ({
         </span>
       )}
       {showDenom && (
-        <span className='truncate font-mono text-xs text-muted-foreground'>{symbol}</span>
+        <span title={symbol} className='max-w-40 truncate font-mono text-xs text-muted-foreground'>
+          {symbol}
+        </span>
       )}
     </div>
   </Pill>

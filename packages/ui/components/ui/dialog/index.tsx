@@ -103,8 +103,7 @@ const dialogContentVariants = cva(
   {
     variants: {
       size: {
-        lg: ['max-w-5xl'],
-        sm: ['max-w-[312px]', 'md:max-w-[400px]'],
+        sm: ['max-w-[350px]', 'md:max-w-[400px] lg:max-w-[600px]'],
       },
     },
     defaultVariants: {
@@ -124,7 +123,11 @@ const DialogContent = React.forwardRef<
   <DialogPortal>
     <DialogOverlay />
     <DialogPrimitive.Content ref={ref} className={cn(dialogContentVariants({ size }))}>
-      <motion.div layout layoutId={layoutId} className='rounded-lg bg-card-radial'>
+      <motion.div
+        layout
+        layoutId={layoutId}
+        className='w-full overflow-hidden rounded-lg bg-card-radial'
+      >
         {children}
       </motion.div>
     </DialogPrimitive.Content>
@@ -135,7 +138,7 @@ DialogContent.displayName = DialogPrimitive.Content.displayName;
 const DialogHeader = ({ children }: { children?: React.ReactNode }) => (
   <div
     className={cn(
-      'flex items-center gap-4 px-4 text-xl leading-[30px] font-headline font-semibold h-[70px] border-b shrink-0 overflow-hidden w-full',
+      'flex items-center gap-4 px-4 text-xl leading-[30px] font-headline font-semibold h-[70px] border-b shrink-0 w-full',
     )}
   >
     <DialogPrimitive.Close
