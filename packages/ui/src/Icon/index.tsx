@@ -46,6 +46,10 @@ const PROPS_BY_SIZE: Record<IconSize, ComponentProps<LucideIcon>> = {
  * component rather than rendering Lucide icon components directly, since this
  * component standardizes the stroke width and sizes throughout the Penumbra
  * ecosystem.
+ *
+ * ```tsx
+ * <Icon IconComponent={ArrowRightLeft} size='sm' color={theme.colors.primary.main} />
+ * ```
  */
 export const Icon = ({ IconComponent, size = 'sm', color }: IconProps) => (
   <IconComponent absoluteStrokeWidth {...PROPS_BY_SIZE[size]} color={color} />
