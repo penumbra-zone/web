@@ -29,7 +29,9 @@ export interface IbcInSlice {
   amount?: string;
   setAmount: (amount?: string) => void;
   account: number;
+  address?: string;
   setAccount: (account: number) => void;
+  setAddress: () => Promise<void>;
   issueTx: (
     getClient: ChainWalletContext['getSigningStargateClient'],
     address?: string,
@@ -59,10 +61,22 @@ export const createIbcInSlice = (): SliceCreator<IbcInSlice> => (set, get) => {
       });
     },
     account: 0,
-    setAccount: (account: number) =>
+    address: undefined,
+    setAddress: async () => {
+      const { selectedChain, account } = get().ibcIn;
+      const penumbraAddress = await getPenumbraAddress(account, selectedChain?.chainName);
+      if (penumbraAddress) {
+        set(state => {
+          state.ibcIn.address = penumbraAddress;
+        });
+      }
+    },
+    setAccount: (account: number) => {
       set(state => {
         state.ibcIn.account = account;
-      }),
+      });
+      void get().ibcIn.setAddress();
+    },
     issueTx: async (getClient, address) => {
       const toast = new Toast();
       try {
@@ -122,6 +136,14 @@ const bech32Chains = ['noble', 'nobletestnet'];
 const getCompatibleBech32 = (chainName: string, address: Address): string => {
   return bech32Chains.includes(chainName) ? bech32CompatAddress(address) : bech32mAddress(address);
 };
+export const getPenumbraAddress = async (
+  account: number,
+  chainName?: string,
+): Promise<string | undefined> => {
+  if (!chainName) return undefined;
+  const receiverAddress = await getAddrByIndex(account, true);
+  return getCompatibleBech32(chainName, receiverAddress);
+};
 
 const estimateFee = async ({
   chainId,
@@ -147,7 +169,7 @@ const estimateFee = async ({
 
 async function execute(
   slice: IbcInSlice,
-  address: string,
+  sender: string,
   getStargateClient: ChainWalletContext['getSigningStargateClient'],
 ) {
   const { selectedChain, coin, amount, account } = slice;
@@ -159,8 +181,7 @@ async function execute(
   const penumbraChainId = await getChainId();
   if (!penumbraChainId) throw new Error('Penumbra chain id could not be retrieved');
 
-  const receiverAddress = await getAddrByIndex(account, true);
-  const penumbraAddress = getCompatibleBech32(selectedChain.chainName, receiverAddress);
+  const penumbraAddress = await getPenumbraAddress(account, selectedChain.chainName);
   if (!penumbraAddress) throw new Error('Penumbra address not available');
 
   const { timeoutHeight, timeoutTimestamp } = await getTimeout(penumbraChainId);
@@ -170,7 +191,7 @@ async function execute(
   const params: MsgTransfer = {
     sourcePort: 'transfer',
     sourceChannel: getCounterpartyChannelId(selectedChain, penumbraChainId),
-    sender: address,
+    sender,
     receiver: penumbraAddress,
     token: transferToken,
     timeoutHeight,
@@ -183,11 +204,11 @@ async function execute(
   const fee = await estimateFee({
     chainId: selectedChain.chainId,
     client,
-    signerAddress: address,
+    signerAddress: sender,
     message: ibcTransferMsg,
   });
 
-  const signedTx = await client.sign(address, [ibcTransferMsg], fee, '');
+  const signedTx = await client.sign(sender, [ibcTransferMsg], fee, '');
   return await client.broadcastTx(cosmos.tx.v1beta1.TxRaw.encode(signedTx).finish());
 }
 
