@@ -53,8 +53,11 @@ export const StakingActions = ({
   );
 
   const handleSubmit = () => {
-    if (state.action === 'delegate') void state.delegate();
-    else void state.undelegate();
+    if (state.action === 'delegate') {
+      void state.delegate();
+    } else {
+      void state.undelegate();
+    }
   };
 
   return (

@@ -39,9 +39,15 @@ const getValueView = async (
   value: Value | undefined,
   denomMetadataByAssetId: (id: AssetId) => Promise<Metadata>,
 ): Promise<ValueView> => {
-  if (!value) throw new Error('No value to view');
-  if (!value.assetId) throw new Error('No asset ID in value');
-  if (!value.amount) throw new Error('No amount in value');
+  if (!value) {
+    throw new Error('No value to view');
+  }
+  if (!value.assetId) {
+    throw new Error('No asset ID in value');
+  }
+  if (!value.amount) {
+    throw new Error('No amount in value');
+  }
 
   return new ValueView({
     valueView: {
@@ -59,9 +65,15 @@ const getNoteView = async (
   denomMetadataByAssetId: (id: AssetId) => Promise<Metadata>,
   fullViewingKey: FullViewingKey,
 ) => {
-  if (!note) throw new Error('No note to view');
-  if (!note.address) throw new Error('No address in note');
-  if (!note.value) throw new Error('No value in note');
+  if (!note) {
+    throw new Error('No note to view');
+  }
+  if (!note.address) {
+    throw new Error('No address in note');
+  }
+  if (!note.value) {
+    throw new Error('No value in note');
+  }
 
   return new NoteView({
     address: getAddressView(note.address, fullViewingKey),
@@ -74,7 +86,9 @@ const getSpendView = async (
   denomMetadataByAssetId: (id: AssetId) => Promise<Metadata>,
   fullViewingKey: FullViewingKey,
 ): Promise<SpendView> => {
-  if (!spendPlan.note?.address) throw new Error('No address in spend plan');
+  if (!spendPlan.note?.address) {
+    throw new Error('No address in spend plan');
+  }
 
   return new SpendView({
     spendView: {
@@ -91,7 +105,9 @@ const getOutputView = async (
   denomMetadataByAssetId: (id: AssetId) => Promise<Metadata>,
   fullViewingKey: FullViewingKey,
 ): Promise<OutputView> => {
-  if (!outputPlan.destAddress) throw new Error('No destAddress in output plan');
+  if (!outputPlan.destAddress) {
+    throw new Error('No destAddress in output plan');
+  }
 
   return new OutputView({
     outputView: {

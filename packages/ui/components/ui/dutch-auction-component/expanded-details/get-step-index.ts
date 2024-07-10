@@ -15,9 +15,15 @@ export const getStepIndex = (
   }: Pick<DutchAuctionDescription, 'startHeight' | 'endHeight' | 'stepCount'>,
   fullSyncHeight?: bigint,
 ): bigint | undefined => {
-  if (fullSyncHeight === undefined) return undefined;
-  if (fullSyncHeight >= endHeight) return stepCount - 1n; // zero-indexed
-  if (fullSyncHeight <= startHeight) return 0n;
+  if (fullSyncHeight === undefined) {
+    return undefined;
+  }
+  if (fullSyncHeight >= endHeight) {
+    return stepCount - 1n;
+  } // zero-indexed
+  if (fullSyncHeight <= startHeight) {
+    return 0n;
+  }
 
   const currentDistanceFromStartHeight = fullSyncHeight - startHeight;
   const endHeightDistanceFromStartHeightInclusive = endHeight - startHeight + 1n;

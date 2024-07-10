@@ -10,16 +10,24 @@ export const extractAltFee = async (
   indexedDb: IndexedDbInterface,
 ): Promise<AssetId> => {
   const outputAsset = request.outputs.map(o => o.value?.assetId).find(Boolean);
-  if (outputAsset) return outputAsset;
+  if (outputAsset) {
+    return outputAsset;
+  }
 
   const spendAsset = request.spends.map(o => o.value?.assetId).find(Boolean);
-  if (spendAsset) return spendAsset;
+  if (spendAsset) {
+    return spendAsset;
+  }
 
   const swapAsset = request.swaps.map(assetIn => assetIn.value?.assetId).find(Boolean);
-  if (swapAsset) return swapAsset;
+  if (swapAsset) {
+    return swapAsset;
+  }
 
   const ics20WithdrawAsset = request.ics20Withdrawals.map(w => w.denom).find(Boolean);
-  if (ics20WithdrawAsset) return assetIdFromBaseDenom(ics20WithdrawAsset.denom);
+  if (ics20WithdrawAsset) {
+    return assetIdFromBaseDenom(ics20WithdrawAsset.denom);
+  }
 
   const swapCommitment = request.swapClaims
     .map(swapClaim => swapClaim.swapCommitment)

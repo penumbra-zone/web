@@ -9,7 +9,9 @@ export const CosmosWalletConnector = () => {
   const { selectedChain } = useStore(ibcInSelector);
   const { username, address, status, message } = useChainConnector();
 
-  if (!selectedChain) return <></>;
+  if (!selectedChain) {
+    return <></>;
+  }
 
   return (
     <div className='flex flex-col items-center justify-center gap-4'>

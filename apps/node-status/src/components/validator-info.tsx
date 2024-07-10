@@ -6,7 +6,9 @@ import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import { uint8ArrayToString } from '@penumbra-zone/types/string';
 
 const PublicKeyComponent = ({ publicKey }: { publicKey: PublicKey | undefined }) => {
-  if (!publicKey) return null;
+  if (!publicKey) {
+    return null;
+  }
 
   const publicKeyType = publicKey.sum.case;
   const value = publicKey.sum.value ? uint8ArrayToHex(publicKey.sum.value) : undefined;
@@ -24,7 +26,9 @@ export const ValidatorInfo = () => {
   const {
     status: { validatorInfo },
   } = useLoaderData() as IndexLoaderResponse;
-  if (!validatorInfo) return <></>;
+  if (!validatorInfo) {
+    return <></>;
+  }
 
   return (
     // Outer div used to shrink to size instead of expand to sibling's size

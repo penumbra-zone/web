@@ -50,7 +50,9 @@ export const DutchAuctionComponent = ({
   const [isExpanded, setIsExpanded] = useState(false);
 
   const { description } = dutchAuction;
-  if (!description) return null;
+  if (!description) {
+    return null;
+  }
 
   return (
     <motion.div layout='position' className='flex flex-col gap-2'>

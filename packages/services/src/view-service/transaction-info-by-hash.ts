@@ -6,7 +6,9 @@ import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbr
 import { fvkCtx } from '../ctx/full-viewing-key';
 
 export const transactionInfoByHash: Impl['transactionInfoByHash'] = async (req, ctx) => {
-  if (!req.id) throw new ConnectError('Missing transaction ID in request', Code.InvalidArgument);
+  if (!req.id) {
+    throw new ConnectError('Missing transaction ID in request', Code.InvalidArgument);
+  }
 
   const services = await ctx.values.get(servicesCtx)();
   const { indexedDb, querier } = await services.getWalletServices();
@@ -17,7 +19,9 @@ export const transactionInfoByHash: Impl['transactionInfoByHash'] = async (req, 
   const { transaction, height } =
     (await indexedDb.getTransaction(req.id)) ?? (await querier.tendermint.getTransaction(req.id));
 
-  if (!transaction) throw new ConnectError('Transaction not available', Code.NotFound);
+  if (!transaction) {
+    throw new ConnectError('Transaction not available', Code.NotFound);
+  }
 
   const { txp: perspective, txv: view } = await generateTransactionInfo(
     await fvk(),

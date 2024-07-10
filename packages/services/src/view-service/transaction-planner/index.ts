@@ -24,15 +24,23 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
     : indexedDb.stakingTokenAssetId;
 
   const fmdParams = await indexedDb.getFmdParams();
-  if (!fmdParams) throw new ConnectError('FmdParameters not available', Code.FailedPrecondition);
+  if (!fmdParams) {
+    throw new ConnectError('FmdParameters not available', Code.FailedPrecondition);
+  }
 
   const { chainId, sctParams } = (await indexedDb.getAppParams()) ?? {};
-  if (!sctParams) throw new ConnectError('SctParameters not available', Code.FailedPrecondition);
-  if (!chainId) throw new ConnectError('ChainId not available', Code.FailedPrecondition);
+  if (!sctParams) {
+    throw new ConnectError('SctParameters not available', Code.FailedPrecondition);
+  }
+  if (!chainId) {
+    throw new ConnectError('ChainId not available', Code.FailedPrecondition);
+  }
 
   // Wasm planner needs the presence of gas prices in the db to work
   const gasPrices = await indexedDb.getNativeGasPrices();
-  if (!gasPrices) throw new ConnectError('Gas prices is not available', Code.FailedPrecondition);
+  if (!gasPrices) {
+    throw new ConnectError('Gas prices is not available', Code.FailedPrecondition);
+  }
 
   const idbConstants = indexedDb.constants();
   const fvk = await ctx.values.get(fvkCtx)();

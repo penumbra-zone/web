@@ -33,11 +33,17 @@ export const getFilteredAuctionInfos = (
   filter: Filter,
   fullSyncHeight?: bigint,
 ): AuctionInfo[] => {
-  if (filter === 'all') return auctionInfos;
+  if (filter === 'all') {
+    return auctionInfos;
+  }
 
   return auctionInfos.filter(auctionInfo => {
-    if (!fullSyncHeight) return false;
-    if (!haveEnoughDataToDetermineIfAuctionMatchesFilter(auctionInfo)) return false;
+    if (!fullSyncHeight) {
+      return false;
+    }
+    if (!haveEnoughDataToDetermineIfAuctionMatchesFilter(auctionInfo)) {
+      return false;
+    }
     return (
       auctionIsActive(auctionInfo, fullSyncHeight) || auctionIsUpcoming(auctionInfo, fullSyncHeight)
     );

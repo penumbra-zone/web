@@ -38,7 +38,9 @@ const fromBechWithLib = <P extends Prefix>(
   bechLib: BechLib,
 ): Uint8Array => {
   const p = b32mStr.slice(0, b32mStr.lastIndexOf('1'));
-  if (p !== prefix) throw new TypeError(`Unexpected prefix: expected ${prefix}, got ${p}`);
+  if (p !== prefix) {
+    throw new TypeError(`Unexpected prefix: expected ${prefix}, got ${p}`);
+  }
   return from({
     bechLib: bechLib,
     b32mStr,
@@ -107,9 +109,13 @@ const from = ({
   }
 
   const { prefix, words } = bechLib.decode(b32mStr, expectLength);
-  if (prefix !== expectPrefix) throw new TypeError('Wrong prefix');
+  if (prefix !== expectPrefix) {
+    throw new TypeError('Wrong prefix');
+  }
   const bytes = new Uint8Array(bechLib.fromWords(words));
-  if (bytes.length !== expectBytes) throw new TypeError('Unexpected data length');
+  if (bytes.length !== expectBytes) {
+    throw new TypeError('Unexpected data length');
+  }
   return bytes;
 };
 
@@ -138,6 +144,8 @@ const to = <P extends string>({
     throw new TypeError(`Invalid data length: expected ${expectBytes}, got ${bData.length}`);
   }
   const bStr = bechLib.encode(prefix, bechLib.toWords(bData), expectLength);
-  if (bStr.length !== expectLength) throw new TypeError('Unexpected string length');
+  if (bStr.length !== expectLength) {
+    throw new TypeError('Unexpected string length');
+  }
   return bStr as `${P}1${string}`;
 };

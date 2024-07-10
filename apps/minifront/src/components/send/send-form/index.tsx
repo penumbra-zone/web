@@ -71,7 +71,9 @@ export const SendForm = () => {
         setIsSendingMax={setIsSendingMax}
         value={amount}
         onInputChange={amount => {
-          if (Number(amount) < 0) return;
+          if (Number(amount) < 0) {
+            return;
+          }
           setAmount(amount);
         }}
         validations={[

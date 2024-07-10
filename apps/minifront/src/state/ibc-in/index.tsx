@@ -82,7 +82,9 @@ export const createIbcInSlice = (): SliceCreator<IbcInSlice> => (set, get) => {
       try {
         toast.loading().message('Issuing IBC transaction').render();
 
-        if (!address) throw new Error('Address not selected');
+        if (!address) {
+          throw new Error('Address not selected');
+        }
         const { code, transactionHash, height } = await execute(get().ibcIn, address, getClient);
 
         // The transaction succeeded if and only if code is 0.
@@ -117,11 +119,15 @@ export const createIbcInSlice = (): SliceCreator<IbcInSlice> => (set, get) => {
 };
 
 const getExplorerPage = (txHash: string, chainId?: string) => {
-  if (!chainId) return undefined;
+  if (!chainId) {
+    return undefined;
+  }
 
   // They come in the format of "https://mintscan.io/noble-testnet/txs/${txHash}"
   const txPage = chains.find(({ chain_id }) => chain_id === chainId)?.explorers?.[0]?.tx_page;
-  if (!txPage) return undefined;
+  if (!txPage) {
+    return undefined;
+  }
 
   return txPage.replace('${txHash}', txHash);
 };
@@ -140,7 +146,9 @@ export const getPenumbraAddress = async (
   account: number,
   chainName?: string,
 ): Promise<string | undefined> => {
-  if (!chainName) return undefined;
+  if (!chainName) {
+    return undefined;
+  }
   const receiverAddress = await getAddrByIndex(account, true);
   return getCompatibleBech32(chainName, receiverAddress);
 };
@@ -158,8 +166,12 @@ const estimateFee = async ({
 }) => {
   const feeToken = chains.find(({ chain_id }) => chain_id === chainId)?.fees?.fee_tokens[0];
   const avgGasPrice = feeToken?.average_gas_price;
-  if (!feeToken) throw new Error(`Fee token not found in registry for ${chainId}`);
-  if (!avgGasPrice) throw new Error(`Average gas price not found for ${chainId}`);
+  if (!feeToken) {
+    throw new Error(`Fee token not found in registry for ${chainId}`);
+  }
+  if (!avgGasPrice) {
+    throw new Error(`Average gas price not found for ${chainId}`);
+  }
 
   const estimatedGas = await client.simulate(signerAddress, [message], '');
   const gasLimit = Math.round(estimatedGas * 1.5); // Give some padding to the limit due to fluctuations
@@ -174,15 +186,25 @@ async function execute(
 ) {
   const { selectedChain, coin, amount, account } = slice;
 
-  if (!coin) throw new Error('No token is selected');
-  if (!amount) throw new Error('Amount has not been entered');
-  if (!selectedChain) throw new Error('No chain has been selected');
+  if (!coin) {
+    throw new Error('No token is selected');
+  }
+  if (!amount) {
+    throw new Error('Amount has not been entered');
+  }
+  if (!selectedChain) {
+    throw new Error('No chain has been selected');
+  }
 
   const penumbraChainId = await getChainId();
-  if (!penumbraChainId) throw new Error('Penumbra chain id could not be retrieved');
+  if (!penumbraChainId) {
+    throw new Error('Penumbra chain id could not be retrieved');
+  }
 
   const penumbraAddress = await getPenumbraAddress(account, selectedChain.chainName);
-  if (!penumbraAddress) throw new Error('Penumbra address not available');
+  if (!penumbraAddress) {
+    throw new Error('Penumbra address not available');
+  }
 
   const { timeoutHeight, timeoutTimestamp } = await getTimeout(penumbraChainId);
   const assetMetadata = augmentToAsset(coin.raw.denom, selectedChain.chainName);

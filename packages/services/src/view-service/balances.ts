@@ -54,8 +54,12 @@ export const balances: Impl['balances'] = async function* (req, ctx) {
   });
 
   for await (const noteRecord of indexedDb.iterateSpendableNotes()) {
-    if (noteRecord.heightSpent !== 0n) continue;
-    if (isZero(getAmountFromRecord(noteRecord))) continue;
+    if (noteRecord.heightSpent !== 0n) {
+      continue;
+    }
+    if (isZero(getAmountFromRecord(noteRecord))) {
+      continue;
+    }
 
     await aggregator.add(noteRecord);
   }
@@ -156,20 +160,26 @@ class BalancesAggregator {
    */
   private async aggregateEquivalentValues(valueView: ValueView, toAdd: SpendableNoteRecord) {
     const assetId = getAssetIdFromRecord.optional()(toAdd);
-    if (!assetId?.inner) return;
+    if (!assetId?.inner) {
+      return;
+    }
 
     const amount = getAmount(valueView);
 
     const equivalentValues: EquivalentValue[] = [];
 
     for (const price of this.estimatedPriceByPricedAsset[uint8ArrayToBase64(assetId.inner)] ?? []) {
-      if (!price.numeraire) continue;
+      if (!price.numeraire) {
+        continue;
+      }
 
       const numeraire = await assetMetadataById(
         new AssetMetadataByIdRequest({ assetId: price.numeraire }),
         this.ctx,
       );
-      if (!numeraire.denomMetadata) continue;
+      if (!numeraire.denomMetadata) {
+        continue;
+      }
 
       const equivalentAmount = multiplyAmountByNumber(amount, price.numerairePerUnit);
 

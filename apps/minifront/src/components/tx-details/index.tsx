@@ -22,8 +22,9 @@ export const TxDetails = () => {
     !txInfo.data?.id ||
     // Don't show a previously loaded transaction while a new one is loading
     txInfo.loading
-  )
+  ) {
     return null;
+  }
 
   return (
     <FadeTransition className='flex min-h-[calc(100vh-122px)] flex-col items-stretch justify-start'>

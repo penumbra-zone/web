@@ -15,7 +15,9 @@ import {
 const availableOrigin = () => Object.keys(window[PenumbraSymbol] ?? {})[0];
 
 export const assertGlobalPresent = () => {
-  if (!window[PenumbraSymbol]) throw new PenumbraNotInstalledError();
+  if (!window[PenumbraSymbol]) {
+    throw new PenumbraNotInstalledError();
+  }
   return window[PenumbraSymbol];
 };
 
@@ -25,7 +27,9 @@ export const assertGlobalPresent = () => {
  */
 export const assertProvider = (providerOrigin?: string): PenumbraInjection => {
   const provider = providerOrigin && assertGlobalPresent()[providerOrigin];
-  if (!provider) throw new PenumbraProviderNotAvailableError(providerOrigin);
+  if (!provider) {
+    throw new PenumbraProviderNotAvailableError(providerOrigin);
+  }
   return provider;
 };
 
@@ -36,7 +40,9 @@ export const assertProvider = (providerOrigin?: string): PenumbraInjection => {
  */
 export const assertProviderConnected = (providerOrigin?: string) => {
   const provider = assertProvider(providerOrigin);
-  if (!provider.isConnected()) throw new PenumbraProviderNotConnectedError(providerOrigin);
+  if (!provider.isConnected()) {
+    throw new PenumbraProviderNotConnectedError(providerOrigin);
+  }
   return provider;
 };
 
@@ -53,14 +59,17 @@ export const assertProviderManifest = async (
 
   try {
     // confirm the provider manifest is located at the expected origin
-    if (new URL(provider.manifest).origin !== providerOrigin)
+    if (new URL(provider.manifest).origin !== providerOrigin) {
       throw new Error('Manifest located at unexpected origin');
+    }
 
     // confirm the provider manifest can be fetched, and is json
     const req = await fetch(provider.manifest);
     const manifest: unknown = await req.json();
 
-    if (!manifest) throw new Error(`Cannot confirm ${providerOrigin} is real.`);
+    if (!manifest) {
+      throw new Error(`Cannot confirm ${providerOrigin} is real.`);
+    }
   } catch (e) {
     console.warn(e);
     throw new PenumbraProviderNotAvailableError(providerOrigin);
@@ -80,7 +89,9 @@ export const assertProviderManifest = async (
  */
 export const getPenumbraPort = async (requireProvider?: string) => {
   const provider = await assertProviderManifest(requireProvider ?? availableOrigin());
-  if (!provider.isConnected()) await provider.request();
+  if (!provider.isConnected()) {
+    await provider.request();
+  }
   return provider.connect();
 };
 

@@ -135,7 +135,9 @@ const byBalanceAndVotingPower = (valueViewA: ValueView, valueViewB: ValueView): 
   const byBalance = Number(
     joinLoHiAmount(getAmount(valueViewB)) - joinLoHiAmount(getAmount(valueViewA)),
   );
-  if (byBalance !== 0) return byBalance;
+  if (byBalance !== 0) {
+    return byBalance;
+  }
 
   const validatorInfoA = getValidatorInfoFromValueView(valueViewA);
   const validatorInfoB = getValidatorInfoFromValueView(valueViewB);
@@ -180,7 +182,9 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
   unbondingTokensByAccount: new Map(),
   loadDelegationsForCurrentAccount: async () => {
     const existingAbortController = get().staking.loadDelegationsForCurrentAccountAbortController;
-    if (existingAbortController) existingAbortController.abort();
+    if (existingAbortController) {
+      existingAbortController.abort();
+    }
     const newAbortController = new AbortController();
     set(state => {
       state.staking.loadDelegationsForCurrentAccountAbortController = newAbortController;
@@ -209,7 +213,9 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
      * delegations and then flush them to state in batches.
      */
     const flushToState = () => {
-      if (!delegationsToFlush.length) return;
+      if (!delegationsToFlush.length) {
+        return;
+      }
 
       const delegations = get().staking.delegationsByAccount.get(addressIndex.account) ?? [];
 
@@ -250,7 +256,9 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
   loadUnbondingTokensForCurrentAccount: async () => {
     const existingAbortController =
       get().staking.loadUnbondingTokensForCurrentAccountAbortController;
-    if (existingAbortController) existingAbortController.abort();
+    if (existingAbortController) {
+      existingAbortController.abort();
+    }
     const newAbortController = new AbortController();
     set(state => {
       state.staking.loadUnbondingTokensForCurrentAccountAbortController = newAbortController;
@@ -329,11 +337,15 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
   undelegateClaim: async () => {
     const { account, unbondingTokensByAccount } = get().staking;
     const unbondingTokens = unbondingTokensByAccount.get(account)?.claimable.tokens;
-    if (!unbondingTokens) return;
+    if (!unbondingTokens) {
+      return;
+    }
 
     try {
       const req = await assembleUndelegateClaimRequest({ account, unbondingTokens });
-      if (!req) return;
+      if (!req) {
+        return;
+      }
 
       await planBuildBroadcast('undelegateClaim', req);
 
@@ -382,8 +394,9 @@ const assembleUndelegateRequest = ({
   const delegation = delegationsByAccount
     .get(account)
     ?.find(delegation => isDelegationTokenForValidator(delegation, validatorInfo!));
-  if (!delegation)
+  if (!delegation) {
     throw new Error('Tried to assemble undelegate request from account with no delegation tokens');
+  }
 
   return new TransactionPlannerRequest({
     undelegations: [

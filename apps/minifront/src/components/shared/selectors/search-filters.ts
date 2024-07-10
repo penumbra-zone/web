@@ -27,6 +27,8 @@ export const bySearch =
     if (isMetadata(asset)) {
       return metadataBySearch(search)(asset);
     }
-    if (isBalance(asset)) return balanceBySearch(search)(asset);
+    if (isBalance(asset)) {
+      return balanceBySearch(search)(asset);
+    }
     return false;
   };

@@ -26,13 +26,17 @@ export const getAddresses = async (accounts: (number | undefined)[]): Promise<In
 
 export const getAddressByIndex = async (account = 0): Promise<Address> => {
   const { address } = await viewClient.addressByIndex({ addressIndex: { account } });
-  if (!address) throw new Error('Address not in getAddressByIndex response');
+  if (!address) {
+    throw new Error('Address not in getAddressByIndex response');
+  }
   return address;
 };
 
 export const getEphemeralAddress = async (account = 0): Promise<Address> => {
   const { address } = await viewClient.ephemeralAddress({ addressIndex: { account } });
-  if (!address) throw new Error('Address not in getEphemeralAddress response');
+  if (!address) {
+    throw new Error('Address not in getEphemeralAddress response');
+  }
   return address;
 };
 

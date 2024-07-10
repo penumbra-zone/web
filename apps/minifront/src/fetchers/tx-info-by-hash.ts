@@ -9,7 +9,9 @@ export const getTxInfoByHash = async (hash: string): Promise<TransactionInfo> =>
   });
 
   const txInfo = res.txInfo;
-  if (!txInfo) throw new Error('Transaction info not found');
+  if (!txInfo) {
+    throw new Error('Transaction info not found');
+  }
 
   return txInfo;
 };

@@ -5,7 +5,9 @@ import { Translator } from './types';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 
 export const asPublicTransactionView: Translator<TransactionView> = transactionView => {
-  if (!transactionView?.bodyView) return new TransactionView();
+  if (!transactionView?.bodyView) {
+    return new TransactionView();
+  }
 
   return new TransactionView({
     bodyView: {
@@ -24,7 +26,9 @@ export const asReceiverTransactionView: Translator<
   Promise<TransactionView>,
   { isControlledAddress: (address: Address) => Promise<boolean> }
 > = async (transactionView, ctx) => {
-  if (!transactionView?.bodyView) return new TransactionView();
+  if (!transactionView?.bodyView) {
+    return new TransactionView();
+  }
 
   return new TransactionView({
     bodyView: {

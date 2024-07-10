@@ -14,8 +14,9 @@ export const validatorInfo: Impl['validatorInfo'] = async function* (req, ctx) {
     if (
       !req.showInactive &&
       getStateEnumFromValidatorInfo(validatorInfo) === ValidatorState_ValidatorStateEnum.INACTIVE
-    )
+    ) {
       continue;
+    }
 
     yield new ValidatorInfoResponse({ validatorInfo });
   }

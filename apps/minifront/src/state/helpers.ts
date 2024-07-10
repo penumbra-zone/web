@@ -83,7 +83,9 @@ export const plan = async (
   req: PartialMessage<TransactionPlannerRequest>,
 ): Promise<TransactionPlan> => {
   const { plan } = await viewClient.transactionPlanner(req);
-  if (!plan) throw new Error('No plan in planner response');
+  if (!plan) {
+    throw new Error('No plan in planner response');
+  }
   return plan;
 };
 
@@ -115,16 +117,22 @@ const broadcast = async (
   onStatusUpdate: (status?: BroadcastTransactionResponse['status']) => void,
 ): Promise<{ txHash: string; detectionHeight?: bigint }> => {
   const { awaitDetection, transaction } = req;
-  if (!transaction) throw new Error('no transaction');
+  if (!transaction) {
+    throw new Error('no transaction');
+  }
   const txId = await getTxId(transaction);
   const txHash = getTxHash(txId);
   onStatusUpdate(undefined);
   for await (const { status } of viewClient.broadcastTransaction({ awaitDetection, transaction })) {
-    if (!txId.equals(status.value?.id)) throw new Error('unexpected transaction id');
+    if (!txId.equals(status.value?.id)) {
+      throw new Error('unexpected transaction id');
+    }
     onStatusUpdate(status);
     switch (status.case) {
       case 'broadcastSuccess':
-        if (!awaitDetection) return { txHash, detectionHeight: undefined };
+        if (!awaitDetection) {
+          return { txHash, detectionHeight: undefined };
+        }
         break;
       case 'confirmed':
         return { txHash, detectionHeight: status.value.detectionHeight };

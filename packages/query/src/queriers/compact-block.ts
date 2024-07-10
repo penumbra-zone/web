@@ -25,7 +25,9 @@ export class CompactBlockQuerier implements CompactBlockQuerierInterface {
     const req = new CompactBlockRangeRequest({ keepAlive, startHeight });
     const iterable = this.client.compactBlockRange(req, { signal: abortSignal });
     for await (const res of iterable) {
-      if (!res.compactBlock) throw new Error('No block in response');
+      if (!res.compactBlock) {
+        throw new Error('No block in response');
+      }
       yield res.compactBlock;
     }
   }

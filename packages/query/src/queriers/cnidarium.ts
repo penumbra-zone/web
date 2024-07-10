@@ -17,7 +17,9 @@ export class CnidariumQuerier implements CnidariumQuerierInterface {
       key: `sct/tree/anchor_by_height/${blockHeight}`,
     });
     const keyValue = await this.client.keyValue(keyValueRequest);
-    if (!keyValue.value) throw new Error('no value in KeyValueResponse');
+    if (!keyValue.value) {
+      throw new Error('no value in KeyValueResponse');
+    }
 
     return MerkleRoot.fromBinary(keyValue.value.value);
   }

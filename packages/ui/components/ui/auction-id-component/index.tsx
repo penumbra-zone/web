@@ -17,7 +17,9 @@ const SEPARATOR_INDEX = PENUMBRA_BECH32M_AUCTION_PREFIX.length + 1;
 export const AuctionIdComponent = ({ auctionId }: { auctionId?: AuctionId }) => {
   const id = useMemo(() => (auctionId ? bech32mAuctionId(auctionId) : undefined), [auctionId]);
 
-  if (!id) return null;
+  if (!id) {
+    return null;
+  }
 
   return (
     <div className='flex min-w-0 items-center gap-2'>

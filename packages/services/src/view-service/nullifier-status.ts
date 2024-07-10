@@ -11,13 +11,19 @@ const watchStream = async <U>(
   subscription: AsyncGenerator<U>,
   test: (x: U) => boolean,
 ): Promise<U> => {
-  for await (const update of subscription) if (test(update)) return update;
+  for await (const update of subscription) {
+    if (test(update)) {
+      return update;
+    }
+  }
   throw new Error('Subscription ended');
 };
 
 export const nullifierStatus: Impl['nullifierStatus'] = async (req, ctx) => {
   const { nullifier } = req;
-  if (!nullifier) throw new ConnectError('No nullifier passed', Code.InvalidArgument);
+  if (!nullifier) {
+    throw new ConnectError('No nullifier passed', Code.InvalidArgument);
+  }
 
   const services = await ctx.values.get(servicesCtx)();
   const { indexedDb } = await services.getWalletServices();

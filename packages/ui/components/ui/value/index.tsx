@@ -19,7 +19,9 @@ export const ValueViewComponent = ({
   showIcon = true,
   size = 'default',
 }: ValueViewProps) => {
-  if (!view) return null;
+  if (!view) {
+    return null;
+  }
 
   const formattedAmount = getFormattedAmtFromValueView(view, true);
 

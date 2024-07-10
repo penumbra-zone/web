@@ -145,8 +145,11 @@ export class Toast {
    * always be rendered inside a button.
    */
   action(label?: ReactNode, onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void): this {
-    if (typeof label === 'undefined') this._action = undefined;
-    else this._action = { label, onClick: onClick ?? noOp };
+    if (typeof label === 'undefined') {
+      this._action = undefined;
+    } else {
+      this._action = { label, onClick: onClick ?? noOp };
+    }
     return this;
   }
 

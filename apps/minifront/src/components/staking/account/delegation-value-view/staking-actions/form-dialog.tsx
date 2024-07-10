@@ -52,7 +52,9 @@ export const FormDialog = ({
   onSubmit: () => void;
 }) => {
   const handleOpenChange = (open: boolean) => {
-    if (!open) onClose();
+    if (!open) {
+      onClose();
+    }
   };
 
   const handleSubmit = (e: FormEvent) => {

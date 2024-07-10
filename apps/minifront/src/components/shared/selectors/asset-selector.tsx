@@ -38,11 +38,15 @@ const switchAssetIfNecessary = ({
   filter,
   assets,
 }: AssetSelectorProps & { assets: Metadata[] }) => {
-  if (!filter || !value) return;
+  if (!filter || !value) {
+    return;
+  }
 
   if (!filter(value)) {
     const firstAssetThatPassesTheFilter = assets.find(filter);
-    if (firstAssetThatPassesTheFilter) onChange(firstAssetThatPassesTheFilter);
+    if (firstAssetThatPassesTheFilter) {
+      onChange(firstAssetThatPassesTheFilter);
+    }
   }
 };
 

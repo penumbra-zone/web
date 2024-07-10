@@ -20,7 +20,9 @@ export const getAuctionInfos = async function* ({
   queryLatestState?: boolean;
 } = {}): AsyncGenerator<AuctionInfo> {
   for await (const response of viewClient.auctions({ queryLatestState, includeInactive: true })) {
-    if (!response.auction || !response.id) continue;
+    if (!response.auction || !response.id) {
+      continue;
+    }
 
     const auction = DutchAuction.fromBinary(response.auction.value);
 

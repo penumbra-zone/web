@@ -11,7 +11,9 @@ export const authorizeAndBuild: Impl['authorizeAndBuild'] = async function* (
   ctx,
 ) {
   const services = await ctx.values.get(servicesCtx)();
-  if (!transactionPlan) throw new ConnectError('No tx plan in request', Code.InvalidArgument);
+  if (!transactionPlan) {
+    throw new ConnectError('No tx plan in request', Code.InvalidArgument);
+  }
 
   const { indexedDb } = await services.getWalletServices();
   const fvk = ctx.values.get(fvkCtx);

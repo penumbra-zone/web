@@ -114,7 +114,9 @@ export class Key {
     const buffer = await crypto.subtle.exportKey('raw', key);
     const hashedKey = await crypto.subtle.digest('SHA-256', buffer);
 
-    if (!uintArraysEqual(print.hash, new Uint8Array(hashedKey))) return null;
+    if (!uintArraysEqual(print.hash, new Uint8Array(hashedKey))) {
+      return null;
+    }
     return new Key(key);
   }
 
