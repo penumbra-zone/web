@@ -10,7 +10,7 @@ import {
   PartialMessage,
   ServiceType,
 } from '@bufbuild/protobuf';
-import { Code, ConnectError, StreamResponse, UnaryResponse } from '@connectrpc/connect';
+import { Code, ConnectError, StreamResponse, Transport, UnaryResponse } from '@connectrpc/connect';
 import { CommonTransportOptions } from '@connectrpc/connect/protocol';
 import { errorFromJson } from '@connectrpc/connect/protocol-connect';
 import {
@@ -49,7 +49,7 @@ export const createChannelTransport = ({
   getPort,
   jsonOptions,
   defaultTimeoutMs = 10_000,
-}: ChannelTransportOptions) => {
+}: ChannelTransportOptions): Transport => {
   const pending = new Map<string, (response: TransportEvent) => void>();
 
   // this is used to recover errors that couldn't be thrown at a caller
