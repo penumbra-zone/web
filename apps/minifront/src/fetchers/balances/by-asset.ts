@@ -9,13 +9,17 @@ const hasMatchingAssetId = (vA: ValueView, vB: ValueView) => {
 
 // Use for doing a .reduce() on BalancesResponse[]
 export const groupByAsset = (acc: ValueView[], curr: BalancesResponse): ValueView[] => {
-  if (!curr.balanceView?.valueView.value?.amount) throw new Error('No amount in value view');
+  if (!curr.balanceView?.valueView.value?.amount) {
+    throw new Error('No amount in value view');
+  }
 
   const grouping = acc.find(v => hasMatchingAssetId(v, curr.balanceView!));
 
   if (grouping) {
     // Combine the amounts
-    if (!grouping.valueView.value?.amount) throw new Error('Grouping without amount');
+    if (!grouping.valueView.value?.amount) {
+      throw new Error('Grouping without amount');
+    }
     grouping.valueView.value.amount = addAmounts(
       grouping.valueView.value.amount,
       curr.balanceView.valueView.value.amount,

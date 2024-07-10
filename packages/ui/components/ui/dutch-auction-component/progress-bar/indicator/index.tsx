@@ -13,7 +13,9 @@ export const Indicator = ({
 }) => {
   const description = getDescription(dutchAuction);
   const seqNum = dutchAuction.state?.seq;
-  if (seqNum === undefined) return null;
+  if (seqNum === undefined) {
+    return null;
+  }
 
   const auctionEnded =
     (!!seqNum && seqNum > 0n) || (!!fullSyncHeight && fullSyncHeight >= description.endHeight);

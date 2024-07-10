@@ -16,8 +16,9 @@ export const transactionInfo: Impl['transactionInfo'] = async function* (req, ct
       !txRecord.transaction ||
       txRecord.height < req.startHeight ||
       (req.endHeight && txRecord.height > req.endHeight)
-    )
+    ) {
       continue;
+    }
 
     const { txp: perspective, txv: view } = await generateTransactionInfo(
       await fvk(),

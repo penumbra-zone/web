@@ -13,7 +13,8 @@ export const makeAnyServiceImpl = <S extends ServiceType>(
   const impl = {} as ServiceImpl<S>;
   let localName: keyof S['methods'];
   let methodInfo: MethodInfo & S['methods'][typeof localName];
-  for ([localName, methodInfo] of Object.entries(service.methods))
+  for ([localName, methodInfo] of Object.entries(service.methods)) {
     impl[localName] = createMethod(methodInfo, localName);
+  }
   return impl;
 };

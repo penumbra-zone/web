@@ -34,13 +34,19 @@ const getAssetIn = (state: AllSlices, from?: string, account?: number) => {
     const matchingBalancesResponse = filteredSwappableBalancesResponses.find(
       balance => getMetadataFromBalancesResponse.optional()(balance)?.symbol === from,
     );
-    if (matchingBalancesResponse) return matchingBalancesResponse;
+    if (matchingBalancesResponse) {
+      return matchingBalancesResponse;
+    }
 
     const matchingMetadata = state.shared.assets.data?.find(metadata => metadata.symbol === from);
-    if (matchingMetadata) return emptyBalanceResponse(matchingMetadata, account);
+    if (matchingMetadata) {
+      return emptyBalanceResponse(matchingMetadata, account);
+    }
   }
 
-  if (state.swap.assetIn) return state.swap.assetIn;
+  if (state.swap.assetIn) {
+    return state.swap.assetIn;
+  }
 
   const firstSwappableAsset = (swappableAssetsSelector(state.shared.assets).data ?? [])[0];
   return firstSwappableAsset ? emptyBalanceResponse(firstSwappableAsset, account) : undefined;
@@ -58,10 +64,14 @@ const getAssetOut = (state: AllSlices, to?: string, assetIn?: BalancesResponse) 
 
   if (to) {
     const matchingAsset = swappableAssets.find(asset => asset.symbol === to);
-    if (matchingAsset) return matchingAsset;
+    if (matchingAsset) {
+      return matchingAsset;
+    }
   }
 
-  if (state.swap.assetOut) return state.swap.assetOut;
+  if (state.swap.assetOut) {
+    return state.swap.assetOut;
+  }
 
   if (getMetadataFromBalancesResponse.optional()(assetIn)?.equals(swappableAssets[0])) {
     return swappableAssets[1];
@@ -87,7 +97,9 @@ export const swapBalancesMiddleware: Middleware = f => (set, get, store) => {
     const assetsWereJustSet =
       before.shared.assets.data !== after.shared.assets.data && !!after.shared.assets.data?.[0];
 
-    if (!balancesResponsesWereJustSet && !assetsWereJustSet) return;
+    if (!balancesResponsesWereJustSet && !assetsWereJustSet) {
+      return;
+    }
 
     const { from, to, account } = getSwapQueryParams();
 

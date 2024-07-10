@@ -169,8 +169,9 @@ export const connectChannelAdapter = (opt: ChannelAdapterOptions): ChannelHandle
     const requestType = request.getType();
 
     const methodType = I_MethodType.get(requestType.typeName);
-    if (!methodType)
+    if (!methodType) {
       throw new ConnectError(`Method ${requestType.typeName} not found`, ConnectErrorCode.NotFound);
+    }
 
     let response: UnaryResponse | StreamResponse | undefined;
     switch (methodType.kind) {
@@ -203,8 +204,10 @@ export const connectChannelAdapter = (opt: ChannelAdapterOptions): ChannelHandle
         );
     }
 
-    if (response.stream)
+    if (response.stream) {
       return ReadableStream.from(response.message).pipeThrough(new MessageToJson(jsonOptions));
-    else return Any.pack(response.message).toJson(jsonOptions);
+    } else {
+      return Any.pack(response.message).toJson(jsonOptions);
+    }
   };
 };

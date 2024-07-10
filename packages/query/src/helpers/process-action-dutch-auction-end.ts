@@ -24,7 +24,9 @@ export const processActionDutchAuctionEnd = async (
   auctionQuerier: AuctionQuerierInterface,
   indexedDb: IndexedDbInterface,
 ) => {
-  if (!action.auctionId) return;
+  if (!action.auctionId) {
+    return;
+  }
 
   // Always a sequence number of 1 when ending a Dutch auction
   const seqNum = 1n;

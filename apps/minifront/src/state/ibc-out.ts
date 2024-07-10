@@ -186,13 +186,21 @@ const getPlanRequest = async ({
   chain,
   destinationChainAddress,
 }: IbcOutSlice): Promise<TransactionPlannerRequest> => {
-  if (!destinationChainAddress) throw new Error('no destination chain address set');
-  if (!chain) throw new Error('Chain not set');
-  if (!selection) throw new Error('No asset selected');
+  if (!destinationChainAddress) {
+    throw new Error('no destination chain address set');
+  }
+  if (!chain) {
+    throw new Error('Chain not set');
+  }
+  if (!selection) {
+    throw new Error('No asset selected');
+  }
 
   const addressIndex = getAddressIndex(selection.accountAddress);
   const { address: returnAddress } = await viewClient.ephemeralAddress({ addressIndex });
-  if (!returnAddress) throw new Error('Error with generating IBC deposit address');
+  if (!returnAddress) {
+    throw new Error('Error with generating IBC deposit address');
+  }
 
   const { timeoutHeight, timeoutTime } = await getTimeout(chain.channelId);
 
@@ -235,7 +243,9 @@ export const ibcValidationErrors = (state: AllSlices) => {
  * - the prefix matches the chain
  */
 const unknownAddrIsValid = (chain: Chain | undefined, address: string): boolean => {
-  if (!chain || address === '') return false;
+  if (!chain || address === '') {
+    return false;
+  }
   const { prefix, words } =
     bech32.decodeUnsafe(address, Infinity) ?? bech32m.decodeUnsafe(address, Infinity) ?? {};
   return !!words && prefix === chain.addressPrefix;
@@ -258,7 +268,9 @@ export const filterBalancesPerChain = (
   const assetsWithMatchingChannel = registryAssets
     .filter(a => {
       const match = assetPatterns.ibc.capture(a.base);
-      if (!match) return false;
+      if (!match) {
+        return false;
+      }
       return chain?.channelId === match.channel;
     })
     .map(m => m.penumbraAssetId!);

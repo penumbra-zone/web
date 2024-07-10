@@ -43,17 +43,25 @@ const isUUID = (uuid: string): uuid is UUID => reUUIDv4.test(uuid);
  * @param label type/purpose of connection
  */
 export const nameConnection = (prefix: string, label: ChannelLabel) => {
-  if (prefix.includes(delimiter)) throw TypeError(`Prefix cannot contain delimiter "${delimiter}"`);
+  if (prefix.includes(delimiter)) {
+    throw TypeError(`Prefix cannot contain delimiter "${delimiter}"`);
+  }
   return `${prefix}${delimiter}${label}${delimiter}${crypto.randomUUID()}`;
 };
 
 export const parseConnectionName = (prefix: string, name: string) => {
-  if (prefix.includes(delimiter)) throw TypeError(`Prefix cannot contain delimiter "${delimiter}"`);
+  if (prefix.includes(delimiter)) {
+    throw TypeError(`Prefix cannot contain delimiter "${delimiter}"`);
+  }
   const segments = name.split(delimiter);
-  if (segments.length !== 3) return undefined;
+  if (segments.length !== 3) {
+    return undefined;
+  }
 
   const [parsedPrefix, label, uuid] = segments as [string, string, string];
-  if (parsedPrefix !== prefix || !isChannelLabel(label) || !isUUID(uuid)) return undefined;
+  if (parsedPrefix !== prefix || !isChannelLabel(label) || !isUUID(uuid)) {
+    return undefined;
+  }
 
   return {
     label,

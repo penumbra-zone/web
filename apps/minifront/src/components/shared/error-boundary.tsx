@@ -13,11 +13,18 @@ import { SplashPage } from '@repo/ui/components/ui/splash-page';
 export const ErrorBoundary = () => {
   const error = useRouteError();
 
-  if (error instanceof ConnectError && error.code === Code.Unavailable)
+  if (error instanceof ConnectError && error.code === Code.Unavailable) {
     return <ExtensionTransportDisconnected />;
-  if (error instanceof PenumbraNotInstalledError) return <ExtensionNotInstalled />;
-  if (error instanceof PenumbraProviderNotConnectedError) return <ExtensionNotConnected />;
-  if (isRouteErrorResponse(error) && error.status === 404) return <NotFound />;
+  }
+  if (error instanceof PenumbraNotInstalledError) {
+    return <ExtensionNotInstalled />;
+  }
+  if (error instanceof PenumbraProviderNotConnectedError) {
+    return <ExtensionNotConnected />;
+  }
+  if (isRouteErrorResponse(error) && error.status === 404) {
+    return <NotFound />;
+  }
 
   console.error('ErrorBoundary caught error:', error);
 

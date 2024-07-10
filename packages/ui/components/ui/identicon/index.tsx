@@ -3,7 +3,9 @@ import { generateGradient, generateSolidColor } from './generate';
 import { IdenticonProps } from './types';
 
 export const Identicon = ({ type, ...props }: IdenticonProps & { type: 'gradient' | 'solid' }) => {
-  if (type === 'gradient') return <IdenticonGradient {...props} />;
+  if (type === 'gradient') {
+    return <IdenticonGradient {...props} />;
+  }
   return <IdenticonSolid {...props} />;
 };
 

@@ -90,7 +90,9 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
 
       const txPlan = await plan(assembleRequest(get().send));
       const fee = txPlan.transactionParameters?.fee;
-      if (!fee?.amount) return;
+      if (!fee?.amount) {
+        return;
+      }
 
       set(state => {
         state.send.fee = fee;

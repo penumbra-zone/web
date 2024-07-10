@@ -38,7 +38,9 @@ export const isDelegationTokenForValidator = (
   const delegationMatch = assetPatterns.delegationToken.capture(
     getDisplayDenomFromView(delegation),
   );
-  if (!delegationMatch) return false;
+  if (!delegationMatch) {
+    return false;
+  }
 
   return (
     delegationMatch.idKey === bech32mIdentityKey(getIdentityKeyFromValidatorInfo(validatorInfo))

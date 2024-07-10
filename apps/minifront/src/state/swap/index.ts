@@ -110,7 +110,9 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
       const balances = get().shared.balancesResponses.data ?? [];
       const assetIn = get().swap.assetIn;
       const assetOut = get().swap.assetOut;
-      if (!assetIn || !assetOut) return;
+      if (!assetIn || !assetOut) {
+        return;
+      }
 
       swap.assetIn =
         getBalanceByMatchingMetadataAndAddressIndex(

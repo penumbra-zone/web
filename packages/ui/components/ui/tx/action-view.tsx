@@ -37,10 +37,14 @@ const CASE_TO_LABEL: Record<string, string> = {
 };
 
 const getLabelForActionCase = (actionCase: string | undefined): string => {
-  if (!actionCase) return '';
+  if (!actionCase) {
+    return '';
+  }
 
   const label = CASE_TO_LABEL[actionCase];
-  if (label) return label;
+  if (label) {
+    return label;
+  }
 
   return String(actionCase);
 };

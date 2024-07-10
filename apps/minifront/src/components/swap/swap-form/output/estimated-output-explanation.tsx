@@ -18,7 +18,9 @@ export const EstimatedOutputExplanation = () => {
     estimatedOutputExplanationSelector,
   );
 
-  if (!estimatedOutput) return null;
+  if (!estimatedOutput) {
+    return null;
+  }
 
   const formattedAmount = formatAmount({
     amount: estimatedOutput,

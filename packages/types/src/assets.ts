@@ -46,7 +46,9 @@ export class RegexMatcher<T = never> {
 
   capture(str: string): T | undefined {
     const match = this.regex.exec(str);
-    if (!match) return undefined;
+    if (!match) {
+      return undefined;
+    }
     return match.groups as unknown as T;
   }
 }
@@ -91,7 +93,9 @@ export const assetPatterns: AssetPatterns = {
  * For metadata of a non-unbonding token, will return `undefined`.
  */
 export const getUnbondingStartHeight = (metadata?: Metadata) => {
-  if (!metadata) return undefined;
+  if (!metadata) {
+    return undefined;
+  }
 
   const unbondingMatch = assetPatterns.unbondingToken.capture(metadata.display);
 

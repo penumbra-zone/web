@@ -46,8 +46,11 @@ const directGetPort =
 
     // TODO: this only supports unary requests
     servicePort.addEventListener('message', (ev: MessageEvent<unknown>) => {
-      if (isTransportMessage(ev.data)) void directEntryHandler(ev.data);
-      else console.error('Unknown message event', ev);
+      if (isTransportMessage(ev.data)) {
+        void directEntryHandler(ev.data);
+      } else {
+        console.error('Unknown message event', ev);
+      }
     });
 
     // open the port

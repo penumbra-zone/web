@@ -65,7 +65,9 @@ export const NonNativeFeeWarning = ({
 }) => {
   const shouldRender = useShouldRender(balancesResponses, amount);
 
-  if (!shouldRender) return null;
+  if (!shouldRender) {
+    return null;
+  }
 
   return wrap(
     <div className='rounded border border-yellow-500 p-4 text-yellow-500'>

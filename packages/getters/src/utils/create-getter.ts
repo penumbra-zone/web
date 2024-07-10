@@ -19,8 +19,11 @@ export const createGetter = <SourceType, TargetType, Optional extends boolean = 
       try {
         return getterFunction(value);
       } catch (e) {
-        if (e instanceof GetterMissingValueError) return undefined;
-        else throw e;
+        if (e instanceof GetterMissingValueError) {
+          return undefined;
+        } else {
+          throw e;
+        }
       }
     }, true);
 
@@ -31,8 +34,11 @@ export const createGetter = <SourceType, TargetType, Optional extends boolean = 
       try {
         return next(getterFunction(value));
       } catch (e) {
-        if (!optional || !(e instanceof GetterMissingValueError)) throw e;
-        else return undefined;
+        if (!optional || !(e instanceof GetterMissingValueError)) {
+          throw e;
+        } else {
+          return undefined;
+        }
       }
     }, optional);
   };

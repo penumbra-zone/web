@@ -45,12 +45,16 @@ const getSegmentCount = ({
   min,
   step,
 }: PropsWithSegmented | PropsWithoutSegmented) => {
-  if (!segmented) return 1;
+  if (!segmented) {
+    return 1;
+  }
 
   const rangeInclusive = max - min + 1;
   const rangeDividesEvenlyIntoStepSize = rangeInclusive % step === 0;
 
-  if (!rangeDividesEvenlyIntoStepSize) return 1;
+  if (!rangeDividesEvenlyIntoStepSize) {
+    return 1;
+  }
 
   const numberOfOptions = rangeInclusive / step;
 

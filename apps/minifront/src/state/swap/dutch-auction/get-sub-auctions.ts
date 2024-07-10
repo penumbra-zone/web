@@ -54,7 +54,9 @@ export const getSubAuctions = async ({
   Pick<DutchAuctionSlice, 'minOutput' | 'maxOutput'>): Promise<
   TransactionPlannerRequest_ActionDutchAuctionSchedule[]
 > => {
-  if (duration === 'instant') return [];
+  if (duration === 'instant') {
+    return [];
+  }
   const inputAssetId = getAssetIdFromValueView(assetIn?.balanceView);
   const outputAssetId = getAssetId(assetOut);
   const assetInExponent = getDisplayDenomExponentFromValueView(assetIn?.balanceView);

@@ -8,9 +8,12 @@ export const appParameters: Impl['appParameters'] = async (_, ctx) => {
 
   const subscription = indexedDb.subscribe('APP_PARAMETERS');
   const parameters = await indexedDb.getAppParams();
-  if (parameters) return { parameters };
-  for await (const update of subscription)
+  if (parameters) {
+    return { parameters };
+  }
+  for await (const update of subscription) {
     return { parameters: AppParameters.fromJson(update.value) };
+  }
 
   throw new Error('App parameters not available');
 };

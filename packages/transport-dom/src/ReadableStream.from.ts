@@ -20,8 +20,11 @@ const ReadableStreamWithFrom: typeof ReadableStream & { from: ReadableStreamFrom
             return new ReadableStream({
               pull(cont) {
                 const result = it.next();
-                if (result.done) cont.close();
-                else cont.enqueue(result.value);
+                if (result.done) {
+                  cont.close();
+                } else {
+                  cont.enqueue(result.value);
+                }
               },
             });
           } else if (Symbol.asyncIterator in iterable) {
@@ -29,11 +32,16 @@ const ReadableStreamWithFrom: typeof ReadableStream & { from: ReadableStreamFrom
             return new ReadableStream({
               async pull(cont) {
                 const result = await it.next();
-                if (result.done) cont.close();
-                else cont.enqueue(result.value);
+                if (result.done) {
+                  cont.close();
+                } else {
+                  cont.enqueue(result.value);
+                }
               },
             });
-          } else throw TypeError('Not iterable');
+          } else {
+            throw TypeError('Not iterable');
+          }
         },
       });
 

@@ -28,7 +28,9 @@ const useChainInfos = (): ChainInfo[] => {
   return useMemo(
     () =>
       chainRecords.map(r => {
-        if (!r.chain?.chain_id) throw new Error(`No chain id found for ${r.name}`);
+        if (!r.chain?.chain_id) {
+          throw new Error(`No chain id found for ${r.name}`);
+        }
 
         return {
           chainName: r.name,

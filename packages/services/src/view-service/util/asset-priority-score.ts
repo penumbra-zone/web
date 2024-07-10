@@ -23,28 +23,36 @@ export const getAssetPriorityScore = (
   metadata: Metadata | undefined,
   nativeTokenId: AssetId,
 ): bigint => {
-  if (!metadata) return 0n;
+  if (!metadata) {
+    return 0n;
+  }
 
   if (metadata.penumbraAssetId?.equals(nativeTokenId)) {
     return 50n;
   }
 
-  if (assetPatterns.ibc.matches(metadata.display)) return 40n;
+  if (assetPatterns.ibc.matches(metadata.display)) {
+    return 40n;
+  }
 
   if (
     assetPatterns.auctionNft.matches(metadata.display) ||
     assetPatterns.lpNft.matches(metadata.display)
-  )
+  ) {
     return 30n;
+  }
 
-  if (assetPatterns.delegationToken.matches(metadata.display)) return 20n;
+  if (assetPatterns.delegationToken.matches(metadata.display)) {
+    return 20n;
+  }
 
   if (
     assetPatterns.unbondingToken.matches(metadata.display) ||
     assetPatterns.proposalNft.matches(metadata.display) ||
     assetPatterns.votingReceipt.matches(metadata.display)
-  )
+  ) {
     return 10n;
+  }
 
   return 40n;
 };

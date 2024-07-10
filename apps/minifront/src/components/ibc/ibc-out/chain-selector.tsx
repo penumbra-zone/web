@@ -65,14 +65,18 @@ export const ChainSelector = () => {
 
 const ChainIcon = ({ chain }: { chain: Chain }) => {
   const imgUrl = getChainImgUrl(chain);
-  if (!imgUrl) return undefined;
+  if (!imgUrl) {
+    return undefined;
+  }
 
   return <img src={imgUrl} alt='Chain' className='size-5' />;
 };
 
 const getChainImgUrl = (chain?: Chain) => {
   const chainImgObj = chain?.images[0];
-  if (!chainImgObj) return undefined;
+  if (!chainImgObj) {
+    return undefined;
+  }
 
   return chainImgObj.png ?? chainImgObj.svg;
 };

@@ -32,7 +32,9 @@ const getAssetOutBalance = (
   assetIn?: BalancesResponse,
   assetOut?: Metadata,
 ) => {
-  if (!assetIn || !assetOut) return zeroValueView();
+  if (!assetIn || !assetOut) {
+    return zeroValueView();
+  }
 
   const match = getBalanceByMatchingMetadataAndAddressIndex(
     balancesResponses,
@@ -70,14 +72,21 @@ export const TokenSwapInput = () => {
   const assetOutBalance = getAssetOutBalance(balancesResponses?.data, assetIn, assetOut);
 
   useEffect(() => {
-    if (!assetIn || !assetOut) return;
-    else return priceHistory.load();
+    if (!assetIn || !assetOut) {
+      return;
+    } else {
+      return priceHistory.load();
+    }
   }, [assetIn, assetOut]);
 
   useEffect(() => {
-    if (!priceHistory.candles.length) return;
-    else if (latestKnownBlockHeight % 10n) return;
-    else return priceHistory.load();
+    if (!priceHistory.candles.length) {
+      return;
+    } else if (latestKnownBlockHeight % 10n) {
+      return;
+    } else {
+      return priceHistory.load();
+    }
   }, [priceHistory, latestKnownBlockHeight]);
 
   const maxAmount = getAmount.optional()(assetIn);

@@ -40,7 +40,9 @@ const getMetadataByAssetId = async (
 
   const promises = traces.flatMap(trace =>
     trace.value.map(async value => {
-      if (!value.assetId || map[bech32mAssetId(value.assetId)]) return;
+      if (!value.assetId || map[bech32mAssetId(value.assetId)]) {
+        return;
+      }
 
       const { denomMetadata } = await viewClient.assetMetadataById({ assetId: value.assetId });
 
@@ -169,9 +171,15 @@ const assembleSwapRequest = async ({
   amount,
   assetOut,
 }: Pick<SwapSlice, 'assetIn' | 'assetOut' | 'amount'>) => {
-  if (!assetIn) throw new Error('`assetIn` is undefined');
-  if (!assetOut) throw new Error('`assetOut` is undefined');
-  if (!isValidAmount(amount, assetIn)) throw new Error('Invalid amount');
+  if (!assetIn) {
+    throw new Error('`assetIn` is undefined');
+  }
+  if (!assetOut) {
+    throw new Error('`assetOut` is undefined');
+  }
+  if (!isValidAmount(amount, assetIn)) {
+    throw new Error('Invalid amount');
+  }
 
   const addressIndex = getAddressIndex(assetIn.accountAddress);
 
@@ -210,7 +218,9 @@ export const issueSwapClaim = async (
   the price of the trade and see the % diff off the best execution trace.
  */
 const calculatePriceImpact = (swapExec?: SwapExecution): number | undefined => {
-  if (!swapExec?.traces.length || !swapExec.output || !swapExec.input) return undefined;
+  if (!swapExec?.traces.length || !swapExec.output || !swapExec.input) {
+    return undefined;
+  }
 
   // Get the price of the estimate for the swap total
   const inputAmount = getAmountFromValue(swapExec.input);
@@ -235,7 +245,9 @@ const calculatePriceImpact = (swapExec?: SwapExecution): number | undefined => {
 
 const getMatchingAmount = (values: Value[], toMatch: AssetId): Amount => {
   const match = values.find(v => toMatch.equals(v.assetId));
-  if (!match?.amount) throw new Error('No match in values array found');
+  if (!match?.amount) {
+    throw new Error('No match in values array found');
+  }
 
   return match.amount;
 };

@@ -51,7 +51,9 @@ const toAccountSwitcherFilter = (
     );
   });
 
-  if (isRelevantAccount) return [...accountSwitcherFilter, curr.account];
+  if (isRelevantAccount) {
+    return [...accountSwitcherFilter, curr.account];
+  }
   return accountSwitcherFilter;
 };
 
@@ -77,7 +79,9 @@ export const useStakingTokensAndFilter = (
   }, [stakingTokenMetadata, balancesByAccount]);
 
   const accountSwitcherFilter = useMemo(() => {
-    if (!stakingTokenMetadata || !balancesByAccount) return [];
+    if (!stakingTokenMetadata || !balancesByAccount) {
+      return [];
+    }
 
     return balancesByAccount.reduce<number[]>(
       (prev, curr) => toAccountSwitcherFilter(prev, curr, stakingTokenMetadata),

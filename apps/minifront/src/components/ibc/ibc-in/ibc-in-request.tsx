@@ -31,7 +31,9 @@ export const IbcInRequest = () => {
   const isReady = useStore(isReadySelector);
 
   // User is not ready to issue request
-  if (!address || !selectedChain || !data?.length) return <></>;
+  if (!address || !selectedChain || !data?.length) {
+    return <></>;
+  }
 
   return (
     <div className='flex flex-col items-center gap-2'>

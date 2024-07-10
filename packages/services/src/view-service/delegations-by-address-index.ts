@@ -25,7 +25,9 @@ import { Impl } from '.';
 
 const isDelegationBalance = (balance: BalancesResponse, identityKey: IdentityKey) => {
   const match = assetPatterns.delegationToken.capture(getDisplayDenomFromView(balance.balanceView));
-  if (!match) return false;
+  if (!match) {
+    return false;
+  }
 
   return bech32mIdentityKey(identityKey) === match.idKey;
 };
@@ -48,7 +50,9 @@ export const delegationsByAddressIndex: Impl['delegationsByAddressIndex'] = asyn
   }
 
   const mockStakeClient = ctx.values.get(stakeClientCtx);
-  if (!mockStakeClient) throw new Error('Staking context not found');
+  if (!mockStakeClient) {
+    throw new Error('Staking context not found');
+  }
 
   const assetBalances = await Array.fromAsync(
     balances(new BalancesRequest({ accountFilter: addressIndex }), ctx),
@@ -75,8 +79,9 @@ export const delegationsByAddressIndex: Impl['delegationsByAddressIndex'] = asyn
     if (addressHasDelegationTokens(delegation)) {
       const withValidatorInfo = delegation.balanceView.clone();
 
-      if (withValidatorInfo.valueView.case !== 'knownAssetId')
+      if (withValidatorInfo.valueView.case !== 'knownAssetId') {
         throw new Error(`Unexpected ValueView case: ${withValidatorInfo.valueView.case}`);
+      }
 
       withValidatorInfo.valueView.value.extendedMetadata = extendedMetadata;
 

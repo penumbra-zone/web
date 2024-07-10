@@ -38,7 +38,9 @@ export const AccountSwitcher = ({
   const handleClickPrevious = () => {
     if (sortedFilter) {
       const previousAccount = sortedFilter[sortedFilter.indexOf(account) - 1];
-      if (previousAccount !== undefined) handleChange(previousAccount);
+      if (previousAccount !== undefined) {
+        handleChange(previousAccount);
+      }
     } else {
       handleChange(account - 1);
     }
@@ -47,7 +49,9 @@ export const AccountSwitcher = ({
   const handleClickNext = () => {
     if (sortedFilter) {
       const nextAccount = sortedFilter[sortedFilter.indexOf(account) + 1];
-      if (nextAccount !== undefined) handleChange(nextAccount);
+      if (nextAccount !== undefined) {
+        handleChange(nextAccount);
+      }
     } else {
       handleChange(account + 1);
     }
@@ -104,12 +108,16 @@ export const AccountSwitcher = ({
                    * user presses Enter? Then it could validate that the entered
                    * account index is in the filter.
                    */
-                  if (filter) return;
+                  if (filter) {
+                    return;
+                  }
 
                   const value = Number(e.target.value);
                   const valueLength = e.target.value.replace(/^0+/, '').length;
 
-                  if (value > MAX_INDEX || valueLength > MAX_INDEX.toString().length) return;
+                  if (value > MAX_INDEX || valueLength > MAX_INDEX.toString().length) {
+                    return;
+                  }
                   handleChange(value);
                 }}
                 style={{ width: `${inputCharWidth}ch` }}

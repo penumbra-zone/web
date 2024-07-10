@@ -40,7 +40,9 @@ export const subtractAmounts = (minuend: Amount, subtrahend: Amount): Amount => 
   const joinedMinuend = joinLoHiAmount(minuend);
   const joinedSubtrahend = joinLoHiAmount(subtrahend);
 
-  if (joinedSubtrahend > joinedMinuend) throw new Error('Amount cannot be negative');
+  if (joinedSubtrahend > joinedMinuend) {
+    throw new Error('Amount cannot be negative');
+  }
 
   const joined = joinedMinuend - joinedSubtrahend;
   const { lo, hi } = splitLoHi(joined);
@@ -56,7 +58,9 @@ export const multiplyAmountByNumber = (amount: Amount, multiplier: number): Amou
 };
 
 export const divideAmounts = (dividend: Amount, divisor: Amount): BigNumber => {
-  if (isZero(divisor)) throw new Error('Division by zero');
+  if (isZero(divisor)) {
+    throw new Error('Division by zero');
+  }
 
   const joinedDividend = new BigNumber(joinLoHiAmount(dividend).toString());
   const joinedDivisor = new BigNumber(joinLoHiAmount(divisor).toString());

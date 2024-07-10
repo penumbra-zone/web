@@ -15,15 +15,16 @@ type BroadcastStatus = BroadcastTransactionResponse['status'];
 type BuildStatus = (AuthorizeAndBuildResponse | WitnessAndBuildResponse)['status'];
 
 const getBroadcastStatusMessage = (label: string, status?: BroadcastStatus) => {
-  if (status?.case === 'broadcastSuccess' || status?.case === 'confirmed')
+  if (status?.case === 'broadcastSuccess' || status?.case === 'confirmed') {
     return 'Waiting for confirmation';
+  }
   return `Emitting ${label} transaction`;
 };
 
 const getBuildStatusDescription = (
   status?: Exclude<BuildStatus, undefined>,
 ): ReactNode | undefined => {
-  if (status?.case === 'buildProgress')
+  if (status?.case === 'buildProgress') {
     return (
       <div className='mt-2'>
         <Progress
@@ -34,12 +35,14 @@ const getBuildStatusDescription = (
         />
       </div>
     );
-  if (status?.case === 'complete')
+  }
+  if (status?.case === 'complete') {
     return (
       <div className='mt-2'>
         <Progress status='done' value={100} size='sm' />
       </div>
     );
+  }
   return undefined;
 };
 
@@ -123,10 +126,11 @@ export class TransactionToast {
      */
     detectionHeight?: bigint,
   ): void {
-    if (!this._txHash)
+    if (!this._txHash) {
       throw new Error(
         'You called TransactionToast.onSuccess() without first calling `TransactionToast.txHash()`. You must first call `TransactionToast.txHash()` with the transaction hash, so that the success toast can construct a link to the transaction.',
       );
+    }
 
     this.toast
       .success()

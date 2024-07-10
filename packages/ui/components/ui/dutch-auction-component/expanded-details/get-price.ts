@@ -30,8 +30,9 @@ export const getPrice = (
     !auctionDescription.maxOutput ||
     !auctionDescription.minOutput ||
     !auctionDescription.input?.amount
-  )
+  ) {
     return undefined;
+  }
 
   const maxOutput = joinLoHiAmount(auctionDescription.maxOutput);
   const minOutput = joinLoHiAmount(auctionDescription.minOutput);

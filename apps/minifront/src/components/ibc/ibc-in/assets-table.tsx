@@ -19,7 +19,9 @@ export const AssetsTable = () => {
   const { data, isLoading, error } = useCosmosChainBalances();
 
   // User has not connected their wallet yet
-  if (!address || !selectedChain) return <></>;
+  if (!address || !selectedChain) {
+    return <></>;
+  }
 
   if (isLoading) {
     return (

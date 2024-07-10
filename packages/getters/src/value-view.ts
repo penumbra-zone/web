@@ -68,16 +68,22 @@ export const getSymbolFromValueView = createGetter((valueView?: ValueView) => {
 
 export const getDisplayDenomFromView = createGetter((view?: ValueView) => {
   if (view?.valueView.case === 'unknownAssetId') {
-    if (!view.valueView.value.assetId) return undefined;
+    if (!view.valueView.value.assetId) {
+      return undefined;
+    }
     return bech32mAssetId(view.valueView.value.assetId);
   }
 
   if (view?.valueView.case === 'knownAssetId') {
     const displayDenom = view.valueView.value.metadata?.display;
-    if (displayDenom) return displayDenom;
+    if (displayDenom) {
+      return displayDenom;
+    }
 
     const assetId = view.valueView.value.metadata?.penumbraAssetId;
-    if (assetId) return bech32mAssetId(assetId);
+    if (assetId) {
+      return bech32mAssetId(assetId);
+    }
 
     return 'unknown';
   }
