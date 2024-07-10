@@ -1,4 +1,4 @@
-import { CreateZQueryStreamingProps, CreateZQueryUnaryProps } from './types';
+import { CreateZQueryStreamingProps, CreateZQueryUnaryProps } from './types.js';
 
 /**
  * Some of the `createZQuery` props work differently depending on whether

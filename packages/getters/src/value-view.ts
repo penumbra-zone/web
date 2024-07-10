@@ -1,10 +1,10 @@
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { createGetter } from './utils/create-getter';
+import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { createGetter } from './utils/create-getter.js';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
-import { getDisplayDenomExponent, getSymbol } from './metadata';
+import { getDisplayDenomExponent, getSymbol } from './metadata.js';
 import { Any } from '@bufbuild/protobuf';
-import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
-import { getIdentityKeyFromValidatorInfo } from './validator-info';
+import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
+import { getIdentityKeyFromValidatorInfo } from './validator-info.js';
 
 export const getMetadata = createGetter((valueView?: ValueView) =>
   valueView?.valueView.case === 'knownAssetId' ? valueView.valueView.value.metadata : undefined,

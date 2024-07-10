@@ -1,16 +1,16 @@
 import { beforeEach, describe, expect, test } from 'vitest';
-import { IndexByAddressRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { IndexByAddressRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import {
   Address,
   FullViewingKey,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { indexByAddress } from './index-by-address';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+import { indexByAddress } from './index-by-address.js';
 import { getAddressByIndex, getEphemeralByIndex } from '@penumbra-zone/wasm/keys';
 import { fullViewingKeyFromBech32m } from '@penumbra-zone/bech32m/penumbrafullviewingkey';
-import { testFullViewingKey } from '../test-utils';
-import { fvkCtx } from '../ctx/full-viewing-key';
+import { testFullViewingKey } from '../test-utils.js';
+import { fvkCtx } from '../ctx/full-viewing-key.js';
 
 describe('IndexByAddress request handler', () => {
   let mockCtx: HandlerContext;

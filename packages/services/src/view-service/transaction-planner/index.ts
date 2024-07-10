@@ -1,11 +1,11 @@
-import type { Impl } from '..';
-import { servicesCtx } from '../../ctx/prax';
+import type { Impl } from '../index.js';
+import { servicesCtx } from '../../ctx/prax.js';
 import { planTransaction } from '@penumbra-zone/wasm/planner';
 import { Code, ConnectError } from '@connectrpc/connect';
-import { assertSwapAssetsAreNotTheSame } from './assert-swap-assets-are-not-the-same';
-import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { fvkCtx } from '../../ctx/full-viewing-key';
-import { extractAltFee } from '../fees';
+import { assertSwapAssetsAreNotTheSame } from './assert-swap-assets-are-not-the-same.js';
+import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { fvkCtx } from '../../ctx/full-viewing-key.js';
+import { extractAltFee } from '../fees.js';
 
 export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) => {
   assertValidRequest(req);

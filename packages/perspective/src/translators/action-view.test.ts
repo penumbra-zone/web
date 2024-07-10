@@ -1,5 +1,5 @@
-import { ActionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import { asPublicActionView, asReceiverActionView } from './action-view';
+import { ActionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
+import { asPublicActionView, asReceiverActionView } from './action-view.js';
 import { describe, expect, test, vi } from 'vitest';
 
 const u8 = (length: number) => Uint8Array.from({ length }, () => Math.floor(Math.random() * 256));

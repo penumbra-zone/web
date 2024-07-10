@@ -26,8 +26,8 @@ import {
   UniversalServerRequest,
 } from '@connectrpc/connect/protocol';
 import { createTransport } from '@connectrpc/connect/protocol-connect';
-import { MessageToJson } from './stream';
-import ReadableStream from './ReadableStream.from';
+import { MessageToJson } from './stream.js';
+import ReadableStream from './ReadableStream.from.js';
 
 // see https://github.com/connectrpc/connect-es/pull/925
 // hopefully also simplifies transport call soon

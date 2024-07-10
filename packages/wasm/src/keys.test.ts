@@ -5,7 +5,7 @@ import {
   getEphemeralByIndex,
   getFullViewingKey,
   getWalletId,
-} from './keys';
+} from './keys.js';
 
 describe('keys', () => {
   const seedPhrase =

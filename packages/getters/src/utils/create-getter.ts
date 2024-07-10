@@ -1,5 +1,5 @@
-import { Getter } from './getter';
-import { GetterMissingValueError } from './getter-missing-value-error';
+import { Getter } from './getter.js';
+import { GetterMissingValueError } from './getter-missing-value-error.js';
 
 export const createGetter = <SourceType, TargetType, Optional extends boolean = false>(
   getterFunction: (value: SourceType | undefined) => TargetType | undefined,

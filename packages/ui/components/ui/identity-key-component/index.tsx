@@ -1,4 +1,4 @@
-import { IdentityKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import { IdentityKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 import { CopyToClipboardIconButton } from '../copy-to-clipboard/copy-to-clipboard-icon-button';
 import {
   bech32mIdentityKey,

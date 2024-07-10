@@ -1,7 +1,7 @@
-import type { IbcChannelService, IbcClientService, IbcConnectionService } from './ibc-core';
-import type { CustodyService, ViewService } from './penumbra';
-import type { DexService, SctService, SimulationService, StakeService } from './penumbra-core';
-import type { TendermintProxyService } from './penumbra-proxy';
+import type { IbcChannelService, IbcClientService, IbcConnectionService } from './ibc-core.js';
+import type { CustodyService, ViewService } from './penumbra.js';
+import type { DexService, SctService, SimulationService, StakeService } from './penumbra-core.js';
+import type { TendermintProxyService } from './penumbra-proxy.js';
 
 export type PenumbraService =
   | typeof CustodyService

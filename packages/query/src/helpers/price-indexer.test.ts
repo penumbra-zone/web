@@ -1,8 +1,8 @@
-import { deriveAndSavePriceFromBSOD } from './price-indexer';
-import { BatchSwapOutputData } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
+import { deriveAndSavePriceFromBSOD } from './price-indexer.js';
+import { BatchSwapOutputData } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
-import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 
 describe('updatePricesFromSwaps()', () => {

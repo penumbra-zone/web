@@ -1,6 +1,6 @@
-import { asOpaqueSpendView } from './spend-view';
+import { asOpaqueSpendView } from './spend-view.js';
 import { describe, expect, test } from 'vitest';
-import { SpendView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
+import { SpendView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb.js';
 
 describe('asOpaqueSpendView', () => {
   describe('when passed `undefined`', () => {

@@ -1,8 +1,8 @@
-export * from './ibc-core';
-export * from './penumbra';
-export * from './penumbra-core';
-export * from './penumbra-cnidarium';
-export * from './penumbra-proxy';
+export * from './ibc-core.js';
+export * from './penumbra.js';
+export * from './penumbra-core.js';
+export * from './penumbra-cnidarium.js';
+export * from './penumbra-proxy.js';
 
-export * from './registry';
-export * from './web';
+export * from './registry.js';
+export * from './web.js';

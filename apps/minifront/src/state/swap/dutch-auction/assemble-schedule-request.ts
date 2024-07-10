@@ -1,4 +1,4 @@
-import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import { DutchAuctionSlice } from '.';
 import { getSubAuctions } from './get-sub-auctions';
 import { getAddressIndex } from '@penumbra-zone/getters/balances-response';

@@ -1,5 +1,5 @@
 import { ViewService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../ctx/prax';
+import { servicesCtx } from '../ctx/prax.js';
 
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 
@@ -8,11 +8,11 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import {
   OwnedPositionIdsRequest,
   OwnedPositionIdsResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { IndexedDbMock, MockServices } from '../test-utils';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { IndexedDbMock, MockServices } from '../test-utils.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
-import { PositionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
-import { ownedPositionIds } from './owned-position-ids';
+import { PositionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
+import { ownedPositionIds } from './owned-position-ids.js';
 
 describe('OwnedPositionIds request handler', () => {
   let mockServices: MockServices;

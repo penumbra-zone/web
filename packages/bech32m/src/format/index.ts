@@ -1,7 +1,7 @@
-import { Inner } from './inner';
-import { StringLength } from './strings';
-import { ByteLength } from './bytes';
-import { Prefix, Prefixes } from './prefix';
+import { Inner } from './inner.js';
+import { StringLength } from './strings.js';
+import { ByteLength } from './bytes.js';
+import { Prefix, Prefixes } from './prefix.js';
 
 type PenumbraBech32mSpec = Required<{
   readonly [p in Prefix]: {

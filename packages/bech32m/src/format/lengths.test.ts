@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest';
-import { Prefix } from './prefix';
-import { StringLength } from './strings';
-import { ByteLength } from './bytes';
+import { Prefix } from './prefix.js';
+import { StringLength } from './strings.js';
+import { ByteLength } from './bytes.js';
 
 const bech32Length = (prefix: string, byteSize: number) =>
   prefix.length +

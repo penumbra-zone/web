@@ -1,5 +1,5 @@
 import { ViewService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../ctx/prax';
+import { servicesCtx } from '../ctx/prax.js';
 
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 
@@ -9,11 +9,11 @@ import {
   TransactionInfo,
   TransactionInfoRequest,
   TransactionInfoResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { IndexedDbMock, MockServices, testFullViewingKey } from '../test-utils';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { IndexedDbMock, MockServices, testFullViewingKey } from '../test-utils.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
-import { transactionInfo } from './transaction-info';
-import { fvkCtx } from '../ctx/full-viewing-key';
+import { transactionInfo } from './transaction-info.js';
+import { fvkCtx } from '../ctx/full-viewing-key.js';
 
 const mockTransactionInfo = vi.hoisted(() => vi.fn());
 vi.mock('@penumbra-zone/wasm/transaction', () => ({

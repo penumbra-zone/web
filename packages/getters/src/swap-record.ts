@@ -1,6 +1,6 @@
-import { createGetter } from './utils/create-getter';
-import { SwapRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { getAsset1, getAsset2 } from './trading-pair';
+import { createGetter } from './utils/create-getter.js';
+import { SwapRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { getAsset1, getAsset2 } from './trading-pair.js';
 
 export const getSwapRecordCommitment = createGetter((swap?: SwapRecord) => swap?.swapCommitment);
 export const getTradingPair = createGetter((s?: SwapRecord) => s?.swap?.tradingPair);

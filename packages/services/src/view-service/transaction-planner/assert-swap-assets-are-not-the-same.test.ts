@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { assertSwapAssetsAreNotTheSame } from './assert-swap-assets-are-not-the-same';
+import { assertSwapAssetsAreNotTheSame } from './assert-swap-assets-are-not-the-same.js';
 import {
   TransactionPlannerRequest,
   TransactionPlannerRequest_Swap,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 
 const swapWithSameAssets = new TransactionPlannerRequest_Swap({
   value: {

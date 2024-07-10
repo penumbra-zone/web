@@ -1,27 +1,27 @@
 import {
   AssetId,
   Metadata,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
 import {
   PositionState,
   PositionState_PositionStateEnum,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
 import {
   CommitmentSource,
   Nullifier,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb';
-import { ValidatorInfoResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb.js';
+import { ValidatorInfoResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
 import {
   Action,
   Transaction,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
-import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
+import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb.js';
+import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb.js';
 import {
   SpendableNoteRecord,
   SwapRecord,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import { auctionIdFromBech32 } from '@penumbra-zone/bech32m/pauctid';
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
 import { sha256Hash } from '@penumbra-zone/crypto-web/sha256';
@@ -40,12 +40,12 @@ import { ScanBlockResult } from '@penumbra-zone/types/state-commitment-tree';
 import { computePositionId, getLpNftMetadata } from '@penumbra-zone/wasm/dex';
 import { customizeSymbol } from '@penumbra-zone/wasm/metadata';
 import { backOff } from 'exponential-backoff';
-import { updatePricesFromSwaps } from './helpers/price-indexer';
-import { processActionDutchAuctionEnd } from './helpers/process-action-dutch-auction-end';
-import { processActionDutchAuctionSchedule } from './helpers/process-action-dutch-auction-schedule';
-import { processActionDutchAuctionWithdraw } from './helpers/process-action-dutch-auction-withdraw';
-import { RootQuerier } from './root-querier';
-import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
+import { updatePricesFromSwaps } from './helpers/price-indexer.js';
+import { processActionDutchAuctionEnd } from './helpers/process-action-dutch-auction-end.js';
+import { processActionDutchAuctionSchedule } from './helpers/process-action-dutch-auction-schedule.js';
+import { processActionDutchAuctionWithdraw } from './helpers/process-action-dutch-auction-withdraw.js';
+import { RootQuerier } from './root-querier.js';
+import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb.js';
 
 declare global {
   // eslint-disable-next-line no-var

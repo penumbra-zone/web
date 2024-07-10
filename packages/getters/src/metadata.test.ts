@@ -1,6 +1,6 @@
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import { describe, expect, it } from 'vitest';
-import { getDisplayDenomExponent } from './metadata';
+import { getDisplayDenomExponent } from './metadata.js';
 
 describe('getDisplayDenomExponent()', () => {
   it("gets the exponent from the denom unit whose `denom` is equal to the metadata's `display` property", () => {

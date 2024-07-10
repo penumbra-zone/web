@@ -1,5 +1,5 @@
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { createGetter } from './utils/create-getter';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { createGetter } from './utils/create-getter.js';
 
 export const getAssetId = createGetter((metadata?: Metadata) => metadata?.penumbraAssetId);
 

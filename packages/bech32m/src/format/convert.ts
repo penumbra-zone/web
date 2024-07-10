@@ -1,7 +1,7 @@
 import { bech32, bech32m, BechLib } from 'bech32';
-import { StringLength } from './strings';
-import { ByteLength } from './bytes';
-import { Prefix } from './prefix';
+import { StringLength } from './strings.js';
+import { ByteLength } from './bytes.js';
+import { Prefix } from './prefix.js';
 
 /**
  * Internal use. Converts a valid bech32m string of spec format to a byte array,

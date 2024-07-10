@@ -1,4 +1,4 @@
-import type { Prefix } from './prefix';
+import type { Prefix } from './prefix.js';
 
 export const Inner = {
   passet: 'inner',

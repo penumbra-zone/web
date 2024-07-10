@@ -1,8 +1,8 @@
 import { describe } from 'vitest';
-import { generateTests } from './util/generate-tests';
-import { bech32mWalletId, walletIdFromBech32m } from '../penumbrawalletid';
-import { Prefixes } from '../format/prefix';
-import { Inner } from '../format/inner';
+import { generateTests } from './util/generate-tests.js';
+import { bech32mWalletId, walletIdFromBech32m } from '../penumbrawalletid.js';
+import { Prefixes } from '../format/prefix.js';
+import { Inner } from '../format/inner.js';
 
 describe('asset id conversion', () => {
   const okBech32 = 'penumbrawalletid15r7q7qsf3hhsgj0g530n7ng9acdacmmx9ajknjz38dyt90u9gcgsmjre75';

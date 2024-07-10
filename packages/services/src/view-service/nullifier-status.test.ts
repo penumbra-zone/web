@@ -1,20 +1,20 @@
-import { nullifierStatus } from './nullifier-status';
+import { nullifierStatus } from './nullifier-status.js';
 
 import { ViewService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../ctx/prax';
+import { servicesCtx } from '../ctx/prax.js';
 
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
 
-import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb';
+import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb.js';
 import {
   NullifierStatusRequest,
   SpendableNoteRecord,
   SwapRecord,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { IndexedDbMock, MockServices } from '../test-utils';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { IndexedDbMock, MockServices } from '../test-utils.js';
 import { stringToUint8Array } from '@penumbra-zone/types/string';
 
 describe('nullifierStatus', () => {

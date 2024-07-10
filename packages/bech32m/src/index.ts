@@ -1,4 +1,4 @@
-import SPEC from './format';
+import SPEC from './format/index.js';
 
 export default SPEC;
 

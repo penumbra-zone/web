@@ -1,5 +1,5 @@
 // Public, stored representation of Box
-import { Base64Str, base64ToUint8Array, uint8ArrayToBase64 } from './base64';
+import { Base64Str, base64ToUint8Array, uint8ArrayToBase64 } from './base64.js';
 
 export interface BoxJson {
   nonce: Base64Str;

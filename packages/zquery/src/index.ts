@@ -1,8 +1,8 @@
-import type { CreateZQueryStreamingProps, CreateZQueryUnaryProps, ZQuery } from './types';
-import { getUseHook } from './get-use-hook';
-import { getSlice } from './get-slice';
+import type { CreateZQueryStreamingProps, CreateZQueryUnaryProps, ZQuery } from './types.js';
+import { getUseHook } from './get-use-hook.js';
+import { getSlice } from './get-slice.js';
 
-export type { ZQueryState } from './types';
+export type { ZQueryState } from './types.js';
 
 /** `hello world` -> `Hello world` */
 const capitalize = <Str extends string>(str: Str): Capitalize<Str> =>
