@@ -12,14 +12,14 @@ function getAbsolutePath(value) {
 const config = {
   stories: [
     {
-      directory: '../components',
-      files: '**/@(*.stories.@(js|jsx|mjs|ts|tsx)|*.mdx)',
-      titlePrefix: 'Deprecated',
-    },
-    {
       directory: '../src',
       files: '**/@(*.stories.@(js|jsx|mjs|ts|tsx)|*.mdx)',
       titlePrefix: 'UI library',
+    },
+    {
+      directory: '../components',
+      files: '**/@(*.stories.@(js|jsx|mjs|ts|tsx)|*.mdx)',
+      titlePrefix: 'Deprecated',
     },
   ],
   addons: [
