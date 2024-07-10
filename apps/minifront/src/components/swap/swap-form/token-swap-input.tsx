@@ -4,11 +4,7 @@ import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/
 import { Box } from '@repo/ui/components/ui/box';
 import { CandlestickPlot } from '@repo/ui/components/ui/candlestick-plot';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
-import {
-  getAmount,
-  getBalanceView,
-  getMetadataFromBalancesResponse,
-} from '@penumbra-zone/getters/balances-response';
+import { getAmount, getBalanceView } from '@penumbra-zone/getters/balances-response';
 import { ArrowRight } from 'lucide-react';
 import { useEffect } from 'react';
 import { getBlockDate } from '../../../fetchers/block-date';
@@ -25,6 +21,7 @@ import { NonNativeFeeWarning } from '../../shared/non-native-fee-warning';
 import { NumberInput } from '../../shared/number-input';
 import { useBalancesResponses, useAssets } from '../../../state/shared';
 import { FadeIn } from '@repo/ui/components/ui/fade-in';
+import { getBalanceByMatchingMetadataAndAddressIndex } from '../../../state/swap/getters';
 import {
   swappableAssetsSelector,
   swappableBalancesResponsesSelector,
@@ -37,15 +34,11 @@ const getAssetOutBalance = (
 ) => {
   if (!assetIn || !assetOut) return zeroValueView();
 
-  const match = balancesResponses.find(balance => {
-    const balanceViewMetadata = getMetadataFromBalancesResponse(balance);
-
-    return (
-      getAddressIndex(balance.accountAddress).account ===
-        getAddressIndex(assetIn.accountAddress).account &&
-      assetOut.penumbraAssetId?.equals(balanceViewMetadata.penumbraAssetId)
-    );
-  });
+  const match = getBalanceByMatchingMetadataAndAddressIndex(
+    balancesResponses,
+    getAddressIndex(assetIn.accountAddress),
+    assetOut,
+  );
   const matchedBalance = getBalanceView.optional()(match);
   return matchedBalance ?? zeroValueView(assetOut);
 };
@@ -58,6 +51,7 @@ const tokenSwapInputSelector = (state: AllSlices) => ({
   amount: state.swap.amount,
   setAmount: state.swap.setAmount,
   priceHistory: state.swap.priceHistory,
+  reverse: state.swap.reverse,
 });
 
 /**
@@ -71,7 +65,7 @@ export const TokenSwapInput = () => {
   const latestKnownBlockHeight = status.data?.latestKnownBlockHeight ?? 0n;
   const balancesResponses = useBalancesResponses({ select: swappableBalancesResponsesSelector });
   const swappableAssets = useAssets({ select: swappableAssetsSelector });
-  const { amount, setAmount, assetIn, setAssetIn, assetOut, setAssetOut, priceHistory } =
+  const { amount, setAmount, assetIn, setAssetIn, assetOut, setAssetOut, priceHistory, reverse } =
     useStoreShallow(tokenSwapInputSelector);
   const assetOutBalance = getAssetOutBalance(balancesResponses?.data, assetIn, assetOut);
 
@@ -146,9 +140,14 @@ export const TokenSwapInput = () => {
               )}
             </div>
 
-            <div className='size-4 pt-2'>
+            <button
+              type='button'
+              className='flex size-8 items-center rounded p-2 transition hover:bg-light-brown disabled:bg-transparent'
+              disabled={!assetIn || !assetOut}
+              onClick={reverse}
+            >
               <ArrowRight size={16} className='text-muted-foreground' />
-            </div>
+            </button>
 
             <div className='flex h-full flex-col justify-end gap-2'>
               <AssetSelector
