@@ -5,10 +5,10 @@
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "scripts": {
-    "build": "tsc && vite build",
-    "clean": "rm -rfv dist",
+    "build": "vite build",
+    "clean": "rm -rfv dist *.tsbuildinfo",
     "dev:app": "vite --port 5174",
-    "lint": "eslint src",
+    "lint": "tsc --noEmit && eslint src",
     "preview": "vite preview"
   },
   "dependencies": {

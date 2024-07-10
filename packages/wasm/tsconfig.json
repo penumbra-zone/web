@@ -1,9 +1,13 @@
 {
-  "extends": "@repo/tsconfig/base.json",
-  "include": ["src"],
-  "exclude": ["node_modules", "crate", "dist"],
   "compilerOptions": {
+    "exactOptionalPropertyTypes": false,
+    "composite": true,
+    "module": "Node16",
     "outDir": "dist",
-    "rootDir": "src"
-  }
+    "preserveWatchOutput": true,
+    "rootDir": "src",
+    "target": "ESNext"
+  },
+  "extends": "@tsconfig/strictest/tsconfig.json",
+  "include": ["src"]
 }

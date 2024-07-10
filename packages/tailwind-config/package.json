@@ -3,7 +3,7 @@
   "version": "3.0.0",
   "private": true,
   "license": "(MIT OR Apache-2.0)",
-  "main": "index.ts",
+  "main": "index.js",
   "dependencies": {
     "tailwindcss": "^3.4.3",
     "tailwindcss-animate": "^1.0.7"
