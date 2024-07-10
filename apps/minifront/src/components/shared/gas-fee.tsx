@@ -48,6 +48,19 @@ export const GasFee = ({
         value: { amount: fee.amount, metadata: stakingAssetMetadata },
       },
     });
+  } else {
+    feeValueView = new ValueView({
+      valueView: {
+        case: 'knownAssetId',
+        value: {
+          amount: {
+            lo: 0n,
+            hi: 0n,
+          },
+          metadata: stakingAssetMetadata,
+        },
+      },
+    });
   }
 
   return (
@@ -59,13 +72,11 @@ export const GasFee = ({
       <div className='flex flex-col gap-2'>
         <SegmentedPicker value={feeTier} options={FEE_TIER_OPTIONS} onChange={setFeeTier} />
 
-        {feeValueView && (
-          <div className='flex flex-row items-center gap-2'>
-            <img src='./fuel.svg' alt='Gas fee' className='size-5' />
+        <div className='flex flex-row items-center gap-2'>
+          <img src='./fuel.svg' alt='Gas fee' className='size-5' />
 
-            <ValueViewComponent view={feeValueView} />
-          </div>
-        )}
+          <ValueViewComponent showValue={!!fee?.amount} view={feeValueView} />
+        </div>
       </div>
     </InputBlock>
   );
