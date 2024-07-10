@@ -6,12 +6,11 @@ import {
   UnbondingTokensByAddressIndexRequest_Filter,
   UnbondingTokensByAddressIndexResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
-import { ViewService } from '@penumbra-zone/protobuf';
+import { ViewService, StakeService } from '@penumbra-zone/protobuf';
 import { createContextValues, createHandlerContext, PromiseClient } from '@connectrpc/connect';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { unbondingTokensByAddressIndex } from './index.js';
 import { getDisplayDenomFromView } from '@penumbra-zone/getters/value-view';
-import { StakeService } from '@penumbra-zone/protobuf';
 import { stakeClientCtx } from '../../ctx/stake-client.js';
 import { ValidatorInfoResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
 

@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { delegationsByAddressIndex } from './delegations-by-address-index.js';
-import { ViewService } from '@penumbra-zone/protobuf';
+import { ViewService, StakeService } from '@penumbra-zone/protobuf';
 import {
   createContextValues,
   createHandlerContext,
@@ -8,7 +8,6 @@ import {
   PromiseClient,
 } from '@connectrpc/connect';
 import { stakeClientCtx } from '../ctx/stake-client.js';
-import { StakeService } from '@penumbra-zone/protobuf';
 import {
   AssetMetadataByIdResponse,
   BalancesResponse,
