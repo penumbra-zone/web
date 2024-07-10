@@ -1,23 +1,28 @@
 import React from 'react';
 import globalsCssUrl from '../styles/globals.css?url';
 import penumbraTheme from './penumbraTheme';
-import { Normalize } from '../src/Normalize';
+import { ThemeProvider } from 'styled-components';
+import { theme } from '../src/utils/theme';
 
 /** @type { import('@storybook/react').Preview } */
 const preview = {
   decorators: [
     (Story, { title }) => {
-      const css = title.startsWith('Deprecated/') ? (
-        <link rel='stylesheet' type='text/css' href={globalsCssUrl} />
-      ) : (
-        <Normalize />
-      );
+      const isDeprecatedComponent = title.startsWith('Deprecated/');
+
+      if (isDeprecatedComponent) {
+        return (
+          <>
+            <link rel='stylesheet' type='text/css' href={globalsCssUrl} />
+            <Story />
+          </>
+        );
+      }
 
       return (
-        <>
-          {css}
+        <ThemeProvider theme={theme}>
           <Story />
-        </>
+        </ThemeProvider>
       );
     },
   ],
