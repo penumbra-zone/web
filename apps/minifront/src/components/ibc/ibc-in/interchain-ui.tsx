@@ -14,6 +14,9 @@ export const InterchainUi = () => {
   if (!data) {
     return <></>;
   }
+  if (!data.ibcConnections.length) {
+    return <div>No known IBC connections available for {data.chainId}</div>;
+  }
 
   return (
     <IbcChainProvider registry={data}>
