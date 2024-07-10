@@ -5,9 +5,9 @@
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "scripts": {
+    "build-storybook": "storybook build",
     "lint": "tsc --noEmit && eslint components lib",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build",
     "test": "vitest run",
     "ui:add": "pnpm dlx shadcn-ui@latest add"
   },
