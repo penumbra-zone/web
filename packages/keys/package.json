@@ -5,6 +5,7 @@
   "description": "Tool to download proving keys for Penumbra",
   "type": "module",
   "scripts": {
+    "clean": "rm -rf penumbra-zone-*.tgz",
     "dev:pack": "$npm_execpath pack",
     "prepare": "./download-keys ./keys"
   },

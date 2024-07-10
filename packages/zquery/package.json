@@ -8,7 +8,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "lint": "eslint src",
+    "lint": "tsc --noEmit && eslint src",
     "test": "vitest run"
   },
   "dependencies": {
