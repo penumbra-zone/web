@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "lint": "tsc --noEmit && eslint components lib",
+    "lint:fix": "eslint components lib --fix",
     "storybook": "storybook dev -p 6006",
     "test": "vitest run",
     "ui:add": "pnpm dlx shadcn-ui@latest add"

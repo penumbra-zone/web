@@ -32,6 +32,7 @@ jobs:
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - run: pnpm turbo telemetry disable
+      - run: pnpm turbo lint --cache-dir=.turbo
       - run: pnpm turbo build --cache-dir=.turbo
 
       # If there are changesets, this action will create a PR on the repo to version packages

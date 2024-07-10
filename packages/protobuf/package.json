@@ -11,7 +11,8 @@
     "build": "tsc --build --verbose",
     "clean": "rm -rfv dist *.tsbuildinfo package penumbra-zone-*.tgz",
     "dev:pack": "tsc-watch --onSuccess \"$npm_execpath pack\"",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix"
   },
   "files": [
     "dist"

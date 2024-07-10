@@ -9,6 +9,7 @@
     "clean": "rm -rfv dist *.tsbuildinfo",
     "dev:app": "vite --port 5173",
     "lint": "tsc --noEmit && eslint src",
+    "lint:fix": "eslint src --fix",
     "preview": "vite preview",
     "test": "vitest run"
   },
