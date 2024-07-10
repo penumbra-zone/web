@@ -1,11 +1,11 @@
 import { PromiseClient } from '@connectrpc/connect';
-import { createClient } from './utils';
+import { createClient } from './utils.js';
 import { StakeService } from '@penumbra-zone/protobuf';
 import {
   ValidatorInfoResponse,
   ValidatorPenaltyRequest,
   ValidatorPenaltyResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
 import { StakeQuerierInterface } from '@penumbra-zone/types/querier';
 
 export class StakeQuerier implements StakeQuerierInterface {

@@ -1,9 +1,9 @@
 import { SliceCreator, useStore } from '.';
-import { SwapRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { SwapRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import { issueSwapClaim } from './swap/instant-swap';
 import { getSwapRecordCommitment } from '@penumbra-zone/getters/swap-record';
 import { createZQuery, ZQueryState } from '@penumbra-zone/zquery';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import { fetchUnclaimedSwaps } from '../fetchers/unclaimed-swaps';
 import { viewClient } from '../clients';
 

@@ -1,7 +1,7 @@
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { createGetter } from './utils/create-getter';
-import { getCase, getMetadata } from './value-view';
-import { getAssetId, getDisplay } from './metadata';
+import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { createGetter } from './utils/create-getter.js';
+import { getCase, getMetadata } from './value-view.js';
+import { getAssetId, getDisplay } from './metadata.js';
 
 export const getBalanceView = createGetter(
   (balancesResponse?: BalancesResponse) => balancesResponse?.balanceView,

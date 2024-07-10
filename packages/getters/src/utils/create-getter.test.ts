@@ -1,5 +1,5 @@
 import { assertType, describe, expect, it } from 'vitest';
-import { createGetter } from './create-getter';
+import { createGetter } from './create-getter.js';
 
 interface Address {
   city: string;

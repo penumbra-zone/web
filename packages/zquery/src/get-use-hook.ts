@@ -5,7 +5,7 @@ import {
   CreateZQueryUnaryProps,
   UseHookOptions,
   ZQueryState,
-} from './types';
+} from './types.js';
 
 /**
  * Returns a hook that can be used via `use[Name]()` to access the ZQuery state.

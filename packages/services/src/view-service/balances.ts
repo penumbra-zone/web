@@ -1,5 +1,5 @@
-import type { Impl } from '.';
-import { servicesCtx } from '../ctx/prax';
+import type { Impl } from './index.js';
+import { servicesCtx } from '../ctx/prax.js';
 import { getAmount } from '@penumbra-zone/getters/value-view';
 import {
   getAmountFromRecord,
@@ -12,22 +12,22 @@ import {
   Metadata,
   ValueView,
   ValueView_KnownAssetId,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import {
   AddressIndex,
   AddressView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 import {
   AddressByIndexRequest,
   AssetMetadataByIdRequest,
   BalancesRequest,
   BalancesResponse,
   SpendableNoteRecord,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import { HandlerContext } from '@connectrpc/connect';
-import { assetMetadataById } from './asset-metadata-by-id';
-import { addressByIndex } from './address-by-index';
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
+import { assetMetadataById } from './asset-metadata-by-id.js';
+import { addressByIndex } from './address-by-index.js';
+import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb.js';
 import { Base64Str, uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { addLoHi } from '@penumbra-zone/types/lo-hi';
 import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';

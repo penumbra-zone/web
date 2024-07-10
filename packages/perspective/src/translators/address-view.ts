@@ -1,5 +1,5 @@
-import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { Translator } from './types';
+import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+import { Translator } from './types.js';
 
 export const asOpaqueAddressView: Translator<AddressView> = addressView => {
   if (!addressView) {

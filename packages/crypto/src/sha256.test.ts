@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { sha256HashStr } from './sha256';
+import { sha256HashStr } from './sha256.js';
 
 describe('sha256Hash', () => {
   test('returns correct hash for a given input', async () => {

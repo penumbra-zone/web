@@ -2,12 +2,12 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import {
   NotesForVotingRequest,
   NotesForVotingResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../ctx/prax';
-import { IndexedDbMock, MockServices } from '../test-utils';
-import { notesForVoting } from './notes-for-voting';
+import { servicesCtx } from '../ctx/prax.js';
+import { IndexedDbMock, MockServices } from '../test-utils.js';
+import { notesForVoting } from './notes-for-voting.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 describe('NotesForVoting request handler', () => {

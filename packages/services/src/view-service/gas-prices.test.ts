@@ -2,13 +2,13 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import {
   GasPricesRequest,
   GasPricesResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../ctx/prax';
-import { IndexedDbMock, MockServices } from '../test-utils';
-import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
-import { gasPrices } from './gas-prices';
+import { servicesCtx } from '../ctx/prax.js';
+import { IndexedDbMock, MockServices } from '../test-utils.js';
+import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb.js';
+import { gasPrices } from './gas-prices.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 describe('GasPrices request handler', () => {

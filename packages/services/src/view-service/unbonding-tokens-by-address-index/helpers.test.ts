@@ -1,10 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
-import { getIsClaimable } from './helpers';
+import { getIsClaimable } from './helpers.js';
 import {
   AppParametersResponse,
   BalancesResponse,
   StatusResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import { createHandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 

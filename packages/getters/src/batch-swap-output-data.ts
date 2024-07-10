@@ -1,6 +1,6 @@
-import { createGetter } from './utils/create-getter';
-import { getAsset1, getAsset2 } from './trading-pair';
-import { BatchSwapOutputData } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
+import { createGetter } from './utils/create-getter.js';
+import { getAsset1, getAsset2 } from './trading-pair.js';
+import { BatchSwapOutputData } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
 
 export const getTradingPair = createGetter((b?: BatchSwapOutputData) => b?.tradingPair);
 export const getSwapAsset1 = getTradingPair.pipe(getAsset1);

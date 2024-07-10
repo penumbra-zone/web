@@ -1,8 +1,8 @@
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import { WalletIcon } from '../icons/wallet';
 import { getAmount, getDisplayDenomExponentFromValueView } from '@penumbra-zone/getters/value-view';
 import { formatAmount } from '@penumbra-zone/types/amount';
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
+import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb.js';
 import { cn } from '../../../lib/utils';
 
 /**

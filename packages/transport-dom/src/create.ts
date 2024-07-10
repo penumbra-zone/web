@@ -21,9 +21,9 @@ import {
   TransportEvent,
   TransportMessage,
   TransportStream,
-} from './messages';
+} from './messages.js';
 
-import ReadableStream from './ReadableStream.from';
+import ReadableStream from './ReadableStream.from.js';
 
 const forceTransportOptions = {
   httpClient: null as never,

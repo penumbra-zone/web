@@ -1,4 +1,4 @@
-import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1/custody_pb';
+import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1/custody_pb.js';
 import { Code, ConnectError, createContextKey } from '@connectrpc/connect';
 import { PartialMessage } from '@bufbuild/protobuf';
 import { UserChoice } from '@penumbra-zone/types/user-choice';

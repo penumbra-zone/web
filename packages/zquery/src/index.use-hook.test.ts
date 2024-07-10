@@ -4,10 +4,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { StoreApi, UseBoundStore, create } from 'zustand';
-import { ZQueryState } from './types';
-import { createZQuery } from '.';
-import verifyNeverOccurs from './test/verify-never-occurs';
-import { MOCK_PUPPY_PHOTOS, PuppyPhoto, State } from './test/mock-state';
+import { ZQueryState } from './types.js';
+import { createZQuery } from './index.js';
+import verifyNeverOccurs from './test/verify-never-occurs.js';
+import { MOCK_PUPPY_PHOTOS, PuppyPhoto, State } from './test/mock-state.js';
 
 describe('`use[Name]()` hook', () => {
   let puppyPhotos: ZQueryState<PuppyPhoto[]>;

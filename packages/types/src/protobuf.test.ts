@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { typeUrlMatchesTypeName } from './protobuf';
+import { typeUrlMatchesTypeName } from './protobuf.js';
 
 describe('typeUrlMatchesTypeName()', () => {
   it('returns `true` if the type URL is equal to the type name with a leading slash', () => {

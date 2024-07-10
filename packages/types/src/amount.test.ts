@@ -11,12 +11,12 @@ import {
   multiplyAmountByNumber,
   subtractAmounts,
   toDecimalExchangeRate,
-} from './amount';
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
+} from './amount.js';
+import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb.js';
 import {
   Metadata,
   ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 
 describe('lohi helpers', () => {
   it('fromBaseUnitAmount works', () => {

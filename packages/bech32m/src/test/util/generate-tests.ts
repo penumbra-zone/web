@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { generateInvalid } from './corrupt';
+import { generateInvalid } from './corrupt.js';
 
 export const generateTests = <N extends string = 'inner'>(
   prefix: string,

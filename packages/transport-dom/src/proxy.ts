@@ -6,7 +6,7 @@ import type {
   PromiseClient,
   ServiceImpl,
 } from '@connectrpc/connect';
-import { CreateAnyMethodImpl, makeAnyServiceImpl } from './any-impl';
+import { CreateAnyMethodImpl, makeAnyServiceImpl } from './any-impl.js';
 
 export type ProxyContextHandler = <I>(i: I, ctx: HandlerContext) => [I, CallOptions];
 

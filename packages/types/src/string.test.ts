@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { shorten, stringToUint8Array, uint8ArrayToString } from './string';
+import { shorten, stringToUint8Array, uint8ArrayToString } from './string.js';
 
 describe('stringToUint8Array', () => {
   it('should return correct Uint8Array for ASCII strings', () => {

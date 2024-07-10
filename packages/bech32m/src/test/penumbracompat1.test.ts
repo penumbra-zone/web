@@ -1,8 +1,8 @@
 import { describe } from 'vitest';
-import { generateTests } from './util/generate-tests';
-import { bech32CompatAddress, compatAddressFromBech32 } from '../penumbracompat1';
-import { Prefixes } from '../format/prefix';
-import { Inner } from '../format/inner';
+import { generateTests } from './util/generate-tests.js';
+import { bech32CompatAddress, compatAddressFromBech32 } from '../penumbracompat1.js';
+import { Prefixes } from '../format/prefix.js';
+import { Inner } from '../format/inner.js';
 
 describe('compat address conversion', () => {
   const okInner = new Uint8Array([

@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { getAddressView } from './get-address-view';
+import { getAddressView } from './get-address-view.js';
 import {
   Address,
   AddressIndex,
   AddressView,
   FullViewingKey,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
 
 const mockGetAddressIndexByAddress = vi.hoisted(() => vi.fn());

@@ -2,7 +2,7 @@ import {
   Address,
   AddressView,
   FullViewingKey,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 import { getAddressIndexByAddress } from '@penumbra-zone/wasm/address';
 
 export const getAddressView = (address: Address, fullViewingKey: FullViewingKey): AddressView => {

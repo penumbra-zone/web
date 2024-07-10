@@ -1,6 +1,6 @@
-import { fromBech32m, toBech32m } from './format/convert';
-import { Inner } from './format/inner';
-import { Prefixes } from './format/prefix';
+import { fromBech32m, toBech32m } from './format/convert.js';
+import { Inner } from './format/inner.js';
+import { Prefixes } from './format/prefix.js';
 
 const innerName = Inner.pauctid;
 const prefix = Prefixes.pauctid;
@@ -21,4 +21,4 @@ export const isAuctionId = (check: string): check is `${typeof prefix}1${string}
   }
 };
 
-export { PENUMBRA_BECH32M_AUCTION_LENGTH, PENUMBRA_BECH32M_AUCTION_PREFIX } from '.';
+export { PENUMBRA_BECH32M_AUCTION_LENGTH, PENUMBRA_BECH32M_AUCTION_PREFIX } from './index.js';

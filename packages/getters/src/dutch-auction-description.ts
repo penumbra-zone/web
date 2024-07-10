@@ -1,5 +1,5 @@
-import { DutchAuctionDescription } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
-import { createGetter } from './utils/create-getter';
+import { DutchAuctionDescription } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
+import { createGetter } from './utils/create-getter.js';
 
 export const getInputAssetId = createGetter(
   (dutchAuctionDescription?: DutchAuctionDescription) => dutchAuctionDescription?.input?.assetId,

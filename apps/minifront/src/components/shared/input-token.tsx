@@ -2,7 +2,7 @@ import { cn } from '@repo/ui/lib/utils';
 import BalanceSelector from './selectors/balance-selector';
 import { Validation } from './validation-result';
 import { InputBlock } from './input-block';
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import { BalanceValueView } from '@repo/ui/components/ui/balance-value-view';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
 import { NumberInput } from './number-input';

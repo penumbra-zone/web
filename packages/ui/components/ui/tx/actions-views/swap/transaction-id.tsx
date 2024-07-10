@@ -1,4 +1,4 @@
-import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
+import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb.js';
 import { Pill } from '../../../pill';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import { shorten } from '@penumbra-zone/types/string';

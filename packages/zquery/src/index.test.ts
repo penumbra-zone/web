@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { createZQuery } from '.';
-import { MOCK_PUPPY_PHOTOS, PuppyPhoto, State } from './test/mock-state';
+import { createZQuery } from './index.js';
+import { MOCK_PUPPY_PHOTOS, PuppyPhoto, State } from './test/mock-state.js';
 import { StoreApi, UseBoundStore, create } from 'zustand';
-import { ZQuery } from './types';
+import { ZQuery } from './types.js';
 import { waitFor } from '@testing-library/react';
 
 describe('createZQuery()', () => {

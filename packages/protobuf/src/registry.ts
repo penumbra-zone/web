@@ -1,19 +1,19 @@
 import { IMessageTypeRegistry, createRegistry } from '@bufbuild/protobuf';
 
-import * as ibcCore from './ibc-core';
-import * as penumbra from './penumbra';
-import * as penumbraCore from './penumbra-core';
-import * as penumbraCnidarium from './penumbra-cnidarium';
-import * as penumbraProxy from './penumbra-proxy';
+import * as ibcCore from './ibc-core.js';
+import * as penumbra from './penumbra.js';
+import * as penumbraCore from './penumbra-core.js';
+import * as penumbraCnidarium from './penumbra-cnidarium.js';
+import * as penumbraProxy from './penumbra-proxy.js';
 
 import {
   ClientState,
   Header,
-} from '@buf/cosmos_ibc.bufbuild_es/ibc/lightclients/tendermint/v1/tendermint_pb';
-import { MsgUpdateClient } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/tx_pb';
-import { MsgRecvPacket } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/channel/v1/tx_pb';
-import { DutchAuction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
-import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
+} from '@buf/cosmos_ibc.bufbuild_es/ibc/lightclients/tendermint/v1/tendermint_pb.js';
+import { MsgUpdateClient } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/tx_pb.js';
+import { MsgRecvPacket } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/channel/v1/tx_pb.js';
+import { DutchAuction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
+import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
 
 /**
  * This type registry is for JSON serialization of protobuf messages.

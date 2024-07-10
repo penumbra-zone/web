@@ -2,12 +2,12 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import {
   StatusRequest,
   StatusResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../ctx/prax';
-import { IndexedDbMock, MockServices, TendermintMock } from '../test-utils';
-import { status } from './status';
+import { servicesCtx } from '../ctx/prax.js';
+import { IndexedDbMock, MockServices, TendermintMock } from '../test-utils.js';
+import { status } from './status.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 describe('Status request handler', () => {

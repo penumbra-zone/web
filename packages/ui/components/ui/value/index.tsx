@@ -1,4 +1,4 @@
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import { ValueComponent } from './value';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
 

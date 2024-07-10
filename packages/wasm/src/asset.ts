@@ -1,5 +1,5 @@
-import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { get_asset_id_inner } from '../wasm';
+import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { get_asset_id_inner } from '../wasm/index.js';
 
 /**
  * Converts a base denom name string to an `AssetId` with inner binary field

@@ -1,5 +1,5 @@
-import { SpendView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
-import { Translator } from './types';
+import { SpendView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb.js';
+import { Translator } from './types.js';
 
 export const asOpaqueSpendView: Translator<SpendView> = spendView => {
   if (spendView?.spendView.case === 'opaque') {

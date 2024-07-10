@@ -1,6 +1,6 @@
-import { fromBech32m, toBech32m } from './format/convert';
-import { Inner } from './format/inner';
-import { Prefixes } from './format/prefix';
+import { fromBech32m, toBech32m } from './format/convert.js';
+import { Inner } from './format/inner.js';
+import { Prefixes } from './format/prefix.js';
 
 const innerName = Inner.penumbragovern;
 const prefix = Prefixes.penumbragovern;
@@ -21,4 +21,7 @@ export const isGovernanceId = (check: string): check is `${typeof prefix}1${stri
   }
 };
 
-export { PENUMBRA_BECH32M_GOVERNANCEID_LENGTH, PENUMBRA_BECH32M_GOVERNANCEID_PREFIX } from '.';
+export {
+  PENUMBRA_BECH32M_GOVERNANCEID_LENGTH,
+  PENUMBRA_BECH32M_GOVERNANCEID_PREFIX,
+} from './index.js';

@@ -3,13 +3,13 @@ import {
   BalancesResponse,
   UnbondingTokensByAddressIndexRequest_Filter,
   UnbondingTokensByAddressIndexResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { Impl } from '..';
-import { balances } from '../balances';
-import { getIsClaimable, isUnbondingTokenBalance } from './helpers';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { Impl } from '../index.js';
+import { balances } from '../balances.js';
+import { getIsClaimable, isUnbondingTokenBalance } from './helpers.js';
 import { Any } from '@bufbuild/protobuf';
-import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
-import { stakeClientCtx } from '../../ctx/stake-client';
+import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
+import { stakeClientCtx } from '../../ctx/stake-client.js';
 import { getValidatorInfo } from '@penumbra-zone/getters/get-validator-info-response';
 import { assetPatterns } from '@penumbra-zone/types/assets';
 import {

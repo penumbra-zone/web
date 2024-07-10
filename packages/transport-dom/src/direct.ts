@@ -3,12 +3,12 @@ import {
   TransportMessage,
   isTransportMessage,
   isTransportStream,
-} from './messages';
+} from './messages.js';
 import { ConnectError, createPromiseClient } from '@connectrpc/connect';
 import { errorToJson } from '@connectrpc/connect/protocol-connect';
-import { ChannelHandlerFn } from './adapter';
+import { ChannelHandlerFn } from './adapter.js';
 import { JsonReadOptions, JsonWriteOptions, ServiceType } from '@bufbuild/protobuf';
-import { ChannelTransportOptions, createChannelTransport } from './create';
+import { ChannelTransportOptions, createChannelTransport } from './create.js';
 
 /**
  * This creates a port for a channelTransport to enter a router, when provided

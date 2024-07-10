@@ -1,5 +1,5 @@
 import { ViewService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../ctx/prax';
+import { servicesCtx } from '../ctx/prax.js';
 
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 
@@ -9,10 +9,10 @@ import {
   SwapRecord,
   UnclaimedSwapsRequest,
   UnclaimedSwapsResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { IndexedDbMock, MockServices } from '../test-utils';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { IndexedDbMock, MockServices } from '../test-utils.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
-import { unclaimedSwaps } from './unclaimed-swaps';
+import { unclaimedSwaps } from './unclaimed-swaps.js';
 
 describe('UnclaimedSwaps request handler', () => {
   let mockServices: MockServices;

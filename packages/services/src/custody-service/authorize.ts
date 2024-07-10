@@ -1,11 +1,11 @@
-import type { Impl } from '.';
-import { approverCtx } from '../ctx/approver';
+import type { Impl } from './index.js';
+import { approverCtx } from '../ctx/approver.js';
 import { authorizePlan } from '@penumbra-zone/wasm/build';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
-import { fvkCtx } from '../ctx/full-viewing-key';
-import { skCtx } from '../ctx/spend-key';
-import { assertValidAuthorizeRequest } from './validation/authorize';
+import { fvkCtx } from '../ctx/full-viewing-key.js';
+import { skCtx } from '../ctx/spend-key.js';
+import { assertValidAuthorizeRequest } from './validation/authorize.js';
 
 export const authorize: Impl['authorize'] = async (req, ctx) => {
   if (!req.plan) {

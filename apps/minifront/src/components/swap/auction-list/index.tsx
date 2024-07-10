@@ -1,7 +1,7 @@
 import { AllSlices } from '../../../state';
 import { DutchAuctionComponent } from '@repo/ui/components/ui/dutch-auction-component';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
-import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
+import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
 import { GradientHeader } from '@repo/ui/components/ui/gradient-header';
 import { QueryLatestStateButton } from './query-latest-state-button';
 import { Card } from '@repo/ui/components/ui/card';

@@ -1,5 +1,5 @@
-import { Impl } from '.';
-import { servicesCtx } from '../ctx/prax';
+import { Impl } from './index.js';
+import { servicesCtx } from '../ctx/prax.js';
 import { Code, ConnectError } from '@connectrpc/connect';
 
 export const getValidatorInfo: Impl['getValidatorInfo'] = async (req, ctx) => {

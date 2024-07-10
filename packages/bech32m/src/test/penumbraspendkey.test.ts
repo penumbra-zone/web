@@ -1,8 +1,8 @@
 import { describe } from 'vitest';
-import { spendKeyFromBech32m, bech32mSpendKey } from '../penumbraspendkey';
-import { generateTests } from './util/generate-tests';
-import { Prefixes } from '../format/prefix';
-import { Inner } from '../format/inner';
+import { spendKeyFromBech32m, bech32mSpendKey } from '../penumbraspendkey.js';
+import { generateTests } from './util/generate-tests.js';
+import { Prefixes } from '../format/prefix.js';
+import { Inner } from '../format/inner.js';
 
 describe('spend key conversion', () => {
   const okBech32 = 'penumbraspendkey1esjxkxnflw9ucrhhvgshxxpqkkjsf2ak40h2hwsanzvn6x542wnqe8stud';

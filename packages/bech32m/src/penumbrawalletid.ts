@@ -1,6 +1,6 @@
-import { fromBech32m, toBech32m } from './format/convert';
-import { Inner } from './format/inner';
-import { Prefixes } from './format/prefix';
+import { fromBech32m, toBech32m } from './format/convert.js';
+import { Inner } from './format/inner.js';
+import { Prefixes } from './format/prefix.js';
 
 const innerName = Inner.penumbrawalletid;
 const prefix = Prefixes.penumbrawalletid;
@@ -21,4 +21,4 @@ export const isWalletId = (check: string): check is `${typeof prefix}1${string}`
   }
 };
 
-export { PENUMBRA_BECH32M_WALLETID_LENGTH, PENUMBRA_BECH32M_WALLETID_PREFIX } from '.';
+export { PENUMBRA_BECH32M_WALLETID_LENGTH, PENUMBRA_BECH32M_WALLETID_PREFIX } from './index.js';

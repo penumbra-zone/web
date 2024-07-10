@@ -1,9 +1,9 @@
 import {
   AuthorizationData,
   TransactionPlan,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
 import { HandlerContext, ConnectError, Code } from '@connectrpc/connect';
-import { custodyClientCtx } from '../../ctx/custody-client';
+import { custodyClientCtx } from '../../ctx/custody-client.js';
 
 export const custodyAuthorize = async (
   ctx: HandlerContext,
