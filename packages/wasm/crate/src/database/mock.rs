@@ -29,6 +29,7 @@ pub fn get_mock_tables() -> Tables {
 
 type DbTable = Rc<RefCell<HashMap<String, JsValue>>>;
 
+#[derive(Clone, Debug)]
 pub struct MockDb {
     tables: RefCell<HashMap<String, DbTable>>,
 }
