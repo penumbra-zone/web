@@ -1,12 +1,13 @@
 import { PropsWithChildren } from 'react';
 import styled from 'styled-components';
+import { AsTransientProps, asTransientProps } from '../utils/asTransientProps';
 
 interface GridContainerProps {
   /** Whether this is a grid container, vs. an item. */
   container: true;
 }
 
-interface GridItemProps {
+interface GridItemProps extends Record<string, unknown> {
   /** Whether this is a grid container, vs. an item. */
   container?: false;
   /**
@@ -32,53 +33,57 @@ interface GridItemProps {
 
 export type GridProps = PropsWithChildren<GridContainerProps | GridItemProps>;
 
-const Container = styled.div<Omit<GridContainerProps, 'container'>>`
+const Container = styled.div`
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   gap: ${props => props.theme.spacing(4)};
 `;
 
-const Item = styled.div<GridItemProps>`
+const Item = styled.div<AsTransientProps<Exclude<GridItemProps, 'container'>>>`
   @media (min-width: ${props => props.theme.breakpoints.mobile}px) {
-    grid-column: span ${props => props.mobile || 12};
+    grid-column: span ${props => props.$mobile ?? 12};
   }
 
   ${props =>
-    props.tablet
+    props.$tablet
       ? `
           @media (min-width: ${props.theme.breakpoints.tablet}px) {
-            grid-column: span ${props.tablet};
+            grid-column: span ${props.$tablet};
           }
         `
       : ''}
 
   ${props =>
-    props.desktop
+    props.$desktop
       ? `
           @media (min-width: ${props.theme.breakpoints.desktop}px) {
-            grid-column: span ${props.desktop};
+            grid-column: span ${props.$desktop};
           }
         `
       : ''}
 
   ${props =>
-    props.lg
+    props.$lg
       ? `
           @media (min-width: ${props.theme.breakpoints.lg}px) {
-            grid-column: span ${props.lg};
+            grid-column: span ${props.$lg};
           }
         `
       : ''}
 
   ${props =>
-    props.xl
+    props.$xl
       ? `
           @media (min-width: ${props.theme.breakpoints.xl}px) {
-            grid-column: span ${props.xl};
+            grid-column: span ${props.$xl};
           }
         `
       : ''}
 `;
 
-export const Grid = ({ container, ...props }: GridProps) =>
-  container ? <Container {...props} /> : <Item {...props} />;
+export const Grid = ({ container, children, ...props }: GridProps) =>
+  container ? (
+    <Container>{children}</Container>
+  ) : (
+    <Item {...asTransientProps(props)}>{children}</Item>
+  );
