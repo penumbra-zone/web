@@ -1,14 +1,14 @@
 import {
   Fee,
   FeeTier_Tier,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb.js';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
 import { SegmentedPicker, SegmentedPickerOption } from '@repo/ui/components/ui/segmented-picker';
 import { InputBlock } from './input-block';
 import { ValueViewComponent } from '@repo/ui/components/ui/value';
 import {
   Metadata,
   ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
 const FEE_TIER_OPTIONS: SegmentedPickerOption<FeeTier_Tier>[] = [
   {
@@ -30,25 +30,24 @@ export const GasFee = ({
   feeTier,
   stakingAssetMetadata,
   setFeeTier,
+  assetFeeMetadata,
 }: {
   fee: Fee | undefined;
   feeTier: FeeTier_Tier;
   stakingAssetMetadata?: Metadata;
+  assetFeeMetadata?: Metadata;
   setFeeTier: (feeTier: FeeTier_Tier) => void;
 }) => {
-  if (!stakingAssetMetadata) {
-    return null;
-  }
+  if (!stakingAssetMetadata) return null;
 
   let feeValueView: ValueView | undefined;
-  if (fee?.amount) {
+  if (fee?.amount)
     feeValueView = new ValueView({
       valueView: {
         case: 'knownAssetId',
-        value: { amount: fee.amount, metadata: stakingAssetMetadata },
+        value: { amount: fee.amount, metadata: assetFeeMetadata },
       },
     });
-  }
 
   return (
     /**

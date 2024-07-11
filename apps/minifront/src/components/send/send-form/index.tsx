@@ -24,6 +24,7 @@ export const SendForm = () => {
     memo,
     fee,
     feeTier,
+    assetFeeMetadata,
     setAmount,
     setSelection,
     setRecipient,
@@ -71,9 +72,7 @@ export const SendForm = () => {
         setIsSendingMax={setIsSendingMax}
         value={amount}
         onInputChange={amount => {
-          if (Number(amount) < 0) {
-            return;
-          }
+          if (Number(amount) < 0) return;
           setAmount(amount);
         }}
         validations={[
@@ -97,6 +96,7 @@ export const SendForm = () => {
         feeTier={feeTier}
         stakingAssetMetadata={stakingTokenMetadata.data}
         setFeeTier={setFeeTier}
+        assetFeeMetadata={assetFeeMetadata}
       />
 
       <InputBlock
