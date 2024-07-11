@@ -498,12 +498,24 @@ importers:
       '@penumbra-zone/client':
         specifier: workspace:*
         version: link:../client
+      '@penumbra-zone/getters':
+        specifier: workspace:*
+        version: 11.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240703080008-312294d02bf9.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.1)(@penumbra-zone/protobuf@packages+protobuf)
+      '@penumbra-zone/perspective':
+        specifier: workspace:*
+        version: link:../perspective
       '@penumbra-zone/protobuf':
         specifier: workspace:*
         version: link:../protobuf
       '@penumbra-zone/transport-dom':
         specifier: workspace:*
         version: link:../transport-dom
+      '@penumbra-zone/types':
+        specifier: workspace:*
+        version: link:../types
+      '@tanstack/react-query':
+        specifier: 4.36.1
+        version: 4.36.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
     devDependencies:
       '@connectrpc/connect':
         specifier: ^1.4.0
@@ -3031,6 +3043,17 @@ packages:
 
   '@penumbra-labs/registry@10.0.0':
     resolution: {integrity: sha512-LyeA5pYwi2YatMEeb6MB6PpyrRkZivyPvr/HLjFM0kOQTWK8hOS8XO+huF50QFW+6AGQggIs6R9yFE109o/fMA==}
+
+  '@penumbra-zone/bech32m@6.1.1':
+    resolution: {integrity: sha512-LlN7P66kmH7e/jvTUppw3au4eh9ib1t4ejKZDRmHO9KvTm61E1aiGRt8x6wwWsOkgQ6t89H5s4VhNBjWgx1P1A==}
+
+  '@penumbra-zone/getters@11.0.0':
+    resolution: {integrity: sha512-lQo+xJ4v61x2Gp7s6IGoVndYUGf3sKJTCfu/GigEEzNg01Iw8nIb3VP29rwSzN+fWlGZzZt5NDYCxN/HlbtpYA==}
+    peerDependencies:
+      '@buf/penumbra-zone_penumbra.bufbuild_es': 1.10.0-20240703080008-312294d02bf9.1
+      '@bufbuild/protobuf': ^1.10.0
+      '@penumbra-zone/bech32m': 6.1.1
+      '@penumbra-zone/protobuf': 5.4.0
 
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
@@ -14305,6 +14328,17 @@ snapshots:
       '@parcel/watcher-win32-x64': 2.4.1
 
   '@penumbra-labs/registry@10.0.0': {}
+
+  '@penumbra-zone/bech32m@6.1.1':
+    dependencies:
+      bech32: 2.0.0
+
+  '@penumbra-zone/getters@11.0.0(@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240703080008-312294d02bf9.1(@bufbuild/protobuf@1.10.0))(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@6.1.1)(@penumbra-zone/protobuf@packages+protobuf)':
+    dependencies:
+      '@buf/penumbra-zone_penumbra.bufbuild_es': 1.10.0-20240703080008-312294d02bf9.1(@bufbuild/protobuf@1.10.0)
+      '@bufbuild/protobuf': 1.10.0
+      '@penumbra-zone/bech32m': 6.1.1
+      '@penumbra-zone/protobuf': link:packages/protobuf
 
   '@pkgjs/parseargs@0.11.0':
     optional: true

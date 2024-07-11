@@ -38,8 +38,11 @@
   },
   "dependencies": {
     "@penumbra-zone/client": "workspace:*",
+    "@penumbra-zone/perspective": "workspace:*",
     "@penumbra-zone/protobuf": "workspace:*",
-    "@penumbra-zone/transport-dom": "workspace:*"
+    "@penumbra-zone/transport-dom": "workspace:*",
+    "@penumbra-zone/types": "workspace:*",
+    "@tanstack/react-query": "4.36.1"
   },
   "devDependencies": {
     "@connectrpc/connect": "^1.4.0",
@@ -49,6 +52,7 @@
   "peerDependencies": {
     "@bufbuild/protobuf": "^1.10.0",
     "@connectrpc/connect": "^1.4.0",
+    "@penumbra-zone/getters": "workspace:*",
     "react": "^18.3.1"
   }
 }
