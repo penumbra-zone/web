@@ -1,7 +1,7 @@
-import type { Config } from 'tailwindcss';
 import plugin from 'tailwindcss/plugin';
 import tailwindCssAnimatePlugin from 'tailwindcss-animate';
 
+/** @type {import('tailwindcss').Config} */
 export default {
   content: [
     './pages/**/*.{ts,tsx}',
@@ -173,4 +173,4 @@ export default {
       });
     }),
   ],
-} satisfies Config;
+};

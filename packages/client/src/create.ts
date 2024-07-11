@@ -4,12 +4,12 @@ import {
   createChannelTransport,
   type ChannelTransportOptions,
 } from '@penumbra-zone/transport-dom/create';
-import { PenumbraSymbol, type PenumbraInjection } from '.';
+import { PenumbraSymbol, type PenumbraInjection } from './index.js';
 import {
   PenumbraNotInstalledError,
   PenumbraProviderNotAvailableError,
   PenumbraProviderNotConnectedError,
-} from './error';
+} from './error.js';
 
 // Naively return the first available provider origin, or `undefined`.
 const availableOrigin = () => Object.keys(window[PenumbraSymbol] ?? {})[0];

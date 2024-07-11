@@ -3,13 +3,13 @@ import {
   SwapByCommitmentRequest,
   SwapByCommitmentResponse,
   SwapRecord,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../ctx/prax';
-import { IndexedDbMock, MockServices } from '../test-utils';
-import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
-import { swapByCommitment } from './swap-by-commitment';
+import { servicesCtx } from '../ctx/prax.js';
+import { IndexedDbMock, MockServices } from '../test-utils.js';
+import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb.js';
+import { swapByCommitment } from './swap-by-commitment.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 describe('SwapByCommitment request handler', () => {

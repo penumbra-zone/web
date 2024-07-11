@@ -1,6 +1,6 @@
-import { SwapClaimView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
-import { createGetter } from './utils/create-getter';
-import { getValue } from './note-view';
+import { SwapClaimView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
+import { createGetter } from './utils/create-getter.js';
+import { getValue } from './note-view.js';
 
 export const getOutput1 = createGetter((swapClaimView?: SwapClaimView) =>
   swapClaimView?.swapClaimView.case === 'visible'

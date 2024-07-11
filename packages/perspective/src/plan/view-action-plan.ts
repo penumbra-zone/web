@@ -1,14 +1,14 @@
 import {
   ActionPlan,
   ActionView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
 import {
   AssetId,
   Metadata,
   Value,
   ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { getAddressView } from './get-address-view';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { getAddressView } from './get-address-view.js';
 import {
   Note,
   NoteView,
@@ -16,14 +16,14 @@ import {
   OutputView,
   SpendPlan,
   SpendView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb.js';
 import {
   SwapClaimPlan,
   SwapClaimView,
   SwapPlan,
   SwapView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
-import { FullViewingKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
+import { FullViewingKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 import { getAuctionId } from '@penumbra-zone/wasm/auction';
 import {
   getInputAssetId,
@@ -32,7 +32,7 @@ import {
 import {
   ActionDutchAuctionWithdrawPlan,
   ActionDutchAuctionWithdrawView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
 import { PartialMessage } from '@bufbuild/protobuf';
 
 const getValueView = async (

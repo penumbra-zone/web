@@ -1,8 +1,8 @@
 import { describe } from 'vitest';
-import { bech32mFullViewingKey, fullViewingKeyFromBech32m } from '../penumbrafullviewingkey';
-import { generateTests } from './util/generate-tests';
-import { Prefixes } from '../format/prefix';
-import { Inner } from '../format/inner';
+import { bech32mFullViewingKey, fullViewingKeyFromBech32m } from '../penumbrafullviewingkey.js';
+import { generateTests } from './util/generate-tests.js';
+import { Prefixes } from '../format/prefix.js';
+import { Inner } from '../format/inner.js';
 
 describe('fvk conversion', () => {
   const okInner = new Uint8Array([

@@ -1,4 +1,4 @@
-import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { getAssetIdFromValue } from '@penumbra-zone/getters/value';
 

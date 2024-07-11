@@ -1,16 +1,16 @@
 import { describe, expect, it } from 'vitest';
 
-import { createChannelTransport } from './create';
-import { ElizaService } from '@buf/connectrpc_eliza.connectrpc_es/connectrpc/eliza/v1/eliza_connect';
+import { createChannelTransport } from './create.js';
+import { ElizaService } from '@buf/connectrpc_eliza.connectrpc_es/connectrpc/eliza/v1/eliza_connect.js';
 import {
   IntroduceRequest,
   SayRequest,
   SayResponse,
-} from '@buf/connectrpc_eliza.bufbuild_es/connectrpc/eliza/v1/eliza_pb';
+} from '@buf/connectrpc_eliza.bufbuild_es/connectrpc/eliza/v1/eliza_pb.js';
 import { createRegistry } from '@bufbuild/protobuf';
-import { TransportMessage } from './messages';
+import { TransportMessage } from './messages.js';
 
-import ReadableStream from './ReadableStream.from';
+import ReadableStream from './ReadableStream.from.js';
 
 const typeRegistry = createRegistry(ElizaService);
 

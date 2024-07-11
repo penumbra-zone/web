@@ -21,14 +21,13 @@
     "build": {
       "dependsOn": ["compile", "^build"],
       "dotEnv": [".env"],
-      "outputs": ["dist/**"]
+      "outputs": ["dist/**", "*.tsbuildinfo"]
     },
     "clean": {
       "cache": false,
       "dependsOn": ["//#clean:vitest-mjs"]
     },
     "compile": {
-      "dependsOn": ["^build"],
       "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock"],
       "outputs": ["wasm/**"]
     },
@@ -62,7 +61,7 @@
     },
     "lint": {
       "dependsOn": ["//#lint:syncpack", "//#lint:prettier", "compile"],
-      "inputs": ["**/*.ts", "**/*.tsx", "wasm/index*.ts", "package.json"]
+      "inputs": ["components", "lib", "src", "wasm", "package.json"]
     },
     "lint:rust": {
       "dependsOn": ["compile"],

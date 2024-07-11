@@ -1,7 +1,7 @@
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
-import { fromBaseUnit, joinLoHi, splitLoHi, toBaseUnit } from './lo-hi';
+import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb.js';
+import { fromBaseUnit, joinLoHi, splitLoHi, toBaseUnit } from './lo-hi.js';
 import { BigNumber } from 'bignumber.js';
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import { getAmount, getDisplayDenomExponentFromValueView } from '@penumbra-zone/getters/value-view';
 
 export const joinLoHiAmount = (amount: Amount): bigint => {

@@ -6,7 +6,7 @@ import { Switch } from '../switch';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../tooltip';
 import { useEffect, useState } from 'react';
 import { AddressComponent } from '../address/address-component';
-import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 import { AccountSwitcher } from '../account-switcher';
 import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 import { Box } from '../box';

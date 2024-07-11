@@ -1,7 +1,7 @@
-import type { Impl } from '.';
+import type { Impl } from './index.js';
 
 import { getAddressByIndex } from '@penumbra-zone/wasm/keys';
-import { fvkCtx } from '../ctx/full-viewing-key';
+import { fvkCtx } from '../ctx/full-viewing-key.js';
 
 export const addressByIndex: Impl['addressByIndex'] = async (req, ctx) => {
   const fvk = ctx.values.get(fvkCtx);

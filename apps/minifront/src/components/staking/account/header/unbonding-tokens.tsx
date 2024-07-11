@@ -1,7 +1,7 @@
 import {
   Metadata,
   ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import { getDisplayDenomFromView } from '@penumbra-zone/getters/value-view';
 import {
   TooltipProvider,

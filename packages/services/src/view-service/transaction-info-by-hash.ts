@@ -1,9 +1,9 @@
-import type { Impl } from '.';
-import { servicesCtx } from '../ctx/prax';
+import type { Impl } from './index.js';
+import { servicesCtx } from '../ctx/prax.js';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { generateTransactionInfo } from '@penumbra-zone/wasm/transaction';
-import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { fvkCtx } from '../ctx/full-viewing-key';
+import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { fvkCtx } from '../ctx/full-viewing-key.js';
 
 export const transactionInfoByHash: Impl['transactionInfoByHash'] = async (req, ctx) => {
   if (!req.id) {

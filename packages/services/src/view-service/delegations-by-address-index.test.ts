@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { delegationsByAddressIndex } from './delegations-by-address-index';
+import { delegationsByAddressIndex } from './delegations-by-address-index.js';
 import { ViewService } from '@penumbra-zone/protobuf';
 import {
   createContextValues,
@@ -7,7 +7,7 @@ import {
   HandlerContext,
   PromiseClient,
 } from '@connectrpc/connect';
-import { stakeClientCtx } from '../ctx/stake-client';
+import { stakeClientCtx } from '../ctx/stake-client.js';
 import { StakeService } from '@penumbra-zone/protobuf';
 import {
   AssetMetadataByIdResponse,
@@ -15,19 +15,19 @@ import {
   DelegationsByAddressIndexRequest,
   DelegationsByAddressIndexRequest_Filter,
   DelegationsByAddressIndexResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import {
   ValidatorInfoRequest,
   ValidatorInfoResponse,
   ValidatorState_ValidatorStateEnum,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
 import { getAmount, getValidatorInfoFromValueView } from '@penumbra-zone/getters/value-view';
 import { identityKeyFromBech32m } from '@penumbra-zone/bech32m/penumbravalid';
 import { PartialMessage } from '@bufbuild/protobuf';
 import {
   Metadata,
   ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 
 vi.mock('@penumbra-zone/wasm/metadata', () => ({
   customizeSymbol: (metadata: Metadata) => metadata,

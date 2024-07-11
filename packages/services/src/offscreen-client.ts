@@ -1,9 +1,9 @@
-import { FullViewingKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import { FullViewingKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 import {
   Action,
   TransactionPlan,
   WitnessData,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
 import { ConnectError } from '@connectrpc/connect';
 import { errorFromJson } from '@connectrpc/connect/protocol-connect';
 import { ActionBuildMessage, OffscreenMessage } from '@penumbra-zone/types/internal-msg/offscreen';

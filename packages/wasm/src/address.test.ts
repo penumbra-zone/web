@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { generateSpendKey, getAddressByIndex, getFullViewingKey } from './keys';
-import { getAddressIndexByAddress, isControlledAddress } from './address';
+import { generateSpendKey, getAddressByIndex, getFullViewingKey } from './keys.js';
+import { getAddressIndexByAddress, isControlledAddress } from './address.js';
 import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
-import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 
 describe('address', () => {
   const seedPhrase =

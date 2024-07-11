@@ -1,6 +1,6 @@
-import { fromBech32m, toBech32m } from './format/convert';
-import { Inner } from './format/inner';
-import { Prefixes } from './format/prefix';
+import { fromBech32m, toBech32m } from './format/convert.js';
+import { Inner } from './format/inner.js';
+import { Prefixes } from './format/prefix.js';
 
 const innerName = Inner.plpid;
 const prefix = Prefixes.plpid;
@@ -21,4 +21,4 @@ export const isPositionId = (check: string): check is `${typeof prefix}1${string
   }
 };
 
-export { PENUMBRA_BECH32M_POSITIONID_LENGTH, PENUMBRA_BECH32M_POSITIONID_PREFIX } from '.';
+export { PENUMBRA_BECH32M_POSITIONID_LENGTH, PENUMBRA_BECH32M_POSITIONID_PREFIX } from './index.js';

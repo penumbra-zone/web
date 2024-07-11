@@ -1,9 +1,9 @@
-import { Value } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { Value } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import {
   CandlestickData,
   SimulateTradeRequest,
   SimulateTradeResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
 import { getAssetId } from '@penumbra-zone/getters/metadata';
 import {
   getAssetIdFromValueView,
@@ -17,8 +17,8 @@ import { PriceHistorySlice } from './price-history';
 import { assetPatterns } from '@penumbra-zone/types/assets';
 import { getAmount, getMetadata } from '@penumbra-zone/getters/value-view';
 import { fromBaseUnitAmount } from '@penumbra-zone/types/amount';
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import { getDisplay } from '@penumbra-zone/getters/metadata';
 import { isKnown } from '../helpers';
 import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';

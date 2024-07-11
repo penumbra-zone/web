@@ -1,4 +1,4 @@
-import { ZQueryState } from '../types';
+import { ZQueryState } from '../types.js';
 
 export interface PuppyPhoto {
   id: string;

@@ -1,6 +1,6 @@
 import { ValueViewComponent } from '../../../value';
 import { ArrowRight } from 'lucide-react';
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import { getAmount } from '@penumbra-zone/getters/value-view';
 
 /**

@@ -1,15 +1,15 @@
 import {
   Address,
   FullViewingKey,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 import { describe, expect, test, vi } from 'vitest';
-import { viewTransactionPlan } from './view-transaction-plan';
+import { viewTransactionPlan } from './view-transaction-plan.js';
 import {
   MemoView_Visible,
   TransactionPlan,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
 import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import { fullViewingKeyFromBech32m } from '@penumbra-zone/bech32m/penumbrafullviewingkey';
 
 describe('viewTransactionPlan()', () => {

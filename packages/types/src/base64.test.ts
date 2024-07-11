@@ -5,7 +5,7 @@ import {
   base64ToUint8Array,
   InnerBase64Schema,
   uint8ArrayToBase64,
-} from './base64';
+} from './base64.js';
 import type { SafeParseError } from 'zod';
 
 describe('Base64StringSchema', () => {

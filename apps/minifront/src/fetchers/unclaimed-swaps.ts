@@ -1,9 +1,9 @@
 import { viewClient } from '../clients';
-import { SwapRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { SwapRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import { getUnclaimedSwaps } from '@penumbra-zone/getters/unclaimed-swaps-response';
 import { UnclaimedSwapsWithMetadata } from '../state/unclaimed-swaps';
 import { getSwapAsset1, getSwapAsset2 } from '@penumbra-zone/getters/swap-record';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 
 const fetchMetadataForSwap = async (swap: SwapRecord): Promise<UnclaimedSwapsWithMetadata> => {

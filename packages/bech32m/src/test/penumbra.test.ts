@@ -1,8 +1,8 @@
 import { describe } from 'vitest';
-import { addressFromBech32m, bech32mAddress } from '../penumbra';
-import { generateTests } from './util/generate-tests';
-import { Prefixes } from '../format/prefix';
-import { Inner } from '../format/inner';
+import { addressFromBech32m, bech32mAddress } from '../penumbra.js';
+import { generateTests } from './util/generate-tests.js';
+import { Prefixes } from '../format/prefix.js';
+import { Inner } from '../format/inner.js';
 
 describe('address conversion', () => {
   const okInner = new Uint8Array([

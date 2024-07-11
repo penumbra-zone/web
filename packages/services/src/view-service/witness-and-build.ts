@@ -1,13 +1,13 @@
-import type { Impl } from '.';
-import { servicesCtx } from '../ctx/prax';
+import type { Impl } from './index.js';
+import { servicesCtx } from '../ctx/prax.js';
 
-import { optimisticBuild } from './util/build-tx';
+import { optimisticBuild } from './util/build-tx.js';
 
 import { getWitness } from '@penumbra-zone/wasm/build';
 
 import { Code, ConnectError } from '@connectrpc/connect';
-import { AuthorizationData } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import { fvkCtx } from '../ctx/full-viewing-key';
+import { AuthorizationData } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
+import { fvkCtx } from '../ctx/full-viewing-key.js';
 
 export const witnessAndBuild: Impl['witnessAndBuild'] = async function* (
   { authorizationData, transactionPlan },

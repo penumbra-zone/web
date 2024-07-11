@@ -2,16 +2,16 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import {
   AssetMetadataByIdRequest,
   AssetMetadataByIdResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../ctx/prax';
-import { IndexedDbMock, MockServices, ShieldedPoolMock } from '../test-utils';
+import { servicesCtx } from '../ctx/prax.js';
+import { IndexedDbMock, MockServices, ShieldedPoolMock } from '../test-utils.js';
 import {
   AssetId,
   Metadata,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { assetMetadataById } from './asset-metadata-by-id';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { assetMetadataById } from './asset-metadata-by-id.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 describe('AssetMetadataById request handler', () => {

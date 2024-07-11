@@ -2,7 +2,7 @@ import { assetPatterns } from '@penumbra-zone/types/assets';
 import {
   AssetId,
   Metadata,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 
 /**
  * Assigns a priority score to an asset based on its metadata.

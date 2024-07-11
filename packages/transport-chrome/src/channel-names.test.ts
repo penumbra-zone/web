@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { nameConnection, parseConnectionName, ChannelLabel } from './channel-names';
+import { nameConnection, parseConnectionName, ChannelLabel } from './channel-names.js';
 
 describe('nameConnection', () => {
   it('should generate channel names with the specified prefix and label', () => {

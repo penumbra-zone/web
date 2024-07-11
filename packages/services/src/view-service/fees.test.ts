@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import {
   TransactionPlannerRequest,
   TransactionPlannerRequest_ActionDutchAuctionEnd,
@@ -7,8 +7,8 @@ import {
   TransactionPlannerRequest_ActionDutchAuctionWithdraw,
   TransactionPlannerRequest_Output,
   TransactionPlannerRequest_Swap,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
 
 // TODO: Need to properly write tests the coverage
 describe('extractAltFee', () => {

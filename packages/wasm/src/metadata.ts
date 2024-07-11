@@ -1,5 +1,5 @@
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { customize_symbol } from '../wasm';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { customize_symbol } from '../wasm/index.js';
 
 /**
  * Given a `Metadata`, returns a new `Metadata` with the symbol customized if

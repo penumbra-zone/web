@@ -1,5 +1,5 @@
-export * from './error';
-export * from './event';
+export * from './error.js';
+export * from './event.js';
 
 export const PenumbraSymbol = Symbol.for('penumbra');
 

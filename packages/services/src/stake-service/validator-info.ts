@@ -1,9 +1,9 @@
-import { Impl } from '.';
-import { servicesCtx } from '../ctx/prax';
+import { Impl } from './index.js';
+import { servicesCtx } from '../ctx/prax.js';
 import {
   ValidatorInfoResponse,
   ValidatorState_ValidatorStateEnum,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
 import { getStateEnumFromValidatorInfo } from '@penumbra-zone/getters/validator-info';
 
 export const validatorInfo: Impl['validatorInfo'] = async function* (req, ctx) {

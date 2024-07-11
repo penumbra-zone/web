@@ -1,11 +1,14 @@
 {
-  "extends": "@repo/tsconfig/base.json",
-  "include": ["src"],
-  "exclude": ["node_modules", "dist"],
   "compilerOptions": {
+    "exactOptionalPropertyTypes": false,
+    "composite": true,
+    "lib": ["ESNext", "DOM", "DOM.Iterable", "DOM.AsyncIterable"],
+    "module": "Node16",
     "outDir": "dist",
+    "preserveWatchOutput": true,
     "rootDir": "src",
-    "declarationMap": false,
-    "sourceMap": false
-  }
+    "target": "ESNext"
+  },
+  "extends": "@tsconfig/strictest/tsconfig.json",
+  "include": ["src"]
 }

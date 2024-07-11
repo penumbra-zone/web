@@ -1,8 +1,8 @@
 import { describe } from 'vitest';
-import { generateTests } from './util/generate-tests';
-import { assetIdFromBech32m, bech32mAssetId } from '../passet';
-import { Prefixes } from '../format/prefix';
-import { Inner } from '../format/inner';
+import { generateTests } from './util/generate-tests.js';
+import { assetIdFromBech32m, bech32mAssetId } from '../passet.js';
+import { Prefixes } from '../format/prefix.js';
+import { Inner } from '../format/inner.js';
 
 describe('asset id conversion', () => {
   const okBech32 = 'passet1vhga2czmpk76hsu3t7usjj2a2qga0u29vqlcp3hky8lwkfz30qrqy6gaae';

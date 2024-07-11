@@ -1,8 +1,12 @@
 {
-  "extends": "@repo/tsconfig/base.json",
-  "include": ["src", "tests-setup.ts"],
-  "exclude": ["dist", "build", "node_modules"],
   "compilerOptions": {
-    "jsx": "react-jsx"
-  }
+    "exactOptionalPropertyTypes": false,
+    "composite": true,
+    "jsx": "react-jsx",
+    "module": "Node16",
+    "noEmit": true,
+    "target": "ESNext"
+  },
+  "extends": "@tsconfig/strictest/tsconfig.json",
+  "include": ["src", "tests-setup.ts"]
 }

@@ -1,9 +1,9 @@
 import {
   SpendableNoteRecord,
   SwapRecord,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import type { Impl } from '.';
-import { servicesCtx } from '../ctx/prax';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import type { Impl } from './index.js';
+import { servicesCtx } from '../ctx/prax.js';
 
 import { Code, ConnectError } from '@connectrpc/connect';
 

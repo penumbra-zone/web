@@ -5,10 +5,10 @@
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "scripts": {
-    "build": "tsc && vite build",
-    "clean": "rm -rfv dist",
+    "build": "vite build",
+    "clean": "rm -rfv dist *.tsbuildinfo",
     "dev:app": "vite --port 5173",
-    "lint": "eslint src",
+    "lint": "tsc --noEmit && eslint src",
     "preview": "vite preview",
     "test": "vitest run"
   },
@@ -58,12 +58,9 @@
   },
   "devDependencies": {
     "@chain-registry/types": "^0.44.6",
-    "@testing-library/jest-dom": "^6.4.5",
-    "@testing-library/react": "^15.0.7",
     "@types/lodash": "^4.17.4",
     "@types/react": "^18.3.2",
     "@types/react-dom": "^18.3.0",
-    "@types/react-helmet": "^6.1.11",
-    "vite": "^5.2.11"
+    "@types/react-helmet": "^6.1.11"
   }
 }

@@ -33,12 +33,12 @@ wallet extension:
 ```ts
 import actionKeys from '@penumbra-zone/keys';
 
-import type { FullViewingKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import type { FullViewingKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 import type {
   Action,
   TransactionPlan,
   WitnessData,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
 
 // map filenames to bundled key asset URLs
 const keyUrls = actionKeys.map(keyFileName => new URL(`keys/${keyFileName}`, PRAX_ORIGIN));

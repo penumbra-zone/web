@@ -2,9 +2,9 @@ import { PromiseClient } from '@connectrpc/connect';
 import {
   CompactBlock,
   CompactBlockRangeRequest,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1/compact_block_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1/compact_block_pb.js';
 import { CompactBlockService } from '@penumbra-zone/protobuf';
-import { createClient } from './utils';
+import { createClient } from './utils.js';
 import type {
   CompactBlockQuerierInterface,
   CompactBlockRangeParams,

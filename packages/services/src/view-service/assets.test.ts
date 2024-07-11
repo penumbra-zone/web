@@ -1,17 +1,17 @@
 import {
   Denom,
   Metadata,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import {
   AssetsRequest,
   AssetsResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { servicesCtx } from '../ctx/prax';
-import { assets } from './assets';
-import { IndexedDbMock, MockServices } from '../test-utils';
+import { servicesCtx } from '../ctx/prax.js';
+import { assets } from './assets.js';
+import { IndexedDbMock, MockServices } from '../test-utils.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 describe('Assets request handler', () => {

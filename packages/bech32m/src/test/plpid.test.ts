@@ -1,8 +1,8 @@
 import { describe } from 'vitest';
-import { bech32mPositionId, positionIdFromBech32 } from '../plpid';
-import { generateTests } from './util/generate-tests';
-import { Inner } from '../format/inner';
-import { Prefixes } from '../format/prefix';
+import { bech32mPositionId, positionIdFromBech32 } from '../plpid.js';
+import { generateTests } from './util/generate-tests.js';
+import { Inner } from '../format/inner.js';
+import { Prefixes } from '../format/prefix.js';
 
 describe('liquidity provider id conversion', () => {
   const okBech32 = 'plpid1fkf3tlv500vgzwc6dkc7g9wnuv6rzezhefefdywq5tt4lyl97rgsd6j689';

@@ -1,4 +1,4 @@
-import { PenumbraInjectionState, PenumbraSymbol } from '.';
+import { PenumbraInjectionState, PenumbraSymbol } from './index.js';
 
 export class PenumbraInjectionStateEvent extends CustomEvent<{
   origin: string;

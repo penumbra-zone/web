@@ -5,7 +5,7 @@ import {
   isInWordList,
   SeedPhraseLength,
   validateSeedPhrase,
-} from './mnemonic';
+} from './mnemonic.js';
 import { wordlists } from 'bip39';
 
 describe('Mnemonic tests', () => {

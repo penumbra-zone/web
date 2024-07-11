@@ -1,4 +1,4 @@
-import { Base64StringSchema } from './base64';
+import { Base64StringSchema } from './base64.js';
 
 declare global {
   // eslint-disable-next-line no-var

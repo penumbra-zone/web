@@ -1,10 +1,10 @@
 import { PromiseClient } from '@connectrpc/connect';
-import { createClient } from './utils';
+import { createClient } from './utils.js';
 import { IbcClientService } from '@penumbra-zone/protobuf';
 import {
   QueryClientStatesRequest,
   QueryClientStatesResponse,
-} from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/query_pb';
+} from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/query_pb.js';
 import type { IbcClientQuerierInterface } from '@penumbra-zone/types/querier';
 
 export class IbcClientQuerier implements IbcClientQuerierInterface {

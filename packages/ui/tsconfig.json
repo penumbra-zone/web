@@ -1,11 +1,10 @@
 {
-  "extends": "@repo/tsconfig/vite.json",
-  "include": ["components", "lib", "src", "tests-setup.ts"],
-  "exclude": ["node_modules", "dist"],
   "compilerOptions": {
-    "outDir": "dist",
-    "noEmit": false,
-    "sourceMap": false,
-    "declarationMap": false
-  }
+    "composite": true,
+    "exactOptionalPropertyTypes": false,
+    "noEmit": true,
+    "target": "ESNext"
+  },
+  "extends": ["@tsconfig/strictest/tsconfig.json", "@tsconfig/vite-react/tsconfig.json"],
+  "include": ["components", "lib", "src", "tests-setup.ts"]
 }

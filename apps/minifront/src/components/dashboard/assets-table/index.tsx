@@ -1,4 +1,4 @@
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import { AddressComponent, AddressIcon } from '@repo/ui/components/ui/address';
 import { Button } from '@repo/ui/components/ui/button';
 import {
