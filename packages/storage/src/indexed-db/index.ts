@@ -283,7 +283,9 @@ export class IndexedDb implements IndexedDbInterface {
       const localVersion = await this.db.get('REGISTRY_VERSION', 'commit');
 
       // Registry version already saved
-      if (localVersion === remoteVersion) return;
+      if (localVersion === remoteVersion) {
+        return;
+      }
 
       const assets = registry.getAllAssets();
       const saveLocalMetadata = assets.map(m => this.saveAssetsMetadata(m));

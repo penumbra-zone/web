@@ -28,23 +28,30 @@ const useFeeMetadata = (txv: TransactionView, getMetadata: MetadataFetchFn) => {
     }),
   );
 
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<unknown>();
+
   useEffect(() => {
     const chainId = txv.bodyView?.transactionParameters?.chainId;
     const assetId = txv.bodyView?.transactionParameters?.fee?.assetId;
-    void getMetadata({ chainId, assetId }).then(metadata => {
-      if (metadata) {
-        const feeValueView = new ValueView({
-          valueView: {
-            case: 'knownAssetId',
-            value: { amount, metadata },
-          },
-        });
-        setFeeValueView(feeValueView);
-      }
-    });
-  }, []); // txv, getMetadata, setFeeValueView
+    setIsLoading(true);
+    void getMetadata({ chainId, assetId })
+      .then(metadata => {
+        if (metadata) {
+          const feeValueView = new ValueView({
+            valueView: {
+              case: 'knownAssetId',
+              value: { amount, metadata },
+            },
+          });
+          setFeeValueView(feeValueView);
+        }
+        setIsLoading(false);
+      })
+      .catch((e: unknown) => setError(e));
+  }, [txv, getMetadata, setFeeValueView]);
 
-  return feeValueView;
+  return { feeValueView, isLoading, error };
 };
 
 export const TransactionViewComponent = ({
@@ -54,7 +61,7 @@ export const TransactionViewComponent = ({
   txv: TransactionView;
   metadataFetcher: MetadataFetchFn;
 }) => {
-  const feeValueView = useFeeMetadata(txv, metadataFetcher);
+  const { feeValueView, isLoading, error } = useFeeMetadata(txv, metadataFetcher);
 
   return (
     <div className='flex flex-col gap-8'>
@@ -68,9 +75,12 @@ export const TransactionViewComponent = ({
         <ViewBox
           label='Transaction Fee'
           visibleContent={
-            <div className='font-mono'>
-              {/* Add loading indicator */}
+            <div className='flex items-center gap-2'>
               <ValueViewComponent view={feeValueView} />
+              {isLoading && <span className='font-mono text-light-brown'>Loading...</span>}
+              {error ? (
+                <span className='font-mono text-red-400'>Error: {String(error)}</span>
+              ) : null}
             </div>
           }
         />

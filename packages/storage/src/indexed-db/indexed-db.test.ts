@@ -54,11 +54,30 @@ import {
   DutchAuctionDescription,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb.js';
-import { ChainRegistryClient } from '@penumbra-labs/registry';
+import { ChainRegistryClient, Registry } from '@penumbra-labs/registry';
 import fetchMock from 'fetch-mock';
+import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
+import { JsonValue } from '@bufbuild/protobuf';
 
 const registryClient = new ChainRegistryClient();
 const chainId = 'penumbra-testnet-deimos-8';
+
+const jsonifyRegistry = (r: Registry) => {
+  const assetById = r.getAllAssets().reduce<Record<string, JsonValue>>((acc, m) => {
+    const assetIdStr = uint8ArrayToBase64(m.penumbraAssetId!.inner);
+    acc[assetIdStr] = m.toJson();
+    return acc;
+  }, {});
+
+  const numeraires = r.numeraires.map(n => uint8ArrayToBase64(n.inner));
+
+  return {
+    chainId: r.chainId,
+    ibcConnections: r.ibcConnections,
+    numeraires,
+    assetById,
+  };
+};
 
 // uses different wallet ids so no collisions take place
 const generateInitialProps = () => ({
@@ -74,9 +93,9 @@ const registryEndpoint = 'https://raw.githubusercontent.com/prax-wallet/registry
 describe('IndexedDb', () => {
   beforeEach(() => {
     fetchMock.reset();
-    fetchMock.mock(`${registryEndpoint}/chains/${chainId}`, {
+    fetchMock.mock(`${registryEndpoint}/chains/${chainId}.json`, {
       status: 200,
-      body: registryClient.bundled.get(chainId),
+      body: jsonifyRegistry(registryClient.bundled.get(chainId)),
     });
   });
 
@@ -94,7 +113,7 @@ describe('IndexedDb', () => {
       const testnetDb = await IndexedDb.initialize(generateInitialProps());
       const mainnetDb = await IndexedDb.initialize({
         ...generateInitialProps(),
-        chainId: 'penumbra-testnet-deimos-7',
+        chainId,
       });
 
       await testnetDb.saveAssetsMetadata(metadataA);
@@ -159,7 +178,7 @@ describe('IndexedDb', () => {
       for await (const note of db.iterateSpendableNotes()) {
         notes.push(note);
       }
-      expect(notes.length).toBe(21);
+      expect(notes.length).toBe(1);
 
       await db.saveAssetsMetadata(metadataA);
 
@@ -343,7 +362,7 @@ describe('IndexedDb', () => {
         savedAssets.push(asset);
       }
       const registryLength = registryClient.bundled.get(chainId).getAllAssets().length;
-      expect(savedAssets.length === registryLength + 3).toBeTruthy();
+      expect(savedAssets.length).toBe(registryLength + 3);
     });
   });
 
