@@ -1,6 +1,7 @@
 import { PropsWithChildren } from 'react';
 import styled from 'styled-components';
 import { AsTransientProps, asTransientProps } from '../utils/asTransientProps';
+import { media } from '../utils/media';
 
 interface GridContainerProps {
   /** Whether this is a grid container, vs. an item. */
@@ -40,40 +41,32 @@ const Container = styled.div`
 `;
 
 const Item = styled.div<AsTransientProps<Exclude<GridItemProps, 'container'>>>`
-  @media (min-width: ${props => props.theme.breakpoints.mobile}px) {
-    grid-column: span ${props => props.$mobile ?? 12};
-  }
+  ${props => media.mobile`
+    grid-column: span ${props.$mobile ?? 12};
+  `}
 
   ${props =>
     props.$tablet &&
-    `
-      @media (min-width: ${props.theme.breakpoints.tablet}px) {
-        grid-column: span ${props.$tablet};
-      }
+    media.tablet`
+      grid-column: span ${props.$tablet};
     `}
 
   ${props =>
     props.$desktop &&
-    `
-      @media (min-width: ${props.theme.breakpoints.desktop}px) {
-        grid-column: span ${props.$desktop};
-      }
+    media.desktop`
+      grid-column: span ${props.$desktop};
     `}
 
   ${props =>
     props.$lg &&
-    `
-      @media (min-width: ${props.theme.breakpoints.lg}px) {
-        grid-column: span ${props.$lg};
-      }
+    media.lg`
+      grid-column: span ${props.$lg};
     `}
 
   ${props =>
     props.$xl &&
-    `
-      @media (min-width: ${props.theme.breakpoints.xl}px) {
-        grid-column: span ${props.$xl};
-      }
+    media.xl`
+      grid-column: span ${props.$xl};
     `}
 `;
 
