@@ -13,6 +13,7 @@ const penumbraTheme = create({
   colorSecondary: '#629994',
   fontBase: 'Poppins',
   fontCode: '"Iosevka Term",monospace',
+  textColor: 'white',
   textMutedColor: '#e3e3e3',
 });
 
