@@ -45,40 +45,36 @@ const Item = styled.div<AsTransientProps<Exclude<GridItemProps, 'container'>>>`
   }
 
   ${props =>
-    props.$tablet
-      ? `
-          @media (min-width: ${props.theme.breakpoints.tablet}px) {
-            grid-column: span ${props.$tablet};
-          }
-        `
-      : ''}
+    props.$tablet &&
+    `
+      @media (min-width: ${props.theme.breakpoints.tablet}px) {
+        grid-column: span ${props.$tablet};
+      }
+    `}
 
   ${props =>
-    props.$desktop
-      ? `
-          @media (min-width: ${props.theme.breakpoints.desktop}px) {
-            grid-column: span ${props.$desktop};
-          }
-        `
-      : ''}
+    props.$desktop &&
+    `
+      @media (min-width: ${props.theme.breakpoints.desktop}px) {
+        grid-column: span ${props.$desktop};
+      }
+    `}
 
   ${props =>
-    props.$lg
-      ? `
-          @media (min-width: ${props.theme.breakpoints.lg}px) {
-            grid-column: span ${props.$lg};
-          }
-        `
-      : ''}
+    props.$lg &&
+    `
+      @media (min-width: ${props.theme.breakpoints.lg}px) {
+        grid-column: span ${props.$lg};
+      }
+    `}
 
   ${props =>
-    props.$xl
-      ? `
-          @media (min-width: ${props.theme.breakpoints.xl}px) {
-            grid-column: span ${props.$xl};
-          }
-        `
-      : ''}
+    props.$xl &&
+    `
+      @media (min-width: ${props.theme.breakpoints.xl}px) {
+        grid-column: span ${props.$xl};
+      }
+    `}
 `;
 
 export const Grid = ({ container, children, ...props }: GridProps) =>
