@@ -1,3 +1,5 @@
+import { PenumbraInjectionStateEventTarget } from './event.js';
+
 export * from './error.js';
 export * from './event.js';
 
@@ -38,7 +40,7 @@ export const PenumbraSymbol = Symbol.for('penumbra');
  * use the helpers available in `@penumbra-zone/client/create`.
  *
  */
-export interface PenumbraInjection {
+export interface PenumbraInjection extends Readonly<PenumbraInjectionStateEventTarget> {
   /** Should contain a URI at the provider's origin, serving a manifest
    * describing this provider. */
   readonly manifest: string;
@@ -63,11 +65,14 @@ export interface PenumbraInjection {
   /** Synchronously return present injection state. */
   readonly state: () => PenumbraInjectionState;
 
-  /** Emits `PenubraInjectionStateEvent` when state changes. Listen for
+  /** Like a normal EventTarget.addEventListener, but should only emit
+   * `PenubraInjectionStateEvent` when state changes. Listen for
    * `'penumbrastate'` events, and check the `detail` field for a
-   * `PenumbraInjectionState` value. */
-  readonly addEventListener: EventTarget['addEventListener'];
-  readonly removeEventListener: EventTarget['removeEventListener'];
+   * `PenumbraInjectionState` value.
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener
+   */
+  readonly addEventListener: PenumbraInjectionStateEventTarget['addEventListener'];
+  readonly removeEventListener: PenumbraInjectionStateEventTarget['addEventListener'];
 }
 
 export enum PenumbraInjectionState {
