@@ -46,6 +46,8 @@ import { processActionDutchAuctionSchedule } from './helpers/process-action-dutc
 import { processActionDutchAuctionWithdraw } from './helpers/process-action-dutch-auction-withdraw.js';
 import { RootQuerier } from './root-querier.js';
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb.js';
+import { IdentityKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+import { getDelegationTokenMetadata } from '@penumbra-zone/wasm/stake';
 
 declare global {
   // eslint-disable-next-line no-var
@@ -450,6 +452,24 @@ export class BlockProcessor implements BlockProcessorInterface {
     return undefined;
   }
 
+  private async saveAndReturnDelegationMetadata(
+    identityKey: IdentityKey,
+  ): Promise<Metadata | undefined> {
+    const delegationTokenAssetId = new AssetId({
+      altBaseDenom: `udelegation_${bech32mIdentityKey(identityKey)}`,
+    });
+
+    const metadataAlreadyInDb = await this.indexedDb.getAssetsMetadata(delegationTokenAssetId);
+    if (metadataAlreadyInDb) {
+      return metadataAlreadyInDb;
+    }
+
+    const generatedMetadata = getDelegationTokenMetadata(identityKey);
+
+    await this.indexedDb.saveAssetsMetadata(customizeSymbol(generatedMetadata));
+    return generatedMetadata;
+  }
+
   // Nullifier is published in network when a note is spent or swap is claimed.
   private async resolveNullifiers(nullifiers: Nullifier[], height: bigint) {
     const spentNullifiers = new Set<Nullifier>();
@@ -627,11 +647,8 @@ export class BlockProcessor implements BlockProcessorInterface {
     nextEpochStartHeight: bigint,
   ) {
     const identityKey = getIdentityKeyFromValidatorInfoResponse(validatorInfoResponse);
-    const delegationTokenAssetId = new AssetId({
-      altBaseDenom: `udelegation_${bech32mIdentityKey(identityKey)}`,
-    });
 
-    const metadata = await this.saveAndReturnMetadata(delegationTokenAssetId);
+    const metadata = await this.saveAndReturnDelegationMetadata(identityKey);
 
     if (metadata) {
       const assetId = getAssetId(metadata);
