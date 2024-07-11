@@ -70,6 +70,41 @@ const Item = styled.div<AsTransientProps<Exclude<GridItemProps, 'container'>>>`
     `}
 `;
 
+/**
+ * A responsive grid component that makes 12-column layouts super easy to build.
+ *
+ * Pass the `container` prop to the root `<Grid />` component; then, any nested
+ * children `<Grid />`s will be treated as grid items.
+ *
+ * @example
+ * ```tsx
+ * <Grid container>
+ *   <Grid mobile={12}>This will span the full width on all screen sizes.</Grid>
+ *
+ *   <Grid>So will this.</Grid>
+ *
+ *   <Grid mobile={12} desktop={6}>
+ *     These will span the full width on mobile...
+ *   </Grid>
+ *
+ *   <Grid mobile={12} desktop={6}>
+ *     ...but half the width on desktop.
+ *   </Grid>
+ *
+ *   <Grid mobile={4}>
+ *     These will...
+ *   </Grid>
+ *
+ *   <Grid mobile={4}>
+ *     ...take up...
+ *   </Grid>
+ *
+ *   <Grid mobile={4}>
+ *     ...one third each.
+ *   </Grid>
+ * </Grid>
+ * ```
+ */
 export const Grid = ({ container, children, ...props }: GridProps) =>
   container ? (
     <Container>{children}</Container>
