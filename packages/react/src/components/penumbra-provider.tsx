@@ -1,4 +1,8 @@
-import { PenumbraInjection, PenumbraInjectionState } from '@penumbra-zone/client';
+import {
+  isPenumbraInjectionStateEvent,
+  PenumbraInjection,
+  PenumbraInjectionState,
+} from '@penumbra-zone/client';
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { PenumbraManifest } from '../manifest';
 import { PenumbraContext, penumbraContext } from '../penumbra-context';
@@ -22,37 +26,46 @@ export const PenumbraProvider = ({
 
   const [providerState, setProviderState] = useState(providerInjection?.state());
   const [providerConnected, setProviderConnected] = useState(providerInjection?.isConnected());
-  const updateProviderState = useCallback(() => {
-    // skip uninitialized state
-    if (
-      providerState === undefined &&
-      providerConnected === undefined &&
-      providerInjection === undefined
-    )
-      return;
-
-    // skip final states
-    if (
-      providerConnected === false &&
-      (providerState === PenumbraInjectionState.Failed ||
-        providerState === PenumbraInjectionState.Disconnected)
-    )
-      return;
-
-    setProviderState(providerInjection?.state());
-    setProviderConnected(providerInjection?.isConnected());
-  }, [providerInjection, providerState, providerConnected, setProviderState, setProviderConnected]);
 
   const [failure, setFailureError] = useState<Error>();
   const setFailureUnknown = useCallback(
-    (cause: unknown) => {
-      if (failure)
-        console.error('Not replacing existing PenumbraProvider failure', { failure, cause });
-      else
-        setFailureError(cause instanceof Error ? cause : new Error('Unknown failure', { cause }));
-    },
+    (cause: unknown) =>
+      failure
+        ? console.error('Not replacing existing PenumbraProvider failure', { failure, cause })
+        : setFailureError(cause instanceof Error ? cause : new Error('Unknown failure', { cause })),
     [failure, setFailureError],
   );
+
+  const providerStateListener = useCallback(
+    (evt: Event) => {
+      console.log('penumbrastate', evt); // TODO: remove
+      if (!isPenumbraInjectionStateEvent(evt)) return;
+      const detail = evt.detail;
+      if (!providerInjection) setFailureError(new Error('State change without injection'));
+      else if (detail.origin !== providerOrigin)
+        setFailureError(new Error('State change from unexpected origin'));
+      else if (detail.state !== providerInjection.state())
+        console.warn('State change not verifiable');
+      else {
+        setProviderState(providerInjection.state());
+        setProviderConnected(providerInjection.isConnected());
+      }
+    },
+    [providerInjection, providerOrigin, providerInjection?.state, providerInjection?.isConnected],
+  );
+
+  useEffect(() => {
+    const eventListener = providerStateListener;
+    const { addEventListener, removeEventListener } = providerInjection ?? {};
+    if (!addEventListener || !removeEventListener) return;
+    addEventListener('penumbrastate', eventListener);
+    return () => removeEventListener('penumbrastate', eventListener);
+  }, [
+    providerInjection,
+    providerInjection?.addEventListener,
+    providerInjection?.removeEventListener,
+    providerStateListener,
+  ]);
 
   const [providerPort, setProviderPort] = useState<MessagePort>();
   const [manifest, setManifest] = useState<PenumbraManifest>();
@@ -88,16 +101,12 @@ export const PenumbraProvider = ({
     ],
   );
 
-  useEffect(() => updateProviderState());
-
   // fetch manifest to confirm presence of provider
   useEffect(() => {
     // require provider
     if (!providerOrigin || !providerInjection) return;
-    // don't repeat
-    if (manifest) return;
-    // unnecessary if failed
-    if (failure) return;
+    // don't repeat, unnecessary if failed
+    if (!!manifest || failure) return;
 
     // sync assertion
     try {
@@ -131,7 +140,9 @@ export const PenumbraProvider = ({
 
   // request effect
   useEffect(() => {
+    // require manifest, no failures
     if (!manifest || failure) return;
+
     switch (providerState) {
       case PenumbraInjectionState.Present:
         if (makeApprovalRequest) void providerInjection?.request().catch(setFailureUnknown);
@@ -143,7 +154,9 @@ export const PenumbraProvider = ({
 
   // connect effect
   useEffect(() => {
+    // require manifest, no failures
     if (!manifest || failure) return;
+
     switch (providerState) {
       case PenumbraInjectionState.Present:
         if (!makeApprovalRequest)
