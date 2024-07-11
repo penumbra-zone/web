@@ -47,7 +47,7 @@ import { processActionDutchAuctionWithdraw } from './helpers/process-action-dutc
 import { RootQuerier } from './root-querier.js';
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb.js';
 import { IdentityKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
-import { getDelegationTokenMetadata } from '@penumbra-zone/wasm/staking';
+import { getDelegationTokenMetadata } from '@penumbra-zone/wasm/stake';
 
 declare global {
   // eslint-disable-next-line no-var
