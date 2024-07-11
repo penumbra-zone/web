@@ -1,9 +1,9 @@
-use crate::error::WasmResult;
-use crate::utils;
-use penumbra_dex::lp::position::Id;
 use penumbra_proto::DomainType;
 use penumbra_stake::{DelegationToken, IdentityKey};
 use wasm_bindgen::prelude::wasm_bindgen;
+
+use crate::error::WasmResult;
+use crate::utils;
 
 /// get delegation asset by validator identity key
 /// Arguments:

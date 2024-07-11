@@ -46,7 +46,7 @@ import { processActionDutchAuctionSchedule } from './helpers/process-action-dutc
 import { processActionDutchAuctionWithdraw } from './helpers/process-action-dutch-auction-withdraw.js';
 import { RootQuerier } from './root-querier.js';
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb.js';
-import { IdentityKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import { IdentityKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 import { getDelegationTokenMetadata } from '@penumbra-zone/wasm/staking';
 
 declare global {
@@ -460,7 +460,9 @@ export class BlockProcessor implements BlockProcessorInterface {
     });
 
     const metadataAlreadyInDb = await this.indexedDb.getAssetsMetadata(delegationTokenAssetId);
-    if (metadataAlreadyInDb) { return metadataAlreadyInDb; }
+    if (metadataAlreadyInDb) {
+      return metadataAlreadyInDb;
+    }
 
     const generatedMetadata = getDelegationTokenMetadata(identityKey);
 
