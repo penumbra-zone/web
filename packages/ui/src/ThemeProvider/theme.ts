@@ -1,6 +1,13 @@
 import { DefaultTheme } from 'styled-components';
 
 export const theme: DefaultTheme = {
+  breakpoints: {
+    mobile: 0,
+    tablet: 600,
+    desktop: 900,
+    lg: 1200,
+    xl: 1600,
+  },
   fonts: {
     default: 'Poppins',
     mono: 'Iosevka Term, monospace',
@@ -21,4 +28,12 @@ export const theme: DefaultTheme = {
     textSm: '0.875rem',
     textXs: '0.75rem',
   },
+  palette: {
+    neutral: {
+      100: '#f5f5f5',
+      400: '#a3a3a3',
+      700: '#404040',
+    },
+  },
+  spacing: spacingUnits => `${spacingUnits * 4}px`,
 };

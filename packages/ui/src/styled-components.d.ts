@@ -2,6 +2,13 @@ import 'styled-components';
 
 declare module 'styled-components' {
   export interface DefaultTheme {
+    breakpoints: {
+      mobile: number;
+      tablet: number;
+      desktop: number;
+      lg: number;
+      xl: number;
+    };
     fonts: {
       default: string;
       mono: string;
@@ -22,5 +29,17 @@ declare module 'styled-components' {
       textSm: string;
       textXs: string;
     };
+    palette: {
+      neutral: {
+        100: string;
+        400: string;
+        700: string;
+      };
+    };
+    /**
+     * A function that takes a number of spacing units, and returns a string to
+     * use for a CSS property.
+     */
+    spacing: (spacingUnits: number) => string;
   }
 }
