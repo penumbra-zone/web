@@ -40,28 +40,16 @@ export const GasFee = ({
     return null;
   }
 
-  let feeValueView: ValueView | undefined;
-  if (fee?.amount) {
-    feeValueView = new ValueView({
-      valueView: {
-        case: 'knownAssetId',
-        value: { amount: fee.amount, metadata: stakingAssetMetadata },
+  const feeValueView = new ValueView({
+    valueView: {
+      case: 'knownAssetId',
+      value: {
+        amount: fee?.amount ?? { hi: 0n, lo: 0n },
+        // TODO: once https://github.com/penumbra-zone/web/pull/1468 is merged, change this to metadata: assetFeeMedata
+        metadata: stakingAssetMetadata,
       },
-    });
-  } else {
-    feeValueView = new ValueView({
-      valueView: {
-        case: 'knownAssetId',
-        value: {
-          amount: {
-            lo: 0n,
-            hi: 0n,
-          },
-          metadata: stakingAssetMetadata,
-        },
-      },
-    });
-  }
+    },
+  });
 
   return (
     /**
