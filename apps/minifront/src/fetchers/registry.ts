@@ -10,10 +10,8 @@ export const useRegistry = () => {
     queryKey: ['penumbraRegistry'],
     queryFn: async (): Promise<Registry> => {
       const chainId = await getChainId();
-      if (!chainId) {
-        throw new Error('No chain id in response');
-      }
-      return chainRegistryClient.get(chainId);
+      if (!chainId) throw new Error('No chain id in response');
+      return chainRegistryClient.remote.get(chainId);
     },
     staleTime: Infinity,
   });
@@ -25,7 +23,7 @@ export const getStakingTokenMetadata = async () => {
     throw new Error('Could not fetch chain id');
   }
 
-  const stakingAssetId = chainRegistryClient.globals().stakingAssetId;
+  const { stakingAssetId } = await chainRegistryClient.remote.globals();
   const stakingAssetsMetadata = await getAssetMetadataById(stakingAssetId);
 
   if (!stakingAssetsMetadata) {
@@ -40,6 +38,6 @@ export const getChains = async (): Promise<Chain[]> => {
     throw new Error('Could not fetch chain id');
   }
 
-  const { ibcConnections } = chainRegistryClient.get(chainId);
+  const { ibcConnections } = await chainRegistryClient.remote.get(chainId);
   return ibcConnections;
 };

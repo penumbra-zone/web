@@ -4,12 +4,13 @@ import {
   Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 
-export function getFeeAssetMetadataOrDefault(
+// TODO: Likely needs to be passed DELETE
+export const getFeeAssetMetadataOrDefault = (
   chainId: string,
   assetId?: AssetId,
-): Metadata | undefined {
+): Metadata | undefined => {
   const registryClient = new ChainRegistryClient();
-  const registry = registryClient.get(chainId);
-  const feeAssetId = assetId ?? registryClient.globals().stakingAssetId;
+  const registry = registryClient.bundled.get(chainId);
+  const feeAssetId = assetId ?? registryClient.bundled.globals().stakingAssetId;
   return registry.getMetadata(feeAssetId);
-}
+};

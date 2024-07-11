@@ -10,6 +10,8 @@ import { useQuery } from '@tanstack/react-query';
 import fetchReceiverView from './hooks';
 import { classifyTransaction } from '@penumbra-zone/perspective/transaction/classify';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
+import { viewClient } from '../../clients';
+import { ChainRegistryClient } from '@penumbra-labs/registry';
 
 export enum TxDetailsTab {
   PUBLIC = 'public',
@@ -22,6 +24,13 @@ const OPTIONS = [
   { label: 'Public View', value: TxDetailsTab.PUBLIC },
   { label: 'Reciever View', value: TxDetailsTab.RECIEVER },
 ];
+
+const getMetadata: MetadataFetchFn = async ({ assetId }) => {
+  const feeAssetId = assetId ? assetId : new ChainRegistryClient().bundled.globals().stakingAssetId;
+
+  const { denomMetadata } = await viewClient.assetMetadataById({ assetId: feeAssetId });
+  return denomMetadata;
+};
 
 export const TxViewer = ({ txInfo }: { txInfo?: TransactionInfo }) => {
   const [option, setOption] = useState(TxDetailsTab.PRIVATE);
@@ -62,7 +71,7 @@ export const TxViewer = ({ txInfo }: { txInfo?: TransactionInfo }) => {
       </div>
       {option === TxDetailsTab.PRIVATE && txInfo && (
         <>
-          <TransactionViewComponent txv={txInfo.view!} />
+          <TransactionViewComponent txv={txInfo.view!} metadataFetcher={getMetadata} />
           <div className='mt-8'>
             <div className='text-xl font-bold'>Raw JSON</div>
             <JsonViewer jsonObj={txInfo.toJson({ typeRegistry }) as Jsonified<TransactionInfo>} />
@@ -70,10 +79,13 @@ export const TxViewer = ({ txInfo }: { txInfo?: TransactionInfo }) => {
         </>
       )}
       {option === TxDetailsTab.RECIEVER && receiverView && showReceiverTransactionView && (
-        <TransactionViewComponent txv={receiverView} />
+        <TransactionViewComponent txv={receiverView} metadataFetcher={getMetadata} />
       )}
       {option === TxDetailsTab.PUBLIC && txInfo && (
-        <TransactionViewComponent txv={asPublicTransactionView(txInfo.view)} />
+        <TransactionViewComponent
+          txv={asPublicTransactionView(txInfo.view)}
+          metadataFetcher={getMetadata}
+        />
       )}
     </div>
   );

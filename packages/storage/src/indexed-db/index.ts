@@ -137,13 +137,8 @@ export class IndexedDb implements IndexedDbInterface {
       tables: IDB_TABLES,
     } satisfies IdbConstants;
 
-    const instance = new this(
-      db,
-      new IbdUpdater(db),
-      constants,
-      chainId,
-      registryClient.globals().stakingAssetId,
-    );
+    const { stakingAssetId } = registryClient.bundled.globals();
+    const instance = new this(db, new IbdUpdater(db), constants, chainId, stakingAssetId);
     await instance.saveRegistryAssets(registryClient, chainId); // Pre-load asset metadata from registry
 
     const existing0thEpoch = await instance.getEpochByHeight(0n);
@@ -282,19 +277,18 @@ export class IndexedDb implements IndexedDbInterface {
 
   // creates a local copy of the asset list from registry (https://github.com/prax-wallet/registry)
   async saveRegistryAssets(registryClient: ChainRegistryClient, chainId: string) {
-    const { commit } = registryClient.version();
-    const lastPosition = await this.db.get('REGISTRY_VERSION', 'commit');
-
-    // Registry version already saved
-    if (lastPosition === commit) {
-      return;
-    }
-
     try {
-      const assets = registryClient.get(chainId).getAllAssets();
+      const registry = await registryClient.remote.get(chainId);
+      const remoteVersion = await registry.version();
+      const localVersion = await this.db.get('REGISTRY_VERSION', 'commit');
+
+      // Registry version already saved
+      if (localVersion === remoteVersion) return;
+
+      const assets = registry.getAllAssets();
       const saveLocalMetadata = assets.map(m => this.saveAssetsMetadata(m));
       await Promise.all(saveLocalMetadata);
-      await this.u.update({ table: 'REGISTRY_VERSION', key: 'commit', value: commit });
+      await this.u.update({ table: 'REGISTRY_VERSION', key: 'commit', value: remoteVersion });
     } catch (error) {
       console.error('Failed pre-population of assets from the registry', error);
     }
