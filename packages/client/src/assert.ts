@@ -5,6 +5,8 @@ import {
 } from './error.js';
 import { PenumbraSymbol } from './symbol.js';
 
+import './global.js';
+
 export const assertStringIsOrigin = (s?: string) => {
   if (!s || new URL(s).origin !== s) {
     throw new TypeError('Invalid origin');
@@ -12,7 +14,7 @@ export const assertStringIsOrigin = (s?: string) => {
   return s;
 };
 
-export const assertGlobalPresent = () => {
+export const assertPenumbra = () => {
   if (!window[PenumbraSymbol]) {
     throw new PenumbraNotInstalledError();
   }
@@ -24,15 +26,12 @@ export const assertGlobalPresent = () => {
  * `undefined` origin is accepted but will throw.
  */
 export const assertProviderRecord = (providerOrigin?: string) => {
-  const provider = providerOrigin && assertGlobalPresent()[assertStringIsOrigin(providerOrigin)];
+  const provider = providerOrigin && assertPenumbra()[assertStringIsOrigin(providerOrigin)];
   if (!provider) {
     throw new PenumbraProviderNotAvailableError(providerOrigin);
   }
   return provider;
 };
-
-export const assertProvider = (providerOrigin?: string) =>
-  assertProviderManifest(providerOrigin).then(() => assertProviderRecord(providerOrigin));
 
 /**
  * Given a specific origin, identify the relevant injection, and confirm

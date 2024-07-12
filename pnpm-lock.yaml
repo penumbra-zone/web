@@ -490,31 +490,6 @@ importers:
         specifier: workspace:*
         version: link:../wasm
 
-  packages/react:
-    dependencies:
-      '@bufbuild/protobuf':
-        specifier: 1.10.0
-        version: 1.10.0
-      '@penumbra-zone/client':
-        specifier: workspace:*
-        version: link:../client
-      '@penumbra-zone/protobuf':
-        specifier: workspace:*
-        version: link:../protobuf
-      '@penumbra-zone/transport-dom':
-        specifier: workspace:*
-        version: link:../transport-dom
-    devDependencies:
-      '@connectrpc/connect':
-        specifier: 1.4.0
-        version: 1.4.0(@bufbuild/protobuf@1.10.0)
-      '@types/react':
-        specifier: ^18.3.2
-        version: 18.3.3
-      react:
-        specifier: ^18.3.1
-        version: 18.3.1
-
   packages/services:
     devDependencies:
       '@buf/penumbra-zone_penumbra.bufbuild_es':
@@ -10074,11 +10049,6 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
 
-  use-sync-external-store@1.2.2:
-    resolution: {integrity: sha512-PElTlVMwpblvbNqQ82d2n6RjStvdSoNe9FG28kNfz3WiXilJm4DdNkEzRhCZuIDwY8U08WVihhGR5iRqAwfDiw==}
-    peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
-
   utf-8-validate@5.0.10:
     resolution: {integrity: sha512-Z6czzLq4u8fPOyx7TU6X3dvUZVvoJmxSQ+IcrlmagKhilxlhZgxPK6C5Jqbkw1IDUmFTM+cz9QDnnLTwDz/2gQ==}
     engines: {node: '>=6.14.2'}
@@ -17112,7 +17082,7 @@ snapshots:
     dependencies:
       '@tanstack/query-core': 4.36.1
       react: 18.3.1
-      use-sync-external-store: 1.2.2(react@18.3.1)
+      use-sync-external-store: 1.2.0(react@18.3.1)
     optionalDependencies:
       react-dom: 18.3.1(react@18.3.1)
 
@@ -23439,10 +23409,6 @@ snapshots:
       '@types/react': 18.3.3
 
   use-sync-external-store@1.2.0(react@18.3.1):
-    dependencies:
-      react: 18.3.1
-
-  use-sync-external-store@1.2.2(react@18.3.1):
     dependencies:
       react: 18.3.1
 

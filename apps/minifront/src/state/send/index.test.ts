@@ -21,6 +21,14 @@ vi.mock('../fetchers/address', () => ({
   getAddressByIndex: vi.fn(),
 }));
 
+vi.mock('../../prax', async () => {
+  const { createPromiseClient } =
+    await vi.importActual<typeof import('@connectrpc/connect')>('@connectrpc/connect');
+  return {
+    createPraxClient: vi.fn(s => createPromiseClient(s, { unary: vi.fn(), stream: vi.fn() })),
+  };
+});
+
 describe('Send Slice', () => {
   const selectionExample = new BalancesResponse({
     balanceView: new ValueView({

@@ -1,4 +1,4 @@
-import type { PenumbraStateEventTarget } from './event.js';
+import type { PenumbraEventTarget } from './event.js';
 import type { PenumbraState } from './state.js';
 
 /**
@@ -37,7 +37,7 @@ import type { PenumbraState } from './state.js';
  *
  */
 
-export interface PenumbraProvider extends Readonly<PenumbraStateEventTarget> {
+export interface PenumbraProvider extends Readonly<PenumbraEventTarget> {
   /** Should contain a URI at the provider's origin, serving a manifest
    * describing this provider. */
   readonly manifest: string;
@@ -68,6 +68,6 @@ export interface PenumbraProvider extends Readonly<PenumbraStateEventTarget> {
    * `PenumbraInjectionState` value.
    * @see https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener
    */
-  readonly addEventListener: PenumbraStateEventTarget['addEventListener'];
-  readonly removeEventListener: PenumbraStateEventTarget['addEventListener'];
+  readonly addEventListener: PenumbraEventTarget['addEventListener'];
+  readonly removeEventListener: PenumbraEventTarget['addEventListener'];
 }

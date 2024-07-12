@@ -7,6 +7,7 @@ import { HeadTag } from './metadata/head-tag';
 import { useState } from 'react';
 import { PenumbraRequestFailure } from '@penumbra-zone/client';
 import { requestPraxAccess } from '../prax';
+import { useNavigate } from 'react-router-dom';
 
 const handleErr = (e: unknown) => {
   if (e instanceof Error && e.cause) {
@@ -34,11 +35,12 @@ const handleErr = (e: unknown) => {
 
 const useExtConnector = () => {
   const [result, setResult] = useState<boolean>();
+  const navigate = useNavigate();
 
   const request = async () => {
     try {
       await requestPraxAccess();
-      location.reload();
+      navigate('/');
     } catch (e) {
       handleErr(e);
     } finally {

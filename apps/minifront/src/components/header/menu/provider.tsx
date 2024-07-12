@@ -1,27 +1,21 @@
 import { cn } from '@repo/ui/lib/utils';
 import * as NavigationMenu from '@radix-ui/react-navigation-menu';
 import { getChainId } from '../../../fetchers/chain-id';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { itemStyle, triggerStyle, dropdownStyle, linkStyle, viewportStyle } from './nav-style';
 import { Link1Icon, LinkBreak1Icon } from '@radix-ui/react-icons';
-import { getPraxManifest, getPraxOrigin } from '../../../prax';
-import { PenumbraSymbol } from '@penumbra-zone/client';
+import { penumbraClient } from '../../../prax';
 
 export const ProviderMenu = () => {
   const [chainId, setChainId] = useState<string | undefined>();
   const [providerManifest, setProviderManifest] = useState<ProviderManifest>();
-  const [providerOrigin] = useState(getPraxOrigin());
 
   const [manifestIconUnavailable, setManifestIconUnavailable] = useState<boolean>();
 
-  const disconnect = useCallback(() => {
-    void window[PenumbraSymbol]?.[providerOrigin]
-      ?.disconnect()
-      .then(() => window.location.reload());
-  }, [providerOrigin]);
+  const disconnect = () => void penumbraClient.disconnect().then(() => window.location.reload());
 
   useEffect(() => {
-    void getPraxManifest().then(m => setProviderManifest(m as ProviderManifest));
+    void penumbraClient.manifest().then(m => setProviderManifest(m as ProviderManifest));
     void getChainId().then(setChainId);
   }, []);
 
@@ -45,7 +39,7 @@ export const ProviderMenu = () => {
             <img
               id='provider-icon'
               className={cn('w-[1.5em]', 'max-w-none', 'h-[1.5em]')}
-              src={String(new URL(providerManifest.icons['128'], providerOrigin))}
+              src={String(new URL(providerManifest.icons['128'], penumbraClient.origin))}
               alt={`${providerManifest.name} Icon`}
               onError={() => setManifestIconUnavailable(true)}
             />
@@ -64,13 +58,7 @@ export const ProviderMenu = () => {
                 </div>
               </NavigationMenu.Link>
             </NavigationMenu.Item>
-            <NavigationMenu.Item
-              hidden={
-                // hide if injection does not contain disconnect
-                !window[PenumbraSymbol]?.[providerOrigin]?.disconnect
-              }
-              className={cn(...itemStyle)}
-            >
+            <NavigationMenu.Item className={cn(...itemStyle)}>
               <NavigationMenu.Link className={cn(...linkStyle)} onSelect={disconnect}>
                 <span>
                   <LinkBreak1Icon className={cn('size-[1em]', 'inline-block')} />

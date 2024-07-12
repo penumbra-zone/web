@@ -5,6 +5,14 @@ import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import { AllSlices } from '../../../../../state';
 
+vi.mock('../../prax', async () => {
+  const { createPromiseClient } =
+    await vi.importActual<typeof import('@connectrpc/connect')>('@connectrpc/connect');
+  return {
+    createPraxClient: vi.fn(s => createPromiseClient(s, { unary: vi.fn(), stream: vi.fn() })),
+  };
+});
+
 const nonZeroBalance = new ValueView({
   valueView: {
     case: 'knownAssetId',
