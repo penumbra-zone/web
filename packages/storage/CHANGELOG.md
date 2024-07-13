@@ -1,5 +1,26 @@
 # @penumbra-zone/storage
 
+## 14.0.0
+
+### Major Changes
+
+- 877fb1f: use epochDuration as PRICE_RELEVANCE_THRESHOLD for delegation assets
+
+### Minor Changes
+
+- cbc2419: Storage: bump IDB version. UI: fix Dialog rendering on mobile screens. Minifront: fix metadata symbol truncation.
+- 3b7a289: Utilize v10 remote registry methods
+
+### Patch Changes
+
+- Updated dependencies [83151cb]
+- Updated dependencies [cbc2419]
+- Updated dependencies [877fb1f]
+- Updated dependencies [1011b3b]
+- Updated dependencies [5641af2]
+  - @penumbra-zone/wasm@17.0.0
+  - @penumbra-zone/types@15.1.0
+
 ## 13.0.0
 
 ### Minor Changes

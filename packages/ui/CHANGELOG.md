@@ -1,5 +1,22 @@
 # @penumbra-zone/ui
 
+## 7.0.0
+
+### Major Changes
+
+- 3b7a289: Utilize v10 remote registry methods
+
+### Minor Changes
+
+- 3c91e8b: UI: update CopyToClipboard component. Minifront: add information about ibc-in new address generation
+
+### Patch Changes
+
+- cbc2419: Stop truncating metadata symbols programatically
+- cbc2419: Storage: bump IDB version. UI: fix Dialog rendering on mobile screens. Minifront: fix metadata symbol truncation.
+- Updated dependencies [877fb1f]
+  - @penumbra-zone/types@15.1.0
+
 ## 6.6.0
 
 ### Minor Changes

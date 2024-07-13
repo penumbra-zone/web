@@ -1,5 +1,22 @@
 # @penumbra-zone/query
 
+## 15.0.0
+
+### Minor Changes
+
+- 83151cb: Use the generated metadata for delegation tokens
+
+### Patch Changes
+
+- Updated dependencies [83151cb]
+- Updated dependencies [cbc2419]
+- Updated dependencies [877fb1f]
+- Updated dependencies [1011b3b]
+- Updated dependencies [5641af2]
+  - @penumbra-zone/wasm@17.0.0
+  - @penumbra-zone/types@15.1.0
+  - @penumbra-zone/crypto-web@13.0.0
+
 ## 14.0.0
 
 ### Minor Changes
