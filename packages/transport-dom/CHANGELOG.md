@@ -1,5 +1,11 @@
 # @penumbra-zone/transport-dom
 
+## 7.2.2
+
+### Patch Changes
+
+- e65e36b: use Transport type for createChannelTransport return
+
 ## 7.2.1
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @penumbra-zone/types
 
+## 15.1.0
+
+### Minor Changes
+
+- 877fb1f: use epochDuration as PRICE_RELEVANCE_THRESHOLD for delegation assets
+
 ## 15.0.0
 
 ### Minor Changes

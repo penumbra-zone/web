@@ -1,5 +1,15 @@
 # node-status
 
+## 4.1.7
+
+### Patch Changes
+
+- Updated dependencies [cbc2419]
+- Updated dependencies [3c91e8b]
+- Updated dependencies [cbc2419]
+- Updated dependencies [3b7a289]
+  - @repo/ui@7.0.0
+
 ## 4.1.6
 
 ### Patch Changes
