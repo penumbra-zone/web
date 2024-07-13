@@ -28,8 +28,8 @@ export const Demo: Story = {
   render: function Render() {
     return (
       <Wrapper>
-        <Grid container>
-          <Grid mobile={12}>
+        <Grid container as='main'>
+          <Grid mobile={12} as='section'>
             <Item>
               <Technical>mobile=12</Technical>
             </Item>

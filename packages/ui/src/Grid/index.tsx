@@ -3,12 +3,19 @@ import styled from 'styled-components';
 import { AsTransientProps, asTransientProps } from '../utils/asTransientProps';
 import { media } from '../utils/media';
 
-interface GridContainerProps {
+type GridElement = 'div' | 'main' | 'section';
+
+interface BaseGridProps extends Record<string, unknown> {
+  /** Which element to use. Defaults to `'div'`. */
+  as?: GridElement;
+}
+
+interface GridContainerProps extends BaseGridProps {
   /** Whether this is a grid container, vs. an item. */
   container: true;
 }
 
-interface GridItemProps extends Record<string, unknown> {
+interface GridItemProps extends BaseGridProps {
   /** Whether this is a grid container, vs. an item. */
   container?: false;
   /**
@@ -74,12 +81,18 @@ const Item = styled.div<AsTransientProps<Exclude<GridItemProps, 'container'>>>`
  * A responsive grid component that makes 12-column layouts super easy to build.
  *
  * Pass the `container` prop to the root `<Grid />` component; then, any nested
- * children `<Grid />`s will be treated as grid items.
+ * children `<Grid />`s will be treated as grid items. You can customize which
+ * HTML element to use for each grid container or item by passing the element's
+ * name via the optional `as` prop.
+ *
+ * Use the `<Grid />` component — rather than styling your own HTML elements
+ * with `display: grid` — to ensure consistent behavior (such as grid gutters)
+ * throughout your app.
  *
  * @example
  * ```tsx
- * <Grid container>
- *   <Grid mobile={12}>This will span the full width on all screen sizes.</Grid>
+ * <Grid container as="main">
+ *   <Grid mobile={12} as="section">This will span the full width on all screen sizes.</Grid>
  *
  *   <Grid>So will this.</Grid>
  *
@@ -105,9 +118,11 @@ const Item = styled.div<AsTransientProps<Exclude<GridItemProps, 'container'>>>`
  * </Grid>
  * ```
  */
-export const Grid = ({ container, children, ...props }: GridProps) =>
+export const Grid = ({ container, children, as = 'div', ...props }: GridProps) =>
   container ? (
-    <Container>{children}</Container>
+    <Container as={as}>{children}</Container>
   ) : (
-    <Item {...asTransientProps(props)}>{children}</Item>
+    <Item {...asTransientProps(props)} as={as}>
+      {children}
+    </Item>
   );
