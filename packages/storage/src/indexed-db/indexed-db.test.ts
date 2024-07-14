@@ -4,7 +4,7 @@ import {
   SwapRecord,
   TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterAll, beforeEach, describe, expect, it } from 'vitest';
 import { IndexedDb } from './index.js';
 import {
   delegationMetadataA,
@@ -54,18 +54,53 @@ import {
   DutchAuctionDescription,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb.js';
-import { ChainRegistryClient } from '@penumbra-labs/registry';
+import { ChainRegistryClient, Registry } from '@penumbra-labs/registry';
+import fetchMock from 'fetch-mock';
+import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
+import { JsonValue } from '@bufbuild/protobuf';
+
+const registryClient = new ChainRegistryClient();
+const chainId = 'penumbra-testnet-deimos-8';
+
+const jsonifyRegistry = (r: Registry) => {
+  const assetById = r.getAllAssets().reduce<Record<string, JsonValue>>((acc, m) => {
+    const assetIdStr = uint8ArrayToBase64(m.penumbraAssetId!.inner);
+    acc[assetIdStr] = m.toJson();
+    return acc;
+  }, {});
+
+  const numeraires = r.numeraires.map(n => uint8ArrayToBase64(n.inner));
+
+  return {
+    chainId: r.chainId,
+    ibcConnections: r.ibcConnections,
+    numeraires,
+    assetById,
+  };
+};
+
+// uses different wallet ids so no collisions take place
+const generateInitialProps = () => ({
+  chainId,
+  walletId: new WalletId({
+    inner: Uint8Array.from({ length: 32 }, () => Math.floor(Math.random() * 256)),
+  }),
+  registryClient,
+});
+
+const registryEndpoint = 'https://raw.githubusercontent.com/prax-wallet/registry/main/registry';
 
 describe('IndexedDb', () => {
-  // uses different wallet ids so no collisions take place
-  const registryClient = new ChainRegistryClient();
-  const chainId = 'penumbra-testnet-deimos-6';
-  const generateInitialProps = () => ({
-    chainId,
-    walletId: new WalletId({
-      inner: Uint8Array.from({ length: 32 }, () => Math.floor(Math.random() * 256)),
-    }),
-    registryClient,
+  beforeEach(() => {
+    fetchMock.reset();
+    fetchMock.mock(`${registryEndpoint}/chains/${chainId}.json`, {
+      status: 200,
+      body: jsonifyRegistry(registryClient.bundled.get(chainId)),
+    });
+  });
+
+  afterAll(() => {
+    fetchMock.restore();
   });
 
   describe('initializing', () => {
@@ -78,7 +113,7 @@ describe('IndexedDb', () => {
       const testnetDb = await IndexedDb.initialize(generateInitialProps());
       const mainnetDb = await IndexedDb.initialize({
         ...generateInitialProps(),
-        chainId: 'penumbra-testnet-deimos-7',
+        chainId,
       });
 
       await testnetDb.saveAssetsMetadata(metadataA);
@@ -151,7 +186,7 @@ describe('IndexedDb', () => {
       for await (const asset of db.iterateAssetsMetadata()) {
         assets.push(asset);
       }
-      const registryLength = registryClient.get(chainId).getAllAssets().length;
+      const registryLength = registryClient.bundled.get(chainId).getAllAssets().length;
       expect(assets.length).toBe(registryLength + 1);
 
       await db.saveTransaction(transactionId, 1000n, transaction);
@@ -301,7 +336,8 @@ describe('IndexedDb', () => {
         savedAssets.push(asset);
       }
 
-      const registryLength = registryClient.get(chainId).getAllAssets().length;
+      const registry = await registryClient.remote.get(chainId);
+      const registryLength = registry.getAllAssets().length;
       expect(savedAssets.length === registryLength).toBeTruthy();
     });
 
@@ -325,8 +361,8 @@ describe('IndexedDb', () => {
       for await (const asset of db.iterateAssetsMetadata()) {
         savedAssets.push(asset);
       }
-      const registryLength = registryClient.get(chainId).getAllAssets().length;
-      expect(savedAssets.length === registryLength + 3).toBeTruthy();
+      const registryLength = registryClient.bundled.get(chainId).getAllAssets().length;
+      expect(savedAssets.length).toBe(registryLength + 3);
     });
   });
 

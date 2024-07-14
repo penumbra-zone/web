@@ -1,5 +1,30 @@
 # minifront
 
+## 6.11.0
+
+### Minor Changes
+
+- 3b7a289: Utilize v10 remote registry methods
+
+### Patch Changes
+
+- 4914063: Minifront: add reverse swap assets button
+- 3c91e8b: UI: update CopyToClipboard component. Minifront: add information about ibc-in new address generation
+- e7ebfb1: Fix tablet header menu styles
+- cbc2419: Storage: bump IDB version. UI: fix Dialog rendering on mobile screens. Minifront: fix metadata symbol truncation.
+- Updated dependencies [cbc2419]
+- Updated dependencies [3c91e8b]
+- Updated dependencies [877fb1f]
+- Updated dependencies [cbc2419]
+- Updated dependencies [e65e36b]
+- Updated dependencies [3b7a289]
+  - @repo/ui@7.0.0
+  - @penumbra-zone/types@15.1.0
+  - @penumbra-zone/transport-dom@7.2.2
+  - @penumbra-zone/perspective@14.0.0
+  - @penumbra-zone/crypto-web@13.0.0
+  - @penumbra-zone/client@11.0.1
+
 ## 6.10.0
 
 ### Minor Changes

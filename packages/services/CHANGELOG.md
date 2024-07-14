@@ -1,5 +1,29 @@
 # @penumbra-zone/router
 
+## 17.0.0
+
+### Minor Changes
+
+- 877fb1f: use epochDuration as PRICE_RELEVANCE_THRESHOLD for delegation assets
+
+### Patch Changes
+
+- Updated dependencies [83151cb]
+- Updated dependencies [cbc2419]
+- Updated dependencies [877fb1f]
+- Updated dependencies [1011b3b]
+- Updated dependencies [cbc2419]
+- Updated dependencies [e65e36b]
+- Updated dependencies [3b7a289]
+- Updated dependencies [5641af2]
+  - @penumbra-zone/query@15.0.0
+  - @penumbra-zone/wasm@17.0.0
+  - @penumbra-zone/storage@14.0.0
+  - @penumbra-zone/types@15.1.0
+  - @penumbra-zone/transport-dom@7.2.2
+  - @penumbra-zone/perspective@14.0.0
+  - @penumbra-zone/crypto-web@13.0.0
+
 ## 16.0.0
 
 ### Minor Changes

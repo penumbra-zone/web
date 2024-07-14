@@ -1,5 +1,19 @@
 # @penumbra-zone/wasm
 
+## 17.0.0
+
+### Minor Changes
+
+- 83151cb: Use the generated metadata for delegation tokens
+- 1011b3b: Add delegator voting support
+- 5641af2: Internally use dependency injection for storage for easier testing
+
+### Patch Changes
+
+- cbc2419: Stop truncating metadata symbols programatically
+- Updated dependencies [877fb1f]
+  - @penumbra-zone/types@15.1.0
+
 ## 16.0.0
 
 ### Minor Changes

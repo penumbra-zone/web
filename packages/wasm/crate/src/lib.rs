@@ -14,6 +14,7 @@ pub mod keys;
 pub mod metadata;
 pub mod note_record;
 pub mod planner;
+pub mod stake;
 pub mod storage;
 pub mod swap_record;
 pub mod tree;

@@ -1,5 +1,12 @@
 # @penumbra-zone/client
 
+## 11.0.1
+
+### Patch Changes
+
+- Updated dependencies [e65e36b]
+  - @penumbra-zone/transport-dom@7.2.2
+
 ## 11.0.0
 
 ### Minor Changes
