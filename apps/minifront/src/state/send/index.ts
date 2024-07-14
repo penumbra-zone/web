@@ -24,7 +24,7 @@ import { isAddress } from '@penumbra-zone/bech32m/penumbra';
 import { transferableBalancesResponsesSelector } from './helpers';
 import { PartialMessage } from '@bufbuild/protobuf';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { getAssetTokenMetadata, getStakingTokenMetadata } from '../../fetchers/registry';
+import { getAssetTokenMetadata } from '../../fetchers/registry';
 
 export interface SendSlice {
   selection: BalancesResponse | undefined;
@@ -96,11 +96,11 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
       const txPlan = await plan(assembleRequest(get().send));
       const fee = txPlan.transactionParameters?.fee;
 
-      const feeAssetMetadata = fee?.assetId
-        ? await getAssetTokenMetadata(fee.assetId)
-        : await getStakingTokenMetadata();
+      const feeAssetMetadata = fee?.assetId ? await getAssetTokenMetadata(fee.assetId) : undefined;
 
-      if (!fee?.amount) return;
+      if (!fee?.amount) {
+        return;
+      }
 
       set(state => {
         state.send.fee = fee;
