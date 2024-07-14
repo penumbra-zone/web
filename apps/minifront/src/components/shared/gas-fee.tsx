@@ -46,7 +46,6 @@ export const GasFee = ({
       case: 'knownAssetId',
       value: {
         amount: fee?.amount ?? { hi: 0n, lo: 0n },
-        // TODO: once https://github.com/penumbra-zone/web/pull/1468 is merged, change this to metadata: assetFeeMedata
         metadata: feeMetadata,
       },
     },
