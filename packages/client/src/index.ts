@@ -5,20 +5,20 @@ import { PenumbraSymbol } from './symbol.js';
 
 declare global {
   interface Window {
-    /** Records injected upon this global should identify themselves by a field
-     * name matching the origin of the provider. */
+    /** Records injected upon this global should be identified by a name matching
+     * the origin segment of their manifest href `PenumbraProvider['manifest']`. */
     readonly [PenumbraSymbol]?: undefined | Readonly<Record<string, PenumbraProvider>>;
   }
 }
 
-/** Synchronously return the specified provider, without verifying anything. */
+/** Return the specified provider, without verifying anything. */
 export const getPenumbraUnsafe = (penumbraOrigin: string) =>
   window[PenumbraSymbol]?.[penumbraOrigin];
 
 /** Return the specified provider after confirming presence of its manifest. */
 export const getPenumbra = (penumbraOrigin: string) => assertProvider(penumbraOrigin);
 
-/** Return the specified provider's manifest. */
+/** Fetch the specified provider's manifest. */
 export const getPenumbraManifest = async (
   penumbraOrigin: string,
   signal?: AbortSignal,
@@ -30,14 +30,12 @@ export const getPenumbraManifest = async (
   return manifestJson;
 };
 
-export const getAllPenumbraManifests = (): Record<
-  keyof (typeof window)[typeof PenumbraSymbol],
-  Promise<PenumbraManifest>
-> =>
+/** Fetch all manifests for all providers available on the page. */
+export const getAllPenumbraManifests = (signal?: AbortSignal) =>
   Object.fromEntries(
     Object.keys(assertGlobalPresent()).map(providerOrigin => [
       providerOrigin,
-      getPenumbraManifest(providerOrigin),
+      getPenumbraManifest(providerOrigin, signal),
     ]),
   );
 

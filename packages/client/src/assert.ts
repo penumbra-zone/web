@@ -51,6 +51,9 @@ export const assertProviderConnected = (providerOrigin?: string) => {
  * Given a specific origin, identify the relevant injection, and confirm its
  * manifest is actually present or throw.  An `undefined` origin is accepted but
  * will throw.
+ *
+ * The manifest will be fetched and returned as parsed json. The `signal`
+ * parameter may be used to abort the fetch.
  */
 export const assertProviderManifest = async (providerOrigin?: string, signal?: AbortSignal) => {
   // confirm the provider injection is present

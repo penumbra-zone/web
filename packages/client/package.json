@@ -37,7 +37,8 @@
   "devDependencies": {
     "@connectrpc/connect": "^1.4.0",
     "@penumbra-zone/protobuf": "workspace:*",
-    "@penumbra-zone/transport-dom": "workspace:*"
+    "@penumbra-zone/transport-dom": "workspace:*",
+    "@types/chrome": "^0.0.268"
   },
   "peerDependencies": {
     "@connectrpc/connect": "^1.4.0",
