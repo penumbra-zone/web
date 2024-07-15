@@ -95,32 +95,22 @@ const PALETTE = {
 };
 
 export const theme: DefaultTheme = {
+  borderRadius: {
+    none: '0px',
+    xs: '4px',
+    sm: '8px',
+    md: '12px',
+    lg: '16px',
+    xl: '20px',
+    '2xl': '24px',
+    full: '9999px',
+  },
   breakpoints: {
     mobile: 0,
     tablet: 600,
     desktop: 900,
     lg: 1200,
     xl: 1600,
-  },
-  fonts: {
-    default: 'Poppins',
-    mono: 'Iosevka Term, monospace',
-    heading: 'Work Sans',
-  },
-  fontSizes: {
-    text9xl: '8rem',
-    text8xl: '6rem',
-    text7xl: '4.5rem',
-    text6xl: '3.75rem',
-    text5xl: '3rem',
-    text4xl: '2.25rem',
-    text3xl: '1.875rem',
-    text2xl: '1.5rem',
-    textXl: '1.25rem',
-    textLg: '1.125rem',
-    textBase: '1rem',
-    textSm: '0.875rem',
-    textXs: '0.75rem',
   },
   colors: {
     neutral: {
@@ -172,5 +162,29 @@ export const theme: DefaultTheme = {
       special: PALETTE.orange['400'],
     },
   },
+  fonts: {
+    default: 'Poppins',
+    mono: 'Iosevka Term, monospace',
+    heading: 'Work Sans',
+  },
+  fontSizes: {
+    text9xl: '8rem',
+    text8xl: '6rem',
+    text7xl: '4.5rem',
+    text6xl: '3.75rem',
+    text5xl: '3rem',
+    text4xl: '2.25rem',
+    text3xl: '1.875rem',
+    text2xl: '1.5rem',
+    textXl: '1.25rem',
+    textLg: '1.125rem',
+    textBase: '1rem',
+    textSm: '0.875rem',
+    textXs: '0.75rem',
+  },
   spacing: spacingUnits => `${spacingUnits * 4}px`,
 };
+
+export type Color = keyof DefaultTheme['colors'];
+export type ColorVariants = keyof DefaultTheme['colors']['neutral'];
+export type TextColorVariants = keyof DefaultTheme['colors']['text'];

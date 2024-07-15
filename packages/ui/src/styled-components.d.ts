@@ -9,6 +9,34 @@ interface ColorVariants {
 
 declare module 'styled-components' {
   export interface DefaultTheme {
+    borderRadius: {
+      none: string;
+      xs: string;
+      sm: string;
+      md: string;
+      lg: string;
+      xl: string;
+      '2xl': string;
+      full: string;
+    };
+    colors: {
+      neutral: ColorVariants;
+      primary: ColorVariants;
+      secondary: ColorVariants;
+      unshield: ColorVariants;
+      destructive: ColorVariants;
+      caution: ColorVariants;
+      success: ColorVariants;
+
+      // Special cases
+
+      text: {
+        primary: string;
+        secondary: string;
+        disabled: string;
+        special: string;
+      };
+    };
     breakpoints: {
       mobile: number;
       tablet: number;
@@ -35,24 +63,6 @@ declare module 'styled-components' {
       textBase: string;
       textSm: string;
       textXs: string;
-    };
-    colors: {
-      neutral: ColorVariants;
-      primary: ColorVariants;
-      secondary: ColorVariants;
-      unshield: ColorVariants;
-      destructive: ColorVariants;
-      caution: ColorVariants;
-      success: ColorVariants;
-
-      // Special cases
-
-      text: {
-        primary: string;
-        secondary: string;
-        disabled: string;
-        special: string;
-      };
     };
     /**
      * A function that takes a number of spacing units, and returns a string to
