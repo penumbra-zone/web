@@ -1,5 +1,12 @@
 # minifront
 
+## 6.11.1
+
+### Patch Changes
+
+- Updated dependencies [72d83ea]
+  - @penumbra-zone/client@11.1.0
+
 ## 6.11.0
 
 ### Minor Changes

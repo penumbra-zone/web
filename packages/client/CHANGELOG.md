@@ -1,5 +1,11 @@
 # @penumbra-zone/client
 
+## 11.1.0
+
+### Minor Changes
+
+- 72d83ea: provide type guards for event, and better types for event interface
+
 ## 11.0.1
 
 ### Patch Changes
