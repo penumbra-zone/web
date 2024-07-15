@@ -2,6 +2,11 @@ import React from 'react';
 import globalsCssUrl from '../styles/globals.css?url';
 import penumbraTheme from './penumbraTheme';
 import { ThemeProvider } from '../src/ThemeProvider';
+import styled from 'styled-components';
+
+const Wrapper = styled.div`
+  color: ${props => props.theme.colors.text.primary};
+`;
 
 /** @type { import('@storybook/react').Preview } */
 const preview = {
@@ -20,7 +25,9 @@ const preview = {
 
       return (
         <ThemeProvider>
-          <Story />
+          <Wrapper>
+            <Story />
+          </Wrapper>
         </ThemeProvider>
       );
     },

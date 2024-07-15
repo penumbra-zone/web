@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
 import { Body, Detail, H1, H2, H3, H4, Large, P, Small, Strong, Technical } from '.';
-import styled from 'styled-components';
 
 const meta: Meta<typeof Body> = {
   title: 'Typography',
@@ -9,12 +8,10 @@ const meta: Meta<typeof Body> = {
 };
 export default meta;
 
-const Wrapper = styled.div({ color: 'white' });
-
 export const KitchenSink: StoryObj = {
   render: function Render() {
     return (
-      <Wrapper>
+      <>
         <H1>H1: This is a heading</H1>
         <H2>H2: This is a heading</H2>
         <H3>H3: This is a heading</H3>
@@ -29,7 +26,7 @@ export const KitchenSink: StoryObj = {
         <Technical as='p'>
           Technical: This is monospaced text used for code, values, and other technical information
         </Technical>
-      </Wrapper>
+      </>
     );
   },
 };
@@ -37,7 +34,7 @@ export const KitchenSink: StoryObj = {
 export const UsageExample: StoryObj<typeof Body> = {
   render: function Render() {
     return (
-      <Wrapper>
+      <>
         <H1>h1. Typography</H1>
         <H2>h2. This is a section</H2>
         <P>
@@ -78,7 +75,7 @@ export const UsageExample: StoryObj<typeof Body> = {
           academy award day-for-night christopher nolan undercranking. Unreal engine visionary match
           cut grain vs. noise 35mm anti-hero production design.
         </P>
-      </Wrapper>
+      </>
     );
   },
 };
