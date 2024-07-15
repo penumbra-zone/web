@@ -7,46 +7,46 @@ use decaf377::{Fq, Fr};
 use indexed_db_futures::IdbDatabase;
 use penumbra_asset::asset::{Id, Metadata};
 use penumbra_asset::Value;
-use penumbra_auction::auction::dutch::actions::ActionDutchAuctionWithdrawPlan;
+use penumbra_auction::auction::{AuctionId, AuctionNft};
 use penumbra_auction::auction::dutch::{
     ActionDutchAuctionEnd, ActionDutchAuctionSchedule, DutchAuctionDescription,
 };
-use penumbra_auction::auction::{AuctionId, AuctionNft};
-use penumbra_dex::swap_claim::SwapClaimPlan;
+use penumbra_auction::auction::dutch::actions::ActionDutchAuctionWithdrawPlan;
 use penumbra_dex::{
     swap::{SwapPlaintext, SwapPlan},
     TradingPair,
 };
+use penumbra_dex::swap_claim::SwapClaimPlan;
 use penumbra_fee::FeeTier;
 use penumbra_governance::DelegatorVotePlan;
-use penumbra_keys::keys::AddressIndex;
 use penumbra_keys::FullViewingKey;
+use penumbra_keys::keys::AddressIndex;
 use penumbra_num::Amount;
 use penumbra_proto::core::app::v1::AppParameters;
 use penumbra_proto::core::component::ibc;
-use penumbra_proto::view::v1::{
-    transaction_planner_request as tpr, NotesRequest, TransactionPlannerRequest,
-};
 use penumbra_proto::DomainType;
+use penumbra_proto::view::v1::{
+    NotesRequest, transaction_planner_request as tpr, TransactionPlannerRequest,
+};
 use penumbra_sct::params::SctParameters;
 use penumbra_shielded_pool::{fmd, OutputPlan, SpendPlan};
-use penumbra_stake::rate::RateData;
 use penumbra_stake::{IdentityKey, Penalty, Undelegate, UndelegateClaimPlan};
+use penumbra_stake::rate::RateData;
+use penumbra_transaction::{ActionPlan, plan::MemoPlan, TransactionParameters};
+use penumbra_transaction::{ActionList, TransactionPlan};
 use penumbra_transaction::gas::swap_claim_gas_cost;
 use penumbra_transaction::memo::MemoPlaintext;
-use penumbra_transaction::ActionList;
-use penumbra_transaction::{plan::MemoPlan, ActionPlan, TransactionParameters};
 use prost::Message;
 use rand_core::{OsRng, RngCore};
-use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::JsValue;
+use wasm_bindgen::prelude::wasm_bindgen;
 
+use crate::{error::WasmResult, swap_record::SwapRecord};
 use crate::error::WasmError;
 use crate::metadata::customize_symbol_inner;
 use crate::note_record::SpendableNoteRecord;
-use crate::storage::{init_idb_storage, OutstandingReserves, Storage};
+use crate::storage::{DbConstants, init_idb_storage, OutstandingReserves, Storage};
 use crate::utils;
-use crate::{error::WasmResult, swap_record::SwapRecord};
 
 /// Prioritize notes to spend to release value of a specific transaction.
 ///
@@ -148,8 +148,22 @@ pub async fn plan_transaction(
 ) -> WasmResult<JsValue> {
     utils::set_panic_hook();
 
-    let request = TransactionPlannerRequest::decode(request)?;
+    let tx_planner_req = TransactionPlannerRequest::decode(request)?;
+    let fvk: FullViewingKey = FullViewingKey::decode(full_viewing_key)?;
+    let constants: DbConstants = serde_wasm_bindgen::from_value(idb_constants)?;
+    let fee_asset_id = Id::decode(gas_fee_token)?;
 
+    let plan = plan_transaction_inner(constants, tx_planner_req, fvk, fee_asset_id).await?;
+
+    Ok(serde_wasm_bindgen::to_value(&plan)?)
+}
+
+pub async fn plan_transaction_inner(
+    constants: DbConstants,
+    request: TransactionPlannerRequest,
+    fvk: FullViewingKey,
+    fee_asset_id: Id,
+) -> WasmResult<TransactionPlan> {
     let expiry_height: u64 = request.expiry_height;
 
     let mut source_address_index: AddressIndex = request
@@ -164,14 +178,11 @@ pub async fn plan_transaction(
     // 2. Using one-time addresses for change addresses is undesirable.
     source_address_index.randomizer = [0u8; 12];
 
-    let fvk: FullViewingKey = FullViewingKey::decode(full_viewing_key)?;
-
     // Compute the change address for this transaction.
     let (mut change_address, _) = fvk
         .incoming()
         .payment_address(source_address_index.account.into());
 
-    let constants = serde_wasm_bindgen::from_value(idb_constants)?;
     let storage = init_idb_storage(constants).await?;
 
     let fmd_params: fmd::Parameters = storage
@@ -190,9 +201,6 @@ pub async fn plan_transaction(
         .try_into()?;
 
     let chain_id: String = app_parameters.chain_id;
-
-    // Decode the gas fee token into an `Id` type
-    let fee_asset_id: Id = Id::decode(gas_fee_token)?;
 
     // Request information about current gas prices
     let gas_prices = storage
@@ -634,5 +642,5 @@ pub async fn plan_transaction(
     let plan =
         mem::take(&mut actions_list).into_plan(OsRng, &fmd_params, transaction_parameters, memo)?;
 
-    Ok(serde_wasm_bindgen::to_value(&plan)?)
+    Ok(plan)
 }
