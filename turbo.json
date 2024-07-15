@@ -27,8 +27,12 @@
     "format:rust": { "cache": false },
     "host": { "cache": false, "dependsOn": ["build"], "persistent": true },
     "lint": {
-      "dependsOn": ["//#lint:syncpack", "//#lint:prettier", "compile"],
+      "dependsOn": ["//#lint:syncpack", "//#lint:pretty-quick", "compile"],
       "inputs": ["components", "lib", "src", "wasm", "package.json"]
+    },
+    "lint:strict": {
+      "dependsOn": ["//#lint:syncpack", "//#lint:prettier", "compile"],
+      "cache": false
     },
     "lint:fix": { "cache": false },
     "lint:rust": {

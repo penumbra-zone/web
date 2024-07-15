@@ -6,7 +6,7 @@
   "packageManager": "pnpm@9.4.0+sha512.f549b8a52c9d2b8536762f99c0722205efc5af913e77835dbccc3b0b0b2ca9e7dc8022b78062c17291c48e88749c70ce88eb5a74f1fa8c4bf5e18bb46c8bd83a",
   "type": "module",
   "scripts": {
-    "all-check": "pnpm clean:vitest-mjs && pnpm install && pnpm compile && pnpm lint && pnpm lint:rust && pnpm build && pnpm test && pnpm test:rust",
+    "all-check": "pnpm clean:vitest-mjs && pnpm install && pnpm compile && pnpm lint:strict && pnpm lint:rust && pnpm build && pnpm test && pnpm test:rust",
     "all-check:clean": "pnpm clean && pnpm clean:modules && pnpm all-check",
     "buf-update": "pnpm update --latest \"@buf/*\" \"@bufbuild/*\" \"@connectrpc/*\" && pnpm syncpack fix-mismatches && pnpm install",
     "build": "turbo build",
@@ -27,6 +27,7 @@
     "lint:prettier": "prettier --check .",
     "lint:pretty-quick": "pretty-quick --check",
     "lint:rust": "turbo lint:rust",
+    "lint:strict": "turbo lint:strict",
     "lint:syncpack": "syncpack lint",
     "postinstall": "syncpack list-mismatches",
     "pretest": "playwright install",

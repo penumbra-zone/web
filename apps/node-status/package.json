@@ -8,8 +8,9 @@
     "build": "vite build",
     "clean": "rm -rfv dist *.tsbuildinfo",
     "dev:app": "vite --port 5174",
-    "lint": "tsc --noEmit && eslint src",
+    "lint": "eslint src",
     "lint:fix": "eslint src --fix",
+    "lint:strict": "tsc --noEmit && eslint src --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
