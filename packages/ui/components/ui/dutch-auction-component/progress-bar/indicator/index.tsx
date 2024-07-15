@@ -21,8 +21,10 @@ export const Indicator = ({
   const stateIcon = useMemo(() => {
     const auctionEnded =
       (!!seqNum && seqNum > 0n) || (!!fullSyncHeight && fullSyncHeight >= description.endHeight);
-    const isFilled = !!dutchAuction.state?.inputReserves && isZero(dutchAuction.state.inputReserves);
-    const isUnfilled = !!dutchAuction.state?.inputReserves && !isZero(dutchAuction.state.inputReserves);
+    const isFilled =
+      !!dutchAuction.state?.inputReserves && isZero(dutchAuction.state.inputReserves);
+    const isUnfilled =
+      !!dutchAuction.state?.inputReserves && !isZero(dutchAuction.state.inputReserves);
 
     if (auctionEnded && isUnfilled) {
       return <CircleX size={16} className='text-red' />;
