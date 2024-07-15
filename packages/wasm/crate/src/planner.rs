@@ -6,47 +6,47 @@ use ark_ff::UniformRand;
 use decaf377::{Fq, Fr};
 use penumbra_asset::asset::{Id, Metadata};
 use penumbra_asset::Value;
-use penumbra_auction::auction::{AuctionId, AuctionNft};
+use penumbra_auction::auction::dutch::actions::ActionDutchAuctionWithdrawPlan;
 use penumbra_auction::auction::dutch::{
     ActionDutchAuctionEnd, ActionDutchAuctionSchedule, DutchAuctionDescription,
 };
-use penumbra_auction::auction::dutch::actions::ActionDutchAuctionWithdrawPlan;
+use penumbra_auction::auction::{AuctionId, AuctionNft};
+use penumbra_dex::swap_claim::SwapClaimPlan;
 use penumbra_dex::{
     swap::{SwapPlaintext, SwapPlan},
     TradingPair,
 };
-use penumbra_dex::swap_claim::SwapClaimPlan;
 use penumbra_fee::FeeTier;
 use penumbra_governance::DelegatorVotePlan;
-use penumbra_keys::FullViewingKey;
 use penumbra_keys::keys::AddressIndex;
+use penumbra_keys::FullViewingKey;
 use penumbra_num::Amount;
 use penumbra_proto::core::app::v1::AppParameters;
 use penumbra_proto::core::component::ibc;
-use penumbra_proto::DomainType;
 use penumbra_proto::view::v1::{
-    NotesRequest, transaction_planner_request as tpr, TransactionPlannerRequest,
+    transaction_planner_request as tpr, NotesRequest, TransactionPlannerRequest,
 };
+use penumbra_proto::DomainType;
 use penumbra_sct::params::SctParameters;
 use penumbra_shielded_pool::{fmd, OutputPlan, SpendPlan};
-use penumbra_stake::{IdentityKey, Penalty, Undelegate, UndelegateClaimPlan};
 use penumbra_stake::rate::RateData;
-use penumbra_transaction::{ActionPlan, plan::MemoPlan, TransactionParameters};
-use penumbra_transaction::{ActionList, TransactionPlan};
+use penumbra_stake::{IdentityKey, Penalty, Undelegate, UndelegateClaimPlan};
 use penumbra_transaction::gas::swap_claim_gas_cost;
 use penumbra_transaction::memo::MemoPlaintext;
+use penumbra_transaction::{plan::MemoPlan, ActionPlan, TransactionParameters};
+use penumbra_transaction::{ActionList, TransactionPlan};
 use prost::Message;
 use rand_core::{OsRng, RngCore};
-use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
+use wasm_bindgen::JsValue;
 
-use crate::{error::WasmResult, swap_record::SwapRecord};
 use crate::database::interface::Database;
 use crate::error::WasmError;
 use crate::metadata::customize_symbol_inner;
 use crate::note_record::SpendableNoteRecord;
-use crate::storage::{DbConstants, init_idb_storage, OutstandingReserves, Storage};
+use crate::storage::{init_idb_storage, DbConstants, OutstandingReserves, Storage};
 use crate::utils;
+use crate::{error::WasmResult, swap_record::SwapRecord};
 
 /// Prioritize notes to spend to release value of a specific transaction.
 ///

@@ -9,13 +9,13 @@ use penumbra_auction::auction::AuctionId;
 use penumbra_fee::GasPrices;
 use penumbra_keys::keys::AddressIndex;
 use penumbra_num::Amount;
+use penumbra_proto::core::keys;
 use penumbra_proto::{
     core::{app::v1::AppParameters, asset::v1::Value, component::sct::v1::Epoch},
     crypto::tct::v1::StateCommitment,
-    DomainType,
     view::v1::{NotesRequest, SwapRecord, TransactionInfo},
+    DomainType,
 };
-use penumbra_proto::core::keys;
 use penumbra_sct::Nullifier;
 use penumbra_shielded_pool::{fmd, note, Note};
 use penumbra_stake::{DelegationToken, IdentityKey};

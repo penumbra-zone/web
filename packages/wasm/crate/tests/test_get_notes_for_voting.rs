@@ -1,5 +1,5 @@
-use penumbra_asset::{asset, Value};
 use penumbra_asset::asset::Metadata;
+use penumbra_asset::{asset, Value};
 use penumbra_keys::Address;
 use penumbra_proto::core::asset::v1 as pb;
 use penumbra_sct::{CommitmentSource, Nullifier};
