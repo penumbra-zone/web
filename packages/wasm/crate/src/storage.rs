@@ -54,17 +54,17 @@ pub async fn init_idb_storage(constants: DbConstants) -> WasmResult<Storage<IdbD
     Storage::new(db, constants.tables)
 }
 
-pub struct Storage<T: Database> {
-    db: T,
+pub struct Storage<Db: Database> {
+    db: Db,
     tables: Tables,
 }
 
-impl<T: Database> Storage<T> {
-    pub fn new(db: T, tables: Tables) -> WasmResult<Self> {
+impl<Db: Database> Storage<Db> {
+    pub fn new(db: Db, tables: Tables) -> WasmResult<Self> {
         Ok(Storage { db, tables })
     }
 
-    pub fn get_database(&self) -> *const T {
+    pub fn get_database(&self) -> *const Db {
         &self.db
     }
 

@@ -4,7 +4,6 @@ use std::mem;
 use anyhow::anyhow;
 use ark_ff::UniformRand;
 use decaf377::{Fq, Fr};
-use indexed_db_futures::IdbDatabase;
 use penumbra_asset::asset::{Id, Metadata};
 use penumbra_asset::Value;
 use penumbra_auction::auction::{AuctionId, AuctionNft};
@@ -42,6 +41,7 @@ use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 use crate::{error::WasmResult, swap_record::SwapRecord};
+use crate::database::interface::Database;
 use crate::error::WasmError;
 use crate::metadata::customize_symbol_inner;
 use crate::note_record::SpendableNoteRecord;
@@ -97,9 +97,9 @@ fn prioritize_and_filter_spendable_notes(
 /// token metadata for a given validator and a given height doesn't exist yet,
 /// we'll generate it here and save it to the database, so that the undelegate
 /// action renders correctly in the transaction approval dialog.
-async fn save_unbonding_token_metadata_if_needed(
+async fn save_unbonding_token_metadata_if_needed<Db: Database>(
     undelegate: &Undelegate,
-    storage: &Storage<IdbDatabase>,
+    storage: &Storage<Db>,
 ) -> WasmResult<()> {
     let metadata = undelegate.unbonding_token().denom();
 
@@ -113,9 +113,9 @@ async fn save_unbonding_token_metadata_if_needed(
 /// dervived from the auction description parameters, which include a nonce). So
 /// we'll generate the metadata here and save it to the database, so that the
 /// action renders correctly in the transaction approval dialog.
-async fn save_auction_nft_metadata_if_needed(
+async fn save_auction_nft_metadata_if_needed<Db: Database>(
     id: AuctionId,
-    storage: &Storage<IdbDatabase>,
+    storage: &Storage<Db>,
     seq: u64,
 ) -> WasmResult<()> {
     let nft = AuctionNft::new(id, seq);
@@ -124,9 +124,9 @@ async fn save_auction_nft_metadata_if_needed(
     save_metadata_if_needed(metadata, storage).await
 }
 
-async fn save_metadata_if_needed(
+async fn save_metadata_if_needed<Db: Database>(
     metadata: Metadata,
-    storage: &Storage<IdbDatabase>,
+    storage: &Storage<Db>,
 ) -> WasmResult<()> {
     if storage.get_asset(&metadata.id()).await?.is_none() {
         let metadata_proto = metadata.to_proto();
@@ -150,16 +150,17 @@ pub async fn plan_transaction(
 
     let tx_planner_req = TransactionPlannerRequest::decode(request)?;
     let fvk: FullViewingKey = FullViewingKey::decode(full_viewing_key)?;
-    let constants: DbConstants = serde_wasm_bindgen::from_value(idb_constants)?;
     let fee_asset_id = Id::decode(gas_fee_token)?;
+    let constants: DbConstants = serde_wasm_bindgen::from_value(idb_constants)?;
+    let storage = init_idb_storage(constants).await?;
 
-    let plan = plan_transaction_inner(constants, tx_planner_req, fvk, fee_asset_id).await?;
+    let plan = plan_transaction_inner(storage, tx_planner_req, fvk, fee_asset_id).await?;
 
     Ok(serde_wasm_bindgen::to_value(&plan)?)
 }
 
-pub async fn plan_transaction_inner(
-    constants: DbConstants,
+pub async fn plan_transaction_inner<Db: Database>(
+    storage: Storage<Db>,
     request: TransactionPlannerRequest,
     fvk: FullViewingKey,
     fee_asset_id: Id,
@@ -182,8 +183,6 @@ pub async fn plan_transaction_inner(
     let (mut change_address, _) = fvk
         .incoming()
         .payment_address(source_address_index.account.into());
-
-    let storage = init_idb_storage(constants).await?;
 
     let fmd_params: fmd::Parameters = storage
         .get_fmd_params()

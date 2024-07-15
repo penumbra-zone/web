@@ -16,7 +16,7 @@ mod utils;
 wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
 
 #[wasm_bindgen_test]
-async fn test_planner_delegator_has_none() {
+async fn test_planner_without_actions() {
     let mock_db = MockDb::new();
     let tables = get_mock_tables();
 
@@ -26,7 +26,7 @@ async fn test_planner_delegator_has_none() {
 
     #[allow(deprecated)]
     let req = TransactionPlannerRequest {
-        expiry_height: 0,
+        expiry_height: 100,
         memo: None,
         source: None,
         outputs: vec![],
@@ -59,5 +59,8 @@ async fn test_planner_delegator_has_none() {
     let res = plan_transaction_inner(storage, req, full_viewing_key, fee_id)
         .await
         .unwrap();
+    assert_eq!(res.transaction_parameters.chain_id, "penumbra-deimos-8");
+    assert_eq!(res.transaction_parameters.expiry_height, 100);
     assert_eq!(res.actions.len(), 0);
+    assert!(res.memo.is_none());
 }
