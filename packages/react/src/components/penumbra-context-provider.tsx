@@ -1,14 +1,14 @@
 import { getPenumbraManifest, PenumbraProvider, PenumbraState } from '@penumbra-zone/client';
+import { assertProviderRecord } from '@penumbra-zone/client/assert';
 import { isPenumbraStateEvent } from '@penumbra-zone/client/event';
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
-import { PenumbraContext, penumbraContext } from '../penumbra-context.js';
 import { PenumbraManifest } from '@penumbra-zone/client/manifest';
+import { jsonOptions } from '@penumbra-zone/protobuf';
 import {
   ChannelTransportOptions,
   createChannelTransport,
 } from '@penumbra-zone/transport-dom/create';
-import { jsonOptions } from '@penumbra-zone/protobuf';
-import { assertProviderRecord } from '@penumbra-zone/client/assert';
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { PenumbraContext, penumbraContext } from '../penumbra-context.js';
 
 type PenumbraContextProviderProps = {
   children?: ReactNode;
@@ -66,7 +66,7 @@ export const PenumbraContextProvider = ({
       .catch(setFailure);
 
     return () => ac.abort();
-  }, [providerOrigin, penumbra, providerManifest, setProviderManifest]);
+  }, [failure, penumbra, providerManifest, providerOrigin, setFailure, setProviderManifest]);
 
   // attach state event listener
   useEffect(() => {
@@ -94,7 +94,7 @@ export const PenumbraContextProvider = ({
       { signal: ac.signal },
     );
     return () => ac.abort();
-  }, [penumbra, penumbra.addEventListener, providerManifest, failure]);
+  }, [failure, penumbra, penumbra.addEventListener, providerManifest, providerOrigin, setFailure]);
 
   // request effect
   useEffect(() => {
@@ -110,7 +110,15 @@ export const PenumbraContextProvider = ({
           break;
       }
     }
-  }, [makeApprovalRequest, providerState, penumbra.request, providerManifest, failure]);
+  }, [
+    failure,
+    makeApprovalRequest,
+    penumbra,
+    penumbra.request,
+    providerManifest,
+    providerState,
+    setFailure,
+  ]);
 
   // connect effect
   useEffect(() => {
@@ -135,7 +143,15 @@ export const PenumbraContextProvider = ({
           break;
       }
     }
-  }, [makeApprovalRequest, providerState, penumbra.connect, providerManifest, failure]);
+  }, [
+    failure,
+    makeApprovalRequest,
+    penumbra,
+    penumbra.connect,
+    providerManifest,
+    providerState,
+    setFailure,
+  ]);
 
   const createdContext: PenumbraContext = useMemo(
     () => ({
@@ -170,9 +186,12 @@ export const PenumbraContextProvider = ({
     }),
     [
       failure,
-      penumbra.connect,
+      penumbra.addEventListener,
       penumbra.connect,
       penumbra.disconnect,
+      penumbra.removeEventListener,
+      penumbra.request,
+      providerConnected,
       providerManifest,
       providerOrigin,
       providerPort,

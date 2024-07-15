@@ -12,11 +12,11 @@ declare global {
 }
 
 /** Synchronously return the specified provider, without verifying anything. */
-export const getPenumbraProviderUnsafe = (penumbraOrigin: string) =>
+export const getPenumbraUnsafe = (penumbraOrigin: string) =>
   window[PenumbraSymbol]?.[penumbraOrigin];
 
 /** Return the specified provider after confirming presence of its manifest. */
-export const getPenumbraProvider = (penumbraOrigin: string) => assertProvider(penumbraOrigin);
+export const getPenumbra = (penumbraOrigin: string) => assertProvider(penumbraOrigin);
 
 /** Return the specified provider's manifest. */
 export const getPenumbraManifest = async (
@@ -41,6 +41,7 @@ export const getAllPenumbraManifests = (): Record<
     ]),
   );
 
+export * from './error.js';
 export type { PenumbraManifest } from './manifest.js';
 export type { PenumbraProvider } from './provider.js';
 export { PenumbraState } from './state.js';
