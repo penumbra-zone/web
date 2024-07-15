@@ -52,4 +52,4 @@ export const isPenumbraManifest = (mf: unknown): mf is PenumbraManifest =>
   typeof mf.icons === 'object' &&
   mf.icons !== null &&
   '128' in mf.icons &&
-  mf.icons['128'] === 'string';
+  typeof mf.icons['128'] === 'string';
