@@ -17,7 +17,7 @@ const Wrapper = styled.div`
 `;
 
 const Item = styled.div`
-  background-color: ${props => props.theme.palette.neutral['700']};
+  background-color: ${props => props.theme.colors.neutral.main};
   display: flex;
   align-items: center;
   justify-content: center;

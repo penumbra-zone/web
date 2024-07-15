@@ -1,5 +1,12 @@
 import 'styled-components';
 
+interface Colors {
+  main: string;
+  light: string;
+  dark: string;
+  contrast: string;
+}
+
 declare module 'styled-components' {
   export interface DefaultTheme {
     breakpoints: {
@@ -29,11 +36,22 @@ declare module 'styled-components' {
       textSm: string;
       textXs: string;
     };
-    palette: {
-      neutral: {
-        100: string;
-        400: string;
-        700: string;
+    colors: {
+      neutral: Colors;
+      primary: Colors;
+      secondary: Colors;
+      unshield: Colors;
+      destructive: Colors;
+      caution: Colors;
+      success: Colors;
+
+      // Special cases
+
+      text: {
+        primary: string;
+        secondary: string;
+        disabled: string;
+        special: string;
       };
     };
     /**
