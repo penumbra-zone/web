@@ -3,8 +3,8 @@ import { HeadTag } from './metadata/head-tag';
 import { Header } from './header/header';
 import { Toaster } from '@repo/ui/components/ui/toaster';
 import { Footer } from './footer/footer';
-import '@repo/ui/styles/globals.css';
 import { MotionConfig } from 'framer-motion';
+import '@repo/ui/styles/globals.css';
 
 export const Layout = () => {
   return (
