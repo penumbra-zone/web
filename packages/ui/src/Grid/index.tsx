@@ -89,7 +89,6 @@ const Item = styled.div<AsTransientProps<Exclude<GridItemProps, 'container'>>>`
  * with `display: grid` — to ensure consistent behavior (such as grid gutters)
  * throughout your app.
  *
- * @example
  * ```tsx
  * <Grid container as="main">
  *   <Grid mobile={12} as="section">This will span the full width on all screen sizes.</Grid>

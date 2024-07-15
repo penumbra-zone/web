@@ -93,9 +93,7 @@ const Color = <T extends TColor>({ color }: { color: T }) => (
 );
 
 export const ColorGrid: StoryObj = {
-  // https://storybook.js.org/docs/writing-stories/tags#docs-only-stories
   tags: ['!dev'],
-
   render: function Render() {
     return (
       <>

@@ -6,7 +6,7 @@ import { Technical } from '../Typography';
 const meta: Meta<typeof Grid> = {
   component: Grid,
   title: 'Grid',
-  tags: ['autodocs'],
+  tags: ['autodocs', '!dev'],
 };
 export default meta;
 

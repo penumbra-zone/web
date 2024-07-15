@@ -4,7 +4,7 @@ import { Body, Detail, H1, H2, H3, H4, Large, P, Small, Strong, Technical } from
 
 const meta: Meta<typeof Body> = {
   title: 'Typography',
-  tags: ['autodocs'],
+  tags: ['autodocs', '!dev'],
 };
 export default meta;
 

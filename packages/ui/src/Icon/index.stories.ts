@@ -5,7 +5,7 @@ import { Icon } from '.';
 
 const meta: Meta<typeof Icon> = {
   component: Icon,
-  tags: ['autodocs'],
+  tags: ['autodocs', '!dev'],
   argTypes: {
     IconComponent: {
       options: ['ArrowRightLeft', 'Send', 'Wallet'],
