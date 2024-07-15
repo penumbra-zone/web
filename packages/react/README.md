@@ -12,10 +12,17 @@ npm config set @buf:registry https://buf.build/gen/npm/v1
 
 ## Overview
 
-You must independently identify a Penumbra extension to which your app wishes to
-connect.
+If a user has a Penumbra provider in their browser, it may be present (injected)
+in the record at the window global `window[Symbol.for('penumbra')]` identified
+by a URL origin at which the provider can serve a manifest. For example, Prax
+Wallet's origin is `chrome-extension://lkpmkhpnhknhmibgnmmhdhgdilepfghe`, so its provider record may be accessed like
 
-Then, use of `<PenumbraProvider>` with an `origin` prop identifying your
+```ts
+const prax: PenumbraProvider | undefined =
+  window[Symbol.for('penumbra')]?.['chrome-extension://lkpmkhpnhknhmibgnmmhdhgdilepfghe'];
+```
+
+So, use of `<PenumbraContextProvider>` with an `origin` prop identifying your
 preferred extension, or `injection` prop identifying the actual page injection
 from your preferred extension, will result in automatic progress towards a
 successful connection.
@@ -30,7 +37,7 @@ queues requests while connection is pending, and begins returning responses when
 appropriate. If the provider fails to connect, requests via the transport or
 client may time out.
 
-## `<PenumbraProvider>`
+## `<PenumbraContextProvider>`
 
 This wrapping component will provide a context available to all child components
 that is directly accessible by `usePenumbra`, or additionally by
@@ -75,6 +82,7 @@ import { useQuery } from '@connectrpc/connect-query';
 import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 
 export const PraxAddress = ({ account }: { account?: number }) => {
+  // note this is not tanstack's useQuery
   const { data } = useQuery(addressByIndex, { addressIndex: { account } });
   return data?.address && bech32mAddress(data.address);
 };
@@ -128,23 +136,23 @@ export default function AssetBalancesByAccount({ assetIdFilter }: { assetIdFilte
 
 ## Possible provider states
 
-On the bare Penumbra injection, there is only a boolean/undefined
-`isConnected()` state and a few simple actions available. It is generally robust
-and should asynchronously progress towards an active connection if possible,
-even if steps are performed 'out-of-order'.
+Each Penumbra provider exposes a simple `.isConnected()` method and a more
+complex `.state()` method, which also tracks pending transitions. It is
+generally robust and should asynchronously progress towards an active connection
+if possible, even if steps are performed slightly 'out-of-order'.
 
-This package's exported `<PenumbraProvider>` component handles this state and
-all of these transitions for you. Use of `<PenumbraProvider>` with an `origin`
-or `injection` prop will result in automatic progress towards a `Connected`
-state.
+This package's exported `<PenumbraContextProvider>` component handles this state
+and all of these transitions for you. Use of `<PenumbraContextProvider>` with an
+`origin` or `provider` prop will result in automatic progress towards a
+`Connected` state.
 
 During this progress, the context exposes an explicit status, so you may easily
 condition your layout and display. You can access this status via
-`usePenumbra().state`. All possible values are represented by the exported enum
-`PenumbraProviderState`.
+`usePenumbra().state`. All possible values are represented by the enum
+`PenumbraState` available from `@penumbra-zone/client`.
 
-Hooks `usePenumbraTransport` and `usePenumbraService` conceal this state, and
-unconditionally provide a transport or client.
+Hooks `usePenumbraTransportSync` and `usePenumbraServiceSync` conceal this
+state, and unconditionally provide a transport or client.
 
 `Connected` is the only state in which a `MessagePort`, working `Transport`, or
 working client is available.
@@ -174,7 +182,7 @@ stateDiagram-v2
     state make_request <<choice>>
 
 
-    [*] --> global_exists: window[Symbol.for('penumbra')][validOrigin]
+    [*] --> global_exists: p = window[Symbol.for('penumbra')][validOrigin]
     global_exists --> [*]: undefined
 
     Failed:::BadNode --> [*]: p.failure

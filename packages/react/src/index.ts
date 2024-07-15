@@ -1,2 +1,2 @@
 export { usePenumbra } from './hooks/use-penumbra.js';
-export { PenumbraProvider } from './components/penumbra-provider.js';
+export { PenumbraContextProvider } from './components/penumbra-context-provider.js';

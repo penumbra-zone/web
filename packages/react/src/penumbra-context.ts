@@ -1,16 +1,23 @@
+import type { Transport } from '@connectrpc/connect';
+import {
+  PenumbraProvider,
+  PenumbraSymbol,
+  type PenumbraManifest,
+  type PenumbraState,
+} from '@penumbra-zone/client';
+import type { ChannelTransportOptions } from '@penumbra-zone/transport-dom/create';
 import { createContext } from 'react';
-import { PenumbraInjectionState, PenumbraSymbol } from '@penumbra-zone/client';
-import type { PenumbraManifest } from './manifest.js';
 
 const penumbraGlobal = window[PenumbraSymbol];
 
-export interface PenumbraContext {
+export type PenumbraContext = Partial<Omit<PenumbraProvider, 'manifest' | 'state'>> & {
   origin?: keyof NonNullable<typeof penumbraGlobal>;
   manifest?: PenumbraManifest;
-  disconnect?: () => Promise<void>;
   port?: MessagePort | false;
   failure?: Error;
-  state?: PenumbraInjectionState;
-}
+  state?: PenumbraState;
+  transport?: Transport;
+  transportOpts?: Omit<ChannelTransportOptions, 'getPort'>;
+};
 
 export const penumbraContext = createContext<PenumbraContext>({});

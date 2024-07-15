@@ -2,7 +2,7 @@
   "name": "@penumbra-zone/react",
   "version": "0.0.1",
   "license": "(MIT OR Apache-2.0)",
-  "description": "Reactive package for connecting to any Penumbra extension, including Prax.",
+  "description": "React package for connecting to any Penumbra extension, including Prax.",
   "type": "module",
   "scripts": {
     "build": "tsc --build --verbose",

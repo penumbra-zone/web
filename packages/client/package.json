@@ -20,7 +20,7 @@
   ],
   "exports": {
     ".": "./src/index.ts",
-    "./create": "./src/create.ts"
+    "./*": "./src/*.ts"
   },
   "publishConfig": {
     "exports": {
@@ -28,9 +28,9 @@
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
       },
-      "./create": {
-        "types": "./dist/create.d.ts",
-        "default": "./dist/create.js"
+      "./*": {
+        "types": "./dist/*.d.ts",
+        "default": "./dist/*.js"
       }
     }
   },

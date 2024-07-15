@@ -1,34 +1,32 @@
-import { PenumbraInjectionState, PenumbraSymbol } from './index.js';
+import { PenumbraState } from './state.js';
+import { PenumbraSymbol } from './symbol.js';
 
-export interface PenumbraInjectionStateEventDetail {
+export interface PenumbraStateEventDetail {
   origin: string;
-  state?: PenumbraInjectionState;
+  state?: PenumbraState;
 }
 
-export class PenumbraInjectionStateEvent extends CustomEvent<PenumbraInjectionStateEventDetail> {
-  constructor(injectionProviderOrigin: string, injectionState?: PenumbraInjectionState) {
+export class PenumbraStateEvent extends CustomEvent<PenumbraStateEventDetail> {
+  constructor(penumbraOrigin: string, penumbraState?: PenumbraState) {
     super('penumbrastate', {
       detail: {
-        state: injectionState ?? window[PenumbraSymbol]?.[injectionProviderOrigin]?.state(),
-        origin: injectionProviderOrigin,
+        origin: penumbraOrigin,
+        state: penumbraState ?? window[PenumbraSymbol]?.[penumbraOrigin]?.state(),
       },
     });
   }
 }
 
-export const isPenumbraInjectionStateEvent = (evt: Event): evt is PenumbraInjectionStateEvent =>
-  evt instanceof PenumbraInjectionStateEvent ||
-  ('detail' in evt && isPenumbraInjectionStateEventDetail(evt.detail));
+export const isPenumbraStateEvent = (evt: Event): evt is PenumbraStateEvent =>
+  evt instanceof PenumbraStateEvent || ('detail' in evt && isPenumbraStateEventDetail(evt.detail));
 
-export const isPenumbraInjectionStateEventDetail = (
-  detail: unknown,
-): detail is PenumbraInjectionStateEventDetail =>
+export const isPenumbraStateEventDetail = (detail: unknown): detail is PenumbraStateEventDetail =>
   typeof detail === 'object' &&
   detail !== null &&
   'origin' in detail &&
   typeof detail.origin === 'string';
 
-// utility type for SpecificEventTarget. any and unused are required for type inference
+// utility type for SpecificEventTarget. any is required for type inference
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type ParametersTail<T extends (...args: any[]) => any> =
   Parameters<T> extends [unknown, ...infer TailParams] ? TailParams : never;
@@ -47,7 +45,7 @@ interface SpecificEventTarget<SpecificTypeName extends string, SpecificEvent ext
   dispatchEvent: (event: SpecificEvent) => boolean;
 }
 
-export type PenumbraInjectionStateEventTarget = Omit<
+export type PenumbraStateEventTarget = Omit<
   SpecificEventTarget<'penumbrastate', never>,
   'dispatchEvent'
 >;

@@ -4,12 +4,14 @@ import {
 } from '@penumbra-zone/transport-dom/create';
 import { useEffect, useMemo, useState } from 'react';
 import { usePenumbra } from './use-penumbra.js';
-import { PenumbraInjectionState } from '@penumbra-zone/client';
+import { PenumbraState } from '@penumbra-zone/client';
 
-/** Unconditionally returns a Transport to the provided Penumbra context. This
- * transport will always create synchronously, but may reject all requests if
- * the Penumbra context does not provide a port within your configured
- * defaultTimeoutMs (defaults to 10 seconds). */
+export const usePenumbraTransport = () => usePenumbra().transport;
+
+/** This method immediately returns a new, unshared Transport to the surrounding
+ * Penumbra context. This transport will always create synchronously, but may
+ * time out and reject all requests if the Penumbra context does not provide a
+ * port within your configured defaultTimeoutMs (defaults to 10 seconds). */
 export const usePenumbraTransportSync = (opts?: Omit<ChannelTransportOptions, 'getPort'>) => {
   const penumbra = usePenumbra();
   const { port, failure, state } = penumbra;
@@ -21,8 +23,13 @@ export const usePenumbraTransportSync = (opts?: Omit<ChannelTransportOptions, 'g
 
   // memoize the transport to avoid re-creating it on every render
   const transport = useMemo(
-    () => createChannelTransport({ ...opts, getPort: () => portPromise }),
-    [portPromise],
+    () =>
+      createChannelTransport({
+        ...penumbra.transportOpts,
+        ...opts,
+        getPort: () => portPromise,
+      }),
+    [penumbra, portPromise, opts],
   );
 
   // handle context updates
@@ -37,11 +44,12 @@ export const usePenumbraTransportSync = (opts?: Omit<ChannelTransportOptions, 'g
   return transport;
 };
 
-/** Promises a Transport to the provided Penumbra context.  Awaits confirmation
- * of a MessagePort to the provider in context before attempting to create the
- * Transport, so this will not time out if approval takes very long - but it
- * must be async. The returned promise may reject with a connection failure. */
-export const usePenumbraTransport = (opts?: Omit<ChannelTransportOptions, 'getPort'>) => {
+/** This method Promises a new, unshared Transport to the provided Penumbra
+ * context.  Awaits confirmation of a MessagePort to the provider in context
+ * before attempting to create the Transport, so this will not time out if
+ * approval takes very long - but it must be async. The returned promise may
+ * reject with a connection failure. */
+export const usePenumbraTransportAsync = (opts?: Omit<ChannelTransportOptions, 'getPort'>) => {
   const penumbra = usePenumbra();
   const { port, failure, state } = penumbra;
 
@@ -52,22 +60,29 @@ export const usePenumbraTransport = (opts?: Omit<ChannelTransportOptions, 'getPo
 
   // memoize the transport to avoid re-creating it on every render
   const transportPromise = useMemo(
-    () => portPromise.then(() => createChannelTransport({ ...opts, getPort: () => portPromise })),
-    [portPromise],
+    () =>
+      portPromise.then(() =>
+        createChannelTransport({
+          ...penumbra.transportOpts,
+          ...opts,
+          getPort: () => portPromise,
+        }),
+      ),
+    [penumbra, portPromise, opts],
   );
 
   // handle context updates
   useEffect(() => {
     if (port) {
       resolvePort(port);
-    } else if (failure ?? state === PenumbraInjectionState.Failed) {
+    } else if (failure ?? state === PenumbraState.Failed) {
       rejectPort(failure ?? new Error('Unknown failure'));
     }
   }, [failure, penumbra, port, resolvePort, rejectPort, state]);
 
   switch (state) {
-    case PenumbraInjectionState.Disconnected:
-    case PenumbraInjectionState.Failed:
+    case PenumbraState.Disconnected:
+    case PenumbraState.Failed:
       return Promise.reject(failure ?? new Error(state));
     default:
       return transportPromise;
