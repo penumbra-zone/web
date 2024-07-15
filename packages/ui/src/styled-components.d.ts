@@ -1,6 +1,6 @@
 import 'styled-components';
 
-interface Colors {
+interface ColorVariants {
   main: string;
   light: string;
   dark: string;
@@ -37,13 +37,13 @@ declare module 'styled-components' {
       textXs: string;
     };
     colors: {
-      neutral: Colors;
-      primary: Colors;
-      secondary: Colors;
-      unshield: Colors;
-      destructive: Colors;
-      caution: Colors;
-      success: Colors;
+      neutral: ColorVariants;
+      primary: ColorVariants;
+      secondary: ColorVariants;
+      unshield: ColorVariants;
+      destructive: ColorVariants;
+      caution: ColorVariants;
+      success: ColorVariants;
 
       // Special cases
 
