@@ -176,7 +176,7 @@ importers:
         version: 3.3.0(vite@5.3.3(@types/node@20.14.10)(terser@5.31.1))
       vitest:
         specifier: ^1.6.0
-        version: 1.6.0(@types/node@20.14.10)(@vitest/browser@1.6.0)(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1)
+        version: 1.6.0(@types/node@20.14.10)(@vitest/browser@1.6.0(playwright@1.45.1)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1)
 
   apps/minifront:
     dependencies:
@@ -489,6 +489,31 @@ importers:
       '@penumbra-zone/wasm':
         specifier: workspace:*
         version: link:../wasm
+
+  packages/react:
+    dependencies:
+      '@bufbuild/protobuf':
+        specifier: ^1.10.0
+        version: 1.10.0
+      '@penumbra-zone/client':
+        specifier: workspace:*
+        version: link:../client
+      '@penumbra-zone/protobuf':
+        specifier: workspace:*
+        version: link:../protobuf
+      '@penumbra-zone/transport-dom':
+        specifier: workspace:*
+        version: link:../transport-dom
+    devDependencies:
+      '@connectrpc/connect':
+        specifier: ^1.4.0
+        version: 1.4.0(@bufbuild/protobuf@1.10.0)
+      '@types/react':
+        specifier: ^18.3.2
+        version: 18.3.3
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
 
   packages/services:
     devDependencies:
@@ -17067,7 +17092,7 @@ snapshots:
       lodash: 4.17.21
       redent: 3.0.0
     optionalDependencies:
-      vitest: 1.6.0(@types/node@20.14.10)(@vitest/browser@1.6.0)(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1)
+      vitest: 1.6.0(@types/node@20.14.10)(@vitest/browser@1.6.0(playwright@1.45.1)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1)
 
   '@testing-library/jest-dom@6.4.6(vitest@1.6.0(@types/node@20.14.10)(@vitest/browser@1.6.0)(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1))':
     dependencies:
@@ -17080,7 +17105,7 @@ snapshots:
       lodash: 4.17.21
       redent: 3.0.0
     optionalDependencies:
-      vitest: 1.6.0(@types/node@20.14.10)(@vitest/browser@1.6.0)(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1)
+      vitest: 1.6.0(@types/node@20.14.10)(@vitest/browser@1.6.0(playwright@1.45.1)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1)
 
   '@testing-library/react@15.0.7(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
@@ -17674,7 +17699,7 @@ snapshots:
       '@vitest/utils': 1.6.0
       magic-string: 0.30.10
       sirv: 2.0.4
-      vitest: 1.6.0(@types/node@20.14.10)(@vitest/browser@1.6.0)(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1)
+      vitest: 1.6.0(@types/node@20.14.10)(@vitest/browser@1.6.0(playwright@1.45.1)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1)
     optionalDependencies:
       playwright: 1.45.1
 
@@ -19605,7 +19630,7 @@ snapshots:
       '@typescript-eslint/utils': 7.16.0(eslint@9.6.0)(typescript@5.5.3)
       eslint: 9.6.0
     optionalDependencies:
-      vitest: 1.6.0(@types/node@20.14.10)(@vitest/browser@1.6.0)(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1)
+      vitest: 1.6.0(@types/node@20.14.10)(@vitest/browser@1.6.0(playwright@1.45.1)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1)
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -23363,7 +23388,7 @@ snapshots:
       fsevents: 2.3.3
       terser: 5.31.1
 
-  vitest@1.6.0(@types/node@20.14.10)(@vitest/browser@1.6.0)(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1):
+  vitest@1.6.0(@types/node@20.14.10)(@vitest/browser@1.6.0(playwright@1.45.1)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1):
     dependencies:
       '@vitest/expect': 1.6.0
       '@vitest/runner': 1.6.0
