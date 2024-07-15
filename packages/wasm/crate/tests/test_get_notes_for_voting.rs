@@ -112,40 +112,36 @@ async fn test_ineligible_note_criteria() {
     let mock_db = MockDb::new();
     let tables = get_mock_tables();
 
-    let metadata_a_proto = pb::Metadata {
+    let metadata_in_db_proto = pb::Metadata {
         base:
             "udelegation_penumbravalid1hz2hqlgx4w55vkxzv0n3u93czlkvm6zpgftyny2psg3dp8vcygxqd7fedt"
                 .to_string(),
         ..Default::default()
     };
+    let metadata_in_db: Metadata = metadata_in_db_proto.clone().try_into().unwrap();
     mock_db
-        .put_with_key(&tables.assets, "metadata_a", &metadata_a_proto)
+        .put_with_key(&tables.assets, "metadata_a", &metadata_in_db_proto)
         .await
         .unwrap();
 
-    let metadata_b_proto = pb::Metadata {
+    let metadata_not_in_db_proto = pb::Metadata {
         base:
-            "udelegation_penumbravalid18jfq3tvrnzpeuzj6yq25v4spmttc08gwjdtjk4r77xcsyyaz6c9qutgtch"
+            "udelegation_penumbravalid1aglayhqq2ec5yfgx8ljqrd9ypnma5uu46hsd0d77dakgu4nywuyqk29d0m"
                 .to_string(),
         ..Default::default()
     };
-    mock_db
-        .put_with_key(&tables.assets, "metadata_b", &metadata_b_proto)
-        .await
-        .unwrap();
+    let metadata_not_in_db: Metadata = metadata_not_in_db_proto.try_into().unwrap();
 
-    let addr = Address::dummy(&mut OsRng);
-    let value = Value {
-        amount: 10u64.into(),
-        asset_id: asset::Cache::with_known_assets()
-            .get_unit("upenumbra")
-            .unwrap()
-            .id(),
-    };
-
-    let note_a = SpendableNoteRecord {
+    let no_metadata_for_del_token = SpendableNoteRecord {
         note_commitment: StateCommitment::try_from([0; 32]).unwrap(),
-        note: Note::generate(&mut OsRng, &addr, value),
+        note: Note::generate(
+            &mut OsRng,
+            &Address::dummy(&mut OsRng),
+            Value {
+                amount: 10u64.into(),
+                asset_id: metadata_not_in_db.id(),
+            },
+        ),
         address_index: Default::default(),
         nullifier: Nullifier::try_from(vec![
             76, 12, 37, 160, 207, 93, 129, 238, 230, 254, 29, 227, 107, 97, 138, 12, 172, 130, 138,
@@ -160,12 +156,219 @@ async fn test_ineligible_note_criteria() {
     };
 
     mock_db
-        .put_with_key(&tables.spendable_notes, "note_a", &note_a)
+        .put_with_key(
+            &tables.spendable_notes,
+            "no_metadata_for_del_token",
+            &no_metadata_for_del_token,
+        )
+        .await
+        .unwrap();
+
+    let note_created_at_vote_height = SpendableNoteRecord {
+        note_commitment: StateCommitment::try_from([0; 32]).unwrap(),
+        note: Note::generate(
+            &mut OsRng,
+            &Address::dummy(&mut OsRng),
+            Value {
+                amount: 10u64.into(),
+                asset_id: metadata_in_db.id(),
+            },
+        ),
+        address_index: Default::default(),
+        nullifier: Nullifier::try_from(vec![
+            76, 12, 37, 160, 207, 93, 129, 238, 230, 254, 29, 227, 107, 97, 138, 12, 172, 130, 138,
+            66, 123, 217, 253, 148, 178, 91, 112, 125, 247, 32, 189, 2,
+        ])
+        .unwrap(),
+        height_created: 42,
+        height_spent: None,
+        position: Default::default(),
+        source: CommitmentSource::Genesis,
+        return_address: None,
+    };
+
+    mock_db
+        .put_with_key(
+            &tables.spendable_notes,
+            "note_created_at_vote_height",
+            &note_created_at_vote_height,
+        )
+        .await
+        .unwrap();
+
+    let note_created_after_vote_height = SpendableNoteRecord {
+        note_commitment: StateCommitment::try_from([0; 32]).unwrap(),
+        note: Note::generate(
+            &mut OsRng,
+            &Address::dummy(&mut OsRng),
+            Value {
+                amount: 10u64.into(),
+                asset_id: metadata_in_db.id(),
+            },
+        ),
+        address_index: Default::default(),
+        nullifier: Nullifier::try_from(vec![
+            76, 12, 37, 160, 207, 93, 129, 238, 230, 254, 29, 227, 107, 97, 138, 12, 172, 130, 138,
+            66, 123, 217, 253, 148, 178, 91, 112, 125, 247, 32, 189, 2,
+        ])
+        .unwrap(),
+        height_created: 12222,
+        height_spent: None,
+        position: Default::default(),
+        source: CommitmentSource::Genesis,
+        return_address: None,
+    };
+
+    mock_db
+        .put_with_key(
+            &tables.spendable_notes,
+            "note_created_after_vote_height",
+            &note_created_after_vote_height,
+        )
+        .await
+        .unwrap();
+
+    let note_spent_before_vote_height = SpendableNoteRecord {
+        note_commitment: StateCommitment::try_from([0; 32]).unwrap(),
+        note: Note::generate(
+            &mut OsRng,
+            &Address::dummy(&mut OsRng),
+            Value {
+                amount: 10u64.into(),
+                asset_id: metadata_in_db.id(),
+            },
+        ),
+        address_index: Default::default(),
+        nullifier: Nullifier::try_from(vec![
+            76, 12, 37, 160, 207, 93, 129, 238, 230, 254, 29, 227, 107, 97, 138, 12, 172, 130, 138,
+            66, 123, 217, 253, 148, 178, 91, 112, 125, 247, 32, 189, 2,
+        ])
+        .unwrap(),
+        height_created: 0,
+        height_spent: Some(5),
+        position: Default::default(),
+        source: CommitmentSource::Genesis,
+        return_address: None,
+    };
+
+    mock_db
+        .put_with_key(
+            &tables.spendable_notes,
+            "note_spent_before_vote_height",
+            &note_spent_before_vote_height,
+        )
         .await
         .unwrap();
 
     let storage = Storage::new(mock_db, tables).unwrap();
 
-    let result = storage.get_notes_for_voting(None, 142).await.unwrap();
+    let result = storage.get_notes_for_voting(None, 42).await.unwrap();
     assert_eq!(result.len(), 0);
+}
+
+#[wasm_bindgen_test]
+async fn test_eligible_notes() {
+    let mock_db = MockDb::new();
+    let tables = get_mock_tables();
+
+    let metadata_in_db_proto = pb::Metadata {
+        base:
+            "udelegation_penumbravalid1hz2hqlgx4w55vkxzv0n3u93czlkvm6zpgftyny2psg3dp8vcygxqd7fedt"
+                .to_string(),
+        ..Default::default()
+    };
+    let metadata_in_db: Metadata = metadata_in_db_proto.clone().try_into().unwrap();
+    mock_db
+        .put_with_key(&tables.assets, "metadata_a", &metadata_in_db_proto)
+        .await
+        .unwrap();
+
+    let eligible_a = SpendableNoteRecord {
+        note_commitment: StateCommitment::try_from([0; 32]).unwrap(),
+        note: Note::generate(
+            &mut OsRng,
+            &Address::dummy(&mut OsRng),
+            Value {
+                amount: 50u64.into(),
+                asset_id: metadata_in_db.id(),
+            },
+        ),
+        address_index: Default::default(),
+        nullifier: Nullifier::try_from(vec![
+            76, 12, 37, 160, 207, 93, 129, 238, 230, 254, 29, 227, 107, 97, 138, 12, 172, 130, 138,
+            66, 123, 217, 253, 148, 178, 91, 112, 125, 247, 32, 189, 2,
+        ])
+        .unwrap(),
+        height_created: 0,
+        height_spent: None,
+        position: Default::default(),
+        source: CommitmentSource::Genesis,
+        return_address: None,
+    };
+
+    mock_db
+        .put_with_key(&tables.spendable_notes, "eligible_a", &eligible_a)
+        .await
+        .unwrap();
+
+    let eligible_b = SpendableNoteRecord {
+        note_commitment: StateCommitment::try_from([0; 32]).unwrap(),
+        note: Note::generate(
+            &mut OsRng,
+            &Address::dummy(&mut OsRng),
+            Value {
+                amount: 50u64.into(),
+                asset_id: metadata_in_db.id(),
+            },
+        ),
+        address_index: Default::default(),
+        nullifier: Nullifier::try_from(vec![
+            76, 12, 37, 160, 207, 93, 129, 238, 230, 254, 29, 227, 107, 97, 138, 12, 172, 130, 138,
+            66, 123, 217, 253, 148, 178, 91, 112, 125, 247, 32, 189, 2,
+        ])
+        .unwrap(),
+        height_created: 40,
+        height_spent: Some(42),
+        position: Default::default(),
+        source: CommitmentSource::Genesis,
+        return_address: None,
+    };
+
+    mock_db
+        .put_with_key(&tables.spendable_notes, "eligible_b", &eligible_b)
+        .await
+        .unwrap();
+
+    let eligible_c = SpendableNoteRecord {
+        note_commitment: StateCommitment::try_from([0; 32]).unwrap(),
+        note: Note::generate(
+            &mut OsRng,
+            &Address::dummy(&mut OsRng),
+            Value {
+                amount: 50u64.into(),
+                asset_id: metadata_in_db.id(),
+            },
+        ),
+        address_index: Default::default(),
+        nullifier: Nullifier::try_from(vec![
+            76, 12, 37, 160, 207, 93, 129, 238, 230, 254, 29, 227, 107, 97, 138, 12, 172, 130, 138,
+            66, 123, 217, 253, 148, 178, 91, 112, 125, 247, 32, 189, 2,
+        ])
+        .unwrap(),
+        height_created: 6,
+        height_spent: Some(100),
+        position: Default::default(),
+        source: CommitmentSource::Genesis,
+        return_address: None,
+    };
+
+    mock_db
+        .put_with_key(&tables.spendable_notes, "eligible_c", &eligible_c)
+        .await
+        .unwrap();
+
+    let storage = Storage::new(mock_db, tables).unwrap();
+
+    let result = storage.get_notes_for_voting(None, 42).await.unwrap();
+    assert_eq!(result.len(), 3);
 }

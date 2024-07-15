@@ -9,13 +9,13 @@ use penumbra_auction::auction::AuctionId;
 use penumbra_fee::GasPrices;
 use penumbra_keys::keys::AddressIndex;
 use penumbra_num::Amount;
-use penumbra_proto::core::keys;
 use penumbra_proto::{
     core::{app::v1::AppParameters, asset::v1::Value, component::sct::v1::Epoch},
     crypto::tct::v1::StateCommitment,
-    view::v1::{NotesRequest, SwapRecord, TransactionInfo},
     DomainType,
+    view::v1::{NotesRequest, SwapRecord, TransactionInfo},
 };
+use penumbra_proto::core::keys;
 use penumbra_sct::Nullifier;
 use penumbra_shielded_pool::{fmd, note, Note};
 use penumbra_stake::{DelegationToken, IdentityKey};
@@ -94,8 +94,10 @@ impl<T: Database> Storage<T> {
                 continue;
             }
 
-            if Some(record.note.asset_id()) != asset_id {
-                continue;
+            if let Some(id) = asset_id {
+                if record.note.asset_id() != id {
+                    continue;
+                }
             }
 
             // Planner should omit the address index randomizer and compare only the account index
