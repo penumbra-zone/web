@@ -55,7 +55,7 @@ export const STYLES_BY_VARIANT = (theme: DefaultTheme) =>
       fontWeight: 400,
       lineHeight: theme.lineHeight.textBase,
     },
-    bodyEmphasized: {
+    bodyStrong: {
       ...base,
       fontFamily: theme.font.default,
       fontSize: theme.fontSize.textBase,
@@ -119,7 +119,7 @@ export const H3 = styled.h3(props => STYLES_BY_VARIANT(props.theme).h3);
 export const H4 = styled.h4(props => STYLES_BY_VARIANT(props.theme).h4);
 export const Large = styled.span(props => STYLES_BY_VARIANT(props.theme).large);
 export const Body = styled.span(props => STYLES_BY_VARIANT(props.theme).body);
-export const Strong = styled.span(props => STYLES_BY_VARIANT(props.theme).bodyEmphasized);
+export const Strong = styled.span(props => STYLES_BY_VARIANT(props.theme).bodyStrong);
 export const Detail = styled.span(props => STYLES_BY_VARIANT(props.theme).detail);
 export const Small = styled.span(props => STYLES_BY_VARIANT(props.theme).small);
 export const Technical = styled.span(props => STYLES_BY_VARIANT(props.theme).technical);
