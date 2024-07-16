@@ -105,14 +105,14 @@ export const theme: DefaultTheme = {
     '2xl': '24px',
     full: '9999px',
   },
-  breakpoints: {
+  breakpoint: {
     mobile: 0,
     tablet: 600,
     desktop: 900,
     lg: 1200,
     xl: 1600,
   },
-  colors: {
+  color: {
     neutral: {
       main: PALETTE.neutral['700'],
       light: PALETTE.neutral['400'],
@@ -162,12 +162,12 @@ export const theme: DefaultTheme = {
       special: PALETTE.orange['400'],
     },
   },
-  fonts: {
+  font: {
     default: 'Poppins',
     mono: 'Iosevka Term, monospace',
     heading: 'Work Sans',
   },
-  fontSizes: {
+  fontSize: {
     text9xl: '8rem',
     text8xl: '6rem',
     text7xl: '4.5rem',
@@ -185,6 +185,6 @@ export const theme: DefaultTheme = {
   spacing: spacingUnits => `${spacingUnits * 4}px`,
 };
 
-export type Color = keyof DefaultTheme['colors'];
-export type ColorVariants = keyof DefaultTheme['colors']['neutral'];
-export type TextColorVariants = keyof DefaultTheme['colors']['text'];
+export type Color = keyof DefaultTheme['color'];
+export type ColorVariant = keyof DefaultTheme['color']['neutral'];
+export type TextColorVariant = keyof DefaultTheme['color']['text'];

@@ -13,7 +13,7 @@ export default meta;
 type Story = StoryObj<typeof Grid>;
 
 const Item = styled.div`
-  background-color: ${props => props.theme.colors.neutral.main};
+  background-color: ${props => props.theme.color.neutral.main};
   display: flex;
   align-items: center;
   justify-content: center;

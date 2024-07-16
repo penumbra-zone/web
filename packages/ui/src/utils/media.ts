@@ -1,6 +1,6 @@
 import { css, DefaultTheme, RuleSet } from 'styled-components';
 
-const breakpoints: (keyof DefaultTheme['breakpoints'])[] = [
+const breakpoints: (keyof DefaultTheme['breakpoint'])[] = [
   'mobile',
   'tablet',
   'desktop',
@@ -8,10 +8,7 @@ const breakpoints: (keyof DefaultTheme['breakpoints'])[] = [
   'xl',
 ];
 
-type Media = Record<
-  keyof DefaultTheme['breakpoints'],
-  (...args: Parameters<typeof css>) => RuleSet
->;
+type Media = Record<keyof DefaultTheme['breakpoint'], (...args: Parameters<typeof css>) => RuleSet>;
 
 /**
  * CSS mixin for adding a min-width media query.
@@ -36,7 +33,7 @@ export const media = breakpoints.reduce<Partial<Media>>(
   (prev, breakpoint) => ({
     ...prev,
     [breakpoint]: (...args: Parameters<typeof css>) => css`
-      @media (min-width: ${props => props.theme.breakpoints[breakpoint]}px) {
+      @media (min-width: ${props => props.theme.breakpoint[breakpoint]}px) {
         ${css(...args)};
       }
     `,

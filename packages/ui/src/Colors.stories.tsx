@@ -3,9 +3,9 @@ import { Grid } from './Grid';
 import { Technical } from './Typography';
 import styled from 'styled-components';
 import {
-  type ColorVariants,
+  type ColorVariant,
   type Color as TColor,
-  type TextColorVariants,
+  type TextColorVariant,
 } from './ThemeProvider/theme';
 import { Fragment } from 'react';
 import { media } from './utils/media';
@@ -35,25 +35,23 @@ const Variants = styled.div`
 type VariantProps =
   | {
       $color: 'text';
-      $colorVariant: TextColorVariants;
+      $colorVariant: TextColorVariant;
     }
   | {
       $color: Exclude<TColor, 'text'>;
-      $colorVariant: ColorVariants;
+      $colorVariant: ColorVariant;
     };
 
 const Variant = styled.div<VariantProps>`
   background-color: ${props =>
-    props.$color === 'text'
-      ? 'transparent'
-      : props.theme.colors[props.$color][props.$colorVariant]};
+    props.$color === 'text' ? 'transparent' : props.theme.color[props.$color][props.$colorVariant]};
   border-radius: ${props => props.theme.borderRadius.xl};
   color: ${props =>
     props.$color === 'text'
-      ? props.theme.colors.text[props.$colorVariant]
+      ? props.theme.color.text[props.$colorVariant]
       : props.$colorVariant === 'contrast' || props.$colorVariant === 'light'
-        ? props.theme.colors[props.$color].dark
-        : props.theme.colors.text.primary};
+        ? props.theme.color[props.$color].dark
+        : props.theme.color.text.primary};
   padding: ${props => props.theme.spacing(2)};
 `;
 

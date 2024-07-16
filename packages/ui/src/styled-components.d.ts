@@ -19,7 +19,7 @@ declare module 'styled-components' {
       '2xl': string;
       full: string;
     };
-    colors: {
+    color: {
       neutral: ColorVariants;
       primary: ColorVariants;
       secondary: ColorVariants;
@@ -37,19 +37,19 @@ declare module 'styled-components' {
         special: string;
       };
     };
-    breakpoints: {
+    breakpoint: {
       mobile: number;
       tablet: number;
       desktop: number;
       lg: number;
       xl: number;
     };
-    fonts: {
+    font: {
       default: string;
       mono: string;
       heading: string;
     };
-    fontSizes: {
+    fontSize: {
       text9xl: string;
       text8xl: string;
       text7xl: string;
