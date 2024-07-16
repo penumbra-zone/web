@@ -25,12 +25,12 @@
   "publishConfig": {
     "exports": {
       "./ctx/*": {
-        "default": "./dist/ctx/*.js",
-        "types": "./dist/ctx/*.d.ts"
+        "types": "./dist/ctx/*.d.ts",
+        "default": "./dist/ctx/*.js"
       },
       "./*": {
-        "default": "./dist/*/index.js",
-        "types": "./dist/*/index.d.ts"
+        "types": "./dist/*/index.d.ts",
+        "default": "./dist/*/index.js"
       }
     }
   },
