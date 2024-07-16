@@ -61,7 +61,7 @@ export const TxViewer = ({ txInfo }: { txInfo?: TransactionInfo }) => {
           {txInfo?.id && uint8ArrayToHex(txInfo.id.inner)}
         </div>
         <div
-          className={'font-mono italic text-muted-foreground bg-black px-3 py-2 rounded-lg border'}
+          className={'rounded-lg border bg-black px-3 py-2 font-mono italic text-muted-foreground'}
         >
           block {txInfo?.height.toString()}
         </div>
