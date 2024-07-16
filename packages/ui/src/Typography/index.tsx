@@ -1,128 +1,98 @@
-import styled, { DefaultTheme } from 'styled-components';
+import styled from 'styled-components';
 
-const base = {
-  margin: 0,
-};
+const base = `
+  margin: 0;
+`;
 
-type Spec = typeof base & {
-  fontFamily: string;
-  fontSize: string;
-  fontWeight: number;
-  lineHeight: string;
-};
+export const H1 = styled.h1`
+  ${base}
 
-export const STYLES_BY_VARIANT = (theme: DefaultTheme) =>
-  ({
-    h1: {
-      ...base,
-      fontFamily: theme.font.heading,
-      fontSize: theme.fontSize.text6xl,
-      fontWeight: 500,
-      lineHeight: theme.lineHeight.text6xl,
-    },
-    h2: {
-      ...base,
-      fontFamily: theme.font.heading,
-      fontSize: theme.fontSize.text5xl,
-      fontWeight: 500,
-      lineHeight: theme.lineHeight.text5xl,
-    },
-    h3: {
-      ...base,
-      fontFamily: theme.font.heading,
-      fontSize: theme.fontSize.text4xl,
-      fontWeight: 500,
-      lineHeight: theme.lineHeight.text4xl,
-    },
-    h4: {
-      ...base,
-      fontFamily: theme.font.heading,
-      fontSize: theme.fontSize.text3xl,
-      fontWeight: 500,
-      lineHeight: theme.lineHeight.text3xl,
-    },
-    large: {
-      ...base,
-      fontFamily: theme.font.default,
-      fontSize: theme.fontSize.textLg,
-      fontWeight: 500,
-      lineHeight: theme.lineHeight.textLg,
-    },
-    body: {
-      ...base,
-      fontFamily: theme.font.default,
-      fontSize: theme.fontSize.textBase,
-      fontWeight: 400,
-      lineHeight: theme.lineHeight.textBase,
-    },
-    bodyStrong: {
-      ...base,
-      fontFamily: theme.font.default,
-      fontSize: theme.fontSize.textBase,
-      fontWeight: 500,
-      lineHeight: theme.lineHeight.textBase,
-    },
-    button: {
-      ...base,
-      fontFamily: theme.font.default,
-      fontSize: theme.fontSize.textBase,
-      fontWeight: 500,
-      lineHeight: theme.lineHeight.textBase,
-    },
-    detail: {
-      ...base,
-      fontFamily: theme.font.default,
-      fontSize: theme.fontSize.textXs,
-      fontWeight: 500,
-      lineHeight: theme.lineHeight.textXs,
-    },
-    small: {
-      ...base,
-      fontFamily: theme.font.default,
-      fontSize: theme.fontSize.textSm,
-      fontWeight: 400,
-      lineHeight: theme.lineHeight.textSm,
-    },
-    tab: {
-      ...base,
-      fontFamily: theme.font.default,
-      fontSize: theme.fontSize.textLg,
-      fontWeight: 400,
-      lineHeight: theme.lineHeight.textLg,
-    },
-    tableHeading: {
-      ...base,
-      fontFamily: theme.font.default,
-      fontSize: theme.fontSize.textBase,
-      fontWeight: 500,
-      lineHeight: theme.lineHeight.textBase,
-    },
-    tableItem: {
-      ...base,
-      fontFamily: theme.font.default,
-      fontSize: theme.fontSize.textBase,
-      fontWeight: 400,
-      lineHeight: theme.lineHeight.textBase,
-    },
-    technical: {
-      ...base,
-      fontFamily: theme.font.mono,
-      fontSize: theme.fontSize.textSm,
-      fontWeight: 500,
-      lineHeight: theme.lineHeight.textSm,
-    },
-  }) satisfies Record<string, Spec>;
+  font-family: ${props => props.theme.font.heading};
+  font-size: ${props => props.theme.fontSize.text6xl};
+  font-weight: 500;
+  line-height: ${props => props.theme.lineHeight.text6xl};
+`;
 
-export const H1 = styled.h1(props => STYLES_BY_VARIANT(props.theme).h1);
-export const H2 = styled.h2(props => STYLES_BY_VARIANT(props.theme).h2);
-export const H3 = styled.h3(props => STYLES_BY_VARIANT(props.theme).h3);
-export const H4 = styled.h4(props => STYLES_BY_VARIANT(props.theme).h4);
-export const Large = styled.span(props => STYLES_BY_VARIANT(props.theme).large);
-export const Body = styled.span(props => STYLES_BY_VARIANT(props.theme).body);
-export const Strong = styled.span(props => STYLES_BY_VARIANT(props.theme).bodyStrong);
-export const Detail = styled.span(props => STYLES_BY_VARIANT(props.theme).detail);
-export const Small = styled.span(props => STYLES_BY_VARIANT(props.theme).small);
-export const Technical = styled.span(props => STYLES_BY_VARIANT(props.theme).technical);
+export const H2 = styled.h2`
+  ${base}
+
+  font-family: ${props => props.theme.font.heading};
+  font-size: ${props => props.theme.fontSize.text5xl};
+  font-weight: 500;
+  line-height: ${props => props.theme.lineHeight.text5xl};
+`;
+
+export const H3 = styled.h3`
+  ${base}
+
+  font-family: ${props => props.theme.font.heading};
+  font-size: ${props => props.theme.fontSize.text4xl};
+  font-weight: 500;
+  line-height: ${props => props.theme.lineHeight.text4xl};
+`;
+
+export const H4 = styled.h4`
+  ${base}
+
+  font-family: ${props => props.theme.font.heading};
+  font-size: ${props => props.theme.fontSize.text3xl};
+  font-weight: 500;
+  line-height: ${props => props.theme.lineHeight.text3xl};
+`;
+
+export const Large = styled.span`
+  ${base}
+
+  font-family: ${props => props.theme.font.default};
+  font-size: ${props => props.theme.fontSize.textLg};
+  font-weight: 500;
+  line-height: ${props => props.theme.lineHeight.textLg};
+`;
+
+export const Body = styled.span`
+  ${base}
+
+  font-family: ${props => props.theme.font.default};
+  font-size: ${props => props.theme.fontSize.textBase};
+  font-weight: 400;
+  line-height: ${props => props.theme.lineHeight.textBase};
+`;
+
+export const Strong = styled.span`
+  ${base}
+
+  font-family: ${props => props.theme.font.default};
+  font-size: ${props => props.theme.fontSize.textBase};
+  font-weight: 500;
+  line-height: ${props => props.theme.lineHeight.textBase};
+`;
+
+export const Detail = styled.span`
+  ${base}
+
+  font-family: ${props => props.theme.font.default};
+  font-size: ${props => props.theme.fontSize.textXs};
+  font-weight: 500;
+  line-height: ${props => props.theme.lineHeight.textXs};
+`;
+
+export const Small = styled.span`
+  ${base}
+
+  font-family: ${props => props.theme.font.default};
+  font-size: ${props => props.theme.fontSize.textSm};
+  font-weight: 400;
+  line-height: ${props => props.theme.lineHeight.textSm};
+`;
+
+export const Technical = styled.span`
+  ${base}
+
+  font-family: ${props => props.theme.font.mono};
+  font-size: ${props => props.theme.fontSize.textSm};
+  font-weight: 500;
+  line-height: ${props => props.theme.lineHeight.textSm};
+`;
 
 /**
  * Renders a styled `<p />` tag with a bottom-margin (unless it's the last
@@ -133,15 +103,10 @@ export const Technical = styled.span(props => STYLES_BY_VARIANT(props.theme).tec
  * to wrap each `<P />` in a `<div />` with the appropriate margin, or a flex
  * columnn with a gap.
  */
-export const P = styled.p(props => {
-  const styles = STYLES_BY_VARIANT(props.theme).body;
+export const P = styled(Body).attrs({ as: 'p' })`
+  margin-bottom: ${props => props.theme.lineHeight.textBase};
 
-  return {
-    ...styles,
-    marginBottom: styles.lineHeight,
-
-    '&:last-child': {
-      marginBottom: 0,
-    },
-  };
-});
+  &:last-child {
+    margin-bottom: 0;
+  }
+`;
