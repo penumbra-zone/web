@@ -14,12 +14,12 @@ const dense = css<StyledButtonProps>`
   min-width: 40px;
 `;
 
-const sparse = css`
+const sparse = css<StyledButtonProps>`
   border-radius: ${props => props.theme.borderRadius.sm};
   padding-left: ${props => props.theme.spacing(4)};
   padding-right: ${props => props.theme.spacing(4)};
   height: 56px;
-  min-width: 56px;
+  width: ${props => (props.$iconOnly ? '56px' : '100%')};
 `;
 
 const outlineColorByActionType: Record<ActionType, keyof DefaultTheme['color']['action']> = {
