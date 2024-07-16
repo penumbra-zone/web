@@ -182,6 +182,21 @@ export const theme: DefaultTheme = {
     textSm: '0.875rem',
     textXs: '0.75rem',
   },
+  lineHeight: {
+    text9xl: '8.25rem',
+    text8xl: '6.25rem',
+    text7xl: '5rem',
+    text6xl: '4.25rem',
+    text5xl: '3.5rem',
+    text4xl: '2.75rem',
+    text3xl: '2.5rem',
+    text2xl: '2.25rem',
+    textXl: '2rem',
+    textLg: '1.75rem',
+    textBase: '1.5rem',
+    textSm: '1.25rem',
+    textXs: '1rem',
+  },
   spacing: spacingUnits => `${spacingUnits * 4}px`,
 };
 

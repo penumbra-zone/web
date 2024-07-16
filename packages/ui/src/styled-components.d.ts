@@ -64,6 +64,21 @@ declare module 'styled-components' {
       textSm: string;
       textXs: string;
     };
+    lineHeight: {
+      text9xl: string;
+      text8xl: string;
+      text7xl: string;
+      text6xl: string;
+      text5xl: string;
+      text4xl: string;
+      text3xl: string;
+      text2xl: string;
+      textXl: string;
+      textLg: string;
+      textBase: string;
+      textSm: string;
+      textXs: string;
+    };
     /**
      * A function that takes a number of spacing units, and returns a string to
      * use for a CSS property.
