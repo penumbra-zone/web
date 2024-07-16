@@ -16,7 +16,7 @@ export const Basic: Story = {
     size: 'sparse',
     children: 'Save',
     variant: 'primary',
-    subvariant: 'strong',
+    subvariant: 'filled',
     disabled: false,
   },
 };

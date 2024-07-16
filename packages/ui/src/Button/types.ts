@@ -1,5 +1,5 @@
 export type Variant = 'primary' | 'secondary' | 'unshield' | 'neutral' | 'destructive';
 
-export type Subvariant = 'strong' | 'subtle' | 'outlined';
+export type Subvariant = 'filled' | 'outlined';
 
 export type Size = 'dense' | 'sparse';

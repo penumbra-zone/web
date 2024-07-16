@@ -95,7 +95,7 @@ export const Button = ({
   onClick,
   size = 'sparse',
   variant = 'primary',
-  subvariant = 'strong',
+  subvariant = 'filled',
 }: ButtonProps) => {
   return (
     <StyledButton
