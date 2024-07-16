@@ -36,6 +36,22 @@ declare module 'styled-components' {
         disabled: string;
         special: string;
       };
+
+      action: {
+        hoverOverlay: string;
+        activeOverlay: string;
+        disabledOverlay: string;
+        primaryFocusOutline: string;
+        secondaryFocusOutline: string;
+        unshieldFocusOutline: string;
+        neutralFocusOutline: string;
+        destructiveFocusOutline: string;
+      };
+
+      other: {
+        tonalStroke: string;
+        solidStroke: string;
+      };
     };
     breakpoint: {
       mobile: number;

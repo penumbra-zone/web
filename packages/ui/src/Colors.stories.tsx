@@ -38,7 +38,7 @@ type VariantProps =
       $colorVariant: TextColorVariant;
     }
   | {
-      $color: Exclude<TColor, 'text'>;
+      $color: Exclude<TColor, 'text' | 'action' | 'other'>;
       $colorVariant: ColorVariant;
     };
 
@@ -55,7 +55,7 @@ const Variant = styled.div<VariantProps>`
   padding: ${props => props.theme.spacing(2)};
 `;
 
-const BASE_COLORS: Exclude<TColor, 'text'>[] = [
+const BASE_COLORS: Exclude<TColor, 'text' | 'action' | 'other'>[] = [
   'neutral',
   'primary',
   'secondary',
@@ -65,7 +65,7 @@ const BASE_COLORS: Exclude<TColor, 'text'>[] = [
   'success',
 ];
 
-const Color = <T extends TColor>({ color }: { color: T }) => (
+const Color = <T extends Exclude<TColor, 'action' | 'other'>>({ color }: { color: T }) => (
   <Fragment key={color}>
     <Grid mobile={6} tablet={2}>
       <Label>

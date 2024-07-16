@@ -94,6 +94,9 @@ const PALETTE = {
   },
 };
 
+const FIFTEEN_PERCENT_OPACITY_IN_HEX = '26';
+const EIGHTY_PERCENT_OPACITY_IN_HEX = 'cc';
+
 export const theme: DefaultTheme = {
   borderRadius: {
     none: '0px',
@@ -160,6 +163,20 @@ export const theme: DefaultTheme = {
       secondary: PALETTE.neutral['300'],
       disabled: PALETTE.neutral['500'],
       special: PALETTE.orange['400'],
+    },
+    action: {
+      hoverOverlay: PALETTE.neutral['50'] + FIFTEEN_PERCENT_OPACITY_IN_HEX,
+      activeOverlay: PALETTE.neutral['950'] + FIFTEEN_PERCENT_OPACITY_IN_HEX,
+      disabledOverlay: PALETTE.neutral['950'] + EIGHTY_PERCENT_OPACITY_IN_HEX,
+      primaryFocusOutline: PALETTE.orange['400'],
+      secondaryFocusOutline: PALETTE.teal['400'],
+      unshieldFocusOutline: PALETTE.purple['400'],
+      neutralFocusOutline: PALETTE.neutral['400'],
+      destructiveFocusOutline: PALETTE.red['400'],
+    },
+    other: {
+      tonalStroke: PALETTE.neutral['50'] + FIFTEEN_PERCENT_OPACITY_IN_HEX,
+      solidStroke: PALETTE.neutral['700'],
     },
   },
   font: {
