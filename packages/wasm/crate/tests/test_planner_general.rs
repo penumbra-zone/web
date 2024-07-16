@@ -1,8 +1,7 @@
-use std::str::FromStr;
-
-use penumbra_asset::asset;
+use penumbra_asset::STAKING_TOKEN_ASSET_ID;
 use penumbra_keys::FullViewingKey;
 use penumbra_proto::view::v1::TransactionPlannerRequest;
+use std::str::FromStr;
 use wasm_bindgen_test::wasm_bindgen_test;
 
 use penumbra_wasm::database::mock::{get_mock_tables, MockDb};
@@ -51,12 +50,7 @@ async fn test_planner_without_actions() {
     };
     let full_viewing_key = FullViewingKey::from_str("penumbrafullviewingkey1mnm04x7yx5tyznswlp0sxs8nsxtgxr9p98dp0msuek8fzxuknuzawjpct8zdevcvm3tsph0wvsuw33x2q42e7sf29q904hwerma8xzgrxsgq2").unwrap();
 
-    let fee_id = asset::Cache::with_known_assets()
-        .get_unit("upenumbra")
-        .unwrap()
-        .id();
-
-    let res = plan_transaction_inner(storage, req, full_viewing_key, fee_id)
+    let res = plan_transaction_inner(storage, req, full_viewing_key, *STAKING_TOKEN_ASSET_ID)
         .await
         .unwrap();
     assert_eq!(res.transaction_parameters.chain_id, "penumbra-deimos-8");

@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use penumbra_asset::asset::Metadata;
-use penumbra_asset::{asset, Value};
+use penumbra_asset::{Value, STAKING_TOKEN_ASSET_ID};
 use penumbra_keys::Address;
 use penumbra_keys::FullViewingKey;
 use penumbra_proto::core::asset::v1 as pb;
@@ -86,10 +86,7 @@ async fn setup_env(mock_db: &MockDb, tables: &Tables) {
             &Address::dummy(&mut OsRng),
             Value {
                 amount: 1558828u64.into(),
-                asset_id: asset::Cache::with_known_assets()
-                    .get_unit("upenumbra")
-                    .unwrap()
-                    .id(),
+                asset_id: *STAKING_TOKEN_ASSET_ID,
             },
         ),
         address_index: Default::default(),
@@ -153,10 +150,7 @@ async fn test_delegator_votes_empty() {
     };
     let full_viewing_key = FullViewingKey::from_str("penumbrafullviewingkey1mnm04x7yx5tyznswlp0sxs8nsxtgxr9p98dp0msuek8fzxuknuzawjpct8zdevcvm3tsph0wvsuw33x2q42e7sf29q904hwerma8xzgrxsgq2").unwrap();
 
-    let fee_id = asset::Cache::with_known_assets()
-        .get_unit("upenumbra")
-        .unwrap()
-        .id();
+    let fee_id = *STAKING_TOKEN_ASSET_ID;
 
     let res = plan_transaction_inner(storage, req, full_viewing_key, fee_id).await;
     assert!(matches!(
@@ -207,10 +201,7 @@ async fn test_no_rate_data_passed() {
     };
     let full_viewing_key = FullViewingKey::from_str("penumbrafullviewingkey1mnm04x7yx5tyznswlp0sxs8nsxtgxr9p98dp0msuek8fzxuknuzawjpct8zdevcvm3tsph0wvsuw33x2q42e7sf29q904hwerma8xzgrxsgq2").unwrap();
 
-    let fee_id = asset::Cache::with_known_assets()
-        .get_unit("upenumbra")
-        .unwrap()
-        .id();
+    let fee_id = *STAKING_TOKEN_ASSET_ID;
 
     let res = plan_transaction_inner(storage, req, full_viewing_key, fee_id)
         .await
@@ -268,12 +259,7 @@ async fn test_rate_data_matches() {
     };
     let full_viewing_key = FullViewingKey::from_str("penumbrafullviewingkey1mnm04x7yx5tyznswlp0sxs8nsxtgxr9p98dp0msuek8fzxuknuzawjpct8zdevcvm3tsph0wvsuw33x2q42e7sf29q904hwerma8xzgrxsgq2").unwrap();
 
-    let fee_id = asset::Cache::with_known_assets()
-        .get_unit("upenumbra")
-        .unwrap()
-        .id();
-
-    let res = plan_transaction_inner(storage, req, full_viewing_key, fee_id)
+    let res = plan_transaction_inner(storage, req, full_viewing_key, *STAKING_TOKEN_ASSET_ID)
         .await
         .unwrap();
     assert_eq!(res.actions.len(), 4);

@@ -1,5 +1,5 @@
 use penumbra_asset::asset::Metadata;
-use penumbra_asset::{asset, Value};
+use penumbra_asset::{Value, STAKING_TOKEN_ASSET_ID};
 use penumbra_keys::Address;
 use penumbra_proto::core::asset::v1 as pb;
 use penumbra_sct::{CommitmentSource, Nullifier};
@@ -74,10 +74,7 @@ async fn test_no_delegation_notes() {
     let addr = Address::dummy(&mut OsRng);
     let value = Value {
         amount: 10u64.into(),
-        asset_id: asset::Cache::with_known_assets()
-            .get_unit("upenumbra")
-            .unwrap()
-            .id(),
+        asset_id: *STAKING_TOKEN_ASSET_ID,
     };
 
     let note_a = SpendableNoteRecord {

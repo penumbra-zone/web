@@ -1,4 +1,4 @@
-use penumbra_asset::asset::Cache;
+use penumbra_asset::STAKING_TOKEN_ASSET_ID;
 use penumbra_fee::GasPrices;
 use penumbra_proto::core::app::v1::AppParameters;
 use penumbra_proto::core::component::sct::v1::SctParameters;
@@ -42,10 +42,7 @@ pub async fn seed_params_in_db(mock_db: &MockDb, tables: &Tables) {
         .await
         .unwrap();
 
-    let fee_id = Cache::with_known_assets()
-        .get_unit("upenumbra")
-        .unwrap()
-        .id();
+    let fee_id = *STAKING_TOKEN_ASSET_ID;
 
     let gas_prices = GasPrices {
         asset_id: fee_id,
