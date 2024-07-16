@@ -157,7 +157,7 @@ export const Button = ({
       onClick={onClick}
       aria-label={children}
     >
-      {IconComponent && <IconComponent size={size === 'sparse' ? 24 : 16} />}
+      {IconComponent && <IconComponent size={size === 'sparse' && iconOnly ? 24 : 16} />}
 
       {!iconOnly && children}
     </StyledButton>
