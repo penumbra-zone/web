@@ -5,7 +5,7 @@ import { ThemeProvider } from '../src/ThemeProvider';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
-  color: ${props => props.theme.colors.text.primary};
+  color: ${props => props.theme.color.text.primary};
 `;
 
 /** @type { import('@storybook/react').Preview } */
