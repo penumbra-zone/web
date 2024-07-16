@@ -1,7 +1,7 @@
-import { ReactNode } from 'react';
+import { MouseEventHandler, ReactNode } from 'react';
 import styled, { css, DefaultTheme } from 'styled-components';
-import { asTransientProps, AsTransientProps } from '../utils/asTransientProps';
-import { Subvariant, Variant } from './types';
+import { asTransientProps } from '../utils/asTransientProps';
+import { Size, Subvariant, Variant } from './types';
 import { getBackgroundColor } from './helpers';
 import { button } from '../utils/typography';
 
@@ -26,7 +26,13 @@ const outlineColorByVariant: Record<Variant, keyof DefaultTheme['color']['action
   destructive: 'destructiveFocusOutline',
 };
 
-const StyledButton = styled.button<AsTransientProps<Omit<ButtonProps, 'children'>>>`
+interface StyledButtonProps {
+  $variant: Variant;
+  $subvariant: Subvariant;
+  $size: Size;
+}
+
+const StyledButton = styled.button<StyledButtonProps>`
   ${button}
 
   background-color: ${props => getBackgroundColor(props.$variant, props.$subvariant, props.theme)};
@@ -75,16 +81,28 @@ const StyledButton = styled.button<AsTransientProps<Omit<ButtonProps, 'children'
 `;
 
 export interface ButtonProps {
-  children: ReactNode;
-  size: 'dense' | 'sparse';
-  variant: Variant;
-  subvariant: Subvariant;
+  children?: ReactNode;
+  size?: Size;
+  variant?: Variant;
+  subvariant?: Subvariant;
   disabled?: boolean;
+  onClick?: MouseEventHandler<HTMLButtonElement>;
 }
 
-export const Button = ({ children, disabled, ...rest }: ButtonProps) => {
+export const Button = ({
+  children,
+  disabled,
+  onClick,
+  size = 'sparse',
+  variant = 'primary',
+  subvariant = 'strong',
+}: ButtonProps) => {
   return (
-    <StyledButton {...asTransientProps(rest)} disabled={disabled}>
+    <StyledButton
+      {...asTransientProps({ size, variant, subvariant })}
+      disabled={disabled}
+      onClick={onClick}
+    >
       {children}
     </StyledButton>
   );
