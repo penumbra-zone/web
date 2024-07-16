@@ -24,8 +24,8 @@ export const Basic: Story = {
   args: {
     size: 'sparse',
     children: 'Save',
+    actionType: 'default',
     variant: 'primary',
-    subvariant: 'filled',
     disabled: false,
     icon: Check,
     iconOnly: false,

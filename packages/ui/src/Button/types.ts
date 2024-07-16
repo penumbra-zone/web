@@ -1,5 +1,5 @@
-export type Variant = 'primary' | 'secondary' | 'unshield' | 'neutral' | 'destructive';
+export type ActionType = 'default' | 'accent' | 'unshield' | 'destructive';
 
-export type Subvariant = 'filled' | 'outlined';
+export type Variant = 'primary' | 'secondary';
 
 export type Size = 'dense' | 'sparse';

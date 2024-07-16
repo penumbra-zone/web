@@ -1,7 +1,7 @@
 import { MouseEventHandler } from 'react';
 import styled, { css, DefaultTheme } from 'styled-components';
 import { asTransientProps } from '../utils/asTransientProps';
-import { Size, Subvariant, Variant } from './types';
+import { Size, Variant, ActionType } from './types';
 import { getBackgroundColor } from './helpers';
 import { button } from '../utils/typography';
 import { LucideIcon } from 'lucide-react';
@@ -22,29 +22,38 @@ const sparse = css`
   min-width: 56px;
 `;
 
-const outlineColorByVariant: Record<Variant, keyof DefaultTheme['color']['action']> = {
-  primary: 'primaryFocusOutline',
-  secondary: 'secondaryFocusOutline',
+const outlineColorByActionType: Record<ActionType, keyof DefaultTheme['color']['action']> = {
+  default: 'neutralFocusOutline',
+  accent: 'primaryFocusOutline',
   unshield: 'unshieldFocusOutline',
-  neutral: 'neutralFocusOutline',
   destructive: 'destructiveFocusOutline',
+};
+
+const borderColorByActionType: Record<
+  ActionType,
+  'neutral' | 'primary' | 'unshield' | 'destructive'
+> = {
+  default: 'neutral',
+  accent: 'primary',
+  unshield: 'unshield',
+  destructive: 'destructive',
 };
 
 interface StyledButtonProps {
   $iconOnly?: boolean;
+  $actionType: ActionType;
   $variant: Variant;
-  $subvariant: Subvariant;
   $size: Size;
 }
 
 const StyledButton = styled.button<StyledButtonProps>`
   ${button}
 
-  background-color: ${props => getBackgroundColor(props.$variant, props.$subvariant, props.theme)};
+  background-color: ${props => getBackgroundColor(props.$actionType, props.$variant, props.theme)};
   border: none;
   outline: ${props =>
-    props.$subvariant === 'outlined'
-      ? `1px solid ${props.theme.color[props.$variant].main}`
+    props.$variant === 'secondary'
+      ? `1px solid ${props.theme.color[borderColorByActionType[props.$actionType]].main}`
       : 'none'};
   outline-offset: -1px;
   display: flex;
@@ -75,7 +84,8 @@ const StyledButton = styled.button<StyledButtonProps>`
   }
 
   &:focus {
-    outline: 2px solid ${props => props.theme.color.action[outlineColorByVariant[props.$variant]]};
+    outline: 2px solid
+      ${props => props.theme.color.action[outlineColorByActionType[props.$actionType]]};
   }
 
   &:disabled::before {
@@ -92,8 +102,8 @@ const StyledButton = styled.button<StyledButtonProps>`
 interface BaseButtonProps {
   children: string;
   size?: Size;
+  actionType?: ActionType;
   variant?: Variant;
-  subvariant?: Subvariant;
   disabled?: boolean;
   onClick?: MouseEventHandler<HTMLButtonElement>;
 }
@@ -147,12 +157,12 @@ export const Button = ({
   icon: IconComponent,
   iconOnly,
   size = 'sparse',
+  actionType = 'default',
   variant = 'primary',
-  subvariant = 'filled',
 }: ButtonProps) => {
   return (
     <StyledButton
-      {...asTransientProps({ iconOnly, size, variant, subvariant })}
+      {...asTransientProps({ iconOnly, size, actionType, variant })}
       disabled={disabled}
       onClick={onClick}
       aria-label={children}
