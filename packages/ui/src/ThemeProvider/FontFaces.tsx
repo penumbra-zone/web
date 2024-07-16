@@ -13,7 +13,7 @@ import workSansMediumLatinExt from './fonts/WorkSans-Medium-LatinExt.woff2?url';
 import workSansMediumVietnamese from './fonts/WorkSans-Medium-Vietnamese.woff2?url';
 
 /** @see https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;1,400;1,500&family=Work+Sans:wght@500&display=swap */
-export const GlobalStyles = createGlobalStyle`
+export const FontFaces = createGlobalStyle`
 /* latin-ext */
 @font-face {
   font-family: 'Poppins';
