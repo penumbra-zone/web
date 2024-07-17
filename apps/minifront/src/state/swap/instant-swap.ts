@@ -1,6 +1,6 @@
 import { AllSlices, SliceCreator } from '..';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
-import { isValidAmount, planBuildBroadcast } from '../helpers';
+import { isValidAmount, planBuildBroadcast , getStatusCodeFromError } from '../helpers';
 import {
   AssetId,
   Metadata,
@@ -128,7 +128,20 @@ export const createInstantSwapSlice = (): SliceCreator<InstantSwapSlice> => (set
           };
         });
       } catch (e) {
-        errorToast(e, 'Error estimating swap').render();
+        if (e instanceof Error) {
+          const statusCode = getStatusCodeFromError(e.message);
+          switch (statusCode) {
+            case 404:
+              errorToast('The node operator has not enabled swap simulations.').render();
+              break;
+            case 412:
+              errorToast('No price data available to create a swap estimation.').render();
+              break;
+            default:
+              errorToast(e, 'Error estimating swap.').render();
+              break;
+          }
+        }
       } finally {
         set(({ swap }) => {
           swap.instantSwap.simulateSwapLoading = false;

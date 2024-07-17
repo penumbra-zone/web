@@ -190,3 +190,13 @@ export const isValidAmount = (amount: string, assetIn?: BalancesResponse) =>
 
 export const isKnown = (balancesResponse: BalancesResponse) =>
   getValueViewCaseFromBalancesResponse.optional()(balancesResponse) === 'knownAssetId';
+
+// Utility function to extract status code from error message.
+export const getStatusCodeFromError = (errorMessage: string): number | undefined => {
+  if (errorMessage.includes('HTTP 404')) {
+    return 404;
+  } else if (errorMessage.includes('HTTP 412')) {
+    return 412;
+  }
+  return undefined;
+};
