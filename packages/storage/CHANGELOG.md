@@ -1,5 +1,14 @@
 # @penumbra-zone/storage
 
+## 14.0.2
+
+### Patch Changes
+
+- 3aaead1: Move the "default" option in package.json exports field to the last
+- Updated dependencies [3aaead1]
+  - @penumbra-zone/types@15.1.1
+  - @penumbra-zone/wasm@17.0.2
+
 ## 14.0.1
 
 ### Patch Changes
