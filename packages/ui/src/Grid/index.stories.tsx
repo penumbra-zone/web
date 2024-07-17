@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Grid } from '.';
 import styled from 'styled-components';
-import { Technical } from '../Typography';
+import { Technical } from '../Technical';
 
 const meta: Meta<typeof Grid> = {
   component: Grid,
