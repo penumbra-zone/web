@@ -12,6 +12,7 @@ import { ZQueryState, createZQuery } from '@penumbra-zone/zquery';
 import { AuctionInfo, getAuctionInfos } from '../../../fetchers/auction-infos';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import { bech32mAuctionId } from '@penumbra-zone/bech32m/pauctid';
+import { getAddressIndex } from '@penumbra-zone/getters/balances-response';
 
 /**
  * Multipliers to use with the output of the swap simulation, to determine
@@ -175,14 +176,17 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
   },
 
   endAuction: async auctionId => {
-    const req = new TransactionPlannerRequest({ dutchAuctionEndActions: [{ auctionId }] });
+    const source = getAddressIndex.optional()(get().swap.assetIn);
+    const req = new TransactionPlannerRequest({ dutchAuctionEndActions: [{ auctionId }], source });
     await planBuildBroadcast('dutchAuctionEnd', req);
     get().swap.dutchAuction.auctionInfos.revalidate();
   },
 
   withdraw: async (auctionId, currentSeqNum) => {
+    const source = getAddressIndex.optional()(get().swap.assetIn);
     const req = new TransactionPlannerRequest({
       dutchAuctionWithdrawActions: [{ auctionId, seq: currentSeqNum + 1n }],
+      source,
     });
     await planBuildBroadcast('dutchAuctionWithdraw', req);
     get().swap.dutchAuction.auctionInfos.revalidate();
