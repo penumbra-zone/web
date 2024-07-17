@@ -127,7 +127,7 @@ export class TransactionToast {
     this.toast
       .warning()
       .message('IBC is Currently Disabled')
-      .description('the IBC mechanism enabling withdrawls has not been enabled yet.')
+      .description('the IBC mechanism enabling deposits and withdrawls has not been enabled yet.')
       .duration(5_000)
       .render();
   }
