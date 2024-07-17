@@ -22,6 +22,7 @@ import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import { fromValueView } from '@penumbra-zone/types/amount';
 import { BigNumber } from 'bignumber.js';
 import { getValueViewCaseFromBalancesResponse } from '@penumbra-zone/getters/balances-response';
+import { getAppParameters } from '../fetchers/app-params';
 
 /**
  * Handles the common use case of planning, building, and broadcasting a
@@ -48,6 +49,21 @@ export const planBuildBroadcast = async (
   toast.onStart();
 
   const rpcMethod = options?.skipAuth ? viewClient.witnessAndBuild : viewClient.authorizeAndBuild;
+
+  // Retrieve DEX and IBC app parameters, and display a warning message if they are enabled.
+  const appParameters = await getAppParameters();
+  const { dexParams, ibcParams } = appParameters || {};
+  const dexEnabled = dexParams?.isEnabled ?? false;
+  const ibcEnabled = ibcParams?.ibcEnabled ?? false;
+
+  if (!dexEnabled) {
+    toast.onDexEnabledStatus();
+    return;
+  }
+  if (!ibcEnabled) {
+    toast.onIBCEnabledStatus();
+    return;
+  }
 
   try {
     const transactionPlan = await plan(req);

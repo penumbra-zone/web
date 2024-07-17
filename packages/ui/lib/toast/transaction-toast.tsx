@@ -114,6 +114,24 @@ export class TransactionToast {
       .render();
   }
 
+  onDexEnabledStatus(): void {
+    this.toast
+      .warning()
+      .message('DEX is Currently Disabled')
+      .description('The Decentralized Exchange (DEX) has not been enabled yet.')
+      .duration(5_000)
+      .render();
+  }
+
+  onIBCEnabledStatus(): void {
+    this.toast
+      .warning()
+      .message('IBC is Currently Disabled')
+      .description('the IBC mechanism enabling withdrawls has not been enabled yet.')
+      .duration(5_000)
+      .render();
+  }
+
   /**
    * Updates the toast to show that a transaction succeeded. Note that you must
    * call `.txHash()` before calling `.onSuccess()`, so that `.onSuccess()` can
