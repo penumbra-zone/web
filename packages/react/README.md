@@ -10,12 +10,20 @@ you're writing a Penumbra dapp in React.
 npm config set @buf:registry https://buf.build/gen/npm/v1
 ```
 
+## This is a client-side package
+
+The components in this package should only be executed in a browser, not in any
+server-side rendering context. To encourage this, `<PenumbraContextProvider>`
+uses an input prop that may only be obtained client-side, by using methods from
+`@penumbra-zone/client`.
+
 ## Overview
 
 If a user has a Penumbra provider in their browser, it may be present (injected)
 in the record at the window global `window[Symbol.for('penumbra')]` identified
 by a URL origin at which the provider can serve a manifest. For example, Prax
-Wallet's origin is `chrome-extension://lkpmkhpnhknhmibgnmmhdhgdilepfghe`, so its provider record may be accessed like
+Wallet's origin is `chrome-extension://lkpmkhpnhknhmibgnmmhdhgdilepfghe`, so its
+provider record may be accessed like
 
 ```ts
 const prax: PenumbraProvider | undefined =
