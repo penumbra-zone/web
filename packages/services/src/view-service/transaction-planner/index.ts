@@ -6,6 +6,7 @@ import { assertSwapAssetsAreNotTheSame } from './assert-swap-assets-are-not-the-
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import { fvkCtx } from '../../ctx/full-viewing-key.js';
 import { extractAltFee } from '../fees.js';
+import { assertTransactionSource } from './assert-transaction-source.js';
 
 export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) => {
   assertValidRequest(req);
@@ -66,4 +67,5 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
  */
 const assertValidRequest = (req: TransactionPlannerRequest): void => {
   assertSwapAssetsAreNotTheSame(req);
+  assertTransactionSource(req);
 };
