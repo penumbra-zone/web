@@ -1,5 +1,11 @@
 # node-status
 
+## 4.1.8
+
+### Patch Changes
+
+- @repo/ui@7.0.1
+
 ## 4.1.7
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # @penumbra-zone/wasm
 
+## 17.0.2
+
+### Patch Changes
+
+- Updated dependencies [3aaead1]
+  - @penumbra-zone/types@15.1.1
+
 ## 17.0.1
 
 ### Patch Changes
