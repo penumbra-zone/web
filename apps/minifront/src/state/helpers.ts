@@ -50,7 +50,7 @@ export const planBuildBroadcast = async (
 
   const rpcMethod = options?.skipAuth ? viewClient.witnessAndBuild : viewClient.authorizeAndBuild;
 
-  // Retrieve DEX and IBC app parameters, and display a warning message if they are enabled.
+  // Retrieve DEX and IBC app parameters, and display a warning message if they are disabled.
   const appParameters = await getAppParameters();
   const { dexParams, ibcParams } = appParameters || {};
   const dexEnabled = dexParams?.isEnabled ?? false;
