@@ -1,5 +1,15 @@
 # @penumbra-zone/router
 
+## 17.0.1
+
+### Patch Changes
+
+- Updated dependencies [1a57749]
+  - @penumbra-zone/wasm@17.0.1
+  - @penumbra-zone/perspective@14.0.1
+  - @penumbra-zone/query@15.0.1
+  - @penumbra-zone/storage@14.0.1
+
 ## 17.0.0
 
 ### Minor Changes

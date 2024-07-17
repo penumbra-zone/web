@@ -1,5 +1,11 @@
 # @penumbra-zone/client
 
+## 11.1.1
+
+### Patch Changes
+
+- ab09596: fix manifest checking function
+
 ## 11.1.0
 
 ### Minor Changes
