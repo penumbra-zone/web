@@ -8,6 +8,7 @@ import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { GradientHeader } from '@repo/ui/components/ui/gradient-header';
 import { useStoreShallow } from '../../utils/use-store-shallow';
 import { useState } from 'react';
+import { SwapRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
 const unclaimedSwapsSelector = (state: AllSlices) => ({
   claimSwap: state.unclaimedSwaps.claimSwap,
@@ -20,7 +21,7 @@ export const UnclaimedSwaps = () => {
   const [claim, setClaim] = useState<string[]>([]);
 
   // Internal state management for tracking the IDs of the swaps that are currently being claimed.
-  const handleClaim = async (id: string, swap: any) => {
+  const handleClaim = async (id: string, swap: SwapRecord) => {
     setClaim(previous => [...previous, id]);
     await claimSwap(id, swap);
   };
