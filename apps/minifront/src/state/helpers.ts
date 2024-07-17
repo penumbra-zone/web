@@ -52,9 +52,8 @@ export const planBuildBroadcast = async (
 
   // Retrieve DEX and IBC app parameters, and display a warning message if they are disabled.
   const appParameters = await getAppParameters();
-  const { dexParams, ibcParams } = appParameters || {};
-  const dexEnabled = dexParams?.isEnabled ?? false;
-  const ibcEnabled = ibcParams?.ibcEnabled ?? false;
+  const dexEnabled = appParameters?.dexParams?.isEnabled;
+  const ibcEnabled = appParameters?.ibcParams?.ibcEnabled;
 
   if (!dexEnabled) {
     toast.onDexEnabledStatus();
