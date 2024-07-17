@@ -12,12 +12,11 @@ import { SwapRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/vie
 
 const unclaimedSwapsSelector = (state: AllSlices) => ({
   claimSwap: state.unclaimedSwaps.claimSwap,
-  isInProgress: state.unclaimedSwaps.isInProgress,
 });
 
 export const UnclaimedSwaps = () => {
   const unclaimedSwaps = useUnclaimedSwaps();
-  const { claimSwap, isInProgress } = useStoreShallow(unclaimedSwapsSelector);
+  const { claimSwap } = useStoreShallow(unclaimedSwapsSelector);
   const [claim, setClaim] = useState<string[]>([]);
 
   // Internal state management for tracking the IDs of the swaps that are currently being claimed.
@@ -33,7 +32,7 @@ export const UnclaimedSwaps = () => {
       <GradientHeader layout>Unclaimed Swaps</GradientHeader>
       {unclaimedSwaps.data.map(({ swap, asset1, asset2 }) => {
         const id = uint8ArrayToBase64(getSwapRecordCommitment(swap).inner);
-        const isClaiming = claim.includes(id) || isInProgress(id);
+        const isClaiming = claim.includes(id);
 
         return (
           <div key={id} className='mt-4 flex items-center gap-4 rounded-md border p-2'>
