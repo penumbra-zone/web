@@ -1,5 +1,12 @@
 # @penumbra-zone/react
 
+## 1.0.1
+
+### Patch Changes
+
+- Updated dependencies [ab09596]
+  - @penumbra-zone/client@11.1.1
+
 ## 1.0.0
 
 ### Major Changes

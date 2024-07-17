@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/storage",
-  "version": "14.0.0",
+  "version": "14.0.2",
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "engine": {
@@ -25,8 +25,8 @@
   "publishConfig": {
     "exports": {
       "./indexed-db": {
-        "default": "./dist/indexed-db/index.js",
-        "types": "./dist/indexed-db/index.d.ts"
+        "types": "./dist/indexed-db/index.d.ts",
+        "default": "./dist/indexed-db/index.js"
       }
     }
   },

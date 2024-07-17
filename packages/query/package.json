@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/query",
-  "version": "15.0.0",
+  "version": "15.0.2",
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "engine": {
@@ -25,8 +25,8 @@
   "publishConfig": {
     "exports": {
       "./*": {
-        "default": "./dist/*.js",
-        "types": "./dist/*.d.ts"
+        "types": "./dist/*.d.ts",
+        "default": "./dist/*.js"
       }
     }
   },
