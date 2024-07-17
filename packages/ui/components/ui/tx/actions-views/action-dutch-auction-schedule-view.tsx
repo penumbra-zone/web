@@ -18,6 +18,7 @@ export const ActionDutchAuctionScheduleViewComponent = ({
           dutchAuction={new DutchAuction({ description: value.action?.description })}
           inputMetadata={value.inputMetadata}
           outputMetadata={value.outputMetadata}
+          auctionId={value.auctionId}
         />
       }
     />
