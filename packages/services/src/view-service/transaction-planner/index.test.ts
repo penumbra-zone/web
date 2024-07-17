@@ -18,6 +18,7 @@ import {
   AssetId,
   Value,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 
 const mockPlanTransaction = vi.hoisted(() => vi.fn());
 vi.mock('@penumbra-zone/wasm/planner', () => ({
@@ -60,7 +61,9 @@ describe('TransactionPlanner request handler', () => {
         .set(fvkCtx, () => Promise.resolve(testFullViewingKey)),
     });
 
-    req = new TransactionPlannerRequest({});
+    req = new TransactionPlannerRequest({
+      source: new AddressIndex({ account: 0 }),
+    });
   });
 
   test('should throw if request is not valid', async () => {
