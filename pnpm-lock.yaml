@@ -56,7 +56,7 @@ importers:
         version: link:packages/tailwind-config
       '@storybook/react-vite':
         specifier: 8.1.1
-        version: 8.1.1(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rollup@4.18.1)(typescript@5.5.3)(vite@5.3.3(@types/node@20.14.10)(terser@5.31.1))
+        version: 8.1.1(prettier@3.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rollup@4.18.1)(typescript@5.5.3)(vite@5.3.3(@types/node@20.14.10)(terser@5.31.1))
       '@testing-library/jest-dom':
         specifier: ^6.4.5
         version: 6.4.6(vitest@1.6.0(@types/node@20.14.10)(@vitest/browser@1.6.0)(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1))
@@ -107,7 +107,7 @@ importers:
         version: 0.5.3(eslint@9.6.0)(typescript@5.5.3)
       eslint-plugin-prettier:
         specifier: ^5.1.3
-        version: 5.1.3(@types/eslint@8.56.10)(eslint-config-prettier@9.1.0(eslint@9.6.0))(eslint@9.6.0)(prettier@3.3.2)
+        version: 5.1.3(@types/eslint@8.56.10)(eslint-config-prettier@9.1.0(eslint@9.6.0))(eslint@9.6.0)(prettier@3.3.3)
       eslint-plugin-react:
         specifier: 7.8.0-rc.0
         version: 7.8.0-rc.0(eslint@9.6.0)
@@ -136,11 +136,8 @@ importers:
         specifier: ^1.44.0
         version: 1.45.1
       prettier:
-        specifier: ^3.2.5
-        version: 3.3.2
-      pretty-quick:
-        specifier: ^4.0.0
-        version: 4.0.0(prettier@3.3.2)
+        specifier: ^3.3.3
+        version: 3.3.3
       syncpack:
         specifier: ^12.3.2
         version: 12.3.3(typescript@5.5.3)
@@ -8507,10 +8504,6 @@ packages:
     resolution: {integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==}
     engines: {node: '>=8.6'}
 
-  picomatch@3.0.1:
-    resolution: {integrity: sha512-I3EurrIQMlRc9IaAZnqRR044Phh2DXY+55o7uJ0V+hYZAcQYSuFWsc9q5PvyDHUSCe1Qxn/iBz+78s86zWnGag==}
-    engines: {node: '>=10'}
-
   pify@2.3.0:
     resolution: {integrity: sha512-udgsAY+fTnvv7kI7aaxbqwWNb0AHiB0qBO89PZKPkoTmGOgdbrHDKD+0B2X4uTfJ/FT1R09r9gTsjUjNJotuog==}
     engines: {node: '>=0.10.0'}
@@ -8659,6 +8652,11 @@ packages:
     engines: {node: '>=14'}
     hasBin: true
 
+  prettier@3.3.3:
+    resolution: {integrity: sha512-i2tDNA0O5IrMO757lfrdQZCc2jPNDVntV0m/+4whiDfWaTKfMNgR7Qz0NAeGz/nRqF4m5/6CLzbP4/liHt12Ew==}
+    engines: {node: '>=14'}
+    hasBin: true
+
   pretty-format@27.5.1:
     resolution: {integrity: sha512-Qb1gy5OrP5+zDf2Bvnzdl3jsTf1qXVMazbvCoKhtKqVs4/YK4ozX4gKQJJVyNe+cajNPn0KoC0MC3FUmaHWEmQ==}
     engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
@@ -8670,13 +8668,6 @@ packages:
   pretty-hrtime@1.0.3:
     resolution: {integrity: sha512-66hKPCr+72mlfiSjlEB1+45IjXSqvVAIy6mocupoww4tBFE9R9IhwwUGoI4G++Tc9Aq+2rxOt0RFU6gPcrte0A==}
     engines: {node: '>= 0.8'}
-
-  pretty-quick@4.0.0:
-    resolution: {integrity: sha512-M+2MmeufXb/M7Xw3Afh1gxcYpj+sK0AxEfnfF958ktFeAyi5MsKY5brymVURQLgPLV1QaF5P4pb2oFJ54H3yzQ==}
-    engines: {node: '>=14'}
-    hasBin: true
-    peerDependencies:
-      prettier: ^3.0.0
 
   proc-log@4.2.0:
     resolution: {integrity: sha512-g8+OnU/L2v+wyiVK+D5fA34J7EH8jZ8DDlvwhRCMxmMj7UCBvxiO1mGeN+36JXIKF4zevU4kRBd8lVgG9vLelA==}
@@ -16336,6 +16327,33 @@ snapshots:
       - prettier
       - supports-color
 
+  '@storybook/builder-vite@8.1.1(prettier@3.3.3)(typescript@5.5.3)(vite@5.3.3(@types/node@20.14.10)(terser@5.31.1))':
+    dependencies:
+      '@storybook/channels': 8.1.1
+      '@storybook/client-logger': 8.1.1
+      '@storybook/core-common': 8.1.1(prettier@3.3.3)
+      '@storybook/core-events': 8.1.1
+      '@storybook/csf-plugin': 8.1.1
+      '@storybook/node-logger': 8.1.1
+      '@storybook/preview': 8.1.1
+      '@storybook/preview-api': 8.1.1
+      '@storybook/types': 8.1.1
+      '@types/find-cache-dir': 3.2.1
+      browser-assert: 1.2.1
+      es-module-lexer: 1.5.4
+      express: 4.19.2
+      find-cache-dir: 3.3.2
+      fs-extra: 11.2.0
+      magic-string: 0.30.10
+      ts-dedent: 2.2.0
+      vite: 5.3.3(@types/node@20.14.10)(terser@5.31.1)
+    optionalDependencies:
+      typescript: 5.5.3
+    transitivePeerDependencies:
+      - encoding
+      - prettier
+      - supports-color
+
   '@storybook/channels@8.1.1':
     dependencies:
       '@storybook/client-logger': 8.1.1
@@ -16468,7 +16486,7 @@ snapshots:
       node-fetch: 2.7.0
       picomatch: 2.3.1
       pkg-dir: 5.0.0
-      prettier-fallback: prettier@3.3.2
+      prettier-fallback: prettier@3.3.3
       pretty-hrtime: 1.0.3
       resolve-from: 5.0.0
       semver: 7.6.2
@@ -16478,6 +16496,43 @@ snapshots:
       util: 0.12.5
     optionalDependencies:
       prettier: 3.3.2
+    transitivePeerDependencies:
+      - encoding
+      - supports-color
+
+  '@storybook/core-common@8.1.1(prettier@3.3.3)':
+    dependencies:
+      '@storybook/core-events': 8.1.1
+      '@storybook/csf-tools': 8.1.1
+      '@storybook/node-logger': 8.1.1
+      '@storybook/types': 8.1.1
+      '@yarnpkg/fslib': 2.10.3
+      '@yarnpkg/libzip': 2.3.0
+      chalk: 4.1.2
+      cross-spawn: 7.0.3
+      esbuild: 0.20.2
+      esbuild-register: 3.5.0(esbuild@0.20.2)
+      execa: 5.1.1
+      file-system-cache: 2.3.0
+      find-cache-dir: 3.3.2
+      find-up: 5.0.0
+      fs-extra: 11.2.0
+      glob: 10.4.5
+      handlebars: 4.7.8
+      lazy-universal-dotenv: 4.0.0
+      node-fetch: 2.7.0
+      picomatch: 2.3.1
+      pkg-dir: 5.0.0
+      prettier-fallback: prettier@3.3.3
+      pretty-hrtime: 1.0.3
+      resolve-from: 5.0.0
+      semver: 7.6.2
+      tempy: 1.0.1
+      tiny-invariant: 1.3.3
+      ts-dedent: 2.2.0
+      util: 0.12.5
+    optionalDependencies:
+      prettier: 3.3.3
     transitivePeerDependencies:
       - encoding
       - supports-color
@@ -16652,6 +16707,21 @@ snapshots:
       - prettier
       - supports-color
 
+  '@storybook/docs-tools@8.1.1(prettier@3.3.3)':
+    dependencies:
+      '@storybook/core-common': 8.1.1(prettier@3.3.3)
+      '@storybook/core-events': 8.1.1
+      '@storybook/preview-api': 8.1.1
+      '@storybook/types': 8.1.1
+      '@types/doctrine': 0.0.3
+      assert: 2.1.0
+      doctrine: 3.0.0
+      lodash: 4.17.21
+    transitivePeerDependencies:
+      - encoding
+      - prettier
+      - supports-color
+
   '@storybook/docs-tools@8.1.11(prettier@3.3.2)':
     dependencies:
       '@storybook/core-common': 8.1.11(prettier@3.3.2)
@@ -16790,10 +16860,67 @@ snapshots:
       - typescript
       - vite-plugin-glimmerx
 
+  '@storybook/react-vite@8.1.1(prettier@3.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rollup@4.18.1)(typescript@5.5.3)(vite@5.3.3(@types/node@20.14.10)(terser@5.31.1))':
+    dependencies:
+      '@joshwooding/vite-plugin-react-docgen-typescript': 0.3.1(typescript@5.5.3)(vite@5.3.3(@types/node@20.14.10)(terser@5.31.1))
+      '@rollup/pluginutils': 5.1.0(rollup@4.18.1)
+      '@storybook/builder-vite': 8.1.1(prettier@3.3.3)(typescript@5.5.3)(vite@5.3.3(@types/node@20.14.10)(terser@5.31.1))
+      '@storybook/node-logger': 8.1.1
+      '@storybook/react': 8.1.1(prettier@3.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.3)
+      '@storybook/types': 8.1.1
+      find-up: 5.0.0
+      magic-string: 0.30.10
+      react: 18.3.1
+      react-docgen: 7.0.3
+      react-dom: 18.3.1(react@18.3.1)
+      resolve: 1.22.8
+      tsconfig-paths: 4.2.0
+      vite: 5.3.3(@types/node@20.14.10)(terser@5.31.1)
+    transitivePeerDependencies:
+      - '@preact/preset-vite'
+      - encoding
+      - prettier
+      - rollup
+      - supports-color
+      - typescript
+      - vite-plugin-glimmerx
+
   '@storybook/react@8.1.1(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.3)':
     dependencies:
       '@storybook/client-logger': 8.1.1
       '@storybook/docs-tools': 8.1.1(prettier@3.3.2)
+      '@storybook/global': 5.0.0
+      '@storybook/preview-api': 8.1.1
+      '@storybook/react-dom-shim': 8.1.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@storybook/types': 8.1.1
+      '@types/escodegen': 0.0.6
+      '@types/estree': 0.0.51
+      '@types/node': 18.19.39
+      acorn: 7.4.1
+      acorn-jsx: 5.3.2(acorn@7.4.1)
+      acorn-walk: 7.2.0
+      escodegen: 2.1.0
+      html-tags: 3.3.1
+      lodash: 4.17.21
+      prop-types: 15.8.1
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      react-element-to-jsx-string: 15.0.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      semver: 7.6.2
+      ts-dedent: 2.2.0
+      type-fest: 2.19.0
+      util-deprecate: 1.0.2
+    optionalDependencies:
+      typescript: 5.5.3
+    transitivePeerDependencies:
+      - encoding
+      - prettier
+      - supports-color
+
+  '@storybook/react@8.1.1(prettier@3.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.3)':
+    dependencies:
+      '@storybook/client-logger': 8.1.1
+      '@storybook/docs-tools': 8.1.1(prettier@3.3.3)
       '@storybook/global': 5.0.0
       '@storybook/preview-api': 8.1.1
       '@storybook/react-dom-shim': 8.1.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -17098,7 +17225,7 @@ snapshots:
       lodash: 4.17.21
       redent: 3.0.0
     optionalDependencies:
-      vitest: 1.6.0(@types/node@20.14.10)(@vitest/browser@1.6.0)(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1)
+      vitest: 1.6.0(@types/node@20.14.10)(@vitest/browser@1.6.0(playwright@1.45.1)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1)
 
   '@testing-library/jest-dom@6.4.6(vitest@1.6.0(@types/node@20.14.10)(@vitest/browser@1.6.0)(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1))':
     dependencies:
@@ -19584,10 +19711,10 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-plugin-prettier@5.1.3(@types/eslint@8.56.10)(eslint-config-prettier@9.1.0(eslint@9.6.0))(eslint@9.6.0)(prettier@3.3.2):
+  eslint-plugin-prettier@5.1.3(@types/eslint@8.56.10)(eslint-config-prettier@9.1.0(eslint@9.6.0))(eslint@9.6.0)(prettier@3.3.3):
     dependencies:
       eslint: 9.6.0
-      prettier: 3.3.2
+      prettier: 3.3.3
       prettier-linter-helpers: 1.0.0
       synckit: 0.8.8
     optionalDependencies:
@@ -21569,8 +21696,6 @@ snapshots:
 
   picomatch@2.3.1: {}
 
-  picomatch@3.0.1: {}
-
   pify@2.3.0: {}
 
   pify@4.0.1: {}
@@ -21727,6 +21852,8 @@ snapshots:
 
   prettier@3.3.2: {}
 
+  prettier@3.3.3: {}
+
   pretty-format@27.5.1:
     dependencies:
       ansi-regex: 5.0.1
@@ -21740,17 +21867,6 @@ snapshots:
       react-is: 18.3.1
 
   pretty-hrtime@1.0.3: {}
-
-  pretty-quick@4.0.0(prettier@3.3.2):
-    dependencies:
-      execa: 5.1.1
-      find-up: 5.0.0
-      ignore: 5.3.1
-      mri: 1.2.0
-      picocolors: 1.0.1
-      picomatch: 3.0.1
-      prettier: 3.3.2
-      tslib: 2.6.3
 
   proc-log@4.2.0: {}
 
@@ -23393,6 +23509,42 @@ snapshots:
       '@types/node': 20.14.10
       fsevents: 2.3.3
       terser: 5.31.1
+
+  vitest@1.6.0(@types/node@20.14.10)(@vitest/browser@1.6.0(playwright@1.45.1)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1):
+    dependencies:
+      '@vitest/expect': 1.6.0
+      '@vitest/runner': 1.6.0
+      '@vitest/snapshot': 1.6.0
+      '@vitest/spy': 1.6.0
+      '@vitest/utils': 1.6.0
+      acorn-walk: 8.3.3
+      chai: 4.4.1
+      debug: 4.3.5
+      execa: 8.0.1
+      local-pkg: 0.5.0
+      magic-string: 0.30.10
+      pathe: 1.1.2
+      picocolors: 1.0.1
+      std-env: 3.7.0
+      strip-literal: 2.1.0
+      tinybench: 2.8.0
+      tinypool: 0.8.4
+      vite: 5.3.3(@types/node@20.14.10)(terser@5.31.1)
+      vite-node: 1.6.0(@types/node@20.14.10)(terser@5.31.1)
+      why-is-node-running: 2.3.0
+    optionalDependencies:
+      '@types/node': 20.14.10
+      '@vitest/browser': 1.6.0(playwright@1.45.1)(vitest@1.6.0)
+      jsdom: 24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+    transitivePeerDependencies:
+      - less
+      - lightningcss
+      - sass
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+    optional: true
 
   vitest@1.6.0(@types/node@20.14.10)(@vitest/browser@1.6.0)(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1):
     dependencies:
