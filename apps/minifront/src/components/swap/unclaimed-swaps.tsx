@@ -7,6 +7,7 @@ import { getSwapRecordCommitment } from '@penumbra-zone/getters/swap-record';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { GradientHeader } from '@repo/ui/components/ui/gradient-header';
 import { useStoreShallow } from '../../utils/use-store-shallow';
+import { useState } from 'react';
 
 const unclaimedSwapsSelector = (state: AllSlices) => ({
   claimSwap: state.unclaimedSwaps.claimSwap,
@@ -16,6 +17,13 @@ const unclaimedSwapsSelector = (state: AllSlices) => ({
 export const UnclaimedSwaps = () => {
   const unclaimedSwaps = useUnclaimedSwaps();
   const { claimSwap, isInProgress } = useStoreShallow(unclaimedSwapsSelector);
+  const [claim, setClaim] = useState<string[]>([]);
+
+  // Internal state management for tracking the IDs of the swaps that are currently being claimed.
+  const handleClaim = async (id: string, swap: any) => {
+    setClaim(previous => [...previous, id]);
+    await claimSwap(id, swap);
+  };
 
   return !unclaimedSwaps.data?.length ? (
     <div className='hidden xl:block'></div>
@@ -24,6 +32,7 @@ export const UnclaimedSwaps = () => {
       <GradientHeader layout>Unclaimed Swaps</GradientHeader>
       {unclaimedSwaps.data.map(({ swap, asset1, asset2 }) => {
         const id = uint8ArrayToBase64(getSwapRecordCommitment(swap).inner);
+        const isClaiming = claim.includes(id) || isInProgress(id);
 
         return (
           <div key={id} className='mt-4 flex items-center gap-4 rounded-md border p-2'>
@@ -39,10 +48,10 @@ export const UnclaimedSwaps = () => {
 
             <Button
               className='ml-auto w-20'
-              onClick={() => void claimSwap(id, swap)}
-              disabled={isInProgress(id)}
+              onClick={() => void handleClaim(id, swap)}
+              disabled={isClaiming}
             >
-              {isInProgress(id) ? 'Claiming' : 'Claim'}
+              {isClaiming ? 'Claiming' : 'Claim'}
             </Button>
           </div>
         );
