@@ -1,5 +1,14 @@
 # minifront
 
+## 6.11.2
+
+### Patch Changes
+
+- Updated dependencies [ab09596]
+  - @penumbra-zone/client@11.1.1
+  - @penumbra-zone/perspective@14.0.1
+  - @repo/ui@7.0.0
+
 ## 6.11.1
 
 ### Patch Changes

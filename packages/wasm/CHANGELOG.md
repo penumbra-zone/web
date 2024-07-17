@@ -1,5 +1,11 @@
 # @penumbra-zone/wasm
 
+## 17.0.1
+
+### Patch Changes
+
+- 1a57749: Bug fix with get_all_notes not respecting None asset id + delegator voting tests
+
 ## 17.0.0
 
 ### Minor Changes
