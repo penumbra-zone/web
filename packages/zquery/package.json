@@ -9,6 +9,8 @@
   },
   "scripts": {
     "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "lint:strict": "tsc --noEmit && eslint src --max-warnings 0",
     "test": "vitest run"
   },
   "dependencies": {

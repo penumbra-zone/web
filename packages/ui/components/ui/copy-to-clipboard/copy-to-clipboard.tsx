@@ -1,7 +1,6 @@
 'use client';
 
-import type { ReactNode, ButtonHTMLAttributes } from 'react';
-import { useState, forwardRef } from 'react';
+import { ReactNode, ButtonHTMLAttributes, useState, forwardRef } from 'react';
 import { CheckCircledIcon } from '@radix-ui/react-icons';
 import { Button } from '../button';
 import { cn } from '../../../lib/utils';

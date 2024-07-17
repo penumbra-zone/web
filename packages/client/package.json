@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/client",
-  "version": "11.0.1",
+  "version": "11.1.0",
   "license": "(MIT OR Apache-2.0)",
   "description": "Package for connecting to any Penumbra extension, including Prax.",
   "type": "module",
@@ -11,14 +11,16 @@
     "build": "tsc --build --verbose",
     "clean": "rm -rfv dist *.tsbuildinfo package penumbra-zone-*.tgz",
     "dev:pack": "tsc-watch --onSuccess \"$npm_execpath pack\"",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "lint:strict": "tsc --noEmit && eslint src --max-warnings 0"
   },
   "files": [
     "dist"
   ],
   "exports": {
     ".": "./src/index.ts",
-    "./create": "./src/create.ts"
+    "./*": "./src/*.ts"
   },
   "publishConfig": {
     "exports": {
@@ -26,9 +28,9 @@
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
       },
-      "./create": {
-        "types": "./dist/create.d.ts",
-        "default": "./dist/create.js"
+      "./*": {
+        "types": "./dist/*.d.ts",
+        "default": "./dist/*.js"
       }
     }
   },

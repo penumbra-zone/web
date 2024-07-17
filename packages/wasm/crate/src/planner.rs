@@ -4,7 +4,6 @@ use std::mem;
 use anyhow::anyhow;
 use ark_ff::UniformRand;
 use decaf377::{Fq, Fr};
-use indexed_db_futures::IdbDatabase;
 use penumbra_asset::asset::{Id, Metadata};
 use penumbra_asset::Value;
 use penumbra_auction::auction::dutch::actions::ActionDutchAuctionWithdrawPlan;
@@ -34,17 +33,18 @@ use penumbra_stake::rate::RateData;
 use penumbra_stake::{IdentityKey, Penalty, Undelegate, UndelegateClaimPlan};
 use penumbra_transaction::gas::swap_claim_gas_cost;
 use penumbra_transaction::memo::MemoPlaintext;
-use penumbra_transaction::ActionList;
 use penumbra_transaction::{plan::MemoPlan, ActionPlan, TransactionParameters};
+use penumbra_transaction::{ActionList, TransactionPlan};
 use prost::Message;
 use rand_core::{OsRng, RngCore};
 use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::JsValue;
 
+use crate::database::interface::Database;
 use crate::error::WasmError;
 use crate::metadata::customize_symbol_inner;
 use crate::note_record::SpendableNoteRecord;
-use crate::storage::{init_idb_storage, OutstandingReserves, Storage};
+use crate::storage::{init_idb_storage, DbConstants, OutstandingReserves, Storage};
 use crate::utils;
 use crate::{error::WasmResult, swap_record::SwapRecord};
 
@@ -97,9 +97,9 @@ fn prioritize_and_filter_spendable_notes(
 /// token metadata for a given validator and a given height doesn't exist yet,
 /// we'll generate it here and save it to the database, so that the undelegate
 /// action renders correctly in the transaction approval dialog.
-async fn save_unbonding_token_metadata_if_needed(
+async fn save_unbonding_token_metadata_if_needed<Db: Database>(
     undelegate: &Undelegate,
-    storage: &Storage<IdbDatabase>,
+    storage: &Storage<Db>,
 ) -> WasmResult<()> {
     let metadata = undelegate.unbonding_token().denom();
 
@@ -113,9 +113,9 @@ async fn save_unbonding_token_metadata_if_needed(
 /// dervived from the auction description parameters, which include a nonce). So
 /// we'll generate the metadata here and save it to the database, so that the
 /// action renders correctly in the transaction approval dialog.
-async fn save_auction_nft_metadata_if_needed(
+async fn save_auction_nft_metadata_if_needed<Db: Database>(
     id: AuctionId,
-    storage: &Storage<IdbDatabase>,
+    storage: &Storage<Db>,
     seq: u64,
 ) -> WasmResult<()> {
     let nft = AuctionNft::new(id, seq);
@@ -124,9 +124,9 @@ async fn save_auction_nft_metadata_if_needed(
     save_metadata_if_needed(metadata, storage).await
 }
 
-async fn save_metadata_if_needed(
+async fn save_metadata_if_needed<Db: Database>(
     metadata: Metadata,
-    storage: &Storage<IdbDatabase>,
+    storage: &Storage<Db>,
 ) -> WasmResult<()> {
     if storage.get_asset(&metadata.id()).await?.is_none() {
         let metadata_proto = metadata.to_proto();
@@ -148,8 +148,23 @@ pub async fn plan_transaction(
 ) -> WasmResult<JsValue> {
     utils::set_panic_hook();
 
-    let request = TransactionPlannerRequest::decode(request)?;
+    let tx_planner_req = TransactionPlannerRequest::decode(request)?;
+    let fvk: FullViewingKey = FullViewingKey::decode(full_viewing_key)?;
+    let fee_asset_id = Id::decode(gas_fee_token)?;
+    let constants: DbConstants = serde_wasm_bindgen::from_value(idb_constants)?;
+    let storage = init_idb_storage(constants).await?;
 
+    let plan = plan_transaction_inner(storage, tx_planner_req, fvk, fee_asset_id).await?;
+
+    Ok(serde_wasm_bindgen::to_value(&plan)?)
+}
+
+pub async fn plan_transaction_inner<Db: Database>(
+    storage: Storage<Db>,
+    request: TransactionPlannerRequest,
+    fvk: FullViewingKey,
+    fee_asset_id: Id,
+) -> WasmResult<TransactionPlan> {
     let expiry_height: u64 = request.expiry_height;
 
     let mut source_address_index: AddressIndex = request
@@ -164,15 +179,10 @@ pub async fn plan_transaction(
     // 2. Using one-time addresses for change addresses is undesirable.
     source_address_index.randomizer = [0u8; 12];
 
-    let fvk: FullViewingKey = FullViewingKey::decode(full_viewing_key)?;
-
     // Compute the change address for this transaction.
     let (mut change_address, _) = fvk
         .incoming()
         .payment_address(source_address_index.account.into());
-
-    let constants = serde_wasm_bindgen::from_value(idb_constants)?;
-    let storage = init_idb_storage(constants).await?;
 
     let fmd_params: fmd::Parameters = storage
         .get_fmd_params()
@@ -190,9 +200,6 @@ pub async fn plan_transaction(
         .try_into()?;
 
     let chain_id: String = app_parameters.chain_id;
-
-    // Decode the gas fee token into an `Id` type
-    let fee_asset_id: Id = Id::decode(gas_fee_token)?;
 
     // Request information about current gas prices
     let gas_prices = storage
@@ -634,5 +641,5 @@ pub async fn plan_transaction(
     let plan =
         mem::take(&mut actions_list).into_plan(OsRng, &fmd_params, transaction_parameters, memo)?;
 
-    Ok(serde_wasm_bindgen::to_value(&plan)?)
+    Ok(plan)
 }

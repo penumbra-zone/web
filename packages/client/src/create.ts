@@ -4,79 +4,11 @@ import {
   createChannelTransport,
   type ChannelTransportOptions,
 } from '@penumbra-zone/transport-dom/create';
-import { PenumbraSymbol, type PenumbraInjection } from './index.js';
-import {
-  PenumbraNotInstalledError,
-  PenumbraProviderNotAvailableError,
-  PenumbraProviderNotConnectedError,
-} from './error.js';
+import { assertProviderManifest, assertProviderRecord } from './assert.js';
+import { PenumbraSymbol } from './symbol.js';
 
 // Naively return the first available provider origin, or `undefined`.
 const availableOrigin = () => Object.keys(window[PenumbraSymbol] ?? {})[0];
-
-export const assertGlobalPresent = () => {
-  if (!window[PenumbraSymbol]) {
-    throw new PenumbraNotInstalledError();
-  }
-  return window[PenumbraSymbol];
-};
-
-/**
- * Given a specific origin, identify the relevant injection or throw.  An
- * `undefined` origin is accepted but will throw.
- */
-export const assertProvider = (providerOrigin?: string): PenumbraInjection => {
-  const provider = providerOrigin && assertGlobalPresent()[providerOrigin];
-  if (!provider) {
-    throw new PenumbraProviderNotAvailableError(providerOrigin);
-  }
-  return provider;
-};
-
-/**
- * Given a specific origin, identify the relevant injection, and confirm
- * provider is connected or throw. An `undefined` origin is accepted but will
- * throw.
- */
-export const assertProviderConnected = (providerOrigin?: string) => {
-  const provider = assertProvider(providerOrigin);
-  if (!provider.isConnected()) {
-    throw new PenumbraProviderNotConnectedError(providerOrigin);
-  }
-  return provider;
-};
-
-/**
- * Given a specific origin, identify the relevant injection, and confirm its
- * manifest is actually present or throw.  An `undefined` origin is accepted but
- * will throw.
- */
-export const assertProviderManifest = async (
-  providerOrigin?: string,
-): Promise<PenumbraInjection> => {
-  // confirm the provider injection is present
-  const provider = assertProvider(providerOrigin);
-
-  try {
-    // confirm the provider manifest is located at the expected origin
-    if (new URL(provider.manifest).origin !== providerOrigin) {
-      throw new Error('Manifest located at unexpected origin');
-    }
-
-    // confirm the provider manifest can be fetched, and is json
-    const req = await fetch(provider.manifest);
-    const manifest: unknown = await req.json();
-
-    if (!manifest) {
-      throw new Error(`Cannot confirm ${providerOrigin} is real.`);
-    }
-  } catch (e) {
-    console.warn(e);
-    throw new PenumbraProviderNotAvailableError(providerOrigin);
-  }
-
-  return provider;
-};
 
 /**
  * Asynchronously get a connection to the specified provider, or the first
@@ -88,7 +20,9 @@ export const assertProviderManifest = async (
  * @param requireProvider optional string identifying a provider origin
  */
 export const getPenumbraPort = async (requireProvider?: string) => {
-  const provider = await assertProviderManifest(requireProvider ?? availableOrigin());
+  const penumbraOrigin = requireProvider ?? availableOrigin();
+  await assertProviderManifest(penumbraOrigin);
+  const provider = assertProviderRecord(penumbraOrigin);
   if (!provider.isConnected()) {
     await provider.request();
   }
@@ -108,7 +42,7 @@ export const getPenumbraPort = async (requireProvider?: string) => {
  * @param requireProvider optional string identifying a provider origin
  * @param transportOptions optional `ChannelTransportOptions` without `getPort`
  */
-export const syncCreatePenumbraChannelTransport = (
+export const createPenumbraChannelTransportSync = (
   requireProvider?: string,
   transportOptions: Omit<ChannelTransportOptions, 'getPort'> = { jsonOptions },
 ): Transport =>
@@ -140,10 +74,10 @@ export const createPenumbraChannelTransport = async (
  *
  * If the provider is unavailable, the client will fail to make requests.
  */
-export const syncCreatePenumbraClient = <P extends PenumbraService>(
+export const createPenumbraClientSync = <P extends PenumbraService>(
   service: P,
   requireProvider?: string,
-) => createPromiseClient(service, syncCreatePenumbraChannelTransport(requireProvider));
+) => createPromiseClient(service, createPenumbraChannelTransportSync(requireProvider));
 
 /**
  * Asynchronously create a client for `service` from the specified provider, or

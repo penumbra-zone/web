@@ -23,21 +23,18 @@ export class IbdUpdater {
   subscribe<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>>(
     table: StoreName,
   ): AsyncGenerator<IdbUpdate<DBTypes, StoreName>, void> {
-    // Need a local binding
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const bind = this;
-    const subscriber = async function* () {
+    const subscriber = async function* (subscriberMap: Map<StoreNames<PenumbraDb>, Resolver[]>) {
       while (true) {
         const update = await new Promise<IdbUpdate<DBTypes, StoreName>>(resolve => {
-          const resolversForTable = bind.subscribers.get(table) ?? [];
+          const resolversForTable = subscriberMap.get(table) ?? [];
           resolversForTable.push(resolve as Resolver);
-          bind.subscribers.set(table, resolversForTable);
+          subscriberMap.set(table, resolversForTable);
         });
         yield update;
       }
     };
 
-    return subscriber();
+    return subscriber(this.subscribers);
   }
 
   async updateAll(updates: IbdUpdates): Promise<void> {

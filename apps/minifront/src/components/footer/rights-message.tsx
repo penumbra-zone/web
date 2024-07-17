@@ -5,7 +5,7 @@ export const RightsMessage = () => {
       <br />
       <a
         target='_blank'
-        rel='noreferrer'
+        rel='noopener noreferrer'
         className='underline'
         href='https://www.coincenter.org/electronic-cash-decentralized-exchange-and-the-constitution/'
       >
