@@ -1,5 +1,11 @@
 import { css } from 'styled-components';
 
+/**
+ * This file contains styles that are used throughout the Penumbra UI library.
+ * Many of them correlate 1-to-1 to specific components (such as `h1`, `large`,
+ * etc.), while others are base styles shared by a number of components.
+ */
+
 const base = `
   margin: 0;
 `;
