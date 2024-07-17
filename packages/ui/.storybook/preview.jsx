@@ -1,8 +1,12 @@
 import React from 'react';
 import globalsCssUrl from '../styles/globals.css?url';
 import penumbraTheme from './penumbraTheme';
-import { ThemeProvider } from 'styled-components';
-import { theme } from '../src/utils/theme';
+import { ThemeProvider } from '../src/ThemeProvider';
+import styled from 'styled-components';
+
+const Wrapper = styled.div`
+  color: ${props => props.theme.color.text.primary};
+`;
 
 /** @type { import('@storybook/react').Preview } */
 const preview = {
@@ -20,8 +24,10 @@ const preview = {
       }
 
       return (
-        <ThemeProvider theme={theme}>
-          <Story />
+        <ThemeProvider>
+          <Wrapper>
+            <Story />
+          </Wrapper>
         </ThemeProvider>
       );
     },

@@ -2,6 +2,10 @@ import { create } from '@storybook/theming/create';
 import logo from './public/logo.svg';
 
 const penumbraTheme = create({
+  appBg: 'black',
+  appContentBg: 'black',
+  appPreviewBg: 'black',
+  barBg: 'black',
   base: 'dark',
   brandImage: logo,
   brandTitle: 'Penumbra UI library',
@@ -9,6 +13,7 @@ const penumbraTheme = create({
   colorSecondary: '#629994',
   fontBase: 'Poppins',
   fontCode: '"Iosevka Term",monospace',
+  textColor: 'white',
   textMutedColor: '#e3e3e3',
 });
 
