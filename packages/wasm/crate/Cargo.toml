@@ -34,7 +34,7 @@ anyhow = "1.0.86"
 ark-ff = { version = "0.4.2", features = ["std"] }
 base64 = "0.22.1"
 console_error_panic_hook = { version = "0.1.7", optional = true }
-decaf377 = { version = "0.5.0", features = ["r1cs"] }
+decaf377 = { version = "0.10.1", features = ["r1cs"] }
 hex = "0.4.3"
 indexed_db_futures = "0.4.1"
 prost = "0.12.6"
