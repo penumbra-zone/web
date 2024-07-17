@@ -30,10 +30,15 @@ const prax: PenumbraProvider | undefined =
   window[Symbol.for('penumbra')]?.['chrome-extension://lkpmkhpnhknhmibgnmmhdhgdilepfghe'];
 ```
 
-So, use of `<PenumbraContextProvider>` with an `origin` prop identifying your
-preferred extension, or `injection` prop identifying the actual page injection
-from your preferred extension, will result in automatic progress towards a
-successful connection.
+or with helpers available from `@penumbra-zone/client`, like
+
+```ts
+import { assertProvider } from '@penumbra-zone/client';
+const prax = assertProvider('chrome-extension://lkpmkhpnhknhmibgnmmhdhgdilepfghe');
+```
+
+Use of `<PenumbraContextProvider>` with a `penumbra` prop identifying your
+provider will result in automatic progress towards a successful connection.
 
 Hooks `usePenumbraTransport` and `usePenumbraService` will promise a transport
 or client that inits when the configured provider becomes connected, or rejects
@@ -63,7 +68,8 @@ A wrapping component:
 
 ```tsx
 import { Outlet } from 'react-router-dom';
-import { PenumbraProvider } from '@penumbra-zone/react';
+import { assertProvider } from '@penumbra-zone/client';
+import { PenumbraContextProvider } from '@penumbra-zone/react';
 import { usePenumbraTransportSync } from '@penumbra-zone/react/hooks/use-penumbra-transport';
 import { TransportProvider } from '@connectrpc/connect-query';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -72,13 +78,13 @@ const praxOrigin = 'chrome-extension://lkpmkhpnhknhmibgnmmhdhgdilepfghe';
 const queryClient = new QueryClient();
 
 export const PenumbraDappPage = () => (
-  <PenumbraProvider origin={praxOrigin} makeApprovalRequest>
+  <PenumbraContextProvider penumbra={assertProvider(praxOrigin)} makeApprovalRequest>
     <TransportProvider transport={usePenumbraTransportSync()}>
       <QueryClientProvider client={queryClient}>
         <Outlet />
       </QueryClientProvider>
     </TransportProvider>
-  </PenumbraProvider>
+  </PenumbraContextProvider>
 );
 ```
 
@@ -168,7 +174,7 @@ working client is available.
 ### State chart
 
 This flowchart reads from top (page load) to bottom (page unload). Each labelled
-chart node is a possible value of `PenumbraProviderState`. Diamond-shaped nodes
+chart node is a possible value of `PenumbraState`. Diamond-shaped nodes
 are conditions described by the surrounding path labels.
 
 There are more possible transitions than diagrammed here - for instance once
