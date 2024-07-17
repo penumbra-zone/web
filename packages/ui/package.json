@@ -5,6 +5,7 @@
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "scripts": {
+    "build-storybook": "storybook build",
     "lint": "eslint components lib",
     "lint:fix": "eslint components lib --fix",
     "lint:strict": "tsc --noEmit && eslint components lib --max-warnings 0",
@@ -67,6 +68,7 @@
     "react-loader-spinner": "^6.1.6",
     "react-router-dom": "^6.23.1",
     "sonner": "1.4.3",
+    "styled-components": "^6.1.11",
     "tailwind-merge": "^2.3.0",
     "tinycolor2": "^1.6.0"
   },
@@ -78,9 +80,11 @@
     "@storybook/addon-links": "^8.1.1",
     "@storybook/addon-postcss": "^2.0.0",
     "@storybook/blocks": "^8.1.1",
+    "@storybook/manager-api": "^8.1.11",
     "@storybook/preview-api": "^8.1.1",
     "@storybook/react": "^8.1.1",
     "@storybook/react-vite": "8.1.1",
+    "@storybook/theming": "^8.1.11",
     "@types/humanize-duration": "^3.27.4",
     "@types/react": "^18.3.2",
     "@types/react-dom": "^18.3.0",
