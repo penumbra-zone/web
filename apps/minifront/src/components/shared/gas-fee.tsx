@@ -39,7 +39,7 @@ export const GasFee = ({
   setFeeTier: (feeTier: FeeTier_Tier) => void;
 }) => {
   // Use stakingAssetMetadata if assetFeeMetadata is undefined
-  const feeMetadata = assetFeeMetadata ? assetFeeMetadata : stakingAssetMetadata;
+  const feeMetadata = assetFeeMetadata ?? stakingAssetMetadata;
 
   const feeValueView = new ValueView({
     valueView: {
