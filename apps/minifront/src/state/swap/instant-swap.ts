@@ -1,6 +1,6 @@
 import { AllSlices, SliceCreator } from '..';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
-import { isValidAmount, planBuildBroadcast , getStatusCodeFromError } from '../helpers';
+import { isValidAmount, planBuildBroadcast, getStatusCodeFromError } from '../helpers';
 import {
   AssetId,
   Metadata,
