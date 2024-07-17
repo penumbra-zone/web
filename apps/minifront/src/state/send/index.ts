@@ -96,6 +96,8 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
       const txPlan = await plan(assembleRequest(get().send));
       const fee = txPlan.transactionParameters?.fee;
 
+      // Fetch the asset metadata for the fee if assetId is defined; otherwise, set it to undefined.
+      // The undefined case occurs when the fee uses the native staking token.
       const feeAssetMetadata = fee?.assetId ? await getAssetTokenMetadata(fee.assetId) : undefined;
 
       if (!fee?.amount) {

@@ -38,7 +38,7 @@ export const GasFee = ({
   assetFeeMetadata?: Metadata;
   setFeeTier: (feeTier: FeeTier_Tier) => void;
 }) => {
-  // Use stakingAssetMetadata if assetFeeMetadata is undefined
+  // If the metadata for the fee asset is undefined, fallback to using the bundled staking asset metadata.
   const feeMetadata = assetFeeMetadata ?? stakingAssetMetadata;
 
   const feeValueView = new ValueView({
