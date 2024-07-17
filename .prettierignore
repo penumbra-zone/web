@@ -1,4 +1,3 @@
 pnpm-lock.yaml
-packages/ui/storybook-static
 packages/wasm/crate
 packages/wasm/wasm

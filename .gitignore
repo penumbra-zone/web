@@ -62,3 +62,6 @@ packages/*/repo-*-*.tgz
 packages/*/package
 
 tsconfig.tsbuildinfo
+
+# Storybook builds
+storybook-static
