@@ -19,18 +19,18 @@
     "dist"
   ],
   "exports": {
-    "./*": "./src/*.ts",
-    "./internal-msg/*": "./src/internal-msg/*.ts"
+    "./internal-msg/*": "./src/internal-msg/*.ts",
+    "./*": "./src/*.ts"
   },
   "publishConfig": {
     "exports": {
       "./*": {
-        "default": "./dist/*.js",
-        "types": "./dist/*.d.ts"
+        "types": "./dist/*.d.ts",
+        "default": "./dist/*.js"
       },
       "./internal-msg/*": {
-        "default": "./dist/internal-msg/*.js",
-        "types": "./dist/internal-msg/*.d.ts"
+        "types": "./dist/internal-msg/*.d.ts",
+        "default": "./dist/internal-msg/*.js"
       }
     }
   },
