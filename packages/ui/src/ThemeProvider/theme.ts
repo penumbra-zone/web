@@ -1,5 +1,10 @@
 import { DefaultTheme } from 'styled-components';
 
+/**
+ * Used for reference in the `theme` object below. Not intended to be used
+ * directly by consumers, but rather as a semantic reference for building the
+ * theme.
+ */
 const PALETTE = {
   green: {
     50: '#f0fdf4',
