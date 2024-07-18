@@ -1,0 +1,26 @@
+{
+  "name": "docs",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "next build",
+    "dev:app": "next dev",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "lint:strict": "tsc --noEmit && eslint src --max-warnings 0",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "14.2.5",
+    "nextra": "^2.13.4",
+    "nextra-theme-docs": "^2.13.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18.3.2",
+    "@types/react-dom": "^18.3.0"
+  }
+}

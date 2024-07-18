@@ -1,0 +1,43 @@
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 48px;
+}
+
+.hero h1 {
+  margin: 0;
+  font-size: 64px;
+  font-weight: 800;
+}
+
+.hero p {
+  margin-top: 0;
+  font-size: 20px;
+}
+
+.hero a {
+  --teal-700: rgba(139, 228, 217, .7);
+  --sand-700: rgba(200, 184, 128, .7);
+  --rust-600: rgba(255, 144, 47, .6);
+
+  display: block;
+  margin-top: 40px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+  text-transform: uppercase;
+  background-color: transparent;
+  background-size: 200%;
+  background-image: linear-gradient(
+      90deg,
+      var(--teal-700) 0%,
+      var(--sand-700) 25%,
+      var(--rust-600) 50%,
+      var(--rust-600) 50%,
+      var(--sand-700) 75%,
+      var(--teal-700) 100%);
+}

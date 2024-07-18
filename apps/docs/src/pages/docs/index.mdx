@@ -1,6 +1,8 @@
+import Image from 'next/image';
+
 # Docs
 
-## First read [Getting Started](../README.md#getting-started)
+## First read [Getting Started](https://github.com/penumbra-zone/web?tab=readme-ov-file#getting-started)
 
 These handy scripts may be executed directly in an app or package directory, in
 which case they only execute that package's script, or in the top level of the
@@ -13,29 +15,7 @@ repo, in which case they use turbo or the monorepo configuration.
 - `pnpm test`: run vitest only. cargo tests are omitted.
 - `pnpm test:rust`: run cargo tests only.
 - `pnpm format`, `pnpm lint`
-- `pnpm all-check`: check all!
-
-## Subject documents
-
-- [Guiding principles](guiding-principles.md)
-  - [All code should be typesafe](guiding-principles.md#all-code-should-be-typesafe)
-  - [CI/CD enforces best practices](guiding-principles.md#cicd-enforces-best-practices)
-  - [Modularity from the beginning](guiding-principles.md#modularity-from-the-beginning)
-  - [Ongoingly document](guiding-principles.md#ongoingly-document)
-- [CI/CD guide](ci-cd.md)
-- [Documenting Changes](documenting-changes.md)
-- [Dependency Upgrades](dependency-upgrades.md)
-- [Publishing](publishing.md)
-- [State management](state-management.md)
-- [UI library](ui-library.md)
-- [Testing](testing.md)
-- [Custody](custody.md)
-- [Web Workers](web-workers.md)
-- [Protobufs](protobufs.md)
-- [Extension services](extension-services.md)
-- [Writing performant React components](writing-performant-react-components.md)
-- [Deployment](deployment.md)
-- [Debugging](debugging.md)
+- `pnpm all-check`: check all
 
 ## Tools used
 
@@ -73,7 +53,7 @@ activity](https://www.youtube.com/watch?v=mHoe7lQMcxU).
 ### Simplified architecture
 
 Minifront (and eventually other dapps) [connect to
-services](./extension-services.md) hosted by Prax (and eventually other
+services](developers/extension-services.mdservices.md) hosted by Prax (and eventually other
 providers) for information on the user's chain state, and to conduct new
 activity.
 
@@ -81,15 +61,11 @@ Prax queries a remote 'full node' `pd` endpoint to scan the compact chain,
 download full block details when interested, and broadcast new chain activity.
 Omitting the remote endpoint, it looks something like this:
 
-![Penumbra web architecture chart](./penumbra-web-architecture.svg)
-
-<!-- This link is read-only. Update if you edit or replace the diagram.
-https://excalidraw.com/#json=_3b4K0RpWFJWAtVCH5ymB,CHegLkto1X_NdKG67LNh2A
--->
+![Penumbra Web Architecture](/penumbra-web-architecture.svg)
 
 ### Some critical details
 
-Prax and Minifront [share React components](./ui-library.md) and some other
+Prax and Minifront [share React components](developers/ui-library.md-library.md) and some other
 reuseable dependencies.
 
 Both Prax and Minifront manage running state with Zustand. For storage, Prax

@@ -15,7 +15,7 @@ As changes are made in the repo, devs are encouraged to generate a changeset via
 A very helpful description of the changes
 ```
 
-When we are ready to push these changes to NPM, run the [Packages Release](../.github/workflows/packages-release.yml) workflow.
+When we are ready to push these changes to NPM, run the [Packages Release](../../../../../../.github/workflows/packages-release.yml) workflow.
 If there are changesets, it will create a PR versioning the packages appropriately and adding changelogs.
 If there are no changesets, it will attempt to publish all packages with newer versions (not marked as private).
 
