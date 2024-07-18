@@ -7,6 +7,15 @@ const meta: Meta<typeof Grid> = {
   component: Grid,
   title: 'Grid',
   tags: ['autodocs', '!dev'],
+  argTypes: {
+    container: { control: false },
+    mobile: { control: false },
+    tablet: { control: false },
+    desktop: { control: false },
+    lg: { control: false },
+    xl: { control: false },
+    as: { control: false },
+  },
 };
 export default meta;
 

@@ -13,6 +13,14 @@ interface BaseGridProps extends Record<string, unknown> {
 interface GridContainerProps extends BaseGridProps {
   /** Whether this is a grid container, vs. an item. */
   container: true;
+
+  // For some reason, Storybook needs these properties to be defined on the
+  // container props interface in order to show their typings properly.
+  mobile?: undefined;
+  tablet?: undefined;
+  desktop?: undefined;
+  lg?: undefined;
+  xl?: undefined;
 }
 
 interface GridItemProps extends BaseGridProps {
