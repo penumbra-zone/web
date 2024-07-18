@@ -15,7 +15,7 @@ directory will recursively run them in each app/package. The essential commands:
 ### Github actions
 
 All checks above will be run on opening a pull request and merging to main.
-Main merges will also deploy dapp on Firebase. Workflows can be [seen here](../.github/workflows).
+Main merges will also deploy dapp on Firebase. Workflows can be [seen here](../../../../../../.github/workflows).
 
 ### On release
 
