@@ -36,7 +36,7 @@ export const BalanceItem = ({ asset, value, onSelect }: BalanceItemProps) => {
       return metadataFromValue?.equals(metadataFromAsset);
     }
     return false;
-  }, [asset, value]);
+  }, [asset, metadataFromAsset, metadataFromValue, value]);
 
   return (
     <DialogClose asChild onClick={() => onSelect(asset)}>

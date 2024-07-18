@@ -91,7 +91,7 @@ export const PenumbraContextProvider = ({
       { signal: ac.signal },
     );
     return () => ac.abort();
-  }, [failure, penumbra?.addEventListener, providerManifest, penumbra?.manifest, setFailure]);
+  }, [failure, providerManifest, setFailure, penumbra]);
 
   // request effect
   useEffect(() => {
@@ -107,14 +107,7 @@ export const PenumbraContextProvider = ({
           break;
       }
     }
-  }, [
-    failure,
-    makeApprovalRequest,
-    penumbra?.request,
-    providerManifest,
-    providerState,
-    setFailure,
-  ]);
+  }, [failure, makeApprovalRequest, penumbra, providerManifest, providerState, setFailure]);
 
   // connect effect
   useEffect(() => {
@@ -139,14 +132,7 @@ export const PenumbraContextProvider = ({
           break;
       }
     }
-  }, [
-    failure,
-    makeApprovalRequest,
-    penumbra?.connect,
-    providerManifest,
-    providerState,
-    setFailure,
-  ]);
+  }, [failure, makeApprovalRequest, penumbra, providerManifest, providerState, setFailure]);
 
   const createdContext: PenumbraContext = useMemo(
     () => ({
@@ -181,12 +167,7 @@ export const PenumbraContextProvider = ({
     }),
     [
       failure,
-      penumbra?.addEventListener,
-      penumbra?.connect,
-      penumbra?.disconnect,
-      penumbra?.manifest,
-      penumbra?.removeEventListener,
-      penumbra?.request,
+      penumbra,
       providerConnected,
       providerManifest,
       providerPort,

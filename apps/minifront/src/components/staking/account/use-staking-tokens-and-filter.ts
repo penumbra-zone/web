@@ -87,7 +87,7 @@ export const useStakingTokensAndFilter = (
       (prev, curr) => toAccountSwitcherFilter(prev, curr, stakingTokenMetadata),
       [],
     );
-  }, [balancesByAccount]);
+  }, [balancesByAccount, stakingTokenMetadata]);
 
   const stakingTokens = stakingTokensByAccount.get(account);
 
