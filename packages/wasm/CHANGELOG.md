@@ -1,5 +1,13 @@
 # @penumbra-zone/wasm
 
+## 18.0.0
+
+### Patch Changes
+
+- Updated dependencies [22bf02c]
+  - @penumbra-zone/protobuf@5.5.0
+  - @penumbra-zone/types@16.0.0
+
 ## 17.0.2
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @penumbra-zone/react
 
+## 1.0.3
+
+### Patch Changes
+
+- Updated dependencies [22bf02c]
+  - @penumbra-zone/protobuf@5.5.0
+  - @penumbra-zone/client@12.0.0
+
 ## 1.0.2
 
 ### Patch Changes

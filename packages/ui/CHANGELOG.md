@@ -1,5 +1,11 @@
 # @penumbra-zone/ui
 
+## 7.0.2
+
+### Patch Changes
+
+- @penumbra-zone/types@16.0.0
+
 ## 7.0.1
 
 ### Patch Changes

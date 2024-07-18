@@ -1,5 +1,11 @@
 # @penumbra-zone/types
 
+## 16.0.0
+
+### Patch Changes
+
+- @penumbra-zone/getters@12.0.0
+
 ## 15.1.1
 
 ### Patch Changes

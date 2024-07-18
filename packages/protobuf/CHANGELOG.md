@@ -1,5 +1,11 @@
 # @penumbra-zone/protobuf
 
+## 5.5.0
+
+### Minor Changes
+
+- 22bf02c: Add additional query services to PenumbraService
+
 ## 5.4.0
 
 ### Minor Changes
