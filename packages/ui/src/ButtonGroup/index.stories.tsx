@@ -18,6 +18,7 @@ export const Basic: Story = {
   args: {
     actionType: 'default',
     size: 'sparse',
+    iconOnly: false,
     buttons: [
       {
         label: 'Delegate',
