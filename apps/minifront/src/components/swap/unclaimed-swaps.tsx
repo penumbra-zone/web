@@ -19,10 +19,14 @@ export const UnclaimedSwaps = () => {
   const { claimSwap } = useStoreShallow(unclaimedSwapsSelector);
   const [claim, setClaim] = useState<string[]>([]);
 
-  // Internal state management for tracking the IDs of the swaps that are currently being claimed.
+  // Internally track the IDs of the claimed swaps.
   const handleClaim = async (id: string, swap: SwapRecord) => {
-    setClaim(previous => [...previous, id]);
-    await claimSwap(id, swap);
+    setClaim(prev => [...prev, id]);
+    try {
+      await claimSwap(id, swap);
+    } catch (error) {
+      setClaim(prev => prev.filter(claimId => claimId !== id));
+    }
   };
 
   return !unclaimedSwaps.data?.length ? (
