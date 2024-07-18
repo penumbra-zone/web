@@ -5,15 +5,15 @@ import {
   TransactionPlannerRequest,
   TransactionPlannerRequest_Output,
   TransactionPlannerRequest_Spend,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { BigNumber } from 'bignumber.js';
-import { MemoPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
+import { MemoPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { amountMoreThanBalance, plan, planBuildBroadcast } from '../helpers';
 
 import {
   Fee,
   FeeTier_Tier,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb.js';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
 import {
   getAssetIdFromValueView,
   getDisplayDenomExponentFromValueView,
@@ -23,6 +23,8 @@ import { toBaseUnit } from '@penumbra-zone/types/lo-hi';
 import { isAddress } from '@penumbra-zone/bech32m/penumbra';
 import { transferableBalancesResponsesSelector } from './helpers';
 import { PartialMessage } from '@bufbuild/protobuf';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { getAssetTokenMetadata } from '../../fetchers/registry';
 
 export interface SendSlice {
   selection: BalancesResponse | undefined;
@@ -41,6 +43,7 @@ export interface SendSlice {
   txInProgress: boolean;
   isSendingMax: boolean;
   setIsSendingMax: (isSendingMax: boolean) => void;
+  assetFeeMetadata: Metadata | undefined;
 }
 
 export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
@@ -53,6 +56,7 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
     feeTier: FeeTier_Tier.LOW,
     txInProgress: false,
     isSendingMax: false,
+    assetFeeMetadata: undefined,
     setAmount: amount => {
       set(state => {
         state.send.amount = amount;
@@ -84,18 +88,25 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
       if (!amount || !recipient || !selection) {
         set(state => {
           state.send.fee = undefined;
+          state.send.assetFeeMetadata = undefined;
         });
         return;
       }
 
       const txPlan = await plan(assembleRequest(get().send));
       const fee = txPlan.transactionParameters?.fee;
+
+      // Fetch the asset metadata for the fee if assetId is defined; otherwise, set it to undefined.
+      // The undefined case occurs when the fee uses the native staking token.
+      const feeAssetMetadata = fee?.assetId ? await getAssetTokenMetadata(fee.assetId) : undefined;
+
       if (!fee?.amount) {
         return;
       }
 
       set(state => {
         state.send.fee = fee;
+        state.send.assetFeeMetadata = feeAssetMetadata;
       });
     },
     setFeeTier: feeTier => {

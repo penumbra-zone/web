@@ -24,6 +24,7 @@ export const SendForm = () => {
     memo,
     fee,
     feeTier,
+    assetFeeMetadata,
     setAmount,
     setSelection,
     setRecipient,
@@ -97,6 +98,7 @@ export const SendForm = () => {
         feeTier={feeTier}
         stakingAssetMetadata={stakingTokenMetadata.data}
         setFeeTier={setFeeTier}
+        assetFeeMetadata={assetFeeMetadata}
       />
 
       <InputBlock
