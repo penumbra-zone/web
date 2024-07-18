@@ -1,5 +1,19 @@
 # @penumbra-zone/router
 
+## 18.0.0
+
+### Patch Changes
+
+- Updated dependencies [22bf02c]
+  - @penumbra-zone/protobuf@5.5.0
+  - @penumbra-zone/getters@12.0.0
+  - @penumbra-zone/query@16.0.0
+  - @penumbra-zone/wasm@18.0.0
+  - @penumbra-zone/perspective@15.0.0
+  - @penumbra-zone/storage@15.0.0
+  - @penumbra-zone/types@16.0.0
+  - @penumbra-zone/crypto-web@14.0.0
+
 ## 17.0.2
 
 ### Patch Changes

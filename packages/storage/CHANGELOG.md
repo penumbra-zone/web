@@ -1,5 +1,13 @@
 # @penumbra-zone/storage
 
+## 15.0.0
+
+### Patch Changes
+
+- @penumbra-zone/getters@12.0.0
+- @penumbra-zone/wasm@18.0.0
+- @penumbra-zone/types@16.0.0
+
 ## 14.0.2
 
 ### Patch Changes
