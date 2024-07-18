@@ -44,7 +44,7 @@ const localErrorJson = (err: unknown, relevantMessage?: unknown) =>
               typeof err === 'function'
                 ? err.name
                 : typeof err === 'object'
-                  ? (Object.getPrototypeOf(err) as unknown)?.constructor?.name ?? String(err)
+                  ? ((Object.getPrototypeOf(err) as unknown)?.constructor?.name ?? String(err))
                   : typeof err,
             ),
             value: err,
