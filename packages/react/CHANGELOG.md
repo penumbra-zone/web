@@ -1,5 +1,11 @@
 # @penumbra-zone/react
 
+## 1.0.2
+
+### Patch Changes
+
+- 1a269d4: encourage client-side execution with input prop that cannot be obtained server-side
+
 ## 1.0.1
 
 ### Patch Changes
