@@ -27,12 +27,12 @@ const toggleVariants = cva(
   },
 );
 
-export interface ToggleProps
+interface ToggleProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof toggleVariants>,
     RadixToggleProps {}
 
-const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
+export const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
   ({ className, variant, size, ...props }, ref) => {
     return (
       <TogglePrimitive.Root
@@ -43,7 +43,3 @@ const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
     );
   },
 );
-
-Toggle.displayName = 'Toggle';
-
-export { Toggle, toggleVariants };

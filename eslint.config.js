@@ -76,14 +76,12 @@ export default tseslint.config(
       ...react_hooks.configs.recommended.rules,
       'react-hooks/exhaustive-deps': 'error',
       'react-hooks/rules-of-hooks': 'error',
+      'react-refresh/only-export-components': 'error',
     },
   },
   {
     name: 'custom:react-wishlist-improvements',
     rules: {
-      // this plugin was formerly included, but was never actually applied.
-      'react-refresh/only-export-components': 'off',
-
       //'react/jsx-no-literals': 'warn',
       //'react/jsx-no-useless-fragment': 'warn',
     },

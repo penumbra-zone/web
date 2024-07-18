@@ -5,11 +5,9 @@ import { router } from './components/router';
 
 import '@repo/ui/styles/globals.css';
 
-const Main = () => (
+const rootElement = document.getElementById('root') as HTMLDivElement;
+createRoot(rootElement).render(
   <React.StrictMode>
     <RouterProvider router={router} />
-  </React.StrictMode>
+  </React.StrictMode>,
 );
-
-const rootElement = document.getElementById('root') as HTMLDivElement;
-createRoot(rootElement).render(<Main />);
