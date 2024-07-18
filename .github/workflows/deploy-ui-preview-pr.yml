@@ -4,6 +4,10 @@ name: Deploy UI to temporary URL
 on:
   workflow_dispatch:
   pull_request:
+    paths:
+      # Only deploy an ephemeral Storybook preview for PRs that make changes to
+      # the UI package.
+      - 'packages/ui/src/**'
 permissions:
   checks: write
   contents: read
