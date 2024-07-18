@@ -16,18 +16,17 @@ const Root = styled.div<{ $size: Size }>`
   `}
 `;
 
-const ButtonWrapper = styled.div<{ $size: Size }>`
-  flex-grow: ${props => (props.$size === 'sparse' ? 1 : 0)};
-  flex-shrink: ${props => (props.$size === 'sparse' ? 1 : 0)};
+const ButtonWrapper = styled.div<{ $size: Size; $iconOnly?: boolean }>`
+  flex-grow: ${props => (props.$size === 'sparse' && !props.$iconOnly ? 1 : 0)};
+  flex-shrink: ${props => (props.$size === 'sparse' && !props.$iconOnly ? 1 : 0)};
 `;
 
-interface ButtonDescription {
+type ButtonDescription<IconOnly extends boolean> = {
   label: string;
-  icon?: LucideIcon;
   onClick?: MouseEventHandler<HTMLButtonElement>;
-}
+} & (IconOnly extends true ? { icon: LucideIcon } : { icon?: LucideIcon });
 
-export interface ButtonGroupProps {
+export interface ButtonGroupProps<IconOnly extends boolean> {
   /**
    * An array of objects, each describing a button to render. The first will be
    * rendered with the `primary` variant, the rest with the `secondary` variant.
@@ -35,9 +34,9 @@ export interface ButtonGroupProps {
    * Minimum length: 1. Maximum length: 3.
    */
   buttons:
-    | [ButtonDescription]
-    | [ButtonDescription, ButtonDescription]
-    | [ButtonDescription, ButtonDescription, ButtonDescription];
+    | [ButtonDescription<IconOnly>]
+    | [ButtonDescription<IconOnly>, ButtonDescription<IconOnly>]
+    | [ButtonDescription<IconOnly>, ButtonDescription<IconOnly>, ButtonDescription<IconOnly>];
   /**
    * The action type of the button group. Will be used for all buttons in the
    * group.
@@ -45,7 +44,17 @@ export interface ButtonGroupProps {
   actionType?: ActionType;
   /** Will be used for all buttons in the group. */
   size?: Size;
+  /**
+   * When `true`, will render just icon buttons. The label for each button will
+   * be used as the `aria-label`.
+   *
+   * Will be used for all buttons in the group.
+   */
+  iconOnly?: IconOnly;
 }
+
+const isIconOnly = (props: ButtonGroupProps<boolean>): props is ButtonGroupProps<true> =>
+  !!props.iconOnly;
 
 /**
  * Use a `<ButtonGroup />` to render multiple buttons in a group with the same
@@ -54,23 +63,47 @@ export interface ButtonGroupProps {
  * When rendering multiple Penumbra UI buttons together, always use a `<ButtonGroup />` rather than individual `<Button />`s. This ensures that they always meet Penumbra UI guidelines. (For example, all buttons in a group should have the same `actionType`; and the first button in a group should be the `primary` variant, while subsequent buttons are the `secondary` variant.)
  */
 export const ButtonGroup = ({
-  buttons,
   actionType = 'default',
   size = 'sparse',
-}: ButtonGroupProps) => (
-  <Root $size={size}>
-    {buttons.map((action, index) => (
-      <ButtonWrapper key={index} $size={size}>
-        <Button
-          icon={action.icon}
-          actionType={actionType}
-          onClick={action.onClick}
-          variant={index === 0 ? 'primary' : 'secondary'}
-          size={size}
-        >
-          {action.label}
-        </Button>
-      </ButtonWrapper>
-    ))}
-  </Root>
-);
+  ...props
+}: ButtonGroupProps<boolean>) => {
+  return (
+    <Root $size={size}>
+      {/* Annoying TypeScript workaround — we need to explicitly delineate the
+      `isIconOnly` and `!isIconOnly` cases, since TypeScript won't resolve the
+      compatibility of the icon-only and non-icon-only types otherwise. If
+      someone comes up with a better way to do this, feel free to revisit this.
+      */}
+      {isIconOnly(props) &&
+        props.buttons.map((button, index) => (
+          <ButtonWrapper key={index} $size={size} $iconOnly>
+            <Button
+              icon={button.icon}
+              actionType={actionType}
+              onClick={button.onClick}
+              variant={index === 0 ? 'primary' : 'secondary'}
+              size={size}
+              iconOnly
+            >
+              {button.label}
+            </Button>
+          </ButtonWrapper>
+        ))}
+
+      {!isIconOnly(props) &&
+        props.buttons.map((button, index) => (
+          <ButtonWrapper key={index} $size={size}>
+            <Button
+              icon={button.icon}
+              actionType={actionType}
+              onClick={button.onClick}
+              variant={index === 0 ? 'primary' : 'secondary'}
+              size={size}
+            >
+              {button.label}
+            </Button>
+          </ButtonWrapper>
+        ))}
+    </Root>
+  );
+};
