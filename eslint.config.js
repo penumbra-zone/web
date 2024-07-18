@@ -33,7 +33,7 @@ const storybookPluginConfigs = tseslint.config(
 
 export default tseslint.config(
   // completely ignored files
-  { name: 'custom:ignores', ignores: ['vitest.workspace.ts', 'dist', 'node_modules'] },
+  { name: 'custom:ignores', ignores: ['vitest.workspace.ts', 'dist', 'node_modules', '**/.next/'] },
 
   // base javascript config
   eslint.configs.recommended,
