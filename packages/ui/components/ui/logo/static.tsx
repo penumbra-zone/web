@@ -14,15 +14,13 @@ const logoVariants = cva('inline-flex items-center justify-center', {
   },
 });
 
-export interface LogoProps
-  extends React.SVGProps<SVGSVGElement>,
-    VariantProps<typeof logoVariants> {
+interface LogoProps extends React.SVGProps<SVGSVGElement>, VariantProps<typeof logoVariants> {
   onlyWords?: boolean;
 }
 
 // FYI, multiple logos on pages will make onlyWords prop to not be regarded.
 // The SVG defs appear to be global.
-const Logo = React.forwardRef<SVGSVGElement, LogoProps>(
+export const Logo = React.forwardRef<SVGSVGElement, LogoProps>(
   ({ className, size, onlyWords, ...props }, ref) => {
     return (
       <svg
@@ -60,7 +58,3 @@ const Logo = React.forwardRef<SVGSVGElement, LogoProps>(
     );
   },
 );
-
-Logo.displayName = 'Logo';
-
-export { Logo, logoVariants };

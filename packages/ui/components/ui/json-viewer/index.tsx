@@ -2,7 +2,7 @@ import { JsonViewer as TextaJsonViewer, NamedColorspace } from '@textea/json-vie
 
 import type { JsonObject, JsonValue } from '@bufbuild/protobuf';
 
-export const customTheme: NamedColorspace = {
+const customTheme: NamedColorspace = {
   scheme: 'custom',
   author: 'penumbra',
   base00: '#000000', // Background Color

@@ -1,11 +1,10 @@
-import { buttonVariants } from '@repo/ui/components/ui/button';
+import { Button } from '@repo/ui/components/ui/button';
 import {
   Tooltip,
   TooltipProvider,
   TooltipTrigger,
   TooltipContent,
 } from '@repo/ui/components/ui/tooltip';
-import { cn } from '@repo/ui/lib/utils';
 
 export const EstimateButton = ({
   disabled,
@@ -17,16 +16,19 @@ export const EstimateButton = ({
   return (
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger
-          // Style as a button
-          className={cn('w-full', buttonVariants({ variant: 'secondary', size: 'sm' }))}
-          onClick={e => {
-            e.preventDefault();
-            onClick();
-          }}
-          disabled={disabled}
-        >
-          Estimate
+        <TooltipTrigger asChild>
+          <Button
+            disabled={disabled}
+            variant='secondary'
+            size='sm'
+            className='w-full'
+            onClick={e => {
+              e.preventDefault();
+              onClick();
+            }}
+          >
+            Estimate
+          </Button>
         </TooltipTrigger>
         <TooltipContent side='bottom' className='w-60'>
           <p>
