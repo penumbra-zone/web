@@ -14,7 +14,7 @@ interface PenumbraContextProviderProps {
   penumbra?: PenumbraProvider;
   makeApprovalRequest?: boolean;
   transportOpts?: Omit<ChannelTransportOptions, 'getPort'>;
-} 
+}
 
 export const PenumbraContextProvider = ({
   children,
