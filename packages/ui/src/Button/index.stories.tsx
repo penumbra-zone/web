@@ -5,7 +5,6 @@ import { ArrowLeftRight, Check } from 'lucide-react';
 
 const meta: Meta<typeof Button> = {
   component: Button,
-  title: 'Button',
   tags: ['autodocs', '!dev'],
   argTypes: {
     icon: {
