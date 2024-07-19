@@ -2,6 +2,7 @@ import { ThemeProvider as ThemeProviderPrimitive } from 'styled-components';
 import { theme } from './theme';
 import { PropsWithChildren } from 'react';
 import { FontFaces } from './FontFaces';
+import { MotionConfig } from 'framer-motion';
 
 /**
  * Place at the root of your app, above all Penumbra UI components, to provide
@@ -9,8 +10,10 @@ import { FontFaces } from './FontFaces';
  */
 export const ThemeProvider = ({ children }: PropsWithChildren) => (
   <ThemeProviderPrimitive theme={theme}>
-    <FontFaces />
+    <MotionConfig transition={{ duration: 0.15 }}>
+      <FontFaces />
 
-    {children}
+      {children}
+    </MotionConfig>
   </ThemeProviderPrimitive>
 );
