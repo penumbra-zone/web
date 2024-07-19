@@ -70,6 +70,10 @@ const overlays = css<{
 /**
  * A set of shared styles for buttons that handle `:hover`, `:active`,
  * `:disabled`, etc. states.
+ *
+ * Requires a few props to get rendering parameters, which means that any styled
+ * components that use this utility will need to have those props defined as
+ * well.
  */
 export const buttonInteractions = css<{
   $getFocusOutlineColor: (theme: DefaultTheme) => string;
