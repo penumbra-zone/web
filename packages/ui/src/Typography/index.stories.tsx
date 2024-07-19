@@ -1,15 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { Body } from './Body';
-import { Detail } from './Detail';
-import { H1 } from './H1';
-import { H2 } from './H2';
-import { H3 } from './H3';
-import { H4 } from './H4';
-import { Large } from './Large';
-import { P } from './P';
-import { Small } from './Small';
-import { Strong } from './Strong';
-import { Technical } from './Technical';
+
+import { Body, Detail, H1, H2, H3, H4, Large, P, Small, Strong, Technical } from '.';
 
 const meta: Meta<typeof Body> = {
   title: 'Typography',
