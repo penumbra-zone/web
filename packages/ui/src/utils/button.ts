@@ -26,10 +26,10 @@ const focusOutline = css<{
 
   /**
    * The focus outline is styled on the \`::after\` pseudo-element, rather than
-   * just adding an \`outline\`. This is because, if we only used \`outline\`,
-   * and the currently focused button is right before a disabled button, the
-   * overlay of the disabled button would be above the outline, making the
-   * outline appear to be partly cut off.
+   * just adding an \`outline\` to the base element. This is because, if we only
+   * used \`outline\`, and the currently focused button is right before a
+   * disabled button, the overlay of the disabled button would be above the
+   * outline, making the outline appear to be partly cut off.
    */
   &:focus::after {
     outline-color: ${props => props.$getFocusOutlineColor(props.theme)};
