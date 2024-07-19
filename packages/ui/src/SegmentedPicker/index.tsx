@@ -48,15 +48,11 @@ const SegmentButton = styled.button<{
         return props.theme.color.text.primary;
     }
   }};
-
   position: relative;
-
   white-space: nowrap;
-
   cursor: pointer;
 
   ${tab}
-
   ${buttonInteractions}
 
   &::after {
