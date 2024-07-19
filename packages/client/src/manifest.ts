@@ -13,7 +13,7 @@
  * configure a public `key` field to ensure the `id` field matches in
  * development builds, but `id` will still not be present in the manifest.
  *
- * If necessary, `id` could be calculated from the `key` field.
+ * If necessary, `id` could be calculated from your key.
  *
  * @see https://web.archive.org/web/20120606044635/http://supercollider.dk/2010/01/calculating-chrome-extension-id-from-your-private-key-233
  */
