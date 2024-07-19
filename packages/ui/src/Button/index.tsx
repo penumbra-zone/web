@@ -1,10 +1,11 @@
-import { MouseEventHandler } from 'react';
+import { MouseEventHandler, useContext } from 'react';
 import styled, { css, DefaultTheme } from 'styled-components';
 import { asTransientProps } from '../utils/asTransientProps';
 import { Size, Variant, ActionType, buttonInteractions } from '../utils/button';
 import { getBackgroundColor } from './helpers';
 import { button } from '../utils/typography';
 import { LucideIcon } from 'lucide-react';
+import { ButtonVariantContext } from '../ButtonVariantContext';
 
 const dense = css<StyledButtonProps>`
   border-radius: ${props => props.theme.borderRadius.full};
@@ -77,10 +78,28 @@ const StyledButton = styled.button<StyledButtonProps>`
 `;
 
 interface BaseButtonProps {
+  /**
+   * The button label. If `iconOnly` is `true`, this will be used as the
+   * `aria-label` attribute.
+   */
   children: string;
+  /**
+   * Set to `sparse` for more loosely arranged layouts, such as when this is the
+   * submit button for a form. Use `dense` when, e.g., this button appears next
+   * to every item in a dense list of data.
+   *
+   * Default: `sparse`.
+   */
   size?: Size;
+  /**
+   * What type of action is this button related to? Leave as `default` for most
+   * buttons, set to `accent` for the single most important action on a given
+   * page, set to `unshield` for actions that will unshield the user's funds,
+   * and set to `destructive` for destructive actions.
+   *
+   * Default: `default`
+   */
   actionType?: ActionType;
-  variant?: Variant;
   disabled?: boolean;
   onClick?: MouseEventHandler<HTMLButtonElement>;
 }
@@ -127,6 +146,7 @@ interface RegularProps {
 
 export type ButtonProps = BaseButtonProps & (IconOnlyProps | RegularProps);
 
+/** A component for all your button needs! */
 export const Button = ({
   children,
   disabled = false,
@@ -135,18 +155,21 @@ export const Button = ({
   iconOnly,
   size = 'sparse',
   actionType = 'default',
-  variant = 'primary',
-}: ButtonProps) => (
-  <StyledButton
-    {...asTransientProps({ iconOnly, size, actionType, variant })}
-    disabled={disabled}
-    onClick={onClick}
-    aria-label={iconOnly ? children : undefined}
-    $getFocusOutlineColor={theme => theme.color.action[outlineColorByActionType[actionType]]}
-    $getBorderRadius={theme => theme.borderRadius.sm}
-  >
-    {IconComponent && <IconComponent size={size === 'sparse' && iconOnly ? 24 : 16} />}
+}: ButtonProps) => {
+  const variant = useContext(ButtonVariantContext);
 
-    {!iconOnly && children}
-  </StyledButton>
-);
+  return (
+    <StyledButton
+      {...asTransientProps({ iconOnly, size, actionType, variant })}
+      disabled={disabled}
+      onClick={onClick}
+      aria-label={iconOnly ? children : undefined}
+      $getFocusOutlineColor={theme => theme.color.action[outlineColorByActionType[actionType]]}
+      $getBorderRadius={theme => theme.borderRadius.sm}
+    >
+      {IconComponent && <IconComponent size={size === 'sparse' && iconOnly ? 24 : 16} />}
+
+      {!iconOnly && children}
+    </StyledButton>
+  );
+};

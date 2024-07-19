@@ -4,6 +4,7 @@ import { ActionType, Size } from '../utils/button';
 import { Button } from '../Button';
 import styled from 'styled-components';
 import { media } from '../utils/media';
+import { ButtonVariantContext } from '../ButtonVariantContext';
 
 const Root = styled.div<{ $size: Size }>`
   display: flex;
@@ -75,33 +76,30 @@ export const ButtonGroup = ({
       */}
     {isIconOnly(props) &&
       props.buttons.map((button, index) => (
-        <ButtonWrapper key={index} $size={size} $iconOnly>
-          <Button
-            icon={button.icon}
-            actionType={actionType}
-            onClick={button.onClick}
-            variant={index === 0 ? 'primary' : 'secondary'}
-            size={size}
-            iconOnly
-          >
-            {button.label}
-          </Button>
-        </ButtonWrapper>
+        <ButtonVariantContext.Provider key={index} value={index === 0 ? 'primary' : 'secondary'}>
+          <ButtonWrapper $size={size} $iconOnly>
+            <Button
+              icon={button.icon}
+              actionType={actionType}
+              onClick={button.onClick}
+              size={size}
+              iconOnly
+            >
+              {button.label}
+            </Button>
+          </ButtonWrapper>
+        </ButtonVariantContext.Provider>
       ))}
 
     {!isIconOnly(props) &&
       props.buttons.map((button, index) => (
-        <ButtonWrapper key={index} $size={size}>
-          <Button
-            icon={button.icon}
-            actionType={actionType}
-            onClick={button.onClick}
-            variant={index === 0 ? 'primary' : 'secondary'}
-            size={size}
-          >
-            {button.label}
-          </Button>
-        </ButtonWrapper>
+        <ButtonVariantContext.Provider key={index} value={index === 0 ? 'primary' : 'secondary'}>
+          <ButtonWrapper $size={size}>
+            <Button icon={button.icon} actionType={actionType} onClick={button.onClick} size={size}>
+              {button.label}
+            </Button>
+          </ButtonWrapper>
+        </ButtonVariantContext.Provider>
       ))}
   </Root>
 );
