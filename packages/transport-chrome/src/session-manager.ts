@@ -154,7 +154,7 @@ export class CRSessionManager {
    */
   private clientMessageHandler(
     session: CRSession,
-    { requestId, message, timeoutMs }: TransportMessage,
+    { requestId, message }: TransportMessage,
   ): Promise<TransportEvent> {
     if (this.requests.has(requestId)) {
       throw new Error(`Request collision: ${requestId}`);
@@ -162,11 +162,7 @@ export class CRSessionManager {
     const requestController = new AbortController();
     session.signal.addEventListener('abort', () => requestController.abort());
     this.requests.set(requestId, requestController);
-    return this.handler(
-      message,
-      AbortSignal.any([session.signal, requestController.signal]),
-      timeoutMs,
-    )
+    return this.handler(message, AbortSignal.any([session.signal, requestController.signal]))
       .then(response =>
         response instanceof ReadableStream
           ? this.responseChannelStream(requestController.signal, {

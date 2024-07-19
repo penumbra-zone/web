@@ -89,17 +89,16 @@ export const createChannelTransport = ({
       // likely 'false' indicating a disconnect
       listenerError.reject(new ConnectError('Connection closed', Code.Unavailable));
     } else if (isTransportEvent(data)) {
-      // this is a response to a specific request.  the port may be shared, so it
-      // may contain a requestId we don't know about.  the response may be
-      // successful, or contain an error conveyed only to the caller.
-      const respond = pending.get(data.requestId);
-      if (respond) {
-        respond(data);
-      }
+      // this is a response to a specific request.  the port may be shared, so
+      // it's okay if it contains a requestId we don't know about.  the response
+      // may be successful, or contain an error conveyed only to the caller.
+      pending.get(data.requestId)?.(data);
     } else if (isTransportError(data)) {
       // this is a channel-level error, corresponding to no specific request.
       // this will fail this transport, and every client using this transport.
-      // every transport sharing this port will fail independently.
+      // every transport sharing this port will fail independently, but the
+      // rejection created here will be delivered to every subsequent request
+      // attempted on this transport.
       listenerError.reject(
         errorFromJson(data.error, data.metadata, new ConnectError('Transport failed')),
       );
@@ -142,7 +141,7 @@ export const createChannelTransport = ({
       });
 
       const message = Any.pack(new method.I(input)).toJson(jsonOptions);
-      port.postMessage({ requestId, message, header, timeoutMs } satisfies TransportMessage);
+      port.postMessage({ requestId, message, header } satisfies TransportMessage);
 
       setTimeout(() => {
         reject(new ConnectError('Request timed out', Code.DeadlineExceeded));
@@ -200,7 +199,7 @@ export const createChannelTransport = ({
         const [{ value } = { value: null }, { done }] = [await iter.next(), await iter.next()];
         if (done && typeof value === 'object' && value != null) {
           const message = Any.pack(new method.I(value as object)).toJson(jsonOptions);
-          port.postMessage({ requestId, message, header, timeoutMs } satisfies TransportMessage);
+          port.postMessage({ requestId, message, header } satisfies TransportMessage);
         } else {
           throw new ConnectError(
             'MethodKind.ServerStreaming expects a single request message',
@@ -214,9 +213,7 @@ export const createChannelTransport = ({
               cont.enqueue(Any.pack(new method.I(chunk)).toJson(jsonOptions)),
           }),
         );
-        port.postMessage({ requestId, stream, header, timeoutMs } satisfies TransportStream, [
-          stream,
-        ]);
+        port.postMessage({ requestId, stream, header } satisfies TransportStream, [stream]);
       }
 
       setTimeout(() => {

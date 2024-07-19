@@ -15,7 +15,6 @@ export interface TransportEvent<I extends string = string> {
   requestId: I;
   header?: HeadersInit;
   trailer?: HeadersInit;
-  timeoutMs?: number;
   //contextValues?: object;
 }
 
