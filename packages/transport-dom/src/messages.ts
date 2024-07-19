@@ -15,7 +15,12 @@ export interface TransportEvent<I extends string = string> {
   requestId: I;
   header?: HeadersInit;
   trailer?: HeadersInit;
+  timeoutMs?: number;
   //contextValues?: object;
+}
+
+export interface TransportAbort<I = string> extends TransportEvent<I extends string ? I : never> {
+  abort: true;
 }
 
 export interface TransportMessage<I = string> extends TransportEvent<I extends string ? I : never> {
@@ -49,3 +54,6 @@ export const isTransportMessage = <I extends string>(
 
 export const isTransportStream = <I extends string>(s: unknown, id?: I): s is TransportStream<I> =>
   isTransportEvent(s, id) && 'stream' in s && s.stream instanceof ReadableStream;
+
+export const isTransportAbort = <I extends string>(a: unknown, id?: I): a is TransportAbort<I> =>
+  isTransportEvent(a, id) && 'abort' in a && a.abort === true;

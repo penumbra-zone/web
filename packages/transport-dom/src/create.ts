@@ -120,12 +120,13 @@ export const createChannelTransport = ({
     async unary<I extends Message<I> = AnyMessage, O extends Message<O> = AnyMessage>(
       service: ServiceType,
       method: MethodInfo<I, O>,
-      _signal: AbortSignal | undefined, // TODO
-      _timeoutMs: number | undefined, // TODO
+      signal: AbortSignal | undefined,
+      timeoutMs: number | undefined,
       header: HeadersInit | undefined,
       input: PartialMessage<I>,
     ): Promise<UnaryResponse<I, O>> {
       port ??= await connect();
+      timeoutMs ??= defaultTimeoutMs;
 
       const requestId = crypto.randomUUID();
       const { promise: response, resolve, reject } = Promise.withResolvers<TransportMessage>();
@@ -137,10 +138,22 @@ export const createChannelTransport = ({
         } else {
           reject(ConnectError.from(tev));
         }
+        pending.delete(requestId);
       });
 
       const message = Any.pack(new method.I(input)).toJson(jsonOptions);
-      port.postMessage({ requestId, message, header });
+      port.postMessage({ requestId, message, header, timeoutMs } satisfies TransportMessage);
+
+      setTimeout(() => {
+        reject(new ConnectError('Request timed out', Code.DeadlineExceeded));
+        pending.delete(requestId);
+      }, timeoutMs);
+
+      signal?.addEventListener('abort', () => {
+        reject(signal.reason);
+        pending.delete(requestId);
+        port?.postMessage({ requestId, abort: true });
+      });
 
       const success = Promise.race([response, listenerError.promise]);
 
@@ -161,12 +174,13 @@ export const createChannelTransport = ({
     async stream<I extends Message<I> = AnyMessage, O extends Message<O> = AnyMessage>(
       service: ServiceType,
       method: MethodInfo<I, O>,
-      _signal: AbortSignal | undefined, // TODO
-      _timeoutMs: number | undefined, // TODO
+      signal: AbortSignal | undefined,
+      timeoutMs: number | undefined,
       header: HeadersInit | undefined,
       input: AsyncIterable<PartialMessage<I>>,
     ): Promise<StreamResponse<I, O>> {
       port ??= await connect();
+      timeoutMs ??= defaultTimeoutMs;
 
       const requestId = crypto.randomUUID();
       const { promise: response, resolve, reject } = Promise.withResolvers<TransportStream>();
@@ -178,6 +192,7 @@ export const createChannelTransport = ({
         } else {
           reject(ConnectError.from(tev));
         }
+        pending.delete(requestId);
       });
 
       if (method.kind === MethodKind.ServerStreaming) {
@@ -185,7 +200,7 @@ export const createChannelTransport = ({
         const [{ value } = { value: null }, { done }] = [await iter.next(), await iter.next()];
         if (done && typeof value === 'object' && value != null) {
           const message = Any.pack(new method.I(value as object)).toJson(jsonOptions);
-          port.postMessage({ requestId, message, header } satisfies TransportMessage);
+          port.postMessage({ requestId, message, header, timeoutMs } satisfies TransportMessage);
         } else {
           throw new ConnectError(
             'MethodKind.ServerStreaming expects a single request message',
@@ -199,8 +214,21 @@ export const createChannelTransport = ({
               cont.enqueue(Any.pack(new method.I(chunk)).toJson(jsonOptions)),
           }),
         );
-        port.postMessage({ requestId, stream, header } satisfies TransportStream, [stream]);
+        port.postMessage({ requestId, stream, header, timeoutMs } satisfies TransportStream, [
+          stream,
+        ]);
       }
+
+      setTimeout(() => {
+        reject(new ConnectError('Request timed out', Code.DeadlineExceeded));
+        pending.delete(requestId);
+      }, timeoutMs);
+
+      signal?.addEventListener('abort', () => {
+        reject(new ConnectError('Request cancelled', Code.Aborted));
+        pending.delete(requestId);
+        port?.postMessage({ requestId, abort: true });
+      });
 
       const success = await Promise.race([response, listenerError.promise]);
 
@@ -218,6 +246,7 @@ export const createChannelTransport = ({
               cont.enqueue(o);
             },
           }),
+          { signal },
         ),
       };
     },
