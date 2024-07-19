@@ -142,7 +142,7 @@ export const Button = ({
       {...asTransientProps({ iconOnly, size, actionType, variant })}
       disabled={disabled}
       onClick={onClick}
-      aria-label={children}
+      aria-label={iconOnly ? children : undefined}
       $getFocusOutlineColor={theme => theme.color.action[outlineColorByActionType[actionType]]}
       $getBorderRadius={theme => theme.borderRadius.sm}
     >
