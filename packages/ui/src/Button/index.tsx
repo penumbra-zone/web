@@ -136,19 +136,17 @@ export const Button = ({
   size = 'sparse',
   actionType = 'default',
   variant = 'primary',
-}: ButtonProps) => {
-  return (
-    <StyledButton
-      {...asTransientProps({ iconOnly, size, actionType, variant })}
-      disabled={disabled}
-      onClick={onClick}
-      aria-label={iconOnly ? children : undefined}
-      $getFocusOutlineColor={theme => theme.color.action[outlineColorByActionType[actionType]]}
-      $getBorderRadius={theme => theme.borderRadius.sm}
-    >
-      {IconComponent && <IconComponent size={size === 'sparse' && iconOnly ? 24 : 16} />}
+}: ButtonProps) => (
+  <StyledButton
+    {...asTransientProps({ iconOnly, size, actionType, variant })}
+    disabled={disabled}
+    onClick={onClick}
+    aria-label={iconOnly ? children : undefined}
+    $getFocusOutlineColor={theme => theme.color.action[outlineColorByActionType[actionType]]}
+    $getBorderRadius={theme => theme.borderRadius.sm}
+  >
+    {IconComponent && <IconComponent size={size === 'sparse' && iconOnly ? 24 : 16} />}
 
-      {!iconOnly && children}
-    </StyledButton>
-  );
-};
+    {!iconOnly && children}
+  </StyledButton>
+);

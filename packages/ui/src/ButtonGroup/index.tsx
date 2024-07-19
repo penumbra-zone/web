@@ -66,44 +66,42 @@ export const ButtonGroup = ({
   actionType = 'default',
   size = 'sparse',
   ...props
-}: ButtonGroupProps<boolean>) => {
-  return (
-    <Root $size={size}>
-      {/* Annoying TypeScript workaround — we need to explicitly delineate the
+}: ButtonGroupProps<boolean>) => (
+  <Root $size={size}>
+    {/* Annoying TypeScript workaround — we need to explicitly delineate the
       `isIconOnly` and `!isIconOnly` cases, since TypeScript won't resolve the
       compatibility of the icon-only and non-icon-only types otherwise. If
       someone comes up with a better way to do this, feel free to revisit this.
       */}
-      {isIconOnly(props) &&
-        props.buttons.map((button, index) => (
-          <ButtonWrapper key={index} $size={size} $iconOnly>
-            <Button
-              icon={button.icon}
-              actionType={actionType}
-              onClick={button.onClick}
-              variant={index === 0 ? 'primary' : 'secondary'}
-              size={size}
-              iconOnly
-            >
-              {button.label}
-            </Button>
-          </ButtonWrapper>
-        ))}
+    {isIconOnly(props) &&
+      props.buttons.map((button, index) => (
+        <ButtonWrapper key={index} $size={size} $iconOnly>
+          <Button
+            icon={button.icon}
+            actionType={actionType}
+            onClick={button.onClick}
+            variant={index === 0 ? 'primary' : 'secondary'}
+            size={size}
+            iconOnly
+          >
+            {button.label}
+          </Button>
+        </ButtonWrapper>
+      ))}
 
-      {!isIconOnly(props) &&
-        props.buttons.map((button, index) => (
-          <ButtonWrapper key={index} $size={size}>
-            <Button
-              icon={button.icon}
-              actionType={actionType}
-              onClick={button.onClick}
-              variant={index === 0 ? 'primary' : 'secondary'}
-              size={size}
-            >
-              {button.label}
-            </Button>
-          </ButtonWrapper>
-        ))}
-    </Root>
-  );
-};
+    {!isIconOnly(props) &&
+      props.buttons.map((button, index) => (
+        <ButtonWrapper key={index} $size={size}>
+          <Button
+            icon={button.icon}
+            actionType={actionType}
+            onClick={button.onClick}
+            variant={index === 0 ? 'primary' : 'secondary'}
+            size={size}
+          >
+            {button.label}
+          </Button>
+        </ButtonWrapper>
+      ))}
+  </Root>
+);
