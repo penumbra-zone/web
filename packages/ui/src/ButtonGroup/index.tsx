@@ -31,13 +31,8 @@ export interface ButtonGroupProps<IconOnly extends boolean> {
   /**
    * An array of objects, each describing a button to render. The first will be
    * rendered with the `primary` variant, the rest with the `secondary` variant.
-   *
-   * Minimum length: 1. Maximum length: 3.
    */
-  buttons:
-    | [ButtonDescription<IconOnly>]
-    | [ButtonDescription<IconOnly>, ButtonDescription<IconOnly>]
-    | [ButtonDescription<IconOnly>, ButtonDescription<IconOnly>, ButtonDescription<IconOnly>];
+  buttons: ButtonDescription<IconOnly>[];
   /**
    * The action type of the button group. Will be used for all buttons in the
    * group.
