@@ -380,6 +380,9 @@ importers:
       '@penumbra-zone/transport-dom':
         specifier: workspace:*
         version: link:../transport-dom
+      '@types/chrome':
+        specifier: ^0.0.268
+        version: 0.0.268
 
   packages/crypto:
     dependencies:

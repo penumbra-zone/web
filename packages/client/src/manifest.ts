@@ -1,43 +1,24 @@
-/** Currently, Penumbra manifests are chrome extension manifest v3. There's no type
- * guard because manifest format is enforced by chrome. This type only describes
- * fields we're interested in as a client.
+/// <reference types="chrome" />
+
+/**
+ * Currently, Penumbra manifests are expected to be chrome extension manifest
+ * v3.  This type just requires a few fields of ManifestV3 that apps might use
+ * to display provider information to the user.
  *
  * @see https://developer.chrome.com/docs/extensions/reference/manifest#keys
+ *
+ * For chrome extensions, the extension `id` will be the host of the extension
+ * origin. The `id` is added to the manifest by the chrome store, so will be
+ * missing from a locally-built extension in development. Developers may
+ * configure a public `key` field to ensure the `id` field matches in
+ * development builds, but `id` will still not be present in the manifest.
+ *
+ * If necessary, `id` could be calculated from your key.
+ *
+ * @see https://web.archive.org/web/20120606044635/http://supercollider.dk/2010/01/calculating-chrome-extension-id-from-your-private-key-233
  */
-export interface PenumbraManifest {
-  /**
-   * manifest id is present in production, but generally not in dev, because
-   * they are inserted by chrome store tooling. chrome extension id are simple
-   * hashes of the 'key' field, an extension-specific public key.
-   *
-   * developers may configure a public key in dev, and the extension id will
-   * match appropriately, but will not be present in the manifest.
-   *
-   * the extension id is also part of the extension's origin URI.
-   *
-   * @see https://developer.chrome.com/docs/extensions/reference/manifest/key
-   * @see https://web.archive.org/web/20120606044635/http://supercollider.dk/2010/01/calculating-chrome-extension-id-from-your-private-key-233
-   */
-  id?: string;
-  key?: string;
-
-  // these are required
-  name: string;
-  version: string;
-  description: string;
-
-  // these are optional, but might be nice to have
-  homepage_url?: string;
-  options_ui?: { page: string };
-  options_page?: string;
-
-  // icons are not indexed by number, but by a stringified number. they may be
-  // any square size but the power-of-two sizes are typical. the chrome store
-  // requires a '128' icon.
-  icons: Record<`${number}`, string> & {
-    ['128']: string;
-  };
-}
+export type PenumbraManifest = Partial<chrome.runtime.ManifestV3> &
+  Required<Pick<chrome.runtime.ManifestV3, 'name' | 'version' | 'description' | 'icons'>>;
 
 export const isPenumbraManifest = (mf: unknown): mf is PenumbraManifest =>
   mf !== null &&
