@@ -8,8 +8,8 @@ import { Impl } from '../index.js';
 import { balances } from '../balances.js';
 import { getIsClaimable, isUnbondingTokenBalance } from './helpers.js';
 import { Any } from '@bufbuild/protobuf';
+import { getValidatorInfoFromGetValidatorInfoResponse } from '@penumbra-zone/getters/validator-info';
 import { stakeClientCtx } from '../../ctx/stake-client.js';
-import { getValidatorInfo } from '@penumbra-zone/getters/get-validator-info-response';
 import { assetPatterns } from '@penumbra-zone/types/assets';
 import {
   getBalanceView,
@@ -54,10 +54,11 @@ export const unbondingTokensByAddressIndex: Impl['unbondingTokensByAddressIndex'
         throw new Error('expected delegation token identity key not present');
       }
 
-      const validatorInfoResponse = await stakeClient.getValidatorInfo({
-        identityKey: identityKeyFromBech32m(regexResult.idKey),
-      });
-      const validatorInfo = getValidatorInfo(validatorInfoResponse);
+      const validatorInfo = getValidatorInfoFromGetValidatorInfoResponse(
+        await stakeClient.getValidatorInfo({
+          identityKey: identityKeyFromBech32m(regexResult.idKey),
+        }),
+      );
 
       const withValidatorInfo = getBalanceView(new BalancesResponse(balancesResponse));
       if (withValidatorInfo.valueView.case !== 'knownAssetId') {

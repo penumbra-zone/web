@@ -3,8 +3,10 @@ import { customizeSymbol } from '@penumbra-zone/wasm/metadata';
 import { assetPatterns } from '@penumbra-zone/types/assets';
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
 import { Any, PartialMessage } from '@bufbuild/protobuf';
-import { getValidatorInfo } from '@penumbra-zone/getters/validator-info-response';
-import { getIdentityKeyFromValidatorInfo } from '@penumbra-zone/getters/validator-info';
+import {
+  getIdentityKeyFromValidatorInfo,
+  getValidatorInfoFromGetValidatorInfoResponse,
+} from '@penumbra-zone/getters/validator-info';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
 import {
   AssetMetadataByIdRequest,
@@ -49,9 +51,9 @@ export const delegationsByAddressIndex: Impl['delegationsByAddressIndex'] = asyn
     throw new Error('Missing `addressIndex` in `DelegationsByAddressIndex` request');
   }
 
-  const mockStakeClient = ctx.values.get(stakeClientCtx);
-  if (!mockStakeClient) {
-    throw new Error('Staking context not found');
+  const stakeClient = ctx.values.get(stakeClientCtx);
+  if (!stakeClient) {
+    throw new Error('Stake context not found');
   }
 
   const assetBalances = await Array.fromAsync(
@@ -62,13 +64,10 @@ export const delegationsByAddressIndex: Impl['delegationsByAddressIndex'] = asyn
   // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
   const showInactive = req.filter === DelegationsByAddressIndexRequest_Filter.ALL;
 
-  for await (const validatorInfoResponse of mockStakeClient.validatorInfo({ showInactive })) {
-    const validatorInfo = getValidatorInfo(validatorInfoResponse);
+  for await (const validatorInfoResponse of stakeClient.validatorInfo({ showInactive })) {
+    const validatorInfo = getValidatorInfoFromGetValidatorInfoResponse(validatorInfoResponse);
     const extendedMetadata = Any.pack(validatorInfo);
-
-    const identityKey = getValidatorInfo.pipe(getIdentityKeyFromValidatorInfo)(
-      validatorInfoResponse,
-    );
+    const identityKey = getIdentityKeyFromValidatorInfo(validatorInfo);
     const delegation = assetBalances.find(balance =>
       isDelegationBalance(new BalancesResponse(balance), identityKey),
     );
