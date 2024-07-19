@@ -2,6 +2,7 @@ import styled, { DefaultTheme } from 'styled-components';
 import { tab } from '../utils/typography';
 import { motion } from 'framer-motion';
 import { useId } from 'react';
+import { buttonInteractions } from '../utils/button';
 
 const TEN_PERCENT_OPACITY_IN_HEX = '1a';
 
@@ -24,7 +25,11 @@ const outlineColorByActionType: Record<ActionType, keyof DefaultTheme['color']['
   unshield: 'unshieldFocusOutline',
 };
 
-const SegmentButton = styled.button<{ $actionType: ActionType }>`
+const SegmentButton = styled.button<{
+  $actionType: ActionType;
+  $getFocusOutlineColor: (theme: DefaultTheme) => string;
+  $getBorderRadius: (theme: DefaultTheme) => string;
+}>`
   flex-grow: 1;
   flex-shrink: 1;
   flex-basis: 0; /** Ensure equal widths */
@@ -52,57 +57,10 @@ const SegmentButton = styled.button<{ $actionType: ActionType }>`
 
   ${tab}
 
-  &::before {
-    border-radius: ${props => props.theme.borderRadius.xs};
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-
-    transition: background-color 0.15s;
-  }
+  ${buttonInteractions}
 
   &::after {
-    content: '';
-    position: absolute;
     inset: ${props => props.theme.spacing(0.5)};
-    z-index: 1;
-
-    outline-width: 2px;
-    outline-style: solid;
-    outline-color: transparent;
-    border-radius: ${props => props.theme.borderRadius.xs};
-
-    transition: outline-color 0.15s;
-  }
-
-  &:disabled::after {
-    pointer-events: none;
-  }
-
-  &:hover::before {
-    background-color: ${props => props.theme.color.action.hoverOverlay};
-  }
-
-  &:active::before {
-    background-color: ${props => props.theme.color.action.activeOverlay};
-  }
-
-  /**
-   * The focus outline is styled on the \`::after\` pseudo-element, rather than
-   * just adding an \`outline\`. This is because, if we only used \`outline\`,
-   * and the currently focused button is right before a disabled button, the
-   * overlay of the disabled button would be above the outline, making the
-   * outline appear to be partly cut off.
-   */
-  &:focus::after {
-    outline-color: ${props =>
-      props.theme.color.action[outlineColorByActionType[props.$actionType]]};
-  }
-
-  &:disabled::before {
-    background-color: ${props => props.theme.color.action.disabledOverlay};
-    cursor: not-allowed;
   }
 `;
 
@@ -171,6 +129,8 @@ export const SegmentedPicker = <ValueType extends { toString: () => string }>({
           onClick={() => onChange(option.value)}
           $actionType={actionType}
           disabled={option.disabled}
+          $getFocusOutlineColor={theme => theme.color.action[outlineColorByActionType[actionType]]}
+          $getBorderRadius={theme => theme.borderRadius.xs}
         >
           {value === option.value && <SelectedIndicator layout layoutId={layoutId} />}
           {option.label}

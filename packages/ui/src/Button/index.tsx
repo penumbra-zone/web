@@ -1,7 +1,7 @@
 import { MouseEventHandler } from 'react';
 import styled, { css, DefaultTheme } from 'styled-components';
 import { asTransientProps } from '../utils/asTransientProps';
-import { Size, Variant, ActionType } from '../utils/button';
+import { Size, Variant, ActionType, buttonInteractions } from '../utils/button';
 import { getBackgroundColor } from './helpers';
 import { button } from '../utils/typography';
 import { LucideIcon } from 'lucide-react';
@@ -44,6 +44,8 @@ interface StyledButtonProps {
   $actionType: ActionType;
   $variant: Variant;
   $size: Size;
+  $getFocusOutlineColor: (theme: DefaultTheme) => string;
+  $getBorderRadius: (theme: DefaultTheme) => string;
 }
 
 const StyledButton = styled.button<StyledButtonProps>`
@@ -67,35 +69,10 @@ const StyledButton = styled.button<StyledButtonProps>`
 
   ${props => (props.$size === 'dense' ? dense : sparse)}
 
-  &:hover::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-color: ${props => props.theme.color.action.hoverOverlay};
-    z-index: 1;
-  }
+  ${buttonInteractions}
 
-  &:active::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-color: ${props => props.theme.color.action.activeOverlay};
-    z-index: 1;
-  }
-
-  &:focus {
-    outline: 2px solid
-      ${props => props.theme.color.action[outlineColorByActionType[props.$actionType]]};
-  }
-
-  &:disabled::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-color: ${props => props.theme.color.action.disabledOverlay};
-    z-index: 1;
-
-    cursor: not-allowed;
+  &::after {
+    outline-offset: -2px;
   }
 `;
 
@@ -166,6 +143,8 @@ export const Button = ({
       disabled={disabled}
       onClick={onClick}
       aria-label={children}
+      $getFocusOutlineColor={theme => theme.color.action[outlineColorByActionType[actionType]]}
+      $getBorderRadius={theme => theme.borderRadius.sm}
     >
       {IconComponent && <IconComponent size={size === 'sparse' && iconOnly ? 24 : 16} />}
 
