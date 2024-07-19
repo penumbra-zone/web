@@ -1,3 +1,5 @@
+/// <reference types="chrome" />
+
 /**
  * Currently, Penumbra manifests are expected to be chrome extension manifest
  * v3.  This type just requires a few fields of ManifestV3 that apps might use

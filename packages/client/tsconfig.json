@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "types": ["chrome"],
     "exactOptionalPropertyTypes": false,
     "composite": true,
     "module": "Node16",
