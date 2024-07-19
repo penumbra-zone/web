@@ -11,16 +11,16 @@ const dense = css<StyledButtonProps>`
   border-radius: ${props => props.theme.borderRadius.full};
   padding-left: ${props => props.theme.spacing(props.$iconOnly ? 2 : 4)};
   padding-right: ${props => props.theme.spacing(props.$iconOnly ? 2 : 4)};
-  height: 40px;
-  min-width: 40px;
+  height: 32px;
+  min-width: 32px;
 `;
 
 const sparse = css<StyledButtonProps>`
   border-radius: ${props => props.theme.borderRadius.sm};
   padding-left: ${props => props.theme.spacing(4)};
   padding-right: ${props => props.theme.spacing(4)};
-  height: 56px;
-  width: ${props => (props.$iconOnly ? '56px' : '100%')};
+  height: 48px;
+  width: ${props => (props.$iconOnly ? '48px' : '100%')};
 `;
 
 const outlineColorByActionType: Record<ActionType, keyof DefaultTheme['color']['action']> = {
@@ -165,7 +165,9 @@ export const Button = ({
       onClick={onClick}
       aria-label={iconOnly ? children : undefined}
       $getFocusOutlineColor={theme => theme.color.action[outlineColorByActionType[actionType]]}
-      $getBorderRadius={theme => theme.borderRadius.sm}
+      $getBorderRadius={theme =>
+        size === 'sparse' ? theme.borderRadius.sm : theme.borderRadius.full
+      }
     >
       {IconComponent && <IconComponent size={size === 'sparse' && iconOnly ? 24 : 16} />}
 
