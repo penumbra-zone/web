@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Grid } from '.';
 import styled from 'styled-components';
-import { Technical } from '../Technical';
+import { Text } from '../Text';
 
 const meta: Meta<typeof Grid> = {
   component: Grid,
@@ -35,7 +35,7 @@ export const Demo: Story = {
       <Grid container as='main'>
         <Grid mobile={12} as='section'>
           <Item>
-            <Technical>mobile=12</Technical>
+            <Text technical>mobile=12</Text>
           </Item>
         </Grid>
 
@@ -44,7 +44,7 @@ export const Demo: Story = {
           .map((_, index) => (
             <Grid mobile={12} tablet={6} key={index}>
               <Item>
-                <Technical>mobile=12 tablet=6</Technical>
+                <Text technical>mobile=12 tablet=6</Text>
               </Item>
             </Grid>
           ))}
@@ -54,7 +54,7 @@ export const Demo: Story = {
           .map((_, index) => (
             <Grid mobile={6} tablet={6} desktop={3} key={index}>
               <Item>
-                <Technical>mobile=6 tablet=6 desktop=3</Technical>
+                <Text technical>mobile=6 tablet=6 desktop=3</Text>
               </Item>
             </Grid>
           ))}
@@ -64,7 +64,7 @@ export const Demo: Story = {
           .map((_, index) => (
             <Grid key={index} lg={1}>
               <Item>
-                <Technical>lg=1</Technical>
+                <Text technical>lg=1</Text>
               </Item>
             </Grid>
           ))}
