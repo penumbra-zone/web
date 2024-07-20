@@ -11,7 +11,13 @@ import { Any, createRegistry, type PlainMessage } from '@bufbuild/protobuf';
 import type { Transport } from '@connectrpc/connect';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { type ChannelTransportOptions, createChannelTransport } from './create.js';
-import type { TransportMessage, TransportStream } from './messages.js';
+import {
+  isTransportAbort,
+  isTransportMessage,
+  type TransportEvent,
+  type TransportMessage,
+  type TransportStream,
+} from './messages.js';
 
 import ReadableStream from './ReadableStream.from.js';
 
@@ -210,7 +216,7 @@ describe('message transport', () => {
   });
 });
 
-describe('transport options abort and timeout', () => {
+describe('transport timeouts', () => {
   let port1: MessagePort;
   let port2: MessagePort;
   let transportOptions: ChannelTransportOptions;
@@ -362,7 +368,9 @@ describe('transport options abort and timeout', () => {
       };
     });
 
-    await expect(streamRequest).rejects.toThrow('[deadline_exceeded]');
+    await expect(streamRequest.then(({ message }) => message)).rejects.toThrow(
+      '[deadline_exceeded]',
+    );
     await expect(otherEnd).resolves.not.toThrow();
   });
 
@@ -441,5 +449,196 @@ describe('transport options abort and timeout', () => {
           .map(({ name, duration }) => ({ name, duration })),
       ]);
     }
+  });
+});
+
+describe('transport aborts', () => {
+  let port1: MessagePort;
+  let port2: MessagePort;
+  let transportOptions: ChannelTransportOptions;
+  let transport: Transport;
+  let ac: AbortController;
+  const defaultTimeoutMs = 200;
+
+  beforeEach(() => {
+    ({ port1, port2 } = new MessageChannel());
+    transportOptions = {
+      getPort: () => Promise.resolve(port2),
+      jsonOptions: { typeRegistry },
+      defaultTimeoutMs,
+    };
+    transport = createChannelTransport(transportOptions);
+    ac = new AbortController();
+  });
+
+  it('should cancel unary requests if missing reason', async () => {
+    const input: PlainMessage<SayRequest> = { sentence: 'hello' };
+
+    ac.abort();
+
+    const unaryRequest = transport.unary(
+      ElizaService,
+      ElizaService.methods.say,
+      ac.signal,
+      undefined,
+      undefined,
+      new SayRequest(input),
+    );
+
+    const gotRequest = Promise.withResolvers<void>();
+    const gotAbort = Promise.withResolvers<void>();
+
+    port1.onmessage = (event: MessageEvent<unknown>) => {
+      const tev = event.data as TransportEvent;
+      expect(tev.requestId).toBeTypeOf('string');
+
+      if (isTransportMessage(tev)) {
+        expect(tev.message).toMatchObject(input);
+        gotRequest.resolve();
+      } else if (isTransportAbort(tev)) {
+        expect(tev.abort).toBe(true);
+        gotAbort.resolve();
+      } else {
+        throw new Error('unexpected event');
+      }
+    };
+
+    await expect(unaryRequest).rejects.toThrow('[canceled]');
+    await expect(Promise.all([gotRequest, gotAbort])).resolves.not.toThrow();
+  });
+
+  it('should abort unary requests with propagating reason', async () => {
+    const input: PlainMessage<SayRequest> = { sentence: 'hello' };
+
+    ac.abort('some reason');
+
+    const unaryRequest = transport.unary(
+      ElizaService,
+      ElizaService.methods.say,
+      ac.signal,
+      undefined,
+      undefined,
+      new SayRequest(input),
+    );
+
+    const gotRequest = Promise.withResolvers<void>();
+    const gotAbort = Promise.withResolvers<void>();
+
+    port1.onmessage = (event: MessageEvent<unknown>) => {
+      const tev = event.data as TransportEvent;
+      expect(tev.requestId).toBeTypeOf('string');
+
+      if (isTransportMessage(tev)) {
+        expect(tev.message).toMatchObject(input);
+        gotRequest.resolve();
+      } else if (isTransportAbort(tev)) {
+        expect(tev.abort).toBe(true);
+        gotAbort.resolve();
+      } else {
+        throw new Error('unexpected event');
+      }
+    };
+
+    await expect(unaryRequest).rejects.toThrow('some reason');
+    await expect(unaryRequest).rejects.toThrow('[aborted]');
+    await expect(Promise.all([gotRequest, gotAbort])).resolves.not.toThrow();
+  });
+
+  it('can cancel streaming requests before they begin', async () => {
+    const input: PlainMessage<IntroduceRequest> = {
+      name: 'and now for something completely different',
+    };
+
+    ac.abort('another reason');
+
+    const streamRequest = transport.stream(
+      ElizaService,
+      ElizaService.methods.introduce,
+      ac.signal,
+      undefined,
+      undefined,
+      ReadableStream.from([new IntroduceRequest(input)]),
+    );
+
+    const gotRequest = Promise.withResolvers<void>();
+    const gotAbort = Promise.withResolvers<void>();
+
+    port1.onmessage = (event: MessageEvent<unknown>) => {
+      const tev = event.data as TransportEvent;
+      expect(tev.requestId).toBeTypeOf('string');
+
+      if (isTransportMessage(tev)) {
+        expect(tev.message).toMatchObject(input);
+        gotRequest.resolve();
+      } else if (isTransportAbort(tev)) {
+        expect(tev.abort).toBe(true);
+        gotAbort.resolve();
+      } else {
+        throw new Error('unexpected event');
+      }
+    };
+
+    await expect(streamRequest).rejects.toThrow('another reason');
+    await expect(streamRequest).rejects.toThrow('[aborted]');
+    await expect(Promise.all([gotRequest, gotAbort])).resolves.not.toThrow();
+  });
+
+  it('can cancel streaming requests already in progress', async () => {
+    const input: PlainMessage<IntroduceRequest> = {
+      name: 'and now for something remarkably similar',
+    };
+
+    const responses: PlainMessage<IntroduceResponse>[] = [
+      { sentence: 'something remarkably similar' },
+      { sentence: 'something remarkably similar' },
+      { sentence: 'something remarkably similar' },
+      { sentence: 'something remarkably similar' },
+      { sentence: 'something remarkably similar' },
+    ];
+
+    setTimeout(() => ac.abort('a bad reason'), defaultTimeoutMs / 2);
+
+    const streamRequest = transport.stream(
+      ElizaService,
+      ElizaService.methods.introduce,
+      ac.signal,
+      undefined,
+      undefined,
+      ReadableStream.from([new IntroduceRequest(input)]),
+    );
+
+    const gotRequest = Promise.withResolvers<void>();
+    const gotAbort = Promise.withResolvers<void>();
+
+    port1.onmessage = (event: MessageEvent<unknown>) => {
+      const tev = event.data as TransportEvent;
+      const { requestId } = tev;
+      expect(requestId).toBeTypeOf('string');
+
+      if (isTransportMessage(tev)) {
+        expect(tev.message).toMatchObject(input);
+        gotRequest.resolve();
+        const stream = ReadableStream.from(
+          (async function* () {
+            for (const r of responses) {
+              await new Promise(resolve => setTimeout(resolve, defaultTimeoutMs / 3));
+              yield Any.pack(new IntroduceResponse(r)).toJson({ typeRegistry });
+            }
+          })(),
+        );
+        port1.postMessage({ requestId, stream }, [stream]);
+      } else if (isTransportAbort(tev)) {
+        expect(tev.abort).toBe(true);
+        gotAbort.resolve();
+      } else {
+        throw new Error('unexpected event');
+      }
+    };
+
+    await expect(streamRequest).resolves.not.toThrow();
+    await expect(streamRequest.then(({ message }) => Array.fromAsync(message))).rejects.toThrow(
+      'a bad reason',
+    );
+    await expect(Promise.all([gotRequest, gotAbort])).resolves.not.toThrow();
   });
 });
