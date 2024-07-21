@@ -1,12 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Grid } from './Grid';
-import { Technical } from './Typography';
+import { Text } from './Text';
 import styled from 'styled-components';
-import {
-  type ColorVariant,
-  type Color as TColor,
-  type TextColorVariant,
-} from './ThemeProvider/theme';
+import type { ColorVariant, Color as TColor, TextColorVariant } from './ThemeProvider/theme';
 import { Fragment } from 'react';
 import { media } from './utils/media';
 
@@ -69,7 +65,7 @@ const Color = <T extends Exclude<TColor, 'action' | 'other'>>({ color }: { color
   <Fragment key={color}>
     <Grid mobile={6} tablet={2}>
       <Label>
-        <Technical>{color}</Technical>
+        <Text technical>{color}</Text>
       </Label>
     </Grid>
     <Grid mobile={6} tablet={10}>
@@ -77,12 +73,12 @@ const Color = <T extends Exclude<TColor, 'action' | 'other'>>({ color }: { color
         {color === 'text'
           ? (['primary', 'secondary', 'disabled', 'special'] as const).map(variant => (
               <Variant key={variant} $color={color} $colorVariant={variant}>
-                <Technical>{variant}</Technical>
+                <Text technical>{variant}</Text>
               </Variant>
             ))
           : (['main', 'light', 'dark', 'contrast'] as const).map(variant => (
               <Variant key={variant} $color={color} $colorVariant={variant}>
-                <Technical>{variant}</Technical>
+                <Text technical>{variant}</Text>
               </Variant>
             ))}
       </Variants>
