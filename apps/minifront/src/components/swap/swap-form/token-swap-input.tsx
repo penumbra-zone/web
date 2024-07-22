@@ -10,7 +10,7 @@ import {
   getMetadataFromBalancesResponseOptional,
 } from '@penumbra-zone/getters/balances-response';
 import { ArrowRight } from 'lucide-react';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { getBlockDate } from '../../../fetchers/block-date';
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
@@ -79,23 +79,45 @@ export const TokenSwapInput = () => {
     return getDisplayDenomExponent.optional()(getMetadataFromBalancesResponseOptional(assetIn));
   }, [assetIn]);
 
-  useEffect(() => {
-    if (!assetIn || !assetOut) {
-      return;
-    } else {
-      return priceHistory.load();
-    }
-  }, [assetIn, assetOut]);
+  /**
+   * @todo this memo, state, and effects below are awkward. but this prevents
+   * excessive state churn. this is a temporary solution and will be corrected
+   * after implementing use of zquery for this data.
+   *
+   * @issue https://github.com/penumbra-zone/web/issues/1530
+   */
+  const loadPriceHistoryMemo = useMemo(
+    () => (assetIn && assetOut ? priceHistory.load : undefined),
+    [assetIn, assetOut, priceHistory.load],
+  );
 
+  const [updatedHeight, setUpdatedHeight] = useState<bigint>();
+
+  // initial price history
   useEffect(() => {
-    if (!priceHistory.candles.length) {
+    if (updatedHeight ?? !loadPriceHistoryMemo) {
       return;
-    } else if (latestKnownBlockHeight % 10n) {
-      return;
-    } else {
-      return priceHistory.load();
     }
-  }, [priceHistory, latestKnownBlockHeight]);
+    setUpdatedHeight(latestKnownBlockHeight);
+    return loadPriceHistoryMemo();
+  }, [assetIn, assetOut, latestKnownBlockHeight, loadPriceHistoryMemo, updatedHeight]);
+
+  // update price history
+  useEffect(() => {
+    // don't attempt to update an absent price history
+    if (!updatedHeight || !loadPriceHistoryMemo) {
+      return;
+    }
+
+    // rate limit pricing updates
+    const distanceFromLatest = latestKnownBlockHeight - updatedHeight;
+    if (!distanceFromLatest || distanceFromLatest < 10n) {
+      return;
+    }
+
+    setUpdatedHeight(latestKnownBlockHeight);
+    return loadPriceHistoryMemo();
+  }, [priceHistory.candles, latestKnownBlockHeight, loadPriceHistoryMemo, updatedHeight]);
 
   const maxAmount = getAmount.optional()(assetIn);
   const maxAmountAsString = maxAmount ? joinLoHiAmount(maxAmount).toString() : undefined;

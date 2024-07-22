@@ -79,18 +79,31 @@ export const CandlestickPlot = withTooltip<CandlestickPlotProps, CandlestickData
   }: CandlestickPlotProps & WithTooltipProvidedProps<CandlestickData>) => {
     const { parentRef, width: w, height: h } = useParentSize({ debounceTime: 150 });
 
-    const { maxPrice, minPrice } = useMemo(
-      () =>
-        candles.reduce(
-          (acc, d) => ({
-            minPrice: Math.min(acc.minPrice, lowPrice(d)),
-            maxPrice: Math.max(acc.maxPrice, highPrice(d)),
-          }),
-          { minPrice: Infinity, maxPrice: -Infinity },
-        ),
-      [candles],
-    );
-    const maxSpread = maxPrice - minPrice;
+    const { blockScale, priceScale } = useMemo(() => {
+      const { maxPrice, minPrice } = candles.reduce(
+        (acc, d) => ({
+          minPrice: Math.min(acc.minPrice, lowPrice(d)),
+          maxPrice: Math.max(acc.maxPrice, highPrice(d)),
+        }),
+        { minPrice: Infinity, maxPrice: -Infinity },
+      );
+      const maxSpread = maxPrice - minPrice;
+
+      const startBlock = candles.length && blockHeight(candles[0]!);
+      const endBlock = candles.length && blockHeight(candles[candles.length - 1]!);
+
+      const blockScale = scaleLinear<number>({
+        range: [50, w - 5],
+        domain: [startBlock, latestKnownBlockHeight ?? endBlock],
+      });
+
+      const priceScale = scaleLinear<number>({
+        range: [h, 0],
+        domain: [minPrice - maxSpread / 2, maxPrice + maxSpread / 2],
+      });
+
+      return { priceScale, blockScale };
+    }, [candles, latestKnownBlockHeight, w, h]);
 
     const useTooltip = useCallback(
       (d: CandlestickData) => ({
@@ -105,31 +118,17 @@ export const CandlestickPlot = withTooltip<CandlestickPlotProps, CandlestickData
           hideTooltip();
         },
       }),
-      [],
+      [blockScale, hideTooltip, priceScale, showTooltip],
     );
 
     if (!candles.length) {
       return null;
     }
 
-    // assertions here okay because we've just checked length
-    const startBlock = blockHeight(candles[0]!);
-    const endBlock = blockHeight(candles[candles.length - 1]!);
-
     // candle width as fraction of graph width. likely too thin to really
     // matter. if there's lots of records this will overlap, and we'll need to
     // implement some kind of binning.
     const blockWidth = Math.min(w / candles.length, 6);
-
-    const blockScale = scaleLinear<number>({
-      range: [50, w - 5],
-      domain: [startBlock, latestKnownBlockHeight ?? endBlock],
-    });
-
-    const priceScale = scaleLinear<number>({
-      range: [h, 0],
-      domain: [minPrice - maxSpread / 2, maxPrice + maxSpread / 2],
-    });
 
     return (
       <>
@@ -266,7 +265,7 @@ export const CandlesticksTooltip = ({
     const ac = new AbortController();
     void getBlockDate(data.height, ac.signal).then(setBlockDate);
     return () => ac.abort('Abort tooltip date query');
-  }, [data]);
+  }, [data, getBlockDate]);
 
   const endBase = endMetadata.denomUnits.filter(d => !d.exponent)[0]!;
   const startBase = startMetadata.denomUnits.filter(d => !d.exponent)[0]!;
