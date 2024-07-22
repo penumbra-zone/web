@@ -94,7 +94,7 @@ export const getUseHook = <
       };
 
       return onUnmount;
-    }, [fetch]);
+    }, [fetchArgs, useStore]);
 
     const prevState = useRef<ZQueryState<DataType | ProcessedDataType, FetchArgs> | undefined>();
     const prevSelectedState = useRef<
