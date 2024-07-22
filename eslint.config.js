@@ -154,7 +154,6 @@ export default tseslint.config(
         'error',
         { requireDefaultForNonUnion: true },
       ],
-      curly: ['error', 'all'],
       eqeqeq: ['error', 'smart'],
     },
   },
@@ -256,4 +255,9 @@ export default tseslint.config(
 
   // disable rules covered by prettier
   prettier,
+
+  {
+    name: 'custom:prettier-would-disable',
+    rules: { curly: ['error', 'all'] },
+  },
 );
