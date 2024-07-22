@@ -140,7 +140,7 @@ export const sendCandlestickDataRequests = async (
     },
   );
 
-  return combinedCandles;
+  return combinedCandles.sort((a, b) => Number(a.height - b.height));
 };
 
 const byBalanceDescending = (a: BalancesResponse, b: BalancesResponse) => {
