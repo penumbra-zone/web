@@ -1,9 +1,9 @@
-import { tendermintClient } from '../clients';
+import { sctClient } from '../clients';
 
 export const getBlockDate = async (
   height: bigint,
   signal?: AbortSignal,
 ): Promise<Date | undefined> => {
-  const { block } = await tendermintClient.getBlockByHeight({ height }, { signal });
-  return block?.header?.time?.toDate();
+  const { timestamp } = await sctClient.timestampByHeight({ height }, { signal });
+  return timestamp?.toDate();
 };
