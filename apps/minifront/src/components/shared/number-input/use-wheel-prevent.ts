@@ -16,7 +16,7 @@ export const useWheelPrevent = () => {
 
   useEffect(() => {
     const ac = new AbortController();
-    inputRef.current?.addEventListener('wheel', onWheel, { signal: ac.signal });
+    inputRef.current?.addEventListener('wheel', onWheel, { signal: ac.signal, passive: false });
     return () => ac.abort();
   }, []);
 
