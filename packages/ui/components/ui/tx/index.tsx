@@ -49,7 +49,7 @@ const useFeeMetadata = (txv: TransactionView, getMetadata: MetadataFetchFn) => {
         setIsLoading(false);
       })
       .catch((e: unknown) => setError(e));
-  }, [txv, getMetadata, setFeeValueView]);
+  }, [txv, getMetadata, setFeeValueView, amount]);
 
   return { feeValueView, isLoading, error };
 };

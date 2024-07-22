@@ -16,7 +16,7 @@ export const DestinationAddr = () => {
   // Set initial account to trigger address loading
   useEffect(() => {
     setAccount(0);
-  }, []);
+  }, [setAccount]);
 
   return (
     <div className='mb-2 flex w-full flex-col gap-1 text-stone-700'>
