@@ -4,7 +4,7 @@ import { ActionType, Size } from '../utils/button';
 import { Button } from '../Button';
 import styled from 'styled-components';
 import { media } from '../utils/media';
-import { ButtonVariantContext } from '../ButtonVariantContext';
+import { ButtonPriorityContext } from '../ButtonPriorityContext';
 
 const Root = styled.div<{ $size: Size }>`
   display: flex;
@@ -30,7 +30,8 @@ type ButtonDescription<IconOnly extends boolean> = {
 export interface ButtonGroupProps<IconOnly extends boolean> {
   /**
    * An array of objects, each describing a button to render. The first will be
-   * rendered with the `primary` variant, the rest with the `secondary` variant.
+   * rendered with the `primary` priority, the rest with the `secondary`
+   * priority.
    */
   buttons: ButtonDescription<IconOnly>[];
   /**
@@ -60,7 +61,8 @@ const isIconOnly = (props: ButtonGroupProps<boolean>): props is ButtonGroupProps
  * `<ButtonGroup />` rather than individual `<Button />`s. This ensures that
  * they always meet Penumbra UI guidelines. (For example, all buttons in a group
  * should have the same `actionType`; and the first button in a group should be
- * the `primary` variant, while subsequent buttons are the `secondary` variant.)
+ * the `primary` priority, while subsequent buttons are the `secondary`
+ * priority.)
  */
 export const ButtonGroup = ({
   actionType = 'default',
@@ -75,7 +77,7 @@ export const ButtonGroup = ({
       */}
     {isIconOnly(props) &&
       props.buttons.map((button, index) => (
-        <ButtonVariantContext.Provider key={index} value={index === 0 ? 'primary' : 'secondary'}>
+        <ButtonPriorityContext.Provider key={index} value={index === 0 ? 'primary' : 'secondary'}>
           <ButtonWrapper $size={size} $iconOnly>
             <Button
               icon={button.icon}
@@ -87,18 +89,18 @@ export const ButtonGroup = ({
               {button.label}
             </Button>
           </ButtonWrapper>
-        </ButtonVariantContext.Provider>
+        </ButtonPriorityContext.Provider>
       ))}
 
     {!isIconOnly(props) &&
       props.buttons.map((button, index) => (
-        <ButtonVariantContext.Provider key={index} value={index === 0 ? 'primary' : 'secondary'}>
+        <ButtonPriorityContext.Provider key={index} value={index === 0 ? 'primary' : 'secondary'}>
           <ButtonWrapper $size={size}>
             <Button icon={button.icon} actionType={actionType} onClick={button.onClick} size={size}>
               {button.label}
             </Button>
           </ButtonWrapper>
-        </ButtonVariantContext.Provider>
+        </ButtonPriorityContext.Provider>
       ))}
   </Root>
 );

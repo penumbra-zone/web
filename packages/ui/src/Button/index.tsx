@@ -1,11 +1,11 @@
 import { MouseEventHandler, useContext } from 'react';
 import styled, { css, DefaultTheme } from 'styled-components';
 import { asTransientProps } from '../utils/asTransientProps';
-import { Size, Variant, ActionType, buttonInteractions } from '../utils/button';
+import { Size, Priority, ActionType, buttonInteractions } from '../utils/button';
 import { getBackgroundColor } from './helpers';
 import { button } from '../utils/typography';
 import { LucideIcon } from 'lucide-react';
-import { ButtonVariantContext } from '../ButtonVariantContext';
+import { ButtonPriorityContext } from '../ButtonPriorityContext';
 
 const dense = css<StyledButtonProps>`
   border-radius: ${props => props.theme.borderRadius.full};
@@ -43,7 +43,7 @@ const borderColorByActionType: Record<
 interface StyledButtonProps {
   $iconOnly?: boolean;
   $actionType: ActionType;
-  $variant: Variant;
+  $priority: Priority;
   $size: Size;
   $getFocusOutlineColor: (theme: DefaultTheme) => string;
   $getBorderRadius: (theme: DefaultTheme) => string;
@@ -52,10 +52,10 @@ interface StyledButtonProps {
 const StyledButton = styled.button<StyledButtonProps>`
   ${button}
 
-  background-color: ${props => getBackgroundColor(props.$actionType, props.$variant, props.theme)};
+  background-color: ${props => getBackgroundColor(props.$actionType, props.$priority, props.theme)};
   border: none;
   outline: ${props =>
-    props.$variant === 'secondary'
+    props.$priority === 'secondary'
       ? `1px solid ${props.theme.color[borderColorByActionType[props.$actionType]].main}`
       : 'none'};
   outline-offset: -1px;
@@ -156,11 +156,11 @@ export const Button = ({
   size = 'sparse',
   actionType = 'default',
 }: ButtonProps) => {
-  const variant = useContext(ButtonVariantContext);
+  const priority = useContext(ButtonPriorityContext);
 
   return (
     <StyledButton
-      {...asTransientProps({ iconOnly, size, actionType, variant })}
+      {...asTransientProps({ iconOnly, size, actionType, priority })}
       disabled={disabled}
       onClick={onClick}
       aria-label={iconOnly ? children : undefined}

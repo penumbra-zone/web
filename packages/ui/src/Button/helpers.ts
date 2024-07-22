@@ -1,12 +1,12 @@
 import { DefaultTheme } from 'styled-components';
-import { Variant, ActionType } from '../utils/button';
+import { Priority, ActionType } from '../utils/button';
 
 export const getBackgroundColor = (
   actionType: ActionType,
-  variant: Variant,
+  priority: Priority,
   theme: DefaultTheme,
 ): string => {
-  if (variant === 'secondary') {
+  if (priority === 'secondary') {
     return 'transparent';
   }
 

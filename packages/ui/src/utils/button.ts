@@ -2,7 +2,7 @@ import { css, DefaultTheme } from 'styled-components';
 
 export type ActionType = 'default' | 'accent' | 'unshield' | 'destructive';
 
-export type Variant = 'primary' | 'secondary';
+export type Priority = 'primary' | 'secondary';
 
 export type Size = 'dense' | 'sparse';
 

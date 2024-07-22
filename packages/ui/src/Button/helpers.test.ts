@@ -7,7 +7,7 @@ describe('getBackgroundColor()', () => {
     color: { primary: { main: '#aaa' }, neutral: { main: '#ccc' }, destructive: { main: '#f00' } },
   } as DefaultTheme;
 
-  describe('when `variant` is `primary`', () => {
+  describe('when `priority` is `primary`', () => {
     it('returns the primary color for the `accent` action type', () => {
       expect(getBackgroundColor('accent', 'primary', theme)).toBe('#aaa');
     });
@@ -21,7 +21,7 @@ describe('getBackgroundColor()', () => {
     });
   });
 
-  describe('when `variant` is `secondary`', () => {
+  describe('when `priority` is `secondary`', () => {
     it('returns `transparent`', () => {
       expect(getBackgroundColor('accent', 'secondary', theme)).toBe('transparent');
     });
