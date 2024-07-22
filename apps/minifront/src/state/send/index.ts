@@ -8,7 +8,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { BigNumber } from 'bignumber.js';
 import { MemoPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import { amountMoreThanBalance, plan, planBuildBroadcast } from '../helpers';
+import { amountMoreThanBalance, isIncorrectDecimal, plan, planBuildBroadcast } from '../helpers';
 
 import {
   Fee,
@@ -177,6 +177,7 @@ const assembleRequest = ({
 export interface SendValidationFields {
   recipientErr: boolean;
   amountErr: boolean;
+  exponentErr: boolean;
   memoErr: boolean;
 }
 
@@ -189,6 +190,7 @@ export const sendValidationErrors = (
   return {
     recipientErr: Boolean(recipient) && !isAddress(recipient),
     amountErr: !asset ? false : amountMoreThanBalance(asset, amount),
+    exponentErr: !asset ? false : isIncorrectDecimal(asset, amount),
     // The memo cannot exceed 512 bytes
     // return address uses 80 bytes
     // so 512-80=432 bytes for memo text

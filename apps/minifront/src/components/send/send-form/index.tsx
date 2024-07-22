@@ -83,6 +83,11 @@ export const SendForm = () => {
             issue: 'insufficient funds',
             checkFn: () => validationErrors.amountErr,
           },
+          {
+            type: 'error',
+            issue: 'invalid decimal length',
+            checkFn: () => validationErrors.exponentErr,
+          },
         ]}
         balances={transferableBalancesResponses?.data ?? []}
         loading={transferableBalancesResponses?.loading}

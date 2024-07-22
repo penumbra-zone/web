@@ -4,9 +4,13 @@ import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/
 import { Box } from '@repo/ui/components/ui/box';
 import { CandlestickPlot } from '@repo/ui/components/ui/candlestick-plot';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
-import { getAmount, getBalanceView } from '@penumbra-zone/getters/balances-response';
+import {
+  getAmount,
+  getBalanceView,
+  getMetadataFromBalancesResponseOptional,
+} from '@penumbra-zone/getters/balances-response';
 import { ArrowRight } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { getBlockDate } from '../../../fetchers/block-date';
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
@@ -26,6 +30,7 @@ import {
   swappableAssetsSelector,
   swappableBalancesResponsesSelector,
 } from '../../../state/swap/helpers';
+import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 
 const getAssetOutBalance = (
   balancesResponses: BalancesResponse[] = [],
@@ -70,6 +75,9 @@ export const TokenSwapInput = () => {
   const { amount, setAmount, assetIn, setAssetIn, assetOut, setAssetOut, priceHistory, reverse } =
     useStoreShallow(tokenSwapInputSelector);
   const assetOutBalance = getAssetOutBalance(balancesResponses?.data, assetIn, assetOut);
+  const assetInExponent = useMemo(() => {
+    return getDisplayDenomExponent.optional()(getMetadataFromBalancesResponseOptional(assetIn));
+  }, [assetIn]);
 
   useEffect(() => {
     if (!assetIn || !assetOut) {
@@ -108,6 +116,7 @@ export const TokenSwapInput = () => {
           variant='transparent'
           placeholder='Enter an amount...'
           max={maxAmountAsString}
+          maxExponent={assetInExponent}
           step='any'
           className={'font-bold leading-10 md:h-8 md:text-xl xl:h-10 xl:text-3xl'}
           onChange={e => {
