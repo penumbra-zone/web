@@ -233,7 +233,9 @@ export const ibcValidationErrors = (state: AllSlices) => {
     amountErr: !state.ibcOut.selection
       ? false
       : amountMoreThanBalance(state.ibcOut.selection, state.ibcOut.amount),
-    exponentErr: !state.ibcOut.selection ? false : isIncorrectDecimal(state.ibcOut.selection, state.ibcOut.amount),
+    exponentErr: !state.ibcOut.selection
+      ? false
+      : isIncorrectDecimal(state.ibcOut.selection, state.ibcOut.amount),
   };
 };
 

@@ -4,7 +4,11 @@ import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/
 import { Box } from '@repo/ui/components/ui/box';
 import { CandlestickPlot } from '@repo/ui/components/ui/candlestick-plot';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
-import { getAmount, getBalanceView, getMetadataFromBalancesResponseOptional } from '@penumbra-zone/getters/balances-response';
+import {
+  getAmount,
+  getBalanceView,
+  getMetadataFromBalancesResponseOptional,
+} from '@penumbra-zone/getters/balances-response';
 import { ArrowRight } from 'lucide-react';
 import { useEffect, useMemo } from 'react';
 import { getBlockDate } from '../../../fetchers/block-date';

@@ -21,7 +21,10 @@ import { TransactionClassification } from '@penumbra-zone/perspective/transactio
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import { fromValueView } from '@penumbra-zone/types/amount';
 import { BigNumber } from 'bignumber.js';
-import { getMetadataFromBalancesResponseOptional, getValueViewCaseFromBalancesResponse } from '@penumbra-zone/getters/balances-response';
+import {
+  getMetadataFromBalancesResponseOptional,
+  getValueViewCaseFromBalancesResponse,
+} from '@penumbra-zone/getters/balances-response';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 
 /**
@@ -201,14 +204,17 @@ export const isIncorrectDecimal = (
     throw new Error('Missing balanceView');
   }
 
-  const exponent = getDisplayDenomExponent.optional()(getMetadataFromBalancesResponseOptional(asset));
+  const exponent = getDisplayDenomExponent.optional()(
+    getMetadataFromBalancesResponseOptional(asset),
+  );
   const fraction = amountInDisplayDenom.split('.')[1]?.length;
   return typeof exponent !== 'undefined' && typeof fraction !== 'undefined' && fraction > exponent;
-
 };
 
 export const isValidAmount = (amount: string, assetIn?: BalancesResponse) =>
-  Number(amount) >= 0 && (!assetIn || !amountMoreThanBalance(assetIn, amount)) && (!assetIn || !isIncorrectDecimal(assetIn, amount));
+  Number(amount) >= 0 &&
+  (!assetIn || !amountMoreThanBalance(assetIn, amount)) &&
+  (!assetIn || !isIncorrectDecimal(assetIn, amount));
 
 export const isKnown = (balancesResponse: BalancesResponse) =>
   getValueViewCaseFromBalancesResponse.optional()(balancesResponse) === 'knownAssetId';

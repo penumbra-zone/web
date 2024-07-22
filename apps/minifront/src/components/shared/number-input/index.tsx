@@ -10,13 +10,17 @@ export interface NumberInputProps extends InputProps {
 export const NumberInput: FC<NumberInputProps> = ({ maxExponent, ...props }) => {
   const inputRef = useWheelPrevent();
 
-  const onKeyDown: KeyboardEventHandler<HTMLInputElement> = (event) => {
+  const onKeyDown: KeyboardEventHandler<HTMLInputElement> = event => {
     if (maxExponent === 0 && (event.key === '.' || event.key === ',')) {
       event.preventDefault();
       return;
     }
 
-    if (typeof maxExponent !== 'undefined' && typeof props.value === 'string' && !Number.isNaN(Number(event.key))) {
+    if (
+      typeof maxExponent !== 'undefined' &&
+      typeof props.value === 'string' &&
+      !Number.isNaN(Number(event.key))
+    ) {
       const fraction = `${props.value}${event.key}`.split('.')[1]?.length;
       if (fraction && fraction > maxExponent) {
         event.preventDefault();
