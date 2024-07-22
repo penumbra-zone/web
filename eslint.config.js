@@ -74,15 +74,13 @@ export default tseslint.config(
     rules: {
       ...react.configs.recommended.rules,
       ...react_hooks.configs.recommended.rules,
+      'react-hooks/exhaustive-deps': 'warn',
+      'react-hooks/rules-of-hooks': 'error',
     },
   },
   {
     name: 'custom:react-wishlist-improvements',
     rules: {
-      // these were from a broken plugin. should be enabled and fixed.
-      'react-hooks/exhaustive-deps': 'off',
-      'react-hooks/rules-of-hooks': 'off',
-
       // this plugin was formerly included, but was never actually applied.
       'react-refresh/only-export-components': 'off',
 
