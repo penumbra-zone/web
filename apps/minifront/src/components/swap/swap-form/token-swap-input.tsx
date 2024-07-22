@@ -85,7 +85,7 @@ export const TokenSwapInput = () => {
     } else {
       return priceHistory.load();
     }
-  }, [assetIn, assetOut, priceHistory]);
+  }, [assetIn, assetOut, priceHistory.load]);
 
   useEffect(() => {
     if (!priceHistory.candles.length) {
