@@ -19,7 +19,7 @@ import { IndexedDbMock } from '../test-utils.js';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
 
-describe('extractAltFee', async () => {
+describe('extractAltFee', () => {
   let mockIndexedDb: IndexedDbMock;
 
   beforeEach(() => {
@@ -248,8 +248,8 @@ describe('extractAltFee', async () => {
 
     const auction = new DutchAuctionDescription({
       input: {
-        assetId: auctionScheduleAssetId
-      }
+        assetId: auctionScheduleAssetId,
+      },
     });
 
     mockIndexedDb.getAuction?.mockResolvedValueOnce({
@@ -261,7 +261,7 @@ describe('extractAltFee', async () => {
     const request = new TransactionPlannerRequest({
       dutchAuctionEndActions: [
         {
-          auctionId: { inner: new Uint8Array([]) }
+          auctionId: { inner: new Uint8Array([]) },
         },
       ],
     });
@@ -270,7 +270,6 @@ describe('extractAltFee', async () => {
     expect(result.equals(auctionScheduleAssetId)).toBeTruthy();
   });
 
- 
   it('extracts the asset fee from dutchAuctionWithdrawAuctions', async () => {
     const auctionScheduleAssetId = new AssetId({
       inner: new Uint8Array([
@@ -281,8 +280,8 @@ describe('extractAltFee', async () => {
 
     const auction = new DutchAuctionDescription({
       input: {
-        assetId: auctionScheduleAssetId
-      }
+        assetId: auctionScheduleAssetId,
+      },
     });
 
     mockIndexedDb.getAuction?.mockResolvedValueOnce({
@@ -294,7 +293,7 @@ describe('extractAltFee', async () => {
     const request = new TransactionPlannerRequest({
       dutchAuctionWithdrawActions: [
         {
-          auctionId: { inner: new Uint8Array([]) }
+          auctionId: { inner: new Uint8Array([]) },
         },
       ],
     });
