@@ -30,13 +30,22 @@ describe('<Button />', () => {
         <Button iconOnly icon={Check}>
           Label
         </Button>,
-        {
-          wrapper: ThemeProvider,
-        },
+        { wrapper: ThemeProvider },
       );
 
       expect(queryByText('Label')).toBeNull();
       expect(queryByLabelText('Label')).toBeTruthy();
+    });
+
+    it('renders `children` as the `title`', () => {
+      const { queryByTitle } = render(
+        <Button iconOnly icon={Check}>
+          Label
+        </Button>,
+        { wrapper: ThemeProvider },
+      );
+
+      expect(queryByTitle('Label')).toBeTruthy();
     });
   });
 });
