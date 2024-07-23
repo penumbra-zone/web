@@ -36,8 +36,8 @@ export interface ValueViewComponentProps {
    *
    * Default: `default`
    */
-  context: 'default' | 'table';
-  size: 'dense' | 'sparse';
+  context?: 'default' | 'table';
+  size?: 'dense' | 'sparse';
 }
 
 /**
@@ -67,7 +67,7 @@ export const ValueViewComponent = ({
         <AssetIcon metadata={metadata} size={size} />
 
         <Content>
-          <Text>{formattedAmount}</Text>
+          <Text>{formattedAmount} </Text>
           <Text technical>{symbol}</Text>
         </Content>
       </Root>
