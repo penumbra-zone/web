@@ -78,6 +78,7 @@ const StyledButton = styled.button<StyledButtonProps>`
 `;
 
 interface BaseButtonProps {
+  type?: HTMLButtonElement['type'];
   /**
    * The button label. If `iconOnly` is `true`, this will be used as the
    * `aria-label` attribute.
@@ -155,12 +156,14 @@ export const Button = ({
   iconOnly,
   size = 'sparse',
   actionType = 'default',
+  type = 'button',
 }: ButtonProps) => {
   const priority = useContext(ButtonPriorityContext);
 
   return (
     <StyledButton
       {...asTransientProps({ iconOnly, size, actionType, priority })}
+      type={type}
       disabled={disabled}
       onClick={onClick}
       aria-label={iconOnly ? children : undefined}
