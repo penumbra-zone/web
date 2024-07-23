@@ -29,6 +29,24 @@ export interface ConditionalWrapProps {
  * You can also pass an `else` prop to wrap the `children` if the condition is
  * _not_ met.
  *
+ * @example
+ * ```tsx
+ * <ConditionalWrap
+ *   if={shouldUseTooltip}
+ *   then={(children) => (
+ *     <Tooltip>
+ *       <TooltipTrigger>{children}</TooltipTrigger>
+ *       <TooltipContent>Here is the tooltip text.</TooltipContent>
+ *     </Tooltip>
+ *   )}
+ *   else={(children) => (
+ *     <NonTooltipWrapper>{children}</NonTooltipWrapper>
+ *   )}
+ * >
+ *   Here is the content that may or may not need a tooltip.
+ * </ConditionalWrap>
+ * ```
+ *
  * @see https://stackoverflow.com/a/56870316/974981
  */
 export const ConditionalWrap = ({
