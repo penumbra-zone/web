@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   AbridgedZQueryState,
   CreateZQueryStreamingProps,
@@ -6,6 +6,9 @@ import {
   UseHookOptions,
   ZQueryState,
 } from './types.js';
+
+const shallowCompareArrays = (a: unknown[], b: unknown[]): boolean =>
+  a.every((item, index) => item === b[index]) && a.length === b.length;
 
 /**
  * Returns a hook that can be used via `use[Name]()` to access the ZQuery state.
@@ -72,29 +75,35 @@ export const getUseHook = <
   ) => {
     const useStore = props.getUseStore();
 
+    // We want to use a custom comparator to see if `fetchArgs` changed.
+    // `useMemo()` does not support custom comparators, so we'll roll it ourself
+    // using a combination of `useState` and `useEffect`.
+    const [fetchArgsMemo, setFetchArgsMemo] = useState(fetchArgs);
+    useEffect(() => {
+      if (!shallowCompareArrays(fetchArgs, fetchArgsMemo)) {
+        setFetchArgsMemo(fetchArgs);
+      }
+    }, [fetchArgs, fetchArgsMemo]);
+
     useEffect(() => {
       const fetch = props.get(useStore.getState())._zQueryInternal.fetch;
 
-      {
-        const newReferenceCount = incrementReferenceCounter();
-
-        if (newReferenceCount === 1) {
-          setAbortController(new AbortController());
-          void fetch(...fetchArgs);
-        }
+      const incrementedReferenceCount = incrementReferenceCounter();
+      if (incrementedReferenceCount === 1) {
+        setAbortController(new AbortController());
+        void fetch(...fetchArgsMemo);
       }
 
       const onUnmount = () => {
-        const newReferenceCount = decrementReferenceCounter();
-
-        if (newReferenceCount === 0) {
+        const decrementedReferenceCount = decrementReferenceCounter();
+        if (decrementedReferenceCount === 0) {
           props.get(useStore.getState())._zQueryInternal.abortController?.abort();
           setAbortController(undefined);
         }
       };
 
       return onUnmount;
-    }, [fetch]);
+    }, [fetchArgsMemo, useStore]);
 
     const prevState = useRef<ZQueryState<DataType | ProcessedDataType, FetchArgs> | undefined>();
     const prevSelectedState = useRef<

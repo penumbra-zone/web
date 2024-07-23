@@ -75,33 +75,9 @@ pnpm dev
 ```
 
 You now have a local copy of Minifront available at
-[`https://localhost:5173`](https://localhost:5173) and an unbundled Prax is
-available at [`apps/extension/dist`](apps/extension/dist), ready to be loaded
-into your browser.
+[`https://localhost:5173`](https://localhost:5173).
 
 Minifront will hot-reload.
-
-If you're working on Prax, Chrome will show extension page changes after a
-manual refresh, but cannot reload the extension worker scripts or content
-scripts. For worker script changes, you must manually reload the extension. For
-content script changes, you must also manually reload pages hosting the injected
-scripts.
-
-#### Loading your unbundled build of Prax into Chrome
-
-After building Prax, you can load it into Chrome.
-
-It's recommended to use a dedicated browser profile for development, not your
-personal profile.
-
-1. Go to the Extensions page [`chrome://extensions`](chrome://extensions)
-2. Enable _Developer Mode_ by clicking the toggle switch at the top right
-3. Click the button _Load unpacked extension_ at the top and locate your cloned
-   repository. Select the extension's build output directory
-   [`apps/extension/dist`](../apps/extension/dist).
-4. Activate the extension to enter onboarding.
-   - You may set a blank password.
-   - You can pin the Prax extension button to your toolbar for quick access.
 
 ## Security
 

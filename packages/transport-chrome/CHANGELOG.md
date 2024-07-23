@@ -1,5 +1,11 @@
 # @penumbra-zone/transport-chrome
 
+## 5.0.3
+
+### Patch Changes
+
+- 3aaead1: Move the "default" option in package.json exports field to the last
+
 ## 5.0.2
 
 ### Patch Changes

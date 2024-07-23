@@ -1,0 +1,38 @@
+# Deploys the static website for the UI storybook to a temporary environment,
+# with an ephemeral URL posted to the PR for sharing/review.
+name: Deploy UI to temporary URL
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      # Only deploy an ephemeral Storybook preview for PRs that make changes to
+      # the UI package.
+      - 'packages/ui/src/**'
+permissions:
+  checks: write
+  contents: read
+  pull-requests: write
+jobs:
+  build_and_preview:
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - name: Install dependencies
+        run: pnpm install
+        working-directory: packages/ui
+
+      - name: Build static site
+        run: pnpm build-storybook
+        working-directory: packages/ui
+
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PENUMBRA_UI }}
+          target: preview
+          entryPoint: packages/ui
+          projectId: penumbra-ui

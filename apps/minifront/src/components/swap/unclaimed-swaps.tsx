@@ -7,15 +7,27 @@ import { getSwapRecordCommitment } from '@penumbra-zone/getters/swap-record';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { GradientHeader } from '@repo/ui/components/ui/gradient-header';
 import { useStoreShallow } from '../../utils/use-store-shallow';
+import { useState } from 'react';
+import { SwapRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
 const unclaimedSwapsSelector = (state: AllSlices) => ({
   claimSwap: state.unclaimedSwaps.claimSwap,
-  isInProgress: state.unclaimedSwaps.isInProgress,
 });
 
 export const UnclaimedSwaps = () => {
   const unclaimedSwaps = useUnclaimedSwaps();
-  const { claimSwap, isInProgress } = useStoreShallow(unclaimedSwapsSelector);
+  const { claimSwap } = useStoreShallow(unclaimedSwapsSelector);
+  const [claim, setClaim] = useState<string[]>([]);
+
+  // Internally track the IDs of the claimed swaps.
+  const handleClaim = async (id: string, swap: SwapRecord) => {
+    setClaim(prev => [...prev, id]);
+    try {
+      await claimSwap(id, swap);
+    } catch (error) {
+      setClaim(prev => prev.filter(claimId => claimId !== id));
+    }
+  };
 
   return !unclaimedSwaps.data?.length ? (
     <div className='hidden xl:block'></div>
@@ -24,6 +36,7 @@ export const UnclaimedSwaps = () => {
       <GradientHeader layout>Unclaimed Swaps</GradientHeader>
       {unclaimedSwaps.data.map(({ swap, asset1, asset2 }) => {
         const id = uint8ArrayToBase64(getSwapRecordCommitment(swap).inner);
+        const isClaiming = claim.includes(id);
 
         return (
           <div key={id} className='mt-4 flex items-center gap-4 rounded-md border p-2'>
@@ -39,10 +52,10 @@ export const UnclaimedSwaps = () => {
 
             <Button
               className='ml-auto w-20'
-              onClick={() => void claimSwap(id, swap)}
-              disabled={isInProgress(id)}
+              onClick={() => void handleClaim(id, swap)}
+              disabled={isClaiming}
             >
-              {isInProgress(id) ? 'Claiming' : 'Claim'}
+              {isClaiming ? 'Claiming' : 'Claim'}
             </Button>
           </div>
         );

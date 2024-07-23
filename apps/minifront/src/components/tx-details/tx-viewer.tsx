@@ -56,8 +56,15 @@ export const TxViewer = ({ txInfo }: { txInfo?: TransactionInfo }) => {
   return (
     <div>
       <div className='text-xl font-bold'>Transaction View</div>
-      <div className='mb-8 break-all font-mono italic text-muted-foreground'>
-        {txInfo?.id && uint8ArrayToHex(txInfo.id.inner)}
+      <div className={'mb-8 flex items-center justify-between'}>
+        <div className=' break-all font-mono italic text-muted-foreground'>
+          {txInfo?.id && uint8ArrayToHex(txInfo.id.inner)}
+        </div>
+        <div
+          className={'rounded-lg border bg-black px-3 py-2 font-mono italic text-muted-foreground'}
+        >
+          block {txInfo?.height.toString()}
+        </div>
       </div>
 
       <div className='mx-auto mb-4 max-w-[70%]'>

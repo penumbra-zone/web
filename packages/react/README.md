@@ -10,22 +10,38 @@ you're writing a Penumbra dapp in React.
 npm config set @buf:registry https://buf.build/gen/npm/v1
 ```
 
+## This is a client-side package
+
+The components in this package interact with a browser extension, so can only be
+executed in a browser, not in any server-side rendering context. To encourage
+this, `<PenumbraContextProvider>` uses the `penumbra` input prop which may only
+be obtained client-side. It's recommended to use methods from
+`@penumbra-zone/client` to obtain this value, as described below.
+
 ## Overview
 
 If a user has a Penumbra provider in their browser, it may be present (injected)
 in the record at the window global `window[Symbol.for('penumbra')]` identified
 by a URL origin at which the provider can serve a manifest. For example, Prax
-Wallet's origin is `chrome-extension://lkpmkhpnhknhmibgnmmhdhgdilepfghe`, so its provider record may be accessed like
+Wallet's origin is `chrome-extension://lkpmkhpnhknhmibgnmmhdhgdilepfghe`, so its
+provider record may be accessed like
 
 ```ts
 const prax: PenumbraProvider | undefined =
   window[Symbol.for('penumbra')]?.['chrome-extension://lkpmkhpnhknhmibgnmmhdhgdilepfghe'];
 ```
 
-So, use of `<PenumbraContextProvider>` with an `origin` prop identifying your
-preferred extension, or `injection` prop identifying the actual page injection
-from your preferred extension, will result in automatic progress towards a
-successful connection.
+or with helpers available from `@penumbra-zone/client`, like
+
+```ts
+import { assertProvider } from '@penumbra-zone/client';
+const prax = assertProvider('chrome-extension://lkpmkhpnhknhmibgnmmhdhgdilepfghe');
+```
+
+Use of `<PenumbraContextProvider>` with a `penumbra` prop identifying your
+provider will result in automatic progress towards a successful connection.
+Connection requires user approval, so it's recommended provide UI on your page
+controlling the `makeApprovalRequest` prop.
 
 Hooks `usePenumbraTransport` and `usePenumbraService` will promise a transport
 or client that inits when the configured provider becomes connected, or rejects
@@ -40,8 +56,10 @@ client may time out.
 ## `<PenumbraContextProvider>`
 
 This wrapping component will provide a context available to all child components
-that is directly accessible by `usePenumbra`, or additionally by
-`usePenumbraTransport` or `usePenumbraService`.
+that is directly accessible by `usePenumbra`, or by `usePenumbraTransport` or
+`usePenumbraService`. Accepts a `makeApprovalRequest` prop, off by default, to
+configure conditional use of the `request` method of the Penumbra interface,
+which may trigger a popup or require user interaction.
 
 ### Unary requests may use `@connectrpc/connect-query`
 
@@ -55,7 +73,8 @@ A wrapping component:
 
 ```tsx
 import { Outlet } from 'react-router-dom';
-import { PenumbraProvider } from '@penumbra-zone/react';
+import { assertProvider } from '@penumbra-zone/client';
+import { PenumbraContextProvider } from '@penumbra-zone/react';
 import { usePenumbraTransportSync } from '@penumbra-zone/react/hooks/use-penumbra-transport';
 import { TransportProvider } from '@connectrpc/connect-query';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -64,13 +83,13 @@ const praxOrigin = 'chrome-extension://lkpmkhpnhknhmibgnmmhdhgdilepfghe';
 const queryClient = new QueryClient();
 
 export const PenumbraDappPage = () => (
-  <PenumbraProvider origin={praxOrigin} makeApprovalRequest>
+  <PenumbraContextProvider penumbra={assertProvider(praxOrigin)} makeApprovalRequest>
     <TransportProvider transport={usePenumbraTransportSync()}>
       <QueryClientProvider client={queryClient}>
         <Outlet />
       </QueryClientProvider>
     </TransportProvider>
-  </PenumbraProvider>
+  </PenumbraContextProvider>
 );
 ```
 
@@ -142,9 +161,7 @@ generally robust and should asynchronously progress towards an active connection
 if possible, even if steps are performed slightly 'out-of-order'.
 
 This package's exported `<PenumbraContextProvider>` component handles this state
-and all of these transitions for you. Use of `<PenumbraContextProvider>` with an
-`origin` or `provider` prop will result in automatic progress towards a
-`Connected` state.
+and all of these transitions for you.
 
 During this progress, the context exposes an explicit status, so you may easily
 condition your layout and display. You can access this status via
@@ -160,7 +177,7 @@ working client is available.
 ### State chart
 
 This flowchart reads from top (page load) to bottom (page unload). Each labelled
-chart node is a possible value of `PenumbraProviderState`. Diamond-shaped nodes
+chart node is a possible value of `PenumbraState`. Diamond-shaped nodes
 are conditions described by the surrounding path labels.
 
 There are more possible transitions than diagrammed here - for instance once

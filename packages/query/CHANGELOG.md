@@ -1,5 +1,33 @@
 # @penumbra-zone/query
 
+## 16.0.0
+
+### Patch Changes
+
+- Updated dependencies [22bf02c]
+  - @penumbra-zone/protobuf@5.5.0
+  - @penumbra-zone/getters@12.0.0
+  - @penumbra-zone/wasm@18.0.0
+  - @penumbra-zone/types@16.0.0
+  - @penumbra-zone/crypto-web@14.0.0
+
+## 15.0.2
+
+### Patch Changes
+
+- 3aaead1: Move the "default" option in package.json exports field to the last
+- Updated dependencies [3aaead1]
+  - @penumbra-zone/crypto-web@13.0.1
+  - @penumbra-zone/types@15.1.1
+  - @penumbra-zone/wasm@17.0.2
+
+## 15.0.1
+
+### Patch Changes
+
+- Updated dependencies [1a57749]
+  - @penumbra-zone/wasm@17.0.1
+
 ## 15.0.0
 
 ### Minor Changes

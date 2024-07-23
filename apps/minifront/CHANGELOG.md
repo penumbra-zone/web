@@ -1,5 +1,44 @@
 # minifront
 
+## 6.11.4
+
+### Patch Changes
+
+- Updated dependencies [22bf02c]
+  - @penumbra-zone/protobuf@5.5.0
+  - @penumbra-zone/client@12.0.0
+  - @penumbra-zone/getters@12.0.0
+  - @penumbra-zone/perspective@15.0.0
+  - @penumbra-zone/types@16.0.0
+  - @repo/ui@7.0.2
+  - @penumbra-zone/crypto-web@14.0.0
+
+## 6.11.3
+
+### Patch Changes
+
+- Updated dependencies [3aaead1]
+  - @penumbra-zone/crypto-web@13.0.1
+  - @penumbra-zone/types@15.1.1
+  - @repo/ui@7.0.1
+  - @penumbra-zone/perspective@14.0.2
+
+## 6.11.2
+
+### Patch Changes
+
+- Updated dependencies [ab09596]
+  - @penumbra-zone/client@11.1.1
+  - @penumbra-zone/perspective@14.0.1
+  - @repo/ui@7.0.0
+
+## 6.11.1
+
+### Patch Changes
+
+- Updated dependencies [72d83ea]
+  - @penumbra-zone/client@11.1.0
+
 ## 6.11.0
 
 ### Minor Changes

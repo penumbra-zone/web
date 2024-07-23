@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/transport-chrome",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "license": "(MIT OR Apache-2.0)",
   "description": "Tools for adapting `@penumbra-zone/transport` to Chrome's extension runtime messaging API",
   "type": "module",
@@ -26,8 +26,8 @@
   "publishConfig": {
     "exports": {
       "./*": {
-        "default": "./dist/*.js",
-        "types": "./dist/*.d.ts"
+        "types": "./dist/*.d.ts",
+        "default": "./dist/*.js"
       }
     }
   },

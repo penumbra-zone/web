@@ -4,9 +4,7 @@
   "globalEnv": ["DEV"],
   "pipeline": {
     "//#clean:vitest-mjs": { "cache": false },
-    "//#format:pretty-quick": { "cache": false },
     "//#format:prettier": { "cache": false },
-    "//#lint:pretty-quick": { "cache": false },
     "//#format:syncpack": { "cache": false },
     "//#lint:prettier": { "cache": false },
     "//#lint:syncpack": { "cache": false },
@@ -23,11 +21,11 @@
     "dev:app": { "dependsOn": ["compile"], "persistent": true },
     "dev:compile": { "dependsOn": ["compile"], "persistent": true },
     "dev:pack": { "dependsOn": ["compile"], "persistent": true },
-    "format": { "dependsOn": ["//#format:syncpack", "//#format:pretty-quick", "format:rust"] },
+    "format": { "dependsOn": ["//#format:syncpack", "//#format:prettier", "format:rust"] },
     "format:rust": { "cache": false },
     "host": { "cache": false, "dependsOn": ["build"], "persistent": true },
     "lint": {
-      "dependsOn": ["//#lint:syncpack", "//#lint:pretty-quick", "compile"],
+      "dependsOn": ["//#lint:syncpack", "//#lint:prettier", "compile"],
       "inputs": ["components", "lib", "src", "wasm", "package.json"]
     },
     "lint:strict": {

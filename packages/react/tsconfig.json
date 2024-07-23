@@ -4,7 +4,9 @@
     "composite": true,
     "jsx": "react-jsx",
     "module": "Node16",
-    "noEmit": true,
+    "outDir": "dist",
+    "preserveWatchOutput": true,
+    "rootDir": "src",
     "target": "ESNext"
   },
   "extends": "@tsconfig/strictest/tsconfig.json",

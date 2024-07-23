@@ -1,5 +1,4 @@
 import { getPenumbraManifest, PenumbraProvider, PenumbraState } from '@penumbra-zone/client';
-import { assertProviderRecord } from '@penumbra-zone/client/assert';
 import { isPenumbraStateEvent } from '@penumbra-zone/client/event';
 import { PenumbraManifest } from '@penumbra-zone/client/manifest';
 import { jsonOptions } from '@penumbra-zone/protobuf';
@@ -10,21 +9,19 @@ import {
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { PenumbraContext, penumbraContext } from '../penumbra-context.js';
 
-type PenumbraContextProviderProps = {
+interface PenumbraContextProviderProps {
   children?: ReactNode;
-  origin: string;
+  penumbra?: PenumbraProvider;
   makeApprovalRequest?: boolean;
   transportOpts?: Omit<ChannelTransportOptions, 'getPort'>;
-} & ({ provider: PenumbraProvider } | { origin: string });
+}
 
 export const PenumbraContextProvider = ({
   children,
-  origin: providerOrigin,
+  penumbra,
   makeApprovalRequest = false,
   transportOpts,
 }: PenumbraContextProviderProps) => {
-  const penumbra = assertProviderRecord(providerOrigin);
-
   const [providerConnected, setProviderConnected] = useState<boolean>();
   const [providerManifest, setProviderManifest] = useState<PenumbraManifest>();
   const [providerPort, setProviderPort] = useState<MessagePort>();
@@ -53,25 +50,25 @@ export const PenumbraContextProvider = ({
 
   // fetch manifest to confirm presence of provider
   useEffect(() => {
-    // require origin. skip if failure or manifest present
-    if (!providerOrigin || (failure ?? providerManifest)) {
+    // require provider manifest uri, skip if failure or manifest present
+    if (!penumbra?.manifest || (failure ?? providerManifest)) {
       return;
     }
 
     // abortable effect
     const ac = new AbortController();
 
-    void getPenumbraManifest(providerOrigin, ac.signal)
+    void getPenumbraManifest(new URL(penumbra.manifest).origin, ac.signal)
       .then(manifestJson => ac.signal.aborted || setProviderManifest(manifestJson))
       .catch(setFailure);
 
     return () => ac.abort();
-  }, [failure, penumbra, providerManifest, providerOrigin, setFailure, setProviderManifest]);
+  }, [failure, penumbra?.manifest, providerManifest, setFailure, setProviderManifest]);
 
   // attach state event listener
   useEffect(() => {
-    // require manifest. unnecessary if failed
-    if (!providerManifest || failure) {
+    // require penumbra, manifest. unnecessary if failed
+    if (!penumbra || !providerManifest || failure) {
       return;
     }
 
@@ -81,7 +78,7 @@ export const PenumbraContextProvider = ({
       'penumbrastate',
       (evt: Event) => {
         if (isPenumbraStateEvent(evt)) {
-          if (evt.detail.origin !== providerOrigin) {
+          if (evt.detail.origin !== new URL(penumbra.manifest).origin) {
             setFailure(new Error('State change from unexpected origin'));
           } else if (evt.detail.state !== penumbra.state()) {
             console.warn('State change not verifiable');
@@ -94,12 +91,12 @@ export const PenumbraContextProvider = ({
       { signal: ac.signal },
     );
     return () => ac.abort();
-  }, [failure, penumbra, penumbra.addEventListener, providerManifest, providerOrigin, setFailure]);
+  }, [failure, providerManifest, setFailure, penumbra]);
 
   // request effect
   useEffect(() => {
-    // require manifest, no failures
-    if (providerManifest && !failure) {
+    // require penumbra, manifest, no failures
+    if (penumbra?.request && providerManifest && !failure) {
       switch (providerState) {
         case PenumbraState.Present:
           if (makeApprovalRequest) {
@@ -110,20 +107,12 @@ export const PenumbraContextProvider = ({
           break;
       }
     }
-  }, [
-    failure,
-    makeApprovalRequest,
-    penumbra,
-    penumbra.request,
-    providerManifest,
-    providerState,
-    setFailure,
-  ]);
+  }, [failure, makeApprovalRequest, penumbra, providerManifest, providerState, setFailure]);
 
   // connect effect
   useEffect(() => {
     // require manifest, no failures
-    if (providerManifest && !failure) {
+    if (penumbra && providerManifest && !failure) {
       switch (providerState) {
         case PenumbraState.Present:
           if (!makeApprovalRequest) {
@@ -143,21 +132,13 @@ export const PenumbraContextProvider = ({
           break;
       }
     }
-  }, [
-    failure,
-    makeApprovalRequest,
-    penumbra,
-    penumbra.connect,
-    providerManifest,
-    providerState,
-    setFailure,
-  ]);
+  }, [failure, makeApprovalRequest, penumbra, providerManifest, providerState, setFailure]);
 
   const createdContext: PenumbraContext = useMemo(
     () => ({
       failure,
       manifest: providerManifest,
-      origin: providerOrigin,
+      origin: penumbra?.manifest && new URL(penumbra.manifest).origin,
 
       // require manifest to forward state
       state: providerManifest && providerState,
@@ -171,8 +152,8 @@ export const PenumbraContextProvider = ({
           : undefined,
       transportOpts,
 
-      // require manifest and no failures to forward injected methods
-      ...(providerManifest && !failure
+      // require penumbra, manifest and no failures to forward injected things
+      ...(penumbra && providerManifest && !failure
         ? {
             port: providerConnected && providerPort,
             connect: penumbra.connect,
@@ -186,14 +167,9 @@ export const PenumbraContextProvider = ({
     }),
     [
       failure,
-      penumbra.addEventListener,
-      penumbra.connect,
-      penumbra.disconnect,
-      penumbra.removeEventListener,
-      penumbra.request,
+      penumbra,
       providerConnected,
       providerManifest,
-      providerOrigin,
       providerPort,
       providerState,
       transportOpts,

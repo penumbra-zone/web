@@ -97,6 +97,6 @@ export const getClaimTx = createGetter((swapView?: SwapView) =>
  */
 export const getAddressView = createGetter((swapView?: SwapView) =>
   swapView?.swapView.case === 'visible'
-    ? swapView.swapView.value.output1?.address ?? swapView.swapView.value.output2?.address
+    ? (swapView.swapView.value.output1?.address ?? swapView.swapView.value.output2?.address)
     : undefined,
 );

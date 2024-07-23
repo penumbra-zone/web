@@ -1,5 +1,17 @@
 # @penumbra-zone/types
 
+## 16.0.0
+
+### Patch Changes
+
+- @penumbra-zone/getters@12.0.0
+
+## 15.1.1
+
+### Patch Changes
+
+- 3aaead1: Move the "default" option in package.json exports field to the last
+
 ## 15.1.0
 
 ### Minor Changes

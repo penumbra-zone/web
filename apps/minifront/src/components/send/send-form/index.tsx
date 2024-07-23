@@ -24,6 +24,7 @@ export const SendForm = () => {
     memo,
     fee,
     feeTier,
+    assetFeeMetadata,
     setAmount,
     setSelection,
     setRecipient,
@@ -82,6 +83,11 @@ export const SendForm = () => {
             issue: 'insufficient funds',
             checkFn: () => validationErrors.amountErr,
           },
+          {
+            type: 'error',
+            issue: 'invalid decimal length',
+            checkFn: () => validationErrors.exponentErr,
+          },
         ]}
         balances={transferableBalancesResponses?.data ?? []}
         loading={transferableBalancesResponses?.loading}
@@ -97,6 +103,7 @@ export const SendForm = () => {
         feeTier={feeTier}
         stakingAssetMetadata={stakingTokenMetadata.data}
         setFeeTier={setFeeTier}
+        assetFeeMetadata={assetFeeMetadata}
       />
 
       <InputBlock

@@ -1,5 +1,12 @@
 # @penumbra-zone/getters
 
+## 12.0.0
+
+### Patch Changes
+
+- Updated dependencies [22bf02c]
+  - @penumbra-zone/protobuf@5.5.0
+
 ## 11.0.0
 
 ### Minor Changes
