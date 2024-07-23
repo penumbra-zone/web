@@ -1,5 +1,15 @@
 # @penumbra-zone/wasm
 
+## 20.0.0
+
+### Minor Changes
+
+- 4e30796: Witness delegator vote plans
+
+### Patch Changes
+
+- @penumbra-zone/types@17.0.0
+
 ## 19.0.0
 
 ### Patch Changes

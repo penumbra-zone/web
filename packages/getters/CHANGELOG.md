@@ -1,5 +1,11 @@
 # @penumbra-zone/getters
 
+## 12.1.0
+
+### Minor Changes
+
+- 86c1bbe: Add support for delegate vote action views
+
 ## 12.0.0
 
 ### Patch Changes

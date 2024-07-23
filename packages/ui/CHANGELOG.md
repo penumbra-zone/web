@@ -1,5 +1,15 @@
 # @penumbra-zone/ui
 
+## 7.1.0
+
+### Minor Changes
+
+- 86c1bbe: Add support for delegate vote action views
+
+### Patch Changes
+
+- @penumbra-zone/types@17.0.0
+
 ## 7.0.3
 
 ### Patch Changes
