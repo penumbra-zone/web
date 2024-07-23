@@ -1,5 +1,27 @@
 # minifront
 
+## 6.12.0
+
+### Minor Changes
+
+- 0233722: added proxying timestampByHeight
+
+### Patch Changes
+
+- 52fdce2: Add decimal part validation (its length cannot exeed the exponent of a selected token)
+- Updated dependencies [e0f4258]
+- Updated dependencies [0233722]
+- Updated dependencies [978efe6]
+- Updated dependencies [af04e2a]
+- Updated dependencies [26bd932]
+  - @penumbra-zone/zquery@3.0.1
+  - @penumbra-zone/types@16.1.0
+  - @penumbra-zone/client@13.0.0
+  - @penumbra-zone/transport-dom@7.3.0
+  - @repo/ui@7.0.3
+  - @penumbra-zone/crypto-web@15.0.0
+  - @penumbra-zone/perspective@16.0.0
+
 ## 6.11.4
 
 ### Patch Changes

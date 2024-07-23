@@ -1,5 +1,11 @@
 # @penumbra-zone/transport-dom
 
+## 7.3.0
+
+### Minor Changes
+
+- af04e2a: respect transport abort controls
+
 ## 7.2.2
 
 ### Patch Changes

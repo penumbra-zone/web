@@ -1,5 +1,11 @@
 # @penumbra-zone/types
 
+## 16.1.0
+
+### Minor Changes
+
+- 0233722: added proxying timestampByHeight
+
 ## 16.0.0
 
 ### Patch Changes

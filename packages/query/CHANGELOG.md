@@ -1,5 +1,18 @@
 # @penumbra-zone/query
 
+## 17.0.0
+
+### Minor Changes
+
+- 0233722: added proxying timestampByHeight
+
+### Patch Changes
+
+- Updated dependencies [0233722]
+  - @penumbra-zone/types@16.1.0
+  - @penumbra-zone/crypto-web@15.0.0
+  - @penumbra-zone/wasm@19.0.0
+
 ## 16.0.0
 
 ### Patch Changes

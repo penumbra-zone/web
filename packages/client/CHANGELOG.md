@@ -1,5 +1,16 @@
 # @penumbra-zone/client
 
+## 13.0.0
+
+### Minor Changes
+
+- 978efe6: PenumbraManifest refers to chrome.runtime.ManifestV3
+
+### Patch Changes
+
+- Updated dependencies [af04e2a]
+  - @penumbra-zone/transport-dom@7.3.0
+
 ## 12.0.0
 
 ### Patch Changes
