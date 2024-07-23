@@ -15,6 +15,7 @@
  */
 
 import {
+  isTransportAbort,
   isTransportError,
   isTransportMessage,
   isTransportStream,
@@ -102,10 +103,10 @@ export class CRSessionClient {
     try {
       if (ev.data === false) {
         this.disconnectService();
-      } else if (isTransportMessage(ev.data)) {
+      } else if (isTransportAbort(ev.data) || isTransportMessage(ev.data)) {
         this.servicePort.postMessage(ev.data);
       } else if (isTransportStream(ev.data)) {
-        this.servicePort.postMessage(this.requestChannelStream(ev.data));
+        this.servicePort.postMessage(this.makeChannelStreamRequest(ev.data));
       } else {
         console.warn('Unknown item from client', ev.data);
       }
@@ -135,7 +136,7 @@ export class CRSessionClient {
     return [{ requestId, stream }, [stream]] satisfies [TransportStream, [Transferable]];
   };
 
-  private requestChannelStream = ({ requestId, stream }: TransportStream) => {
+  private makeChannelStreamRequest = ({ requestId, stream }: TransportStream) => {
     const channel = nameConnection(this.prefix, ChannelLabel.STREAM);
     const sinkListener = (p: chrome.runtime.Port) => {
       if (p.name !== channel) {

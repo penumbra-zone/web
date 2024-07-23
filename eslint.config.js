@@ -233,7 +233,9 @@ export default tseslint.config(
       '**/*.story.@(ts|tsx|js|jsx|mjs|cjs)',
     ],
     rules: {
+      '@typescript-eslint/no-empty-function': 'off',
       '@typescript-eslint/no-non-null-assertion': 'off',
+      '@typescript-eslint/prefer-promise-reject-errors': 'off',
       'react/display-name': 'off',
     },
   },

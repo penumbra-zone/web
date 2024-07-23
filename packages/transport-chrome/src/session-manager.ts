@@ -5,15 +5,15 @@ import { isTransportInitChannel, TransportInitChannel } from './message.js';
 import { PortStreamSink, PortStreamSource } from './stream.js';
 import { ChannelHandlerFn } from '@penumbra-zone/transport-dom/adapter';
 import {
+  isTransportAbort,
   isTransportMessage,
   TransportEvent,
   TransportMessage,
   TransportStream,
 } from '@penumbra-zone/transport-dom/messages';
 
-interface CRSession {
+interface CRSession extends AbortController {
   clientId: string;
-  acont: AbortController;
   port: chrome.runtime.Port;
   origin: string;
 }
@@ -43,6 +43,7 @@ interface CRSession {
 export class CRSessionManager {
   private static singleton?: CRSessionManager;
   private sessions = new Map<string, CRSession>();
+  private requests = new Map<string, AbortController>();
 
   private constructor(
     private prefix: string,
@@ -61,6 +62,19 @@ export class CRSessionManager {
    */
   public static init = (prefix: string, handler: ChannelHandlerFn) => {
     CRSessionManager.singleton ??= new CRSessionManager(prefix, handler);
+    return CRSessionManager.singleton.sessions;
+  };
+
+  public static killOrigin = (targetOrigin: string) => {
+    if (CRSessionManager.singleton) {
+      CRSessionManager.singleton.sessions.forEach(session => {
+        if (session.origin === targetOrigin) {
+          session.abort(targetOrigin);
+        }
+      });
+    } else {
+      throw new Error('No session manager');
+    }
   };
 
   /**
@@ -100,29 +114,31 @@ export class CRSessionManager {
     if (this.sessions.has(clientId)) {
       throw new Error(`Session collision: ${clientId}`);
     }
-    const session = {
+
+    const session: CRSession = Object.assign(new AbortController(), {
       clientId,
-      acont: new AbortController(),
       origin: sender.origin,
       port: port,
-    };
+    });
     this.sessions.set(clientId, session);
 
-    session.acont.signal.addEventListener('abort', () => port.disconnect());
-    port.onDisconnect.addListener(() => session.acont.abort('Disconnect'));
+    session.signal.addEventListener('abort', () => port.disconnect());
+    port.onDisconnect.addListener(() => session.abort('Disconnect'));
 
     port.onMessage.addListener((i, p) => {
       void (async () => {
         try {
-          if (isTransportMessage(i)) {
-            p.postMessage(await this.clientMessageHandler(session.acont.signal, i));
+          if (isTransportAbort(i)) {
+            this.requests.get(i.requestId)?.abort();
+          } else if (isTransportMessage(i)) {
+            p.postMessage(await this.clientMessageHandler(session, i));
           } else if (isTransportInitChannel(i)) {
             console.warn('Client streaming unimplemented', this.acceptChannelStreamRequest(i));
           } else {
             console.warn('Unknown item in transport', i);
           }
         } catch (e) {
-          session.acont.abort(e);
+          session.abort(e);
         }
       })();
     });
@@ -137,13 +153,19 @@ export class CRSessionManager {
    * representing an error.
    */
   private clientMessageHandler(
-    signal: AbortSignal,
+    session: CRSession,
     { requestId, message }: TransportMessage,
   ): Promise<TransportEvent> {
-    return this.handler(message)
+    if (this.requests.has(requestId)) {
+      throw new Error(`Request collision: ${requestId}`);
+    }
+    const requestController = new AbortController();
+    session.signal.addEventListener('abort', () => requestController.abort());
+    this.requests.set(requestId, requestController);
+    return this.handler(message, AbortSignal.any([session.signal, requestController.signal]))
       .then(response =>
         response instanceof ReadableStream
-          ? this.responseChannelStream(signal, {
+          ? this.responseChannelStream(requestController.signal, {
               requestId,
               stream: response as unknown,
             } as TransportStream)
@@ -152,7 +174,8 @@ export class CRSessionManager {
       .catch((error: unknown) => ({
         requestId,
         error: errorToJson(ConnectError.from(error), undefined),
-      }));
+      }))
+      .finally(() => this.requests.delete(requestId));
   }
 
   /**

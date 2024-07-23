@@ -14,8 +14,10 @@ const ReadableStreamWithFrom: typeof ReadableStream & { from: ReadableStreamFrom
   'from' in ReadableStream
     ? (ReadableStream as typeof ReadableStream & { from: ReadableStreamFrom })
     : Object.assign(ReadableStream, {
-        from<T>(iterable: Iterable<T> | AsyncIterable<T>): ReadableStream<T> {
-          if (Symbol.iterator in iterable) {
+        from<T>(iterable: ReadableStream<T> | Iterable<T> | AsyncIterable<T>): ReadableStream<T> {
+          if (iterable instanceof ReadableStream) {
+            return iterable;
+          } else if (Symbol.iterator in iterable) {
             const it = iterable[Symbol.iterator]();
             return new ReadableStream({
               pull(cont) {
