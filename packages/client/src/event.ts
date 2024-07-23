@@ -1,17 +1,26 @@
+import { PenumbraProviderNotAvailableError } from './error.js';
 import { PenumbraState } from './state.js';
 import { PenumbraSymbol } from './symbol.js';
 
 export interface PenumbraStateEventDetail {
   origin: string;
-  state?: PenumbraState;
+  connected: boolean;
+  state: PenumbraState;
 }
 
 export class PenumbraStateEvent extends CustomEvent<PenumbraStateEventDetail> {
-  constructor(penumbraOrigin: string, penumbraState?: PenumbraState) {
+  constructor(penumbraOrigin: string, penumbraState?: PenumbraState, penumbraConnected?: boolean) {
+    const provider = window[PenumbraSymbol]?.[penumbraOrigin];
+    if (!provider) {
+      throw new PenumbraProviderNotAvailableError(penumbraOrigin);
+    }
+    const state = penumbraState ?? provider.state();
+    const connected = penumbraConnected ?? provider.isConnected();
     super('penumbrastate', {
       detail: {
         origin: penumbraOrigin,
-        state: penumbraState ?? window[PenumbraSymbol]?.[penumbraOrigin]?.state(),
+        state,
+        connected,
       },
     });
   }

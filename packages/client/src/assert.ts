@@ -5,14 +5,14 @@ import {
 } from './error.js';
 import { PenumbraSymbol } from './symbol.js';
 
-export const assertStringIsOrigin = (s?: string) => {
+const assertStringIsOrigin = (s?: string) => {
   if (!s || new URL(s).origin !== s) {
     throw new TypeError('Invalid origin');
   }
   return s;
 };
 
-export const assertGlobalPresent = () => {
+export const assertPenumbra = () => {
   if (!window[PenumbraSymbol]) {
     throw new PenumbraNotInstalledError();
   }
@@ -22,22 +22,31 @@ export const assertGlobalPresent = () => {
 /**
  * Given a specific origin, identify the relevant injection or throw.  An
  * `undefined` origin is accepted but will throw.
+ *
+ * This method does not confirm the manifest is present.
  */
 export const assertProviderRecord = (providerOrigin?: string) => {
-  const provider = providerOrigin && assertGlobalPresent()[assertStringIsOrigin(providerOrigin)];
+  const provider = assertPenumbra()[assertStringIsOrigin(providerOrigin)];
   if (!provider) {
     throw new PenumbraProviderNotAvailableError(providerOrigin);
   }
   return provider;
 };
 
+/**
+ * Perform a complete check and return the specified provider. The global
+ * exists, the manifest is present, and the provider is connected.
+ */
 export const assertProvider = (providerOrigin?: string) =>
-  assertProviderManifest(providerOrigin).then(() => assertProviderRecord(providerOrigin));
+  assertProviderManifest(providerOrigin).then(() => assertProviderConnected(providerOrigin));
 
 /**
  * Given a specific origin, identify the relevant injection, and confirm
  * provider is connected or throw. An `undefined` origin is accepted but will
  * throw.
+ *
+ * This method does not confirm the manifest is present. It only asserts that
+ * the specified provider claims it is connected.
  */
 export const assertProviderConnected = (providerOrigin?: string) => {
   const provider = assertProviderRecord(providerOrigin);
@@ -74,10 +83,10 @@ export const assertProviderManifest = async (providerOrigin?: string, signal?: A
     if (!manifest) {
       throw new Error(`Cannot confirm ${providerOrigin} is real.`);
     }
-  } catch (e) {
+  } catch (cause) {
     if (signal?.aborted !== true) {
-      console.warn(e);
-      throw new PenumbraProviderNotAvailableError(providerOrigin);
+      console.warn(cause);
+      throw new PenumbraProviderNotAvailableError(providerOrigin, { cause });
     }
   }
 

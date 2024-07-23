@@ -2,39 +2,33 @@ import type { PenumbraStateEventTarget } from './event.js';
 import type { PenumbraState } from './state.js';
 
 /**
- * This interface describes the simple API to request, connect, or disconnect a
- * provider. These methods allow a page to acquire permission to connect, and
- * obtain a `MessagePort` to be used for client creation.
+ * This interface describes the simple page API provided to to connect and
+ * obtain a `MessagePort` suitable for client creation.
  *
- * There are three connection states for each provider, which may be identified
- * by calling the synchronous method `isConnected()`:
- * - `true`: a connection is available, and a call to `connect` should resolve
- * - `false`: no connection available. calls to `connect` or `request` will fail
- * - `undefined`: a call may be pending, or no call has been made
+ * A simplified connection state may be acquired by calling the synchronous
+ * method `isConnected()`:
+ * - `true`: a connection is available.
+ * - `false`: no connection available right now.
  *
- * Each injection should also track state-changing actions, so calling
- * `.state()` should provide more detail including currently pending state,
- * enumerated by `PenumbraInjectionState`.
+ * Calling `.state()` will provide more detail including currently pending
+ * state, enumerated by `PenumbraState`.
  *
  * Any script in page scope may create an object like this, so clients should
- * confirm a provider is actually present. Presence can be securely verified by
- * fetching the identified provider manifest from the provider's origin.
+ * confirm a provider is actually present. Presence can be verified by fetching
+ * the identified provider manifest from the provider's origin.
  *
- * Presently clients can expect the manifest is a chrome extension manifest v3.
+ * Presently, clients can expect the manifest is a chrome extension manifest v3.
  * Provider details such as name, version, website, brief descriptive text, and
  * icons should be available in the manifest.
  * @see https://developer.chrome.com/docs/extensions/reference/manifest
  *
- * Clients may `request()` approval to connect. This method may reject if the
- * provider chooses to deny approval.  Approval granted by a successful
- * request will persist accross sessions.
- *
  * Clients must `connect()` to acquire a `MessagePort`. The resulting
  * `MessagePort` represents an active, type-safe communication channel to the
- * provider. It is convenient to provide the `connect` method as the `getPort`
- * option for `createChannelTransport` from `@penumbra-zone/transport-dom`, or
- * use the helpers available in `@penumbra-zone/client/create`.
+ * provider.
  *
+ * It is recommended to use the tools exported from `@penumbra-zone/client`, but
+ * for more control, you may provide the `connect` method as the `getPort`
+ * option for `createChannelTransport` from `@penumbra-zone/transport-dom`.
  */
 
 export interface PenumbraProvider extends Readonly<PenumbraStateEventTarget> {
@@ -42,32 +36,27 @@ export interface PenumbraProvider extends Readonly<PenumbraStateEventTarget> {
    * describing this provider. */
   readonly manifest: string;
 
-  /** Call to acquire a `MessagePort` to this provider, subject to approval. */
+  /** Call to acquire a `MessagePort` to this provider, subject to approval.  May
+   * reject with a `PenumbraProviderRequestError` containing an enumerated
+   * `PenumbraRequestFailure` cause. */
   readonly connect: () => Promise<MessagePort>;
 
-  /** Call to gain approval.  May reject with a `PenumbraProviderRequestError`
-   * containing an enumerated `PenumbraRequestFailure` cause. */
-  readonly request: () => Promise<void>;
-
-  /** Call to indicate the provider should discard approval of this origin. */
+  /** Call to indicate the provider should discard approval of this origin, and
+   * close any present connection. */
   readonly disconnect: () => Promise<void>;
 
-  /** Should synchronously return the present connection state.
-   * - `true` indicates active connection.
-   * - `false` indicates connection is closed or rejected.
-   * - `undefined` no attempt has resolved. connection may be attempted.
-   */
-  readonly isConnected: () => boolean | undefined;
+  /** Synchronously returns a boolean representing a simplified connection state.
+   * - `true` indicates connection is active
+   * - `false` indicates connection is not active */
+  readonly isConnected: () => boolean;
 
-  /** Synchronously return present injection state. */
+  /** Synchronously return one of the enumerated possible connection states. */
   readonly state: () => PenumbraState;
 
   /** Like a normal EventTarget.addEventListener, but should only emit
-   * `PenubraInjectionStateEvent` when state changes. Listen for
-   * `'penumbrastate'` events, and check the `detail` field for a
-   * `PenumbraInjectionState` value.
-   * @see https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener
-   */
+   * `PenubraStateEvent` when state changes. Listen for `'penumbrastate'`
+   * events, and check the event's `detail` field for a `PenumbraState` value.
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener */
   readonly addEventListener: PenumbraStateEventTarget['addEventListener'];
   readonly removeEventListener: PenumbraStateEventTarget['addEventListener'];
 }
