@@ -9,6 +9,11 @@ export type Size = 'dense' | 'sparse';
 const focusOutline = css<{
   $getFocusOutlineColor: (theme: DefaultTheme) => string;
   $getBorderRadius: (theme: DefaultTheme) => string;
+  /**
+   * Allows styling of a non-button component (such as a link, which doesn't
+   * support the `disabled` attribute) as disabled.
+   */
+  $disabled?: boolean;
 }>`
   &::after {
     content: '';
@@ -31,17 +36,29 @@ const focusOutline = css<{
    * disabled button, the overlay of the disabled button would be above the
    * outline, making the outline appear to be partly cut off.
    */
-  &:focus::after {
+  &:focus-within {
+    outline: none;
+  }
+
+  &:focus-within::after {
     outline-color: ${props => props.$getFocusOutlineColor(props.theme)};
   }
 
+  &:disabled,
   &:disabled::after {
     pointer-events: none;
   }
+
+  ${props => props.$disabled && `pointer-events: none;`}
 `;
 
 const overlays = css<{
   $getBorderRadius: (theme: DefaultTheme) => string;
+  /**
+   * Allows styling of a non-button component (such as a link, which doesn't
+   * support the `disabled` attribute) as disabled.
+   */
+  $disabled?: boolean;
 }>`
   &::before {
     border-radius: ${props => props.$getBorderRadius(props.theme)};
@@ -65,6 +82,15 @@ const overlays = css<{
     background-color: ${props => props.theme.color.action.disabledOverlay};
     cursor: not-allowed;
   }
+
+  ${props =>
+    props.$disabled &&
+    `
+      &::before {
+        background-color: ${props.theme.color.action.disabledOverlay};
+        cursor: not-allowed;
+      }
+    `}
 `;
 
 /**
