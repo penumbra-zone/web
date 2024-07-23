@@ -1,5 +1,4 @@
 import { ViewBox } from '../viewbox';
-import { ValueWithAddress } from './value-with-address';
 import { ValueViewComponent } from '../../value';
 import { getAddress } from '@penumbra-zone/getters/note-view';
 import { ActionDetails } from './action-details';
@@ -9,9 +8,53 @@ import {
   Vote,
   Vote_Vote,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/governance/v1/governance_pb';
-import { joinLoHiAmount } from '@penumbra-zone/types/amount';
 import { getDelegatorVoteBody } from '@penumbra-zone/getters/delegator-vote-view';
-import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
+import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb.js';
+import {
+  Metadata,
+  ValueView,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { AddressViewComponent } from '../../address-view';
+import { base64ToUint8Array } from '@penumbra-zone/types/base64';
+
+// TODO: This is sad, but at the moment, we aren't provided the metadata to have a rich display.
+//       Given the high-priority of getting action view support, this is added.
+//       We should properly implement ValueViews into the protos for DelegatorVote action view and delete this code.
+const umMetadata = new Metadata({
+  denomUnits: [
+    {
+      denom: 'penumbra',
+      exponent: 6,
+    },
+    {
+      denom: 'upenumbra',
+      exponent: 0,
+    },
+  ],
+  base: 'upenumbra',
+  display: 'penumbra',
+  symbol: 'UM',
+  penumbraAssetId: {
+    inner: base64ToUint8Array('KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA='),
+  },
+  images: [
+    {
+      svg: 'https://raw.githubusercontent.com/prax-wallet/registry/main/images/um.svg',
+    },
+  ],
+});
+
+const umValueView = (amount?: Amount) => {
+  return new ValueView({
+    valueView: {
+      case: 'knownAssetId',
+      value: {
+        amount,
+        metadata: umMetadata,
+      },
+    },
+  });
+};
 
 export const DelegatorVoteComponent = ({ value }: { value: DelegatorVoteView }) => {
   const body = getDelegatorVoteBody.optional()(value);
@@ -24,12 +67,12 @@ export const DelegatorVoteComponent = ({ value }: { value: DelegatorVoteView }) 
       <ViewBox
         label='Delegator Vote'
         visibleContent={
-          <>
-            <ValueWithAddress addressView={address} label='from'>
-              <ValueViewComponent view={note?.value} />
-            </ValueWithAddress>
+          <ActionDetails>
             <VoteBodyDetails body={body} />
-          </>
+            <ActionDetails.Row label='Account'>
+              <AddressViewComponent view={address} />
+            </ActionDetails.Row>
+          </ActionDetails>
         }
       />
     );
@@ -39,8 +82,11 @@ export const DelegatorVoteComponent = ({ value }: { value: DelegatorVoteView }) 
     return (
       <ViewBox
         label='Delegator Vote'
-        isOpaque={true}
-        visibleContent={<VoteBodyDetails body={body} />}
+        visibleContent={
+          <ActionDetails>
+            <VoteBodyDetails body={body} />
+          </ActionDetails>
+        }
       />
     );
   }
@@ -63,39 +109,19 @@ const VoteToString = (vote: Vote): string => {
 
 const VoteBodyDetails = ({ body }: { body?: DelegatorVoteBody }) => {
   return (
-    <ActionDetails>
+    <>
       {!!body?.proposal && (
         <ActionDetails.Row label='Proposal'>{Number(body.proposal)}</ActionDetails.Row>
-      )}
-
-      {!!body?.startPosition && (
-        <ActionDetails.Row label='Start Position'>{Number(body.startPosition)}</ActionDetails.Row>
       )}
 
       {!!body?.vote && (
         <ActionDetails.Row label='Vote'>{VoteToString(body.vote)}</ActionDetails.Row>
       )}
-
-      {!!body?.value && (
-        <>
-          {body.value.assetId && (
-            <ActionDetails.Row label='Asset id'>
-              {bech32mAssetId({ inner: body.value.assetId.inner })}
-            </ActionDetails.Row>
-          )}
-          {body.value.amount && (
-            <ActionDetails.Row label='Amount'>
-              {joinLoHiAmount(body.value.amount).toString()}
-            </ActionDetails.Row>
-          )}
-        </>
-      )}
-
       {!!body?.unbondedAmount && (
-        <ActionDetails.Row label='Unbonded Amount'>
-          {joinLoHiAmount(body.unbondedAmount).toString()}
+        <ActionDetails.Row label='Voting power'>
+          <ValueViewComponent view={umValueView(body.unbondedAmount)} />
         </ActionDetails.Row>
       )}
-    </ActionDetails>
+    </>
   );
 };

@@ -5,6 +5,7 @@ import { asOpaqueOutputView, asReceiverOutputView } from './output-view.js';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 import { asOpaqueSwapView } from './swap-view.js';
 import { asOpaqueSwapClaimView } from './swap-claim-view.js';
+import { asOpaqueDelegatorVoteView } from './delegator-vote-view.js';
 
 export const asPublicActionView: Translator<ActionView> = actionView => {
   switch (actionView?.actionView.case) {
@@ -37,6 +38,14 @@ export const asPublicActionView: Translator<ActionView> = actionView => {
         actionView: {
           case: 'swapClaim',
           value: asOpaqueSwapClaimView(actionView.actionView.value),
+        },
+      });
+
+    case 'delegatorVote':
+      return new ActionView({
+        actionView: {
+          case: 'delegatorVote',
+          value: asOpaqueDelegatorVoteView(actionView.actionView.value),
         },
       });
 
