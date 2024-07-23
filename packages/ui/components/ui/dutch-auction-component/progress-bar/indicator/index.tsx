@@ -1,8 +1,9 @@
+import { useMemo } from 'react';
 import { DutchAuction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
 import { CircleArrowRight, CircleCheck, CircleX } from 'lucide-react';
-import { getProgress } from './get-progress';
 import { getDescription } from '@penumbra-zone/getters/dutch-auction';
 import { isZero } from '@penumbra-zone/types/amount';
+import { getProgress } from './get-progress';
 
 export const Indicator = ({
   dutchAuction,
@@ -13,16 +14,25 @@ export const Indicator = ({
 }) => {
   const description = getDescription(dutchAuction);
   const seqNum = dutchAuction.state?.seq;
-  if (seqNum === undefined) {
-    return null;
-  }
 
-  const auctionEnded =
-    (!!seqNum && seqNum > 0n) || (!!fullSyncHeight && fullSyncHeight >= description.endHeight);
-  const endedUnfulfilled =
-    auctionEnded &&
-    !!dutchAuction.state?.inputReserves &&
-    !isZero(dutchAuction.state.inputReserves);
+  const stateIcon = useMemo(() => {
+    const auctionEnded =
+      (!!seqNum && seqNum > 0n) || (!!fullSyncHeight && fullSyncHeight >= description.endHeight);
+    const isFilled =
+      !!dutchAuction.state?.inputReserves && isZero(dutchAuction.state.inputReserves);
+    const isUnfilled =
+      !!dutchAuction.state?.inputReserves && !isZero(dutchAuction.state.inputReserves);
+
+    if (auctionEnded && isUnfilled) {
+      return <CircleX size={16} className='text-red' />;
+    }
+
+    if (isFilled || auctionEnded) {
+      return <CircleCheck size={16} className='text-green' />;
+    }
+
+    return <CircleArrowRight size={16} />;
+  }, [seqNum, fullSyncHeight, description.endHeight, dutchAuction.state]);
 
   const progress = getProgress(
     description.startHeight,
@@ -31,15 +41,13 @@ export const Indicator = ({
     seqNum,
   );
 
+  if (seqNum === undefined) {
+    return null;
+  }
+
   return (
     <div className='absolute' style={{ left: `max(${progress * 100}% - 16px, 0px)` }}>
-      {endedUnfulfilled ? (
-        <CircleX size={16} className='text-red' />
-      ) : auctionEnded ? (
-        <CircleCheck size={16} className='text-green' />
-      ) : (
-        <CircleArrowRight size={16} />
-      )}
+      {stateIcon}
     </div>
   );
 };
