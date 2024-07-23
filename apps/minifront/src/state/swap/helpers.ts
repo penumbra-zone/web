@@ -4,6 +4,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import {
   CandlestickData,
+  CandlestickDataResponse,
   SimulateTradeRequest,
   SimulateTradeResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
@@ -18,7 +19,6 @@ import { toBaseUnit } from '@penumbra-zone/types/lo-hi';
 import { BigNumber } from 'bignumber.js';
 import { SwapSlice } from '.';
 import { dexClient, simulationClient } from '../../clients';
-import { PriceHistorySlice } from './price-history';
 import { assetPatterns } from '@penumbra-zone/types/assets';
 import { fromBaseUnitAmount } from '@penumbra-zone/types/amount';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
@@ -59,11 +59,12 @@ export const sendSimulateTradeRequest = ({
  *  3. flip the inverse data (reciprocal values, high becomes low)
  *  4. combine the data (use the highest high, lowest low, sum volumes)
  */
-export const sendCandlestickDataRequests = async (
-  { startMetadata, endMetadata }: Pick<PriceHistorySlice, 'startMetadata' | 'endMetadata'>,
-  limit: bigint,
-  signal?: AbortSignal,
-): Promise<CandlestickData[]> => {
+export const sendCandlestickDataRequest = async (
+  startMetadata?: Metadata,
+  endMetadata?: Metadata,
+  limit?: bigint,
+  startHeight?: bigint,
+): Promise<CandlestickDataResponse> => {
   const start = startMetadata?.penumbraAssetId;
   const end = endMetadata?.penumbraAssetId;
 
@@ -74,73 +75,71 @@ export const sendCandlestickDataRequests = async (
     throw new Error('Asset pair equivalent');
   }
 
-  const suppressAbort = (err: unknown) => {
-    if (!signal?.aborted) {
-      throw err;
-    }
-  };
+  return dexClient.candlestickData({ pair: { start, end }, limit, startHeight });
+};
 
-  const directReq = dexClient
-    .candlestickData({ pair: { start, end }, limit }, { signal })
-    .catch(suppressAbort);
-  const inverseReq = dexClient
-    .candlestickData({ pair: { start: end, end: start }, limit }, { signal })
-    .catch(suppressAbort);
+export const combinedCandlestickDataSelector = (
+  zQueryState: AbridgedZQueryState<{
+    direct: CandlestickDataResponse;
+    inverse: CandlestickDataResponse;
+  }>,
+) => {
+  if (!zQueryState.data) {
+    return { ...zQueryState, data: undefined };
+  } else {
+    const direct = zQueryState.data.direct.data;
+    const corrected = zQueryState.data.inverse.data.map(
+      // flip inverse data to match orientation of direct data
+      inverseCandle => {
+        const correctedCandle = inverseCandle.clone();
+        // comparative values are reciprocal
+        correctedCandle.open = 1 / inverseCandle.open;
+        correctedCandle.close = 1 / inverseCandle.close;
+        // high and low swap places
+        correctedCandle.high = 1 / inverseCandle.low;
+        correctedCandle.low = 1 / inverseCandle.high;
+        return correctedCandle;
+      },
+    );
 
-  const directCandles = (await directReq)?.data ?? [];
-  const inverseCandles = (await inverseReq)?.data ?? [];
-
-  // collect candles at each height
-  const collatedByHeight = Map.groupBy(
-    [
-      ...directCandles,
-      ...inverseCandles.map(
-        // flip inverse data to match orientation of direct data
-        inverseCandle => {
-          const correctedCandle = inverseCandle.clone();
-          // comparative values are reciprocal
-          correctedCandle.open = 1 / inverseCandle.open;
-          correctedCandle.close = 1 / inverseCandle.close;
-          // high and low swap places
-          correctedCandle.high = 1 / inverseCandle.low;
-          correctedCandle.low = 1 / inverseCandle.high;
-          return correctedCandle;
-        },
-      ),
-    ],
-    ({ height }) => height,
-  );
-
-  // combine data at each height into a single candle
-  const combinedCandles = Array.from(collatedByHeight.entries()).map(
-    ([height, candlesAtHeight]) => {
+    // combine data at each height into a single candle
+    const combinedCandles = Array.from(
+      // collect candles at each height
+      Map.groupBy([...direct, ...corrected], ({ height }) => height),
+    ).map(([height, candlesAtHeight]) => {
       // TODO: open/close don't diverge much, and when they do it seems to be due
       // to inadequate number precision. it might be better to just pick one, but
       // it's not clear which one is 'correct'
-      const combinedCandleAtHeight = candlesAtHeight.reduce((acc, cur) => {
-        // sum volumes
-        acc.directVolume += cur.directVolume;
-        acc.swapVolume += cur.swapVolume;
+      const combinedCandleAtHeight = candlesAtHeight.reduce(
+        (acc, cur) => {
+          // sum volumes
+          acc.directVolume += cur.directVolume;
+          acc.swapVolume += cur.swapVolume;
 
-        // highest high, lowest low
-        acc.high = Math.max(acc.high, cur.high);
-        acc.low = Math.min(acc.low, cur.low);
+          // highest high, lowest low
+          acc.high = Math.max(acc.high, cur.high);
+          acc.low = Math.min(acc.low, cur.low);
 
-        // these accumulate to be averaged
-        acc.open += cur.open;
-        acc.close += cur.close;
-        return acc;
-      }, new CandlestickData({ height }));
+          // these accumulate to be averaged
+          acc.open += cur.open;
+          acc.close += cur.close;
+          return acc;
+        },
+        new CandlestickData({ height, low: Infinity, high: -Infinity }),
+      );
 
       // average accumulated open/close
       combinedCandleAtHeight.open /= candlesAtHeight.length;
       combinedCandleAtHeight.close /= candlesAtHeight.length;
 
       return combinedCandleAtHeight;
-    },
-  );
+    });
 
-  return combinedCandles.sort((a, b) => Number(a.height - b.height));
+    return {
+      ...zQueryState,
+      data: combinedCandles.sort((a, b) => Number(a.height - b.height)),
+    };
+  }
 };
 
 const byBalanceDescending = (a: BalancesResponse, b: BalancesResponse) => {

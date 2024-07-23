@@ -43,10 +43,11 @@ interface CandlestickPlotProps {
   width?: number;
   height?: number;
   candles: CandlestickData[];
-  latestKnownBlockHeight?: number;
+  blockDomain: [bigint, bigint];
   startMetadata: Metadata;
   endMetadata: Metadata;
   getBlockDate: GetBlockDateFn;
+  scaleMargin?: number;
 }
 
 interface CandlestickTooltipProps {
@@ -66,8 +67,9 @@ export const CandlestickPlot = withTooltip<CandlestickPlotProps, CandlestickData
     candles,
     startMetadata,
     endMetadata,
-    latestKnownBlockHeight,
+    blockDomain: [startBlock, endBlock],
     getBlockDate,
+    scaleMargin = 40,
 
     // withTooltip props
     tooltipOpen,
@@ -77,7 +79,7 @@ export const CandlestickPlot = withTooltip<CandlestickPlotProps, CandlestickData
     showTooltip,
     hideTooltip,
   }: CandlestickPlotProps & WithTooltipProvidedProps<CandlestickData>) => {
-    const { parentRef, width: w, height: h } = useParentSize({ debounceTime: 150 });
+    const { parentRef, width: w, height: h } = useParentSize();
 
     const { blockScale, priceScale } = useMemo(() => {
       const { maxPrice, minPrice } = candles.reduce(
@@ -85,32 +87,30 @@ export const CandlestickPlot = withTooltip<CandlestickPlotProps, CandlestickData
           minPrice: Math.min(acc.minPrice, lowPrice(d)),
           maxPrice: Math.max(acc.maxPrice, highPrice(d)),
         }),
-        { minPrice: Infinity, maxPrice: -Infinity },
+        { minPrice: Infinity, maxPrice: 0 },
       );
+
       const maxSpread = maxPrice - minPrice;
 
-      const startBlock = candles.length && blockHeight(candles[0]!);
-      const endBlock = candles.length && blockHeight(candles[candles.length - 1]!);
-
       const blockScale = scaleLinear<number>({
-        range: [50, w - 5],
-        domain: [startBlock, latestKnownBlockHeight ?? endBlock],
+        range: [scaleMargin, w],
+        domain: [Number(startBlock), Number(endBlock)],
       });
 
       const priceScale = scaleLinear<number>({
-        range: [h, 0],
-        domain: [minPrice - maxSpread / 2, maxPrice + maxSpread / 2],
+        range: [h - scaleMargin, 0],
+        domain: [Math.max(0, minPrice - maxSpread / 4), maxPrice],
       });
 
       return { priceScale, blockScale };
-    }, [candles, latestKnownBlockHeight, w, h]);
+    }, [candles, scaleMargin, w, startBlock, endBlock, h]);
 
     const useTooltip = useCallback(
       (d: CandlestickData) => ({
         onMouseOver: () => {
           showTooltip({
             tooltipTop: priceScale(midPrice(d)),
-            tooltipLeft: blockScale(blockHeight(d)),
+            tooltipLeft: blockScale(blockHeight(d)) / 2,
             tooltipData: d,
           });
         },
@@ -121,14 +121,7 @@ export const CandlestickPlot = withTooltip<CandlestickPlotProps, CandlestickData
       [blockScale, hideTooltip, priceScale, showTooltip],
     );
 
-    if (!candles.length) {
-      return null;
-    }
-
-    // candle width as fraction of graph width. likely too thin to really
-    // matter. if there's lots of records this will overlap, and we'll need to
-    // implement some kind of binning.
-    const blockWidth = Math.min(w / candles.length, 6);
+    const blockWidth = w / Number(endBlock - startBlock);
 
     return (
       <>
@@ -141,14 +134,14 @@ export const CandlestickPlot = withTooltip<CandlestickPlotProps, CandlestickData
                   textAnchor: 'middle',
                 }}
                 tickStroke='rgba(255,255,255,0.25)'
-                top={h - 50}
+                top={h - scaleMargin}
                 scale={blockScale}
                 numTicks={4}
                 rangePadding={10}
               />
               <GridRows // price axis grid
                 scale={priceScale}
-                left={60}
+                left={scaleMargin}
                 width={w}
                 stroke='white'
                 strokeOpacity={0.1}
@@ -160,7 +153,7 @@ export const CandlestickPlot = withTooltip<CandlestickPlotProps, CandlestickData
                   fill: 'white',
                   textAnchor: 'end',
                 }}
-                left={60}
+                left={scaleMargin}
                 scale={priceScale}
                 numTicks={3}
               />
@@ -209,8 +202,8 @@ export const CandlestickPlot = withTooltip<CandlestickPlotProps, CandlestickData
                         firstQuartile={Math.min(open, close)}
                         thirdQuartile={Math.max(open, close)}
                         // box position and dimensions
-                        left={blockScale(blockHeight(d)) - blockWidth / 2 + 1}
-                        boxWidth={blockWidth - 2}
+                        left={blockScale(blockHeight(d)) - (blockWidth + 1) / 2}
+                        boxWidth={blockWidth + 1}
                         // basic styles
                         fill={movementColor}
                         stroke={'rgba(255,255,255,0.5)'}

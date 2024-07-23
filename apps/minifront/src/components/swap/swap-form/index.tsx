@@ -10,6 +10,7 @@ import { SimulateSwap } from './simulate-swap';
 import { LayoutGroup } from 'framer-motion';
 import { useId } from 'react';
 import { submitButtonDisabledSelector } from '../../../state/swap';
+import { PriceHistory } from './price-history';
 
 const swapFormSelector = (state: AllSlices) => ({
   onSubmit:
@@ -48,6 +49,8 @@ export const SwapForm = () => {
           ) : (
             <Output layoutId={sharedLayoutId} />
           )}
+
+          <PriceHistory />
 
           <Button
             type='submit'
