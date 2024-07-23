@@ -66,6 +66,10 @@ pub fn witness(transaction_plan: &[u8], stored_tree: JsValue) -> WasmResult<Vec<
             plan.swap_claim_plans()
                 .map(|swap_claim| swap_claim.swap_plaintext.swap_commitment()),
         )
+        .chain(
+            plan.delegator_vote_plans()
+                .map(|vote_plan| vote_plan.staked_note.commit()),
+        )
         .collect();
 
     let anchor = sct.root();
