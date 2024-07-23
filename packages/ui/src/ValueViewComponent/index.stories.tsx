@@ -91,16 +91,45 @@ const UNBONDING_VALUE_VIEW = new ValueView({
   },
 });
 
+const UNKNOWN_ASSET_VALUE_VIEW = new ValueView({
+  valueView: {
+    case: 'knownAssetId',
+    value: {
+      amount: { hi: 0n, lo: 123_000_000n },
+      metadata: {
+        penumbraAssetId: { inner: new Uint8Array([]) },
+      },
+    },
+  },
+});
+
+const UNKNOWN_ASSET_ID_VALUE_VIEW = new ValueView({
+  valueView: {
+    case: 'unknownAssetId',
+    value: {
+      amount: { hi: 0n, lo: 123_000_000n },
+    },
+  },
+});
+
 const meta: Meta<typeof ValueViewComponent> = {
   component: ValueViewComponent,
   tags: ['autodocs', '!dev'],
   argTypes: {
     valueView: {
-      options: ['Penumbra', 'Delegation token', 'Unbonding token'],
+      options: [
+        'Penumbra',
+        'Delegation token',
+        'Unbonding token',
+        'Unknown asset',
+        'Unknown asset ID',
+      ],
       mapping: {
         Penumbra: PENUMBRA_VALUE_VIEW,
         'Delegation token': DELEGATION_VALUE_VIEW,
         'Unbonding token': UNBONDING_VALUE_VIEW,
+        'Unknown asset': UNKNOWN_ASSET_VALUE_VIEW,
+        'Unknown asset ID': UNKNOWN_ASSET_ID_VALUE_VIEW,
       },
     },
   },
