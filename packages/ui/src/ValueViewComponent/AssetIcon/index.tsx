@@ -24,7 +24,6 @@ export const AssetIcon = ({ metadata, size = 'sparse' }: AssetIcon) => {
   const display = getDisplay.optional()(metadata);
   const isDelegationToken = display ? assetPatterns.delegationToken.matches(display) : false;
   const isUnbondingToken = display ? assetPatterns.unbondingToken.matches(display) : false;
-  console.log({ AssetIcon, isDelegationToken, isUnbondingToken });
 
   return (
     <>
