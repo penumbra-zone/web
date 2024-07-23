@@ -3,7 +3,7 @@ import { tab } from '../utils/typography';
 import { motion } from 'framer-motion';
 import { useId } from 'react';
 import { buttonInteractions } from '../utils/button';
-import * as Tabs from '@radix-ui/react-tabs';
+import * as RadixTabs from '@radix-ui/react-tabs';
 
 const TEN_PERCENT_OPACITY_IN_HEX = '1a';
 
@@ -26,7 +26,7 @@ const outlineColorByActionType: Record<ActionType, keyof DefaultTheme['color']['
   unshield: 'unshieldFocusOutline',
 };
 
-const SegmentButton = styled.button<{
+const Tab = styled.button<{
   $actionType: ActionType;
   $getFocusOutlineColor: (theme: DefaultTheme) => string;
   $getBorderRadius: (theme: DefaultTheme) => string;
@@ -69,28 +69,27 @@ const SelectedIndicator = styled(motion.div)`
   z-index: -1;
 `;
 
-export interface SegmentedPickerOption {
+export interface TabsTab {
   value: string;
   label: string;
   disabled?: boolean;
 }
 
-export interface SegmentedPickerProps {
+export interface TabsProps {
   value: string;
   onChange: (value: string) => void;
-  options: SegmentedPickerOption[];
+  options: TabsTab[];
   actionType?: ActionType;
 }
 
 /**
- * Renders a segmented picker where only one option can be selected at a time.
- * Functionally equivalent to a `<select>` element or a set of radio buttons,
- * but looks nicer when you only have a few options to choose from. (Probably
- * shouldn't be used with more than 5 options.)
+ * Use tabs for switching between related pages or views.
  *
- * @example
+ * Built atop Radix UI's `<Tabs />` component, so it's fully accessible and
+ * supports keyboard navigation.
+ *
  * ```TSX
- * <SegmentedPicker
+ * <Tabs
  *   value={value}
  *   onChange={setValue}
  *   options={[
@@ -101,26 +100,21 @@ export interface SegmentedPickerProps {
  * />
  * ```
  */
-export const SegmentedPicker = ({
-  value,
-  onChange,
-  options,
-  actionType = 'default',
-}: SegmentedPickerProps) => {
+export const Tabs = ({ value, onChange, options, actionType = 'default' }: TabsProps) => {
   const layoutId = useId();
 
   return (
-    <Tabs.Root value={value} onValueChange={onChange}>
-      <Tabs.List asChild>
+    <RadixTabs.Root value={value} onValueChange={onChange}>
+      <RadixTabs.List asChild>
         <Root>
           {options.map(option => (
-            <Tabs.Trigger
+            <RadixTabs.Trigger
               value={option.value}
               key={option.value.toString()}
               disabled={option.disabled}
               asChild
             >
-              <SegmentButton
+              <Tab
                 onClick={() => onChange(option.value)}
                 disabled={option.disabled}
                 $actionType={actionType}
@@ -131,11 +125,11 @@ export const SegmentedPicker = ({
               >
                 {value === option.value && <SelectedIndicator layout layoutId={layoutId} />}
                 {option.label}
-              </SegmentButton>
-            </Tabs.Trigger>
+              </Tab>
+            </RadixTabs.Trigger>
           ))}
         </Root>
-      </Tabs.List>
-    </Tabs.Root>
+      </RadixTabs.List>
+    </RadixTabs.Root>
   );
 };
