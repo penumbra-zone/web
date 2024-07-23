@@ -1,5 +1,16 @@
 # minifront
 
+## 6.12.1
+
+### Patch Changes
+
+- Updated dependencies [86c1bbe]
+  - @penumbra-zone/perspective@17.0.0
+  - @penumbra-zone/getters@12.1.0
+  - @repo/ui@7.1.0
+  - @penumbra-zone/types@17.0.0
+  - @penumbra-zone/crypto-web@16.0.0
+
 ## 6.12.0
 
 ### Minor Changes

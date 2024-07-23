@@ -1,5 +1,18 @@
 # @penumbra-zone/perspective
 
+## 17.0.0
+
+### Minor Changes
+
+- 86c1bbe: Add support for delegate vote action views
+
+### Patch Changes
+
+- Updated dependencies [4e30796]
+- Updated dependencies [86c1bbe]
+  - @penumbra-zone/wasm@20.0.0
+  - @penumbra-zone/getters@12.1.0
+
 ## 16.0.0
 
 ### Patch Changes

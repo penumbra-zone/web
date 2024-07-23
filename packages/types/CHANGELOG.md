@@ -1,5 +1,12 @@
 # @penumbra-zone/types
 
+## 17.0.0
+
+### Patch Changes
+
+- Updated dependencies [86c1bbe]
+  - @penumbra-zone/getters@12.1.0
+
 ## 16.1.0
 
 ### Minor Changes
