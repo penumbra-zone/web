@@ -6,10 +6,10 @@ const Svg = styled.svg.attrs({
   xmlns: 'http://www.w3.org/2000/svg',
   xmlnsXlink: 'http://www.w3.org/1999/xlink',
   viewBox: '0 0 32 32',
-})<{ $size: 'dense' | 'sparse' }>`
+})`
   border-radius: ${props => props.theme.borderRadius.full};
-  width: ${props => (props.$size === 'sparse' ? 24 : 16)}px;
-  height: ${props => (props.$size === 'sparse' ? 24 : 16)}px;
+  width: 24px;
+  height: 24px;
 `;
 
 const getFirstEightCharactersOfValidatorId = (displayDenom = ''): [string, string] => {
@@ -23,14 +23,13 @@ const getFirstEightCharactersOfValidatorId = (displayDenom = ''): [string, strin
 
 export interface DelegationTokenIconProps {
   displayDenom?: string;
-  size: 'dense' | 'sparse';
 }
 
-export const DelegationTokenIcon = ({ displayDenom, size }: DelegationTokenIconProps) => {
+export const DelegationTokenIcon = ({ displayDenom }: DelegationTokenIconProps) => {
   const [firstFour, lastFour] = getFirstEightCharactersOfValidatorId(displayDenom);
 
   return (
-    <Svg $size={size}>
+    <Svg>
       <defs>
         <radialGradient
           id='logoGradient'
