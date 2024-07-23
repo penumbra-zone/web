@@ -14,9 +14,6 @@ export const Indicator = ({
 }) => {
   const description = getDescription(dutchAuction);
   const seqNum = dutchAuction.state?.seq;
-  if (seqNum === undefined) {
-    return null;
-  }
 
   const stateIcon = useMemo(() => {
     const auctionEnded =
@@ -43,6 +40,10 @@ export const Indicator = ({
     fullSyncHeight,
     seqNum,
   );
+
+  if (seqNum === undefined) {
+    return null;
+  }
 
   return (
     <div className='absolute' style={{ left: `max(${progress * 100}% - 16px, 0px)` }}>
