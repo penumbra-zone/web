@@ -3,6 +3,7 @@ import { tab } from '../utils/typography';
 import { motion } from 'framer-motion';
 import { useId } from 'react';
 import { buttonInteractions } from '../utils/button';
+import * as Tabs from '@radix-ui/react-tabs';
 
 const TEN_PERCENT_OPACITY_IN_HEX = '1a';
 
@@ -118,20 +119,32 @@ export const SegmentedPicker = <ValueType extends { toString: () => string }>({
   const layoutId = useId();
 
   return (
-    <Root>
-      {options.map(option => (
-        <SegmentButton
-          key={option.value.toString()}
-          onClick={() => onChange(option.value)}
-          $actionType={actionType}
-          disabled={option.disabled}
-          $getFocusOutlineColor={theme => theme.color.action[outlineColorByActionType[actionType]]}
-          $getBorderRadius={theme => theme.borderRadius.xs}
-        >
-          {value === option.value && <SelectedIndicator layout layoutId={layoutId} />}
-          {option.label}
-        </SegmentButton>
-      ))}
-    </Root>
+    <Tabs.Root value={value} onValueChange={onChange}>
+      <Tabs.List asChild>
+        <Root>
+          {options.map(option => (
+            <Tabs.Trigger
+              value={option.value}
+              key={option.value.toString()}
+              disabled={option.disabled}
+              asChild
+            >
+              <SegmentButton
+                onClick={() => onChange(option.value)}
+                disabled={option.disabled}
+                $actionType={actionType}
+                $getFocusOutlineColor={theme =>
+                  theme.color.action[outlineColorByActionType[actionType]]
+                }
+                $getBorderRadius={theme => theme.borderRadius.xs}
+              >
+                {value === option.value && <SelectedIndicator layout layoutId={layoutId} />}
+                {option.label}
+              </SegmentButton>
+            </Tabs.Trigger>
+          ))}
+        </Root>
+      </Tabs.List>
+    </Tabs.Root>
   );
 };
