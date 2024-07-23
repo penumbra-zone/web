@@ -1,4 +1,4 @@
-import { Mock, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import {
   SwapRecord,
@@ -8,51 +8,29 @@ import {
   TransactionPlannerRequest_ActionDutchAuctionWithdraw,
   TransactionPlannerRequest_Output,
   TransactionPlannerRequest_Swap,
-  TransactionPlannerRequest_SwapClaim,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import {
-  ActionDutchAuctionEnd,
   AuctionId,
-  DutchAuction,
+  DutchAuctionDescription,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
 import { extractAltFee } from './fees.js';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb.js';
-import { IndexedDbMock, IndexedDbMockImpl } from '../test-utils.js';
+import { IndexedDbMock } from '../test-utils.js';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
-import { processActionDutchAuctionEnd } from '@penumbra-zone/query/helpers/process-action-dutch-auction-end';
 import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
 
-describe('extractAltFee', () => {
-  // Create class 'indexedDbMockImpl' that implements 'IndexedDbInterface', and delegate method
-  // calls to underlying 'IndexedDbMock' indexDB instance. This is requireed because extractAltFee
-  // expects 'IndexedDbInterface' as a type signature, and inside the method perform indexDB calls.
-  let indexedDbMockImpl: IndexedDbMockImpl;
+describe('extractAltFee', async () => {
   let mockIndexedDb: IndexedDbMock;
-
-  // IndexDB methods that we want to mock
-  const getSwapByCommitmentMock: Mock = vi.fn();
-  let auctionQuerier: { auctionStateById: Mock };
-  let upsertAuctionMock: Mock = vi.fn();
-  let saveAssetsMetadataMock: Mock = vi.fn();
-
-  const auctionId = new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) });
-  const action = new ActionDutchAuctionEnd({ auctionId });
 
   beforeEach(() => {
     vi.clearAllMocks();
 
-    auctionQuerier = {
-      auctionStateById: vi.fn(),
-    };
-
     mockIndexedDb = {
-      getSwapByCommitment: getSwapByCommitmentMock,
-      upsertAuction: upsertAuctionMock,
-      saveAssetsMetadata: saveAssetsMetadataMock,
+      getSwapByCommitment: vi.fn(),
+      upsertAuction: vi.fn(),
+      saveAssetsMetadata: vi.fn(),
+      getAuction: vi.fn(),
     };
-
-    // Initialize an instance of 'IndexedDbMockImpl' with 'mockIndexedDb' as the constructor
-    indexedDbMockImpl = new IndexedDbMockImpl(mockIndexedDb);
   });
 
   it('extracts the staking asset fee from outputs', async () => {
@@ -64,12 +42,12 @@ describe('extractAltFee', () => {
     });
     const request = new TransactionPlannerRequest({
       outputs: [
-        new TransactionPlannerRequest_Output({
+        {
           value: { assetId: umAssetId },
-        }),
+        },
       ],
     });
-    const result = await extractAltFee(request, indexedDbMockImpl);
+    const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
     expect(result.equals(umAssetId)).toBeTruthy();
   });
 
@@ -82,12 +60,12 @@ describe('extractAltFee', () => {
     });
     const request = new TransactionPlannerRequest({
       outputs: [
-        new TransactionPlannerRequest_Output({
+        {
           value: { assetId: umAssetId },
-        }),
+        },
       ],
     });
-    const result = await extractAltFee(request, indexedDbMockImpl);
+    const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
     expect(result.equals(umAssetId)).toBeTruthy();
   });
 
@@ -106,7 +84,7 @@ describe('extractAltFee', () => {
         }),
       ],
     });
-    const result = await extractAltFee(request, indexedDbMockImpl);
+    const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
     expect(result.equals(umAssetId)).toBeTruthy();
   });
 
@@ -145,12 +123,12 @@ describe('extractAltFee', () => {
       ],
     });
 
-    const result = await extractAltFee(request, indexedDbMockImpl);
+    const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
     expect(result.equals(outputAssetId)).toBeTruthy();
   });
 
   it('extracts the staking asset fee from swaps', async () => {
-    indexedDbMockImpl.mockDB.getSwapByCommitment?.mockResolvedValue(mockSwapNativeStakingToken);
+    mockIndexedDb.getSwapByCommitment?.mockResolvedValue(mockSwapNativeStakingToken);
 
     const swapAssetId = new AssetId({
       inner: new Uint8Array([
@@ -166,12 +144,12 @@ describe('extractAltFee', () => {
       ],
     });
 
-    const result = await extractAltFee(request, indexedDbMockImpl);
+    const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
     expect(result.equals(swapAssetId)).toBeTruthy();
   });
 
   it('extracts the alternative asset fee from swaps', async () => {
-    indexedDbMockImpl.mockDB.getSwapByCommitment?.mockResolvedValue(mockSwapAlternativeToken);
+    mockIndexedDb.getSwapByCommitment?.mockResolvedValue(mockSwapAlternativeToken);
 
     const swapAssetId = new AssetId({
       inner: new Uint8Array([
@@ -181,18 +159,18 @@ describe('extractAltFee', () => {
     });
     const request = new TransactionPlannerRequest({
       swaps: [
-        new TransactionPlannerRequest_Swap({
+        {
           value: { assetId: swapAssetId },
-        }),
+        },
       ],
     });
 
-    const result = await extractAltFee(request, indexedDbMockImpl);
+    const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
     expect(result.equals(swapAssetId)).toBeTruthy();
   });
 
   it('extracts the staking asset fee from swap claims', async () => {
-    indexedDbMockImpl.mockDB.getSwapByCommitment?.mockResolvedValue(mockSwapNativeStakingToken);
+    mockIndexedDb.getSwapByCommitment?.mockResolvedValue(mockSwapNativeStakingToken);
 
     const swapAssetId = new AssetId({
       inner: new Uint8Array([
@@ -203,18 +181,18 @@ describe('extractAltFee', () => {
 
     const request = new TransactionPlannerRequest({
       swapClaims: [
-        new TransactionPlannerRequest_SwapClaim({
+        {
           swapCommitment: mockSwapCommitmentNativeStakingToken,
-        }),
+        },
       ],
     });
 
-    const result = await extractAltFee(request, indexedDbMockImpl);
+    const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
     expect(result.equals(swapAssetId)).toBeTruthy();
   });
 
   it('extracts the alternative asset fee from swap claims', async () => {
-    indexedDbMockImpl.mockDB.getSwapByCommitment?.mockResolvedValue(mockSwapAlternativeToken);
+    mockIndexedDb.getSwapByCommitment?.mockResolvedValue(mockSwapAlternativeToken);
 
     const swapAssetId = new AssetId({
       inner: new Uint8Array([
@@ -225,17 +203,17 @@ describe('extractAltFee', () => {
 
     const request = new TransactionPlannerRequest({
       swapClaims: [
-        new TransactionPlannerRequest_SwapClaim({
+        {
           swapCommitment: mockSwapCommitmentAlternativeToken,
-        }),
+        },
       ],
     });
 
-    const result = await extractAltFee(request, indexedDbMockImpl);
+    const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
     expect(result.equals(swapAssetId)).toBeTruthy();
   });
 
-  it('extracts the alternative asset fee from dutchAuctionScheduleActions', async () => {
+  it('extracts the asset fee from dutchAuctionScheduleActions', async () => {
     const auctionScheduleAssetId = new AssetId({
       inner: new Uint8Array([
         29, 109, 132, 171, 117, 25, 85, 32, 109, 182, 133, 48, 82, 47, 204, 82, 209, 59, 174, 189,
@@ -245,22 +223,89 @@ describe('extractAltFee', () => {
 
     const request = new TransactionPlannerRequest({
       dutchAuctionScheduleActions: [
-        new TransactionPlannerRequest_ActionDutchAuctionSchedule({
+        {
           description: {
             input: {
               amount: { hi: 0n, lo: 0n },
               assetId: auctionScheduleAssetId,
             },
           },
-        }),
+        },
       ],
     });
 
-    const result = await extractAltFee(request, indexedDbMockImpl);
+    const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
     expect(result.equals(auctionScheduleAssetId)).toBeTruthy();
   });
 
-  it('extracts the alternative asset fee from dutchAuctionEndActions', async () => {});
+  it('extracts the asset fee from dutchAuctionEndActions', async () => {
+    const auctionScheduleAssetId = new AssetId({
+      inner: new Uint8Array([
+        29, 109, 132, 171, 117, 25, 85, 32, 109, 182, 133, 48, 82, 47, 204, 82, 209, 59, 174, 189,
+        148, 83, 191, 212, 31, 157, 52, 111, 42, 123, 56, 7,
+      ]),
+    });
+
+    const auction = new DutchAuctionDescription({
+      input: {
+        assetId: auctionScheduleAssetId
+      }
+    });
+
+    mockIndexedDb.getAuction?.mockResolvedValueOnce({
+      auction,
+      noteCommitment: mockAuctionEndCommitment,
+      seqNum: 0n,
+    });
+
+    const request = new TransactionPlannerRequest({
+      dutchAuctionEndActions: [
+        {
+          auctionId: { inner: new Uint8Array([]) }
+        },
+      ],
+    });
+
+    const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
+    expect(result.equals(auctionScheduleAssetId)).toBeTruthy();
+  });
+
+ 
+  it('extracts the asset fee from dutchAuctionWithdrawAuctions', async () => {
+    const auctionScheduleAssetId = new AssetId({
+      inner: new Uint8Array([
+        29, 109, 132, 171, 117, 25, 85, 32, 109, 182, 133, 48, 82, 47, 204, 82, 209, 59, 174, 189,
+        148, 83, 191, 212, 31, 157, 52, 111, 42, 123, 56, 7,
+      ]),
+    });
+
+    const auction = new DutchAuctionDescription({
+      input: {
+        assetId: auctionScheduleAssetId
+      }
+    });
+
+    mockIndexedDb.getAuction?.mockResolvedValueOnce({
+      auction,
+      noteCommitment: mockAuctionEndCommitment,
+      seqNum: 0n,
+    });
+
+    const request = new TransactionPlannerRequest({
+      dutchAuctionWithdrawActions: [
+        {
+          auctionId: { inner: new Uint8Array([]) }
+        },
+      ],
+    });
+
+    const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
+    expect(result.equals(auctionScheduleAssetId)).toBeTruthy();
+  });
+});
+
+const mockAuctionEndCommitment = StateCommitment.fromJson({
+  inner: 'A6VBVkrk+s18q+Sjhl8uEGfS3i0dwF1FrkNm8Db6VAA=',
 });
 
 const mockSwapCommitmentNativeStakingToken = StateCommitment.fromJson({
