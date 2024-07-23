@@ -7,16 +7,16 @@ import { AssetIcon } from './AssetIcon';
 import { getMetadata } from '@penumbra-zone/getters/value-view';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
 
-const Root = styled.span<{ $context: 'default' | 'table'; $priority: 'primary' | 'secondary' }>`
-  display: inline-flex;
+const Row = styled.span<{ $context: 'default' | 'table'; $priority: 'primary' | 'secondary' }>`
+  display: flex;
   gap: ${props => props.theme.spacing(2)};
   align-items: center;
+  width: min-content;
 
-  border-bottom: 2px dashed
-    ${props =>
-      props.$context === 'table' && props.$priority === 'secondary'
-        ? props.theme.color.other.tonalStroke
-        : 'transparent'};
+  ${props =>
+    props.$context === 'table' && props.$priority === 'secondary'
+      ? `border-bottom: 2px dashed ${props.theme.color.other.tonalStroke}`
+      : ''};
 `;
 
 const PillMarginOffsets = styled.div<{ $size: 'dense' | 'sparse' }>`
@@ -75,14 +75,14 @@ export const ValueViewComponent = ({
         </Pill>
       )}
     >
-      <Root $context={context} $priority={priority}>
+      <Row $context={context} $priority={priority}>
         <AssetIcon metadata={metadata} size={size} />
 
         <Content>
           <Text>{formattedAmount} </Text>
           <Text technical>{symbol}</Text>
         </Content>
-      </Root>
+      </Row>
     </ConditionalWrap>
   );
 };
