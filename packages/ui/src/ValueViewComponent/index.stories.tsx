@@ -39,5 +39,6 @@ export const Basic: Story = {
     valueView: PENUMBRA_VALUE_VIEW,
     context: 'default',
     size: 'sparse',
+    priority: 'primary',
   },
 };
