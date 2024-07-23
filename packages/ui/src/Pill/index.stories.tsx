@@ -14,6 +14,6 @@ export const Basic: Story = {
   args: {
     children: 'Pill',
     size: 'sparse',
-    variant: 'primary',
+    priority: 'primary',
   },
 };
