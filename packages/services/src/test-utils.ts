@@ -58,10 +58,14 @@ export interface ViewServerMock {
 export interface MockQuerier {
   auction?: AuctionMock;
   tendermint?: TendermintMock;
+  sct?: SctMock;
   shieldedPool?: ShieldedPoolMock;
   stake?: StakeMock;
 }
 
+export interface SctMock {
+  timestampByHeight?: Mock;
+}
 export interface StakeMock {
   validatorPenalty?: Mock;
 }

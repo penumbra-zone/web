@@ -21,6 +21,10 @@ import {
   AuctionId,
   DutchAuction,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
+import {
+  TimestampByHeightRequest,
+  TimestampByHeightResponse,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb.js';
 
 export interface RootQuerierInterface {
   app: AppQuerierInterface;
@@ -29,6 +33,7 @@ export interface RootQuerierInterface {
   shieldedPool: ShieldedPoolQuerierInterface;
   ibcClient: IbcClientQuerierInterface;
   stake: StakeQuerierInterface;
+  sct: SctQuerierInterface;
   cnidarium: CnidariumQuerierInterface;
   auction: AuctionQuerierInterface;
 }
@@ -73,4 +78,8 @@ export interface CnidariumQuerierInterface {
 
 export interface AuctionQuerierInterface {
   auctionStateById(id: AuctionId): Promise<DutchAuction | undefined>;
+}
+
+export interface SctQuerierInterface {
+  timestampByHeight(req: TimestampByHeightRequest): Promise<TimestampByHeightResponse>;
 }

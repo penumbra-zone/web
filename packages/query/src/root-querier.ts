@@ -7,6 +7,7 @@ import { CnidariumQuerier } from './queriers/cnidarium.js';
 import { StakeQuerier } from './queriers/staking.js';
 import type { RootQuerierInterface } from '@penumbra-zone/types/querier';
 import { AuctionQuerier } from './queriers/auction.js';
+import { SctQuerier } from './queriers/sct.js';
 
 // Given the amount of query services, this root querier aggregates them all
 // to make it easier for consumers
@@ -16,6 +17,7 @@ export class RootQuerier implements RootQuerierInterface {
   readonly tendermint: TendermintQuerier;
   readonly shieldedPool: ShieldedPoolQuerier;
   readonly ibcClient: IbcClientQuerier;
+  readonly sct: SctQuerier;
   readonly stake: StakeQuerier;
   readonly cnidarium: CnidariumQuerier;
   readonly auction: AuctionQuerier;
@@ -26,6 +28,7 @@ export class RootQuerier implements RootQuerierInterface {
     this.tendermint = new TendermintQuerier({ grpcEndpoint });
     this.shieldedPool = new ShieldedPoolQuerier({ grpcEndpoint });
     this.ibcClient = new IbcClientQuerier({ grpcEndpoint });
+    this.sct = new SctQuerier({ grpcEndpoint });
     this.stake = new StakeQuerier({ grpcEndpoint });
     this.cnidarium = new CnidariumQuerier({ grpcEndpoint });
     this.auction = new AuctionQuerier({ grpcEndpoint });
