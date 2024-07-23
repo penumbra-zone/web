@@ -1,5 +1,13 @@
 # @penumbra-zone/ui
 
+## 7.0.3
+
+### Patch Changes
+
+- 26bd932: Shows the green checkmark icon for all filled dutch auctions
+- Updated dependencies [0233722]
+  - @penumbra-zone/types@16.1.0
+
 ## 7.0.2
 
 ### Patch Changes

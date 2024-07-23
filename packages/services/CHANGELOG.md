@@ -1,5 +1,23 @@
 # @penumbra-zone/router
 
+## 19.0.0
+
+### Minor Changes
+
+- 0233722: added proxying timestampByHeight
+
+### Patch Changes
+
+- Updated dependencies [0233722]
+- Updated dependencies [af04e2a]
+  - @penumbra-zone/query@17.0.0
+  - @penumbra-zone/types@16.1.0
+  - @penumbra-zone/transport-dom@7.3.0
+  - @penumbra-zone/crypto-web@15.0.0
+  - @penumbra-zone/storage@16.0.0
+  - @penumbra-zone/wasm@19.0.0
+  - @penumbra-zone/perspective@16.0.0
+
 ## 18.0.0
 
 ### Patch Changes

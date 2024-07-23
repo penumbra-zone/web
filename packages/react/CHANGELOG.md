@@ -1,5 +1,15 @@
 # @penumbra-zone/react
 
+## 1.0.4
+
+### Patch Changes
+
+- b65f9bb: remove reference to window
+- Updated dependencies [978efe6]
+- Updated dependencies [af04e2a]
+  - @penumbra-zone/client@13.0.0
+  - @penumbra-zone/transport-dom@7.3.0
+
 ## 1.0.3
 
 ### Patch Changes

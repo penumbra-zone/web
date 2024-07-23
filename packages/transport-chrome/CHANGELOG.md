@@ -1,5 +1,16 @@
 # @penumbra-zone/transport-chrome
 
+## 6.0.0
+
+### Minor Changes
+
+- af04e2a: respect transport abort controls
+
+### Patch Changes
+
+- Updated dependencies [af04e2a]
+  - @penumbra-zone/transport-dom@7.3.0
+
 ## 5.0.3
 
 ### Patch Changes
