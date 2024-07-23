@@ -69,25 +69,16 @@ const SelectedIndicator = styled(motion.div)`
   z-index: -1;
 `;
 
-export interface SegmentedPickerOption<ValueType> {
-  /**
-   * The value to pass to the `onChange` handler when clicked. Must be unique
-   * across all segments, and must be either a string, number, or an object with
-   * a `.toString()` method so that it can be used as a React key.
-   */
-  value: ValueType;
+export interface SegmentedPickerOption {
+  value: string;
   label: string;
   disabled?: boolean;
 }
 
-export interface SegmentedPickerProps<ValueType extends { toString: () => string }> {
-  /**
-   * The currently selected value. Will be compared to the `options`' `value`
-   * property using `===` to determine which segment is selected.
-   */
-  value: ValueType;
-  onChange: (value: ValueType) => void;
-  options: SegmentedPickerOption<ValueType>[];
+export interface SegmentedPickerProps {
+  value: string;
+  onChange: (value: string) => void;
+  options: SegmentedPickerOption[];
   actionType?: ActionType;
 }
 
@@ -110,12 +101,12 @@ export interface SegmentedPickerProps<ValueType extends { toString: () => string
  * />
  * ```
  */
-export const SegmentedPicker = <ValueType extends { toString: () => string }>({
+export const SegmentedPicker = ({
   value,
   onChange,
   options,
   actionType = 'default',
-}: SegmentedPickerProps<ValueType>) => {
+}: SegmentedPickerProps) => {
   const layoutId = useId();
 
   return (
