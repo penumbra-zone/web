@@ -5,7 +5,7 @@ import { Size, Priority, ActionType, buttonInteractions } from '../utils/button'
 import { getBackgroundColor } from './helpers';
 import { button } from '../utils/typography';
 import { LucideIcon } from 'lucide-react';
-import { ButtonPriorityContext } from '../ButtonPriorityContext';
+import { ButtonPriorityContext } from '../utils/ButtonPriorityContext';
 
 const dense = css<StyledButtonProps>`
   border-radius: ${props => props.theme.borderRadius.full};

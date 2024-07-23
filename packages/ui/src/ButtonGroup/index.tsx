@@ -4,7 +4,7 @@ import { ActionType, Size } from '../utils/button';
 import { Button } from '../Button';
 import styled from 'styled-components';
 import { media } from '../utils/media';
-import { ButtonPriorityContext } from '../ButtonPriorityContext';
+import { ButtonPriorityContext } from '../utils/ButtonPriorityContext';
 
 const Root = styled.div<{ $size: Size }>`
   display: flex;

@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import { Priority } from './utils/button';
+import { Priority } from './button';
 
 /**
  * For internal Penumbra UI library use only. `<Button />`s should only ever be
