@@ -25,7 +25,10 @@ const Root = styled.span<{ $size: Size; $priority: Priority }>`
   padding-left: ${props => props.theme.spacing(props.$size === 'sparse' ? 4 : 2)};
   padding-right: ${props => props.theme.spacing(props.$size === 'sparse' ? 4 : 2)};
 
-  background-color: ${props => props.theme.color.text.primary + TEN_PERCENT_OPACITY_IN_HEX};
+  background-color: ${props =>
+    props.$priority === 'primary'
+      ? props.theme.color.text.primary + TEN_PERCENT_OPACITY_IN_HEX
+      : 'transparent'};
 `;
 
 export interface PillProps {
