@@ -12,6 +12,7 @@ import { ActionDutchAuctionScheduleViewComponent } from './actions-views/action-
 import { ActionDutchAuctionEndComponent } from './actions-views/action-dutch-auction-end';
 import { ActionDutchAuctionWithdrawViewComponent } from './actions-views/action-dutch-auction-withdraw-view';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { DelegatorVoteComponent } from './actions-views/delegator-vote.tsx';
 
 const CASE_TO_LABEL: Record<string, string> = {
   daoDeposit: 'DAO Deposit',
@@ -106,7 +107,7 @@ export const ActionViewComponent = ({
       return <UnimplementedView label='Validator Vote' />;
 
     case 'delegatorVote':
-      return <UnimplementedView label='Delegator Vote' />;
+      return <DelegatorVoteComponent value={actionView.value} />;
 
     case 'proposalDepositClaim':
       return <UnimplementedView label='Proposal Deposit Claim' />;
