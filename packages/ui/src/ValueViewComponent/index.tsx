@@ -50,6 +50,9 @@ export const ValueViewComponent = ({
 }: ValueViewComponentProps) => {
   const formattedAmount = getFormattedAmtFromValueView(valueView, true);
   const metadata = getMetadata.optional()(valueView);
+  // Symbol default is "" and thus cannot do nullish coalescing
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+  const symbol = metadata?.symbol || 'Unknown';
 
   return (
     <ConditionalWrap
@@ -65,7 +68,7 @@ export const ValueViewComponent = ({
 
         <Content>
           <Text>{formattedAmount}</Text>
-          <Text technical>{metadata?.symbol}</Text>
+          <Text technical>{symbol}</Text>
         </Content>
       </Root>
     </ConditionalWrap>
