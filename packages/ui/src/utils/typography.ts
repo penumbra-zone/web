@@ -91,6 +91,15 @@ export const small = css`
   line-height: ${props => props.theme.lineHeight.textSm};
 `;
 
+export const tab = css`
+  ${base}
+
+  font-family: ${props => props.theme.font.default};
+  font-size: ${props => props.theme.fontSize.textLg};
+  font-weight: 400;
+  line-height: ${props => props.theme.lineHeight.textLg};
+`;
+
 export const tableItem = css`
   ${base}
 
