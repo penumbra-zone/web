@@ -1,5 +1,11 @@
 # @penumbra-zone/ui
 
+## 7.2.0
+
+### Minor Changes
+
+- 54a5d66: Add Button/ButtonGroup/SegmentedPicker components
+
 ## 7.1.0
 
 ### Minor Changes

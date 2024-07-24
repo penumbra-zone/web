@@ -1,5 +1,16 @@
 # @penumbra-zone/client
 
+## 14.0.0
+
+### Minor Changes
+
+- a788eff: Update default timeouts to better support build times
+
+### Patch Changes
+
+- Updated dependencies [a788eff]
+  - @penumbra-zone/transport-dom@7.4.0
+
 ## 13.0.0
 
 ### Minor Changes

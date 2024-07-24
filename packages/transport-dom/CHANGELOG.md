@@ -1,5 +1,11 @@
 # @penumbra-zone/transport-dom
 
+## 7.4.0
+
+### Minor Changes
+
+- a788eff: Update default timeouts to better support build times
+
 ## 7.3.0
 
 ### Minor Changes
