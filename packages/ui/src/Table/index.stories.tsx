@@ -2,10 +2,20 @@ import type { Meta, StoryObj } from '@storybook/react';
 
 import { Table } from '.';
 import { Text } from '../Text';
+import { ComponentType } from 'react';
 
 const meta: Meta<typeof Table> = {
   component: Table,
   tags: ['autodocs', '!dev'],
+  subcomponents: {
+    // Re: type coercion, see
+    // https://github.com/storybookjs/storybook/issues/23170#issuecomment-2241802787
+    'Table.Thead': Table.Thead as ComponentType<unknown>,
+    'Table.Tbody': Table.Tbody as ComponentType<unknown>,
+    'Table.Tr': Table.Tr as ComponentType<unknown>,
+    'Table.Th': Table.Th as ComponentType<unknown>,
+    'Table.Td': Table.Td as ComponentType<unknown>,
+  },
 };
 export default meta;
 
@@ -26,15 +36,15 @@ export const Basic: Story = {
       <Table>
         <Table.Thead>
           <Table.Tr>
-            <Table.Th>Block height</Table.Th>
+            <Table.Th hAlign='right'>Block height</Table.Th>
             <Table.Th>Description</Table.Th>
-            <Table.Th>Transaction hash</Table.Th>
+            <Table.Th width='50%'>Transaction hash</Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
           {DATA.map(([blockHeight, description, hash]) => (
             <Table.Tr key={hash}>
-              <Table.Td>{blockHeight}</Table.Td>
+              <Table.Td hAlign='right'>{blockHeight}</Table.Td>
               <Table.Td>{description}</Table.Td>
               <Table.Td>
                 <Text technical>{hash}</Text>
