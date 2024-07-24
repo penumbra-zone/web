@@ -1,18 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
 import { Table } from '.';
+import { Text } from '../Text';
 
 const meta: Meta<typeof Table> = {
   component: Table,
   tags: ['autodocs', '!dev'],
-  argTypes: {
-    thead: { control: false },
-    tbody: { control: false },
-    tfoot: { control: false },
-    tr: { control: false },
-    th: { control: false },
-    td: { control: false },
-  },
 };
 export default meta;
 
@@ -31,22 +24,24 @@ export const Basic: Story = {
   render: function Render() {
     return (
       <Table>
-        <Table thead>
-          <Table tr>
-            <Table th>Block height</Table>
-            <Table th>Description</Table>
-            <Table th>Transaction hash</Table>
-          </Table>
-        </Table>
-        <Table tbody>
+        <Table.Thead>
+          <Table.Tr>
+            <Table.Th>Block height</Table.Th>
+            <Table.Th>Description</Table.Th>
+            <Table.Th>Transaction hash</Table.Th>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>
           {DATA.map(([blockHeight, description, hash]) => (
-            <Table tr key={hash}>
-              <Table td>{blockHeight}</Table>
-              <Table td>{description}</Table>
-              <Table td>{hash}</Table>
-            </Table>
+            <Table.Tr key={hash}>
+              <Table.Td>{blockHeight}</Table.Td>
+              <Table.Td>{description}</Table.Td>
+              <Table.Td>
+                <Text technical>{hash}</Text>
+              </Table.Td>
+            </Table.Tr>
           ))}
-        </Table>
+        </Table.Tbody>
       </Table>
     );
   },

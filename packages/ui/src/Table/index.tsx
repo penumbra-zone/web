@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { PropsWithChildren, ReactNode } from 'react';
 import styled, { css } from 'styled-components';
 import { tableHeading, tableItem } from '../utils/typography';
 
@@ -13,9 +13,27 @@ const StyledTable = styled.table`
   border-radius: ${props => props.theme.borderRadius.lg};
 `;
 
-const Tbody = styled.tbody``;
+export interface TableProps {
+  children: ReactNode;
+}
 
-const Tr = styled.tr``;
+export const Table = (props: TableProps) => {
+  return <StyledTable cellSpacing={0} cellPadding={0} {...props} />;
+};
+
+const Thead = ({ children }: PropsWithChildren) => <thead>{children}</thead>;
+Table.Thead = Thead;
+
+const StyledTbody = styled.tbody``; // Needs to be a styled component for `StyledTd` below
+const Tbody = ({ children }: PropsWithChildren) => <StyledTbody>{children}</StyledTbody>;
+Table.Tbody = Tbody;
+
+const Tfoot = ({ children }: PropsWithChildren) => <tfoot>{children}</tfoot>;
+Table.Tfoot = Tfoot;
+
+const StyledTr = styled.tr``; // Needs to be a styled component for `StyledTd` below
+const Tr = ({ children }: PropsWithChildren) => <StyledTr>{children}</StyledTr>;
+Table.Tr = Tr;
 
 const cell = css`
   padding-left: ${props => props.theme.spacing(3)};
@@ -25,7 +43,7 @@ const cell = css`
   padding-bottom: ${props => props.theme.spacing(4)};
 `;
 
-const Th = styled.th`
+const StyledTh = styled.th`
   border-bottom: 1px solid ${props => props.theme.color.other.tonalStroke};
   text-align: left;
   color: ${props => props.theme.color.text.secondary};
@@ -33,86 +51,19 @@ const Th = styled.th`
   ${tableHeading}
   ${cell}
 `;
+const Th = ({ children }: PropsWithChildren) => <StyledTh>{children}</StyledTh>;
+Table.Th = Th;
 
-const Td = styled.td`
+const StyledTd = styled.td`
   border-bottom: 1px solid ${props => props.theme.color.other.tonalStroke};
   color: ${props => props.theme.color.text.primary};
 
-  tbody > ${Tr}:last-child > & {
+  ${StyledTbody} > ${StyledTr}:last-child > & {
     border-bottom: none;
   }
 
   ${tableItem}
   ${cell}
 `;
-
-/**
- * Utility interface to be used below to ensure that only one table element is
- * used on a component at a time.
- */
-interface NeverTableTypes {
-  thead?: never;
-  tbody?: never;
-  tfoot?: never;
-  tr?: never;
-  th?: never;
-  td?: never;
-}
-
-type TableType =
-  | (Omit<NeverTableTypes, 'thead'> & {
-      /** Renders a `<thead />` element. */
-      thead: true;
-      children: ReactNode;
-    })
-  | (Omit<NeverTableTypes, 'tbody'> & {
-      /** Renders a `<tbody />` element. */
-      tbody: true;
-      children: ReactNode;
-    })
-  | (Omit<NeverTableTypes, 'tfoot'> & {
-      /** Renders a `<tfoot />` element. */
-      tfoot: true;
-      children: ReactNode;
-    })
-  | (Omit<NeverTableTypes, 'tr'> & {
-      /** Renders a `<tr />` element. */
-      tr: true;
-      children: ReactNode;
-    })
-  | (Omit<NeverTableTypes, 'th'> & {
-      /** Renders a `<th />` element. */
-      th: true;
-      children?: ReactNode;
-    })
-  | (Omit<NeverTableTypes, 'td'> & {
-      /** Renders a `<td />` element. */
-      td: true;
-      children?: ReactNode;
-    })
-  | (NeverTableTypes & { children: ReactNode }); // <table> component
-
-export type TableProps = TableType;
-
-export const Table = (props: TableProps) => {
-  if (props.thead) {
-    return <thead {...props} />;
-  }
-  if (props.tbody) {
-    return <Tbody {...props} />;
-  }
-  if (props.tfoot) {
-    return <tfoot {...props} />;
-  }
-  if (props.tr) {
-    return <Tr {...props} />;
-  }
-  if (props.th) {
-    return <Th {...props} />;
-  }
-  if (props.td) {
-    return <Td {...props} />;
-  }
-
-  return <StyledTable cellSpacing={0} cellPadding={0} {...props} />;
-};
+const Td = ({ children }: PropsWithChildren) => <StyledTd>{children}</StyledTd>;
+Table.Td = Td;
