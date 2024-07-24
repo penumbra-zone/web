@@ -25,19 +25,16 @@ If everything was configured correctly, you should be able to open the database 
 If there is no data, check the logs for `cometbft` for any errors with inserting data into the indexer.
 
 
-## CI
+## Deployment
 
-Merges to main will automatically build a container and deploy to a publicly accessible URL.
-Each deploy of the application has its own Penumbra fullnode sidecar, with CometBFT indexing enabled.
-The URLs are:
+Merges to main will automatically build a container, hosted at `ghcr.io/penumbra-zone/dex-explorer`.
+In order to run the dex-explorer, you'll need to [deploy a Penumbra fullnode](https://guide.penumbra.zone/node/pd/running-node),
+with [ABCI event indexing enabled](https://guide.penumbra.zone/node/pd/indexing-events). The relevant env vars
+you'll want to set are:
 
-  * https://dex-explorer.testnet.penumbra.zone
-  * https://dex-explorer.testnet-preview.penumbra.zone
-
-The "testnet" environment is the public stable testnet with active community participation.
-The "preview" environment is a shorter-lived chain, rebuilt from the tip of `main` merge
-on the [Penumbra monorepo](https://github.com/penumbra-zone/penumbra). As such, it changes
-several times per day, and generally has less information on its chain.
+  * `PENUMBRA_GRPC_ENDPOINT`
+  * `PENUMBRA_INDEXER_ENDPOINT`
+  * `CHAIN_ID`
 
 ## Name
 
