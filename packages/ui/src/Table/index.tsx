@@ -8,7 +8,8 @@ const FIVE_PERCENT_OPACITY_IN_HEX = '0d';
 const StyledTable = styled.table`
   width: 100%;
   background-color: ${props => props.theme.color.neutral.contrast + FIVE_PERCENT_OPACITY_IN_HEX};
-  padding: ${props => props.theme.spacing(3)};
+  padding-left: ${props => props.theme.spacing(3)};
+  padding-right: ${props => props.theme.spacing(3)};
   border-radius: ${props => props.theme.borderRadius.lg};
 `;
 
