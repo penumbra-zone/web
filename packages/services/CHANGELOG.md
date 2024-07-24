@@ -1,5 +1,16 @@
 # @penumbra-zone/router
 
+## 21.0.0
+
+### Minor Changes
+
+- a788eff: Update default timeouts to better support build times
+
+### Patch Changes
+
+- Updated dependencies [a788eff]
+  - @penumbra-zone/transport-dom@7.4.0
+
 ## 20.0.0
 
 ### Patch Changes

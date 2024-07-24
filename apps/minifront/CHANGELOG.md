@@ -1,5 +1,15 @@
 # minifront
 
+## 6.12.2
+
+### Patch Changes
+
+- Updated dependencies [a788eff]
+- Updated dependencies [54a5d66]
+  - @penumbra-zone/transport-dom@7.4.0
+  - @penumbra-zone/client@14.0.0
+  - @repo/ui@7.2.0
+
 ## 6.12.1
 
 ### Patch Changes
