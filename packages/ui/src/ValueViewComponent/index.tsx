@@ -14,6 +14,8 @@ const Row = styled.span<{ $context: Context; $priority: 'primary' | 'secondary' 
   gap: ${props => props.theme.spacing(2)};
   align-items: center;
   width: min-content;
+  max-width: 100%;
+  text-overflow: ellipsis;
 
   ${props =>
     props.$context === 'table' && props.$priority === 'secondary'
@@ -22,6 +24,10 @@ const Row = styled.span<{ $context: Context; $priority: 'primary' | 'secondary' 
         padding-bottom: ${props.theme.spacing(2)};
       `
       : ''};
+`;
+
+const AssetIconWrapper = styled.div`
+  flex-shrink: 0;
 `;
 
 const PillMarginOffsets = styled.div<{ $size: 'dense' | 'sparse' }>`
@@ -36,6 +42,17 @@ const Content = styled.div`
   display: flex;
   gap: ${props => props.theme.spacing(2)};
   align-items: center;
+
+  overflow: hidden;
+`;
+
+const SymbolWrapper = styled.div`
+  flex-grow: 1;
+  flex-shrink: 1;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 export interface ValueViewComponentProps<SelectedContext extends Context> {
@@ -85,11 +102,15 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
       )}
     >
       <Row $context={context ?? 'default'} $priority={priority}>
-        <AssetIcon metadata={metadata} size={size} />
+        <AssetIconWrapper>
+          <AssetIcon metadata={metadata} size={size} />
+        </AssetIconWrapper>
 
         <Content>
           <Text>{formattedAmount} </Text>
-          <Text technical>{symbol}</Text>
+          <SymbolWrapper title={symbol}>
+            <Text technical>{symbol}</Text>
+          </SymbolWrapper>
         </Content>
       </Row>
     </ConditionalWrap>

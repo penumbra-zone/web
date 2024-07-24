@@ -20,7 +20,7 @@ const DELEGATION_TOKEN_METADATA = new Metadata({
   denomUnits: [{ denom: udelString }, { denom: delString, exponent: 6 }],
   name: 'Delegation token',
   penumbraAssetId: delAsset,
-  symbol: 'delUM(abc...xyz)',
+  symbol: `delUM(${validatorIkString})`,
 });
 
 const UNBONDING_TOKEN_METADATA = new Metadata({
@@ -29,7 +29,7 @@ const UNBONDING_TOKEN_METADATA = new Metadata({
   denomUnits: [{ denom: uunbondString }, { denom: unbondString, exponent: 6 }],
   name: 'Unbonding token',
   penumbraAssetId: unbondAsset,
-  symbol: 'unbondUMat123(abc...xyz)',
+  symbol: `unbondUMat123(${validatorIkString})`,
 });
 
 const PENUMBRA_METADATA = new Metadata({
