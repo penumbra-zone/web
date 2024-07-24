@@ -77,7 +77,12 @@ export const createPenumbraChannelTransport = async (
 export const createPenumbraClientSync = <P extends PenumbraService>(
   service: P,
   requireProvider?: string,
-) => createPromiseClient(service, createPenumbraChannelTransportSync(requireProvider));
+  transportOptions?: Omit<ChannelTransportOptions, 'getPort'>,
+) =>
+  createPromiseClient(
+    service,
+    createPenumbraChannelTransportSync(requireProvider, transportOptions),
+  );
 
 /**
  * Asynchronously create a client for `service` from the specified provider, or
