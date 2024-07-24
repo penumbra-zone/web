@@ -8,7 +8,7 @@ import polyfillNode from 'vite-plugin-node-stdlib-browser';
 
 export default defineConfig(({ mode }) => {
   return {
-    define: { 'globalThis.__DEV__': mode === 'development' },
+    define: { 'globalThis.__DEV__': mode !== 'production' },
     clearScreen: false,
     base: './',
     plugins: [polyfillNode(), react(), basicSsl(), commitInfoPlugin()],

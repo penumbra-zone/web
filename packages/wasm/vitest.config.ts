@@ -3,7 +3,7 @@ import wasm from 'vite-plugin-wasm';
 
 export default defineConfig(({ mode }) => {
   return {
-    define: { 'globalThis.__DEV__': mode === 'development' },
+    define: { 'globalThis.__DEV__': mode !== 'production' },
     plugins: [wasm()],
   };
 });
