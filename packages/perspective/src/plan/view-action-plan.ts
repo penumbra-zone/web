@@ -232,10 +232,6 @@ const getDelegatorVoteView = async (
   denomMetadataByAssetId: (id: AssetId) => Promise<Metadata>,
   fullViewingKey: FullViewingKey,
 ): Promise<DelegatorVoteView> => {
-  if (!votePlan.stakedNote?.address) {
-    throw new Error('No address in spend plan');
-  }
-
   return new DelegatorVoteView({
     delegatorVote: {
       case: 'visible',
@@ -246,7 +242,7 @@ const getDelegatorVoteView = async (
             proposal: votePlan.proposal,
             startPosition: votePlan.startPosition,
             vote: votePlan.vote,
-            value: votePlan.stakedNote.value,
+            value: votePlan.stakedNote?.value,
             unbondedAmount: votePlan.unbondedAmount,
           },
         },
