@@ -7,6 +7,7 @@ const Svg = styled.svg.attrs({
   xmlnsXlink: 'http://www.w3.org/1999/xlink',
   viewBox: '0 0 32 32',
 })`
+  display: block;
   border-radius: ${props => props.theme.borderRadius.full};
   width: 24px;
   height: 24px;

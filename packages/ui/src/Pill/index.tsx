@@ -18,6 +18,7 @@ const Root = styled.span<{ $size: Size; $priority: Priority }>`
   border-radius: ${props => props.theme.borderRadius.full};
 
   display: inline-block;
+  max-width: 100%;
 
   padding-top: ${props => props.theme.spacing(props.$size === 'sparse' ? 2 : 1)};
   padding-bottom: ${props => props.theme.spacing(props.$size === 'sparse' ? 2 : 1)};

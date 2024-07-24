@@ -9,6 +9,7 @@ const Svg = styled.svg.attrs<{ $size: number }>(props => ({
   version: '1.1',
   xmlns: 'http://www.w3.org/2000/svg',
 }))`
+  display: block;
   border-radius: ${props => props.theme.borderRadius.full};
 `;
 

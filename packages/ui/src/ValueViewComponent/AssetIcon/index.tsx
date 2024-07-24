@@ -7,6 +7,7 @@ import { UnbondingTokenIcon } from './UnbondingTokenIcon';
 import styled from 'styled-components';
 
 const IconImg = styled.img`
+  display: block;
   border-radius: ${props => props.theme.borderRadius.full};
   width: 24px;
   height: 24px;
