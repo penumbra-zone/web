@@ -1,8 +1,9 @@
-use crate::{error::WasmResult, metadata::customize_symbol_inner, utils};
 use penumbra_asset::asset::Metadata;
 use penumbra_auction::auction::{dutch::DutchAuctionDescription, AuctionId, AuctionNft};
 use penumbra_proto::DomainType;
 use wasm_bindgen::prelude::wasm_bindgen;
+
+use crate::{error::WasmResult, metadata::customize_symbol_inner, utils};
 
 /// Given a `Uint8Array` encoding of a `DutchAuctionDescription`, returns that
 /// auction's ID.
@@ -64,7 +65,7 @@ mod tests {
         let result = Metadata::decode::<&[u8]>(&result_bytes).unwrap();
         let result_proto = result.to_proto();
 
-        assert!(result_proto.symbol.starts_with("auction("));
+        assert!(result_proto.symbol.starts_with("auction@1234("));
         assert!(result_proto.display.starts_with("auctionnft_1234_pauctid1"));
     }
 }

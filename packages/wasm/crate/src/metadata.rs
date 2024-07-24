@@ -11,6 +11,7 @@ pub static DELEGATION_TOKEN_REGEX: &str =
     "^udelegation_(?P<data>penumbravalid1(?P<id>[a-zA-HJ-NP-Z0-9]+))$";
 pub static AUCTION_NFT_REGEX: &str =
     "^auctionnft_(?P<data>(?<seq_num>[a-z_0-9]+)_pauctid1(?P<id>[a-zA-HJ-NP-Z0-9]+))$";
+pub static VOTING_RECEIPT_REGEX: &str = "^uvoted_on_(?P<data>(?P<proposal_id>[0-9]+))$";
 
 /// Given a binary-encoded `Metadata`, returns a new binary-encoded `Metadata`
 /// with the symbol customized if the token is one of several specific types
@@ -34,6 +35,7 @@ pub fn customize_symbol_inner(metadata: Metadata) -> WasmResult<Metadata> {
     let unbonding_re = Regex::new(UNBONDING_TOKEN_REGEX)?;
     let delegation_re = Regex::new(DELEGATION_TOKEN_REGEX)?;
     let auction_re = Regex::new(AUCTION_NFT_REGEX)?;
+    let voting_re = Regex::new(VOTING_RECEIPT_REGEX)?;
 
     if let Some(captures) = unbonding_re.captures(&metadata.base) {
         let asset_id = collect_id(&captures)?;
@@ -61,6 +63,13 @@ pub fn customize_symbol_inner(metadata: Metadata) -> WasmResult<Metadata> {
             symbol: format!("auction@{seq_num}({asset_id})"),
             ..metadata
         });
+    } else if let Some(captures) = voting_re.captures(&metadata.base) {
+        let proposal_id = get_proposal_id(&captures)?;
+
+        return Ok(Metadata {
+            symbol: format!("VotedOn{proposal_id}"),
+            ..metadata
+        });
     }
 
     Ok(metadata)
@@ -80,6 +89,13 @@ fn get_seq_num(captures: &regex::Captures) -> WasmResult<String> {
         .as_str()
         .chars()
         .collect())
+}
+
+fn get_proposal_id(captures: &regex::Captures) -> WasmResult<String> {
+    let id_match = captures
+        .name("proposal_id")
+        .ok_or_else(|| anyhow!("<proposal_id> not matched in token regex"))?;
+    Ok(id_match.as_str().to_string())
 }
 
 #[cfg(test)]
@@ -168,7 +184,7 @@ mod customize_symbol_inner_tests {
         };
         let customized_metadata = customize_symbol_inner(metadata.clone()).unwrap();
 
-        assert_eq!(customized_metadata.symbol, "unbondUMat1234(abcdef12…)");
+        assert_eq!(customized_metadata.symbol, "unbondUMat1234(abcdef123456)");
     }
 
     #[test]
@@ -180,7 +196,7 @@ mod customize_symbol_inner_tests {
         };
         let customized_metadata = customize_symbol_inner(metadata.clone()).unwrap();
 
-        assert_eq!(customized_metadata.symbol, "delUM(abcdef12…)");
+        assert_eq!(customized_metadata.symbol, "delUM(abcdef123456)");
     }
 
     #[test]
@@ -195,7 +211,10 @@ mod customize_symbol_inner_tests {
         };
         let customized_metadata = customize_symbol_inner(metadata.clone()).unwrap();
 
-        assert_eq!(customized_metadata.symbol, "auction@0(jqyupqnz…)");
+        assert_eq!(
+            customized_metadata.symbol,
+            "auction@0(jqyupqnzznyfpq940mv0ac33pyx77s7af3kgdw4nstjmp3567dks8n5amh)"
+        );
 
         let metadata = Metadata {
             name: String::from(""),
@@ -207,7 +226,22 @@ mod customize_symbol_inner_tests {
         };
         let customized_metadata = customize_symbol_inner(metadata.clone()).unwrap();
 
-        assert_eq!(customized_metadata.symbol, "auction@123(jqyupqnz…)");
+        assert_eq!(
+            customized_metadata.symbol,
+            "auction@123(jqyupqnzznyfpq940mv0ac33pyx77s7af3kgdw4nstjmp3567dks8n5amh)"
+        );
+    }
+
+    #[test]
+    fn it_modifies_voting_receipt_token() {
+        let metadata = Metadata {
+            name: String::from(""),
+            symbol: String::from(""),
+            ..test_helpers::get_metadata_for("voted_on_234", false)
+        };
+        let customized_metadata = customize_symbol_inner(metadata.clone()).unwrap();
+
+        assert_eq!(customized_metadata.symbol, "VotedOn234");
     }
 }
 
@@ -234,6 +268,6 @@ mod customize_symbol_tests {
             MetadataDomainType::decode::<&[u8]>(&customized_metadata_bytes);
         let customized_metadata_proto = customized_metadata_result.unwrap().to_proto();
 
-        assert_eq!(customized_metadata_proto.symbol, "delUM(abcdef12...)");
+        assert_eq!(customized_metadata_proto.symbol, "delUM(abcdef123456)");
     }
 }
