@@ -34,6 +34,10 @@ import {
   ActionDutchAuctionWithdrawView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
 import { PartialMessage } from '@bufbuild/protobuf';
+import {
+  DelegatorVotePlan,
+  DelegatorVoteView,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/governance/v1/governance_pb.js';
 
 const getValueView = async (
   value: Value | undefined,
@@ -223,6 +227,30 @@ const getSwapClaimView = async (
   });
 };
 
+const getDelegatorVoteView = async (
+  votePlan: DelegatorVotePlan,
+  denomMetadataByAssetId: (id: AssetId) => Promise<Metadata>,
+  fullViewingKey: FullViewingKey,
+): Promise<DelegatorVoteView> => {
+  return new DelegatorVoteView({
+    delegatorVote: {
+      case: 'visible',
+      value: {
+        note: await getNoteView(votePlan.stakedNote, denomMetadataByAssetId, fullViewingKey),
+        delegatorVote: {
+          body: {
+            proposal: votePlan.proposal,
+            startPosition: votePlan.startPosition,
+            vote: votePlan.vote,
+            value: votePlan.stakedNote?.value,
+            unbondedAmount: votePlan.unbondedAmount,
+          },
+        },
+      },
+    },
+  });
+};
+
 export const viewActionPlan =
   (denomMetadataByAssetId: (id: AssetId) => Promise<Metadata>, fullViewingKey: FullViewingKey) =>
   async (actionPlan: ActionPlan): Promise<ActionView> => {
@@ -332,6 +360,18 @@ export const viewActionPlan =
       case 'actionDutchAuctionEnd':
         return new ActionView({
           actionView: actionPlan.action,
+        });
+
+      case 'delegatorVote':
+        return new ActionView({
+          actionView: {
+            case: 'delegatorVote',
+            value: await getDelegatorVoteView(
+              actionPlan.action.value,
+              denomMetadataByAssetId,
+              fullViewingKey,
+            ),
+          },
         });
 
       case undefined:
