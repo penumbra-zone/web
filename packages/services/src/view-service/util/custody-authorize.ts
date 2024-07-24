@@ -13,7 +13,8 @@ export const custodyAuthorize = async (
   if (!custodyClient) {
     throw new ConnectError('Cannot access custody service', Code.FailedPrecondition);
   }
-  const { data } = await custodyClient.authorize({ plan });
+  // authorization awaits user interaction, so timeout is disabled
+  const { data } = await custodyClient.authorize({ plan }, { timeoutMs: 0 });
   if (!data) {
     throw new ConnectError('No authorization data', Code.PermissionDenied);
   }

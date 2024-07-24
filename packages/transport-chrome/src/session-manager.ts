@@ -126,21 +126,19 @@ export class CRSessionManager {
     port.onDisconnect.addListener(() => session.abort('Disconnect'));
 
     port.onMessage.addListener((i, p) => {
-      void (async () => {
-        try {
-          if (isTransportAbort(i)) {
-            this.requests.get(i.requestId)?.abort();
-          } else if (isTransportMessage(i)) {
-            p.postMessage(await this.clientMessageHandler(session, i));
-          } else if (isTransportInitChannel(i)) {
-            console.warn('Client streaming unimplemented', this.acceptChannelStreamRequest(i));
-          } else {
-            console.warn('Unknown item in transport', i);
-          }
-        } catch (e) {
-          session.abort(e);
+      try {
+        if (isTransportAbort(i)) {
+          this.requests.get(i.requestId)?.abort();
+        } else if (isTransportMessage(i)) {
+          void this.clientMessageHandler(session, i).then(res => p.postMessage(res));
+        } else if (isTransportInitChannel(i)) {
+          console.warn('Client streaming unimplemented', this.acceptChannelStreamRequest(i));
+        } else {
+          console.warn('Unknown item in transport', i);
         }
-      })();
+      } catch (e) {
+        session.abort(e);
+      }
     });
   };
 

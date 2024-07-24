@@ -77,7 +77,7 @@ const rejectOnSignal = (...signals: (AbortSignal | undefined)[]) => {
 export const createChannelTransport = ({
   getPort,
   jsonOptions,
-  defaultTimeoutMs = 10_000,
+  defaultTimeoutMs = 60_000,
 }: ChannelTransportOptions): Transport => {
   const pending = new Map<string, (response: TransportEvent) => void>();
 
@@ -97,7 +97,9 @@ export const createChannelTransport = ({
   const connect = async () => {
     const connectionPort = await Promise.race([
       getPort(),
-      rejectOnSignal(AbortSignal.timeout(defaultTimeoutMs)).catch(() =>
+      rejectOnSignal(
+        defaultTimeoutMs > 0 ? AbortSignal.timeout(defaultTimeoutMs) : undefined,
+      ).catch(() =>
         Promise.reject(new ConnectError('Channel connection request timed out', Code.Unavailable)),
       ),
     ]);
@@ -147,7 +149,7 @@ export const createChannelTransport = ({
       service: ServiceType,
       method: MethodInfo<I, O>,
       signal: AbortSignal | undefined,
-      timeoutMs: number | undefined,
+      timeoutMs: number | undefined = defaultTimeoutMs,
       header: HeadersInit | undefined,
       input: PartialMessage<I>,
     ): Promise<UnaryResponse<I, O>> {
@@ -161,7 +163,7 @@ export const createChannelTransport = ({
         rejectOnSignal(
           transportFailure.signal,
           requestFailure.signal,
-          AbortSignal.timeout(timeoutMs ?? defaultTimeoutMs),
+          timeoutMs > 0 ? AbortSignal.timeout(timeoutMs) : undefined,
           signal,
         ),
         new Promise<TransportMessage>((resolve, reject) => {
@@ -215,7 +217,7 @@ export const createChannelTransport = ({
       service: ServiceType,
       method: MethodInfo<I, O>,
       signal: AbortSignal | undefined,
-      timeoutMs: number | undefined,
+      timeoutMs: number | undefined = defaultTimeoutMs,
       header: HeadersInit | undefined,
       input: AsyncIterable<PartialMessage<I>>,
     ): Promise<StreamResponse<I, O>> {
@@ -230,7 +232,7 @@ export const createChannelTransport = ({
         rejectOnSignal(
           transportFailure.signal,
           requestFailure.signal,
-          AbortSignal.timeout(timeoutMs ?? defaultTimeoutMs),
+          timeoutMs > 0 ? AbortSignal.timeout(timeoutMs) : undefined,
           signal,
         ),
         new Promise<TransportStream>((resolve, reject) => {

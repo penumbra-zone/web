@@ -11,7 +11,7 @@ export const usePenumbraTransport = () => usePenumbra().transport;
 /** This method immediately returns a new, unshared Transport to the surrounding
  * Penumbra context. This transport will always create synchronously, but may
  * time out and reject all requests if the Penumbra context does not provide a
- * port within your configured defaultTimeoutMs (defaults to 10 seconds). */
+ * port within your configured defaultTimeoutMs (defaults to 60 seconds). */
 export const usePenumbraTransportSync = (opts?: Omit<ChannelTransportOptions, 'getPort'>) => {
   const penumbra = usePenumbra();
   const { port, failure, state } = penumbra;
