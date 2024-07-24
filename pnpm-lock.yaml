@@ -765,9 +765,6 @@ importers:
       cmdk:
         specifier: 0.2.0
         version: 0.2.0(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      djb2a:
-        specifier: ^2.0.0
-        version: 2.0.0
       framer-motion:
         specifier: ^11.2.4
         version: 11.2.14(@emotion/is-prop-valid@1.2.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -777,9 +774,12 @@ importers:
       lucide-react:
         specifier: ^0.378.0
         version: 0.378.0(react@18.3.1)
+      murmurhash3js:
+        specifier: ^3.0.1
+        version: 3.0.1
       postcss:
         specifier: ^8.4.38
-        version: 8.4.39
+        version: 7.0.39
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -847,6 +847,9 @@ importers:
       '@types/humanize-duration':
         specifier: ^3.27.4
         version: 3.27.4
+      '@types/murmurhash3js':
+        specifier: ^3.0.7
+        version: 3.0.7
       '@types/react':
         specifier: ^18.3.2
         version: 18.3.3
@@ -5085,6 +5088,9 @@ packages:
   '@types/minimatch@5.1.2':
     resolution: {integrity: sha512-K0VQKziLUWkVKiRVrx4a40iPaxTUefQmjtkQofBkYRcoaaL/8rhwDWww9qWbrgicNOgnpIsMxyNIUM4+n6dUIA==}
 
+  '@types/murmurhash3js@3.0.7':
+    resolution: {integrity: sha512-jN3Z37nILIW1DZyP6N/NK+aw/zjFHPVb7hjrmdw7jx7FayrhKgkNpo6ZDwAsH8HSANjebBOxoXXtA39gKwyeGw==}
+
   '@types/node@10.12.18':
     resolution: {integrity: sha512-fh+pAqt4xRzPfqA6eh3Z2y6fyZavRIumvjhaCL753+TVkGKGhpPeyrJG2JftD0T9q4GF00KjefsQ+PQNDdWQaQ==}
 
@@ -6493,10 +6499,6 @@ packages:
   dir-glob@3.0.1:
     resolution: {integrity: sha512-WkrWp9GR4KXfKGYzOLmTuGVi1UWFfws377n9cc55/tb6DuqyF6pcQ5AbiHEshaDpY9v6oaSr2XCDidGmMwdzIA==}
     engines: {node: '>=8'}
-
-  djb2a@2.0.0:
-    resolution: {integrity: sha512-mSkCTNSJRGjNUADzWx1ubTGxJh2IVY9uoc/WGozUIu0mgBUEvIyBn9uTs9jqFBbJxQthJMF3uDx0cnpdlAUo4Q==}
-    engines: {node: '>=12'}
 
   dlv@1.1.3:
     resolution: {integrity: sha512-+HlytyjlPKnIG8XuRG8WvmBP8xs8P71y+SKKS6ZXWoEgLuePxtDoUEiH7WkdePWrQ5JBpE6aoVqfZfJUQkjXwA==}
@@ -8132,6 +8134,10 @@ packages:
 
   multiformats@9.9.0:
     resolution: {integrity: sha512-HoMUjhH9T8DDBNT+6xzkrd9ga/XiBI4xLr58LJACwK6G3HTOPeMz4nB4KJs33L2BelrIJa7P0VuNaVF3hMYfjg==}
+
+  murmurhash3js@3.0.1:
+    resolution: {integrity: sha512-KL8QYUaxq7kUbcl0Yto51rMcYt7E/4N4BG3/c96Iqw1PQrTRspu8Cpx4TZ4Nunib1d4bEkIH3gjCYlP2RLBdow==}
+    engines: {node: '>=0.10.0'}
 
   mute-stream@0.0.8:
     resolution: {integrity: sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==}
@@ -16563,7 +16569,7 @@ snapshots:
       node-fetch: 2.7.0
       picomatch: 2.3.1
       pkg-dir: 5.0.0
-      prettier-fallback: prettier@3.3.2
+      prettier-fallback: prettier@3.3.3
       pretty-hrtime: 1.0.3
       resolve-from: 5.0.0
       semver: 7.6.2
@@ -17228,7 +17234,7 @@ snapshots:
       lodash: 4.17.21
       redent: 3.0.0
     optionalDependencies:
-      vitest: 1.6.0(@types/node@20.14.10)(@vitest/browser@1.6.0(playwright@1.45.1)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1)
+      vitest: 1.6.0(@types/node@20.14.10)(@vitest/browser@1.6.0)(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1)
 
   '@testing-library/jest-dom@6.4.6(vitest@1.6.0(@types/node@20.14.10)(@vitest/browser@1.6.0)(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1))':
     dependencies:
@@ -17484,6 +17490,8 @@ snapshots:
   '@types/mime@1.3.5': {}
 
   '@types/minimatch@5.1.2': {}
+
+  '@types/murmurhash3js@3.0.7': {}
 
   '@types/node@10.12.18': {}
 
@@ -19360,8 +19368,6 @@ snapshots:
   dir-glob@3.0.1:
     dependencies:
       path-type: 4.0.0
-
-  djb2a@2.0.0: {}
 
   dlv@1.1.3: {}
 
@@ -21261,6 +21267,8 @@ snapshots:
   ms@2.1.3: {}
 
   multiformats@9.9.0: {}
+
+  murmurhash3js@3.0.1: {}
 
   mute-stream@0.0.8: {}
 
@@ -23512,42 +23520,6 @@ snapshots:
       '@types/node': 20.14.10
       fsevents: 2.3.3
       terser: 5.31.1
-
-  vitest@1.6.0(@types/node@20.14.10)(@vitest/browser@1.6.0(playwright@1.45.1)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1):
-    dependencies:
-      '@vitest/expect': 1.6.0
-      '@vitest/runner': 1.6.0
-      '@vitest/snapshot': 1.6.0
-      '@vitest/spy': 1.6.0
-      '@vitest/utils': 1.6.0
-      acorn-walk: 8.3.3
-      chai: 4.4.1
-      debug: 4.3.5
-      execa: 8.0.1
-      local-pkg: 0.5.0
-      magic-string: 0.30.10
-      pathe: 1.1.2
-      picocolors: 1.0.1
-      std-env: 3.7.0
-      strip-literal: 2.1.0
-      tinybench: 2.8.0
-      tinypool: 0.8.4
-      vite: 5.3.3(@types/node@20.14.10)(terser@5.31.1)
-      vite-node: 1.6.0(@types/node@20.14.10)(terser@5.31.1)
-      why-is-node-running: 2.3.0
-    optionalDependencies:
-      '@types/node': 20.14.10
-      '@vitest/browser': 1.6.0(playwright@1.45.1)(vitest@1.6.0)
-      jsdom: 24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-    transitivePeerDependencies:
-      - less
-      - lightningcss
-      - sass
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-    optional: true
 
   vitest@1.6.0(@types/node@20.14.10)(@vitest/browser@1.6.0)(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1):
     dependencies:
