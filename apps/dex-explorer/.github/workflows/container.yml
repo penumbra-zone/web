@@ -1,9 +1,14 @@
 ---
 name: Build container image
 on:
+  # By default, build on merge to main.
+  push:
+    branches:
+      - main
+
+  # Also support ad-hoc and per-repo calls to trigger builds.
   workflow_call:
   workflow_dispatch:
-  # Support triggering builds from penumbra-zone/penumbra CI.
   repository_dispatch:
 jobs:
   dex-explorer:
