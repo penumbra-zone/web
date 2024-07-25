@@ -55,13 +55,13 @@ use crate::{error::WasmResult, swap_record::SwapRecord};
 /// value:
 ///
 /// - Prioritizing notes sent to one-time addresses optimizes for a future in
-/// which we implement DAGSync keyed by fuzzy message detection (which will not
-/// be able to detect notes sent to one-time addresses). Spending these notes
-/// immediately converts them into change notes, sent to the default address for
-/// the users' account, which are detectable.
+///    which we implement DAGSync keyed by fuzzy message detection (which will not
+///    be able to detect notes sent to one-time addresses). Spending these notes
+///    immediately converts them into change notes, sent to the default address for
+///    the users' account, which are detectable.
 ///
 /// - Prioritizing notes with the largest value optimizes for gas used by the
-/// transaction.
+///    transaction.
 ///
 /// We may want to make note prioritization configurable in the future. For
 /// instance, a user might prefer a note prioritization strategy that harvested
