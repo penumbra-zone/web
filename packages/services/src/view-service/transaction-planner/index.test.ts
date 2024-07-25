@@ -80,7 +80,7 @@ describe('TransactionPlanner request handler', () => {
     );
   });
 
-  test('should create a transaction plan if all necessary data exists in indexed-db', async () => {
+  const mockFnReturnVals = () => {
     mockIndexedDb.getFmdParams?.mockResolvedValueOnce(
       new FmdParameters({
         precisionBits: 12,
@@ -106,8 +106,24 @@ describe('TransactionPlanner request handler', () => {
 
     mockIndexedDb.stakingTokenAssetId?.mockResolvedValueOnce(true);
     mockIndexedDb.hasStakingAssetBalance?.mockResolvedValueOnce(true);
+  };
+
+  test('should create a transaction plan if all necessary data exists in indexed-db', async () => {
+    mockFnReturnVals();
     await transactionPlanner(req, mockCtx);
 
     expect(mockPlanTransaction.mock.calls.length === 1).toBeTruthy();
+  });
+
+  test('override undefined source', async () => {
+    mockFnReturnVals();
+
+    // No source sent
+    const req = new TransactionPlannerRequest({});
+
+    await transactionPlanner(req, mockCtx);
+
+    const calls = mockPlanTransaction.mock.calls[0] as [undefined, TransactionPlannerRequest];
+    expect(calls[1].source?.equals(new AddressIndex({ account: 0 }))).toBeTruthy();
   });
 });

@@ -6,10 +6,15 @@ import { assertSwapAssetsAreNotTheSame } from './assert-swap-assets-are-not-the-
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import { fvkCtx } from '../../ctx/full-viewing-key.js';
 import { extractAltFee } from '../fees.js';
-import { assertTransactionSource } from './assert-transaction-source.js';
+import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 
 export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) => {
   assertValidRequest(req);
+
+  // If no source is passed, default to index 0 account
+  if (!req.source) {
+    req.source = new AddressIndex({ account: 0 });
+  }
 
   const services = await ctx.values.get(servicesCtx)();
   const { indexedDb } = await services.getWalletServices();
@@ -67,5 +72,4 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
  */
 const assertValidRequest = (req: TransactionPlannerRequest): void => {
   assertSwapAssetsAreNotTheSame(req);
-  assertTransactionSource(req);
 };
