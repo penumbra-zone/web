@@ -1,5 +1,12 @@
 # @penumbra-zone/ui
 
+## 7.2.1
+
+### Patch Changes
+
+- Updated dependencies [3477bef]
+  - @penumbra-zone/types@17.0.1
+
 ## 7.2.0
 
 ### Minor Changes

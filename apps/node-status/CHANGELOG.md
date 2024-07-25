@@ -1,5 +1,12 @@
 # node-status
 
+## 4.1.13
+
+### Patch Changes
+
+- 3477bef: bugfix: injecting globalThis.**DEV** correctly on prod builds
+  - @repo/ui@7.2.1
+
 ## 4.1.12
 
 ### Patch Changes
