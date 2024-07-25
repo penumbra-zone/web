@@ -1,5 +1,11 @@
 # @penumbra-zone/types
 
+## 17.0.1
+
+### Patch Changes
+
+- 3477bef: bugfix: injecting globalThis.**DEV** correctly on prod builds
+
 ## 17.0.0
 
 ### Patch Changes

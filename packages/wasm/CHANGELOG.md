@@ -1,5 +1,17 @@
 # @penumbra-zone/wasm
 
+## 20.1.0
+
+### Minor Changes
+
+- d6ce325: Support customizing symbol for vote receipt tokens
+
+### Patch Changes
+
+- 3477bef: bugfix: injecting globalThis.**DEV** correctly on prod builds
+- Updated dependencies [3477bef]
+  - @penumbra-zone/types@17.0.1
+
 ## 20.0.0
 
 ### Minor Changes

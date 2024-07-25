@@ -1,5 +1,17 @@
 # @penumbra-zone/perspective
 
+## 18.0.0
+
+### Minor Changes
+
+- 16147fe: Add support for DelegatorVotePlan -> DelegatorVoteView
+
+### Patch Changes
+
+- Updated dependencies [3477bef]
+- Updated dependencies [d6ce325]
+  - @penumbra-zone/wasm@20.1.0
+
 ## 17.0.0
 
 ### Minor Changes
