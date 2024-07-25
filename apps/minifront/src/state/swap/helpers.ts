@@ -59,6 +59,17 @@ export const sendSimulateTradeRequest = ({
  *  3. flip the inverse data (reciprocal values, high becomes low)
  *  4. combine the data (use the highest high, lowest low, sum volumes)
  */
+export const sendComplementaryCandlestickDataRequests = async (
+  startMetadata?: Metadata,
+  endMetadata?: Metadata,
+  limit?: bigint,
+  startHeight?: bigint,
+) =>
+  Promise.all([
+    sendCandlestickDataRequest(startMetadata, endMetadata, limit, startHeight),
+    sendCandlestickDataRequest(endMetadata, startMetadata, limit, startHeight),
+  ]).then(([direct, inverse]) => ({ direct, inverse }));
+
 export const sendCandlestickDataRequest = async (
   startMetadata?: Metadata,
   endMetadata?: Metadata,

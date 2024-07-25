@@ -11,7 +11,7 @@ import { useCandles, useRevalidateCandles } from '../../../state/swap/price-hist
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { Button } from '@repo/ui/components/ui/button';
 
-const priceHistoryRequestSelector = (state: AllSlices) => ({
+const priceHistorySelector = (state: AllSlices) => ({
   startMetadata: getMetadataFromBalancesResponseOptional(state.swap.assetIn),
   endMetadata: state.swap.assetOut,
   historyLimit: state.swap.priceHistory.historyLimit,
@@ -26,14 +26,13 @@ const latestKnownBlockHeightSelector = (
 ) => state.data?.latestKnownBlockHeight;
 
 export const PriceHistory = () => {
-  const { startMetadata, endMetadata, historyLimit, historyStart } = useStoreShallow(
-    priceHistoryRequestSelector,
-  );
+  const { startMetadata, endMetadata, historyLimit, historyStart } =
+    useStoreShallow(priceHistorySelector);
   const latestKnownBlockHeight = useStatus({ select: latestKnownBlockHeightSelector });
 
   const [lastCandlesUpdate, setLastCandlesUpdate] = useState<bigint>();
   const [staleCandles, setStaleCandles] = useState<boolean>();
-  const [pause, setPause] = useState<bigint>();
+  const [pauseAtHeight, setPauseAtHeight] = useState<bigint>();
 
   const candles = useCandles(
     { select: combinedCandlestickDataSelector },
@@ -56,56 +55,56 @@ export const PriceHistory = () => {
     if (!staleCandles && latestKnownBlockHeight && lastCandlesUpdate) {
       setStaleCandles(latestKnownBlockHeight - lastCandlesUpdate > 10n);
     }
-  }, [lastCandlesUpdate, latestKnownBlockHeight, pause, staleCandles]);
+  }, [lastCandlesUpdate, latestKnownBlockHeight, pauseAtHeight, staleCandles]);
 
   useEffect(() => {
-    if (staleCandles && !pause) {
+    if (staleCandles && !pauseAtHeight) {
       setStaleCandles(false);
       setLastCandlesUpdate(latestKnownBlockHeight);
       refetchCandles(...candleRefetchArgs);
     }
-  }, [candleRefetchArgs, latestKnownBlockHeight, pause, refetchCandles, staleCandles]);
+  }, [candleRefetchArgs, latestKnownBlockHeight, pauseAtHeight, refetchCandles, staleCandles]);
 
   const [startBlock, endBlock] = useMemo(() => {
-    const atHeight = pause ?? latestKnownBlockHeight;
+    const atHeight = pauseAtHeight ?? latestKnownBlockHeight;
     if (atHeight) {
       return historyStart ? [historyStart, historyLimit] : [atHeight - historyLimit, atHeight];
     } else {
       return [];
     }
-  }, [pause, latestKnownBlockHeight, historyStart, historyLimit]);
+  }, [pauseAtHeight, latestKnownBlockHeight, historyStart, historyLimit]);
 
-  if (latestKnownBlockHeight && candles?.data && startMetadata && endMetadata) {
-    return (
-      <Box
-        label='Price History'
-        headerContent={
-          <Button
-            type='button'
-            variant={pause ? 'onLight' : 'secondary'}
-            size='sm'
-            onClick={() => setPause(a => (a ? undefined : latestKnownBlockHeight))}
-          >
-            Pause
-          </Button>
-        }
-      >
-        {candles.data.length ? (
-          <div className='text-sm'>Since block {String(startBlock)}</div>
-        ) : (
-          <div className='text-sm'>No recent price data</div>
-        )}
-        <CandlestickPlot
-          className='h-[240px] w-full'
-          candles={candles.data}
-          startMetadata={startMetadata}
-          endMetadata={endMetadata}
-          blockDomain={[startBlock ?? 0n, endBlock ?? latestKnownBlockHeight]}
-          getBlockDate={getBlockDate}
-        />
-      </Box>
-    );
-  } else {
-    return undefined;
+  if (!latestKnownBlockHeight || !candles?.data || !startMetadata || !endMetadata) {
+    return;
   }
+
+  return (
+    <Box
+      label='Price History'
+      headerContent={
+        <Button
+          type='button'
+          variant={pauseAtHeight ? 'onLight' : 'secondary'}
+          size='sm'
+          onClick={() => setPauseAtHeight(a => (a ? undefined : latestKnownBlockHeight))}
+        >
+          Pause
+        </Button>
+      }
+    >
+      {candles.data.length ? (
+        <div className='text-sm'>Since block {String(startBlock)}</div>
+      ) : (
+        <div className='text-sm'>No recent price data</div>
+      )}
+      <CandlestickPlot
+        className='h-[240px] w-full'
+        candles={candles.data}
+        startMetadata={startMetadata}
+        endMetadata={endMetadata}
+        blockDomain={[startBlock ?? 0n, endBlock ?? latestKnownBlockHeight]}
+        getBlockDate={getBlockDate}
+      />
+    </Box>
+  );
 };

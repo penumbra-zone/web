@@ -1,9 +1,8 @@
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import { CandlestickDataResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
 import { PRICE_RELEVANCE_THRESHOLDS } from '@penumbra-zone/types/assets';
 import { createZQuery, ZQueryState } from '@penumbra-zone/zquery';
 import { AllSlices, SliceCreator, useStore } from '..';
-import { sendCandlestickDataRequest } from './helpers';
+import { sendCandlestickDataRequest, sendComplementaryCandlestickDataRequests } from './helpers';
 
 interface Actions {
   /**
@@ -21,16 +20,7 @@ interface Actions {
 
 export const { candles, useCandles, useRevalidateCandles } = createZQuery({
   name: 'candles',
-  fetch: (
-    startMetadata: Metadata | undefined,
-    endMetadata: Metadata | undefined,
-    historyLimit: bigint | undefined,
-    historyStart: bigint | undefined,
-  ) =>
-    Promise.all([
-      sendCandlestickDataRequest(startMetadata, endMetadata, historyLimit, historyStart),
-      sendCandlestickDataRequest(endMetadata, startMetadata, historyLimit, historyStart),
-    ]).then(([direct, inverse]) => ({ direct, inverse })),
+  fetch: sendComplementaryCandlestickDataRequests,
   getUseStore: () => useStore,
   get: state => state.swap.priceHistory.candles,
   set: setter => {
@@ -57,15 +47,15 @@ const INITIAL_STATE: Omit<State, 'pair'> = {
   historyLimit: PRICE_RELEVANCE_THRESHOLDS.default,
 };
 
-export const createPriceHistorySlice = (): SliceCreator<PriceHistorySlice> => () => ({
+export const createPriceHistorySlice = (): SliceCreator<PriceHistorySlice> => set => ({
   ...INITIAL_STATE,
   setHistoryLimit: blocks => {
-    useStore.setState(state => {
+    set(state => {
       state.swap.priceHistory.historyLimit = blocks;
     });
   },
   setHistoryStart: blockHeight => {
-    useStore.setState(state => {
+    set(state => {
       state.swap.priceHistory.historyStart = blockHeight;
     });
   },
