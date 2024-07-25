@@ -7,6 +7,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
+import { Any } from '@bufbuild/protobuf';
 
 const u8 = (length: number) => Uint8Array.from({ length }, () => Math.floor(Math.random() * 256));
 
@@ -90,10 +91,7 @@ const valueView = new ValueView({
         },
       ],
 
-      extendedMetadata: {
-        typeUrl: ValidatorInfo.typeName,
-        value: validatorInfo.toBinary(),
-      },
+      extendedMetadata: Any.pack(validatorInfo),
     },
   },
 });

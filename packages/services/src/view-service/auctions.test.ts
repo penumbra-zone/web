@@ -20,6 +20,7 @@ import { IndexedDbMock, MockQuerier, MockServices } from '../test-utils.js';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb.js';
 import { Value } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb.js';
+import { Any } from '@bufbuild/protobuf';
 
 const AUCTION_ID_1 = new AuctionId({ inner: new Uint8Array(Array(32).fill(1)) });
 const BECH32M_AUCTION_ID_1 = bech32mAuctionId(AUCTION_ID_1);
@@ -165,10 +166,7 @@ describe('Auctions request handler', () => {
     expect(results[0]).toEqual(
       new AuctionsResponse({
         id: AUCTION_ID_1,
-        auction: {
-          typeUrl: DutchAuction.typeName,
-          value: new DutchAuction({ description: MOCK_AUCTION_1, state: { seq: 0n } }).toBinary(),
-        },
+        auction: Any.pack(new DutchAuction({ description: MOCK_AUCTION_1, state: { seq: 0n } })),
         noteRecord: MOCK_SPENDABLE_NOTE_RECORD,
       }),
     );
