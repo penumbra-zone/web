@@ -17,7 +17,7 @@
     "dev": "turbo dev:compile dev:app",
     "dev:app": "turbo dev:compile dev:app",
     "dev:compile": "turbo dev:compile",
-    "dev:pack": "turbo dev:pack --concurrency 16",
+    "dev:pack": "rm -fv ./packages/*/penumbra-zone-*.tgz && turbo dev:pack --concurrency 16",
     "format": "turbo format",
     "format:prettier": "prettier --write .",
     "format:syncpack": "syncpack format",
