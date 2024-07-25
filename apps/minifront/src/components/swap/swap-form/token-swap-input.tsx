@@ -2,7 +2,6 @@ import { BalanceValueView } from '@repo/ui/components/ui/balance-value-view';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import { Box } from '@repo/ui/components/ui/box';
-import { CandlestickPlot } from '@repo/ui/components/ui/candlestick-plot';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
 import {
   getAmount,
@@ -10,15 +9,13 @@ import {
   getMetadataFromBalancesResponseOptional,
 } from '@penumbra-zone/getters/balances-response';
 import { ArrowRight } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
-import { getBlockDate } from '../../../fetchers/block-date';
+import { useMemo } from 'react';
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
 import { getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { AssetSelector } from '../../shared/selectors/asset-selector';
 import BalanceSelector from '../../shared/selectors/balance-selector';
-import { useStatus } from '../../../state/status';
 import { zeroValueView } from '../../../utils/zero-value-view';
 import { isValidAmount } from '../../../state/helpers';
 import { NonNativeFeeWarning } from '../../shared/non-native-fee-warning';
@@ -57,7 +54,6 @@ const tokenSwapInputSelector = (state: AllSlices) => ({
   setAssetOut: state.swap.setAssetOut,
   amount: state.swap.amount,
   setAmount: state.swap.setAmount,
-  priceHistory: state.swap.priceHistory,
   reverse: state.swap.reverse,
 });
 
@@ -68,56 +64,14 @@ const tokenSwapInputSelector = (state: AllSlices) => ({
  * amount.
  */
 export const TokenSwapInput = () => {
-  const status = useStatus();
-  const latestKnownBlockHeight = status.data?.latestKnownBlockHeight ?? 0n;
   const balancesResponses = useBalancesResponses({ select: swappableBalancesResponsesSelector });
   const swappableAssets = useAssets({ select: swappableAssetsSelector });
-  const { amount, setAmount, assetIn, setAssetIn, assetOut, setAssetOut, priceHistory, reverse } =
+  const { amount, setAmount, assetIn, setAssetIn, assetOut, setAssetOut, reverse } =
     useStoreShallow(tokenSwapInputSelector);
   const assetOutBalance = getAssetOutBalance(balancesResponses?.data, assetIn, assetOut);
   const assetInExponent = useMemo(() => {
     return getDisplayDenomExponent.optional()(getMetadataFromBalancesResponseOptional(assetIn));
   }, [assetIn]);
-
-  /**
-   * @todo this memo, state, and effects below are awkward. but this prevents
-   * excessive state churn. this is a temporary solution and will be corrected
-   * after implementing use of zquery for this data.
-   *
-   * @issue https://github.com/penumbra-zone/web/issues/1530
-   */
-  const loadPriceHistoryMemo = useMemo(
-    () => (assetIn && assetOut ? priceHistory.load : undefined),
-    [assetIn, assetOut, priceHistory.load],
-  );
-
-  const [updatedHeight, setUpdatedHeight] = useState<bigint>();
-
-  // initial price history
-  useEffect(() => {
-    if (updatedHeight ?? !loadPriceHistoryMemo) {
-      return;
-    }
-    setUpdatedHeight(latestKnownBlockHeight);
-    return loadPriceHistoryMemo();
-  }, [assetIn, assetOut, latestKnownBlockHeight, loadPriceHistoryMemo, updatedHeight]);
-
-  // update price history
-  useEffect(() => {
-    // don't attempt to update an absent price history
-    if (!updatedHeight || !loadPriceHistoryMemo) {
-      return;
-    }
-
-    // rate limit pricing updates
-    const distanceFromLatest = latestKnownBlockHeight - updatedHeight;
-    if (!distanceFromLatest || distanceFromLatest < 10n) {
-      return;
-    }
-
-    setUpdatedHeight(latestKnownBlockHeight);
-    return loadPriceHistoryMemo();
-  }, [priceHistory.candles, latestKnownBlockHeight, loadPriceHistoryMemo, updatedHeight]);
 
   const maxAmount = getAmount.optional()(assetIn);
   const maxAmountAsString = maxAmount ? joinLoHiAmount(maxAmount).toString() : undefined;
@@ -201,19 +155,6 @@ export const TokenSwapInput = () => {
             </div>
           </div>
         </div>
-      </div>
-
-      <div className='pt-2'>
-        {priceHistory.startMetadata && priceHistory.endMetadata && priceHistory.candles.length ? (
-          <CandlestickPlot
-            className='h-[480px] w-full bg-charcoal'
-            candles={priceHistory.candles}
-            startMetadata={priceHistory.startMetadata}
-            endMetadata={priceHistory.endMetadata}
-            latestKnownBlockHeight={Number(latestKnownBlockHeight)}
-            getBlockDate={getBlockDate}
-          />
-        ) : null}
       </div>
 
       <NonNativeFeeWarning

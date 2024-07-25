@@ -16,7 +16,7 @@ export const SimulateSwap = ({ layoutId }: { layoutId: string }) => {
 
   return (
     <Box
-      label='Swap'
+      label='Instant Swap'
       headerContent={<EstimateButton disabled={disabled} onClick={() => void simulateSwap()} />}
       layoutId={layoutId}
     >

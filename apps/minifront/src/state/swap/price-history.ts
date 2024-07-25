@@ -1,47 +1,63 @@
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import { CandlestickData } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
-import { getMetadataFromBalancesResponseOptional } from '@penumbra-zone/getters/balances-response';
-import { AllSlices, SliceCreator } from '..';
-import { sendCandlestickDataRequests } from './helpers';
+import { CandlestickDataResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
 import { PRICE_RELEVANCE_THRESHOLDS } from '@penumbra-zone/types/assets';
+import { createZQuery, ZQueryState } from '@penumbra-zone/zquery';
+import { AllSlices, SliceCreator, useStore } from '..';
+import { sendCandlestickDataRequest, sendComplementaryCandlestickDataRequests } from './helpers';
 
 interface Actions {
-  load: (ac?: AbortController) => AbortController['abort'];
+  /**
+   * History limit becomes the maximum width of the chart domain (block height).
+   */
+  setHistoryLimit: (limit: bigint) => void;
+  /**
+   * Setting history start will cause the chart domain to begin at the specified
+   * block height and extend towards the present. Setting history start to
+   * `undefined` or `0n` will cause the chart domain to end at the present block
+   * height and extend towards the past.
+   */
+  setHistoryStart: (blockHeight?: bigint) => void;
 }
 
+export const { candles, useCandles, useRevalidateCandles } = createZQuery({
+  name: 'candles',
+  fetch: sendComplementaryCandlestickDataRequests,
+  getUseStore: () => useStore,
+  get: state => state.swap.priceHistory.candles,
+  set: setter => {
+    const newState = setter(useStore.getState().swap.priceHistory.candles);
+    useStore.setState(state => {
+      state.swap.priceHistory.candles = newState;
+    });
+  },
+});
+
 interface State {
-  candles: CandlestickData[];
-  endMetadata?: Metadata;
-  startMetadata?: Metadata;
+  candles: ZQueryState<
+    { direct: CandlestickDataResponse; inverse: CandlestickDataResponse },
+    Parameters<typeof sendCandlestickDataRequest>
+  >;
+  historyLimit: bigint;
+  historyStart?: bigint;
 }
 
 export type PriceHistorySlice = Actions & State;
 
-const INITIAL_STATE: State = {
-  candles: [],
+const INITIAL_STATE: Omit<State, 'pair'> = {
+  candles,
+  historyLimit: PRICE_RELEVANCE_THRESHOLDS.default,
 };
 
-export const createPriceHistorySlice = (): SliceCreator<PriceHistorySlice> => (set, get) => ({
+export const createPriceHistorySlice = (): SliceCreator<PriceHistorySlice> => set => ({
   ...INITIAL_STATE,
-  load: (ac = new AbortController()): AbortController['abort'] => {
-    const { assetIn, assetOut } = get().swap;
-    const startMetadata = getMetadataFromBalancesResponseOptional(assetIn);
-    const endMetadata = assetOut;
-    void sendCandlestickDataRequests(
-      { startMetadata, endMetadata },
-      // there's no UI to set limit yet, and any given range won't always happen
-      // to include price records.
-      PRICE_RELEVANCE_THRESHOLDS.default * 2n,
-      ac.signal,
-    ).then(candles => {
-      set(({ swap }) => {
-        swap.priceHistory.startMetadata = startMetadata;
-        swap.priceHistory.endMetadata = endMetadata;
-        swap.priceHistory.candles = candles;
-      });
+  setHistoryLimit: blocks => {
+    set(state => {
+      state.swap.priceHistory.historyLimit = blocks;
     });
-
-    return () => ac.abort('Returned slice abort');
+  },
+  setHistoryStart: blockHeight => {
+    set(state => {
+      state.swap.priceHistory.historyStart = blockHeight;
+    });
   },
 });
 
