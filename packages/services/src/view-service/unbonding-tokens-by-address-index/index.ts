@@ -8,7 +8,6 @@ import { Impl } from '../index.js';
 import { balances } from '../balances.js';
 import { getIsClaimable, isUnbondingTokenBalance } from './helpers.js';
 import { Any } from '@bufbuild/protobuf';
-import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
 import { stakeClientCtx } from '../../ctx/stake-client.js';
 import { getValidatorInfo } from '@penumbra-zone/getters/get-validator-info-response';
 import { assetPatterns } from '@penumbra-zone/types/assets';
@@ -59,17 +58,13 @@ export const unbondingTokensByAddressIndex: Impl['unbondingTokensByAddressIndex'
         identityKey: identityKeyFromBech32m(regexResult.idKey),
       });
       const validatorInfo = getValidatorInfo(validatorInfoResponse);
-      const extendedMetadata = new Any({
-        typeUrl: ValidatorInfo.typeName,
-        value: validatorInfo.toBinary(),
-      });
 
       const withValidatorInfo = getBalanceView(new BalancesResponse(balancesResponse));
       if (withValidatorInfo.valueView.case !== 'knownAssetId') {
         throw new Error(`Unexpected ValueView case: ${withValidatorInfo.valueView.case}`);
       }
 
-      withValidatorInfo.valueView.value.extendedMetadata = extendedMetadata;
+      withValidatorInfo.valueView.value.extendedMetadata = Any.pack(validatorInfo);
 
       yield new UnbondingTokensByAddressIndexResponse({
         claimable,

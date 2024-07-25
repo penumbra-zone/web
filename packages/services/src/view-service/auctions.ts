@@ -79,17 +79,16 @@ export const auctions: Impl['auctions'] = async function* (req, ctx) {
     let auction: Any | undefined;
     if (!!value.auction || state) {
       const outstandingReserves = await indexedDb.getAuctionOutstandingReserves(id);
-      auction = new Any({
-        typeUrl: DutchAuction.typeName,
-        value: new DutchAuction({
+      auction = Any.pack(
+        new DutchAuction({
           state: state ?? {
             seq: value.seqNum,
             inputReserves: outstandingReserves?.input.amount,
             outputReserves: outstandingReserves?.output.amount,
           },
           description: value.auction,
-        }).toBinary(),
-      });
+        }),
+      );
     }
 
     yield new AuctionsResponse({

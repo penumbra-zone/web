@@ -64,10 +64,7 @@ export const delegationsByAddressIndex: Impl['delegationsByAddressIndex'] = asyn
 
   for await (const validatorInfoResponse of mockStakeClient.validatorInfo({ showInactive })) {
     const validatorInfo = getValidatorInfo(validatorInfoResponse);
-    const extendedMetadata = new Any({
-      typeUrl: ValidatorInfo.typeName,
-      value: validatorInfo.toBinary(),
-    });
+    const extendedMetadata = Any.pack(validatorInfo);
 
     const identityKey = getValidatorInfo.pipe(getIdentityKeyFromValidatorInfo)(
       validatorInfoResponse,
