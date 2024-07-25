@@ -11,18 +11,21 @@ import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import { cn } from '../../../../lib/utils';
 import { AuctionIdComponent } from '../../auction-id-component';
 import { motion } from 'framer-motion';
+import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 
 export const ExpandedDetails = ({
   auctionId,
   dutchAuction,
   inputMetadata,
   outputMetadata,
+  addressIndex,
   fullSyncHeight,
 }: {
   auctionId?: AuctionId;
   dutchAuction: DutchAuction;
   inputMetadata?: Metadata;
   outputMetadata?: Metadata;
+  addressIndex?: AddressIndex;
   fullSyncHeight?: bigint;
 }) => {
   const { description } = dutchAuction;
@@ -102,6 +105,12 @@ export const ExpandedDetails = ({
       {auctionId && (
         <Row label='Auction ID'>
           <AuctionIdComponent auctionId={auctionId} />
+        </Row>
+      )}
+
+      {addressIndex && (
+        <Row label='Account'>
+          <span className='font-mono text-xs'>{addressIndex.account}</span>
         </Row>
       )}
     </div>

@@ -10,12 +10,14 @@ import { useState } from 'react';
 import { cn } from '../../../lib/utils';
 import { ExpandedDetails } from './expanded-details';
 import { AnimatePresence, motion } from 'framer-motion';
+import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 
 interface BaseProps {
   auctionId?: AuctionId;
   dutchAuction: DutchAuction;
   inputMetadata?: Metadata;
   outputMetadata?: Metadata;
+  addressIndex?: AddressIndex;
   fullSyncHeight?: bigint;
   /**
    * If this will be in a list of other `<DutchAuctionComponent />`s, and some
@@ -42,6 +44,7 @@ export const DutchAuctionComponent = ({
   dutchAuction,
   inputMetadata,
   outputMetadata,
+  addressIndex,
   fullSyncHeight,
   buttonType,
   onClickButton,
@@ -103,6 +106,7 @@ export const DutchAuctionComponent = ({
               inputMetadata={inputMetadata}
               outputMetadata={outputMetadata}
               fullSyncHeight={fullSyncHeight}
+              addressIndex={addressIndex}
             />
 
             {renderButtonPlaceholder && <div className='w-[85px] shrink-0' />}

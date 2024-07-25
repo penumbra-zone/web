@@ -13,6 +13,7 @@ import { useAuctionInfos } from '../../../state/swap/dutch-auction';
 import { useStatus } from '../../../state/status';
 import { byStartHeightAscending } from './helpers';
 import { Filters } from './filters';
+import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 
 const auctionListSelector = (state: AllSlices) => ({
   endAuction: state.swap.dutchAuction.endAuction,
@@ -22,18 +23,22 @@ const auctionListSelector = (state: AllSlices) => ({
 
 const getButtonProps = (
   auctionId: AuctionId,
-  endAuction: (auctionId: AuctionId) => Promise<void>,
-  withdraw: (auctionId: AuctionId, seqNum: bigint) => Promise<void>,
+  addressIndex: AddressIndex,
+  endAuction: (auctionId: AuctionId, addressIndex: AddressIndex) => Promise<void>,
+  withdraw: (auctionId: AuctionId, seqNum: bigint, addressIndex: AddressIndex) => Promise<void>,
   localSeqNum?: bigint,
 ):
   | { buttonType: 'end' | 'withdraw'; onClickButton: VoidFunction }
   | { buttonType: undefined; onClickButton: undefined } => {
   if (localSeqNum === 0n) {
-    return { buttonType: 'end', onClickButton: () => void endAuction(auctionId) };
+    return { buttonType: 'end', onClickButton: () => void endAuction(auctionId, addressIndex) };
   }
 
   if (localSeqNum === 1n) {
-    return { buttonType: 'withdraw', onClickButton: () => void withdraw(auctionId, localSeqNum) };
+    return {
+      buttonType: 'withdraw',
+      onClickButton: () => void withdraw(auctionId, localSeqNum, addressIndex),
+    };
   }
 
   return { buttonType: undefined, onClickButton: undefined };
@@ -87,7 +92,14 @@ export const AuctionList = () => {
                 inputMetadata={auctionInfo.inputMetadata}
                 outputMetadata={auctionInfo.outputMetadata}
                 fullSyncHeight={status?.fullSyncHeight}
-                {...getButtonProps(auctionInfo.id, endAuction, withdraw, auctionInfo.localSeqNum)}
+                addressIndex={auctionInfo.addressIndex}
+                {...getButtonProps(
+                  auctionInfo.id,
+                  auctionInfo.addressIndex,
+                  endAuction,
+                  withdraw,
+                  auctionInfo.localSeqNum,
+                )}
                 renderButtonPlaceholder
               />
             </div>

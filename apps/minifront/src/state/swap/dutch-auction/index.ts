@@ -12,7 +12,7 @@ import { ZQueryState, createZQuery } from '@penumbra-zone/zquery';
 import { AuctionInfo, getAuctionInfos } from '../../../fetchers/auction-infos';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import { bech32mAuctionId } from '@penumbra-zone/bech32m/pauctid';
-import { getAddressIndex } from '@penumbra-zone/getters/balances-response';
+import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 
 /**
  * Multipliers to use with the output of the swap simulation, to determine
@@ -34,8 +34,12 @@ interface Actions {
   setMinOutput: (minOutput: string) => void;
   setMaxOutput: (maxOutput: string) => void;
   onSubmit: () => Promise<void>;
-  endAuction: (auctionId: AuctionId) => Promise<void>;
-  withdraw: (auctionId: AuctionId, currentSeqNum: bigint) => Promise<void>;
+  endAuction: (auctionId: AuctionId, addressIndex: AddressIndex) => Promise<void>;
+  withdraw: (
+    auctionId: AuctionId,
+    currentSeqNum: bigint,
+    addressIndex: AddressIndex,
+  ) => Promise<void>;
   reset: VoidFunction;
   setFilter: (filter: Filter) => void;
   estimate: () => Promise<void>;
@@ -175,18 +179,19 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
     }
   },
 
-  endAuction: async auctionId => {
-    const source = getAddressIndex.optional()(get().swap.assetIn);
-    const req = new TransactionPlannerRequest({ dutchAuctionEndActions: [{ auctionId }], source });
+  endAuction: async (auctionId, addressIndex) => {
+    const req = new TransactionPlannerRequest({
+      dutchAuctionEndActions: [{ auctionId }],
+      source: addressIndex,
+    });
     await planBuildBroadcast('dutchAuctionEnd', req);
     get().swap.dutchAuction.auctionInfos.revalidate();
   },
 
-  withdraw: async (auctionId, currentSeqNum) => {
-    const source = getAddressIndex.optional()(get().swap.assetIn);
+  withdraw: async (auctionId, currentSeqNum, addressIndex) => {
     const req = new TransactionPlannerRequest({
       dutchAuctionWithdrawActions: [{ auctionId, seq: currentSeqNum + 1n }],
-      source,
+      source: addressIndex,
     });
     await planBuildBroadcast('dutchAuctionWithdraw', req);
     get().swap.dutchAuction.auctionInfos.revalidate();
