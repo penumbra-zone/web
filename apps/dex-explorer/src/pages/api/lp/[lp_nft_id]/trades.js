@@ -1,10 +1,10 @@
 // pages/api/lp/[lp_nft_id]/trades.js
 import { IndexerQuerier } from "../../../../utils/indexer/connector";
-import { testnetConstants } from "../../../../constants/configConstants";
+import { Constants } from "../../../../constants/configConstants";
 
 export default async function liquidityPositionTradeHandler(req, res) {
   const { lp_nft_id } = req.query;
-  const indexerQuerier = new IndexerQuerier(testnetConstants.indexerEndpoint);
+  const indexerQuerier = new IndexerQuerier(Constants.indexerEndpoint);
 
   try {
     const data = await indexerQuerier.fetchLiquidityPositionExecutionEventsOnBech32(
