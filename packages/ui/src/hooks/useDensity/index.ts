@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { Density } from '../../types/Density';
-import { DensityContext } from '../../DensityContext';
+import { DensityContext } from '../../utils/DensityContext';
 
 /**
  * Returns the `Density` value to use for the component using this hook, by
