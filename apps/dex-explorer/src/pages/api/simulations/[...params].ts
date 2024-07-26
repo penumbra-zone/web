@@ -1,5 +1,5 @@
 // pages/api/simulations/[...params].ts
-import { testnetConstants } from "../../../constants/configConstants";
+import { Constants } from "../../../constants/configConstants";
 import { SimulationQuerier } from "@/utils/protos/services/dex/simulated-trades";
 import { base64ToUint8Array } from "../../../utils/math/base64";
 import {
@@ -43,7 +43,7 @@ export default async function simulationHandler(
       return res.status(400).json({ error: "Could not find requested token in registry" });
     }
     const sim_querier = new SimulationQuerier({
-      grpcEndpoint: testnetConstants.grpcEndpoint,
+      grpcEndpoint: Constants.grpcEndpoint,
     });
 
     const amtIn = splitLoHi(BigInt(Number(amountIn) * 10 ** asset1Token.decimals));
