@@ -7,7 +7,7 @@ import { Token } from "../types/token";
 const getRegistry = (): Registry => {
   const chainId = Constants.chainId
   const registryClient = new ChainRegistryClient()
-  return registryClient.get(chainId)
+  return registryClient.bundled.get(chainId)
 };
 
 export const fetchAllTokenAssets = (): Token[] => {
@@ -16,6 +16,7 @@ export const fetchAllTokenAssets = (): Token[] => {
   const tokens: Token[] = []
   metadata.forEach((x) => {
     // Filter out assets with no assetId and "Delegation" assets -- need to check this
+    // Standardize case
     if (x.penumbraAssetId && !x.display.startsWith("delegation_")) {
       const displayParts = x.display.split('/')
       tokens.push(

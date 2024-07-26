@@ -5,9 +5,9 @@ export interface GrpcConfig {
   chainId: string;
 }
 
-const defaultPenumbraGrpcEndpoint = "https://grpc.testnet.penumbra.zone";
+const defaultPenumbraGrpcEndpoint = "https://penumbra-grpc.rockycrypt.com/"
 const defaultIndexerEndpoint = "postgresql://penumbra:penumbra@db.testnet-preview.penumbra.zone:5432/penumbra?sslmode=disable"
-const defaultChainId = "penumbra-testnet-deimos-8"
+const defaultChainId = "penumbra-1"
 const defaultCuiolaUrl = "https://cuiloa.testnet.penumbra.zone"
 
 export const Constants: GrpcConfig = {
