@@ -139,8 +139,8 @@ export default function TradingPairs() {
 
     // Get token 1 & 2
     const tokenAssets = fetchAllTokenAssets();
-    const asset1Token = tokenAssets.find((x) => x.display === token1Symbol);
-    const asset2Token = tokenAssets.find((x) => x.display === token2Symbol);
+    const asset1Token = tokenAssets.find((x) => x.display.toLocaleLowerCase() === token1Symbol.toLocaleLowerCase());
+    const asset2Token = tokenAssets.find((x) => x.display.toLocaleLowerCase() === token2Symbol.toLocaleLowerCase());
 
     if (!asset1Token || !asset2Token) {
       setIsLoading(false);
@@ -243,8 +243,8 @@ export default function TradingPairs() {
     try {
       // Get token 1 & 2
       const tokenAssets = fetchAllTokenAssets();
-      const asset1Token = tokenAssets.find((x) => x.display === token1Symbol);
-      const asset2Token = tokenAssets.find((x) => x.display === token2Symbol);
+      const asset1Token = tokenAssets.find((x) => x.display.toLocaleLowerCase() === token1Symbol.toLocaleLowerCase());
+      const asset2Token = tokenAssets.find((x) => x.display.toLocaleLowerCase() === token2Symbol.toLocaleLowerCase());
       if (!asset1Token || !asset2Token) {
         setIsLoading(false);
         setIsChartLoading(false);
