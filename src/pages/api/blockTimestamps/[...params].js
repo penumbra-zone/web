@@ -1,10 +1,10 @@
 // pages/api/blockTimestamps/[...params].js
 
 import { IndexerQuerier } from "../../../utils/indexer/connector";
-import { testnetConstants } from "../../../constants/configConstants";
+import { Constants } from "../../../constants/configConstants";
 
 export default async function blockTimestampsFetchHandler(req, res) {
-  const indexerQuerier = new IndexerQuerier(testnetConstants.indexerEndpoint);
+  const indexerQuerier = new IndexerQuerier(Constants.indexerEndpoint);
   
   // Params will be an arbitrarily long list of block heights
   const params = req.query.params;

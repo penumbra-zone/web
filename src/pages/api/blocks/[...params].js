@@ -1,11 +1,11 @@
 // pages/api/blocks/[...params].js
 
 import { IndexerQuerier } from "../../../utils/indexer/connector";
-import { testnetConstants } from "../../../constants/configConstants";
+import { Constants } from "../../../constants/configConstants";
 
 export default async function blockInfoFetchHandler(req, res) {
   
-  const indexerQuerier = new IndexerQuerier(testnetConstants.indexerEndpoint);
+  const indexerQuerier = new IndexerQuerier(Constants.indexerEndpoint);
   try {
     if (req.query.params.length === 1) {
         const n = req.query.params[0];
