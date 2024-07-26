@@ -91,6 +91,22 @@ export default async function simulationHandler(
     res.status(200).json(data as SwapExecution);
   } catch (error) {
     console.error("Error simulation trade grpc data:", error);
+    const errorString = error as string
+
+    // If the error contains 'there are no orders to fulfill this swap', there are no orders to fulfill the trade, so just return an empty array
+    if (error instanceof Error) {
+        const errorMessage = error.message;
+        
+        // If the error message contains 'there are no orders to fulfill this swap', return an empty array
+        if (errorMessage.includes("there are no orders to fulfill this swap")) {
+            console.log("No orders to fulfill swap");
+            return res.status(200).json(
+              {'traces': []}
+            );
+        }
+    }
+   
+
     res
       .status(500)
       .json({ error: `Error simualtion trade grpc data: ${error}` });
