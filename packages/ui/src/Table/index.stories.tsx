@@ -2,7 +2,11 @@ import type { Meta, StoryObj } from '@storybook/react';
 
 import { Table } from '.';
 import { Text } from '../Text';
-import { ComponentType } from 'react';
+import { ComponentType, PropsWithChildren, useState } from 'react';
+import { Density } from '../Density';
+import { ConditionalWrap } from '../utils/ConditionalWrap';
+import { Tabs } from '../Tabs';
+import styled from 'styled-components';
 
 const meta: Meta<typeof Table> = {
   component: Table,
@@ -30,7 +34,46 @@ const DATA = [
   [1024, 'Delegate', '9d80ffa9113f7eed74ddeff8eddfda6a89106c6cdf336565f9cbaf90810396bf'],
 ];
 
+const Column = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${props => props.theme.spacing(4)};
+`;
+
+const DensityWrapper = ({ children }: PropsWithChildren) => {
+  const [density, setDensity] = useState('sparse');
+
+  return (
+    <ConditionalWrap
+      if={density === 'sparse'}
+      then={children => <Density sparse>{children}</Density>}
+      else={children => <Density compact>{children}</Density>}
+    >
+      <Column>
+        <Tabs
+          options={[
+            { label: 'Sparse', value: 'sparse' },
+            { label: 'Compact', value: 'compact' },
+          ]}
+          value={density}
+          onChange={setDensity}
+        />
+
+        {children}
+      </Column>
+    </ConditionalWrap>
+  );
+};
+
 export const Basic: Story = {
+  decorators: [
+    Story => (
+      <DensityWrapper>
+        <Story />
+      </DensityWrapper>
+    ),
+  ],
+
   render: function Render() {
     return (
       <Table>

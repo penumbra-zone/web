@@ -1,6 +1,8 @@
 import { PropsWithChildren, ReactNode } from 'react';
 import styled, { css } from 'styled-components';
 import { tableHeading, tableItem } from '../utils/typography';
+import { Density } from '../types/Density';
+import { useDensity } from '../hooks/useDensity';
 
 const FIVE_PERCENT_OPACITY_IN_HEX = '0d';
 
@@ -62,6 +64,7 @@ Table.Tr = Tr;
 type HAlign = 'left' | 'center' | 'right';
 type VAlign = 'top' | 'middle' | 'bottom';
 interface CellStyledProps {
+  $density: Density;
   $width?: string;
   $hAlign?: HAlign;
   $vAlign?: VAlign;
@@ -71,8 +74,8 @@ const cell = css<CellStyledProps>`
   padding-left: ${props => props.theme.spacing(3)};
   padding-right: ${props => props.theme.spacing(3)};
 
-  padding-top: ${props => props.theme.spacing(4)};
-  padding-bottom: ${props => props.theme.spacing(4)};
+  padding-top: ${props => props.theme.spacing(props.$density === 'sparse' ? 4 : 3)};
+  padding-bottom: ${props => props.theme.spacing(props.$density === 'sparse' ? 4 : 3)};
 
   ${props => props.$width && `width: ${props.$width};`}
   ${props => props.$hAlign && `text-align: ${props.$hAlign};`};
@@ -101,11 +104,15 @@ const Th = ({
   hAlign?: HAlign;
   /** Controls the CSS `vertical-align` property for this cell. */
   vAlign?: VAlign;
-}>) => (
-  <StyledTh colSpan={colSpan} $width={width} $hAlign={hAlign} $vAlign={vAlign}>
-    {children}
-  </StyledTh>
-);
+}>) => {
+  const density = useDensity();
+
+  return (
+    <StyledTh colSpan={colSpan} $width={width} $hAlign={hAlign} $vAlign={vAlign} $density={density}>
+      {children}
+    </StyledTh>
+  );
+};
 Table.Th = Th;
 
 const StyledTd = styled.td<CellStyledProps>`
@@ -134,9 +141,13 @@ const Td = ({
   hAlign?: HAlign;
   /** Controls the CSS `vertical-align` property for this cell. */
   vAlign?: VAlign;
-}>) => (
-  <StyledTd colSpan={colSpan} $width={width} $hAlign={hAlign} $vAlign={vAlign}>
-    {children}
-  </StyledTd>
-);
+}>) => {
+  const density = useDensity();
+
+  return (
+    <StyledTd colSpan={colSpan} $width={width} $hAlign={hAlign} $vAlign={vAlign} $density={density}>
+      {children}
+    </StyledTd>
+  );
+};
 Table.Td = Td;
