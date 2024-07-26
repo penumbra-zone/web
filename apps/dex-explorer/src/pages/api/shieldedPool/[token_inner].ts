@@ -1,5 +1,5 @@
 // pages/api/shieldedPool/[token_inner].ts
-import { testnetConstants } from "../../../constants/configConstants";
+import { Constants } from "../../../constants/configConstants";
 import { ShieldedPoolQuerier } from "../../../utils/protos/services/app/shielded-pool";
 import { base64ToUint8Array } from "../../../utils/math/base64";
 import {
@@ -13,7 +13,7 @@ export default async function assetMetadataHandler(req: any, res: any) {
   const decodedTokenInner = decodeURIComponent(token_inner);
 
   const pool_querier = new ShieldedPoolQuerier({
-    grpcEndpoint: testnetConstants.grpcEndpoint,
+    grpcEndpoint: Constants.grpcEndpoint,
   });
 
   try {

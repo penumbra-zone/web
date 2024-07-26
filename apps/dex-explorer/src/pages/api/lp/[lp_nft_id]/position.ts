@@ -1,5 +1,5 @@
 // pages/api/lp/[lp_nft_id]/position.ts
-import { testnetConstants } from "../../../../constants/configConstants";
+import { Constants } from "../../../../constants/configConstants";
 import { DexQueryServiceClient } from "../../../../utils/protos/services/dex/dex-query-service-client";
 import {
   PositionId,
@@ -10,7 +10,7 @@ export default async function liquidityPositionDataHandler(req: any, res: any) {
   const { lp_nft_id } = req.query;
 
   const lp_querier = new DexQueryServiceClient({
-    grpcEndpoint: testnetConstants.grpcEndpoint,
+    grpcEndpoint: Constants.grpcEndpoint,
   });
 
   try {
