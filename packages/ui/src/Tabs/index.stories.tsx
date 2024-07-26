@@ -1,11 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { useArgs } from '@storybook/preview-api';
 
-import { SegmentedPicker } from '.';
+import { Tabs } from '.';
 
-const meta: Meta<typeof SegmentedPicker> = {
-  component: SegmentedPicker,
-  title: 'SegmentedPicker',
+const meta: Meta<typeof Tabs> = {
+  component: Tabs,
   tags: ['autodocs', '!dev'],
   argTypes: {
     value: { control: false },
@@ -15,7 +14,7 @@ const meta: Meta<typeof SegmentedPicker> = {
 };
 export default meta;
 
-type Story = StoryObj<typeof SegmentedPicker>;
+type Story = StoryObj<typeof Tabs>;
 
 export const Basic: Story = {
   args: {
@@ -34,6 +33,6 @@ export const Basic: Story = {
 
     const onChange = (value: { toString: () => string }) => updateArgs({ value });
 
-    return <SegmentedPicker {...props} onChange={onChange} />;
+    return <Tabs {...props} onChange={onChange} />;
   },
 };

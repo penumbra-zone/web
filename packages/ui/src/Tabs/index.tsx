@@ -3,6 +3,7 @@ import { tab } from '../utils/typography';
 import { motion } from 'framer-motion';
 import { useId } from 'react';
 import { buttonInteractions } from '../utils/button';
+import * as RadixTabs from '@radix-ui/react-tabs';
 
 const TEN_PERCENT_OPACITY_IN_HEX = '1a';
 
@@ -25,7 +26,7 @@ const outlineColorByActionType: Record<ActionType, keyof DefaultTheme['color']['
   unshield: 'unshieldFocusOutline',
 };
 
-const SegmentButton = styled.button<{
+const Tab = styled.button<{
   $actionType: ActionType;
   $getFocusOutlineColor: (theme: DefaultTheme) => string;
   $getBorderRadius: (theme: DefaultTheme) => string;
@@ -68,37 +69,27 @@ const SelectedIndicator = styled(motion.div)`
   z-index: -1;
 `;
 
-export interface SegmentedPickerOption<ValueType> {
-  /**
-   * The value to pass to the `onChange` handler when clicked. Must be unique
-   * across all segments, and must be either a string, number, or an object with
-   * a `.toString()` method so that it can be used as a React key.
-   */
-  value: ValueType;
+export interface TabsTab {
+  value: string;
   label: string;
   disabled?: boolean;
 }
 
-export interface SegmentedPickerProps<ValueType extends { toString: () => string }> {
-  /**
-   * The currently selected value. Will be compared to the `options`' `value`
-   * property using `===` to determine which segment is selected.
-   */
-  value: ValueType;
-  onChange: (value: ValueType) => void;
-  options: SegmentedPickerOption<ValueType>[];
+export interface TabsProps {
+  value: string;
+  onChange: (value: string) => void;
+  options: TabsTab[];
   actionType?: ActionType;
 }
 
 /**
- * Renders a segmented picker where only one option can be selected at a time.
- * Functionally equivalent to a `<select>` element or a set of radio buttons,
- * but looks nicer when you only have a few options to choose from. (Probably
- * shouldn't be used with more than 5 options.)
+ * Use tabs for switching between related pages or views.
  *
- * @example
+ * Built atop Radix UI's `<Tabs />` component, so it's fully accessible and
+ * supports keyboard navigation.
+ *
  * ```TSX
- * <SegmentedPicker
+ * <Tabs
  *   value={value}
  *   onChange={setValue}
  *   options={[
@@ -109,29 +100,36 @@ export interface SegmentedPickerProps<ValueType extends { toString: () => string
  * />
  * ```
  */
-export const SegmentedPicker = <ValueType extends { toString: () => string }>({
-  value,
-  onChange,
-  options,
-  actionType = 'default',
-}: SegmentedPickerProps<ValueType>) => {
+export const Tabs = ({ value, onChange, options, actionType = 'default' }: TabsProps) => {
   const layoutId = useId();
 
   return (
-    <Root>
-      {options.map(option => (
-        <SegmentButton
-          key={option.value.toString()}
-          onClick={() => onChange(option.value)}
-          $actionType={actionType}
-          disabled={option.disabled}
-          $getFocusOutlineColor={theme => theme.color.action[outlineColorByActionType[actionType]]}
-          $getBorderRadius={theme => theme.borderRadius.xs}
-        >
-          {value === option.value && <SelectedIndicator layout layoutId={layoutId} />}
-          {option.label}
-        </SegmentButton>
-      ))}
-    </Root>
+    <RadixTabs.Root value={value} onValueChange={onChange}>
+      <RadixTabs.List asChild>
+        <Root>
+          {options.map(option => (
+            <RadixTabs.Trigger
+              value={option.value}
+              key={option.value.toString()}
+              disabled={option.disabled}
+              asChild
+            >
+              <Tab
+                onClick={() => onChange(option.value)}
+                disabled={option.disabled}
+                $actionType={actionType}
+                $getFocusOutlineColor={theme =>
+                  theme.color.action[outlineColorByActionType[actionType]]
+                }
+                $getBorderRadius={theme => theme.borderRadius.xs}
+              >
+                {value === option.value && <SelectedIndicator layout layoutId={layoutId} />}
+                {option.label}
+              </Tab>
+            </RadixTabs.Trigger>
+          ))}
+        </Root>
+      </RadixTabs.List>
+    </RadixTabs.Root>
   );
 };

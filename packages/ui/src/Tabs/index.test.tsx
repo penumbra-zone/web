@@ -1,12 +1,12 @@
 import { describe, expect, it, vi } from 'vitest';
-import { SegmentedPicker } from '.';
+import { Tabs } from '.';
 import { fireEvent, render } from '@testing-library/react';
 import { ThemeProvider } from '../ThemeProvider';
 
-describe('<SegmentedPicker />', () => {
+describe('<Tabs />', () => {
   it('renders a button for each of the `options`', () => {
     const { queryByText } = render(
-      <SegmentedPicker
+      <Tabs
         value='one'
         options={[
           { label: 'One', value: 'one' },
@@ -24,7 +24,7 @@ describe('<SegmentedPicker />', () => {
   it("calls the `onChange` handler with the clicked option's value when clicked", () => {
     const onChange = vi.fn();
     const { getByText } = render(
-      <SegmentedPicker
+      <Tabs
         value='one'
         options={[
           { label: 'One', value: 'one' },

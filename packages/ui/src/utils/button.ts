@@ -31,10 +31,15 @@ const focusOutline = css<{
    * disabled button, the overlay of the disabled button would be above the
    * outline, making the outline appear to be partly cut off.
    */
-  &:focus::after {
+  &:focus-within {
+    outline: none;
+  }
+
+  &:focus-within::after {
     outline-color: ${props => props.$getFocusOutlineColor(props.theme)};
   }
 
+  &:disabled,
   &:disabled::after {
     pointer-events: none;
   }
