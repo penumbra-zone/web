@@ -13,7 +13,7 @@ import { BlockDetailedSummaryData } from "@/utils/types/block";
 import { BlockInfo, LiquidityPositionEvent } from "@/utils/indexer/types/lps";
 import { SwapExecutionWithBlockHeight } from "@/utils/protos/types/DexQueryServiceClientInterface";
 import { LoadingSpinner } from "@/components/util/loadingSpinner";
-import { testnetConstants } from "@/constants/configConstants";
+import { Constants } from "@/constants/configConstants";
 import { formatTimestampShort } from "@/components/blockTimestamp";
 import { AddIcon, MinusIcon } from "@chakra-ui/icons";
 import { innerToBech32Address } from "@/utils/math/bech32";
@@ -641,7 +641,7 @@ export default function Block() {
             </Text>
             <Text>
               <a
-                href={testnetConstants.cuiloaUrl + "/block/" + blockHeight}
+                href={Constants.cuiloaUrl + "/block/" + blockHeight}
                 target="_blank"
                 rel="noreferrer"
                 style={{

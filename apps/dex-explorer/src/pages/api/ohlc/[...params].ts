@@ -1,6 +1,6 @@
 // pages/api/ohlc/[...params].ts
 
-import { testnetConstants } from "@/constants/configConstants";
+import { Constants } from "@/constants/configConstants";
 import { DexQueryServiceClient } from "@/utils/protos/services/dex/dex-query-service-client";
 import { NextApiRequest, NextApiResponse } from "next";
 import {
@@ -29,7 +29,7 @@ export default async function candleStickData(
     }
 
     const dex_querier = new DexQueryServiceClient({
-      grpcEndpoint: testnetConstants.grpcEndpoint,
+      grpcEndpoint: Constants.grpcEndpoint,
     });
 
     const tokenInInner = tokenAssets.find(

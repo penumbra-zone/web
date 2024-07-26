@@ -8,10 +8,11 @@ export interface GrpcConfig {
 const defaultPenumbraGrpcEndpoint = "https://grpc.testnet.penumbra.zone";
 const defaultIndexerEndpoint = "postgresql://penumbra:penumbra@db.testnet-preview.penumbra.zone:5432/penumbra?sslmode=disable"
 const defaultChainId = "penumbra-testnet-deimos-8"
+const defaultCuiolaUrl = "https://cuiloa.testnet.penumbra.zone"
 
-export const testnetConstants: GrpcConfig = {
+export const Constants: GrpcConfig = {
   grpcEndpoint: process.env.PENUMBRA_GRPC_ENDPOINT ? process.env.PENUMBRA_GRPC_ENDPOINT : defaultPenumbraGrpcEndpoint,
   indexerEndpoint: process.env.PENUMBRA_INDEXER_ENDPOINT ? process.env.PENUMBRA_INDEXER_ENDPOINT : defaultIndexerEndpoint,
-  cuiloaUrl: "https://cuiloa.testnet.penumbra.zone",
-  chainId: process.env.CHAIN_ID ? process.env.CHAIN_ID : defaultChainId
+  cuiloaUrl: process.env.NEXT_PUBLIC_CUILOA_URL ? process.env.NEXT_PUBLIC_CUILOA_URL : defaultCuiolaUrl,
+  chainId: process.env.NEXT_PUBLIC_CHAIN_ID ? process.env.NEXT_PUBLIC_CHAIN_ID : defaultChainId,
 };

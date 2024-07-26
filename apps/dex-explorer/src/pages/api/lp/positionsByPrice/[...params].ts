@@ -1,5 +1,5 @@
 // pages/api/lp/positionsByPrice/[...params].ts
-import { testnetConstants } from "../../../../constants/configConstants";
+import { Constants } from "../../../../constants/configConstants";
 import { NextApiRequest, NextApiResponse } from "next";
 import { DexQueryServiceClient } from "@/utils/protos/services/dex/dex-query-service-client";
 import {
@@ -34,7 +34,7 @@ export default async function positionsByPriceHandler(
     }
 
     const lp_querier = new DexQueryServiceClient({
-      grpcEndpoint: testnetConstants.grpcEndpoint,
+      grpcEndpoint: Constants.grpcEndpoint,
     });
 
     const tradingPair = new DirectedTradingPair({

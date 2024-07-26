@@ -1,6 +1,6 @@
 // pages/api/swaps/[...params].ts
 
-import { testnetConstants } from "@/constants/configConstants";
+import { Constants } from "@/constants/configConstants";
 import { DexQueryServiceClient } from "@/utils/protos/services/dex/dex-query-service-client";
 import { SwapExecutionWithBlockHeight } from "@/utils/protos/types/DexQueryServiceClientInterface";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -18,7 +18,7 @@ export default async function swapsByBlockRange(req: NextApiRequest, res: NextAp
         }
         // TODO: validate StartHeight/EndHeight are numbers
         const dex_querier = new DexQueryServiceClient({
-            grpcEndpoint: testnetConstants.grpcEndpoint,
+            grpcEndpoint: Constants.grpcEndpoint,
         });
 
         const data = await dex_querier.swapExecutions(
