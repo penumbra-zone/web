@@ -26,8 +26,8 @@ export default async function positionsByPriceHandler(
 
     // Get token 1 & 2
     const tokenAssets = fetchAllTokenAssets();
-    const asset1Token = tokenAssets.find((x) => x.display === token1);
-    const asset2Token = tokenAssets.find((x) => x.display === token2);
+    const asset1Token = tokenAssets.find((x) => x.display.toLocaleLowerCase() === token1.toLocaleLowerCase());
+    const asset2Token = tokenAssets.find((x) => x.display.toLocaleLowerCase() === token2.toLocaleLowerCase());
 
     if (!asset1Token || !asset2Token) {
       return res.status(400).json({ error: "Could not find requested token in registry" });
