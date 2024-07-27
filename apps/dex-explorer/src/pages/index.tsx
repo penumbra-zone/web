@@ -5,10 +5,7 @@ export const routes = [
   { path: "/lp/utils" },
   { path: "/lp/<NFT_ID>" },
   {
-    path: "/tradingPairs?baseToken=<COMMON_TOKEN_NAME>&quoteToken=<COMMON_TOKEN_NAME>",
-  },
-  {
-    path: "/tradingPairs?baseToken=<COMMON_TOKEN_NAME>&quoteToken=<COMMON_TOKEN_NAME>&singleHop",
+    path: "/pair/<BASE_TOKEN_NAME>:<QUOTE_TOKEN_NAME>",
   },
 ];
 
