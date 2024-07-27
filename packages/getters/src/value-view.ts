@@ -22,15 +22,19 @@ export const getEquivalentValues = createGetter((valueView?: ValueView) =>
     : undefined,
 );
 
-const getValidatorInfo = createGetter((any?: Any) =>
-  any ? ValidatorInfo.fromBinary(any.value) : undefined,
-);
-
 /**
  * Only to be used on `ValueView`s that contain delegation tokens -- and thus,
  * validator infos.
  */
-export const getValidatorInfoFromValueView = getExtendedMetadata.pipe(getValidatorInfo);
+export const getValidatorInfoFromValueView = getExtendedMetadata.pipe(
+  createGetter((a?: Any) => {
+    const validatorInfo = new ValidatorInfo();
+    if (a?.unpackTo(validatorInfo)) {
+      return validatorInfo;
+    }
+    return undefined;
+  }),
+);
 
 /**
  * Only to be used on `ValueView`s that contain delegation tokens -- and thus,
@@ -61,10 +65,7 @@ export const getAmount = createGetter(
   (valueView?: ValueView) => valueView?.valueView.value?.amount,
 );
 
-export const getSymbolFromValueView = createGetter((valueView?: ValueView) => {
-  const metadata = getMetadata(valueView);
-  return getSymbol(metadata);
-});
+export const getSymbolFromValueView = getMetadata.pipe(getSymbol);
 
 export const getDisplayDenomFromView = createGetter((view?: ValueView) => {
   if (view?.valueView.case === 'unknownAssetId') {
