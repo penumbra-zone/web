@@ -14,7 +14,7 @@ import { EquivalentValues } from './equivalent-values';
 import { Fragment } from 'react';
 import { PagePath } from '../../metadata/paths';
 import { Link } from 'react-router-dom';
-import { getMetadataFromBalancesResponseOptional } from '@penumbra-zone/getters/balances-response';
+import { getMetadataFromBalancesResponse } from '@penumbra-zone/getters/balances-response';
 import { getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { BalancesByAccount, groupByAccount, useBalancesResponses } from '../../../state/shared';
 import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
@@ -24,7 +24,7 @@ import { LineWave } from 'react-loader-spinner';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 
 const getTradeLink = (balance: BalancesResponse): string => {
-  const metadata = getMetadataFromBalancesResponseOptional(balance);
+  const metadata = getMetadataFromBalancesResponse.optional()(balance);
   const accountIndex = getAddressIndex(balance.accountAddress).account;
   const accountQuery = accountIndex ? `&account=${accountIndex}` : '';
   return metadata ? `${PagePath.SWAP}?from=${metadata.symbol}${accountQuery}` : PagePath.SWAP;

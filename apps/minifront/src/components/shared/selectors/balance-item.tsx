@@ -1,9 +1,6 @@
 import { BalanceOrMetadata, isBalance, isMetadata } from './helpers';
 import { getAddressIndex } from '@penumbra-zone/getters/address-view';
-import {
-  getMetadataFromBalancesResponse,
-  getMetadataFromBalancesResponseOptional,
-} from '@penumbra-zone/getters/balances-response';
+import { getMetadataFromBalancesResponse } from '@penumbra-zone/getters/balances-response';
 import { useMemo } from 'react';
 import { DialogClose } from '@penumbra-zone/ui/components/ui/dialog';
 import { cn } from '@penumbra-zone/ui/lib/utils';
@@ -22,7 +19,7 @@ export const BalanceItem = ({ asset, value, onSelect }: BalanceItemProps) => {
   const account = isBalance(asset) ? getAddressIndex(asset.accountAddress).account : undefined;
   const metadataFromAsset = isMetadata(asset)
     ? asset
-    : getMetadataFromBalancesResponseOptional(asset);
+    : getMetadataFromBalancesResponse.optional()(asset);
   const metadataFromValue = getMetadataFromBalancesResponse.optional()(value);
 
   const isSelected = useMemo(() => {

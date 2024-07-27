@@ -1,7 +1,7 @@
 import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { getMetadataFromBalancesResponseOptional } from '@penumbra-zone/getters/balances-response';
+import { getMetadataFromBalancesResponse } from '@penumbra-zone/getters/balances-response';
 import { getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { getMetadata } from '@penumbra-zone/getters/value-view';
 
@@ -38,7 +38,7 @@ export const getBalanceByMatchingMetadataAndAddressIndex = (
   metadata: Metadata,
 ) => {
   return balances.find(balance => {
-    const balanceViewMetadata = getMetadataFromBalancesResponseOptional(balance);
+    const balanceViewMetadata = getMetadataFromBalancesResponse.optional()(balance);
 
     return (
       getAddressIndex(balance.accountAddress).account === addressIndex.account &&

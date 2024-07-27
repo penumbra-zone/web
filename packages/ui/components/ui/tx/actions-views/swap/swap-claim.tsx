@@ -3,8 +3,8 @@ import { SwapClaimView } from '@penumbra-zone/protobuf/penumbra/core/component/d
 import { TransactionIdComponent } from './transaction-id';
 import { ActionDetails } from '../action-details';
 import {
-  getOutput1ValueOptional,
-  getOutput2ValueOptional,
+  getOutput1Value,
+  getOutput2Value,
   getSwapClaimFee,
 } from '@penumbra-zone/getters/swap-claim-view';
 import { getAmount } from '@penumbra-zone/getters/value-view';
@@ -30,8 +30,8 @@ const getClaimLabel = (
 export const SwapClaimViewComponent = ({ value }: { value: SwapClaimView }) => {
   if (value.swapClaimView.case === 'visible') {
     const swapTxId = value.swapClaimView.value.swapTx;
-    const output1Value = getOutput1ValueOptional(value);
-    const output2Value = getOutput2ValueOptional(value);
+    const output1Value = getOutput1Value.optional()(value);
+    const output2Value = getOutput2Value.optional()(value);
     const output1Amount = getAmount.optional()(output1Value);
     const output2Amount = getAmount.optional()(output2Value);
     const claimLabel = getClaimLabel(output1Amount, output2Amount);
