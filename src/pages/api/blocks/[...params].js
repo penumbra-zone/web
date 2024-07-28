@@ -1,11 +1,20 @@
 // pages/api/blocks/[...params].js
 
 import { IndexerQuerier } from "../../../utils/indexer/connector";
-import { Constants } from "../../../constants/configConstants";
+
+const grpcEndpoint = process.env.PENUMBRA_GRPC_ENDPOINT
+if (!grpcEndpoint) {
+    throw new Error("PENUMBRA_GRPC_ENDPOINT is not set")
+}
+
+const indexerEndpoint = process.env.PENUMBRA_INDEXER_ENDPOINT
+if (!indexerEndpoint) {
+    throw new Error("PENUMBRA_INDEXER_ENDPOINT is not set")
+}
 
 export default async function blockInfoFetchHandler(req, res) {
   
-  const indexerQuerier = new IndexerQuerier(Constants.indexerEndpoint);
+  const indexerQuerier = new IndexerQuerier(indexerEndpoint);
   try {
     if (req.query.params.length === 1) {
         const n = req.query.params[0];
