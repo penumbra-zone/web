@@ -27,7 +27,6 @@ import OHLCChart from "@/components/charts/ohlcChart";
 import BuySellChart from "@/components/charts/buySellChart";
 import { Token } from "@/utils/types/token";
 import { fetchAllTokenAssets } from "@/utils/token/tokenFetch";
-
 // TODO: Better parameter check
 
 // ! Important note: 'sell' side here refers to selling asset1 for asset2, so its really DEMAND for buying asset 1, anc vice versa for 'buy' side
