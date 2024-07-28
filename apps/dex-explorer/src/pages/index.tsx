@@ -14,25 +14,29 @@ export default function Home() {
     <Layout pageTitle="Penumbra Dex Explorer">
       <div className={styles.container}>
         <main className={styles.main}>
-          <h1>Penumbra Dex Explorer</h1>
-          <ul>
-            {routes.map((route, index) => (
-              <li key={index}>
-                <a
-                  href={route.path}
-                  style={{
-                    textDecoration: "underline",
-                    color: "var(--complimentary-background)",
-                    display: "flex",
-                    fontSize: "small",
-                    fontFamily: "monospace",
-                  }}
-                >
-                  {route.path}
-                </a>
-              </li>
-            ))}
-          </ul>
+          <div style={{ textAlign: "center" }}>
+            <h1 style={{fontWeight: "bolder"}}>The Penumbra Dex Explorer</h1>
+            <h2>A WIP and constantly evolving. Mobile support coming soon.</h2>
+            <br />
+            <ul>
+              {routes.map((route, index) => (
+                <li key={index}>
+                  <a
+                    href={route.path}
+                    style={{
+                      textDecoration: "underline",
+                      color: "var(--complimentary-background)",
+                      display: "flex",
+                      fontSize: "small",
+                      fontFamily: "monospace",
+                    }}
+                  >
+                    {route.path}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
         </main>
       </div>
     </Layout>
