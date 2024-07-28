@@ -1,5 +1,4 @@
 // pages/api/lp/positionsByPrice/[...params].ts
-import { Constants } from "../../../../constants/configConstants";
 import { NextApiRequest, NextApiResponse } from "next";
 import { DexQueryServiceClient } from "@/utils/protos/services/dex/dex-query-service-client";
 import {
@@ -8,6 +7,11 @@ import {
 } from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb";
 import { base64ToUint8Array } from "@/utils/math/base64";
 import { fetchAllTokenAssets } from "@/utils/token/tokenFetch";
+
+const grpcEndpoint = process.env.PENUMBRA_GRPC_ENDPOINT!
+if (!grpcEndpoint) {
+    throw new Error("PENUMBRA_GRPC_ENDPOINT is not set")
+}
 
 export default async function positionsByPriceHandler(
   req: NextApiRequest,
@@ -34,7 +38,7 @@ export default async function positionsByPriceHandler(
     }
 
     const lp_querier = new DexQueryServiceClient({
-      grpcEndpoint: Constants.grpcEndpoint,
+      grpcEndpoint: grpcEndpoint,
     });
 
     const tradingPair = new DirectedTradingPair({
