@@ -4,7 +4,6 @@ import { LiquidityPositionEvent } from "@/utils/indexer/types/lps";
 import ClosedPositionStatus from "@/components/liquidityPositions/closedStatus";
 import OpenPositionStatus from "@/components/liquidityPositions/openStatus";
 import WithdrawnPositionStatus from "@/components/liquidityPositions/withdrawnStatus";
-import { Constants } from "@/constants/configConstants";
 import BlockTimestampView from "../blockTimestamp";
 
 interface TimelinePositionProps {

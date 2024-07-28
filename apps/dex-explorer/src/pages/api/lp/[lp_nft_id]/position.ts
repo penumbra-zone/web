@@ -1,16 +1,20 @@
 // pages/api/lp/[lp_nft_id]/position.ts
-import { Constants } from "../../../../constants/configConstants";
 import { DexQueryServiceClient } from "../../../../utils/protos/services/dex/dex-query-service-client";
 import {
   PositionId,
   Position,
 } from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb";
 
+const grpcEndpoint = process.env.PENUMBRA_GRPC_ENDPOINT!
+if (!grpcEndpoint) {
+    throw new Error("PENUMBRA_GRPC_ENDPOINT is not set")
+}
+
 export default async function liquidityPositionDataHandler(req: any, res: any) {
   const { lp_nft_id } = req.query;
 
   const lp_querier = new DexQueryServiceClient({
-    grpcEndpoint: Constants.grpcEndpoint,
+    grpcEndpoint: grpcEndpoint,
   });
 
   try {

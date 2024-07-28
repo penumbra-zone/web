@@ -1,5 +1,4 @@
 // pages/api/simulations/[...params].ts
-import { Constants } from "../../../constants/configConstants";
 import { SimulationQuerier } from "@/utils/protos/services/dex/simulated-trades";
 import { base64ToUint8Array } from "../../../utils/math/base64";
 import {
@@ -11,6 +10,11 @@ import {
 import { joinLoHi, splitLoHi } from "@/utils/math/hiLo";
 import { NextApiRequest, NextApiResponse } from "next";
 import { fetchAllTokenAssets } from "@/utils/token/tokenFetch";
+
+const grpcEndpoint = process.env.PENUMBRA_GRPC_ENDPOINT!
+if (!grpcEndpoint) {
+    throw new Error("PENUMBRA_GRPC_ENDPOINT is not set")
+}
 
 export default async function simulationHandler(
   req: NextApiRequest,
@@ -43,7 +47,7 @@ export default async function simulationHandler(
       return res.status(400).json({ error: "Could not find requested token in registry" });
     }
     const sim_querier = new SimulationQuerier({
-      grpcEndpoint: Constants.grpcEndpoint,
+      grpcEndpoint: grpcEndpoint,
     });
 
     const amtIn = splitLoHi(BigInt(Number(amountIn) * 10 ** asset1Token.decimals));
