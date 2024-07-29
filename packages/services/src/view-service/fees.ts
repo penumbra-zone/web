@@ -7,8 +7,9 @@ import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
 // in the actions of the transaction planner request (TPR).
 //
 // (1) For outputs, spends, swaps, scheduling auctions, and ICS withdrawals, the naive approach
-// of "using the first alternative token for which the user has a balance" is semantically
-// equivalent to "extract the input asset from the transaction request".
+// of "using the first alternative token for which the user has a balance" is similar to "extracting
+// the input asset from the transaction request". While both methods aim to retrieve an alternative
+// fee token, they may result in selecting different tokens.
 //
 // (2) Swap claims are a special case where the claim must use the swap's fee token.
 //
@@ -64,14 +65,14 @@ export const extractAltFee = async (
   if (auctionEndAsset) {
     const endAuction = await indexedDb.getAuction(auctionEndAsset);
     if (endAuction.auction?.input?.assetId) {
-      const checkAssetBalance = await indexedDb.getAssetTokenMetadata(
+      const checkAssetBalance = await indexedDb.hasTokenBalance(
         request.source,
         endAuction.auction.input.assetId,
       );
       if (checkAssetBalance) {
         return endAuction.auction.input.assetId;
       } else {
-        const assetId = await retrieveAltAsset(request, indexedDb);
+        const assetId = await getAssetFromGasPriceTable(request, indexedDb);
         if (assetId) {
           return assetId;
         }
@@ -85,14 +86,14 @@ export const extractAltFee = async (
   if (auctionWithdrawAsset) {
     const withdrawAuction = await indexedDb.getAuction(auctionWithdrawAsset);
     if (withdrawAuction.auction?.input?.assetId) {
-      const checkAssetBalance = await indexedDb.getAssetTokenMetadata(
+      const checkAssetBalance = await indexedDb.hasTokenBalance(
         request.source,
         withdrawAuction.auction.input.assetId,
       );
       if (checkAssetBalance) {
         return withdrawAuction.auction.input.assetId;
       } else {
-        const assetId = await retrieveAltAsset(request, indexedDb);
+        const assetId = await getAssetFromGasPriceTable(request, indexedDb);
         if (assetId) {
           return assetId;
         }
@@ -101,7 +102,7 @@ export const extractAltFee = async (
   }
 
   if (request.undelegations.length > 0) {
-    const assetId = await retrieveAltAsset(request, indexedDb);
+    const assetId = await getAssetFromGasPriceTable(request, indexedDb);
     if (assetId) {
       return assetId;
     }
@@ -113,14 +114,14 @@ export const extractAltFee = async (
 // Attempts to find an alternative fee token for a transaction by checking the user's balance of
 // various gas price assets. It queries the IndexedDb for alternative gas prices and iterates
 // through them, returning the asset ID of the first asset for which the user has a balance.
-export const retrieveAltAsset = async (
+export const getAssetFromGasPriceTable = async (
   request: TransactionPlannerRequest,
   indexedDb: IndexedDbInterface,
 ): Promise<AssetId | undefined> => {
   const altGasPrices = await indexedDb.getAltGasPrices();
   for (const gasPrice of altGasPrices) {
     if (gasPrice.assetId) {
-      const balance = await indexedDb.getAssetTokenMetadata(request.source, gasPrice.assetId);
+      const balance = await indexedDb.hasTokenBalance(request.source, gasPrice.assetId);
       if (balance) {
         return gasPrice.assetId;
       }

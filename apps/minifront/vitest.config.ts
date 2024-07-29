@@ -5,7 +5,5 @@ export default defineConfig({
     snapshotSerializers: [],
     environment: 'jsdom',
     setupFiles: ['./tests-setup.ts'],
-    silent: false,
-    reporters: 'default',
   },
 });

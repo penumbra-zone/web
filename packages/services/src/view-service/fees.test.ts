@@ -31,7 +31,7 @@ describe('extractAltFee', () => {
       upsertAuction: vi.fn(),
       saveAssetsMetadata: vi.fn(),
       getAuction: vi.fn(),
-      getAssetTokenMetadata: vi.fn(),
+      hasTokenBalance: vi.fn(),
       saveGasPrices: vi.fn(),
       getAltGasPrices: vi.fn(),
     };
@@ -262,7 +262,7 @@ describe('extractAltFee', () => {
       seqNum: 0n,
     });
 
-    mockIndexedDb.getAssetTokenMetadata?.mockResolvedValueOnce(true);
+    mockIndexedDb.hasTokenBalance?.mockResolvedValueOnce(true);
 
     const request = new TransactionPlannerRequest({
       dutchAuctionEndActions: [
@@ -311,10 +311,10 @@ describe('extractAltFee', () => {
       }),
     ];
 
-    mockIndexedDb.getAssetTokenMetadata?.mockResolvedValue(false);
+    mockIndexedDb.hasTokenBalance?.mockResolvedValue(false);
     mockIndexedDb.saveGasPrices?.mockResolvedValueOnce(gasPrices);
     mockIndexedDb.getAltGasPrices?.mockResolvedValueOnce(gasPrices);
-    mockIndexedDb.getAssetTokenMetadata?.mockResolvedValue(true);
+    mockIndexedDb.hasTokenBalance?.mockResolvedValue(true);
 
     const request = new TransactionPlannerRequest({
       dutchAuctionEndActions: [
@@ -348,7 +348,7 @@ describe('extractAltFee', () => {
       seqNum: 0n,
     });
 
-    mockIndexedDb.getAssetTokenMetadata?.mockResolvedValueOnce(true);
+    mockIndexedDb.hasTokenBalance?.mockResolvedValueOnce(true);
 
     const request = new TransactionPlannerRequest({
       dutchAuctionWithdrawActions: [
@@ -397,10 +397,10 @@ describe('extractAltFee', () => {
       }),
     ];
 
-    mockIndexedDb.getAssetTokenMetadata?.mockResolvedValue(false);
+    mockIndexedDb.hasTokenBalance?.mockResolvedValue(false);
     mockIndexedDb.saveGasPrices?.mockResolvedValueOnce(gasPrices);
     mockIndexedDb.getAltGasPrices?.mockResolvedValueOnce(gasPrices);
-    mockIndexedDb.getAssetTokenMetadata?.mockResolvedValue(true);
+    mockIndexedDb.hasTokenBalance?.mockResolvedValue(true);
 
     const request = new TransactionPlannerRequest({
       dutchAuctionWithdrawActions: [
