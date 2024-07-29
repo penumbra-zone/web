@@ -35,12 +35,12 @@ export const Navbar = () => {
                     display={{ md: 'none' }}
                     onClick={isOpen ? onClose : onOpen}
                 />
-                <Center flex={1}>
+                <Box>
                     <HStack as="a" href="/">
                         <Image src="/favicon.ico" alt="Penumbra Logo" width={35} height={35} />
                         <Text fontWeight={"bold"}>Dex Explorer</Text>
                     </HStack>
-                </Center>
+                </Box>
                 <HStack as={'nav'} spacing={4} display={{ base: 'none', md: 'flex' }}>
                     {Links.map((x) => (<NavLink key={x.name} link={x.link} >{x.name}</NavLink>))}
                     <Flex paddingLeft={10}>
