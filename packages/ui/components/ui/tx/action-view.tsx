@@ -13,11 +13,13 @@ import { ActionDutchAuctionEndComponent } from './actions-views/action-dutch-auc
 import { ActionDutchAuctionWithdrawViewComponent } from './actions-views/action-dutch-auction-withdraw-view';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import { DelegatorVoteComponent } from './actions-views/delegator-vote.tsx';
+import { ValidatorVoteComponent } from './actions-views/validator-vote.tsx';
 
-const CASE_TO_LABEL: Record<string, string> = {
-  daoDeposit: 'DAO Deposit',
-  daoOutput: 'DAO Output',
-  daoSpend: 'DAO Spend',
+type Case = Exclude<ActionView['actionView']['case'], undefined>;
+
+const CASE_TO_LABEL: Record<Case, string> = {
+  output: 'Output',
+  spend: 'Spend',
   delegate: 'Delegate',
   delegatorVote: 'Delegator Vote',
   ibcRelayAction: 'IBC Relay Action',
@@ -35,9 +37,15 @@ const CASE_TO_LABEL: Record<string, string> = {
   undelegateClaim: 'Undelegate Claim',
   validatorDefinition: 'Validator Definition',
   validatorVote: 'Validator Vote',
+  actionDutchAuctionEnd: 'Dutch Auction End',
+  actionDutchAuctionSchedule: 'Dutch Auction Schedule',
+  actionDutchAuctionWithdraw: 'Dutch Auction Withdraw',
+  communityPoolDeposit: 'Community Pool Deposit',
+  communityPoolOutput: 'Community Pool Output',
+  communityPoolSpend: 'Community Pool Spend',
 };
 
-const getLabelForActionCase = (actionCase: string | undefined): string => {
+const getLabelForActionCase = (actionCase: ActionView['actionView']['case']): string => {
   if (!actionCase) {
     return '';
   }
@@ -91,6 +99,12 @@ export const ActionViewComponent = ({
     case 'actionDutchAuctionWithdraw':
       return <ActionDutchAuctionWithdrawViewComponent value={actionView.value} />;
 
+    case 'delegatorVote':
+      return <DelegatorVoteComponent value={actionView.value} />;
+
+    case 'validatorVote':
+      return <ValidatorVoteComponent value={actionView.value} />;
+
     case 'validatorDefinition':
       return <UnimplementedView label='Validator Definition' />;
 
@@ -102,12 +116,6 @@ export const ActionViewComponent = ({
 
     case 'proposalWithdraw':
       return <UnimplementedView label='Proposal Withdraw' />;
-
-    case 'validatorVote':
-      return <UnimplementedView label='Validator Vote' />;
-
-    case 'delegatorVote':
-      return <DelegatorVoteComponent value={actionView.value} />;
 
     case 'proposalDepositClaim':
       return <UnimplementedView label='Proposal Deposit Claim' />;

@@ -375,7 +375,8 @@ describe('classifyTransaction()', () => {
           },
           {
             actionView: {
-              case: 'delegatorVote',
+              // @ts-expect-error Simulating an unexpected case
+              case: 'daoGovernanceVote',
               value: {},
             },
           },

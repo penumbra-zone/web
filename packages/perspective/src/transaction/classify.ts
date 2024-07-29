@@ -36,6 +36,48 @@ export const classifyTransaction = (txv?: TransactionView): TransactionClassific
   if (allActionCases.has('actionDutchAuctionWithdraw')) {
     return 'dutchAuctionWithdraw';
   }
+  if (allActionCases.has('delegatorVote')) {
+    return 'delegatorVote';
+  }
+  if (allActionCases.has('validatorVote')) {
+    return 'validatorVote';
+  }
+  if (allActionCases.has('validatorDefinition')) {
+    return 'validatorDefinition';
+  }
+  if (allActionCases.has('ibcRelayAction')) {
+    return 'ibcRelayAction';
+  }
+  if (allActionCases.has('proposalSubmit')) {
+    return 'proposalSubmit';
+  }
+  if (allActionCases.has('proposalWithdraw')) {
+    return 'proposalWithdraw';
+  }
+  if (allActionCases.has('proposalDepositClaim')) {
+    return 'proposalDepositClaim';
+  }
+  if (allActionCases.has('positionOpen')) {
+    return 'positionOpen';
+  }
+  if (allActionCases.has('positionClose')) {
+    return 'positionClose';
+  }
+  if (allActionCases.has('positionWithdraw')) {
+    return 'positionWithdraw';
+  }
+  if (allActionCases.has('positionRewardClaim')) {
+    return 'positionRewardClaim';
+  }
+  if (allActionCases.has('communityPoolSpend')) {
+    return 'communityPoolSpend';
+  }
+  if (allActionCases.has('communityPoolDeposit')) {
+    return 'communityPoolDeposit';
+  }
+  if (allActionCases.has('communityPoolOutput')) {
+    return 'communityPoolOutput';
+  }
 
   const hasOpaqueSpend = txv.bodyView?.actionViews.some(
     a => a.actionView.case === 'spend' && a.actionView.value.spendView.case === 'opaque',
@@ -89,7 +131,6 @@ export const classifyTransaction = (txv?: TransactionView): TransactionClassific
   }
 
   if (isInternal) {
-    // TODO: fill this in with classification of swaps, swapclaims, etc.
     return 'unknownInternal';
   }
 
@@ -112,6 +153,20 @@ export const TRANSACTION_LABEL_BY_CLASSIFICATION: Record<TransactionClassificati
   dutchAuctionSchedule: 'Dutch Auction Schedule',
   dutchAuctionEnd: 'Dutch Auction End',
   dutchAuctionWithdraw: 'Dutch Auction Withdraw',
+  delegatorVote: 'Delegator Vote',
+  validatorVote: 'Validator Vote',
+  communityPoolDeposit: 'Community Pool Deposit',
+  communityPoolOutput: 'Community Pool Output',
+  communityPoolSpend: 'Community Pool Spend',
+  ibcRelayAction: 'IBC Relay Action',
+  positionClose: 'Position Close',
+  positionOpen: 'Position Open',
+  positionRewardClaim: 'Position Reward Claim',
+  positionWithdraw: 'Position Withdraw',
+  proposalDepositClaim: 'Proposal Deposit Claim',
+  proposalSubmit: 'Proposal Submit',
+  proposalWithdraw: 'Proposal Withdraw',
+  validatorDefinition: 'Validator Definition',
 };
 
 export const getTransactionClassificationLabel = (txv?: TransactionView): string =>
