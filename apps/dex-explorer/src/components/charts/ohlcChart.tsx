@@ -25,137 +25,156 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
     [string, number, number, number, number][]
   >([]); // [[date, open, close, low, high]]
   const [volumeData, setVolumeData] = useState<[string, number][]>([]);
-  // Time aggregate, 30s, 1m, 5m to start off
-  const [timeAggregateSeconds, setTimeAggregateSeconds] = useState<number>(30);
+  // Time aggregate, 1m, 5m, 1h, 1D to start off
+  const [timeAggregateSeconds, setTimeAggregateSeconds] = useState<number>(60);
   const [isAggregating, setIsAggregating] = useState(true);
 
-  // TODO: Decide how to set the start block and limit
   // Potentially show last n days of data based on current block - n days via avg block time
-  const blockTimeSeconds = 5; // 5 seconds
-  const startBlock = 0;
+  const blockTimeSeconds = 5; // 5s seconds
+  const daysLookback = 7; // 1 week lookback
   const limit = 10000;
 
   useEffect(() => {
     if (!asset1Token || !asset2Token) {
       return;
     }
-
-    // Get data from the API
-
-    // 1. First fetch ohlc data
-    const ohlcDataForward = fetch(
-      `/api/ohlc/${asset1Token.display}/${asset2Token.display}/${startBlock}/${limit}`
-    ).then((res) => res.json());
-    const ohlcDataBackward = fetch(
-      `/api/ohlc/${asset2Token.display}/${asset1Token.display}/${startBlock}/${limit}`
-    ).then((res) => res.json());
-
-    Promise.all([ohlcDataForward, ohlcDataBackward])
-      .then(([ohlcDataForwardResponse, ohlcDataBackwardResponse]) => {
-        if (
-          !ohlcDataForwardResponse ||
-          ohlcDataForwardResponse.error ||
-          !ohlcDataBackwardResponse ||
-          ohlcDataBackwardResponse.error
-        ) {
-          throw new Error("Error fetching data");
-        }
-        console.log("ohlcDataForward", ohlcDataForwardResponse);
-        console.log("ohlcDataBackward", ohlcDataBackwardResponse);
-
-        if (
-          ohlcDataForwardResponse.length === 0 &&
-          ohlcDataBackwardResponse.length === 0
-        ) {
-          setError("No OHLC data found");
-        }
-
-        // Merge the two arrays, forward will be left alone, however backward will need to have 1/price and volumes will have to account for the pricing and decimal difference
-        ohlcDataBackwardResponse.forEach((item: any) => {
-          item.open = 1 / item.open;
-          item.close = 1 / item.close;
-          item.high = 1 / item.high;
-          item.low = 1 / item.low;
-          // TODO: Adjust volumes based on price? But what price???
-          item.swapVolume =
-            (item.swapVolume * (1 / item.close)) /
-            10 ** Math.abs(asset2Token.decimals - asset2Token.decimals);
-          item.directVolume =
-            (item.directVolume * (1 / item.close)) /
-            10 ** Math.abs(asset1Token.decimals - asset2Token.decimals);
+    // Get current block height from `/api/blocks/1`
+    const getData = async () => {
+      const startBlock = await fetch("/api/blocks/1")
+        .then((res) => res.json())
+        .then((data) => {
+          const currentBlock = data[0]['height']
+          console.log(currentBlock)
+          const startBlock = currentBlock - Math.trunc(daysLookback * 24 * 60 * 60 / blockTimeSeconds);
+          console.log("Start block: ", startBlock);
+          return startBlock
+        })
+        .catch((error) => {
+          console.error("Error fetching data", error);
+          setError("Error fetching block height");
+          setIsLoading(false);
+          return 0; // Gets recent data (not necessarily last 7 days)
         });
 
-        // If theres any data at the same height, combine them
-        const combinedDataMap = new Map();
-        ohlcDataForwardResponse.forEach((item: any) => {
+      // Get data from the API
+
+      // 1. First fetch ohlc data
+      const ohlcDataForward = fetch(
+        `/api/ohlc/${asset1Token.display}/${asset2Token.display}/${startBlock}/${limit}`
+      ).then((res) => res.json());
+      const ohlcDataBackward = fetch(
+        `/api/ohlc/${asset2Token.display}/${asset1Token.display}/${startBlock}/${limit}`
+      ).then((res) => res.json());
+
+      Promise.all([ohlcDataForward, ohlcDataBackward])
+        .then(([ohlcDataForwardResponse, ohlcDataBackwardResponse]) => {
           if (
-            combinedDataMap.has(item.height) &&
-            combinedDataMap.get(item.height).height === item.height
+            !ohlcDataForwardResponse ||
+            ohlcDataForwardResponse.error ||
+            !ohlcDataBackwardResponse ||
+            ohlcDataBackwardResponse.error
           ) {
-            const combinedItem = combinedDataMap.get(item.height);
-            // OHLC should be weighted average
-            const totalVolume = item.swapVolume + item.directVolume;
-            const oldTotalVolume =
-              combinedItem.swapVolume + combinedItem.directVolume;
-
-            combinedItem.open =
-              (combinedItem.open * oldTotalVolume + item.open * totalVolume) /
-              (oldTotalVolume + totalVolume);
-            combinedItem.close =
-              (combinedItem.close * oldTotalVolume + item.close * totalVolume) /
-              (oldTotalVolume + totalVolume);
-            combinedItem.high = Math.max(combinedItem.high, item.high);
-            combinedItem.low = Math.min(combinedItem.low, item.low);
-
-            combinedItem.directVolume += item.directVolume;
-            combinedItem.swapVolume += item.swapVolume;
-          } else {
-            combinedDataMap.set(item.height, item);
+            throw new Error("Error fetching data");
           }
-        });
-        ohlcDataBackwardResponse.forEach((item: any) => {
+          console.log("ohlcDataForward", ohlcDataForwardResponse);
+          console.log("ohlcDataBackward", ohlcDataBackwardResponse);
+
           if (
-            combinedDataMap.has(item.height) &&
-            combinedDataMap.get(item.height).height === item.height
+            ohlcDataForwardResponse.length === 0 &&
+            ohlcDataBackwardResponse.length === 0
           ) {
-            const combinedItem = combinedDataMap.get(item.height);
-            // OHLC should be weighted average
-            const totalVolume = item.swapVolume + item.directVolume;
-            const oldTotalVolume =
-              combinedItem.swapVolume + combinedItem.directVolume;
-
-            combinedItem.open =
-              (combinedItem.open * oldTotalVolume + item.open * totalVolume) /
-              (oldTotalVolume + totalVolume);
-            combinedItem.close =
-              (combinedItem.close * oldTotalVolume + item.close * totalVolume) /
-              (oldTotalVolume + totalVolume);
-            combinedItem.high = Math.max(combinedItem.high, item.high);
-            combinedItem.low = Math.min(combinedItem.low, item.low);
-
-            combinedItem.directVolume += item.directVolume;
-            combinedItem.swapVolume += item.swapVolume;
-          } else {
-            combinedDataMap.set(item.height, item);
+            setError("No OHLC data found");
           }
+
+          // Merge the two arrays, forward will be left alone, however backward will need to have 1/price and volumes will have to account for the pricing and decimal difference
+          ohlcDataBackwardResponse.forEach((item: any) => {
+            item.open = 1 / item.open;
+            item.close = 1 / item.close;
+            item.high = 1 / item.high;
+            item.low = 1 / item.low;
+            // TODO: Adjust volumes based on price? But what price???
+            item.swapVolume =
+              (item.swapVolume * (1 / item.close)) /
+              10 ** Math.abs(asset2Token.decimals - asset2Token.decimals);
+            item.directVolume =
+              (item.directVolume * (1 / item.close)) /
+              10 ** Math.abs(asset1Token.decimals - asset2Token.decimals);
+          });
+
+          // If theres any data at the same height, combine them
+          const combinedDataMap = new Map();
+          ohlcDataForwardResponse.forEach((item: any) => {
+            if (
+              combinedDataMap.has(item.height) &&
+              combinedDataMap.get(item.height).height === item.height
+            ) {
+              const combinedItem = combinedDataMap.get(item.height);
+              // OHLC should be weighted average
+              const totalVolume = item.swapVolume + item.directVolume;
+              const oldTotalVolume =
+                combinedItem.swapVolume + combinedItem.directVolume;
+
+              combinedItem.open =
+                (combinedItem.open * oldTotalVolume + item.open * totalVolume) /
+                (oldTotalVolume + totalVolume);
+              combinedItem.close =
+                (combinedItem.close * oldTotalVolume + item.close * totalVolume) /
+                (oldTotalVolume + totalVolume);
+              combinedItem.high = Math.max(combinedItem.high, item.high);
+              combinedItem.low = Math.min(combinedItem.low, item.low);
+
+              combinedItem.directVolume += item.directVolume;
+              combinedItem.swapVolume += item.swapVolume;
+            } else {
+              combinedDataMap.set(item.height, item);
+            }
+          });
+          ohlcDataBackwardResponse.forEach((item: any) => {
+            if (
+              combinedDataMap.has(item.height) &&
+              combinedDataMap.get(item.height).height === item.height
+            ) {
+              const combinedItem = combinedDataMap.get(item.height);
+              // OHLC should be weighted average
+              const totalVolume = item.swapVolume + item.directVolume;
+              const oldTotalVolume =
+                combinedItem.swapVolume + combinedItem.directVolume;
+
+              combinedItem.open =
+                (combinedItem.open * oldTotalVolume + item.open * totalVolume) /
+                (oldTotalVolume + totalVolume);
+              combinedItem.close =
+                (combinedItem.close * oldTotalVolume + item.close * totalVolume) /
+                (oldTotalVolume + totalVolume);
+              combinedItem.high = Math.max(combinedItem.high, item.high);
+              combinedItem.low = Math.min(combinedItem.low, item.low);
+
+              combinedItem.directVolume += item.directVolume;
+              combinedItem.swapVolume += item.swapVolume;
+            } else {
+              combinedDataMap.set(item.height, item);
+            }
+          });
+
+          // Sort the data by height
+          // Put it back into an array
+          const sortedData = Array.from(combinedDataMap.values()).sort(
+            (a, b) => a.height - b.height
+          );
+
+          setOHLCData(sortedData as any);
+          setOriginalOHLCData(sortedData as any);
+          setIsOHLCDataLoading(false);
+        })
+        .catch((error) => {
+          console.error("Error fetching data", error);
+          setError("Error fetching OHLC data");
+          setIsLoading(false);
+          setIsOHLCDataLoading(false);
         });
+    }
 
-        // Sort the data by height
-        // Put it back into an array
-        const sortedData = Array.from(combinedDataMap.values()).sort(
-          (a, b) => a.height - b.height
-        );
-
-        setOHLCData(sortedData as any);
-        setOriginalOHLCData(sortedData as any);
-        setIsOHLCDataLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching data", error);
-        setError("Error fetching OHLC data");
-        setIsLoading(false);
-        setIsOHLCDataLoading(false);
-      });
+    getData();
 
     // 2. Then fetch timestamp data
   }, [asset1Token, asset2Token]);
@@ -244,8 +263,7 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
         const formattedDate = formatTimestamp(blockToTimestamp[ohlc["height"]]);
         if (!formattedDate) {
           console.error(
-            `Invalid timestamp for height ${ohlc["height"]}: ${
-              blockToTimestamp[ohlc["height"]]
+            `Invalid timestamp for height ${ohlc["height"]}: ${blockToTimestamp[ohlc["height"]]
             }`
           );
           setError("Missing timestamp for height " + ohlc["height"]);
@@ -270,13 +288,13 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
         ];
       })
       .filter((item) => item !== null) as [
-      string,
-      number,
-      number,
-      number,
-      number,
-      number
-    ][];
+        string,
+        number,
+        number,
+        number,
+        number,
+        number
+      ][];
 
     console.log("Prepared data: ", preparedData);
 
@@ -379,7 +397,7 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
       while (
         currentBatchStartBlock !== null &&
         currentBatchStartBlock + blocksPerInterval <=
-          originalOHLCData[originalOHLCData.length - 1]["height"]
+        originalOHLCData[originalOHLCData.length - 1]["height"]
       ) {
         const previousOHLC = aggregatedData[aggregatedData.length - 1];
         const placeholderBlock = currentBatchStartBlock + blocksPerInterval;
@@ -610,17 +628,6 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
             >
               <Button
                 borderRadius={10}
-                onClick={() => setTimeAggregateSeconds(30)}
-                colorScheme={
-                  timeAggregateSeconds === 30
-                    ? "purple"
-                    : "var(--charcoal-tertiary-blended)"
-                }
-              >
-                30s
-              </Button>
-              <Button
-                borderRadius={10}
                 onClick={() => setTimeAggregateSeconds(60)}
                 colorScheme={
                   timeAggregateSeconds === 60
@@ -651,6 +658,17 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
                 }
               >
                 1h
+              </Button>
+              <Button
+                borderRadius={10}
+                onClick={() => setTimeAggregateSeconds(60 * 60 * 24)}
+                colorScheme={
+                  timeAggregateSeconds === 60 * 60 * 24
+                    ? "purple"
+                    : "var(--charcoal-tertiary-blended)"
+                }
+              >
+                1d
               </Button>
             </ButtonGroup>
             <ReactECharts
