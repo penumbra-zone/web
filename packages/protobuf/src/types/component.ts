@@ -4,7 +4,7 @@
  * except the duplicated conflicting types (e.g. `GenesisContent`).
  */
 
-export type {
+export {
   AuctionParameters,
   ActionDutchAuctionSchedule,
   AuctionId,
@@ -28,7 +28,7 @@ export type {
   EventDutchAuctionScheduled,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
 
-export type {
+export {
   CompactBlock,
   CompactBlockRangeResponse,
   CompactBlockRequest,
@@ -40,13 +40,13 @@ export type {
   StatePayload_Swap,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1/compact_block_pb.js';
 
-export type {
+export {
   CommunityPoolAssetBalancesRequest,
   CommunityPoolAssetBalancesResponse,
   CommunityPoolParameters,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/community_pool/v1/community_pool_pb.js';
 
-export type {
+export {
   ArbExecutionRequest,
   ArbExecutionResponse,
   ArbExecutionsRequest,
@@ -124,9 +124,9 @@ export type {
   ZKSwapClaimProof,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
 
-export type { DistributionsParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/distributions/v1/distributions_pb.js';
+export { DistributionsParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/distributions/v1/distributions_pb.js';
 
-export type {
+export {
   FeeParameters,
   Fee,
   Gas,
@@ -139,12 +139,12 @@ export type {
   FeeTier_Tier,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb.js';
 
-export type {
+export {
   FundingParameters,
   EventFundingStreamReward,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/funding/v1/funding_pb.js';
 
-export type {
+export {
   AllTalliedDelegatorVotesForProposalRequest,
   AllTalliedDelegatorVotesForProposalResponse,
   CommunityPoolDeposit,
@@ -211,7 +211,7 @@ export type {
   ZKDelegatorVoteProof,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/governance/v1/governance_pb.js';
 
-export type {
+export {
   ClientCounter,
   ClientData,
   ConnectionCounter,
@@ -224,7 +224,7 @@ export type {
   FungibleTokenPacketData,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/ibc/v1/ibc_pb.js';
 
-export type {
+export {
   AnchorByHeightRequest,
   CommitmentSource,
   CommitmentSource_CommunityPoolOutput,
@@ -247,7 +247,7 @@ export type {
   TimestampByHeightRequest,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb.js';
 
-export type {
+export {
   AssetMetadataByIdsRequest,
   AssetMetadataByIdsResponse,
   EventBroadcastClue,
@@ -281,7 +281,7 @@ export type {
   ZKNullifierDerivationProof,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb.js';
 
-export type {
+export {
   BondingState,
   BaseRateData,
   BondingState_BondingStateEnum,

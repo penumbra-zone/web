@@ -4,13 +4,13 @@
  * except the duplicated conflicting types (e.g. `AppParametersRequest`).
  */
 
-export type {
+export {
   AppParameters,
   TransactionsByHeightRequest,
   TransactionsByHeightResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb.js';
 
-export type {
+export {
   AssetId,
   Value,
   Metadata,
@@ -26,7 +26,7 @@ export type {
   EstimatedPrice,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 
-export type {
+export {
   Address,
   AddressView,
   AddressIndex,
@@ -42,9 +42,9 @@ export type {
   WalletId,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 
-export type { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb.js';
+export { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb.js';
 
-export type {
+export {
   Transaction,
   Action,
   ActionPlan,
@@ -74,7 +74,7 @@ export type {
   WitnessData,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
 
-export type {
+export {
   EffectHash,
   TransactionId,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb.js';
