@@ -2,7 +2,6 @@ use std::collections::BTreeMap;
 use std::mem;
 
 use anyhow::anyhow;
-use ark_ff::UniformRand;
 use decaf377::{Fq, Fr};
 use penumbra_asset::asset::{Id, Metadata};
 use penumbra_asset::Value;
