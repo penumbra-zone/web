@@ -85,7 +85,7 @@ enum DataBoxType {
 }
 
 // Trace Type enum
-enum TraceType {
+export enum TraceType {
   SWAP = DataBoxType.SWAPS,
   ARB = DataBoxType.ARBS,
 }
@@ -94,10 +94,12 @@ export const Trace = ({
   trace,
   metadataByAssetId,
   type,
+  hidePrice,
 }: {
   trace: SwapExecution_Trace;
   metadataByAssetId: Record<string, Token>;
   type: TraceType;
+  hidePrice?: boolean;
 }) => {
   return (
     <Box width="100%" paddingLeft="0%">
@@ -154,7 +156,12 @@ export const Trace = ({
         })}
       </HStack>
       {type !== TraceType.ARB && (
-        <Price trace={trace} metadataByAssetId={metadataByAssetId} />
+        !hidePrice &&
+        <>
+          <div style={{ paddingTop: "7px", paddingBottom: "10px"}} >
+            <Price trace={trace} metadataByAssetId={metadataByAssetId} />
+          </div>
+        </>
       )}
     </Box>
   );
