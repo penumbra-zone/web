@@ -18,6 +18,34 @@ import { ValueViewComponent } from '@penumbra-zone/ui/ValueViewComponent';
 
 Deprecated components can be imported from `@penumbra-zone/ui/components/ui/<component-name>`, where `<component-name>` should be replaced with the kebab-cased component name.
 
+## Usage
+
+### Density
+
+Many Penumbra UI components come in two densities: `sparse` and `compact`. This feature allows Penumbra UI consumers to choose how to present data based on the context. For example, a table with dozens or hundreds of rows would be well suited to a `compact` density, while an interactive form could use the `sparse` density.
+
+To control density, use the `<Density />` component with either the `sparse` or `compact` prop:
+
+```tsx
+<Density compact>
+  <Table>{/* ... */}</Table>
+</Density>
+```
+
+In the example above, the `<Table />` (and all Penumbra UI components inside of it that have density variants) will use the `compact` variant, ensuring consistency throughout the layout.
+
+To enable density variants in your own components and layouts, import and use the `useDensity()` hook:
+
+```tsx
+const MyComponent = () => {
+  const density = useDensity();
+
+  return <div style={{ padding: density === 'sparse' ? '8px' : '4px' }}>{/* ... */}</div>;
+};
+```
+
+That way, `<MyComponent />` will have looser padding when wrapped with `<Density sparse />`, and tighter when wrapped with `<Density compact />`.
+
 ## Development
 
 These guidelines are for maintainers of the components in the Penumbra UI library.
@@ -290,3 +318,7 @@ describe('<FooBarAndMaybeBaz />', () => {
 ```
 
 Note that we do not use unit tests to test the visual appearance of components; that's a job better suited to screenshot testing, which we may implement in the future.
+
+### Use the `useDensity()` hook to control component density.
+
+Components should never accept a `density` prop to control their density. This ensures that all components in a given density context will be rendered with the same density.
