@@ -26,7 +26,7 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
   >([]); // [[date, open, close, low, high]]
   const [volumeData, setVolumeData] = useState<[string, number][]>([]);
   // Time aggregate, 1m, 5m, 1h, 1D to start off
-  const [timeAggregateSeconds, setTimeAggregateSeconds] = useState<number>(60);
+  const [timeAggregateSeconds, setTimeAggregateSeconds] = useState<number>(60 * 60); // 1h default
   const [isAggregating, setIsAggregating] = useState(true);
 
   // Potentially show last n days of data based on current block - n days via avg block time
