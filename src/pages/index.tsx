@@ -2,7 +2,7 @@ import styles from "@/Home.module.css";
 import Layout from "../components/layout";
 import { useEffect, useState } from "react";
 import { Price, Trace, TraceType } from "./block/[block_height]";
-import { Box, Heading, HStack, Link, VStack } from "@chakra-ui/react";
+import { Box, Heading, HStack, Link, Stack, VStack } from "@chakra-ui/react";
 import {
   SwapExecution,
   SwapExecution_Trace,
@@ -87,8 +87,8 @@ export default function Home() {
     <Layout pageTitle="Penumbra Dex Explorer">
       <div className={styles.container}>
         <main className={styles.main}>
-          <div style={{ width: "100%", maxWidth: "1000px", margin: "0 auto", padding: "40px 20px" }}>
-            <Heading as="h1" size="xl" textAlign="center" marginBottom="40px" color="var(--complimentary-background)">
+          <div style={{ width: "100%", maxWidth: "1000px", margin: "0 auto", padding: "40px 10px" }}>
+            <Heading as="h1" size={["lg", "xl"]} textAlign="center" marginBottom="40px" color="var(--complimentary-background)">
               Recent Swaps
             </Heading>
             {isLoading ? (
@@ -101,10 +101,10 @@ export default function Home() {
               </Box>
             ) : (
               <VStack
-                fontSize={"small"}
+                fontSize={["xs", "small"]}
                 fontFamily={"monospace"}
                 spacing={"40px"}
-                width={"100%"}
+                width={["60vw", "100%"]}
               >
                 {swapExecutions.map((swapExecution: any, execIndex: number) => {
                   const firstTrace = swapExecution.swapExecution.traces[0];
@@ -116,20 +116,20 @@ export default function Home() {
                   const poolLink = `/pair/${startAssetDisplay}:${endAssetDisplay}`;
 
                   return (
-                    <Box key={execIndex} width="100%" backgroundColor="var(--charcoal)" borderRadius="15px" padding="25px">
+                    <Box key={execIndex} width="100%" backgroundColor="var(--charcoal)" borderRadius="15px" padding={["15px", "25px"]}>
                       <VStack
                         spacing={8}
                         align="stretch"
                         width={"100%"}
                       >
-                        <HStack justifyContent="space-between" width="100%">
+                        <Stack direction={["column", "row"]} justifyContent="space-between" width="100%" spacing={[2, 0]}>
                           <Link href={`/block/${swapExecution.blockHeight}`} color="var(--complimentary-background)">
                             Block #{swapExecution.blockHeight}
                           </Link>
                           <Link href={poolLink} color="var(--complimentary-background)">
                             View {startAssetDisplay}:{endAssetDisplay} Pool
                           </Link>
-                        </HStack>
+                        </Stack>
 
                         {swapExecution.swapExecution.traces.map(
                           (trace: SwapExecution_Trace, index: number) => (
@@ -137,7 +137,7 @@ export default function Home() {
                               key={index}
                               backgroundColor="var(--charcoal-tertiary)"
                               borderRadius="10px"
-                              padding="20px"
+                              padding={["10px", "20px"]}
                               boxShadow="0 0 10px rgba(255, 255, 255, 0.05)"
                             >
                               <VStack spacing={4} align="stretch">
@@ -153,6 +153,7 @@ export default function Home() {
                                   borderRadius="8px"
                                   textAlign="center"
                                   fontWeight="bold"
+                                  fontSize={["xs", "small"]}
                                 >
                                   <Price trace={trace} metadataByAssetId={metadataByAssetId} />
                                 </Box>
