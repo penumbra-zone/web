@@ -9,21 +9,27 @@ export type TransactionClassification =
   | 'send'
   /** The transaction is a receive from an external account. */
   | 'receive'
-  /** The transaction contains a `swap` action. */
+  /** The transactions below are one that contain the respective action. */
   | 'swap'
-  /** The transaction contains a `swapClaim` action. */
   | 'swapClaim'
-  /** The transaction contains a `delegate` action. */
   | 'delegate'
-  /** The transaction contains an `undelegate` action. */
   | 'undelegate'
-  /** The transaction contains an `undelegateClaim` action. */
   | 'undelegateClaim'
-  /** The transaction contains an `ics20Withdrawal` action. */
   | 'ics20Withdrawal'
-  /** The transaction contains an `actionDutchAuctionSchedule` action. */
   | 'dutchAuctionSchedule'
-  /** The transaction contains an `actionDutchAuctionEnd` action. */
   | 'dutchAuctionEnd'
-  /** The transaction contains an `actionDutchAuctionWithdraw` action. */
-  | 'dutchAuctionWithdraw';
+  | 'dutchAuctionWithdraw'
+  | 'delegatorVote'
+  | 'validatorVote'
+  | 'validatorDefinition'
+  | 'ibcRelayAction'
+  | 'proposalSubmit'
+  | 'proposalWithdraw'
+  | 'proposalDepositClaim'
+  | 'positionOpen'
+  | 'positionClose'
+  | 'positionWithdraw'
+  | 'positionRewardClaim'
+  | 'communityPoolSpend'
+  | 'communityPoolOutput'
+  | 'communityPoolDeposit';
