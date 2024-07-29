@@ -6,6 +6,8 @@ import styled from 'styled-components';
 import { AssetIcon } from './AssetIcon';
 import { getMetadata } from '@penumbra-zone/getters/value-view';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
+import { Density } from '../types/Density';
+import { useDensity } from '../hooks/useDensity';
 
 type Context = 'default' | 'table';
 
@@ -30,9 +32,9 @@ const AssetIconWrapper = styled.div`
   flex-shrink: 0;
 `;
 
-const PillMarginOffsets = styled.div<{ $size: 'dense' | 'sparse' }>`
-  margin-left: ${props => props.theme.spacing(props.$size === 'sparse' ? -2 : -1)};
-  margin-right: ${props => props.theme.spacing(props.$size === 'sparse' ? -1 : 0)};
+const PillMarginOffsets = styled.div<{ $density: Density }>`
+  margin-left: ${props => props.theme.spacing(props.$density === 'sparse' ? -2 : -1)};
+  margin-right: ${props => props.theme.spacing(props.$density === 'sparse' ? -1 : 0)};
 `;
 
 const Content = styled.div`
@@ -64,11 +66,6 @@ export interface ValueViewComponentProps<SelectedContext extends Context> {
    */
   context?: SelectedContext;
   /**
-   * Can only be set when the `context` is `default`. For the `table` context,
-   * there is only one size (`sparse`).
-   */
-  size?: SelectedContext extends 'table' ? 'sparse' : 'dense' | 'sparse';
-  /**
    * Use `primary` in most cases, or `secondary` when this value view
    * represents a secondary value, such as when it's an equivalent value of a
    * numeraire.
@@ -79,13 +76,16 @@ export interface ValueViewComponentProps<SelectedContext extends Context> {
 /**
  * `ValueViewComponent` renders a `ValueView` — its amount, icon, and symbol.
  * Use this anywhere you would like to render a `ValueView`.
+ *
+ * Note that `ValueViewComponent` only has density variants when the `context`
+ * is `default`. For the `table` context, there is only one density.
  */
 export const ValueViewComponent = <SelectedContext extends Context = 'default'>({
   valueView,
   context,
-  size = 'sparse',
   priority = 'primary',
 }: ValueViewComponentProps<SelectedContext>) => {
+  const density = useDensity();
   const formattedAmount = getFormattedAmtFromValueView(valueView, true);
   const metadata = getMetadata.optional()(valueView);
   // Symbol default is "" and thus cannot do nullish coalescing
@@ -96,14 +96,14 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
     <ConditionalWrap
       if={!context || context === 'default'}
       then={children => (
-        <Pill size={size} priority={priority}>
-          <PillMarginOffsets $size={size}>{children}</PillMarginOffsets>
+        <Pill priority={priority}>
+          <PillMarginOffsets $density={density}>{children}</PillMarginOffsets>
         </Pill>
       )}
     >
       <Row $context={context ?? 'default'} $priority={priority}>
         <AssetIconWrapper>
-          <AssetIcon metadata={metadata} size={size} />
+          <AssetIcon metadata={metadata} />
         </AssetIconWrapper>
 
         <Content>

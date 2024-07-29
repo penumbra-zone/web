@@ -1,11 +1,13 @@
 import { MouseEventHandler, useContext } from 'react';
 import styled, { css, DefaultTheme } from 'styled-components';
 import { asTransientProps } from '../utils/asTransientProps';
-import { Size, Priority, ActionType, buttonInteractions } from '../utils/button';
+import { Priority, ActionType, buttonInteractions } from '../utils/button';
 import { getBackgroundColor } from './helpers';
 import { button } from '../utils/typography';
 import { LucideIcon } from 'lucide-react';
 import { ButtonPriorityContext } from '../utils/ButtonPriorityContext';
+import { Density } from '../types/Density';
+import { useDensity } from '../hooks/useDensity';
 
 const dense = css<StyledButtonProps>`
   border-radius: ${props => props.theme.borderRadius.full};
@@ -44,7 +46,7 @@ interface StyledButtonProps {
   $iconOnly?: boolean;
   $actionType: ActionType;
   $priority: Priority;
-  $size: Size;
+  $density: Density;
   $getFocusOutlineColor: (theme: DefaultTheme) => string;
   $getBorderRadius: (theme: DefaultTheme) => string;
 }
@@ -68,7 +70,7 @@ const StyledButton = styled.button<StyledButtonProps>`
   overflow: hidden;
   position: relative;
 
-  ${props => (props.$size === 'dense' ? dense : sparse)}
+  ${props => (props.$density === 'compact' ? dense : sparse)}
 
   ${buttonInteractions}
 
@@ -84,14 +86,6 @@ interface BaseButtonProps {
    * `aria-label` attribute.
    */
   children: string;
-  /**
-   * Set to `sparse` for more loosely arranged layouts, such as when this is the
-   * submit button for a form. Use `dense` when, e.g., this button appears next
-   * to every item in a dense list of data.
-   *
-   * Default: `sparse`.
-   */
-  size?: Size;
   /**
    * What type of action is this button related to? Leave as `default` for most
    * buttons, set to `accent` for the single most important action on a given
@@ -154,15 +148,15 @@ export const Button = ({
   onClick,
   icon: IconComponent,
   iconOnly,
-  size = 'sparse',
   actionType = 'default',
   type = 'button',
 }: ButtonProps) => {
   const priority = useContext(ButtonPriorityContext);
+  const density = useDensity();
 
   return (
     <StyledButton
-      {...asTransientProps({ iconOnly, size, actionType, priority })}
+      {...asTransientProps({ iconOnly, density, actionType, priority })}
       type={type}
       disabled={disabled}
       onClick={onClick}
@@ -170,10 +164,10 @@ export const Button = ({
       title={iconOnly ? children : undefined}
       $getFocusOutlineColor={theme => theme.color.action[outlineColorByActionType[actionType]]}
       $getBorderRadius={theme =>
-        size === 'sparse' ? theme.borderRadius.sm : theme.borderRadius.full
+        density === 'sparse' ? theme.borderRadius.sm : theme.borderRadius.full
       }
     >
-      {IconComponent && <IconComponent size={size === 'sparse' && iconOnly ? 24 : 16} />}
+      {IconComponent && <IconComponent size={density === 'sparse' && iconOnly ? 24 : 16} />}
 
       {!iconOnly && children}
     </StyledButton>

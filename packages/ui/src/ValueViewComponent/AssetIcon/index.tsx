@@ -15,7 +15,6 @@ const IconImg = styled.img`
 
 export interface AssetIcon {
   metadata?: Metadata;
-  size?: 'sparse' | 'dense';
 }
 
 export const AssetIcon = ({ metadata }: AssetIcon) => {

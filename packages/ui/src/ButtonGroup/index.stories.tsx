@@ -17,7 +17,7 @@ type Story = StoryObj<typeof ButtonGroup>;
 export const Basic: Story = {
   args: {
     actionType: 'default',
-    size: 'sparse',
+    density: 'sparse',
     iconOnly: false,
     buttons: [
       {
