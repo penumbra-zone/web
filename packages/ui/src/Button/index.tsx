@@ -9,20 +9,20 @@ import { ButtonPriorityContext } from '../utils/ButtonPriorityContext';
 import { Density } from '../types/Density';
 import { useDensity } from '../hooks/useDensity';
 
-const dense = css<StyledButtonProps>`
-  border-radius: ${props => props.theme.borderRadius.full};
-  padding-left: ${props => props.theme.spacing(props.$iconOnly ? 2 : 4)};
-  padding-right: ${props => props.theme.spacing(props.$iconOnly ? 2 : 4)};
-  height: 32px;
-  min-width: 32px;
-`;
-
 const sparse = css<StyledButtonProps>`
   border-radius: ${props => props.theme.borderRadius.sm};
   padding-left: ${props => props.theme.spacing(4)};
   padding-right: ${props => props.theme.spacing(4)};
   height: 48px;
   width: ${props => (props.$iconOnly ? '48px' : '100%')};
+`;
+
+const compact = css<StyledButtonProps>`
+  border-radius: ${props => props.theme.borderRadius.full};
+  padding-left: ${props => props.theme.spacing(props.$iconOnly ? 2 : 4)};
+  padding-right: ${props => props.theme.spacing(props.$iconOnly ? 2 : 4)};
+  height: 32px;
+  min-width: 32px;
 `;
 
 const outlineColorByActionType: Record<ActionType, keyof DefaultTheme['color']['action']> = {
@@ -70,7 +70,7 @@ const StyledButton = styled.button<StyledButtonProps>`
   overflow: hidden;
   position: relative;
 
-  ${props => (props.$density === 'compact' ? dense : sparse)}
+  ${props => (props.$density === 'sparse' ? sparse : compact)}
 
   ${buttonInteractions}
 
