@@ -8,46 +8,34 @@ import {
   StoreHash,
 } from './state-commitment-tree.js';
 
-import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb.js';
 import {
+  AppParameters,
   AssetId,
   EstimatedPrice,
   Metadata,
   Value,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import {
   AuctionId,
   DutchAuctionDescription,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
-import {
   Position,
   PositionId,
   PositionState,
   TradingPair,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
-import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb.js';
-import {
+  GasPrices,
   Epoch,
   Nullifier,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb.js';
-import {
   FmdParameters,
   Note,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb.js';
-import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
-import {
+  ValidatorInfo,
   AddressIndex,
   IdentityKey,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
-import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
-import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb.js';
-import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb.js';
-import {
+  Transaction,
+  TransactionId,
+  StateCommitment,
   NotesForVotingResponse,
   SpendableNoteRecord,
   SwapRecord,
   TransactionInfo,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+} from '@penumbra-zone/protobuf/types';
 import { PartialMessage } from '@bufbuild/protobuf';
 import type { Jsonified } from './jsonified.js';
 

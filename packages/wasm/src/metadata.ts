@@ -1,4 +1,4 @@
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { Metadata } from '@penumbra-zone/protobuf/types';
 import { customize_symbol } from '../wasm/index.js';
 
 /**

@@ -1,6 +1,6 @@
 import type { Impl } from './index.js';
 import { servicesCtx } from '../ctx/prax.js';
-import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { TransactionInfo } from '@penumbra-zone/protobuf/types';
 import { generateTransactionInfo } from '@penumbra-zone/wasm/transaction';
 import { fvkCtx } from '../ctx/full-viewing-key.js';
 

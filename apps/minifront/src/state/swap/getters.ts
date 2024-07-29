@@ -1,6 +1,4 @@
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import { BalancesResponse, Metadata, AddressIndex } from '@penumbra-zone/protobuf/types';
 import { getMetadataFromBalancesResponseOptional } from '@penumbra-zone/getters/balances-response';
 import { getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { getMetadata } from '@penumbra-zone/getters/value-view';

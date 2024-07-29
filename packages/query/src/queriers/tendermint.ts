@@ -1,8 +1,7 @@
 import { PromiseClient } from '@connectrpc/connect';
 import { createClient } from './utils.js';
 import { TendermintProxyService } from '@penumbra-zone/protobuf';
-import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb.js';
-import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
+import { TransactionId, Transaction } from '@penumbra-zone/protobuf/types';
 import type { TendermintQuerierInterface } from '@penumbra-zone/types/querier';
 
 declare global {

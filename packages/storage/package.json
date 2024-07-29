@@ -36,6 +36,7 @@
     "@penumbra-labs/registry": "10.0.0",
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
+    "@penumbra-zone/protobuf": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
     "@penumbra-zone/wasm": "workspace:*",
     "idb": "^8.0.0"
@@ -49,6 +50,7 @@
     "@penumbra-labs/registry": "10.0.0",
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
+    "@penumbra-zone/protobuf": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
     "@penumbra-zone/wasm": "workspace:*"
   }

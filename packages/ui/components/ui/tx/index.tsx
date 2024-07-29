@@ -1,12 +1,7 @@
-import { TransactionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
+import { TransactionView, AssetId, Metadata, ValueView } from '@penumbra-zone/protobuf/types';
 import { MemoViewComponent } from './memo-view';
 import { ActionViewComponent } from './action-view';
 import { ViewBox, ViewSection } from './viewbox';
-import {
-  AssetId,
-  Metadata,
-  ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { ValueViewComponent } from '../value';
 import { useEffect, useState } from 'react';
 

@@ -1,9 +1,9 @@
 import {
   Metadata,
   ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import { DutchAuctionDescription } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb.js';
+  DutchAuctionDescription,
+  Amount,
+} from '@penumbra-zone/protobuf/types';
 import { getHumanReadableInterval } from './get-human-readable-interval';
 
 const APPROX_BLOCK_DURATION_SEC = 5n;

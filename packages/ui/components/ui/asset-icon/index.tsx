@@ -1,4 +1,4 @@
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { Metadata } from '@penumbra-zone/protobuf/types';
 import { Identicon } from '../identicon';
 import { cn } from '../../../lib/utils';
 import { DelegationTokenIcon } from './delegation-token-icon';
@@ -14,8 +14,8 @@ export const AssetIcon = ({
   size?: 'xs' | 'sm' | 'lg';
 }) => {
   // Image default is "" and thus cannot do nullish-coalescing
-  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-  const icon = metadata?.images[0]?.png || metadata?.images[0]?.svg;
+
+  const icon = metadata?.images[0]?.png ?? metadata?.images[0]?.svg;
   const className = cn(
     'rounded-full',
     size === 'xs' && 'size-4',

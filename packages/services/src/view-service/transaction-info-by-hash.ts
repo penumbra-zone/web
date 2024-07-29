@@ -2,7 +2,7 @@ import type { Impl } from './index.js';
 import { servicesCtx } from '../ctx/prax.js';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { generateTransactionInfo } from '@penumbra-zone/wasm/transaction';
-import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { TransactionInfo } from '@penumbra-zone/protobuf/types';
 import { fvkCtx } from '../ctx/full-viewing-key.js';
 
 export const transactionInfoByHash: Impl['transactionInfoByHash'] = async (req, ctx) => {

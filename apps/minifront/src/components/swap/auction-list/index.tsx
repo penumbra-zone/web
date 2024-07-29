@@ -1,7 +1,7 @@
 import { AllSlices } from '../../../state';
 import { DutchAuctionComponent } from '@repo/ui/components/ui/dutch-auction-component';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
-import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
+import { AuctionId, AddressIndex } from '@penumbra-zone/protobuf/types';
 import { GradientHeader } from '@repo/ui/components/ui/gradient-header';
 import { QueryLatestStateButton } from './query-latest-state-button';
 import { Card } from '@repo/ui/components/ui/card';
@@ -13,7 +13,6 @@ import { useAuctionInfos } from '../../../state/swap/dutch-auction';
 import { useStatus } from '../../../state/status';
 import { byStartHeightAscending } from './helpers';
 import { Filters } from './filters';
-import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 
 const auctionListSelector = (state: AllSlices) => ({
   endAuction: state.swap.dutchAuction.endAuction,

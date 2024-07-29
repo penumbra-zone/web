@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { calculateCommissionAsPercentage, getVotingPowerByValidatorInfo } from './staking.js';
-import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
+import { ValidatorInfo } from '@penumbra-zone/protobuf/types';
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
 import { getIdentityKeyFromValidatorInfo } from '@penumbra-zone/getters/validator-info';
 

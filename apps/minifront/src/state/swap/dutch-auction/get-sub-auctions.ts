@@ -1,4 +1,7 @@
-import { TransactionPlannerRequest_ActionDutchAuctionSchedule } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import {
+  TransactionPlannerRequest_ActionDutchAuctionSchedule,
+  Amount,
+} from '@penumbra-zone/protobuf/types';
 import { getAssetId, getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import {
   getAssetIdFromValueView,
@@ -11,7 +14,6 @@ import { GDA_RECIPES, GdaRecipe, STEP_COUNT } from '../constants';
 import { BLOCKS_PER_MINUTE } from '../../constants';
 import { timeUntilNextEvent } from './time-until-next-event';
 import { splitLoHi } from '@penumbra-zone/types/lo-hi';
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb.js';
 import { BigNumber } from 'bignumber.js';
 import { SwapSlice } from '..';
 

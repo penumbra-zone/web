@@ -1,16 +1,14 @@
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import {
+  Metadata,
   SpendableNoteRecord,
   SwapRecord,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
-import {
   Position,
   PositionId,
   TradingPair,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
-import { Epoch } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb.js';
-import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb.js';
-import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
+  Epoch,
+  TransactionId,
+  Transaction,
+} from '@penumbra-zone/protobuf/types';
 import type { ScanBlockResult } from '@penumbra-zone/types/state-commitment-tree';
 
 export const emptyScanResult: ScanBlockResult = {

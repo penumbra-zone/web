@@ -1,8 +1,8 @@
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import {
+  ValueView,
   TransactionPlannerRequest,
   TransactionPlannerRequest_UndelegateClaim,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+} from '@penumbra-zone/protobuf/types';
 
 import { sctClient, stakeClient, viewClient } from '../../clients';
 import {

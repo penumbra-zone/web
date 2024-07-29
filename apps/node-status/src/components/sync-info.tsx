@@ -2,7 +2,7 @@ import { useLoaderData } from 'react-router-dom';
 import { IndexLoaderResponse } from '../fetching/loader';
 import { Card } from '@repo/ui/components/ui/card';
 import { format } from 'date-fns';
-import { SyncInfo as SyncInfoProto } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/util/tendermint_proxy/v1/tendermint_proxy_pb.js';
+import { SyncInfo as SyncInfoProto } from '@penumbra-zone/protobuf/types';
 
 const getFormattedTime = (syncInfo: SyncInfoProto): { date?: string; time?: string } => {
   const dateObj = syncInfo.latestBlockTime?.toDate();

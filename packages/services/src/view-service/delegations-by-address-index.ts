@@ -1,24 +1,22 @@
-import { IdentityKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+import {
+  IdentityKey,
+  ValidatorInfo,
+  AssetMetadataByIdRequest,
+  BalancesRequest,
+  BalancesResponse,
+  DelegationsByAddressIndexRequest_Filter,
+  DelegationsByAddressIndexResponse,
+  Metadata,
+  ValueView,
+} from '@penumbra-zone/protobuf/types';
 import { customizeSymbol } from '@penumbra-zone/wasm/metadata';
 import { assetPatterns } from '@penumbra-zone/types/assets';
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
 import { Any, PartialMessage } from '@bufbuild/protobuf';
 import { getValidatorInfo } from '@penumbra-zone/getters/validator-info-response';
 import { getIdentityKeyFromValidatorInfo } from '@penumbra-zone/getters/validator-info';
-import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
-import {
-  AssetMetadataByIdRequest,
-  BalancesRequest,
-  BalancesResponse,
-  DelegationsByAddressIndexRequest_Filter,
-  DelegationsByAddressIndexResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import { stakeClientCtx } from '../ctx/stake-client.js';
 import { balances } from './balances.js';
-import {
-  Metadata,
-  ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import { assetMetadataById } from './asset-metadata-by-id.js';
 import { getDisplayDenomFromView } from '@penumbra-zone/getters/value-view';
 import { Impl } from './index.js';

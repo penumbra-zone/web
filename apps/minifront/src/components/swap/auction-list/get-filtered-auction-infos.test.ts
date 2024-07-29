@@ -1,11 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { getFilteredAuctionInfos } from './get-filtered-auction-infos';
-import {
-  AuctionId,
-  DutchAuction,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
+import { AuctionId, DutchAuction, AddressIndex } from '@penumbra-zone/protobuf/types';
 import { AuctionInfo } from '../../../fetchers/auction-infos';
-import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 
 const MOCK_AUCTION_1 = new DutchAuction({
   description: {

@@ -1,4 +1,4 @@
-import { ActionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
+import { ActionView } from '@penumbra-zone/protobuf/types';
 import { asPublicActionView, asReceiverActionView } from './action-view.js';
 import { describe, expect, test, vi } from 'vitest';
 

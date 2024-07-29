@@ -1,8 +1,5 @@
 import { Translator } from './types.js';
-import {
-  SwapView,
-  SwapView_Opaque,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
+import { SwapView, SwapView_Opaque } from '@penumbra-zone/protobuf/types';
 
 export const asOpaqueSwapView: Translator<SwapView> = swapView => {
   if (swapView?.swapView.case === 'opaque') {

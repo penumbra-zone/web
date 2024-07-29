@@ -1,15 +1,15 @@
 import { Mock, beforeEach, describe, expect, test, vi } from 'vitest';
 import {
-  AppParametersRequest,
+  AppParameters,
   AppParametersResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+  AppParametersRequest,
+} from '@penumbra-zone/protobuf/types';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
+import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { servicesCtx } from '../ctx/prax.js';
-import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb.js';
 import { appParameters } from './app-parameters.js';
 import { IndexedDbMock, MockServices } from '../test-utils.js';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 describe('AppParameters request handler', () => {
   let mockServices: MockServices;

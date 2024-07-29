@@ -1,10 +1,5 @@
 import { compute_position_id, get_lpnft_asset } from '../wasm/index.js';
-import {
-  Position,
-  PositionId,
-  PositionState,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { Position, PositionId, PositionState, Metadata } from '@penumbra-zone/protobuf/types';
 
 export const computePositionId = (position: Position): PositionId => {
   const bytes = compute_position_id(position.toBinary());

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { BalancesResponse } from '@penumbra-zone/protobuf/types';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import { getMetadataFromBalancesResponseOptional } from '@penumbra-zone/getters/balances-response';
 import { BalanceValueView } from '@repo/ui/components/ui/balance-value-view';

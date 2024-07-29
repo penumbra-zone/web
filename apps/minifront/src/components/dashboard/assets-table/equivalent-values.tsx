@@ -1,4 +1,4 @@
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { ValueView } from '@penumbra-zone/protobuf/types';
 import { asValueView } from '@penumbra-zone/getters/equivalent-value';
 import { getDisplayDenomFromView, getEquivalentValues } from '@penumbra-zone/getters/value-view';
 import { ValueViewComponent } from '@repo/ui/components/ui/value';

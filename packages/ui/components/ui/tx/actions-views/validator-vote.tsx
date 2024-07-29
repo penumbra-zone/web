@@ -1,6 +1,6 @@
 import { ViewBox } from '../viewbox';
 import { ActionDetails } from './action-details';
-import { ValidatorVote } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/governance/v1/governance_pb';
+import { ValidatorVote } from '@penumbra-zone/protobuf/types';
 import { VoteToString } from './delegator-vote.tsx';
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
 import { bech32mGovernanceId } from '@penumbra-zone/bech32m/penumbragovern';

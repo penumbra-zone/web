@@ -2,10 +2,10 @@ import { beforeEach, describe, expect, test } from 'vitest';
 import {
   EphemeralAddressRequest,
   EphemeralAddressResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+  Address,
+} from '@penumbra-zone/protobuf/types';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
-import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 import { ephemeralAddress } from './ephemeral-address.js';
 import { testFullViewingKey } from '../test-utils.js';
 import { fvkCtx } from '../ctx/full-viewing-key.js';

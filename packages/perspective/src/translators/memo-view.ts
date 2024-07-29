@@ -1,4 +1,4 @@
-import { MemoView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
+import { MemoView } from '@penumbra-zone/protobuf/types';
 import { Translator } from './types.js';
 import { asOpaqueAddressView } from './address-view.js';
 

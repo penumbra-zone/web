@@ -1,10 +1,8 @@
-import { DutchAuctionDescription } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb.js';
+import { DutchAuctionDescription, Amount, Metadata } from '@penumbra-zone/protobuf/types';
 import { getStepIndex } from './get-step-index';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
 import { splitLoHi } from '@penumbra-zone/types/lo-hi';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 
 /**
  * Returns the price, _in the output asset_, for one _display_ denom of the

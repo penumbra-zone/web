@@ -1,7 +1,4 @@
-import {
-  Metadata,
-  ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { Metadata, ValueView } from '@penumbra-zone/protobuf/types';
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
 
 const u8 = (length: number) => Uint8Array.from({ length }, () => Math.floor(Math.random() * 256));

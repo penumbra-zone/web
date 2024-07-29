@@ -1,9 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getAssetPriorityScore } from './asset-priority-score.js';
-import {
-  AssetId,
-  Metadata,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { AssetId, Metadata } from '@penumbra-zone/protobuf/types';
 import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 
 describe('getAssetPriorityScore', () => {

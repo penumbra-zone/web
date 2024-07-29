@@ -1,11 +1,6 @@
-import {
-  AuctionId,
-  DutchAuction,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
+import { AuctionId, DutchAuction, Metadata, AddressIndex } from '@penumbra-zone/protobuf/types';
 import { viewClient } from '../clients';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import { getInputAssetId, getOutputAssetId } from '@penumbra-zone/getters/dutch-auction';
-import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 
 export interface AuctionInfo {
   id: AuctionId;

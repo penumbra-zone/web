@@ -2,16 +2,14 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import {
   WitnessRequest,
   WitnessResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+  WitnessData,
+  TransactionPlan,
+} from '@penumbra-zone/protobuf/types';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
 import { IndexedDbMock, MockServices } from '../test-utils.js';
 import { witness } from './witness.js';
-import {
-  TransactionPlan,
-  WitnessData,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 describe('Witness request handler', () => {

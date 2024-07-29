@@ -1,5 +1,4 @@
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { ValueView, BalancesResponse } from '@penumbra-zone/protobuf/types';
 import { getAssetIdFromValueView } from '@penumbra-zone/getters/value-view';
 import { addAmounts } from '@penumbra-zone/types/amount';
 

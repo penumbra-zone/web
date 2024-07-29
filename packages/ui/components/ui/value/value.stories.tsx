@@ -1,11 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
 import { ValueViewComponent } from '.';
-import {
-  Metadata,
-  ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb.js';
+import { Metadata, ValueView, Amount } from '@penumbra-zone/protobuf/types';
 
 const meta: Meta<typeof ValueViewComponent> = {
   component: ValueViewComponent,

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
 import { AssetIcon } from '.';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { Metadata } from '@penumbra-zone/protobuf/types';
 
 const meta: Meta<typeof AssetIcon> = {
   component: AssetIcon,

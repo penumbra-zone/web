@@ -2,18 +2,16 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import {
   TransactionInfoByHashRequest,
   TransactionInfoByHashResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+  TransactionId,
+  Transaction,
+  TransactionPerspective,
+} from '@penumbra-zone/protobuf/types';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
 import { IndexedDbMock, MockServices, TendermintMock, testFullViewingKey } from '../test-utils.js';
 import { transactionInfoByHash } from './transaction-info-by-hash.js';
-import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
-import {
-  Transaction,
-  TransactionPerspective,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
 import { fvkCtx } from '../ctx/full-viewing-key.js';
 
 const mockTransactionInfo = vi.hoisted(() => vi.fn());

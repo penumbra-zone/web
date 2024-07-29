@@ -428,6 +428,9 @@ importers:
       '@penumbra-zone/getters':
         specifier: workspace:*
         version: link:../getters
+      '@penumbra-zone/protobuf':
+        specifier: workspace:*
+        version: link:../protobuf
       '@penumbra-zone/wasm':
         specifier: workspace:*
         version: link:../wasm
@@ -577,6 +580,9 @@ importers:
       '@penumbra-zone/getters':
         specifier: workspace:*
         version: link:../getters
+      '@penumbra-zone/protobuf':
+        specifier: workspace:*
+        version: link:../protobuf
       '@penumbra-zone/types':
         specifier: workspace:*
         version: link:../types
@@ -651,6 +657,9 @@ importers:
       '@penumbra-zone/getters':
         specifier: workspace:*
         version: link:../getters
+      '@penumbra-zone/protobuf':
+        specifier: workspace:*
+        version: link:../protobuf
 
   packages/ui:
     dependencies:
@@ -814,6 +823,9 @@ importers:
       '@penumbra-zone/getters':
         specifier: workspace:*
         version: link:../getters
+      '@penumbra-zone/protobuf':
+        specifier: workspace:*
+        version: link:../protobuf
       '@storybook/addon-essentials':
         specifier: ^8.1.1
         version: 8.1.11(@types/react-dom@18.3.0)(@types/react@18.3.3)(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)

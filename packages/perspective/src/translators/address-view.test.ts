@@ -1,7 +1,4 @@
-import {
-  Address,
-  AddressView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+import { Address, AddressView } from '@penumbra-zone/protobuf/types';
 import { describe, expect, test } from 'vitest';
 import { asOpaqueAddressView } from './address-view.js';
 

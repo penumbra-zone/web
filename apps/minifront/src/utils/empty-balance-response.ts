@@ -1,6 +1,4 @@
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
-import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+import { Metadata, BalancesResponse, AddressView } from '@penumbra-zone/protobuf/types';
 import { zeroValueView } from './zero-value-view';
 
 /**

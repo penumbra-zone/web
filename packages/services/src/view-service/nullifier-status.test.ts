@@ -8,12 +8,12 @@ import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
 
-import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb.js';
 import {
+  Nullifier,
   NullifierStatusRequest,
   SpendableNoteRecord,
   SwapRecord,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+} from '@penumbra-zone/protobuf/types';
 import { IndexedDbMock, MockServices } from '../test-utils.js';
 import { stringToUint8Array } from '@penumbra-zone/types/string';
 

@@ -1,7 +1,4 @@
-import {
-  AuthorizationData,
-  TransactionPlan,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
+import { AuthorizationData, TransactionPlan } from '@penumbra-zone/protobuf/types';
 import { HandlerContext, ConnectError, Code } from '@connectrpc/connect';
 import { custodyClientCtx } from '../../ctx/custody-client.js';
 

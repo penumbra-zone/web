@@ -1,43 +1,37 @@
-import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb.js';
 import {
+  AppParameters,
   AssetId,
   EstimatedPrice,
   Metadata,
   Value,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import {
   Position,
   PositionId,
   PositionState,
   TradingPair,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
-import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb.js';
-import {
+  GasPrices,
   Epoch,
   Nullifier,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb.js';
-import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb.js';
-import {
+  FmdParameters,
   AddressIndex,
   IdentityKey,
   WalletId,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
-import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb.js';
-import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb.js';
-import {
+  TransactionId,
+  StateCommitment,
   NotesForVotingResponse,
   SpendableNoteRecord,
   SwapRecord,
   TransactionInfo,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+  ValidatorInfo,
+  Transaction,
+  AuctionId,
+  DutchAuctionDescription,
+} from '@penumbra-zone/protobuf/types';
 import { assetPatterns, PRICE_RELEVANCE_THRESHOLDS } from '@penumbra-zone/types/assets';
 import { IDBPDatabase, openDB, StoreNames } from 'idb';
 import { IbdUpdater, IbdUpdates } from './updater.js';
 
 import { IdbCursorSource } from './stream.js';
 
-import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
-import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { bech32mIdentityKey, identityKeyFromBech32m } from '@penumbra-zone/bech32m/penumbravalid';
 import { bech32mWalletId } from '@penumbra-zone/bech32m/penumbrawalletid';
@@ -58,10 +52,6 @@ import type {
   StateCommitmentTree,
 } from '@penumbra-zone/types/state-commitment-tree';
 import { sctPosition } from '@penumbra-zone/wasm/tree';
-import {
-  AuctionId,
-  DutchAuctionDescription,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { PartialMessage } from '@bufbuild/protobuf';
 import { getAmountFromRecord } from '@penumbra-zone/getters/spendable-note-record';
@@ -218,7 +208,7 @@ export class IndexedDb implements IndexedDbInterface {
   async saveSpendableNote(note: SpendableNoteRecord) {
     await this.u.update({
       table: 'SPENDABLE_NOTES',
-      value: note.toJson() as Jsonified<SpendableNoteRecord>,
+      value: note.toJson(),
     });
   }
 
@@ -272,7 +262,7 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async saveAssetsMetadata(metadata: Metadata) {
-    await this.u.update({ table: 'ASSETS', value: metadata.toJson() as Jsonified<Metadata> });
+    await this.u.update({ table: 'ASSETS', value: metadata.toJson() });
   }
 
   // creates a local copy of the asset list from registry (https://github.com/prax-wallet/registry)
@@ -319,7 +309,7 @@ export class IndexedDb implements IndexedDbInterface {
     const tx = new TransactionInfo({ id, height, transaction });
     await this.u.update({
       table: 'TRANSACTIONS',
-      value: tx.toJson() as Jsonified<TransactionInfo>,
+      value: tx.toJson(),
     });
   }
 
@@ -343,7 +333,7 @@ export class IndexedDb implements IndexedDbInterface {
   async saveFmdParams(fmd: FmdParameters): Promise<void> {
     await this.u.update({
       table: 'FMD_PARAMETERS',
-      value: fmd.toJson() as Jsonified<FmdParameters>,
+      value: fmd.toJson(),
       key: 'params',
     });
   }
@@ -368,7 +358,7 @@ export class IndexedDb implements IndexedDbInterface {
     }
     await this.u.update({
       table: 'APP_PARAMETERS',
-      value: app.toJson() as Jsonified<AppParameters>,
+      value: app.toJson(),
       key: 'params',
     });
   }
@@ -395,7 +385,7 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async saveSwap(swap: SwapRecord) {
-    await this.u.update({ table: 'SWAPS', value: swap.toJson() as Jsonified<SwapRecord> });
+    await this.u.update({ table: 'SWAPS', value: swap.toJson() });
   }
 
   async getSwapByCommitment(commitment: StateCommitment): Promise<SwapRecord | undefined> {
@@ -428,7 +418,7 @@ export class IndexedDb implements IndexedDbInterface {
   async saveGasPrices(value: PartialMessage<GasPrices>): Promise<void> {
     await this.u.update({
       table: 'GAS_PRICES',
-      value: new GasPrices(value).toJson() as Jsonified<GasPrices>,
+      value: new GasPrices(value).toJson(),
     });
   }
 
@@ -524,8 +514,8 @@ export class IndexedDb implements IndexedDbInterface {
 
   async addPosition(positionId: PositionId, position: Position): Promise<void> {
     const positionRecord = {
-      id: positionId.toJson() as Jsonified<PositionId>,
-      position: position.toJson() as Jsonified<Position>,
+      id: positionId.toJson(),
+      position: position.toJson(),
     };
     await this.u.update({ table: 'POSITIONS', value: positionRecord });
   }
@@ -544,8 +534,8 @@ export class IndexedDb implements IndexedDbInterface {
     await this.u.update({
       table: 'POSITIONS',
       value: {
-        id: positionId.toJson() as Jsonified<PositionId>,
-        position: position.toJson() as Jsonified<Position>,
+        id: positionId.toJson(),
+        position: position.toJson(),
       },
     });
   }
@@ -622,7 +612,7 @@ export class IndexedDb implements IndexedDbInterface {
     await this.u.update({
       table: 'VALIDATOR_INFOS',
       key: identityKeyAsBech32,
-      value: validatorInfo.toJson() as Jsonified<ValidatorInfo>,
+      value: validatorInfo.toJson(),
     });
   }
 
@@ -675,7 +665,7 @@ export class IndexedDb implements IndexedDbInterface {
 
     await this.u.update({
       table: 'PRICES',
-      value: estimatedPrice.toJson() as Jsonified<EstimatedPrice>,
+      value: estimatedPrice.toJson(),
     });
   }
 
@@ -758,7 +748,7 @@ export class IndexedDb implements IndexedDbInterface {
 
   private addNewNotes(txs: IbdUpdates, notes: SpendableNoteRecord[]): void {
     for (const n of notes) {
-      txs.add({ table: 'SPENDABLE_NOTES', value: n.toJson() as Jsonified<SpendableNoteRecord> });
+      txs.add({ table: 'SPENDABLE_NOTES', value: n.toJson() });
     }
   }
 
@@ -782,7 +772,7 @@ export class IndexedDb implements IndexedDbInterface {
       // Adds position prefix to swap record. Needed to make swap claims.
       n.outputData.sctPositionPrefix = sctPosition(blockHeight, epoch);
 
-      txs.add({ table: 'SWAPS', value: n.toJson() as Jsonified<SwapRecord> });
+      txs.add({ table: 'SWAPS', value: n.toJson() });
     }
   }
 
@@ -800,9 +790,7 @@ export class IndexedDb implements IndexedDbInterface {
     const existingRecord = await this.db.get('AUCTIONS', key);
     const auction =
       (value.auction?.toJson() as Jsonified<T> | undefined) ?? existingRecord?.auction;
-    const noteCommitment =
-      (value.noteCommitment?.toJson() as Jsonified<StateCommitment> | undefined) ??
-      existingRecord?.noteCommitment;
+    const noteCommitment = value.noteCommitment?.toJson() ?? existingRecord?.noteCommitment;
     const seqNum = value.seqNum ?? existingRecord?.seqNum;
 
     await this.u.update({
@@ -840,8 +828,8 @@ export class IndexedDb implements IndexedDbInterface {
     await this.db.add(
       'AUCTION_OUTSTANDING_RESERVES',
       {
-        input: value.input.toJson() as Jsonified<Value>,
-        output: value.output.toJson() as Jsonified<Value>,
+        input: value.input.toJson(),
+        output: value.output.toJson(),
       },
       uint8ArrayToBase64(auctionId.inner),
     );

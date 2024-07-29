@@ -1,9 +1,5 @@
-import { SwapExecution_Trace } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
+import { SwapExecution_Trace, Metadata, ValueView } from '@penumbra-zone/protobuf/types';
 import { Trace } from './trace';
-import {
-  Metadata,
-  ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import { ValueViewComponent } from '@repo/ui/components/ui/value';
 import { ArrowDown, ArrowUp } from 'lucide-react';
 

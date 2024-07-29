@@ -5,14 +5,14 @@ import {
   UnbondingTokensByAddressIndexRequest,
   UnbondingTokensByAddressIndexRequest_Filter,
   UnbondingTokensByAddressIndexResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+  ValidatorInfoResponse,
+} from '@penumbra-zone/protobuf/types';
 import { ViewService, StakeService } from '@penumbra-zone/protobuf';
 import { createContextValues, createHandlerContext, PromiseClient } from '@connectrpc/connect';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { unbondingTokensByAddressIndex } from './index.js';
 import { getDisplayDenomFromView } from '@penumbra-zone/getters/value-view';
 import { stakeClientCtx } from '../../ctx/stake-client.js';
-import { ValidatorInfoResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
 
 const mockBalances = vi.hoisted(() => vi.fn());
 vi.mock('../balances', () => ({

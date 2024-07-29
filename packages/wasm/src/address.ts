@@ -1,9 +1,5 @@
 import { get_index_by_address } from '../wasm/index.js';
-import {
-  Address,
-  AddressIndex,
-  FullViewingKey,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+import { Address, AddressIndex, FullViewingKey } from '@penumbra-zone/protobuf/types';
 import { JsonValue } from '@bufbuild/protobuf';
 
 export const getAddressIndexByAddress = (

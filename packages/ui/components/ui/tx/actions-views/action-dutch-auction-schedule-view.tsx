@@ -1,7 +1,4 @@
-import {
-  ActionDutchAuctionScheduleView,
-  DutchAuction,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
+import { ActionDutchAuctionScheduleView, DutchAuction } from '@penumbra-zone/protobuf/types';
 import { DutchAuctionComponent } from '../../dutch-auction-component';
 import { ViewBox } from '../viewbox';
 

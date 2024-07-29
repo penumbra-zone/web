@@ -1,4 +1,4 @@
-import { SwapClaimView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
+import { SwapClaimView } from '@penumbra-zone/protobuf/types';
 import { createGetter } from './utils/create-getter.js';
 import { getValue } from './note-view.js';
 

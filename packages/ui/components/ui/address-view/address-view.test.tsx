@@ -3,7 +3,7 @@ import {
   AddressIndex,
   AddressView,
   AddressView_Decoded,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+} from '@penumbra-zone/protobuf/types';
 import { AddressViewComponent } from '.';
 import { describe, expect, test } from 'vitest';
 import { render } from '@testing-library/react';

@@ -74,6 +74,7 @@
   },
   "devDependencies": {
     "@penumbra-zone/getters": "workspace:*",
+    "@penumbra-zone/protobuf": "workspace:*",
     "@storybook/addon-essentials": "^8.1.1",
     "@storybook/addon-interactions": "^8.1.1",
     "@storybook/addon-links": "^8.1.1",

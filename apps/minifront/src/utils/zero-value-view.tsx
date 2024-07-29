@@ -1,7 +1,4 @@
-import {
-  Metadata,
-  ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { Metadata, ValueView } from '@penumbra-zone/protobuf/types';
 /**
  * A default `ValueView` to render when we don't have any balance data for a
  * particular token.

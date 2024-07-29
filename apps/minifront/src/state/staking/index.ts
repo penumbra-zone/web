@@ -1,16 +1,14 @@
-import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
-import { SliceCreator } from '..';
-import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import {
+  ValidatorInfo,
   Metadata,
   ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
-import { planBuildBroadcast } from '../helpers';
-import {
+  AddressIndex,
   TransactionPlannerRequest,
   UnbondingTokensByAddressIndexResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+} from '@penumbra-zone/protobuf/types';
+import { SliceCreator } from '..';
+import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
+import { planBuildBroadcast } from '../helpers';
 import { BigNumber } from 'bignumber.js';
 import { assembleUndelegateClaimRequest } from './assemble-undelegate-claim-request';
 import throttle from 'lodash/throttle';

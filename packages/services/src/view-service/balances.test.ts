@@ -3,23 +3,22 @@ import { balances } from './balances.js';
 
 import { ViewService } from '@penumbra-zone/protobuf';
 
-import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 import {
+  AddressIndex,
   BalancesRequest,
   BalancesResponse,
   SpendableNoteRecord,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+  AssetId,
+  EquivalentValue,
+  EstimatedPrice,
+  Metadata,
+  AppParameters,
+} from '@penumbra-zone/protobuf/types';
 
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { IndexedDbMock, MockServices, TendermintMock, testFullViewingKey } from '../test-utils.js';
-import {
-  AssetId,
-  EquivalentValue,
-  EstimatedPrice,
-  Metadata,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import {
   getAmount,
   getAssetIdFromValueView,
@@ -30,7 +29,6 @@ import { getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 import { multiplyAmountByNumber } from '@penumbra-zone/types/amount';
 import { fvkCtx } from '../ctx/full-viewing-key.js';
-import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb.js';
 
 const assertOnlyUniqueAssetIds = (responses: BalancesResponse[], accountId: number) => {
   const account0Res = responses.filter(

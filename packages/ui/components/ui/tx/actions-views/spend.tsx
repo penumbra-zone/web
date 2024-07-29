@@ -1,4 +1,4 @@
-import { SpendView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb.js';
+import { SpendView } from '@penumbra-zone/protobuf/types';
 import { ViewBox } from '../viewbox';
 import { ValueViewComponent } from '../../value';
 import { ValueWithAddress } from './value-with-address';

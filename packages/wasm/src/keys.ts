@@ -5,12 +5,7 @@ import {
   get_full_viewing_key,
   get_wallet_id,
 } from '../wasm/index.js';
-import {
-  Address,
-  FullViewingKey,
-  SpendKey,
-  WalletId,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+import { Address, FullViewingKey, SpendKey, WalletId } from '@penumbra-zone/protobuf/types';
 
 export const generateSpendKey = (seedPhrase: string) =>
   SpendKey.fromBinary(generate_spend_key(seedPhrase));

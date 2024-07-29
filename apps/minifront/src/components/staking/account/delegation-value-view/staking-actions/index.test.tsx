@@ -1,8 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { StakingActions } from '.';
 import { render } from '@testing-library/react';
-import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { ValidatorInfo, ValueView } from '@penumbra-zone/protobuf/types';
 import { AllSlices } from '../../../../../state';
 
 const nonZeroBalance = new ValueView({

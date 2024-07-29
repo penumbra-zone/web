@@ -1,8 +1,4 @@
-import {
-  AuctionId,
-  DutchAuction,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { AuctionId, DutchAuction, Metadata, AddressIndex } from '@penumbra-zone/protobuf/types';
 import { Button } from '../button';
 import { ChevronRight } from 'lucide-react';
 import { ProgressBar } from './progress-bar';
@@ -10,7 +6,6 @@ import { useState } from 'react';
 import { cn } from '../../../lib/utils';
 import { ExpandedDetails } from './expanded-details';
 import { AnimatePresence, motion } from 'framer-motion';
-import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 
 interface BaseProps {
   auctionId?: AuctionId;

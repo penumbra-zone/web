@@ -1,6 +1,6 @@
 import { SpendViewComponent } from './actions-views/spend';
 import { OutputViewComponent } from './actions-views/output';
-import { ActionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
+import { ActionView, ValueView } from '@penumbra-zone/protobuf/types';
 import { SwapClaimViewComponent } from './actions-views/swap/swap-claim';
 import { DelegateComponent } from './actions-views/delegate';
 import { UndelegateComponent } from './actions-views/undelegate';
@@ -11,7 +11,6 @@ import { SwapViewComponent } from './actions-views/swap';
 import { ActionDutchAuctionScheduleViewComponent } from './actions-views/action-dutch-auction-schedule-view';
 import { ActionDutchAuctionEndComponent } from './actions-views/action-dutch-auction-end';
 import { ActionDutchAuctionWithdrawViewComponent } from './actions-views/action-dutch-auction-withdraw-view';
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import { DelegatorVoteComponent } from './actions-views/delegator-vote.tsx';
 import { ValidatorVoteComponent } from './actions-views/validator-vote.tsx';
 

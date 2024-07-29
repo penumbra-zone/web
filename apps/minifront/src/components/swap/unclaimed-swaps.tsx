@@ -8,7 +8,7 @@ import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { GradientHeader } from '@repo/ui/components/ui/gradient-header';
 import { useStoreShallow } from '../../utils/use-store-shallow';
 import { useState } from 'react';
-import { SwapRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { SwapRecord } from '@penumbra-zone/protobuf/types';
 
 const unclaimedSwapsSelector = (state: AllSlices) => ({
   claimSwap: state.unclaimedSwaps.claimSwap,

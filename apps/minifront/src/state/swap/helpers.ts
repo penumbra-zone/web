@@ -1,13 +1,12 @@
 import {
   Value,
   Metadata,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import {
   CandlestickData,
   CandlestickDataResponse,
   SimulateTradeRequest,
   SimulateTradeResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
+  BalancesResponse,
+} from '@penumbra-zone/protobuf/types';
 import { getAssetId, getDisplay } from '@penumbra-zone/getters/metadata';
 import {
   getAssetIdFromValueView,
@@ -21,7 +20,6 @@ import { SwapSlice } from '.';
 import { dexClient, simulationClient } from '../../clients';
 import { assetPatterns } from '@penumbra-zone/types/assets';
 import { fromBaseUnitAmount } from '@penumbra-zone/types/amount';
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import { isKnown } from '../helpers';
 import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
 

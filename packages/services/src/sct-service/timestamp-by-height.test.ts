@@ -4,10 +4,7 @@ import { createContextValues, createHandlerContext, HandlerContext } from '@conn
 import { SctService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
-import {
-  TimestampByHeightRequest,
-  TimestampByHeightResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb.js';
+import { TimestampByHeightRequest, TimestampByHeightResponse } from '@penumbra-zone/protobuf/types';
 import { Timestamp } from '@bufbuild/protobuf';
 import { timestampByHeight } from './timestamp-by-height.js';
 

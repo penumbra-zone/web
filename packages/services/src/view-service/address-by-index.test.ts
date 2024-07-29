@@ -1,12 +1,12 @@
 import { beforeEach, describe, expect, test } from 'vitest';
-import {
-  AddressByIndexRequest,
-  AddressByIndexResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
+import {
+  Address,
+  AddressByIndexResponse,
+  AddressByIndexRequest,
+} from '@penumbra-zone/protobuf/types';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { addressByIndex } from './address-by-index.js';
-import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 import { testFullViewingKey } from '../test-utils.js';
 import { fvkCtx } from '../ctx/full-viewing-key.js';
 

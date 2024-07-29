@@ -1,11 +1,9 @@
 import { ZQueryState, createZQuery } from '@penumbra-zone/zquery';
 import { SliceCreator, useStore } from '.';
 import { getStakingTokenMetadata } from '../fetchers/registry';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { Metadata, BalancesResponse, Address } from '@penumbra-zone/protobuf/types';
 import { getBalances } from '../fetchers/balances';
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import { getAllAssets } from '../fetchers/assets';
-import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 import { getAddress, getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
 

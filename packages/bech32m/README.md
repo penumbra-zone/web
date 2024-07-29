@@ -44,9 +44,7 @@ import { plpidFromBech32m } from '@penumbra-zone/bech32m/plpid';
 import { spendKeyFromBech32m } from '@penumbra-zone/bech32m/penumbraspendkey';
 
 import type { PlainMessage, PartialMessage } from '@bufbuild/protobuf';
-import type { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import type { PositionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
-import { SpendKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+import { AssetId, PositionId, SpendKey } from '@penumbra-zone/protobuf/types';
 
 const plainAssetId: PlainMessage<AssetId> = assetIdFromBech32m(
   'passet1vhga2czmpk76hsu3t7usjj2a2qga0u29vqlcp3hky8lwkfz30qrqy6gaae',

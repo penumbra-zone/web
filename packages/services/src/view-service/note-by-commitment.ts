@@ -1,7 +1,6 @@
 import type { Impl } from './index.js';
 import { servicesCtx } from '../ctx/prax.js';
-
-import { SpendableNoteRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { SpendableNoteRecord } from '@penumbra-zone/protobuf/types';
 
 import { Code, ConnectError } from '@connectrpc/connect';
 

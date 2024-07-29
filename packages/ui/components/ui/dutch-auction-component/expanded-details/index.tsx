@@ -1,8 +1,4 @@
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import {
-  AuctionId,
-  DutchAuction,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
+import { Metadata, AuctionId, DutchAuction, AddressIndex } from '@penumbra-zone/protobuf/types';
 import { formatAmount } from '@penumbra-zone/types/amount';
 import { ReactNode } from 'react';
 import { Separator } from '../../separator';
@@ -11,7 +7,6 @@ import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import { cn } from '../../../../lib/utils';
 import { AuctionIdComponent } from '../../auction-id-component';
 import { motion } from 'framer-motion';
-import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 
 export const ExpandedDetails = ({
   auctionId,

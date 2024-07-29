@@ -1,9 +1,6 @@
 import { describe, expect, test, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
-import {
-  Metadata,
-  ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { Metadata, ValueView } from '@penumbra-zone/protobuf/types';
 import { BalanceValueView } from '.';
 import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 

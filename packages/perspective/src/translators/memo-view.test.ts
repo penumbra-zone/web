@@ -1,9 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import { asOpaqueMemoView, asReceiverMemoView } from './memo-view.js';
-import {
-  MemoView,
-  MemoView_Visible,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
+import { MemoView, MemoView_Visible } from '@penumbra-zone/protobuf/types';
 import { asOpaqueAddressView } from './address-view.js';
 
 describe('asOpaqueMemoView()', () => {

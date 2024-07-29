@@ -1,8 +1,4 @@
-import {
-  SwapBody,
-  SwapPlaintext,
-  SwapView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
+import { SwapBody, SwapPlaintext, SwapView } from '@penumbra-zone/protobuf/types';
 import { createGetter } from './utils/create-getter.js';
 
 // Generic getter function for 'Output1'

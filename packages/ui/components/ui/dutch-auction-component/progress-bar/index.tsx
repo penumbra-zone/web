@@ -1,6 +1,5 @@
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { Metadata, DutchAuction } from '@penumbra-zone/protobuf/types';
 import { ValueViewComponent } from '../../value';
-import { DutchAuction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
 import { Separator } from '../../separator';
 import { Indicator } from './indicator';
 import { ClockIcon, HourglassIcon } from 'lucide-react';

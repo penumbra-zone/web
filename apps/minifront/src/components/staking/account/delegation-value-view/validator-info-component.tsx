@@ -1,4 +1,4 @@
-import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
+import { ValidatorInfo, Metadata } from '@penumbra-zone/protobuf/types';
 import { IdentityKeyComponent } from '@repo/ui/components/ui/identity-key-component';
 import {
   Tooltip,
@@ -12,7 +12,6 @@ import {
   getValidator,
 } from '@penumbra-zone/getters/validator-info';
 import { calculateCommissionAsPercentage } from '@penumbra-zone/types/staking';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import { AssetIcon } from '@repo/ui/components/ui/asset-icon';
 
 /**

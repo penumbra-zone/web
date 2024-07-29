@@ -1,5 +1,5 @@
 import { ViewBox } from '../../viewbox';
-import { SwapView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
+import { SwapView, ValueView } from '@penumbra-zone/protobuf/types';
 import { TransactionIdComponent } from './transaction-id';
 import { getOneWaySwapValues, isOneWaySwap } from '@penumbra-zone/types/swap';
 import { OneWaySwap } from './one-way-swap';
@@ -11,7 +11,6 @@ import {
 } from '@penumbra-zone/getters/swap-view';
 import { ValueViewComponent } from '../../../value';
 import { ActionDetails } from '../action-details';
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 
 export const SwapViewComponent = ({
   value,

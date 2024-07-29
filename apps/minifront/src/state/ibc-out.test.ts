@@ -4,12 +4,12 @@ import { AllSlices, initializeStore } from '.';
 import {
   Metadata,
   ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb.js';
+  Amount,
+  AddressView,
+  BalancesResponse,
+} from '@penumbra-zone/protobuf/types';
 import { sendValidationErrors } from './send';
-import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 import { produce } from 'immer';
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
 import { Chain } from '@penumbra-labs/registry';
 import { currentTimePlusTwoDaysRounded, ibcValidationErrors } from './ibc-out';

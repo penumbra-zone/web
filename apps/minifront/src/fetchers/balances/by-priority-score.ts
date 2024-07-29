@@ -1,4 +1,4 @@
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { BalancesResponse } from '@penumbra-zone/protobuf/types';
 import {
   getMetadataFromBalancesResponseOptional,
   getAmount,

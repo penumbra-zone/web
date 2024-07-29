@@ -3,11 +3,8 @@ import { epochByHeight } from './epoch-by-height.js';
 import { IndexedDbMock, MockServices } from '../test-utils.js';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { SctService } from '@penumbra-zone/protobuf';
+import { Epoch, EpochByHeightRequest } from '@penumbra-zone/protobuf/types';
 import { servicesCtx } from '../ctx/prax.js';
-import {
-  Epoch,
-  EpochByHeightRequest,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 describe('EpochByHeight request handler', () => {

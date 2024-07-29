@@ -1,8 +1,8 @@
 import { describe, expect, test } from 'vitest';
-import { JsonToMessage, MessageToJson } from './stream.js';
 import { createRegistry, Message, proto3 } from '@bufbuild/protobuf';
 
 import ReadableStream from './ReadableStream.from.js';
+import { JsonToMessage, MessageToJson } from './stream.js';
 
 import { ElizaService } from '@buf/connectrpc_eliza.connectrpc_es/connectrpc/eliza/v1/eliza_connect.js';
 import { SayRequest } from '@buf/connectrpc_eliza.bufbuild_es/connectrpc/eliza/v1/eliza_pb.js';

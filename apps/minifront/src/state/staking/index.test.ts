@@ -1,19 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '..';
-import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
 import {
+  ValidatorInfo,
   Metadata,
   ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
-import { getValidatorInfoFromValueView } from '@penumbra-zone/getters/value-view';
-import {
   AddressView,
   IdentityKey,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+  DelegationsByAddressIndexResponse,
+} from '@penumbra-zone/protobuf/types';
+import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
+import { getValidatorInfoFromValueView } from '@penumbra-zone/getters/value-view';
 import { THROTTLE_MS } from '.';
-import { DelegationsByAddressIndexResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 
 const u8 = (length: number) => Uint8Array.from({ length }, () => Math.floor(Math.random() * 256));
 const validator1IdentityKey = new IdentityKey({ ik: u8(32) });

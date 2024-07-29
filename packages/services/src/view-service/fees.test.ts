@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import {
+  AssetId,
   SwapRecord,
   TransactionPlannerRequest,
   TransactionPlannerRequest_ActionDutchAuctionEnd,
@@ -8,13 +8,11 @@ import {
   TransactionPlannerRequest_ActionDutchAuctionWithdraw,
   TransactionPlannerRequest_Output,
   TransactionPlannerRequest_Swap,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
-import {
   AuctionId,
   DutchAuctionDescription,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
+  StateCommitment,
+} from '@penumbra-zone/protobuf/types';
 import { extractAltFee } from './fees.js';
-import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb.js';
 import { IndexedDbMock } from '../test-utils.js';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';

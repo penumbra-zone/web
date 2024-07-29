@@ -1,4 +1,4 @@
-import { ValidatorStatus } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
+import { ValidatorStatus } from '@penumbra-zone/protobuf/types';
 import { createGetter } from './utils/create-getter.js';
 
 export const getVotingPower = createGetter(

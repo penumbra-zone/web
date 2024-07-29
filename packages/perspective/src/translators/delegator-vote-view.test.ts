@@ -5,9 +5,9 @@ import {
   DelegatorVoteView,
   DelegatorVoteView_Opaque,
   DelegatorVoteView_Visible,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/governance/v1/governance_pb.js';
-import { NoteView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb.js';
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+  NoteView,
+  ValueView,
+} from '@penumbra-zone/protobuf/types';
 
 describe('asOpaqueDelegatorVoteView', () => {
   test('when passed `undefined` returns an empty, opaque delegator vote view', () => {

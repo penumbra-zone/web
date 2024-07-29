@@ -1,5 +1,5 @@
 import { AddressIcon } from '../address/address-icon';
-import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+import { AddressView } from '@penumbra-zone/protobuf/types';
 import { CopyToClipboardIconButton } from '../copy-to-clipboard/copy-to-clipboard-icon-button';
 import { AddressComponent } from '../address/address-component';
 import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';

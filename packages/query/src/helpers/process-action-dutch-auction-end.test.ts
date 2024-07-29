@@ -4,12 +4,10 @@ import {
   AssetId,
   Metadata,
   Value,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import {
   ActionDutchAuctionEnd,
   AuctionId,
   DutchAuction,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
+} from '@penumbra-zone/protobuf/types';
 import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
 
 vi.mock('@penumbra-zone/wasm/auction', () => ({

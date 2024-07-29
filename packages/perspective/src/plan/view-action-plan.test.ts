@@ -3,36 +3,24 @@ import { viewActionPlan } from './view-action-plan.js';
 import {
   ActionPlan,
   ActionView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
-import {
   OutputView,
   OutputView_Visible,
   SpendView,
   SpendView_Visible,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb.js';
-import {
   AssetId,
   Metadata,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import {
   Address,
   FullViewingKey,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
-import {
   SwapPlaintext,
   BatchSwapOutputData,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
-import {
   Delegate,
   Undelegate,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
-import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
-import { fullViewingKeyFromBech32m } from '@penumbra-zone/bech32m/penumbrafullviewingkey';
-import {
   ActionDutchAuctionSchedule,
   ActionDutchAuctionWithdrawPlan,
   AuctionId,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
+} from '@penumbra-zone/protobuf/types';
+import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
+import { fullViewingKeyFromBech32m } from '@penumbra-zone/bech32m/penumbrafullviewingkey';
 
 vi.mock('@penumbra-zone/wasm/auction', () => ({
   getAuctionId: () => new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) }),

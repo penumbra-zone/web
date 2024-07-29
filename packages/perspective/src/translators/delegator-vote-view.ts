@@ -1,8 +1,5 @@
 import { Translator } from './types.js';
-import {
-  DelegatorVoteView,
-  DelegatorVoteView_Opaque,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/governance/v1/governance_pb.js';
+import { DelegatorVoteView, DelegatorVoteView_Opaque } from '@penumbra-zone/protobuf/types';
 
 export const asOpaqueDelegatorVoteView: Translator<DelegatorVoteView> = delegatorVoteView => {
   if (delegatorVoteView?.delegatorVote.case === 'opaque') {

@@ -1,27 +1,21 @@
 import {
   AssetId,
   Metadata,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
-import {
+  AuctionId,
   PositionState,
   PositionState_PositionStateEnum,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
-import {
   CommitmentSource,
   Nullifier,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb.js';
-import { ValidatorInfoResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
-import {
+  ValidatorInfoResponse,
   Action,
   Transaction,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
-import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb.js';
-import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb.js';
-import {
+  TransactionId,
+  StateCommitment,
   SpendableNoteRecord,
   SwapRecord,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+  GasPrices,
+  IdentityKey,
+} from '@penumbra-zone/protobuf/types';
 import { auctionIdFromBech32 } from '@penumbra-zone/bech32m/pauctid';
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
 import { sha256Hash } from '@penumbra-zone/crypto-web/sha256';
@@ -45,8 +39,6 @@ import { processActionDutchAuctionEnd } from './helpers/process-action-dutch-auc
 import { processActionDutchAuctionSchedule } from './helpers/process-action-dutch-auction-schedule.js';
 import { processActionDutchAuctionWithdraw } from './helpers/process-action-dutch-auction-withdraw.js';
 import { RootQuerier } from './root-querier.js';
-import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb.js';
-import { IdentityKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 import { getDelegationTokenMetadata } from '@penumbra-zone/wasm/stake';
 
 declare global {
@@ -217,10 +209,10 @@ export class BlockProcessor implements BlockProcessorInterface {
         await this.identifyNewAssets(flush.newNotes);
 
         for (const spendableNoteRecord of flush.newNotes) {
-          recordsByCommitment.set(spendableNoteRecord.noteCommitment!, spendableNoteRecord);
+          recordsByCommitment.set(spendableNoteRecord.noteCommitment, spendableNoteRecord);
         }
         for (const swapRecord of flush.newSwaps) {
-          recordsByCommitment.set(swapRecord.swapCommitment!, swapRecord);
+          recordsByCommitment.set(swapRecord.swapCommitment, swapRecord);
         }
       }
 

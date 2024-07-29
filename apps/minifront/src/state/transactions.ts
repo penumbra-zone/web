@@ -3,10 +3,7 @@ import { SliceCreator, useStore } from '.';
 import { viewClient } from '../clients';
 import { getTransactionClassificationLabel } from '@penumbra-zone/perspective/transaction/classify';
 import { ZQueryState, createZQuery } from '@penumbra-zone/zquery';
-import {
-  TransactionInfo,
-  TransactionInfoResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { TransactionInfo, TransactionInfoResponse } from '@penumbra-zone/protobuf/types';
 import { getTxInfoByHash } from '../fetchers/tx-info-by-hash';
 
 export interface TransactionSummary {

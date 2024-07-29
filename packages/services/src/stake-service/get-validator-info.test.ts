@@ -1,13 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { IndexedDbMock, MockServices } from '../test-utils.js';
-import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
-import { StakeService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../ctx/prax.js';
 import {
   GetValidatorInfoRequest,
   GetValidatorInfoResponse,
   ValidatorState_ValidatorStateEnum,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
+} from '@penumbra-zone/protobuf/types';
+import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
+import { StakeService } from '@penumbra-zone/protobuf';
+import { IndexedDbMock, MockServices } from '../test-utils.js';
+import { servicesCtx } from '../ctx/prax.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { getValidatorInfo } from './get-validator-info.js';
 

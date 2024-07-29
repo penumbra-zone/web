@@ -1,6 +1,5 @@
 import { BalanceValueView } from '@repo/ui/components/ui/balance-value-view';
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { BalancesResponse, Metadata } from '@penumbra-zone/protobuf/types';
 import { Box } from '@repo/ui/components/ui/box';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
 import {

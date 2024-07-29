@@ -1,9 +1,9 @@
 import {
   BalancesRequest,
   BalancesResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
-import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+  AssetId,
+  AddressIndex,
+} from '@penumbra-zone/protobuf/types';
 import { viewClient } from '../../clients';
 
 interface BalancesProps {

@@ -1,8 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import {
-  NotesForVotingRequest,
-  NotesForVotingResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { NotesForVotingRequest, NotesForVotingResponse } from '@penumbra-zone/protobuf/types';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';

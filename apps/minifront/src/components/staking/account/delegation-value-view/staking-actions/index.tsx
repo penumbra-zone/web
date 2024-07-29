@@ -1,6 +1,5 @@
 import { Button } from '@repo/ui/components/ui/button';
-import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { ValidatorInfo, ValueView } from '@penumbra-zone/protobuf/types';
 import { FormDialog } from './form-dialog';
 import { useMemo } from 'react';
 import { AllSlices } from '../../../../../state';

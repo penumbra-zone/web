@@ -1,5 +1,5 @@
 import { sct_position } from '../wasm/index.js';
-import { Epoch } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb.js';
+import { Epoch } from '@penumbra-zone/protobuf/types';
 
 /**
  * Returns a serialized representation of a SCT position

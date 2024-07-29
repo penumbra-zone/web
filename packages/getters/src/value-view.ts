@@ -1,9 +1,8 @@
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { ValueView, ValidatorInfo } from '@penumbra-zone/protobuf/types';
 import { createGetter } from './utils/create-getter.js';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { getDisplayDenomExponent, getSymbol } from './metadata.js';
 import { Any } from '@bufbuild/protobuf';
-import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
 import { getIdentityKeyFromValidatorInfo } from './validator-info.js';
 
 export const getMetadata = createGetter((valueView?: ValueView) =>

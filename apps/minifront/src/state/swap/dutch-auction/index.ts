@@ -1,18 +1,20 @@
-import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import {
+  TransactionPlannerRequest,
+  AuctionId,
+  Amount,
+  Metadata,
+  AddressIndex,
+} from '@penumbra-zone/protobuf/types';
 import { AllSlices, SliceCreator, useStore } from '../..';
 import { planBuildBroadcast } from '../../helpers';
 import { assembleScheduleRequest } from './assemble-schedule-request';
-import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
 import { sendSimulateTradeRequest } from '../helpers';
 import { fromBaseUnitAmount, isZero, multiplyAmountByNumber } from '@penumbra-zone/types/amount';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb.js';
 import { errorToast } from '@repo/ui/lib/toast/presets';
 import { ZQueryState, createZQuery } from '@penumbra-zone/zquery';
 import { AuctionInfo, getAuctionInfos } from '../../../fetchers/auction-infos';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import { bech32mAuctionId } from '@penumbra-zone/bech32m/pauctid';
-import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 
 /**
  * Multipliers to use with the output of the swap simulation, to determine

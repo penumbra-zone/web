@@ -1,4 +1,4 @@
-import { DutchAuctionDescription } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
+import { DutchAuctionDescription } from '@penumbra-zone/protobuf/types';
 import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
 import { getAuctionId, getAuctionNftMetadata } from '@penumbra-zone/wasm/auction';
 

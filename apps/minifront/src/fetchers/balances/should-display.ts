@@ -1,6 +1,6 @@
 import { assetPatterns } from '@penumbra-zone/types/assets';
 import { getDisplay } from '@penumbra-zone/getters/metadata';
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { BalancesResponse } from '@penumbra-zone/protobuf/types';
 import { getMetadata } from '@penumbra-zone/getters/value-view';
 import { isKnown } from '../../state/helpers';
 

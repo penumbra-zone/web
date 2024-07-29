@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import {
   AuthorizeAndBuildResponse,
   BroadcastTransactionResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+} from '@penumbra-zone/protobuf/types';
 import { Progress } from '../../components/ui/progress';
 
 const TOAST_FN_PROPERTIES = vi.hoisted(

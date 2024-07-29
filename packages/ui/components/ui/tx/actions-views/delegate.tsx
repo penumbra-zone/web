@@ -1,4 +1,4 @@
-import { Delegate } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
+import { Delegate } from '@penumbra-zone/protobuf/types';
 import { ViewBox } from '../viewbox';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';

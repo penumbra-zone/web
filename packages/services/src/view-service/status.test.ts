@@ -1,8 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import {
-  StatusRequest,
-  StatusResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { StatusRequest, StatusResponse } from '@penumbra-zone/protobuf/types';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';

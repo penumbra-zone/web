@@ -1,4 +1,4 @@
-import { EpochByHeightResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb.js';
+import { EpochByHeightResponse } from '@penumbra-zone/protobuf/types';
 import { Impl } from './index.js';
 import { servicesCtx } from '../ctx/prax.js';
 

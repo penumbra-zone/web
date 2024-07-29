@@ -1,4 +1,4 @@
-import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+import { Address } from '@penumbra-zone/protobuf/types';
 import { viewClient } from '../clients';
 import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 

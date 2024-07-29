@@ -1,5 +1,4 @@
-import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
-import { TransactionPlan } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
+import { Address, TransactionPlan } from '@penumbra-zone/protobuf/types';
 import { Code, ConnectError } from '@connectrpc/connect';
 
 export const assertSwapClaimAddressesBelongToCurrentUser = (

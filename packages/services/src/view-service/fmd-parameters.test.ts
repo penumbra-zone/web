@@ -2,12 +2,12 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import {
   FMDParametersRequest,
   FMDParametersResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+  FmdParameters,
+} from '@penumbra-zone/protobuf/types';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
 import { IndexedDbMock, MockServices } from '../test-utils.js';
-import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb.js';
 import { fMDParameters } from './fmd-parameters.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 

@@ -1,6 +1,6 @@
 import { describe, test, expect } from 'vitest';
 import { assetIdFromBaseDenom } from './asset.js';
-import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { AssetId } from '@penumbra-zone/protobuf/types';
 import { randomBytes } from 'crypto';
 import { assetIdFromBech32m } from '@penumbra-zone/bech32m/passet';
 

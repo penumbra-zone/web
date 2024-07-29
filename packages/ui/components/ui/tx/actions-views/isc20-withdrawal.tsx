@@ -1,4 +1,4 @@
-import { Ics20Withdrawal } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/ibc/v1/ibc_pb.js';
+import { Ics20Withdrawal } from '@penumbra-zone/protobuf/types';
 import { ViewBox } from '../viewbox';
 import { ActionDetails } from './action-details';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
