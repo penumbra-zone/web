@@ -7,6 +7,7 @@ import {
   IconButton,
   HStack,
   Avatar,
+  Flex,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { BlockDetailedSummaryData } from "@/utils/types/block";
@@ -89,7 +90,6 @@ export enum TraceType {
   SWAP = DataBoxType.SWAPS,
   ARB = DataBoxType.ARBS,
 }
-
 export const Trace = ({
   trace,
   metadataByAssetId,
@@ -101,27 +101,29 @@ export const Trace = ({
   type: TraceType;
   hidePrice?: boolean;
 }) => {
+  const isMobile = window.innerWidth < 768;
+  
   return (
     <Box width="100%" paddingLeft="0%">
-      <HStack
-        spacing={2}
-        align="start"
+      <Flex
+        flexDirection={["column", "row"]}
+        align="center"
         justifyContent="space-between"
         padding="2px"
-        whiteSpace="nowrap"
-        width={"100%"}
+        width="100%"
         position="relative"
+        overflow="hidden"
       >
         {/* Background line for trace connections */}
         <Box
           position="absolute"
-          top="50%"
+          top={["0", "50%"]}
           left="0"
           right="0"
-          height="2px"
+          height={["100%", "2px"]}
+          width={["2px", "100%"]}
           backgroundColor="var(--charcoal-tertiary-bright)"
           zIndex="0"
-          width="100%"
         />
         {trace.value.map((value, index) => {
           const metadata =
@@ -133,40 +135,38 @@ export const Trace = ({
             displayDenomExponent
           ).toFixed(6);
           return (
-            <HStack key={index} align="left" zIndex={1}>
+            <Flex key={index} align="center" zIndex={1} mb={[2, 0]}>
               <Box>
-                <HStack
+                <Flex
                   outline={"2px solid var(--charcoal-tertiary-blended)"}
                   padding="8px"
                   borderRadius={"30px"}
                   backgroundColor="var(--charcoal-tertiary)"
+                  alignItems="center"
+                  flexWrap="nowrap"
                 >
                   {metadata?.imagePath ? (
-                    <Avatar src={metadata.imagePath} size={"xs"} />
+                    <Avatar src={metadata.imagePath} size={"xs"} mr={2} />
                   ) : (
-                    <Avatar size={"xs"} />
+                    <Avatar size={"xs"} mr={2} />
                   )}
-                  <Text fontSize={"small"} fontFamily={"monospace"}>
+                  <Text fontSize={["xs", "small"]} fontFamily={"monospace"} whiteSpace="nowrap">
                     {formattedAmount} {metadata?.symbol}
                   </Text>
-                </HStack>
+                </Flex>
               </Box>
-            </HStack>
+            </Flex>
           );
         })}
-      </HStack>
-      {type !== TraceType.ARB && (
-        !hidePrice &&
-        <>
-          <div style={{ paddingTop: "7px", paddingBottom: "10px"}} >
-            <Price trace={trace} metadataByAssetId={metadataByAssetId} />
-          </div>
-        </>
+      </Flex>
+      {type !== TraceType.ARB && !hidePrice && (
+        <Box pt={2} pb={3}>
+          <Price trace={trace} metadataByAssetId={metadataByAssetId} />
+        </Box>
       )}
     </Box>
   );
 };
-
 export const formatTimestampOrDefault = (timestamp: any) => {
   if (timestamp === undefined || timestamp === "") {
     return "Missing data in indexer to display timestamp";
