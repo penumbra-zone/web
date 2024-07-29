@@ -30,6 +30,7 @@ describe('extractAltFee', () => {
       upsertAuction: vi.fn(),
       saveAssetsMetadata: vi.fn(),
       getAuction: vi.fn(),
+      getAssetTokenMetadata: vi.fn(),
     };
   });
 
@@ -258,6 +259,8 @@ describe('extractAltFee', () => {
       seqNum: 0n,
     });
 
+    mockIndexedDb.getAssetTokenMetadata?.mockResolvedValueOnce(true);
+
     const request = new TransactionPlannerRequest({
       dutchAuctionEndActions: [
         {
@@ -289,6 +292,8 @@ describe('extractAltFee', () => {
       noteCommitment: mockAuctionEndCommitment,
       seqNum: 0n,
     });
+
+    mockIndexedDb.getAssetTokenMetadata?.mockResolvedValueOnce(true);
 
     const request = new TransactionPlannerRequest({
       dutchAuctionWithdrawActions: [
