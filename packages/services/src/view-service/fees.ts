@@ -119,9 +119,11 @@ export const retrieveAltAsset = async (
 ): Promise<AssetId | undefined> => {
   const altGasPrices = await indexedDb.getAltGasPrices();
   for (const gasPrice of altGasPrices) {
-    const balance = await indexedDb.getAssetTokenMetadata(request.source, gasPrice.assetId!);
-    if (balance) {
-      return gasPrice.assetId!;
+    if (gasPrice.assetId) {
+      const balance = await indexedDb.getAssetTokenMetadata(request.source, gasPrice.assetId);
+      if (balance) {
+        return gasPrice.assetId;
+      }
     }
   }
   return undefined;

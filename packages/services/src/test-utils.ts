@@ -37,6 +37,7 @@ export interface IndexedDbMock {
   stakingTokenAssetId?: Mock;
   upsertAuction?: Mock;
   getAssetTokenMetadata?: Mock;
+  saveGasPrices?: Mock;
 }
 
 export interface AuctionMock {
