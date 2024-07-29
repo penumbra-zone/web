@@ -17,6 +17,10 @@ const Column = styled.div`
   gap: ${props => props.theme.spacing(8)};
 `;
 
+/**
+ * Utility component to let users control the density, for components whose
+ * stories include the `density` tag.
+ */
 const DensityWrapper = ({ children, showDensityControl }) => {
   const [density, setDensity] = useState('sparse');
 
