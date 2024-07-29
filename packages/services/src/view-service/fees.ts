@@ -72,7 +72,9 @@ export const extractAltFee = async (
         return endAuction.auction.input.assetId;
       } else {
         const assetId = await retrieveAltAsset(request, indexedDb);
-        return assetId!;
+        if (assetId) {
+          return assetId;
+        }
       }
     }
   }
@@ -91,8 +93,17 @@ export const extractAltFee = async (
         return withdrawAuction.auction.input.assetId;
       } else {
         const assetId = await retrieveAltAsset(request, indexedDb);
-        return assetId!;
+        if (assetId) {
+          return assetId;
+        }
       }
+    }
+  }
+
+  if (request.undelegations.length > 0) {
+    const assetId = await retrieveAltAsset(request, indexedDb);
+    if (assetId) {
+      return assetId;
     }
   }
 
