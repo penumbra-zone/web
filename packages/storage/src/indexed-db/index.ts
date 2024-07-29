@@ -885,4 +885,24 @@ export class IndexedDb implements IndexedDbInterface {
       );
     });
   }
+
+  async getAssetTokenMetadata(
+    addressIndex: AddressIndex | undefined,
+    assetId: AssetId,
+  ): Promise<boolean> {
+    const spendableAltNotes = await this.db.getAllFromIndex(
+      'SPENDABLE_NOTES',
+      'assetId',
+      uint8ArrayToBase64(assetId.inner),
+    );
+
+    return spendableAltNotes.some(note => {
+      const altNote = SpendableNoteRecord.fromJson(note);
+      return (
+        altNote.heightSpent === 0n &&
+        !isZero(getAmountFromRecord(altNote)) &&
+        altNote.addressIndex?.equals(addressIndex)
+      );
+    });
+  }
 }

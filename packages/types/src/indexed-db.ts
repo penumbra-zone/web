@@ -151,6 +151,8 @@ export interface IndexedDbInterface {
   ): Promise<{ input: Value; output: Value } | undefined>;
 
   hasStakingAssetBalance(addressIndex: AddressIndex | undefined): Promise<boolean>;
+
+  getAssetTokenMetadata(addressIndex: AddressIndex | undefined, assetId: AssetId): Promise<boolean>;
 }
 
 export interface PenumbraDb extends DBSchema {
