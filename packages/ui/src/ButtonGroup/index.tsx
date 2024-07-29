@@ -55,7 +55,7 @@ const isIconOnly = (props: ButtonGroupProps<boolean>): props is ButtonGroupProps
 
 /**
  * Use a `<ButtonGroup />` to render multiple buttons in a group with the same
- * `actionType` and `size`.
+ * `actionType`.
  *
  * When rendering multiple Penumbra UI buttons together, always use a
  * `<ButtonGroup />` rather than individual `<Button />`s. This ensures that
