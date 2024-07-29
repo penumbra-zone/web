@@ -24,7 +24,6 @@ export default async function swapsByBlockRange(req: NextApiRequest, res: NextAp
         const dex_querier = new DexQueryServiceClient({
             grpcEndpoint: grpcEndpoint,
         });
-
         const data = await dex_querier.swapExecutions(
             parseInt(startHeight),
             parseInt(endHeight)
