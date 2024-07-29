@@ -94,7 +94,7 @@ export const DelegatorVoteComponent = ({ value }: { value: DelegatorVoteView }) 
   return <div>Invalid DelegatorVoteView</div>;
 };
 
-const VoteToString = (vote: Vote): string => {
+export const VoteToString = (vote: Vote): string => {
   switch (vote.vote) {
     case Vote_Vote.UNSPECIFIED:
       return 'UNSPECIFIED';

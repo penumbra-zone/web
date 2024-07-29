@@ -374,6 +374,11 @@ export const viewActionPlan =
           },
         });
 
+      case 'validatorVote':
+        return new ActionView({
+          actionView: actionPlan.action,
+        });
+
       case undefined:
         throw new Error('No action case in action plan');
       default:
