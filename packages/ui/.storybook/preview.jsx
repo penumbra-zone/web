@@ -17,7 +17,7 @@ const Column = styled.div`
   gap: ${props => props.theme.spacing(8)};
 `;
 
-const DensityWrapper = ({ children, includeDensityControl }) => {
+const DensityWrapper = ({ children, showDensityControl }) => {
   const [density, setDensity] = useState('sparse');
 
   return (
@@ -27,7 +27,7 @@ const DensityWrapper = ({ children, includeDensityControl }) => {
       else={children => <Density compact>{children}</Density>}
     >
       <Column>
-        {includeDensityControl && (
+        {showDensityControl && (
           <Tabs
             options={[
               { label: 'Sparse', value: 'sparse' },
@@ -61,7 +61,7 @@ const preview = {
 
       return (
         <ThemeProvider>
-          <DensityWrapper includeDensityControl={tags.includes('density')}>
+          <DensityWrapper showDensityControl={tags.includes('density')}>
             <WhiteTextWrapper>
               <Story />
             </WhiteTextWrapper>
