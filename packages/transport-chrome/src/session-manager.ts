@@ -99,7 +99,12 @@ export class CRSessionManager {
     // origin restrictions
     const fromThisExtension = sender.id === chrome.runtime.id;
     // frameId == 0 for top-level documents
-    const fromPageHttps = !sender.frameId && sender.tab?.id && (sender.origin.startsWith('https://') || sender.origin.startsWith('http://localhost:') || sender.origin === 'http://localhost');
+    const fromPageHttps =
+      !sender.frameId &&
+      sender.tab?.id &&
+      (sender.origin.startsWith('https://') ||
+        sender.origin.startsWith('http://localhost:') ||
+        sender.origin === 'http://localhost');
     if (!(fromThisExtension || fromPageHttps)) {
       return;
     }
