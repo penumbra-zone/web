@@ -107,16 +107,20 @@ export const getAssetFromGasPriceTable = async (
   indexedDb: IndexedDbInterface,
   assetId?: AssetId,
 ): Promise<AssetId | undefined> => {
+  if (!request.source) {
+    throw new Error('No source provided in request');
+  }
+
   // Fetch alternative gas prices, excluding those with a zero price.
   const altGasPrices = await indexedDb.getAltGasPrices();
 
   // If a specific asset ID is provided, extracted from the transaction request, check its balance is
   // positive and GasPrices for that asset exist.
   if (assetId) {
-    const balance = await indexedDb.hasTokenBalance(request.source!, assetId);
+    const balance = await indexedDb.hasTokenBalance(request.source, assetId);
     // This check ensures that the alternative fee token is a valid fee token, for example, TestUSD is not.
-    const filteredSpecificGasPrices = altGasPrices.filter(gp => gp.assetId?.equals(assetId));
-    if (balance && filteredSpecificGasPrices.length > 0) {
+    const isInGasTable = altGasPrices.find(gp => gp.assetId?.equals(assetId));
+    if (balance && isInGasTable) {
       return assetId;
     }
   }
@@ -125,7 +129,7 @@ export const getAssetFromGasPriceTable = async (
   // GasPrices table as a fallback case.
   for (const gasPrice of altGasPrices) {
     if (gasPrice.assetId) {
-      const balance = await indexedDb.hasTokenBalance(request.source!, gasPrice.assetId);
+      const balance = await indexedDb.hasTokenBalance(request.source, gasPrice.assetId);
       if (balance) {
         return gasPrice.assetId;
       }

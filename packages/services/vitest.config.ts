@@ -5,7 +5,5 @@ export default defineConfig({
   plugins: [wasm()],
   test: {
     setupFiles: ['./tests-setup.js'],
-    silent: false,
-    reporters: 'default',
   },
 });

@@ -12,7 +12,5 @@ export default defineConfig({
       enabled: true,
       headless: true,
     },
-    silent: false,
-    reporters: 'default',
   },
 });
