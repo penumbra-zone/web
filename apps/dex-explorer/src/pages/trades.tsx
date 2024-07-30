@@ -243,28 +243,31 @@ export default function Trades() {
             alignItems="center"
             width="100%"
           >
-            <VStack spacing="5em" width="full" maxW="container.md" px={4}>
+            <VStack spacing="5em" width="full" maxW="container.md" px={{ base: 2, md: 4 }}>
               <VStack align="stretch" paddingTop={"3em"}>
-                <HStack paddingTop="2em" paddingBottom="5em">
-                  <Text fontWeight={"bold"} width={"100%"} fontSize={"1.5em"}>
-                    DEX Execution Timeline
-                  </Text>
-                  <FormControl>
-                    <FormLabel></FormLabel>
-                    <form onSubmit={onSearch}>
-                      <NumberInput>
-                        <NumberInputField
-                          placeholder="Enter block height to start history from"
-                          value={userRequestedBlockEndHeight}
-                          onChange={(e) =>
-                            setUserRequestedBlockEndHeight(
-                              parseInt(e.target.value)
-                            )
-                          }
-                        />
-                      </NumberInput>
-                    </form>
-                  </FormControl>
+                <HStack paddingTop="2em" paddingBottom="5em" justifyContent={"center"}>
+                  <VStack align="center" width="50%" justifyContent="center">
+                    <Text fontWeight="bold" width="100%" fontSize="1.5em" textAlign="center">
+                      DEX Execution Timeline
+                    </Text>
+                    <FormControl width="100%">
+                      <FormLabel></FormLabel>
+                      <form onSubmit={onSearch} style={{ width: "100%", textAlign: "center" }}>
+                        <NumberInput>
+                          <NumberInputField
+                            placeholder="Enter block height"
+                            value={userRequestedBlockEndHeight}
+                            justifyContent={"center"}
+                            onChange={(e) =>
+                              setUserRequestedBlockEndHeight(parseInt(e.target.value))
+                            }
+                            width="100%"
+                          />
+                        </NumberInput>
+                      </form>
+                    </FormControl>
+                  </VStack>
+
                 </HStack>
 
                 {Array.from(
