@@ -1,5 +1,12 @@
 # @penumbra-zone/query
 
+## 20.0.0
+
+### Patch Changes
+
+- Updated dependencies [318690e]
+  - @penumbra-zone/wasm@20.2.0
+
 ## 19.0.0
 
 ### Patch Changes
