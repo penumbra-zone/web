@@ -9,6 +9,14 @@ interface ColorVariants {
 
 declare module 'styled-components' {
   export interface DefaultTheme {
+    blur: {
+      none: number;
+      xs: number;
+      sm: number;
+      md: number;
+      lg: number;
+      xl: number;
+    };
     borderRadius: {
       none: string;
       xs: string;
@@ -29,6 +37,12 @@ declare module 'styled-components' {
       success: ColorVariants;
 
       // Special cases
+
+      base: {
+        black: string;
+        white: string;
+        transparent: string;
+      };
 
       text: {
         primary: string;

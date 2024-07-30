@@ -103,6 +103,14 @@ const FIFTEEN_PERCENT_OPACITY_IN_HEX = '26';
 const EIGHTY_PERCENT_OPACITY_IN_HEX = 'cc';
 
 export const theme: DefaultTheme = {
+  blur: {
+    none: 0,
+    xs: 4,
+    sm: 8,
+    md: 16,
+    lg: 32,
+    xl: 64,
+  },
   borderRadius: {
     none: '0px',
     xs: '4px',
@@ -162,6 +170,11 @@ export const theme: DefaultTheme = {
       light: PALETTE.green['400'],
       dark: PALETTE.green['950'],
       contrast: PALETTE.green['50'],
+    },
+    base: {
+      black: '#000',
+      white: '#fff',
+      transparent: 'transparent',
     },
     text: {
       primary: PALETTE.neutral['50'],
