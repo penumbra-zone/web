@@ -15,6 +15,7 @@ import {
   FeeTier_Tier,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
 import {
+  getAmount,
   getAssetIdFromValueView,
   getDisplayDenomExponentFromValueView,
 } from '@penumbra-zone/getters/value-view';
@@ -25,6 +26,7 @@ import { transferableBalancesResponsesSelector } from './helpers';
 import { PartialMessage } from '@bufbuild/protobuf';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { getAssetTokenMetadata } from '../../fetchers/registry';
+import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb.js';
 
 export interface SendSlice {
   selection: BalancesResponse | undefined;
@@ -41,8 +43,6 @@ export interface SendSlice {
   setFeeTier: (feeTier: FeeTier_Tier) => void;
   sendTx: () => Promise<void>;
   txInProgress: boolean;
-  isSendingMax: boolean;
-  setIsSendingMax: (isSendingMax: boolean) => void;
   assetFeeMetadata: Metadata | undefined;
 }
 
@@ -60,11 +60,6 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
     setAmount: amount => {
       set(state => {
         state.send.amount = amount;
-      });
-    },
-    setIsSendingMax: isSendingMax => {
-      set(state => {
-        state.send.isSendingMax = isSendingMax;
       });
     },
     setSelection: selection => {
@@ -135,14 +130,7 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
   };
 };
 
-const assembleRequest = ({
-  amount,
-  feeTier,
-  recipient,
-  selection,
-  memo,
-  isSendingMax,
-}: SendSlice) => {
+const assembleRequest = ({ amount, feeTier, recipient, selection, memo }: SendSlice) => {
   const spendOrOutput:
     | PartialMessage<TransactionPlannerRequest_Spend>
     | PartialMessage<TransactionPlannerRequest_Output> = {
@@ -155,6 +143,9 @@ const assembleRequest = ({
       assetId: getAssetIdFromValueView(selection?.balanceView),
     },
   };
+  const isSendingMax = getAmount(selection?.balanceView).equals(
+    spendOrOutput.value?.amount as Amount,
+  );
   return new TransactionPlannerRequest({
     ...(isSendingMax ? { spends: [spendOrOutput] } : { outputs: [spendOrOutput] }),
     source: getAddressIndex(selection?.accountAddress),
