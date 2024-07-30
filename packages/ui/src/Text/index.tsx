@@ -1,5 +1,17 @@
 import styled, { WebTarget } from 'styled-components';
-import { body, detail, h1, h2, h3, h4, large, small, strong, technical } from '../utils/typography';
+import {
+  body,
+  detail,
+  h1,
+  h2,
+  h3,
+  h4,
+  large,
+  small,
+  strong,
+  technical,
+  xxl,
+} from '../utils/typography';
 import { ReactNode } from 'react';
 
 const H1 = styled.h1`
@@ -16,6 +28,10 @@ const H3 = styled.h3`
 
 const H4 = styled.h4`
   ${h4}
+`;
+
+const Xxl = styled.span`
+  ${xxl}
 `;
 
 const Large = styled.span`
@@ -61,6 +77,7 @@ interface NeverTextTypes {
   h2?: never;
   h3?: never;
   h4?: never;
+  xxl?: never;
   large?: never;
   p?: never;
   strong?: never;
@@ -99,9 +116,17 @@ type TextType =
        */
       h4: true;
     })
-  | (Omit<NeverTextTypes, 'large'> & {
+  | (Omit<NeverTextTypes, 'xxl'> & {
       /**
        * Renders bigger text used for section titles. Renders a `<span />` by
+       * default; pass the `as` prop to use a different HTML element with the
+       * same styling.
+       */
+      xxl: true;
+    })
+  | (Omit<NeverTextTypes, 'large'> & {
+      /**
+       * Renders big text used for section titles. Renders a `<span />` by
        * default; pass the `as` prop to use a different HTML element with the
        * same styling.
        */
@@ -218,6 +243,9 @@ export const Text = (props: TextProps) => {
   }
   if (props.h4) {
     return <H4 {...props} />;
+  }
+  if (props.xxl) {
+    return <Xxl {...props} />;
   }
   if (props.large) {
     return <Large {...props} />;
