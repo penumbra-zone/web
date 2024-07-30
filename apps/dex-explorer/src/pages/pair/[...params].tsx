@@ -27,7 +27,6 @@ import OHLCChart from "@/components/charts/ohlcChart";
 import BuySellChart from "@/components/charts/buySellChart";
 import { Token } from "@/utils/types/token";
 import { fetchAllTokenAssets } from "@/utils/token/tokenFetch";
-
 // TODO: Better parameter check
 
 // ! Important note: 'sell' side here refers to selling asset1 for asset2, so its really DEMAND for buying asset 1, anc vice versa for 'buy' side
@@ -139,8 +138,8 @@ export default function TradingPairs() {
 
     // Get token 1 & 2
     const tokenAssets = fetchAllTokenAssets();
-    const asset1Token = tokenAssets.find((x) => x.display === token1Symbol);
-    const asset2Token = tokenAssets.find((x) => x.display === token2Symbol);
+    const asset1Token = tokenAssets.find((x) => x.display.toLocaleLowerCase() === token1Symbol.toLocaleLowerCase());
+    const asset2Token = tokenAssets.find((x) => x.display.toLocaleLowerCase() === token2Symbol.toLocaleLowerCase());
 
     if (!asset1Token || !asset2Token) {
       setIsLoading(false);
@@ -243,8 +242,8 @@ export default function TradingPairs() {
     try {
       // Get token 1 & 2
       const tokenAssets = fetchAllTokenAssets();
-      const asset1Token = tokenAssets.find((x) => x.display === token1Symbol);
-      const asset2Token = tokenAssets.find((x) => x.display === token2Symbol);
+      const asset1Token = tokenAssets.find((x) => x.display.toLocaleLowerCase() === token1Symbol.toLocaleLowerCase());
+      const asset2Token = tokenAssets.find((x) => x.display.toLocaleLowerCase() === token2Symbol.toLocaleLowerCase());
       if (!asset1Token || !asset2Token) {
         setIsLoading(false);
         setIsChartLoading(false);

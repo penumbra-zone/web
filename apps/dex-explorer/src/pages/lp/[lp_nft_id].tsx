@@ -221,7 +221,7 @@ export default function LP() {
               alignItems="center"
               width="100%"
             >
-              <VStack spacing="5em" width="full" maxW="container.md" px={4}>
+              <VStack spacing="2em" width="full" maxW="container.md" px={4}>
                 <VStack align="stretch" paddingTop={"3em"}>
                   <VStack align="stretch">
                     <Text
@@ -238,7 +238,7 @@ export default function LP() {
                       className="neon-box"
                       padding={30}
                       ref={currentStatusRef}
-                      width={"40em"}
+                      width={{ base: "100%", md: "40em" }}
                     >
                       <CurrentLPStatus
                         nftId={lp_nft_id}
@@ -258,14 +258,13 @@ export default function LP() {
                     Timeline
                   </Text>
                   {timelineData.map((dataItem, index) => (
-                    <>
+                    <React.Fragment key={index}>
                       {"lpevent_attributes" in dataItem ? (
-                        // ! User/LP Events
                         <VStack
                           align={"flex-start"}
                           paddingTop={index === 0 ? "0" : "3em"}
                         >
-                          <VStack key={index} ref={originalStatusRef}>
+                          <VStack ref={originalStatusRef}>
                             <TimelinePosition
                               nftId={lp_nft_id}
                               lp_event={dataItem}
@@ -273,67 +272,57 @@ export default function LP() {
                           </VStack>
                         </VStack>
                       ) : (
-                        //! Trade Events and expand button if applicable
                         <VStack
-                          align={"flex-end"}
+                          align={["flex-end"]}
                           paddingTop={index === 0 ? "0" : "3em"}
+                          paddingRight={["0", "5em"]}
                         >
-                          <VStack key={index}>
+                          <VStack>
                             {dataItem.type != EXPAND_BUTTON_TYPE_FLAG ? (
                               <ExecutionEvent
                                 nftId={lp_nft_id}
                                 lp_event={dataItem}
                               />
                             ) : (
-                              //! Expand hidden events button
-                              <>
-                                {showExpandButton ? (
-                                  <HStack
-                                    spacing="1em"
-                                    align="center"
-                                    paddingTop="1em"
-                                    justifyContent="center" // Center the button horizontally
+                              showExpandButton && (
+                                <HStack
+                                  spacing="1em"
+                                  align="center"
+                                  paddingTop="1em"
+                                  justifyContent="center" // Center the button horizontally
+                                >
+                                  <Text
+                                    fontWeight="bold"
+                                    fontSize="1.2em"
+                                    color="var(--complimentary-background)"
+                                    cursor="pointer"
+                                    onClick={() =>
+                                      setShowAllTradeEvents(!showAllTradeEvents)
+                                    }
                                   >
-                                    <Text
-                                      fontWeight="bold"
-                                      fontSize="1.2em"
-                                      color="var(--complimentary-background)"
-                                      cursor="pointer"
-                                      onClick={() =>
-                                        setShowAllTradeEvents(
-                                          !showAllTradeEvents
-                                        )
-                                      }
-                                    >
-                                      {`+${hiddenEventCount} Hidden`}
-                                    </Text>
-                                    <IconButton
-                                      icon={<ChevronDownIcon />}
-                                      onClick={() =>
-                                        setShowAllTradeEvents(
-                                          !showAllTradeEvents
-                                        )
-                                      }
-                                      aria-label={"Expand"}
-                                      size="md"
-                                      colorScheme="var(--complimentary-background)"
-                                      color="var(--complimentary-background)"
-                                      variant="outline"
-                                      _hover={{
-                                        backgroundColor:
-                                          "var(--purple-emphasis)",
-                                      }}
-                                    />
-                                  </HStack>
-                                ) : (
-                                  <></>
-                                )}
-                              </>
+                                    {`+${hiddenEventCount} Hidden`}
+                                  </Text>
+                                  <IconButton
+                                    icon={<ChevronDownIcon />}
+                                    onClick={() =>
+                                      setShowAllTradeEvents(!showAllTradeEvents)
+                                    }
+                                    aria-label={"Expand"}
+                                    size="md"
+                                    colorScheme="var(--complimentary-background)"
+                                    color="var(--complimentary-background)"
+                                    variant="outline"
+                                    _hover={{
+                                      backgroundColor: "var(--purple-emphasis)",
+                                    }}
+                                  />
+                                </HStack>
+                              )
                             )}
                           </VStack>
                         </VStack>
                       )}
-                    </>
+                    </React.Fragment>
                   ))}
                 </VStack>
               </VStack>
@@ -349,21 +338,18 @@ export default function LP() {
               backgroundColor="var(--complimentary-background)"
               id="vertical-line"
             />
-            <Text>
-              {/*LPData.map((event, index) => (
-                <p key={index}>{JSON.stringify(event)}</p>
-              ))*/}
-            </Text>
             <HStack paddingBottom="5em"></HStack>
           </>
-        ) : !isLoading &&
+        ) : (
+          !isLoading &&
           !liquidityPosition &&
           !isLineLoading &&
-          !isTimelineLoading ? ( // Explicitly check all loading states
-          <VStack height={"100%"} width={"100%"}>
-            <Text paddingTop={"20%"}>Liquidity position not found.</Text>
-          </VStack>
-        ) : null}
+          !isTimelineLoading && (
+            <VStack height={"100%"} width={"100%"}>
+              <Text paddingTop={"20%"}>Liquidity position not found.</Text>
+            </VStack>
+          )
+        )}
       </main>
     </Layout>
   );
