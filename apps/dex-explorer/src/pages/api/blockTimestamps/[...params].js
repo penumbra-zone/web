@@ -1,10 +1,14 @@
 // pages/api/blockTimestamps/[...params].js
 
 import { IndexerQuerier } from "../../../utils/indexer/connector";
-import { testnetConstants } from "../../../constants/configConstants";
+
+const indexerEndpoint = process.env.PENUMBRA_INDEXER_ENDPOINT
+if (!indexerEndpoint) {
+    throw new Error("PENUMBRA_INDEXER_ENDPOINT is not set")
+}
 
 export default async function blockTimestampsFetchHandler(req, res) {
-  const indexerQuerier = new IndexerQuerier(testnetConstants.indexerEndpoint);
+  const indexerQuerier = new IndexerQuerier(indexerEndpoint);
   
   // Params will be an arbitrarily long list of block heights
   const params = req.query.params;

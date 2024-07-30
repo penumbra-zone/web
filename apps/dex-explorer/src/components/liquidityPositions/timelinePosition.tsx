@@ -4,7 +4,6 @@ import { LiquidityPositionEvent } from "@/utils/indexer/types/lps";
 import ClosedPositionStatus from "@/components/liquidityPositions/closedStatus";
 import OpenPositionStatus from "@/components/liquidityPositions/openStatus";
 import WithdrawnPositionStatus from "@/components/liquidityPositions/withdrawnStatus";
-import { testnetConstants } from "@/constants/configConstants";
 import BlockTimestampView from "../blockTimestamp";
 
 interface TimelinePositionProps {
@@ -20,10 +19,14 @@ const TimelinePosition = ({ nftId, lp_event }: TimelinePositionProps) => {
   //console.log(lp_event);
   return (
     <>
-      <HStack spacing={"2em"}>
+      <HStack
+        spacing={{ base: "1em", md: "2em" }}
+        alignItems={{ base: "flex-start", md: "center" }}
+        flexDirection={{ base: "column", md: "row" }}
+      >
         <Box
           className="neon-box"
-          width={"28em"}
+          width={{ base: "100%", md: "28em" }}
           height={"fit-content"}
           padding="2em"
         >
@@ -36,7 +39,7 @@ const TimelinePosition = ({ nftId, lp_event }: TimelinePositionProps) => {
           )}
         </Box>
         <VStack spacing={".5em"} align={"flex-end"}>
-          <BlockTimestampView blockHeight={lp_event.block_height} timestamp={lp_event.created_at}/>
+          <BlockTimestampView blockHeight={lp_event.block_height} timestamp={lp_event.created_at} />
         </VStack>
       </HStack>
     </>

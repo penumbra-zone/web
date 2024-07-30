@@ -1,5 +1,4 @@
 // pages/api/simulations/[...params].ts
-import { testnetConstants } from "../../../constants/configConstants";
 import { SimulationQuerier } from "@/utils/protos/services/dex/simulated-trades";
 import { base64ToUint8Array } from "../../../utils/math/base64";
 import {
@@ -11,6 +10,11 @@ import {
 import { joinLoHi, splitLoHi } from "@/utils/math/hiLo";
 import { NextApiRequest, NextApiResponse } from "next";
 import { fetchAllTokenAssets } from "@/utils/token/tokenFetch";
+
+const grpcEndpoint = process.env.PENUMBRA_GRPC_ENDPOINT!
+if (!grpcEndpoint) {
+    throw new Error("PENUMBRA_GRPC_ENDPOINT is not set")
+}
 
 export default async function simulationHandler(
   req: NextApiRequest,
@@ -36,14 +40,14 @@ export default async function simulationHandler(
 
     // Get token 1 & 2
     const tokenAssets = fetchAllTokenAssets();
-    const asset1Token = tokenAssets.find((x) => x.display === token1);
-    const asset2Token = tokenAssets.find((x) => x.display === token2);
+    const asset1Token = tokenAssets.find((x) => x.display.toLocaleLowerCase() === token1.toLocaleLowerCase());
+    const asset2Token = tokenAssets.find((x) => x.display.toLocaleLowerCase() === token2.toLocaleLowerCase());
 
     if (!asset1Token || !asset2Token) {
       return res.status(400).json({ error: "Could not find requested token in registry" });
     }
     const sim_querier = new SimulationQuerier({
-      grpcEndpoint: testnetConstants.grpcEndpoint,
+      grpcEndpoint: grpcEndpoint,
     });
 
     const amtIn = splitLoHi(BigInt(Number(amountIn) * 10 ** asset1Token.decimals));
@@ -91,6 +95,22 @@ export default async function simulationHandler(
     res.status(200).json(data as SwapExecution);
   } catch (error) {
     console.error("Error simulation trade grpc data:", error);
+    const errorString = error as string
+
+    // If the error contains 'there are no orders to fulfill this swap', there are no orders to fulfill the trade, so just return an empty array
+    if (error instanceof Error) {
+        const errorMessage = error.message;
+        
+        // If the error message contains 'there are no orders to fulfill this swap', return an empty array
+        if (errorMessage.includes("there are no orders to fulfill this swap")) {
+            console.log("No orders to fulfill swap");
+            return res.status(200).json(
+              {'traces': []}
+            );
+        }
+    }
+   
+
     res
       .status(500)
       .json({ error: `Error simualtion trade grpc data: ${error}` });
