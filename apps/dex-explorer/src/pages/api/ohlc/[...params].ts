@@ -1,6 +1,5 @@
 // pages/api/ohlc/[...params].ts
 
-import { testnetConstants } from "@/constants/configConstants";
 import { DexQueryServiceClient } from "@/utils/protos/services/dex/dex-query-service-client";
 import { NextApiRequest, NextApiResponse } from "next";
 import {
@@ -10,6 +9,11 @@ import {
 import { AssetId } from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb";
 import { base64ToUint8Array } from "@/utils/math/base64";
 import { fetchAllTokenAssets } from "@/utils/token/tokenFetch";
+
+const grpcEndpoint = process.env.PENUMBRA_GRPC_ENDPOINT!
+if (!grpcEndpoint) {
+    throw new Error("PENUMBRA_GRPC_ENDPOINT is not set")
+}
 
 export default async function candleStickData(
   req: NextApiRequest,
@@ -28,8 +32,13 @@ export default async function candleStickData(
       return res.status(400).json({ error: "Invalid query parameters" });
     }
 
+    // Set a HARD limit to prevent abuse
+    if (parseInt(limit) > 10000) {
+      return res.status(400).json({ error: "Limit exceeded" });
+    }
+
     const dex_querier = new DexQueryServiceClient({
-      grpcEndpoint: testnetConstants.grpcEndpoint,
+      grpcEndpoint: grpcEndpoint,
     });
 
     const tokenInInner = tokenAssets.find(

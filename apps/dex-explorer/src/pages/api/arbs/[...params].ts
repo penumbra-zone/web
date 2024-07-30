@@ -1,10 +1,13 @@
 // pages/api/arbs/[...params].ts
 
-import { testnetConstants } from "@/constants/configConstants";
 import { DexQueryServiceClient } from "@/utils/protos/services/dex/dex-query-service-client";
 import { SwapExecutionWithBlockHeight } from "@/utils/protos/types/DexQueryServiceClientInterface";
 import { NextApiRequest, NextApiResponse } from "next";
 
+const grpcEndpoint = process.env.PENUMBRA_GRPC_ENDPOINT!
+if (!grpcEndpoint) {
+    throw new Error("PENUMBRA_GRPC_ENDPOINT is not set")
+}
 
 export default async function arbsByBlockRange(req: NextApiRequest, res: NextApiResponse) {
     const params = req.query.params as string[];
@@ -18,7 +21,7 @@ export default async function arbsByBlockRange(req: NextApiRequest, res: NextApi
         }
         // TODO: validate StartHeight/EndHeight are numbers
         const dex_querier = new DexQueryServiceClient({
-            grpcEndpoint: testnetConstants.grpcEndpoint,
+            grpcEndpoint: grpcEndpoint,
         });
 
         const data = await dex_querier.arbExecutions(

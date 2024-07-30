@@ -1,5 +1,4 @@
 // pages/api/lp/positionsByPrice/[...params].ts
-import { testnetConstants } from "../../../../constants/configConstants";
 import { NextApiRequest, NextApiResponse } from "next";
 import { DexQueryServiceClient } from "@/utils/protos/services/dex/dex-query-service-client";
 import {
@@ -8,6 +7,11 @@ import {
 } from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb";
 import { base64ToUint8Array } from "@/utils/math/base64";
 import { fetchAllTokenAssets } from "@/utils/token/tokenFetch";
+
+const grpcEndpoint = process.env.PENUMBRA_GRPC_ENDPOINT!
+if (!grpcEndpoint) {
+    throw new Error("PENUMBRA_GRPC_ENDPOINT is not set")
+}
 
 export default async function positionsByPriceHandler(
   req: NextApiRequest,
@@ -26,15 +30,15 @@ export default async function positionsByPriceHandler(
 
     // Get token 1 & 2
     const tokenAssets = fetchAllTokenAssets();
-    const asset1Token = tokenAssets.find((x) => x.display === token1);
-    const asset2Token = tokenAssets.find((x) => x.display === token2);
+    const asset1Token = tokenAssets.find((x) => x.display.toLocaleLowerCase() === token1.toLocaleLowerCase());
+    const asset2Token = tokenAssets.find((x) => x.display.toLocaleLowerCase() === token2.toLocaleLowerCase());
 
     if (!asset1Token || !asset2Token) {
       return res.status(400).json({ error: "Could not find requested token in registry" });
     }
 
     const lp_querier = new DexQueryServiceClient({
-      grpcEndpoint: testnetConstants.grpcEndpoint,
+      grpcEndpoint: grpcEndpoint,
     });
 
     const tradingPair = new DirectedTradingPair({

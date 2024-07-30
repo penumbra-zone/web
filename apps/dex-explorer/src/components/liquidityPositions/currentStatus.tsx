@@ -135,102 +135,87 @@ const CurrentLPStatus = ({ nftId, position }: CurrentLPStatusProps) => {
   );
 
   return (
-    <>
-      <VStack width={"100%"}>
-        <HStack>
-          <Text fontFamily={"monospace"}>{nftId}</Text>
-
-          <div style={{ position: "relative", display: "inline-block" }}>
-            <CopyIcon onClick={handleCopy} style={{ cursor: "pointer" }} />
-            {isCopied && (
-              <div
-                style={{
-                  position: "absolute",
-                  bottom: "100%", // Align bottom of popup with top of the button
-                  left: "50%",
-                  transform: "translateX(-50%) translateY(-8px)", // Adjust Y translation for spacing
-                  padding: "8px",
-                  backgroundColor: "#4A5568", // Dark grayish-blue
-                  color: "white",
-                  borderRadius: "6px",
-                  fontSize: "14px",
-                  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)", // Soft shadow
-                  zIndex: 1, // Ensure the popup is above other elements
-                  transition: "opacity 0.3s, transform 0.3s", // Smooth transition for both opacity and position
-                  opacity: 0.9, // Slightly transparent
-                  width: "10em",
-                  textAlign: "center",
-                  border: "3px solid #2D3748",
-                }}
-              >
-                {`LP ID copied`}
-              </div>
-            )}
-          </div>
-        </HStack>
-        <HStack width={"100%"} justifyContent={"center"} paddingTop={"1em"}>
-          <HStack>
-            <Badge colorScheme="blue">Status:</Badge>
-            <Text>{statusText}</Text>
-          </HStack>
-          <HStack width={"10%"} />
-          <HStack>
-            <Badge colorScheme="orange">Fee tier:</Badge>
-            <Text>{feeTier + "bps"}</Text>
-          </HStack>
-        </HStack>
-        <VStack width={"100%"} padding="1em" alignItems={"left"}>
-          {/* Asset 1 */}
-          <HStack>
-            <Avatar
-              name={asset1Token.symbol}
-              src={asset1Token.imagePath}
-              size="sm"
-              borderRadius="50%"
-            />
-            <Text fontFamily={"monospace"}>
-              {`Sell ${Number.parseFloat(reserves1.toFixed(6))} ${
-                asset1Token.symbol
-              } @ ${Number.parseFloat(p.div(q).toFixed(6))} ${
-                asset2Token.symbol
-              } / ${asset1Token.symbol} `}
-            </Text>
-          </HStack>
-
-          {/* Swap Icon*/}
-          <HStack width={"100%"} justifyContent={"left"} paddingLeft=".15em">
-            <Image
-              src="/assets/icons/swap.svg"
-              alt="swap"
-              width="7"
-              paddingTop=".2em"
-              paddingBottom=".2em"
-              sx={{
-                transform: "rotate(90deg)",
+    <VStack width={[
+      
+      "100%"
+    ]}>
+      <HStack>
+        <Text fontFamily={"monospace"} wordBreak={"break-word"}>{nftId}</Text>
+        <div style={{ position: "relative", display: "inline-block" }}>
+          <CopyIcon onClick={handleCopy} style={{ cursor: "pointer" }} />
+          {isCopied && (
+            <div
+              style={{
+                position: "absolute",
+                bottom: "100%", // Align bottom of popup with top of the button
+                left: "50%",
+                transform: "translateX(-50%) translateY(-8px)", // Adjust Y translation for spacing
+                padding: "8px",
+                backgroundColor: "#4A5568", // Dark grayish-blue
+                color: "white",
+                borderRadius: "6px",
+                fontSize: "14px",
+                boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)", // Soft shadow
+                zIndex: 1, // Ensure the popup is above other elements
+                transition: "opacity 0.3s, transform 0.3s", // Smooth transition for both opacity and position
+                opacity: 0.9, // Slightly transparent
+                width: "10em",
+                textAlign: "center",
+                border: "3px solid #2D3748",
               }}
-            />
-          </HStack>
-
-          {/* Asset 2 */}
-          <HStack>
-            <Avatar
-              name={asset2Token.symbol}
-              src={asset2Token.imagePath}
-              size="sm"
-              borderRadius="50%"
-            />
-            <Text fontFamily={"monospace"}>
-              {`Sell ${Number.parseFloat(reserves2.toFixed(6))} ${
-                asset2Token.symbol
-              } @ ${Number.parseFloat(q.div(p).toFixed(6))} ${
-                asset1Token.symbol
-              } / ${asset2Token.symbol} `}
-            </Text>
-          </HStack>
-        </VStack>
+            >
+              {`LP ID copied`}
+            </div>
+          )}
+        </div>
+      </HStack>
+      <HStack width={"100%"} justifyContent={"center"} paddingTop={"1em"}>
+        <HStack>
+          <Badge colorScheme="blue">Status:</Badge>
+          <Text>{statusText}</Text>
+        </HStack>
+        <HStack width={{ base: "10%", md: "5%" }} />
+        <HStack>
+          <Badge colorScheme="orange">Fee tier:</Badge>
+          <Text>{feeTier + "bps"}</Text>
+        </HStack>
+      </HStack>
+      <VStack width={"100%"} padding="1em" alignItems={"left"}>
+        <HStack>
+          <Avatar
+            name={asset1Token.symbol}
+            src={asset1Token.imagePath}
+            size="sm"
+            borderRadius="50%"
+          />
+          <Text fontFamily={"monospace"}>
+            {`Sell ${Number.parseFloat(reserves1.toFixed(6))} ${asset1Token.symbol} @ ${Number.parseFloat(p.div(q).toFixed(6))} ${asset2Token.symbol} / ${asset1Token.symbol} `}
+          </Text>
+        </HStack>
+        <HStack width={"100%"} justifyContent={"left"} paddingLeft=".15em">
+          <Image
+            src="/assets/icons/swap.svg"
+            alt="swap"
+            width="7"
+            paddingTop=".2em"
+            paddingBottom=".2em"
+            sx={{ transform: "rotate(90deg)" }}
+          />
+        </HStack>
+        <HStack>
+          <Avatar
+            name={asset2Token.symbol}
+            src={asset2Token.imagePath}
+            size="sm"
+            borderRadius="50%"
+          />
+          <Text fontFamily={"monospace"}>
+            {`Sell ${Number.parseFloat(reserves2.toFixed(6))} ${asset2Token.symbol} @ ${Number.parseFloat(q.div(p).toFixed(6))} ${asset1Token.symbol} / ${asset2Token.symbol} `}
+          </Text>
+        </HStack>
       </VStack>
-    </>
+    </VStack>
   );
-};
+}
 
 export default CurrentLPStatus;
