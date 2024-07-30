@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/types",
-  "version": "17.0.1",
+  "version": "18.0.0",
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "engine": {

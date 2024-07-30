@@ -1,5 +1,24 @@
 # @penumbra-zone/router
 
+## 24.0.0
+
+### Minor Changes
+
+- a9ffd2d: rework extractAltFee with fallback protections
+
+### Patch Changes
+
+- Updated dependencies [a9ffd2d]
+- Updated dependencies
+  - @penumbra-zone/storage@20.0.0
+  - @penumbra-zone/types@18.0.0
+  - @penumbra-zone/protobuf@5.6.0
+  - @penumbra-zone/crypto-web@17.0.0
+  - @penumbra-zone/query@21.0.0
+  - @penumbra-zone/wasm@21.0.0
+  - @penumbra-zone/getters@13.0.0
+  - @penumbra-zone/perspective@20.0.0
+
 ## 23.0.0
 
 ### Minor Changes
