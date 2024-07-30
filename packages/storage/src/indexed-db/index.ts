@@ -870,18 +870,18 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async hasTokenBalance(addressIndex: AddressIndex, assetId: AssetId): Promise<boolean> {
-    const spendableAltNotes = await this.db.getAllFromIndex(
+    const spendableNotes = await this.db.getAllFromIndex(
       'SPENDABLE_NOTES',
       'assetId',
       uint8ArrayToBase64(assetId.inner),
     );
 
-    return spendableAltNotes.some(note => {
-      const altNote = SpendableNoteRecord.fromJson(note);
+    return spendableNotes.some(note => {
+      const spendableNote = SpendableNoteRecord.fromJson(note);
       return (
-        altNote.heightSpent === 0n &&
-        !isZero(getAmountFromRecord(altNote)) &&
-        altNote.addressIndex?.equals(addressIndex)
+        spendableNote.heightSpent === 0n &&
+        !isZero(getAmountFromRecord(spendableNote)) &&
+        spendableNote.addressIndex?.equals(addressIndex)
       );
     });
   }
