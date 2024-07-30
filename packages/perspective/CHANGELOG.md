@@ -1,5 +1,12 @@
 # @penumbra-zone/perspective
 
+## 20.0.0
+
+### Patch Changes
+
+- @penumbra-zone/wasm@21.0.0
+- @penumbra-zone/getters@13.0.0
+
 ## 19.0.0
 
 ### Minor Changes

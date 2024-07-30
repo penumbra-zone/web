@@ -1,5 +1,15 @@
 # @penumbra-zone/types
 
+## 18.0.0
+
+### Minor Changes
+
+- a9ffd2d: rework extractAltFee with fallback protections
+
+### Patch Changes
+
+- @penumbra-zone/getters@13.0.0
+
 ## 17.0.1
 
 ### Patch Changes

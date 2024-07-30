@@ -1,5 +1,11 @@
 # @penumbra-zone/protobuf
 
+## 5.6.0
+
+### Minor Changes
+
+- Catchup bump (previously changed without a bump)
+
 ## 5.5.0
 
 ### Minor Changes
