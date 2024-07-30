@@ -97,7 +97,8 @@ export class CRSessionManager {
     }
 
     const fromThisExtension = sender.id === chrome.runtime.id;
-    const fromPageHttps = !sender.frameId && !!sender.tab?.id && sender.origin.startsWith('https://');
+    const fromPageHttps =
+      !sender.frameId && !!sender.tab?.id && sender.origin.startsWith('https://');
     const isLocalhost =
       sender.origin.startsWith('http://localhost:') || sender.origin === 'http://localhost';
 
