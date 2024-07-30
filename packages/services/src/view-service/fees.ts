@@ -109,19 +109,30 @@ export const getAssetFromGasPriceTable = async (
 ): Promise<AssetId | undefined> => {
   // Fetch alternative gas prices, excluding those with a zero price.
   const altGasPrices = await indexedDb.getAltGasPrices();
+  const filteredAltGasPrices = altGasPrices.filter(
+    gp =>
+      gp.blockSpacePrice > 0n ||
+      gp.compactBlockSpacePrice > 0n ||
+      gp.verificationPrice > 0n ||
+      gp.executionPrice > 0n,
+  );
 
   // If a specific asset ID is provided, extracted from the transaction request, check its balance is
   // positive and GasPrices for that asset exist.
   if (assetId) {
     const balance = await indexedDb.hasTokenBalance(request.source!, assetId);
-    if (balance) {
+    // This check ensures that the alternative fee token is a valid fee token, for example, TestUSD is not.
+    const filteredSpecificGasPrices = filteredAltGasPrices.filter(gp =>
+      gp.assetId?.equals(assetId),
+    );
+    if (balance && filteredSpecificGasPrices.length > 0) {
       return assetId;
     }
   }
 
   // If no specific asset ID is provided or if the specific asset ID has no balance, check assets in the
   // GasPrices table as a fallback case.
-  for (const gasPrice of altGasPrices) {
+  for (const gasPrice of filteredAltGasPrices) {
     if (gasPrice.assetId) {
       const balance = await indexedDb.hasTokenBalance(request.source!, gasPrice.assetId);
       if (balance) {
