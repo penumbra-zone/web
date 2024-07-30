@@ -31,32 +31,36 @@ interface ExecutionEventProps {
 
 const ExecutionEvent = ({ nftId, lp_event }: ExecutionEventProps) => {
   return (
-    <>
-      <HStack spacing={"5em"}>
-        <VStack spacing={".5em"} align={"flex-start"}>
-          <BlockTimestampView
-            blockHeight={lp_event.block_height}
-            timestamp={lp_event.created_at}
-          />
-        </VStack>
-        <Box
-          className="neon-box"
-          width={"25em"}
-          height={"7em"}
-          padding="2em"
-          display={"flex"}
-        >
-          <HStack align={"center"} spacing={10}>
-            <Text fontSize={"large"} fontWeight={"bold"}>
-              Fill
-            </Text>
-            <HStack align={"center"} spacing={2}>
-              <LPAssetView sectionTitle={"Updated Reserves"} lp_event={lp_event} />
-            </HStack>
+    <HStack
+      spacing={{ base: "1em", md: "5em" }}
+      flexDirection={{ base: "column", md: "row" }}
+      alignItems={{ base: "flex-start", md: "center" }}
+      width={["95vw", "inherit"]}
+    >
+      <VStack spacing={".5em"} align={"flex-start"}>
+        <BlockTimestampView
+          blockHeight={lp_event.block_height}
+          timestamp={lp_event.created_at}
+        />
+      </VStack>
+      <Box
+        className="neon-box"
+        width={{ base: "100%", md: "25em" }}
+        height={"7em"}
+        padding="2em"
+        display={"flex"}
+      >
+        <HStack align={"center"} spacing={10}>
+          <Text fontSize={"large"} fontWeight={"bold"}>
+            Fill
+          </Text>
+          <HStack align={"center"} spacing={2}>
+            <LPAssetView sectionTitle={"Updated Reserves"} lp_event={lp_event} />
           </HStack>
-        </Box>
-      </HStack>
-    </>
+        </HStack>
+      </Box>
+    </HStack>
+
   );
 };
 
