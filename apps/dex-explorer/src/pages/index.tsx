@@ -104,7 +104,7 @@ export default function Home() {
                 fontSize={["xs", "small"]}
                 fontFamily={"monospace"}
                 spacing={"40px"}
-                width={["60vw", "100%"]}
+                width={["60vw", "110%"]}
               >
                 {swapExecutions.map((swapExecution: any, execIndex: number) => {
                   const firstTrace = swapExecution.swapExecution.traces[0];
