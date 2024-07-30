@@ -322,3 +322,17 @@ Note that we do not use unit tests to test the visual appearance of components; 
 ### Use the `useDensity()` hook to control component density.
 
 Components should never accept a `density` prop to control their density. This ensures that all components in a given density context will be rendered with the same density.
+
+#### Using density with Storybook
+
+If you're creating a component that has density variants, use the `density` tag for your Storybook stories:
+
+```ts
+const meta: Meta<typeof MyComponent> = {
+  component: MyComponent,
+  tags: ['density'],
+  // ...
+};
+```
+
+Storybook will then add a control for density, so that density can be controlled via context.

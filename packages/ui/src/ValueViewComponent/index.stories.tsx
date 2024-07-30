@@ -10,7 +10,7 @@ import {
 
 const meta: Meta<typeof ValueViewComponent> = {
   component: ValueViewComponent,
-  tags: ['autodocs', '!dev'],
+  tags: ['autodocs', '!dev', 'density'],
   argTypes: {
     valueView: {
       options: [
@@ -38,7 +38,6 @@ export const Basic: Story = {
   args: {
     valueView: PENUMBRA_VALUE_VIEW,
     context: 'default',
-    size: 'sparse',
     priority: 'primary',
   },
 };

@@ -5,7 +5,7 @@ import { Ban, HandCoins, Send } from 'lucide-react';
 
 const meta: Meta<typeof ButtonGroup> = {
   component: ButtonGroup,
-  tags: ['autodocs', '!dev'],
+  tags: ['autodocs', '!dev', 'density'],
   argTypes: {
     buttons: { control: false },
   },
@@ -17,7 +17,6 @@ type Story = StoryObj<typeof ButtonGroup>;
 export const Basic: Story = {
   args: {
     actionType: 'default',
-    size: 'sparse',
     iconOnly: false,
     buttons: [
       {

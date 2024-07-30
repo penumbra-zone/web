@@ -4,8 +4,6 @@ export type ActionType = 'default' | 'accent' | 'unshield' | 'destructive';
 
 export type Priority = 'primary' | 'secondary';
 
-export type Size = 'dense' | 'sparse';
-
 const focusOutline = css<{
   $getFocusOutlineColor: (theme: DefaultTheme) => string;
   $getBorderRadius: (theme: DefaultTheme) => string;
