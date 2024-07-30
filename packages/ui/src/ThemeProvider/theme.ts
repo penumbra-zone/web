@@ -104,12 +104,12 @@ const EIGHTY_PERCENT_OPACITY_IN_HEX = 'cc';
 
 export const theme: DefaultTheme = {
   blur: {
-    none: 0,
-    xs: 4,
-    sm: 8,
-    md: 16,
-    lg: 32,
-    xl: 64,
+    none: '0px',
+    xs: '4px',
+    sm: '8px',
+    md: '16px',
+    lg: '32px',
+    xl: '64px',
   },
   borderRadius: {
     none: '0px',
@@ -233,6 +233,10 @@ export const theme: DefaultTheme = {
     textXs: '1rem',
   },
   spacing: spacingUnits => `${spacingUnits * 4}px`,
+  zIndex: {
+    dialogOverlay: 1000,
+    dialogContent: 1001,
+  },
 };
 
 export type Color = keyof DefaultTheme['color'];

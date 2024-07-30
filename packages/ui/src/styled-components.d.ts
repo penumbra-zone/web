@@ -10,12 +10,12 @@ interface ColorVariants {
 declare module 'styled-components' {
   export interface DefaultTheme {
     blur: {
-      none: number;
-      xs: number;
-      sm: number;
-      md: number;
-      lg: number;
-      xl: number;
+      none: string;
+      xs: string;
+      sm: string;
+      md: string;
+      lg: string;
+      xl: string;
     };
     borderRadius: {
       none: string;
@@ -114,5 +114,9 @@ declare module 'styled-components' {
      * use for a CSS property.
      */
     spacing: (spacingUnits: number) => string;
+    zIndex: {
+      dialogOverlay: number;
+      dialogContent: number;
+    };
   }
 }
