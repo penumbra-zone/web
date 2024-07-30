@@ -19,10 +19,14 @@ const TimelinePosition = ({ nftId, lp_event }: TimelinePositionProps) => {
   //console.log(lp_event);
   return (
     <>
-      <HStack spacing={"2em"}>
+      <HStack
+        spacing={{ base: "1em", md: "2em" }}
+        alignItems={{ base: "flex-start", md: "center" }}
+        flexDirection={{ base: "column", md: "row" }}
+      >
         <Box
           className="neon-box"
-          width={"28em"}
+          width={{ base: "100%", md: "28em" }}
           height={"fit-content"}
           padding="2em"
         >
