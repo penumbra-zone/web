@@ -48,13 +48,13 @@ export default function Pairs() {
                     <HStack justifyContent={'space-evenly'} width={'100%'} paddingTop={'5%'}>
                         <Box borderColor="gray.200">
                             <VStack>
-                                <Select placeholder='Select First Asset' onChange={(e) => handleSelectEvent(e.target.value, 0)}>
+                                <Select placeholder='Select Base Asset' onChange={(e) => handleSelectEvent(e.target.value, 0)}>
                                     {tokenAssets.map((x, index) => (<option key={index} value={x.display}>{x.display}</option>))}
                                 </Select>
                             </VStack>
                         </Box>
                         <Box>
-                        <Select placeholder='Select Second Asset' onChange={(e) => handleSelectEvent(e.target.value, 1)}>
+                        <Select placeholder='Select Quote Asset' onChange={(e) => handleSelectEvent(e.target.value, 1)}>
                             {tokenAssets.map((x) => (<option key={x.display} value={x.display}>{x.display}</option>))}
                         </Select>
                         </Box>

@@ -1,36 +1,47 @@
 // components/lpSearchBar.tsx
 
 import React, { useState } from "react";
-import { Input } from "@chakra-ui/react";
+import { Input, InputGroup, InputRightElement, IconButton } from "@chakra-ui/react";
+import { SearchIcon } from '@chakra-ui/icons';
 
+export const LPSearchBar = ({ isMobile = false }) => {
+  const [LpId, setLpId] = useState("");
 
-export const LPSearchBar = () => {
+  const onSearch = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const sanitizedId = sanitizeInput(LpId)
+    location.assign("/lp/" + sanitizedId)
+  }
 
-    const [LpId, setLpId] = useState("");
-
-   const onSearch = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        const sanitizedId = sanitizeInput(LpId)
-        location.assign("/lp/" + sanitizedId)
-    }
-
-    return (
-      // TODO: Massage on mobile
-      <form onSubmit={onSearch}>
+  return (
+    <form onSubmit={onSearch} style={{ width: '100%' }}>
+      <InputGroup size="md">
         <Input
           placeholder="Search by Liquidity Position ID"
-          width={"37.5em"}
+          width={isMobile ? "100%" : "37.5em"}
           height={"2.5em"}
           fontSize={"0.8em"}
           value={LpId}
-          spellCheck={false}
           onChange={(e) => setLpId(e.target.value)}
+          pr={isMobile ? "4.5rem" : "1rem"}
+          spellCheck={false}
         />
-      </form>
-    );
+        {isMobile && (
+          <InputRightElement width="4.5rem">
+            <IconButton
+              h="1.75rem"
+              size="sm"
+              aria-label="Search"
+              icon={<SearchIcon />}
+              type="submit"
+            />
+          </InputRightElement>
+        )}
+      </InputGroup>
+    </form>
+  );
 }
 
 const sanitizeInput = (input: string): string => {
-    // Trivial sanitation now, should replace with regex for lpId
-    return input.replaceAll(/[&/\\#,+()$~%.^'":*?<>{} ]/g, "");
+  return input.replaceAll(/[&/\\#,+()$~%.^'":*?<>{} ]/g, "");
 }
