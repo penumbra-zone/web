@@ -1,5 +1,17 @@
 # @penumbra-zone/storage
 
+## 19.0.0
+
+### Minor Changes
+
+- 955dbf2: Bump idb version so del vote tokens show up correctly in storage
+- Update registry dep
+
+### Patch Changes
+
+- Updated dependencies [318690e]
+  - @penumbra-zone/wasm@20.2.0
+
 ## 18.0.0
 
 ### Patch Changes

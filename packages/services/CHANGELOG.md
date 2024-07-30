@@ -1,5 +1,22 @@
 # @penumbra-zone/router
 
+## 23.0.0
+
+### Minor Changes
+
+- 955dbf2: Save customized symbol metadata on denom req
+
+### Patch Changes
+
+- Updated dependencies [40a471d]
+- Updated dependencies [955dbf2]
+- Updated dependencies [318690e]
+- Updated dependencies
+  - @penumbra-zone/perspective@19.0.0
+  - @penumbra-zone/storage@19.0.0
+  - @penumbra-zone/wasm@20.2.0
+  - @penumbra-zone/query@20.0.0
+
 ## 22.0.0
 
 ### Patch Changes

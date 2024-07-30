@@ -1,5 +1,11 @@
 # @penumbra-zone/wasm
 
+## 20.2.0
+
+### Minor Changes
+
+- 318690e: Properly derive DelegatorVoteView from perspective
+
 ## 20.1.0
 
 ### Minor Changes

@@ -1,5 +1,21 @@
 # minifront
 
+## 6.13.0
+
+### Minor Changes
+
+- dfad32b: fix auctions source
+- Update registry dep
+
+### Patch Changes
+
+- Updated dependencies [dfad32b]
+- Updated dependencies [40a471d]
+- Updated dependencies [49fb3f1]
+- Updated dependencies
+  - @repo/ui@7.3.0
+  - @penumbra-zone/perspective@19.0.0
+
 ## 6.12.3
 
 ### Patch Changes
