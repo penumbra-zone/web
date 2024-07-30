@@ -422,14 +422,7 @@ export class IndexedDb implements IndexedDbInterface {
     const allGasPrices = await this.db.getAll('GAS_PRICES');
     return allGasPrices
       .map(gp => GasPrices.fromJson(gp))
-      .filter(
-        gp =>
-          !gp.assetId?.equals(this.stakingTokenAssetId) &&
-          (gp.blockSpacePrice > 0n ||
-            gp.compactBlockSpacePrice > 0n ||
-            gp.verificationPrice > 0n ||
-            gp.executionPrice > 0n),
-      );
+      .filter(gp => !gp.assetId?.equals(this.stakingTokenAssetId));
   }
 
   async saveGasPrices(value: PartialMessage<GasPrices>): Promise<void> {
