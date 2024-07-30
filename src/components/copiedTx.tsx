@@ -1,7 +1,7 @@
 import React, { FC, useState } from "react";
 import { CopyIcon } from "@radix-ui/react-icons";
 import { HStack } from "@chakra-ui/react";
-import { testnetConstants } from "@/constants/configConstants";
+import { Constants } from "@/constants/configConstants";
 
 interface CopyTxToClipboardProps {
   txHash: string;
@@ -24,7 +24,7 @@ const CopyTxToClipboard: FC<CopyTxToClipboardProps> = ({
   return (
     <HStack align={"center"} spacing={".5em"}>
       <a
-        href={`${testnetConstants.cuiloaUrl}/transaction/${txHash}`}
+        href={`${Constants.cuiloaUrl}/transaction/${txHash}`}
         target="_blank"
         rel="noreferrer"
         style={{
@@ -37,8 +37,8 @@ const CopyTxToClipboard: FC<CopyTxToClipboardProps> = ({
       >
         {txHash.length > 40
           ? `${txHash.substring(0, 20)}...${txHash.substring(
-              txHash.length - 20
-            )}`
+            txHash.length - 20
+          )}`
           : txHash}
       </a>
 

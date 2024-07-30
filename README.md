@@ -34,7 +34,8 @@ you'll want to set are:
 
   * `PENUMBRA_GRPC_ENDPOINT`
   * `PENUMBRA_INDEXER_ENDPOINT`
-  * `CHAIN_ID`
+  * `NEXT_PUBLIC_CHAIN_ID`
+  * `NEXT_PUBLIC_CUILOA_URL`
 
 ## Name
 

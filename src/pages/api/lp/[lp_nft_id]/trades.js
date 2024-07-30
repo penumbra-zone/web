@@ -1,10 +1,14 @@
 // pages/api/lp/[lp_nft_id]/trades.js
 import { IndexerQuerier } from "../../../../utils/indexer/connector";
-import { testnetConstants } from "../../../../constants/configConstants";
+
+const indexerEndpoint = process.env.PENUMBRA_INDEXER_ENDPOINT
+if (!indexerEndpoint) {
+    throw new Error("PENUMBRA_INDEXER_ENDPOINT is not set")
+}
 
 export default async function liquidityPositionTradeHandler(req, res) {
   const { lp_nft_id } = req.query;
-  const indexerQuerier = new IndexerQuerier(testnetConstants.indexerEndpoint);
+  const indexerQuerier = new IndexerQuerier(indexerEndpoint);
 
   try {
     const data = await indexerQuerier.fetchLiquidityPositionExecutionEventsOnBech32(
