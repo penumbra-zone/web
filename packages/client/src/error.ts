@@ -1,6 +1,8 @@
 export enum PenumbraRequestFailure {
-  Denied = 'Denied',
-  NeedsLogin = 'NeedsLogin',
+  'Denied' = 'Denied',
+  'NeedsLogin' = 'NeedsLogin',
+  'BadResponse' = 'BadResponse',
+  'NotHandled' = 'NotHandled',
 }
 
 export class PenumbraProviderNotAvailableError extends Error {
@@ -19,10 +21,11 @@ export class PenumbraProviderNotConnectedError extends Error {
 
 export class PenumbraProviderRequestError extends Error {
   constructor(providerOrigin?: string, opts?: ErrorOptions & { cause: PenumbraRequestFailure }) {
-    super(`Penumbra provider ${providerOrigin} did not approve request`, opts);
+    super(`Penumbra provider ${providerOrigin} did not complete request`, opts);
     this.name = 'PenumbraProviderRequestError';
   }
 }
+
 export class PenumbraNotInstalledError extends Error {
   constructor(
     message = "Penumbra global `window[Symbol.for('penumbra')]` is not present.",
