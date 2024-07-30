@@ -32,7 +32,7 @@ export class PenumbraClient implements IPenumbraClient {
 
   private origin?: string;
   private provider?: PenumbraProvider;
-  private port?: MessagePort;
+  public port?: MessagePort;
 
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor() {
@@ -60,15 +60,18 @@ export class PenumbraClient implements IPenumbraClient {
 
     this.origin = providerOrigin;
     this.provider = assertProviderRecord(providerOrigin);
+
+    const request = this.provider.connect().then(port => {
+      this.port = port;
+    });
+
     this.provider.addEventListener('penumbrastate', (evt: PenumbraStateEvent | Event) => {
       if (isPenumbraStateEvent(evt)) {
-        for (const callback of this.callbacks) {
-          callback(evt.detail);
-        }
+        void request.finally(() => this.callbacks.forEach(cb => cb(evt.detail)));
       }
     });
 
-    this.port = await this.provider.connect();
+    await request;
 
     return this.provider.manifest;
   }
@@ -85,7 +88,7 @@ export class PenumbraClient implements IPenumbraClient {
     return this.assertProvider().state();
   }
 
-  public onConnectionChange(callback: (detail: PenumbraStateEventDetail) => unknown) {
+  public onConnectionChange(callback: (detail: PenumbraStateEventDetail) => void) {
     this.callbacks.add(callback);
   }
 

@@ -16,13 +16,12 @@ export class PenumbraStateEvent extends CustomEvent<PenumbraStateEventDetail> {
     }
     const state = penumbraState ?? provider.state();
     const connected = penumbraConnected ?? provider.isConnected();
-    super('penumbrastate', {
-      detail: {
-        origin: penumbraOrigin,
-        state,
-        connected,
-      },
-    });
+    const detail = {
+      origin: penumbraOrigin,
+      state,
+      connected,
+    };
+    super('penumbrastate', { detail });
   }
 }
 

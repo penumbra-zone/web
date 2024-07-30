@@ -1,9 +1,4 @@
-import {
-  assertPenumbra,
-  assertProvider,
-  assertProviderManifest,
-  assertProviderRecord,
-} from './assert.js';
+import { assertPenumbra, assertProviderManifest, assertProviderRecord } from './assert.js';
 import { PenumbraManifest, isPenumbraManifest } from './manifest.js';
 import type { PenumbraProvider } from './provider.js';
 import { PenumbraSymbol } from './symbol.js';
@@ -11,11 +6,6 @@ import { PenumbraSymbol } from './symbol.js';
 /** Return the specified provider, without verifying anything. */
 export const getPenumbraUnsafe = (penumbraOrigin: string): PenumbraProvider | undefined =>
   window[PenumbraSymbol]?.[penumbraOrigin];
-
-/** Return the specified provider after confirming presence of its manifest and
- * confirming an active connection. */
-export const getPenumbraConnected = (penumbraOrigin: string): Promise<PenumbraProvider> =>
-  assertProvider(penumbraOrigin);
 
 /** Return the specified provider after confirming presence of its manifest. */
 export const getPenumbra = (penumbraOrigin: string): Promise<PenumbraProvider> =>

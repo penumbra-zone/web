@@ -3,6 +3,7 @@ import {
   PenumbraProviderNotAvailableError,
   PenumbraProviderNotConnectedError,
 } from './error.js';
+import { PenumbraProvider } from './provider.js';
 import { PenumbraSymbol } from './symbol.js';
 
 const assertStringIsOrigin = (s?: string) => {
@@ -37,8 +38,11 @@ export const assertProviderRecord = (providerOrigin?: string) => {
  * Perform a complete check and return the specified provider. The global
  * exists, the manifest is present, and the provider is connected.
  */
-export const assertProvider = (providerOrigin?: string) =>
-  assertProviderManifest(providerOrigin).then(() => assertProviderConnected(providerOrigin));
+export const assertProvider = async (providerOrigin?: string): Promise<PenumbraProvider> => {
+  await assertProviderManifest(providerOrigin);
+  assertProviderConnected(providerOrigin);
+  return assertProviderRecord(providerOrigin);
+};
 
 /**
  * Given a specific origin, identify the relevant injection, and confirm
@@ -53,7 +57,6 @@ export const assertProviderConnected = (providerOrigin?: string) => {
   if (!provider.isConnected()) {
     throw new PenumbraProviderNotConnectedError(providerOrigin);
   }
-  return provider;
 };
 
 /**
