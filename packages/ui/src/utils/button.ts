@@ -4,7 +4,8 @@ export type ActionType = 'default' | 'accent' | 'unshield' | 'destructive';
 
 export type Priority = 'primary' | 'secondary';
 
-const focusOutline = css<{
+/** Adds a focus outline to a button using the `:focus-within` pseudoclass. */
+export const focusOutline = css<{
   $getFocusOutlineColor: (theme: DefaultTheme) => string;
   $getBorderRadius: (theme: DefaultTheme) => string;
 }>`
@@ -43,7 +44,8 @@ const focusOutline = css<{
   }
 `;
 
-const overlays = css<{
+/** Adds overlays to a button for when it's hovered, active, or disabled. */
+export const overlays = css<{
   $getBorderRadius: (theme: DefaultTheme) => string;
 }>`
   &::before {
@@ -68,20 +70,4 @@ const overlays = css<{
     background-color: ${props => props.theme.color.action.disabledOverlay};
     cursor: not-allowed;
   }
-`;
-
-/**
- * A set of shared styles for buttons that handle `:hover`, `:active`,
- * `:disabled`, etc. states.
- *
- * Requires a few props to get rendering parameters, which means that any styled
- * components that use this utility will need to have those props defined as
- * well.
- */
-export const buttonInteractions = css<{
-  $getFocusOutlineColor: (theme: DefaultTheme) => string;
-  $getBorderRadius: (theme: DefaultTheme) => string;
-}>`
-  ${overlays}
-  ${focusOutline}
 `;
