@@ -111,7 +111,7 @@ export const getAssetFromGasPriceTable = async (
     throw new Error('No source provided in request');
   }
 
-  // Fetch alternative gas prices, excluding those with a zero price.
+  // Fetch alternative gas prices from GasPrices indexdb table.
   const altGasPrices = await indexedDb.getAltGasPrices();
 
   // If a specific asset ID is provided, extracted from the transaction request, check its balance is
