@@ -55,7 +55,6 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
     fee: undefined,
     feeTier: FeeTier_Tier.LOW,
     txInProgress: false,
-    isSendingMax: false,
     assetFeeMetadata: undefined,
     setAmount: amount => {
       set(state => {
