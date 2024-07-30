@@ -19,6 +19,7 @@ import { IndexedDbMock } from '../test-utils.js';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb.js';
+import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 
 describe('extractAltFee', () => {
   let mockIndexedDb: IndexedDbMock;
@@ -50,6 +51,7 @@ describe('extractAltFee', () => {
           value: { assetId: inputAssetId },
         },
       ],
+      source: new AddressIndex({ account: 0 }),
     });
 
     const gasPrices = [
@@ -84,6 +86,7 @@ describe('extractAltFee', () => {
           value: { assetId: inputAssetId },
         }),
       ],
+      source: new AddressIndex({ account: 0 }),
     });
 
     const gasPrices = [
@@ -137,6 +140,7 @@ describe('extractAltFee', () => {
           auctionId: auctionWithdrawAuctiontId,
         }),
       ],
+      source: new AddressIndex({ account: 0 }),
     });
 
     const gasPrices = [
@@ -172,6 +176,7 @@ describe('extractAltFee', () => {
           value: { assetId: inputAssetId },
         }),
       ],
+      source: new AddressIndex({ account: 0 }),
     });
 
     const gasPrices = [
@@ -207,6 +212,7 @@ describe('extractAltFee', () => {
           value: { assetId: inputAssetId },
         },
       ],
+      source: new AddressIndex({ account: 0 }),
     });
 
     const gasPrices = [
@@ -243,6 +249,7 @@ describe('extractAltFee', () => {
           swapCommitment: mockSwapCommitmentNativeStakingToken,
         },
       ],
+      source: new AddressIndex({ account: 0 }),
     });
 
     const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
@@ -265,6 +272,7 @@ describe('extractAltFee', () => {
           swapCommitment: mockSwapCommitmentAlternativeToken,
         },
       ],
+      source: new AddressIndex({ account: 0 }),
     });
 
     const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
@@ -290,6 +298,7 @@ describe('extractAltFee', () => {
           },
         },
       ],
+      source: new AddressIndex({ account: 0 }),
     });
 
     const gasPrices = [
@@ -338,6 +347,7 @@ describe('extractAltFee', () => {
           auctionId: { inner: new Uint8Array([]) },
         },
       ],
+      source: new AddressIndex({ account: 0 }),
     });
 
     const gasPrices = [
@@ -406,6 +416,7 @@ describe('extractAltFee', () => {
           auctionId: { inner: new Uint8Array([]) },
         },
       ],
+      source: new AddressIndex({ account: 0 }),
     });
 
     const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
@@ -452,6 +463,7 @@ describe('extractAltFee', () => {
           auctionId: { inner: new Uint8Array([]) },
         },
       ],
+      source: new AddressIndex({ account: 0 }),
     });
 
     const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
@@ -506,6 +518,7 @@ describe('extractAltFee', () => {
           auctionId: { inner: new Uint8Array([]) },
         },
       ],
+      source: new AddressIndex({ account: 0 }),
     });
 
     const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
