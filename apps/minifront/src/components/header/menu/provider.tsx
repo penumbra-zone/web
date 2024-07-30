@@ -6,6 +6,7 @@ import { itemStyle, triggerStyle, dropdownStyle, linkStyle, viewportStyle } from
 import { Link1Icon, LinkBreak1Icon } from '@radix-ui/react-icons';
 import { getPraxManifest, getPraxOrigin } from '../../../prax';
 import { PenumbraSymbol } from '@penumbra-zone/client';
+import { getPenumbraUnsafe } from '@penumbra-zone/client/get';
 
 export const ProviderMenu = () => {
   const [chainId, setChainId] = useState<string | undefined>();
@@ -15,7 +16,7 @@ export const ProviderMenu = () => {
   const [manifestIconUnavailable, setManifestIconUnavailable] = useState<boolean>();
 
   const disconnect = useCallback(() => {
-    void window[PenumbraSymbol]?.[providerOrigin]
+    void getPenumbraUnsafe(providerOrigin)
       ?.disconnect()
       .then(() => window.location.reload());
   }, [providerOrigin]);

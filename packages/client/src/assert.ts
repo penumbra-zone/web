@@ -6,6 +6,8 @@ import {
 import { PenumbraProvider } from './provider.js';
 import { PenumbraSymbol } from './symbol.js';
 
+import './global.js';
+
 const assertStringIsOrigin = (s?: string) => {
   if (!s || new URL(s).origin !== s) {
     throw new TypeError('Invalid origin');
@@ -13,7 +15,7 @@ const assertStringIsOrigin = (s?: string) => {
   return s;
 };
 
-export const assertPenumbra = () => {
+export const assertPenumbra = (): Record<string, PenumbraProvider> => {
   if (!window[PenumbraSymbol]) {
     throw new PenumbraNotInstalledError();
   }
@@ -26,7 +28,7 @@ export const assertPenumbra = () => {
  *
  * This method does not confirm the manifest is present.
  */
-export const assertProviderRecord = (providerOrigin?: string) => {
+export const assertProviderRecord = (providerOrigin?: string): PenumbraProvider => {
   const provider = assertPenumbra()[assertStringIsOrigin(providerOrigin)];
   if (!provider) {
     throw new PenumbraProviderNotAvailableError(providerOrigin);

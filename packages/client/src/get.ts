@@ -3,8 +3,10 @@ import { PenumbraManifest, isPenumbraManifest } from './manifest.js';
 import type { PenumbraProvider } from './provider.js';
 import { PenumbraSymbol } from './symbol.js';
 
+import './global.js';
+
 /** Return the specified provider, without verifying anything. */
-export const getPenumbraUnsafe = (penumbraOrigin: string): PenumbraProvider | undefined =>
+export const getPenumbraUnsafe = (penumbraOrigin: string) =>
   window[PenumbraSymbol]?.[penumbraOrigin];
 
 /** Return the specified provider after confirming presence of its manifest. */
@@ -35,7 +37,10 @@ export const getAllPenumbraManifests = (
   );
 
 // Naively return the first available provider origin, or `undefined`.
-export const availableOrigin = () => Object.keys(window[PenumbraSymbol] ?? {})[0];
+export const availableOrigin = () => {
+  const providers = window[PenumbraSymbol];
+  return Object.keys(providers ?? {})[0];
+};
 
 /**
  * Asynchronously get a connection to the specified provider, or the first
@@ -46,7 +51,7 @@ export const availableOrigin = () => Object.keys(window[PenumbraSymbol] ?? {})[0
  *
  * @param requireProvider optional string identifying a provider origin
  */
-export const getPenumbraPort = async (penumbraOrigin?: string) => {
+export const getPenumbraPort = async (penumbraOrigin?: string): Promise<MessagePort> => {
   const provider = assertProviderRecord(penumbraOrigin);
   await assertProviderManifest(penumbraOrigin);
   return provider.connect();
