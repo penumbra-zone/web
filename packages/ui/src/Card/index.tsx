@@ -31,7 +31,7 @@ export interface CardProps {
   title?: string;
 }
 
-export const Card = ({ children, as, title }: CardProps) => {
+export const Card = ({ children, as = 'section', title }: CardProps) => {
   return (
     <Root as={as}>
       {title && <Title>{title}</Title>}
