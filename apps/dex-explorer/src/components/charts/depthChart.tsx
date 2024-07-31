@@ -635,7 +635,7 @@ const DepthChart = ({
 
   return (
     <>
-      <VStack height={["600px", "600px", "650px"]} width={["105%", "105%", "60em"]}>
+      <VStack height={["600px", "600px", "650px"]} width={["105%", "105%", "105%", "100%", "100%", "60em"]}>
         <div
           style={{ height: "100%", width: "100%" }}
           onMouseOver={handleMouseOverChart}
