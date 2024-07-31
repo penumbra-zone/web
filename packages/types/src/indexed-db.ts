@@ -150,7 +150,7 @@ export interface IndexedDbInterface {
     auctionId: AuctionId,
   ): Promise<{ input: Value; output: Value } | undefined>;
 
-  hasTokenBalance(addressIndex: AddressIndex, assetId: AssetId): Promise<boolean>;
+  hasTokenBalance(addressIndex: number, assetId: AssetId): Promise<boolean>;
 }
 
 export interface PenumbraDb extends DBSchema {

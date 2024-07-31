@@ -15,7 +15,10 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
   const { indexedDb } = await services.getWalletServices();
 
   // Query IndexedDB directly to check for the existence of staking token
-  const nativeToken = await indexedDb.hasTokenBalance(req.source!, indexedDb.stakingTokenAssetId);
+  const nativeToken = await indexedDb.hasTokenBalance(
+    req.source?.account!,
+    indexedDb.stakingTokenAssetId,
+  );
 
   // Check if we should use the native token or extract an alternate gas fee token.
   // Special cased for swap claims as gas fee needs to match the claimFee on the corresponding swap.
