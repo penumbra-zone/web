@@ -600,7 +600,7 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
   // ! Width should be the same as that of the DepthChart
 
   return (
-    <VStack height="600px" width={"60em"}>
+    <VStack height={["600px", "600px", "650px"]} width={["103%", "100%", "100%", "100%", "100%", "60em"]}>
       {isLoading && error === undefined ? (
         <LoadingSpinner />
       ) : error !== undefined ? (
@@ -618,7 +618,7 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
             <ButtonGroup
               size="xs"
               isAttached
-              alignContent={"right"}
+              alignContent={"left"}
               position={"absolute"}
               top={0}
               left={-1}
@@ -673,7 +673,7 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
             </ButtonGroup>
             <ReactECharts
               option={options}
-              style={{ height: "600px", width: "105%" }}
+              style={{ height: "600px", width: "115%" }}
             />
           </VStack>
         </>
