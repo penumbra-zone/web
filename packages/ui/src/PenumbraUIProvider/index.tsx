@@ -1,4 +1,10 @@
-import { ThemeProvider as ThemeProviderPrimitive } from 'styled-components';
+/**
+ * We need to import the ambient typings for styled-components so that consumers
+ * can use the theme we've created.
+ */
+import '../styled-components';
+
+import { ThemeProvider } from 'styled-components';
 import { theme } from './theme';
 import { PropsWithChildren } from 'react';
 import { FontFaces } from './FontFaces';
@@ -9,11 +15,11 @@ import { MotionConfig } from 'framer-motion';
  * a number of context values that they use.
  */
 export const PenumbraUIProvider = ({ children }: PropsWithChildren) => (
-  <ThemeProviderPrimitive theme={theme}>
+  <ThemeProvider theme={theme}>
     <MotionConfig transition={{ duration: 0.15 }}>
       <FontFaces />
 
       {children}
     </MotionConfig>
-  </ThemeProviderPrimitive>
+  </ThemeProvider>
 );
