@@ -1,5 +1,11 @@
 # @penumbra-zone/transport-chrome
 
+## 7.0.1
+
+### Patch Changes
+
+- 06aa65d: Allow http://localhost to establish the connection with chrome extensions
+
 ## 7.0.0
 
 ### Minor Changes

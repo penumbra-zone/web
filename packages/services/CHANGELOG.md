@@ -1,5 +1,21 @@
 # @penumbra-zone/router
 
+## 25.0.0
+
+### Minor Changes
+
+- f5bea48: fix source randomizer
+
+### Patch Changes
+
+- Updated dependencies [f5bea48]
+  - @penumbra-zone/storage@21.0.0
+  - @penumbra-zone/types@18.1.0
+  - @penumbra-zone/crypto-web@18.0.0
+  - @penumbra-zone/query@22.0.0
+  - @penumbra-zone/wasm@22.0.0
+  - @penumbra-zone/perspective@21.0.0
+
 ## 24.0.0
 
 ### Minor Changes
