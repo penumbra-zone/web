@@ -34,7 +34,7 @@ describe('extractAltFee', () => {
       getAuction: vi.fn(),
       saveGasPrices: vi.fn(),
       getAltGasPrices: vi.fn(),
-      hasTokenBalance: vi.fn(),
+      accountHasSpendableAsset: vi.fn(),
     };
   });
 
@@ -66,7 +66,7 @@ describe('extractAltFee', () => {
 
     mockIndexedDb.saveGasPrices?.mockResolvedValueOnce(gasPrices);
     mockIndexedDb.getAltGasPrices?.mockResolvedValueOnce(gasPrices);
-    mockIndexedDb.hasTokenBalance?.mockResolvedValue(true);
+    mockIndexedDb.accountHasSpendableAsset?.mockResolvedValue(true);
 
     const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
     expect(result.equals(inputAssetId)).toBeTruthy();
@@ -101,7 +101,7 @@ describe('extractAltFee', () => {
 
     mockIndexedDb.saveGasPrices?.mockResolvedValueOnce(gasPrices);
     mockIndexedDb.getAltGasPrices?.mockResolvedValueOnce(gasPrices);
-    mockIndexedDb.hasTokenBalance?.mockResolvedValue(true);
+    mockIndexedDb.accountHasSpendableAsset?.mockResolvedValue(true);
 
     const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
     expect(result.equals(inputAssetId)).toBeTruthy();
@@ -155,7 +155,7 @@ describe('extractAltFee', () => {
 
     mockIndexedDb.saveGasPrices?.mockResolvedValueOnce(gasPrices);
     mockIndexedDb.getAltGasPrices?.mockResolvedValueOnce(gasPrices);
-    mockIndexedDb.hasTokenBalance?.mockResolvedValue(true);
+    mockIndexedDb.accountHasSpendableAsset?.mockResolvedValue(true);
 
     const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
     expect(result.equals(outputAssetId)).toBeTruthy();
@@ -191,7 +191,7 @@ describe('extractAltFee', () => {
 
     mockIndexedDb.saveGasPrices?.mockResolvedValueOnce(gasPrices);
     mockIndexedDb.getAltGasPrices?.mockResolvedValueOnce(gasPrices);
-    mockIndexedDb.hasTokenBalance?.mockResolvedValue(true);
+    mockIndexedDb.accountHasSpendableAsset?.mockResolvedValue(true);
 
     const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
     expect(result.equals(inputAssetId)).toBeTruthy();
@@ -227,7 +227,7 @@ describe('extractAltFee', () => {
 
     mockIndexedDb.saveGasPrices?.mockResolvedValueOnce(gasPrices);
     mockIndexedDb.getAltGasPrices?.mockResolvedValueOnce(gasPrices);
-    mockIndexedDb.hasTokenBalance?.mockResolvedValue(true);
+    mockIndexedDb.accountHasSpendableAsset?.mockResolvedValue(true);
 
     const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
     expect(result.equals(inputAssetId)).toBeTruthy();
@@ -313,7 +313,7 @@ describe('extractAltFee', () => {
 
     mockIndexedDb.saveGasPrices?.mockResolvedValueOnce(gasPrices);
     mockIndexedDb.getAltGasPrices?.mockResolvedValueOnce(gasPrices);
-    mockIndexedDb.hasTokenBalance?.mockResolvedValue(true);
+    mockIndexedDb.accountHasSpendableAsset?.mockResolvedValue(true);
 
     const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
     expect(result.equals(inputAssetId)).toBeTruthy();
@@ -339,7 +339,7 @@ describe('extractAltFee', () => {
       seqNum: 0n,
     });
 
-    mockIndexedDb.hasTokenBalance?.mockResolvedValueOnce(true);
+    mockIndexedDb.accountHasSpendableAsset?.mockResolvedValueOnce(true);
 
     const request = new TransactionPlannerRequest({
       dutchAuctionEndActions: [
@@ -362,7 +362,7 @@ describe('extractAltFee', () => {
 
     mockIndexedDb.saveGasPrices?.mockResolvedValueOnce(gasPrices);
     mockIndexedDb.getAltGasPrices?.mockResolvedValueOnce(gasPrices);
-    mockIndexedDb.hasTokenBalance?.mockResolvedValue(true);
+    mockIndexedDb.accountHasSpendableAsset?.mockResolvedValue(true);
 
     const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
     expect(result.equals(inputAssetId)).toBeTruthy();
@@ -406,9 +406,9 @@ describe('extractAltFee', () => {
     mockIndexedDb.saveGasPrices?.mockResolvedValue(gasPrices);
     mockIndexedDb.getAltGasPrices?.mockResolvedValueOnce(gasPrices);
 
-    // Mock hasTokenBalance twice to control its behavior in the function
-    mockIndexedDb.hasTokenBalance?.mockResolvedValueOnce(false); // For the specificAssetId check
-    mockIndexedDb.hasTokenBalance?.mockResolvedValueOnce(true); // For the altGasPrices check
+    // Mock accountHasSpendableAsset twice to control its behavior in the function
+    mockIndexedDb.accountHasSpendableAsset?.mockResolvedValueOnce(false); // For the specificAssetId check
+    mockIndexedDb.accountHasSpendableAsset?.mockResolvedValueOnce(true); // For the altGasPrices check
 
     const request = new TransactionPlannerRequest({
       dutchAuctionEndActions: [
@@ -455,7 +455,7 @@ describe('extractAltFee', () => {
 
     mockIndexedDb.saveGasPrices?.mockResolvedValueOnce(gasPrices);
     mockIndexedDb.getAltGasPrices?.mockResolvedValueOnce(gasPrices);
-    mockIndexedDb.hasTokenBalance?.mockResolvedValue(true);
+    mockIndexedDb.accountHasSpendableAsset?.mockResolvedValue(true);
 
     const request = new TransactionPlannerRequest({
       dutchAuctionWithdrawActions: [
@@ -508,9 +508,9 @@ describe('extractAltFee', () => {
     mockIndexedDb.saveGasPrices?.mockResolvedValue(gasPrices);
     mockIndexedDb.getAltGasPrices?.mockResolvedValueOnce(gasPrices);
 
-    // Mock hasTokenBalance twice to control its behavior in the function
-    mockIndexedDb.hasTokenBalance?.mockResolvedValueOnce(false); // For the specificAssetId check
-    mockIndexedDb.hasTokenBalance?.mockResolvedValueOnce(true); // For the altGasPrices check
+    // Mock accountHasSpendableAsset twice to control its behavior in the function
+    mockIndexedDb.accountHasSpendableAsset?.mockResolvedValueOnce(false); // For the specificAssetId check
+    mockIndexedDb.accountHasSpendableAsset?.mockResolvedValueOnce(true); // For the altGasPrices check
 
     const request = new TransactionPlannerRequest({
       dutchAuctionWithdrawActions: [
