@@ -12,7 +12,8 @@ import {
   HStack,
   Input,
   Button,
-  ButtonGroup
+  ButtonGroup,
+  Stack
 } from "@chakra-ui/react";
 import { useSearchParams } from "next/navigation";
 import {
@@ -592,27 +593,32 @@ export default function TradingPairs() {
           <LoadingSpinner />
         </Center>
       ) : !isChartLoading && !error ? (
-        <Center height="100vh">
-          <VStack width="85vw">
+        <Center minHeight="100vh" paddingY={4}>
+          <VStack width={["95vw", "85vw", "85vw"]} spacing={4} maxWidth="1840px">
             <Box
               className="neon-box"
               padding="1.5em"
               width="100%"
-              height="100%"
             >
-              <HStack spacing={8} width="100%" height="100%">
-                <VStack flex={1} height="100%" position="relative">
-                  <>
+              <Stack
+                direction={["column", "column", "row"]}
+                spacing={8}
+                width="100%"
+                alignItems="flex-start"
+              >
+                <VStack flex={1} width={["100%", "100%", "calc(100% - 400px)"]} position="relative" alignItems="center">
+                  <Box width="100%" position="relative" paddingTop={[0, 0, "1.5em"]}>
                     <ButtonGroup
                       size="xs"
                       isAttached
                       alignContent={"left"}
-                      position={"absolute"}
-                      top={-3}
-                      left={-1}
+                      position={["static", "static", "absolute"]}
+                      top={[0, 0, 0]}
+                      left={[0, 0, -1]}
                       zIndex={1}
                       borderRadius={10}
                       outline={"2px solid var(--complimentary-background)"}
+                      marginBottom={[2, 2, 0]}
                     >
                       <Button
                         borderRadius={10}
@@ -637,7 +643,7 @@ export default function TradingPairs() {
                         Candlestick
                       </Button>
                     </ButtonGroup>
-                    <HStack paddingBottom={"2px"}>
+                    <HStack justifyContent="center" width="100%" paddingBottom={"2px"}>
                       <Text
                         fontFamily="monospace"
                         fontSize={"md"}
@@ -649,6 +655,8 @@ export default function TradingPairs() {
                         {` / ${asset2Token!.display}`}
                       </Text>
                     </HStack>
+                  </Box>
+                  <Box width="100%">
                     {activeChart === "OHLC" ? (
                       <OHLCChart
                         asset1Token={asset1Token!}
@@ -668,29 +676,27 @@ export default function TradingPairs() {
                         asset2Token={asset2Token!}
                       />
                     )}
-                  </>
+                  </Box>
                 </VStack>
-                <VStack width="60em" height="650px">
-                  <Text fontFamily={"monospace"} fontSize="xs">
+                <VStack width={["100%", "100%", "400px"]} height="auto" alignItems="center">
+                  <Text fontFamily={"monospace"} fontSize="xs" textAlign="center" width="100%">
                     Direct Liq Order Book
                   </Text>
-                  <VStack
-                    flex={1}
-                    width={"90%"}
+                  <Box
+                    width="100%"
                     outline={"2px solid var(--complimentary-background)"}
                     borderRadius={"10px"}
-                    height="600px"
+                    height={["600px", "600px", "650px"]}
                   >
-                    {/* Note the same reversal here */}
                     <BuySellChart
                       buySidePositions={lpsSellSide}
                       sellSidePositions={lpsBuySide}
                       asset1Token={asset1Token!}
                       asset2Token={asset2Token!}
                     />
-                  </VStack>
+                  </Box>
                 </VStack>
-              </HStack>
+              </Stack>
             </Box>
           </VStack>
         </Center>
