@@ -327,105 +327,106 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
     setIsLoading(true);
     setIsAggregating(true);
 
-    // Function to aggregate OHLC data into time intervals
-    const aggregateOHLCData = () => {
-      const aggregatedData: any[] = [];
-      const blocksPerInterval = Math.trunc(
-        timeAggregateSeconds / blockTimeSeconds
-      );
+    const batchOHLCData = (batch: any[], intervalStart: Date) => {
+      const aggregatedOHLC: any = {
+        open: batch[0]["open"],
+        high: Math.max(...batch.map((ohlc) => ohlc["high"])),
+        low: Math.min(...batch.map((ohlc) => ohlc["low"])),
+        close: batch[batch.length - 1]["close"],
+        directVolume: batch.reduce((acc, ohlc) => acc + ohlc["directVolume"], 0),
+        swapVolume: batch.reduce((acc, ohlc) => acc + ohlc["swapVolume"], 0),
+        height: batch[0]["height"],
+      };
 
-      let currentBatch: any[] = [];
-      let currentBatchStartBlock: number | null = null;
+      // Add the interval start time to blockToTimestamp
+      blockToTimestamp[aggregatedOHLC["height"]] = intervalStart.toISOString();
 
-      // Helper function to generate a placeholder OHLC object
-      const createPlaceholderOHLC = (blockHeight: number, close: number) => ({
+      return aggregatedOHLC;
+    };
+
+    const createPlaceholderOHLC = (intervalStart: Date, close: number) => {
+      const placeholderHeight = `placeholder_${intervalStart.getTime()}`;
+      const placeholderOHLC = {
         open: close,
         high: close,
         low: close,
         close: close,
         directVolume: 0,
         swapVolume: 0,
-        height: blockHeight,
-      });
+        height: placeholderHeight,
+      };
 
-      // Always aggregated based on the originalOHLCData
+      // Add the interval start time to blockToTimestamp
+      blockToTimestamp[placeholderHeight] = intervalStart.toISOString();
+
+      return placeholderOHLC;
+    };
+
+    // Function to aggregate OHLC data into time intervals
+    const aggregateOHLCData = () => {
+      const aggregatedData: any[] = [];
+
+      // Helper function to get the start of the interval
+      const getIntervalStart = (timestamp: string) => {
+        const date = new Date(timestamp);
+        switch (timeAggregateSeconds) {
+          case 60: // 1 minute
+            date.setSeconds(0, 0);
+            break;
+          case 60 * 5: // 5 minutes
+            date.setMinutes(Math.floor(date.getMinutes() / 5) * 5, 0, 0);
+            break;
+          case 60 * 60: // 1 hour
+            date.setMinutes(0, 0, 0);
+            break;
+          case 60 * 60 * 24: // 1 day
+            date.setHours(0, 0, 0, 0);
+            break;
+        }
+        return date;
+      };
+
+      let currentBatch: any[] = [];
+      let currentIntervalStart: Date | null = null;
+
       originalOHLCData.forEach((ohlc, index) => {
-        const blockHeight = Number(ohlc["height"]);
+        const timestamp = new Date(blockToTimestamp[ohlc["height"]]);
+        const intervalStart = getIntervalStart(timestamp.toISOString());
 
-        if (currentBatchStartBlock === null) {
-          currentBatchStartBlock = blockHeight;
+        if (currentIntervalStart === null) {
+          currentIntervalStart = intervalStart;
         }
 
-        // Check if the current block is within the current batch interval
-        if (blockHeight < currentBatchStartBlock + blocksPerInterval) {
+        if (timestamp < new Date(currentIntervalStart.getTime() + timeAggregateSeconds * 1000)) {
           currentBatch.push(ohlc);
-          return;
         } else {
-          // If the current block is outside the current batch interval
           // Aggregate the current batch
-          aggregatedData.push(batchOHLCData(currentBatch));
+          if (currentBatch.length > 0) {
+            aggregatedData.push(batchOHLCData(currentBatch, currentIntervalStart));
+          }
 
-          // Fill gaps if there are any missing intervals
-          while (currentBatchStartBlock + blocksPerInterval < blockHeight) {
-            const previousOHLC = aggregatedData[aggregatedData.length - 1];
-            const placeholderBlock = currentBatchStartBlock + blocksPerInterval;
-            const placeholderOHLC = createPlaceholderOHLC(
-              placeholderBlock,
-              previousOHLC.close
-            );
-            const lastTimestamp = blockToTimestamp[previousOHLC.height];
-            blockToTimestamp[placeholderBlock] = new Date(
-              new Date(lastTimestamp).getTime() + timeAggregateSeconds * 1000
-            ).toISOString();
-            aggregatedData.push(placeholderOHLC);
-
-            currentBatchStartBlock = currentBatchStartBlock + blocksPerInterval;
+          // Fill in any missing intervals
+          while (new Date(currentIntervalStart.getTime() + timeAggregateSeconds * 1000) <= intervalStart) {
+            currentIntervalStart = new Date(currentIntervalStart.getTime() + timeAggregateSeconds * 1000);
+            if (currentIntervalStart < intervalStart) {
+              const previousOHLC = aggregatedData[aggregatedData.length - 1];
+              const placeholderOHLC = createPlaceholderOHLC(currentIntervalStart, previousOHLC["close"]);
+              aggregatedData.push(placeholderOHLC);
+            }
           }
 
           // Start a new batch
           currentBatch = [ohlc];
-          currentBatchStartBlock = blockHeight;
+          currentIntervalStart = intervalStart;
         }
 
         // Handle the last batch
         if (index === originalOHLCData.length - 1 && currentBatch.length > 0) {
-          aggregatedData.push(batchOHLCData(currentBatch));
+          aggregatedData.push(batchOHLCData(currentBatch, currentIntervalStart));
         }
       });
 
-      // Fill gaps at the end if there are any remaining intervals
-      while (
-        currentBatchStartBlock !== null &&
-        currentBatchStartBlock + blocksPerInterval <=
-        originalOHLCData[originalOHLCData.length - 1]["height"]
-      ) {
-        const previousOHLC = aggregatedData[aggregatedData.length - 1];
-        const placeholderBlock = currentBatchStartBlock + blocksPerInterval;
-        const placeholderOHLC = createPlaceholderOHLC(
-          placeholderBlock,
-          previousOHLC.close
-        );
-        aggregatedData.push(placeholderOHLC);
-
-        currentBatchStartBlock = currentBatchStartBlock + blocksPerInterval;
-      }
-
       return aggregatedData;
-    };
-
-    // Function to batch OHLC data into a single OHLC object
-    const batchOHLCData = (batch: any[]) => {
-      const aggregatedOHLC: any = {
-        open: batch[0].open,
-        high: Math.max(...batch.map((ohlc) => ohlc.high)),
-        low: Math.min(...batch.map((ohlc) => ohlc.low)),
-        close: batch[batch.length - 1].close,
-        directVolume: batch.reduce((acc, ohlc) => acc + ohlc.directVolume, 0),
-        swapVolume: batch.reduce((acc, ohlc) => acc + ohlc.swapVolume, 0),
-        height: batch[0].height,
-      };
-
-      return aggregatedOHLC;
     };
 
     const aggregatedData = aggregateOHLCData();
