@@ -11,6 +11,11 @@ import { assertTransactionSource } from './assert-transaction-source.js';
 export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) => {
   assertValidRequest(req);
 
+  // TODO: Temp fix to not compare randomizer
+  if (req.source) {
+    req.source.randomizer = new Uint8Array();
+  }
+
   const services = await ctx.values.get(servicesCtx)();
   const { indexedDb } = await services.getWalletServices();
 
