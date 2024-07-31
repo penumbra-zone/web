@@ -9,8 +9,18 @@ import { Tabs } from '../Tabs';
 import { useState } from 'react';
 
 const BgWrapper = styled.div`
-  background: url(${storiesBg}) center / cover;
-  padding: ${props => props.theme.spacing(8)};
+  background: ${props => props.theme.color.base.black};
+  padding: ${props => props.theme.spacing(20)};
+  position: relative;
+
+  &::before {
+    content: '';
+    background: url(${storiesBg}) center / cover;
+    opacity: 0.4;
+    filter: blur(4px);
+    position: absolute;
+    inset: 0;
+  }
 `;
 
 const meta: Meta<typeof Card> = {
