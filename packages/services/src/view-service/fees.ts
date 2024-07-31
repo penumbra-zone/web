@@ -117,7 +117,7 @@ export const getAssetFromGasPriceTable = async (
   // If a specific asset ID is provided, extracted from the transaction request, check its balance is
   // positive and GasPrices for that asset exist.
   if (assetId) {
-    const balance = await indexedDb.hasTokenBalance(request.source, assetId);
+    const balance = await indexedDb.hasTokenBalance(request.source.account, assetId);
     // This check ensures that the alternative fee token is a valid fee token, for example, TestUSD is not.
     const isInGasTable = altGasPrices.find(gp => gp.assetId?.equals(assetId));
     if (balance && isInGasTable) {
@@ -129,7 +129,7 @@ export const getAssetFromGasPriceTable = async (
   // GasPrices table as a fallback case.
   for (const gasPrice of altGasPrices) {
     if (gasPrice.assetId) {
-      const balance = await indexedDb.hasTokenBalance(request.source, gasPrice.assetId);
+      const balance = await indexedDb.hasTokenBalance(request.source.account, gasPrice.assetId);
       if (balance) {
         return gasPrice.assetId;
       }
