@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 
 import { Dialog } from '.';
 import { Button } from '../Button';
-import { ComponentType } from 'react';
+import { ComponentType, useState } from 'react';
 import { Text } from '../Text';
 import styled from 'styled-components';
 import { Ban, Handshake, ThumbsUp } from 'lucide-react';
@@ -31,11 +31,11 @@ type Story = StoryObj<typeof Dialog>;
 
 export const Basic: Story = {
   render: function Render() {
+    const [isOpen, setIsOpen] = useState(false);
+
     return (
-      <Dialog>
-        <Dialog.Trigger asChild>
-          <Button>Open dialog</Button>
-        </Dialog.Trigger>
+      <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)}>
+        <Button onClick={() => setIsOpen(true)}>Open dialog</Button>
 
         <Dialog.Content
           title='This is the heading'

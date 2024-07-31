@@ -83,11 +83,11 @@ interface ControlledDialogProps {
   isOpen: boolean;
   /**
    * Callback for when the user closes the dialog. Should update the state
-   * variable being passed in via `isOpen`. If left `undefined`, this will be
-   * treated as an uncontrolled dialog — that is, it will open and close based
-   * on user interactions rather than on state variables.
+   * variable being passed in via `isOpen`. If left `undefined`, users will not
+   * be able to close it -- that is, it will only be able to be closed
+   * programmatically, and no Close button will be rendered.
    */
-  onClose: VoidFunction;
+  onClose?: VoidFunction;
 }
 
 interface UncontrolledDialogProps {
@@ -138,6 +138,21 @@ export type DialogProps = {
  * `<Dialog />`, and there is no `<Dialog.Trigger />` component rendered inside
  * the `<Dialog />`.
  *
+ * You can also leave `onClose` undefined. In that case, no Close button will be
+ * rendered, and closing will have to be done programmatically, rather than by
+ * the user. This can be useful for, e.g., a dialog with a loading spinner that
+ * the user must wait for:
+ *
+ * ```tsx
+ * <Button onClick={() => setIsOpen(true)}>Open dialog</Button>
+ *
+ * <Dialog isOpen={isOpen}> setIsOpen(false)}>
+ *   <Dialog.Content title="Dialog title">
+ *     This dialog can not be closed by the user.
+ *   </Dialog.Content>
+ * </Dialog>
+ * ```
+ *
  * ## Usage as an uncontrolled component
  * If you want to render `<Dialog />` as an uncontrolled component, don't pass
  * `isOpen` or `onClose` to `<Dialog />`, and make sure to include a
@@ -153,19 +168,23 @@ export type DialogProps = {
  * </Dialog>
  * ```
  */
-export const Dialog = ({ children, onClose, isOpen }: DialogProps) => (
-  <DialogContext.Provider value={{ onClose }}>
-    <RadixDialog.Root open={isOpen} onOpenChange={value => onClose && !value && onClose()}>
-      {children}
-    </RadixDialog.Root>
-  </DialogContext.Provider>
-);
+export const Dialog = ({ children, onClose, isOpen }: DialogProps) => {
+  const isControlledComponent = isOpen !== undefined;
+  const showCloseButton = (isControlledComponent && !!onClose) || !isControlledComponent;
 
-/**
- * Internal use only. Provides a context that `<Dialog.Content />` can read to
- * determine whether to pass an `onClick` handler to `<RadixDialog.Close />`.
- */
-const DialogContext = createContext<{ onClose?: VoidFunction }>({});
+  return (
+    <DialogContext.Provider value={{ showCloseButton }}>
+      <RadixDialog.Root open={isOpen} onOpenChange={value => onClose && !value && onClose()}>
+        {children}
+      </RadixDialog.Root>
+    </DialogContext.Provider>
+  );
+};
+
+/** Internal use only. */
+const DialogContext = createContext<{ showCloseButton: boolean }>({
+  showCloseButton: true,
+});
 
 const CloseButton = styled.button`
   appearance: none;
@@ -192,7 +211,7 @@ const Content = <IconOnlyButtonGroupProps extends boolean | undefined>({
   title,
   buttonGroupProps,
 }: DialogContentProps<IconOnlyButtonGroupProps>) => {
-  const { onClose } = useContext(DialogContext);
+  const { showCloseButton } = useContext(DialogContext);
 
   return (
     <RadixDialog.Portal>
@@ -206,11 +225,13 @@ const Content = <IconOnlyButtonGroupProps extends boolean | undefined>({
             </Text>
           </RadixDialog.Title>
 
-          <RadixDialog.Close onClick={onClose} asChild>
-            <CloseButton>
-              <Icon IconComponent={X} size='md' />
-            </CloseButton>
-          </RadixDialog.Close>
+          {showCloseButton && (
+            <RadixDialog.Close asChild>
+              <CloseButton aria-label='Close'>
+                <Icon IconComponent={X} size='md' />
+              </CloseButton>
+            </RadixDialog.Close>
+          )}
         </TitleAndCloseButton>
 
         {children}
