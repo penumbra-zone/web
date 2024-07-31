@@ -1,9 +1,10 @@
-import { ReactNode } from 'react';
+import { createContext, ReactNode, useContext } from 'react';
 import styled, { keyframes } from 'styled-components';
 import * as RadixDialog from '@radix-ui/react-dialog';
 import { Text } from '../Text';
-
-const Root = styled(RadixDialog.Root)``;
+import { Icon } from '../Icon';
+import { X } from 'lucide-react';
+import { ButtonGroup, ButtonGroupProps } from '../ButtonGroup';
 
 const gradualBlur = (blur: string) => keyframes`
   from {
@@ -70,6 +71,7 @@ const DialogContent = styled(RadixDialog.Content)`
 const TitleAndCloseButton = styled.header`
   display: flex;
   color: ${props => props.theme.color.text.primary};
+  justify-content: space-between;
 `;
 
 interface ControlledDialogProps {
@@ -140,20 +142,69 @@ export type DialogProps = {
  * </Dialog>
  * ```
  */
-export const Dialog = ({ children }: DialogProps) => <Root>{children}</Root>;
+export const Dialog = ({ children, onClose, isOpen }: DialogProps) => (
+  <DialogContext.Provider value={{ onClose }}>
+    <RadixDialog.Root open={isOpen} onOpenChange={value => onClose && !value && onClose()}>
+      {children}
+    </RadixDialog.Root>
+  </DialogContext.Provider>
+);
 
-const Content = ({ children, title }: { children?: ReactNode; title: string }) => {
+/**
+ * Internal use only. Provides a context that `<Dialog.Content />` can read to
+ * determine whether to pass an `onClick` handler to `<RadixDialog.Close />`.
+ */
+const DialogContext = createContext<{ onClose?: VoidFunction }>({});
+
+const CloseButton = styled.button`
+  appearance: none;
+  background: none;
+  border: none;
+  color: ${props => props.theme.color.text.primary};
+`;
+
+export interface DialogContentProps<IconOnlyButtonGroupProps extends boolean | undefined> {
+  children?: ReactNode;
+  title: string;
+  /**
+   * If you want to render CTA buttons in the dialog footer, use
+   * `buttonGroupProps`. The dialog will then render a `<ButtonGroup />` using
+   * these props.
+   */
+  buttonGroupProps?: IconOnlyButtonGroupProps extends boolean
+    ? ButtonGroupProps<IconOnlyButtonGroupProps>
+    : undefined;
+}
+
+const Content = <IconOnlyButtonGroupProps extends boolean | undefined>({
+  children,
+  title,
+  buttonGroupProps,
+}: DialogContentProps<IconOnlyButtonGroupProps>) => {
+  const { onClose } = useContext(DialogContext);
+
   return (
     <RadixDialog.Portal>
       <Overlay />
+
       <DialogContent>
         <TitleAndCloseButton>
-          <RadixDialog.Title>
-            <Text xxl>{title}</Text>
+          <RadixDialog.Title asChild>
+            <Text xxl as='h2'>
+              {title}
+            </Text>
           </RadixDialog.Title>
-          <RadixDialog.Close />
+
+          <RadixDialog.Close onClick={onClose} asChild>
+            <CloseButton>
+              <Icon IconComponent={X} size='md' />
+            </CloseButton>
+          </RadixDialog.Close>
         </TitleAndCloseButton>
+
         {children}
+
+        {buttonGroupProps && <ButtonGroup {...buttonGroupProps} column />}
       </DialogContent>
     </RadixDialog.Portal>
   );
