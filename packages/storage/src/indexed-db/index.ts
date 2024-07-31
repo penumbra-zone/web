@@ -869,7 +869,6 @@ export class IndexedDb implements IndexedDbInterface {
     };
   }
 
-
   async hasTokenBalance(accountIndex: number, assetId: AssetId): Promise<boolean> {
     const spendableNotes = await this.db.getAllFromIndex(
       'SPENDABLE_NOTES',
