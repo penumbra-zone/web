@@ -38,7 +38,7 @@ export default function TradingPairs() {
   const [isChartLoading, setIsChartLoading] = useState(true);
   const [error, setError] = useState<string | undefined>();
   const searchParams = useSearchParams();
-  const [activeChart, setActiveChart] = useState<"Depth" | "OHLC" >("Depth");
+  const [activeChart, setActiveChart] = useState<"Depth" | "OHLC">("Depth");
 
   // Pairs are in the form of baseToken:quoteToken
   const router = useRouter();
@@ -594,19 +594,19 @@ export default function TradingPairs() {
         </Center>
       ) : !isChartLoading && !error ? (
         <Center minHeight="100vh" paddingY={4}>
-          <VStack width={["95vw", "85vw", "85vw"]} spacing={4} maxWidth="1840px">
+            <VStack width={["95vw", "95vw", "95vw", "95vw", "95vw", "85vw"]} spacing={4}>
             <Box
               className="neon-box"
               padding="1.5em"
               width="100%"
             >
               <Stack
-                direction={["column", "column", "row"]}
+                  direction={["column", "column", "column", "column", "column", "row"]}
                 spacing={8}
                 width="100%"
                 alignItems="flex-start"
               >
-                <VStack flex={1} width={["100%", "100%", "calc(100% - 400px)"]} position="relative" alignItems="center">
+                  <VStack flex={1} width={["100%", "100%", "100%", "100%", "100%", "calc(100% - 400px)"]} position="relative" alignItems="center">
                   <Box width="100%" position="relative" paddingTop={[0, 0, "1.5em"]}>
                     <ButtonGroup
                       size="xs"
@@ -678,7 +678,7 @@ export default function TradingPairs() {
                     )}
                   </Box>
                 </VStack>
-                <VStack width={["100%", "100%", "400px"]} height="auto" alignItems="center">
+                  <VStack width={["100%", "100%", "100%", "100%", "100%", "400px"]} height="auto" alignItems="center">
                   <Text fontFamily={"monospace"} fontSize="xs" textAlign="center" width="100%">
                     Direct Liq Order Book
                   </Text>
