@@ -2,6 +2,7 @@ import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/a
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import { assetIdFromBaseDenom } from '@penumbra-zone/wasm/asset';
 import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
+import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 
 // Attempts to extract a fee token, with priority in descending order, from the assets used
 // in the actions of the transaction planner request (TPR). If no fee token is found from the
@@ -117,9 +118,12 @@ export const getAssetFromGasPriceTable = async (
   // If a specific asset ID is provided, extracted from the transaction request, check its balance is
   // positive and GasPrices for that asset exist.
   if (assetId) {
-    const balance = await indexedDb.hasTokenBalance(request.source, assetId);
+    const balance = await indexedDb.accountHasSpendableAsset(request.source, assetId);
     // This check ensures that the alternative fee token is a valid fee token, for example, TestUSD is not.
-    const isInGasTable = altGasPrices.find(gp => gp.assetId?.equals(assetId));
+    const isInGasTable = altGasPrices.find(
+      // TODO: assert this more thoroughly
+      gp => bech32mAssetId(gp.assetId!) === bech32mAssetId(assetId),
+    );
     if (balance && isInGasTable) {
       return assetId;
     }
@@ -129,7 +133,7 @@ export const getAssetFromGasPriceTable = async (
   // GasPrices table as a fallback case.
   for (const gasPrice of altGasPrices) {
     if (gasPrice.assetId) {
-      const balance = await indexedDb.hasTokenBalance(request.source, gasPrice.assetId);
+      const balance = await indexedDb.accountHasSpendableAsset(request.source, gasPrice.assetId);
       if (balance) {
         return gasPrice.assetId;
       }

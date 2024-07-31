@@ -48,7 +48,7 @@ import {
   SwapRecord,
   TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
-import { PartialMessage } from '@bufbuild/protobuf';
+import { PartialMessage, PlainMessage } from '@bufbuild/protobuf';
 import type { Jsonified } from './jsonified.js';
 
 export interface IdbUpdate<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>> {
@@ -150,7 +150,10 @@ export interface IndexedDbInterface {
     auctionId: AuctionId,
   ): Promise<{ input: Value; output: Value } | undefined>;
 
-  hasTokenBalance(addressIndex: AddressIndex, assetId: AssetId): Promise<boolean>;
+  accountHasSpendableAsset(
+    addressIndex: PlainMessage<AddressIndex>,
+    assetId: PlainMessage<AssetId>,
+  ): Promise<boolean>;
 }
 
 export interface PenumbraDb extends DBSchema {

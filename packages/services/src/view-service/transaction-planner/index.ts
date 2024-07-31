@@ -7,6 +7,8 @@ import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_
 import { fvkCtx } from '../../ctx/full-viewing-key.js';
 import { extractAltFee } from '../fees.js';
 import { assertTransactionSource } from './assert-transaction-source.js';
+import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+import { toPlainMessage } from '@bufbuild/protobuf';
 
 export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) => {
   assertValidRequest(req);
@@ -14,15 +16,20 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
   const services = await ctx.values.get(servicesCtx)();
   const { indexedDb } = await services.getWalletServices();
 
-  // Query IndexedDB directly to check for the existence of staking token
-  const nativeToken = await indexedDb.hasTokenBalance(req.source!, indexedDb.stakingTokenAssetId);
+  const noNativeTokenAvailable = !(await indexedDb.accountHasSpendableAsset(
+    toPlainMessage(req.source ?? new AddressIndex()),
+    indexedDb.stakingTokenAssetId,
+  ));
 
+  const planningSwapClaim = req.swapClaims.length > 0;
   // Check if we should use the native token or extract an alternate gas fee token.
   // Special cased for swap claims as gas fee needs to match the claimFee on the corresponding swap.
-  const needsAltFeeToken = !nativeToken || req.swapClaims.length > 0;
-  const gasFeeToken = needsAltFeeToken
-    ? await extractAltFee(req, indexedDb)
-    : indexedDb.stakingTokenAssetId;
+  console.log('alt fee reasons', noNativeTokenAvailable, planningSwapClaim);
+
+  const gasFeeToken =
+    noNativeTokenAvailable || planningSwapClaim
+      ? await extractAltFee(req, indexedDb)
+      : indexedDb.stakingTokenAssetId;
 
   const fmdParams = await indexedDb.getFmdParams();
   if (!fmdParams) {
@@ -35,12 +42,6 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
   }
   if (!chainId) {
     throw new ConnectError('ChainId not available', Code.FailedPrecondition);
-  }
-
-  // Wasm planner needs the presence of gas prices in the db to work
-  const gasPrices = await indexedDb.getNativeGasPrices();
-  if (!gasPrices) {
-    throw new ConnectError('Gas prices is not available', Code.FailedPrecondition);
   }
 
   const idbConstants = indexedDb.constants();
