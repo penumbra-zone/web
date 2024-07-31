@@ -6,9 +6,9 @@ import { MotionConfig } from 'framer-motion';
 
 /**
  * Place at the root of your app, above all Penumbra UI components, to provide
- * the theme values that they use.
+ * a number of context values that they use.
  */
-export const ThemeProvider = ({ children }: PropsWithChildren) => (
+export const PenumbraUIProvider = ({ children }: PropsWithChildren) => (
   <ThemeProviderPrimitive theme={theme}>
     <MotionConfig transition={{ duration: 0.15 }}>
       <FontFaces />

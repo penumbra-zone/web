@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { Grid } from './Grid';
 import { Text } from './Text';
 import styled from 'styled-components';
-import type { ColorVariant, Color as TColor, TextColorVariant } from './ThemeProvider/theme';
+import type { ColorVariant, Color as TColor, TextColorVariant } from './PenumbraUIProvider/theme';
 import { Fragment } from 'react';
 import { media } from './utils/media';
 

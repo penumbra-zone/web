@@ -6,12 +6,12 @@ import {
   UNKNOWN_ASSET_ID_VALUE_VIEW,
   UNKNOWN_ASSET_VALUE_VIEW,
 } from './sampleValueViews';
-import { ThemeProvider } from '../ThemeProvider';
+import { PenumbraUIProvider } from '../PenumbraUIProvider';
 
 describe('<ValueViewComponent />', () => {
   it('renders the formatted amount and symbol', () => {
     const { container } = render(<ValueViewComponent valueView={PENUMBRA_VALUE_VIEW} />, {
-      wrapper: ThemeProvider,
+      wrapper: PenumbraUIProvider,
     });
 
     expect(container).toHaveTextContent('123 UM');
@@ -19,7 +19,7 @@ describe('<ValueViewComponent />', () => {
 
   it("renders 'Unknown' for metadata without a symbol", () => {
     const { container } = render(<ValueViewComponent valueView={UNKNOWN_ASSET_VALUE_VIEW} />, {
-      wrapper: ThemeProvider,
+      wrapper: PenumbraUIProvider,
     });
 
     expect(container).toHaveTextContent('123,000,000 Unknown');
@@ -27,7 +27,7 @@ describe('<ValueViewComponent />', () => {
 
   it("renders 'Unknown' for a value view with a `case` of `unknownAssetId`", () => {
     const { container } = render(<ValueViewComponent valueView={UNKNOWN_ASSET_ID_VALUE_VIEW} />, {
-      wrapper: ThemeProvider,
+      wrapper: PenumbraUIProvider,
     });
 
     expect(container).toHaveTextContent('123,000,000 Unknown');

@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { ButtonGroup, ButtonGroupProps } from '.';
 import { fireEvent, render } from '@testing-library/react';
 import { Ban, HandCoins, Send } from 'lucide-react';
-import { ThemeProvider } from '../ThemeProvider';
+import { PenumbraUIProvider } from '../PenumbraUIProvider';
 
 const onClickDelegate = vi.fn();
 const onClickUndelegate = vi.fn();
@@ -28,7 +28,9 @@ const BUTTONS: ButtonGroupProps<true>['buttons'] = [
 
 describe('<ButtonGroup />', () => {
   it('renders a button for each item in the `buttons` prop', () => {
-    const { queryByText } = render(<ButtonGroup buttons={BUTTONS} />, { wrapper: ThemeProvider });
+    const { queryByText } = render(<ButtonGroup buttons={BUTTONS} />, {
+      wrapper: PenumbraUIProvider,
+    });
 
     expect(queryByText('Delegate')).toBeTruthy();
     expect(queryByText('Undelegate')).toBeTruthy();
@@ -36,7 +38,9 @@ describe('<ButtonGroup />', () => {
   });
 
   it("calls the given button's click handler when clicked", () => {
-    const { getByText } = render(<ButtonGroup buttons={BUTTONS} />, { wrapper: ThemeProvider });
+    const { getByText } = render(<ButtonGroup buttons={BUTTONS} />, {
+      wrapper: PenumbraUIProvider,
+    });
 
     fireEvent.click(getByText('Delegate'));
     expect(onClickDelegate).toHaveBeenCalled();
@@ -51,7 +55,7 @@ describe('<ButtonGroup />', () => {
   describe('when `iconOnly` is `true`', () => {
     it('renders an icon button for each item in the `buttons` prop', () => {
       const { queryByText, queryByLabelText } = render(<ButtonGroup buttons={BUTTONS} iconOnly />, {
-        wrapper: ThemeProvider,
+        wrapper: PenumbraUIProvider,
       });
 
       expect(queryByText('Delegate')).toBeNull();
