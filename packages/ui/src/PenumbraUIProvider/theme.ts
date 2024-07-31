@@ -1,5 +1,3 @@
-import { DefaultTheme } from 'styled-components';
-
 /**
  * Used for reference in the `theme` object below. Not intended to be used
  * directly by consumers, but rather as a semantic reference for building the
@@ -102,7 +100,7 @@ const PALETTE = {
 const FIFTEEN_PERCENT_OPACITY_IN_HEX = '26';
 const EIGHTY_PERCENT_OPACITY_IN_HEX = 'cc';
 
-export const theme: DefaultTheme = {
+export const theme = {
   blur: {
     none: '0px',
     xs: '4px',
@@ -232,13 +230,20 @@ export const theme: DefaultTheme = {
     textSm: '1.25rem',
     textXs: '1rem',
   },
-  spacing: spacingUnits => `${spacingUnits * 4}px`,
+  spacing: (spacingUnits: number) => `${spacingUnits * 4}px`,
   zIndex: {
     dialogOverlay: 1000,
     dialogContent: 1001,
   },
-};
+} as const;
 
-export type Color = keyof DefaultTheme['color'];
-export type ColorVariant = keyof DefaultTheme['color']['neutral'];
-export type TextColorVariant = keyof DefaultTheme['color']['text'];
+type Theme = typeof theme;
+export type Color = keyof Theme['color'];
+export type ColorVariant = keyof Theme['color']['neutral'];
+export type TextColorVariant = keyof Theme['color']['text'];
+
+declare module 'styled-components' {
+  // We're doing a declaration merge here, so the interface will be empty.
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  export interface DefaultTheme extends Theme {}
+}
