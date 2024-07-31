@@ -242,6 +242,11 @@ export type Color = keyof Theme['color'];
 export type ColorVariant = keyof Theme['color']['neutral'];
 export type TextColorVariant = keyof Theme['color']['text'];
 
+/**
+ * Merge styled-components' `DefaultTheme` interface with our interface above.
+ * Since we're defining this in a code file that consumers of PenumbraUI will
+ * import, they'll get the updated theme typings as well.
+ */
 declare module 'styled-components' {
   // We're doing a declaration merge here, so the interface will be empty.
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
