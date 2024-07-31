@@ -1,9 +1,3 @@
-/**
- * We need to import the ambient typings for styled-components so that consumers
- * can use the theme we've created.
- */
-import '../styled-components';
-
 import { ThemeProvider } from 'styled-components';
 import { theme } from './theme';
 import { PropsWithChildren } from 'react';
