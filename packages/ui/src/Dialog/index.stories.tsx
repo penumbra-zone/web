@@ -14,6 +14,10 @@ const WhiteTextWrapper = styled.div`
 const meta: Meta<typeof Dialog> = {
   component: Dialog,
   tags: ['autodocs', '!dev'],
+  argTypes: {
+    isOpen: { control: false },
+    onClose: { control: false },
+  },
   subcomponents: {
     // Re: type coercion, see
     // https://github.com/storybookjs/storybook/issues/23170#issuecomment-2241802787

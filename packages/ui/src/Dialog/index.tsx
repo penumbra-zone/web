@@ -75,7 +75,18 @@ const TitleAndCloseButton = styled.header`
 `;
 
 interface ControlledDialogProps {
+  /**
+   * Whether the dialog is currently open. If left `undefined`, this will be
+   * treated as an uncontrolled dialog — that is, it will open and close based
+   * on user interactions rather than on state variables.
+   */
   isOpen: boolean;
+  /**
+   * Callback for when the user closes the dialog. Should update the state
+   * variable being passed in via `isOpen`. If left `undefined`, this will be
+   * treated as an uncontrolled dialog — that is, it will open and close based
+   * on user interactions rather than on state variables.
+   */
   onClose: VoidFunction;
 }
 
