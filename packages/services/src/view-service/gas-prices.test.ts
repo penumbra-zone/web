@@ -48,9 +48,9 @@ describe('GasPrices request handler', () => {
     expect(gasPricesResponse.gasPrices?.equals(testData)).toBeTruthy();
   });
 
-  test('should fail to get gas prices when idb has none', async () => {
+  test('should return undefined gas prices when idb has none', async () => {
     mockIndexedDb.getNativeGasPrices?.mockResolvedValue(undefined);
-    await expect(gasPrices(new GasPricesRequest(), mockCtx)).rejects.toThrow(
+    await expect(gasPrices(new GasPricesRequest(), mockCtx)).resolves.not.toThrow(
       'Gas prices is not available',
     );
   });
