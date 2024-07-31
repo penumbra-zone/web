@@ -63,8 +63,8 @@ import {
   DutchAuctionDescription,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
-import { PartialMessage } from '@bufbuild/protobuf';
-import { getAmountFromRecord } from '@penumbra-zone/getters/spendable-note-record';
+import { PartialMessage, PlainMessage, toPlainMessage } from '@bufbuild/protobuf';
+import { getAmountFromNote } from '@penumbra-zone/getters/note';
 import { isZero } from '@penumbra-zone/types/amount';
 import { IDB_VERSION } from './config.js';
 
@@ -869,20 +869,26 @@ export class IndexedDb implements IndexedDbInterface {
     };
   }
 
-  async hasTokenBalance(addressIndex: AddressIndex, assetId: AssetId): Promise<boolean> {
-    const spendableNotes = await this.db.getAllFromIndex(
-      'SPENDABLE_NOTES',
-      'assetId',
-      uint8ArrayToBase64(assetId.inner),
-    );
+  async accountHasSpendableAsset(
+    { account }: PlainMessage<AddressIndex>,
+    { inner }: PlainMessage<AssetId>,
+  ): Promise<boolean> {
+    // asserts length of assetId.inner
+    bech32mAssetId({ inner });
 
-    return spendableNotes.some(note => {
-      const spendableNote = SpendableNoteRecord.fromJson(note);
-      return (
-        spendableNote.heightSpent === 0n &&
-        !isZero(getAmountFromRecord(spendableNote)) &&
-        spendableNote.addressIndex?.equals(addressIndex)
-      );
+    const assetNotes = (
+      await this.db.getAllFromIndex('SPENDABLE_NOTES', 'assetId', uint8ArrayToBase64(inner))
+    ).map(note => SpendableNoteRecord.fromJson(note));
+
+    const spendableNotes = assetNotes.filter(({ note, addressIndex, heightSpent }) => {
+      const noteAddressIndex = toPlainMessage(addressIndex ?? new AddressIndex());
+      const accountMatch = noteAddressIndex.account === account;
+      const nonzero = !isZero(getAmountFromNote(note));
+      const unspent = heightSpent === 0n;
+      return accountMatch && nonzero && unspent;
     });
+
+    console.log('accountHasSpendableAsset', account, bech32mAssetId({ inner }), spendableNotes);
+    return spendableNotes.length > 0;
   }
 }

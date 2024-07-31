@@ -205,7 +205,7 @@ pub async fn plan_transaction_inner<Db: Database>(
     let gas_prices = storage
         .get_gas_prices_by_asset_id(&fee_asset_id)
         .await?
-        .ok_or_else(|| anyhow!("GasPrices not available"))?;
+        .unwrap_or_default();
 
     let fee_tier = match request.fee_mode {
         None => FeeTier::default(),
