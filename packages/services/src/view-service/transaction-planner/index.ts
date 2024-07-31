@@ -11,17 +11,12 @@ import { assertTransactionSource } from './assert-transaction-source.js';
 export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) => {
   assertValidRequest(req);
 
-  // TODO: Temp fix to not compare randomizer
-  if (req.source) {
-    req.source.randomizer = new Uint8Array();
-  }
-
   const services = await ctx.values.get(servicesCtx)();
   const { indexedDb } = await services.getWalletServices();
 
   // Query IndexedDB directly to check for the existence of staking token
   const nativeToken = await indexedDb.hasTokenBalance(
-    req.source?.account!,
+    req.source!.account,
     indexedDb.stakingTokenAssetId,
   );
 
