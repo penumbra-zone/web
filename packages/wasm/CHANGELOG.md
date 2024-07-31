@@ -1,5 +1,20 @@
 # @penumbra-zone/wasm
 
+## 21.0.0
+
+### Patch Changes
+
+- Updated dependencies [a9ffd2d]
+- Updated dependencies
+  - @penumbra-zone/types@18.0.0
+  - @penumbra-zone/protobuf@5.6.0
+
+## 20.2.0
+
+### Minor Changes
+
+- 318690e: Properly derive DelegatorVoteView from perspective
+
 ## 20.1.0
 
 ### Minor Changes

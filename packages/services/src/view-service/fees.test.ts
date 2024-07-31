@@ -18,6 +18,8 @@ import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbr
 import { IndexedDbMock } from '../test-utils.js';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
+import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb.js';
+import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 
 describe('extractAltFee', () => {
   let mockIndexedDb: IndexedDbMock;
@@ -30,29 +32,14 @@ describe('extractAltFee', () => {
       upsertAuction: vi.fn(),
       saveAssetsMetadata: vi.fn(),
       getAuction: vi.fn(),
+      saveGasPrices: vi.fn(),
+      getAltGasPrices: vi.fn(),
+      hasTokenBalance: vi.fn(),
     };
   });
 
-  it('extracts the staking asset fee from outputs', async () => {
-    const umAssetId = new AssetId({
-      inner: new Uint8Array([
-        41, 234, 156, 47, 51, 113, 246, 164, 135, 231, 233, 92, 36, 112, 65, 244, 163, 86, 249, 131,
-        235, 6, 78, 93, 43, 59, 207, 50, 44, 169, 106, 16,
-      ]),
-    });
-    const request = new TransactionPlannerRequest({
-      outputs: [
-        {
-          value: { assetId: umAssetId },
-        },
-      ],
-    });
-    const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
-    expect(result.equals(umAssetId)).toBeTruthy();
-  });
-
   it('extracts the alternative asset fee from outputs', async () => {
-    const umAssetId = new AssetId({
+    const inputAssetId = new AssetId({
       inner: new Uint8Array([
         29, 109, 132, 171, 117, 25, 85, 32, 109, 182, 133, 48, 82, 47, 204, 82, 209, 59, 174, 189,
         148, 83, 191, 212, 31, 157, 52, 111, 42, 123, 56, 7,
@@ -61,16 +48,32 @@ describe('extractAltFee', () => {
     const request = new TransactionPlannerRequest({
       outputs: [
         {
-          value: { assetId: umAssetId },
+          value: { assetId: inputAssetId },
         },
       ],
+      source: new AddressIndex({ account: 0 }),
     });
+
+    const gasPrices = [
+      new GasPrices({
+        assetId: inputAssetId,
+        blockSpacePrice: 1n,
+        compactBlockSpacePrice: 1n,
+        verificationPrice: 1n,
+        executionPrice: 1n,
+      }),
+    ];
+
+    mockIndexedDb.saveGasPrices?.mockResolvedValueOnce(gasPrices);
+    mockIndexedDb.getAltGasPrices?.mockResolvedValueOnce(gasPrices);
+    mockIndexedDb.hasTokenBalance?.mockResolvedValue(true);
+
     const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
-    expect(result.equals(umAssetId)).toBeTruthy();
+    expect(result.equals(inputAssetId)).toBeTruthy();
   });
 
   it('skips over outputs that do not have assetIds', async () => {
-    const umAssetId = new AssetId({
+    const inputAssetId = new AssetId({
       inner: new Uint8Array([
         41, 234, 156, 47, 51, 113, 246, 164, 135, 231, 233, 92, 36, 112, 65, 244, 163, 86, 249, 131,
         235, 6, 78, 93, 43, 59, 207, 50, 44, 169, 106, 16,
@@ -80,12 +83,28 @@ describe('extractAltFee', () => {
       outputs: [
         new TransactionPlannerRequest_Output({}),
         new TransactionPlannerRequest_Output({
-          value: { assetId: umAssetId },
+          value: { assetId: inputAssetId },
         }),
       ],
+      source: new AddressIndex({ account: 0 }),
     });
+
+    const gasPrices = [
+      new GasPrices({
+        assetId: inputAssetId,
+        blockSpacePrice: 1n,
+        compactBlockSpacePrice: 1n,
+        verificationPrice: 1n,
+        executionPrice: 1n,
+      }),
+    ];
+
+    mockIndexedDb.saveGasPrices?.mockResolvedValueOnce(gasPrices);
+    mockIndexedDb.getAltGasPrices?.mockResolvedValueOnce(gasPrices);
+    mockIndexedDb.hasTokenBalance?.mockResolvedValue(true);
+
     const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
-    expect(result.equals(umAssetId)).toBeTruthy();
+    expect(result.equals(inputAssetId)).toBeTruthy();
   });
 
   it('prioritizes outputs over all else', async () => {
@@ -121,7 +140,22 @@ describe('extractAltFee', () => {
           auctionId: auctionWithdrawAuctiontId,
         }),
       ],
+      source: new AddressIndex({ account: 0 }),
     });
+
+    const gasPrices = [
+      new GasPrices({
+        assetId: outputAssetId,
+        blockSpacePrice: 1n,
+        compactBlockSpacePrice: 1n,
+        verificationPrice: 1n,
+        executionPrice: 1n,
+      }),
+    ];
+
+    mockIndexedDb.saveGasPrices?.mockResolvedValueOnce(gasPrices);
+    mockIndexedDb.getAltGasPrices?.mockResolvedValueOnce(gasPrices);
+    mockIndexedDb.hasTokenBalance?.mockResolvedValue(true);
 
     const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
     expect(result.equals(outputAssetId)).toBeTruthy();
@@ -130,7 +164,7 @@ describe('extractAltFee', () => {
   it('extracts the staking asset fee from swaps', async () => {
     mockIndexedDb.getSwapByCommitment?.mockResolvedValue(mockSwapNativeStakingToken);
 
-    const swapAssetId = new AssetId({
+    const inputAssetId = new AssetId({
       inner: new Uint8Array([
         41, 234, 156, 47, 51, 113, 246, 164, 135, 231, 233, 92, 36, 112, 65, 244, 163, 86, 249, 131,
         235, 6, 78, 93, 43, 59, 207, 50, 44, 169, 106, 16,
@@ -139,19 +173,34 @@ describe('extractAltFee', () => {
     const request = new TransactionPlannerRequest({
       swaps: [
         new TransactionPlannerRequest_Swap({
-          value: { assetId: swapAssetId },
+          value: { assetId: inputAssetId },
         }),
       ],
+      source: new AddressIndex({ account: 0 }),
     });
 
+    const gasPrices = [
+      new GasPrices({
+        assetId: inputAssetId,
+        blockSpacePrice: 1n,
+        compactBlockSpacePrice: 1n,
+        verificationPrice: 1n,
+        executionPrice: 1n,
+      }),
+    ];
+
+    mockIndexedDb.saveGasPrices?.mockResolvedValueOnce(gasPrices);
+    mockIndexedDb.getAltGasPrices?.mockResolvedValueOnce(gasPrices);
+    mockIndexedDb.hasTokenBalance?.mockResolvedValue(true);
+
     const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
-    expect(result.equals(swapAssetId)).toBeTruthy();
+    expect(result.equals(inputAssetId)).toBeTruthy();
   });
 
   it('extracts the alternative asset fee from swaps', async () => {
     mockIndexedDb.getSwapByCommitment?.mockResolvedValue(mockSwapAlternativeToken);
 
-    const swapAssetId = new AssetId({
+    const inputAssetId = new AssetId({
       inner: new Uint8Array([
         29, 109, 132, 171, 117, 25, 85, 32, 109, 182, 133, 48, 82, 47, 204, 82, 209, 59, 174, 189,
         148, 83, 191, 212, 31, 157, 52, 111, 42, 123, 56, 7,
@@ -160,19 +209,34 @@ describe('extractAltFee', () => {
     const request = new TransactionPlannerRequest({
       swaps: [
         {
-          value: { assetId: swapAssetId },
+          value: { assetId: inputAssetId },
         },
       ],
+      source: new AddressIndex({ account: 0 }),
     });
 
+    const gasPrices = [
+      new GasPrices({
+        assetId: inputAssetId,
+        blockSpacePrice: 1n,
+        compactBlockSpacePrice: 1n,
+        verificationPrice: 1n,
+        executionPrice: 1n,
+      }),
+    ];
+
+    mockIndexedDb.saveGasPrices?.mockResolvedValueOnce(gasPrices);
+    mockIndexedDb.getAltGasPrices?.mockResolvedValueOnce(gasPrices);
+    mockIndexedDb.hasTokenBalance?.mockResolvedValue(true);
+
     const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
-    expect(result.equals(swapAssetId)).toBeTruthy();
+    expect(result.equals(inputAssetId)).toBeTruthy();
   });
 
   it('extracts the staking asset fee from swap claims', async () => {
     mockIndexedDb.getSwapByCommitment?.mockResolvedValue(mockSwapNativeStakingToken);
 
-    const swapAssetId = new AssetId({
+    const inputAssetId = new AssetId({
       inner: new Uint8Array([
         41, 234, 156, 47, 51, 113, 246, 164, 135, 231, 233, 92, 36, 112, 65, 244, 163, 86, 249, 131,
         235, 6, 78, 93, 43, 59, 207, 50, 44, 169, 106, 16,
@@ -185,16 +249,17 @@ describe('extractAltFee', () => {
           swapCommitment: mockSwapCommitmentNativeStakingToken,
         },
       ],
+      source: new AddressIndex({ account: 0 }),
     });
 
     const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
-    expect(result.equals(swapAssetId)).toBeTruthy();
+    expect(result.equals(inputAssetId)).toBeTruthy();
   });
 
   it('extracts the alternative asset fee from swap claims', async () => {
     mockIndexedDb.getSwapByCommitment?.mockResolvedValue(mockSwapAlternativeToken);
 
-    const swapAssetId = new AssetId({
+    const inputAssetId = new AssetId({
       inner: new Uint8Array([
         29, 109, 132, 171, 117, 25, 85, 32, 109, 182, 133, 48, 82, 47, 204, 82, 209, 59, 174, 189,
         148, 83, 191, 212, 31, 157, 52, 111, 42, 123, 56, 7,
@@ -207,14 +272,15 @@ describe('extractAltFee', () => {
           swapCommitment: mockSwapCommitmentAlternativeToken,
         },
       ],
+      source: new AddressIndex({ account: 0 }),
     });
 
     const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
-    expect(result.equals(swapAssetId)).toBeTruthy();
+    expect(result.equals(inputAssetId)).toBeTruthy();
   });
 
   it('extracts the asset fee from dutchAuctionScheduleActions', async () => {
-    const auctionScheduleAssetId = new AssetId({
+    const inputAssetId = new AssetId({
       inner: new Uint8Array([
         29, 109, 132, 171, 117, 25, 85, 32, 109, 182, 133, 48, 82, 47, 204, 82, 209, 59, 174, 189,
         148, 83, 191, 212, 31, 157, 52, 111, 42, 123, 56, 7,
@@ -227,19 +293,34 @@ describe('extractAltFee', () => {
           description: {
             input: {
               amount: { hi: 0n, lo: 0n },
-              assetId: auctionScheduleAssetId,
+              assetId: inputAssetId,
             },
           },
         },
       ],
+      source: new AddressIndex({ account: 0 }),
     });
 
+    const gasPrices = [
+      new GasPrices({
+        assetId: inputAssetId,
+        blockSpacePrice: 1n,
+        compactBlockSpacePrice: 1n,
+        verificationPrice: 1n,
+        executionPrice: 1n,
+      }),
+    ];
+
+    mockIndexedDb.saveGasPrices?.mockResolvedValueOnce(gasPrices);
+    mockIndexedDb.getAltGasPrices?.mockResolvedValueOnce(gasPrices);
+    mockIndexedDb.hasTokenBalance?.mockResolvedValue(true);
+
     const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
-    expect(result.equals(auctionScheduleAssetId)).toBeTruthy();
+    expect(result.equals(inputAssetId)).toBeTruthy();
   });
 
   it('extracts the asset fee from dutchAuctionEndActions', async () => {
-    const auctionScheduleAssetId = new AssetId({
+    const inputAssetId = new AssetId({
       inner: new Uint8Array([
         29, 109, 132, 171, 117, 25, 85, 32, 109, 182, 133, 48, 82, 47, 204, 82, 209, 59, 174, 189,
         148, 83, 191, 212, 31, 157, 52, 111, 42, 123, 56, 7,
@@ -248,7 +329,7 @@ describe('extractAltFee', () => {
 
     const auction = new DutchAuctionDescription({
       input: {
-        assetId: auctionScheduleAssetId,
+        assetId: inputAssetId,
       },
     });
 
@@ -257,6 +338,8 @@ describe('extractAltFee', () => {
       noteCommitment: mockAuctionEndCommitment,
       seqNum: 0n,
     });
+
+    mockIndexedDb.hasTokenBalance?.mockResolvedValueOnce(true);
 
     const request = new TransactionPlannerRequest({
       dutchAuctionEndActions: [
@@ -264,14 +347,29 @@ describe('extractAltFee', () => {
           auctionId: { inner: new Uint8Array([]) },
         },
       ],
+      source: new AddressIndex({ account: 0 }),
     });
 
+    const gasPrices = [
+      new GasPrices({
+        assetId: inputAssetId,
+        blockSpacePrice: 1n,
+        compactBlockSpacePrice: 1n,
+        verificationPrice: 1n,
+        executionPrice: 1n,
+      }),
+    ];
+
+    mockIndexedDb.saveGasPrices?.mockResolvedValueOnce(gasPrices);
+    mockIndexedDb.getAltGasPrices?.mockResolvedValueOnce(gasPrices);
+    mockIndexedDb.hasTokenBalance?.mockResolvedValue(true);
+
     const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
-    expect(result.equals(auctionScheduleAssetId)).toBeTruthy();
+    expect(result.equals(inputAssetId)).toBeTruthy();
   });
 
-  it('extracts the asset fee from dutchAuctionWithdrawAuctions', async () => {
-    const auctionScheduleAssetId = new AssetId({
+  it('extracts a different asset fee from dutchAuctionEndActions', async () => {
+    const inputAssetId = new AssetId({
       inner: new Uint8Array([
         29, 109, 132, 171, 117, 25, 85, 32, 109, 182, 133, 48, 82, 47, 204, 82, 209, 59, 174, 189,
         148, 83, 191, 212, 31, 157, 52, 111, 42, 123, 56, 7,
@@ -280,7 +378,7 @@ describe('extractAltFee', () => {
 
     const auction = new DutchAuctionDescription({
       input: {
-        assetId: auctionScheduleAssetId,
+        assetId: inputAssetId,
       },
     });
 
@@ -290,16 +388,141 @@ describe('extractAltFee', () => {
       seqNum: 0n,
     });
 
+    // Retrieve a different asset ID than the original scheduled auction.
+    const anotherAssetId = new AssetId({
+      inner: new Uint8Array([0, 1, 2, 3]),
+    });
+
+    const gasPrices = [
+      new GasPrices({
+        assetId: anotherAssetId,
+        blockSpacePrice: 1n,
+        compactBlockSpacePrice: 1n,
+        verificationPrice: 1n,
+        executionPrice: 1n,
+      }),
+    ];
+
+    mockIndexedDb.saveGasPrices?.mockResolvedValue(gasPrices);
+    mockIndexedDb.getAltGasPrices?.mockResolvedValueOnce(gasPrices);
+
+    // Mock hasTokenBalance twice to control its behavior in the function
+    mockIndexedDb.hasTokenBalance?.mockResolvedValueOnce(false); // For the specificAssetId check
+    mockIndexedDb.hasTokenBalance?.mockResolvedValueOnce(true); // For the altGasPrices check
+
+    const request = new TransactionPlannerRequest({
+      dutchAuctionEndActions: [
+        {
+          auctionId: { inner: new Uint8Array([]) },
+        },
+      ],
+      source: new AddressIndex({ account: 0 }),
+    });
+
+    const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
+    expect(result.equals(anotherAssetId)).toBeTruthy();
+  });
+
+  it('extracts the asset fee from dutchAuctionWithdrawAuctions', async () => {
+    const inputAssetId = new AssetId({
+      inner: new Uint8Array([
+        29, 109, 132, 171, 117, 25, 85, 32, 109, 182, 133, 48, 82, 47, 204, 82, 209, 59, 174, 189,
+        148, 83, 191, 212, 31, 157, 52, 111, 42, 123, 56, 7,
+      ]),
+    });
+
+    const auction = new DutchAuctionDescription({
+      input: {
+        assetId: inputAssetId,
+      },
+    });
+
+    mockIndexedDb.getAuction?.mockResolvedValueOnce({
+      auction,
+      noteCommitment: mockAuctionEndCommitment,
+      seqNum: 0n,
+    });
+
+    const gasPrices = [
+      new GasPrices({
+        assetId: inputAssetId,
+        blockSpacePrice: 1n,
+        compactBlockSpacePrice: 1n,
+        verificationPrice: 1n,
+        executionPrice: 1n,
+      }),
+    ];
+
+    mockIndexedDb.saveGasPrices?.mockResolvedValueOnce(gasPrices);
+    mockIndexedDb.getAltGasPrices?.mockResolvedValueOnce(gasPrices);
+    mockIndexedDb.hasTokenBalance?.mockResolvedValue(true);
+
     const request = new TransactionPlannerRequest({
       dutchAuctionWithdrawActions: [
         {
           auctionId: { inner: new Uint8Array([]) },
         },
       ],
+      source: new AddressIndex({ account: 0 }),
     });
 
     const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
-    expect(result.equals(auctionScheduleAssetId)).toBeTruthy();
+    expect(result.equals(inputAssetId)).toBeTruthy();
+  });
+
+  it('extracts a different asset fee from dutchAuctionWithdrawAuctions', async () => {
+    const inputAssetId = new AssetId({
+      inner: new Uint8Array([
+        29, 109, 132, 171, 117, 25, 85, 32, 109, 182, 133, 48, 82, 47, 204, 82, 209, 59, 174, 189,
+        148, 83, 191, 212, 31, 157, 52, 111, 42, 123, 56, 7,
+      ]),
+    });
+
+    const auction = new DutchAuctionDescription({
+      input: {
+        assetId: inputAssetId,
+      },
+    });
+
+    mockIndexedDb.getAuction?.mockResolvedValueOnce({
+      auction,
+      noteCommitment: mockAuctionEndCommitment,
+      seqNum: 0n,
+    });
+
+    // Retrieve a different asset ID than the original scheduled auction.
+    const anotherAssetId = new AssetId({
+      inner: new Uint8Array([0, 1, 2, 3]),
+    });
+
+    const gasPrices = [
+      new GasPrices({
+        assetId: anotherAssetId,
+        blockSpacePrice: 1n,
+        compactBlockSpacePrice: 1n,
+        verificationPrice: 1n,
+        executionPrice: 1n,
+      }),
+    ];
+
+    mockIndexedDb.saveGasPrices?.mockResolvedValue(gasPrices);
+    mockIndexedDb.getAltGasPrices?.mockResolvedValueOnce(gasPrices);
+
+    // Mock hasTokenBalance twice to control its behavior in the function
+    mockIndexedDb.hasTokenBalance?.mockResolvedValueOnce(false); // For the specificAssetId check
+    mockIndexedDb.hasTokenBalance?.mockResolvedValueOnce(true); // For the altGasPrices check
+
+    const request = new TransactionPlannerRequest({
+      dutchAuctionWithdrawActions: [
+        {
+          auctionId: { inner: new Uint8Array([]) },
+        },
+      ],
+      source: new AddressIndex({ account: 0 }),
+    });
+
+    const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
+    expect(result.equals(anotherAssetId)).toBeTruthy();
   });
 });
 

@@ -5,7 +5,7 @@ import { ArrowLeftRight, Check } from 'lucide-react';
 
 const meta: Meta<typeof Button> = {
   component: Button,
-  tags: ['autodocs', '!dev'],
+  tags: ['autodocs', '!dev', 'density'],
   argTypes: {
     icon: {
       control: 'select',
@@ -21,7 +21,6 @@ type Story = StoryObj<typeof Button>;
 
 export const Basic: Story = {
   args: {
-    size: 'sparse',
     children: 'Save',
     actionType: 'default',
     disabled: false,

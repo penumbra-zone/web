@@ -1,5 +1,26 @@
 # @penumbra-zone/ui
 
+## 7.3.1
+
+### Patch Changes
+
+- Updated dependencies [a9ffd2d]
+  - @penumbra-zone/types@18.0.0
+  - @penumbra-zone/perspective@20.0.0
+
+## 7.3.0
+
+### Minor Changes
+
+- dfad32b: fix auctions source
+- 49fb3f1: Create <Table /> component; introduce <Density />
+- Update registry dep
+
+### Patch Changes
+
+- Updated dependencies [40a471d]
+  - @penumbra-zone/perspective@19.0.0
+
 ## 7.2.1
 
 ### Patch Changes

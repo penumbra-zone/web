@@ -1,5 +1,12 @@
 # @penumbra-zone/client
 
+## 15.0.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @penumbra-zone/protobuf@5.6.0
+
 ## 14.0.0
 
 ### Minor Changes

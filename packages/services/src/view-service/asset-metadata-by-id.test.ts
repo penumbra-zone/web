@@ -74,6 +74,17 @@ describe('AssetMetadataById request handler', () => {
     expect(metadataByIdResponse.equals({ denomMetadata: metadataFromNode })).toBeTruthy();
   });
 
+  test('should customize symbols', async () => {
+    mockIndexedDb.getAssetsMetadata?.mockResolvedValue(undefined);
+    mockShieldedPool.assetMetadataById.mockResolvedValueOnce(delegationMetadata);
+    const metadataByIdResponse = new AssetMetadataByIdResponse(
+      await assetMetadataById(request, mockCtx),
+    );
+    expect(metadataByIdResponse.denomMetadata!.symbol).toBe(
+      'delUM(2s9lanucncnyasrsqgy6z532q7nwsw3aqzzeqas55kkpyf6lhsqs2w0zar)',
+    );
+  });
+
   test('should successfully respond even when no metadata is available', async () => {
     mockIndexedDb.getAssetsMetadata?.mockResolvedValue(undefined);
     mockShieldedPool.assetMetadataById.mockResolvedValueOnce(undefined);
@@ -106,9 +117,29 @@ const metadataFromNode = Metadata.fromJson({
   name: '',
   symbol: '',
   penumbraAssetId: {
-    inner: 'nwPDkQq3OvLnBwGTD+nmv1Ifb2GEmFCgNHrU++9BsRE=',
+    inner: 'HW2Eq3UZVSBttoUwUi/MUtE7rr2UU7/UH500byp7OAc=',
   },
 });
+
+export const delegationMetadata = Metadata.fromJson({
+  denomUnits: [
+    {
+      denom: 'delegation_penumbravalid12s9lanucncnyasrsqgy6z532q7nwsw3aqzzeqas55kkpyf6lhsqs2w0zar',
+      exponent: 6,
+    },
+    {
+      denom: 'mdelegation_penumbravalid12s9lanucncnyasrsqgy6z532q7nwsw3aqzzeqas55kkpyf6lhsqs2w0zar',
+      exponent: 3,
+    },
+    {
+      denom: 'udelegation_penumbravalid12s9lanucncnyasrsqgy6z532q7nwsw3aqzzeqas55kkpyf6lhsqs2w0zar',
+    },
+  ],
+  base: 'udelegation_penumbravalid12s9lanucncnyasrsqgy6z532q7nwsw3aqzzeqas55kkpyf6lhsqs2w0zar',
+  display: 'delegation_penumbravalid12s9lanucncnyasrsqgy6z532q7nwsw3aqzzeqas55kkpyf6lhsqs2w0zar',
+  penumbraAssetId: { inner: '9gOwzeyGwav8YydzDGlEZyZkN8ITX2IerjVy0YjAIw8=' },
+});
+
 const metadataFromIdb = Metadata.fromJson({
   description: '',
   denomUnits: [

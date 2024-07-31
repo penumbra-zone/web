@@ -1,5 +1,30 @@
 # @penumbra-zone/storage
 
+## 20.0.0
+
+### Minor Changes
+
+- a9ffd2d: rework extractAltFee with fallback protections
+
+### Patch Changes
+
+- Updated dependencies [a9ffd2d]
+  - @penumbra-zone/types@18.0.0
+  - @penumbra-zone/wasm@21.0.0
+  - @penumbra-zone/getters@13.0.0
+
+## 19.0.0
+
+### Minor Changes
+
+- 955dbf2: Bump idb version so del vote tokens show up correctly in storage
+- Update registry dep
+
+### Patch Changes
+
+- Updated dependencies [318690e]
+  - @penumbra-zone/wasm@20.2.0
+
 ## 18.0.0
 
 ### Patch Changes

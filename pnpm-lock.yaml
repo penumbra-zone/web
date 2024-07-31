@@ -196,8 +196,8 @@ importers:
         specifier: ^1.23.16
         version: 1.23.25(@types/react@18.3.3)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@penumbra-labs/registry':
-        specifier: 10.0.0
-        version: 10.0.0
+        specifier: 11.0.0
+        version: 11.0.0
       '@penumbra-zone/bech32m':
         specifier: workspace:*
         version: link:../../packages/bech32m
@@ -569,8 +569,8 @@ importers:
         specifier: ^1.10.0
         version: 1.10.0
       '@penumbra-labs/registry':
-        specifier: 10.0.0
-        version: 10.0.0
+        specifier: 11.0.0
+        version: 11.0.0
       '@penumbra-zone/bech32m':
         specifier: workspace:*
         version: link:../bech32m
@@ -667,8 +667,8 @@ importers:
         specifier: ^11.11.5
         version: 11.11.5(@emotion/react@11.11.4(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react@18.3.1)
       '@penumbra-labs/registry':
-        specifier: 10.0.0
-        version: 10.0.0
+        specifier: 11.0.0
+        version: 11.0.0
       '@penumbra-zone/bech32m':
         specifier: workspace:*
         version: link:../bech32m
@@ -3038,8 +3038,8 @@ packages:
     resolution: {integrity: sha512-HNjmfLQEVRZmHRET336f20H/8kOozUGwk7yajvsonjNxbj2wBTK1WsQuHkD5yYh9RxFGL2EyDHryOihOwUoKDA==}
     engines: {node: '>= 10.0.0'}
 
-  '@penumbra-labs/registry@10.0.0':
-    resolution: {integrity: sha512-LyeA5pYwi2YatMEeb6MB6PpyrRkZivyPvr/HLjFM0kOQTWK8hOS8XO+huF50QFW+6AGQggIs6R9yFE109o/fMA==}
+  '@penumbra-labs/registry@11.0.0':
+    resolution: {integrity: sha512-BMxCpAkGZ2f8Y16gCDi9vXMqYBXH73hCzBJkgBKEqUBdRnHUuWXmgi/bEQPN9lfR4+Vs2/Wh8+4NnW4xTGRMFQ==}
 
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
@@ -14310,7 +14310,7 @@ snapshots:
       '@parcel/watcher-win32-ia32': 2.4.1
       '@parcel/watcher-win32-x64': 2.4.1
 
-  '@penumbra-labs/registry@10.0.0': {}
+  '@penumbra-labs/registry@11.0.0': {}
 
   '@pkgjs/parseargs@0.11.0':
     optional: true

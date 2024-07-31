@@ -1,5 +1,23 @@
 # @penumbra-zone/perspective
 
+## 20.0.0
+
+### Patch Changes
+
+- @penumbra-zone/wasm@21.0.0
+- @penumbra-zone/getters@13.0.0
+
+## 19.0.0
+
+### Minor Changes
+
+- 40a471d: Add additional transaction type classifications
+
+### Patch Changes
+
+- Updated dependencies [318690e]
+  - @penumbra-zone/wasm@20.2.0
+
 ## 18.0.0
 
 ### Minor Changes

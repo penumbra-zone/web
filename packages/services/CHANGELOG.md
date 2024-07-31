@@ -1,5 +1,41 @@
 # @penumbra-zone/router
 
+## 24.0.0
+
+### Minor Changes
+
+- a9ffd2d: rework extractAltFee with fallback protections
+
+### Patch Changes
+
+- Updated dependencies [a9ffd2d]
+- Updated dependencies
+  - @penumbra-zone/storage@20.0.0
+  - @penumbra-zone/types@18.0.0
+  - @penumbra-zone/protobuf@5.6.0
+  - @penumbra-zone/crypto-web@17.0.0
+  - @penumbra-zone/query@21.0.0
+  - @penumbra-zone/wasm@21.0.0
+  - @penumbra-zone/getters@13.0.0
+  - @penumbra-zone/perspective@20.0.0
+
+## 23.0.0
+
+### Minor Changes
+
+- 955dbf2: Save customized symbol metadata on denom req
+
+### Patch Changes
+
+- Updated dependencies [40a471d]
+- Updated dependencies [955dbf2]
+- Updated dependencies [318690e]
+- Updated dependencies
+  - @penumbra-zone/perspective@19.0.0
+  - @penumbra-zone/storage@19.0.0
+  - @penumbra-zone/wasm@20.2.0
+  - @penumbra-zone/query@20.0.0
+
 ## 22.0.0
 
 ### Patch Changes

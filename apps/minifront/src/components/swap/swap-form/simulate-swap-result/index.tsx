@@ -24,7 +24,7 @@ const simulateSwapResultSelector = (state: AllSlices) => ({
       case: 'knownAssetId',
       value: {
         amount: toBaseUnit(
-          new BigNumber(state.swap.amount),
+          new BigNumber(state.swap.amount || 0),
           getDisplayDenomExponentFromValueView.optional()(state.swap.assetIn?.balanceView),
         ),
         metadata: getMetadata.optional()(state.swap.assetIn?.balanceView),
