@@ -108,11 +108,27 @@ describe('extractAltFee', () => {
   });
 
   it('prioritizes outputs over all else', async () => {
-    const outputAssetId = new AssetId({ altBaseDenom: 'output' });
+    const outputAssetId = new AssetId({
+      inner: new Uint8Array([
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+        26, 27, 28, 29, 30, 31, 32,
+      ]),
+      altBaseDenom: 'output',
+    });
     const swapAssetId = new AssetId({ altBaseDenom: 'swap' });
     const auctionScheduleAssetId = new AssetId({ altBaseDenom: 'auction-schedule' });
-    const auctionEndAuctionId = new AuctionId({ inner: new Uint8Array([3, 2, 5, 2]) });
-    const auctionWithdrawAuctiontId = new AuctionId({ inner: new Uint8Array([9, 9, 6, 3]) });
+    const auctionEndAuctionId = new AuctionId({
+      inner: new Uint8Array([
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+        26, 27, 28, 29, 30, 31, 32,
+      ]),
+    });
+    const auctionWithdrawAuctiontId = new AuctionId({
+      inner: new Uint8Array([
+        32, 31, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9,
+        8, 7, 6, 5, 4, 3, 2, 1,
+      ]),
+    });
 
     const request = new TransactionPlannerRequest({
       outputs: [
@@ -390,7 +406,10 @@ describe('extractAltFee', () => {
 
     // Retrieve a different asset ID than the original scheduled auction.
     const anotherAssetId = new AssetId({
-      inner: new Uint8Array([0, 1, 2, 3]),
+      inner: new Uint8Array([
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+        26, 27, 28, 29, 30, 31, 32,
+      ]),
     });
 
     const gasPrices = [
@@ -492,7 +511,10 @@ describe('extractAltFee', () => {
 
     // Retrieve a different asset ID than the original scheduled auction.
     const anotherAssetId = new AssetId({
-      inner: new Uint8Array([0, 1, 2, 3]),
+      inner: new Uint8Array([
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+        26, 27, 28, 29, 30, 31, 32,
+      ]),
     });
 
     const gasPrices = [
