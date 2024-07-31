@@ -4,7 +4,7 @@ import { Header } from './header/header';
 import { Toaster } from '@repo/ui/components/ui/toaster';
 import { Footer } from './footer/footer';
 import '@repo/ui/styles/globals.css';
-import { SyncingModal } from './syncing-modal';
+import { SyncingDialog } from './syncing-dialog';
 
 export const Layout = () => {
   return (
@@ -20,7 +20,7 @@ export const Layout = () => {
       </div>
 
       <Toaster />
-      <SyncingModal />
+      <SyncingDialog />
     </>
   );
 };

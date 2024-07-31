@@ -35,7 +35,7 @@ const statusSelector = (zQueryState: AbridgedZQueryState<Status>): StatusSelecto
   }
 };
 
-export const SyncingModal = () => {
+export const SyncingDialog = () => {
   const status = useStatus({
     select: statusSelector,
   });
