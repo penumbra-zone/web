@@ -203,15 +203,9 @@ impl<Db: Database> Storage<Db> {
     }
 
     pub async fn get_gas_prices_by_asset_id(&self, asset_id: &Id) -> WasmResult<Option<GasPrices>> {
-        // let key = byte_array_to_base64(&asset_id.to_proto().inner);
-        // let result = self.db.get(&self.tables.gas_prices, key).await?;
-        Ok(Some(GasPrices {
-            asset_id: *asset_id,
-            block_space_price: 60,
-            compact_block_space_price: 1556,
-            verification_price: 142,
-            execution_price: 16,
-        }))
+        let key = byte_array_to_base64(&asset_id.to_proto().inner);
+        let result = self.db.get(&self.tables.gas_prices, key).await?;
+        Ok(result)
     }
 
     pub async fn get_latest_known_epoch(&self) -> WasmResult<Option<Epoch>> {
