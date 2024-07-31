@@ -204,6 +204,19 @@ export type TextProps = TextType & {
 };
 
 /**
+ * Runtime equivalent of TypeScript's `Omit` type. Removes extraneous props that
+ * shouldn't be passed to the DOM.
+ */
+const omit = <ObjectType extends Record<string, unknown>>(
+  object: ObjectType,
+  key: keyof ObjectType,
+) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- we're discarding the unused key
+  const { [key]: _, ...rest } = object;
+  return rest;
+};
+
+/**
  * All-purpose text wrapper for quickly styling text per the Penumbra UI
  * guidelines.
  *
@@ -233,38 +246,38 @@ export type TextProps = TextType & {
  */
 export const Text = (props: TextProps) => {
   if (props.h1) {
-    return <H1 {...props} />;
+    return <H1 {...omit(props, 'h1')} />;
   }
   if (props.h2) {
-    return <H2 {...props} />;
+    return <H2 {...omit(props, 'h2')} />;
   }
   if (props.h3) {
-    return <H3 {...props} />;
+    return <H3 {...omit(props, 'h3')} />;
   }
   if (props.h4) {
-    return <H4 {...props} />;
+    return <H4 {...omit(props, 'h4')} />;
   }
   if (props.xxl) {
-    return <Xxl {...props} />;
+    return <Xxl {...omit(props, 'xxl')} />;
   }
   if (props.large) {
-    return <Large {...props} />;
+    return <Large {...omit(props, 'large')} />;
   }
   if (props.strong) {
-    return <Strong {...props} />;
+    return <Strong {...omit(props, 'strong')} />;
   }
   if (props.detail) {
-    return <Detail {...props} />;
+    return <Detail {...omit(props, 'detail')} />;
   }
   if (props.small) {
-    return <Small {...props} />;
+    return <Small {...omit(props, 'small')} />;
   }
   if (props.technical) {
-    return <Technical {...props} />;
+    return <Technical {...omit(props, 'technical')} />;
   }
   if (props.p) {
-    return <P {...props} />;
+    return <P {...omit(props, 'p')} />;
   }
 
-  return <Body {...props} />;
+  return <Body {...omit(props, 'body')} />;
 };
