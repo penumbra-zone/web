@@ -1,5 +1,11 @@
 # @penumbra-zone/types
 
+## 18.1.0
+
+### Minor Changes
+
+- f5bea48: fix source randomizer
+
 ## 18.0.0
 
 ### Minor Changes

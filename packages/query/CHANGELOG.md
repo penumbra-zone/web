@@ -1,5 +1,14 @@
 # @penumbra-zone/query
 
+## 22.0.0
+
+### Patch Changes
+
+- Updated dependencies [f5bea48]
+  - @penumbra-zone/types@18.1.0
+  - @penumbra-zone/crypto-web@18.0.0
+  - @penumbra-zone/wasm@22.0.0
+
 ## 21.0.0
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @penumbra-zone/storage
 
+## 21.0.0
+
+### Minor Changes
+
+- f5bea48: fix source randomizer
+
+### Patch Changes
+
+- Updated dependencies [f5bea48]
+  - @penumbra-zone/types@18.1.0
+  - @penumbra-zone/wasm@22.0.0
+
 ## 20.0.0
 
 ### Minor Changes
