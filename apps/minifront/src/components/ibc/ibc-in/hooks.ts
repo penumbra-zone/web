@@ -108,6 +108,8 @@ interface UseCosmosChainBalancesRes {
 }
 
 const getIconFromAsset = (asset: Asset): string | undefined => {
+  // Image default is "" and thus cannot do nullish-coalescing
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   const logoUri = asset.logo_URIs?.svg || asset.logo_URIs?.png;
   if (logoUri) {
     return logoUri;
@@ -115,6 +117,7 @@ const getIconFromAsset = (asset: Asset): string | undefined => {
 
   if (asset.images?.length) {
     const first = asset.images[0]!;
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
     return first.svg || first.svg;
   }
   return undefined;
@@ -143,7 +146,7 @@ const usePenumbraIbcDenoms = () => {
     error: ibcAddrssErr,
   } = useQuery(
     ['penumbraIbcDenoms', registry],
-    async () => generatePenumbraIbcDenoms(registry?.ibcConnections || []),
+    async () => generatePenumbraIbcDenoms(registry?.ibcConnections ?? []),
     {
       enabled: Boolean(registry),
     },
@@ -193,7 +196,7 @@ export const useCosmosChainBalances = (): UseCosmosChainBalancesRes => {
       displayAmount: toDisplayAmount(asset, coin),
       icon: getIconFromAsset(asset),
       assetType: assetTypeCheck(asset.type_asset),
-      isPenumbra: (penumbraIbcAddrs || []).includes(coin.denom),
+      isPenumbra: (penumbraIbcAddrs ?? []).includes(coin.denom),
     };
   });
 
