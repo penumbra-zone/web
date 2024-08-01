@@ -180,7 +180,7 @@ pub async fn plan_transaction_inner<Db: Database>(
     source_address_index.randomizer = [0u8; 12];
 
     // Compute the change address for this transaction.
-    let (mut change_address, _) = fvk
+    let (change_address, _) = fvk
         .incoming()
         .payment_address(source_address_index.account.into());
 
