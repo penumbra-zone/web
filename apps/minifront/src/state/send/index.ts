@@ -15,7 +15,6 @@ import {
   FeeTier_Tier,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
 import {
-  getAmount,
   getAssetIdFromValueView,
   getDisplayDenomExponentFromValueView,
 } from '@penumbra-zone/getters/value-view';
@@ -26,7 +25,6 @@ import { transferableBalancesResponsesSelector } from './helpers';
 import { PartialMessage } from '@bufbuild/protobuf';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { getAssetTokenMetadata } from '../../fetchers/registry';
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb.js';
 
 export interface SendSlice {
   selection: BalancesResponse | undefined;
@@ -142,11 +140,12 @@ const assembleRequest = ({ amount, feeTier, recipient, selection, memo }: SendSl
       assetId: getAssetIdFromValueView(selection?.balanceView),
     },
   };
-  const isSendingMax = getAmount(selection?.balanceView).equals(
-    spendOrOutput.value?.amount as Amount,
-  );
+  // TODO MAX functionality is temporarily disabled due to a bug
+  // const isSendingMax = getAmount(selection?.balanceView).equals(
+  //   spendOrOutput.value?.amount as Amount,
+  // );
   return new TransactionPlannerRequest({
-    ...(isSendingMax ? { spends: [spendOrOutput] } : { outputs: [spendOrOutput] }),
+    ...{ outputs: [spendOrOutput] },
     source: getAddressIndex(selection?.accountAddress),
     // Note: we currently don't provide a UI for setting the fee manually. Thus,
     // a `feeMode` of `manualFee` is not supported here.
