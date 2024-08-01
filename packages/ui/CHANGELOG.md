@@ -1,5 +1,11 @@
 # @penumbra-zone/ui
 
+## 7.3.3
+
+### Patch Changes
+
+- @penumbra-zone/perspective@22.0.0
+
 ## 7.3.2
 
 ### Patch Changes
