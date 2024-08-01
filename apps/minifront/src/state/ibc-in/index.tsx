@@ -286,7 +286,9 @@ export const ibcErrorSelector = (state: AllSlices) => {
     amountErr: isNotValidAmount,
     // Testnet coins don't seem to have assetType field. Checking manually for ibc address first.
     isUnsupportedAsset:
-      coin && (isIbcAsset(coin.raw.denom) || (coin.assetType && coin.assetType !== 'sdk.coin')),
+      coin &&
+      !coin.isPenumbra &&
+      (isIbcAsset(coin.raw.denom) || (coin.assetType && coin.assetType !== 'sdk.coin')),
   };
 };
 
