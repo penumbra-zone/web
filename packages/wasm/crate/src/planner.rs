@@ -510,7 +510,6 @@ pub async fn plan_transaction_inner<Db: Database>(
                 actions_list.push(spend);
             }
         }
-        
     }
 
     for tpr::DelegatorVote {
