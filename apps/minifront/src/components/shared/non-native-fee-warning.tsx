@@ -11,17 +11,27 @@ const hasStakingToken = (
   stakingAssetMetadata?: Metadata,
   account?: number,
 ): boolean => {
-  return balancesResponses.some(asset =>
-    getAssetIdFromValueView
-      .optional()(asset.balanceView)
-      ?.equals(getAssetId.optional()(stakingAssetMetadata)) && getAddressIndex.optional()(asset)?.account === account,
+  return balancesResponses.some(
+    asset =>
+      getAssetIdFromValueView
+        .optional()(asset.balanceView)
+        ?.equals(getAssetId.optional()(stakingAssetMetadata)) &&
+      getAddressIndex.optional()(asset)?.account === account,
   );
 };
 
-export const useShouldRender = (balancesResponses: BalancesResponse[] = [], amount: number, account?: BalancesResponse) => {
+export const useShouldRender = (
+  balancesResponses: BalancesResponse[] = [],
+  amount: number,
+  account?: BalancesResponse,
+) => {
   const stakingTokenMetadata = useStakingTokenMetadata();
   const sourceAddressIndex = getAddressIndex.optional()(account)?.account ?? 0;
-  const userHasStakingToken = hasStakingToken(balancesResponses, stakingTokenMetadata.data, sourceAddressIndex);
+  const userHasStakingToken = hasStakingToken(
+    balancesResponses,
+    stakingTokenMetadata.data,
+    sourceAddressIndex,
+  );
   const showNonNativeFeeWarning = amount > 0 && !userHasStakingToken;
 
   return showNonNativeFeeWarning;
