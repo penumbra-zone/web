@@ -54,11 +54,6 @@ export const planBuildBroadcast = async (
   const rpcMethod = options?.skipAuth ? viewClient.witnessAndBuild : viewClient.authorizeAndBuild;
 
   try {
-    // TODO: Temp fix to not compare randomizer. Can delete after v11.10 is released.
-    if (req.source) {
-      req.source.randomizer = new Uint8Array();
-    }
-
     const transactionPlan = await plan(req);
 
     const transaction = await build({ transactionPlan }, rpcMethod, status =>
