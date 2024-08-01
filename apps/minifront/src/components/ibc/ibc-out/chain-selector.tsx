@@ -44,6 +44,7 @@ export const ChainSelector = () => {
         <SelectContent className='left-[-17px]'>
           {chains.data?.map((i, index) => (
             <SelectItem
+              disabled={i.chainId === 'noble-1'}
               key={index}
               value={i.displayName}
               className={cn(
