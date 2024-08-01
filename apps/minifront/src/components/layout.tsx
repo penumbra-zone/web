@@ -4,7 +4,12 @@ import { Header } from './header/header';
 import { Toaster } from '@repo/ui/components/ui/toaster';
 import { Footer } from './footer/footer';
 import '@repo/ui/styles/globals.css';
-import { SyncingDialog } from './syncing-dialog';
+
+/**
+ * @todo: add back the SyncingDialog once we've determined whether it can be
+ * dismissed.
+ */
+// import { SyncingDialog } from './syncing-dialog';
 
 export const Layout = () => {
   return (
@@ -20,7 +25,7 @@ export const Layout = () => {
       </div>
 
       <Toaster />
-      <SyncingDialog />
+      {/* <SyncingDialog /> */}
     </>
   );
 };
