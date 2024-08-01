@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 
 import { Card } from '.';
 
-import storiesBg from './storiesBg.png';
+import storiesBg from './storiesBg.jpg';
 import styled from 'styled-components';
 import { Text } from '../Text';
 
@@ -13,7 +13,7 @@ const BgWrapper = styled.div`
   &::before {
     content: '';
     background: url(${storiesBg}) center / cover;
-    opacity: 0.4;
+    opacity: 0.6;
     filter: blur(4px);
     position: absolute;
     inset: 0;
