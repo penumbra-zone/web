@@ -12,6 +12,7 @@ const meta: Meta<typeof Text> = {
     h2: { control: false },
     h3: { control: false },
     h4: { control: false },
+    xxl: { control: false },
     large: { control: false },
     body: { control: false },
     p: { control: false },
@@ -74,6 +75,7 @@ export const KitchenSink: StoryObj<typeof Text> = {
     children: 'The quick brown fox jumps over the lazy dog.',
     h1: true,
     as: 'span',
+    truncate: false,
   },
 
   render: function Render(props) {
