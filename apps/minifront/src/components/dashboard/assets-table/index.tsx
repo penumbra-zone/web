@@ -20,6 +20,7 @@ import { BalancesByAccount, groupByAccount, useBalancesResponses } from '../../.
 import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
 import { shouldDisplay } from '../../../fetchers/balances/should-display';
 import { sortByPriorityScore } from '../../../fetchers/balances/by-priority-score';
+import { Oval } from 'react-loader-spinner';
 
 const getTradeLink = (balance: BalancesResponse): string => {
   const metadata = getMetadataFromBalancesResponseOptional(balance);
@@ -47,7 +48,18 @@ export default function AssetsTable() {
     shouldReselect: (before, after) => before?.data !== after.data,
   });
 
-  if (balancesByAccount?.length === 0) {
+  /** Are assets still loading */
+  const isLoading = balancesByAccount === undefined;
+
+  if (isLoading) {
+    return (
+      <div className='mt-5 flex w-full flex-col items-center justify-center'>
+        <Oval width={32} height={32} color='white' secondaryColor='white' />
+      </div>
+    );
+  }
+
+  if (balancesByAccount.length === 0) {
     return (
       <div className='mt-5 flex flex-col items-center gap-6'>
         <p>
@@ -64,7 +76,7 @@ export default function AssetsTable() {
   return (
     <div className='w-full overflow-x-auto'>
       <Table>
-        {balancesByAccount?.map(account => (
+        {balancesByAccount.map(account => (
           <Fragment key={account.account}>
             <TableHeader className='group'>
               <TableRow>
