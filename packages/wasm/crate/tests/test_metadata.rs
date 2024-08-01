@@ -160,5 +160,5 @@ fn it_works() {
         MetadataDomainType::decode::<&[u8]>(&customized_metadata_bytes);
     let customized_metadata_proto = customized_metadata_result.unwrap().to_proto();
 
-    assert_eq!(customized_metadata_proto.symbol, "delUM(abcdef12...)");
+    assert_eq!(customized_metadata_proto.symbol, "delUM(abcdef123456)");
 }
