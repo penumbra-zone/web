@@ -510,9 +510,7 @@ pub async fn plan_transaction_inner<Db: Database>(
                 actions_list.push(spend);
             }
         }
-
-        // Change address is overwritten to the recipient.
-        change_address = address.try_into()?;
+        
     }
 
     for tpr::DelegatorVote {
