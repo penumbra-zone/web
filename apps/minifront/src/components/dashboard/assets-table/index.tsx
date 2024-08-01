@@ -42,13 +42,13 @@ export default function AssetsTable() {
 
   if (balancesByAccount?.length === 0) {
     return (
-      <div className='flex flex-col gap-6'>
+      <div className='mt-5 flex flex-col items-center gap-6'>
         <p>
-          No balances found. Try requesting tokens by pasting your address in{' '}
-          <a style={{ color: '#aaaaff' }} href='https://discord.gg/CDNEnzX6YC'>
-            the faucet channel
-          </a>{' '}
-          on Discord!
+          No balances found.{' '}
+          <Link to='/ibc' style={{ color: '#aaaaff' }}>
+            Try shielding funds
+          </Link>
+          .
         </p>
       </div>
     );
