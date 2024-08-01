@@ -94,6 +94,7 @@ export const SendForm = () => {
       <NonNativeFeeWarning
         balancesResponses={transferableBalancesResponses?.data}
         amount={Number(amount)}
+        source={selection}
       />
 
       <GasFee

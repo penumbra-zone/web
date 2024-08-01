@@ -4,21 +4,24 @@ import { getAssetIdFromValueView } from '@penumbra-zone/getters/value-view';
 import { getAssetId } from '@penumbra-zone/getters/metadata';
 import { useStakingTokenMetadata } from '../../state/shared';
 import { ReactNode } from 'react';
+import { getAddressIndex } from '@penumbra-zone/getters/balances-response';
 
 const hasStakingToken = (
   balancesResponses: BalancesResponse[] = [],
   stakingAssetMetadata?: Metadata,
+  account?: number,
 ): boolean => {
   return balancesResponses.some(asset =>
     getAssetIdFromValueView
       .optional()(asset.balanceView)
-      ?.equals(getAssetId.optional()(stakingAssetMetadata)),
+      ?.equals(getAssetId.optional()(stakingAssetMetadata)) && getAddressIndex.optional()(asset)?.account === account,
   );
 };
 
-export const useShouldRender = (balancesResponses: BalancesResponse[] = [], amount: number) => {
+export const useShouldRender = (balancesResponses: BalancesResponse[] = [], amount: number, account?: BalancesResponse) => {
   const stakingTokenMetadata = useStakingTokenMetadata();
-  const userHasStakingToken = hasStakingToken(balancesResponses, stakingTokenMetadata.data);
+  const sourceAddressIndex = getAddressIndex.optional()(account)?.account ?? 0;
+  const userHasStakingToken = hasStakingToken(balancesResponses, stakingTokenMetadata.data, sourceAddressIndex);
   const showNonNativeFeeWarning = amount > 0 && !userHasStakingToken;
 
   return showNonNativeFeeWarning;
@@ -33,6 +36,7 @@ export const useShouldRender = (balancesResponses: BalancesResponse[] = [], amou
 export const NonNativeFeeWarning = ({
   balancesResponses,
   amount,
+  source,
   wrap = children => children,
 }: {
   /**
@@ -45,6 +49,11 @@ export const NonNativeFeeWarning = ({
    * determine whether the warning should render.
    */
   amount: number;
+  /**
+   * A source token – helps determine whether the user has UM token
+   * in the same account as `source` to use for fees.
+   */
+  source?: BalancesResponse;
   /*
    * Since this component determines for itself whether to render, a parent
    * component can't optionally render wrapper markup depending on whether this
@@ -57,13 +66,14 @@ export const NonNativeFeeWarning = ({
    * <NonNativeFeeWarning
    *   balancesResponses={balancesResponses}
    *   amount={amount}
+   *   account={account}
    *   wrap={children => <div className='mt-5'>{children}</div>}
    * />
    * ```
    */
   wrap?: (children: ReactNode) => ReactNode;
 }) => {
-  const shouldRender = useShouldRender(balancesResponses, amount);
+  const shouldRender = useShouldRender(balancesResponses, amount, source);
 
   if (!shouldRender) {
     return null;

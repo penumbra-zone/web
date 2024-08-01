@@ -160,6 +160,7 @@ export const TokenSwapInput = () => {
       <NonNativeFeeWarning
         balancesResponses={balancesResponses?.data}
         amount={Number(amount)}
+        source={assetIn}
         wrap={children => (
           <>
             {/* This div adds an empty line */} <div className='h-4' />
