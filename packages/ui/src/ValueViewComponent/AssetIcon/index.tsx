@@ -1,5 +1,5 @@
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import { Identicon } from './Identicon';
+import { Identicon } from '../../Identicon';
 import { DelegationTokenIcon } from './DelegationTokenIcon';
 import { getDisplay } from '@penumbra-zone/getters/metadata';
 import { assetPatterns } from '@penumbra-zone/types/assets';
