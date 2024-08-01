@@ -3,7 +3,7 @@ import { SliceCreator, useStore } from '.';
 import { createZQuery } from '@penumbra-zone/zquery';
 import { getStatusStream } from '../fetchers/status';
 
-interface Status {
+export interface Status {
   fullSyncHeight?: bigint;
   latestKnownBlockHeight?: bigint;
 }

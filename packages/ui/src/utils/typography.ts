@@ -127,6 +127,15 @@ export const technical = css`
   line-height: ${props => props.theme.lineHeight.textSm};
 `;
 
+export const xxl = css`
+  ${base}
+
+  font-family: ${props => props.theme.font.default};
+  font-size: ${props => props.theme.fontSize.text2xl};
+  font-weight: 500;
+  line-height: ${props => props.theme.lineHeight.text2xl};
+`;
+
 export const button = css`
   font-family: ${props => props.theme.font.default};
   font-size: ${props => props.theme.fontSize.textBase};

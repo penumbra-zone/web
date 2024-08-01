@@ -1,5 +1,5 @@
 import { Config } from 'tailwindcss';
-import { theme } from './ThemeProvider/theme';
+import { theme } from './PenumbraUIProvider/theme';
 import { RecursiveKeyValuePair, ResolvableTo } from 'tailwindcss/types/config';
 
 /**

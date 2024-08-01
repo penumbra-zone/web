@@ -8,12 +8,14 @@ import { ButtonPriorityContext } from '../utils/ButtonPriorityContext';
 import { Density } from '../types/Density';
 import { useDensity } from '../hooks/useDensity';
 
-const Root = styled.div<{ $density: Density }>`
+const Root = styled.div<{ $density: Density; $column?: boolean }>`
   display: flex;
-  flex-direction: ${props => (props.$density === 'sparse' ? 'column' : 'row')};
+  flex-direction: ${props => (props.$density === 'sparse' || props.$column ? 'column' : 'row')};
   gap: ${props => props.theme.spacing(2)};
 
-  ${props => media.tablet`
+  ${props =>
+    !props.$column &&
+    media.tablet`
     flex-direction: row;
     gap: ${props.theme.spacing(props.$density === 'sparse' ? 4 : 2)};
   `}
@@ -48,6 +50,12 @@ export interface ButtonGroupProps<IconOnly extends boolean> {
    * Will be used for all buttons in the group.
    */
   iconOnly?: IconOnly;
+  /**
+   * In some cases, you will want to disable responsiveness and enforce that
+   * buttons are always rendered in a column, rather than a row (such as in a
+   * narrow layout width, such as a dialog). In those cases, set this to `true`.
+   */
+  column?: boolean;
 }
 
 const isIconOnly = (props: ButtonGroupProps<boolean>): props is ButtonGroupProps<true> =>
@@ -64,11 +72,15 @@ const isIconOnly = (props: ButtonGroupProps<boolean>): props is ButtonGroupProps
  * the `primary` priority, while subsequent buttons are the `secondary`
  * priority.)
  */
-export const ButtonGroup = ({ actionType = 'default', ...props }: ButtonGroupProps<boolean>) => {
+export const ButtonGroup = ({
+  actionType = 'default',
+  column,
+  ...props
+}: ButtonGroupProps<boolean>) => {
   const density = useDensity();
 
   return (
-    <Root $density={density}>
+    <Root $density={density} $column={column}>
       {/* Annoying TypeScript workaround — we need to explicitly delineate the
       `isIconOnly` and `!isIconOnly` cases, since TypeScript won't resolve the
       compatibility of the icon-only and non-icon-only types otherwise. If

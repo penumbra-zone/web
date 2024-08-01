@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import globalsCssUrl from '../styles/globals.css?url';
 import penumbraTheme from './penumbraTheme';
 import { ConditionalWrap } from '../src/utils/ConditionalWrap';
-import { ThemeProvider } from '../src/ThemeProvider';
+import { PenumbraUIProvider } from '../src/PenumbraUIProvider';
 import { Density } from '../src/Density';
 import { Tabs } from '../src/Tabs';
 import styled from 'styled-components';
@@ -64,13 +64,13 @@ const preview = {
       }
 
       return (
-        <ThemeProvider>
+        <PenumbraUIProvider>
           <DensityWrapper showDensityControl={tags.includes('density')}>
             <WhiteTextWrapper>
               <Story />
             </WhiteTextWrapper>
           </DensityWrapper>
-        </ThemeProvider>
+        </PenumbraUIProvider>
       );
     },
   ],
