@@ -3,6 +3,7 @@ import { button } from '../utils/typography';
 import { focusOutline, overlays, reset } from '../utils/button';
 import { Density } from '../types/Density';
 import { useDensity } from '../hooks/useDensity';
+import * as RadixRadioGroup from '@radix-ui/react-radio-group';
 
 const Root = styled.div`
   display: flex;
@@ -32,40 +33,39 @@ const Segment = styled.button<{
   padding-right: ${props => props.theme.spacing(props.$density === 'sparse' ? 4 : 2)};
 `;
 
-export interface Option<ValueType extends { toString: () => string }> {
-  value: ValueType;
+export interface Option {
+  value: string;
   label: string;
   disabled?: boolean;
 }
 
-export interface SegmentedControlProps<ValueType extends { toString: () => string }> {
-  value: ValueType;
-  onChange: (value: ValueType) => void;
-  options: Option<ValueType>[];
+export interface SegmentedControlProps {
+  value: string;
+  onChange: (value: string) => void;
+  options: Option[];
 }
 
-export const SegmentedControl = <ValueType extends { toString: () => string }>({
-  value,
-  onChange,
-  options,
-}: SegmentedControlProps<ValueType>) => {
+export const SegmentedControl = ({ value, onChange, options }: SegmentedControlProps) => {
   const density = useDensity();
 
   return (
-    <Root>
-      {options.map(option => (
-        <Segment
-          key={option.value.toString()}
-          onClick={() => onChange(option.value)}
-          $getBorderRadius={theme => theme.borderRadius.full}
-          $getFocusOutlineColor={theme => theme.color.neutral.light}
-          $selected={value === option.value}
-          $density={density}
-          disabled={option.disabled}
-        >
-          {option.label}
-        </Segment>
-      ))}
-    </Root>
+    <RadixRadioGroup.Root asChild value={value} onValueChange={onChange}>
+      <Root>
+        {options.map(option => (
+          <RadixRadioGroup.Item asChild key={option.value} value={option.value}>
+            <Segment
+              onClick={() => onChange(option.value)}
+              $getBorderRadius={theme => theme.borderRadius.full}
+              $getFocusOutlineColor={theme => theme.color.neutral.light}
+              $selected={value === option.value}
+              $density={density}
+              disabled={option.disabled}
+            >
+              {option.label}
+            </Segment>
+          </RadixRadioGroup.Item>
+        ))}
+      </Root>
+    </RadixRadioGroup.Root>
   );
 };
