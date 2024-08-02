@@ -15,7 +15,7 @@
     "gen:cosmos-sdk": "buf generate buf.build/cosmos/cosmos-sdk:e7a85cef453e4b999ad9aff8714ae05f",
     "gen:ibc": "buf generate buf.build/cosmos/ibc:7ab44ae956a0488ea04e04511efa5f70",
     "gen:ics23": "buf generate buf.build/cosmos/ics23:55085f7c710a45f58fa09947208eb70b",
-    "gen:penumbra": "buf generate buf.build/penumbra-zone/penumbra:312294d02bf945ffa4c1b1dd7cd91328",
+    "gen:penumbra": "buf generate https://github.com/penumbra-zone/penumbra.git#subdir=proto,branch=compat-return-address",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "lint:strict": "tsc --noEmit && eslint src --max-warnings 0",
