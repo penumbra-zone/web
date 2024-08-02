@@ -119,8 +119,8 @@ continuosuly until aborted. For a good user experience with those queries, you
 may need more complex query and state management.
 
 ```tsx
-import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { usePenumbraServiceSync } from '@penumbra-zone/react/hooks/use-penumbra-service';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { useQuery } from '@tanstack/react-query';

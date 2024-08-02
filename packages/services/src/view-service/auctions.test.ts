@@ -5,21 +5,21 @@ import {
   AuctionsResponse,
   BalancesResponse,
   SpendableNoteRecord,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import {
   AuctionId,
   DutchAuction,
   DutchAuctionDescription,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
 import { bech32mAuctionId } from '@penumbra-zone/bech32m/pauctid';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { ServicesInterface } from '@penumbra-zone/types/services';
 import { HandlerContext, createContextValues, createHandlerContext } from '@connectrpc/connect';
 import { servicesCtx } from '../ctx/prax.js';
 import { IndexedDbMock, MockQuerier, MockServices } from '../test-utils.js';
-import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb.js';
-import { Value } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb.js';
+import { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
+import { Value } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 
 const AUCTION_ID_1 = new AuctionId({ inner: new Uint8Array(Array(32).fill(1)) });
 const BECH32M_AUCTION_ID_1 = bech32mAuctionId(AUCTION_ID_1);

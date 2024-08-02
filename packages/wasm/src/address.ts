@@ -3,7 +3,7 @@ import {
   Address,
   AddressIndex,
   FullViewingKey,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { JsonValue } from '@bufbuild/protobuf';
 
 export const getAddressIndexByAddress = (

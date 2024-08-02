@@ -2,10 +2,10 @@ import { AllSlices, Middleware, SliceCreator, useStore } from '.';
 import {
   BalancesResponse,
   TransactionPlannerRequest,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { BigNumber } from 'bignumber.js';
-import { ClientState } from '@buf/cosmos_ibc.bufbuild_es/ibc/lightclients/tendermint/v1/tendermint_pb.js';
-import { Height } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/client_pb.js';
+import { ClientState } from '@penumbra-zone/protobuf/ibc/lightclients/tendermint/v1/tendermint_pb';
+import { Height } from '@penumbra-zone/protobuf/ibc/core/client/v1/client_pb';
 import { ibcChannelClient, ibcClient, ibcConnectionClient, viewClient } from '../clients';
 import {
   getAssetIdFromValueView,
@@ -20,8 +20,8 @@ import { assetPatterns } from '@penumbra-zone/types/assets';
 import { bech32, bech32m } from 'bech32';
 import { errorToast } from '@repo/ui/lib/toast/presets';
 import { Chain } from '@penumbra-labs/registry';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import { Channel } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/channel/v1/channel_pb.js';
+import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { Channel } from '@penumbra-zone/protobuf/ibc/core/channel/v1/channel_pb';
 import { BLOCKS_PER_HOUR } from './constants';
 import { ZQueryState, createZQuery } from '@penumbra-zone/zquery';
 import { getChains } from '../fetchers/registry';

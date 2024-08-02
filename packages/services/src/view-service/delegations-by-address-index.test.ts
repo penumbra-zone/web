@@ -14,19 +14,16 @@ import {
   DelegationsByAddressIndexRequest,
   DelegationsByAddressIndexRequest_Filter,
   DelegationsByAddressIndexResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import {
   ValidatorInfoRequest,
   ValidatorInfoResponse,
   ValidatorState_ValidatorStateEnum,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 import { getAmount, getValidatorInfoFromValueView } from '@penumbra-zone/getters/value-view';
 import { identityKeyFromBech32m } from '@penumbra-zone/bech32m/penumbravalid';
 import { PartialMessage } from '@bufbuild/protobuf';
-import {
-  Metadata,
-  ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
 vi.mock('@penumbra-zone/wasm/metadata', () => ({
   customizeSymbol: (metadata: Metadata) => metadata,

@@ -1,4 +1,4 @@
-import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
 export interface BlockProcessorInterface {
   sync(): Promise<void>;

@@ -10,7 +10,7 @@ import {
   FullViewingKey,
   SpendKey,
   WalletId,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 export const generateSpendKey = (seedPhrase: string) =>
   SpendKey.fromBinary(generate_spend_key(seedPhrase));

@@ -1,4 +1,4 @@
-import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { TransactionPlannerRequest } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { Code, ConnectError } from '@connectrpc/connect';
 
 export const assertTransactionSource = (transactionPlannerRequest: TransactionPlannerRequest) => {

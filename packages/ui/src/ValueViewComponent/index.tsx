@@ -1,4 +1,4 @@
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { ConditionalWrap } from '../utils/ConditionalWrap';
 import { Pill } from '../Pill';
 import { Text } from '../Text';
