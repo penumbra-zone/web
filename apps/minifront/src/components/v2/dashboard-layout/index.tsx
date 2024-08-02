@@ -20,6 +20,7 @@ export const DashboardLayout = () => {
           { label: 'Assets', value: v2PathPrefix(PagePath.DASHBOARD) },
           { label: 'Transactions', value: v2PathPrefix(PagePath.TRANSACTIONS) },
         ]}
+        actionType='accent'
       />
 
       <Outlet />
