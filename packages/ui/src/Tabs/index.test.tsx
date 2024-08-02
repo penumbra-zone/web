@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { Tabs } from '.';
 import { fireEvent, render } from '@testing-library/react';
-import { ThemeProvider } from '../ThemeProvider';
+import { PenumbraUIProvider } from '../PenumbraUIProvider';
 
 describe('<Tabs />', () => {
   it('renders a button for each of the `options`', () => {
@@ -14,7 +14,7 @@ describe('<Tabs />', () => {
         ]}
         onChange={vi.fn()}
       />,
-      { wrapper: ThemeProvider },
+      { wrapper: PenumbraUIProvider },
     );
 
     expect(queryByText('One')).toBeTruthy();
@@ -32,7 +32,7 @@ describe('<Tabs />', () => {
         ]}
         onChange={onChange}
       />,
-      { wrapper: ThemeProvider },
+      { wrapper: PenumbraUIProvider },
     );
 
     fireEvent.click(getByText('Two'));

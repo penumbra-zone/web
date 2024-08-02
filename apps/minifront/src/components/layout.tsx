@@ -3,13 +3,19 @@ import { HeadTag } from './metadata/head-tag';
 import { Header } from './header/header';
 import { Toaster } from '@repo/ui/components/ui/toaster';
 import { Footer } from './footer/footer';
-import { MotionConfig } from 'framer-motion';
 import '@repo/ui/styles/globals.css';
+
+/**
+ * @todo: add back the SyncingDialog once we've determined whether it can be
+ * dismissed.
+ */
+// import { SyncingDialog } from './syncing-dialog';
 
 export const Layout = () => {
   return (
-    <MotionConfig transition={{ duration: 0.1 }}>
+    <>
       <HeadTag />
+
       <div className='flex min-h-screen w-full flex-col'>
         <Header />
         <main className='flex size-full flex-1 px-4'>
@@ -17,7 +23,9 @@ export const Layout = () => {
         </main>
         <Footer />
       </div>
+
       <Toaster />
-    </MotionConfig>
+      {/* <SyncingDialog /> */}
+    </>
   );
 };

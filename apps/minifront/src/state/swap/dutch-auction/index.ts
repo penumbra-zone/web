@@ -100,7 +100,7 @@ const INITIAL_STATE: State = {
   maxOutput: '',
   txInProgress: false,
   auctionInfos,
-  filter: 'active',
+  filter: 'all',
   estimateLoading: false,
   estimatedOutput: undefined,
 };

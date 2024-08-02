@@ -1,5 +1,11 @@
 # @penumbra-zone/wasm
 
+## 22.1.0
+
+### Minor Changes
+
+- 534a6ad: Disable change max
+
 ## 22.0.0
 
 ### Patch Changes

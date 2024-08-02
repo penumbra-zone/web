@@ -1,7 +1,7 @@
 import { MouseEventHandler, useContext } from 'react';
 import styled, { css, DefaultTheme } from 'styled-components';
 import { asTransientProps } from '../utils/asTransientProps';
-import { Priority, ActionType, buttonInteractions } from '../utils/button';
+import { Priority, ActionType, focusOutline, overlays } from '../utils/button';
 import { getBackgroundColor } from './helpers';
 import { button } from '../utils/typography';
 import { LucideIcon } from 'lucide-react';
@@ -72,7 +72,8 @@ const StyledButton = styled.button<StyledButtonProps>`
 
   ${props => (props.$density === 'sparse' ? sparse : compact)}
 
-  ${buttonInteractions}
+  ${focusOutline}
+  ${overlays}
 
   &::after {
     outline-offset: -2px;

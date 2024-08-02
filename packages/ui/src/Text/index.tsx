@@ -1,5 +1,17 @@
 import styled, { WebTarget } from 'styled-components';
-import { body, detail, h1, h2, h3, h4, large, small, strong, technical } from '../utils/typography';
+import {
+  body,
+  detail,
+  h1,
+  h2,
+  h3,
+  h4,
+  large,
+  small,
+  strong,
+  technical,
+  xxl,
+} from '../utils/typography';
 import { ReactNode } from 'react';
 
 const H1 = styled.h1`
@@ -16,6 +28,10 @@ const H3 = styled.h3`
 
 const H4 = styled.h4`
   ${h4}
+`;
+
+const Xxl = styled.span`
+  ${xxl}
 `;
 
 const Large = styled.span`
@@ -61,6 +77,7 @@ interface NeverTextTypes {
   h2?: never;
   h3?: never;
   h4?: never;
+  xxl?: never;
   large?: never;
   p?: never;
   strong?: never;
@@ -99,9 +116,17 @@ type TextType =
        */
       h4: true;
     })
-  | (Omit<NeverTextTypes, 'large'> & {
+  | (Omit<NeverTextTypes, 'xxl'> & {
       /**
        * Renders bigger text used for section titles. Renders a `<span />` by
+       * default; pass the `as` prop to use a different HTML element with the
+       * same styling.
+       */
+      xxl: true;
+    })
+  | (Omit<NeverTextTypes, 'large'> & {
+      /**
+       * Renders big text used for section titles. Renders a `<span />` by
        * default; pass the `as` prop to use a different HTML element with the
        * same styling.
        */
@@ -179,6 +204,19 @@ export type TextProps = TextType & {
 };
 
 /**
+ * Runtime equivalent of TypeScript's `Omit` type. Removes extraneous props that
+ * shouldn't be passed to the DOM.
+ */
+const omit = <ObjectType extends Record<string, unknown>>(
+  object: ObjectType,
+  key: keyof ObjectType,
+) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- we're discarding the unused key
+  const { [key]: _, ...rest } = object;
+  return rest;
+};
+
+/**
  * All-purpose text wrapper for quickly styling text per the Penumbra UI
  * guidelines.
  *
@@ -208,35 +246,38 @@ export type TextProps = TextType & {
  */
 export const Text = (props: TextProps) => {
   if (props.h1) {
-    return <H1 {...props} />;
+    return <H1 {...omit(props, 'h1')} />;
   }
   if (props.h2) {
-    return <H2 {...props} />;
+    return <H2 {...omit(props, 'h2')} />;
   }
   if (props.h3) {
-    return <H3 {...props} />;
+    return <H3 {...omit(props, 'h3')} />;
   }
   if (props.h4) {
-    return <H4 {...props} />;
+    return <H4 {...omit(props, 'h4')} />;
+  }
+  if (props.xxl) {
+    return <Xxl {...omit(props, 'xxl')} />;
   }
   if (props.large) {
-    return <Large {...props} />;
+    return <Large {...omit(props, 'large')} />;
   }
   if (props.strong) {
-    return <Strong {...props} />;
+    return <Strong {...omit(props, 'strong')} />;
   }
   if (props.detail) {
-    return <Detail {...props} />;
+    return <Detail {...omit(props, 'detail')} />;
   }
   if (props.small) {
-    return <Small {...props} />;
+    return <Small {...omit(props, 'small')} />;
   }
   if (props.technical) {
-    return <Technical {...props} />;
+    return <Technical {...omit(props, 'technical')} />;
   }
   if (props.p) {
-    return <P {...props} />;
+    return <P {...omit(props, 'p')} />;
   }
 
-  return <Body {...props} />;
+  return <Body {...omit(props, 'body')} />;
 };

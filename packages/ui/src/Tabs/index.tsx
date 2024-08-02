@@ -2,14 +2,10 @@ import styled, { DefaultTheme } from 'styled-components';
 import { tab } from '../utils/typography';
 import { motion } from 'framer-motion';
 import { useId } from 'react';
-import { buttonInteractions } from '../utils/button';
+import { overlays } from '../utils/button';
 import * as RadixTabs from '@radix-ui/react-tabs';
 
-const TEN_PERCENT_OPACITY_IN_HEX = '1a';
-
 const Root = styled.div`
-  border: 1px solid ${props => props.theme.color.other.tonalStroke};
-  border-radius: ${props => props.theme.borderRadius.sm};
   height: 52px;
   padding: ${props => props.theme.spacing(1)};
 
@@ -26,6 +22,12 @@ const outlineColorByActionType: Record<ActionType, keyof DefaultTheme['color']['
   unshield: 'unshieldFocusOutline',
 };
 
+const gradientColorByActionType: Record<ActionType, 'neutral' | 'primary' | 'unshield'> = {
+  default: 'neutral',
+  accent: 'primary',
+  unshield: 'unshield',
+};
+
 const Tab = styled.button<{
   $actionType: ActionType;
   $getFocusOutlineColor: (theme: DefaultTheme) => string;
@@ -38,7 +40,6 @@ const Tab = styled.button<{
   appearance: none;
   background-color: transparent;
   border: none;
-  border-radius: ${props => props.theme.borderRadius.xs};
   color: ${props => {
     switch (props.$actionType) {
       case 'accent':
@@ -54,16 +55,29 @@ const Tab = styled.button<{
   cursor: pointer;
 
   ${tab}
-  ${buttonInteractions}
+  ${overlays}
+
+  &:focus-within {
+    outline: none;
+  }
 
   &::after {
     inset: ${props => props.theme.spacing(0.5)};
   }
 `;
 
-const SelectedIndicator = styled(motion.div)`
-  background-color: ${props => props.theme.color.text.primary + TEN_PERCENT_OPACITY_IN_HEX};
-  border-radius: ${props => props.theme.borderRadius.xs};
+const THIRTY_FIVE_PERCENT_OPACITY_IN_HEX = '59';
+const SelectedIndicator = styled(motion.div)<{ $actionType: ActionType }>`
+  background: radial-gradient(
+    at 50% 100%,
+    ${props =>
+        props.theme.color[gradientColorByActionType[props.$actionType]].light +
+        THIRTY_FIVE_PERCENT_OPACITY_IN_HEX}
+      0%,
+    transparent 50%
+  );
+  border-bottom: 2px solid
+    ${props => props.theme.color.action[outlineColorByActionType[props.$actionType]]};
   position: absolute;
   inset: 0;
   z-index: -1;
@@ -121,9 +135,11 @@ export const Tabs = ({ value, onChange, options, actionType = 'default' }: TabsP
                 $getFocusOutlineColor={theme =>
                   theme.color.action[outlineColorByActionType[actionType]]
                 }
-                $getBorderRadius={theme => theme.borderRadius.xs}
+                $getBorderRadius={theme => theme.borderRadius.none}
               >
-                {value === option.value && <SelectedIndicator layout layoutId={layoutId} />}
+                {value === option.value && (
+                  <SelectedIndicator layout layoutId={layoutId} $actionType={actionType} />
+                )}
                 {option.label}
               </Tab>
             </RadixTabs.Trigger>
