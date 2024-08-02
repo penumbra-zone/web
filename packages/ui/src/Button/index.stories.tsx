@@ -30,5 +30,6 @@ export const Basic: Story = {
     disabled: false,
     icon: Check,
     iconOnly: false,
+    type: 'button',
   },
 };
