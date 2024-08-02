@@ -1,7 +1,8 @@
 import {
   TransactionPlannerRequest,
   TransactionPlannerRequest_ActionDutchAuctionWithdraw,
- TransactionPlannerRequest_ActionDutchAuctionEnd } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+  TransactionPlannerRequest_ActionDutchAuctionEnd,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import { AllSlices, SliceCreator, useStore } from '../..';
 import { planBuildBroadcast } from '../../helpers';
 import { assembleScheduleRequest } from './assemble-schedule-request';
