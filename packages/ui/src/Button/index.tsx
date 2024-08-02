@@ -9,6 +9,11 @@ import { ButtonPriorityContext } from '../utils/ButtonPriorityContext';
 import { Density } from '../types/Density';
 import { useDensity } from '../hooks/useDensity';
 
+const iconOnlyAdornment = css<StyledButtonProps>`
+  border-radius: ${props => props.theme.borderRadius.full};
+  padding: ${props => props.theme.spacing(1)};
+`;
+
 const sparse = css<StyledButtonProps>`
   border-radius: ${props => props.theme.borderRadius.sm};
   padding-left: ${props => props.theme.spacing(4)};
@@ -43,7 +48,7 @@ const borderColorByActionType: Record<
 };
 
 interface StyledButtonProps {
-  $iconOnly?: boolean;
+  $iconOnly?: boolean | 'adornment';
   $actionType: ActionType;
   $priority: Priority;
   $density: Density;
@@ -54,7 +59,8 @@ interface StyledButtonProps {
 const StyledButton = styled.button<StyledButtonProps>`
   ${button}
 
-  background-color: ${props => getBackgroundColor(props.$actionType, props.$priority, props.theme)};
+  background-color: ${props =>
+    getBackgroundColor(props.$actionType, props.$priority, props.theme, props.$iconOnly)};
   border: none;
   outline: ${props =>
     props.$priority === 'secondary'
@@ -70,7 +76,12 @@ const StyledButton = styled.button<StyledButtonProps>`
   overflow: hidden;
   position: relative;
 
-  ${props => (props.$density === 'sparse' ? sparse : compact)}
+  ${props =>
+    props.$iconOnly === 'adornment'
+      ? iconOnlyAdornment
+      : props.$density === 'sparse'
+        ? sparse
+        : compact}
 
   ${focusOutline}
   ${overlays}
@@ -83,8 +94,8 @@ const StyledButton = styled.button<StyledButtonProps>`
 interface BaseButtonProps {
   type?: HTMLButtonElement['type'];
   /**
-   * The button label. If `iconOnly` is `true`, this will be used as the
-   * `aria-label` attribute.
+   * The button label. If `iconOnly` is `true` or `adornment`, this will be used
+   * as the `aria-label` attribute.
    */
   children: string;
   /**
@@ -102,10 +113,20 @@ interface BaseButtonProps {
 
 interface IconOnlyProps {
   /**
-   * When `true`, will render just an icon button. The label text passed via
-   * `children` will be used as the `aria-label`.
+   * When set to `true`, will render just an icon button. When set to
+   * `adornment`, will render an icon button without the fill or outline of a
+   * normal button. This latter case is useful when the button is an adornment
+   * to another component (e.g., when it's a copy icon attached to an
+   * `AddressViewComponent`).
+   *
+   * In both of these cases, the label text passed via `children` will be used
+   * as the `aria-label`.
+   *
+   * Note that, when `iconOnly` is `adornment`, density has no impact on the
+   * button: it will render at the same size in either a `compact` or `sparse`
+   * context.
    */
-  iconOnly: true;
+  iconOnly: true | 'adornment';
   /**
    * The icon import from `lucide-react` to render. If `iconOnly` is `true`, no
    * label will be rendered -- just the icon. Otherwise, the icon will be
@@ -121,10 +142,6 @@ interface IconOnlyProps {
 }
 
 interface RegularProps {
-  /**
-   * When `true`, will render just an icon button. The label text passed via
-   * `children` will be used as the `aria-label`.
-   */
   iconOnly?: false;
   /**
    * The icon import from `lucide-react` to render. If `iconOnly` is `true`, no
@@ -165,10 +182,14 @@ export const Button = ({
       title={iconOnly ? children : undefined}
       $getFocusOutlineColor={theme => theme.color.action[outlineColorByActionType[actionType]]}
       $getBorderRadius={theme =>
-        density === 'sparse' ? theme.borderRadius.sm : theme.borderRadius.full
+        density === 'sparse' && iconOnly !== 'adornment'
+          ? theme.borderRadius.sm
+          : theme.borderRadius.full
       }
     >
-      {IconComponent && <IconComponent size={density === 'sparse' && iconOnly ? 24 : 16} />}
+      {IconComponent && (
+        <IconComponent size={density === 'sparse' && iconOnly === true ? 24 : 16} />
+      )}
 
       {!iconOnly && children}
     </StyledButton>

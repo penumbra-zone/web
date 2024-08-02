@@ -5,8 +5,9 @@ export const getBackgroundColor = (
   actionType: ActionType,
   priority: Priority,
   theme: DefaultTheme,
+  iconOnly?: boolean | 'adornment',
 ): string => {
-  if (priority === 'secondary') {
+  if (priority === 'secondary' || iconOnly === 'adornment') {
     return 'transparent';
   }
 
