@@ -13,6 +13,8 @@ import { LockOpen2Icon } from '@radix-ui/react-icons';
 import { useAssets, useBalancesResponses, useStakingTokenMetadata } from '../../../state/shared';
 import { getAssetIdFromBalancesResponseOptional } from '@penumbra-zone/getters/balances-response';
 
+const FORBID_UM_IBC_OUT = ['celestia'];
+
 export const IbcOutForm = () => {
   const stakingTokenMetadata = useStakingTokenMetadata();
   const assets = useAssets();
@@ -69,13 +71,15 @@ export const IbcOutForm = () => {
             checkFn: () => validationErrors.exponentErr,
           },
         ]}
-        balances={filteredBalances.filter(
-          b =>
-            chain?.chainId !== 'celestia' ||
-            !stakingTokenMetadata.data?.penumbraAssetId?.equals(
-              getAssetIdFromBalancesResponseOptional(b),
-            ),
-        )}
+        balances={filteredBalances.filter(b => {
+          if (chain?.chainId && FORBID_UM_IBC_OUT.includes(chain.chainId)) {
+            const um = stakingTokenMetadata.data?.penumbraAssetId;
+            const balanceAsset = getAssetIdFromBalancesResponseOptional(b);
+            const filter = !um?.equals(balanceAsset);
+            return filter;
+          }
+          return true;
+        })}
       />
       <InputBlock
         label='Recipient on destination chain'
