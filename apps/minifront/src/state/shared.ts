@@ -9,6 +9,17 @@ import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/k
 import { getAddress, getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
 
+/**
+ * For Noble specifically we need to use a Bech32 encoding rather than Bech32m,
+ * because Noble currently has a middleware that decodes as Bech32.
+ * Noble plans to change this at some point in the future but until then we need
+ * to use a special encoding just for Noble specifically.
+ */
+export const bech32ChainIds = [
+  'noble-1', // noble mainnet
+  'grand-1', // noble testnet
+];
+
 export const { stakingTokenMetadata, useStakingTokenMetadata } = createZQuery({
   name: 'stakingTokenMetadata',
   fetch: getStakingTokenMetadata,

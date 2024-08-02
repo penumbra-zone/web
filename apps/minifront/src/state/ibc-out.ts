@@ -217,6 +217,8 @@ const getPlanRequest = async ({
         timeoutHeight,
         timeoutTime,
         sourceChannel: chain.channelId,
+        // TODO: after updating bufbuild types, uncomment this
+        // useCompatAddress: bech32ChainIds.includes(chain.chainId),
       },
     ],
     source: addressIndex,
