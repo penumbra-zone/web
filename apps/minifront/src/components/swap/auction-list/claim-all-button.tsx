@@ -62,7 +62,7 @@ export const ClaimAllAuctionButton = () => {
               void withdrawAllAuctions(
                 // Chain has a transaction size limit, so we can add at most a batch of 48 auctions in a single transaction
                 // see https://github.com/penumbra-zone/web/issues/1166#issuecomment-2263550249
-                filterWithLimit(data, a => a.localSeqNum === 1n, 24),
+                filterWithLimit(data, a => a.localSeqNum === 1n, 48),
                 // TODO Should use the index of the selected account after the account selector for the auction is implemented
                 new AddressIndex({ account: 0 }),
               )
