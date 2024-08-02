@@ -42,15 +42,15 @@
     }
   },
   "devDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240703080008-312294d02bf9.1",
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
+    "@penumbra-zone/protobuf": "workspace:*",
     "@penumbra-zone/wasm": "workspace:*"
   },
   "peerDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240703080008-312294d02bf9.1",
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
+    "@penumbra-zone/protobuf": "workspace:*",
     "@penumbra-zone/wasm": "workspace:*"
   }
 }

@@ -31,7 +31,6 @@
     }
   },
   "dependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240703080008-312294d02bf9.1",
     "@bufbuild/protobuf": "^1.10.0",
     "@penumbra-labs/registry": "11.0.0",
     "@penumbra-zone/bech32m": "workspace:*",
@@ -41,14 +40,15 @@
     "idb": "^8.0.0"
   },
   "devDependencies": {
+    "@penumbra-zone/protobuf": "workspace:*",
     "fetch-mock": "^10.0.7"
   },
   "peerDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240703080008-312294d02bf9.1",
     "@bufbuild/protobuf": "^1.10.0",
     "@penumbra-labs/registry": "11.0.0",
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
+    "@penumbra-zone/protobuf": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
     "@penumbra-zone/wasm": "workspace:*"
   }
