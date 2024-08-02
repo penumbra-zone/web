@@ -2,13 +2,12 @@ import { ZQueryState, createZQuery } from '@penumbra-zone/zquery';
 import { SliceCreator, useStore } from '.';
 import { getStakingTokenMetadata } from '../fetchers/registry';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import { getBalancesStream } from '../fetchers/balances';
+import { getBalances } from '../fetchers/balances';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import { getAllAssets } from '../fetchers/assets';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 import { getAddress, getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
-import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 
 export const { stakingTokenMetadata, useStakingTokenMetadata } = createZQuery({
   name: 'stakingTokenMetadata',
@@ -23,37 +22,9 @@ export const { stakingTokenMetadata, useStakingTokenMetadata } = createZQuery({
   },
 });
 
-const getHash = (bal: BalancesResponse) => uint8ArrayToHex(bal.toBinary());
-
 export const { balancesResponses, useBalancesResponses } = createZQuery({
   name: 'balancesResponses',
-  fetch: getBalancesStream,
-  stream: () => {
-    const balanceResponseIdsToKeep = new Set<string>();
-
-    return {
-      onValue: (
-        prevState: BalancesResponse[] | undefined = [],
-        balanceResponse: BalancesResponse,
-      ) => {
-        balanceResponseIdsToKeep.add(getHash(balanceResponse));
-
-        const existingIndex = prevState.findIndex(bal => getHash(bal) === getHash(balanceResponse));
-
-        // Update any existing items in place, rather than appending
-        // duplicates.
-        if (existingIndex >= 0) {
-          return prevState.toSpliced(existingIndex, 1, balanceResponse);
-        } else {
-          return [...prevState, balanceResponse];
-        }
-      },
-
-      onEnd: (prevState = []) =>
-        // Discard any balances from a previous stream.
-        prevState.filter(balanceResponse => balanceResponseIdsToKeep.has(getHash(balanceResponse))),
-    };
-  },
+  fetch: getBalances,
   getUseStore: () => useStore,
   get: state => state.shared.balancesResponses,
   set: setter => {
@@ -79,7 +50,7 @@ export const { assets, useAssets } = createZQuery({
 
 export interface SharedSlice {
   assets: ZQueryState<Metadata[]>;
-  balancesResponses: ZQueryState<BalancesResponse[], Parameters<typeof getBalancesStream>>;
+  balancesResponses: ZQueryState<BalancesResponse[]>;
   stakingTokenMetadata: ZQueryState<Metadata>;
 }
 

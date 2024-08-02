@@ -72,10 +72,9 @@ vi.mock('../../fetchers/registry', async () => ({
 }));
 
 vi.mock('../../fetchers/balances', () => ({
-  getBalancesStream: vi.fn(() => ({
-    [Symbol.asyncIterator]: async function* () {
-      await new Promise(resolve => setTimeout(resolve, 0));
-      yield {
+  getBalances: vi.fn(async () =>
+    Promise.resolve([
+      {
         balanceView: new ValueView({
           valueView: {
             case: 'knownAssetId',
@@ -102,8 +101,8 @@ vi.mock('../../fetchers/balances', () => ({
             },
           },
         }),
-      };
-      yield {
+      },
+      {
         balanceView: new ValueView({
           valueView: {
             case: 'knownAssetId',
@@ -130,8 +129,8 @@ vi.mock('../../fetchers/balances', () => ({
             },
           },
         }),
-      };
-      yield {
+      },
+      {
         balanceView: new ValueView({
           valueView: {
             case: 'knownAssetId',
@@ -154,9 +153,9 @@ vi.mock('../../fetchers/balances', () => ({
             },
           },
         }),
-      };
-    },
-  })),
+      },
+    ]),
+  ),
 }));
 
 const mockViewClient = vi.hoisted(() => ({
