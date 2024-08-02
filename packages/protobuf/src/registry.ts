@@ -7,9 +7,9 @@ import * as penumbraCustody from './services/penumbra-custody.js';
 import * as penumbraUtil from './services/penumbra-util.js';
 import * as penumbraView from './services/penumbra-view.js';
 
-import { MsgRecvPacket } from './gen/ibc/core/channel/v1/tx_pb.js';
-import { ClientState, Header } from './gen/ibc/lightclients/tendermint/v1/tendermint_pb.js';
-import { DutchAuction } from './gen/penumbra/core/component/auction/v1/auction_pb.js';
+import { MsgRecvPacket } from '../gen/ibc/core/channel/v1/tx_pb.js';
+import { ClientState, Header } from '../gen/ibc/lightclients/tendermint/v1/tendermint_pb.js';
+import { DutchAuction } from '../gen/penumbra/core/component/auction/v1/auction_pb.js';
 
 /**
  * This type registry is for JSON serialization of protobuf messages.

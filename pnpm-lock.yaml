@@ -518,9 +518,6 @@ importers:
       '@penumbra-zone/getters':
         specifier: workspace:*
         version: link:../getters
-      '@penumbra-zone/perspective':
-        specifier: workspace:*
-        version: link:../perspective
       '@penumbra-zone/protobuf':
         specifier: workspace:*
         version: link:../protobuf

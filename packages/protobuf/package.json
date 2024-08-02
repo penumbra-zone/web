@@ -10,6 +10,7 @@
   "scripts": {
     "build": "tsc --build --verbose",
     "clean": "rm -rfv dist *.tsbuildinfo package penumbra-zone-*.tgz",
+    "clean:proto": "rm -rfv gen",
     "dev:pack": "tsc-watch --onSuccess \"$npm_execpath pack\"",
     "gen:cosmos-sdk": "buf generate buf.build/cosmos/cosmos-sdk:e7a85cef453e4b999ad9aff8714ae05f",
     "gen:ibc": "buf generate buf.build/cosmos/ibc:7ab44ae956a0488ea04e04511efa5f70",
@@ -18,7 +19,7 @@
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "lint:strict": "tsc --noEmit && eslint src --max-warnings 0",
-    "prebuild": "pnpm gen:cosmos-sdk --clean && pnpm gen:ibc && pnpm gen:ics23 && pnpm gen:penumbra && touch src/gen/.npmignore",
+    "proto": "pnpm gen:cosmos-sdk --clean && pnpm gen:ibc && pnpm gen:ics23 && pnpm gen:penumbra && touch gen/.npmignore",
     "test": "vitest run"
   },
   "files": [
@@ -28,21 +29,21 @@
     ".": "./src/index.ts",
     "./web": "./src/web.ts",
     "./registry": "./src/registry.ts",
-    "./*": "./src/gen/*.ts"
+    "./*": "./gen/*.ts"
   },
   "publishConfig": {
     "exports": {
       ".": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
+        "types": "./dist/src/index.d.ts",
+        "default": "./dist/src/index.js"
       },
       "./web": {
-        "types": "./dist/web.d.ts",
-        "default": "./dist/web.js"
+        "types": "./dist/src/web.d.ts",
+        "default": "./dist/src/web.js"
       },
       "./registry": {
-        "types": "./dist/registry.d.ts",
-        "default": "./dist/registry.js"
+        "types": "./dist/src/registry.d.ts",
+        "default": "./dist/src/registry.js"
       },
       "./*": {
         "types": "./dist/gen/*.d.ts",
