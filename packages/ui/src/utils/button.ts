@@ -4,10 +4,11 @@ export type ActionType = 'default' | 'accent' | 'unshield' | 'destructive';
 
 export type Priority = 'primary' | 'secondary';
 
-export const reset = css`
+export const buttonBase = css`
   appearance: none;
   background: transparent;
   border: none;
+  cursor: pointer;
 `;
 
 /** Adds a focus outline to a button using the `:focus-within` pseudoclass. */

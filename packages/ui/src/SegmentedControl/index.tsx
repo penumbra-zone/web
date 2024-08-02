@@ -1,6 +1,6 @@
 import styled, { DefaultTheme } from 'styled-components';
 import { button } from '../utils/typography';
-import { focusOutline, overlays, reset } from '../utils/button';
+import { focusOutline, overlays, buttonBase } from '../utils/button';
 import { Density } from '../types/Density';
 import { useDensity } from '../hooks/useDensity';
 import * as RadixRadioGroup from '@radix-ui/react-radio-group';
@@ -16,7 +16,7 @@ const Segment = styled.button<{
   $selected: boolean;
   $density: Density;
 }>`
-  ${reset}
+  ${buttonBase}
   ${button}
   ${overlays}
   ${focusOutline}
