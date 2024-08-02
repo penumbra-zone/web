@@ -75,7 +75,7 @@ export const IbcOutForm = () => {
           if (chain?.chainId && FORBID_UM_IBC_OUT.includes(chain.chainId)) {
             const um = stakingTokenMetadata.data?.penumbraAssetId;
             const balanceAsset = getAssetIdFromBalancesResponseOptional(b);
-            const notUm = !um?.equals(balanceAsset);
+            const notUm = !balanceAsset?.equals(um);
             return notUm;
           }
           return true;
