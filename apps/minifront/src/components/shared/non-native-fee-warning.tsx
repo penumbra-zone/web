@@ -9,7 +9,7 @@ import {
   getAssetIdFromBalancesResponseOptional,
 } from '@penumbra-zone/getters/balances-response';
 import { viewClient } from '../../clients.ts';
-import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
+import { GasPrices } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
 import { getAssetId } from '@penumbra-zone/getters/metadata';
 
 const hasTokenBalance = ({
