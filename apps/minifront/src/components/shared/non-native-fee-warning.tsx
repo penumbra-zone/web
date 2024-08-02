@@ -12,31 +12,40 @@ import { viewClient } from '../../clients.ts';
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
 import { getAssetId } from '@penumbra-zone/getters/metadata';
 
-// Finds the UM token in the user's account balances
-const hasStakingToken = (
-  account: number,
-  balancesResponses: BalancesResponse[] = [],
-  stakingAssetMetadata?: Metadata,
-): boolean => {
-  return balancesResponses.some(
+const hasTokenBalance = ({
+  source,
+  balancesResponses = [],
+  gasPrices,
+  stakingAssetMetadata,
+}: {
+  source?: BalancesResponse;
+  balancesResponses: BalancesResponse[];
+  gasPrices: GasPrices[];
+  stakingAssetMetadata?: Metadata;
+}): boolean => {
+  const account = getAddressIndex.optional()(source)?.account;
+  if (typeof account === 'undefined') {
+    return false;
+  }
+
+  // Finds the UM token in the user's account balances
+  const hasStakingToken = balancesResponses.some(
     asset =>
       getAssetIdFromValueView
         .optional()(asset.balanceView)
         ?.equals(getAssetId.optional()(stakingAssetMetadata)) &&
       getAddressIndex.optional()(asset)?.account === account,
   );
-};
 
-// Finds the alt tokens in the user's account balances that can be used for fees
-const hasAltToken = (
-  account: number,
-  balancesResponses: BalancesResponse[] = [],
-  gasPrices: GasPrices[],
-) => {
+  if (hasStakingToken) {
+    return false;
+  }
+
   const accountAssets = balancesResponses.filter(
     balance => getAddressIndex.optional()(balance)?.account === account,
   );
-  return accountAssets.some(balance => {
+  // Finds the alt tokens in the user's account balances that can be used for fees
+  const hasAltTokens = accountAssets.some(balance => {
     const amount = getAmount(balance);
     const hasBalance = amount.lo !== 0n || amount.hi !== 0n;
     if (!hasBalance) {
@@ -47,6 +56,8 @@ const hasAltToken = (
       price.assetId?.equals(getAssetIdFromBalancesResponseOptional(balance)),
     );
   });
+
+  return hasAltTokens;
 };
 
 const useGasPrices = () => {
@@ -64,40 +75,13 @@ const useGasPrices = () => {
   return prices;
 };
 
-// Returns boolean if the Alt fees will be used for transaction
-export const useShouldRender = (
-  balancesResponses: BalancesResponse[] = [],
-  amount: number,
-  account?: BalancesResponse,
-) => {
-  const gasPrices = useGasPrices();
-  const stakingTokenMetadata = useStakingTokenMetadata();
-
-  if (!amount) {
-    return false;
-  }
-
-  const sourceAddressIndex = getAddressIndex.optional()(account)?.account ?? 0;
-  const userHasStakingToken = hasStakingToken(
-    sourceAddressIndex,
-    balancesResponses,
-    stakingTokenMetadata.data,
-  );
-
-  if (userHasStakingToken) {
-    return false;
-  }
-
-  return hasAltToken(sourceAddressIndex, balancesResponses, gasPrices);
-};
-
 /**
  * Renders a non-native fee warning if
  * 1. the user does not have any balance (in the selected account) of the staking token to use for fees
- * 2. user has alt token balances to pay for the fees
+ * 2. the user does not have sufficient balances in alternative tokens to cover the fees
  */
 export const NonNativeFeeWarning = ({
-  balancesResponses,
+  balancesResponses = [],
   amount,
   source,
   wrap = children => children,
@@ -136,7 +120,16 @@ export const NonNativeFeeWarning = ({
    */
   wrap?: (children: ReactNode) => ReactNode;
 }) => {
-  const shouldRender = useShouldRender(balancesResponses, amount, source);
+  const gasPrices = useGasPrices();
+  const stakingTokenMetadata = useStakingTokenMetadata();
+  const shouldRender =
+    !!amount &&
+    hasTokenBalance({
+      source,
+      balancesResponses,
+      gasPrices,
+      stakingAssetMetadata: stakingTokenMetadata.data,
+    });
 
   if (!shouldRender) {
     return null;
