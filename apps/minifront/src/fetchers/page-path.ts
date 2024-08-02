@@ -13,6 +13,8 @@ export const usePagePath = <T extends PagePath>() => {
 };
 
 export const matchPagePath = (str: string): PagePath => {
+  /** @todo: Remove next line after we switch to v2 layout */
+  str = str.replace('/v2', '');
   const pathValues = Object.values(PagePath);
 
   if (pathValues.includes(str as PagePath)) {
