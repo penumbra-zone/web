@@ -24,7 +24,7 @@ const Segment = styled.button<{
   color:${props => props.theme.color.base.white};
   border: 1px solid
     ${props =>
-      props.$selected ? props.theme.color.neutral.light : props.theme.color.base.transparent};
+      props.$selected ? props.theme.color.neutral.light : props.theme.color.other.tonalStroke};
   border-radius: ${props => props.theme.borderRadius.full};
 
   padding-top: ${props => props.theme.spacing(props.$density === 'sparse' ? 2 : 1)};
