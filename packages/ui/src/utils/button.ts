@@ -4,6 +4,7 @@ export type ActionType = 'default' | 'accent' | 'unshield' | 'destructive';
 
 export type Priority = 'primary' | 'secondary';
 
+/** Shared styles to use for any `<button />` */
 export const buttonBase = css`
   appearance: none;
   background: transparent;

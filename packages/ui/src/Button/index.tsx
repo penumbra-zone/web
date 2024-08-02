@@ -1,7 +1,7 @@
 import { MouseEventHandler, useContext } from 'react';
 import styled, { css, DefaultTheme } from 'styled-components';
 import { asTransientProps } from '../utils/asTransientProps';
-import { Priority, ActionType, focusOutline, overlays } from '../utils/button';
+import { Priority, ActionType, focusOutline, overlays, buttonBase } from '../utils/button';
 import { getBackgroundColor } from './helpers';
 import { button } from '../utils/typography';
 import { LucideIcon } from 'lucide-react';
@@ -57,11 +57,11 @@ interface StyledButtonProps {
 }
 
 const StyledButton = styled.button<StyledButtonProps>`
+  ${buttonBase}
   ${button}
 
   background-color: ${props =>
     getBackgroundColor(props.$actionType, props.$priority, props.theme, props.$iconOnly)};
-  border: none;
   outline: ${props =>
     props.$priority === 'secondary'
       ? `1px solid ${props.theme.color[borderColorByActionType[props.$actionType]].main}`
@@ -72,7 +72,6 @@ const StyledButton = styled.button<StyledButtonProps>`
   align-items: center;
   justify-content: center;
   color: ${props => props.theme.color.neutral.contrast};
-  cursor: pointer;
   overflow: hidden;
   position: relative;
 

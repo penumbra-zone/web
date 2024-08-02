@@ -2,7 +2,7 @@ import styled, { DefaultTheme } from 'styled-components';
 import { tab } from '../utils/typography';
 import { motion } from 'framer-motion';
 import { useId } from 'react';
-import { overlays } from '../utils/button';
+import { buttonBase, overlays } from '../utils/button';
 import * as RadixTabs from '@radix-ui/react-tabs';
 
 const Root = styled.div`
@@ -33,13 +33,12 @@ const Tab = styled.button<{
   $getFocusOutlineColor: (theme: DefaultTheme) => string;
   $getBorderRadius: (theme: DefaultTheme) => string;
 }>`
+  ${buttonBase}
+
   flex-grow: 1;
   flex-shrink: 1;
   flex-basis: 0; /** Ensure equal widths */
 
-  appearance: none;
-  background-color: transparent;
-  border: none;
   color: ${props => {
     switch (props.$actionType) {
       case 'accent':
@@ -52,7 +51,6 @@ const Tab = styled.button<{
   }};
   position: relative;
   white-space: nowrap;
-  cursor: pointer;
 
   ${tab}
   ${overlays}
