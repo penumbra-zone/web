@@ -129,7 +129,7 @@ export const NonNativeFeeWarning = ({
    * <NonNativeFeeWarning
    *   balancesResponses={balancesResponses}
    *   amount={amount}
-   *   account={account}
+   *   source={selectedBalancesResponse}
    *   wrap={children => <div className='mt-5'>{children}</div>}
    * />
    * ```
