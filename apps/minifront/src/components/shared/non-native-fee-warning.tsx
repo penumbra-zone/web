@@ -3,7 +3,11 @@ import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/
 import { getAssetIdFromValueView } from '@penumbra-zone/getters/value-view';
 import { useStakingTokenMetadata } from '../../state/shared';
 import { ReactNode, useCallback, useEffect, useState } from 'react';
-import { getAddressIndex, getAmount, getAssetIdFromBalancesResponseOptional } from '@penumbra-zone/getters/balances-response';
+import {
+  getAddressIndex,
+  getAmount,
+  getAssetIdFromBalancesResponseOptional,
+} from '@penumbra-zone/getters/balances-response';
 import { viewClient } from '../../clients.ts';
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
 import { getAssetId } from '@penumbra-zone/getters/metadata';
@@ -24,16 +28,24 @@ const hasStakingToken = (
 };
 
 // Finds the alt tokens in the user's account balances that can be used for fees
-const hasAltToken = (account: number, balancesResponses: BalancesResponse[] = [], gasPrices: GasPrices[]) => {
-  const accountAssets = balancesResponses.filter((balance) => getAddressIndex.optional()(balance)?.account === account);
-  return accountAssets.some((balance) => {
+const hasAltToken = (
+  account: number,
+  balancesResponses: BalancesResponse[] = [],
+  gasPrices: GasPrices[],
+) => {
+  const accountAssets = balancesResponses.filter(
+    balance => getAddressIndex.optional()(balance)?.account === account,
+  );
+  return accountAssets.some(balance => {
     const amount = getAmount(balance);
     const hasBalance = amount.lo !== 0n || amount.hi !== 0n;
     if (!hasBalance) {
       return false;
     }
 
-    return gasPrices.some((price) => price.assetId?.equals(getAssetIdFromBalancesResponseOptional(balance)));
+    return gasPrices.some(price =>
+      price.assetId?.equals(getAssetIdFromBalancesResponseOptional(balance)),
+    );
   });
 };
 
