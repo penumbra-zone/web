@@ -7,7 +7,7 @@ import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys
 import { ViewService } from '@penumbra-zone/protobuf';
 import { penumbra } from '../../prax';
 
-interface BalancesProps {
+export interface BalancesProps {
   accountFilter?: AddressIndex;
   assetIdFilter?: AssetId;
 }
@@ -25,4 +25,19 @@ export const getBalances = ({ accountFilter, assetIdFilter }: BalancesProps = {}
 
   const iterable = penumbra.service(ViewService).balances(req);
   return Array.fromAsync(iterable);
+};
+
+export const getBalancesStream = ({
+                                    accountFilter,
+                                    assetIdFilter,
+                                  }: BalancesProps = {}): AsyncIterable<BalancesResponse> => {
+  const req = new BalancesRequest();
+  if (accountFilter) {
+    req.accountFilter = accountFilter;
+  }
+  if (assetIdFilter) {
+    req.assetIdFilter = assetIdFilter;
+  }
+
+  return penumbra.service(ViewService).balances(req);
 };
