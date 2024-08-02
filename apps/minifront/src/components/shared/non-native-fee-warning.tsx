@@ -85,7 +85,7 @@ export const useShouldRender = (
   );
 
   if (userHasStakingToken) {
-    return true;
+    return false;
   }
 
   return hasAltToken(sourceAddressIndex, balancesResponses, gasPrices);
