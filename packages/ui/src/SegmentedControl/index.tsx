@@ -45,6 +45,27 @@ export interface SegmentedControlProps {
   options: Option[];
 }
 
+/**
+ * Renders a segmented control where only one option can be selected at a time.
+ * Functionally equivalent to a `<select>` element or a set of radio buttons,
+ * but looks nicer when you only have a few options to choose from. (Probably
+ * shouldn't be used with more than 5 options.)
+ *
+ * Fully accessible and keyboard-controllable.
+ *
+ * @example
+ * ```TSX
+ * <SegmentedPicker
+ *   value={value}
+ *   onChange={setValue}
+ *   options={[
+ *     { value: 'one', label: 'One' },
+ *     { value: 'two', label: 'Two' },
+ *     { value: 'three', label: 'Three', disabled: true },
+ *   ]}
+ * />
+ * ```
+ */
 export const SegmentedControl = ({ value, onChange, options }: SegmentedControlProps) => {
   const density = useDensity();
 
