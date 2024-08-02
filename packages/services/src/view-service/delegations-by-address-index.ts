@@ -55,8 +55,6 @@ export const delegationsByAddressIndex: Impl['delegationsByAddressIndex'] = asyn
     balances(new BalancesRequest({ accountFilter: addressIndex }), ctx),
   );
 
-  // See https://github.com/typescript-eslint/typescript-eslint/issues/7114
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
   const showInactive = req.filter === DelegationsByAddressIndexRequest_Filter.ALL;
 
   for await (const validatorInfoResponse of mockStakeClient.validatorInfo({ showInactive })) {
@@ -84,8 +82,6 @@ export const delegationsByAddressIndex: Impl['delegationsByAddressIndex'] = asyn
 
       yield new DelegationsByAddressIndexResponse({ valueView: withValidatorInfo });
     } else {
-      // See https://github.com/typescript-eslint/typescript-eslint/issues/7114
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
       if (req.filter === DelegationsByAddressIndexRequest_Filter.ALL_ACTIVE_WITH_NONZERO_BALANCES) {
         continue;
       }
