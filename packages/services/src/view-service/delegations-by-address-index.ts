@@ -49,8 +49,6 @@ export const delegationsByAddressIndex: Impl['delegationsByAddressIndex'] = asyn
 
   const delTokenTracker = await DelegationTokenTracker.init({ addressIndex, ctx });
 
-  // See https://github.com/typescript-eslint/typescript-eslint/issues/7114
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
   const showInactive = req.filter === DelegationsByAddressIndexRequest_Filter.ALL;
 
   // Step 1: Query the current validator list. Mark those that have matched what's in the balances.
@@ -68,8 +66,6 @@ export const delegationsByAddressIndex: Impl['delegationsByAddressIndex'] = asyn
       yield* responseWithExtMetadata(delegation, extendedMetadata);
       delTokenTracker.markAsQueried(identityKey);
     } else {
-      // See https://github.com/typescript-eslint/typescript-eslint/issues/7114
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
       if (req.filter === DelegationsByAddressIndexRequest_Filter.ALL_ACTIVE_WITH_NONZERO_BALANCES) {
         continue;
       }
