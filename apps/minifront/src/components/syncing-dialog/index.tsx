@@ -3,6 +3,7 @@ import { Status, useStatus } from '../../state/status';
 import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
 import { SyncAnimation } from './sync-animation';
 import { Text } from '@repo/ui/Text';
+import { useEffect, useState } from 'react';
 
 type StatusSelector =
   | {
@@ -40,23 +41,30 @@ export const SyncingDialog = () => {
     select: statusSelector,
   });
 
-  if (!status?.isCatchingUp) {
-    return null;
-  }
+  const [isOpen, setIsOpen] = useState(false);
 
-  const { fullSyncHeight, latestKnownBlockHeight, percentSynced } = status;
+  useEffect(() => {
+    if (status?.isCatchingUp) {
+      setIsOpen(true);
+    } else {
+      setIsOpen(false);
+    }
+  }, [status?.isCatchingUp]);
 
   return (
-    <Dialog isOpen>
+    <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)}>
       <Dialog.Content title='Your client is syncing...'>
         <SyncAnimation />
 
         <div className='text-center'>
           <Text p>Updating your local state with public state.</Text>
-          <Text technical>
-            {!!percentSynced && `${percentSynced} Synced – `} Block {fullSyncHeight.toString()}{' '}
-            {!!latestKnownBlockHeight && `of ${latestKnownBlockHeight.toString()}`}
-          </Text>
+          {!!status?.isCatchingUp && (
+            <Text technical>
+              {!!status.percentSynced && `${status.percentSynced} Synced – `} Block{' '}
+              {status.fullSyncHeight.toString()}{' '}
+              {!!status.latestKnownBlockHeight && `of ${status.latestKnownBlockHeight.toString()}`}
+            </Text>
+          )}
         </div>
       </Dialog.Content>
     </Dialog>

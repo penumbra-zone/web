@@ -3,13 +3,8 @@ import { HeadTag } from './metadata/head-tag';
 import { Header } from './header/header';
 import { Toaster } from '@repo/ui/components/ui/toaster';
 import { Footer } from './footer/footer';
+import { SyncingDialog } from './syncing-dialog';
 import '@repo/ui/styles/globals.css';
-
-/**
- * @todo: add back the SyncingDialog once we've determined whether it can be
- * dismissed.
- */
-// import { SyncingDialog } from './syncing-dialog';
 
 export const Layout = () => {
   return (
@@ -25,7 +20,7 @@ export const Layout = () => {
       </div>
 
       <Toaster />
-      {/* <SyncingDialog /> */}
+      <SyncingDialog />
     </>
   );
 };
