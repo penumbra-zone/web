@@ -20,6 +20,7 @@ import { currentTimePlusTwoDaysRounded } from '../ibc-out';
 import { EncodeObject } from '@cosmjs/proto-signing';
 import { MsgTransfer } from 'osmo-query/ibc/applications/transfer/v1/tx';
 import { parseRevisionNumberFromChainId } from './parse-revision-number-from-chain-id';
+import { bech32ChainIds } from '../shared.ts';
 
 export interface IbcInSlice {
   selectedChain?: ChainInfo;
@@ -64,7 +65,7 @@ export const createIbcInSlice = (): SliceCreator<IbcInSlice> => (set, get) => {
     address: undefined,
     setAddress: async () => {
       const { selectedChain, account } = get().ibcIn;
-      const penumbraAddress = await getPenumbraAddress(account, selectedChain?.chainName);
+      const penumbraAddress = await getPenumbraAddress(account, selectedChain?.chainId);
       if (penumbraAddress) {
         set(state => {
           state.ibcIn.address = penumbraAddress;
@@ -132,25 +133,19 @@ const getExplorerPage = (txHash: string, chainId?: string) => {
   return txPage.replace('${txHash}', txHash);
 };
 
-/**
- * For Noble specifically we need to use a Bech32 encoding rather than Bech32m,
- * because Noble currently has a middleware that decodes as Bech32.
- * Noble plans to change this at some point in the future but until then we need
- * to use a special encoding just for Noble specifically.
- */
-const bech32Chains = ['noble', 'nobletestnet'];
-const getCompatibleBech32 = (chainName: string, address: Address): string => {
-  return bech32Chains.includes(chainName) ? bech32CompatAddress(address) : bech32mAddress(address);
+const getCompatibleBech32 = (chainId: string, address: Address): string => {
+  return bech32ChainIds.includes(chainId) ? bech32CompatAddress(address) : bech32mAddress(address);
 };
+
 export const getPenumbraAddress = async (
   account: number,
-  chainName?: string,
+  chainId?: string,
 ): Promise<string | undefined> => {
-  if (!chainName) {
+  if (!chainId) {
     return undefined;
   }
   const receiverAddress = await getAddrByIndex(account, true);
-  return getCompatibleBech32(chainName, receiverAddress);
+  return getCompatibleBech32(chainId, receiverAddress);
 };
 
 const estimateFee = async ({
@@ -201,7 +196,7 @@ async function execute(
     throw new Error('Penumbra chain id could not be retrieved');
   }
 
-  const penumbraAddress = await getPenumbraAddress(account, selectedChain.chainName);
+  const penumbraAddress = await getPenumbraAddress(account, selectedChain.chainId);
   if (!penumbraAddress) {
     throw new Error('Penumbra address not available');
   }

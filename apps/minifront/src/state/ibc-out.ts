@@ -23,7 +23,7 @@ import { Chain } from '@penumbra-labs/registry';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { Channel } from '@penumbra-zone/protobuf/ibc/core/channel/v1/channel_pb';
 import { BLOCKS_PER_HOUR } from './constants';
-import { ZQueryState, createZQuery } from '@penumbra-zone/zquery';
+import { createZQuery, ZQueryState } from '@penumbra-zone/zquery';
 import { getChains } from '../fetchers/registry';
 
 export const { chains, useChains } = createZQuery({
@@ -211,6 +211,8 @@ const getPlanRequest = async ({
         timeoutHeight,
         timeoutTime,
         sourceChannel: chain.channelId,
+        // TODO: after updating bufbuild types, uncomment this
+        // useCompatAddress: bech32ChainIds.includes(chain.chainId),
       },
     ],
     source: addressIndex,
