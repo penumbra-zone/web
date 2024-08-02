@@ -12,7 +12,7 @@ const OPTIONS = [
 
 const meta: Meta<typeof SegmentedControl> = {
   component: SegmentedControl,
-  tags: ['autodocs', '!dev'],
+  tags: ['autodocs', '!dev', 'density'],
   argTypes: {
     value: {
       control: 'select',
