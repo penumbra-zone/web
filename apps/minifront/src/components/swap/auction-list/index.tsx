@@ -14,6 +14,7 @@ import { useStatus } from '../../../state/status';
 import { byStartHeightAscending } from './helpers';
 import { Filters } from './filters';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+import { ClaimAllAuctionButton } from './claim-all-button.tsx';
 
 const auctionListSelector = (state: AllSlices) => ({
   endAuction: state.swap.dutchAuction.endAuction,
@@ -66,6 +67,7 @@ export const AuctionList = () => {
           {!!auctionInfos.data?.length && <QueryLatestStateButton />}
 
           <Filters />
+          <ClaimAllAuctionButton />
         </motion.div>
       </div>
 
