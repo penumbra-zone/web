@@ -26,7 +26,7 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
   >([]); // [[date, open, close, low, high]]
   const [volumeData, setVolumeData] = useState<[string, number][]>([]);
   // Time aggregate, 1m, 5m, 1h, 1D to start off
-  const [timeAggregateSeconds, setTimeAggregateSeconds] = useState<number>(60 * 60); // 1h default
+  const [timeAggregateSeconds, setTimeAggregateSeconds] = useState<number>(60 * 60* 24); // 1D default
   const [isAggregating, setIsAggregating] = useState(true);
 
   // Potentially show last n days of data based on current block - n days via avg block time
@@ -190,11 +190,9 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
     }
 
     // Process the data and make a list of OHLC heights
-    // format needed is '/api/blockTimestamps/{height1}/{height2}/{height3}'
+    // format needed is '/api/blockTimestamps/range/{startHeight}/{endHeight}'
     const timestampsForHeights = fetch(
-      `/api/blockTimestamps/${originalOHLCData
-        .map((ohlc) => ohlc["height"])
-        .join("/")}`
+      `/api/blockTimestamps/range/${originalOHLCData[0]["height"]}/${originalOHLCData[originalOHLCData.length - 1]["height"]}`
     ).then((res) => res.json());
 
     Promise.all([timestampsForHeights])
