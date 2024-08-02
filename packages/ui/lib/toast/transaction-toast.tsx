@@ -3,7 +3,7 @@ import {
   AuthorizeAndBuildResponse,
   BroadcastTransactionResponse,
   WitnessAndBuildResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { Link } from 'react-router-dom';
 import { Progress } from '../../components/ui/progress';
 import { ReactNode } from 'react';

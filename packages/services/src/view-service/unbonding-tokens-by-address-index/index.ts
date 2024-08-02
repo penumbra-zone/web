@@ -3,7 +3,7 @@ import {
   BalancesResponse,
   UnbondingTokensByAddressIndexRequest_Filter,
   UnbondingTokensByAddressIndexResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { Impl } from '../index.js';
 import { balances } from '../balances.js';
 import { getIsClaimable, isUnbondingTokenBalance } from './helpers.js';

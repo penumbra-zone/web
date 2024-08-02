@@ -10,7 +10,7 @@ import {
 } from '@penumbra-zone/getters/value-view';
 import { Traces } from './traces';
 import { AllSlices } from '../../../../state';
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { toBaseUnit } from '@penumbra-zone/types/lo-hi';
 import BigNumber from 'bignumber.js';
 import { useStoreShallow } from '../../../../utils/use-store-shallow';

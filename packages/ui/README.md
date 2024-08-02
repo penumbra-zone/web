@@ -325,7 +325,7 @@ For example, a component designed to render a `ValueView` must be named `ValueVi
 
 ```tsx
 // ValueViewComponent/index.tsx
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb.js';
 
 export interface ValueViewComponentProps {
   valueView: ValueView;
@@ -337,7 +337,7 @@ export function ValueViewComponent({ valueView }: ValueViewComponentProps) {
 
 // SomeConsumer.tsx
 // ✅ Now, there is no naming conflict between these two imports.
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { ValueView } from 'penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb.js';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueViewComponent';
 ```
 

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { DutchAuction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
+import { DutchAuction } from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
 import { CircleArrowRight, CircleCheck, CircleX } from 'lucide-react';
 import { getDescription } from '@penumbra-zone/getters/dutch-auction';
 import { isZero } from '@penumbra-zone/types/amount';

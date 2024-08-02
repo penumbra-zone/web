@@ -1,6 +1,6 @@
 import { AddressViewComponent } from '@repo/ui/AddressViewComponent';
 import { BalancesByAccount } from '../../../../state/shared';
-import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { useMemo } from 'react';
 
 export const TableTitle = ({ account }: { account: BalancesByAccount }) => {

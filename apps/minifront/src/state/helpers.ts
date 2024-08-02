@@ -7,14 +7,14 @@ import {
   TransactionPlannerRequest,
   WitnessAndBuildRequest,
   WitnessAndBuildResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { sha256Hash } from '@penumbra-zone/crypto-web/sha256';
 import {
   Transaction,
   TransactionPlan,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
-import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
 import { PartialMessage } from '@bufbuild/protobuf';
 import { TransactionToast } from '@repo/ui/lib/toast/transaction-toast';
 import { TransactionClassification } from '@penumbra-zone/perspective/transaction/classification';
@@ -166,7 +166,7 @@ const getTxHash = <T extends Required<PartialMessage<TransactionId>> | PartialMe
         uint8ArrayToHex(inner),
       ) as T extends Required<PartialMessage<TransactionId>> ? never : Promise<string>);
 
-const getTxId = (tx: Transaction | PartialMessage<Transaction>) =>
+const getTxId = (tx: Transaction) =>
   sha256Hash(tx instanceof Transaction ? tx.toBinary() : new Transaction(tx).toBinary()).then(
     inner => new TransactionId({ inner }),
   );
