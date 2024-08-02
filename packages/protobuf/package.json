@@ -11,16 +11,24 @@
     "build": "tsc --build --verbose",
     "clean": "rm -rfv dist *.tsbuildinfo package penumbra-zone-*.tgz",
     "dev:pack": "tsc-watch --onSuccess \"$npm_execpath pack\"",
+    "gen:cosmos-sdk": "buf generate buf.build/cosmos/cosmos-sdk:e7a85cef453e4b999ad9aff8714ae05f",
+    "gen:ibc": "buf generate buf.build/cosmos/ibc:7ab44ae956a0488ea04e04511efa5f70",
+    "gen:ics23": "buf generate buf.build/cosmos/ics23:55085f7c710a45f58fa09947208eb70b",
+    "gen:penumbra": "buf generate buf.build/penumbra-zone/penumbra:312294d02bf945ffa4c1b1dd7cd91328",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
-    "lint:strict": "tsc --noEmit && eslint src --max-warnings 0"
+    "lint:strict": "tsc --noEmit && eslint src --max-warnings 0",
+    "prebuild": "pnpm gen:cosmos-sdk --clean && pnpm gen:ibc && pnpm gen:ics23 && pnpm gen:penumbra && touch src/gen/.npmignore",
+    "test": "vitest run"
   },
   "files": [
     "dist"
   ],
   "exports": {
     ".": "./src/index.ts",
-    "./*": "./src/*"
+    "./web": "./src/web.ts",
+    "./registry": "./src/registry.ts",
+    "./*": "./src/gen/*.ts"
   },
   "publishConfig": {
     "exports": {
@@ -28,24 +36,27 @@
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
       },
+      "./web": {
+        "types": "./dist/web.d.ts",
+        "default": "./dist/web.js"
+      },
+      "./registry": {
+        "types": "./dist/registry.d.ts",
+        "default": "./dist/registry.js"
+      },
       "./*": {
-        "types": "./dist/*",
-        "default": "./dist/*"
+        "types": "./dist/gen/*.d.ts",
+        "default": "./dist/gen/*.js"
       }
     }
   },
   "devDependencies": {
-    "@buf/cosmos_ibc.bufbuild_es": "1.10.0-20230913112312-7ab44ae956a0.1",
-    "@buf/cosmos_ibc.connectrpc_es": "1.4.0-20230913112312-7ab44ae956a0.3",
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240804013626-f19a2ee01838.1",
-    "@buf/penumbra-zone_penumbra.connectrpc_es": "1.4.0-20240804013626-f19a2ee01838.3",
-    "@bufbuild/protobuf": "1.10.0"
+    "@bufbuild/buf": "1.x",
+    "@bufbuild/protobuf": "^1.10.0",
+    "@bufbuild/protoc-gen-es": "^1.10.0",
+    "@connectrpc/protoc-gen-connect-es": "^1.4.0"
   },
   "peerDependencies": {
-    "@buf/cosmos_ibc.bufbuild_es": "1.10.0-20230913112312-7ab44ae956a0.1",
-    "@buf/cosmos_ibc.connectrpc_es": "1.4.0-20230913112312-7ab44ae956a0.3",
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240804013626-f19a2ee01838.1",
-    "@buf/penumbra-zone_penumbra.connectrpc_es": "1.4.0-20240804013626-f19a2ee01838.3",
-    "@bufbuild/protobuf": "1.10.0"
+    "@bufbuild/protobuf": "^1.10.0"
   }
 }

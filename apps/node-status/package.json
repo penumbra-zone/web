@@ -25,6 +25,7 @@
     "tailwindcss": "^3.4.3"
   },
   "devDependencies": {
+    "@buf/tendermint_tendermint.bufbuild_es": "1.10.0-20231117195010-33ed361a9051.1",
     "@penumbra-zone/crypto-web": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
     "@types/react": "^18.3.2",
