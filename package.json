@@ -46,6 +46,7 @@
     "@connectrpc/connect-web": "^1.4.0"
   },
   "devDependencies": {
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240703080008-312294d02bf9.1",
     "@changesets/cli": "^2.27.3",
     "@eslint/compat": "^1.1.0",
     "@eslint/js": "^9.6.0",

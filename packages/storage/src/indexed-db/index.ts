@@ -135,7 +135,13 @@ export class IndexedDb implements IndexedDbInterface {
     } satisfies IdbConstants;
 
     const { stakingAssetId } = registryClient.bundled.globals();
-    const instance = new this(db, new IbdUpdater(db), constants, chainId, stakingAssetId);
+    const instance = new this(
+      db,
+      new IbdUpdater(db),
+      constants,
+      chainId,
+      new AssetId(stakingAssetId),
+    );
     await instance.saveRegistryAssets(registryClient, chainId); // Pre-load asset metadata from registry
 
     const existing0thEpoch = await instance.getEpochByHeight(0n);
