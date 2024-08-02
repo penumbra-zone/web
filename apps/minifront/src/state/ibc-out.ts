@@ -26,6 +26,8 @@ import { BLOCKS_PER_HOUR } from './constants';
 import { ZQueryState, createZQuery } from '@penumbra-zone/zquery';
 import { getChains } from '../fetchers/registry';
 
+const FORBID_UM_IBC_OUT = ['celestia'];
+
 export const { chains, useChains } = createZQuery({
   name: 'chains',
   fetch: getChains,
@@ -272,10 +274,14 @@ export const filterBalancesPerChain = (
     })
     .map(m => m.penumbraAssetId!);
 
-  const assetIdsToCheck = [penumbraAssetId, ...assetsWithMatchingChannel];
+  const assetIdsToCheck = [...assetsWithMatchingChannel];
+
+  if (!FORBID_UM_IBC_OUT.includes(chain!.chainId)) {
+    assetIdsToCheck.push(penumbraAssetId!);
+  }
 
   return allBalances.filter(({ balanceView }) => {
-    return assetIdsToCheck.some(assetId => assetId?.equals(getAssetIdFromValueView(balanceView)));
+    return assetIdsToCheck.some(assetId => assetId.equals(getAssetIdFromValueView(balanceView)));
   });
 };
 
