@@ -60,10 +60,11 @@ describe('viewTransactionPlan()', () => {
       metadataByAssetId,
       mockFvk,
     );
-    await expect(view).resolves.toHaveProperty('bodyView.memoView.memoView.value.plaintext.text');
-    await expect(view).resolves.not.toHaveProperty(
-      'bodyView.memoView.memoView.value.plaintext.returnAddress',
-    );
+    await expect(
+      view.then(({ bodyView }) => bodyView?.memoView?.memoView.value),
+    ).resolves.toMatchObject({
+      plaintext: { text: '', returnAddress: undefined },
+    });
   });
 
   test('includes the fee', async () =>
