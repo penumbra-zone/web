@@ -5,8 +5,9 @@ import {
   AddressView_Decoded,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 import { AddressViewComponent } from '.';
-import { describe, expect, test } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { render } from '@testing-library/react';
+import { PenumbraUIProvider } from '../PenumbraUIProvider';
 
 const addressViewWithOneTimeAddress = new AddressView({
   addressView: {
@@ -40,38 +41,42 @@ const addressViewWithNormalAddress = new AddressView({
 
 describe('<AddressViewComponent />', () => {
   describe('when `copyable` is `true`', () => {
-    test('does not show the copy icon when the address is a one-time address', () => {
-      const { queryByTestId } = render(
+    it('does not show the copy icon when the address is a one-time address', () => {
+      const { queryByLabelText } = render(
         <AddressViewComponent addressView={addressViewWithOneTimeAddress} copyable />,
+        { wrapper: PenumbraUIProvider },
       );
 
-      expect(queryByTestId('CopyToClipboardIconButton__icon')).toBeNull();
+      expect(queryByLabelText('Copy')).toBeNull();
     });
 
-    test('shows the copy icon when the address is not a one-time address', () => {
-      const { queryByTestId } = render(
+    it('shows the copy icon when the address is not a one-time address', () => {
+      const { queryByLabelText } = render(
         <AddressViewComponent addressView={addressViewWithNormalAddress} copyable />,
+        { wrapper: PenumbraUIProvider },
       );
 
-      expect(queryByTestId('CopyToClipboardIconButton__icon')).not.toBeNull();
+      expect(queryByLabelText('Copy')).not.toBeNull();
     });
   });
 
   describe('when `copyable` is `false`', () => {
-    test('does not show the copy icon when the address is a one-time address', () => {
-      const { queryByTestId } = render(
+    it('does not show the copy icon when the address is a one-time address', () => {
+      const { queryByLabelText } = render(
         <AddressViewComponent addressView={addressViewWithOneTimeAddress} copyable={false} />,
+        { wrapper: PenumbraUIProvider },
       );
 
-      expect(queryByTestId('CopyToClipboardIconButton__icon')).toBeNull();
+      expect(queryByLabelText('Copy')).toBeNull();
     });
 
-    test('does not show the copy icon when the address is not a one-time address', () => {
-      const { queryByTestId } = render(
+    it('does not show the copy icon when the address is not a one-time address', () => {
+      const { queryByLabelText } = render(
         <AddressViewComponent addressView={addressViewWithNormalAddress} copyable={false} />,
+        { wrapper: PenumbraUIProvider },
       );
 
-      expect(queryByTestId('CopyToClipboardIconButton__icon')).toBeNull();
+      expect(queryByLabelText('Copy')).toBeNull();
     });
   });
 });
