@@ -6,6 +6,7 @@ import { DutchAuction } from '../gen/penumbra/core/component/auction/v1/auction_
 import { ValidatorInfo } from '../gen/penumbra/core/component/stake/v1/stake_pb.js';
 import { BalancesResponse } from '../gen/penumbra/view/v1/view_pb.js';
 import { typeRegistry } from './registry.js';
+import { Ics20Withdrawal } from '../gen/penumbra/core/component/ibc/v1/ibc_pb.js';
 
 describe('registry contents that are part of services', () => {
   it('includes ValidatorInfo', () => {
@@ -38,5 +39,15 @@ describe('registry contents that are not part of services', () => {
 describe('registry contents that are important for noble ibc', () => {
   it('includes BalancesResponse', () => {
     expect(typeRegistry.findMessage(BalancesResponse.typeName)).toBeTruthy();
+  });
+
+  it('includes useCompatAddress on Ics20Withdrawal', () => {
+    expect(typeRegistry.findMessage(Ics20Withdrawal.typeName)).toBeTruthy();
+
+    const ics20w = Ics20Withdrawal.fromJson({
+      useCompatAddress: true,
+    });
+
+    expect(ics20w.useCompatAddress).toBe(true);
   });
 });
