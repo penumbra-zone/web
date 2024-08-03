@@ -48,7 +48,7 @@ import {
   SwapRecord,
   TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
-import { PartialMessage } from '@bufbuild/protobuf';
+import { PlainMessage } from '@bufbuild/protobuf';
 import type { Jsonified } from './jsonified.js';
 
 export interface IdbUpdate<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>> {
@@ -90,7 +90,7 @@ export interface IndexedDbInterface {
   getSwapByCommitment(commitment: StateCommitment): Promise<SwapRecord | undefined>;
   getNativeGasPrices(): Promise<GasPrices | undefined>;
   getAltGasPrices(): Promise<GasPrices[]>;
-  saveGasPrices(value: PartialMessage<GasPrices>): Promise<void>;
+  saveGasPrices(value: Required<PlainMessage<GasPrices>>): Promise<void>;
   getNotesForVoting(
     addressIndex: AddressIndex | undefined,
     votableAtHeight: bigint,

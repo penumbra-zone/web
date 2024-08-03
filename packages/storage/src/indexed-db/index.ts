@@ -314,7 +314,11 @@ export class IndexedDb implements IndexedDbInterface {
       }
 
       const assets = registry.getAllAssets();
-      const saveLocalMetadata = assets.map(m => this.saveAssetsMetadata(m));
+      const saveLocalMetadata = assets.map(m => {
+        if (m.penumbraAssetId) {
+          this.saveAssetsMetadata(m);
+        }
+      });
       await Promise.all(saveLocalMetadata);
       await this.u.update({ table: 'REGISTRY_VERSION', key: 'commit', value: remoteVersion });
     } catch (error) {
@@ -457,8 +461,7 @@ export class IndexedDb implements IndexedDbInterface {
       .filter(gp => !gp.assetId?.equals(this.stakingTokenAssetId));
   }
 
-  async saveGasPrices(value: PartialMessage<GasPrices>): Promise<void> {
-    assertAssetId(value.assetId);
+  async saveGasPrices(value: Required<PlainMessage<GasPrices>>): Promise<void> {
     await this.u.update({
       table: 'GAS_PRICES',
       value: new GasPrices(value).toJson() as Jsonified<GasPrices>,

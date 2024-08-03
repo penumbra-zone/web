@@ -32,7 +32,6 @@ import {
   transaction,
   transactionId,
 } from './indexed-db.test-data.js';
-import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb.js';
 import {
   AddressIndex,
   WalletId,
@@ -433,17 +432,17 @@ describe('IndexedDb', () => {
     it('should be able to set/get', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
-      const gasPrices = new GasPrices({
+      const gasPrices = {
         assetId: db.stakingTokenAssetId,
         blockSpacePrice: 0n,
         compactBlockSpacePrice: 0n,
         verificationPrice: 0n,
         executionPrice: 0n,
-      });
+      };
       await db.saveGasPrices(gasPrices);
       const savedPrices = await db.getNativeGasPrices();
 
-      expect(gasPrices.equals(savedPrices)).toBeTruthy();
+      expect(savedPrices?.equals(gasPrices)).toBeTruthy();
     });
   });
 
