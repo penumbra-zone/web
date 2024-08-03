@@ -59,6 +59,11 @@ import fetchMock from 'fetch-mock';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { JsonValue } from '@bufbuild/protobuf';
 
+const inner0123 = Uint8Array.from({ length: 32 }, () => Math.floor(Math.random() * 256));
+const inner5678 = Uint8Array.from({ length: 32 }, () => Math.floor(Math.random() * 256));
+const inner1111 = Uint8Array.from({ length: 32 }, () => Math.floor(Math.random() * 256));
+const inner2222 = Uint8Array.from({ length: 32 }, () => Math.floor(Math.random() * 256));
+
 const registryClient = new ChainRegistryClient();
 const chainId = 'penumbra-testnet-deimos-8';
 
@@ -628,7 +633,7 @@ describe('IndexedDb', () => {
   describe('prices', () => {
     let db: IndexedDb;
 
-    const numeraireAssetId = new AssetId({ inner: new Uint8Array([5, 6, 7, 8]) });
+    const numeraireAssetId = new AssetId({ inner: inner5678 });
 
     const stakingAssetId = AssetId.fromJson({
       inner: 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=',
@@ -682,7 +687,7 @@ describe('IndexedDb', () => {
     });
 
     it('inserts an auction', async () => {
-      const auctionId = new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) });
+      const auctionId = new AuctionId({ inner: inner0123 });
       const auction = new DutchAuctionDescription({ startHeight: 1234n });
       await db.upsertAuction(auctionId, { auction });
 
@@ -693,8 +698,8 @@ describe('IndexedDb', () => {
     });
 
     it('inserts a note commitment', async () => {
-      const auctionId = new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) });
-      const noteCommitment = new StateCommitment({ inner: new Uint8Array([0, 1, 2, 3]) });
+      const auctionId = new AuctionId({ inner: inner0123 });
+      const noteCommitment = new StateCommitment({ inner: inner0123 });
       await db.upsertAuction(auctionId, { noteCommitment });
 
       const fetchedAuction = await db.getAuction(auctionId);
@@ -704,9 +709,9 @@ describe('IndexedDb', () => {
     });
 
     it('inserts both an auction and a note commitment', async () => {
-      const auctionId = new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) });
+      const auctionId = new AuctionId({ inner: inner0123 });
       const auction = new DutchAuctionDescription({ startHeight: 1234n });
-      const noteCommitment = new StateCommitment({ inner: new Uint8Array([0, 1, 2, 3]) });
+      const noteCommitment = new StateCommitment({ inner: inner0123 });
       await db.upsertAuction(auctionId, { auction, noteCommitment });
 
       const fetchedAuction = await db.getAuction(auctionId);
@@ -717,7 +722,7 @@ describe('IndexedDb', () => {
     });
 
     it('inserts an auction and sequence number, and then updates with a note commitment when given the same auction ID', async () => {
-      const auctionId = new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) });
+      const auctionId = new AuctionId({ inner: inner0123 });
       const auction = new DutchAuctionDescription({ startHeight: 1234n });
       const seqNum = 0n;
       await db.upsertAuction(auctionId, { auction, seqNum });
@@ -725,7 +730,7 @@ describe('IndexedDb', () => {
       let fetchedAuction = await db.getAuction(auctionId);
       expect(fetchedAuction).toBeTruthy();
 
-      const noteCommitment = new StateCommitment({ inner: new Uint8Array([0, 1, 2, 3]) });
+      const noteCommitment = new StateCommitment({ inner: inner0123 });
       await db.upsertAuction(auctionId, { noteCommitment });
 
       fetchedAuction = await db.getAuction(auctionId);
@@ -739,8 +744,8 @@ describe('IndexedDb', () => {
     });
 
     it('inserts a note commitment and then updates with an auction and sequence number when given the same auction ID', async () => {
-      const auctionId = new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) });
-      const noteCommitment = new StateCommitment({ inner: new Uint8Array([0, 1, 2, 3]) });
+      const auctionId = new AuctionId({ inner: inner0123 });
+      const noteCommitment = new StateCommitment({ inner: inner0123 });
       await db.upsertAuction(auctionId, { noteCommitment });
 
       let fetchedAuction = await db.getAuction(auctionId);
@@ -761,9 +766,9 @@ describe('IndexedDb', () => {
     });
 
     it('inserts all data, and then updates with a sequence number when given the same auction ID', async () => {
-      const auctionId = new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) });
+      const auctionId = new AuctionId({ inner: inner0123 });
       const auction = new DutchAuctionDescription({ startHeight: 1234n });
-      const noteCommitment = new StateCommitment({ inner: new Uint8Array([0, 1, 2, 3]) });
+      const noteCommitment = new StateCommitment({ inner: inner0123 });
       await db.upsertAuction(auctionId, { auction, noteCommitment, seqNum: 0n });
 
       let fetchedAuction = await db.getAuction(auctionId);
@@ -790,14 +795,14 @@ describe('IndexedDb', () => {
     });
 
     it('saves the outstanding reserves', async () => {
-      const auctionId = new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) });
+      const auctionId = new AuctionId({ inner: inner0123 });
       const input = new Value({
         amount: { hi: 0n, lo: 1n },
-        assetId: { inner: new Uint8Array([1, 1, 1, 1]) },
+        assetId: { inner: inner1111 },
       });
       const output = new Value({
         amount: { hi: 0n, lo: 2n },
-        assetId: { inner: new Uint8Array([2, 2, 2, 2]) },
+        assetId: { inner: inner2222 },
       });
       await db.addAuctionOutstandingReserves(auctionId, { input, output });
 
@@ -813,14 +818,14 @@ describe('IndexedDb', () => {
     });
 
     it('deletes the reserves', async () => {
-      const auctionId = new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) });
+      const auctionId = new AuctionId({ inner: inner0123 });
       const input = new Value({
         amount: { hi: 0n, lo: 1n },
-        assetId: { inner: new Uint8Array([1, 1, 1, 1]) },
+        assetId: { inner: inner1111 },
       });
       const output = new Value({
         amount: { hi: 0n, lo: 2n },
-        assetId: { inner: new Uint8Array([2, 2, 2, 2]) },
+        assetId: { inner: inner2222 },
       });
       await db.addAuctionOutstandingReserves(auctionId, { input, output });
 

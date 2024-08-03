@@ -12,6 +12,9 @@ import { Epoch } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/com
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb.js';
 import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
 import type { ScanBlockResult } from '@penumbra-zone/types/state-commitment-tree';
+import { base64ToUint8Array } from '@penumbra-zone/types/base64';
+
+const hash3312332298 = base64ToUint8Array('JbOzRkf0VKm4eIM0DS27N5igX8jxvPhAMpBWSr2bj/Q=');
 
 export const emptyScanResult: ScanBlockResult = {
   height: 1092n,
@@ -32,14 +35,14 @@ export const scanResultWithSctUpdates: ScanBlockResult = {
     delete_ranges: [],
     store_commitments: [
       {
-        commitment: { inner: 'qs3wdffdg34sfv' },
+        commitment: { inner: 'XQ5CaaCm1etf2jbB5F5hQbH75Gy8MSsE8UT3g3hslOc=' },
         position: { block: 2, commitment: 11, epoch: 1 },
       },
     ],
     store_hashes: [
       {
         essential: false,
-        hash: new Uint8Array([33, 12, 33, 22, 98]),
+        hash: hash3312332298,
         height: 1090,
         position: {
           block: 3,
@@ -100,14 +103,14 @@ export const scanResultWithNewSwaps: ScanBlockResult = {
     delete_ranges: [],
     store_commitments: [
       {
-        commitment: { inner: 'qs3wdffdg34sfv' },
+        commitment: { inner: 'XQ5CaaCm1etf2jbB5F5hQbH75Gy8MSsE8UT3g3hslOc=' },
         position: { block: 2, commitment: 11, epoch: 1 },
       },
     ],
     store_hashes: [
       {
         essential: false,
-        hash: new Uint8Array([33, 12, 33, 22, 98]),
+        hash: hash3312332298,
         height: 1090,
         position: {
           block: 3,
@@ -125,7 +128,7 @@ export const metadataA = Metadata.fromJson({
   denomUnits: [{ denom: 'mars', exponent: 6 }, { denom: 'mmars', exponent: 3 }, { denom: 'umars' }],
   base: 'umars',
   display: 'mars',
-  penumbraAssetId: { inner: 'cGFzc2V0MTgyODQ3MjgxODQzMTg3NDg=' },
+  penumbraAssetId: { inner: 'fptGlCc8DHGYGzC0SGI9RJPkTcOhlwEgmTYlWKqG6RE=' },
 });
 
 export const metadataB = Metadata.fromJson({
@@ -136,7 +139,7 @@ export const metadataB = Metadata.fromJson({
   ],
   base: 'ujupiter',
   display: 'jupiter',
-  penumbraAssetId: { inner: 'cGFzc2V0OTQ5MjgyODQ1OTg0NTc2' },
+  penumbraAssetId: { inner: 'tC8UkRa/CMAtIft8TgIHRTWS7D8KNA+nYlixMl0mYjU=' },
 });
 
 export const metadataC = Metadata.fromJson({
@@ -163,7 +166,7 @@ export const metadataC = Metadata.fromJson({
   name: '',
   symbol: '',
   penumbra_asset_id: {
-    inner: 'cGFzc2V0MTIzMjEyNDEyMzEyNDIy',
+    inner: 'MuKoww0J2uLfVA403rXz3/xvjS0/kaiLIi5ADYEVaOI=',
     alt_bech32m: '',
     alt_base_denom: '',
   },
