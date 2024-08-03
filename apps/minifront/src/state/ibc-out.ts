@@ -25,6 +25,7 @@ import { Channel } from '@penumbra-zone/protobuf/ibc/core/channel/v1/channel_pb'
 import { BLOCKS_PER_HOUR } from './constants';
 import { createZQuery, ZQueryState } from '@penumbra-zone/zquery';
 import { getChains } from '../fetchers/registry';
+import { bech32ChainIds } from './shared';
 
 export const { chains, useChains } = createZQuery({
   name: 'chains',
@@ -211,8 +212,7 @@ const getPlanRequest = async ({
         timeoutHeight,
         timeoutTime,
         sourceChannel: chain.channelId,
-        // TODO: after updating bufbuild types, uncomment this
-        // useCompatAddress: bech32ChainIds.includes(chain.chainId),
+        useCompatAddress: bech32ChainIds.includes(chain.chainId),
       },
     ],
     source: addressIndex,
