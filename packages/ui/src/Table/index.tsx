@@ -107,6 +107,8 @@ interface CellStyledProps {
 }
 
 const cell = css<CellStyledProps>`
+  box-sizing: border-box;
+
   padding-left: ${props => props.theme.spacing(3)};
   padding-right: ${props => props.theme.spacing(3)};
 
