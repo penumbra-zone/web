@@ -170,14 +170,12 @@ export class BlockProcessor implements BlockProcessorInterface {
         await this.indexedDb.saveFmdParams(compactBlock.fmdParameters);
       }
       if (compactBlock.gasPrices) {
-        console.log('setting native gas prices at', compactBlock.height);
         await this.indexedDb.saveGasPrices({
           ...toPlainMessage(compactBlock.gasPrices),
           assetId: toPlainMessage(this.stakingAssetId),
         });
       }
       if (compactBlock.altGasPrices.length) {
-        console.log('setting alt gas prices at', compactBlock.height);
         for (const altGas of compactBlock.altGasPrices) {
           await this.indexedDb.saveGasPrices({
             ...toPlainMessage(altGas),
