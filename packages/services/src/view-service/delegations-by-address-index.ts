@@ -108,6 +108,16 @@ export const delegationsByAddressIndex: Impl['delegationsByAddressIndex'] = asyn
   //         It's necessary to query for these individually as they are not available in the previous query.
   const allUnqueried = tracker.allUnqueried();
   for (const valueView of allUnqueried) {
+    // TODO: Query metadata too
+    // const test = await stakeClient.getValidatorInfo({ showInactive });
+    // const validatorInfo = getValidatorInfo(validatorInfoResponse);
+    // const extendedMetadata = Any.pack(validatorInfo);
+    // const withValidatorInfo = delegation.clone();
+    // if (withValidatorInfo.valueView.case !== 'knownAssetId') {
+    //   throw new Error(`Unexpected ValueView case: ${withValidatorInfo.valueView.case}`);
+    // }
+    // withValidatorInfo.valueView.value.extendedMetadata = extendedMetadata;
+
     yield new DelegationsByAddressIndexResponse({ valueView });
   }
 };
