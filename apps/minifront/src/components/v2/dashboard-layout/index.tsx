@@ -8,6 +8,11 @@ import { PagePath } from '../../metadata/paths';
 /** @todo: Remove this function and its uses after we switch to v2 layout */
 const v2PathPrefix = (path: string) => `/v2${path}`;
 
+const CARD_TITLE_BY_PATH = {
+  [v2PathPrefix(PagePath.DASHBOARD)]: 'Asset Balances',
+  [v2PathPrefix(PagePath.TRANSACTIONS)]: 'Transaction List',
+};
+
 export const DashboardLayout = () => {
   const pagePath = usePagePath();
   const navigate = useNavigate();
@@ -17,7 +22,7 @@ export const DashboardLayout = () => {
       <Grid mobile={0} tablet={2} desktop={3} xl={4} />
 
       <Grid tablet={8} desktop={6} xl={4}>
-        <Card title='Asset Balances'>
+        <Card title={CARD_TITLE_BY_PATH[v2PathPrefix(pagePath)]}>
           <Tabs
             value={v2PathPrefix(pagePath)}
             onChange={value => navigate(value)}
