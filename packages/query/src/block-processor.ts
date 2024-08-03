@@ -49,6 +49,7 @@ import { IdentityKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/co
 import { getDelegationTokenMetadata } from '@penumbra-zone/wasm/stake';
 import { toPlainMessage } from '@bufbuild/protobuf';
 import { getAssetIdFromGasPrices } from '@penumbra-zone/getters/compact-block';
+import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb.js';
 
 declare global {
   // eslint-disable-next-line no-var
@@ -147,6 +148,36 @@ export class BlockProcessor implements BlockProcessorInterface {
       // beginning of sync as well, and force the rest of sync to wait until
       // it's done.
       void this.updateValidatorInfos(0n);
+
+      const undefinedAssetId = new AssetId({
+        inner: undefined,
+      });
+
+      let stakingTokenPrice = new GasPrices({
+        assetId: this.stakingAssetId,
+        blockSpacePrice: 60n,
+        compactBlockSpacePrice: 1556n,
+        verificationPrice: 1n,
+        executionPrice: 1n,
+      });
+
+      let AltTokenPrice = new GasPrices({
+        assetId: undefinedAssetId,
+        blockSpacePrice: 600n,
+        compactBlockSpacePrice: 15560n,
+        verificationPrice: 10n,
+        executionPrice: 10n,
+      });
+
+      await this.indexedDb.saveGasPrices({
+        ...toPlainMessage(stakingTokenPrice),
+        assetId: toPlainMessage(this.stakingAssetId),
+      });
+
+      await this.indexedDb.saveGasPrices({
+        ...toPlainMessage(AltTokenPrice),
+        assetId: getAssetIdFromGasPrices(AltTokenPrice),
+      });
     }
 
     // this is an indefinite stream of the (compact) chain from the network
