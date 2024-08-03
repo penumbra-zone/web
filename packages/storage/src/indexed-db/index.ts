@@ -63,7 +63,7 @@ import {
   DutchAuctionDescription,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
-import { PartialMessage } from '@bufbuild/protobuf';
+import { PlainMessage } from '@bufbuild/protobuf';
 import { getAmountFromRecord } from '@penumbra-zone/getters/spendable-note-record';
 import { isZero } from '@penumbra-zone/types/amount';
 import { IDB_VERSION } from './config.js';
@@ -425,7 +425,7 @@ export class IndexedDb implements IndexedDbInterface {
       .filter(gp => !gp.assetId?.equals(this.stakingTokenAssetId));
   }
 
-  async saveGasPrices(value: PartialMessage<GasPrices>): Promise<void> {
+  async saveGasPrices(value: Required<PlainMessage<GasPrices>>): Promise<void> {
     await this.u.update({
       table: 'GAS_PRICES',
       value: new GasPrices(value).toJson() as Jsonified<GasPrices>,
