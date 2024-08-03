@@ -58,7 +58,7 @@ const SymbolWrapper = styled.div`
 `;
 
 export interface ValueViewComponentProps<SelectedContext extends Context> {
-  valueView: ValueView;
+  valueView?: ValueView;
   /**
    * A `ValueViewComponent` will be rendered differently depending on which
    * context it's rendered in. By default, it'll be rendered in a pill. But in a
@@ -86,6 +86,11 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
   priority = 'primary',
 }: ValueViewComponentProps<SelectedContext>) => {
   const density = useDensity();
+
+  if (!valueView) {
+    return null;
+  }
+
   const formattedAmount = getFormattedAmtFromValueView(valueView, true);
   const metadata = getMetadata.optional()(valueView);
   // Symbol default is "" and thus cannot do nullish coalescing
