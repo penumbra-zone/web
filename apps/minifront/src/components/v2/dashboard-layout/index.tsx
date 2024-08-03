@@ -1,5 +1,6 @@
 import { Card } from '@repo/ui/Card';
 import { Outlet, useNavigate } from 'react-router-dom';
+import { Grid } from '@repo/ui/Grid';
 import { Tabs } from '@repo/ui/Tabs';
 import { usePagePath } from '../../../fetchers/page-path';
 import { PagePath } from '../../metadata/paths';
@@ -12,18 +13,26 @@ export const DashboardLayout = () => {
   const navigate = useNavigate();
 
   return (
-    <Card title='Asset Balances'>
-      <Tabs
-        value={v2PathPrefix(pagePath)}
-        onChange={value => navigate(value)}
-        options={[
-          { label: 'Assets', value: v2PathPrefix(PagePath.DASHBOARD) },
-          { label: 'Transactions', value: v2PathPrefix(PagePath.TRANSACTIONS) },
-        ]}
-        actionType='accent'
-      />
+    <Grid container>
+      <Grid mobile={0} tablet={2} desktop={3} xl={4} />
 
-      <Outlet />
-    </Card>
+      <Grid tablet={8} desktop={6} xl={4}>
+        <Card title='Asset Balances'>
+          <Tabs
+            value={v2PathPrefix(pagePath)}
+            onChange={value => navigate(value)}
+            options={[
+              { label: 'Assets', value: v2PathPrefix(PagePath.DASHBOARD) },
+              { label: 'Transactions', value: v2PathPrefix(PagePath.TRANSACTIONS) },
+            ]}
+            actionType='accent'
+          />
+
+          <Outlet />
+        </Card>
+      </Grid>
+
+      <Grid mobile={0} tablet={2} desktop={3} xl={4} />
+    </Grid>
   );
 };
