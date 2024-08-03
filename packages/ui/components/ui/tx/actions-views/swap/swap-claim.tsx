@@ -1,5 +1,5 @@
 import { ViewBox } from '../../viewbox';
-import { SwapClaimView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
+import { SwapClaimView } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { TransactionIdComponent } from './transaction-id';
 import { ActionDetails } from '../action-details';
 import {
@@ -11,7 +11,7 @@ import { getAmount } from '@penumbra-zone/getters/value-view';
 import { getAmount as getAmountFee } from '@penumbra-zone/getters/fee';
 import { isZero, joinLoHiAmount } from '@penumbra-zone/types/amount';
 import { ValueViewComponent } from '../../../value';
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb.js';
+import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 
 const getClaimLabel = (
   output1Amount?: Amount,

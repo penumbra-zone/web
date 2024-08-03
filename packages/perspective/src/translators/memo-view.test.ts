@@ -3,7 +3,7 @@ import { asOpaqueMemoView, asReceiverMemoView } from './memo-view.js';
 import {
   MemoView,
   MemoView_Visible,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { asOpaqueAddressView } from './address-view.js';
 
 describe('asOpaqueMemoView()', () => {

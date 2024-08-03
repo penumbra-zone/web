@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import { getSubAuctions } from './get-sub-auctions';
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb.js';
+import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 
 const MOCK_START_HEIGHT = vi.hoisted(() => 1234n);
 

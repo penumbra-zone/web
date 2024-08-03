@@ -1,4 +1,4 @@
-import { CandlestickDataResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
+import { CandlestickDataResponse } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { PRICE_RELEVANCE_THRESHOLDS } from '@penumbra-zone/types/assets';
 import { createZQuery, ZQueryState } from '@penumbra-zone/zquery';
 import { AllSlices, SliceCreator, useStore } from '..';

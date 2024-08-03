@@ -1,13 +1,10 @@
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '..';
 import { beforeEach, describe, expect, it, test, vi } from 'vitest';
-import {
-  Metadata,
-  ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb.js';
-import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
 
 describe('Swap Slice', () => {

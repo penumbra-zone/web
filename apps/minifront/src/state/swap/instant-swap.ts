@@ -1,20 +1,20 @@
 import { AllSlices, SliceCreator } from '..';
-import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { TransactionPlannerRequest } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { isValidAmount, planBuildBroadcast } from '../helpers';
 import {
   AssetId,
   Metadata,
   Value,
   ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { BigNumber } from 'bignumber.js';
 import { getAddressByIndex } from '../../fetchers/address';
-import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb.js';
+import { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
 import { errorToast } from '@repo/ui/lib/toast/presets';
 import {
   SwapExecution,
   SwapExecution_Trace,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { viewClient } from '../../clients';
 import {
   getAssetIdFromValueView,
@@ -26,12 +26,12 @@ import { getSwapCommitmentFromTx } from '@penumbra-zone/getters/transaction';
 import { getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { toBaseUnit } from '@penumbra-zone/types/lo-hi';
 import { getAmountFromValue, getAssetIdFromValue } from '@penumbra-zone/getters/value';
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb.js';
+import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { divideAmounts } from '@penumbra-zone/types/amount';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { SwapSlice } from '.';
 import { sendSimulateTradeRequest } from './helpers';
-import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 const getMetadataByAssetId = async (
   traces: SwapExecution_Trace[] = [],

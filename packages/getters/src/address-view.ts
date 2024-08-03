@@ -1,4 +1,4 @@
-import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { createGetter } from './utils/create-getter.js';
 
 export const getAddressIndex = createGetter((addressView?: AddressView) =>

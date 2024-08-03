@@ -6,7 +6,7 @@ import {
   AddressIndex,
   AddressView,
   AddressView_Decoded,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
 
 const meta: Meta<typeof AddressViewComponent> = {

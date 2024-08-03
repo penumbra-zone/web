@@ -1,4 +1,4 @@
-import { OutputView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb.js';
+import { OutputView } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 import { createGetter } from './utils/create-getter.js';
 
 export const getNote = createGetter((outputView?: OutputView) =>

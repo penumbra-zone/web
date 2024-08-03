@@ -5,15 +5,12 @@ import {
   TransactionPlannerRequest,
   TransactionPlannerRequest_Output,
   TransactionPlannerRequest_Spend,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { BigNumber } from 'bignumber.js';
-import { MemoPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
+import { MemoPlaintext } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { amountMoreThanBalance, isIncorrectDecimal, plan, planBuildBroadcast } from '../helpers';
 
-import {
-  Fee,
-  FeeTier_Tier,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
+import { Fee, FeeTier_Tier } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
 import {
   getAssetIdFromValueView,
   getDisplayDenomExponentFromValueView,
@@ -23,7 +20,7 @@ import { toBaseUnit } from '@penumbra-zone/types/lo-hi';
 import { isAddress } from '@penumbra-zone/bech32m/penumbra';
 import { transferableBalancesResponsesSelector } from './helpers';
 import { PartialMessage } from '@bufbuild/protobuf';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getAssetTokenMetadata } from '../../fetchers/registry';
 
 export interface SendSlice {

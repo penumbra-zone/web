@@ -6,7 +6,7 @@ import { ZQueryState, createZQuery } from '@penumbra-zone/zquery';
 import {
   TransactionInfo,
   TransactionInfoResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { getTxInfoByHash } from '../fetchers/tx-info-by-hash';
 
 export interface TransactionSummary {

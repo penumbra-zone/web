@@ -3,7 +3,7 @@ import { assertSwapAssetsAreNotTheSame } from './assert-swap-assets-are-not-the-
 import {
   TransactionPlannerRequest,
   TransactionPlannerRequest_Swap,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 
 const swapWithSameAssets = new TransactionPlannerRequest_Swap({
   value: {

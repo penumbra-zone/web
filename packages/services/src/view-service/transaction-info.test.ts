@@ -9,7 +9,7 @@ import {
   TransactionInfo,
   TransactionInfoRequest,
   TransactionInfoResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { IndexedDbMock, MockServices, testFullViewingKey } from '../test-utils.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { transactionInfo } from './transaction-info.js';

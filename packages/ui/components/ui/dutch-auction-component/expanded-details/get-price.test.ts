@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { getPrice } from './get-price';
-import { DutchAuctionDescription } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb.js';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { DutchAuctionDescription } from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
+import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
 describe('getPrice()', () => {
   it('returns `undefined` if `fullSyncHeight` is `undefined`', () => {

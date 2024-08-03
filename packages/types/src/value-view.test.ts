@@ -1,9 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import {
-  Metadata,
-  ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb.js';
+import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { getFormattedAmtFromValueView } from './value-view.js';
 
 describe('getFormattedAmtFromValueView', () => {

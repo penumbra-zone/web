@@ -1,24 +1,21 @@
-import { IdentityKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+import { IdentityKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { customizeSymbol } from '@penumbra-zone/wasm/metadata';
 import { assetPatterns } from '@penumbra-zone/types/assets';
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
 import { Any, PartialMessage } from '@bufbuild/protobuf';
 import { getValidatorInfo } from '@penumbra-zone/getters/validator-info-response';
 import { getIdentityKeyFromValidatorInfo } from '@penumbra-zone/getters/validator-info';
-import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
+import { ValidatorInfo } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 import {
   AssetMetadataByIdRequest,
   BalancesRequest,
   BalancesResponse,
   DelegationsByAddressIndexRequest_Filter,
   DelegationsByAddressIndexResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { stakeClientCtx } from '../ctx/stake-client.js';
 import { balances } from './balances.js';
-import {
-  Metadata,
-  ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { assetMetadataById } from './asset-metadata-by-id.js';
 import { getDisplayDenomFromView } from '@penumbra-zone/getters/value-view';
 import { Impl } from './index.js';
@@ -58,8 +55,6 @@ export const delegationsByAddressIndex: Impl['delegationsByAddressIndex'] = asyn
     balances(new BalancesRequest({ accountFilter: addressIndex }), ctx),
   );
 
-  // See https://github.com/typescript-eslint/typescript-eslint/issues/7114
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
   const showInactive = req.filter === DelegationsByAddressIndexRequest_Filter.ALL;
 
   for await (const validatorInfoResponse of mockStakeClient.validatorInfo({ showInactive })) {
@@ -87,8 +82,6 @@ export const delegationsByAddressIndex: Impl['delegationsByAddressIndex'] = asyn
 
       yield new DelegationsByAddressIndexResponse({ valueView: withValidatorInfo });
     } else {
-      // See https://github.com/typescript-eslint/typescript-eslint/issues/7114
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
       if (req.filter === DelegationsByAddressIndexRequest_Filter.ALL_ACTIVE_WITH_NONZERO_BALANCES) {
         continue;
       }

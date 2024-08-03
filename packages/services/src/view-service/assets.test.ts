@@ -1,11 +1,5 @@
-import {
-  Denom,
-  Metadata,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import {
-  AssetsRequest,
-  AssetsResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { Denom, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { AssetsRequest, AssetsResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { beforeEach, describe, expect, test, vi } from 'vitest';

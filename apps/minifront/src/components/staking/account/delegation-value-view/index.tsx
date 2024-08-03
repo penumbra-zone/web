@@ -1,4 +1,4 @@
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { ValidatorInfoComponent } from './validator-info-component';
 import { ValueViewComponent } from '@repo/ui/components/ui/value';
 import { StakingActions } from './staking-actions';

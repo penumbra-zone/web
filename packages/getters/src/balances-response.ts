@@ -1,4 +1,4 @@
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { createGetter } from './utils/create-getter.js';
 import { getCase, getMetadata } from './value-view.js';
 import { getAssetId, getDisplay } from './metadata.js';

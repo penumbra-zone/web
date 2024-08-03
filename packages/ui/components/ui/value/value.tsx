@@ -1,4 +1,4 @@
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { AssetIcon } from '../asset-icon';
 import { Pill } from '../pill';
 import { cn } from '../../../lib/utils';

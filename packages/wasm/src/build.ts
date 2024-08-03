@@ -4,7 +4,7 @@ import {
   Transaction,
   TransactionPlan,
   WitnessData,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import type { StateCommitmentTree } from '@penumbra-zone/types/state-commitment-tree';
 import {
   authorize,
@@ -13,10 +13,7 @@ import {
   load_proving_key,
   witness,
 } from '../wasm/index.js';
-import {
-  FullViewingKey,
-  SpendKey,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+import { FullViewingKey, SpendKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 export const authorizePlan = (spendKey: SpendKey, txPlan: TransactionPlan): AuthorizationData => {
   const result = authorize(spendKey.toBinary(), txPlan.toBinary());

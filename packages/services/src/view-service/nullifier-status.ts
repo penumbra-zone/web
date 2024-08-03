@@ -1,7 +1,4 @@
-import {
-  SpendableNoteRecord,
-  SwapRecord,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { SpendableNoteRecord, SwapRecord } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import type { Impl } from './index.js';
 import { servicesCtx } from '../ctx/prax.js';
 

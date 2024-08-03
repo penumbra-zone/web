@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { SwapViewComponent } from '.';
-import { SwapView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
+import { SwapView } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { render } from '@testing-library/react';
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
 describe('<SwapViewComponent />', () => {
   describe('when the swap view is visible', () => {

@@ -1,9 +1,6 @@
 import { z } from 'zod';
 import { InnerBase64Schema } from './base64.js';
-import {
-  SpendableNoteRecord,
-  SwapRecord,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { SpendableNoteRecord, SwapRecord } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 
 export const Position = z.object({
   epoch: z.number(),

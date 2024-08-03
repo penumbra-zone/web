@@ -2,10 +2,10 @@ import type {
   Action,
   TransactionPlan,
   WitnessData,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import type { Jsonified } from '../jsonified.js';
 import type { InternalMessage, InternalRequest, InternalResponse } from './shared.js';
-import { FullViewingKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 export type ActionBuildMessage = InternalMessage<
   'BUILD_ACTION',

@@ -3,17 +3,17 @@ import {
   Transaction,
   TransactionPlan,
   WitnessData,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { buildParallel } from '@penumbra-zone/wasm/build';
 import { offscreenClient } from '../../offscreen-client.js';
 import {
   AuthorizeAndBuildResponse,
   WitnessAndBuildResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { PartialMessage } from '@bufbuild/protobuf';
 import { ConnectError } from '@connectrpc/connect';
 
-import { FullViewingKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 export const optimisticBuild = async function* (
   transactionPlan: TransactionPlan,

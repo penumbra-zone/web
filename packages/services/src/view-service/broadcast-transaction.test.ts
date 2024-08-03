@@ -3,14 +3,14 @@ import {
   BroadcastTransactionRequest,
   BroadcastTransactionResponse,
   TransactionInfo,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
-import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
+import { Transaction } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { broadcastTransaction } from './broadcast-transaction.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
-import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb.js';
+import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
 import { IndexedDbMock, MockServices, TendermintMock } from '../test-utils.js';
 
 const mockSha256 = vi.hoisted(() => vi.fn());

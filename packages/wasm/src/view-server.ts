@@ -1,11 +1,8 @@
 import { ViewServer as WasmViewServer } from '../wasm/index.js';
-import { CompactBlock } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1/compact_block_pb.js';
-import { MerkleRoot } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb.js';
+import { CompactBlock } from '@penumbra-zone/protobuf/penumbra/core/component/compact_block/v1/compact_block_pb';
+import { MerkleRoot } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
 import { JsonObject, JsonValue } from '@bufbuild/protobuf';
-import {
-  SpendableNoteRecord,
-  SwapRecord,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { SpendableNoteRecord, SwapRecord } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import {
   ScanBlockResult,
   SctUpdatesSchema,
@@ -13,7 +10,7 @@ import {
 } from '@penumbra-zone/types/state-commitment-tree';
 import type { IdbConstants } from '@penumbra-zone/types/indexed-db';
 import type { ViewServerInterface } from '@penumbra-zone/types/servers';
-import { FullViewingKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 declare global {
   // eslint-disable-next-line no-var

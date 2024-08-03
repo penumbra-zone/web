@@ -1,7 +1,7 @@
 import { PromiseClient } from '@connectrpc/connect';
 import { createClient } from './utils.js';
-import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb.js';
-import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
+import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
+import { Transaction } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { AppService } from '@penumbra-zone/protobuf';
 import type { AppQuerierInterface } from '@penumbra-zone/types/querier';
 

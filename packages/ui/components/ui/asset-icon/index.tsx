@@ -1,4 +1,4 @@
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { Identicon } from '../identicon';
 import { cn } from '../../../lib/utils';
 import { DelegationTokenIcon } from './delegation-token-icon';

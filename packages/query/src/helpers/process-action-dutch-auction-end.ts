@@ -1,8 +1,8 @@
-import { Value } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { Value } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import {
   ActionDutchAuctionEnd,
   DutchAuction,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
 import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
 import { AuctionQuerierInterface } from '@penumbra-zone/types/querier';
 import { getAuctionNftMetadata } from '@penumbra-zone/wasm/auction';

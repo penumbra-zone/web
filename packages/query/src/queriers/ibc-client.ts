@@ -4,7 +4,7 @@ import { IbcClientService } from '@penumbra-zone/protobuf';
 import {
   QueryClientStatesRequest,
   QueryClientStatesResponse,
-} from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/query_pb.js';
+} from '@penumbra-zone/protobuf/ibc/core/client/v1/query_pb';
 import type { IbcClientQuerierInterface } from '@penumbra-zone/types/querier';
 
 export class IbcClientQuerier implements IbcClientQuerierInterface {
