@@ -15,7 +15,7 @@ const Row = styled.span<{ $context: Context; $priority: 'primary' | 'secondary' 
   display: flex;
   gap: ${props => props.theme.spacing(2)};
   align-items: center;
-  width: min-content;
+  width: max-content;
   max-width: 100%;
   text-overflow: ellipsis;
 
