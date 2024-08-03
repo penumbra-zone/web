@@ -32,19 +32,19 @@ interface GridItemProps extends BaseGridProps {
    * The mobile grid layout can only be split in half, so you can only set a
    * grid item to 6 or 12 columns on mobile.
    */
-  mobile?: 6 | 12;
+  mobile?: 0 | 6 | 12;
   /**
    * The number of columns this grid item should span on tablet.
    *
    * The tablet grid layout can only be split into six columns.
    */
-  tablet?: 2 | 4 | 6 | 8 | 10 | 12;
+  tablet?: 0 | 2 | 4 | 6 | 8 | 10 | 12;
   /** The number of columns this grid item should span on desktop. */
-  desktop?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
+  desktop?: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
   /** The number of columns this grid item should span on large screens. */
-  lg?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
+  lg?: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
   /** The number of columns this grid item should span on XL screens. */
-  xl?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
+  xl?: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 }
 
 export type GridProps = PropsWithChildren<GridContainerProps | GridItemProps>;
