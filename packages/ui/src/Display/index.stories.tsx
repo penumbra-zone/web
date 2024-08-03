@@ -35,24 +35,23 @@ const InnerWidthIndicator = styled.div`
 export const FullWidth: Story = {
   args: {
     children: (
-      <>
-        <InnerWidthIndicator>
-          <Text p>
-            The white background that this text sits inside of indicates the width of whatever you
-            put <Text strong>inside</Text> the <Text technical>&lt;Display /&gt;</Text> component.
-            The white border to the left and right of this white bar represent the{' '}
-            <Text technical>&lt;Display /&gt;</Text> component&apos;s boundaries itself.
-          </Text>
-          <Text p>
-            You can resize your window to see how the margins at left and right change depending on
-            the size of the browser window.
-          </Text>
-          <Text p>
-            To view the <Text technical>&lt;Display /&gt;</Text> at full width, click the &quot;Full
-            Width&quot; item in the left sidebar.
-          </Text>
-        </InnerWidthIndicator>
-      </>
+      <InnerWidthIndicator>
+        <Text p>
+          The white background that this text sits inside of represents the{' '}
+          <Text strong>inside</Text> width of the <Text technical>&lt;Display /&gt;</Text>{' '}
+          component. The white border to the left and right of this white bar represent the{' '}
+          <Text strong>outside</Text> width of the <Text technical>&lt;Display /&gt;</Text>{' '}
+          component.
+        </Text>
+        <Text p>
+          You can resize your window to see how the margins at left and right change depending on
+          the size of the browser window.
+        </Text>
+        <Text p>
+          To view the <Text technical>&lt;Display /&gt;</Text> at full width, click the &quot;Full
+          Width&quot; item in the left sidebar.
+        </Text>
+      </InnerWidthIndicator>
     ),
   },
 };
