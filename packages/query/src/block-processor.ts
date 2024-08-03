@@ -7,11 +7,16 @@ import {
   PositionState,
   PositionState_PositionStateEnum,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
+import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb.js';
 import {
   CommitmentSource,
   Nullifier,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb.js';
-import { ValidatorInfoResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
+import {
+  ValidatorInfo,
+  ValidatorState_ValidatorStateEnum,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
+import { IdentityKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 import {
   Action,
   Transaction,
@@ -23,13 +28,13 @@ import {
   SwapRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import { auctionIdFromBech32 } from '@penumbra-zone/bech32m/pauctid';
-import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
+import { bech32mIdentityKey, identityKeyFromBech32m } from '@penumbra-zone/bech32m/penumbravalid';
 import { sha256Hash } from '@penumbra-zone/crypto-web/sha256';
 import { getAssetId } from '@penumbra-zone/getters/metadata';
 import {
-  getExchangeRateFromValidatorInfoResponse,
-  getIdentityKeyFromValidatorInfoResponse,
-} from '@penumbra-zone/getters/validator-info-response';
+  getExchangeRateFromValidatorInfo,
+  getIdentityKeyFromValidatorInfo,
+} from '@penumbra-zone/getters/validator-info';
 import { toDecimalExchangeRate } from '@penumbra-zone/types/amount';
 import { PRICE_RELEVANCE_THRESHOLDS, assetPatterns } from '@penumbra-zone/types/assets';
 import type { BlockProcessorInterface } from '@penumbra-zone/types/block-processor';
@@ -39,29 +44,19 @@ import type { ViewServerInterface } from '@penumbra-zone/types/servers';
 import { ScanBlockResult } from '@penumbra-zone/types/state-commitment-tree';
 import { computePositionId, getLpNftMetadata } from '@penumbra-zone/wasm/dex';
 import { customizeSymbol } from '@penumbra-zone/wasm/metadata';
+import { getDelegationTokenMetadata } from '@penumbra-zone/wasm/stake';
 import { backOff } from 'exponential-backoff';
 import { updatePricesFromSwaps } from './helpers/price-indexer.js';
 import { processActionDutchAuctionEnd } from './helpers/process-action-dutch-auction-end.js';
 import { processActionDutchAuctionSchedule } from './helpers/process-action-dutch-auction-schedule.js';
 import { processActionDutchAuctionWithdraw } from './helpers/process-action-dutch-auction-withdraw.js';
 import { RootQuerier } from './root-querier.js';
-import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb.js';
-import { IdentityKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
-import { getDelegationTokenMetadata } from '@penumbra-zone/wasm/stake';
 
 declare global {
   // eslint-disable-next-line no-var
   var __DEV__: boolean | undefined;
   // eslint-disable-next-line no-var
   var __ASSERT_ROOT__: boolean | undefined;
-}
-
-interface QueryClientProps {
-  querier: RootQuerier;
-  indexedDb: IndexedDbInterface;
-  viewServer: ViewServerInterface;
-  numeraires: AssetId[];
-  stakingAssetId: AssetId;
 }
 
 const BLANK_TX_SOURCE = new CommitmentSource({
@@ -80,15 +75,27 @@ export class BlockProcessor implements BlockProcessorInterface {
   private readonly viewServer: ViewServerInterface;
   private readonly abortController: AbortController = new AbortController();
   private numeraires: AssetId[];
-  private readonly stakingAssetId: AssetId;
+  private readonly nativeAsset: AssetId;
   private syncPromise: Promise<void> | undefined;
 
-  constructor({ indexedDb, viewServer, querier, numeraires, stakingAssetId }: QueryClientProps) {
+  constructor({
+    indexedDb,
+    viewServer,
+    querier,
+    numeraires,
+    stakingAssetId: nativeAsset,
+  }: {
+    querier: RootQuerier;
+    indexedDb: IndexedDbInterface;
+    viewServer: ViewServerInterface;
+    numeraires: AssetId[];
+    stakingAssetId: AssetId;
+  }) {
     this.indexedDb = indexedDb;
     this.viewServer = viewServer;
     this.querier = querier;
     this.numeraires = numeraires;
-    this.stakingAssetId = stakingAssetId;
+    this.nativeAsset = nativeAsset;
   }
 
   // If sync() is called multiple times concurrently, they'll all wait for
@@ -138,14 +145,10 @@ export class BlockProcessor implements BlockProcessorInterface {
     // TODO: init validator info in a better way, possibly after batch endpoint
     // implemented https://github.com/penumbra-zone/penumbra/issues/4688
     if (currentHeight === -1n) {
-      // In the `for` loop below, we only update validator infos once we've
-      // reached the latest known epoch. This means that, if a user is syncing
-      // for the first time, they could experience a broken UI until the latest
-      // known epoch is reached, since they may have delegation tokens but no
-      // validator info to go with them. So we'll update validator infos at the
-      // beginning of sync as well, and force the rest of sync to wait until
-      // it's done.
-      void this.updateValidatorInfos(0n);
+      // The main sync loop will only update validator info at modern epoch
+      // transitions. If the client is syncing from genesis, that might be far
+      // off, so some initial info is gathered here.
+      void this.updateValidatorInfo(0n);
     }
 
     // this is an indefinite stream of the (compact) chain from the network
@@ -165,17 +168,20 @@ export class BlockProcessor implements BlockProcessorInterface {
       if (compactBlock.appParametersUpdated) {
         await this.indexedDb.saveAppParams(await this.querier.app.appParams());
       }
+
       if (compactBlock.fmdParameters) {
         await this.indexedDb.saveFmdParams(compactBlock.fmdParameters);
       }
+
       if (compactBlock.gasPrices) {
         await this.indexedDb.saveGasPrices(
           new GasPrices({
-            assetId: this.stakingAssetId,
+            assetId: this.nativeAsset,
             ...compactBlock.gasPrices,
           }),
         );
       }
+
       if (compactBlock.altGasPrices.length) {
         for (const gasPrice of compactBlock.altGasPrices) {
           await this.indexedDb.saveGasPrices(gasPrice);
@@ -261,45 +267,18 @@ export class BlockProcessor implements BlockProcessorInterface {
         await this.saveTransactions(compactBlock.height, relevantTx);
       }
 
-      /**
-       * This... really isn't great.
-       *
-       * You can see above that we're already iterating over flush.newNotes. So
-       * why don't we put this call to
-       * `this.maybeUpsertAuctionWithNoteCommitment()` inside that earlier `for`
-       * loop?
-       *
-       * The problem is, we need to call `this.processTransactions()` before
-       * calling `this.maybeUpsertAuctionWithNoteCommitment()`, because
-       * `this.processTransactions()` is what saves the auction NFT metadata to
-       * the database. `this.maybeUpsertAuctionWithNoteCommitment()` depends on
-       * that auction NFT metadata being saved already to be able to detect
-       * whether a given note is for an auction NFT; only then will it save the
-       * note's commitment to the `AUCTIONS` table.
-       *
-       * "So why not just move `this.processTransactions()` to before the block
-       * where we handle `flush.newNotes`?" Because `this.processTransactions()`
-       * should only run after we've handled `flush.newNotes`, since we depend
-       * on the result of the flush to determine whether there are transactions
-       * to process in the first place. It's a catch-22.
-       *
-       * This isn't a problem in core because core isn't going back and forth
-       * between Rust and TypeScript like we are. If and when we move the block
-       * processor into Rust, this issue should be resolved.
-       */
-      for (const spendableNoteRecord of flush?.newNotes ?? []) {
-        await this.maybeUpsertAuctionWithNoteCommitment(spendableNoteRecord);
+      // this must execute after processTransactions, so it can query any
+      // updated auction NFT metadata in idb.
+      if (flush?.newNotes) {
+        await this.updateAuctions(flush.newNotes);
       }
 
-      // We do not store historical prices,
-      // so there is no point in saving prices that would already be considered obsolete at the time of saving
-      const blockInPriceRelevanceThreshold =
-        compactBlock.height >= latestKnownBlockHeight - BigInt(PRICE_RELEVANCE_THRESHOLDS.default);
-
-      // we can't use third-party price oracles for privacy reasons,
-      // so we have to get asset prices from swap results during block scans
-      // and store them locally in indexed-db.
-      if (blockInPriceRelevanceThreshold && compactBlock.swapOutputs.length) {
+      if (
+        // present swap outputs mean there are prices to update
+        compactBlock.swapOutputs.length &&
+        // only save prices that aren't already obsolete
+        compactBlock.height >= latestKnownBlockHeight - BigInt(PRICE_RELEVANCE_THRESHOLDS.default)
+      ) {
         await updatePricesFromSwaps(
           this.indexedDb,
           this.numeraires,
@@ -308,17 +287,11 @@ export class BlockProcessor implements BlockProcessorInterface {
         );
       }
 
-      // We only query Tendermint for the latest known block height once, when
-      // the block processor starts running. Once we're caught up, though, the
-      // chain will of course continue adding blocks, and we'll keep processing
-      // them. So, we need to update `latestKnownBlockHeight` once we've passed
-      // it.
       if (compactBlock.height > latestKnownBlockHeight) {
         latestKnownBlockHeight = compactBlock.height;
       }
 
-      const isLastBlockOfEpoch = !!compactBlock.epochRoot;
-      if (isLastBlockOfEpoch) {
+      if (compactBlock.epochRoot) {
         await this.handleEpochTransition(compactBlock.height, latestKnownBlockHeight);
       }
 
@@ -452,9 +425,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     return undefined;
   }
 
-  private async saveAndReturnDelegationMetadata(
-    identityKey: IdentityKey,
-  ): Promise<Metadata | undefined> {
+  async saveAndReturnDelegationMetadata(identityKey: IdentityKey) {
     const delegationTokenAssetId = new AssetId({
       altBaseDenom: `udelegation_${bech32mIdentityKey(identityKey)}`,
     });
@@ -567,23 +538,20 @@ export class BlockProcessor implements BlockProcessorInterface {
     }
   }
 
-  private async maybeUpsertAuctionWithNoteCommitment(spendableNoteRecord: SpendableNoteRecord) {
-    const assetId = spendableNoteRecord.note?.value?.assetId;
-    if (!assetId) {
-      return;
+  /**
+   * Detect auction NFTs and update the relevant auction records.
+   */
+  private async updateAuctions(newNotes: SpendableNoteRecord[]) {
+    for (const { noteCommitment, note } of newNotes) {
+      const metadata =
+        note?.value?.assetId && (await this.indexedDb.getAssetsMetadata(note.value.assetId));
+      const auctionIdString =
+        metadata?.display && assetPatterns.auctionNft.capture(metadata.display)?.auctionId;
+      if (auctionIdString) {
+        const auctionId = new AuctionId(auctionIdFromBech32(auctionIdString));
+        await this.indexedDb.upsertAuction(auctionId, { noteCommitment });
+      }
     }
-
-    const metadata = await this.indexedDb.getAssetsMetadata(assetId);
-    const captureGroups = assetPatterns.auctionNft.capture(metadata?.display ?? '');
-    if (!captureGroups) {
-      return;
-    }
-
-    const auctionId = new AuctionId(auctionIdFromBech32(captureGroups.auctionId));
-
-    await this.indexedDb.upsertAuction(auctionId, {
-      noteCommitment: spendableNoteRecord.noteCommitment,
-    });
   }
 
   private async saveTransactions(height: bigint, relevantTx: Map<TransactionId, Transaction>) {
@@ -603,63 +571,92 @@ export class BlockProcessor implements BlockProcessorInterface {
     const nextEpochIsLatestKnownEpoch =
       sctParams && latestKnownBlockHeight - nextEpochStartHeight < sctParams.epochDuration;
 
-    // If we're doing a full sync from block 0, there could be hundreds or even
-    // thousands of epoch transitions in the chain already. If we update
-    // validator infos on every epoch transition, we'd be making tons of
-    // unnecessary calls to the RPC node for validator infos. Instead, we'll
-    // only get updated validator infos once we're within the latest known
-    // epoch.
+    // validator info is only updated at modern epochs for performance reasons
     if (nextEpochIsLatestKnownEpoch) {
-      void this.updateValidatorInfos(nextEpochStartHeight);
+      void this.updateValidatorInfo(nextEpochStartHeight);
     }
   }
 
-  // TODO: refactor. there is definitely a better way to do this.  batch
-  // endpoint issue https://github.com/penumbra-zone/penumbra/issues/4688
-  private async updateValidatorInfos(nextEpochStartHeight: bigint): Promise<void> {
-    for await (const validatorInfoResponse of this.querier.stake.allValidatorInfos()) {
-      if (!validatorInfoResponse.validatorInfo) {
-        continue;
+  /**
+   * At the end of an epoch, update validator info to reflect current validator
+   * state and delegation token prices.
+   *
+   * Unfortunately, the current batch validator request endpoint only returns
+   * 'ACTIVE' or 'INACTIVE' validators, meaning if a validator has transitioned
+   * into a different state, it won't be updated.
+   *
+   * So, all known validators are iterated, and expected 'ACTIVE' or 'INACTIVE'
+   * validators missing from the update are checked individually.
+   *
+   * @see https://github.com/penumbra-zone/web/issues/1453
+   * @see https://github.com/penumbra-zone/penumbra/issues/4723
+   */
+  async updateValidatorInfo(nextEpochStartHeight: bigint): Promise<void> {
+    const getKnownValidators = this.indexedDb.iterateValidatorInfos();
+    const getCurrentValidators = this.querier.stake.validatorInfo({ showInactive: true });
+
+    const currentValidators = new Map(
+      (await Array.fromAsync(getCurrentValidators))
+        .filter(({ validatorInfo }) => validatorInfo)
+        .map(({ validatorInfo }) => [
+          bech32mIdentityKey(getIdentityKeyFromValidatorInfo(validatorInfo)),
+          validatorInfo!,
+        ]),
+    );
+
+    const expectedValidators = new Map(
+      (await Array.fromAsync(getKnownValidators))
+        .filter(
+          ({ status }) =>
+            status?.state?.state &&
+            [
+              ValidatorState_ValidatorStateEnum.ACTIVE,
+              ValidatorState_ValidatorStateEnum.INACTIVE,
+            ].includes(status.state.state),
+        )
+        .map(validatorInfo => [
+          bech32mIdentityKey(getIdentityKeyFromValidatorInfo(validatorInfo)),
+          validatorInfo,
+        ]),
+    );
+
+    const currentValidatorSet = new Set(currentValidators.keys());
+    const expectedValidatorSet = new Set(expectedValidators.keys());
+    const missingValidatorSet = expectedValidatorSet.difference(currentValidatorSet);
+
+    for await (const missingValidatorKey of missingValidatorSet) {
+      const { validatorInfo } = await this.querier.stake.getValidatorInfo({
+        identityKey: identityKeyFromBech32m(missingValidatorKey),
+      });
+      if (validatorInfo) {
+        await this.indexedDb.upsertValidatorInfo(validatorInfo);
+        void this.updateValidatorDelegationPrice(validatorInfo, nextEpochStartHeight);
+      } else {
+        const noValidatorInfo = expectedValidators.get(missingValidatorKey)!.clone();
+        // set state to "UNSPECIFIED", since there is no state information anywhere
+        noValidatorInfo.status!.state!.state = ValidatorState_ValidatorStateEnum.UNSPECIFIED;
+        await this.indexedDb.upsertValidatorInfo(noValidatorInfo);
       }
+    }
 
-      await this.indexedDb.upsertValidatorInfo(validatorInfoResponse.validatorInfo);
-
-      await this.updatePriceForValidatorDelegationToken(
-        validatorInfoResponse,
-        nextEpochStartHeight,
-      );
-
-      // this loop requests delegation token metadata for each validator
-      // individually. there may be very many, so we must artificially delay
-      // this loop or the RPC may hard-ratelimit us.
-      await new Promise(resolve =>
-        setTimeout(
-          resolve,
-          // an entire second
-          1000,
-        ),
-      );
+    for await (const validatorInfo of currentValidators.values()) {
+      await this.indexedDb.upsertValidatorInfo(validatorInfo);
+      void this.updateValidatorDelegationPrice(validatorInfo, nextEpochStartHeight);
     }
   }
 
-  private async updatePriceForValidatorDelegationToken(
-    validatorInfoResponse: ValidatorInfoResponse,
-    nextEpochStartHeight: bigint,
-  ) {
-    const identityKey = getIdentityKeyFromValidatorInfoResponse(validatorInfoResponse);
-
-    const metadata = await this.saveAndReturnDelegationMetadata(identityKey);
-
-    if (metadata) {
-      const assetId = getAssetId(metadata);
-      const exchangeRate = getExchangeRateFromValidatorInfoResponse(validatorInfoResponse);
-
-      await this.indexedDb.updatePrice(
-        assetId,
-        this.stakingAssetId,
-        toDecimalExchangeRate(exchangeRate),
-        nextEpochStartHeight,
-      );
-    }
+  /**
+   * Validator info contains exchange rate (price info) for the validator's
+   * delegation token. Prices are tracked for all known validators.
+   */
+  async updateValidatorDelegationPrice(validatorInfo: ValidatorInfo, nextEpochStartHeight: bigint) {
+    await this.indexedDb.updatePrice(
+      getAssetId(
+        await this.saveAndReturnDelegationMetadata(getIdentityKeyFromValidatorInfo(validatorInfo)),
+      ),
+      this.nativeAsset,
+      toDecimalExchangeRate(getExchangeRateFromValidatorInfo(validatorInfo)),
+      nextEpochStartHeight,
+    );
   }
 }

@@ -11,6 +11,8 @@ import {
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb.js';
 import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
 import {
+  GetValidatorInfoRequest,
+  GetValidatorInfoResponse,
   ValidatorInfoRequest,
   ValidatorInfoResponse,
   ValidatorPenaltyRequest,
@@ -25,6 +27,7 @@ import {
   TimestampByHeightRequest,
   TimestampByHeightResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb.js';
+import { PartialMessage } from '@bufbuild/protobuf';
 
 export interface RootQuerierInterface {
   app: AppQuerierInterface;
@@ -68,8 +71,9 @@ export interface IbcClientQuerierInterface {
 }
 
 export interface StakeQuerierInterface {
-  allValidatorInfos(req: ValidatorInfoRequest): AsyncIterable<ValidatorInfoResponse>;
-  validatorPenalty(req: ValidatorPenaltyRequest): Promise<ValidatorPenaltyResponse>;
+  getValidatorInfo(req: PartialMessage<GetValidatorInfoRequest>): Promise<GetValidatorInfoResponse>;
+  validatorInfo(req: PartialMessage<ValidatorInfoRequest>): AsyncIterable<ValidatorInfoResponse>;
+  validatorPenalty(req: PartialMessage<ValidatorPenaltyRequest>): Promise<ValidatorPenaltyResponse>;
 }
 
 export interface CnidariumQuerierInterface {

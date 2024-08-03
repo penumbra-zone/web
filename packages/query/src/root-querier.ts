@@ -4,7 +4,7 @@ import { TendermintQuerier } from './queriers/tendermint.js';
 import { ShieldedPoolQuerier } from './queriers/shielded-pool.js';
 import { IbcClientQuerier } from './queriers/ibc-client.js';
 import { CnidariumQuerier } from './queriers/cnidarium.js';
-import { StakeQuerier } from './queriers/staking.js';
+import { StakeQuerier } from './queriers/stake.js';
 import type { RootQuerierInterface } from '@penumbra-zone/types/querier';
 import { AuctionQuerier } from './queriers/auction.js';
 import { SctQuerier } from './queriers/sct.js';
