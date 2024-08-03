@@ -154,7 +154,6 @@ Table.Th = Th;
 const StyledTd = styled.td<CellStyledProps>`
   border-bottom: 1px solid ${props => props.theme.color.other.tonalStroke};
   color: ${props => props.theme.color.text.primary};
-  ${props => props.$width && `width: ${props.$width};`}
 
   ${StyledTbody} > ${StyledTr}:last-child > & {
     border-bottom: none;
