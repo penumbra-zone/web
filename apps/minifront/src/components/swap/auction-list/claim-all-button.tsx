@@ -24,11 +24,7 @@ export interface AuctionsBatch {
 
 // Assemble batch auctions for end or withdrawal.
 // All auctions in the batch will have the same 'AddressIndex'
-export const assembleAuctionBatch: (
-  auctions: AuctionInfo[],
-  filteredSeqNumber: bigint,
-  batchLimit: number,
-) => AuctionsBatch = (
+export const assembleAuctionBatch = (
   auctions: AuctionInfo[],
   filteredSeqNumber: bigint,
   batchLimit: number,
@@ -36,7 +32,6 @@ export const assembleAuctionBatch: (
   const filteredBySeqAuctions: AuctionInfo[] = auctions.filter(
     a => a.localSeqNum === filteredSeqNumber,
   );
-
   // Get the address index of the first auction in the list and filter other auctions with this address index
   const firstFoundAddressIndex: AddressIndex = filteredBySeqAuctions[0]?.addressIndex!;
 
