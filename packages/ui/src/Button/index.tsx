@@ -158,7 +158,15 @@ interface RegularProps {
 
 export type ButtonProps = BaseButtonProps & (IconOnlyProps | RegularProps);
 
-/** A component for all your button needs! */
+/**
+ * A component for all your button needs!
+ *
+ * See individual props for how to use `<Button />` in various forms.
+ *
+ * Note that, to use `<Button />` as a link, you can simple wrap it in an `<a
+ * />` (or `<Link />`, if you're using e.g., React Router) tag and leave
+ * `onClick` undefined.
+ */
 export const Button = ({
   children,
   disabled = false,
