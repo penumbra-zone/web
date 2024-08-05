@@ -1,3 +1,4 @@
+import { Density } from '@repo/ui/Density';
 import { Table } from '@repo/ui/Table';
 import { BalancesByAccount, groupByAccount, useBalancesResponses } from '../../../../state/shared';
 import { shouldDisplay } from '../../../../fetchers/balances/should-display';
@@ -11,6 +12,8 @@ import { ValueViewComponent } from '@repo/ui/ValueViewComponent';
 import { EquivalentValues } from './equivalent-values';
 import { TableTitle } from './table-title';
 import { Link } from 'react-router-dom';
+import { Button } from '@repo/ui/Button';
+import { ArrowRightLeft } from 'lucide-react';
 
 const getTradeLink = (balance: BalancesResponse): string => {
   const metadata = getMetadataFromBalancesResponseOptional(balance);
@@ -25,7 +28,7 @@ const filteredBalancesByAccountSelector = (
   zQueryState.data?.filter(shouldDisplay).sort(sortByPriorityScore).reduce(groupByAccount, []) ??
   [];
 
-const BUTTON_WIDTH_PX = 100;
+const BUTTON_CELL_WIDTH_PX = '56px';
 
 export const AssetsPage = () => {
   const balancesByAccount = useBalancesResponses({
@@ -39,9 +42,9 @@ export const AssetsPage = () => {
         <Table key={account.account} layout='fixed' title={<TableTitle account={account} />}>
           <Table.Thead>
             <Table.Tr>
-              <Table.Th width={`calc(50% - ${BUTTON_WIDTH_PX / 2}px)`}>Asset</Table.Th>
-              <Table.Th width={`calc(50% - ${BUTTON_WIDTH_PX / 2}px)`}>Estimate</Table.Th>
-              <Table.Th width={`${BUTTON_WIDTH_PX}px`} />
+              <Table.Th width={`calc(50% - (${BUTTON_CELL_WIDTH_PX} / 2))`}>Asset</Table.Th>
+              <Table.Th width={`calc(50% - (${BUTTON_CELL_WIDTH_PX} / 2))`}>Estimate</Table.Th>
+              <Table.Th width={BUTTON_CELL_WIDTH_PX} />
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
@@ -55,11 +58,12 @@ export const AssetsPage = () => {
                 </Table.Td>
 
                 <Table.Td>
-                  <Link
-                    className='opacity-0 transition [tr:hover>td>&]:opacity-100'
-                    to={getTradeLink(balance)}
-                  >
-                    Trade
+                  <Link to={getTradeLink(balance)}>
+                    <Density compact>
+                      <Button icon={ArrowRightLeft} iconOnly>
+                        Trade
+                      </Button>
+                    </Density>
                   </Link>
                 </Table.Td>
               </Table.Tr>
