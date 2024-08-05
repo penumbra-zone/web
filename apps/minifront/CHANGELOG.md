@@ -1,5 +1,25 @@
 # minifront
 
+## 6.15.0
+
+### Minor Changes
+
+- 807648a: Support viewing fresh state of jailed validators
+
+### Patch Changes
+
+- f983923: Fix NonNativeFeeWarning not being displayed
+- 6d02104: show all auctions by default
+- Updated dependencies [bd43d49]
+- Updated dependencies [0069132]
+- Updated dependencies [bd43d49]
+- Updated dependencies [807648a]
+  - @penumbra-zone/types@18.2.0
+  - @repo/ui@7.3.4
+  - @penumbra-zone/getters@13.0.1
+  - @penumbra-zone/crypto-web@19.0.0
+  - @penumbra-zone/perspective@23.0.0
+
 ## 6.14.2
 
 ### Patch Changes

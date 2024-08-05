@@ -1,5 +1,12 @@
 # node-status
 
+## 4.1.18
+
+### Patch Changes
+
+- Updated dependencies [0069132]
+  - @repo/ui@7.3.4
+
 ## 4.1.17
 
 ### Patch Changes

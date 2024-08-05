@@ -1,5 +1,22 @@
 # @penumbra-zone/storage
 
+## 23.0.0
+
+### Minor Changes
+
+- bd43d49: assert binary input dimensions
+- bd43d49: require complete GasPrices input to saveGasPrices
+- 807648a: Support viewing fresh state of jailed validators
+
+### Patch Changes
+
+- Updated dependencies [bd43d49]
+- Updated dependencies [bd43d49]
+- Updated dependencies [807648a]
+  - @penumbra-zone/types@18.2.0
+  - @penumbra-zone/getters@13.0.1
+  - @penumbra-zone/wasm@23.0.0
+
 ## 22.0.0
 
 ### Patch Changes

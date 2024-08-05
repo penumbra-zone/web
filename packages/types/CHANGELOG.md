@@ -1,5 +1,17 @@
 # @penumbra-zone/types
 
+## 18.2.0
+
+### Minor Changes
+
+- bd43d49: require complete GasPrices input to saveGasPrices
+- 807648a: Support viewing fresh state of jailed validators
+
+### Patch Changes
+
+- Updated dependencies [bd43d49]
+  - @penumbra-zone/getters@13.0.1
+
 ## 18.1.0
 
 ### Minor Changes
