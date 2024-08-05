@@ -4,7 +4,7 @@ import { large } from '../utils/typography';
 
 const Root = styled.section``;
 
-const Title = styled.h1`
+const Title = styled.h2`
   ${large};
 
   color: ${props => props.theme.color.base.white};
@@ -35,7 +35,7 @@ export interface CardProps {
    * ```
    */
   as?: WebTarget;
-  title?: string;
+  title?: ReactNode;
 }
 
 export const Card = ({ children, as = 'section', title }: CardProps) => {

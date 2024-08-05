@@ -4,13 +4,15 @@ import { Grid } from '@repo/ui/Grid';
 import { Tabs } from '@repo/ui/Tabs';
 import { usePagePath } from '../../../fetchers/page-path';
 import { PagePath } from '../../metadata/paths';
+import { AssetsCardTitle } from './assets-card-title';
+import { TransactionsCardTitle } from './transactions-card-title';
 
 /** @todo: Remove this function and its uses after we switch to v2 layout */
 const v2PathPrefix = (path: string) => `/v2${path}`;
 
 const CARD_TITLE_BY_PATH = {
-  [v2PathPrefix(PagePath.DASHBOARD)]: 'Asset Balances',
-  [v2PathPrefix(PagePath.TRANSACTIONS)]: 'Transaction List',
+  [v2PathPrefix(PagePath.DASHBOARD)]: <AssetsCardTitle />,
+  [v2PathPrefix(PagePath.TRANSACTIONS)]: <TransactionsCardTitle />,
 };
 
 export const DashboardLayout = () => {
