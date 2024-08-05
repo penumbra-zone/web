@@ -12,7 +12,7 @@ export const TransactionsPage = () => {
     <Table layout='fixed'>
       <Table.Thead>
         <Table.Tr>
-          <Table.Th>Block Height</Table.Th>
+          <Table.Th width='150px'>Block Height</Table.Th>
           <Table.Th>Description</Table.Th>
           <Table.Th width='125px'>Hash</Table.Th>
         </Table.Tr>
@@ -28,7 +28,11 @@ export const TransactionsPage = () => {
             </Table.Td>
             <Table.Td>
               <div className='flex gap-1'>
-                <Link to={`/tx/${summary.hash}`} className='shrink overflow-hidden'>
+                <Link
+                  to={`/tx/${summary.hash}`}
+                  className='shrink overflow-hidden'
+                  title={summary.hash}
+                >
                   <Text truncate as='div'>
                     {summary.hash}
                   </Text>
