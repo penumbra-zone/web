@@ -48,8 +48,8 @@ export const FullWidth: Story = {
           the size of the browser window.
         </Text>
         <Text p>
-          To view the <Text technical>&lt;Display /&gt;</Text> at full width, click the &quot;Full
-          Width&quot; item in the left sidebar.
+          To test <Text technical>&lt;Display /&gt;</Text> at full width, click the &quot;Full
+          Width&quot; item in the left sidebar, and try resizing your browser.
         </Text>
       </InnerWidthIndicator>
     ),
