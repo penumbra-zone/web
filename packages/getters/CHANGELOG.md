@@ -1,5 +1,11 @@
 # @penumbra-zone/getters
 
+## 13.0.1
+
+### Patch Changes
+
+- bd43d49: add export getAssetIdFromGasPrices
+
 ## 13.0.0
 
 ### Patch Changes

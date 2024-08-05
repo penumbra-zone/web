@@ -1,5 +1,22 @@
 # @penumbra-zone/query
 
+## 24.0.0
+
+### Minor Changes
+
+- 807648a: Support viewing fresh state of jailed validators
+
+### Patch Changes
+
+- bd43d49: correctly save gas prices from compact block
+- Updated dependencies [bd43d49]
+- Updated dependencies [bd43d49]
+- Updated dependencies [807648a]
+  - @penumbra-zone/types@18.2.0
+  - @penumbra-zone/getters@13.0.1
+  - @penumbra-zone/crypto-web@19.0.0
+  - @penumbra-zone/wasm@23.0.0
+
 ## 23.0.0
 
 ### Patch Changes

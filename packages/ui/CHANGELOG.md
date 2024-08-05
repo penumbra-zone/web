@@ -1,5 +1,15 @@
 # @penumbra-zone/ui
 
+## 7.3.4
+
+### Patch Changes
+
+- 0069132: Fix copy button styles
+- Updated dependencies [bd43d49]
+- Updated dependencies [807648a]
+  - @penumbra-zone/types@18.2.0
+  - @penumbra-zone/perspective@23.0.0
+
 ## 7.3.3
 
 ### Patch Changes

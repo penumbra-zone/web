@@ -1,5 +1,29 @@
 # @penumbra-zone/router
 
+## 27.0.0
+
+### Minor Changes
+
+- 807648a: Support viewing fresh state of jailed validators
+- ecc548e: Fix gas prices RPC
+- f650f48: Return jailed validators in delegation balances request
+
+### Patch Changes
+
+- 457e04f: use `Any.pack` to create `Any` messages
+- Updated dependencies [bd43d49]
+- Updated dependencies [bd43d49]
+- Updated dependencies [bd43d49]
+- Updated dependencies [807648a]
+- Updated dependencies [bd43d49]
+  - @penumbra-zone/storage@23.0.0
+  - @penumbra-zone/types@18.2.0
+  - @penumbra-zone/getters@13.0.1
+  - @penumbra-zone/query@24.0.0
+  - @penumbra-zone/crypto-web@19.0.0
+  - @penumbra-zone/wasm@23.0.0
+  - @penumbra-zone/perspective@23.0.0
+
 ## 26.0.0
 
 ### Patch Changes
