@@ -75,6 +75,7 @@ export const assetPatterns: AssetPatterns = {
     /^auctionnft_(?<seqNum>[0-9]+)_(?<auctionId>pauctid1[a-zA-HJ-NP-Z0-9]+)$/,
   ),
   lpNft: new RegexMatcher(/^lpnft_/),
+  // TODO: This should be a regex on the base denom and not the display denom
   delegationToken: new RegexMatcher(
     /^delegation_(?<idKey>penumbravalid1(?<id>[a-zA-HJ-NP-Z0-9]+))$/,
   ),
