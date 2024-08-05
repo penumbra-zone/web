@@ -38,8 +38,8 @@
     }
   },
   "devDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240703080008-312294d02bf9.1",
-    "@bufbuild/protobuf": "^1.10.0",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240804013626-f19a2ee01838.1",
+    "@bufbuild/protobuf": "1.10.0",
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/protobuf": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
@@ -49,8 +49,8 @@
     "@penumbra-zone/keys": "workspace:*"
   },
   "peerDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240703080008-312294d02bf9.1",
-    "@bufbuild/protobuf": "^1.10.0",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240804013626-f19a2ee01838.1",
+    "@bufbuild/protobuf": "1.10.0",
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/protobuf": "workspace:*",
     "@penumbra-zone/types": "workspace:*"

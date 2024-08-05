@@ -42,13 +42,13 @@
     "@penumbra-zone/transport-dom": "workspace:*"
   },
   "devDependencies": {
-    "@connectrpc/connect": "^1.4.0",
+    "@connectrpc/connect": "1.4.0",
     "@types/react": "^18.3.2",
     "react": "^18.3.1"
   },
   "peerDependencies": {
-    "@bufbuild/protobuf": "^1.10.0",
-    "@connectrpc/connect": "^1.4.0",
+    "@bufbuild/protobuf": "1.10.0",
+    "@connectrpc/connect": "1.4.0",
     "react": "^18.3.1"
   }
 }
