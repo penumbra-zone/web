@@ -31,7 +31,7 @@ import {
   getIdentityKeyFromValidatorInfoResponse,
 } from '@penumbra-zone/getters/validator-info-response';
 import { toDecimalExchangeRate } from '@penumbra-zone/types/amount';
-import { PRICE_RELEVANCE_THRESHOLDS, assetPatterns } from '@penumbra-zone/types/assets';
+import { assetPatterns, PRICE_RELEVANCE_THRESHOLDS } from '@penumbra-zone/types/assets';
 import type { BlockProcessorInterface } from '@penumbra-zone/types/block-processor';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import type { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
@@ -657,6 +657,9 @@ export class BlockProcessor implements BlockProcessorInterface {
   // TODO: refactor. there is definitely a better way to do this.  batch
   // endpoint issue https://github.com/penumbra-zone/penumbra/issues/4688
   private async updateValidatorInfos(nextEpochStartHeight: bigint): Promise<void> {
+    // It's important to clear the table so any stale (jailed, tombstoned, etc) entries are filtered out.
+    await this.indexedDb.clearValidatorInfos();
+
     for await (const validatorInfoResponse of this.querier.stake.allValidatorInfos()) {
       if (!validatorInfoResponse.validatorInfo) {
         continue;

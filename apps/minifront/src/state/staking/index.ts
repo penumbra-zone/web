@@ -8,6 +8,7 @@ import {
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 import { planBuildBroadcast } from '../helpers';
 import {
+  DelegationsByAddressIndexRequest_Filter,
   TransactionPlannerRequest,
   UnbondingTokensByAddressIndexResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
@@ -231,7 +232,10 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
     };
     const throttledFlushToState = throttle(flushToState, THROTTLE_MS, { trailing: true });
 
-    for await (const response of viewClient.delegationsByAddressIndex({ addressIndex })) {
+    for await (const response of viewClient.delegationsByAddressIndex({
+      addressIndex,
+      filter: DelegationsByAddressIndexRequest_Filter.ALL,
+    })) {
       if (newAbortController.signal.aborted) {
         throttledFlushToState.cancel();
         return;

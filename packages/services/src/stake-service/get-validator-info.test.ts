@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { IndexedDbMock, MockServices } from '../test-utils.js';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { StakeService } from '@penumbra-zone/protobuf';
@@ -14,6 +14,7 @@ import { getValidatorInfo } from './get-validator-info.js';
 describe('GetValidatorInfo request handler', () => {
   let mockServices: MockServices;
   let mockIndexedDb: IndexedDbMock;
+  let mockStakingQuerierValidatorInfo: Mock;
   let mockCtx: HandlerContext;
   let req: GetValidatorInfoRequest;
   const mockGetValidatorInfoResponse = new GetValidatorInfoResponse({
@@ -29,11 +30,19 @@ describe('GetValidatorInfo request handler', () => {
     mockIndexedDb = {
       getValidatorInfo: vi.fn(),
     };
+
+    mockStakingQuerierValidatorInfo = vi.fn();
+
     mockServices = {
       getWalletServices: vi.fn(() =>
-        Promise.resolve({ indexedDb: mockIndexedDb }),
+        Promise.resolve({
+          indexedDb: mockIndexedDb,
+          querier: {
+            stake: { validatorInfo: mockStakingQuerierValidatorInfo },
+          },
+        }),
       ) as MockServices['getWalletServices'],
-    };
+    } satisfies MockServices;
     mockCtx = createHandlerContext({
       service: StakeService,
       method: StakeService.methods.validatorInfo,
@@ -50,7 +59,13 @@ describe('GetValidatorInfo request handler', () => {
     });
   });
 
-  it('should successfully get validator info when idb has them', async () => {
+  it('should fail to get validator info if identity key is not passed', async () => {
+    await expect(getValidatorInfo(new GetValidatorInfoRequest(), mockCtx)).rejects.toThrow(
+      'Missing identityKey in request',
+    );
+  });
+
+  it('should successfully return validator info when idb has them', async () => {
     mockIndexedDb.getValidatorInfo?.mockResolvedValueOnce(
       mockGetValidatorInfoResponse.validatorInfo,
     );
@@ -59,13 +74,16 @@ describe('GetValidatorInfo request handler', () => {
     expect(validatorInfoResponse.validatorInfo).toEqual(mockGetValidatorInfoResponse.validatorInfo);
   });
 
-  it('should fail to get validator info when idb has none', async () => {
-    await expect(getValidatorInfo(req, mockCtx)).rejects.toThrow('No found validator info');
+  it('should successfully return validator info when ibd does not, but remote does have them', async () => {
+    mockStakingQuerierValidatorInfo = vi.fn().mockResolvedValue(mockGetValidatorInfoResponse);
+
+    const validatorInfoResponse = await getValidatorInfo(req, mockCtx);
+    expect(validatorInfoResponse.validatorInfo).toEqual(mockGetValidatorInfoResponse.validatorInfo);
   });
 
-  it('should fail to get validator info if identity key is not passed', async () => {
-    await expect(getValidatorInfo(new GetValidatorInfoRequest(), mockCtx)).rejects.toThrow(
-      'Missing identityKey in request',
-    );
+  it('should fail to get validator info when idb has none', async () => {
+    mockStakingQuerierValidatorInfo = vi.fn().mockResolvedValue({});
+
+    await expect(getValidatorInfo(req, mockCtx)).rejects.toThrow('No found validator info');
   });
 });

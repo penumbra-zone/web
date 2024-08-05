@@ -2,6 +2,8 @@ import { PromiseClient } from '@connectrpc/connect';
 import { createClient } from './utils.js';
 import { StakeService } from '@penumbra-zone/protobuf';
 import {
+  GetValidatorInfoRequest,
+  GetValidatorInfoResponse,
   ValidatorInfoResponse,
   ValidatorPenaltyRequest,
   ValidatorPenaltyResponse,
@@ -13,6 +15,10 @@ export class StakeQuerier implements StakeQuerierInterface {
 
   constructor({ grpcEndpoint }: { grpcEndpoint: string }) {
     this.client = createClient(grpcEndpoint, StakeService);
+  }
+
+  validatorInfo(req: GetValidatorInfoRequest): Promise<GetValidatorInfoResponse> {
+    return this.client.getValidatorInfo(req);
   }
 
   allValidatorInfos(): AsyncIterable<ValidatorInfoResponse> {

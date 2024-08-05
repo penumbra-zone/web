@@ -689,6 +689,10 @@ export class IndexedDb implements IndexedDbInterface {
     );
   }
 
+  async clearValidatorInfos() {
+    await this.db.clear('VALIDATOR_INFOS');
+  }
+
   async getValidatorInfo(identityKey: IdentityKey): Promise<ValidatorInfo | undefined> {
     // bech32m conversion asserts length
     const key = bech32mIdentityKey(identityKey);
