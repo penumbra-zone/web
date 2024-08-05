@@ -11,7 +11,14 @@ const Title = styled.h1`
   padding: ${props => props.theme.spacing(3)};
 `;
 
+const TEN_PERCENT_OPACITY_IN_HEX = '1a';
+const ONE_PERCENT_OPACITY_IN_HEX = '03';
 const Content = styled.div`
+  background: linear-gradient(
+    136deg,
+    ${props => props.theme.color.neutral.contrast + TEN_PERCENT_OPACITY_IN_HEX} 6.32%,
+    ${props => props.theme.color.neutral.contrast + ONE_PERCENT_OPACITY_IN_HEX} 75.55%
+  );
   backdrop-filter: blur(${props => props.theme.blur.lg});
   border-radius: ${props => props.theme.borderRadius.xl};
   padding: ${props => props.theme.spacing(3)};
