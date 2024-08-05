@@ -3,8 +3,8 @@ import {
   IdentityKey,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 import { customizeSymbol } from '@penumbra-zone/wasm/metadata';
-import { assetPatterns } from '@penumbra-zone/types/assets';
-import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
+import { assetPatterns, DelegationCaptureGroups } from '@penumbra-zone/types/assets';
+import { bech32mIdentityKey, identityKeyFromBech32m } from '@penumbra-zone/bech32m/penumbravalid';
 import { Any } from '@bufbuild/protobuf';
 import { getValidatorInfo } from '@penumbra-zone/getters/validator-info-response';
 import { getIdentityKeyFromValidatorInfo } from '@penumbra-zone/getters/validator-info';
@@ -30,6 +30,15 @@ import { HandlerContext } from '@connectrpc/connect';
 const getDelegationTokenBaseDenom = (validatorInfo: ValidatorInfo) =>
   `udelegation_${bech32mIdentityKey(getIdentityKeyFromValidatorInfo(validatorInfo))}`;
 
+const responseWithExtMetadata = function* (delegation: ValueView, extendedMetadata: Any) {
+  const withValidatorInfo = delegation.clone();
+  if (withValidatorInfo.valueView.case !== 'knownAssetId') {
+    throw new Error(`Unexpected ValueView case: ${withValidatorInfo.valueView.case}`);
+  }
+  withValidatorInfo.valueView.value.extendedMetadata = extendedMetadata;
+  yield new DelegationsByAddressIndexResponse({ valueView: withValidatorInfo });
+};
+
 export const delegationsByAddressIndex: Impl['delegationsByAddressIndex'] = async function* (
   req,
   ctx,
@@ -44,7 +53,7 @@ export const delegationsByAddressIndex: Impl['delegationsByAddressIndex'] = asyn
     throw new Error('Staking context not found');
   }
 
-  const tracker = await DelegationTokenTracker.init({ addressIndex, ctx });
+  const delTokenTracker = await DelegationTokenTracker.init({ addressIndex, ctx });
 
   // See https://github.com/typescript-eslint/typescript-eslint/issues/7114
   // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
@@ -59,19 +68,11 @@ export const delegationsByAddressIndex: Impl['delegationsByAddressIndex'] = asyn
       validatorInfoResponse,
     );
 
-    const delegation = tracker.getDelegationFor(identityKey);
+    const delegation = delTokenTracker.getDelegationFor(identityKey);
 
     if (delegation) {
-      const withValidatorInfo = delegation.clone();
-
-      if (withValidatorInfo.valueView.case !== 'knownAssetId') {
-        throw new Error(`Unexpected ValueView case: ${withValidatorInfo.valueView.case}`);
-      }
-
-      withValidatorInfo.valueView.value.extendedMetadata = extendedMetadata;
-
-      yield new DelegationsByAddressIndexResponse({ valueView: withValidatorInfo });
-      tracker.markAsQueried(identityKey);
+      yield* responseWithExtMetadata(delegation, extendedMetadata);
+      delTokenTracker.markAsQueried(identityKey);
     } else {
       // See https://github.com/typescript-eslint/typescript-eslint/issues/7114
       // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
@@ -106,29 +107,31 @@ export const delegationsByAddressIndex: Impl['delegationsByAddressIndex'] = asyn
 
   // Step 2: For the delegation tokens that haven't been queried for, it must mean they are jailed.
   //         It's necessary to query for these individually as they are not available in the previous query.
-  const allUnqueried = tracker.allUnqueried();
-  for (const valueView of allUnqueried) {
-    // TODO: Query metadata too
-    // const test = await stakeClient.getValidatorInfo({ showInactive });
-    // const validatorInfo = getValidatorInfo(validatorInfoResponse);
-    // const extendedMetadata = Any.pack(validatorInfo);
-    // const withValidatorInfo = delegation.clone();
-    // if (withValidatorInfo.valueView.case !== 'knownAssetId') {
-    //   throw new Error(`Unexpected ValueView case: ${withValidatorInfo.valueView.case}`);
-    // }
-    // withValidatorInfo.valueView.value.extendedMetadata = extendedMetadata;
+  const allUnqueried = delTokenTracker.allUnqueried();
+  for (const { identityKey, valueView } of allUnqueried) {
+    const { validatorInfo } = await stakeClient.getValidatorInfo({ identityKey });
+    if (!validatorInfo) {
+      console.warn(`No validator info found for ${bech32mIdentityKey(identityKey)}`);
+      continue;
+    }
 
-    yield new DelegationsByAddressIndexResponse({ valueView });
+    const extendedMetadata = Any.pack(validatorInfo);
+    yield* responseWithExtMetadata(valueView, extendedMetadata);
   }
 };
 
+type Bech32IdentityKey = string;
+
 interface DelTokenQueryStatus {
-  balance: BalancesResponse;
+  valueView: ValueView;
   queried: boolean;
+  identityKey: IdentityKey;
 }
 
+type DelTokenMap = Record<Bech32IdentityKey, DelTokenQueryStatus>;
+
 class DelegationTokenTracker {
-  private constructor(private readonly delTokens: DelTokenQueryStatus[]) {}
+  private constructor(private readonly delTokens: DelTokenMap) {}
 
   // Create a new Key instance from a password. Do not store the Key, only KeyPrint.
   static async init({
@@ -142,47 +145,40 @@ class DelegationTokenTracker {
       balances(new BalancesRequest({ accountFilter: addressIndex }), ctx),
     );
 
-    const allDelTokens = allBalances
-      .map(b => new BalancesResponse(b))
-      .filter(({ balanceView }) => this.isDelegationToken(balanceView))
-      .map(balance => {
-        return {
-          balance,
+    const delTokenMap: DelTokenMap = {};
+
+    for (const partialRes of allBalances) {
+      const res = new BalancesResponse(partialRes);
+      const match = this.getDelTokenCaptureGroups(res.balanceView);
+      if (match && res.balanceView) {
+        delTokenMap[match.idKey] = {
+          valueView: res.balanceView,
           queried: false,
+          identityKey: new IdentityKey(identityKeyFromBech32m(match.idKey)),
         };
-      });
-    return new this(allDelTokens);
-  }
-
-  private static isDelegationToken(view?: ValueView): boolean {
-    const match = assetPatterns.delegationToken.capture(getDisplayDenomFromView(view));
-    return Boolean(match);
-  }
-
-  private findDelegation(idKey: IdentityKey): DelTokenQueryStatus | undefined {
-    for (const t of this.delTokens) {
-      const match = assetPatterns.delegationToken.capture(
-        getDisplayDenomFromView(t.balance.balanceView),
-      );
-      if (!match || bech32mIdentityKey(idKey) === match.idKey) {
-        continue;
       }
-
-      return t;
     }
-    return undefined;
+    return new this(delTokenMap);
+  }
+
+  private static getDelTokenCaptureGroups(view?: ValueView): DelegationCaptureGroups | undefined {
+    return assetPatterns.delegationToken.capture(getDisplayDenomFromView(view));
+  }
+
+  private findDelegationStatus(idKey: IdentityKey): DelTokenQueryStatus | undefined {
+    return this.delTokens[bech32mIdentityKey(idKey)];
   }
 
   getDelegationFor(idKey: IdentityKey): ValueView | undefined {
-    const delegation = this.findDelegation(idKey);
+    const delegation = this.findDelegationStatus(idKey);
     if (delegation) {
-      return delegation.balance.balanceView;
+      return delegation.valueView;
     }
     return undefined;
   }
 
   markAsQueried(idKey: IdentityKey): void {
-    const delegation = this.findDelegation(idKey);
+    const delegation = this.findDelegationStatus(idKey);
     if (!delegation) {
       console.warn(
         'tried to mark a delegation token as queried the user did not have a balance for',
@@ -192,10 +188,7 @@ class DelegationTokenTracker {
     }
   }
 
-  allUnqueried(): ValueView[] {
-    return this.delTokens
-      .filter(t => !t.queried)
-      .map(t => t.balance.balanceView)
-      .filter(Boolean) as ValueView[];
+  allUnqueried(): DelTokenQueryStatus[] {
+    return Object.values(this.delTokens).filter(t => !t.queried);
   }
 }
