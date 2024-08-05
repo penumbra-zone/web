@@ -107,16 +107,18 @@ export const delegationsByAddressIndex: Impl['delegationsByAddressIndex'] = asyn
 
   // Step 2: For the delegation tokens that haven't been queried for, it must mean they are jailed.
   //         It's necessary to query for these individually as they are not available in the previous query.
-  const allUnqueried = delTokenTracker.allUnqueried();
-  for (const { identityKey, valueView } of allUnqueried) {
-    const { validatorInfo } = await stakeClient.getValidatorInfo({ identityKey });
-    if (!validatorInfo) {
-      console.warn(`No validator info found for ${bech32mIdentityKey(identityKey)}`);
-      continue;
-    }
+  if (showInactive) {
+    const allUnqueried = delTokenTracker.allUnqueried();
+    for (const { identityKey, valueView } of allUnqueried) {
+      const { validatorInfo } = await stakeClient.getValidatorInfo({ identityKey });
+      if (!validatorInfo) {
+        console.warn(`No validator info found for ${bech32mIdentityKey(identityKey)}`);
+        continue;
+      }
 
-    const extendedMetadata = Any.pack(validatorInfo);
-    yield* responseWithExtMetadata(valueView, extendedMetadata);
+      const extendedMetadata = Any.pack(validatorInfo);
+      yield* responseWithExtMetadata(valueView, extendedMetadata);
+    }
   }
 };
 
