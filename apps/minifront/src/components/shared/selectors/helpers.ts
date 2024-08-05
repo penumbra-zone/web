@@ -1,6 +1,6 @@
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import { getMetadataFromBalancesResponseOptional } from '@penumbra-zone/getters/balances-response';
+import { getMetadataFromBalancesResponse } from '@penumbra-zone/getters/balances-response';
 
 export type BalanceOrMetadata = BalancesResponse | Metadata;
 
@@ -18,7 +18,7 @@ export const mergeBalancesAndAssets = (
 ): BalanceOrMetadata[] => {
   const filteredAssets = assets.filter(asset => {
     return !balances.some(balance => {
-      const balanceMetadata = getMetadataFromBalancesResponseOptional(balance);
+      const balanceMetadata = getMetadataFromBalancesResponse.optional()(balance);
       return balanceMetadata?.equals(asset);
     });
   });

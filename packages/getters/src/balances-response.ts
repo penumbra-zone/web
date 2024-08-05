@@ -7,18 +7,11 @@ export const getBalanceView = createGetter(
   (balancesResponse?: BalancesResponse) => balancesResponse?.balanceView,
 );
 
-export const getAssetIdFromBalancesResponseOptional = getBalanceView
-  .optional()
-  .pipe(getMetadata)
-  .pipe(getAssetId);
+export const getAssetIdFromBalancesResponse = getBalanceView.pipe(getMetadata).pipe(getAssetId);
 
 export const getMetadataFromBalancesResponse = getBalanceView.pipe(getMetadata);
 
-export const getDisplayFromBalancesResponse = getMetadataFromBalancesResponse
-  .optional()
-  .pipe(getDisplay);
-
-export const getMetadataFromBalancesResponseOptional = getBalanceView.optional().pipe(getMetadata);
+export const getDisplayFromBalancesResponse = getMetadataFromBalancesResponse.pipe(getDisplay);
 
 export const getAddressIndex = createGetter((balancesResponse?: BalancesResponse) =>
   balancesResponse?.accountAddress?.addressView.case === 'decoded'

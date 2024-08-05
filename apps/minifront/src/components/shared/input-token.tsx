@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
-import { getMetadataFromBalancesResponseOptional } from '@penumbra-zone/getters/balances-response';
+import { getMetadataFromBalancesResponse } from '@penumbra-zone/getters/balances-response';
 import { BalanceValueView } from '@repo/ui/components/ui/balance-value-view';
 import { cn } from '@repo/ui/lib/utils';
 import BalanceSelector from './selectors/balance-selector';
@@ -38,7 +38,9 @@ export default function InputToken({
   loading,
 }: InputTokenProps) {
   const tokenExponent = useMemo(() => {
-    return getDisplayDenomExponent.optional()(getMetadataFromBalancesResponseOptional(selection));
+    return getDisplayDenomExponent.optional()(
+      getMetadataFromBalancesResponse.optional()(selection),
+    );
   }, [selection]);
 
   const setInputToBalanceMax = () => {

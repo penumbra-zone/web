@@ -6,7 +6,7 @@ import { joinLoHiAmount } from '@penumbra-zone/types/amount';
 import {
   getAmount,
   getBalanceView,
-  getMetadataFromBalancesResponseOptional,
+  getMetadataFromBalancesResponse,
 } from '@penumbra-zone/getters/balances-response';
 import { ArrowRight } from 'lucide-react';
 import { useMemo } from 'react';
@@ -70,7 +70,7 @@ export const TokenSwapInput = () => {
     useStoreShallow(tokenSwapInputSelector);
   const assetOutBalance = getAssetOutBalance(balancesResponses?.data, assetIn, assetOut);
   const assetInExponent = useMemo(() => {
-    return getDisplayDenomExponent.optional()(getMetadataFromBalancesResponseOptional(assetIn));
+    return getDisplayDenomExponent.optional()(getMetadataFromBalancesResponse.optional()(assetIn));
   }, [assetIn]);
 
   const maxAmount = getAmount.optional()(assetIn);
