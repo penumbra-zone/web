@@ -14,6 +14,10 @@ export const getValidator = createGetter(
   (validatorInfo?: ValidatorInfo) => validatorInfo?.validator,
 );
 
+export const getValidatorState = createGetter(
+  (validatorInfo?: ValidatorInfo) => validatorInfo?.status?.state?.state,
+);
+
 export const getVotingPowerFromValidatorInfo = getStatus.pipe(getVotingPower);
 
 export const getStateEnumFromValidatorInfo = getStatus.pipe(getState).pipe(getValidatorStateEnum);
