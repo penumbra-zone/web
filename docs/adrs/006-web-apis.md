@@ -41,9 +41,19 @@ Creating the `client` should be the starting point for any application working w
 ```ts
 import { PenumbraClient } from '@penumbra-zone/client';
 
-export const providerManifests: Record<string, PenumbraManifest> = await PenumbraClient.manifests();
-const providerOrigin: keyof providerManifests = '....';
-export const client = new PenumbraClient(providerOrigin);
+const providerManifests: Record<
+  string,
+  Promise<PenumbraManifest>
+> = PenumbraClient.providerManifests();
+const someProviderOrigin: keyof providerManifests = '....';
+
+// connect will fetch and verify manifest before initiating connection, then return an active client
+const someProviderClient = await PenumbraClient.connect(someProviderOrigin);
+
+// or, a caller could do it independently
+const someProviderManifest = await providerManifests[someProviderOrigin];
+const createdProviderClient = new PenumbraClient(someProviderOrigin);
+void createdProviderClient.connect();
 ```
 
 The flow of work with the `client` would be as follows:
