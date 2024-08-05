@@ -12,6 +12,10 @@ const meta: Meta<typeof Button> = {
       options: ['None', 'Check', 'ArrowLeftRight'],
       mapping: { None: undefined, Check, ArrowLeftRight },
     },
+    iconOnly: {
+      options: ['true', 'false', 'adornment'],
+      mapping: { true: true, false: false, adornment: 'adornment' },
+    },
     onClick: { control: false },
   },
 };
@@ -26,5 +30,6 @@ export const Basic: Story = {
     disabled: false,
     icon: Check,
     iconOnly: false,
+    type: 'button',
   },
 };

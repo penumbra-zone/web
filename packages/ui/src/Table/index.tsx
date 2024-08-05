@@ -3,6 +3,7 @@ import styled, { css } from 'styled-components';
 import { tableHeading, tableItem } from '../utils/typography';
 import { Density } from '../types/Density';
 import { useDensity } from '../hooks/useDensity';
+import { ConditionalWrap } from '../utils/ConditionalWrap';
 
 const FIVE_PERCENT_OPACITY_IN_HEX = '0d';
 
@@ -15,7 +16,18 @@ const StyledTable = styled.table`
   border-radius: ${props => props.theme.borderRadius.lg};
 `;
 
+const TitleAndTableWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const TitleWrapper = styled.div`
+  padding: ${props => props.theme.spacing(3)};
+`;
+
 export interface TableProps {
+  /** Content that will appear above the table. */
+  title?: ReactNode;
   children: ReactNode;
 }
 
@@ -42,13 +54,37 @@ export interface TableProps {
  * </Table>
  * ```
  *
- * By design, most `<Table.* />` elements only accept a `children` prop. No
- * styling or customization is permitted. This ensures that all tables look
- * consistent throughout the Penumbra UI.
+ * By design, `<Table.* />` elements have limited props. No styling or
+ * customization is permitted. This ensures that all tables look consistent
+ * throughout the Penumbra UI.
+ *
+ * To render title content above the table, pass a `title` prop:
+ *
+ * ```tsx
+ * <Table title="Here's the table title">
+ *   ...
+ * </Table>
+ *
+ * // or...
+ *
+ * <Table title={<div>Here is some rich table title content</div>}>
+ *   ...
+ * </Table>
+ * ```
  */
-export const Table = (props: TableProps) => {
-  return <StyledTable cellSpacing={0} cellPadding={0} {...props} />;
-};
+export const Table = ({ title, ...props }: TableProps) => (
+  <ConditionalWrap
+    if={!!title}
+    then={children => (
+      <TitleAndTableWrapper>
+        <TitleWrapper>{title}</TitleWrapper>
+        {children}
+      </TitleAndTableWrapper>
+    )}
+  >
+    <StyledTable cellSpacing={0} cellPadding={0} {...props} />
+  </ConditionalWrap>
+);
 
 const Thead = ({ children }: PropsWithChildren) => <thead>{children}</thead>;
 Table.Thead = Thead;

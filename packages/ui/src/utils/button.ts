@@ -4,11 +4,21 @@ export type ActionType = 'default' | 'accent' | 'unshield' | 'destructive';
 
 export type Priority = 'primary' | 'secondary';
 
+/** Shared styles to use for any `<button />` */
+export const buttonBase = css`
+  appearance: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+`;
+
 /** Adds a focus outline to a button using the `:focus-within` pseudoclass. */
 export const focusOutline = css<{
   $getFocusOutlineColor: (theme: DefaultTheme) => string;
   $getBorderRadius: (theme: DefaultTheme) => string;
 }>`
+  position: relative;
+
   &::after {
     content: '';
     position: absolute;
@@ -48,6 +58,8 @@ export const focusOutline = css<{
 export const overlays = css<{
   $getBorderRadius: (theme: DefaultTheme) => string;
 }>`
+  position: relative;
+
   &::before {
     border-radius: ${props => props.$getBorderRadius(props.theme)};
     content: '';

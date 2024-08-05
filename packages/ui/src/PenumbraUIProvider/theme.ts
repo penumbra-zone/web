@@ -181,7 +181,7 @@ export const theme = {
       special: PALETTE.orange['400'],
     },
     action: {
-      hoverOverlay: PALETTE.neutral['50'] + FIFTEEN_PERCENT_OPACITY_IN_HEX,
+      hoverOverlay: PALETTE.teal['400'] + FIFTEEN_PERCENT_OPACITY_IN_HEX,
       activeOverlay: PALETTE.neutral['950'] + FIFTEEN_PERCENT_OPACITY_IN_HEX,
       disabledOverlay: PALETTE.neutral['950'] + EIGHTY_PERCENT_OPACITY_IN_HEX,
       primaryFocusOutline: PALETTE.orange['400'],

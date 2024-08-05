@@ -33,7 +33,7 @@ const DATA = [
 export const Basic: Story = {
   render: function Render() {
     return (
-      <Table>
+      <Table title={<Text large>Recent transactions</Text>}>
         <Table.Thead>
           <Table.Tr>
             <Table.Th hAlign='right'>Block height</Table.Th>
