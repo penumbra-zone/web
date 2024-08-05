@@ -100,15 +100,15 @@ import type { PromiseClient } from '@connectrpc/connect';
 interface PenumbraClient {
 
   // static methods
-  public static manifests: () => Record<string, Promise<PenumbraManifest>>;
+  public static providerManifests: () => Record<string, Promise<PenumbraManifest>>;
 
   // provider-specific static methods
-  public static manifest: (providerOrigin?: string) =>  Promise<PenumbraManifest>;
-  public static isConnected: (providerOrigin?: string) => boolean;
-  public static state: (providerOrigin?: string) => PenumbraState;
+  public static providerManifest: (providerOrigin?: string) =>  Promise<PenumbraManifest>;
+  public static providerIsConnected: (providerOrigin?: string) => boolean;
+  public static providerState: (providerOrigin?: string) => PenumbraState;
 
   /** Initiates initiates connection, returns a client instance. */
-  public static connect: (providerOrigin?: string) => Promise<PenumbraClient>;
+  public static providerConnect: (providerOrigin?: string) => Promise<PenumbraClient>;
 
   // instance features
 
