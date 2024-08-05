@@ -9,7 +9,12 @@ import { motion } from 'framer-motion';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import { emptyBalanceResponse } from '../../../utils/empty-balance-response';
 import { bySearch } from './search-filters';
-import { BalanceOrMetadata, isMetadata, mergeBalancesAndAssets } from './helpers';
+import {
+  BalanceOrMetadata,
+  isMetadata,
+  mergeBalancesAndAssets,
+  useSyncSelectedBalance,
+} from './helpers';
 import { BalanceItem } from './balance-item';
 import { cn } from '@repo/ui/lib/utils';
 import { LoadingIndicator } from './loading-indicator';
@@ -44,6 +49,7 @@ export default function BalanceSelector({
 
   const allAssets = mergeBalancesAndAssets(balances, assets);
   const filteredBalances = search ? allAssets.filter(bySearch(search)) : allAssets;
+  useSyncSelectedBalance({ balances, value, onChange });
 
   const onSelect = (asset: BalanceOrMetadata) => {
     if (!isMetadata(asset)) {

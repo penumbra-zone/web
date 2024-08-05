@@ -172,6 +172,7 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
 
       get().swap.setAmount('');
       get().swap.dutchAuction.auctionInfos.revalidate();
+      get().shared.balancesResponses.revalidate();
     } finally {
       set(state => {
         state.swap.dutchAuction.txInProgress = false;
@@ -186,6 +187,7 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
     });
     await planBuildBroadcast('dutchAuctionEnd', req);
     get().swap.dutchAuction.auctionInfos.revalidate();
+    get().shared.balancesResponses.revalidate();
   },
 
   withdraw: async (auctionId, currentSeqNum, addressIndex) => {
@@ -195,6 +197,7 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
     });
     await planBuildBroadcast('dutchAuctionWithdraw', req);
     get().swap.dutchAuction.auctionInfos.revalidate();
+    get().shared.balancesResponses.revalidate();
   },
 
   reset: () =>

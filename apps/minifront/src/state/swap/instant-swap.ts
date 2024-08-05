@@ -149,6 +149,7 @@ export const createInstantSwapSlice = (): SliceCreator<InstantSwapSlice> => (set
         set(state => {
           state.swap.amount = '';
         });
+        get().shared.balancesResponses.revalidate();
       } finally {
         set(state => {
           state.swap.instantSwap.txInProgress = false;
