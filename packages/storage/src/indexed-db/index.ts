@@ -63,32 +63,39 @@ import {
   DutchAuctionDescription,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
-import { PartialMessage } from '@bufbuild/protobuf';
+import { PartialMessage, PlainMessage } from '@bufbuild/protobuf';
 import { getAmountFromRecord } from '@penumbra-zone/getters/spendable-note-record';
 import { isZero } from '@penumbra-zone/types/amount';
 import { IDB_VERSION } from './config.js';
 
-const assertBytes = (v?: Uint8Array, expect?: number, name = 'value') => {
+const assertBytes = (v?: Uint8Array, expect?: number, name = 'value'): v is Uint8Array => {
   if (expect !== undefined && v?.length !== expect) {
     throw new Error(`Expected ${name} of ${expect} bytes, but got ${v?.length} bytes`);
   } else if (expect === undefined && !v?.length) {
     throw new Error(`Expected ${name} to be non-empty, but got ${v?.length} bytes`);
   }
+  return true;
 };
 
 // yes these are all 32 bytes
-const assertAssetId = (assetId?: PartialMessage<AssetId>) =>
+const assertAssetId = (assetId?: PartialMessage<AssetId>): assetId is PlainMessage<AssetId> =>
   assertBytes(assetId?.inner, 32, 'AssetId');
-const assertAuctionId = (auctionId?: PartialMessage<AuctionId>) =>
-  assertBytes(auctionId?.inner, 32, 'AuctionId');
-const assertCommitment = (commitment?: PartialMessage<StateCommitment>) =>
+const assertAuctionId = (
+  auctionId?: PartialMessage<AuctionId>,
+): auctionId is PlainMessage<AuctionId> => assertBytes(auctionId?.inner, 32, 'AuctionId');
+const assertCommitment = (
+  commitment?: PartialMessage<StateCommitment>,
+): commitment is PlainMessage<StateCommitment> =>
   assertBytes(commitment?.inner, 32, 'StateCommitment');
-const assertNullifier = (nullifier?: PartialMessage<Nullifier>) =>
-  assertBytes(nullifier?.inner, 32, 'Nullifier');
-const assertTransactionId = (txId?: PartialMessage<TransactionId>) =>
-  assertBytes(txId?.inner, 32, 'TransactionId');
-const assertPositionId = (positionId?: PartialMessage<PositionId>) =>
-  assertBytes(positionId?.inner, 32, 'PositionId');
+const assertNullifier = (
+  nullifier?: PartialMessage<Nullifier>,
+): nullifier is PartialMessage<Nullifier> => assertBytes(nullifier?.inner, 32, 'Nullifier');
+const assertTransactionId = (
+  txId?: PartialMessage<TransactionId>,
+): txId is PartialMessage<TransactionId> => assertBytes(txId?.inner, 32, 'TransactionId');
+const assertPositionId = (
+  positionId?: PartialMessage<PositionId>,
+): positionId is PlainMessage<PositionId> => assertBytes(positionId?.inner, 32, 'PositionId');
 
 interface IndexedDbProps {
   chainId: string;
@@ -296,9 +303,12 @@ export class IndexedDb implements IndexedDbInterface {
     );
   }
 
-  async saveAssetsMetadata(metadata: Metadata) {
+  async saveAssetsMetadata(metadata: Required<PlainMessage<Metadata>>) {
     assertAssetId(metadata.penumbraAssetId);
-    await this.u.update({ table: 'ASSETS', value: metadata.toJson() as Jsonified<Metadata> });
+    await this.u.update({
+      table: 'ASSETS',
+      value: new Metadata(metadata).toJson() as Jsonified<Metadata>,
+    });
   }
 
   // creates a local copy of the asset list from registry (https://github.com/prax-wallet/registry)
@@ -314,7 +324,9 @@ export class IndexedDb implements IndexedDbInterface {
       }
 
       const assets = registry.getAllAssets();
-      const saveLocalMetadata = assets.map(m => this.saveAssetsMetadata(m));
+      const saveLocalMetadata = assets.map(m =>
+        this.saveAssetsMetadata({ ...m, penumbraAssetId: getAssetId(m) }),
+      );
       await Promise.all(saveLocalMetadata);
       await this.u.update({ table: 'REGISTRY_VERSION', key: 'commit', value: remoteVersion });
     } catch (error) {
@@ -457,8 +469,7 @@ export class IndexedDb implements IndexedDbInterface {
       .filter(gp => !gp.assetId?.equals(this.stakingTokenAssetId));
   }
 
-  async saveGasPrices(value: PartialMessage<GasPrices>): Promise<void> {
-    assertAssetId(value.assetId);
+  async saveGasPrices(value: Required<PlainMessage<GasPrices>>): Promise<void> {
     await this.u.update({
       table: 'GAS_PRICES',
       value: new GasPrices(value).toJson() as Jsonified<GasPrices>,
