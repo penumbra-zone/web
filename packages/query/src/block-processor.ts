@@ -45,9 +45,12 @@ import { processActionDutchAuctionEnd } from './helpers/process-action-dutch-auc
 import { processActionDutchAuctionSchedule } from './helpers/process-action-dutch-auction-schedule.js';
 import { processActionDutchAuctionWithdraw } from './helpers/process-action-dutch-auction-withdraw.js';
 import { RootQuerier } from './root-querier.js';
-import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb.js';
 import { IdentityKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 import { getDelegationTokenMetadata } from '@penumbra-zone/wasm/stake';
+import { toPlainMessage } from '@bufbuild/protobuf';
+import { getAssetIdFromGasPrices } from '@penumbra-zone/getters/compact-block';
+import { getSpendableNoteRecordCommitment } from '@penumbra-zone/getters/spendable-note-record';
+import { getSwapRecordCommitment } from '@penumbra-zone/getters/swap-record';
 
 declare global {
   // eslint-disable-next-line no-var
@@ -55,6 +58,16 @@ declare global {
   // eslint-disable-next-line no-var
   var __ASSERT_ROOT__: boolean | undefined;
 }
+
+const isSwapRecordWithSwapCommitment = (
+  r?: unknown,
+): r is Exclude<SwapRecord, { swapCommitment: undefined }> =>
+  r instanceof SwapRecord && r.swapCommitment instanceof StateCommitment;
+
+const isSpendableNoteRecordWithNoteCommitment = (
+  r?: unknown,
+): r is Exclude<SpendableNoteRecord, { noteCommitment: undefined }> =>
+  r instanceof SpendableNoteRecord && r.noteCommitment instanceof StateCommitment;
 
 interface QueryClientProps {
   querier: RootQuerier;
@@ -169,16 +182,17 @@ export class BlockProcessor implements BlockProcessorInterface {
         await this.indexedDb.saveFmdParams(compactBlock.fmdParameters);
       }
       if (compactBlock.gasPrices) {
-        await this.indexedDb.saveGasPrices(
-          new GasPrices({
-            assetId: this.stakingAssetId,
-            ...compactBlock.gasPrices,
-          }),
-        );
+        await this.indexedDb.saveGasPrices({
+          ...toPlainMessage(compactBlock.gasPrices),
+          assetId: toPlainMessage(this.stakingAssetId),
+        });
       }
       if (compactBlock.altGasPrices.length) {
-        for (const gasPrice of compactBlock.altGasPrices) {
-          await this.indexedDb.saveGasPrices(gasPrice);
+        for (const altGas of compactBlock.altGasPrices) {
+          await this.indexedDb.saveGasPrices({
+            ...toPlainMessage(altGas),
+            assetId: getAssetIdFromGasPrices(altGas),
+          });
         }
       }
 
@@ -352,10 +366,16 @@ export class BlockProcessor implements BlockProcessorInterface {
 
   private async saveRecoveredCommitmentSources(recovered: (SpendableNoteRecord | SwapRecord)[]) {
     for (const record of recovered) {
-      if (record instanceof SpendableNoteRecord) {
-        await this.indexedDb.saveSpendableNote(record);
-      } else if (record instanceof SwapRecord) {
-        await this.indexedDb.saveSwap(record);
+      if (isSpendableNoteRecordWithNoteCommitment(record)) {
+        await this.indexedDb.saveSpendableNote({
+          ...toPlainMessage(record),
+          noteCommitment: toPlainMessage(getSpendableNoteRecordCommitment(record)),
+        });
+      } else if (isSwapRecordWithSwapCommitment(record)) {
+        await this.indexedDb.saveSwap({
+          ...toPlainMessage(record),
+          swapCommitment: toPlainMessage(getSwapRecordCommitment(record)),
+        });
       } else {
         throw new Error('Unexpected record type');
       }
@@ -445,7 +465,11 @@ export class BlockProcessor implements BlockProcessorInterface {
     const isIbcAsset = metadataFromNode && assetPatterns.ibc.matches(metadataFromNode.display);
 
     if (metadataFromNode && !isIbcAsset) {
-      await this.indexedDb.saveAssetsMetadata(customizeSymbol(metadataFromNode));
+      const customized = customizeSymbol(metadataFromNode);
+      await this.indexedDb.saveAssetsMetadata({
+        ...customized,
+        penumbraAssetId: getAssetId(customized),
+      });
       return metadataFromNode;
     }
 
@@ -466,7 +490,11 @@ export class BlockProcessor implements BlockProcessorInterface {
 
     const generatedMetadata = getDelegationTokenMetadata(identityKey);
 
-    await this.indexedDb.saveAssetsMetadata(customizeSymbol(generatedMetadata));
+    const customized = customizeSymbol(generatedMetadata);
+    await this.indexedDb.saveAssetsMetadata({
+      ...customized,
+      penumbraAssetId: getAssetId(customized),
+    });
     return generatedMetadata;
   }
 
@@ -486,10 +514,16 @@ export class BlockProcessor implements BlockProcessorInterface {
 
       if (record instanceof SpendableNoteRecord) {
         record.heightSpent = height;
-        await this.indexedDb.saveSpendableNote(record);
+        await this.indexedDb.saveSpendableNote({
+          ...toPlainMessage(record),
+          noteCommitment: toPlainMessage(getSpendableNoteRecordCommitment(record)),
+        });
       } else if (record instanceof SwapRecord) {
         record.heightClaimed = height;
-        await this.indexedDb.saveSwap(record);
+        await this.indexedDb.saveSwap({
+          ...toPlainMessage(record),
+          swapCommitment: toPlainMessage(getSwapRecordCommitment(record)),
+        });
       }
     }
 
@@ -539,7 +573,10 @@ export class BlockProcessor implements BlockProcessorInterface {
     if (action.case === 'positionOpen' && action.value.position) {
       for (const state of POSITION_STATES) {
         const metadata = getLpNftMetadata(computePositionId(action.value.position), state);
-        await this.indexedDb.saveAssetsMetadata(metadata);
+        await this.indexedDb.saveAssetsMetadata({
+          ...metadata,
+          penumbraAssetId: getAssetId(metadata),
+        });
       }
       // to optimize on-chain storage PositionId is not written in the positionOpen action,
       // but can be computed via hashing of immutable position fields
@@ -561,7 +598,10 @@ export class BlockProcessor implements BlockProcessorInterface {
         sequence: action.value.sequence,
       });
       const metadata = getLpNftMetadata(action.value.positionId, positionState);
-      await this.indexedDb.saveAssetsMetadata(metadata);
+      await this.indexedDb.saveAssetsMetadata({
+        ...metadata,
+        penumbraAssetId: getAssetId(metadata),
+      });
 
       await this.indexedDb.updatePosition(action.value.positionId, positionState);
     }

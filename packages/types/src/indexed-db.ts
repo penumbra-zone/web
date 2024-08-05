@@ -48,7 +48,7 @@ import {
   SwapRecord,
   TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
-import { PartialMessage } from '@bufbuild/protobuf';
+import { PlainMessage } from '@bufbuild/protobuf';
 import type { Jsonified } from './jsonified.js';
 
 export interface IdbUpdate<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>> {
@@ -70,13 +70,15 @@ export interface IndexedDbInterface {
   getSpendableNoteByCommitment(
     commitment: StateCommitment,
   ): Promise<SpendableNoteRecord | undefined>;
-  saveSpendableNote(note: SpendableNoteRecord): Promise<void>;
+  saveSpendableNote(
+    note: PlainMessage<SpendableNoteRecord> & { noteCommitment: PlainMessage<StateCommitment> },
+  ): Promise<void>;
   iterateSpendableNotes(): AsyncGenerator<SpendableNoteRecord, void>;
   saveTransaction(id: TransactionId, height: bigint, tx: Transaction): Promise<void>;
   getTransaction(txId: TransactionId): Promise<TransactionInfo | undefined>;
   iterateTransactions(): AsyncGenerator<TransactionInfo, void>;
   getAssetsMetadata(assetId: AssetId): Promise<Metadata | undefined>;
-  saveAssetsMetadata(metadata: Metadata): Promise<void>;
+  saveAssetsMetadata(metadata: Required<PlainMessage<Metadata>>): Promise<void>;
   iterateAssetsMetadata(): AsyncGenerator<Metadata, void>;
   getStateCommitmentTree(): Promise<StateCommitmentTree>;
   saveScanResult(updates: ScanBlockResult): Promise<void>;
@@ -86,11 +88,13 @@ export interface IndexedDbInterface {
   saveAppParams(params: AppParameters): Promise<void>;
   iterateSwaps(): AsyncGenerator<SwapRecord, void>;
   getSwapByNullifier(nullifier: Nullifier): Promise<SwapRecord | undefined>;
-  saveSwap(note: SwapRecord): Promise<void>;
+  saveSwap(
+    swap: PlainMessage<SwapRecord> & { swapCommitment: PlainMessage<StateCommitment> },
+  ): Promise<void>;
   getSwapByCommitment(commitment: StateCommitment): Promise<SwapRecord | undefined>;
   getNativeGasPrices(): Promise<GasPrices | undefined>;
   getAltGasPrices(): Promise<GasPrices[]>;
-  saveGasPrices(value: PartialMessage<GasPrices>): Promise<void>;
+  saveGasPrices(value: Required<PlainMessage<GasPrices>>): Promise<void>;
   getNotesForVoting(
     addressIndex: AddressIndex | undefined,
     votableAtHeight: bigint,
