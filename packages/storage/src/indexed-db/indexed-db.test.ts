@@ -123,8 +123,8 @@ describe('IndexedDb', () => {
       await testnetDb.saveAssetsMetadata(metadataA);
       await mainnetDb.saveAssetsMetadata(metadataB);
 
-      expect(await testnetDb.getAssetsMetadata(metadataA.penumbraAssetId!)).toEqual(metadataA);
-      expect(await mainnetDb.getAssetsMetadata(metadataB.penumbraAssetId!)).toEqual(metadataB);
+      expect(await testnetDb.getAssetsMetadata(metadataA.penumbraAssetId)).toEqual(metadataA);
+      expect(await mainnetDb.getAssetsMetadata(metadataB.penumbraAssetId)).toEqual(metadataB);
     });
 
     it('same version uses same db', async () => {
@@ -133,7 +133,7 @@ describe('IndexedDb', () => {
       await dbA.saveAssetsMetadata(metadataA);
 
       const dbB = await IndexedDb.initialize(props);
-      expect((await dbB.getAssetsMetadata(metadataA.penumbraAssetId!))?.name).toBe(metadataA.name);
+      expect((await dbB.getAssetsMetadata(metadataA.penumbraAssetId))?.name).toBe(metadataA.name);
     });
 
     // TODO: Do not skip this test after vitest has been updated to v2.0.0.
@@ -150,7 +150,7 @@ describe('IndexedDb', () => {
         registryClient: new ChainRegistryClient(),
       };
       const dbB = await IndexedDb.initialize(version2Props);
-      expect((await dbB.getAssetsMetadata(metadataA.penumbraAssetId!))?.name).toBeUndefined();
+      expect((await dbB.getAssetsMetadata(metadataA.penumbraAssetId))?.name).toBeUndefined();
     });
   });
 
@@ -295,7 +295,7 @@ describe('IndexedDb', () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
       await db.saveSpendableNote(newNote);
-      const noteByCommitment = await db.getSpendableNoteByCommitment(newNote.noteCommitment!);
+      const noteByCommitment = await db.getSpendableNoteByCommitment(newNote.noteCommitment);
 
       expect(newNote.equals(noteByCommitment)).toBeTruthy();
     });
@@ -303,7 +303,7 @@ describe('IndexedDb', () => {
     it('should return undefined by commitment', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
-      const noteByCommitment = await db.getSpendableNoteByCommitment(newNote.noteCommitment!);
+      const noteByCommitment = await db.getSpendableNoteByCommitment(newNote.noteCommitment);
 
       expect(noteByCommitment).toBeUndefined();
     });
@@ -349,7 +349,7 @@ describe('IndexedDb', () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
       await db.saveAssetsMetadata(metadataC);
-      const savedDenomMetadata = await db.getAssetsMetadata(metadataC.penumbraAssetId!);
+      const savedDenomMetadata = await db.getAssetsMetadata(metadataC.penumbraAssetId);
 
       expect(metadataC.equals(savedDenomMetadata)).toBeTruthy();
     });
@@ -639,8 +639,8 @@ describe('IndexedDb', () => {
     });
     beforeEach(async () => {
       db = await IndexedDb.initialize({ ...generateInitialProps() });
-      await db.updatePrice(delegationMetadataA.penumbraAssetId!, stakingAssetId, 1.23, 50n);
-      await db.updatePrice(metadataA.penumbraAssetId!, numeraireAssetId, 22.15, 40n);
+      await db.updatePrice(delegationMetadataA.penumbraAssetId, stakingAssetId, 1.23, 50n);
+      await db.updatePrice(metadataA.penumbraAssetId, numeraireAssetId, 22.15, 40n);
     });
 
     it('saves and gets a price in the database', async () => {
@@ -648,7 +648,7 @@ describe('IndexedDb', () => {
       // `updatePrice()` in the `beforeEach` above.
       await expect(db.getPricesForAsset(delegationMetadataA, 50n, 719n)).resolves.toEqual([
         new EstimatedPrice({
-          pricedAsset: delegationMetadataA.penumbraAssetId!,
+          pricedAsset: delegationMetadataA.penumbraAssetId,
           numeraire: stakingAssetId,
           numerairePerUnit: 1.23,
           asOfHeight: 50n,
@@ -664,7 +664,7 @@ describe('IndexedDb', () => {
       await expect(db.getPricesForAsset(metadataA, 241n, 719n)).resolves.toEqual([]);
       await expect(db.getPricesForAsset(delegationMetadataA, 241n, 719n)).resolves.toEqual([
         new EstimatedPrice({
-          pricedAsset: delegationMetadataA.penumbraAssetId!,
+          pricedAsset: delegationMetadataA.penumbraAssetId,
           numeraire: stakingAssetId,
           numerairePerUnit: 1.23,
           asOfHeight: 50n,

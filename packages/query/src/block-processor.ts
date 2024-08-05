@@ -447,7 +447,11 @@ export class BlockProcessor implements BlockProcessorInterface {
     const isIbcAsset = metadataFromNode && assetPatterns.ibc.matches(metadataFromNode.display);
 
     if (metadataFromNode && !isIbcAsset) {
-      await this.indexedDb.saveAssetsMetadata(customizeSymbol(metadataFromNode));
+      const customized = customizeSymbol(metadataFromNode);
+      await this.indexedDb.saveAssetsMetadata({
+        ...customized,
+        penumbraAssetId: getAssetId(customized),
+      });
       return metadataFromNode;
     }
 
@@ -468,7 +472,11 @@ export class BlockProcessor implements BlockProcessorInterface {
 
     const generatedMetadata = getDelegationTokenMetadata(identityKey);
 
-    await this.indexedDb.saveAssetsMetadata(customizeSymbol(generatedMetadata));
+    const customized = customizeSymbol(generatedMetadata);
+    await this.indexedDb.saveAssetsMetadata({
+      ...customized,
+      penumbraAssetId: getAssetId(customized),
+    });
     return generatedMetadata;
   }
 
@@ -541,7 +549,10 @@ export class BlockProcessor implements BlockProcessorInterface {
     if (action.case === 'positionOpen' && action.value.position) {
       for (const state of POSITION_STATES) {
         const metadata = getLpNftMetadata(computePositionId(action.value.position), state);
-        await this.indexedDb.saveAssetsMetadata(metadata);
+        await this.indexedDb.saveAssetsMetadata({
+          ...metadata,
+          penumbraAssetId: getAssetId(metadata),
+        });
       }
       // to optimize on-chain storage PositionId is not written in the positionOpen action,
       // but can be computed via hashing of immutable position fields
@@ -563,7 +574,10 @@ export class BlockProcessor implements BlockProcessorInterface {
         sequence: action.value.sequence,
       });
       const metadata = getLpNftMetadata(action.value.positionId, positionState);
-      await this.indexedDb.saveAssetsMetadata(metadata);
+      await this.indexedDb.saveAssetsMetadata({
+        ...metadata,
+        penumbraAssetId: getAssetId(metadata),
+      });
 
       await this.indexedDb.updatePosition(action.value.positionId, positionState);
     }

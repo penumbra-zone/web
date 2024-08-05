@@ -76,7 +76,7 @@ export interface IndexedDbInterface {
   getTransaction(txId: TransactionId): Promise<TransactionInfo | undefined>;
   iterateTransactions(): AsyncGenerator<TransactionInfo, void>;
   getAssetsMetadata(assetId: AssetId): Promise<Metadata | undefined>;
-  saveAssetsMetadata(metadata: Metadata): Promise<void>;
+  saveAssetsMetadata(metadata: Required<PlainMessage<Metadata>>): Promise<void>;
   iterateAssetsMetadata(): AsyncGenerator<Metadata, void>;
   getStateCommitmentTree(): Promise<StateCommitmentTree>;
   saveScanResult(updates: ScanBlockResult): Promise<void>;
