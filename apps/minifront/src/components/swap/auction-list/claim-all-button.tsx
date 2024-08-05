@@ -33,14 +33,14 @@ export const assembleAuctionBatch = (
     a => a.localSeqNum === filteredSeqNumber,
   );
   // Get the address index of the first auction in the list and filter other auctions with this address index
-  const firstFoundAddressIndex: AddressIndex = filteredBySeqAuctions[0]?.addressIndex!;
+  const firstFoundAddressIndex = filteredBySeqAuctions[0]?.addressIndex;
 
   const filteredBySeqAndAddressIndexAuctions = filterWithLimit(
     filteredBySeqAuctions,
     a => a.addressIndex.equals(firstFoundAddressIndex),
     batchLimit,
   );
-  return { auctions: filteredBySeqAndAddressIndexAuctions, source: firstFoundAddressIndex };
+  return { auctions: filteredBySeqAndAddressIndexAuctions, source: firstFoundAddressIndex! };
 };
 
 export const ClaimAllAuctionButton = () => {
@@ -92,9 +92,9 @@ export const ClaimAllAuctionButton = () => {
               // see https://github.com/penumbra-zone/web/issues/1166#issuecomment-2263550249
               const auctionBatch = assembleAuctionBatch(data, 1n, 48);
               void withdrawAllAuctions(
-                auctionBatch?.auctions,
+                auctionBatch.auctions,
                 // TODO Should use the index of the selected account after the account selector for the auction is implemented
-                auctionBatch?.source,
+                auctionBatch.source,
               );
             }}
             aria-label='Withdraw all ended auctions, with a limit of 48 auctions per transaction'
