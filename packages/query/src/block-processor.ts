@@ -49,6 +49,8 @@ import { IdentityKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/co
 import { getDelegationTokenMetadata } from '@penumbra-zone/wasm/stake';
 import { toPlainMessage } from '@bufbuild/protobuf';
 import { getAssetIdFromGasPrices } from '@penumbra-zone/getters/compact-block';
+import { getSpendableNoteRecordCommitment } from '@penumbra-zone/getters/spendable-note-record';
+import { getSwapRecordCommitment } from '@penumbra-zone/getters/swap-record';
 
 declare global {
   // eslint-disable-next-line no-var
@@ -56,6 +58,16 @@ declare global {
   // eslint-disable-next-line no-var
   var __ASSERT_ROOT__: boolean | undefined;
 }
+
+const isSwapRecordWithSwapCommitment = (
+  r?: unknown,
+): r is Exclude<SwapRecord, { swapCommitment: undefined }> =>
+  r instanceof SwapRecord && r.swapCommitment instanceof StateCommitment;
+
+const isSpendableNoteRecordWithNoteCommitment = (
+  r?: unknown,
+): r is Exclude<SpendableNoteRecord, { noteCommitment: undefined }> =>
+  r instanceof SpendableNoteRecord && r.noteCommitment instanceof StateCommitment;
 
 interface QueryClientProps {
   querier: RootQuerier;
@@ -354,10 +366,16 @@ export class BlockProcessor implements BlockProcessorInterface {
 
   private async saveRecoveredCommitmentSources(recovered: (SpendableNoteRecord | SwapRecord)[]) {
     for (const record of recovered) {
-      if (record instanceof SpendableNoteRecord) {
-        await this.indexedDb.saveSpendableNote(record);
-      } else if (record instanceof SwapRecord) {
-        await this.indexedDb.saveSwap(record);
+      if (isSpendableNoteRecordWithNoteCommitment(record)) {
+        await this.indexedDb.saveSpendableNote({
+          ...toPlainMessage(record),
+          noteCommitment: toPlainMessage(getSpendableNoteRecordCommitment(record)),
+        });
+      } else if (isSwapRecordWithSwapCommitment(record)) {
+        await this.indexedDb.saveSwap({
+          ...toPlainMessage(record),
+          swapCommitment: toPlainMessage(getSwapRecordCommitment(record)),
+        });
       } else {
         throw new Error('Unexpected record type');
       }
@@ -496,10 +514,16 @@ export class BlockProcessor implements BlockProcessorInterface {
 
       if (record instanceof SpendableNoteRecord) {
         record.heightSpent = height;
-        await this.indexedDb.saveSpendableNote(record);
+        await this.indexedDb.saveSpendableNote({
+          ...toPlainMessage(record),
+          noteCommitment: toPlainMessage(getSpendableNoteRecordCommitment(record)),
+        });
       } else if (record instanceof SwapRecord) {
         record.heightClaimed = height;
-        await this.indexedDb.saveSwap(record);
+        await this.indexedDb.saveSwap({
+          ...toPlainMessage(record),
+          swapCommitment: toPlainMessage(getSwapRecordCommitment(record)),
+        });
       }
     }
 

@@ -246,11 +246,13 @@ export class IndexedDb implements IndexedDbInterface {
     return SpendableNoteRecord.fromJson(json);
   }
 
-  async saveSpendableNote(note: SpendableNoteRecord & { noteCommitment: StateCommitment }) {
+  async saveSpendableNote(
+    note: PlainMessage<SpendableNoteRecord> & { noteCommitment: PlainMessage<StateCommitment> },
+  ) {
     assertCommitment(note.noteCommitment);
     await this.u.update({
       table: 'SPENDABLE_NOTES',
-      value: note.toJson() as Jsonified<SpendableNoteRecord>,
+      value: new SpendableNoteRecord(note).toJson() as Jsonified<SpendableNoteRecord>,
     });
   }
 
@@ -435,9 +437,14 @@ export class IndexedDb implements IndexedDbInterface {
     return SwapRecord.fromJson(json);
   }
 
-  async saveSwap(swap: SwapRecord & { swapCommitment: StateCommitment }) {
+  async saveSwap(
+    swap: PlainMessage<SwapRecord> & { swapCommitment: PlainMessage<StateCommitment> },
+  ) {
     assertCommitment(swap.swapCommitment);
-    await this.u.update({ table: 'SWAPS', value: swap.toJson() as Jsonified<SwapRecord> });
+    await this.u.update({
+      table: 'SWAPS',
+      value: new SwapRecord(swap).toJson() as Jsonified<SwapRecord>,
+    });
   }
 
   async getSwapByCommitment(commitment: StateCommitment): Promise<SwapRecord | undefined> {

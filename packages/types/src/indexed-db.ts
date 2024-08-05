@@ -70,7 +70,9 @@ export interface IndexedDbInterface {
   getSpendableNoteByCommitment(
     commitment: StateCommitment,
   ): Promise<SpendableNoteRecord | undefined>;
-  saveSpendableNote(note: SpendableNoteRecord): Promise<void>;
+  saveSpendableNote(
+    note: PlainMessage<SpendableNoteRecord> & { noteCommitment: PlainMessage<StateCommitment> },
+  ): Promise<void>;
   iterateSpendableNotes(): AsyncGenerator<SpendableNoteRecord, void>;
   saveTransaction(id: TransactionId, height: bigint, tx: Transaction): Promise<void>;
   getTransaction(txId: TransactionId): Promise<TransactionInfo | undefined>;
@@ -86,7 +88,9 @@ export interface IndexedDbInterface {
   saveAppParams(params: AppParameters): Promise<void>;
   iterateSwaps(): AsyncGenerator<SwapRecord, void>;
   getSwapByNullifier(nullifier: Nullifier): Promise<SwapRecord | undefined>;
-  saveSwap(note: SwapRecord): Promise<void>;
+  saveSwap(
+    swap: PlainMessage<SwapRecord> & { swapCommitment: PlainMessage<StateCommitment> },
+  ): Promise<void>;
   getSwapByCommitment(commitment: StateCommitment): Promise<SwapRecord | undefined>;
   getNativeGasPrices(): Promise<GasPrices | undefined>;
   getAltGasPrices(): Promise<GasPrices[]>;

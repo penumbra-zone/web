@@ -8,3 +8,7 @@ export const getAssetIdFromRecord = createGetter(
 export const getAmountFromRecord = createGetter(
   (noteRecord?: SpendableNoteRecord) => noteRecord?.note?.value?.amount,
 );
+
+export const getSpendableNoteRecordCommitment = createGetter(
+  (note?: SpendableNoteRecord) => note?.noteCommitment,
+);
