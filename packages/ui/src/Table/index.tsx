@@ -8,12 +8,13 @@ import { ConditionalWrap } from '../utils/ConditionalWrap';
 const FIVE_PERCENT_OPACITY_IN_HEX = '0d';
 
 // So named to avoid naming conflicts with `<Table />`
-const StyledTable = styled.table`
+const StyledTable = styled.table<{ $layout?: 'fixed' | 'auto' }>`
   width: 100%;
   background-color: ${props => props.theme.color.neutral.contrast + FIVE_PERCENT_OPACITY_IN_HEX};
   padding-left: ${props => props.theme.spacing(3)};
   padding-right: ${props => props.theme.spacing(3)};
   border-radius: ${props => props.theme.borderRadius.lg};
+  table-layout: ${props => props.$layout ?? 'auto'};
 `;
 
 const TitleAndTableWrapper = styled.div`
@@ -29,6 +30,8 @@ export interface TableProps {
   /** Content that will appear above the table. */
   title?: ReactNode;
   children: ReactNode;
+  /** Which CSS `table-layout` property to use. */
+  layout?: 'fixed' | 'auto';
 }
 
 /**
@@ -72,7 +75,7 @@ export interface TableProps {
  * </Table>
  * ```
  */
-export const Table = ({ title, ...props }: TableProps) => (
+export const Table = ({ title, children, layout }: TableProps) => (
   <ConditionalWrap
     if={!!title}
     then={children => (
@@ -82,7 +85,9 @@ export const Table = ({ title, ...props }: TableProps) => (
       </TitleAndTableWrapper>
     )}
   >
-    <StyledTable cellSpacing={0} cellPadding={0} {...props} />
+    <StyledTable cellSpacing={0} cellPadding={0} $layout={layout}>
+      {children}
+    </StyledTable>
   </ConditionalWrap>
 );
 
