@@ -132,10 +132,12 @@ interface DelTokenQueryStatus {
 
 type DelTokenMap = Record<Bech32IdentityKey, DelTokenQueryStatus>;
 
+// Class used to keep track of what delegation balances have been queried yet.
+// Used after main stream loop to ensure we still query and send back delegation token balances
+// that have a jailed state.
 class DelegationTokenTracker {
   private constructor(private readonly delTokens: DelTokenMap) {}
 
-  // Create a new Key instance from a password. Do not store the Key, only KeyPrint.
   static async init({
     addressIndex,
     ctx,
