@@ -68,8 +68,10 @@ export interface MockQuerier {
 export interface SctMock {
   timestampByHeight?: Mock;
 }
+
 export interface StakeMock {
   validatorPenalty?: Mock;
+  validatorInfo?: Mock;
 }
 
 interface MockServicesInner {

@@ -109,6 +109,7 @@ export interface IndexedDbInterface {
   getEpochByHeight(height: bigint): Promise<Epoch | undefined>;
   upsertValidatorInfo(validatorInfo: ValidatorInfo): Promise<void>;
   iterateValidatorInfos(): AsyncGenerator<ValidatorInfo, void>;
+  clearValidatorInfos(): Promise<void>;
   getValidatorInfo(identityKey: IdentityKey): Promise<ValidatorInfo | undefined>;
   updatePrice(
     pricedAsset: AssetId,

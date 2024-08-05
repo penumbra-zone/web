@@ -10,10 +10,12 @@ import { useStore } from '../../../../state';
 import {
   getIdentityKeyFromValidatorInfo,
   getValidator,
+  getValidatorState,
 } from '@penumbra-zone/getters/validator-info';
 import { calculateCommissionAsPercentage } from '@penumbra-zone/types/staking';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import { AssetIcon } from '@repo/ui/components/ui/asset-icon';
+import { ValidatorStateLabel } from './validator-state-label.tsx';
 
 /**
  * Renders a single `ValidatorInfo`: its name and identity key,
@@ -33,6 +35,7 @@ export const ValidatorInfoComponent = ({
   const showTooltips = useStore(state => !state.staking.loading);
   const validator = getValidator(validatorInfo);
   const identityKey = getIdentityKeyFromValidatorInfo(validatorInfo);
+  const state = getValidatorState.optional()(validatorInfo);
 
   return (
     <TooltipProvider>
@@ -71,6 +74,7 @@ export const ValidatorInfoComponent = ({
               )}
               {!showTooltips && <span>Com:</span>} {calculateCommissionAsPercentage(validatorInfo)}%
             </span>
+            {state && <ValidatorStateLabel state={state} />}
           </div>
         </div>
       </div>
