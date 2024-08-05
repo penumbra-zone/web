@@ -21,7 +21,7 @@ export interface AddressViewProps {
 // If the view is given and is "visible", the account information will be displayed instead.
 export const AddressViewComponent = ({ addressView, copyable = true }: AddressViewProps) => {
   if (!addressView?.addressView.value?.address) {
-    return <></>;
+    return null;
   }
 
   const accountIndex =
