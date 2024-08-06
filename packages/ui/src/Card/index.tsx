@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import styled, { WebTarget } from 'styled-components';
 import { large } from '../utils/typography';
+import { hexOpacity } from '../utils/hexOpacity';
 
 const Root = styled.section``;
 
@@ -11,13 +12,11 @@ const Title = styled.h2`
   padding: ${props => props.theme.spacing(3)};
 `;
 
-const TEN_PERCENT_OPACITY_IN_HEX = '1a';
-const ONE_PERCENT_OPACITY_IN_HEX = '03';
 const Content = styled.div`
   background: linear-gradient(
     136deg,
-    ${props => props.theme.color.neutral.contrast + TEN_PERCENT_OPACITY_IN_HEX} 6.32%,
-    ${props => props.theme.color.neutral.contrast + ONE_PERCENT_OPACITY_IN_HEX} 75.55%
+    ${props => props.theme.color.neutral.contrast + hexOpacity(0.1)} 6.32%,
+    ${props => props.theme.color.neutral.contrast + hexOpacity(0.01)} 75.55%
   );
   backdrop-filter: blur(${props => props.theme.blur.lg});
   border-radius: ${props => props.theme.borderRadius.xl};
