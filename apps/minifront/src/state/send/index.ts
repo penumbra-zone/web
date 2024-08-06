@@ -118,6 +118,7 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
         set(state => {
           state.send.amount = '';
         });
+        get().shared.balancesResponses.revalidate();
       } finally {
         set(state => {
           state.send.txInProgress = false;
