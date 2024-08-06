@@ -5,6 +5,8 @@ import { Text } from '../Text';
 import { Icon } from '../Icon';
 import { X } from 'lucide-react';
 import { ButtonGroup, ButtonGroupProps } from '../ButtonGroup';
+import { Button } from '../Button';
+import { Density } from '../Density';
 
 const gradualBlur = (blur: string) => keyframes`
   from {
@@ -226,11 +228,13 @@ const Content = <IconOnlyButtonGroupProps extends boolean | undefined>({
           </RadixDialog.Title>
 
           {showCloseButton && (
-            <RadixDialog.Close asChild>
-              <CloseButton aria-label='Close'>
-                <Icon IconComponent={X} size='md' />
-              </CloseButton>
-            </RadixDialog.Close>
+            <Density compact>
+              <RadixDialog.Close asChild>
+                <Button icon={X} iconOnly priority='secondary'>
+                  Close
+                </Button>
+              </RadixDialog.Close>
+            </Density>
           )}
         </TitleAndCloseButton>
 
