@@ -12,7 +12,7 @@ import {
 } from '@repo/ui/components/ui/tooltip';
 import { AuctionInfo } from '../../../fetchers/auction-infos.ts';
 
-const claimAllAuctionButtonSelector = (state: AllSlices) => ({
+const endOrWithdrawAllButtonSelector = (state: AllSlices) => ({
   endAllAuctions: state.swap.dutchAuction.endAllAuctions,
   withdrawAllAuctions: state.swap.dutchAuction.withdrawAllAuctions,
 });
@@ -43,8 +43,8 @@ export const assembleAuctionBatch = (
   return { auctions: filteredBySeqAndAddressIndexAuctions, source: firstFoundAddressIndex! };
 };
 
-export const ClaimAllAuctionButton = () => {
-  const { endAllAuctions, withdrawAllAuctions } = useStoreShallow(claimAllAuctionButtonSelector);
+export const EndOrWithdrawAllButton = () => {
+  const { endAllAuctions, withdrawAllAuctions } = useStoreShallow(endOrWithdrawAllButtonSelector);
   const { data } = useAuctionInfos();
 
   if (!data?.length) {
