@@ -2,7 +2,7 @@ import { create, StateCreator } from 'zustand';
 import { enableMapSet } from 'immer';
 import { immer } from 'zustand/middleware/immer';
 import { createSwapSlice, SwapSlice } from './swap';
-import { createIbcOutSlice, ibcOutMiddleware, IbcOutSlice } from './ibc-out';
+import { createIbcOutSlice, IbcOutSlice } from './ibc-out';
 import { createSendSlice, sendSelectionMiddleware, SendSlice } from './send';
 import { createStakingSlice, StakingSlice } from './staking';
 import { createStatusSlice, StatusSlice } from './status';
@@ -51,20 +51,18 @@ export const initializeStore = () => {
   // middleware call. Thus, all other middlewares can't use immer's syntax in
   // their setters.
   return immer(
-    ibcOutMiddleware(
-      sendSelectionMiddleware(
-        swapBalancesMiddleware((setState, getState: () => AllSlices, store) => ({
-          ibcIn: createIbcInSlice()(setState, getState, store),
-          ibcOut: createIbcOutSlice()(setState, getState, store),
-          send: createSendSlice()(setState, getState, store),
-          shared: createSharedSlice()(setState, getState, store),
-          staking: createStakingSlice()(setState, getState, store),
-          status: createStatusSlice()(setState, getState, store),
-          swap: createSwapSlice()(setState, getState, store),
-          transactions: createTransactionsSlice()(setState, getState, store),
-          unclaimedSwaps: createUnclaimedSwapsSlice()(setState, getState, store),
-        })),
-      ),
+    sendSelectionMiddleware(
+      swapBalancesMiddleware((setState, getState: () => AllSlices, store) => ({
+        ibcIn: createIbcInSlice()(setState, getState, store),
+        ibcOut: createIbcOutSlice()(setState, getState, store),
+        send: createSendSlice()(setState, getState, store),
+        shared: createSharedSlice()(setState, getState, store),
+        staking: createStakingSlice()(setState, getState, store),
+        status: createStatusSlice()(setState, getState, store),
+        swap: createSwapSlice()(setState, getState, store),
+        transactions: createTransactionsSlice()(setState, getState, store),
+        unclaimedSwaps: createUnclaimedSwapsSlice()(setState, getState, store),
+      })),
     ),
   );
 };

@@ -3,7 +3,7 @@ import { Input } from '@repo/ui/components/ui/input';
 import { ChainSelector } from './chain-selector';
 import { useStore } from '../../../state';
 import {
-  filterBalancesPerChain,
+  filteredIbcBalancesSelector,
   ibcOutSelector,
   ibcValidationErrors,
 } from '../../../state/ibc-out';
@@ -11,14 +11,19 @@ import InputToken from '../../shared/input-token';
 import { InputBlock } from '../../shared/input-block';
 import { LockOpen2Icon } from '@radix-ui/react-icons';
 import { useAssets, useBalancesResponses, useStakingTokenMetadata } from '../../../state/shared';
-import { getAssetIdFromBalancesResponseOptional } from '@penumbra-zone/getters/balances-response';
 
-const FORBID_UM_IBC_OUT = ['celestia'];
+const useFilteredBalances = () => {
+  // Kick off requests
+  useStakingTokenMetadata();
+  useAssets();
+  useBalancesResponses();
+  // ========================
+  return useStore(filteredIbcBalancesSelector);
+};
 
 export const IbcOutForm = () => {
-  const stakingTokenMetadata = useStakingTokenMetadata();
-  const assets = useAssets();
-  const balances = useBalancesResponses();
+  const filteredBalances = useFilteredBalances();
+
   const {
     sendIbcWithdraw,
     destinationChainAddress,
@@ -27,14 +32,7 @@ export const IbcOutForm = () => {
     setAmount,
     selection,
     setSelection,
-    chain,
   } = useStore(ibcOutSelector);
-  const filteredBalances = filterBalancesPerChain(
-    balances.data ?? [],
-    chain,
-    assets.data ?? [],
-    stakingTokenMetadata.data,
-  );
   const validationErrors = useStore(ibcValidationErrors);
 
   return (
@@ -48,7 +46,7 @@ export const IbcOutForm = () => {
       <ChainSelector />
       <InputToken
         label='Amount to send'
-        placeholder='Enter an amount'
+        placeholder={filteredBalances.length > 0 ? 'Enter an amount' : 'No balances to transfer'}
         className='mb-1'
         selection={selection}
         setSelection={setSelection}
@@ -71,15 +69,7 @@ export const IbcOutForm = () => {
             checkFn: () => validationErrors.exponentErr,
           },
         ]}
-        balances={filteredBalances.filter(b => {
-          if (chain?.chainId && FORBID_UM_IBC_OUT.includes(chain.chainId)) {
-            const um = stakingTokenMetadata.data?.penumbraAssetId;
-            const balanceAsset = getAssetIdFromBalancesResponseOptional(b);
-            const notUm = !balanceAsset?.equals(um);
-            return notUm;
-          }
-          return true;
-        })}
+        balances={filteredBalances}
       />
       <InputBlock
         label='Recipient on destination chain'
