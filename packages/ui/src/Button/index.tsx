@@ -179,7 +179,11 @@ export const Button = ({
       onClick={onClick}
       aria-label={iconOnly ? children : undefined}
       title={iconOnly ? children : undefined}
-      $getFocusOutlineColor={theme => theme.color.action[outlineColorByActionType[actionType]]}
+      $getFocusOutlineColor={theme =>
+        iconOnly === 'adornment'
+          ? theme.color.base.transparent
+          : theme.color.action[outlineColorByActionType[actionType]]
+      }
       $getBorderRadius={theme =>
         density === 'sparse' && iconOnly !== 'adornment'
           ? theme.borderRadius.sm
