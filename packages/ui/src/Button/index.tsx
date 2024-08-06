@@ -1,11 +1,10 @@
-import { MouseEventHandler, useContext } from 'react';
+import { MouseEventHandler } from 'react';
 import styled, { css, DefaultTheme } from 'styled-components';
 import { asTransientProps } from '../utils/asTransientProps';
 import { Priority, ActionType, focusOutline, overlays, buttonBase } from '../utils/button';
 import { getBackgroundColor } from './helpers';
 import { button } from '../utils/typography';
 import { LucideIcon } from 'lucide-react';
-import { ButtonPriorityContext } from '../utils/ButtonPriorityContext';
 import { Density } from '../types/Density';
 import { useDensity } from '../hooks/useDensity';
 
@@ -108,6 +107,7 @@ interface BaseButtonProps {
   actionType?: ActionType;
   disabled?: boolean;
   onClick?: MouseEventHandler<HTMLButtonElement>;
+  priority?: Priority;
 }
 
 interface IconOnlyProps {
@@ -167,8 +167,8 @@ export const Button = ({
   iconOnly,
   actionType = 'default',
   type = 'button',
+  priority = 'primary',
 }: ButtonProps) => {
-  const priority = useContext(ButtonPriorityContext);
   const density = useDensity();
 
   return (
