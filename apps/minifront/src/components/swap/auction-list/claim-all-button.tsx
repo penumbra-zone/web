@@ -101,7 +101,7 @@ export const ClaimAllAuctionButton = () => {
           >
             <div className='w-[95px] shrink-0'>
               <Button size='sm' variant='secondary' className='w-full'>
-                {'Withdraw all'}
+                Withdraw all
               </Button>
             </div>
           </TooltipTrigger>
