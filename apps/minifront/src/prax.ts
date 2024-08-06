@@ -1,5 +1,9 @@
 import { PromiseClient } from '@connectrpc/connect';
-import { createPenumbraClient, createServiceClient, getPenumbraManifest } from '@penumbra-zone/client';
+import {
+  createPenumbraClient,
+  createServiceClient,
+  getPenumbraManifest,
+} from '@penumbra-zone/client';
 import { assertProviderConnected, assertProviderManifest } from '@penumbra-zone/client/assert';
 import { PenumbraService } from '@penumbra-zone/protobuf';
 

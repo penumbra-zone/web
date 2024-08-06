@@ -90,8 +90,9 @@ export class PenumbraClient implements IPenumbraClient {
     if (requireOrigin) {
       provider = assertProviderRecord(requireOrigin);
     } else {
-      const connectedEntry = Object.entries(providers).find(([, provider]) => provider.isConnected());
-      console.log(providers, connectedEntry);
+      const connectedEntry = Object.entries(providers).find(([, provider]) =>
+        provider.isConnected(),
+      );
       origin = connectedEntry?.[0];
       provider = connectedEntry?.[1];
     }
