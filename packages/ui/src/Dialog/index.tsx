@@ -27,6 +27,17 @@ const FullHeightWrapper = styled.div`
   align-items: center;
 `;
 
+/**
+ * We make a full-screen wrapper around the dialog's content so that we can
+ * correctly position it using the same `<Display />`/`<Grid />` as the
+ * underlying page uses. Note that we use a `styled.div` here, rather than
+ * `styled(RadixDialog.Content)`, because Radix adds an inline `pointer-events:
+ * auto` style to that element. We need to make sure there _aren't_ pointer
+ * events on the dialog content, because of the aforementioned full-screen
+ * wrapper that appears over the `<Overlay />`. We want to make sure that clicks
+ * on the full-screen wrapper pass through to the underlying `<Overlay />`, so
+ * that the dialog closes when the user clicks there.
+ */
 const DialogContent = styled.div`
   position: fixed;
   inset: 0;
@@ -52,6 +63,11 @@ const DialogContentCard = styled.div`
   flex-direction: column;
   gap: ${props => props.theme.spacing(6)};
 
+  /**
+   * We add 'pointer-events: auto' here so that clicks _inside_ the content card
+   * work, even though the _outside_ clicks pass through to the underlying
+   * '<Overlay />'.
+   */
   pointer-events: auto;
 `;
 
