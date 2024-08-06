@@ -1,42 +1,57 @@
+import { ServiceType } from '@bufbuild/protobuf';
 import { createPromiseClient, PromiseClient, Transport } from '@connectrpc/connect';
-import { jsonOptions, PenumbraService } from '@penumbra-zone/protobuf';
+import { jsonOptions } from '@penumbra-zone/protobuf';
 import {
   ChannelTransportOptions,
   createChannelTransport,
 } from '@penumbra-zone/transport-dom/create';
 import { assertProviderManifest, assertProviderRecord } from './assert.js';
 import { PenumbraProviderNotConnectedError } from './error.js';
+import { isPenumbraStateEvent, PenumbraStateEventDetail } from './event.js';
 import {
   getAllPenumbraManifests,
   getPenumbraGlobal,
   getPenumbraManifest,
   getPenumbraUnsafe,
 } from './get.js';
-import { PenumbraProvider } from './provider.js';
-import { isPenumbraStateEvent, PenumbraStateEventDetail } from './event.js';
 import { PenumbraManifest } from './manifest.js';
+import { PenumbraProvider } from './provider.js';
 import { PenumbraState } from './state.js';
 
 export class PenumbraClient<O extends string> {
   // static features
 
+  /** Return a list of all present provider origins available in the page, or
+   * `undefined` if no object is present at `window[Symbol.for('penumbra')]`
+   * (indicating no providers installed). */
   public static providers(): string[] | undefined {
     return Object.keys(getPenumbraGlobal());
   }
 
+  /** Return a record of all present providers with pending fetches of their
+   * manifests. */
   public static providerManifests(): Record<string, Promise<PenumbraManifest>> {
     return getAllPenumbraManifests();
   }
+
+  /* Fetch manifest of a specific provider. */
   public static providerManifest(providerOrigin: string): Promise<PenumbraManifest> {
     return getPenumbraManifest(providerOrigin);
   }
+
+  /* Return boolean connection state of a specific provider. */
   public static providerIsConnected(providerOrigin: string): boolean {
     return Boolean(getPenumbraUnsafe(providerOrigin)?.isConnected());
   }
+
+  /* Return connection state enum of a specific provider. */
   public static providerState(providerOrigin: string): PenumbraState | undefined {
     return getPenumbraUnsafe(providerOrigin)?.state();
   }
 
+  /* Make a connection attempt to a specific provider, and return a client bound
+   * to that provider if successful. May reject with an enumerated
+   * `PenumbraRequestFailure`. */
   public static async providerConnect<N extends string>(
     providerOrigin: N,
   ): Promise<PenumbraClient<N>> {
@@ -49,7 +64,7 @@ export class PenumbraClient<O extends string> {
   // instance features
 
   private readonly provider: PenumbraProvider;
-  private readonly serviceClients: Map<string, PromiseClient<PenumbraService>>;
+  private readonly serviceClients: Map<string, PromiseClient<ServiceType>>;
   private readonly stateListeners: Set<(detail: PenumbraStateEventDetail) => void>;
   private readonly requestManifest: Promise<PenumbraManifest>;
   private parsedManifest?: PenumbraManifest;
@@ -62,7 +77,9 @@ export class PenumbraClient<O extends string> {
   /** Construct an instance representing connection to a specific provider,
    * identified by the origin parameter, but take to specific action. */
   constructor(
+    /** The provider origin provided during client construction. */
     public readonly origin: O,
+    /** Custom options for the created `Transport`. */
     private readonly transportOptions?: Omit<ChannelTransportOptions, 'getPort'>,
   ) {
     this.provider = assertProviderRecord(this.origin);
@@ -81,39 +98,48 @@ export class PenumbraClient<O extends string> {
     transportOptions?: Omit<ChannelTransportOptions, 'getPort'>;
   };
 
+  /** The `MessagePort` used by this connection. */
   get port(): MessagePort | undefined {
     return this.connection?.port;
   }
 
+  /** The ConnectRPC `Transport` created by this connection. */
   get transport(): Transport | undefined {
     return this.connection?.transport;
   }
 
+  private destroyConnection() {
+    this.connection?.port.close();
+    this.connection = undefined;
+    this.serviceClients.clear();
+  }
+
   private assertConnection() {
     if (!this.isConnected() || !this.connection) {
-      this.connection?.port.close();
-      this.serviceClients.clear();
+      this.destroyConnection();
       throw new PenumbraProviderNotConnectedError();
     }
     return this.connection;
   }
 
+  /** Return the `PenumbraManifest` associated with this provider, fetched at
+   * time of client creation. Fetch is an async operation so this may be
+   * undefined until it completes. If you hold an active connection to this
+   * provider, this should be present. */
   public manifestSync(): PenumbraManifest | undefined {
     return this.parsedManifest;
   }
 
+  /** Return a promised `PenumbraManifest` associated with this provider. If you
+   * hold an active connection to this provider, this promise should be
+   * successfully resolved. */
   public manifest(): Promise<PenumbraManifest> {
     return this.requestManifest;
   }
 
-  public disconnect(): Promise<void> {
-    const request = this.provider.disconnect();
-    this.serviceClients.clear();
-    this.connection?.port.close();
-    this.connection = undefined;
-    return request;
-  }
-
+  /** Return the `Transport` representing the present connection, or create it if
+   * necessary by calling `connect` to obtain a `MessagePort` from the
+   * associated provider. */
   public async connect(): Promise<Transport> {
     if (this.connection) {
       if (this.isConnected()) {
@@ -137,7 +163,19 @@ export class PenumbraClient<O extends string> {
     return this.connection.transport;
   }
 
-  public service<T extends PenumbraService>(service: T): PromiseClient<T> {
+  /** Call `disconnect` on the associated provider to release connection
+   * approval, and destroy any present connection. */
+  public disconnect(): Promise<void> {
+    const request = this.provider.disconnect();
+    this.destroyConnection();
+    return request;
+  }
+
+  /** Return a `PromiseClient<T>` for some `T extends ServiceType`, using
+   * transport created internally. You should call this method *after*
+   * connection is resolved, or it will fail. You can check for the presence of
+   * a `transport` on this instance. */
+  public service<T extends ServiceType>(service: T): PromiseClient<T> {
     const existingClient = this.serviceClients.get(service.typeName);
 
     if (existingClient) {
@@ -148,6 +186,13 @@ export class PenumbraClient<O extends string> {
       this.serviceClients.set(service.typeName, createdClient);
       return createdClient;
     }
+  }
+
+  /** Attempt connection and return a `PromiseClient<T>` for some `T extends
+   * ServiceType`, pending connection success. */
+  public async connectService<T extends ServiceType>(service: T): Promise<PromiseClient<T>> {
+    await this.connect();
+    return this.service(service);
   }
 
   get isConnected() {
@@ -164,11 +209,17 @@ export class PenumbraClient<O extends string> {
     return this.provider.removeEventListener.bind(this.provider);
   }
 
+  /** Simplified callback interface to the `EventTarget` interface of the
+   * associated provider. */
   public onConnectionStateChange(
     listener: (detail: PenumbraStateEventDetail) => void,
     removeListener?: AbortSignal,
   ) {
-    removeListener?.addEventListener('abort', () => this.stateListeners.delete(listener));
-    this.stateListeners.add(listener);
+    if (removeListener?.aborted) {
+      this.stateListeners.delete(listener);
+    } else {
+      removeListener?.addEventListener('abort', () => this.stateListeners.delete(listener));
+      this.stateListeners.add(listener);
+    }
   }
 }
