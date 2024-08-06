@@ -122,11 +122,11 @@ interface PenumbraClient {
     cb: (connection: { origin: string; connected: boolean; state: PenumbraState }) => void,
   ) => void;
 
-  /**
-   * Needed for custom service connections if `getService` is not enough.
-   * For example, might be useful for React wrapper of the `client` package
-   */
-  readonly getMessagePort: () => MessagePort;
+  /** Returns a new or re-used `PromiseClient<T>` for a specific `PenumbraService` */
+  readonly service: <T extends PenumbraService>(
+    service: T,
+    options: Omit<ChannelTransportOptions, 'getPort'>,
+  ) => PromiseClient<T>;
 }
 ```
 
@@ -153,30 +153,19 @@ export type getAllPenumbraManifests = () => Record<
 
 ## Requests
 
-The client library should separately export the creation of service clients. It is not going to be integrated into the `client` instance to save the initial bundle size. Instead, it should be exported from `@penumbra-zone/client/service`:
+The `PenumbraClient` should have a `service` method that returns a `PromiseClient` instance for a specific Penumbra service. Requesting data example:
 
 ```ts
-/** Synchronously creates a connectrpc `PromiseClient` instance to a given Penumbra service */
-export type createServiceClient = <T extends ServiceType>(
-  client: PenumbraClient,
-  service: T,
-) => PromiseClient<T>;
-```
-
-Under the hood, `createServiceClient` might save the resulting PromiseClient in the `client` instance to avoid creating multiple instances of the same service.
-
-Requesting data example:
-
-```ts
-import { createPenumbraClient, createServiceClient } from '@penumbra-zone/client';
+import { createPenumbraClient } from '@penumbra-zone/client';
 import { ViewService } from '@penumbra-zone/protobuf';
 
 export const client = createPenumbraClient();
-
-const viewService = createServiceClient(client, ViewService);
+const viewService = client.service(ViewService);
 
 const address = await viewService.getAddressByIndex({ account: 0 });
 const balances = await viewService.getBalances({ account: 0 });
 ```
+
+Under the hood, `client.service` might save the resulting PromiseClient in the `client` instance to avoid creating multiple instances of the same service.
 
 Each call of the services function should check for a connection and throw an error if the connection is not established.

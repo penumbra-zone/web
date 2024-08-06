@@ -1,9 +1,5 @@
 import { PromiseClient } from '@connectrpc/connect';
-import {
-  createPenumbraClient,
-  createServiceClient,
-  getPenumbraManifest,
-} from '@penumbra-zone/client';
+import { createPenumbraClient, getPenumbraManifest } from '@penumbra-zone/client';
 import { assertProviderConnected, assertProviderManifest } from '@penumbra-zone/client/assert';
 import { PenumbraService } from '@penumbra-zone/protobuf';
 
@@ -37,9 +33,11 @@ export const throwIfPraxNotConnected = () => assertProviderConnected(prax_origin
 export const throwIfPraxNotInstalled = async () => assertProviderManifest(prax_origin);
 
 export const penumbraClient = createPenumbraClient();
-void penumbraClient.reconnect();
+void penumbraClient.reconnect().catch(() => {
+  /* no-op */
+});
 
 export const requestPraxAccess = async () => penumbraClient.connect(prax_origin);
 
 export const createPraxClient = <T extends PenumbraService>(service: T): PromiseClient<T> =>
-  createServiceClient(penumbraClient, service);
+  penumbraClient.service(service);

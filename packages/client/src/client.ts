@@ -1,9 +1,16 @@
+import { jsonOptions, PenumbraService } from '@penumbra-zone/protobuf';
+import { createPromiseClient, PromiseClient } from '@connectrpc/connect';
+
 import { assertPenumbra, assertProviderManifest, assertProviderRecord } from './assert.js';
 import { PenumbraProviderNotConnectedError } from './error.js';
 import { PenumbraStateEventDetail, PenumbraStateEvent, isPenumbraStateEvent } from './event.js';
 import { availableOrigin } from './get.js';
 import { PenumbraProvider } from './provider.js';
 import { PenumbraState } from './state.js';
+import {
+  ChannelTransportOptions,
+  createChannelTransport,
+} from '@penumbra-zone/transport-dom/create';
 
 export interface IPenumbraClient {
   /**
@@ -26,11 +33,12 @@ export interface IPenumbraClient {
   readonly getState: () => PenumbraState;
   /** Provides a simplified callback interface to `PenumbraStateEvent`s. */
   readonly onConnectionChange: (cb: (connection: PenumbraStateEventDetail) => void) => void;
-  /**
-   * Needed for custom service connections if `getService` is not enough.
-   * For example, might be useful for React wrapper of the `client` package
-   */
-  readonly getMessagePort: () => MessagePort;
+
+  /** Returns a new or re-used `PromiseClient<T>` for a specific `PenumbraService` */
+  readonly service: <T extends PenumbraService>(
+    service: T,
+    options: Omit<ChannelTransportOptions, 'getPort'>,
+  ) => PromiseClient<T>;
 }
 
 export class PenumbraClient implements IPenumbraClient {
@@ -38,18 +46,11 @@ export class PenumbraClient implements IPenumbraClient {
 
   private origin?: string;
   private provider?: PenumbraProvider;
-  public port?: MessagePort;
+  private port?: MessagePort;
+  private serviceClients: Map<string, PromiseClient<PenumbraService>>;
 
-  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor() {
-    /* noop by spec */
-  }
-
-  private assertProvider() {
-    if (!this.provider) {
-      throw new PenumbraProviderNotConnectedError(this.origin);
-    }
-    return this.provider;
+    this.serviceClients = new Map();
   }
 
   private assertPort() {
@@ -57,6 +58,13 @@ export class PenumbraClient implements IPenumbraClient {
       throw new PenumbraProviderNotConnectedError(this.origin);
     }
     return this.port;
+  }
+
+  private assertProvider() {
+    if (!this.provider) {
+      throw new PenumbraProviderNotConnectedError(this.origin);
+    }
+    return this.provider;
   }
 
   public async connect(requireOrigin?: string): Promise<string> {
@@ -112,7 +120,10 @@ export class PenumbraClient implements IPenumbraClient {
   }
 
   public disconnect() {
-    return this.assertProvider().disconnect();
+    const request = this.assertProvider().disconnect();
+    this.assertPort().close();
+    this.serviceClients.clear();
+    return request;
   }
 
   public isConnected() {
@@ -127,7 +138,28 @@ export class PenumbraClient implements IPenumbraClient {
     this.callbacks.add(callback);
   }
 
-  public getMessagePort() {
-    return this.assertPort();
+  public service<T extends PenumbraService>(
+    service: T,
+    options?: Omit<ChannelTransportOptions, 'getPort'>,
+  ): PromiseClient<T> {
+    const existingClient = this.serviceClients.get(service.typeName);
+
+    if (existingClient) {
+      // TODO: avoid type cast
+      return existingClient as PromiseClient<T>;
+    } else {
+      const createdClient = createPromiseClient(
+        service,
+        createChannelTransport({
+          getPort: () => Promise.resolve(this.assertPort()),
+          ...options,
+          jsonOptions,
+        }),
+      );
+      this.serviceClients.set(service.typeName, createdClient);
+      return createdClient;
+    }
   }
 }
+
+export const createPenumbraClient = () => new PenumbraClient();

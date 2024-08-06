@@ -1,4 +1,4 @@
-export { createPenumbraClient, createServiceClient } from './create.js';
+export { createPenumbraClient, type IPenumbraClient as PenumbraClient } from './client.js';
 export * from './error.js';
 export {
   PenumbraStateEvent,
