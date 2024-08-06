@@ -14,7 +14,7 @@ export interface IPenumbraClient {
   readonly connect: (providerUrl?: string) => Promise<string>;
 
   /**
-   * Tries to reconnect to an injected provider without asking for user approval.
+   * Tries to reconnect to the injected provider without asking for user approval.
    */
   readonly reconnect: (providerUrl?: string) => Promise<string>;
 
