@@ -213,7 +213,6 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
     get().swap.dutchAuction.auctionInfos.revalidate();
   },
   withdrawAllAuctions: async (auctions: AuctionInfo[], addressIndex: AddressIndex) => {
-    console.log(auctions);
     const req = new TransactionPlannerRequest({
       dutchAuctionWithdrawActions: auctions.map(
         au =>
