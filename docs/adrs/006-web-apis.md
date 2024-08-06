@@ -41,19 +41,11 @@ Creating the `client` should be the starting point for any application working w
 ```ts
 import { PenumbraClient } from '@penumbra-zone/client';
 
-const providerManifests: Record<
-  string,
-  Promise<PenumbraManifest>
-> = PenumbraClient.providerManifests();
-const someProviderOrigin: keyof providerManifests = '....';
+const providers: Record<string, PenumbraProvider> = PenumbraClient.providers();
+const someProviderOrigin: keyof providers = '....';
 
 // connect will fetch and verify manifest before initiating connection, then return an active client
 const someProviderClient = await PenumbraClient.connect(someProviderOrigin);
-
-// or, a caller could do it independently
-const someProviderManifest = await providerManifests[someProviderOrigin];
-const createdProviderClient = new PenumbraClient(someProviderOrigin);
-void createdProviderClient.connect();
 ```
 
 The flow of work with the `client` would be as follows:
@@ -73,28 +65,28 @@ The idea of a single shared `client` is inspired by these popular TypeScript lib
 The `client` must be able to connect to injected wallets. To make the API possible, the interface injected into the `window` object must be standardized:
 
 ```ts
-export interface PenumbraProvider extends Readonly<PenumbraStateEventTarget> {
+export interface PenumbraProvider extends Readonly<PenumbraEventTarget> {
   /** Should contain a URI at the provider's origin, serving a manifest
    * describing this provider */
-  manifest: string;
+  readonly manifest: string;
 
   /** Call to acquire a `MessagePort` to this provider, subject to approval. */
-  connect: () => Promise<MessagePort>;
+  readonly connect: () => Promise<MessagePort>;
 
   /** Call to indicate the provider should discard approval of this origin. */
-  disconnect: () => Promise<void>;
+  readonly disconnect: () => Promise<void>;
 
   /** Should synchronously return the present connection state.
    * - `true` indicates active connection.
    * - `false` indicates connection is inactive. */
-  isConnected: () => boolean;
+  readonly isConnected: () => boolean;
 
   /** Synchronously return present injection state */
-  state: () => PenumbraState;
+  readonly state: () => PenumbraState;
 
   /** Standard EventTarget methods emitting PenumbraStateEvent upon state changes */
-  addEventListener: EventTarget['addEventListener'];
-  removeEventListener: EventTarget['removeEvenListener'];
+  readonly addEventListener: PenumbraEventTarget['addEventListener'];
+  readonly removeEventListener: PenumbraEventTarget['removeEvenListener'];
 }
 ```
 
@@ -107,49 +99,49 @@ injected wallet providers and use the connection to query the blockchain. The AP
 import type { PenumbraService } from '@penumbra-zone/protobuf';
 import type { PromiseClient } from '@connectrpc/connect';
 
-interface PenumbraClient {
+interface PenumbraClientConstructor {
+  // static features
+  providers(): string[] | undefined;
+  providerManifests(): Record<string, Promise<PenumbraManifest>>;
 
-  // static methods
-  public static providerManifests: () => Record<string, Promise<PenumbraManifest>>;
+  // provider-specific static features
+  providerManifest(providerOrigin: string): Promise<PenumbraManifest>;
+  providerIsConnected(providerOrigin: string): boolean;
+  providerState(providerOrigin: string): PenumbraState | undefined;
 
-  // provider-specific static methods
-  public static providerManifest: (providerOrigin?: string) =>  Promise<PenumbraManifest>;
-  public static providerIsConnected: (providerOrigin?: string) => boolean;
-  public static providerState: (providerOrigin?: string) => PenumbraState;
+  // Initiates connection and returns a connected client instance.
+  providerConnect<C extends string>(providerOrigin: C): Promise<PenumbraClient<C>>;
 
-  /** Initiates initiates connection, returns a client instance. */
-  public static providerConnect: (providerOrigin?: string) => Promise<PenumbraClient>;
+  // constructor for an instance bound to a specific provider
+  new <O extends string>(providerOrigin: O): PenumbraClient<O>;
+}
 
-  // instance features
-
-  /** Creates a client instance for a provider origin but does not take any action. */
-  constructor(providerOrigin?: string) => PenumbraClient
-
+interface PenumbraClient<O extends string> {
   // constructor input
-  public readonly providerOrigin: string;
+  origin: O;
 
   // populated when client is in appropriate state.
-  public readonly transport?: Transport;
-  public readonly port?: MessagePort;
+  transport?: Transport;
+  port?: MessagePort;
 
-  /** Direct re-exports the from appropriate provider */
-  public readonly disconnect: () => Promise<void>;
-  public readonly isConnected: () => boolean | undefined;
-  public readonly state: () => PenumbraState;
-  public readonly addEventListener: EventTarget['addEventListener'];
-  public readonly removeEventListener: EventTarget['removeEvenListener'];
+  // direct re-exports from the selected provider
+  disconnect(): Promise<void>;
+  isConnected: () => boolean;
+  state: () => PenumbraState;
+  addEventListener: PenumbraProvider['addEventListener'];
+  removeEventListener: PenumbraProvider['removeEvenListener'];
 
   /** Initiates connection request and then connection. A transport is
    * constructed, maintained internally and also returned to the caller. */
-  public readonly connect: () => Promise<Transport>;
+  connect: () => Promise<Transport>;
 
   /** Fetches manifest for the provider of this instance */
-  public readonly manifest: () =>  Promise<PenumbraManifest>;
+  manifest: () =>  Promise<PenumbraManifest>;
 
+  // Returns a new or re-used `PromiseClient<T>` for a specific `PenumbraService`
+  service = <T extends PenumbraService>(service: T): PromiseClient<T>;
 
-  /** Returns a new or re-used `PromiseClient<T>` for a specific
-   * `PenumbraService` using this client's transport. */
-  public service = <T extends PenumbraService>(service: T): PromiseClient<T>;
+  onConnectionStateChange(listener: (detail: PenumbraStateEventDetail) => void, removeListener?: AbortSignal): void;
 }
 ```
 
@@ -159,7 +151,10 @@ Requesting data example:
 import { PenumbraClient } from '@penumbra-zone/client';
 import { ViewService } from '@penumbra-zone/protobuf';
 
-const penumbraClient = new PenumbraClient.connect('some origin');
+const providers: Record<string, PenumbraProvider> = PenumbraClient.providers();
+const someProviderOrigin: keyof providers = '....';
+
+const penumbraClient = await PenumbraClient.connect(someProviderOrigin);
 
 const viewClient = penumbraClient.service(ViewService);
 
