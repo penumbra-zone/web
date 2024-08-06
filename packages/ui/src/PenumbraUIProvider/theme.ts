@@ -95,10 +95,25 @@ const PALETTE = {
     900: '#6B3F18',
     950: '#201004',
   },
+  base: {
+    black: '#000000',
+    white: '#ffffff',
+    transparent: 'transparent',
+  },
 };
 
-const FIFTEEN_PERCENT_OPACITY_IN_HEX = '26';
-const EIGHTY_PERCENT_OPACITY_IN_HEX = 'cc';
+/**
+ * Given a decimal opacity (between 0 and 1), returns a two-character string
+ * that can be appended to an RGB value for the alpha channel.
+ *
+ * ```ts
+ * `#000000${opacityInHex(0.5)}` // #00000080 -- i.e., black at 50% opacity
+ * ```
+ */
+const opacityInHex = (opacity: number) =>
+  Math.round(opacity * 255)
+    .toString(16)
+    .padStart(2, '0');
 
 export const theme = {
   blur: {
@@ -170,9 +185,9 @@ export const theme = {
       contrast: PALETTE.green['50'],
     },
     base: {
-      black: '#000',
-      white: '#fff',
-      transparent: 'transparent',
+      black: PALETTE.base.black,
+      white: PALETTE.base.white,
+      transparent: PALETTE.base.transparent,
     },
     text: {
       primary: PALETTE.neutral['50'],
@@ -181,9 +196,9 @@ export const theme = {
       special: PALETTE.orange['400'],
     },
     action: {
-      hoverOverlay: PALETTE.teal['400'] + FIFTEEN_PERCENT_OPACITY_IN_HEX,
-      activeOverlay: PALETTE.neutral['950'] + FIFTEEN_PERCENT_OPACITY_IN_HEX,
-      disabledOverlay: PALETTE.neutral['950'] + EIGHTY_PERCENT_OPACITY_IN_HEX,
+      hoverOverlay: PALETTE.teal['400'] + opacityInHex(0.15),
+      activeOverlay: PALETTE.neutral['950'] + opacityInHex(0.15),
+      disabledOverlay: PALETTE.neutral['950'] + opacityInHex(0.8),
       primaryFocusOutline: PALETTE.orange['400'],
       secondaryFocusOutline: PALETTE.teal['400'],
       unshieldFocusOutline: PALETTE.purple['400'],
@@ -191,8 +206,12 @@ export const theme = {
       destructiveFocusOutline: PALETTE.red['400'],
     },
     other: {
-      tonalStroke: PALETTE.neutral['50'] + FIFTEEN_PERCENT_OPACITY_IN_HEX,
+      tonalStroke: PALETTE.neutral['50'] + opacityInHex(0.15),
+      tonalFill5: PALETTE.neutral['50'] + opacityInHex(0.05),
+      tonalFill10: PALETTE.neutral['50'] + opacityInHex(0.1),
       solidStroke: PALETTE.neutral['700'],
+      dialogBackground: PALETTE.teal['700'] + opacityInHex(0.1),
+      overlay: PALETTE.base.black + opacityInHex(0.5),
     },
   },
   font: {
