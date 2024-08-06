@@ -45,6 +45,7 @@ export const Basic: Story = {
               { label: 'Secondary CTA', icon: Handshake },
               { label: 'Another secondary CTA', icon: Ban },
             ],
+            hasPrimaryButton: true,
           }}
         >
           <WhiteTextWrapper>

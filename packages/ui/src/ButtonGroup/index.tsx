@@ -4,7 +4,6 @@ import { ActionType } from '../utils/button';
 import { Button } from '../Button';
 import styled from 'styled-components';
 import { media } from '../utils/media';
-import { ButtonPriorityContext } from '../utils/ButtonPriorityContext';
 import { Density } from '../types/Density';
 import { useDensity } from '../hooks/useDensity';
 
@@ -56,6 +55,14 @@ export interface ButtonGroupProps<IconOnly extends boolean> {
    * narrow layout width, such as a dialog). In those cases, set this to `true`.
    */
   column?: boolean;
+  /**
+   * Often, a button group should have a primary button for the action that the
+   * user is most likely to take. In those cases, pass `hasPrimaryButton` to
+   * `<ButtonGroup />`. When you do, the first button will have a `priority` of
+   * `primary`, while the rest will be `secondary`. (Note that there can only be
+   * one primary button in a button group.)
+   */
+  hasPrimaryButton?: boolean;
 }
 
 const isIconOnly = (props: ButtonGroupProps<boolean>): props is ButtonGroupProps<true> =>
@@ -68,13 +75,14 @@ const isIconOnly = (props: ButtonGroupProps<boolean>): props is ButtonGroupProps
  * When rendering multiple Penumbra UI buttons together, always use a
  * `<ButtonGroup />` rather than individual `<Button />`s. This ensures that
  * they always meet Penumbra UI guidelines. (For example, all buttons in a group
- * should have the same `actionType`; and the first button in a group should be
- * the `primary` priority, while subsequent buttons are the `secondary`
+ * should have the same `actionType`; and the first button in a group can have
+ * the `primary` priority, while subsequent buttons have the `secondary`
  * priority.)
  */
 export const ButtonGroup = ({
   actionType = 'default',
   column,
+  hasPrimaryButton,
   ...props
 }: ButtonGroupProps<boolean>) => {
   const density = useDensity();
@@ -88,24 +96,31 @@ export const ButtonGroup = ({
       */}
       {isIconOnly(props) &&
         props.buttons.map((button, index) => (
-          <ButtonPriorityContext.Provider key={index} value={index === 0 ? 'primary' : 'secondary'}>
-            <ButtonWrapper $density={density} $iconOnly>
-              <Button icon={button.icon} actionType={actionType} onClick={button.onClick} iconOnly>
-                {button.label}
-              </Button>
-            </ButtonWrapper>
-          </ButtonPriorityContext.Provider>
+          <ButtonWrapper key={index} $density={density} $iconOnly>
+            <Button
+              icon={button.icon}
+              actionType={actionType}
+              onClick={button.onClick}
+              iconOnly
+              priority={index === 0 && hasPrimaryButton ? 'primary' : 'secondary'}
+            >
+              {button.label}
+            </Button>
+          </ButtonWrapper>
         ))}
 
       {!isIconOnly(props) &&
         props.buttons.map((button, index) => (
-          <ButtonPriorityContext.Provider key={index} value={index === 0 ? 'primary' : 'secondary'}>
-            <ButtonWrapper $density={density}>
-              <Button icon={button.icon} actionType={actionType} onClick={button.onClick}>
-                {button.label}
-              </Button>
-            </ButtonWrapper>
-          </ButtonPriorityContext.Provider>
+          <ButtonWrapper key={index} $density={density}>
+            <Button
+              icon={button.icon}
+              actionType={actionType}
+              onClick={button.onClick}
+              priority={index === 0 && hasPrimaryButton ? 'primary' : 'secondary'}
+            >
+              {button.label}
+            </Button>
+          </ButtonWrapper>
         ))}
     </Root>
   );
