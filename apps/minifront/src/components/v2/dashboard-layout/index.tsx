@@ -15,6 +15,11 @@ const CARD_TITLE_BY_PATH = {
   [v2PathPrefix(PagePath.TRANSACTIONS)]: <TransactionsCardTitle />,
 };
 
+const TABS_OPTIONS = [
+  { label: 'Assets', value: v2PathPrefix(PagePath.DASHBOARD) },
+  { label: 'Transactions', value: v2PathPrefix(PagePath.TRANSACTIONS) },
+];
+
 export const DashboardLayout = () => {
   const pagePath = usePagePath();
   const navigate = useNavigate();
@@ -29,10 +34,7 @@ export const DashboardLayout = () => {
             <Tabs
               value={v2PathPrefix(pagePath)}
               onChange={value => navigate(value)}
-              options={[
-                { label: 'Assets', value: v2PathPrefix(PagePath.DASHBOARD) },
-                { label: 'Transactions', value: v2PathPrefix(PagePath.TRANSACTIONS) },
-              ]}
+              options={TABS_OPTIONS}
               actionType='accent'
             />
 
