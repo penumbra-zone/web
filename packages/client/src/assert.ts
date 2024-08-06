@@ -3,16 +3,19 @@ import {
   PenumbraProviderNotAvailableError,
   PenumbraProviderNotConnectedError,
 } from './error.js';
+import { PenumbraProvider } from './provider.js';
 import { PenumbraSymbol } from './symbol.js';
 
-export const assertStringIsOrigin = (s?: string) => {
+import './global.js';
+
+const assertStringIsOrigin = (s?: string) => {
   if (!s || new URL(s).origin !== s) {
     throw new TypeError('Invalid origin');
   }
   return s;
 };
 
-export const assertGlobalPresent = () => {
+export const assertPenumbra = (): Record<string, PenumbraProvider> => {
   if (!window[PenumbraSymbol]) {
     throw new PenumbraNotInstalledError();
   }
@@ -22,29 +25,40 @@ export const assertGlobalPresent = () => {
 /**
  * Given a specific origin, identify the relevant injection or throw.  An
  * `undefined` origin is accepted but will throw.
+ *
+ * This method does not confirm the manifest is present.
  */
-export const assertProviderRecord = (providerOrigin?: string) => {
-  const provider = providerOrigin && assertGlobalPresent()[assertStringIsOrigin(providerOrigin)];
+export const assertProviderRecord = (providerOrigin?: string): PenumbraProvider => {
+  const provider = assertPenumbra()[assertStringIsOrigin(providerOrigin)];
   if (!provider) {
     throw new PenumbraProviderNotAvailableError(providerOrigin);
   }
   return provider;
 };
 
-export const assertProvider = (providerOrigin?: string) =>
-  assertProviderManifest(providerOrigin).then(() => assertProviderRecord(providerOrigin));
+/**
+ * Perform a complete check and return the specified provider. The global
+ * exists, the manifest is present, and the provider is connected.
+ */
+export const assertProvider = async (providerOrigin?: string): Promise<PenumbraProvider> => {
+  await assertProviderManifest(providerOrigin);
+  assertProviderConnected(providerOrigin);
+  return assertProviderRecord(providerOrigin);
+};
 
 /**
  * Given a specific origin, identify the relevant injection, and confirm
  * provider is connected or throw. An `undefined` origin is accepted but will
  * throw.
+ *
+ * This method does not confirm the manifest is present. It only asserts that
+ * the specified provider claims it is connected.
  */
 export const assertProviderConnected = (providerOrigin?: string) => {
   const provider = assertProviderRecord(providerOrigin);
   if (!provider.isConnected()) {
     throw new PenumbraProviderNotConnectedError(providerOrigin);
   }
-  return provider;
 };
 
 /**
@@ -74,10 +88,10 @@ export const assertProviderManifest = async (providerOrigin?: string, signal?: A
     if (!manifest) {
       throw new Error(`Cannot confirm ${providerOrigin} is real.`);
     }
-  } catch (e) {
+  } catch (cause) {
     if (signal?.aborted !== true) {
-      console.warn(e);
-      throw new PenumbraProviderNotAvailableError(providerOrigin);
+      console.warn(cause);
+      throw new PenumbraProviderNotAvailableError(providerOrigin, { cause });
     }
   }
 
