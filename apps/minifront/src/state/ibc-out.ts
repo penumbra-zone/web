@@ -1,4 +1,4 @@
-import { AllSlices, Middleware, SliceCreator, useStore } from '.';
+import { AllSlices, SliceCreator, useStore } from '.';
 import {
   BalancesResponse,
   TransactionPlannerRequest,
@@ -23,7 +23,7 @@ import { Chain } from '@penumbra-labs/registry';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import { Channel } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/channel/v1/channel_pb.js';
 import { BLOCKS_PER_HOUR } from './constants';
-import { ZQueryState, createZQuery } from '@penumbra-zone/zquery';
+import { createZQuery, ZQueryState } from '@penumbra-zone/zquery';
 import { getChains } from '../fetchers/registry';
 
 export const { chains, useChains } = createZQuery({
@@ -74,6 +74,12 @@ export const createIbcOutSlice = (): SliceCreator<IbcOutSlice> => (set, get) => 
     setChain: chain => {
       set(state => {
         state.ibcOut.chain = chain;
+      });
+
+      // After new chain is selected, the asset selection should also be updated separately
+      const initialSelection = filteredIbcBalancesSelector(get())[0];
+      set(state => {
+        state.ibcOut.selection = initialSelection;
       });
     },
     setDestinationChainAddress: addr => {
@@ -248,6 +254,9 @@ const unknownAddrIsValid = (chain: Chain | undefined, address: string): boolean 
   return !!words && prefix === chain.addressPrefix;
 };
 
+// These chains do not allow IBC-in transfers unless the token is native to the chain
+export const NATIVE_TRANSFERS_ONLY_CHAIN_IDS = ['celestia'];
+
 /**
  * Filters the given IBC loader response balances by checking if any of the assets
  * in the balance view match the staking token's asset ID or are of the same ibc channel.
@@ -272,58 +281,37 @@ export const filterBalancesPerChain = (
     })
     .map(m => m.penumbraAssetId!);
 
-  const assetIdsToCheck = [penumbraAssetId, ...assetsWithMatchingChannel];
+  const assetIdsToCheck = [...assetsWithMatchingChannel];
+
+  if (
+    chain?.chainId &&
+    penumbraAssetId &&
+    !NATIVE_TRANSFERS_ONLY_CHAIN_IDS.includes(chain.chainId)
+  ) {
+    assetIdsToCheck.push(penumbraAssetId);
+  }
 
   return allBalances.filter(({ balanceView }) => {
-    return assetIdsToCheck.some(assetId => assetId?.equals(getAssetIdFromValueView(balanceView)));
+    return assetIdsToCheck.some(assetId => assetId.equals(getAssetIdFromValueView(balanceView)));
   });
 };
 
-export const ibcOutMiddleware: Middleware = f => (set, get, store) => {
-  const modifiedSetter: typeof set = (...args) => {
-    set(...args);
+export const filteredIbcBalancesSelector = (state: AllSlices): BalancesResponse[] => {
+  return filterBalancesPerChain(
+    state.shared.balancesResponses.data ?? [],
+    state.ibcOut.chain,
+    state.shared.assets.data ?? [],
+    state.shared.stakingTokenMetadata.data,
+  );
+};
 
-    const initialChain = get().ibcOut.chains.data?.[0];
-    const shouldSetInitialChain = !!initialChain && !get().ibcOut.chain;
-    if (shouldSetInitialChain) {
-      set(state => ({
-        ...state,
-        ibcOut: {
-          ...state.ibcOut,
-          chain: initialChain,
-        },
-      }));
-    }
-
-    const assets = get().shared.assets.data;
-    const balancesResponses = get().shared.balancesResponses.data;
-    const stakingTokenMetadata = get().shared.stakingTokenMetadata.data;
-    const shouldSetInitialSelection =
-      initialChain &&
-      assets?.length &&
-      balancesResponses?.length &&
-      stakingTokenMetadata &&
-      !get().ibcOut.selection;
-
-    if (shouldSetInitialSelection) {
-      const initialSelection = filterBalancesPerChain(
-        balancesResponses,
-        initialChain,
-        assets,
-        stakingTokenMetadata,
-      )[0];
-
-      set(state => ({
-        ...state,
-        ibcOut: {
-          ...state.ibcOut,
-          selection: initialSelection,
-        },
-      }));
-    }
-  };
-
-  store.setState = modifiedSetter;
-
-  return f(modifiedSetter, get, store);
+export const ibcPlaceholderSelector = (state: AllSlices): string => {
+  const filteredBalances = filteredIbcBalancesSelector(state);
+  if (!state.ibcOut.chain) {
+    return 'Select a chain';
+  }
+  if (filteredBalances.length === 0) {
+    return 'No balances to transfer';
+  }
+  return 'Enter an amount';
 };
