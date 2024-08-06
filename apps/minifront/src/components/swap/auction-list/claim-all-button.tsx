@@ -70,7 +70,7 @@ export const ClaimAllAuctionButton = () => {
           >
             <div className='w-[85px] shrink-0'>
               <Button size='sm' variant='secondary' className='w-full'>
-                {'End all'}
+                End all
               </Button>
             </div>
           </TooltipTrigger>
