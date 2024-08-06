@@ -2,7 +2,6 @@ import { createContext, ReactNode, useContext } from 'react';
 import styled, { keyframes } from 'styled-components';
 import * as RadixDialog from '@radix-ui/react-dialog';
 import { Text } from '../Text';
-import { Icon } from '../Icon';
 import { X } from 'lucide-react';
 import { ButtonGroup, ButtonGroupProps } from '../ButtonGroup';
 import { Button } from '../Button';
@@ -187,13 +186,6 @@ export const Dialog = ({ children, onClose, isOpen }: DialogProps) => {
 const DialogContext = createContext<{ showCloseButton: boolean }>({
   showCloseButton: true,
 });
-
-const CloseButton = styled.button`
-  appearance: none;
-  background: none;
-  border: none;
-  color: ${props => props.theme.color.text.primary};
-`;
 
 export interface DialogContentProps<IconOnlyButtonGroupProps extends boolean | undefined> {
   children?: ReactNode;
