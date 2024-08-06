@@ -1,60 +1,44 @@
 import { createContext, ReactNode, useContext } from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 import * as RadixDialog from '@radix-ui/react-dialog';
 import { Text } from '../Text';
 import { X } from 'lucide-react';
 import { ButtonGroup, ButtonGroupProps } from '../ButtonGroup';
 import { Button } from '../Button';
 import { Density } from '../Density';
-
-const gradualBlur = (blur: string) => keyframes`
-  from {
-    backdrop-filter: blur(0);
-  }
-
-  to {
-    backdrop-filter: blur(${blur});
-  }
-`;
+import { Display } from '../Display';
+import { Grid } from '../Grid';
 
 const Overlay = styled(RadixDialog.Overlay)`
-  animation: ${props => gradualBlur(props.theme.blur.xs)} 0.15s forwards;
-  /* animation: name duration timing-function delay iteration-count direction fill-mode; */
+  backdrop-filter: blur(${props => props.theme.blur.xs});
+  background-color: ${props => props.theme.color.other.overlay};
   position: fixed;
   inset: 0;
   z-index: ${props => props.theme.zIndex.dialogOverlay};
 `;
 
-const fadeIn = keyframes`
-  from {
-    opacity: 0;
-  }
+const FullHeightWrapper = styled.div`
+  height: 100%;
+  min-height: 100svh;
+  max-height: 100lvh;
+  position: relative;
 
-  to {
-    opacity: 1;
-  };
+  display: flex;
+  align-items: center;
 `;
 
-const TEN_PERCENT_OPACITY_IN_HEX = '1a';
-const ONE_PERCENT_OPACITY_IN_HEX = '03';
-const DialogContent = styled(RadixDialog.Content)`
-  animation: ${fadeIn} 0.15s forwards;
-
+const DialogContent = styled.div`
   position: fixed;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  inset: 0;
   z-index: ${props => props.theme.zIndex.dialogContent};
+  pointer-events: none;
+`;
 
-  width: 472px;
-  max-width: 100%;
+const DialogContentCard = styled.div`
+  width: 100%;
   box-sizing: border-box;
 
-  background: linear-gradient(
-    136deg,
-    ${props => props.theme.color.neutral.contrast + TEN_PERCENT_OPACITY_IN_HEX},
-    ${props => props.theme.color.neutral.contrast + ONE_PERCENT_OPACITY_IN_HEX}
-  );
+  background: ${props => props.theme.color.other.dialogBackground};
   border: 1px solid ${props => props.theme.color.other.tonalStroke};
   border-radius: ${props => props.theme.borderRadius.xl};
   backdrop-filter: blur(${props => props.theme.blur.xl});
@@ -67,6 +51,8 @@ const DialogContent = styled(RadixDialog.Content)`
   display: flex;
   flex-direction: column;
   gap: ${props => props.theme.spacing(6)};
+
+  pointer-events: auto;
 `;
 
 const TitleAndCloseButton = styled.header`
@@ -211,29 +197,45 @@ const Content = <IconOnlyButtonGroupProps extends boolean | undefined>({
     <RadixDialog.Portal>
       <Overlay />
 
-      <DialogContent>
-        <TitleAndCloseButton>
-          <RadixDialog.Title asChild>
-            <Text xxl as='h2'>
-              {title}
-            </Text>
-          </RadixDialog.Title>
+      <RadixDialog.Content>
+        <DialogContent>
+          <Display>
+            <Grid container>
+              <Grid mobile={0} tablet={2} desktop={3} xl={4} />
 
-          {showCloseButton && (
-            <Density compact>
-              <RadixDialog.Close asChild>
-                <Button icon={X} iconOnly priority='secondary'>
-                  Close
-                </Button>
-              </RadixDialog.Close>
-            </Density>
-          )}
-        </TitleAndCloseButton>
+              <Grid mobile={12} tablet={8} desktop={6} xl={4}>
+                <FullHeightWrapper>
+                  <DialogContentCard>
+                    <TitleAndCloseButton>
+                      <RadixDialog.Title asChild>
+                        <Text xxl as='h2'>
+                          {title}
+                        </Text>
+                      </RadixDialog.Title>
 
-        {children}
+                      {showCloseButton && (
+                        <Density compact>
+                          <RadixDialog.Close asChild>
+                            <Button icon={X} iconOnly priority='secondary'>
+                              Close
+                            </Button>
+                          </RadixDialog.Close>
+                        </Density>
+                      )}
+                    </TitleAndCloseButton>
 
-        {buttonGroupProps && <ButtonGroup {...buttonGroupProps} column />}
-      </DialogContent>
+                    {children}
+
+                    {buttonGroupProps && <ButtonGroup {...buttonGroupProps} column />}
+                  </DialogContentCard>
+                </FullHeightWrapper>
+              </Grid>
+
+              <Grid mobile={0} tablet={2} desktop={3} xl={4} />
+            </Grid>
+          </Display>
+        </DialogContent>
+      </RadixDialog.Content>
     </RadixDialog.Portal>
   );
 };
