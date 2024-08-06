@@ -9,7 +9,7 @@ import './global.js';
 
 export const assertStringIsOrigin = (s?: string) => {
   if (!s || new URL(s).origin !== s) {
-    throw new TypeError('Invalid origin');
+    throw new TypeError(`Invalid origin: ${s}`);
   }
   return s;
 };

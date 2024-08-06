@@ -5,33 +5,23 @@ import {
   type ChannelTransportOptions,
 } from '@penumbra-zone/transport-dom/create';
 import { assertProviderManifest, assertProviderRecord } from './assert.js';
-import { PenumbraSymbol } from './symbol.js';
-
-// Naively return the first available provider origin, or `undefined`.
-const availableOrigin = () => Object.keys(window[PenumbraSymbol] ?? {})[0];
 
 /**
- * Asynchronously get a connection to the specified provider, or the first
- * available provider if unspecified.
+ * Asynchronously get a connection to the specified provider.
  *
  * Confirms presence of the provider's manifest.  Will attempt to request
  * approval if connection is not already active.
  *
- * @param requireProvider optional string identifying a provider origin
+ * @param requireProvider string identifying a provider origin
  */
-export const getPenumbraPort = async (requireProvider?: string) => {
-  const penumbraOrigin = requireProvider ?? availableOrigin();
-  await assertProviderManifest(penumbraOrigin);
-  const provider = assertProviderRecord(penumbraOrigin);
-  if (!provider.isConnected()) {
-    await provider.request();
-  }
+export const getPenumbraPort = async (requireProvider: string) => {
+  await assertProviderManifest(requireProvider);
+  const provider = assertProviderRecord(requireProvider);
   return provider.connect();
 };
 
 /**
- * Synchronously create a channel transport for the specified provider, or the
- * first available provider if unspecified.
+ * Synchronously create a channel transport for the specified provider.
  *
  * Will always succeed, but the transport may fail if the provider is not
  * present, or if the provider rejects the connection.
@@ -39,11 +29,11 @@ export const getPenumbraPort = async (requireProvider?: string) => {
  * Confirms presence of the provider's manifest.  Will attempt to request
  * approval if connection is not already active.
  *
- * @param requireProvider optional string identifying a provider origin
+ * @param requireProvider string identifying a provider origin
  * @param transportOptions optional `ChannelTransportOptions` without `getPort`
  */
 export const createPenumbraChannelTransportSync = (
-  requireProvider?: string,
+  requireProvider: string,
   transportOptions: Omit<ChannelTransportOptions, 'getPort'> = { jsonOptions },
 ): Transport =>
   createChannelTransport({
@@ -52,13 +42,12 @@ export const createPenumbraChannelTransportSync = (
   });
 
 /**
- * Asynchronously create a channel transport for the specified provider, or the
- * first available provider if unspecified.
+ * Asynchronously create a channel transport for the specified provider.
  *
  * Like `syncCreatePenumbraChannelTransport`, but awaits connection init.
  */
 export const createPenumbraChannelTransport = async (
-  requireProvider?: string,
+  requireProvider: string,
   transportOptions: Omit<ChannelTransportOptions, 'getPort'> = { jsonOptions },
 ): Promise<Transport> => {
   const port = await getPenumbraPort(requireProvider);
@@ -69,14 +58,13 @@ export const createPenumbraChannelTransport = async (
 };
 
 /**
- * Synchronously create a client for `service` from the specified provider, or the
- * first available provider if unspecified.
+ * Synchronously create a client for `service` from the specified provider.
  *
  * If the provider is unavailable, the client will fail to make requests.
  */
 export const createPenumbraClientSync = <P extends PenumbraService>(
   service: P,
-  requireProvider?: string,
+  requireProvider: string,
   transportOptions?: Omit<ChannelTransportOptions, 'getPort'>,
 ) =>
   createPromiseClient(
@@ -85,14 +73,13 @@ export const createPenumbraClientSync = <P extends PenumbraService>(
   );
 
 /**
- * Asynchronously create a client for `service` from the specified provider, or
- * the first available provider if unspecified.
+ * Asynchronously create a client for `service` from the specified provider.
  *
  * Like `syncCreatePenumbraClient`, but awaits connection init.
  */
 export const createPenumbraClient = async <P extends PenumbraService>(
   service: P,
-  requireProvider?: string,
+  requireProvider: string,
   transportOptions?: Omit<ChannelTransportOptions, 'getPort'>,
 ) =>
   createPromiseClient(

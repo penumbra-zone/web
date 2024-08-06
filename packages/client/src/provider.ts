@@ -45,19 +45,14 @@ export interface PenumbraProvider extends Readonly<PenumbraEventTarget> {
   /** Call to acquire a `MessagePort` to this provider, subject to approval. */
   readonly connect: () => Promise<MessagePort>;
 
-  /** Call to gain approval.  May reject with a `PenumbraProviderRequestError`
-   * containing an enumerated `PenumbraRequestFailure` cause. */
-  readonly request: () => Promise<void>;
-
   /** Call to indicate the provider should discard approval of this origin. */
   readonly disconnect: () => Promise<void>;
 
   /** Should synchronously return the present connection state.
    * - `true` indicates active connection.
-   * - `false` indicates connection is closed or rejected.
-   * - `undefined` no attempt has resolved. connection may be attempted.
+   * - `false` indicates inactive connection.
    */
-  readonly isConnected: () => boolean | undefined;
+  readonly isConnected: () => boolean;
 
   /** Synchronously return present injection state. */
   readonly state: () => PenumbraState;

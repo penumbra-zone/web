@@ -153,7 +153,7 @@ vi.mock('../../fetchers/balances', () => ({
   ),
 }));
 
-const mockViewClient = vi.hoisted(() => ({
+const mockViewClient = vi.hoisted(() => () => ({
   assetMetadataById: vi.fn(() => new Metadata()),
   delegationsByAddressIndex: vi.fn(async function* () {
     yield await Promise.resolve(

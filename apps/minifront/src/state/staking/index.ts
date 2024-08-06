@@ -232,7 +232,7 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
     };
     const throttledFlushToState = throttle(flushToState, THROTTLE_MS, { trailing: true });
 
-    for await (const response of viewClient.delegationsByAddressIndex({
+    for await (const response of viewClient().delegationsByAddressIndex({
       addressIndex,
       filter: DelegationsByAddressIndexRequest_Filter.ALL,
     })) {
@@ -275,7 +275,7 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
     });
 
     const responses = await Array.fromAsync(
-      viewClient.unbondingTokensByAddressIndex({ addressIndex }),
+      viewClient().unbondingTokensByAddressIndex({ addressIndex }),
     );
     const stakingTokenMetadata = await getStakingTokenMetadata();
 

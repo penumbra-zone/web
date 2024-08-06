@@ -6,7 +6,9 @@ import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbr
 const fetchReceiverView = async (txInfo: TransactionInfo): Promise<TransactionView> => {
   return await asReceiverTransactionView(txInfo.view, {
     isControlledAddress: async address =>
-      viewClient.indexByAddress({ address }).then(({ addressIndex }) => Boolean(addressIndex)),
+      viewClient()
+        .indexByAddress({ address })
+        .then(({ addressIndex }) => Boolean(addressIndex)),
   });
 };
 

@@ -8,7 +8,6 @@ import {
   Metadata,
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import { viewClient } from '../../clients';
 import {
   AddressByIndexResponse,
   BalancesResponse,
@@ -21,11 +20,15 @@ vi.mock('../fetchers/address', () => ({
   getAddressByIndex: vi.fn(),
 }));
 
-vi.mock('../../prax', async () => {
-  const { createPromiseClient } =
-    await vi.importActual<typeof import('@connectrpc/connect')>('@connectrpc/connect');
+const mockViewClient = {
+  addressByIndex: vi.fn(),
+  transactionPlanner: vi.fn(),
+  transactionPanner: vi.fn(),
+};
+
+vi.mock('../../clients', () => {
   return {
-    createPraxClient: vi.fn(s => createPromiseClient(s, { unary: vi.fn(), stream: vi.fn() })),
+    viewClient: () => mockViewClient,
   };
 });
 
@@ -183,15 +186,15 @@ describe('Send Slice', () => {
     const mockFee = new Fee({ amount: { hi: 1n, lo: 2n } });
 
     beforeEach(() => {
-      vi.spyOn(viewClient, 'addressByIndex').mockResolvedValue(new AddressByIndexResponse());
+      vi.spyOn(mockViewClient, 'addressByIndex').mockResolvedValue(new AddressByIndexResponse());
 
-      vi.spyOn(viewClient, 'transactionPlanner').mockResolvedValue(
+      vi.spyOn(mockViewClient, 'transactionPlanner').mockResolvedValue(
         new TransactionPlannerResponse({ plan: { transactionParameters: { fee: mockFee } } }),
       );
     });
 
     afterEach(() => {
-      vi.spyOn(viewClient, 'transactionPlanner').mockReset();
+      vi.spyOn(mockViewClient, 'transactionPlanner').mockReset();
     });
 
     describe('when `fee` is not yet present in the state`', () => {

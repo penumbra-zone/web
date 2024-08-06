@@ -249,7 +249,7 @@ const getCounterpartyChannelId = async (
 
 // Get timeout from penumbra chain blocks
 const getTimeout = async (chainId: string) => {
-  const { syncInfo } = await tendermintClient.getStatus({});
+  const { syncInfo } = await tendermintClient().getStatus({});
   const height = syncInfo?.latestBlockHeight;
   if (height === undefined) {
     throw new Error('Could not retrieve latest block height from Tendermint');

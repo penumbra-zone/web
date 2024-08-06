@@ -47,7 +47,7 @@ export const sendSimulateTradeRequest = ({
     output: getAssetId(assetOut),
   });
 
-  return simulationClient.simulateTrade(req);
+  return simulationClient().simulateTrade(req);
 };
 
 /**
@@ -86,7 +86,7 @@ export const sendCandlestickDataRequest = async (
     throw new Error('Asset pair equivalent');
   }
 
-  return dexClient.candlestickData({ pair: { start, end }, limit, startHeight });
+  return dexClient().candlestickData({ pair: { start, end }, limit, startHeight });
 };
 
 export const combinedCandlestickDataSelector = (

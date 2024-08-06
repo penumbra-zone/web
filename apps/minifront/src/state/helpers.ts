@@ -26,6 +26,8 @@ import {
   getValueViewCaseFromBalancesResponse,
 } from '@penumbra-zone/getters/balances-response';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
+import { ViewService } from '@penumbra-zone/protobuf';
+import { PromiseClient } from '@connectrpc/connect';
 
 /**
  * Handles the common use case of planning, building, and broadcasting a
@@ -51,7 +53,9 @@ export const planBuildBroadcast = async (
   const toast = new TransactionToast(transactionClassification);
   toast.onStart();
 
-  const rpcMethod = options?.skipAuth ? viewClient.witnessAndBuild : viewClient.authorizeAndBuild;
+  const rpcMethod = options?.skipAuth
+    ? viewClient().witnessAndBuild
+    : viewClient().authorizeAndBuild;
 
   try {
     const transactionPlan = await plan(req);
@@ -86,7 +90,7 @@ export const planBuildBroadcast = async (
 export const plan = async (
   req: PartialMessage<TransactionPlannerRequest>,
 ): Promise<TransactionPlan> => {
-  const { plan } = await viewClient.transactionPlanner(req);
+  const { plan } = await viewClient().transactionPlanner(req);
   if (!plan) {
     throw new Error('No plan in planner response');
   }
@@ -95,7 +99,7 @@ export const plan = async (
 
 const build = async (
   req: PartialMessage<AuthorizeAndBuildRequest> | PartialMessage<WitnessAndBuildRequest>,
-  buildFn: (typeof viewClient)['authorizeAndBuild' | 'witnessAndBuild'],
+  buildFn: PromiseClient<typeof ViewService>['authorizeAndBuild' | 'witnessAndBuild'],
   onStatusUpdate: (
     status?: (AuthorizeAndBuildResponse | WitnessAndBuildResponse)['status'],
   ) => void,
@@ -127,7 +131,10 @@ const broadcast = async (
   const txId = await getTxId(transaction);
   const txHash = getTxHash(txId);
   onStatusUpdate(undefined);
-  for await (const { status } of viewClient.broadcastTransaction({ awaitDetection, transaction })) {
+  for await (const { status } of viewClient().broadcastTransaction({
+    awaitDetection,
+    transaction,
+  })) {
     if (!txId.equals(status.value?.id)) {
       throw new Error('unexpected transaction id');
     }

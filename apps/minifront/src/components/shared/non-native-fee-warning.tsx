@@ -64,7 +64,7 @@ const useGasPrices = () => {
   const [prices, setPrices] = useState<GasPrices[]>([]);
 
   const fetchGasPrices = useCallback(async () => {
-    const res = await viewClient.gasPrices({});
+    const res = await viewClient().gasPrices({});
     setPrices(res.altGasPrices);
   }, []);
 

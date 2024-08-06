@@ -21,7 +21,7 @@ const getHash = (tx: TransactionInfoResponse) =>
 
 export const { summaries, useSummaries } = createZQuery({
   name: 'summaries',
-  fetch: () => viewClient.transactionInfo({}),
+  fetch: () => viewClient().transactionInfo({}),
   stream: () => {
     const txIdsToKeep = new Set<string>();
     return {

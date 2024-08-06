@@ -11,8 +11,8 @@ const fetchMetadataForSwap = async (swap: SwapRecord): Promise<UnclaimedSwapsWit
   const assetId2 = getSwapAsset2(swap);
 
   const [{ denomMetadata: asset1Metadata }, { denomMetadata: asset2Metadata }] = await Promise.all([
-    viewClient.assetMetadataById({ assetId: assetId1 }),
-    viewClient.assetMetadataById({ assetId: assetId2 }),
+    viewClient().assetMetadataById({ assetId: assetId1 }),
+    viewClient().assetMetadataById({ assetId: assetId2 }),
   ]);
 
   return {
@@ -31,7 +31,7 @@ const byHeightDescending = (a: UnclaimedSwapsWithMetadata, b: UnclaimedSwapsWith
   Number(b.swap.outputData?.height) - Number(a.swap.outputData?.height);
 
 export const fetchUnclaimedSwaps = async (): Promise<UnclaimedSwapsWithMetadata[]> => {
-  const responses = await Array.fromAsync(viewClient.unclaimedSwaps({}));
+  const responses = await Array.fromAsync(viewClient().unclaimedSwaps({}));
   const unclaimedSwaps = responses.map(getUnclaimedSwaps);
   const unclaimedSwapsWithMetadata = await Promise.all(unclaimedSwaps.map(fetchMetadataForSwap));
 

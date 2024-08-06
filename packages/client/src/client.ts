@@ -1,6 +1,9 @@
 import { createPromiseClient, PromiseClient, Transport } from '@connectrpc/connect';
 import { jsonOptions, PenumbraService } from '@penumbra-zone/protobuf';
-import { createChannelTransport } from '@penumbra-zone/transport-dom/create';
+import {
+  ChannelTransportOptions,
+  createChannelTransport,
+} from '@penumbra-zone/transport-dom/create';
 import { assertProviderManifest, assertProviderRecord } from './assert.js';
 import { PenumbraProviderNotConnectedError } from './error.js';
 import {
@@ -9,102 +12,80 @@ import {
   getPenumbraManifest,
   getPenumbraUnsafe,
 } from './get.js';
-import { PenumbraManifest } from './manifest.js';
 import { PenumbraProvider } from './provider.js';
+import { isPenumbraStateEvent, PenumbraStateEventDetail } from './event.js';
+import { PenumbraManifest } from './manifest.js';
 import { PenumbraState } from './state.js';
 
-interface IPenumbraClientStatic {
-  // all-provider static methods
-  providers(): string[] | undefined;
-  providerManifests(): Record<string, Promise<PenumbraManifest>>;
+export class PenumbraClient<O extends string> {
+  // static features
 
-  // provider-specific static methods
-  providerManifest(providerOrigin: string): Promise<PenumbraManifest>;
-  providerIsConnected(providerOrigin: string): boolean;
-  providerState(providerOrigin: string): PenumbraState | undefined;
-
-  /** Initiates connection and returns a connected client instance. */
-  providerConnect<C extends string>(providerOrigin: C): Promise<IPenumbraClientInstance<C>>;
-
-  /** Constructs a client instance. */
-  new <N extends string>(providerOrigin: N): IPenumbraClientInstance<N>;
-}
-
-type IPenumbraClientInstance<O extends string> = Pick<
-  PenumbraProvider,
-  'disconnect' | 'isConnected' | 'state' | 'addEventListener' | 'removeEventListener'
-> & {
-  readonly origin: O;
-
-  // populated when client is in appropriate state.
-  readonly transport?: Transport;
-  readonly port?: MessagePort;
-
-  /** Initiates connection request and then connection. A channel transport is
-   * constructed, maintained internally and also returned to the caller. */
-  readonly connect: () => Promise<Transport>;
-
-  /** Fetches manifest for the provider of this instance */
-  readonly manifest: () => Promise<PenumbraManifest>;
-
-  /** Returns a new or re-used `PromiseClient<T>` for a specific
-   * `PenumbraService` using this client's transport. */
-  service: <T extends PenumbraService>(service: T) => PromiseClient<T>;
-};
-
-export const PenumbraClient: IPenumbraClientStatic = class PenumbraClient<O extends string>
-  implements IPenumbraClientInstance<O>
-{
-  // IPenumbraClientStatic features
-
-  public static providers() {
+  public static providers(): string[] | undefined {
     return Object.keys(getPenumbraGlobal());
   }
 
-  public static providerManifests() {
+  public static providerManifests(): Record<string, Promise<PenumbraManifest>> {
     return getAllPenumbraManifests();
   }
-  public static providerManifest(providerOrigin: string) {
+  public static providerManifest(providerOrigin: string): Promise<PenumbraManifest> {
     return getPenumbraManifest(providerOrigin);
   }
-  public static providerIsConnected(providerOrigin: string) {
+  public static providerIsConnected(providerOrigin: string): boolean {
     return Boolean(getPenumbraUnsafe(providerOrigin)?.isConnected());
   }
-  public static providerState(providerOrigin: string) {
+  public static providerState(providerOrigin: string): PenumbraState | undefined {
     return getPenumbraUnsafe(providerOrigin)?.state();
   }
 
   public static async providerConnect<N extends string>(
     providerOrigin: N,
-  ): Promise<IPenumbraClientInstance<N>> {
+  ): Promise<PenumbraClient<N>> {
     await assertProviderManifest(providerOrigin);
     const client = new PenumbraClient(providerOrigin);
     await client.connect();
     return client;
   }
 
-  // IPenumbraClientInstance features
+  // instance features
 
   private readonly provider: PenumbraProvider;
   private readonly serviceClients: Map<string, PromiseClient<PenumbraService>>;
+  private readonly stateListeners: Set<(detail: PenumbraStateEventDetail) => void>;
+  private readonly requestManifest: Promise<PenumbraManifest>;
+  private parsedManifest?: PenumbraManifest;
+  private readonly eventListener = (evt: Event) => {
+    if (isPenumbraStateEvent(evt) && evt.detail.origin === this.origin) {
+      this.stateListeners.forEach(listener => listener(evt.detail));
+    }
+  };
 
   /** Construct an instance representing connection to a specific provider,
    * identified by the origin parameter, but take to specific action. */
-  constructor(public readonly origin: O) {
+  constructor(
+    public readonly origin: O,
+    private readonly transportOptions?: Omit<ChannelTransportOptions, 'getPort'>,
+  ) {
     this.provider = assertProviderRecord(this.origin);
+    this.requestManifest = getPenumbraManifest(this.origin);
+    void this.requestManifest.then(manifest => {
+      this.parsedManifest = manifest;
+    });
     this.serviceClients = new Map();
+    this.stateListeners = new Set();
+    this.provider.addEventListener('penumbrastate', this.eventListener);
   }
 
   private connection?: {
     port: MessagePort;
     transport: Transport;
+    transportOptions?: Omit<ChannelTransportOptions, 'getPort'>;
   };
 
-  get port() {
+  get port(): MessagePort | undefined {
     return this.connection?.port;
   }
 
-  get transport() {
+  get transport(): Transport | undefined {
     return this.connection?.transport;
   }
 
@@ -117,9 +98,15 @@ export const PenumbraClient: IPenumbraClientStatic = class PenumbraClient<O exte
     return this.connection;
   }
 
-  public manifest = () => getPenumbraManifest(this.origin);
+  public manifestSync(): PenumbraManifest | undefined {
+    return this.parsedManifest;
+  }
 
-  public disconnect() {
+  public manifest(): Promise<PenumbraManifest> {
+    return this.requestManifest;
+  }
+
+  public disconnect(): Promise<void> {
     const request = this.provider.disconnect();
     this.serviceClients.clear();
     this.connection?.port.close();
@@ -127,7 +114,7 @@ export const PenumbraClient: IPenumbraClientStatic = class PenumbraClient<O exte
     return request;
   }
 
-  public async connect() {
+  public async connect(): Promise<Transport> {
     if (this.connection) {
       if (this.isConnected()) {
         return this.connection.transport;
@@ -136,12 +123,13 @@ export const PenumbraClient: IPenumbraClientStatic = class PenumbraClient<O exte
       }
     }
 
-    await assertProviderManifest(this.provider.manifest);
+    await assertProviderManifest(this.origin);
     const request = this.provider.connect();
     this.connection = {
       transport: createChannelTransport({
-        getPort: () => request,
         jsonOptions,
+        ...this.transportOptions,
+        getPort: () => request,
       }),
       port: await request,
     };
@@ -149,7 +137,7 @@ export const PenumbraClient: IPenumbraClientStatic = class PenumbraClient<O exte
     return this.connection.transport;
   }
 
-  public service<T extends PenumbraService>(service: T) {
+  public service<T extends PenumbraService>(service: T): PromiseClient<T> {
     const existingClient = this.serviceClients.get(service.typeName);
 
     if (existingClient) {
@@ -175,4 +163,12 @@ export const PenumbraClient: IPenumbraClientStatic = class PenumbraClient<O exte
   get removeEventListener(): PenumbraProvider['removeEventListener'] {
     return this.provider.removeEventListener.bind(this.provider);
   }
-};
+
+  public onConnectionStateChange(
+    listener: (detail: PenumbraStateEventDetail) => void,
+    removeListener?: AbortSignal,
+  ) {
+    removeListener?.addEventListener('abort', () => this.stateListeners.delete(listener));
+    this.stateListeners.add(listener);
+  }
+}

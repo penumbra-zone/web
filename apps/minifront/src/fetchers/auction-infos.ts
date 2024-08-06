@@ -21,7 +21,7 @@ export const getAuctionInfos = async function* ({
 }: {
   queryLatestState?: boolean;
 } = {}): AsyncGenerator<AuctionInfo> {
-  for await (const response of viewClient.auctions({ queryLatestState, includeInactive: true })) {
+  for await (const response of viewClient().auctions({ queryLatestState, includeInactive: true })) {
     if (!response.auction || !response.id || !response.noteRecord?.addressIndex) {
       continue;
     }
@@ -32,10 +32,10 @@ export const getAuctionInfos = async function* ({
     const outputAssetId = getOutputAssetId.optional()(auction);
 
     const inputMetadataPromise = inputAssetId
-      ? viewClient.assetMetadataById({ assetId: inputAssetId })
+      ? viewClient().assetMetadataById({ assetId: inputAssetId })
       : undefined;
     const outputMetadataPromise = outputAssetId
-      ? viewClient.assetMetadataById({ assetId: outputAssetId })
+      ? viewClient().assetMetadataById({ assetId: outputAssetId })
       : undefined;
 
     const [inputMetadata, outputMetadata] = await Promise.all([
