@@ -5,6 +5,7 @@ import { useStore } from '../../../state';
 import {
   filteredIbcBalancesSelector,
   ibcOutSelector,
+  ibcPlaceholderSelector,
   ibcValidationErrors,
 } from '../../../state/ibc-out';
 import InputToken from '../../shared/input-token';
@@ -34,6 +35,7 @@ export const IbcOutForm = () => {
     setSelection,
   } = useStore(ibcOutSelector);
   const validationErrors = useStore(ibcValidationErrors);
+  const placeholder = useStore(ibcPlaceholderSelector);
 
   return (
     <form
@@ -46,7 +48,7 @@ export const IbcOutForm = () => {
       <ChainSelector />
       <InputToken
         label='Amount to send'
-        placeholder={filteredBalances.length > 0 ? 'Enter an amount' : 'No balances to transfer'}
+        placeholder={placeholder}
         className='mb-1'
         selection={selection}
         setSelection={setSelection}

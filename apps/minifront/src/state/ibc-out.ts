@@ -304,3 +304,14 @@ export const filteredIbcBalancesSelector = (state: AllSlices): BalancesResponse[
     state.shared.stakingTokenMetadata.data,
   );
 };
+
+export const ibcPlaceholderSelector = (state: AllSlices): string => {
+  const filteredBalances = filteredIbcBalancesSelector(state);
+  if (!state.ibcOut.chain) {
+    return 'Select a chain';
+  }
+  if (filteredBalances.length === 0) {
+    return 'No balances to transfer';
+  }
+  return 'Enter an amount';
+};
