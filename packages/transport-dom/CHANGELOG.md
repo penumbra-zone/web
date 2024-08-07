@@ -1,5 +1,11 @@
 # @penumbra-zone/transport-dom
 
+## 7.5.0
+
+### Minor Changes
+
+- 10ef940: Updating to v0.80.0 bufbuild types
+
 ## 7.4.0
 
 ### Minor Changes
