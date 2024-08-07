@@ -36,8 +36,8 @@ importers:
         specifier: 1.4.0
         version: 1.4.0(@bufbuild/protobuf@1.10.0)
       '@connectrpc/connect-web':
-        specifier: '1.0'
-        version: 1.0.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
+        specifier: 1.4.0
+        version: 1.4.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
     devDependencies:
       '@changesets/cli':
         specifier: ^2.27.3
@@ -323,8 +323,8 @@ importers:
   apps/node-status:
     dependencies:
       '@connectrpc/connect-web':
-        specifier: '1.0'
-        version: 1.0.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
+        specifier: 1.4.0
+        version: 1.4.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
       '@penumbra-zone/protobuf':
         specifier: workspace:*
         version: link:../../packages/protobuf
@@ -459,8 +459,8 @@ importers:
         specifier: 1.4.0
         version: 1.4.0(@bufbuild/protobuf@1.10.0)
       '@connectrpc/connect-web':
-        specifier: '1.0'
-        version: 1.0.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
+        specifier: 1.4.0
+        version: 1.4.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
       exponential-backoff:
         specifier: ^3.1.1
         version: 3.1.1
@@ -785,7 +785,7 @@ importers:
         version: 3.0.1
       postcss:
         specifier: ^8.4.38
-        version: 7.0.39
+        version: 8.4.39
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -1850,11 +1850,11 @@ packages:
   '@confio/ics23@0.6.8':
     resolution: {integrity: sha512-wB6uo+3A50m0sW/EWcU64xpV/8wShZ6bMTa7pF8eYsTrSkQA7oLUIJcs/wb8g4y2Oyq701BaGiO6n/ak5WXO1w==}
 
-  '@connectrpc/connect-web@1.0.0':
-    resolution: {integrity: sha512-QMoq/KoZG2ZUAJptXqQtFVoZY9avX+11JDFrb+2P7rVOzHifupBPNTp4LJjTPciuUhpNwMCNnNXdddAh/+N2aw==}
+  '@connectrpc/connect-web@1.4.0':
+    resolution: {integrity: sha512-13aO4psFbbm7rdOFGV0De2Za64DY/acMspgloDlcOKzLPPs0yZkhp1OOzAQeiAIr7BM/VOHIA3p8mF0inxCYTA==}
     peerDependencies:
-      '@bufbuild/protobuf': ^1.2.1
-      '@connectrpc/connect': 1.0.0
+      '@bufbuild/protobuf': ^1.4.2
+      '@connectrpc/connect': 1.4.0
 
   '@connectrpc/connect@1.4.0':
     resolution: {integrity: sha512-vZeOkKaAjyV4+RH3+rJZIfDFJAfr+7fyYr6sLDKbYX3uuTVszhFe9/YKf5DNqrDb5cKdKVlYkGn6DTDqMitAnA==}
@@ -11711,7 +11711,7 @@ snapshots:
       '@noble/hashes': 1.4.0
       protobufjs: 6.11.4
 
-  '@connectrpc/connect-web@1.0.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))':
+  '@connectrpc/connect-web@1.4.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))':
     dependencies:
       '@bufbuild/protobuf': 1.10.0
       '@connectrpc/connect': 1.4.0(@bufbuild/protobuf@1.10.0)

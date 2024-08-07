@@ -14,7 +14,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@connectrpc/connect-web": "1.0",
+    "@connectrpc/connect-web": "1.4.0",
     "@penumbra-zone/protobuf": "workspace:*",
     "@repo/ui": "workspace:*",
     "date-fns": "^3.6.0",
