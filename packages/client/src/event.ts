@@ -26,12 +26,13 @@ type PenumbraEventTypeName = 'penumbrastate'; // may eventually contain more mem
 type PenumbraEventDetail<T extends PenumbraEventTypeName> = {
   penumbrastate: PenumbraStateEventDetail;
 }[T];
-type PenumbraEvent<T extends PenumbraEventTypeName> = CustomEvent<PenumbraEventDetail<T>>;
+export type PenumbraEvent<T extends PenumbraEventTypeName> = CustomEvent<PenumbraEventDetail<T>>;
 
 // custom event details
 export interface PenumbraStateEventDetail {
   origin: string;
   state: PenumbraState;
+  connected: boolean;
 }
 
 export const isPenumbraStateEventDetail = (detail: unknown): detail is PenumbraStateEventDetail =>
@@ -54,6 +55,7 @@ export class PenumbraStateEvent
     const detail = {
       origin: penumbraOrigin,
       state: penumbraState,
+      connected: penumbraState === PenumbraState.Connected,
     };
 
     super(name, { detail });

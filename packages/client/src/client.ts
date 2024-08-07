@@ -18,7 +18,7 @@ import { PenumbraManifest } from './manifest.js';
 import { PenumbraProvider } from './provider.js';
 import { PenumbraState } from './state.js';
 
-export class PenumbraClient<O extends string> {
+export class PenumbraClient<O extends string = string> {
   // static features
 
   /** Return a list of all present provider origins available in the page, or
@@ -93,13 +93,13 @@ export class PenumbraClient<O extends string> {
   }
 
   private connection?: {
-    port: MessagePort;
+    port: Promise<MessagePort>;
     transport: Transport;
     transportOptions?: Omit<ChannelTransportOptions, 'getPort'>;
   };
 
-  /** The `MessagePort` used by this connection. */
-  get port(): MessagePort | undefined {
+  /** The promised `MessagePort` used by this connection. */
+  get port(): Promise<MessagePort> | undefined {
     return this.connection?.port;
   }
 
@@ -108,18 +108,14 @@ export class PenumbraClient<O extends string> {
     return this.connection?.transport;
   }
 
-  private destroyConnection() {
-    this.connection?.port.close();
-    this.connection = undefined;
-    this.serviceClients.clear();
+  get connected(): boolean {
+    return this.provider.isConnected() && Boolean(this.port);
   }
 
-  private assertConnection() {
-    if (!this.isConnected() || !this.connection) {
-      this.destroyConnection();
-      throw new PenumbraProviderNotConnectedError();
-    }
-    return this.connection;
+  private destroyConnection() {
+    void this.connection?.port.then(port => port.close());
+    this.connection = undefined;
+    this.serviceClients.clear();
   }
 
   /** Return the `PenumbraManifest` associated with this provider, fetched at
@@ -137,29 +133,25 @@ export class PenumbraClient<O extends string> {
     return this.requestManifest;
   }
 
-  /** Return the `Transport` representing the present connection, or create it if
-   * necessary by calling `connect` to obtain a `MessagePort` from the
-   * associated provider. */
-  public async connect(): Promise<Transport> {
-    if (this.connection) {
-      if (this.isConnected()) {
-        return this.connection.transport;
-      } else {
-        this.connection = undefined;
-      }
-    }
-
-    await assertProviderManifest(this.origin);
-    const request = this.provider.connect();
-    this.connection = {
+  private createConnection() {
+    const request = this.requestManifest.then(() => this.provider.connect());
+    return {
       transport: createChannelTransport({
         jsonOptions,
         ...this.transportOptions,
         getPort: () => request,
       }),
-      port: await request,
+      port: request,
     };
+  }
 
+  /** Return the `Transport` representing the present connection, or create it if
+   * necessary by calling `connect` to obtain a `MessagePort` from the
+   * associated provider. */
+  public async connect(): Promise<Transport> {
+    await this.requestManifest;
+    await this.provider.connect();
+    this.connection ??= this.createConnection();
     return this.connection.transport;
   }
 
@@ -176,28 +168,23 @@ export class PenumbraClient<O extends string> {
    * connection is resolved, or it will fail. You can check for the presence of
    * a `transport` on this instance. */
   public service<T extends ServiceType>(service: T): PromiseClient<T> {
-    const existingClient = this.serviceClients.get(service.typeName);
+    if (!this.provider.isConnected()) {
+      this.destroyConnection();
+      throw new PenumbraProviderNotConnectedError();
+    }
 
+    const existingClient = this.serviceClients.get(service.typeName);
     if (existingClient) {
       // TODO: avoid type cast
       return existingClient as PromiseClient<T>;
     } else {
-      const createdClient = createPromiseClient(service, this.assertConnection().transport);
+      this.connection ??= this.createConnection();
+      const createdClient = createPromiseClient(service, this.connection.transport);
       this.serviceClients.set(service.typeName, createdClient);
       return createdClient;
     }
   }
 
-  /** Attempt connection and return a `PromiseClient<T>` for some `T extends
-   * ServiceType`, pending connection success. */
-  public async connectService<T extends ServiceType>(service: T): Promise<PromiseClient<T>> {
-    await this.connect();
-    return this.service(service);
-  }
-
-  get isConnected() {
-    return this.provider.isConnected.bind(this.provider);
-  }
   get state() {
     return this.provider.state.bind(this.provider);
   }
