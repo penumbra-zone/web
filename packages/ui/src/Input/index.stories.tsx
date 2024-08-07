@@ -13,16 +13,20 @@ type Story = StoryObj<typeof Input>;
 
 export const Basic: Story = {
   args: {
-    label: 'Label',
-    placeholder: 'Enter text here...',
+    actionType: 'default',
+    label: "Recipient's address",
+    placeholder: 'penumbra1abc123...',
     value: '',
+    disabled: false,
+    helperText: 'The recipient can find their address via the Receive tab above.',
+    type: 'text',
   },
 
-  render: function Render({ label, value, placeholder }) {
+  render: function Render(props) {
     const [, updateArgs] = useArgs();
 
     const onChange = (value: string) => updateArgs({ value });
 
-    return <Input label={label} value={value} onChange={onChange} placeholder={placeholder} />;
+    return <Input {...props} onChange={onChange} />;
   },
 };
