@@ -180,7 +180,7 @@ export const theme = {
     },
     text: {
       primary: PALETTE.neutral['50'],
-      secondary: PALETTE.neutral['300'],
+      secondary: PALETTE.neutral['400'],
       disabled: PALETTE.neutral['500'],
       special: PALETTE.orange['400'],
     },
