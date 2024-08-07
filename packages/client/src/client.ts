@@ -100,8 +100,8 @@ export class PenumbraClient {
   }
 
   /** Synchronously return present injection state: `'Pending' | 'Connected' | 'Disconnected'`  */
-  public state(): PenumbraState {
-    return this.provider?.state() ?? PenumbraState.Disconnected;
+  public state(): PenumbraState | undefined {
+    return this.provider?.state() ?? undefined;
   }
 
   /** Provides a simplified callback interface to `PenumbraStateEvent`s. */

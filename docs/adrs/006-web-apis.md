@@ -98,57 +98,51 @@ import type { PenumbraService } from '@penumbra-zone/protobuf';
 import type { PromiseClient } from '@connectrpc/connect';
 
 interface PenumbraClient {
-  /**
-   * Connects to the injected provider, asks for user approval if wasn't connected before.
-   * If `providerUrl` argument is not provided, tries to connect to the first injected provider.
-   * Returns the manifest URL of the connected provider or throws an error otherwise.
-   */
-  readonly connect: (providerUrl?: string) => Promise<string>;
+  // public utility helpers
+
+  /** Return a list of all present provider origins available in the page, or
+   * `undefined` if no object is present at `window[Symbol.for('penumbra')]`
+   * (indicating no providers installed). */
+  getProviders(): string[];
+  /** Return a record of all present providers with pending fetches of their manifests. */
+  getProviderManifests(): Record<string, Promise<PenumbraManifest>>;
+  /** Fetch manifest of a specific provider. */
+  getProviderManifest(providerOrigin: string): Promise<PenumbraManifest>;
+  /** Return boolean connection state of a specific provider. */
+  getProviderIsConnected(providerOrigin: string): boolean;
+  /** Return connection state enum of a specific provider. */
+  getProviderState(providerOrigin: string): PenumbraState | undefined;
+
+  // public methods
 
   /**
-   * Tries to reconnect to the injected provider (the first one with `connected` state)
-   * without asking for user approval
+   * Asks users to approve the connection to a specific browser manifest URL.
+   * If `manifest` argument is not provided, tries to connect to the first injected provider.
    */
-  readonly reconnect: (providerUrl?: string) => Promise<string>;
+  connect(requireOrigin?: string): Promise<void>;
 
   /** Reexports the `disconnect` function from injected provider */
-  readonly disconnect: () => Promise<void>;
+  disconnect(): Promise<void>;
+  
   /** Reexports the `isConnected` function from injected provider  */
-  readonly isConnected: () => boolean | undefined;
+  isConnected(): boolean | undefined;
   /** Reexports the `state` function from injected provider */
-  readonly getState: () => PenumbraState;
+  state(): PenumbraState | undefined;
   /** Provides a simplified callback interface to `PenumbraStateEvent`s. */
-  readonly onConnectionChange: (
-    cb: (connection: { origin: string; connected: boolean; state: PenumbraState }) => void,
-  ) => void;
+  onConnectionChange(
+    listener: (detail: { origin: string; state: PenumbraState; connected: boolean }) => void,
+    removeListener?: AbortSignal,
+  ): void;
 
-  /** Returns a new or re-used `PromiseClient<T>` for a specific `PenumbraService` */
-  readonly service: <T extends PenumbraService>(
+  /**
+   * Returns a new or re-used `PromiseClient<T>` for a specific `PenumbraService`.
+   * Use it to fetch the account or blockchain related data.
+   */
+  service<T extends PenumbraService>(
     service: T,
-    options: Omit<ChannelTransportOptions, 'getPort'>,
-  ) => PromiseClient<T>;
+    options?: Omit<ChannelTransportOptions, 'getPort'>,
+  ): PromiseClient<T>;
 }
-```
-
-Moreover, the `client` package might export but not limited to the following useful functions and types:
-
-```ts
-export type PenumbraManifest = Partial<chrome.runtime.ManifestV3> &
-  Required<Pick<chrome.runtime.ManifestV3, 'name' | 'version' | 'description' | 'icons'>>;
-
-export type getInjectedProvider = (penumbraOrigin: string) => Promise<PenumbraProvider>;
-
-export type getAllInjectedProviders = () => string[];
-
-export type getPenumbraManifest = (
-  penumbraOrigin: string,
-  signal?: AbortSignal,
-) => Promise<PenumbraManifest>;
-
-export type getAllPenumbraManifests = () => Record<
-  keyof (typeof window)[typeof PenumbraSymbol],
-  Promise<PenumbraManifest>
->;
 ```
 
 ## Requests
