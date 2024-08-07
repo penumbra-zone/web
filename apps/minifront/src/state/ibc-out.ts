@@ -25,6 +25,7 @@ import { Channel } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/channel/v1/channel
 import { BLOCKS_PER_HOUR } from './constants';
 import { createZQuery, ZQueryState } from '@penumbra-zone/zquery';
 import { getChains } from '../fetchers/registry';
+import { bech32ChainIds } from './shared';
 
 export const { chains, useChains } = createZQuery({
   name: 'chains',
@@ -217,6 +218,7 @@ const getPlanRequest = async ({
         timeoutHeight,
         timeoutTime,
         sourceChannel: chain.channelId,
+        useCompatAddress: bech32ChainIds.includes(chain.chainId),
       },
     ],
     source: addressIndex,
