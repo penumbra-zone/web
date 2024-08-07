@@ -1,5 +1,13 @@
 # node-status
 
+## 4.1.19
+
+### Patch Changes
+
+- Updated dependencies [10ef940]
+  - @penumbra-zone/protobuf@5.7.0
+  - @repo/ui@7.4.0
+
 ## 4.1.18
 
 ### Patch Changes

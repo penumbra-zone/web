@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/react",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "license": "(MIT OR Apache-2.0)",
   "description": "React package for connecting to any Penumbra extension, including Prax.",
   "type": "module",
