@@ -53,9 +53,7 @@ export const planBuildBroadcast = async (
   const toast = new TransactionToast(transactionClassification);
   toast.onStart();
 
-  const rpcMethod = options?.skipAuth
-    ? viewClient().witnessAndBuild
-    : viewClient().authorizeAndBuild;
+  const rpcMethod = options?.skipAuth ? viewClient.witnessAndBuild : viewClient.authorizeAndBuild;
 
   try {
     const transactionPlan = await plan(req);
@@ -90,7 +88,7 @@ export const planBuildBroadcast = async (
 export const plan = async (
   req: PartialMessage<TransactionPlannerRequest>,
 ): Promise<TransactionPlan> => {
-  const { plan } = await viewClient().transactionPlanner(req);
+  const { plan } = await viewClient.transactionPlanner(req);
   if (!plan) {
     throw new Error('No plan in planner response');
   }
@@ -131,7 +129,7 @@ const broadcast = async (
   const txId = await getTxId(transaction);
   const txHash = getTxHash(txId);
   onStatusUpdate(undefined);
-  for await (const { status } of viewClient().broadcastTransaction({
+  for await (const { status } of viewClient.broadcastTransaction({
     awaitDetection,
     transaction,
   })) {

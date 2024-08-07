@@ -1,4 +1,4 @@
-import { isPraxConnected, throwIfPraxNotConnected, throwIfPraxNotInstalled } from './prax';
+import { praxClient, throwIfPraxNotConnected, throwIfPraxNotInstalled } from './prax';
 
 /**
  * Retry test, resolving `true`, or resolving `false` if timeout reached.
@@ -30,7 +30,7 @@ const retry = async (fn: () => boolean, ms = 500, rate = Math.max(ms / 10, 50)) 
  */
 export const abortLoader = async (): Promise<null> => {
   await throwIfPraxNotInstalled();
-  await retry(() => isPraxConnected());
+  await retry(() => Boolean(praxClient.connected));
   throwIfPraxNotConnected();
 
   // Loaders are required to return a value, even if it's null. By returning

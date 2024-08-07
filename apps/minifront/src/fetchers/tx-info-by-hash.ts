@@ -4,7 +4,7 @@ import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbr
 import { hexToUint8Array } from '@penumbra-zone/types/hex';
 
 export const getTxInfoByHash = async (hash: string): Promise<TransactionInfo> => {
-  const res = await viewClient().transactionInfoByHash({
+  const res = await viewClient.transactionInfoByHash({
     id: new TransactionId({ inner: hexToUint8Array(hash) }),
   });
 

@@ -136,7 +136,7 @@ const clientStateForChannel = async (channel?: Channel): Promise<ClientState> =>
     throw new Error('no connectionId in channel returned from ibcChannelClient request');
   }
 
-  const { connection } = await ibcConnectionClient().connection({
+  const { connection } = await ibcConnectionClient.connection({
     connectionId,
   });
   const clientId = connection?.clientId;
@@ -144,7 +144,7 @@ const clientStateForChannel = async (channel?: Channel): Promise<ClientState> =>
     throw new Error('no clientId ConnectionEnd returned from ibcConnectionClient request');
   }
 
-  const { clientState: anyClientState } = await ibcClient().clientState({ clientId: clientId });
+  const { clientState: anyClientState } = await ibcClient.clientState({ clientId: clientId });
   if (!anyClientState) {
     throw new Error(`Could not get state for client id ${clientId}`);
   }
@@ -162,7 +162,7 @@ const clientStateForChannel = async (channel?: Channel): Promise<ClientState> =>
 const getTimeout = async (
   ibcChannelId: string,
 ): Promise<{ timeoutTime: bigint; timeoutHeight: Height }> => {
-  const { channel } = await ibcChannelClient().channel({
+  const { channel } = await ibcChannelClient.channel({
     portId: 'transfer',
     channelId: ibcChannelId,
   });
@@ -198,7 +198,7 @@ const getPlanRequest = async ({
   }
 
   const addressIndex = getAddressIndex(selection.accountAddress);
-  const { address: returnAddress } = await viewClient().ephemeralAddress({ addressIndex });
+  const { address: returnAddress } = await viewClient.ephemeralAddress({ addressIndex });
   if (!returnAddress) {
     throw new Error('Error with generating IBC deposit address');
   }

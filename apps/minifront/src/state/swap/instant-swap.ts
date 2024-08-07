@@ -44,7 +44,7 @@ const getMetadataByAssetId = async (
         return;
       }
 
-      const { denomMetadata } = await viewClient().assetMetadataById({ assetId: value.assetId });
+      const { denomMetadata } = await viewClient.assetMetadataById({ assetId: value.assetId });
 
       if (denomMetadata) {
         map[bech32mAssetId(value.assetId)] = denomMetadata;

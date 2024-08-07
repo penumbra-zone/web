@@ -28,7 +28,7 @@ const OPTIONS = [
 const getMetadata: MetadataFetchFn = async ({ assetId }) => {
   const feeAssetId = assetId ? assetId : new ChainRegistryClient().bundled.globals().stakingAssetId;
 
-  const { denomMetadata } = await viewClient().assetMetadataById({ assetId: feeAssetId });
+  const { denomMetadata } = await viewClient.assetMetadataById({ assetId: feeAssetId });
   return denomMetadata;
 };
 

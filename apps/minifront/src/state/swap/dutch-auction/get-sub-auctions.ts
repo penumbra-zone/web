@@ -91,7 +91,7 @@ export const getSubAuctions = async ({
     ),
   );
 
-  const { fullSyncHeight } = await viewClient().status({});
+  const { fullSyncHeight } = await viewClient.status({});
 
   const overallStartHeight = getStartHeight(fullSyncHeight);
 

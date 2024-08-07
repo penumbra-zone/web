@@ -16,9 +16,9 @@ const getUndelegateClaimPlannerRequest =
   (endEpochIndex: bigint) => async (unbondingToken: ValueView) => {
     const unbondingStartHeight = getUnbondingStartHeight(getMetadata(unbondingToken));
     const identityKey = getValidatorIdentityKeyFromValueView(unbondingToken);
-    const { epoch: startEpoch } = await sctClient().epochByHeight({ height: unbondingStartHeight });
+    const { epoch: startEpoch } = await sctClient.epochByHeight({ height: unbondingStartHeight });
 
-    const { penalty } = await stakeClient().validatorPenalty({
+    const { penalty } = await stakeClient.validatorPenalty({
       startEpochIndex: startEpoch?.index,
       endEpochIndex,
       identityKey,
@@ -39,8 +39,8 @@ export const assembleUndelegateClaimRequest = async ({
   account: number;
   unbondingTokens: ValueView[];
 }) => {
-  const { fullSyncHeight } = await viewClient().status({});
-  const { epoch } = await sctClient().epochByHeight({ height: fullSyncHeight });
+  const { fullSyncHeight } = await viewClient.status({});
+  const { epoch } = await sctClient.epochByHeight({ height: fullSyncHeight });
   const endEpochIndex = epoch?.index;
   if (!endEpochIndex) {
     return;

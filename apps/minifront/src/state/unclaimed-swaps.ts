@@ -66,7 +66,7 @@ export const createUnclaimedSwapsSlice = (): SliceCreator<UnclaimedSwapsSlice> =
 
     const commitment = getSwapRecordCommitment(swap);
 
-    const { addressIndex } = await viewClient().indexByAddress({
+    const { addressIndex } = await viewClient.indexByAddress({
       address: swap.swap?.claimAddress,
     });
     await issueSwapClaim(commitment, addressIndex);

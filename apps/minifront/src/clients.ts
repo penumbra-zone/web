@@ -1,3 +1,4 @@
+import { PromiseClient } from '@connectrpc/connect';
 import {
   DexService,
   IbcChannelService,
@@ -9,14 +10,19 @@ import {
   TendermintProxyService,
   ViewService,
 } from '@penumbra-zone/protobuf';
-import { createPraxClient } from './prax';
+import { praxClient } from './prax';
 
-export const dexClient = () => createPraxClient(DexService);
-export const ibcChannelClient = () => createPraxClient(IbcChannelService);
-export const ibcClient = () => createPraxClient(IbcClientService);
-export const ibcConnectionClient = () => createPraxClient(IbcConnectionService);
-export const sctClient = () => createPraxClient(SctService);
-export const simulationClient = () => createPraxClient(SimulationService);
-export const stakeClient = () => createPraxClient(StakeService);
-export const tendermintClient = () => createPraxClient(TendermintProxyService);
-export const viewClient = () => createPraxClient(ViewService);
+export const dexClient: PromiseClient<typeof DexService> = praxClient.service(DexService);
+export const ibcChannelClient: PromiseClient<typeof IbcChannelService> =
+  praxClient.service(IbcChannelService);
+export const ibcClient: PromiseClient<typeof IbcClientService> =
+  praxClient.service(IbcClientService);
+export const ibcConnectionClient: PromiseClient<typeof IbcConnectionService> =
+  praxClient.service(IbcConnectionService);
+export const sctClient: PromiseClient<typeof SctService> = praxClient.service(SctService);
+export const simulationClient: PromiseClient<typeof SimulationService> =
+  praxClient.service(SimulationService);
+export const stakeClient: PromiseClient<typeof StakeService> = praxClient.service(StakeService);
+export const tendermintClient: PromiseClient<typeof TendermintProxyService> =
+  praxClient.service(TendermintProxyService);
+export const viewClient: PromiseClient<typeof ViewService> = praxClient.service(ViewService);

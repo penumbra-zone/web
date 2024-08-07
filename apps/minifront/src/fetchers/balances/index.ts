@@ -22,6 +22,6 @@ export const getBalances = ({ accountFilter, assetIdFilter }: BalancesProps = {}
     req.assetIdFilter = assetIdFilter;
   }
 
-  const iterable = viewClient().balances(req);
+  const iterable = viewClient.balances(req);
   return Array.fromAsync(iterable);
 };

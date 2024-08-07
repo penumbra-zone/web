@@ -6,7 +6,7 @@ import { HeadTag } from './metadata/head-tag';
 
 import { useState } from 'react';
 import { PenumbraRequestFailure } from '@penumbra-zone/client';
-import { requestPraxAccess } from '../prax';
+import { praxClient } from '../prax';
 import { useNavigate } from 'react-router-dom';
 
 const handleErr = (e: unknown) => {
@@ -39,7 +39,7 @@ const useExtConnector = () => {
 
   const request = async () => {
     try {
-      await requestPraxAccess();
+      await praxClient.connect();
       navigate('/');
     } catch (e) {
       handleErr(e);
