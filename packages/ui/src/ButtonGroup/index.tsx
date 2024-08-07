@@ -1,6 +1,6 @@
 import { LucideIcon } from 'lucide-react';
 import { MouseEventHandler } from 'react';
-import { ActionType } from '../utils/button';
+import { ActionType } from '../utils/ActionType';
 import { Button } from '../Button';
 import styled from 'styled-components';
 import { media } from '../utils/media';
