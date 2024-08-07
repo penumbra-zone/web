@@ -1,5 +1,6 @@
 export * from './error.js';
 export * from './event.js';
+export * from './event-listener.js';
 
 export { PenumbraClient } from './client.js';
 

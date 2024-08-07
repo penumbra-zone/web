@@ -1,76 +1,48 @@
 import { PenumbraState } from './state.js';
 
-// like EventListener, but restricts possible event types
-interface SpecificEventListener<T extends Event> extends EventListener {
-  (evt: T): void;
-}
-
-// like EventTarget, but restricts possible event types
-interface SpecificEventTarget<SpecificTypeName extends string, SpecificEvent extends Event = Event>
-  extends EventTarget {
-  addEventListener: (
-    type: SpecificTypeName,
-    listener: SpecificEventListener<SpecificEvent> | EventListenerObject | null,
-    options?: boolean | AddEventListenerOptions | undefined,
-  ) => void;
-  removeEventListener: (
-    type: SpecificTypeName,
-    listener: SpecificEventListener<SpecificEvent> | EventListenerObject | null,
-    options?: boolean | EventListenerOptions | undefined,
-  ) => void;
-  dispatchEvent: (event: SpecificEvent) => boolean;
-}
-
-// utilities
-type PenumbraEventTypeName = 'penumbrastate'; // may eventually contain more members
-type PenumbraEventDetail<T extends PenumbraEventTypeName> = {
-  penumbrastate: PenumbraStateEventDetail;
+// custom event utility types
+export type PenumbraEventTypeName = 'penumbrastate'; // may eventually contain more members
+export type PenumbraEventDetail<T extends PenumbraEventTypeName> = {
+  penumbrastate: {
+    origin: string;
+    state: PenumbraState;
+    connected: boolean;
+  };
 }[T];
+
+// custom event type
 export type PenumbraEvent<T extends PenumbraEventTypeName> = CustomEvent<PenumbraEventDetail<T>>;
 
-// custom event details
-export interface PenumbraStateEventDetail {
-  origin: string;
-  state: PenumbraState;
-  connected: boolean;
-}
+// custom event tools
+export const createPenumbraStateEvent = (penumbraOrigin: string, penumbraState: PenumbraState) =>
+  new CustomEvent('penumbrastate', {
+    detail: {
+      origin: penumbraOrigin,
+      state: penumbraState,
+      connected: penumbraState === PenumbraState.Connected,
+    },
+  }) satisfies PenumbraEvent<'penumbrastate'>;
 
-export const isPenumbraStateEventDetail = (detail: unknown): detail is PenumbraStateEventDetail =>
+// custom event type guards
+/** Type guard for `PenumbraStateEvent`. The `restrictOrigin` parameter is purely
+ * informational - anyone may create an event with any origin label. */
+export const isPenumbraStateEvent = (
+  evt: unknown,
+  restrictOrigin?: string,
+): evt is PenumbraEvent<'penumbrastate'> =>
+  evt instanceof CustomEvent && isPenumbraStateEventDetail(evt.detail, restrictOrigin);
+
+export const isPenumbraStateEventDetail = (
+  detail: unknown,
+  restrictOrigin?: string,
+): detail is PenumbraEventDetail<'penumbrastate'> =>
   typeof detail === 'object' &&
   detail !== null &&
   'origin' in detail &&
   typeof detail.origin === 'string' &&
+  (!restrictOrigin || detail.origin === restrictOrigin) &&
+  'connected' in detail &&
+  typeof detail.connected === 'boolean' &&
   'state' in detail &&
   typeof detail.state === 'string' &&
   Object.keys(PenumbraState).includes(detail.state);
-
-// custom event
-//export class PenumbraStateEvent extends CustomEvent<PenumbraEventDetail<'penumbrastate'>> {
-export class PenumbraStateEvent
-  extends CustomEvent<PenumbraEventDetail<'penumbrastate'>>
-  implements PenumbraEvent<'penumbrastate'>
-{
-  constructor(penumbraOrigin: string, penumbraState: PenumbraState) {
-    const name = 'penumbrastate';
-    const detail = {
-      origin: penumbraOrigin,
-      state: penumbraState,
-      connected: penumbraState === PenumbraState.Connected,
-    };
-
-    super(name, { detail });
-  }
-}
-
-export const isPenumbraStateEvent = (evt: Event): evt is PenumbraStateEvent =>
-  evt instanceof PenumbraStateEvent || ('detail' in evt && isPenumbraStateEventDetail(evt.detail));
-
-// event listener
-export type PenumbraEventListener<T extends PenumbraEventTypeName = PenumbraEventTypeName> =
-  SpecificEventListener<PenumbraEvent<T>>;
-
-// event target
-export type PenumbraEventTarget<T extends PenumbraEventTypeName = PenumbraEventTypeName> = Omit<
-  SpecificEventTarget<T, PenumbraEvent<T>>,
-  'dispatchEvent'
->;

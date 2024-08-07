@@ -1,4 +1,4 @@
-import type { PenumbraEventTarget } from './event.js';
+import type { PenumbraEventTarget } from './event-listener.js';
 import type { PenumbraState } from './state.js';
 
 /**
