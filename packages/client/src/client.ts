@@ -1,50 +1,26 @@
 import { jsonOptions, PenumbraService } from '@penumbra-zone/protobuf';
 import { createPromiseClient, PromiseClient } from '@connectrpc/connect';
 
-import { assertPenumbra, assertProviderManifest, assertProviderRecord } from './assert.js';
-import { PenumbraProviderNotConnectedError } from './error.js';
-import { PenumbraStateEventDetail, PenumbraStateEvent, isPenumbraStateEvent } from './event.js';
-import { availableOrigin } from './get.js';
+import { assertProviderManifest, assertProviderRecord } from './assert.js';
+import { isPenumbraStateEvent, PenumbraStateEvent, PenumbraStateEventDetail } from './event.js';
+import {
+  getAllPenumbraManifests,
+  getAvailableOrigin,
+  getPenumbraGlobal,
+  getPenumbraManifest,
+  getPenumbraUnsafe,
+} from './get.js';
 import { PenumbraProvider } from './provider.js';
 import { PenumbraState } from './state.js';
 import {
   ChannelTransportOptions,
   createChannelTransport,
 } from '@penumbra-zone/transport-dom/create';
+import { PenumbraManifest } from './manifest.js';
 
-export interface IPenumbraClient {
-  /**
-   * Asks users to approve the connection to a specific browser manifest URL.
-   * If `manifest` argument is not provided, tries to connect to the first injected provider.
-   * Returns the manifest url of the connected provider, or an error
-   */
-  readonly connect: (providerUrl?: string) => Promise<string>;
-
-  /**
-   * Tries to reconnect to the injected provider without asking for user approval.
-   */
-  readonly reconnect: (providerUrl?: string) => Promise<string>;
-
-  /** Reexports the `disconnect` function from injected provider */
-  readonly disconnect: () => Promise<void>;
-  /** Reexports the `isConnected` function from injected provider  */
-  readonly isConnected: () => boolean | undefined;
-  /** Reexports the `state` function from injected provider */
-  readonly getState: () => PenumbraState;
-  /** Provides a simplified callback interface to `PenumbraStateEvent`s. */
-  readonly onConnectionChange: (cb: (connection: PenumbraStateEventDetail) => void) => void;
-
-  /** Returns a new or re-used `PromiseClient<T>` for a specific `PenumbraService` */
-  readonly service: <T extends PenumbraService>(
-    service: T,
-    options: Omit<ChannelTransportOptions, 'getPort'>,
-  ) => PromiseClient<T>;
-}
-
-export class PenumbraClient implements IPenumbraClient {
+export class PenumbraClient {
   private readonly callbacks = new Set<(detail: PenumbraStateEventDetail) => void>();
 
-  private origin?: string;
   private provider?: PenumbraProvider;
   private port?: MessagePort;
   private serviceClients: Map<string, PromiseClient<PenumbraService>>;
@@ -53,26 +29,45 @@ export class PenumbraClient implements IPenumbraClient {
     this.serviceClients = new Map();
   }
 
-  private assertPort() {
-    if (!this.port) {
-      throw new PenumbraProviderNotConnectedError(this.origin);
-    }
-    return this.port;
+  // public utility helpers
+
+  /** Return a list of all present provider origins available in the page, or
+   * `undefined` if no object is present at `window[Symbol.for('penumbra')]`
+   * (indicating no providers installed). */
+  public getProviders(): string[] {
+    return Object.keys(getPenumbraGlobal());
   }
 
-  private assertProvider() {
-    if (!this.provider) {
-      throw new PenumbraProviderNotConnectedError(this.origin);
-    }
-    return this.provider;
+  /** Return a record of all present providers with pending fetches of their manifests. */
+  public getProviderManifests(): Record<string, Promise<PenumbraManifest>> {
+    return getAllPenumbraManifests();
   }
 
-  public async connect(requireOrigin?: string): Promise<string> {
-    const providerOrigin = requireOrigin ?? availableOrigin();
+  /** Fetch manifest of a specific provider. */
+  public getProviderManifest(providerOrigin: string): Promise<PenumbraManifest> {
+    return getPenumbraManifest(providerOrigin);
+  }
+
+  /** Return boolean connection state of a specific provider. */
+  public getProviderIsConnected(providerOrigin: string): boolean {
+    return Boolean(getPenumbraUnsafe(providerOrigin)?.isConnected());
+  }
+
+  /** Return connection state enum of a specific provider. */
+  public getProviderState(providerOrigin: string): PenumbraState | undefined {
+    return getPenumbraUnsafe(providerOrigin)?.state();
+  }
+
+  // public methods
+
+  /**
+   * Asks users to approve the connection to a specific browser manifest URL.
+   * If `manifest` argument is not provided, tries to connect to the first injected provider.
+   */
+  public async connect(requireOrigin?: string): Promise<void> {
+    const providerOrigin = requireOrigin ?? getAvailableOrigin();
 
     await assertProviderManifest(providerOrigin);
-
-    this.origin = providerOrigin;
     this.provider = assertProviderRecord(providerOrigin);
 
     const request = this.provider.connect().then(port => {
@@ -85,59 +80,47 @@ export class PenumbraClient implements IPenumbraClient {
       }
     });
 
-    await request;
-
-    return this.provider.manifest;
+    return request;
   }
 
-  public async reconnect(requireOrigin?: string) {
-    const providers = assertPenumbra();
-
-    let provider: PenumbraProvider | undefined;
-    let origin = requireOrigin;
-    if (requireOrigin) {
-      provider = assertProviderRecord(requireOrigin);
-    } else {
-      const connectedEntry = Object.entries(providers).find(([, provider]) =>
-        provider.isConnected(),
-      );
-      origin = connectedEntry?.[0];
-      provider = connectedEntry?.[1];
-    }
-
-    if (!origin || !provider?.isConnected()) {
-      throw new PenumbraProviderNotConnectedError(origin);
-    }
-
-    await assertProviderManifest(origin);
-
-    this.origin = origin;
-    this.provider = provider;
-    this.port = await provider.connect();
-    this.callbacks.forEach(cb => cb(new PenumbraStateEvent(origin, provider.state(), true).detail));
-
-    return origin;
-  }
-
-  public disconnect() {
-    const request = this.assertProvider().disconnect();
-    this.assertPort().close();
+  /** Calls a `disconnect` method of the provider to prohibit future service calls */
+  public async disconnect(): Promise<void> {
+    const request = this.provider?.disconnect();
+    this.port?.close();
     this.serviceClients.clear();
     return request;
   }
 
-  public isConnected() {
+  /** Should synchronously return the present connection state.
+   * - `true` indicates active connection.
+   * - `false` indicates inactive connection.
+   */
+  public isConnected(): boolean {
     return this.provider?.isConnected() ?? false;
   }
 
-  public getState() {
-    return this.assertProvider().state();
+  /** Synchronously return present injection state: `'Pending' | 'Connected' | 'Disconnected'`  */
+  public state(): PenumbraState {
+    return this.provider?.state() ?? PenumbraState.Disconnected;
   }
 
-  public onConnectionChange(callback: (detail: PenumbraStateEventDetail) => void) {
-    this.callbacks.add(callback);
+  /** Provides a simplified callback interface to `PenumbraStateEvent`s. */
+  public onConnectionChange(
+    listener: (detail: PenumbraStateEventDetail) => void,
+    removeListener?: AbortSignal,
+  ) {
+    if (removeListener?.aborted) {
+      this.callbacks.delete(listener);
+    } else {
+      removeListener?.addEventListener('abort', () => this.callbacks.delete(listener));
+      this.callbacks.add(listener);
+    }
   }
 
+  /**
+   * Returns a new or re-used `PromiseClient<T>` for a specific `PenumbraService`.
+   * Use it to fetch the account or blockchain related data.
+   */
   public service<T extends PenumbraService>(
     service: T,
     options?: Omit<ChannelTransportOptions, 'getPort'>,
@@ -151,7 +134,7 @@ export class PenumbraClient implements IPenumbraClient {
       const createdClient = createPromiseClient(
         service,
         createChannelTransport({
-          getPort: () => Promise.resolve(this.assertPort()),
+          getPort: () => Promise.resolve(this.port!),
           ...options,
           jsonOptions,
         }),
@@ -162,4 +145,8 @@ export class PenumbraClient implements IPenumbraClient {
   }
 }
 
+/**
+ * Creates a new `PenumbraClient` instance. Use it to connect to a certain provider,
+ * listen to connection changes, call Penumbra services,
+ */
 export const createPenumbraClient = () => new PenumbraClient();

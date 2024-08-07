@@ -1,14 +1,23 @@
 import { PromiseClient } from '@connectrpc/connect';
-import { createPenumbraClient, getPenumbraManifest } from '@penumbra-zone/client';
+import { createPenumbraClient } from '@penumbra-zone/client';
 import { assertProviderConnected, assertProviderManifest } from '@penumbra-zone/client/assert';
 import { PenumbraService } from '@penumbra-zone/protobuf';
 
 const prax_id = 'lkpmkhpnhknhmibgnmmhdhgdilepfghe';
 const prax_origin = `chrome-extension://${prax_id}`;
 
+export const penumbraClient = createPenumbraClient();
+
+// If Prax is connected on page load, reconnect to ensure the connection is still active
+if (penumbraClient.getProviderIsConnected(prax_origin)) {
+  void penumbraClient.connect(prax_origin).catch(() => {
+    /* no-op */
+  });
+}
+
 export const getPraxOrigin = () => prax_origin;
 
-export const getPraxManifest = () => getPenumbraManifest(prax_origin);
+export const getPraxManifest = () => penumbraClient.getProviderManifest(prax_origin);
 
 export const isPraxConnected = () => {
   try {
@@ -31,11 +40,6 @@ export const isPraxInstalled = async () => {
 export const throwIfPraxNotConnected = () => assertProviderConnected(prax_origin);
 
 export const throwIfPraxNotInstalled = async () => assertProviderManifest(prax_origin);
-
-export const penumbraClient = createPenumbraClient();
-void penumbraClient.reconnect().catch(() => {
-  /* no-op */
-});
 
 export const requestPraxAccess = async () => penumbraClient.connect(prax_origin);
 
