@@ -123,7 +123,7 @@ interface PenumbraClient {
 
   /** Reexports the `disconnect` function from injected provider */
   disconnect(): Promise<void>;
-  
+
   /** Reexports the `isConnected` function from injected provider  */
   isConnected(): boolean | undefined;
   /** Reexports the `state` function from injected provider */
