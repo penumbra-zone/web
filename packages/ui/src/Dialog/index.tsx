@@ -2,9 +2,10 @@ import { createContext, ReactNode, useContext } from 'react';
 import styled, { keyframes } from 'styled-components';
 import * as RadixDialog from '@radix-ui/react-dialog';
 import { Text } from '../Text';
-import { Icon } from '../Icon';
 import { X } from 'lucide-react';
 import { ButtonGroup, ButtonGroupProps } from '../ButtonGroup';
+import { Button } from '../Button';
+import { Density } from '../Density';
 
 const gradualBlur = (blur: string) => keyframes`
   from {
@@ -186,13 +187,6 @@ const DialogContext = createContext<{ showCloseButton: boolean }>({
   showCloseButton: true,
 });
 
-const CloseButton = styled.button`
-  appearance: none;
-  background: none;
-  border: none;
-  color: ${props => props.theme.color.text.primary};
-`;
-
 export interface DialogContentProps<IconOnlyButtonGroupProps extends boolean | undefined> {
   children?: ReactNode;
   title: string;
@@ -226,11 +220,13 @@ const Content = <IconOnlyButtonGroupProps extends boolean | undefined>({
           </RadixDialog.Title>
 
           {showCloseButton && (
-            <RadixDialog.Close asChild>
-              <CloseButton aria-label='Close'>
-                <Icon IconComponent={X} size='md' />
-              </CloseButton>
-            </RadixDialog.Close>
+            <Density compact>
+              <RadixDialog.Close asChild>
+                <Button icon={X} iconOnly priority='secondary'>
+                  Close
+                </Button>
+              </RadixDialog.Close>
+            </Density>
           )}
         </TitleAndCloseButton>
 

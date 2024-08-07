@@ -1,5 +1,18 @@
 # @penumbra-zone/storage
 
+## 24.0.0
+
+### Minor Changes
+
+- 10ef940: Updating to v0.80.0 bufbuild types
+
+### Patch Changes
+
+- Updated dependencies [10ef940]
+  - @penumbra-zone/getters@14.0.0
+  - @penumbra-zone/types@19.0.0
+  - @penumbra-zone/wasm@24.0.0
+
 ## 23.0.0
 
 ### Minor Changes

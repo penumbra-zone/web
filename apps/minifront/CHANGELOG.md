@@ -1,5 +1,25 @@
 # minifront
 
+## 6.16.0
+
+### Minor Changes
+
+- 6094b6b: Add a "claim all" button to the auctions list
+
+### Patch Changes
+
+- 2c0c167: Refetch BalancesResponse query after successful swap and send
+- b524a03: forbid um ibc out to celestia
+- Updated dependencies [10ef940]
+  - @penumbra-zone/transport-dom@7.5.0
+  - @penumbra-zone/perspective@24.0.0
+  - @penumbra-zone/protobuf@5.7.0
+  - @penumbra-zone/getters@14.0.0
+  - @penumbra-zone/client@16.0.0
+  - @penumbra-zone/types@19.0.0
+  - @repo/ui@7.4.0
+  - @penumbra-zone/crypto-web@20.0.0
+
 ## 6.15.0
 
 ### Minor Changes

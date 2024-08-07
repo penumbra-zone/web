@@ -1,4 +1,8 @@
-import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import {
+  TransactionPlannerRequest,
+  TransactionPlannerRequest_ActionDutchAuctionWithdraw,
+  TransactionPlannerRequest_ActionDutchAuctionEnd,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import { AllSlices, SliceCreator, useStore } from '../..';
 import { planBuildBroadcast } from '../../helpers';
 import { assembleScheduleRequest } from './assemble-schedule-request';
@@ -40,6 +44,8 @@ interface Actions {
     currentSeqNum: bigint,
     addressIndex: AddressIndex,
   ) => Promise<void>;
+  endAllAuctions: (auctions: AuctionInfo[], addressIndex: AddressIndex) => Promise<void>;
+  withdrawAllAuctions: (auctions: AuctionInfo[], addressIndex: AddressIndex) => Promise<void>;
   reset: VoidFunction;
   setFilter: (filter: Filter) => void;
   estimate: () => Promise<void>;
@@ -172,6 +178,7 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
 
       get().swap.setAmount('');
       get().swap.dutchAuction.auctionInfos.revalidate();
+      get().shared.balancesResponses.revalidate();
     } finally {
       set(state => {
         state.swap.dutchAuction.txInProgress = false;
@@ -186,6 +193,7 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
     });
     await planBuildBroadcast('dutchAuctionEnd', req);
     get().swap.dutchAuction.auctionInfos.revalidate();
+    get().shared.balancesResponses.revalidate();
   },
 
   withdraw: async (auctionId, currentSeqNum, addressIndex) => {
@@ -195,8 +203,32 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
     });
     await planBuildBroadcast('dutchAuctionWithdraw', req);
     get().swap.dutchAuction.auctionInfos.revalidate();
+    get().shared.balancesResponses.revalidate();
   },
-
+  endAllAuctions: async (auctions: AuctionInfo[], addressIndex: AddressIndex) => {
+    const req = new TransactionPlannerRequest({
+      dutchAuctionEndActions: auctions.map(
+        au => new TransactionPlannerRequest_ActionDutchAuctionEnd({ auctionId: au.id }),
+      ),
+      source: addressIndex,
+    });
+    await planBuildBroadcast('dutchAuctionEnd', req);
+    get().swap.dutchAuction.auctionInfos.revalidate();
+  },
+  withdrawAllAuctions: async (auctions: AuctionInfo[], addressIndex: AddressIndex) => {
+    const req = new TransactionPlannerRequest({
+      dutchAuctionWithdrawActions: auctions.map(
+        au =>
+          new TransactionPlannerRequest_ActionDutchAuctionWithdraw({
+            auctionId: au.id,
+            seq: au.localSeqNum + 1n,
+          }),
+      ),
+      source: addressIndex,
+    });
+    await planBuildBroadcast('dutchAuctionWithdraw', req);
+    get().swap.dutchAuction.auctionInfos.revalidate();
+  },
   reset: () =>
     set(({ swap }) => {
       swap.dutchAuction = {
