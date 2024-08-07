@@ -11,7 +11,7 @@ const mockViewClient = vi.hoisted(() => ({
 }));
 
 vi.mock('../../../clients', () => ({
-  viewClient: () => mockViewClient,
+  viewClient: mockViewClient,
 }));
 
 const metadata = new Metadata({

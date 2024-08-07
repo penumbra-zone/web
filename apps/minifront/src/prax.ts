@@ -1,3 +1,4 @@
+import { ServiceType } from '@bufbuild/protobuf';
 import { PenumbraClient } from '@penumbra-zone/client';
 import { assertProviderConnected, assertProviderManifest } from '@penumbra-zone/client/assert';
 
@@ -13,3 +14,5 @@ export const isPraxInstalled = () =>
     () => true,
     () => false,
   );
+
+export const createPraxClient = <T extends ServiceType>(s: T) => praxClient.service(s);

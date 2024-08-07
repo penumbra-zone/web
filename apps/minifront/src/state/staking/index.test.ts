@@ -153,66 +153,64 @@ vi.mock('../../fetchers/balances', () => ({
   ),
 }));
 
-const mockViewClient = vi.hoisted(() => () => ({
-  assetMetadataById: vi.fn(() => new Metadata()),
-  delegationsByAddressIndex: vi.fn(async function* () {
-    yield await Promise.resolve(
-      new DelegationsByAddressIndexResponse({
-        valueView: {
-          valueView: {
-            case: 'knownAssetId',
-            value: {
-              amount: { hi: 0n, lo: 1n },
-              extendedMetadata: Any.pack(validatorInfo1),
-            },
-          },
-        },
-      }),
-    );
-    yield await Promise.resolve(
-      new DelegationsByAddressIndexResponse({
-        valueView: {
-          valueView: {
-            case: 'knownAssetId',
-            value: {
-              amount: { hi: 0n, lo: 2n },
-              extendedMetadata: Any.pack(validatorInfo2),
-            },
-          },
-        },
-      }),
-    );
-    yield await Promise.resolve(
-      new DelegationsByAddressIndexResponse({
-        valueView: {
-          valueView: {
-            case: 'knownAssetId',
-            value: {
-              amount: { hi: 0n, lo: 0n },
-              extendedMetadata: Any.pack(validatorInfo3),
-            },
-          },
-        },
-      }),
-    );
-    yield await Promise.resolve(
-      new DelegationsByAddressIndexResponse({
-        valueView: {
-          valueView: {
-            case: 'knownAssetId',
-            value: {
-              amount: { hi: 0n, lo: 0n },
-              extendedMetadata: Any.pack(validatorInfo4),
-            },
-          },
-        },
-      }),
-    );
-  }),
-}));
-
 vi.mock('../../clients', () => ({
-  viewClient: mockViewClient,
+  viewClient: {
+    assetMetadataById: vi.fn(() => new Metadata()),
+    delegationsByAddressIndex: vi.fn(async function* () {
+      yield await Promise.resolve(
+        new DelegationsByAddressIndexResponse({
+          valueView: {
+            valueView: {
+              case: 'knownAssetId',
+              value: {
+                amount: { hi: 0n, lo: 1n },
+                extendedMetadata: Any.pack(validatorInfo1),
+              },
+            },
+          },
+        }),
+      );
+      yield await Promise.resolve(
+        new DelegationsByAddressIndexResponse({
+          valueView: {
+            valueView: {
+              case: 'knownAssetId',
+              value: {
+                amount: { hi: 0n, lo: 2n },
+                extendedMetadata: Any.pack(validatorInfo2),
+              },
+            },
+          },
+        }),
+      );
+      yield await Promise.resolve(
+        new DelegationsByAddressIndexResponse({
+          valueView: {
+            valueView: {
+              case: 'knownAssetId',
+              value: {
+                amount: { hi: 0n, lo: 0n },
+                extendedMetadata: Any.pack(validatorInfo3),
+              },
+            },
+          },
+        }),
+      );
+      yield await Promise.resolve(
+        new DelegationsByAddressIndexResponse({
+          valueView: {
+            valueView: {
+              case: 'knownAssetId',
+              value: {
+                amount: { hi: 0n, lo: 0n },
+                extendedMetadata: Any.pack(validatorInfo4),
+              },
+            },
+          },
+        }),
+      );
+    }),
+  },
 }));
 
 describe('Staking Slice', () => {

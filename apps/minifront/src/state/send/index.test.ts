@@ -20,15 +20,19 @@ vi.mock('../fetchers/address', () => ({
   getAddressByIndex: vi.fn(),
 }));
 
-const mockViewClient = {
-  addressByIndex: vi.fn(),
-  transactionPlanner: vi.fn(),
-  transactionPanner: vi.fn(),
-};
+const hoisted = vi.hoisted(() => {
+  return {
+    mockViewClient: {
+      addressByIndex: vi.fn(),
+      transactionPlanner: vi.fn(),
+      transactionPanner: vi.fn(),
+    },
+  };
+});
 
 vi.mock('../../clients', () => {
   return {
-    viewClient: () => mockViewClient,
+    viewClient: hoisted.mockViewClient,
   };
 });
 
@@ -186,15 +190,17 @@ describe('Send Slice', () => {
     const mockFee = new Fee({ amount: { hi: 1n, lo: 2n } });
 
     beforeEach(() => {
-      vi.spyOn(mockViewClient, 'addressByIndex').mockResolvedValue(new AddressByIndexResponse());
+      vi.spyOn(hoisted.mockViewClient, 'addressByIndex').mockResolvedValue(
+        new AddressByIndexResponse(),
+      );
 
-      vi.spyOn(mockViewClient, 'transactionPlanner').mockResolvedValue(
+      vi.spyOn(hoisted.mockViewClient, 'transactionPlanner').mockResolvedValue(
         new TransactionPlannerResponse({ plan: { transactionParameters: { fee: mockFee } } }),
       );
     });
 
     afterEach(() => {
-      vi.spyOn(mockViewClient, 'transactionPlanner').mockReset();
+      vi.spyOn(hoisted.mockViewClient, 'transactionPlanner').mockReset();
     });
 
     describe('when `fee` is not yet present in the state`', () => {

@@ -11,7 +11,7 @@ const mockSimulationClient = vi.hoisted(() => ({
 }));
 
 vi.mock('../../../clients', () => ({
-  simulationClient: () => mockSimulationClient,
+  simulationClient: mockSimulationClient,
 }));
 
 describe('Dutch auction slice', () => {

@@ -10,19 +10,18 @@ import {
   TendermintProxyService,
   ViewService,
 } from '@penumbra-zone/protobuf';
-import { praxClient } from './prax';
+import { createPraxClient } from './prax';
 
-export const dexClient: PromiseClient<typeof DexService> = praxClient.service(DexService);
+export const dexClient: PromiseClient<typeof DexService> = createPraxClient(DexService);
 export const ibcChannelClient: PromiseClient<typeof IbcChannelService> =
-  praxClient.service(IbcChannelService);
-export const ibcClient: PromiseClient<typeof IbcClientService> =
-  praxClient.service(IbcClientService);
+  createPraxClient(IbcChannelService);
+export const ibcClient: PromiseClient<typeof IbcClientService> = createPraxClient(IbcClientService);
 export const ibcConnectionClient: PromiseClient<typeof IbcConnectionService> =
-  praxClient.service(IbcConnectionService);
-export const sctClient: PromiseClient<typeof SctService> = praxClient.service(SctService);
+  createPraxClient(IbcConnectionService);
+export const sctClient: PromiseClient<typeof SctService> = createPraxClient(SctService);
 export const simulationClient: PromiseClient<typeof SimulationService> =
-  praxClient.service(SimulationService);
-export const stakeClient: PromiseClient<typeof StakeService> = praxClient.service(StakeService);
+  createPraxClient(SimulationService);
+export const stakeClient: PromiseClient<typeof StakeService> = createPraxClient(StakeService);
 export const tendermintClient: PromiseClient<typeof TendermintProxyService> =
-  praxClient.service(TendermintProxyService);
-export const viewClient: PromiseClient<typeof ViewService> = praxClient.service(ViewService);
+  createPraxClient(TendermintProxyService);
+export const viewClient: PromiseClient<typeof ViewService> = createPraxClient(ViewService);
