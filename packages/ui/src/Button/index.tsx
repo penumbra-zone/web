@@ -163,8 +163,8 @@ export type ButtonProps = BaseButtonProps & (IconOnlyProps | RegularProps);
  *
  * See individual props for how to use `<Button />` in various forms.
  *
- * Note that, to use `<Button />` as a link, you can simple wrap it in an `<a
- * />` (or `<Link />`, if you're using e.g., React Router) tag and leave
+ * Note that, to use `<Button />` as a link, you can simply wrap it in an anchor
+ * (`<a />`) tag (or `<Link />`, if you're using e.g., React Router) and leave
  * `onClick` undefined.
  */
 export const Button = ({
