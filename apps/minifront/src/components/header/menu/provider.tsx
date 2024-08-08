@@ -59,7 +59,7 @@ export const ProviderMenu = () => {
               </NavigationMenu.Link>
             </NavigationMenu.Item>
             <NavigationMenu.Item className={cn(...itemStyle)}>
-              <NavigationMenu.Link className={cn(...linkStyle)} onSelect={disconnect}>
+              <NavigationMenu.Link className={cn(...linkStyle)} onSelect={() => disconnect()}>
                 <span>
                   <LinkBreak1Icon className={cn('size-[1em]', 'inline-block')} />
                   &nbsp;Disconnect
