@@ -143,3 +143,4 @@ jobs:
       - uses: browser-actions/setup-firefox@v1
       - run: pnpm turbo telemetry disable
       - run: pnpm turbo test:rust --cache-dir=.turbo
+      - run: pnpm turbo test:rust-unit --cache-dir=.turbo
