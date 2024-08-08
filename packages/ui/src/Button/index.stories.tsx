@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
 import { Button } from '.';
-import { ArrowLeftRight, Check } from 'lucide-react';
+import { ArrowLeftRight, Check, Copy } from 'lucide-react';
 
 const meta: Meta<typeof Button> = {
   component: Button,
@@ -9,8 +9,8 @@ const meta: Meta<typeof Button> = {
   argTypes: {
     icon: {
       control: 'select',
-      options: ['None', 'Check', 'ArrowLeftRight'],
-      mapping: { None: undefined, Check, ArrowLeftRight },
+      options: ['None', 'Copy', 'Check', 'ArrowLeftRight'],
+      mapping: { None: undefined, Copy, Check, ArrowLeftRight },
     },
     iconOnly: {
       options: ['true', 'false', 'adornment'],
@@ -28,7 +28,7 @@ export const Basic: Story = {
     children: 'Save',
     actionType: 'default',
     disabled: false,
-    icon: Check,
+    icon: Copy,
     iconOnly: false,
     type: 'button',
   },
