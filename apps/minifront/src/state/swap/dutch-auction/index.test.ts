@@ -6,12 +6,16 @@ import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb.js';
 import { OUTPUT_LIMIT } from '.';
 
-const mockSimulationClient = vi.hoisted(() => ({
-  simulateTrade: vi.fn(),
+const hoisted = vi.hoisted(() => ({
+  mockSimulationClient: {
+    simulateTrade: vi.fn(),
+  },
 }));
 
-vi.mock('../../../clients', () => ({
-  simulationClient: mockSimulationClient,
+vi.mock('../../../prax', () => ({
+  praxClient: {
+    service: vi.fn(() => hoisted.mockSimulationClient),
+  },
 }));
 
 describe('Dutch auction slice', () => {
@@ -64,7 +68,7 @@ describe('Dutch auction slice', () => {
 
     describe('when the estimation is a non-zero amount', () => {
       beforeEach(() => {
-        mockSimulationClient.simulateTrade.mockResolvedValue({
+        hoisted.mockSimulationClient.simulateTrade.mockResolvedValue({
           output: {
             output: {
               amount: {
@@ -91,7 +95,7 @@ describe('Dutch auction slice', () => {
 
     describe('when the estimation is zero (because there is no liquidity)', () => {
       beforeEach(() => {
-        mockSimulationClient.simulateTrade.mockResolvedValue({
+        hoisted.mockSimulationClient.simulateTrade.mockResolvedValue({
           output: {
             output: {
               amount: {

@@ -20,21 +20,19 @@ vi.mock('../fetchers/address', () => ({
   getAddressByIndex: vi.fn(),
 }));
 
-const hoisted = vi.hoisted(() => {
-  return {
-    mockViewClient: {
-      addressByIndex: vi.fn(),
-      transactionPlanner: vi.fn(),
-      transactionPanner: vi.fn(),
-    },
-  };
-});
+const hoisted = vi.hoisted(() => ({
+  mockViewClient: {
+    addressByIndex: vi.fn(),
+    transactionPlanner: vi.fn(),
+    transactionPanner: vi.fn(),
+  },
+}));
 
-vi.mock('../../clients', () => {
-  return {
-    viewClient: hoisted.mockViewClient,
-  };
-});
+vi.mock('../../prax', () => ({
+  praxClient: {
+    service: vi.fn(() => hoisted.mockViewClient),
+  },
+}));
 
 describe('Send Slice', () => {
   const selectionExample = new BalancesResponse({

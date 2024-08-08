@@ -153,8 +153,14 @@ vi.mock('../../fetchers/balances', () => ({
   ),
 }));
 
-vi.mock('../../clients', () => ({
-  viewClient: {
+vi.mock('../../prax', () => ({
+  praxClient: {
+    service: vi.fn(() => hoisted.mockViewClient),
+  },
+}));
+
+const hoisted = vi.hoisted(() => ({
+  mockViewClient: {
     assetMetadataById: vi.fn(() => new Metadata()),
     delegationsByAddressIndex: vi.fn(async function* () {
       yield await Promise.resolve(
