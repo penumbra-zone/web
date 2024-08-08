@@ -71,7 +71,7 @@ const Color = <T extends Exclude<TColor, 'action' | 'other' | 'base'>>({ color }
     <Grid mobile={6} tablet={10}>
       <Variants>
         {color === 'text'
-          ? (['primary', 'secondary', 'disabled', 'special'] as const).map(variant => (
+          ? (['primary', 'secondary', 'muted', 'special'] as const).map(variant => (
               <Variant key={variant} $color={color} $colorVariant={variant}>
                 <Text technical>{variant}</Text>
               </Variant>
