@@ -11,21 +11,13 @@ import { useDensity } from '../hooks/useDensity';
 
 type Context = 'default' | 'table';
 
-const Row = styled.span<{ $context: Context; $priority: 'primary' | 'secondary' }>`
+const Row = styled.span`
   display: flex;
   gap: ${props => props.theme.spacing(2)};
   align-items: center;
-  width: min-content;
+  width: max-content;
   max-width: 100%;
   text-overflow: ellipsis;
-
-  ${props =>
-    props.$context === 'table' && props.$priority === 'secondary'
-      ? `
-        border-bottom: 2px dashed ${props.theme.color.other.tonalStroke};
-        padding-bottom: ${props.theme.spacing(2)};
-      `
-      : ''};
 `;
 
 const AssetIconWrapper = styled.div`
@@ -37,7 +29,7 @@ const PillMarginOffsets = styled.div<{ $density: Density }>`
   margin-right: ${props => props.theme.spacing(props.$density === 'sparse' ? -1 : 0)};
 `;
 
-const Content = styled.div`
+const Content = styled.div<{ $context: Context; $priority: 'primary' | 'secondary' }>`
   flex-grow: 1;
   flex-shrink: 1;
 
@@ -46,6 +38,11 @@ const Content = styled.div`
   align-items: center;
 
   overflow: hidden;
+
+  ${props =>
+    props.$context === 'table' &&
+    props.$priority === 'secondary' &&
+    `border-bottom: 2px dashed ${props.theme.color.other.tonalStroke};`};
 `;
 
 const SymbolWrapper = styled.div`
@@ -58,7 +55,7 @@ const SymbolWrapper = styled.div`
 `;
 
 export interface ValueViewComponentProps<SelectedContext extends Context> {
-  valueView: ValueView;
+  valueView?: ValueView;
   /**
    * A `ValueViewComponent` will be rendered differently depending on which
    * context it's rendered in. By default, it'll be rendered in a pill. But in a
@@ -86,6 +83,11 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
   priority = 'primary',
 }: ValueViewComponentProps<SelectedContext>) => {
   const density = useDensity();
+
+  if (!valueView) {
+    return null;
+  }
+
   const formattedAmount = getFormattedAmtFromValueView(valueView, true);
   const metadata = getMetadata.optional()(valueView);
   // Symbol default is "" and thus cannot do nullish coalescing
@@ -101,12 +103,12 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
         </Pill>
       )}
     >
-      <Row $context={context ?? 'default'} $priority={priority}>
+      <Row>
         <AssetIconWrapper>
           <AssetIcon metadata={metadata} />
         </AssetIconWrapper>
 
-        <Content>
+        <Content $context={context ?? 'default'} $priority={priority}>
           <Text>{formattedAmount} </Text>
           <SymbolWrapper title={symbol}>
             <Text technical>{symbol}</Text>

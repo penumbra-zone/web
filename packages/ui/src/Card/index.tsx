@@ -1,10 +1,11 @@
 import { ReactNode } from 'react';
 import styled, { WebTarget } from 'styled-components';
 import { large } from '../utils/typography';
+import { hexOpacity } from '../utils/hexOpacity';
 
 const Root = styled.section``;
 
-const Title = styled.h1`
+const Title = styled.h2`
   ${large};
 
   color: ${props => props.theme.color.base.white};
@@ -12,6 +13,11 @@ const Title = styled.h1`
 `;
 
 const Content = styled.div`
+  background: linear-gradient(
+    136deg,
+    ${props => props.theme.color.neutral.contrast + hexOpacity(0.1)} 6.32%,
+    ${props => props.theme.color.neutral.contrast + hexOpacity(0.01)} 75.55%
+  );
   backdrop-filter: blur(${props => props.theme.blur.lg});
   border-radius: ${props => props.theme.borderRadius.xl};
   padding: ${props => props.theme.spacing(3)};
@@ -28,7 +34,7 @@ export interface CardProps {
    * ```
    */
   as?: WebTarget;
-  title?: string;
+  title?: ReactNode;
 }
 
 export const Card = ({ children, as = 'section', title }: CardProps) => {

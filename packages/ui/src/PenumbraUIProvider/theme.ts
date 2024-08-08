@@ -1,3 +1,5 @@
+import { hexOpacity } from '../utils/hexOpacity';
+
 /**
  * Used for reference in the `theme` object below. Not intended to be used
  * directly by consumers, but rather as a semantic reference for building the
@@ -95,10 +97,12 @@ const PALETTE = {
     900: '#6B3F18',
     950: '#201004',
   },
+  base: {
+    black: '#000000',
+    white: '#ffffff',
+    transparent: 'transparent',
+  },
 };
-
-const FIFTEEN_PERCENT_OPACITY_IN_HEX = '26';
-const EIGHTY_PERCENT_OPACITY_IN_HEX = 'cc';
 
 export const theme = {
   blur: {
@@ -170,9 +174,9 @@ export const theme = {
       contrast: PALETTE.green['50'],
     },
     base: {
-      black: '#000',
-      white: '#fff',
-      transparent: 'transparent',
+      black: PALETTE.base.black,
+      white: PALETTE.base.white,
+      transparent: PALETTE.base.transparent,
     },
     text: {
       primary: PALETTE.neutral['50'],
@@ -181,9 +185,9 @@ export const theme = {
       special: PALETTE.orange['400'],
     },
     action: {
-      hoverOverlay: PALETTE.teal['400'] + FIFTEEN_PERCENT_OPACITY_IN_HEX,
-      activeOverlay: PALETTE.neutral['950'] + FIFTEEN_PERCENT_OPACITY_IN_HEX,
-      disabledOverlay: PALETTE.neutral['950'] + EIGHTY_PERCENT_OPACITY_IN_HEX,
+      hoverOverlay: PALETTE.teal['400'] + hexOpacity(0.15),
+      activeOverlay: PALETTE.neutral['950'] + hexOpacity(0.15),
+      disabledOverlay: PALETTE.neutral['950'] + hexOpacity(0.8),
       primaryFocusOutline: PALETTE.orange['400'],
       secondaryFocusOutline: PALETTE.teal['400'],
       unshieldFocusOutline: PALETTE.purple['400'],
@@ -191,8 +195,12 @@ export const theme = {
       destructiveFocusOutline: PALETTE.red['400'],
     },
     other: {
-      tonalStroke: PALETTE.neutral['50'] + FIFTEEN_PERCENT_OPACITY_IN_HEX,
+      tonalStroke: PALETTE.neutral['50'] + hexOpacity(0.15),
+      tonalFill5: PALETTE.neutral['50'] + hexOpacity(0.05),
+      tonalFill10: PALETTE.neutral['50'] + hexOpacity(0.1),
       solidStroke: PALETTE.neutral['700'],
+      dialogBackground: PALETTE.teal['700'] + hexOpacity(0.1),
+      overlay: PALETTE.base.black + hexOpacity(0.5),
     },
   },
   font: {
