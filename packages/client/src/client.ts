@@ -44,8 +44,8 @@ export class PenumbraClient {
 
   /** Fetch manifest of a specific provider, or return `undefined` if the
    * provider is not present. */
-  public static getManifest(providerOrigin: string): Promise<PenumbraManifest> {
-    return getPenumbraManifest(providerOrigin);
+  public static getManifest(providerOrigin: string): Promise<PenumbraManifest> | undefined {
+    return getPenumbraUnsafe(providerOrigin) && getPenumbraManifest(providerOrigin);
   }
 
   /** Return boolean connection state of a specific provider, or `undefined` if
@@ -185,7 +185,7 @@ export class PenumbraClient {
     return this.config?.provider.isConnected();
   }
 
-  /** The `PenumbraState` enumerated provider connection state, or undefined if
+  /** The `PenumbraState` enumerated provider connection state, or `undefined` if
    * this client is not configured with a provider. */
   get state(): PenumbraState | undefined {
     return this.config?.provider.state();
@@ -227,6 +227,7 @@ export class PenumbraClient {
     this.assertConnection();
   }
 
+  /** Assert an active connection, and potentially init this client's transport. */
   private assertConnection() {
     assertProviderConnected(this.config?.origin);
     this.connection ??= this.createConnection();
@@ -235,7 +236,10 @@ export class PenumbraClient {
 
   /** Destroy any active connection and clients. */
   private destroyConnection() {
-    void this.connection?.port.then(port => port.close());
+    void this.connection?.port.then(port => {
+      port.postMessage(false);
+      port.close();
+    });
     this.connection = undefined;
     this.serviceClients.clear();
   }
