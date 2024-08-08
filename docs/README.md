@@ -11,7 +11,7 @@ repo, in which case they use turbo or the monorepo configuration.
 - `pnpm build`: transform and bundle all packages and apps.
 - `pnpm dev`: build all, serve local apps. watch and rebuild continuously.
 - `pnpm test`: run vitest only. cargo tests are omitted.
-- `pnpm test:rust`: run cargo tests only.
+- `pnpm test:rust`: run rust tests only.
 - `pnpm format`, `pnpm lint`
 - `pnpm all-check`: check all!
 

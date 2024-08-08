@@ -41,6 +41,10 @@
     "test:rust": {
       "dependsOn": ["compile"],
       "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock", "crate/tests/**"]
+    },
+    "test:rust-unit": {
+      "dependsOn": ["compile"],
+      "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock", "crate/tests/**"]
     }
   }
 }
