@@ -18,12 +18,13 @@ import {
 import { toBaseUnit } from '@penumbra-zone/types/lo-hi';
 import { BigNumber } from 'bignumber.js';
 import { SwapSlice } from '.';
-import { dexClient, simulationClient } from '../../clients';
 import { assetPatterns } from '@penumbra-zone/types/assets';
 import { fromBaseUnitAmount } from '@penumbra-zone/types/amount';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import { isKnown } from '../helpers';
 import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
+import { praxClient } from '../../prax';
+import { DexService, SimulationService } from '@penumbra-zone/protobuf';
 
 export const sendSimulateTradeRequest = ({
   assetIn,
@@ -47,7 +48,7 @@ export const sendSimulateTradeRequest = ({
     output: getAssetId(assetOut),
   });
 
-  return simulationClient.simulateTrade(req);
+  return praxClient.service(SimulationService).simulateTrade(req);
 };
 
 /**
@@ -86,7 +87,9 @@ export const sendCandlestickDataRequest = async (
     throw new Error('Asset pair equivalent');
   }
 
-  return dexClient.candlestickData({ pair: { start, end }, limit, startHeight });
+  return praxClient
+    .service(DexService)
+    .candlestickData({ pair: { start, end }, limit, startHeight });
 };
 
 export const combinedCandlestickDataSelector = (

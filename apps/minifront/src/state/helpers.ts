@@ -8,7 +8,7 @@ import {
   WitnessAndBuildRequest,
   WitnessAndBuildResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
-import { viewClient } from '../clients';
+import { ViewService } from '@penumbra-zone/protobuf';
 import { sha256Hash } from '@penumbra-zone/crypto-web/sha256';
 import {
   Transaction,
@@ -26,8 +26,8 @@ import {
   getValueViewCaseFromBalancesResponse,
 } from '@penumbra-zone/getters/balances-response';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
-import { ViewService } from '@penumbra-zone/protobuf';
 import { PromiseClient } from '@connectrpc/connect';
+import { praxClient } from '../prax';
 
 /**
  * Handles the common use case of planning, building, and broadcasting a
@@ -53,7 +53,9 @@ export const planBuildBroadcast = async (
   const toast = new TransactionToast(transactionClassification);
   toast.onStart();
 
-  const rpcMethod = options?.skipAuth ? viewClient.witnessAndBuild : viewClient.authorizeAndBuild;
+  const rpcMethod = options?.skipAuth
+    ? praxClient.service(ViewService).witnessAndBuild
+    : praxClient.service(ViewService).authorizeAndBuild;
 
   try {
     const transactionPlan = await plan(req);
@@ -88,7 +90,7 @@ export const planBuildBroadcast = async (
 export const plan = async (
   req: PartialMessage<TransactionPlannerRequest>,
 ): Promise<TransactionPlan> => {
-  const { plan } = await viewClient.transactionPlanner(req);
+  const { plan } = await praxClient.service(ViewService).transactionPlanner(req);
   if (!plan) {
     throw new Error('No plan in planner response');
   }
@@ -129,7 +131,7 @@ const broadcast = async (
   const txId = await getTxId(transaction);
   const txHash = getTxHash(txId);
   onStatusUpdate(undefined);
-  for await (const { status } of viewClient.broadcastTransaction({
+  for await (const { status } of praxClient.service(ViewService).broadcastTransaction({
     awaitDetection,
     transaction,
   })) {
