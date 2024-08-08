@@ -44,17 +44,3 @@ export const getAllPenumbraManifests = (
       getPenumbraManifest(providerOrigin, signal),
     ]),
   );
-
-/**
- * Asynchronously get a connection to the specified provider.
- *
- * Confirms presence of the provider's manifest.  Will attempt to request
- * approval if connection is not already active.
- *
- * @param requireProvider string identifying a provider origin
- */
-export const getPenumbraPort = async (penumbraOrigin: string): Promise<MessagePort> => {
-  const provider = assertProviderRecord(penumbraOrigin);
-  await assertProviderManifest(penumbraOrigin);
-  return provider.connect();
-};
