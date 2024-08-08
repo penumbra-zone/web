@@ -11,7 +11,6 @@ import { AllSlices } from '../../../state';
 import { Chain } from '@penumbra-labs/registry';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { useChains } from '../../../state/ibc-out';
-import { bech32ChainIds } from '../../../state/shared.ts';
 
 const chainSelectorSelector = (state: AllSlices) => ({
   chain: state.ibcOut.chain,
@@ -45,7 +44,6 @@ export const ChainSelector = () => {
         <SelectContent className='left-[-17px]'>
           {chains.data?.map((i, index) => (
             <SelectItem
-              disabled={bech32ChainIds.includes(i.chainId)}
               key={index}
               value={i.displayName}
               className={cn(
