@@ -181,7 +181,7 @@ export const theme = {
     text: {
       primary: PALETTE.neutral['50'],
       secondary: PALETTE.neutral['400'],
-      disabled: PALETTE.neutral['500'],
+      muted: PALETTE.neutral['700'],
       special: PALETTE.orange['400'],
     },
     action: {
@@ -240,6 +240,7 @@ export const theme = {
   },
   spacing: (spacingUnits: number) => `${spacingUnits * 4}px`,
   zIndex: {
+    disabledOverlay: 10,
     dialogOverlay: 1000,
     dialogContent: 1001,
   },
