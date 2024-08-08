@@ -59,6 +59,7 @@ export interface TextInputProps {
   type?: 'email' | 'number' | 'password' | 'tel' | 'text' | 'url';
 }
 
+/** A simple text field. */
 export const TextInput = ({
   value,
   onChange,

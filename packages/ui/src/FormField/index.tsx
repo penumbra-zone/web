@@ -26,6 +26,14 @@ const LabelText = styled.div<{ $disabled: boolean }>`
 
 export interface FormFieldProps {
   label: string;
+  /**
+   * Setting this to `true` will render the `<FormField />` as disabled, and
+   * will also disable whatever input component you pass as children (if that
+   * component uses the `useDisabled()` hook).
+   *
+   * Thus, you can simply set `disabled` on the `<FormField />`, and don't need
+   * to _also_ set it on the child input component.
+   */
   disabled?: boolean;
   helperText?: string;
   /**
@@ -35,6 +43,25 @@ export interface FormFieldProps {
   children: ReactNode;
 }
 
+/**
+ * A wrapper around a field in a form. Provides a standardized presentation for
+ * any inputs, such as `<TextInput />`, `<SegmentedControl />`, etc.
+ *
+ * ```tsx
+ * <FormField
+ *   label="Field label"
+ *   helperText="This is the helper text."
+ *   disabled={disabled}
+ * >
+ *   <TextInput value={value} onChange={onChange} />
+ * </FormField>
+ * ```
+ *
+ * Note that, in the example above, you can simply pass the `disabled` prop to
+ * `<FormField />`, and it will take care of disabling its child input component
+ * via context (assuming the child input component uses the `useDisabled()`
+ * hook).
+ */
 export const FormField = ({ label, disabled = false, helperText, children }: FormFieldProps) => (
   <Root>
     <LabelText $disabled={disabled}>{label}</LabelText>
