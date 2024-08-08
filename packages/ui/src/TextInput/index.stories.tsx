@@ -1,24 +1,22 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { useArgs } from '@storybook/preview-api';
 
-import { Input } from '.';
+import { TextInput } from '.';
 
-const meta: Meta<typeof Input> = {
-  component: Input,
+const meta: Meta<typeof TextInput> = {
+  component: TextInput,
   tags: ['autodocs', '!dev'],
 };
 export default meta;
 
-type Story = StoryObj<typeof Input>;
+type Story = StoryObj<typeof TextInput>;
 
 export const Basic: Story = {
   args: {
     actionType: 'default',
-    label: "Recipient's address",
     placeholder: 'penumbra1abc123...',
     value: '',
     disabled: false,
-    helperText: 'The recipient can find their address via the Receive tab above.',
     type: 'text',
   },
 
@@ -27,6 +25,6 @@ export const Basic: Story = {
 
     const onChange = (value: string) => updateArgs({ value });
 
-    return <Input {...props} onChange={onChange} />;
+    return <TextInput {...props} onChange={onChange} />;
   },
 };

@@ -1,26 +1,7 @@
 import styled, { DefaultTheme } from 'styled-components';
-import { Text } from '../Text';
 import { small } from '../utils/typography';
 import { ActionType } from '../utils/ActionType';
-
-const Root = styled.label<{ $disabled?: boolean }>`
-  display: flex;
-  flex-direction: column;
-  gap: ${props => props.theme.spacing(2)};
-  position: relative;
-
-  ${props =>
-    props.$disabled &&
-    `
-      &::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background-color: ${props.theme.color.action.disabledOverlay};
-        cursor: not-allowed;
-      }
-    `}
-`;
+import { useDisabled } from '../hooks/useDisabled';
 
 const BORDER_BOTTOM_WIDTH = '2px';
 
@@ -31,27 +12,12 @@ const borderColorByActionType: Record<ActionType, keyof DefaultTheme['color']['a
   destructive: 'destructiveFocusOutline',
 };
 
-const InputWrapper = styled.div<{ $disabled?: boolean }>`
-  position: relative;
-  width: 100%;
-
-  ${props =>
-    !props.$disabled &&
-    `
-      &:hover::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background-color: ${props.theme.color.action.hoverOverlay};
-      }
-    `}
-`;
-
 const StyledInput = styled.input<{ $actionType: ActionType }>`
   appearance: none;
   border: none;
   background-color: ${props => props.theme.color.other.tonalFill5};
-  color: ${props => props.theme.color.text.primary};
+  color: ${props =>
+    props.disabled ? props.theme.color.text.muted : props.theme.color.text.primary};
 
   padding-left: ${props => props.theme.spacing(3)};
   padding-right: ${props => props.theme.spacing(3)};
@@ -69,6 +35,14 @@ const StyledInput = styled.input<{ $actionType: ActionType }>`
     color: ${props => props.theme.color.text.secondary};
   }
 
+  &:disabled {
+    cursor: not-allowed;
+  }
+
+  &:disabled::placeholder {
+    color: ${props => props.theme.color.text.muted};
+  }
+
   &:focus {
     border-bottom-color: ${props =>
       props.theme.color.action[borderColorByActionType[props.$actionType]]};
@@ -76,49 +50,33 @@ const StyledInput = styled.input<{ $actionType: ActionType }>`
   }
 `;
 
-const HelperText = styled.div`
-  color: ${props => props.theme.color.text.secondary};
-
-  ${small}
-`;
-
-export interface InputProps {
-  label: string;
+export interface TextInputProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
   actionType?: ActionType;
   disabled?: boolean;
-  helperText?: string;
   type?: 'email' | 'number' | 'password' | 'tel' | 'text' | 'url';
 }
 
-export const Input = ({
-  label,
+export const TextInput = ({
   value,
   onChange,
   placeholder,
   actionType = 'default',
   disabled,
-  helperText,
   type = 'text',
-}: InputProps) => {
+}: TextInputProps) => {
+  disabled = useDisabled(disabled);
+
   return (
-    <Root $disabled={disabled}>
-      <Text strong>{label}</Text>
-
-      <InputWrapper>
-        <StyledInput
-          value={value}
-          onChange={e => onChange(e.target.value)}
-          placeholder={placeholder}
-          disabled={disabled}
-          type={type}
-          $actionType={actionType}
-        />
-      </InputWrapper>
-
-      {helperText && <HelperText>{helperText}</HelperText>}
-    </Root>
+    <StyledInput
+      value={value}
+      onChange={e => onChange(e.target.value)}
+      placeholder={placeholder}
+      disabled={disabled}
+      type={type}
+      $actionType={actionType}
+    />
   );
 };
