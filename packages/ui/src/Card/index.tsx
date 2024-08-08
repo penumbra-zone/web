@@ -46,7 +46,25 @@ export interface CardProps {
  * page by a background and an optional title. They're useful for presenting
  * data, or for wrapping a form.
  *
- * You can use `<Card.Stack />` and `<Card.Section />` to create a stack of
+ * A `<Card />` wraps its children in a flex column with a spacing of `4`
+ * between each top-level HTML element. This results in a standard card layout
+ * no matter what its contents are.
+ *
+ * If you wish to pass children to `<Card />` that should not be spaced apart in
+ * that way, simply pass a single HTML element as the root of the `<Card />`'s
+ * children. That way, the built-in flex column will have no effect:
+ *
+ * ```tsx
+ * <Card title="This is the card title">
+ *   <div>
+ *     <span>These two elements...</span>
+ *     <span>...will not appear in a flex column, but rather inline beside each
+ *     other.</span>
+ *   </div>
+ * </Card>
+ * ```
+ *
+ * You can also use `<Card.Stack />` and `<Card.Section />` to create a stack of
  * sections, which are useful for wrapping individual form fields.
  *
  * ```tsx
