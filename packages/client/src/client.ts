@@ -27,7 +27,7 @@ export class PenumbraClient {
     return Boolean(penumbraGlobal && Object.values(penumbraGlobal).length);
   }
 
-  /** Return a the record of all present providers available in the page. */
+  /** Return the record of all present providers available in the page. */
   public static getAllProviders(): Record<string, PenumbraProvider> {
     return getPenumbraGlobalUnsafe() ?? {};
   }
