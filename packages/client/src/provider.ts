@@ -14,7 +14,7 @@ import type { PenumbraState } from './state.js';
  * - `false`: no connection is active
  *
  *  Calling `state` will also indicate a 'pending' state, enumerated by
- *  `PenumbraInjectionState`.
+ *  `PenumbraState`.
  *
  * Any script in page scope may create an object like this, so clients should
  * confirm a provider is actually present. Presence can be verified by fetching
