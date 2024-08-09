@@ -13,6 +13,7 @@ export const buttonBase = css`
 /** Adds a focus outline to a button using the `:focus-within` pseudoclass. */
 export const focusOutline = css<{
   $getFocusOutlineColor: (theme: DefaultTheme) => string;
+  $getFocusOutlineOffset?: (theme: DefaultTheme) => string | undefined;
   $getBorderRadius: (theme: DefaultTheme) => string;
 }>`
   position: relative;
@@ -26,6 +27,9 @@ export const focusOutline = css<{
     outline-width: 2px;
     outline-style: solid;
     outline-color: transparent;
+    ${props =>
+      props.$getFocusOutlineOffset?.(props.theme) &&
+      `outline-offset: ${props.$getFocusOutlineOffset(props.theme)};`}
     border-radius: ${props => props.$getBorderRadius(props.theme)};
 
     transition: outline-color 0.15s;

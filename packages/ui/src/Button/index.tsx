@@ -53,6 +53,7 @@ interface StyledButtonProps {
   $priority: Priority;
   $density: Density;
   $getFocusOutlineColor: (theme: DefaultTheme) => string;
+  $getFocusOutlineOffset?: (theme: DefaultTheme) => string | undefined;
   $getBorderRadius: (theme: DefaultTheme) => string;
 }
 
@@ -72,7 +73,6 @@ const StyledButton = styled.button<StyledButtonProps>`
   align-items: center;
   justify-content: center;
   color: ${props => props.theme.color.neutral.contrast};
-  overflow: hidden;
   position: relative;
 
   ${props =>
@@ -82,12 +82,12 @@ const StyledButton = styled.button<StyledButtonProps>`
         ? sparse
         : compact}
 
-  ${focusOutline}
-  ${overlays}
-
   &::after {
     outline-offset: -2px;
   }
+
+  ${focusOutline}
+  ${overlays}
 `;
 
 interface BaseButtonProps {
@@ -188,11 +188,8 @@ export const Button = ({
       onClick={onClick}
       aria-label={iconOnly ? children : undefined}
       title={iconOnly ? children : undefined}
-      $getFocusOutlineColor={theme =>
-        iconOnly === 'adornment'
-          ? theme.color.base.transparent
-          : theme.color.action[outlineColorByActionType[actionType]]
-      }
+      $getFocusOutlineColor={theme => theme.color.action[outlineColorByActionType[actionType]]}
+      $getFocusOutlineOffset={() => (iconOnly === 'adornment' ? '0px' : undefined)}
       $getBorderRadius={theme =>
         density === 'sparse' && iconOnly !== 'adornment'
           ? theme.borderRadius.sm
