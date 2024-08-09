@@ -177,33 +177,27 @@ export declare class PenumbraClient {
    * attach to a specified provider, or remain unconfigured. */
   constructor(providerOrigin?: string | undefined, options?: PenumbraClientOptions);
 
-  /** Attempt to connect to the attached provider, or attach and then connect to
-   * the provider specified by parameter.
-   *
-   * Presence of the public `connected` field can confirm the client is
-   * connected or can connect.  The public `transport` field can confirm the
-   * client possesses an active connection.
+  /** Attempt to connect to the attached provider. If this client is unattached,
+   * a provider may be specified at this moment.
    *
    * May reject with an enumerated `PenumbraRequestFailure`.
+   *
+   * The public `connected` field will report the provider's connected state, or
+   * `undefined` if this client is not attached to a provider. The public
+   * `transport` field can confirm the client possesses an active connection.
+   *
+   * If called again while already connected, `connect` is a no-op.
    */
   connect(providerOrigin?: string): Promise<void>;
 
-  /** Call `disconnect` on any associated provider to release connection
+  /** Call `disconnect` on the associated provider to release connection
    * approval, and destroy any present connection. */
   disconnect(): Promise<void>;
 
   /** Return a `PromiseClient<T>` for some `T extends ServiceType`, using this
-   * client's internal `Transport`. If you call this method before this client
-   * is attached, this method will throw.
+   * client's internal `Transport`.
    *
-   * You should also prefer to call this method *after* this client's connection
-   * has succeeded.
-   *
-   * If you call this method before connection success is resolved, a connection
-   * will be initiated if necessary but will not be awaited (as this is a
-   * synchronous method). If a connection initated this way is rejected, or does
-   * not resolve within the `defaultTimeoutMs` of this client's
-   * `options.transport`, requests made with the returned `PromiseClient<T>`
+   * If you call this method while this client is not `Connected`, this method
    * will throw.
    */
   service<T extends ServiceType>(service: T): PromiseClient<T>;
@@ -215,17 +209,20 @@ export declare class PenumbraClient {
     removeListener?: AbortSignal,
   ): void;
 
-  /** It is recommended to construct clients with a specific provider origin. If
+  /**
+   * It is recommended to construct clients with a specific provider origin. If
    * you didn't do that, and you're working with an unconfigured client, you can
    * configure it with `attach`.
    *
    * A client may only be attached once. A client must be attached to connect.
    *
    * Presence of the public `origin` field can confirm a client instance is
-   * attached.
+   * attached to a provider, and presence of the public `manifest` field can
+   * confirm the attached provider served an appropriate manifest. You may await
+   * manifest confirmation by awaiting the return of `attach`.
    *
-   * If called repeatedly with a matching provider, `attach` is a no-op. If
-   * called repeatedly with a different provider, `attach` will throw.
+   * If called again with a matching provider, `attach` is a no-op. If called
+   * again with a different provider, `attach` will throw.
    */
   attach(providerOrigin: string): Promise<PenumbraManifest>;
 
