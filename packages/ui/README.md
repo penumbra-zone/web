@@ -50,87 +50,29 @@ That way, `<MyComponent />` will have looser padding when wrapped with `<Density
 
 These guidelines are for maintainers of the components in the Penumbra UI library.
 
-### Components must be located at `./components/v2/<ComponentName>/index.tsx`.
+### Guiding principles
 
-This ensures that the Penumbra UI `package.json` `exports` field works as intended, so that components can be imported via `@penumbra-zone/ui/<ComponentName>`.
+To ensure consistency in the code design of the Penumbra UI components, and to maintain an optimal developer experience, developers should adhere to these guidelines.
 
-Note that `<ComponentName>` should be replaced with the `UpperCamelCase` component name — e.g., `./components/v2/LoadingIndicator/index.tsx`.
+#### Keep design decisions to a minimum for Penumbra UI consumers.
 
-### Internal-use components that are only used within a parent component must sit in the parent component's directory, rather than be a sibling of the parent directory.
+Penumbra UI aims to take as much as possible of the design-related decision-making out of developers' hands. Developers using Penumbra UI should be freed up to focus on _functionality_, rather than needing to think about what colors would "look nice" or what spacing would "feel right." Specifically:
 
-This guideline only applies to components that are _not_ intended to be used externally, but are only to be used as dependencies of other Penumbra UI library components.
+##### Props and their values should be named to indicate their _use_, rather than their _effect on appearance_.
 
-```
-- src/components/
-  - HeaderWithDropdown/
-    - index.tsx
-    - Dropdown.tsx ✅ Correct, if Dropdown is only ever used inside HeaderWithDropdown
-```
+For example, buttons have a `priority` prop to determine whether a given button is `primary` or `secondary`. This allows consumers to set the prop based on how the button is _used_: if it's the "Confirm" button for a popup dialog, it would obviously have a `primary` priority. If it's a "Cancel" button underneath the "Confirm" button, it would have a `secondary` priority.
 
-```
-- src/components/
-  - Dropdown.tsx ❌ Wrong, if Dropdown is only ever used inside HeaderWithDropdown
-  - HeaderWithDropdown/
-    - index.tsx
-```
+It just so happens that the primary button has a filled-in, solid-color background, while the secondary button has a transparent background and a subtle border. Notice, though, that Penumbra UI buttons don't accept `backgroundColor` or `borderColor` props. Nor do they accept `className` props that would allow consumers to customize their appearance in any number of other ways (that would be even worse!). For that matter, they don't even have a `variant` prop with values like `filled` vs. `outlined`. Why not? Because if they did, two developers working on the same app might end up using those visual styles in inconsistent ways, resulting in a disjointed UI.
 
-(One exception to this rule: if you're developing a component that will eventually be used by multiple other components, and just happens to be a child of only a single component at the moment, you can leave it as a sibling of its parent.)
+Instead, the `priority` prop is so named to indicate that it should be set based on how the button is used. Then, Penumbra UI itself makes the right decision about how to style it based on that use case.
 
-### Internal-use components should be located at the most specific possible directory level.
-
-This guideline only applies to components that are _not_ intended to be used externally, but are only to be used as dependencies of other Penumbra UI library components.
-
-For example, if the `Dropdown` component is used by both `HeaderWithDropdown` and `Menu` components, `Dropdown` should be placed in the lowest-level directory that contains both `HeaderWithDropdown` and `Menu`:
-
-```
-- src/components/
-  - SomeCommonParentOfBothHeaderWithDropdownAndMenu/
-    - index.tsx
-    - HeaderWithDropdown/
-      - index.tsx
-      - index.test.tsx
-    - Menu/
-      - index.tsx
-      - index.test.tsx
-    - Dropdown.tsx ✅ Correct - Dropdown is used by both Menu and HeaderWithDropdown, so it's a sibling to both
-```
-
-This, as opposed to e.g., placing it inside the `HeaderWithDropdown` directory (and then importing it from there in `Menu`), or inside a root-level directory. This way, components are nested as closely to the components using them as possible.
-
-```
-- src/components/
-  - SomeCommonParentOfBothHeaderWithDropdownAndMenu/
-    - index.tsx
-    - HeaderWithDropdown/
-      - index.tsx
-      - index.test.tsx
-      - Dropdown.tsx ❌ Wrong - Menu shouldn't be importing a child of HeaderWithDropdown
-    - Menu/
-      - index.tsx
-      - index.test.tsx
-```
-
-### Component props must be exported from the component file as `<ComponentName>Props`.
-
-For example:
-
-```tsx
-export interface MyComponentProps {
-  color: Color;
-}
-
-export function MyComponent({ color }: MyComponentProps) {
-  // ...
-}
-```
-
-### Components must not accept `className` or `style` props.
+##### Components must not accept `className` or `style` props.
 
 This ensures that each component is internally responsible for its own styling.
 
-Any variations of the component's appearance must be controlled via props like `variant`, `state`, etc. — not by kitchen-sink props like `className` and `style`, which allow arbitrary changes to be made that could interfere with the internal structure of the component and cause visual inconsistencies between instances of Penumbra UI components.
+Any variations of the component's appearance must be controlled via props like `state`, `priority` etc. — not by kitchen-sink props like `className` and `style`, which allow arbitrary changes to be made that could interfere with the internal structure of the component and cause visual inconsistencies between instances of Penumbra UI components.
 
-### Components should not define external margins or absolute/fixed positioning.
+##### Components should not define external margins or absolute/fixed positioning.
 
 Components may only define their internal spacing and layout — never external spacing and layout. This ensures that components can be reused in any context.
 
@@ -138,7 +80,7 @@ External spacing and positioning is the responsibility of parent components, and
 
 (Note that absolute positioning _is_ acceptable for elements who have a higher-level relative-positioned element in the same component, since that means that the absolute-positioned element is still contained within the component's layout. There also a few exceptions to this rule, such as for tooltips and dropdown menus, as well as for page-level components that absolutely position a child component via a wrapper.)
 
-#### Correct
+###### Correct
 
 ```tsx
 // BackgroundAnimation/index.tsx
@@ -158,7 +100,7 @@ export function SplashPage() {
 }
 ```
 
-#### Incorrect
+###### Incorrect
 
 ```tsx
 // BackgroundAnimation/index.tsx
@@ -178,7 +120,7 @@ export function SplashPage() {
 }
 ```
 
-#### Correct
+###### Correct
 
 ```tsx
 // AssetIcon/index.tsx
@@ -211,7 +153,7 @@ export function ValueComponent({ value, metadata }: ValueComponentProps) {
 }
 ```
 
-#### Incorrect
+###### Incorrect
 
 ```tsx
 // AssetIcon/index.tsx
@@ -247,41 +189,23 @@ export function ValueComponent({ value, metadata }: ValueComponentProps) {
 }
 ```
 
-### Components should include Storybook stories.
+#### Document and test Penumbra UI components thoroughly.
 
-[Storybook stories](https://storybook.js.org/docs/react/writing-stories/introduction) are pages in Storybook that show a particular component, usually in a specific state.
+Penumbra UI is a public package available for anyone in the Penumbra ecosystem to use. As such, its documentation and tests should be given first-class treatment. Specifically:
 
-Storybook stories should be located next to the component they apply to, and have a file suffix of `.stories.ts(x)`. For example, a component located at `components/v2/Button/index.tsx` should have stories at `src/components/v2/Button/index.stories.ts`.
+##### Components should include Storybook stories.
+
+[Storybook stories](https://storybook.js.org/docs/react/writing-stories/introduction) are pages in Storybook that showcase a particular component, usually with controls that allow the user to edit its props.
+
+Storybook stories should be located next to the component they apply to, and have a file suffix of `.stories.ts(x)`. For example, a component located at `src/Button/index.tsx` should have stories at `src/Button/index.stories.tsx`.
 
 When writing stories, make sure to tag your stories with [`autodocs`](https://storybook.js.org/docs/react/writing-docs/autodocs). This is a Storybook feature that analyzes your component code to auto-generate documentation for your component, including a code sample, controls for each of the props, etc.
 
-### Documentation of component props should be written with JSDoc syntax.
+##### Documentation of component props should be written with JSDoc syntax.
 
 [JSDoc-style comments](https://jsdoc.app/about-getting-started.html#adding-documentation-comments-to-your-code) (`/** ... */`) should be written before any props that need to be documented so that A) IDEs can pull them in for tooltips, and B) Storybook can use them in the Storybook UI.
 
-### Components built for Protobuf types must be suffixed with `Component` to avoid naming collisions.
-
-For example, a component designed to render a `ValueView` must be named `ValueViewComponent`, rather than `ValueView`, to avoid awkward naming collisions for consumers:
-
-```tsx
-// ValueViewComponent/index.tsx
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-
-export interface ValueViewComponentProps {
-  valueView: ValueView;
-}
-
-export function ValueViewComponent({ valueView }: ValueViewComponentProps) {
-  // ...
-}
-
-// SomeConsumer.tsx
-// ✅ Now, there is no naming conflict between these two imports.
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import { ValueViewComponent } from '@penumbra-zone/ui/ValueViewComponent';
-```
-
-### Components' rendering logic should be covered via unit tests.
+##### Components' rendering logic should be covered via unit tests.
 
 ```tsx
 // FooBarAndMaybeBaz/index.tsx
@@ -319,11 +243,109 @@ describe('<FooBarAndMaybeBaz />', () => {
 
 Note that we do not use unit tests to test the visual appearance of components; that's a job better suited to screenshot testing, which we may implement in the future.
 
-### Use the `useDensity()` hook to control component density.
+### Code style and file organization guidelines
+
+#### Components must be located at `./components/v2/<ComponentName>/index.tsx`.
+
+This ensures that the Penumbra UI `package.json` `exports` field works as intended, so that components can be imported via `@penumbra-zone/ui/<ComponentName>`.
+
+Note that `<ComponentName>` should be replaced with the `UpperCamelCase` component name — e.g., `./components/v2/LoadingIndicator/index.tsx`.
+
+#### Internal-use components that are only used within a parent component must sit in the parent component's directory, rather than be a sibling of the parent directory.
+
+This guideline only applies to components that are _not_ intended to be used externally, but are only to be used as dependencies of other Penumbra UI library components.
+
+```
+- src/components/
+  - HeaderWithDropdown/
+    - index.tsx
+    - Dropdown.tsx ✅ Correct, if Dropdown is only ever used inside HeaderWithDropdown
+```
+
+```
+- src/components/
+  - Dropdown.tsx ❌ Wrong, if Dropdown is only ever used inside HeaderWithDropdown
+  - HeaderWithDropdown/
+    - index.tsx
+```
+
+(One exception to this rule: if you're developing a component that will eventually be used by multiple other components, and just happens to be a child of only a single component at the moment, you can leave it as a sibling of its parent.)
+
+#### Internal-use components should be located at the most specific possible directory level.
+
+This guideline only applies to components that are _not_ intended to be used externally, but are only to be used as dependencies of other Penumbra UI library components.
+
+For example, if the `Dropdown` component is used by both `HeaderWithDropdown` and `Menu` components, `Dropdown` should be placed in the lowest-level directory that contains both `HeaderWithDropdown` and `Menu`:
+
+```
+- src/components/
+  - SomeCommonParentOfBothHeaderWithDropdownAndMenu/
+    - index.tsx
+    - HeaderWithDropdown/
+      - index.tsx
+      - index.test.tsx
+    - Menu/
+      - index.tsx
+      - index.test.tsx
+    - Dropdown.tsx ✅ Correct - Dropdown is used by both Menu and HeaderWithDropdown, so it's a sibling to both
+```
+
+This, as opposed to e.g., placing it inside the `HeaderWithDropdown` directory (and then importing it from there in `Menu`), or inside a root-level directory. This way, components are nested as closely to the components using them as possible.
+
+```
+- src/components/
+  - SomeCommonParentOfBothHeaderWithDropdownAndMenu/
+    - index.tsx
+    - HeaderWithDropdown/
+      - index.tsx
+      - index.test.tsx
+      - Dropdown.tsx ❌ Wrong - Menu shouldn't be importing a child of HeaderWithDropdown
+    - Menu/
+      - index.tsx
+      - index.test.tsx
+```
+
+#### Component props must be exported from the component file as `<ComponentName>Props`.
+
+For example:
+
+```tsx
+export interface MyComponentProps {
+  color: Color;
+}
+
+export function MyComponent({ color }: MyComponentProps) {
+  // ...
+}
+```
+
+#### Components built for Protobuf types must be suffixed with `Component` to avoid naming collisions.
+
+For example, a component designed to render a `ValueView` must be named `ValueViewComponent`, rather than `ValueView`, to avoid awkward naming collisions for consumers:
+
+```tsx
+// ValueViewComponent/index.tsx
+import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+
+export interface ValueViewComponentProps {
+  valueView: ValueView;
+}
+
+export function ValueViewComponent({ valueView }: ValueViewComponentProps) {
+  // ...
+}
+
+// SomeConsumer.tsx
+// ✅ Now, there is no naming conflict between these two imports.
+import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { ValueViewComponent } from '@penumbra-zone/ui/ValueViewComponent';
+```
+
+#### Use the `useDensity()` hook to control component density.
 
 Components should never accept a `density` prop to control their density. This ensures that all components in a given density context will be rendered with the same density.
 
-#### Using density with Storybook
+##### Using density with Storybook
 
 If you're creating a component that has density variants, use the `density` tag for your Storybook stories:
 
