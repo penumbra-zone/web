@@ -8,7 +8,7 @@ import {
   TransactionInfoResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import { getTxInfoByHash } from '../fetchers/tx-info-by-hash';
-import { praxClient } from '../prax';
+import { penumbra } from '../prax';
 
 export interface TransactionSummary {
   height: number;
@@ -22,7 +22,7 @@ const getHash = (tx: TransactionInfoResponse) =>
 
 export const { summaries, useSummaries } = createZQuery({
   name: 'summaries',
-  fetch: () => praxClient.service(ViewService).transactionInfo({}),
+  fetch: () => penumbra.service(ViewService).transactionInfo({}),
   stream: () => {
     const txIdsToKeep = new Set<string>();
     return {

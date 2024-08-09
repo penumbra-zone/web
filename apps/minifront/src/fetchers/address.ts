@@ -1,7 +1,7 @@
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
-import { praxClient } from '../prax';
+import { penumbra } from '../prax';
 
 type Index = number;
 type Bech32Address = string;
@@ -26,7 +26,7 @@ export const getAddresses = async (accounts: (number | undefined)[]): Promise<In
 };
 
 export const getAddressByIndex = async (account = 0): Promise<Address> => {
-  const { address } = await praxClient
+  const { address } = await penumbra
     .service(ViewService)
     .addressByIndex({ addressIndex: { account } });
   if (!address) {
@@ -36,7 +36,7 @@ export const getAddressByIndex = async (account = 0): Promise<Address> => {
 };
 
 export const getEphemeralAddress = async (account = 0): Promise<Address> => {
-  const { address } = await praxClient
+  const { address } = await penumbra
     .service(ViewService)
     .ephemeralAddress({ addressIndex: { account } });
   if (!address) {

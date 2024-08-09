@@ -5,7 +5,7 @@ import {
 import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 import { ViewService } from '@penumbra-zone/protobuf';
-import { praxClient } from '../../prax';
+import { penumbra } from '../../prax';
 
 interface BalancesProps {
   accountFilter?: AddressIndex;
@@ -23,6 +23,6 @@ export const getBalances = ({ accountFilter, assetIdFilter }: BalancesProps = {}
     req.assetIdFilter = assetIdFilter;
   }
 
-  const iterable = praxClient.service(ViewService).balances(req);
+  const iterable = penumbra.service(ViewService).balances(req);
   return Array.fromAsync(iterable);
 };

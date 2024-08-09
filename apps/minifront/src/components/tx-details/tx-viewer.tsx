@@ -11,7 +11,7 @@ import fetchReceiverView from './hooks';
 import { classifyTransaction } from '@penumbra-zone/perspective/transaction/classify';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
-import { praxClient } from '../../prax';
+import { penumbra } from '../../prax';
 
 export enum TxDetailsTab {
   PUBLIC = 'public',
@@ -28,7 +28,7 @@ const OPTIONS = [
 const getMetadata: MetadataFetchFn = async ({ assetId }) => {
   const feeAssetId = assetId ? assetId : new ChainRegistryClient().bundled.globals().stakingAssetId;
 
-  const { denomMetadata } = await praxClient
+  const { denomMetadata } = await penumbra
     .service(ViewService)
     .assetMetadataById({ assetId: feeAssetId });
   return denomMetadata;

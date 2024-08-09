@@ -11,7 +11,7 @@ import {
 import { ViewService } from '@penumbra-zone/protobuf';
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
 import { getAssetId } from '@penumbra-zone/getters/metadata';
-import { praxClient } from '../../prax';
+import { penumbra } from '../../prax';
 
 const hasTokenBalance = ({
   source,
@@ -65,7 +65,7 @@ const useGasPrices = () => {
   const [prices, setPrices] = useState<GasPrices[]>([]);
 
   const fetchGasPrices = useCallback(async () => {
-    const res = await praxClient.service(ViewService).gasPrices({});
+    const res = await penumbra.service(ViewService).gasPrices({});
     setPrices(res.altGasPrices);
   }, []);
 

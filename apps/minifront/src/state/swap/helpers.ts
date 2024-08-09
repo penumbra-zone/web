@@ -23,7 +23,7 @@ import { fromBaseUnitAmount } from '@penumbra-zone/types/amount';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import { isKnown } from '../helpers';
 import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
-import { praxClient } from '../../prax';
+import { penumbra } from '../../prax';
 import { DexService, SimulationService } from '@penumbra-zone/protobuf';
 
 export const sendSimulateTradeRequest = ({
@@ -48,7 +48,7 @@ export const sendSimulateTradeRequest = ({
     output: getAssetId(assetOut),
   });
 
-  return praxClient.service(SimulationService).simulateTrade(req);
+  return penumbra.service(SimulationService).simulateTrade(req);
 };
 
 /**
@@ -87,9 +87,7 @@ export const sendCandlestickDataRequest = async (
     throw new Error('Asset pair equivalent');
   }
 
-  return praxClient
-    .service(DexService)
-    .candlestickData({ pair: { start, end }, limit, startHeight });
+  return penumbra.service(DexService).candlestickData({ pair: { start, end }, limit, startHeight });
 };
 
 export const combinedCandlestickDataSelector = (

@@ -5,15 +5,15 @@ import { UnclaimedSwapsWithMetadata } from '../state/unclaimed-swaps';
 import { getSwapAsset1, getSwapAsset2 } from '@penumbra-zone/getters/swap-record';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
-import { praxClient } from '../prax';
+import { penumbra } from '../prax';
 
 const fetchMetadataForSwap = async (swap: SwapRecord): Promise<UnclaimedSwapsWithMetadata> => {
   const assetId1 = getSwapAsset1(swap);
   const assetId2 = getSwapAsset2(swap);
 
   const [{ denomMetadata: asset1Metadata }, { denomMetadata: asset2Metadata }] = await Promise.all([
-    praxClient.service(ViewService).assetMetadataById({ assetId: assetId1 }),
-    praxClient.service(ViewService).assetMetadataById({ assetId: assetId2 }),
+    penumbra.service(ViewService).assetMetadataById({ assetId: assetId1 }),
+    penumbra.service(ViewService).assetMetadataById({ assetId: assetId2 }),
   ]);
 
   return {
@@ -32,7 +32,7 @@ const byHeightDescending = (a: UnclaimedSwapsWithMetadata, b: UnclaimedSwapsWith
   Number(b.swap.outputData?.height) - Number(a.swap.outputData?.height);
 
 export const fetchUnclaimedSwaps = async (): Promise<UnclaimedSwapsWithMetadata[]> => {
-  const responses = await Array.fromAsync(praxClient.service(ViewService).unclaimedSwaps({}));
+  const responses = await Array.fromAsync(penumbra.service(ViewService).unclaimedSwaps({}));
   const unclaimedSwaps = responses.map(getUnclaimedSwaps);
   const unclaimedSwapsWithMetadata = await Promise.all(unclaimedSwaps.map(fetchMetadataForSwap));
 

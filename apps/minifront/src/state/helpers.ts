@@ -27,7 +27,7 @@ import {
 } from '@penumbra-zone/getters/balances-response';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import { PromiseClient } from '@connectrpc/connect';
-import { praxClient } from '../prax';
+import { penumbra } from '../prax';
 
 /**
  * Handles the common use case of planning, building, and broadcasting a
@@ -54,8 +54,8 @@ export const planBuildBroadcast = async (
   toast.onStart();
 
   const rpcMethod = options?.skipAuth
-    ? praxClient.service(ViewService).witnessAndBuild
-    : praxClient.service(ViewService).authorizeAndBuild;
+    ? penumbra.service(ViewService).witnessAndBuild
+    : penumbra.service(ViewService).authorizeAndBuild;
 
   try {
     const transactionPlan = await plan(req);
@@ -90,7 +90,7 @@ export const planBuildBroadcast = async (
 export const plan = async (
   req: PartialMessage<TransactionPlannerRequest>,
 ): Promise<TransactionPlan> => {
-  const { plan } = await praxClient.service(ViewService).transactionPlanner(req);
+  const { plan } = await penumbra.service(ViewService).transactionPlanner(req);
   if (!plan) {
     throw new Error('No plan in planner response');
   }
@@ -131,7 +131,7 @@ const broadcast = async (
   const txId = await getTxId(transaction);
   const txHash = getTxHash(txId);
   onStatusUpdate(undefined);
-  for await (const { status } of praxClient.service(ViewService).broadcastTransaction({
+  for await (const { status } of penumbra.service(ViewService).broadcastTransaction({
     awaitDetection,
     transaction,
   })) {

@@ -11,7 +11,7 @@ vi.mock('./src/prax', async () => {
   const { createPromiseClient } =
     await vi.importActual<typeof import('@connectrpc/connect')>('@connectrpc/connect');
   return {
-    praxClient: {
+    penumbra: {
       service: vi.fn(s => createPromiseClient(s, { unary: vi.fn(), stream: vi.fn() })),
     },
   };

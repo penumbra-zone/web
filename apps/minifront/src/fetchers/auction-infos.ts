@@ -6,7 +6,7 @@ import { ViewService } from '@penumbra-zone/protobuf';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
 import { getInputAssetId, getOutputAssetId } from '@penumbra-zone/getters/dutch-auction';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
-import { praxClient } from '../prax';
+import { penumbra } from '../prax';
 
 export interface AuctionInfo {
   id: AuctionId;
@@ -22,7 +22,7 @@ export const getAuctionInfos = async function* ({
 }: {
   queryLatestState?: boolean;
 } = {}): AsyncGenerator<AuctionInfo> {
-  for await (const response of praxClient
+  for await (const response of penumbra
     .service(ViewService)
     .auctions({ queryLatestState, includeInactive: true })) {
     if (!response.auction || !response.id || !response.noteRecord?.addressIndex) {
@@ -35,10 +35,10 @@ export const getAuctionInfos = async function* ({
     const outputAssetId = getOutputAssetId.optional()(auction);
 
     const inputMetadataPromise = inputAssetId
-      ? praxClient.service(ViewService).assetMetadataById({ assetId: inputAssetId })
+      ? penumbra.service(ViewService).assetMetadataById({ assetId: inputAssetId })
       : undefined;
     const outputMetadataPromise = outputAssetId
-      ? praxClient.service(ViewService).assetMetadataById({ assetId: outputAssetId })
+      ? penumbra.service(ViewService).assetMetadataById({ assetId: outputAssetId })
       : undefined;
 
     const [inputMetadata, outputMetadata] = await Promise.all([

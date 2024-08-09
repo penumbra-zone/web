@@ -25,7 +25,7 @@ import { BLOCKS_PER_HOUR } from './constants';
 import { createZQuery, ZQueryState } from '@penumbra-zone/zquery';
 import { getChains } from '../fetchers/registry';
 import { bech32ChainIds } from './shared';
-import { praxClient } from '../prax';
+import { penumbra } from '../prax';
 import {
   IbcChannelService,
   IbcClientService,
@@ -142,7 +142,7 @@ const clientStateForChannel = async (channel?: Channel): Promise<ClientState> =>
     throw new Error('no connectionId in channel returned from ibcChannelClient request');
   }
 
-  const { connection } = await praxClient.service(IbcConnectionService).connection({
+  const { connection } = await penumbra.service(IbcConnectionService).connection({
     connectionId,
   });
   const clientId = connection?.clientId;
@@ -150,7 +150,7 @@ const clientStateForChannel = async (channel?: Channel): Promise<ClientState> =>
     throw new Error('no clientId ConnectionEnd returned from ibcConnectionClient request');
   }
 
-  const { clientState: anyClientState } = await praxClient
+  const { clientState: anyClientState } = await penumbra
     .service(IbcClientService)
     .clientState({ clientId: clientId });
   if (!anyClientState) {
@@ -170,7 +170,7 @@ const clientStateForChannel = async (channel?: Channel): Promise<ClientState> =>
 const getTimeout = async (
   ibcChannelId: string,
 ): Promise<{ timeoutTime: bigint; timeoutHeight: Height }> => {
-  const { channel } = await praxClient.service(IbcChannelService).channel({
+  const { channel } = await penumbra.service(IbcChannelService).channel({
     portId: 'transfer',
     channelId: ibcChannelId,
   });
@@ -206,7 +206,7 @@ const getPlanRequest = async ({
   }
 
   const addressIndex = getAddressIndex(selection.accountAddress);
-  const { address: returnAddress } = await praxClient
+  const { address: returnAddress } = await penumbra
     .service(ViewService)
     .ephemeralAddress({ addressIndex });
   if (!returnAddress) {

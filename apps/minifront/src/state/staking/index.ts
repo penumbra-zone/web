@@ -37,7 +37,7 @@ import { getValueView as getValueViewFromDelegationsByAddressIndexResponse } fro
 import { getValueView as getValueViewFromUnbondingTokensByAddressIndexResponse } from '@penumbra-zone/getters/unbonding-tokens-by-address-index-response';
 import { getStakingTokenMetadata } from '../../fetchers/registry';
 import { zeroValueView } from '../../utils/zero-value-view';
-import { praxClient } from '../../prax';
+import { penumbra } from '../../prax';
 
 interface UnbondingTokensForAccount {
   claimable: {
@@ -233,7 +233,7 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
     };
     const throttledFlushToState = throttle(flushToState, THROTTLE_MS, { trailing: true });
 
-    for await (const response of praxClient.service(ViewService).delegationsByAddressIndex({
+    for await (const response of penumbra.service(ViewService).delegationsByAddressIndex({
       addressIndex,
       filter: DelegationsByAddressIndexRequest_Filter.ALL,
     })) {
@@ -276,7 +276,7 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
     });
 
     const responses = await Array.fromAsync(
-      praxClient.service(ViewService).unbondingTokensByAddressIndex({ addressIndex }),
+      penumbra.service(ViewService).unbondingTokensByAddressIndex({ addressIndex }),
     );
     const stakingTokenMetadata = await getStakingTokenMetadata();
 

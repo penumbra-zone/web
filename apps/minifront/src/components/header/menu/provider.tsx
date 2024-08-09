@@ -4,20 +4,20 @@ import { getChainId } from '../../../fetchers/chain-id';
 import { useEffect, useState } from 'react';
 import { itemStyle, triggerStyle, dropdownStyle, linkStyle, viewportStyle } from './nav-style';
 import { Link1Icon, LinkBreak1Icon } from '@radix-ui/react-icons';
-import { praxClient } from '../../../prax';
+import { penumbra } from '../../../prax';
 
 export const ProviderMenu = () => {
   const [chainId, setChainId] = useState<string | undefined>();
 
   const [manifestIconUnavailable, setManifestIconUnavailable] = useState<boolean>();
 
-  const disconnect = () => void praxClient.disconnect().then(() => window.location.reload());
+  const disconnect = () => void penumbra.disconnect().then(() => window.location.reload());
 
   useEffect(() => {
     void getChainId().then(setChainId);
   }, []);
 
-  if (!praxClient.manifest) {
+  if (!penumbra.manifest) {
     return null;
   }
 
@@ -34,12 +34,12 @@ export const ProviderMenu = () => {
           {manifestIconUnavailable ? (
             <Link1Icon className='text-teal-500' />
           ) : (
-            praxClient.manifest.icons['128'] && (
+            penumbra.manifest.icons['128'] && (
               <img
                 id='provider-icon'
                 className={cn('w-[1.5em]', 'max-w-none', 'h-[1.5em]')}
-                src={String(new URL(praxClient.manifest.icons['128'], praxClient.origin))}
-                alt={`${praxClient.manifest.name} Icon`}
+                src={String(new URL(penumbra.manifest.icons['128'], penumbra.origin))}
+                alt={`${penumbra.manifest.name} Icon`}
                 onError={() => setManifestIconUnavailable(true)}
               />
             )
@@ -52,9 +52,9 @@ export const ProviderMenu = () => {
               <NavigationMenu.Link className={cn(...linkStyle, 'p-0', 'leading-normal')}>
                 <div className='ml-4 text-muted-foreground'>
                   <span className='font-headline text-muted'>
-                    {praxClient.manifest.name} {praxClient.manifest.version}
+                    {penumbra.manifest.name} {penumbra.manifest.version}
                   </span>
-                  <p>{praxClient.manifest.description}</p>
+                  <p>{penumbra.manifest.description}</p>
                 </div>
               </NavigationMenu.Link>
             </NavigationMenu.Item>

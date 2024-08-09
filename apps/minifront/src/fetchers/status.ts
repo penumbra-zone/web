@@ -1,8 +1,8 @@
 import { ViewService } from '@penumbra-zone/protobuf';
-import { praxClient } from '../prax';
+import { penumbra } from '../prax';
 
 const getInitialStatus = () =>
-  praxClient
+  penumbra
     .service(ViewService)
     .status({})
     .then(status => ({
@@ -19,7 +19,7 @@ export async function* getStatusStream(): AsyncGenerator<{
   // Therefore, we need to do a unary request to start us off.
   yield await getInitialStatus();
 
-  for await (const result of praxClient.service(ViewService).statusStream({})) {
+  for await (const result of penumbra.service(ViewService).statusStream({})) {
     yield {
       fullSyncHeight: result.fullSyncHeight,
       latestKnownBlockHeight: result.latestKnownBlockHeight,

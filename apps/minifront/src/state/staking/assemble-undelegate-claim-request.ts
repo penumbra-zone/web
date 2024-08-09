@@ -10,18 +10,18 @@ import {
   getMetadata,
 } from '@penumbra-zone/getters/value-view';
 import { getUnbondingStartHeight } from '@penumbra-zone/types/assets';
-import { praxClient } from '../../prax';
+import { penumbra } from '../../prax';
 import { SctService, StakeService, ViewService } from '@penumbra-zone/protobuf';
 
 const getUndelegateClaimPlannerRequest =
   (endEpochIndex: bigint) => async (unbondingToken: ValueView) => {
     const unbondingStartHeight = getUnbondingStartHeight(getMetadata(unbondingToken));
     const identityKey = getValidatorIdentityKeyFromValueView(unbondingToken);
-    const { epoch: startEpoch } = await praxClient
+    const { epoch: startEpoch } = await penumbra
       .service(SctService)
       .epochByHeight({ height: unbondingStartHeight });
 
-    const { penalty } = await praxClient.service(StakeService).validatorPenalty({
+    const { penalty } = await penumbra.service(StakeService).validatorPenalty({
       startEpochIndex: startEpoch?.index,
       endEpochIndex,
       identityKey,
@@ -42,8 +42,8 @@ export const assembleUndelegateClaimRequest = async ({
   account: number;
   unbondingTokens: ValueView[];
 }) => {
-  const { fullSyncHeight } = await praxClient.service(ViewService).status({});
-  const { epoch } = await praxClient.service(SctService).epochByHeight({ height: fullSyncHeight });
+  const { fullSyncHeight } = await penumbra.service(ViewService).status({});
+  const { epoch } = await penumbra.service(SctService).epochByHeight({ height: fullSyncHeight });
   const endEpochIndex = epoch?.index;
   if (!endEpochIndex) {
     return;

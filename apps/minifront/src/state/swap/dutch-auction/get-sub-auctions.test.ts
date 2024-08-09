@@ -13,7 +13,7 @@ const hoisted = vi.hoisted(() => ({
 }));
 
 vi.mock('../../../prax', () => ({
-  praxClient: {
+  penumbra: {
     service: vi.fn(() => hoisted.mockViewClient),
   },
 }));

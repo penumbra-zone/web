@@ -14,7 +14,7 @@ import { splitLoHi } from '@penumbra-zone/types/lo-hi';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb.js';
 import { BigNumber } from 'bignumber.js';
 import { SwapSlice } from '..';
-import { praxClient } from '../../../prax';
+import { penumbra } from '../../../prax';
 
 /**
  * The start height of an auction must be, at minimum, the current block height.
@@ -92,7 +92,7 @@ export const getSubAuctions = async ({
     ),
   );
 
-  const { fullSyncHeight } = await praxClient.service(ViewService).status({});
+  const { fullSyncHeight } = await penumbra.service(ViewService).status({});
 
   const overallStartHeight = getStartHeight(fullSyncHeight);
 
