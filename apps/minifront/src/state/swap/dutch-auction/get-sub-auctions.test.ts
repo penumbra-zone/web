@@ -6,12 +6,16 @@ import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/nu
 
 const MOCK_START_HEIGHT = vi.hoisted(() => 1234n);
 
-const mockViewClient = vi.hoisted(() => ({
-  status: () => Promise.resolve({ fullSyncHeight: MOCK_START_HEIGHT }),
+const hoisted = vi.hoisted(() => ({
+  mockViewClient: {
+    status: () => Promise.resolve({ fullSyncHeight: MOCK_START_HEIGHT }),
+  },
 }));
 
-vi.mock('../../../clients', () => ({
-  viewClient: mockViewClient,
+vi.mock('../../../prax', () => ({
+  penumbra: {
+    service: vi.fn(() => hoisted.mockViewClient),
+  },
 }));
 
 describe('getSubAuctions()', () => {

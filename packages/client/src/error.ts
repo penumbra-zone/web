@@ -1,6 +1,8 @@
 export enum PenumbraRequestFailure {
   Denied = 'Denied',
   NeedsLogin = 'NeedsLogin',
+  BadResponse = 'BadResponse',
+  NotHandled = 'NotHandled',
 }
 
 export class PenumbraProviderNotAvailableError extends Error {

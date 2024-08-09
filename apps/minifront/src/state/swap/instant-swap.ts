@@ -15,7 +15,7 @@ import {
   SwapExecution,
   SwapExecution_Trace,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
-import { viewClient } from '../../clients';
+import { ViewService } from '@penumbra-zone/protobuf';
 import {
   getAssetIdFromValueView,
   getDisplayDenomExponentFromValueView,
@@ -32,6 +32,7 @@ import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { SwapSlice } from '.';
 import { sendSimulateTradeRequest } from './helpers';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+import { penumbra } from '../../prax';
 
 const getMetadataByAssetId = async (
   traces: SwapExecution_Trace[] = [],
@@ -44,7 +45,9 @@ const getMetadataByAssetId = async (
         return;
       }
 
-      const { denomMetadata } = await viewClient.assetMetadataById({ assetId: value.assetId });
+      const { denomMetadata } = await penumbra
+        .service(ViewService)
+        .assetMetadataById({ assetId: value.assetId });
 
       if (denomMetadata) {
         map[bech32mAssetId(value.assetId)] = denomMetadata;

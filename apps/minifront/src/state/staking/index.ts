@@ -32,11 +32,12 @@ import {
 } from '@penumbra-zone/types/staking';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
 import { splitLoHi, toBaseUnit } from '@penumbra-zone/types/lo-hi';
-import { viewClient } from '../../clients';
+import { ViewService } from '@penumbra-zone/protobuf';
 import { getValueView as getValueViewFromDelegationsByAddressIndexResponse } from '@penumbra-zone/getters/delegations-by-address-index-response';
 import { getValueView as getValueViewFromUnbondingTokensByAddressIndexResponse } from '@penumbra-zone/getters/unbonding-tokens-by-address-index-response';
 import { getStakingTokenMetadata } from '../../fetchers/registry';
 import { zeroValueView } from '../../utils/zero-value-view';
+import { penumbra } from '../../prax';
 
 interface UnbondingTokensForAccount {
   claimable: {
@@ -232,7 +233,7 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
     };
     const throttledFlushToState = throttle(flushToState, THROTTLE_MS, { trailing: true });
 
-    for await (const response of viewClient.delegationsByAddressIndex({
+    for await (const response of penumbra.service(ViewService).delegationsByAddressIndex({
       addressIndex,
       filter: DelegationsByAddressIndexRequest_Filter.ALL,
     })) {
@@ -275,7 +276,7 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
     });
 
     const responses = await Array.fromAsync(
-      viewClient.unbondingTokensByAddressIndex({ addressIndex }),
+      penumbra.service(ViewService).unbondingTokensByAddressIndex({ addressIndex }),
     );
     const stakingTokenMetadata = await getStakingTokenMetadata();
 

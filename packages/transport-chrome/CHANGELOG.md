@@ -1,5 +1,11 @@
 # @penumbra-zone/transport-chrome
 
+## 8.0.1
+
+### Patch Changes
+
+- df2ac99: Use newer client package for minifront. Fix disconnect in transport-chrome
+
 ## 8.0.0
 
 ### Minor Changes
