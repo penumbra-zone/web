@@ -3,7 +3,7 @@ import * as NavigationMenu from '@radix-ui/react-navigation-menu';
 import { getChainId } from '../../../fetchers/chain-id';
 import { useEffect, useState } from 'react';
 import { itemStyle, triggerStyle, dropdownStyle, linkStyle, viewportStyle } from './nav-style';
-import { Link1Icon, LinkBreak1Icon } from '@radix-ui/react-icons';
+import { LinkBreak1Icon } from '@radix-ui/react-icons';
 import { penumbra } from '../../../prax';
 
 export const ProviderMenu = () => {
