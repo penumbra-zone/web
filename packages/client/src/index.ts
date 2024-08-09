@@ -4,7 +4,7 @@ export * from './event-listener.js';
 
 export { PenumbraClient, createPenumbraClient } from './client.js';
 
-export type { PenumbraManifest } from './manifest.js';
+export type { PenumbraManifestJson, PenumbraManifest } from './manifest.js';
 export type { PenumbraProvider } from './provider.js';
 export { PenumbraState } from './state.js';
 export { PenumbraSymbol } from './symbol.js';

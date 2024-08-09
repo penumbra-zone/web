@@ -17,16 +17,6 @@ import {
 import { PenumbraManifest } from './manifest.js';
 import { PenumbraProvider } from './provider.js';
 import { PenumbraState } from './state.js';
-import { PenumbraProviderNotAvailableError } from './error.js';
-
-const isPromiseClientOfServiceType = <T extends ServiceType>(
-  s: T,
-  pc?: PromiseClient<ServiceType>,
-): pc is PromiseClient<T> => {
-  const expectMethods = Object.keys(s.methods);
-  const actualMethods = Object.keys(pc ?? {});
-  return expectMethods.every(method => actualMethods.includes(method));
-};
 
 const isLegacyProvider = (
   provider: PenumbraProvider,
@@ -117,7 +107,7 @@ export class PenumbraClient {
 
   // instance features
 
-  private readonly serviceClients: Map<ServiceType['typeName'], PromiseClient<ServiceType>>;
+  private readonly serviceClients: Map<ServiceType, PromiseClient<ServiceType>>;
   private readonly stateListeners: Set<(detail: PenumbraEventDetail<'penumbrastate'>) => void>;
   private readonly providerEventListener: PenumbraEventListener;
 
@@ -154,10 +144,12 @@ export class PenumbraClient {
    * A client may only be attached once. A client must be attached to connect.
    *
    * Presence of the public `origin` field can confirm a client instance is
-   * attached.
+   * attached to a provider, and presence of the public `manifest` field can
+   * confirm the attached provider served an appropriate manifest. You may await
+   * manifest confirmation by awaiting the return of `attach`.
    *
-   * If called repeatedly with a matching provider, `attach` is a no-op. If
-   * called repeatedly with a different provider, `attach` will throw.
+   * If called again with a matching provider, `attach` is a no-op. If called
+   * again with a different provider, `attach` will throw.
    */
   public async attach(providerOrigin: string): Promise<PenumbraManifest> {
     if (!this.attached) {
@@ -180,14 +172,16 @@ export class PenumbraClient {
     return this.attached.confirmManifest;
   }
 
-  /** Attempt to connect to the attached provider, or attach and then connect to
-   * the provider specified by parameter.
-   *
-   * Presence of the public `connected` field can confirm the client is
-   * connected or can connect.  The public `transport` field can confirm the
-   * client possesses an active connection.
+  /** Attempt to connect to the attached provider. If this client is unattached,
+   * a provider may be specified at this moment.
    *
    * May reject with an enumerated `PenumbraRequestFailure`.
+   *
+   * The public `connected` field will report the provider's connected state, or
+   * `undefined` if this client is not attached to a provider. The public
+   * `transport` field can confirm the client possesses an active connection.
+   *
+   * If called again while already connected, `connect` is a no-op.
    */
   public async connect(providerOrigin?: string): Promise<void> {
     if (providerOrigin) {
@@ -197,7 +191,7 @@ export class PenumbraClient {
     await this.connection.port;
   }
 
-  /** Call `disconnect` any the associated provider to release connection
+  /** Call `disconnect` on the associated provider to release connection
    * approval, and destroy any present connection. */
   public async disconnect(): Promise<void> {
     const request = this.attached?.provider.disconnect();
@@ -206,30 +200,20 @@ export class PenumbraClient {
   }
 
   /** Return a `PromiseClient<T>` for some `T extends ServiceType`, using this
-   * client's internal `Transport`. If you call this method before this client
-   * is attached, this method will throw.
+   * client's internal `Transport`.
    *
-   * You should also prefer to call this method *after* this client's connection
-   * has succeeded.
-   *
-   * If you call this method before connection success is resolved, a connection
-   * will be initiated if necessary but will not be awaited (as this is a
-   * synchronous method). If a connection initated this way is rejected, or does
-   * not resolve within the `defaultTimeoutMs` of this client's
-   * `options.transport`, requests made with the returned `PromiseClient<T>`
+   * If you call this method while this client is not `Connected`, this method
    * will throw.
    */
   public service<T extends ServiceType>(service: T): PromiseClient<T> {
-    const serviceClient =
-      this.serviceClients.get(service.typeName) ??
-      this.serviceClients
-        .set(service.typeName, createPromiseClient(service, this.assertConnection().transport))
-        .get(service.typeName);
-    if (!isPromiseClientOfServiceType(service, serviceClient)) {
-      throw new Error(`Detected invalid PromiseClient for ${service.typeName}`, {
-        cause: { service, client: serviceClient },
-      });
+    // TODO: find a way to remove this type cast
+    let serviceClient = this.serviceClients.get(service) as PromiseClient<T> | undefined;
+
+    if (!serviceClient) {
+      serviceClient = createPromiseClient(service, this.assertConnected().transport);
+      this.serviceClients.set(service, serviceClient);
     }
+
     return serviceClient;
   }
 
@@ -294,54 +278,60 @@ export class PenumbraClient {
     return this.attached?.manifest;
   }
 
-  /** Assert client is attached. */
-  private assertAttached() {
-    if (!this.attached?.origin) {
-      throw new PenumbraProviderNotAvailableError(this.attached?.origin);
-    }
-    assertProviderRecord(this.attached.origin);
-    return this.attached;
+  // private methods
+
+  /** Assert an attached provider. */
+  private assertAttached(): PenumbraClientAttachment {
+    assertProviderRecord(this.attached?.origin);
+    return this.attached!;
   }
 
-  /** Assert an active connection, and potentially init this client's transport. */
-  private assertConnection() {
-    assertProviderConnected(this.assertAttached().origin);
+  /** Assert a connected provider, and potentially init this client's transport. */
+  private assertConnected(): PenumbraClientConnection {
+    assertProviderConnected(this.attached?.origin);
     this.connection ??= this.createConnection();
     return this.connection;
   }
 
-  /** Create attachment to a specific provider. */
+  /** Create attachment to a specific provider, and return without waiting. */
   private createAttached(providerOrigin: string): PenumbraClientAttachment {
     const attached: PenumbraClientAttachment = {
+      confirmManifest: getPenumbraManifest(providerOrigin),
       manifest: undefined,
       origin: providerOrigin,
       provider: assertProviderRecord(providerOrigin),
-      confirmManifest: getPenumbraManifest(providerOrigin),
     };
     void attached.confirmManifest.then(manifest => (attached.manifest = manifest));
     return attached;
   }
 
-  /** Connect to the attached provider. */
-  private createConnection() {
+  /** Request a connection to the attached provider, and return the pending
+   * `MessagePort` and created `Transport` without waiting. */
+  private createConnection(): PenumbraClientConnection {
     const { confirmManifest, provider } = this.assertAttached();
-    const request = confirmManifest.then(async () => {
+
+    // requestPort will resolve to the provider's message port if connection
+    // is successful. this promise is not awaited so that this method may be
+    // called synchronously.
+    const requestPort: Promise<MessagePort> = confirmManifest.then(async () => {
       if (isLegacyProvider(provider)) {
         await provider.request();
       }
       return provider.connect();
     });
-    const connection = {
+
+    const connection: PenumbraClientConnection = {
+      port: requestPort,
       transport: createChannelTransport({
         ...this.options.transportOptions,
-        getPort: () => request,
+        getPort: () => requestPort,
       }),
-      port: request,
     };
+
     return connection;
   }
 
-  /** Destroy any active connection and clients. */
+  /** Destroy any active connection and discard existing clients. */
   private destroyConnection() {
     void this.connection?.port.then(port => {
       port.postMessage(false);
@@ -352,7 +342,9 @@ export class PenumbraClient {
   }
 }
 
+/** Construct a client instance but take no specific action. Will immediately
+ * attach to a specified provider, or remain unconfigured. */
 export const createPenumbraClient = (
-  requireProvider?: string,
+  providerOrigin?: string,
   opt?: Partial<PenumbraClientOptions>,
-) => new PenumbraClient(requireProvider, { ...PenumbraClient.defaultOptions, ...opt });
+) => new PenumbraClient(providerOrigin, { ...PenumbraClient.defaultOptions, ...opt });

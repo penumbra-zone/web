@@ -1,5 +1,5 @@
 import { assertPenumbra, assertProviderManifest, assertProviderRecord } from './assert.js';
-import { PenumbraManifest, isPenumbraManifest } from './manifest.js';
+import { PenumbraManifest, PenumbraManifestJson, isPenumbraManifestJson } from './manifest.js';
 import type { PenumbraProvider } from './provider.js';
 import { PenumbraSymbol } from './symbol.js';
 
@@ -28,10 +28,14 @@ export const getPenumbraManifest = async (
   signal?: AbortSignal,
 ): Promise<PenumbraManifest> => {
   const manifestJson = await assertProviderManifest(penumbraOrigin, signal);
-  if (!isPenumbraManifest(manifestJson)) {
+  if (!isPenumbraManifestJson(manifestJson)) {
     throw new TypeError('Invalid manifest');
   }
-  return manifestJson;
+  const icons = await getManifestIcons(penumbraOrigin, manifestJson, signal);
+  return {
+    ...manifestJson,
+    icons,
+  };
 };
 
 /** Fetch all manifests for all providers available on the page. */
@@ -44,3 +48,26 @@ export const getPenumbraManifests = (
       getPenumbraManifest(providerOrigin, signal),
     ]),
   );
+
+// For use by `getPenumbraManifest`
+const getManifestIcons = async (
+  base: string,
+  mf: PenumbraManifestJson,
+  signal?: AbortSignal,
+): Promise<PenumbraManifest['icons']> => {
+  const getIcons = await Promise.all(
+    Object.entries(mf.icons).map(async ([iconSize, iconPath]) => {
+      if (typeof iconPath !== 'string') {
+        throw new TypeError('Icon path is not a string');
+      }
+      if (Number.isNaN(Number(iconSize))) {
+        throw new TypeError('Icon size is not a numeric string');
+      }
+
+      const res = await fetch(new URL(iconPath, base), { signal });
+      return [`${Number(iconSize)}`, await res.blob()] as const;
+    }),
+  );
+
+  return Object.fromEntries(getIcons);
+};

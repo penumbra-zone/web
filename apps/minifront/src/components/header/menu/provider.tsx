@@ -9,8 +9,6 @@ import { penumbra } from '../../../prax';
 export const ProviderMenu = () => {
   const [chainId, setChainId] = useState<string | undefined>();
 
-  const [manifestIconUnavailable, setManifestIconUnavailable] = useState<boolean>();
-
   const disconnect = () => void penumbra.disconnect().then(() => window.location.reload());
 
   useEffect(() => {
@@ -31,19 +29,12 @@ export const ProviderMenu = () => {
             'h-[42px] flex flex-row gap-2 place-items-center justify-evenly whitespace-nowrap',
           )}
         >
-          {manifestIconUnavailable ? (
-            <Link1Icon className='text-teal-500' />
-          ) : (
-            penumbra.manifest.icons['128'] && (
-              <img
-                id='provider-icon'
-                className={cn('w-[1.5em]', 'max-w-none', 'h-[1.5em]')}
-                src={String(new URL(penumbra.manifest.icons['128'], penumbra.origin))}
-                alt={`${penumbra.manifest.name} Icon`}
-                onError={() => setManifestIconUnavailable(true)}
-              />
-            )
-          )}
+          <img
+            id='provider-icon'
+            className={cn('w-[1.5em]', 'max-w-none', 'h-[1.5em]')}
+            src={URL.createObjectURL(penumbra.manifest.icons['128'])}
+            alt={`${penumbra.manifest['name']} Icon`}
+          />
           {chainId}
         </NavigationMenu.Trigger>
         <NavigationMenu.Content className={cn(...dropdownStyle, 'min-w-60 w-full')}>
@@ -52,9 +43,9 @@ export const ProviderMenu = () => {
               <NavigationMenu.Link className={cn(...linkStyle, 'p-0', 'leading-normal')}>
                 <div className='ml-4 text-muted-foreground'>
                   <span className='font-headline text-muted'>
-                    {penumbra.manifest.name} {penumbra.manifest.version}
+                    {penumbra.manifest['name']} {penumbra.manifest['version']}
                   </span>
-                  <p>{penumbra.manifest.description}</p>
+                  <p>{penumbra.manifest['description']}</p>
                 </div>
               </NavigationMenu.Link>
             </NavigationMenu.Item>
