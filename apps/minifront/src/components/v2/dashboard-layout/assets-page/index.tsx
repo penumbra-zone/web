@@ -37,7 +37,7 @@ export const AssetsPage = () => {
   });
 
   return (
-    <div className='flex flex-col gap-1'>
+    <>
       {balancesByAccount?.map(account => (
         <Table key={account.account} layout='fixed' title={<TableTitle account={account} />}>
           <Table.Thead>
@@ -71,6 +71,6 @@ export const AssetsPage = () => {
           </Table.Tbody>
         </Table>
       ))}
-    </div>
+    </>
   );
 };

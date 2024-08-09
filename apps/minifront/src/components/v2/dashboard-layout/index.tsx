@@ -30,16 +30,14 @@ export const DashboardLayout = () => {
 
       <Grid tablet={8} desktop={6} xl={4}>
         <Card title={CARD_TITLE_BY_PATH[v2PathPrefix(pagePath)]}>
-          <div className='flex flex-col gap-4'>
-            <Tabs
-              value={v2PathPrefix(pagePath)}
-              onChange={value => navigate(value)}
-              options={TABS_OPTIONS}
-              actionType='accent'
-            />
+          <Tabs
+            value={v2PathPrefix(pagePath)}
+            onChange={value => navigate(value)}
+            options={TABS_OPTIONS}
+            actionType='accent'
+          />
 
-            <Outlet />
-          </div>
+          <Outlet />
         </Card>
       </Grid>
 

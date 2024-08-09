@@ -1,7 +1,5 @@
 import { css, DefaultTheme } from 'styled-components';
 
-export type ActionType = 'default' | 'accent' | 'unshield' | 'destructive';
-
 export type Priority = 'primary' | 'secondary';
 
 /** Shared styles to use for any `<button />` */
