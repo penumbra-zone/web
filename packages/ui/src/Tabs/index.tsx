@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useId } from 'react';
 import { buttonBase, overlays } from '../utils/button';
 import * as RadixTabs from '@radix-ui/react-tabs';
+import { ActionType } from '../utils/ActionType';
 
 const Root = styled.div`
   height: 52px;
@@ -14,22 +15,22 @@ const Root = styled.div`
   box-sizing: border-box;
 `;
 
-type ActionType = 'default' | 'accent' | 'unshield';
+type LimitedActionType = Exclude<ActionType, 'destructive'>;
 
-const outlineColorByActionType: Record<ActionType, keyof DefaultTheme['color']['action']> = {
+const outlineColorByActionType: Record<LimitedActionType, keyof DefaultTheme['color']['action']> = {
   default: 'neutralFocusOutline',
   accent: 'primaryFocusOutline',
   unshield: 'unshieldFocusOutline',
 };
 
-const gradientColorByActionType: Record<ActionType, 'neutral' | 'primary' | 'unshield'> = {
+const gradientColorByActionType: Record<LimitedActionType, 'neutral' | 'primary' | 'unshield'> = {
   default: 'neutral',
   accent: 'primary',
   unshield: 'unshield',
 };
 
 const Tab = styled.button<{
-  $actionType: ActionType;
+  $actionType: LimitedActionType;
   $getFocusOutlineColor: (theme: DefaultTheme) => string;
   $getBorderRadius: (theme: DefaultTheme) => string;
 }>`
@@ -65,7 +66,7 @@ const Tab = styled.button<{
 `;
 
 const THIRTY_FIVE_PERCENT_OPACITY_IN_HEX = '59';
-const SelectedIndicator = styled(motion.div)<{ $actionType: ActionType }>`
+const SelectedIndicator = styled(motion.div)<{ $actionType: LimitedActionType }>`
   background: radial-gradient(
     at 50% 100%,
     ${props =>
@@ -91,7 +92,7 @@ export interface TabsProps {
   value: string;
   onChange: (value: string) => void;
   options: TabsTab[];
-  actionType?: ActionType;
+  actionType?: LimitedActionType;
 }
 
 /**

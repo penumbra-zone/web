@@ -5,6 +5,9 @@ import { PagePath } from '../metadata/paths';
 import { DashboardLayout } from './dashboard-layout';
 import { AssetsPage } from './dashboard-layout/assets-page';
 import { TransactionsPage } from './dashboard-layout/transactions-page';
+import { TransferLayout } from './transfer-layout';
+import { SendPage } from './transfer-layout/send-page';
+import { ReceivePage } from './transfer-layout/receive-page';
 
 /** @todo: Delete this helper once we switch over to the v2 layout. */
 const temporarilyPrefixPathsWithV2 = (routes: RouteObject[]): RouteObject[] =>
@@ -44,6 +47,20 @@ export const routes: RouteObject[] = temporarilyPrefixPathsWithV2([
           {
             path: PagePath.TRANSACTIONS,
             element: <TransactionsPage />,
+          },
+        ],
+      },
+      {
+        path: PagePath.SEND,
+        element: <TransferLayout />,
+        children: [
+          {
+            index: true,
+            element: <SendPage />,
+          },
+          {
+            path: PagePath.RECEIVE,
+            element: <ReceivePage />,
           },
         ],
       },

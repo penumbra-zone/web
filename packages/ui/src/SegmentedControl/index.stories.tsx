@@ -29,13 +29,14 @@ export const Basic: Story = {
   args: {
     options: OPTIONS,
     value: 'one',
+    disabled: false,
   },
 
-  render: function Render({ value, options }) {
+  render: function Render(props) {
     const [, updateArgs] = useArgs();
 
     const onChange = (value: { toString: () => string }) => updateArgs({ value });
 
-    return <SegmentedControl value={value} options={options} onChange={onChange} />;
+    return <SegmentedControl {...props} onChange={onChange} />;
   },
 };
