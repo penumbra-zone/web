@@ -9,9 +9,9 @@ import { assertProviderConnected, assertProviderRecord } from './assert.js';
 import { createPenumbraStateEvent, isPenumbraStateEvent, PenumbraEventDetail } from './event.js';
 import { PenumbraEventListener } from './event-listener.js';
 import {
-  getAllPenumbraManifests,
   getPenumbraGlobalUnsafe,
   getPenumbraManifest,
+  getPenumbraManifests,
   getPenumbraUnsafe,
 } from './get.js';
 import { PenumbraManifest } from './manifest.js';
@@ -93,8 +93,8 @@ export class PenumbraClient {
   }
 
   /** Return a record of all present providers, and fetch their manifests. */
-  public static getAllProviderManifests(): Record<string, Promise<PenumbraManifest>> {
-    return getPenumbraGlobalUnsafe() ? getAllPenumbraManifests() : {};
+  public static getProviderManifests(): Record<string, Promise<PenumbraManifest>> {
+    return getPenumbraGlobalUnsafe() ? getPenumbraManifests() : {};
   }
 
   /** Fetch manifest of a specific provider, or return `undefined` if the

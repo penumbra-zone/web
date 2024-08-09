@@ -35,7 +35,7 @@ export const getPenumbraManifest = async (
 };
 
 /** Fetch all manifests for all providers available on the page. */
-export const getAllPenumbraManifests = (
+export const getPenumbraManifests = (
   signal?: AbortSignal,
 ): Record<string, Promise<PenumbraManifest>> =>
   Object.fromEntries(
