@@ -8,6 +8,8 @@ import { LucideIcon } from 'lucide-react';
 import { Density } from '../types/Density';
 import { useDensity } from '../hooks/useDensity';
 import { ActionType } from '../utils/ActionType';
+import { MotionProp } from '../utils/MotionProp';
+import { motion } from 'framer-motion';
 
 const iconOnlyAdornment = css<StyledButtonProps>`
   border-radius: ${props => props.theme.borderRadius.full};
@@ -57,7 +59,7 @@ interface StyledButtonProps {
   $getBorderRadius: (theme: DefaultTheme) => string;
 }
 
-const StyledButton = styled.button<StyledButtonProps>`
+const StyledButton = styled(motion.button)<StyledButtonProps>`
   ${buttonBase}
   ${button}
 
@@ -157,7 +159,7 @@ interface RegularProps {
   icon?: LucideIcon;
 }
 
-export type ButtonProps = BaseButtonProps & (IconOnlyProps | RegularProps);
+export type ButtonProps = BaseButtonProps & (IconOnlyProps | RegularProps) & MotionProp;
 
 /**
  * A component for all your button needs!
@@ -179,6 +181,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       actionType = 'default',
       type = 'button',
       priority = 'primary',
+      motion,
     },
     ref,
   ) => {
@@ -200,6 +203,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             ? theme.borderRadius.sm
             : theme.borderRadius.full
         }
+        {...motion}
       >
         {IconComponent && (
           <IconComponent size={density === 'sparse' && iconOnly === true ? 24 : 16} />

@@ -21,6 +21,7 @@
     "./lib/utils": "./lib/utils.ts",
     "./postcss.config.js": "./postcss.config.js",
     "./styles/*": "./styles/*",
+    "./hooks/*": "./src/hooks/*/index.ts",
     "./*": "./src/*/index.tsx"
   },
   "dependencies": {

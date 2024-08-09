@@ -1,15 +1,11 @@
 import React, { useState } from 'react';
 import globalsCssUrl from '../styles/globals.css?url';
 import penumbraTheme from './penumbraTheme';
-import { ConditionalWrap } from '../src/utils/ConditionalWrap';
+import { ConditionalWrap } from '../src/ConditionalWrap';
 import { PenumbraUIProvider } from '../src/PenumbraUIProvider';
 import { Density } from '../src/Density';
 import { Tabs } from '../src/Tabs';
 import styled from 'styled-components';
-
-const WhiteTextWrapper = styled.div`
-  color: ${props => props.theme.color.text.primary};
-`;
 
 const Column = styled.div`
   display: flex;
@@ -66,9 +62,7 @@ const preview = {
       return (
         <PenumbraUIProvider>
           <DensityWrapper showDensityControl={tags.includes('density')}>
-            <WhiteTextWrapper>
-              <Story />
-            </WhiteTextWrapper>
+            <Story />
           </DensityWrapper>
         </PenumbraUIProvider>
       );

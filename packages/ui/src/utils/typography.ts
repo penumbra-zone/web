@@ -1,4 +1,4 @@
-import { css } from 'styled-components';
+import { css, DefaultTheme } from 'styled-components';
 
 /**
  * This file contains styles that are used throughout the Penumbra UI library.
@@ -6,8 +6,11 @@ import { css } from 'styled-components';
  * etc.), while others are base styles shared by a number of components.
  */
 
-const base = `
+const base = css<{
+  $color?: (theme: DefaultTheme) => string;
+}>`
   margin: 0;
+  color: ${props => (props.$color ? props.$color(props.theme) : props.theme.color.text.primary)};
 `;
 
 export const h1 = css`
@@ -82,6 +85,15 @@ export const detail = css`
   line-height: ${props => props.theme.lineHeight.textXs};
 `;
 
+export const detailTechnical = css`
+  ${base}
+
+  font-family: ${props => props.theme.font.mono};
+  font-size: ${props => props.theme.fontSize.textXs};
+  font-weight: 400;
+  line-height: ${props => props.theme.lineHeight.textXs};
+`;
+
 export const small = css`
   ${base}
 
@@ -137,6 +149,8 @@ export const xxl = css`
 `;
 
 export const button = css`
+  ${base}
+
   font-family: ${props => props.theme.font.default};
   font-size: ${props => props.theme.fontSize.textBase};
   font-weight: 500;

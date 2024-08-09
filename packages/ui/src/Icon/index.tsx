@@ -1,5 +1,6 @@
 import { LucideIcon } from 'lucide-react';
 import { ComponentProps } from 'react';
+import { DefaultTheme, useTheme } from 'styled-components';
 
 export type IconSize = 'sm' | 'md' | 'lg';
 
@@ -20,10 +21,11 @@ export interface IconProps {
    */
   size: IconSize;
   /**
-   * The CSS color to render the icon with. If left undefined, will default to
-   * the parent's text color (`currentColor` in SVG terms).
+   * A function that takes the `theme` object, and returns a CSS color to render
+   * the icon with. If left undefined, will default to the parent's text color
+   * (`currentColor` in SVG terms).
    */
-  color?: string;
+  color?: (theme: DefaultTheme) => string;
 }
 
 const PROPS_BY_SIZE: Record<IconSize, ComponentProps<LucideIcon>> = {
@@ -48,9 +50,16 @@ const PROPS_BY_SIZE: Record<IconSize, ComponentProps<LucideIcon>> = {
  * ecosystem.
  *
  * ```tsx
- * <Icon IconComponent={ArrowRightLeft} size='sm' color={theme.colors.primary.main} />
+ * <Icon
+ *   IconComponent={ArrowRightLeft}
+ *   size='sm'
+ *   color={theme => theme.colors.primary.main}
+ * />
  * ```
  */
-export const Icon = ({ IconComponent, size = 'sm', color }: IconProps) => (
-  <IconComponent absoluteStrokeWidth {...PROPS_BY_SIZE[size]} color={color} />
-);
+export const Icon = ({ IconComponent, size = 'sm', color }: IconProps) => {
+  const theme = useTheme();
+  const resolvedColor = color ? color(theme) : 'currentColor';
+
+  return <IconComponent absoluteStrokeWidth {...PROPS_BY_SIZE[size]} color={resolvedColor} />;
+};

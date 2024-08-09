@@ -7,10 +7,7 @@ export const getBalanceView = createGetter(
   (balancesResponse?: BalancesResponse) => balancesResponse?.balanceView,
 );
 
-export const getAssetIdFromBalancesResponseOptional = getBalanceView
-  .optional()
-  .pipe(getMetadata)
-  .pipe(getAssetId);
+export const getAssetIdFromBalancesResponse = getBalanceView.pipe(getMetadata).pipe(getAssetId);
 
 export const getMetadataFromBalancesResponse = getBalanceView.pipe(getMetadata);
 

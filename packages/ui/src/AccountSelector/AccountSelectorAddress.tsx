@@ -6,6 +6,7 @@ import { Density } from '../types/Density';
 import { CopyToClipboardButton } from '../CopyToClipboardButton';
 import { Shrink0 } from '../utils/Shrink0';
 import { technical, truncate } from '../utils/typography';
+import { useAnimationDeferredValue } from '../hooks/useAnimationDeferredValue';
 
 const Root = styled.div<{ $ephemeral: boolean; $loading: boolean; $density: Density }>`
   border: 1px solid ${props => props.theme.color.other.tonalStroke};
@@ -43,16 +44,17 @@ export const AccountSelectorAddress = ({
   loading,
 }: AccountSelectorAddressProps) => {
   const density = useDensity();
+  const deferredAddress = useAnimationDeferredValue(address);
 
   return (
     <Root $ephemeral={ephemeral} $loading={loading} $density={density}>
       <TextWrapper $density={density}>
-        {address ? bech32mAddress(address) : `penumbra1...`}
+        {deferredAddress ? bech32mAddress(deferredAddress) : `penumbra1...`}
       </TextWrapper>
 
       <Shrink0>
         <CopyToClipboardButton
-          text={address ? bech32mAddress(address) : ''}
+          text={deferredAddress ? bech32mAddress(deferredAddress) : ''}
           disabled={!address || loading}
         />
       </Shrink0>

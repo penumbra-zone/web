@@ -20,6 +20,6 @@ export const Basic: StoryObj<typeof Icon> = {
   args: {
     IconComponent: ArrowRightLeft,
     size: 'sm',
-    color: 'white',
+    color: theme => theme.color.text.primary,
   },
 };

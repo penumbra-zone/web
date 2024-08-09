@@ -46,7 +46,9 @@ export const Basic: Story = {
     value: '',
     disabled: false,
     type: 'text',
-    startAdornment: <Icon IconComponent={BookUser} size='sm' />,
+    startAdornment: (
+      <Icon IconComponent={BookUser} size='sm' color={theme => theme.color.text.primary} />
+    ),
     endAdornment: <SampleButton />,
   },
 
