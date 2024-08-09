@@ -197,9 +197,8 @@ export class PenumbraClient {
     await this.connection.port;
   }
 
-  /** Call `disconnect` on the associated provider to release connection
-   * approval, and destroy any present connection. If there is no present
-   * configuration, returns `undefined`. */
+  /** Call `disconnect` any the associated provider to release connection
+   * approval, and destroy any present connection. */
   public async disconnect(): Promise<void> {
     const request = this.attached?.provider.disconnect();
     this.destroyConnection();

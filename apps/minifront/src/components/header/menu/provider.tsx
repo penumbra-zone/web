@@ -11,7 +11,7 @@ export const ProviderMenu = () => {
 
   const [manifestIconUnavailable, setManifestIconUnavailable] = useState<boolean>();
 
-  const disconnect = () => void praxClient.disconnect()?.then(() => window.location.reload());
+  const disconnect = () => void praxClient.disconnect().then(() => window.location.reload());
 
   useEffect(() => {
     void getChainId().then(setChainId);
