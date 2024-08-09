@@ -2,7 +2,7 @@
 
 This package allows developers to create dApps that connect to Penumbra providers and query the Penumbra blockchain.
 
-You can check this package in action in the [NextJS example repo](https://github.com/penumbra-zone/nextjs-penumbra-client-example) or read the [Architecture Decision Record (ADR-006)](https://github.com/penumbra-zone/web/blob/main/docs/adrs/006-web-apis.md) describing the idea behind this package. 
+You can check this package in action in the [NextJS example repo](https://github.com/penumbra-zone/nextjs-penumbra-client-example) or read the [Architecture Decision Record (ADR-006)](https://github.com/penumbra-zone/web/blob/main/docs/adrs/006-web-apis.md) describing the idea behind this package.
 
 ## Installation
 
