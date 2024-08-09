@@ -54,7 +54,7 @@ export interface PenumbraProvider extends Readonly<PenumbraEventTarget> {
    */
   readonly isConnected: () => boolean;
 
-  /** Synchronously return present injection state. */
+  /** Synchronously return present state. */
   readonly state: () => PenumbraState;
 
   /** Like a standard `EventTarget.addEventListener`, but providers should only
