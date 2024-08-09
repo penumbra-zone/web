@@ -1,5 +1,11 @@
 # @penumbra-zone/ui
 
+## 7.4.1
+
+### Patch Changes
+
+- e6f019e: Fix sidebar font
+
 ## 7.4.0
 
 ### Minor Changes
