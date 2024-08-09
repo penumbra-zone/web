@@ -69,5 +69,5 @@ const getManifestIcons = async (
     }),
   );
 
-  return Object.fromEntries(getIcons);
+  return Object.fromEntries(getIcons) as PenumbraManifest['icons'];
 };
