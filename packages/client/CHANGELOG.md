@@ -1,5 +1,11 @@
 # @penumbra-zone/client
 
+## 18.0.0
+
+### Major Changes
+
+- 88b16a7: adr006 implementation
+
 ## 17.0.0
 
 ### Major Changes
