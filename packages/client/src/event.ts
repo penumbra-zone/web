@@ -6,7 +6,6 @@ export type PenumbraEventDetail<T extends PenumbraEventTypeName> = {
   penumbrastate: {
     origin: string;
     state: PenumbraState;
-    connected: boolean;
   };
 }[T];
 
@@ -19,7 +18,6 @@ export const createPenumbraStateEvent = (penumbraOrigin: string, penumbraState: 
     detail: {
       origin: penumbraOrigin,
       state: penumbraState,
-      connected: penumbraState === PenumbraState.Connected,
     },
   }) satisfies PenumbraEvent<'penumbrastate'>;
 
@@ -41,8 +39,6 @@ export const isPenumbraStateEventDetail = (
   'origin' in detail &&
   typeof detail.origin === 'string' &&
   (!restrictOrigin || detail.origin === restrictOrigin) &&
-  'connected' in detail &&
-  typeof detail.connected === 'boolean' &&
   'state' in detail &&
   typeof detail.state === 'string' &&
   Object.keys(PenumbraState).includes(detail.state);
