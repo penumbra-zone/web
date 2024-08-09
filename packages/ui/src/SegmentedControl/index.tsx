@@ -4,6 +4,7 @@ import { focusOutline, overlays, buttonBase } from '../utils/button';
 import { Density } from '../types/Density';
 import { useDensity } from '../hooks/useDensity';
 import * as RadixRadioGroup from '@radix-ui/react-radio-group';
+import { useDisabled } from '../hooks/useDisabled';
 
 const Root = styled.div`
   display: flex;
@@ -36,6 +37,7 @@ const Segment = styled.button<{
 export interface Option {
   value: string;
   label: string;
+  /** Whether this individual option should be disabled. */
   disabled?: boolean;
 }
 
@@ -43,6 +45,12 @@ export interface SegmentedControlProps {
   value: string;
   onChange: (value: string) => void;
   options: Option[];
+  /**
+   * Whether this entire control should be disabled. Note that single options
+   * can be disabled individually by setting the `disabled` property for that
+   * given option.
+   */
+  disabled?: boolean;
 }
 
 /**
@@ -66,8 +74,9 @@ export interface SegmentedControlProps {
  * />
  * ```
  */
-export const SegmentedControl = ({ value, onChange, options }: SegmentedControlProps) => {
+export const SegmentedControl = ({ value, onChange, options, disabled }: SegmentedControlProps) => {
   const density = useDensity();
+  disabled = useDisabled(disabled);
 
   return (
     <RadixRadioGroup.Root asChild value={value} onValueChange={onChange}>
@@ -80,7 +89,7 @@ export const SegmentedControl = ({ value, onChange, options }: SegmentedControlP
               $getFocusOutlineColor={theme => theme.color.neutral.light}
               $selected={value === option.value}
               $density={density}
-              disabled={option.disabled}
+              disabled={disabled || option.disabled}
             >
               {option.label}
             </Segment>

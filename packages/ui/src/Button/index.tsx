@@ -1,12 +1,13 @@
 import { MouseEventHandler } from 'react';
 import styled, { css, DefaultTheme } from 'styled-components';
 import { asTransientProps } from '../utils/asTransientProps';
-import { Priority, ActionType, focusOutline, overlays, buttonBase } from '../utils/button';
+import { Priority, focusOutline, overlays, buttonBase } from '../utils/button';
 import { getBackgroundColor } from './helpers';
 import { button } from '../utils/typography';
 import { LucideIcon } from 'lucide-react';
 import { Density } from '../types/Density';
 import { useDensity } from '../hooks/useDensity';
+import { ActionType } from '../utils/ActionType';
 
 const iconOnlyAdornment = css<StyledButtonProps>`
   border-radius: ${props => props.theme.borderRadius.full};

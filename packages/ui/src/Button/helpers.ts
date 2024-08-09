@@ -1,5 +1,6 @@
 import { DefaultTheme } from 'styled-components';
-import { Priority, ActionType } from '../utils/button';
+import { Priority } from '../utils/button';
+import { ActionType } from '../utils/ActionType';
 
 export const getBackgroundColor = (
   actionType: ActionType,
