@@ -78,11 +78,11 @@ These steps are evident above.
 
 ## `PenumbraProvider` interface
 
-Any user may have one or multiple tools present that independently offer some kind of Penumbra service. These independent software are called "providers".
+Any user may have one or multiple tools present that independently offer some kind of Penumbra service. These independent software are called "providers". For example, Prax browser extension is a provider.
 
 You can interact with providers directly, but it is recommended to use `PenumbraClient`.
 
-Providers should identify themselves by origin URI, typically a chrome extension URI, and expose a simple `PenumbraProvider` API to initate connection.
+Providers should identify themselves by origin URI, typically a chrome extension URI, and expose a simple `PenumbraProvider` API to initiate connection.
 
 Available providers may be discovered by a record on the document at `window[Symbol.for('penumbra')]`, of the type `Record<string, PenumbraProvider>` where the key is a URI origin at which the provider's manifest is hosted.
 
@@ -129,15 +129,17 @@ PenumbraClient static methods will allow you to
 
 If you're developing a dapp using penumbra, you should likely:
 
-- gate penumbra features, if no providers are installed
 - display a button to initiate connection, if no providers are connected
 - display a modal choice, if multiple providers are present
+- gate penumbra features, if no providers are installed
 
-When you've selected a provider, you can provide its origin URI to `createPenumbraClient` or `new PenumbraClient`. This will create a client attached to that provider, and you can then:
+When you've selected a provider, you can provide its origin URI to `createPenumbraClient`, or `new PenumbraClient`. This will create a client attached to that provider, and you can then:
 
 - request permission to connect and create an active connection with `connect`
 - access the provider's services with `service` and a `ServiceType` parameter
 - release your permissions with `disconnect`
+
+As an alternative, you can create an unconfigured client with empty state by calling `createPenumbraClient` with no arguments and then provide the origin URI to the `connect` method.
 
 ### Static features
 
