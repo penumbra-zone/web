@@ -17,10 +17,14 @@
  *
  * @see https://web.archive.org/web/20120606044635/http://supercollider.dk/2010/01/calculating-chrome-extension-id-from-your-private-key-233
  */
-export type PenumbraManifest = Partial<chrome.runtime.ManifestV3> &
+export type PenumbraManifestJson = Partial<chrome.runtime.ManifestV3> &
   Required<Pick<chrome.runtime.ManifestV3, 'name' | 'version' | 'description' | 'icons'>>;
 
-export const isPenumbraManifest = (mf: unknown): mf is PenumbraManifest =>
+export type PenumbraManifest = Omit<PenumbraManifestJson, 'icons'> & {
+  ['icons']: { '128': Blob } & Record<`${number}`, Blob>;
+};
+
+export const isPenumbraManifestJson = (mf: unknown): mf is PenumbraManifestJson =>
   mf !== null &&
   typeof mf === 'object' &&
   'name' in mf &&

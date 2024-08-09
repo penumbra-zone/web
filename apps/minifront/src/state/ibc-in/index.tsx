@@ -14,13 +14,14 @@ import { getChainId } from '../../fetchers/chain-id';
 import { augmentToAsset, fromDisplayAmount } from '../../components/ibc/ibc-in/asset-utils';
 import { cosmos, ibc } from 'osmo-query';
 import { chainRegistryClient } from '../../fetchers/registry';
-import { tendermintClient } from '../../clients';
 import { BLOCKS_PER_HOUR } from '../constants';
 import { currentTimePlusTwoDaysRounded } from '../ibc-out';
 import { EncodeObject } from '@cosmjs/proto-signing';
 import { MsgTransfer } from 'osmo-query/ibc/applications/transfer/v1/tx';
 import { parseRevisionNumberFromChainId } from './parse-revision-number-from-chain-id';
 import { bech32ChainIds } from '../shared.ts';
+import { penumbra } from '../../prax.ts';
+import { TendermintProxyService } from '@penumbra-zone/protobuf';
 
 export interface IbcInSlice {
   selectedChain?: ChainInfo;
@@ -249,7 +250,7 @@ const getCounterpartyChannelId = async (
 
 // Get timeout from penumbra chain blocks
 const getTimeout = async (chainId: string) => {
-  const { syncInfo } = await tendermintClient.getStatus({});
+  const { syncInfo } = await penumbra.service(TendermintProxyService).getStatus({});
   const height = syncInfo?.latestBlockHeight;
   if (height === undefined) {
     throw new Error('Could not retrieve latest block height from Tendermint');

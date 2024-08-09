@@ -1,5 +1,11 @@
 # @penumbra-zone/client
 
+## 17.0.0
+
+### Major Changes
+
+- ca3c325: adr-006
+
 ## 16.0.0
 
 ### Minor Changes

@@ -1,5 +1,18 @@
 # minifront
 
+## 6.17.0
+
+### Minor Changes
+
+- df2ac99: Use newer client package for minifront. Fix disconnect in transport-chrome
+
+### Patch Changes
+
+- Updated dependencies [e6f019e]
+- Updated dependencies [ca3c325]
+  - @repo/ui@7.4.1
+  - @penumbra-zone/client@17.0.0
+
 ## 6.16.0
 
 ### Minor Changes
