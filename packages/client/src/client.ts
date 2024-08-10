@@ -22,7 +22,7 @@ const isLegacyProvider = (
   provider: PenumbraProvider,
 ): provider is PenumbraProvider & { request: () => Promise<void> } => 'request' in provider;
 
-interface PenumbraClientOptions {
+export interface PenumbraClientOptions {
   /** Custom options for this client's `Transport`. */
   transportOptions: Omit<ChannelTransportOptions, 'getPort'>;
 }
