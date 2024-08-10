@@ -134,7 +134,9 @@ export const Tabs = ({ value, onChange, options, actionType = 'default' }: TabsP
                 $getFocusOutlineColor={theme =>
                   theme.color.action[outlineColorByActionType[actionType]]
                 }
-                $getBorderRadius={theme => theme.borderRadius.none}
+                $getBorderRadius={theme =>
+                  `${theme.borderRadius.xs} ${theme.borderRadius.xs} ${theme.borderRadius.none} ${theme.borderRadius.none}`
+                }
               >
                 {value === option.value && (
                   <SelectedIndicator layout layoutId={layoutId} $actionType={actionType} />
