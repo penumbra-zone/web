@@ -64,7 +64,6 @@ export const SyncingDialog = () => {
             You can click away, but your data <i>may</i> not be current
           </Text>
           <div className='mt-6'>
-            <Text technical>16% Synced - Block 12848 of 6754433</Text>
             {!!status?.isCatchingUp && (
               <Text technical>
                 {!!status.percentSynced && `${status.percentSynced} Synced – `} Block{' '}
