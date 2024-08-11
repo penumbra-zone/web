@@ -57,14 +57,23 @@ export const SyncingDialog = () => {
         <SyncAnimation />
 
         <div className='text-center'>
-          <Text p>Updating your local state with public state.</Text>
-          {!!status?.isCatchingUp && (
-            <Text technical>
-              {!!status.percentSynced && `${status.percentSynced} Synced – `} Block{' '}
-              {status.fullSyncHeight.toString()}{' '}
-              {!!status.latestKnownBlockHeight && `of ${status.latestKnownBlockHeight.toString()}`}
-            </Text>
-          )}
+          <Text body as='p'>
+            Decrypting blocks to update your local state
+          </Text>
+          <Text small as='p'>
+            You can click away, but your data <i>may</i> not be current
+          </Text>
+          <div className='mt-6'>
+            <Text technical>16% Synced - Block 12848 of 6754433</Text>
+            {!!status?.isCatchingUp && (
+              <Text technical>
+                {!!status.percentSynced && `${status.percentSynced} Synced – `} Block{' '}
+                {status.fullSyncHeight.toString()}{' '}
+                {!!status.latestKnownBlockHeight &&
+                  `of ${status.latestKnownBlockHeight.toString()}`}
+              </Text>
+            )}
+          </div>
         </div>
       </Dialog.Content>
     </Dialog>
