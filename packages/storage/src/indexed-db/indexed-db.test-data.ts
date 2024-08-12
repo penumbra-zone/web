@@ -10,7 +10,7 @@ import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/t
 import { Transaction } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import type { ScanBlockResult } from '@penumbra-zone/types/state-commitment-tree';
 import { base64ToUint8Array } from '@penumbra-zone/types/base64';
-import { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb.js';
+import { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
 
 const hash3312332298 = base64ToUint8Array('JbOzRkf0VKm4eIM0DS27N5igX8jxvPhAMpBWSr2bj/Q=');
 

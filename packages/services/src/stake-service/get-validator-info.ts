@@ -4,7 +4,7 @@ import { Code, ConnectError } from '@connectrpc/connect';
 import {
   GetValidatorInfoRequest,
   GetValidatorInfoResponse,
-} from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 
 export const getValidatorInfo: Impl['getValidatorInfo'] = async (req, ctx) => {
   if (!req.identityKey) {
