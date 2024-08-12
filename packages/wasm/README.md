@@ -126,5 +126,5 @@ executed with `wasm-bindgen-test`. You can run both with package scripts,
 
 ```sh
 pnpm test
-pnpm test:rust
+pnpm test:wasm
 ```
