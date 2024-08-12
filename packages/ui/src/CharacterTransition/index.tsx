@@ -37,14 +37,7 @@ export const CharacterTransition = memo(({ children }: CharacterTransitionProps)
           const identifier = `${char}${charCounts[char]}`;
 
           return (
-            <Span
-              key={identifier}
-              layout='position'
-              layoutId={identifier}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
+            <Span key={identifier} layout='position' layoutId={identifier}>
               {char}
             </Span>
           );
