@@ -28,11 +28,18 @@ const getTradeLink = (balance: BalancesResponse): string => {
   return metadata ? `${PagePath.SWAP}?from=${metadata.symbol}${accountQuery}` : PagePath.SWAP;
 };
 
+const byAccountIndex = (a: BalancesByAccount, b: BalancesByAccount) => {
+  return a.account - b.account;
+};
+
 const filteredBalancesByAccountSelector = (
   zQueryState: AbridgedZQueryState<BalancesResponse[]>,
 ): BalancesByAccount[] =>
-  zQueryState.data?.filter(shouldDisplay).sort(sortByPriorityScore).reduce(groupByAccount, []) ??
-  [];
+  zQueryState.data
+    ?.filter(shouldDisplay)
+    .sort(sortByPriorityScore)
+    .reduce(groupByAccount, [])
+    .sort(byAccountIndex) ?? [];
 
 export default function AssetsTable() {
   const balancesByAccount = useBalancesResponses({
