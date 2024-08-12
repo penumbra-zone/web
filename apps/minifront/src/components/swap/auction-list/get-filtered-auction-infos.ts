@@ -16,7 +16,7 @@ type FilterMatchableAuctionInfo = AuctionInfo & {
 const haveEnoughDataToDetermineIfAuctionMatchesFilter = (
   auctionInfo: AuctionInfo,
 ): auctionInfo is FilterMatchableAuctionInfo => {
-  return !!auctionInfo.auction.description && !!auctionInfo.auction.state;
+  return !!auctionInfo.auction.state;
 };
 
 const auctionIsActive = (auctionInfo: FilterMatchableAuctionInfo) =>
