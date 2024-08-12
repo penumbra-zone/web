@@ -19,6 +19,8 @@ const haveEnoughDataToDetermineIfAuctionMatchesFilter = (
   return !!auctionInfo.auction.state;
 };
 
+// Dutch auctions move from:
+// 0 (opened) => 1 (closed) => n (withdrawn)
 const auctionIsActive = (auctionInfo: FilterMatchableAuctionInfo) =>
   auctionInfo.auction.state.seq < 2n;
 
