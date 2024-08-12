@@ -1,18 +1,12 @@
 import { ReactNode } from 'react';
 import styled, { WebTarget } from 'styled-components';
-import { large } from '../utils/typography';
 import { hexOpacity } from '../utils/hexOpacity';
+import { motion } from 'framer-motion';
+import { Title } from './Title';
 
 const Root = styled.section``;
 
-const Title = styled.h2`
-  ${large};
-
-  color: ${props => props.theme.color.base.white};
-  padding: ${props => props.theme.spacing(3)};
-`;
-
-const Content = styled.div`
+const Content = styled(motion.div)`
   background: linear-gradient(
     136deg,
     ${props => props.theme.color.neutral.contrast + hexOpacity(0.1)} 6.32%,
@@ -39,6 +33,21 @@ export interface CardProps {
    */
   as?: WebTarget;
   title?: ReactNode;
+
+  /**
+   * This will be passed on to the Framer `motion.div` wrapping the card's
+   * content underneath the title.
+   *
+   * @see https://www.framer.com/motion/component/##layout-animation
+   */
+  layout?: boolean | 'position' | 'size' | 'preserve-aspect';
+  /**
+   * This will be passed on to the Framer `motion.div` wrapping the card's
+   * content underneath the title.
+   *
+   * @see https://www.framer.com/motion/component/##layout-animation
+   */
+  layoutId?: string;
 }
 
 /**
@@ -76,12 +85,14 @@ export interface CardProps {
  * </Card>
  * ```
  */
-export const Card = ({ children, as = 'section', title }: CardProps) => {
+export const Card = ({ children, as = 'section', title, layout, layoutId }: CardProps) => {
   return (
     <Root as={as}>
       {title && <Title>{title}</Title>}
 
-      <Content>{children}</Content>
+      <Content layout={layout} layoutId={layoutId}>
+        {children}
+      </Content>
     </Root>
   );
 };
