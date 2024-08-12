@@ -64,7 +64,7 @@ export const planBuildBroadcast = async (
       toast.onBuildStatus(status),
     );
 
-    const txHash = await getTxHash(transaction);
+    const txHash = uint8ArrayToHex((await txSha256(transaction)).inner);
     toast.txHash(txHash);
 
     const { detectionHeight } = await broadcast({ transaction, awaitDetection: true }, status =>
@@ -128,8 +128,8 @@ const broadcast = async (
   if (!transaction) {
     throw new Error('no transaction');
   }
-  const txId = await getTxId(transaction);
-  const txHash = getTxHash(txId);
+  const txId = await txSha256(transaction);
+  const txHash = uint8ArrayToHex(txId.inner);
   onStatusUpdate(undefined);
   for await (const { status } of penumbra.service(ViewService).broadcastTransaction({
     awaitDetection,
@@ -155,18 +155,7 @@ const broadcast = async (
   throw new Error('did not broadcast transaction');
 };
 
-const getTxHash = <T extends Required<PartialMessage<TransactionId>> | PartialMessage<Transaction>>(
-  t: T,
-): T extends Required<PartialMessage<TransactionId>> ? string : Promise<string> =>
-  'inner' in t && t.inner instanceof Uint8Array
-    ? (uint8ArrayToHex(t.inner) as T extends Required<PartialMessage<TransactionId>>
-        ? string
-        : never)
-    : (getTxId(t as PartialMessage<Transaction>).then(({ inner }) =>
-        uint8ArrayToHex(inner),
-      ) as T extends Required<PartialMessage<TransactionId>> ? never : Promise<string>);
-
-const getTxId = (tx: Transaction) =>
+const txSha256 = (tx: Transaction | PartialMessage<Transaction>) =>
   sha256Hash(tx instanceof Transaction ? tx.toBinary() : new Transaction(tx).toBinary()).then(
     inner => new TransactionId({ inner }),
   );
