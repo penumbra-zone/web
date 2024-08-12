@@ -38,12 +38,11 @@
       "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock", "crate/tests/**"]
     },
     "test": { "cache": false, "dependsOn": ["compile"] },
-    "test:rust": {
+    "test:wasm": {
       "dependsOn": ["compile"],
       "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock", "crate/tests/**"]
     },
-    "test:rust-unit": {
-      "dependsOn": ["compile"],
+    "test:cargo": {
       "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock", "crate/tests/**"]
     }
   }
