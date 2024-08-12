@@ -20,8 +20,8 @@
     "lint:strict": "tsc --noEmit && eslint src --max-warnings 0",
     "postcompile": "touch ./wasm/.npmignore",
     "test": "vitest run",
-    "test:wasm": "cd crate && wasm-pack test --headless --firefox -- --target wasm32-unknown-unknown --release --features 'mock-database'",
-    "test:cargo": "cd crate && cargo test --release"
+    "test:cargo": "cd crate && cargo test --release",
+    "test:wasm": "cd crate && wasm-pack test --headless --firefox -- --target wasm32-unknown-unknown --release --features 'mock-database'"
   },
   "files": [
     "wasm",
