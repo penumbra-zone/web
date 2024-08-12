@@ -2,7 +2,7 @@ import styled, { DefaultTheme } from 'styled-components';
 import { small } from '../utils/typography';
 import { ActionType } from '../utils/ActionType';
 import { useDisabled } from '../hooks/useDisabled';
-import { ReactNode } from 'react';
+import { forwardRef, ReactNode } from 'react';
 
 const BORDER_BOTTOM_WIDTH = '2px';
 
@@ -92,38 +92,44 @@ export interface TextInputProps {
  * Can be enriched with start and end adornments, which are markup that render
  * inside the text input's visual frame.
  */
-export const TextInput = ({
-  value,
-  onChange,
-  placeholder,
-  actionType = 'default',
-  disabled,
-  type = 'text',
-  startAdornment = null,
-  endAdornment = null,
-  max,
-  min,
-}: TextInputProps) => {
-  disabled = useDisabled(disabled);
+export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
+  (
+    {
+      value,
+      onChange,
+      placeholder,
+      actionType = 'default',
+      disabled,
+      type = 'text',
+      startAdornment = null,
+      endAdornment = null,
+      max,
+      min,
+    }: TextInputProps,
+    ref,
+  ) => {
+    disabled = useDisabled(disabled);
 
-  return (
-    <Wrapper $hasStartAdornment={!!startAdornment} $hasEndAdornment={!!endAdornment}>
-      {startAdornment}
+    return (
+      <Wrapper $hasStartAdornment={!!startAdornment} $hasEndAdornment={!!endAdornment}>
+        {startAdornment}
 
-      <StyledInput
-        value={value}
-        onChange={e => onChange(e.target.value)}
-        placeholder={placeholder}
-        disabled={disabled}
-        type={type}
-        max={max}
-        min={min}
-        $actionType={actionType}
-        $hasStartAdornment={!!startAdornment}
-        $hasEndAdornment={!!endAdornment}
-      />
+        <StyledInput
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          placeholder={placeholder}
+          disabled={disabled}
+          type={type}
+          max={max}
+          min={min}
+          ref={ref}
+          $actionType={actionType}
+          $hasStartAdornment={!!startAdornment}
+          $hasEndAdornment={!!endAdornment}
+        />
 
-      {endAdornment}
-    </Wrapper>
-  );
-};
+        {endAdornment}
+      </Wrapper>
+    );
+  },
+);

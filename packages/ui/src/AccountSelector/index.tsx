@@ -8,6 +8,7 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { AccountSelectorAddress } from './AccountSelectorAddress';
 import { IbcDepositToggle } from './IbcDepositToggle';
 import { useAccountSelector } from './useAccountSelector';
+import { useRef } from 'react';
 
 const Root = styled.div`
   display: flex;
@@ -19,6 +20,7 @@ const StartAdornment = styled.div`
   ${body}
 
   color: ${props => props.theme.color.text.secondary};
+  cursor: pointer;
 `;
 
 const EndAdornment = styled.div`
@@ -90,6 +92,9 @@ export const AccountSelector = (props: AccountSelectorProps) => {
     loading,
   } = useAccountSelector(props);
 
+  const textInputRef = useRef<HTMLInputElement>(null);
+  const onClickStartAdornment = () => textInputRef.current?.focus();
+
   return (
     <Root>
       <TextInput
@@ -97,6 +102,7 @@ export const AccountSelector = (props: AccountSelectorProps) => {
         value={index.toString()}
         min={0}
         max={MAX_INDEX}
+        ref={textInputRef}
         onChange={value => {
           /**
            * Don't allow manual account number entry when there's a
@@ -118,7 +124,15 @@ export const AccountSelector = (props: AccountSelectorProps) => {
 
           handleChange(valueAsNumber);
         }}
-        startAdornment={<StartAdornment>Account #</StartAdornment>}
+        startAdornment={
+          <StartAdornment
+            role='button'
+            aria-label='Focus on the account number input'
+            onClick={onClickStartAdornment}
+          >
+            Account #
+          </StartAdornment>
+        }
         endAdornment={
           <EndAdornment>
             <Density compact>
