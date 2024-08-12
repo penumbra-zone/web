@@ -19,7 +19,7 @@
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "lint:strict": "tsc --noEmit && eslint src --max-warnings 0",
-    "proto": "pnpm gen:cosmos-sdk --clean && pnpm gen:ibc && pnpm gen:ics23 && pnpm gen:penumbra && touch gen/.npmignore",
+    "proto": "$npm_execpath run gen:cosmos-sdk --clean && $npm_execpath run gen:ibc && $npm_execpath run gen:ics23 && $npm_execpath run gen:penumbra && touch gen/.npmignore",
     "test": "vitest run"
   },
   "files": [

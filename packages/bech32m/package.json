@@ -42,5 +42,8 @@
   },
   "devDependencies": {
     "@penumbra-zone/protobuf": "workspace:*"
+  },
+  "peerDependencies": {
+    "@penumbra-zone/protobuf": "workspace:*"
   }
 }
