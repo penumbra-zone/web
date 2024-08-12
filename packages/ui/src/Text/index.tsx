@@ -10,6 +10,7 @@ import {
   small,
   strong,
   technical,
+  truncate,
   xxl,
 } from '../utils/typography';
 import { ReactNode } from 'react';
@@ -19,13 +20,7 @@ interface StyledProps {
 }
 
 const maybeTruncate = css<StyledProps>`
-  ${props =>
-    props.$truncate &&
-    `
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  `}
+  ${props => props.$truncate && truncate}
 `;
 
 const H1 = styled.h1<StyledProps>`
