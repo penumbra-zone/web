@@ -20,9 +20,9 @@ export const filterWithLimit = <T>(
   return result;
 };
 
-export const byStartHeightAscending = (a: AuctionInfo, b: AuctionInfo) => {
+export const byStartHeightDescending = (a: AuctionInfo, b: AuctionInfo) => {
   if (!a.auction.description?.startHeight || !b.auction.description?.startHeight) {
     return 0;
   }
-  return Number(a.auction.description.startHeight - b.auction.description.startHeight);
+  return Number(b.auction.description.startHeight - a.auction.description.startHeight);
 };

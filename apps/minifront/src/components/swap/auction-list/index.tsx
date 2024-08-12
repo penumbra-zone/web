@@ -11,7 +11,7 @@ import { getFilteredAuctionInfos } from './get-filtered-auction-infos';
 import { LayoutGroup, motion } from 'framer-motion';
 import { useAuctionInfos } from '../../../state/swap/dutch-auction';
 import { useStatus } from '../../../state/status';
-import { byStartHeightAscending } from './helpers';
+import { byStartHeightDescending } from './helpers';
 import { Filters } from './filters';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 import { EndOrWithdrawAllButton } from './end-or-withdraw-all-button.tsx';
@@ -52,10 +52,8 @@ export const AuctionList = () => {
 
   const filteredAuctionInfos = useMemo(
     () =>
-      [...getFilteredAuctionInfos(auctionInfos.data ?? [], filter, status?.fullSyncHeight)].sort(
-        byStartHeightAscending,
-      ),
-    [auctionInfos.data, filter, status?.fullSyncHeight],
+      [...getFilteredAuctionInfos(auctionInfos.data ?? [], filter)].sort(byStartHeightDescending),
+    [auctionInfos.data, filter],
   );
 
   return (

@@ -32,7 +32,7 @@ const MIN_OUTPUT_ESTIMATE_MULTIPLIER = 0.5;
  */
 export const OUTPUT_LIMIT = 2 ** 52 - 1;
 
-export type Filter = 'active' | 'all';
+export type Filter = 'active' | 'inactive' | 'all';
 
 interface Actions {
   setMinOutput: (minOutput: string) => void;
@@ -106,7 +106,7 @@ const INITIAL_STATE: State = {
   maxOutput: '',
   txInProgress: false,
   auctionInfos,
-  filter: 'all',
+  filter: 'active',
   estimateLoading: false,
   estimatedOutput: undefined,
 };
