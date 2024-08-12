@@ -19,33 +19,23 @@ const haveEnoughDataToDetermineIfAuctionMatchesFilter = (
   return !!auctionInfo.auction.description && !!auctionInfo.auction.state;
 };
 
-const auctionIsActive = (auctionInfo: FilterMatchableAuctionInfo, fullSyncHeight: bigint) =>
-  auctionInfo.auction.state.seq === 0n &&
-  fullSyncHeight >= auctionInfo.auction.description.startHeight &&
-  fullSyncHeight <= auctionInfo.auction.description.endHeight;
-
-const auctionIsUpcoming = (auctionInfo: FilterMatchableAuctionInfo, fullSyncHeight: bigint) =>
-  auctionInfo.auction.state.seq === 0n &&
-  fullSyncHeight < auctionInfo.auction.description.startHeight;
+const auctionIsActive = (auctionInfo: FilterMatchableAuctionInfo) =>
+  auctionInfo.auction.state.seq < 2n;
 
 export const getFilteredAuctionInfos = (
   auctionInfos: AuctionInfo[],
   filter: Filter,
-  fullSyncHeight?: bigint,
 ): AuctionInfo[] => {
   if (filter === 'all') {
     return auctionInfos;
   }
 
   return auctionInfos.filter(auctionInfo => {
-    if (!fullSyncHeight) {
-      return false;
-    }
     if (!haveEnoughDataToDetermineIfAuctionMatchesFilter(auctionInfo)) {
       return false;
     }
-    return (
-      auctionIsActive(auctionInfo, fullSyncHeight) || auctionIsUpcoming(auctionInfo, fullSyncHeight)
-    );
+    const isActive = auctionIsActive(auctionInfo);
+
+    return filter === 'active' ? isActive : !isActive;
   });
 };
