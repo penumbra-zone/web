@@ -58,13 +58,18 @@ export const AssetsPage = () => {
                 </Table.Td>
 
                 <Table.Td>
-                  <Link to={getTradeLink(balance)}>
-                    <Density compact>
-                      <Button icon={ArrowRightLeft} iconOnly>
-                        Trade
-                      </Button>
-                    </Density>
-                  </Link>
+                  <div className='h-8 w-10 overflow-hidden'>
+                    <Link
+                      to={getTradeLink(balance)}
+                      className='block translate-x-full opacity-0 transition [tr:hover>td>div>&]:translate-x-0 [tr:hover>td>div>&]:opacity-100'
+                    >
+                      <Density compact>
+                        <Button icon={ArrowRightLeft} iconOnly>
+                          Trade
+                        </Button>
+                      </Density>
+                    </Link>
+                  </div>
                 </Table.Td>
               </Table.Tr>
             ))}
