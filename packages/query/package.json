@@ -31,9 +31,9 @@
     }
   },
   "dependencies": {
-    "@bufbuild/protobuf": "1.10.0",
-    "@connectrpc/connect": "1.4.0",
-    "@connectrpc/connect-web": "1.4.0",
+    "@bufbuild/protobuf": "^1.10.0",
+    "@connectrpc/connect": "^1.4.0",
+    "@connectrpc/connect-web": "^1.4.0",
     "exponential-backoff": "^3.1.1"
   },
   "devDependencies": {

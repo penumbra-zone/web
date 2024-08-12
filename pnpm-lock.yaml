@@ -12,13 +12,13 @@ importers:
   .:
     dependencies:
       '@bufbuild/protobuf':
-        specifier: 1.10.0
+        specifier: ^1.10.0
         version: 1.10.0
       '@connectrpc/connect':
-        specifier: 1.4.0
+        specifier: ^1.4.0
         version: 1.4.0(@bufbuild/protobuf@1.10.0)
       '@connectrpc/connect-web':
-        specifier: 1.4.0
+        specifier: ^1.4.0
         version: 1.4.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
     devDependencies:
       '@buf/connectrpc_eliza.bufbuild_es':
@@ -169,7 +169,7 @@ importers:
   apps/minifront:
     dependencies:
       '@bufbuild/protobuf':
-        specifier: 1.10.0
+        specifier: ^1.10.0
         version: 1.10.0
       '@cosmjs/proto-signing':
         specifier: ^0.32.4
@@ -314,7 +314,7 @@ importers:
   apps/node-status:
     dependencies:
       '@connectrpc/connect-web':
-        specifier: 1.4.0
+        specifier: ^1.4.0
         version: 1.4.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
       '@penumbra-zone/protobuf':
         specifier: workspace:*
@@ -370,7 +370,7 @@ importers:
   packages/client:
     devDependencies:
       '@connectrpc/connect':
-        specifier: 1.4.0
+        specifier: ^1.4.0
         version: 1.4.0(@bufbuild/protobuf@1.10.0)
       '@penumbra-zone/protobuf':
         specifier: workspace:*
@@ -430,7 +430,7 @@ importers:
   packages/protobuf:
     devDependencies:
       '@bufbuild/buf':
-        specifier: 1.x
+        specifier: ^1.0
         version: 1.35.1
       '@bufbuild/protobuf':
         specifier: ^1.10.0
@@ -445,13 +445,13 @@ importers:
   packages/query:
     dependencies:
       '@bufbuild/protobuf':
-        specifier: 1.10.0
+        specifier: ^1.10.0
         version: 1.10.0
       '@connectrpc/connect':
-        specifier: 1.4.0
+        specifier: ^1.4.0
         version: 1.4.0(@bufbuild/protobuf@1.10.0)
       '@connectrpc/connect-web':
-        specifier: 1.4.0
+        specifier: ^1.4.0
         version: 1.4.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
       exponential-backoff:
         specifier: ^3.1.1
@@ -558,10 +558,10 @@ importers:
   packages/transport-chrome:
     devDependencies:
       '@bufbuild/protobuf':
-        specifier: 1.10.0
+        specifier: ^1.10.0
         version: 1.10.0
       '@connectrpc/connect':
-        specifier: 1.4.0
+        specifier: ^1.4.0
         version: 1.4.0(@bufbuild/protobuf@1.10.0)
       '@penumbra-zone/transport-dom':
         specifier: workspace:*
@@ -573,10 +573,10 @@ importers:
   packages/transport-dom:
     dependencies:
       '@bufbuild/protobuf':
-        specifier: 1.10.0
+        specifier: ^1.10.0
         version: 1.10.0
       '@connectrpc/connect':
-        specifier: 1.4.0
+        specifier: ^1.4.0
         version: 1.4.0(@bufbuild/protobuf@1.10.0)
 
   packages/types:
