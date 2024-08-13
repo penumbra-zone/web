@@ -45,7 +45,7 @@
       "dependsOn": ["compile"],
       "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock", "crate/tests/**"]
     },
-    "test": { "cache": false, "dependsOn": ["compile"] },
+    "test": { "cache": false, "dependsOn": ["compile", "proto"] },
     "test:wasm": {
       "dependsOn": ["compile"],
       "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock", "crate/tests/**"]
