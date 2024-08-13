@@ -3,8 +3,9 @@ import { Input } from '@repo/ui/components/ui/input';
 import { ChainSelector } from './chain-selector';
 import { useStore } from '../../../state';
 import {
-  filterBalancesPerChain,
+  filteredIbcBalancesSelector,
   ibcOutSelector,
+  ibcPlaceholderSelector,
   ibcValidationErrors,
 } from '../../../state/ibc-out';
 import InputToken from '../../shared/input-token';
@@ -12,10 +13,18 @@ import { InputBlock } from '../../shared/input-block';
 import { LockOpen2Icon } from '@radix-ui/react-icons';
 import { useAssets, useBalancesResponses, useStakingTokenMetadata } from '../../../state/shared';
 
+const useFilteredBalances = () => {
+  // Kick off requests
+  useStakingTokenMetadata();
+  useAssets();
+  useBalancesResponses();
+  // ========================
+  return useStore(filteredIbcBalancesSelector);
+};
+
 export const IbcOutForm = () => {
-  const stakingTokenMetadata = useStakingTokenMetadata();
-  const assets = useAssets();
-  const balances = useBalancesResponses();
+  const filteredBalances = useFilteredBalances();
+
   const {
     sendIbcWithdraw,
     destinationChainAddress,
@@ -24,16 +33,9 @@ export const IbcOutForm = () => {
     setAmount,
     selection,
     setSelection,
-    setIsSendingMax,
-    chain,
   } = useStore(ibcOutSelector);
-  const filteredBalances = filterBalancesPerChain(
-    balances.data ?? [],
-    chain,
-    assets.data ?? [],
-    stakingTokenMetadata.data,
-  );
   const validationErrors = useStore(ibcValidationErrors);
+  const placeholder = useStore(ibcPlaceholderSelector);
 
   return (
     <form
@@ -46,11 +48,10 @@ export const IbcOutForm = () => {
       <ChainSelector />
       <InputToken
         label='Amount to send'
-        placeholder='Enter an amount'
+        placeholder={placeholder}
         className='mb-1'
         selection={selection}
         setSelection={setSelection}
-        setIsSendingMax={setIsSendingMax}
         value={amount}
         onInputChange={amount => {
           if (Number(amount) < 0) {

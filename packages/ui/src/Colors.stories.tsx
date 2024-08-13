@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { Grid } from './Grid';
 import { Text } from './Text';
 import styled from 'styled-components';
-import type { ColorVariant, Color as TColor, TextColorVariant } from './ThemeProvider/theme';
+import type { ColorVariant, Color as TColor, TextColorVariant } from './PenumbraUIProvider/theme';
 import { Fragment } from 'react';
 import { media } from './utils/media';
 
@@ -34,7 +34,7 @@ type VariantProps =
       $colorVariant: TextColorVariant;
     }
   | {
-      $color: Exclude<TColor, 'text' | 'action' | 'other'>;
+      $color: Exclude<TColor, 'text' | 'action' | 'other' | 'base'>;
       $colorVariant: ColorVariant;
     };
 
@@ -51,7 +51,7 @@ const Variant = styled.div<VariantProps>`
   padding: ${props => props.theme.spacing(2)};
 `;
 
-const BASE_COLORS: Exclude<TColor, 'text' | 'action' | 'other'>[] = [
+const MAIN_COLORS: Exclude<TColor, 'text' | 'action' | 'other' | 'base'>[] = [
   'neutral',
   'primary',
   'secondary',
@@ -61,7 +61,7 @@ const BASE_COLORS: Exclude<TColor, 'text' | 'action' | 'other'>[] = [
   'success',
 ];
 
-const Color = <T extends Exclude<TColor, 'action' | 'other'>>({ color }: { color: T }) => (
+const Color = <T extends Exclude<TColor, 'action' | 'other' | 'base'>>({ color }: { color: T }) => (
   <Fragment key={color}>
     <Grid mobile={6} tablet={2}>
       <Label>
@@ -71,7 +71,7 @@ const Color = <T extends Exclude<TColor, 'action' | 'other'>>({ color }: { color
     <Grid mobile={6} tablet={10}>
       <Variants>
         {color === 'text'
-          ? (['primary', 'secondary', 'disabled', 'special'] as const).map(variant => (
+          ? (['primary', 'secondary', 'muted', 'special'] as const).map(variant => (
               <Variant key={variant} $color={color} $colorVariant={variant}>
                 <Text technical>{variant}</Text>
               </Variant>
@@ -94,7 +94,7 @@ export const ColorGrid: StoryObj = {
         <Grid container as='section'>
           <Color color='text' />
 
-          {BASE_COLORS.map(color => (
+          {MAIN_COLORS.map(color => (
             <Color key={color} color={color} />
           ))}
         </Grid>

@@ -1,5 +1,52 @@
 # @penumbra-zone/client
 
+## 17.0.0
+
+### Major Changes
+
+- ca3c325: adr-006
+
+## 16.0.0
+
+### Minor Changes
+
+- 10ef940: Updating to v0.80.0 bufbuild types
+
+### Patch Changes
+
+- Updated dependencies [10ef940]
+  - @penumbra-zone/transport-dom@7.5.0
+  - @penumbra-zone/protobuf@5.7.0
+
+## 15.0.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @penumbra-zone/protobuf@5.6.0
+
+## 14.0.0
+
+### Minor Changes
+
+- a788eff: Update default timeouts to better support build times
+
+### Patch Changes
+
+- Updated dependencies [a788eff]
+  - @penumbra-zone/transport-dom@7.4.0
+
+## 13.0.0
+
+### Minor Changes
+
+- 978efe6: PenumbraManifest refers to chrome.runtime.ManifestV3
+
+### Patch Changes
+
+- Updated dependencies [af04e2a]
+  - @penumbra-zone/transport-dom@7.3.0
+
 ## 12.0.0
 
 ### Patch Changes

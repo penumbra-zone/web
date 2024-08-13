@@ -3,13 +3,18 @@ import { useId, useState } from 'react';
 import { IconInput } from '@repo/ui/components/ui/icon-input';
 import { Dialog, DialogContent, DialogHeader } from '@repo/ui/components/ui/dialog';
 import { ValueViewComponent } from '@repo/ui/components/ui/value';
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { Box } from '@repo/ui/components/ui/box';
 import { motion } from 'framer-motion';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { emptyBalanceResponse } from '../../../utils/empty-balance-response';
 import { bySearch } from './search-filters';
-import { BalanceOrMetadata, isMetadata, mergeBalancesAndAssets } from './helpers';
+import {
+  BalanceOrMetadata,
+  isMetadata,
+  mergeBalancesAndAssets,
+  useSyncSelectedBalance,
+} from './helpers';
 import { BalanceItem } from './balance-item';
 import { cn } from '@repo/ui/lib/utils';
 import { LoadingIndicator } from './loading-indicator';
@@ -44,6 +49,7 @@ export default function BalanceSelector({
 
   const allAssets = mergeBalancesAndAssets(balances, assets);
   const filteredBalances = search ? allAssets.filter(bySearch(search)) : allAssets;
+  useSyncSelectedBalance({ balances, value, onChange });
 
   const onSelect = (asset: BalanceOrMetadata) => {
     if (!isMetadata(asset)) {

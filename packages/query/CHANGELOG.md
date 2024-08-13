@@ -1,5 +1,107 @@
 # @penumbra-zone/query
 
+## 25.0.0
+
+### Minor Changes
+
+- 10ef940: Updating to v0.80.0 bufbuild types
+
+### Patch Changes
+
+- Updated dependencies [10ef940]
+  - @penumbra-zone/protobuf@5.7.0
+  - @penumbra-zone/getters@14.0.0
+  - @penumbra-zone/types@19.0.0
+  - @penumbra-zone/wasm@24.0.0
+  - @penumbra-zone/crypto-web@20.0.0
+
+## 24.0.0
+
+### Minor Changes
+
+- 807648a: Support viewing fresh state of jailed validators
+
+### Patch Changes
+
+- bd43d49: correctly save gas prices from compact block
+- Updated dependencies [bd43d49]
+- Updated dependencies [bd43d49]
+- Updated dependencies [807648a]
+  - @penumbra-zone/types@18.2.0
+  - @penumbra-zone/getters@13.0.1
+  - @penumbra-zone/crypto-web@19.0.0
+  - @penumbra-zone/wasm@23.0.0
+
+## 23.0.0
+
+### Patch Changes
+
+- Updated dependencies [534a6ad]
+  - @penumbra-zone/wasm@22.1.0
+
+## 22.0.0
+
+### Patch Changes
+
+- Updated dependencies [f5bea48]
+  - @penumbra-zone/types@18.1.0
+  - @penumbra-zone/crypto-web@18.0.0
+  - @penumbra-zone/wasm@22.0.0
+
+## 21.0.0
+
+### Patch Changes
+
+- Updated dependencies [a9ffd2d]
+- Updated dependencies
+  - @penumbra-zone/types@18.0.0
+  - @penumbra-zone/protobuf@5.6.0
+  - @penumbra-zone/crypto-web@17.0.0
+  - @penumbra-zone/wasm@21.0.0
+  - @penumbra-zone/getters@13.0.0
+
+## 20.0.0
+
+### Patch Changes
+
+- Updated dependencies [318690e]
+  - @penumbra-zone/wasm@20.2.0
+
+## 19.0.0
+
+### Patch Changes
+
+- 3477bef: bugfix: injecting globalThis.**DEV** correctly on prod builds
+- Updated dependencies [3477bef]
+- Updated dependencies [d6ce325]
+  - @penumbra-zone/types@17.0.1
+  - @penumbra-zone/wasm@20.1.0
+  - @penumbra-zone/crypto-web@16.0.1
+
+## 18.0.0
+
+### Patch Changes
+
+- Updated dependencies [4e30796]
+- Updated dependencies [86c1bbe]
+  - @penumbra-zone/wasm@20.0.0
+  - @penumbra-zone/getters@12.1.0
+  - @penumbra-zone/types@17.0.0
+  - @penumbra-zone/crypto-web@16.0.0
+
+## 17.0.0
+
+### Minor Changes
+
+- 0233722: added proxying timestampByHeight
+
+### Patch Changes
+
+- Updated dependencies [0233722]
+  - @penumbra-zone/types@16.1.0
+  - @penumbra-zone/crypto-web@15.0.0
+  - @penumbra-zone/wasm@19.0.0
+
 ## 16.0.0
 
 ### Patch Changes

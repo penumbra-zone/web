@@ -1,13 +1,24 @@
-import { ZQueryState, createZQuery } from '@penumbra-zone/zquery';
-import { SliceCreator, useStore } from '.';
-import { getStakingTokenMetadata } from '../fetchers/registry';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import { getBalances } from '../fetchers/balances';
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
-import { getAllAssets } from '../fetchers/assets';
-import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
 import { getAddress, getAddressIndex } from '@penumbra-zone/getters/address-view';
+import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { ZQueryState, createZQuery } from '@penumbra-zone/zquery';
 import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
+import { SliceCreator, useStore } from '.';
+import { getAllAssets } from '../fetchers/assets';
+import { getBalances } from '../fetchers/balances';
+import { getStakingTokenMetadata } from '../fetchers/registry';
+
+/**
+ * For Noble specifically we need to use a Bech32 encoding rather than Bech32m,
+ * because Noble currently has a middleware that decodes as Bech32.
+ * Noble plans to change this at some point in the future but until then we need
+ * to use a special encoding just for Noble specifically.
+ */
+export const bech32ChainIds = [
+  'noble-1', // noble mainnet
+  'grand-1', // noble testnet
+];
 
 export const { stakingTokenMetadata, useStakingTokenMetadata } = createZQuery({
   name: 'stakingTokenMetadata',

@@ -1,17 +1,18 @@
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import {
-  SpendableNoteRecord,
-  SwapRecord,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { SpendableNoteRecord, SwapRecord } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import {
   Position,
   PositionId,
   TradingPair,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
-import { Epoch } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb.js';
-import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb.js';
-import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
+import { Epoch } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
+import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
+import { Transaction } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import type { ScanBlockResult } from '@penumbra-zone/types/state-commitment-tree';
+import { base64ToUint8Array } from '@penumbra-zone/types/base64';
+import { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
+
+const hash3312332298 = base64ToUint8Array('JbOzRkf0VKm4eIM0DS27N5igX8jxvPhAMpBWSr2bj/Q=');
 
 export const emptyScanResult: ScanBlockResult = {
   height: 1092n,
@@ -32,14 +33,14 @@ export const scanResultWithSctUpdates: ScanBlockResult = {
     delete_ranges: [],
     store_commitments: [
       {
-        commitment: { inner: 'qs3wdffdg34sfv' },
+        commitment: { inner: 'XQ5CaaCm1etf2jbB5F5hQbH75Gy8MSsE8UT3g3hslOc=' },
         position: { block: 2, commitment: 11, epoch: 1 },
       },
     ],
     store_hashes: [
       {
         essential: false,
-        hash: new Uint8Array([33, 12, 33, 22, 98]),
+        hash: hash3312332298,
         height: 1090,
         position: {
           block: 3,
@@ -100,14 +101,14 @@ export const scanResultWithNewSwaps: ScanBlockResult = {
     delete_ranges: [],
     store_commitments: [
       {
-        commitment: { inner: 'qs3wdffdg34sfv' },
+        commitment: { inner: 'XQ5CaaCm1etf2jbB5F5hQbH75Gy8MSsE8UT3g3hslOc=' },
         position: { block: 2, commitment: 11, epoch: 1 },
       },
     ],
     store_hashes: [
       {
         essential: false,
-        hash: new Uint8Array([33, 12, 33, 22, 98]),
+        hash: hash3312332298,
         height: 1090,
         position: {
           block: 3,
@@ -125,8 +126,8 @@ export const metadataA = Metadata.fromJson({
   denomUnits: [{ denom: 'mars', exponent: 6 }, { denom: 'mmars', exponent: 3 }, { denom: 'umars' }],
   base: 'umars',
   display: 'mars',
-  penumbraAssetId: { inner: 'cGFzc2V0MTgyODQ3MjgxODQzMTg3NDg=' },
-});
+  penumbraAssetId: { inner: 'fptGlCc8DHGYGzC0SGI9RJPkTcOhlwEgmTYlWKqG6RE=' },
+}) as Metadata & { penumbraAssetId: AssetId };
 
 export const metadataB = Metadata.fromJson({
   denomUnits: [
@@ -136,8 +137,8 @@ export const metadataB = Metadata.fromJson({
   ],
   base: 'ujupiter',
   display: 'jupiter',
-  penumbraAssetId: { inner: 'cGFzc2V0OTQ5MjgyODQ1OTg0NTc2' },
-});
+  penumbraAssetId: { inner: 'tC8UkRa/CMAtIft8TgIHRTWS7D8KNA+nYlixMl0mYjU=' },
+}) as Metadata & { penumbraAssetId: AssetId };
 
 export const metadataC = Metadata.fromJson({
   denom_units: [
@@ -163,11 +164,11 @@ export const metadataC = Metadata.fromJson({
   name: '',
   symbol: '',
   penumbra_asset_id: {
-    inner: 'cGFzc2V0MTIzMjEyNDEyMzEyNDIy',
+    inner: 'MuKoww0J2uLfVA403rXz3/xvjS0/kaiLIi5ADYEVaOI=',
     alt_bech32m: '',
     alt_base_denom: '',
   },
-});
+}) as Metadata & { penumbraAssetId: AssetId };
 
 export const delegationMetadataA = Metadata.fromJson({
   denomUnits: [
@@ -186,7 +187,7 @@ export const delegationMetadataA = Metadata.fromJson({
   base: 'udelegation_penumbravalid12s9lanucncnyasrsqgy6z532q7nwsw3aqzzeqas55kkpyf6lhsqs2w0zar',
   display: 'delegation_penumbravalid12s9lanucncnyasrsqgy6z532q7nwsw3aqzzeqas55kkpyf6lhsqs2w0zar',
   penumbraAssetId: { inner: '9gOwzeyGwav8YydzDGlEZyZkN8ITX2IerjVy0YjAIw8=' },
-});
+}) as Metadata & { penumbraAssetId: AssetId };
 
 export const delegationMetadataB = Metadata.fromJson({
   denomUnits: [
@@ -205,7 +206,7 @@ export const delegationMetadataB = Metadata.fromJson({
   base: 'udelegation_penumbravalid15ex9m38fl5gv48vwszyhgsvp9q83wc7nl4z274u6atyfwtlaeqgqpjwkkm',
   display: 'delegation_penumbravalid15ex9m38fl5gv48vwszyhgsvp9q83wc7nl4z274u6atyfwtlaeqgqpjwkkm',
   penumbraAssetId: { inner: 'brSeAgTVPCTJsjLKNFWhRSnJOJQgumMRksEe34sJfgc=' },
-});
+}) as Metadata & { penumbraAssetId: AssetId };
 
 export const newNote = SpendableNoteRecord.fromJson({
   noteCommitment: {
@@ -240,7 +241,7 @@ export const newNote = SpendableNoteRecord.fromJson({
       id: '3CBS08dM9eLHH45Z9loZciZ9RaG9x1fc26Qnv0lQlto=',
     },
   },
-});
+}) as SpendableNoteRecord & { noteCommitment: StateCommitment };
 
 export const noteWithDelegationAssetA = SpendableNoteRecord.fromJson({
   noteCommitment: { inner: 'n86D13I1rRUDoLCkX7LKl/AG8/F+2MV76p4XgPD++xA=' },
@@ -260,7 +261,7 @@ export const noteWithDelegationAssetA = SpendableNoteRecord.fromJson({
   heightCreated: '43',
   position: '2818048',
   source: { transaction: { id: 'i++POrLfH1e5t+ys2ytLAJKi41HLt1s39Rj/bCFrMTI=' } },
-});
+}) as SpendableNoteRecord & { noteCommitment: StateCommitment };
 
 export const noteWithDelegationAssetB = SpendableNoteRecord.fromJson({
   noteCommitment: { inner: 'O5vXQyhaImbVKHuhpZqT5QYVA6HDlY4P+Hz/z3Xc5gU=' },
@@ -280,7 +281,7 @@ export const noteWithDelegationAssetB = SpendableNoteRecord.fromJson({
   heightCreated: '53',
   position: '3473408',
   source: { transaction: { id: 'OVtt3KUg5v+yF/O/2pwE1/740EhFGZ3mK74LUvRfcL0=' } },
-});
+}) as SpendableNoteRecord & { noteCommitment: StateCommitment };
 
 export const noteWithGmAsset = SpendableNoteRecord.fromJson({
   noteCommitment: { inner: 'HPA48ggmSUsVVm5u871Y2qpURUZ60ic7/eL32ej0gQo=' },
@@ -300,7 +301,7 @@ export const noteWithGmAsset = SpendableNoteRecord.fromJson({
   heightCreated: '17',
   position: '1114112',
   source: { transaction: { id: 'NNKqIUJRgSI1dS1VbWLNZeQpmQUG6pInn3sFqPNrFDA=' } },
-});
+}) as SpendableNoteRecord & { noteCommitment: StateCommitment };
 
 export const transactionId = TransactionId.fromJson({
   inner: '9MI8IG5D3MQj3s1j0MXTwCQtAaVbwTlPkW8Qdz1EVIo=',

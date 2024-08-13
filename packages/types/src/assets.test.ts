@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { assetPatterns, getUnbondingStartHeight, RegexMatcher } from './assets.js';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
 describe('assetPatterns', () => {
   describe('auctionNft', () => {

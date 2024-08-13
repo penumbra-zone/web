@@ -25,7 +25,7 @@ export const eduPanelContent: Record<EduPanel, string> = {
   [EduPanel.IBC_WITHDRAW]:
     'IBC to a connected chain. Note that if the chain is a transparent chain, the transaction will be visible to others.',
   [EduPanel.SWAP]:
-    'Shielded swaps between any kind of cryptoasset, with sealed-bid, batch pricing and no frontrunning. Only the batch totals are revealed, providing long-term privacy. Penumbra has no MEV, because transactions do not leak data about user activity.',
+    'Shielded batch swaps between any kind of cryptoasset, using an intelligent batch pricing mechanism. While the assets and amounts are publicly revealed, user identities and specific transaction details remain hidden, ensuring long-term privacy.',
   [EduPanel.SWAP_AUCTION]:
     "Offer a specific quantity of cryptocurrency at decreasing prices until all the tokens are sold. Buyers can place bids at the price they're willing to pay, with the auction concluding when all tokens are sold or when the auction time expires. This mechanism allows for price discovery based on market demand, with participants potentially acquiring tokens at prices lower than initially offered.",
   [EduPanel.STAKING]:

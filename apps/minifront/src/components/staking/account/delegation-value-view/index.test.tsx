@@ -1,12 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
 import { DelegationValueView } from '.';
 import { render } from '@testing-library/react';
-import {
-  Metadata,
-  ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
+import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { ValidatorInfo } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
+import { Any } from '@bufbuild/protobuf';
 
 const u8 = (length: number) => Uint8Array.from({ length }, () => Math.floor(Math.random() * 256));
 
@@ -90,10 +88,7 @@ const valueView = new ValueView({
         },
       ],
 
-      extendedMetadata: {
-        typeUrl: ValidatorInfo.typeName,
-        value: validatorInfo.toBinary(),
-      },
+      extendedMetadata: Any.pack(validatorInfo),
     },
   },
 });

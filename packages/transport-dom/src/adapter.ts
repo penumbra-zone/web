@@ -10,9 +10,11 @@ import {
 } from '@connectrpc/connect';
 import {
   Any,
+  AnyMessage,
   JsonReadOptions,
   JsonValue,
   JsonWriteOptions,
+  MessageType,
   MethodInfo,
   MethodKind,
   ServiceType,
@@ -33,10 +35,14 @@ import ReadableStream from './ReadableStream.from.js';
 // hopefully also simplifies transport call soon
 type MethodType = MethodInfo & { service: { typeName: string } };
 
-type ChannelRequest = JsonValue;
+type ChannelRequest = JsonValue | ReadableStream<JsonValue>;
 type ChannelResponse = JsonValue | ReadableStream<JsonValue>;
 
-export type ChannelHandlerFn = (r: ChannelRequest) => Promise<ChannelResponse>;
+export type ChannelHandlerFn = (
+  request: ChannelRequest,
+  signal?: AbortSignal,
+  timeoutMs?: number,
+) => Promise<ChannelResponse>;
 export type ChannelContextFn = (
   h: UniversalServerRequest,
 ) => Promise<UniversalServerRequest & { contextValues: ContextValues }>;
@@ -145,7 +151,7 @@ export const connectChannelAdapter = (opt: ChannelAdapterOptions): ChannelHandle
   );
 
   // TODO: alternatively, we could have the channelClient provide a requestPath
-  const I_MethodType = new Map<string, MethodType>(
+  const methodTypesByName = new Map<string, MethodType>(
     router.handlers.map(({ method, service }) => [
       method.I.typeName,
       { ...method, service: { typeName: service.typeName } },
@@ -164,11 +170,28 @@ export const connectChannelAdapter = (opt: ChannelAdapterOptions): ChannelHandle
     httpClient: injectRequestContext,
   });
 
-  return async function channelHandler(message: ChannelRequest) {
-    const request = Any.fromJson(message, jsonOptions).unpack(jsonOptions.typeRegistry)!;
-    const requestType = request.getType();
+  const deserializeRequest = (
+    message: ChannelRequest,
+  ): { requestType: MessageType; request: AnyMessage | ReadableStream<AnyMessage> } => {
+    if (message instanceof ReadableStream) {
+      throw new ConnectError('Streaming request unimplemented', ConnectErrorCode.Unimplemented);
+    } else {
+      const request = Any.fromJson(message, jsonOptions).unpack(jsonOptions.typeRegistry);
+      if (!request) {
+        throw new ConnectError('Invalid request', ConnectErrorCode.InvalidArgument);
+      }
+      return { requestType: request.getType(), request };
+    }
+  };
 
-    const methodType = I_MethodType.get(requestType.typeName);
+  return async function channelHandler(
+    message: ChannelRequest,
+    signal?: AbortSignal,
+    timeoutMs?: number,
+  ) {
+    const { request, requestType } = deserializeRequest(message);
+
+    const methodType = methodTypesByName.get(requestType.typeName);
     if (!methodType) {
       throw new ConnectError(`Method ${requestType.typeName} not found`, ConnectErrorCode.NotFound);
     }
@@ -180,8 +203,8 @@ export const connectChannelAdapter = (opt: ChannelAdapterOptions): ChannelHandle
           // only uses service.typeName, so this cast is ok
           methodType.service as ServiceType,
           methodType satisfies MethodInfo,
-          undefined, // TODO abort
-          undefined, // TODO timeout
+          signal,
+          timeoutMs,
           undefined, // TODO headers
           request,
         );
@@ -191,21 +214,35 @@ export const connectChannelAdapter = (opt: ChannelAdapterOptions): ChannelHandle
           // only uses service.typeName, so this cast is ok
           methodType.service as ServiceType,
           methodType satisfies MethodInfo,
-          undefined, // TODO abort
-          undefined, // TODO timeout
+          signal,
+          timeoutMs,
           undefined, // TODO headers
           createAsyncIterable([request]),
         );
         break;
+      case MethodKind.BiDiStreaming:
+      case MethodKind.ClientStreaming:
+        response = await transport.stream(
+          // only uses service.typeName, so this cast is ok
+          methodType.service as ServiceType,
+          methodType satisfies MethodInfo,
+          signal,
+          timeoutMs,
+          undefined, // TODO headers
+          request as never,
+        );
+        break;
       default:
         throw new ConnectError(
-          `Unimplemented method kind ${methodType.kind}`,
+          `Unexpected method kind for ${requestType.typeName}`,
           ConnectErrorCode.Unimplemented,
         );
     }
 
     if (response.stream) {
-      return ReadableStream.from(response.message).pipeThrough(new MessageToJson(jsonOptions));
+      return ReadableStream.from(response.message).pipeThrough(new MessageToJson(jsonOptions), {
+        signal,
+      });
     } else {
       return Any.pack(response.message).toJson(jsonOptions);
     }

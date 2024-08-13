@@ -1,5 +1,163 @@
 # minifront
 
+## 6.17.0
+
+### Minor Changes
+
+- df2ac99: Use newer client package for minifront. Fix disconnect in transport-chrome
+
+### Patch Changes
+
+- Updated dependencies [e6f019e]
+- Updated dependencies [ca3c325]
+  - @repo/ui@7.4.1
+  - @penumbra-zone/client@17.0.0
+
+## 6.16.0
+
+### Minor Changes
+
+- 6094b6b: Add a "claim all" button to the auctions list
+
+### Patch Changes
+
+- 2c0c167: Refetch BalancesResponse query after successful swap and send
+- b524a03: forbid um ibc out to celestia
+- Updated dependencies [10ef940]
+  - @penumbra-zone/transport-dom@7.5.0
+  - @penumbra-zone/perspective@24.0.0
+  - @penumbra-zone/protobuf@5.7.0
+  - @penumbra-zone/getters@14.0.0
+  - @penumbra-zone/client@16.0.0
+  - @penumbra-zone/types@19.0.0
+  - @repo/ui@7.4.0
+  - @penumbra-zone/crypto-web@20.0.0
+
+## 6.15.0
+
+### Minor Changes
+
+- 807648a: Support viewing fresh state of jailed validators
+
+### Patch Changes
+
+- f983923: Fix NonNativeFeeWarning not being displayed
+- 6d02104: show all auctions by default
+- Updated dependencies [bd43d49]
+- Updated dependencies [0069132]
+- Updated dependencies [bd43d49]
+- Updated dependencies [807648a]
+  - @penumbra-zone/types@18.2.0
+  - @repo/ui@7.3.4
+  - @penumbra-zone/getters@13.0.1
+  - @penumbra-zone/crypto-web@19.0.0
+  - @penumbra-zone/perspective@23.0.0
+
+## 6.14.2
+
+### Patch Changes
+
+- @penumbra-zone/perspective@22.0.0
+- @repo/ui@7.3.3
+
+## 6.14.1
+
+### Patch Changes
+
+- Updated dependencies [f5bea48]
+  - @penumbra-zone/types@18.1.0
+  - @penumbra-zone/crypto-web@18.0.0
+  - @repo/ui@7.3.2
+  - @penumbra-zone/perspective@21.0.0
+
+## 6.14.0
+
+### Minor Changes
+
+- a9bd817: fixed send form memory bug
+
+### Patch Changes
+
+- Updated dependencies [a9ffd2d]
+- Updated dependencies
+  - @penumbra-zone/types@18.0.0
+  - @penumbra-zone/protobuf@5.6.0
+  - @penumbra-zone/crypto-web@17.0.0
+  - @repo/ui@7.3.1
+  - @penumbra-zone/client@15.0.0
+  - @penumbra-zone/getters@13.0.0
+  - @penumbra-zone/perspective@20.0.0
+
+## 6.13.0
+
+### Minor Changes
+
+- dfad32b: fix auctions source
+- Update registry dep
+
+### Patch Changes
+
+- Updated dependencies [dfad32b]
+- Updated dependencies [40a471d]
+- Updated dependencies [49fb3f1]
+- Updated dependencies
+  - @repo/ui@7.3.0
+  - @penumbra-zone/perspective@19.0.0
+
+## 6.12.3
+
+### Patch Changes
+
+- Updated dependencies [3477bef]
+- Updated dependencies [16147fe]
+  - @penumbra-zone/types@17.0.1
+  - @penumbra-zone/perspective@18.0.0
+  - @penumbra-zone/crypto-web@16.0.1
+  - @repo/ui@7.2.1
+
+## 6.12.2
+
+### Patch Changes
+
+- Updated dependencies [a788eff]
+- Updated dependencies [54a5d66]
+  - @penumbra-zone/transport-dom@7.4.0
+  - @penumbra-zone/client@14.0.0
+  - @repo/ui@7.2.0
+
+## 6.12.1
+
+### Patch Changes
+
+- Updated dependencies [86c1bbe]
+  - @penumbra-zone/perspective@17.0.0
+  - @penumbra-zone/getters@12.1.0
+  - @repo/ui@7.1.0
+  - @penumbra-zone/types@17.0.0
+  - @penumbra-zone/crypto-web@16.0.0
+
+## 6.12.0
+
+### Minor Changes
+
+- 0233722: added proxying timestampByHeight
+
+### Patch Changes
+
+- 52fdce2: Add decimal part validation (its length cannot exeed the exponent of a selected token)
+- Updated dependencies [e0f4258]
+- Updated dependencies [0233722]
+- Updated dependencies [978efe6]
+- Updated dependencies [af04e2a]
+- Updated dependencies [26bd932]
+  - @penumbra-zone/zquery@3.0.1
+  - @penumbra-zone/types@16.1.0
+  - @penumbra-zone/client@13.0.0
+  - @penumbra-zone/transport-dom@7.3.0
+  - @repo/ui@7.0.3
+  - @penumbra-zone/crypto-web@15.0.0
+  - @penumbra-zone/perspective@16.0.0
+
 ## 6.11.4
 
 ### Patch Changes

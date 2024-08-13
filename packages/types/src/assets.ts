@@ -1,4 +1,4 @@
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
 // PRICE_RELEVANCE_THRESHOLDS defines how long prices for different asset types remain relevant (in blocks)
 // 1 block = 5 seconds, 200 blocks approximately equals 17 minutes
@@ -75,6 +75,7 @@ export const assetPatterns: AssetPatterns = {
     /^auctionnft_(?<seqNum>[0-9]+)_(?<auctionId>pauctid1[a-zA-HJ-NP-Z0-9]+)$/,
   ),
   lpNft: new RegexMatcher(/^lpnft_/),
+  // TODO: This should be a regex on the base denom and not the display denom
   delegationToken: new RegexMatcher(
     /^delegation_(?<idKey>penumbravalid1(?<id>[a-zA-HJ-NP-Z0-9]+))$/,
   ),

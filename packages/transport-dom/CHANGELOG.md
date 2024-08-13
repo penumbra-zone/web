@@ -1,5 +1,23 @@
 # @penumbra-zone/transport-dom
 
+## 7.5.0
+
+### Minor Changes
+
+- 10ef940: Updating to v0.80.0 bufbuild types
+
+## 7.4.0
+
+### Minor Changes
+
+- a788eff: Update default timeouts to better support build times
+
+## 7.3.0
+
+### Minor Changes
+
+- af04e2a: respect transport abort controls
+
 ## 7.2.2
 
 ### Patch Changes

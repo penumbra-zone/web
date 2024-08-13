@@ -10,7 +10,7 @@ import { cn } from '@repo/ui/lib/utils';
 import { AssetIcon } from '@repo/ui/components/ui/asset-icon';
 import { ValueViewComponent } from '@repo/ui/components/ui/value';
 import { TableCell, TableRow } from '@repo/ui/components/ui/table';
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 
 interface BalanceItemProps {
   asset: BalanceOrMetadata;
@@ -36,7 +36,7 @@ export const BalanceItem = ({ asset, value, onSelect }: BalanceItemProps) => {
       return metadataFromValue?.equals(metadataFromAsset);
     }
     return false;
-  }, [asset, value]);
+  }, [asset, metadataFromAsset, metadataFromValue, value]);
 
   return (
     <DialogClose asChild onClick={() => onSelect(asset)}>

@@ -1,38 +1,90 @@
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getAssetIdFromValueView } from '@penumbra-zone/getters/value-view';
-import { getAssetId } from '@penumbra-zone/getters/metadata';
 import { useStakingTokenMetadata } from '../../state/shared';
-import { ReactNode } from 'react';
+import { ReactNode, useCallback, useEffect, useState } from 'react';
+import {
+  getAddressIndex,
+  getAmount,
+  getAssetIdFromBalancesResponseOptional,
+} from '@penumbra-zone/getters/balances-response';
+import { ViewService } from '@penumbra-zone/protobuf';
+import { GasPrices } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
+import { getAssetId } from '@penumbra-zone/getters/metadata';
+import { penumbra } from '../../prax';
 
-const hasStakingToken = (
-  balancesResponses: BalancesResponse[] = [],
-  stakingAssetMetadata?: Metadata,
-): boolean => {
-  return balancesResponses.some(asset =>
-    getAssetIdFromValueView
-      .optional()(asset.balanceView)
-      ?.equals(getAssetId.optional()(stakingAssetMetadata)),
+const hasTokenBalance = ({
+  source,
+  balancesResponses = [],
+  gasPrices,
+  stakingAssetMetadata,
+}: {
+  source?: BalancesResponse;
+  balancesResponses: BalancesResponse[];
+  gasPrices: GasPrices[];
+  stakingAssetMetadata?: Metadata;
+}): boolean => {
+  const account = getAddressIndex.optional()(source)?.account;
+  if (typeof account === 'undefined') {
+    return false;
+  }
+
+  // Finds the UM token in the user's account balances
+  const hasStakingToken = balancesResponses.some(
+    asset =>
+      getAssetIdFromValueView
+        .optional()(asset.balanceView)
+        ?.equals(getAssetId.optional()(stakingAssetMetadata)) &&
+      getAddressIndex.optional()(asset)?.account === account,
   );
+
+  if (hasStakingToken) {
+    return false;
+  }
+
+  const accountAssets = balancesResponses.filter(
+    balance => getAddressIndex.optional()(balance)?.account === account,
+  );
+  // Finds the alt tokens in the user's account balances that can be used for fees
+  const hasAltTokens = accountAssets.some(balance => {
+    const amount = getAmount(balance);
+    const hasBalance = amount.lo !== 0n || amount.hi !== 0n;
+    if (!hasBalance) {
+      return false;
+    }
+
+    return gasPrices.some(price =>
+      price.assetId?.equals(getAssetIdFromBalancesResponseOptional(balance)),
+    );
+  });
+
+  return hasAltTokens;
 };
 
-export const useShouldRender = (balancesResponses: BalancesResponse[] = [], amount: number) => {
-  const stakingTokenMetadata = useStakingTokenMetadata();
-  const userHasStakingToken = hasStakingToken(balancesResponses, stakingTokenMetadata.data);
-  const showNonNativeFeeWarning = amount > 0 && !userHasStakingToken;
+const useGasPrices = () => {
+  const [prices, setPrices] = useState<GasPrices[]>([]);
 
-  return showNonNativeFeeWarning;
+  const fetchGasPrices = useCallback(async () => {
+    const res = await penumbra.service(ViewService).gasPrices({});
+    setPrices(res.altGasPrices);
+  }, []);
+
+  useEffect(() => {
+    void fetchGasPrices();
+  }, [fetchGasPrices]);
+
+  return prices;
 };
 
 /**
- * Renders a non-native fee warning if A) the user does not have any balance of
- * the staking token to use for fees, and B) the amount the user has entered for
- * a transaction (e.g., send or swap) is nonzero -- i.e., a fee will be
- * required.
+ * Renders a non-native fee warning if
+ * 1. the user does not have any balance (in the selected account) of the staking token to use for fees
+ * 2. the user does not have sufficient balances in alternative tokens to cover the fees
  */
 export const NonNativeFeeWarning = ({
-  balancesResponses,
+  balancesResponses = [],
   amount,
+  source,
   wrap = children => children,
 }: {
   /**
@@ -45,6 +97,11 @@ export const NonNativeFeeWarning = ({
    * determine whether the warning should render.
    */
   amount: number;
+  /**
+   * A source token – helps determine whether the user has UM token
+   * in the same account as `source` to use for fees.
+   */
+  source?: BalancesResponse;
   /*
    * Since this component determines for itself whether to render, a parent
    * component can't optionally render wrapper markup depending on whether this
@@ -57,13 +114,23 @@ export const NonNativeFeeWarning = ({
    * <NonNativeFeeWarning
    *   balancesResponses={balancesResponses}
    *   amount={amount}
+   *   source={selectedBalancesResponse}
    *   wrap={children => <div className='mt-5'>{children}</div>}
    * />
    * ```
    */
   wrap?: (children: ReactNode) => ReactNode;
 }) => {
-  const shouldRender = useShouldRender(balancesResponses, amount);
+  const gasPrices = useGasPrices();
+  const stakingTokenMetadata = useStakingTokenMetadata();
+  const shouldRender =
+    !!amount &&
+    hasTokenBalance({
+      source,
+      balancesResponses,
+      gasPrices,
+      stakingAssetMetadata: stakingTokenMetadata.data,
+    });
 
   if (!shouldRender) {
     return null;

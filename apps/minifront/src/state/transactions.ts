@@ -1,13 +1,14 @@
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import { SliceCreator, useStore } from '.';
-import { viewClient } from '../clients';
+import { ViewService } from '@penumbra-zone/protobuf';
 import { getTransactionClassificationLabel } from '@penumbra-zone/perspective/transaction/classify';
 import { ZQueryState, createZQuery } from '@penumbra-zone/zquery';
 import {
   TransactionInfo,
   TransactionInfoResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { getTxInfoByHash } from '../fetchers/tx-info-by-hash';
+import { penumbra } from '../prax';
 
 export interface TransactionSummary {
   height: number;
@@ -21,7 +22,7 @@ const getHash = (tx: TransactionInfoResponse) =>
 
 export const { summaries, useSummaries } = createZQuery({
   name: 'summaries',
-  fetch: () => viewClient.transactionInfo({}),
+  fetch: () => penumbra.service(ViewService).transactionInfo({}),
   stream: () => {
     const txIdsToKeep = new Set<string>();
     return {

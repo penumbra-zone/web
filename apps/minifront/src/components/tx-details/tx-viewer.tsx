@@ -1,17 +1,17 @@
 import { JsonViewer } from '@repo/ui/components/ui/json-viewer';
 import { MetadataFetchFn, TransactionViewComponent } from '@repo/ui/components/ui/tx';
-import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { TransactionInfo } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import type { Jsonified } from '@penumbra-zone/types/jsonified';
 import { useState } from 'react';
 import { SegmentedPicker } from '@repo/ui/components/ui/segmented-picker';
 import { asPublicTransactionView } from '@penumbra-zone/perspective/translators/transaction-view';
-import { typeRegistry } from '@penumbra-zone/protobuf';
+import { typeRegistry, ViewService } from '@penumbra-zone/protobuf';
 import { useQuery } from '@tanstack/react-query';
 import fetchReceiverView from './hooks';
 import { classifyTransaction } from '@penumbra-zone/perspective/transaction/classify';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
-import { viewClient } from '../../clients';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
+import { penumbra } from '../../prax';
 
 export enum TxDetailsTab {
   PUBLIC = 'public',
@@ -28,7 +28,9 @@ const OPTIONS = [
 const getMetadata: MetadataFetchFn = async ({ assetId }) => {
   const feeAssetId = assetId ? assetId : new ChainRegistryClient().bundled.globals().stakingAssetId;
 
-  const { denomMetadata } = await viewClient.assetMetadataById({ assetId: feeAssetId });
+  const { denomMetadata } = await penumbra
+    .service(ViewService)
+    .assetMetadataById({ assetId: feeAssetId });
   return denomMetadata;
 };
 

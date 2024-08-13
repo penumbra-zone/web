@@ -4,31 +4,13 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  typescript: 5.5.3
+
 importers:
 
   .:
     dependencies:
-      '@buf/connectrpc_eliza.bufbuild_es':
-        specifier: 1.10.0-20230913231627-233fca715f49.1
-        version: 1.10.0-20230913231627-233fca715f49.1(@bufbuild/protobuf@1.10.0)
-      '@buf/connectrpc_eliza.connectrpc_es':
-        specifier: 1.4.0-20230913231627-233fca715f49.3
-        version: 1.4.0-20230913231627-233fca715f49.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
-      '@buf/cosmos_ibc.bufbuild_es':
-        specifier: 1.10.0-20240703151202-d7191877c701.1
-        version: 1.10.0-20240703151202-d7191877c701.1(@bufbuild/protobuf@1.10.0)
-      '@buf/cosmos_ibc.connectrpc_es':
-        specifier: 1.4.0-20240703151202-d7191877c701.3
-        version: 1.4.0-20240703151202-d7191877c701.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
-      '@buf/penumbra-zone_penumbra.bufbuild_es':
-        specifier: 1.10.0-20240703080008-312294d02bf9.1
-        version: 1.10.0-20240703080008-312294d02bf9.1(@bufbuild/protobuf@1.10.0)
-      '@buf/penumbra-zone_penumbra.connectrpc_es':
-        specifier: 1.4.0-20240703080008-312294d02bf9.3
-        version: 1.4.0-20240703080008-312294d02bf9.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
-      '@buf/tendermint_tendermint.bufbuild_es':
-        specifier: 1.10.0-20231117195010-33ed361a9051.1
-        version: 1.10.0-20231117195010-33ed361a9051.1(@bufbuild/protobuf@1.10.0)
       '@bufbuild/protobuf':
         specifier: ^1.10.0
         version: 1.10.0
@@ -39,6 +21,15 @@ importers:
         specifier: ^1.4.0
         version: 1.4.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
     devDependencies:
+      '@buf/connectrpc_eliza.bufbuild_es':
+        specifier: 1.10.0-20230913231627-233fca715f49.1
+        version: 1.10.0-20230913231627-233fca715f49.1(@bufbuild/protobuf@1.10.0)
+      '@buf/connectrpc_eliza.connectrpc_es':
+        specifier: 1.4.0-20230913231627-233fca715f49.3
+        version: 1.4.0-20230913231627-233fca715f49.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
+      '@buf/penumbra-zone_penumbra.bufbuild_es':
+        specifier: 1.10.0-20240703080008-312294d02bf9.1
+        version: 1.10.0-20240703080008-312294d02bf9.1(@bufbuild/protobuf@1.10.0)
       '@changesets/cli':
         specifier: ^2.27.3
         version: 2.27.7
@@ -181,23 +172,23 @@ importers:
         specifier: ^1.10.0
         version: 1.10.0
       '@cosmjs/proto-signing':
-        specifier: ^0.32.3
+        specifier: ^0.32.4
         version: 0.32.4
       '@cosmjs/stargate':
-        specifier: ^0.32.3
+        specifier: ^0.32.4
         version: 0.32.4(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@cosmos-kit/core':
-        specifier: ^2.12.0
+        specifier: ^2.13.1
         version: 2.13.1(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@cosmos-kit/react':
-        specifier: ^2.15.0
-        version: 2.17.2(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@interchain-ui/react@1.23.25(@types/react@18.3.3)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react-dom@18.3.0)(@types/react@18.3.3)(bufferutil@4.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10)
+        specifier: ^2.18.0
+        version: 2.18.0(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@interchain-ui/react@1.23.29(@types/react@18.3.3)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react-dom@18.3.0)(@types/react@18.3.3)(bufferutil@4.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10)
       '@interchain-ui/react':
-        specifier: ^1.23.16
-        version: 1.23.25(@types/react@18.3.3)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^1.23.29
+        version: 1.23.29(@types/react@18.3.3)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@penumbra-labs/registry':
-        specifier: 10.0.0
-        version: 10.0.0
+        specifier: 11.0.0
+        version: 11.0.0
       '@penumbra-zone/bech32m':
         specifier: workspace:*
         version: link:../../packages/bech32m
@@ -256,11 +247,11 @@ importers:
         specifier: ^9.1.2
         version: 9.1.2
       chain-registry:
-        specifier: ^1.62.8
-        version: 1.63.24
+        specifier: ^1.63.46
+        version: 1.63.46
       cosmos-kit:
-        specifier: ^2.17.0
-        version: 2.18.4(@chain-registry/types@0.44.11)(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@terra-money/terra.js@3.1.10)(@walletconnect/sign-client@2.13.3(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@walletconnect/types@2.13.3)(axios@1.7.2)(bufferutil@4.0.8)(cosmjs-types@0.9.0)(react@18.3.1)(utf-8-validate@5.0.10)
+        specifier: ^2.18.4
+        version: 2.18.4(@chain-registry/types@0.45.38)(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@terra-money/terra.js@3.1.10)(@walletconnect/sign-client@2.13.3(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@walletconnect/types@2.13.3)(axios@1.7.2)(bufferutil@4.0.8)(cosmjs-types@0.9.0)(react@18.3.1)(utf-8-validate@5.0.10)
       date-fns:
         specifier: ^3.6.0
         version: 3.6.0
@@ -305,8 +296,8 @@ importers:
         version: 4.5.4(@types/react@18.3.3)(immer@10.1.1)(react@18.3.1)
     devDependencies:
       '@chain-registry/types':
-        specifier: ^0.44.6
-        version: 0.44.11
+        specifier: ^0.45.38
+        version: 0.45.38
       '@types/lodash':
         specifier: ^4.17.4
         version: 4.17.6
@@ -350,6 +341,9 @@ importers:
         specifier: ^3.4.3
         version: 3.4.4(ts-node@10.9.2(@swc/core@1.6.13(@swc/helpers@0.5.11))(@types/node@20.14.10)(typescript@5.5.3))
     devDependencies:
+      '@buf/tendermint_tendermint.bufbuild_es':
+        specifier: 1.10.0-20231117195010-33ed361a9051.1
+        version: 1.10.0-20231117195010-33ed361a9051.1(@bufbuild/protobuf@1.10.0)
       '@penumbra-zone/crypto-web':
         specifier: workspace:*
         version: link:../../packages/crypto
@@ -368,6 +362,10 @@ importers:
       bech32:
         specifier: ^2.0.0
         version: 2.0.0
+    devDependencies:
+      '@penumbra-zone/protobuf':
+        specifier: workspace:*
+        version: link:../protobuf
 
   packages/client:
     devDependencies:
@@ -402,9 +400,6 @@ importers:
 
   packages/getters:
     devDependencies:
-      '@buf/penumbra-zone_penumbra.bufbuild_es':
-        specifier: 1.10.0-20240703080008-312294d02bf9.1
-        version: 1.10.0-20240703080008-312294d02bf9.1(@bufbuild/protobuf@1.10.0)
       '@bufbuild/protobuf':
         specifier: ^1.10.0
         version: 1.10.0
@@ -419,36 +414,33 @@ importers:
 
   packages/perspective:
     devDependencies:
-      '@buf/penumbra-zone_penumbra.bufbuild_es':
-        specifier: 1.10.0-20240703080008-312294d02bf9.1
-        version: 1.10.0-20240703080008-312294d02bf9.1(@bufbuild/protobuf@1.10.0)
       '@penumbra-zone/bech32m':
         specifier: workspace:*
         version: link:../bech32m
       '@penumbra-zone/getters':
         specifier: workspace:*
         version: link:../getters
+      '@penumbra-zone/protobuf':
+        specifier: workspace:*
+        version: link:../protobuf
       '@penumbra-zone/wasm':
         specifier: workspace:*
         version: link:../wasm
 
   packages/protobuf:
     devDependencies:
-      '@buf/cosmos_ibc.bufbuild_es':
-        specifier: 1.10.0-20240703151202-d7191877c701.1
-        version: 1.10.0-20240703151202-d7191877c701.1(@bufbuild/protobuf@1.10.0)
-      '@buf/cosmos_ibc.connectrpc_es':
-        specifier: 1.4.0-20240703151202-d7191877c701.3
-        version: 1.4.0-20240703151202-d7191877c701.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
-      '@buf/penumbra-zone_penumbra.bufbuild_es':
-        specifier: 1.10.0-20240703080008-312294d02bf9.1
-        version: 1.10.0-20240703080008-312294d02bf9.1(@bufbuild/protobuf@1.10.0)
-      '@buf/penumbra-zone_penumbra.connectrpc_es':
-        specifier: 1.4.0-20240703080008-312294d02bf9.3
-        version: 1.4.0-20240703080008-312294d02bf9.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
+      '@bufbuild/buf':
+        specifier: ^1.0
+        version: 1.35.1
       '@bufbuild/protobuf':
         specifier: ^1.10.0
         version: 1.10.0
+      '@bufbuild/protoc-gen-es':
+        specifier: ^1.10.0
+        version: 1.10.0(@bufbuild/protobuf@1.10.0)
+      '@connectrpc/protoc-gen-connect-es':
+        specifier: ^1.4.0
+        version: 1.4.0(@bufbuild/protoc-gen-es@1.10.0(@bufbuild/protobuf@1.10.0))(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
 
   packages/query:
     dependencies:
@@ -465,12 +457,6 @@ importers:
         specifier: ^3.1.1
         version: 3.1.1
     devDependencies:
-      '@buf/cosmos_ibc.bufbuild_es':
-        specifier: 1.10.0-20240703151202-d7191877c701.1
-        version: 1.10.0-20240703151202-d7191877c701.1(@bufbuild/protobuf@1.10.0)
-      '@buf/penumbra-zone_penumbra.bufbuild_es':
-        specifier: 1.10.0-20240703080008-312294d02bf9.1
-        version: 1.10.0-20240703080008-312294d02bf9.1(@bufbuild/protobuf@1.10.0)
       '@penumbra-zone/bech32m':
         specifier: workspace:*
         version: link:../bech32m
@@ -490,36 +476,8 @@ importers:
         specifier: workspace:*
         version: link:../wasm
 
-  packages/react:
-    dependencies:
-      '@bufbuild/protobuf':
-        specifier: ^1.10.0
-        version: 1.10.0
-      '@penumbra-zone/client':
-        specifier: workspace:*
-        version: link:../client
-      '@penumbra-zone/protobuf':
-        specifier: workspace:*
-        version: link:../protobuf
-      '@penumbra-zone/transport-dom':
-        specifier: workspace:*
-        version: link:../transport-dom
-    devDependencies:
-      '@connectrpc/connect':
-        specifier: ^1.4.0
-        version: 1.4.0(@bufbuild/protobuf@1.10.0)
-      '@types/react':
-        specifier: ^18.3.2
-        version: 18.3.3
-      react:
-        specifier: ^18.3.1
-        version: 18.3.1
-
   packages/services:
     devDependencies:
-      '@buf/penumbra-zone_penumbra.bufbuild_es':
-        specifier: 1.10.0-20240703080008-312294d02bf9.1
-        version: 1.10.0-20240703080008-312294d02bf9.1(@bufbuild/protobuf@1.10.0)
       '@bufbuild/protobuf':
         specifier: ^1.10.0
         version: 1.10.0
@@ -535,9 +493,6 @@ importers:
       '@penumbra-zone/getters':
         specifier: workspace:*
         version: link:../getters
-      '@penumbra-zone/perspective':
-        specifier: workspace:*
-        version: link:../perspective
       '@penumbra-zone/protobuf':
         specifier: workspace:*
         version: link:../protobuf
@@ -562,15 +517,12 @@ importers:
 
   packages/storage:
     dependencies:
-      '@buf/penumbra-zone_penumbra.bufbuild_es':
-        specifier: 1.10.0-20240703080008-312294d02bf9.1
-        version: 1.10.0-20240703080008-312294d02bf9.1(@bufbuild/protobuf@1.10.0)
       '@bufbuild/protobuf':
         specifier: ^1.10.0
         version: 1.10.0
       '@penumbra-labs/registry':
-        specifier: 10.0.0
-        version: 10.0.0
+        specifier: 11.0.0
+        version: 11.0.0
       '@penumbra-zone/bech32m':
         specifier: workspace:*
         version: link:../bech32m
@@ -587,6 +539,9 @@ importers:
         specifier: ^8.0.0
         version: 8.0.0
     devDependencies:
+      '@penumbra-zone/protobuf':
+        specifier: workspace:*
+        version: link:../protobuf
       fetch-mock:
         specifier: ^10.0.7
         version: 10.0.7
@@ -636,12 +591,6 @@ importers:
         specifier: ^3.23.8
         version: 3.23.8
     devDependencies:
-      '@buf/cosmos_ibc.bufbuild_es':
-        specifier: 1.10.0-20240703151202-d7191877c701.1
-        version: 1.10.0-20240703151202-d7191877c701.1(@bufbuild/protobuf@1.10.0)
-      '@buf/penumbra-zone_penumbra.bufbuild_es':
-        specifier: 1.10.0-20240703080008-312294d02bf9.1
-        version: 1.10.0-20240703080008-312294d02bf9.1(@bufbuild/protobuf@1.10.0)
       '@bufbuild/protobuf':
         specifier: ^1.10.0
         version: 1.10.0
@@ -651,12 +600,12 @@ importers:
       '@penumbra-zone/getters':
         specifier: workspace:*
         version: link:../getters
+      '@penumbra-zone/protobuf':
+        specifier: workspace:*
+        version: link:../protobuf
 
   packages/ui:
     dependencies:
-      '@buf/penumbra-zone_penumbra.bufbuild_es':
-        specifier: 1.10.0-20240703080008-312294d02bf9.1
-        version: 1.10.0-20240703080008-312294d02bf9.1(@bufbuild/protobuf@1.10.0)
       '@bufbuild/protobuf':
         specifier: ^1.10.0
         version: 1.10.0
@@ -667,11 +616,14 @@ importers:
         specifier: ^11.11.5
         version: 11.11.5(@emotion/react@11.11.4(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react@18.3.1)
       '@penumbra-labs/registry':
-        specifier: 10.0.0
-        version: 10.0.0
+        specifier: 11.0.0
+        version: 11.0.0
       '@penumbra-zone/bech32m':
         specifier: workspace:*
         version: link:../bech32m
+      '@penumbra-zone/perspective':
+        specifier: workspace:*
+        version: link:../perspective
       '@penumbra-zone/types':
         specifier: workspace:*
         version: link:../types
@@ -696,6 +648,9 @@ importers:
       '@radix-ui/react-progress':
         specifier: ^1.0.3
         version: 1.1.0(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@radix-ui/react-radio-group':
+        specifier: ^1.2.0
+        version: 1.2.0(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-select':
         specifier: ^2.0.0
         version: 2.1.1(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -765,9 +720,6 @@ importers:
       cmdk:
         specifier: 0.2.0
         version: 0.2.0(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      djb2a:
-        specifier: ^2.0.0
-        version: 2.0.0
       framer-motion:
         specifier: ^11.2.4
         version: 11.2.14(@emotion/is-prop-valid@1.2.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -777,6 +729,9 @@ importers:
       lucide-react:
         specifier: ^0.378.0
         version: 0.378.0(react@18.3.1)
+      murmurhash3js:
+        specifier: ^3.0.1
+        version: 3.0.1
       postcss:
         specifier: ^8.4.38
         version: 8.4.39
@@ -811,9 +766,9 @@ importers:
       '@penumbra-zone/getters':
         specifier: workspace:*
         version: link:../getters
-      '@penumbra-zone/perspective':
+      '@penumbra-zone/protobuf':
         specifier: workspace:*
-        version: link:../perspective
+        version: link:../protobuf
       '@storybook/addon-essentials':
         specifier: ^8.1.1
         version: 8.1.11(@types/react-dom@18.3.0)(@types/react@18.3.3)(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -844,9 +799,15 @@ importers:
       '@storybook/theming':
         specifier: ^8.1.11
         version: 8.1.11(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@testing-library/user-event':
+        specifier: ^14.5.2
+        version: 14.5.2(@testing-library/dom@10.1.0)
       '@types/humanize-duration':
         specifier: ^3.27.4
         version: 3.27.4
+      '@types/murmurhash3js':
+        specifier: ^3.0.7
+        version: 3.0.7
       '@types/react':
         specifier: ^18.3.2
         version: 18.3.3
@@ -869,9 +830,6 @@ importers:
         specifier: workspace:*
         version: link:../keys
     devDependencies:
-      '@buf/penumbra-zone_penumbra.bufbuild_es':
-        specifier: 1.10.0-20240703080008-312294d02bf9.1
-        version: 1.10.0-20240703080008-312294d02bf9.1(@bufbuild/protobuf@1.10.0)
       '@bufbuild/protobuf':
         specifier: ^1.10.0
         version: 1.10.0
@@ -1584,16 +1542,6 @@ packages:
     peerDependencies:
       '@bufbuild/protobuf': ^1.10.0
 
-  '@buf/cosmos_cosmos-proto.bufbuild_es@1.7.2-20211202220400-1935555c206d.2':
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_cosmos-proto.bufbuild_es/-/cosmos_cosmos-proto.bufbuild_es-1.7.2-20211202220400-1935555c206d.2.tgz}
-    peerDependencies:
-      '@bufbuild/protobuf': ^1.7.2
-
-  '@buf/cosmos_cosmos-proto.connectrpc_es@1.4.0-20211202220400-1935555c206d.3':
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_cosmos-proto.connectrpc_es/-/cosmos_cosmos-proto.connectrpc_es-1.4.0-20211202220400-1935555c206d.3.tgz}
-    peerDependencies:
-      '@connectrpc/connect': ^1.4.0
-
   '@buf/cosmos_cosmos-sdk.bufbuild_es@1.10.0-20230522115704-e7a85cef453e.1':
     resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_cosmos-sdk.bufbuild_es/-/cosmos_cosmos-sdk.bufbuild_es-1.10.0-20230522115704-e7a85cef453e.1.tgz}
     peerDependencies:
@@ -1603,26 +1551,6 @@ packages:
     resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_cosmos-sdk.bufbuild_es/-/cosmos_cosmos-sdk.bufbuild_es-1.10.0-20230719110346-aa25660f4ff7.1.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.10.0
-
-  '@buf/cosmos_cosmos-sdk.bufbuild_es@1.7.2-20230522115704-e7a85cef453e.2':
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_cosmos-sdk.bufbuild_es/-/cosmos_cosmos-sdk.bufbuild_es-1.7.2-20230522115704-e7a85cef453e.2.tgz}
-    peerDependencies:
-      '@bufbuild/protobuf': ^1.7.2
-
-  '@buf/cosmos_cosmos-sdk.bufbuild_es@1.7.2-20230719110346-aa25660f4ff7.2':
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_cosmos-sdk.bufbuild_es/-/cosmos_cosmos-sdk.bufbuild_es-1.7.2-20230719110346-aa25660f4ff7.2.tgz}
-    peerDependencies:
-      '@bufbuild/protobuf': ^1.7.2
-
-  '@buf/cosmos_cosmos-sdk.connectrpc_es@1.4.0-20230522115704-e7a85cef453e.3':
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_cosmos-sdk.connectrpc_es/-/cosmos_cosmos-sdk.connectrpc_es-1.4.0-20230522115704-e7a85cef453e.3.tgz}
-    peerDependencies:
-      '@connectrpc/connect': ^1.4.0
-
-  '@buf/cosmos_cosmos-sdk.connectrpc_es@1.4.0-20230719110346-aa25660f4ff7.3':
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_cosmos-sdk.connectrpc_es/-/cosmos_cosmos-sdk.connectrpc_es-1.4.0-20230719110346-aa25660f4ff7.3.tgz}
-    peerDependencies:
-      '@connectrpc/connect': ^1.4.0
 
   '@buf/cosmos_gogo-proto.bufbuild_es@1.10.0-20221020125208-34d970b699f8.1':
     resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_gogo-proto.bufbuild_es/-/cosmos_gogo-proto.bufbuild_es-1.10.0-20221020125208-34d970b699f8.1.tgz}
@@ -1634,70 +1562,15 @@ packages:
     peerDependencies:
       '@bufbuild/protobuf': ^1.10.0
 
-  '@buf/cosmos_gogo-proto.bufbuild_es@1.7.2-20221020125208-34d970b699f8.2':
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_gogo-proto.bufbuild_es/-/cosmos_gogo-proto.bufbuild_es-1.7.2-20221020125208-34d970b699f8.2.tgz}
-    peerDependencies:
-      '@bufbuild/protobuf': ^1.7.2
-
-  '@buf/cosmos_gogo-proto.bufbuild_es@1.7.2-20230509103710-5e5b9fdd0180.2':
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_gogo-proto.bufbuild_es/-/cosmos_gogo-proto.bufbuild_es-1.7.2-20230509103710-5e5b9fdd0180.2.tgz}
-    peerDependencies:
-      '@bufbuild/protobuf': ^1.7.2
-
-  '@buf/cosmos_gogo-proto.connectrpc_es@1.4.0-20221020125208-34d970b699f8.3':
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_gogo-proto.connectrpc_es/-/cosmos_gogo-proto.connectrpc_es-1.4.0-20221020125208-34d970b699f8.3.tgz}
-    peerDependencies:
-      '@connectrpc/connect': ^1.4.0
-
-  '@buf/cosmos_gogo-proto.connectrpc_es@1.4.0-20230509103710-5e5b9fdd0180.3':
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_gogo-proto.connectrpc_es/-/cosmos_gogo-proto.connectrpc_es-1.4.0-20230509103710-5e5b9fdd0180.3.tgz}
-    peerDependencies:
-      '@connectrpc/connect': ^1.4.0
-
   '@buf/cosmos_ibc.bufbuild_es@1.10.0-20230913112312-7ab44ae956a0.1':
     resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_ibc.bufbuild_es/-/cosmos_ibc.bufbuild_es-1.10.0-20230913112312-7ab44ae956a0.1.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.10.0
 
-  '@buf/cosmos_ibc.bufbuild_es@1.10.0-20240703151202-d7191877c701.1':
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_ibc.bufbuild_es/-/cosmos_ibc.bufbuild_es-1.10.0-20240703151202-d7191877c701.1.tgz}
-    peerDependencies:
-      '@bufbuild/protobuf': ^1.10.0
-
-  '@buf/cosmos_ibc.bufbuild_es@1.7.2-20230913112312-7ab44ae956a0.2':
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_ibc.bufbuild_es/-/cosmos_ibc.bufbuild_es-1.7.2-20230913112312-7ab44ae956a0.2.tgz}
-    peerDependencies:
-      '@bufbuild/protobuf': ^1.7.2
-
-  '@buf/cosmos_ibc.bufbuild_es@1.7.2-20240703151202-d7191877c701.2':
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_ibc.bufbuild_es/-/cosmos_ibc.bufbuild_es-1.7.2-20240703151202-d7191877c701.2.tgz}
-    peerDependencies:
-      '@bufbuild/protobuf': ^1.7.2
-
-  '@buf/cosmos_ibc.connectrpc_es@1.4.0-20230913112312-7ab44ae956a0.3':
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_ibc.connectrpc_es/-/cosmos_ibc.connectrpc_es-1.4.0-20230913112312-7ab44ae956a0.3.tgz}
-    peerDependencies:
-      '@connectrpc/connect': ^1.4.0
-
-  '@buf/cosmos_ibc.connectrpc_es@1.4.0-20240703151202-d7191877c701.3':
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_ibc.connectrpc_es/-/cosmos_ibc.connectrpc_es-1.4.0-20240703151202-d7191877c701.3.tgz}
-    peerDependencies:
-      '@connectrpc/connect': ^1.4.0
-
   '@buf/cosmos_ics23.bufbuild_es@1.10.0-20221207100654-55085f7c710a.1':
     resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_ics23.bufbuild_es/-/cosmos_ics23.bufbuild_es-1.10.0-20221207100654-55085f7c710a.1.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.10.0
-
-  '@buf/cosmos_ics23.bufbuild_es@1.7.2-20221207100654-55085f7c710a.2':
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_ics23.bufbuild_es/-/cosmos_ics23.bufbuild_es-1.7.2-20221207100654-55085f7c710a.2.tgz}
-    peerDependencies:
-      '@bufbuild/protobuf': ^1.7.2
-
-  '@buf/cosmos_ics23.connectrpc_es@1.4.0-20221207100654-55085f7c710a.3':
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_ics23.connectrpc_es/-/cosmos_ics23.connectrpc_es-1.4.0-20221207100654-55085f7c710a.3.tgz}
-    peerDependencies:
-      '@connectrpc/connect': ^1.4.0
 
   '@buf/googleapis_googleapis.bufbuild_es@1.10.0-20220908150232-8d7204855ec1.1':
     resolution: {tarball: https://buf.build/gen/npm/v1/@buf/googleapis_googleapis.bufbuild_es/-/googleapis_googleapis.bufbuild_es-1.10.0-20220908150232-8d7204855ec1.1.tgz}
@@ -1714,58 +1587,72 @@ packages:
     peerDependencies:
       '@bufbuild/protobuf': ^1.10.0
 
-  '@buf/googleapis_googleapis.bufbuild_es@1.7.2-20220908150232-8d7204855ec1.2':
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/googleapis_googleapis.bufbuild_es/-/googleapis_googleapis.bufbuild_es-1.7.2-20220908150232-8d7204855ec1.2.tgz}
-    peerDependencies:
-      '@bufbuild/protobuf': ^1.7.2
-
-  '@buf/googleapis_googleapis.bufbuild_es@1.7.2-20221214150216-75b4300737fb.2':
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/googleapis_googleapis.bufbuild_es/-/googleapis_googleapis.bufbuild_es-1.7.2-20221214150216-75b4300737fb.2.tgz}
-    peerDependencies:
-      '@bufbuild/protobuf': ^1.7.2
-
-  '@buf/googleapis_googleapis.bufbuild_es@1.7.2-20230502210827-cc916c318597.2':
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/googleapis_googleapis.bufbuild_es/-/googleapis_googleapis.bufbuild_es-1.7.2-20230502210827-cc916c318597.2.tgz}
-    peerDependencies:
-      '@bufbuild/protobuf': ^1.7.2
-
-  '@buf/googleapis_googleapis.connectrpc_es@1.4.0-20220908150232-8d7204855ec1.3':
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/googleapis_googleapis.connectrpc_es/-/googleapis_googleapis.connectrpc_es-1.4.0-20220908150232-8d7204855ec1.3.tgz}
-    peerDependencies:
-      '@connectrpc/connect': ^1.4.0
-
-  '@buf/googleapis_googleapis.connectrpc_es@1.4.0-20221214150216-75b4300737fb.3':
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/googleapis_googleapis.connectrpc_es/-/googleapis_googleapis.connectrpc_es-1.4.0-20221214150216-75b4300737fb.3.tgz}
-    peerDependencies:
-      '@connectrpc/connect': ^1.4.0
-
-  '@buf/googleapis_googleapis.connectrpc_es@1.4.0-20230502210827-cc916c318597.3':
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/googleapis_googleapis.connectrpc_es/-/googleapis_googleapis.connectrpc_es-1.4.0-20230502210827-cc916c318597.3.tgz}
-    peerDependencies:
-      '@connectrpc/connect': ^1.4.0
-
   '@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240703080008-312294d02bf9.1':
     resolution: {tarball: https://buf.build/gen/npm/v1/@buf/penumbra-zone_penumbra.bufbuild_es/-/penumbra-zone_penumbra.bufbuild_es-1.10.0-20240703080008-312294d02bf9.1.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.10.0
-
-  '@buf/penumbra-zone_penumbra.bufbuild_es@1.7.2-20240703080008-312294d02bf9.2':
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/penumbra-zone_penumbra.bufbuild_es/-/penumbra-zone_penumbra.bufbuild_es-1.7.2-20240703080008-312294d02bf9.2.tgz}
-    peerDependencies:
-      '@bufbuild/protobuf': ^1.7.2
-
-  '@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240703080008-312294d02bf9.3':
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/penumbra-zone_penumbra.connectrpc_es/-/penumbra-zone_penumbra.connectrpc_es-1.4.0-20240703080008-312294d02bf9.3.tgz}
-    peerDependencies:
-      '@connectrpc/connect': ^1.4.0
 
   '@buf/tendermint_tendermint.bufbuild_es@1.10.0-20231117195010-33ed361a9051.1':
     resolution: {tarball: https://buf.build/gen/npm/v1/@buf/tendermint_tendermint.bufbuild_es/-/tendermint_tendermint.bufbuild_es-1.10.0-20231117195010-33ed361a9051.1.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.10.0
 
+  '@bufbuild/buf-darwin-arm64@1.35.1':
+    resolution: {integrity: sha512-Yy+sk+8sg3LDvMSZLGUIoMCkZajkQSZkdxO96mpqJagKlEYPLGTtakVFCVNX9KgK/sv1bd9sU55iMGXE3+eIYw==}
+    engines: {node: '>=12'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@bufbuild/buf-darwin-x64@1.35.1':
+    resolution: {integrity: sha512-LcscoNTCHFeb5y9sitw4w6HWZtJ4Ja/MDBCUU9A8/OGHJSESV0JjhbvVHGNOIsKUbPq5p/SVjYA/Ab/wlmmpaA==}
+    engines: {node: '>=12'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@bufbuild/buf-linux-aarch64@1.35.1':
+    resolution: {integrity: sha512-bPeiSURl8WFxCdawtJjAjUOMqknVTw763NLIDcbYSH1/wTiUbM5QeXCORRlHKXtMGM89SYU5AatcY9UhQ+sn9g==}
+    engines: {node: '>=12'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@bufbuild/buf-linux-x64@1.35.1':
+    resolution: {integrity: sha512-n6ziazYjNH9H1JjHiacGi20rIyZuKnsHjF8qWisO8KGajhnS/7tpq0VzYdorqqWyJ1TcnLBWHj+dWYuGay9Nag==}
+    engines: {node: '>=12'}
+    cpu: [x64]
+    os: [linux]
+
+  '@bufbuild/buf-win32-arm64@1.35.1':
+    resolution: {integrity: sha512-3B65+iA1i/LDjJBseEpAvrkEI7VJqrvW39PyYVkIXSHHT917O+n95g74pn38A0XkggN5lEibLEkipBMDUfwMew==}
+    engines: {node: '>=12'}
+    cpu: [arm64]
+    os: [win32]
+
+  '@bufbuild/buf-win32-x64@1.35.1':
+    resolution: {integrity: sha512-iafrcs+1FMlD+3ZjI1kVBHGOluT6YcoAUETrGMbQjRha6dL5s2Ldr0G7zCKLIT13yEKG5QTyP8z8gVEpk8C8wg==}
+    engines: {node: '>=12'}
+    cpu: [x64]
+    os: [win32]
+
+  '@bufbuild/buf@1.35.1':
+    resolution: {integrity: sha512-POtbb4wRhvgCmmClnuaQTpkHL4ukhFItuS/AaD7QDY0kamn4ExNJz4XlHG5jeJODaQ1Wq3f9qn7UIgUr6CUODw==}
+    engines: {node: '>=12'}
+    hasBin: true
+
   '@bufbuild/protobuf@1.10.0':
     resolution: {integrity: sha512-QDdVFLoN93Zjg36NoQPZfsVH9tZew7wKDKyV5qRdj8ntT4wQCOradQjRaTdwMhWUYsgKsvCINKKm87FdEk96Ag==}
+
+  '@bufbuild/protoc-gen-es@1.10.0':
+    resolution: {integrity: sha512-zBYBsVT/ul4uZb6F+kD7/k4sWNHVVbEPfJwKi0FDr+9VJo8MKIofI6pkr5ksBLr4fi/74r+e/75Xi/0clL5dXg==}
+    engines: {node: '>=14'}
+    hasBin: true
+    peerDependencies:
+      '@bufbuild/protobuf': 1.10.0
+    peerDependenciesMeta:
+      '@bufbuild/protobuf':
+        optional: true
+
+  '@bufbuild/protoplugin@1.10.0':
+    resolution: {integrity: sha512-u6NE4vL0lw1+EK4/PiE/SQB7fKO4LRJNTEScIXVOi2x88K/c8WKc/k0KyEaA0asVBMpwekJQZGnRyj04ZtN5Gg==}
 
   '@chain-registry/client@1.48.20':
     resolution: {integrity: sha512-MTYiu/A2KkRGZbzGOApXqSRrp08OV1oUJ8M2bj6TQ1887cjwaL/Qlwpa+lIG3ZvBnkd4liIW+Mg6aEDjvHK6Vw==}
@@ -1782,14 +1669,11 @@ packages:
   '@chain-registry/keplr@1.68.24':
     resolution: {integrity: sha512-sCmBNx7ViqExB9DhwTcRfSmaNycQOqnVsOQDhFdosvjiaX9XUvopPTQ5/h9g76AmqugVA4rbo+dEooFEsEOmGA==}
 
-  '@chain-registry/types@0.44.11':
-    resolution: {integrity: sha512-kV4FsGOfRXwGs3mbxcVWjr4TQ5kVqRPwEhMP5/QvPz4vjP7GYYdQ/HFhActiKicgqR5z4q+dwIRsVPiITlAAKg==}
-
   '@chain-registry/types@0.45.1':
     resolution: {integrity: sha512-xDq3RZwLM6VZt7Bwrilm588xTce7mOZIpLIjpwaT/V6HD3TuzJC3FWMRAxUtMuhQldcjW8b8em5HdFY467FRhA==}
 
-  '@chain-registry/types@0.45.20':
-    resolution: {integrity: sha512-O/cvF68P0IiONdA+xgEZj3ofYpXrKwBMO3voVmlUsmf9i7HG++pqP3THGGDT5N5zxvTeD3vUAnl5dY8ReOr+lw==}
+  '@chain-registry/types@0.45.38':
+    resolution: {integrity: sha512-dQyU6MLIP2Srkcahy9uWTyDFRlulKzHJQ+fPQIn96SYlL+vgA0Khf52UBvYA7sm/hKl7pqJ5Y7/cp9Fh0KdpYQ==}
 
   '@chain-registry/utils@1.46.20':
     resolution: {integrity: sha512-FK1psbkCfVpj4XJRPgRt6RynwH/lYBw6HdnWdlCShmFeVDw+mk5rdtzpl/Nq/xBlAVnFTPuv58Jun7wm9AvcTw==}
@@ -1869,6 +1753,19 @@ packages:
     resolution: {integrity: sha512-vZeOkKaAjyV4+RH3+rJZIfDFJAfr+7fyYr6sLDKbYX3uuTVszhFe9/YKf5DNqrDb5cKdKVlYkGn6DTDqMitAnA==}
     peerDependencies:
       '@bufbuild/protobuf': ^1.4.2
+
+  '@connectrpc/protoc-gen-connect-es@1.4.0':
+    resolution: {integrity: sha512-/7vQ8Q7mEBhV8qEVh/eifRQlQnf8EJ6weMwCD2DljVAQRlZYcW9SLxjYZhV1uM1ZZqQC7Cw2vvgXRg2XQswHBg==}
+    engines: {node: '>=16.0.0'}
+    hasBin: true
+    peerDependencies:
+      '@bufbuild/protoc-gen-es': ^1.7.2
+      '@connectrpc/connect': 1.4.0
+    peerDependenciesMeta:
+      '@bufbuild/protoc-gen-es':
+        optional: true
+      '@connectrpc/connect':
+        optional: true
 
   '@cosmjs/amino@0.32.3':
     resolution: {integrity: sha512-G4zXl+dJbqrz1sSJ56H/25l5NJEk/pAPIr8piAHgbXYw88OdAOlpA26PQvk2IbSN/rRgVbvlLTNgX2tzz1dyUA==}
@@ -2063,16 +1960,16 @@ packages:
   '@cosmos-kit/owallet@2.11.2':
     resolution: {integrity: sha512-HlmSmH5nRG0dOMkK+4MbqLBveA0bFaULnSgtZLtEEV1mUAhrwrZ4hreEBg4yNKpJwCXFLR/7w18u/JMstVkOmw==}
 
-  '@cosmos-kit/react-lite@2.12.2':
-    resolution: {integrity: sha512-hSpLUdyw5XR+BRRRTh4Zczc2a1opbqazQa2BOg/SjldREJ6kXNgJceqgvgpM1VbWXek+1M2egpaAvIsnKQx9Ww==}
+  '@cosmos-kit/react-lite@2.13.0':
+    resolution: {integrity: sha512-BeMjWcqDmto2Fen5iHxg/K+cEb6efWjOmQRA2au2WeIurnFgmreBRTSTXWEuRJx0/6IGM73NIJOtxEMfJFjKsw==}
     peerDependencies:
       '@types/react': '>= 17'
       '@types/react-dom': '>= 17'
       react: ^18
       react-dom: ^18
 
-  '@cosmos-kit/react@2.17.2':
-    resolution: {integrity: sha512-8IYsV46u7TGKa/NqjQbk47LTCsXOYnOlFfa2+O50J1/ad+kG25l2IBf9jRxdIAAYVgAvsui5uO0wXp0iUka8AQ==}
+  '@cosmos-kit/react@2.18.0':
+    resolution: {integrity: sha512-WFOkRw41mD+3ygbs2SJjooDiI5/HJ4XBJxGzdWT4aOWy8+fIGj7JdczWWGJXngsuKwD9GT4CKmB5PumWDphlsA==}
     peerDependencies:
       '@interchain-ui/react': ^1.23.9
       '@types/react': '>= 17'
@@ -2684,8 +2581,8 @@ packages:
     peerDependencies:
       google-protobuf: ^3.14.0
 
-  '@interchain-ui/react@1.23.25':
-    resolution: {integrity: sha512-PVV/gzhqqvt9krJn/Y2hmuDaKu0h2PQRgtprAuJ5eEBRdT5V/asaHtKmPadoDZfDVisYODxE1PnPECcKRPLG7w==}
+  '@interchain-ui/react@1.23.29':
+    resolution: {integrity: sha512-t9aPw0BBmf/ePLGvBARAeoFZWy1vO+K7Ch9d5jtpqp5V07A2jCtMKwCNNbhBkllGmKAjZWvF/gTuj1ozz+W3xg==}
     peerDependencies:
       react: ^16.14.0 || ^17.0.0 || ^18.0.0
       react-dom: ^16.14.0 || ^17.0.0 || ^18.0.0
@@ -2713,7 +2610,7 @@ packages:
   '@joshwooding/vite-plugin-react-docgen-typescript@0.3.1':
     resolution: {integrity: sha512-pdoMZ9QaPnVlSM+SdU/wgg0nyD/8wQ7y90ttO2CMCyrrm7RxveYIJ5eNfjPaoMFqW41LZra7QO9j+xV4Y18Glw==}
     peerDependencies:
-      typescript: '>= 4.3.x'
+      typescript: 5.5.3
       vite: ^3.0.0 || ^4.0.0 || ^5.0.0
     peerDependenciesMeta:
       typescript:
@@ -3035,8 +2932,8 @@ packages:
     resolution: {integrity: sha512-HNjmfLQEVRZmHRET336f20H/8kOozUGwk7yajvsonjNxbj2wBTK1WsQuHkD5yYh9RxFGL2EyDHryOihOwUoKDA==}
     engines: {node: '>= 10.0.0'}
 
-  '@penumbra-labs/registry@10.0.0':
-    resolution: {integrity: sha512-LyeA5pYwi2YatMEeb6MB6PpyrRkZivyPvr/HLjFM0kOQTWK8hOS8XO+huF50QFW+6AGQggIs6R9yFE109o/fMA==}
+  '@penumbra-labs/registry@11.0.0':
+    resolution: {integrity: sha512-BMxCpAkGZ2f8Y16gCDi9vXMqYBXH73hCzBJkgBKEqUBdRnHUuWXmgi/bEQPN9lfR4+Vs2/Wh8+4NnW4xTGRMFQ==}
 
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
@@ -3498,6 +3395,19 @@ packages:
 
   '@radix-ui/react-progress@1.1.0':
     resolution: {integrity: sha512-aSzvnYpP725CROcxAOEBVZZSIQVQdHgBr2QQFKySsaD14u8dNT0batuXI+AAGDdAHfXH8rbnHmjYFqVJ21KkRg==}
+    peerDependencies:
+      '@types/react': '*'
+      '@types/react-dom': '*'
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+
+  '@radix-ui/react-radio-group@1.2.0':
+    resolution: {integrity: sha512-yv+oiLaicYMBpqgfpSPw6q+RyXlLdIpQWDHZbUKURxe+nEh53hFXPPlfhfQQtYkS5MMK/5IWIa76SksleQZSzw==}
     peerDependencies:
       '@types/react': '*'
       '@types/react-dom': '*'
@@ -4502,7 +4412,7 @@ packages:
     resolution: {integrity: sha512-+BSmXuZ9j95oKCvHcKztzjZNzBVeXYMoRO2TuflLnknMUA0v9ySp1PhiQxHM4DgAW6t9db1akzc9HoTA5sjTWg==}
     peerDependencies:
       '@preact/preset-vite': '*'
-      typescript: '>= 4.3.x'
+      typescript: 5.5.3
       vite: ^4.0.0 || ^5.0.0
       vite-plugin-glimmerx: '*'
     peerDependenciesMeta:
@@ -4653,7 +4563,7 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
       react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
-      typescript: '>= 4.2.x'
+      typescript: 5.5.3
     peerDependenciesMeta:
       typescript:
         optional: true
@@ -4664,7 +4574,7 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
       react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
-      typescript: '>= 4.2.x'
+      typescript: 5.5.3
     peerDependenciesMeta:
       typescript:
         optional: true
@@ -4787,6 +4697,15 @@ packages:
         optional: true
       react-native:
         optional: true
+
+  '@tanstack/react-virtual@3.8.4':
+    resolution: {integrity: sha512-Dq0VQr3QlTS2qL35g360QaJWBt7tCn/0xw4uZ0dHXPLO1Ak4Z4nVX4vuj1Npg1b/jqNMDToRtR5OIxM2NXRBWg==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+
+  '@tanstack/virtual-core@3.8.4':
+    resolution: {integrity: sha512-iO5Ujgw3O1yIxWDe9FgUPNkGjyT657b1WNX52u+Wv1DyBFEpdCdGkuVaky0M3hHFqNWjAmHWTn4wgj9rTr7ZQg==}
 
   '@terra-money/feather.js@1.2.1':
     resolution: {integrity: sha512-OyXkWriNwb0lCF45eMmtjdOPEmfGKJxgGSnxpM7VxD0Vqr1qqtlcYyQG9wOHXNQrExvZv+uo922B2ZA4S77HsQ==}
@@ -5085,6 +5004,9 @@ packages:
   '@types/minimatch@5.1.2':
     resolution: {integrity: sha512-K0VQKziLUWkVKiRVrx4a40iPaxTUefQmjtkQofBkYRcoaaL/8rhwDWww9qWbrgicNOgnpIsMxyNIUM4+n6dUIA==}
 
+  '@types/murmurhash3js@3.0.7':
+    resolution: {integrity: sha512-jN3Z37nILIW1DZyP6N/NK+aw/zjFHPVb7hjrmdw7jx7FayrhKgkNpo6ZDwAsH8HSANjebBOxoXXtA39gKwyeGw==}
+
   '@types/node@10.12.18':
     resolution: {integrity: sha512-fh+pAqt4xRzPfqA6eh3Z2y6fyZavRIumvjhaCL753+TVkGKGhpPeyrJG2JftD0T9q4GF00KjefsQ+PQNDdWQaQ==}
 
@@ -5214,6 +5136,11 @@ packages:
   '@typescript-eslint/visitor-keys@7.16.0':
     resolution: {integrity: sha512-rMo01uPy9C7XxG7AFsxa8zLnWXTF8N3PYclekWSrurvhwiw1eW88mrKiAYe6s53AUY57nTRz8dJsuuXdkAhzCg==}
     engines: {node: ^18.18.0 || >=20.0.0}
+
+  '@typescript/vfs@1.6.0':
+    resolution: {integrity: sha512-hvJUjNVeBMp77qPINuUvYXj4FyWeeMMKZkxEATEU3hqBAQ7qdTBCUFT7Sp0Zu0faeEtFf+ldXxMEDr/bk73ISg==}
+    peerDependencies:
+      typescript: 5.5.3
 
   '@ungap/structured-clone@1.2.0':
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
@@ -5930,8 +5857,8 @@ packages:
     resolution: {integrity: sha512-13sOfMv2+DWduEU+/xbun3LScLoqN17nBeTLUsmDfKdoiC1fr0n9PU4guu4AhRcOVFk/sW8LyZWHuhWtQZiF+g==}
     engines: {node: '>=4'}
 
-  chain-registry@1.63.24:
-    resolution: {integrity: sha512-DnGv9Vfu0lx+IqXhProiZRYcSrJ0JDZ4TVfpbmM1ceojyibvCLz5JdkosgwUjmjJF0m9Rb3zk9N8KsG3PORnDw==}
+  chain-registry@1.63.46:
+    resolution: {integrity: sha512-ZVIZR1rppn0yfG+1SZiD78Eezdf5shFNkIGW3IJQs1Ghr4lNUsW/swOYuOx1nvNorzRkDpnzcyoe5e1WG9s2Zw==}
 
   chalk-template@1.1.0:
     resolution: {integrity: sha512-T2VJbcDuZQ0Tb2EWwSotMPJjgpy1/tGee1BTpUNsGZ/qgNjV2t7Mvu+d4600U564nbLesN1x2dPL+xii174Ekg==}
@@ -6169,7 +6096,7 @@ packages:
     resolution: {integrity: sha512-itvL5h8RETACmOTFc4UfIyB2RfEHi71Ax6E/PivVxq9NseKbOWpeyHEOIbmAw1rs8Ak0VursQNww7lf7YtUwzg==}
     engines: {node: '>=14'}
     peerDependencies:
-      typescript: '>=4.9.5'
+      typescript: 5.5.3
     peerDependenciesMeta:
       typescript:
         optional: true
@@ -6493,10 +6420,6 @@ packages:
   dir-glob@3.0.1:
     resolution: {integrity: sha512-WkrWp9GR4KXfKGYzOLmTuGVi1UWFfws377n9cc55/tb6DuqyF6pcQ5AbiHEshaDpY9v6oaSr2XCDidGmMwdzIA==}
     engines: {node: '>=8'}
-
-  djb2a@2.0.0:
-    resolution: {integrity: sha512-mSkCTNSJRGjNUADzWx1ubTGxJh2IVY9uoc/WGozUIu0mgBUEvIyBn9uTs9jqFBbJxQthJMF3uDx0cnpdlAUo4Q==}
-    engines: {node: '>=12'}
 
   dlv@1.1.3:
     resolution: {integrity: sha512-+HlytyjlPKnIG8XuRG8WvmBP8xs8P71y+SKKS6ZXWoEgLuePxtDoUEiH7WkdePWrQ5JBpE6aoVqfZfJUQkjXwA==}
@@ -8133,6 +8056,10 @@ packages:
   multiformats@9.9.0:
     resolution: {integrity: sha512-HoMUjhH9T8DDBNT+6xzkrd9ga/XiBI4xLr58LJACwK6G3HTOPeMz4nB4KJs33L2BelrIJa7P0VuNaVF3hMYfjg==}
 
+  murmurhash3js@3.0.1:
+    resolution: {integrity: sha512-KL8QYUaxq7kUbcl0Yto51rMcYt7E/4N4BG3/c96Iqw1PQrTRspu8Cpx4TZ4Nunib1d4bEkIH3gjCYlP2RLBdow==}
+    engines: {node: '>=0.10.0'}
+
   mute-stream@0.0.8:
     resolution: {integrity: sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==}
 
@@ -8820,7 +8747,7 @@ packages:
   react-docgen-typescript@2.2.2:
     resolution: {integrity: sha512-tvg2ZtOpOi6QDwsb3GZhOjDkkX0h8Z2gipvTg6OVMUyoYoURhEiRNePT8NZItTVCDh39JJHnLdfCOkzoLbFnTg==}
     peerDependencies:
-      typescript: '>= 4.3.x'
+      typescript: 5.5.3
 
   react-docgen@7.0.3:
     resolution: {integrity: sha512-i8aF1nyKInZnANZ4uZrH49qn1paRgBZ7wZiCNBMnenlPzEv0mRl+ShpTVEI6wZNl8sSc79xZkivtgLKQArcanQ==}
@@ -9710,7 +9637,7 @@ packages:
     resolution: {integrity: sha512-UQMIo7pb8WRomKR1/+MFVLTroIvDVtMX3K6OUir8ynLyzB8Jeriont2bTAtmNPa1ekAgN7YPDyf6V+ygrdU+eQ==}
     engines: {node: '>=16'}
     peerDependencies:
-      typescript: '>=4.2.0'
+      typescript: 5.5.3
 
   ts-dedent@2.2.0:
     resolution: {integrity: sha512-q5W7tVM71e2xjHZTlgfTDoPF/SmqKG5hddq9SzR49CH2hayqRKJtQ4mtRlSxKaJlR/+9rEM+mnBHf7I2/BQcpQ==}
@@ -9726,7 +9653,7 @@ packages:
       '@swc/core': '>=1.2.50'
       '@swc/wasm': '>=1.2.50'
       '@types/node': '*'
-      typescript: '>=2.7'
+      typescript: 5.5.3
     peerDependenciesMeta:
       '@swc/core':
         optional: true
@@ -9741,7 +9668,7 @@ packages:
     engines: {node: '>=12.12.0'}
     hasBin: true
     peerDependencies:
-      typescript: '*'
+      typescript: 5.5.3
 
   tsconfig-paths@3.15.0:
     resolution: {integrity: sha512-2Ac2RgzDe/cn48GvOe3M+o82pEFewD3UPbyoUHHdKasHwJKjds4fLXWf/Ux5kATBKN20oaFGu+jbElp1pos0mg==}
@@ -9860,11 +9787,6 @@ packages:
     peerDependenciesMeta:
       typescript:
         optional: true
-
-  typescript@5.4.2:
-    resolution: {integrity: sha512-+2/g0Fds1ERlP6JsakQQDXjZdZMM+rqpamFZJEKh4kwTIn3iDkgKtby0CeNd5ATNZ4Ry1ax15TMx0W2V+miizQ==}
-    engines: {node: '>=14.17'}
-    hasBin: true
 
   typescript@5.5.3:
     resolution: {integrity: sha512-/hreyEujaB0w76zKo6717l3L0o/qEUtRgdvUBvlkhoWeOVMjMuHNHk0BRBzikzuGDqNmPQbg5ifMEqsHLiIUcQ==}
@@ -10055,11 +9977,6 @@ packages:
 
   use-sync-external-store@1.2.0:
     resolution: {integrity: sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==}
-    peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
-
-  use-sync-external-store@1.2.2:
-    resolution: {integrity: sha512-PElTlVMwpblvbNqQ82d2n6RjStvdSoNe9FG28kNfz3WiXilJm4DdNkEzRhCZuIDwY8U08WVihhGR5iRqAwfDiw==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
 
@@ -11260,17 +11177,6 @@ snapshots:
     dependencies:
       '@bufbuild/protobuf': 1.10.0
 
-  '@buf/cosmos_cosmos-proto.bufbuild_es@1.7.2-20211202220400-1935555c206d.2(@bufbuild/protobuf@1.10.0)':
-    dependencies:
-      '@bufbuild/protobuf': 1.10.0
-
-  '@buf/cosmos_cosmos-proto.connectrpc_es@1.4.0-20211202220400-1935555c206d.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))':
-    dependencies:
-      '@buf/cosmos_cosmos-proto.bufbuild_es': 1.7.2-20211202220400-1935555c206d.2(@bufbuild/protobuf@1.10.0)
-      '@connectrpc/connect': 1.4.0(@bufbuild/protobuf@1.10.0)
-    transitivePeerDependencies:
-      - '@bufbuild/protobuf'
-
   '@buf/cosmos_cosmos-sdk.bufbuild_es@1.10.0-20230522115704-e7a85cef453e.1(@bufbuild/protobuf@1.10.0)':
     dependencies:
       '@buf/cosmos_cosmos-proto.bufbuild_es': 1.10.0-20211202220400-1935555c206d.1(@bufbuild/protobuf@1.10.0)
@@ -11285,40 +11191,6 @@ snapshots:
       '@buf/googleapis_googleapis.bufbuild_es': 1.10.0-20230502210827-cc916c318597.1(@bufbuild/protobuf@1.10.0)
       '@bufbuild/protobuf': 1.10.0
 
-  '@buf/cosmos_cosmos-sdk.bufbuild_es@1.7.2-20230522115704-e7a85cef453e.2(@bufbuild/protobuf@1.10.0)':
-    dependencies:
-      '@buf/cosmos_cosmos-proto.bufbuild_es': 1.7.2-20211202220400-1935555c206d.2(@bufbuild/protobuf@1.10.0)
-      '@buf/cosmos_gogo-proto.bufbuild_es': 1.7.2-20221020125208-34d970b699f8.2(@bufbuild/protobuf@1.10.0)
-      '@buf/googleapis_googleapis.bufbuild_es': 1.7.2-20221214150216-75b4300737fb.2(@bufbuild/protobuf@1.10.0)
-      '@bufbuild/protobuf': 1.10.0
-
-  '@buf/cosmos_cosmos-sdk.bufbuild_es@1.7.2-20230719110346-aa25660f4ff7.2(@bufbuild/protobuf@1.10.0)':
-    dependencies:
-      '@buf/cosmos_cosmos-proto.bufbuild_es': 1.7.2-20211202220400-1935555c206d.2(@bufbuild/protobuf@1.10.0)
-      '@buf/cosmos_gogo-proto.bufbuild_es': 1.7.2-20230509103710-5e5b9fdd0180.2(@bufbuild/protobuf@1.10.0)
-      '@buf/googleapis_googleapis.bufbuild_es': 1.7.2-20230502210827-cc916c318597.2(@bufbuild/protobuf@1.10.0)
-      '@bufbuild/protobuf': 1.10.0
-
-  '@buf/cosmos_cosmos-sdk.connectrpc_es@1.4.0-20230522115704-e7a85cef453e.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))':
-    dependencies:
-      '@buf/cosmos_cosmos-proto.connectrpc_es': 1.4.0-20211202220400-1935555c206d.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
-      '@buf/cosmos_cosmos-sdk.bufbuild_es': 1.7.2-20230522115704-e7a85cef453e.2(@bufbuild/protobuf@1.10.0)
-      '@buf/cosmos_gogo-proto.connectrpc_es': 1.4.0-20221020125208-34d970b699f8.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
-      '@buf/googleapis_googleapis.connectrpc_es': 1.4.0-20221214150216-75b4300737fb.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
-      '@connectrpc/connect': 1.4.0(@bufbuild/protobuf@1.10.0)
-    transitivePeerDependencies:
-      - '@bufbuild/protobuf'
-
-  '@buf/cosmos_cosmos-sdk.connectrpc_es@1.4.0-20230719110346-aa25660f4ff7.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))':
-    dependencies:
-      '@buf/cosmos_cosmos-proto.connectrpc_es': 1.4.0-20211202220400-1935555c206d.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
-      '@buf/cosmos_cosmos-sdk.bufbuild_es': 1.7.2-20230719110346-aa25660f4ff7.2(@bufbuild/protobuf@1.10.0)
-      '@buf/cosmos_gogo-proto.connectrpc_es': 1.4.0-20230509103710-5e5b9fdd0180.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
-      '@buf/googleapis_googleapis.connectrpc_es': 1.4.0-20230502210827-cc916c318597.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
-      '@connectrpc/connect': 1.4.0(@bufbuild/protobuf@1.10.0)
-    transitivePeerDependencies:
-      - '@bufbuild/protobuf'
-
   '@buf/cosmos_gogo-proto.bufbuild_es@1.10.0-20221020125208-34d970b699f8.1(@bufbuild/protobuf@1.10.0)':
     dependencies:
       '@bufbuild/protobuf': 1.10.0
@@ -11326,28 +11198,6 @@ snapshots:
   '@buf/cosmos_gogo-proto.bufbuild_es@1.10.0-20230509103710-5e5b9fdd0180.1(@bufbuild/protobuf@1.10.0)':
     dependencies:
       '@bufbuild/protobuf': 1.10.0
-
-  '@buf/cosmos_gogo-proto.bufbuild_es@1.7.2-20221020125208-34d970b699f8.2(@bufbuild/protobuf@1.10.0)':
-    dependencies:
-      '@bufbuild/protobuf': 1.10.0
-
-  '@buf/cosmos_gogo-proto.bufbuild_es@1.7.2-20230509103710-5e5b9fdd0180.2(@bufbuild/protobuf@1.10.0)':
-    dependencies:
-      '@bufbuild/protobuf': 1.10.0
-
-  '@buf/cosmos_gogo-proto.connectrpc_es@1.4.0-20221020125208-34d970b699f8.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))':
-    dependencies:
-      '@buf/cosmos_gogo-proto.bufbuild_es': 1.7.2-20221020125208-34d970b699f8.2(@bufbuild/protobuf@1.10.0)
-      '@connectrpc/connect': 1.4.0(@bufbuild/protobuf@1.10.0)
-    transitivePeerDependencies:
-      - '@bufbuild/protobuf'
-
-  '@buf/cosmos_gogo-proto.connectrpc_es@1.4.0-20230509103710-5e5b9fdd0180.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))':
-    dependencies:
-      '@buf/cosmos_gogo-proto.bufbuild_es': 1.7.2-20230509103710-5e5b9fdd0180.2(@bufbuild/protobuf@1.10.0)
-      '@connectrpc/connect': 1.4.0(@bufbuild/protobuf@1.10.0)
-    transitivePeerDependencies:
-      - '@bufbuild/protobuf'
 
   '@buf/cosmos_ibc.bufbuild_es@1.10.0-20230913112312-7ab44ae956a0.1(@bufbuild/protobuf@1.10.0)':
     dependencies:
@@ -11358,71 +11208,9 @@ snapshots:
       '@buf/googleapis_googleapis.bufbuild_es': 1.10.0-20220908150232-8d7204855ec1.1(@bufbuild/protobuf@1.10.0)
       '@bufbuild/protobuf': 1.10.0
 
-  '@buf/cosmos_ibc.bufbuild_es@1.10.0-20240703151202-d7191877c701.1(@bufbuild/protobuf@1.10.0)':
-    dependencies:
-      '@buf/cosmos_cosmos-proto.bufbuild_es': 1.10.0-20211202220400-1935555c206d.1(@bufbuild/protobuf@1.10.0)
-      '@buf/cosmos_cosmos-sdk.bufbuild_es': 1.10.0-20230719110346-aa25660f4ff7.1(@bufbuild/protobuf@1.10.0)
-      '@buf/cosmos_gogo-proto.bufbuild_es': 1.10.0-20221020125208-34d970b699f8.1(@bufbuild/protobuf@1.10.0)
-      '@buf/cosmos_ics23.bufbuild_es': 1.10.0-20221207100654-55085f7c710a.1(@bufbuild/protobuf@1.10.0)
-      '@buf/googleapis_googleapis.bufbuild_es': 1.10.0-20220908150232-8d7204855ec1.1(@bufbuild/protobuf@1.10.0)
-      '@bufbuild/protobuf': 1.10.0
-
-  '@buf/cosmos_ibc.bufbuild_es@1.7.2-20230913112312-7ab44ae956a0.2(@bufbuild/protobuf@1.10.0)':
-    dependencies:
-      '@buf/cosmos_cosmos-proto.bufbuild_es': 1.7.2-20211202220400-1935555c206d.2(@bufbuild/protobuf@1.10.0)
-      '@buf/cosmos_cosmos-sdk.bufbuild_es': 1.7.2-20230719110346-aa25660f4ff7.2(@bufbuild/protobuf@1.10.0)
-      '@buf/cosmos_gogo-proto.bufbuild_es': 1.7.2-20221020125208-34d970b699f8.2(@bufbuild/protobuf@1.10.0)
-      '@buf/cosmos_ics23.bufbuild_es': 1.7.2-20221207100654-55085f7c710a.2(@bufbuild/protobuf@1.10.0)
-      '@buf/googleapis_googleapis.bufbuild_es': 1.7.2-20220908150232-8d7204855ec1.2(@bufbuild/protobuf@1.10.0)
-      '@bufbuild/protobuf': 1.10.0
-
-  '@buf/cosmos_ibc.bufbuild_es@1.7.2-20240703151202-d7191877c701.2(@bufbuild/protobuf@1.10.0)':
-    dependencies:
-      '@buf/cosmos_cosmos-proto.bufbuild_es': 1.7.2-20211202220400-1935555c206d.2(@bufbuild/protobuf@1.10.0)
-      '@buf/cosmos_cosmos-sdk.bufbuild_es': 1.7.2-20230719110346-aa25660f4ff7.2(@bufbuild/protobuf@1.10.0)
-      '@buf/cosmos_gogo-proto.bufbuild_es': 1.7.2-20221020125208-34d970b699f8.2(@bufbuild/protobuf@1.10.0)
-      '@buf/cosmos_ics23.bufbuild_es': 1.7.2-20221207100654-55085f7c710a.2(@bufbuild/protobuf@1.10.0)
-      '@buf/googleapis_googleapis.bufbuild_es': 1.7.2-20220908150232-8d7204855ec1.2(@bufbuild/protobuf@1.10.0)
-      '@bufbuild/protobuf': 1.10.0
-
-  '@buf/cosmos_ibc.connectrpc_es@1.4.0-20230913112312-7ab44ae956a0.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))':
-    dependencies:
-      '@buf/cosmos_cosmos-proto.connectrpc_es': 1.4.0-20211202220400-1935555c206d.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
-      '@buf/cosmos_cosmos-sdk.connectrpc_es': 1.4.0-20230719110346-aa25660f4ff7.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
-      '@buf/cosmos_gogo-proto.connectrpc_es': 1.4.0-20221020125208-34d970b699f8.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
-      '@buf/cosmos_ibc.bufbuild_es': 1.7.2-20230913112312-7ab44ae956a0.2(@bufbuild/protobuf@1.10.0)
-      '@buf/cosmos_ics23.connectrpc_es': 1.4.0-20221207100654-55085f7c710a.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
-      '@buf/googleapis_googleapis.connectrpc_es': 1.4.0-20220908150232-8d7204855ec1.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
-      '@connectrpc/connect': 1.4.0(@bufbuild/protobuf@1.10.0)
-    transitivePeerDependencies:
-      - '@bufbuild/protobuf'
-
-  '@buf/cosmos_ibc.connectrpc_es@1.4.0-20240703151202-d7191877c701.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))':
-    dependencies:
-      '@buf/cosmos_cosmos-proto.connectrpc_es': 1.4.0-20211202220400-1935555c206d.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
-      '@buf/cosmos_cosmos-sdk.connectrpc_es': 1.4.0-20230719110346-aa25660f4ff7.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
-      '@buf/cosmos_gogo-proto.connectrpc_es': 1.4.0-20221020125208-34d970b699f8.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
-      '@buf/cosmos_ibc.bufbuild_es': 1.7.2-20240703151202-d7191877c701.2(@bufbuild/protobuf@1.10.0)
-      '@buf/cosmos_ics23.connectrpc_es': 1.4.0-20221207100654-55085f7c710a.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
-      '@buf/googleapis_googleapis.connectrpc_es': 1.4.0-20220908150232-8d7204855ec1.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
-      '@connectrpc/connect': 1.4.0(@bufbuild/protobuf@1.10.0)
-    transitivePeerDependencies:
-      - '@bufbuild/protobuf'
-
   '@buf/cosmos_ics23.bufbuild_es@1.10.0-20221207100654-55085f7c710a.1(@bufbuild/protobuf@1.10.0)':
     dependencies:
       '@bufbuild/protobuf': 1.10.0
-
-  '@buf/cosmos_ics23.bufbuild_es@1.7.2-20221207100654-55085f7c710a.2(@bufbuild/protobuf@1.10.0)':
-    dependencies:
-      '@bufbuild/protobuf': 1.10.0
-
-  '@buf/cosmos_ics23.connectrpc_es@1.4.0-20221207100654-55085f7c710a.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))':
-    dependencies:
-      '@buf/cosmos_ics23.bufbuild_es': 1.7.2-20221207100654-55085f7c710a.2(@bufbuild/protobuf@1.10.0)
-      '@connectrpc/connect': 1.4.0(@bufbuild/protobuf@1.10.0)
-    transitivePeerDependencies:
-      - '@bufbuild/protobuf'
 
   '@buf/googleapis_googleapis.bufbuild_es@1.10.0-20220908150232-8d7204855ec1.1(@bufbuild/protobuf@1.10.0)':
     dependencies:
@@ -11436,39 +11224,6 @@ snapshots:
     dependencies:
       '@bufbuild/protobuf': 1.10.0
 
-  '@buf/googleapis_googleapis.bufbuild_es@1.7.2-20220908150232-8d7204855ec1.2(@bufbuild/protobuf@1.10.0)':
-    dependencies:
-      '@bufbuild/protobuf': 1.10.0
-
-  '@buf/googleapis_googleapis.bufbuild_es@1.7.2-20221214150216-75b4300737fb.2(@bufbuild/protobuf@1.10.0)':
-    dependencies:
-      '@bufbuild/protobuf': 1.10.0
-
-  '@buf/googleapis_googleapis.bufbuild_es@1.7.2-20230502210827-cc916c318597.2(@bufbuild/protobuf@1.10.0)':
-    dependencies:
-      '@bufbuild/protobuf': 1.10.0
-
-  '@buf/googleapis_googleapis.connectrpc_es@1.4.0-20220908150232-8d7204855ec1.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))':
-    dependencies:
-      '@buf/googleapis_googleapis.bufbuild_es': 1.7.2-20220908150232-8d7204855ec1.2(@bufbuild/protobuf@1.10.0)
-      '@connectrpc/connect': 1.4.0(@bufbuild/protobuf@1.10.0)
-    transitivePeerDependencies:
-      - '@bufbuild/protobuf'
-
-  '@buf/googleapis_googleapis.connectrpc_es@1.4.0-20221214150216-75b4300737fb.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))':
-    dependencies:
-      '@buf/googleapis_googleapis.bufbuild_es': 1.7.2-20221214150216-75b4300737fb.2(@bufbuild/protobuf@1.10.0)
-      '@connectrpc/connect': 1.4.0(@bufbuild/protobuf@1.10.0)
-    transitivePeerDependencies:
-      - '@bufbuild/protobuf'
-
-  '@buf/googleapis_googleapis.connectrpc_es@1.4.0-20230502210827-cc916c318597.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))':
-    dependencies:
-      '@buf/googleapis_googleapis.bufbuild_es': 1.7.2-20230502210827-cc916c318597.2(@bufbuild/protobuf@1.10.0)
-      '@connectrpc/connect': 1.4.0(@bufbuild/protobuf@1.10.0)
-    transitivePeerDependencies:
-      - '@bufbuild/protobuf'
-
   '@buf/penumbra-zone_penumbra.bufbuild_es@1.10.0-20240703080008-312294d02bf9.1(@bufbuild/protobuf@1.10.0)':
     dependencies:
       '@buf/cosmos_cosmos-proto.bufbuild_es': 1.10.0-20211202220400-1935555c206d.1(@bufbuild/protobuf@1.10.0)
@@ -11479,39 +11234,59 @@ snapshots:
       '@buf/googleapis_googleapis.bufbuild_es': 1.10.0-20221214150216-75b4300737fb.1(@bufbuild/protobuf@1.10.0)
       '@bufbuild/protobuf': 1.10.0
 
-  '@buf/penumbra-zone_penumbra.bufbuild_es@1.7.2-20240703080008-312294d02bf9.2(@bufbuild/protobuf@1.10.0)':
-    dependencies:
-      '@buf/cosmos_cosmos-proto.bufbuild_es': 1.7.2-20211202220400-1935555c206d.2(@bufbuild/protobuf@1.10.0)
-      '@buf/cosmos_cosmos-sdk.bufbuild_es': 1.7.2-20230522115704-e7a85cef453e.2(@bufbuild/protobuf@1.10.0)
-      '@buf/cosmos_gogo-proto.bufbuild_es': 1.7.2-20221020125208-34d970b699f8.2(@bufbuild/protobuf@1.10.0)
-      '@buf/cosmos_ibc.bufbuild_es': 1.7.2-20230913112312-7ab44ae956a0.2(@bufbuild/protobuf@1.10.0)
-      '@buf/cosmos_ics23.bufbuild_es': 1.7.2-20221207100654-55085f7c710a.2(@bufbuild/protobuf@1.10.0)
-      '@buf/googleapis_googleapis.bufbuild_es': 1.7.2-20221214150216-75b4300737fb.2(@bufbuild/protobuf@1.10.0)
-      '@bufbuild/protobuf': 1.10.0
-
-  '@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240703080008-312294d02bf9.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))':
-    dependencies:
-      '@buf/cosmos_cosmos-proto.connectrpc_es': 1.4.0-20211202220400-1935555c206d.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
-      '@buf/cosmos_cosmos-sdk.connectrpc_es': 1.4.0-20230522115704-e7a85cef453e.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
-      '@buf/cosmos_gogo-proto.connectrpc_es': 1.4.0-20221020125208-34d970b699f8.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
-      '@buf/cosmos_ibc.connectrpc_es': 1.4.0-20230913112312-7ab44ae956a0.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
-      '@buf/cosmos_ics23.connectrpc_es': 1.4.0-20221207100654-55085f7c710a.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
-      '@buf/googleapis_googleapis.connectrpc_es': 1.4.0-20221214150216-75b4300737fb.3(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
-      '@buf/penumbra-zone_penumbra.bufbuild_es': 1.7.2-20240703080008-312294d02bf9.2(@bufbuild/protobuf@1.10.0)
-      '@connectrpc/connect': 1.4.0(@bufbuild/protobuf@1.10.0)
-    transitivePeerDependencies:
-      - '@bufbuild/protobuf'
-
   '@buf/tendermint_tendermint.bufbuild_es@1.10.0-20231117195010-33ed361a9051.1(@bufbuild/protobuf@1.10.0)':
     dependencies:
       '@buf/cosmos_gogo-proto.bufbuild_es': 1.10.0-20230509103710-5e5b9fdd0180.1(@bufbuild/protobuf@1.10.0)
       '@bufbuild/protobuf': 1.10.0
 
+  '@bufbuild/buf-darwin-arm64@1.35.1':
+    optional: true
+
+  '@bufbuild/buf-darwin-x64@1.35.1':
+    optional: true
+
+  '@bufbuild/buf-linux-aarch64@1.35.1':
+    optional: true
+
+  '@bufbuild/buf-linux-x64@1.35.1':
+    optional: true
+
+  '@bufbuild/buf-win32-arm64@1.35.1':
+    optional: true
+
+  '@bufbuild/buf-win32-x64@1.35.1':
+    optional: true
+
+  '@bufbuild/buf@1.35.1':
+    optionalDependencies:
+      '@bufbuild/buf-darwin-arm64': 1.35.1
+      '@bufbuild/buf-darwin-x64': 1.35.1
+      '@bufbuild/buf-linux-aarch64': 1.35.1
+      '@bufbuild/buf-linux-x64': 1.35.1
+      '@bufbuild/buf-win32-arm64': 1.35.1
+      '@bufbuild/buf-win32-x64': 1.35.1
+
   '@bufbuild/protobuf@1.10.0': {}
+
+  '@bufbuild/protoc-gen-es@1.10.0(@bufbuild/protobuf@1.10.0)':
+    dependencies:
+      '@bufbuild/protoplugin': 1.10.0
+    optionalDependencies:
+      '@bufbuild/protobuf': 1.10.0
+    transitivePeerDependencies:
+      - supports-color
+
+  '@bufbuild/protoplugin@1.10.0':
+    dependencies:
+      '@bufbuild/protobuf': 1.10.0
+      '@typescript/vfs': 1.6.0(typescript@5.5.3)
+      typescript: 5.5.3
+    transitivePeerDependencies:
+      - supports-color
 
   '@chain-registry/client@1.48.20':
     dependencies:
-      '@chain-registry/types': 0.45.20
+      '@chain-registry/types': 0.45.38
       '@chain-registry/utils': 1.46.20
       bfs-path: 1.0.2
       cross-fetch: 3.1.8
@@ -11520,39 +11295,37 @@ snapshots:
 
   '@chain-registry/cosmostation@1.66.2':
     dependencies:
-      '@chain-registry/types': 0.45.20
+      '@chain-registry/types': 0.45.38
       '@chain-registry/utils': 1.46.20
       '@cosmostation/extension-client': 0.1.15
 
   '@chain-registry/cosmostation@1.66.24':
     dependencies:
-      '@chain-registry/types': 0.45.20
+      '@chain-registry/types': 0.45.38
       '@chain-registry/utils': 1.46.20
       '@cosmostation/extension-client': 0.1.15
 
   '@chain-registry/keplr@1.68.2':
     dependencies:
-      '@chain-registry/types': 0.45.20
+      '@chain-registry/types': 0.45.38
       '@keplr-wallet/cosmos': 0.12.28
       '@keplr-wallet/crypto': 0.12.28
       semver: 7.6.2
 
   '@chain-registry/keplr@1.68.24':
     dependencies:
-      '@chain-registry/types': 0.45.20
+      '@chain-registry/types': 0.45.38
       '@keplr-wallet/cosmos': 0.12.28
       '@keplr-wallet/crypto': 0.12.28
       semver: 7.6.2
 
-  '@chain-registry/types@0.44.11': {}
-
   '@chain-registry/types@0.45.1': {}
 
-  '@chain-registry/types@0.45.20': {}
+  '@chain-registry/types@0.45.38': {}
 
   '@chain-registry/utils@1.46.20':
     dependencies:
-      '@chain-registry/types': 0.45.20
+      '@chain-registry/types': 0.45.38
       bignumber.js: 9.1.2
       sha.js: 2.4.11
 
@@ -11735,6 +11508,16 @@ snapshots:
   '@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0)':
     dependencies:
       '@bufbuild/protobuf': 1.10.0
+
+  '@connectrpc/protoc-gen-connect-es@1.4.0(@bufbuild/protoc-gen-es@1.10.0(@bufbuild/protobuf@1.10.0))(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))':
+    dependencies:
+      '@bufbuild/protobuf': 1.10.0
+      '@bufbuild/protoplugin': 1.10.0
+    optionalDependencies:
+      '@bufbuild/protoc-gen-es': 1.10.0(@bufbuild/protobuf@1.10.0)
+      '@connectrpc/connect': 1.4.0(@bufbuild/protobuf@1.10.0)
+    transitivePeerDependencies:
+      - supports-color
 
   '@cosmjs/amino@0.32.3':
     dependencies:
@@ -12064,7 +11847,7 @@ snapshots:
     dependencies:
       '@chain-registry/client': 1.48.20
       '@chain-registry/keplr': 1.68.24
-      '@chain-registry/types': 0.45.20
+      '@chain-registry/types': 0.45.38
       '@cosmjs/amino': 0.32.4
       '@cosmjs/cosmwasm-stargate': 0.32.4(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@cosmjs/proto-signing': 0.32.4
@@ -12768,9 +12551,9 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/react-lite@2.12.2(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@types/react-dom@18.3.0)(@types/react@18.3.3)(bufferutil@4.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/react-lite@2.13.0(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@types/react-dom@18.3.0)(@types/react@18.3.3)(bufferutil@4.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10)':
     dependencies:
-      '@chain-registry/types': 0.45.20
+      '@chain-registry/types': 0.45.38
       '@cosmos-kit/core': 2.13.1(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@dao-dao/cosmiframe': 0.1.0(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)
       '@types/react': 18.3.3
@@ -12800,12 +12583,12 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/react@2.17.2(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@interchain-ui/react@1.23.25(@types/react@18.3.3)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react-dom@18.3.0)(@types/react@18.3.3)(bufferutil@4.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/react@2.18.0(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@interchain-ui/react@1.23.29(@types/react@18.3.3)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react-dom@18.3.0)(@types/react@18.3.3)(bufferutil@4.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10)':
     dependencies:
-      '@chain-registry/types': 0.45.20
+      '@chain-registry/types': 0.45.38
       '@cosmos-kit/core': 2.13.1(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@cosmos-kit/react-lite': 2.12.2(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@types/react-dom@18.3.0)(@types/react@18.3.3)(bufferutil@4.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10)
-      '@interchain-ui/react': 1.23.25(@types/react@18.3.3)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@cosmos-kit/react-lite': 2.13.0(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@types/react-dom@18.3.0)(@types/react@18.3.3)(bufferutil@4.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10)
+      '@interchain-ui/react': 1.23.29(@types/react@18.3.3)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@react-icons/all-files': 4.1.0(react@18.3.1)
       '@types/react': 18.3.3
       '@types/react-dom': 18.3.0
@@ -12887,9 +12670,9 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/station-extension@2.11.2(@chain-registry/types@0.44.11)(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@terra-money/terra.js@3.1.10)(axios@1.7.2)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/station-extension@2.11.2(@chain-registry/types@0.45.38)(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@terra-money/terra.js@3.1.10)(axios@1.7.2)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
-      '@chain-registry/types': 0.44.11
+      '@chain-registry/types': 0.45.38
       '@cosmjs/amino': 0.32.4
       '@cosmjs/proto-signing': 0.32.4
       '@cosmos-kit/core': 2.13.1(bufferutil@4.0.8)(utf-8-validate@5.0.10)
@@ -12919,9 +12702,9 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/station@2.10.2(@chain-registry/types@0.44.11)(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@terra-money/terra.js@3.1.10)(axios@1.7.2)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/station@2.10.2(@chain-registry/types@0.45.38)(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@terra-money/terra.js@3.1.10)(axios@1.7.2)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
-      '@cosmos-kit/station-extension': 2.11.2(@chain-registry/types@0.44.11)(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@terra-money/terra.js@3.1.10)(axios@1.7.2)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/station-extension': 2.11.2(@chain-registry/types@0.45.38)(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@terra-money/terra.js@3.1.10)(axios@1.7.2)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -13832,7 +13615,7 @@ snapshots:
       browser-headers: 0.4.1
       google-protobuf: 3.21.2
 
-  '@interchain-ui/react@1.23.25(@types/react@18.3.3)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@interchain-ui/react@1.23.29(@types/react@18.3.3)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@floating-ui/core': 1.6.4
       '@floating-ui/dom': 1.6.7
@@ -13843,6 +13626,7 @@ snapshots:
       '@react-aria/listbox': 3.12.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@react-aria/overlays': 3.22.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@react-aria/utils': 3.24.1(react@18.3.1)
+      '@tanstack/react-virtual': 3.8.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@vanilla-extract/css': 1.15.3(babel-plugin-macros@3.1.0)
       '@vanilla-extract/dynamic': 2.1.1
       '@vanilla-extract/recipes': 0.5.3(@vanilla-extract/css@1.15.3(babel-plugin-macros@3.1.0))
@@ -14123,7 +13907,7 @@ snapshots:
       resolve: 1.22.8
       semver: 7.5.4
       source-map: 0.6.1
-      typescript: 5.4.2
+      typescript: 5.5.3
     transitivePeerDependencies:
       - '@types/node'
 
@@ -14304,7 +14088,7 @@ snapshots:
       '@parcel/watcher-win32-ia32': 2.4.1
       '@parcel/watcher-win32-x64': 2.4.1
 
-  '@penumbra-labs/registry@10.0.0': {}
+  '@penumbra-labs/registry@11.0.0': {}
 
   '@pkgjs/parseargs@0.11.0':
     optional: true
@@ -14792,6 +14576,24 @@ snapshots:
     dependencies:
       '@radix-ui/react-context': 1.1.0(@types/react@18.3.3)(react@18.3.1)
       '@radix-ui/react-primitive': 2.0.0(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+    optionalDependencies:
+      '@types/react': 18.3.3
+      '@types/react-dom': 18.3.0
+
+  '@radix-ui/react-radio-group@1.2.0(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@radix-ui/primitive': 1.1.0
+      '@radix-ui/react-compose-refs': 1.1.0(@types/react@18.3.3)(react@18.3.1)
+      '@radix-ui/react-context': 1.1.0(@types/react@18.3.3)(react@18.3.1)
+      '@radix-ui/react-direction': 1.1.0(@types/react@18.3.3)(react@18.3.1)
+      '@radix-ui/react-presence': 1.1.0(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@radix-ui/react-primitive': 2.0.0(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@radix-ui/react-roving-focus': 1.1.0(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@radix-ui/react-use-controllable-state': 1.1.0(@types/react@18.3.3)(react@18.3.1)
+      '@radix-ui/react-use-previous': 1.1.0(@types/react@18.3.3)(react@18.3.1)
+      '@radix-ui/react-use-size': 1.1.0(@types/react@18.3.3)(react@18.3.1)
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
     optionalDependencies:
@@ -16563,7 +16365,7 @@ snapshots:
       node-fetch: 2.7.0
       picomatch: 2.3.1
       pkg-dir: 5.0.0
-      prettier-fallback: prettier@3.3.2
+      prettier-fallback: prettier@3.3.3
       pretty-hrtime: 1.0.3
       resolve-from: 5.0.0
       semver: 7.6.2
@@ -17109,9 +16911,17 @@ snapshots:
     dependencies:
       '@tanstack/query-core': 4.36.1
       react: 18.3.1
-      use-sync-external-store: 1.2.2(react@18.3.1)
+      use-sync-external-store: 1.2.0(react@18.3.1)
     optionalDependencies:
       react-dom: 18.3.1(react@18.3.1)
+
+  '@tanstack/react-virtual@3.8.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@tanstack/virtual-core': 3.8.4
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+
+  '@tanstack/virtual-core@3.8.4': {}
 
   '@terra-money/feather.js@1.2.1':
     dependencies:
@@ -17228,7 +17038,7 @@ snapshots:
       lodash: 4.17.21
       redent: 3.0.0
     optionalDependencies:
-      vitest: 1.6.0(@types/node@20.14.10)(@vitest/browser@1.6.0(playwright@1.45.1)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1)
+      vitest: 1.6.0(@types/node@20.14.10)(@vitest/browser@1.6.0)(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1)
 
   '@testing-library/jest-dom@6.4.6(vitest@1.6.0(@types/node@20.14.10)(@vitest/browser@1.6.0)(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1))':
     dependencies:
@@ -17485,6 +17295,8 @@ snapshots:
 
   '@types/minimatch@5.1.2': {}
 
+  '@types/murmurhash3js@3.0.7': {}
+
   '@types/node@10.12.18': {}
 
   '@types/node@12.20.55': {}
@@ -17637,6 +17449,13 @@ snapshots:
     dependencies:
       '@typescript-eslint/types': 7.16.0
       eslint-visitor-keys: 3.4.3
+
+  '@typescript/vfs@1.6.0(typescript@5.5.3)':
+    dependencies:
+      debug: 4.3.5
+      typescript: 5.5.3
+    transitivePeerDependencies:
+      - supports-color
 
   '@ungap/structured-clone@1.2.0': {}
 
@@ -18739,9 +18558,9 @@ snapshots:
       pathval: 1.1.1
       type-detect: 4.0.8
 
-  chain-registry@1.63.24:
+  chain-registry@1.63.46:
     dependencies:
-      '@chain-registry/types': 0.45.20
+      '@chain-registry/types': 0.45.38
 
   chalk-template@1.1.0:
     dependencies:
@@ -18990,7 +18809,7 @@ snapshots:
 
   cosmjs-types@0.9.0: {}
 
-  cosmos-kit@2.18.4(@chain-registry/types@0.44.11)(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@terra-money/terra.js@3.1.10)(@walletconnect/sign-client@2.13.3(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@walletconnect/types@2.13.3)(axios@1.7.2)(bufferutil@4.0.8)(cosmjs-types@0.9.0)(react@18.3.1)(utf-8-validate@5.0.10):
+  cosmos-kit@2.18.4(@chain-registry/types@0.45.38)(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@terra-money/terra.js@3.1.10)(@walletconnect/sign-client@2.13.3(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@walletconnect/types@2.13.3)(axios@1.7.2)(bufferutil@4.0.8)(cosmjs-types@0.9.0)(react@18.3.1)(utf-8-validate@5.0.10):
     dependencies:
       '@cosmos-kit/cdcwallet': 2.13.2(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@cosmos-kit/coin98': 2.11.2(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
@@ -19007,7 +18826,7 @@ snapshots:
       '@cosmos-kit/omni': 2.10.2(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@cosmos-kit/owallet': 2.11.2(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@cosmos-kit/shell': 2.11.2(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@cosmos-kit/station': 2.10.2(@chain-registry/types@0.44.11)(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@terra-money/terra.js@3.1.10)(axios@1.7.2)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/station': 2.10.2(@chain-registry/types@0.45.38)(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@terra-money/terra.js@3.1.10)(axios@1.7.2)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@cosmos-kit/tailwind': 1.5.2(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@cosmos-kit/trust': 2.11.2(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@cosmos-kit/vectis': 2.11.2(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
@@ -19360,8 +19179,6 @@ snapshots:
   dir-glob@3.0.1:
     dependencies:
       path-type: 4.0.0
-
-  djb2a@2.0.0: {}
 
   dlv@1.1.3: {}
 
@@ -21261,6 +21078,8 @@ snapshots:
   ms@2.1.3: {}
 
   multiformats@9.9.0: {}
+
+  murmurhash3js@3.0.1: {}
 
   mute-stream@0.0.8: {}
 
@@ -23267,8 +23086,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  typescript@5.4.2: {}
-
   typescript@5.5.3: {}
 
   ufo@1.5.3: {}
@@ -23429,10 +23246,6 @@ snapshots:
     dependencies:
       react: 18.3.1
 
-  use-sync-external-store@1.2.2(react@18.3.1):
-    dependencies:
-      react: 18.3.1
-
   utf-8-validate@5.0.10:
     dependencies:
       node-gyp-build: 4.8.1
@@ -23512,42 +23325,6 @@ snapshots:
       '@types/node': 20.14.10
       fsevents: 2.3.3
       terser: 5.31.1
-
-  vitest@1.6.0(@types/node@20.14.10)(@vitest/browser@1.6.0(playwright@1.45.1)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1):
-    dependencies:
-      '@vitest/expect': 1.6.0
-      '@vitest/runner': 1.6.0
-      '@vitest/snapshot': 1.6.0
-      '@vitest/spy': 1.6.0
-      '@vitest/utils': 1.6.0
-      acorn-walk: 8.3.3
-      chai: 4.4.1
-      debug: 4.3.5
-      execa: 8.0.1
-      local-pkg: 0.5.0
-      magic-string: 0.30.10
-      pathe: 1.1.2
-      picocolors: 1.0.1
-      std-env: 3.7.0
-      strip-literal: 2.1.0
-      tinybench: 2.8.0
-      tinypool: 0.8.4
-      vite: 5.3.3(@types/node@20.14.10)(terser@5.31.1)
-      vite-node: 1.6.0(@types/node@20.14.10)(terser@5.31.1)
-      why-is-node-running: 2.3.0
-    optionalDependencies:
-      '@types/node': 20.14.10
-      '@vitest/browser': 1.6.0(playwright@1.45.1)(vitest@1.6.0)
-      jsdom: 24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-    transitivePeerDependencies:
-      - less
-      - lightningcss
-      - sass
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-    optional: true
 
   vitest@1.6.0(@types/node@20.14.10)(@vitest/browser@1.6.0)(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1):
     dependencies:

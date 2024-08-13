@@ -1,19 +1,22 @@
 import { Mock, beforeEach, describe, expect, it, vi } from 'vitest';
 import { processActionDutchAuctionEnd } from './process-action-dutch-auction-end.js';
-import {
-  AssetId,
-  Metadata,
-  Value,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { AssetId, Metadata, Value } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import {
   ActionDutchAuctionEnd,
   AuctionId,
   DutchAuction,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
 import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
 
+const inner0123 = Uint8Array.from({ length: 32 }, () => Math.floor(Math.random() * 256));
+const inner4567 = Uint8Array.from({ length: 32 }, () => Math.floor(Math.random() * 256));
+
 vi.mock('@penumbra-zone/wasm/auction', () => ({
-  getAuctionNftMetadata: () => new Metadata({ display: 'penumbra' }),
+  getAuctionNftMetadata: () =>
+    Metadata.fromJson({
+      penumbraAssetId: { inner: 'ARpgNbcWB8SkCuCBjlTsW8eDmEqeJQGWYDhbUk3Q1pc=' },
+      display: 'test',
+    }),
 }));
 
 describe('processActionDutchAuctionEnd()', () => {
@@ -23,7 +26,7 @@ describe('processActionDutchAuctionEnd()', () => {
     upsertAuction: Mock;
     addAuctionOutstandingReserves: Mock;
   };
-  const auctionId = new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) });
+  const auctionId = new AuctionId({ inner: inner0123 });
   const action = new ActionDutchAuctionEnd({ auctionId });
 
   beforeEach(() => {
@@ -45,13 +48,13 @@ describe('processActionDutchAuctionEnd()', () => {
     );
 
     expect(indexedDb.saveAssetsMetadata).toHaveBeenCalledWith(
-      expect.objectContaining({ display: 'penumbra' }),
+      expect.objectContaining({ display: 'test' }),
     );
   });
 
   it('upserts the auction with the sequence number', async () => {
-    const inputAssetId = new AssetId({ inner: new Uint8Array([0, 1, 2, 3]) });
-    const outputAssetId = new AssetId({ inner: new Uint8Array([4, 5, 6, 7]) });
+    const inputAssetId = new AssetId({ inner: inner0123 });
+    const outputAssetId = new AssetId({ inner: inner4567 });
 
     auctionQuerier.auctionStateById.mockResolvedValueOnce(
       new DutchAuction({
@@ -81,8 +84,8 @@ describe('processActionDutchAuctionEnd()', () => {
   });
 
   it('adds the auction reserves', async () => {
-    const inputAssetId = new AssetId({ inner: new Uint8Array([0, 1, 2, 3]) });
-    const outputAssetId = new AssetId({ inner: new Uint8Array([4, 5, 6, 7]) });
+    const inputAssetId = new AssetId({ inner: inner0123 });
+    const outputAssetId = new AssetId({ inner: inner4567 });
 
     auctionQuerier.auctionStateById.mockResolvedValueOnce(
       new DutchAuction({

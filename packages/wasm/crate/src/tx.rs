@@ -7,6 +7,7 @@ use penumbra_auction::auction::dutch::actions::view::{
     ActionDutchAuctionScheduleView, ActionDutchAuctionWithdrawView,
 };
 use penumbra_dex::BatchSwapOutputData;
+use penumbra_dex::{swap::SwapView, swap_claim::SwapClaimView};
 use penumbra_keys::keys::SpendKey;
 use penumbra_keys::FullViewingKey;
 use penumbra_proto::core::transaction::v1::{TransactionPerspective, TransactionView};
@@ -15,6 +16,9 @@ use penumbra_sct::{CommitmentSource, Nullifier};
 use penumbra_tct::{Position, Proof, StateCommitment};
 use penumbra_transaction::plan::TransactionPlan;
 use penumbra_transaction::txhash::TransactionId;
+use penumbra_transaction::view::action_view::{
+    ActionView, DelegatorVoteView, OutputView, SpendView,
+};
 use penumbra_transaction::Action;
 use penumbra_transaction::{AuthorizationData, Transaction, WitnessData};
 use prost::Message;
@@ -65,6 +69,10 @@ pub fn witness(transaction_plan: &[u8], stored_tree: JsValue) -> WasmResult<Vec<
         .chain(
             plan.swap_claim_plans()
                 .map(|swap_claim| swap_claim.swap_plaintext.swap_commitment()),
+        )
+        .chain(
+            plan.delegator_vote_plans()
+                .map(|vote_plan| vote_plan.staked_note.commit()),
         )
         .collect();
 
@@ -281,6 +289,16 @@ async fn transaction_info_inner(
                 txp.advice_notes
                     .insert(claim.body.output_2_commitment, output_2_record.note.clone());
             }
+            Action::DelegatorVote(v) => {
+                let nullifier = v.body.nullifier;
+                // An error here indicates we don't know the nullifier, so we omit it from the Perspective.
+                if let Some(spendable_note_record) =
+                    storage.get_note_by_nullifier(&nullifier).await?
+                {
+                    txp.spend_nullifiers
+                        .insert(nullifier, spendable_note_record.note.clone());
+                }
+            }
             _ => {}
         }
     }
@@ -292,10 +310,6 @@ async fn transaction_info_inner(
     let mut address_views = BTreeMap::new();
     let mut asset_ids = BTreeSet::new();
     for action_view in min_view.action_views() {
-        use penumbra_dex::{swap::SwapView, swap_claim::SwapClaimView};
-        use penumbra_transaction::view::action_view::{
-            ActionView, DelegatorVoteView, OutputView, SpendView,
-        };
         match action_view {
             ActionView::Spend(SpendView::Visible { note, .. }) => {
                 address_views.insert(

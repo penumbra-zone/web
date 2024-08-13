@@ -1,5 +1,167 @@
 # @penumbra-zone/router
 
+## 28.0.0
+
+### Minor Changes
+
+- 10ef940: Updating to v0.80.0 bufbuild types
+
+### Patch Changes
+
+- Updated dependencies [10ef940]
+  - @penumbra-zone/transport-dom@7.5.0
+  - @penumbra-zone/perspective@24.0.0
+  - @penumbra-zone/protobuf@5.7.0
+  - @penumbra-zone/getters@14.0.0
+  - @penumbra-zone/storage@24.0.0
+  - @penumbra-zone/query@25.0.0
+  - @penumbra-zone/types@19.0.0
+  - @penumbra-zone/wasm@24.0.0
+  - @penumbra-zone/crypto-web@20.0.0
+
+## 27.0.0
+
+### Minor Changes
+
+- 807648a: Support viewing fresh state of jailed validators
+- ecc548e: Fix gas prices RPC
+- f650f48: Return jailed validators in delegation balances request
+
+### Patch Changes
+
+- 457e04f: use `Any.pack` to create `Any` messages
+- Updated dependencies [bd43d49]
+- Updated dependencies [bd43d49]
+- Updated dependencies [bd43d49]
+- Updated dependencies [807648a]
+- Updated dependencies [bd43d49]
+  - @penumbra-zone/storage@23.0.0
+  - @penumbra-zone/types@18.2.0
+  - @penumbra-zone/getters@13.0.1
+  - @penumbra-zone/query@24.0.0
+  - @penumbra-zone/crypto-web@19.0.0
+  - @penumbra-zone/wasm@23.0.0
+  - @penumbra-zone/perspective@23.0.0
+
+## 26.0.0
+
+### Patch Changes
+
+- Updated dependencies [534a6ad]
+  - @penumbra-zone/wasm@22.1.0
+  - @penumbra-zone/perspective@22.0.0
+  - @penumbra-zone/query@23.0.0
+  - @penumbra-zone/storage@22.0.0
+
+## 25.0.0
+
+### Minor Changes
+
+- f5bea48: fix source randomizer
+
+### Patch Changes
+
+- Updated dependencies [f5bea48]
+  - @penumbra-zone/storage@21.0.0
+  - @penumbra-zone/types@18.1.0
+  - @penumbra-zone/crypto-web@18.0.0
+  - @penumbra-zone/query@22.0.0
+  - @penumbra-zone/wasm@22.0.0
+  - @penumbra-zone/perspective@21.0.0
+
+## 24.0.0
+
+### Minor Changes
+
+- a9ffd2d: rework extractAltFee with fallback protections
+
+### Patch Changes
+
+- Updated dependencies [a9ffd2d]
+- Updated dependencies
+  - @penumbra-zone/storage@20.0.0
+  - @penumbra-zone/types@18.0.0
+  - @penumbra-zone/protobuf@5.6.0
+  - @penumbra-zone/crypto-web@17.0.0
+  - @penumbra-zone/query@21.0.0
+  - @penumbra-zone/wasm@21.0.0
+  - @penumbra-zone/getters@13.0.0
+  - @penumbra-zone/perspective@20.0.0
+
+## 23.0.0
+
+### Minor Changes
+
+- 955dbf2: Save customized symbol metadata on denom req
+
+### Patch Changes
+
+- Updated dependencies [40a471d]
+- Updated dependencies [955dbf2]
+- Updated dependencies [318690e]
+- Updated dependencies
+  - @penumbra-zone/perspective@19.0.0
+  - @penumbra-zone/storage@19.0.0
+  - @penumbra-zone/wasm@20.2.0
+  - @penumbra-zone/query@20.0.0
+
+## 22.0.0
+
+### Patch Changes
+
+- Updated dependencies [3477bef]
+- Updated dependencies [d6ce325]
+- Updated dependencies [16147fe]
+  - @penumbra-zone/query@19.0.0
+  - @penumbra-zone/types@17.0.1
+  - @penumbra-zone/wasm@20.1.0
+  - @penumbra-zone/perspective@18.0.0
+  - @penumbra-zone/crypto-web@16.0.1
+  - @penumbra-zone/storage@18.0.0
+
+## 21.0.0
+
+### Minor Changes
+
+- a788eff: Update default timeouts to better support build times
+
+### Patch Changes
+
+- Updated dependencies [a788eff]
+  - @penumbra-zone/transport-dom@7.4.0
+
+## 20.0.0
+
+### Patch Changes
+
+- Updated dependencies [4e30796]
+- Updated dependencies [86c1bbe]
+  - @penumbra-zone/wasm@20.0.0
+  - @penumbra-zone/perspective@17.0.0
+  - @penumbra-zone/getters@12.1.0
+  - @penumbra-zone/query@18.0.0
+  - @penumbra-zone/storage@17.0.0
+  - @penumbra-zone/types@17.0.0
+  - @penumbra-zone/crypto-web@16.0.0
+
+## 19.0.0
+
+### Minor Changes
+
+- 0233722: added proxying timestampByHeight
+
+### Patch Changes
+
+- Updated dependencies [0233722]
+- Updated dependencies [af04e2a]
+  - @penumbra-zone/query@17.0.0
+  - @penumbra-zone/types@16.1.0
+  - @penumbra-zone/transport-dom@7.3.0
+  - @penumbra-zone/crypto-web@15.0.0
+  - @penumbra-zone/storage@16.0.0
+  - @penumbra-zone/wasm@19.0.0
+  - @penumbra-zone/perspective@16.0.0
+
 ## 18.0.0
 
 ### Patch Changes

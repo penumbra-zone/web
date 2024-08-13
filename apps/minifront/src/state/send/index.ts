@@ -5,15 +5,12 @@ import {
   TransactionPlannerRequest,
   TransactionPlannerRequest_Output,
   TransactionPlannerRequest_Spend,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { BigNumber } from 'bignumber.js';
-import { MemoPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
+import { MemoPlaintext } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { amountMoreThanBalance, isIncorrectDecimal, plan, planBuildBroadcast } from '../helpers';
 
-import {
-  Fee,
-  FeeTier_Tier,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
+import { Fee, FeeTier_Tier } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
 import {
   getAssetIdFromValueView,
   getDisplayDenomExponentFromValueView,
@@ -23,7 +20,7 @@ import { toBaseUnit } from '@penumbra-zone/types/lo-hi';
 import { isAddress } from '@penumbra-zone/bech32m/penumbra';
 import { transferableBalancesResponsesSelector } from './helpers';
 import { PartialMessage } from '@bufbuild/protobuf';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getAssetTokenMetadata } from '../../fetchers/registry';
 
 export interface SendSlice {
@@ -41,8 +38,6 @@ export interface SendSlice {
   setFeeTier: (feeTier: FeeTier_Tier) => void;
   sendTx: () => Promise<void>;
   txInProgress: boolean;
-  isSendingMax: boolean;
-  setIsSendingMax: (isSendingMax: boolean) => void;
   assetFeeMetadata: Metadata | undefined;
 }
 
@@ -55,16 +50,10 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
     fee: undefined,
     feeTier: FeeTier_Tier.LOW,
     txInProgress: false,
-    isSendingMax: false,
     assetFeeMetadata: undefined,
     setAmount: amount => {
       set(state => {
         state.send.amount = amount;
-      });
-    },
-    setIsSendingMax: isSendingMax => {
-      set(state => {
-        state.send.isSendingMax = isSendingMax;
       });
     },
     setSelection: selection => {
@@ -126,6 +115,7 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
         set(state => {
           state.send.amount = '';
         });
+        get().shared.balancesResponses.revalidate();
       } finally {
         set(state => {
           state.send.txInProgress = false;
@@ -135,14 +125,7 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
   };
 };
 
-const assembleRequest = ({
-  amount,
-  feeTier,
-  recipient,
-  selection,
-  memo,
-  isSendingMax,
-}: SendSlice) => {
+const assembleRequest = ({ amount, feeTier, recipient, selection, memo }: SendSlice) => {
   const spendOrOutput:
     | PartialMessage<TransactionPlannerRequest_Spend>
     | PartialMessage<TransactionPlannerRequest_Output> = {
@@ -155,8 +138,12 @@ const assembleRequest = ({
       assetId: getAssetIdFromValueView(selection?.balanceView),
     },
   };
+  // TODO MAX functionality is temporarily disabled due to a bug
+  // const isSendingMax = getAmount(selection?.balanceView).equals(
+  //   spendOrOutput.value?.amount as Amount,
+  // );
   return new TransactionPlannerRequest({
-    ...(isSendingMax ? { spends: [spendOrOutput] } : { outputs: [spendOrOutput] }),
+    ...{ outputs: [spendOrOutput] },
     source: getAddressIndex(selection?.accountAddress),
     // Note: we currently don't provide a UI for setting the fee manually. Thus,
     // a `feeMode` of `manualFee` is not supported here.

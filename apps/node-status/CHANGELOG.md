@@ -1,5 +1,84 @@
 # node-status
 
+## 4.1.20
+
+### Patch Changes
+
+- Updated dependencies [e6f019e]
+  - @repo/ui@7.4.1
+
+## 4.1.19
+
+### Patch Changes
+
+- Updated dependencies [10ef940]
+  - @penumbra-zone/protobuf@5.7.0
+  - @repo/ui@7.4.0
+
+## 4.1.18
+
+### Patch Changes
+
+- Updated dependencies [0069132]
+  - @repo/ui@7.3.4
+
+## 4.1.17
+
+### Patch Changes
+
+- @repo/ui@7.3.3
+
+## 4.1.16
+
+### Patch Changes
+
+- @repo/ui@7.3.2
+
+## 4.1.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @penumbra-zone/protobuf@5.6.0
+  - @repo/ui@7.3.1
+
+## 4.1.14
+
+### Patch Changes
+
+- Updated dependencies [dfad32b]
+- Updated dependencies [49fb3f1]
+- Updated dependencies
+  - @repo/ui@7.3.0
+
+## 4.1.13
+
+### Patch Changes
+
+- 3477bef: bugfix: injecting globalThis.**DEV** correctly on prod builds
+  - @repo/ui@7.2.1
+
+## 4.1.12
+
+### Patch Changes
+
+- Updated dependencies [54a5d66]
+  - @repo/ui@7.2.0
+
+## 4.1.11
+
+### Patch Changes
+
+- Updated dependencies [86c1bbe]
+  - @repo/ui@7.1.0
+
+## 4.1.10
+
+### Patch Changes
+
+- Updated dependencies [26bd932]
+  - @repo/ui@7.0.3
+
 ## 4.1.9
 
 ### Patch Changes

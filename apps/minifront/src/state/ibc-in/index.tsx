@@ -6,7 +6,7 @@ import { getAddrByIndex } from '../../fetchers/address';
 import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 import { Toast } from '@repo/ui/lib/toast/toast';
 import { shorten } from '@penumbra-zone/types/string';
-import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { bech32CompatAddress } from '@penumbra-zone/bech32m/penumbracompat1';
 import { calculateFee, GasPrice, SigningStargateClient } from '@cosmjs/stargate';
 import { chains } from 'chain-registry';
@@ -14,12 +14,14 @@ import { getChainId } from '../../fetchers/chain-id';
 import { augmentToAsset, fromDisplayAmount } from '../../components/ibc/ibc-in/asset-utils';
 import { cosmos, ibc } from 'osmo-query';
 import { chainRegistryClient } from '../../fetchers/registry';
-import { tendermintClient } from '../../clients';
 import { BLOCKS_PER_HOUR } from '../constants';
 import { currentTimePlusTwoDaysRounded } from '../ibc-out';
 import { EncodeObject } from '@cosmjs/proto-signing';
 import { MsgTransfer } from 'osmo-query/ibc/applications/transfer/v1/tx';
 import { parseRevisionNumberFromChainId } from './parse-revision-number-from-chain-id';
+import { bech32ChainIds } from '../shared.ts';
+import { penumbra } from '../../prax.ts';
+import { TendermintProxyService } from '@penumbra-zone/protobuf';
 
 export interface IbcInSlice {
   selectedChain?: ChainInfo;
@@ -64,7 +66,7 @@ export const createIbcInSlice = (): SliceCreator<IbcInSlice> => (set, get) => {
     address: undefined,
     setAddress: async () => {
       const { selectedChain, account } = get().ibcIn;
-      const penumbraAddress = await getPenumbraAddress(account, selectedChain?.chainName);
+      const penumbraAddress = await getPenumbraAddress(account, selectedChain?.chainId);
       if (penumbraAddress) {
         set(state => {
           state.ibcIn.address = penumbraAddress;
@@ -132,25 +134,19 @@ const getExplorerPage = (txHash: string, chainId?: string) => {
   return txPage.replace('${txHash}', txHash);
 };
 
-/**
- * For Noble specifically we need to use a Bech32 encoding rather than Bech32m,
- * because Noble currently has a middleware that decodes as Bech32.
- * Noble plans to change this at some point in the future but until then we need
- * to use a special encoding just for Noble specifically.
- */
-const bech32Chains = ['noble', 'nobletestnet'];
-const getCompatibleBech32 = (chainName: string, address: Address): string => {
-  return bech32Chains.includes(chainName) ? bech32CompatAddress(address) : bech32mAddress(address);
+const getCompatibleBech32 = (chainId: string, address: Address): string => {
+  return bech32ChainIds.includes(chainId) ? bech32CompatAddress(address) : bech32mAddress(address);
 };
+
 export const getPenumbraAddress = async (
   account: number,
-  chainName?: string,
+  chainId?: string,
 ): Promise<string | undefined> => {
-  if (!chainName) {
+  if (!chainId) {
     return undefined;
   }
   const receiverAddress = await getAddrByIndex(account, true);
-  return getCompatibleBech32(chainName, receiverAddress);
+  return getCompatibleBech32(chainId, receiverAddress);
 };
 
 const estimateFee = async ({
@@ -201,7 +197,7 @@ async function execute(
     throw new Error('Penumbra chain id could not be retrieved');
   }
 
-  const penumbraAddress = await getPenumbraAddress(account, selectedChain.chainName);
+  const penumbraAddress = await getPenumbraAddress(account, selectedChain.chainId);
   if (!penumbraAddress) {
     throw new Error('Penumbra address not available');
   }
@@ -254,7 +250,7 @@ const getCounterpartyChannelId = async (
 
 // Get timeout from penumbra chain blocks
 const getTimeout = async (chainId: string) => {
-  const { syncInfo } = await tendermintClient.getStatus({});
+  const { syncInfo } = await penumbra.service(TendermintProxyService).getStatus({});
   const height = syncInfo?.latestBlockHeight;
   if (height === undefined) {
     throw new Error('Could not retrieve latest block height from Tendermint');
@@ -286,7 +282,9 @@ export const ibcErrorSelector = (state: AllSlices) => {
     amountErr: isNotValidAmount,
     // Testnet coins don't seem to have assetType field. Checking manually for ibc address first.
     isUnsupportedAsset:
-      coin && (isIbcAsset(coin.raw.denom) || (coin.assetType && coin.assetType !== 'sdk.coin')),
+      coin &&
+      !coin.isPenumbra &&
+      (isIbcAsset(coin.raw.denom) || (coin.assetType && coin.assetType !== 'sdk.coin')),
   };
 };
 

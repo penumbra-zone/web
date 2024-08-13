@@ -15,11 +15,9 @@ export const useWheelPrevent = () => {
   };
 
   useEffect(() => {
-    inputRef.current?.addEventListener('wheel', onWheel);
-
-    return () => {
-      inputRef.current?.removeEventListener('wheel', onWheel);
-    };
+    const ac = new AbortController();
+    inputRef.current?.addEventListener('wheel', onWheel, { signal: ac.signal, passive: false });
+    return () => ac.abort();
   }, []);
 
   return inputRef;

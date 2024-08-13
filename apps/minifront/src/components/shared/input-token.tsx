@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import { getMetadataFromBalancesResponseOptional } from '@penumbra-zone/getters/balances-response';
 import { BalanceValueView } from '@repo/ui/components/ui/balance-value-view';
@@ -20,7 +20,6 @@ interface InputTokenProps {
   setSelection: (selection: BalancesResponse) => void;
   validations?: Validation[];
   balances: BalancesResponse[];
-  setIsSendingMax: (isSendingMax: boolean) => void;
   onInputChange: (amount: string) => void;
   loading?: boolean;
 }
@@ -35,7 +34,6 @@ export default function InputToken({
   inputClassName,
   setSelection,
   balances,
-  setIsSendingMax,
   onInputChange,
   loading,
 }: InputTokenProps) {
@@ -48,8 +46,6 @@ export default function InputToken({
     if (match?.balanceView) {
       const formattedAmt = getFormattedAmtFromValueView(match.balanceView);
       onInputChange(formattedAmt);
-      // Track internal state for sending the maximum balance
-      setIsSendingMax(true);
     }
   };
 

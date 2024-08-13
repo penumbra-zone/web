@@ -91,6 +91,15 @@ export const small = css`
   line-height: ${props => props.theme.lineHeight.textSm};
 `;
 
+export const tab = css`
+  ${base}
+
+  font-family: ${props => props.theme.font.default};
+  font-size: ${props => props.theme.fontSize.textLg};
+  font-weight: 400;
+  line-height: ${props => props.theme.lineHeight.textLg};
+`;
+
 export const tableItem = css`
   ${base}
 
@@ -118,9 +127,24 @@ export const technical = css`
   line-height: ${props => props.theme.lineHeight.textSm};
 `;
 
+export const xxl = css`
+  ${base}
+
+  font-family: ${props => props.theme.font.default};
+  font-size: ${props => props.theme.fontSize.text2xl};
+  font-weight: 500;
+  line-height: ${props => props.theme.lineHeight.text2xl};
+`;
+
 export const button = css`
   font-family: ${props => props.theme.font.default};
   font-size: ${props => props.theme.fontSize.textBase};
   font-weight: 500;
   line-height: ${props => props.theme.lineHeight.textBase};
+`;
+
+export const truncate = `
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;

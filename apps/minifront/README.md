@@ -72,7 +72,6 @@ Prerequisites:
 
 - Install [nodejs](https://nodejs.org/)
 - Install [pnpm](https://pnpm.io/installation)
-- Add buf registry: `npm config set @buf:registry https://buf.build/gen/npm/v1/`
 
 ```shell
 pnpm install

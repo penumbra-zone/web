@@ -1,16 +1,14 @@
-import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
+import { ValidatorInfo } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 import { SliceCreator } from '..';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
-import {
-  Metadata,
-  ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { planBuildBroadcast } from '../helpers';
 import {
+  DelegationsByAddressIndexRequest_Filter,
   TransactionPlannerRequest,
   UnbondingTokensByAddressIndexResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { BigNumber } from 'bignumber.js';
 import { assembleUndelegateClaimRequest } from './assemble-undelegate-claim-request';
 import throttle from 'lodash/throttle';
@@ -31,11 +29,12 @@ import {
 } from '@penumbra-zone/types/staking';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
 import { splitLoHi, toBaseUnit } from '@penumbra-zone/types/lo-hi';
-import { viewClient } from '../../clients';
+import { ViewService } from '@penumbra-zone/protobuf';
 import { getValueView as getValueViewFromDelegationsByAddressIndexResponse } from '@penumbra-zone/getters/delegations-by-address-index-response';
 import { getValueView as getValueViewFromUnbondingTokensByAddressIndexResponse } from '@penumbra-zone/getters/unbonding-tokens-by-address-index-response';
 import { getStakingTokenMetadata } from '../../fetchers/registry';
 import { zeroValueView } from '../../utils/zero-value-view';
+import { penumbra } from '../../prax';
 
 interface UnbondingTokensForAccount {
   claimable: {
@@ -231,7 +230,10 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
     };
     const throttledFlushToState = throttle(flushToState, THROTTLE_MS, { trailing: true });
 
-    for await (const response of viewClient.delegationsByAddressIndex({ addressIndex })) {
+    for await (const response of penumbra.service(ViewService).delegationsByAddressIndex({
+      addressIndex,
+      filter: DelegationsByAddressIndexRequest_Filter.ALL,
+    })) {
       if (newAbortController.signal.aborted) {
         throttledFlushToState.cancel();
         return;
@@ -271,7 +273,7 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
     });
 
     const responses = await Array.fromAsync(
-      viewClient.unbondingTokensByAddressIndex({ addressIndex }),
+      penumbra.service(ViewService).unbondingTokensByAddressIndex({ addressIndex }),
     );
     const stakingTokenMetadata = await getStakingTokenMetadata();
 

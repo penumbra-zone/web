@@ -3,7 +3,7 @@ import { servicesCtx } from '../../ctx/prax.js';
 import { planTransaction } from '@penumbra-zone/wasm/planner';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { assertSwapAssetsAreNotTheSame } from './assert-swap-assets-are-not-the-same.js';
-import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { TransactionPlannerRequest } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { fvkCtx } from '../../ctx/full-viewing-key.js';
 import { extractAltFee } from '../fees.js';
 import { assertTransactionSource } from './assert-transaction-source.js';
@@ -15,7 +15,10 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
   const { indexedDb } = await services.getWalletServices();
 
   // Query IndexedDB directly to check for the existence of staking token
-  const nativeToken = await indexedDb.hasStakingAssetBalance(req.source);
+  const nativeToken = await indexedDb.hasTokenBalance(
+    req.source!.account,
+    indexedDb.stakingTokenAssetId,
+  );
 
   // Check if we should use the native token or extract an alternate gas fee token.
   // Special cased for swap claims as gas fee needs to match the claimFee on the corresponding swap.

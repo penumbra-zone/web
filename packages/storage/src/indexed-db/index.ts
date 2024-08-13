@@ -1,49 +1,46 @@
-import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb.js';
+import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 import {
   AssetId,
   EstimatedPrice,
   Metadata,
   Value,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import {
   Position,
   PositionId,
   PositionState,
   TradingPair,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
-import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb.js';
-import {
-  Epoch,
-  Nullifier,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb.js';
-import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
+import { GasPrices } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
+import { Epoch, Nullifier } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
+import { FmdParameters } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 import {
   AddressIndex,
   IdentityKey,
   WalletId,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
-import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb.js';
-import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
+import { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
 import {
   NotesForVotingResponse,
   SpendableNoteRecord,
   SwapRecord,
   TransactionInfo,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { assetPatterns, PRICE_RELEVANCE_THRESHOLDS } from '@penumbra-zone/types/assets';
 import { IDBPDatabase, openDB, StoreNames } from 'idb';
 import { IbdUpdater, IbdUpdates } from './updater.js';
 
 import { IdbCursorSource } from './stream.js';
 
-import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
-import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
+import { ValidatorInfo } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
+import { Transaction } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { bech32mIdentityKey, identityKeyFromBech32m } from '@penumbra-zone/bech32m/penumbravalid';
 import { bech32mWalletId } from '@penumbra-zone/bech32m/penumbrawalletid';
 import { getAssetId } from '@penumbra-zone/getters/metadata';
 import { getIdentityKeyFromValidatorInfo } from '@penumbra-zone/getters/validator-info';
-import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
+import { base64ToUint8Array, uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import {
   IDB_TABLES,
@@ -61,12 +58,41 @@ import { sctPosition } from '@penumbra-zone/wasm/tree';
 import {
   AuctionId,
   DutchAuctionDescription,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
-import { PartialMessage } from '@bufbuild/protobuf';
+import { PartialMessage, PlainMessage } from '@bufbuild/protobuf';
 import { getAmountFromRecord } from '@penumbra-zone/getters/spendable-note-record';
 import { isZero } from '@penumbra-zone/types/amount';
 import { IDB_VERSION } from './config.js';
+
+const assertBytes = (v?: Uint8Array, expect?: number, name = 'value'): v is Uint8Array => {
+  if (expect !== undefined && v?.length !== expect) {
+    throw new Error(`Expected ${name} of ${expect} bytes, but got ${v?.length} bytes`);
+  } else if (expect === undefined && !v?.length) {
+    throw new Error(`Expected ${name} to be non-empty, but got ${v?.length} bytes`);
+  }
+  return true;
+};
+
+// yes these are all 32 bytes
+const assertAssetId = (assetId?: PartialMessage<AssetId>): assetId is PlainMessage<AssetId> =>
+  assertBytes(assetId?.inner, 32, 'AssetId');
+const assertAuctionId = (
+  auctionId?: PartialMessage<AuctionId>,
+): auctionId is PlainMessage<AuctionId> => assertBytes(auctionId?.inner, 32, 'AuctionId');
+const assertCommitment = (
+  commitment?: PartialMessage<StateCommitment>,
+): commitment is PlainMessage<StateCommitment> =>
+  assertBytes(commitment?.inner, 32, 'StateCommitment');
+const assertNullifier = (
+  nullifier?: PartialMessage<Nullifier>,
+): nullifier is PartialMessage<Nullifier> => assertBytes(nullifier?.inner, 32, 'Nullifier');
+const assertTransactionId = (
+  txId?: PartialMessage<TransactionId>,
+): txId is PartialMessage<TransactionId> => assertBytes(txId?.inner, 32, 'TransactionId');
+const assertPositionId = (
+  positionId?: PartialMessage<PositionId>,
+): positionId is PlainMessage<PositionId> => assertBytes(positionId?.inner, 32, 'PositionId');
 
 interface IndexedDbProps {
   chainId: string;
@@ -138,7 +164,13 @@ export class IndexedDb implements IndexedDbInterface {
     } satisfies IdbConstants;
 
     const { stakingAssetId } = registryClient.bundled.globals();
-    const instance = new this(db, new IbdUpdater(db), constants, chainId, stakingAssetId);
+    const instance = new this(
+      db,
+      new IbdUpdater(db),
+      constants,
+      chainId,
+      new AssetId(stakingAssetId),
+    );
     await instance.saveRegistryAssets(registryClient, chainId); // Pre-load asset metadata from registry
 
     const existing0thEpoch = await instance.getEpochByHeight(0n);
@@ -196,6 +228,7 @@ export class IndexedDb implements IndexedDbInterface {
   async getSpendableNoteByNullifier(
     nullifier: Nullifier,
   ): Promise<SpendableNoteRecord | undefined> {
+    assertNullifier(nullifier);
     const key = uint8ArrayToBase64(nullifier.inner);
     const json = await this.db.getFromIndex('SPENDABLE_NOTES', 'nullifier', key);
     if (!json) {
@@ -207,6 +240,7 @@ export class IndexedDb implements IndexedDbInterface {
   async getSpendableNoteByCommitment(
     commitment: StateCommitment,
   ): Promise<SpendableNoteRecord | undefined> {
+    assertCommitment(commitment);
     const key = uint8ArrayToBase64(commitment.inner);
     const json = await this.db.get('SPENDABLE_NOTES', key);
     if (!json) {
@@ -215,10 +249,13 @@ export class IndexedDb implements IndexedDbInterface {
     return SpendableNoteRecord.fromJson(json);
   }
 
-  async saveSpendableNote(note: SpendableNoteRecord) {
+  async saveSpendableNote(
+    note: PlainMessage<SpendableNoteRecord> & { noteCommitment: PlainMessage<StateCommitment> },
+  ) {
+    assertCommitment(note.noteCommitment);
     await this.u.update({
       table: 'SPENDABLE_NOTES',
-      value: note.toJson() as Jsonified<SpendableNoteRecord>,
+      value: new SpendableNoteRecord(note).toJson() as Jsonified<SpendableNoteRecord>,
     });
   }
 
@@ -271,8 +308,12 @@ export class IndexedDb implements IndexedDbInterface {
     );
   }
 
-  async saveAssetsMetadata(metadata: Metadata) {
-    await this.u.update({ table: 'ASSETS', value: metadata.toJson() as Jsonified<Metadata> });
+  async saveAssetsMetadata(metadata: Required<PlainMessage<Metadata>>) {
+    assertAssetId(metadata.penumbraAssetId);
+    await this.u.update({
+      table: 'ASSETS',
+      value: new Metadata(metadata).toJson() as Jsonified<Metadata>,
+    });
   }
 
   // creates a local copy of the asset list from registry (https://github.com/prax-wallet/registry)
@@ -288,7 +329,9 @@ export class IndexedDb implements IndexedDbInterface {
       }
 
       const assets = registry.getAllAssets();
-      const saveLocalMetadata = assets.map(m => this.saveAssetsMetadata(m));
+      const saveLocalMetadata = assets.map(m =>
+        this.saveAssetsMetadata({ ...m, penumbraAssetId: getAssetId(m) }),
+      );
       await Promise.all(saveLocalMetadata);
       await this.u.update({ table: 'REGISTRY_VERSION', key: 'commit', value: remoteVersion });
     } catch (error) {
@@ -316,6 +359,7 @@ export class IndexedDb implements IndexedDbInterface {
     height: bigint,
     transaction: Transaction,
   ): Promise<void> {
+    assertTransactionId(id);
     const tx = new TransactionInfo({ id, height, transaction });
     await this.u.update({
       table: 'TRANSACTIONS',
@@ -324,6 +368,7 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async getTransaction(txId: TransactionId): Promise<TransactionInfo | undefined> {
+    assertTransactionId(txId);
     const key = uint8ArrayToBase64(txId.inner);
     const jsonRecord = await this.db.get('TRANSACTIONS', key);
     if (!jsonRecord) {
@@ -386,6 +431,7 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async getSwapByNullifier(nullifier: Nullifier): Promise<SwapRecord | undefined> {
+    assertNullifier(nullifier);
     const key = uint8ArrayToBase64(nullifier.inner);
     const json = await this.db.getFromIndex('SWAPS', 'nullifier', key);
     if (!json) {
@@ -394,11 +440,18 @@ export class IndexedDb implements IndexedDbInterface {
     return SwapRecord.fromJson(json);
   }
 
-  async saveSwap(swap: SwapRecord) {
-    await this.u.update({ table: 'SWAPS', value: swap.toJson() as Jsonified<SwapRecord> });
+  async saveSwap(
+    swap: PlainMessage<SwapRecord> & { swapCommitment: PlainMessage<StateCommitment> },
+  ) {
+    assertCommitment(swap.swapCommitment);
+    await this.u.update({
+      table: 'SWAPS',
+      value: new SwapRecord(swap).toJson() as Jsonified<SwapRecord>,
+    });
   }
 
   async getSwapByCommitment(commitment: StateCommitment): Promise<SwapRecord | undefined> {
+    assertCommitment(commitment);
     const key = uint8ArrayToBase64(commitment.inner);
     const json = await this.db.get('SWAPS', key);
     if (!json) {
@@ -408,6 +461,7 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async getNativeGasPrices(): Promise<GasPrices | undefined> {
+    assertAssetId(this.stakingTokenAssetId);
     const jsonGasPrices = await this.db.get(
       'GAS_PRICES',
       uint8ArrayToBase64(this.stakingTokenAssetId.inner),
@@ -425,7 +479,7 @@ export class IndexedDb implements IndexedDbInterface {
       .filter(gp => !gp.assetId?.equals(this.stakingTokenAssetId));
   }
 
-  async saveGasPrices(value: PartialMessage<GasPrices>): Promise<void> {
+  async saveGasPrices(value: Required<PlainMessage<GasPrices>>): Promise<void> {
     await this.u.update({
       table: 'GAS_PRICES',
       value: new GasPrices(value).toJson() as Jsonified<GasPrices>,
@@ -523,6 +577,7 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async addPosition(positionId: PositionId, position: Position): Promise<void> {
+    assertPositionId(positionId);
     const positionRecord = {
       id: positionId.toJson() as Jsonified<PositionId>,
       position: position.toJson() as Jsonified<Position>,
@@ -531,6 +586,7 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async updatePosition(positionId: PositionId, newState: PositionState): Promise<void> {
+    assertPositionId(positionId);
     const key = uint8ArrayToBase64(positionId.inner);
     const positionRecord = await this.db.get('POSITIONS', key);
 
@@ -617,6 +673,7 @@ export class IndexedDb implements IndexedDbInterface {
    * validator info if one with the same identity key exists.
    */
   async upsertValidatorInfo(validatorInfo: ValidatorInfo): Promise<void> {
+    // bech32m conversion asserts length
     const identityKeyAsBech32 = bech32mIdentityKey(getIdentityKeyFromValidatorInfo(validatorInfo));
 
     await this.u.update({
@@ -635,7 +692,12 @@ export class IndexedDb implements IndexedDbInterface {
     );
   }
 
+  async clearValidatorInfos() {
+    await this.db.clear('VALIDATOR_INFOS');
+  }
+
   async getValidatorInfo(identityKey: IdentityKey): Promise<ValidatorInfo | undefined> {
+    // bech32m conversion asserts length
     const key = bech32mIdentityKey(identityKey);
     const json = await this.db.get('VALIDATOR_INFOS', key);
     if (!json) {
@@ -666,6 +728,8 @@ export class IndexedDb implements IndexedDbInterface {
      */
     asOfHeight: bigint,
   ) {
+    assertAssetId(pricedAsset);
+    assertAssetId(numeraire);
     const estimatedPrice = new EstimatedPrice({
       pricedAsset,
       numeraire,
@@ -746,10 +810,12 @@ export class IndexedDb implements IndexedDbInterface {
     }
 
     for (const c of sctUpdates.store_commitments) {
+      assertCommitment({ inner: base64ToUint8Array(c.commitment.inner) });
       txs.add({ table: 'TREE_COMMITMENTS', value: c });
     }
 
     for (const h of sctUpdates.store_hashes) {
+      assertBytes(h.hash, 32);
       txs.add({ table: 'TREE_HASHES', value: h });
     }
 
@@ -758,6 +824,7 @@ export class IndexedDb implements IndexedDbInterface {
 
   private addNewNotes(txs: IbdUpdates, notes: SpendableNoteRecord[]): void {
     for (const n of notes) {
+      assertCommitment(n.noteCommitment);
       txs.add({ table: 'SPENDABLE_NOTES', value: n.toJson() as Jsonified<SpendableNoteRecord> });
     }
   }
@@ -782,6 +849,7 @@ export class IndexedDb implements IndexedDbInterface {
       // Adds position prefix to swap record. Needed to make swap claims.
       n.outputData.sctPositionPrefix = sctPosition(blockHeight, epoch);
 
+      assertCommitment(n.swapCommitment);
       txs.add({ table: 'SWAPS', value: n.toJson() as Jsonified<SwapRecord> });
     }
   }
@@ -796,6 +864,7 @@ export class IndexedDb implements IndexedDbInterface {
       outstandingReserves?: { input: Value; output: Value };
     },
   ): Promise<void> {
+    assertAuctionId(auctionId);
     const key = uint8ArrayToBase64(auctionId.inner);
     const existingRecord = await this.db.get('AUCTIONS', key);
     const auction =
@@ -822,6 +891,7 @@ export class IndexedDb implements IndexedDbInterface {
     noteCommitment?: StateCommitment;
     seqNum?: bigint;
   }> {
+    assertAuctionId(auctionId);
     const result = await this.db.get('AUCTIONS', uint8ArrayToBase64(auctionId.inner));
 
     return {
@@ -837,6 +907,7 @@ export class IndexedDb implements IndexedDbInterface {
     auctionId: AuctionId,
     value: { input: Value; output: Value },
   ): Promise<void> {
+    assertAuctionId(auctionId);
     await this.db.add(
       'AUCTION_OUTSTANDING_RESERVES',
       {
@@ -854,6 +925,7 @@ export class IndexedDb implements IndexedDbInterface {
   async getAuctionOutstandingReserves(
     auctionId: AuctionId,
   ): Promise<{ input: Value; output: Value } | undefined> {
+    assertAuctionId(auctionId);
     const result = await this.db.get(
       'AUCTION_OUTSTANDING_RESERVES',
       uint8ArrayToBase64(auctionId.inner),
@@ -869,19 +941,22 @@ export class IndexedDb implements IndexedDbInterface {
     };
   }
 
-  async hasStakingAssetBalance(addressIndex: AddressIndex | undefined): Promise<boolean> {
-    const spendableUMNotes = await this.db.getAllFromIndex(
+  async hasTokenBalance(accountIndex: number, assetId: AssetId): Promise<boolean> {
+    assertAssetId(assetId);
+    const spendableNotes = await this.db.getAllFromIndex(
       'SPENDABLE_NOTES',
       'assetId',
-      uint8ArrayToBase64(this.stakingTokenAssetId.inner),
+      uint8ArrayToBase64(assetId.inner),
     );
 
-    return spendableUMNotes.some(note => {
-      const umNote = SpendableNoteRecord.fromJson(note);
+    return spendableNotes.some(note => {
+      const spendableNote = SpendableNoteRecord.fromJson(note);
+
+      // randomizer should be ignored
       return (
-        umNote.heightSpent === 0n &&
-        !isZero(getAmountFromRecord(umNote)) &&
-        umNote.addressIndex?.equals(addressIndex)
+        spendableNote.heightSpent === 0n &&
+        !isZero(getAmountFromRecord(spendableNote)) &&
+        spendableNote.addressIndex?.account === accountIndex
       );
     });
   }

@@ -2,10 +2,12 @@ import { PromiseClient } from '@connectrpc/connect';
 import { createClient } from './utils.js';
 import { StakeService } from '@penumbra-zone/protobuf';
 import {
+  GetValidatorInfoRequest,
+  GetValidatorInfoResponse,
   ValidatorInfoResponse,
   ValidatorPenaltyRequest,
   ValidatorPenaltyResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 import { StakeQuerierInterface } from '@penumbra-zone/types/querier';
 
 export class StakeQuerier implements StakeQuerierInterface {
@@ -13,6 +15,10 @@ export class StakeQuerier implements StakeQuerierInterface {
 
   constructor({ grpcEndpoint }: { grpcEndpoint: string }) {
     this.client = createClient(grpcEndpoint, StakeService);
+  }
+
+  validatorInfo(req: GetValidatorInfoRequest): Promise<GetValidatorInfoResponse> {
+    return this.client.getValidatorInfo(req);
   }
 
   allValidatorInfos(): AsyncIterable<ValidatorInfoResponse> {

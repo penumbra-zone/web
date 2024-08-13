@@ -1,5 +1,11 @@
 # @penumbra-zone/zquery
 
+## 3.0.1
+
+### Patch Changes
+
+- e0f4258: correct state dependency for fetch
+
 ## 3.0.0
 
 ### Major Changes

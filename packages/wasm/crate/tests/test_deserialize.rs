@@ -20,7 +20,8 @@ fn height_properly_serializes_from_json() {
             "revisionHeight": "3928271"
           },
           "timeoutTime": "1701471437169",
-          "sourceChannel": "channel-0"
+          "sourceChannel": "channel-0",
+          "useCompatAddress": true
         }
     "#;
 
@@ -32,4 +33,5 @@ fn height_properly_serializes_from_json() {
     let domain_type: Ics20Withdrawal = withdrawal_proto.try_into().unwrap();
     assert_eq!(domain_type.timeout_height.revision_number, 5u64);
     assert_eq!(domain_type.timeout_height.revision_height, 3928271u64);
+    assert!(domain_type.use_compat_address);
 }

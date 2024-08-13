@@ -1,9 +1,9 @@
-import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb.js';
+import { FmdParameters } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 import {
   SpendableNoteRecord,
   SwapRecord,
   TransactionInfo,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { afterAll, beforeEach, describe, expect, it } from 'vitest';
 import { IndexedDb } from './index.js';
 import {
@@ -32,32 +32,33 @@ import {
   transaction,
   transactionId,
 } from './indexed-db.test-data.js';
-import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb.js';
-import {
-  AddressIndex,
-  WalletId,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+import { AddressIndex, WalletId } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import {
   PositionId,
   PositionState,
   PositionState_PositionStateEnum,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import {
   AssetId,
   EstimatedPrice,
   Metadata,
   Value,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import type { IdbUpdate, PenumbraDb } from '@penumbra-zone/types/indexed-db';
 import {
   AuctionId,
   DutchAuctionDescription,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
-import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
+import { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
 import { ChainRegistryClient, Registry } from '@penumbra-labs/registry';
 import fetchMock from 'fetch-mock';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { JsonValue } from '@bufbuild/protobuf';
+
+const inner0123 = Uint8Array.from({ length: 32 }, () => Math.floor(Math.random() * 256));
+const inner5678 = Uint8Array.from({ length: 32 }, () => Math.floor(Math.random() * 256));
+const inner1111 = Uint8Array.from({ length: 32 }, () => Math.floor(Math.random() * 256));
+const inner2222 = Uint8Array.from({ length: 32 }, () => Math.floor(Math.random() * 256));
 
 const registryClient = new ChainRegistryClient();
 const chainId = 'penumbra-testnet-deimos-8';
@@ -119,8 +120,8 @@ describe('IndexedDb', () => {
       await testnetDb.saveAssetsMetadata(metadataA);
       await mainnetDb.saveAssetsMetadata(metadataB);
 
-      expect(await testnetDb.getAssetsMetadata(metadataA.penumbraAssetId!)).toEqual(metadataA);
-      expect(await mainnetDb.getAssetsMetadata(metadataB.penumbraAssetId!)).toEqual(metadataB);
+      expect(await testnetDb.getAssetsMetadata(metadataA.penumbraAssetId)).toEqual(metadataA);
+      expect(await mainnetDb.getAssetsMetadata(metadataB.penumbraAssetId)).toEqual(metadataB);
     });
 
     it('same version uses same db', async () => {
@@ -129,7 +130,7 @@ describe('IndexedDb', () => {
       await dbA.saveAssetsMetadata(metadataA);
 
       const dbB = await IndexedDb.initialize(props);
-      expect((await dbB.getAssetsMetadata(metadataA.penumbraAssetId!))?.name).toBe(metadataA.name);
+      expect((await dbB.getAssetsMetadata(metadataA.penumbraAssetId))?.name).toBe(metadataA.name);
     });
 
     // TODO: Do not skip this test after vitest has been updated to v2.0.0.
@@ -146,7 +147,7 @@ describe('IndexedDb', () => {
         registryClient: new ChainRegistryClient(),
       };
       const dbB = await IndexedDb.initialize(version2Props);
-      expect((await dbB.getAssetsMetadata(metadataA.penumbraAssetId!))?.name).toBeUndefined();
+      expect((await dbB.getAssetsMetadata(metadataA.penumbraAssetId))?.name).toBeUndefined();
     });
   });
 
@@ -291,7 +292,7 @@ describe('IndexedDb', () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
       await db.saveSpendableNote(newNote);
-      const noteByCommitment = await db.getSpendableNoteByCommitment(newNote.noteCommitment!);
+      const noteByCommitment = await db.getSpendableNoteByCommitment(newNote.noteCommitment);
 
       expect(newNote.equals(noteByCommitment)).toBeTruthy();
     });
@@ -299,7 +300,7 @@ describe('IndexedDb', () => {
     it('should return undefined by commitment', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
-      const noteByCommitment = await db.getSpendableNoteByCommitment(newNote.noteCommitment!);
+      const noteByCommitment = await db.getSpendableNoteByCommitment(newNote.noteCommitment);
 
       expect(noteByCommitment).toBeUndefined();
     });
@@ -345,7 +346,7 @@ describe('IndexedDb', () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
       await db.saveAssetsMetadata(metadataC);
-      const savedDenomMetadata = await db.getAssetsMetadata(metadataC.penumbraAssetId!);
+      const savedDenomMetadata = await db.getAssetsMetadata(metadataC.penumbraAssetId);
 
       expect(metadataC.equals(savedDenomMetadata)).toBeTruthy();
     });
@@ -428,17 +429,17 @@ describe('IndexedDb', () => {
     it('should be able to set/get', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
-      const gasPrices = new GasPrices({
+      const gasPrices = {
         assetId: db.stakingTokenAssetId,
         blockSpacePrice: 0n,
         compactBlockSpacePrice: 0n,
         verificationPrice: 0n,
         executionPrice: 0n,
-      });
+      };
       await db.saveGasPrices(gasPrices);
       const savedPrices = await db.getNativeGasPrices();
 
-      expect(gasPrices.equals(savedPrices)).toBeTruthy();
+      expect(savedPrices?.equals(gasPrices)).toBeTruthy();
     });
   });
 
@@ -628,15 +629,15 @@ describe('IndexedDb', () => {
   describe('prices', () => {
     let db: IndexedDb;
 
-    const numeraireAssetId = new AssetId({ inner: new Uint8Array([5, 6, 7, 8]) });
+    const numeraireAssetId = new AssetId({ inner: inner5678 });
 
     const stakingAssetId = AssetId.fromJson({
       inner: 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=',
     });
     beforeEach(async () => {
       db = await IndexedDb.initialize({ ...generateInitialProps() });
-      await db.updatePrice(delegationMetadataA.penumbraAssetId!, stakingAssetId, 1.23, 50n);
-      await db.updatePrice(metadataA.penumbraAssetId!, numeraireAssetId, 22.15, 40n);
+      await db.updatePrice(delegationMetadataA.penumbraAssetId, stakingAssetId, 1.23, 50n);
+      await db.updatePrice(metadataA.penumbraAssetId, numeraireAssetId, 22.15, 40n);
     });
 
     it('saves and gets a price in the database', async () => {
@@ -644,7 +645,7 @@ describe('IndexedDb', () => {
       // `updatePrice()` in the `beforeEach` above.
       await expect(db.getPricesForAsset(delegationMetadataA, 50n, 719n)).resolves.toEqual([
         new EstimatedPrice({
-          pricedAsset: delegationMetadataA.penumbraAssetId!,
+          pricedAsset: delegationMetadataA.penumbraAssetId,
           numeraire: stakingAssetId,
           numerairePerUnit: 1.23,
           asOfHeight: 50n,
@@ -660,7 +661,7 @@ describe('IndexedDb', () => {
       await expect(db.getPricesForAsset(metadataA, 241n, 719n)).resolves.toEqual([]);
       await expect(db.getPricesForAsset(delegationMetadataA, 241n, 719n)).resolves.toEqual([
         new EstimatedPrice({
-          pricedAsset: delegationMetadataA.penumbraAssetId!,
+          pricedAsset: delegationMetadataA.penumbraAssetId,
           numeraire: stakingAssetId,
           numerairePerUnit: 1.23,
           asOfHeight: 50n,
@@ -682,7 +683,7 @@ describe('IndexedDb', () => {
     });
 
     it('inserts an auction', async () => {
-      const auctionId = new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) });
+      const auctionId = new AuctionId({ inner: inner0123 });
       const auction = new DutchAuctionDescription({ startHeight: 1234n });
       await db.upsertAuction(auctionId, { auction });
 
@@ -693,8 +694,8 @@ describe('IndexedDb', () => {
     });
 
     it('inserts a note commitment', async () => {
-      const auctionId = new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) });
-      const noteCommitment = new StateCommitment({ inner: new Uint8Array([0, 1, 2, 3]) });
+      const auctionId = new AuctionId({ inner: inner0123 });
+      const noteCommitment = new StateCommitment({ inner: inner0123 });
       await db.upsertAuction(auctionId, { noteCommitment });
 
       const fetchedAuction = await db.getAuction(auctionId);
@@ -704,9 +705,9 @@ describe('IndexedDb', () => {
     });
 
     it('inserts both an auction and a note commitment', async () => {
-      const auctionId = new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) });
+      const auctionId = new AuctionId({ inner: inner0123 });
       const auction = new DutchAuctionDescription({ startHeight: 1234n });
-      const noteCommitment = new StateCommitment({ inner: new Uint8Array([0, 1, 2, 3]) });
+      const noteCommitment = new StateCommitment({ inner: inner0123 });
       await db.upsertAuction(auctionId, { auction, noteCommitment });
 
       const fetchedAuction = await db.getAuction(auctionId);
@@ -717,7 +718,7 @@ describe('IndexedDb', () => {
     });
 
     it('inserts an auction and sequence number, and then updates with a note commitment when given the same auction ID', async () => {
-      const auctionId = new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) });
+      const auctionId = new AuctionId({ inner: inner0123 });
       const auction = new DutchAuctionDescription({ startHeight: 1234n });
       const seqNum = 0n;
       await db.upsertAuction(auctionId, { auction, seqNum });
@@ -725,7 +726,7 @@ describe('IndexedDb', () => {
       let fetchedAuction = await db.getAuction(auctionId);
       expect(fetchedAuction).toBeTruthy();
 
-      const noteCommitment = new StateCommitment({ inner: new Uint8Array([0, 1, 2, 3]) });
+      const noteCommitment = new StateCommitment({ inner: inner0123 });
       await db.upsertAuction(auctionId, { noteCommitment });
 
       fetchedAuction = await db.getAuction(auctionId);
@@ -739,8 +740,8 @@ describe('IndexedDb', () => {
     });
 
     it('inserts a note commitment and then updates with an auction and sequence number when given the same auction ID', async () => {
-      const auctionId = new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) });
-      const noteCommitment = new StateCommitment({ inner: new Uint8Array([0, 1, 2, 3]) });
+      const auctionId = new AuctionId({ inner: inner0123 });
+      const noteCommitment = new StateCommitment({ inner: inner0123 });
       await db.upsertAuction(auctionId, { noteCommitment });
 
       let fetchedAuction = await db.getAuction(auctionId);
@@ -761,9 +762,9 @@ describe('IndexedDb', () => {
     });
 
     it('inserts all data, and then updates with a sequence number when given the same auction ID', async () => {
-      const auctionId = new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) });
+      const auctionId = new AuctionId({ inner: inner0123 });
       const auction = new DutchAuctionDescription({ startHeight: 1234n });
-      const noteCommitment = new StateCommitment({ inner: new Uint8Array([0, 1, 2, 3]) });
+      const noteCommitment = new StateCommitment({ inner: inner0123 });
       await db.upsertAuction(auctionId, { auction, noteCommitment, seqNum: 0n });
 
       let fetchedAuction = await db.getAuction(auctionId);
@@ -790,14 +791,14 @@ describe('IndexedDb', () => {
     });
 
     it('saves the outstanding reserves', async () => {
-      const auctionId = new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) });
+      const auctionId = new AuctionId({ inner: inner0123 });
       const input = new Value({
         amount: { hi: 0n, lo: 1n },
-        assetId: { inner: new Uint8Array([1, 1, 1, 1]) },
+        assetId: { inner: inner1111 },
       });
       const output = new Value({
         amount: { hi: 0n, lo: 2n },
-        assetId: { inner: new Uint8Array([2, 2, 2, 2]) },
+        assetId: { inner: inner2222 },
       });
       await db.addAuctionOutstandingReserves(auctionId, { input, output });
 
@@ -813,14 +814,14 @@ describe('IndexedDb', () => {
     });
 
     it('deletes the reserves', async () => {
-      const auctionId = new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) });
+      const auctionId = new AuctionId({ inner: inner0123 });
       const input = new Value({
         amount: { hi: 0n, lo: 1n },
-        assetId: { inner: new Uint8Array([1, 1, 1, 1]) },
+        assetId: { inner: inner1111 },
       });
       const output = new Value({
         amount: { hi: 0n, lo: 2n },
-        assetId: { inner: new Uint8Array([2, 2, 2, 2]) },
+        assetId: { inner: inner2222 },
       });
       await db.addAuctionOutstandingReserves(auctionId, { input, output });
 

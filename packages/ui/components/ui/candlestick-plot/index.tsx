@@ -1,5 +1,5 @@
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import { CandlestickData } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
+import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { CandlestickData } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { AxisBottom, AxisLeft } from '@visx/axis';
 import { curveLinear } from '@visx/curve';
 import { GridRows } from '@visx/grid';
@@ -43,10 +43,11 @@ interface CandlestickPlotProps {
   width?: number;
   height?: number;
   candles: CandlestickData[];
-  latestKnownBlockHeight?: number;
+  blockDomain: [bigint, bigint];
   startMetadata: Metadata;
   endMetadata: Metadata;
   getBlockDate: GetBlockDateFn;
+  scaleMargin?: number;
 }
 
 interface CandlestickTooltipProps {
@@ -66,8 +67,9 @@ export const CandlestickPlot = withTooltip<CandlestickPlotProps, CandlestickData
     candles,
     startMetadata,
     endMetadata,
-    latestKnownBlockHeight,
+    blockDomain: [startBlock, endBlock],
     getBlockDate,
+    scaleMargin = 40,
 
     // withTooltip props
     tooltipOpen,
@@ -77,27 +79,38 @@ export const CandlestickPlot = withTooltip<CandlestickPlotProps, CandlestickData
     showTooltip,
     hideTooltip,
   }: CandlestickPlotProps & WithTooltipProvidedProps<CandlestickData>) => {
-    const { parentRef, width: w, height: h } = useParentSize({ debounceTime: 150 });
+    const { parentRef, width: w, height: h } = useParentSize();
 
-    const { maxPrice, minPrice } = useMemo(
-      () =>
-        candles.reduce(
-          (acc, d) => ({
-            minPrice: Math.min(acc.minPrice, lowPrice(d)),
-            maxPrice: Math.max(acc.maxPrice, highPrice(d)),
-          }),
-          { minPrice: Infinity, maxPrice: -Infinity },
-        ),
-      [candles],
-    );
-    const maxSpread = maxPrice - minPrice;
+    const { blockScale, priceScale } = useMemo(() => {
+      const { maxPrice, minPrice } = candles.reduce(
+        (acc, d) => ({
+          minPrice: Math.min(acc.minPrice, lowPrice(d)),
+          maxPrice: Math.max(acc.maxPrice, highPrice(d)),
+        }),
+        { minPrice: Infinity, maxPrice: 0 },
+      );
+
+      const maxSpread = maxPrice - minPrice;
+
+      const blockScale = scaleLinear<number>({
+        range: [scaleMargin, w],
+        domain: [Number(startBlock), Number(endBlock)],
+      });
+
+      const priceScale = scaleLinear<number>({
+        range: [h - scaleMargin, 0],
+        domain: [Math.max(0, minPrice - maxSpread / 4), maxPrice],
+      });
+
+      return { priceScale, blockScale };
+    }, [candles, scaleMargin, w, startBlock, endBlock, h]);
 
     const useTooltip = useCallback(
       (d: CandlestickData) => ({
         onMouseOver: () => {
           showTooltip({
             tooltipTop: priceScale(midPrice(d)),
-            tooltipLeft: blockScale(blockHeight(d)),
+            tooltipLeft: blockScale(blockHeight(d)) / 2,
             tooltipData: d,
           });
         },
@@ -105,31 +118,10 @@ export const CandlestickPlot = withTooltip<CandlestickPlotProps, CandlestickData
           hideTooltip();
         },
       }),
-      [],
+      [blockScale, hideTooltip, priceScale, showTooltip],
     );
 
-    if (!candles.length) {
-      return null;
-    }
-
-    // assertions here okay because we've just checked length
-    const startBlock = blockHeight(candles[0]!);
-    const endBlock = blockHeight(candles[candles.length - 1]!);
-
-    // candle width as fraction of graph width. likely too thin to really
-    // matter. if there's lots of records this will overlap, and we'll need to
-    // implement some kind of binning.
-    const blockWidth = Math.min(w / candles.length, 6);
-
-    const blockScale = scaleLinear<number>({
-      range: [50, w - 5],
-      domain: [startBlock, latestKnownBlockHeight ?? endBlock],
-    });
-
-    const priceScale = scaleLinear<number>({
-      range: [h, 0],
-      domain: [minPrice - maxSpread / 2, maxPrice + maxSpread / 2],
-    });
+    const blockWidth = w / Number(endBlock - startBlock);
 
     return (
       <>
@@ -142,14 +134,14 @@ export const CandlestickPlot = withTooltip<CandlestickPlotProps, CandlestickData
                   textAnchor: 'middle',
                 }}
                 tickStroke='rgba(255,255,255,0.25)'
-                top={h - 50}
+                top={h - scaleMargin}
                 scale={blockScale}
                 numTicks={4}
                 rangePadding={10}
               />
               <GridRows // price axis grid
                 scale={priceScale}
-                left={60}
+                left={scaleMargin}
                 width={w}
                 stroke='white'
                 strokeOpacity={0.1}
@@ -161,7 +153,7 @@ export const CandlestickPlot = withTooltip<CandlestickPlotProps, CandlestickData
                   fill: 'white',
                   textAnchor: 'end',
                 }}
-                left={60}
+                left={scaleMargin}
                 scale={priceScale}
                 numTicks={3}
               />
@@ -210,8 +202,8 @@ export const CandlestickPlot = withTooltip<CandlestickPlotProps, CandlestickData
                         firstQuartile={Math.min(open, close)}
                         thirdQuartile={Math.max(open, close)}
                         // box position and dimensions
-                        left={blockScale(blockHeight(d)) - blockWidth / 2 + 1}
-                        boxWidth={blockWidth - 2}
+                        left={blockScale(blockHeight(d)) - (blockWidth + 1) / 2}
+                        boxWidth={blockWidth + 1}
                         // basic styles
                         fill={movementColor}
                         stroke={'rgba(255,255,255,0.5)'}
@@ -266,7 +258,7 @@ export const CandlesticksTooltip = ({
     const ac = new AbortController();
     void getBlockDate(data.height, ac.signal).then(setBlockDate);
     return () => ac.abort('Abort tooltip date query');
-  }, [data]);
+  }, [data, getBlockDate]);
 
   const endBase = endMetadata.denomUnits.filter(d => !d.exponent)[0]!;
   const startBase = startMetadata.denomUnits.filter(d => !d.exponent)[0]!;

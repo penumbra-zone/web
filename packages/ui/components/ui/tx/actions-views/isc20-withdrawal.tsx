@@ -1,4 +1,4 @@
-import { Ics20Withdrawal } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/ibc/v1/ibc_pb.js';
+import { Ics20Withdrawal } from '@penumbra-zone/protobuf/penumbra/core/component/ibc/v1/ibc_pb';
 import { ViewBox } from '../viewbox';
 import { ActionDetails } from './action-details';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
@@ -39,6 +39,10 @@ export const Ics20WithdrawalComponent = ({ value }: { value: Ics20Withdrawal }) 
               {bech32mAddress(value.returnAddress)}
             </ActionDetails.Row>
           )}
+
+          <ActionDetails.Row label='Use Compat Address'>
+            {value.useCompatAddress ? 'TRUE' : 'FALSE'}
+          </ActionDetails.Row>
 
           {value.timeoutHeight && (
             <>

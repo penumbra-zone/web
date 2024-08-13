@@ -31,7 +31,6 @@ export const SendForm = () => {
     setFeeTier,
     setMemo,
     sendTx,
-    setIsSendingMax,
     txInProgress,
   } = useStore(sendSelector);
 
@@ -69,7 +68,6 @@ export const SendForm = () => {
         className='mb-1'
         selection={selection}
         setSelection={setSelection}
-        setIsSendingMax={setIsSendingMax}
         value={amount}
         onInputChange={amount => {
           if (Number(amount) < 0) {
@@ -96,6 +94,7 @@ export const SendForm = () => {
       <NonNativeFeeWarning
         balancesResponses={transferableBalancesResponses?.data}
         amount={Number(amount)}
+        source={selection}
       />
 
       <GasFee

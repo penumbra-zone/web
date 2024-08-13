@@ -18,6 +18,7 @@ import {
   isTransportEvent,
   isTransportMessage,
   isTransportStream,
+  TransportAbort,
   TransportEvent,
   TransportMessage,
   TransportStream,
@@ -45,15 +46,43 @@ export interface ChannelTransportOptions
   getPort: () => PromiseLike<MessagePort>;
 }
 
+/**
+ * For use with `ConnectError.from`, in `rejectOnSignal`. Identifies an
+ * appropriate error code for an unknown throw.
+ * - ConnectError.from forwards exising ConnectError codes, ignoring this
+ * - ConnectError.from uses `Code.Canceled` for an 'AbortError', ignoring this
+ * - We want to apply `Code.DeadlineExceeded` for any 'TimeoutError'
+ * - All others should use `Code.Aborted`
+ */
+const codeForError = (r?: unknown) => {
+  if (r instanceof DOMException && r.name === 'TimeoutError') {
+    return Code.DeadlineExceeded;
+  } else {
+    return Code.Aborted;
+  }
+};
+
+const rejectOnSignal = (...signals: (AbortSignal | undefined)[]) => {
+  return new Promise<never>((_, reject) => {
+    const signal = AbortSignal.any(signals.filter(s => s instanceof AbortSignal));
+    signal.addEventListener('abort', () =>
+      reject(ConnectError.from(signal.reason, codeForError(signal.reason))),
+    );
+    if (signal.aborted) {
+      reject(ConnectError.from(signal.reason, codeForError(signal.reason)));
+    }
+  });
+};
+
 export const createChannelTransport = ({
   getPort,
   jsonOptions,
-  defaultTimeoutMs = 10_000,
+  defaultTimeoutMs = 60_000,
 }: ChannelTransportOptions): Transport => {
   const pending = new Map<string, (response: TransportEvent) => void>();
 
   // this is used to recover errors that couldn't be thrown at a caller
-  const listenerError = Promise.withResolvers<never>();
+  const transportFailure = new AbortController();
 
   // port returned by the penumbra global
   let port: MessagePort | undefined;
@@ -66,45 +95,44 @@ export const createChannelTransport = ({
    * @returns A promise that resolves when the channel is acquired.
    */
   const connect = async () => {
-    const initTimeout = new Promise<never>(
-      (_, reject) =>
-        defaultTimeoutMs &&
-        setTimeout(
-          reject,
-          defaultTimeoutMs,
-          new ConnectError('Channel connection request timed out', Code.Unavailable),
-        ),
+    const connectionPort = await Promise.race([
+      getPort(),
+      rejectOnSignal(
+        defaultTimeoutMs > 0 ? AbortSignal.timeout(defaultTimeoutMs) : undefined,
+      ).catch(() =>
+        Promise.reject(new ConnectError('Channel connection request timed out', Code.Unavailable)),
+      ),
+    ]);
+
+    connectionPort.addEventListener('message', transportListener);
+    connectionPort.addEventListener('messageerror', (ev: MessageEvent<unknown>) =>
+      transportFailure.abort(ConnectError.from(ev.data)),
     );
+    connectionPort.start();
 
-    const gotPort = await Promise.race([getPort(), initTimeout]);
-
-    gotPort.addEventListener('message', transportListener);
-    gotPort.start();
-
-    return gotPort;
+    return connectionPort;
   };
 
   const transportListener = ({ data }: MessageEvent<unknown>) => {
-    if (!data) {
-      // likely 'false' indicating a disconnect
-      listenerError.reject(new ConnectError('Connection closed', Code.Unavailable));
+    if (data === false) {
+      // 'false' indicating a disconnect
+      transportFailure.abort(new ConnectError('Connection closed', Code.Unavailable));
     } else if (isTransportEvent(data)) {
-      // this is a response to a specific request.  the port may be shared, so it
-      // may contain a requestId we don't know about.  the response may be
-      // successful, or contain an error conveyed only to the caller.
-      const respond = pending.get(data.requestId);
-      if (respond) {
-        respond(data);
-      }
+      // this is a response to a specific request.  the port may be shared, so
+      // it's okay if it contains a requestId we don't know about.  the response
+      // may be successful, or contain an error conveyed only to the caller.
+      pending.get(data.requestId)?.(data);
     } else if (isTransportError(data)) {
       // this is a channel-level error, corresponding to no specific request.
-      // this will fail this transport, and every client using this transport.
-      // every transport sharing this port will fail independently.
-      listenerError.reject(
+      // it will fail this transport, and every client using this transport, and
+      // every transport using this channel. every transport sharing this port
+      // will fail independently, but the rejection created here will be
+      // delivered to every subsequent request attempted on this transport.
+      transportFailure.abort(
         errorFromJson(data.error, data.metadata, new ConnectError('Transport failed')),
       );
     } else {
-      listenerError.reject(
+      transportFailure.abort(
         new ConnectError(
           'Unknown item in transport',
           Code.Unimplemented,
@@ -120,37 +148,64 @@ export const createChannelTransport = ({
     async unary<I extends Message<I> = AnyMessage, O extends Message<O> = AnyMessage>(
       service: ServiceType,
       method: MethodInfo<I, O>,
-      _signal: AbortSignal | undefined, // TODO
-      _timeoutMs: number | undefined, // TODO
+      signal: AbortSignal | undefined,
+      timeoutMs: number | undefined = defaultTimeoutMs,
       header: HeadersInit | undefined,
       input: PartialMessage<I>,
     ): Promise<UnaryResponse<I, O>> {
+      transportFailure.signal.throwIfAborted();
       port ??= await connect();
 
       const requestId = crypto.randomUUID();
-      const { promise: response, resolve, reject } = Promise.withResolvers<TransportMessage>();
-      pending.set(requestId, (tev: TransportEvent) => {
-        if (isTransportMessage(tev, requestId)) {
-          resolve(tev);
-        } else if (isTransportError(tev)) {
-          reject(errorFromJson(tev.error, tev.metadata, new ConnectError('Unary failed')));
-        } else {
-          reject(ConnectError.from(tev));
+      const requestFailure = new AbortController();
+
+      const response = Promise.race([
+        rejectOnSignal(
+          transportFailure.signal,
+          requestFailure.signal,
+          timeoutMs > 0 ? AbortSignal.timeout(timeoutMs) : undefined,
+          signal,
+        ),
+        new Promise<TransportMessage>((resolve, reject) => {
+          pending.set(requestId, (tev: TransportEvent) => {
+            if (isTransportMessage(tev, requestId)) {
+              resolve(tev);
+            } else if (isTransportError(tev, requestId)) {
+              reject(errorFromJson(tev.error, tev.metadata, new ConnectError('Unary failed')));
+            } else {
+              reject(ConnectError.from(tev));
+            }
+          });
+        }),
+      ]).finally(() => pending.delete(requestId));
+
+      if (!signal?.aborted) {
+        try {
+          switch (method.kind) {
+            case MethodKind.Unary:
+              {
+                const message = Any.pack(new method.I(input)).toJson(jsonOptions);
+                signal?.addEventListener('abort', () =>
+                  port?.postMessage({ requestId, abort: true } satisfies TransportAbort),
+                );
+                port.postMessage({ requestId, message, header } satisfies TransportMessage);
+              }
+              break;
+            default:
+              throw new ConnectError('MethodKind not supported', Code.Unimplemented);
+          }
+        } catch (e) {
+          requestFailure.abort(e);
         }
-      });
-
-      const message = Any.pack(new method.I(input)).toJson(jsonOptions);
-      port.postMessage({ requestId, message, header });
-
-      const success = Promise.race([response, listenerError.promise]);
+      }
 
       return {
         service,
         method,
         stream: false,
-        header: new Headers((await success).header),
-        trailer: new Headers((await success).trailer),
-        message: await success.then(({ message }) => {
+        header: new Headers((await response).header),
+        trailer: new Headers((await response).trailer),
+        message: await response.then(({ message }) => {
           const o = new method.O();
           Any.fromJson(message, jsonOptions).unpackTo(o);
           return o;
@@ -161,63 +216,100 @@ export const createChannelTransport = ({
     async stream<I extends Message<I> = AnyMessage, O extends Message<O> = AnyMessage>(
       service: ServiceType,
       method: MethodInfo<I, O>,
-      _signal: AbortSignal | undefined, // TODO
-      _timeoutMs: number | undefined, // TODO
+      signal: AbortSignal | undefined,
+      timeoutMs: number | undefined = defaultTimeoutMs,
       header: HeadersInit | undefined,
       input: AsyncIterable<PartialMessage<I>>,
     ): Promise<StreamResponse<I, O>> {
+      transportFailure.signal.throwIfAborted();
       port ??= await connect();
 
       const requestId = crypto.randomUUID();
-      const { promise: response, resolve, reject } = Promise.withResolvers<TransportStream>();
-      pending.set(requestId, (tev: TransportEvent) => {
-        if (isTransportStream(tev, requestId)) {
-          resolve(tev);
-        } else if (isTransportError(tev)) {
-          reject(errorFromJson(tev.error, tev.metadata, new ConnectError('Stream failed')));
-        } else {
-          reject(ConnectError.from(tev));
-        }
-      });
 
-      if (method.kind === MethodKind.ServerStreaming) {
-        const iter = input[Symbol.asyncIterator]();
-        const [{ value } = { value: null }, { done }] = [await iter.next(), await iter.next()];
-        if (done && typeof value === 'object' && value != null) {
-          const message = Any.pack(new method.I(value as object)).toJson(jsonOptions);
-          port.postMessage({ requestId, message, header } satisfies TransportMessage);
-        } else {
-          throw new ConnectError(
-            'MethodKind.ServerStreaming expects a single request message',
-            Code.OutOfRange,
-          );
+      const requestFailure = new AbortController();
+
+      const response = Promise.race([
+        rejectOnSignal(
+          transportFailure.signal,
+          requestFailure.signal,
+          timeoutMs > 0 ? AbortSignal.timeout(timeoutMs) : undefined,
+          signal,
+        ),
+        new Promise<TransportStream>((resolve, reject) => {
+          pending.set(requestId, (tev: TransportEvent) => {
+            if (isTransportStream(tev, requestId)) {
+              resolve(tev);
+            } else if (isTransportError(tev, requestId)) {
+              reject(errorFromJson(tev.error, tev.metadata, new ConnectError('Stream failed')));
+            } else {
+              reject(ConnectError.from(tev));
+            }
+          });
+        }),
+      ]).finally(() => pending.delete(requestId));
+
+      if (!signal?.aborted) {
+        try {
+          switch (method.kind) {
+            case MethodKind.ServerStreaming:
+              // send as a single message
+              {
+                // consume the input stream, which should have only one message
+                const iter = input[Symbol.asyncIterator]();
+                const [{ value } = { value: null }, { done }] = [
+                  await iter.next(),
+                  await iter.next(),
+                ];
+                // confirm the input stream ended after one message with content
+                if (done && typeof value === 'object' && value !== null) {
+                  const message = Any.pack(new method.I(value as object)).toJson(jsonOptions);
+                  port.postMessage({ requestId, message, header } satisfies TransportMessage);
+                } else {
+                  throw new ConnectError(
+                    'MethodKind.ServerStreaming expects a single request message',
+                    Code.OutOfRange,
+                  );
+                }
+              }
+              break;
+            case MethodKind.ClientStreaming:
+            case MethodKind.BiDiStreaming:
+              // send as an actual stream
+              {
+                const stream: ReadableStream<JsonValue> = ReadableStream.from(input).pipeThrough(
+                  new TransformStream({
+                    transform: (chunk: PartialMessage<I>, cont) =>
+                      cont.enqueue(Any.pack(new method.I(chunk)).toJson(jsonOptions)),
+                  }),
+                );
+                port.postMessage({ requestId, stream, header } satisfies TransportStream, [stream]);
+              }
+              break;
+            default:
+              throw new ConnectError('MethodKind not supported', Code.Unimplemented);
+          }
+        } catch (e) {
+          requestFailure.abort(e);
         }
-      } else {
-        const stream: ReadableStream<JsonValue> = ReadableStream.from(input).pipeThrough(
-          new TransformStream({
-            transform: (chunk: PartialMessage<I>, cont) =>
-              cont.enqueue(Any.pack(new method.I(chunk)).toJson(jsonOptions)),
-          }),
-        );
-        port.postMessage({ requestId, stream, header } satisfies TransportStream, [stream]);
       }
-
-      const success = await Promise.race([response, listenerError.promise]);
 
       return {
         service,
         method,
         stream: true,
-        header: new Headers(success.header),
-        trailer: new Headers(success.trailer),
-        message: success.stream.pipeThrough(
-          new TransformStream({
-            transform: (chunk, cont) => {
-              const o = new method.O();
-              Any.fromJson(chunk, jsonOptions).unpackTo(o);
-              cont.enqueue(o);
-            },
-          }),
+        header: new Headers((await response).header),
+        trailer: new Headers((await response).trailer),
+        message: await response.then(({ stream }) =>
+          stream.pipeThrough(
+            new TransformStream({
+              transform: (chunk, cont) => {
+                const o = new method.O();
+                Any.fromJson(chunk, jsonOptions).unpackTo(o);
+                cont.enqueue(o);
+              },
+            }),
+            { signal },
+          ),
         ),
       };
     },

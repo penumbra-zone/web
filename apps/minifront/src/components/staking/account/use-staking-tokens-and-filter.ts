@@ -5,10 +5,7 @@ import {
   useBalancesResponses,
   useStakingTokenMetadata,
 } from '../../../state/shared';
-import {
-  Metadata,
-  ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getDisplayDenomFromView } from '@penumbra-zone/getters/value-view';
 import { assetPatterns } from '@penumbra-zone/types/assets';
 
@@ -87,7 +84,7 @@ export const useStakingTokensAndFilter = (
       (prev, curr) => toAccountSwitcherFilter(prev, curr, stakingTokenMetadata),
       [],
     );
-  }, [balancesByAccount]);
+  }, [balancesByAccount, stakingTokenMetadata]);
 
   const stakingTokens = stakingTokensByAccount.get(account);
 

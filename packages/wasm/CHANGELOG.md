@@ -1,5 +1,82 @@
 # @penumbra-zone/wasm
 
+## 24.0.0
+
+### Minor Changes
+
+- 10ef940: Updating to v0.80.0 bufbuild types
+
+### Patch Changes
+
+- Updated dependencies [10ef940]
+  - @penumbra-zone/protobuf@5.7.0
+  - @penumbra-zone/types@19.0.0
+
+## 23.0.0
+
+### Patch Changes
+
+- Updated dependencies [bd43d49]
+- Updated dependencies [807648a]
+  - @penumbra-zone/types@18.2.0
+
+## 22.1.0
+
+### Minor Changes
+
+- 534a6ad: Disable change max
+
+## 22.0.0
+
+### Patch Changes
+
+- Updated dependencies [f5bea48]
+  - @penumbra-zone/types@18.1.0
+
+## 21.0.0
+
+### Patch Changes
+
+- Updated dependencies [a9ffd2d]
+- Updated dependencies
+  - @penumbra-zone/types@18.0.0
+  - @penumbra-zone/protobuf@5.6.0
+
+## 20.2.0
+
+### Minor Changes
+
+- 318690e: Properly derive DelegatorVoteView from perspective
+
+## 20.1.0
+
+### Minor Changes
+
+- d6ce325: Support customizing symbol for vote receipt tokens
+
+### Patch Changes
+
+- 3477bef: bugfix: injecting globalThis.**DEV** correctly on prod builds
+- Updated dependencies [3477bef]
+  - @penumbra-zone/types@17.0.1
+
+## 20.0.0
+
+### Minor Changes
+
+- 4e30796: Witness delegator vote plans
+
+### Patch Changes
+
+- @penumbra-zone/types@17.0.0
+
+## 19.0.0
+
+### Patch Changes
+
+- Updated dependencies [0233722]
+  - @penumbra-zone/types@16.1.0
+
 ## 18.0.0
 
 ### Patch Changes

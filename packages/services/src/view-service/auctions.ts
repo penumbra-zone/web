@@ -3,22 +3,22 @@ import {
   BalancesRequest,
   BalancesResponse,
   SpendableNoteRecord,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { Impl } from './index.js';
 import {
   AuctionId,
   DutchAuction,
   DutchAuctionState,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
 import { balances } from './balances.js';
 import { getDisplayDenomFromView } from '@penumbra-zone/getters/value-view';
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { assetPatterns } from '@penumbra-zone/types/assets';
 import { Any, PartialMessage } from '@bufbuild/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
 import { auctionIdFromBech32 } from '@penumbra-zone/bech32m/pauctid';
 import { HandlerContext } from '@connectrpc/connect';
-import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 const getBech32mAuctionId = (
   balancesResponse: PartialMessage<BalancesResponse>,
@@ -79,17 +79,16 @@ export const auctions: Impl['auctions'] = async function* (req, ctx) {
     let auction: Any | undefined;
     if (!!value.auction || state) {
       const outstandingReserves = await indexedDb.getAuctionOutstandingReserves(id);
-      auction = new Any({
-        typeUrl: DutchAuction.typeName,
-        value: new DutchAuction({
+      auction = Any.pack(
+        new DutchAuction({
           state: state ?? {
             seq: value.seqNum,
             inputReserves: outstandingReserves?.input.amount,
             outputReserves: outstandingReserves?.output.amount,
           },
           description: value.auction,
-        }).toBinary(),
-      });
+        }),
+      );
     }
 
     yield new AuctionsResponse({

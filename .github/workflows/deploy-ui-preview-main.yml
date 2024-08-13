@@ -16,7 +16,10 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
-        working-directory: packages/ui
+
+      - name: Protobuf codegen
+        run: pnpm proto
+        working-directory: packages/protobuf
 
       - name: Build static site
         run: pnpm build-storybook

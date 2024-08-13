@@ -1,5 +1,99 @@
 # @penumbra-zone/ui
 
+## 7.4.1
+
+### Patch Changes
+
+- e6f019e: Fix sidebar font
+
+## 7.4.0
+
+### Minor Changes
+
+- 10ef940: Updating to v0.80.0 bufbuild types
+
+### Patch Changes
+
+- Updated dependencies [10ef940]
+  - @penumbra-zone/perspective@24.0.0
+  - @penumbra-zone/types@19.0.0
+
+## 7.3.4
+
+### Patch Changes
+
+- 0069132: Fix copy button styles
+- Updated dependencies [bd43d49]
+- Updated dependencies [807648a]
+  - @penumbra-zone/types@18.2.0
+  - @penumbra-zone/perspective@23.0.0
+
+## 7.3.3
+
+### Patch Changes
+
+- @penumbra-zone/perspective@22.0.0
+
+## 7.3.2
+
+### Patch Changes
+
+- Updated dependencies [f5bea48]
+  - @penumbra-zone/types@18.1.0
+  - @penumbra-zone/perspective@21.0.0
+
+## 7.3.1
+
+### Patch Changes
+
+- Updated dependencies [a9ffd2d]
+  - @penumbra-zone/types@18.0.0
+  - @penumbra-zone/perspective@20.0.0
+
+## 7.3.0
+
+### Minor Changes
+
+- dfad32b: fix auctions source
+- 49fb3f1: Create <Table /> component; introduce <Density />
+- Update registry dep
+
+### Patch Changes
+
+- Updated dependencies [40a471d]
+  - @penumbra-zone/perspective@19.0.0
+
+## 7.2.1
+
+### Patch Changes
+
+- Updated dependencies [3477bef]
+  - @penumbra-zone/types@17.0.1
+
+## 7.2.0
+
+### Minor Changes
+
+- 54a5d66: Add Button/ButtonGroup/SegmentedPicker components
+
+## 7.1.0
+
+### Minor Changes
+
+- 86c1bbe: Add support for delegate vote action views
+
+### Patch Changes
+
+- @penumbra-zone/types@17.0.0
+
+## 7.0.3
+
+### Patch Changes
+
+- 26bd932: Shows the green checkmark icon for all filled dutch auctions
+- Updated dependencies [0233722]
+  - @penumbra-zone/types@16.1.0
+
 ## 7.0.2
 
 ### Patch Changes

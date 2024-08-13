@@ -1,5 +1,87 @@
 # @penumbra-zone/perspective
 
+## 24.0.0
+
+### Minor Changes
+
+- 10ef940: Updating to v0.80.0 bufbuild types
+
+### Patch Changes
+
+- Updated dependencies [10ef940]
+  - @penumbra-zone/getters@14.0.0
+  - @penumbra-zone/wasm@24.0.0
+
+## 23.0.0
+
+### Patch Changes
+
+- Updated dependencies [bd43d49]
+  - @penumbra-zone/getters@13.0.1
+  - @penumbra-zone/wasm@23.0.0
+
+## 22.0.0
+
+### Patch Changes
+
+- Updated dependencies [534a6ad]
+  - @penumbra-zone/wasm@22.1.0
+
+## 21.0.0
+
+### Patch Changes
+
+- @penumbra-zone/wasm@22.0.0
+
+## 20.0.0
+
+### Patch Changes
+
+- @penumbra-zone/wasm@21.0.0
+- @penumbra-zone/getters@13.0.0
+
+## 19.0.0
+
+### Minor Changes
+
+- 40a471d: Add additional transaction type classifications
+
+### Patch Changes
+
+- Updated dependencies [318690e]
+  - @penumbra-zone/wasm@20.2.0
+
+## 18.0.0
+
+### Minor Changes
+
+- 16147fe: Add support for DelegatorVotePlan -> DelegatorVoteView
+
+### Patch Changes
+
+- Updated dependencies [3477bef]
+- Updated dependencies [d6ce325]
+  - @penumbra-zone/wasm@20.1.0
+
+## 17.0.0
+
+### Minor Changes
+
+- 86c1bbe: Add support for delegate vote action views
+
+### Patch Changes
+
+- Updated dependencies [4e30796]
+- Updated dependencies [86c1bbe]
+  - @penumbra-zone/wasm@20.0.0
+  - @penumbra-zone/getters@12.1.0
+
+## 16.0.0
+
+### Patch Changes
+
+- @penumbra-zone/wasm@19.0.0
+
 ## 15.0.0
 
 ### Patch Changes

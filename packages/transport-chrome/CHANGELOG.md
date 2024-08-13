@@ -1,5 +1,50 @@
 # @penumbra-zone/transport-chrome
 
+## 8.0.1
+
+### Patch Changes
+
+- df2ac99: Use newer client package for minifront. Fix disconnect in transport-chrome
+
+## 8.0.0
+
+### Minor Changes
+
+- 10ef940: Updating to v0.80.0 bufbuild types
+
+### Patch Changes
+
+- Updated dependencies [10ef940]
+  - @penumbra-zone/transport-dom@7.5.0
+
+## 7.0.1
+
+### Patch Changes
+
+- 06aa65d: Allow http://localhost to establish the connection with chrome extensions
+
+## 7.0.0
+
+### Minor Changes
+
+- a788eff: Update default timeouts to better support build times
+
+### Patch Changes
+
+- Updated dependencies [a788eff]
+  - @penumbra-zone/transport-dom@7.4.0
+
+## 6.0.0
+
+### Minor Changes
+
+- af04e2a: respect transport abort controls
+
+### Patch Changes
+
+- Updated dependencies [af04e2a]
+  - @penumbra-zone/transport-dom@7.3.0
+
 ## 5.0.3
 
 ### Patch Changes

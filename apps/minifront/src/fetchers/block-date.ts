@@ -1,9 +1,12 @@
-import { tendermintClient } from '../clients';
+import { SctService } from '@penumbra-zone/protobuf';
+import { penumbra } from '../prax';
 
 export const getBlockDate = async (
   height: bigint,
   signal?: AbortSignal,
 ): Promise<Date | undefined> => {
-  const { block } = await tendermintClient.getBlockByHeight({ height }, { signal });
-  return block?.header?.time?.toDate();
+  const { timestamp } = await penumbra
+    .service(SctService)
+    .timestampByHeight({ height }, { signal });
+  return timestamp?.toDate();
 };

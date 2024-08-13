@@ -1,49 +1,86 @@
-import styled, { WebTarget } from 'styled-components';
-import { body, detail, h1, h2, h3, h4, large, small, strong, technical } from '../utils/typography';
+import styled, { css, WebTarget } from 'styled-components';
+import {
+  body,
+  detail,
+  h1,
+  h2,
+  h3,
+  h4,
+  large,
+  small,
+  strong,
+  technical,
+  truncate,
+  xxl,
+} from '../utils/typography';
 import { ReactNode } from 'react';
 
-const H1 = styled.h1`
+interface StyledProps {
+  $truncate?: boolean;
+}
+
+const maybeTruncate = css<StyledProps>`
+  ${props => props.$truncate && truncate}
+`;
+
+const H1 = styled.h1<StyledProps>`
   ${h1}
+  ${maybeTruncate}
 `;
 
-const H2 = styled.h2`
+const H2 = styled.h2<StyledProps>`
   ${h2}
+  ${maybeTruncate}
 `;
 
-const H3 = styled.h3`
+const H3 = styled.h3<StyledProps>`
   ${h3}
+  ${maybeTruncate}
 `;
 
-const H4 = styled.h4`
+const H4 = styled.h4<StyledProps>`
   ${h4}
+  ${maybeTruncate}
 `;
 
-const Large = styled.span`
+const Xxl = styled.span<StyledProps>`
+  ${xxl}
+  ${maybeTruncate}
+`;
+
+const Large = styled.span<StyledProps>`
   ${large}
+  ${maybeTruncate}
 `;
 
-const Body = styled.span`
+const Body = styled.span<StyledProps>`
   ${body}
+  ${maybeTruncate}
 `;
 
-const Strong = styled.span`
+const Strong = styled.span<StyledProps>`
   ${strong}
+  ${maybeTruncate}
 `;
 
-const Detail = styled.span`
+const Detail = styled.span<StyledProps>`
   ${detail}
+  ${maybeTruncate}
 `;
 
-const Small = styled.span`
+const Small = styled.span<StyledProps>`
   ${small}
+  ${maybeTruncate}
 `;
 
-const Technical = styled.span`
+const Technical = styled.span<StyledProps>`
   ${technical}
+  ${maybeTruncate}
 `;
 
-const P = styled.p`
+const P = styled.p<StyledProps>`
   ${body}
+  ${maybeTruncate}
 
   margin-bottom: ${props => props.theme.lineHeight.textBase};
 
@@ -61,6 +98,7 @@ interface NeverTextTypes {
   h2?: never;
   h3?: never;
   h4?: never;
+  xxl?: never;
   large?: never;
   p?: never;
   strong?: never;
@@ -99,9 +137,17 @@ type TextType =
        */
       h4: true;
     })
-  | (Omit<NeverTextTypes, 'large'> & {
+  | (Omit<NeverTextTypes, 'xxl'> & {
       /**
        * Renders bigger text used for section titles. Renders a `<span />` by
+       * default; pass the `as` prop to use a different HTML element with the
+       * same styling.
+       */
+      xxl: true;
+    })
+  | (Omit<NeverTextTypes, 'large'> & {
+      /**
+       * Renders big text used for section titles. Renders a `<span />` by
        * default; pass the `as` prop to use a different HTML element with the
        * same styling.
        */
@@ -176,6 +222,24 @@ export type TextProps = TextType & {
    * ```
    */
   as?: WebTarget;
+  /**
+   * When `true`, will apply styles that 1) prevent text wrapping, 2) hide
+   * overflow, 3) add an ellpsis when the text overflows.
+   */
+  truncate?: boolean;
+};
+
+/**
+ * Runtime equivalent of TypeScript's `Omit` type. Removes extraneous props that
+ * shouldn't be passed to the DOM.
+ */
+const omit = <ObjectType extends Record<string, unknown>>(
+  object: ObjectType,
+  key: keyof ObjectType,
+) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- we're discarding the unused key
+  const { [key]: _, ...rest } = object;
+  return rest;
 };
 
 /**
@@ -206,37 +270,40 @@ export type TextProps = TextType & {
  * </Text>
  * ```
  */
-export const Text = (props: TextProps) => {
+export const Text = ({ truncate, ...props }: TextProps) => {
   if (props.h1) {
-    return <H1 {...props} />;
+    return <H1 {...omit(props, 'h1')} $truncate={truncate} />;
   }
   if (props.h2) {
-    return <H2 {...props} />;
+    return <H2 {...omit(props, 'h2')} $truncate={truncate} />;
   }
   if (props.h3) {
-    return <H3 {...props} />;
+    return <H3 {...omit(props, 'h3')} $truncate={truncate} />;
   }
   if (props.h4) {
-    return <H4 {...props} />;
+    return <H4 {...omit(props, 'h4')} $truncate={truncate} />;
+  }
+  if (props.xxl) {
+    return <Xxl {...omit(props, 'xxl')} $truncate={truncate} />;
   }
   if (props.large) {
-    return <Large {...props} />;
+    return <Large {...omit(props, 'large')} $truncate={truncate} />;
   }
   if (props.strong) {
-    return <Strong {...props} />;
+    return <Strong {...omit(props, 'strong')} $truncate={truncate} />;
   }
   if (props.detail) {
-    return <Detail {...props} />;
+    return <Detail {...omit(props, 'detail')} $truncate={truncate} />;
   }
   if (props.small) {
-    return <Small {...props} />;
+    return <Small {...omit(props, 'small')} $truncate={truncate} />;
   }
   if (props.technical) {
-    return <Technical {...props} />;
+    return <Technical {...omit(props, 'technical')} $truncate={truncate} />;
   }
   if (props.p) {
-    return <P {...props} />;
+    return <P {...omit(props, 'p')} $truncate={truncate} />;
   }
 
-  return <Body {...props} />;
+  return <Body {...omit(props, 'body')} $truncate={truncate} />;
 };

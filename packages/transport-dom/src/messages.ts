@@ -2,7 +2,8 @@ import type { JsonValue } from '@bufbuild/protobuf';
 
 // transport meta
 
-export interface TransportError extends Partial<TransportEvent> {
+export interface TransportError<I extends string | undefined> extends Partial<TransportEvent> {
+  requestId: I extends string ? string : string | undefined;
   error: JsonValue;
   metadata?: HeadersInit;
 }
@@ -18,6 +19,10 @@ export interface TransportEvent<I extends string = string> {
   //contextValues?: object;
 }
 
+export interface TransportAbort<I = string> extends TransportEvent<I extends string ? I : never> {
+  abort: true;
+}
+
 export interface TransportMessage<I = string> extends TransportEvent<I extends string ? I : never> {
   message: JsonValue;
 }
@@ -31,7 +36,8 @@ export interface TransportStream<I = string> extends TransportEvent<I extends st
 
 const isObj = (o: unknown): o is object => typeof o === 'object' && o !== null;
 
-export const isTransportError = (e: unknown): e is TransportError => isObj(e) && 'error' in e;
+export const isTransportError = <I extends string>(e: unknown, id?: I): e is TransportError<I> =>
+  isObj(e) && 'error' in e && (!id || ('requestId' in e && e.requestId === id));
 
 export const isTransportData = (t: unknown): t is TransportData =>
   isTransportMessage(t) || isTransportStream(t);
@@ -49,3 +55,6 @@ export const isTransportMessage = <I extends string>(
 
 export const isTransportStream = <I extends string>(s: unknown, id?: I): s is TransportStream<I> =>
   isTransportEvent(s, id) && 'stream' in s && s.stream instanceof ReadableStream;
+
+export const isTransportAbort = <I extends string>(a: unknown, id?: I): a is TransportAbort<I> =>
+  isTransportEvent(a, id) && 'abort' in a && a.abort === true;

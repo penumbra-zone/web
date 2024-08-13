@@ -2,8 +2,8 @@ import {
   Metadata,
   Value,
   ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import { SwapExecution_Trace } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { SwapExecution_Trace } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { ValueViewComponent } from '@repo/ui/components/ui/value';
 import { Price } from './price';

@@ -1,8 +1,8 @@
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import {
   AuctionId,
   DutchAuction,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
 import { formatAmount } from '@penumbra-zone/types/amount';
 import { ReactNode } from 'react';
 import { Separator } from '../../separator';
@@ -11,18 +11,21 @@ import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import { cn } from '../../../../lib/utils';
 import { AuctionIdComponent } from '../../auction-id-component';
 import { motion } from 'framer-motion';
+import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 export const ExpandedDetails = ({
   auctionId,
   dutchAuction,
   inputMetadata,
   outputMetadata,
+  addressIndex,
   fullSyncHeight,
 }: {
   auctionId?: AuctionId;
   dutchAuction: DutchAuction;
   inputMetadata?: Metadata;
   outputMetadata?: Metadata;
+  addressIndex?: AddressIndex;
   fullSyncHeight?: bigint;
 }) => {
   const { description } = dutchAuction;
@@ -102,6 +105,12 @@ export const ExpandedDetails = ({
       {auctionId && (
         <Row label='Auction ID'>
           <AuctionIdComponent auctionId={auctionId} />
+        </Row>
+      )}
+
+      {addressIndex && (
+        <Row label='Account'>
+          <span className='font-mono text-xs'>{addressIndex.account}</span>
         </Row>
       )}
     </div>

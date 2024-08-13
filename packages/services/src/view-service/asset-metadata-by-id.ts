@@ -2,6 +2,8 @@ import type { Impl } from './index.js';
 import { servicesCtx } from '../ctx/prax.js';
 import { assetPatterns } from '@penumbra-zone/types/assets';
 import { getAssetPriorityScore } from './util/asset-priority-score.js';
+import { customizeSymbol } from '@penumbra-zone/wasm/metadata';
+import { getAssetId } from '@penumbra-zone/getters/metadata';
 
 export const assetMetadataById: Impl['assetMetadataById'] = async ({ assetId }, ctx) => {
   if (!assetId) {
@@ -39,8 +41,9 @@ export const assetMetadataById: Impl['assetMetadataById'] = async ({ assetId }, 
   const isIbcAsset = remoteMetadata && assetPatterns.ibc.matches(remoteMetadata.display);
 
   if (remoteMetadata && !isIbcAsset) {
-    void indexedDb.saveAssetsMetadata(remoteMetadata);
-    return { denomMetadata: remoteMetadata };
+    const customized = customizeSymbol(remoteMetadata);
+    void indexedDb.saveAssetsMetadata({ ...customized, penumbraAssetId: getAssetId(customized) });
+    return { denomMetadata: customized };
   }
 
   return { denomMetadata: undefined };

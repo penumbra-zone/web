@@ -1,27 +1,21 @@
-import {
-  AssetId,
-  Metadata,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
+import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { AuctionId } from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
 import {
   PositionState,
   PositionState_PositionStateEnum,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import {
   CommitmentSource,
   Nullifier,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb.js';
-import { ValidatorInfoResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
+import { ValidatorInfoResponse } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 import {
   Action,
   Transaction,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
-import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb.js';
-import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb.js';
-import {
-  SpendableNoteRecord,
-  SwapRecord,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
+import { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
+import { SpendableNoteRecord, SwapRecord } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { auctionIdFromBech32 } from '@penumbra-zone/bech32m/pauctid';
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
 import { sha256Hash } from '@penumbra-zone/crypto-web/sha256';
@@ -31,7 +25,7 @@ import {
   getIdentityKeyFromValidatorInfoResponse,
 } from '@penumbra-zone/getters/validator-info-response';
 import { toDecimalExchangeRate } from '@penumbra-zone/types/amount';
-import { PRICE_RELEVANCE_THRESHOLDS, assetPatterns } from '@penumbra-zone/types/assets';
+import { assetPatterns, PRICE_RELEVANCE_THRESHOLDS } from '@penumbra-zone/types/assets';
 import type { BlockProcessorInterface } from '@penumbra-zone/types/block-processor';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import type { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
@@ -45,9 +39,12 @@ import { processActionDutchAuctionEnd } from './helpers/process-action-dutch-auc
 import { processActionDutchAuctionSchedule } from './helpers/process-action-dutch-auction-schedule.js';
 import { processActionDutchAuctionWithdraw } from './helpers/process-action-dutch-auction-withdraw.js';
 import { RootQuerier } from './root-querier.js';
-import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb.js';
-import { IdentityKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+import { IdentityKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { getDelegationTokenMetadata } from '@penumbra-zone/wasm/stake';
+import { toPlainMessage } from '@bufbuild/protobuf';
+import { getAssetIdFromGasPrices } from '@penumbra-zone/getters/compact-block';
+import { getSpendableNoteRecordCommitment } from '@penumbra-zone/getters/spendable-note-record';
+import { getSwapRecordCommitment } from '@penumbra-zone/getters/swap-record';
 
 declare global {
   // eslint-disable-next-line no-var
@@ -55,6 +52,16 @@ declare global {
   // eslint-disable-next-line no-var
   var __ASSERT_ROOT__: boolean | undefined;
 }
+
+const isSwapRecordWithSwapCommitment = (
+  r?: unknown,
+): r is Exclude<SwapRecord, { swapCommitment: undefined }> =>
+  r instanceof SwapRecord && r.swapCommitment instanceof StateCommitment;
+
+const isSpendableNoteRecordWithNoteCommitment = (
+  r?: unknown,
+): r is Exclude<SpendableNoteRecord, { noteCommitment: undefined }> =>
+  r instanceof SpendableNoteRecord && r.noteCommitment instanceof StateCommitment;
 
 interface QueryClientProps {
   querier: RootQuerier;
@@ -169,16 +176,17 @@ export class BlockProcessor implements BlockProcessorInterface {
         await this.indexedDb.saveFmdParams(compactBlock.fmdParameters);
       }
       if (compactBlock.gasPrices) {
-        await this.indexedDb.saveGasPrices(
-          new GasPrices({
-            assetId: this.stakingAssetId,
-            ...compactBlock.gasPrices,
-          }),
-        );
+        await this.indexedDb.saveGasPrices({
+          ...toPlainMessage(compactBlock.gasPrices),
+          assetId: toPlainMessage(this.stakingAssetId),
+        });
       }
       if (compactBlock.altGasPrices.length) {
-        for (const gasPrice of compactBlock.altGasPrices) {
-          await this.indexedDb.saveGasPrices(gasPrice);
+        for (const altGas of compactBlock.altGasPrices) {
+          await this.indexedDb.saveGasPrices({
+            ...toPlainMessage(altGas),
+            assetId: getAssetIdFromGasPrices(altGas),
+          });
         }
       }
 
@@ -352,10 +360,16 @@ export class BlockProcessor implements BlockProcessorInterface {
 
   private async saveRecoveredCommitmentSources(recovered: (SpendableNoteRecord | SwapRecord)[]) {
     for (const record of recovered) {
-      if (record instanceof SpendableNoteRecord) {
-        await this.indexedDb.saveSpendableNote(record);
-      } else if (record instanceof SwapRecord) {
-        await this.indexedDb.saveSwap(record);
+      if (isSpendableNoteRecordWithNoteCommitment(record)) {
+        await this.indexedDb.saveSpendableNote({
+          ...toPlainMessage(record),
+          noteCommitment: toPlainMessage(getSpendableNoteRecordCommitment(record)),
+        });
+      } else if (isSwapRecordWithSwapCommitment(record)) {
+        await this.indexedDb.saveSwap({
+          ...toPlainMessage(record),
+          swapCommitment: toPlainMessage(getSwapRecordCommitment(record)),
+        });
       } else {
         throw new Error('Unexpected record type');
       }
@@ -445,7 +459,11 @@ export class BlockProcessor implements BlockProcessorInterface {
     const isIbcAsset = metadataFromNode && assetPatterns.ibc.matches(metadataFromNode.display);
 
     if (metadataFromNode && !isIbcAsset) {
-      await this.indexedDb.saveAssetsMetadata(customizeSymbol(metadataFromNode));
+      const customized = customizeSymbol(metadataFromNode);
+      await this.indexedDb.saveAssetsMetadata({
+        ...customized,
+        penumbraAssetId: getAssetId(customized),
+      });
       return metadataFromNode;
     }
 
@@ -466,7 +484,11 @@ export class BlockProcessor implements BlockProcessorInterface {
 
     const generatedMetadata = getDelegationTokenMetadata(identityKey);
 
-    await this.indexedDb.saveAssetsMetadata(customizeSymbol(generatedMetadata));
+    const customized = customizeSymbol(generatedMetadata);
+    await this.indexedDb.saveAssetsMetadata({
+      ...customized,
+      penumbraAssetId: getAssetId(customized),
+    });
     return generatedMetadata;
   }
 
@@ -486,10 +508,16 @@ export class BlockProcessor implements BlockProcessorInterface {
 
       if (record instanceof SpendableNoteRecord) {
         record.heightSpent = height;
-        await this.indexedDb.saveSpendableNote(record);
+        await this.indexedDb.saveSpendableNote({
+          ...toPlainMessage(record),
+          noteCommitment: toPlainMessage(getSpendableNoteRecordCommitment(record)),
+        });
       } else if (record instanceof SwapRecord) {
         record.heightClaimed = height;
-        await this.indexedDb.saveSwap(record);
+        await this.indexedDb.saveSwap({
+          ...toPlainMessage(record),
+          swapCommitment: toPlainMessage(getSwapRecordCommitment(record)),
+        });
       }
     }
 
@@ -539,7 +567,10 @@ export class BlockProcessor implements BlockProcessorInterface {
     if (action.case === 'positionOpen' && action.value.position) {
       for (const state of POSITION_STATES) {
         const metadata = getLpNftMetadata(computePositionId(action.value.position), state);
-        await this.indexedDb.saveAssetsMetadata(metadata);
+        await this.indexedDb.saveAssetsMetadata({
+          ...metadata,
+          penumbraAssetId: getAssetId(metadata),
+        });
       }
       // to optimize on-chain storage PositionId is not written in the positionOpen action,
       // but can be computed via hashing of immutable position fields
@@ -561,7 +592,10 @@ export class BlockProcessor implements BlockProcessorInterface {
         sequence: action.value.sequence,
       });
       const metadata = getLpNftMetadata(action.value.positionId, positionState);
-      await this.indexedDb.saveAssetsMetadata(metadata);
+      await this.indexedDb.saveAssetsMetadata({
+        ...metadata,
+        penumbraAssetId: getAssetId(metadata),
+      });
 
       await this.indexedDb.updatePosition(action.value.positionId, positionState);
     }
@@ -617,6 +651,9 @@ export class BlockProcessor implements BlockProcessorInterface {
   // TODO: refactor. there is definitely a better way to do this.  batch
   // endpoint issue https://github.com/penumbra-zone/penumbra/issues/4688
   private async updateValidatorInfos(nextEpochStartHeight: bigint): Promise<void> {
+    // It's important to clear the table so any stale (jailed, tombstoned, etc) entries are filtered out.
+    await this.indexedDb.clearValidatorInfos();
+
     for await (const validatorInfoResponse of this.querier.stake.allValidatorInfos()) {
       if (!validatorInfoResponse.validatorInfo) {
         continue;

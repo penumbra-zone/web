@@ -1,4 +1,4 @@
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { AddressComponent, AddressIcon } from '@repo/ui/components/ui/address';
 import { Button } from '@repo/ui/components/ui/button';
 import {
@@ -28,11 +28,18 @@ const getTradeLink = (balance: BalancesResponse): string => {
   return metadata ? `${PagePath.SWAP}?from=${metadata.symbol}${accountQuery}` : PagePath.SWAP;
 };
 
+const byAccountIndex = (a: BalancesByAccount, b: BalancesByAccount) => {
+  return a.account - b.account;
+};
+
 const filteredBalancesByAccountSelector = (
   zQueryState: AbridgedZQueryState<BalancesResponse[]>,
 ): BalancesByAccount[] =>
-  zQueryState.data?.filter(shouldDisplay).sort(sortByPriorityScore).reduce(groupByAccount, []) ??
-  [];
+  zQueryState.data
+    ?.filter(shouldDisplay)
+    .sort(sortByPriorityScore)
+    .reduce(groupByAccount, [])
+    .sort(byAccountIndex) ?? [];
 
 export default function AssetsTable() {
   const balancesByAccount = useBalancesResponses({
@@ -42,13 +49,13 @@ export default function AssetsTable() {
 
   if (balancesByAccount?.length === 0) {
     return (
-      <div className='flex flex-col gap-6'>
+      <div className='mt-5 flex flex-col items-center gap-6'>
         <p>
-          No balances found. Try requesting tokens by pasting your address in{' '}
-          <a style={{ color: '#aaaaff' }} href='https://discord.gg/CDNEnzX6YC'>
-            the faucet channel
-          </a>{' '}
-          on Discord!
+          No balances found.{' '}
+          <Link to='/ibc' style={{ color: '#aaaaff' }}>
+            Try shielding funds
+          </Link>
+          .
         </p>
       </div>
     );

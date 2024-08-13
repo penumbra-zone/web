@@ -1,5 +1,63 @@
 # @penumbra-zone/types
 
+## 19.0.0
+
+### Minor Changes
+
+- 10ef940: Updating to v0.80.0 bufbuild types
+
+### Patch Changes
+
+- Updated dependencies [10ef940]
+  - @penumbra-zone/getters@14.0.0
+
+## 18.2.0
+
+### Minor Changes
+
+- bd43d49: require complete GasPrices input to saveGasPrices
+- 807648a: Support viewing fresh state of jailed validators
+
+### Patch Changes
+
+- Updated dependencies [bd43d49]
+  - @penumbra-zone/getters@13.0.1
+
+## 18.1.0
+
+### Minor Changes
+
+- f5bea48: fix source randomizer
+
+## 18.0.0
+
+### Minor Changes
+
+- a9ffd2d: rework extractAltFee with fallback protections
+
+### Patch Changes
+
+- @penumbra-zone/getters@13.0.0
+
+## 17.0.1
+
+### Patch Changes
+
+- 3477bef: bugfix: injecting globalThis.**DEV** correctly on prod builds
+
+## 17.0.0
+
+### Patch Changes
+
+- Updated dependencies [86c1bbe]
+  - @penumbra-zone/getters@12.1.0
+
+## 16.1.0
+
+### Minor Changes
+
+- 0233722: added proxying timestampByHeight
+
 ## 16.0.0
 
 ### Patch Changes

@@ -1,19 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '..';
-import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
-import {
-  Metadata,
-  ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { ValidatorInfo } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
+import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
 import { getValidatorInfoFromValueView } from '@penumbra-zone/getters/value-view';
-import {
-  AddressView,
-  IdentityKey,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+import { AddressView, IdentityKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { THROTTLE_MS } from '.';
-import { DelegationsByAddressIndexResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { DelegationsByAddressIndexResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { Any } from '@bufbuild/protobuf';
 
 const u8 = (length: number) => Uint8Array.from({ length }, () => Math.floor(Math.random() * 256));
 const validator1IdentityKey = new IdentityKey({ ik: u8(32) });
@@ -83,10 +78,7 @@ vi.mock('../../fetchers/balances', () => ({
               metadata: {
                 display: `delegation_${validator1Bech32IdentityKey}`,
               },
-              extendedMetadata: {
-                typeUrl: ValidatorInfo.typeName,
-                value: validatorInfo1.toBinary(),
-              },
+              extendedMetadata: Any.pack(validatorInfo1),
             },
           },
         }),
@@ -111,10 +103,7 @@ vi.mock('../../fetchers/balances', () => ({
               metadata: {
                 display: `delegation_${validator2Bech32IdentityKey}`,
               },
-              extendedMetadata: {
-                typeUrl: ValidatorInfo.typeName,
-                value: validatorInfo2.toBinary(),
-              },
+              extendedMetadata: Any.pack(validatorInfo2),
             },
           },
         }),
@@ -158,78 +147,70 @@ vi.mock('../../fetchers/balances', () => ({
   ),
 }));
 
-const mockViewClient = vi.hoisted(() => ({
-  assetMetadataById: vi.fn(() => new Metadata()),
-  delegationsByAddressIndex: vi.fn(async function* () {
-    yield await Promise.resolve(
-      new DelegationsByAddressIndexResponse({
-        valueView: {
-          valueView: {
-            case: 'knownAssetId',
-            value: {
-              amount: { hi: 0n, lo: 1n },
-              extendedMetadata: {
-                typeUrl: ValidatorInfo.typeName,
-                value: validatorInfo1.toBinary(),
-              },
-            },
-          },
-        },
-      }),
-    );
-    yield await Promise.resolve(
-      new DelegationsByAddressIndexResponse({
-        valueView: {
-          valueView: {
-            case: 'knownAssetId',
-            value: {
-              amount: { hi: 0n, lo: 2n },
-              extendedMetadata: {
-                typeUrl: ValidatorInfo.typeName,
-                value: validatorInfo2.toBinary(),
-              },
-            },
-          },
-        },
-      }),
-    );
-    yield await Promise.resolve(
-      new DelegationsByAddressIndexResponse({
-        valueView: {
-          valueView: {
-            case: 'knownAssetId',
-            value: {
-              amount: { hi: 0n, lo: 0n },
-              extendedMetadata: {
-                typeUrl: ValidatorInfo.typeName,
-                value: validatorInfo3.toBinary(),
-              },
-            },
-          },
-        },
-      }),
-    );
-    yield await Promise.resolve(
-      new DelegationsByAddressIndexResponse({
-        valueView: {
-          valueView: {
-            case: 'knownAssetId',
-            value: {
-              amount: { hi: 0n, lo: 0n },
-              extendedMetadata: {
-                typeUrl: ValidatorInfo.typeName,
-                value: validatorInfo4.toBinary(),
-              },
-            },
-          },
-        },
-      }),
-    );
-  }),
+vi.mock('../../prax', () => ({
+  penumbra: {
+    service: vi.fn(() => hoisted.mockViewClient),
+  },
 }));
 
-vi.mock('../../clients', () => ({
-  viewClient: mockViewClient,
+const hoisted = vi.hoisted(() => ({
+  mockViewClient: {
+    assetMetadataById: vi.fn(() => new Metadata()),
+    delegationsByAddressIndex: vi.fn(async function* () {
+      yield await Promise.resolve(
+        new DelegationsByAddressIndexResponse({
+          valueView: {
+            valueView: {
+              case: 'knownAssetId',
+              value: {
+                amount: { hi: 0n, lo: 1n },
+                extendedMetadata: Any.pack(validatorInfo1),
+              },
+            },
+          },
+        }),
+      );
+      yield await Promise.resolve(
+        new DelegationsByAddressIndexResponse({
+          valueView: {
+            valueView: {
+              case: 'knownAssetId',
+              value: {
+                amount: { hi: 0n, lo: 2n },
+                extendedMetadata: Any.pack(validatorInfo2),
+              },
+            },
+          },
+        }),
+      );
+      yield await Promise.resolve(
+        new DelegationsByAddressIndexResponse({
+          valueView: {
+            valueView: {
+              case: 'knownAssetId',
+              value: {
+                amount: { hi: 0n, lo: 0n },
+                extendedMetadata: Any.pack(validatorInfo3),
+              },
+            },
+          },
+        }),
+      );
+      yield await Promise.resolve(
+        new DelegationsByAddressIndexResponse({
+          valueView: {
+            valueView: {
+              case: 'knownAssetId',
+              value: {
+                amount: { hi: 0n, lo: 0n },
+                extendedMetadata: Any.pack(validatorInfo4),
+              },
+            },
+          },
+        }),
+      );
+    }),
+  },
 }));
 
 describe('Staking Slice', () => {

@@ -1,5 +1,17 @@
 # @penumbra-zone/protobuf
 
+## 5.7.0
+
+### Minor Changes
+
+- 10ef940: Updating to v0.80.0 bufbuild types
+
+## 5.6.0
+
+### Minor Changes
+
+- Catchup bump (previously changed without a bump)
+
 ## 5.5.0
 
 ### Minor Changes

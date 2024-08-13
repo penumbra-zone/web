@@ -1,18 +1,22 @@
-import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import {
+  TransactionPlannerRequest,
+  TransactionPlannerRequest_ActionDutchAuctionWithdraw,
+  TransactionPlannerRequest_ActionDutchAuctionEnd,
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { AllSlices, SliceCreator, useStore } from '../..';
 import { planBuildBroadcast } from '../../helpers';
 import { assembleScheduleRequest } from './assemble-schedule-request';
-import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
+import { AuctionId } from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
 import { sendSimulateTradeRequest } from '../helpers';
 import { fromBaseUnitAmount, isZero, multiplyAmountByNumber } from '@penumbra-zone/types/amount';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb.js';
+import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { errorToast } from '@repo/ui/lib/toast/presets';
 import { ZQueryState, createZQuery } from '@penumbra-zone/zquery';
 import { AuctionInfo, getAuctionInfos } from '../../../fetchers/auction-infos';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { bech32mAuctionId } from '@penumbra-zone/bech32m/pauctid';
-import { getAddressIndex } from '@penumbra-zone/getters/balances-response';
+import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 /**
  * Multipliers to use with the output of the swap simulation, to determine
@@ -28,14 +32,20 @@ const MIN_OUTPUT_ESTIMATE_MULTIPLIER = 0.5;
  */
 export const OUTPUT_LIMIT = 2 ** 52 - 1;
 
-export type Filter = 'active' | 'all';
+export type Filter = 'active' | 'inactive' | 'all';
 
 interface Actions {
   setMinOutput: (minOutput: string) => void;
   setMaxOutput: (maxOutput: string) => void;
   onSubmit: () => Promise<void>;
-  endAuction: (auctionId: AuctionId) => Promise<void>;
-  withdraw: (auctionId: AuctionId, currentSeqNum: bigint) => Promise<void>;
+  endAuction: (auctionId: AuctionId, addressIndex: AddressIndex) => Promise<void>;
+  withdraw: (
+    auctionId: AuctionId,
+    currentSeqNum: bigint,
+    addressIndex: AddressIndex,
+  ) => Promise<void>;
+  endAllAuctions: (auctions: AuctionInfo[], addressIndex: AddressIndex) => Promise<void>;
+  withdrawAllAuctions: (auctions: AuctionInfo[], addressIndex: AddressIndex) => Promise<void>;
   reset: VoidFunction;
   setFilter: (filter: Filter) => void;
   estimate: () => Promise<void>;
@@ -168,6 +178,7 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
 
       get().swap.setAmount('');
       get().swap.dutchAuction.auctionInfos.revalidate();
+      get().shared.balancesResponses.revalidate();
     } finally {
       set(state => {
         state.swap.dutchAuction.txInProgress = false;
@@ -175,23 +186,49 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
     }
   },
 
-  endAuction: async auctionId => {
-    const source = getAddressIndex.optional()(get().swap.assetIn);
-    const req = new TransactionPlannerRequest({ dutchAuctionEndActions: [{ auctionId }], source });
+  endAuction: async (auctionId, addressIndex) => {
+    const req = new TransactionPlannerRequest({
+      dutchAuctionEndActions: [{ auctionId }],
+      source: addressIndex,
+    });
+    await planBuildBroadcast('dutchAuctionEnd', req);
+    get().swap.dutchAuction.auctionInfos.revalidate();
+    get().shared.balancesResponses.revalidate();
+  },
+
+  withdraw: async (auctionId, currentSeqNum, addressIndex) => {
+    const req = new TransactionPlannerRequest({
+      dutchAuctionWithdrawActions: [{ auctionId, seq: currentSeqNum + 1n }],
+      source: addressIndex,
+    });
+    await planBuildBroadcast('dutchAuctionWithdraw', req);
+    get().swap.dutchAuction.auctionInfos.revalidate();
+    get().shared.balancesResponses.revalidate();
+  },
+  endAllAuctions: async (auctions: AuctionInfo[], addressIndex: AddressIndex) => {
+    const req = new TransactionPlannerRequest({
+      dutchAuctionEndActions: auctions.map(
+        au => new TransactionPlannerRequest_ActionDutchAuctionEnd({ auctionId: au.id }),
+      ),
+      source: addressIndex,
+    });
     await planBuildBroadcast('dutchAuctionEnd', req);
     get().swap.dutchAuction.auctionInfos.revalidate();
   },
-
-  withdraw: async (auctionId, currentSeqNum) => {
-    const source = getAddressIndex.optional()(get().swap.assetIn);
+  withdrawAllAuctions: async (auctions: AuctionInfo[], addressIndex: AddressIndex) => {
     const req = new TransactionPlannerRequest({
-      dutchAuctionWithdrawActions: [{ auctionId, seq: currentSeqNum + 1n }],
-      source,
+      dutchAuctionWithdrawActions: auctions.map(
+        au =>
+          new TransactionPlannerRequest_ActionDutchAuctionWithdraw({
+            auctionId: au.id,
+            seq: au.localSeqNum + 1n,
+          }),
+      ),
+      source: addressIndex,
     });
     await planBuildBroadcast('dutchAuctionWithdraw', req);
     get().swap.dutchAuction.auctionInfos.revalidate();
   },
-
   reset: () =>
     set(({ swap }) => {
       swap.dutchAuction = {

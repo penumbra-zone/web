@@ -1,8 +1,9 @@
-import { Value } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { Value } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import {
   ActionDutchAuctionEnd,
   DutchAuction,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
+import { getAssetId } from '@penumbra-zone/getters/metadata';
 import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
 import { AuctionQuerierInterface } from '@penumbra-zone/types/querier';
 import { getAuctionNftMetadata } from '@penumbra-zone/wasm/auction';
@@ -40,7 +41,7 @@ export const processActionDutchAuctionEnd = async (
   };
 
   await Promise.all([
-    indexedDb.saveAssetsMetadata(metadata),
+    indexedDb.saveAssetsMetadata({ ...metadata, penumbraAssetId: getAssetId(metadata) }),
     indexedDb.upsertAuction(action.auctionId, { seqNum }),
     indexedDb.addAuctionOutstandingReserves(action.auctionId, outstandingReserves),
   ]);
