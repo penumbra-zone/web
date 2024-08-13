@@ -84,21 +84,31 @@ export const CharacterTransition = memo(({ children }: CharacterTransitionProps)
 
   const charCounts: Record<string, number> = {};
 
-  return children.split(' ').map((word, index, array) => (
-    <Fragment key={index}>
-      <Word>
-        {word.split('').map(char => {
-          charCounts[char] = charCounts[char] ? charCounts[char] + 1 : 1;
-          const identifier = `${char}${charCounts[char]}`;
+  return (
+    /**
+     * Wrap the entire thing in a `<span />`, so that it is rendered as a single
+     * string of text. (Otherwise, a sentence in a flexbox column would have one
+     * word rendered per row.)
+     */
+    <span>
+      {children.split(' ').map((word, index, array) => (
+        <Fragment key={index}>
+          <Word>
+            {word.split('').map(char => {
+              charCounts[char] = charCounts[char] ? charCounts[char] + 1 : 1;
+              const identifier = `${char}${charCounts[char]}`;
 
-          return (
-            <Character key={identifier} layout='position' layoutId={identifier}>
-              {char}
-            </Character>
-          );
-        })}
-      </Word>
-      {index < array.length - 1 && ' '}
-    </Fragment>
-  ));
+              return (
+                <Character key={identifier} layout='position' layoutId={identifier}>
+                  {char}
+                </Character>
+              );
+            })}
+          </Word>
+
+          {index < array.length - 1 && ' '}
+        </Fragment>
+      ))}
+    </span>
+  );
 });
