@@ -21,6 +21,7 @@ jobs:
 
       - name: Protobuf codegen
         run: pnpm proto
+        working-directory: packages/protobuf
 
       - name: Build static site
         run: pnpm build-storybook
