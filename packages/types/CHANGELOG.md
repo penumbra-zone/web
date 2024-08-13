@@ -1,5 +1,14 @@
 # @penumbra-zone/types
 
+## 20.0.0
+
+### Patch Changes
+
+- Updated dependencies [49263c6]
+  - @penumbra-zone/protobuf@6.0.0
+  - @penumbra-zone/bech32m@7.0.0
+  - @penumbra-zone/getters@15.0.0
+
 ## 19.0.0
 
 ### Minor Changes

@@ -1,5 +1,16 @@
 # @penumbra-zone/client
 
+## 18.0.0
+
+### Major Changes
+
+- 88b16a7: adr006 implementation
+
+### Patch Changes
+
+- Updated dependencies [49263c6]
+  - @penumbra-zone/protobuf@6.0.0
+
 ## 17.0.0
 
 ### Major Changes

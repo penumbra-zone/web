@@ -1,5 +1,20 @@
 # @penumbra-zone/ui
 
+## 8.0.0
+
+### Minor Changes
+
+- 6fd8ce6: Compress fonts (ttf -> woff2)
+- 2a76fce: Create <Card />'s subcomponents; create <FormField /> and <TextInput />; add some features re: disabled fields
+
+### Patch Changes
+
+- Updated dependencies [49263c6]
+  - @penumbra-zone/protobuf@6.0.0
+  - @penumbra-zone/bech32m@7.0.0
+  - @penumbra-zone/perspective@25.0.0
+  - @penumbra-zone/types@20.0.0
+
 ## 7.4.1
 
 ### Patch Changes
