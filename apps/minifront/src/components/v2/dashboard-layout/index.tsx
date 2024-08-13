@@ -41,7 +41,9 @@ export const DashboardLayout = () => {
               />
             </motion.div>
 
-            <Outlet />
+            <LayoutGroup id='dashboardContent'>
+              <Outlet />
+            </LayoutGroup>
           </Card>
         </LayoutGroup>
       </Grid>
