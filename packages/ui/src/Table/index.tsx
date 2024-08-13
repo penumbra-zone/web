@@ -13,7 +13,7 @@ const StyledTable = styled.table<{ $layout?: 'fixed' | 'auto' }>`
   background-color: ${props => props.theme.color.neutral.contrast + FIVE_PERCENT_OPACITY_IN_HEX};
   padding-left: ${props => props.theme.spacing(3)};
   padding-right: ${props => props.theme.spacing(3)};
-  border-radius: ${props => props.theme.borderRadius.lg};
+  border-radius: ${props => props.theme.borderRadius.sm};
   table-layout: ${props => props.$layout ?? 'auto'};
 `;
 
