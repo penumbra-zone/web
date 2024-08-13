@@ -1,6 +1,6 @@
 import { ViewService } from '@penumbra-zone/protobuf';
-import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb.js';
-import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
+import { TransactionInfo } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { hexToUint8Array } from '@penumbra-zone/types/hex';
 import { penumbra } from '../prax';
 

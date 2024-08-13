@@ -1,21 +1,18 @@
 import {
   QueryClientStatesRequest,
   QueryClientStatesResponse,
-} from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/query_pb.js';
-import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb.js';
-import {
-  AssetId,
-  Metadata,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+} from '@penumbra-zone/protobuf/ibc/core/client/v1/query_pb';
+import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
+import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import {
   AuctionId,
   DutchAuction,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
-import { CompactBlock } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1/compact_block_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
+import { CompactBlock } from '@penumbra-zone/protobuf/penumbra/core/component/compact_block/v1/compact_block_pb';
 import {
   TimestampByHeightRequest,
   TimestampByHeightResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
 import {
   GetValidatorInfoRequest,
   GetValidatorInfoResponse,
@@ -23,10 +20,10 @@ import {
   ValidatorInfoResponse,
   ValidatorPenaltyRequest,
   ValidatorPenaltyResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
-import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
-import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb.js';
-import { MerkleRoot } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
+import { Transaction } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
+import { MerkleRoot } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
 
 export interface RootQuerierInterface {
   app: AppQuerierInterface;

@@ -10,7 +10,7 @@
     "all-check:clean": "pnpm clean && pnpm clean:modules && pnpm all-check",
     "build": "turbo build",
     "clean": "turbo clean",
-    "clean:modules": "rm -rf node_modules apps/*/node_modules packages/*/node_modules pnpm-lock.yaml",
+    "clean:modules": "rm -rf node_modules apps/*/node_modules packages/*/node_modules pnpm-lock.yaml && git checkout HEAD ./pnpm-lock.yaml",
     "clean:vitest-mjs": "find . -type f -name 'vite*.config.ts.timestamp-*-*.mjs' -ls -delete",
     "compile": "turbo compile",
     "dev": "turbo dev:compile dev:app",
@@ -31,19 +31,20 @@
     "test": "turbo test",
     "test:wasm": "turbo test:wasm"
   },
+  "pnpm": {
+    "overrides": {
+      "typescript": "5.5.3"
+    }
+  },
   "dependencies": {
-    "@buf/connectrpc_eliza.bufbuild_es": "1.10.0-20230913231627-233fca715f49.1",
-    "@buf/connectrpc_eliza.connectrpc_es": "1.4.0-20230913231627-233fca715f49.3",
-    "@buf/cosmos_ibc.bufbuild_es": "1.10.0-20230913112312-7ab44ae956a0.1",
-    "@buf/cosmos_ibc.connectrpc_es": "1.4.0-20230913112312-7ab44ae956a0.3",
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240804013626-f19a2ee01838.1",
-    "@buf/penumbra-zone_penumbra.connectrpc_es": "1.4.0-20240804013626-f19a2ee01838.3",
-    "@buf/tendermint_tendermint.bufbuild_es": "1.10.0-20231117195010-33ed361a9051.1",
-    "@bufbuild/protobuf": "1.10.0",
-    "@connectrpc/connect": "1.4.0",
-    "@connectrpc/connect-web": "1.4.0"
+    "@bufbuild/protobuf": "^1.10.0",
+    "@connectrpc/connect": "^1.4.0",
+    "@connectrpc/connect-web": "^1.4.0"
   },
   "devDependencies": {
+    "@buf/connectrpc_eliza.bufbuild_es": "1.10.0-20230913231627-233fca715f49.1",
+    "@buf/connectrpc_eliza.connectrpc_es": "1.4.0-20230913231627-233fca715f49.3",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240703080008-312294d02bf9.1",
     "@changesets/cli": "^2.27.3",
     "@eslint/compat": "^1.1.0",
     "@eslint/js": "^9.6.0",

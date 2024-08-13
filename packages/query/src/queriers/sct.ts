@@ -5,7 +5,7 @@ import { SctQuerierInterface } from '@penumbra-zone/types/querier';
 import {
   TimestampByHeightRequest,
   TimestampByHeightResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
 
 export class SctQuerier implements SctQuerierInterface {
   private readonly client: PromiseClient<typeof SctService>;

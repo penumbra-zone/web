@@ -1,11 +1,11 @@
 import {
   AuctionId,
   DutchAuction,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
 import { ViewService } from '@penumbra-zone/protobuf';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getInputAssetId, getOutputAssetId } from '@penumbra-zone/getters/dutch-auction';
-import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { penumbra } from '../prax';
 
 export interface AuctionInfo {

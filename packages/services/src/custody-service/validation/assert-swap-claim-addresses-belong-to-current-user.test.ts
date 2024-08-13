@@ -3,9 +3,9 @@ import { assertSwapClaimAddressesBelongToCurrentUser } from './assert-swap-claim
 import {
   ActionPlan,
   TransactionPlan,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { Code, ConnectError } from '@connectrpc/connect';
-import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 const currentUserAddress1 = new Address({
   inner: new Uint8Array([1, 2, 3]),

@@ -3,7 +3,7 @@ import {
   BalancesResponse,
   UnbondingTokensByAddressIndexRequest_Filter,
   UnbondingTokensByAddressIndexResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { Impl } from '../index.js';
 import { balances } from '../balances.js';
 import { getIsClaimable, isUnbondingTokenBalance } from './helpers.js';
@@ -32,15 +32,11 @@ export const unbondingTokensByAddressIndex: Impl['unbondingTokensByAddressIndex'
       }
       const claimable = await getIsClaimable(balancesResponse, ctx);
 
-      // See https://github.com/typescript-eslint/typescript-eslint/issues/7114
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
       if (req.filter === UnbondingTokensByAddressIndexRequest_Filter.CLAIMABLE && !claimable) {
         continue;
       }
 
       if (
-        // See https://github.com/typescript-eslint/typescript-eslint/issues/7114
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
         req.filter === UnbondingTokensByAddressIndexRequest_Filter.NOT_YET_CLAIMABLE &&
         claimable
       ) {

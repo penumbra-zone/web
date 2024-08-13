@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { setSwapQueryParams, getSwapQueryParams } from './query-params';
 import { AllSlices } from '..';
 import { emptyBalanceResponse } from '../../utils/empty-balance-response';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
 describe('swap query params', () => {
   beforeEach(() => {

@@ -4,14 +4,14 @@ import { approverCtx } from '../ctx/approver.js';
 import { servicesCtx } from '../ctx/prax.js';
 import { testFullViewingKey, testSpendKey } from '../test-utils.js';
 import { authorize } from './authorize.js';
-import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1/custody_pb.js';
+import { AuthorizeRequest } from '@penumbra-zone/protobuf/penumbra/custody/v1/custody_pb';
 import { CustodyService } from '@penumbra-zone/protobuf';
 import {
   AuthorizationData,
   TransactionPlan,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { fvkCtx } from '../ctx/full-viewing-key.js';
 import { skCtx } from '../ctx/spend-key.js';

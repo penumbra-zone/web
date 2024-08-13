@@ -1,5 +1,5 @@
 import { useAuctionInfos } from '../../../state/swap/dutch-auction';
-import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { Button } from '@repo/ui/components/ui/button';
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow.ts';

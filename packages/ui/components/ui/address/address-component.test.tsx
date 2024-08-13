@@ -2,7 +2,7 @@ import { AddressComponent } from './address-component';
 import { describe, expect, test } from 'vitest';
 import { render } from '@testing-library/react';
 import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
-import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 describe('<AddressComponent />', () => {
   const address =

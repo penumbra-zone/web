@@ -2,7 +2,7 @@ import {
   BondingState_BondingStateEnum,
   ValidatorInfo,
   ValidatorState_ValidatorStateEnum,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 import {
   getBondingStateEnumFromValidatorInfo,
   getFundingStreamsFromValidatorInfo,
@@ -13,7 +13,7 @@ import {
 import { getRateBpsFromFundingStream } from '@penumbra-zone/getters/funding-stream';
 import { joinLoHiAmount } from './amount.js';
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getDisplayDenomFromView } from '@penumbra-zone/getters/value-view';
 import { assetPatterns } from './assets.js';
 

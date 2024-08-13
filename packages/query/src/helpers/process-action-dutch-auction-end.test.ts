@@ -1,15 +1,11 @@
 import { Mock, beforeEach, describe, expect, it, vi } from 'vitest';
 import { processActionDutchAuctionEnd } from './process-action-dutch-auction-end.js';
-import {
-  AssetId,
-  Metadata,
-  Value,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { AssetId, Metadata, Value } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import {
   ActionDutchAuctionEnd,
   AuctionId,
   DutchAuction,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
 import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
 
 const inner0123 = Uint8Array.from({ length: 32 }, () => Math.floor(Math.random() * 256));

@@ -39,5 +39,11 @@
   },
   "dependencies": {
     "bech32": "^2.0.0"
+  },
+  "devDependencies": {
+    "@penumbra-zone/protobuf": "workspace:*"
+  },
+  "peerDependencies": {
+    "@penumbra-zone/protobuf": "workspace:*"
   }
 }

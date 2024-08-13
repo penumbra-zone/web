@@ -1,9 +1,6 @@
-import { AssetMetadataByIdRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { AssetMetadataByIdRequest } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { ViewService } from '@penumbra-zone/protobuf';
-import {
-  AssetId,
-  Metadata,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getDenomMetadata } from '@penumbra-zone/getters/assets-response';
 import { penumbra } from '../prax';
 

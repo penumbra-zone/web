@@ -1,19 +1,15 @@
 import { IMessageTypeRegistry, createRegistry } from '@bufbuild/protobuf';
 
-import * as ibcCore from './ibc-core.js';
-import * as penumbra from './penumbra.js';
-import * as penumbraCore from './penumbra-core.js';
-import * as penumbraCnidarium from './penumbra-cnidarium.js';
-import * as penumbraProxy from './penumbra-proxy.js';
+import * as ibcCore from './services/cosmos-ibc-core.js';
+import * as penumbraCnidarium from './services/penumbra-cnidarium.js';
+import * as penumbraCore from './services/penumbra-core.js';
+import * as penumbraCustody from './services/penumbra-custody.js';
+import * as penumbraUtil from './services/penumbra-util.js';
+import * as penumbraView from './services/penumbra-view.js';
 
-import {
-  ClientState,
-  Header,
-} from '@buf/cosmos_ibc.bufbuild_es/ibc/lightclients/tendermint/v1/tendermint_pb.js';
-import { MsgUpdateClient } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/tx_pb.js';
-import { MsgRecvPacket } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/channel/v1/tx_pb.js';
-import { DutchAuction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
-import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
+import { MsgRecvPacket } from '../gen/ibc/core/channel/v1/tx_pb.js';
+import { ClientState, Header } from '../gen/ibc/lightclients/tendermint/v1/tendermint_pb.js';
+import { DutchAuction } from '../gen/penumbra/core/component/auction/v1/auction_pb.js';
 
 /**
  * This type registry is for JSON serialization of protobuf messages.
@@ -28,30 +24,25 @@ import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/
 
 export const typeRegistry: IMessageTypeRegistry = createRegistry(
   ...Object.values(ibcCore),
-  ...Object.values(penumbra),
-  ...Object.values(penumbraCore),
   ...Object.values(penumbraCnidarium),
-  ...Object.values(penumbraProxy),
+  ...Object.values(penumbraCore),
+  ...Object.values(penumbraCustody),
+  ...Object.values(penumbraUtil),
+  ...Object.values(penumbraView),
 
   // Types not explicitly referenced by any above services should be added here.
   // Otherwise, it will not be possible to serialize/deserialize these types if,
   // e.g., they're used in an `Any` protobuf.
 
-  // @buf/cosmos_ibc.bufbuild_es/ibc/lightclients/tendermint/v1/tendermint_pb
+  // gen/ibc/lightclients/tendermint/v1/tendermint_pb
   ClientState,
   Header,
 
-  // @buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/tx_pb
-  MsgUpdateClient,
-
-  // @buf/cosmos_ibc.bufbuild_es/ibc/core/channel/v1/tx_pb
+  // gen/ibc/core/channel/v1/tx_pb
   MsgRecvPacket,
 
-  // @buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb
+  // penumbra/core/component/auction/v1/auction_pb
   DutchAuction,
-
-  // @buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb
-  ValidatorInfo,
 );
 
 /**

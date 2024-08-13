@@ -9,7 +9,7 @@ import {
   SwapRecord,
   UnclaimedSwapsRequest,
   UnclaimedSwapsResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { IndexedDbMock, MockServices } from '../test-utils.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { unclaimedSwaps } from './unclaimed-swaps.js';

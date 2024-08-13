@@ -35,13 +35,11 @@
     }
   },
   "devDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240804013626-f19a2ee01838.1",
-    "@bufbuild/protobuf": "1.10.0",
-    "@connectrpc/connect": "1.4.0",
+    "@bufbuild/protobuf": "^1.10.0",
+    "@connectrpc/connect": "^1.4.0",
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/crypto-web": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
-    "@penumbra-zone/perspective": "workspace:*",
     "@penumbra-zone/protobuf": "workspace:*",
     "@penumbra-zone/query": "workspace:*",
     "@penumbra-zone/storage": "workspace:*",
@@ -51,13 +49,11 @@
     "@types/chrome": "^0.0.268"
   },
   "peerDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240804013626-f19a2ee01838.1",
-    "@bufbuild/protobuf": "1.10.0",
-    "@connectrpc/connect": "1.4.0",
+    "@bufbuild/protobuf": "^1.10.0",
+    "@connectrpc/connect": "^1.4.0",
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/crypto-web": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
-    "@penumbra-zone/perspective": "workspace:*",
     "@penumbra-zone/protobuf": "workspace:*",
     "@penumbra-zone/query": "workspace:*",
     "@penumbra-zone/storage": "workspace:*",
