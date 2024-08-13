@@ -1,0 +1,29 @@
+{
+  "name": "services",
+  "version": "0.1.0",
+  "private": true,
+  "license": "(MIT OR Apache-2.0)",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "clean": "rm -rfv dist *.tsbuildinfo",
+    "dev:app": "vite --port 5173",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "lint:strict": "tsc --noEmit && eslint src --max-warnings 0",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@penumbra-zone/client": "workspace:*",
+    "@penumbra-zone/protobuf": "workspace:*",
+    "@repo/ui": "workspace:*",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.23.1",
+    "tailwindcss": "^3.4.3"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.2",
+    "@types/react-dom": "^18.3.0"
+  }
+}

@@ -357,6 +357,37 @@ importers:
         specifier: ^18.3.0
         version: 18.3.0
 
+  apps/services:
+    dependencies:
+      '@penumbra-zone/client':
+        specifier: workspace:*
+        version: link:../../packages/client
+      '@penumbra-zone/protobuf':
+        specifier: workspace:*
+        version: link:../../packages/protobuf
+      '@repo/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.3.1
+        version: 18.3.1(react@18.3.1)
+      react-router-dom:
+        specifier: ^6.23.1
+        version: 6.24.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      tailwindcss:
+        specifier: ^3.4.3
+        version: 3.4.4(ts-node@10.9.2(@swc/core@1.6.13(@swc/helpers@0.5.11))(@types/node@20.14.10)(typescript@5.5.3))
+    devDependencies:
+      '@types/react':
+        specifier: ^18.3.2
+        version: 18.3.3
+      '@types/react-dom':
+        specifier: ^18.3.0
+        version: 18.3.0
+
   packages/bech32m:
     dependencies:
       bech32:
