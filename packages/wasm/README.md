@@ -10,16 +10,6 @@ almost anywhere.
 
 If you're reading this, you're probably trying to use the package. **[Next.js / Webpack example.](https://github.com/penumbra-zone/nextjs-penumbra-wasm-example/)**
 
-### [enable the Buf Schema Registry](https://buf.build/docs/bsr/generated-sdks/npm)
-
-This package depends on types from the Buf Schema Registry. If you're not
-configured to resolve those, you won't be able to install. Add the
-`@buf:registry` configuration to your local `.npmrc`
-
-```sh
-echo "@buf:registry=https://buf.build/gen/npm/v1/" >> .npmrc
-```
-
 ### install
 
 ```sh

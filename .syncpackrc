@@ -53,7 +53,7 @@
       "isBanned": true
     },
     {
-      "label": "Require @buf registry packages remain in root or apps",
+      "label": "Require @buf registry packages remain in root or in apps",
       "dependencies": [
         "@buf/*"
       ],

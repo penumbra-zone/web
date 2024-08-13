@@ -4,20 +4,6 @@ This package allows developers to create dApps that connect to Penumbra provider
 
 You can check this package in action in the [NextJS example repo](https://github.com/penumbra-zone/nextjs-penumbra-client-example) or read the [Architecture Decision Record (ADR-006)](https://github.com/penumbra-zone/web/blob/main/docs/adrs/006-web-apis.md) describing the idea behind this package.
 
-## Installation
-
-**To use this package, you need to [enable the Buf Schema Registry](https://buf.build/docs/bsr/generated-sdks/npm):**
-
-```sh
-echo "@buf:registry=https://buf.build/gen/npm/v1/" >> .npmrc
-```
-
-Then, install the package:
-
-```sh
-npm install @penumbra-zone/client
-```
-
 ## A simple example
 
 ```ts

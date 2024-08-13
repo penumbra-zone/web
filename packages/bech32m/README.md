@@ -31,8 +31,7 @@ const validator: string = bech32mIdentityKey({ ik: new Uint8Array(32) });
 ## Typical use
 
 If you're working with Penumbra bech32m strings, there's a good chance you also
-want to use our protobuf message types. The buf registry package
-`@buf/penumbra-zone_penumbra.bufbuild_es` is a peer dependency.
+want to use our protobuf message types.
 
 Exported functions do not explicitly refer to those types, in order to permit
 production use without bundling the definitions, but all input/output will

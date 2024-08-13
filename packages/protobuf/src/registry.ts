@@ -34,14 +34,14 @@ export const typeRegistry: IMessageTypeRegistry = createRegistry(
   // Otherwise, it will not be possible to serialize/deserialize these types if,
   // e.g., they're used in an `Any` protobuf.
 
-  // @buf/cosmos_ibc.bufbuild_es/ibc/lightclients/tendermint/v1/tendermint_pb
+  // gen/ibc/lightclients/tendermint/v1/tendermint_pb
   ClientState,
   Header,
 
-  // @buf/cosmos_ibc.bufbuild_es/ibc/core/channel/v1/tx_pb
+  // gen/ibc/core/channel/v1/tx_pb
   MsgRecvPacket,
 
-  // @buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb
+  // penumbra/core/component/auction/v1/auction_pb
   DutchAuction,
 );
 
