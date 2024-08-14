@@ -94,5 +94,5 @@ const RemainingTime = ({
   latestKnownBlockHeight: bigint;
 }) => {
   const { formattedTimeRemaining } = useSyncProgress(fullSyncHeight, latestKnownBlockHeight);
-  return <Text technical>(Remaining {formattedTimeRemaining})</Text>;
+  return <Text technical>(Estimated time remaining: {formattedTimeRemaining})</Text>;
 };
