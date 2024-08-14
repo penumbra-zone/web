@@ -1,5 +1,6 @@
-import type { ReactNode } from 'react';
+import { ReactNode} from 'react';
 import * as RadixPopover from '@radix-ui/react-popover';
+import type { PopoverContentProps as RadixPopoverContentProps } from '@radix-ui/react-popover';
 import styled from 'styled-components';
 
 const RadixContent = styled(RadixPopover.Content)`
@@ -123,14 +124,24 @@ Popover.Trigger = Trigger;
 
 export interface PopoverContentProps {
   children?: ReactNode;
+  side?: RadixPopoverContentProps['side'];
+  align?: RadixPopoverContentProps['align'];
 }
 
+/**
+ * Popover content. Must be a child of `<Popover />`.
+ *
+ * Control the position of the Popover relative to the trigger element by passing
+ * `side` and `align` props.
+ */
 const Content = ({
   children,
+  side,
+  align,
 }: PopoverContentProps) => {
   return (
     <RadixPopover.Portal>
-      <RadixContent sideOffset={4}>
+      <RadixContent sideOffset={4} side={side} align={align}>
         {children}
       </RadixContent>
     </RadixPopover.Portal>
