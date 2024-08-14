@@ -9,8 +9,9 @@ describe('<Popover />', () => {
       <Popover>
         <Popover.Trigger>Trigger</Popover.Trigger>
         <Popover.Content>Content</Popover.Content>
-      </Popover>
-    , { wrapper: PenumbraUIProvider });
+      </Popover>,
+      { wrapper: PenumbraUIProvider },
+    );
 
     expect(queryByText('Content')).toBeFalsy();
     fireEvent.click(getByText('Trigger'));
@@ -22,8 +23,9 @@ describe('<Popover />', () => {
       <Popover isOpen>
         <Popover.Trigger>Trigger</Popover.Trigger>
         <Popover.Content>Content</Popover.Content>
-      </Popover>
-    , { wrapper: PenumbraUIProvider });
+      </Popover>,
+      { wrapper: PenumbraUIProvider },
+    );
 
     expect(queryByText('Content')).toBeTruthy();
   });

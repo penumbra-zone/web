@@ -49,11 +49,14 @@ export const Basic: Story = {
               This is a heading
             </Text>
             <Text small>
-              This is description information. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi.
+              This is description information. Lorem ipsum dolor sit amet, consectetur adipiscing
+              elit. Ut et massa mi.
             </Text>
             <div>
               <Density compact>
-                <Button icon={Shield} onClick={() => setIsOpen(false)}>Action</Button>
+                <Button icon={Shield} onClick={() => setIsOpen(false)}>
+                  Action
+                </Button>
               </Density>
             </div>
           </WhiteTextWrapper>

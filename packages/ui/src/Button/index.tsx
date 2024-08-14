@@ -168,41 +168,46 @@ export type ButtonProps = BaseButtonProps & (IconOnlyProps | RegularProps);
  * (`<a />`) tag (or `<Link />`, if you're using e.g., React Router) and leave
  * `onClick` undefined.
  */
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
-  children,
-  disabled = false,
-  onClick,
-  icon: IconComponent,
-  iconOnly,
-  actionType = 'default',
-  type = 'button',
-  priority = 'primary',
-}, ref) => {
-  const density = useDensity();
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  (
+    {
+      children,
+      disabled = false,
+      onClick,
+      icon: IconComponent,
+      iconOnly,
+      actionType = 'default',
+      type = 'button',
+      priority = 'primary',
+    },
+    ref,
+  ) => {
+    const density = useDensity();
 
-  return (
-    <StyledButton
-      {...asTransientProps({ iconOnly, density, actionType, priority })}
-      ref={ref}
-      type={type}
-      disabled={disabled}
-      onClick={onClick}
-      aria-label={iconOnly ? children : undefined}
-      title={iconOnly ? children : undefined}
-      $getFocusOutlineColor={theme => theme.color.action[outlineColorByActionType[actionType]]}
-      $getFocusOutlineOffset={() => (iconOnly === 'adornment' ? '0px' : undefined)}
-      $getBorderRadius={theme =>
-        density === 'sparse' && iconOnly !== 'adornment'
-          ? theme.borderRadius.sm
-          : theme.borderRadius.full
-      }
-    >
-      {IconComponent && (
-        <IconComponent size={density === 'sparse' && iconOnly === true ? 24 : 16} />
-      )}
+    return (
+      <StyledButton
+        {...asTransientProps({ iconOnly, density, actionType, priority })}
+        ref={ref}
+        type={type}
+        disabled={disabled}
+        onClick={onClick}
+        aria-label={iconOnly ? children : undefined}
+        title={iconOnly ? children : undefined}
+        $getFocusOutlineColor={theme => theme.color.action[outlineColorByActionType[actionType]]}
+        $getFocusOutlineOffset={() => (iconOnly === 'adornment' ? '0px' : undefined)}
+        $getBorderRadius={theme =>
+          density === 'sparse' && iconOnly !== 'adornment'
+            ? theme.borderRadius.sm
+            : theme.borderRadius.full
+        }
+      >
+        {IconComponent && (
+          <IconComponent size={density === 'sparse' && iconOnly === true ? 24 : 16} />
+        )}
 
-      {!iconOnly && children}
-    </StyledButton>
-  );
-});
+        {!iconOnly && children}
+      </StyledButton>
+    );
+  },
+);
 Button.displayName = 'Button';
