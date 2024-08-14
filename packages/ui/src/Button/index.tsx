@@ -1,4 +1,4 @@
-import { MouseEventHandler } from 'react';
+import { forwardRef, MouseEventHandler } from 'react';
 import styled, { css, DefaultTheme } from 'styled-components';
 import { asTransientProps } from '../utils/asTransientProps';
 import { Priority, focusOutline, overlays, buttonBase } from '../utils/button';
@@ -168,7 +168,7 @@ export type ButtonProps = BaseButtonProps & (IconOnlyProps | RegularProps);
  * (`<a />`) tag (or `<Link />`, if you're using e.g., React Router) and leave
  * `onClick` undefined.
  */
-export const Button = ({
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
   children,
   disabled = false,
   onClick,
@@ -177,12 +177,13 @@ export const Button = ({
   actionType = 'default',
   type = 'button',
   priority = 'primary',
-}: ButtonProps) => {
+}, ref) => {
   const density = useDensity();
 
   return (
     <StyledButton
       {...asTransientProps({ iconOnly, density, actionType, priority })}
+      ref={ref}
       type={type}
       disabled={disabled}
       onClick={onClick}
@@ -203,4 +204,5 @@ export const Button = ({
       {!iconOnly && children}
     </StyledButton>
   );
-};
+});
+Button.displayName = 'Button';
