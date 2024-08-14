@@ -18,7 +18,7 @@ const FadeTransition = ({
       animate={{ opacity: 1, transition: { duration: 0.3, ease: 'easeOut' } }}
       exit={{ opacity: 0 }}
     >
-      <div className='flex flex-col'>{children}</div>
+      {children}
     </motion.div>
   );
 };

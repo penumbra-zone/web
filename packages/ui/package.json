@@ -71,7 +71,8 @@
     "sonner": "1.4.3",
     "styled-components": "^6.1.11",
     "tailwind-merge": "^2.3.0",
-    "tinycolor2": "^1.6.0"
+    "tinycolor2": "^1.6.0",
+    "ua-parser-js": "^1.0.38"
   },
   "devDependencies": {
     "@penumbra-zone/getters": "workspace:*",
@@ -91,6 +92,7 @@
     "@types/react": "^18.3.2",
     "@types/react-dom": "^18.3.0",
     "@types/tinycolor2": "^1.4.6",
+    "@types/ua-parser-js": "^0.7.39",
     "prop-types": "^15.8.1",
     "storybook": "^8.1.1"
   },
