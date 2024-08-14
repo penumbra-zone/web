@@ -40,22 +40,22 @@ vi.mock('ua-parser-js', () => ({
 }));
 
 describe('<IncompatableBrowserBanner />', () => {
-  it('shouldn’t render when using a compatable browser & device', async () => {
+  it('shouldn’t render when using a compatable browser & device', () => {
     const { container } = render(<IncompatableBrowserBanner />);
     expect(container.firstChild).toBe(null);
   });
 
-  it('renders "Incompatable Browser Detected" when not using Chrome', async () => {
+  it('renders "Incompatable Browser Detected" when not using Chrome', () => {
     const { container } = render(<IncompatableBrowserBanner />);
     expect(container).toHaveTextContent('Incompatable Browser Detected');
   });
 
-  it('renders "Incompatable Browser Detected" when using a dated version of Chrome', async () => {
+  it('renders "Incompatable Browser Detected" when using a dated version of Chrome', () => {
     const { container } = render(<IncompatableBrowserBanner />);
     expect(container).toHaveTextContent('Incompatable Browser Detected');
   });
 
-  it('renders "Incompatable Device Detected" when using a mobile device', async () => {
+  it('renders "Incompatable Device Detected" when using a mobile device', () => {
     const { container } = render(<IncompatableBrowserBanner />);
     expect(container).toHaveTextContent('Incompatable Device Detected');
   });
