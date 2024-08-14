@@ -4,6 +4,7 @@ import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
 import { SyncAnimation } from './sync-animation';
 import { Text } from '@repo/ui/Text';
 import { useEffect, useState } from 'react';
+import { useSyncProgress } from '@repo/ui/components/ui/block-sync-status';
 
 type StatusSelector =
   | {
@@ -73,8 +74,25 @@ export const SyncingDialog = () => {
               </Text>
             )}
           </div>
+          {!!status?.isCatchingUp && status.latestKnownBlockHeight ? (
+            <RemainingTime
+              fullSyncHeight={status.fullSyncHeight}
+              latestKnownBlockHeight={status.latestKnownBlockHeight}
+            />
+          ) : null}
         </div>
       </Dialog.Content>
     </Dialog>
   );
+};
+
+const RemainingTime = ({
+  fullSyncHeight,
+  latestKnownBlockHeight,
+}: {
+  fullSyncHeight: bigint;
+  latestKnownBlockHeight: bigint;
+}) => {
+  const { formattedTimeRemaining } = useSyncProgress(fullSyncHeight, latestKnownBlockHeight);
+  return <Text technical>(Remaining {formattedTimeRemaining})</Text>;
 };
