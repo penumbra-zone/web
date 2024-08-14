@@ -1,9 +1,20 @@
 import { ReactNode} from 'react';
 import * as RadixPopover from '@radix-ui/react-popover';
 import type { PopoverContentProps as RadixPopoverContentProps } from '@radix-ui/react-popover';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
-const RadixContent = styled(RadixPopover.Content)`
+const appearAnimation = (spacing: string) => keyframes`
+  from {
+    opacity: 0;
+    transform: translate(${spacing}, ${spacing});
+  }
+  to {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+`
+
+const RadixContent = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${props => props.theme.spacing(4)};
@@ -14,6 +25,7 @@ const RadixContent = styled(RadixPopover.Content)`
   border: 1px solid ${props => props.theme.color.other.tonalStroke};
   background: ${props => props.theme.color.other.dialogBackground};
   backdrop-filter: blur(${props => props.theme.blur.lg});
+  animation: ${props => appearAnimation(props.theme.spacing(1))} 0.15s ease-out;
 `;
 
 interface ControlledPopoverProps {
@@ -141,9 +153,11 @@ const Content = ({
 }: PopoverContentProps) => {
   return (
     <RadixPopover.Portal>
-      <RadixContent sideOffset={4} side={side} align={align}>
-        {children}
-      </RadixContent>
+      <RadixPopover.Content sideOffset={4} side={side} align={align} asChild>
+        <RadixContent>
+          {children}
+        </RadixContent>
+      </RadixPopover.Content>
     </RadixPopover.Portal>
   );
 };
