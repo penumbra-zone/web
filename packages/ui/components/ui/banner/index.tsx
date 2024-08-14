@@ -20,20 +20,14 @@ const contentColorMapping = {
   error: 'text-red-100',
 };
 
-interface BannerProps extends React.ComponentPropsWithoutRef<"div"> {
+interface BannerProps extends React.ComponentPropsWithoutRef<'div'> {
   type: BannerType;
   title: string;
   content: string;
   className?: string;
 }
 
-export const Banner = ({
-  type,
-  title,
-  content,
-  className,
-  ...props
-}: BannerProps) => (
+export const Banner = ({ type, title, content, className, ...props }: BannerProps) => (
   <div
     className={cn(
       'relative z-[99] w-full text-center font-headline',
