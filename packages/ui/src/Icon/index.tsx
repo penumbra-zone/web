@@ -16,7 +16,7 @@ export interface IconProps {
   /**
    * - `sm`: 16px square
    * - `md`: 24px square
-   * - `lg`: 48px square
+   * - `lg`: 32px square
    */
   size: IconSize;
   /**
@@ -36,7 +36,7 @@ const PROPS_BY_SIZE: Record<IconSize, ComponentProps<LucideIcon>> = {
     strokeWidth: 1.5,
   },
   lg: {
-    size: 48,
+    size: 32,
     strokeWidth: 2,
   },
 };
