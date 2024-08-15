@@ -65,3 +65,6 @@ tsconfig.tsbuildinfo
 
 # Storybook builds
 storybook-static
+
+packages/protobuf/gen
+packages/protobuf/proto

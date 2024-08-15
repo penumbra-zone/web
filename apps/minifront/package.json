@@ -1,6 +1,6 @@
 {
   "name": "minifront",
-  "version": "6.17.0",
+  "version": "6.18.0",
   "private": true,
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
@@ -15,7 +15,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@bufbuild/protobuf": "1.10.0",
+    "@bufbuild/protobuf": "^1.10.0",
     "@cosmjs/proto-signing": "^0.32.4",
     "@cosmjs/stargate": "^0.32.4",
     "@cosmos-kit/core": "^2.13.1",

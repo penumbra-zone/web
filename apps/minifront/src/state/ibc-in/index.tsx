@@ -6,7 +6,7 @@ import { getAddrByIndex } from '../../fetchers/address';
 import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 import { Toast } from '@repo/ui/lib/toast/toast';
 import { shorten } from '@penumbra-zone/types/string';
-import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { bech32CompatAddress } from '@penumbra-zone/bech32m/penumbracompat1';
 import { calculateFee, GasPrice, SigningStargateClient } from '@cosmjs/stargate';
 import { chains } from 'chain-registry';

@@ -8,6 +8,7 @@ export const buttonBase = css`
   background: transparent;
   border: none;
   cursor: pointer;
+  padding: 0;
 `;
 
 /** Adds a focus outline to a button using the `:focus-within` pseudoclass. */

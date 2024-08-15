@@ -15,6 +15,10 @@ const OPTIONS: PopoverMenuItem<TFilter>[] = [
     value: 'active',
   },
   {
+    label: 'Inactive',
+    value: 'inactive',
+  },
+  {
     label: 'All',
     value: 'all',
   },

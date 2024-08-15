@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/wasm",
-  "version": "24.0.0",
+  "version": "25.0.0",
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "engine": {
@@ -20,7 +20,8 @@
     "lint:strict": "tsc --noEmit && eslint src --max-warnings 0",
     "postcompile": "touch ./wasm/.npmignore",
     "test": "vitest run",
-    "test:rust": "cd crate && wasm-pack test --headless --firefox -- --target wasm32-unknown-unknown --release --features 'mock-database'"
+    "test:cargo": "cd crate && cargo test --release",
+    "test:wasm": "cd crate && wasm-pack test --headless --firefox -- --target wasm32-unknown-unknown --release --features 'mock-database'"
   },
   "files": [
     "wasm",
@@ -38,8 +39,7 @@
     }
   },
   "devDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240804013626-f19a2ee01838.1",
-    "@bufbuild/protobuf": "1.10.0",
+    "@bufbuild/protobuf": "^1.10.0",
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/protobuf": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
@@ -49,8 +49,7 @@
     "@penumbra-zone/keys": "workspace:*"
   },
   "peerDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240804013626-f19a2ee01838.1",
-    "@bufbuild/protobuf": "1.10.0",
+    "@bufbuild/protobuf": "^1.10.0",
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/protobuf": "workspace:*",
     "@penumbra-zone/types": "workspace:*"

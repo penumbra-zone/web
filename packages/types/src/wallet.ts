@@ -1,8 +1,5 @@
 import { Box, BoxJson } from './box.js';
-import {
-  FullViewingKey,
-  WalletId,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+import { FullViewingKey, WalletId } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { Stringified } from './jsonified.js';
 
 export interface WalletCreate {

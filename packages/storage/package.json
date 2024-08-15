@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/storage",
-  "version": "24.0.0",
+  "version": "25.0.0",
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "engine": {
@@ -31,8 +31,7 @@
     }
   },
   "dependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240804013626-f19a2ee01838.1",
-    "@bufbuild/protobuf": "1.10.0",
+    "@bufbuild/protobuf": "^1.10.0",
     "@penumbra-labs/registry": "11.0.0",
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
@@ -41,14 +40,15 @@
     "idb": "^8.0.0"
   },
   "devDependencies": {
+    "@penumbra-zone/protobuf": "workspace:*",
     "fetch-mock": "^10.0.7"
   },
   "peerDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240804013626-f19a2ee01838.1",
-    "@bufbuild/protobuf": "1.10.0",
+    "@bufbuild/protobuf": "^1.10.0",
     "@penumbra-labs/registry": "11.0.0",
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
+    "@penumbra-zone/protobuf": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
     "@penumbra-zone/wasm": "workspace:*"
   }

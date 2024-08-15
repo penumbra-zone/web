@@ -2,44 +2,87 @@
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.*local"],
   "globalEnv": ["DEV"],
-  "pipeline": {
-    "//#clean:vitest-mjs": { "cache": false },
-    "//#format:prettier": { "cache": false },
-    "//#format:syncpack": { "cache": false },
-    "//#lint:prettier": { "cache": false },
-    "//#lint:syncpack": { "cache": false },
+  "tasks": {
+    "//#clean:vitest-mjs": {
+      "cache": false
+    },
+    "//#format:prettier": {
+      "cache": false
+    },
+    "//#format:syncpack": {
+      "cache": false
+    },
+    "//#lint:prettier": {
+      "cache": false
+    },
+    "//#lint:syncpack": {
+      "cache": false
+    },
     "build": {
-      "dependsOn": ["compile", "^build"],
-      "dotEnv": [".env"],
+      "dependsOn": ["compile", "proto", "^build"],
       "outputs": ["dist/**", "*.tsbuildinfo"]
     },
-    "clean": { "cache": false, "dependsOn": ["//#clean:vitest-mjs"] },
+    "proto": {
+      "dependsOn": ["^proto"],
+      "inputs": ["package.json", "buf.gen.yaml", "proto/**"],
+      "outputs": ["gen/**"]
+    },
+    "clean": {
+      "cache": false,
+      "dependsOn": ["//#clean:vitest-mjs"]
+    },
     "compile": {
       "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock"],
       "outputs": ["wasm/**"]
     },
-    "dev:app": { "dependsOn": ["compile"], "persistent": true },
-    "dev:compile": { "dependsOn": ["compile"], "persistent": true },
-    "dev:pack": { "dependsOn": ["compile"], "persistent": true },
-    "format": { "dependsOn": ["//#format:syncpack", "//#format:prettier", "format:rust"] },
-    "format:rust": { "cache": false },
-    "host": { "cache": false, "dependsOn": ["build"], "persistent": true },
+    "dev:app": {
+      "dependsOn": ["compile", "proto"],
+      "persistent": true
+    },
+    "dev:compile": {
+      "dependsOn": ["compile"],
+      "persistent": true
+    },
+    "dev:pack": {
+      "dependsOn": ["build"],
+      "persistent": true
+    },
+    "format": {
+      "dependsOn": ["//#format:syncpack", "//#format:prettier", "format:rust"]
+    },
+    "format:rust": {
+      "cache": false
+    },
+    "host": {
+      "cache": false,
+      "dependsOn": ["build"],
+      "persistent": true
+    },
     "lint": {
-      "dependsOn": ["//#lint:syncpack", "//#lint:prettier", "compile"],
+      "dependsOn": ["//#lint:syncpack", "//#lint:prettier", "compile", "proto"],
       "inputs": ["components", "lib", "src", "wasm", "package.json"]
     },
     "lint:strict": {
-      "dependsOn": ["//#lint:syncpack", "//#lint:prettier", "compile"],
+      "dependsOn": ["//#lint:syncpack", "//#lint:prettier", "compile", "proto"],
       "cache": false
     },
-    "lint:fix": { "cache": false },
+    "lint:fix": {
+      "dependsOn": ["compile", "proto"],
+      "cache": false
+    },
     "lint:rust": {
       "dependsOn": ["compile"],
       "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock", "crate/tests/**"]
     },
-    "test": { "cache": false, "dependsOn": ["compile"] },
-    "test:rust": {
+    "test": {
+      "cache": false,
+      "dependsOn": ["compile", "proto"]
+    },
+    "test:wasm": {
       "dependsOn": ["compile"],
+      "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock", "crate/tests/**"]
+    },
+    "test:cargo": {
       "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock", "crate/tests/**"]
     }
   }

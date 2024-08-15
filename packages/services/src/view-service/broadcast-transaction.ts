@@ -1,9 +1,9 @@
 import type { Impl } from './index.js';
 import { servicesCtx } from '../ctx/prax.js';
-import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb.js';
+import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { sha256Hash } from '@penumbra-zone/crypto-web/sha256';
-import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { TransactionInfo } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 
 export const broadcastTransaction: Impl['broadcastTransaction'] = async function* (req, ctx) {

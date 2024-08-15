@@ -3,7 +3,7 @@ import { Table } from '@repo/ui/Table';
 import { BalancesByAccount, groupByAccount, useBalancesResponses } from '../../../../state/shared';
 import { shouldDisplay } from '../../../../fetchers/balances/should-display';
 import { sortByPriorityScore } from '../../../../fetchers/balances/by-priority-score';
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { getMetadataFromBalancesResponseOptional } from '@penumbra-zone/getters/balances-response';
 import { PagePath } from '../../../metadata/paths';
 import { getAddressIndex } from '@penumbra-zone/getters/address-view';
@@ -58,13 +58,18 @@ export const AssetsPage = () => {
                 </Table.Td>
 
                 <Table.Td>
-                  <Link to={getTradeLink(balance)}>
-                    <Density compact>
-                      <Button icon={ArrowRightLeft} iconOnly>
-                        Trade
-                      </Button>
-                    </Density>
-                  </Link>
+                  <div className='h-8 w-10 overflow-hidden'>
+                    <Link
+                      to={getTradeLink(balance)}
+                      className='block translate-x-full opacity-0 transition [tr:hover>td>div>&]:translate-x-0 [tr:hover>td>div>&]:opacity-100'
+                    >
+                      <Density compact>
+                        <Button icon={ArrowRightLeft} iconOnly>
+                          Trade
+                        </Button>
+                      </Density>
+                    </Link>
+                  </div>
                 </Table.Td>
               </Table.Tr>
             ))}

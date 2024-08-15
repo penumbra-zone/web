@@ -1,30 +1,23 @@
 # `@penumbra-zone/protobuf`
 
-## If you are looking for a Penumbra extension client
+This package exports protobuf message types generated with `@bufbuild` intended
+for use with other `@penumbra-zone` packages.
 
-You should install `@penumbra-zone/client`. This package is provided for
-developers interested in lower-level work or more detailed configuration.
+## If you are looking for a Penumbra client
 
----
+You should install `@penumbra-zone/client`.
 
-This package collects types and some configuration intended for use with
-`@penumbra-zone/transport-dom`.
-
-**To use this package, you need to [enable the Buf Schema Registry](https://buf.build/docs/bsr/generated-sdks/npm):**
-
-```sh
-echo "@buf:registry=https://buf.build/gen/npm/v1/" >> .npmrc
-```
-
-### Exports
+### Other Exports
 
 This package exports a `typeRegistry` (and `jsonOptions` including said
-registry) for use with `createChannelTransport` or any `@connectrpc` transport.
+registry) for use with `createChannelTransport` of
+`@penumbra-zone/transport-dom` or any `@connectrpc` transport.
 
 All types necessary for a to serialize/deserialize communication with Prax or
-any other Penumbra extension are included.
+any other Penumbra provider are included.
 
-Service definitions for all relevant services are also re-exported.
+Service definitions for all relevant Penumbra services, and some related Cosmos
+definitions are exported.
 
 ### A Simple example
 
@@ -34,7 +27,6 @@ import { createChannelTransport } from '@penumbra-zone/transport-dom';
 
 // naively get first available provider
 const provider = Object.values(window[Symbol.for('penumbra')])[0];
-void provider.request();
 
 // establish a transport
 const transport = createChannelTransport({ jsonOptions, getPort: provider.connect });

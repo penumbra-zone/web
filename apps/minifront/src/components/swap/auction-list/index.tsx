@@ -1,7 +1,7 @@
 import { AllSlices } from '../../../state';
 import { DutchAuctionComponent } from '@repo/ui/components/ui/dutch-auction-component';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
-import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
+import { AuctionId } from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
 import { GradientHeader } from '@repo/ui/components/ui/gradient-header';
 import { QueryLatestStateButton } from './query-latest-state-button';
 import { Card } from '@repo/ui/components/ui/card';
@@ -11,9 +11,9 @@ import { getFilteredAuctionInfos } from './get-filtered-auction-infos';
 import { LayoutGroup, motion } from 'framer-motion';
 import { useAuctionInfos } from '../../../state/swap/dutch-auction';
 import { useStatus } from '../../../state/status';
-import { byStartHeightAscending } from './helpers';
+import { byStartHeightDescending } from './helpers';
 import { Filters } from './filters';
-import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { EndOrWithdrawAllButton } from './end-or-withdraw-all-button.tsx';
 
 const auctionListSelector = (state: AllSlices) => ({
@@ -52,10 +52,8 @@ export const AuctionList = () => {
 
   const filteredAuctionInfos = useMemo(
     () =>
-      [...getFilteredAuctionInfos(auctionInfos.data ?? [], filter, status?.fullSyncHeight)].sort(
-        byStartHeightAscending,
-      ),
-    [auctionInfos.data, filter, status?.fullSyncHeight],
+      [...getFilteredAuctionInfos(auctionInfos.data ?? [], filter)].sort(byStartHeightDescending),
+    [auctionInfos.data, filter],
   );
 
   return (

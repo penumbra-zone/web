@@ -1,5 +1,27 @@
 # minifront
 
+## 6.18.0
+
+### Minor Changes
+
+- 894d038: Adjust active auction filter & reverse order auctions
+
+### Patch Changes
+
+- ef54d56: sort asset groups by account index
+- Updated dependencies [6fd8ce6]
+- Updated dependencies [49263c6]
+- Updated dependencies [88b16a7]
+- Updated dependencies [2a76fce]
+  - @repo/ui@8.0.0
+  - @penumbra-zone/protobuf@6.0.0
+  - @penumbra-zone/client@18.0.0
+  - @penumbra-zone/bech32m@7.0.0
+  - @penumbra-zone/getters@15.0.0
+  - @penumbra-zone/perspective@25.0.0
+  - @penumbra-zone/types@20.0.0
+  - @penumbra-zone/crypto-web@21.0.0
+
 ## 6.17.0
 
 ### Minor Changes

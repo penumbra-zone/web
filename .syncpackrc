@@ -24,9 +24,8 @@
   ],
   "semverGroups": [
     {
-      "range": "",
+      "range": "^",
       "dependencies": [
-        "@buf/*",
         "@bufbuild/**",
         "@connectrpc/**"
       ],
@@ -54,13 +53,14 @@
       "isBanned": true
     },
     {
-      "label": "Control @buf registry packages from root",
+      "label": "Require @buf registry packages remain in root or in apps",
       "dependencies": [
         "@buf/*"
       ],
-      "snapTo": [
-        "penumbra-web"
-      ]
+      "packages": [
+        "@penumbra-zone/**"
+      ],
+      "isBanned": true
     }
   ]
 }

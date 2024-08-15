@@ -1,4 +1,4 @@
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { AddressComponent, AddressIcon } from '@repo/ui/components/ui/address';
 import { Button } from '@repo/ui/components/ui/button';
 import {
@@ -28,11 +28,18 @@ const getTradeLink = (balance: BalancesResponse): string => {
   return metadata ? `${PagePath.SWAP}?from=${metadata.symbol}${accountQuery}` : PagePath.SWAP;
 };
 
+const byAccountIndex = (a: BalancesByAccount, b: BalancesByAccount) => {
+  return a.account - b.account;
+};
+
 const filteredBalancesByAccountSelector = (
   zQueryState: AbridgedZQueryState<BalancesResponse[]>,
 ): BalancesByAccount[] =>
-  zQueryState.data?.filter(shouldDisplay).sort(sortByPriorityScore).reduce(groupByAccount, []) ??
-  [];
+  zQueryState.data
+    ?.filter(shouldDisplay)
+    .sort(sortByPriorityScore)
+    .reduce(groupByAccount, [])
+    .sort(byAccountIndex) ?? [];
 
 export default function AssetsTable() {
   const balancesByAccount = useBalancesResponses({

@@ -6,11 +6,11 @@
   "packageManager": "pnpm@9.4.0+sha512.f549b8a52c9d2b8536762f99c0722205efc5af913e77835dbccc3b0b0b2ca9e7dc8022b78062c17291c48e88749c70ce88eb5a74f1fa8c4bf5e18bb46c8bd83a",
   "type": "module",
   "scripts": {
-    "all-check": "pnpm clean:vitest-mjs && pnpm install && pnpm compile && pnpm lint:strict && pnpm lint:rust && pnpm build && pnpm test && pnpm test:rust",
+    "all-check": "pnpm clean:vitest-mjs && pnpm install && pnpm compile && pnpm lint:strict && pnpm lint:rust && pnpm build && pnpm test && pnpm test:wasm",
     "all-check:clean": "pnpm clean && pnpm clean:modules && pnpm all-check",
     "build": "turbo build",
     "clean": "turbo clean",
-    "clean:modules": "rm -rf node_modules apps/*/node_modules packages/*/node_modules pnpm-lock.yaml",
+    "clean:modules": "rm -rf node_modules apps/*/node_modules packages/*/node_modules pnpm-lock.yaml && git checkout HEAD ./pnpm-lock.yaml",
     "clean:vitest-mjs": "find . -type f -name 'vite*.config.ts.timestamp-*-*.mjs' -ls -delete",
     "compile": "turbo compile",
     "dev": "turbo dev:compile dev:app",
@@ -29,21 +29,22 @@
     "postinstall": "syncpack list-mismatches",
     "pretest": "playwright install",
     "test": "turbo test",
-    "test:rust": "turbo test:rust"
+    "test:wasm": "turbo test:wasm"
+  },
+  "pnpm": {
+    "overrides": {
+      "typescript": "5.5.3"
+    }
   },
   "dependencies": {
-    "@buf/connectrpc_eliza.bufbuild_es": "1.10.0-20230913231627-233fca715f49.1",
-    "@buf/connectrpc_eliza.connectrpc_es": "1.4.0-20230913231627-233fca715f49.3",
-    "@buf/cosmos_ibc.bufbuild_es": "1.10.0-20230913112312-7ab44ae956a0.1",
-    "@buf/cosmos_ibc.connectrpc_es": "1.4.0-20230913112312-7ab44ae956a0.3",
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240804013626-f19a2ee01838.1",
-    "@buf/penumbra-zone_penumbra.connectrpc_es": "1.4.0-20240804013626-f19a2ee01838.3",
-    "@buf/tendermint_tendermint.bufbuild_es": "1.10.0-20231117195010-33ed361a9051.1",
-    "@bufbuild/protobuf": "1.10.0",
-    "@connectrpc/connect": "1.4.0",
-    "@connectrpc/connect-web": "1.4.0"
+    "@bufbuild/protobuf": "^1.10.0",
+    "@connectrpc/connect": "^1.4.0",
+    "@connectrpc/connect-web": "^1.4.0"
   },
   "devDependencies": {
+    "@buf/connectrpc_eliza.bufbuild_es": "1.10.0-20230913231627-233fca715f49.1",
+    "@buf/connectrpc_eliza.connectrpc_es": "1.4.0-20230913231627-233fca715f49.3",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240703080008-312294d02bf9.1",
     "@changesets/cli": "^2.27.3",
     "@eslint/compat": "^1.1.0",
     "@eslint/js": "^9.6.0",
@@ -72,7 +73,7 @@
     "eslint-plugin-react-refresh": "^0.4.8",
     "eslint-plugin-storybook": "0.9.0--canary.156.ed236ca.0",
     "eslint-plugin-tailwindcss": "^3.17.4",
-    "eslint-plugin-turbo": "^1.13.4",
+    "eslint-plugin-turbo": "^2.0.12",
     "eslint-plugin-vitest": "^0.5.4",
     "jsdom": "^24.0.0",
     "playwright": "^1.44.0",
@@ -81,7 +82,7 @@
     "tailwindcss": "^3.4.3",
     "tailwindcss-animate": "^1.0.7",
     "tsc-watch": "^6.2.0",
-    "turbo": "^1.13.3",
+    "turbo": "^2.0.12",
     "typescript": "5.5.3",
     "typescript-eslint": "^7.16.0",
     "vite": "^5.2.11",

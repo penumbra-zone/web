@@ -1,6 +1,6 @@
 import { JsonViewer } from '@repo/ui/components/ui/json-viewer';
 import { MetadataFetchFn, TransactionViewComponent } from '@repo/ui/components/ui/tx';
-import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { TransactionInfo } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import type { Jsonified } from '@penumbra-zone/types/jsonified';
 import { useState } from 'react';
 import { SegmentedPicker } from '@repo/ui/components/ui/segmented-picker';

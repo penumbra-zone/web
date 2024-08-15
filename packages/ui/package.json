@@ -1,6 +1,6 @@
 {
   "name": "@repo/ui",
-  "version": "7.4.1",
+  "version": "8.0.0",
   "private": true,
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
@@ -75,6 +75,7 @@
   },
   "devDependencies": {
     "@penumbra-zone/getters": "workspace:*",
+    "@penumbra-zone/protobuf": "workspace:*",
     "@storybook/addon-essentials": "^8.1.1",
     "@storybook/addon-interactions": "^8.1.1",
     "@storybook/addon-links": "^8.1.1",
@@ -95,8 +96,8 @@
     "storybook": "^8.1.1"
   },
   "peerDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240804013626-f19a2ee01838.1",
-    "@bufbuild/protobuf": "1.10.0",
+    "@bufbuild/protobuf": "^1.10.0",
+    "@penumbra-zone/protobuf": "workspace:*",
     "postcss": "^8.4.38",
     "react": "^18.3.1",
     "tailwindcss": "^3.4.3"

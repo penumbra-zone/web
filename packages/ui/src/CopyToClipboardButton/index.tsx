@@ -1,4 +1,4 @@
-import { ButtonHTMLAttributes, useState } from 'react';
+import { useState } from 'react';
 import { Copy, Check, LucideIcon } from 'lucide-react';
 import { Button } from '../Button';
 
@@ -19,23 +19,24 @@ const useClipboardButton = (text: string) => {
   return { onClick, icon, label };
 };
 
-export interface CopyToClipboardButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface CopyToClipboardButtonProps {
   /**
    * The text that should be copied to the clipboard when the user presses this
    * button.
    */
   text: string;
+  disabled?: boolean;
 }
 
 /**
  * A simple icon button for copying some text to the clipboard. Use it alongside
  * text that the user may want to copy.
  */
-export const CopyToClipboardButton = ({ text }: CopyToClipboardButtonProps) => {
+export const CopyToClipboardButton = ({ text, disabled = false }: CopyToClipboardButtonProps) => {
   const { onClick, icon, label } = useClipboardButton(text);
 
   return (
-    <Button type='button' iconOnly='adornment' icon={icon} onClick={onClick}>
+    <Button type='button' iconOnly='adornment' icon={icon} onClick={onClick} disabled={disabled}>
       {label}
     </Button>
   );

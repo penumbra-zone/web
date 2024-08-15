@@ -1,4 +1,4 @@
-import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { ReactNode } from 'react';
 import { AddressViewComponent } from '../../address-view';
 

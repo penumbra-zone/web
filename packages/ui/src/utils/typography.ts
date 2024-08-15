@@ -142,3 +142,9 @@ export const button = css`
   font-weight: 500;
   line-height: ${props => props.theme.lineHeight.textBase};
 `;
+
+export const truncate = `
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
