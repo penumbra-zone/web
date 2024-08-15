@@ -160,8 +160,8 @@ export const NonNativeFeeWarning = ({
     <div className='rounded border border-yellow-500 p-4 text-yellow-500'>
       <strong>Privacy Warning:</strong>
       <span className='block'>
-        Using non-native tokens for transaction fees may pose a privacy risk. It is recommended to
-        use the native token (UM) for better privacy and security.
+        You are using an alternative token for transaction fees, which may pose a privacy risk. It
+        is recommended to use the native token (UM) for better privacy and security.
       </span>
     </div>,
   );
