@@ -134,9 +134,7 @@ export const NonNativeFeeWarning = ({
 
   // Set the list of available gas prices
   useEffect(() => {
-    if (setGasPrices && gasPrices.length > 0) {
-      setGasPrices(gasPrices);
-    }
+    setGasPrices(gasPrices);
   }, [gasPrices, setGasPrices]);
 
   const stakingTokenMetadata = useStakingTokenMetadata();

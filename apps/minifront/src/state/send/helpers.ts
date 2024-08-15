@@ -79,8 +79,8 @@ export const checkSendMaxInvariants = ({
   gasPrices: GasPrices[] | undefined;
   stakingToken: boolean | undefined;
 }): boolean => {
-  let caseOne = isMaxAmount(selection, spendOrOutput) && isUmAsset(spendOrOutput);
-  let caseTwo = !stakingToken && isAlternativeAssetUsedForFees(spendOrOutput, gasPrices);
+  const caseOne = isMaxAmount(selection, spendOrOutput) && isUmAsset(spendOrOutput);
+  const caseTwo = !stakingToken && isAlternativeAssetUsedForFees(spendOrOutput, gasPrices);
   const isSendingMax = caseOne || caseTwo;
 
   return isSendingMax;
