@@ -31,6 +31,8 @@ export const SendForm = () => {
     setFeeTier,
     setMemo,
     sendTx,
+    setGasPrices,
+    setStakingToken,
     txInProgress,
   } = useStore(sendSelector);
 
@@ -95,6 +97,8 @@ export const SendForm = () => {
         balancesResponses={transferableBalancesResponses?.data}
         amount={Number(amount)}
         source={selection}
+        setGasPrices={setGasPrices}
+        setStakingToken={setStakingToken}
       />
 
       <GasFee

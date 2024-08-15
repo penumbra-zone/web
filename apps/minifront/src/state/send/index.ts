@@ -10,7 +10,11 @@ import { BigNumber } from 'bignumber.js';
 import { MemoPlaintext } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { amountMoreThanBalance, isIncorrectDecimal, plan, planBuildBroadcast } from '../helpers';
 
-import { Fee, FeeTier_Tier } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
+import {
+  Fee,
+  FeeTier_Tier,
+  GasPrices,
+} from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
 import {
   getAssetIdFromValueView,
   getDisplayDenomExponentFromValueView,
@@ -18,7 +22,7 @@ import {
 import { getAddress, getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { toBaseUnit } from '@penumbra-zone/types/lo-hi';
 import { isAddress } from '@penumbra-zone/bech32m/penumbra';
-import { transferableBalancesResponsesSelector } from './helpers';
+import { checkSendMaxInvariants, transferableBalancesResponsesSelector } from './helpers';
 import { PartialMessage } from '@bufbuild/protobuf';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getAssetTokenMetadata } from '../../fetchers/registry';
@@ -39,6 +43,10 @@ export interface SendSlice {
   sendTx: () => Promise<void>;
   txInProgress: boolean;
   assetFeeMetadata: Metadata | undefined;
+  gasPrices: GasPrices[] | undefined;
+  setGasPrices: (prices: GasPrices[]) => void;
+  stakingToken: boolean | undefined;
+  setStakingToken: (stakingToken: boolean) => void;
 }
 
 export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
@@ -51,6 +59,8 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
     feeTier: FeeTier_Tier.LOW,
     txInProgress: false,
     assetFeeMetadata: undefined,
+    gasPrices: undefined,
+    stakingToken: false,
     setAmount: amount => {
       set(state => {
         state.send.amount = amount;
@@ -122,10 +132,28 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
         });
       }
     },
+    setGasPrices: prices => {
+      set(state => {
+        state.send.gasPrices = prices;
+      });
+    },
+    setStakingToken: stakingToken => {
+      set(state => {
+        state.send.stakingToken = stakingToken;
+      });
+    },
   };
 };
 
-const assembleRequest = ({ amount, feeTier, recipient, selection, memo }: SendSlice) => {
+const assembleRequest = ({
+  amount,
+  feeTier,
+  recipient,
+  selection,
+  memo,
+  gasPrices,
+  stakingToken,
+}: SendSlice) => {
   const spendOrOutput:
     | PartialMessage<TransactionPlannerRequest_Spend>
     | PartialMessage<TransactionPlannerRequest_Output> = {
@@ -138,12 +166,17 @@ const assembleRequest = ({ amount, feeTier, recipient, selection, memo }: SendSl
       assetId: getAssetIdFromValueView(selection?.balanceView),
     },
   };
-  // TODO MAX functionality is temporarily disabled due to a bug
-  // const isSendingMax = getAmount(selection?.balanceView).equals(
-  //   spendOrOutput.value?.amount as Amount,
-  // );
+
+  // Call a utility function to check if the transaction planner request meets the "send max" conditions.
+  const isSendingMax = checkSendMaxInvariants({
+    selection,
+    spendOrOutput,
+    gasPrices,
+    stakingToken,
+  });
+
   return new TransactionPlannerRequest({
-    ...{ outputs: [spendOrOutput] },
+    ...(isSendingMax ? { spends: [spendOrOutput] } : { outputs: [spendOrOutput] }),
     source: getAddressIndex(selection?.accountAddress),
     // Note: we currently don't provide a UI for setting the fee manually. Thus,
     // a `feeMode` of `manualFee` is not supported here.

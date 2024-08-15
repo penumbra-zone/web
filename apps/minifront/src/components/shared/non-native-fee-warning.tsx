@@ -18,11 +18,13 @@ const hasTokenBalance = ({
   balancesResponses = [],
   gasPrices,
   stakingAssetMetadata,
+  setStakingToken,
 }: {
   source?: BalancesResponse;
   balancesResponses: BalancesResponse[];
   gasPrices: GasPrices[];
   stakingAssetMetadata?: Metadata;
+  setStakingToken: (stakingToken: boolean) => void;
 }): boolean => {
   const account = getAddressIndex.optional()(source)?.account;
   if (typeof account === 'undefined') {
@@ -37,6 +39,9 @@ const hasTokenBalance = ({
         ?.equals(getAssetId.optional()(stakingAssetMetadata)) &&
       getAddressIndex.optional()(asset)?.account === account,
   );
+
+  // Set the staking token status in the state
+  setStakingToken(hasStakingToken);
 
   if (hasStakingToken) {
     return false;
@@ -86,6 +91,8 @@ export const NonNativeFeeWarning = ({
   amount,
   source,
   wrap = children => children,
+  setGasPrices,
+  setStakingToken,
 }: {
   /**
    * The user's balances that are relevant to this transaction, from which
@@ -120,8 +127,18 @@ export const NonNativeFeeWarning = ({
    * ```
    */
   wrap?: (children: ReactNode) => ReactNode;
+  setGasPrices: (prices: GasPrices[]) => void;
+  setStakingToken: (stakingToken: boolean) => void;
 }) => {
   const gasPrices = useGasPrices();
+
+  // Set the list of available gas prices
+  useEffect(() => {
+    if (setGasPrices && gasPrices.length > 0) {
+      setGasPrices(gasPrices);
+    }
+  }, [gasPrices, setGasPrices]);
+
   const stakingTokenMetadata = useStakingTokenMetadata();
   const shouldRender =
     !!amount &&
@@ -130,6 +147,7 @@ export const NonNativeFeeWarning = ({
       balancesResponses,
       gasPrices,
       stakingAssetMetadata: stakingTokenMetadata.data,
+      setStakingToken,
     });
 
   if (!shouldRender) {
