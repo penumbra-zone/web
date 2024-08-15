@@ -55,6 +55,8 @@ const tokenSwapInputSelector = (state: AllSlices) => ({
   amount: state.swap.amount,
   setAmount: state.swap.setAmount,
   reverse: state.swap.reverse,
+  setGasPrices: state.swap.setGasPrices,
+  setStakingToken: state.swap.setStakingToken,
 });
 
 /**
@@ -66,8 +68,17 @@ const tokenSwapInputSelector = (state: AllSlices) => ({
 export const TokenSwapInput = () => {
   const balancesResponses = useBalancesResponses({ select: swappableBalancesResponsesSelector });
   const swappableAssets = useAssets({ select: swappableAssetsSelector });
-  const { amount, setAmount, assetIn, setAssetIn, assetOut, setAssetOut, reverse } =
-    useStoreShallow(tokenSwapInputSelector);
+  const {
+    amount,
+    setAmount,
+    assetIn,
+    setAssetIn,
+    assetOut,
+    setAssetOut,
+    reverse,
+    setGasPrices,
+    setStakingToken,
+  } = useStoreShallow(tokenSwapInputSelector);
   const assetOutBalance = getAssetOutBalance(balancesResponses?.data, assetIn, assetOut);
   const assetInExponent = useMemo(() => {
     return getDisplayDenomExponent.optional()(getMetadataFromBalancesResponseOptional(assetIn));
@@ -161,6 +172,8 @@ export const TokenSwapInput = () => {
         balancesResponses={balancesResponses?.data}
         amount={Number(amount)}
         source={assetIn}
+        setGasPrices={setGasPrices}
+        setStakingToken={setStakingToken}
         wrap={children => (
           <>
             {/* This div adds an empty line */} <div className='h-4' />

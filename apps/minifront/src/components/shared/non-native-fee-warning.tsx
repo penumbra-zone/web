@@ -131,23 +131,27 @@ export const NonNativeFeeWarning = ({
   setStakingToken: (stakingToken: boolean) => void;
 }) => {
   const gasPrices = useGasPrices();
+  const stakingTokenMetadata = useStakingTokenMetadata();
+  const [hasStakingToken, setHasStakingToken] = useState(false);
 
-  // Set the list of available gas prices
+  // useEffect here defers the state updates until after the rendering phase is complete,
+  // preventing direct state modifications during rendering.
   useEffect(() => {
     setGasPrices(gasPrices);
   }, [gasPrices, setGasPrices]);
 
-  const stakingTokenMetadata = useStakingTokenMetadata();
-  const shouldRender =
-    !!amount &&
-    hasTokenBalance({
+  useEffect(() => {
+    const stakingToken = hasTokenBalance({
       source,
       balancesResponses,
       gasPrices,
       stakingAssetMetadata: stakingTokenMetadata.data,
       setStakingToken,
     });
+    setHasStakingToken(stakingToken);
+  }, [source, balancesResponses, gasPrices, stakingTokenMetadata, setStakingToken]);
 
+  const shouldRender = !!amount && hasStakingToken;
   if (!shouldRender) {
     return null;
   }

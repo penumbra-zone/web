@@ -28,6 +28,7 @@ import {
   getFirstMetadataNotMatchingBalancesResponse,
   getBalanceByMatchingMetadataAndAddressIndex,
 } from './getters';
+import { GasPrices } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
 
 export interface SimulateSwapResult {
   metadataByAssetId: Record<string, Metadata>;
@@ -44,6 +45,10 @@ interface Actions {
   reverse: () => void;
   setDuration: (duration: DurationOption) => void;
   resetSubslices: VoidFunction;
+  gasPrices?: GasPrices[];
+  setGasPrices: (prices: GasPrices[]) => void;
+  stakingToken?: boolean;
+  setStakingToken: (stakingToken: boolean) => void;
 }
 
 interface State {
@@ -70,6 +75,17 @@ export type SwapSlice = Actions & State & Subslices;
 
 export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) => ({
   ...INITIAL_STATE,
+  setGasPrices: (prices: GasPrices[]) => {
+    set(state => {
+      state.swap.gasPrices = prices;
+    });
+  },
+
+  setStakingToken: (stakingToken: boolean) => {
+    set(state => {
+      state.swap.stakingToken = stakingToken;
+    });
+  },
   dutchAuction: createDutchAuctionSlice()(set, get, store),
   instantSwap: createInstantSwapSlice()(set, get, store),
   priceHistory: createPriceHistorySlice()(set, get, store),
