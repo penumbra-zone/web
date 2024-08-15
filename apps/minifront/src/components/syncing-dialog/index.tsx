@@ -4,6 +4,7 @@ import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
 import { SyncAnimation } from './sync-animation';
 import { Text } from '@repo/ui/Text';
 import { useEffect, useState } from 'react';
+import { useSyncProgress } from '@repo/ui/components/ui/block-sync-status';
 
 type StatusSelector =
   | {
@@ -57,16 +58,41 @@ export const SyncingDialog = () => {
         <SyncAnimation />
 
         <div className='text-center'>
-          <Text p>Updating your local state with public state.</Text>
-          {!!status?.isCatchingUp && (
-            <Text technical>
-              {!!status.percentSynced && `${status.percentSynced} Synced – `} Block{' '}
-              {status.fullSyncHeight.toString()}{' '}
-              {!!status.latestKnownBlockHeight && `of ${status.latestKnownBlockHeight.toString()}`}
-            </Text>
-          )}
+          <Text body as='p'>
+            Decrypting blocks to update your local state
+          </Text>
+          <Text small as='p'>
+            You can click away, but your data <i>may</i> not be current
+          </Text>
+          <div className='mt-6'>
+            {!!status?.isCatchingUp && (
+              <Text technical>
+                {!!status.percentSynced && `${status.percentSynced} Synced – `} Block{' '}
+                {status.fullSyncHeight.toString()}{' '}
+                {!!status.latestKnownBlockHeight &&
+                  `of ${status.latestKnownBlockHeight.toString()}`}
+              </Text>
+            )}
+          </div>
+          {!!status?.isCatchingUp && status.latestKnownBlockHeight ? (
+            <RemainingTime
+              fullSyncHeight={status.fullSyncHeight}
+              latestKnownBlockHeight={status.latestKnownBlockHeight}
+            />
+          ) : null}
         </div>
       </Dialog.Content>
     </Dialog>
   );
+};
+
+const RemainingTime = ({
+  fullSyncHeight,
+  latestKnownBlockHeight,
+}: {
+  fullSyncHeight: bigint;
+  latestKnownBlockHeight: bigint;
+}) => {
+  const { formattedTimeRemaining } = useSyncProgress(fullSyncHeight, latestKnownBlockHeight);
+  return <Text technical>(Estimated time remaining: {formattedTimeRemaining})</Text>;
 };
