@@ -1,16 +1,16 @@
 import { ReactNode } from 'react';
 import * as RadixPopover from '@radix-ui/react-popover';
 import type { PopoverContentProps as RadixPopoverContentProps } from '@radix-ui/react-popover';
-import styled, { keyframes } from 'styled-components';
+import styled, { keyframes, useTheme } from 'styled-components';
 
-const appearAnimation = (spacing: string) => keyframes`
+const scaleIn = keyframes`
   from {
     opacity: 0;
-    transform: translate(${spacing}, ${spacing});
+    transform: scale(0);
   }
   to {
     opacity: 1;
-    transform: translate(0, 0);
+    transform: scale(1);
   }
 `;
 
@@ -18,14 +18,18 @@ const RadixContent = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${props => props.theme.spacing(4)};
+
   width: 240px;
   max-width: 320px;
   padding: ${props => props.theme.spacing(3)} ${props => props.theme.spacing(2)};
-  border-radius: ${props => props.theme.borderRadius.sm};
-  border: 1px solid ${props => props.theme.color.other.tonalStroke};
+
   background: ${props => props.theme.color.other.dialogBackground};
+  border: 1px solid ${props => props.theme.color.other.tonalStroke};
+  border-radius: ${props => props.theme.borderRadius.sm};
   backdrop-filter: blur(${props => props.theme.blur.lg});
-  animation: ${props => appearAnimation(props.theme.spacing(1))} 0.15s ease-out;
+
+  transform-origin: var(--radix-tooltip-content-transform-origin);
+  animation: ${scaleIn} 0.15s ease-out;
 `;
 
 interface ControlledPopoverProps {
@@ -44,7 +48,7 @@ interface ControlledPopoverProps {
 }
 
 interface UncontrolledPopoverProps {
-  isOpen?: false | undefined;
+  isOpen?: undefined;
   onClose?: undefined;
 }
 
@@ -147,9 +151,16 @@ export interface PopoverContentProps {
  * `side` and `align` props.
  */
 const Content = ({ children, side, align }: PopoverContentProps) => {
+  const theme = useTheme();
+
   return (
     <RadixPopover.Portal>
-      <RadixPopover.Content sideOffset={4} side={side} align={align} asChild>
+      <RadixPopover.Content
+        sideOffset={theme.spacing(1, 'number')}
+        side={side}
+        align={align}
+        asChild
+      >
         <RadixContent>{children}</RadixContent>
       </RadixPopover.Content>
     </RadixPopover.Portal>

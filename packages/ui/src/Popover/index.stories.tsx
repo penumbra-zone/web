@@ -8,7 +8,7 @@ import styled from 'styled-components';
 import { Shield } from 'lucide-react';
 import { Density } from '../Density';
 
-const WhiteTextWrapper = styled.div`
+const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${props => props.theme.spacing(4)};
@@ -44,7 +44,7 @@ export const Basic: Story = {
         </Popover.Trigger>
 
         <Popover.Content>
-          <WhiteTextWrapper>
+          <Wrapper>
             <Text body as='h3'>
               This is a heading
             </Text>
@@ -59,7 +59,7 @@ export const Basic: Story = {
                 </Button>
               </Density>
             </div>
-          </WhiteTextWrapper>
+          </Wrapper>
         </Popover.Content>
       </Popover>
     );
