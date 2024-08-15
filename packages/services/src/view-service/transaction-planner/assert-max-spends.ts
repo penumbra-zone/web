@@ -1,13 +1,27 @@
-import { TransactionPlan } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { ConnectError } from '@connectrpc/connect';
+import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { TransactionPlan } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import { TransactionPlannerRequest } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 
-export const assertSpendMax = (plan: TransactionPlan) => {
-  // Invariant: Validate that each spend action's asset ID matches the fee asset ID.
-  const feeAssetId = plan.transactionParameters?.fee?.assetId;
+export const assertSpendMax = (
+  req: TransactionPlannerRequest,
+  plan: TransactionPlan,
+  stakingToken: AssetId,
+) => {
+  if (req.spends.length === 0) {
+    return;
+  }
+
+  // Constraint: validate that each spend action's asset ID matches the fee asset ID.
+  let feeAssetId = plan.transactionParameters?.fee?.assetId;
+  if (feeAssetId === undefined) {
+    feeAssetId = stakingToken;
+  }
+
   plan.actions.forEach(action => {
     if (action.action.case === 'spend') {
-      if (action.action.value.note?.value !== feeAssetId) {
-        throw new ConnectError('Spend asset ID does not match the fee asset ID.');
+      if (!action.action.value.note?.value?.assetId?.equals(feeAssetId)) {
+        throw new ConnectError('Transaction is invalid due to asset inconsistency.');
       }
     }
   });

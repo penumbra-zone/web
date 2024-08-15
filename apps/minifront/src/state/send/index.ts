@@ -167,7 +167,6 @@ const assembleRequest = ({
     },
   };
 
-  // Call a utility function to check if the transaction planner request meets the "send max" conditions.
   const isSendingMax = checkSendMaxInvariants({
     selection,
     spendOrOutput,

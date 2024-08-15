@@ -9,10 +9,11 @@ import { extractAltFee } from '../fees.js';
 import { assertTransactionSource } from './assert-transaction-source.js';
 import { TransactionPlan } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { assertSpendMax } from './assert-max-spends.js';
+import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
 export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) => {
   // Pre-checks before the transaction planning process begins.
-  // This ensures that the initial TransactionPlannerRequest (TPR) is valid.
+  // This ensures that the initial transaction planner request is valid.
   assertValidRequest(req);
 
   const services = await ctx.values.get(servicesCtx)();
@@ -56,7 +57,7 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
 
   // Post-checks after the transaction plan is fully formed, providing an extra layer of validation
   // to ensure the plan adheres to all necessary rules.
-  assertValidPlan(plan);
+  assertValidPlan(req, plan, indexedDb.stakingTokenAssetId);
 
   return { plan };
 };
@@ -81,8 +82,12 @@ const assertValidRequest = (req: TransactionPlannerRequest): void => {
   assertTransactionSource(req);
 };
 
-const assertValidPlan = (plan: TransactionPlan): void => {
+const assertValidPlan = (
+  req: TransactionPlannerRequest,
+  plan: TransactionPlan,
+  stakingToken: AssetId,
+): void => {
   // Perform additional checks specifically focused on ensuring that
   // transactions intending to spend the maximum amount are valid.
-  assertSpendMax(plan);
+  assertSpendMax(req, plan, stakingToken);
 };

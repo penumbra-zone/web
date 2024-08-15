@@ -66,6 +66,8 @@ const isAlternativeAssetUsedForFees = (
   );
 };
 
+// Check whether the transaction meets the "send max" conditions, which determines if the request
+// should be structured as a "spend" rather than an "output".
 export const checkSendMaxInvariants = ({
   selection,
   spendOrOutput,
@@ -79,9 +81,16 @@ export const checkSendMaxInvariants = ({
   gasPrices: GasPrices[] | undefined;
   stakingToken: boolean | undefined;
 }): boolean => {
-  const caseOne = isMaxAmount(selection, spendOrOutput) && isUmAsset(spendOrOutput);
-  const caseTwo = !stakingToken && isAlternativeAssetUsedForFees(spendOrOutput, gasPrices);
-  const isSendingMax = caseOne || caseTwo;
+  // Checks if the transaction involves sending the maximum amount of the native
+  // staking token (UM). This condition is met if the selected asset's amount equals the maximum
+  // balance and the asset is UM.
+  const invariantOne = isUmAsset(spendOrOutput) && isMaxAmount(selection, spendOrOutput);
 
+  // Checks if the transaction uses an alternative asset for fees, and the staking
+  // token is not present in the account. This condition ensures that the transaction is treated
+  // as a "send max" operation using a non-native asset for covering fees.
+  const invariantTwo = !stakingToken && isAlternativeAssetUsedForFees(spendOrOutput, gasPrices);
+
+  const isSendingMax = invariantOne || invariantTwo;
   return isSendingMax;
 };
