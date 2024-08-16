@@ -28,12 +28,8 @@ describe('<DropdownMenu />', () => {
         </DropdownMenu.Trigger>
         <DropdownMenu.Content>
           <DropdownMenu.RadioGroup value={'1'} onChange={onChange}>
-            <DropdownMenu.RadioItem value='1'>
-              Item 1
-            </DropdownMenu.RadioItem>
-            <DropdownMenu.RadioItem value='2'>
-              Item 2
-            </DropdownMenu.RadioItem>
+            <DropdownMenu.RadioItem value='1'>Item 1</DropdownMenu.RadioItem>
+            <DropdownMenu.RadioItem value='2'>Item 2</DropdownMenu.RadioItem>
           </DropdownMenu.RadioGroup>
         </DropdownMenu.Content>
       </DropdownMenu>,
@@ -54,9 +50,7 @@ describe('<DropdownMenu />', () => {
           <button type='button'>Trigger</button>
         </DropdownMenu.Trigger>
         <DropdownMenu.Content>
-          <DropdownMenu.CheckboxItem onChange={onChange}>
-            Item
-          </DropdownMenu.CheckboxItem>
+          <DropdownMenu.CheckboxItem onChange={onChange}>Item</DropdownMenu.CheckboxItem>
         </DropdownMenu.Content>
       </DropdownMenu>,
       { wrapper: PenumbraUIProvider },
@@ -76,9 +70,7 @@ describe('<DropdownMenu />', () => {
           <button type='button'>Trigger</button>
         </DropdownMenu.Trigger>
         <DropdownMenu.Content>
-          <DropdownMenu.Item onSelect={onChange}>
-            Item
-          </DropdownMenu.Item>
+          <DropdownMenu.Item onSelect={onChange}>Item</DropdownMenu.Item>
         </DropdownMenu.Content>
       </DropdownMenu>,
       { wrapper: PenumbraUIProvider },
