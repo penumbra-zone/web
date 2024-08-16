@@ -179,6 +179,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       actionType = 'default',
       type = 'button',
       priority = 'primary',
+      ...props
     },
     ref,
   ) => {
@@ -200,6 +201,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             ? theme.borderRadius.sm
             : theme.borderRadius.full
         }
+        {...props}
       >
         {IconComponent && (
           <IconComponent size={density === 'sparse' && iconOnly === true ? 24 : 16} />

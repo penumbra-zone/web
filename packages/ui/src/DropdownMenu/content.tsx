@@ -1,8 +1,11 @@
 import { ReactNode } from 'react';
-import { DropdownMenuContentProps as RadixDropdownMenuContentProps } from '@radix-ui/react-dropdown-menu';
 import { useTheme } from 'styled-components';
-import * as RadixDropdownMenu from '@radix-ui/react-dropdown-menu';
-import { PopoverContent } from '../Popover/styles.ts';
+import {
+  Content as RadixDropdownMenuContent,
+  Portal as RadixDropdownMenuPortal,
+  DropdownMenuContentProps as RadixDropdownMenuContentProps,
+} from '@radix-ui/react-dropdown-menu';
+import { PopoverContent } from '../utils/popover.ts';
 
 export interface DropdownMenuContentProps {
   children?: ReactNode;
@@ -14,15 +17,15 @@ export const Content = ({ children, side, align }: DropdownMenuContentProps) => 
   const theme = useTheme();
 
   return (
-    <RadixDropdownMenu.Portal>
-      <RadixDropdownMenu.Content
+    <RadixDropdownMenuPortal>
+      <RadixDropdownMenuContent
         sideOffset={theme.spacing(1, 'number')}
         side={side}
         align={align}
         asChild
       >
         <PopoverContent>{children}</PopoverContent>
-      </RadixDropdownMenu.Content>
-    </RadixDropdownMenu.Portal>
+      </RadixDropdownMenuContent>
+    </RadixDropdownMenuPortal>
   );
 };

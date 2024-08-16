@@ -1,4 +1,7 @@
-import * as RadixDropdownMenu from '@radix-ui/react-dropdown-menu';
+import {
+  CheckboxItem as RadixDropdownMenuCheckboxItem,
+  ItemIndicator as RadixDropdownMenuItemIndicator,
+} from '@radix-ui/react-dropdown-menu';
 import { ReactNode } from 'react';
 import { Check } from 'lucide-react';
 import { asTransientProps } from '../utils/asTransientProps.ts';
@@ -11,16 +14,27 @@ export interface DropdownMenuCheckboxItemProps extends DropdownMenuItemBase {
   onChange?: (value: boolean) => void;
 }
 
-export const CheckboxItem = ({ children, actionType = 'default', disabled, checked, onChange }: DropdownMenuCheckboxItemProps) => {
+export const CheckboxItem = ({
+  children,
+  actionType = 'default',
+  disabled,
+  checked,
+  onChange,
+}: DropdownMenuCheckboxItemProps) => {
   return (
-    <RadixDropdownMenu.CheckboxItem checked={checked} disabled={disabled} asChild onCheckedChange={onChange}>
+    <RadixDropdownMenuCheckboxItem
+      checked={checked}
+      disabled={disabled}
+      asChild
+      onCheckedChange={onChange}
+    >
       <MenuItem {...asTransientProps({ actionType, disabled })}>
-        <RadixDropdownMenu.ItemIndicator>
+        <RadixDropdownMenuItemIndicator>
           <Check />
-        </RadixDropdownMenu.ItemIndicator>
+        </RadixDropdownMenuItemIndicator>
 
         <Text small>{children}</Text>
       </MenuItem>
-    </RadixDropdownMenu.CheckboxItem>
+    </RadixDropdownMenuCheckboxItem>
   );
 };

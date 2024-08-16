@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 import * as RadixPopover from '@radix-ui/react-popover';
 import type { PopoverContentProps as RadixPopoverContentProps } from '@radix-ui/react-popover';
 import { useTheme } from 'styled-components';
-import { PopoverContent } from './styles.ts';
+import { PopoverContent } from '../utils/popover.ts';
 
 interface ControlledPopoverProps {
   /**
@@ -38,7 +38,7 @@ export type PopoverProps = {
  *
  * ```tsx
  * <Popover>
- *   <Popover.Trigger asChild>
+ *   <Popover.Trigger>
  *     <Button>Open the popover</Button>
  *   </Popover.Trigger>
  *
@@ -76,7 +76,7 @@ export type PopoverProps = {
 
  * ```tsx
  * <Popover>
- *   <Popover.Trigger asChild>
+ *   <Popover.Trigger>
  *     <Button>Open the popover</Button>
  *   </Popover.Trigger>
  *
@@ -94,19 +94,10 @@ export const Popover = ({ children, onClose, isOpen }: PopoverProps) => {
 
 export interface PopoverTriggerProps {
   children: ReactNode;
-  /**
-   * Change the default rendered element for the one passed as a child, merging
-   * their props and behavior.
-   *
-   * Uses Radix UI's `asChild` prop under the hood.
-   *
-   * @see https://www.radix-ui.com/primitives/docs/guides/composition
-   */
-  asChild?: boolean;
 }
 
-const Trigger = ({ children, asChild }: PopoverTriggerProps) => (
-  <RadixPopover.Trigger asChild={asChild}>{children}</RadixPopover.Trigger>
+const Trigger = ({ children }: PopoverTriggerProps) => (
+  <RadixPopover.Trigger asChild>{children}</RadixPopover.Trigger>
 );
 Popover.Trigger = Trigger;
 

@@ -1,4 +1,7 @@
-import * as RadixDropdownMenu from '@radix-ui/react-dropdown-menu';
+import {
+  RadioItem as RadixDropdownMenuRadioItem,
+  ItemIndicator as RadixDropdownMenuItemIndicator,
+} from '@radix-ui/react-dropdown-menu';
 import { ReactNode } from 'react';
 import { Check } from 'lucide-react';
 import { asTransientProps } from '../utils/asTransientProps.ts';
@@ -10,16 +13,21 @@ export interface DropdownMenuRadioItemProps extends DropdownMenuItemBase {
   value: string;
 }
 
-export const RadioItem = ({ children, value, actionType = 'default', disabled }: DropdownMenuRadioItemProps) => {
+export const RadioItem = ({
+  children,
+  value,
+  actionType = 'default',
+  disabled,
+}: DropdownMenuRadioItemProps) => {
   return (
-    <RadixDropdownMenu.RadioItem value={value} disabled={disabled} asChild>
+    <RadixDropdownMenuRadioItem value={value} disabled={disabled} asChild>
       <MenuItem {...asTransientProps({ actionType, disabled })}>
-        <RadixDropdownMenu.ItemIndicator>
+        <RadixDropdownMenuItemIndicator>
           <Check />
-        </RadixDropdownMenu.ItemIndicator>
+        </RadixDropdownMenuItemIndicator>
 
         <Text small>{children}</Text>
       </MenuItem>
-    </RadixDropdownMenu.RadioItem>
+    </RadixDropdownMenuRadioItem>
   );
 };

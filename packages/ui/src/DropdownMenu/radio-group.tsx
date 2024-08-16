@@ -1,16 +1,16 @@
 import { ReactNode } from 'react';
-import * as RadixDropdownMenu from '@radix-ui/react-dropdown-menu';
+import { RadioGroup as RadixDropdownMenuRadioGroup } from '@radix-ui/react-dropdown-menu';
 
 export interface DropdownMenuRadioGroupProps {
   children?: ReactNode;
   value?: string;
-  onValueChange?: (value: string) => void;
+  onChange?: (value: string) => void;
 }
 
-export const RadioGroup = ({ children, value, onValueChange }: DropdownMenuRadioGroupProps) => {
+export const RadioGroup = ({ children, value, onChange }: DropdownMenuRadioGroupProps) => {
   return (
-    <RadixDropdownMenu.RadioGroup value={value} onValueChange={onValueChange}>
+    <RadixDropdownMenuRadioGroup value={value} onValueChange={onChange}>
       {children}
-    </RadixDropdownMenu.RadioGroup>
+    </RadixDropdownMenuRadioGroup>
   );
 };
