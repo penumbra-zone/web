@@ -7,7 +7,9 @@ describe('<Popover />', () => {
   it('opens when trigger is clicked', () => {
     const { getByText, queryByText } = render(
       <Popover>
-        <Popover.Trigger>Trigger</Popover.Trigger>
+        <Popover.Trigger>
+          <button type='button'>Trigger</button>
+        </Popover.Trigger>
         <Popover.Content>Content</Popover.Content>
       </Popover>,
       { wrapper: PenumbraUIProvider },
@@ -21,7 +23,9 @@ describe('<Popover />', () => {
   it('opens initially if `isOpen` is passed', () => {
     const { queryByText } = render(
       <Popover isOpen>
-        <Popover.Trigger>Trigger</Popover.Trigger>
+        <Popover.Trigger>
+          <button type='button'>Trigger</button>
+        </Popover.Trigger>
         <Popover.Content>Content</Popover.Content>
       </Popover>,
       { wrapper: PenumbraUIProvider },

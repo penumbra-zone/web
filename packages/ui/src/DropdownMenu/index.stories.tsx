@@ -9,8 +9,8 @@ const meta: Meta<typeof DropdownMenu> = {
   component: DropdownMenu,
   tags: ['autodocs', '!dev'],
   argTypes: {
-    // isOpen: { control: false },
-    // onClose: { control: false },
+    isOpen: { control: false },
+    onClose: { control: false },
   },
   subcomponents: {
     // Re: type coercion, see

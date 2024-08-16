@@ -14,7 +14,6 @@ const scaleIn = keyframes`
 export const PopoverContent = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${props => props.theme.spacing(4)};
 
   width: 240px;
   max-width: 320px;
