@@ -1,36 +1,8 @@
 import { ReactNode } from 'react';
 import * as RadixPopover from '@radix-ui/react-popover';
 import type { PopoverContentProps as RadixPopoverContentProps } from '@radix-ui/react-popover';
-import styled, { keyframes, useTheme } from 'styled-components';
-
-const scaleIn = keyframes`
-  from {
-    opacity: 0;
-    transform: scale(0);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-`;
-
-const RadixContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${props => props.theme.spacing(4)};
-
-  width: 240px;
-  max-width: 320px;
-  padding: ${props => props.theme.spacing(3)} ${props => props.theme.spacing(2)};
-
-  background: ${props => props.theme.color.other.dialogBackground};
-  border: 1px solid ${props => props.theme.color.other.tonalStroke};
-  border-radius: ${props => props.theme.borderRadius.sm};
-  backdrop-filter: blur(${props => props.theme.blur.lg});
-
-  transform-origin: var(--radix-tooltip-content-transform-origin);
-  animation: ${scaleIn} 0.15s ease-out;
-`;
+import { useTheme } from 'styled-components';
+import { PopoverContent } from './styles.ts';
 
 interface ControlledPopoverProps {
   /**
@@ -161,7 +133,7 @@ const Content = ({ children, side, align }: PopoverContentProps) => {
         align={align}
         asChild
       >
-        <RadixContent>{children}</RadixContent>
+        <PopoverContent>{children}</PopoverContent>
       </RadixPopover.Content>
     </RadixPopover.Portal>
   );
