@@ -172,6 +172,28 @@ export type DialogProps = {
  *   <Dialog.Content title="Dialog title">Dialog content here</Dialog.Content>
  * </Dialog>
  * ```
+ *
+ * ## Animating a dialog out of its trigger
+ *
+ * You can use the `motion` prop with a layout ID to make a dialog appear to
+ * animate out of the trigger button:
+ *
+ * ```tsx
+ * const layoutId = useId();
+ *
+ * return (
+ *   <Dialog>
+ *     <Dialog.Trigger asChild>
+ *       <Button icon={Info} iconOnly='adornment' motion={{ layoutId }}>
+ *         Info
+ *       </Button>
+ *     </Dialog.Trigger>
+ *     <Dialog.Content title='Info' motion={{ layoutId }}>
+ *       ...
+ *     </Dialog.Content>
+ *   </Dialog>
+ * );
+ * ```
  */
 export const Dialog = ({ children, onClose, isOpen }: DialogProps) => {
   const isControlledComponent = isOpen !== undefined;

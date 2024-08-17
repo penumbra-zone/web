@@ -68,6 +68,11 @@ const preview = {
       );
     },
   ],
+  argTypes: {
+    // The `motion` prop is used throughout many Penumbra UI components for
+    // framer-motion settings, and shouldn't be controlled in Storybook.
+    motion: { control: false },
+  },
   parameters: {
     actions: { argTypesRegex: '^on[A-Z].*' },
     controls: {

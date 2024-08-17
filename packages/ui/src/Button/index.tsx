@@ -14,6 +14,7 @@ import { motion } from 'framer-motion';
 const iconOnlyAdornment = css<StyledButtonProps>`
   border-radius: ${props => props.theme.borderRadius.full};
   padding: ${props => props.theme.spacing(1)};
+  width: max-content;
 `;
 
 const sparse = css<StyledButtonProps>`
@@ -30,6 +31,7 @@ const compact = css<StyledButtonProps>`
   padding-right: ${props => props.theme.spacing(props.$iconOnly ? 2 : 4)};
   height: 32px;
   min-width: 32px;
+  width: max-content;
 `;
 
 const outlineColorByActionType: Record<ActionType, keyof DefaultTheme['color']['action']> = {

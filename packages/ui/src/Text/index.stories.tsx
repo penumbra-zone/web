@@ -20,6 +20,7 @@ const meta: Meta<typeof Text> = {
     detail: { control: false },
     small: { control: false },
     technical: { control: false },
+    detailTechnical: { control: false },
 
     as: {
       options: ['span', 'div', 'h1', 'h2', 'h3', 'h4', 'p', 'main', 'section'],
@@ -47,6 +48,7 @@ const OPTIONS = [
   'detail',
   'small',
   'technical',
+  'detailTechnical',
 ] as const;
 
 const Option = ({
