@@ -49,16 +49,20 @@ export const SendPage = () => {
     amount,
     recipient,
     memo,
-    fee,
     feeTier,
-    assetFeeMetadata,
     setAmount,
-    setSelection,
     setRecipient,
     setFeeTier,
     setMemo,
-    sendTx,
     txInProgress,
+
+    /**
+     * @todo: Implement form controls that use these properties:
+     */
+    // fee,
+    // setSelection,
+    // assetFeeMetadata,
+    // sendTx,
   } = useStoreShallow(sendPageSelector);
 
   useRefreshFee();
