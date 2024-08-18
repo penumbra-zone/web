@@ -101,7 +101,7 @@ export class BlockProcessor implements BlockProcessorInterface {
 
   // If sync() is called multiple times concurrently, they'll all wait for
   // the same promise rather than each starting their own sync process.
-  public sync = (genesisBlock: JsonObject): Promise<void> =>
+  public sync = (genesisBlock?: JsonObject): Promise<void> =>
     (this.syncPromise ??= backOff(() => this.syncAndStore(genesisBlock), {
       delayFirstAttempt: false,
       startingDelay: 5_000, // 5 seconds
@@ -126,7 +126,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     this.numeraires = numeraires;
   }
 
-  private async syncAndStore(genesisBlock: JsonObject) {
+  private async syncAndStore(genesisBlock?: JsonObject) {
     // start at next block, or genesis if height is undefined
     let currentHeight = (await this.indexedDb.getFullSyncHeight()) ?? -1n;
 
@@ -156,8 +156,9 @@ export class BlockProcessor implements BlockProcessorInterface {
       void this.updateValidatorInfos(0n);
     }
 
-    // process the genesis block if it's the first block
-    if (currentHeight === -1n) {
+    // if this is the first block being synced and the bundled genesis block data is available,
+    // process the genesis block first
+    if (currentHeight === -1n && genesisBlock) {
       const genesisCompactBlock = CompactBlock.fromJson(genesisBlock);
       await this.processBlock(genesisCompactBlock, latestKnownBlockHeight);
       currentHeight = 0n;
@@ -181,6 +182,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     }
   }
 
+  // logic for processing a compact block
   private async processBlock(compactBlock: CompactBlock, latestKnownBlockHeight: bigint) {
     if (compactBlock.appParametersUpdated) {
       await this.indexedDb.saveAppParams(await this.querier.app.appParams());
