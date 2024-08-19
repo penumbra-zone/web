@@ -601,13 +601,7 @@ pub async fn plan_transaction_inner<Db: Database>(
         let note = notes_by_asset_id
             .get_mut(&required.asset_id)
             .and_then(|notes| notes.pop())
-            .ok_or_else(|| {
-                anyhow!(
-                    "Failed to retrieve or ran out of notes for asset {}, required amount {}",
-                    required.asset_id,
-                    required.amount
-                )
-            })?;
+            .ok_or_else(|| anyhow!("Transaction failed due to insufficient funds"))?;
 
         // Add a spend for that note to the action list.
         actions_list.push(SpendPlan::new(&mut OsRng, note.note, note.position));
