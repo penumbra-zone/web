@@ -113,7 +113,11 @@ impl ViewServer {
     /// Use `flush_updates()` to get the scan results
     /// Returns: `bool`
     #[wasm_bindgen]
-    pub async fn scan_block(&mut self, compact_block: &[u8]) -> WasmResult<bool> {
+    pub async fn scan_block(
+        &mut self,
+        compact_block: &[u8],
+        skip_trial_decrypt: bool,
+    ) -> WasmResult<bool> {
         utils::set_panic_hook();
 
         let block = CompactBlock::decode(compact_block)?;
@@ -125,7 +129,9 @@ impl ViewServer {
 
             match state_payload {
                 StatePayload::Note { note: payload, .. } => {
-                    match payload.trial_decrypt(&self.fvk) {
+                    match bool::then_some(!skip_trial_decrypt, payload.trial_decrypt(&self.fvk))
+                        .flatten()
+                    {
                         Some(note) => {
                             let note_position = self.sct.insert(Keep, payload.note_commitment)?;
 
@@ -161,7 +167,9 @@ impl ViewServer {
                     }
                 }
                 StatePayload::Swap { swap: payload, .. } => {
-                    match payload.trial_decrypt(&self.fvk) {
+                    match bool::then_some(!skip_trial_decrypt, payload.trial_decrypt(&self.fvk))
+                        .flatten()
+                    {
                         Some(swap) => {
                             let swap_position = self.sct.insert(Keep, payload.commitment)?;
                             let batch_data =

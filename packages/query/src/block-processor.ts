@@ -100,8 +100,8 @@ export class BlockProcessor implements BlockProcessorInterface {
 
   // If sync() is called multiple times concurrently, they'll all wait for
   // the same promise rather than each starting their own sync process.
-  public sync = (): Promise<void> =>
-    (this.syncPromise ??= backOff(() => this.syncAndStore(), {
+  public sync = (isFreshWallet?: boolean, walletCreationBlockHeight?: number): Promise<void> =>
+    (this.syncPromise ??= backOff(() => this.syncAndStore(isFreshWallet, walletCreationBlockHeight), {
       delayFirstAttempt: false,
       startingDelay: 5_000, // 5 seconds
       numOfAttempts: Infinity,
@@ -125,7 +125,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     this.numeraires = numeraires;
   }
 
-  private async syncAndStore() {
+  private async syncAndStore(isFreshWallet?: boolean, walletCreationBlockHeight?: number) {
     // start at next block, or genesis if height is undefined
     let currentHeight = (await this.indexedDb.getFullSyncHeight()) ?? -1n;
 
@@ -169,6 +169,13 @@ export class BlockProcessor implements BlockProcessorInterface {
         throw new Error(`Unexpected block height: ${compactBlock.height} at ${currentHeight}`);
       }
 
+      // Set the skip_trial_decrypt flag
+      const skipTrialDecrypt = Boolean(
+        isFreshWallet &&
+        walletCreationBlockHeight &&
+        currentHeight < BigInt(walletCreationBlockHeight),
+      );
+
       if (compactBlock.appParametersUpdated) {
         await this.indexedDb.saveAppParams(await this.querier.app.appParams());
       }
@@ -194,7 +201,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       // - decrypts new notes
       // - decrypts new swaps
       // - updates idb with advice
-      const scannerWantsFlush = await this.viewServer.scanBlock(compactBlock);
+      const scannerWantsFlush = await this.viewServer.scanBlock(compactBlock, skipTrialDecrypt);
 
       // flushing is slow, avoid it until
       // - wasm says
