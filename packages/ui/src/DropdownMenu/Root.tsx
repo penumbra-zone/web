@@ -1,11 +1,11 @@
 import { ReactNode } from 'react';
 import { Root as RadixDropdownMenuRoot } from '@radix-ui/react-dropdown-menu';
-import { Trigger } from './trigger.tsx';
-import { Content } from './content.tsx';
-import { RadioGroup } from './radio-group.tsx';
-import { RadioItem } from './radio-item.tsx';
-import { CheckboxItem } from './checkbox-item.tsx';
-import { Item } from './item.tsx';
+import { Trigger } from './Trigger.tsx';
+import { Content } from './Content.tsx';
+import { RadioGroup } from './RadioGroup.tsx';
+import { RadioItem } from './RadioItem.tsx';
+import { CheckboxItem } from './CheckboxItem.tsx';
+import { Item } from './Item.tsx';
 
 interface ControlledDropdownMenuProps {
   /**

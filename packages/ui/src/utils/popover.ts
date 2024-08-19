@@ -24,6 +24,6 @@ export const PopoverContent = styled.div`
   border-radius: ${props => props.theme.borderRadius.sm};
   backdrop-filter: blur(${props => props.theme.blur.lg});
 
-  transform-origin: var(--radix-tooltip-content-transform-origin);
+  transform-origin: var(--radix-popper-transform-origin);
   animation: ${scaleIn} 0.15s ease-out;
 `;
