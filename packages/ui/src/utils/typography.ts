@@ -7,10 +7,11 @@ import { css, DefaultTheme } from 'styled-components';
  */
 
 const base = css<{
-  $color?: (theme: DefaultTheme) => string;
+  $color?: (color: DefaultTheme['color']) => string;
 }>`
   margin: 0;
-  color: ${props => (props.$color ? props.$color(props.theme) : props.theme.color.text.primary)};
+  color: ${props =>
+    props.$color ? props.$color(props.theme.color) : props.theme.color.text.primary};
 `;
 
 export const h1 = css`

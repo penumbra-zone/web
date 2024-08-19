@@ -77,7 +77,7 @@ export const MetadataOrBalancesResponse = ({
         <div>
           {metadata?.name && <Text as='div'>{metadata.name}</Text>}
           {metadata?.symbol && (
-            <Text detail color={theme => theme.color.text.secondary} as='div'>
+            <Text detail color={color => color.text.secondary} as='div'>
               {metadata.symbol}
             </Text>
           )}

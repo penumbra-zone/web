@@ -18,7 +18,7 @@ import { ReactNode } from 'react';
 
 interface StyledProps {
   $truncate?: boolean;
-  $color?: (theme: DefaultTheme) => string;
+  $color?: (color: DefaultTheme['color']) => string;
 }
 
 const maybeTruncate = css<StyledProps>`
@@ -246,10 +246,10 @@ export type TextProps = TextType & {
    */
   truncate?: boolean;
   /**
-   * A function that takes the `theme` object, and returns a CSS color to render
+   * A function that takes the 'color' object of `theme`, and returns a CSS color to render
    * the icon with. If left undefined, will default to the `text.primary` color.
    */
-  color?: (theme: DefaultTheme) => string;
+  color?: (color: DefaultTheme['color']) => string;
 };
 
 /**

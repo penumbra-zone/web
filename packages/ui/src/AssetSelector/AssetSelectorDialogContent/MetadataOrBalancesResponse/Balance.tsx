@@ -22,7 +22,7 @@ export const Balance = ({ balancesResponse }: BalanceProps) => {
       {valueView && <Text>{getFormattedAmtFromValueView(valueView, true)}</Text>}
 
       {addressIndexAccount !== undefined && (
-        <Text detailTechnical color={theme => theme.color.text.secondary}>
+        <Text detailTechnical color={color => color.text.secondary}>
           Account #{addressIndexAccount}
         </Text>
       )}

@@ -16,7 +16,7 @@ const SampleButton = () => (
 );
 
 const addressBookIcon = (
-  <Icon IconComponent={BookUser} size='sm' color={theme => theme.color.text.primary} />
+  <Icon IconComponent={BookUser} size='sm' color={color => color.text.primary} />
 );
 
 const meta: Meta<typeof TextInput> = {

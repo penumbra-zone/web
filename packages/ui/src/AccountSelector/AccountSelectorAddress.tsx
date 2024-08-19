@@ -22,12 +22,8 @@ const TextWrapper = styled.div`
   flex-grow: 1;
 `;
 
-const getAddressColor = (loading: boolean, ephemeral: boolean) => (theme: DefaultTheme) =>
-  loading
-    ? theme.color.text.muted
-    : ephemeral
-      ? theme.color.text.special
-      : theme.color.text.primary;
+const getAddressColor = (loading: boolean, ephemeral: boolean) => (color: DefaultTheme['color']) =>
+  loading ? color.text.muted : ephemeral ? color.text.special : color.text.primary;
 
 export interface AccountSelectorAddressProps {
   address?: Address;

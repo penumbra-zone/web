@@ -21,11 +21,11 @@ export interface IconProps {
    */
   size: IconSize;
   /**
-   * A function that takes the `theme` object, and returns a CSS color to render
+   * A function that takes the `color` object of `theme`, and returns a CSS color to render
    * the icon with. If left undefined, will default to the parent's text color
    * (`currentColor` in SVG terms).
    */
-  color?: (theme: DefaultTheme) => string;
+  color?: (color: DefaultTheme['color']) => string;
 }
 
 const PROPS_BY_SIZE: Record<IconSize, ComponentProps<LucideIcon>> = {
@@ -53,13 +53,13 @@ const PROPS_BY_SIZE: Record<IconSize, ComponentProps<LucideIcon>> = {
  * <Icon
  *   IconComponent={ArrowRightLeft}
  *   size='sm'
- *   color={theme => theme.colors.primary.main}
+ *   color={color => color.primary.main}
  * />
  * ```
  */
 export const Icon = ({ IconComponent, size = 'sm', color }: IconProps) => {
   const theme = useTheme();
-  const resolvedColor = color ? color(theme) : 'currentColor';
+  const resolvedColor = color ? color(theme.color) : 'currentColor';
 
   return <IconComponent absoluteStrokeWidth {...PROPS_BY_SIZE[size]} color={resolvedColor} />;
 };

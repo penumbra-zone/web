@@ -76,7 +76,7 @@ export const AssetSelectorDialogContent = <
         <Dialog.Content title={title} motion={{ ...props, layoutId }} key={layoutId}>
           <TextInput
             startAdornment={
-              <Icon size='sm' IconComponent={Search} color={theme => theme.color.text.primary} />
+              <Icon size='sm' IconComponent={Search} color={color => color.text.primary} />
             }
             value={search}
             onChange={setSearch}
