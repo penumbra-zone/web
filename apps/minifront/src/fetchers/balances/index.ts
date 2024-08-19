@@ -15,7 +15,7 @@ export interface BalancesProps {
 export const getBalances = ({ accountFilter, assetIdFilter }: BalancesProps = {}): Promise<
   BalancesResponse[]
 > => {
-  const req = new BalancesRequest();
+  const req = new BalancesRequest({});
   if (accountFilter) {
     req.accountFilter = accountFilter;
   }
@@ -28,9 +28,9 @@ export const getBalances = ({ accountFilter, assetIdFilter }: BalancesProps = {}
 };
 
 export const getBalancesStream = ({
-                                    accountFilter,
-                                    assetIdFilter,
-                                  }: BalancesProps = {}): AsyncIterable<BalancesResponse> => {
+  accountFilter,
+  assetIdFilter,
+}: BalancesProps = {}): AsyncIterable<BalancesResponse> => {
   const req = new BalancesRequest();
   if (accountFilter) {
     req.accountFilter = accountFilter;
