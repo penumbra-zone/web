@@ -8,6 +8,8 @@ import { Button } from '../Button';
 import { Density } from '../Density';
 import { Display } from '../Display';
 import { Grid } from '../Grid';
+import { MotionProp } from '../utils/MotionProp';
+import { motion } from 'framer-motion';
 
 const Overlay = styled(RadixDialog.Overlay)`
   backdrop-filter: blur(${props => props.theme.blur.xs});
@@ -45,7 +47,7 @@ const DialogContent = styled.div`
   pointer-events: none;
 `;
 
-const DialogContentCard = styled.div`
+const DialogContentCard = styled(motion.div)`
   width: 100%;
   box-sizing: border-box;
 
@@ -170,6 +172,28 @@ export type DialogProps = {
  *   <Dialog.Content title="Dialog title">Dialog content here</Dialog.Content>
  * </Dialog>
  * ```
+ *
+ * ## Animating a dialog out of its trigger
+ *
+ * You can use the `motion` prop with a layout ID to make a dialog appear to
+ * animate out of the trigger button:
+ *
+ * ```tsx
+ * const layoutId = useId();
+ *
+ * return (
+ *   <Dialog>
+ *     <Dialog.Trigger asChild>
+ *       <Button icon={Info} iconOnly='adornment' motion={{ layoutId }}>
+ *         Info
+ *       </Button>
+ *     </Dialog.Trigger>
+ *     <Dialog.Content title='Info' motion={{ layoutId }}>
+ *       ...
+ *     </Dialog.Content>
+ *   </Dialog>
+ * );
+ * ```
  */
 export const Dialog = ({ children, onClose, isOpen }: DialogProps) => {
   const isControlledComponent = isOpen !== undefined;
@@ -189,7 +213,8 @@ const DialogContext = createContext<{ showCloseButton: boolean }>({
   showCloseButton: true,
 });
 
-export interface DialogContentProps<IconOnlyButtonGroupProps extends boolean | undefined> {
+export interface DialogContentProps<IconOnlyButtonGroupProps extends boolean | undefined>
+  extends MotionProp {
   children?: ReactNode;
   title: string;
   /**
@@ -206,6 +231,7 @@ const Content = <IconOnlyButtonGroupProps extends boolean | undefined>({
   children,
   title,
   buttonGroupProps,
+  motion,
 }: DialogContentProps<IconOnlyButtonGroupProps>) => {
   const { showCloseButton } = useContext(DialogContext);
 
@@ -221,7 +247,7 @@ const Content = <IconOnlyButtonGroupProps extends boolean | undefined>({
 
               <Grid mobile={12} tablet={8} desktop={6} xl={4}>
                 <FullHeightWrapper>
-                  <DialogContentCard>
+                  <DialogContentCard {...motion}>
                     <TitleAndCloseButton>
                       <RadixDialog.Title asChild>
                         <Text xxl as='h2'>

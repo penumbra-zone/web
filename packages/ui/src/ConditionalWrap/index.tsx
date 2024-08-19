@@ -8,8 +8,8 @@ export interface ConditionalWrapProps {
 }
 
 /**
- * Internal utility component to optionally wrap a React component with another
- * React component, depending on a condition.
+ * Utility component to optionally wrap a React component with another React
+ * component, depending on a condition.
  *
  * @example
  * ```tsx

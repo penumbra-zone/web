@@ -2,6 +2,12 @@
 
 The Penumbra UI library is a set of UI components purpose-built for the Penumbra ecosystem. Use these components to get rendering of various Penumbra data types out of the box, and to create a UI that is consistent with other Penumbra UIs' look and feel.
 
+## Storybook
+
+All Penumbra UI components (except some deprecated ones) in the latest tagged release can be found at the Penumbra UI Storybook site: https://ui.penumbra.zone/
+
+To view the latest components merged to `main` (even if they are not yet in a tagged release), check out the Storybook Preview site: https://preview.ui.penumbra.zone/
+
 ## Set up
 
 First, install the library:

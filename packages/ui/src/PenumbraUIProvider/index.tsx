@@ -1,3 +1,4 @@
+import { TooltipProvider } from '@radix-ui/react-tooltip';
 import { ThemeProvider } from 'styled-components';
 import { theme } from './theme';
 import { PropsWithChildren } from 'react';
@@ -11,9 +12,11 @@ import { MotionConfig } from 'framer-motion';
 export const PenumbraUIProvider = ({ children }: PropsWithChildren) => (
   <ThemeProvider theme={theme}>
     <MotionConfig transition={{ duration: 0.15 }}>
-      <FontFaces />
+      <TooltipProvider delayDuration={0}>
+        <FontFaces />
 
-      {children}
+        {children}
+      </TooltipProvider>
     </MotionConfig>
   </ThemeProvider>
 );

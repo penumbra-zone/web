@@ -8,10 +8,13 @@ import { LucideIcon } from 'lucide-react';
 import { Density } from '../types/Density';
 import { useDensity } from '../hooks/useDensity';
 import { ActionType } from '../utils/ActionType';
+import { MotionProp } from '../utils/MotionProp';
+import { motion } from 'framer-motion';
 
 const iconOnlyAdornment = css<StyledButtonProps>`
   border-radius: ${props => props.theme.borderRadius.full};
   padding: ${props => props.theme.spacing(1)};
+  width: max-content;
 `;
 
 const sparse = css<StyledButtonProps>`
@@ -28,6 +31,7 @@ const compact = css<StyledButtonProps>`
   padding-right: ${props => props.theme.spacing(props.$iconOnly ? 2 : 4)};
   height: 32px;
   min-width: 32px;
+  width: max-content;
 `;
 
 const outlineColorByActionType: Record<ActionType, keyof DefaultTheme['color']['action']> = {
@@ -57,7 +61,7 @@ interface StyledButtonProps {
   $getBorderRadius: (theme: DefaultTheme) => string;
 }
 
-const StyledButton = styled.button<StyledButtonProps>`
+const StyledButton = styled(motion.button)<StyledButtonProps>`
   ${buttonBase}
   ${button}
 
@@ -157,7 +161,7 @@ interface RegularProps {
   icon?: LucideIcon;
 }
 
-export type ButtonProps = BaseButtonProps & (IconOnlyProps | RegularProps);
+export type ButtonProps = BaseButtonProps & (IconOnlyProps | RegularProps) & MotionProp;
 
 /**
  * A component for all your button needs!
@@ -179,6 +183,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       actionType = 'default',
       type = 'button',
       priority = 'primary',
+      motion,
       // needed for the Radix's `asChild` prop to work correctly
       // https://www.radix-ui.com/primitives/docs/guides/composition#composing-with-your-own-react-components
       ...props
@@ -190,6 +195,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <StyledButton
         {...props}
+        {...motion}
         {...asTransientProps({ iconOnly, density, actionType, priority })}
         ref={ref}
         type={type}

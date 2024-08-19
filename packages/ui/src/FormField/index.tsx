@@ -11,10 +11,10 @@ const Root = styled.label`
 `;
 
 const HelperText = styled.div<{ $disabled: boolean }>`
+  ${small}
+
   color: ${props =>
     props.$disabled ? props.theme.color.text.muted : props.theme.color.text.secondary};
-
-  ${small}
 `;
 
 const LabelText = styled.div<{ $disabled: boolean }>`

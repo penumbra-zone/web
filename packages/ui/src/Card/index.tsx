@@ -3,6 +3,8 @@ import styled, { WebTarget } from 'styled-components';
 import { hexOpacity } from '../utils/hexOpacity';
 import { motion } from 'framer-motion';
 import { Title } from './Title';
+import { IsAnimatingProvider } from '../IsAnimatingProvider';
+import { MotionProp } from '../utils/MotionProp';
 
 const Root = styled.section``;
 
@@ -21,7 +23,7 @@ const Content = styled(motion.div)`
   gap: ${props => props.theme.spacing(4)};
 `;
 
-export interface CardProps {
+export interface CardProps extends MotionProp {
   children?: ReactNode;
   /**
    * Which component or HTML element to render this card as.
@@ -33,21 +35,6 @@ export interface CardProps {
    */
   as?: WebTarget;
   title?: ReactNode;
-
-  /**
-   * This will be passed on to the Framer `motion.div` wrapping the card's
-   * content underneath the title.
-   *
-   * @see https://www.framer.com/motion/component/##layout-animation
-   */
-  layout?: boolean | 'position' | 'size' | 'preserve-aspect';
-  /**
-   * This will be passed on to the Framer `motion.div` wrapping the card's
-   * content underneath the title.
-   *
-   * @see https://www.framer.com/motion/component/##layout-animation
-   */
-  layoutId?: string;
 }
 
 /**
@@ -85,14 +72,18 @@ export interface CardProps {
  * </Card>
  * ```
  */
-export const Card = ({ children, as = 'section', title, layout, layoutId }: CardProps) => {
+export const Card = ({ children, as = 'section', title, motion }: CardProps) => {
   return (
     <Root as={as}>
       {title && <Title>{title}</Title>}
 
-      <Content layout={layout} layoutId={layoutId}>
-        {children}
-      </Content>
+      <IsAnimatingProvider>
+        {props => (
+          <Content {...motion} {...props}>
+            {children}
+          </Content>
+        )}
+      </IsAnimatingProvider>
     </Root>
   );
 };

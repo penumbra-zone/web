@@ -1,5 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { CharacterTransition } from '.';
+import styled from 'styled-components';
+
+const WhiteTextWrapper = styled.div`
+  color: ${props => props.theme.color.text.primary};
+`;
 
 const meta: Meta<typeof CharacterTransition> = {
   component: CharacterTransition,
@@ -16,6 +21,13 @@ const meta: Meta<typeof CharacterTransition> = {
       ],
     },
   },
+  decorators: [
+    Story => (
+      <WhiteTextWrapper>
+        <Story />
+      </WhiteTextWrapper>
+    ),
+  ],
 };
 export default meta;
 

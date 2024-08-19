@@ -1,14 +1,19 @@
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { Identicon } from '../../Identicon';
+import { Identicon } from '../Identicon';
 import { DelegationTokenIcon } from './DelegationTokenIcon';
 import { getDisplay } from '@penumbra-zone/getters/metadata';
 import { assetPatterns } from '@penumbra-zone/types/assets';
 import { UnbondingTokenIcon } from './UnbondingTokenIcon';
 import styled from 'styled-components';
 
+const BorderWrapper = styled.div`
+  border-radius: ${props => props.theme.borderRadius.full};
+  border: 1px solid ${props => props.theme.color.other.tonalStroke};
+  overflow: hidden;
+`;
+
 const IconImg = styled.img`
   display: block;
-  border-radius: ${props => props.theme.borderRadius.full};
   width: 24px;
   height: 24px;
 `;
@@ -26,7 +31,7 @@ export const AssetIcon = ({ metadata }: AssetIcon) => {
   const isUnbondingToken = display ? assetPatterns.unbondingToken.matches(display) : false;
 
   return (
-    <>
+    <BorderWrapper>
       {icon ? (
         <IconImg src={icon} alt='Asset icon' />
       ) : isDelegationToken ? (
@@ -41,6 +46,6 @@ export const AssetIcon = ({ metadata }: AssetIcon) => {
       ) : (
         <Identicon uniqueIdentifier={metadata?.symbol ?? '?'} size={24} type='solid' />
       )}
-    </>
+    </BorderWrapper>
   );
 };

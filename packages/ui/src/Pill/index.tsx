@@ -20,6 +20,7 @@ const Root = styled.span<{ $density: Density; $priority: Priority }>`
 
   display: inline-block;
   max-width: 100%;
+  width: max-content;
 
   padding-top: ${props => props.theme.spacing(props.$density === 'sparse' ? 2 : 1)};
   padding-bottom: ${props => props.theme.spacing(props.$density === 'sparse' ? 2 : 1)};

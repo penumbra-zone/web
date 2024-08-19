@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build-storybook": "storybook build",
-    "lint": "eslint components lib",
+    "lint": "eslint components lib src",
     "lint:fix": "eslint components lib --fix",
     "lint:strict": "tsc --noEmit && eslint components lib --max-warnings 0",
     "storybook": "storybook dev -p 6006",
@@ -21,6 +21,7 @@
     "./lib/utils": "./lib/utils.ts",
     "./postcss.config.js": "./postcss.config.js",
     "./styles/*": "./styles/*",
+    "./hooks/*": "./src/hooks/*/index.ts",
     "./*": "./src/*/index.tsx"
   },
   "dependencies": {

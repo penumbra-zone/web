@@ -1,4 +1,4 @@
-import styled, { css, WebTarget } from 'styled-components';
+import styled, { css, DefaultTheme, WebTarget } from 'styled-components';
 import {
   body,
   detail,
@@ -8,6 +8,7 @@ import {
   h4,
   large,
   small,
+  detailTechnical,
   strong,
   technical,
   truncate,
@@ -17,6 +18,7 @@ import { ReactNode } from 'react';
 
 interface StyledProps {
   $truncate?: boolean;
+  $color?: (color: DefaultTheme['color']) => string;
 }
 
 const maybeTruncate = css<StyledProps>`
@@ -73,6 +75,11 @@ const Small = styled.span<StyledProps>`
   ${maybeTruncate}
 `;
 
+const DetailTechnical = styled.span<StyledProps>`
+  ${detailTechnical}
+  ${maybeTruncate}
+`;
+
 const Technical = styled.span<StyledProps>`
   ${technical}
   ${maybeTruncate}
@@ -104,6 +111,7 @@ interface NeverTextTypes {
   strong?: never;
   detail?: never;
   small?: never;
+  detailTechnical?: never;
   technical?: never;
   body?: never;
 }
@@ -192,6 +200,16 @@ type TextType =
        */
       small: true;
     })
+  | (Omit<NeverTextTypes, 'detailTechnical'> & {
+      /**
+       * Small monospaced text used for code, values, and other technical
+       * information.
+       *
+       * Renders a `<span />` by default; pass the `as` prop to use a different
+       * HTML element with the same styling.
+       */
+      detailTechnical: true;
+    })
   | (Omit<NeverTextTypes, 'technical'> & {
       /**
        * Monospaced text used for code, values, and other technical information.
@@ -227,6 +245,11 @@ export type TextProps = TextType & {
    * overflow, 3) add an ellpsis when the text overflows.
    */
   truncate?: boolean;
+  /**
+   * A function that takes the 'color' object of `theme`, and returns a CSS color to render
+   * the icon with. If left undefined, will default to the `text.primary` color.
+   */
+  color?: (color: DefaultTheme['color']) => string;
 };
 
 /**
@@ -270,40 +293,45 @@ const omit = <ObjectType extends Record<string, unknown>>(
  * </Text>
  * ```
  */
-export const Text = ({ truncate, ...props }: TextProps) => {
+export const Text = ({ truncate, color, ...props }: TextProps) => {
   if (props.h1) {
-    return <H1 {...omit(props, 'h1')} $truncate={truncate} />;
+    return <H1 {...omit(props, 'h1')} $truncate={truncate} $color={color} />;
   }
   if (props.h2) {
-    return <H2 {...omit(props, 'h2')} $truncate={truncate} />;
+    return <H2 {...omit(props, 'h2')} $truncate={truncate} $color={color} />;
   }
   if (props.h3) {
-    return <H3 {...omit(props, 'h3')} $truncate={truncate} />;
+    return <H3 {...omit(props, 'h3')} $truncate={truncate} $color={color} />;
   }
   if (props.h4) {
-    return <H4 {...omit(props, 'h4')} $truncate={truncate} />;
+    return <H4 {...omit(props, 'h4')} $truncate={truncate} $color={color} />;
   }
   if (props.xxl) {
-    return <Xxl {...omit(props, 'xxl')} $truncate={truncate} />;
+    return <Xxl {...omit(props, 'xxl')} $truncate={truncate} $color={color} />;
   }
   if (props.large) {
-    return <Large {...omit(props, 'large')} $truncate={truncate} />;
+    return <Large {...omit(props, 'large')} $truncate={truncate} $color={color} />;
   }
   if (props.strong) {
-    return <Strong {...omit(props, 'strong')} $truncate={truncate} />;
+    return <Strong {...omit(props, 'strong')} $truncate={truncate} $color={color} />;
   }
   if (props.detail) {
-    return <Detail {...omit(props, 'detail')} $truncate={truncate} />;
+    return <Detail {...omit(props, 'detail')} $truncate={truncate} $color={color} />;
   }
   if (props.small) {
-    return <Small {...omit(props, 'small')} $truncate={truncate} />;
+    return <Small {...omit(props, 'small')} $truncate={truncate} $color={color} />;
+  }
+  if (props.detailTechnical) {
+    return (
+      <DetailTechnical {...omit(props, 'detailTechnical')} $truncate={truncate} $color={color} />
+    );
   }
   if (props.technical) {
-    return <Technical {...omit(props, 'technical')} $truncate={truncate} />;
+    return <Technical {...omit(props, 'technical')} $truncate={truncate} $color={color} />;
   }
   if (props.p) {
-    return <P {...omit(props, 'p')} $truncate={truncate} />;
+    return <P {...omit(props, 'p')} $truncate={truncate} $color={color} />;
   }
 
-  return <Body {...omit(props, 'body')} $truncate={truncate} />;
+  return <Body {...omit(props, 'body')} $truncate={truncate} $color={color} />;
 };
