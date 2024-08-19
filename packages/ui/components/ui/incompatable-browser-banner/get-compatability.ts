@@ -4,6 +4,8 @@ const parser: UAParserInstance = new UAParser();
 
 const CompatableBrowsers: Record<string, number> = {
   // browser name: min version
+
+  // same as https://github.com/prax-wallet/web/blob/main/apps/extension/public/manifest.json#L7
   Chrome: 119,
 };
 
