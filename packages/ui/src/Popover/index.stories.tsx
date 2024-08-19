@@ -39,7 +39,7 @@ export const Basic: Story = {
 
     return (
       <Popover isOpen={isOpen} onClose={() => setIsOpen(false)}>
-        <Popover.Trigger asChild>
+        <Popover.Trigger>
           <Button onClick={() => setIsOpen(true)}>Open popover</Button>
         </Popover.Trigger>
 
