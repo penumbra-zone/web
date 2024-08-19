@@ -1,6 +1,6 @@
 import styled, { keyframes } from 'styled-components';
 
-const scaleIn = keyframes`
+export const scaleIn = keyframes`
   from {
     opacity: 0;
     transform: scale(0);

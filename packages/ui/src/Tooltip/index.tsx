@@ -1,21 +1,10 @@
 import * as RadixTooltip from '@radix-ui/react-tooltip';
 import { ReactNode } from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 import { Text } from '../Text';
 import { buttonBase } from '../utils/button';
 import { small } from '../utils/typography';
-
-const scaleIn = keyframes`
-  from {
-    opacity: 0;
-    transform: scale(0);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-`;
+import { scaleIn } from '../utils/popover.ts';
 
 const Content = styled(RadixTooltip.Content).attrs(props => ({
   sideOffset: props.theme.spacing(1, 'number'),
