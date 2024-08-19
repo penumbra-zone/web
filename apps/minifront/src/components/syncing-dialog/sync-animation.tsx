@@ -17,7 +17,7 @@ export const SyncAnimation = () => (
     <FakeButtons />
 
     <div className='relative h-0 overflow-hidden pb-[33%]'>
-      <div className='absolute left-[50%] top-0 w-full translate-x-[-50%] overflow-hidden'>
+      <div className='absolute left-1/2 top-0 w-full -translate-x-1/2 overflow-hidden'>
         <img
           src={illustration}
           alt='A loading illustration'
