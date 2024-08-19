@@ -112,7 +112,7 @@ export class BlockProcessor implements BlockProcessorInterface {
   // If sync() is called multiple times concurrently, they'll all wait for
   // the same promise rather than each starting their own sync process.
   public sync = (): Promise<void> =>
-    (this.syncPromise ??= backOff(() => this.syncAndStore(this.genesisBlock), {
+    (this.syncPromise ??= backOff(() => this.syncAndStore(), {
       delayFirstAttempt: false,
       startingDelay: 5_000, // 5 seconds
       numOfAttempts: Infinity,
@@ -136,7 +136,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     this.numeraires = numeraires;
   }
 
-  private async syncAndStore(genesisBlock?: CompactBlock) {
+  private async syncAndStore() {
     // start at next block, or genesis if height is undefined
     let currentHeight = (await this.indexedDb.getFullSyncHeight()) ?? -1n;
 
@@ -168,8 +168,8 @@ export class BlockProcessor implements BlockProcessorInterface {
 
     // if this is the first block being synced and the bundled genesis block data is available,
     // process the genesis block first
-    if (currentHeight === -1n && genesisBlock) {
-      await this.processBlock(genesisBlock, latestKnownBlockHeight);
+    if (currentHeight === -1n && this.genesisBlock) {
+      await this.processBlock(this.genesisBlock, latestKnownBlockHeight);
       currentHeight = 0n;
     }
 
