@@ -41,7 +41,7 @@ import { processActionDutchAuctionWithdraw } from './helpers/process-action-dutc
 import { RootQuerier } from './root-querier.js';
 import { IdentityKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { getDelegationTokenMetadata } from '@penumbra-zone/wasm/stake';
-import { JsonObject, toPlainMessage } from '@bufbuild/protobuf';
+import { toPlainMessage } from '@bufbuild/protobuf';
 import { getAssetIdFromGasPrices } from '@penumbra-zone/getters/compact-block';
 import { getSpendableNoteRecordCommitment } from '@penumbra-zone/getters/spendable-note-record';
 import { getSwapRecordCommitment } from '@penumbra-zone/getters/swap-record';
@@ -70,6 +70,7 @@ interface QueryClientProps {
   viewServer: ViewServerInterface;
   numeraires: AssetId[];
   stakingAssetId: AssetId;
+  genesisBlock: CompactBlock | undefined;
 }
 
 const BLANK_TX_SOURCE = new CommitmentSource({
@@ -90,19 +91,28 @@ export class BlockProcessor implements BlockProcessorInterface {
   private numeraires: AssetId[];
   private readonly stakingAssetId: AssetId;
   private syncPromise: Promise<void> | undefined;
+  private genesisBlock: CompactBlock | undefined;
 
-  constructor({ indexedDb, viewServer, querier, numeraires, stakingAssetId }: QueryClientProps) {
+  constructor({
+    indexedDb,
+    viewServer,
+    querier,
+    numeraires,
+    stakingAssetId,
+    genesisBlock,
+  }: QueryClientProps) {
     this.indexedDb = indexedDb;
     this.viewServer = viewServer;
     this.querier = querier;
     this.numeraires = numeraires;
     this.stakingAssetId = stakingAssetId;
+    this.genesisBlock = genesisBlock;
   }
 
   // If sync() is called multiple times concurrently, they'll all wait for
   // the same promise rather than each starting their own sync process.
-  public sync = (genesisBlock?: JsonObject): Promise<void> =>
-    (this.syncPromise ??= backOff(() => this.syncAndStore(genesisBlock), {
+  public sync = (): Promise<void> =>
+    (this.syncPromise ??= backOff(() => this.syncAndStore(this.genesisBlock), {
       delayFirstAttempt: false,
       startingDelay: 5_000, // 5 seconds
       numOfAttempts: Infinity,
@@ -126,7 +136,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     this.numeraires = numeraires;
   }
 
-  private async syncAndStore(genesisBlock?: JsonObject) {
+  private async syncAndStore(genesisBlock?: CompactBlock) {
     // start at next block, or genesis if height is undefined
     let currentHeight = (await this.indexedDb.getFullSyncHeight()) ?? -1n;
 
@@ -159,8 +169,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     // if this is the first block being synced and the bundled genesis block data is available,
     // process the genesis block first
     if (currentHeight === -1n && genesisBlock) {
-      const genesisCompactBlock = CompactBlock.fromJson(genesisBlock);
-      await this.processBlock(genesisCompactBlock, latestKnownBlockHeight);
+      await this.processBlock(genesisBlock, latestKnownBlockHeight);
       currentHeight = 0n;
     }
 
