@@ -184,6 +184,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       type = 'button',
       priority = 'primary',
       motion,
+      // needed for the Radix's `asChild` prop to work correctly
+      // https://www.radix-ui.com/primitives/docs/guides/composition#composing-with-your-own-react-components
+      ...props
     },
     ref,
   ) => {
@@ -191,6 +194,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     return (
       <StyledButton
+        {...props}
+        {...motion}
         {...asTransientProps({ iconOnly, density, actionType, priority })}
         ref={ref}
         type={type}
@@ -205,7 +210,6 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             ? theme.borderRadius.sm
             : theme.borderRadius.full
         }
-        {...motion}
       >
         {IconComponent && (
           <IconComponent size={density === 'sparse' && iconOnly === true ? 24 : 16} />
