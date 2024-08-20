@@ -1,5 +1,14 @@
 # @penumbra-zone/storage
 
+## 26.0.0
+
+### Patch Changes
+
+- Updated dependencies [f8730e9]
+  - @penumbra-zone/getters@16.0.0
+  - @penumbra-zone/types@21.0.0
+  - @penumbra-zone/wasm@26.0.0
+
 ## 25.0.0
 
 ### Patch Changes
