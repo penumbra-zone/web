@@ -136,6 +136,15 @@ export class BlockProcessor implements BlockProcessorInterface {
     this.numeraires = numeraires;
   }
 
+  /**
+   * Sync local state to present. This method will
+   * - identify current synced height (or `-1n` to represent a 'pre-genesis' state)
+   * - query remote rpc for the chain's latest block height
+   * - pre-genesis, initialize validator info
+   * - pre-genesis, process a local genesis block if provided
+   * - query remote rpc to begin streaming at the next block
+   * - iterate
+   */
   private async syncAndStore() {
     // start at next block, or genesis if height is undefined
     let currentHeight = (await this.indexedDb.getFullSyncHeight()) ?? -1n;
