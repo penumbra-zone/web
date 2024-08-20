@@ -107,7 +107,7 @@ export default tseslint.config(
 
   {
     name: 'custom:import-enabled',
-    plugins: { import: import_ },
+    plugins: { import: fixupPluginRules(import_) },
     settings: { 'import/resolver': { typescript: true } },
     rules: {
       // be aware this rule doesn't always provide correct fixes. its bad fixes

@@ -8,6 +8,7 @@ import { SliceCreator, useStore } from '.';
 import { getStakingTokenMetadata } from '../fetchers/registry';
 import { getBalancesStream } from '../fetchers/balances';
 import { getAllAssets } from '../fetchers/assets';
+import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 
 /**
  * For Noble specifically we need to use a Bech32 encoding rather than Bech32m,
@@ -19,7 +20,6 @@ export const bech32ChainIds = [
   'noble-1', // noble mainnet
   'grand-1', // noble testnet
 ];
-import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 
 export const { stakingTokenMetadata, useStakingTokenMetadata } = createZQuery({
   name: 'stakingTokenMetadata',
