@@ -197,11 +197,6 @@ export class BlockProcessor implements BlockProcessorInterface {
       if (compactBlock.height > latestKnownBlockHeight) {
         latestKnownBlockHeight = compactBlock.height;
       }
-
-      const isLastBlockOfEpoch = !!compactBlock.epochRoot;
-      if (isLastBlockOfEpoch) {
-        await this.handleEpochTransition(compactBlock.height, latestKnownBlockHeight);
-      }
     }
   }
 
@@ -352,6 +347,11 @@ export class BlockProcessor implements BlockProcessorInterface {
         compactBlock.swapOutputs,
         compactBlock.height,
       );
+    }
+
+    const isLastBlockOfEpoch = !!compactBlock.epochRoot;
+    if (isLastBlockOfEpoch) {
+      await this.handleEpochTransition(compactBlock.height, latestKnownBlockHeight);
     }
 
     if (globalThis.__ASSERT_ROOT__) {
