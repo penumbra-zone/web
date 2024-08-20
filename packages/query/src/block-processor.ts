@@ -166,7 +166,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     if (currentHeight === -1n) {
       // initialize validator info at genesis
       // TODO: use batch endpoint https://github.com/penumbra-zone/penumbra/issues/4688
-      void this.updateValidatorInfos(currentHeight + 1n);
+      await this.updateValidatorInfos(currentHeight + 1n);
 
       // begin the chain with local genesis block if provided
       if (this.genesisBlock?.height === currentHeight + 1n) {
@@ -686,21 +686,16 @@ export class BlockProcessor implements BlockProcessorInterface {
 
       await this.indexedDb.upsertValidatorInfo(validatorInfoResponse.validatorInfo);
 
-      await this.updatePriceForValidatorDelegationToken(
-        validatorInfoResponse,
-        nextEpochStartHeight,
-      );
-
-      // this loop requests delegation token metadata for each validator
-      // individually. there may be very many, so we must artificially delay
-      // this loop or the RPC may hard-ratelimit us.
-      await new Promise(resolve =>
-        setTimeout(
-          resolve,
-          // an entire second
-          1000,
-        ),
-      );
+      // skip price updates at genesis block
+      if (nextEpochStartHeight) {
+        await Promise.all([
+          this.updatePriceForValidatorDelegationToken(validatorInfoResponse, nextEpochStartHeight),
+          // the price update method requests token metadata for each validator
+          // individually. there may be very many, so we must artificially delay
+          // this loop or the RPC may ratelimit us.
+          new Promise<void>(resolve => setTimeout(resolve, 1000 /* an entire second */)),
+        ]);
+      }
     }
   }
 
