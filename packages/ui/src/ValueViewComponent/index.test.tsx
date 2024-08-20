@@ -14,7 +14,7 @@ describe('<ValueViewComponent />', () => {
       wrapper: PenumbraUIProvider,
     });
 
-    expect(container).toHaveTextContent('123 UM');
+    expect(container).toHaveTextContent('123,456.789 UM');
   });
 
   it("renders 'Unknown' for metadata without a symbol", () => {
