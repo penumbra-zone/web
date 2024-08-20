@@ -136,6 +136,15 @@ export class BlockProcessor implements BlockProcessorInterface {
     this.numeraires = numeraires;
   }
 
+  /**
+   * Sync local state to present. This method will
+   * - identify current synced height (or `-1n` to represent a 'pre-genesis' state)
+   * - query remote rpc for the chain's latest block height
+   * - pre-genesis, initialize validator info
+   * - pre-genesis, process a local genesis block if provided
+   * - query remote rpc to begin streaming at the next block
+   * - iterate
+   */
   private async syncAndStore() {
     // start at next block, or genesis if height is undefined
     let currentHeight = (await this.indexedDb.getFullSyncHeight()) ?? -1n;
@@ -153,24 +162,17 @@ export class BlockProcessor implements BlockProcessorInterface {
       { retry: () => true },
     );
 
-    // TODO: init validator info in a better way, possibly after batch endpoint
-    // implemented https://github.com/penumbra-zone/penumbra/issues/4688
+    // special case genesis sync
     if (currentHeight === -1n) {
-      // In the `for` loop below, we only update validator infos once we've
-      // reached the latest known epoch. This means that, if a user is syncing
-      // for the first time, they could experience a broken UI until the latest
-      // known epoch is reached, since they may have delegation tokens but no
-      // validator info to go with them. So we'll update validator infos at the
-      // beginning of sync as well, and force the rest of sync to wait until
-      // it's done.
-      void this.updateValidatorInfos(0n);
-    }
+      // initialize validator info at genesis
+      // TODO: use batch endpoint https://github.com/penumbra-zone/penumbra/issues/4688
+      void this.updateValidatorInfos(currentHeight + 1n);
 
-    // if this is the first block being synced and the bundled genesis block data is available,
-    // process the genesis block first
-    if (currentHeight === -1n && this.genesisBlock) {
-      await this.processBlock(this.genesisBlock, latestKnownBlockHeight);
-      currentHeight = 0n;
+      // begin the chain with local genesis block if provided
+      if (this.genesisBlock?.height === currentHeight + 1n) {
+        currentHeight = this.genesisBlock.height;
+        await this.processBlock(this.genesisBlock, latestKnownBlockHeight);
+      }
     }
 
     // this is an indefinite stream of the (compact) chain from the network
