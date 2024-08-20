@@ -187,7 +187,21 @@ export class BlockProcessor implements BlockProcessorInterface {
         throw new Error(`Unexpected block height: ${compactBlock.height} at ${currentHeight}`);
       }
 
-      latestKnownBlockHeight = await this.processBlock(compactBlock, latestKnownBlockHeight);
+      await this.processBlock(compactBlock, latestKnownBlockHeight);
+
+      // We only query Tendermint for the latest known block height once, when
+      // the block processor starts running. Once we're caught up, though, the
+      // chain will of course continue adding blocks, and we'll keep processing
+      // them. So, we need to update `latestKnownBlockHeight` once we've passed
+      // it.
+      if (compactBlock.height > latestKnownBlockHeight) {
+        latestKnownBlockHeight = compactBlock.height;
+      }
+
+      const isLastBlockOfEpoch = !!compactBlock.epochRoot;
+      if (isLastBlockOfEpoch) {
+        await this.handleEpochTransition(compactBlock.height, latestKnownBlockHeight);
+      }
     }
   }
 
@@ -340,25 +354,9 @@ export class BlockProcessor implements BlockProcessorInterface {
       );
     }
 
-    // We only query Tendermint for the latest known block height once, when
-    // the block processor starts running. Once we're caught up, though, the
-    // chain will of course continue adding blocks, and we'll keep processing
-    // them. So, we need to update `latestKnownBlockHeight` once we've passed
-    // it.
-    if (compactBlock.height > latestKnownBlockHeight) {
-      latestKnownBlockHeight = compactBlock.height;
-    }
-
-    const isLastBlockOfEpoch = !!compactBlock.epochRoot;
-    if (isLastBlockOfEpoch) {
-      await this.handleEpochTransition(compactBlock.height, latestKnownBlockHeight);
-    }
-
     if (globalThis.__ASSERT_ROOT__) {
       await this.assertRootValid(compactBlock.height);
     }
-
-    return latestKnownBlockHeight;
   }
 
   /*
