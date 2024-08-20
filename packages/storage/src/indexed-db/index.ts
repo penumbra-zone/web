@@ -173,11 +173,6 @@ export class IndexedDb implements IndexedDbInterface {
     );
     await instance.saveRegistryAssets(registryClient, chainId); // Pre-load asset metadata from registry
 
-    const existing0thEpoch = await instance.getEpochByHeight(0n);
-    if (!existing0thEpoch) {
-      await instance.addEpoch(0n);
-    } // Create first epoch
-
     return instance;
   }
 

@@ -140,7 +140,7 @@ export class BlockProcessor implements BlockProcessorInterface {
    * Sync local state to present. This method will
    * - identify current synced height (or `-1n` to represent a 'pre-genesis' state)
    * - query remote rpc for the chain's latest block height
-   * - pre-genesis, initialize validator info
+   * - pre-genesis, initialize 0th epoch and validator info
    * - pre-genesis, process a local genesis block if provided
    * - query remote rpc to begin streaming at the next block
    * - iterate
@@ -164,12 +164,11 @@ export class BlockProcessor implements BlockProcessorInterface {
 
     // special case genesis sync
     if (currentHeight === -1n) {
-      // initialize validator info at genesis
-      // TODO: use batch endpoint https://github.com/penumbra-zone/penumbra/issues/4688
+      // initialize epoch 0
+      await this.indexedDb.addEpoch(currentHeight + 1n);
       await this.updateValidatorInfos(currentHeight + 1n);
-
-      // begin the chain with local genesis block if provided
       if (this.genesisBlock?.height === currentHeight + 1n) {
+        // begin the chain with local genesis block if provided
         currentHeight = this.genesisBlock.height;
         await this.processBlock(this.genesisBlock, latestKnownBlockHeight);
       }
@@ -351,8 +350,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       );
     }
 
-    const isLastBlockOfEpoch = !!compactBlock.epochRoot;
-    if (isLastBlockOfEpoch) {
+    if (compactBlock.epochRoot) {
       await this.handleEpochTransition(compactBlock.height, latestKnownBlockHeight);
     }
 
@@ -669,7 +667,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     // only get updated validator infos once we're within the latest known
     // epoch.
     if (nextEpochIsLatestKnownEpoch) {
-      void this.updateValidatorInfos(nextEpochStartHeight);
+      await this.updateValidatorInfos(nextEpochStartHeight);
     }
   }
 
