@@ -53,7 +53,6 @@ export const useSyncSelectedBalance = ({
         onChange(matchedValue);
       }
     }
-    // we only want to run this on new balances from ZQuery, so don't include `value` as dependency
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- we only want to run this on new balances from ZQuery, so don't include `value` as dependency
   }, [balances]);
 };

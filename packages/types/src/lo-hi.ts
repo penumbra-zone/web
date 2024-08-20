@@ -1,3 +1,5 @@
+/* eslint-disable no-bitwise -- expected bitwise operations */
+
 import { BigNumber } from 'bignumber.js';
 
 BigNumber.config({

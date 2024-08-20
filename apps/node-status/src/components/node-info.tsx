@@ -9,7 +9,7 @@ export const NodeInfo = () => {
     status: { nodeInfo },
   } = useLoaderData() as IndexLoaderResponse;
   if (!nodeInfo) {
-    return <></>;
+    return;
   }
 
   return (

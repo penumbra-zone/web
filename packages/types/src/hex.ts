@@ -1,7 +1,7 @@
 import { Base64StringSchema } from './base64.js';
 
 declare global {
-  // eslint-disable-next-line no-var
+  // eslint-disable-next-line no-var -- expected globals
   var __DEV__: boolean | undefined;
 }
 

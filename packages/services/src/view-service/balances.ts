@@ -37,7 +37,7 @@ export const balances: Impl['balances'] = async function* (req, ctx) {
   const { indexedDb, querier } = await services.getWalletServices();
 
   // latestBlockHeight is needed to calculate the threshold of price relevance,
-  //it is better to use  rather than fullSyncHeight to avoid displaying old prices during the synchronization process
+  // it is better to use  rather than fullSyncHeight to avoid displaying old prices during the synchronization process
   const latestKnownBlockHeight =
     (await querier.tendermint.latestBlockHeight()) ?? (await indexedDb.getFullSyncHeight()) ?? 0n;
 

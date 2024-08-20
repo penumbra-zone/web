@@ -131,6 +131,7 @@ const getExplorerPage = (txHash: string, chainId?: string) => {
     return undefined;
   }
 
+  // eslint-disable-next-line no-template-curly-in-string -- Intended template string
   return txPage.replace('${txHash}', txHash);
 };
 

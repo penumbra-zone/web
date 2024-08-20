@@ -7,18 +7,18 @@ interface Plot {
 }
 
 // Adjustable variables. Take care while adjusting these as small changes in the values can result in massive changes in the result.
-const baseRadFactor = 0.0022; //the radius of the smallest ring. Adjust carefully as small changes result it large results. Generally keep wthin the range of 0.0015 and 0.0022.
+const baseRadFactor = 0.0022; // the radius of the smallest ring. Adjust carefully as small changes result it large results. Generally keep wthin the range of 0.0015 and 0.0022.
 const octaveSpeed = 0.007 / 3; // controls the speed for animating octaves
-const plotRotationSpeed = -0.009 / 3; //adjust value to control speed of plot rotation and sign to control direction.
-const plotThickness = 0.3; //adjust the thickness of each plot
-const wobblyConstant = 1.1; //This adjusts the frequency of the perlin noise allowing for more peaks.
+const plotRotationSpeed = -0.009 / 3; // adjust value to control speed of plot rotation and sign to control direction.
+const plotThickness = 0.3; // adjust the thickness of each plot
+const wobblyConstant = 1.1; // This adjusts the frequency of the perlin noise allowing for more peaks.
 const numPoints = 250; // Resolution of the plot for each ring. This can be adjusted to get a better balance betwen performance and visual fidelity
-const plotGap = 0.00017; //Distance between each plot. small changes produce large results.
+const plotGap = 0.00017; // Distance between each plot. small changes produce large results.
 
-//These variables are best left untouched as they either produce little to no visual changes or massive negative results when adjusted as the
-const numPlots = 22; //this number corresponds to the number of plots in the svg section
-const maxTheta = 2 * Math.PI; //Used in the polar coordinates calculation which gives the circular appearance, this variable limits the circle to just one turn.
-const amplitudeFactor = 1; //this can also be used to control the distance between each plot
+// These variables are best left untouched as they either produce little to no visual changes or massive negative results when adjusted as the
+const numPlots = 22; // this number corresponds to the number of plots in the svg section
+const maxTheta = 2 * Math.PI; // Used in the polar coordinates calculation which gives the circular appearance, this variable limits the circle to just one turn.
+const amplitudeFactor = 1; // this can also be used to control the distance between each plot
 
 const frameTime = 16.67;
 
@@ -32,7 +32,7 @@ const calculateR = (
   noiseIntensity: number,
   octaves: number,
 ) => {
-  const baseRad = ccp * baseRadFactor; //the radius of the smallest ring.
+  const baseRad = ccp * baseRadFactor; // the radius of the smallest ring.
   const r =
     initialValue +
     baseRad +

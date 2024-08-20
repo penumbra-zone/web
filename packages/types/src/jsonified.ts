@@ -50,11 +50,11 @@ export type Jsonified<T> = T extends JsonValue ? T                          // J
                          : T extends AnyMessage ? JsonObject                // AnyMessage is a black box
                          : T extends object ? {                             // any object...
                             [P in keyof T as                                // ...index into...
-                              // eslint-disable-next-line @typescript-eslint/ban-types
+                              // eslint-disable-next-line @typescript-eslint/ban-types -- expected use of never
                               T[P] extends (Function) ? never               // ...strip function members
                             : P extends string ? P                          // ...keep string keys
                             : P extends number ? `${P}`                     // ...stringify number keys
                             : never                                         // ...strip symbol keys
                             ]: Jsonified<T[P]>;                             // ...recurse object members
-                          } 
+                          }
                          : T extends undefined ? never : T; // undefined not allowed
