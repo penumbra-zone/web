@@ -20,7 +20,7 @@ export const ADDRESS2_VIEW_DECODED = new AddressView({
     value: {
       address: { inner: new Uint8Array(80) },
       index: {
-        account: 0,
+        account: 2,
         randomizer: new Uint8Array([0, 0, 0]),
       },
     },

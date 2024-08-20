@@ -5,9 +5,21 @@ import { AssetSelector } from '.';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { useState } from 'react';
-import { OSMO_BALANCE, OSMO_METADATA, PENUMBRA2_BALANCE, PENUMBRA_BALANCE, PENUMBRA_METADATA, PIZZA_METADATA } from '../utils/bufs';
+import {
+  OSMO_BALANCE,
+  OSMO_METADATA,
+  PENUMBRA2_BALANCE,
+  PENUMBRA_BALANCE,
+  PENUMBRA_METADATA,
+  PIZZA_METADATA,
+} from '../utils/bufs';
 
-const mixedOptions: (BalancesResponse | Metadata)[] = [PIZZA_METADATA, PENUMBRA_BALANCE, PENUMBRA2_BALANCE, OSMO_BALANCE];
+const mixedOptions: (BalancesResponse | Metadata)[] = [
+  PIZZA_METADATA,
+  PENUMBRA_BALANCE,
+  PENUMBRA2_BALANCE,
+  OSMO_BALANCE,
+];
 const metadataOnlyOptions: Metadata[] = [PIZZA_METADATA, PENUMBRA_METADATA, OSMO_METADATA];
 
 const meta: Meta<typeof AssetSelector> = {

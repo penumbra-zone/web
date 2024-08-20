@@ -1,11 +1,16 @@
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { DELEGATION_TOKEN_METADATA, OSMO_METADATA, PENUMBRA_METADATA, UNBONDING_TOKEN_METADATA } from './metadata.ts';
+import {
+  DELEGATION_TOKEN_METADATA,
+  OSMO_METADATA,
+  PENUMBRA_METADATA,
+  UNBONDING_TOKEN_METADATA,
+} from './metadata.ts';
 
 export const PENUMBRA_VALUE_VIEW = new ValueView({
   valueView: {
     case: 'knownAssetId',
     value: {
-      amount: { hi: 0n, lo: 123_000_000n },
+      amount: { hi: 0n, lo: 123_456_789_000n },
       metadata: PENUMBRA_METADATA,
     },
   },

@@ -1,7 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { ValueViewComponent } from '.';
-import { DELEGATION_VALUE_VIEW, PENUMBRA_VALUE_VIEW, UNBONDING_VALUE_VIEW, UNKNOWN_ASSET_ID_VALUE_VIEW, UNKNOWN_ASSET_VALUE_VIEW } from '../utils/bufs';
-
+import {
+  DELEGATION_VALUE_VIEW,
+  PENUMBRA_VALUE_VIEW,
+  UNBONDING_VALUE_VIEW,
+  UNKNOWN_ASSET_ID_VALUE_VIEW,
+  UNKNOWN_ASSET_VALUE_VIEW,
+} from '../utils/bufs';
 
 const meta: Meta<typeof ValueViewComponent> = {
   component: ValueViewComponent,
