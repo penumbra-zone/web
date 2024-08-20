@@ -1,5 +1,19 @@
 # @penumbra-zone/ui
 
+## 8.1.0
+
+### Minor Changes
+
+- e4a4dd7: Fix font alignments & sync dialog
+- 7732f8d: Add Popover UI component
+- 2788cf0: Add DropdownMenu UI component
+- 907f6ee: Add Banner and IncompatableBrowserBanner
+
+### Patch Changes
+
+- @penumbra-zone/perspective@26.0.0
+- @penumbra-zone/types@21.0.0
+
 ## 8.0.0
 
 ### Minor Changes
