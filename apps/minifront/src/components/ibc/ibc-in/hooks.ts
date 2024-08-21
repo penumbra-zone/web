@@ -130,7 +130,7 @@ const generatePenumbraIbcDenoms = async (chains: Chain[]): Promise<string[]> => 
     const ibcStr = `transfer/${c.counterpartyChannelId}/upenumbra`;
     const encoder = new TextEncoder();
     const encodedString = encoder.encode(ibcStr);
-     
+
     const hash = await sha256HashStr(encodedString);
     ibcAddrs.push(`ibc/${hash.toUpperCase()}`);
   }
