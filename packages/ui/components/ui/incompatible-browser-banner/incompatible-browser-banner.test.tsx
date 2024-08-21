@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render } from '@testing-library/react';
-import { IncompatableBrowserBanner } from '.';
+import { IncompatibleBrowserBanner } from '.';
 
 vi.mock('ua-parser-js', () => ({
   UAParser: vi.fn().mockImplementation(() => ({
@@ -39,24 +39,24 @@ vi.mock('ua-parser-js', () => ({
   })),
 }));
 
-describe('<IncompatableBrowserBanner />', () => {
-  it('shouldn’t render when using a compatable browser & device', () => {
-    const { container } = render(<IncompatableBrowserBanner />);
+describe('<IncompatibleBrowserBanner />', () => {
+  it('shouldn’t render when using a compatible browser & device', () => {
+    const { container } = render(<IncompatibleBrowserBanner />);
     expect(container.firstChild).toBe(null);
   });
 
-  it('renders "Incompatable Browser Detected" when not using Chrome', () => {
-    const { container } = render(<IncompatableBrowserBanner />);
-    expect(container).toHaveTextContent('Incompatable Browser Detected');
+  it('renders "Incompatible Browser Detected" when not using Chrome', () => {
+    const { container } = render(<IncompatibleBrowserBanner />);
+    expect(container).toHaveTextContent('Incompatible Browser Detected');
   });
 
-  it('renders "Incompatable Browser Detected" when using a dated version of Chrome', () => {
-    const { container } = render(<IncompatableBrowserBanner />);
-    expect(container).toHaveTextContent('Incompatable Browser Detected');
+  it('renders "Incompatible Browser Detected" when using a dated version of Chrome', () => {
+    const { container } = render(<IncompatibleBrowserBanner />);
+    expect(container).toHaveTextContent('Incompatible Browser Detected');
   });
 
-  it('renders "Incompatable Device Detected" when using a mobile device', () => {
-    const { container } = render(<IncompatableBrowserBanner />);
-    expect(container).toHaveTextContent('Incompatable Device Detected');
+  it('renders "Incompatible Device Detected" when using a mobile device', () => {
+    const { container } = render(<IncompatibleBrowserBanner />);
+    expect(container).toHaveTextContent('Incompatible Device Detected');
   });
 });
