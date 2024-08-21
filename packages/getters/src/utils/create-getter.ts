@@ -15,21 +15,15 @@ const createPiper =
     const pipedGetter = Object.defineProperties(pipedFn, {
       pipe: {
         enumerable: true,
-        get() {
-          return createPiper(pipedFn);
-        },
+        get: () => createPiper(pipedFn),
       },
       optional: {
         enumerable: true,
-        get() {
-          return createOptional(pipedFn);
-        },
+        get: () => createOptional(pipedFn),
       },
       required: {
         enumerable: true,
-        get() {
-          return createRequired(pipedFn);
-        },
+        get: () => createRequired(pipedFn),
       },
     }) as Getter<PipeSourceType, PipeTargetType>;
 
@@ -59,17 +53,13 @@ const createOptional = <SourceType, TargetType>(
     },
     required: {
       enumerable: true,
-      get() {
-        return createRequired(selector);
-      },
+      get: () => createRequired(selector),
     },
   }) as Getter<SourceType, TargetType | undefined>;
 
   Object.defineProperty(optionalGetter, 'optional', {
     enumerable: true,
-    get() {
-      return optionalGetter;
-    },
+    get: () => optionalGetter,
   });
 
   return optionalGetter;
@@ -92,23 +82,17 @@ const createRequired = <SourceType, TargetType>(
   const requiredGetter = Object.defineProperties(requiredFn, {
     pipe: {
       enumerable: true,
-      get() {
-        return createPiper(requiredFn);
-      },
+      get: () => createPiper(requiredFn),
     },
     optional: {
       enumerable: true,
-      get() {
-        return createOptional(selector);
-      },
+      get: () => createOptional(selector),
     },
   }) as Getter<SourceType, NonNullable<TargetType>>;
 
   Object.defineProperty(requiredGetter, 'required', {
     enumerable: true,
-    get() {
-      return requiredGetter;
-    },
+    get: () => requiredGetter,
   });
 
   return requiredGetter;
