@@ -17,6 +17,7 @@ interface Person {
   address?: Address;
 }
 
+// complete data
 const alice: Person = {
   firstName: 'Alice',
   lastName: 'Liddell',
@@ -28,14 +29,17 @@ const alice: Person = {
 
 const bob: Person = {
   firstName: 'Bob',
+  // missing lastName
   address: {
     city: 'Seattle',
+    // missing state
   },
 };
 
 const charlie: Person = {
   firstName: 'Charlie',
-  lastName: '',
+  lastName: '', // falsy lastName
+  // missing address
 };
 
 describe('createGetter()', () => {
