@@ -19,8 +19,8 @@ export const BalanceItem = ({ asset, value, onSelect }: BalanceItemProps) => {
   const account = isBalance(asset) ? getAddressIndex(asset.accountAddress).account : undefined;
   const metadataFromAsset = isMetadata(asset)
     ? asset
-    : getMetadataFromBalancesResponse.optional()(asset);
-  const metadataFromValue = getMetadataFromBalancesResponse.optional()(value);
+    : getMetadataFromBalancesResponse.optional(asset);
+  const metadataFromValue = getMetadataFromBalancesResponse.optional(value);
 
   const isSelected = useMemo(() => {
     if (!value) {

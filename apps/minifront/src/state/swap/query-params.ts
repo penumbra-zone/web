@@ -31,9 +31,9 @@ export const getSwapQueryParams = (): SwapQueryParams => {
  * Sets the swap query parameters in the URL hash based on the store state
  */
 export const setSwapQueryParams = (state: AllSlices): void => {
-  const fromSymbol = getMetadataFromBalancesResponse.optional()(state.swap.assetIn)?.symbol;
+  const fromSymbol = getMetadataFromBalancesResponse.optional(state.swap.assetIn)?.symbol;
   const toSymbol = state.swap.assetOut?.symbol;
-  const accountIndex = getAddressIndex.optional()(state.swap.assetIn)?.account;
+  const accountIndex = getAddressIndex.optional(state.swap.assetIn)?.account;
 
   const searchParams = new URLSearchParams();
   if (fromSymbol) {

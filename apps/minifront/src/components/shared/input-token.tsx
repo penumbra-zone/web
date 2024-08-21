@@ -38,9 +38,7 @@ export default function InputToken({
   loading,
 }: InputTokenProps) {
   const tokenExponent = useMemo(() => {
-    return getDisplayDenomExponent.optional()(
-      getMetadataFromBalancesResponse.optional()(selection),
-    );
+    return getDisplayDenomExponent.optional(getMetadataFromBalancesResponse.optional(selection));
   }, [selection]);
 
   const setInputToBalanceMax = () => {

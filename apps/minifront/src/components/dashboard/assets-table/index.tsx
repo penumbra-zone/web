@@ -24,7 +24,7 @@ import { LineWave } from 'react-loader-spinner';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 
 const getTradeLink = (balance: BalancesResponse): string => {
-  const metadata = getMetadataFromBalancesResponse.optional()(balance);
+  const metadata = getMetadataFromBalancesResponse.optional(balance);
   const accountIndex = getAddressIndex(balance.accountAddress).account;
   const accountQuery = accountIndex ? `&account=${accountIndex}` : '';
   return metadata ? `${PagePath.SWAP}?from=${metadata.symbol}${accountQuery}` : PagePath.SWAP;

@@ -282,7 +282,7 @@ export const filterBalancesPerChain = (
   registryAssets: Metadata[],
   stakingTokenMetadata?: Metadata,
 ): BalancesResponse[] => {
-  const penumbraAssetId = getAssetId.optional()(stakingTokenMetadata);
+  const penumbraAssetId = getAssetId.optional(stakingTokenMetadata);
   const assetsWithMatchingChannel = registryAssets
     .filter(a => {
       const match = assetPatterns.ibc.capture(a.base);

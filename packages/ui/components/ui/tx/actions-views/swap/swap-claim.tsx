@@ -30,10 +30,10 @@ const getClaimLabel = (
 export const SwapClaimViewComponent = ({ value }: { value: SwapClaimView }) => {
   if (value.swapClaimView.case === 'visible') {
     const swapTxId = value.swapClaimView.value.swapTx;
-    const output1Value = getOutput1Value.optional()(value);
-    const output2Value = getOutput2Value.optional()(value);
-    const output1Amount = getAmount.optional()(output1Value);
-    const output2Amount = getAmount.optional()(output2Value);
+    const output1Value = getOutput1Value.optional(value);
+    const output2Value = getOutput2Value.optional(value);
+    const output1Amount = getAmount.optional(output1Value);
+    const output2Amount = getAmount.optional(output2Value);
     const claimLabel = getClaimLabel(output1Amount, output2Amount);
 
     return (

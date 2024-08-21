@@ -8,7 +8,7 @@ import { getMetadata } from '@penumbra-zone/getters/value-view';
 export const balancesResponseAndMetadataAreSameAsset = (
   balancesResponse?: BalancesResponse,
   metadata?: Metadata,
-) => getMetadata.optional()(balancesResponse?.balanceView)?.equals(metadata);
+) => getMetadata.optional(balancesResponse?.balanceView)?.equals(metadata);
 
 export const getFirstBalancesResponseNotMatchingMetadata = (
   balancesResponses: BalancesResponse[],
@@ -38,7 +38,7 @@ export const getBalanceByMatchingMetadataAndAddressIndex = (
   metadata: Metadata,
 ) => {
   return balances.find(balance => {
-    const balanceViewMetadata = getMetadataFromBalancesResponse.optional()(balance);
+    const balanceViewMetadata = getMetadataFromBalancesResponse.optional(balance);
 
     return (
       getAddressIndex(balance.accountAddress).account === addressIndex.account &&

@@ -43,7 +43,7 @@ const getAssetOutBalance = (
     getAddressIndex(assetIn.accountAddress),
     assetOut,
   );
-  const matchedBalance = getBalanceView.optional()(match);
+  const matchedBalance = getBalanceView.optional(match);
   return matchedBalance ?? zeroValueView(assetOut);
 };
 
@@ -70,10 +70,10 @@ export const TokenSwapInput = () => {
     useStoreShallow(tokenSwapInputSelector);
   const assetOutBalance = getAssetOutBalance(balancesResponses?.data, assetIn, assetOut);
   const assetInExponent = useMemo(() => {
-    return getDisplayDenomExponent.optional()(getMetadataFromBalancesResponse.optional()(assetIn));
+    return getDisplayDenomExponent.optional(getMetadataFromBalancesResponse.optional(assetIn));
   }, [assetIn]);
 
-  const maxAmount = getAmount.optional()(assetIn);
+  const maxAmount = getAmount.optional(assetIn);
   const maxAmountAsString = maxAmount ? joinLoHiAmount(maxAmount).toString() : undefined;
 
   const setInputToBalanceMax = () => {

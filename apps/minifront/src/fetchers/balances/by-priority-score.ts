@@ -6,11 +6,11 @@ import {
 import { multiplyAmountByNumber, joinLoHiAmount } from '@penumbra-zone/types/amount';
 
 export const sortByPriorityScore = (a: BalancesResponse, b: BalancesResponse) => {
-  const aScore = getMetadataFromBalancesResponse.optional()(a)?.priorityScore ?? 1n;
-  const bScore = getMetadataFromBalancesResponse.optional()(b)?.priorityScore ?? 1n;
+  const aScore = getMetadataFromBalancesResponse.optional(a)?.priorityScore ?? 1n;
+  const bScore = getMetadataFromBalancesResponse.optional(b)?.priorityScore ?? 1n;
 
-  const aAmount = getAmount.optional()(a);
-  const bAmount = getAmount.optional()(b);
+  const aAmount = getAmount.optional(a);
+  const bAmount = getAmount.optional(b);
 
   const aPriority = aAmount
     ? joinLoHiAmount(multiplyAmountByNumber(aAmount, Number(aScore)))

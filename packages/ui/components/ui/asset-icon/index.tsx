@@ -21,7 +21,7 @@ export const AssetIcon = ({
     size === 'sm' && 'size-6',
     size === 'lg' && 'size-12',
   );
-  const display = getDisplay.optional()(metadata);
+  const display = getDisplay.optional(metadata);
   const isDelegationToken = display ? assetPatterns.delegationToken.matches(display) : false;
   const isUnbondingToken = display ? assetPatterns.unbondingToken.matches(display) : false;
 

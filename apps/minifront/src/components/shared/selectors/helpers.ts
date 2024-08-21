@@ -22,7 +22,7 @@ export const mergeBalancesAndAssets = (
 ): BalanceOrMetadata[] => {
   const filteredAssets = assets.filter(asset => {
     return !balances.some(balance => {
-      const balanceMetadata = getMetadataFromBalancesResponse.optional()(balance);
+      const balanceMetadata = getMetadataFromBalancesResponse.optional(balance);
       return balanceMetadata?.equals(asset);
     });
   });
@@ -43,10 +43,10 @@ export const useSyncSelectedBalance = ({
     if (value) {
       const matchedValue = balances?.find(balance => {
         return (
-          getAddressIndex.optional()(balance)?.equals(getAddressIndex.optional()(value)) &&
+          getAddressIndex.optional(balance)?.equals(getAddressIndex.optional(value)) &&
           getMetadataFromBalancesResponse
-            .optional()(balance)
-            ?.equals(getMetadataFromBalancesResponse.optional()(value))
+            .optional(balance)
+            ?.equals(getMetadataFromBalancesResponse.optional(value))
         );
       });
       if (matchedValue && !matchedValue.equals(value)) {

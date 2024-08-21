@@ -32,7 +32,7 @@ const getAssetIn = (state: AllSlices, from?: string, account?: number) => {
 
   if (from) {
     const matchingBalancesResponse = filteredSwappableBalancesResponses.find(
-      balance => getMetadataFromBalancesResponse.optional()(balance)?.symbol === from,
+      balance => getMetadataFromBalancesResponse.optional(balance)?.symbol === from,
     );
     if (matchingBalancesResponse) {
       return matchingBalancesResponse;
@@ -73,7 +73,7 @@ const getAssetOut = (state: AllSlices, to?: string, assetIn?: BalancesResponse) 
     return state.swap.assetOut;
   }
 
-  if (getMetadataFromBalancesResponse.optional()(assetIn)?.equals(swappableAssets[0])) {
+  if (getMetadataFromBalancesResponse.optional(assetIn)?.equals(swappableAssets[0])) {
     return swappableAssets[1];
   }
 

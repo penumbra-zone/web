@@ -201,8 +201,8 @@ export const isIncorrectDecimal = (
     throw new Error('Missing balanceView');
   }
 
-  const exponent = getDisplayDenomExponent.optional()(
-    getMetadataFromBalancesResponse.optional()(asset),
+  const exponent = getDisplayDenomExponent.optional(
+    getMetadataFromBalancesResponse.optional(asset),
   );
   const fraction = amountInDisplayDenom.split('.')[1]?.length;
   return typeof exponent !== 'undefined' && typeof fraction !== 'undefined' && fraction > exponent;
@@ -214,4 +214,4 @@ export const isValidAmount = (amount: string, assetIn?: BalancesResponse) =>
   (!assetIn || !isIncorrectDecimal(assetIn, amount));
 
 export const isKnown = (balancesResponse: BalancesResponse) =>
-  getValueViewCaseFromBalancesResponse.optional()(balancesResponse) === 'knownAssetId';
+  getValueViewCaseFromBalancesResponse.optional(balancesResponse) === 'knownAssetId';

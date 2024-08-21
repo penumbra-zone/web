@@ -324,8 +324,8 @@ export const viewActionPlan =
         });
 
       case 'actionDutchAuctionSchedule': {
-        const inputAssetId = getInputAssetId.optional()(actionPlan.action.value.description);
-        const outputAssetId = getOutputAssetId.optional()(actionPlan.action.value.description);
+        const inputAssetId = getInputAssetId.optional(actionPlan.action.value.description);
+        const outputAssetId = getOutputAssetId.optional(actionPlan.action.value.description);
         const [inputMetadata, outputMetadata] = await Promise.all([
           inputAssetId ? await denomMetadataByAssetId(inputAssetId) : undefined,
           outputAssetId ? await denomMetadataByAssetId(outputAssetId) : undefined,

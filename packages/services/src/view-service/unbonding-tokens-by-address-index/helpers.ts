@@ -11,7 +11,7 @@ import { status } from '../status.js';
 import { appParameters } from '../app-parameters.js';
 
 export const isUnbondingTokenBalance = (balancesResponse: PartialMessage<BalancesResponse>) => {
-  const display = getDisplayFromBalancesResponse.optional()(new BalancesResponse(balancesResponse));
+  const display = getDisplayFromBalancesResponse.optional(new BalancesResponse(balancesResponse));
   return display ? assetPatterns.unbondingToken.matches(display) : false;
 };
 
@@ -40,7 +40,7 @@ export const getIsClaimable = async (
     return false;
   }
 
-  const display = getDisplayFromBalancesResponse.optional()(new BalancesResponse(balancesResponse));
+  const display = getDisplayFromBalancesResponse.optional(new BalancesResponse(balancesResponse));
   if (!display) {
     return false;
   }

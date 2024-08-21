@@ -54,11 +54,11 @@ const umValueView = (amount?: Amount) => {
 };
 
 export const DelegatorVoteComponent = ({ value }: { value: DelegatorVoteView }) => {
-  const body = getDelegatorVoteBody.optional()(value);
+  const body = getDelegatorVoteBody.optional(value);
 
   if (value.delegatorVote.case === 'visible') {
     const note = value.delegatorVote.value.note;
-    const address = getAddress.optional()(note);
+    const address = getAddress.optional(note);
 
     return (
       <ViewBox

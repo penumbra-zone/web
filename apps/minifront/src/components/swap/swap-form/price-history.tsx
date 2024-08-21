@@ -12,7 +12,7 @@ import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { Button } from '@penumbra-zone/ui/components/ui/button';
 
 const priceHistorySelector = (state: AllSlices) => ({
-  startMetadata: getMetadataFromBalancesResponse.optional()(state.swap.assetIn),
+  startMetadata: getMetadataFromBalancesResponse.optional(state.swap.assetIn),
   endMetadata: state.swap.assetOut,
   historyLimit: state.swap.priceHistory.historyLimit,
   historyStart: state.swap.priceHistory.historyStart,
