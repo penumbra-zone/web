@@ -83,7 +83,7 @@ const createRequired = <SourceType, TargetType>(
     if (required == null) {
       throw new GetterMissingValueError(
         `Failed to select value from "${String(source)}" with "${selector.name}"`,
-        { cause: { source, selector } },
+        { cause: { source, selector } } satisfies ErrorOptions,
       );
     }
     return required;
