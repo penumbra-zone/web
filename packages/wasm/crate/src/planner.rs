@@ -147,8 +147,7 @@ pub async fn insufficient_funds_err<Db: Database>(
         Ok(Some(asset_metadata)) => {
             let display_unit = asset_metadata.default_unit();
             format!(
-                "Transaction failed due to insufficient funds. 
-                Required amount: {} {}",
+                "Transaction failed due to insufficient funds. Required amount: {} {}.",
                 display_unit.format_value(required.amount),
                 display_unit
             )
