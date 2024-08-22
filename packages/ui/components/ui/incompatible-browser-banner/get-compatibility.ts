@@ -2,15 +2,15 @@ import { UAParser, UAParserInstance, IDevice } from 'ua-parser-js';
 
 const parser: UAParserInstance = new UAParser();
 
-const CompatableBrowsers: Record<string, number> = {
+const CompatibleBrowsers: Record<string, number> = {
   // browser name: min version
 
   // same as https://github.com/prax-wallet/web/blob/main/apps/extension/public/manifest.json#L7
   Chrome: 119,
 };
 
-interface CompatabilityResponse {
-  isIncompatable: boolean;
+interface CompatibilityResponse {
+  isIncompatible: boolean;
   title: string;
   content: string;
 }
@@ -20,26 +20,26 @@ function isDesktop(device: IDevice): boolean {
   return device.type === undefined || !['wearable', 'mobile'].includes(device.type);
 }
 
-function getCompatability(): CompatabilityResponse {
+function getCompatibility(): CompatibilityResponse {
   const browser = parser.getBrowser();
   const device = parser.getDevice();
 
-  if (!CompatableBrowsers[browser.name!]) {
+  if (!CompatibleBrowsers[browser.name!]) {
     return {
-      isIncompatable: true,
-      title: 'Incompatable Browser Detected',
+      isIncompatible: true,
+      title: 'Incompatible Browser Detected',
       content:
         'You are currently using an incompatible browser. For the best experience, we recommend using Chrome as your browser.',
     };
   }
 
   if (
-    !!CompatableBrowsers[browser.name!] &&
-    Number(browser.version) < CompatableBrowsers[browser.name!]!
+    !!CompatibleBrowsers[browser.name!] &&
+    Number(browser.version) < CompatibleBrowsers[browser.name!]!
   ) {
     return {
-      isIncompatable: true,
-      title: 'Incompatable Browser Detected',
+      isIncompatible: true,
+      title: 'Incompatible Browser Detected',
       content:
         'You are currently using an outdated browser. For the best experience, we recommend upgrading Chrome to the latest version.',
     };
@@ -47,18 +47,18 @@ function getCompatability(): CompatabilityResponse {
 
   if (!isDesktop(device)) {
     return {
-      isIncompatable: true,
-      title: 'Incompatable Device Detected',
+      isIncompatible: true,
+      title: 'Incompatible Device Detected',
       content:
         'You are currently using an incompatible environment. For the best experience, we recommend using a desktop as your device.',
     };
   }
 
   return {
-    isIncompatable: false,
+    isIncompatible: false,
     title: '',
     content: '',
   };
 }
 
-export { getCompatability };
+export { getCompatibility };
