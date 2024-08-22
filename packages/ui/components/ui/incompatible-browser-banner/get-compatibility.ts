@@ -2,14 +2,10 @@ import { UAParser, UAParserInstance, IDevice } from 'ua-parser-js';
 
 const parser: UAParserInstance = new UAParser();
 
-const CompatibleBrowsers: Record<string, number> = {
-  // browser name: min version
+// same as https://github.com/prax-wallet/web/blob/main/apps/extension/public/manifest.json#L7
+const MIN_CHROME_VERSION = 119;
 
-  // same as https://github.com/prax-wallet/web/blob/main/apps/extension/public/manifest.json#L7
-  Chrome: 119,
-};
-
-interface CompatibilityResponse {
+interface CompatabilityResponse {
   isIncompatible: boolean;
   title: string;
   content: string;
@@ -20,11 +16,15 @@ function isDesktop(device: IDevice): boolean {
   return device.type === undefined || !['wearable', 'mobile'].includes(device.type);
 }
 
-function getCompatibility(): CompatibilityResponse {
+function getCompatibility(): CompatabilityResponse {
+  const ua = parser.getUA();
   const browser = parser.getBrowser();
   const device = parser.getDevice();
 
-  if (!CompatibleBrowsers[browser.name!]) {
+  // Brave returns Brave but contains Chrome in user-agent
+  const isChrome = browser.name === 'Chrome' || ua.includes('Chrome');
+
+  if (!isChrome) {
     return {
       isIncompatible: true,
       title: 'Incompatible Browser Detected',
@@ -33,10 +33,7 @@ function getCompatibility(): CompatibilityResponse {
     };
   }
 
-  if (
-    !!CompatibleBrowsers[browser.name!] &&
-    Number(browser.version) < CompatibleBrowsers[browser.name!]!
-  ) {
+  if (Number(browser.version) < MIN_CHROME_VERSION) {
     return {
       isIncompatible: true,
       title: 'Incompatible Browser Detected',
