@@ -117,11 +117,11 @@ export default tseslint.config(
         'error',
         {
           pathGroups: [
-            { pattern: '@penumbra-labs/**', group: 'external', position: 'after' },
-            { pattern: '@buf/**', group: 'external', position: 'after' },
             { pattern: '@penumbra-zone/**', group: 'internal', position: 'before' },
-            { pattern: '@buf/penumbra-zone_penumbra.*', group: 'internal', position: 'before' },
             { pattern: '@repo/**', group: 'internal', position: 'after' },
+
+            { pattern: '@buf/**', group: 'external', position: 'after' },
+            { pattern: '@penumbra-labs/**', group: 'external', position: 'after' },
           ],
           pathGroupsExcludedImportTypes: [],
           distinctGroup: true,

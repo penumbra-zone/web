@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { AccountSelectorProps } from '.';
-import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import type { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 const MAX_INDEX = 2 ** 32;
 
