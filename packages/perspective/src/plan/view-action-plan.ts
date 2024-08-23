@@ -33,7 +33,7 @@ import {
   ActionDutchAuctionWithdrawPlan,
   ActionDutchAuctionWithdrawView,
 } from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
-import { PartialMessage } from '@bufbuild/protobuf';
+import type { PartialMessage } from '@bufbuild/protobuf';
 import {
   DelegatorVotePlan,
   DelegatorVoteView,

@@ -53,7 +53,14 @@
       "isBanned": true
     },
     {
-      "label": "Require @buf registry packages remain in root or in apps",
+      "label": "Use @penumbra-zone/protobuf instead of a BSR dependency",
+      "dependencies": [
+        "@buf/penumbra-zone_penumbra.*"
+      ],
+      "isBanned": true
+    },
+    {
+      "label": "Don't depend on BSR in published packages",
       "dependencies": [
         "@buf/*"
       ],

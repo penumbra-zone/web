@@ -4,7 +4,7 @@ import { SegmentedControl } from '@repo/ui/SegmentedControl';
 import { TextInput } from '@repo/ui/TextInput';
 import { AllSlices } from '../../../../state';
 import { sendValidationErrors } from '../../../../state/send';
-import { FeeTier_Tier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
+import { FeeTier_Tier } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
 import { Button } from '@repo/ui/Button';
 import { ArrowUpFromDot } from 'lucide-react';
 import { useMemo } from 'react';
