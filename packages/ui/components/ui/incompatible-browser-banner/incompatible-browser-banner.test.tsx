@@ -26,7 +26,7 @@ vi.mock('ua-parser-js', () => ({
 }));
 
 describe('<IncompatibleBrowserBanner />', () => {
-  it('shouldn’t render when using a compatable device', () => {
+  it('shouldn’t render when using a compatible device', () => {
     const { container } = render(<IncompatibleBrowserBanner />);
     expect(container.firstChild).toBe(null);
   });

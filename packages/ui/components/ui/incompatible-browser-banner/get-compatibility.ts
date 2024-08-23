@@ -2,7 +2,7 @@ import { UAParser, UAParserInstance, IDevice } from 'ua-parser-js';
 
 const parser: UAParserInstance = new UAParser();
 
-interface CompatabilityResponse {
+interface CompatibilityResponse {
   isIncompatible: boolean;
   title: string;
   content: string;
@@ -13,7 +13,7 @@ function isDesktop(device: IDevice): boolean {
   return device.type === undefined || !['wearable', 'mobile'].includes(device.type);
 }
 
-function getCompatibility(): CompatabilityResponse {
+function getCompatibility(): CompatibilityResponse {
   const device = parser.getDevice();
 
   if (!isDesktop(device)) {
