@@ -1,5 +1,25 @@
 # minifront
 
+## 6.19.0
+
+### Minor Changes
+
+- e4a4dd7: Fix font alignments & sync dialog
+- c7aa17b: Update approx block duration to ~5.5s
+
+### Patch Changes
+
+- Updated dependencies [e4a4dd7]
+- Updated dependencies [f8730e9]
+- Updated dependencies [7732f8d]
+- Updated dependencies [2788cf0]
+- Updated dependencies [907f6ee]
+  - @repo/ui@8.1.0
+  - @penumbra-zone/getters@16.0.0
+  - @penumbra-zone/perspective@26.0.0
+  - @penumbra-zone/types@21.0.0
+  - @penumbra-zone/crypto-web@22.0.0
+
 ## 6.18.0
 
 ### Minor Changes

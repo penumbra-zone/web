@@ -1,5 +1,5 @@
 import { CondensedBlockSyncStatus } from '@repo/ui/components/ui/block-sync-status';
-import { IncompatableBrowserBanner } from '@repo/ui/components/ui/incompatable-browser-banner';
+import { IncompatibleBrowserBanner } from '@repo/ui/components/ui/incompatible-browser-banner';
 import { TestnetBanner } from '@repo/ui/components/ui/testnet-banner';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -18,7 +18,7 @@ export const Header = () => {
 
   return (
     <header className='w-full bg-gradient-to-t from-transparent to-black to-40% pb-[3em]'>
-      <IncompatableBrowserBanner />
+      <IncompatibleBrowserBanner />
       <TestnetBanner chainId={chainId} />
       <CondensedBlockSyncStatus
         fullSyncHeight={data?.fullSyncHeight}

@@ -1,6 +1,6 @@
 {
   "name": "@repo/ui",
-  "version": "8.0.0",
+  "version": "8.1.0",
   "private": true,
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
@@ -27,7 +27,6 @@
   "dependencies": {
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
-    "@penumbra-labs/registry": "11.0.0",
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/perspective": "workspace:*",
     "@penumbra-zone/types": "workspace:*",

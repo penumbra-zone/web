@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../card';
-import { IncompatableBrowserBanner } from '../incompatable-browser-banner';
+import { IncompatibleBrowserBanner } from '../incompatible-browser-banner';
 import { FadeTransition } from '../fade-transition';
 import { AnimatedPenumbra } from '../logo/animated-penumbra';
 
@@ -15,7 +15,7 @@ export const SplashPage = ({
 }) => {
   return (
     <FadeTransition>
-      <IncompatableBrowserBanner className='!absolute inset-x-0 top-0' />
+      <IncompatibleBrowserBanner className='!absolute inset-x-0 top-0' />
       <div className='flex min-h-screen flex-col items-center justify-center'>
         <div className='absolute inset-0 z-[-1] flex w-screen items-center justify-center'>
           <AnimatedPenumbra className='w-[calc(100%-25vw)]' />

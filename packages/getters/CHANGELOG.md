@@ -1,5 +1,11 @@
 # @penumbra-zone/getters
 
+## 16.0.0
+
+### Major Changes
+
+- f8730e9: Update asset ID getter; it no longer has a hardcoded Optional version
+
 ## 15.0.0
 
 ### Patch Changes
