@@ -260,9 +260,11 @@ export class BlockProcessor implements BlockProcessorInterface {
       await this.identifyNewAssets(flush.newNotes);
 
       for (const spendableNoteRecord of flush.newNotes) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify non-null assertion
         recordsByCommitment.set(spendableNoteRecord.noteCommitment!, spendableNoteRecord);
       }
       for (const swapRecord of flush.newSwaps) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify non-null assertion
         recordsByCommitment.set(swapRecord.swapCommitment!, swapRecord);
       }
     }

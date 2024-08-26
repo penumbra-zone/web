@@ -115,6 +115,7 @@ export const SegmentedControl = <ValueType extends ToStringable>({
 
   const handleChange = useCallback(
     (optionValue: string) => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify non-null assertion
       const selected = options.find(option => option.value.toString() === optionValue)!;
       onChange(selected.value);
     },

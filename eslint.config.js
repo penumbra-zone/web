@@ -193,8 +193,7 @@ export default tseslint.config(
     name: 'custom:typescript-wishlist-improvements',
     files: ['**/*.@(ts|tsx)'],
     rules: {
-      // enabled by tseslint strictTypeChecked. large diff
-      '@typescript-eslint/no-non-null-assertion': 'off',
+      '@typescript-eslint/no-non-null-assertion': 'error',
 
       // '@typescript-eslint/no-redeclare': 'error',
       // '@typescript-eslint/no-shadow': 'error',

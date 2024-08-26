@@ -13,6 +13,7 @@ export const parseRevisionNumberFromChainId = (chainId: string): bigint => {
     return 0n;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify non-null assertion
   const numStr = chainId.split('-').pop()!;
   return BigInt(numStr);
 };

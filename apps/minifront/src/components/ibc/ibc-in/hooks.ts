@@ -115,6 +115,7 @@ const getIconFromAsset = (asset: Asset): string | undefined => {
   }
 
   if (asset.images?.length) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify non-null assertion
     const first = asset.images[0]!;
     // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- Image default is "" and thus cannot do nullish-coalescing
     return first.svg || first.svg;

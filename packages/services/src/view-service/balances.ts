@@ -115,6 +115,7 @@ class BalancesAggregator {
 
     this.accounts[accountNumber][assetIdBase64] ??= await this.initializeBalResponse(n);
 
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify non-null assertion
     const valueView = this.accounts[accountNumber][assetIdBase64].balanceView!;
     this.aggregateAmount(valueView, n);
     await this.aggregateEquivalentValues(valueView, n);

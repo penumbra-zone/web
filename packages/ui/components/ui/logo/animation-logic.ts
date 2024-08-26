@@ -82,6 +82,7 @@ const renderPlot = (
 export const initializePlotsArr = (noiseIntensityFactor: number): Plot[] => {
   const plots: Plot[] = [];
   for (let i = 0; i < numPlots; i++) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify non-null assertion
     const path = document.getElementById(`plot${i + 1}`)!;
     const noiseIntensity = noiseIntensityFactor * (i / (numPlots - 1)); // noise intensity control for each ring as they move towards the edge
     const initialValue = i * plotGap; // As the loop works itself towards the outer plots, the initialValue is increased to create a larger distance from the centre for each plot. This basically denotes the base radius of each plot.

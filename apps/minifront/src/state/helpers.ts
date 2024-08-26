@@ -112,6 +112,7 @@ const build = async (
       case 'buildProgress':
         break;
       case 'complete':
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify
         return status.value.transaction!;
       default:
         console.warn(`unknown ${buildFn.name} status`, status);
