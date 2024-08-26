@@ -18,7 +18,13 @@ import {
 import { BalanceItem } from './balance-item';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { LoadingIndicator } from './loading-indicator';
-import { Table, TableBody, TableHead, TableHeader, TableRow } from '@penumbra-zone/ui/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@penumbra-zone/ui/components/ui/table';
 
 interface BalanceSelectorProps {
   value: BalancesResponse | undefined;

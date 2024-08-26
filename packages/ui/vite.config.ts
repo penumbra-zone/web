@@ -12,19 +12,24 @@ const getAllUIComponents = (): Record<string, string> => {
   const source = resolve(__dirname, 'src');
   const dirs = readdirSync(source, { withFileTypes: true });
 
-  return dirs.reduce((accum, dir) => {
-    const componentPath = join(source, dir.name, 'index.tsx');
-    if (dir.isDirectory() && existsSync(componentPath)) {
-      accum[`src/${dir.name}/index`] = componentPath;
-    }
-    return accum;
-  }, {} as Record<string, string>);
+  return dirs.reduce(
+    (accum, dir) => {
+      const componentPath = join(source, dir.name, 'index.tsx');
+      if (dir.isDirectory() && existsSync(componentPath)) {
+        accum[`src/${dir.name}/index`] = componentPath;
+      }
+      return accum;
+    },
+    {} as Record<string, string>,
+  );
 };
 
 export default defineConfig({
-  plugins: [dts({
-    strictOutput: true,
-  })],
+  plugins: [
+    dts({
+      strictOutput: true,
+    }),
+  ],
   build: {
     emptyOutDir: true,
     lib: {
@@ -40,8 +45,8 @@ export default defineConfig({
         'react-dom',
         'framer-motion',
         'styled-components',
-        'lucide-react'
-      ]
+        'lucide-react',
+      ],
     },
   },
-})
+});

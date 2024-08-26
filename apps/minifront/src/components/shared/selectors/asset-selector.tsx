@@ -1,4 +1,9 @@
-import { Dialog, DialogClose, DialogContent, DialogHeader } from '@penumbra-zone/ui/components/ui/dialog';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogHeader,
+} from '@penumbra-zone/ui/components/ui/dialog';
 import { AssetIcon } from '@penumbra-zone/ui/components/ui/asset-icon';
 import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/value';
