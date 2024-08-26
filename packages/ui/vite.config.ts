@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import { resolve, join } from 'path';
 import { readdirSync, existsSync } from 'fs';
 import dts from 'vite-plugin-dts';
+import { exec } from 'child_process';
 
 /**
  * Returns an object with keys as resulting component build paths and values as
@@ -26,9 +27,18 @@ const getAllUIComponents = (): Record<string, string> => {
 
 export default defineConfig({
   plugins: [
-    dts({
-      strictOutput: true,
-    }),
+    dts(),
+    {
+      // runs 'pnpm pack' after the build in watch mode
+      name: 'postbuild-pack',
+      closeBundle: () => {
+        const isWatch = process.env.VITE_WATCH === 'true';
+        if (isWatch) {
+          const cmd = exec('$npm_execpath pack');
+          cmd.unref();
+        }
+      },
+    },
   ],
   build: {
     emptyOutDir: true,
