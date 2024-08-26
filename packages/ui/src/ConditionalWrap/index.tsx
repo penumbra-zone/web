@@ -57,4 +57,5 @@ export const ConditionalWrap = ({
   then: thenWrapper,
   else: elseWrapper,
 }: ConditionalWrapProps) =>
+  // eslint-disable-next-line no-nested-ternary -- simple nested ternary
   condition ? thenWrapper(children) : elseWrapper ? elseWrapper(children) : children;

@@ -23,8 +23,7 @@ export interface AssetIcon {
 }
 
 export const AssetIcon = ({ metadata }: AssetIcon) => {
-  // Image default is "" and thus cannot do nullish-coalescing
-  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- possibly empty string
   const icon = metadata?.images[0]?.png || metadata?.images[0]?.svg;
   const display = getDisplay.optional()(metadata);
   const isDelegationToken = display ? assetPatterns.delegationToken.matches(display) : false;

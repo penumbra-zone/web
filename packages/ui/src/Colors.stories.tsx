@@ -90,15 +90,13 @@ export const ColorGrid: StoryObj = {
   tags: ['!dev'],
   render: function Render() {
     return (
-      <>
-        <Grid container as='section'>
-          <Color color='text' />
+      <Grid container as='section'>
+        <Color color='text' />
 
-          {MAIN_COLORS.map(color => (
-            <Color key={color} color={color} />
-          ))}
-        </Grid>
-      </>
+        {MAIN_COLORS.map(color => (
+          <Color key={color} color={color} />
+        ))}
+      </Grid>
     );
   },
 };
