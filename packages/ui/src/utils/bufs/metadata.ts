@@ -1,5 +1,5 @@
-import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
+import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
 const u8 = (length: number) => Uint8Array.from({ length }, () => Math.floor(Math.random() * 256));
 const validatorIk = { ik: u8(32) };
@@ -11,7 +11,7 @@ const unbondString = 'unbonding_start_at_123_' + validatorIkString;
 const uunbondString = 'uunbonding_start_at_123_' + validatorIkString;
 const unbondAsset = { inner: u8(32) };
 
-const DELEGATION_TOKEN_METADATA = new Metadata({
+export const DELEGATION_TOKEN_METADATA = new Metadata({
   display: delString,
   base: udelString,
   denomUnits: [{ denom: udelString }, { denom: delString, exponent: 6 }],
@@ -20,7 +20,7 @@ const DELEGATION_TOKEN_METADATA = new Metadata({
   symbol: `delUM(${validatorIkString})`,
 });
 
-const UNBONDING_TOKEN_METADATA = new Metadata({
+export const UNBONDING_TOKEN_METADATA = new Metadata({
   display: unbondString,
   base: uunbondString,
   denomUnits: [{ denom: uunbondString }, { denom: unbondString, exponent: 6 }],
@@ -29,7 +29,7 @@ const UNBONDING_TOKEN_METADATA = new Metadata({
   symbol: `unbondUMat123(${validatorIkString})`,
 });
 
-const PENUMBRA_METADATA = new Metadata({
+export const PENUMBRA_METADATA = new Metadata({
   denomUnits: [
     {
       denom: 'penumbra',
@@ -56,53 +56,20 @@ const PENUMBRA_METADATA = new Metadata({
   ],
 });
 
-export const PENUMBRA_VALUE_VIEW = new ValueView({
-  valueView: {
-    case: 'knownAssetId',
-    value: {
-      amount: { hi: 0n, lo: 123_000_000n },
-      metadata: PENUMBRA_METADATA,
-    },
-  },
+export const OSMO_METADATA = new Metadata({
+  symbol: 'OSMO',
+  name: 'Osmosis',
+  penumbraAssetId: new AssetId({ inner: u8(32) }),
+  base: 'uosmo',
+  display: 'osmo',
+  denomUnits: [{ denom: 'uosmo' }, { denom: 'osmo', exponent: 6 }],
 });
 
-export const DELEGATION_VALUE_VIEW = new ValueView({
-  valueView: {
-    case: 'knownAssetId',
-    value: {
-      amount: { hi: 0n, lo: 123_000_000n },
-      metadata: DELEGATION_TOKEN_METADATA,
-    },
-  },
-});
-
-export const UNBONDING_VALUE_VIEW = new ValueView({
-  valueView: {
-    case: 'knownAssetId',
-    value: {
-      amount: { hi: 0n, lo: 123_000_000n },
-      metadata: UNBONDING_TOKEN_METADATA,
-    },
-  },
-});
-
-export const UNKNOWN_ASSET_VALUE_VIEW = new ValueView({
-  valueView: {
-    case: 'knownAssetId',
-    value: {
-      amount: { hi: 0n, lo: 123_000_000n },
-      metadata: {
-        penumbraAssetId: { inner: new Uint8Array([]) },
-      },
-    },
-  },
-});
-
-export const UNKNOWN_ASSET_ID_VALUE_VIEW = new ValueView({
-  valueView: {
-    case: 'unknownAssetId',
-    value: {
-      amount: { hi: 0n, lo: 123_000_000n },
-    },
-  },
+export const PIZZA_METADATA = new Metadata({
+  symbol: 'PIZZA',
+  name: 'Pizza',
+  penumbraAssetId: new AssetId({ inner: u8(32) }),
+  base: 'upizza',
+  display: 'pizza',
+  denomUnits: [{ denom: 'upizza' }, { denom: 'pizza', exponent: 6 }],
 });
