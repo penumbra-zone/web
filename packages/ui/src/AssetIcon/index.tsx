@@ -31,9 +31,11 @@ export const AssetIcon = ({ metadata }: AssetIcon) => {
 
   return (
     <BorderWrapper>
+      {/* eslint-disable-next-line no-nested-ternary -- readable ternary */}
       {icon ? (
         <IconImg src={icon} alt='Asset icon' />
-      ) : isDelegationToken ? (
+      ) : // eslint-disable-next-line no-nested-ternary -- readable ternary
+      isDelegationToken ? (
         <DelegationTokenIcon displayDenom={display} />
       ) : isUnbondingToken ? (
         /**

@@ -65,7 +65,7 @@ const StyledButton = styled(motion.button)<StyledButtonProps>`
   ${buttonBase}
   ${button}
 
-  background-color: ${props =>
+    background-color: ${props =>
     getBackgroundColor(props.$actionType, props.$priority, props.theme, props.$iconOnly)};
   outline: ${props =>
     props.$priority === 'secondary'
@@ -80,12 +80,12 @@ const StyledButton = styled(motion.button)<StyledButtonProps>`
   position: relative;
 
   ${props =>
+    // eslint-disable-next-line no-nested-ternary -- readable ternary
     props.$iconOnly === 'adornment'
       ? iconOnlyAdornment
       : props.$density === 'sparse'
         ? sparse
         : compact}
-
   &::after {
     outline-offset: -2px;
   }

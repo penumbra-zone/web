@@ -23,6 +23,7 @@ const TextWrapper = styled.div`
 `;
 
 const getAddressColor = (loading: boolean, ephemeral: boolean) => (color: DefaultTheme['color']) =>
+  // eslint-disable-next-line no-nested-ternary -- readable ternary
   loading ? color.text.muted : ephemeral ? color.text.special : color.text.primary;
 
 export interface AccountSelectorAddressProps {

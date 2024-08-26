@@ -43,6 +43,7 @@ const Variant = styled.div<VariantProps>`
     props.$color === 'text' ? 'transparent' : props.theme.color[props.$color][props.$colorVariant]};
   border-radius: ${props => props.theme.borderRadius.xl};
   color: ${props =>
+    // eslint-disable-next-line no-nested-ternary -- readable ternary
     props.$color === 'text'
       ? props.theme.color.text[props.$colorVariant]
       : props.$colorVariant === 'contrast' || props.$colorVariant === 'light'
