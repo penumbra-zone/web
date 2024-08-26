@@ -115,7 +115,7 @@ export const WalletBalance = ({
         onClick={onClick}
       >
         <WalletIcon />
-        <ValueText detailTechnical>{account.account}</ValueText>
+        <ValueText detailTechnical>#{account.account}</ValueText>
       </AccountWrapper>
 
       <ValueText detailTechnical>
