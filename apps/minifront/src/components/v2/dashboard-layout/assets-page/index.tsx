@@ -14,6 +14,9 @@ import { TableTitle } from './table-title';
 import { Link } from 'react-router-dom';
 import { Button } from '@repo/ui/Button';
 import { ArrowRightLeft } from 'lucide-react';
+import { useAnimationDeferredValue } from '@repo/ui/hooks/useAnimationDeferredValue';
+import { ConditionalWrap } from '@repo/ui/ConditionalWrap';
+import { LayoutGroup } from 'framer-motion';
 
 const getTradeLink = (balance: BalancesResponse): string => {
   const metadata = getMetadataFromBalancesResponseOptional(balance);
@@ -36,46 +39,69 @@ export const AssetsPage = () => {
     shouldReselect: (before, after) => before?.data !== after.data,
   });
 
-  return (
-    <>
-      {balancesByAccount?.map(account => (
-        <Table key={account.account} layout='fixed' title={<TableTitle account={account} />}>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th width={`calc(50% - (${BUTTON_CELL_WIDTH_PX} / 2))`}>Asset</Table.Th>
-              <Table.Th width={`calc(50% - (${BUTTON_CELL_WIDTH_PX} / 2))`}>Estimate</Table.Th>
-              <Table.Th width={BUTTON_CELL_WIDTH_PX} />
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
-            {account.balances.map((balance, index) => (
-              <Table.Tr key={index}>
-                <Table.Td vAlign='top'>
-                  <ValueViewComponent valueView={balance.balanceView} context='table' />
-                </Table.Td>
-                <Table.Td vAlign='top'>
-                  <EquivalentValues valueView={balance.balanceView} />
-                </Table.Td>
+  const deferredBalancesByAccount = useAnimationDeferredValue(balancesByAccount);
 
-                <Table.Td>
-                  <div className='h-8 w-10 overflow-hidden'>
-                    <Link
-                      to={getTradeLink(balance)}
-                      className='block translate-x-full opacity-0 transition [tr:hover>td>div>&]:translate-x-0 [tr:hover>td>div>&]:opacity-100'
-                    >
-                      <Density compact>
-                        <Button icon={ArrowRightLeft} iconOnly>
-                          Trade
-                        </Button>
-                      </Density>
-                    </Link>
-                  </div>
-                </Table.Td>
-              </Table.Tr>
-            ))}
-          </Table.Tbody>
-        </Table>
-      ))}
-    </>
-  );
+  return deferredBalancesByAccount?.map((account, index) => (
+    <ConditionalWrap
+      key={account.account}
+      // Only wrap the first table in the `<LayoutGroup />`, since that's the
+      // only one that will be animating when transitioning to the assets table.
+      if={index === 0}
+      then={children => <LayoutGroup id='dashboardContent'>{children}</LayoutGroup>}
+    >
+      <Table
+        tableLayout='fixed'
+        title={<TableTitle account={account} />}
+        motion={{ layoutId: index === 0 ? 'table' : undefined }}
+      >
+        <Table.Thead>
+          <Table.Tr>
+            <Table.Th
+              width={`calc(50% - (${BUTTON_CELL_WIDTH_PX} / 2))`}
+              motion={{ layoutId: index === 0 ? 'th1' : undefined }}
+            >
+              Asset
+            </Table.Th>
+            <Table.Th
+              width={`calc(50% - (${BUTTON_CELL_WIDTH_PX} / 2))`}
+              motion={{ layoutId: index === 0 ? 'th2' : undefined }}
+            >
+              Estimate
+            </Table.Th>
+            <Table.Th
+              width={BUTTON_CELL_WIDTH_PX}
+              motion={{ layoutId: index === 0 ? 'th3' : undefined }}
+            />
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>
+          {account.balances.map((balance, index) => (
+            <Table.Tr key={index}>
+              <Table.Td vAlign='top'>
+                <ValueViewComponent valueView={balance.balanceView} context='table' />
+              </Table.Td>
+              <Table.Td vAlign='top'>
+                <EquivalentValues valueView={balance.balanceView} />
+              </Table.Td>
+
+              <Table.Td>
+                <div className='h-8 w-10 overflow-hidden'>
+                  <Link
+                    to={getTradeLink(balance)}
+                    className='block translate-x-full opacity-0 transition [tr:hover>td>div>&]:translate-x-0 [tr:hover>td>div>&]:opacity-100'
+                  >
+                    <Density compact>
+                      <Button icon={ArrowRightLeft} iconOnly>
+                        Trade
+                      </Button>
+                    </Density>
+                  </Link>
+                </div>
+              </Table.Td>
+            </Table.Tr>
+          ))}
+        </Table.Tbody>
+      </Table>
+    </ConditionalWrap>
+  ));
 };

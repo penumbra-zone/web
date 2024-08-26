@@ -1,4 +1,4 @@
-import { ServiceType } from '@bufbuild/protobuf';
+import type { ServiceType } from '@bufbuild/protobuf';
 import { createPromiseClient, PromiseClient, Transport } from '@connectrpc/connect';
 import { jsonOptions } from '@penumbra-zone/protobuf';
 import {

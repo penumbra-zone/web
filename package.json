@@ -3,7 +3,7 @@
   "private": true,
   "license": "(MIT OR Apache-2.0)",
   "repository": "penumbra-zone/web.git",
-  "packageManager": "pnpm@9.4.0+sha512.f549b8a52c9d2b8536762f99c0722205efc5af913e77835dbccc3b0b0b2ca9e7dc8022b78062c17291c48e88749c70ce88eb5a74f1fa8c4bf5e18bb46c8bd83a",
+  "packageManager": "pnpm@9.7.0+sha512.dc09430156b427f5ecfc79888899e1c39d2d690f004be70e05230b72cb173d96839587545d09429b55ac3c429c801b4dc3c0e002f653830a420fa2dd4e3cf9cf",
   "type": "module",
   "scripts": {
     "all-check": "pnpm clean:vitest-mjs && pnpm install && pnpm compile && pnpm lint:strict && pnpm lint:rust && pnpm build && pnpm test && pnpm test:wasm",
@@ -36,15 +36,9 @@
       "typescript": "5.5.3"
     }
   },
-  "dependencies": {
-    "@bufbuild/protobuf": "^1.10.0",
-    "@connectrpc/connect": "^1.4.0",
-    "@connectrpc/connect-web": "^1.4.0"
-  },
   "devDependencies": {
     "@buf/connectrpc_eliza.bufbuild_es": "1.10.0-20230913231627-233fca715f49.1",
     "@buf/connectrpc_eliza.connectrpc_es": "1.4.0-20230913231627-233fca715f49.3",
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240703080008-312294d02bf9.1",
     "@changesets/cli": "^2.27.3",
     "@eslint/compat": "^1.1.0",
     "@eslint/js": "^9.6.0",

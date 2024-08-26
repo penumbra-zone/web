@@ -1,35 +1,29 @@
-import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import type { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
-import styled from 'styled-components';
+import styled, { DefaultTheme } from 'styled-components';
 import { useDensity } from '../hooks/useDensity';
 import { Density } from '../types/Density';
 import { CopyToClipboardButton } from '../CopyToClipboardButton';
 import { Shrink0 } from '../utils/Shrink0';
-import { technical, truncate } from '../utils/typography';
+import { useAnimationDeferredValue } from '../hooks/useAnimationDeferredValue';
+import { Text } from '../Text';
 
-const Root = styled.div<{ $ephemeral: boolean; $loading: boolean; $density: Density }>`
+const Root = styled.div<{ $density: Density }>`
   border: 1px solid ${props => props.theme.color.other.tonalStroke};
   padding: ${props => props.theme.spacing(2)} ${props => props.theme.spacing(3)};
 
   display: flex;
   gap: ${props => props.theme.spacing(2)};
 
-  color: ${props =>
-    props.$loading
-      ? props.theme.color.text.muted
-      : props.$ephemeral
-        ? props.theme.color.text.special
-        : props.theme.color.text.primary};
-
   ${props => props.$density === 'sparse' && 'word-break: break-all;'}
 `;
 
-const TextWrapper = styled.div<{ $density: Density }>`
+const TextWrapper = styled.div`
   flex-grow: 1;
-
-  ${props => props.$density === 'compact' && truncate}
-  ${technical}
 `;
+
+const getAddressColor = (loading: boolean, ephemeral: boolean) => (color: DefaultTheme['color']) =>
+  loading ? color.text.muted : ephemeral ? color.text.special : color.text.primary;
 
 export interface AccountSelectorAddressProps {
   address?: Address;
@@ -43,16 +37,23 @@ export const AccountSelectorAddress = ({
   loading,
 }: AccountSelectorAddressProps) => {
   const density = useDensity();
+  const deferredAddress = useAnimationDeferredValue(address);
 
   return (
-    <Root $ephemeral={ephemeral} $loading={loading} $density={density}>
-      <TextWrapper $density={density}>
-        {address ? bech32mAddress(address) : `penumbra1...`}
+    <Root $density={density}>
+      <TextWrapper>
+        <Text
+          technical
+          truncate={density === 'compact'}
+          color={getAddressColor(loading, ephemeral)}
+        >
+          {deferredAddress ? bech32mAddress(deferredAddress) : `penumbra1...`}
+        </Text>
       </TextWrapper>
 
       <Shrink0>
         <CopyToClipboardButton
-          text={address ? bech32mAddress(address) : ''}
+          text={deferredAddress ? bech32mAddress(deferredAddress) : ''}
           disabled={!address || loading}
         />
       </Shrink0>

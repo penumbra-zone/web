@@ -15,6 +15,10 @@ const SampleButton = () => (
   </Density>
 );
 
+const addressBookIcon = (
+  <Icon IconComponent={BookUser} size='sm' color={color => color.text.primary} />
+);
+
 const meta: Meta<typeof TextInput> = {
   component: TextInput,
   tags: ['autodocs', '!dev'],
@@ -22,7 +26,7 @@ const meta: Meta<typeof TextInput> = {
     startAdornment: {
       options: ['Address book icon', 'None'],
       mapping: {
-        'Address book icon': <Icon IconComponent={BookUser} size='sm' />,
+        'Address book icon': addressBookIcon,
         None: undefined,
       },
     },
@@ -33,6 +37,8 @@ const meta: Meta<typeof TextInput> = {
         None: undefined,
       },
     },
+    max: { control: false },
+    min: { control: false },
   },
 };
 export default meta;
@@ -46,7 +52,7 @@ export const Basic: Story = {
     value: '',
     disabled: false,
     type: 'text',
-    startAdornment: <Icon IconComponent={BookUser} size='sm' />,
+    startAdornment: addressBookIcon,
     endAdornment: <SampleButton />,
   },
 

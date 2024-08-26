@@ -1,5 +1,17 @@
 # @penumbra-zone/wasm
 
+## 26.1.0
+
+### Minor Changes
+
+- 598d148: better error message for insufficient note balance
+
+## 26.0.0
+
+### Patch Changes
+
+- @penumbra-zone/types@21.0.0
+
 ## 25.0.0
 
 ### Patch Changes

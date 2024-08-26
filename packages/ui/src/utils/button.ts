@@ -7,7 +7,9 @@ export const buttonBase = css`
   appearance: none;
   background: transparent;
   border: none;
+  color: inherit;
   cursor: pointer;
+  font-family: inherit;
   padding: 0;
 `;
 

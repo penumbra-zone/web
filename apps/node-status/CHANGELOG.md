@@ -1,5 +1,25 @@
 # node-status
 
+## 4.1.23
+
+### Patch Changes
+
+- e952e03: remove BSR dependencies, correctly specify @bufbuild and @connectrpc dependencies
+- Updated dependencies [d01196a]
+- Updated dependencies [e952e03]
+- Updated dependencies [74f9a7f]
+  - @repo/ui@8.2.0
+
+## 4.1.22
+
+### Patch Changes
+
+- Updated dependencies [e4a4dd7]
+- Updated dependencies [7732f8d]
+- Updated dependencies [2788cf0]
+- Updated dependencies [907f6ee]
+  - @repo/ui@8.1.0
+
 ## 4.1.21
 
 ### Patch Changes

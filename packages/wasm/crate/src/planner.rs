@@ -137,6 +137,27 @@ async fn save_metadata_if_needed<Db: Database>(
     }
 }
 
+// Used to augment error message with denom metadata for a more readable error
+pub async fn insufficient_funds_err<Db: Database>(
+    storage: &Storage<Db>,
+    required: &Value,
+) -> WasmError {
+    let metadata_result = storage.get_asset(&required.asset_id).await;
+    let error_message = match metadata_result {
+        Ok(Some(asset_metadata)) => {
+            let display_unit = asset_metadata.default_unit();
+            format!(
+                "Transaction failed due to insufficient funds. Required amount: {} {}.",
+                display_unit.format_value(required.amount),
+                display_unit
+            )
+        }
+        // Gracefully handle cases when database errors or does not have metadata for asset
+        _ => "Transaction failed due to insufficient funds".to_string(),
+    };
+    anyhow!(error_message).into()
+}
+
 /// Process a `TransactionPlannerRequest`, returning a `TransactionPlan`
 #[wasm_bindgen]
 pub async fn plan_transaction(
@@ -598,16 +619,13 @@ pub async fn plan_transaction_inner<Db: Database>(
     // Now iterate over the action list's imbalances to balance the transaction.
     while let Some(required) = actions_list.balance_with_fee().required().next() {
         // Find a single note to spend towards the required balance.
-        let note = notes_by_asset_id
+        let maybe_note = notes_by_asset_id
             .get_mut(&required.asset_id)
-            .and_then(|notes| notes.pop())
-            .ok_or_else(|| {
-                anyhow!(
-                    "Failed to retrieve or ran out of notes for asset {}, required amount {}",
-                    required.asset_id,
-                    required.amount
-                )
-            })?;
+            .and_then(|notes| notes.pop());
+        let note = match maybe_note {
+            Some(note) => Ok(note),
+            None => Err(insufficient_funds_err(&storage, &required).await),
+        }?;
 
         // Add a spend for that note to the action list.
         actions_list.push(SpendPlan::new(&mut OsRng, note.note, note.position));

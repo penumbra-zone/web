@@ -68,3 +68,5 @@ storybook-static
 
 packages/protobuf/gen
 packages/protobuf/proto
+
+scripts/private

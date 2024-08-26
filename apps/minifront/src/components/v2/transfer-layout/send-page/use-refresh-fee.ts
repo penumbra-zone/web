@@ -1,15 +1,24 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { sendSelector } from '../../../state/send';
-import { useStore } from '../../../state';
+import { AllSlices } from '../../../../state';
+import { useStoreShallow } from '../../../../utils/use-store-shallow';
 
 const DEBOUNCE_MS = 500;
+
+const useRefreshFeeSelector = (state: AllSlices) => ({
+  amount: state.send.amount,
+  feeTier: state.send.feeTier,
+  recipient: state.send.recipient,
+  selection: state.send.selection,
+  refreshFee: state.send.refreshFee,
+});
 
 /**
  * Refreshes the fee in the state when the amount, recipient, selection, or memo
  * changes.
  */
 export const useRefreshFee = () => {
-  const { amount, feeTier, recipient, selection, refreshFee } = useStore(sendSelector);
+  const { amount, feeTier, recipient, selection, refreshFee } =
+    useStoreShallow(useRefreshFeeSelector);
   const timeoutId = useRef<number | null>(null);
 
   const debouncedRefreshFee = useCallback(() => {
