@@ -1,6 +1,6 @@
 import { useLoaderData } from 'react-router-dom';
-import { Card } from '@repo/ui/components/ui/card';
-import { Identicon } from '@repo/ui/components/ui/identicon';
+import { Card } from '@penumbra-zone/ui/components/ui/card';
+import { Identicon } from '@penumbra-zone/ui/components/ui/identicon';
 import { IndexLoaderResponse } from '../fetching/loader';
 import { uint8ArrayToString } from '@penumbra-zone/types/string';
 

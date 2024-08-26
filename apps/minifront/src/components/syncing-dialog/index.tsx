@@ -1,10 +1,10 @@
-import { Dialog } from '@repo/ui/Dialog';
+import { Dialog } from '@penumbra-zone/ui/Dialog';
 import { Status, useStatus } from '../../state/status';
 import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
 import { SyncAnimation } from './sync-animation';
-import { Text } from '@repo/ui/Text';
+import { Text } from '@penumbra-zone/ui/Text';
 import { useEffect, useState } from 'react';
-import { useSyncProgress } from '@repo/ui/components/ui/block-sync-status';
+import { useSyncProgress } from '@penumbra-zone/ui/components/ui/block-sync-status';
 
 type StatusSelector =
   | {

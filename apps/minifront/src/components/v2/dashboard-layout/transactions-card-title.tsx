@@ -1,7 +1,7 @@
-import { Button } from '@repo/ui/Button';
-import { CharacterTransition } from '@repo/ui/CharacterTransition';
-import { Dialog } from '@repo/ui/Dialog';
-import { Text } from '@repo/ui/Text';
+import { Button } from '@penumbra-zone/ui/Button';
+import { CharacterTransition } from '@penumbra-zone/ui/CharacterTransition';
+import { Dialog } from '@penumbra-zone/ui/Dialog';
+import { Text } from '@penumbra-zone/ui/Text';
 import { Info } from 'lucide-react';
 import { useId } from 'react';
 

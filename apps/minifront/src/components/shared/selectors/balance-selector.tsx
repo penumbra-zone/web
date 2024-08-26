@@ -1,10 +1,10 @@
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { useId, useState } from 'react';
-import { IconInput } from '@repo/ui/components/ui/icon-input';
-import { Dialog, DialogContent, DialogHeader } from '@repo/ui/components/ui/dialog';
-import { ValueViewComponent } from '@repo/ui/components/ui/value';
+import { IconInput } from '@penumbra-zone/ui/components/ui/icon-input';
+import { Dialog, DialogContent, DialogHeader } from '@penumbra-zone/ui/components/ui/dialog';
+import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/value';
 import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { Box } from '@repo/ui/components/ui/box';
+import { Box } from '@penumbra-zone/ui/components/ui/box';
 import { motion } from 'framer-motion';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { emptyBalanceResponse } from '../../../utils/empty-balance-response';
@@ -16,9 +16,9 @@ import {
   useSyncSelectedBalance,
 } from './helpers';
 import { BalanceItem } from './balance-item';
-import { cn } from '@repo/ui/lib/utils';
+import { cn } from '@penumbra-zone/ui/lib/utils';
 import { LoadingIndicator } from './loading-indicator';
-import { Table, TableBody, TableHead, TableHeader, TableRow } from '@repo/ui/components/ui/table';
+import { Table, TableBody, TableHead, TableHeader, TableRow } from '@penumbra-zone/ui/components/ui/table';
 
 interface BalanceSelectorProps {
   value: BalancesResponse | undefined;

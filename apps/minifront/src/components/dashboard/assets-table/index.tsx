@@ -1,6 +1,6 @@
 import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { AddressComponent, AddressIcon } from '@repo/ui/components/ui/address';
-import { Button } from '@repo/ui/components/ui/button';
+import { AddressComponent, AddressIcon } from '@penumbra-zone/ui/components/ui/address';
+import { Button } from '@penumbra-zone/ui/components/ui/button';
 import {
   Table,
   TableBody,
@@ -8,8 +8,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@repo/ui/components/ui/table';
-import { ValueViewComponent } from '@repo/ui/components/ui/value';
+} from '@penumbra-zone/ui/components/ui/table';
+import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/value';
 import { EquivalentValues } from './equivalent-values';
 import { Fragment } from 'react';
 import { PagePath } from '../../metadata/paths';

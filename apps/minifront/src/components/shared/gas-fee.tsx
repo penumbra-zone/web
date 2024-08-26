@@ -1,7 +1,7 @@
 import { Fee, FeeTier_Tier } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
-import { SegmentedPicker, SegmentedPickerOption } from '@repo/ui/components/ui/segmented-picker';
+import { SegmentedPicker, SegmentedPickerOption } from '@penumbra-zone/ui/components/ui/segmented-picker';
 import { InputBlock } from './input-block';
-import { ValueViewComponent } from '@repo/ui/components/ui/value';
+import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/value';
 import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
 const FEE_TIER_OPTIONS: SegmentedPickerOption<FeeTier_Tier>[] = [
