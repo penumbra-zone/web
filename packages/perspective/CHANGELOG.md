@@ -1,5 +1,13 @@
 # @penumbra-zone/perspective
 
+## 27.0.0
+
+### Patch Changes
+
+- e952e03: remove BSR dependencies, correctly specify @bufbuild and @connectrpc dependencies
+- Updated dependencies [598d148]
+  - @penumbra-zone/wasm@26.1.0
+
 ## 26.0.0
 
 ### Patch Changes

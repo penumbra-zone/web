@@ -1,5 +1,17 @@
 # minifront
 
+## 6.19.1
+
+### Patch Changes
+
+- e952e03: remove BSR dependencies, correctly specify @bufbuild and @connectrpc dependencies
+- Updated dependencies [d01196a]
+- Updated dependencies [e952e03]
+- Updated dependencies [74f9a7f]
+  - @repo/ui@8.2.0
+  - @penumbra-zone/perspective@27.0.0
+  - @penumbra-zone/client@18.0.1
+
 ## 6.19.0
 
 ### Minor Changes
