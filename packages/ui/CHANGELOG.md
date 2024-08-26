@@ -1,5 +1,18 @@
 # @penumbra-zone/ui
 
+## 8.2.0
+
+### Minor Changes
+
+- d01196a: Add WalletBalance UI component
+- 74f9a7f: Remove browser & version check
+
+### Patch Changes
+
+- e952e03: remove BSR dependencies, correctly specify @bufbuild and @connectrpc dependencies
+- Updated dependencies [e952e03]
+  - @penumbra-zone/perspective@27.0.0
+
 ## 8.1.0
 
 ### Minor Changes
