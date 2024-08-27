@@ -1,4 +1,4 @@
-import illustration from './illustration.svg';
+import illustration from './illustration.svg?url';
 
 const FakeButtons = () => (
   <div className='ml-6 mt-6 flex gap-1'>
