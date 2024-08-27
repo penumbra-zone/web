@@ -40,6 +40,7 @@ export const assembleAuctionBatch = (
     a => a.addressIndex.equals(firstFoundAddressIndex),
     batchLimit,
   );
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify
   return { auctions: filteredBySeqAndAddressIndexAuctions, source: firstFoundAddressIndex! };
 };
 

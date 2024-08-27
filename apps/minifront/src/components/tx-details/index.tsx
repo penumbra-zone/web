@@ -16,6 +16,7 @@ export const TxDetailsErrorBoundary = () => {
 export const TxDetails = () => {
   const { hash } = useParams<{ hash: string }>();
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify
   const txInfo = useTransactionInfo(undefined, hash!);
 
   if (

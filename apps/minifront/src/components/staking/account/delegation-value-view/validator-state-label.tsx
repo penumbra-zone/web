@@ -24,7 +24,7 @@ const getStateLabel = (state: ValidatorState_ValidatorStateEnum) =>
 
 export const ValidatorStateLabel = ({ state }: { state: ValidatorState_ValidatorStateEnum }) => {
   if (state === ValidatorState_ValidatorStateEnum.ACTIVE) {
-    return <></>;
+    return;
   }
 
   const { label, color } = getStateLabel(state);

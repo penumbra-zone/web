@@ -12,7 +12,9 @@ export const DurationSlider = () => {
   const { duration, setDuration } = useStoreShallow(durationSliderSelector);
 
   const handleChange = (newValue: number[]) => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify non-null assertion
     const value = newValue[0]!; // We don't use multiple values in the slider
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify non-null assertion
     const option = DURATION_OPTIONS[value]!;
 
     setDuration(option);

@@ -49,7 +49,11 @@ export const TxViewer = ({ txInfo }: { txInfo?: TransactionInfo }) => {
   // use React-Query to invoke custom hooks that call async translators.
   const { data: receiverView } = useQuery(
     ['receiverView', txInfo, option],
-    () => fetchReceiverView(txInfo!),
+    () =>
+      fetchReceiverView(
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify
+        txInfo!,
+      ),
     {
       enabled: option === TxDetailsTab.RECEIVER && !!txInfo,
     },
@@ -80,7 +84,13 @@ export const TxViewer = ({ txInfo }: { txInfo?: TransactionInfo }) => {
       </div>
       {option === TxDetailsTab.PRIVATE && txInfo && (
         <>
-          <TransactionViewComponent txv={txInfo.view!} metadataFetcher={getMetadata} />
+          <TransactionViewComponent
+            txv={
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify
+              txInfo.view!
+            }
+            metadataFetcher={getMetadata}
+          />
           <div className='mt-8'>
             <div className='text-xl font-bold'>Raw JSON</div>
             <JsonViewer jsonObj={txInfo.toJson({ typeRegistry }) as Jsonified<TransactionInfo>} />

@@ -234,6 +234,7 @@ const calculatePriceImpact = (swapExec?: SwapExecution): number | undefined => {
   // Get the price in the best execution trace
   const inputAssetId = getAssetIdFromValue(swapExec.input);
   const outputAssetId = getAssetIdFromValue(swapExec.output);
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify non-null assertion
   const bestTrace = swapExec.traces[0]!;
   const bestInputAmount = getMatchingAmount(bestTrace.value, inputAssetId);
   const bestOutputAmount = getMatchingAmount(bestTrace.value, outputAssetId);

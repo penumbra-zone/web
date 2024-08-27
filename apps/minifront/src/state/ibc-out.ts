@@ -291,6 +291,7 @@ export const filterBalancesPerChain = (
       }
       return chain?.channelId === match.channel;
     })
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify
     .map(m => m.penumbraAssetId!);
 
   const assetIdsToCheck = [...assetsWithMatchingChannel];

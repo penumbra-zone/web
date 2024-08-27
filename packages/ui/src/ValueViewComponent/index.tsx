@@ -90,8 +90,7 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
 
   const formattedAmount = getFormattedAmtFromValueView(valueView, true);
   const metadata = getMetadata.optional()(valueView);
-  // Symbol default is "" and thus cannot do nullish coalescing
-  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- possibly empty string
   const symbol = metadata?.symbol || 'Unknown';
 
   return (

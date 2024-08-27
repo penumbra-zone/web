@@ -20,7 +20,7 @@ export const AssetsTable = () => {
 
   // User has not connected their wallet yet
   if (!address || !selectedChain) {
-    return <></>;
+    return;
   }
 
   if (isLoading) {

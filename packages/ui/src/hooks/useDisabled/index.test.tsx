@@ -4,9 +4,9 @@ import { render } from '@testing-library/react';
 import { DisabledContext } from '../../utils/DisabledContext';
 
 const MockUseDisabledComponent = ({ disabled }: { disabled?: boolean }) => {
-  disabled = useDisabled(disabled);
+  const isDisabled = useDisabled(disabled);
 
-  return <>{disabled.toString()}</>;
+  return <>{isDisabled.toString()}</>;
 };
 
 describe('useDisabled()', () => {

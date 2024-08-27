@@ -27,7 +27,7 @@ export const ValidatorInfo = () => {
     status: { validatorInfo },
   } = useLoaderData() as IndexLoaderResponse;
   if (!validatorInfo) {
-    return <></>;
+    return;
   }
 
   return (

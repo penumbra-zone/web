@@ -16,7 +16,7 @@ export interface TransportEvent<I extends string = string> {
   requestId: I;
   header?: HeadersInit;
   trailer?: HeadersInit;
-  //contextValues?: object;
+  // contextValues?: object;
 }
 
 export interface TransportAbort<I = string> extends TransportEvent<I extends string ? I : never> {

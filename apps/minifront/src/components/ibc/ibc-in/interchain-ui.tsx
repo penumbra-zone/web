@@ -12,7 +12,7 @@ export const InterchainUi = () => {
     return <div>Error trying to load registry!</div>;
   }
   if (!data) {
-    return <></>;
+    return;
   }
   if (!data.ibcConnections.length) {
     return <div>No known IBC connections available for {data.chainId}</div>;

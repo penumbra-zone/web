@@ -42,6 +42,7 @@ const localErrorJson = (err: unknown, relevantMessage?: unknown) =>
         details: [
           {
             type: String(
+              // eslint-disable-next-line no-nested-ternary -- readable ternary nesting
               typeof err === 'function'
                 ? err.name
                 : typeof err === 'object'

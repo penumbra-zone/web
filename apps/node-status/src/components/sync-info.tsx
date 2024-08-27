@@ -23,7 +23,7 @@ export const SyncInfo = () => {
     latestAppHash,
   } = useLoaderData() as IndexLoaderResponse;
   if (!syncInfo) {
-    return <></>;
+    return;
   }
 
   const { date, time } = getFormattedTime(syncInfo);

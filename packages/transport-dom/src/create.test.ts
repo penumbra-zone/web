@@ -415,7 +415,7 @@ describe('transport timeouts', () => {
               performance.mark('stream');
               try {
                 for (const [i, r] of responses.entries()) {
-                  await new Promise(resolve => setTimeout(resolve, defaultTimeoutMs / 3));
+                  await new Promise(resolve => void setTimeout(resolve, defaultTimeoutMs / 3));
                   performance.measure(`chunk ${i}`, 'stream');
                   yield Any.pack(new IntroduceResponse(r)).toJson({ typeRegistry });
                 }
@@ -440,7 +440,7 @@ describe('transport timeouts', () => {
       streamRequest.then(({ message }) => Array.fromAsync(message)),
     ).resolves.not.toThrow();
     await expect(streamDone.promise).resolves.not.toThrow();
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- tests
     if (PRINT_TEST_TIMES) {
       console.log('measure', [
         { defaultTimeoutMs },
@@ -621,7 +621,7 @@ describe('transport aborts', () => {
         const stream = ReadableStream.from(
           (async function* () {
             for (const r of responses) {
-              await new Promise(resolve => setTimeout(resolve, defaultTimeoutMs / 3));
+              await new Promise(resolve => void setTimeout(resolve, defaultTimeoutMs / 3));
               yield Any.pack(new IntroduceResponse(r)).toJson({ typeRegistry });
             }
           })(),

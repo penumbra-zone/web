@@ -32,7 +32,7 @@ export const IbcInRequest = () => {
 
   // User is not ready to issue request
   if (!address || !selectedChain || !data?.length) {
-    return <></>;
+    return;
   }
 
   return (
