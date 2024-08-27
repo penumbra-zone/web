@@ -1,17 +1,15 @@
-import { Config } from 'tailwindcss';
 import { theme } from './PenumbraUIProvider/theme';
-import { RecursiveKeyValuePair, ResolvableTo } from 'tailwindcss/types/config';
 
 /**
  * For consumers using Tailwind, this file exports a Tailwind config based on
  * the Penumbra UI theme values.
  */
-export const tailwindConfig: Config = {
+export const tailwindConfig = {
   content: [],
   theme: {
     extend: {
       borderRadius: theme.borderRadius,
-      colors: theme.color as unknown as ResolvableTo<RecursiveKeyValuePair>,
+      colors: theme.color,
       fontFamily: theme.font,
       fontSize: theme.fontSize,
       lineHeight: theme.lineHeight,
@@ -27,4 +25,4 @@ export const tailwindConfig: Config = {
       // Penumbra UI's.
     },
   },
-};
+} as const;

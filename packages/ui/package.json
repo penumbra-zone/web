@@ -19,6 +19,7 @@
     "./lib/toast/*": "./lib/toast/*.ts",
     "./lib/toast/transaction-toast": "./lib/toast/transaction-toast.tsx",
     "./lib/utils": "./lib/utils.ts",
+    "./tailwind": "./src/tailwindConfig.ts",
     "./postcss.config.js": "./postcss.config.js",
     "./styles/*": "./styles/*",
     "./hooks/*": "./src/hooks/*/index.ts",

@@ -6,6 +6,7 @@
   "main": "index.js",
   "dependencies": {
     "tailwindcss": "^3.4.3",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "@repo/ui": "workspace:*"
   }
 }

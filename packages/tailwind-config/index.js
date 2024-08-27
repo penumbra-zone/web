@@ -1,6 +1,9 @@
 import plugin from 'tailwindcss/plugin';
 import tailwindCssAnimatePlugin from 'tailwindcss-animate';
 
+// TODO: Replace the theme to v2 instead of partially using it
+import { tailwindConfig as v2TailwindConfig } from '@repo/ui/tailwind';
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -27,6 +30,7 @@ export default {
         mono: ['Iosevka Term', 'monospace'],
       },
       colors: {
+        ...v2TailwindConfig.theme.extend.colors,
         border: {
           DEFAULT: 'hsl(var(--border))',
           secondary: 'var(--border-secondary)',
