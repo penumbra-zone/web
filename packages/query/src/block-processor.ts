@@ -145,7 +145,7 @@ export class BlockProcessor implements BlockProcessorInterface {
    * - query remote rpc to begin streaming at the next block
    * - iterate
    */
-  private async syncAndStore(_isFreshWallet: boolean | undefined, _walletCreationBlockHeight: number | undefined) {
+  private async syncAndStore(isFreshWallet: boolean | undefined, walletCreationBlockHeight: number | undefined) {
     // start at next block, or genesis if height is undefined
     let currentHeight = (await this.indexedDb.getFullSyncHeight()) ?? -1n;
 
@@ -171,7 +171,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       // begin the chain with local genesis block if provided
       if (this.genesisBlock?.height === currentHeight + 1n) {
         currentHeight = this.genesisBlock.height;
-        await this.processBlock(this.genesisBlock, latestKnownBlockHeight);
+        await this.processBlock(this.genesisBlock, latestKnownBlockHeight, false);
       }
     }
 
@@ -189,7 +189,16 @@ export class BlockProcessor implements BlockProcessorInterface {
         throw new Error(`Unexpected block height: ${compactBlock.height} at ${currentHeight}`);
       }
 
-      await this.processBlock(compactBlock, latestKnownBlockHeight);
+
+      // Set the skip_trial_decrypt flag
+      const skipTrialDecrypt = Boolean(
+        isFreshWallet &&
+        walletCreationBlockHeight &&
+        currentHeight < BigInt(walletCreationBlockHeight),
+      );
+      console.log("skipTrialDecrypt: ", skipTrialDecrypt)
+
+      await this.processBlock(compactBlock, latestKnownBlockHeight, skipTrialDecrypt);
 
       // We only query Tendermint for the latest known block height once, when
       // the block processor starts running. Once we're caught up, though, the
@@ -203,7 +212,7 @@ export class BlockProcessor implements BlockProcessorInterface {
   }
 
   // logic for processing a compact block
-  private async processBlock(compactBlock: CompactBlock, latestKnownBlockHeight: bigint) {
+  private async processBlock(compactBlock: CompactBlock, latestKnownBlockHeight: bigint, skipTrialDecrypt: boolean) {
     if (compactBlock.appParametersUpdated) {
       await this.indexedDb.saveAppParams(await this.querier.app.appParams());
     }
@@ -230,7 +239,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     // - decrypts new notes
     // - decrypts new swaps
     // - updates idb with advice
-    const scannerWantsFlush = await this.viewServer.scanBlock(compactBlock, true);
+    const scannerWantsFlush = await this.viewServer.scanBlock(compactBlock, skipTrialDecrypt);
 
     // flushing is slow, avoid it until
     // - wasm says
