@@ -75,8 +75,10 @@ export const overlays = css<{
     transition: background-color 0.15s;
   }
 
-  &:hover::before {
-    background-color: ${props => props.theme.color.action.hoverOverlay};
+  @media (hover: hover) {
+    &:hover::before {
+      background-color: ${props => props.theme.color.action.hoverOverlay};
+    }
   }
 
   &:active::before {

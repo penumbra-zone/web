@@ -258,8 +258,6 @@ export const theme = {
   spacing,
   zIndex: {
     disabledOverlay: 10,
-    dialogOverlay: 1000,
-    dialogContent: 1001,
   },
 } as const;
 
