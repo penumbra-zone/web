@@ -1,5 +1,5 @@
 import { ViewServer as WasmViewServer } from '../wasm/index.js';
-import { CompactBlock } from '@penumbra-zone/protobuf/penumbra/core/component/compact_block/v1/compact_block_pb';
+// import { CompactBlock } from '@penumbra-zone/protobuf/penumbra/core/component/compact_block/v1/compact_block_pb';
 import { MerkleRoot } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
 import { JsonObject, JsonValue } from '@bufbuild/protobuf';
 import { SpendableNoteRecord, SwapRecord } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
@@ -58,9 +58,13 @@ export class ViewServer implements ViewServerInterface {
   // Decrypts blocks with viewing key for notes, swaps, and updates revealed for user
   // Makes update to internal state-commitment-tree as a side effect.
   // Should extract updates via this.flushUpdates().
-  async scanBlock(compactBlock: CompactBlock, skipTrialDecrypt: boolean): Promise<boolean> {
-    const res = compactBlock.toBinary();
-    return this.wasmViewServer.scan_block(res, skipTrialDecrypt);
+  async scanBlock(compactBlock: Uint8Array, skipTrialDecrypt: boolean): Promise<boolean> {
+    // const res = compactBlock.toBinary();
+    return this.wasmViewServer.scan_block(compactBlock, skipTrialDecrypt);
+  }
+
+  async decodeBlock(compactBlock: Uint8Array) {
+    this.wasmViewServer.decode_block(compactBlock);
   }
 
   // Resets the state of the wasmViewServer to the one set in storage

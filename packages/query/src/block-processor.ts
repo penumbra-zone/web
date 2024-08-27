@@ -46,7 +46,6 @@ import { getAssetIdFromGasPrices } from '@penumbra-zone/getters/compact-block';
 import { getSpendableNoteRecordCommitment } from '@penumbra-zone/getters/spendable-note-record';
 import { getSwapRecordCommitment } from '@penumbra-zone/getters/swap-record';
 import { CompactBlock } from '@penumbra-zone/protobuf/penumbra/core/component/compact_block/v1/compact_block_pb';
-
 declare global {
   // eslint-disable-next-line no-var
   var __DEV__: boolean | undefined;
@@ -146,8 +145,12 @@ export class BlockProcessor implements BlockProcessorInterface {
    * - iterate
    */
   private async syncAndStore(_isFreshWallet: boolean | undefined, _walletCreationBlockHeight: number | undefined) {
+    console.log("entered syncAndStore!!!!")
+
     // start at next block, or genesis if height is undefined
     let currentHeight = (await this.indexedDb.getFullSyncHeight()) ?? -1n;
+    // const fullSyncHeight = await this.indexedDb.getFullSyncHeight();
+    const startHeight = 1n; // Must compare to undefined as 0n is falsy
 
     // this is the first network query of the block processor. use backoff to
     // delay until network is available
@@ -175,31 +178,102 @@ export class BlockProcessor implements BlockProcessorInterface {
       }
     }
 
-    // this is an indefinite stream of the (compact) chain from the network
-    // intended to run continuously
+    // Start timing the entire loop
+    performance.mark('Loop_Start');
+
+    let blockCounter = 0;
+    const maxBlocks = 800000;
+    // const intervalBlocks = 1000;
+    const totalCompactBlocks = [];
+
     for await (const compactBlock of this.querier.compactBlock.compactBlockRange({
-      startHeight: currentHeight + 1n,
+      startHeight,
       keepAlive: true,
       abortSignal: this.abortController.signal,
     })) {
-      // confirm block height to prevent corruption of local state
-      if (compactBlock.height === currentHeight + 1n) {
-        currentHeight = compactBlock.height;
-      } else {
-        throw new Error(`Unexpected block height: ${compactBlock.height} at ${currentHeight}`);
+      totalCompactBlocks.push(compactBlock)
+
+      // Increment the block counter
+      blockCounter++;
+
+      // Break the loop if we've processed the first 10,000 blocks
+      if (blockCounter > maxBlocks) {
+        break;
       }
 
-      await this.processBlock(compactBlock, latestKnownBlockHeight);
+      // console.log("compactBlock: ", compactBlock)
 
-      // We only query Tendermint for the latest known block height once, when
-      // the block processor starts running. Once we're caught up, though, the
-      // chain will of course continue adding blocks, and we'll keep processing
-      // them. So, we need to update `latestKnownBlockHeight` once we've passed
-      // it.
-      if (compactBlock.height > latestKnownBlockHeight) {
-        latestKnownBlockHeight = compactBlock.height;
-      }
+      //   if (compactBlock.height < 10) {
+      //     // //   // Start timing this iteration
+      //     performance.mark('toBinary_Start');
+      //     const compactBlockJson = compactBlock.toBinary();
+      //     performance.mark('toBinary_End');
+      //     const toBinaryMeasure = performance.measure('toBinary_Measure', 'toBinary_Start', 'toBinary_End');
+      //     console.log('toBinary_Measure: ' + toBinaryMeasure.duration);
+
+      //     performance.mark('Function2_Start');
+      //     await this.viewServer.decodeBlock(compactBlockJson);
+      //     performance.mark('Function2_End');
+      //     const measure2 = performance.measure('Measure2', 'Function2_Start', 'Function2_End');
+      //     console.log('Measure2: ' + measure2.duration);
+      //   }
     }
+
+    // End timing the entire loop
+    performance.mark('Loop_End');
+    const loopMeasure = performance.measure('Loop_Measure', 'Loop_Start', 'Loop_End');
+    console.log('Total loop time: ' + loopMeasure.duration + ' ms');
+    console.log("totalCompactBlocks: ", totalCompactBlocks)
+
+    // Start timing the entire loop
+    performance.mark('Loop_Start_2');
+
+    for (let i = 0; i < totalCompactBlocks.length; i++) {
+      totalCompactBlocks[i]?.toBinary();
+    }
+
+    performance.mark('Loop_End_2');
+    const loopMeasure2 = performance.measure('loopMeasure2', 'Loop_Start_2', 'Loop_End_2');
+    console.log('Total serialization to binary time: ' + loopMeasure2.duration + ' ms');
+
+    // Start timing the entire loop
+    performance.mark('Loop_Start_3');
+
+    for (let i = 0; i < totalCompactBlocks.length; i++) {
+      let compactBlockJson = totalCompactBlocks[i]?.toBinary();
+      await this.viewServer.decodeBlock(compactBlockJson!);
+    }
+
+    performance.mark('Loop_End_3');
+    const loopMeasure3 = performance.measure('loopMeasure3', 'Loop_Start_3', 'Loop_End_3');
+    console.log('Total wasm decoding time: ' + loopMeasure3.duration + ' ms');
+
+
+    // // this is an indefinite stream of the (compact) chain from the network
+    // // intended to run continuously
+    // for await (const compactBlock of this.querier.compactBlock.compactBlockRange({
+    //   startHeight: currentHeight + 1n,
+    //   keepAlive: true,
+    //   abortSignal: this.abortController.signal,
+    // })) {
+    //   // confirm block height to prevent corruption of local state
+    //   if (compactBlock.height === currentHeight + 1n) {
+    //     currentHeight = compactBlock.height;
+    //   } else {
+    //     throw new Error(`Unexpected block height: ${compactBlock.height} at ${currentHeight}`);
+    //   }
+
+    //   await this.processBlock(compactBlock, latestKnownBlockHeight);
+
+    //   // We only query Tendermint for the latest known block height once, when
+    //   // the block processor starts running. Once we're caught up, though, the
+    //   // chain will of course continue adding blocks, and we'll keep processing
+    //   // them. So, we need to update `latestKnownBlockHeight` once we've passed
+    //   // it.
+    //   if (compactBlock.height > latestKnownBlockHeight) {
+    //     latestKnownBlockHeight = compactBlock.height;
+    //   }
+    // }
   }
 
   // logic for processing a compact block
@@ -230,7 +304,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     // - decrypts new notes
     // - decrypts new swaps
     // - updates idb with advice
-    const scannerWantsFlush = await this.viewServer.scanBlock(compactBlock, true);
+    const scannerWantsFlush = await this.viewServer.scanBlock(compactBlock.toBinary(), true);
 
     // flushing is slow, avoid it until
     // - wasm says
