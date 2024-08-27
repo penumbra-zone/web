@@ -162,7 +162,7 @@ impl ViewServer {
                             found_new_data = true;
                         }
                         None => {
-                            self.sct.insert(Forget, payload.note_commitment)?;
+                            // self.sct.insert(Forget, payload.note_commitment)?;
                         }
                     }
                 }
@@ -207,48 +207,48 @@ impl ViewServer {
                             found_new_data = true;
                         }
                         None => {
-                            self.sct.insert(Forget, payload.commitment)?;
+                            // self.sct.insert(Forget, payload.commitment)?;
                         }
                     }
                 }
-                StatePayload::RolledUp { commitment, .. } => {
-                    // This is a note we anticipated, so retain its auth path.
+                StatePayload::RolledUp { .. } => {
+                    // // This is a note we anticipated, so retain its auth path.
 
-                    let advice_result = self.storage.read_advice(commitment).await?;
+                    // let advice_result = self.storage.read_advice(commitment).await?;
 
-                    match advice_result {
-                        None => {
-                            self.sct.insert(Forget, commitment)?;
-                        }
-                        Some(note) => {
-                            let position = self.sct.insert(Keep, commitment)?;
+                    // match advice_result {
+                    //     None => {
+                    //         self.sct.insert(Forget, commitment)?;
+                    //     }
+                    //     Some(note) => {
+                    //         let position = self.sct.insert(Keep, commitment)?;
 
-                            let address_index_1 = self
-                                .fvk
-                                .incoming()
-                                .index_for_diversifier(note.diversifier());
+                    //         let address_index_1 = self
+                    //             .fvk
+                    //             .incoming()
+                    //             .index_for_diversifier(note.diversifier());
 
-                            let nullifier =
-                                Nullifier::derive(self.fvk.nullifier_key(), position, &commitment);
+                    //         let nullifier =
+                    //             Nullifier::derive(self.fvk.nullifier_key(), position, &commitment);
 
-                            let source = clone_payload.source().clone();
+                    //         let source = clone_payload.source().clone();
 
-                            let spendable_note = SpendableNoteRecord {
-                                note_commitment: note.commit(),
-                                height_spent: None,
-                                height_created: block.height,
-                                note: note.clone(),
-                                address_index: address_index_1,
-                                nullifier,
-                                position,
-                                source,
-                                return_address: None,
-                            };
-                            self.notes
-                                .insert(spendable_note.note_commitment, spendable_note.clone());
-                            found_new_data = true;
-                        }
-                    }
+                    //         let spendable_note = SpendableNoteRecord {
+                    //             note_commitment: note.commit(),
+                    //             height_spent: None,
+                    //             height_created: block.height,
+                    //             note: note.clone(),
+                    //             address_index: address_index_1,
+                    //             nullifier,
+                    //             position,
+                    //             source,
+                    //             return_address: None,
+                    //         };
+                    //         self.notes
+                    //             .insert(spendable_note.note_commitment, spendable_note.clone());
+                    //         found_new_data = true;
+                    //     }
+                    // }
                 }
             }
         }
@@ -261,6 +261,13 @@ impl ViewServer {
         self.latest_height = block.height;
 
         Ok(found_new_data)
+    }
+
+    #[wasm_bindgen]
+    pub async fn decode_block(&mut self, compact_block: &[u8]) {
+        utils::set_panic_hook();
+
+        CompactBlock::decode(compact_block).unwrap();
     }
 
     /// Get new notes, swaps, SCT state updates
