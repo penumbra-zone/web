@@ -1,18 +1,37 @@
-import styled, { DefaultTheme } from 'styled-components';
-import { tab } from '../utils/typography';
+import styled, { css, DefaultTheme } from 'styled-components';
+import { tab, tabSmall } from '../utils/typography';
 import { motion } from 'framer-motion';
 import { useId } from 'react';
 import { buttonBase, overlays } from '../utils/button';
 import * as RadixTabs from '@radix-ui/react-tabs';
 import { ActionType } from '../utils/ActionType';
+import { useDensity } from '../hooks/useDensity';
+import { Density } from '../types/Density.ts';
 
-const Root = styled.div`
-  height: 52px;
-  padding: ${props => props.theme.spacing(1)};
+const sparse = css`
+  ${tab};
+  
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 0; /** Ensure equal widths */
 
+  padding: ${props => props.theme.spacing(2)};
+`;
+
+const compact = css`
+  ${tabSmall};
+
+  padding: ${props => props.theme.spacing(1)} ${props => props.theme.spacing(2)};
+`;
+
+const Root = styled.div<{
+  $density: Density;
+}>`
   display: flex;
   align-items: stretch;
   box-sizing: border-box;
+  gap: ${props => props.theme.spacing(4)};
+  height: ${props => props.$density === 'sparse' ? 44 : 28}px;
 `;
 
 type LimitedActionType = Exclude<ActionType, 'destructive'>;
@@ -33,13 +52,12 @@ const Tab = styled.button<{
   $actionType: LimitedActionType;
   $getFocusOutlineColor: (theme: DefaultTheme) => string;
   $getBorderRadius: (theme: DefaultTheme) => string;
+  $density: Density;
 }>`
-  ${buttonBase}
+  ${buttonBase};
 
-  flex-grow: 1;
-  flex-shrink: 1;
-  flex-basis: 0; /** Ensure equal widths */
-
+  height: 100%;
+  
   color: ${props => {
     switch (props.$actionType) {
       case 'accent':
@@ -53,9 +71,13 @@ const Tab = styled.button<{
   position: relative;
   white-space: nowrap;
 
-  ${tab}
   ${overlays}
 
+  ${props => 
+    props.$density === 'sparse'
+      ? sparse
+      : compact}
+  
   &:focus-within {
     outline: none;
   }
@@ -115,11 +137,12 @@ export interface TabsProps {
  */
 export const Tabs = ({ value, onChange, options, actionType = 'default' }: TabsProps) => {
   const layoutId = useId();
+  const density = useDensity();
 
   return (
     <RadixTabs.Root value={value} onValueChange={onChange}>
       <RadixTabs.List asChild>
-        <Root>
+        <Root $density={density}>
           {options.map(option => (
             <RadixTabs.Trigger
               value={option.value}
@@ -130,6 +153,7 @@ export const Tabs = ({ value, onChange, options, actionType = 'default' }: TabsP
               <Tab
                 onClick={() => onChange(option.value)}
                 disabled={option.disabled}
+                $density={density}
                 $actionType={actionType}
                 $getFocusOutlineColor={theme =>
                   theme.color.action[outlineColorByActionType[actionType]]

@@ -113,6 +113,15 @@ export const tab = css`
   line-height: ${props => props.theme.lineHeight.textLg};
 `;
 
+export const tabSmall = css`
+  ${base}
+
+  font-family: ${props => props.theme.font.default};
+  font-size: ${props => props.theme.fontSize.textSm};
+  font-weight: 500;
+  line-height: ${props => props.theme.lineHeight.textSm};
+`;
+
 export const tableItem = css`
   ${base}
 
