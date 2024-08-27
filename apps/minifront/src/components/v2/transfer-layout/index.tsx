@@ -5,13 +5,11 @@ import { Tabs } from '@repo/ui/Tabs';
 import { usePagePath } from '../../../fetchers/page-path';
 import { PagePath } from '../../metadata/paths';
 import { motion } from 'framer-motion';
-
-/** @todo: Remove this function and its uses after we switch to v2 layout */
-const v2PathPrefix = (path: string) => `/v2${path}`;
+import { getV2Link } from '../get-v2-link.ts';
 
 const TABS_OPTIONS = [
-  { label: 'Send', value: v2PathPrefix(PagePath.SEND) },
-  { label: 'Receive', value: v2PathPrefix(PagePath.RECEIVE) },
+  { label: 'Send', value: getV2Link(PagePath.SEND) },
+  { label: 'Receive', value: getV2Link(PagePath.RECEIVE) },
 ];
 
 export const TransferLayout = () => {
@@ -26,7 +24,7 @@ export const TransferLayout = () => {
         <Card title='Transfer Assets' motion={{ layout: true, layoutId: 'main' }}>
           <motion.div layout>
             <Tabs
-              value={v2PathPrefix(pagePath)}
+              value={getV2Link(pagePath)}
               onChange={value => navigate(value)}
               options={TABS_OPTIONS}
               actionType='accent'
