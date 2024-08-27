@@ -1,5 +1,5 @@
-import { Density } from '@repo/ui/Density';
-import { Table } from '@repo/ui/Table';
+import { Density } from '@penumbra-zone/ui/Density';
+import { Table } from '@penumbra-zone/ui/Table';
 import { BalancesByAccount, groupByAccount, useBalancesResponses } from '../../../../state/shared';
 import { shouldDisplay } from '../../../../fetchers/balances/should-display';
 import { sortByPriorityScore } from '../../../../fetchers/balances/by-priority-score';
@@ -8,14 +8,14 @@ import { getMetadataFromBalancesResponseOptional } from '@penumbra-zone/getters/
 import { PagePath } from '../../../metadata/paths';
 import { getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
-import { ValueViewComponent } from '@repo/ui/ValueViewComponent';
+import { ValueViewComponent } from '@penumbra-zone/ui/ValueViewComponent';
 import { EquivalentValues } from './equivalent-values';
 import { TableTitle } from './table-title';
 import { Link } from 'react-router-dom';
-import { Button } from '@repo/ui/Button';
+import { Button } from '@penumbra-zone/ui/Button';
 import { ArrowRightLeft } from 'lucide-react';
-import { useAnimationDeferredValue } from '@repo/ui/hooks/useAnimationDeferredValue';
-import { ConditionalWrap } from '@repo/ui/ConditionalWrap';
+import { useAnimationDeferredValue } from '@penumbra-zone/ui/hooks/useAnimationDeferredValue';
+import { ConditionalWrap } from '@penumbra-zone/ui/ConditionalWrap';
 import { LayoutGroup } from 'framer-motion';
 
 const getTradeLink = (balance: BalancesResponse): string => {

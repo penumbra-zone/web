@@ -1,7 +1,7 @@
-import { Button } from '@repo/ui/components/ui/button';
-import { Toaster } from '@repo/ui/components/ui/toaster';
-import { SplashPage } from '@repo/ui/components/ui/splash-page';
-import { errorToast, warningToast } from '@repo/ui/lib/toast/presets';
+import { Button } from '@penumbra-zone/ui/components/ui/button';
+import { Toaster } from '@penumbra-zone/ui/components/ui/toaster';
+import { SplashPage } from '@penumbra-zone/ui/components/ui/splash-page';
+import { errorToast, warningToast } from '@penumbra-zone/ui/lib/toast/presets';
 import { HeadTag } from './metadata/head-tag';
 
 import { useState } from 'react';

@@ -5,11 +5,11 @@ import {
   getMetadataFromBalancesResponseOptional,
 } from '@penumbra-zone/getters/balances-response';
 import { useMemo } from 'react';
-import { DialogClose } from '@repo/ui/components/ui/dialog';
-import { cn } from '@repo/ui/lib/utils';
-import { AssetIcon } from '@repo/ui/components/ui/asset-icon';
-import { ValueViewComponent } from '@repo/ui/components/ui/value';
-import { TableCell, TableRow } from '@repo/ui/components/ui/table';
+import { DialogClose } from '@penumbra-zone/ui/components/ui/dialog';
+import { cn } from '@penumbra-zone/ui/lib/utils';
+import { AssetIcon } from '@penumbra-zone/ui/components/ui/asset-icon';
+import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/value';
+import { TableCell, TableRow } from '@penumbra-zone/ui/components/ui/table';
 import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 
 interface BalanceItemProps {
