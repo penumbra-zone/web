@@ -8,5 +8,5 @@ export const HeaderLogo = () => {
     <Link className='flex h-8 items-center' to={getV2Link(PagePath.INDEX)}>
       <PenumbraLogo />
     </Link>
-  )
+  );
 };

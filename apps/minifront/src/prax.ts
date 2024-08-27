@@ -1,5 +1,6 @@
-import { createPenumbraClient } from '@penumbra-zone/client';
+import { createPenumbraClient, PenumbraManifest } from '@penumbra-zone/client';
 import { assertProviderConnected, assertProviderManifest } from '@penumbra-zone/client/assert';
+import { useEffect, useState } from 'react';
 
 const prax_id = 'lkpmkhpnhknhmibgnmmhdhgdilepfghe';
 const prax_origin = new URL(`chrome-extension://${prax_id}`).origin;
@@ -13,3 +14,15 @@ export const isPraxInstalled = () =>
     () => true,
     () => false,
   );
+
+export const usePraxManifest = (): PenumbraManifest | undefined => {
+  const [manifest, setManifest] = useState<PenumbraManifest>();
+
+  useEffect(() => {
+    penumbra.onConnectionStateChange(() => {
+      setManifest(penumbra.manifest);
+    });
+  }, []);
+
+  return manifest;
+};

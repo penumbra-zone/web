@@ -7,11 +7,13 @@ export const StatusPopover = () => {
   return (
     <Popover>
       <Popover.Trigger>
-        <Button icon={Blocks} iconOnly>Status</Button>
+        <Button icon={Blocks} iconOnly>
+          Status
+        </Button>
       </Popover.Trigger>
       <Popover.Content align='end' side='bottom'>
         <Text>Prax wallet</Text>
       </Popover.Content>
     </Popover>
-  )
-}
+  );
+};

@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) => {
       basicSsl(),
       commitInfoPlugin(),
       svgr({
-        include: "**/*.svg",
+        include: '**/*.svg',
         svgrOptions: {
           exportType: 'default',
         },
