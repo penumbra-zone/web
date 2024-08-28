@@ -20,6 +20,8 @@ import { BalancesByAccount, groupByAccount, useBalancesResponses } from '../../.
 import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
 import { shouldDisplay } from '../../../fetchers/balances/should-display';
 import { sortByPriorityScore } from '../../../fetchers/balances/by-priority-score';
+import { LineWave } from 'react-loader-spinner';
+import { cn } from '@penumbra-zone/ui/lib/utils';
 
 const getTradeLink = (balance: BalancesResponse): string => {
   const metadata = getMetadataFromBalancesResponseOptional(balance);
@@ -34,18 +36,26 @@ const byAccountIndex = (a: BalancesByAccount, b: BalancesByAccount) => {
 
 const filteredBalancesByAccountSelector = (
   zQueryState: AbridgedZQueryState<BalancesResponse[]>,
-): BalancesByAccount[] =>
-  zQueryState.data
-    ?.filter(shouldDisplay)
-    .sort(sortByPriorityScore)
-    .reduce(groupByAccount, [])
-    .sort(byAccountIndex) ?? [];
+): AbridgedZQueryState<BalancesByAccount[]> => {
+  const data =
+    zQueryState.data
+      ?.filter(shouldDisplay)
+      .sort(sortByPriorityScore)
+      .reduce(groupByAccount, [])
+      .sort(byAccountIndex) ?? [];
+  return {
+    ...zQueryState,
+    data,
+  };
+};
 
 export default function AssetsTable() {
-  const balancesByAccount = useBalancesResponses({
+  const balances = useBalancesResponses({
     select: filteredBalancesByAccountSelector,
     shouldReselect: (before, after) => before?.data !== after.data,
   });
+  const balancesByAccount = balances?.data;
+  const loading = balances?.loading;
 
   if (balancesByAccount?.length === 0) {
     return (
@@ -114,6 +124,17 @@ export default function AssetsTable() {
           </Fragment>
         ))}
       </Table>
+      {(loading ?? balancesByAccount === undefined) && (
+        <div className='mt-5 flex w-full flex-col items-center justify-center'>
+          <LineWave
+            visible={true}
+            height='70'
+            width='70'
+            color='white'
+            wrapperClass={cn('mb-5 transition-all duration-300')}
+          />
+        </div>
+      )}
     </div>
   );
 }
