@@ -3,6 +3,8 @@ import { Coin } from 'osmo-query';
 import { Asset } from '@chain-registry/types';
 import { BigNumber } from 'bignumber.js';
 import { AssetDenomUnit } from '@chain-registry/types/assets';
+import { CosmosAssetBalance } from './hooks.ts';
+import { ChainRegistryClient } from '@penumbra-labs/registry';
 
 // Searches for corresponding denom in asset registry and returns the metadata
 export const augmentToAsset = (denom: string, chainName: string): Asset => {
@@ -56,4 +58,20 @@ export const fromDisplayAmount = (
 
 const getExponent = (denomUnits: AssetDenomUnit[], denom: string): number | undefined => {
   return denomUnits.find(unit => unit.denom === denom)?.exponent;
+};
+
+export const getIconWithUmFallback = (b: CosmosAssetBalance) => {
+  if (b.icon) {
+    return b.icon;
+  }
+  // If we've identified UM, but it's got to this line,
+  // that means there is not an entry for UM in the counterparty chain's asset registry.
+  // To help users identify the ibc asset, this manually grabs the UM asset icon.
+  if (b.isPenumbra) {
+    const client = new ChainRegistryClient().bundled;
+    const umAssetId = client.globals().stakingAssetId;
+    const umMetadata = client.get('penumbra-1').getMetadata(umAssetId);
+    return umMetadata.images[0]?.svg;
+  }
+  return undefined;
 };
