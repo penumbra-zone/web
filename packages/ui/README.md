@@ -22,8 +22,6 @@ Then, use components by importing them from their specific files:
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueViewComponent';
 ```
 
-Deprecated components can be imported from `@penumbra-zone/ui/components/ui/<component-name>`, where `<component-name>` should be replaced with the kebab-cased component name.
-
 ## Usage
 
 ### Density

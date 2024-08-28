@@ -4,7 +4,7 @@ import { ChainWalletContext } from '@cosmos-kit/core';
 import { AllSlices, SliceCreator } from '..';
 import { getAddrByIndex } from '../../fetchers/address';
 import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
-import { Toast } from '@repo/ui/lib/toast/toast';
+import { Toast } from '@penumbra-zone/ui/lib/toast/toast';
 import { shorten } from '@penumbra-zone/types/string';
 import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { bech32CompatAddress } from '@penumbra-zone/bech32m/penumbracompat1';
@@ -131,6 +131,7 @@ const getExplorerPage = (txHash: string, chainId?: string) => {
     return undefined;
   }
 
+  // eslint-disable-next-line no-template-curly-in-string -- Intended template string
   return txPage.replace('${txHash}', txHash);
 };
 

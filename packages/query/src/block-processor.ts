@@ -48,9 +48,9 @@ import { getSwapRecordCommitment } from '@penumbra-zone/getters/swap-record';
 import { CompactBlock } from '@penumbra-zone/protobuf/penumbra/core/component/compact_block/v1/compact_block_pb';
 
 declare global {
-  // eslint-disable-next-line no-var
+  // eslint-disable-next-line no-var -- expected globals
   var __DEV__: boolean | undefined;
-  // eslint-disable-next-line no-var
+  // eslint-disable-next-line no-var -- expected globals
   var __ASSERT_ROOT__: boolean | undefined;
 }
 
@@ -260,9 +260,11 @@ export class BlockProcessor implements BlockProcessorInterface {
       await this.identifyNewAssets(flush.newNotes);
 
       for (const spendableNoteRecord of flush.newNotes) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify non-null assertion
         recordsByCommitment.set(spendableNoteRecord.noteCommitment!, spendableNoteRecord);
       }
       for (const swapRecord of flush.newSwaps) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify non-null assertion
         recordsByCommitment.set(swapRecord.swapCommitment!, swapRecord);
       }
     }
@@ -480,7 +482,7 @@ export class BlockProcessor implements BlockProcessorInterface {
 
     const metadataFromNode = await this.querier.shieldedPool.assetMetadataById(assetId);
 
-    //do not save IBC token metadata that are not in the prax registry
+    // do not save IBC token metadata that are not in the prax registry
     const isIbcAsset = metadataFromNode && assetPatterns.ibc.matches(metadataFromNode.display);
 
     if (metadataFromNode && !isIbcAsset) {
@@ -694,12 +696,13 @@ export class BlockProcessor implements BlockProcessorInterface {
       // this loop requests delegation token metadata for each validator
       // individually. there may be very many, so we must artificially delay
       // this loop or the RPC may hard-ratelimit us.
-      await new Promise(resolve =>
-        setTimeout(
-          resolve,
-          // an entire second
-          1000,
-        ),
+      await new Promise(
+        resolve =>
+          void setTimeout(
+            resolve,
+            // an entire second
+            1000,
+          ),
       );
     }
   }

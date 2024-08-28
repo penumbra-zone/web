@@ -7,11 +7,11 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@repo/ui/components/ui/select';
-import { Avatar, AvatarImage } from '@repo/ui/components/ui/avatar';
-import { Identicon } from '@repo/ui/components/ui/identicon';
+} from '@penumbra-zone/ui/components/ui/select';
+import { Avatar, AvatarImage } from '@penumbra-zone/ui/components/ui/avatar';
+import { Identicon } from '@penumbra-zone/ui/components/ui/identicon';
 import { DestinationAddr } from './destination-addr';
-import { Button } from '@repo/ui/components/ui/button';
+import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { LockClosedIcon } from '@radix-ui/react-icons';
 import { NumberInput } from '../../shared/number-input';
 
@@ -32,7 +32,7 @@ export const IbcInRequest = () => {
 
   // User is not ready to issue request
   if (!address || !selectedChain || !data?.length) {
-    return <></>;
+    return;
   }
 
   return (

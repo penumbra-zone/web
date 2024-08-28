@@ -53,6 +53,7 @@ export const asPublicActionView: Translator<ActionView> = actionView => {
     // to err on communicating private data as public than the other way around
     // TODO: Do proper audit of what data for each action is public
     default:
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify non-null assertion
       return actionView!;
   }
 };

@@ -1,4 +1,4 @@
-import { Box } from '@repo/ui/components/ui/box';
+import { Box } from '@penumbra-zone/ui/components/ui/box';
 import { SimulateSwapResult } from './simulate-swap-result';
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';

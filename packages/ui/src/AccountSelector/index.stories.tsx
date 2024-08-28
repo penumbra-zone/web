@@ -14,7 +14,7 @@ const Column = styled.div`
 `;
 
 const mockGetAddressByIndex = (): Promise<Address> =>
-  new Promise(resolve => setTimeout(() => resolve(new Address({ inner: u8(80) })), 1000));
+  new Promise(resolve => void setTimeout(() => resolve(new Address({ inner: u8(80) })), 1000));
 
 const meta: Meta<typeof AccountSelector> = {
   component: AccountSelector,

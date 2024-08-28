@@ -17,6 +17,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
         ref={ref}
         className={cn(
           baseClasses,
+          // eslint-disable-next-line no-nested-ternary -- readable ternary
           light ? 'bg-stone-300' : gradient ? 'bg-card-radial' : 'bg-charcoal',
           className,
         )}

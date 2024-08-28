@@ -1,7 +1,7 @@
-import { Card } from '@repo/ui/Card';
+import { Card } from '@penumbra-zone/ui/Card';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { Grid } from '@repo/ui/Grid';
-import { Tabs } from '@repo/ui/Tabs';
+import { Grid } from '@penumbra-zone/ui/Grid';
+import { Tabs } from '@penumbra-zone/ui/Tabs';
 import { usePagePath } from '../../../fetchers/page-path';
 import { PagePath } from '../../metadata/paths';
 import { motion } from 'framer-motion';

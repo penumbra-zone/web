@@ -395,6 +395,7 @@ const assembleUndelegateRequest = ({
 }: StakingSlice) => {
   const delegation = delegationsByAccount
     .get(account)
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify
     ?.find(delegation => isDelegationTokenForValidator(delegation, validatorInfo!));
   if (!delegation) {
     throw new Error('Tried to assemble undelegate request from account with no delegation tokens');

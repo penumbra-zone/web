@@ -283,6 +283,7 @@ export class PenumbraClient {
   /** Assert an attached provider. */
   private assertAttached(): PenumbraClientAttachment {
     assertProviderRecord(this.attached?.origin);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify
     return this.attached!;
   }
 
