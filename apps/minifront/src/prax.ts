@@ -19,6 +19,7 @@ export const usePraxManifest = (): PenumbraManifest | undefined => {
   const [manifest, setManifest] = useState<PenumbraManifest>();
 
   useEffect(() => {
+    setManifest(penumbra.manifest);
     penumbra.onConnectionStateChange(() => {
       setManifest(penumbra.manifest);
     });

@@ -2,16 +2,8 @@ import { useNavigate } from 'react-router-dom';
 import { Tabs } from '@repo/ui/Tabs';
 import { Density } from '@repo/ui/Density';
 import { getV2Link } from '../get-v2-link.ts';
-import { PagePath } from '../../metadata/paths.ts';
 import { usePagePath } from '../../../fetchers/page-path.ts';
-
-const TABS_OPTIONS = [
-  { label: 'Dashboard', value: getV2Link(PagePath.DASHBOARD) },
-  { label: 'Shield', value: getV2Link(PagePath.IBC) },
-  { label: 'Transfer', value: getV2Link(PagePath.SEND) },
-  { label: 'Swap', value: getV2Link(PagePath.SWAP) },
-  { label: 'Stake', value: getV2Link(PagePath.STAKING) },
-];
+import { HEADER_LINKS } from './links.ts';
 
 export const DesktopNav = () => {
   const pagePath = usePagePath();
@@ -23,10 +15,10 @@ export const DesktopNav = () => {
         <Tabs
           value={getV2Link(pagePath)}
           onChange={value => navigate(value)}
-          options={TABS_OPTIONS}
+          options={HEADER_LINKS}
           actionType='accent'
         />
       </Density>
     </nav>
-  )
-}
+  );
+};
