@@ -20,7 +20,8 @@ export const PraxPopover = () => {
   const icon = useMemo(() => {
     const icons: Record<string, Blob> = manifest?.icons ?? {};
     const blob = icons['32'] ?? icons['128'] ?? icons['48'] ?? icons['16'] ?? undefined;
-    return getIconComponent(blob, manifest?.['name']);
+    const name = manifest?.['name'] as string;
+    return getIconComponent(blob, name);
   }, [manifest]);
 
   const disconnect = () => {
