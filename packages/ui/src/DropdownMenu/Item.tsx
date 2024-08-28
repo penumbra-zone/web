@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { Item as RadixDropdownMenuItem } from '@radix-ui/react-dropdown-menu';
 import { asTransientProps } from '../utils/asTransientProps.ts';
 import { Text } from '../Text';
-import { DropdownMenuItemBase, MenuItem } from './shared.ts';
+import { DropdownMenuItemBase, MenuItem } from '../utils/menuItem.ts';
 
 export interface DropdownMenuItemProps extends DropdownMenuItemBase {
   children?: ReactNode;

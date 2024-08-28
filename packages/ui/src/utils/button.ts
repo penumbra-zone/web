@@ -73,7 +73,9 @@ export const overlays = css<{
     inset: 0;
     z-index: 1;
 
-    transition: background-color 0.15s, outline 0.15s;
+    transition:
+      background-color 0.15s,
+      outline 0.15s;
   }
 
   @media (hover: hover) {
@@ -85,7 +87,7 @@ export const overlays = css<{
   &:active::before {
     background-color: ${props => props.theme.color.action.activeOverlay};
   }
-  
+
   &:focus::before {
     outline: 2px solid ${props => props.$getFocusOutlineColor(props.theme)};
   }

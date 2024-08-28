@@ -10,7 +10,7 @@ import { Density } from '../types/Density.ts';
 
 const sparse = css`
   ${tab};
-  
+
   flex-grow: 1;
   flex-shrink: 1;
   flex-basis: 0; /** Ensure equal widths */
@@ -31,7 +31,7 @@ const Root = styled.div<{
   align-items: stretch;
   box-sizing: border-box;
   gap: ${props => props.theme.spacing(4)};
-  height: ${props => props.$density === 'sparse' ? 44 : 28}px;
+  height: ${props => (props.$density === 'sparse' ? 44 : 28)}px;
 `;
 
 type LimitedActionType = Exclude<ActionType, 'destructive'>;
@@ -57,7 +57,7 @@ const Tab = styled.button<{
   ${buttonBase};
 
   height: 100%;
-  
+
   color: ${props => {
     switch (props.$actionType) {
       case 'accent':
@@ -73,10 +73,7 @@ const Tab = styled.button<{
 
   ${overlays}
 
-  ${props => 
-    props.$density === 'sparse'
-      ? sparse
-      : compact}
+  ${props => (props.$density === 'sparse' ? sparse : compact)}
   
   &:focus-within {
     outline: none;
