@@ -21,7 +21,7 @@ import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
 import { shouldDisplay } from '../../../fetchers/balances/should-display';
 import { sortByPriorityScore } from '../../../fetchers/balances/by-priority-score';
 import { LineWave } from 'react-loader-spinner';
-import { cn } from '@repo/ui/lib/utils';
+import { cn } from '@penumbra-zone/ui/lib/utils';
 
 const getTradeLink = (balance: BalancesResponse): string => {
   const metadata = getMetadataFromBalancesResponseOptional(balance);

@@ -69,7 +69,7 @@ vi.mock('../../fetchers/registry', async () => ({
 vi.mock('../../fetchers/balances', () => ({
   getBalancesStream: vi.fn(() => ({
     [Symbol.asyncIterator]: async function* () {
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise(resolve => void setTimeout(resolve, 0));
       yield {
         balanceView: new ValueView({
           valueView: {
