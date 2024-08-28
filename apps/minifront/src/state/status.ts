@@ -67,7 +67,10 @@ export const statusSelector = (
 
     let percentSyncedNumber = 0;
     if (latestKnownBlockHeight) {
-      percentSyncedNumber = Math.round(Number(fullSyncHeight) / Number(latestKnownBlockHeight));
+      percentSyncedNumber = Number(fullSyncHeight) / Number(latestKnownBlockHeight);
+      if (percentSyncedNumber > 1) {
+        percentSyncedNumber = 1;
+      }
     }
 
     return {
