@@ -11,9 +11,11 @@ interface SliderProps {
   leftLabel?: string;
   rightLabel?: string;
   showValue?: boolean;
+  valueDetails?: string;
   showTrackGaps?: boolean;
   trackGapBackground?: string;
   showFill?: boolean;
+  fontSize?: string;
 }
 
 const THUMB_SIZE = '16px';
@@ -80,41 +82,30 @@ const LabelContainer = styled.div`
   margin-bottom: ${props => props.theme.spacing(1)};
 `;
 
-const Label = styled.div<{ $position: 'left' | 'right' }>`
-  font-size: ${props => props.theme.fontSize.textSm};
+const Label = styled.div<{ $position: 'left' | 'right'; $fontSize: string }>`
+  font-size: ${props => props.$fontSize};
   color: ${props => props.theme.color.text.secondary};
   justify-self: ${props => (props.$position === 'left' ? 'flex-start' : 'flex-end')};
 `;
 
-const ValueDisplay = styled.div`
+const ValueContainer = styled.div<{ $fontSize: string }>`
+  display: flex;
   margin-top: ${props => props.theme.spacing(1)};
   border: 1px solid ${props => props.theme.color.other.tonalStroke};
-  font-size: ${props => props.theme.fontSize.textSm};
+  font-size: ${props => props.$fontSize};
   color: ${props => props.theme.color.text.primary};
   padding: ${props => props.theme.spacing(1)} ${props => props.theme.spacing(2)};
 `;
 
-/**
- * Renders a segmented control where only one option can be selected at a time.
- * Functionally equivalent to a `<select>` element or a set of radio buttons,
- * but looks nicer when you only have a few options to choose from. (Probably
- * shouldn't be used with more than 5 options.)
- *
- * Fully accessible and keyboard-controllable.
- *
- * @example
- * ```TSX
- * <SegmentedPicker
- *   value={value}
- *   onChange={setValue}
- *   options={[
- *     { value: 'one', label: 'One' },
- *     { value: 'two', label: 'Two' },
- *     { value: 'three', label: 'Three', disabled: true },
- *   ]}
- * />
- * ```
- */
+const ValueDisplay = styled.div`
+  color: ${props => props.theme.color.text.primary};
+`;
+
+const ValueDetails = styled.div`
+  margin-left: ${props => props.theme.spacing(1)};
+  color: ${props => props.theme.color.text.secondary};
+`;
+
 export const Slider: React.FC<SliderProps> = ({
   min = 0,
   max = 100,
@@ -124,9 +115,11 @@ export const Slider: React.FC<SliderProps> = ({
   leftLabel,
   rightLabel,
   showValue = false,
+  valueDetails,
   showTrackGaps = true,
   trackGapBackground = theme.color.base.black,
   showFill = false,
+  fontSize = theme.fontSize.textSm,
 }) => {
   const [value, setValue] = useState(defaultValue);
   const sliderRef = useRef<HTMLDivElement>(null);
@@ -184,8 +177,12 @@ export const Slider: React.FC<SliderProps> = ({
     <div>
       {(!!leftLabel || !!rightLabel) && (
         <LabelContainer>
-          <Label $position='left'>{leftLabel}</Label>
-          <Label $position='right'>{rightLabel}</Label>
+          <Label $fontSize={fontSize} $position='left'>
+            {leftLabel}
+          </Label>
+          <Label $fontSize={fontSize} $position='right'>
+            {rightLabel}
+          </Label>
         </LabelContainer>
       )}
       <SliderContainer ref={sliderRef} onMouseDown={handleStart} onTouchStart={handleStart}>
@@ -202,7 +199,12 @@ export const Slider: React.FC<SliderProps> = ({
           <SliderThumb $left={percentage} />
         </SliderTrack>
       </SliderContainer>
-      {showValue && <ValueDisplay>{value}</ValueDisplay>}
+      {showValue && (
+        <ValueContainer $fontSize={fontSize}>
+          <ValueDisplay>{value}</ValueDisplay>
+          {valueDetails && <ValueDetails>· {valueDetails}</ValueDetails>}
+        </ValueContainer>
+      )}
     </div>
   );
 };
