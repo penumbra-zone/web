@@ -11,6 +11,7 @@ import { LayoutGroup } from 'framer-motion';
 import { useId } from 'react';
 import { submitButtonDisabledSelector } from '../../../state/swap';
 import { PriceHistory } from './price-history';
+import { LimitOrder } from './limit-order.tsx';
 
 const swapFormSelector = (state: AllSlices) => ({
   onSubmit:
@@ -43,6 +44,8 @@ export const SwapForm = () => {
           <InputBlock label='Speed' layout>
             <DurationSlider />
           </InputBlock>
+
+          <LimitOrder />
 
           {duration === 'instant' ? (
             <SimulateSwap layoutId={sharedLayoutId} />
