@@ -43,7 +43,10 @@ export default defineConfig({
   build: {
     emptyOutDir: true,
     lib: {
-      entry: getAllUIComponents(),
+      entry: {
+        'src/tailwindConfig': join(__dirname, 'src', 'tailwindConfig.ts'),
+        ...getAllUIComponents(),
+      },
       formats: ['es'],
       name: '@penumbra-zone/ui',
     },

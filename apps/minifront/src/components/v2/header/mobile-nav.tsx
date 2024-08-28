@@ -1,8 +1,8 @@
 import { Menu, X } from 'lucide-react';
-import { Button } from '@repo/ui/Button';
-import { Dialog } from '@repo/ui/Dialog';
-import { Display } from '@repo/ui/Display';
-import { MenuItem } from '@repo/ui/MenuItem';
+import { Button } from '@penumbra-zone/ui/Button';
+import { Dialog } from '@penumbra-zone/ui/Dialog';
+import { Display } from '@penumbra-zone/ui/Display';
+import { MenuItem } from '@penumbra-zone/ui/MenuItem';
 import { StatusPopover } from './status-popover.tsx';
 import { PraxPopover } from './prax-popover.tsx';
 import { HeaderLogo } from './logo.tsx';

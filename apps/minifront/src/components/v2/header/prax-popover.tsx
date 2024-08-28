@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import { Link2Off } from 'lucide-react';
-import { Popover } from '@repo/ui/Popover';
-import { Button } from '@repo/ui/Button';
-import { Text } from '@repo/ui/Text';
+import { Popover } from '@penumbra-zone/ui/Popover';
+import { Button } from '@penumbra-zone/ui/Button';
+import { Text } from '@penumbra-zone/ui/Text';
 import { penumbra, usePraxManifest } from '../../../prax.ts';
 import praxLogo from './prax.svg?url';
 

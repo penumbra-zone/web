@@ -550,7 +550,7 @@ importers:
 
   packages/tailwind-config:
     dependencies:
-      '@repo/ui':
+      '@penumbra-zone/ui':
         specifier: workspace:*
         version: link:../ui
       tailwindcss:

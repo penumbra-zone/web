@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import { Tabs } from '@repo/ui/Tabs';
-import { Density } from '@repo/ui/Density';
+import { Tabs } from '@penumbra-zone/ui/Tabs';
+import { Density } from '@penumbra-zone/ui/Density';
 import { getV2Link } from '../get-v2-link.ts';
 import { usePagePath } from '../../../fetchers/page-path.ts';
 import { HEADER_LINKS } from './links.ts';

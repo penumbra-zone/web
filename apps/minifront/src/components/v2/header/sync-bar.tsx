@@ -1,5 +1,5 @@
 import { statusSelector, useStatus } from '../../../state/status.ts';
-import { Progress } from '@repo/ui/Progress';
+import { Progress } from '@penumbra-zone/ui/Progress';
 
 export const SyncBar = () => {
   const status = useStatus({

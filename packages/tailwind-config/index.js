@@ -2,7 +2,7 @@ import plugin from 'tailwindcss/plugin';
 import tailwindCssAnimatePlugin from 'tailwindcss-animate';
 
 // TODO: Replace the theme to v2 instead of partially using it
-import { tailwindConfig as v2TailwindConfig } from '@repo/ui/tailwind';
+import { tailwindConfig as v2TailwindConfig } from '@penumbra-zone/ui/tailwind';
 
 /** @type {import('tailwindcss').Config} */
 export default {

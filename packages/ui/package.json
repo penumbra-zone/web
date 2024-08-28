@@ -38,6 +38,10 @@
   },
   "publishConfig": {
     "exports": {
+      "./tailwind": {
+        "types": "./dist/src/tailwindConfig.d.ts",
+        "default": "./dist/src/tailwindConfig.js"
+      },
       "./*": {
         "types": "./dist/src/*/index.d.ts",
         "default": "./dist/src/*/index.js"
