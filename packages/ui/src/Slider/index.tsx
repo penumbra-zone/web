@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
+import { detail, detailTechnical } from '../utils/typography';
 import { theme } from '../PenumbraUIProvider/theme';
 
 interface SliderProps {
@@ -83,18 +84,20 @@ const LabelContainer = styled.div`
 `;
 
 const Label = styled.div<{ $position: 'left' | 'right'; $fontSize: string }>`
+  ${detailTechnical}
   font-size: ${props => props.$fontSize};
   color: ${props => props.theme.color.text.secondary};
   justify-self: ${props => (props.$position === 'left' ? 'flex-start' : 'flex-end')};
 `;
 
 const ValueContainer = styled.div<{ $fontSize: string }>`
+  ${detail}
   display: flex;
-  margin-top: ${props => props.theme.spacing(1)};
+  margin-top: ${props => props.theme.spacing(2)};
   border: 1px solid ${props => props.theme.color.other.tonalStroke};
   font-size: ${props => props.$fontSize};
   color: ${props => props.theme.color.text.primary};
-  padding: ${props => props.theme.spacing(1)} ${props => props.theme.spacing(2)};
+  padding: ${props => props.theme.spacing(2)} ${props => props.theme.spacing(3)};
 `;
 
 const ValueDisplay = styled.div`
@@ -119,7 +122,7 @@ export const Slider: React.FC<SliderProps> = ({
   showTrackGaps = true,
   trackGapBackground = theme.color.base.black,
   showFill = false,
-  fontSize = theme.fontSize.textSm,
+  fontSize = theme.fontSize.textXs,
 }) => {
   const [value, setValue] = useState(defaultValue);
   const sliderRef = useRef<HTMLDivElement>(null);
