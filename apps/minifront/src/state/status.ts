@@ -1,4 +1,4 @@
-import { ZQueryState } from '@penumbra-zone/zquery/src/types';
+import { AbridgedZQueryState, ZQueryState } from '@penumbra-zone/zquery/src/types';
 import { SliceCreator, useStore } from '.';
 import { createZQuery } from '@penumbra-zone/zquery';
 import { getStatusStream } from '../fetchers/status';
@@ -37,3 +37,47 @@ export interface StatusSlice {
 export const createStatusSlice = (): SliceCreator<StatusSlice> => () => ({
   status,
 });
+
+// Copies the logic from the view service's `status` method.
+export const statusSelector = (
+  zQueryState: AbridgedZQueryState<Status>,
+):
+  | {
+      isCatchingUp: undefined;
+    }
+  | {
+      isCatchingUp: boolean;
+      isUpdating: boolean;
+      fullSyncHeight: bigint;
+      latestKnownBlockHeight?: bigint;
+      percentSynced?: string;
+      percentSyncedNumber: number;
+      error: unknown;
+    } => {
+  if (!zQueryState.data?.fullSyncHeight) {
+    return { isCatchingUp: undefined };
+  } else {
+    const { fullSyncHeight, latestKnownBlockHeight } = zQueryState.data;
+    const isCatchingUp = !latestKnownBlockHeight || latestKnownBlockHeight - fullSyncHeight > 10;
+    const isUpdating = Boolean(
+      latestKnownBlockHeight &&
+        latestKnownBlockHeight !== fullSyncHeight &&
+        latestKnownBlockHeight - fullSyncHeight <= 10,
+    );
+
+    let percentSyncedNumber = 0;
+    if (latestKnownBlockHeight) {
+      percentSyncedNumber = Math.round(Number(fullSyncHeight) / Number(latestKnownBlockHeight));
+    }
+
+    return {
+      error: zQueryState.error,
+      isCatchingUp,
+      isUpdating,
+      fullSyncHeight,
+      latestKnownBlockHeight,
+      percentSyncedNumber,
+      percentSynced: `${percentSyncedNumber * 100}%`,
+    };
+  }
+};

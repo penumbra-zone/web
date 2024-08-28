@@ -30,7 +30,7 @@ export default {
         mono: ['Iosevka Term', 'monospace'],
       },
       colors: {
-        ...v2TailwindConfig.theme.extend.colors,
+        v2: v2TailwindConfig.theme.extend.colors,
         border: {
           DEFAULT: 'hsl(var(--border))',
           secondary: 'var(--border-secondary)',
