@@ -28,14 +28,16 @@ const DensityWrapper = ({ children, showDensityControl }) => {
     >
       <Column>
         {showDensityControl && (
-          <Tabs
-            options={[
-              { label: 'Sparse', value: 'sparse' },
-              { label: 'Compact', value: 'compact' },
-            ]}
-            value={density}
-            onChange={setDensity}
-          />
+          <Density sparse>
+            <Tabs
+              options={[
+                { label: 'Sparse', value: 'sparse' },
+                { label: 'Compact', value: 'compact' },
+              ]}
+              value={density}
+              onChange={setDensity}
+            />
+          </Density>
         )}
 
         {children}
