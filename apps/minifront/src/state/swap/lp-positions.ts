@@ -75,6 +75,7 @@ export const createLpPositionsSlice = (): SliceCreator<LpPositionsSlice> => (set
   };
 };
 
+// TODO: This is temporary data for testing purposes. Update with inputs when component is ready.
 const assembleLimitOrderReq = ({ assetIn, amount, assetOut }: SwapSlice) => {
   if (!assetIn) {
     throw new Error('`assetIn` is undefined');
@@ -99,19 +100,19 @@ const assembleLimitOrderReq = ({ assetIn, amount, assetOut }: SwapSlice) => {
           },
           nonce: crypto.getRandomValues(new Uint8Array(32)),
           state: { state: PositionState_PositionStateEnum.OPENED },
-          reserves: { r1: { lo: 1000000n }, r2: {} },
+          reserves: { r1: { lo: 1n }, r2: {} },
           closeOnFill: true,
         },
       },
     ],
     positionCloses: [
       {
-        positionId: { inner: base64ToUint8Array('6lu2JLvI6EtN7DLDzQO+ksmiqVev2baRAxkJHWEhF08=') },
+        positionId: { inner: base64ToUint8Array('/C9cn0d8veH0IGt2SCghzfcCWkPWbgUDXpXOPgZyA8c=') },
       },
     ],
     positionWithdraws: [
       {
-        positionId: { inner: base64ToUint8Array('s0dhjk685auqu9/dAnVXX7fmZTLDoc1qycUpFO9FK3Y=') },
+        positionId: { inner: base64ToUint8Array('+vbub7BbEAAKLqRorZbNZ4yixPNVFzGl1BAexym3mDc=') },
         reserves: { r1: { lo: 1000000n }, r2: {} },
         tradingPair: {
           asset1: getAssetIdFromValueView(assetIn.balanceView),

@@ -379,21 +379,82 @@ export const viewActionPlan =
           actionView: actionPlan.action,
         });
 
-      case undefined:
-        throw new Error('No action case in action plan');
-      default:
-        /**
-         * `<ActionViewComponent />` only renders data about the `spend` and
-         * `output` cases. For all other cases, it just renders the action name.
-         *
-         * @todo As we render more data about other action types, add them as
-         * cases above.
-         */
+      case 'positionOpen':
+        return new ActionView({
+          actionView: actionPlan.action,
+        });
+
+      case 'positionClose':
+        return new ActionView({
+          actionView: actionPlan.action,
+        });
+
+      case 'positionWithdraw':
+        return new ActionView({
+          actionView: actionPlan.action,
+        });
+
+      case 'validatorDefinition': {
+        return new ActionView({
+          actionView: actionPlan.action,
+        });
+      }
+
+      case 'ibcRelayAction': {
+        return new ActionView({
+          actionView: actionPlan.action,
+        });
+      }
+
+      case 'proposalSubmit': {
+        return new ActionView({
+          actionView: actionPlan.action,
+        });
+      }
+
+      case 'proposalWithdraw': {
+        return new ActionView({
+          actionView: actionPlan.action,
+        });
+      }
+
+      case 'proposalDepositClaim': {
+        return new ActionView({
+          actionView: actionPlan.action,
+        });
+      }
+
+      case 'communityPoolSpend': {
+        return new ActionView({
+          actionView: actionPlan.action,
+        });
+      }
+
+      case 'communityPoolOutput': {
+        return new ActionView({
+          actionView: actionPlan.action,
+        });
+      }
+
+      case 'communityPoolDeposit': {
+        return new ActionView({
+          actionView: actionPlan.action,
+        });
+      }
+
+      // Deprecated
+      case 'positionRewardClaim': {
         return new ActionView({
           actionView: {
-            case: actionPlan.action.case,
+            case: 'positionRewardClaim',
             value: {},
           },
+        });
+      }
+
+      case undefined:
+        return new ActionView({
+          actionView: actionPlan.action,
         });
     }
   };

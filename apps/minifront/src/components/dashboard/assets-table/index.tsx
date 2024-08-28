@@ -57,8 +57,6 @@ export default function AssetsTable() {
   const balancesByAccount = balances?.data;
   const loading = balances?.loading;
 
-  console.log(balancesByAccount);
-
   if (balancesByAccount?.length === 0) {
     return (
       <div className='mt-5 flex flex-col items-center gap-6'>

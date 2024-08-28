@@ -10,10 +10,11 @@ use penumbra_auction::auction::dutch::{
     ActionDutchAuctionEnd, ActionDutchAuctionSchedule, DutchAuctionDescription,
 };
 use penumbra_auction::auction::{AuctionId, AuctionNft};
+use penumbra_dex::lp::plan::PositionWithdrawPlan;
 use penumbra_dex::swap_claim::SwapClaimPlan;
 use penumbra_dex::{
     swap::{SwapPlaintext, SwapPlan},
-    TradingPair,
+    PositionClose, PositionOpen, TradingPair,
 };
 use penumbra_fee::FeeTier;
 use penumbra_governance::DelegatorVotePlan;
@@ -408,19 +409,42 @@ pub async fn plan_transaction_inner<Db: Database>(
         actions_list.push(ActionPlan::Ics20Withdrawal(ics20_withdrawal.try_into()?));
     }
 
-    #[allow(clippy::never_loop)]
-    for tpr::PositionOpen { .. } in request.position_opens {
-        return Err(anyhow!("PositionOpen not yet implemented").into());
+    for tpr::PositionOpen { position } in request.position_opens {
+        actions_list.push(ActionPlan::PositionOpen(PositionOpen {
+            position: position
+                .ok_or_else(|| anyhow!("missing position in PositionOpen"))?
+                .try_into()?,
+        }));
     }
 
-    #[allow(clippy::never_loop)]
-    for tpr::PositionClose { .. } in request.position_closes {
-        return Err(anyhow!("PositionClose not yet implemented").into());
+    for tpr::PositionClose { position_id } in request.position_closes {
+        actions_list.push(ActionPlan::PositionClose(PositionClose {
+            position_id: position_id
+                .ok_or_else(|| anyhow!("missing position_id in PositionClose"))?
+                .try_into()?,
+        }));
     }
 
-    #[allow(clippy::never_loop)]
-    for tpr::PositionWithdraw { .. } in request.position_withdraws {
-        return Err(anyhow!("PositionWithdraw not yet implemented").into());
+    // Note: Currently this only supports an initial withdrawal from Closed, with no rewards.
+    for tpr::PositionWithdraw {
+        position_id,
+        reserves,
+        trading_pair,
+    } in request.position_withdraws
+    {
+        actions_list.push(ActionPlan::PositionWithdraw(PositionWithdrawPlan {
+            position_id: position_id
+                .ok_or_else(|| anyhow!("missing position_id in PositionWithdraw"))?
+                .try_into()?,
+            reserves: reserves
+                .ok_or_else(|| anyhow!("missing reserves in PositionWithdraw"))?
+                .try_into()?,
+            pair: trading_pair
+                .ok_or_else(|| anyhow!("missing trading_pair in PositionWithdraw"))?
+                .try_into()?,
+            sequence: 0,
+            rewards: vec![],
+        }));
     }
 
     for tpr::ActionDutchAuctionSchedule { description } in request.dutch_auction_schedule_actions {
