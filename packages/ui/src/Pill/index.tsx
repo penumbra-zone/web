@@ -6,7 +6,12 @@ import { Density } from '../types/Density';
 import { useDensity } from '../hooks/useDensity';
 
 type Priority = 'primary' | 'secondary';
-type Context = 'default' | 'technical-default' | 'technical-success' | 'technical-caution' | 'technical-destructive';
+type Context =
+  | 'default'
+  | 'technical-default'
+  | 'technical-success'
+  | 'technical-caution'
+  | 'technical-destructive';
 
 const getFont = (context: Context, density: Density) => {
   if (context === 'default') {
@@ -33,13 +38,15 @@ const getBackgroundColor = (theme: DefaultTheme, priority: Priority, context: Co
     'technical-success': theme.color.secondary.light,
     'technical-caution': theme.color.caution.light,
     'technical-destructive': theme.color.destructive.light,
-  }
+  };
   return colorMap[context];
 };
 
 const getColor = (theme: DefaultTheme, priority: Priority, context: Context) => {
   if (priority === 'primary') {
-    return (context === 'default' || context === 'technical-default') ? theme.color.text.primary : theme.color.secondary.dark;
+    return context === 'default' || context === 'technical-default'
+      ? theme.color.text.primary
+      : theme.color.secondary.dark;
   }
 
   const colorMap: Record<Context, string> = {
@@ -48,20 +55,21 @@ const getColor = (theme: DefaultTheme, priority: Priority, context: Context) => 
     'technical-success': theme.color.secondary.light,
     'technical-caution': theme.color.caution.light,
     'technical-destructive': theme.color.destructive.light,
-  }
+  };
   return colorMap[context];
 };
 
-const Root = styled.span<{ $density: Density; $priority: Priority, $context: Context }>`
+const Root = styled.span<{ $density: Density; $priority: Priority; $context: Context }>`
   box-sizing: border-box;
-  
-  border: ${props => props.$priority === 'secondary' ? `2px dashed ${props.theme.color.other.tonalStroke}` : 'none'};
+
+  border: ${props =>
+    props.$priority === 'secondary' ? `2px dashed ${props.theme.color.other.tonalStroke}` : 'none'};
   border-radius: ${props => props.theme.borderRadius.full};
 
   display: inline-block;
   max-width: 100%;
   width: max-content;
-  
+
   padding-top: ${props => props.theme.spacing(props.$priority === 'secondary' ? 0.5 : 1)};
   padding-bottom: ${props => props.theme.spacing(props.$priority === 'secondary' ? 0.5 : 1)};
 

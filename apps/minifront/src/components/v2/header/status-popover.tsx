@@ -18,14 +18,14 @@ export const StatusPopover = () => {
     }
 
     if (status.error) {
-      return <Pill context='technical-destructive'>Block Sync Error</Pill>
+      return <Pill context='technical-destructive'>Block Sync Error</Pill>;
     }
 
     if (status.percentSyncedNumber === 1) {
-      return <Pill context='technical-success'>Blocks Synced</Pill>
+      return <Pill context='technical-success'>Blocks Synced</Pill>;
     }
 
-    return <Pill context='technical-caution'>Block Syncing</Pill>
+    return <Pill context='technical-caution'>Block Syncing</Pill>;
   }, [status]);
 
   return (
@@ -46,14 +46,13 @@ export const StatusPopover = () => {
               </div>
               <div className='flex flex-col gap-2'>
                 <Text technical>Block Height</Text>
-                {status.latestKnownBlockHeight && status.latestKnownBlockHeight !== status.fullSyncHeight ? (
+                {status.latestKnownBlockHeight &&
+                status.latestKnownBlockHeight !== status.fullSyncHeight ? (
                   <Pill context='technical-default'>
                     {status.fullSyncHeight.toString()} of {status.latestKnownBlockHeight.toString()}
                   </Pill>
                 ) : (
-                  <Pill context='technical-default'>
-                    {status.fullSyncHeight.toString()}
-                  </Pill>
+                  <Pill context='technical-default'>{status.fullSyncHeight.toString()}</Pill>
                 )}
               </div>
             </div>
