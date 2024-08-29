@@ -7,6 +7,8 @@ import {
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../tooltip';
+import { InfoIcon } from 'lucide-react';
 
 export const PositionOpenComponent = ({ value }: { value: PositionOpen }) => {
   return (
@@ -42,6 +44,35 @@ export const PositionOpenComponent = ({ value }: { value: PositionOpen }) => {
             <ActionDetails.Row label='fee'>{value.position.phi.component.fee}</ActionDetails.Row>
           )}
 
+          {value.position?.nonce && (
+            <ActionDetails.Row label='Nonce'>
+              <ActionDetails.TruncatedText>
+                {uint8ArrayToBase64(value.position.nonce)}
+              </ActionDetails.TruncatedText>
+            </ActionDetails.Row>
+          )}
+
+          <ActionDetails.Row label='Close on fill'>
+            {value.position?.closeOnFill ? 'true' : 'false'}
+          </ActionDetails.Row>
+
+          <div className='flex gap-2'>
+            <p className='font-bold'>Trading Parameters</p>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <InfoIcon className='size-4 cursor-pointer text-muted-foreground hover:text-[#8D5728]' />
+                </TooltipTrigger>
+                <TooltipContent className='w-[250px]'>
+                  <p>
+                    p and q are the price coefficients of the trading function: phi(R_1, R_2) = p *
+                    r1 + q * r2, where r1 and r2 represent the old and new reserves.
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+
           {value.position?.phi?.component?.p && (
             <ActionDetails.Row label='p'>
               {joinLoHiAmount(value.position.phi.component.p).toString()}
@@ -51,14 +82,6 @@ export const PositionOpenComponent = ({ value }: { value: PositionOpen }) => {
           {value.position?.phi?.component?.q && (
             <ActionDetails.Row label='q'>
               {joinLoHiAmount(value.position.phi.component.q).toString()}
-            </ActionDetails.Row>
-          )}
-
-          {value.position?.nonce && (
-            <ActionDetails.Row label='Nonce'>
-              <ActionDetails.TruncatedText>
-                {uint8ArrayToBase64(value.position.nonce)}
-              </ActionDetails.TruncatedText>
             </ActionDetails.Row>
           )}
 
@@ -73,10 +96,6 @@ export const PositionOpenComponent = ({ value }: { value: PositionOpen }) => {
               {joinLoHiAmount(value.position.reserves.r2).toString()}
             </ActionDetails.Row>
           )}
-
-          <ActionDetails.Row label='Close on fill'>
-            {value.position?.closeOnFill ? 'true' : 'false'}
-          </ActionDetails.Row>
         </ActionDetails>
       }
     />

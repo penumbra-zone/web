@@ -9,11 +9,11 @@ export const LpPositions = () => {
   const { data, error } = useOwnedPositions();
 
   return !data?.length ? (
-    <div className='hidden xl:block'></div>
+    <div className='hidden xl:block' />
   ) : (
     <Card layout>
       <GradientHeader layout>Limit orders</GradientHeader>
-      {error ? <div>❌ There was an error loading your limit orders</div> : undefined}
+      {!!error && <div>❌ There was an error loading your limit orders: ${String(error)}</div>}
       {data.map(({ positionId }) => {
         const base64Id = bech32mPositionId(positionId ?? { inner: new Uint8Array() });
         return (
