@@ -65,8 +65,8 @@ export const PositionOpenComponent = ({ value }: { value: PositionOpen }) => {
                 </TooltipTrigger>
                 <TooltipContent className='w-[250px]'>
                   <p>
-                    p and q are the price coefficients of the trading function: phi(R_1, R_2) = p *
-                    r1 + q * r2, where r1 and r2 represent the old and new reserves.
+                    p and q are the price coefficients of the trading function: phi(r1, r2) = p * r1
+                    + q * r2, where r1 and r2 represent the old and new reserves.
                   </p>
                 </TooltipContent>
               </Tooltip>
