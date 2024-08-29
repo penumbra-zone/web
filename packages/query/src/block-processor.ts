@@ -197,7 +197,6 @@ export class BlockProcessor implements BlockProcessorInterface {
       const skipTrialDecrypt = Boolean(
         this.walletCreationBlockHeight && currentHeight < BigInt(this.walletCreationBlockHeight),
       );
-      console.log('skipTrialDecrypt: ', skipTrialDecrypt);
 
       await this.processBlock(compactBlock, latestKnownBlockHeight, skipTrialDecrypt);
 
