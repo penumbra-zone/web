@@ -1,5 +1,11 @@
 # @penumbra-zone/wasm
 
+## 26.2.0
+
+### Minor Changes
+
+- e7d0767: Customize symbol for LP position NFTs
+
 ## 26.1.0
 
 ### Minor Changes

@@ -1,5 +1,16 @@
 # @penumbra-zone/query
 
+## 29.0.0
+
+### Minor Changes
+
+- e7d0767: Customize symbol for LP position NFTs
+
+### Patch Changes
+
+- Updated dependencies [e7d0767]
+  - @penumbra-zone/wasm@26.2.0
+
 ## 28.0.0
 
 ### Patch Changes

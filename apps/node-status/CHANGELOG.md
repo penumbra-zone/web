@@ -1,5 +1,14 @@
 # node-status
 
+## 4.1.24
+
+### Patch Changes
+
+- a8a5f41: Prepare UI package for publishing to NPM
+- Updated dependencies [a8a5f41]
+- Updated dependencies [e7d0767]
+  - @penumbra-zone/ui@9.0.0
+
 ## 4.1.23
 
 ### Patch Changes

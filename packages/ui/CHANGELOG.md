@@ -1,5 +1,20 @@
 # @penumbra-zone/ui
 
+## 9.0.0
+
+### Major Changes
+
+- a8a5f41: Prepare UI package for publishing to NPM
+
+### Minor Changes
+
+- e7d0767: Support for displaying LP position action views
+
+### Patch Changes
+
+- Updated dependencies [e7d0767]
+  - @penumbra-zone/perspective@28.0.0
+
 ## 8.2.0
 
 ### Minor Changes
