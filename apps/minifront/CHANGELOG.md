@@ -1,5 +1,19 @@
 # minifront
 
+## 6.20.0
+
+### Minor Changes
+
+- e7d0767: Support for displaying LP position action views
+
+### Patch Changes
+
+- a8a5f41: Prepare UI package for publishing to NPM
+- Updated dependencies [a8a5f41]
+- Updated dependencies [e7d0767]
+  - @penumbra-zone/ui@9.0.0
+  - @penumbra-zone/perspective@28.0.0
+
 ## 6.19.1
 
 ### Patch Changes

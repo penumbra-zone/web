@@ -1,6 +1,6 @@
 {
   "name": "node-status",
-  "version": "4.1.23",
+  "version": "4.1.24",
   "private": true,
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
