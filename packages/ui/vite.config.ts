@@ -25,6 +25,14 @@ const getAllUIComponents = (): Record<string, string> => {
   );
 };
 
+/** Extends the `getAllUIComponents` function to add support for other useful files */
+const getAllEntries = (): Record<string, string> => {
+  return {
+    'src/tailwindConfig': join(__dirname, 'src', 'tailwindConfig.ts'),
+    ...getAllUIComponents(),
+  };
+};
+
 export default defineConfig({
   plugins: [
     dts(),
@@ -43,10 +51,7 @@ export default defineConfig({
   build: {
     emptyOutDir: true,
     lib: {
-      entry: {
-        'src/tailwindConfig': join(__dirname, 'src', 'tailwindConfig.ts'),
-        ...getAllUIComponents(),
-      },
+      entry: getAllEntries(),
       formats: ['es'],
       name: '@penumbra-zone/ui',
     },
