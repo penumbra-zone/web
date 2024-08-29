@@ -1,5 +1,6 @@
-import React, { useState, useRef } from 'react';
-import styled from 'styled-components';
+import React, { useState } from 'react';
+import styled, { css } from 'styled-components';
+import * as RadixSlider from '@radix-ui/react-slider';
 import { detail, detailTechnical } from '../utils/typography';
 import { theme } from '../PenumbraUIProvider/theme';
 
@@ -13,67 +14,81 @@ interface SliderProps {
   rightLabel?: string;
   showValue?: boolean;
   valueDetails?: string;
+  focusedOutlineColor?: string;
   showTrackGaps?: boolean;
   trackGapBackground?: string;
   showFill?: boolean;
   fontSize?: string;
+  disabled?: boolean;
 }
 
-const THUMB_SIZE = '16px';
-const TRACK_HEIGHT = '4px';
-const TRACK_GAP_WIDTH = '4px';
+const THUMB_SIZE = theme.spacing(4);
+const TRACK_HEIGHT = theme.spacing(1);
 
-const SliderContainer = styled.div`
+const SliderContainer = styled(RadixSlider.Root)`
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: ${THUMB_SIZE};
+`;
+
+const Track = styled(RadixSlider.Track)`
+  background-color: ${props => props.theme.color.other.tonalFill10};
   position: relative;
   width: 100%;
-  height: ${THUMB_SIZE};
-  cursor: pointer;
-  touch-action: none;
+  height: ${TRACK_HEIGHT};
 `;
 
-const SliderTrack = styled.div`
+const TrackGap = styled.div<{ $left: number; $gapBackground?: string }>`
   position: absolute;
-  width: 100%;
-  top: 50%;
-  transform: translateY(-50%);
+  width: 2px;
   height: ${TRACK_HEIGHT};
-  background: rgba(250, 250, 250, 0.1);
-`;
-
-const SliderGap = styled.div<{ $left: number; $background: string }>`
-  position: absolute;
-  z-index: 2;
-  width: ${TRACK_GAP_WIDTH};
-  height: ${TRACK_HEIGHT};
-  background: ${props => props.$background};
   left: ${props => props.$left}%;
   transform: translateX(-50%);
+  background-color: ${props => props.$gapBackground};
 `;
 
-const SliderThumb = styled.div<{ $left: number }>`
+const Range = styled(RadixSlider.Range)`
   position: absolute;
-  z-index: 3;
+  background-color: ${props => props.theme.color.primary.main};
+  height: 100%;
+`;
+
+const Thumb = styled(RadixSlider.Thumb)<{
+  $focusedOutlineColor: string;
+  $disabled: boolean;
+}>`
+  display: block;
   width: ${THUMB_SIZE};
   height: ${THUMB_SIZE};
-  background: ${props => props.theme.color.neutral.contrast};
+  background-color: ${props => props.theme.color.neutral.contrast};
   border-radius: 50%;
-  left: ${props => props.$left}%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  cursor: grab;
-  touch-action: none;
-`;
 
-const SliderFill = styled.div<{ percentage: number }>`
-  position: absolute;
-  z-index: 1;
-  height: ${TRACK_HEIGHT};
-  background: ${props => props.theme.color.primary.main};
-  border-radius: 2px;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-  width: ${props => props.percentage}%;
+  ${props =>
+    props.$disabled
+      ? css`
+          &:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: ${props => props.theme.color.action.disabledOverlay};
+          }
+        `
+      : css<{ $focusedOutlineColor: string }>`
+          cursor: grab;
+
+          &:hover {
+            background-color: ${props => props.theme.color.neutral.contrast};
+          }
+
+          &:focus {
+            outline: 2px solid ${props => props.$focusedOutlineColor};
+          }
+        `}
 `;
 
 const LabelContainer = styled.div`
@@ -117,64 +132,23 @@ export const Slider: React.FC<SliderProps> = ({
   onChange,
   leftLabel,
   rightLabel,
-  showValue = false,
-  valueDetails,
+  showValue = true,
+  showFill = false,
   showTrackGaps = true,
   trackGapBackground = theme.color.base.black,
-  showFill = false,
+  focusedOutlineColor = theme.color.action.neutralFocusOutline,
+  valueDetails,
   fontSize = theme.fontSize.textXs,
+  disabled = false,
 }) => {
   const [value, setValue] = useState(defaultValue);
-  const sliderRef = useRef<HTMLDivElement>(null);
-
-  const handleChange = (newValue: number) => {
-    const clampedValue = Math.min(Math.max(newValue, min), max);
-    const steppedValue = Math.round((clampedValue - min) / step) * step + min;
-    setValue(steppedValue);
-    onChange?.(steppedValue);
+  const handleValueChange = (newValue: number[]) => {
+    const updatedValue = newValue[0] ?? defaultValue;
+    setValue(updatedValue);
+    onChange?.(updatedValue);
   };
 
-  const updateValue = (clientX: number) => {
-    if (sliderRef.current) {
-      const rect = sliderRef.current.getBoundingClientRect();
-      const percentage = (clientX - rect.left) / rect.width;
-      const newValue = percentage * (max - min) + min;
-      handleChange(newValue);
-    }
-  };
-
-  const handleStart = (
-    event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>,
-  ) => {
-    event.preventDefault();
-    const clientX = 'touches' in event ? event.touches[0]?.clientX : event.clientX;
-    if (clientX !== undefined) {
-      updateValue(clientX);
-    }
-
-    const handleMove = (e: MouseEvent | TouchEvent) => {
-      const moveClientX = 'touches' in e ? e.touches[0]?.clientX : e.clientX;
-      if (moveClientX !== undefined) {
-        updateValue(moveClientX);
-      }
-    };
-
-    const handleEnd = () => {
-      document.removeEventListener('mousemove', handleMove);
-      document.removeEventListener('touchmove', handleMove);
-      document.removeEventListener('mouseup', handleEnd);
-      document.removeEventListener('touchend', handleEnd);
-    };
-
-    document.addEventListener('mousemove', handleMove);
-    document.addEventListener('touchmove', handleMove);
-    document.addEventListener('mouseup', handleEnd);
-    document.addEventListener('touchend', handleEnd);
-  };
-
-  const range = max - min;
-  const numberOfSteps = Math.floor(range / step);
-  const percentage = ((value - min) / range) * 100;
+  const totalSteps = (max - min) / step;
 
   return (
     <div>
@@ -188,19 +162,24 @@ export const Slider: React.FC<SliderProps> = ({
           </Label>
         </LabelContainer>
       )}
-      <SliderContainer ref={sliderRef} onMouseDown={handleStart} onTouchStart={handleStart}>
-        <SliderTrack>
+      <SliderContainer
+        min={min}
+        max={max}
+        step={step}
+        defaultValue={[defaultValue]}
+        onValueChange={handleValueChange}
+        disabled={disabled}
+      >
+        <Track>
+          {showFill && <Range />}
           {showTrackGaps &&
-            Array.from({ length: numberOfSteps + 1 }).map((_, index) => (
-              <SliderGap
-                key={index}
-                $left={((index * step) / range) * 100}
-                $background={trackGapBackground}
-              />
-            ))}
-          {showFill && <SliderFill percentage={percentage} />}
-          <SliderThumb $left={percentage} />
-        </SliderTrack>
+            Array.from({ length: totalSteps - 1 })
+              .map((_, i): number => ((i + 1) / totalSteps) * 100)
+              .map(left => (
+                <TrackGap key={left} $left={left} $gapBackground={trackGapBackground} />
+              ))}
+        </Track>
+        <Thumb $disabled={disabled} $focusedOutlineColor={focusedOutlineColor} />
       </SliderContainer>
       {showValue && (
         <ValueContainer $fontSize={fontSize}>
