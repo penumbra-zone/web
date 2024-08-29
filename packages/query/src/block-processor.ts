@@ -71,6 +71,7 @@ interface QueryClientProps {
   numeraires: AssetId[];
   stakingAssetId: AssetId;
   genesisBlock: CompactBlock | undefined;
+  walletCreationBlockHeight: number;
 }
 
 const BLANK_TX_SOURCE = new CommitmentSource({
@@ -92,6 +93,7 @@ export class BlockProcessor implements BlockProcessorInterface {
   private readonly stakingAssetId: AssetId;
   private syncPromise: Promise<void> | undefined;
   private genesisBlock: CompactBlock | undefined;
+  private walletCreationBlockHeight: number;
 
   constructor({
     indexedDb,
@@ -100,6 +102,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     numeraires,
     stakingAssetId,
     genesisBlock,
+    walletCreationBlockHeight
   }: QueryClientProps) {
     this.indexedDb = indexedDb;
     this.viewServer = viewServer;
@@ -107,12 +110,13 @@ export class BlockProcessor implements BlockProcessorInterface {
     this.numeraires = numeraires;
     this.stakingAssetId = stakingAssetId;
     this.genesisBlock = genesisBlock;
+    this.walletCreationBlockHeight = walletCreationBlockHeight;
   }
 
   // If sync() is called multiple times concurrently, they'll all wait for
   // the same promise rather than each starting their own sync process.
-  public sync = (isFreshWallet?: boolean, walletCreationBlockHeight?: number): Promise<void> =>
-    (this.syncPromise ??= backOff(() => this.syncAndStore(isFreshWallet, walletCreationBlockHeight), {
+  public sync = (): Promise<void> =>
+    (this.syncPromise ??= backOff(() => this.syncAndStore(), {
       delayFirstAttempt: false,
       startingDelay: 5_000, // 5 seconds
       numOfAttempts: Infinity,
@@ -145,7 +149,7 @@ export class BlockProcessor implements BlockProcessorInterface {
    * - query remote rpc to begin streaming at the next block
    * - iterate
    */
-  private async syncAndStore(isFreshWallet: boolean | undefined, walletCreationBlockHeight: number | undefined) {
+  private async syncAndStore() {
     // start at next block, or genesis if height is undefined
     let currentHeight = (await this.indexedDb.getFullSyncHeight()) ?? -1n;
 
@@ -192,9 +196,8 @@ export class BlockProcessor implements BlockProcessorInterface {
 
       // Set the skip_trial_decrypt flag
       const skipTrialDecrypt = Boolean(
-        isFreshWallet &&
-        walletCreationBlockHeight &&
-        currentHeight < BigInt(walletCreationBlockHeight),
+        this.walletCreationBlockHeight &&
+        currentHeight < BigInt(this.walletCreationBlockHeight),
       );
       console.log("skipTrialDecrypt: ", skipTrialDecrypt)
 
