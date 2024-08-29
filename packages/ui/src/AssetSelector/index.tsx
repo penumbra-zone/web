@@ -13,6 +13,8 @@ import { AssetSelectorDialogContent } from './AssetSelectorDialogContent';
 import { motion } from 'framer-motion';
 import { useId, useState } from 'react';
 import { isMetadata } from './helpers';
+import { Icon } from '../Icon';
+import { ChevronsUpDownIcon } from 'lucide-react';
 
 const Button = styled(motion.button)<{ $density: Density }>`
   ${buttonBase}
@@ -82,6 +84,13 @@ export const AssetSelector = <ValueType extends (BalancesResponse | Metadata) | 
             >
               {metadata?.symbol}
             </ConditionalWrap>
+            <div className={'ml-auto'}>
+              <Icon
+                IconComponent={ChevronsUpDownIcon}
+                size={'sm'}
+                color={color => color.neutral.contrast}
+              />
+            </div>
           </Row>
         )}
 
