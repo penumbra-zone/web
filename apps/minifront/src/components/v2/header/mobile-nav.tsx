@@ -4,7 +4,7 @@ import { Dialog } from '@penumbra-zone/ui/Dialog';
 import { Display } from '@penumbra-zone/ui/Display';
 import { MenuItem } from '@penumbra-zone/ui/MenuItem';
 import { StatusPopover } from './status-popover.tsx';
-import { PraxPopover } from './prax-popover.tsx';
+import { ProviderPopover } from './provider-popover.tsx';
 import { HeaderLogo } from './logo.tsx';
 import { useState } from 'react';
 import { HEADER_LINKS } from './links.ts';
@@ -32,7 +32,7 @@ export const MobileNav = () => {
 
               <div className='flex gap-2'>
                 <StatusPopover />
-                <PraxPopover />
+                <ProviderPopover />
                 <Button iconOnly icon={X} onClick={() => setIsOpen(false)}>
                   Close
                 </Button>

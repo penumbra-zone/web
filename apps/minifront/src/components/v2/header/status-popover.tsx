@@ -46,14 +46,11 @@ export const StatusPopover = () => {
               </div>
               <div className='flex flex-col gap-2'>
                 <Text technical>Block Height</Text>
-                {status.latestKnownBlockHeight &&
-                status.latestKnownBlockHeight !== status.fullSyncHeight ? (
-                  <Pill context='technical-default'>
-                    {status.fullSyncHeight.toString()} of {status.latestKnownBlockHeight.toString()}
-                  </Pill>
-                ) : (
-                  <Pill context='technical-default'>{status.fullSyncHeight.toString()}</Pill>
-                )}
+                <Pill context='technical-default'>
+                  {status.latestKnownBlockHeight !== status.fullSyncHeight
+                    ? `${status.fullSyncHeight} of ${status.latestKnownBlockHeight}`
+                    : `${status.latestKnownBlockHeight}`}
+                </Pill>
               </div>
             </div>
           </Density>
