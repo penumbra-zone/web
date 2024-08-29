@@ -38,7 +38,7 @@ export class ViewServer implements ViewServerInterface {
     private readonly epochDuration: bigint,
     private readonly getStoredTree: () => Promise<StateCommitmentTree>,
     private readonly idbConstants: IdbConstants,
-  ) { }
+  ) {}
 
   static async initialize({
     fullViewingKey,

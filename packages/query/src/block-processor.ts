@@ -102,7 +102,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     numeraires,
     stakingAssetId,
     genesisBlock,
-    walletCreationBlockHeight
+    walletCreationBlockHeight,
   }: QueryClientProps) {
     this.indexedDb = indexedDb;
     this.viewServer = viewServer;
@@ -193,13 +193,11 @@ export class BlockProcessor implements BlockProcessorInterface {
         throw new Error(`Unexpected block height: ${compactBlock.height} at ${currentHeight}`);
       }
 
-
       // Set the skip_trial_decrypt flag
       const skipTrialDecrypt = Boolean(
-        this.walletCreationBlockHeight &&
-        currentHeight < BigInt(this.walletCreationBlockHeight),
+        this.walletCreationBlockHeight && currentHeight < BigInt(this.walletCreationBlockHeight),
       );
-      console.log("skipTrialDecrypt: ", skipTrialDecrypt)
+      console.log('skipTrialDecrypt: ', skipTrialDecrypt);
 
       await this.processBlock(compactBlock, latestKnownBlockHeight, skipTrialDecrypt);
 
@@ -215,7 +213,11 @@ export class BlockProcessor implements BlockProcessorInterface {
   }
 
   // logic for processing a compact block
-  private async processBlock(compactBlock: CompactBlock, latestKnownBlockHeight: bigint, skipTrialDecrypt: boolean) {
+  private async processBlock(
+    compactBlock: CompactBlock,
+    latestKnownBlockHeight: bigint,
+    skipTrialDecrypt: boolean,
+  ) {
     if (compactBlock.appParametersUpdated) {
       await this.indexedDb.saveAppParams(await this.querier.app.appParams());
     }
