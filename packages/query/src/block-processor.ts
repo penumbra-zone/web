@@ -594,8 +594,9 @@ export class BlockProcessor implements BlockProcessorInterface {
     if (action.case === 'positionOpen' && action.value.position) {
       for (const state of POSITION_STATES) {
         const metadata = getLpNftMetadata(computePositionId(action.value.position), state);
+        const customized = customizeSymbol(metadata);
         await this.indexedDb.saveAssetsMetadata({
-          ...metadata,
+          ...customized,
           penumbraAssetId: getAssetId(metadata),
         });
       }
@@ -619,8 +620,9 @@ export class BlockProcessor implements BlockProcessorInterface {
         sequence: action.value.sequence,
       });
       const metadata = getLpNftMetadata(action.value.positionId, positionState);
+      const customized = customizeSymbol(metadata);
       await this.indexedDb.saveAssetsMetadata({
-        ...metadata,
+        ...customized,
         penumbraAssetId: getAssetId(metadata),
       });
 
