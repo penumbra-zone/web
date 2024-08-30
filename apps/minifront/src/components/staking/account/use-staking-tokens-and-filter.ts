@@ -60,7 +60,7 @@ export const useStakingTokensAndFilter = (
   const { data: stakingTokenMetadata } = useStakingTokenMetadata();
   const balancesByAccount = useBalancesResponses({
     select: balancesByAccountSelector,
-    shouldReselect: (before, after) => before?.data === after.data,
+    shouldReselect: (before, after) => before?.data !== after.data,
   });
 
   const stakingTokensByAccount = useMemo(() => {
