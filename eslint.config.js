@@ -101,7 +101,7 @@ export default tseslint.config(
           allowExpressions: true,
         },
       ],
-      'react-refresh/only-export-components': 'off',
+      'react-refresh/only-export-components': 'warn',
     },
   },
 
