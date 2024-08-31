@@ -129,9 +129,10 @@ impl ViewServer {
 
             match state_payload {
                 StatePayload::Note { note: payload, .. } => {
-                    match bool::then_some(!skip_trial_decrypt, payload.trial_decrypt(&self.fvk))
-                        .flatten()
-                    {
+                    let note_opt = (!skip_trial_decrypt)
+                        .then(|| payload.trial_decrypt(&self.fvk))
+                        .flatten();
+                    match note_opt {
                         Some(note) => {
                             let note_position = self.sct.insert(Keep, payload.note_commitment)?;
 
@@ -167,9 +168,10 @@ impl ViewServer {
                     }
                 }
                 StatePayload::Swap { swap: payload, .. } => {
-                    match bool::then_some(!skip_trial_decrypt, payload.trial_decrypt(&self.fvk))
-                        .flatten()
-                    {
+                    let note_opt = (!skip_trial_decrypt)
+                        .then(|| payload.trial_decrypt(&self.fvk))
+                        .flatten();
+                    match note_opt {
                         Some(swap) => {
                             let swap_position = self.sct.insert(Keep, payload.commitment)?;
                             let batch_data =

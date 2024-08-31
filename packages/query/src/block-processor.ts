@@ -71,7 +71,13 @@ interface QueryClientProps {
   numeraires: AssetId[];
   stakingAssetId: AssetId;
   genesisBlock: CompactBlock | undefined;
-  walletCreationBlockHeight: number;
+  walletCreationBlockHeight: bigint;
+}
+
+interface ProcessBlockParams {
+  compactBlock: CompactBlock;
+  latestKnownBlockHeight: bigint;
+  skipTrialDecrypt?: boolean;
 }
 
 const BLANK_TX_SOURCE = new CommitmentSource({
@@ -92,8 +98,8 @@ export class BlockProcessor implements BlockProcessorInterface {
   private numeraires: AssetId[];
   private readonly stakingAssetId: AssetId;
   private syncPromise: Promise<void> | undefined;
-  private genesisBlock: CompactBlock | undefined;
-  private walletCreationBlockHeight: number;
+  private readonly genesisBlock: CompactBlock | undefined;
+  private readonly walletCreationBlockHeight: bigint;
 
   constructor({
     indexedDb,
@@ -175,7 +181,17 @@ export class BlockProcessor implements BlockProcessorInterface {
       // begin the chain with local genesis block if provided
       if (this.genesisBlock?.height === currentHeight + 1n) {
         currentHeight = this.genesisBlock.height;
-        await this.processBlock(this.genesisBlock, latestKnownBlockHeight, false);
+
+        // Set the trial decryption flag for the genesis compact block
+        const skipTrialDecrypt = Boolean(
+          this.walletCreationBlockHeight && currentHeight < BigInt(this.walletCreationBlockHeight),
+        );
+
+        await this.processBlock({
+          compactBlock: this.genesisBlock,
+          latestKnownBlockHeight: latestKnownBlockHeight,
+          skipTrialDecrypt: skipTrialDecrypt,
+        });
       }
     }
 
@@ -193,12 +209,16 @@ export class BlockProcessor implements BlockProcessorInterface {
         throw new Error(`Unexpected block height: ${compactBlock.height} at ${currentHeight}`);
       }
 
-      // Set the skip_trial_decrypt flag
+      // Set the trial decryption flag for all other compact blocks
       const skipTrialDecrypt = Boolean(
         this.walletCreationBlockHeight && currentHeight < BigInt(this.walletCreationBlockHeight),
       );
 
-      await this.processBlock(compactBlock, latestKnownBlockHeight, skipTrialDecrypt);
+      await this.processBlock({
+        compactBlock: compactBlock,
+        latestKnownBlockHeight: latestKnownBlockHeight,
+        skipTrialDecrypt: skipTrialDecrypt,
+      });
 
       // We only query Tendermint for the latest known block height once, when
       // the block processor starts running. Once we're caught up, though, the
@@ -212,11 +232,11 @@ export class BlockProcessor implements BlockProcessorInterface {
   }
 
   // logic for processing a compact block
-  private async processBlock(
-    compactBlock: CompactBlock,
-    latestKnownBlockHeight: bigint,
-    skipTrialDecrypt: boolean,
-  ) {
+  private async processBlock({
+    compactBlock,
+    latestKnownBlockHeight,
+    skipTrialDecrypt = false,
+  }: ProcessBlockParams) {
     if (compactBlock.appParametersUpdated) {
       await this.indexedDb.saveAppParams(await this.querier.app.appParams());
     }
@@ -238,7 +258,6 @@ export class BlockProcessor implements BlockProcessorInterface {
       }
     }
 
-    // TODO: add logic for determining when to skip trial decryption
     // wasm view server scan
     // - decrypts new notes
     // - decrypts new swaps
