@@ -11,9 +11,8 @@ export const ProviderPopover = () => {
   const icon = useMemo(() => {
     const icons = manifest?.icons;
     const blob = icons?.['32'] ?? icons?.['128'];
-    const name = manifest?.['name'] as string;
     const element = !blob ? null : (
-      <img src={URL.createObjectURL(blob)} alt={name} className='size-4' />
+      <img src={URL.createObjectURL(blob)} alt={manifest?.name} className='size-4' />
     );
     return () => element;
   }, [manifest]);
@@ -26,16 +25,16 @@ export const ProviderPopover = () => {
     <Popover>
       <Popover.Trigger>
         <Button icon={icon} iconOnly>
-          {manifest?.['name'] ?? ''}
+          {manifest?.name ?? ''}
         </Button>
       </Popover.Trigger>
       <Popover.Content align='end' side='bottom'>
         {manifest ? (
           <div className='flex flex-col gap-2'>
             <Text body>
-              {manifest['name']} v{manifest['version']}
+              {manifest.name} v{manifest.version}
             </Text>
-            <Text small>{manifest['description']}</Text>
+            <Text small>{manifest.description}</Text>
           </div>
         ) : (
           <Text body>Loading provider manifest...</Text>

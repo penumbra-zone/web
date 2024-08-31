@@ -43,6 +43,11 @@ export const statusSelector = (
   zQueryState: AbridgedZQueryState<Status>,
 ):
   | {
+      /**
+       * - `undefined` when not loaded
+       * `true` if the sync is behind 10 blocks the current state of blockchain, or if not synced at all
+       * `false` otherwise
+       */
       isCatchingUp: undefined;
     }
   | {

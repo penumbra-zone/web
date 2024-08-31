@@ -12,7 +12,9 @@ export const StatusPopover = () => {
     select: statusSelector,
   });
 
+  // a ReactNode displaying the sync status in form of a pill
   const pill = useMemo(() => {
+    // isCatchingUp is undefined when the status is not yet loaded
     if (status?.isCatchingUp === undefined) {
       return null;
     }
