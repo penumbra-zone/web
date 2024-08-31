@@ -1,4 +1,4 @@
-import { forwardRef, MouseEventHandler } from 'react';
+import { FC, forwardRef, MouseEventHandler } from 'react';
 import styled, { css, DefaultTheme } from 'styled-components';
 import { asTransientProps } from '../utils/asTransientProps';
 import { Priority, focusOutline, overlays, buttonBase } from '../utils/button';
@@ -142,7 +142,7 @@ interface IconOnlyProps {
    * <Button icon={ChevronRight} iconOnly>Label</Button>
    * ```
    */
-  icon: LucideIcon;
+  icon: LucideIcon | FC;
 }
 
 interface RegularProps {
@@ -158,7 +158,7 @@ interface RegularProps {
    * <Button icon={ChevronRight} iconOnly>Label</Button>
    * ```
    */
-  icon?: LucideIcon;
+  icon?: LucideIcon | FC;
 }
 
 export type ButtonProps = BaseButtonProps & (IconOnlyProps | RegularProps) & MotionProp;

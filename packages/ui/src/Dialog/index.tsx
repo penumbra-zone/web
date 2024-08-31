@@ -16,7 +16,7 @@ const Overlay = styled(RadixDialog.Overlay)`
   background-color: ${props => props.theme.color.other.overlay};
   position: fixed;
   inset: 0;
-  z-index: ${props => props.theme.zIndex.dialogOverlay};
+  z-index: auto;
 `;
 
 const FullHeightWrapper = styled.div`
@@ -43,8 +43,8 @@ const FullHeightWrapper = styled.div`
 const DialogContent = styled.div`
   position: fixed;
   inset: 0;
-  z-index: ${props => props.theme.zIndex.dialogContent};
   pointer-events: none;
+  z-index: auto;
 `;
 
 const DialogContentCard = styled(motion.div)`
@@ -208,6 +208,23 @@ export const Dialog = ({ children, onClose, isOpen }: DialogProps) => {
   );
 };
 
+export interface DialogEmptyContentProps {
+  children?: ReactNode;
+}
+
+const EmptyContent = ({ children }: DialogEmptyContentProps) => {
+  return (
+    <RadixDialog.Portal>
+      <Overlay />
+
+      <RadixDialog.Content>
+        <DialogContent>{children}</DialogContent>
+      </RadixDialog.Content>
+    </RadixDialog.Portal>
+  );
+};
+Dialog.EmptyContent = EmptyContent;
+
 /** Internal use only. */
 const DialogContext = createContext<{ showCloseButton: boolean }>({
   showCloseButton: true,
@@ -236,49 +253,43 @@ const Content = <IconOnlyButtonGroupProps extends boolean | undefined>({
   const { showCloseButton } = useContext(DialogContext);
 
   return (
-    <RadixDialog.Portal>
-      <Overlay />
+    <EmptyContent>
+      <Display>
+        <Grid container>
+          <Grid mobile={0} tablet={2} desktop={3} xl={4} />
 
-      <RadixDialog.Content>
-        <DialogContent>
-          <Display>
-            <Grid container>
-              <Grid mobile={0} tablet={2} desktop={3} xl={4} />
+          <Grid mobile={12} tablet={8} desktop={6} xl={4}>
+            <FullHeightWrapper>
+              <DialogContentCard {...motion}>
+                <TitleAndCloseButton>
+                  <RadixDialog.Title asChild>
+                    <Text xxl as='h2'>
+                      {title}
+                    </Text>
+                  </RadixDialog.Title>
 
-              <Grid mobile={12} tablet={8} desktop={6} xl={4}>
-                <FullHeightWrapper>
-                  <DialogContentCard {...motion}>
-                    <TitleAndCloseButton>
-                      <RadixDialog.Title asChild>
-                        <Text xxl as='h2'>
-                          {title}
-                        </Text>
-                      </RadixDialog.Title>
+                  {showCloseButton && (
+                    <Density compact>
+                      <RadixDialog.Close asChild>
+                        <Button icon={X} iconOnly priority='secondary'>
+                          Close
+                        </Button>
+                      </RadixDialog.Close>
+                    </Density>
+                  )}
+                </TitleAndCloseButton>
 
-                      {showCloseButton && (
-                        <Density compact>
-                          <RadixDialog.Close asChild>
-                            <Button icon={X} iconOnly priority='secondary'>
-                              Close
-                            </Button>
-                          </RadixDialog.Close>
-                        </Density>
-                      )}
-                    </TitleAndCloseButton>
+                {children}
 
-                    {children}
+                {buttonGroupProps && <ButtonGroup {...buttonGroupProps} column />}
+              </DialogContentCard>
+            </FullHeightWrapper>
+          </Grid>
 
-                    {buttonGroupProps && <ButtonGroup {...buttonGroupProps} column />}
-                  </DialogContentCard>
-                </FullHeightWrapper>
-              </Grid>
-
-              <Grid mobile={0} tablet={2} desktop={3} xl={4} />
-            </Grid>
-          </Display>
-        </DialogContent>
-      </RadixDialog.Content>
-    </RadixDialog.Portal>
+          <Grid mobile={0} tablet={2} desktop={3} xl={4} />
+        </Grid>
+      </Display>
+    </EmptyContent>
   );
 };
 Dialog.Content = Content;

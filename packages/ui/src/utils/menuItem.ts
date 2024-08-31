@@ -1,9 +1,5 @@
 import styled from 'styled-components';
-import {
-  ActionType,
-  getColorByActionType,
-  getOutlineColorByActionType,
-} from '../utils/ActionType.ts';
+import { ActionType, getColorByActionType, getOutlineColorByActionType } from './ActionType.ts';
 
 export interface DropdownMenuItemBase {
   actionType?: ActionType;
@@ -36,12 +32,17 @@ export const MenuItem = styled.div<StyledItemProps>`
     outline: 2px solid ${props => getOutlineColorByActionType(props.theme, props.$actionType)};
   }
 
-  &[aria-disabled='true'] {
+  &[aria-disabled='true'],
+  &:disabled {
     color: ${props => props.theme.color.text.muted};
   }
 
   &[aria-checked='false'],
   &[role='menuitem'] {
     padding-left: ${props => props.theme.spacing(9)};
+  }
+
+  & > span {
+    color: inherit;
   }
 `;
