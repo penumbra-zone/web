@@ -17,17 +17,18 @@ import { createPriceHistorySlice, PriceHistorySlice } from './price-history';
 import { isValidAmount } from '../helpers';
 
 import { setSwapQueryParams } from './query-params';
-import { swappableBalancesResponsesSelector, swappableAssetsSelector } from './helpers';
+import { swappableAssetsSelector, swappableBalancesResponsesSelector } from './helpers';
 import { getMetadataFromBalancesResponse } from '@penumbra-zone/getters/balances-response';
 import { getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { emptyBalanceResponse } from '../../utils/empty-balance-response';
 import {
   balancesResponseAndMetadataAreSameAsset,
+  getBalanceByMatchingMetadataAndAddressIndex,
   getFirstBalancesResponseMatchingMetadata,
   getFirstBalancesResponseNotMatchingMetadata,
   getFirstMetadataNotMatchingBalancesResponse,
-  getBalanceByMatchingMetadataAndAddressIndex,
 } from './getters';
+import { createLpPositionsSlice, LpPositionsSlice } from './lp-positions.ts';
 
 export interface SimulateSwapResult {
   metadataByAssetId: Record<string, Metadata>;
@@ -58,6 +59,7 @@ interface Subslices {
   dutchAuction: DutchAuctionSlice;
   instantSwap: InstantSwapSlice;
   priceHistory: PriceHistorySlice;
+  lpPositions: LpPositionsSlice;
 }
 
 const INITIAL_STATE: State = {
@@ -72,6 +74,7 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
   ...INITIAL_STATE,
   dutchAuction: createDutchAuctionSlice()(set, get, store),
   instantSwap: createInstantSwapSlice()(set, get, store),
+  lpPositions: createLpPositionsSlice()(set, get, store),
   priceHistory: createPriceHistorySlice()(set, get, store),
   setAssetIn: asset => {
     get().swap.resetSubslices();

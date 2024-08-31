@@ -44,6 +44,9 @@ export const SwapForm = () => {
             <DurationSlider />
           </InputBlock>
 
+          {/* TODO: Enable in subsequent PR */}
+          {/* <LimitOrder />*/}
+
           {duration === 'instant' ? (
             <SimulateSwap layoutId={sharedLayoutId} />
           ) : (

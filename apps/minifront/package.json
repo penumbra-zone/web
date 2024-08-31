@@ -1,6 +1,6 @@
 {
   "name": "minifront",
-  "version": "6.19.1",
+  "version": "6.20.0",
   "private": true,
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
@@ -61,6 +61,7 @@
   },
   "devDependencies": {
     "@chain-registry/types": "^0.45.38",
+    "@eslint/compat": "^1.1.0",
     "@types/lodash": "^4.17.4",
     "@types/react": "^18.3.2",
     "@types/react-dom": "^18.3.0",

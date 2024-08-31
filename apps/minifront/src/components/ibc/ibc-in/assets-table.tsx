@@ -12,6 +12,7 @@ import {
 import { Avatar, AvatarImage } from '@penumbra-zone/ui/components/ui/avatar';
 import { Identicon } from '@penumbra-zone/ui/components/ui/identicon';
 import { LineWave } from 'react-loader-spinner';
+import { getIconWithUmFallback } from './asset-utils.tsx';
 
 export const AssetsTable = () => {
   const { address } = useChainConnector();
@@ -55,7 +56,7 @@ export const AssetsTable = () => {
               <TableRow key={b.displayDenom}>
                 <TableCell className='flex gap-2'>
                   <Avatar className='size-6'>
-                    <AvatarImage src={b.icon} />
+                    <AvatarImage src={getIconWithUmFallback(b)} />
                     <Identicon uniqueIdentifier={b.displayDenom} type='gradient' size={22} />
                   </Avatar>
                   <span className='max-w-[200px] truncate'>{b.displayDenom}</span>
