@@ -71,7 +71,7 @@ interface QueryClientProps {
   numeraires: AssetId[];
   stakingAssetId: AssetId;
   genesisBlock: CompactBlock | undefined;
-  walletCreationBlockHeight: bigint;
+  walletCreationBlockHeight: number;
 }
 
 interface ProcessBlockParams {
@@ -99,7 +99,7 @@ export class BlockProcessor implements BlockProcessorInterface {
   private readonly stakingAssetId: AssetId;
   private syncPromise: Promise<void> | undefined;
   private readonly genesisBlock: CompactBlock | undefined;
-  private readonly walletCreationBlockHeight: bigint;
+  private readonly walletCreationBlockHeight: number;
 
   constructor({
     indexedDb,
