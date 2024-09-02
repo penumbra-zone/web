@@ -20,7 +20,7 @@ const BorderWrapper = styled.div<{ $size: Size }>`
   height: ${props => sizeMap[props.$size]}px;
   border-radius: ${props => props.theme.borderRadius.full};
   overflow: hidden;
-  
+
   & > * {
     width: 100%;
     height: 100%;
@@ -55,9 +55,7 @@ export const AssetIcon = ({ metadata, size = 'md' }: AssetIconProps) => {
      */
     assetIcon = <UnbondingTokenIcon displayDenom={display} />;
   } else {
-    assetIcon = (
-      <Identicon uniqueIdentifier={metadata?.symbol ?? '?'} type='solid' />
-    );
+    assetIcon = <Identicon uniqueIdentifier={metadata?.symbol ?? '?'} type='solid' />;
   }
 
   return <BorderWrapper $size={size}>{assetIcon}</BorderWrapper>;
