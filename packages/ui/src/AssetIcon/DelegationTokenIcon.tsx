@@ -1,8 +1,7 @@
 import { assetPatterns } from '@penumbra-zone/types/assets';
 import styled from 'styled-components';
-import { Size, size } from './shared.ts';
 
-const Svg = styled.svg.attrs<{ $size: Size }>({
+const Svg = styled.svg.attrs({
   id: 'delegation',
   xmlns: 'http://www.w3.org/2000/svg',
   xmlnsXlink: 'http://www.w3.org/1999/xlink',
@@ -10,7 +9,6 @@ const Svg = styled.svg.attrs<{ $size: Size }>({
 })`
   display: block;
   border-radius: ${props => props.theme.borderRadius.full};
-  ${size};
 `;
 
 const getFirstEightCharactersOfValidatorId = (displayDenom = ''): [string, string] => {
@@ -24,14 +22,13 @@ const getFirstEightCharactersOfValidatorId = (displayDenom = ''): [string, strin
 
 export interface DelegationTokenIconProps {
   displayDenom?: string;
-  size?: Size;
 }
 
-export const DelegationTokenIcon = ({ displayDenom, size = 'md' }: DelegationTokenIconProps) => {
+export const DelegationTokenIcon = ({ displayDenom }: DelegationTokenIconProps) => {
   const [firstFour, lastFour] = getFirstEightCharactersOfValidatorId(displayDenom);
 
   return (
-    <Svg $size={size}>
+    <Svg>
       <defs>
         <radialGradient
           id='logoGradient'
