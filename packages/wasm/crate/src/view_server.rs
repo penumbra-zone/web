@@ -235,8 +235,8 @@ impl ViewServer {
                         found_new_data = true;
                     }
                     (None, None) => {
-                        // Don't remember this commitment; it wasn't ours
-                        // It doesn't matter what kind of payload it was, either
+                        // Don't remember this commitment; it wasn't ours, and
+                        // it doesn't matter what kind of payload it was either.
                         // Just insert and forget
                         self.sct
                             .insert(tct::Witness::Forget, *payload.commitment())
@@ -246,11 +246,13 @@ impl ViewServer {
                 }
             }
 
-            self.sct.end_block()?;
+            // End the block in the commitment tree
+            self.sct.end_block().expect("ending the block must succed");
         }
 
+        // If we've also reached the end of the epoch, end the epoch in the commitment tree
         if block.epoch_root.is_some() {
-            self.sct.end_epoch()?;
+            self.sct.end_epoch().expect("ending the epoch must succeed");
         }
 
         self.latest_height = block.height;
