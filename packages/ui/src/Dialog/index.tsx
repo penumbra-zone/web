@@ -44,7 +44,7 @@ const DialogContent = styled.div`
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: auto;
+  z-index: 9999;
 `;
 
 const DialogContentCard = styled(motion.div)`
