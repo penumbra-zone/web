@@ -1,7 +1,8 @@
 import { assetPatterns } from '@penumbra-zone/types/assets';
 import styled from 'styled-components';
+import { Size, size } from './shared.ts';
 
-const Svg = styled.svg.attrs({
+const Svg = styled.svg.attrs<{ $size: Size }>({
   id: 'unbonding',
   xmlns: 'http://www.w3.org/2000/svg',
   xmlnsXlink: 'http://www.w3.org/1999/xlink',
@@ -9,8 +10,7 @@ const Svg = styled.svg.attrs({
 })`
   display: block;
   border-radius: ${props => props.theme.borderRadius.full};
-  width: 24px;
-  height: 24px;
+  ${size};
 `;
 
 const getFirstEightCharactersOfValidatorId = (displayDenom = ''): [string, string] => {
@@ -24,13 +24,14 @@ const getFirstEightCharactersOfValidatorId = (displayDenom = ''): [string, strin
 
 export interface UnbondingTokenIconProps {
   displayDenom?: string;
+  size?: Size;
 }
 
-export const UnbondingTokenIcon = ({ displayDenom }: UnbondingTokenIconProps) => {
+export const UnbondingTokenIcon = ({ displayDenom, size = 'md' }: UnbondingTokenIconProps) => {
   const [firstFour, lastFour] = getFirstEightCharactersOfValidatorId(displayDenom);
 
   return (
-    <Svg>
+    <Svg $size={size}>
       <defs>
         <radialGradient
           id='logoGradient'
