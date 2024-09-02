@@ -201,11 +201,10 @@ impl ViewServer {
                     }
                     (None, Some(swap)) => {
                         let position = self.sct.insert(Keep, *payload.commitment())?;
-                        let output_data = block
+                        let output_data = *block
                             .swap_outputs
                             .get(&swap.trading_pair)
-                            .ok_or_else(|| anyhow::anyhow!("server gave invalid compact block"))?
-                            .clone();
+                            .ok_or_else(|| anyhow::anyhow!("server gave invalid compact block"))?;
 
                         let source = payload.source().clone();
                         let nullifier = Nullifier::derive(
