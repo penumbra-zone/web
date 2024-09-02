@@ -460,6 +460,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     for (const tx of blockTx) {
       let txId: TransactionId | undefined;
 
+      // Something here? Not getting closed/withdrawn actions
       const txCommitments = (tx.body?.actions ?? []).flatMap(({ action }) => {
         switch (action.case) {
           case 'output':

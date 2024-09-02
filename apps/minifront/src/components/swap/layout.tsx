@@ -4,6 +4,7 @@ import { UnclaimedSwaps } from './unclaimed-swaps';
 import { AuctionList } from './auction-list';
 import { SwapInfoCard } from './swap-info-card';
 import { LayoutGroup } from 'framer-motion';
+import { LpPositions } from './lp-positions.tsx';
 
 export const SwapLayout = () => {
   return (
@@ -15,8 +16,7 @@ export const SwapLayout = () => {
 
             <UnclaimedSwaps />
 
-            {/* TODO: Will enable in subsequent PR */}
-            {/* <LpPositions />*/}
+            <LpPositions />
 
             <AuctionList />
           </div>

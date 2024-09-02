@@ -2,26 +2,94 @@ import { SliceCreator, useStore } from '..';
 import { createZQuery, ZQueryState } from '@penumbra-zone/zquery';
 import { penumbra } from '../../prax.ts';
 import { ViewService } from '@penumbra-zone/protobuf/penumbra/view/v1/view_connect';
-import {
-  OwnedPositionIdsResponse,
-  TransactionPlannerRequest,
-} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { TransactionPlannerRequest } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { SwapSlice } from './index.ts';
 import { isValidAmount, planBuildBroadcast } from '../helpers.ts';
 import { getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { getAssetIdFromValueView } from '@penumbra-zone/getters/value-view';
-import { PositionState_PositionStateEnum } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
+import {
+  Position,
+  PositionId,
+  PositionState_PositionStateEnum,
+} from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { base64ToUint8Array } from '@penumbra-zone/types/base64';
+import { DexService } from '@penumbra-zone/protobuf';
+import { AssetId, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+
+export interface PositionWithId {
+  id: PositionId;
+  position: Position;
+  r1ValueView: ValueView;
+  r2ValueView: ValueView;
+}
+
+const toValueView = async (assetId?: AssetId, amount?: Amount) => {
+  if (!assetId) {
+    return new ValueView({
+      valueView: { case: 'unknownAssetId', value: { amount, assetId } },
+    });
+  }
+
+  const { denomMetadata } = await penumbra.service(ViewService).assetMetadataById({ assetId });
+  if (denomMetadata) {
+    return new ValueView({
+      valueView: { case: 'knownAssetId', value: { amount, metadata: denomMetadata } },
+    });
+  } else {
+    return new ValueView({
+      valueView: { case: 'unknownAssetId', value: { amount, assetId } },
+    });
+  }
+};
+
+// Collects the stream of owned positions and then yields the positions results in a stream
+const fetchOwnedPositions = async function* (): AsyncIterable<PositionWithId> {
+  // We only care about opened and closed state. If withdrawn, not helpful to display in the UI.
+  const openedIds = await Array.fromAsync(
+    penumbra
+      .service(ViewService)
+      .ownedPositionIds({ positionState: { state: PositionState_PositionStateEnum.OPENED } }),
+  );
+  const closedIds = await Array.fromAsync(
+    penumbra
+      .service(ViewService)
+      .ownedPositionIds({ positionState: { state: PositionState_PositionStateEnum.CLOSED } }),
+  );
+
+  const allPositionIds = [...closedIds].map(i => i.positionId).filter(Boolean) as PositionId[];
+
+  const iterable = penumbra
+    .service(DexService)
+    .liquidityPositionsById({ positionId: allPositionIds });
+
+  let index = 0;
+  for await (const res of iterable) {
+    console.log(res);
+    const id = allPositionIds[index]; // responses are emitted in the order of the input ids
+    if (!id) {
+      throw new Error(`No corresponding ID in request array for position index ${index}`);
+    }
+
+    if (res.data) {
+      yield {
+        id,
+        position: res.data,
+        r1ValueView: await toValueView(res.data.phi?.pair?.asset1, res.data.reserves?.r1),
+        r2ValueView: await toValueView(res.data.phi?.pair?.asset2, res.data.reserves?.r2),
+      };
+    }
+
+    index = index + 1;
+  }
+};
 
 export const { ownedPositions, useOwnedPositions } = createZQuery({
   name: 'ownedPositions',
-  fetch: () => penumbra.service(ViewService).ownedPositionIds({}),
+  fetch: fetchOwnedPositions,
   stream: () => {
     return {
-      onValue: (
-        prevState: OwnedPositionIdsResponse[] | undefined,
-        response: OwnedPositionIdsResponse,
-      ) => {
+      onValue: (prevState: PositionWithId[] | undefined, response: PositionWithId) => {
         return [...(prevState ?? []), response];
       },
     };
@@ -41,7 +109,7 @@ interface Actions {
 }
 
 interface State {
-  ownedPositions: ZQueryState<OwnedPositionIdsResponse[]>;
+  ownedPositions: ZQueryState<PositionWithId[]>;
 }
 
 export type LpPositionsSlice = Actions & State;
