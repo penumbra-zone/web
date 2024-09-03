@@ -1,5 +1,73 @@
 # minifront
 
+## 6.20.0
+
+### Minor Changes
+
+- e7d0767: Support for displaying LP position action views
+
+### Patch Changes
+
+- a8a5f41: Prepare UI package for publishing to NPM
+- Updated dependencies [a8a5f41]
+- Updated dependencies [e7d0767]
+  - @penumbra-zone/ui@9.0.0
+  - @penumbra-zone/perspective@28.0.0
+
+## 6.19.1
+
+### Patch Changes
+
+- e952e03: remove BSR dependencies, correctly specify @bufbuild and @connectrpc dependencies
+- Updated dependencies [d01196a]
+- Updated dependencies [e952e03]
+- Updated dependencies [74f9a7f]
+  - @repo/ui@8.2.0
+  - @penumbra-zone/perspective@27.0.0
+  - @penumbra-zone/client@18.0.1
+
+## 6.19.0
+
+### Minor Changes
+
+- e4a4dd7: Fix font alignments & sync dialog
+- c7aa17b: Update approx block duration to ~5.5s
+
+### Patch Changes
+
+- Updated dependencies [e4a4dd7]
+- Updated dependencies [f8730e9]
+- Updated dependencies [7732f8d]
+- Updated dependencies [2788cf0]
+- Updated dependencies [907f6ee]
+  - @repo/ui@8.1.0
+  - @penumbra-zone/getters@16.0.0
+  - @penumbra-zone/perspective@26.0.0
+  - @penumbra-zone/types@21.0.0
+  - @penumbra-zone/crypto-web@22.0.0
+
+## 6.18.0
+
+### Minor Changes
+
+- 894d038: Adjust active auction filter & reverse order auctions
+
+### Patch Changes
+
+- ef54d56: sort asset groups by account index
+- Updated dependencies [6fd8ce6]
+- Updated dependencies [49263c6]
+- Updated dependencies [88b16a7]
+- Updated dependencies [2a76fce]
+  - @repo/ui@8.0.0
+  - @penumbra-zone/protobuf@6.0.0
+  - @penumbra-zone/client@18.0.0
+  - @penumbra-zone/bech32m@7.0.0
+  - @penumbra-zone/getters@15.0.0
+  - @penumbra-zone/perspective@25.0.0
+  - @penumbra-zone/types@20.0.0
+  - @penumbra-zone/crypto-web@21.0.0
+
 ## 6.17.0
 
 ### Minor Changes

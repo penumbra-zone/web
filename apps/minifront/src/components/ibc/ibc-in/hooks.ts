@@ -108,16 +108,16 @@ interface UseCosmosChainBalancesRes {
 }
 
 const getIconFromAsset = (asset: Asset): string | undefined => {
-  // Image default is "" and thus cannot do nullish-coalescing
-  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- Image default is "" and thus cannot do nullish-coalescing
   const logoUri = asset.logo_URIs?.svg || asset.logo_URIs?.png;
   if (logoUri) {
     return logoUri;
   }
 
   if (asset.images?.length) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify non-null assertion
     const first = asset.images[0]!;
-    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- Image default is "" and thus cannot do nullish-coalescing
     return first.svg || first.svg;
   }
   return undefined;
@@ -131,6 +131,7 @@ const generatePenumbraIbcDenoms = async (chains: Chain[]): Promise<string[]> => 
     const ibcStr = `transfer/${c.counterpartyChannelId}/upenumbra`;
     const encoder = new TextEncoder();
     const encodedString = encoder.encode(ibcStr);
+
     const hash = await sha256HashStr(encodedString);
     ibcAddrs.push(`ibc/${hash.toUpperCase()}`);
   }

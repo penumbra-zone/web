@@ -92,6 +92,7 @@ export interface TextInputProps {
  * Can be enriched with start and end adornments, which are markup that render
  * inside the text input's visual frame.
  */
+// eslint-disable-next-line react/display-name -- exotic component
 export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
   (
     {
@@ -107,29 +108,25 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
       min,
     }: TextInputProps,
     ref,
-  ) => {
-    disabled = useDisabled(disabled);
+  ) => (
+    <Wrapper $hasStartAdornment={!!startAdornment} $hasEndAdornment={!!endAdornment}>
+      {startAdornment}
 
-    return (
-      <Wrapper $hasStartAdornment={!!startAdornment} $hasEndAdornment={!!endAdornment}>
-        {startAdornment}
+      <StyledInput
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        placeholder={placeholder}
+        disabled={useDisabled(disabled)}
+        type={type}
+        max={max}
+        min={min}
+        ref={ref}
+        $actionType={actionType}
+        $hasStartAdornment={!!startAdornment}
+        $hasEndAdornment={!!endAdornment}
+      />
 
-        <StyledInput
-          value={value}
-          onChange={e => onChange(e.target.value)}
-          placeholder={placeholder}
-          disabled={disabled}
-          type={type}
-          max={max}
-          min={min}
-          ref={ref}
-          $actionType={actionType}
-          $hasStartAdornment={!!startAdornment}
-          $hasEndAdornment={!!endAdornment}
-        />
-
-        {endAdornment}
-      </Wrapper>
-    );
-  },
+      {endAdornment}
+    </Wrapper>
+  ),
 );

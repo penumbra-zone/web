@@ -1,7 +1,7 @@
-import { BalanceValueView } from '@repo/ui/components/ui/balance-value-view';
+import { BalanceValueView } from '@penumbra-zone/ui/components/ui/balance-value-view';
 import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { Box } from '@repo/ui/components/ui/box';
+import { Box } from '@penumbra-zone/ui/components/ui/box';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
 import {
   getAmount,
@@ -21,7 +21,7 @@ import { isValidAmount } from '../../../state/helpers';
 import { NonNativeFeeWarning } from '../../shared/non-native-fee-warning';
 import { NumberInput } from '../../shared/number-input';
 import { useBalancesResponses, useAssets } from '../../../state/shared';
-import { FadeIn } from '@repo/ui/components/ui/fade-in';
+import { FadeIn } from '@penumbra-zone/ui/components/ui/fade-in';
 import { getBalanceByMatchingMetadataAndAddressIndex } from '../../../state/swap/getters';
 import {
   swappableAssetsSelector,

@@ -20,11 +20,9 @@ describe('<Dialog />', () => {
 
   it('renders a close button when both `isOpen` and `onClose` are passed', () => {
     const { queryByLabelText } = render(
-      <>
-        <Dialog isOpen={true} onClose={() => {}}>
-          <Dialog.Content title='Title'>Hello, world</Dialog.Content>
-        </Dialog>
-      </>,
+      <Dialog isOpen={true} onClose={() => {}}>
+        <Dialog.Content title='Title'>Hello, world</Dialog.Content>
+      </Dialog>,
       { wrapper: PenumbraUIProvider },
     );
 
@@ -33,11 +31,9 @@ describe('<Dialog />', () => {
 
   it('does not render a close button when both `isOpen` is passed but `onClose` is not', () => {
     const { queryByLabelText } = render(
-      <>
-        <Dialog isOpen={true}>
-          <Dialog.Content title='Title'>Hello, world</Dialog.Content>
-        </Dialog>
-      </>,
+      <Dialog isOpen={true}>
+        <Dialog.Content title='Title'>Hello, world</Dialog.Content>
+      </Dialog>,
       { wrapper: PenumbraUIProvider },
     );
 

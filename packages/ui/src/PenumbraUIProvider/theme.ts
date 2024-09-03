@@ -104,6 +104,23 @@ const PALETTE = {
   },
 };
 
+/**
+ * Call `theme.spacing(x)`, where `x` is the number of spacing units (in the
+ * Penumbra theme, 1 spacing unit = 4px) that you want to interpolate into your
+ * CSS or JavaScript. By default, returns a string with the number of pixels
+ * suffixed with `px` -- e.g., `theme.spacing(4)` returns `'16px'`. Pass
+ * `number` as the second argument to get back a number of pixels -- e.g.,
+ * `theme.spacing(4, 'number')` returns `16`.
+ */
+function spacing(spacingUnits: number, returnType?: 'string'): string;
+function spacing(spacingUnits: number, returnType: 'number'): number;
+function spacing(spacingUnits: number, returnType?: 'string' | 'number'): string | number {
+  if (returnType === 'number') {
+    return spacingUnits * 4;
+  }
+  return `${spacingUnits * 4}px`;
+}
+
 export const theme = {
   blur: {
     none: '0px',
@@ -238,11 +255,9 @@ export const theme = {
     textSm: '1.25rem',
     textXs: '1rem',
   },
-  spacing: (spacingUnits: number) => `${spacingUnits * 4}px`,
+  spacing,
   zIndex: {
     disabledOverlay: 10,
-    dialogOverlay: 1000,
-    dialogContent: 1001,
   },
 } as const;
 
@@ -257,7 +272,6 @@ export type TextColorVariant = keyof Theme['color']['text'];
  * import, they'll get the updated theme typings as well.
  */
 declare module 'styled-components' {
-  // We're doing a declaration merge here, so the interface will be empty.
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface -- declaration merge
   export interface DefaultTheme extends Theme {}
 }

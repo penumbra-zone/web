@@ -1,5 +1,32 @@
 # @penumbra-zone/wasm
 
+## 26.2.0
+
+### Minor Changes
+
+- e7d0767: Customize symbol for LP position NFTs
+
+## 26.1.0
+
+### Minor Changes
+
+- 598d148: better error message for insufficient note balance
+
+## 26.0.0
+
+### Patch Changes
+
+- @penumbra-zone/types@21.0.0
+
+## 25.0.0
+
+### Patch Changes
+
+- Updated dependencies [49263c6]
+  - @penumbra-zone/protobuf@6.0.0
+  - @penumbra-zone/bech32m@7.0.0
+  - @penumbra-zone/types@20.0.0
+
 ## 24.0.0
 
 ### Minor Changes

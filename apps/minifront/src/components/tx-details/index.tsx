@@ -1,5 +1,5 @@
-import { Card } from '@repo/ui/components/ui/card';
-import { FadeTransition } from '@repo/ui/components/ui/fade-transition';
+import { Card } from '@penumbra-zone/ui/components/ui/card';
+import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
 import { TxViewer } from './tx-viewer';
 import { EduInfoCard } from '../shared/edu-panels/edu-info-card';
 import { EduPanel } from '../shared/edu-panels/content';
@@ -16,6 +16,7 @@ export const TxDetailsErrorBoundary = () => {
 export const TxDetails = () => {
   const { hash } = useParams<{ hash: string }>();
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify
   const txInfo = useTransactionInfo(undefined, hash!);
 
   if (
@@ -28,19 +29,21 @@ export const TxDetails = () => {
 
   return (
     <FadeTransition className='flex min-h-[calc(100vh-122px)] flex-col items-stretch justify-start'>
-      <RestrictMaxWidth>
-        <div className='relative grid grid-std-spacing lg:grid-cols-3'>
-          <Card gradient className='flex-1 p-5 md:p-4 lg:col-span-2 lg:row-span-2 xl:p-5'>
-            <TxViewer txInfo={txInfo.data} />
-          </Card>
-          <EduInfoCard
-            className='row-span-1'
-            src='./incognito.svg'
-            label='Shielded Transactions'
-            content={EduPanel.SHIELDED_TRANSACTION}
-          />
-        </div>
-      </RestrictMaxWidth>
+      <div className='flex flex-col'>
+        <RestrictMaxWidth>
+          <div className='relative grid grid-std-spacing lg:grid-cols-3'>
+            <Card gradient className='flex-1 p-5 md:p-4 lg:col-span-2 lg:row-span-2 xl:p-5'>
+              <TxViewer txInfo={txInfo.data} />
+            </Card>
+            <EduInfoCard
+              className='row-span-1'
+              src='./incognito.svg'
+              label='Shielded Transactions'
+              content={EduPanel.SHIELDED_TRANSACTION}
+            />
+          </div>
+        </RestrictMaxWidth>
+      </div>
     </FadeTransition>
   );
 };

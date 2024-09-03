@@ -11,6 +11,7 @@ export const appParameters: Impl['appParameters'] = async (_, ctx) => {
   if (parameters) {
     return { parameters };
   }
+  // eslint-disable-next-line no-unreachable-loop -- TODO: justify
   for await (const update of subscription) {
     return { parameters: AppParameters.fromJson(update.value) };
   }

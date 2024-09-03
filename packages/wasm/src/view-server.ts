@@ -13,7 +13,7 @@ import type { ViewServerInterface } from '@penumbra-zone/types/servers';
 import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 declare global {
-  // eslint-disable-next-line no-var
+  // eslint-disable-next-line no-var -- TODO: explain
   var __DEV__: boolean | undefined;
 }
 

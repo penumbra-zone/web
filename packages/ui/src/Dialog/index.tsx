@@ -8,13 +8,15 @@ import { Button } from '../Button';
 import { Density } from '../Density';
 import { Display } from '../Display';
 import { Grid } from '../Grid';
+import { MotionProp } from '../utils/MotionProp';
+import { motion } from 'framer-motion';
 
 const Overlay = styled(RadixDialog.Overlay)`
   backdrop-filter: blur(${props => props.theme.blur.xs});
   background-color: ${props => props.theme.color.other.overlay};
   position: fixed;
   inset: 0;
-  z-index: ${props => props.theme.zIndex.dialogOverlay};
+  z-index: auto;
 `;
 
 const FullHeightWrapper = styled.div`
@@ -41,11 +43,11 @@ const FullHeightWrapper = styled.div`
 const DialogContent = styled.div`
   position: fixed;
   inset: 0;
-  z-index: ${props => props.theme.zIndex.dialogContent};
   pointer-events: none;
+  z-index: 9999;
 `;
 
-const DialogContentCard = styled.div`
+const DialogContentCard = styled(motion.div)`
   width: 100%;
   box-sizing: border-box;
 
@@ -170,6 +172,28 @@ export type DialogProps = {
  *   <Dialog.Content title="Dialog title">Dialog content here</Dialog.Content>
  * </Dialog>
  * ```
+ *
+ * ## Animating a dialog out of its trigger
+ *
+ * You can use the `motion` prop with a layout ID to make a dialog appear to
+ * animate out of the trigger button:
+ *
+ * ```tsx
+ * const layoutId = useId();
+ *
+ * return (
+ *   <Dialog>
+ *     <Dialog.Trigger asChild>
+ *       <Button icon={Info} iconOnly='adornment' motion={{ layoutId }}>
+ *         Info
+ *       </Button>
+ *     </Dialog.Trigger>
+ *     <Dialog.Content title='Info' motion={{ layoutId }}>
+ *       ...
+ *     </Dialog.Content>
+ *   </Dialog>
+ * );
+ * ```
  */
 export const Dialog = ({ children, onClose, isOpen }: DialogProps) => {
   const isControlledComponent = isOpen !== undefined;
@@ -184,12 +208,30 @@ export const Dialog = ({ children, onClose, isOpen }: DialogProps) => {
   );
 };
 
+export interface DialogEmptyContentProps {
+  children?: ReactNode;
+}
+
+const EmptyContent = ({ children }: DialogEmptyContentProps) => {
+  return (
+    <RadixDialog.Portal>
+      <Overlay />
+
+      <RadixDialog.Content>
+        <DialogContent>{children}</DialogContent>
+      </RadixDialog.Content>
+    </RadixDialog.Portal>
+  );
+};
+Dialog.EmptyContent = EmptyContent;
+
 /** Internal use only. */
 const DialogContext = createContext<{ showCloseButton: boolean }>({
   showCloseButton: true,
 });
 
-export interface DialogContentProps<IconOnlyButtonGroupProps extends boolean | undefined> {
+export interface DialogContentProps<IconOnlyButtonGroupProps extends boolean | undefined>
+  extends MotionProp {
   children?: ReactNode;
   title: string;
   /**
@@ -206,53 +248,48 @@ const Content = <IconOnlyButtonGroupProps extends boolean | undefined>({
   children,
   title,
   buttonGroupProps,
+  motion,
 }: DialogContentProps<IconOnlyButtonGroupProps>) => {
   const { showCloseButton } = useContext(DialogContext);
 
   return (
-    <RadixDialog.Portal>
-      <Overlay />
+    <EmptyContent>
+      <Display>
+        <Grid container>
+          <Grid mobile={0} tablet={2} desktop={3} xl={4} />
 
-      <RadixDialog.Content>
-        <DialogContent>
-          <Display>
-            <Grid container>
-              <Grid mobile={0} tablet={2} desktop={3} xl={4} />
+          <Grid mobile={12} tablet={8} desktop={6} xl={4}>
+            <FullHeightWrapper>
+              <DialogContentCard {...motion}>
+                <TitleAndCloseButton>
+                  <RadixDialog.Title asChild>
+                    <Text xxl as='h2'>
+                      {title}
+                    </Text>
+                  </RadixDialog.Title>
 
-              <Grid mobile={12} tablet={8} desktop={6} xl={4}>
-                <FullHeightWrapper>
-                  <DialogContentCard>
-                    <TitleAndCloseButton>
-                      <RadixDialog.Title asChild>
-                        <Text xxl as='h2'>
-                          {title}
-                        </Text>
-                      </RadixDialog.Title>
+                  {showCloseButton && (
+                    <Density compact>
+                      <RadixDialog.Close asChild>
+                        <Button icon={X} iconOnly priority='secondary'>
+                          Close
+                        </Button>
+                      </RadixDialog.Close>
+                    </Density>
+                  )}
+                </TitleAndCloseButton>
 
-                      {showCloseButton && (
-                        <Density compact>
-                          <RadixDialog.Close asChild>
-                            <Button icon={X} iconOnly priority='secondary'>
-                              Close
-                            </Button>
-                          </RadixDialog.Close>
-                        </Density>
-                      )}
-                    </TitleAndCloseButton>
+                {children}
 
-                    {children}
+                {buttonGroupProps && <ButtonGroup {...buttonGroupProps} column />}
+              </DialogContentCard>
+            </FullHeightWrapper>
+          </Grid>
 
-                    {buttonGroupProps && <ButtonGroup {...buttonGroupProps} column />}
-                  </DialogContentCard>
-                </FullHeightWrapper>
-              </Grid>
-
-              <Grid mobile={0} tablet={2} desktop={3} xl={4} />
-            </Grid>
-          </Display>
-        </DialogContent>
-      </RadixDialog.Content>
-    </RadixDialog.Portal>
+          <Grid mobile={0} tablet={2} desktop={3} xl={4} />
+        </Grid>
+      </Display>
+    </EmptyContent>
   );
 };
 Dialog.Content = Content;

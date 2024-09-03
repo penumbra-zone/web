@@ -5,7 +5,7 @@ import { Tabs } from '.';
 
 const meta: Meta<typeof Tabs> = {
   component: Tabs,
-  tags: ['autodocs', '!dev'],
+  tags: ['autodocs', '!dev', 'density'],
   argTypes: {
     value: { control: false },
     options: { control: false },

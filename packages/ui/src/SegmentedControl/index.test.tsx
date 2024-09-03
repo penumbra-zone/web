@@ -35,4 +35,46 @@ describe('<SegmentedControl />', () => {
 
     expect(onChange).toHaveBeenCalledWith('two');
   });
+
+  describe('when the options have non-string values', () => {
+    const valueOne = { toString: () => 'one' };
+    const valueTwo = { toString: () => 'two' };
+    const valueThree = { toString: () => 'three' };
+
+    const options = [
+      { value: valueOne, label: 'One' },
+      { value: valueTwo, label: 'Two' },
+      { value: valueThree, label: 'Three' },
+    ];
+
+    it('calls the `onClick` handler with the value of the clicked option', () => {
+      const { getByText } = render(
+        <SegmentedControl value={valueOne} options={options} onChange={onChange} />,
+        { wrapper: PenumbraUIProvider },
+      );
+      fireEvent.click(getByText('Two', { selector: ':not([aria-hidden])' }));
+
+      expect(onChange).toHaveBeenCalledWith(valueTwo);
+    });
+
+    describe("when the options' `.toString()` methods return non-unique values", () => {
+      const valueOne = { toString: () => 'one' };
+      const valueTwo = { toString: () => 'two' };
+      const valueTwoAgain = { toString: () => 'two' };
+
+      const options = [
+        { value: valueOne, label: 'One' },
+        { value: valueTwo, label: 'Two' },
+        { value: valueTwoAgain, label: 'Two again' },
+      ];
+
+      it('throws', () => {
+        expect(() =>
+          render(<SegmentedControl value={valueOne} options={options} onChange={onChange} />, {
+            wrapper: PenumbraUIProvider,
+          }),
+        ).toThrow('The value options passed to `<SegmentedControl />` are not unique.');
+      });
+    });
+  });
 });

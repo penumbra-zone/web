@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/client",
-  "version": "17.0.0",
+  "version": "18.0.1",
   "license": "(MIT OR Apache-2.0)",
   "description": "Package for connecting to any Penumbra extension, including Prax.",
   "type": "module",
@@ -35,12 +35,14 @@
     }
   },
   "devDependencies": {
+    "@bufbuild/protobuf": "^1.10.0",
     "@connectrpc/connect": "^1.4.0",
     "@penumbra-zone/protobuf": "workspace:*",
     "@penumbra-zone/transport-dom": "workspace:*",
     "@types/chrome": "^0.0.268"
   },
   "peerDependencies": {
+    "@bufbuild/protobuf": "^1.10.0",
     "@connectrpc/connect": "^1.4.0",
     "@penumbra-zone/protobuf": "workspace:*",
     "@penumbra-zone/transport-dom": "workspace:*"

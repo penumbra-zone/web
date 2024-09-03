@@ -1,9 +1,9 @@
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { ConditionalWrap } from '../utils/ConditionalWrap';
+import { ConditionalWrap } from '../ConditionalWrap';
 import { Pill } from '../Pill';
 import { Text } from '../Text';
 import styled from 'styled-components';
-import { AssetIcon } from './AssetIcon';
+import { AssetIcon } from '../AssetIcon';
 import { getMetadata } from '@penumbra-zone/getters/value-view';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
 import { Density } from '../types/Density';
@@ -90,8 +90,7 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
 
   const formattedAmount = getFormattedAmtFromValueView(valueView, true);
   const metadata = getMetadata.optional()(valueView);
-  // Symbol default is "" and thus cannot do nullish coalescing
-  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- possibly empty string
   const symbol = metadata?.symbol || 'Unknown';
 
   return (

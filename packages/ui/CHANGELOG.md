@@ -1,5 +1,62 @@
 # @penumbra-zone/ui
 
+## 9.0.0
+
+### Major Changes
+
+- a8a5f41: Prepare UI package for publishing to NPM
+
+### Minor Changes
+
+- e7d0767: Support for displaying LP position action views
+
+### Patch Changes
+
+- Updated dependencies [e7d0767]
+  - @penumbra-zone/perspective@28.0.0
+
+## 8.2.0
+
+### Minor Changes
+
+- d01196a: Add WalletBalance UI component
+- 74f9a7f: Remove browser & version check
+
+### Patch Changes
+
+- e952e03: remove BSR dependencies, correctly specify @bufbuild and @connectrpc dependencies
+- Updated dependencies [e952e03]
+  - @penumbra-zone/perspective@27.0.0
+
+## 8.1.0
+
+### Minor Changes
+
+- e4a4dd7: Fix font alignments & sync dialog
+- 7732f8d: Add Popover UI component
+- 2788cf0: Add DropdownMenu UI component
+- 907f6ee: Add Banner and IncompatableBrowserBanner
+
+### Patch Changes
+
+- @penumbra-zone/perspective@26.0.0
+- @penumbra-zone/types@21.0.0
+
+## 8.0.0
+
+### Minor Changes
+
+- 6fd8ce6: Compress fonts (ttf -> woff2)
+- 2a76fce: Create <Card />'s subcomponents; create <FormField /> and <TextInput />; add some features re: disabled fields
+
+### Patch Changes
+
+- Updated dependencies [49263c6]
+  - @penumbra-zone/protobuf@6.0.0
+  - @penumbra-zone/bech32m@7.0.0
+  - @penumbra-zone/perspective@25.0.0
+  - @penumbra-zone/types@20.0.0
+
 ## 7.4.1
 
 ### Patch Changes

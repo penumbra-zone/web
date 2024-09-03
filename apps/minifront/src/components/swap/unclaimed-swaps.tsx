@@ -1,11 +1,11 @@
-import { Button } from '@repo/ui/components/ui/button';
-import { Card } from '@repo/ui/components/ui/card';
-import { AssetIcon } from '@repo/ui/components/ui/asset-icon';
+import { Button } from '@penumbra-zone/ui/components/ui/button';
+import { Card } from '@penumbra-zone/ui/components/ui/card';
+import { AssetIcon } from '@penumbra-zone/ui/components/ui/asset-icon';
 import { AllSlices } from '../../state';
 import { useUnclaimedSwaps } from '../../state/unclaimed-swaps';
 import { getSwapRecordCommitment } from '@penumbra-zone/getters/swap-record';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
-import { GradientHeader } from '@repo/ui/components/ui/gradient-header';
+import { GradientHeader } from '@penumbra-zone/ui/components/ui/gradient-header';
 import { useStoreShallow } from '../../utils/use-store-shallow';
 import { useState } from 'react';
 import { SwapRecord } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';

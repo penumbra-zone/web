@@ -1,15 +1,11 @@
 import React, { useState } from 'react';
 import globalsCssUrl from '../styles/globals.css?url';
 import penumbraTheme from './penumbraTheme';
-import { ConditionalWrap } from '../src/utils/ConditionalWrap';
+import { ConditionalWrap } from '../src/ConditionalWrap';
 import { PenumbraUIProvider } from '../src/PenumbraUIProvider';
 import { Density } from '../src/Density';
 import { Tabs } from '../src/Tabs';
 import styled from 'styled-components';
-
-const WhiteTextWrapper = styled.div`
-  color: ${props => props.theme.color.text.primary};
-`;
 
 const Column = styled.div`
   display: flex;
@@ -32,14 +28,16 @@ const DensityWrapper = ({ children, showDensityControl }) => {
     >
       <Column>
         {showDensityControl && (
-          <Tabs
-            options={[
-              { label: 'Sparse', value: 'sparse' },
-              { label: 'Compact', value: 'compact' },
-            ]}
-            value={density}
-            onChange={setDensity}
-          />
+          <Density sparse>
+            <Tabs
+              options={[
+                { label: 'Sparse', value: 'sparse' },
+                { label: 'Compact', value: 'compact' },
+              ]}
+              value={density}
+              onChange={setDensity}
+            />
+          </Density>
         )}
 
         {children}
@@ -66,14 +64,17 @@ const preview = {
       return (
         <PenumbraUIProvider>
           <DensityWrapper showDensityControl={tags.includes('density')}>
-            <WhiteTextWrapper>
-              <Story />
-            </WhiteTextWrapper>
+            <Story />
           </DensityWrapper>
         </PenumbraUIProvider>
       );
     },
   ],
+  argTypes: {
+    // The `motion` prop is used throughout many Penumbra UI components for
+    // framer-motion settings, and shouldn't be controlled in Storybook.
+    motion: { control: false },
+  },
   parameters: {
     actions: { argTypesRegex: '^on[A-Z].*' },
     controls: {

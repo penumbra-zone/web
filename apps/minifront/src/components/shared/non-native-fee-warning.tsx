@@ -6,7 +6,7 @@ import { ReactNode, useCallback, useEffect, useState } from 'react';
 import {
   getAddressIndex,
   getAmount,
-  getAssetIdFromBalancesResponseOptional,
+  getAssetIdFromBalancesResponse,
 } from '@penumbra-zone/getters/balances-response';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { GasPrices } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
@@ -59,7 +59,7 @@ const hasTokenBalance = ({
     }
 
     return gasPrices.some(price =>
-      price.assetId?.equals(getAssetIdFromBalancesResponseOptional(balance)),
+      price.assetId?.equals(getAssetIdFromBalancesResponse.optional()(balance)),
     );
   });
 

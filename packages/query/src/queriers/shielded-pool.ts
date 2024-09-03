@@ -5,7 +5,7 @@ import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v
 import type { ShieldedPoolQuerierInterface } from '@penumbra-zone/types/querier';
 
 declare global {
-  // eslint-disable-next-line no-var
+  // eslint-disable-next-line no-var -- expected globals
   var __DEV__: boolean | undefined;
 }
 
