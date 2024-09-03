@@ -1,5 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export interface Getter<SourceType = any, TargetType = any> {
+export interface Getter<SourceType, TargetType> {
   /**
    * Given an input value of `SourceType`, asserts successful retrieval of a
    * value of `TargetType`, by the naive retrieval function passed to
