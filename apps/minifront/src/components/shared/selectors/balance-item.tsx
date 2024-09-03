@@ -46,7 +46,7 @@ export const BalanceItem = ({ asset, value, onSelect }: BalanceItemProps) => {
           isSelected && 'bg-light-brown',
         )}
       >
-        <TableCell>{account}</TableCell>
+        <TableCell className='pl-4'>{account}</TableCell>
 
         <TableCell>
           <div className='col-span-2 flex items-center justify-start gap-1'>
@@ -60,7 +60,7 @@ export const BalanceItem = ({ asset, value, onSelect }: BalanceItemProps) => {
           </div>
         </TableCell>
 
-        <TableCell>
+        <TableCell className='pr-4'>
           <div className='col-span-2 flex justify-end'>
             {isBalance(asset) && (
               <ValueViewComponent showIcon={false} showDenom={false} view={asset.balanceView} />
