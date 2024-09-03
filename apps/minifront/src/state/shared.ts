@@ -9,6 +9,8 @@ import { getStakingTokenMetadata } from '../fetchers/registry';
 import { getBalancesStream } from '../fetchers/balances';
 import { getAllAssets } from '../fetchers/assets';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
+import { GasPrices } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
+import { getGasPrices } from '../fetchers/gas-prices';
 
 /**
  * For Noble specifically we need to use a Bech32 encoding rather than Bech32m,
@@ -88,16 +90,31 @@ export const { assets, useAssets } = createZQuery({
   },
 });
 
+export const { gasPrices, useGasPrices } = createZQuery({
+  name: 'gasPrices',
+  fetch: getGasPrices,
+  getUseStore: () => useStore,
+  get: state => state.shared.gasPrices,
+  set: setter => {
+    const newState = setter(useStore.getState().shared.gasPrices);
+    useStore.setState(state => {
+      state.shared.gasPrices = newState;
+    });
+  },
+});
+
 export interface SharedSlice {
   assets: ZQueryState<Metadata[]>;
   balancesResponses: ZQueryState<BalancesResponse[], Parameters<typeof getBalancesStream>>;
   stakingTokenMetadata: ZQueryState<Metadata>;
+  gasPrices: ZQueryState<GasPrices[]>;
 }
 
 export const createSharedSlice = (): SliceCreator<SharedSlice> => () => ({
   assets,
   balancesResponses,
   stakingTokenMetadata,
+  gasPrices,
 });
 
 export interface BalancesByAccount {

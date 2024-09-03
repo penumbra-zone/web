@@ -9,7 +9,7 @@ import {
   getMetadataFromBalancesResponseOptional,
 } from '@penumbra-zone/getters/balances-response';
 import { ArrowRight } from 'lucide-react';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
@@ -20,7 +20,12 @@ import { zeroValueView } from '../../../utils/zero-value-view';
 import { isValidAmount } from '../../../state/helpers';
 import { NonNativeFeeWarning } from '../../shared/non-native-fee-warning';
 import { NumberInput } from '../../shared/number-input';
-import { useBalancesResponses, useAssets } from '../../../state/shared';
+import {
+  useBalancesResponses,
+  useAssets,
+  useStakingTokenMetadata,
+  useGasPrices,
+} from '../../../state/shared';
 import { FadeIn } from '@penumbra-zone/ui/components/ui/fade-in';
 import { getBalanceByMatchingMetadataAndAddressIndex } from '../../../state/swap/getters';
 import {
@@ -28,6 +33,7 @@ import {
   swappableBalancesResponsesSelector,
 } from '../../../state/swap/helpers';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
+import { hasStakingToken } from '../../../fetchers/gas-prices';
 
 const getAssetOutBalance = (
   balancesResponses: BalancesResponse[] = [],
@@ -55,8 +61,6 @@ const tokenSwapInputSelector = (state: AllSlices) => ({
   amount: state.swap.amount,
   setAmount: state.swap.setAmount,
   reverse: state.swap.reverse,
-  setGasPrices: state.swap.setGasPrices,
-  setStakingToken: state.swap.setStakingToken,
 });
 
 /**
@@ -68,17 +72,8 @@ const tokenSwapInputSelector = (state: AllSlices) => ({
 export const TokenSwapInput = () => {
   const balancesResponses = useBalancesResponses({ select: swappableBalancesResponsesSelector });
   const swappableAssets = useAssets({ select: swappableAssetsSelector });
-  const {
-    amount,
-    setAmount,
-    assetIn,
-    setAssetIn,
-    assetOut,
-    setAssetOut,
-    reverse,
-    setGasPrices,
-    setStakingToken,
-  } = useStoreShallow(tokenSwapInputSelector);
+  const { amount, setAmount, assetIn, setAssetIn, assetOut, setAssetOut, reverse } =
+    useStoreShallow(tokenSwapInputSelector);
   const assetOutBalance = getAssetOutBalance(balancesResponses?.data, assetIn, assetOut);
   const assetInExponent = useMemo(() => {
     return getDisplayDenomExponent.optional()(getMetadataFromBalancesResponseOptional(assetIn));
@@ -93,6 +88,22 @@ export const TokenSwapInput = () => {
       setAmount(formattedAmt);
     }
   };
+
+  const stakingTokenMetadata = useStakingTokenMetadata();
+  const gasPrices = useGasPrices().data;
+  const [localIsStakingToken, setLocalIsStakingToken] = useState(false);
+
+  useEffect(() => {
+    const updateStakingTokenAndGasPrices = async () => {
+      const isStakingToken = await hasStakingToken(
+        balancesResponses?.data!,
+        stakingTokenMetadata.data,
+        assetIn,
+      );
+      setLocalIsStakingToken(isStakingToken);
+    };
+    updateStakingTokenAndGasPrices();
+  }, [balancesResponses?.data!, stakingTokenMetadata, assetIn, gasPrices]);
 
   return (
     <Box label='Trade' layout>
@@ -169,11 +180,8 @@ export const TokenSwapInput = () => {
       </div>
 
       <NonNativeFeeWarning
-        balancesResponses={balancesResponses?.data}
         amount={Number(amount)}
-        source={assetIn}
-        setGasPrices={setGasPrices}
-        setStakingToken={setStakingToken}
+        hasStakingToken={localIsStakingToken}
         wrap={children => (
           <>
             {/* This div adds an empty line */} <div className='h-4' />
