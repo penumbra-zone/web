@@ -1,85 +1,4 @@
-import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { getAssetIdFromValueView } from '@penumbra-zone/getters/value-view';
-import { useStakingTokenMetadata } from '../../state/shared';
-import { ReactNode, useCallback, useEffect, useState } from 'react';
-import {
-  getAddressIndex,
-  getAmount,
-  getAssetIdFromBalancesResponse,
-} from '@penumbra-zone/getters/balances-response';
-import { ViewService } from '@penumbra-zone/protobuf';
-import { GasPrices } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
-import { getAssetId } from '@penumbra-zone/getters/metadata';
-import { penumbra } from '../../prax';
-
-const hasTokenBalance = ({
-  source,
-  balancesResponses = [],
-  gasPrices,
-  stakingAssetMetadata,
-  setStakingToken,
-}: {
-  source?: BalancesResponse;
-  balancesResponses: BalancesResponse[];
-  gasPrices: GasPrices[];
-  stakingAssetMetadata?: Metadata;
-  setStakingToken: (stakingToken: boolean) => void;
-}): boolean => {
-  const account = getAddressIndex.optional()(source)?.account;
-  if (typeof account === 'undefined') {
-    return false;
-  }
-
-  // Finds the UM token in the user's account balances
-  const hasStakingToken = balancesResponses.some(
-    asset =>
-      getAssetIdFromValueView
-        .optional()(asset.balanceView)
-        ?.equals(getAssetId.optional()(stakingAssetMetadata)) &&
-      getAddressIndex.optional()(asset)?.account === account,
-  );
-
-  // Set the staking token status in the state
-  setStakingToken(hasStakingToken);
-
-  if (hasStakingToken) {
-    return false;
-  }
-
-  const accountAssets = balancesResponses.filter(
-    balance => getAddressIndex.optional()(balance)?.account === account,
-  );
-  // Finds the alt tokens in the user's account balances that can be used for fees
-  const hasAltTokens = accountAssets.some(balance => {
-    const amount = getAmount(balance);
-    const hasBalance = amount.lo !== 0n || amount.hi !== 0n;
-    if (!hasBalance) {
-      return false;
-    }
-
-    return gasPrices.some(price =>
-      price.assetId?.equals(getAssetIdFromBalancesResponse.optional()(balance)),
-    );
-  });
-
-  return hasAltTokens;
-};
-
-const useGasPrices = () => {
-  const [prices, setPrices] = useState<GasPrices[]>([]);
-
-  const fetchGasPrices = useCallback(async () => {
-    const res = await penumbra.service(ViewService).gasPrices({});
-    setPrices(res.altGasPrices);
-  }, []);
-
-  useEffect(() => {
-    void fetchGasPrices();
-  }, [fetchGasPrices]);
-
-  return prices;
-};
+import { ReactNode } from 'react';
 
 /**
  * Renders a non-native fee warning if
@@ -87,28 +6,15 @@ const useGasPrices = () => {
  * 2. the user does not have sufficient balances in alternative tokens to cover the fees
  */
 export const NonNativeFeeWarning = ({
-  balancesResponses = [],
   amount,
-  source,
+  hasStakingToken,
   wrap = children => children,
-  setGasPrices,
-  setStakingToken,
 }: {
-  /**
-   * The user's balances that are relevant to this transaction, from which
-   * `<NonNativeFeeWarning />` will determine whether to render.
-   */
-  balancesResponses?: BalancesResponse[];
   /**
    * The amount that the user is putting into this transaction, which will help
    * determine whether the warning should render.
    */
   amount: number;
-  /**
-   * A source token – helps determine whether the user has UM token
-   * in the same account as `source` to use for fees.
-   */
-  source?: BalancesResponse;
   /*
    * Since this component determines for itself whether to render, a parent
    * component can't optionally render wrapper markup depending on whether this
@@ -126,32 +32,10 @@ export const NonNativeFeeWarning = ({
    * />
    * ```
    */
+  hasStakingToken: boolean;
   wrap?: (children: ReactNode) => ReactNode;
-  setGasPrices: (prices: GasPrices[]) => void;
-  setStakingToken: (stakingToken: boolean) => void;
 }) => {
-  const gasPrices = useGasPrices();
-  const stakingTokenMetadata = useStakingTokenMetadata();
-  const [hasStakingToken, setHasStakingToken] = useState(false);
-
-  // useEffect here defers the state updates until after the rendering phase is complete,
-  // preventing direct state modifications during rendering.
-  useEffect(() => {
-    setGasPrices(gasPrices);
-  }, [gasPrices, setGasPrices]);
-
-  useEffect(() => {
-    const stakingToken = hasTokenBalance({
-      source,
-      balancesResponses,
-      gasPrices,
-      stakingAssetMetadata: stakingTokenMetadata.data,
-      setStakingToken,
-    });
-    setHasStakingToken(stakingToken);
-  }, [source, balancesResponses, gasPrices, stakingTokenMetadata, setStakingToken]);
-
-  const shouldRender = !!amount && hasStakingToken;
+  const shouldRender = !!amount && !hasStakingToken;
   if (!shouldRender) {
     return null;
   }
