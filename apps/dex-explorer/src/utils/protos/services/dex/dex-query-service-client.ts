@@ -1,8 +1,17 @@
 import { PromiseClient } from "@connectrpc/connect";
 import { createClient } from "../utils";
-import { DexService } from "@penumbra-zone/protobuf"
-import { PositionId, Position, DirectedTradingPair, SwapExecution, CandlestickData } from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb";
-import { DexQueryServiceClientInterface, SwapExecutionWithBlockHeight } from "../../types/DexQueryServiceClientInterface";
+import { DexService } from "@penumbra-zone/protobuf";
+import {
+  PositionId,
+  Position,
+  DirectedTradingPair,
+  SwapExecution,
+  CandlestickData,
+} from "@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb";
+import {
+  DexQueryServiceClientInterface,
+  SwapExecutionWithBlockHeight,
+} from "../../types/DexQueryServiceClientInterface";
 import { Readable } from "stream";
 
 export class DexQueryServiceClient implements DexQueryServiceClientInterface {
