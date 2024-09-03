@@ -46,6 +46,7 @@ import { getAssetIdFromGasPrices } from '@penumbra-zone/getters/compact-block';
 import { getSpendableNoteRecordCommitment } from '@penumbra-zone/getters/spendable-note-record';
 import { getSwapRecordCommitment } from '@penumbra-zone/getters/swap-record';
 import { CompactBlock } from '@penumbra-zone/protobuf/penumbra/core/component/compact_block/v1/compact_block_pb';
+import { shouldSkipTrialDecrypt } from './helpers/skip-trial-decrypt.js';
 
 declare global {
   // eslint-disable-next-line no-var
@@ -71,7 +72,7 @@ interface QueryClientProps {
   numeraires: AssetId[];
   stakingAssetId: AssetId;
   genesisBlock: CompactBlock | undefined;
-  walletCreationBlockHeight: number;
+  walletCreationBlockHeight: number | undefined;
 }
 
 interface ProcessBlockParams {
@@ -99,7 +100,7 @@ export class BlockProcessor implements BlockProcessorInterface {
   private readonly stakingAssetId: AssetId;
   private syncPromise: Promise<void> | undefined;
   private readonly genesisBlock: CompactBlock | undefined;
-  private readonly walletCreationBlockHeight: number;
+  private readonly walletCreationBlockHeight: number | undefined;
 
   constructor({
     indexedDb,
@@ -183,14 +184,15 @@ export class BlockProcessor implements BlockProcessorInterface {
         currentHeight = this.genesisBlock.height;
 
         // Set the trial decryption flag for the genesis compact block
-        const skipTrialDecrypt = Boolean(
-          this.walletCreationBlockHeight && currentHeight < BigInt(this.walletCreationBlockHeight),
+        const skipTrialDecrypt = shouldSkipTrialDecrypt(
+          this.walletCreationBlockHeight,
+          currentHeight,
         );
 
         await this.processBlock({
           compactBlock: this.genesisBlock,
           latestKnownBlockHeight: latestKnownBlockHeight,
-          skipTrialDecrypt: skipTrialDecrypt,
+          skipTrialDecrypt,
         });
       }
     }
@@ -210,14 +212,15 @@ export class BlockProcessor implements BlockProcessorInterface {
       }
 
       // Set the trial decryption flag for all other compact blocks
-      const skipTrialDecrypt = Boolean(
-        this.walletCreationBlockHeight && currentHeight < BigInt(this.walletCreationBlockHeight),
+      const skipTrialDecrypt = shouldSkipTrialDecrypt(
+        this.walletCreationBlockHeight,
+        currentHeight,
       );
 
       await this.processBlock({
         compactBlock: compactBlock,
         latestKnownBlockHeight: latestKnownBlockHeight,
-        skipTrialDecrypt: skipTrialDecrypt,
+        skipTrialDecrypt,
       });
 
       // We only query Tendermint for the latest known block height once, when
