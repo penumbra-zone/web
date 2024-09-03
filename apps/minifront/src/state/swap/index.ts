@@ -45,8 +45,6 @@ interface Actions {
   reverse: () => void;
   setDuration: (duration: DurationOption) => void;
   resetSubslices: VoidFunction;
-  stakingToken?: boolean;
-  setStakingToken: (stakingToken: boolean) => void;
 }
 
 interface State {
@@ -74,11 +72,6 @@ export type SwapSlice = Actions & State & Subslices;
 
 export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) => ({
   ...INITIAL_STATE,
-  setStakingToken: (stakingToken: boolean) => {
-    set(state => {
-      state.swap.stakingToken = stakingToken;
-    });
-  },
   dutchAuction: createDutchAuctionSlice()(set, get, store),
   instantSwap: createInstantSwapSlice()(set, get, store),
   lpPositions: createLpPositionsSlice()(set, get, store),

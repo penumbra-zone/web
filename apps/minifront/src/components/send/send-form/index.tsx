@@ -3,7 +3,7 @@ import { Input } from '@penumbra-zone/ui/components/ui/input';
 import { useStore } from '../../../state';
 import { sendSelector, sendValidationErrors } from '../../../state/send';
 import { InputBlock } from '../../shared/input-block';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { penumbraAddrValidation } from '../helpers';
 import InputToken from '../../shared/input-token';
 import { GasFee } from '../../shared/gas-fee';
@@ -12,12 +12,11 @@ import { NonNativeFeeWarning } from '../../shared/non-native-fee-warning';
 import { transferableBalancesResponsesSelector } from '../../../state/send/helpers';
 import { useRefreshFee } from '../../v2/transfer-layout/send-page/use-refresh-fee';
 import { hasStakingToken } from '../../../fetchers/gas-prices';
-// import { hasStakingToken } from '../../../fetchers/gas-prices';
 
 export const SendForm = () => {
+  // Retrieve the staking token metadata and gas prices from the zustand
   const stakingTokenMetadata = useStakingTokenMetadata();
-  const gasPrices = useGasPrices().data;
-  const [localIsStakingToken, setLocalIsStakingToken] = useState(false);
+  const gasPrices = useGasPrices();
 
   const transferableBalancesResponses = useBalancesResponses({
     select: transferableBalancesResponsesSelector,
@@ -43,23 +42,34 @@ export const SendForm = () => {
 
   useRefreshFee();
 
+  // Determine if the selected token is the staking token based on the current balances and metadata
+  const isStakingToken = hasStakingToken(
+    transferableBalancesResponses?.data,
+    stakingTokenMetadata.data,
+    selection,
+  );
+
   // useEffect here defers the state updates until after the rendering phase is complete,
   // preventing direct state modifications during rendering.
   useEffect(() => {
-    const updateStakingTokenAndGasPrices = async () => {
-      const isStakingToken = await hasStakingToken(
-        transferableBalancesResponses?.data!,
-        stakingTokenMetadata.data,
-        selection,
-      );
+    const updateStakingTokenAndGasPrices = () => {
+      // Update the zustand store and local state
       setStakingToken(isStakingToken);
-      setLocalIsStakingToken(isStakingToken);
-      if (gasPrices) {
-        setGasPrices(gasPrices);
+      if (gasPrices.data) {
+        setGasPrices(gasPrices.data);
       }
     };
+
     updateStakingTokenAndGasPrices();
-  }, [transferableBalancesResponses, stakingTokenMetadata, selection, gasPrices, setGasPrices]);
+  }, [
+    transferableBalancesResponses,
+    stakingTokenMetadata,
+    selection,
+    gasPrices,
+    isStakingToken,
+    setGasPrices,
+    setStakingToken,
+  ]);
 
   const validationErrors = useMemo(() => {
     return sendValidationErrors(selection, amount, recipient);
@@ -116,7 +126,7 @@ export const SendForm = () => {
         loading={transferableBalancesResponses?.loading}
       />
 
-      <NonNativeFeeWarning amount={Number(amount)} hasStakingToken={localIsStakingToken} />
+      <NonNativeFeeWarning amount={Number(amount)} hasStakingToken={isStakingToken} />
 
       <GasFee
         fee={fee}

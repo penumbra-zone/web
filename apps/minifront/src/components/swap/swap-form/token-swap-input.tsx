@@ -9,7 +9,7 @@ import {
   getMetadataFromBalancesResponseOptional,
 } from '@penumbra-zone/getters/balances-response';
 import { ArrowRight } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
@@ -20,12 +20,7 @@ import { zeroValueView } from '../../../utils/zero-value-view';
 import { isValidAmount } from '../../../state/helpers';
 import { NonNativeFeeWarning } from '../../shared/non-native-fee-warning';
 import { NumberInput } from '../../shared/number-input';
-import {
-  useBalancesResponses,
-  useAssets,
-  useStakingTokenMetadata,
-  useGasPrices,
-} from '../../../state/shared';
+import { useBalancesResponses, useAssets, useStakingTokenMetadata } from '../../../state/shared';
 import { FadeIn } from '@penumbra-zone/ui/components/ui/fade-in';
 import { getBalanceByMatchingMetadataAndAddressIndex } from '../../../state/swap/getters';
 import {
@@ -90,20 +85,13 @@ export const TokenSwapInput = () => {
   };
 
   const stakingTokenMetadata = useStakingTokenMetadata();
-  const gasPrices = useGasPrices().data;
-  const [localIsStakingToken, setLocalIsStakingToken] = useState(false);
 
-  useEffect(() => {
-    const updateStakingTokenAndGasPrices = async () => {
-      const isStakingToken = await hasStakingToken(
-        balancesResponses?.data!,
-        stakingTokenMetadata.data,
-        assetIn,
-      );
-      setLocalIsStakingToken(isStakingToken);
-    };
-    updateStakingTokenAndGasPrices();
-  }, [balancesResponses?.data!, stakingTokenMetadata, assetIn, gasPrices]);
+  // Determine if the selected token is the staking token based on the current balances and metadata
+  const isStakingToken = hasStakingToken(
+    balancesResponses?.data,
+    stakingTokenMetadata.data,
+    assetIn,
+  );
 
   return (
     <Box label='Trade' layout>
@@ -181,7 +169,7 @@ export const TokenSwapInput = () => {
 
       <NonNativeFeeWarning
         amount={Number(amount)}
-        hasStakingToken={localIsStakingToken}
+        hasStakingToken={isStakingToken}
         wrap={children => (
           <>
             {/* This div adds an empty line */} <div className='h-4' />
