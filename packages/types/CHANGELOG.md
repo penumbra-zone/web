@@ -1,5 +1,11 @@
 # @penumbra-zone/types
 
+## 22.0.0
+
+### Major Changes
+
+- e01d5f8: fresh and existing wallets skip trial decryption
+
 ## 21.0.0
 
 ### Patch Changes
