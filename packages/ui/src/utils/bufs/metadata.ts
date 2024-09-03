@@ -73,3 +73,7 @@ export const PIZZA_METADATA = new Metadata({
   display: 'pizza',
   denomUnits: [{ denom: 'upizza' }, { denom: 'pizza', exponent: 6 }],
 });
+
+export const UNKNOWN_TOKEN_METADATA = new Metadata({
+  penumbraAssetId: { inner: new Uint8Array([]) },
+});
