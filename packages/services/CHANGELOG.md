@@ -1,5 +1,16 @@
 # @penumbra-zone/router
 
+## 33.0.0
+
+### Patch Changes
+
+- Updated dependencies [e01d5f8]
+  - @penumbra-zone/query@30.0.0
+  - @penumbra-zone/types@22.0.0
+  - @penumbra-zone/wasm@27.0.0
+  - @penumbra-zone/crypto-web@23.0.0
+  - @penumbra-zone/storage@29.0.0
+
 ## 32.0.0
 
 ### Patch Changes

@@ -1,5 +1,16 @@
 # @penumbra-zone/wasm
 
+## 27.0.0
+
+### Major Changes
+
+- e01d5f8: fresh and existing wallets skip trial decryption
+
+### Patch Changes
+
+- Updated dependencies [e01d5f8]
+  - @penumbra-zone/types@22.0.0
+
 ## 26.2.0
 
 ### Minor Changes

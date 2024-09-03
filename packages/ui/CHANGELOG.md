@@ -1,5 +1,36 @@
 # @penumbra-zone/ui
 
+## 9.1.0
+
+### Minor Changes
+
+- 74e89e0: UI:
+
+  - Add new `Progress` component
+  - Add `MenuItem` component that shares the styles with `DropdownMenu.Item`
+  - Update the `Pill` component to support `context` prop
+  - Update the `Tabs` component to support the `compact` density
+  - Allow passing custom icons to the `Button`
+  - Fix `density` tag in Storybook
+
+  Tailwind Config:
+
+  - Add support for v2 colors with v2 prefix like `bg-v2-secondary-dark`
+
+  Minifront:
+
+  - Add top navigation to the v2 minifront with sync bar and prax connection infos
+
+- d938456: Add Slider Component
+
+### Patch Changes
+
+- 516caf3: Fix z-index of dialog content
+- 5100518: Update UI components: `ValueViewComponent`, `AssetIcon`, and `Popover`
+- Updated dependencies [e01d5f8]
+  - @penumbra-zone/types@22.0.0
+  - @penumbra-zone/perspective@29.0.0
+
 ## 9.0.0
 
 ### Major Changes

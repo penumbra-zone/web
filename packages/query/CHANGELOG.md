@@ -1,5 +1,18 @@
 # @penumbra-zone/query
 
+## 30.0.0
+
+### Major Changes
+
+- e01d5f8: fresh and existing wallets skip trial decryption
+
+### Patch Changes
+
+- Updated dependencies [e01d5f8]
+  - @penumbra-zone/types@22.0.0
+  - @penumbra-zone/wasm@27.0.0
+  - @penumbra-zone/crypto-web@23.0.0
+
 ## 29.0.0
 
 ### Minor Changes
