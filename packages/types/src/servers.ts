@@ -3,7 +3,7 @@ import { CompactBlock } from '@penumbra-zone/protobuf/penumbra/core/component/co
 import { MerkleRoot } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
 
 export interface ViewServerInterface {
-  scanBlock(compactBlock: CompactBlock): Promise<boolean>;
+  scanBlock(compactBlock: CompactBlock, skipTrialDecrypt: boolean): Promise<boolean>;
   flushUpdates(): ScanBlockResult;
   resetTreeToStored(): Promise<void>;
   getSctRoot(): MerkleRoot;

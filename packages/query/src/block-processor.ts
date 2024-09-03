@@ -46,6 +46,7 @@ import { getAssetIdFromGasPrices } from '@penumbra-zone/getters/compact-block';
 import { getSpendableNoteRecordCommitment } from '@penumbra-zone/getters/spendable-note-record';
 import { getSwapRecordCommitment } from '@penumbra-zone/getters/swap-record';
 import { CompactBlock } from '@penumbra-zone/protobuf/penumbra/core/component/compact_block/v1/compact_block_pb';
+import { shouldSkipTrialDecrypt } from './helpers/skip-trial-decrypt.js';
 
 declare global {
   // eslint-disable-next-line no-var -- expected globals
@@ -71,6 +72,13 @@ interface QueryClientProps {
   numeraires: AssetId[];
   stakingAssetId: AssetId;
   genesisBlock: CompactBlock | undefined;
+  walletCreationBlockHeight: number | undefined;
+}
+
+interface ProcessBlockParams {
+  compactBlock: CompactBlock;
+  latestKnownBlockHeight: bigint;
+  skipTrialDecrypt?: boolean;
 }
 
 const BLANK_TX_SOURCE = new CommitmentSource({
@@ -91,7 +99,8 @@ export class BlockProcessor implements BlockProcessorInterface {
   private numeraires: AssetId[];
   private readonly stakingAssetId: AssetId;
   private syncPromise: Promise<void> | undefined;
-  private genesisBlock: CompactBlock | undefined;
+  private readonly genesisBlock: CompactBlock | undefined;
+  private readonly walletCreationBlockHeight: number | undefined;
 
   constructor({
     indexedDb,
@@ -100,6 +109,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     numeraires,
     stakingAssetId,
     genesisBlock,
+    walletCreationBlockHeight,
   }: QueryClientProps) {
     this.indexedDb = indexedDb;
     this.viewServer = viewServer;
@@ -107,6 +117,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     this.numeraires = numeraires;
     this.stakingAssetId = stakingAssetId;
     this.genesisBlock = genesisBlock;
+    this.walletCreationBlockHeight = walletCreationBlockHeight;
   }
 
   // If sync() is called multiple times concurrently, they'll all wait for
@@ -171,7 +182,18 @@ export class BlockProcessor implements BlockProcessorInterface {
       // begin the chain with local genesis block if provided
       if (this.genesisBlock?.height === currentHeight + 1n) {
         currentHeight = this.genesisBlock.height;
-        await this.processBlock(this.genesisBlock, latestKnownBlockHeight);
+
+        // Set the trial decryption flag for the genesis compact block
+        const skipTrialDecrypt = shouldSkipTrialDecrypt(
+          this.walletCreationBlockHeight,
+          currentHeight,
+        );
+
+        await this.processBlock({
+          compactBlock: this.genesisBlock,
+          latestKnownBlockHeight: latestKnownBlockHeight,
+          skipTrialDecrypt,
+        });
       }
     }
 
@@ -189,7 +211,17 @@ export class BlockProcessor implements BlockProcessorInterface {
         throw new Error(`Unexpected block height: ${compactBlock.height} at ${currentHeight}`);
       }
 
-      await this.processBlock(compactBlock, latestKnownBlockHeight);
+      // Set the trial decryption flag for all other compact blocks
+      const skipTrialDecrypt = shouldSkipTrialDecrypt(
+        this.walletCreationBlockHeight,
+        currentHeight,
+      );
+
+      await this.processBlock({
+        compactBlock: compactBlock,
+        latestKnownBlockHeight: latestKnownBlockHeight,
+        skipTrialDecrypt,
+      });
 
       // We only query Tendermint for the latest known block height once, when
       // the block processor starts running. Once we're caught up, though, the
@@ -203,7 +235,11 @@ export class BlockProcessor implements BlockProcessorInterface {
   }
 
   // logic for processing a compact block
-  private async processBlock(compactBlock: CompactBlock, latestKnownBlockHeight: bigint) {
+  private async processBlock({
+    compactBlock,
+    latestKnownBlockHeight,
+    skipTrialDecrypt = false,
+  }: ProcessBlockParams) {
     if (compactBlock.appParametersUpdated) {
       await this.indexedDb.saveAppParams(await this.querier.app.appParams());
     }
@@ -229,7 +265,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     // - decrypts new notes
     // - decrypts new swaps
     // - updates idb with advice
-    const scannerWantsFlush = await this.viewServer.scanBlock(compactBlock);
+    const scannerWantsFlush = await this.viewServer.scanBlock(compactBlock, skipTrialDecrypt);
 
     // flushing is slow, avoid it until
     // - wasm says
