@@ -1,5 +1,12 @@
 # @penumbra-zone/getters
 
+## 17.0.0
+
+### Major Changes
+
+- 3a5c074: don't export optional getters
+- 3a5c074: improve getter type
+
 ## 16.0.0
 
 ### Major Changes
