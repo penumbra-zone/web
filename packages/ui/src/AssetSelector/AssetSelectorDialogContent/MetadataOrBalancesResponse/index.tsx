@@ -44,7 +44,7 @@ export const MetadataOrBalancesResponse = ({
   isSelected,
   onSelect,
 }: MetadataOrBalancesResponseProps) => {
-  const metadata = isMetadata(value) ? value : getMetadataFromBalancesResponse.optional(value);
+  const metadata = isMetadata(value) ? value : getMetadataFromBalancesResponse.optional()(value);
   const isParentAnimating = useIsAnimating();
   const [scope, animate] = useAnimate();
   const animationControls = useRef<AnimationPlaybackControls | undefined>();

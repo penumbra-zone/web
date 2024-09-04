@@ -4,7 +4,7 @@ import { getDisplayDenomFromView, getEquivalentValues } from '@penumbra-zone/get
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueViewComponent';
 
 export const EquivalentValues = ({ valueView }: { valueView?: ValueView }) => {
-  const equivalentValuesAsValueViews = (getEquivalentValues.optional(valueView) ?? []).map(
+  const equivalentValuesAsValueViews = (getEquivalentValues.optional()(valueView) ?? []).map(
     asValueView,
   );
 

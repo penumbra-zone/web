@@ -13,7 +13,7 @@ export const getFormattedAmtFromValueView = (v: ValueView, commas = false): stri
 
   if (v.valueView.case === 'knownAssetId' && v.valueView.value.metadata) {
     const { amount = new Amount(), metadata } = v.valueView.value;
-    const exponent = getDisplayDenomExponent.optional(metadata);
+    const exponent = getDisplayDenomExponent.optional()(metadata);
     return formatAmount({ amount, exponent, commas });
   } else {
     const { amount = new Amount() } = v.valueView.value;

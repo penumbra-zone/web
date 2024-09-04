@@ -46,7 +46,7 @@ export const getPrice = (
   // The input, scaled up by `step_count` to match.
   const inputScaled = (stepCount - 1n) * input;
 
-  const inputDisplayDenomExponent = getDisplayDenomExponent.optional(inputMetadata);
+  const inputDisplayDenomExponent = getDisplayDenomExponent.optional()(inputMetadata);
   const multiplier = 10 ** (inputDisplayDenomExponent ?? 0);
   const price = Math.round((Number(targetOutputScaled) / Number(inputScaled)) * multiplier);
 

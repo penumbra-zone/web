@@ -44,7 +44,7 @@ export const unbondingTokensByAddressIndex: Impl['unbondingTokensByAddressIndex'
       }
 
       const regexResult = assetPatterns.unbondingToken.capture(
-        getDisplayFromBalancesResponse.optional(new BalancesResponse(balancesResponse)) ?? '',
+        getDisplayFromBalancesResponse(new BalancesResponse(balancesResponse)) ?? '',
       );
       if (!regexResult) {
         throw new Error('expected delegation token identity key not present');

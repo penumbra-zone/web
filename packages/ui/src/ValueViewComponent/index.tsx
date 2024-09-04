@@ -99,7 +99,7 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
   }
 
   const formattedAmount = getFormattedAmtFromValueView(valueView, true);
-  const metadata = getMetadata.optional(valueView);
+  const metadata = getMetadata.optional()(valueView);
   // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- possibly empty string
   const symbol = metadata?.symbol || 'Unknown';
 

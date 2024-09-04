@@ -10,7 +10,7 @@ import { getAmount } from '@penumbra-zone/getters/value-view';
  * 1.23INPUT -> 4.56OUTPUT
  */
 export const OneWaySwap = ({ input, output }: { input: ValueView; output: ValueView }) => {
-  const outputAmount = getAmount.optional(output);
+  const outputAmount = getAmount.optional()(output);
 
   return (
     <div className='flex items-center gap-2'>

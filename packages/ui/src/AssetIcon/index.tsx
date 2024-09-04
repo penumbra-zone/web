@@ -39,7 +39,7 @@ export interface AssetIconProps {
 export const AssetIcon = ({ metadata, size = 'md' }: AssetIconProps) => {
   // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- possibly empty string
   const icon = metadata?.images[0]?.png || metadata?.images[0]?.svg;
-  const display = getDisplay.optional(metadata);
+  const display = getDisplay.optional()(metadata);
   const isDelegationToken = display ? assetPatterns.delegationToken.matches(display) : false;
   const isUnbondingToken = display ? assetPatterns.unbondingToken.matches(display) : false;
 

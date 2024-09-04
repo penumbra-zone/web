@@ -35,8 +35,8 @@ const getUnfilledAmount = (swapView: SwapView): ValueView | undefined => {
   const delta1I = getDelta1IFromSwapView(swapView);
   const delta2I = getDelta2IFromSwapView(swapView);
 
-  const output1Value = getOutput1Value.optional(swapView);
-  const output2Value = getOutput2Value.optional(swapView);
+  const output1Value = getOutput1Value.optional()(swapView);
+  const output2Value = getOutput2Value.optional()(swapView);
 
   const is1To2Swap = isZero(delta2I);
   const is2To1Swap = isZero(delta1I);
@@ -69,8 +69,8 @@ export const getOneWaySwapValues = (
     );
   }
 
-  const output1 = getOutput1Value.optional(swapView);
-  const output2 = getOutput2Value.optional(swapView);
+  const output1 = getOutput1Value.optional()(swapView);
+  const output2 = getOutput2Value.optional()(swapView);
 
   const delta1I = getDelta1IFromSwapView(swapView);
   const delta2I = getDelta2IFromSwapView(swapView);

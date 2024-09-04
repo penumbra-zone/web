@@ -83,7 +83,7 @@ At this point, it's worth mentioning that getters are _required by default_. If 
 What if the value you're getting _is_ optional, though? What if you don't want your getter to throw if either the value it's passed, or the value it returns, is `undefined`? That's what the `.optional()` property on the getter is for:
 
 ```tsx
-const addressView = getAddressView.optional(memoView)
+const addressView = getAddressView.optional()(memoView)
 
 <div>
   {addressView && <AddressViewComponent addressView={addressView} />}
