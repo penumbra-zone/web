@@ -99,9 +99,9 @@ export const WalletBalance = ({
   disabled,
   onClick,
 }: WalletBalanceProps) => {
-  const account = getAddressIndex.optional(balance);
-  const valueView = getBalanceView.optional(balance);
-  const metadata = getMetadataFromBalancesResponse.optional(balance);
+  const account = getAddressIndex.optional()(balance);
+  const valueView = getBalanceView.optional()(balance);
+  const metadata = getMetadataFromBalancesResponse.optional()(balance);
 
   if (!valueView || !account || !metadata) {
     return null;

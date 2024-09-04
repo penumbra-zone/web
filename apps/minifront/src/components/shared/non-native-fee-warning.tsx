@@ -24,7 +24,7 @@ const hasTokenBalance = ({
   gasPrices: GasPrices[];
   stakingAssetMetadata?: Metadata;
 }): boolean => {
-  const account = getAddressIndex.optional(source)?.account;
+  const account = getAddressIndex.optional()(source)?.account;
   if (typeof account === 'undefined') {
     return false;
   }
@@ -33,9 +33,9 @@ const hasTokenBalance = ({
   const hasStakingToken = balancesResponses.some(
     asset =>
       getAssetIdFromValueView
-        .optional(asset.balanceView)
-        ?.equals(getAssetId.optional(stakingAssetMetadata)) &&
-      getAddressIndex.optional(asset)?.account === account,
+        .optional()(asset.balanceView)
+        ?.equals(getAssetId.optional()(stakingAssetMetadata)) &&
+      getAddressIndex.optional()(asset)?.account === account,
   );
 
   if (hasStakingToken) {
@@ -43,7 +43,7 @@ const hasTokenBalance = ({
   }
 
   const accountAssets = balancesResponses.filter(
-    balance => getAddressIndex.optional(balance)?.account === account,
+    balance => getAddressIndex.optional()(balance)?.account === account,
   );
   // Finds the alt tokens in the user's account balances that can be used for fees
   const hasAltTokens = accountAssets.some(balance => {
@@ -54,7 +54,7 @@ const hasTokenBalance = ({
     }
 
     return gasPrices.some(price =>
-      price.assetId?.equals(getAssetIdFromBalancesResponse.optional(balance)),
+      price.assetId?.equals(getAssetIdFromBalancesResponse.optional()(balance)),
     );
   });
 

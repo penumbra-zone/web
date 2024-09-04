@@ -13,7 +13,7 @@ export const assembleScheduleRequest = async ({
   duration,
 }: Pick<SwapSlice, 'amount' | 'assetIn' | 'assetOut' | 'duration'> &
   Pick<DutchAuctionSlice, 'minOutput' | 'maxOutput'>): Promise<TransactionPlannerRequest> => {
-  const source = getAddressIndex.optional(assetIn);
+  const source = getAddressIndex.optional()(assetIn);
 
   return new TransactionPlannerRequest({
     dutchAuctionScheduleActions: await getSubAuctions({

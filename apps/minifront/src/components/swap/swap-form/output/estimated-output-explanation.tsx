@@ -24,9 +24,9 @@ export const EstimatedOutputExplanation = () => {
 
   const formattedAmount = formatAmount({
     amount: estimatedOutput,
-    exponent: getDisplayDenomExponent.optional(assetOut),
+    exponent: getDisplayDenomExponent.optional()(assetOut),
   });
-  const assetInSymbol = getSymbolFromValueView.optional(assetIn?.balanceView);
+  const assetInSymbol = getSymbolFromValueView.optional()(assetIn?.balanceView);
 
   return (
     <div className='text-xs'>

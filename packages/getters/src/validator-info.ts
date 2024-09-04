@@ -26,7 +26,10 @@ export const getBondingStateEnumFromValidatorInfo = getStatus
   .pipe(getBondingState)
   .pipe(getBondingStateEnum);
 
-export const getValidatorRewardRateFromValidatorInfo = getRateData.pipe(getValidatorRewardRate);
+export const getValidatorRewardRateFromValidatorInfoOptional = getStatus
+  .optional()
+  .pipe(getRateData)
+  .pipe(getValidatorRewardRate);
 
 export const getFundingStreamsFromValidatorInfo = getValidator.pipe(getFundingStreams);
 
