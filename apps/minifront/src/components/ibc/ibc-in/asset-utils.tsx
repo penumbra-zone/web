@@ -5,6 +5,7 @@ import { BigNumber } from 'bignumber.js';
 import { AssetDenomUnit } from '@chain-registry/types/assets';
 import { CosmosAssetBalance } from './hooks.ts';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
+import { bigNumConfig } from '@penumbra-zone/types/lo-hi';
 
 // Searches for corresponding denom in asset registry and returns the metadata
 export const augmentToAsset = (denom: string, chainName: string): Asset => {
@@ -52,7 +53,11 @@ export const fromDisplayAmount = (
   const baseExponent = getExponent(asset.denom_units, asset.base) ?? 0;
 
   const exponentDifference = displayExponent - baseExponent;
-  const amount = new BigNumber(displayAmount).shiftedBy(exponentDifference).toString();
+
+  // Overriding repo default and setting a very high threshold to avoid exponential notation
+  const CustomBigNumber = BigNumber.clone({ ...bigNumConfig, EXPONENTIAL_AT: [-1e9, 1e9] });
+
+  const amount = new CustomBigNumber(displayAmount).shiftedBy(exponentDifference).toString();
   return { denom: asset.base, amount };
 };
 
