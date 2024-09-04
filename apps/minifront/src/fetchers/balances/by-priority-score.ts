@@ -2,6 +2,7 @@ import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_
 import {
   getMetadataFromBalancesResponseOptional,
   getAmount,
+  getAddressIndex,
 } from '@penumbra-zone/getters/balances-response';
 import { multiplyAmountByNumber, joinLoHiAmount } from '@penumbra-zone/types/amount';
 
@@ -20,4 +21,15 @@ export const sortByPriorityScore = (a: BalancesResponse, b: BalancesResponse) =>
     : bScore;
 
   return Number(bPriority - aPriority);
+};
+
+export const sortByPriorityScoreAndAccountIndex = (a: BalancesResponse, b: BalancesResponse) => {
+  const aIndex = getAddressIndex.optional()(a)?.account ?? Infinity;
+  const bIndex = getAddressIndex.optional()(b)?.account ?? Infinity;
+
+  if (aIndex === bIndex) {
+    return sortByPriorityScore(a, b);
+  }
+
+  return aIndex - bIndex;
 };
