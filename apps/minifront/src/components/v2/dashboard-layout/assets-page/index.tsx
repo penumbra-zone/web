@@ -4,7 +4,7 @@ import { BalancesByAccount, groupByAccount, useBalancesResponses } from '../../.
 import { shouldDisplay } from '../../../../fetchers/balances/should-display';
 import { sortByPriorityScore } from '../../../../fetchers/balances/by-priority-score';
 import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { getMetadataFromBalancesResponseOptional } from '@penumbra-zone/getters/balances-response';
+import { getMetadataFromBalancesResponse } from '@penumbra-zone/getters/balances-response';
 import { PagePath } from '../../../metadata/paths';
 import { getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
@@ -19,7 +19,7 @@ import { ConditionalWrap } from '@penumbra-zone/ui/ConditionalWrap';
 import { LayoutGroup } from 'framer-motion';
 
 const getTradeLink = (balance: BalancesResponse): string => {
-  const metadata = getMetadataFromBalancesResponseOptional(balance);
+  const metadata = getMetadataFromBalancesResponse.optional(balance);
   const accountIndex = getAddressIndex(balance.accountAddress).account;
   const accountQuery = accountIndex ? `&account=${accountIndex}` : '';
   return metadata ? `${PagePath.SWAP}?from=${metadata.symbol}${accountQuery}` : PagePath.SWAP;

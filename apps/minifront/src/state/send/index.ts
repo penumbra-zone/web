@@ -133,7 +133,7 @@ const assembleRequest = ({ amount, feeTier, recipient, selection, memo }: SendSl
     value: {
       amount: toBaseUnit(
         BigNumber(amount),
-        getDisplayDenomExponentFromValueView.optional()(selection?.balanceView),
+        getDisplayDenomExponentFromValueView.optional(selection?.balanceView),
       ),
       assetId: getAssetIdFromValueView(selection?.balanceView),
     },

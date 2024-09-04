@@ -2,7 +2,7 @@ import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import {
   getAddressIndex,
-  getMetadataFromBalancesResponseOptional,
+  getMetadataFromBalancesResponse,
 } from '@penumbra-zone/getters/balances-response';
 import { useEffect } from 'react';
 
@@ -22,7 +22,7 @@ export const mergeBalancesAndAssets = (
 ): BalanceOrMetadata[] => {
   const filteredAssets = assets.filter(asset => {
     return !balances.some(balance => {
-      const balanceMetadata = getMetadataFromBalancesResponseOptional(balance);
+      const balanceMetadata = getMetadataFromBalancesResponse.optional(balance);
       return balanceMetadata?.equals(asset);
     });
   });
@@ -43,10 +43,10 @@ export const useSyncSelectedBalance = ({
     if (value) {
       const matchedValue = balances?.find(balance => {
         return (
-          getAddressIndex.optional()(balance)?.equals(getAddressIndex.optional()(value)) &&
-          getMetadataFromBalancesResponseOptional(balance)?.equals(
-            getMetadataFromBalancesResponseOptional(value),
-          )
+          getAddressIndex.optional(balance)?.equals(getAddressIndex.optional(value)) &&
+          getMetadataFromBalancesResponse
+            .optional(balance)
+            ?.equals(getMetadataFromBalancesResponse.optional(value))
         );
       });
       if (matchedValue && !matchedValue.equals(value)) {
