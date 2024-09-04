@@ -157,7 +157,7 @@ class BalancesAggregator {
    * of the equivalent value and the `amount` of the `ValueView`.
    */
   private async aggregateEquivalentValues(valueView: ValueView, toAdd: SpendableNoteRecord) {
-    const assetId = getAssetIdFromRecord.optional()(toAdd);
+    const assetId = getAssetIdFromRecord.optional(toAdd);
     if (!assetId?.inner) {
       return;
     }

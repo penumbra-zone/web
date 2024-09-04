@@ -122,7 +122,7 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
         swap.dutchAuction.minOutput = '';
       } else {
         const minMinOutput = getSmallestPossibleAmountAboveZero(get().swap.assetOut);
-        const exponent = getDisplayDenomExponent.optional()(get().swap.assetOut) ?? 0;
+        const exponent = getDisplayDenomExponent.optional(get().swap.assetOut) ?? 0;
         const minOutputAsBaseUnit = Number(minOutput) * 10 ** exponent;
         const outputLimitAsDisplayUnit = (OUTPUT_LIMIT / 10 ** exponent).toString();
 
@@ -144,7 +144,7 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
         swap.dutchAuction.maxOutput = '';
       } else {
         const minMaxOutput = getSmallestPossibleAmountAboveZero(get().swap.assetOut);
-        const exponent = getDisplayDenomExponent.optional()(get().swap.assetOut) ?? 0;
+        const exponent = getDisplayDenomExponent.optional(get().swap.assetOut) ?? 0;
         const maxOutputAsBaseUnit = Number(maxOutput) * 10 ** exponent;
         const outputLimitAsDisplayUnit = (OUTPUT_LIMIT / 10 ** exponent).toString();
 
