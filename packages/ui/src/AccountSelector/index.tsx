@@ -1,4 +1,4 @@
-import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import type { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { TextInput } from '../TextInput';
 import styled from 'styled-components';
 import { body } from '../utils/typography';

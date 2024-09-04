@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { Text } from '../Text';
 import { CopyToClipboardButton } from '../CopyToClipboardButton';
 import { Shrink0 } from '../utils/Shrink0';
+import { getAddressIndex } from '@penumbra-zone/getters/address-view';
 
 const Root = styled.div`
   display: flex;
@@ -24,18 +25,10 @@ export const AddressViewComponent = ({ addressView, copyable = true }: AddressVi
     return null;
   }
 
-  const accountIndex =
-    addressView.addressView.case === 'decoded'
-      ? addressView.addressView.value.index?.account
-      : undefined;
-  const isOneTimeAddress =
-    addressView.addressView.case === 'decoded'
-      ? !addressView.addressView.value.index?.randomizer.every(v => v === 0) // Randomized (and thus, a one-time address) if the randomizer is not all zeros.
-      : undefined;
+  const addressIndex = getAddressIndex.optional()(addressView);
 
-  const addressIndexLabel = isOneTimeAddress ? 'IBC Deposit Address for Account #' : 'Account #';
-
-  copyable = isOneTimeAddress ? false : copyable;
+  // a randomized index has nonzero randomizer bytes
+  const isRandomized = addressIndex?.randomizer.some(v => v);
 
   const encodedAddress = bech32mAddress(addressView.addressView.value.address);
 
@@ -45,18 +38,18 @@ export const AddressViewComponent = ({ addressView, copyable = true }: AddressVi
         <AddressIcon address={addressView.addressView.value.address} size={24} />
       </Shrink0>
 
-      {accountIndex === undefined ? (
+      {addressIndex ? (
+        <Text strong truncate>
+          {isRandomized && 'IBC Deposit Address for '}
+          {`Account #${addressIndex.account}`}
+        </Text>
+      ) : (
         <Text technical truncate>
           {encodedAddress}
         </Text>
-      ) : (
-        <Text strong truncate>
-          {addressIndexLabel}
-          {accountIndex}
-        </Text>
       )}
 
-      {copyable && (
+      {copyable && !isRandomized && (
         <Shrink0>
           <CopyToClipboardButton text={encodedAddress} />
         </Shrink0>

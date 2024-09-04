@@ -9,8 +9,6 @@ const Svg = styled.svg.attrs({
 })`
   display: block;
   border-radius: ${props => props.theme.borderRadius.full};
-  width: 24px;
-  height: 24px;
 `;
 
 const getFirstEightCharactersOfValidatorId = (displayDenom = ''): [string, string] => {

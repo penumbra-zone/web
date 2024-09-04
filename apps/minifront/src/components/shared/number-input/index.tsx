@@ -1,5 +1,5 @@
 import type { FC, KeyboardEventHandler } from 'react';
-import { Input, InputProps } from '@repo/ui/components/ui/input';
+import { Input, InputProps } from '@penumbra-zone/ui/components/ui/input';
 import { useWheelPrevent } from './use-wheel-prevent';
 
 export interface NumberInputProps extends InputProps {

@@ -14,6 +14,9 @@ import { ActionDutchAuctionWithdrawViewComponent } from './actions-views/action-
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { DelegatorVoteComponent } from './actions-views/delegator-vote.tsx';
 import { ValidatorVoteComponent } from './actions-views/validator-vote.tsx';
+import { PositionOpenComponent } from './actions-views/position-open.tsx';
+import { PositionCloseComponent } from './actions-views/position-close.tsx';
+import { PositionWithdrawComponent } from './actions-views/position-withdraw.tsx';
 
 type Case = Exclude<ActionView['actionView']['case'], undefined>;
 
@@ -121,13 +124,13 @@ export const ActionViewComponent = ({
       return <UnimplementedView label='Proposal Deposit Claim' />;
 
     case 'positionOpen':
-      return <UnimplementedView label='Position Open' />;
+      return <PositionOpenComponent value={actionView.value} />;
 
     case 'positionClose':
-      return <UnimplementedView label='Position Close' />;
+      return <PositionCloseComponent value={actionView.value} />;
 
     case 'positionWithdraw':
-      return <UnimplementedView label='Position Withdraw' />;
+      return <PositionWithdrawComponent value={actionView.value} />;
 
     case 'positionRewardClaim':
       return <UnimplementedView label='Position Reward Claim' />;

@@ -13,7 +13,7 @@ interface AddressViewProps {
 // If the view is given and is "visible", the account information will be displayed instead.
 export const AddressViewComponent = ({ view, copyable = true }: AddressViewProps) => {
   if (!view?.addressView.value?.address) {
-    return <></>;
+    return;
   }
 
   const encodedAddress = bech32mAddress(view.addressView.value.address);
@@ -27,7 +27,7 @@ export const AddressViewComponent = ({ view, copyable = true }: AddressViewProps
 
   const addressIndexLabel = isOneTimeAddress ? 'IBC Deposit Address for Account #' : 'Account #';
 
-  copyable = isOneTimeAddress ? false : copyable;
+  const isCopyable = isOneTimeAddress ? false : copyable;
 
   return (
     <div className='flex items-center gap-2 overflow-hidden'>
@@ -45,7 +45,7 @@ export const AddressViewComponent = ({ view, copyable = true }: AddressViewProps
         <AddressComponent address={view.addressView.value.address} />
       )}
 
-      {copyable && <CopyToClipboardIconButton text={encodedAddress} />}
+      {isCopyable && <CopyToClipboardIconButton text={encodedAddress} />}
     </div>
   );
 };

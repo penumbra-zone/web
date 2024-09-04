@@ -1,5 +1,86 @@
 # minifront
 
+## 6.21.0
+
+### Minor Changes
+
+- 74e89e0: UI:
+
+  - Add new `Progress` component
+  - Add `MenuItem` component that shares the styles with `DropdownMenu.Item`
+  - Update the `Pill` component to support `context` prop
+  - Update the `Tabs` component to support the `compact` density
+  - Allow passing custom icons to the `Button`
+  - Fix `density` tag in Storybook
+
+  Tailwind Config:
+
+  - Add support for v2 colors with v2 prefix like `bg-v2-secondary-dark`
+
+  Minifront:
+
+  - Add top navigation to the v2 minifront with sync bar and prax connection infos
+
+### Patch Changes
+
+- Updated dependencies [74e89e0]
+- Updated dependencies [e01d5f8]
+- Updated dependencies [516caf3]
+- Updated dependencies [a3bef37]
+- Updated dependencies [5100518]
+- Updated dependencies [d938456]
+  - @penumbra-zone/ui@9.1.0
+  - @penumbra-zone/types@22.0.0
+  - @penumbra-zone/client@18.1.0
+  - @penumbra-zone/crypto-web@23.0.0
+  - @penumbra-zone/perspective@29.0.0
+
+## 6.20.0
+
+### Minor Changes
+
+- e7d0767: Support for displaying LP position action views
+
+### Patch Changes
+
+- a8a5f41: Prepare UI package for publishing to NPM
+- Updated dependencies [a8a5f41]
+- Updated dependencies [e7d0767]
+  - @penumbra-zone/ui@9.0.0
+  - @penumbra-zone/perspective@28.0.0
+
+## 6.19.1
+
+### Patch Changes
+
+- e952e03: remove BSR dependencies, correctly specify @bufbuild and @connectrpc dependencies
+- Updated dependencies [d01196a]
+- Updated dependencies [e952e03]
+- Updated dependencies [74f9a7f]
+  - @repo/ui@8.2.0
+  - @penumbra-zone/perspective@27.0.0
+  - @penumbra-zone/client@18.0.1
+
+## 6.19.0
+
+### Minor Changes
+
+- e4a4dd7: Fix font alignments & sync dialog
+- c7aa17b: Update approx block duration to ~5.5s
+
+### Patch Changes
+
+- Updated dependencies [e4a4dd7]
+- Updated dependencies [f8730e9]
+- Updated dependencies [7732f8d]
+- Updated dependencies [2788cf0]
+- Updated dependencies [907f6ee]
+  - @repo/ui@8.1.0
+  - @penumbra-zone/getters@16.0.0
+  - @penumbra-zone/perspective@26.0.0
+  - @penumbra-zone/types@21.0.0
+  - @penumbra-zone/crypto-web@22.0.0
+
 ## 6.18.0
 
 ### Minor Changes

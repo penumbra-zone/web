@@ -1,5 +1,5 @@
-import styled, { DefaultTheme } from 'styled-components';
-import { ActionType } from '../utils/ActionType.ts';
+import styled from 'styled-components';
+import { ActionType, getColorByActionType, getOutlineColorByActionType } from './ActionType.ts';
 
 export interface DropdownMenuItemBase {
   actionType?: ActionType;
@@ -7,29 +7,9 @@ export interface DropdownMenuItemBase {
 }
 
 export interface StyledItemProps {
-  $actionType?: ActionType;
+  $actionType: ActionType;
   $disabled?: boolean;
 }
-
-const getColorByActionType = (theme: DefaultTheme, actionType: ActionType = 'default'): string => {
-  if (actionType === 'destructive') {
-    return theme.color.destructive.light;
-  }
-  return theme.color.text.primary;
-};
-
-const getOutlineColorByActionType = (
-  theme: DefaultTheme,
-  actionType: ActionType = 'default',
-): string => {
-  const map: Record<ActionType, keyof DefaultTheme['color']['action']> = {
-    default: 'neutralFocusOutline',
-    accent: 'primaryFocusOutline',
-    unshield: 'unshieldFocusOutline',
-    destructive: 'destructiveFocusOutline',
-  };
-  return theme.color.action[map[actionType]];
-};
 
 export const MenuItem = styled.div<StyledItemProps>`
   display: flex;
@@ -52,12 +32,17 @@ export const MenuItem = styled.div<StyledItemProps>`
     outline: 2px solid ${props => getOutlineColorByActionType(props.theme, props.$actionType)};
   }
 
-  &[aria-disabled='true'] {
+  &[aria-disabled='true'],
+  &:disabled {
     color: ${props => props.theme.color.text.muted};
   }
 
   &[aria-checked='false'],
   &[role='menuitem'] {
     padding-left: ${props => props.theme.spacing(9)};
+  }
+
+  & > span {
+    color: inherit;
   }
 `;

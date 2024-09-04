@@ -1,5 +1,17 @@
 # @penumbra-zone/client
 
+## 18.1.0
+
+### Minor Changes
+
+- a3bef37: improve manifest type
+
+## 18.0.1
+
+### Patch Changes
+
+- e952e03: remove BSR dependencies, correctly specify @bufbuild and @connectrpc dependencies
+
 ## 18.0.0
 
 ### Major Changes

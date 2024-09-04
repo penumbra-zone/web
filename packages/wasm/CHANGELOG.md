@@ -1,5 +1,34 @@
 # @penumbra-zone/wasm
 
+## 27.0.0
+
+### Major Changes
+
+- e01d5f8: fresh and existing wallets skip trial decryption
+
+### Patch Changes
+
+- Updated dependencies [e01d5f8]
+  - @penumbra-zone/types@22.0.0
+
+## 26.2.0
+
+### Minor Changes
+
+- e7d0767: Customize symbol for LP position NFTs
+
+## 26.1.0
+
+### Minor Changes
+
+- 598d148: better error message for insufficient note balance
+
+## 26.0.0
+
+### Patch Changes
+
+- @penumbra-zone/types@21.0.0
+
 ## 25.0.0
 
 ### Patch Changes

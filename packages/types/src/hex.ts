@@ -1,7 +1,7 @@
 import { Base64StringSchema } from './base64.js';
 
 declare global {
-  // eslint-disable-next-line no-var
+  // eslint-disable-next-line no-var -- expected globals
   var __DEV__: boolean | undefined;
 }
 
@@ -60,6 +60,7 @@ export const hexToUint8Array = (hexString: string): Uint8Array => {
   }
 
   // Split the string into pairs of characters
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify non-null assertion
   const hexPairs = hexString.match(/.{1,2}/g)!;
 
   // Map each hexadecimal pair to the corresponding integer and create a Uint8Array from it

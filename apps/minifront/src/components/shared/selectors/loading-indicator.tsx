@@ -3,7 +3,7 @@ import { LineWave } from 'react-loader-spinner';
 import resolveConfig from 'tailwindcss/resolveConfig';
 import tailwindConfig from '@repo/tailwind-config';
 
-// eslint-disable-next-line
+// eslint-disable-next-line -- TODO: explain
 const lightGrey: string = (resolveConfig(tailwindConfig).theme.colors as any)['light-grey'].DEFAULT;
 
 /**

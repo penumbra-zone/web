@@ -16,6 +16,7 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
 
   // Query IndexedDB directly to check for the existence of staking token
   const nativeToken = await indexedDb.hasTokenBalance(
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify non-null assertion
     req.source!.account,
     indexedDb.stakingTokenAssetId,
   );

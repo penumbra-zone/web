@@ -15,19 +15,19 @@ const Label = ({ label }: { label: string }) => <span className='text-lg'>{label
 
 export const ViewBox = ({ label, visibleContent, isOpaque }: ViewBoxProps) => {
   // if isOpaque is undefined, set it to !visibleContent
-  isOpaque = isOpaque ?? !visibleContent;
+  const opaque = isOpaque ?? !visibleContent;
   return (
     <Box overflow='xHidden'>
       <div
         className={cn(
           'flex flex-col gap-1 break-all overflow-hidden',
-          isOpaque ? 'cursor-not-allowed' : '',
+          opaque ? 'cursor-not-allowed' : '',
         )}
       >
         <div className='flex items-center gap-2 self-start'>
-          <span className={cn('text-base font-bold', isOpaque ? 'text-gray-600' : '')}>
-            {!isOpaque && <Label label={label} />}
-            {isOpaque && (
+          <span className={cn('text-base font-bold', opaque ? 'text-gray-600' : '')}>
+            {!opaque && <Label label={label} />}
+            {opaque && (
               <div className='flex gap-2'>
                 <IncognitoIcon fill='#4b5563' />
                 <Label label={label} />

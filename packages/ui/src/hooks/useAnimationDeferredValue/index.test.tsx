@@ -37,12 +37,12 @@ describe('useAnimationDeferredValue()', () => {
       rerender(
         <IsAnimatingContext.Provider value={false}>
           <MockUseAnimationDeferredValueComponent>
-            'ello, poppet!
+            Hello, poppet!
           </MockUseAnimationDeferredValueComponent>
         </IsAnimatingContext.Provider>,
       );
 
-      expect(container).toHaveTextContent("'ello, poppet!");
+      expect(container).toHaveTextContent('Hello, poppet!');
     });
   });
 
@@ -73,7 +73,7 @@ describe('useAnimationDeferredValue()', () => {
       rerender(
         <IsAnimatingContext.Provider value={true}>
           <MockUseAnimationDeferredValueComponent>
-            'ello, poppet!
+            Hello, poppet!
           </MockUseAnimationDeferredValueComponent>
         </IsAnimatingContext.Provider>,
       );
@@ -95,7 +95,7 @@ describe('useAnimationDeferredValue()', () => {
       rerender(
         <IsAnimatingContext.Provider value={true}>
           <MockUseAnimationDeferredValueComponent>
-            'ello, poppet!
+            Hello, poppet!
           </MockUseAnimationDeferredValueComponent>
         </IsAnimatingContext.Provider>,
       );
@@ -105,12 +105,12 @@ describe('useAnimationDeferredValue()', () => {
       rerender(
         <IsAnimatingContext.Provider value={false}>
           <MockUseAnimationDeferredValueComponent>
-            'ello, poppet!
+            Hello, poppet!
           </MockUseAnimationDeferredValueComponent>
         </IsAnimatingContext.Provider>,
       );
 
-      expect(container).toHaveTextContent("'ello, poppet!");
+      expect(container).toHaveTextContent('Hello, poppet!');
     });
   });
 });

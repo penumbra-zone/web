@@ -1,24 +1,22 @@
-import { Card } from '@repo/ui/Card';
+import { Card } from '@penumbra-zone/ui/Card';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { Grid } from '@repo/ui/Grid';
-import { Tabs } from '@repo/ui/Tabs';
+import { Grid } from '@penumbra-zone/ui/Grid';
+import { Tabs } from '@penumbra-zone/ui/Tabs';
 import { usePagePath } from '../../../fetchers/page-path';
 import { PagePath } from '../../metadata/paths';
 import { AssetsCardTitle } from './assets-card-title';
 import { TransactionsCardTitle } from './transactions-card-title';
 import { motion } from 'framer-motion';
-
-/** @todo: Remove this function and its uses after we switch to v2 layout */
-const v2PathPrefix = (path: string) => `/v2${path}`;
+import { getV2Link } from '../get-v2-link.ts';
 
 const CARD_TITLE_BY_PATH = {
-  [v2PathPrefix(PagePath.DASHBOARD)]: <AssetsCardTitle />,
-  [v2PathPrefix(PagePath.TRANSACTIONS)]: <TransactionsCardTitle />,
+  [getV2Link(PagePath.DASHBOARD)]: <AssetsCardTitle />,
+  [getV2Link(PagePath.TRANSACTIONS)]: <TransactionsCardTitle />,
 };
 
 const TABS_OPTIONS = [
-  { label: 'Assets', value: v2PathPrefix(PagePath.DASHBOARD) },
-  { label: 'Transactions', value: v2PathPrefix(PagePath.TRANSACTIONS) },
+  { label: 'Assets', value: getV2Link(PagePath.DASHBOARD) },
+  { label: 'Transactions', value: getV2Link(PagePath.TRANSACTIONS) },
 ];
 
 export const DashboardLayout = () => {
@@ -31,12 +29,12 @@ export const DashboardLayout = () => {
 
       <Grid tablet={8} desktop={6} xl={4}>
         <Card
-          title={CARD_TITLE_BY_PATH[v2PathPrefix(pagePath)]}
+          title={CARD_TITLE_BY_PATH[getV2Link(pagePath)]}
           motion={{ layout: true, layoutId: 'main' }}
         >
           <motion.div layout>
             <Tabs
-              value={v2PathPrefix(pagePath)}
+              value={getV2Link(pagePath)}
               onChange={value => navigate(value)}
               options={TABS_OPTIONS}
               actionType='accent'

@@ -1,6 +1,6 @@
 import { useAuctionInfos } from '../../../state/swap/dutch-auction';
 import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { Button } from '@repo/ui/components/ui/button';
+import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow.ts';
 import { filterWithLimit } from './helpers.ts';
@@ -9,7 +9,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@repo/ui/components/ui/tooltip';
+} from '@penumbra-zone/ui/components/ui/tooltip';
 import { AuctionInfo } from '../../../fetchers/auction-infos.ts';
 
 const endOrWithdrawAllButtonSelector = (state: AllSlices) => ({
@@ -40,8 +40,17 @@ export const assembleAuctionBatch = (
     a => a.addressIndex.equals(firstFoundAddressIndex),
     batchLimit,
   );
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify
   return { auctions: filteredBySeqAndAddressIndexAuctions, source: firstFoundAddressIndex! };
 };
+
+// Chain has a transaction size limit, so we can add at most a batch of 48 auctions in a single transaction
+// see https://github.com/penumbra-zone/web/issues/1166#issuecomment-2263550249
+// However, due to wasm memory limits, making the max lower until resolved:
+// https://github.com/penumbra-zone/web/issues/1702
+const BATCH_LIMIT = 24;
+const endTooltipContent = `End a batch of open auctions, with a limit of ${BATCH_LIMIT} auctions per transaction`;
+const withdrawTooltipContent = `Withdraw a batch of ended auctions, with a limit of ${BATCH_LIMIT} auctions per transaction`;
 
 export const EndOrWithdrawAllButton = () => {
   const { endAllAuctions, withdrawAllAuctions } = useStoreShallow(endOrWithdrawAllButtonSelector);
@@ -56,9 +65,7 @@ export const EndOrWithdrawAllButton = () => {
         <Tooltip>
           <TooltipTrigger
             onClick={() => {
-              // Chain has a transaction size limit, so we can add at most a batch of 48 auctions in a single transaction
-              // see https://github.com/penumbra-zone/web/issues/1166#issuecomment-2263550249
-              const auctionBatch = assembleAuctionBatch(data, 0n, 48);
+              const auctionBatch = assembleAuctionBatch(data, 0n, BATCH_LIMIT);
 
               void endAllAuctions(
                 auctionBatch.auctions,
@@ -66,17 +73,15 @@ export const EndOrWithdrawAllButton = () => {
                 auctionBatch.source,
               );
             }}
-            aria-label='End all open auctions, with a limit of 48 auctions per transaction'
+            aria-label={endTooltipContent}
           >
-            <div className='w-[85px] shrink-0'>
+            <div className='w-[120px] shrink-0'>
               <Button size='sm' variant='secondary' className='w-full'>
-                End all
+                End batch
               </Button>
             </div>
           </TooltipTrigger>
-          <TooltipContent>
-            End all open auctions, with a limit of 48 auctions per transaction
-          </TooltipContent>
+          <TooltipContent>{endTooltipContent}</TooltipContent>
         </Tooltip>
       </TooltipProvider>
     );
@@ -88,26 +93,22 @@ export const EndOrWithdrawAllButton = () => {
         <Tooltip>
           <TooltipTrigger
             onClick={() => {
-              // Chain has a transaction size limit, so we can add at most a batch of 48 auctions in a single transaction
-              // see https://github.com/penumbra-zone/web/issues/1166#issuecomment-2263550249
-              const auctionBatch = assembleAuctionBatch(data, 1n, 48);
+              const auctionBatch = assembleAuctionBatch(data, 1n, BATCH_LIMIT);
               void withdrawAllAuctions(
                 auctionBatch.auctions,
                 // TODO Should use the index of the selected account after the account selector for the auction is implemented
                 auctionBatch.source,
               );
             }}
-            aria-label='Withdraw all ended auctions, with a limit of 48 auctions per transaction'
+            aria-label={withdrawTooltipContent}
           >
-            <div className='w-[95px] shrink-0'>
+            <div className='w-[120px] shrink-0'>
               <Button size='sm' variant='secondary' className='w-full'>
-                Withdraw all
+                Withdraw batch
               </Button>
             </div>
           </TooltipTrigger>
-          <TooltipContent>
-            Withdraw all ended auctions, with a limit of 48 auctions per transaction
-          </TooltipContent>
+          <TooltipContent>{withdrawTooltipContent}</TooltipContent>
         </Tooltip>
       </TooltipProvider>
     );

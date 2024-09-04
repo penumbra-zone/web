@@ -25,8 +25,10 @@ export const corruptBech32 = (goodBech32: string, change?: { i: number; c: strin
 export const generateInvalid = (okBytes: Uint8Array, okString: string, innerName = 'inner') => {
   const prefix = okString.slice(0, okString.lastIndexOf('1'));
   return {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify non-null assertion
     longBytes: { [innerName]: new Uint8Array([...okBytes, okBytes[0]!]) },
     shortBytes: { [innerName]: okBytes.slice(1) },
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify non-null assertion
     longString: bech32m.encode(prefix, bech32m.toWords([...okBytes, okBytes[0]!]), Infinity),
     shortString: bech32m.encode(prefix, bech32m.toWords(okBytes.slice(1)), Infinity),
     corruptString: corruptBech32(okString),

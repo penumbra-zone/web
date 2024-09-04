@@ -1,4 +1,4 @@
-import { forwardRef, MouseEventHandler } from 'react';
+import { FC, forwardRef, MouseEventHandler } from 'react';
 import styled, { css, DefaultTheme } from 'styled-components';
 import { asTransientProps } from '../utils/asTransientProps';
 import { Priority, focusOutline, overlays, buttonBase } from '../utils/button';
@@ -65,7 +65,7 @@ const StyledButton = styled(motion.button)<StyledButtonProps>`
   ${buttonBase}
   ${button}
 
-  background-color: ${props =>
+    background-color: ${props =>
     getBackgroundColor(props.$actionType, props.$priority, props.theme, props.$iconOnly)};
   outline: ${props =>
     props.$priority === 'secondary'
@@ -80,12 +80,12 @@ const StyledButton = styled(motion.button)<StyledButtonProps>`
   position: relative;
 
   ${props =>
+    // eslint-disable-next-line no-nested-ternary -- readable ternary
     props.$iconOnly === 'adornment'
       ? iconOnlyAdornment
       : props.$density === 'sparse'
         ? sparse
         : compact}
-
   &::after {
     outline-offset: -2px;
   }
@@ -142,7 +142,7 @@ interface IconOnlyProps {
    * <Button icon={ChevronRight} iconOnly>Label</Button>
    * ```
    */
-  icon: LucideIcon;
+  icon: LucideIcon | FC;
 }
 
 interface RegularProps {
@@ -158,7 +158,7 @@ interface RegularProps {
    * <Button icon={ChevronRight} iconOnly>Label</Button>
    * ```
    */
-  icon?: LucideIcon;
+  icon?: LucideIcon | FC;
 }
 
 export type ButtonProps = BaseButtonProps & (IconOnlyProps | RegularProps) & MotionProp;

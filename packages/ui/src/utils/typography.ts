@@ -113,6 +113,15 @@ export const tab = css`
   line-height: ${props => props.theme.lineHeight.textLg};
 `;
 
+export const tabSmall = css`
+  ${base}
+
+  font-family: ${props => props.theme.font.default};
+  font-size: ${props => props.theme.fontSize.textSm};
+  font-weight: 500;
+  line-height: ${props => props.theme.lineHeight.textSm};
+`;
+
 export const tableItem = css`
   ${base}
 
@@ -135,9 +144,9 @@ export const technical = css`
   ${base}
 
   font-family: ${props => props.theme.font.mono};
-  font-size: ${props => props.theme.fontSize.textSm};
+  font-size: ${props => props.theme.fontSize.textBase};
   font-weight: 500;
-  line-height: ${props => props.theme.lineHeight.textSm};
+  line-height: ${props => props.theme.lineHeight.textBase};
 `;
 
 export const xxl = css`

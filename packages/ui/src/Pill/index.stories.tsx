@@ -12,7 +12,7 @@ type Story = StoryObj<typeof Pill>;
 
 export const Basic: Story = {
   args: {
-    children: 'Pill',
+    children: 'Label',
     priority: 'primary',
   },
 };

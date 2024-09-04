@@ -13,7 +13,7 @@ import type { ViewServerInterface } from '@penumbra-zone/types/servers';
 import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 declare global {
-  // eslint-disable-next-line no-var
+  // eslint-disable-next-line no-var -- TODO: explain
   var __DEV__: boolean | undefined;
 }
 
@@ -58,9 +58,9 @@ export class ViewServer implements ViewServerInterface {
   // Decrypts blocks with viewing key for notes, swaps, and updates revealed for user
   // Makes update to internal state-commitment-tree as a side effect.
   // Should extract updates via this.flushUpdates().
-  async scanBlock(compactBlock: CompactBlock): Promise<boolean> {
+  async scanBlock(compactBlock: CompactBlock, skipTrialDecrypt: boolean): Promise<boolean> {
     const res = compactBlock.toBinary();
-    return this.wasmViewServer.scan_block(res);
+    return this.wasmViewServer.scan_block(res, skipTrialDecrypt);
   }
 
   // Resets the state of the wasmViewServer to the one set in storage

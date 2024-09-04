@@ -1,5 +1,47 @@
 # node-status
 
+## 4.1.25
+
+### Patch Changes
+
+- Updated dependencies [74e89e0]
+- Updated dependencies [e01d5f8]
+- Updated dependencies [516caf3]
+- Updated dependencies [5100518]
+- Updated dependencies [d938456]
+  - @penumbra-zone/ui@9.1.0
+  - @penumbra-zone/types@22.0.0
+  - @penumbra-zone/crypto-web@23.0.0
+
+## 4.1.24
+
+### Patch Changes
+
+- a8a5f41: Prepare UI package for publishing to NPM
+- Updated dependencies [a8a5f41]
+- Updated dependencies [e7d0767]
+  - @penumbra-zone/ui@9.0.0
+
+## 4.1.23
+
+### Patch Changes
+
+- e952e03: remove BSR dependencies, correctly specify @bufbuild and @connectrpc dependencies
+- Updated dependencies [d01196a]
+- Updated dependencies [e952e03]
+- Updated dependencies [74f9a7f]
+  - @repo/ui@8.2.0
+
+## 4.1.22
+
+### Patch Changes
+
+- Updated dependencies [e4a4dd7]
+- Updated dependencies [7732f8d]
+- Updated dependencies [2788cf0]
+- Updated dependencies [907f6ee]
+  - @repo/ui@8.1.0
+
 ## 4.1.21
 
 ### Patch Changes

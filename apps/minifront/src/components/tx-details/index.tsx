@@ -1,5 +1,5 @@
-import { Card } from '@repo/ui/components/ui/card';
-import { FadeTransition } from '@repo/ui/components/ui/fade-transition';
+import { Card } from '@penumbra-zone/ui/components/ui/card';
+import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
 import { TxViewer } from './tx-viewer';
 import { EduInfoCard } from '../shared/edu-panels/edu-info-card';
 import { EduPanel } from '../shared/edu-panels/content';
@@ -16,6 +16,7 @@ export const TxDetailsErrorBoundary = () => {
 export const TxDetails = () => {
   const { hash } = useParams<{ hash: string }>();
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify
   const txInfo = useTransactionInfo(undefined, hash!);
 
   if (

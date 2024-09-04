@@ -12,6 +12,7 @@ export const generateGradient = (str: string) => {
   const tetrad = c.tetrad(); // 4 colors spaced around the color wheel, the first being the input
   const secondColorOptions = tetrad.slice(1);
   const index = hash % 3;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify non-null assertion
   const toColor = secondColorOptions[index]!.toHexString();
 
   return {

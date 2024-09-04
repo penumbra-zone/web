@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 declare global {
-  // eslint-disable-next-line no-var
+  // eslint-disable-next-line no-var -- expected globals
   var __DEV__: boolean | undefined;
 }
 
@@ -23,6 +23,7 @@ export const InnerBase64Schema = z.object({ inner: Base64StringSchema });
 export const base64ToUint8Array = (base64: string): Uint8Array => {
   const validated = globalThis.__DEV__ ? Base64StringSchema.parse(base64) : base64;
   const binString = atob(validated);
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify non-null assertion
   return Uint8Array.from(binString, byte => byte.codePointAt(0)!);
 };
 

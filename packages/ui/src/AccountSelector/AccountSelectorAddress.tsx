@@ -1,4 +1,4 @@
-import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import type { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 import styled, { DefaultTheme } from 'styled-components';
 import { useDensity } from '../hooks/useDensity';
@@ -23,6 +23,7 @@ const TextWrapper = styled.div`
 `;
 
 const getAddressColor = (loading: boolean, ephemeral: boolean) => (color: DefaultTheme['color']) =>
+  // eslint-disable-next-line no-nested-ternary -- readable ternary
   loading ? color.text.muted : ephemeral ? color.text.special : color.text.primary;
 
 export interface AccountSelectorAddressProps {

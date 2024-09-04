@@ -17,7 +17,7 @@ export const PopoverContent = styled.div`
 
   width: 240px;
   max-width: 320px;
-  padding: ${props => props.theme.spacing(3)} ${props => props.theme.spacing(2)};
+  padding: ${props => props.theme.spacing(3)};
 
   background: ${props => props.theme.color.other.dialogBackground};
   border: 1px solid ${props => props.theme.color.other.tonalStroke};

@@ -1,5 +1,50 @@
 # @penumbra-zone/query
 
+## 30.0.0
+
+### Major Changes
+
+- e01d5f8: fresh and existing wallets skip trial decryption
+
+### Patch Changes
+
+- Updated dependencies [e01d5f8]
+  - @penumbra-zone/types@22.0.0
+  - @penumbra-zone/wasm@27.0.0
+  - @penumbra-zone/crypto-web@23.0.0
+
+## 29.0.0
+
+### Minor Changes
+
+- e7d0767: Customize symbol for LP position NFTs
+
+### Patch Changes
+
+- Updated dependencies [e7d0767]
+  - @penumbra-zone/wasm@26.2.0
+
+## 28.0.0
+
+### Patch Changes
+
+- Updated dependencies [598d148]
+  - @penumbra-zone/wasm@26.1.0
+
+## 27.0.0
+
+### Minor Changes
+
+- 94d2c8d: special case local genesis sync
+
+### Patch Changes
+
+- Updated dependencies [f8730e9]
+  - @penumbra-zone/getters@16.0.0
+  - @penumbra-zone/types@21.0.0
+  - @penumbra-zone/crypto-web@22.0.0
+  - @penumbra-zone/wasm@26.0.0
+
 ## 26.0.0
 
 ### Patch Changes

@@ -36,16 +36,11 @@
       "typescript": "5.5.3"
     }
   },
-  "dependencies": {
-    "@bufbuild/protobuf": "^1.10.0",
-    "@connectrpc/connect": "^1.4.0",
-    "@connectrpc/connect-web": "^1.4.0"
-  },
   "devDependencies": {
     "@buf/connectrpc_eliza.bufbuild_es": "1.10.0-20230913231627-233fca715f49.1",
     "@buf/connectrpc_eliza.connectrpc_es": "1.4.0-20230913231627-233fca715f49.3",
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240703080008-312294d02bf9.1",
     "@changesets/cli": "^2.27.3",
+    "@eslint-community/eslint-plugin-eslint-comments": "^4.4.0",
     "@eslint/compat": "^1.1.0",
     "@eslint/js": "^9.6.0",
     "@microsoft/api-extractor": "^7.47.0",
@@ -68,7 +63,7 @@
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-import-x": "^0.5.3",
     "eslint-plugin-prettier": "^5.1.3",
-    "eslint-plugin-react": "7.8.0-rc.0",
+    "eslint-plugin-react": "^7.35.0",
     "eslint-plugin-react-hooks": "5.1.0-rc-c3cdbec0a7-20240708",
     "eslint-plugin-react-refresh": "^0.4.8",
     "eslint-plugin-storybook": "0.9.0--canary.156.ed236ca.0",
@@ -87,6 +82,7 @@
     "typescript-eslint": "^7.16.0",
     "vite": "^5.2.11",
     "vite-plugin-node-stdlib-browser": "^0.2.1",
+    "vite-plugin-svgr": "^4.2.0",
     "vite-plugin-top-level-await": "^1.4.1",
     "vite-plugin-wasm": "^3.3.0",
     "vitest": "^1.6.0"

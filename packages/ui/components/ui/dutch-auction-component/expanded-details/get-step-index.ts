@@ -5,6 +5,7 @@ import { DutchAuctionDescription } from '@penumbra-zone/protobuf/penumbra/core/c
  * the step index to the step count.
  */
 const clampBetweenZeroAnd = (max: bigint, value: bigint) =>
+  // eslint-disable-next-line no-nested-ternary -- readable ternary
   value > max ? max : value < 0n ? 0n : value;
 
 export const getStepIndex = (
