@@ -20,7 +20,7 @@ import { isKnown } from '../helpers';
 import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
 import { penumbra } from '../../prax';
 import { DexService, SimulationService } from '@penumbra-zone/protobuf';
-import { sortByPriorityScore } from '../../fetchers/balances/by-priority-score.ts';
+import { sortByPriorityScoreAndAccountIndex } from '../../fetchers/balances/by-priority-score.ts';
 
 export const sendSimulateTradeRequest = ({
   assetIn,
@@ -173,7 +173,7 @@ export const swappableBalancesResponsesSelector = (
   data: zQueryState.data
     ?.filter(isKnown)
     .filter(balance => isSwappable(getMetadata(balance.balanceView)))
-    .sort(sortByPriorityScore),
+    .sort(sortByPriorityScoreAndAccountIndex),
 });
 
 export const swappableAssetsSelector = (zQueryState: AbridgedZQueryState<Metadata[]>) => ({
