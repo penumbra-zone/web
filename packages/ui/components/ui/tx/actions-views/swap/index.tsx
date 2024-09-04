@@ -21,8 +21,8 @@ export const SwapViewComponent = ({
   feeValueView: ValueView;
 }) => {
   if (value.swapView.case === 'visible') {
-    const claimTx = getClaimTx.optional()(value);
-    const addressView = getAddressView.optional()(value);
+    const claimTx = getClaimTx.optional(value);
+    const addressView = getAddressView.optional(value);
     const oneWaySwap = isOneWaySwap(value) ? getOneWaySwapValues(value) : undefined;
 
     // The 'Fee' protobuf definition does not include assetMetadata.
