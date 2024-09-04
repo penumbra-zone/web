@@ -24,8 +24,8 @@ export const sortByPriorityScore = (a: BalancesResponse, b: BalancesResponse) =>
 };
 
 export const sortByPriorityScoreAndAccountIndex = (a: BalancesResponse, b: BalancesResponse) => {
-  const aIndex = getAddressIndex.optional()(a)?.account ?? Infinity;
-  const bIndex = getAddressIndex.optional()(b)?.account ?? Infinity;
+  const aIndex = getAddressIndex.optional(a)?.account ?? Infinity;
+  const bIndex = getAddressIndex.optional(b)?.account ?? Infinity;
 
   if (aIndex === bIndex) {
     return sortByPriorityScore(a, b);
