@@ -115,7 +115,7 @@ export default function BalanceSelector({
                   <TableRow>
                     <TableHead className='pl-4'>Account</TableHead>
                     <TableHead>Asset</TableHead>
-                    <TableHead className='text-right pr-4'>Balance</TableHead>
+                    <TableHead className='pr-4 text-right'>Balance</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
