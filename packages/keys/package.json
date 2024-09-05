@@ -5,18 +5,29 @@
   "description": "Tool to download proving keys for Penumbra",
   "type": "module",
   "scripts": {
-    "clean": "rm -rf penumbra-zone-*.tgz",
-    "dev:pack": "$npm_execpath pack",
+    "build": "tsc --build --verbose",
+    "clean": "rm -rfv dist *.tsbuildinfo package penumbra-zone-*.tgz",
+    "clean:keys": "rm -rfv keys",
+    "dev:pack": "tsc-watch --onSuccess \"$npm_execpath pack\"",
     "prepare": "./download-keys ./keys"
   },
   "files": [
-    "action-keys.json",
+    "dist",
     "download-keys",
     "keys/*_pk.bin"
   ],
   "exports": {
-    ".": "./action-keys.json",
+    ".": "./src/index.ts",
     "./*_pk.bin": "./keys/*_pk.bin"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "./*_pk.bin": "./keys/*_pk.bin"
+    }
   },
   "bin": {
     "penumbra-download-keys": "./download-keys"

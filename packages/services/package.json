@@ -40,13 +40,15 @@
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/crypto-web": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
+    "@penumbra-zone/keys": "workspace:*",
     "@penumbra-zone/protobuf": "workspace:*",
     "@penumbra-zone/query": "workspace:*",
     "@penumbra-zone/storage": "workspace:*",
     "@penumbra-zone/transport-dom": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
     "@penumbra-zone/wasm": "workspace:*",
-    "@types/chrome": "^0.0.268"
+    "@types/chrome": "^0.0.268",
+    "import-meta-resolve": "^4.1.0"
   },
   "peerDependencies": {
     "@bufbuild/protobuf": "^1.10.0",
@@ -54,6 +56,7 @@
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/crypto-web": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
+    "@penumbra-zone/keys": "workspace:*",
     "@penumbra-zone/protobuf": "workspace:*",
     "@penumbra-zone/query": "workspace:*",
     "@penumbra-zone/storage": "workspace:*",
