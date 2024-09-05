@@ -27,19 +27,14 @@ interface ExecuteWorkerParams {
 
 // necessary to propagate errors that occur in promises
 // see: https://stackoverflow.com/questions/39992417/how-to-bubble-a-web-worker-error-in-a-promise-via-worker-onerror
-globalThis.addEventListener(
-  'unhandledrejection',
-  event => {
-    // the event object has two special properties:
-    // event.promise - the promise that generated the error
-    // event.reason  - the unhandled error object
-    throw event.reason;
-  },
-  { once: true },
-);
+onunhandledrejection = function (this, event) {
+  console.debug('build-action-worker unhandledrejection', this, event);
+  throw event.reason;
+};
 
-const workerListener = ({ data }: MessageEvent<WorkerBuildAction>) => {
-  console.debug('build-action-worker workerListener', data);
+onmessage = function (this, event) {
+  console.debug('build-action-worker onmessage', this, event);
+  const { data } = event as MessageEvent<WorkerBuildAction>;
   const {
     transactionPlan: transactionPlanJson,
     witness: witnessJson,
@@ -54,14 +49,12 @@ const workerListener = ({ data }: MessageEvent<WorkerBuildAction>) => {
 
   console.debug('executing...');
 
-  void executeWorker({ transactionPlan, witness, fullViewingKey, actionPlanIndex }).then(action =>
-    globalThis.postMessage(action.toJson()),
+  void buildAction({ transactionPlan, witness, fullViewingKey, actionPlanIndex }).then(action =>
+    postMessage(action.toJson()),
   );
 };
 
-globalThis.addEventListener('message', workerListener, { once: true });
-
-const executeWorker = async ({
+const buildAction = async ({
   transactionPlan,
   witness,
   fullViewingKey,
@@ -96,5 +89,6 @@ const executeWorker = async ({
 
   console.debug('built action', action);
 
+  debugger;
   return action;
 };
