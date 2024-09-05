@@ -1,11 +1,15 @@
 import {
-  ActionPlan,
+  type Action,
+  type ActionPlan,
   TransactionPlan,
   WitnessData,
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
-import type { JsonObject, JsonValue } from '@bufbuild/protobuf';
+import type { JsonObject } from '@bufbuild/protobuf';
 import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import keyPaths from '@penumbra-zone/keys';
+
+console.log('build-action-worker loaded');
+console.log('keyPaths', keyPaths);
 
 export interface WorkerBuildAction {
   transactionPlan: JsonObject;
@@ -35,7 +39,7 @@ globalThis.addEventListener(
 );
 
 const workerListener = ({ data }: MessageEvent<WorkerBuildAction>) => {
-  console.debug('workerListener', data);
+  console.debug('build-action-worker workerListener', data);
   const {
     transactionPlan: transactionPlanJson,
     witness: witnessJson,
@@ -48,11 +52,10 @@ const workerListener = ({ data }: MessageEvent<WorkerBuildAction>) => {
   const witness = WitnessData.fromJson(witnessJson);
   const fullViewingKey = FullViewingKey.fromJson(fullViewingKeyJson);
 
-  void executeWorker({ transactionPlan, witness, fullViewingKey, actionPlanIndex }).then(
-    jsonAction => {
-      console.debug('built action', jsonAction);
-      globalThis.postMessage(jsonAction);
-    },
+  console.debug('executing...');
+
+  void executeWorker({ transactionPlan, witness, fullViewingKey, actionPlanIndex }).then(action =>
+    globalThis.postMessage(action.toJson()),
   );
 };
 
@@ -63,8 +66,14 @@ const executeWorker = async ({
   witness,
   fullViewingKey,
   actionPlanIndex,
-}: ExecuteWorkerParams): Promise<JsonValue> => {
-  console.debug('executeWorker', transactionPlan, witness, fullViewingKey, actionPlanIndex);
+}: ExecuteWorkerParams): Promise<Action> => {
+  console.debug(
+    'build-action-worker executeWorker',
+    transactionPlan,
+    witness,
+    fullViewingKey,
+    actionPlanIndex,
+  );
   // Dynamically load wasm module
   const penumbraWasmModule = await import('@penumbra-zone/wasm/build');
 
@@ -74,7 +83,7 @@ const executeWorker = async ({
   type KeyPaths = Partial<Record<NonNullable<ActionPlan['action']['case']>, URL>>;
   const keyPath = (keyPaths as KeyPaths)[actionType];
 
-  console.debug('build-action-worker using keyPath', keyPath);
+  console.debug('build-action-worker using keyPath', String(keyPath));
 
   // Build action according to specification in `TransactionPlan`
   const action = await penumbraWasmModule.buildActionParallel(
@@ -85,7 +94,7 @@ const executeWorker = async ({
     keyPath?.href,
   );
 
-  console.debug('built action', action.toJson());
+  console.debug('built action', action);
 
-  return action.toJson();
+  return action;
 };
