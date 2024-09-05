@@ -62,7 +62,7 @@ export const AssetSelector = <ValueType extends (BalancesResponse | Metadata) | 
 }: AssetSelectorProps<ValueType>) => {
   const layoutId = useId();
   const density = useDensity();
-  const metadata = isMetadata(value) ? value : getMetadataFromBalancesResponse.optional()(value);
+  const metadata = isMetadata(value) ? value : getMetadataFromBalancesResponse.optional(value);
 
   const [isOpen, setIsOpen] = useState(false);
 

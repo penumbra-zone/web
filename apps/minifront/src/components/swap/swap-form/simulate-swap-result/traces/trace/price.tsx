@@ -21,8 +21,8 @@ export const Price = ({
     const lastValueMetadata = metadataByAssetId[bech32mAssetId(outputValue.assetId)];
 
     if (firstValueMetadata?.symbol && lastValueMetadata?.symbol) {
-      const inputDisplayDenomExponent = getDisplayDenomExponent.optional()(firstValueMetadata) ?? 0;
-      const outputDisplayDenomExponent = getDisplayDenomExponent.optional()(lastValueMetadata) ?? 0;
+      const inputDisplayDenomExponent = getDisplayDenomExponent.optional(firstValueMetadata) ?? 0;
+      const outputDisplayDenomExponent = getDisplayDenomExponent.optional(lastValueMetadata) ?? 0;
       const formattedInputAmount = formatAmount({
         amount: inputValue.amount,
         exponent: inputDisplayDenomExponent,

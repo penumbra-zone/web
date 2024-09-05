@@ -15,8 +15,8 @@ export interface BalanceProps {
 }
 
 export const Balance = ({ balancesResponse }: BalanceProps) => {
-  const addressIndexAccount = getAddressIndex.optional()(balancesResponse)?.account;
-  const valueView = getBalanceView.optional()(balancesResponse);
+  const addressIndexAccount = getAddressIndex.optional(balancesResponse)?.account;
+  const valueView = getBalanceView.optional(balancesResponse);
   return (
     <Root>
       {valueView && <Text>{getFormattedAmtFromValueView(valueView, true)}</Text>}

@@ -31,8 +31,8 @@ export const getAuctionInfos = async function* ({
 
     const auction = DutchAuction.fromBinary(response.auction.value);
 
-    const inputAssetId = getInputAssetId.optional()(auction);
-    const outputAssetId = getOutputAssetId.optional()(auction);
+    const inputAssetId = getInputAssetId.optional(auction);
+    const outputAssetId = getOutputAssetId.optional(auction);
 
     const inputMetadataPromise = inputAssetId
       ? penumbra.service(ViewService).assetMetadataById({ assetId: inputAssetId })

@@ -78,14 +78,17 @@ export const statusSelector = (
       }
     }
 
+    // Round down to ensure whole numbers
+    const roundedPercentSyncedNumber = Math.floor(percentSyncedNumber * 100);
+
     return {
       error: zQueryState.error,
       isCatchingUp,
       isUpdating,
       fullSyncHeight,
       latestKnownBlockHeight,
-      percentSyncedNumber,
-      percentSynced: `${percentSyncedNumber * 100}%`,
+      percentSyncedNumber: roundedPercentSyncedNumber / 100,
+      percentSynced: `${roundedPercentSyncedNumber}%`,
     };
   }
 };

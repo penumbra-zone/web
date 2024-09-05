@@ -35,7 +35,7 @@ export const ValidatorInfoComponent = ({
   const showTooltips = useStore(state => !state.staking.loading);
   const validator = getValidator(validatorInfo);
   const identityKey = getIdentityKeyFromValidatorInfo(validatorInfo);
-  const state = getValidatorState.optional()(validatorInfo);
+  const state = getValidatorState.optional(validatorInfo);
 
   return (
     <TooltipProvider>

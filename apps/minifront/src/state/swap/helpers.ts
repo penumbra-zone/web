@@ -9,19 +9,18 @@ import { getAssetId, getDisplay } from '@penumbra-zone/getters/metadata';
 import {
   getAssetIdFromValueView,
   getDisplayDenomExponentFromValueView,
-  getAmount,
   getMetadata,
 } from '@penumbra-zone/getters/value-view';
 import { toBaseUnit } from '@penumbra-zone/types/lo-hi';
 import { BigNumber } from 'bignumber.js';
 import { SwapSlice } from '.';
 import { assetPatterns } from '@penumbra-zone/types/assets';
-import { fromBaseUnitAmount } from '@penumbra-zone/types/amount';
 import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { isKnown } from '../helpers';
 import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
 import { penumbra } from '../../prax';
 import { DexService, SimulationService } from '@penumbra-zone/protobuf';
+import { sortByPriorityScoreAndAccountIndex } from '../../fetchers/balances/by-priority-score.ts';
 
 export const sendSimulateTradeRequest = ({
   assetIn,
@@ -151,15 +150,6 @@ export const combinedCandlestickDataSelector = (
   }
 };
 
-const byBalanceDescending = (a: BalancesResponse, b: BalancesResponse) => {
-  const aExponent = getDisplayDenomExponentFromValueView(a.balanceView);
-  const bExponent = getDisplayDenomExponentFromValueView(b.balanceView);
-  const aAmount = fromBaseUnitAmount(getAmount(a.balanceView), aExponent);
-  const bAmount = fromBaseUnitAmount(getAmount(b.balanceView), bExponent);
-
-  return bAmount.comparedTo(aAmount);
-};
-
 const nonSwappableAssetPatterns = [
   assetPatterns.lpNft,
   assetPatterns.proposalNft,
@@ -183,7 +173,7 @@ export const swappableBalancesResponsesSelector = (
   data: zQueryState.data
     ?.filter(isKnown)
     .filter(balance => isSwappable(getMetadata(balance.balanceView)))
-    .sort(byBalanceDescending),
+    .sort(sortByPriorityScoreAndAccountIndex),
 });
 
 export const swappableAssetsSelector = (zQueryState: AbridgedZQueryState<Metadata[]>) => ({
