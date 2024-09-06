@@ -12,7 +12,8 @@ import { asTransientProps } from '../utils/asTransientProps.ts';
 import { Icon } from '../Icon';
 import { Text } from '../Text';
 import { AssetIcon } from '../AssetIcon';
-import { isMetadata } from './helpers.ts';
+import { isMetadata } from './utils/helpers.ts';
+import { Dialog } from '../Dialog/index.tsx';
 
 const SparseButton = css`
   height: ${props => props.theme.spacing(12)};
@@ -101,34 +102,36 @@ const AssetSelectorTriggerFunc = <ValueType extends (BalancesResponse | Metadata
   const metadata = isMetadata(value) ? value : getMetadataFromBalancesResponse.optional(value);
 
   return (
-    <Trigger
-      ref={ref}
-      layoutId={layoutId}
-      disabled={disabled}
-      {...asTransientProps({ density, actionType })}
-      onClick={onClick}
-    >
-      {!value ? (
-        <Text small color={color => (disabled ? color.text.muted : color.text.primary)}>
-          Asset
-        </Text>
-      ) : (
-        <Value {...asTransientProps({ density, actionType })}>
-          <AssetIcon metadata={metadata} size={density === 'sparse' ? 'lg' : 'md'} />
-          <Text color={color => (disabled ? color.text.muted : color.text.primary)}>
-            {metadata?.symbol ?? 'Unknown'}
+    <Dialog.Trigger asChild>
+      <Trigger
+        ref={ref}
+        layoutId={layoutId}
+        disabled={disabled}
+        {...asTransientProps({ density, actionType })}
+        onClick={onClick}
+      >
+        {!value ? (
+          <Text small color={color => (disabled ? color.text.muted : color.text.primary)}>
+            Asset
           </Text>
-        </Value>
-      )}
+        ) : (
+          <Value {...asTransientProps({ density, actionType })}>
+            <AssetIcon metadata={metadata} size={density === 'sparse' ? 'lg' : 'md'} />
+            <Text color={color => (disabled ? color.text.muted : color.text.primary)}>
+              {metadata?.symbol ?? 'Unknown'}
+            </Text>
+          </Value>
+        )}
 
-      <IconAdornment $disabled={disabled}>
-        <Icon
-          IconComponent={ChevronsUpDownIcon}
-          size='sm'
-          color={color => (disabled ? color.text.muted : color.text.primary)}
-        />
-      </IconAdornment>
-    </Trigger>
+        <IconAdornment $disabled={disabled}>
+          <Icon
+            IconComponent={ChevronsUpDownIcon}
+            size='sm'
+            color={color => (disabled ? color.text.muted : color.text.primary)}
+          />
+        </IconAdornment>
+      </Trigger>
+    </Dialog.Trigger>
   );
 };
 

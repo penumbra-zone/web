@@ -1,7 +1,7 @@
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { Dialog } from '../Dialog';
-import { AssetSelectorDialogContent } from './AssetSelectorDialogContent';
+import { AssetSelectorContent } from './Content.tsx';
 import { useId, useState } from 'react';
 import { AssetSelectorTrigger } from './Trigger.tsx';
 import { ActionType } from '../utils/ActionType.ts';
@@ -45,28 +45,27 @@ export const AssetSelector = <ValueType extends (BalancesResponse | Metadata) | 
 
   const handleChange = (newValue: ValueType) => {
     onChange(newValue);
-    setIsOpen(false);
   };
 
   return (
     <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)}>
-      <Dialog.Trigger>
-        <AssetSelectorTrigger
-          value={value}
-          actionType={actionType}
-          disabled={disabled}
-          layoutId={layoutId}
-          key={layoutId}
-          onClick={() => setIsOpen(true)}
-        />
-      </Dialog.Trigger>
+      <AssetSelectorTrigger
+        value={value}
+        actionType={actionType}
+        disabled={disabled}
+        layoutId={layoutId}
+        key={layoutId}
+        onClick={() => setIsOpen(true)}
+      />
 
-      <AssetSelectorDialogContent
+      <AssetSelectorContent
         title={dialogTitle}
         layoutId={layoutId}
         value={value}
         onChange={handleChange}
         options={options}
+        actionType={actionType}
+        onClose={() => setIsOpen(false)}
       />
     </Dialog>
   );
