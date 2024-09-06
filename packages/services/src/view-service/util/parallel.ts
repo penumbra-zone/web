@@ -30,34 +30,18 @@ export const launchActionWorkers = (
       actionPlanIndex,
     };
 
-    console.log('launching action worker');
     const actionWorker = new Worker(new URL('./build-action-worker.js', import.meta.url));
-    actionWorker.addEventListener('message', (...p) => console.log('parallel message', ...p));
-    actionWorker.addEventListener('error', (...p) => console.log('parallel error', ...p));
-    console.log('launched action worker');
 
     const buildRes = await new Promise<Action>((resolve, reject) => {
       signal.addEventListener('abort', () => reject(ConnectError.from(signal.reason)));
       signal.throwIfAborted();
 
-      actionWorker.onmessage = evt => {
-        console.debug('actionWorker.onmessage', evt.data);
-        resolve(Action.fromJson(evt.data as JsonValue));
-      };
-      actionWorker.onerror = evt => {
-        console.debug('actionWorker.onerror', evt.error);
-        reject(evt.error as Error);
-      };
-      actionWorker.onmessageerror = evt => {
-        console.debug('actionWorker.onmessageerror', evt.data);
-        reject(new Error('Message Error', { cause: evt.data }));
-      };
+      actionWorker.onmessage = evt => resolve(Action.fromJson(evt.data as JsonValue));
+      actionWorker.onerror = evt => reject(evt.error as Error);
+      actionWorker.onmessageerror = evt => reject(new Error('Message Error', { cause: evt.data }));
 
       actionWorker.postMessage(buildReq);
-    }).finally(() => {
-      console.debug('actionWorker finally');
-      actionWorker.terminate();
-    });
+    }).finally(() => actionWorker.terminate());
 
     return buildRes;
   });
