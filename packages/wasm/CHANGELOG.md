@@ -1,5 +1,15 @@
 # @penumbra-zone/wasm
 
+## 28.0.0
+
+### Minor Changes
+
+- 990291f: TCT block acceleration
+
+### Patch Changes
+
+- @penumbra-zone/types@23.0.0
+
 ## 27.0.0
 
 ### Major Changes

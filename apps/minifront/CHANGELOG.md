@@ -1,5 +1,22 @@
 # minifront
 
+## 6.22.0
+
+### Minor Changes
+
+- 74527df: modify precision for sync percentage
+
+### Patch Changes
+
+- 0b85eca: Sort the balances by priority in the swap and send pages
+- Updated dependencies [3a5c074]
+- Updated dependencies [3a5c074]
+  - @penumbra-zone/getters@17.0.0
+  - @penumbra-zone/perspective@30.0.0
+  - @penumbra-zone/types@23.0.0
+  - @penumbra-zone/ui@9.1.1
+  - @penumbra-zone/crypto-web@24.0.0
+
 ## 6.21.0
 
 ### Minor Changes

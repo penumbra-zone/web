@@ -1,5 +1,13 @@
 # node-status
 
+## 4.1.26
+
+### Patch Changes
+
+- @penumbra-zone/types@23.0.0
+- @penumbra-zone/ui@9.1.1
+- @penumbra-zone/crypto-web@24.0.0
+
 ## 4.1.25
 
 ### Patch Changes
