@@ -49,9 +49,11 @@ onmessage = function (this, event) {
 
   console.debug('executing...');
 
-  void buildAction({ transactionPlan, witness, fullViewingKey, actionPlanIndex }).then(action =>
-    postMessage(action.toJson()),
-  );
+  void (async () => {
+    const action = await buildAction({ transactionPlan, witness, fullViewingKey, actionPlanIndex });
+    console.log('built action!!!', action);
+    postMessage(action.toJson());
+  })();
 };
 
 const buildAction = async ({
@@ -89,6 +91,5 @@ const buildAction = async ({
 
   console.debug('built action', action);
 
-  debugger;
   return action;
 };

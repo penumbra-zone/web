@@ -30,7 +30,11 @@ export const launchActionWorkers = (
       actionPlanIndex,
     };
 
+    console.log('launching action worker');
     const actionWorker = new Worker(new URL('./build-action-worker.js', import.meta.url));
+    actionWorker.addEventListener('message', (...p) => console.log('parallel message', ...p));
+    actionWorker.addEventListener('error', (...p) => console.log('parallel error', ...p));
+    console.log('launched action worker');
 
     const buildRes = await new Promise<Action>((resolve, reject) => {
       signal.addEventListener('abort', () => reject(ConnectError.from(signal.reason)));
