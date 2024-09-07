@@ -1,12 +1,10 @@
 import { RadioGroupItem } from '@radix-ui/react-radio-group';
-import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { AssetIcon } from '../AssetIcon';
 import { Text } from '../Text';
-import { isBalancesResponse, isMetadata } from './utils/helpers.ts';
+import { isBalancesResponse, isEqual, isMetadata, SelectorValue } from './utils/helpers.ts';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
 import {
   getAddressIndex,
@@ -15,7 +13,8 @@ import {
 } from '@penumbra-zone/getters/balances-response';
 import { ActionType, getOutlineColorByActionType } from '../utils/ActionType.ts';
 import { asTransientProps } from '../utils/asTransientProps.ts';
-import { KeyboardEventHandler } from 'react';
+import { KeyboardEventHandler, MouseEventHandler } from 'react';
+import { useAssetsSelector } from './utils/Context.tsx';
 
 const Root = styled(motion.button)<{
   $isSelected: boolean;
@@ -76,20 +75,20 @@ const Balance = styled.div`
 `;
 
 export interface ListItemProps {
-  value: Metadata | BalancesResponse;
-  isSelected: boolean;
-  actionType?: ActionType;
+  /**
+   * A `BalancesResponse` or `Metadata` protobuf message type. Renders the asset
+   * icon name and, depending on the type, the value of the asset in the account.
+   * */
+  value: SelectorValue;
   disabled?: boolean;
-  onClose?: VoidFunction;
+  actionType?: ActionType;
 }
 
-export const ListItem = ({
-  value,
-  isSelected,
-  actionType = 'default',
-  disabled,
-  onClose,
-}: ListItemProps) => {
+/** A radio button that selects an asset or a balance from the `AssetSelector` */
+export const ListItem = ({ value, disabled, actionType = 'default' }: ListItemProps) => {
+  const { onClose, onChange, value: selectedValue } = useAssetsSelector();
+
+  const isSelected = isEqual(value, selectedValue);
   const hash = uint8ArrayToHex(value.toBinary());
 
   const metadata = isMetadata(value) ? value : getMetadataFromBalancesResponse.optional(value);
@@ -103,16 +102,29 @@ export const ListItem = ({
 
   const onEnter: KeyboardEventHandler<HTMLButtonElement> = event => {
     if (event.key === 'Enter') {
-      onClose?.();
+      onClose();
     }
   };
 
+  const onMouseDown: MouseEventHandler<HTMLButtonElement> = () => {
+    // close only after the value is selected by onClick
+    setTimeout(() => {
+      onClose();
+    }, 0);
+  };
+
+  // click is triggered by radix-ui on focus, click, arrow selection, etc. – basically always
+  const onClick = () => {
+    onChange?.(value);
+  };
+
   return (
-    <RadioGroupItem disabled={disabled} value={hash} asChild>
+    <RadioGroupItem key={hash} disabled={disabled} value={hash} asChild>
       <Root
         {...asTransientProps({ isSelected, actionType, disabled })}
         onKeyDown={onEnter}
-        onMouseDown={onClose}
+        onMouseDown={onMouseDown}
+        onClick={onClick}
       >
         <AssetInfo>
           <AssetIcon size='lg' metadata={metadata} />

@@ -1,9 +1,7 @@
-import { ForwardedRef, forwardRef, MouseEventHandler } from 'react';
+import { forwardRef, MouseEventHandler } from 'react';
 import styled, { css } from 'styled-components';
 import { ChevronsUpDownIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getMetadataFromBalancesResponse } from '@penumbra-zone/getters/balances-response';
 import { ActionType, getOutlineColorByActionType } from '../utils/ActionType.ts';
 import { Density } from '../types/Density.ts';
@@ -12,7 +10,7 @@ import { asTransientProps } from '../utils/asTransientProps.ts';
 import { Icon } from '../Icon';
 import { Text } from '../Text';
 import { AssetIcon } from '../AssetIcon';
-import { isMetadata } from './utils/helpers.ts';
+import { isMetadata, SelectorValue } from './utils/helpers.ts';
 import { Dialog } from '../Dialog/index.tsx';
 
 const SparseButton = css`
@@ -77,66 +75,52 @@ const IconAdornment = styled.i<{ $disabled?: boolean }>`
     props.$disabled ? props.theme.color.action.disabledOverlay : 'transparent'};
 `;
 
-export interface AssetSelectorTriggerProps<
-  ValueType extends (BalancesResponse | Metadata) | Metadata,
-> {
-  value?: ValueType;
+export interface AssetSelectorTriggerProps {
+  value?: SelectorValue;
   actionType?: ActionType;
   disabled?: boolean;
   onClick?: MouseEventHandler<HTMLButtonElement>;
   layoutId?: string;
 }
 
-const AssetSelectorTriggerFunc = <ValueType extends (BalancesResponse | Metadata) | Metadata>(
-  {
-    value,
-    actionType = 'default',
-    disabled,
-    onClick,
-    layoutId,
-  }: AssetSelectorTriggerProps<ValueType>,
-  ref: ForwardedRef<HTMLButtonElement>,
-) => {
-  const density = useDensity();
+export const AssetSelectorTrigger = forwardRef<HTMLButtonElement, AssetSelectorTriggerProps>(
+  ({ value, actionType = 'default', disabled, onClick, layoutId }, ref) => {
+    const density = useDensity();
 
-  const metadata = isMetadata(value) ? value : getMetadataFromBalancesResponse.optional(value);
+    const metadata = isMetadata(value) ? value : getMetadataFromBalancesResponse.optional(value);
 
-  return (
-    <Dialog.Trigger asChild>
-      <Trigger
-        ref={ref}
-        layoutId={layoutId}
-        disabled={disabled}
-        {...asTransientProps({ density, actionType })}
-        onClick={onClick}
-      >
-        {!value ? (
-          <Text small color={color => (disabled ? color.text.muted : color.text.primary)}>
-            Asset
-          </Text>
-        ) : (
-          <Value {...asTransientProps({ density, actionType })}>
-            <AssetIcon metadata={metadata} size={density === 'sparse' ? 'lg' : 'md'} />
-            <Text color={color => (disabled ? color.text.muted : color.text.primary)}>
-              {metadata?.symbol ?? 'Unknown'}
+    return (
+      <Dialog.Trigger asChild>
+        <Trigger
+          ref={ref}
+          layoutId={layoutId}
+          disabled={disabled}
+          {...asTransientProps({ density, actionType })}
+          onClick={onClick}
+        >
+          {!value ? (
+            <Text small color={color => (disabled ? color.text.muted : color.text.primary)}>
+              Asset
             </Text>
-          </Value>
-        )}
+          ) : (
+            <Value {...asTransientProps({ density, actionType })}>
+              <AssetIcon metadata={metadata} size={density === 'sparse' ? 'lg' : 'md'} />
+              <Text color={color => (disabled ? color.text.muted : color.text.primary)}>
+                {metadata?.symbol ?? 'Unknown'}
+              </Text>
+            </Value>
+          )}
 
-        <IconAdornment $disabled={disabled}>
-          <Icon
-            IconComponent={ChevronsUpDownIcon}
-            size='sm'
-            color={color => (disabled ? color.text.muted : color.text.primary)}
-          />
-        </IconAdornment>
-      </Trigger>
-    </Dialog.Trigger>
-  );
-};
-
-export const AssetSelectorTrigger = forwardRef(AssetSelectorTriggerFunc) as <
-  ValueType extends (BalancesResponse | Metadata) | Metadata,
->(
-  props: AssetSelectorTriggerProps<ValueType> & { ref?: ForwardedRef<HTMLButtonElement> },
-) => ReturnType<typeof AssetSelectorTriggerFunc>;
+          <IconAdornment $disabled={disabled}>
+            <Icon
+              IconComponent={ChevronsUpDownIcon}
+              size='sm'
+              color={color => (disabled ? color.text.muted : color.text.primary)}
+            />
+          </IconAdornment>
+        </Trigger>
+      </Dialog.Trigger>
+    );
+  },
+);
+AssetSelectorTrigger.displayName = 'AssetSelectorTrigger';

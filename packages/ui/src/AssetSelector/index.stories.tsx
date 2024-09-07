@@ -1,10 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { useArgs } from '@storybook/preview-api';
 
 import { AssetSelector } from '.';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   OSMO_BALANCE,
   OSMO_METADATA,
@@ -13,6 +12,7 @@ import {
   PENUMBRA_METADATA,
   PIZZA_METADATA,
 } from '../utils/bufs';
+import { filterMetadataOrBalancesResponseByText } from './utils/filterMetadataOrBalancesResponseByText.ts';
 
 const mixedOptions: (BalancesResponse | Metadata)[] = [
   PIZZA_METADATA,
@@ -27,7 +27,6 @@ const meta: Meta<typeof AssetSelector> = {
   tags: ['autodocs', '!dev', 'density'],
   argTypes: {
     value: { control: false },
-    options: { control: false },
   },
 };
 export default meta;
@@ -37,30 +36,47 @@ type Story = StoryObj<typeof AssetSelector>;
 export const MixedBalancesResponsesAndMetadata: Story = {
   args: {
     dialogTitle: 'Transfer Assets',
-    value: PENUMBRA_BALANCE,
-    options: mixedOptions,
   },
 
   render: function Render(props) {
-    const [, updateArgs] = useArgs();
+    const [value, setValue] = useState<Metadata | BalancesResponse>();
+    const [search, setSearch] = useState('');
 
-    const onChange = (value: BalancesResponse | Metadata) => updateArgs({ value });
+    const filteredOptions = useMemo(
+      () => mixedOptions.filter(filterMetadataOrBalancesResponseByText(search)),
+      [search],
+    );
 
-    return <AssetSelector {...props} onChange={onChange} />;
+    return (
+      <AssetSelector
+        {...props}
+        value={value}
+        search={search}
+        onChange={setValue}
+        onSearchChange={setSearch}
+      >
+        {({ getKeyHash }) =>
+          filteredOptions.map(option => (
+            <AssetSelector.ListItem key={getKeyHash(option)} value={option} />
+          ))
+        }
+      </AssetSelector>
+    );
   },
 };
 
 export const MetadataOnly: Story = {
   render: function Render() {
-    const [value, setValue] = useState<Metadata>(PENUMBRA_METADATA);
+    const [value, setValue] = useState<Metadata | BalancesResponse>(PENUMBRA_METADATA);
 
     return (
-      <AssetSelector
-        dialogTitle='Transfer Assets'
-        value={value}
-        options={metadataOnlyOptions}
-        onChange={setValue}
-      />
+      <AssetSelector dialogTitle='Transfer Assets' value={value} onChange={setValue}>
+        {({ getKeyHash }) =>
+          metadataOnlyOptions.map(option => (
+            <AssetSelector.ListItem key={getKeyHash(option)} value={option} />
+          ))
+        }
+      </AssetSelector>
     );
   },
 };
