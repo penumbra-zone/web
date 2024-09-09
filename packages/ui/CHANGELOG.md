@@ -1,5 +1,12 @@
 # @penumbra-zone/ui
 
+## 9.1.1
+
+### Patch Changes
+
+- @penumbra-zone/perspective@30.0.0
+- @penumbra-zone/types@23.0.0
+
 ## 9.1.0
 
 ### Minor Changes
