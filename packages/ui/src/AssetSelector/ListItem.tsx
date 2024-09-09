@@ -1,10 +1,9 @@
 import { RadioGroupItem } from '@radix-ui/react-radio-group';
-import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { AssetIcon } from '../AssetIcon';
 import { Text } from '../Text';
-import { isBalancesResponse, isEqual, isMetadata, SelectorValue } from './utils/helpers.ts';
+import { getHash, isBalancesResponse, isMetadata, SelectorValue } from './utils/helpers.ts';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
 import {
   getAddressIndex,
@@ -42,7 +41,8 @@ const Root = styled(motion.button)<{
       ${props => props.theme.color.other.tonalFill5};
   }
 
-  &:focus {
+  &:focus,
+  &[aria-checked='true'] {
     background: linear-gradient(
         0deg,
         ${props => props.theme.color.action.hoverOverlay} 0%,
@@ -88,8 +88,8 @@ export interface ListItemProps {
 export const ListItem = ({ value, disabled, actionType = 'default' }: ListItemProps) => {
   const { onClose, onChange, value: selectedValue } = useAssetsSelector();
 
-  const isSelected = isEqual(value, selectedValue);
-  const hash = uint8ArrayToHex(value.toBinary());
+  const hash = getHash(value);
+  const isSelected = !!selectedValue && getHash(value) === getHash(selectedValue);
 
   const metadata = isMetadata(value) ? value : getMetadataFromBalancesResponse.optional(value);
 

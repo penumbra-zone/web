@@ -73,7 +73,7 @@ export interface AssetSelectorProps {
  * of the selector. It is up to the consumer to sort or group the options however they want.
  *
  * Example usage:
- * 
+ *
  * ```tsx
  * const [value, setValue] = useState<Metadata | BalancesResponse>();
  * const [search, setSearch] = useState('');
@@ -134,7 +134,7 @@ export const AssetSelector = ({
                 <AssetSelectorSearchFilter value={search} onChange={onSearchChange} />
               )}
 
-              <RadioGroup asChild>
+              <RadioGroup value={value ? getHash(value) : undefined} asChild>
                 <OptionsWrapper>
                   {typeof children === 'function'
                     ? children({ onClose, getKeyHash: getHash })
