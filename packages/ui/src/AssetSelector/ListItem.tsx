@@ -14,7 +14,7 @@ import { ActionType, getOutlineColorByActionType } from '../utils/ActionType.ts'
 import { asTransientProps } from '../utils/asTransientProps.ts';
 import { KeyboardEventHandler, MouseEventHandler } from 'react';
 import { useAssetsSelector } from './shared/Context.tsx';
-import { SelectorValue } from './shared/types.ts';
+import { AssetSelectorValue } from './shared/types.ts';
 
 const Root = styled(motion.button)<{
   $isSelected: boolean;
@@ -83,7 +83,7 @@ export interface ListItemProps {
    * A `BalancesResponse` or `Metadata` protobuf message type. Renders the asset
    * icon name and, depending on the type, the value of the asset in the account.
    * */
-  value: SelectorValue;
+  value: AssetSelectorValue;
   disabled?: boolean;
   actionType?: ActionType;
 }

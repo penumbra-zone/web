@@ -1,10 +1,10 @@
 import { createContext, useContext } from 'react';
-import { SelectorValue } from './types.ts';
+import { AssetSelectorValue } from './types.ts';
 
 export interface AssetSelectorContextValue {
   onClose: VoidFunction;
-  onChange?: (value: SelectorValue) => void;
-  value: SelectorValue | undefined;
+  onChange?: (value: AssetSelectorValue) => void;
+  value: AssetSelectorValue | undefined;
 }
 
 /**

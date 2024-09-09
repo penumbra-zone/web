@@ -12,7 +12,7 @@ import { Text } from '../Text';
 import { AssetIcon } from '../AssetIcon';
 import { isMetadata } from './shared/helpers.ts';
 import { Dialog } from '../Dialog/index.tsx';
-import { SelectorValue } from './shared/types.ts';
+import { AssetSelectorValue } from './shared/types.ts';
 
 const SparseButton = css`
   height: ${props => props.theme.spacing(12)};
@@ -77,7 +77,7 @@ const IconAdornment = styled.i<{ $disabled?: boolean }>`
 `;
 
 export interface AssetSelectorTriggerProps {
-  value?: SelectorValue;
+  value?: AssetSelectorValue;
   actionType?: ActionType;
   disabled?: boolean;
   onClick?: MouseEventHandler<HTMLButtonElement>;

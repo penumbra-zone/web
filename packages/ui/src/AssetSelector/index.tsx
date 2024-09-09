@@ -1,13 +1,13 @@
+import { useMemo, useState } from 'react';
+import styled from 'styled-components';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 
 import { filterMetadataOrBalancesResponseByText } from './shared/filterMetadataOrBalancesResponseByText.ts';
-import { AssetSelectorCustom } from './Custom.tsx';
-import { ListItem } from './ListItem.tsx';
+import { AssetSelectorBaseProps, AssetSelectorValue } from './shared/types.ts';
+import { AssetSelectorCustom, AssetSelectorCustomProps } from './Custom.tsx';
+import { ListItem, ListItemProps } from './ListItem.tsx';
 import { Text } from '../Text';
-import { useMemo, useState } from 'react';
-import { AssetSelectorBaseProps } from './shared/types.ts';
-import styled from 'styled-components';
 import { groupAndSort } from './shared/groupAndSort.ts';
 
 const ListItemGroup = styled.div`
@@ -155,3 +155,5 @@ export const AssetSelector = ({
 
 AssetSelector.Custom = AssetSelectorCustom;
 AssetSelector.ListItem = ListItem;
+
+export type { AssetSelectorValue, AssetSelectorCustomProps, ListItemProps };
