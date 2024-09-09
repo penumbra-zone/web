@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { AssetSelector } from '.';
+import { AssetSelector, AssetSelectorValue } from '.';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { useState } from 'react';
@@ -35,7 +35,7 @@ export const MixedBalancesResponsesAndMetadata: Story = {
   },
 
   render: function Render(props) {
-    const [value, setValue] = useState<Metadata | BalancesResponse>();
+    const [value, setValue] = useState<AssetSelectorValue>();
 
     return <AssetSelector {...props} value={value} onChange={setValue} />;
   },

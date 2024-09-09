@@ -2,14 +2,14 @@ import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { ActionType } from '../../utils/ActionType.ts';
 
-export type SelectorValue = BalancesResponse | Metadata;
+export type AssetSelectorValue = BalancesResponse | Metadata;
 
 export interface AssetSelectorBaseProps {
   /** The value of the selected asset or balance */
-  value?: SelectorValue;
+  value?: AssetSelectorValue;
 
   /** Callback when the selected asset or balance changes */
-  onChange?: (value: SelectorValue) => void;
+  onChange?: (value: AssetSelectorValue) => void;
 
   /** The title of the dialog */
   dialogTitle?: string;
