@@ -57,6 +57,10 @@ export interface SwapInputProps {
   disabled?: boolean;
 }
 
+/**
+ * An input field for swapping assets. It allows the user to select the "from" and "to" assets,
+ * input the amount to swap, and see the balances of the selected assets.
+ */
 export const SwapInput = ({
   assets,
   balances,

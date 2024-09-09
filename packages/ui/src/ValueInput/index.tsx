@@ -38,6 +38,10 @@ export interface ValueInputProps {
   disabled?: boolean;
 }
 
+/**
+ * A form field that allows the user to select an asset and input a value for it,
+ * or select the maximum balance of the asset.
+ */
 export const ValueInput = ({
   assets,
   balances,
