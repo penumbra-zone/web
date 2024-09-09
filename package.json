@@ -70,6 +70,7 @@
     "eslint-plugin-vitest": "^0.5.4",
     "jsdom": "^24.0.0",
     "playwright": "^1.44.0",
+    "prax-configs": "github:prax-wallet/configs#main",
     "prettier": "^3.3.3",
     "syncpack": "^12.3.2",
     "tailwindcss": "^3.4.3",
