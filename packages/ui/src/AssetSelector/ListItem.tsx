@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { AssetIcon } from '../AssetIcon';
 import { Text } from '../Text';
-import { getHash, isBalancesResponse, isMetadata, SelectorValue } from './utils/helpers.ts';
+import { getHash, isBalancesResponse, isMetadata } from './shared/helpers.ts';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
 import {
   getAddressIndex,
@@ -13,7 +13,8 @@ import {
 import { ActionType, getOutlineColorByActionType } from '../utils/ActionType.ts';
 import { asTransientProps } from '../utils/asTransientProps.ts';
 import { KeyboardEventHandler, MouseEventHandler } from 'react';
-import { useAssetsSelector } from './utils/Context.tsx';
+import { useAssetsSelector } from './shared/Context.tsx';
+import { SelectorValue } from './shared/types.ts';
 
 const Root = styled(motion.button)<{
   $isSelected: boolean;
@@ -41,14 +42,17 @@ const Root = styled(motion.button)<{
       ${props => props.theme.color.other.tonalFill5};
   }
 
-  &:focus,
-  &[aria-checked='true'] {
+  &:focus {
     background: linear-gradient(
         0deg,
         ${props => props.theme.color.action.hoverOverlay} 0%,
         ${props => props.theme.color.action.hoverOverlay} 100%
       ),
       ${props => props.theme.color.other.tonalFill5};
+    outline: 2px solid ${props => getOutlineColorByActionType(props.theme, props.$actionType)};
+  }
+
+  &[aria-checked='true'] {
     outline: 2px solid ${props => getOutlineColorByActionType(props.theme, props.$actionType)};
   }
 

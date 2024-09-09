@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import { SelectorValue } from './helpers.ts';
+import { SelectorValue } from './types.ts';
 
 export interface AssetSelectorContextValue {
   onClose: VoidFunction;

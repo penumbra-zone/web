@@ -10,8 +10,9 @@ import { asTransientProps } from '../utils/asTransientProps.ts';
 import { Icon } from '../Icon';
 import { Text } from '../Text';
 import { AssetIcon } from '../AssetIcon';
-import { isMetadata, SelectorValue } from './utils/helpers.ts';
+import { isMetadata } from './shared/helpers.ts';
 import { Dialog } from '../Dialog/index.tsx';
+import { SelectorValue } from './shared/types.ts';
 
 const SparseButton = css`
   height: ${props => props.theme.spacing(12)};

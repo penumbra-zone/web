@@ -3,7 +3,6 @@ import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_
 import { isMetadata } from './helpers.ts';
 import { getMetadataFromBalancesResponse } from '@penumbra-zone/getters/balances-response';
 
-/** TODO: move to minifront */
 export const filterMetadataOrBalancesResponseByText =
   (textSearch: string) =>
   (value: Metadata | BalancesResponse): boolean => {
