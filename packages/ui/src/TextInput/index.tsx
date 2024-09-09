@@ -66,8 +66,8 @@ const StyledInput = styled.input<{
 `;
 
 export interface TextInputProps {
-  value: string;
-  onChange: (value: string) => void;
+  value?: string;
+  onChange?: (value: string) => void;
   placeholder?: string;
   actionType?: ActionType;
   disabled?: boolean;
@@ -114,7 +114,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
 
       <StyledInput
         value={value}
-        onChange={e => onChange(e.target.value)}
+        onChange={e => onChange?.(e.target.value)}
         placeholder={placeholder}
         disabled={useDisabled(disabled)}
         type={type}

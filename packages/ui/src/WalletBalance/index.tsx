@@ -110,8 +110,9 @@ export const WalletBalance = ({
   return (
     <Wrapper {...asTransientProps({ actionType, disabled })}>
       <AccountWrapper
-        type='button'
         {...asTransientProps({ actionType, disabled })}
+        disabled={disabled}
+        type='button'
         onClick={onClick}
       >
         <WalletIcon />
