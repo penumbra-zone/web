@@ -238,7 +238,7 @@ export default function LP() {
                       Position Status
                     </Text>
                     <Box
-                      className="neon-box"
+                      className="box-card"
                       padding={30}
                       ref={currentStatusRef}
                       width={{ base: "100%", md: "40em" }}
@@ -337,7 +337,7 @@ export default function LP() {
               top={`${lineTop}`}
               height={`${lineHeight}`}
               width={".1em"}
-              className="neon-box"
+              className="box-card"
               backgroundColor="var(--complimentary-background)"
               id="vertical-line"
             />

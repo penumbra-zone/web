@@ -11,7 +11,7 @@ interface NavLinkProps {
     link: string
 }
 
-const Links = [{ 'name': 'Trades', 'link': '/trades' }, { 'name': 'Pairs', 'link': '/pair' }]
+const Links = [{ 'name': 'Trade', 'link': '/trade' }, { 'name': 'Explorer', 'link': '/explorer' }]
 
 const NavLink = (props: NavLinkProps) => {
     return (
@@ -26,7 +26,7 @@ export const Navbar = () => {
 
     return (
         <Box px={4}>
-            <Flex alignItems={'center'} justifyContent={'space-between'} paddingBottom="1em">
+            <Flex alignItems={'center'}>
                 <IconButton
                     size={'md'}
                     colorScheme={"blackAlpha"}
@@ -35,7 +35,7 @@ export const Navbar = () => {
                     display={{ md: 'none' }}
                     onClick={isOpen ? onClose : onOpen}
                 />
-                <Box>
+                <Box mr={8}>
                     <HStack as="a" href="/">
                         <Image src="/favicon.ico" alt="Penumbra Logo" width={35} height={35} />
                         <Text fontWeight={"bold"}>Dex Explorer</Text>
@@ -43,9 +43,6 @@ export const Navbar = () => {
                 </Box>
                 <HStack as={'nav'} spacing={4} display={{ base: 'none', md: 'flex' }}>
                     {Links.map((x) => (<NavLink key={x.name} link={x.link} >{x.name}</NavLink>))}
-                    <Flex paddingLeft={10}>
-                        <LPSearchBar />
-                    </Flex>
                 </HStack>
                 <Box display={{ md: 'none' }} width={10} /> {/* Placeholder for symmetry */}
             </Flex>
@@ -55,9 +52,6 @@ export const Navbar = () => {
                     <Stack as={'nav'} spacing={4}>
                         {Links.map((x) => (<NavLink key={x.name} link={x.link}>{x.name}</NavLink>))}
                     </Stack>
-                    <Box pt={4}>
-                        <LPSearchBar />
-                    </Box>
                 </Box>
             )}
         </Box>

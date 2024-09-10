@@ -25,7 +25,7 @@ const TimelinePosition = ({ nftId, lp_event }: TimelinePositionProps) => {
         flexDirection={{ base: "column", md: "row" }}
       >
         <Box
-          className="neon-box"
+          className="box-card"
           width={{ base: "100%", md: "28em" }}
           height={"fit-content"}
           padding="2em"

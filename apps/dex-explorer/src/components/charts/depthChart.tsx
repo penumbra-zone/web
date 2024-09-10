@@ -185,7 +185,7 @@ const DepthChart = ({
       setZoomIndex((prevIndex) => prevIndex - 1); // Decreasing index zooms in
     }
   };
-  const [pageLoad, setPageLoad] = useState(false);
+  const didInitRef = useRef<undefined | boolean>();
 
   const maxLiquidity = Math.max(
     ...sellSideData.map((p) => p.y),
@@ -216,7 +216,11 @@ const DepthChart = ({
       setDisableMinusButton(true);
       return;
     }
-    if (zoomIndex === lastZoomIndex && pageLoad) return;
+    if (zoomIndex === lastZoomIndex && didInitRef.current) {
+      return;
+    }
+    didInitRef.current = true;
+
     // Change zoom to only show points within how close they are to the midpoint price,
     // If zoom index is 1, show all points, if z oom index is 2, show middle 50% of points, if zoom index is 3, show middle 25% of points, etc.
     const localMin = 0;
@@ -321,16 +325,16 @@ const DepthChart = ({
     // Update the last zoom level
     setLastZoomIndex(zoomIndex);
     console.log("running");
-  }, [zoomIndex, midMarketPrice, buySideData, sellSideData, pageLoad]);
+  }, [zoomIndex, midMarketPrice, buySideData, sellSideData]);
 
   // set initial zoom at 0 to load the chart appropriately
   useEffect(() => {
     setZoomIndex(0);
-    setPageLoad(true);
   }, []);
 
   console.log("multi", buySideData, sellSideData, midMarketPrice);
   console.log("single", buySideSingleHopData, sellSideSingleHopData);
+
   const data: any = {
     datasets: [
       {
@@ -635,9 +639,9 @@ const DepthChart = ({
 
   return (
     <>
-      <VStack height={["600px", "600px", "650px"]} width={["105%", "105%", "105%", "100%", "100%", "60em"]}>
+      <VStack height={["320px", "320px", "320px"]} width={["100%", "100%", "100%", "100%", "100%", "100%"]}>
         <div
-          style={{ height: "100%", width: "100%" }}
+          style={{ height: "320px", width: "100%" }}
           onMouseOver={handleMouseOverChart}
           onMouseOut={handleMouseOutChart}
         >
