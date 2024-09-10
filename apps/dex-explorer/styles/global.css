@@ -1,4 +1,5 @@
 :root {
+  --body-background: #272629;
   --background: 0, 0%, 0%;
   --foreground: 0, 4%, 73%;
   --muted: 0, 0%, 100%;
@@ -62,6 +63,7 @@ html,
 body {
   padding: 0;
   margin: 0;
+  background: var(--body-background) !important;
 }
 
 a {
@@ -78,20 +80,8 @@ img {
   height: auto;
 }
 
-.neon-box {
-  outline: 0.15em solid var(--complimentary-background);
+.box-card {
   border-radius: 0.5em;
   width: fit-content;
   background: var(--charcoal);
-  box-shadow: 0 0 5px var(--complimentary-background),
-    /* Smaller glow */ 0 0 10px var(--complimentary-background),
-    /* Smaller glow */ 0 0 15px var(--complimentary-background),
-    /* Subtle bright glow */ 0 0 20px var(--complimentary-background),
-    /* Subtle bright glow */ 0 0 25px var(--complimentary-background),
-    /* Subtle bright glow */ 0 0 30px var(--complimentary-background); 
-}
-
-.neon-spinner {
-  filter: drop-shadow(0 0 8px white)
-    drop-shadow(0 0 12px white);
 }

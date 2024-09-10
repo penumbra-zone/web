@@ -1,16 +1,13 @@
-// pages/trades.tsx
+// copied from pages/trades.tsx
 
 import {
-  VStack,
   Text,
   Box,
-  HStack,
   FormLabel,
   NumberInput,
   FormControl,
   NumberInputField,
 } from "@chakra-ui/react";
-import Layout from "../components/layout";
 import { LoadingSpinner } from "@/components/util/loadingSpinner";
 import { useEffect, useRef, useState } from "react";
 import { BlockSummary } from "@/components/executionHistory/blockSummary";
@@ -18,7 +15,7 @@ import { BlockInfo, LiquidityPositionEvent } from "@/utils/indexer/types/lps";
 import { SwapExecutionWithBlockHeight } from "@/utils/protos/types/DexQueryServiceClientInterface";
 import { BlockInfoMap, BlockSummaryMap } from "@/utils/types/block";
 
-export default function Trades() {
+export default function Blocks() {
   // Go back hardcoded N blocks
   const NUMBER_BLOCKS_IN_TIMELINE = 50;
 
@@ -219,97 +216,61 @@ export default function Trades() {
     }
   };
 
-  return (
-    <Layout pageTitle={`Trades`}>
-      {isLoading ? (
-        <LoadingSpinner />
-      ) : error ? (
-        <Box
-          position="relative"
-          display="flex"
-          flexDirection="column"
-          width="100%"
-          height="100%"
-          paddingTop="20%"
-        >
-          <Text>{error}</Text>
-        </Box>
-      ) : (
-        <>
-          <Box
-            position="relative"
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            width="100%"
+  return isLoading ? (
+    <LoadingSpinner />
+  ) : error ? (
+    <Box
+      position="relative"
+      display="flex"
+      flexDirection="column"
+      width="100%"
+      height="100%"
+      paddingTop="20%"
+    >
+      <Text>{error}</Text>
+    </Box>
+  ) : (
+    <>
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        width="100%"
+      >
+        <FormControl width="100%" mb={8}>
+          <FormLabel></FormLabel>
+          <form
+            onSubmit={onSearch}
+            style={{ width: "100%", textAlign: "center" }}
           >
-            <VStack spacing="5em" width="full" maxW="container.md" px={{ base: 2, md: 4 }}>
-              <VStack align="stretch" paddingTop={"3em"}>
-                <HStack paddingTop="2em" paddingBottom="5em" justifyContent={"center"}>
-                  <VStack align="center" width="50%" justifyContent="center">
-                    <Text fontWeight="bold" width="100%" fontSize="1.5em" textAlign="center">
-                      DEX Execution Timeline
-                    </Text>
-                    <FormControl width="100%">
-                      <FormLabel></FormLabel>
-                      <form onSubmit={onSearch} style={{ width: "100%", textAlign: "center" }}>
-                        <NumberInput>
-                          <NumberInputField
-                            placeholder="Enter block height"
-                            value={userRequestedBlockEndHeight}
-                            justifyContent={"center"}
-                            onChange={(e) =>
-                              setUserRequestedBlockEndHeight(parseInt(e.target.value))
-                            }
-                            width="100%"
-                          />
-                        </NumberInput>
-                      </form>
-                    </FormControl>
-                  </VStack>
+            <NumberInput>
+              <NumberInputField
+                placeholder="Enter block height"
+                value={userRequestedBlockEndHeight}
+                justifyContent={"center"}
+                backgroundColor="rgba(0,0,0,1)"
+                // backgroundColor="var(--body-background)"
+                onChange={(e) =>
+                  setUserRequestedBlockEndHeight(parseInt(e.target.value))
+                }
+                width="100%"
+                p={5}
+                border="none"
+              />
+            </NumberInput>
+          </form>
+        </FormControl>
 
-                </HStack>
-
-                {Array.from(
-                  Array(endingBlockHeight - startingBlockHeight + 1)
-                ).map((_, index: number) => (
-                  <>
-                    <VStack
-                      key={index}
-                      align={"flex-start"}
-                      paddingTop={index === 0 ? "0" : "3em"}
-                      borderColor={"white"}
-                    >
-                      <VStack
-                        key={index}
-                        ref={index == 0 ? currentStatusRef : originalStatusRef}
-                      >
-                        <BlockSummary
-                          key={index}
-                          blockHeight={endingBlockHeight - index}
-                          blockSummary={blockData[endingBlockHeight - index]}
-                        />
-                      </VStack>
-                    </VStack>
-                  </>
-                ))}
-              </VStack>
-            </VStack>
-          </Box>
-          <Box
-            position="absolute"
-            zIndex={-999}
-            left="50%"
-            top={`${lineTop}`}
-            height={`${lineHeight}`}
-            width={".1em"}
-            className="box-card"
-            backgroundColor="var(--complimentary-background)"
-            id="vertical-line"
-          />
-          <HStack paddingBottom="5em"></HStack>
-        </>
-      )}
-    </Layout>
+        {Array.from(Array(endingBlockHeight - startingBlockHeight + 1)).map(
+          (_, index: number) => (
+            <BlockSummary
+              key={index}
+              blockHeight={endingBlockHeight - index}
+              blockSummary={blockData[endingBlockHeight - index]}
+            />
+          )
+        )}
+      </Box>
+    </>
   );
 }
