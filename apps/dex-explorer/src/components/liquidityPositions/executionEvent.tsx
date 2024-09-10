@@ -12,7 +12,7 @@ import {
 import {
   Position,
   PositionState,
-} from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb";
+} from "@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb";
 import { fromBaseUnit } from "../../utils/math/hiLo";
 import { uint8ArrayToBase64 } from "../../utils/math/base64";
 import BigNumber from "bignumber.js";
@@ -55,12 +55,14 @@ const ExecutionEvent = ({ nftId, lp_event }: ExecutionEventProps) => {
             Fill
           </Text>
           <HStack align={"center"} spacing={2}>
-            <LPAssetView sectionTitle={"Updated Reserves"} lp_event={lp_event} />
+            <LPAssetView
+              sectionTitle={"Updated Reserves"}
+              lp_event={lp_event}
+            />
           </HStack>
         </HStack>
       </Box>
     </HStack>
-
   );
 };
 

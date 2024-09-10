@@ -13,13 +13,13 @@ import {
   Input,
   Button,
   ButtonGroup,
-  Stack
+  Stack,
 } from "@chakra-ui/react";
 import { useSearchParams } from "next/navigation";
 import {
   Position,
   SwapExecution,
-} from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb";
+} from "@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb";
 import { LoadingSpinner } from "../../components/util/loadingSpinner";
 import { base64ToUint8Array } from "@/utils/math/base64";
 import { joinLoHi, splitLoHi } from "@/utils/math/hiLo";
@@ -139,8 +139,12 @@ export default function TradingPairs() {
 
     // Get token 1 & 2
     const tokenAssets = fetchAllTokenAssets();
-    const asset1Token = tokenAssets.find((x) => x.display.toLocaleLowerCase() === token1Symbol.toLocaleLowerCase());
-    const asset2Token = tokenAssets.find((x) => x.display.toLocaleLowerCase() === token2Symbol.toLocaleLowerCase());
+    const asset1Token = tokenAssets.find(
+      (x) => x.display.toLocaleLowerCase() === token1Symbol.toLocaleLowerCase()
+    );
+    const asset2Token = tokenAssets.find(
+      (x) => x.display.toLocaleLowerCase() === token2Symbol.toLocaleLowerCase()
+    );
 
     if (!asset1Token || !asset2Token) {
       setIsLoading(false);
@@ -243,8 +247,14 @@ export default function TradingPairs() {
     try {
       // Get token 1 & 2
       const tokenAssets = fetchAllTokenAssets();
-      const asset1Token = tokenAssets.find((x) => x.display.toLocaleLowerCase() === token1Symbol.toLocaleLowerCase());
-      const asset2Token = tokenAssets.find((x) => x.display.toLocaleLowerCase() === token2Symbol.toLocaleLowerCase());
+      const asset1Token = tokenAssets.find(
+        (x) =>
+          x.display.toLocaleLowerCase() === token1Symbol.toLocaleLowerCase()
+      );
+      const asset2Token = tokenAssets.find(
+        (x) =>
+          x.display.toLocaleLowerCase() === token2Symbol.toLocaleLowerCase()
+      );
       if (!asset1Token || !asset2Token) {
         setIsLoading(false);
         setIsChartLoading(false);
@@ -594,20 +604,42 @@ export default function TradingPairs() {
         </Center>
       ) : !isChartLoading && !error ? (
         <Center minHeight="100vh" paddingY={4}>
-            <VStack width={["95vw", "95vw", "95vw", "95vw", "95vw", "85vw"]} spacing={4}>
-            <Box
-              className="neon-box"
-              padding="1.5em"
-              width="100%"
-            >
+          <VStack
+            width={["95vw", "95vw", "95vw", "95vw", "95vw", "85vw"]}
+            spacing={4}
+          >
+            <Box className="neon-box" padding="1.5em" width="100%">
               <Stack
-                  direction={["column", "column", "column", "column", "column", "row"]}
+                direction={[
+                  "column",
+                  "column",
+                  "column",
+                  "column",
+                  "column",
+                  "row",
+                ]}
                 spacing={8}
                 width="100%"
                 alignItems="flex-start"
               >
-                  <VStack flex={1} width={["100%", "100%", "100%", "100%", "100%", "calc(100% - 400px)"]} position="relative" alignItems="center">
-                  <Box width="100%" position="relative" paddingTop={[0, 0, "1.5em"]}>
+                <VStack
+                  flex={1}
+                  width={[
+                    "100%",
+                    "100%",
+                    "100%",
+                    "100%",
+                    "100%",
+                    "calc(100% - 400px)",
+                  ]}
+                  position="relative"
+                  alignItems="center"
+                >
+                  <Box
+                    width="100%"
+                    position="relative"
+                    paddingTop={[0, 0, "1.5em"]}
+                  >
                     <ButtonGroup
                       size="xs"
                       isAttached
@@ -643,7 +675,11 @@ export default function TradingPairs() {
                         Candlestick
                       </Button>
                     </ButtonGroup>
-                    <HStack justifyContent="center" width="100%" paddingBottom={"2px"}>
+                    <HStack
+                      justifyContent="center"
+                      width="100%"
+                      paddingBottom={"2px"}
+                    >
                       <Text
                         fontFamily="monospace"
                         fontSize={"md"}
@@ -678,8 +714,17 @@ export default function TradingPairs() {
                     )}
                   </Box>
                 </VStack>
-                  <VStack width={["100%", "100%", "100%", "100%", "100%", "400px"]} height="auto" alignItems="center">
-                  <Text fontFamily={"monospace"} fontSize="xs" textAlign="center" width="100%">
+                <VStack
+                  width={["100%", "100%", "100%", "100%", "100%", "400px"]}
+                  height="auto"
+                  alignItems="center"
+                >
+                  <Text
+                    fontFamily={"monospace"}
+                    fontSize="xs"
+                    textAlign="center"
+                    width="100%"
+                  >
                     Direct Liq Order Book
                   </Text>
                   <Box

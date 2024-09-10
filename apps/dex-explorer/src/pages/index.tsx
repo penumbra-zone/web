@@ -6,7 +6,7 @@ import { Box, Heading, HStack, Link, Stack, VStack } from "@chakra-ui/react";
 import {
   SwapExecution,
   SwapExecution_Trace,
-} from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb";
+} from "@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb";
 import { fetchAllTokenAssets } from "@/utils/token/tokenFetch";
 import { Token } from "@/utils/types/token";
 import { LoadingSpinner } from "@/components/util/loadingSpinner";
@@ -21,7 +21,9 @@ export const routes = [
 
 export default function Home() {
   const [swapExecutions, setSwapExecutions] = useState<SwapExecution[]>([]);
-  const [metadataByAssetId, setMetadataByAssetId] = useState<Record<string, Token>>({});
+  const [metadataByAssetId, setMetadataByAssetId] = useState<
+    Record<string, Token>
+  >({});
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -29,28 +31,35 @@ export default function Home() {
       const blockHeight = await fetch("/api/blocks/1")
         .then((res) => res.json())
         .then((data) => {
-          return data[0]["height"]
-        }).catch((err) => {
+          return data[0]["height"];
+        })
+        .catch((err) => {
           console.error(err);
           return null;
-        })
+        });
 
       console.log("Current block height: ", blockHeight);
 
-      let swaps = []
-      let blockRange = 10
-      let maxBlocks = 100000
+      let swaps = [];
+      let blockRange = 10;
+      let maxBlocks = 100000;
 
       while (blockRange <= maxBlocks && swaps.length == 0) {
-        console.log("route: ", `/api/swaps/${blockHeight - blockRange}/${blockHeight}`)
-        swaps = await fetch(`/api/swaps/${blockHeight - blockRange}/${blockHeight}`)
+        console.log(
+          "route: ",
+          `/api/swaps/${blockHeight - blockRange}/${blockHeight}`
+        );
+        swaps = await fetch(
+          `/api/swaps/${blockHeight - blockRange}/${blockHeight}`
+        )
           .then((res) => res.json())
           .then((data) => {
-            return data
-          }).catch((err) => {
-            console.error(err);
-            return []
+            return data;
           })
+          .catch((err) => {
+            console.error(err);
+            return [];
+          });
 
         if (swaps.length != 0) {
           swaps = swaps.sort((a: any, b: any) => {
@@ -73,13 +82,13 @@ export default function Home() {
           setMetadataByAssetId(metadataByAssetId);
         }
 
-        blockRange *= 10
+        blockRange *= 10;
         console.log("Block range: ", blockRange);
-        console.log(swaps)
+        console.log(swaps);
       }
       console.log("Latest swap executions: ", swaps);
-      setIsLoading(false);  // Set loading to false after fetching is complete
-    }
+      setIsLoading(false); // Set loading to false after fetching is complete
+    };
     fetchData();
   }, []);
 
@@ -87,12 +96,30 @@ export default function Home() {
     <Layout pageTitle="Penumbra Dex Explorer">
       <div className={styles.container}>
         <main className={styles.main}>
-          <div style={{ width: "100%", maxWidth: "1000px", margin: "0 auto", padding: "40px 10px" }}>
-            <Heading as="h1" size={["lg", "xl"]} textAlign="center" marginBottom="40px" color="var(--complimentary-background)">
+          <div
+            style={{
+              width: "100%",
+              maxWidth: "1000px",
+              margin: "0 auto",
+              padding: "40px 10px",
+            }}
+          >
+            <Heading
+              as="h1"
+              size={["lg", "xl"]}
+              textAlign="center"
+              marginBottom="40px"
+              color="var(--complimentary-background)"
+            >
               Recent Swaps
             </Heading>
             {isLoading ? (
-              <Box display="flex" justifyContent="center" alignItems="center" height="200px">
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                height="200px"
+              >
                 <LoadingSpinner />
               </Box>
             ) : swapExecutions.length === 0 ? (
@@ -108,25 +135,44 @@ export default function Home() {
               >
                 {swapExecutions.map((swapExecution: any, execIndex: number) => {
                   const firstTrace = swapExecution.swapExecution.traces[0];
-                  const lastTrace = swapExecution.swapExecution.traces[swapExecution.swapExecution.traces.length - 1];
+                  const lastTrace =
+                    swapExecution.swapExecution.traces[
+                      swapExecution.swapExecution.traces.length - 1
+                    ];
                   const startAssetId = firstTrace.value[0].assetId?.inner;
-                  const endAssetId = lastTrace.value[lastTrace.value.length - 1].assetId?.inner;
-                  const startAssetDisplay = metadataByAssetId[startAssetId]?.display;
-                  const endAssetDisplay = metadataByAssetId[endAssetId]?.display;
+                  const endAssetId =
+                    lastTrace.value[lastTrace.value.length - 1].assetId?.inner;
+                  const startAssetDisplay =
+                    metadataByAssetId[startAssetId]?.display;
+                  const endAssetDisplay =
+                    metadataByAssetId[endAssetId]?.display;
                   const poolLink = `/pair/${startAssetDisplay}:${endAssetDisplay}`;
 
                   return (
-                    <Box key={execIndex} width="100%" backgroundColor="var(--charcoal)" borderRadius="15px" padding={["15px", "25px"]}>
-                      <VStack
-                        spacing={8}
-                        align="stretch"
-                        width={"100%"}
-                      >
-                        <Stack direction={["column", "row"]} justifyContent="space-between" width="100%" spacing={[2, 0]}>
-                          <Link href={`/block/${swapExecution.blockHeight}`} color="var(--complimentary-background)">
+                    <Box
+                      key={execIndex}
+                      width="100%"
+                      backgroundColor="var(--charcoal)"
+                      borderRadius="15px"
+                      padding={["15px", "25px"]}
+                    >
+                      <VStack spacing={8} align="stretch" width={"100%"}>
+                        <Stack
+                          direction={["column", "row"]}
+                          justifyContent="space-between"
+                          width="100%"
+                          spacing={[2, 0]}
+                        >
+                          <Link
+                            href={`/block/${swapExecution.blockHeight}`}
+                            color="var(--complimentary-background)"
+                          >
                             Block #{swapExecution.blockHeight}
                           </Link>
-                          <Link href={poolLink} color="var(--complimentary-background)">
+                          <Link
+                            href={poolLink}
+                            color="var(--complimentary-background)"
+                          >
                             View {startAssetDisplay}:{endAssetDisplay} Pool
                           </Link>
                         </Stack>
@@ -155,7 +201,10 @@ export default function Home() {
                                   fontWeight="bold"
                                   fontSize={["xs", "small"]}
                                 >
-                                  <Price trace={trace} metadataByAssetId={metadataByAssetId} />
+                                  <Price
+                                    trace={trace}
+                                    metadataByAssetId={metadataByAssetId}
+                                  />
                                 </Box>
                               </VStack>
                             </Box>
