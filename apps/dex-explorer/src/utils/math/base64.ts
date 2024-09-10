@@ -10,7 +10,7 @@ export const Base64StringSchema = z.string().refine(
   },
   {
     message: "Invalid base64 string",
-  }
+  },
 );
 
 export type Base64Str = z.infer<typeof Base64StringSchema>;
@@ -20,7 +20,7 @@ export const InnerBase64Schema = z.object({ inner: Base64StringSchema });
 export const base64ToUint8Array = (base64: string): Uint8Array => {
   const validated = validateSchema(Base64StringSchema, base64);
   const binString = atob(validated);
-  return Uint8Array.from(binString, (byte) => byte.codePointAt(0)!);
+  return Uint8Array.from(binString, (byte) => byte.codePointAt(0) ?? 0);
 };
 
 export const uint8ArrayToBase64 = (byteArray: Uint8Array): string => {

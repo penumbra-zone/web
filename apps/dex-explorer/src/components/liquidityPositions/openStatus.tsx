@@ -1,3 +1,5 @@
+// @ts-nocheck
+/* eslint-disable -- disabling this file as this was created before our strict rules */
 import React, { useEffect, useState } from "react";
 import {
   Box,
@@ -27,8 +29,7 @@ interface OpenPositionStatusProps {
 
 const OpenPositionStatus = ({ nftId, lp_event }: OpenPositionStatusProps) => {
   return (
-    <>
-      <VStack align={"left"} spacing={2}>
+    <VStack align={"left"} spacing={2}>
         <Text fontSize={"large"} fontWeight={"bold"} paddingBottom=".2em">
           Position Opened
         </Text>
@@ -44,7 +45,6 @@ const OpenPositionStatus = ({ nftId, lp_event }: OpenPositionStatusProps) => {
         </HStack>
         <LPAssetView sectionTitle={"Initial Reserves"} lp_event={lp_event} />
       </VStack>
-    </>
   );
 };
 

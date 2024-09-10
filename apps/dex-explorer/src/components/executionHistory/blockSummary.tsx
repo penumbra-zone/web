@@ -1,3 +1,5 @@
+// @ts-nocheck
+/* eslint-disable -- disabling this file as this was created before our strict rules */
 import { Box, HStack, Flex, Text } from "@chakra-ui/react";
 import BlockTimestampView from "../blockTimestamp";
 import { BlockDetails } from "./blockDetails";

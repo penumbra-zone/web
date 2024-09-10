@@ -1,3 +1,5 @@
+// @ts-nocheck
+/* eslint-disable -- disabling this file as this was created before our strict rules */
 // pages/api/ohlc/[...params].ts
 
 import { DexQueryServiceClient } from "@/utils/protos/services/dex/dex-query-service-client";
@@ -29,12 +31,12 @@ export default async function candleStickData(
   try {
     const tokenAssets = fetchAllTokenAssets();
     if (!startHeight || !tokenIn || !tokenOut || !limit) {
-      return res.status(400).json({ error: "Invalid query parameters" });
+      res.status(400).json({ error: "Invalid query parameters" }); return;
     }
 
     // Set a HARD limit to prevent abuse
     if (parseInt(limit) > 10000) {
-      return res.status(400).json({ error: "Limit exceeded" });
+      res.status(400).json({ error: "Limit exceeded" }); return;
     }
 
     const dex_querier = new DexQueryServiceClient({
@@ -48,9 +50,9 @@ export default async function candleStickData(
       (x) => x.display.toLowerCase() === tokenOut.toLowerCase()
     )?.inner;
     if (!tokenInInner || !tokenOutInner) {
-      return res.status(400).json({
+      res.status(400).json({
         error: `Invalid token pair, a token was not found: ${tokenIn} ${tokenOut}`,
-      });
+      }); return;
     }
 
     const tradingPair = new DirectedTradingPair();
