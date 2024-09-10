@@ -1,10 +1,10 @@
 import { PromiseClient } from "@connectrpc/connect";
 import { createClient } from "../utils";
-import { ShieldedPoolService } from "@penumbra-zone/protobuf"
+import { ShieldedPoolService } from "@penumbra-zone/protobuf";
 import {
   AssetId,
   Metadata,
-} from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb";
+} from "@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb";
 import { ShieldedPoolQuerierInterface } from "../../types/ShieldedPoolQuerier";
 
 export class ShieldedPoolQuerier implements ShieldedPoolQuerierInterface {

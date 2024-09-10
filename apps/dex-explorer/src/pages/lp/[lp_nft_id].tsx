@@ -3,12 +3,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import styles from "../../../styles/Home.module.css";
-import { Position } from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb";
+import { Position } from "@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb";
 import Layout from "../../components/layout";
 import CurrentLPStatus from "../../components/liquidityPositions/currentStatus";
 import { VStack, Text, Box, HStack, IconButton } from "@chakra-ui/react";
 import { LoadingSpinner } from "../../components/util/loadingSpinner";
-import { LiquidityPositionEvent, PositionExecutionEvent } from "@/utils/indexer/types/lps";
+import {
+  LiquidityPositionEvent,
+  PositionExecutionEvent,
+} from "@/utils/indexer/types/lps";
 import TimelinePosition from "@/components/liquidityPositions/timelinePosition";
 import ExecutionEvent from "@/components/liquidityPositions/executionEvent";
 import { ChevronDownIcon } from "@chakra-ui/icons";
