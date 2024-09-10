@@ -1,6 +1,7 @@
+// @ts-nocheck
+/* eslint-disable -- disabling this file as this was created before our strict rules */
 import React, { FC } from "react";
-import { HStack } from "@chakra-ui/react";
-import { Text } from "@chakra-ui/react";
+import { HStack , Text } from "@chakra-ui/react";
 
 interface BlockTimestampProps {
   blockHeight: number;

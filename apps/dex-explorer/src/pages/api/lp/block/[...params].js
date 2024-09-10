@@ -1,3 +1,5 @@
+// @ts-nocheck
+/* eslint-disable -- disabling this file as this was created before our strict rules */
 // pages/api/lp/positionsByBlockHeight/[...params].js
 import { IndexerQuerier } from "../../../../utils/indexer/connector";
 

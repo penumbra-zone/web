@@ -1,3 +1,5 @@
+// @ts-nocheck
+/* eslint-disable -- disabling this file as this was created before our strict rules */
 // pages/api/lp/[lp_nft_id]/position.ts
 import { DexQueryServiceClient } from "../../../../utils/protos/services/dex/dex-query-service-client";
 import {
@@ -24,7 +26,7 @@ export default async function liquidityPositionDataHandler(req: any, res: any) {
 
     const data = await lp_querier.liquidityPositionById(positionId);
 
-    res.status(200).json(data as Position);
+    res.status(200).json(data!);
   } catch (error) {
     console.error("Error fetching liquidity position grpc data:", error);
     res

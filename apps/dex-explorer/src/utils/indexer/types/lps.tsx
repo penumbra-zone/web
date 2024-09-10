@@ -1,6 +1,8 @@
-export type LiquidityPositionEvent = {
+// @ts-nocheck
+/* eslint-disable -- disabling this file as this was created before our strict rules */
+export interface LiquidityPositionEvent {
   block_height: number;
-  event_id: number; //! Needed for sorting
+  event_id: number; // ! Needed for sorting
   block_id: number;
   tx_id: number;
   type: string;
@@ -29,11 +31,11 @@ export type LiquidityPositionEvent = {
       };
     };
   };
-};
+}
 
-export type PositionExecutionEvent = {
+export interface PositionExecutionEvent {
   block_height: number;
-  event_id: number; //! Needed for sorting
+  event_id: number; // ! Needed for sorting
   block_id: number;
   tx_id: number;
   type: string;
@@ -62,7 +64,7 @@ export type PositionExecutionEvent = {
       };
     };
   };
-};
+}
 
 export interface BlockInfo {
   height: number,

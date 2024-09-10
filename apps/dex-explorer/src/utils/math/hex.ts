@@ -1,3 +1,5 @@
+// @ts-nocheck
+/* eslint-disable -- disabling this file as this was created before our strict rules */
 import { Base64StringSchema } from "./base64";
 import { validateSchema } from "./validation";
 
@@ -21,10 +23,10 @@ export const base64ToHex = (base64: string): string => {
  * @see https://stackoverflow.com/a/41797377/974981
  */
 export const hexToBase64 = (hex: string): string => {
-  if (!hex) return "";
+  if (!hex) {return "";}
 
   const hexPairs = hex.match(/[0-9A-Fa-f]{2}/g);
-  if (!hexPairs) throw new Error("Invalid hexadecimal input");
+  if (!hexPairs) {throw new Error("Invalid hexadecimal input");}
 
   const binaryString = hexPairs
     .map((a) => String.fromCharCode(parseInt(a, 16)))
@@ -51,7 +53,7 @@ export const hexToUint8Array = (hexString: string): Uint8Array => {
     throw new Error(`Invalid hexadecimal string: ${hexString}`);
   }
 
-  if (!hexString) return new Uint8Array();
+  if (!hexString) {return new Uint8Array();}
 
   // Split the string into pairs of characters
   const hexPairs = hexString.match(/.{1,2}/g)!;

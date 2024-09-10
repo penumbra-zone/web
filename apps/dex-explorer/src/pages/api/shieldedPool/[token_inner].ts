@@ -1,3 +1,5 @@
+// @ts-nocheck
+/* eslint-disable -- disabling this file as this was created before our strict rules */
 // pages/api/shieldedPool/[token_inner].ts
 import { ShieldedPoolQuerier } from "../../../utils/protos/services/app/shielded-pool";
 import { base64ToUint8Array } from "../../../utils/math/base64";
@@ -27,7 +29,7 @@ export default async function assetMetadataHandler(req: any, res: any) {
 
     const data = await pool_querier.assetMetadata(positionId);
 
-    res.status(200).json(data as Metadata);
+    res.status(200).json(data!);
   } catch (error) {
     console.error("Error fetching asset metadata grpc data:", error);
     res

@@ -1,3 +1,5 @@
+// @ts-nocheck
+/* eslint-disable -- disabling this file as this was created before our strict rules */
 import { Box, Flex, Text } from "@chakra-ui/react";
 import Layout from "../../components/layout";
 import { LPSearchBar } from "../../components/lpSearchBar";
