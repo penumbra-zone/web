@@ -5,10 +5,9 @@ export const LoadingSpinner = () => {
     <Center height="100vh">
       <VStack spacing={4} align="center" justify="center">
         <Spinner
-          className="neon-spinner" // Custom neon effect
           thickness="4px"
           speed="0.65s"
-          emptyColor="gray.200"
+          emptyColor="var(--charcoal)"
           color="purple.700" 
           size="xl"
         />

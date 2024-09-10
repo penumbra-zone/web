@@ -1,4 +1,4 @@
-import { Box, HStack, VStack, Text } from "@chakra-ui/react";
+import { Box, HStack, Flex, Text } from "@chakra-ui/react";
 import BlockTimestampView from "../blockTimestamp";
 import { BlockDetails } from "./blockDetails";
 import { BlockSummaryData } from "@/utils/types/block";
@@ -10,36 +10,24 @@ export interface BlockSummaryProps {
 
 export const BlockSummary = ({ blockHeight, blockSummary }: BlockSummaryProps) => {
   return (
-    <>
-      <HStack
-        spacing={{ base: "1em", md: "5em" }}
-        flexDirection={{ base: "column", md: "row" }}
-        alignItems={{ base: "flex-start", md: "center" }}
-      >
-        <VStack spacing=".5em" align="flex-start" paddingBottom={"5px"}>
-          <BlockTimestampView
-            blockHeight={blockHeight}
-            timestamp={blockSummary.createdAt ?? undefined}
-          />
-        </VStack>
-        <Box
-          className="neon-box"
-          width={{ base: "calc(100vw - 2em)", md: "35em" }}
-          height="14em"
-          padding="2em"
-          display="flex"
-          justifyContent="center"
-        >
-          <HStack align="center" spacing={10}>
-            <Text as="a" href={"/block/" + blockHeight} fontSize="large" fontWeight="bold">
-              Block: {blockHeight}
-            </Text>
-            <HStack align="center" spacing={2}>
-              <BlockDetails blockSummary={blockSummary} />
-            </HStack>
-          </HStack>
-        </Box>
-      </HStack>
-    </>
+    <Flex
+      w="100%"
+      className="box-card"
+      backgroundColor="var(--charcoal-tertiary)"
+      borderRadius="10px"
+      padding={6}
+      mb={6}
+    >
+      <Box w="50%">
+        <Text as="a" href={"/block/" + blockHeight} fontSize="large" fontWeight="bold" w="50%" py={2}>
+          Block: {blockHeight}
+        </Text>
+        <BlockTimestampView
+          blockHeight={blockHeight}
+          timestamp={blockSummary.createdAt ?? undefined}
+        />
+      </Box>
+      <BlockDetails blockSummary={blockSummary} />
+    </Flex>
   );
 };

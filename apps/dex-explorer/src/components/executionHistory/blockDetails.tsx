@@ -8,7 +8,7 @@ export interface BlockDetailsProps {
 export const BlockDetails = ({ blockSummary }: BlockDetailsProps) => {
   return (
     <>
-      <VStack align="flex-start" spacing={2} paddingTop=".5em">
+      <VStack align="flex-start" spacing={2}>
         <Text fontSize="medium" fontStyle="monospace">
           {"Positions Opened: "}
           {blockSummary.openPositionEvents.length}
