@@ -1,3 +1,5 @@
+// @ts-nocheck
+/* eslint-disable -- disabling this file as this was created before our strict rules */
 import React, { useRef, useEffect } from "react";
 import { Box, HStack, Spacer, Text, VStack } from "@chakra-ui/react";
 import { Position } from "@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb";
@@ -55,17 +57,17 @@ export default dynamic(
           );
 
           const p: BigNumber = fromBaseUnit(
-            BigInt(position!.phi!.component!.p!.lo || 0),
-            BigInt(position!.phi!.component!.p!.hi || 0),
+            BigInt(position.phi!.component!.p!.lo || 0),
+            BigInt(position.phi!.component!.p!.hi || 0),
             direction === 1 ? asset2Token.decimals : asset1Token.decimals
           );
           const q: BigNumber = fromBaseUnit(
-            BigInt(position!.phi!.component!.q!.lo || 0),
-            BigInt(position!.phi!.component!.q!.hi || 0),
+            BigInt(position.phi!.component!.q!.lo || 0),
+            BigInt(position.phi!.component!.q!.hi || 0),
             direction === 1 ? asset1Token.decimals : asset2Token.decimals
           );
 
-          let price = Number.parseFloat(
+          const price = Number.parseFloat(
             direction === 1 ? p.div(q).toFixed(6) : q.div(p).toFixed(6)
           );
 
@@ -80,17 +82,17 @@ export default dynamic(
           // Reconstruct a 'real' Position object from the JSON object as it is slightly different
           // somewhere up the stack. we need a real Position with toBinary to
           // enter wasm. this is sufficient for now.
-          //console.log("position", position)
+          // console.log("position", position)
           const protoPosition = Position.fromJson({
             phi: {
               component: {
                 p: {
-                  lo: String(position!.phi!.component!.p!.lo) || "0",
-                  hi: String(position!.phi!.component!.p!.hi) || "0",
+                  lo: String(position.phi!.component!.p!.lo) || "0",
+                  hi: String(position.phi!.component!.p!.hi) || "0",
                 },
                 q: {
-                  lo: String(position!.phi!.component!.q!.lo) || "0",
-                  hi: String(position!.phi!.component!.q!.hi) || "0",
+                  lo: String(position.phi!.component!.q!.lo) || "0",
+                  hi: String(position.phi!.component!.q!.hi) || "0",
                 },
                 fee: position.phi!.component!.fee as unknown as string,
               },
@@ -118,7 +120,7 @@ export default dynamic(
               },
             },
           });
-          //console.log("buy protoPosition", protoPosition)
+          // console.log("buy protoPosition", protoPosition)
           const positionId = computePositionId(protoPosition);
           // Convert inner byte array to bech32
           const innerStr = uint8ArrayToBase64(positionId.inner);
@@ -168,34 +170,34 @@ export default dynamic(
           );
 
           const p: BigNumber = fromBaseUnit(
-            BigInt(position!.phi!.component!.p!.lo || 0),
-            BigInt(position!.phi!.component!.p!.hi || 0),
+            BigInt(position.phi!.component!.p!.lo || 0),
+            BigInt(position.phi!.component!.p!.hi || 0),
             direction === 1 ? asset2Token.decimals : asset1Token.decimals
           );
           const q: BigNumber = fromBaseUnit(
-            BigInt(position!.phi!.component!.q!.lo || 0),
-            BigInt(position!.phi!.component!.q!.hi || 0),
+            BigInt(position.phi!.component!.q!.lo || 0),
+            BigInt(position.phi!.component!.q!.hi || 0),
             direction === 1 ? asset1Token.decimals : asset2Token.decimals
           );
 
-          let price = Number.parseFloat(
+          const price = Number.parseFloat(
             direction === 1 ? p.div(q).toFixed(6) : q.div(p).toFixed(6)
           );
 
           // Reconstruct a 'real' Position object from the JSON object as it is slightly different
           // somewhere up the stack. we need a real Position with toBinary to
           // enter wasm. this is sufficient for now.
-          //console.log("sell position", position);
+          // console.log("sell position", position);
           const protoPosition = Position.fromJson({
             phi: {
               component: {
                 p: {
-                  lo: String(position!.phi!.component!.p!.lo) || "0",
-                  hi: String(position!.phi!.component!.p!.hi) || "0",
+                  lo: String(position.phi!.component!.p!.lo) || "0",
+                  hi: String(position.phi!.component!.p!.hi) || "0",
                 },
                 q: {
-                  lo: String(position!.phi!.component!.q!.lo) || "0",
-                  hi: String(position!.phi!.component!.q!.hi) || "0",
+                  lo: String(position.phi!.component!.q!.lo) || "0",
+                  hi: String(position.phi!.component!.q!.hi) || "0",
                 },
                 fee: position.phi!.component!.fee as unknown as string,
               },
@@ -223,7 +225,7 @@ export default dynamic(
               },
             },
           });
-          //console.log("sell protoPosition", protoPosition);
+          // console.log("sell protoPosition", protoPosition);
           const positionId = computePositionId(protoPosition);
           // Convert inner byte array to bech32
           const innerStr = uint8ArrayToBase64(positionId.inner);
@@ -251,7 +253,7 @@ export default dynamic(
           return b.price - a.price;
         });
 
-      let midPointPrice: number = 0;
+      let midPointPrice = 0;
       if (
         cleaned_buy_side_positions.length > 0 &&
         cleaned_sell_side_positions.length > 0

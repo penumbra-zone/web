@@ -1,3 +1,5 @@
+// @ts-nocheck
+/* eslint-disable -- disabling this file as this was created before our strict rules */
 import { Center, VStack, Spinner, Text } from "@chakra-ui/react";
 
 export const LoadingSpinner = () => {

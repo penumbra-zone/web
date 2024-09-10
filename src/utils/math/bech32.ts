@@ -1,3 +1,5 @@
+// @ts-nocheck
+/* eslint-disable -- disabling this file as this was created before our strict rules */
 import { bech32m } from "bech32";
 import { uint8ArrayToBase64, base64ToUint8Array } from "./base64";
 

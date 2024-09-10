@@ -1,18 +1,20 @@
-import { PromiseClient } from "@connectrpc/connect";
-import { createClient } from "../utils";
-import { DexService } from "@penumbra-zone/protobuf";
+// @ts-nocheck
+/* eslint-disable -- disabling this file as this was created before our strict rules */
+import { PromiseClient } from '@connectrpc/connect';
+import { createClient } from '../utils';
+import { DexService } from '@penumbra-zone/protobuf';
 import {
   PositionId,
   Position,
   DirectedTradingPair,
   SwapExecution,
   CandlestickData,
-} from "@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb";
+} from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import {
   DexQueryServiceClientInterface,
   SwapExecutionWithBlockHeight,
-} from "../../types/DexQueryServiceClientInterface";
-import { Readable } from "stream";
+} from '../../types/DexQueryServiceClientInterface';
+import { Readable } from 'stream';
 
 export class DexQueryServiceClient implements DexQueryServiceClientInterface {
   private readonly client: PromiseClient<typeof DexService>;
@@ -21,17 +23,15 @@ export class DexQueryServiceClient implements DexQueryServiceClientInterface {
     this.client = createClient(grpcEndpoint, DexService);
   }
 
-  async liquidityPositionById(
-    positionId: PositionId
-  ): Promise<Position | undefined> {
-    //console.log('liquidityPositionById', positionId)
+  async liquidityPositionById(positionId: PositionId): Promise<Position | undefined> {
+    // console.log('liquidityPositionById', positionId)
     const res = await this.client.liquidityPositionById({ positionId });
     return res.data;
   }
 
   async liquidityPositionsByPrice(
     tradingPair: DirectedTradingPair,
-    limit: number
+    limit: number,
   ): Promise<Position[] | undefined> {
     const res = await this.client.liquidityPositionsByPrice({
       tradingPair,
@@ -39,9 +39,9 @@ export class DexQueryServiceClient implements DexQueryServiceClientInterface {
     });
 
     if (!res[Symbol.asyncIterator]) {
-      console.error("Received:", res);
+      console.error('Received:', res);
       throw new Error(
-        "Received an unexpected response type from the server, expected an async iterable."
+        'Received an unexpected response type from the server, expected an async iterable.',
       );
     }
 
@@ -55,7 +55,7 @@ export class DexQueryServiceClient implements DexQueryServiceClientInterface {
 
   async arbExecutions(
     startHeight: number,
-    endHeight: number
+    endHeight: number,
   ): Promise<SwapExecutionWithBlockHeight[] | undefined> {
     const res = await this.client.arbExecutions({
       startHeight: BigInt(startHeight),
@@ -63,16 +63,16 @@ export class DexQueryServiceClient implements DexQueryServiceClientInterface {
     });
 
     if (!res[Symbol.asyncIterator]) {
-      console.error("Received:", res);
+      console.error('Received:', res);
       throw new Error(
-        "Received an unexpected response type from the server, expected an async iterable."
+        'Received an unexpected response type from the server, expected an async iterable.',
       );
     }
 
     const arbs: SwapExecutionWithBlockHeight[] = [];
     for await (const arb of res as Readable) {
       const swapExecution: SwapExecution = arb.swapExecution;
-      const blockHeight: number = Number(arb.height);
+      const blockHeight = Number(arb.height);
       arbs.push({ swapExecution, blockHeight });
     }
     return arbs;
@@ -80,7 +80,7 @@ export class DexQueryServiceClient implements DexQueryServiceClientInterface {
 
   async swapExecutions(
     startHeight: number,
-    endHeight: number
+    endHeight: number,
   ): Promise<SwapExecutionWithBlockHeight[] | undefined> {
     const res = await this.client.swapExecutions({
       startHeight: BigInt(startHeight),
@@ -88,16 +88,16 @@ export class DexQueryServiceClient implements DexQueryServiceClientInterface {
     });
 
     if (!res[Symbol.asyncIterator]) {
-      console.error("Received:", res);
+      console.error('Received:', res);
       throw new Error(
-        "Received an unexpected response type from the server, expected an async iterable."
+        'Received an unexpected response type from the server, expected an async iterable.',
       );
     }
 
     const swaps: SwapExecutionWithBlockHeight[] = [];
     for await (const swap of res as Readable) {
       const swapExecution: SwapExecution = swap.swapExecution;
-      const blockHeight: number = Number(swap.height);
+      const blockHeight = Number(swap.height);
       swaps.push({ swapExecution, blockHeight });
     }
     return swaps;
@@ -106,7 +106,7 @@ export class DexQueryServiceClient implements DexQueryServiceClientInterface {
   async candlestickData(
     pair: DirectedTradingPair,
     startHeight: number,
-    limit: number
+    limit: number,
   ): Promise<CandlestickData[] | undefined> {
     const res = await this.client.candlestickData({
       pair,
