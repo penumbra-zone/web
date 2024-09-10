@@ -1,7 +1,7 @@
 // components/lpSearchBar.tsx
 
 import React, { useState } from "react";
-import { Input, InputGroup, InputRightElement, IconButton } from "@chakra-ui/react";
+import { Box, Input, InputGroup, InputRightElement, IconButton } from "@chakra-ui/react";
 import { SearchIcon } from '@chakra-ui/icons';
 
 export const LPSearchBar = ({ isMobile = false }) => {
@@ -14,17 +14,17 @@ export const LPSearchBar = ({ isMobile = false }) => {
   }
 
   return (
-    <form onSubmit={onSearch} style={{ width: '100%' }}>
+    <Box as="form" onSubmit={onSearch} className="box-card">
       <InputGroup size="md">
         <Input
           placeholder="Search by Liquidity Position ID"
           width={isMobile ? "100%" : "37.5em"}
-          height={"2.5em"}
-          fontSize={"0.8em"}
+          fontSize={"1em"}
           value={LpId}
           onChange={(e) => setLpId(e.target.value)}
-          pr={isMobile ? "4.5rem" : "1rem"}
+          p={6}
           spellCheck={false}
+          border="none"
         />
         {isMobile && (
           <InputRightElement width="4.5rem">
@@ -38,7 +38,7 @@ export const LPSearchBar = ({ isMobile = false }) => {
           </InputRightElement>
         )}
       </InputGroup>
-    </form>
+    </Box>
   );
 }
 

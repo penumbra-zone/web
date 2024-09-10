@@ -104,20 +104,21 @@ export const Trace = ({
   const isMobile = window.innerWidth < 768;
 
   return (
-    <Box width="100%" paddingLeft="0%">
+    <Box width="100%" paddingLeft="0%" overflow="hidden" height="44px">
       <Flex
         flexDirection={["column", "row"]}
-        align="center"
+        alignItems="flex-start"
         justifyContent="space-between"
         padding="2px"
         width="100%"
+        height="70px"
         position="relative"
-        overflow="hidden"
+        overflow="scroll"
       >
         {/* Background line for trace connections */}
         <Box
           position="absolute"
-          top={["0", "50%"]}
+          top={["0", "22px"]}
           left="0"
           right="0"
           height={["100%", "2px"]}
@@ -135,7 +136,7 @@ export const Trace = ({
             displayDenomExponent
           ).toFixed(6);
           return (
-            <Flex key={index} align="center" zIndex={1} mb={[2, 0]}>
+            <Flex key={index} align="center" zIndex={1} mb={[2, 0]} mr={2}>
               <Box>
                 <Flex
                   outline={"2px solid var(--charcoal-tertiary-blended)"}
@@ -464,7 +465,7 @@ export default function Block() {
 
     return (
       <Box
-        className="neon-box"
+        className="box-card"
         position="relative"
         padding="2%"
         paddingTop="2%"
