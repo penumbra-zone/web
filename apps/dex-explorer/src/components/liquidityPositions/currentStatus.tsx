@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { VStack, Text, Badge, HStack, Image, Avatar } from "@chakra-ui/react";
-import { Position, PositionState } from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb";
+import {
+  Position,
+  PositionState,
+} from "@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb";
 import { fromBaseUnit } from "../../utils/math/hiLo";
 import { uint8ArrayToBase64 } from "../../utils/math/base64";
 import { fetchTokenAsset } from "../../utils/token/tokenFetch";
@@ -135,12 +138,11 @@ const CurrentLPStatus = ({ nftId, position }: CurrentLPStatusProps) => {
   );
 
   return (
-    <VStack width={[
-      
-      "100%"
-    ]}>
+    <VStack width={["100%"]}>
       <HStack>
-        <Text fontFamily={"monospace"} wordBreak={"break-word"}>{nftId}</Text>
+        <Text fontFamily={"monospace"} wordBreak={"break-word"}>
+          {nftId}
+        </Text>
         <div style={{ position: "relative", display: "inline-block" }}>
           <CopyIcon onClick={handleCopy} style={{ cursor: "pointer" }} />
           {isCopied && (
@@ -189,7 +191,11 @@ const CurrentLPStatus = ({ nftId, position }: CurrentLPStatusProps) => {
             borderRadius="50%"
           />
           <Text fontFamily={"monospace"}>
-            {`Sell ${Number.parseFloat(reserves1.toFixed(6))} ${asset1Token.symbol} @ ${Number.parseFloat(p.div(q).toFixed(6))} ${asset2Token.symbol} / ${asset1Token.symbol} `}
+            {`Sell ${Number.parseFloat(reserves1.toFixed(6))} ${
+              asset1Token.symbol
+            } @ ${Number.parseFloat(p.div(q).toFixed(6))} ${
+              asset2Token.symbol
+            } / ${asset1Token.symbol} `}
           </Text>
         </HStack>
         <HStack width={"100%"} justifyContent={"left"} paddingLeft=".15em">
@@ -210,12 +216,16 @@ const CurrentLPStatus = ({ nftId, position }: CurrentLPStatusProps) => {
             borderRadius="50%"
           />
           <Text fontFamily={"monospace"}>
-            {`Sell ${Number.parseFloat(reserves2.toFixed(6))} ${asset2Token.symbol} @ ${Number.parseFloat(q.div(p).toFixed(6))} ${asset1Token.symbol} / ${asset2Token.symbol} `}
+            {`Sell ${Number.parseFloat(reserves2.toFixed(6))} ${
+              asset2Token.symbol
+            } @ ${Number.parseFloat(q.div(p).toFixed(6))} ${
+              asset1Token.symbol
+            } / ${asset2Token.symbol} `}
           </Text>
         </HStack>
       </VStack>
     </VStack>
   );
-}
+};
 
 export default CurrentLPStatus;

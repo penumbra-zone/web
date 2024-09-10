@@ -3,11 +3,11 @@ import { DexQueryServiceClient } from "../../../../utils/protos/services/dex/dex
 import {
   PositionId,
   Position,
-} from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb";
+} from "@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb";
 
-const grpcEndpoint = process.env.PENUMBRA_GRPC_ENDPOINT!
+const grpcEndpoint = process.env.PENUMBRA_GRPC_ENDPOINT!;
 if (!grpcEndpoint) {
-    throw new Error("PENUMBRA_GRPC_ENDPOINT is not set")
+  throw new Error("PENUMBRA_GRPC_ENDPOINT is not set");
 }
 
 export default async function liquidityPositionDataHandler(req: any, res: any) {
@@ -27,6 +27,8 @@ export default async function liquidityPositionDataHandler(req: any, res: any) {
     res.status(200).json(data as Position);
   } catch (error) {
     console.error("Error fetching liquidity position grpc data:", error);
-    res.status(500).json({"error":`Error fetching liquidity position grpc data: ${error}`});
+    res
+      .status(500)
+      .json({ error: `Error fetching liquidity position grpc data: ${error}` });
   }
 }

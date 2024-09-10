@@ -4,13 +4,13 @@ import { DexQueryServiceClient } from "@/utils/protos/services/dex/dex-query-ser
 import {
   DirectedTradingPair,
   Position,
-} from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb";
+} from "@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb";
 import { base64ToUint8Array } from "@/utils/math/base64";
 import { fetchAllTokenAssets } from "@/utils/token/tokenFetch";
 
-const grpcEndpoint = process.env.PENUMBRA_GRPC_ENDPOINT!
+const grpcEndpoint = process.env.PENUMBRA_GRPC_ENDPOINT!;
 if (!grpcEndpoint) {
-    throw new Error("PENUMBRA_GRPC_ENDPOINT is not set")
+  throw new Error("PENUMBRA_GRPC_ENDPOINT is not set");
 }
 
 export default async function positionsByPriceHandler(
@@ -30,11 +30,17 @@ export default async function positionsByPriceHandler(
 
     // Get token 1 & 2
     const tokenAssets = fetchAllTokenAssets();
-    const asset1Token = tokenAssets.find((x) => x.display.toLocaleLowerCase() === token1.toLocaleLowerCase());
-    const asset2Token = tokenAssets.find((x) => x.display.toLocaleLowerCase() === token2.toLocaleLowerCase());
+    const asset1Token = tokenAssets.find(
+      (x) => x.display.toLocaleLowerCase() === token1.toLocaleLowerCase()
+    );
+    const asset2Token = tokenAssets.find(
+      (x) => x.display.toLocaleLowerCase() === token2.toLocaleLowerCase()
+    );
 
     if (!asset1Token || !asset2Token) {
-      return res.status(400).json({ error: "Could not find requested token in registry" });
+      return res
+        .status(400)
+        .json({ error: "Could not find requested token in registry" });
     }
 
     const lp_querier = new DexQueryServiceClient({
@@ -57,11 +63,12 @@ export default async function positionsByPriceHandler(
 
     res.status(200).json(data as Position[]);
   } catch (error) {
-    console.error("Error getting liquidty positions by price grpc data:", error);
-    res
-      .status(500)
-      .json({
-        error: `Error getting liquidty positions by price grpc data: ${error}`,
-      });
+    console.error(
+      "Error getting liquidty positions by price grpc data:",
+      error
+    );
+    res.status(500).json({
+      error: `Error getting liquidty positions by price grpc data: ${error}`,
+    });
   }
 }
