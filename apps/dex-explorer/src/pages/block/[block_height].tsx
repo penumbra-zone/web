@@ -21,7 +21,7 @@ import { innerToBech32Address } from "@/utils/math/bech32";
 import {
   SwapExecution,
   SwapExecution_Trace,
-} from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb";
+} from "@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb";
 import BigNumber from "bignumber.js";
 import { fetchAllTokenAssets } from "@/utils/token/tokenFetch";
 import { Token } from "@/utils/types/token";
@@ -102,7 +102,7 @@ export const Trace = ({
   hidePrice?: boolean;
 }) => {
   const isMobile = window.innerWidth < 768;
-  
+
   return (
     <Box width="100%" paddingLeft="0%">
       <Flex
@@ -150,7 +150,11 @@ export const Trace = ({
                   ) : (
                     <Avatar size={"xs"} mr={2} />
                   )}
-                  <Text fontSize={["xs", "small"]} fontFamily={"monospace"} whiteSpace="nowrap">
+                  <Text
+                    fontSize={["xs", "small"]}
+                    fontFamily={"monospace"}
+                    whiteSpace="nowrap"
+                  >
                     {formattedAmount} {metadata?.symbol}
                   </Text>
                 </Flex>

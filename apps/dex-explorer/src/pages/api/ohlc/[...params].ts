@@ -5,14 +5,14 @@ import { NextApiRequest, NextApiResponse } from "next";
 import {
   CandlestickData,
   DirectedTradingPair,
-} from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb";
-import { AssetId } from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb";
+} from "@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb";
+import { AssetId } from "@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb";
 import { base64ToUint8Array } from "@/utils/math/base64";
 import { fetchAllTokenAssets } from "@/utils/token/tokenFetch";
 
-const grpcEndpoint = process.env.PENUMBRA_GRPC_ENDPOINT!
+const grpcEndpoint = process.env.PENUMBRA_GRPC_ENDPOINT!;
 if (!grpcEndpoint) {
-    throw new Error("PENUMBRA_GRPC_ENDPOINT is not set")
+  throw new Error("PENUMBRA_GRPC_ENDPOINT is not set");
 }
 
 export default async function candleStickData(
