@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from "react";
 import { Box, HStack, Spacer, Text, VStack } from "@chakra-ui/react";
-import { Position } from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb";
+import { Position } from "@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb";
 import { fromBaseUnit, splitLoHi } from "@/utils/math/hiLo";
 import BigNumber from "bignumber.js";
 import { Token } from "@/utils/types/token";
@@ -31,7 +31,8 @@ export default dynamic(
       const cleaned_buy_side_positions = buySidePositions
         .filter(
           (position) =>
-            position.state?.state.toLocaleString() === "POSITION_STATE_ENUM_OPENED"
+            position.state?.state.toLocaleString() ===
+            "POSITION_STATE_ENUM_OPENED"
         )
         .map((position) => {
           let direction = 1;
@@ -69,7 +70,11 @@ export default dynamic(
           );
 
           const willingToBuy = Number.parseFloat(
-            (Number(direction === 1 ? reserves2.toFixed(6) : reserves1.toFixed(6)) / price).toFixed(6)
+            (
+              Number(
+                direction === 1 ? reserves2.toFixed(6) : reserves1.toFixed(6)
+              ) / price
+            ).toFixed(6)
           );
 
           // Reconstruct a 'real' Position object from the JSON object as it is slightly different
@@ -137,7 +142,8 @@ export default dynamic(
       const cleaned_sell_side_positions = sellSidePositions
         .filter(
           (position) =>
-            position.state?.state.toLocaleString() === "POSITION_STATE_ENUM_OPENED"
+            position.state?.state.toLocaleString() ===
+            "POSITION_STATE_ENUM_OPENED"
         )
         .map((position) => {
           let direction = 1;
@@ -223,10 +229,9 @@ export default dynamic(
           const innerStr = uint8ArrayToBase64(positionId.inner);
           const bech32Id = innerToBech32Address(innerStr, "plpid");
 
-          const willingToSell =
-            Number.parseFloat(
-              direction === 1 ? reserves1.toFixed(6) : reserves2.toFixed(6)
-            );
+          const willingToSell = Number.parseFloat(
+            direction === 1 ? reserves1.toFixed(6) : reserves2.toFixed(6)
+          );
 
           return {
             price: price,
@@ -260,7 +265,8 @@ export default dynamic(
         midPointPrice = cleaned_buy_side_positions[0].price;
       } else if (cleaned_sell_side_positions.length > 0) {
         midPointPrice =
-          cleaned_sell_side_positions[cleaned_sell_side_positions.length - 1].price;
+          cleaned_sell_side_positions[cleaned_sell_side_positions.length - 1]
+            .price;
       }
 
       interface PositionData {
@@ -324,7 +330,8 @@ export default dynamic(
 
       useEffect(() => {
         if (sellSectionRef.current) {
-          sellSectionRef.current.scrollTop = sellSectionRef.current.scrollHeight;
+          sellSectionRef.current.scrollTop =
+            sellSectionRef.current.scrollHeight;
         }
       }, [sellSidePositions]); // Trigger on sell position changes
 
@@ -426,5 +433,5 @@ export default dynamic(
 
     return BuySellChart;
   },
-  { ssr: false, loading: () => <span>Loading...</span> },
+  { ssr: false, loading: () => <span>Loading...</span> }
 );

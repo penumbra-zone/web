@@ -4,11 +4,11 @@ import { base64ToUint8Array } from "../../../utils/math/base64";
 import {
   AssetId,
   Metadata,
-} from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb";
+} from "@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb";
 
-const grpcEndpoint = process.env.PENUMBRA_GRPC_ENDPOINT!
+const grpcEndpoint = process.env.PENUMBRA_GRPC_ENDPOINT!;
 if (!grpcEndpoint) {
-    throw new Error("PENUMBRA_GRPC_ENDPOINT is not set")
+  throw new Error("PENUMBRA_GRPC_ENDPOINT is not set");
 }
 
 export default async function assetMetadataHandler(req: any, res: any) {
@@ -30,6 +30,8 @@ export default async function assetMetadataHandler(req: any, res: any) {
     res.status(200).json(data as Metadata);
   } catch (error) {
     console.error("Error fetching asset metadata grpc data:", error);
-    res.status(500).json({"error": `Error fetching asset metadata grpc data: ${error}`});
+    res
+      .status(500)
+      .json({ error: `Error fetching asset metadata grpc data: ${error}` });
   }
 }
