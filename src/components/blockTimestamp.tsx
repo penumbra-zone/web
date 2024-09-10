@@ -30,48 +30,18 @@ const BlockTimestampView: FC<BlockTimestampProps> = ({
   timestamp,
 }) => {
   return (
-    <>
-      <HStack>
-        <Text
-          fontSize="xs"
-          style={{
-            color: "var(--charcoal-tertiary-blended)",
-            fontSize: "small",
-            fontFamily: "monospace",
-          }}
-        >
-          Block{" "}
-        </Text>
-        <Text>
-          <a
-            href={`/block/${blockHeight}`}
-            target="_blank"
-            rel="noreferrer"
-            style={{
-              textDecoration: "underline",
-              color: "var(--charcoal-tertiary-blended)",
-              display: "flex",
-              fontSize: "small",
-              fontFamily: "monospace",
-            }}
-          >
-            {blockHeight}
-          </a>
-        </Text>
-      </HStack>
-      <Text
-        fontSize="xs"
-        style={{
-          color: "var(--charcoal-tertiary-blended)",
-          display: "flex",
-          fontSize: "small",
-          fontFamily: "monospace",
-        }}
-      >
-        {" "}
-        {formatTimestampOrDefault(timestamp)}
-      </Text>
-    </>
+    <Text
+      fontSize="xs"
+      style={{
+        color: "var(--light-grey)",
+        display: "flex",
+        fontSize: "small",
+        fontFamily: "monospace",
+      }}
+    >
+      {" "}
+      {formatTimestampOrDefault(timestamp)}
+    </Text>
   );
 };
 

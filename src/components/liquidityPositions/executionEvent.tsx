@@ -44,7 +44,7 @@ const ExecutionEvent = ({ nftId, lp_event }: ExecutionEventProps) => {
         />
       </VStack>
       <Box
-        className="neon-box"
+        className="box-card"
         width={{ base: "100%", md: "25em" }}
         height={"7em"}
         padding="2em"

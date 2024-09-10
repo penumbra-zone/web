@@ -347,10 +347,6 @@ export default dynamic(
       return (
         <VStack
           flex={1}
-          width="100%"
-          justifyContent="stretch"
-          spacing={4}
-          padding="1em"
           height="600px"
         >
           <HStack
