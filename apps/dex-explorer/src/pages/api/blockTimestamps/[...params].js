@@ -1,23 +1,25 @@
+// @ts-nocheck
+/* eslint-disable -- disabling this file as this was created before our strict rules */
 // pages/api/blockTimestamps/[...params].js
 
 import { IndexerQuerier } from "../../../utils/indexer/connector";
 
-const indexerEndpoint = process.env.PENUMBRA_INDEXER_ENDPOINT
+const indexerEndpoint = process.env.PENUMBRA_INDEXER_ENDPOINT;
 if (!indexerEndpoint) {
-    throw new Error("PENUMBRA_INDEXER_ENDPOINT is not set")
+  throw new Error("PENUMBRA_INDEXER_ENDPOINT is not set");
 }
 
 export default async function blockTimestampsFetchHandler(req, res) {
   const indexerQuerier = new IndexerQuerier(indexerEndpoint);
 
   // if the first param is 'range' then we are fetching a range of blocks
-  
+
   // Params will be an arbitrarily long list of block heights
   const params = req.query.params;
   let blocks = [];
 
-  if (params[0] == "range") {
-    if (params.length != 3 || isNaN(params[1]) || isNaN(params[2])) {
+  if (params[0] === "range") {
+    if (params.length !== 3 || isNaN(params[1]) || isNaN(params[2])) {
       res.status(400).json({ error: "Invalid block height range" });
       return;
     }
@@ -25,7 +27,7 @@ export default async function blockTimestampsFetchHandler(req, res) {
     // define blocks as inclusive range between the two block heights
     const start = parseInt(params[1]);
     const end = parseInt(params[2]);
-    blocks = Array.from({length: end - start + 1}, (_, i) => start + i);
+    blocks = Array.from({ length: end - start + 1 }, (_, i) => start + i);
   } else {
     for (const param of params) {
       if (isNaN(param)) {

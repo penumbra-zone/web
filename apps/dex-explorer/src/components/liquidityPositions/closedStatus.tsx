@@ -1,3 +1,5 @@
+// @ts-nocheck
+/* eslint-disable -- disabling this file as this was created before our strict rules */
 import React from "react";
 import {
   VStack,
@@ -14,8 +16,7 @@ interface ClosedPositionStatusProps {
 
 const ClosedPositionStatus = ({ nftId, lp_event }: ClosedPositionStatusProps) => {
   return (
-    <>
-      <VStack align={"left"} spacing={2}>
+    <VStack align={"left"} spacing={2}>
         <Text fontSize={"large"} fontWeight={"bold"} paddingBottom=".2em">
           Position Closed
         </Text>
@@ -30,7 +31,6 @@ const ClosedPositionStatus = ({ nftId, lp_event }: ClosedPositionStatusProps) =>
           />
         </HStack>
       </VStack>
-    </>
   );
 };
 

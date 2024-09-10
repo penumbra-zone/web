@@ -16,6 +16,8 @@
 /build
 
 # misc
+.vscode
+.idea
 .DS_Store
 .vscode
 
@@ -36,3 +38,5 @@ yarn-error.log*
 # webpack
 /dist
 .vercel
+
+tsconfig.tsbuildinfo

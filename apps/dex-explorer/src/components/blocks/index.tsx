@@ -1,4 +1,5 @@
 // copied from pages/trades.tsx
+/* eslint-disable -- disabling this file as this was created before our strict rules */
 
 import {
   Text,
@@ -13,7 +14,7 @@ import { useEffect, useRef, useState } from "react";
 import { BlockSummary } from "@/components/executionHistory/blockSummary";
 import { BlockInfo, LiquidityPositionEvent } from "@/utils/indexer/types/lps";
 import { SwapExecutionWithBlockHeight } from "@/utils/protos/types/DexQueryServiceClientInterface";
-import { BlockInfoMap, BlockSummaryMap } from "@/utils/types/block";
+import { BlockInfoMap, BlockSummaryData, BlockSummaryMap } from "@/utils/types/block";
 
 export default function Blocks() {
   // Go back hardcoded N blocks
@@ -21,7 +22,6 @@ export default function Blocks() {
 
   const [isBlockRangeLoading, setIsBlockRangeLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
-  const [isLineLoading, setIsLineLoading] = useState(true);
 
   const [startingBlockHeight, setStartingBlockHeight] = useState(-1); // negative number meaning not set yet
   const [endingBlockHeight, setEndingBlockHeight] = useState(-1); // negative number meaning not set yet
@@ -32,46 +32,48 @@ export default function Blocks() {
 
   const currentStatusRef = useRef<HTMLDivElement>(null);
   const originalStatusRef = useRef<HTMLDivElement>(null);
-  const [lineHeight, setLineHeight] = useState(0);
-  const [lineTop, setLineTop] = useState(0);
+  const [, setLineHeight] = useState(0);
+  const [, setLineTop] = useState(0);
   const [error, setError] = useState<string | undefined>(undefined);
 
   // Get starting block number
   useEffect(() => {
     setIsBlockRangeLoading(true);
     if (endingBlockHeight <= 0 || startingBlockHeight <= 0) {
-      var blockInfoPromise: Promise<BlockInfo[]>;
+      let blockInfoPromise: Promise<BlockInfo[]>;
       if (userRequestedBlockEndHeight >= 1) {
         const startHeight = Math.max(
           userRequestedBlockEndHeight - NUMBER_BLOCKS_IN_TIMELINE + 1,
-          1
+          1,
         ); // Lowest block_height is 1
         blockInfoPromise = fetch(
-          `/api/blocks/${startHeight}/${userRequestedBlockEndHeight + 1}`
-        ).then((res) => res.json());
+          `/api/blocks/${startHeight}/${userRequestedBlockEndHeight + 1}`,
+        ).then((res) => res.json()) as Promise<BlockInfo[]>;
       } else {
         blockInfoPromise = fetch(
-          `/api/blocks/${NUMBER_BLOCKS_IN_TIMELINE}`
-        ).then((res) => res.json());
+          `/api/blocks/${NUMBER_BLOCKS_IN_TIMELINE}`,
+        ).then((res) => res.json()) as Promise<BlockInfo[]>;
       }
       Promise.all([blockInfoPromise])
         .then(([blockInfoResponse]) => {
-          const blockInfoList: BlockInfo[] = blockInfoResponse as BlockInfo[];
+          const blockInfoList: BlockInfo[] = blockInfoResponse;
           const blockInfoMap: BlockInfoMap = {};
-          blockInfoList.forEach((blockInfo: BlockInfo, i: number) => {
-            //console.log(blockInfo)
-            blockInfoMap[blockInfo["height"]] = blockInfo;
+          blockInfoList.forEach((blockInfo: BlockInfo) => {
+            // console.log(blockInfo)
+            blockInfoMap[blockInfo.height] = blockInfo;
           });
 
           if (blockInfoList.length === 0) {
             setIsLoading(false);
-            setError("No blocks found before: " + userRequestedBlockEndHeight);
+            setError(`No blocks found before: ${userRequestedBlockEndHeight}`);
+
+            // eslint-disable-next-line no-console -- logging for debugging
             console.log("No blocks found");
             return;
           } else {
-            setEndingBlockHeight(blockInfoList[0]["height"]);
+            setEndingBlockHeight((blockInfoList[0] as BlockInfo).height);
             setStartingBlockHeight(
-              blockInfoList[NUMBER_BLOCKS_IN_TIMELINE - 1]["height"]
+              (blockInfoList[NUMBER_BLOCKS_IN_TIMELINE - 1] as BlockInfo).height,
             );
             setBlockInfo(blockInfoMap);
             setError(undefined);
@@ -95,13 +97,13 @@ export default function Blocks() {
     setIsLoading(true);
     if (blockInfo && endingBlockHeight >= 1 && startingBlockHeight >= 1) {
       const liquidityPositionOpenClosePromise = fetch(
-        `/api/lp/block/${startingBlockHeight}/${endingBlockHeight + 1}`
+        `/api/lp/block/${startingBlockHeight}/${endingBlockHeight + 1}`,
       ).then((res) => res.json());
       const arbsPromise = fetch(
-        `/api/arbs/${startingBlockHeight}/${endingBlockHeight + 1}`
+        `/api/arbs/${startingBlockHeight}/${endingBlockHeight + 1}`,
       ).then((res) => res.json());
       const swapsPromise = fetch(
-        `/api/swaps/${startingBlockHeight}/${endingBlockHeight + 1}`
+        `/api/swaps/${startingBlockHeight}/${endingBlockHeight + 1}`,
       ).then((res) => res.json());
 
       Promise.all([
@@ -124,7 +126,7 @@ export default function Blocks() {
 
             // Initialize blocks
             const blockSummaryMap: BlockSummaryMap = {};
-            var i: number;
+            let i: number;
             for (i = startingBlockHeight; i <= endingBlockHeight; i++) {
               blockSummaryMap[i] = {
                 openPositionEvents: [],
@@ -132,46 +134,43 @@ export default function Blocks() {
                 withdrawPositionEvents: [],
                 swapExecutions: [],
                 arbExecutions: [],
-                createdAt: blockInfo[i]["created_at"],
+                createdAt: (blockInfo[i] as BlockInfo).created_at,
               };
             }
 
             positionData.forEach(
               (positionOpenCloseEvent: LiquidityPositionEvent) => {
-                if (positionOpenCloseEvent["type"].includes("PositionOpen")) {
-                  blockSummaryMap[positionOpenCloseEvent["block_height"]][
-                    "openPositionEvents"
-                  ].push(positionOpenCloseEvent);
+                const blockSummary = blockSummaryMap[positionOpenCloseEvent.block_height] as BlockSummaryData;
+                if (positionOpenCloseEvent.type.includes("PositionOpen")) {
+                  blockSummary.openPositionEvents.push(positionOpenCloseEvent);
                 } else if (
-                  positionOpenCloseEvent["type"].includes("PositionClose")
+                  positionOpenCloseEvent.type.includes("PositionClose")
                 ) {
-                  blockSummaryMap[positionOpenCloseEvent["block_height"]][
-                    "closePositionEvents"
-                  ].push(positionOpenCloseEvent);
+                  blockSummary.closePositionEvents.push(positionOpenCloseEvent);
                 } else if (
-                  positionOpenCloseEvent["type"].includes("PositionWithdraw")
+                  positionOpenCloseEvent.type.includes("PositionWithdraw")
                 ) {
-                  blockSummaryMap[positionOpenCloseEvent["block_height"]][
-                    "withdrawPositionEvents"
-                  ].push(positionOpenCloseEvent);
+                  blockSummary.withdrawPositionEvents.push(positionOpenCloseEvent);
                 }
-              }
+              },
             );
 
             arbData.forEach((arb: SwapExecutionWithBlockHeight) => {
-              blockSummaryMap[arb.blockHeight]["arbExecutions"].push(
-                arb.swapExecution
+              const blockSummary = blockSummaryMap[arb.blockHeight] as BlockSummaryData;
+              blockSummary.arbExecutions.push(
+                arb.swapExecution,
               );
             });
 
             swapData.forEach((swap: SwapExecutionWithBlockHeight) => {
-              blockSummaryMap[swap.blockHeight]["swapExecutions"].push(
-                swap.swapExecution
+              const blockSummary = blockSummaryMap[swap.blockHeight] as BlockSummaryData;
+              blockSummary.swapExecutions.push(
+                swap.swapExecution,
               );
             });
 
             setBlockData(blockSummaryMap);
-          }
+          },
         )
         .catch((error) => {
           console.error("Error fetching block summary data:", error);
@@ -190,7 +189,6 @@ export default function Blocks() {
 
   // Draw vertical line
   useEffect(() => {
-    setIsLineLoading(true);
     if (currentStatusRef.current && originalStatusRef.current) {
       const firstBoxRect = currentStatusRef.current.getBoundingClientRect();
       const lastBoxRect = originalStatusRef.current.getBoundingClientRect();
@@ -200,8 +198,7 @@ export default function Blocks() {
       setLineHeight(newLineHeight - 50);
       setLineTop(firstBoxRect.bottom);
     }
-    setIsLineLoading(false);
-  });
+  }, []);
 
   const onSearch = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -230,8 +227,7 @@ export default function Blocks() {
       <Text>{error}</Text>
     </Box>
   ) : (
-    <>
-      <Box
+    <Box
         display="flex"
         flexDirection="column"
         alignItems="center"
@@ -266,11 +262,10 @@ export default function Blocks() {
             <BlockSummary
               key={index}
               blockHeight={endingBlockHeight - index}
-              blockSummary={blockData[endingBlockHeight - index]}
+              blockSummary={blockData[endingBlockHeight - index] as BlockSummaryData}
             />
           )
         )}
       </Box>
-    </>
   );
 }
