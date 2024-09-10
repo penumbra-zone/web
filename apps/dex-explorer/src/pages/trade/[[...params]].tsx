@@ -1,3 +1,5 @@
+// @ts-nocheck
+/* eslint-disable -- disabling this file as this was created before our strict rules */
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import Layout from "../../components/layout";
@@ -329,14 +331,14 @@ export default function TradingPairs() {
     console.log(asset2Token);
 
     // Set single and multi hop depth chart data
-    simulatedMultiHopAsset1SellData!.traces.forEach((trace) => {
+    simulatedMultiHopAsset1SellData.traces.forEach((trace) => {
       // First item is the input, last item is the output
       const input = trace.value.at(0);
       const output = trace.value.at(trace.value.length - 1);
 
       const inputValue =
         Number(
-          joinLoHi(BigInt(input!.amount!.lo!), BigInt(input!.amount!.hi))
+          joinLoHi(BigInt(input!.amount!.lo), BigInt(input!.amount!.hi))
         ) / Number(10 ** asset1Token.decimals);
       const outputValue =
         Number(
@@ -346,7 +348,7 @@ export default function TradingPairs() {
       const price: number = outputValue / inputValue;
 
       // First trace will have best price, so set only on first iteration
-      if (trace === simulatedMultiHopAsset1SellData!.traces[0]) {
+      if (trace === simulatedMultiHopAsset1SellData.traces[0]) {
         console.log("Best Asset1 Sell Price for multi hop", price);
         setBestAsset1SellPriceMultiHop(Number(price));
         bestAsset1SellPriceMultiHop = price;
@@ -375,14 +377,14 @@ export default function TradingPairs() {
     });
 
     // Similar logic for single hop
-    simulatedSingleHopAsset1SellData!.traces.forEach((trace) => {
+    simulatedSingleHopAsset1SellData.traces.forEach((trace) => {
       // First item is the input, last item is the output
       const input = trace.value.at(0);
       const output = trace.value.at(1); // If this isnt 1 then something is wrong
 
       const inputValue =
         Number(
-          joinLoHi(BigInt(input!.amount!.lo!), BigInt(input!.amount!.hi))
+          joinLoHi(BigInt(input!.amount!.lo), BigInt(input!.amount!.hi))
         ) / Number(10 ** asset1Token.decimals);
       const outputValue =
         Number(
@@ -392,7 +394,7 @@ export default function TradingPairs() {
       const price: number = outputValue / inputValue;
 
       // First trace will have best price, so set only on first iteration
-      if (trace === simulatedSingleHopAsset1SellData!.traces[0]) {
+      if (trace === simulatedSingleHopAsset1SellData.traces[0]) {
         console.log("Best Asset1 Sell Price for single hop", price);
         setBestAsset1SellPriceSingleHop(Number(price));
         bestAsset1SellPriceSingleHop = price;
@@ -420,7 +422,7 @@ export default function TradingPairs() {
     });
 
     // Do it all again for the buy side :)
-    //! Maybe theres a way to refactor this to be more concise
+    // ! Maybe theres a way to refactor this to be more concise
     let bestAsset1BuyPriceMultiHop: number | undefined;
     let bestAsset1BuyPriceSingleHop: number | undefined;
 
@@ -429,14 +431,14 @@ export default function TradingPairs() {
     setDepthChartSingleHopAsset1BuyPoints([]);
 
     // Set single and multi hop depth chart data
-    simulatedMultiHopAsset1BuyData!.traces.forEach((trace) => {
+    simulatedMultiHopAsset1BuyData.traces.forEach((trace) => {
       // First item is the input, last item is the output
       const input = trace.value.at(0);
       const output = trace.value.at(trace.value.length - 1);
 
       const inputValue =
         Number(
-          joinLoHi(BigInt(input!.amount!.lo!), BigInt(input!.amount!.hi))
+          joinLoHi(BigInt(input!.amount!.lo), BigInt(input!.amount!.hi))
         ) / Number(10 ** asset2Token.decimals);
       const outputValue =
         Number(
@@ -447,7 +449,7 @@ export default function TradingPairs() {
       const price: number = inputValue / outputValue;
 
       // First trace will have best price, so set only on first iteration
-      if (trace === simulatedMultiHopAsset1BuyData!.traces[0]) {
+      if (trace === simulatedMultiHopAsset1BuyData.traces[0]) {
         console.log("Best Asset1 Buy Price for multi hop", price);
         setBestAsset1BuyPriceMultiHop(Number(price));
         bestAsset1BuyPriceMultiHop = price;
@@ -476,14 +478,14 @@ export default function TradingPairs() {
     });
 
     // Similar logic for single hop
-    simulatedSingleHopAsset1BuyData!.traces.forEach((trace) => {
+    simulatedSingleHopAsset1BuyData.traces.forEach((trace) => {
       // First item is the input, last item is the output
       const input = trace.value.at(0);
       const output = trace.value.at(1); // If this isnt 1 then something is wrong
 
       const inputValue =
         Number(
-          joinLoHi(BigInt(input!.amount!.lo!), BigInt(input!.amount!.hi))
+          joinLoHi(BigInt(input!.amount!.lo), BigInt(input!.amount!.hi))
         ) / Number(10 ** asset2Token.decimals);
       const outputValue =
         Number(
@@ -494,7 +496,7 @@ export default function TradingPairs() {
       const price: number = inputValue / outputValue;
 
       // First trace will have best price, so set only on first iteration
-      if (trace === simulatedSingleHopAsset1BuyData!.traces[0]) {
+      if (trace === simulatedSingleHopAsset1BuyData.traces[0]) {
         console.log("Best Asset1 Buy Price for single hop", price);
         setBestAsset1BuyPriceSingleHop(Number(price));
         bestAsset1BuyPriceSingleHop = price;

@@ -1,8 +1,9 @@
 // copied from pages/index
+/* eslint-disable -- disabling this file as this was created before our strict rules */
 
 import { useEffect, useState } from "react";
 import { Price, Trace, TraceType } from "../../pages/block/[block_height]";
-import { Box, Heading, HStack, Link, Stack, VStack } from "@chakra-ui/react";
+import { Box, Link, Stack, VStack } from "@chakra-ui/react";
 import {
   SwapExecution,
   SwapExecution_Trace,
@@ -27,11 +28,11 @@ export default function Swaps() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    let fetchData = async () => {
+    const fetchData = async () => {
       const blockHeight = await fetch("/api/blocks/1")
         .then((res) => res.json())
         .then((data) => {
-          return data[0]["height"];
+          return data[0].height;
         })
         .catch((err) => {
           console.error(err);
@@ -42,7 +43,7 @@ export default function Swaps() {
 
       let swaps = [];
       let blockRange = 10;
-      let maxBlocks = 100000;
+      const maxBlocks = 100000;
 
       while (blockRange <= maxBlocks && swaps.length == 0) {
         console.log(

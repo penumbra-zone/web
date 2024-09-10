@@ -1,3 +1,5 @@
+// @ts-nocheck
+/* eslint-disable -- disabling this file as this was created before our strict rules */
 // pages/api/swaps/[...params].ts
 
 import { DexQueryServiceClient } from "@/utils/protos/services/dex/dex-query-service-client";
@@ -18,7 +20,7 @@ export default async function swapsByBlockRange(req: NextApiRequest, res: NextAp
 
     try {
         if (!startHeight || !endHeight) {
-            return res.status(400).json({ error: "Invalid query parameters" });
+            res.status(400).json({ error: "Invalid query parameters" }); return;
         }
         // TODO: validate StartHeight/EndHeight are numbers
         const dex_querier = new DexQueryServiceClient({

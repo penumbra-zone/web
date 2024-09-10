@@ -1,0 +1,70 @@
+name: CI
+on:
+  workflow_call:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: buildjet-8vcpu-ubuntu-2204
+    steps:
+      - uses: actions/checkout@v4
+      - id: lint
+        uses: buildjet/cache@v4
+        with:
+          path: .next
+          key: $${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-lint
+          restore-keys: $${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-compiled
+      - uses: pnpm/action-setup@v4
+      - uses: buildjet/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "pnpm"
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint:strict
+
+  build:
+    name: Build
+    runs-on: buildjet-8vcpu-ubuntu-2204
+    steps:
+      - uses: actions/checkout@v4
+      - id: build
+        uses: buildjet/cache@v4
+        with:
+          path: .next
+          key: ${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-built
+          restore-keys: ${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-compiled
+      - uses: pnpm/action-setup@v4
+      - uses: buildjet/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "pnpm"
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+
+  # test:
+  #   name: test
+  #   runs-on: buildjet-4vcpu-ubuntu-2204
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - id: tested
+  #       uses: buildjet/cache@v4
+  #       with:
+  #         path: .next
+  #         key: ${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-test
+  #         restore-keys: ${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-compiled
+  #     - uses: pnpm/action-setup@v4
+  #     - uses: buildjet/setup-node@v4
+  #       with:
+  #         node-version: "22"
+  #         cache: "pnpm"
+  #     - run: pnpm install --frozen-lockfile
+  #     - run: pnpm test

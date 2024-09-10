@@ -1,3 +1,5 @@
+// @ts-nocheck
+/* eslint-disable -- disabling this file as this was created before our strict rules */
 import type { AppProps } from "next/app";
 import React from "react";
 import "@/global.css";

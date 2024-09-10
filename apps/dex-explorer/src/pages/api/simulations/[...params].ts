@@ -1,3 +1,5 @@
+// @ts-nocheck
+/* eslint-disable -- disabling this file as this was created before our strict rules */
 // pages/api/simulations/[...params].ts
 import { SimulationQuerier } from "@/utils/protos/services/dex/simulated-trades";
 import { base64ToUint8Array } from "../../../utils/math/base64";
@@ -31,7 +33,7 @@ export default async function simulationHandler(
 
   try {
     if (!token1 || !token2 || !amountIn) {
-      return res.status(400).json({ error: "Invalid query parameters" });
+      res.status(400).json({ error: "Invalid query parameters" }); return;
     }
 
     if (String(singleHop).toLocaleLowerCase() === "singlehop") {
@@ -48,9 +50,9 @@ export default async function simulationHandler(
     );
 
     if (!asset1Token || !asset2Token) {
-      return res
+      res
         .status(400)
-        .json({ error: "Could not find requested token in registry" });
+        .json({ error: "Could not find requested token in registry" }); return;
     }
     const sim_querier = new SimulationQuerier({
       grpcEndpoint: grpcEndpoint,
@@ -112,7 +114,7 @@ export default async function simulationHandler(
       // If the error message contains 'there are no orders to fulfill this swap', return an empty array
       if (errorMessage.includes("there are no orders to fulfill this swap")) {
         console.log("No orders to fulfill swap");
-        return res.status(200).json({ traces: [] });
+        res.status(200).json({ traces: [] }); return;
       }
     }
 

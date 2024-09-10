@@ -1,3 +1,5 @@
+// @ts-nocheck
+/* eslint-disable -- disabling this file as this was created before our strict rules */
 // pages/pairs.tsx
 
 import { useState, useEffect } from 'react';
@@ -43,8 +45,7 @@ export default function Pairs() {
             {isLoading ? (
               <LoadingSpinner />
             ) : 
-            <>
-                <VStack height={'100%'} width={'100%'}>
+            <VStack height={'100%'} width={'100%'}>
                     <HStack justifyContent={'space-evenly'} width={'100%'} paddingTop={'5%'}>
                         <Box borderColor="gray.200">
                             <VStack>
@@ -67,7 +68,6 @@ export default function Pairs() {
                         </form>
                     </Box>
                 </VStack>
-            </>
             }
         </Layout>
     )

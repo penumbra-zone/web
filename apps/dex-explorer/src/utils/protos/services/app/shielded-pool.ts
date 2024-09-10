@@ -1,3 +1,5 @@
+// @ts-nocheck
+/* eslint-disable -- disabling this file as this was created before our strict rules */
 import { PromiseClient } from "@connectrpc/connect";
 import { createClient } from "../utils";
 import { ShieldedPoolService } from "@penumbra-zone/protobuf";
@@ -16,7 +18,7 @@ export class ShieldedPoolQuerier implements ShieldedPoolQuerierInterface {
 
   async assetMetadata(assetId: AssetId): Promise<Metadata | undefined> {
     const res = await this.client.assetMetadataById({ assetId });
-    //console.info(res)
+    // console.info(res)
     return res.denomMetadata;
   }
 }
