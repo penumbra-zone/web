@@ -115,11 +115,16 @@ export const AssetSelectorCustom = ({
 
         <IsAnimatingProvider>
           {props => (
-            <Dialog.Content title={dialogTitle} motion={{ ...props, layoutId }} key={layoutId}>
-              {onSearchChange && (
-                <AssetSelectorSearchFilter value={search} onChange={onSearchChange} />
-              )}
-
+            <Dialog.Content
+              title={dialogTitle}
+              motion={{ ...props, layoutId }}
+              key={layoutId}
+              headerChildren={
+                !!onSearchChange && (
+                  <AssetSelectorSearchFilter value={search} onChange={onSearchChange} />
+                )
+              }
+            >
               <RadioGroup value={value ? getHash(value) : undefined} asChild>
                 <OptionsWrapper>
                   {typeof children === 'function'
