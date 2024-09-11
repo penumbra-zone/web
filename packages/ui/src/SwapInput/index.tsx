@@ -25,6 +25,12 @@ const AssetColumn = styled.div`
   gap: ${props => props.theme.spacing(1)};
 `;
 
+// Extends the height of the text input to match the height of the asset selectors
+const HeightExtender = styled.div`
+  width: 0;
+  height: ${props => props.theme.spacing(12)};
+`;
+
 export interface SwapInputProps {
   label: string;
   placeholder?: string;
@@ -100,6 +106,7 @@ export const SwapInput = ({
         actionType={actionType}
         placeholder={placeholder}
         onChange={onValueChange}
+        endAdornment={<HeightExtender />}
       />
 
       <AssetsRow>
