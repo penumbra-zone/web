@@ -4,7 +4,12 @@ import { DefaultTheme } from 'styled-components';
 
 describe('getBackgroundColor()', () => {
   const theme = {
-    color: { primary: { main: '#aaa' }, neutral: { main: '#ccc' }, destructive: { main: '#f00' } },
+    color: {
+      primary: { main: '#aaa' },
+      neutral: { main: '#ccc' },
+      destructive: { main: '#f00' },
+      other: { tonalFill10: '#ccc' },
+    },
   } as DefaultTheme;
 
   describe('when `priority` is `primary`', () => {
