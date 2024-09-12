@@ -44,11 +44,10 @@ export const PENUMBRA_METADATA = new Metadata({
     },
   ],
   base: 'upenumbra',
+  name: 'Penumbra',
   display: 'penumbra',
   symbol: 'UM',
-  penumbraAssetId: {
-    altBaseDenom: 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=',
-  },
+  penumbraAssetId: new AssetId({ inner: u8(32) }),
   images: [
     {
       svg: 'https://raw.githubusercontent.com/prax-wallet/registry/main/images/um.svg',
