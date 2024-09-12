@@ -15,6 +15,7 @@ import {
   getAssetIdFromValueView,
   getDisplayDenomExponentFromValueView,
 } from '@penumbra-zone/getters/value-view';
+import { AssetSelectorValue, isBalancesResponse } from '@penumbra-zone/ui/AssetSelector';
 import { getAddress, getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { toBaseUnit } from '@penumbra-zone/types/lo-hi';
 import { isAddress } from '@penumbra-zone/bech32m/penumbra';
@@ -25,7 +26,7 @@ import { getAssetTokenMetadata } from '../../fetchers/registry';
 
 export interface SendSlice {
   selection: BalancesResponse | undefined;
-  setSelection: (selection: BalancesResponse) => void;
+  setSelection: (selection?: AssetSelectorValue) => void;
   amount: string;
   setAmount: (amount: string) => void;
   recipient: string;
@@ -58,7 +59,7 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
     },
     setSelection: selection => {
       set(state => {
-        state.send.selection = selection;
+        state.send.selection = isBalancesResponse(selection) ? selection : undefined;
       });
     },
     setRecipient: addr => {

@@ -1,69 +1,44 @@
+import { FormEventHandler, useMemo } from 'react';
+import { ArrowUpFromDot } from 'lucide-react';
+import { ValueInput } from '@penumbra-zone/ui/ValueInput';
+import { Button } from '@penumbra-zone/ui/Button';
 import { Card } from '@penumbra-zone/ui/Card';
 import { FormField } from '@penumbra-zone/ui/FormField';
-import { SegmentedControl } from '@penumbra-zone/ui/SegmentedControl';
 import { TextInput } from '@penumbra-zone/ui/TextInput';
 import { AllSlices } from '../../../../state';
 import { sendValidationErrors } from '../../../../state/send';
-import { FeeTier_Tier } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
-import { Button } from '@penumbra-zone/ui/Button';
-import { ArrowUpFromDot } from 'lucide-react';
-import { useMemo } from 'react';
 import { useStoreShallow } from '../../../../utils/use-store-shallow';
 import { useRefreshFee } from './use-refresh-fee';
+import { useBalancesResponses } from '../../../../state/shared.ts';
+import { GasFee } from './gas-fee.tsx';
 
 const sendPageSelector = (state: AllSlices) => ({
   selection: state.send.selection,
   amount: state.send.amount,
   recipient: state.send.recipient,
   memo: state.send.memo,
-  fee: state.send.fee,
-  feeTier: state.send.feeTier,
-  assetFeeMetadata: state.send.assetFeeMetadata,
   setAmount: state.send.setAmount,
   setSelection: state.send.setSelection,
   setRecipient: state.send.setRecipient,
-  setFeeTier: state.send.setFeeTier,
   setMemo: state.send.setMemo,
   sendTx: state.send.sendTx,
   txInProgress: state.send.txInProgress,
 });
 
-const FEE_TIER_OPTIONS = [
-  {
-    label: 'Low',
-    value: FeeTier_Tier.LOW,
-  },
-  {
-    label: 'Medium',
-    value: FeeTier_Tier.MEDIUM,
-  },
-  {
-    label: 'High',
-    value: FeeTier_Tier.HIGH,
-  },
-];
-
 export const SendPage = () => {
   const {
     selection,
+    setSelection,
     amount,
     recipient,
     memo,
-    feeTier,
     setAmount,
     setRecipient,
-    setFeeTier,
     setMemo,
     txInProgress,
-
-    /**
-     * @todo: Implement form controls that use these properties:
-     */
-    // fee,
-    // setSelection,
-    // assetFeeMetadata,
-    // sendTx,
+    sendTx,
   } = useStoreShallow(sendPageSelector);
+  const { data: balancesResponses } = useBalancesResponses();
 
   useRefreshFee();
 
@@ -81,8 +56,13 @@ export const SendPage = () => {
     [amount, recipient, validationErrors, txInProgress, selection],
   );
 
+  const onSubmit: FormEventHandler = (event) => {
+    event.preventDefault();
+    void sendTx();
+  }
+
   return (
-    <>
+    <form onSubmit={onSubmit}>
       <Card.Stack>
         <Card.Section>
           <FormField label="Recipient's address">
@@ -91,21 +71,19 @@ export const SendPage = () => {
         </Card.Section>
 
         <Card.Section>
-          <FormField label='Amount' helperText='#0: 123,456.789'>
-            <TextInput
-              type='number'
-              value={amount}
-              onChange={setAmount}
-              placeholder='Amount to send...'
-              min={0}
-            />
-          </FormField>
+          <ValueInput
+            label='Amount'
+            placeholder='Amount to send...'
+            balances={balancesResponses}
+            value={amount}
+            onValueChange={setAmount}
+            selection={selection}
+            onSelectionChange={setSelection}
+          />
         </Card.Section>
 
         <Card.Section>
-          <FormField label='Fee Tier'>
-            <SegmentedControl value={feeTier} onChange={setFeeTier} options={FEE_TIER_OPTIONS} />
-          </FormField>
+          <GasFee />
         </Card.Section>
 
         <Card.Section>
@@ -123,6 +101,6 @@ export const SendPage = () => {
       >
         Send
       </Button>
-    </>
+    </form>
   );
 };
