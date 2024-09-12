@@ -66,6 +66,16 @@ const StyledInput = styled.input<{
   &:focus {
     outline: none;
   }
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  &[type='number'] {
+    -moz-appearance: textfield;
+  }
 `;
 
 export interface TextInputProps {
