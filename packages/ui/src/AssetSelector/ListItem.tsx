@@ -15,6 +15,7 @@ import { asTransientProps } from '../utils/asTransientProps.ts';
 import { KeyboardEventHandler, MouseEventHandler } from 'react';
 import { useAssetsSelector } from './shared/Context.tsx';
 import { AssetSelectorValue } from './shared/types.ts';
+import { media } from '../utils/media.ts';
 
 const Root = styled(motion.button)<{
   $isSelected: boolean;
@@ -70,6 +71,26 @@ const AssetInfo = styled.div`
   display: flex;
   gap: ${props => props.theme.spacing(2)};
   align-items: center;
+`;
+
+const AssetTitle = styled.div`
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  gap: ${props => props.theme.spacing(1)};
+`;
+
+const AssetTitleText = styled(Text)`
+  display: inline-block;
+  max-width: 100px;
+
+  ${media.tablet`
+      max-width: 300px;
+  `}
+
+  ${media.lg`
+      max-width: 400px;
+  `}
 `;
 
 const Balance = styled.div`
@@ -133,12 +154,16 @@ export const ListItem = ({ value, disabled, actionType = 'default' }: ListItemPr
         <AssetInfo>
           <AssetIcon size='lg' metadata={metadata} />
           <div>
-            <div>
+            <AssetTitle>
               {balance?.valueView && (
-                <Text body>{getFormattedAmtFromValueView(balance.valueView, true)} </Text>
+                <Text body truncate>
+                  {getFormattedAmtFromValueView(balance.valueView, true)}{' '}
+                </Text>
               )}
-              <Text body>{metadata?.symbol ?? 'Unknown'}</Text>
-            </div>
+              <AssetTitleText body truncate>
+                {metadata?.symbol ?? 'Unknown'}
+              </AssetTitleText>
+            </AssetTitle>
             {metadata?.name && (
               <Text detail color={color => color.text.secondary} as='div'>
                 {metadata.name}

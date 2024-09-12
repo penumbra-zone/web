@@ -3,8 +3,35 @@ import {
   getAmount,
   getMetadataFromBalancesResponse,
   getAddressIndex,
+  getValueViewCaseFromBalancesResponse,
 } from '@penumbra-zone/getters/balances-response';
 import { joinLoHiAmount, multiplyAmountByNumber } from '@penumbra-zone/types/amount';
+import { assetPatterns } from '@penumbra-zone/types/assets';
+import { getDisplay } from '@penumbra-zone/getters/metadata';
+
+const nonSwappableAssetPatterns = [
+  assetPatterns.lpNft,
+  assetPatterns.proposalNft,
+  assetPatterns.votingReceipt,
+  assetPatterns.auctionNft,
+  assetPatterns.lpNft,
+
+  // In theory, these asset types are swappable, but we have removed them for now to get a better UX
+  assetPatterns.delegationToken,
+  assetPatterns.unbondingToken,
+];
+
+const isUnswappable = (balance: BalancesResponse): boolean => {
+  const metadata = getMetadataFromBalancesResponse.optional(balance);
+  if (!metadata) {
+    return true;
+  }
+  return nonSwappableAssetPatterns.some(pattern => pattern.matches(getDisplay(metadata)));
+};
+
+const isUnknownBalance = (balance: BalancesResponse): boolean => {
+  return getValueViewCaseFromBalancesResponse.optional(balance) !== 'knownAssetId';
+};
 
 const groupByAccount = (
   acc: Record<number, BalancesResponse[]>,
@@ -12,7 +39,7 @@ const groupByAccount = (
 ): Record<number, BalancesResponse[]> => {
   const index = getAddressIndex.optional(curr)?.account;
 
-  if (index === undefined) {
+  if (index === undefined || isUnknownBalance(curr) || isUnswappable(curr)) {
     return acc;
   }
 
