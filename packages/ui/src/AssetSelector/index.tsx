@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 
+import { isBalancesResponse, isMetadata } from './shared/helpers.ts';
 import { filterMetadataOrBalancesResponseByText } from './shared/filterMetadataOrBalancesResponseByText.ts';
 import { AssetSelectorBaseProps, AssetSelectorValue } from './shared/types.ts';
 import { AssetSelectorCustom, AssetSelectorCustomProps } from './Custom.tsx';
@@ -155,5 +156,7 @@ export const AssetSelector = ({
 
 AssetSelector.Custom = AssetSelectorCustom;
 AssetSelector.ListItem = ListItem;
+
+export { isBalancesResponse, isMetadata };
 
 export type { AssetSelectorValue, AssetSelectorCustomProps, ListItemProps };
