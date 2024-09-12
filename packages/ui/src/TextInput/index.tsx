@@ -1,26 +1,32 @@
-import styled, { DefaultTheme } from 'styled-components';
+import styled from 'styled-components';
 import { small } from '../utils/typography';
-import { ActionType } from '../utils/ActionType';
+import { ActionType, getOutlineColorByActionType } from '../utils/ActionType';
 import { useDisabled } from '../hooks/useDisabled';
 import { forwardRef, ReactNode } from 'react';
 
-const BORDER_BOTTOM_WIDTH = '2px';
-
-const borderColorByActionType: Record<ActionType, keyof DefaultTheme['color']['action']> = {
-  default: 'neutralFocusOutline',
-  accent: 'primaryFocusOutline',
-  unshield: 'unshieldFocusOutline',
-  destructive: 'destructiveFocusOutline',
-};
-
-const Wrapper = styled.div<{ $hasStartAdornment: boolean; $hasEndAdornment: boolean }>`
+const Wrapper = styled.div<{
+  $hasStartAdornment: boolean;
+  $hasEndAdornment: boolean;
+  $actionType: ActionType;
+}>`
   background-color: ${props => props.theme.color.other.tonalFill5};
   display: flex;
   align-items: center;
   gap: ${props => props.theme.spacing(2)};
+  transition:
+    outline 0.15s,
+    background-color 0.15s;
 
   ${props => props.$hasStartAdornment && `padding-left: ${props.theme.spacing(3)};`}
   ${props => props.$hasEndAdornment && `padding-right: ${props.theme.spacing(3)};`}
+  
+  &:focus-within {
+    outline: 2px solid ${props => getOutlineColorByActionType(props.theme, props.$actionType)};
+  }
+
+  &:hover {
+    background-color: ${props => props.theme.color.action.hoverOverlay};
+  }
 `;
 
 const StyledInput = styled.input<{
@@ -37,8 +43,7 @@ const StyledInput = styled.input<{
   padding-left: ${props => (props.$hasStartAdornment ? '0' : props.theme.spacing(3))};
   padding-right: ${props => (props.$hasEndAdornment ? '0' : props.theme.spacing(3))};
   padding-top: ${props => props.theme.spacing(2)};
-  padding-bottom: calc(${props => props.theme.spacing(2)} - ${BORDER_BOTTOM_WIDTH});
-  border-bottom: ${BORDER_BOTTOM_WIDTH} solid ${props => props.theme.color.base.transparent};
+  padding-bottom: ${props => props.theme.spacing(2)};
   transition: border-color 0.15s;
 
   box-sizing: border-box;
@@ -59,15 +64,23 @@ const StyledInput = styled.input<{
   }
 
   &:focus {
-    border-bottom-color: ${props =>
-      props.theme.color.action[borderColorByActionType[props.$actionType]]};
     outline: none;
+  }
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  &[type='number'] {
+    -moz-appearance: textfield;
   }
 `;
 
 export interface TextInputProps {
-  value: string;
-  onChange: (value: string) => void;
+  value?: string;
+  onChange?: (value: string) => void;
   placeholder?: string;
   actionType?: ActionType;
   disabled?: boolean;
@@ -109,12 +122,16 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
     }: TextInputProps,
     ref,
   ) => (
-    <Wrapper $hasStartAdornment={!!startAdornment} $hasEndAdornment={!!endAdornment}>
+    <Wrapper
+      $actionType={actionType}
+      $hasStartAdornment={!!startAdornment}
+      $hasEndAdornment={!!endAdornment}
+    >
       {startAdornment}
 
       <StyledInput
         value={value}
-        onChange={e => onChange(e.target.value)}
+        onChange={e => onChange?.(e.target.value)}
         placeholder={placeholder}
         disabled={useDisabled(disabled)}
         type={type}
