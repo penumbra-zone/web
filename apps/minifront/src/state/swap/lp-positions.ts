@@ -57,21 +57,32 @@ const fetchOwnedPositions = async function* (): AsyncIterable<PositionWithId> {
       .ownedPositionIds({ positionState: { state: PositionState_PositionStateEnum.CLOSED } }),
   );
 
-  const allPositionIds = [...closedIds].map(i => i.positionId).filter(Boolean) as PositionId[];
+  const allPositionIds = [...openedIds, ...closedIds]
+    .map(i => i.positionId)
+    .filter(Boolean) as PositionId[];
 
+  // We then need to retrieve the LP data for each of these ID's from the node
   const iterable = penumbra
     .service(DexService)
     .liquidityPositionsById({ positionId: allPositionIds });
 
   let index = 0;
   for await (const res of iterable) {
-    console.log(res);
     const id = allPositionIds[index]; // responses are emitted in the order of the input ids
     if (!id) {
       throw new Error(`No corresponding ID in request array for position index ${index}`);
     }
 
-    if (res.data) {
+    if (
+      res.data &&
+      // TODO: Bug w/ testnet whale seedphrase on penumbra-1 LP position
+      //       https://dex.penumbra.sevenseas.capital/lp/plpid17wqat9ppwkjk8hffpk2jz669c3u5hzm8268jjlf6j88qju7d238qak905k
+      //       Stored as an opened position in indexeddb, but when querying `liquidityPositionsById()`, it's actually already withdrawn
+      //       Doing a temp additional filter here so users don't see that state.
+      [PositionState_PositionStateEnum.OPENED, PositionState_PositionStateEnum.CLOSED].includes(
+        res.data.state?.state ?? PositionState_PositionStateEnum.UNSPECIFIED,
+      )
+    ) {
       yield {
         id,
         position: res.data,

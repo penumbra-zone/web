@@ -4,7 +4,8 @@ import { useOwnedPositions } from '../../state/swap/lp-positions.ts';
 import { bech32mPositionId } from '@penumbra-zone/bech32m/plpid';
 import { PositionState_PositionStateEnum } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/value';
-import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
+import { Button } from '@penumbra-zone/ui/components/ui/button';
+import { cn } from '@penumbra-zone/ui/lib/utils';
 
 const stateToString = (state?: PositionState_PositionStateEnum): string => {
   switch (state) {
@@ -38,42 +39,50 @@ export const LpPositions = () => {
     <Card layout>
       <GradientHeader layout>Limit orders</GradientHeader>
       {!!error && <div>❌ There was an error loading your limit orders: ${String(error)}</div>}
-      {data.map(({ position, id, r1ValueView, r2ValueView }) => {
-        const bech32Id = bech32mPositionId(id);
-        const base64Id = uint8ArrayToBase64(id.inner);
-        return (
-          <div key={bech32Id} className='flex flex-col items-center gap-4 p-2'>
-            <div>{bech32Id}</div>
-            <div>{base64Id}</div>
-            <div>{stateToString(position.state?.state)}</div>
-
-            <ValueViewComponent view={r1ValueView} />
-            <ValueViewComponent view={r2ValueView} />
-
-            {/* <div>{position.state?.sequence ? position.state.sequence.toString() : '0'}</div>*/}
-
-            <div className='truncate'>
-              {!!position.phi?.component?.fee && position.phi.component.fee}
+      <div className='flex flex-col gap-4'>
+        {data.map(({ position, id, r1ValueView, r2ValueView }) => {
+          const bech32Id = bech32mPositionId(id);
+          return (
+            <div key={bech32Id} className='flex flex-col gap-4 p-2'>
+              <div className='flex justify-between gap-2'>
+                <div className='flex grow flex-col gap-2'>
+                  <div className='flex items-center gap-2'>
+                    <div
+                      className={cn(
+                        'text-white flex items-center justify-center rounded p-1 h-7',
+                        position.state?.state === PositionState_PositionStateEnum.OPENED
+                          ? 'bg-teal'
+                          : 'bg-rust',
+                      )}
+                    >
+                      <span className='mt-1'>{stateToString(position.state?.state)}</span>
+                    </div>
+                    <div className='max-w-[250px] overflow-hidden truncate text-gray-300 lg:max-w-[400px]'>
+                      {bech32Id}
+                    </div>
+                  </div>
+                  <div className='flex flex-wrap gap-2'>
+                    <ValueViewComponent view={r1ValueView} />
+                    <ValueViewComponent view={r2ValueView} />
+                  </div>
+                </div>
+                <div className='shrink-0'>
+                  {position.state?.state === PositionState_PositionStateEnum.OPENED && (
+                    <Button size='sm' variant='secondary' className='w-full'>
+                      Close
+                    </Button>
+                  )}
+                  {position.state?.state === PositionState_PositionStateEnum.CLOSED && (
+                    <Button size='sm' variant='secondary' className='w-full'>
+                      Withdraw
+                    </Button>
+                  )}
+                </div>
+              </div>
             </div>
-
-            {/* <div>{uint8ArrayToBase64(position.nonce)}</div>*/}
-
-            {/* <div>{position.closeOnFill ? 'true' : 'false'}</div>*/}
-
-            {/* <div>*/}
-            {/*  {position.phi?.component?.p && joinLoHiAmount(position.phi.component.p).toString()}*/}
-            {/* </div>*/}
-
-            {/* <div>*/}
-            {/*  {position.phi?.component?.q && joinLoHiAmount(position.phi.component.q).toString()}*/}
-            {/* </div>*/}
-
-            {/* <div>{position.reserves?.r1 && joinLoHiAmount(position.reserves.r1).toString()}</div>*/}
-
-            {/* <div>{position.reserves?.r2 && joinLoHiAmount(position.reserves.r2).toString()}</div>*/}
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </Card>
   );
 };
