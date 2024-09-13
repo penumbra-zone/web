@@ -61,7 +61,7 @@ const inner1111 = Uint8Array.from({ length: 32 }, () => Math.floor(Math.random()
 const inner2222 = Uint8Array.from({ length: 32 }, () => Math.floor(Math.random() * 256));
 
 const registryClient = new ChainRegistryClient();
-const chainId = 'penumbra-testnet-deimos-8';
+const chainId = 'penumbra-testnet-phobos-1';
 
 const jsonifyRegistry = (r: Registry) => {
   const assetById = r.getAllAssets().reduce<Record<string, JsonValue>>((acc, m) => {
