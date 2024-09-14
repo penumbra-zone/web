@@ -23,7 +23,7 @@ export const hasStakingToken = (
     return false;
   }
 
-  const account = getAddressIndex.optional()(source)?.account;
+  const account = getAddressIndex.optional(source)?.account;
   if (typeof account === 'undefined') {
     return false;
   }
@@ -31,8 +31,8 @@ export const hasStakingToken = (
   return balancesResponses.some(
     asset =>
       getAssetIdFromValueView
-        .optional()(asset.balanceView)
-        ?.equals(getAssetId.optional()(stakingAssetMetadata)) &&
-      getAddressIndex.optional()(asset)?.account === account,
+        .optional(asset.balanceView)
+        ?.equals(getAssetId.optional(stakingAssetMetadata)) &&
+      getAddressIndex.optional(asset)?.account === account,
   );
 };

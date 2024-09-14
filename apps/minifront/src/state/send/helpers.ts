@@ -67,7 +67,9 @@ const isAlternativeAssetUsedForFees = (
 };
 
 // Check whether the transaction meets the "send max" conditions, which determines if the request
-// should be structured as a "spend" rather than an "output".
+// should be structured as a "spend" rather than an "output". The way the logic is structured,
+// if both invariantOne and invariantTwo are false, isSendingMax will be false, crafting an output
+// TPR. However, if either of the invariants is satisfied, a spend TPR will be crafted.
 export const checkSendMaxInvariants = ({
   selection,
   spendOrOutput,
@@ -87,10 +89,15 @@ export const checkSendMaxInvariants = ({
   const invariantOne = isUmAsset(spendOrOutput) && isMaxAmount(selection, spendOrOutput);
 
   // Checks if the transaction uses an alternative asset for fees, and the staking
-  // token is not present in the account. This condition ensures that the transaction is treated
-  // as a "send max" operation using a non-native asset for covering fees.
-  const invariantTwo = !stakingToken && isAlternativeAssetUsedForFees(spendOrOutput, gasPrices);
+  // token is not present in the account, and we're spending the maximum of that alternative asset.
+  // This condition ensures that the transaction is treated as a "send max" operation using a
+  // non-native asset for covering fees.
+  const invariantTwo =
+    !stakingToken &&
+    isAlternativeAssetUsedForFees(spendOrOutput, gasPrices) &&
+    isMaxAmount(selection, spendOrOutput);
 
   const isSendingMax = invariantOne || invariantTwo;
+
   return isSendingMax;
 };
