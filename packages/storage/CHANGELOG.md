@@ -1,5 +1,24 @@
 # @penumbra-zone/storage
 
+## 30.0.0
+
+### Patch Changes
+
+- Updated dependencies [3a5c074]
+- Updated dependencies [3a5c074]
+- Updated dependencies [990291f]
+  - @penumbra-zone/getters@17.0.0
+  - @penumbra-zone/wasm@28.0.0
+  - @penumbra-zone/types@23.0.0
+
+## 29.0.0
+
+### Patch Changes
+
+- Updated dependencies [e01d5f8]
+  - @penumbra-zone/types@22.0.0
+  - @penumbra-zone/wasm@27.0.0
+
 ## 28.0.0
 
 ### Patch Changes

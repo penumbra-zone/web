@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { filterMetadataOrBalancesResponseByText } from './filterMetadataOrBalancesResponseByText';
-import { PENUMBRA_BALANCE, PENUMBRA_METADATA } from '../utils/bufs';
+import { filterMetadataOrBalancesResponseByText } from './filterMetadataOrBalancesResponseByText.ts';
+import { PENUMBRA_BALANCE, PENUMBRA_METADATA } from '../../utils/bufs';
 
 describe('filterMetadataOrBalancesResponseByText()', () => {
   describe('when the search text is empty', () => {

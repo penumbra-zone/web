@@ -48,7 +48,9 @@ const DialogContent = styled.div`
 `;
 
 const DialogContentCard = styled(motion.div)`
+  position: relative;
   width: 100%;
+  max-height: 75%;
   box-sizing: border-box;
 
   background: ${props => props.theme.color.other.dialogBackground};
@@ -56,14 +58,8 @@ const DialogContentCard = styled(motion.div)`
   border-radius: ${props => props.theme.borderRadius.xl};
   backdrop-filter: blur(${props => props.theme.blur.xl});
 
-  padding-top: ${props => props.theme.spacing(8)};
-  padding-bottom: ${props => props.theme.spacing(8)};
-  padding-left: ${props => props.theme.spacing(6)};
-  padding-right: ${props => props.theme.spacing(6)};
-
   display: flex;
   flex-direction: column;
-  gap: ${props => props.theme.spacing(6)};
 
   /**
    * We add 'pointer-events: auto' here so that clicks _inside_ the content card
@@ -73,10 +69,41 @@ const DialogContentCard = styled(motion.div)`
   pointer-events: auto;
 `;
 
-const TitleAndCloseButton = styled.header`
+const DialogChildrenWrap = styled.div`
+  overflow-y: auto;
+
   display: flex;
+  flex-direction: column;
+  gap: ${props => props.theme.spacing(6)};
+
+  padding-bottom: ${props => props.theme.spacing(8)};
+  padding-left: ${props => props.theme.spacing(6)};
+  padding-right: ${props => props.theme.spacing(6)};
+`;
+
+const DialogHeader = styled.header`
+  position: sticky;
+  top: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: ${props => props.theme.spacing(4)};
   color: ${props => props.theme.color.text.primary};
-  justify-content: space-between;
+
+  padding-top: ${props => props.theme.spacing(8)};
+  padding-bottom: ${props => props.theme.spacing(6)};
+  padding-left: ${props => props.theme.spacing(6)};
+  padding-right: ${props => props.theme.spacing(6)};
+`;
+
+/**
+ * Opening the dialog focuses the first focusable element in the dialog. That's why the Close button
+ * should be positioned absolutely and rendered as the last element in the dialog content.
+ */
+const DialogClose = styled.div`
+  position: absolute;
+  top: ${props => props.theme.spacing(8)};
+  right: ${props => props.theme.spacing(6)};
 `;
 
 interface ControlledDialogProps {
@@ -233,6 +260,8 @@ const DialogContext = createContext<{ showCloseButton: boolean }>({
 export interface DialogContentProps<IconOnlyButtonGroupProps extends boolean | undefined>
   extends MotionProp {
   children?: ReactNode;
+  /** Renders the element after the dialog title. These elements will be sticky to the top of the dialog */
+  headerChildren?: ReactNode;
   title: string;
   /**
    * If you want to render CTA buttons in the dialog footer, use
@@ -246,6 +275,7 @@ export interface DialogContentProps<IconOnlyButtonGroupProps extends boolean | u
 
 const Content = <IconOnlyButtonGroupProps extends boolean | undefined>({
   children,
+  headerChildren,
   title,
   buttonGroupProps,
   motion,
@@ -261,27 +291,32 @@ const Content = <IconOnlyButtonGroupProps extends boolean | undefined>({
           <Grid mobile={12} tablet={8} desktop={6} xl={4}>
             <FullHeightWrapper>
               <DialogContentCard {...motion}>
-                <TitleAndCloseButton>
+                <DialogHeader>
                   <RadixDialog.Title asChild>
                     <Text xxl as='h2'>
                       {title}
                     </Text>
                   </RadixDialog.Title>
+                  {headerChildren}
+                </DialogHeader>
 
-                  {showCloseButton && (
-                    <Density compact>
-                      <RadixDialog.Close asChild>
+                <DialogChildrenWrap>
+                  {children}
+
+                  {buttonGroupProps && <ButtonGroup {...buttonGroupProps} column />}
+                </DialogChildrenWrap>
+
+                {showCloseButton && (
+                  <Density compact>
+                    <RadixDialog.Close asChild>
+                      <DialogClose>
                         <Button icon={X} iconOnly priority='secondary'>
                           Close
                         </Button>
-                      </RadixDialog.Close>
-                    </Density>
-                  )}
-                </TitleAndCloseButton>
-
-                {children}
-
-                {buttonGroupProps && <ButtonGroup {...buttonGroupProps} column />}
+                      </DialogClose>
+                    </RadixDialog.Close>
+                  </Density>
+                )}
               </DialogContentCard>
             </FullHeightWrapper>
           </Grid>

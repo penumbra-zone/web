@@ -44,11 +44,10 @@ export const PENUMBRA_METADATA = new Metadata({
     },
   ],
   base: 'upenumbra',
+  name: 'Penumbra',
   display: 'penumbra',
   symbol: 'UM',
-  penumbraAssetId: {
-    altBaseDenom: 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=',
-  },
+  penumbraAssetId: new AssetId({ inner: u8(32) }),
   images: [
     {
       svg: 'https://raw.githubusercontent.com/prax-wallet/registry/main/images/um.svg',
@@ -72,4 +71,8 @@ export const PIZZA_METADATA = new Metadata({
   base: 'upizza',
   display: 'pizza',
   denomUnits: [{ denom: 'upizza' }, { denom: 'pizza', exponent: 6 }],
+});
+
+export const UNKNOWN_TOKEN_METADATA = new Metadata({
+  penumbraAssetId: { inner: new Uint8Array([]) },
 });

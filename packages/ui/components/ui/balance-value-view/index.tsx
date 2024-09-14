@@ -18,8 +18,8 @@ export const BalanceValueView = ({
   error?: boolean;
   onClick?: (valueView: ValueView) => void;
 }) => {
-  const exponent = getDisplayDenomExponentFromValueView.optional()(valueView);
-  const amount = getAmount.optional()(valueView) ?? new Amount({ hi: 0n, lo: 0n });
+  const exponent = getDisplayDenomExponentFromValueView.optional(valueView);
+  const amount = getAmount.optional(valueView) ?? new Amount({ hi: 0n, lo: 0n });
   const formattedAmount = formatAmount({ amount, exponent, commas: true });
 
   return (

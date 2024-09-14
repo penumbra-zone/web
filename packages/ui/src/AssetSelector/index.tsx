@@ -1,108 +1,162 @@
+import { useMemo, useState } from 'react';
+import styled from 'styled-components';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { Dialog } from '../Dialog';
+
+import { isBalancesResponse, isMetadata } from './shared/helpers.ts';
+import { filterMetadataOrBalancesResponseByText } from './shared/filterMetadataOrBalancesResponseByText.ts';
+import { AssetSelectorBaseProps, AssetSelectorValue } from './shared/types.ts';
+import { AssetSelectorCustom, AssetSelectorCustomProps } from './Custom.tsx';
+import { ListItem, ListItemProps } from './ListItem.tsx';
 import { Text } from '../Text';
-import styled from 'styled-components';
-import { buttonBase } from '../utils/button';
-import { Density } from '../types/Density';
-import { useDensity } from '../hooks/useDensity';
-import { getMetadataFromBalancesResponse } from '@penumbra-zone/getters/balances-response';
-import { AssetIcon } from '../AssetIcon';
-import { ConditionalWrap } from '../ConditionalWrap';
-import { AssetSelectorDialogContent } from './AssetSelectorDialogContent';
-import { motion } from 'framer-motion';
-import { useId, useState } from 'react';
-import { isMetadata } from './helpers';
+import { groupAndSort } from './shared/groupAndSort.ts';
 
-const Button = styled(motion.button)<{ $density: Density }>`
-  ${buttonBase}
-
-  background-color: ${props => props.theme.color.other.tonalFill5};
-  height: ${props => props.theme.spacing(props.$density === 'sparse' ? 12 : 8)};
-  text-align: left;
-  padding: 0 ${props => props.theme.spacing(props.$density === 'sparse' ? 3 : 2)};
-  width: ${props => (props.$density === 'sparse' ? '100%' : 'max-content')};
-`;
-
-const Row = styled.div<{ $density: Density }>`
+const ListItemGroup = styled.div`
   display: flex;
-  gap: ${props => props.theme.spacing(props.$density === 'sparse' ? 2 : 1)};
-  align-items: center;
+  flex-direction: column;
+  gap: ${props => props.theme.spacing(1)};
 `;
 
-export interface AssetSelectorProps<ValueType extends (BalancesResponse | Metadata) | Metadata> {
+const SelectorList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${props => props.theme.spacing(4)};
+`;
+
+export interface AssetSelectorProps extends AssetSelectorBaseProps {
   /**
-   * The currently selected `Metadata` or `BalancesResponse`.
+   * An array of `Metadata` – protobuf message types describing the asset:
+   * its name, symbol, id, icons, and more
    */
-  value?: ValueType;
-  onChange: (value: ValueType) => void;
+  assets?: Metadata[];
   /**
-   * An array of `Metadata`s and possibly `BalancesResponse`s to render as
-   * options. If `BalancesResponse`s are included in the `options` array, those
-   * options will be rendered with the user's balance of them.
+   * An array of `BalancesResponse` – protobuf message types describing the balance of an asset:
+   * the account containing the asset, the value of this asset and its description (has `Metadata` inside it)
    */
-  options: ValueType[];
-  /** The title to show above the asset selector dialog when it opens. */
-  dialogTitle: string;
+  balances?: BalancesResponse[];
 }
 
 /**
  * Allows users to choose an asset for e.g., the swap and send forms. Note that
- * the `options` prop can be an array of just `Metadata`s, or a mixed array of
+ * it can render an array of just `Metadata`s, or a mixed array of
  * both `Metadata`s and `BalancesResponse`s. The latter is useful for e.g.,
  * letting the user estimate a swap of an asset they don't hold.
+ *
+ * The component has two ways of using it:
+ *
+ * ### 1.
+ *
+ * A default way with pre-defined grouping, sorting, searching and rendering algorithms. Renders the list of balances on top of the dialog with account index grouping and priority sorting within each group. When searching, it filters the assets by name, symbol, display name and base name.
+ *
+ * Example:
+ *
+ * ```tsx
+ * const [value, setValue] = useState();
+ *
+ * <AssetSelector
+ *   assets={[...]}
+ *   balances={[...]}
+ *   value={value}
+ *   onChange={setValue}
+ * />
+ * ```
+ *
+ * ### 2.
+ *
+ * A custom way. You can use the `AssetSelector.Custom` with `AssetSelector.ListItem` to render the options of the selector. It is up to the consumer to sort or group the options however they want.
+ *
+ * Example:
+ *
+ * ```tsx
+ * const [value, setValue] = useState<Metadata | BalancesResponse>();
+ * const [search, setSearch] = useState('');
+ *
+ * const filteredOptions = useMemo(
+ *   () => mixedOptions.filter(filterMetadataOrBalancesResponseByText(search)),
+ *   [search],
+ * );
+ *
+ * return (
+ *   <AssetSelector.Custom
+ *     value={value}
+ *     search={search}
+ *     onChange={setValue}
+ *     onSearchChange={setSearch}
+ *   >
+ *     {({ getKeyHash }) =>
+ *       filteredOptions.map(option => (
+ *         <AssetSelector.ListItem key={getKeyHash(option)} value={option} />
+ *       ))
+ *     }
+ *   </AssetSelector>
+ * );
+ * ```
  */
-export const AssetSelector = <ValueType extends (BalancesResponse | Metadata) | Metadata>({
+export const AssetSelector = ({
+  assets = [],
+  balances = [],
   value,
   onChange,
-  options,
-  dialogTitle,
-}: AssetSelectorProps<ValueType>) => {
-  const layoutId = useId();
-  const density = useDensity();
-  const metadata = isMetadata(value) ? value : getMetadataFromBalancesResponse.optional()(value);
+  dialogTitle = 'Select Asset',
+  actionType,
+  disabled,
+}: AssetSelectorProps) => {
+  const [search, setSearch] = useState('');
 
-  const [isOpen, setIsOpen] = useState(false);
-
-  const handleChange = (newValue: ValueType) => {
-    onChange(newValue);
-    setIsOpen(false);
-  };
+  const { filteredAssets, filteredBalances } = useMemo(
+    () => ({
+      filteredAssets: assets.filter(filterMetadataOrBalancesResponseByText(search)),
+      filteredBalances: groupAndSort(
+        balances.filter(filterMetadataOrBalancesResponseByText(search)),
+      ),
+    }),
+    [assets, balances, search],
+  );
 
   return (
-    <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)}>
-      <Button $density={density} layoutId={layoutId} key={layoutId} onClick={() => setIsOpen(true)}>
-        {value && (
-          <Row $density={density}>
-            <AssetIcon metadata={metadata} />
-            <ConditionalWrap
-              if={density === 'sparse'}
-              then={children => <Text>{children}</Text>}
-              else={children => <Text small>{children}</Text>}
-            >
-              {metadata?.symbol}
-            </ConditionalWrap>
-          </Row>
-        )}
+    <AssetSelectorCustom
+      value={value}
+      search={search}
+      dialogTitle={dialogTitle}
+      actionType={actionType}
+      disabled={disabled}
+      onSearchChange={setSearch}
+      onChange={onChange}
+    >
+      {({ getKeyHash }) => (
+        <SelectorList>
+          {!!filteredBalances.length && (
+            <Text small color={color => color.text.secondary}>
+              Your Tokens
+            </Text>
+          )}
 
-        {!value && (
-          <ConditionalWrap
-            if={density === 'sparse'}
-            then={children => <Text>{children}</Text>}
-            else={children => <Text small>{children}</Text>}
-          >
-            Asset
-          </ConditionalWrap>
-        )}
-      </Button>
+          {filteredBalances.map(([account, balances]) => (
+            <ListItemGroup key={account}>
+              {balances.map(balance => (
+                <ListItem key={getKeyHash(balance)} value={balance} />
+              ))}
+            </ListItemGroup>
+          ))}
 
-      <AssetSelectorDialogContent
-        title={dialogTitle}
-        layoutId={layoutId}
-        value={value}
-        onChange={handleChange}
-        options={options}
-      />
-    </Dialog>
+          {!!filteredAssets.length && (
+            <Text small color={color => color.text.secondary}>
+              All Tokens
+            </Text>
+          )}
+
+          {filteredAssets.map(asset => (
+            <ListItem key={getKeyHash(asset)} value={asset} />
+          ))}
+        </SelectorList>
+      )}
+    </AssetSelectorCustom>
   );
 };
+
+AssetSelector.Custom = AssetSelectorCustom;
+AssetSelector.ListItem = ListItem;
+
+export { isBalancesResponse, isMetadata };
+
+export type { AssetSelectorValue, AssetSelectorCustomProps, ListItemProps };

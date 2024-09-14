@@ -98,22 +98,24 @@ export default function BalanceSelector({
         <DialogContent layoutId={layoutId}>
           <div className='flex max-h-[90dvh] flex-col'>
             <DialogHeader>Select asset</DialogHeader>
-            <div className='flex shrink flex-col gap-4 overflow-auto p-4'>
-              <Box spacing='compact'>
-                <IconInput
-                  icon={<MagnifyingGlassIcon className='size-5 text-muted-foreground' />}
-                  value={search}
-                  onChange={setSearch}
-                  autoFocus
-                  placeholder='Search assets...'
-                />
-              </Box>
+            <div className='flex shrink flex-col gap-4 overflow-auto'>
+              <div className='px-4 pt-4'>
+                <Box spacing='compact'>
+                  <IconInput
+                    icon={<MagnifyingGlassIcon className='size-5 text-muted-foreground' />}
+                    value={search}
+                    onChange={setSearch}
+                    autoFocus
+                    placeholder='Search assets...'
+                  />
+                </Box>
+              </div>
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Account</TableHead>
+                    <TableHead className='pl-4'>Account</TableHead>
                     <TableHead>Asset</TableHead>
-                    <TableHead className='text-right'>Balance</TableHead>
+                    <TableHead className='pr-4 text-right'>Balance</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

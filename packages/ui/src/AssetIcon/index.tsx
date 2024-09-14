@@ -1,52 +1,62 @@
+import { ReactNode } from 'react';
+import styled from 'styled-components';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { Identicon } from '../Identicon';
-import { DelegationTokenIcon } from './DelegationTokenIcon';
 import { getDisplay } from '@penumbra-zone/getters/metadata';
 import { assetPatterns } from '@penumbra-zone/types/assets';
+import { Identicon } from '../Identicon';
+import { DelegationTokenIcon } from './DelegationTokenIcon';
 import { UnbondingTokenIcon } from './UnbondingTokenIcon';
-import styled from 'styled-components';
 
-const BorderWrapper = styled.div`
+type Size = 'lg' | 'md' | 'sm';
+
+const sizeMap: Record<Size, number> = {
+  lg: 32,
+  md: 24,
+  sm: 16,
+};
+
+const BorderWrapper = styled.div<{ $size: Size }>`
+  width: ${props => sizeMap[props.$size]}px;
+  height: ${props => sizeMap[props.$size]}px;
   border-radius: ${props => props.theme.borderRadius.full};
-  border: 1px solid ${props => props.theme.color.other.tonalStroke};
   overflow: hidden;
+
+  & > * {
+    width: 100%;
+    height: 100%;
+  }
 `;
 
 const IconImg = styled.img`
   display: block;
-  width: 24px;
-  height: 24px;
 `;
 
-export interface AssetIcon {
+export interface AssetIconProps {
+  size?: Size;
   metadata?: Metadata;
 }
 
-export const AssetIcon = ({ metadata }: AssetIcon) => {
+export const AssetIcon = ({ metadata, size = 'md' }: AssetIconProps) => {
   // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- possibly empty string
   const icon = metadata?.images[0]?.png || metadata?.images[0]?.svg;
-  const display = getDisplay.optional()(metadata);
+  const display = getDisplay.optional(metadata);
   const isDelegationToken = display ? assetPatterns.delegationToken.matches(display) : false;
   const isUnbondingToken = display ? assetPatterns.unbondingToken.matches(display) : false;
 
-  return (
-    <BorderWrapper>
-      {/* eslint-disable-next-line no-nested-ternary -- readable ternary */}
-      {icon ? (
-        <IconImg src={icon} alt='Asset icon' />
-      ) : // eslint-disable-next-line no-nested-ternary -- readable ternary
-      isDelegationToken ? (
-        <DelegationTokenIcon displayDenom={display} />
-      ) : isUnbondingToken ? (
-        /**
-         * @todo: Render a custom unbonding token for validators that have a
-         * logo -- e.g., with the validator ID superimposed over the validator
-         * logo.
-         */
-        <UnbondingTokenIcon displayDenom={display} />
-      ) : (
-        <Identicon uniqueIdentifier={metadata?.symbol ?? '?'} size={24} type='solid' />
-      )}
-    </BorderWrapper>
-  );
+  let assetIcon: ReactNode;
+  if (icon) {
+    assetIcon = <IconImg src={icon} alt='Asset icon' />;
+  } else if (isDelegationToken) {
+    assetIcon = <DelegationTokenIcon displayDenom={display} />;
+  } else if (isUnbondingToken) {
+    /**
+     * @todo: Render a custom unbonding token for validators that have a
+     * logo -- e.g., with the validator ID superimposed over the validator logo.
+     */
+    assetIcon = <UnbondingTokenIcon displayDenom={display} />;
+  } else {
+    assetIcon = <Identicon uniqueIdentifier={metadata?.symbol ?? '?'} type='solid' />;
+  }
+
+  return <BorderWrapper $size={size}>{assetIcon}</BorderWrapper>;
 };

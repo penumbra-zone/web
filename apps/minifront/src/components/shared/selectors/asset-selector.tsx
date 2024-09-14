@@ -142,16 +142,18 @@ export const AssetSelector = ({ assets, loading, onChange, value, filter }: Asse
           <div className='flex max-h-[90dvh] flex-col'>
             <DialogHeader>Select asset</DialogHeader>
 
-            <div className='flex flex-col gap-2 overflow-auto p-4'>
-              <Box spacing='compact'>
-                <IconInput
-                  icon={<MagnifyingGlassIcon className='size-5 text-muted-foreground' />}
-                  value={search}
-                  onChange={setSearch}
-                  autoFocus
-                  placeholder='Search assets...'
-                />
-              </Box>
+            <div className='flex flex-col gap-2 overflow-auto'>
+              <div className='px-4 pt-4'>
+                <Box spacing='compact'>
+                  <IconInput
+                    icon={<MagnifyingGlassIcon className='size-5 text-muted-foreground' />}
+                    value={search}
+                    onChange={setSearch}
+                    autoFocus
+                    placeholder='Search assets...'
+                  />
+                </Box>
+              </div>
 
               <Table>
                 <TableBody>
@@ -165,7 +167,7 @@ export const AssetSelector = ({ assets, loading, onChange, value, filter }: Asse
                         <TableCell className='p-0'>
                           <div
                             className={cn(
-                              '-mx-4 flex h-full gap-[6px] p-4 hover:bg-light-brown',
+                              'flex h-full gap-[6px] p-4 hover:bg-light-brown',
                               isSelected(metadata) && 'bg-light-brown',
                             )}
                           >

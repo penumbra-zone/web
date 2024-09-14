@@ -3,13 +3,8 @@ import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { Box } from '@penumbra-zone/ui/components/ui/box';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
-import {
-  getAmount,
-  getBalanceView,
-  getMetadataFromBalancesResponseOptional,
-} from '@penumbra-zone/getters/balances-response';
+import { getAmount, getBalanceView } from '@penumbra-zone/getters/balances-response';
 import { ArrowRight } from 'lucide-react';
-import { useMemo } from 'react';
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
@@ -29,6 +24,7 @@ import {
 } from '../../../state/swap/helpers';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import { hasStakingToken } from '../../../fetchers/gas-prices';
+import { TokenInputError } from './token-input-error.tsx';
 
 const getAssetOutBalance = (
   balancesResponses: BalancesResponse[] = [],
@@ -44,7 +40,7 @@ const getAssetOutBalance = (
     getAddressIndex(assetIn.accountAddress),
     assetOut,
   );
-  const matchedBalance = getBalanceView.optional()(match);
+  const matchedBalance = getBalanceView.optional(match);
   return matchedBalance ?? zeroValueView(assetOut);
 };
 
@@ -70,11 +66,8 @@ export const TokenSwapInput = () => {
   const { amount, setAmount, assetIn, setAssetIn, assetOut, setAssetOut, reverse } =
     useStoreShallow(tokenSwapInputSelector);
   const assetOutBalance = getAssetOutBalance(balancesResponses?.data, assetIn, assetOut);
-  const assetInExponent = useMemo(() => {
-    return getDisplayDenomExponent.optional()(getMetadataFromBalancesResponseOptional(assetIn));
-  }, [assetIn]);
 
-  const maxAmount = getAmount.optional()(assetIn);
+  const maxAmount = getAmount.optional(assetIn);
   const maxAmountAsString = maxAmount ? joinLoHiAmount(maxAmount).toString() : undefined;
 
   const setInputToBalanceMax = () => {
@@ -94,7 +87,7 @@ export const TokenSwapInput = () => {
   );
 
   return (
-    <Box label='Trade' layout>
+    <Box label='Trade' layout headerContent={<TokenInputError />}>
       <div className='flex flex-col items-stretch gap-4 sm:flex-row'>
         <NumberInput
           value={amount}
@@ -102,7 +95,6 @@ export const TokenSwapInput = () => {
           variant='transparent'
           placeholder='Enter an amount...'
           max={maxAmountAsString}
-          maxExponent={assetInExponent}
           step='any'
           className={'font-bold leading-10 md:h-8 md:text-xl xl:h-10 xl:text-3xl'}
           onChange={e => {
@@ -117,13 +109,6 @@ export const TokenSwapInput = () => {
               </span>
             </div>
           )}
-
-          <FadeIn condition={!!balancesResponses?.error || !!swappableAssets?.error}>
-            <div className='flex gap-4 text-red'>
-              {balancesResponses?.error instanceof Error && balancesResponses.error.toString()}
-              {swappableAssets?.error instanceof Error && swappableAssets.error.toString()}
-            </div>
-          </FadeIn>
 
           <div className='flex gap-4'>
             <div className='flex h-full flex-col justify-end gap-2'>

@@ -1,5 +1,11 @@
 # @penumbra-zone/client
 
+## 18.1.0
+
+### Minor Changes
+
+- a3bef37: improve manifest type
+
 ## 18.0.1
 
 ### Patch Changes

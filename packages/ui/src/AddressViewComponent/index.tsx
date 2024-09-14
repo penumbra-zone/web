@@ -25,7 +25,7 @@ export const AddressViewComponent = ({ addressView, copyable = true }: AddressVi
     return null;
   }
 
-  const addressIndex = getAddressIndex.optional()(addressView);
+  const addressIndex = getAddressIndex.optional(addressView);
 
   // a randomized index has nonzero randomizer bytes
   const isRandomized = addressIndex?.randomizer.some(v => v);

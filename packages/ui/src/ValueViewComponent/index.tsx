@@ -1,11 +1,12 @@
-import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { ConditionalWrap } from '../ConditionalWrap';
-import { Pill } from '../Pill';
-import { Text } from '../Text';
+import { ReactNode } from 'react';
 import styled from 'styled-components';
-import { AssetIcon } from '../AssetIcon';
+import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getMetadata } from '@penumbra-zone/getters/value-view';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
+import { ConditionalWrap } from '../ConditionalWrap';
+import { Pill, PillProps } from '../Pill';
+import { Text } from '../Text';
+import { AssetIcon } from '../AssetIcon';
 import { Density } from '../types/Density';
 import { useDensity } from '../hooks/useDensity';
 
@@ -25,8 +26,9 @@ const AssetIconWrapper = styled.div`
 `;
 
 const PillMarginOffsets = styled.div<{ $density: Density }>`
-  margin-left: ${props => props.theme.spacing(props.$density === 'sparse' ? -2 : -1)};
-  margin-right: ${props => props.theme.spacing(props.$density === 'sparse' ? -1 : 0)};
+  margin-left: ${props => props.theme.spacing(-2)};
+  margin-top: ${props => props.theme.spacing(props.$density === 'sparse' ? 0 : -1)};
+  margin-bottom: ${props => props.theme.spacing(props.$density === 'sparse' ? 0 : -1)};
 `;
 
 const Content = styled.div<{ $context: Context; $priority: 'primary' | 'secondary' }>`
@@ -54,6 +56,14 @@ const SymbolWrapper = styled.div`
   white-space: nowrap;
 `;
 
+const ValueText = ({ children, density }: { children: ReactNode; density: Density }) => {
+  if (density === 'sparse') {
+    return <Text body>{children}</Text>;
+  }
+
+  return <Text detail>{children}</Text>;
+};
+
 export interface ValueViewComponentProps<SelectedContext extends Context> {
   valueView?: ValueView;
   /**
@@ -67,7 +77,7 @@ export interface ValueViewComponentProps<SelectedContext extends Context> {
    * represents a secondary value, such as when it's an equivalent value of a
    * numeraire.
    */
-  priority?: 'primary' | 'secondary';
+  priority?: PillProps['priority'];
 }
 
 /**
@@ -89,7 +99,7 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
   }
 
   const formattedAmount = getFormattedAmtFromValueView(valueView, true);
-  const metadata = getMetadata.optional()(valueView);
+  const metadata = getMetadata.optional(valueView);
   // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- possibly empty string
   const symbol = metadata?.symbol || 'Unknown';
 
@@ -104,13 +114,13 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
     >
       <Row>
         <AssetIconWrapper>
-          <AssetIcon metadata={metadata} />
+          <AssetIcon size={density === 'sparse' ? 'lg' : 'md'} metadata={metadata} />
         </AssetIconWrapper>
 
         <Content $context={context ?? 'default'} $priority={priority}>
-          <Text>{formattedAmount} </Text>
+          <ValueText density={density}>{formattedAmount} </ValueText>
           <SymbolWrapper title={symbol}>
-            <Text technical>{symbol}</Text>
+            <ValueText density={density}>{symbol}</ValueText>
           </SymbolWrapper>
         </Content>
       </Row>

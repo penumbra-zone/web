@@ -1,5 +1,19 @@
 # @penumbra-zone/types
 
+## 23.0.0
+
+### Patch Changes
+
+- Updated dependencies [3a5c074]
+- Updated dependencies [3a5c074]
+  - @penumbra-zone/getters@17.0.0
+
+## 22.0.0
+
+### Major Changes
+
+- e01d5f8: fresh and existing wallets skip trial decryption
+
 ## 21.0.0
 
 ### Patch Changes
