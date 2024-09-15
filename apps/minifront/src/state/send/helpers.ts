@@ -53,7 +53,7 @@ const isUmAsset = (
   return stakingAssetId.equals(spendOrOutput.value?.assetId as AssetId);
 };
 
-// Check if the asset is an alternative asset used for fees.
+// Check whether the asset you're sending is an alternative asset used for fees.
 const isAlternativeAssetUsedForFees = (
   spendOrOutput:
     | PartialMessage<TransactionPlannerRequest_Spend>
@@ -88,8 +88,6 @@ export const checkSendMaxInvariants = ({
   // balance and the asset is UM.
   const invariantOne = isUmAsset(spendOrOutput) && isMaxAmount(selection, spendOrOutput);
 
-  // Checks if the transaction uses an alternative asset for fees, and the staking
-  // token is not present in the account, and we're spending the maximum of that alternative asset.
   // This condition ensures that the transaction is treated as a "send max" operation using a
   // non-native asset for covering fees.
   const invariantTwo =
