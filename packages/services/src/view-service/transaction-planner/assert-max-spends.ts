@@ -20,8 +20,9 @@ export const assertSpendMax = (
 
   plan.actions.forEach(action => {
     if (action.action.case === 'spend') {
-      if (!action.action.value.note?.value?.assetId?.equals(feeAssetId)) {
-        throw new ConnectError('Transaction is invalid due to asset inconsistency.');
+      // prettier-ignore
+      if (!(action.action.value.note?.value?.assetId?.equals(feeAssetId))) {
+        throw new ConnectError('Invalid transaction: The transaction was constructed improperly.');
       }
     }
   });
