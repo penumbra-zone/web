@@ -21,7 +21,7 @@ describe('sendMax', () => {
     vi.clearAllMocks();
   });
 
-  it('sends the non-maximum amount of an alternative fee asset (GM), and pays fees with the native asset (UM).', async () => {
+  it('sends the non-maximum amount of an alternative fee asset (GM), and pays fees with the native asset (UM).', () => {
     const selectionExample = new BalancesResponse({
       balanceView: new ValueView({
         valueView: {
@@ -47,7 +47,7 @@ describe('sendMax', () => {
           lo: 0n,
           hi: 1n,
         }),
-        assetId: getAssetIdFromValueView(selectionExample?.balanceView),
+        assetId: getAssetIdFromValueView(selectionExample.balanceView),
       },
     };
 
@@ -65,7 +65,7 @@ describe('sendMax', () => {
     expect(result).toBe(false);
   });
 
-  it('sends the maximum amount of an alternative fee asset (GM), and pays fees with the native asset (UM).', async () => {
+  it('sends the maximum amount of an alternative fee asset (GM), and pays fees with the native asset (UM).', () => {
     const selectionExample = new BalancesResponse({
       balanceView: new ValueView({
         valueView: {
@@ -91,7 +91,7 @@ describe('sendMax', () => {
           lo: 0n,
           hi: 20000n,
         }),
-        assetId: getAssetIdFromValueView(selectionExample?.balanceView),
+        assetId: getAssetIdFromValueView(selectionExample.balanceView),
       },
     };
 
@@ -109,7 +109,7 @@ describe('sendMax', () => {
     expect(result).toBe(false);
   });
 
-  it('sends the non-maximum amount of an another asset (Pizza), and pays fees with an alternative fee asset (GN).', async () => {
+  it('sends the non-maximum amount of an another asset (Pizza), and pays fees with an alternative fee asset (GN).', () => {
     const selectionExample = new BalancesResponse({
       balanceView: new ValueView({
         valueView: {
@@ -135,7 +135,7 @@ describe('sendMax', () => {
           lo: 0n,
           hi: 1n,
         }),
-        assetId: getAssetIdFromValueView(selectionExample?.balanceView),
+        assetId: getAssetIdFromValueView(selectionExample.balanceView),
       },
     };
 
@@ -153,7 +153,7 @@ describe('sendMax', () => {
     expect(result).toBe(false);
   });
 
-  it('sends the maximum amount of an another asset (Pizza), and pays fees with an alternative fee asset (GN).', async () => {
+  it('sends the maximum amount of an another asset (Pizza), and pays fees with an alternative fee asset (GN).', () => {
     const selectionExample = new BalancesResponse({
       balanceView: new ValueView({
         valueView: {
@@ -179,7 +179,7 @@ describe('sendMax', () => {
           lo: 0n,
           hi: 20000n,
         }),
-        assetId: getAssetIdFromValueView(selectionExample?.balanceView),
+        assetId: getAssetIdFromValueView(selectionExample.balanceView),
       },
     };
 
@@ -197,7 +197,7 @@ describe('sendMax', () => {
     expect(result).toBe(false);
   });
 
-  it('sends the non-maximum amount of the native asset (UM).', async () => {
+  it('sends the non-maximum amount of the native asset (UM).', () => {
     const selectionExample = new BalancesResponse({
       balanceView: new ValueView({
         valueView: {
@@ -223,7 +223,7 @@ describe('sendMax', () => {
           lo: 0n,
           hi: 1n,
         }),
-        assetId: getAssetIdFromValueView(selectionExample?.balanceView),
+        assetId: getAssetIdFromValueView(selectionExample.balanceView),
       },
     };
 
@@ -241,7 +241,7 @@ describe('sendMax', () => {
     expect(result).toBe(false);
   });
 
-  it('sends the maximum amount of the native asset (UM).', async () => {
+  it('sends the maximum amount of the native asset (UM).', () => {
     const selectionExample = new BalancesResponse({
       balanceView: new ValueView({
         valueView: {
@@ -267,7 +267,7 @@ describe('sendMax', () => {
           lo: 0n,
           hi: 20000n,
         }),
-        assetId: getAssetIdFromValueView(selectionExample?.balanceView),
+        assetId: getAssetIdFromValueView(selectionExample.balanceView),
       },
     };
 
@@ -285,7 +285,7 @@ describe('sendMax', () => {
     expect(result).toBe(true);
   });
 
-  it('sends the non-maximum amount of alternative asset (GM), and pays fees with the same alternative asset (GM) since the native token (UM) is absent.', async () => {
+  it('sends the non-maximum amount of alternative asset (GM), and pays fees with the same alternative asset (GM) since the native token (UM) is absent.', () => {
     const selectionExample = new BalancesResponse({
       balanceView: new ValueView({
         valueView: {
@@ -311,7 +311,7 @@ describe('sendMax', () => {
           lo: 0n,
           hi: 1n,
         }),
-        assetId: getAssetIdFromValueView(selectionExample?.balanceView),
+        assetId: getAssetIdFromValueView(selectionExample.balanceView),
       },
     };
 
@@ -329,7 +329,7 @@ describe('sendMax', () => {
     expect(result).toBe(false);
   });
 
-  it('sends the maximum amount of alternative asset (GM), and pays fees with the same alternative asset (GM) since the native token (UM) is absent.', async () => {
+  it('sends the maximum amount of alternative asset (GM), and pays fees with the same alternative asset (GM) since the native token (UM) is absent.', () => {
     const selectionExample = new BalancesResponse({
       balanceView: new ValueView({
         valueView: {
@@ -355,7 +355,7 @@ describe('sendMax', () => {
           lo: 0n,
           hi: 20000n,
         }),
-        assetId: getAssetIdFromValueView(selectionExample?.balanceView),
+        assetId: getAssetIdFromValueView(selectionExample.balanceView),
       },
     };
 
@@ -379,7 +379,7 @@ const stakingAssetId = new AssetId({
   inner: base64ToUint8Array('KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA='),
 });
 
-let stakingTokenPrice = new GasPrices({
+const stakingTokenPrice = new GasPrices({
   assetId: stakingAssetId,
   blockSpacePrice: 60n,
   compactBlockSpacePrice: 1556n,
@@ -392,7 +392,7 @@ const assetId1 = new AssetId({
   inner: base64ToUint8Array('HW2Eq3UZVSBttoUwUi/MUtE7rr2UU7/UH500byp7OAc='),
 });
 
-let AltTokenPrice1 = new GasPrices({
+const AltTokenPrice1 = new GasPrices({
   assetId: assetId1,
   blockSpacePrice: 120n,
   compactBlockSpacePrice: 3112n,
@@ -405,7 +405,7 @@ const assetId2 = new AssetId({
   inner: base64ToUint8Array('nwPDkQq3OvLnBwGTD+nmv1Ifb2GEmFCgNHrU++9BsRE='),
 });
 
-let AltTokenPrice2 = new GasPrices({
+const AltTokenPrice2 = new GasPrices({
   assetId: assetId2,
   blockSpacePrice: 120n,
   compactBlockSpacePrice: 3112n,

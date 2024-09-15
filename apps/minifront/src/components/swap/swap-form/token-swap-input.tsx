@@ -16,13 +16,11 @@ import { isValidAmount } from '../../../state/helpers';
 import { NonNativeFeeWarning } from '../../shared/non-native-fee-warning';
 import { NumberInput } from '../../shared/number-input';
 import { useBalancesResponses, useAssets, useStakingTokenMetadata } from '../../../state/shared';
-import { FadeIn } from '@penumbra-zone/ui/components/ui/fade-in';
 import { getBalanceByMatchingMetadataAndAddressIndex } from '../../../state/swap/getters';
 import {
   swappableAssetsSelector,
   swappableBalancesResponsesSelector,
 } from '../../../state/swap/helpers';
-import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import { hasStakingToken } from '../../../fetchers/gas-prices';
 import { TokenInputError } from './token-input-error.tsx';
 
