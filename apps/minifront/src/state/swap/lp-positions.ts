@@ -12,10 +12,13 @@ import {
   PositionId,
   PositionState_PositionStateEnum,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
-import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 import { DexService } from '@penumbra-zone/protobuf';
 import { AssetId, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { getBalancesStream } from '../../fetchers/balances';
+import { bech32mPositionId } from '@penumbra-zone/bech32m/plpid';
+import { getMetadataFromBalancesResponse } from '@penumbra-zone/getters/balances-response';
 
 export interface PositionWithId {
   id: PositionId;
@@ -116,7 +119,8 @@ export const { ownedPositions, useOwnedPositions } = createZQuery({
 });
 
 interface Actions {
-  onSubmit: () => Promise<void>;
+  onAction: (action: 'positionClose' | 'positionWithdraw', p: PositionWithId) => Promise<void>;
+  open: () => Promise<void>;
 }
 
 interface State {
@@ -129,10 +133,47 @@ const INITIAL_STATE: State = {
   ownedPositions,
 };
 
+// TODO: This is a slow operation. We should revise LiquidityPositionsResponse to:
+//       message LiquidityPositionsResponse {
+//            Position data = 1;
+//            // === new ===
+//            PositionId position_id = 2;
+//            SpendableNoteRecord note_record = 3;
+//            ValueView r1_value_view = 4;
+//            ValueView r2_value_view = 5;
+// }
+const getSourceForPosition = async (pId: PositionId): Promise<AddressIndex | undefined> => {
+  const bech32Id = bech32mPositionId(pId);
+  const responses = await Array.fromAsync(getBalancesStream());
+  for (const r of responses) {
+    const baseDenom = getMetadataFromBalancesResponse.optional(r)?.base;
+    if (baseDenom?.includes(bech32Id)) {
+      return getAddressIndex.optional(r.accountAddress);
+    }
+  }
+  return undefined;
+};
+
 export const createLpPositionsSlice = (): SliceCreator<LpPositionsSlice> => (set, get) => {
   return {
     ...INITIAL_STATE,
-    onSubmit: async () => {
+    onAction: async (action, { id, position }) => {
+      try {
+        set(state => {
+          state.swap.txInProgress = true;
+        });
+
+        const txPlannerRequest = await assembleReq(action, id, position);
+        await planBuildBroadcast(action, txPlannerRequest);
+
+        get().swap.lpPositions.ownedPositions.revalidate();
+      } finally {
+        set(state => {
+          state.swap.txInProgress = false;
+        });
+      }
+    },
+    open: async () => {
       try {
         set(state => {
           state.swap.txInProgress = true;
@@ -141,10 +182,7 @@ export const createLpPositionsSlice = (): SliceCreator<LpPositionsSlice> => (set
         const txPlannerRequest = assembleLimitOrderReq(get().swap);
         await planBuildBroadcast('positionOpen', txPlannerRequest);
 
-        set(state => {
-          state.swap.amount = '';
-        });
-        get().shared.balancesResponses.revalidate();
+        get().swap.lpPositions.ownedPositions.revalidate();
       } finally {
         set(state => {
           state.swap.txInProgress = false;
@@ -154,7 +192,31 @@ export const createLpPositionsSlice = (): SliceCreator<LpPositionsSlice> => (set
   };
 };
 
-// TODO: This is temporary data for testing purposes. Update with inputs when component is ready.
+const assembleReq = async (action: string, positionId: PositionId, position: Position) => {
+  const source = await getSourceForPosition(positionId);
+  if (!source) {
+    throw new Error(`Could not find source for ${bech32mPositionId(positionId)}`);
+  }
+
+  if (action === 'positionClose') {
+    return new TransactionPlannerRequest({
+      positionCloses: [{ positionId }],
+      source,
+    });
+  }
+
+  if (action === 'positionWithdraw') {
+    return new TransactionPlannerRequest({
+      positionWithdraws: [
+        { positionId, reserves: position.reserves, tradingPair: position.phi?.pair },
+      ],
+      source,
+    });
+  }
+
+  throw new Error(`Action not implemented: ${action}`);
+};
+
 const assembleLimitOrderReq = ({ assetIn, amount, assetOut }: SwapSlice) => {
   if (!assetIn) {
     throw new Error('`assetIn` is undefined');
@@ -181,21 +243,6 @@ const assembleLimitOrderReq = ({ assetIn, amount, assetOut }: SwapSlice) => {
           state: { state: PositionState_PositionStateEnum.OPENED },
           reserves: { r1: { lo: 1n }, r2: {} },
           closeOnFill: true,
-        },
-      },
-    ],
-    positionCloses: [
-      {
-        positionId: { inner: base64ToUint8Array('/C9cn0d8veH0IGt2SCghzfcCWkPWbgUDXpXOPgZyA8c=') },
-      },
-    ],
-    positionWithdraws: [
-      {
-        positionId: { inner: base64ToUint8Array('+vbub7BbEAAKLqRorZbNZ4yixPNVFzGl1BAexym3mDc=') },
-        reserves: { r1: { lo: 1000000n }, r2: {} },
-        tradingPair: {
-          asset1: getAssetIdFromValueView(assetIn.balanceView),
-          asset2: assetOut.penumbraAssetId,
         },
       },
     ],
