@@ -333,7 +333,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       // TODO: this is the second time we save these records, after "saveScanResult"
       await this.saveRecoveredCommitmentSources(recordsWithSources);
 
-      await this.processTransactions(blockTx);
+      await this.processTransactions(relevantTx);
 
       // at this point txinfo can be generated and saved. this will resolve
       // pending broadcasts, and populate the transaction list.
@@ -591,8 +591,8 @@ export class BlockProcessor implements BlockProcessorInterface {
    * Identify various pieces of data from the transaction that we need to save,
    * such as metadata, liquidity positions, etc.
    */
-  private async processTransactions(txs: Transaction[]) {
-    for (const tx of txs) {
+  private async processTransactions(txs: Map<TransactionId, Transaction>) {
+    for (const [, tx] of txs) {
       for (const { action } of tx.body?.actions ?? []) {
         await Promise.all([this.identifyAuctionNfts(action), this.identifyLpNftPositions(action)]);
       }
