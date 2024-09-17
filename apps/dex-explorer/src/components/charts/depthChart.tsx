@@ -2,23 +2,27 @@
 /* eslint-disable -- disabling this file as this was created before our strict rules */
 // src/components/charts/depthChart.tsx
 
-import React, { useRef, useEffect, useState } from "react";
-import {
-  ChartEvent,
-  Chart as ChartJS,
-  ChartOptions,
-  registerables,
-} from "chart.js";
-import { Line } from "react-chartjs-2";
-import annotationPlugin, { AnnotationOptions } from "chartjs-plugin-annotation";
-import { set, throttle } from "lodash";
-import { Chart } from "chart.js/auto";
-import { Button, HStack, Text, useBreakpoint, VStack } from "@chakra-ui/react";
-import zoomPlugin, { zoom } from "chartjs-plugin-zoom";
-import { Token } from "@/utils/types/token";
+import React, { useRef, useEffect, useState } from 'react';
+import { ChartEvent, Chart as ChartJS, ChartOptions, registerables } from 'chart.js';
+import { Line } from 'react-chartjs-2';
+import annotationPlugin, { AnnotationOptions } from 'chartjs-plugin-annotation';
+import { set, throttle } from 'lodash';
+import { Chart } from 'chart.js/auto';
+import { Button, HStack, Text, useBreakpoint, VStack } from '@chakra-ui/react';
+import zoomPlugin, { zoom } from 'chartjs-plugin-zoom';
+import { Token } from '@/utils/types/token';
 
 // Register the necessary components from chart.js
 ChartJS.register(...registerables, annotationPlugin);
+
+const getDataKey = data =>
+  data.length && [data[0].x, data[0].y, data[data.length - 1].x, data[data.length - 1].y].join('');
+
+const getDrawKey = (asset1Token, asset2Token, buySideData, sellSideData) => {
+  return (
+    asset1Token.symbol + asset2Token.symbol + getDataKey(buySideData) + getDataKey(sellSideData)
+  );
+};
 
 interface DepthChartProps {
   buySideData: { x: number; y: number }[];
@@ -38,10 +42,11 @@ const DepthChart = ({
   asset2Token,
 }: DepthChartProps) => {
   useEffect(() => {
-    if (typeof window !== "undefined")
-      {import("chartjs-plugin-zoom").then((plugin) => {
+    if (typeof window !== 'undefined') {
+      import('chartjs-plugin-zoom').then(plugin => {
         ChartJS.register(plugin.default);
-      });}
+      });
+    }
   }, []);
 
   const [isMouseOverChart, setIsMouseOverChart] = useState(false);
@@ -66,12 +71,8 @@ const DepthChart = ({
     midMarketPrice = (sellSideData[0].x + buySideSingleHopData[0].x) / 2;
   } else if (sellSideSingleHopData.length > 0 && buySideData.length > 0) {
     midMarketPrice = (sellSideSingleHopData[0].x + buySideData[0].x) / 2;
-  } else if (
-    sellSideSingleHopData.length > 0 &&
-    buySideSingleHopData.length > 0
-  ) {
-    midMarketPrice =
-      (sellSideSingleHopData[0].x + buySideSingleHopData[0].x) / 2;
+  } else if (sellSideSingleHopData.length > 0 && buySideSingleHopData.length > 0) {
+    midMarketPrice = (sellSideSingleHopData[0].x + buySideSingleHopData[0].x) / 2;
   } else if (sellSideData.length > 0) {
     midMarketPrice = sellSideData[0].x;
   } else if (buySideData.length > 0) {
@@ -82,21 +83,19 @@ const DepthChart = ({
     midMarketPrice = buySideSingleHopData[0].x;
   } else {
     midMarketPrice = 0;
-    console.log("No data for this pair");
+    console.log('No data for this pair');
   }
 
-  console.log("midMarketPrice", midMarketPrice);
+  console.log('midMarketPrice', midMarketPrice);
 
   // Update all single hope data to have a point at the same x values as the non single hop data does so that we always can render both points on the tooltip
   // Make the duplicate point have the same y value as the last point in the single hop data, or 0 if the point before DNE, or dont change if the point is already there
   function synchronizeData(
     mainData: { x: number; y: number }[],
-    singleHopData: { x: number; y: number }[]
+    singleHopData: { x: number; y: number }[],
   ) {
     // Create a map from singleHopData for quick lookup
-    const singleHopMap = new Map(
-      singleHopData.map((dataPoint) => [dataPoint.x, dataPoint.y])
-    );
+    const singleHopMap = new Map(singleHopData.map(dataPoint => [dataPoint.x, dataPoint.y]));
 
     // This will hold the modified single hop data
     const newSingleHopData: { x: number; y: number }[] = [];
@@ -151,19 +150,17 @@ const DepthChart = ({
   const [zoomIndex, setZoomIndex] = useState(0);
   const [lastZoomIndex, setLastZoomIndex] = useState(0);
 
-  // Function to update the chart's view to the current zoom level
-  const updateZoomRange = () => {
+  // update the chart's view to the current zoom level
+  useEffect(() => {
     const chartInstance = chartRef.current;
-    if (!chartInstance) {return;}
+    if (!chartInstance) {
+      return;
+    }
 
     const midMarketPrice =
-      (Math.min(...buySideData.map((d) => d.x)) +
-        Math.max(...sellSideData.map((d) => d.x))) /
-      2;
+      (Math.min(...buySideData.map(d => d.x)) + Math.max(...sellSideData.map(d => d.x))) / 2;
     const halfRange =
-      (Math.max(...sellSideData.map((d) => d.x)) -
-        Math.min(...buySideData.map((d) => d.x))) /
-      2;
+      (Math.max(...sellSideData.map(d => d.x)) - Math.min(...buySideData.map(d => d.x))) / 2;
 
     const zoomFactor = zoomLevels[zoomIndex];
     const newMin = midMarketPrice - halfRange / zoomFactor;
@@ -172,32 +169,34 @@ const DepthChart = ({
     chartInstance.options.scales.x.min = newMin;
     chartInstance.options.scales.x.max = newMax;
     chartInstance.update();
-  };
-  useEffect(() => {
-    updateZoomRange();
-  }, [zoomIndex, buySideData, sellSideData]);
+  }, [
+    zoomIndex,
+    getDataKey(buySideData),
+    getDataKey(sellSideData),
+    asset1Token.symbol,
+    asset2Token.symbol,
+  ]);
+
   const handleZoomIn = () => {
     if (zoomIndex < zoomLevels.length - 1) {
-      setZoomIndex((prevIndex) => prevIndex + 1); // Increasing index zooms out
+      setZoomIndex(prevIndex => prevIndex + 1); // Increasing index zooms out
     }
   };
 
   const handleZoomOut = () => {
     if (zoomIndex > 0) {
-      setZoomIndex((prevIndex) => prevIndex - 1); // Decreasing index zooms in
+      setZoomIndex(prevIndex => prevIndex - 1); // Decreasing index zooms in
     }
   };
-  const didInitRef = useRef<undefined | boolean>();
+  const drawRef = useRef<undefined | boolean>();
+  const drawKey = getDrawKey(asset1Token, asset2Token, buySideData, sellSideData);
 
-  const maxLiquidity = Math.max(
-    ...sellSideData.map((p) => p.y),
-    ...buySideData.map((p) => p.y)
-  );
+  const maxLiquidity = Math.max(...sellSideData.map(p => p.y), ...buySideData.map(p => p.y));
   const [maxY, setMaxY] = useState<number>(calculateMaxY(maxLiquidity));
   const [minXValue, setMinXValue] = useState<number>(0);
   // Max sell side value if present, otherwise max buy side value
   const [maxXValue, setMaxXValue] = useState<number>(
-    sellSideData[sellSideData.length - 1]?.x || buySideData[0]?.x || 0
+    sellSideData[sellSideData.length - 1]?.x || buySideData[0]?.x || 0,
   );
 
   const xRange = maxXValue - minXValue;
@@ -207,8 +206,8 @@ const DepthChart = ({
   const [disableMinusButton, setDisableMinusButton] = useState(false);
 
   useEffect(() => {
-    console.log("disable plus button", disablePlusButton);
-    console.log("disable minus button", disableMinusButton);
+    console.log('disable plus button', disablePlusButton);
+    console.log('disable minus button', disableMinusButton);
   }, [disablePlusButton, disableMinusButton]);
 
   // Control the zoom level of the chart
@@ -218,10 +217,11 @@ const DepthChart = ({
       setDisableMinusButton(true);
       return;
     }
-    if (zoomIndex === lastZoomIndex && didInitRef.current) {
+
+    if (zoomIndex === lastZoomIndex && drawRef.current === drawKey) {
       return;
     }
-    didInitRef.current = true;
+    drawRef.current = drawKey;
 
     // Change zoom to only show points within how close they are to the midpoint price,
     // If zoom index is 1, show all points, if z oom index is 2, show middle 50% of points, if zoom index is 3, show middle 25% of points, etc.
@@ -233,9 +233,7 @@ const DepthChart = ({
       // Calculate the range of prices to show based on the zoom level
 
       // Filter the data points to only show those within the range
-      const filteredData = data.filter(
-        (point) => Math.abs(point.x - midMarketPrice) <= range
-      );
+      const filteredData = data.filter(point => Math.abs(point.x - midMarketPrice) <= range);
 
       return filteredData;
     };
@@ -246,19 +244,16 @@ const DepthChart = ({
     const newRenderedBuySideSingleHopData = filterData(buySideSingleHopData);
     const newRenderedSellSideSingleHopData = filterData(sellSideSingleHopData);
     // Stop zooming if there is no data for newRenderedBuySideData & newRenderedSellSideData and reset zoom level
-    if (
-      newRenderedBuySideData.length === 0 ||
-      newRenderedSellSideData.length === 0
-    ) {
-      console.log("resetting zoom level", zoomIndex, lastZoomIndex);
+    if (newRenderedBuySideData.length === 0 || newRenderedSellSideData.length === 0) {
+      console.log('resetting zoom level', zoomIndex, lastZoomIndex);
       setZoomIndex(lastZoomIndex);
 
       if (newRenderedBuySideData.length === 0) {
         setDisablePlusButton(true);
-        console.log("disable plus button", disablePlusButton);
+        console.log('disable plus button', disablePlusButton);
       } else {
         setDisableMinusButton(true);
-        console.log("disable minus button", disableMinusButton);
+        console.log('disable minus button', disableMinusButton);
       }
       return;
     } else {
@@ -273,22 +268,22 @@ const DepthChart = ({
     setRenderedSellSideSingleHopData(newRenderedSellSideSingleHopData);
 
     const xVals = [
-      ...newRenderedBuySideData.map((d) => d.x),
-      ...newRenderedSellSideData.map((d) => d.x),
+      ...newRenderedBuySideData.map(d => d.x),
+      ...newRenderedSellSideData.map(d => d.x),
     ];
 
-    console.log("zoomLevel", zoomLevels[zoomIndex]);
+    console.log('zoomLevel', zoomLevels[zoomIndex]);
 
     // Add an additional point equal to the same value as the last point to extend the line to the border
     // first check if the data is not empty
-    setRenderedBuySideData((prev) => {
+    setRenderedBuySideData(prev => {
       const lastPoint = prev[prev.length - 1];
       if (lastPoint) {
         return [...prev, { x: -1000000, y: lastPoint.y }];
       }
       return [{ x: -1000000, y: 0 }];
     });
-    setRenderedSellSideData((prev) => {
+    setRenderedSellSideData(prev => {
       const lastPoint = prev[prev.length - 1];
       if (lastPoint) {
         return [...prev, { x: lastPoint.x + 1e18, y: lastPoint.y }];
@@ -296,14 +291,14 @@ const DepthChart = ({
       return [{ x: -1000000, y: 0 }];
     });
 
-    setRenderedBuySideSingleHopData((prev) => {
+    setRenderedBuySideSingleHopData(prev => {
       const lastPoint = prev[prev.length - 1];
       if (lastPoint) {
         return [...prev, { x: -1000000, y: lastPoint.y }];
       }
       return [{ x: -1000000, y: 0 }];
     });
-    setRenderedSellSideSingleHopData((prev) => {
+    setRenderedSellSideSingleHopData(prev => {
       const lastPoint = prev[prev.length - 1];
       if (lastPoint) {
         return [...prev, { x: lastPoint.x + 1e18, y: lastPoint.y }];
@@ -318,78 +313,78 @@ const DepthChart = ({
     // setPadding((Math.max(...xVals) - Math.min(...xVals)) * 0.05);
 
     const liquidityMax = Math.max(
-      ...newRenderedSellSideData.map((p) => p.y),
-      ...newRenderedBuySideData.map((p) => p.y)
+      ...newRenderedSellSideData.map(p => p.y),
+      ...newRenderedBuySideData.map(p => p.y),
     );
-    console.log("maxY", calculateMaxY(liquidityMax));
+    console.log('maxY', calculateMaxY(liquidityMax));
     setMaxY(calculateMaxY(liquidityMax));
 
     // Update the last zoom level
     setLastZoomIndex(zoomIndex);
-    console.log("running");
-  }, [zoomIndex, midMarketPrice, buySideData, sellSideData]);
+    console.log('running');
+  }, [zoomIndex, midMarketPrice, drawKey]);
 
   // set initial zoom at 0 to load the chart appropriately
   useEffect(() => {
     setZoomIndex(0);
   }, []);
 
-  console.log("multi", buySideData, sellSideData, midMarketPrice);
-  console.log("single", buySideSingleHopData, sellSideSingleHopData);
+  console.log('multi', buySideData, sellSideData, midMarketPrice);
+  console.log('single', buySideSingleHopData, sellSideSingleHopData);
 
   const data: any = {
     datasets: [
       {
-        label: "Incl Synthetic Sell",
-        data: renderedSellSideData.map((point) => ({
+        label: 'Incl Synthetic Sell',
+        data: renderedSellSideData.map(point => ({
           x: point.x.toFixed(6),
           y: point.y.toFixed(6),
         })),
-        borderColor: "rgba(255, 73, 108, 0.6)", // Neon Red
-        backgroundColor: "rgba(255, 73, 108, 0.6)",
-        fill: "origin",
-        stepped: "before",
-        yAxisID: "left-y",
+        borderColor: 'rgba(255, 73, 108, 0.6)', // Neon Red
+        backgroundColor: 'rgba(255, 73, 108, 0.6)',
+        fill: 'origin',
+        stepped: 'before',
+        yAxisID: 'left-y',
         clip: true,
       },
       {
-        label: "Incl Synthetic Buy",
+        label: 'Incl Synthetic Buy',
         data: renderedBuySideData
-          .map((point) => ({ x: point.x.toFixed(6), y: point.y.toFixed(6) }))
+          .map(point => ({ x: point.x.toFixed(6), y: point.y.toFixed(6) }))
           .reverse(),
-        borderColor: "rgba(51, 255, 87, 0.6)", // Neon Green
-        backgroundColor: "rgba(51, 255, 87, 0.6)",
-        fill: "origin",
+        borderColor: 'rgba(51, 255, 87, 0.6)', // Neon Green
+        backgroundColor: 'rgba(51, 255, 87, 0.6)',
+        fill: 'origin',
         // horizontal lines on buy side need to start at point on right and continue to the left
-        stepped: "after",
-        yAxisID: "right-y",
+        stepped: 'after',
+        yAxisID: 'right-y',
         clip: true,
       },
       // Single hops darker data
       {
-        label: "Direct Sell",
-        data: renderedSellSideSingleHopData.map((point) => ({
+        label: 'Direct Sell',
+        data: renderedSellSideSingleHopData.map(point => ({
           x: point.x.toFixed(6),
           y: point.y.toFixed(6),
         })),
-        borderColor: "rgba(255, 150, 130, .6)", // Neon Red
-        backgroundColor: "rgba(255, 150, 130, .6)",
-        fill: "origin",
-        stepped: "before",
-        yAxisID: "left-y",
+        borderColor: 'rgba(255, 150, 130, .6)', // Neon Red
+        backgroundColor: 'rgba(255, 150, 130, .6)',
+        fill: 'origin',
+        stepped: 'before',
+        yAxisID: 'left-y',
         clip: true,
       },
       {
-        label: "Direct Buy",
+        label: 'Direct Buy',
         data: renderedBuySideSingleHopData
-          .map((point) => ({ x: point.x.toFixed(6), y: point.y.toFixed(6) }))
+          .map(point => ({ x: point.x.toFixed(6), y: point.y.toFixed(6) }))
           .reverse(),
-        borderColor: "rgba(255, 255, 87, .6)", // Neon Green
-        backgroundColor: "rgba(255, 255, 87, .6)",
-        fill: "origin",
+        borderColor: 'rgba(255, 255, 87, .6)', // Neon Green
+        backgroundColor: 'rgba(255, 255, 87, .6)',
+        fill: 'origin',
         // horizontal lines on buy side need to start at point on right and continue to the left
-        stepped: "after",
-        yAxisID: "right-y",
+        stepped: 'after',
+        yAxisID: 'right-y',
         clip: true,
       },
     ],
@@ -399,20 +394,16 @@ const DepthChart = ({
   const totalTicks = 10;
   const [tickStepSize, setTickStepSize] = useState<number>(
     +(
-      (Math.max(
-        ...buySideData.map((d) => d.x),
-        ...sellSideData.map((d) => d.x)
-      ) -
-        Math.min(
-          ...buySideData.map((d) => d.x),
-          ...sellSideData.map((d) => d.x)
-        )) /
+      (Math.max(...buySideData.map(d => d.x), ...sellSideData.map(d => d.x)) -
+        Math.min(...buySideData.map(d => d.x), ...sellSideData.map(d => d.x))) /
       totalTicks
-    ).toPrecision(6)
+    ).toPrecision(6),
   );
 
   function calculateMaxY(maxLiquidity: number) {
-    if (maxLiquidity < 10) {return 10;} // If less than 10, round up to 10
+    if (maxLiquidity < 10) {
+      return 10;
+    } // If less than 10, round up to 10
 
     // Round to the nearest upper number, eg for 1500, round to 2000, for 2000, round to 3000, for 10345 round to 11000, for 12790, round to 13000
     let roundedNumber = Math.ceil(maxLiquidity / 1000) * 1000;
@@ -431,10 +422,10 @@ const DepthChart = ({
   }
 
   const [hoverAnnotation, setHoverAnnotation] = useState<AnnotationOptions>({
-    type: "line",
-    scaleID: "x-axis-0",
+    type: 'line',
+    scaleID: 'x-axis-0',
     value: 0,
-    borderColor: "rgba(255, 255, 255, 0.8)",
+    borderColor: 'rgba(255, 255, 255, 0.8)',
     borderWidth: 1,
     yMin: 0,
     yMax: 1,
@@ -456,20 +447,19 @@ const DepthChart = ({
             xMin: xValue,
             xMax: xValue,
             yMin: 0,
-            yMax: Math.max(
-              ...sellSideData.map((p) => p.y),
-              ...buySideData.map((p) => p.y)
-            ),
+            yMax: Math.max(...sellSideData.map(p => p.y), ...buySideData.map(p => p.y)),
           };
-          chart.update("none"); // Update without animation
+          chart.update('none'); // Update without animation
         }
       }
     },
     100,
-    { leading: true, trailing: false }
+    { leading: true, trailing: false },
   );
   function roundToNextBigNumber(number: number) {
-    if (number <= 10) {return 10;} // For numbers less than or equal to 10, round up to 10
+    if (number <= 10) {
+      return 10;
+    } // For numbers less than or equal to 10, round up to 10
 
     // Calculate the order of magnitude of the number
     const orderOfMagnitude = Math.floor(Math.log10(number));
@@ -484,7 +474,7 @@ const DepthChart = ({
     return roundedNumber;
   }
 
-  const options: ChartOptions<"line"> = {
+  const options: ChartOptions<'line'> = {
     scales: {
       x: {
         title: {
@@ -494,10 +484,10 @@ const DepthChart = ({
         },
         grid: {
           display: true, // Display vertical grid lines
-          color: "#363434", // Lighter color for vertical grid lines
+          color: '#363434', // Lighter color for vertical grid lines
         },
-        type: "linear",
-        position: "bottom",
+        type: 'linear',
+        position: 'bottom',
         beginAtZero: false,
         min: Math.max(0, minXValue - padding), // Always >=0
         max: maxXValue + padding,
@@ -510,17 +500,17 @@ const DepthChart = ({
           stepSize: tickStepSize,
         },
       },
-      "left-y": {
-        type: "linear",
+      'left-y': {
+        type: 'linear',
         grid: {
           display: false,
         },
         beginAtZero: true,
-        position: "left",
+        position: 'left',
         max: maxY,
       },
-      "right-y": {
-        type: "linear",
+      'right-y': {
+        type: 'linear',
         grid: {
           display: false,
         },
@@ -530,12 +520,14 @@ const DepthChart = ({
           text: `${asset1Token.symbol}`,
           padding: { bottom: 10 },
         },
-        position: "right",
+        position: 'right',
         max: maxY,
       },
     },
     onHover: (event: ChartEvent, chartElement: any, chart: any) => {
-      if (!event.native) {return;}
+      if (!event.native) {
+        return;
+      }
 
       const nativeEvent = event.native as MouseEvent;
       // Convert the mouse's pixel position to the corresponding value on the chart's x-axis.
@@ -551,21 +543,18 @@ const DepthChart = ({
       let nearestXValue: number | null = null; // Initialize as null to later check if found any point.
       let minDistance = Infinity;
 
-      chart.data.datasets.forEach(
-        (dataset: { data: { x: number; y: number }[] }) => {
-          dataset.data.forEach((dataPoint) => {
-            const pointXValue =
-              typeof dataPoint === "object" ? dataPoint.x : dataPoint;
-            // Calculate the distance between the cursor and the data point.
-            const distance = Math.abs(mouseXValue - pointXValue);
-            // Check if this data point is closer than the previous closest one.
-            if (distance < minDistance) {
-              nearestXValue = pointXValue;
-              minDistance = distance;
-            }
-          });
-        }
-      );
+      chart.data.datasets.forEach((dataset: { data: { x: number; y: number }[] }) => {
+        dataset.data.forEach(dataPoint => {
+          const pointXValue = typeof dataPoint === 'object' ? dataPoint.x : dataPoint;
+          // Calculate the distance between the cursor and the data point.
+          const distance = Math.abs(mouseXValue - pointXValue);
+          // Check if this data point is closer than the previous closest one.
+          if (distance < minDistance) {
+            nearestXValue = pointXValue;
+            minDistance = distance;
+          }
+        });
+      });
 
       if (nearestXValue !== null) {
         // Update the hover line position.
@@ -575,21 +564,21 @@ const DepthChart = ({
     plugins: {
       tooltip: {
         enabled: true,
-        mode: "nearest",
+        mode: 'nearest',
         intersect: false,
-        axis: "x",
+        axis: 'x',
         callbacks: {
           // Customize tooltip labels to show precise values
           label: function (context) {
-            let label = context.dataset.label || "";
+            let label = context.dataset.label || '';
             if (label) {
-              label += ": ";
+              label += ': ';
             }
             if (context.parsed.y !== null) {
               label += Number(context.parsed.y.toFixed(3)).toLocaleString(); // Adjust for y value
             }
             if (context.parsed.x !== null) {
-              label += " at " + Number(context.parsed.x.toFixed(6)).toLocaleString(); // Adjust for x value
+              label += ' at ' + Number(context.parsed.x.toFixed(6)).toLocaleString(); // Adjust for x value
             }
             return label;
           },
@@ -604,21 +593,18 @@ const DepthChart = ({
       annotation: {
         annotations: {
           line1: {
-            type: "line",
+            type: 'line',
             yMin: 0,
-            yMax: Math.max(
-              ...sellSideData.map((p) => p.y),
-              ...buySideData.map((p) => p.y)
-            ),
+            yMax: Math.max(...sellSideData.map(p => p.y), ...buySideData.map(p => p.y)),
             xMin: midMarketPrice,
             xMax: midMarketPrice,
-            borderColor: "black",
+            borderColor: 'black',
             borderWidth: 0,
             label: {
               display: true,
               content: `Mid Market Price: ${Number(midMarketPrice.toFixed(6)).toLocaleString()}`,
-              position: "end",
-              backgroundColor: "#6e6eb8",
+              position: 'end',
+              backgroundColor: '#6e6eb8',
               font: {
                 // family: "monospace"
               },
@@ -640,38 +626,39 @@ const DepthChart = ({
   };
 
   return (
-    <VStack height={["320px", "320px", "320px"]} width={["100%", "100%", "100%", "100%", "100%", "100%"]}>
-        <div
-          style={{ height: "320px", width: "100%" }}
-          onMouseOver={handleMouseOverChart}
-          onMouseOut={handleMouseOutChart}
+    <VStack
+      height={['320px', '320px', '320px']}
+      width={['100%', '100%', '100%', '100%', '100%', '100%']}
+    >
+      <div
+        style={{ height: '320px', width: '100%' }}
+        onMouseOver={handleMouseOverChart}
+        onMouseOut={handleMouseOutChart}
+      >
+        <Line ref={chartRef} data={data} options={options} />
+      </div>
+      <HStack spacing={2} paddingRight='6' paddingTop='1'>
+        <Button
+          onClick={handleZoomOut}
+          colorScheme='purple'
+          backgroundColor='var(--complimentary-background)'
+          size={'sm'}
+          isDisabled={zoomIndex == 0 || disableMinusButton}
         >
-          <Line ref={chartRef} data={data} options={options} />
-        </div>
-        <HStack spacing={2} paddingRight="6" paddingTop="1">
-          <Button
-            onClick={handleZoomOut}
-            colorScheme="purple"
-            backgroundColor="var(--complimentary-background)"
-            size={"sm"}
-            isDisabled={zoomIndex == 0 || disableMinusButton}
-          >
-            -
-          </Button>
-          <Text fontSize="sm">{zoomLevels[zoomIndex]}x</Text>
-          <Button
-            onClick={handleZoomIn}
-            colorScheme="purple"
-            backgroundColor="var(--complimentary-background)"
-            size={"sm"}
-            isDisabled={
-              zoomIndex == zoomLevels.length - 1 || disablePlusButton
-            }
-          >
-            +
-          </Button>
-        </HStack>
-      </VStack>
+          -
+        </Button>
+        <Text fontSize='sm'>{zoomLevels[zoomIndex]}x</Text>
+        <Button
+          onClick={handleZoomIn}
+          colorScheme='purple'
+          backgroundColor='var(--complimentary-background)'
+          size={'sm'}
+          isDisabled={zoomIndex == zoomLevels.length - 1 || disablePlusButton}
+        >
+          +
+        </Button>
+      </HStack>
+    </VStack>
   );
 };
 
