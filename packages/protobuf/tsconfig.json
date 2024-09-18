@@ -5,9 +5,9 @@
     "module": "Node16",
     "outDir": "dist",
     "preserveWatchOutput": true,
-    "rootDir": "src",
+    "rootDirs": ["src", "gen"],
     "target": "ESNext"
   },
   "extends": "@tsconfig/strictest/tsconfig.json",
-  "include": ["src"]
+  "include": ["src", "gen"]
 }

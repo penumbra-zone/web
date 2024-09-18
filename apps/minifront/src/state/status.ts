@@ -1,4 +1,4 @@
-import { ZQueryState } from '@penumbra-zone/zquery/src/types';
+import { AbridgedZQueryState, ZQueryState } from '@penumbra-zone/zquery/src/types';
 import { SliceCreator, useStore } from '.';
 import { createZQuery } from '@penumbra-zone/zquery';
 import { getStatusStream } from '../fetchers/status';
@@ -37,3 +37,58 @@ export interface StatusSlice {
 export const createStatusSlice = (): SliceCreator<StatusSlice> => () => ({
   status,
 });
+
+// Copies the logic from the view service's `status` method.
+export const statusSelector = (
+  zQueryState: AbridgedZQueryState<Status>,
+):
+  | {
+      /**
+       * - `undefined` when not loaded
+       * `true` if the sync is behind 10 blocks the current state of blockchain, or if not synced at all
+       * `false` otherwise
+       */
+      isCatchingUp: undefined;
+    }
+  | {
+      isCatchingUp: boolean;
+      isUpdating: boolean;
+      fullSyncHeight: bigint;
+      latestKnownBlockHeight?: bigint;
+      percentSynced?: string;
+      percentSyncedNumber: number;
+      error: unknown;
+    } => {
+  if (!zQueryState.data?.fullSyncHeight) {
+    return { isCatchingUp: undefined };
+  } else {
+    const { fullSyncHeight, latestKnownBlockHeight } = zQueryState.data;
+    const isCatchingUp = !latestKnownBlockHeight || latestKnownBlockHeight - fullSyncHeight > 10;
+    const isUpdating = Boolean(
+      latestKnownBlockHeight &&
+        latestKnownBlockHeight !== fullSyncHeight &&
+        latestKnownBlockHeight - fullSyncHeight <= 10,
+    );
+
+    let percentSyncedNumber = 0;
+    if (latestKnownBlockHeight) {
+      percentSyncedNumber = Number(fullSyncHeight) / Number(latestKnownBlockHeight);
+      if (percentSyncedNumber > 1) {
+        percentSyncedNumber = 1;
+      }
+    }
+
+    // Round down to ensure whole numbers
+    const roundedPercentSyncedNumber = Math.floor(percentSyncedNumber * 100);
+
+    return {
+      error: zQueryState.error,
+      isCatchingUp,
+      isUpdating,
+      fullSyncHeight,
+      latestKnownBlockHeight,
+      percentSyncedNumber: roundedPercentSyncedNumber / 100,
+      percentSynced: `${roundedPercentSyncedNumber}%`,
+    };
+  }
+};

@@ -1,4 +1,4 @@
-import illustration from './illustration.svg';
+import illustration from './illustration.svg?url';
 
 const FakeButtons = () => (
   <div className='ml-6 mt-6 flex gap-1'>
@@ -16,12 +16,12 @@ export const SyncAnimation = () => (
   <div className='flex flex-col gap-8 rounded-sm bg-black'>
     <FakeButtons />
 
-    <div className='relative h-0 pb-[33%]'>
-      <div className='absolute inset-0 overflow-hidden'>
+    <div className='relative h-0 overflow-hidden pb-[33%]'>
+      <div className='absolute left-1/2 top-0 w-full -translate-x-1/2 overflow-hidden'>
         <img
           src={illustration}
           alt='A loading illustration'
-          className='animate-spin [animation-duration:_5s]'
+          className='w-full animate-spin [animation-duration:_5s]'
         />
       </div>
     </div>

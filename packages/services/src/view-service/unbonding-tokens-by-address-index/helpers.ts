@@ -2,7 +2,7 @@ import {
   AppParametersRequest,
   BalancesResponse,
   StatusRequest,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { PartialMessage } from '@bufbuild/protobuf';
 import { HandlerContext } from '@connectrpc/connect';
 import { assetPatterns } from '@penumbra-zone/types/assets';
@@ -11,7 +11,7 @@ import { status } from '../status.js';
 import { appParameters } from '../app-parameters.js';
 
 export const isUnbondingTokenBalance = (balancesResponse: PartialMessage<BalancesResponse>) => {
-  const display = getDisplayFromBalancesResponse(new BalancesResponse(balancesResponse));
+  const display = getDisplayFromBalancesResponse.optional(new BalancesResponse(balancesResponse));
   return display ? assetPatterns.unbondingToken.matches(display) : false;
 };
 
@@ -40,7 +40,7 @@ export const getIsClaimable = async (
     return false;
   }
 
-  const display = getDisplayFromBalancesResponse(new BalancesResponse(balancesResponse));
+  const display = getDisplayFromBalancesResponse.optional(new BalancesResponse(balancesResponse));
   if (!display) {
     return false;
   }

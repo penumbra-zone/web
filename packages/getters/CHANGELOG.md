@@ -1,5 +1,43 @@
 # @penumbra-zone/getters
 
+## 17.0.0
+
+### Major Changes
+
+- 3a5c074: don't export optional getters
+- 3a5c074: improve getter type
+
+## 16.0.0
+
+### Major Changes
+
+- f8730e9: Update asset ID getter; it no longer has a hardcoded Optional version
+
+## 15.0.0
+
+### Patch Changes
+
+- Updated dependencies [49263c6]
+  - @penumbra-zone/protobuf@6.0.0
+  - @penumbra-zone/bech32m@7.0.0
+
+## 14.0.0
+
+### Minor Changes
+
+- 10ef940: Updating to v0.80.0 bufbuild types
+
+### Patch Changes
+
+- Updated dependencies [10ef940]
+  - @penumbra-zone/protobuf@5.7.0
+
+## 13.0.1
+
+### Patch Changes
+
+- bd43d49: add export getAssetIdFromGasPrices
+
 ## 13.0.0
 
 ### Patch Changes

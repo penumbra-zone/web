@@ -1,8 +1,8 @@
 import { useLoaderData } from 'react-router-dom';
 import { IndexLoaderResponse } from '../fetching/loader';
-import { Card } from '@repo/ui/components/ui/card';
+import { Card } from '@penumbra-zone/ui/components/ui/card';
 import { format } from 'date-fns';
-import { SyncInfo as SyncInfoProto } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/util/tendermint_proxy/v1/tendermint_proxy_pb.js';
+import { SyncInfo as SyncInfoProto } from '@penumbra-zone/protobuf/penumbra/util/tendermint_proxy/v1/tendermint_proxy_pb';
 
 const getFormattedTime = (syncInfo: SyncInfoProto): { date?: string; time?: string } => {
   const dateObj = syncInfo.latestBlockTime?.toDate();
@@ -23,7 +23,7 @@ export const SyncInfo = () => {
     latestAppHash,
   } = useLoaderData() as IndexLoaderResponse;
   if (!syncInfo) {
-    return <></>;
+    return;
   }
 
   const { date, time } = getFormattedTime(syncInfo);

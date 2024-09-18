@@ -1,8 +1,8 @@
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import {
   AuctionId,
   DutchAuction,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
 import { formatAmount } from '@penumbra-zone/types/amount';
 import { ReactNode } from 'react';
 import { Separator } from '../../separator';
@@ -11,7 +11,7 @@ import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import { cn } from '../../../../lib/utils';
 import { AuctionIdComponent } from '../../auction-id-component';
 import { motion } from 'framer-motion';
-import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 export const ExpandedDetails = ({
   auctionId,
@@ -45,8 +45,8 @@ export const ExpandedDetails = ({
     fullSyncHeight >= description.startHeight &&
     fullSyncHeight <= description.endHeight;
 
-  const inputExponent = getDisplayDenomExponent.optional()(inputMetadata);
-  const outputExponent = getDisplayDenomExponent.optional()(outputMetadata);
+  const inputExponent = getDisplayDenomExponent.optional(inputMetadata);
+  const outputExponent = getDisplayDenomExponent.optional(outputMetadata);
 
   return (
     <div className='flex w-full flex-col overflow-hidden'>

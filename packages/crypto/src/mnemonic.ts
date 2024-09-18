@@ -30,5 +30,6 @@ export const validateSeedPhrase = (seedPhrase: string[]): boolean => {
 };
 
 export const isInWordList = (word: string): boolean => {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify non-null assertion
   return wordlists['EN']!.includes(word);
 };

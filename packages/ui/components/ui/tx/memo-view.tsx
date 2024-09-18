@@ -1,4 +1,4 @@
-import { MemoView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
+import { MemoView } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { AddressViewComponent } from '../address-view';
 import { ViewBox } from './viewbox';
 import { ActionDetails } from './actions-views/action-details';
@@ -13,6 +13,7 @@ export const MemoViewComponent = ({ memo: { memoView } }: { memo: MemoView }) =>
             <div className='flex flex-col gap-4'>
               <ActionDetails>
                 <ActionDetails.Row label='Return Address'>
+                  {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify not using '?' operator */}
                   <AddressViewComponent view={memoView.value.plaintext!.returnAddress} />
                 </ActionDetails.Row>
                 <ActionDetails.Row label='Memo Text'>

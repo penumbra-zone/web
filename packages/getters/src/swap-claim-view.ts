@@ -1,4 +1,4 @@
-import { SwapClaimView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
+import { SwapClaimView } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { createGetter } from './utils/create-getter.js';
 import { getValue } from './note-view.js';
 
@@ -14,8 +14,8 @@ export const getOutput2 = createGetter((swapClaimView?: SwapClaimView) =>
     : undefined,
 );
 
-export const getOutput1ValueOptional = getOutput1.optional().pipe(getValue);
-export const getOutput2ValueOptional = getOutput2.optional().pipe(getValue);
+export const getOutput1Value = getOutput1.pipe(getValue);
+export const getOutput2Value = getOutput2.pipe(getValue);
 
 export const getSwapClaimFee = createGetter((swapClaimView?: SwapClaimView) =>
   swapClaimView?.swapClaimView.case === 'visible' || swapClaimView?.swapClaimView.case === 'opaque'

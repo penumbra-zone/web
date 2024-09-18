@@ -42,6 +42,7 @@ const localErrorJson = (err: unknown, relevantMessage?: unknown) =>
         details: [
           {
             type: String(
+              // eslint-disable-next-line no-nested-ternary -- readable ternary nesting
               typeof err === 'function'
                 ? err.name
                 : typeof err === 'object'
@@ -57,14 +58,17 @@ const localErrorJson = (err: unknown, relevantMessage?: unknown) =>
 export class CRSessionClient {
   private static singleton?: CRSessionClient;
   private servicePort: chrome.runtime.Port;
+  private clientPort: MessagePort;
+  public inputPort: MessagePort;
 
-  private constructor(
-    private prefix: string,
-    private clientPort: MessagePort,
-  ) {
+  private constructor(private prefix: string) {
     if (CRSessionClient.singleton) {
       throw new Error('Already constructed');
     }
+
+    const { port1, port2 } = new MessageChannel();
+    this.clientPort = port1;
+    this.inputPort = port2;
 
     this.servicePort = chrome.runtime.connect({
       includeTlsChannelId: true,
@@ -72,7 +76,7 @@ export class CRSessionClient {
     });
 
     this.servicePort.onMessage.addListener(this.serviceListener);
-    this.servicePort.onDisconnect.addListener(this.disconnectClient);
+    this.servicePort.onDisconnect.addListener(this.disconnect);
     this.clientPort.addEventListener('message', this.clientListener);
     this.clientPort.start();
   }
@@ -84,25 +88,22 @@ export class CRSessionClient {
    * @returns a `MessagePort` that can be provided to DOM channel transports
    */
   public static init(prefix: string): MessagePort {
-    const { port1, port2 } = new MessageChannel();
-    CRSessionClient.singleton ??= new CRSessionClient(prefix, port1);
-    return port2;
+    CRSessionClient.singleton ??= new CRSessionClient(prefix);
+    return CRSessionClient.singleton.inputPort;
   }
 
-  private disconnectClient = () => {
+  private disconnect = () => {
     this.clientPort.removeEventListener('message', this.clientListener);
     this.clientPort.postMessage(false);
     this.clientPort.close();
-  };
-
-  private disconnectService = () => {
     this.servicePort.disconnect();
+    CRSessionClient.singleton = undefined;
   };
 
   private clientListener = (ev: MessageEvent<unknown>) => {
     try {
       if (ev.data === false) {
-        this.disconnectService();
+        this.disconnect();
       } else if (isTransportAbort(ev.data) || isTransportMessage(ev.data)) {
         this.servicePort.postMessage(ev.data);
       } else if (isTransportStream(ev.data)) {

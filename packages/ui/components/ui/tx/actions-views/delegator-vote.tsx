@@ -7,13 +7,10 @@ import {
   DelegatorVoteView,
   Vote,
   Vote_Vote,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/governance/v1/governance_pb';
+} from '@penumbra-zone/protobuf/penumbra/core/component/governance/v1/governance_pb';
 import { getDelegatorVoteBody } from '@penumbra-zone/getters/delegator-vote-view';
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb.js';
-import {
-  Metadata,
-  ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { AddressViewComponent } from '../../address-view';
 import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 
@@ -57,11 +54,11 @@ const umValueView = (amount?: Amount) => {
 };
 
 export const DelegatorVoteComponent = ({ value }: { value: DelegatorVoteView }) => {
-  const body = getDelegatorVoteBody.optional()(value);
+  const body = getDelegatorVoteBody.optional(value);
 
   if (value.delegatorVote.case === 'visible') {
     const note = value.delegatorVote.value.note;
-    const address = getAddress.optional()(note);
+    const address = getAddress.optional(note);
 
     return (
       <ViewBox

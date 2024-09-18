@@ -4,8 +4,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@repo/ui/components/ui/select';
-import { cn } from '@repo/ui/lib/utils';
+} from '@penumbra-zone/ui/components/ui/select';
+import { cn } from '@penumbra-zone/ui/lib/utils';
 import { useState } from 'react';
 import { AllSlices } from '../../../state';
 import { Chain } from '@penumbra-labs/registry';
@@ -44,7 +44,6 @@ export const ChainSelector = () => {
         <SelectContent className='left-[-17px]'>
           {chains.data?.map((i, index) => (
             <SelectItem
-              disabled={i.chainId === 'noble-1'}
               key={index}
               value={i.displayName}
               className={cn(

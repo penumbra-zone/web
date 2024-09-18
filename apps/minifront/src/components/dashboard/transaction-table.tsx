@@ -5,7 +5,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@repo/ui/components/ui/table';
+} from '@penumbra-zone/ui/components/ui/table';
 import { Link } from 'react-router-dom';
 import { shorten } from '@penumbra-zone/types/string';
 import { memo } from 'react';

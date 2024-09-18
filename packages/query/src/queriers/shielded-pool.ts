@@ -1,14 +1,11 @@
 import { PromiseClient } from '@connectrpc/connect';
 import { createClient } from './utils.js';
 import { ShieldedPoolService } from '@penumbra-zone/protobuf';
-import {
-  AssetId,
-  Metadata,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import type { ShieldedPoolQuerierInterface } from '@penumbra-zone/types/querier';
 
 declare global {
-  // eslint-disable-next-line no-var
+  // eslint-disable-next-line no-var -- expected globals
   var __DEV__: boolean | undefined;
 }
 

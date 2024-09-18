@@ -13,16 +13,18 @@ export const usePagePath = <T extends PagePath>() => {
 };
 
 export const matchPagePath = (str: string): PagePath => {
+  /** @todo: Remove next line after we switch to v2 layout */
+  const strFixed = str.replace('/v2', '');
   const pathValues = Object.values(PagePath);
 
-  if (pathValues.includes(str as PagePath)) {
-    return str as PagePath;
+  if (pathValues.includes(strFixed as PagePath)) {
+    return strFixed as PagePath;
   }
 
   for (const pathValue of pathValues) {
     if (pathValue.includes(':')) {
       const regex = new RegExp('^' + pathValue.replace(/:(\w+)/g, '([^/]+)') + '$');
-      const match = str.match(regex);
+      const match = strFixed.match(regex);
       if (match) {
         return pathValue as PagePath;
       }

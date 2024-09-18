@@ -3,7 +3,7 @@ import { servicesCtx } from '../../ctx/prax.js';
 import { planTransaction } from '@penumbra-zone/wasm/planner';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { assertSwapAssetsAreNotTheSame } from './assert-swap-assets-are-not-the-same.js';
-import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { TransactionPlannerRequest } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { fvkCtx } from '../../ctx/full-viewing-key.js';
 import { extractAltFee } from '../fees.js';
 import { assertTransactionSource } from './assert-transaction-source.js';
@@ -16,6 +16,7 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
 
   // Query IndexedDB directly to check for the existence of staking token
   const nativeToken = await indexedDb.hasTokenBalance(
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify non-null assertion
     req.source!.account,
     indexedDb.stakingTokenAssetId,
   );

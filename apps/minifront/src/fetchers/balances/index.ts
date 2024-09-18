@@ -1,12 +1,13 @@
 import {
   BalancesRequest,
   BalancesResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
-import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
-import { viewClient } from '../../clients';
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { ViewService } from '@penumbra-zone/protobuf';
+import { penumbra } from '../../prax';
 
-interface BalancesProps {
+export interface BalancesProps {
   accountFilter?: AddressIndex;
   assetIdFilter?: AssetId;
 }
@@ -14,6 +15,22 @@ interface BalancesProps {
 export const getBalances = ({ accountFilter, assetIdFilter }: BalancesProps = {}): Promise<
   BalancesResponse[]
 > => {
+  const req = new BalancesRequest({});
+  if (accountFilter) {
+    req.accountFilter = accountFilter;
+  }
+  if (assetIdFilter) {
+    req.assetIdFilter = assetIdFilter;
+  }
+
+  const iterable = penumbra.service(ViewService).balances(req);
+  return Array.fromAsync(iterable);
+};
+
+export const getBalancesStream = ({
+  accountFilter,
+  assetIdFilter,
+}: BalancesProps = {}): AsyncIterable<BalancesResponse> => {
   const req = new BalancesRequest();
   if (accountFilter) {
     req.accountFilter = accountFilter;
@@ -22,6 +39,5 @@ export const getBalances = ({ accountFilter, assetIdFilter }: BalancesProps = {}
     req.assetIdFilter = assetIdFilter;
   }
 
-  const iterable = viewClient.balances(req);
-  return Array.fromAsync(iterable);
+  return penumbra.service(ViewService).balances(req);
 };

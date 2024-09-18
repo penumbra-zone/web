@@ -12,6 +12,7 @@ const meta: Meta<typeof Text> = {
     h2: { control: false },
     h3: { control: false },
     h4: { control: false },
+    xxl: { control: false },
     large: { control: false },
     body: { control: false },
     p: { control: false },
@@ -19,6 +20,7 @@ const meta: Meta<typeof Text> = {
     detail: { control: false },
     small: { control: false },
     technical: { control: false },
+    detailTechnical: { control: false },
 
     as: {
       options: ['span', 'div', 'h1', 'h2', 'h3', 'h4', 'p', 'main', 'section'],
@@ -46,6 +48,7 @@ const OPTIONS = [
   'detail',
   'small',
   'technical',
+  'detailTechnical',
 ] as const;
 
 const Option = ({
@@ -74,6 +77,7 @@ export const KitchenSink: StoryObj<typeof Text> = {
     children: 'The quick brown fox jumps over the lazy dog.',
     h1: true,
     as: 'span',
+    truncate: false,
   },
 
   render: function Render(props) {

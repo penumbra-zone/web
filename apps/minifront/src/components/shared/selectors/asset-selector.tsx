@@ -1,19 +1,21 @@
-import { Dialog, DialogClose, DialogContent, DialogHeader } from '@repo/ui/components/ui/dialog';
-import { AssetIcon } from '@repo/ui/components/ui/asset-icon';
 import {
-  Metadata,
-  ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import { ValueViewComponent } from '@repo/ui/components/ui/value';
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogHeader,
+} from '@penumbra-zone/ui/components/ui/dialog';
+import { AssetIcon } from '@penumbra-zone/ui/components/ui/asset-icon';
+import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/value';
 import { useCallback, useEffect, useId, useMemo, useState } from 'react';
-import { IconInput } from '@repo/ui/components/ui/icon-input';
+import { IconInput } from '@penumbra-zone/ui/components/ui/icon-input';
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
-import { Box } from '@repo/ui/components/ui/box';
+import { Box } from '@penumbra-zone/ui/components/ui/box';
 import { motion } from 'framer-motion';
 import { metadataBySearch } from './search-filters';
-import { cn } from '@repo/ui/lib/utils';
+import { cn } from '@penumbra-zone/ui/lib/utils';
 import { LoadingIndicator } from './loading-indicator';
-import { Table, TableBody, TableCell, TableRow } from '@repo/ui/components/ui/table';
+import { Table, TableBody, TableCell, TableRow } from '@penumbra-zone/ui/components/ui/table';
 
 interface AssetSelectorProps {
   assets: Metadata[];
@@ -140,16 +142,18 @@ export const AssetSelector = ({ assets, loading, onChange, value, filter }: Asse
           <div className='flex max-h-[90dvh] flex-col'>
             <DialogHeader>Select asset</DialogHeader>
 
-            <div className='flex flex-col gap-2 overflow-auto p-4'>
-              <Box spacing='compact'>
-                <IconInput
-                  icon={<MagnifyingGlassIcon className='size-5 text-muted-foreground' />}
-                  value={search}
-                  onChange={setSearch}
-                  autoFocus
-                  placeholder='Search assets...'
-                />
-              </Box>
+            <div className='flex flex-col gap-2 overflow-auto'>
+              <div className='px-4 pt-4'>
+                <Box spacing='compact'>
+                  <IconInput
+                    icon={<MagnifyingGlassIcon className='size-5 text-muted-foreground' />}
+                    value={search}
+                    onChange={setSearch}
+                    autoFocus
+                    placeholder='Search assets...'
+                  />
+                </Box>
+              </div>
 
               <Table>
                 <TableBody>
@@ -163,7 +167,7 @@ export const AssetSelector = ({ assets, loading, onChange, value, filter }: Asse
                         <TableCell className='p-0'>
                           <div
                             className={cn(
-                              '-mx-4 flex h-full gap-[6px] p-4 hover:bg-light-brown',
+                              'flex h-full gap-[6px] p-4 hover:bg-light-brown',
                               isSelected(metadata) && 'bg-light-brown',
                             )}
                           >

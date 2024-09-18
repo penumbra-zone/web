@@ -1,5 +1,5 @@
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import { CandlestickData } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
+import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { CandlestickData } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { AxisBottom, AxisLeft } from '@visx/axis';
 import { curveLinear } from '@visx/curve';
 import { GridRows } from '@visx/grid';
@@ -260,7 +260,9 @@ export const CandlesticksTooltip = ({
     return () => ac.abort('Abort tooltip date query');
   }, [data, getBlockDate]);
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify non-null assertion
   const endBase = endMetadata.denomUnits.filter(d => !d.exponent)[0]!;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify non-null assertion
   const startBase = startMetadata.denomUnits.filter(d => !d.exponent)[0]!;
   return (
     <Tooltip

@@ -1,24 +1,34 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '..';
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb.js';
+import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { sendValidationErrors } from '.';
-import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
-import {
-  Metadata,
-  ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import { viewClient } from '../../clients';
+import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import {
   AddressByIndexResponse,
   BalancesResponse,
   TransactionPlannerResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
-import { Fee } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { Fee } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
 import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
 
 vi.mock('../fetchers/address', () => ({
   getAddressByIndex: vi.fn(),
+}));
+
+const hoisted = vi.hoisted(() => ({
+  mockViewClient: {
+    addressByIndex: vi.fn(),
+    transactionPlanner: vi.fn(),
+    transactionPanner: vi.fn(),
+  },
+}));
+
+vi.mock('../../prax', () => ({
+  penumbra: {
+    service: vi.fn(() => hoisted.mockViewClient),
+  },
 }));
 
 describe('Send Slice', () => {
@@ -175,15 +185,17 @@ describe('Send Slice', () => {
     const mockFee = new Fee({ amount: { hi: 1n, lo: 2n } });
 
     beforeEach(() => {
-      vi.spyOn(viewClient, 'addressByIndex').mockResolvedValue(new AddressByIndexResponse());
+      vi.spyOn(hoisted.mockViewClient, 'addressByIndex').mockResolvedValue(
+        new AddressByIndexResponse(),
+      );
 
-      vi.spyOn(viewClient, 'transactionPlanner').mockResolvedValue(
+      vi.spyOn(hoisted.mockViewClient, 'transactionPlanner').mockResolvedValue(
         new TransactionPlannerResponse({ plan: { transactionParameters: { fee: mockFee } } }),
       );
     });
 
     afterEach(() => {
-      vi.spyOn(viewClient, 'transactionPlanner').mockReset();
+      vi.spyOn(hoisted.mockViewClient, 'transactionPlanner').mockReset();
     });
 
     describe('when `fee` is not yet present in the state`', () => {

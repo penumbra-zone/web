@@ -1,7 +1,7 @@
 import {
   UndelegateClaim,
   UndelegateClaimBody,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 import { createGetter } from './utils/create-getter.js';
 import { getValidatorIdentity } from './undelegate-claim-body.js';
 

@@ -1,4 +1,4 @@
-import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb.js';
+import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 import type { Impl } from './index.js';
 import { servicesCtx } from '../ctx/prax.js';
 
@@ -11,6 +11,7 @@ export const appParameters: Impl['appParameters'] = async (_, ctx) => {
   if (parameters) {
     return { parameters };
   }
+  // eslint-disable-next-line no-unreachable-loop -- TODO: justify
   for await (const update of subscription) {
     return { parameters: AppParameters.fromJson(update.value) };
   }

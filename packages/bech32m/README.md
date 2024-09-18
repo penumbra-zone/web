@@ -31,8 +31,7 @@ const validator: string = bech32mIdentityKey({ ik: new Uint8Array(32) });
 ## Typical use
 
 If you're working with Penumbra bech32m strings, there's a good chance you also
-want to use our protobuf message types. The buf registry package
-`@buf/penumbra-zone_penumbra.bufbuild_es` is a peer dependency.
+want to use our protobuf message types.
 
 Exported functions do not explicitly refer to those types, in order to permit
 production use without bundling the definitions, but all input/output will
@@ -44,9 +43,9 @@ import { plpidFromBech32m } from '@penumbra-zone/bech32m/plpid';
 import { spendKeyFromBech32m } from '@penumbra-zone/bech32m/penumbraspendkey';
 
 import type { PlainMessage, PartialMessage } from '@bufbuild/protobuf';
-import type { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import type { PositionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
-import { SpendKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+import type { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import type { PositionId } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
+import { SpendKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 const plainAssetId: PlainMessage<AssetId> = assetIdFromBech32m(
   'passet1vhga2czmpk76hsu3t7usjj2a2qga0u29vqlcp3hky8lwkfz30qrqy6gaae',

@@ -1,17 +1,17 @@
-import { JsonViewer } from '@repo/ui/components/ui/json-viewer';
-import { MetadataFetchFn, TransactionViewComponent } from '@repo/ui/components/ui/tx';
-import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { JsonViewer } from '@penumbra-zone/ui/components/ui/json-viewer';
+import { MetadataFetchFn, TransactionViewComponent } from '@penumbra-zone/ui/components/ui/tx';
+import { TransactionInfo } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import type { Jsonified } from '@penumbra-zone/types/jsonified';
 import { useState } from 'react';
-import { SegmentedPicker } from '@repo/ui/components/ui/segmented-picker';
+import { SegmentedPicker } from '@penumbra-zone/ui/components/ui/segmented-picker';
 import { asPublicTransactionView } from '@penumbra-zone/perspective/translators/transaction-view';
-import { typeRegistry } from '@penumbra-zone/protobuf';
+import { typeRegistry, ViewService } from '@penumbra-zone/protobuf';
 import { useQuery } from '@tanstack/react-query';
 import fetchReceiverView from './hooks';
 import { classifyTransaction } from '@penumbra-zone/perspective/transaction/classify';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
-import { viewClient } from '../../clients';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
+import { penumbra } from '../../prax';
 
 export enum TxDetailsTab {
   PUBLIC = 'public',
@@ -28,7 +28,9 @@ const OPTIONS = [
 const getMetadata: MetadataFetchFn = async ({ assetId }) => {
   const feeAssetId = assetId ? assetId : new ChainRegistryClient().bundled.globals().stakingAssetId;
 
-  const { denomMetadata } = await viewClient.assetMetadataById({ assetId: feeAssetId });
+  const { denomMetadata } = await penumbra
+    .service(ViewService)
+    .assetMetadataById({ assetId: feeAssetId });
   return denomMetadata;
 };
 
@@ -47,7 +49,11 @@ export const TxViewer = ({ txInfo }: { txInfo?: TransactionInfo }) => {
   // use React-Query to invoke custom hooks that call async translators.
   const { data: receiverView } = useQuery(
     ['receiverView', txInfo, option],
-    () => fetchReceiverView(txInfo!),
+    () =>
+      fetchReceiverView(
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify
+        txInfo!,
+      ),
     {
       enabled: option === TxDetailsTab.RECEIVER && !!txInfo,
     },
@@ -78,7 +84,13 @@ export const TxViewer = ({ txInfo }: { txInfo?: TransactionInfo }) => {
       </div>
       {option === TxDetailsTab.PRIVATE && txInfo && (
         <>
-          <TransactionViewComponent txv={txInfo.view!} metadataFetcher={getMetadata} />
+          <TransactionViewComponent
+            txv={
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify
+              txInfo.view!
+            }
+            metadataFetcher={getMetadata}
+          />
           <div className='mt-8'>
             <div className='text-xl font-bold'>Raw JSON</div>
             <JsonViewer jsonObj={txInfo.toJson({ typeRegistry }) as Jsonified<TransactionInfo>} />

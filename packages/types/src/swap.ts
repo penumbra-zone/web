@@ -6,8 +6,8 @@ import {
   getOutput1Value,
   getOutput2Value,
 } from '@penumbra-zone/getters/swap-view';
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import { SwapView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
+import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { SwapView } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { isZero } from './amount.js';
 import { getAmount } from '@penumbra-zone/getters/value-view';
 
@@ -35,8 +35,8 @@ const getUnfilledAmount = (swapView: SwapView): ValueView | undefined => {
   const delta1I = getDelta1IFromSwapView(swapView);
   const delta2I = getDelta2IFromSwapView(swapView);
 
-  const output1Value = getOutput1Value.optional()(swapView);
-  const output2Value = getOutput2Value.optional()(swapView);
+  const output1Value = getOutput1Value.optional(swapView);
+  const output2Value = getOutput2Value.optional(swapView);
 
   const is1To2Swap = isZero(delta2I);
   const is2To1Swap = isZero(delta1I);
@@ -69,8 +69,8 @@ export const getOneWaySwapValues = (
     );
   }
 
-  const output1 = getOutput1Value.optional()(swapView);
-  const output2 = getOutput2Value.optional()(swapView);
+  const output1 = getOutput1Value.optional(swapView);
+  const output2 = getOutput2Value.optional(swapView);
 
   const delta1I = getDelta1IFromSwapView(swapView);
   const delta2I = getDelta2IFromSwapView(swapView);

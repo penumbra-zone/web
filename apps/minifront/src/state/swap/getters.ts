@@ -1,14 +1,14 @@
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { getMetadataFromBalancesResponseOptional } from '@penumbra-zone/getters/balances-response';
+import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { getMetadataFromBalancesResponse } from '@penumbra-zone/getters/balances-response';
 import { getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { getMetadata } from '@penumbra-zone/getters/value-view';
 
 export const balancesResponseAndMetadataAreSameAsset = (
   balancesResponse?: BalancesResponse,
   metadata?: Metadata,
-) => getMetadata.optional()(balancesResponse?.balanceView)?.equals(metadata);
+) => getMetadata.optional(balancesResponse?.balanceView)?.equals(metadata);
 
 export const getFirstBalancesResponseNotMatchingMetadata = (
   balancesResponses: BalancesResponse[],
@@ -38,7 +38,7 @@ export const getBalanceByMatchingMetadataAndAddressIndex = (
   metadata: Metadata,
 ) => {
   return balances.find(balance => {
-    const balanceViewMetadata = getMetadataFromBalancesResponseOptional(balance);
+    const balanceViewMetadata = getMetadataFromBalancesResponse.optional(balance);
 
     return (
       getAddressIndex(balance.accountAddress).account === addressIndex.account &&

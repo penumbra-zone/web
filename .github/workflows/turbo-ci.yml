@@ -117,7 +117,7 @@ jobs:
       - run: pnpm turbo lint:rust --cache-dir=.turbo
 
   turbo-test-rust:
-    name: test:rust
+    name: test:wasm
     runs-on: buildjet-16vcpu-ubuntu-2204
     needs: turbo-compile
     steps:
@@ -126,7 +126,7 @@ jobs:
         uses: buildjet/cache@v4
         with:
           path: .turbo
-          key: ${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-test:rust
+          key: ${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-test:wasm
           restore-keys: ${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-compiled
       - uses: pnpm/action-setup@v4
       - uses: buildjet/setup-node@v4
@@ -142,4 +142,5 @@ jobs:
           version: 'latest'
       - uses: browser-actions/setup-firefox@v1
       - run: pnpm turbo telemetry disable
-      - run: pnpm turbo test:rust --cache-dir=.turbo
+      - run: pnpm turbo test:wasm --cache-dir=.turbo
+      - run: pnpm turbo test:cargo --cache-dir=.turbo

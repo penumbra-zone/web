@@ -1,5 +1,5 @@
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { getAssetIdFromValueView } from '@penumbra-zone/getters/value-view';
 import { addAmounts } from '@penumbra-zone/types/amount';
 
@@ -13,6 +13,7 @@ export const groupByAsset = (acc: ValueView[], curr: BalancesResponse): ValueVie
     throw new Error('No amount in value view');
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify
   const grouping = acc.find(v => hasMatchingAssetId(v, curr.balanceView!));
 
   if (grouping) {

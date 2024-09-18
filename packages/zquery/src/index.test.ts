@@ -47,10 +47,10 @@ describe('createZQuery()', () => {
           data: undefined,
           error: undefined,
           loading: false,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- tests
           revalidate: expect.any(Function),
           _zQueryInternal: {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- tests
             fetch: expect.any(Function),
             referenceCount: 0,
           },
@@ -116,7 +116,7 @@ describe('createZQuery()', () => {
 
               // A contrived implementation for the sake of the test.
               onAbort: (prevState: PuppyPhoto[] | undefined = []) => {
-                console.log('calling onAbort');
+                console.warn('calling onAbort');
                 return [...prevState, { id: 'aborted', name: 'aborted', url: 'aborted.jpg' }];
               },
             }),

@@ -1,3 +1,5 @@
+import { hexOpacity } from '../utils/hexOpacity';
+
 /**
  * Used for reference in the `theme` object below. Not intended to be used
  * directly by consumers, but rather as a semantic reference for building the
@@ -95,10 +97,29 @@ const PALETTE = {
     900: '#6B3F18',
     950: '#201004',
   },
+  base: {
+    black: '#000000',
+    white: '#ffffff',
+    transparent: 'transparent',
+  },
 };
 
-const FIFTEEN_PERCENT_OPACITY_IN_HEX = '26';
-const EIGHTY_PERCENT_OPACITY_IN_HEX = 'cc';
+/**
+ * Call `theme.spacing(x)`, where `x` is the number of spacing units (in the
+ * Penumbra theme, 1 spacing unit = 4px) that you want to interpolate into your
+ * CSS or JavaScript. By default, returns a string with the number of pixels
+ * suffixed with `px` -- e.g., `theme.spacing(4)` returns `'16px'`. Pass
+ * `number` as the second argument to get back a number of pixels -- e.g.,
+ * `theme.spacing(4, 'number')` returns `16`.
+ */
+function spacing(spacingUnits: number, returnType?: 'string'): string;
+function spacing(spacingUnits: number, returnType: 'number'): number;
+function spacing(spacingUnits: number, returnType?: 'string' | 'number'): string | number {
+  if (returnType === 'number') {
+    return spacingUnits * 4;
+  }
+  return `${spacingUnits * 4}px`;
+}
 
 export const theme = {
   blur: {
@@ -170,20 +191,20 @@ export const theme = {
       contrast: PALETTE.green['50'],
     },
     base: {
-      black: '#000',
-      white: '#fff',
-      transparent: 'transparent',
+      black: PALETTE.base.black,
+      white: PALETTE.base.white,
+      transparent: PALETTE.base.transparent,
     },
     text: {
       primary: PALETTE.neutral['50'],
-      secondary: PALETTE.neutral['300'],
-      disabled: PALETTE.neutral['500'],
+      secondary: PALETTE.neutral['400'],
+      muted: PALETTE.neutral['700'],
       special: PALETTE.orange['400'],
     },
     action: {
-      hoverOverlay: PALETTE.neutral['50'] + FIFTEEN_PERCENT_OPACITY_IN_HEX,
-      activeOverlay: PALETTE.neutral['950'] + FIFTEEN_PERCENT_OPACITY_IN_HEX,
-      disabledOverlay: PALETTE.neutral['950'] + EIGHTY_PERCENT_OPACITY_IN_HEX,
+      hoverOverlay: PALETTE.teal['400'] + hexOpacity(0.15),
+      activeOverlay: PALETTE.neutral['950'] + hexOpacity(0.15),
+      disabledOverlay: PALETTE.neutral['950'] + hexOpacity(0.8),
       primaryFocusOutline: PALETTE.orange['400'],
       secondaryFocusOutline: PALETTE.teal['400'],
       unshieldFocusOutline: PALETTE.purple['400'],
@@ -191,8 +212,12 @@ export const theme = {
       destructiveFocusOutline: PALETTE.red['400'],
     },
     other: {
-      tonalStroke: PALETTE.neutral['50'] + FIFTEEN_PERCENT_OPACITY_IN_HEX,
+      tonalStroke: PALETTE.neutral['50'] + hexOpacity(0.15),
+      tonalFill5: PALETTE.neutral['50'] + hexOpacity(0.05),
+      tonalFill10: PALETTE.neutral['50'] + hexOpacity(0.1),
       solidStroke: PALETTE.neutral['700'],
+      dialogBackground: PALETTE.teal['700'] + hexOpacity(0.1),
+      overlay: PALETTE.base.black + hexOpacity(0.5),
     },
   },
   font: {
@@ -230,10 +255,9 @@ export const theme = {
     textSm: '1.25rem',
     textXs: '1rem',
   },
-  spacing: (spacingUnits: number) => `${spacingUnits * 4}px`,
+  spacing,
   zIndex: {
-    dialogOverlay: 1000,
-    dialogContent: 1001,
+    disabledOverlay: 10,
   },
 } as const;
 
@@ -248,7 +272,6 @@ export type TextColorVariant = keyof Theme['color']['text'];
  * import, they'll get the updated theme typings as well.
  */
 declare module 'styled-components' {
-  // We're doing a declaration merge here, so the interface will be empty.
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface -- declaration merge
   export interface DefaultTheme extends Theme {}
 }

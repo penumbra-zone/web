@@ -1,6 +1,10 @@
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import { getMetadataFromBalancesResponseOptional } from '@penumbra-zone/getters/balances-response';
+import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import {
+  getAddressIndex,
+  getMetadataFromBalancesResponse,
+} from '@penumbra-zone/getters/balances-response';
+import { useEffect } from 'react';
 
 export type BalanceOrMetadata = BalancesResponse | Metadata;
 
@@ -18,9 +22,37 @@ export const mergeBalancesAndAssets = (
 ): BalanceOrMetadata[] => {
   const filteredAssets = assets.filter(asset => {
     return !balances.some(balance => {
-      const balanceMetadata = getMetadataFromBalancesResponseOptional(balance);
+      const balanceMetadata = getMetadataFromBalancesResponse.optional(balance);
       return balanceMetadata?.equals(asset);
     });
   });
   return [...balances, ...filteredAssets];
+};
+
+// When `balances` change, emit new value of the selected balance: match by address index and asset metadata
+export const useSyncSelectedBalance = ({
+  balances,
+  onChange,
+  value,
+}: {
+  balances?: BalancesResponse[];
+  value?: BalancesResponse;
+  onChange: (selection: BalancesResponse) => void;
+}) => {
+  useEffect(() => {
+    if (value) {
+      const matchedValue = balances?.find(balance => {
+        return (
+          getAddressIndex.optional(balance)?.equals(getAddressIndex.optional(value)) &&
+          getMetadataFromBalancesResponse
+            .optional(balance)
+            ?.equals(getMetadataFromBalancesResponse.optional(value))
+        );
+      });
+      if (matchedValue && !matchedValue.equals(value)) {
+        onChange(matchedValue);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- we only want to run this on new balances from ZQuery, so don't include `value` as dependency
+  }, [balances]);
 };

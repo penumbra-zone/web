@@ -1,12 +1,16 @@
+/* eslint-disable no-bitwise -- expected bitwise operations */
+
 import { BigNumber } from 'bignumber.js';
 
-BigNumber.config({
+export const bigNumConfig: BigNumber.Config = {
   EXPONENTIAL_AT: [-20, 20],
   FORMAT: {
     decimalSeparator: '.',
     groupSeparator: '',
   },
-});
+};
+
+BigNumber.config(bigNumConfig);
 
 /**
  * In protobufs, it's common to split a single u128 into two u64's.

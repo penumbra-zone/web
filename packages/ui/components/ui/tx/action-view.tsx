@@ -1,6 +1,6 @@
 import { SpendViewComponent } from './actions-views/spend';
 import { OutputViewComponent } from './actions-views/output';
-import { ActionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
+import { ActionView } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { SwapClaimViewComponent } from './actions-views/swap/swap-claim';
 import { DelegateComponent } from './actions-views/delegate';
 import { UndelegateComponent } from './actions-views/undelegate';
@@ -11,9 +11,12 @@ import { SwapViewComponent } from './actions-views/swap';
 import { ActionDutchAuctionScheduleViewComponent } from './actions-views/action-dutch-auction-schedule-view';
 import { ActionDutchAuctionEndComponent } from './actions-views/action-dutch-auction-end';
 import { ActionDutchAuctionWithdrawViewComponent } from './actions-views/action-dutch-auction-withdraw-view';
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { DelegatorVoteComponent } from './actions-views/delegator-vote.tsx';
 import { ValidatorVoteComponent } from './actions-views/validator-vote.tsx';
+import { PositionOpenComponent } from './actions-views/position-open.tsx';
+import { PositionCloseComponent } from './actions-views/position-close.tsx';
+import { PositionWithdrawComponent } from './actions-views/position-withdraw.tsx';
 
 type Case = Exclude<ActionView['actionView']['case'], undefined>;
 
@@ -121,13 +124,13 @@ export const ActionViewComponent = ({
       return <UnimplementedView label='Proposal Deposit Claim' />;
 
     case 'positionOpen':
-      return <UnimplementedView label='Position Open' />;
+      return <PositionOpenComponent value={actionView.value} />;
 
     case 'positionClose':
-      return <UnimplementedView label='Position Close' />;
+      return <PositionCloseComponent value={actionView.value} />;
 
     case 'positionWithdraw':
-      return <UnimplementedView label='Position Withdraw' />;
+      return <PositionWithdrawComponent value={actionView.value} />;
 
     case 'positionRewardClaim':
       return <UnimplementedView label='Position Reward Claim' />;

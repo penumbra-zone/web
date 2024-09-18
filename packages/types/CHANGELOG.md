@@ -1,5 +1,58 @@
 # @penumbra-zone/types
 
+## 23.0.0
+
+### Patch Changes
+
+- Updated dependencies [3a5c074]
+- Updated dependencies [3a5c074]
+  - @penumbra-zone/getters@17.0.0
+
+## 22.0.0
+
+### Major Changes
+
+- e01d5f8: fresh and existing wallets skip trial decryption
+
+## 21.0.0
+
+### Patch Changes
+
+- Updated dependencies [f8730e9]
+  - @penumbra-zone/getters@16.0.0
+
+## 20.0.0
+
+### Patch Changes
+
+- Updated dependencies [49263c6]
+  - @penumbra-zone/protobuf@6.0.0
+  - @penumbra-zone/bech32m@7.0.0
+  - @penumbra-zone/getters@15.0.0
+
+## 19.0.0
+
+### Minor Changes
+
+- 10ef940: Updating to v0.80.0 bufbuild types
+
+### Patch Changes
+
+- Updated dependencies [10ef940]
+  - @penumbra-zone/getters@14.0.0
+
+## 18.2.0
+
+### Minor Changes
+
+- bd43d49: require complete GasPrices input to saveGasPrices
+- 807648a: Support viewing fresh state of jailed validators
+
+### Patch Changes
+
+- Updated dependencies [bd43d49]
+  - @penumbra-zone/getters@13.0.1
+
 ## 18.1.0
 
 ### Minor Changes

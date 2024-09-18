@@ -1,29 +1,26 @@
-import {
-  Value,
-  Metadata,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { Value, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import {
   CandlestickData,
   CandlestickDataResponse,
   SimulateTradeRequest,
   SimulateTradeResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { getAssetId, getDisplay } from '@penumbra-zone/getters/metadata';
 import {
   getAssetIdFromValueView,
   getDisplayDenomExponentFromValueView,
-  getAmount,
   getMetadata,
 } from '@penumbra-zone/getters/value-view';
 import { toBaseUnit } from '@penumbra-zone/types/lo-hi';
 import { BigNumber } from 'bignumber.js';
 import { SwapSlice } from '.';
-import { dexClient, simulationClient } from '../../clients';
 import { assetPatterns } from '@penumbra-zone/types/assets';
-import { fromBaseUnitAmount } from '@penumbra-zone/types/amount';
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
+import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { isKnown } from '../helpers';
 import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
+import { penumbra } from '../../prax';
+import { DexService, SimulationService } from '@penumbra-zone/protobuf';
+import { sortByPriorityScoreAndAccountIndex } from '../../fetchers/balances/by-priority-score.ts';
 
 export const sendSimulateTradeRequest = ({
   assetIn,
@@ -47,7 +44,7 @@ export const sendSimulateTradeRequest = ({
     output: getAssetId(assetOut),
   });
 
-  return simulationClient.simulateTrade(req);
+  return penumbra.service(SimulationService).simulateTrade(req);
 };
 
 /**
@@ -86,7 +83,7 @@ export const sendCandlestickDataRequest = async (
     throw new Error('Asset pair equivalent');
   }
 
-  return dexClient.candlestickData({ pair: { start, end }, limit, startHeight });
+  return penumbra.service(DexService).candlestickData({ pair: { start, end }, limit, startHeight });
 };
 
 export const combinedCandlestickDataSelector = (
@@ -153,15 +150,6 @@ export const combinedCandlestickDataSelector = (
   }
 };
 
-const byBalanceDescending = (a: BalancesResponse, b: BalancesResponse) => {
-  const aExponent = getDisplayDenomExponentFromValueView(a.balanceView);
-  const bExponent = getDisplayDenomExponentFromValueView(b.balanceView);
-  const aAmount = fromBaseUnitAmount(getAmount(a.balanceView), aExponent);
-  const bAmount = fromBaseUnitAmount(getAmount(b.balanceView), bExponent);
-
-  return bAmount.comparedTo(aAmount);
-};
-
 const nonSwappableAssetPatterns = [
   assetPatterns.lpNft,
   assetPatterns.proposalNft,
@@ -185,7 +173,7 @@ export const swappableBalancesResponsesSelector = (
   data: zQueryState.data
     ?.filter(isKnown)
     .filter(balance => isSwappable(getMetadata(balance.balanceView)))
-    .sort(byBalanceDescending),
+    .sort(sortByPriorityScoreAndAccountIndex),
 });
 
 export const swappableAssetsSelector = (zQueryState: AbridgedZQueryState<Metadata[]>) => ({

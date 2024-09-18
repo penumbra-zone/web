@@ -22,6 +22,18 @@
     "pnpmOverrides",
     "prod"
   ],
+  "semverGroups": [
+    {
+      "range": "^",
+      "dependencies": [
+        "@bufbuild/**",
+        "@connectrpc/**"
+      ],
+      "packages": [
+        "**"
+      ]
+    }
+  ],
   "versionGroups": [
     {
       "label": "Use workspace protocol for local packages",
@@ -41,13 +53,21 @@
       "isBanned": true
     },
     {
-      "label": "Control @buf registry packages from root",
+      "label": "Use @penumbra-zone/protobuf instead of a BSR dependency",
+      "dependencies": [
+        "@buf/penumbra-zone_penumbra.*"
+      ],
+      "isBanned": true
+    },
+    {
+      "label": "Don't depend on BSR in published packages",
       "dependencies": [
         "@buf/*"
       ],
-      "snapTo": [
-        "penumbra-web"
-      ]
+      "packages": [
+        "@penumbra-zone/**"
+      ],
+      "isBanned": true
     }
   ]
 }

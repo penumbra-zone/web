@@ -14,7 +14,7 @@ export const CopyToClipboardIconButton = ({ text }: { text: string }) => {
           data-testid='CopyToClipboardIconButton__icon'
         />
       }
-      successLabel={<></>}
+      successLabel={null}
       className='size-4'
     />
   );

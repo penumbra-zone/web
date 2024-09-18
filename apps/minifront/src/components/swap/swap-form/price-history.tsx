@@ -1,7 +1,7 @@
-import { getMetadataFromBalancesResponseOptional } from '@penumbra-zone/getters/balances-response';
+import { getMetadataFromBalancesResponse } from '@penumbra-zone/getters/balances-response';
 import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
-import { Box } from '@repo/ui/components/ui/box';
-import { CandlestickPlot } from '@repo/ui/components/ui/candlestick-plot';
+import { Box } from '@penumbra-zone/ui/components/ui/box';
+import { CandlestickPlot } from '@penumbra-zone/ui/components/ui/candlestick-plot';
 import { useEffect, useMemo, useState } from 'react';
 import { getBlockDate } from '../../../fetchers/block-date';
 import { AllSlices } from '../../../state';
@@ -9,10 +9,10 @@ import { useStatus } from '../../../state/status';
 import { combinedCandlestickDataSelector } from '../../../state/swap/helpers';
 import { useCandles, useRevalidateCandles } from '../../../state/swap/price-history';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
-import { Button } from '@repo/ui/components/ui/button';
+import { Button } from '@penumbra-zone/ui/components/ui/button';
 
 const priceHistorySelector = (state: AllSlices) => ({
-  startMetadata: getMetadataFromBalancesResponseOptional(state.swap.assetIn),
+  startMetadata: getMetadataFromBalancesResponse.optional(state.swap.assetIn),
   endMetadata: state.swap.assetOut,
   historyLimit: state.swap.priceHistory.historyLimit,
   historyStart: state.swap.priceHistory.historyStart,

@@ -1,14 +1,26 @@
 import { css, DefaultTheme } from 'styled-components';
 
-export type ActionType = 'default' | 'accent' | 'unshield' | 'destructive';
-
 export type Priority = 'primary' | 'secondary';
+
+/** Shared styles to use for any `<button />` */
+export const buttonBase = css`
+  appearance: none;
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+`;
 
 /** Adds a focus outline to a button using the `:focus-within` pseudoclass. */
 export const focusOutline = css<{
   $getFocusOutlineColor: (theme: DefaultTheme) => string;
+  $getFocusOutlineOffset?: (theme: DefaultTheme) => string | undefined;
   $getBorderRadius: (theme: DefaultTheme) => string;
 }>`
+  position: relative;
+
   &::after {
     content: '';
     position: absolute;
@@ -18,6 +30,9 @@ export const focusOutline = css<{
     outline-width: 2px;
     outline-style: solid;
     outline-color: transparent;
+    ${props =>
+      props.$getFocusOutlineOffset?.(props.theme) &&
+      `outline-offset: ${props.$getFocusOutlineOffset(props.theme)};`}
     border-radius: ${props => props.$getBorderRadius(props.theme)};
 
     transition: outline-color 0.15s;
@@ -47,7 +62,10 @@ export const focusOutline = css<{
 /** Adds overlays to a button for when it's hovered, active, or disabled. */
 export const overlays = css<{
   $getBorderRadius: (theme: DefaultTheme) => string;
+  $getFocusOutlineColor: (theme: DefaultTheme) => string;
 }>`
+  position: relative;
+
   &::before {
     border-radius: ${props => props.$getBorderRadius(props.theme)};
     content: '';
@@ -55,15 +73,23 @@ export const overlays = css<{
     inset: 0;
     z-index: 1;
 
-    transition: background-color 0.15s;
+    transition:
+      background-color 0.15s,
+      outline 0.15s;
   }
 
-  &:hover::before {
-    background-color: ${props => props.theme.color.action.hoverOverlay};
+  @media (hover: hover) {
+    &:hover::before {
+      background-color: ${props => props.theme.color.action.hoverOverlay};
+    }
   }
 
   &:active::before {
     background-color: ${props => props.theme.color.action.activeOverlay};
+  }
+
+  &:focus::before {
+    outline: 2px solid ${props => props.$getFocusOutlineColor(props.theme)};
   }
 
   &:disabled::before {

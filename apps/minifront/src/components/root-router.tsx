@@ -14,8 +14,10 @@ import { StakingLayout } from './staking/layout';
 import { IbcLayout } from './ibc/layout';
 import { abortLoader } from '../abort-loader';
 import type { Router } from '@remix-run/router';
+import { routes as v2Routes } from './v2/root-router';
 
 export const rootRouter: Router = createHashRouter([
+  ...v2Routes,
   {
     path: '/',
     element: <Layout />,

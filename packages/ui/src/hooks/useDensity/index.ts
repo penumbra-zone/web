@@ -8,8 +8,13 @@ import { DensityContext } from '../../utils/DensityContext';
  *
  * @example
  * ```tsx
+ * const SomeStyledComponent = styled.div<{ $density: Density }>`
+ *   padding: ${props => props.theme.spacing(props.$density === 'sparse' ? 4 : 2)};
+ * `
+ *
  * const MyComponent = () => {
  *   const density = useDensity();
+ *
  *   return <SomeStyledComponent $density={density} />
  * }
  * ```

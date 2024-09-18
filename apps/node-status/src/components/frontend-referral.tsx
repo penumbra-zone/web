@@ -1,4 +1,4 @@
-import { Button } from '@repo/ui/components/ui/button';
+import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { devFrontend, prodFrontend } from '../constants';
 
 export const FrontendReferral = () => {

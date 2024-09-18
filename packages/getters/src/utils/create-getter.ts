@@ -1,47 +1,101 @@
 import { Getter } from './getter.js';
 import { GetterMissingValueError } from './getter-missing-value-error.js';
 
-export const createGetter = <SourceType, TargetType, Optional extends boolean = false>(
-  getterFunction: (value: SourceType | undefined) => TargetType | undefined,
-  optional?: Optional,
-): Getter<SourceType, TargetType, Optional> => {
-  const getter: Getter<SourceType, TargetType, Optional> = value => {
-    const result = getterFunction(value);
-    if (result === undefined && !optional) {
-      const errorMessage = `Failed to extract from ${JSON.stringify(value)}`;
-      throw new GetterMissingValueError(errorMessage);
+const createPiper =
+  <PipeSourceType, IntermediateType>(firstSelector: (s?: PipeSourceType) => IntermediateType) =>
+  <PipeTargetType>(
+    secondSelector: (i?: IntermediateType) => PipeTargetType,
+  ): Getter<PipeSourceType, PipeTargetType> => {
+    const pipedFn = (source?: PipeSourceType) => {
+      const intermediate: IntermediateType = firstSelector(source);
+      const target: PipeTargetType = secondSelector(intermediate);
+      return target;
+    };
+
+    const pipedGetter = Object.defineProperties(pipedFn, {
+      pipe: {
+        enumerable: true,
+        get: () => createPiper(pipedFn),
+      },
+      optional: {
+        enumerable: true,
+        get: () => createOptional(pipedFn),
+      },
+      required: {
+        enumerable: true,
+        get: () => createRequired(pipedFn),
+      },
+    }) as Getter<PipeSourceType, PipeTargetType>;
+
+    return pipedGetter;
+  };
+
+const createOptional = <SourceType, TargetType>(
+  selector: (v?: SourceType) => TargetType | undefined,
+): Getter<SourceType, TargetType | undefined> => {
+  const optionalFn = (source?: SourceType) => {
+    try {
+      return selector(source);
+    } catch (e) {
+      if (e instanceof GetterMissingValueError) {
+        return undefined;
+      }
+      throw e;
     }
-    return result as Optional extends true ? TargetType | undefined : TargetType;
   };
 
-  getter.optional = () =>
-    createGetter<SourceType, TargetType, true>(value => {
-      try {
-        return getterFunction(value);
-      } catch (e) {
-        if (e instanceof GetterMissingValueError) {
-          return undefined;
-        } else {
-          throw e;
-        }
-      }
-    }, true);
+  const optionalGetter = Object.defineProperties(optionalFn, {
+    pipe: {
+      enumerable: true,
+      value: <NextTargetType>(nextSelector: (i?: TargetType) => NextTargetType) => {
+        return createPiper(optionalFn)(nextSelector).optional;
+      },
+    },
+    required: {
+      enumerable: true,
+      get: () => createRequired(selector),
+    },
+  }) as Getter<SourceType, TargetType | undefined>;
 
-  getter.pipe = <PipedTargetType = unknown>(
-    next: Getter<TargetType, PipedTargetType, Optional>,
-  ) => {
-    return createGetter<SourceType, PipedTargetType, Optional>(value => {
-      try {
-        return next(getterFunction(value));
-      } catch (e) {
-        if (!optional || !(e instanceof GetterMissingValueError)) {
-          throw e;
-        } else {
-          return undefined;
-        }
-      }
-    }, optional);
-  };
+  Object.defineProperty(optionalGetter, 'optional', {
+    enumerable: true,
+    get: () => optionalGetter,
+  });
 
-  return getter;
+  return optionalGetter;
 };
+
+const createRequired = <SourceType, TargetType>(
+  selector: (v?: SourceType) => TargetType | undefined,
+): Getter<SourceType, NonNullable<TargetType>> => {
+  const requiredFn = (source?: SourceType) => {
+    const required = selector(source);
+    if (required == null) {
+      throw new GetterMissingValueError(
+        `Failed to select value from "${String(source)}" with "${selector.name}"`,
+        { cause: { source, selector } } satisfies ErrorOptions,
+      );
+    }
+    return required;
+  };
+
+  const requiredGetter = Object.defineProperties(requiredFn, {
+    pipe: {
+      enumerable: true,
+      get: () => createPiper(requiredFn),
+    },
+    optional: {
+      enumerable: true,
+      get: () => createOptional(selector),
+    },
+  }) as Getter<SourceType, NonNullable<TargetType>>;
+
+  Object.defineProperty(requiredGetter, 'required', {
+    enumerable: true,
+    get: () => requiredGetter,
+  });
+
+  return requiredGetter;
+};
+
+export { createRequired as createGetter };

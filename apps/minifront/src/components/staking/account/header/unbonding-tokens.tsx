@@ -1,15 +1,12 @@
-import {
-  Metadata,
-  ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getDisplayDenomFromView } from '@penumbra-zone/getters/value-view';
 import {
   TooltipProvider,
   Tooltip,
   TooltipTrigger,
   TooltipContent,
-} from '@repo/ui/components/ui/tooltip';
-import { ValueViewComponent } from '@repo/ui/components/ui/value';
+} from '@penumbra-zone/ui/components/ui/tooltip';
+import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/value';
 import { ReactNode } from 'react';
 import { zeroValueView } from '../../../../utils/zero-value-view';
 

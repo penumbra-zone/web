@@ -1,4 +1,4 @@
-import { ValueViewComponent } from '@repo/ui/components/ui/value';
+import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/value';
 import { PriceImpact } from './price-impact';
 import { motion } from 'framer-motion';
 import { SimulateSwapResult as TSimulateSwapResult } from '../../../../state/swap';
@@ -10,7 +10,7 @@ import {
 } from '@penumbra-zone/getters/value-view';
 import { Traces } from './traces';
 import { AllSlices } from '../../../../state';
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { toBaseUnit } from '@penumbra-zone/types/lo-hi';
 import BigNumber from 'bignumber.js';
 import { useStoreShallow } from '../../../../utils/use-store-shallow';
@@ -25,9 +25,9 @@ const simulateSwapResultSelector = (state: AllSlices) => ({
       value: {
         amount: toBaseUnit(
           new BigNumber(state.swap.amount || 0),
-          getDisplayDenomExponentFromValueView.optional()(state.swap.assetIn?.balanceView),
+          getDisplayDenomExponentFromValueView.optional(state.swap.assetIn?.balanceView),
         ),
-        metadata: getMetadata.optional()(state.swap.assetIn?.balanceView),
+        metadata: getMetadata.optional(state.swap.assetIn?.balanceView),
       },
     },
   }),

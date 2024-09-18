@@ -1,4 +1,4 @@
-import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
+import { ValidatorInfo } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 import { createGetter } from './utils/create-getter.js';
 import { getBondingState, getState, getVotingPower } from './validator-status.js';
 import { getValidatorStateEnum } from './validator-state.js';
@@ -14,6 +14,10 @@ export const getValidator = createGetter(
   (validatorInfo?: ValidatorInfo) => validatorInfo?.validator,
 );
 
+export const getValidatorState = createGetter(
+  (validatorInfo?: ValidatorInfo) => validatorInfo?.status?.state?.state,
+);
+
 export const getVotingPowerFromValidatorInfo = getStatus.pipe(getVotingPower);
 
 export const getStateEnumFromValidatorInfo = getStatus.pipe(getState).pipe(getValidatorStateEnum);
@@ -22,10 +26,7 @@ export const getBondingStateEnumFromValidatorInfo = getStatus
   .pipe(getBondingState)
   .pipe(getBondingStateEnum);
 
-export const getValidatorRewardRateFromValidatorInfoOptional = getStatus
-  .optional()
-  .pipe(getRateData)
-  .pipe(getValidatorRewardRate);
+export const getValidatorRewardRateFromValidatorInfo = getRateData.pipe(getValidatorRewardRate);
 
 export const getFundingStreamsFromValidatorInfo = getValidator.pipe(getFundingStreams);
 

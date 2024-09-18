@@ -1,5 +1,17 @@
 # @penumbra-zone/protobuf
 
+## 6.0.0
+
+### Major Changes
+
+- 49263c6: generate and bundle proto types
+
+## 5.7.0
+
+### Minor Changes
+
+- 10ef940: Updating to v0.80.0 bufbuild types
+
 ## 5.6.0
 
 ### Minor Changes

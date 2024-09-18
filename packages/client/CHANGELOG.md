@@ -1,5 +1,46 @@
 # @penumbra-zone/client
 
+## 18.1.0
+
+### Minor Changes
+
+- a3bef37: improve manifest type
+
+## 18.0.1
+
+### Patch Changes
+
+- e952e03: remove BSR dependencies, correctly specify @bufbuild and @connectrpc dependencies
+
+## 18.0.0
+
+### Major Changes
+
+- 88b16a7: adr006 implementation
+
+### Patch Changes
+
+- Updated dependencies [49263c6]
+  - @penumbra-zone/protobuf@6.0.0
+
+## 17.0.0
+
+### Major Changes
+
+- ca3c325: adr-006
+
+## 16.0.0
+
+### Minor Changes
+
+- 10ef940: Updating to v0.80.0 bufbuild types
+
+### Patch Changes
+
+- Updated dependencies [10ef940]
+  - @penumbra-zone/transport-dom@7.5.0
+  - @penumbra-zone/protobuf@5.7.0
+
 ## 15.0.0
 
 ### Patch Changes

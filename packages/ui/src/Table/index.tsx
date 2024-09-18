@@ -3,20 +3,37 @@ import styled, { css } from 'styled-components';
 import { tableHeading, tableItem } from '../utils/typography';
 import { Density } from '../types/Density';
 import { useDensity } from '../hooks/useDensity';
+import { ConditionalWrap } from '../ConditionalWrap';
+import { motion } from 'framer-motion';
+import { MotionProp } from '../utils/MotionProp';
 
 const FIVE_PERCENT_OPACITY_IN_HEX = '0d';
 
 // So named to avoid naming conflicts with `<Table />`
-const StyledTable = styled.table`
+const StyledTable = styled(motion.table)<{ $tableLayout?: 'fixed' | 'auto' }>`
   width: 100%;
   background-color: ${props => props.theme.color.neutral.contrast + FIVE_PERCENT_OPACITY_IN_HEX};
   padding-left: ${props => props.theme.spacing(3)};
   padding-right: ${props => props.theme.spacing(3)};
-  border-radius: ${props => props.theme.borderRadius.lg};
+  border-radius: ${props => props.theme.borderRadius.sm};
+  table-layout: ${props => props.$tableLayout ?? 'auto'};
 `;
 
-export interface TableProps {
+const TitleAndTableWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const TitleWrapper = styled.div`
+  padding: ${props => props.theme.spacing(3)};
+`;
+
+export interface TableProps extends MotionProp {
+  /** Content that will appear above the table. */
+  title?: ReactNode;
   children: ReactNode;
+  /** Which CSS `table-layout` property to use. */
+  tableLayout?: 'fixed' | 'auto';
 }
 
 /**
@@ -42,13 +59,39 @@ export interface TableProps {
  * </Table>
  * ```
  *
- * By design, most `<Table.* />` elements only accept a `children` prop. No
- * styling or customization is permitted. This ensures that all tables look
- * consistent throughout the Penumbra UI.
+ * By design, `<Table.* />` elements have limited props. No styling or
+ * customization is permitted. This ensures that all tables look consistent
+ * throughout the Penumbra UI.
+ *
+ * To render title content above the table, pass a `title` prop:
+ *
+ * ```tsx
+ * <Table title="Here's the table title">
+ *   ...
+ * </Table>
+ *
+ * // or...
+ *
+ * <Table title={<div>Here is some rich table title content</div>}>
+ *   ...
+ * </Table>
+ * ```
  */
-export const Table = (props: TableProps) => {
-  return <StyledTable cellSpacing={0} cellPadding={0} {...props} />;
-};
+export const Table = ({ title, children, tableLayout }: TableProps) => (
+  <ConditionalWrap
+    if={!!title}
+    then={children => (
+      <TitleAndTableWrapper>
+        <TitleWrapper>{title}</TitleWrapper>
+        {children}
+      </TitleAndTableWrapper>
+    )}
+  >
+    <StyledTable cellSpacing={0} cellPadding={0} $tableLayout={tableLayout}>
+      {children}
+    </StyledTable>
+  </ConditionalWrap>
+);
 
 const Thead = ({ children }: PropsWithChildren) => <thead>{children}</thead>;
 Table.Thead = Thead;
@@ -57,8 +100,10 @@ const StyledTbody = styled.tbody``; // Needs to be a styled component for `Style
 const Tbody = ({ children }: PropsWithChildren) => <StyledTbody>{children}</StyledTbody>;
 Table.Tbody = Tbody;
 
-const StyledTr = styled.tr``; // Needs to be a styled component for `StyledTd` below
-const Tr = ({ children }: PropsWithChildren) => <StyledTr>{children}</StyledTr>;
+const StyledTr = styled(motion.tr)``; // Needs to be a styled component for `StyledTd` below
+const Tr = ({ children, motion }: PropsWithChildren<MotionProp>) => (
+  <StyledTr {...motion}>{children}</StyledTr>
+);
 Table.Tr = Tr;
 
 type HAlign = 'left' | 'center' | 'right';
@@ -71,6 +116,8 @@ interface CellStyledProps {
 }
 
 const cell = css<CellStyledProps>`
+  box-sizing: border-box;
+
   padding-left: ${props => props.theme.spacing(3)};
   padding-right: ${props => props.theme.spacing(3)};
 
@@ -82,7 +129,7 @@ const cell = css<CellStyledProps>`
   ${props => props.$vAlign && `vertical-align: ${props.$vAlign};`};
 `;
 
-const StyledTh = styled.th<CellStyledProps>`
+const StyledTh = styled(motion.th)<CellStyledProps>`
   border-bottom: 1px solid ${props => props.theme.color.other.tonalStroke};
   text-align: left;
   color: ${props => props.theme.color.text.secondary};
@@ -96,29 +143,38 @@ const Th = ({
   hAlign,
   vAlign,
   width,
-}: PropsWithChildren<{
-  colSpan?: number;
-  /** A CSS `width` value to use for this cell. */
-  width?: string;
-  /** Controls the CSS `text-align` property for this cell. */
-  hAlign?: HAlign;
-  /** Controls the CSS `vertical-align` property for this cell. */
-  vAlign?: VAlign;
-}>) => {
+  motion,
+}: PropsWithChildren<
+  {
+    colSpan?: number;
+    /** A CSS `width` value to use for this cell. */
+    width?: string;
+    /** Controls the CSS `text-align` property for this cell. */
+    hAlign?: HAlign;
+    /** Controls the CSS `vertical-align` property for this cell. */
+    vAlign?: VAlign;
+  } & MotionProp
+>) => {
   const density = useDensity();
 
   return (
-    <StyledTh colSpan={colSpan} $width={width} $hAlign={hAlign} $vAlign={vAlign} $density={density}>
+    <StyledTh
+      colSpan={colSpan}
+      {...motion}
+      $width={width}
+      $hAlign={hAlign}
+      $vAlign={vAlign}
+      $density={density}
+    >
       {children}
     </StyledTh>
   );
 };
 Table.Th = Th;
 
-const StyledTd = styled.td<CellStyledProps>`
+const StyledTd = styled(motion.td)<CellStyledProps>`
   border-bottom: 1px solid ${props => props.theme.color.other.tonalStroke};
   color: ${props => props.theme.color.text.primary};
-  ${props => props.$width && `width: ${props.$width};`}
 
   ${StyledTbody} > ${StyledTr}:last-child > & {
     border-bottom: none;
@@ -133,19 +189,29 @@ const Td = ({
   hAlign,
   vAlign,
   width,
-}: PropsWithChildren<{
-  colSpan?: number;
-  /** A CSS `width` value to use for this cell. */
-  width?: string;
-  /** Controls the CSS `text-align` property for this cell. */
-  hAlign?: HAlign;
-  /** Controls the CSS `vertical-align` property for this cell. */
-  vAlign?: VAlign;
-}>) => {
+  motion,
+}: PropsWithChildren<
+  {
+    colSpan?: number;
+    /** A CSS `width` value to use for this cell. */
+    width?: string;
+    /** Controls the CSS `text-align` property for this cell. */
+    hAlign?: HAlign;
+    /** Controls the CSS `vertical-align` property for this cell. */
+    vAlign?: VAlign;
+  } & MotionProp
+>) => {
   const density = useDensity();
 
   return (
-    <StyledTd colSpan={colSpan} $width={width} $hAlign={hAlign} $vAlign={vAlign} $density={density}>
+    <StyledTd
+      colSpan={colSpan}
+      {...motion}
+      $width={width}
+      $hAlign={hAlign}
+      $vAlign={vAlign}
+      $density={density}
+    >
       {children}
     </StyledTd>
   );

@@ -7,25 +7,27 @@ import {
   TransactionPlannerRequest,
   WitnessAndBuildRequest,
   WitnessAndBuildResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
-import { viewClient } from '../clients';
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { ViewService } from '@penumbra-zone/protobuf';
 import { sha256Hash } from '@penumbra-zone/crypto-web/sha256';
 import {
   Transaction,
   TransactionPlan,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
-import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
 import { PartialMessage } from '@bufbuild/protobuf';
-import { TransactionToast } from '@repo/ui/lib/toast/transaction-toast';
+import { TransactionToast } from '@penumbra-zone/ui/lib/toast/transaction-toast';
 import { TransactionClassification } from '@penumbra-zone/perspective/transaction/classification';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import { fromValueView } from '@penumbra-zone/types/amount';
 import { BigNumber } from 'bignumber.js';
 import {
-  getMetadataFromBalancesResponseOptional,
+  getMetadataFromBalancesResponse,
   getValueViewCaseFromBalancesResponse,
 } from '@penumbra-zone/getters/balances-response';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
+import { PromiseClient } from '@connectrpc/connect';
+import { penumbra } from '../prax';
 
 /**
  * Handles the common use case of planning, building, and broadcasting a
@@ -51,7 +53,9 @@ export const planBuildBroadcast = async (
   const toast = new TransactionToast(transactionClassification);
   toast.onStart();
 
-  const rpcMethod = options?.skipAuth ? viewClient.witnessAndBuild : viewClient.authorizeAndBuild;
+  const rpcMethod = options?.skipAuth
+    ? penumbra.service(ViewService).witnessAndBuild
+    : penumbra.service(ViewService).authorizeAndBuild;
 
   try {
     const transactionPlan = await plan(req);
@@ -60,7 +64,7 @@ export const planBuildBroadcast = async (
       toast.onBuildStatus(status),
     );
 
-    const txHash = await getTxHash(transaction);
+    const txHash = uint8ArrayToHex((await txSha256(transaction)).inner);
     toast.txHash(txHash);
 
     const { detectionHeight } = await broadcast({ transaction, awaitDetection: true }, status =>
@@ -86,7 +90,7 @@ export const planBuildBroadcast = async (
 export const plan = async (
   req: PartialMessage<TransactionPlannerRequest>,
 ): Promise<TransactionPlan> => {
-  const { plan } = await viewClient.transactionPlanner(req);
+  const { plan } = await penumbra.service(ViewService).transactionPlanner(req);
   if (!plan) {
     throw new Error('No plan in planner response');
   }
@@ -95,7 +99,7 @@ export const plan = async (
 
 const build = async (
   req: PartialMessage<AuthorizeAndBuildRequest> | PartialMessage<WitnessAndBuildRequest>,
-  buildFn: (typeof viewClient)['authorizeAndBuild' | 'witnessAndBuild'],
+  buildFn: PromiseClient<typeof ViewService>['authorizeAndBuild' | 'witnessAndBuild'],
   onStatusUpdate: (
     status?: (AuthorizeAndBuildResponse | WitnessAndBuildResponse)['status'],
   ) => void,
@@ -108,6 +112,7 @@ const build = async (
       case 'buildProgress':
         break;
       case 'complete':
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify
         return status.value.transaction!;
       default:
         console.warn(`unknown ${buildFn.name} status`, status);
@@ -124,10 +129,13 @@ const broadcast = async (
   if (!transaction) {
     throw new Error('no transaction');
   }
-  const txId = await getTxId(transaction);
-  const txHash = getTxHash(txId);
+  const txId = await txSha256(transaction);
+  const txHash = uint8ArrayToHex(txId.inner);
   onStatusUpdate(undefined);
-  for await (const { status } of viewClient.broadcastTransaction({ awaitDetection, transaction })) {
+  for await (const { status } of penumbra.service(ViewService).broadcastTransaction({
+    awaitDetection,
+    transaction,
+  })) {
     if (!txId.equals(status.value?.id)) {
       throw new Error('unexpected transaction id');
     }
@@ -148,18 +156,7 @@ const broadcast = async (
   throw new Error('did not broadcast transaction');
 };
 
-const getTxHash = <T extends Required<PartialMessage<TransactionId>> | PartialMessage<Transaction>>(
-  t: T,
-): T extends Required<PartialMessage<TransactionId>> ? string : Promise<string> =>
-  'inner' in t && t.inner instanceof Uint8Array
-    ? (uint8ArrayToHex(t.inner) as T extends Required<PartialMessage<TransactionId>>
-        ? string
-        : never)
-    : (getTxId(t as PartialMessage<Transaction>).then(({ inner }) =>
-        uint8ArrayToHex(inner),
-      ) as T extends Required<PartialMessage<TransactionId>> ? never : Promise<string>);
-
-const getTxId = (tx: Transaction | PartialMessage<Transaction>) =>
+const txSha256 = (tx: Transaction | PartialMessage<Transaction>) =>
   sha256Hash(tx instanceof Transaction ? tx.toBinary() : new Transaction(tx).toBinary()).then(
     inner => new TransactionId({ inner }),
   );
@@ -204,8 +201,8 @@ export const isIncorrectDecimal = (
     throw new Error('Missing balanceView');
   }
 
-  const exponent = getDisplayDenomExponent.optional()(
-    getMetadataFromBalancesResponseOptional(asset),
+  const exponent = getDisplayDenomExponent.optional(
+    getMetadataFromBalancesResponse.optional(asset),
   );
   const fraction = amountInDisplayDenom.split('.')[1]?.length;
   return typeof exponent !== 'undefined' && typeof fraction !== 'undefined' && fraction > exponent;
@@ -217,4 +214,4 @@ export const isValidAmount = (amount: string, assetIn?: BalancesResponse) =>
   (!assetIn || !isIncorrectDecimal(assetIn, amount));
 
 export const isKnown = (balancesResponse: BalancesResponse) =>
-  getValueViewCaseFromBalancesResponse.optional()(balancesResponse) === 'knownAssetId';
+  getValueViewCaseFromBalancesResponse.optional(balancesResponse) === 'knownAssetId';

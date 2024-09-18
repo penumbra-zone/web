@@ -1,12 +1,13 @@
-import { Button } from '@repo/ui/components/ui/button';
-import { Toaster } from '@repo/ui/components/ui/toaster';
-import { SplashPage } from '@repo/ui/components/ui/splash-page';
-import { errorToast, warningToast } from '@repo/ui/lib/toast/presets';
+import { Button } from '@penumbra-zone/ui/components/ui/button';
+import { Toaster } from '@penumbra-zone/ui/components/ui/toaster';
+import { SplashPage } from '@penumbra-zone/ui/components/ui/splash-page';
+import { errorToast, warningToast } from '@penumbra-zone/ui/lib/toast/presets';
 import { HeadTag } from './metadata/head-tag';
 
 import { useState } from 'react';
 import { PenumbraRequestFailure } from '@penumbra-zone/client';
-import { requestPraxAccess } from '../prax';
+import { penumbra } from '../prax';
+import { useNavigate } from 'react-router-dom';
 
 const handleErr = (e: unknown) => {
   if (e instanceof Error && e.cause) {
@@ -34,11 +35,12 @@ const handleErr = (e: unknown) => {
 
 const useExtConnector = () => {
   const [result, setResult] = useState<boolean>();
+  const navigate = useNavigate();
 
   const request = async () => {
     try {
-      await requestPraxAccess();
-      location.reload();
+      await penumbra.connect();
+      navigate('/');
     } catch (e) {
       handleErr(e);
     } finally {

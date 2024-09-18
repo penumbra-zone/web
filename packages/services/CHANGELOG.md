@@ -1,5 +1,119 @@
 # @penumbra-zone/router
 
+## 34.0.0
+
+### Patch Changes
+
+- Updated dependencies [3a5c074]
+- Updated dependencies [3a5c074]
+- Updated dependencies [990291f]
+  - @penumbra-zone/getters@17.0.0
+  - @penumbra-zone/wasm@28.0.0
+  - @penumbra-zone/query@31.0.0
+  - @penumbra-zone/storage@30.0.0
+  - @penumbra-zone/types@23.0.0
+  - @penumbra-zone/crypto-web@24.0.0
+
+## 33.0.0
+
+### Patch Changes
+
+- Updated dependencies [e01d5f8]
+  - @penumbra-zone/query@30.0.0
+  - @penumbra-zone/types@22.0.0
+  - @penumbra-zone/wasm@27.0.0
+  - @penumbra-zone/crypto-web@23.0.0
+  - @penumbra-zone/storage@29.0.0
+
+## 32.0.0
+
+### Patch Changes
+
+- Updated dependencies [e7d0767]
+  - @penumbra-zone/query@29.0.0
+  - @penumbra-zone/wasm@26.2.0
+  - @penumbra-zone/storage@28.0.0
+
+## 31.0.0
+
+### Patch Changes
+
+- Updated dependencies [598d148]
+- Updated dependencies [e952e03]
+  - @penumbra-zone/wasm@26.1.0
+  - @penumbra-zone/storage@27.0.0
+  - @penumbra-zone/query@28.0.0
+
+## 30.0.0
+
+### Patch Changes
+
+- Updated dependencies [f8730e9]
+- Updated dependencies [94d2c8d]
+  - @penumbra-zone/getters@16.0.0
+  - @penumbra-zone/query@27.0.0
+  - @penumbra-zone/storage@26.0.0
+  - @penumbra-zone/types@21.0.0
+  - @penumbra-zone/crypto-web@22.0.0
+  - @penumbra-zone/wasm@26.0.0
+
+## 29.0.0
+
+### Patch Changes
+
+- Updated dependencies [49263c6]
+  - @penumbra-zone/protobuf@6.0.0
+  - @penumbra-zone/bech32m@7.0.0
+  - @penumbra-zone/getters@15.0.0
+  - @penumbra-zone/query@26.0.0
+  - @penumbra-zone/storage@25.0.0
+  - @penumbra-zone/types@20.0.0
+  - @penumbra-zone/wasm@25.0.0
+  - @penumbra-zone/crypto-web@21.0.0
+
+## 28.0.0
+
+### Minor Changes
+
+- 10ef940: Updating to v0.80.0 bufbuild types
+
+### Patch Changes
+
+- Updated dependencies [10ef940]
+  - @penumbra-zone/transport-dom@7.5.0
+  - @penumbra-zone/perspective@24.0.0
+  - @penumbra-zone/protobuf@5.7.0
+  - @penumbra-zone/getters@14.0.0
+  - @penumbra-zone/storage@24.0.0
+  - @penumbra-zone/query@25.0.0
+  - @penumbra-zone/types@19.0.0
+  - @penumbra-zone/wasm@24.0.0
+  - @penumbra-zone/crypto-web@20.0.0
+
+## 27.0.0
+
+### Minor Changes
+
+- 807648a: Support viewing fresh state of jailed validators
+- ecc548e: Fix gas prices RPC
+- f650f48: Return jailed validators in delegation balances request
+
+### Patch Changes
+
+- 457e04f: use `Any.pack` to create `Any` messages
+- Updated dependencies [bd43d49]
+- Updated dependencies [bd43d49]
+- Updated dependencies [bd43d49]
+- Updated dependencies [807648a]
+- Updated dependencies [bd43d49]
+  - @penumbra-zone/storage@23.0.0
+  - @penumbra-zone/types@18.2.0
+  - @penumbra-zone/getters@13.0.1
+  - @penumbra-zone/query@24.0.0
+  - @penumbra-zone/crypto-web@19.0.0
+  - @penumbra-zone/wasm@23.0.0
+  - @penumbra-zone/perspective@23.0.0
+
 ## 26.0.0
 
 ### Patch Changes

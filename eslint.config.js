@@ -1,14 +1,14 @@
 // @ts-check
 
 import { createRequire } from 'node:module';
-
+// @ts-expect-error https://github.com/eslint-community/eslint-plugin-eslint-comments/issues/214
+import ESLintPluginESLintCommentsConfigs from '@eslint-community/eslint-plugin-eslint-comments/configs';
 import { fixupPluginRules } from '@eslint/compat';
 import eslint from '@eslint/js';
 import * as import_ from 'eslint-plugin-import';
 import prettier from 'eslint-config-prettier';
 import react from 'eslint-plugin-react';
 import react_hooks from 'eslint-plugin-react-hooks';
-import react_refresh from 'eslint-plugin-react-refresh';
 import storybook from 'eslint-plugin-storybook';
 import tailwindcss from 'eslint-plugin-tailwindcss';
 import turbo from 'eslint-plugin-turbo';
@@ -31,9 +31,17 @@ const storybookPluginConfigs = tseslint.config(
   },
 );
 
+// The plugin is not currently exported from the root, so we have to get the plugin from the config.
+// https://github.com/eslint-community/eslint-plugin-eslint-comments/issues/215
+const ESLintPluginESLintComments =
+  ESLintPluginESLintCommentsConfigs.recommended.plugins['@eslint-community/eslint-comments'];
+
 export default tseslint.config(
   // completely ignored files
-  { name: 'custom:ignores', ignores: ['vitest.workspace.ts', 'dist', 'node_modules'] },
+  {
+    name: 'custom:ignores',
+    ignores: ['vitest.workspace.ts', 'dist', 'node_modules', 'vite-env.d.ts'],
+  },
 
   // base javascript config
   eslint.configs.recommended,
@@ -45,6 +53,16 @@ export default tseslint.config(
   {
     name: 'custom:languageOptions-parserOptions-project-true',
     languageOptions: { parser: tseslint.parser, parserOptions: { project: true } },
+  },
+
+  {
+    name: 'custom:eslint-comments',
+    plugins: {
+      '@eslint-community/eslint-comments': ESLintPluginESLintComments,
+    },
+    rules: {
+      '@eslint-community/eslint-comments/require-description': ['error', { ignore: [] }],
+    },
   },
 
   // tailwind config
@@ -68,30 +86,25 @@ export default tseslint.config(
       react: fixupPluginRules(react),
       // @ts-expect-error - react_hooks is incorrectly typed
       'react-hooks': fixupPluginRules(react_hooks),
-      'react-refresh': react_refresh,
     },
     // @ts-expect-error - rules are incorrectly typed
     rules: {
       ...react.configs.recommended.rules,
       ...react_hooks.configs.recommended.rules,
-      'react-hooks/exhaustive-deps': 'warn',
+      'react-hooks/exhaustive-deps': 'error',
       'react-hooks/rules-of-hooks': 'error',
-    },
-  },
-  {
-    name: 'custom:react-wishlist-improvements',
-    rules: {
-      // this plugin was formerly included, but was never actually applied.
-      'react-refresh/only-export-components': 'off',
-
-      //'react/jsx-no-literals': 'warn',
-      //'react/jsx-no-useless-fragment': 'warn',
+      'react/jsx-no-useless-fragment': [
+        'error',
+        {
+          allowExpressions: true,
+        },
+      ],
     },
   },
 
   {
     name: 'custom:import-enabled',
-    plugins: { import: import_ },
+    plugins: { import: fixupPluginRules(import_) },
     settings: { 'import/resolver': { typescript: true } },
     rules: {
       // be aware this rule doesn't always provide correct fixes. its bad fixes
@@ -117,11 +130,11 @@ export default tseslint.config(
         'error',
         {
           pathGroups: [
-            { pattern: '@penumbra-labs/**', group: 'external', position: 'after' },
-            { pattern: '@buf/**', group: 'external', position: 'after' },
             { pattern: '@penumbra-zone/**', group: 'internal', position: 'before' },
-            { pattern: '@buf/penumbra-zone_penumbra.*', group: 'internal', position: 'before' },
             { pattern: '@repo/**', group: 'internal', position: 'after' },
+
+            { pattern: '@buf/**', group: 'external', position: 'after' },
+            { pattern: '@penumbra-labs/**', group: 'external', position: 'after' },
           ],
           pathGroupsExcludedImportTypes: [],
           distinctGroup: true,
@@ -177,39 +190,33 @@ export default tseslint.config(
     name: 'custom:typescript-wishlist-improvements',
     files: ['**/*.@(ts|tsx)'],
     rules: {
-      // enabled by tseslint strictTypeChecked. large diff
-      '@typescript-eslint/no-non-null-assertion': 'off',
+      '@typescript-eslint/no-non-null-assertion': 'error',
 
-      //'@typescript-eslint/no-redeclare': 'error',
-      //'@typescript-eslint/no-shadow': 'error',
-      //'@typescript-eslint/restrict-template-expressions': ['error', { allowNumber: true }],
+      // '@typescript-eslint/no-redeclare': 'error',
+      // '@typescript-eslint/no-shadow': 'error',
+      // '@typescript-eslint/restrict-template-expressions': ['error', { allowNumber: true }],
     },
   },
 
   {
     name: 'custom:eslint-wishlist-improvements',
     rules: {
-      //'array-callback-return': 'warn',
-      //'class-methods-use-this': 'warn',
-      //'consistent-return': 'warn',
-      //'consistent-this': 'error',
-      //'func-name-matching': 'warn',
-      //'no-await-in-loop': 'warn',
-      //'no-bitwise': 'warn',
-      //'no-console': 'warn',
-      //'no-continue': 'warn',
-      //'no-nested-ternary': 'warn',
-      //'no-param-reassign': 'error',
-      //'no-plusplus': 'error',
-      //'no-promise-executor-return': ['error', { allowVoid: true }],
-      //'no-restricted-globals': [ 'error', { message: 'Use `globalThis` instead.', name: 'global' }, { message: 'Use `globalThis` instead.', name: 'self' }, ],
-      //'no-self-assign': ['error', { props: true }],
-      //'no-template-curly-in-string': 'warn',
-      //'no-unreachable-loop': 'warn',
-      //'no-warning-comments': 'warn',
-      //'prefer-regex-literals': ['error', { disallowRedundantWrapping: true }],
-      //'spaced-comment': 'warn',
-      //complexity: 'warn',
+      'no-bitwise': 'error',
+      'no-console': ['error', { allow: ['warn', 'error', 'debug'] }],
+      'no-nested-ternary': 'warn',
+      'no-param-reassign': 'error',
+      'no-promise-executor-return': ['error', { allowVoid: true }],
+      'no-restricted-globals': [
+        'error',
+        { message: 'Use `globalThis` instead.', name: 'global' },
+        { message: 'Use `globalThis` instead.', name: 'self' },
+      ],
+      'no-self-assign': ['error', { props: true }],
+      'no-template-curly-in-string': 'warn',
+      'no-unreachable-loop': 'warn',
+      'no-warning-comments': 'off',
+      'prefer-regex-literals': ['error', { disallowRedundantWrapping: true }],
+      'spaced-comment': ['error', 'always', { markers: ['/'] }],
     },
   },
 
@@ -233,10 +240,12 @@ export default tseslint.config(
       '**/*.story.@(ts|tsx|js|jsx|mjs|cjs)',
     ],
     rules: {
+      'no-console': 'off',
       '@typescript-eslint/no-empty-function': 'off',
       '@typescript-eslint/no-non-null-assertion': 'off',
       '@typescript-eslint/prefer-promise-reject-errors': 'off',
       'react/display-name': 'off',
+      '@eslint-community/eslint-comments/require-description': 'off',
     },
   },
 

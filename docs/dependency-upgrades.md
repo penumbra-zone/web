@@ -33,21 +33,6 @@ $ pnpm i # use new versions and update lockfile
 You should always run install again after fixing, because syncpack will not run
 install for you.
 
-## `@buf` registry
-
-Syncpack is configured to prefer `@buf` registry versions specified at the root
-package of the monorepo. So if you need new message types, you must update at
-the root and propagate from there.
-
-These packages also have tight relationships with `@bufbuild` and `@connectrpc`
-packages, so it's usually best to update these together.
-
-```sh
-$ pnpm update --latest "@buf/*" "@bufbuild/*" "@connectrpc/*" # update root buf packages
-$ pnpm syncpack fix-mismatches # propagate versions
-$ pnpm i # use new versions and update lockfile
-```
-
 ## Identifying sources of conflict
 
 If you have conflicting dependencies, you can use `pnpm why` to inspect the

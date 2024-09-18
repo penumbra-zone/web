@@ -1,16 +1,17 @@
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getAssetIdFromValueView } from '@penumbra-zone/getters/value-view';
 import { useStakingTokenMetadata } from '../../state/shared';
 import { ReactNode, useCallback, useEffect, useState } from 'react';
 import {
   getAddressIndex,
   getAmount,
-  getAssetIdFromBalancesResponseOptional,
+  getAssetIdFromBalancesResponse,
 } from '@penumbra-zone/getters/balances-response';
-import { viewClient } from '../../clients.ts';
-import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
+import { ViewService } from '@penumbra-zone/protobuf';
+import { GasPrices } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
 import { getAssetId } from '@penumbra-zone/getters/metadata';
+import { penumbra } from '../../prax';
 
 const hasTokenBalance = ({
   source,
@@ -23,7 +24,7 @@ const hasTokenBalance = ({
   gasPrices: GasPrices[];
   stakingAssetMetadata?: Metadata;
 }): boolean => {
-  const account = getAddressIndex.optional()(source)?.account;
+  const account = getAddressIndex.optional(source)?.account;
   if (typeof account === 'undefined') {
     return false;
   }
@@ -32,9 +33,9 @@ const hasTokenBalance = ({
   const hasStakingToken = balancesResponses.some(
     asset =>
       getAssetIdFromValueView
-        .optional()(asset.balanceView)
-        ?.equals(getAssetId.optional()(stakingAssetMetadata)) &&
-      getAddressIndex.optional()(asset)?.account === account,
+        .optional(asset.balanceView)
+        ?.equals(getAssetId.optional(stakingAssetMetadata)) &&
+      getAddressIndex.optional(asset)?.account === account,
   );
 
   if (hasStakingToken) {
@@ -42,7 +43,7 @@ const hasTokenBalance = ({
   }
 
   const accountAssets = balancesResponses.filter(
-    balance => getAddressIndex.optional()(balance)?.account === account,
+    balance => getAddressIndex.optional(balance)?.account === account,
   );
   // Finds the alt tokens in the user's account balances that can be used for fees
   const hasAltTokens = accountAssets.some(balance => {
@@ -53,7 +54,7 @@ const hasTokenBalance = ({
     }
 
     return gasPrices.some(price =>
-      price.assetId?.equals(getAssetIdFromBalancesResponseOptional(balance)),
+      price.assetId?.equals(getAssetIdFromBalancesResponse.optional(balance)),
     );
   });
 
@@ -64,7 +65,7 @@ const useGasPrices = () => {
   const [prices, setPrices] = useState<GasPrices[]>([]);
 
   const fetchGasPrices = useCallback(async () => {
-    const res = await viewClient.gasPrices({});
+    const res = await penumbra.service(ViewService).gasPrices({});
     setPrices(res.altGasPrices);
   }, []);
 

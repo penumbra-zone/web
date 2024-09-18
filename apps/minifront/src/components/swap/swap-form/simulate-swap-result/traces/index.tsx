@@ -1,10 +1,7 @@
-import { SwapExecution_Trace } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
+import { SwapExecution_Trace } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { Trace } from './trace';
-import {
-  Metadata,
-  ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
-import { ValueViewComponent } from '@repo/ui/components/ui/value';
+import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/value';
 import { ArrowDown, ArrowUp } from 'lucide-react';
 
 export const Traces = ({

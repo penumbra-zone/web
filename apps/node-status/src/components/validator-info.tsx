@@ -1,7 +1,7 @@
 import { useLoaderData } from 'react-router-dom';
-import { Card } from '@repo/ui/components/ui/card';
+import { Card } from '@penumbra-zone/ui/components/ui/card';
 import { IndexLoaderResponse } from '../fetching/loader';
-import { PublicKey } from '@buf/tendermint_tendermint.bufbuild_es/tendermint/crypto/keys_pb.js';
+import { PublicKey } from '@penumbra-zone/protobuf/tendermint/crypto/keys_pb';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import { uint8ArrayToString } from '@penumbra-zone/types/string';
 
@@ -27,7 +27,7 @@ export const ValidatorInfo = () => {
     status: { validatorInfo },
   } = useLoaderData() as IndexLoaderResponse;
   if (!validatorInfo) {
-    return <></>;
+    return;
   }
 
   return (

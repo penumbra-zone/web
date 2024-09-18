@@ -1,13 +1,13 @@
-import { Button } from '@repo/ui/components/ui/button';
-import { Dialog, DialogContent, DialogHeader } from '@repo/ui/components/ui/dialog';
-import { IdentityKeyComponent } from '@repo/ui/components/ui/identity-key-component';
+import { Button } from '@penumbra-zone/ui/components/ui/button';
+import { Dialog, DialogContent, DialogHeader } from '@penumbra-zone/ui/components/ui/dialog';
+import { IdentityKeyComponent } from '@penumbra-zone/ui/components/ui/identity-key-component';
 import { InputBlock } from '../../../../shared/input-block';
-import { Validator } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb.js';
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+import { Validator } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
+import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { FormEvent } from 'react';
 import { getIdentityKey } from '@penumbra-zone/getters/validator';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
-import { BalanceValueView } from '@repo/ui/components/ui/balance-value-view';
+import { BalanceValueView } from '@penumbra-zone/ui/components/ui/balance-value-view';
 import { NumberInput } from '../../../../shared/number-input';
 
 const getCapitalizedAction = (action: 'delegate' | 'undelegate') =>

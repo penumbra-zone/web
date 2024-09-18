@@ -1,13 +1,13 @@
 import {
   ActionPlan,
   ActionView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import {
   AssetId,
   Metadata,
   Value,
   ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getAddressView } from './get-address-view.js';
 import {
   Note,
@@ -16,14 +16,14 @@ import {
   OutputView,
   SpendPlan,
   SpendView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 import {
   SwapClaimPlan,
   SwapClaimView,
   SwapPlan,
   SwapView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
-import { FullViewingKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
+import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { getAuctionId } from '@penumbra-zone/wasm/auction';
 import {
   getInputAssetId,
@@ -32,12 +32,12 @@ import {
 import {
   ActionDutchAuctionWithdrawPlan,
   ActionDutchAuctionWithdrawView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb.js';
-import { PartialMessage } from '@bufbuild/protobuf';
+} from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
+import type { PartialMessage } from '@bufbuild/protobuf';
 import {
   DelegatorVotePlan,
   DelegatorVoteView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/governance/v1/governance_pb.js';
+} from '@penumbra-zone/protobuf/penumbra/core/component/governance/v1/governance_pb';
 
 const getValueView = async (
   value: Value | undefined,
@@ -324,8 +324,8 @@ export const viewActionPlan =
         });
 
       case 'actionDutchAuctionSchedule': {
-        const inputAssetId = getInputAssetId.optional()(actionPlan.action.value.description);
-        const outputAssetId = getOutputAssetId.optional()(actionPlan.action.value.description);
+        const inputAssetId = getInputAssetId.optional(actionPlan.action.value.description);
+        const outputAssetId = getOutputAssetId.optional(actionPlan.action.value.description);
         const [inputMetadata, outputMetadata] = await Promise.all([
           inputAssetId ? await denomMetadataByAssetId(inputAssetId) : undefined,
           outputAssetId ? await denomMetadataByAssetId(outputAssetId) : undefined,
@@ -379,21 +379,82 @@ export const viewActionPlan =
           actionView: actionPlan.action,
         });
 
-      case undefined:
-        throw new Error('No action case in action plan');
-      default:
-        /**
-         * `<ActionViewComponent />` only renders data about the `spend` and
-         * `output` cases. For all other cases, it just renders the action name.
-         *
-         * @todo As we render more data about other action types, add them as
-         * cases above.
-         */
+      case 'positionOpen':
+        return new ActionView({
+          actionView: actionPlan.action,
+        });
+
+      case 'positionClose':
+        return new ActionView({
+          actionView: actionPlan.action,
+        });
+
+      case 'positionWithdraw':
+        return new ActionView({
+          actionView: actionPlan.action,
+        });
+
+      case 'validatorDefinition': {
+        return new ActionView({
+          actionView: actionPlan.action,
+        });
+      }
+
+      case 'ibcRelayAction': {
+        return new ActionView({
+          actionView: actionPlan.action,
+        });
+      }
+
+      case 'proposalSubmit': {
+        return new ActionView({
+          actionView: actionPlan.action,
+        });
+      }
+
+      case 'proposalWithdraw': {
+        return new ActionView({
+          actionView: actionPlan.action,
+        });
+      }
+
+      case 'proposalDepositClaim': {
+        return new ActionView({
+          actionView: actionPlan.action,
+        });
+      }
+
+      case 'communityPoolSpend': {
+        return new ActionView({
+          actionView: actionPlan.action,
+        });
+      }
+
+      case 'communityPoolOutput': {
+        return new ActionView({
+          actionView: actionPlan.action,
+        });
+      }
+
+      case 'communityPoolDeposit': {
+        return new ActionView({
+          actionView: actionPlan.action,
+        });
+      }
+
+      // Deprecated
+      case 'positionRewardClaim': {
         return new ActionView({
           actionView: {
-            case: actionPlan.action.case,
+            case: 'positionRewardClaim',
             value: {},
           },
+        });
+      }
+
+      case undefined:
+        return new ActionView({
+          actionView: actionPlan.action,
         });
     }
   };
