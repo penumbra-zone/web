@@ -401,8 +401,10 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
     setIsAggregating(false);
   }, [timeAggregateSeconds, isOHLCDataLoading, isTimestampsLoading, blockToTimestamp, error]);
 
+  const left = 44;
+  const right = 8;
   const options = {
-    width: width - 44 - 8,
+    width: width - left - right,
     xAxis: [
       {
         type: 'category',
@@ -448,13 +450,13 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
     ],
     grid: [
       {
-        left: 44,
-        right: 8,
+        left,
+        right,
         height: '60%',
       },
       {
-        left: 44,
-        right: 8,
+        left,
+        right,
         top: '74%',
         height: '12%',
       },
