@@ -38,7 +38,11 @@ const CopyToClipboard = forwardRef<HTMLButtonElement, CopyToClipboardProps>(
       >
         {copied ? (
           <span className='flex items-center gap-2'>
-            {successLabel ?? <span className='whitespace-nowrap'>Copied</span>}
+            {typeof successLabel !== 'undefined' ? (
+              successLabel
+            ) : (
+              <span className='whitespace-nowrap'>Copied</span>
+            )}
             <CheckCircledIcon />
           </span>
         ) : (
