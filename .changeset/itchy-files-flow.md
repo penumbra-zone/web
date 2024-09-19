@@ -1,5 +1,5 @@
 ---
-'@repo/ui': patch
+'@penumbra-zone/ui': patch
 ---
 
 Fix copy button styles
