@@ -32,6 +32,7 @@
     "@penumbra-zone/ui": "^9.0.0",
     "@penumbra-zone/wasm": "^26.2.0",
     "@radix-ui/react-icons": "^1.3.0",
+    "@rehooks/component-size": "^1.0.3",
     "@styled-icons/octicons": "^10.47.0",
     "@tsconfig/strictest": "^2.0.5",
     "@tsconfig/vite-react": "^3.0.2",
