@@ -527,6 +527,9 @@ pub async fn plan_transaction_inner<Db: Database>(
 
     for tpr::Spend { value, address } in request.spends {
         let value = value.ok_or_else(|| anyhow!("missing value in spend"))?;
+        let amount = value
+            .amount
+            .ok_or_else(|| anyhow!("missing amount in spend"))?;
         let address = address.ok_or_else(|| anyhow!("missing address in spend"))?;
         let asset_id = value
             .asset_id
@@ -541,6 +544,14 @@ pub async fn plan_transaction_inner<Db: Database>(
                 amount_to_spend: None,
             })
             .await?;
+
+        let accumulated_note_amounts = records
+            .iter()
+            .map(|record| record.note.value().amount)
+            .fold(penumbra_num::Amount::zero(), |acc, note_value| {
+                acc + note_value
+            });
+
         notes_by_asset_id.insert(
             asset_id.try_into()?,
             prioritize_and_filter_spendable_notes(records.clone()),
@@ -553,6 +564,27 @@ pub async fn plan_transaction_inner<Db: Database>(
                     SpendPlan::new(&mut OsRng, record.clone().note, record.clone().position);
                 actions_list.push(spend);
             }
+        }
+
+        // safety: validate that each spend action's asset ID matches the fee asset ID.
+        for action in actions_list.actions() {
+            if let ActionPlan::Spend(spend_plan) = action {
+                if spend_plan.note.asset_id() != fee_asset_id {
+                    let error_message =
+                        format!("Invalid transaction: The transaction was constructed improperly.");
+                    return Err(WasmError::Anyhow(anyhow!(error_message)));
+                }
+            }
+        }
+
+        // safety: if spend amount is not equal to the maximum amount, request cannot
+        // contain more than one spend action.
+        if accumulated_note_amounts.to_proto() != amount {
+            if actions_list.actions().len() != 1 {
+                let error_message =
+                    format!("Invalid transaction: The transaction was constructed improperly.");
+                return Err(WasmError::Anyhow(anyhow!(error_message)));
+            };
         }
 
         // Change address is overwritten to the recipient.
