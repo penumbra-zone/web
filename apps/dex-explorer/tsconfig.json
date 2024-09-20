@@ -24,7 +24,8 @@
     },
     "allowJs": true,
     "incremental": true,
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "strictNullChecks": true
   },
   "extends": [
     "@tsconfig/strictest/tsconfig.json",
