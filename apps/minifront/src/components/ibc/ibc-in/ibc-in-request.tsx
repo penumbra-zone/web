@@ -47,23 +47,21 @@ export const IbcInRequest = () => {
       )}
       <div className='flex w-full gap-2'>
         <Select onValueChange={v => setCoin(data.find(b => b.displayDenom === v))}>
-          <SelectTrigger className='truncate rounded-lg bg-white p-2' variant='light'>
+          <SelectTrigger className='truncate rounded-lg p-2' variant='light'>
             <SelectValue placeholder='Select Asset' />
           </SelectTrigger>
           <SelectContent className='max-w-52 bg-white text-stone-700'>
-            {data.map(b => {
-              return (
-                <SelectItem value={b.displayDenom} key={b.displayDenom} className='p-2'>
-                  <div className='flex gap-2 text-stone-700'>
-                    <Avatar className='size-6'>
-                      <AvatarImage src={getIconWithUmFallback(b)} />
-                      <Identicon uniqueIdentifier={b.displayDenom} type='gradient' size={22} />
-                    </Avatar>
-                    <span className=''>{b.displayDenom}</span>
-                  </div>
-                </SelectItem>
-              );
-            })}
+            {data.map(b => (
+              <SelectItem value={b.displayDenom} key={b.displayDenom}>
+                <div className='flex items-center gap-2 text-stone-700'>
+                  <Avatar className='size-6'>
+                    <AvatarImage src={getIconWithUmFallback(b)} />
+                    <Identicon uniqueIdentifier={b.displayDenom} type='gradient' size={22} />
+                  </Avatar>
+                  <span className=''>{b.displayDenom}</span>
+                </div>
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
         <AmountInput />

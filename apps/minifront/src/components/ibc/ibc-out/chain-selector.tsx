@@ -6,7 +6,6 @@ import {
   SelectValue,
 } from '@penumbra-zone/ui/components/ui/select';
 import { cn } from '@penumbra-zone/ui/lib/utils';
-import { useState } from 'react';
 import { AllSlices } from '../../../state';
 import { Chain } from '@penumbra-labs/registry';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
@@ -20,7 +19,6 @@ const chainSelectorSelector = (state: AllSlices) => ({
 export const ChainSelector = () => {
   const { chain, setChain } = useStoreShallow(chainSelectorSelector);
   const chains = useChains();
-  const [openSelect, setOpenSelect] = useState(false);
 
   return (
     <div className='flex flex-col gap-3 rounded-lg border bg-background px-4 pb-5 pt-3'>
@@ -28,10 +26,8 @@ export const ChainSelector = () => {
       <Select
         value={chain?.displayName ?? ''}
         onValueChange={v => setChain(chains.data?.find(i => i.displayName === v))}
-        open={openSelect}
-        onOpenChange={open => setOpenSelect(open)}
       >
-        <SelectTrigger open={openSelect}>
+        <SelectTrigger className='border-none'>
           <SelectValue placeholder='Select chain'>
             {chain && (
               <div className='flex gap-2'>
@@ -41,7 +37,7 @@ export const ChainSelector = () => {
             )}
           </SelectValue>
         </SelectTrigger>
-        <SelectContent className='left-[-17px]'>
+        <SelectContent>
           {chains.data?.map((i, index) => (
             <SelectItem
               key={index}
