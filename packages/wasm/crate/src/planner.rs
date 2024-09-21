@@ -201,7 +201,7 @@ pub async fn plan_transaction_inner<Db: Database>(
     source_address_index.randomizer = [0u8; 12];
 
     // Compute the change address for this transaction.
-    let (change_address, _) = fvk
+    let (mut change_address, _) = fvk
         .incoming()
         .payment_address(source_address_index.account.into());
 
@@ -525,36 +525,71 @@ pub async fn plan_transaction_inner<Db: Database>(
         ));
     }
 
-    // for tpr::Spend { value, address } in request.spends {
-    //     let value = value.ok_or_else(|| anyhow!("missing value in spend"))?;
-    //     let address = address.ok_or_else(|| anyhow!("missing address in spend"))?;
-    //     let asset_id = value
-    //         .asset_id
-    //         .ok_or_else(|| anyhow!("missing asset_id in spend"))?;
+    for tpr::Spend { value, address } in request.spends {
+        let value = value.ok_or_else(|| anyhow!("missing value in spend"))?;
+        let amount = value
+            .amount
+            .ok_or_else(|| anyhow!("missing amount in spend"))?;
+        let address = address.ok_or_else(|| anyhow!("missing address in spend"))?;
+        let asset_id = value
+            .asset_id
+            .ok_or_else(|| anyhow!("missing asset_id in spend"))?;
 
-    //     // Find all the notes of this asset in the source account.
-    //     let records = storage
-    //         .get_notes(NotesRequest {
-    //             include_spent: false,
-    //             asset_id: Some(asset_id.clone()),
-    //             address_index: Some(source_address_index.into()),
-    //             amount_to_spend: None,
-    //         })
-    //         .await?;
-    //     notes_by_asset_id.insert(
-    //         asset_id.try_into()?,
-    //         prioritize_and_filter_spendable_notes(records.clone()),
-    //     );
+        // Find all the notes of this asset in the source account.
+        let records = storage
+            .get_notes(NotesRequest {
+                include_spent: false,
+                asset_id: Some(asset_id.clone()),
+                address_index: Some(source_address_index.into()),
+                amount_to_spend: None,
+            })
+            .await?;
 
-    //     for record in records {
-    //         // filter zero-valued notes from SNR set
-    //         if record.clone().note.amount() != 0u64.into() {
-    //             let spend: SpendPlan =
-    //                 SpendPlan::new(&mut OsRng, record.clone().note, record.clone().position);
-    //             actions_list.push(spend);
-    //         }
-    //     }
-    // }
+        let accumulated_note_amounts = records
+            .iter()
+            .map(|record| record.note.value().amount)
+            .fold(penumbra_num::Amount::zero(), |acc, note_value| {
+                acc + note_value
+            });
+
+        notes_by_asset_id.insert(
+            asset_id.try_into()?,
+            prioritize_and_filter_spendable_notes(records.clone()),
+        );
+
+        for record in records {
+            // filter zero-valued notes from SNR set
+            if record.clone().note.amount() != 0u64.into() {
+                let spend: SpendPlan =
+                    SpendPlan::new(&mut OsRng, record.clone().note, record.clone().position);
+                actions_list.push(spend);
+            }
+        }
+
+        // safety: validate that each spend action's asset ID matches the fee asset ID.
+        for action in actions_list.actions() {
+            if let ActionPlan::Spend(spend_plan) = action {
+                if spend_plan.note.asset_id() != fee_asset_id {
+                    let error_message =
+                        format!("Invalid transaction: The transaction was constructed improperly.");
+                    return Err(WasmError::Anyhow(anyhow!(error_message)));
+                }
+            }
+        }
+
+        // safety: if spend amount is not equal to the maximum amount, request cannot
+        // contain more than one spend action.
+        if accumulated_note_amounts.to_proto() != amount {
+            if actions_list.actions().len() != 1 {
+                let error_message =
+                    format!("Invalid transaction: The transaction was constructed improperly.");
+                return Err(WasmError::Anyhow(anyhow!(error_message)));
+            };
+        }
+
+        // Change address is overwritten to the recipient.
+        change_address = address.try_into()?;
+    }
 
     for tpr::DelegatorVote {
         proposal,
