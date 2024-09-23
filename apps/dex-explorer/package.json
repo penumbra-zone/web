@@ -10,7 +10,7 @@
   "packageManager": "pnpm@9.7.0+sha512.dc09430156b427f5ecfc79888899e1c39d2d690f004be70e05230b72cb173d96839587545d09429b55ac3c429c801b4dc3c0e002f653830a420fa2dd4e3cf9cf",
   "scripts": {
     "build": "next build",
-    "dev": "PENUMBRA_GRPC_ENDPOINT=https://penumbra-grpc.simplystaking.xyz/ next dev",
+    "dev": "next dev",
     "start": "next start",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
@@ -27,7 +27,7 @@
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@grpc/proto-loader": "^0.7.13",
-    "@penumbra-labs/registry": "^11.1.0",
+    "@penumbra-labs/registry": "^11.3.0",
     "@penumbra-zone/client": "^18.1.0",
     "@penumbra-zone/protobuf": "^6.0.0",
     "@penumbra-zone/transport-dom": "^7.5.0",
