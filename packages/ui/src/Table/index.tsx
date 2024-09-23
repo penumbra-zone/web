@@ -1,5 +1,5 @@
 import { PropsWithChildren, ReactNode } from 'react';
-import styled, { css } from 'styled-components';
+import { styled, css } from 'styled-components';
 import { tableHeading, tableItem } from '../utils/typography';
 import { Density } from '../types/Density';
 import { useDensity } from '../hooks/useDensity';

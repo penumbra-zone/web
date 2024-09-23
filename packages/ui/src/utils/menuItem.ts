@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 import { ActionType, getColorByActionType, getOutlineColorByActionType } from './ActionType.ts';
 
 export interface DropdownMenuItemBase {

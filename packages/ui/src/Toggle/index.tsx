@@ -1,6 +1,6 @@
 import * as RadixToggle from '@radix-ui/react-toggle';
 import { useDisabled } from '../hooks/useDisabled';
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 import { buttonBase } from '../utils/button';
 import { useDensity } from '../hooks/useDensity';
 import { Density } from '../types/Density';

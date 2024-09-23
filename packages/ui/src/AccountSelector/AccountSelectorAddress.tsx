@@ -1,6 +1,6 @@
 import type { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
-import styled, { DefaultTheme } from 'styled-components';
+import { styled, DefaultTheme } from 'styled-components';
 import { useDensity } from '../hooks/useDensity';
 import { Density } from '../types/Density';
 import { CopyToClipboardButton } from '../CopyToClipboardButton';

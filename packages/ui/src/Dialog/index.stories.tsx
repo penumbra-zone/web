@@ -4,7 +4,7 @@ import { Dialog } from '.';
 import { Button } from '../Button';
 import { ComponentType } from 'react';
 import { Text } from '../Text';
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 import { Ban, Handshake, ThumbsUp } from 'lucide-react';
 
 const WhiteTextWrapper = styled.div`

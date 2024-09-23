@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 import { small } from '../utils/typography';
 import { ActionType, getOutlineColorByActionType } from '../utils/ActionType';
 import { useDisabled } from '../hooks/useDisabled';
