@@ -7,10 +7,57 @@ import { SpendableNoteRecord, SwapRecord } from '@penumbra-zone/protobuf/penumbr
 import { Transaction } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
 import { sha256Hash } from '@penumbra-zone/crypto-web/sha256';
+import { MsgRecvPacket } from '@penumbra-zone/protobuf/ibc/core/channel/v1/tx_pb';
+import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { FungibleTokenPacketData } from '@penumbra-zone/protobuf/penumbra/core/component/ibc/v1/ibc_pb';
+import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
+import { compatAddressFromBech32, isCompatAddress } from '@penumbra-zone/bech32m/penumbracompat1';
+import { ViewServerInterface } from '@penumbra-zone/types/servers';
 
 const BLANK_TX_SOURCE = new CommitmentSource({
   source: { case: 'transaction', value: { id: new Uint8Array() } },
 });
+
+export const parseIntoAddr = (addrStr: string): Address => {
+  if (isCompatAddress(addrStr)) {
+    return new Address(compatAddressFromBech32(addrStr));
+  }
+  return new Address(addressFromBech32m(addrStr));
+};
+
+export const hasRelevantIbcRelay = (
+  tx: Transaction,
+  isControlledAddr: ViewServerInterface['isControlledAddress'],
+) => {
+  return tx.body?.actions.some(action => {
+    if (action.action.case !== 'ibcRelayAction') {
+      return false;
+    }
+
+    if (!action.action.value.rawAction?.is(MsgRecvPacket.typeName)) {
+      return false;
+    }
+
+    const recvPacket = new MsgRecvPacket();
+    const success = action.action.value.rawAction.unpackTo(recvPacket);
+    if (!success) {
+      throw new Error('Error while trying to unpack Any to MsgRecvPacket');
+    }
+
+    if (!recvPacket.packet?.data) {
+      throw new Error('No FungibleTokenPacketData MsgRecvPacket');
+    }
+
+    try {
+      const dataString = new TextDecoder().decode(recvPacket.packet.data);
+      const { receiver } = FungibleTokenPacketData.fromJsonString(dataString);
+      const receivingAddr = parseIntoAddr(receiver);
+      return isControlledAddr(receivingAddr);
+    } catch (e) {
+      return false;
+    }
+  });
+};
 
 // Used as a type-check helper as .filter(Boolean) still results with undefined as a possible value
 const isDefined = <T>(value: T | null | undefined): value is NonNullable<T> =>
@@ -70,6 +117,7 @@ const searchRelevant = async (
   tx: Transaction,
   spentNullifiers: Set<Nullifier>,
   commitmentRecords: Map<StateCommitment, SpendableNoteRecord | SwapRecord>,
+  isControlledAddr: ViewServerInterface['isControlledAddress'],
 ): Promise<
   { relevantTx: RelevantTx; recoveredSourceRecords: RecoveredSourceRecords } | undefined
 > => {
@@ -99,6 +147,10 @@ const searchRelevant = async (
     }
   }
 
+  if (hasRelevantIbcRelay(tx, isControlledAddr)) {
+    txId ??= await generateTxId(tx);
+  }
+
   if (txId) {
     return {
       relevantTx: { id: txId, data: tx },
@@ -115,6 +167,7 @@ export const identifyTransactions = async (
   spentNullifiers: Set<Nullifier>,
   commitmentRecords: Map<StateCommitment, SpendableNoteRecord | SwapRecord>,
   blockTx: Transaction[],
+  isControlledAddr: ViewServerInterface['isControlledAddress'],
 ): Promise<{
   relevantTxs: RelevantTx[];
   recoveredSourceRecords: RecoveredSourceRecords;
@@ -122,7 +175,9 @@ export const identifyTransactions = async (
   const relevantTxs: RelevantTx[] = [];
   const recoveredSourceRecords: RecoveredSourceRecords = [];
 
-  const searchPromises = blockTx.map(tx => searchRelevant(tx, spentNullifiers, commitmentRecords));
+  const searchPromises = blockTx.map(tx =>
+    searchRelevant(tx, spentNullifiers, commitmentRecords, isControlledAddr),
+  );
   const results = await Promise.all(searchPromises);
 
   for (const result of results) {
