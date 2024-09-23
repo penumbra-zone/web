@@ -1,14 +1,14 @@
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Dialog } from '@penumbra-zone/ui/Dialog';
 import { Display } from '@penumbra-zone/ui/Display';
 import { MenuItem } from '@penumbra-zone/ui/MenuItem';
 // import { StatusPopover } from './status-popover.tsx';
-import { ProviderPopover } from './provider-popover.tsx';
 import { HeaderLogo } from './logo.tsx';
-import { useState } from 'react';
 import { HEADER_LINKS } from './links.ts';
-import { useRouter } from 'next/navigation';
+import { Connection } from './connection.tsx';
 
 export const MobileNav = () => {
   const router = useRouter();
@@ -32,7 +32,7 @@ export const MobileNav = () => {
 
               <div className='flex gap-2'>
                 {/* <StatusPopover />*/}
-                <ProviderPopover />
+                <Connection />
                 <Button iconOnly icon={X} onClick={() => setIsOpen(false)}>
                   Close
                 </Button>
