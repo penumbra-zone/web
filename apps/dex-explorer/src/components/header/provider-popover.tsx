@@ -4,10 +4,11 @@ import Image from 'next/image';
 import { Popover } from '@penumbra-zone/ui/Popover';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
-import { penumbra, usePraxManifest } from '@/utils/penumbra.ts';
+import { useConnect } from '@/utils/penumbra/useConnect.ts';
 
 export const ProviderPopover = () => {
-  const manifest = usePraxManifest();
+  const { disconnect, manifest } = useConnect();
+
   const name = manifest?.['name'] as string;
   const version = manifest?.['version'] as string;
   const description = manifest?.['description'] as string;
@@ -20,10 +21,6 @@ export const ProviderPopover = () => {
     );
     return () => element;
   }, [name, manifest]);
-
-  const disconnect = () => {
-    void penumbra.disconnect().then(() => window.location.reload());
-  };
 
   return (
     <Popover>
@@ -44,7 +41,7 @@ export const ProviderPopover = () => {
           <Text body>Loading provider manifest...</Text>
         )}
         <div className='mt-4'>
-          <Button icon={Link2Off} onClick={disconnect}>
+          <Button icon={Link2Off} onClick={() => void disconnect()}>
             Disconnect
           </Button>
         </div>
