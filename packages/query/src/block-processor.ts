@@ -305,8 +305,6 @@ export class BlockProcessor implements BlockProcessorInterface {
       // this is a network query
       const blockTx = await this.querier.app.txsByHeight(compactBlock.height);
 
-      // debugger;
-
       // Filter down to transactions & note records in block relevant to user
       const { relevantTxs, recoveredSourceRecords } = await identifyTransactions(
         spentNullifiers,

@@ -25,6 +25,7 @@ export const parseIntoAddr = (addrStr: string): Address => {
   return new Address(addressFromBech32m(addrStr));
 };
 
+// Identifies if a tx with a relay action of which the receiver is the user
 export const hasRelevantIbcRelay = (
   tx: Transaction,
   isControlledAddr: ViewServerInterface['isControlledAddress'],
