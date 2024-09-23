@@ -1,5 +1,12 @@
 # @penumbra-zone/storage
 
+## 30.0.1
+
+### Patch Changes
+
+- e343d22: Version DB to 47
+- f9b8c07: Bump registry version to v11.2
+
 ## 30.0.0
 
 ### Patch Changes
