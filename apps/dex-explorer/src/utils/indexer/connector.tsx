@@ -8,7 +8,20 @@ export class IndexerQuerier {
   private pool: Pool;
 
   constructor(connectionString: string) {
-    this.pool = new Pool({ connectionString });
+    const dbConfig = {
+      connectionString: connectionString,
+      // If a CA certificate was specified as an env var, pass that info to the database config.
+      // Be advised that if PENUMBRA_INDEXER_CA_CERT is set, then PENUMBRA_INDEXER_ENDPOINT must
+      // *lack* an `sslmode` param! This is documented here:
+      // https://node-postgres.com/features/ssl#usage-with-connectionstring
+      ...(process.env.PENUMBRA_INDEXER_CA_CERT != null && {
+        ssl: {
+            rejectUnauthorized: true,
+            ca: process.env.PENUMBRA_INDEXER_CA_CERT,
+          },
+      }),
+    };
+    this.pool = new Pool(dbConfig);
   }
 
   /**
