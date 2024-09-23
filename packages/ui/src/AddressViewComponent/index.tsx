@@ -1,7 +1,7 @@
 import { AddressIcon } from './AddressIcon';
 import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 import { Text } from '../Text';
 import { CopyToClipboardButton } from '../CopyToClipboardButton';
 import { Shrink0 } from '../utils/Shrink0';

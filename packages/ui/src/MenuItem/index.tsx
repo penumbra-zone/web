@@ -2,7 +2,7 @@ import type { LucideIcon } from 'lucide-react';
 import type { FC, MouseEventHandler } from 'react';
 import { MenuItem as SharedMenuItem, DropdownMenuItemBase } from '../utils/menuItem';
 import { Text } from '../Text';
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 import { asTransientProps } from '../utils/asTransientProps.ts';
 
 const IconAdornment = styled.i`

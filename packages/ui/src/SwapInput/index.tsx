@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 import { ArrowLeftRight } from 'lucide-react';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';

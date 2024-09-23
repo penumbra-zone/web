@@ -1,5 +1,5 @@
 import { FC, forwardRef, MouseEventHandler } from 'react';
-import styled, { css, DefaultTheme } from 'styled-components';
+import { styled, css, DefaultTheme } from 'styled-components';
 import { asTransientProps } from '../utils/asTransientProps';
 import { Priority, focusOutline, overlays, buttonBase } from '../utils/button';
 import { getBackgroundColor } from './helpers';

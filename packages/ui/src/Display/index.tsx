@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 import { media } from '../utils/media';
 
 const Root = styled.section`

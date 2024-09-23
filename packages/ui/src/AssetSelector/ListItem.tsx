@@ -1,5 +1,5 @@
 import { RadioGroupItem } from '@radix-ui/react-radio-group';
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 import { motion } from 'framer-motion';
 import { AssetIcon } from '../AssetIcon';
 import { Text } from '../Text';

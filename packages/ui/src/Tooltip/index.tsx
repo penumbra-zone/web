@@ -1,6 +1,6 @@
 import * as RadixTooltip from '@radix-ui/react-tooltip';
 import { ReactNode } from 'react';
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 import { Text } from '../Text';
 import { buttonBase } from '../utils/button';
 import { small } from '../utils/typography';

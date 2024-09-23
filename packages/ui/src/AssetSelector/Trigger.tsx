@@ -1,5 +1,5 @@
 import { forwardRef, MouseEventHandler } from 'react';
-import styled, { css } from 'styled-components';
+import { styled, css } from 'styled-components';
 import { ChevronsUpDownIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { getMetadataFromBalancesResponse } from '@penumbra-zone/getters/balances-response';
