@@ -345,6 +345,10 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
       let currentIntervalStart: Date | null = null;
 
       originalOHLCData.forEach((ohlc, index) => {
+        if (!blockToTimestamp[ohlc.height]) {
+          return;
+        }
+
         const timestamp = new Date(blockToTimestamp[ohlc.height]);
         const intervalStart = getIntervalStart(timestamp.toISOString());
 
