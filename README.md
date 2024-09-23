@@ -32,10 +32,11 @@ In order to run the dex-explorer, you'll need to [deploy a Penumbra fullnode](ht
 with [ABCI event indexing enabled](https://guide.penumbra.zone/node/pd/indexing-events). The relevant env vars
 you'll want to set are:
 
-  * `PENUMBRA_GRPC_ENDPOINT`
-  * `PENUMBRA_INDEXER_ENDPOINT`
-  * `NEXT_PUBLIC_CHAIN_ID`
-  * `NEXT_PUBLIC_CUILOA_URL`
+  * `PENUMBRA_GRPC_ENDPOINT`: the URL to a remote node's `pd` gRPC service
+  * `PENUMBRA_INDEXER_ENDPOINT`: the URL to a Postgre database containing ABCI events
+  * `PENUMBRA_INDEXER_CA_CERT`: optional; if set, the database connection will use the provided certificate authority when validating TLS
+  * `NEXT_PUBLIC_CHAIN_ID`: the chain id for the network being indexed, controls asset-registry lookups
+  * `NEXT_PUBLIC_CUILOA_URL`: the URL for a block-explorer application, for generating URLs for more block/transaction info
 
 ## Name
 
