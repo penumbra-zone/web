@@ -1,5 +1,17 @@
 # minifront
 
+## 6.22.1
+
+### Patch Changes
+
+- f9b8c07: Bump registry version to v11.2
+- e5c76a6: Render the error in swap page in case of incorrect decimals or insufficient funds
+- Updated dependencies [b1d4b7d]
+- Updated dependencies [75ef4f5]
+- Updated dependencies [de9bd06]
+- Updated dependencies [43d8350]
+  - @penumbra-zone/ui@9.2.0
+
 ## 6.22.0
 
 ### Minor Changes

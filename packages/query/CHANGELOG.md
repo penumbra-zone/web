@@ -1,5 +1,12 @@
 # @penumbra-zone/query
 
+## 31.0.1
+
+### Patch Changes
+
+- e343d22: [bug fix] Only process relevant transactions for NFTs
+- e343d22: Extract, refactor, and test IdentifyTransactions
+
 ## 31.0.0
 
 ### Patch Changes
