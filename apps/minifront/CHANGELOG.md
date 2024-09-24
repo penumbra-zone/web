@@ -1,5 +1,21 @@
 # minifront
 
+## 6.22.2
+
+### Patch Changes
+
+- Updated dependencies [b6e32f8]
+- Updated dependencies [b6e32f8]
+- Updated dependencies [b6e32f8]
+  - @penumbra-zone/protobuf@6.1.0
+  - @penumbra-zone/bech32m@8.0.0
+  - @penumbra-zone/types@24.0.0
+  - @penumbra-zone/client@19.0.0
+  - @penumbra-zone/getters@18.0.0
+  - @penumbra-zone/perspective@31.0.0
+  - @penumbra-zone/ui@10.0.0
+  - @penumbra-zone/crypto-web@25.0.0
+
 ## 6.22.1
 
 ### Patch Changes

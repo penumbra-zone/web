@@ -1,5 +1,12 @@
 # @penumbra-zone/client
 
+## 19.0.0
+
+### Patch Changes
+
+- Updated dependencies [b6e32f8]
+  - @penumbra-zone/protobuf@6.1.0
+
 ## 18.1.0
 
 ### Minor Changes
