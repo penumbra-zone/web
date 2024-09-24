@@ -3,6 +3,7 @@ import {
   IbcChannelService,
   IbcClientMsgService,
   IbcClientService,
+  IbcConnectionMsgService,
   IbcConnectionService,
 } from './services/cosmos-ibc-core.js';
 import type { CustodyService } from './services/penumbra-custody.js';
@@ -36,6 +37,7 @@ export type PenumbraService =
   | typeof IbcClientService
   | typeof IbcClientMsgService
   | typeof IbcConnectionService
+  | typeof IbcConnectionMsgService
   | typeof SctService
   | typeof ShieldedPoolService
   | typeof SimulationService

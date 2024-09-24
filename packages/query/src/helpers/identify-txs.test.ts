@@ -1,8 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import {
-  CommitmentSource,
-  Nullifier,
-} from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
+import { Nullifier } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
 import { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
 import {
   Action,
@@ -10,10 +7,10 @@ import {
   TransactionBody,
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import {
+  BLANK_TX_SOURCE,
   getCommitmentsFromActions,
   getNullifiersFromActions,
   identifyTransactions,
-  parseIntoAddr,
 } from './identify-txs.js';
 import {
   Output,
@@ -37,10 +34,6 @@ import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
 import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { Packet } from '@penumbra-zone/protobuf/ibc/core/channel/v1/channel_pb';
 import { MsgRecvPacket } from '@penumbra-zone/protobuf/ibc/core/channel/v1/tx_pb';
-
-const BLANK_TX_SOURCE = new CommitmentSource({
-  source: { case: 'transaction', value: { id: new Uint8Array() } },
-});
 
 describe('getCommitmentsFromActions', () => {
   test('returns empty array when tx.body.actions is undefined', () => {
@@ -385,25 +378,3 @@ const createIbcRelay = (receiver: string): Action => {
     action: { case: 'ibcRelayAction', value: new IbcRelay({ rawAction: relevantRelay }) },
   });
 };
-
-describe('parseIntoAddr', () => {
-  test('works with compat', () => {
-    expect(() =>
-      parseIntoAddr(
-        'penumbracompat1147mfall0zr6am5r45qkwht7xqqrdsp50czde7empv7yq2nk3z8yyfh9k9520ddgswkmzar22vhz9dwtuem7uxw0qytfpv7lk3q9dp8ccaw2fn5c838rfackazmgf3ahhwqq0da',
-      ),
-    ).not.toThrow();
-  });
-
-  test('works with normal addresses', () => {
-    expect(() =>
-      parseIntoAddr(
-        'penumbra1e8k5cyds484dxvapeamwveh5khqv4jsvyvaf5wwxaaccgfghm229qw03pcar3ryy8smptevstycch0qk3uu0rgkvtjpxy3cu3rjd0agawqtlz6erev28a6sg69u7cxy0t02nd4',
-      ),
-    ).not.toThrow();
-  });
-
-  test('raises on invalid addresses', () => {
-    expect(() => parseIntoAddr('not_valid_format')).toThrow();
-  });
-});

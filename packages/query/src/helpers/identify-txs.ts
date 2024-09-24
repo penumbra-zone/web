@@ -8,25 +8,16 @@ import { Transaction } from '@penumbra-zone/protobuf/penumbra/core/transaction/v
 import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
 import { sha256Hash } from '@penumbra-zone/crypto-web/sha256';
 import { MsgRecvPacket } from '@penumbra-zone/protobuf/ibc/core/channel/v1/tx_pb';
-import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { FungibleTokenPacketData } from '@penumbra-zone/protobuf/penumbra/core/component/ibc/v1/ibc_pb';
-import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
-import { compatAddressFromBech32, isCompatAddress } from '@penumbra-zone/bech32m/penumbracompat1';
 import { ViewServerInterface } from '@penumbra-zone/types/servers';
+import { parseIntoAddr } from '@penumbra-zone/types/address';
 
-const BLANK_TX_SOURCE = new CommitmentSource({
+export const BLANK_TX_SOURCE = new CommitmentSource({
   source: { case: 'transaction', value: { id: new Uint8Array() } },
 });
 
-export const parseIntoAddr = (addrStr: string): Address => {
-  if (isCompatAddress(addrStr)) {
-    return new Address(compatAddressFromBech32(addrStr));
-  }
-  return new Address(addressFromBech32m(addrStr));
-};
-
 // Identifies if a tx with a relay action of which the receiver is the user
-export const hasRelevantIbcRelay = (
+const hasRelevantIbcRelay = (
   tx: Transaction,
   isControlledAddr: ViewServerInterface['isControlledAddress'],
 ) => {
