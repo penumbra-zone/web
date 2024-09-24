@@ -33,6 +33,9 @@ const MsgResvComponent = ({ packet }: { packet: MsgRecvPacket }) => {
       label='IBC Relay: Msg Received'
       visibleContent={
         <ActionDetails>
+          {packetData === undefined && (
+            <ActionDetails.Row label='Data'>Unknown packet data</ActionDetails.Row>
+          )}
           {!!packetData?.sender && (
             <ActionDetails.Row label='Sender'>
               <ActionDetails.TruncatedText>{packetData.sender}</ActionDetails.TruncatedText>
