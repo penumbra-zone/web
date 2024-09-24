@@ -180,8 +180,8 @@ importers:
         specifier: ^1.23.29
         version: 1.23.29(@types/react@18.3.3)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@penumbra-labs/registry':
-        specifier: ^11.2.0
-        version: 11.2.0
+        specifier: ^11.3.1
+        version: 11.3.1
       '@penumbra-zone/bech32m':
         specifier: workspace:*
         version: link:../../packages/bech32m
@@ -539,8 +539,8 @@ importers:
         version: 8.0.0
     devDependencies:
       '@penumbra-labs/registry':
-        specifier: ^11.2.0
-        version: 11.2.0
+        specifier: ^11.3.1
+        version: 11.3.1
       '@penumbra-zone/protobuf':
         specifier: workspace:*
         version: link:../protobuf
@@ -739,7 +739,7 @@ importers:
         version: 3.0.1
       postcss:
         specifier: ^8.4.38
-        version: 7.0.39
+        version: 8.4.39
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -2905,8 +2905,8 @@ packages:
     resolution: {integrity: sha512-HNjmfLQEVRZmHRET336f20H/8kOozUGwk7yajvsonjNxbj2wBTK1WsQuHkD5yYh9RxFGL2EyDHryOihOwUoKDA==}
     engines: {node: '>= 10.0.0'}
 
-  '@penumbra-labs/registry@11.2.0':
-    resolution: {integrity: sha512-kGxu6KWjFl581eEYMk9/ODehrxJT9YB9TxNxJOYSKXt+8ni9kovovcj5jdP7MkP7bGHrNEssSziWvjCg2nfuug==}
+  '@penumbra-labs/registry@11.3.1':
+    resolution: {integrity: sha512-0hBfPZW4Y3my6RzYSBGI3cwutW+C7KJXn5OLXOhhXPsH+VlexrxvKIWc8nJeUwRCTtBkRR0lUSwuIhnaw0tsyQ==}
 
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
@@ -14310,7 +14310,7 @@ snapshots:
       '@parcel/watcher-win32-ia32': 2.4.1
       '@parcel/watcher-win32-x64': 2.4.1
 
-  '@penumbra-labs/registry@11.2.0': {}
+  '@penumbra-labs/registry@11.3.1': {}
 
   '@pkgjs/parseargs@0.11.0':
     optional: true
