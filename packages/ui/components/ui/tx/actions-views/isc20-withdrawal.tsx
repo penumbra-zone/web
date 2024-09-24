@@ -4,7 +4,8 @@ import { ActionDetails } from './action-details';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
 import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 
-const getUtcTime = (time: bigint) => {
+// Converts nanoseconds timestamp to UTC timestamp string
+export const getUtcTime = (time: bigint) => {
   const formatter = new Intl.DateTimeFormat('en-US', {
     dateStyle: 'medium',
     timeStyle: 'long',
