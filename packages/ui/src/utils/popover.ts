@@ -1,4 +1,4 @@
-import { styled, keyframes } from 'styled-components';
+import { styled, keyframes, DefaultTheme } from 'styled-components';
 
 export type PopoverContext = 'default' | 'success' | 'caution' | 'error';
 
