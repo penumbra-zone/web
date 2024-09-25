@@ -10,11 +10,12 @@ export const infiniteLoading = keyframes`
   }
 `;
 
-const Root = styled(ProgressPrimitive.Root)`
+const Root = styled(ProgressPrimitive.Root)<{ $error: boolean }>`
   position: relative;
   width: 100%;
   height: ${props => props.theme.spacing(1)};
-  background-color: ${props => props.theme.color.other.tonalFill5};
+  background-color: ${props =>
+    props.$error ? props.theme.color.destructive.light : props.theme.color.other.tonalFill5};
   transition: background-color 0.15s;
   overflow: hidden;
 `;
@@ -70,7 +71,7 @@ export interface ProgressProps {
  * Progress bar with loading and error states
  */
 export const Progress = ({ value, loading, error = false }: ProgressProps) => (
-  <Root value={value} max={1}>
+  <Root value={value} max={1} $error={error}>
     <ProgressPrimitive.Indicator asChild>
       <Indicator
         $value={value}

@@ -49,6 +49,7 @@ export const statusSelector = (
        * `false` otherwise
        */
       isCatchingUp: undefined;
+      error: unknown;
     }
   | {
       isCatchingUp: boolean;
@@ -60,7 +61,7 @@ export const statusSelector = (
       error: unknown;
     } => {
   if (!zQueryState.data?.fullSyncHeight) {
-    return { isCatchingUp: undefined };
+    return { isCatchingUp: undefined, error: zQueryState.error };
   } else {
     const { fullSyncHeight, latestKnownBlockHeight } = zQueryState.data;
     const isCatchingUp = !latestKnownBlockHeight || latestKnownBlockHeight - fullSyncHeight > 10;
