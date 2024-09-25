@@ -4,26 +4,40 @@ A DEX explorer for [Penumbra](https://penumbra.zone/).
 
 ## Getting Started
 
-TK. Although the docs at https://github.com/penumbra-zone/cuiloa may be useful.
+The application is written in [NextJS], and uses [pnpm] for package management.
+The fastest way to get started on the development environment is to use [Nix]:
 
-### Penumbra node setup
-
-You need to have a full node setup with penumbra (including `cometbft`) as detailed [here for testnets](https://guide.penumbra.zone/main/pd/join-testnet.html#joining-a-testnet).
-Alternatively, you can configure a full node on a devnet as explained [here](https://guide.penumbra.zone/main/dev/devnet-quickstart.html).
-**In either case**, you need to modify the `config.toml` file that is created by `pd` after generating your configuration files.
-
-`config.toml` should be found under `$HOME/.penumbra/testnet_data/node0/cometbft/config/`. In this file, there is a heading `[tx_index]` with the configuration variable of `indexer = "kv"`.
-Using the URI of the database you created with PostgreSQL from the previous section, you need to update the section under `[tx_index]` to the following:
-
-```toml
-[tx_index]
-indexer = "psql"
-psql-conn = "$YOUR_DB_URI_HERE"
+```shell
+sh <(curl -L https://nixos.org/nix/install)
+nix develop
+just dev
 ```
-After you have updated this file, you should start the full node as instructed by the Penumbra guide.
-If everything was configured correctly, you should be able to open the database and inspect for Block and Transaction events.
-If there is no data, check the logs for `cometbft` for any errors with inserting data into the indexer.
 
+However, you still need a database to connect to.
+
+## Connecting to a database
+
+The DEX explorer application requires a PostgreSQL database containing ABCI event information
+[as emitted by a Penumbra node](https://guide.penumbra.zone/node/pd/indexing-events).
+You can set up a local devnet by following the [Penumbra devnet quickstart guide](https://guide.penumbra.zone/dev/devnet-quickstart),
+or plug in credentials for an already running database via environment variables:
+
+```
+# add these to e.g. `.envrc`:
+export PENUMBRA_GRPC_ENDPOINT="https://testnet.plinfra.net"
+export PENUMBRA_INDEXER_ENDPOINT="postgresql://<PGUSER>:<PGPASS>@<PGHOST>:<PGPORT>/<PGDATABASE>?sslmode=require""
+export NEXT_PUBLIC_CHAIN_ID="penumbra-testnet-phobos-2"
+# optional: if you see "self-signed certificate in certificate chain" errors,
+# you'll likely need to export a `ca-cert.pem` file for the DB TLS.
+# export PENUMBRA_INDEXER_CA_CERT="$(cat ca-cert.pem)"
+```
+
+If you see an error `self-signed certificate in certificate chain`, then you'll need to:
+
+  1. obtain the CA certificate file for the backend database you're connecting to, and export it as `PENUMBRA_INDEXER_CA_CERT`.
+  2. _remove_ the `sslmode=require` string on the `PENUMBRA_INDEXER_ENDPOINT` var.
+
+See context in #55. After configuring that information, run `just dev` again in the nix shell, and you should have events visible.
 
 ## Deployment
 
@@ -42,6 +56,9 @@ you'll want to set are:
 
 It'd be nice to have a cool name for the DEX explorer. We don't have one yet.
 
-
 ## Proto Generation
 Using https://buf.build/penumbra-zone/penumbra/sdks/main
+
+[NextJS]: https://nextjs.org/
+[pnpm]: https://pnpm.io/
+[Nix]: https://nixos.org/download/
