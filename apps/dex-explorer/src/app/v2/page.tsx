@@ -1,13 +1,6 @@
-'use client';
+import { redirect } from 'next/navigation';
+import { PagePath } from '@/utils/routes/pages.ts';
 
-import { Text } from '@penumbra-zone/ui/Text';
-
-const HomePage = () => {
-  return (
-    <section>
-      <Text h2>Hi!</Text>
-    </section>
-  )
+export default function RedirectPage() {
+  redirect(PagePath.Trade);
 }
-
-export default HomePage;
