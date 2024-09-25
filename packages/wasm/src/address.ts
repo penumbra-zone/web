@@ -1,4 +1,4 @@
-import { get_index_by_address } from '../wasm/index.js';
+import { get_index_by_address, is_controlled_address } from '../wasm/index.js';
 import {
   Address,
   AddressIndex,
@@ -19,10 +19,5 @@ export const isControlledAddress = (fullViewingKey: FullViewingKey, address?: Ad
   if (!address) {
     return false;
   }
-
-  const viewableIndex = get_index_by_address(
-    fullViewingKey.toBinary(),
-    address.toBinary(),
-  ) as JsonValue;
-  return Boolean(viewableIndex);
+  return is_controlled_address(fullViewingKey.toBinary(), address.toBinary());
 };

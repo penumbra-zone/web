@@ -1,5 +1,5 @@
 import * as ProgressPrimitive from '@radix-ui/react-progress';
-import styled, { type DefaultTheme, keyframes } from 'styled-components';
+import { styled, type DefaultTheme, keyframes } from 'styled-components';
 
 export const infiniteLoading = keyframes`
   from {

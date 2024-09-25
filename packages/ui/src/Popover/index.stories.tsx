@@ -4,7 +4,7 @@ import { Popover } from '.';
 import { Button } from '../Button';
 import { ComponentType, useState } from 'react';
 import { Text } from '../Text';
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 import { Shield } from 'lucide-react';
 import { Density } from '../Density';
 

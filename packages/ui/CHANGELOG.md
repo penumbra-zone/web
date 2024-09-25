@@ -1,5 +1,29 @@
 # @penumbra-zone/ui
 
+## 10.0.0
+
+### Patch Changes
+
+- Updated dependencies [b6e32f8]
+- Updated dependencies [b6e32f8]
+- Updated dependencies [b6e32f8]
+  - @penumbra-zone/protobuf@6.1.0
+  - @penumbra-zone/bech32m@8.0.0
+  - @penumbra-zone/types@24.0.0
+  - @penumbra-zone/perspective@31.0.0
+
+## 9.2.0
+
+### Minor Changes
+
+- b1d4b7d: Add `AssetSelector` UI component
+- de9bd06: Add `SwapInput` and `ValueInput` UI components
+- 43d8350: Fix the issue of UI package not being build correctly for some server-side environments
+
+### Patch Changes
+
+- 75ef4f5: Fix copy button styles
+
 ## 9.1.1
 
 ### Patch Changes

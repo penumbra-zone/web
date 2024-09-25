@@ -1,6 +1,7 @@
 import { AnyMessage, JsonValue, Message, MessageType } from '@bufbuild/protobuf';
 import { IDBPCursorWithValue } from 'idb';
 import type { PenumbraDb, PenumbraStoreNames } from '@penumbra-zone/types/indexed-db';
+import { typeRegistry } from '@penumbra-zone/protobuf';
 
 export class IdbCursorSource<N extends PenumbraStoreNames, T extends Message<T> = AnyMessage>
   implements UnderlyingDefaultSource<T>
@@ -15,7 +16,7 @@ export class IdbCursorSource<N extends PenumbraStoreNames, T extends Message<T> 
     void (async () => {
       let cursor = await this.cursor;
       while (cursor) {
-        cont.enqueue(this.messageType.fromJson(cursor.value as JsonValue));
+        cont.enqueue(this.messageType.fromJson(cursor.value as JsonValue, { typeRegistry }));
         cursor = await cursor.continue();
       }
       cont.close();

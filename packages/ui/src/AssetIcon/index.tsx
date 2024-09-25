@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getDisplay } from '@penumbra-zone/getters/metadata';
 import { assetPatterns } from '@penumbra-zone/types/assets';

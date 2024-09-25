@@ -1,5 +1,5 @@
 import { ReactNode, useId, useState } from 'react';
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 import { RadioGroup } from '@radix-ui/react-radio-group';
 import { Dialog } from '../Dialog';
 import { IsAnimatingProvider } from '../IsAnimatingProvider';

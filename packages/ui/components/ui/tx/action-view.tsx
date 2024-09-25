@@ -17,6 +17,7 @@ import { ValidatorVoteComponent } from './actions-views/validator-vote.tsx';
 import { PositionOpenComponent } from './actions-views/position-open.tsx';
 import { PositionCloseComponent } from './actions-views/position-close.tsx';
 import { PositionWithdrawComponent } from './actions-views/position-withdraw.tsx';
+import { IbcRelayComponent } from './actions-views/ibc-relay.tsx';
 
 type Case = Exclude<ActionView['actionView']['case'], undefined>;
 
@@ -112,7 +113,7 @@ export const ActionViewComponent = ({
       return <UnimplementedView label='Validator Definition' />;
 
     case 'ibcRelayAction':
-      return <UnimplementedView label='IBC Relay Action' />;
+      return <IbcRelayComponent value={actionView.value} />;
 
     case 'proposalSubmit':
       return <UnimplementedView label='Proposal Submit' />;

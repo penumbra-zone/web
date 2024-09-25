@@ -8,8 +8,7 @@ use penumbra_proof_params::{
     SPEND_PROOF_PROVING_KEY, SWAPCLAIM_PROOF_PROVING_KEY, SWAP_PROOF_PROVING_KEY,
 };
 use penumbra_proto::core::keys::v1 as pb;
-use penumbra_proto::core::keys::v1::WalletId;
-use penumbra_proto::{DomainType, Message};
+use penumbra_proto::DomainType;
 use rand_core::OsRng;
 use wasm_bindgen::prelude::*;
 
@@ -75,9 +74,7 @@ pub fn get_wallet_id(full_viewing_key: &[u8]) -> WasmResult<Vec<u8>> {
     utils::set_panic_hook();
 
     let fvk: FullViewingKey = FullViewingKey::decode(full_viewing_key)?;
-    // Can do `fvk.wallet_id().encode_to_vec()` when Domain impl added to WalletId in core
-    let wallet_id_proto = WalletId::from(fvk.wallet_id());
-    Ok(wallet_id_proto.encode_to_vec())
+    Ok(fvk.wallet_id().encode_to_vec())
 }
 
 /// get address by index using FVK
@@ -124,4 +121,18 @@ pub fn get_index_by_address(full_viewing_key: &[u8], address: &[u8]) -> WasmResu
     let index: Option<pb::AddressIndex> = fvk.address_index(&address).map(Into::into);
     let result = serde_wasm_bindgen::to_value(&index)?;
     Ok(result)
+}
+
+/// Checks if address is controlled by full viewing key provided
+#[wasm_bindgen]
+pub fn is_controlled_address(full_viewing_key: &[u8], address: &[u8]) -> WasmResult<bool> {
+    utils::set_panic_hook();
+
+    let address: Address = Address::decode(address)?;
+    let fvk: FullViewingKey = FullViewingKey::decode(full_viewing_key)?;
+    Ok(is_controlled_inner(&fvk, &address))
+}
+
+pub fn is_controlled_inner(fvk: &FullViewingKey, address: &Address) -> bool {
+    fvk.address_index(address).is_some()
 }

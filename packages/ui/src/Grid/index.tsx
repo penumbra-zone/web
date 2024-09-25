@@ -1,5 +1,5 @@
 import { PropsWithChildren } from 'react';
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 import { AsTransientProps, asTransientProps } from '../utils/asTransientProps';
 import { media } from '../utils/media';
 

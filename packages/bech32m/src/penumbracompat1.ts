@@ -12,4 +12,13 @@ export const compatAddressFromBech32 = (penumbracompat1: string): { [innerName]:
   [innerName]: fromBech32(penumbracompat1 as `${typeof prefix}1${string}`, prefix),
 });
 
+export const isCompatAddress = (check: string): check is `${typeof prefix}1${string}` => {
+  try {
+    compatAddressFromBech32(check);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 export { PENUMBRA_BECH32M_ADDRESS_LENGTH, PENUMBRA_BECH32M_ADDRESS_PREFIX } from './index.js';

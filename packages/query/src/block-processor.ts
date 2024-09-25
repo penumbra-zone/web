@@ -4,21 +4,13 @@ import {
   PositionState,
   PositionState_PositionStateEnum,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
-import {
-  CommitmentSource,
-  Nullifier,
-} from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
+import { Nullifier } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
 import { ValidatorInfoResponse } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
-import {
-  Action,
-  Transaction,
-} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
-import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
+import { Action } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
 import { SpendableNoteRecord, SwapRecord } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { auctionIdFromBech32 } from '@penumbra-zone/bech32m/pauctid';
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
-import { sha256Hash } from '@penumbra-zone/crypto-web/sha256';
 import { getAssetId } from '@penumbra-zone/getters/metadata';
 import {
   getExchangeRateFromValidatorInfoResponse,
@@ -47,6 +39,7 @@ import { getSpendableNoteRecordCommitment } from '@penumbra-zone/getters/spendab
 import { getSwapRecordCommitment } from '@penumbra-zone/getters/swap-record';
 import { CompactBlock } from '@penumbra-zone/protobuf/penumbra/core/component/compact_block/v1/compact_block_pb';
 import { shouldSkipTrialDecrypt } from './helpers/skip-trial-decrypt.js';
+import { identifyTransactions, RelevantTx } from './helpers/identify-txs.js';
 
 declare global {
   // eslint-disable-next-line no-var -- expected globals
@@ -80,10 +73,6 @@ interface ProcessBlockParams {
   latestKnownBlockHeight: bigint;
   skipTrialDecrypt?: boolean;
 }
-
-const BLANK_TX_SOURCE = new CommitmentSource({
-  source: { case: 'transaction', value: { id: new Uint8Array() } },
-});
 
 const POSITION_STATES: PositionState[] = [
   new PositionState({ state: PositionState_PositionStateEnum.OPENED }),
@@ -129,9 +118,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       numOfAttempts: Infinity,
       maxDelay: 20_000, // 20 seconds
       retry: async (e, attemptNumber) => {
-        if (globalThis.__DEV__) {
-          console.debug('Sync failure', attemptNumber, e);
-        }
+        console.error(`Sync failure #${attemptNumber}: `, e);
         await this.viewServer.resetTreeToStored();
         return !this.abortController.signal.aborted;
       },
@@ -318,28 +305,25 @@ export class BlockProcessor implements BlockProcessorInterface {
       // this is a network query
       const blockTx = await this.querier.app.txsByHeight(compactBlock.height);
 
-      // identify tx that involve a new record
-      // - compare nullifiers
-      // - compare state commitments
-      // - collect relevant tx for info generation later
-      // - if matched by commitment, collect record with recovered source
-      const { relevantTx, recordsWithSources } = await this.identifyTransactions(
+      // Filter down to transactions & note records in block relevant to user
+      const { relevantTxs, recoveredSourceRecords } = await identifyTransactions(
         spentNullifiers,
         recordsByCommitment,
         blockTx,
+        addr => this.viewServer.isControlledAddress(addr),
       );
 
       // this simply stores the new records with 'rehydrated' sources to idb
       // TODO: this is the second time we save these records, after "saveScanResult"
-      await this.saveRecoveredCommitmentSources(recordsWithSources);
+      await this.saveRecoveredCommitmentSources(recoveredSourceRecords);
 
-      await this.processTransactions(blockTx);
+      await this.processTransactions(relevantTxs);
 
       // at this point txinfo can be generated and saved. this will resolve
       // pending broadcasts, and populate the transaction list.
       // - calls wasm for each relevant tx
       // - saves to idb
-      await this.saveTransactions(compactBlock.height, relevantTx);
+      await this.saveTransactions(compactBlock.height, relevantTxs);
     }
 
     /**
@@ -450,64 +434,6 @@ export class BlockProcessor implements BlockProcessorInterface {
     }
   }
 
-  private async identifyTransactions(
-    spentNullifiers: Set<Nullifier>,
-    commitmentRecordsByStateCommitment: Map<StateCommitment, SpendableNoteRecord | SwapRecord>,
-    blockTx: Transaction[],
-  ) {
-    const relevantTx = new Map<TransactionId, Transaction>();
-    const recordsWithSources = new Array<SpendableNoteRecord | SwapRecord>();
-    for (const tx of blockTx) {
-      let txId: TransactionId | undefined;
-
-      const txCommitments = (tx.body?.actions ?? []).flatMap(({ action }) => {
-        switch (action.case) {
-          case 'output':
-            return action.value.body?.notePayload?.noteCommitment;
-          case 'swap':
-            return action.value.body?.payload?.commitment;
-          case 'swapClaim':
-            return [action.value.body?.output1Commitment, action.value.body?.output2Commitment];
-          default:
-            return;
-        }
-      });
-
-      const txNullifiers = (tx.body?.actions ?? []).map(({ action }) => {
-        switch (action.case) {
-          case 'spend':
-          case 'swapClaim':
-            return action.value.body?.nullifier;
-          default:
-            return;
-        }
-      });
-
-      for (const spentNullifier of spentNullifiers) {
-        if (txNullifiers.some(txNullifier => spentNullifier.equals(txNullifier))) {
-          txId = new TransactionId({ inner: await sha256Hash(tx.toBinary()) });
-          relevantTx.set(txId, tx);
-          spentNullifiers.delete(spentNullifier);
-        }
-      }
-
-      for (const [stateCommitment, spendableNoteRecord] of commitmentRecordsByStateCommitment) {
-        if (txCommitments.some(txCommitment => stateCommitment.equals(txCommitment))) {
-          txId ??= new TransactionId({ inner: await sha256Hash(tx.toBinary()) });
-          relevantTx.set(txId, tx);
-          if (BLANK_TX_SOURCE.equals(spendableNoteRecord.source)) {
-            spendableNoteRecord.source = new CommitmentSource({
-              source: { case: 'transaction', value: { id: txId.inner } },
-            });
-            recordsWithSources.push(spendableNoteRecord);
-          }
-          commitmentRecordsByStateCommitment.delete(stateCommitment);
-        }
-      }
-    }
-    return { relevantTx, recordsWithSources };
-  }
-
   // TODO: refactor. there is definitely a better way to do this.  batch
   // endpoint issue https://github.com/penumbra-zone/penumbra/issues/4688
   private async saveAndReturnMetadata(assetId: AssetId): Promise<Metadata | undefined> {
@@ -591,9 +517,9 @@ export class BlockProcessor implements BlockProcessorInterface {
    * Identify various pieces of data from the transaction that we need to save,
    * such as metadata, liquidity positions, etc.
    */
-  private async processTransactions(txs: Transaction[]) {
-    for (const tx of txs) {
-      for (const { action } of tx.body?.actions ?? []) {
+  private async processTransactions(txs: RelevantTx[]) {
+    for (const { data } of txs) {
+      for (const { action } of data.body?.actions ?? []) {
         await Promise.all([this.identifyAuctionNfts(action), this.identifyLpNftPositions(action)]);
       }
     }
@@ -685,9 +611,9 @@ export class BlockProcessor implements BlockProcessorInterface {
     });
   }
 
-  private async saveTransactions(height: bigint, relevantTx: Map<TransactionId, Transaction>) {
-    for (const [id, transaction] of relevantTx) {
-      await this.indexedDb.saveTransaction(id, height, transaction);
+  private async saveTransactions(height: bigint, relevantTx: RelevantTx[]) {
+    for (const { id, data } of relevantTx) {
+      await this.indexedDb.saveTransaction(id, height, data);
     }
   }
 

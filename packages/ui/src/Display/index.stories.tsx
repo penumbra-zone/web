@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
 import { Display } from '.';
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 import { Text } from '../Text';
 
 const meta: Meta<typeof Display> = {

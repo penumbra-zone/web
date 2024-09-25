@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useContext } from 'react';
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 import * as RadixDialog from '@radix-ui/react-dialog';
 import { Text } from '../Text';
 import { X } from 'lucide-react';

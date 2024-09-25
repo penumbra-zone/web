@@ -1,5 +1,19 @@
 # @penumbra-zone/types
 
+## 24.0.0
+
+### Minor Changes
+
+- b6e32f8: Update ViewServerInterface
+
+### Patch Changes
+
+- Updated dependencies [b6e32f8]
+- Updated dependencies [b6e32f8]
+  - @penumbra-zone/protobuf@6.1.0
+  - @penumbra-zone/bech32m@8.0.0
+  - @penumbra-zone/getters@18.0.0
+
 ## 23.0.0
 
 ### Patch Changes
