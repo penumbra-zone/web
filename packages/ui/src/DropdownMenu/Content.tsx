@@ -5,15 +5,21 @@ import {
   Portal as RadixDropdownMenuPortal,
   DropdownMenuContentProps as RadixDropdownMenuContentProps,
 } from '@radix-ui/react-dropdown-menu';
-import { PopoverContent } from '../utils/popover.ts';
+import { PopoverContent, PopoverContext } from '../utils/popover.ts';
 
 export interface DropdownMenuContentProps {
   children?: ReactNode;
   side?: RadixDropdownMenuContentProps['side'];
   align?: RadixDropdownMenuContentProps['align'];
+  context?: PopoverContext;
 }
 
-export const Content = ({ children, side, align }: DropdownMenuContentProps) => {
+export const Content = ({
+  children,
+  side,
+  align,
+  context = 'default',
+}: DropdownMenuContentProps) => {
   const theme = useTheme();
 
   return (
@@ -24,7 +30,7 @@ export const Content = ({ children, side, align }: DropdownMenuContentProps) => 
         align={align}
         asChild
       >
-        <PopoverContent>{children}</PopoverContent>
+        <PopoverContent $context={context}>{children}</PopoverContent>
       </RadixDropdownMenuContent>
     </RadixDropdownMenuPortal>
   );
