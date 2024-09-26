@@ -1,8 +1,11 @@
 // @ts-nocheck
 /* eslint-disable -- disabling this file as this was created before our strict rules */
-import { Pool } from "pg";
-import { BlockInfo, LiquidityPositionEvent } from "./types/lps";
-import { bech32ToInner } from "../math/bech32";
+import { Pool } from 'pg';
+import fs from 'fs';
+import { BlockInfo, LiquidityPositionEvent } from './types/lps';
+import { bech32ToInner } from '../math/bech32';
+
+const ca = process.env.PENUMBRA_INDEXER_CA_CERT;
 
 export class IndexerQuerier {
   private pool: Pool;
@@ -14,11 +17,13 @@ export class IndexerQuerier {
       // Be advised that if PENUMBRA_INDEXER_CA_CERT is set, then PENUMBRA_INDEXER_ENDPOINT must
       // *lack* an `sslmode` param! This is documented here:
       // https://node-postgres.com/features/ssl#usage-with-connectionstring
-      ...(process.env.PENUMBRA_INDEXER_CA_CERT != null && {
+      ...(ca && {
         ssl: {
-            rejectUnauthorized: true,
-            ca: process.env.PENUMBRA_INDEXER_CA_CERT,
-          },
+          rejectUnauthorized: true,
+          ca: ca.startsWith('-----BEGIN CERTIFICATE-----')
+            ? ca
+            : fs.readFileSync(process.env.PENUMBRA_INDEXER_CA_CERT, 'utf-8'),
+        },
       }),
     };
     this.pool = new Pool(dbConfig);
@@ -34,8 +39,8 @@ export class IndexerQuerier {
       const res = await client.query(queryText, params);
 
       // convert timestamps to ISO strings
-      res.rows.forEach((row) => {
-        Object.keys(row).forEach((key) => {
+      res.rows.forEach(row => {
+        Object.keys(row).forEach(key => {
           if (row[key] instanceof Date) {
             row[key] = row[key].toISOString();
           }
@@ -49,7 +54,7 @@ export class IndexerQuerier {
   }
 
   private recursivelyParseJSON(value: any): any {
-    if (typeof value === "string") {
+    if (typeof value === 'string') {
       try {
         // Attempt to parse the string as JSON
         const parsed = JSON.parse(value);
@@ -61,11 +66,11 @@ export class IndexerQuerier {
       }
     } else if (Array.isArray(value)) {
       // If it's an array, apply recursively to each element
-      return value.map((item) => this.recursivelyParseJSON(item));
-    } else if (typeof value === "object" && value !== null) {
+      return value.map(item => this.recursivelyParseJSON(item));
+    } else if (typeof value === 'object' && value !== null) {
       // If it's an object, apply recursively to each value
       const parsedObject: Record<string, any> = {};
-      Object.keys(value).forEach((key) => {
+      Object.keys(value).forEach(key => {
         parsedObject[key] = this.recursivelyParseJSON(value[key]);
       });
       return parsedObject;
@@ -75,7 +80,7 @@ export class IndexerQuerier {
   }
 
   public async fetchLiquidityPositionEventsOnBech32(
-    bech32: string
+    bech32: string,
   ): Promise<LiquidityPositionEvent[]> {
     const queryText = `
     SELECT 
@@ -107,7 +112,7 @@ export class IndexerQuerier {
   }
 
   public async fetchLiquidityPositionExecutionEventsOnBech32(
-    bech32: string
+    bech32: string,
   ): Promise<LiquidityPositionEvent[]> {
     // TODO: Refractor once more events are emitted around trades
     // This basically pops off the first instance of a trade event for each event_id assuming that was the EventPositionExecution event for opening a position
@@ -156,8 +161,10 @@ export class IndexerQuerier {
     return res;
   }
 
-
-  public async fetchLiquidityPositionOpenCloseEventsOnBlockHeightRange(startHeight: number, endHeight: number): Promise<LiquidityPositionEvent[]>  {
+  public async fetchLiquidityPositionOpenCloseEventsOnBlockHeightRange(
+    startHeight: number,
+    endHeight: number,
+  ): Promise<LiquidityPositionEvent[]> {
     const queryText = `
     SELECT
       a.event_id,
@@ -185,7 +192,9 @@ export class IndexerQuerier {
     return res;
   }
 
-  public async fetchLiquidityPositionExecutionEventsOnBlockHeight(blockHeight: number): Promise<LiquidityPositionEvent[]> {
+  public async fetchLiquidityPositionExecutionEventsOnBlockHeight(
+    blockHeight: number,
+  ): Promise<LiquidityPositionEvent[]> {
     // TODO: Refractor once more events are emitted around trades
     // This basically pops off the first instance of a trade event for each event_id assuming that was the EventPositionExecution event for opening a position
     const queryText = `
@@ -240,10 +249,13 @@ export class IndexerQuerier {
     LIMIT $1;
     `;
     const res = await this.query(queryText, [`${n}`]);
-    return res
+    return res;
   }
 
-  public async fetchBlocksWithinRange(startHeight: number, endHeight: number): Promise<BlockInfo[]> {
+  public async fetchBlocksWithinRange(
+    startHeight: number,
+    endHeight: number,
+  ): Promise<BlockInfo[]> {
     const queryText = `
     SELECT
       height,
@@ -253,7 +265,7 @@ export class IndexerQuerier {
     ORDER BY height DESC
     `;
     const res = await this.query(queryText, [`${startHeight}`, `${endHeight}`]);
-    return res
+    return res;
   }
 
   public async fetchBlocksByHeight(heights: number[]): Promise<BlockInfo[]> {
@@ -266,7 +278,7 @@ export class IndexerQuerier {
     ORDER BY height DESC
     `;
     const res = await this.query(queryText, [heights]);
-    return res
+    return res;
   }
 
   /**
