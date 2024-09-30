@@ -10,9 +10,6 @@ import {
   delegationMetadataA,
   delegationMetadataB,
   emptyScanResult,
-  epoch1,
-  epoch2,
-  epoch3,
   metadataA,
   metadataB,
   metadataC,
@@ -562,67 +559,6 @@ describe('IndexedDb', () => {
         ownedPositions.push(positionId as PositionId);
       }
       expect(ownedPositions.length).toBe(1);
-    });
-  });
-
-  describe('epochs', () => {
-    let db: IndexedDb;
-
-    beforeEach(async () => {
-      db = await IndexedDb.initialize({ ...generateInitialProps() });
-    });
-
-    it('prepopulates the 0th epoch', async () => {
-      const epoch = await db.getEpochByHeight(0n);
-      expect(epoch?.index).toBe(0n);
-      expect(epoch?.startHeight).toBe(0n);
-    });
-
-    describe('addEpoch', () => {
-      beforeEach(async () => {
-        await db.addEpoch(epoch1.startHeight);
-        await db.addEpoch(epoch2.startHeight);
-        await db.addEpoch(epoch3.startHeight);
-      });
-
-      it('auto-increments the epoch index', async () => {
-        const [result1, result2, result3] = await Promise.all([
-          db.getEpochByHeight(150n),
-          db.getEpochByHeight(250n),
-          db.getEpochByHeight(350n),
-        ]);
-
-        expect(result1?.index).toBe(1n);
-        expect(result2?.index).toBe(2n);
-        expect(result3?.index).toBe(3n);
-      });
-
-      it('should not save the epoch with the same startHeight twice', async () => {
-        await db.addEpoch(epoch3.startHeight);
-
-        const result = await db.getEpochByHeight(350n);
-        expect(result?.index).toBe(3n);
-      });
-    });
-
-    describe('getEpochByHeight', () => {
-      beforeEach(async () => {
-        await db.addEpoch(epoch1.startHeight);
-        await db.addEpoch(epoch2.startHeight);
-        await db.addEpoch(epoch3.startHeight);
-      });
-
-      it('returns the epoch containing the given block height', async () => {
-        const [result1, result2, result3] = await Promise.all([
-          db.getEpochByHeight(150n),
-          db.getEpochByHeight(250n),
-          db.getEpochByHeight(350n),
-        ]);
-
-        expect(result1?.toJson()).toEqual(epoch1.toJson());
-        expect(result2?.toJson()).toEqual(epoch2.toJson());
-        expect(result3?.toJson()).toEqual(epoch3.toJson());
-      });
     });
   });
 
