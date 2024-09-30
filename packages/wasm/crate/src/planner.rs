@@ -525,12 +525,19 @@ pub async fn plan_transaction_inner<Db: Database>(
         ));
     }
 
-    for tpr::Spend { value, address } in request.spends {
+    for tpr::Spend { value, address } in request.spends.clone() {
         let value = value.ok_or_else(|| anyhow!("missing value in spend"))?;
         let address = address.ok_or_else(|| anyhow!("missing address in spend"))?;
         let asset_id = value
             .asset_id
             .ok_or_else(|| anyhow!("missing asset_id in spend"))?;
+
+        // Constraint: validate the transaction planner request is constructed with a single spend request.
+        if request.spends.len() > 1 {
+            let error_message =
+                "Invalid transaction: The transaction was constructed improperly.".to_string();
+            return Err(WasmError::Anyhow(anyhow!(error_message)));
+        }
 
         // Find all the notes of this asset in the source account.
         let records = storage
@@ -550,7 +557,7 @@ pub async fn plan_transaction_inner<Db: Database>(
                 acc + note_value
             });
 
-        // Safety: check if the requested spend amount is equal to the accumulated note balance.
+        // Constraint: check if the requested spend amount is equal to the accumulated note balance.
         if accumulated_note_amounts.to_proto() != value.amount.unwrap() {
             let error_message =
                 "Invalid transaction: The transaction was constructed improperly.".to_string();
@@ -566,7 +573,7 @@ pub async fn plan_transaction_inner<Db: Database>(
             }
         }
 
-        // Safety: validate that each spend action's asset ID matches the fee asset ID.
+        // Constraint: validate that each spend action's asset ID matches the fee asset ID.
         for action in actions_list.actions() {
             if let ActionPlan::Spend(spend_plan) = action {
                 if spend_plan.note.asset_id() != fee_asset_id {
