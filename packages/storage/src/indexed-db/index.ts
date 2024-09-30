@@ -64,6 +64,8 @@ import { PartialMessage, PlainMessage } from '@bufbuild/protobuf';
 import { getAmountFromRecord } from '@penumbra-zone/getters/spendable-note-record';
 import { isZero } from '@penumbra-zone/types/amount';
 import { IDB_VERSION } from './config.js';
+import { addLoHi } from '@penumbra-zone/types/lo-hi';
+import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 
 const assertBytes = (v?: Uint8Array, expect?: number, name = 'value'): v is Uint8Array => {
   if (expect !== undefined && v?.length !== expect) {
@@ -959,5 +961,46 @@ export class IndexedDb implements IndexedDbInterface {
         spendableNote.addressIndex?.account === accountIndex
       );
     });
+  }
+
+  async accumulateNoteBalance(accountIndex: number, assetId: AssetId): Promise<Amount> {
+    assertAssetId(assetId);
+    const spendableNotes = await this.db.getAllFromIndex(
+      'SPENDABLE_NOTES',
+      'assetId',
+      uint8ArrayToBase64(assetId.inner),
+    );
+
+    const spendableNotesSet: SpendableNoteRecord[] = [];
+
+    spendableNotes.forEach(note => {
+      const spendableNote = SpendableNoteRecord.fromJson(note);
+
+      // randomizer should be ignored
+      if (
+        spendableNote.heightSpent === 0n &&
+        !isZero(getAmountFromRecord(spendableNote)) &&
+        spendableNote.addressIndex?.account === accountIndex
+      ) {
+        spendableNotesSet.push(spendableNote);
+      }
+    });
+
+    let accumulator = new Amount({ hi: 0n, lo: 0n });
+
+    // Accumulate the total value from the spendable note set
+    spendableNotesSet.forEach(noteRecord => {
+      if (noteRecord.note?.value?.amount) {
+        const noteAmount = noteRecord.note.value.amount;
+        const newAmount = addLoHi(
+          { lo: accumulator.lo, hi: accumulator.hi },
+          { lo: BigInt(noteAmount.lo), hi: BigInt(noteAmount.hi) },
+        );
+
+        accumulator = new Amount(newAmount);
+      }
+    });
+
+    return accumulator;
   }
 }
