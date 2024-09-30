@@ -1,5 +1,5 @@
 import { LucideIcon } from 'lucide-react';
-import { ComponentProps } from 'react';
+import { ComponentProps, FC } from 'react';
 import { DefaultTheme, useTheme } from 'styled-components';
 
 export type IconSize = 'sm' | 'md' | 'lg';
@@ -13,7 +13,7 @@ export interface IconProps {
    * <Icon IconComponent={ChevronRight} />
    * ```
    */
-  IconComponent: LucideIcon;
+  IconComponent: LucideIcon | FC;
   /**
    * - `sm`: 16px square
    * - `md`: 24px square
