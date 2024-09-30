@@ -43,7 +43,7 @@ async fn setup_env_1(mock_db: &MockDb, tables: &Tables) {
         note_commitment: StateCommitment::try_from([0; 32]).unwrap(),
         note: Note::generate(
             &mut OsRng,
-            &sender_address,
+            sender_address,
             Value {
                 amount: 1u64.into(),
                 asset_id: *STAKING_TOKEN_ASSET_ID,
@@ -66,7 +66,7 @@ async fn setup_env_1(mock_db: &MockDb, tables: &Tables) {
         note_commitment: StateCommitment::try_from([0; 32]).unwrap(),
         note: Note::generate(
             &mut OsRng,
-            &sender_address,
+            sender_address,
             Value {
                 amount: 1558827u64.into(),
                 asset_id: *STAKING_TOKEN_ASSET_ID,
@@ -112,7 +112,7 @@ async fn setup_env_2(mock_db: &MockDb, tables: &Tables) {
         note_commitment: StateCommitment::try_from([0; 32]).unwrap(),
         note: Note::generate(
             &mut OsRng,
-            &sender_address,
+            sender_address,
             Value {
                 amount: 1u64.into(),
                 asset_id: metadata.id(),
@@ -135,7 +135,7 @@ async fn setup_env_2(mock_db: &MockDb, tables: &Tables) {
         note_commitment: StateCommitment::try_from([0; 32]).unwrap(),
         note: Note::generate(
             &mut OsRng,
-            &sender_address,
+            sender_address,
             Value {
                 amount: 1558827u64.into(),
                 asset_id: metadata.id(),
@@ -174,7 +174,7 @@ async fn setup_env_3(mock_db: &MockDb, tables: &Tables) {
         note_commitment: StateCommitment::try_from([0; 32]).unwrap(),
         note: Note::generate(
             &mut OsRng,
-            &sender_address,
+            sender_address,
             Value {
                 amount: 1u64.into(),
                 asset_id: *STAKING_TOKEN_ASSET_ID,
@@ -197,7 +197,7 @@ async fn setup_env_3(mock_db: &MockDb, tables: &Tables) {
         note_commitment: StateCommitment::try_from([0; 32]).unwrap(),
         note: Note::generate(
             &mut OsRng,
-            &sender_address,
+            sender_address,
             Value {
                 amount: 1558827u64.into(),
                 asset_id: *STAKING_TOKEN_ASSET_ID,
@@ -220,7 +220,7 @@ async fn setup_env_3(mock_db: &MockDb, tables: &Tables) {
         note_commitment: StateCommitment::try_from([0; 32]).unwrap(),
         note: Note::generate(
             &mut OsRng,
-            &sender_address,
+            sender_address,
             Value {
                 amount: 0u64.into(),
                 asset_id: *STAKING_TOKEN_ASSET_ID,
