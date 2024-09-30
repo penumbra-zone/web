@@ -260,7 +260,9 @@ export const CandlesticksTooltip = ({
     return () => ac.abort('Abort tooltip date query');
   }, [data, getBlockDate]);
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify non-null assertion
   const endBase = endMetadata.denomUnits.filter(d => !d.exponent)[0]!;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify non-null assertion
   const startBase = startMetadata.denomUnits.filter(d => !d.exponent)[0]!;
   return (
     <Tooltip

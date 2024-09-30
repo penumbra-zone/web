@@ -12,6 +12,7 @@ pub static DELEGATION_TOKEN_REGEX: &str =
 pub static AUCTION_NFT_REGEX: &str =
     "^auctionnft_(?P<data>(?<seq_num>[a-z_0-9]+)_pauctid1(?P<id>[a-zA-HJ-NP-Z0-9]+))$";
 pub static VOTING_RECEIPT_REGEX: &str = "^uvoted_on_(?P<data>(?P<proposal_id>[0-9]+))$";
+pub static LP_NFT_REGEX: &str = "^lpnft_(?P<lp_state>[a-z_0-9]+)_plpid1(?P<id>[a-zA-HJ-NP-Z0-9]+)$";
 
 /// Given a binary-encoded `Metadata`, returns a new binary-encoded `Metadata`
 /// with the symbol customized if the token is one of several specific types
@@ -36,6 +37,7 @@ pub fn customize_symbol_inner(metadata: Metadata) -> WasmResult<Metadata> {
     let delegation_re = Regex::new(DELEGATION_TOKEN_REGEX)?;
     let auction_re = Regex::new(AUCTION_NFT_REGEX)?;
     let voting_re = Regex::new(VOTING_RECEIPT_REGEX)?;
+    let lp_nft_re = Regex::new(LP_NFT_REGEX)?;
 
     if let Some(captures) = unbonding_re.captures(&metadata.base) {
         let asset_id = collect_id(&captures)?;
@@ -70,6 +72,13 @@ pub fn customize_symbol_inner(metadata: Metadata) -> WasmResult<Metadata> {
             symbol: format!("VotedOn{proposal_id}"),
             ..metadata
         });
+    } else if let Some(captures) = lp_nft_re.captures(&metadata.base) {
+        let (state, id) = get_lp_info(&captures)?;
+
+        return Ok(Metadata {
+            symbol: format!("lpNft:{state}({id})"),
+            ..metadata
+        });
     }
 
     Ok(metadata)
@@ -96,6 +105,19 @@ fn get_proposal_id(captures: &regex::Captures) -> WasmResult<String> {
         .name("proposal_id")
         .ok_or_else(|| anyhow!("<proposal_id> not matched in token regex"))?;
     Ok(id_match.as_str().to_string())
+}
+
+fn get_lp_info(captures: &regex::Captures) -> WasmResult<(String, String)> {
+    let state_match = captures
+        .name("lp_state")
+        .ok_or_else(|| anyhow!("<lp_state> not matched in token regex"))?;
+    let id_match = captures
+        .name("id")
+        .ok_or_else(|| anyhow!("<id> not matched in lpnft token regex"))?;
+    Ok((
+        state_match.as_str().to_string(),
+        id_match.as_str().to_string(),
+    ))
 }
 
 #[cfg(test)]
@@ -242,6 +264,60 @@ mod customize_symbol_inner_tests {
         let customized_metadata = customize_symbol_inner(metadata.clone()).unwrap();
 
         assert_eq!(customized_metadata.symbol, "VotedOn234");
+    }
+
+    #[test]
+    fn it_modifies_lp_nft_opened() {
+        let metadata = Metadata {
+            name: String::from("xyz"),
+            symbol: String::from("xyz"),
+            ..test_helpers::get_metadata_for(
+                "lpnft_opened_plpid1pae7ssx6uwct9srws9uxznp7n087me8j9jvpmf5tve8fjupky4rqspvcd5",
+                true,
+            )
+        };
+        let customized_metadata = customize_symbol_inner(metadata.clone()).unwrap();
+
+        assert_eq!(
+            customized_metadata.symbol,
+            "lpNft:opened(pae7ssx6uwct9srws9uxznp7n087me8j9jvpmf5tve8fjupky4rqspvcd5)"
+        );
+    }
+
+    #[test]
+    fn it_modifies_lp_nft_closed() {
+        let metadata = Metadata {
+            name: String::from("xyz"),
+            symbol: String::from("xyz"),
+            ..test_helpers::get_metadata_for(
+                "lpnft_closed_plpid1y4y5y94wrtkrem0a2mv9pwqk8myv9ykfamkz28jy97ycs8zgw0ysrnqm3r",
+                true,
+            )
+        };
+        let customized_metadata = customize_symbol_inner(metadata.clone()).unwrap();
+
+        assert_eq!(
+            customized_metadata.symbol,
+            "lpNft:closed(y4y5y94wrtkrem0a2mv9pwqk8myv9ykfamkz28jy97ycs8zgw0ysrnqm3r)"
+        );
+    }
+
+    #[test]
+    fn it_modifies_lp_nft_withdrawn() {
+        let metadata = Metadata {
+            name: String::from("xyz"),
+            symbol: String::from("xyz"),
+            ..test_helpers::get_metadata_for(
+                "lpnft_withdrawn_0_plpid1pae7ssx6uwct9srws9uxznp7n087me8j9jvpmf5tve8fjupky4rqspvcd5",
+                true,
+            )
+        };
+        let customized_metadata = customize_symbol_inner(metadata.clone()).unwrap();
+
+        assert_eq!(
+            customized_metadata.symbol,
+            "lpNft:withdrawn_0(pae7ssx6uwct9srws9uxznp7n087me8j9jvpmf5tve8fjupky4rqspvcd5)"
+        );
     }
 }
 

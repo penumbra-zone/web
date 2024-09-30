@@ -17,7 +17,7 @@ import { amountMoreThanBalance, isIncorrectDecimal, planBuildBroadcast } from '.
 import { getAssetId } from '@penumbra-zone/getters/metadata';
 import { assetPatterns } from '@penumbra-zone/types/assets';
 import { bech32, bech32m } from 'bech32';
-import { errorToast } from '@repo/ui/lib/toast/presets';
+import { errorToast } from '@penumbra-zone/ui/lib/toast/presets';
 import { Chain } from '@penumbra-labs/registry';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { Channel } from '@penumbra-zone/protobuf/ibc/core/channel/v1/channel_pb';
@@ -282,7 +282,7 @@ export const filterBalancesPerChain = (
   registryAssets: Metadata[],
   stakingTokenMetadata?: Metadata,
 ): BalancesResponse[] => {
-  const penumbraAssetId = getAssetId.optional()(stakingTokenMetadata);
+  const penumbraAssetId = getAssetId.optional(stakingTokenMetadata);
   const assetsWithMatchingChannel = registryAssets
     .filter(a => {
       const match = assetPatterns.ibc.capture(a.base);
@@ -291,6 +291,7 @@ export const filterBalancesPerChain = (
       }
       return chain?.channelId === match.channel;
     })
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify
     .map(m => m.penumbraAssetId!);
 
   const assetIdsToCheck = [...assetsWithMatchingChannel];

@@ -1,4 +1,4 @@
-import styled, { DefaultTheme } from 'styled-components';
+import { styled, DefaultTheme } from 'styled-components';
 import { button } from '../utils/typography';
 import { focusOutline, overlays, buttonBase } from '../utils/button';
 import { Density } from '../types/Density';
@@ -6,7 +6,7 @@ import { useDensity } from '../hooks/useDensity';
 import * as RadixRadioGroup from '@radix-ui/react-radio-group';
 import { useDisabled } from '../hooks/useDisabled';
 import { ToStringable } from '../utils/ToStringable';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 
 const Root = styled.div`
   display: flex;
@@ -110,14 +110,17 @@ export const SegmentedControl = <ValueType extends ToStringable>({
   disabled,
 }: SegmentedControlProps<ValueType>) => {
   const density = useDensity();
-  disabled = useDisabled(disabled);
-
+  const isDisabled = useDisabled(disabled);
   useEffect(() => assertUniqueOptions(options), [options]);
 
-  const handleChange = (value: string) => {
-    const matchingOption = options.find(option => option.value.toString() === value)!;
-    onChange(matchingOption.value);
-  };
+  const handleChange = useCallback(
+    (optionValue: string) => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify non-null assertion
+      const selected = options.find(option => option.value.toString() === optionValue)!;
+      onChange(selected.value);
+    },
+    [options, onChange],
+  );
 
   return (
     <RadixRadioGroup.Root asChild value={value.toString()} onValueChange={handleChange}>
@@ -134,7 +137,7 @@ export const SegmentedControl = <ValueType extends ToStringable>({
               $getFocusOutlineColor={theme => theme.color.neutral.light}
               $selected={value === option.value}
               $density={density}
-              disabled={disabled || option.disabled}
+              disabled={isDisabled || option.disabled}
             >
               {option.label}
             </Segment>

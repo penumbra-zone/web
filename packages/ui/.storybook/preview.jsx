@@ -5,7 +5,8 @@ import { ConditionalWrap } from '../src/ConditionalWrap';
 import { PenumbraUIProvider } from '../src/PenumbraUIProvider';
 import { Density } from '../src/Density';
 import { Tabs } from '../src/Tabs';
-import styled from 'styled-components';
+import { styled } from 'styled-components';
+import '../styles/globals.css';
 
 const Column = styled.div`
   display: flex;
@@ -28,14 +29,16 @@ const DensityWrapper = ({ children, showDensityControl }) => {
     >
       <Column>
         {showDensityControl && (
-          <Tabs
-            options={[
-              { label: 'Sparse', value: 'sparse' },
-              { label: 'Compact', value: 'compact' },
-            ]}
-            value={density}
-            onChange={setDensity}
-          />
+          <Density sparse>
+            <Tabs
+              options={[
+                { label: 'Sparse', value: 'sparse' },
+                { label: 'Compact', value: 'compact' },
+              ]}
+              value={density}
+              onChange={setDensity}
+            />
+          </Density>
         )}
 
         {children}

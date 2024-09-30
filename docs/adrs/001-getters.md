@@ -60,7 +60,7 @@ If we want to allow `undefined`, we can add a call to `.optional()`:
     required because we called `.optional()`. Otherwise, TypeScript would have
     guaranteed that the return value of `getAddressIndex()` was an actual
     `AddressIndex`. */}
-    {getAddressIndex.optional()(addressView)?.account}
+    {getAddressIndex.optional(addressView)?.account}
   </span>
 </div>
 ```

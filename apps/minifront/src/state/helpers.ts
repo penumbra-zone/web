@@ -16,13 +16,13 @@ import {
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
 import { PartialMessage } from '@bufbuild/protobuf';
-import { TransactionToast } from '@repo/ui/lib/toast/transaction-toast';
+import { TransactionToast } from '@penumbra-zone/ui/lib/toast/transaction-toast';
 import { TransactionClassification } from '@penumbra-zone/perspective/transaction/classification';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import { fromValueView } from '@penumbra-zone/types/amount';
 import { BigNumber } from 'bignumber.js';
 import {
-  getMetadataFromBalancesResponseOptional,
+  getMetadataFromBalancesResponse,
   getValueViewCaseFromBalancesResponse,
 } from '@penumbra-zone/getters/balances-response';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
@@ -104,7 +104,8 @@ const build = async (
     status?: (AuthorizeAndBuildResponse | WitnessAndBuildResponse)['status'],
   ) => void,
 ) => {
-  for await (const { status } of buildFn(req)) {
+  // Setting timeout for 10mins given slower machines can take time to build
+  for await (const { status } of buildFn(req, { timeoutMs: 600_000 })) {
     onStatusUpdate(status);
 
     switch (status.case) {
@@ -112,6 +113,7 @@ const build = async (
       case 'buildProgress':
         break;
       case 'complete':
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify
         return status.value.transaction!;
       default:
         console.warn(`unknown ${buildFn.name} status`, status);
@@ -200,8 +202,8 @@ export const isIncorrectDecimal = (
     throw new Error('Missing balanceView');
   }
 
-  const exponent = getDisplayDenomExponent.optional()(
-    getMetadataFromBalancesResponseOptional(asset),
+  const exponent = getDisplayDenomExponent.optional(
+    getMetadataFromBalancesResponse.optional(asset),
   );
   const fraction = amountInDisplayDenom.split('.')[1]?.length;
   return typeof exponent !== 'undefined' && typeof fraction !== 'undefined' && fraction > exponent;
@@ -213,4 +215,4 @@ export const isValidAmount = (amount: string, assetIn?: BalancesResponse) =>
   (!assetIn || !isIncorrectDecimal(assetIn, amount));
 
 export const isKnown = (balancesResponse: BalancesResponse) =>
-  getValueViewCaseFromBalancesResponse.optional()(balancesResponse) === 'knownAssetId';
+  getValueViewCaseFromBalancesResponse.optional(balancesResponse) === 'knownAssetId';

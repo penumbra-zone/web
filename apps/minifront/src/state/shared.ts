@@ -5,9 +5,10 @@ import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_
 import { ZQueryState, createZQuery } from '@penumbra-zone/zquery';
 import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
 import { SliceCreator, useStore } from '.';
-import { getAllAssets } from '../fetchers/assets';
-import { getBalances } from '../fetchers/balances';
 import { getStakingTokenMetadata } from '../fetchers/registry';
+import { getBalancesStream } from '../fetchers/balances';
+import { getAllAssets } from '../fetchers/assets';
+import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 
 /**
  * For Noble specifically we need to use a Bech32 encoding rather than Bech32m,
@@ -33,9 +34,37 @@ export const { stakingTokenMetadata, useStakingTokenMetadata } = createZQuery({
   },
 });
 
+const getHash = (bal: BalancesResponse) => uint8ArrayToHex(bal.toBinary());
+
 export const { balancesResponses, useBalancesResponses } = createZQuery({
   name: 'balancesResponses',
-  fetch: getBalances,
+  fetch: getBalancesStream,
+  stream: () => {
+    const balanceResponseIdsToKeep = new Set<string>();
+
+    return {
+      onValue: (
+        prevState: BalancesResponse[] | undefined = [],
+        balanceResponse: BalancesResponse,
+      ) => {
+        balanceResponseIdsToKeep.add(getHash(balanceResponse));
+
+        const existingIndex = prevState.findIndex(bal => getHash(bal) === getHash(balanceResponse));
+
+        // Update any existing items in place, rather than appending
+        // duplicates.
+        if (existingIndex >= 0) {
+          return prevState.toSpliced(existingIndex, 1, balanceResponse);
+        } else {
+          return [...prevState, balanceResponse];
+        }
+      },
+
+      onEnd: (prevState = []) =>
+        // Discard any balances from a previous stream.
+        prevState.filter(balanceResponse => balanceResponseIdsToKeep.has(getHash(balanceResponse))),
+    };
+  },
   getUseStore: () => useStore,
   get: state => state.shared.balancesResponses,
   set: setter => {
@@ -61,7 +90,7 @@ export const { assets, useAssets } = createZQuery({
 
 export interface SharedSlice {
   assets: ZQueryState<Metadata[]>;
-  balancesResponses: ZQueryState<BalancesResponse[]>;
+  balancesResponses: ZQueryState<BalancesResponse[], Parameters<typeof getBalancesStream>>;
   stakingTokenMetadata: ZQueryState<Metadata>;
 }
 

@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 import { small, strong } from '../utils/typography';
 import { ReactNode } from 'react';
 import { DisabledContext } from '../utils/DisabledContext';
@@ -11,14 +11,14 @@ const Root = styled.label`
 `;
 
 const HelperText = styled.div<{ $disabled: boolean }>`
-  ${small}
+  ${small};
 
   color: ${props =>
     props.$disabled ? props.theme.color.text.muted : props.theme.color.text.secondary};
 `;
 
 const LabelText = styled.div<{ $disabled: boolean }>`
-  ${strong}
+  ${strong};
 
   color: ${props =>
     props.$disabled ? props.theme.color.text.muted : props.theme.color.text.primary};
@@ -35,7 +35,7 @@ export interface FormFieldProps {
    * to _also_ set it on the child input component.
    */
   disabled?: boolean;
-  helperText?: string;
+  helperText?: ReactNode;
   /**
    * The form control to render for this field, whether a `<TextInput />`,
    * `<SegmentedControl />`, etc.

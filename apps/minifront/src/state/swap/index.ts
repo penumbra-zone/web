@@ -14,20 +14,22 @@ import {
   instantSwapSubmitButtonDisabledSelector,
 } from './instant-swap';
 import { createPriceHistorySlice, PriceHistorySlice } from './price-history';
-import { isValidAmount } from '../helpers';
+import { amountMoreThanBalance, isIncorrectDecimal, isValidAmount } from '../helpers';
 
 import { setSwapQueryParams } from './query-params';
-import { swappableBalancesResponsesSelector, swappableAssetsSelector } from './helpers';
+import { swappableAssetsSelector, swappableBalancesResponsesSelector } from './helpers';
 import { getMetadataFromBalancesResponse } from '@penumbra-zone/getters/balances-response';
 import { getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { emptyBalanceResponse } from '../../utils/empty-balance-response';
 import {
   balancesResponseAndMetadataAreSameAsset,
+  getBalanceByMatchingMetadataAndAddressIndex,
   getFirstBalancesResponseMatchingMetadata,
   getFirstBalancesResponseNotMatchingMetadata,
   getFirstMetadataNotMatchingBalancesResponse,
-  getBalanceByMatchingMetadataAndAddressIndex,
 } from './getters';
+import { createLpPositionsSlice, LpPositionsSlice } from './lp-positions.ts';
+import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 
 export interface SimulateSwapResult {
   metadataByAssetId: Record<string, Metadata>;
@@ -58,6 +60,7 @@ interface Subslices {
   dutchAuction: DutchAuctionSlice;
   instantSwap: InstantSwapSlice;
   priceHistory: PriceHistorySlice;
+  lpPositions: LpPositionsSlice;
 }
 
 const INITIAL_STATE: State = {
@@ -72,6 +75,7 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
   ...INITIAL_STATE,
   dutchAuction: createDutchAuctionSlice()(set, get, store),
   instantSwap: createInstantSwapSlice()(set, get, store),
+  lpPositions: createLpPositionsSlice()(set, get, store),
   priceHistory: createPriceHistorySlice()(set, get, store),
   setAssetIn: asset => {
     get().swap.resetSubslices();
@@ -139,6 +143,26 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
     get().swap.dutchAuction.reset();
     get().swap.instantSwap.reset();
   },
+});
+
+export const swapErrorSelector = (state: AllSlices) => ({
+  balanceResponsesError:
+    state.shared.balancesResponses.error instanceof Error &&
+    state.shared.balancesResponses.error.toString(),
+  swappableAssetsError:
+    state.shared.assets.error instanceof Error && state.shared.assets.error.toString(),
+  amountMoreThanBalanceErr:
+    state.swap.amount &&
+    state.swap.assetIn &&
+    amountMoreThanBalance(state.swap.assetIn, state.swap.amount)
+      ? 'Insufficient funds'
+      : '',
+  incorrectDecimalErr:
+    state.swap.amount &&
+    state.swap.assetIn &&
+    isIncorrectDecimal(state.swap.assetIn, state.swap.amount)
+      ? `Incorrect decimals, maximum ${getDisplayDenomExponent.optional(getMetadataFromBalancesResponse.optional(state.swap.assetIn))} allowed`
+      : '',
 });
 
 export const submitButtonDisabledSelector = (state: AllSlices) =>

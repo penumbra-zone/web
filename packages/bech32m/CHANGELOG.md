@@ -1,5 +1,13 @@
 # @penumbra-zone/bech32
 
+## 8.0.0
+
+### Patch Changes
+
+- b6e32f8: Add isCompatAddress() func
+- Updated dependencies [b6e32f8]
+  - @penumbra-zone/protobuf@6.1.0
+
 ## 7.0.0
 
 ### Patch Changes

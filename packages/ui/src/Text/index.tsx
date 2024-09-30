@@ -1,4 +1,4 @@
-import styled, { css, DefaultTheme, WebTarget } from 'styled-components';
+import { styled, css, DefaultTheme, WebTarget } from 'styled-components';
 import {
   body,
   detail,

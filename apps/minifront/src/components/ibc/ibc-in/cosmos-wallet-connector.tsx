@@ -10,7 +10,7 @@ export const CosmosWalletConnector = () => {
   const { username, address, status, message } = useChainConnector();
 
   if (!selectedChain) {
-    return <></>;
+    return;
   }
 
   return (

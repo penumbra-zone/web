@@ -17,7 +17,7 @@ export const getBackgroundColor = (
       return theme.color.primary.main;
 
     case 'default':
-      return theme.color.neutral.main;
+      return theme.color.other.tonalFill10;
 
     default:
       return theme.color[actionType].main;

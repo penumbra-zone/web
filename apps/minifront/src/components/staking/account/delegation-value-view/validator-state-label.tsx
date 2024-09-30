@@ -1,5 +1,5 @@
 import { ValidatorState_ValidatorStateEnum } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
-import { cn } from '@repo/ui/lib/utils';
+import { cn } from '@penumbra-zone/ui/lib/utils';
 
 interface LabelInfo {
   label: string;
@@ -24,7 +24,7 @@ const getStateLabel = (state: ValidatorState_ValidatorStateEnum) =>
 
 export const ValidatorStateLabel = ({ state }: { state: ValidatorState_ValidatorStateEnum }) => {
   if (state === ValidatorState_ValidatorStateEnum.ACTIVE) {
-    return <></>;
+    return;
   }
 
   const { label, color } = getStateLabel(state);

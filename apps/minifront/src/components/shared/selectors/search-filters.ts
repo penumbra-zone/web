@@ -7,7 +7,7 @@ import { getValueViewCaseFromBalancesResponse } from '@penumbra-zone/getters/bal
 export const balanceBySearch =
   (search: string) =>
   (balancesResponse: BalancesResponse): boolean =>
-    getValueViewCaseFromBalancesResponse.optional()(balancesResponse) === 'knownAssetId' &&
+    getValueViewCaseFromBalancesResponse.optional(balancesResponse) === 'knownAssetId' &&
     (getDisplayDenomFromView(balancesResponse.balanceView)
       .toLocaleLowerCase()
       .includes(search.toLocaleLowerCase()) ||

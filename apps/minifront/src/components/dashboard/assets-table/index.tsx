@@ -1,6 +1,6 @@
 import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { AddressComponent, AddressIcon } from '@repo/ui/components/ui/address';
-import { Button } from '@repo/ui/components/ui/button';
+import { AddressComponent, AddressIcon } from '@penumbra-zone/ui/components/ui/address';
+import { Button } from '@penumbra-zone/ui/components/ui/button';
 import {
   Table,
   TableBody,
@@ -8,21 +8,23 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@repo/ui/components/ui/table';
-import { ValueViewComponent } from '@repo/ui/components/ui/value';
+} from '@penumbra-zone/ui/components/ui/table';
+import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/value';
 import { EquivalentValues } from './equivalent-values';
 import { Fragment } from 'react';
 import { PagePath } from '../../metadata/paths';
 import { Link } from 'react-router-dom';
-import { getMetadataFromBalancesResponseOptional } from '@penumbra-zone/getters/balances-response';
+import { getMetadataFromBalancesResponse } from '@penumbra-zone/getters/balances-response';
 import { getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { BalancesByAccount, groupByAccount, useBalancesResponses } from '../../../state/shared';
 import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
 import { shouldDisplay } from '../../../fetchers/balances/should-display';
 import { sortByPriorityScore } from '../../../fetchers/balances/by-priority-score';
+import { LineWave } from 'react-loader-spinner';
+import { cn } from '@penumbra-zone/ui/lib/utils';
 
 const getTradeLink = (balance: BalancesResponse): string => {
-  const metadata = getMetadataFromBalancesResponseOptional(balance);
+  const metadata = getMetadataFromBalancesResponse.optional(balance);
   const accountIndex = getAddressIndex(balance.accountAddress).account;
   const accountQuery = accountIndex ? `&account=${accountIndex}` : '';
   return metadata ? `${PagePath.SWAP}?from=${metadata.symbol}${accountQuery}` : PagePath.SWAP;
@@ -34,18 +36,26 @@ const byAccountIndex = (a: BalancesByAccount, b: BalancesByAccount) => {
 
 const filteredBalancesByAccountSelector = (
   zQueryState: AbridgedZQueryState<BalancesResponse[]>,
-): BalancesByAccount[] =>
-  zQueryState.data
-    ?.filter(shouldDisplay)
-    .sort(sortByPriorityScore)
-    .reduce(groupByAccount, [])
-    .sort(byAccountIndex) ?? [];
+): AbridgedZQueryState<BalancesByAccount[]> => {
+  const data =
+    zQueryState.data
+      ?.filter(shouldDisplay)
+      .sort(sortByPriorityScore)
+      .reduce(groupByAccount, [])
+      .sort(byAccountIndex) ?? [];
+  return {
+    ...zQueryState,
+    data,
+  };
+};
 
 export default function AssetsTable() {
-  const balancesByAccount = useBalancesResponses({
+  const balances = useBalancesResponses({
     select: filteredBalancesByAccountSelector,
     shouldReselect: (before, after) => before?.data !== after.data,
   });
+  const balancesByAccount = balances?.data;
+  const loading = balances?.loading;
 
   if (balancesByAccount?.length === 0) {
     return (
@@ -114,6 +124,17 @@ export default function AssetsTable() {
           </Fragment>
         ))}
       </Table>
+      {(loading ?? balancesByAccount === undefined) && (
+        <div className='mt-5 flex w-full flex-col items-center justify-center'>
+          <LineWave
+            visible={true}
+            height='70'
+            width='70'
+            color='white'
+            wrapperClass={cn('mb-5 transition-all duration-300')}
+          />
+        </div>
+      )}
     </div>
   );
 }

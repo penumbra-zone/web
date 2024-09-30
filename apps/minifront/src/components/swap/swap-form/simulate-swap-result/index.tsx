@@ -1,4 +1,4 @@
-import { ValueViewComponent } from '@repo/ui/components/ui/value';
+import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/value';
 import { PriceImpact } from './price-impact';
 import { motion } from 'framer-motion';
 import { SimulateSwapResult as TSimulateSwapResult } from '../../../../state/swap';
@@ -25,9 +25,9 @@ const simulateSwapResultSelector = (state: AllSlices) => ({
       value: {
         amount: toBaseUnit(
           new BigNumber(state.swap.amount || 0),
-          getDisplayDenomExponentFromValueView.optional()(state.swap.assetIn?.balanceView),
+          getDisplayDenomExponentFromValueView.optional(state.swap.assetIn?.balanceView),
         ),
-        metadata: getMetadata.optional()(state.swap.assetIn?.balanceView),
+        metadata: getMetadata.optional(state.swap.assetIn?.balanceView),
       },
     },
   }),

@@ -7,13 +7,14 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@repo/ui/components/ui/select';
-import { Avatar, AvatarImage } from '@repo/ui/components/ui/avatar';
-import { Identicon } from '@repo/ui/components/ui/identicon';
+} from '@penumbra-zone/ui/components/ui/select';
+import { Avatar, AvatarImage } from '@penumbra-zone/ui/components/ui/avatar';
+import { Identicon } from '@penumbra-zone/ui/components/ui/identicon';
 import { DestinationAddr } from './destination-addr';
-import { Button } from '@repo/ui/components/ui/button';
+import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { LockClosedIcon } from '@radix-ui/react-icons';
 import { NumberInput } from '../../shared/number-input';
+import { getIconWithUmFallback } from './asset-utils.tsx';
 
 const isReadySelector = (state: AllSlices) => {
   const { amount, coin, selectedChain } = state.ibcIn;
@@ -32,7 +33,7 @@ export const IbcInRequest = () => {
 
   // User is not ready to issue request
   if (!address || !selectedChain || !data?.length) {
-    return <></>;
+    return;
   }
 
   return (
@@ -46,23 +47,21 @@ export const IbcInRequest = () => {
       )}
       <div className='flex w-full gap-2'>
         <Select onValueChange={v => setCoin(data.find(b => b.displayDenom === v))}>
-          <SelectTrigger className='truncate rounded-lg bg-white p-2' variant='light'>
+          <SelectTrigger className='truncate rounded-lg p-2' variant='light'>
             <SelectValue placeholder='Select Asset' />
           </SelectTrigger>
           <SelectContent className='max-w-52 bg-white text-stone-700'>
-            {data.map(b => {
-              return (
-                <SelectItem value={b.displayDenom} key={b.displayDenom} className='p-2'>
-                  <div className='flex gap-2 text-stone-700'>
-                    <Avatar className='size-6'>
-                      <AvatarImage src={b.icon} />
-                      <Identicon uniqueIdentifier={b.displayDenom} type='gradient' size={22} />
-                    </Avatar>
-                    <span className=''>{b.displayDenom}</span>
-                  </div>
-                </SelectItem>
-              );
-            })}
+            {data.map(b => (
+              <SelectItem value={b.displayDenom} key={b.displayDenom}>
+                <div className='flex items-center gap-2 text-stone-700'>
+                  <Avatar className='size-6'>
+                    <AvatarImage src={getIconWithUmFallback(b)} />
+                    <Identicon uniqueIdentifier={b.displayDenom} type='gradient' size={22} />
+                  </Avatar>
+                  <span className=''>{b.displayDenom}</span>
+                </div>
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
         <AmountInput />

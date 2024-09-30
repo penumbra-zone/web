@@ -1,5 +1,27 @@
 # @penumbra-zone/getters
 
+## 18.0.0
+
+### Patch Changes
+
+- Updated dependencies [b6e32f8]
+- Updated dependencies [b6e32f8]
+  - @penumbra-zone/protobuf@6.1.0
+  - @penumbra-zone/bech32m@8.0.0
+
+## 17.0.0
+
+### Major Changes
+
+- 3a5c074: don't export optional getters
+- 3a5c074: improve getter type
+
+## 16.0.0
+
+### Major Changes
+
+- f8730e9: Update asset ID getter; it no longer has a hardcoded Optional version
+
 ## 15.0.0
 
 ### Patch Changes

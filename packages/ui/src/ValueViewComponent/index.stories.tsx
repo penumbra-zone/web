@@ -6,7 +6,7 @@ import {
   UNBONDING_VALUE_VIEW,
   UNKNOWN_ASSET_ID_VALUE_VIEW,
   UNKNOWN_ASSET_VALUE_VIEW,
-} from './sampleValueViews';
+} from '../utils/bufs';
 
 const meta: Meta<typeof ValueViewComponent> = {
   component: ValueViewComponent,

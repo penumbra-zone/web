@@ -13,6 +13,7 @@ export const groupByAsset = (acc: ValueView[], curr: BalancesResponse): ValueVie
     throw new Error('No amount in value view');
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify
   const grouping = acc.find(v => hasMatchingAssetId(v, curr.balanceView!));
 
   if (grouping) {

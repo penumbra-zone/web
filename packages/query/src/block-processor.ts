@@ -4,21 +4,13 @@ import {
   PositionState,
   PositionState_PositionStateEnum,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
-import {
-  CommitmentSource,
-  Nullifier,
-} from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
+import { Nullifier } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
 import { ValidatorInfoResponse } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
-import {
-  Action,
-  Transaction,
-} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
-import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
+import { Action } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
 import { SpendableNoteRecord, SwapRecord } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { auctionIdFromBech32 } from '@penumbra-zone/bech32m/pauctid';
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
-import { sha256Hash } from '@penumbra-zone/crypto-web/sha256';
 import { getAssetId } from '@penumbra-zone/getters/metadata';
 import {
   getExchangeRateFromValidatorInfoResponse,
@@ -46,11 +38,13 @@ import { getAssetIdFromGasPrices } from '@penumbra-zone/getters/compact-block';
 import { getSpendableNoteRecordCommitment } from '@penumbra-zone/getters/spendable-note-record';
 import { getSwapRecordCommitment } from '@penumbra-zone/getters/swap-record';
 import { CompactBlock } from '@penumbra-zone/protobuf/penumbra/core/component/compact_block/v1/compact_block_pb';
+import { shouldSkipTrialDecrypt } from './helpers/skip-trial-decrypt.js';
+import { identifyTransactions, RelevantTx } from './helpers/identify-txs.js';
 
 declare global {
-  // eslint-disable-next-line no-var
+  // eslint-disable-next-line no-var -- expected globals
   var __DEV__: boolean | undefined;
-  // eslint-disable-next-line no-var
+  // eslint-disable-next-line no-var -- expected globals
   var __ASSERT_ROOT__: boolean | undefined;
 }
 
@@ -71,11 +65,14 @@ interface QueryClientProps {
   numeraires: AssetId[];
   stakingAssetId: AssetId;
   genesisBlock: CompactBlock | undefined;
+  walletCreationBlockHeight: number | undefined;
 }
 
-const BLANK_TX_SOURCE = new CommitmentSource({
-  source: { case: 'transaction', value: { id: new Uint8Array() } },
-});
+interface ProcessBlockParams {
+  compactBlock: CompactBlock;
+  latestKnownBlockHeight: bigint;
+  skipTrialDecrypt?: boolean;
+}
 
 const POSITION_STATES: PositionState[] = [
   new PositionState({ state: PositionState_PositionStateEnum.OPENED }),
@@ -91,7 +88,8 @@ export class BlockProcessor implements BlockProcessorInterface {
   private numeraires: AssetId[];
   private readonly stakingAssetId: AssetId;
   private syncPromise: Promise<void> | undefined;
-  private genesisBlock: CompactBlock | undefined;
+  private readonly genesisBlock: CompactBlock | undefined;
+  private readonly walletCreationBlockHeight: number | undefined;
 
   constructor({
     indexedDb,
@@ -100,6 +98,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     numeraires,
     stakingAssetId,
     genesisBlock,
+    walletCreationBlockHeight,
   }: QueryClientProps) {
     this.indexedDb = indexedDb;
     this.viewServer = viewServer;
@@ -107,6 +106,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     this.numeraires = numeraires;
     this.stakingAssetId = stakingAssetId;
     this.genesisBlock = genesisBlock;
+    this.walletCreationBlockHeight = walletCreationBlockHeight;
   }
 
   // If sync() is called multiple times concurrently, they'll all wait for
@@ -118,9 +118,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       numOfAttempts: Infinity,
       maxDelay: 20_000, // 20 seconds
       retry: async (e, attemptNumber) => {
-        if (globalThis.__DEV__) {
-          console.debug('Sync failure', attemptNumber, e);
-        }
+        console.error(`Sync failure #${attemptNumber}: `, e);
         await this.viewServer.resetTreeToStored();
         return !this.abortController.signal.aborted;
       },
@@ -171,7 +169,18 @@ export class BlockProcessor implements BlockProcessorInterface {
       if (this.genesisBlock?.height === currentHeight + 1n) {
         // begin the chain with local genesis block if provided
         currentHeight = this.genesisBlock.height;
-        await this.processBlock(this.genesisBlock, latestKnownBlockHeight);
+
+        // Set the trial decryption flag for the genesis compact block
+        const skipTrialDecrypt = shouldSkipTrialDecrypt(
+          this.walletCreationBlockHeight,
+          currentHeight,
+        );
+
+        await this.processBlock({
+          compactBlock: this.genesisBlock,
+          latestKnownBlockHeight: latestKnownBlockHeight,
+          skipTrialDecrypt,
+        });
       }
     }
 
@@ -189,7 +198,17 @@ export class BlockProcessor implements BlockProcessorInterface {
         throw new Error(`Unexpected block height: ${compactBlock.height} at ${currentHeight}`);
       }
 
-      await this.processBlock(compactBlock, latestKnownBlockHeight);
+      // Set the trial decryption flag for all other compact blocks
+      const skipTrialDecrypt = shouldSkipTrialDecrypt(
+        this.walletCreationBlockHeight,
+        currentHeight,
+      );
+
+      await this.processBlock({
+        compactBlock: compactBlock,
+        latestKnownBlockHeight: latestKnownBlockHeight,
+        skipTrialDecrypt,
+      });
 
       // We only query Tendermint for the latest known block height once, when
       // the block processor starts running. Once we're caught up, though, the
@@ -203,7 +222,11 @@ export class BlockProcessor implements BlockProcessorInterface {
   }
 
   // logic for processing a compact block
-  private async processBlock(compactBlock: CompactBlock, latestKnownBlockHeight: bigint) {
+  private async processBlock({
+    compactBlock,
+    latestKnownBlockHeight,
+    skipTrialDecrypt = false,
+  }: ProcessBlockParams) {
     if (compactBlock.appParametersUpdated) {
       await this.indexedDb.saveAppParams(await this.querier.app.appParams());
     }
@@ -229,7 +252,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     // - decrypts new notes
     // - decrypts new swaps
     // - updates idb with advice
-    const scannerWantsFlush = await this.viewServer.scanBlock(compactBlock);
+    const scannerWantsFlush = await this.viewServer.scanBlock(compactBlock, skipTrialDecrypt);
 
     // flushing is slow, avoid it until
     // - wasm says
@@ -260,9 +283,11 @@ export class BlockProcessor implements BlockProcessorInterface {
       await this.identifyNewAssets(flush.newNotes);
 
       for (const spendableNoteRecord of flush.newNotes) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify non-null assertion
         recordsByCommitment.set(spendableNoteRecord.noteCommitment!, spendableNoteRecord);
       }
       for (const swapRecord of flush.newSwaps) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify non-null assertion
         recordsByCommitment.set(swapRecord.swapCommitment!, swapRecord);
       }
     }
@@ -280,28 +305,25 @@ export class BlockProcessor implements BlockProcessorInterface {
       // this is a network query
       const blockTx = await this.querier.app.txsByHeight(compactBlock.height);
 
-      // identify tx that involve a new record
-      // - compare nullifiers
-      // - compare state commitments
-      // - collect relevant tx for info generation later
-      // - if matched by commitment, collect record with recovered source
-      const { relevantTx, recordsWithSources } = await this.identifyTransactions(
+      // Filter down to transactions & note records in block relevant to user
+      const { relevantTxs, recoveredSourceRecords } = await identifyTransactions(
         spentNullifiers,
         recordsByCommitment,
         blockTx,
+        addr => this.viewServer.isControlledAddress(addr),
       );
 
       // this simply stores the new records with 'rehydrated' sources to idb
       // TODO: this is the second time we save these records, after "saveScanResult"
-      await this.saveRecoveredCommitmentSources(recordsWithSources);
+      await this.saveRecoveredCommitmentSources(recoveredSourceRecords);
 
-      await this.processTransactions(blockTx);
+      await this.processTransactions(relevantTxs);
 
       // at this point txinfo can be generated and saved. this will resolve
       // pending broadcasts, and populate the transaction list.
       // - calls wasm for each relevant tx
       // - saves to idb
-      await this.saveTransactions(compactBlock.height, relevantTx);
+      await this.saveTransactions(compactBlock.height, relevantTxs);
     }
 
     /**
@@ -411,64 +433,6 @@ export class BlockProcessor implements BlockProcessorInterface {
     }
   }
 
-  private async identifyTransactions(
-    spentNullifiers: Set<Nullifier>,
-    commitmentRecordsByStateCommitment: Map<StateCommitment, SpendableNoteRecord | SwapRecord>,
-    blockTx: Transaction[],
-  ) {
-    const relevantTx = new Map<TransactionId, Transaction>();
-    const recordsWithSources = new Array<SpendableNoteRecord | SwapRecord>();
-    for (const tx of blockTx) {
-      let txId: TransactionId | undefined;
-
-      const txCommitments = (tx.body?.actions ?? []).flatMap(({ action }) => {
-        switch (action.case) {
-          case 'output':
-            return action.value.body?.notePayload?.noteCommitment;
-          case 'swap':
-            return action.value.body?.payload?.commitment;
-          case 'swapClaim':
-            return [action.value.body?.output1Commitment, action.value.body?.output2Commitment];
-          default:
-            return;
-        }
-      });
-
-      const txNullifiers = (tx.body?.actions ?? []).map(({ action }) => {
-        switch (action.case) {
-          case 'spend':
-          case 'swapClaim':
-            return action.value.body?.nullifier;
-          default:
-            return;
-        }
-      });
-
-      for (const spentNullifier of spentNullifiers) {
-        if (txNullifiers.some(txNullifier => spentNullifier.equals(txNullifier))) {
-          txId = new TransactionId({ inner: await sha256Hash(tx.toBinary()) });
-          relevantTx.set(txId, tx);
-          spentNullifiers.delete(spentNullifier);
-        }
-      }
-
-      for (const [stateCommitment, spendableNoteRecord] of commitmentRecordsByStateCommitment) {
-        if (txCommitments.some(txCommitment => stateCommitment.equals(txCommitment))) {
-          txId ??= new TransactionId({ inner: await sha256Hash(tx.toBinary()) });
-          relevantTx.set(txId, tx);
-          if (BLANK_TX_SOURCE.equals(spendableNoteRecord.source)) {
-            spendableNoteRecord.source = new CommitmentSource({
-              source: { case: 'transaction', value: { id: txId.inner } },
-            });
-            recordsWithSources.push(spendableNoteRecord);
-          }
-          commitmentRecordsByStateCommitment.delete(stateCommitment);
-        }
-      }
-    }
-    return { relevantTx, recordsWithSources };
-  }
-
   // TODO: refactor. there is definitely a better way to do this.  batch
   // endpoint issue https://github.com/penumbra-zone/penumbra/issues/4688
   private async saveAndReturnMetadata(assetId: AssetId): Promise<Metadata | undefined> {
@@ -479,7 +443,7 @@ export class BlockProcessor implements BlockProcessorInterface {
 
     const metadataFromNode = await this.querier.shieldedPool.assetMetadataById(assetId);
 
-    //do not save IBC token metadata that are not in the prax registry
+    // do not save IBC token metadata that are not in the prax registry
     const isIbcAsset = metadataFromNode && assetPatterns.ibc.matches(metadataFromNode.display);
 
     if (metadataFromNode && !isIbcAsset) {
@@ -552,9 +516,9 @@ export class BlockProcessor implements BlockProcessorInterface {
    * Identify various pieces of data from the transaction that we need to save,
    * such as metadata, liquidity positions, etc.
    */
-  private async processTransactions(txs: Transaction[]) {
-    for (const tx of txs) {
-      for (const { action } of tx.body?.actions ?? []) {
+  private async processTransactions(txs: RelevantTx[]) {
+    for (const { data } of txs) {
+      for (const { action } of data.body?.actions ?? []) {
         await Promise.all([this.identifyAuctionNfts(action), this.identifyLpNftPositions(action)]);
       }
     }
@@ -591,8 +555,9 @@ export class BlockProcessor implements BlockProcessorInterface {
     if (action.case === 'positionOpen' && action.value.position) {
       for (const state of POSITION_STATES) {
         const metadata = getLpNftMetadata(computePositionId(action.value.position), state);
+        const customized = customizeSymbol(metadata);
         await this.indexedDb.saveAssetsMetadata({
-          ...metadata,
+          ...customized,
           penumbraAssetId: getAssetId(metadata),
         });
       }
@@ -616,8 +581,9 @@ export class BlockProcessor implements BlockProcessorInterface {
         sequence: action.value.sequence,
       });
       const metadata = getLpNftMetadata(action.value.positionId, positionState);
+      const customized = customizeSymbol(metadata);
       await this.indexedDb.saveAssetsMetadata({
-        ...metadata,
+        ...customized,
         penumbraAssetId: getAssetId(metadata),
       });
 
@@ -644,9 +610,9 @@ export class BlockProcessor implements BlockProcessorInterface {
     });
   }
 
-  private async saveTransactions(height: bigint, relevantTx: Map<TransactionId, Transaction>) {
-    for (const [id, transaction] of relevantTx) {
-      await this.indexedDb.saveTransaction(id, height, transaction);
+  private async saveTransactions(height: bigint, relevantTx: RelevantTx[]) {
+    for (const { id, data } of relevantTx) {
+      await this.indexedDb.saveTransaction(id, height, data);
     }
   }
 
@@ -693,12 +659,13 @@ export class BlockProcessor implements BlockProcessorInterface {
       // this loop requests delegation token metadata for each validator
       // individually. there may be very many, so we must artificially delay
       // this loop or the RPC may hard-ratelimit us.
-      await new Promise(resolve =>
-        setTimeout(
-          resolve,
-          // an entire second
-          1000,
-        ),
+      await new Promise(
+        resolve =>
+          void setTimeout(
+            resolve,
+            // an entire second
+            1000,
+          ),
       );
     }
   }

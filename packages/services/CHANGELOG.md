@@ -1,5 +1,92 @@
 # @penumbra-zone/router
 
+## 35.0.0
+
+### Patch Changes
+
+- Updated dependencies [b6e32f8]
+- Updated dependencies [b6e32f8]
+- Updated dependencies [b6e32f8]
+- Updated dependencies [b6e32f8]
+- Updated dependencies [b6e32f8]
+- Updated dependencies [b6e32f8]
+  - @penumbra-zone/storage@31.0.0
+  - @penumbra-zone/protobuf@6.1.0
+  - @penumbra-zone/bech32m@8.0.0
+  - @penumbra-zone/wasm@29.0.0
+  - @penumbra-zone/query@32.0.0
+  - @penumbra-zone/types@24.0.0
+  - @penumbra-zone/getters@18.0.0
+  - @penumbra-zone/crypto-web@25.0.0
+
+## 34.0.1
+
+### Patch Changes
+
+- Updated dependencies [e343d22]
+- Updated dependencies [f9b8c07]
+- Updated dependencies [e343d22]
+- Updated dependencies [e343d22]
+  - @penumbra-zone/storage@30.0.1
+  - @penumbra-zone/query@31.0.1
+
+## 34.0.0
+
+### Patch Changes
+
+- Updated dependencies [3a5c074]
+- Updated dependencies [3a5c074]
+- Updated dependencies [990291f]
+  - @penumbra-zone/getters@17.0.0
+  - @penumbra-zone/wasm@28.0.0
+  - @penumbra-zone/query@31.0.0
+  - @penumbra-zone/storage@30.0.0
+  - @penumbra-zone/types@23.0.0
+  - @penumbra-zone/crypto-web@24.0.0
+
+## 33.0.0
+
+### Patch Changes
+
+- Updated dependencies [e01d5f8]
+  - @penumbra-zone/query@30.0.0
+  - @penumbra-zone/types@22.0.0
+  - @penumbra-zone/wasm@27.0.0
+  - @penumbra-zone/crypto-web@23.0.0
+  - @penumbra-zone/storage@29.0.0
+
+## 32.0.0
+
+### Patch Changes
+
+- Updated dependencies [e7d0767]
+  - @penumbra-zone/query@29.0.0
+  - @penumbra-zone/wasm@26.2.0
+  - @penumbra-zone/storage@28.0.0
+
+## 31.0.0
+
+### Patch Changes
+
+- Updated dependencies [598d148]
+- Updated dependencies [e952e03]
+  - @penumbra-zone/wasm@26.1.0
+  - @penumbra-zone/storage@27.0.0
+  - @penumbra-zone/query@28.0.0
+
+## 30.0.0
+
+### Patch Changes
+
+- Updated dependencies [f8730e9]
+- Updated dependencies [94d2c8d]
+  - @penumbra-zone/getters@16.0.0
+  - @penumbra-zone/query@27.0.0
+  - @penumbra-zone/storage@26.0.0
+  - @penumbra-zone/types@21.0.0
+  - @penumbra-zone/crypto-web@22.0.0
+  - @penumbra-zone/wasm@26.0.0
+
 ## 29.0.0
 
 ### Patch Changes

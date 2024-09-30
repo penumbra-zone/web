@@ -1,5 +1,109 @@
 # @penumbra-zone/ui
 
+## 10.0.0
+
+### Patch Changes
+
+- Updated dependencies [b6e32f8]
+- Updated dependencies [b6e32f8]
+- Updated dependencies [b6e32f8]
+  - @penumbra-zone/protobuf@6.1.0
+  - @penumbra-zone/bech32m@8.0.0
+  - @penumbra-zone/types@24.0.0
+  - @penumbra-zone/perspective@31.0.0
+
+## 9.2.0
+
+### Minor Changes
+
+- b1d4b7d: Add `AssetSelector` UI component
+- de9bd06: Add `SwapInput` and `ValueInput` UI components
+- 43d8350: Fix the issue of UI package not being build correctly for some server-side environments
+
+### Patch Changes
+
+- 75ef4f5: Fix copy button styles
+
+## 9.1.1
+
+### Patch Changes
+
+- @penumbra-zone/perspective@30.0.0
+- @penumbra-zone/types@23.0.0
+
+## 9.1.0
+
+### Minor Changes
+
+- 74e89e0: UI:
+
+  - Add new `Progress` component
+  - Add `MenuItem` component that shares the styles with `DropdownMenu.Item`
+  - Update the `Pill` component to support `context` prop
+  - Update the `Tabs` component to support the `compact` density
+  - Allow passing custom icons to the `Button`
+  - Fix `density` tag in Storybook
+
+  Tailwind Config:
+
+  - Add support for v2 colors with v2 prefix like `bg-v2-secondary-dark`
+
+  Minifront:
+
+  - Add top navigation to the v2 minifront with sync bar and prax connection infos
+
+- d938456: Add Slider Component
+
+### Patch Changes
+
+- 516caf3: Fix z-index of dialog content
+- 5100518: Update UI components: `ValueViewComponent`, `AssetIcon`, and `Popover`
+- Updated dependencies [e01d5f8]
+  - @penumbra-zone/types@22.0.0
+  - @penumbra-zone/perspective@29.0.0
+
+## 9.0.0
+
+### Major Changes
+
+- a8a5f41: Prepare UI package for publishing to NPM
+
+### Minor Changes
+
+- e7d0767: Support for displaying LP position action views
+
+### Patch Changes
+
+- Updated dependencies [e7d0767]
+  - @penumbra-zone/perspective@28.0.0
+
+## 8.2.0
+
+### Minor Changes
+
+- d01196a: Add WalletBalance UI component
+- 74f9a7f: Remove browser & version check
+
+### Patch Changes
+
+- e952e03: remove BSR dependencies, correctly specify @bufbuild and @connectrpc dependencies
+- Updated dependencies [e952e03]
+  - @penumbra-zone/perspective@27.0.0
+
+## 8.1.0
+
+### Minor Changes
+
+- e4a4dd7: Fix font alignments & sync dialog
+- 7732f8d: Add Popover UI component
+- 2788cf0: Add DropdownMenu UI component
+- 907f6ee: Add Banner and IncompatableBrowserBanner
+
+### Patch Changes
+
+- @penumbra-zone/perspective@26.0.0
+- @penumbra-zone/types@21.0.0
+
 ## 8.0.0
 
 ### Minor Changes

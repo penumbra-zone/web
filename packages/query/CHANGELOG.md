@@ -1,5 +1,88 @@
 # @penumbra-zone/query
 
+## 32.0.0
+
+### Minor Changes
+
+- b6e32f8: Check for IbcRelays to add to txs
+
+### Patch Changes
+
+- Updated dependencies [b6e32f8]
+- Updated dependencies [b6e32f8]
+- Updated dependencies [b6e32f8]
+- Updated dependencies [b6e32f8]
+  - @penumbra-zone/protobuf@6.1.0
+  - @penumbra-zone/bech32m@8.0.0
+  - @penumbra-zone/wasm@29.0.0
+  - @penumbra-zone/types@24.0.0
+  - @penumbra-zone/getters@18.0.0
+  - @penumbra-zone/crypto-web@25.0.0
+
+## 31.0.1
+
+### Patch Changes
+
+- e343d22: [bug fix] Only process relevant transactions for NFTs
+- e343d22: Extract, refactor, and test IdentifyTransactions
+
+## 31.0.0
+
+### Patch Changes
+
+- Updated dependencies [3a5c074]
+- Updated dependencies [3a5c074]
+- Updated dependencies [990291f]
+  - @penumbra-zone/getters@17.0.0
+  - @penumbra-zone/wasm@28.0.0
+  - @penumbra-zone/types@23.0.0
+  - @penumbra-zone/crypto-web@24.0.0
+
+## 30.0.0
+
+### Major Changes
+
+- e01d5f8: fresh and existing wallets skip trial decryption
+
+### Patch Changes
+
+- Updated dependencies [e01d5f8]
+  - @penumbra-zone/types@22.0.0
+  - @penumbra-zone/wasm@27.0.0
+  - @penumbra-zone/crypto-web@23.0.0
+
+## 29.0.0
+
+### Minor Changes
+
+- e7d0767: Customize symbol for LP position NFTs
+
+### Patch Changes
+
+- Updated dependencies [e7d0767]
+  - @penumbra-zone/wasm@26.2.0
+
+## 28.0.0
+
+### Patch Changes
+
+- Updated dependencies [598d148]
+  - @penumbra-zone/wasm@26.1.0
+
+## 27.0.0
+
+### Minor Changes
+
+- 94d2c8d: special case local genesis sync
+
+### Patch Changes
+
+- Updated dependencies [f8730e9]
+  - @penumbra-zone/getters@16.0.0
+  - @penumbra-zone/types@21.0.0
+  - @penumbra-zone/crypto-web@22.0.0
+  - @penumbra-zone/wasm@26.0.0
+
 ## 26.0.0
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Fragment, memo } from 'react';
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 
 /**
  * Since we're splitting individual characters and wrapping them in `<span />`s,
@@ -77,6 +77,7 @@ export interface CharacterTransitionProps {
  * leave it up to the consumer to determine how to properly namespace its layout
  * IDs.
  */
+// eslint-disable-next-line react/display-name -- exotic component
 export const CharacterTransition = memo(({ children }: CharacterTransitionProps) => {
   if (!children) {
     return null;

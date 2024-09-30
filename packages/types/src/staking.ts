@@ -57,7 +57,7 @@ export const isDelegationTokenForValidator = (
  */
 export const calculateCommissionAsPercentage = (validatorInfo: ValidatorInfo): number => {
   const fundingStreams = getFundingStreamsFromValidatorInfo(validatorInfo);
-  const totalBps = fundingStreams.map(getRateBpsFromFundingStream).reduce(toSum);
+  const totalBps = fundingStreams.map(getRateBpsFromFundingStream).reduce(toSum, 0);
 
   return totalBps / 100;
 };

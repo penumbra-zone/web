@@ -13,6 +13,7 @@ export const MemoViewComponent = ({ memo: { memoView } }: { memo: MemoView }) =>
             <div className='flex flex-col gap-4'>
               <ActionDetails>
                 <ActionDetails.Row label='Return Address'>
+                  {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify not using '?' operator */}
                   <AddressViewComponent view={memoView.value.plaintext!.returnAddress} />
                 </ActionDetails.Row>
                 <ActionDetails.Row label='Memo Text'>

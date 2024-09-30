@@ -1,5 +1,131 @@
 # minifront
 
+## 6.22.2
+
+### Patch Changes
+
+- Updated dependencies [b6e32f8]
+- Updated dependencies [b6e32f8]
+- Updated dependencies [b6e32f8]
+  - @penumbra-zone/protobuf@6.1.0
+  - @penumbra-zone/bech32m@8.0.0
+  - @penumbra-zone/types@24.0.0
+  - @penumbra-zone/client@19.0.0
+  - @penumbra-zone/getters@18.0.0
+  - @penumbra-zone/perspective@31.0.0
+  - @penumbra-zone/ui@10.0.0
+  - @penumbra-zone/crypto-web@25.0.0
+
+## 6.22.1
+
+### Patch Changes
+
+- f9b8c07: Bump registry version to v11.2
+- e5c76a6: Render the error in swap page in case of incorrect decimals or insufficient funds
+- Updated dependencies [b1d4b7d]
+- Updated dependencies [75ef4f5]
+- Updated dependencies [de9bd06]
+- Updated dependencies [43d8350]
+  - @penumbra-zone/ui@9.2.0
+
+## 6.22.0
+
+### Minor Changes
+
+- 74527df: modify precision for sync percentage
+
+### Patch Changes
+
+- 0b85eca: Sort the balances by priority in the swap and send pages
+- Updated dependencies [3a5c074]
+- Updated dependencies [3a5c074]
+  - @penumbra-zone/getters@17.0.0
+  - @penumbra-zone/perspective@30.0.0
+  - @penumbra-zone/types@23.0.0
+  - @penumbra-zone/ui@9.1.1
+  - @penumbra-zone/crypto-web@24.0.0
+
+## 6.21.0
+
+### Minor Changes
+
+- 74e89e0: UI:
+
+  - Add new `Progress` component
+  - Add `MenuItem` component that shares the styles with `DropdownMenu.Item`
+  - Update the `Pill` component to support `context` prop
+  - Update the `Tabs` component to support the `compact` density
+  - Allow passing custom icons to the `Button`
+  - Fix `density` tag in Storybook
+
+  Tailwind Config:
+
+  - Add support for v2 colors with v2 prefix like `bg-v2-secondary-dark`
+
+  Minifront:
+
+  - Add top navigation to the v2 minifront with sync bar and prax connection infos
+
+### Patch Changes
+
+- Updated dependencies [74e89e0]
+- Updated dependencies [e01d5f8]
+- Updated dependencies [516caf3]
+- Updated dependencies [a3bef37]
+- Updated dependencies [5100518]
+- Updated dependencies [d938456]
+  - @penumbra-zone/ui@9.1.0
+  - @penumbra-zone/types@22.0.0
+  - @penumbra-zone/client@18.1.0
+  - @penumbra-zone/crypto-web@23.0.0
+  - @penumbra-zone/perspective@29.0.0
+
+## 6.20.0
+
+### Minor Changes
+
+- e7d0767: Support for displaying LP position action views
+
+### Patch Changes
+
+- a8a5f41: Prepare UI package for publishing to NPM
+- Updated dependencies [a8a5f41]
+- Updated dependencies [e7d0767]
+  - @penumbra-zone/ui@9.0.0
+  - @penumbra-zone/perspective@28.0.0
+
+## 6.19.1
+
+### Patch Changes
+
+- e952e03: remove BSR dependencies, correctly specify @bufbuild and @connectrpc dependencies
+- Updated dependencies [d01196a]
+- Updated dependencies [e952e03]
+- Updated dependencies [74f9a7f]
+  - @repo/ui@8.2.0
+  - @penumbra-zone/perspective@27.0.0
+  - @penumbra-zone/client@18.0.1
+
+## 6.19.0
+
+### Minor Changes
+
+- e4a4dd7: Fix font alignments & sync dialog
+- c7aa17b: Update approx block duration to ~5.5s
+
+### Patch Changes
+
+- Updated dependencies [e4a4dd7]
+- Updated dependencies [f8730e9]
+- Updated dependencies [7732f8d]
+- Updated dependencies [2788cf0]
+- Updated dependencies [907f6ee]
+  - @repo/ui@8.1.0
+  - @penumbra-zone/getters@16.0.0
+  - @penumbra-zone/perspective@26.0.0
+  - @penumbra-zone/types@21.0.0
+  - @penumbra-zone/crypto-web@22.0.0
+
 ## 6.18.0
 
 ### Minor Changes

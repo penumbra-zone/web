@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 import { Toggle } from '../Toggle';
 import { Text } from '../Text';
 import { Tooltip } from '../Tooltip';

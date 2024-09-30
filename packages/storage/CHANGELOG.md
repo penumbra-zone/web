@@ -1,5 +1,70 @@
 # @penumbra-zone/storage
 
+## 31.0.0
+
+### Patch Changes
+
+- b6e32f8: Bump registry version
+- Updated dependencies [b6e32f8]
+- Updated dependencies [b6e32f8]
+- Updated dependencies [b6e32f8]
+- Updated dependencies [b6e32f8]
+  - @penumbra-zone/protobuf@6.1.0
+  - @penumbra-zone/bech32m@8.0.0
+  - @penumbra-zone/wasm@29.0.0
+  - @penumbra-zone/types@24.0.0
+  - @penumbra-zone/getters@18.0.0
+
+## 30.0.1
+
+### Patch Changes
+
+- e343d22: Version DB to 47
+- f9b8c07: Bump registry version to v11.2
+
+## 30.0.0
+
+### Patch Changes
+
+- Updated dependencies [3a5c074]
+- Updated dependencies [3a5c074]
+- Updated dependencies [990291f]
+  - @penumbra-zone/getters@17.0.0
+  - @penumbra-zone/wasm@28.0.0
+  - @penumbra-zone/types@23.0.0
+
+## 29.0.0
+
+### Patch Changes
+
+- Updated dependencies [e01d5f8]
+  - @penumbra-zone/types@22.0.0
+  - @penumbra-zone/wasm@27.0.0
+
+## 28.0.0
+
+### Patch Changes
+
+- Updated dependencies [e7d0767]
+  - @penumbra-zone/wasm@26.2.0
+
+## 27.0.0
+
+### Patch Changes
+
+- e952e03: remove BSR dependencies, correctly specify @bufbuild and @connectrpc dependencies
+- Updated dependencies [598d148]
+  - @penumbra-zone/wasm@26.1.0
+
+## 26.0.0
+
+### Patch Changes
+
+- Updated dependencies [f8730e9]
+  - @penumbra-zone/getters@16.0.0
+  - @penumbra-zone/types@21.0.0
+  - @penumbra-zone/wasm@26.0.0
+
 ## 25.0.0
 
 ### Patch Changes

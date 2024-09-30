@@ -20,6 +20,7 @@ import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/ke
  * Add more assertions to this function as needed.
  */
 export const assertValidAuthorizeRequest = (req: AuthorizeRequest, fvk: FullViewingKey): void =>
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify non-null assertion
   assertSwapClaimAddressesBelongToCurrentUser(req.plan!, address =>
     isControlledAddress(fvk, address),
   );

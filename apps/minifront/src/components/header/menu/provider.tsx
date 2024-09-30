@@ -1,4 +1,4 @@
-import { cn } from '@repo/ui/lib/utils';
+import { cn } from '@penumbra-zone/ui/lib/utils';
 import * as NavigationMenu from '@radix-ui/react-navigation-menu';
 import { getChainId } from '../../../fetchers/chain-id';
 import { useEffect, useState } from 'react';
@@ -33,7 +33,7 @@ export const ProviderMenu = () => {
             id='provider-icon'
             className={cn('w-[1.5em]', 'max-w-none', 'h-[1.5em]')}
             src={URL.createObjectURL(penumbra.manifest.icons['128'])}
-            alt={`${penumbra.manifest['name']} Icon`}
+            alt={`${penumbra.manifest.name} Icon`}
           />
           {chainId}
         </NavigationMenu.Trigger>
@@ -43,9 +43,9 @@ export const ProviderMenu = () => {
               <NavigationMenu.Link className={cn(...linkStyle, 'p-0', 'leading-normal')}>
                 <div className='ml-4 text-muted-foreground'>
                   <span className='font-headline text-muted'>
-                    {penumbra.manifest['name']} {penumbra.manifest['version']}
+                    {penumbra.manifest.name} {penumbra.manifest.version}
                   </span>
-                  <p>{penumbra.manifest['description']}</p>
+                  <p>{penumbra.manifest.description}</p>
                 </div>
               </NavigationMenu.Link>
             </NavigationMenu.Item>

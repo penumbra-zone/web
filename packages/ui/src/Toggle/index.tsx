@@ -1,6 +1,6 @@
 import * as RadixToggle from '@radix-ui/react-toggle';
 import { useDisabled } from '../hooks/useDisabled';
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 import { buttonBase } from '../utils/button';
 import { useDensity } from '../hooks/useDensity';
 import { Density } from '../types/Density';
@@ -48,7 +48,6 @@ export interface ToggleProps {
 }
 
 export const Toggle = ({ label, value, onChange, disabled }: ToggleProps) => {
-  disabled = useDisabled(disabled);
   const density = useDensity();
 
   return (
@@ -56,7 +55,7 @@ export const Toggle = ({ label, value, onChange, disabled }: ToggleProps) => {
       aria-label={label}
       pressed={value}
       onPressedChange={onChange}
-      disabled={disabled}
+      disabled={useDisabled(disabled)}
       $density={density}
     >
       <Indicator $value={value} $density={density} />

@@ -1,5 +1,5 @@
-import { forwardRef, MouseEventHandler } from 'react';
-import styled, { css, DefaultTheme } from 'styled-components';
+import { FC, forwardRef, MouseEventHandler, ReactNode } from 'react';
+import { styled, css, DefaultTheme } from 'styled-components';
 import { asTransientProps } from '../utils/asTransientProps';
 import { Priority, focusOutline, overlays, buttonBase } from '../utils/button';
 import { getBackgroundColor } from './helpers';
@@ -65,7 +65,7 @@ const StyledButton = styled(motion.button)<StyledButtonProps>`
   ${buttonBase}
   ${button}
 
-  background-color: ${props =>
+    background-color: ${props =>
     getBackgroundColor(props.$actionType, props.$priority, props.theme, props.$iconOnly)};
   outline: ${props =>
     props.$priority === 'secondary'
@@ -80,12 +80,12 @@ const StyledButton = styled(motion.button)<StyledButtonProps>`
   position: relative;
 
   ${props =>
+    // eslint-disable-next-line no-nested-ternary -- readable ternary
     props.$iconOnly === 'adornment'
       ? iconOnlyAdornment
       : props.$density === 'sparse'
         ? sparse
         : compact}
-
   &::after {
     outline-offset: -2px;
   }
@@ -100,7 +100,7 @@ interface BaseButtonProps {
    * The button label. If `iconOnly` is `true` or `adornment`, this will be used
    * as the `aria-label` attribute.
    */
-  children: string;
+  children: ReactNode;
   /**
    * What type of action is this button related to? Leave as `default` for most
    * buttons, set to `accent` for the single most important action on a given
@@ -142,7 +142,7 @@ interface IconOnlyProps {
    * <Button icon={ChevronRight} iconOnly>Label</Button>
    * ```
    */
-  icon: LucideIcon;
+  icon: LucideIcon | FC;
 }
 
 interface RegularProps {
@@ -158,7 +158,7 @@ interface RegularProps {
    * <Button icon={ChevronRight} iconOnly>Label</Button>
    * ```
    */
-  icon?: LucideIcon;
+  icon?: LucideIcon | FC;
 }
 
 export type ButtonProps = BaseButtonProps & (IconOnlyProps | RegularProps) & MotionProp;
@@ -201,8 +201,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         type={type}
         disabled={disabled}
         onClick={onClick}
-        aria-label={iconOnly ? children : undefined}
-        title={iconOnly ? children : undefined}
+        aria-label={iconOnly && typeof children === 'string' ? children : undefined}
+        title={iconOnly && typeof children === 'string' ? children : undefined}
         $getFocusOutlineColor={theme => theme.color.action[outlineColorByActionType[actionType]]}
         $getFocusOutlineOffset={() => (iconOnly === 'adornment' ? '0px' : undefined)}
         $getBorderRadius={theme =>

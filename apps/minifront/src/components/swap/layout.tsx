@@ -15,6 +15,9 @@ export const SwapLayout = () => {
 
             <UnclaimedSwaps />
 
+            {/* TODO: Will enable in subsequent PR */}
+            {/* <LpPositions />*/}
+
             <AuctionList />
           </div>
 

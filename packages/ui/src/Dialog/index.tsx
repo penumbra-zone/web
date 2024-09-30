@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useContext } from 'react';
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 import * as RadixDialog from '@radix-ui/react-dialog';
 import { Text } from '../Text';
 import { X } from 'lucide-react';
@@ -16,7 +16,7 @@ const Overlay = styled(RadixDialog.Overlay)`
   background-color: ${props => props.theme.color.other.overlay};
   position: fixed;
   inset: 0;
-  z-index: ${props => props.theme.zIndex.dialogOverlay};
+  z-index: auto;
 `;
 
 const FullHeightWrapper = styled.div`
@@ -40,15 +40,17 @@ const FullHeightWrapper = styled.div`
  * on the full-screen wrapper pass through to the underlying `<Overlay />`, so
  * that the dialog closes when the user clicks there.
  */
-const DialogContent = styled.div`
+const DialogContent = styled.div<{ $zIndex?: number }>`
   position: fixed;
   inset: 0;
-  z-index: ${props => props.theme.zIndex.dialogContent};
   pointer-events: none;
+  ${props => props.$zIndex && `z-index: ${props.$zIndex};`}
 `;
 
 const DialogContentCard = styled(motion.div)`
+  position: relative;
   width: 100%;
+  max-height: 75%;
   box-sizing: border-box;
 
   background: ${props => props.theme.color.other.dialogBackground};
@@ -56,14 +58,8 @@ const DialogContentCard = styled(motion.div)`
   border-radius: ${props => props.theme.borderRadius.xl};
   backdrop-filter: blur(${props => props.theme.blur.xl});
 
-  padding-top: ${props => props.theme.spacing(8)};
-  padding-bottom: ${props => props.theme.spacing(8)};
-  padding-left: ${props => props.theme.spacing(6)};
-  padding-right: ${props => props.theme.spacing(6)};
-
   display: flex;
   flex-direction: column;
-  gap: ${props => props.theme.spacing(6)};
 
   /**
    * We add 'pointer-events: auto' here so that clicks _inside_ the content card
@@ -73,10 +69,41 @@ const DialogContentCard = styled(motion.div)`
   pointer-events: auto;
 `;
 
-const TitleAndCloseButton = styled.header`
+const DialogChildrenWrap = styled.div`
+  overflow-y: auto;
+
   display: flex;
+  flex-direction: column;
+  gap: ${props => props.theme.spacing(6)};
+
+  padding-bottom: ${props => props.theme.spacing(8)};
+  padding-left: ${props => props.theme.spacing(6)};
+  padding-right: ${props => props.theme.spacing(6)};
+`;
+
+const DialogHeader = styled.header`
+  position: sticky;
+  top: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: ${props => props.theme.spacing(4)};
   color: ${props => props.theme.color.text.primary};
-  justify-content: space-between;
+
+  padding-top: ${props => props.theme.spacing(8)};
+  padding-bottom: ${props => props.theme.spacing(6)};
+  padding-left: ${props => props.theme.spacing(6)};
+  padding-right: ${props => props.theme.spacing(6)};
+`;
+
+/**
+ * Opening the dialog focuses the first focusable element in the dialog. That's why the Close button
+ * should be positioned absolutely and rendered as the last element in the dialog content.
+ */
+const DialogClose = styled.div`
+  position: absolute;
+  top: ${props => props.theme.spacing(8)};
+  right: ${props => props.theme.spacing(6)};
 `;
 
 interface ControlledDialogProps {
@@ -208,6 +235,25 @@ export const Dialog = ({ children, onClose, isOpen }: DialogProps) => {
   );
 };
 
+export interface DialogEmptyContentProps {
+  children?: ReactNode;
+  /** @deprecated this prop will be removed in the future */
+  zIndex?: number;
+}
+
+const EmptyContent = ({ children, zIndex }: DialogEmptyContentProps) => {
+  return (
+    <RadixDialog.Portal>
+      <Overlay />
+
+      <RadixDialog.Content>
+        <DialogContent $zIndex={zIndex}>{children}</DialogContent>
+      </RadixDialog.Content>
+    </RadixDialog.Portal>
+  );
+};
+Dialog.EmptyContent = EmptyContent;
+
 /** Internal use only. */
 const DialogContext = createContext<{ showCloseButton: boolean }>({
   showCloseButton: true,
@@ -216,6 +262,8 @@ const DialogContext = createContext<{ showCloseButton: boolean }>({
 export interface DialogContentProps<IconOnlyButtonGroupProps extends boolean | undefined>
   extends MotionProp {
   children?: ReactNode;
+  /** Renders the element after the dialog title. These elements will be sticky to the top of the dialog */
+  headerChildren?: ReactNode;
   title: string;
   /**
    * If you want to render CTA buttons in the dialog footer, use
@@ -225,60 +273,63 @@ export interface DialogContentProps<IconOnlyButtonGroupProps extends boolean | u
   buttonGroupProps?: IconOnlyButtonGroupProps extends boolean
     ? ButtonGroupProps<IconOnlyButtonGroupProps>
     : undefined;
+  /** @deprecated this prop will be removed in the future */
+  zIndex?: number;
 }
 
 const Content = <IconOnlyButtonGroupProps extends boolean | undefined>({
   children,
+  headerChildren,
   title,
   buttonGroupProps,
   motion,
+  zIndex,
 }: DialogContentProps<IconOnlyButtonGroupProps>) => {
   const { showCloseButton } = useContext(DialogContext);
 
   return (
-    <RadixDialog.Portal>
-      <Overlay />
+    <EmptyContent zIndex={zIndex}>
+      <Display>
+        <Grid container>
+          <Grid mobile={0} tablet={2} desktop={3} xl={4} />
 
-      <RadixDialog.Content>
-        <DialogContent>
-          <Display>
-            <Grid container>
-              <Grid mobile={0} tablet={2} desktop={3} xl={4} />
+          <Grid mobile={12} tablet={8} desktop={6} xl={4}>
+            <FullHeightWrapper>
+              <DialogContentCard {...motion}>
+                <DialogHeader>
+                  <RadixDialog.Title asChild>
+                    <Text xxl as='h2'>
+                      {title}
+                    </Text>
+                  </RadixDialog.Title>
+                  {headerChildren}
+                </DialogHeader>
 
-              <Grid mobile={12} tablet={8} desktop={6} xl={4}>
-                <FullHeightWrapper>
-                  <DialogContentCard {...motion}>
-                    <TitleAndCloseButton>
-                      <RadixDialog.Title asChild>
-                        <Text xxl as='h2'>
-                          {title}
-                        </Text>
-                      </RadixDialog.Title>
+                <DialogChildrenWrap>
+                  {children}
 
-                      {showCloseButton && (
-                        <Density compact>
-                          <RadixDialog.Close asChild>
-                            <Button icon={X} iconOnly priority='secondary'>
-                              Close
-                            </Button>
-                          </RadixDialog.Close>
-                        </Density>
-                      )}
-                    </TitleAndCloseButton>
+                  {buttonGroupProps && <ButtonGroup {...buttonGroupProps} column />}
+                </DialogChildrenWrap>
 
-                    {children}
+                {showCloseButton && (
+                  <Density compact>
+                    <RadixDialog.Close asChild>
+                      <DialogClose>
+                        <Button icon={X} iconOnly priority='secondary'>
+                          Close
+                        </Button>
+                      </DialogClose>
+                    </RadixDialog.Close>
+                  </Density>
+                )}
+              </DialogContentCard>
+            </FullHeightWrapper>
+          </Grid>
 
-                    {buttonGroupProps && <ButtonGroup {...buttonGroupProps} column />}
-                  </DialogContentCard>
-                </FullHeightWrapper>
-              </Grid>
-
-              <Grid mobile={0} tablet={2} desktop={3} xl={4} />
-            </Grid>
-          </Display>
-        </DialogContent>
-      </RadixDialog.Content>
-    </RadixDialog.Portal>
+          <Grid mobile={0} tablet={2} desktop={3} xl={4} />
+        </Grid>
+      </Display>
+    </EmptyContent>
   );
 };
 Dialog.Content = Content;

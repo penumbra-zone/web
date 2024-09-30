@@ -6,7 +6,7 @@ import { Transaction } from '@penumbra-zone/protobuf/penumbra/core/transaction/v
 import type { TendermintQuerierInterface } from '@penumbra-zone/types/querier';
 
 declare global {
-  // eslint-disable-next-line no-var
+  // eslint-disable-next-line no-var -- expected globals
   var __DEV__: boolean | undefined;
 }
 

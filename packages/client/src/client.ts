@@ -1,4 +1,4 @@
-import { ServiceType } from '@bufbuild/protobuf';
+import type { ServiceType } from '@bufbuild/protobuf';
 import { createPromiseClient, PromiseClient, Transport } from '@connectrpc/connect';
 import { jsonOptions } from '@penumbra-zone/protobuf';
 import {
@@ -283,6 +283,7 @@ export class PenumbraClient {
   /** Assert an attached provider. */
   private assertAttached(): PenumbraClientAttachment {
     assertProviderRecord(this.attached?.origin);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify
     return this.attached!;
   }
 

@@ -11,7 +11,7 @@ import { sendSimulateTradeRequest } from '../helpers';
 import { fromBaseUnitAmount, isZero, multiplyAmountByNumber } from '@penumbra-zone/types/amount';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
-import { errorToast } from '@repo/ui/lib/toast/presets';
+import { errorToast } from '@penumbra-zone/ui/lib/toast/presets';
 import { ZQueryState, createZQuery } from '@penumbra-zone/zquery';
 import { AuctionInfo, getAuctionInfos } from '../../../fetchers/auction-infos';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
@@ -122,7 +122,7 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
         swap.dutchAuction.minOutput = '';
       } else {
         const minMinOutput = getSmallestPossibleAmountAboveZero(get().swap.assetOut);
-        const exponent = getDisplayDenomExponent.optional()(get().swap.assetOut) ?? 0;
+        const exponent = getDisplayDenomExponent.optional(get().swap.assetOut) ?? 0;
         const minOutputAsBaseUnit = Number(minOutput) * 10 ** exponent;
         const outputLimitAsDisplayUnit = (OUTPUT_LIMIT / 10 ** exponent).toString();
 
@@ -144,7 +144,7 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
         swap.dutchAuction.maxOutput = '';
       } else {
         const minMaxOutput = getSmallestPossibleAmountAboveZero(get().swap.assetOut);
-        const exponent = getDisplayDenomExponent.optional()(get().swap.assetOut) ?? 0;
+        const exponent = getDisplayDenomExponent.optional(get().swap.assetOut) ?? 0;
         const maxOutputAsBaseUnit = Number(maxOutput) * 10 ** exponent;
         const outputLimitAsDisplayUnit = (OUTPUT_LIMIT / 10 ** exponent).toString();
 

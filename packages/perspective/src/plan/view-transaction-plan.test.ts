@@ -82,7 +82,7 @@ describe('viewTransactionPlan()', () => {
             },
           },
           transactionParameters: {
-            //fee,
+            // fee,
             chainId,
             expiryHeight,
           },

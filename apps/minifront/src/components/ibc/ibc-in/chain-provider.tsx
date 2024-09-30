@@ -32,6 +32,7 @@ export const IbcChainProvider = ({ registry, children }: IbcProviderProps) => {
       wallets={wallets.extension}
       signerOptions={signerOptions}
       modalTheme={{ defaultTheme: 'light' }}
+      logLevel={'NONE'}
     >
       {children}
     </ChainProvider>

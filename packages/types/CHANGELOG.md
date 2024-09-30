@@ -1,5 +1,40 @@
 # @penumbra-zone/types
 
+## 24.0.0
+
+### Minor Changes
+
+- b6e32f8: Update ViewServerInterface
+
+### Patch Changes
+
+- Updated dependencies [b6e32f8]
+- Updated dependencies [b6e32f8]
+  - @penumbra-zone/protobuf@6.1.0
+  - @penumbra-zone/bech32m@8.0.0
+  - @penumbra-zone/getters@18.0.0
+
+## 23.0.0
+
+### Patch Changes
+
+- Updated dependencies [3a5c074]
+- Updated dependencies [3a5c074]
+  - @penumbra-zone/getters@17.0.0
+
+## 22.0.0
+
+### Major Changes
+
+- e01d5f8: fresh and existing wallets skip trial decryption
+
+## 21.0.0
+
+### Patch Changes
+
+- Updated dependencies [f8730e9]
+  - @penumbra-zone/getters@16.0.0
+
 ## 20.0.0
 
 ### Patch Changes

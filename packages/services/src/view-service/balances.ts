@@ -37,7 +37,7 @@ export const balances: Impl['balances'] = async function* (req, ctx) {
   const { indexedDb, querier } = await services.getWalletServices();
 
   // latestBlockHeight is needed to calculate the threshold of price relevance,
-  //it is better to use  rather than fullSyncHeight to avoid displaying old prices during the synchronization process
+  // it is better to use  rather than fullSyncHeight to avoid displaying old prices during the synchronization process
   const latestKnownBlockHeight =
     (await querier.tendermint.latestBlockHeight()) ?? (await indexedDb.getFullSyncHeight()) ?? 0n;
 
@@ -115,6 +115,7 @@ class BalancesAggregator {
 
     this.accounts[accountNumber][assetIdBase64] ??= await this.initializeBalResponse(n);
 
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify non-null assertion
     const valueView = this.accounts[accountNumber][assetIdBase64].balanceView!;
     this.aggregateAmount(valueView, n);
     await this.aggregateEquivalentValues(valueView, n);
@@ -156,7 +157,7 @@ class BalancesAggregator {
    * of the equivalent value and the `amount` of the `ValueView`.
    */
   private async aggregateEquivalentValues(valueView: ValueView, toAdd: SpendableNoteRecord) {
-    const assetId = getAssetIdFromRecord.optional()(toAdd);
+    const assetId = getAssetIdFromRecord.optional(toAdd);
     if (!assetId?.inner) {
       return;
     }
