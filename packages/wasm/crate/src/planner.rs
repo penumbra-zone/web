@@ -553,7 +553,7 @@ pub async fn plan_transaction_inner<Db: Database>(
         // Safety: check if the requested spend amount is equal to the accumulated note balance.
         if accumulated_note_amounts.to_proto() != value.amount.unwrap() {
             let error_message =
-                format!("Invalid transaction: The transaction was constructed improperly.");
+                "Invalid transaction: The transaction was constructed improperly.".to_string();
             return Err(WasmError::Anyhow(anyhow!(error_message)));
         }
 
@@ -571,7 +571,8 @@ pub async fn plan_transaction_inner<Db: Database>(
             if let ActionPlan::Spend(spend_plan) = action {
                 if spend_plan.note.asset_id() != fee_asset_id {
                     let error_message =
-                        format!("Invalid transaction: The transaction was constructed improperly.");
+                        "Invalid transaction: The transaction was constructed improperly."
+                            .to_string();
                     return Err(WasmError::Anyhow(anyhow!(error_message)));
                 }
             }
