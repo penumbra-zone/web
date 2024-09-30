@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 import { large } from '../utils/typography';
 import { ReactNode } from 'react';
 import { CharacterTransition } from '../CharacterTransition';

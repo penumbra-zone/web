@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Fragment, memo } from 'react';
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 
 /**
  * Since we're splitting individual characters and wrapping them in `<span />`s,

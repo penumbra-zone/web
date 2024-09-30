@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 import { small, strong } from '../utils/typography';
 import { ReactNode } from 'react';
 import { DisabledContext } from '../utils/DisabledContext';

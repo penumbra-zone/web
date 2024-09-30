@@ -66,6 +66,7 @@ import { isZero } from '@penumbra-zone/types/amount';
 import { IDB_VERSION } from './config.js';
 import { addLoHi } from '@penumbra-zone/types/lo-hi';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import { typeRegistry } from '@penumbra-zone/protobuf';
 
 const assertBytes = (v?: Uint8Array, expect?: number, name = 'value'): v is Uint8Array => {
   if (expect !== undefined && v?.length !== expect) {
@@ -365,7 +366,7 @@ export class IndexedDb implements IndexedDbInterface {
     const tx = new TransactionInfo({ id, height, transaction });
     await this.u.update({
       table: 'TRANSACTIONS',
-      value: tx.toJson() as Jsonified<TransactionInfo>,
+      value: tx.toJson({ typeRegistry }) as Jsonified<TransactionInfo>,
     });
   }
 
@@ -376,7 +377,7 @@ export class IndexedDb implements IndexedDbInterface {
     if (!jsonRecord) {
       return undefined;
     }
-    return TransactionInfo.fromJson(jsonRecord);
+    return TransactionInfo.fromJson(jsonRecord, { typeRegistry });
   }
 
   async getFmdParams(): Promise<FmdParameters | undefined> {

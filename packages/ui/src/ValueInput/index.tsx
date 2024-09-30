@@ -9,7 +9,7 @@ import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_
 import { getBalanceView } from '@penumbra-zone/getters/balances-response';
 import { fromValueView } from '@penumbra-zone/types/amount';
 import { Density } from '../Density';
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 
 const SelectorWrapper = styled.div`
   padding-top: ${props => props.theme.spacing(2)};

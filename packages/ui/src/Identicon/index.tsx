@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { generateGradient, generateSolidColor } from './generate';
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 
 /**
  * The view box size is separate from the passed-in `size` prop.

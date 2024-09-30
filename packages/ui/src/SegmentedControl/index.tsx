@@ -1,4 +1,4 @@
-import styled, { DefaultTheme } from 'styled-components';
+import { styled, DefaultTheme } from 'styled-components';
 import { button } from '../utils/typography';
 import { focusOutline, overlays, buttonBase } from '../utils/button';
 import { Density } from '../types/Density';

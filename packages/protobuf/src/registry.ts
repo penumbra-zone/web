@@ -1,4 +1,4 @@
-import { IMessageTypeRegistry, createRegistry } from '@bufbuild/protobuf';
+import { createRegistry, IMessageTypeRegistry } from '@bufbuild/protobuf';
 
 import * as ibcCore from './services/cosmos-ibc-core.js';
 import * as penumbraCnidarium from './services/penumbra-cnidarium.js';
@@ -6,8 +6,6 @@ import * as penumbraCore from './services/penumbra-core.js';
 import * as penumbraCustody from './services/penumbra-custody.js';
 import * as penumbraUtil from './services/penumbra-util.js';
 import * as penumbraView from './services/penumbra-view.js';
-
-import { MsgRecvPacket } from '../gen/ibc/core/channel/v1/tx_pb.js';
 import { ClientState, Header } from '../gen/ibc/lightclients/tendermint/v1/tendermint_pb.js';
 import { DutchAuction } from '../gen/penumbra/core/component/auction/v1/auction_pb.js';
 
@@ -37,9 +35,6 @@ export const typeRegistry: IMessageTypeRegistry = createRegistry(
   // gen/ibc/lightclients/tendermint/v1/tendermint_pb
   ClientState,
   Header,
-
-  // gen/ibc/core/channel/v1/tx_pb
-  MsgRecvPacket,
 
   // penumbra/core/component/auction/v1/auction_pb
   DutchAuction,

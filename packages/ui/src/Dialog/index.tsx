@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useContext } from 'react';
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 import * as RadixDialog from '@radix-ui/react-dialog';
 import { Text } from '../Text';
 import { X } from 'lucide-react';
@@ -40,11 +40,11 @@ const FullHeightWrapper = styled.div`
  * on the full-screen wrapper pass through to the underlying `<Overlay />`, so
  * that the dialog closes when the user clicks there.
  */
-const DialogContent = styled.div`
+const DialogContent = styled.div<{ $zIndex?: number }>`
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 9999;
+  ${props => props.$zIndex && `z-index: ${props.$zIndex};`}
 `;
 
 const DialogContentCard = styled(motion.div)`
@@ -237,15 +237,17 @@ export const Dialog = ({ children, onClose, isOpen }: DialogProps) => {
 
 export interface DialogEmptyContentProps {
   children?: ReactNode;
+  /** @deprecated this prop will be removed in the future */
+  zIndex?: number;
 }
 
-const EmptyContent = ({ children }: DialogEmptyContentProps) => {
+const EmptyContent = ({ children, zIndex }: DialogEmptyContentProps) => {
   return (
     <RadixDialog.Portal>
       <Overlay />
 
       <RadixDialog.Content>
-        <DialogContent>{children}</DialogContent>
+        <DialogContent $zIndex={zIndex}>{children}</DialogContent>
       </RadixDialog.Content>
     </RadixDialog.Portal>
   );
@@ -271,6 +273,8 @@ export interface DialogContentProps<IconOnlyButtonGroupProps extends boolean | u
   buttonGroupProps?: IconOnlyButtonGroupProps extends boolean
     ? ButtonGroupProps<IconOnlyButtonGroupProps>
     : undefined;
+  /** @deprecated this prop will be removed in the future */
+  zIndex?: number;
 }
 
 const Content = <IconOnlyButtonGroupProps extends boolean | undefined>({
@@ -279,11 +283,12 @@ const Content = <IconOnlyButtonGroupProps extends boolean | undefined>({
   title,
   buttonGroupProps,
   motion,
+  zIndex,
 }: DialogContentProps<IconOnlyButtonGroupProps>) => {
   const { showCloseButton } = useContext(DialogContext);
 
   return (
-    <EmptyContent>
+    <EmptyContent zIndex={zIndex}>
       <Display>
         <Grid container>
           <Grid mobile={0} tablet={2} desktop={3} xl={4} />

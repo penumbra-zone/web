@@ -5,7 +5,7 @@ import { ConditionalWrap } from '../src/ConditionalWrap';
 import { PenumbraUIProvider } from '../src/PenumbraUIProvider';
 import { Density } from '../src/Density';
 import { Tabs } from '../src/Tabs';
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 import '../styles/globals.css';
 
 const Column = styled.div`

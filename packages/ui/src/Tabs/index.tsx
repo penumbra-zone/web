@@ -1,4 +1,4 @@
-import styled, { css, DefaultTheme } from 'styled-components';
+import { styled, css, DefaultTheme } from 'styled-components';
 import { tab, tabSmall } from '../utils/typography';
 import { motion } from 'framer-motion';
 import { useId } from 'react';

@@ -1,4 +1,4 @@
-import styled, { DefaultTheme } from 'styled-components';
+import { styled, DefaultTheme } from 'styled-components';
 import { asTransientProps } from '../utils/asTransientProps';
 import { ReactNode } from 'react';
 import { body, technical, detail, detailTechnical } from '../utils/typography';

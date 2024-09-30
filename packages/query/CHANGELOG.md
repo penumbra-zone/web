@@ -1,5 +1,31 @@
 # @penumbra-zone/query
 
+## 32.0.0
+
+### Minor Changes
+
+- b6e32f8: Check for IbcRelays to add to txs
+
+### Patch Changes
+
+- Updated dependencies [b6e32f8]
+- Updated dependencies [b6e32f8]
+- Updated dependencies [b6e32f8]
+- Updated dependencies [b6e32f8]
+  - @penumbra-zone/protobuf@6.1.0
+  - @penumbra-zone/bech32m@8.0.0
+  - @penumbra-zone/wasm@29.0.0
+  - @penumbra-zone/types@24.0.0
+  - @penumbra-zone/getters@18.0.0
+  - @penumbra-zone/crypto-web@25.0.0
+
+## 31.0.1
+
+### Patch Changes
+
+- e343d22: [bug fix] Only process relevant transactions for NFTs
+- e343d22: Extract, refactor, and test IdentifyTransactions
+
 ## 31.0.0
 
 ### Patch Changes
