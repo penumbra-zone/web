@@ -633,7 +633,7 @@ async fn test_filter_zero_value_notes() {
     let fee_id = *STAKING_TOKEN_ASSET_ID;
 
     #[allow(deprecated)]
-    let req = TransactionPlannerRequest {
+    let invalid_request = TransactionPlannerRequest {
         expiry_height: 0,
         memo: None,
         source: None,
@@ -668,11 +668,16 @@ async fn test_filter_zero_value_notes() {
     };
     let full_viewing_key = FullViewingKey::from_str("penumbrafullviewingkey1mnm04x7yx5tyznswlp0sxs8nsxtgxr9p98dp0msuek8fzxuknuzawjpct8zdevcvm3tsph0wvsuw33x2q42e7sf29q904hwerma8xzgrxsgq2").unwrap();
 
-    let res = plan_transaction_inner(storage.clone(), req, full_viewing_key.clone(), fee_id)
-        .await
-        .unwrap();
+    let invalid_response = plan_transaction_inner(
+        storage.clone(),
+        invalid_request,
+        full_viewing_key.clone(),
+        fee_id,
+    )
+    .await
+    .unwrap();
 
-    assert_eq!(res.actions.len(), 3);
+    assert_eq!(invalid_response.actions.len(), 3);
 }
 
 #[wasm_bindgen_test]
@@ -688,7 +693,7 @@ async fn test_empty_note_set() {
     let fee_id = *STAKING_TOKEN_ASSET_ID;
 
     #[allow(deprecated)]
-    let req = TransactionPlannerRequest {
+    let invalid_request = TransactionPlannerRequest {
         expiry_height: 0,
         memo: None,
         source: None,
@@ -723,9 +728,95 @@ async fn test_empty_note_set() {
     };
     let full_viewing_key = FullViewingKey::from_str("penumbrafullviewingkey1mnm04x7yx5tyznswlp0sxs8nsxtgxr9p98dp0msuek8fzxuknuzawjpct8zdevcvm3tsph0wvsuw33x2q42e7sf29q904hwerma8xzgrxsgq2").unwrap();
 
-    let res = plan_transaction_inner(storage.clone(), req, full_viewing_key.clone(), fee_id).await;
+    let invalid_response = plan_transaction_inner(
+        storage.clone(),
+        invalid_request,
+        full_viewing_key.clone(),
+        fee_id,
+    )
+    .await;
 
-    match res {
+    match invalid_response {
+        Ok(_) => panic!(),
+        Err(e) => {
+            if let WasmError::Anyhow(err) = e {
+                let error_message = err.to_string();
+                assert!(error_message
+                    .contains("Invalid transaction: The transaction was constructed improperly."));
+            }
+        }
+    }
+}
+
+#[wasm_bindgen_test]
+async fn test_multiple_spend_requests() {
+    let mock_db = MockDb::new();
+    let tables = get_mock_tables();
+
+    setup_env_1(&mock_db, &tables).await;
+
+    let storage = Storage::new(mock_db.clone(), tables.clone()).unwrap();
+    let reciever_address = &Address::dummy(&mut OsRng);
+
+    let fee_id = *STAKING_TOKEN_ASSET_ID;
+
+    #[allow(deprecated)]
+    let invalid_request = TransactionPlannerRequest {
+        expiry_height: 0,
+        memo: None,
+        source: None,
+        outputs: vec![],
+        spends: vec![
+            Spend {
+                address: Some(reciever_address.into()),
+                value: Some(
+                    Value {
+                        amount: 1558828u64.into(),
+                        asset_id: fee_id,
+                    }
+                    .into(),
+                ),
+            },
+            Spend {
+                address: Some(reciever_address.into()),
+                value: Some(
+                    Value {
+                        amount: 1558828u64.into(),
+                        asset_id: fee_id,
+                    }
+                    .into(),
+                ),
+            },
+        ],
+        swaps: vec![],
+        swap_claims: vec![],
+        delegations: vec![],
+        undelegations: vec![],
+        undelegation_claims: vec![],
+        ibc_relay_actions: vec![],
+        ics20_withdrawals: vec![],
+        position_opens: vec![],
+        position_closes: vec![],
+        position_withdraws: vec![],
+        dutch_auction_schedule_actions: vec![],
+        dutch_auction_end_actions: vec![],
+        dutch_auction_withdraw_actions: vec![],
+        delegator_votes: vec![],
+        epoch_index: 0,
+        epoch: None,
+        fee_mode: None,
+    };
+    let full_viewing_key = FullViewingKey::from_str("penumbrafullviewingkey1mnm04x7yx5tyznswlp0sxs8nsxtgxr9p98dp0msuek8fzxuknuzawjpct8zdevcvm3tsph0wvsuw33x2q42e7sf29q904hwerma8xzgrxsgq2").unwrap();
+
+    let invalid_response = plan_transaction_inner(
+        storage.clone(),
+        invalid_request,
+        full_viewing_key.clone(),
+        fee_id,
+    )
+    .await;
+
+    match invalid_response {
         Ok(_) => panic!(),
         Err(e) => {
             if let WasmError::Anyhow(err) = e {
