@@ -1,5 +1,11 @@
 # @penumbra-zone/protobuf
 
+## 6.1.0
+
+### Minor Changes
+
+- b6e32f8: Add MsgUpdateClient to typeRegistry
+
 ## 6.0.0
 
 ### Major Changes

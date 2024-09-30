@@ -48,7 +48,7 @@ export const TxViewer = ({ txInfo }: { txInfo?: TransactionInfo }) => {
 
   // use React-Query to invoke custom hooks that call async translators.
   const { data: receiverView } = useQuery(
-    ['receiverView', txInfo, option],
+    ['receiverView', txInfo?.toJson({ typeRegistry }), option],
     () =>
       fetchReceiverView(
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify

@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { AccountSelector } from '.';
 import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { Text } from '../Text';
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 
 const u8 = (length: number) => Uint8Array.from({ length }, () => Math.floor(Math.random() * 256));
 

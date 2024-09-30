@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 
 /**
  * Utility component for wrapping other markup in a `flex-shrink: 0` container.

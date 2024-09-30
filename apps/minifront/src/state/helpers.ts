@@ -104,7 +104,8 @@ const build = async (
     status?: (AuthorizeAndBuildResponse | WitnessAndBuildResponse)['status'],
   ) => void,
 ) => {
-  for await (const { status } of buildFn(req)) {
+  // Setting timeout for 10mins given slower machines can take time to build
+  for await (const { status } of buildFn(req, { timeoutMs: 600_000 })) {
     onStatusUpdate(status);
 
     switch (status.case) {

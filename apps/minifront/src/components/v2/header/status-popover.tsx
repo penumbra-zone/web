@@ -1,5 +1,5 @@
 import { Blocks } from 'lucide-react';
-import { Popover } from '@penumbra-zone/ui/Popover';
+import { Popover, PopoverContext } from '@penumbra-zone/ui/Popover';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Density } from '@penumbra-zone/ui/Density';
 import { Pill } from '@penumbra-zone/ui/Pill';
@@ -30,6 +30,18 @@ export const StatusPopover = () => {
     return <Pill context='technical-caution'>Block Syncing</Pill>;
   }, [status]);
 
+  const popoverContext = useMemo<PopoverContext>(() => {
+    if (status?.isCatchingUp === undefined) {
+      return 'default';
+    } else if (status.error) {
+      return 'error';
+    } else if (status.percentSyncedNumber === 1) {
+      return 'success';
+    } else {
+      return 'caution';
+    }
+  }, [status]);
+
   return (
     <Popover>
       <Popover.Trigger>
@@ -38,7 +50,7 @@ export const StatusPopover = () => {
         </Button>
       </Popover.Trigger>
       {status?.isCatchingUp !== undefined && (
-        <Popover.Content align='end' side='bottom'>
+        <Popover.Content context={popoverContext} align='end' side='bottom'>
           <Density compact>
             <div className='flex flex-col gap-4'>
               <div className='flex flex-col gap-2'>

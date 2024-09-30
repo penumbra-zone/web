@@ -3,7 +3,7 @@ use std::collections::BTreeMap;
 use indexed_db_futures::IdbDatabase;
 use penumbra_asset::asset::{Id, Metadata};
 use penumbra_compact_block::{CompactBlock, StatePayload};
-use penumbra_keys::FullViewingKey;
+use penumbra_keys::{Address, FullViewingKey};
 use penumbra_proto::DomainType;
 use penumbra_sct::Nullifier;
 use penumbra_shielded_pool::note;
@@ -17,6 +17,7 @@ use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::JsValue;
 
 use crate::error::WasmResult;
+use crate::keys::is_controlled_inner;
 use crate::note_record::SpendableNoteRecord;
 use crate::storage::{init_idb_storage, Storage};
 use crate::swap_record::SwapRecord;
@@ -310,6 +311,15 @@ impl ViewServer {
 
         let root = self.sct.root();
         Ok(root.encode_to_vec())
+    }
+
+    /// Checks if address is controlled by view server full viewing key
+    #[wasm_bindgen]
+    pub fn is_controlled_address(&self, address: &[u8]) -> WasmResult<bool> {
+        utils::set_panic_hook();
+
+        let address: Address = Address::decode(address)?;
+        Ok(is_controlled_inner(&self.fvk, &address))
     }
 }
 

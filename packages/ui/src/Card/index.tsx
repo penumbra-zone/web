@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import styled, { WebTarget } from 'styled-components';
+import { styled, WebTarget } from 'styled-components';
 import { hexOpacity } from '../utils/hexOpacity';
 import { motion } from 'framer-motion';
 import { Title } from './Title';

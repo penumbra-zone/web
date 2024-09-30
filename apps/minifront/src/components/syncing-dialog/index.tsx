@@ -22,7 +22,7 @@ export const SyncingDialog = () => {
 
   return (
     <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)}>
-      <Dialog.Content title='Your client is syncing...'>
+      <Dialog.Content title='Your client is syncing...' zIndex={9999}>
         <SyncAnimation />
 
         <div className='text-center'>

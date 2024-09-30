@@ -1,4 +1,6 @@
-import styled, { keyframes } from 'styled-components';
+import { styled, keyframes, DefaultTheme } from 'styled-components';
+
+export type PopoverContext = 'default' | 'success' | 'caution' | 'error';
 
 export const scaleIn = keyframes`
   from {
@@ -11,7 +13,20 @@ export const scaleIn = keyframes`
   }
 `;
 
-export const PopoverContent = styled.div`
+const getPopoverBackground = (context: PopoverContext, theme: DefaultTheme) => {
+  if (context === 'success') {
+    return `radial-gradient(100% 100% at 0% 0%, rgba(83, 174, 168, 0.20) 0%, rgba(83, 174, 168, 0.02) 100%), ${theme.color.other.dialogBackground}`;
+  }
+  if (context === 'caution') {
+    return `radial-gradient(100% 100% at 0% 0%, rgba(153, 97, 15, 0.20) 0%, rgba(153, 97, 15, 0.02) 100%), ${theme.color.other.dialogBackground}`;
+  }
+  if (context === 'error') {
+    return `radial-gradient(100% 100% at 0% 0%, rgba(175, 38, 38, 0.20) 0%, rgba(175, 38, 38, 0.02) 100%), ${theme.color.other.dialogBackground}`;
+  }
+  return theme.color.other.dialogBackground;
+};
+
+export const PopoverContent = styled.div<{ $context: PopoverContext }>`
   display: flex;
   flex-direction: column;
 
@@ -19,7 +34,7 @@ export const PopoverContent = styled.div`
   max-width: 320px;
   padding: ${props => props.theme.spacing(3)};
 
-  background: ${props => props.theme.color.other.dialogBackground};
+  background: ${props => getPopoverBackground(props.$context, props.theme)};
   border: 1px solid ${props => props.theme.color.other.tonalStroke};
   border-radius: ${props => props.theme.borderRadius.sm};
   backdrop-filter: blur(${props => props.theme.blur.lg});

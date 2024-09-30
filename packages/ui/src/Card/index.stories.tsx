@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { Card } from '.';
 
 import storiesBg from './storiesBg.jpg';
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 import { Text } from '../Text';
 import { FormField } from '../FormField';
 import { TextInput } from '../TextInput';

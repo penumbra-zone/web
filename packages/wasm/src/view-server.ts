@@ -10,7 +10,8 @@ import {
 } from '@penumbra-zone/types/state-commitment-tree';
 import type { IdbConstants } from '@penumbra-zone/types/indexed-db';
 import type { ViewServerInterface } from '@penumbra-zone/types/servers';
-import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { Address, FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { isControlledAddress } from './address.js';
 
 declare global {
   // eslint-disable-next-line no-var -- TODO: explain
@@ -91,5 +92,9 @@ export class ViewServer implements ViewServerInterface {
       newNotes: (new_notes ?? []).map(n => SpendableNoteRecord.fromJson(n)),
       newSwaps: (new_swaps ?? []).map(s => SwapRecord.fromJson(s)),
     };
+  }
+
+  isControlledAddress(address: Address): boolean {
+    return isControlledAddress(this.fullViewingKey, address);
   }
 }

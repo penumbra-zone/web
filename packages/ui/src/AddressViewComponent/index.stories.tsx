@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
 import { AddressViewComponent } from '.';
-import styled from 'styled-components';
+import { styled } from 'styled-components';
 import { ADDRESS_VIEW_DECODED, ADDRESS_VIEW_OPAQUE } from '../utils/bufs';
 
 const MaxWidthWrapper = styled.div`
