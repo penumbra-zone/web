@@ -1,5 +1,5 @@
 import { uint8ArrayToBase64, base64ToUint8Array } from "../math/base64";
-import { Constants } from "../../constants/configConstants";
+import { Constants } from "../configConstants.ts";
 import {
   AssetId,
   AssetImage,
