@@ -1,15 +1,16 @@
 import { Button } from '@penumbra-zone/ui/Button';
-import { useConnect } from '@/utils/penumbra/useConnect.ts';
-import { ProviderPopover } from './provider-popover.tsx';
+import { ProviderPopover } from './provider-popover';
+import { connectionStore } from '@/state/connection';
+import { observer } from 'mobx-react-lite';
 
-export const Connection = () => {
-  const { connected, connect } = useConnect();
-
-  if (!connected) {
+export const Connection = observer(() => {
+  if (!connectionStore.connected) {
     return (
-      <Button actionType='accent' onClick={() => void connect()}>Connect</Button>
+      <Button actionType='accent' onClick={() => void connectionStore.connect()}>
+        Connect
+      </Button>
     );
   }
 
-  return <ProviderPopover />
-};
+  return <ProviderPopover />;
+});
