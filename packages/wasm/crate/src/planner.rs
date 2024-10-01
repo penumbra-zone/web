@@ -527,6 +527,7 @@ pub async fn plan_transaction_inner<Db: Database>(
 
     for tpr::Spend { value, address } in request.spends.clone() {
         let value = value.ok_or_else(|| anyhow!("missing value in spend"))?;
+        let amount = value.amount.ok_or_else(|| anyhow!("no amount in value"))?;
         let address = address.ok_or_else(|| anyhow!("missing address in spend"))?;
         let asset_id = value
             .asset_id
@@ -535,7 +536,8 @@ pub async fn plan_transaction_inner<Db: Database>(
         // Constraint: validate the transaction planner request is constructed with a single spend request.
         if request.spends.len() > 1 {
             let error_message =
-                "Invalid transaction: The transaction was constructed improperly.".to_string();
+                "Invalid transaction: only one Spend action allowed in planner request."
+                    .to_string();
             return Err(WasmError::Anyhow(anyhow!(error_message)));
         }
 
@@ -553,14 +555,12 @@ pub async fn plan_transaction_inner<Db: Database>(
         let accumulated_note_amounts = records
             .iter()
             .map(|record| record.note.value().amount)
-            .fold(penumbra_num::Amount::zero(), |acc, note_value| {
-                acc + note_value
-            });
+            .fold(Amount::zero(), |acc, note_value| acc + note_value);
 
         // Constraint: check if the requested spend amount is equal to the accumulated note balance.
-        if accumulated_note_amounts.to_proto() != value.amount.unwrap() {
+        if accumulated_note_amounts.to_proto() != amount {
             let error_message =
-                "Invalid transaction: The transaction was constructed improperly.".to_string();
+                "Invalid transaction: The requested spend amount does not match the available balance.".to_string();
             return Err(WasmError::Anyhow(anyhow!(error_message)));
         }
 
@@ -574,11 +574,13 @@ pub async fn plan_transaction_inner<Db: Database>(
         }
 
         // Constraint: validate that each spend action's asset ID matches the fee asset ID.
+        // It enforces that all the notes being sent to the recipient are of the same denomination
+        // and that fees are deducted from those notes.
         for action in actions_list.actions() {
             if let ActionPlan::Spend(spend_plan) = action {
                 if spend_plan.note.asset_id() != fee_asset_id {
                     let error_message =
-                        "Invalid transaction: The transaction was constructed improperly."
+                        "Invalid transaction: The asset ID for the spend action does not match the fee asset ID."
                             .to_string();
                     return Err(WasmError::Anyhow(anyhow!(error_message)));
                 }

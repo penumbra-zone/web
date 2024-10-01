@@ -34,7 +34,7 @@ wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /// Populate database with only native staking token.
-async fn setup_env_1(mock_db: &MockDb, tables: &Tables) {
+async fn setup_env_native_staking_only(mock_db: &MockDb, tables: &Tables) {
     seed_params_in_db(mock_db, tables).await;
 
     let sender_address = &Address::dummy(&mut OsRng);
@@ -96,7 +96,7 @@ async fn setup_env_1(mock_db: &MockDb, tables: &Tables) {
 }
 
 /// Populate database with only alternative fee token.
-async fn setup_env_2(mock_db: &MockDb, tables: &Tables) {
+async fn setup_env_alt_fee(mock_db: &MockDb, tables: &Tables) {
     seed_params_in_db(mock_db, tables).await;
 
     let sender_address = &Address::dummy(&mut OsRng);
@@ -165,7 +165,7 @@ async fn setup_env_2(mock_db: &MockDb, tables: &Tables) {
 }
 
 /// Populate database with native staking token and dummy zero-valued notes.
-async fn setup_env_3(mock_db: &MockDb, tables: &Tables) {
+async fn setup_env_zero_val_notes(mock_db: &MockDb, tables: &Tables) {
     seed_params_in_db(mock_db, tables).await;
 
     let sender_address = &Address::dummy(&mut OsRng);
@@ -271,7 +271,7 @@ async fn test_spend_amount_validation_with_native_token() {
     let mock_db = MockDb::new();
     let tables = get_mock_tables();
 
-    setup_env_1(&mock_db, &tables).await;
+    setup_env_native_staking_only(&mock_db, &tables).await;
 
     let storage = Storage::new(mock_db, tables).unwrap();
     let reciever_address = &Address::dummy(&mut OsRng);
@@ -383,7 +383,7 @@ async fn test_spend_amount_validation_with_alternative_token() {
     let mock_db = MockDb::new();
     let tables = get_mock_tables();
 
-    setup_env_2(&mock_db, &tables).await;
+    setup_env_alt_fee(&mock_db, &tables).await;
 
     let storage = Storage::new(mock_db.clone(), tables.clone()).unwrap();
     let reciever_address = &Address::dummy(&mut OsRng);
@@ -526,7 +526,7 @@ async fn test_fee_asset_id_validation() {
     let mock_db = MockDb::new();
     let tables = get_mock_tables();
 
-    setup_env_1(&mock_db, &tables).await;
+    setup_env_native_staking_only(&mock_db, &tables).await;
 
     let storage = Storage::new(mock_db.clone(), tables.clone()).unwrap();
     let reciever_address = &Address::dummy(&mut OsRng);
@@ -625,7 +625,7 @@ async fn test_filter_zero_value_notes() {
     let mock_db = MockDb::new();
     let tables = get_mock_tables();
 
-    setup_env_3(&mock_db, &tables).await;
+    setup_env_zero_val_notes(&mock_db, &tables).await;
 
     let storage = Storage::new(mock_db.clone(), tables.clone()).unwrap();
     let reciever_address = &Address::dummy(&mut OsRng);
@@ -753,7 +753,7 @@ async fn test_multiple_spend_requests() {
     let mock_db = MockDb::new();
     let tables = get_mock_tables();
 
-    setup_env_1(&mock_db, &tables).await;
+    setup_env_native_staking_only(&mock_db, &tables).await;
 
     let storage = Storage::new(mock_db.clone(), tables.clone()).unwrap();
     let reciever_address = &Address::dummy(&mut OsRng);
