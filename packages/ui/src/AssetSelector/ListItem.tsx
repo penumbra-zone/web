@@ -3,7 +3,7 @@ import { styled } from 'styled-components';
 import { motion } from 'framer-motion';
 import { AssetIcon } from '../AssetIcon';
 import { Text } from '../Text';
-import { getHash, isBalancesResponse, isMetadata } from './shared/helpers.ts';
+import { getHash, isBalancesResponse } from './shared/helpers.ts';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
 import {
   getAddressIndex,
