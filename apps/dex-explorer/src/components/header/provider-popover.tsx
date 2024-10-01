@@ -4,10 +4,11 @@ import Image from 'next/image';
 import { Popover } from '@penumbra-zone/ui/Popover';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
-import { useConnect } from '@/utils/penumbra/useConnect.ts';
+import { connectionStore } from '@/state/connection';
+import { observer } from 'mobx-react-lite';
 
-export const ProviderPopover = () => {
-  const { disconnect, manifest } = useConnect();
+export const ProviderPopover = observer(() => {
+  const { manifest } = connectionStore;
 
   const name = manifest?.['name'] as string;
   const version = manifest?.['version'] as string;
@@ -20,7 +21,7 @@ export const ProviderPopover = () => {
       <Image width={16} height={16} src={URL.createObjectURL(blob)} alt={name} className='size-4' />
     );
     return () => element;
-  }, [name, manifest]);
+  }, [manifest, name]);
 
   return (
     <Popover>
@@ -41,11 +42,11 @@ export const ProviderPopover = () => {
           <Text body>Loading provider manifest...</Text>
         )}
         <div className='mt-4'>
-          <Button icon={Link2Off} onClick={() => void disconnect()}>
+          <Button icon={Link2Off} onClick={() => void connectionStore.disconnect()}>
             Disconnect
           </Button>
         </div>
       </Popover.Content>
     </Popover>
   );
-};
+});
