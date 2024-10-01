@@ -5,11 +5,11 @@ import { AssetSelectorValue } from './types.ts';
 
 /** Type predicate to check if a value is a `Metadata`. */
 export const isMetadata = (value?: AssetSelectorValue): value is Metadata =>
-  value?.getType() === Metadata;
+  value?.getType().typeName === Metadata.typeName;
 
 /** Type predicate to check if a value is a `BalancesResponse`. */
 export const isBalancesResponse = (value?: AssetSelectorValue): value is BalancesResponse =>
-  value?.getType() === BalancesResponse;
+  value?.getType().typeName === BalancesResponse.typeName;
 
 /** returns a unique id of a specific Metadata or BalancesResponse */
 export const getHash = (value: AssetSelectorValue) => {

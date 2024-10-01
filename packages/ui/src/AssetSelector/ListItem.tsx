@@ -116,7 +116,7 @@ export const ListItem = ({ value, disabled, actionType = 'default' }: ListItemPr
   const hash = getHash(value);
   const isSelected = !!selectedValue && getHash(value) === getHash(selectedValue);
 
-  const metadata = isMetadata(value) ? value : getMetadataFromBalancesResponse.optional(value);
+  const metadata = isBalancesResponse(value) ? getMetadataFromBalancesResponse.optional(value) : value;
 
   const balance = isBalancesResponse(value)
     ? {
