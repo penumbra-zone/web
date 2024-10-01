@@ -78,7 +78,9 @@ const sortbyPriorityScore = (a: BalancesResponse, b: BalancesResponse) => {
   return Number(bPriority - aPriority);
 };
 
-export const groupAndSortBalances = (balances: BalancesResponse[]): [string, BalancesResponse[]][] => {
+export const groupAndSortBalances = (
+  balances: BalancesResponse[],
+): [string, BalancesResponse[]][] => {
   const grouped = balances.reduce(groupByAccount, {});
   return Object.entries(grouped)
     .sort(sortByAccountIndex)
