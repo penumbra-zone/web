@@ -1,9 +1,9 @@
 import { Density } from '@penumbra-zone/ui/Density';
-import { HeaderLogo } from './logo.tsx';
-// import { StatusPopover } from './status-popover.tsx';
-import { MobileNav } from './mobile-nav.tsx';
-import { DesktopNav } from './desktop-nav.tsx';
-import { Connection } from './connection.tsx';
+import { HeaderLogo } from './logo';
+import { StatusPopover } from './status-popover';
+import { MobileNav } from './mobile-nav';
+import { DesktopNav } from './desktop-nav';
+import { Connection } from './connection';
 
 export const Header = () => {
   return (
@@ -14,7 +14,7 @@ export const Header = () => {
 
       <Density compact>
         <div className='hidden gap-2 lg:flex'>
-          {/* <StatusPopover />*/}
+          <StatusPopover />
           <Connection />
         </div>
         <div className='block lg:hidden'>
