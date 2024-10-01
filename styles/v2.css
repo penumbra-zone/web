@@ -17,3 +17,8 @@ a {
 * {
   box-sizing: border-box;
 }
+
+body > section {
+  position: relative;
+  z-index: 0;
+}
