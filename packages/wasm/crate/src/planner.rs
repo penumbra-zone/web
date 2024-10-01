@@ -525,72 +525,6 @@ pub async fn plan_transaction_inner<Db: Database>(
         ));
     }
 
-    for tpr::Spend { value, address } in request.spends.clone() {
-        let value = value.ok_or_else(|| anyhow!("missing value in spend"))?;
-        let amount = value.amount.ok_or_else(|| anyhow!("no amount in value"))?;
-        let address = address.ok_or_else(|| anyhow!("missing address in spend"))?;
-        let asset_id = value
-            .asset_id
-            .ok_or_else(|| anyhow!("missing asset_id in spend"))?;
-
-        // Constraint: validate the transaction planner request is constructed with a single spend request.
-        if request.spends.len() > 1 {
-            let error_message =
-                "Invalid transaction: only one Spend action allowed in planner request."
-                    .to_string();
-            return Err(WasmError::Anyhow(anyhow!(error_message)));
-        }
-
-        // Find all the notes of this asset in the source account.
-        let records = storage
-            .get_notes(NotesRequest {
-                include_spent: false,
-                asset_id: Some(asset_id.clone()),
-                address_index: Some(source_address_index.into()),
-                amount_to_spend: None,
-            })
-            .await?;
-
-        // Accumlate the total available note balance for the asset id.
-        let accumulated_note_amounts = records
-            .iter()
-            .map(|record| record.note.value().amount)
-            .fold(Amount::zero(), |acc, note_value| acc + note_value);
-
-        // Constraint: check if the requested spend amount is equal to the accumulated note balance.
-        if accumulated_note_amounts.to_proto() != amount {
-            let error_message =
-                "Invalid transaction: The requested spend amount does not match the available balance.".to_string();
-            return Err(WasmError::Anyhow(anyhow!(error_message)));
-        }
-
-        for record in records.clone() {
-            // Filter out zero-valued notes from spendable note record (SNR) set.
-            if record.clone().note.amount() != 0u64.into() {
-                let spend: SpendPlan =
-                    SpendPlan::new(&mut OsRng, record.clone().note, record.clone().position);
-                actions_list.push(spend);
-            }
-        }
-
-        // Constraint: validate that each spend action's asset ID matches the fee asset ID.
-        // It enforces that all the notes being sent to the recipient are of the same denomination
-        // and that fees are deducted from those notes.
-        for action in actions_list.actions() {
-            if let ActionPlan::Spend(spend_plan) = action {
-                if spend_plan.note.asset_id() != fee_asset_id {
-                    let error_message =
-                        "Invalid transaction: The asset ID for the spend action does not match the fee asset ID."
-                            .to_string();
-                    return Err(WasmError::Anyhow(anyhow!(error_message)));
-                }
-            }
-        }
-
-        // Change address is overwritten to the recipient.
-        change_address = address.try_into()?;
-    }
-
     for tpr::DelegatorVote {
         proposal,
         vote,
@@ -645,6 +579,72 @@ pub async fn plan_transaction_inner<Db: Database>(
             );
             actions_list.push(ActionPlan::DelegatorVote(vote_plan));
         }
+    }
+
+    for tpr::Spend { value, address } in request.spends.clone() {
+        let value = value.ok_or_else(|| anyhow!("missing value in spend"))?;
+        let amount = value.amount.ok_or_else(|| anyhow!("no amount in value"))?;
+        let address = address.ok_or_else(|| anyhow!("missing address in spend"))?;
+        let asset_id = value
+            .asset_id
+            .ok_or_else(|| anyhow!("missing asset_id in spend"))?;
+
+        // Constraint: validate the transaction planner request is constructed with a single spend request.
+        if request.spends.len() > 1 && actions_list.actions().len() == 0 {
+            let error_message =
+                "Invalid transaction: only one Spend action allowed in planner request."
+                    .to_string();
+            return Err(WasmError::Anyhow(anyhow!(error_message)));
+        }
+
+        // Find all the notes of this asset in the source account.
+        let records = storage
+            .get_notes(NotesRequest {
+                include_spent: false,
+                asset_id: Some(asset_id.clone()),
+                address_index: Some(source_address_index.into()),
+                amount_to_spend: None,
+            })
+            .await?;
+
+        // Accumlate the total available note balance for the asset id.
+        let accumulated_note_amounts = records
+            .iter()
+            .map(|record| record.note.value().amount)
+            .fold(Amount::zero(), |acc, note_value| acc + note_value);
+
+        // Constraint: check if the requested spend amount is equal to the accumulated note balance.
+        if accumulated_note_amounts.to_proto() != amount {
+            let error_message =
+                "Invalid transaction: The requested spend amount does not match the available balance.".to_string();
+            return Err(WasmError::Anyhow(anyhow!(error_message)));
+        }
+
+        for record in records.clone() {
+            // Filter out zero-valued notes from spendable note record (SNR) set.
+            if record.clone().note.amount() != 0u64.into() {
+                let spend: SpendPlan =
+                    SpendPlan::new(&mut OsRng, record.clone().note, record.clone().position);
+                actions_list.push(spend);
+            }
+        }
+
+        // Constraint: validate that each spend action's asset ID matches the fee asset ID.
+        // It enforces that all the notes being sent to the recipient are of the same denomination
+        // and that fees are deducted from those notes.
+        for action in actions_list.actions() {
+            if let ActionPlan::Spend(spend_plan) = action {
+                if spend_plan.note.asset_id() != fee_asset_id {
+                    let error_message =
+                        "Invalid transaction: The asset ID for the spend action does not match the fee asset ID."
+                            .to_string();
+                    return Err(WasmError::Anyhow(anyhow!(error_message)));
+                }
+            }
+        }
+
+        // Change address is overwritten to the recipient.
+        change_address = address.try_into()?;
     }
 
     // Phase 2: balance the transaction with information from the view service.
