@@ -138,14 +138,16 @@ export class BlockProcessor implements BlockProcessorInterface {
    * Sync local state to present. This method will
    * - identify current synced height (or `-1n` to represent a 'pre-genesis' state)
    * - query remote rpc for the chain's latest block height
-   * - pre-genesis, initialize validator info
+   * - pre-genesis, initialize 0th epoch and validator info
    * - pre-genesis, process a local genesis block if provided
    * - query remote rpc to begin streaming at the next block
    * - iterate
    */
   private async syncAndStore() {
+    const PRE_GENESIS_SYNC_HEIGHT = -1n;
+
     // start at next block, or genesis if height is undefined
-    let currentHeight = (await this.indexedDb.getFullSyncHeight()) ?? -1n;
+    let currentHeight = (await this.indexedDb.getFullSyncHeight()) ?? PRE_GENESIS_SYNC_HEIGHT;
 
     // this is the first network query of the block processor. use backoff to
     // delay until network is available
@@ -160,13 +162,18 @@ export class BlockProcessor implements BlockProcessorInterface {
       { retry: () => true },
     );
 
-    // special case genesis sync
-    if (currentHeight === -1n) {
+    // handle the special case where no syncing has been done yet, and
+    // prepares for syncing and checks for a bundled genesis block,
+    // which can save time by avoiding an initial network request.
+    if (currentHeight === PRE_GENESIS_SYNC_HEIGHT) {
+      // create first epoch
+      await this.indexedDb.addEpoch(0n);
+
       // initialize validator info at genesis
       // TODO: use batch endpoint https://github.com/penumbra-zone/penumbra/issues/4688
-      void this.updateValidatorInfos(currentHeight + 1n);
+      void this.updateValidatorInfos(0n);
 
-      // begin the chain with local genesis block if provided
+      // conditional only runs if there is a bundled genesis block provided for the chain
       if (this.genesisBlock?.height === currentHeight + 1n) {
         currentHeight = this.genesisBlock.height;
 
@@ -373,8 +380,8 @@ export class BlockProcessor implements BlockProcessorInterface {
       );
     }
 
-    const isLastBlockOfEpoch = !!compactBlock.epochRoot;
-    if (isLastBlockOfEpoch) {
+    // The presence of `epochRoot` indicates that this is the final block of the current epoch.
+    if (compactBlock.epochRoot) {
       await this.handleEpochTransition(compactBlock.height, latestKnownBlockHeight);
     }
 
