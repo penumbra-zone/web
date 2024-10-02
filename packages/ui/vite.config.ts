@@ -76,7 +76,7 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@repo/tailwind-config': path.resolve(__dirname, 'dist', 'tailwindconfig.js'),
+      '@repo/tailwind-config': path.resolve(__dirname, '../', 'tailwind-config'),
     },
   },
   build: {
