@@ -6,6 +6,7 @@ use std::convert::{TryFrom, TryInto};
 
 use serde::{Deserialize, Serialize};
 
+// We sadly have to vendor this code as penumbra-view package cannot be compiled with wasm-pack
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(try_from = "pb::SwapRecord", into = "pb::SwapRecord")]
 pub struct SwapRecord {
