@@ -59,6 +59,15 @@ pub struct Storage<Db: Database> {
     tables: Tables,
 }
 
+impl<Db: Database + Clone> Clone for Storage<Db> {
+    fn clone(&self) -> Self {
+        Self {
+            db: self.db.clone(),
+            tables: self.tables.clone(),
+        }
+    }
+}
+
 impl<Db: Database> Storage<Db> {
     pub fn new(db: Db, tables: Tables) -> WasmResult<Self> {
         Ok(Storage { db, tables })
