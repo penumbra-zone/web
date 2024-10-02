@@ -1,5 +1,11 @@
 # @penumbra-zone/wasm
 
+## 29.1.0
+
+### Minor Changes
+
+- 735e22b: add support for spend transaction planner requests in wasm
+
 ## 29.0.0
 
 ### Minor Changes
