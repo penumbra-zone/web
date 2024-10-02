@@ -3,6 +3,7 @@ use penumbra_asset::{Value, STAKING_TOKEN_ASSET_ID};
 use penumbra_fee::GasPrices;
 use penumbra_keys::Address;
 use penumbra_keys::FullViewingKey;
+use penumbra_proto::view::v1::transaction_planner_request::Output;
 use penumbra_proto::view::v1::transaction_planner_request::Spend;
 use penumbra_proto::view::v1::TransactionPlannerRequest;
 use penumbra_sct::{CommitmentSource, Nullifier};
@@ -260,78 +261,76 @@ async fn setup_env_zero_val_notes(mock_db: &MockDb, tables: &Tables) {
 ///                                                                                                                  ///
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// #[wasm_bindgen_test]
-// async fn test_multiple_action_plans_in_transaction_request() {
-//     let mock_db = MockDb::new();
-//     let tables = get_mock_tables();
+#[wasm_bindgen_test]
+async fn test_multiple_action_plans_in_transaction_request() {
+    let mock_db = MockDb::new();
+    let tables = get_mock_tables();
 
-//     setup_env_native_staking_only(&mock_db, &tables).await;
+    setup_env_native_staking_only(&mock_db, &tables).await;
 
-//     let storage = Storage::new(mock_db.clone(), tables.clone()).unwrap();
-//     let reciever_address = &Address::dummy(&mut OsRng);
+    let storage = Storage::new(mock_db.clone(), tables.clone()).unwrap();
+    let reciever_address = &Address::dummy(&mut OsRng);
 
-//     let fee_id = *STAKING_TOKEN_ASSET_ID;
+    let fee_id = *STAKING_TOKEN_ASSET_ID;
 
-//     #[allow(deprecated)]
-//     let invalid_request = TransactionPlannerRequest {
-//         expiry_height: 0,
-//         memo: None,
-//         source: None,
-//         outputs: vec![
-//             Output {
-//                 address: Some(reciever_address.into()),
-//                 value: Some(
-//                     Value {
-//                         amount: 1558828u64.into(),
-//                         asset_id: fee_id,
-//                     }
-//                     .into(),
-//                 ),
-//             }
-//         ],
-//         spends: vec![
-//             Spend {
-//                 address: Some(reciever_address.into()),
-//                 value: Some(
-//                     Value {
-//                         amount: 1558828u64.into(),
-//                         asset_id: fee_id,
-//                     }
-//                     .into(),
-//                 ),
-//             }
-//         ],
-//         swaps: vec![],
-//         swap_claims: vec![],
-//         delegations: vec![],
-//         undelegations: vec![],
-//         undelegation_claims: vec![],
-//         ibc_relay_actions: vec![],
-//         ics20_withdrawals: vec![],
-//         position_opens: vec![],
-//         position_closes: vec![],
-//         position_withdraws: vec![],
-//         dutch_auction_schedule_actions: vec![],
-//         dutch_auction_end_actions: vec![],
-//         dutch_auction_withdraw_actions: vec![],
-//         delegator_votes: vec![],
-//         epoch_index: 0,
-//         epoch: None,
-//         fee_mode: None,
-//     };
-//     let full_viewing_key = FullViewingKey::from_str("penumbrafullviewingkey1mnm04x7yx5tyznswlp0sxs8nsxtgxr9p98dp0msuek8fzxuknuzawjpct8zdevcvm3tsph0wvsuw33x2q42e7sf29q904hwerma8xzgrxsgq2").unwrap();
+    #[allow(deprecated)]
+    let invalid_request = TransactionPlannerRequest {
+        expiry_height: 0,
+        memo: None,
+        source: None,
+        outputs: vec![Output {
+            address: Some(reciever_address.into()),
+            value: Some(
+                Value {
+                    amount: 1558828u64.into(),
+                    asset_id: fee_id,
+                }
+                .into(),
+            ),
+        }],
+        spends: vec![Spend {
+            address: Some(reciever_address.into()),
+            value: Some(
+                Value {
+                    amount: 1558828u64.into(),
+                    asset_id: fee_id,
+                }
+                .into(),
+            ),
+        }],
+        swaps: vec![],
+        swap_claims: vec![],
+        delegations: vec![],
+        undelegations: vec![],
+        undelegation_claims: vec![],
+        ibc_relay_actions: vec![],
+        ics20_withdrawals: vec![],
+        position_opens: vec![],
+        position_closes: vec![],
+        position_withdraws: vec![],
+        dutch_auction_schedule_actions: vec![],
+        dutch_auction_end_actions: vec![],
+        dutch_auction_withdraw_actions: vec![],
+        delegator_votes: vec![],
+        epoch_index: 0,
+        epoch: None,
+        fee_mode: None,
+    };
+    let full_viewing_key = FullViewingKey::from_str("penumbrafullviewingkey1mnm04x7yx5tyznswlp0sxs8nsxtgxr9p98dp0msuek8fzxuknuzawjpct8zdevcvm3tsph0wvsuw33x2q42e7sf29q904hwerma8xzgrxsgq2").unwrap();
 
-//     let invalid_response = plan_transaction_inner(
-//         storage.clone(),
-//         invalid_request,
-//         full_viewing_key.clone(),
-//         fee_id,
-//     )
-//     .await;
+    let invalid_response = plan_transaction_inner(
+        storage.clone(),
+        invalid_request,
+        full_viewing_key.clone(),
+        fee_id,
+    )
+    .await;
 
-//     let error_message = invalid_response.unwrap_err().to_string();
-//     assert!(error_message.contains("Invalid transaction: Spend action must be the only action in the planner request."));
-// }
+    let error_message = invalid_response.unwrap_err().to_string();
+    assert!(error_message.contains(
+        "Invalid transaction: Spend action must be the only action in the planner request."
+    ));
+}
 
 /////////////////////////////////////////////// CONSTRAINT 2: MULTIPLE SPEND REQUESTS //////////////////////////////////
 ///                                                                                                                  ///
@@ -340,77 +339,78 @@ async fn setup_env_zero_val_notes(mock_db: &MockDb, tables: &Tables) {
 ///                                                                                                                  ///
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// #[wasm_bindgen_test]
-// async fn test_multiple_spend_requests() {
-//     let mock_db = MockDb::new();
-//     let tables = get_mock_tables();
+#[wasm_bindgen_test]
+async fn test_multiple_spend_requests() {
+    let mock_db = MockDb::new();
+    let tables = get_mock_tables();
 
-//     setup_env_native_staking_only(&mock_db, &tables).await;
+    setup_env_native_staking_only(&mock_db, &tables).await;
 
-//     let storage = Storage::new(mock_db.clone(), tables.clone()).unwrap();
-//     let reciever_address = &Address::dummy(&mut OsRng);
+    let storage = Storage::new(mock_db.clone(), tables.clone()).unwrap();
+    let reciever_address = &Address::dummy(&mut OsRng);
 
-//     let fee_id = *STAKING_TOKEN_ASSET_ID;
+    let fee_id = *STAKING_TOKEN_ASSET_ID;
 
-//     #[allow(deprecated)]
-//     let invalid_request = TransactionPlannerRequest {
-//         expiry_height: 0,
-//         memo: None,
-//         source: None,
-//         outputs: vec![],
-//         spends: vec![
-//             Spend {
-//                 address: Some(reciever_address.into()),
-//                 value: Some(
-//                     Value {
-//                         amount: 1558828u64.into(),
-//                         asset_id: fee_id,
-//                     }
-//                     .into(),
-//                 ),
-//             },
-//             Spend {
-//                 address: Some(reciever_address.into()),
-//                 value: Some(
-//                     Value {
-//                         amount: 1558828u64.into(),
-//                         asset_id: fee_id,
-//                     }
-//                     .into(),
-//                 ),
-//             },
-//         ],
-//         swaps: vec![],
-//         swap_claims: vec![],
-//         delegations: vec![],
-//         undelegations: vec![],
-//         undelegation_claims: vec![],
-//         ibc_relay_actions: vec![],
-//         ics20_withdrawals: vec![],
-//         position_opens: vec![],
-//         position_closes: vec![],
-//         position_withdraws: vec![],
-//         dutch_auction_schedule_actions: vec![],
-//         dutch_auction_end_actions: vec![],
-//         dutch_auction_withdraw_actions: vec![],
-//         delegator_votes: vec![],
-//         epoch_index: 0,
-//         epoch: None,
-//         fee_mode: None,
-//     };
-//     let full_viewing_key = FullViewingKey::from_str("penumbrafullviewingkey1mnm04x7yx5tyznswlp0sxs8nsxtgxr9p98dp0msuek8fzxuknuzawjpct8zdevcvm3tsph0wvsuw33x2q42e7sf29q904hwerma8xzgrxsgq2").unwrap();
+    #[allow(deprecated)]
+    let invalid_request = TransactionPlannerRequest {
+        expiry_height: 0,
+        memo: None,
+        source: None,
+        outputs: vec![],
+        spends: vec![
+            Spend {
+                address: Some(reciever_address.into()),
+                value: Some(
+                    Value {
+                        amount: 1558828u64.into(),
+                        asset_id: fee_id,
+                    }
+                    .into(),
+                ),
+            },
+            Spend {
+                address: Some(reciever_address.into()),
+                value: Some(
+                    Value {
+                        amount: 1558828u64.into(),
+                        asset_id: fee_id,
+                    }
+                    .into(),
+                ),
+            },
+        ],
+        swaps: vec![],
+        swap_claims: vec![],
+        delegations: vec![],
+        undelegations: vec![],
+        undelegation_claims: vec![],
+        ibc_relay_actions: vec![],
+        ics20_withdrawals: vec![],
+        position_opens: vec![],
+        position_closes: vec![],
+        position_withdraws: vec![],
+        dutch_auction_schedule_actions: vec![],
+        dutch_auction_end_actions: vec![],
+        dutch_auction_withdraw_actions: vec![],
+        delegator_votes: vec![],
+        epoch_index: 0,
+        epoch: None,
+        fee_mode: None,
+    };
+    let full_viewing_key = FullViewingKey::from_str("penumbrafullviewingkey1mnm04x7yx5tyznswlp0sxs8nsxtgxr9p98dp0msuek8fzxuknuzawjpct8zdevcvm3tsph0wvsuw33x2q42e7sf29q904hwerma8xzgrxsgq2").unwrap();
 
-//     let invalid_response = plan_transaction_inner(
-//         storage.clone(),
-//         invalid_request,
-//         full_viewing_key.clone(),
-//         fee_id,
-//     )
-//     .await;
+    let invalid_response = plan_transaction_inner(
+        storage.clone(),
+        invalid_request,
+        full_viewing_key.clone(),
+        fee_id,
+    )
+    .await;
 
-//     let error_message = invalid_response.unwrap_err().to_string();
-//     assert!(error_message.contains("Invalid transaction: only one Spend action allowed in planner request."));
-// }
+    let error_message = invalid_response.unwrap_err().to_string();
+    assert!(error_message
+        .contains("Invalid transaction: only one Spend action allowed in planner request."));
+}
 
 /////////////////////////////////////////////// CONSTRAINT 3: SPEND AMOUNT VALIDATION //////////////////////////////////
 ///                                                                                                                  ///
