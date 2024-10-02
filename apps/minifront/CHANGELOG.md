@@ -1,5 +1,15 @@
 # minifront
 
+## 6.22.3
+
+### Patch Changes
+
+- 4295109: - Add a temporary zIndex prop to the Dialog component. It is only needed for minifront v1 and must be removed when we stop supporting the v1.
+  - Improve the styles of the v2 sync bar and popover
+- Updated dependencies [4295109]
+  - @penumbra-zone/ui@10.0.1
+  - @penumbra-zone/perspective@32.0.0
+
 ## 6.22.2
 
 ### Patch Changes

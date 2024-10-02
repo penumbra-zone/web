@@ -1,5 +1,16 @@
 # @penumbra-zone/query
 
+## 33.0.0
+
+### Minor Changes
+
+- 487e26d: perform idb genesis in the block processor
+
+### Patch Changes
+
+- Updated dependencies [735e22b]
+  - @penumbra-zone/wasm@29.1.0
+
 ## 32.0.0
 
 ### Minor Changes
