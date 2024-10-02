@@ -589,8 +589,16 @@ pub async fn plan_transaction_inner<Db: Database>(
             .asset_id
             .ok_or_else(|| anyhow!("missing asset_id in spend"))?;
 
+        // Constraint: validates the Spend transaction planner request is constructed in isolation.
+        if !actions_list.actions().is_empty() {
+            let error_message =
+                "Invalid transaction: Spend action must be the only action in the planner request."
+                    .to_string();
+            return Err(WasmError::Anyhow(anyhow!(error_message)));
+        }
+
         // Constraint: validate the transaction planner request is constructed with a single spend request.
-        if request.spends.len() > 1 && actions_list.actions().len() == 0 {
+        if request.spends.len() > 1 {
             let error_message =
                 "Invalid transaction: only one Spend action allowed in planner request."
                     .to_string();
@@ -613,7 +621,7 @@ pub async fn plan_transaction_inner<Db: Database>(
             .map(|record| record.note.value().amount)
             .fold(Amount::zero(), |acc, note_value| acc + note_value);
 
-        // Constraint: check if the requested spend amount is equal to the accumulated note balance.
+        // Constraint: validate if the requested spend amount is not equal to the accumulated note balance.
         if accumulated_note_amounts.to_proto() != amount {
             let error_message =
                 "Invalid transaction: The requested spend amount does not match the available balance.".to_string();
