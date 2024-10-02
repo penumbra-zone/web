@@ -42,6 +42,10 @@
         "types": "./dist/src/tailwindConfig.d.ts",
         "default": "./dist/src/tailwindConfig.js"
       },
+      "./components/*": {
+        "types": "./dist/components/ui/*.d.ts",
+        "default": "./dist/components/ui/*.js"
+      },
       "./*": {
         "types": "./dist/src/*/index.d.ts",
         "default": "./dist/src/*/index.js"

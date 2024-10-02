@@ -3,6 +3,7 @@ import { resolve, join } from 'path';
 import { readdirSync, existsSync } from 'fs';
 import dts from 'vite-plugin-dts';
 import { exec } from 'child_process';
+import * as path from 'node:path';
 
 /**
  * Returns an object with keys as resulting component build paths and values as
@@ -25,10 +26,36 @@ const getAllUIComponents = (): Record<string, string> => {
   );
 };
 
+const getDeprecatedUIComponents = (): Record<string, string> => {
+  const source = resolve(__dirname, 'components/ui');
+  return getRecursiveTsxFiles(source, 'components/ui');
+};
+
+const getRecursiveTsxFiles = (dir: string, baseDir: string): Record<string, string> => {
+  const files = readdirSync(dir, { withFileTypes: true });
+  return files.reduce(
+    (accum, file) => {
+      const fullPath = join(dir, file.name);
+      const relativePath = path.relative(resolve(__dirname, baseDir), fullPath);
+      if (file.isDirectory()) {
+        return { ...accum, ...getRecursiveTsxFiles(fullPath, baseDir) };
+      } else if (file.isFile() && file.name.endsWith('.tsx')) {
+        const key = `${baseDir}/${relativePath.replace(/\.tsx$/, '')}`;
+        accum[key] = fullPath;
+      }
+      return accum;
+    },
+    {} as Record<string, string>,
+  );
+};
+
 /** Extends the `getAllUIComponents` function to add support for other useful files */
 const getAllEntries = (): Record<string, string> => {
   return {
+    tailwind: join(__dirname, 'styles', 'globals.css'),
+    tailwindconfig: resolve('../tailwind-config'),
     'src/tailwindConfig': join(__dirname, 'src', 'tailwindConfig.ts'),
+    ...getDeprecatedUIComponents(),
     ...getAllUIComponents(),
   };
 };
@@ -48,7 +75,13 @@ export default defineConfig({
       },
     },
   ],
+  resolve: {
+    alias: {
+      '@repo/tailwind-config': path.resolve(__dirname, 'dist', 'tailwindconfig.js'),
+    },
+  },
   build: {
+    minify: false,
     emptyOutDir: true,
     lib: {
       entry: getAllEntries(),
@@ -64,6 +97,7 @@ export default defineConfig({
         'framer-motion',
         'styled-components',
         'lucide-react',
+        'react-router-dom',
       ],
     },
   },
