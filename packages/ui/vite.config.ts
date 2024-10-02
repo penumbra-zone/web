@@ -52,7 +52,6 @@ const getRecursiveTsxFiles = (dir: string, baseDir: string): Record<string, stri
 /** Extends the `getAllUIComponents` function to add support for other useful files */
 const getAllEntries = (): Record<string, string> => {
   return {
-    tailwind: join(__dirname, 'styles', 'globals.css'),
     tailwindconfig: resolve('../tailwind-config'),
     'src/tailwindConfig': join(__dirname, 'src', 'tailwindConfig.ts'),
     ...getDeprecatedUIComponents(),
@@ -81,7 +80,6 @@ export default defineConfig({
     },
   },
   build: {
-    minify: false,
     emptyOutDir: true,
     lib: {
       entry: getAllEntries(),
