@@ -1,4 +1,5 @@
 import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import {
   getAmount,
   getMetadataFromBalancesResponse,
@@ -21,7 +22,11 @@ const nonSwappableAssetPatterns = [
   assetPatterns.unbondingToken,
 ];
 
-const isUnswappable = (balance: BalancesResponse): boolean => {
+const isSwappableMetadata = (metadata: Metadata): boolean => {
+  return !nonSwappableAssetPatterns.some(pattern => pattern.matches(getDisplay(metadata)));
+};
+
+const isUnswappableBalance = (balance: BalancesResponse): boolean => {
   const metadata = getMetadataFromBalancesResponse.optional(balance);
   if (!metadata) {
     return true;
@@ -39,7 +44,7 @@ const groupByAccount = (
 ): Record<number, BalancesResponse[]> => {
   const index = getAddressIndex.optional(curr)?.account;
 
-  if (index === undefined || isUnknownBalance(curr) || isUnswappable(curr)) {
+  if (index === undefined || isUnknownBalance(curr) || isUnswappableBalance(curr)) {
     return acc;
   }
 
@@ -73,9 +78,15 @@ const sortbyPriorityScore = (a: BalancesResponse, b: BalancesResponse) => {
   return Number(bPriority - aPriority);
 };
 
-export const groupAndSort = (balances: BalancesResponse[]): [string, BalancesResponse[]][] => {
+export const groupAndSortBalances = (
+  balances: BalancesResponse[],
+): [string, BalancesResponse[]][] => {
   const grouped = balances.reduce(groupByAccount, {});
   return Object.entries(grouped)
     .sort(sortByAccountIndex)
     .map(([index, balances]) => [index, balances.sort(sortbyPriorityScore)]);
+};
+
+export const filterAssets = (assets: Metadata[]): Metadata[] => {
+  return assets.filter(isSwappableMetadata);
 };

@@ -9,7 +9,7 @@ import { AssetSelectorBaseProps, AssetSelectorValue } from './shared/types.ts';
 import { AssetSelectorCustom, AssetSelectorCustomProps } from './Custom.tsx';
 import { ListItem, ListItemProps } from './ListItem.tsx';
 import { Text } from '../Text';
-import { groupAndSort } from './shared/groupAndSort.ts';
+import { filterAssets, groupAndSortBalances } from './shared/groupAndSort.ts';
 
 const ListItemGroup = styled.div`
   display: flex;
@@ -105,8 +105,8 @@ export const AssetSelector = ({
 
   const { filteredAssets, filteredBalances } = useMemo(
     () => ({
-      filteredAssets: assets.filter(filterMetadataOrBalancesResponseByText(search)),
-      filteredBalances: groupAndSort(
+      filteredAssets: filterAssets(assets).filter(filterMetadataOrBalancesResponseByText(search)),
+      filteredBalances: groupAndSortBalances(
         balances.filter(filterMetadataOrBalancesResponseByText(search)),
       ),
     }),
@@ -157,6 +157,6 @@ export const AssetSelector = ({
 AssetSelector.Custom = AssetSelectorCustom;
 AssetSelector.ListItem = ListItem;
 
-export { isBalancesResponse, isMetadata };
+export { isBalancesResponse, isMetadata, groupAndSortBalances, filterAssets };
 
 export type { AssetSelectorValue, AssetSelectorCustomProps, ListItemProps };

@@ -3,7 +3,7 @@ import { styled } from 'styled-components';
 import { motion } from 'framer-motion';
 import { AssetIcon } from '../AssetIcon';
 import { Text } from '../Text';
-import { getHash, isBalancesResponse, isMetadata } from './shared/helpers.ts';
+import { getHash, isBalancesResponse } from './shared/helpers.ts';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
 import {
   getAddressIndex,
@@ -116,7 +116,9 @@ export const ListItem = ({ value, disabled, actionType = 'default' }: ListItemPr
   const hash = getHash(value);
   const isSelected = !!selectedValue && getHash(value) === getHash(selectedValue);
 
-  const metadata = isMetadata(value) ? value : getMetadataFromBalancesResponse.optional(value);
+  const metadata = isBalancesResponse(value)
+    ? getMetadataFromBalancesResponse.optional(value)
+    : value;
 
   const balance = isBalancesResponse(value)
     ? {
