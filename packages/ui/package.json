@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/ui",
-  "version": "10.0.1",
+  "version": "10.0.2",
   "license": "(MIT OR Apache-2.0)",
   "description": "UI components for Penumbra",
   "type": "module",
@@ -41,6 +41,10 @@
       "./tailwind": {
         "types": "./dist/src/tailwindConfig.d.ts",
         "default": "./dist/src/tailwindConfig.js"
+      },
+      "./components/*": {
+        "types": "./dist/components/ui/*.d.ts",
+        "default": "./dist/components/ui/*.js"
       },
       "./*": {
         "types": "./dist/src/*/index.d.ts",
