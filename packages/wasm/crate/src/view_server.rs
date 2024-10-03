@@ -1,7 +1,6 @@
 use std::collections::BTreeMap;
 
 use indexed_db_futures::IdbDatabase;
-use penumbra_asset::asset::{Id, Metadata};
 use penumbra_compact_block::{CompactBlock, StatePayload};
 use penumbra_keys::{Address, FullViewingKey};
 use penumbra_proto::DomainType;
@@ -58,11 +57,9 @@ impl ScanBlockResult {
 #[wasm_bindgen]
 pub struct ViewServer {
     latest_height: u64,
-    epoch_duration: u64,
     fvk: FullViewingKey,
     notes: BTreeMap<note::StateCommitment, SpendableNoteRecord>,
     swaps: BTreeMap<tct::StateCommitment, SwapRecord>,
-    denoms: BTreeMap<Id, Metadata>,
     sct: Tree,
     storage: Storage<IdbDatabase>,
     last_position: Option<StoredPosition>,
@@ -82,7 +79,6 @@ impl ViewServer {
     #[wasm_bindgen]
     pub async fn new(
         full_viewing_key: &[u8],
-        epoch_duration: u64,
         stored_tree: JsValue,
         idb_constants: JsValue,
     ) -> WasmResult<ViewServer> {
@@ -95,9 +91,7 @@ impl ViewServer {
         let view_server = Self {
             latest_height: u64::MAX,
             fvk,
-            epoch_duration,
             notes: Default::default(),
-            denoms: Default::default(),
             sct: tree,
             swaps: Default::default(),
             storage: init_idb_storage(constants).await?,

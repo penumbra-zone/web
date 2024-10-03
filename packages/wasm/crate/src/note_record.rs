@@ -6,7 +6,7 @@ use penumbra_tct as tct;
 use serde::{Deserialize, Serialize};
 use std::convert::{TryFrom, TryInto};
 
-/// Corresponds to the SpendableNoteRecord proto
+// We sadly have to vendor this code as penumbra-view package cannot be compiled with wasm-pack
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(try_from = "pb::SpendableNoteRecord", into = "pb::SpendableNoteRecord")]
 pub struct SpendableNoteRecord {

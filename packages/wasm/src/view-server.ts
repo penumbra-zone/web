@@ -20,7 +20,6 @@ declare global {
 
 interface ViewServerProps {
   fullViewingKey: FullViewingKey;
-  epochDuration: bigint;
   getStoredTree: () => Promise<StateCommitmentTree>;
   idbConstants: IdbConstants;
 }
@@ -36,24 +35,21 @@ export class ViewServer implements ViewServerInterface {
   private constructor(
     private wasmViewServer: WasmViewServer,
     public readonly fullViewingKey: FullViewingKey,
-    private readonly epochDuration: bigint,
     private readonly getStoredTree: () => Promise<StateCommitmentTree>,
     private readonly idbConstants: IdbConstants,
   ) {}
 
   static async initialize({
     fullViewingKey,
-    epochDuration,
     getStoredTree,
     idbConstants,
   }: ViewServerProps): Promise<ViewServer> {
     const wvs = await WasmViewServer.new(
       fullViewingKey.toBinary(),
-      epochDuration,
       await getStoredTree(),
       idbConstants,
     );
-    return new this(wvs, fullViewingKey, epochDuration, getStoredTree, idbConstants);
+    return new this(wvs, fullViewingKey, getStoredTree, idbConstants);
   }
 
   // Decrypts blocks with viewing key for notes, swaps, and updates revealed for user
@@ -68,7 +64,6 @@ export class ViewServer implements ViewServerInterface {
   async resetTreeToStored() {
     this.wasmViewServer = await WasmViewServer.new(
       this.fullViewingKey.toBinary(),
-      this.epochDuration,
       await this.getStoredTree(),
       this.idbConstants,
     );
