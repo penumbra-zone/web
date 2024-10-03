@@ -229,28 +229,29 @@ type TextType =
       body?: true;
     });
 
-export type TextProps = TextType & {
-  children?: ReactNode;
-  /**
-   * Which component or HTML element to render this text as.
-   *
-   * @example
-   * ```tsx
-   * <Text h1 as='span'>This is a span with H1 styling</Text>
-   * ```
-   */
-  as?: WebTarget;
-  /**
-   * When `true`, will apply styles that 1) prevent text wrapping, 2) hide
-   * overflow, 3) add an ellpsis when the text overflows.
-   */
-  truncate?: boolean;
-  /**
-   * A function that takes the 'color' object of `theme`, and returns a CSS color to render
-   * the icon with. If left undefined, will default to the `text.primary` color.
-   */
-  color?: (color: DefaultTheme['color']) => string;
-};
+export type TextProps = TextType &
+  React.HTMLAttributes<T> & {
+    children?: ReactNode;
+    /**
+     * Which component or HTML element to render this text as.
+     *
+     * @example
+     * ```tsx
+     * <Text h1 as='span'>This is a span with H1 styling</Text>
+     * ```
+     */
+    as?: WebTarget;
+    /**
+     * When `true`, will apply styles that 1) prevent text wrapping, 2) hide
+     * overflow, 3) add an ellpsis when the text overflows.
+     */
+    truncate?: boolean;
+    /**
+     * A function that takes the 'color' object of `theme`, and returns a CSS color to render
+     * the icon with. If left undefined, will default to the `text.primary` color.
+     */
+    color?: (color: DefaultTheme['color']) => string;
+  };
 
 /**
  * Runtime equivalent of TypeScript's `Omit` type. Removes extraneous props that
