@@ -35,6 +35,7 @@ export interface CardProps extends MotionProp {
    */
   as?: WebTarget;
   title?: ReactNode;
+  className?: string;
 }
 
 /**
@@ -72,9 +73,9 @@ export interface CardProps extends MotionProp {
  * </Card>
  * ```
  */
-export const Card = ({ children, as = 'section', title, motion }: CardProps) => {
+export const Card = ({ children, as = 'section', title, motion, className }: CardProps) => {
   return (
-    <Root as={as}>
+    <Root as={as} className={className}>
       {title && <Title>{title}</Title>}
 
       <IsAnimatingProvider>
