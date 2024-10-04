@@ -19,75 +19,84 @@ import { ReactNode } from 'react';
 interface StyledProps {
   $truncate?: boolean;
   $color?: (color: DefaultTheme['color']) => string;
+  $align?: 'left' | 'center' | 'right';
+  $decoration?: 'line-through' | 'underline';
+  $transform?: 'uppercase' | 'lowercase' | 'capitalize';
+  $break: false | 'word' | undefined;
 }
 
-const maybeTruncate = css<StyledProps>`
+const textCss = css<StyledProps>`
   ${props => props.$truncate && truncate}
+  ${props => props.$align && `text-align: ${props.$align};`}
+  ${props => props.$decoration && `text-decoration: ${props.$decoration};`}
+  ${props => props.$transform && `text-transform: ${props.$transform};`}
+  ${props => props.$break === false && `white-space: nowrap;`}
+  ${props => props.$break === 'word' && `word-break: break-word;`}
 `;
 
 const H1 = styled.h1<StyledProps>`
   ${h1}
-  ${maybeTruncate}
+  ${textCss}
 `;
 
 const H2 = styled.h2<StyledProps>`
   ${h2}
-  ${maybeTruncate}
+  ${textCss}
 `;
 
 const H3 = styled.h3<StyledProps>`
   ${h3}
-  ${maybeTruncate}
+  ${textCss}
 `;
 
 const H4 = styled.h4<StyledProps>`
   ${h4}
-  ${maybeTruncate}
+  ${textCss}
 `;
 
 const Xxl = styled.span<StyledProps>`
   ${xxl}
-  ${maybeTruncate}
+  ${textCss}
 `;
 
 const Large = styled.span<StyledProps>`
   ${large}
-  ${maybeTruncate}
+  ${textCss}
 `;
 
 const Body = styled.span<StyledProps>`
   ${body}
-  ${maybeTruncate}
+  ${textCss}
 `;
 
 const Strong = styled.span<StyledProps>`
   ${strong}
-  ${maybeTruncate}
+  ${textCss}
 `;
 
 const Detail = styled.span<StyledProps>`
   ${detail}
-  ${maybeTruncate}
+  ${textCss}
 `;
 
 const Small = styled.span<StyledProps>`
   ${small}
-  ${maybeTruncate}
+  ${textCss}
 `;
 
 const DetailTechnical = styled.span<StyledProps>`
   ${detailTechnical}
-  ${maybeTruncate}
+  ${textCss}
 `;
 
 const Technical = styled.span<StyledProps>`
   ${technical}
-  ${maybeTruncate}
+  ${textCss}
 `;
 
 const P = styled.p<StyledProps>`
   ${body}
-  ${maybeTruncate}
+  ${textCss}
 
   margin-bottom: ${props => props.theme.lineHeight.textBase};
 
@@ -250,6 +259,22 @@ export type TextProps = TextType & {
    * the icon with. If left undefined, will default to the `text.primary` color.
    */
   color?: (color: DefaultTheme['color']) => string;
+  /**
+   * The text alignment
+   */
+  align?: 'left' | 'center' | 'right';
+  /**
+   * The text decoration
+   */
+  decoration?: 'line-through' | 'underline';
+  /**
+   * The text transform
+   */
+  transform?: 'uppercase' | 'lowercase' | 'capitalize';
+  /**
+   * Controls how the text breaks.
+   */
+  break?: false | 'word' | undefined;
 };
 
 /**
@@ -293,45 +318,60 @@ const omit = <ObjectType extends Record<string, unknown>>(
  * </Text>
  * ```
  */
-export const Text = ({ truncate, color, ...props }: TextProps) => {
+export const Text = ({
+  truncate,
+  color,
+  align,
+  decoration,
+  transform,
+  break: breakProp,
+  ...props
+}: TextProps) => {
+  const styledProps = {
+    $truncate: truncate,
+    $color: color,
+    $align: align,
+    $decoration: decoration,
+    $transform: transform,
+    $break: breakProp,
+  };
+
   if (props.h1) {
-    return <H1 {...omit(props, 'h1')} $truncate={truncate} $color={color} />;
+    return <H1 {...omit(props, 'h1')} {...styledProps} />;
   }
   if (props.h2) {
-    return <H2 {...omit(props, 'h2')} $truncate={truncate} $color={color} />;
+    return <H2 {...omit(props, 'h2')} {...styledProps} />;
   }
   if (props.h3) {
-    return <H3 {...omit(props, 'h3')} $truncate={truncate} $color={color} />;
+    return <H3 {...omit(props, 'h3')} {...styledProps} />;
   }
   if (props.h4) {
-    return <H4 {...omit(props, 'h4')} $truncate={truncate} $color={color} />;
+    return <H4 {...omit(props, 'h4')} {...styledProps} />;
   }
   if (props.xxl) {
-    return <Xxl {...omit(props, 'xxl')} $truncate={truncate} $color={color} />;
+    return <Xxl {...omit(props, 'xxl')} {...styledProps} />;
   }
   if (props.large) {
-    return <Large {...omit(props, 'large')} $truncate={truncate} $color={color} />;
+    return <Large {...omit(props, 'large')} {...styledProps} />;
   }
   if (props.strong) {
-    return <Strong {...omit(props, 'strong')} $truncate={truncate} $color={color} />;
+    return <Strong {...omit(props, 'strong')} {...styledProps} />;
   }
   if (props.detail) {
-    return <Detail {...omit(props, 'detail')} $truncate={truncate} $color={color} />;
+    return <Detail {...omit(props, 'detail')} {...styledProps} />;
   }
   if (props.small) {
-    return <Small {...omit(props, 'small')} $truncate={truncate} $color={color} />;
+    return <Small {...omit(props, 'small')} {...styledProps} />;
   }
   if (props.detailTechnical) {
-    return (
-      <DetailTechnical {...omit(props, 'detailTechnical')} $truncate={truncate} $color={color} />
-    );
+    return <DetailTechnical {...omit(props, 'detailTechnical')} {...styledProps} />;
   }
   if (props.technical) {
-    return <Technical {...omit(props, 'technical')} $truncate={truncate} $color={color} />;
+    return <Technical {...omit(props, 'technical')} {...styledProps} />;
   }
   if (props.p) {
-    return <P {...omit(props, 'p')} $truncate={truncate} $color={color} />;
+    return <P {...omit(props, 'p')} {...styledProps} />;
   }
 
-  return <Body {...omit(props, 'body')} $truncate={truncate} $color={color} />;
+  return <Body {...omit(props, 'body')} {...styledProps} />;
 };
