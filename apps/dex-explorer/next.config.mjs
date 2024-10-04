@@ -2,6 +2,9 @@
 
 const nextConfig = {
   transpilePackages: ["@penumbra-zone/protobuf"],
+  compiler: {
+    styledComponents: true,
+  },
   webpack: (config) => {
     config.module.rules.push({
       test: /\.svg$/i,
