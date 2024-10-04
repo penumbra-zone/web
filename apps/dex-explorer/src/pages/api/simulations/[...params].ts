@@ -1,17 +1,17 @@
 // @ts-nocheck
 /* eslint-disable -- disabling this file as this was created before our strict rules */
 // pages/api/simulations/[...params].ts
-import { SimulationQuerier } from "@/utils/protos/services/dex/simulated-trades";
-import { base64ToUint8Array } from "../../../utils/math/base64";
+import { SimulationQuerier } from "@/old/utils/protos/services/dex/simulated-trades";
+import { base64ToUint8Array } from "@/old/utils/math/base64";
 import {
   SimulateTradeRequest,
   SimulateTradeRequest_Routing_SingleHop,
   SimulateTradeResponse,
   SwapExecution,
 } from "@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb";
-import { joinLoHi, splitLoHi } from "@/utils/math/hiLo";
+import { joinLoHi, splitLoHi } from "@/old/utils/math/hiLo";
 import { NextApiRequest, NextApiResponse } from "next";
-import { fetchAllTokenAssets } from "@/utils/token/tokenFetch";
+import { fetchAllTokenAssets } from "@/old/utils/token/tokenFetch";
 
 const grpcEndpoint = process.env.PENUMBRA_GRPC_ENDPOINT!;
 if (!grpcEndpoint) {

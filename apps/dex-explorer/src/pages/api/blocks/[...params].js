@@ -2,7 +2,7 @@
 /* eslint-disable -- disabling this file as this was created before our strict rules */
 // pages/api/blocks/[...params].js
 
-import { IndexerQuerier } from "../../../utils/indexer/connector";
+import { IndexerQuerier } from "../../../old/utils/indexer/connector";
 
 const grpcEndpoint = process.env.PENUMBRA_GRPC_ENDPOINT;
 if (!grpcEndpoint) {

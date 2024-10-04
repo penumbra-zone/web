@@ -1,7 +1,7 @@
 // @ts-nocheck
 /* eslint-disable -- disabling this file as this was created before our strict rules */
 // pages/api/lp/[lp_nft_id]/trades.js
-import { IndexerQuerier } from "../../../../utils/indexer/connector";
+import { IndexerQuerier } from "../../../../old/utils/indexer/connector";
 
 const indexerEndpoint = process.env.PENUMBRA_INDEXER_ENDPOINT
 if (!indexerEndpoint) {

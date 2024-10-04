@@ -1,6 +1,6 @@
 // pages/api/arbs/[...params].ts
 
-import { DexQueryServiceClient } from '@/utils/protos/services/dex/dex-query-service-client';
+import { DexQueryServiceClient } from '@/old/utils/protos/services/dex/dex-query-service-client';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 const grpcEndpoint = process.env['PENUMBRA_GRPC_ENDPOINT'];
