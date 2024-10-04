@@ -53,7 +53,7 @@ export const Basic: Story = {
               elit. Ut et massa mi.
             </Text>
             <div>
-              <Density compact>
+              <Density density='compact'>
                 <Button icon={Shield} onClick={() => setIsOpen(false)}>
                   Action
                 </Button>

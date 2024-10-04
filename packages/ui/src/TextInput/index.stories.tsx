@@ -8,7 +8,7 @@ import { Button } from '../Button';
 import { Density } from '../Density';
 
 const SampleButton = () => (
-  <Density compact>
+  <Density density='compact'>
     <Button icon={Send} iconOnly>
       Validate
     </Button>

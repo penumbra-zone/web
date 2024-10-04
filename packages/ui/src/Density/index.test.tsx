@@ -12,7 +12,7 @@ const MockUseDensityConsumerComponent = () => {
 describe('<Density />', () => {
   it('sets `sparse` density for child components', () => {
     const { container } = render(
-      <Density sparse>
+      <Density density='sparse'>
         <MockUseDensityConsumerComponent />
       </Density>,
     );
@@ -22,11 +22,21 @@ describe('<Density />', () => {
 
   it('sets `compact` density for child components', () => {
     const { container } = render(
-      <Density compact>
+      <Density density='compact'>
         <MockUseDensityConsumerComponent />
       </Density>,
     );
 
     expect(container).toHaveTextContent('compact');
+  });
+
+  it('sets `slim` density for child components', () => {
+    const { container } = render(
+      <Density density='slim'>
+        <MockUseDensityConsumerComponent />
+      </Density>,
+    );
+
+    expect(container).toHaveTextContent('slim');
   });
 });

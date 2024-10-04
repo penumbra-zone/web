@@ -312,7 +312,7 @@ const Content = <IconOnlyButtonGroupProps extends boolean | undefined>({
                 </DialogChildrenWrap>
 
                 {showCloseButton && (
-                  <Density compact>
+                  <Density density='compact'>
                     <RadixDialog.Close asChild>
                       <DialogClose>
                         <Button icon={X} iconOnly priority='secondary'>

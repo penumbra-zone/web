@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import globalsCssUrl from '../styles/globals.css?url';
 import penumbraTheme from './penumbraTheme';
-import { ConditionalWrap } from '../src/ConditionalWrap';
 import { PenumbraUIProvider } from '../src/PenumbraUIProvider';
 import { Density } from '../src/Density';
 import { Tabs } from '../src/Tabs';
@@ -22,18 +21,15 @@ const DensityWrapper = ({ children, showDensityControl }) => {
   const [density, setDensity] = useState('sparse');
 
   return (
-    <ConditionalWrap
-      if={density === 'sparse'}
-      then={children => <Density sparse>{children}</Density>}
-      else={children => <Density compact>{children}</Density>}
-    >
+    <Density density={density}>
       <Column>
         {showDensityControl && (
-          <Density sparse>
+          <Density density='sparse'>
             <Tabs
               options={[
                 { label: 'Sparse', value: 'sparse' },
                 { label: 'Compact', value: 'compact' },
+                { label: 'Slim', value: 'slim' },
               ]}
               value={density}
               onChange={setDensity}
@@ -43,7 +39,7 @@ const DensityWrapper = ({ children, showDensityControl }) => {
 
         {children}
       </Column>
-    </ConditionalWrap>
+    </Density>
   );
 };
 

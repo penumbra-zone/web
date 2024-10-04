@@ -51,7 +51,7 @@ export const StatusPopover = () => {
       </Popover.Trigger>
       {status?.isCatchingUp !== undefined && (
         <Popover.Content context={popoverContext} align='end' side='bottom'>
-          <Density compact>
+          <Density density='compact'>
             <div className='flex flex-col gap-4'>
               <div className='flex flex-col gap-2'>
                 <Text technical>Status</Text>

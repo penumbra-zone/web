@@ -135,7 +135,7 @@ export const AccountSelector = (props: AccountSelectorProps) => {
         }
         endAdornment={
           <EndAdornment>
-            <Density compact>
+            <Density density='compact'>
               <Button
                 icon={ArrowLeft}
                 iconOnly

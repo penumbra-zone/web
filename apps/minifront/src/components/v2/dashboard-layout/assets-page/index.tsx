@@ -90,7 +90,7 @@ export const AssetsPage = () => {
                     to={getTradeLink(balance)}
                     className='block translate-x-full opacity-0 transition [tr:hover>td>div>&]:translate-x-0 [tr:hover>td>div>&]:opacity-100'
                   >
-                    <Density compact>
+                    <Density density='compact'>
                       <Button icon={ArrowRightLeft} iconOnly>
                         Trade
                       </Button>
