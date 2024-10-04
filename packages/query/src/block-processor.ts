@@ -646,8 +646,6 @@ export class BlockProcessor implements BlockProcessorInterface {
     }
   }
 
-  // TODO: refactor. there is definitely a better way to do this.  batch
-  // endpoint issue https://github.com/penumbra-zone/penumbra/issues/4688
   private async updateValidatorInfos(nextEpochStartHeight: bigint): Promise<void> {
     // It's important to clear the table so any stale (jailed, tombstoned, etc) entries are filtered out.
     await this.indexedDb.clearValidatorInfos();
@@ -662,18 +660,6 @@ export class BlockProcessor implements BlockProcessorInterface {
       await this.updatePriceForValidatorDelegationToken(
         validatorInfoResponse,
         nextEpochStartHeight,
-      );
-
-      // this loop requests delegation token metadata for each validator
-      // individually. there may be very many, so we must artificially delay
-      // this loop or the RPC may hard-ratelimit us.
-      await new Promise(
-        resolve =>
-          void setTimeout(
-            resolve,
-            // an entire second
-            1000,
-          ),
       );
     }
   }
