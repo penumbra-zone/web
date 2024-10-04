@@ -12,7 +12,7 @@ export const Header = () => {
 
       <DesktopNav />
 
-      <Density compact>
+      <Density density='compact'>
         <div className='hidden gap-2 lg:flex'>
           <StatusPopover />
           <ProviderPopover />

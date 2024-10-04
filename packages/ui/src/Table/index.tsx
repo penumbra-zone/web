@@ -115,14 +115,20 @@ interface CellStyledProps {
   $vAlign?: VAlign;
 }
 
+const cellPaddingMapping = {
+  sparse: 4,
+  compact: 3,
+  slim: 2,
+};
+
 const cell = css<CellStyledProps>`
   box-sizing: border-box;
 
   padding-left: ${props => props.theme.spacing(3)};
   padding-right: ${props => props.theme.spacing(3)};
 
-  padding-top: ${props => props.theme.spacing(props.$density === 'sparse' ? 4 : 3)};
-  padding-bottom: ${props => props.theme.spacing(props.$density === 'sparse' ? 4 : 3)};
+  padding-top: ${props => props.theme.spacing(cellPaddingMapping[props.$density])};
+  padding-bottom: ${props => props.theme.spacing(cellPaddingMapping[props.$density])};
 
   ${props => props.$width && `width: ${props.$width};`}
   ${props => props.$hAlign && `text-align: ${props.$hAlign};`};

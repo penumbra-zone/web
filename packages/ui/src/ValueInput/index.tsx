@@ -94,7 +94,7 @@ export const ValueInput = ({
         onChange={onValueChange}
         endAdornment={
           <SelectorWrapper>
-            <Density compact>
+            <Density density='compact'>
               <AssetSelector
                 value={selection}
                 assets={assets}

@@ -2,11 +2,10 @@ import { ReactNode } from 'react';
 import { Density as TDensity } from '../types/Density';
 import { DensityContext } from '../utils/DensityContext';
 
-export type DensityProps<SelectedDensity extends TDensity> = {
+export interface DensityProps {
   children?: ReactNode;
-} & (SelectedDensity extends 'sparse'
-  ? { sparse: true; compact?: never }
-  : { compact: true; sparse?: never });
+  density: TDensity;
+}
 
 /**
  * Use the `<Density />` component to set the density for all descendants in the
@@ -22,12 +21,12 @@ export type DensityProps<SelectedDensity extends TDensity> = {
  * which contain nested components with density variants. If we used a `density`
  * prop, you'd need to set that prop on every single component in that tree.
  *
- * Instead, you can simply wrap the entire `<Table />` with `<Density sparse />`
- * or `<Density compact />`, and it will set a density context value for all
+ * Instead, you can simply wrap the entire `<Table />` with `<Density density='sparse' />`
+ * or `<Density density='compact' />`, and it will set a density context value for all
  * descendant components:
  *
  * ```tsx
- * <Density compact>
+ * <Density density='compact'>
  *   <Table>
  *     <Table.Tbody>
  *       <Table.Tr>
@@ -59,25 +58,20 @@ export type DensityProps<SelectedDensity extends TDensity> = {
  * example, let's say you have an icon-only button as the `startAdornment` for a
  * `<TextInput />`, and you want to make sure that icon-only button always
  * renders as `compact` density. In that case, simply wrap the button in
- * `<Density compact />`. Then, it will always be compact, even if there's a
- * higher-up `<Density sparse />`:
+ * `<Density density='compact' />`. Then, it will always be compact, even if there's a
+ * higher-up `<Density density='sparse' />`:
  *
  * ```tsx
  * <TextInput
  *   // ...
  *   startAdornment={
- *     <Density compact>
+ *     <Density density='compact'>
  *       <Button iconOnly icon={Search}>Search</Button>
  *     </Density>
  *   }
  * />
  * ```
  */
-export const Density = <SelectedDensity extends TDensity>({
-  children,
-  sparse,
-}: DensityProps<SelectedDensity>) => (
-  <DensityContext.Provider value={sparse ? 'sparse' : 'compact'}>
-    {children}
-  </DensityContext.Provider>
+export const Density = ({ children, density }: DensityProps) => (
+  <DensityContext.Provider value={density}>{children}</DensityContext.Provider>
 );

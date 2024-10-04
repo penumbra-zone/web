@@ -6,4 +6,4 @@
  *
  * See `<DensityContext />`
  */
-export type Density = 'compact' | 'sparse';
+export type Density = 'slim' | 'compact' | 'sparse';

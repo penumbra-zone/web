@@ -11,7 +11,7 @@ export const DesktopNav = () => {
 
   return (
     <nav className='hidden rounded-full bg-v2-other-tonalFill5 px-4 py-1 backdrop-blur-xl lg:flex'>
-      <Density compact>
+      <Density density='compact'>
         <Tabs
           value={getV2Link(pagePath)}
           onChange={value => navigate(value)}
