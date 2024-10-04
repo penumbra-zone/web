@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { PagePath } from '@/utils/routes/pages.ts';
+import { PagePath } from '@/shared/pages';
 
 export default function RedirectPage() {
   redirect(PagePath.Trade);

@@ -2,8 +2,8 @@
 /* eslint-disable -- disabling this file as this was created before our strict rules */
 // pages/api/swaps/[...params].ts
 
-import { DexQueryServiceClient } from "@/utils/protos/services/dex/dex-query-service-client";
-import { SwapExecutionWithBlockHeight } from "@/utils/protos/types/DexQueryServiceClientInterface";
+import { DexQueryServiceClient } from "@/old/utils/protos/services/dex/dex-query-service-client";
+import { SwapExecutionWithBlockHeight } from "@/old/utils/protos/types/DexQueryServiceClientInterface";
 import { NextApiRequest, NextApiResponse } from "next";
 
 const grpcEndpoint = process.env.PENUMBRA_GRPC_ENDPOINT!

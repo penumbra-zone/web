@@ -1,32 +1,27 @@
-// @ts-nocheck
+// copied from pages/trades.tsx
 /* eslint-disable -- disabling this file as this was created before our strict rules */
-// pages/trades.tsx
 
 import {
-  VStack,
   Text,
   Box,
-  HStack,
   FormLabel,
   NumberInput,
   FormControl,
   NumberInputField,
 } from "@chakra-ui/react";
-import Layout from "@/old/components/layout";
 import { LoadingSpinner } from "@/old/components/util/loadingSpinner";
 import { useEffect, useRef, useState } from "react";
 import { BlockSummary } from "@/old/components/executionHistory/blockSummary";
 import { BlockInfo, LiquidityPositionEvent } from "@/old/utils/indexer/types/lps";
 import { SwapExecutionWithBlockHeight } from "@/old/utils/protos/types/DexQueryServiceClientInterface";
-import { BlockInfoMap, BlockSummaryMap } from "@/old/utils/types/block";
+import { BlockInfoMap, BlockSummaryData, BlockSummaryMap } from "@/old/utils/types/block";
 
-export default function Trades() {
+export default function Blocks() {
   // Go back hardcoded N blocks
   const NUMBER_BLOCKS_IN_TIMELINE = 50;
 
   const [isBlockRangeLoading, setIsBlockRangeLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
-  const [isLineLoading, setIsLineLoading] = useState(true);
 
   const [startingBlockHeight, setStartingBlockHeight] = useState(-1); // negative number meaning not set yet
   const [endingBlockHeight, setEndingBlockHeight] = useState(-1); // negative number meaning not set yet
@@ -37,8 +32,8 @@ export default function Trades() {
 
   const currentStatusRef = useRef<HTMLDivElement>(null);
   const originalStatusRef = useRef<HTMLDivElement>(null);
-  const [lineHeight, setLineHeight] = useState(0);
-  const [lineTop, setLineTop] = useState(0);
+  const [, setLineHeight] = useState(0);
+  const [, setLineTop] = useState(0);
   const [error, setError] = useState<string | undefined>(undefined);
 
   // Get starting block number
@@ -49,34 +44,36 @@ export default function Trades() {
       if (userRequestedBlockEndHeight >= 1) {
         const startHeight = Math.max(
           userRequestedBlockEndHeight - NUMBER_BLOCKS_IN_TIMELINE + 1,
-          1
+          1,
         ); // Lowest block_height is 1
         blockInfoPromise = fetch(
-          `/api/blocks/${startHeight}/${userRequestedBlockEndHeight + 1}`
-        ).then((res) => res.json());
+          `/api/blocks/${startHeight}/${userRequestedBlockEndHeight + 1}`,
+        ).then((res) => res.json()) as Promise<BlockInfo[]>;
       } else {
         blockInfoPromise = fetch(
-          `/api/blocks/${NUMBER_BLOCKS_IN_TIMELINE}`
-        ).then((res) => res.json());
+          `/api/blocks/${NUMBER_BLOCKS_IN_TIMELINE}`,
+        ).then((res) => res.json()) as Promise<BlockInfo[]>;
       }
       Promise.all([blockInfoPromise])
         .then(([blockInfoResponse]) => {
           const blockInfoList: BlockInfo[] = blockInfoResponse;
           const blockInfoMap: BlockInfoMap = {};
-          blockInfoList.forEach((blockInfo: BlockInfo, i: number) => {
+          blockInfoList.forEach((blockInfo: BlockInfo) => {
             // console.log(blockInfo)
             blockInfoMap[blockInfo.height] = blockInfo;
           });
 
           if (blockInfoList.length === 0) {
             setIsLoading(false);
-            setError("No blocks found before: " + userRequestedBlockEndHeight);
+            setError(`No blocks found before: ${userRequestedBlockEndHeight}`);
+
+            // eslint-disable-next-line no-console -- logging for debugging
             console.log("No blocks found");
             return;
           } else {
-            setEndingBlockHeight(blockInfoList[0].height);
+            setEndingBlockHeight((blockInfoList[0] as BlockInfo).height);
             setStartingBlockHeight(
-              blockInfoList[NUMBER_BLOCKS_IN_TIMELINE - 1].height
+              (blockInfoList[NUMBER_BLOCKS_IN_TIMELINE - 1] as BlockInfo).height,
             );
             setBlockInfo(blockInfoMap);
             setError(undefined);
@@ -100,13 +97,13 @@ export default function Trades() {
     setIsLoading(true);
     if (blockInfo && endingBlockHeight >= 1 && startingBlockHeight >= 1) {
       const liquidityPositionOpenClosePromise = fetch(
-        `/api/lp/block/${startingBlockHeight}/${endingBlockHeight + 1}`
+        `/api/lp/block/${startingBlockHeight}/${endingBlockHeight + 1}`,
       ).then((res) => res.json());
       const arbsPromise = fetch(
-        `/api/arbs/${startingBlockHeight}/${endingBlockHeight + 1}`
+        `/api/arbs/${startingBlockHeight}/${endingBlockHeight + 1}`,
       ).then((res) => res.json());
       const swapsPromise = fetch(
-        `/api/swaps/${startingBlockHeight}/${endingBlockHeight + 1}`
+        `/api/swaps/${startingBlockHeight}/${endingBlockHeight + 1}`,
       ).then((res) => res.json());
 
       Promise.all([
@@ -137,40 +134,43 @@ export default function Trades() {
                 withdrawPositionEvents: [],
                 swapExecutions: [],
                 arbExecutions: [],
-                createdAt: blockInfo[i].created_at,
+                createdAt: (blockInfo[i] as BlockInfo).created_at,
               };
             }
 
             positionData.forEach(
               (positionOpenCloseEvent: LiquidityPositionEvent) => {
+                const blockSummary = blockSummaryMap[positionOpenCloseEvent.block_height] as BlockSummaryData;
                 if (positionOpenCloseEvent.type.includes("PositionOpen")) {
-                  blockSummaryMap[positionOpenCloseEvent.block_height].openPositionEvents.push(positionOpenCloseEvent);
+                  blockSummary.openPositionEvents.push(positionOpenCloseEvent);
                 } else if (
                   positionOpenCloseEvent.type.includes("PositionClose")
                 ) {
-                  blockSummaryMap[positionOpenCloseEvent.block_height].closePositionEvents.push(positionOpenCloseEvent);
+                  blockSummary.closePositionEvents.push(positionOpenCloseEvent);
                 } else if (
                   positionOpenCloseEvent.type.includes("PositionWithdraw")
                 ) {
-                  blockSummaryMap[positionOpenCloseEvent.block_height].withdrawPositionEvents.push(positionOpenCloseEvent);
+                  blockSummary.withdrawPositionEvents.push(positionOpenCloseEvent);
                 }
-              }
+              },
             );
 
             arbData.forEach((arb: SwapExecutionWithBlockHeight) => {
-              blockSummaryMap[arb.blockHeight].arbExecutions.push(
-                arb.swapExecution
+              const blockSummary = blockSummaryMap[arb.blockHeight] as BlockSummaryData;
+              blockSummary.arbExecutions.push(
+                arb.swapExecution,
               );
             });
 
             swapData.forEach((swap: SwapExecutionWithBlockHeight) => {
-              blockSummaryMap[swap.blockHeight].swapExecutions.push(
-                swap.swapExecution
+              const blockSummary = blockSummaryMap[swap.blockHeight] as BlockSummaryData;
+              blockSummary.swapExecutions.push(
+                swap.swapExecution,
               );
             });
 
             setBlockData(blockSummaryMap);
-          }
+          },
         )
         .catch((error) => {
           console.error("Error fetching block summary data:", error);
@@ -189,7 +189,6 @@ export default function Trades() {
 
   // Draw vertical line
   useEffect(() => {
-    setIsLineLoading(true);
     if (currentStatusRef.current && originalStatusRef.current) {
       const firstBoxRect = currentStatusRef.current.getBoundingClientRect();
       const lastBoxRect = originalStatusRef.current.getBoundingClientRect();
@@ -199,8 +198,7 @@ export default function Trades() {
       setLineHeight(newLineHeight - 50);
       setLineTop(firstBoxRect.bottom);
     }
-    setIsLineLoading(false);
-  });
+  }, []);
 
   const onSearch = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -215,95 +213,59 @@ export default function Trades() {
     }
   };
 
-  return (
-    <Layout pageTitle={`Trades`}>
-      {isLoading ? (
-        <LoadingSpinner />
-      ) : error ? (
-        <Box
-          position="relative"
-          display="flex"
-          flexDirection="column"
-          width="100%"
-          height="100%"
-          paddingTop="20%"
-        >
-          <Text>{error}</Text>
-        </Box>
-      ) : (
-        <>
-          <Box
-            position="relative"
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            width="100%"
+  return isLoading ? (
+    <LoadingSpinner />
+  ) : error ? (
+    <Box
+      position="relative"
+      display="flex"
+      flexDirection="column"
+      width="100%"
+      height="100%"
+      paddingTop="20%"
+    >
+      <Text>{error}</Text>
+    </Box>
+  ) : (
+    <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        width="100%"
+      >
+        <FormControl width="100%" mb={8}>
+          <FormLabel></FormLabel>
+          <form
+            onSubmit={onSearch}
+            style={{ width: "100%", textAlign: "center" }}
           >
-            <VStack spacing="5em" width="full" maxW="container.md" px={{ base: 2, md: 4 }}>
-              <VStack align="stretch" paddingTop={"3em"}>
-                <HStack paddingTop="2em" paddingBottom="5em" justifyContent={"center"}>
-                  <VStack align="center" width="50%" justifyContent="center">
-                    <Text fontWeight="bold" width="100%" fontSize="1.5em" textAlign="center">
-                      DEX Execution Timeline
-                    </Text>
-                    <FormControl width="100%">
-                      <FormLabel></FormLabel>
-                      <form onSubmit={onSearch} style={{ width: "100%", textAlign: "center" }}>
-                        <NumberInput>
-                          <NumberInputField
-                            placeholder="Enter block height"
-                            value={userRequestedBlockEndHeight}
-                            justifyContent={"center"}
-                            onChange={(e) =>
-                              setUserRequestedBlockEndHeight(parseInt(e.target.value))
-                            }
-                            width="100%"
-                          />
-                        </NumberInput>
-                      </form>
-                    </FormControl>
-                  </VStack>
+            <NumberInput>
+              <NumberInputField
+                placeholder="Enter block height"
+                value={userRequestedBlockEndHeight}
+                justifyContent={"center"}
+                backgroundColor="rgba(0,0,0,1)"
+                // backgroundColor="var(--body-background)"
+                onChange={(e) =>
+                  setUserRequestedBlockEndHeight(parseInt(e.target.value))
+                }
+                width="100%"
+                p={5}
+                border="none"
+              />
+            </NumberInput>
+          </form>
+        </FormControl>
 
-                </HStack>
-
-                {Array.from(
-                  Array(endingBlockHeight - startingBlockHeight + 1)
-                ).map((_, index: number) => (
-                  <VStack
-                      key={index}
-                      align={"flex-start"}
-                      paddingTop={index === 0 ? "0" : "3em"}
-                      borderColor={"white"}
-                    >
-                      <VStack
-                        key={index}
-                        ref={index == 0 ? currentStatusRef : originalStatusRef}
-                      >
-                        <BlockSummary
-                          key={index}
-                          blockHeight={endingBlockHeight - index}
-                          blockSummary={blockData[endingBlockHeight - index]}
-                        />
-                      </VStack>
-                    </VStack>
-                ))}
-              </VStack>
-            </VStack>
-          </Box>
-          <Box
-            position="absolute"
-            zIndex={-999}
-            left="50%"
-            top={`${lineTop}`}
-            height={`${lineHeight}`}
-            width={".1em"}
-            className="box-card"
-            backgroundColor="var(--complimentary-background)"
-            id="vertical-line"
-          />
-          <HStack paddingBottom="5em"></HStack>
-        </>
-      )}
-    </Layout>
+        {Array.from(Array(endingBlockHeight - startingBlockHeight + 1)).map(
+          (_, index: number) => (
+            <BlockSummary
+              key={index}
+              blockHeight={endingBlockHeight - index}
+              blockSummary={blockData[endingBlockHeight - index] as BlockSummaryData}
+            />
+          )
+        )}
+      </Box>
   );
 }

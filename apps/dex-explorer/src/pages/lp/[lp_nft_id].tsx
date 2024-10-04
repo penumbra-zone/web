@@ -6,16 +6,16 @@ import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import styles from "../../../styles/Home.module.css";
 import { Position } from "@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb";
-import Layout from "../../components/layout";
-import CurrentLPStatus from "../../components/liquidityPositions/currentStatus";
+import Layout from "@/old/components/layout";
+import CurrentLPStatus from "@/old/components/liquidityPositions/currentStatus";
 import { VStack, Text, Box, HStack, IconButton } from "@chakra-ui/react";
-import { LoadingSpinner } from "../../components/util/loadingSpinner";
+import { LoadingSpinner } from "@/old/components/util/loadingSpinner";
 import {
   LiquidityPositionEvent,
   PositionExecutionEvent,
-} from "@/utils/indexer/types/lps";
-import TimelinePosition from "@/components/liquidityPositions/timelinePosition";
-import ExecutionEvent from "@/components/liquidityPositions/executionEvent";
+} from "@/old/utils/indexer/types/lps";
+import TimelinePosition from "@/old/components/liquidityPositions/timelinePosition";
+import ExecutionEvent from "@/old/components/liquidityPositions/executionEvent";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 
 export default function LP() {

@@ -4,7 +4,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
-import Layout from "../../components/layout";
+import Layout from "@/old/components/layout";
 import {
   VStack,
   Text,
@@ -22,14 +22,14 @@ import {
   Position,
   SwapExecution,
 } from "@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb";
-import { LoadingSpinner } from "../../components/util/loadingSpinner";
-import { base64ToUint8Array } from "@/utils/math/base64";
-import { joinLoHi, splitLoHi } from "@/utils/math/hiLo";
-import DepthChart from "@/components/charts/depthChart";
-import OHLCChart from "@/components/charts/ohlcChart";
-import BuySellChart from "@/components/charts/buySellChart";
-import { Token } from "@/utils/types/token";
-import { fetchAllTokenAssets } from "@/utils/token/tokenFetch";
+import { LoadingSpinner } from "@/old/components/util/loadingSpinner";
+import { base64ToUint8Array } from "@/old/utils/math/base64";
+import { joinLoHi, splitLoHi } from "@/old/utils/math/hiLo";
+import DepthChart from "@/old/components/charts/depthChart";
+import OHLCChart from "@/old/components/charts/ohlcChart";
+import BuySellChart from "@/old/components/charts/buySellChart";
+import { Token } from "@/old/utils/types/token";
+import { fetchAllTokenAssets } from "@/old/utils/token/tokenFetch";
 // TODO: Better parameter check
 
 // ! Important note: 'sell' side here refers to selling asset1 for asset2, so its really DEMAND for buying asset 1, anc vice versa for 'buy' side
