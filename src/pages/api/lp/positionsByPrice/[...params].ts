@@ -2,13 +2,13 @@
 /* eslint-disable -- disabling this file as this was created before our strict rules */
 // pages/api/lp/positionsByPrice/[...params].ts
 import { NextApiRequest, NextApiResponse } from "next";
-import { DexQueryServiceClient } from "@/utils/protos/services/dex/dex-query-service-client";
+import { DexQueryServiceClient } from "@/old/utils/protos/services/dex/dex-query-service-client";
 import {
   DirectedTradingPair,
   Position,
 } from "@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb";
-import { base64ToUint8Array } from "@/utils/math/base64";
-import { fetchAllTokenAssets } from "@/utils/token/tokenFetch";
+import { base64ToUint8Array } from "@/old/utils/math/base64";
+import { fetchAllTokenAssets } from "@/old/utils/token/tokenFetch";
 
 const grpcEndpoint = process.env.PENUMBRA_GRPC_ENDPOINT!;
 if (!grpcEndpoint) {

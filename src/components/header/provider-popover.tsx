@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { Popover } from '@penumbra-zone/ui/Popover';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
-import { connectionStore } from '@/state/connection';
+import { connectionStore } from '@/shared/state/connection';
 import { observer } from 'mobx-react-lite';
 
 export const ProviderPopover = observer(() => {

@@ -3,9 +3,9 @@
 // pages/lp/utils.tsx
 
 import React, { useState } from "react";
-import Layout from "../../components/layout";
+import Layout from "@/old/components/layout";
 import { VStack, Text, Center, HStack, Input, Button } from "@chakra-ui/react";
-import { innerToBech32Address, bech32ToInner } from "../../utils/math/bech32";
+import { innerToBech32Address, bech32ToInner } from "@/old/utils/math/bech32";
 
 export default function Utils() {
   const [innerAddress, setInnerAddress] = useState("");

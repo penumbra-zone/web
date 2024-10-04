@@ -4,10 +4,10 @@
 
 import { useState, useEffect } from 'react';
 import { VStack, HStack, Box, Select, Button, Avatar } from '@chakra-ui/react';
-import Layout from '@/components/layout';
-import { fetchAllTokenAssets } from '@/utils/token/tokenFetch';
-import { LoadingSpinner } from '@/components/util/loadingSpinner';
-import { Token } from '@/utils/types/token';
+import Layout from '@/old/components/layout';
+import { fetchAllTokenAssets } from '@/old/utils/token/tokenFetch';
+import { LoadingSpinner } from '@/old/components/util/loadingSpinner';
+import { Token } from '@/old/utils/types/token';
 
 export default function Pairs() {
     const [isLoading, setIsLoading] = useState(true);
@@ -44,7 +44,7 @@ export default function Pairs() {
         <Layout pageTitle='Pairs'>
             {isLoading ? (
               <LoadingSpinner />
-            ) : 
+            ) :
             <VStack height={'100%'} width={'100%'}>
                     <HStack justifyContent={'space-evenly'} width={'100%'} paddingTop={'5%'}>
                         <Box borderColor="gray.200">
