@@ -1,10 +1,10 @@
 // @ts-nocheck
 /* eslint-disable -- disabling this file as this was created before our strict rules */
 import { Box, Flex, Text } from "@chakra-ui/react";
-import Layout from "../../components/layout";
-import { LPSearchBar } from "../../components/lpSearchBar";
-import Blocks from '../../components/blocks'
-import Swaps from '../../components/swaps'
+import Layout from "@/old/components/layout";
+import { LPSearchBar } from "@/old/components/lpSearchBar";
+import Blocks from '@/old/components/blocks'
+import Swaps from '@/old/components/swaps'
 
 export default function Explorer() {
   return (

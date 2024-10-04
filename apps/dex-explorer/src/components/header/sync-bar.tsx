@@ -1,5 +1,5 @@
 import { Progress } from '@penumbra-zone/ui/Progress';
-import { statusStore } from '@/state/status';
+import { statusStore } from '@/shared/state/status';
 import { observer } from 'mobx-react-lite';
 
 export const SyncBar = observer(() => {

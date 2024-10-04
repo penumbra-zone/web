@@ -1,6 +1,6 @@
 import { Button } from '@penumbra-zone/ui/Button';
 import { ProviderPopover } from './provider-popover';
-import { connectionStore } from '@/state/connection';
+import { connectionStore } from '@/shared/state/connection';
 import { observer } from 'mobx-react-lite';
 
 export const Connection = observer(() => {

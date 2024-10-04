@@ -1,5 +1,5 @@
 import { MoonStar, ArrowUpFromDot, Coins } from 'lucide-react';
-import { PagePath } from '@/utils/routes/pages.ts';
+import { PagePath } from '@/shared/pages';
 
 export const HEADER_LINKS = [
   { label: 'Trade', value: PagePath.Trade, icon: ArrowUpFromDot },
