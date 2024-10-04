@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { PagePath } from '@/utils/routes/pages';
+import { PagePath } from '@/shared/pages';
 import PenumbraLogo from './logo.svg';
 
 export const HeaderLogo = () => {

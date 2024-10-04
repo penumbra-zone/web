@@ -5,8 +5,8 @@ import { Button } from '@penumbra-zone/ui/Button';
 import { Density } from '@penumbra-zone/ui/Density';
 import { Pill } from '@penumbra-zone/ui/Pill';
 import { Text } from '@penumbra-zone/ui/Text';
-import { statusStore } from '@/state/status';
-import { connectionStore } from '@/state/connection';
+import { statusStore } from '@/shared/state/status';
+import { connectionStore } from '@/shared/state/connection';
 import { observer } from 'mobx-react-lite';
 
 export const StatusPopover = observer(() => {
