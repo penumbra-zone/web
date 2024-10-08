@@ -29,7 +29,7 @@ export default async function candleStickData(
   const limit = params[3] || null;
 
   try {
-    const tokenAssets = fetchAllTokenAssets();
+    const tokenAssets = fetchAllTokenAssets(process.env.PENUMBRA_CHAIN_ID);
     if (!startHeight || !tokenIn || !tokenOut || !limit) {
       res.status(400).json({ error: "Invalid query parameters" }); return;
     }

@@ -26,7 +26,7 @@ or plug in credentials for an already running database via environment variables
 # add these to e.g. `.envrc`:
 export PENUMBRA_GRPC_ENDPOINT="https://testnet.plinfra.net"
 export PENUMBRA_INDEXER_ENDPOINT="postgresql://<PGUSER>:<PGPASS>@<PGHOST>:<PGPORT>/<PGDATABASE>?sslmode=require""
-export NEXT_PUBLIC_CHAIN_ID="penumbra-testnet-phobos-2"
+export PENUMBRA_CHAIN_ID="penumbra-testnet-phobos-2"
 # optional: if you see "self-signed certificate in certificate chain" errors,
 # you'll likely need to export a `ca-cert.pem` file for the DB TLS.
 # export PENUMBRA_INDEXER_CA_CERT="$(cat ca-cert.pem)"
@@ -49,8 +49,8 @@ you'll want to set are:
   * `PENUMBRA_GRPC_ENDPOINT`: the URL to a remote node's `pd` gRPC service
   * `PENUMBRA_INDEXER_ENDPOINT`: the URL to a Postgre database containing ABCI events
   * `PENUMBRA_INDEXER_CA_CERT`: optional; if set, the database connection will use the provided certificate authority when validating TLS
-  * `NEXT_PUBLIC_CHAIN_ID`: the chain id for the network being indexed, controls asset-registry lookups
-  * `NEXT_PUBLIC_CUILOA_URL`: the URL for a block-explorer application, for generating URLs for more block/transaction info
+  * `PENUMBRA_CHAIN_ID`: the chain id for the network being indexed, controls asset-registry lookups
+  * `PENUMBRA_CUILOA_URL`: the URL for a block-explorer application, for generating URLs for more block/transaction info
 
 ## Name
 
