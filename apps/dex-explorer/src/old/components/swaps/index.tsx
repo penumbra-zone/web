@@ -8,7 +8,7 @@ import {
   SwapExecution,
   SwapExecution_Trace,
 } from "@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb";
-import { fetchAllTokenAssets } from "@/old/utils/token/tokenFetch";
+import { useTokenAssetsDeprecated } from "@/fetchers/tokenAssets";
 import { Token } from "@/old/utils/types/token";
 import { LoadingSpinner } from "@/old/components/util/loadingSpinner";
 
@@ -26,6 +26,7 @@ export default function Swaps() {
     Record<string, Token>
   >({});
   const [isLoading, setIsLoading] = useState(true);
+  const { data: tokenAssets } = useTokenAssetsDeprecated();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -72,7 +73,6 @@ export default function Swaps() {
 
           setSwapExecutions(swaps as SwapExecution[]);
 
-          const tokenAssets = fetchAllTokenAssets();
           const metadataByAssetId: Record<string, Token> = {};
           tokenAssets.forEach((asset) => {
             metadataByAssetId[asset.inner] = {
@@ -94,7 +94,7 @@ export default function Swaps() {
       setIsLoading(false); // Set loading to false after fetching is complete
     };
     fetchData();
-  }, []);
+  }, [tokenAssets.length]);
 
   return isLoading ? (
     <Box
@@ -144,9 +144,11 @@ export default function Swaps() {
                 >
                   Block #{swapExecution.blockHeight}
                 </Link>
-                <Link href={poolLink} color="var(--complimentary-background)">
-                  View {startAssetDisplay}:{endAssetDisplay} Pool
-                </Link>
+                {startAssetDisplay && endAssetDisplay && (
+                  <Link href={poolLink} color="var(--complimentary-background)">
+                    View {startAssetDisplay}:{endAssetDisplay} Pool
+                  </Link>
+                )}
               </Stack>
 
               {swapExecution.swapExecution.traces.map(
