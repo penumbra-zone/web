@@ -5,20 +5,21 @@
 import { useState, useEffect } from 'react';
 import { VStack, HStack, Box, Select, Button, Avatar } from '@chakra-ui/react';
 import Layout from '@/old/components/layout';
-import { fetchAllTokenAssets } from '@/old/utils/token/tokenFetch';
+import { useTokenAssetsDeprecated } from '@/fetchers/tokenAssets';
 import { LoadingSpinner } from '@/old/components/util/loadingSpinner';
 import { Token } from '@/old/utils/types/token';
 
 export default function Pairs() {
     const [isLoading, setIsLoading] = useState(true);
     const [tokenAssets, setTokenAssets] = useState<Token[]>([]);
+    const { data: tokenAssetsList } = useTokenAssetsDeprecated();
 
     const [firstAsset, setFirstAsset] = useState('');
     const [secondAsset, setSecondAsset] = useState('');
 
     useEffect(() => {
         setIsLoading(true)
-        const tokens : Token[] = fetchAllTokenAssets().sort((a, b) => a.display > b.display ? 1 : b.display > a.display ? -1 : 0);
+        const tokens : Token[] = tokenAssetsList.sort((a, b) => a.display > b.display ? 1 : b.display > a.display ? -1 : 0);
         if (tokens.length > 0 && tokenAssets.length === 0) {
             setTokenAssets(tokens)
         }

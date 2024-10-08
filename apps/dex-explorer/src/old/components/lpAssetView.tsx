@@ -7,7 +7,7 @@ import {
   LiquidityPositionEvent,
   PositionExecutionEvent,
 } from "@/old/utils/indexer/types/lps";
-import { fetchTokenAsset } from "@/old/utils/token/tokenFetch";
+import { useTokenAssetDeprecated } from "@/fetchers/tokenAssets";
 import { fromBaseUnit } from "@/old/utils/math/hiLo";
 import { base64ToUint8Array } from "@/old/utils/math/base64";
 import { Token } from "@/old/utils/types/token";
@@ -18,82 +18,17 @@ interface LPAssetViewProps {
 }
 
 const LPAssetView: FC<LPAssetViewProps> = ({ sectionTitle, lp_event }) => {
-  // States for tokens
-  const [asset1Token, setAsset1Token] = useState<Token>({
-    symbol: "UNKNOWN",
-    display: "UNKNOWN",
-    decimals: 0,
-    inner: "UNKNOWN",
-    imagePath: "UNKNOWN",
-  });
-  const [asset2Token, setAsset2Token] = useState<Token>({
-    symbol: "UNKNOWN",
-    display: "UNKNOWN",
-    decimals: 0,
-    inner: "UNKNOWN",
-    imagePath: "UNKNOWN",
-  });
-  const [assetError, setAssetError] = useState<string | undefined>();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { asset1, asset2 } = lp_event.lpevent_attributes?.tradingPair
+    ?? lp_event.execution_event_attributes?.tradingPair;
+
+  const { data: asset1Token } = useTokenAssetDeprecated(asset1 && base64ToUint8Array(asset1.inner));
+  const { data: asset2Token } = useTokenAssetDeprecated(asset2 && base64ToUint8Array(asset2.inner));
+
   const [reserves1, setReserves1] = useState<number>(0);
   const [reserves2, setReserves2] = useState<number>(0);
 
   useEffect(() => {
-    // Function to fetch tokens asynchronously
-    const fetchTokens = async () => {
-      setIsLoading(true);
-      try {
-        let asset1;
-        let asset2;
-
-        if ("lpevent_attributes" in lp_event) {
-          asset1 = base64ToUint8Array(
-            lp_event.lpevent_attributes.tradingPair!.asset1.inner
-          );
-          asset2 = base64ToUint8Array(
-            lp_event.lpevent_attributes.tradingPair!.asset2.inner
-          );
-        } else {
-          asset1 = base64ToUint8Array(
-            lp_event.execution_event_attributes.tradingPair!.asset1.inner
-          );
-          asset2 = base64ToUint8Array(
-            lp_event.execution_event_attributes.tradingPair!.asset2.inner
-          );
-        }
-
-        if (asset1) {
-          const fetchedAsset1Token = fetchTokenAsset(asset1)
-          if (!fetchedAsset1Token) {
-            setAssetError("Asset 1 token not found");
-            throw new Error("Asset 1 token not found");
-          }
-          setAsset1Token(fetchedAsset1Token);
-        }
-
-        if (asset2) {
-          const fetchedAsset2Token = fetchTokenAsset(asset2)
-          // const fetchedAsset2Token = await fetchToken(asset2);
-          if (!fetchedAsset2Token) {
-            setAssetError("Asset 2 token not found");
-            throw new Error("Asset 2 token not found");
-          }
-          setAsset2Token(fetchedAsset2Token);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-      setIsLoading(false);
-    };
-
-    fetchTokens();
-  }, [lp_event]);
-
-  if (!isLoading && (!asset1Token || !asset2Token)) {
-    return <div>{`LP exists, but ${assetError}.`}</div>;
-  }
-
-  useEffect(() => {
+    if (!asset1Token) return;
     // number to bigint
     // if undefined, default to 0
     let reserves1;

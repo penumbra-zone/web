@@ -17,11 +17,13 @@ import {
 import TimelinePosition from "@/old/components/liquidityPositions/timelinePosition";
 import ExecutionEvent from "@/old/components/liquidityPositions/executionEvent";
 import { ChevronDownIcon } from "@chakra-ui/icons";
+import { useTokenAssetsDeprecated } from "@/fetchers/tokenAssets";
 
 export default function LP() {
   const [isLoading, setIsLoading] = useState(true);
   const [isTimelineLoading, setIsTimelineLoading] = useState(true);
   const [isLineLoading, setIsLineLoading] = useState(true);
+  const { data: assetTokens } = useTokenAssetsDeprecated();
 
   const EXPAND_BUTTON_TYPE_FLAG = "ExpandButton";
 
@@ -215,7 +217,7 @@ export default function LP() {
   return (
     <Layout pageTitle={`LP - ${lp_nft_id}`}>
       <main className={styles.main}>
-        {isLoading || isTimelineLoading || isLineLoading ? (
+        {isLoading || isTimelineLoading || isLineLoading || !assetTokens.length ? (
           <LoadingSpinner />
         ) : liquidityPosition ? (
           <>
