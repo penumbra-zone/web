@@ -31,7 +31,7 @@ export default async function positionsByPriceHandler(
     }
 
     // Get token 1 & 2
-    const tokenAssets = fetchAllTokenAssets();
+    const tokenAssets = fetchAllTokenAssets(process.env.PENUMBRA_CHAIN_ID);
     const asset1Token = tokenAssets.find(
       (x) => x.display.toLocaleLowerCase() === token1.toLocaleLowerCase()
     );

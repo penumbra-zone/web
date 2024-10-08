@@ -16,7 +16,6 @@ import { BlockDetailedSummaryData } from "@/old/utils/types/block";
 import { BlockInfo, LiquidityPositionEvent } from "@/old/utils/indexer/types/lps";
 import { SwapExecutionWithBlockHeight } from "@/old/utils/protos/types/DexQueryServiceClientInterface";
 import { LoadingSpinner } from "@/old/components/util/loadingSpinner";
-import { Constants } from "@/old/utils/configConstants";
 import { formatTimestampShort } from "@/old/components/blockTimestamp";
 import { AddIcon, MinusIcon } from "@chakra-ui/icons";
 import { innerToBech32Address } from "@/old/utils/math/bech32";
@@ -25,9 +24,10 @@ import {
   SwapExecution_Trace,
 } from "@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb";
 import BigNumber from "bignumber.js";
-import { fetchAllTokenAssets } from "@/old/utils/token/tokenFetch";
+import { useTokenAssetsDeprecated } from "@/fetchers/tokenAssets";
 import { Token } from "@/old/utils/types/token";
 import { fromBaseUnit } from "@/old/utils/math/hiLo";
+import { useEnv } from "@/fetchers/env";
 
 export const Price = ({
   trace,
@@ -295,6 +295,7 @@ export const ArbSummary = ({
 export default function Block() {
   const router = useRouter();
   const { block_height } = router.query as { block_height: string };
+  const { data: env } = useEnv();
   console.log(router);
   console.log(router.query);
 
@@ -438,7 +439,7 @@ export default function Block() {
   }) => {
     // ! Expand default
     const [isExpanded, setIsExpanded] = useState(false); // EXPAND
-    const tokenAssets = fetchAllTokenAssets();
+    const { data: tokenAssets } = useTokenAssetsDeprecated();
     const metadataByAssetId: Record<string, Token> = {};
     tokenAssets.forEach((asset) => {
       metadataByAssetId[asset.inner] = {
@@ -653,7 +654,9 @@ export default function Block() {
             </Text>
             <Text>
               <a
-                href={Constants.cuiloaUrl + "/block/" + blockHeight}
+                href={env?.PENUMBRA_CUILOA_URL
+                  ? env.PENUMBRA_CUILOA_URL + "/block/" + blockHeight
+                  : ''}
                 target="_blank"
                 rel="noreferrer"
                 style={{

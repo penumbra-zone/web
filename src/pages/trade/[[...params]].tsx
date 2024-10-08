@@ -16,7 +16,7 @@ import OHLCChart from '@/old/components/charts/ohlcChart';
 import BuySellChart from '@/old/components/charts/buySellChart';
 import PairSelector from '@/old/components/pairSelector';
 import { Token } from '@/old/utils/types/token';
-import { fetchAllTokenAssets } from '@/old/utils/token/tokenFetch';
+import { useTokenAssetsDeprecated } from '@/fetchers/tokenAssets';
 // TODO: Better parameter check
 
 // ! Important note: 'sell' side here refers to selling asset1 for asset2, so its really DEMAND for buying asset 1, anc vice versa for 'buy' side
@@ -26,6 +26,7 @@ export default function TradingPairs() {
   const [isLPsLoading, setIsLPsLoading] = useState(true);
   const [isChartLoading, setIsChartLoading] = useState(true);
   const [error, setError] = useState<string | undefined>();
+  const { data: tokenAssets } = useTokenAssetsDeprecated();
 
   // Pairs are in the form of baseToken:quoteToken
   const router = useRouter();
@@ -37,8 +38,8 @@ export default function TradingPairs() {
   useEffect(() => {
     // Check if there are no query params
     if (!router.asPath.includes('[[...params]]') && !router.query.params) {
-      // Redirect to /trade/penumbra:usdc
-      router.push('/trade/penumbra:usdc');
+      // Redirect to /trade/penumbra:gm
+      router.push('/trade/penumbra:gm');
     }
   }, [router.query]);
 
@@ -132,7 +133,6 @@ export default function TradingPairs() {
     setIsLoading(true);
 
     // Get token 1 & 2
-    const tokenAssets = fetchAllTokenAssets();
     const asset1Token = tokenAssets.find(
       x => x.display.toLocaleLowerCase() === token1Symbol.toLocaleLowerCase(),
     );
@@ -208,7 +208,7 @@ export default function TradingPairs() {
       .finally(() => {
         setIsLoading(false);
       });
-  }, [token1Symbol, token2Symbol]);
+  }, [tokenAssets.length, token1Symbol, token2Symbol]);
 
   const [lpsBuySide, setLPsBuySide] = useState<Position[]>([]);
   const [lpsSellSide, setLPsSellSide] = useState<Position[]>([]);
@@ -218,7 +218,6 @@ export default function TradingPairs() {
 
     try {
       // Get token 1 & 2
-      const tokenAssets = fetchAllTokenAssets();
       const asset1Token = tokenAssets.find(
         x => x.display.toLocaleLowerCase() === token1Symbol.toLocaleLowerCase(),
       );
@@ -272,7 +271,7 @@ export default function TradingPairs() {
       setError('Error querying liquidity positions');
       setIsLPsLoading(false);
     }
-  }, [token1Symbol, token2Symbol]);
+  }, [tokenAssets.length, token1Symbol, token2Symbol]);
 
   useEffect(() => {
     setIsChartLoading(true);
