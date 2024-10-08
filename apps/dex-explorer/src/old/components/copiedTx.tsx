@@ -3,7 +3,7 @@
 import React, { FC, useState } from "react";
 import { CopyIcon } from "@radix-ui/react-icons";
 import { HStack } from "@chakra-ui/react";
-import { Constants } from "@/old/utils/configConstants";
+import { useEnv } from "@/fetchers/env";
 
 interface CopyTxToClipboardProps {
   txHash: string;
@@ -14,6 +14,7 @@ const CopyTxToClipboard: FC<CopyTxToClipboardProps> = ({
   txHash,
   clipboardPopupText,
 }) => {
+  const env = useEnv();
   const [isCopied, setIsCopied] = useState(false);
 
   const handleCopy = () => {
@@ -26,7 +27,7 @@ const CopyTxToClipboard: FC<CopyTxToClipboardProps> = ({
   return (
     <HStack align={"center"} spacing={".5em"}>
       <a
-        href={`${Constants.cuiloaUrl}/transaction/${txHash}`}
+        href={`${env?.PENUMBRA_CUILOA_URL}/transaction/${txHash}`}
         target="_blank"
         rel="noreferrer"
         style={{
