@@ -1,7 +1,9 @@
 import {
+  generate_noble_addr,
   generate_spend_key,
   get_address_by_index,
   get_ephemeral_address,
+  get_forwarding_address_for_sequence,
   get_full_viewing_key,
   get_wallet_id,
 } from '../wasm/index.js';
@@ -30,3 +32,16 @@ export const getEphemeralByIndex = (fullViewingKey: FullViewingKey, index: numbe
 
 export const getWalletId = (fullViewingKey: FullViewingKey) =>
   WalletId.fromBinary(get_wallet_id(fullViewingKey.toBinary()));
+
+export const getForwardingAddressForSequence = (
+  sequence: number,
+  fvk: FullViewingKey,
+  account?: number,
+): Address => {
+  const res = get_forwarding_address_for_sequence(sequence, fvk.toBinary(), account);
+  return Address.fromBinary(res);
+};
+
+export const generateNobleAddr = (address: Address, channel: string): string => {
+  return generate_noble_addr(address.toBinary(), channel);
+};

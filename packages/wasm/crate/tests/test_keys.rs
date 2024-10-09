@@ -6,8 +6,8 @@ use penumbra_keys::keys::{
 use penumbra_keys::{Address, FullViewingKey};
 use penumbra_proto::{DomainType, Message};
 use penumbra_wasm::keys::{
-    generate_spend_key, get_address_by_index, get_full_viewing_key, get_wallet_id,
-    is_controlled_address,
+    forwarding_addr_inner, generate_spend_key, get_address_by_index, get_full_viewing_key,
+    get_wallet_id, is_controlled_address,
 };
 use rand_core::OsRng;
 use std::str::FromStr;
@@ -86,4 +86,40 @@ fn returns_false_on_unknown_addr() {
             .payment_address(AddressIndex::from(0u32))
             .0;
     assert!(!is_controlled_address(&fvk.encode_to_vec(), &other_address.encode_to_vec()).unwrap());
+}
+
+#[test]
+fn test_forwarding_addr_sequence_variation() {
+    let spend_key = generate_spend_key(TEST_SEED_PHRASE).unwrap();
+    let fvk_bytes = get_full_viewing_key(spend_key.as_slice()).unwrap();
+    let fvk = FullViewingKey::decode(fvk_bytes.as_slice()).unwrap();
+
+    // Use two different sequences
+    let sequence1 = 1234;
+    let sequence2 = 5678;
+    let account = Some(1);
+
+    let address1 = forwarding_addr_inner(sequence1, account, &fvk);
+    let address2 = forwarding_addr_inner(sequence2, account, &fvk);
+
+    // Check that the addresses are different
+    assert_ne!(address1, address2);
+}
+
+#[test]
+fn test_forwarding_addr_account_variation() {
+    let spend_key = generate_spend_key(TEST_SEED_PHRASE).unwrap();
+    let fvk_bytes = get_full_viewing_key(spend_key.as_slice()).unwrap();
+    let fvk = FullViewingKey::decode(fvk_bytes.as_slice()).unwrap();
+
+    let sequence = 1234;
+
+    let account1 = Some(1);
+    let account2 = Some(2);
+
+    let address1 = forwarding_addr_inner(sequence, account1, &fvk);
+    let address2 = forwarding_addr_inner(sequence, account2, &fvk);
+
+    // Check that the addresses are different
+    assert_ne!(address1, address2);
 }
