@@ -18,6 +18,10 @@
             just
             pnpm
             postgresql
+
+            # for deployment/ci
+            doctl
+            kubectl
           ];
         };
       });
