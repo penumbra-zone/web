@@ -4,26 +4,26 @@ import {
   DirectedTradingPair,
   SwapExecution,
   CandlestickData,
-} from "@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb";
+} from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 
 export interface DexQueryServiceClientInterface {
   liquidityPositionById(id: PositionId): Promise<Position | undefined>;
   liquidityPositionsByPrice(
     directedTradingPair: DirectedTradingPair,
-    limit: number
+    limit: number,
   ): Promise<Position[] | undefined>;
   arbExecutions(
     starHheight: number,
-    endHeight: number
+    endHeight: number,
   ): Promise<SwapExecutionWithBlockHeight[] | undefined>;
   swapExecutions(
     startHeight: number,
-    endHeight: number
+    endHeight: number,
   ): Promise<SwapExecutionWithBlockHeight[] | undefined>;
   candlestickData(
     tradingPair: DirectedTradingPair,
     limit: number,
-    startHeight: number
+    startHeight: number,
   ): Promise<CandlestickData[] | undefined>;
 }
 

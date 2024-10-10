@@ -1,16 +1,13 @@
 // @ts-nocheck
 /* eslint-disable -- disabling this file as this was created before our strict rules */
 // pages/api/shieldedPool/[token_inner].ts
-import { ShieldedPoolQuerier } from "@/old/utils/protos/services/app/shielded-pool";
-import { base64ToUint8Array } from "@/old/utils/math/base64";
-import {
-  AssetId,
-  Metadata,
-} from "@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb";
+import { ShieldedPoolQuerier } from '@/old/utils/protos/services/app/shielded-pool';
+import { base64ToUint8Array } from '@/old/utils/math/base64';
+import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
 const grpcEndpoint = process.env.PENUMBRA_GRPC_ENDPOINT!;
 if (!grpcEndpoint) {
-  throw new Error("PENUMBRA_GRPC_ENDPOINT is not set");
+  throw new Error('PENUMBRA_GRPC_ENDPOINT is not set');
 }
 
 export default async function assetMetadataHandler(req: any, res: any) {
@@ -31,9 +28,7 @@ export default async function assetMetadataHandler(req: any, res: any) {
 
     res.status(200).json(data!);
   } catch (error) {
-    console.error("Error fetching asset metadata grpc data:", error);
-    res
-      .status(500)
-      .json({ error: `Error fetching asset metadata grpc data: ${error}` });
+    console.error('Error fetching asset metadata grpc data:', error);
+    res.status(500).json({ error: `Error fetching asset metadata grpc data: ${error}` });
   }
 }

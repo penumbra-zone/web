@@ -2,15 +2,15 @@
 /* eslint-disable -- disabling this file as this was created before our strict rules */
 // pages/api/ohlc/[...params].ts
 
-import { DexQueryServiceClient } from "@/old/utils/protos/services/dex/dex-query-service-client";
-import { NextApiRequest, NextApiResponse } from "next";
+import { DexQueryServiceClient } from '@/old/utils/protos/services/dex/dex-query-service-client';
+import { NextApiRequest, NextApiResponse } from 'next';
 import {
   CandlestickData,
   DirectedTradingPair,
-} from "@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb";
-import { AssetId } from "@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb";
-import { base64ToUint8Array } from "@/old/utils/math/base64";
-import { fetchAllTokenAssets } from "@/old/utils/token/tokenFetch";
+} from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
+import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { base64ToUint8Array } from '@/old/utils/math/base64';
+import { fetchAllTokenAssets } from '@/old/utils/token/tokenFetch';
 
 const grpcEndpoint = process.env.PENUMBRA_GRPC_ENDPOINT!;
 if (!grpcEndpoint) {

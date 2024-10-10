@@ -1,7 +1,7 @@
 export const getSyncPercent = (
   fullSyncHeight: bigint,
   latestKnownBlockHeight: bigint,
-): { syncPercent: number, syncPercentStringified: string } => {
+): { syncPercent: number; syncPercentStringified: string } => {
   let percentSyncedNumber = 0;
   if (latestKnownBlockHeight) {
     percentSyncedNumber = Number(fullSyncHeight) / Number(latestKnownBlockHeight);
@@ -16,5 +16,5 @@ export const getSyncPercent = (
   return {
     syncPercent: roundedPercentSyncedNumber / 100,
     syncPercentStringified: `${roundedPercentSyncedNumber}%`,
-  }
+  };
 };

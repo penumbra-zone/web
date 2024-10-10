@@ -2,10 +2,10 @@
 /* eslint-disable -- disabling this file as this was created before our strict rules */
 // components/Layout.js
 
-import Head from "next/head";
-import styles from "@/Home.module.css";
-import { Navbar } from "./navbar";
-import React from "react";
+import Head from 'next/head';
+import styles from '@/Home.module.css';
+import { Navbar } from './navbar';
+import React from 'react';
 
 interface LayoutProps {
   children?: React.ReactNode;
@@ -17,10 +17,10 @@ const Layout = ({ children, pageTitle }: LayoutProps) => {
     <>
       <Head>
         <title className={styles.title}>{pageTitle}</title>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel='icon' href='/favicon.ico' />
       </Head>
-      <header className={styles.header} >
-        <Navbar/>
+      <header className={styles.header}>
+        <Navbar />
       </header>
       <main>{children}</main>
       <footer>{/* Footer */}</footer>
