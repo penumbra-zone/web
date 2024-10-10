@@ -1,14 +1,14 @@
 import { ReactNode } from 'react';
 import '@/v2.css';
-import { StyledComponentsRegistry } from './StyleRegistry';
+import { Providers } from './Providers';
 
 const RootLayout = ({ children }: { children: ReactNode }) => {
   return (
     <html lang="en">
       <body>
-        <StyledComponentsRegistry>
+        <Providers>
           {children}
-        </StyledComponentsRegistry>
+        </Providers>
       </body>
     </html>
   )
