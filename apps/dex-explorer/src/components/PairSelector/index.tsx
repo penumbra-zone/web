@@ -18,51 +18,46 @@ export interface PairSelectorProps {
   disabled?: boolean;
 }
 
-export const PairSelector = observer(({
-  from,
-  onFromChange,
-  to,
-  onToChange,
-  disabled,
-  dialogTitle,
-}: PairSelectorProps) => {
-  const { data: assets } = useAssets();
-  const { data: balances } = useBalances();
+export const PairSelector = observer(
+  ({ from, onFromChange, to, onToChange, disabled, dialogTitle }: PairSelectorProps) => {
+    const { data: assets } = useAssets();
+    const { data: balances } = useBalances();
 
-  const onSwap = () => {
-    onFromChange?.(to);
-    onToChange?.(from);
-  };
+    const onSwap = () => {
+      onFromChange?.(to);
+      onToChange?.(from);
+    };
 
-  return (
-    <div className="flex gap-2">
-      <AssetSelector
-        value={from}
-        assets={assets}
-        balances={balances}
-        disabled={disabled}
-        dialogTitle={dialogTitle}
-        onChange={onFromChange}
-      />
+    return (
+      <div className='flex gap-2'>
+        <AssetSelector
+          value={from}
+          assets={assets}
+          balances={balances}
+          disabled={disabled}
+          dialogTitle={dialogTitle}
+          onChange={onFromChange}
+        />
 
-      <Button
-        priority='primary'
-        iconOnly
-        icon={ArrowLeftRight}
-        disabled={disabled}
-        onClick={onSwap}
-      >
-        Swap
-      </Button>
+        <Button
+          priority='primary'
+          iconOnly
+          icon={ArrowLeftRight}
+          disabled={disabled}
+          onClick={onSwap}
+        >
+          Swap
+        </Button>
 
-      <AssetSelector
-        value={to}
-        assets={assets}
-        balances={balances}
-        disabled={disabled}
-        dialogTitle={dialogTitle}
-        onChange={onToChange}
-      />
-    </div>
-  );
-});
+        <AssetSelector
+          value={to}
+          assets={assets}
+          balances={balances}
+          disabled={disabled}
+          dialogTitle={dialogTitle}
+          onChange={onToChange}
+        />
+      </div>
+    );
+  },
+);

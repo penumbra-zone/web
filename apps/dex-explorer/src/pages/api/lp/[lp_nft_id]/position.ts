@@ -1,15 +1,15 @@
 // @ts-nocheck
 /* eslint-disable -- disabling this file as this was created before our strict rules */
 // pages/api/lp/[lp_nft_id]/position.ts
-import { DexQueryServiceClient } from "@/old/utils/protos/services/dex/dex-query-service-client";
+import { DexQueryServiceClient } from '@/old/utils/protos/services/dex/dex-query-service-client';
 import {
   PositionId,
   Position,
-} from "@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb";
+} from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 
 const grpcEndpoint = process.env.PENUMBRA_GRPC_ENDPOINT!;
 if (!grpcEndpoint) {
-  throw new Error("PENUMBRA_GRPC_ENDPOINT is not set");
+  throw new Error('PENUMBRA_GRPC_ENDPOINT is not set');
 }
 
 export default async function liquidityPositionDataHandler(req: any, res: any) {
@@ -28,9 +28,7 @@ export default async function liquidityPositionDataHandler(req: any, res: any) {
 
     res.status(200).json(data!);
   } catch (error) {
-    console.error("Error fetching liquidity position grpc data:", error);
-    res
-      .status(500)
-      .json({ error: `Error fetching liquidity position grpc data: ${error}` });
+    console.error('Error fetching liquidity position grpc data:', error);
+    res.status(500).json({ error: `Error fetching liquidity position grpc data: ${error}` });
   }
 }
