@@ -8,9 +8,7 @@ import { StyledComponentsRegistry } from './StyleRegistry';
 export const Providers = ({ children }: { children: ReactNode }) => {
   return (
     <StyledComponentsRegistry>
-      <QueryClientProvider client={queryClient}>
-        {children}
-      </QueryClientProvider>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </StyledComponentsRegistry>
   );
 };

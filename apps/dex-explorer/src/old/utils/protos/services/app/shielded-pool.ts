@@ -1,13 +1,10 @@
 // @ts-nocheck
 /* eslint-disable -- disabling this file as this was created before our strict rules */
-import { PromiseClient } from "@connectrpc/connect";
-import { createClient } from "../utils";
-import { ShieldedPoolService } from "@penumbra-zone/protobuf";
-import {
-  AssetId,
-  Metadata,
-} from "@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb";
-import { ShieldedPoolQuerierInterface } from "../../types/ShieldedPoolQuerier";
+import { PromiseClient } from '@connectrpc/connect';
+import { createClient } from '../utils';
+import { ShieldedPoolService } from '@penumbra-zone/protobuf';
+import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { ShieldedPoolQuerierInterface } from '../../types/ShieldedPoolQuerier';
 
 export class ShieldedPoolQuerier implements ShieldedPoolQuerierInterface {
   private readonly client: PromiseClient<typeof ShieldedPoolService>;

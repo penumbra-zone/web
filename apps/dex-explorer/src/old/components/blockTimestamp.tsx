@@ -1,7 +1,7 @@
 // @ts-nocheck
 /* eslint-disable -- disabling this file as this was created before our strict rules */
-import React, { FC } from "react";
-import { HStack , Text } from "@chakra-ui/react";
+import React, { FC } from 'react';
+import { HStack, Text } from '@chakra-ui/react';
 
 interface BlockTimestampProps {
   blockHeight: number;
@@ -10,37 +10,34 @@ interface BlockTimestampProps {
 
 export function formatTimestampShort(timestamp: string) {
   const date = new Date(timestamp);
-  const month = date.toLocaleString("en-US", { month: "short" });
+  const month = date.toLocaleString('en-US', { month: 'short' });
   const day = date.getUTCDate();
   const year = String(date.getUTCFullYear());
-  const hour = String(date.getUTCHours()).padStart(2, "0");
-  const minute = String(date.getUTCMinutes()).padStart(2, "0");
+  const hour = String(date.getUTCHours()).padStart(2, '0');
+  const minute = String(date.getUTCMinutes()).padStart(2, '0');
 
   return `${month} ${day}, ${year}\n${hour}:${minute} UTC`;
 }
 
 export const formatTimestampOrDefault = (timestamp: any) => {
-  if (timestamp === undefined || timestamp === "") {
-    return "Missing data in indexer to display timestamp";
+  if (timestamp === undefined || timestamp === '') {
+    return 'Missing data in indexer to display timestamp';
   }
   return formatTimestampShort(timestamp);
 };
 
-const BlockTimestampView: FC<BlockTimestampProps> = ({
-  blockHeight,
-  timestamp,
-}) => {
+const BlockTimestampView: FC<BlockTimestampProps> = ({ blockHeight, timestamp }) => {
   return (
     <Text
-      fontSize="xs"
+      fontSize='xs'
       style={{
-        color: "var(--light-grey)",
-        display: "flex",
-        fontSize: "small",
-        fontFamily: "monospace",
+        color: 'var(--light-grey)',
+        display: 'flex',
+        fontSize: 'small',
+        fontFamily: 'monospace',
       }}
     >
-      {" "}
+      {' '}
       {formatTimestampOrDefault(timestamp)}
     </Text>
   );
