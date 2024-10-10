@@ -4,13 +4,13 @@ import { Center, VStack, Spinner, Text } from "@chakra-ui/react";
 
 export const LoadingSpinner = () => {
   return (
-    <Center height="100vh">
+    <Center height="100%">
       <VStack spacing={4} align="center" justify="center">
         <Spinner
           thickness="4px"
           speed="0.65s"
-          emptyColor="var(--charcoal)"
-          color="purple.700" 
+          emptyColor="var(--light-grey)"
+          color="purple.700"
           size="xl"
         />
         <Text fontSize="l">Loading</Text>{" "}

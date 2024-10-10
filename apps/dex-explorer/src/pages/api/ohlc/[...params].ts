@@ -14,13 +14,10 @@ import { fetchAllTokenAssets } from "@/old/utils/token/tokenFetch";
 
 const grpcEndpoint = process.env.PENUMBRA_GRPC_ENDPOINT!;
 if (!grpcEndpoint) {
-  throw new Error("PENUMBRA_GRPC_ENDPOINT is not set");
+  throw new Error('PENUMBRA_GRPC_ENDPOINT is not set');
 }
 
-export default async function candleStickData(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function candleStickData(req: NextApiRequest, res: NextApiResponse) {
   const params = req.query.params as string[];
 
   const tokenIn = params[0] || null;
@@ -31,12 +28,14 @@ export default async function candleStickData(
   try {
     const tokenAssets = fetchAllTokenAssets(process.env.PENUMBRA_CHAIN_ID);
     if (!startHeight || !tokenIn || !tokenOut || !limit) {
-      res.status(400).json({ error: "Invalid query parameters" }); return;
+      res.status(400).json({ error: 'Invalid query parameters' });
+      return;
     }
 
     // Set a HARD limit to prevent abuse
     if (parseInt(limit) > 10000) {
-      res.status(400).json({ error: "Limit exceeded" }); return;
+      res.status(400).json({ error: 'Limit exceeded' });
+      return;
     }
 
     const dex_querier = new DexQueryServiceClient({
@@ -44,15 +43,16 @@ export default async function candleStickData(
     });
 
     const tokenInInner = tokenAssets.find(
-      (x) => x.display.toLowerCase() === tokenIn.toLowerCase()
+      x => x.display.toLowerCase() === tokenIn.toLowerCase(),
     )?.inner;
     const tokenOutInner = tokenAssets.find(
-      (x) => x.display.toLowerCase() === tokenOut.toLowerCase()
+      x => x.display.toLowerCase() === tokenOut.toLowerCase(),
     )?.inner;
     if (!tokenInInner || !tokenOutInner) {
       res.status(400).json({
         error: `Invalid token pair, a token was not found: ${tokenIn} ${tokenOut}`,
-      }); return;
+      });
+      return;
     }
 
     const tradingPair = new DirectedTradingPair();
@@ -64,12 +64,12 @@ export default async function candleStickData(
     const data = await dex_querier.candlestickData(
       tradingPair,
       parseInt(startHeight),
-      parseInt(limit)
+      parseInt(limit),
     );
 
     res.status(200).json(data as CandlestickData[]);
   } catch (error) {
-    console.error("Error getting candlestick by grpc data:", error);
+    console.error('Error getting candlestick by grpc data:', error);
     res.status(500).json({
       error: `Error getting candlestick by grpc data: ${error}`,
     });
