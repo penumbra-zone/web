@@ -1,7 +1,10 @@
 import { DexQueryServiceClient } from '@/old/utils/protos/services/dex/dex-query-service-client';
 import { IndexerQuerier } from '@/old/utils/indexer/connector';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { CandlestickData, DirectedTradingPair } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
+import {
+  CandlestickData,
+  DirectedTradingPair,
+} from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { base64ToUint8Array } from '@/old/utils/math/base64';
 import { fetchAllTokenAssets } from '@/old/utils/token/tokenFetch';
@@ -38,7 +41,10 @@ function fillBlocks(startHeight: number, endHeight: number) {
   return Array.from({ length: endHeight - startHeight + 1 }, (_, i) => startHeight + i);
 }
 
-async function getTimestampsByBlockheight(startHeight: number, limit: number): Promise<Record<string, string>> {
+async function getTimestampsByBlockheight(
+  startHeight: number,
+  limit: number,
+): Promise<Record<string, string>> {
   const indexerQuerier = new IndexerQuerier(process.env['PENUMBRA_INDEXER_ENDPOINT'] ?? '');
 
   if (startHeight === 0) {
@@ -68,7 +74,12 @@ async function getTimestampsByBlockheight(startHeight: number, limit: number): P
 }
 
 export default async function candleStickData(req: NextApiRequest, res: NextApiResponse) {
-  const { symbol1, symbol2, startHeight: startHeightQuery, limit: limitQuery } = req.query as QueryParams;
+  const {
+    symbol1,
+    symbol2,
+    startHeight: startHeightQuery,
+    limit: limitQuery,
+  } = req.query as QueryParams;
   const startHeight = Number(startHeightQuery);
   const limit = Number(limitQuery);
 
@@ -94,7 +105,9 @@ export default async function candleStickData(req: NextApiRequest, res: NextApiR
     return;
   }
 
-  const dexQuerier = new DexQueryServiceClient({ grpcEndpoint: process.env['PENUMBRA_GRPC_ENDPOINT'] ?? '' });
+  const dexQuerier = new DexQueryServiceClient({
+    grpcEndpoint: process.env['PENUMBRA_GRPC_ENDPOINT'] ?? '',
+  });
   const tradingPair = getDirectedTradingPair(asset1, asset2);
   const reversePair = getDirectedTradingPair(asset2, asset1);
 
@@ -108,12 +121,15 @@ export default async function candleStickData(req: NextApiRequest, res: NextApiR
   const mergedCandles = mergeCandles(candlesFwd, candlesRev);
 
   const candlesWithTime = mergedCandles
-    .map((candle: CandlestickData) => (({
-      ...candle,
-      height: candle.height.toString(),
-      time: new Date(timestampsByHeight[candle.height.toString()] ?? '').getTime(),
-    }) as Candle))
-    .filter((candle) => !Number.isNaN(candle.time))
+    .map(
+      (candle: CandlestickData) =>
+        ({
+          ...candle,
+          height: candle.height.toString(),
+          time: new Date(timestampsByHeight[candle.height.toString()] ?? '').getTime(),
+        }) as Candle,
+    )
+    .filter(candle => !Number.isNaN(candle.time));
 
   res.status(200).json(candlesWithTime);
 }

@@ -67,6 +67,6 @@ export interface PositionExecutionEvent {
 }
 
 export interface BlockInfo {
-  height: number,
-  created_at: string,
+  height: number;
+  created_at: string;
 }

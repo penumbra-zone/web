@@ -2,9 +2,9 @@
 /* eslint-disable -- disabling this file as this was created before our strict rules */
 // pages/tradingPairs/index.tsx
 
-import React, { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/router";
-import Layout from "@/old/components/layout";
+import React, { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/router';
+import Layout from '@/old/components/layout';
 import {
   VStack,
   Text,
@@ -16,20 +16,20 @@ import {
   Button,
   ButtonGroup,
   Stack,
-} from "@chakra-ui/react";
-import { useSearchParams } from "next/navigation";
+} from '@chakra-ui/react';
+import { useSearchParams } from 'next/navigation';
 import {
   Position,
   SwapExecution,
-} from "@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb";
-import { LoadingSpinner } from "@/old/components/util/loadingSpinner";
-import { base64ToUint8Array } from "@/old/utils/math/base64";
-import { joinLoHi, splitLoHi } from "@/old/utils/math/hiLo";
-import DepthChart from "@/old/components/charts/depthChart";
-import OHLCChart from "@/old/components/charts/ohlcChart";
-import BuySellChart from "@/old/components/charts/buySellChart";
-import { Token } from "@/old/utils/types/token";
-import { useTokenAssetsDeprecated } from "@/fetchers/tokenAssets";
+} from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
+import { LoadingSpinner } from '@/old/components/util/loadingSpinner';
+import { base64ToUint8Array } from '@/old/utils/math/base64';
+import { joinLoHi, splitLoHi } from '@/old/utils/math/hiLo';
+import DepthChart from '@/old/components/charts/depthChart';
+import OHLCChart from '@/old/components/charts/ohlcChart';
+import BuySellChart from '@/old/components/charts/buySellChart';
+import { Token } from '@/old/utils/types/token';
+import { useTokenAssetsDeprecated } from '@/fetchers/tokenAssets';
 // TODO: Better parameter check
 
 // ! Important note: 'sell' side here refers to selling asset1 for asset2, so its really DEMAND for buying asset 1, anc vice versa for 'buy' side
@@ -40,13 +40,13 @@ export default function TradingPairs() {
   const [isChartLoading, setIsChartLoading] = useState(true);
   const [error, setError] = useState<string | undefined>();
   const searchParams = useSearchParams();
-  const [activeChart, setActiveChart] = useState<"Depth" | "OHLC">("Depth");
+  const [activeChart, setActiveChart] = useState<'Depth' | 'OHLC'>('Depth');
   const { data: tokenAssets } = useTokenAssetsDeprecated();
 
   // Pairs are in the form of baseToken:quoteToken
   const router = useRouter();
-  const [token1Symbol, setToken1Symbol] = useState<string>("unknown");
-  const [token2Symbol, setToken2Symbol] = useState<string>("unknown");
+  const [token1Symbol, setToken1Symbol] = useState<string>('unknown');
+  const [token2Symbol, setToken2Symbol] = useState<string>('unknown');
 
   useEffect(() => {
     const params = router.query as { params: string[] | string | undefined };
@@ -55,14 +55,14 @@ export default function TradingPairs() {
     }
 
     // Concat the whole array into a string, it will split on '/' so rejoin
-    let pair = "";
+    let pair = '';
     if (Array.isArray(params.params)) {
-      pair = params.params.join("/");
+      pair = params.params.join('/');
     } else {
       pair = params.params;
     }
 
-    const [token1, token2] = pair.split(":");
+    const [token1, token2] = pair.split(':');
     setToken1Symbol(token1);
     setToken2Symbol(token2);
   }, [router.query]);
@@ -71,67 +71,64 @@ export default function TradingPairs() {
   const [asset2Token, setAsset2Token] = useState<Token | undefined>();
 
   // Sell Side
-  const [
-    simulatedSingleHopAsset1SellData,
-    setSimulatedSingleHopAsset1SellData,
-  ] = useState<SwapExecution | undefined>(undefined);
-  const [simulatedMultiHopAsset1SellData, setSimulatedMultiHopAsset1SellData] =
-    useState<SwapExecution | undefined>(undefined);
+  const [simulatedSingleHopAsset1SellData, setSimulatedSingleHopAsset1SellData] = useState<
+    SwapExecution | undefined
+  >(undefined);
+  const [simulatedMultiHopAsset1SellData, setSimulatedMultiHopAsset1SellData] = useState<
+    SwapExecution | undefined
+  >(undefined);
 
   // Buy Side
-  const [simulatedSingleHopAsset1BuyData, setSimulatedSingleHopAsset1BuyData] =
-    useState<SwapExecution | undefined>(undefined);
-  const [simulatedMultiHopAsset1BuyData, setSimulatedMultiHopAsset1BuyData] =
-    useState<SwapExecution | undefined>(undefined);
+  const [simulatedSingleHopAsset1BuyData, setSimulatedSingleHopAsset1BuyData] = useState<
+    SwapExecution | undefined
+  >(undefined);
+  const [simulatedMultiHopAsset1BuyData, setSimulatedMultiHopAsset1BuyData] = useState<
+    SwapExecution | undefined
+  >(undefined);
 
   // Depth chart data points, x is price, y is liquidity
 
   // Sell Side
-  const [
-    depthChartMultiHopAsset1SellPoints,
-    setDepthChartMultiHopAsset1SellPoints,
-  ] = useState<
+  const [depthChartMultiHopAsset1SellPoints, setDepthChartMultiHopAsset1SellPoints] = useState<
     {
       x: number;
       y: number;
     }[]
   >([]);
-  const [
-    depthChartSingleHopAsset1SellPoints,
-    setDepthChartSingleHopAsset1SellPoints,
-  ] = useState<{ x: number; y: number }[]>([]);
+  const [depthChartSingleHopAsset1SellPoints, setDepthChartSingleHopAsset1SellPoints] = useState<
+    { x: number; y: number }[]
+  >([]);
 
   // Buy Side
-  const [
-    depthChartMultiHopAsset1BuyPoints,
-    setDepthChartMultiHopAsset1BuyPoints,
-  ] = useState<
+  const [depthChartMultiHopAsset1BuyPoints, setDepthChartMultiHopAsset1BuyPoints] = useState<
     {
       x: number;
       y: number;
     }[]
   >([]);
-  const [
-    depthChartSingleHopAsset1BuyPoints,
-    setDepthChartSingleHopAsset1BuyPoints,
-  ] = useState<{ x: number; y: number }[]>([]);
+  const [depthChartSingleHopAsset1BuyPoints, setDepthChartSingleHopAsset1BuyPoints] = useState<
+    { x: number; y: number }[]
+  >([]);
 
   // ! Note this needs to be kind of extreme for now due to limited 'real' liquidity
   const bestPriceDeviationPercent = 100; // 100%,
   //  Override to 100% to show all liquidity
 
   // Sell Side
-  const [bestAsset1SellPriceMultiHop, setBestAsset1SellPriceMultiHop] =
-    useState<number | undefined>(undefined);
-  const [bestAsset1SellPriceSingleHop, setBestAsset1SellPriceSingleHop] =
-    useState<number | undefined>(undefined);
-
-  // Buy Side
-  const [bestAsset1BuyPriceMultiHop, setBestAsset1BuyPriceMultiHop] = useState<
+  const [bestAsset1SellPriceMultiHop, setBestAsset1SellPriceMultiHop] = useState<
     number | undefined
   >(undefined);
-  const [bestAsset1BuyPriceSingleHop, setBestAsset1BuyPriceSingleHop] =
-    useState<number | undefined>(undefined);
+  const [bestAsset1SellPriceSingleHop, setBestAsset1SellPriceSingleHop] = useState<
+    number | undefined
+  >(undefined);
+
+  // Buy Side
+  const [bestAsset1BuyPriceMultiHop, setBestAsset1BuyPriceMultiHop] = useState<number | undefined>(
+    undefined,
+  );
+  const [bestAsset1BuyPriceSingleHop, setBestAsset1BuyPriceSingleHop] = useState<
+    number | undefined
+  >(undefined);
 
   // TODO: Decide how to set this more intelligently/dynamically
   const unitsToSimulateSelling = 1000000; // 1M units
@@ -142,19 +139,17 @@ export default function TradingPairs() {
 
     // Get token 1 & 2
     const asset1Token = tokenAssets.find(
-      (x) => x.display.toLocaleLowerCase() === token1Symbol.toLocaleLowerCase()
+      x => x.display.toLocaleLowerCase() === token1Symbol.toLocaleLowerCase(),
     );
     const asset2Token = tokenAssets.find(
-      (x) => x.display.toLocaleLowerCase() === token2Symbol.toLocaleLowerCase()
+      x => x.display.toLocaleLowerCase() === token2Symbol.toLocaleLowerCase(),
     );
 
     if (!asset1Token || !asset2Token) {
       setIsLoading(false);
       setIsChartLoading(false);
       setIsLPsLoading(false);
-      setError(
-        `Token not found: ${!asset1Token ? token1Symbol : token2Symbol}`
-      );
+      setError(`Token not found: ${!asset1Token ? token1Symbol : token2Symbol}`);
       return;
     }
     setError(undefined);
@@ -162,17 +157,17 @@ export default function TradingPairs() {
     setAsset2Token(asset2Token);
 
     const simSellMultiHopPromise = fetch(
-      `/api/simulations/${asset1Token.display}/${asset2Token.display}/${unitsToSimulateSelling}`
-    ).then((res) => res.json());
+      `/api/simulations/${asset1Token.display}/${asset2Token.display}/${unitsToSimulateSelling}`,
+    ).then(res => res.json());
     const simSellSingleHopPromise = fetch(
-      `/api/simulations/${asset1Token.display}/${asset2Token.display}/${unitsToSimulateSelling}/singleHop`
-    ).then((res) => res.json());
+      `/api/simulations/${asset1Token.display}/${asset2Token.display}/${unitsToSimulateSelling}/singleHop`,
+    ).then(res => res.json());
     const simBuyMultiHopPromise = fetch(
-      `/api/simulations/${asset2Token.display}/${asset1Token.display}/${unitsToSimulateBuying}`
-    ).then((res) => res.json());
+      `/api/simulations/${asset2Token.display}/${asset1Token.display}/${unitsToSimulateBuying}`,
+    ).then(res => res.json());
     const simBuySingleHopPromise = fetch(
-      `/api/simulations/${asset2Token.display}/${asset1Token.display}/${unitsToSimulateBuying}/singleHop`
-    ).then((res) => res.json());
+      `/api/simulations/${asset2Token.display}/${asset1Token.display}/${unitsToSimulateBuying}/singleHop`,
+    ).then(res => res.json());
 
     Promise.all([
       simSellMultiHopPromise,
@@ -197,43 +192,23 @@ export default function TradingPairs() {
             !simQuerySingleHopAsset1BuyResponse ||
             simQuerySingleHopAsset1BuyResponse.error
           ) {
-            console.error("Error querying simulated trades");
-            setError("Error querying simulated trades");
+            console.error('Error querying simulated trades');
+            setError('Error querying simulated trades');
           }
           setError(undefined);
 
-          setSimulatedMultiHopAsset1SellData(
-            simQueryMultiHopAsset1SellResponse as SwapExecution
-          );
-          setSimulatedSingleHopAsset1SellData(
-            simQuerySingleHopAsset1SellResponse as SwapExecution
-          );
-          setSimulatedMultiHopAsset1BuyData(
-            simQueryMultiHopAsset1BuyResponse as SwapExecution
-          );
-          setSimulatedSingleHopAsset1BuyData(
-            simQuerySingleHopAsset1BuyResponse as SwapExecution
-          );
-          console.log(
-            "simQueryMultiHopAsset1SellResponse",
-            simQueryMultiHopAsset1SellResponse
-          );
-          console.log(
-            "simQuerySingleHopAsset1SellResponse",
-            simQuerySingleHopAsset1SellResponse
-          );
-          console.log(
-            "simQueryMultiHopAsset1BuyResponse",
-            simQueryMultiHopAsset1BuyResponse
-          );
-          console.log(
-            "simQuerySingleHopAsset1BuyResponse",
-            simQuerySingleHopAsset1BuyResponse
-          );
-        }
+          setSimulatedMultiHopAsset1SellData(simQueryMultiHopAsset1SellResponse as SwapExecution);
+          setSimulatedSingleHopAsset1SellData(simQuerySingleHopAsset1SellResponse as SwapExecution);
+          setSimulatedMultiHopAsset1BuyData(simQueryMultiHopAsset1BuyResponse as SwapExecution);
+          setSimulatedSingleHopAsset1BuyData(simQuerySingleHopAsset1BuyResponse as SwapExecution);
+          console.log('simQueryMultiHopAsset1SellResponse', simQueryMultiHopAsset1SellResponse);
+          console.log('simQuerySingleHopAsset1SellResponse', simQuerySingleHopAsset1SellResponse);
+          console.log('simQueryMultiHopAsset1BuyResponse', simQueryMultiHopAsset1BuyResponse);
+          console.log('simQuerySingleHopAsset1BuyResponse', simQuerySingleHopAsset1BuyResponse);
+        },
       )
-      .catch((error) => {
-        console.error("Error querying simulated trades", error);
+      .catch(error => {
+        console.error('Error querying simulated trades', error);
       })
       .finally(() => {
         setIsLoading(false);
@@ -249,30 +224,26 @@ export default function TradingPairs() {
     try {
       // Get token 1 & 2
       const asset1Token = tokenAssets.find(
-        (x) =>
-          x.display.toLocaleLowerCase() === token1Symbol.toLocaleLowerCase()
+        x => x.display.toLocaleLowerCase() === token1Symbol.toLocaleLowerCase(),
       );
       const asset2Token = tokenAssets.find(
-        (x) =>
-          x.display.toLocaleLowerCase() === token2Symbol.toLocaleLowerCase()
+        x => x.display.toLocaleLowerCase() === token2Symbol.toLocaleLowerCase(),
       );
       if (!asset1Token || !asset2Token) {
         setIsLoading(false);
         setIsChartLoading(false);
         setIsLPsLoading(false);
-        setError(
-          `Token not found: ${!asset1Token ? token1Symbol : token2Symbol}`
-        );
+        setError(`Token not found: ${!asset1Token ? token1Symbol : token2Symbol}`);
         return;
       }
       setError(undefined);
 
       const lpsBuySidePromise = fetch(
-        `/api/lp/positionsByPrice/${asset2Token.display}/${asset1Token.display}/${LPS_TO_RENDER}`
-      ).then((res) => res.json());
+        `/api/lp/positionsByPrice/${asset2Token.display}/${asset1Token.display}/${LPS_TO_RENDER}`,
+      ).then(res => res.json());
       const lpsSellSidePromise = fetch(
-        `/api/lp/positionsByPrice/${asset1Token.display}/${asset2Token.display}/${LPS_TO_RENDER}`
-      ).then((res) => res.json());
+        `/api/lp/positionsByPrice/${asset1Token.display}/${asset2Token.display}/${LPS_TO_RENDER}`,
+      ).then(res => res.json());
 
       Promise.all([lpsBuySidePromise, lpsSellSidePromise])
         .then(([lpsBuySideResponse, lpsSellSideResponse]) => {
@@ -282,27 +253,27 @@ export default function TradingPairs() {
             !lpsSellSideResponse ||
             lpsSellSideResponse.error
           ) {
-            console.error("Error querying liquidity positions");
-            setError("Error querying liquidity positions");
+            console.error('Error querying liquidity positions');
+            setError('Error querying liquidity positions');
           }
           setError(undefined);
 
-          console.log("lpsBuySideResponse", lpsBuySideResponse);
-          console.log("lpsSellSideResponse", lpsSellSideResponse);
+          console.log('lpsBuySideResponse', lpsBuySideResponse);
+          console.log('lpsSellSideResponse', lpsSellSideResponse);
 
           setLPsBuySide(lpsBuySideResponse as Position[]);
           setLPsSellSide(lpsSellSideResponse as Position[]);
         })
-        .catch((error) => {
-          console.error("Error querying lps", error);
+        .catch(error => {
+          console.error('Error querying lps', error);
         })
         .finally(() => {
           setIsLPsLoading(false);
         });
       setError(undefined);
     } catch (error) {
-      console.error("Error querying liquidity positions", error);
-      setError("Error querying liquidity positions");
+      console.error('Error querying liquidity positions', error);
+      setError('Error querying liquidity positions');
       setIsLPsLoading(false);
     }
   }, [token1Symbol, token2Symbol]);
@@ -331,34 +302,29 @@ export default function TradingPairs() {
     console.log(asset2Token);
 
     // Set single and multi hop depth chart data
-    simulatedMultiHopAsset1SellData.traces.forEach((trace) => {
+    simulatedMultiHopAsset1SellData.traces.forEach(trace => {
       // First item is the input, last item is the output
       const input = trace.value.at(0);
       const output = trace.value.at(trace.value.length - 1);
 
       const inputValue =
-        Number(
-          joinLoHi(BigInt(input!.amount!.lo), BigInt(input!.amount!.hi))
-        ) / Number(10 ** asset1Token.decimals);
+        Number(joinLoHi(BigInt(input!.amount!.lo), BigInt(input!.amount!.hi))) /
+        Number(10 ** asset1Token.decimals);
       const outputValue =
-        Number(
-          joinLoHi(BigInt(output!.amount!.lo), BigInt(output!.amount!.hi))
-        ) / Number(BigInt(10 ** asset2Token.decimals));
+        Number(joinLoHi(BigInt(output!.amount!.lo), BigInt(output!.amount!.hi))) /
+        Number(BigInt(10 ** asset2Token.decimals));
 
       const price: number = outputValue / inputValue;
 
       // First trace will have best price, so set only on first iteration
       if (trace === simulatedMultiHopAsset1SellData.traces[0]) {
-        console.log("Best Asset1 Sell Price for multi hop", price);
+        console.log('Best Asset1 Sell Price for multi hop', price);
         setBestAsset1SellPriceMultiHop(Number(price));
         bestAsset1SellPriceMultiHop = price;
       }
 
       // If price is within % of best price, add to depth chart, else ignore
-      if (
-        price >=
-        bestAsset1SellPriceMultiHop! * (1 - bestPriceDeviationPercent / 100)
-      ) {
+      if (price >= bestAsset1SellPriceMultiHop! * (1 - bestPriceDeviationPercent / 100)) {
         depthChartMultiHopAsset1SellPoints.push({
           x: Number(price),
           y: Number(inputValue),
@@ -377,34 +343,29 @@ export default function TradingPairs() {
     });
 
     // Similar logic for single hop
-    simulatedSingleHopAsset1SellData.traces.forEach((trace) => {
+    simulatedSingleHopAsset1SellData.traces.forEach(trace => {
       // First item is the input, last item is the output
       const input = trace.value.at(0);
       const output = trace.value.at(1); // If this isnt 1 then something is wrong
 
       const inputValue =
-        Number(
-          joinLoHi(BigInt(input!.amount!.lo), BigInt(input!.amount!.hi))
-        ) / Number(10 ** asset1Token.decimals);
+        Number(joinLoHi(BigInt(input!.amount!.lo), BigInt(input!.amount!.hi))) /
+        Number(10 ** asset1Token.decimals);
       const outputValue =
-        Number(
-          joinLoHi(BigInt(output!.amount!.lo), BigInt(output!.amount!.hi))
-        ) / Number(BigInt(10 ** asset2Token.decimals));
+        Number(joinLoHi(BigInt(output!.amount!.lo), BigInt(output!.amount!.hi))) /
+        Number(BigInt(10 ** asset2Token.decimals));
 
       const price: number = outputValue / inputValue;
 
       // First trace will have best price, so set only on first iteration
       if (trace === simulatedSingleHopAsset1SellData.traces[0]) {
-        console.log("Best Asset1 Sell Price for single hop", price);
+        console.log('Best Asset1 Sell Price for single hop', price);
         setBestAsset1SellPriceSingleHop(Number(price));
         bestAsset1SellPriceSingleHop = price;
       }
 
       // If price is within % of best price, add to depth chart, else ignore
-      if (
-        price >=
-        bestAsset1SellPriceSingleHop! * (1 - bestPriceDeviationPercent / 100)
-      ) {
+      if (price >= bestAsset1SellPriceSingleHop! * (1 - bestPriceDeviationPercent / 100)) {
         depthChartSingleHopAsset1SellPoints.push({
           x: Number(price),
           y: Number(inputValue),
@@ -431,35 +392,30 @@ export default function TradingPairs() {
     setDepthChartSingleHopAsset1BuyPoints([]);
 
     // Set single and multi hop depth chart data
-    simulatedMultiHopAsset1BuyData.traces.forEach((trace) => {
+    simulatedMultiHopAsset1BuyData.traces.forEach(trace => {
       // First item is the input, last item is the output
       const input = trace.value.at(0);
       const output = trace.value.at(trace.value.length - 1);
 
       const inputValue =
-        Number(
-          joinLoHi(BigInt(input!.amount!.lo), BigInt(input!.amount!.hi))
-        ) / Number(10 ** asset2Token.decimals);
+        Number(joinLoHi(BigInt(input!.amount!.lo), BigInt(input!.amount!.hi))) /
+        Number(10 ** asset2Token.decimals);
       const outputValue =
-        Number(
-          joinLoHi(BigInt(output!.amount!.lo), BigInt(output!.amount!.hi))
-        ) / Number(BigInt(10 ** asset1Token.decimals));
+        Number(joinLoHi(BigInt(output!.amount!.lo), BigInt(output!.amount!.hi))) /
+        Number(BigInt(10 ** asset1Token.decimals));
 
       // ! Important to note that the price is inverted here, so we do input/output instead of output/input
       const price: number = inputValue / outputValue;
 
       // First trace will have best price, so set only on first iteration
       if (trace === simulatedMultiHopAsset1BuyData.traces[0]) {
-        console.log("Best Asset1 Buy Price for multi hop", price);
+        console.log('Best Asset1 Buy Price for multi hop', price);
         setBestAsset1BuyPriceMultiHop(Number(price));
         bestAsset1BuyPriceMultiHop = price;
       }
 
       // If price is within % of best price, add to depth chart, else ignore
-      if (
-        price <=
-        bestAsset1BuyPriceMultiHop! * (1 + bestPriceDeviationPercent / 100)
-      ) {
+      if (price <= bestAsset1BuyPriceMultiHop! * (1 + bestPriceDeviationPercent / 100)) {
         depthChartMultiHopAsset1BuyPoints.push({
           x: Number(price),
           y: Number(outputValue),
@@ -478,35 +434,30 @@ export default function TradingPairs() {
     });
 
     // Similar logic for single hop
-    simulatedSingleHopAsset1BuyData.traces.forEach((trace) => {
+    simulatedSingleHopAsset1BuyData.traces.forEach(trace => {
       // First item is the input, last item is the output
       const input = trace.value.at(0);
       const output = trace.value.at(1); // If this isnt 1 then something is wrong
 
       const inputValue =
-        Number(
-          joinLoHi(BigInt(input!.amount!.lo), BigInt(input!.amount!.hi))
-        ) / Number(10 ** asset2Token.decimals);
+        Number(joinLoHi(BigInt(input!.amount!.lo), BigInt(input!.amount!.hi))) /
+        Number(10 ** asset2Token.decimals);
       const outputValue =
-        Number(
-          joinLoHi(BigInt(output!.amount!.lo), BigInt(output!.amount!.hi))
-        ) / Number(BigInt(10 ** asset1Token.decimals));
+        Number(joinLoHi(BigInt(output!.amount!.lo), BigInt(output!.amount!.hi))) /
+        Number(BigInt(10 ** asset1Token.decimals));
 
       // ! Important to note that the price is inverted here, so we do input/output instead of output/input
       const price: number = inputValue / outputValue;
 
       // First trace will have best price, so set only on first iteration
       if (trace === simulatedSingleHopAsset1BuyData.traces[0]) {
-        console.log("Best Asset1 Buy Price for single hop", price);
+        console.log('Best Asset1 Buy Price for single hop', price);
         setBestAsset1BuyPriceSingleHop(Number(price));
         bestAsset1BuyPriceSingleHop = price;
       }
 
       // If price is within % of best price, add to depth chart, else ignore
-      if (
-        price <=
-        bestAsset1BuyPriceSingleHop! * (1 + bestPriceDeviationPercent / 100)
-      ) {
+      if (price <= bestAsset1BuyPriceSingleHop! * (1 + bestPriceDeviationPercent / 100)) {
         depthChartSingleHopAsset1BuyPoints.push({
           x: Number(price),
           y: Number(outputValue),
@@ -526,20 +477,16 @@ export default function TradingPairs() {
     // Set all of the stateful data
     // ! First update depth and sell charts to show CUMULTAIVE liquidity (y) of all points before them
     for (let i = 1; i < depthChartMultiHopAsset1SellPoints.length; i++) {
-      depthChartMultiHopAsset1SellPoints[i].y +=
-        depthChartMultiHopAsset1SellPoints[i - 1].y;
+      depthChartMultiHopAsset1SellPoints[i].y += depthChartMultiHopAsset1SellPoints[i - 1].y;
     }
     for (let i = 1; i < depthChartSingleHopAsset1SellPoints.length; i++) {
-      depthChartSingleHopAsset1SellPoints[i].y +=
-        depthChartSingleHopAsset1SellPoints[i - 1].y;
+      depthChartSingleHopAsset1SellPoints[i].y += depthChartSingleHopAsset1SellPoints[i - 1].y;
     }
     for (let i = 1; i < depthChartMultiHopAsset1BuyPoints.length; i++) {
-      depthChartMultiHopAsset1BuyPoints[i].y +=
-        depthChartMultiHopAsset1BuyPoints[i - 1].y;
+      depthChartMultiHopAsset1BuyPoints[i].y += depthChartMultiHopAsset1BuyPoints[i - 1].y;
     }
     for (let i = 1; i < depthChartSingleHopAsset1BuyPoints.length; i++) {
-      depthChartSingleHopAsset1BuyPoints[i].y +=
-        depthChartSingleHopAsset1BuyPoints[i - 1].y;
+      depthChartSingleHopAsset1BuyPoints[i].y += depthChartSingleHopAsset1BuyPoints[i - 1].y;
     }
 
     setDepthChartMultiHopAsset1SellPoints(depthChartMultiHopAsset1SellPoints);
@@ -548,23 +495,11 @@ export default function TradingPairs() {
     setDepthChartSingleHopAsset1BuyPoints(depthChartSingleHopAsset1BuyPoints);
 
     // print to debug
-    console.log(
-      "depthChartMultiHopAsset1SellPoints",
-      depthChartMultiHopAsset1SellPoints
-    );
-    console.log(
-      "depthChartSingleHopAsset1SellPoints",
-      depthChartSingleHopAsset1SellPoints
-    );
+    console.log('depthChartMultiHopAsset1SellPoints', depthChartMultiHopAsset1SellPoints);
+    console.log('depthChartSingleHopAsset1SellPoints', depthChartSingleHopAsset1SellPoints);
 
-    console.log(
-      "depthChartMultiHopAsset1BuyPoints",
-      depthChartMultiHopAsset1BuyPoints
-    );
-    console.log(
-      "depthChartSingleHopAsset1BuyPoints",
-      depthChartSingleHopAsset1BuyPoints
-    );
+    console.log('depthChartMultiHopAsset1BuyPoints', depthChartMultiHopAsset1BuyPoints);
+    console.log('depthChartSingleHopAsset1BuyPoints', depthChartSingleHopAsset1BuyPoints);
 
     // TODO: these should really be &&s but theres no real market so sometimes they can be 0 (we should also handle this edgecase gracefully)
 
@@ -582,133 +517,86 @@ export default function TradingPairs() {
   ]);
 
   useEffect(() => {
-    console.log("isLoading", isLoading);
-    console.log("isChartLoading", isChartLoading);
-    console.log("isLPsLoading", isLPsLoading);
-    console.log("error", error);
-    console.log("asset1Token", asset1Token);
-    console.log("asset2Token", asset2Token);
-  }, [
-    isLoading,
-    isChartLoading,
-    isLPsLoading,
-    error,
-    asset1Token,
-    asset2Token,
-  ]);
+    console.log('isLoading', isLoading);
+    console.log('isChartLoading', isChartLoading);
+    console.log('isLPsLoading', isLPsLoading);
+    console.log('error', error);
+    console.log('asset1Token', asset1Token);
+    console.log('asset2Token', asset2Token);
+  }, [isLoading, isChartLoading, isLPsLoading, error, asset1Token, asset2Token]);
 
   return (
     <Layout pageTitle={`Trading View`}>
       {isLoading || isChartLoading || isLPsLoading ? (
-        <Center height="100vh">
+        <Center height='100vh'>
           <LoadingSpinner />
         </Center>
       ) : !isChartLoading && !error ? (
-        <Center minHeight="100vh" paddingY={4}>
-          <VStack
-            width={["95vw", "95vw", "95vw", "95vw", "95vw", "85vw"]}
-            spacing={4}
-          >
-            <Box className="box-card" padding="1.5em" width="100%">
+        <Center minHeight='100vh' paddingY={4}>
+          <VStack width={['95vw', '95vw', '95vw', '95vw', '95vw', '85vw']} spacing={4}>
+            <Box className='box-card' padding='1.5em' width='100%'>
               <Stack
-                direction={[
-                  "column",
-                  "column",
-                  "column",
-                  "column",
-                  "column",
-                  "row",
-                ]}
+                direction={['column', 'column', 'column', 'column', 'column', 'row']}
                 spacing={8}
-                width="100%"
-                alignItems="flex-start"
+                width='100%'
+                alignItems='flex-start'
               >
                 <VStack
                   flex={1}
-                  width={[
-                    "100%",
-                    "100%",
-                    "100%",
-                    "100%",
-                    "100%",
-                    "calc(100% - 400px)",
-                  ]}
-                  position="relative"
-                  alignItems="center"
+                  width={['100%', '100%', '100%', '100%', '100%', 'calc(100% - 400px)']}
+                  position='relative'
+                  alignItems='center'
                 >
-                  <Box
-                    width="100%"
-                    position="relative"
-                    paddingTop={[0, 0, "1.5em"]}
-                  >
+                  <Box width='100%' position='relative' paddingTop={[0, 0, '1.5em']}>
                     <ButtonGroup
-                      size="xs"
+                      size='xs'
                       isAttached
-                      alignContent={"left"}
-                      position={["static", "static", "absolute"]}
+                      alignContent={'left'}
+                      position={['static', 'static', 'absolute']}
                       top={[0, 0, 0]}
                       left={[0, 0, -1]}
                       zIndex={1}
                       borderRadius={10}
-                      outline={"2px solid var(--complimentary-background)"}
+                      outline={'2px solid var(--complimentary-background)'}
                       marginBottom={[2, 2, 0]}
                     >
                       <Button
                         borderRadius={10}
-                        onClick={() => setActiveChart("Depth")}
+                        onClick={() => setActiveChart('Depth')}
                         colorScheme={
-                          activeChart === "Depth"
-                            ? "purple"
-                            : "var(--charcoal-tertiary-blended)"
+                          activeChart === 'Depth' ? 'purple' : 'var(--charcoal-tertiary-blended)'
                         }
                       >
                         Depth
                       </Button>
                       <Button
                         borderRadius={10}
-                        onClick={() => setActiveChart("OHLC")}
+                        onClick={() => setActiveChart('OHLC')}
                         colorScheme={
-                          activeChart === "OHLC"
-                            ? "purple"
-                            : "var(--charcoal-tertiary-blended)"
+                          activeChart === 'OHLC' ? 'purple' : 'var(--charcoal-tertiary-blended)'
                         }
                       >
                         Candlestick
                       </Button>
                     </ButtonGroup>
-                    <HStack
-                      justifyContent="center"
-                      width="100%"
-                      paddingBottom={"2px"}
-                    >
-                      <Text
-                        fontFamily="monospace"
-                        fontSize={"md"}
-                        fontWeight={"bold"}
-                      >
+                    <HStack justifyContent='center' width='100%' paddingBottom={'2px'}>
+                      <Text fontFamily='monospace' fontSize={'md'} fontWeight={'bold'}>
                         {`${asset1Token!.display}`}
                       </Text>
-                      <Text fontSize={"sm"} fontFamily="monospace">
+                      <Text fontSize={'sm'} fontFamily='monospace'>
                         {` / ${asset2Token!.display}`}
                       </Text>
                     </HStack>
                   </Box>
-                  <Box width="100%">
-                    {activeChart === "OHLC" ? (
-                      <OHLCChart
-                        asset1Token={asset1Token!}
-                        asset2Token={asset2Token!}
-                      />
+                  <Box width='100%'>
+                    {activeChart === 'OHLC' ? (
+                      <OHLCChart asset1Token={asset1Token!} asset2Token={asset2Token!} />
                     ) : (
                       <DepthChart
                         buySideData={depthChartMultiHopAsset1SellPoints}
                         sellSideData={depthChartMultiHopAsset1BuyPoints}
-                        buySideSingleHopData={
-                          depthChartSingleHopAsset1SellPoints
-                        }
-                        sellSideSingleHopData={
-                          depthChartSingleHopAsset1BuyPoints
-                        }
+                        buySideSingleHopData={depthChartSingleHopAsset1SellPoints}
+                        sellSideSingleHopData={depthChartSingleHopAsset1BuyPoints}
                         asset1Token={asset1Token!}
                         asset2Token={asset2Token!}
                       />
@@ -716,23 +604,18 @@ export default function TradingPairs() {
                   </Box>
                 </VStack>
                 <VStack
-                  width={["100%", "100%", "100%", "100%", "100%", "400px"]}
-                  height="auto"
-                  alignItems="center"
+                  width={['100%', '100%', '100%', '100%', '100%', '400px']}
+                  height='auto'
+                  alignItems='center'
                 >
-                  <Text
-                    fontFamily={"monospace"}
-                    fontSize="xs"
-                    textAlign="center"
-                    width="100%"
-                  >
+                  <Text fontFamily={'monospace'} fontSize='xs' textAlign='center' width='100%'>
                     Direct Liq Order Book
                   </Text>
                   <Box
-                    width="100%"
-                    outline={"2px solid var(--complimentary-background)"}
-                    borderRadius={"10px"}
-                    height={["600px", "600px", "650px"]}
+                    width='100%'
+                    outline={'2px solid var(--complimentary-background)'}
+                    borderRadius={'10px'}
+                    height={['600px', '600px', '650px']}
                   >
                     <BuySellChart
                       buySidePositions={lpsSellSide}
@@ -747,7 +630,7 @@ export default function TradingPairs() {
           </VStack>
         </Center>
       ) : !isLoading ? (
-        <Center height="100vh">
+        <Center height='100vh'>
           <Text>{`${error}`}</Text>
         </Center>
       ) : null}

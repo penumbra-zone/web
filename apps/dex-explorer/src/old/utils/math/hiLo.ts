@@ -2,7 +2,7 @@
 /* eslint-disable -- disabling this file as this was created before our strict rules */
 // https://github.com/penumbra-zone/web/blob/main/packages/types/src/lo-hi.ts
 
-import BigNumber from "bignumber.js";
+import BigNumber from 'bignumber.js';
 
 BigNumber.config({ EXPONENTIAL_AT: [-20, 20] });
 

@@ -1,4 +1,4 @@
-import { usePathname } from 'next/navigation'
+import { usePathname } from 'next/navigation';
 import { PagePath } from './pages';
 
 const removeTrailingSlash = (url: string): string => {

@@ -34,8 +34,8 @@ export PENUMBRA_CHAIN_ID="penumbra-testnet-phobos-2"
 
 If you see an error `self-signed certificate in certificate chain`, then you'll need to:
 
-  1. obtain the CA certificate file for the backend database you're connecting to, and export it as `PENUMBRA_INDEXER_CA_CERT`.
-  2. _remove_ the `sslmode=require` string on the `PENUMBRA_INDEXER_ENDPOINT` var.
+1. obtain the CA certificate file for the backend database you're connecting to, and export it as `PENUMBRA_INDEXER_CA_CERT`.
+2. _remove_ the `sslmode=require` string on the `PENUMBRA_INDEXER_ENDPOINT` var.
 
 See context in #55. After configuring that information, run `just dev` again in the nix shell, and you should have events visible.
 
@@ -46,17 +46,18 @@ In order to run the dex-explorer, you'll need to [deploy a Penumbra fullnode](ht
 with [ABCI event indexing enabled](https://guide.penumbra.zone/node/pd/indexing-events). The relevant env vars
 you'll want to set are:
 
-  * `PENUMBRA_GRPC_ENDPOINT`: the URL to a remote node's `pd` gRPC service
-  * `PENUMBRA_INDEXER_ENDPOINT`: the URL to a Postgre database containing ABCI events
-  * `PENUMBRA_INDEXER_CA_CERT`: optional; if set, the database connection will use the provided certificate authority when validating TLS
-  * `PENUMBRA_CHAIN_ID`: the chain id for the network being indexed, controls asset-registry lookups
-  * `PENUMBRA_CUILOA_URL`: the URL for a block-explorer application, for generating URLs for more block/transaction info
+- `PENUMBRA_GRPC_ENDPOINT`: the URL to a remote node's `pd` gRPC service
+- `PENUMBRA_INDEXER_ENDPOINT`: the URL to a Postgre database containing ABCI events
+- `PENUMBRA_INDEXER_CA_CERT`: optional; if set, the database connection will use the provided certificate authority when validating TLS
+- `PENUMBRA_CHAIN_ID`: the chain id for the network being indexed, controls asset-registry lookups
+- `PENUMBRA_CUILOA_URL`: the URL for a block-explorer application, for generating URLs for more block/transaction info
 
 ## Name
 
 It'd be nice to have a cool name for the DEX explorer. We don't have one yet.
 
 ## Proto Generation
+
 Using https://buf.build/penumbra-zone/penumbra/sdks/main
 
 [NextJS]: https://nextjs.org/

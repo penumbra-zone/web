@@ -32,7 +32,10 @@ export function createMergeCandles(asset1Token: Token, asset2Token: Token) {
     return mergedCandle;
   }
 
-  return function mergeCandles(candles1: CandlestickData[] | undefined, candles2: CandlestickData[] | undefined): VolumeCandle[] {
+  return function mergeCandles(
+    candles1: CandlestickData[] | undefined,
+    candles2: CandlestickData[] | undefined,
+  ): VolumeCandle[] {
     if (!candles1?.length || !candles2?.length) {
       return [];
     }
@@ -71,8 +74,9 @@ export function createMergeCandles(asset1Token: Token, asset2Token: Token) {
       }
     });
 
-    const sortedCandles = (Array.from(combinedDataMap.values()) as VolumeCandle[])
-      .sort((a, b) => (a.height > b.height ? 1 : -1));
+    const sortedCandles = (Array.from(combinedDataMap.values()) as VolumeCandle[]).sort((a, b) =>
+      a.height > b.height ? 1 : -1,
+    );
 
     return sortedCandles;
   };
