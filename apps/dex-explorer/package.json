@@ -12,10 +12,11 @@
     "build": "next build",
     "dev": "next dev",
     "start": "next start",
+    "format": "prettier --write .",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "lint:strict": "tsc --noEmit && pnpm lint --max-warnings 0",
-    "lint:strict2": "tsc --noEmit && pnpm lint --max-warnings 0"
+    "lint:prettier": "prettier --check ."
   },
   "dependencies": {
     "@bufbuild/protobuf": "^1.10.0",
@@ -64,6 +65,7 @@
     "mobx-react-lite": "^4.0.7",
     "next": "^14.2.7",
     "pg": "^8.12.0",
+    "prettier": "^3.3.3",
     "react": "^18.3.1",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.3.1",

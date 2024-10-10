@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import Link from 'next/link';
 import { PagePath } from '@/shared/pages';
 import PenumbraLogo from './logo.svg';
 

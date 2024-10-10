@@ -76,7 +76,7 @@ export function Chart({ height }: ChartProps) {
   return (
     <div ref={chartElRef} style={{ height }}>
       {isLoading && (
-        <div className="flex w-full items-center justify-center"  style={{ height }}>
+        <div className='flex w-full items-center justify-center' style={{ height }}>
           <div className='text-gray-500'>Loading...</div>
         </div>
       )}

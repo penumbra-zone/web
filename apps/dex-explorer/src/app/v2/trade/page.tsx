@@ -11,13 +11,8 @@ const TradePage = observer(() => {
 
   return (
     <div>
-      <div className="flex gap-2">
-        <PairSelector
-          to={to}
-          onToChange={setTo}
-          from={from}
-          onFromChange={setFrom}
-        />
+      <div className='flex gap-2'>
+        <PairSelector to={to} onToChange={setTo} from={from} onFromChange={setFrom} />
       </div>
 
       <div className='flex flex-wrap lg:gap-2'>

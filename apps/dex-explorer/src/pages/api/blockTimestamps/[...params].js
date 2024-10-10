@@ -2,11 +2,11 @@
 /* eslint-disable -- disabling this file as this was created before our strict rules */
 // pages/api/blockTimestamps/[...params].js
 
-import { IndexerQuerier } from "../../../old/utils/indexer/connector";
+import { IndexerQuerier } from '../../../old/utils/indexer/connector';
 
 const indexerEndpoint = process.env.PENUMBRA_INDEXER_ENDPOINT;
 if (!indexerEndpoint) {
-  throw new Error("PENUMBRA_INDEXER_ENDPOINT is not set");
+  throw new Error('PENUMBRA_INDEXER_ENDPOINT is not set');
 }
 
 export default async function blockTimestampsFetchHandler(req, res) {
@@ -18,9 +18,9 @@ export default async function blockTimestampsFetchHandler(req, res) {
   const params = req.query.params;
   let blocks = [];
 
-  if (params[0] === "range") {
+  if (params[0] === 'range') {
     if (params.length !== 3 || isNaN(params[1]) || isNaN(params[2])) {
-      res.status(400).json({ error: "Invalid block height range" });
+      res.status(400).json({ error: 'Invalid block height range' });
       return;
     }
 
@@ -31,7 +31,7 @@ export default async function blockTimestampsFetchHandler(req, res) {
   } else {
     for (const param of params) {
       if (isNaN(param)) {
-        res.status(400).json({ error: "Invalid block height" });
+        res.status(400).json({ error: 'Invalid block height' });
         return;
       }
       blocks.push(parseInt(param));
@@ -42,7 +42,7 @@ export default async function blockTimestampsFetchHandler(req, res) {
     const data = await indexerQuerier.fetchBlocksByHeight(blocks);
     res.status(200).json(data);
   } catch (error) {
-    console.error("Error fetching block timestamps for heights:", error);
+    console.error('Error fetching block timestamps for heights:', error);
     res.status(500).json([]);
   }
   indexerQuerier.close();
