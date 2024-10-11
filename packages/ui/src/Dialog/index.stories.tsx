@@ -91,9 +91,24 @@ export const WithRadioItems: Story = {
         <Dialog.Content title='Select wallet'>
           <Dialog.RadioGroup>
             <Column>
-              <Dialog.RadioItem value='1' title='Wallet 1' />
-              <Dialog.RadioItem value='2' title='Wallet 2' />
-              <Dialog.RadioItem value='3' title='Wallet 3' />
+              <Dialog.RadioItem
+                value='1'
+                title='Wallet 1'
+                description='Some description'
+                startAdornment={<AssetIcon metadata={PIZZA_METADATA} size='lg' />}
+              />
+              <Dialog.RadioItem
+                value='2'
+                title='Wallet 2'
+                description='Some description'
+                startAdornment={<AssetIcon metadata={PENUMBRA_METADATA} size='lg' />}
+              />
+              <Dialog.RadioItem
+                value='3'
+                title='Wallet 3'
+                description='Some description'
+                startAdornment={<AssetIcon metadata={OSMO_METADATA} size='lg' />}
+              />
             </Column>
           </Dialog.RadioGroup>
         </Dialog.Content>
