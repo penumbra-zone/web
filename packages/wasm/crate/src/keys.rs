@@ -1,5 +1,3 @@
-use std::str::FromStr;
-
 use anyhow;
 use penumbra_keys::keys::{AddressIndex, Bip44Path, SeedPhrase, SpendKey};
 use penumbra_keys::{Address, FullViewingKey};
@@ -10,6 +8,7 @@ use penumbra_proof_params::{
 use penumbra_proto::core::keys::v1 as pb;
 use penumbra_proto::DomainType;
 use rand_core::OsRng;
+use std::str::FromStr;
 use wasm_bindgen::prelude::*;
 
 use crate::error::WasmResult;
@@ -137,17 +136,34 @@ pub fn is_controlled_inner(fvk: &FullViewingKey, address: &Address) -> bool {
     fvk.address_index(address).is_some()
 }
 
+#[wasm_bindgen(getter_with_clone)]
+pub struct ForwardingAddrResponse {
+    /// A noble address that will be used for registration on the noble network
+    pub noble_addr_bech32: String,
+    /// Byte representation of the noble forwarding address. Used for broadcasting cosmos message.
+    pub noble_addr_bytes: Vec<u8>,
+    /// The penumbra address that a deposit to the noble address with forward to
+    /// Vec encoded `pb::Address`
+    pub penumbra_addr_bytes: Vec<u8>,
+}
+
 /// Generates an address that can be used as a forwarding address for Noble
 /// Returns: Uint8Array representing encoded Address
 #[wasm_bindgen]
-pub fn get_forwarding_address_for_sequence(
+pub fn get_noble_forwarding_addr(
     sequence: u16,
     full_viewing_key: &[u8],
+    channel: &str,
     account: Option<u32>,
-) -> WasmResult<Vec<u8>> {
+) -> WasmResult<ForwardingAddrResponse> {
     let fvk: FullViewingKey = FullViewingKey::decode(full_viewing_key)?;
-    let addr = forwarding_addr_inner(sequence, account, &fvk);
-    Ok(addr.encode_to_vec())
+    let penumbra_addr = forwarding_addr_inner(sequence, account, &fvk);
+    let noble_addr = penumbra_addr.noble_forwarding_address(channel);
+    Ok(ForwardingAddrResponse {
+        noble_addr_bech32: noble_addr.to_string(),
+        noble_addr_bytes: noble_addr.bytes(),
+        penumbra_addr_bytes: penumbra_addr.encode_to_vec(),
+    })
 }
 
 /// Noble Randomizer: [0xff; 10] followed by LE16(sequence)
@@ -164,12 +180,4 @@ pub fn forwarding_addr_inner(sequence: u16, account: Option<u32>, fvk: &FullView
     let (address, _dtk) = fvk.incoming().payment_address(index);
 
     address
-}
-
-/// Generates Bech32m noble address
-#[wasm_bindgen]
-pub fn generate_noble_addr(address: &[u8], channel: &str) -> WasmResult<String> {
-    let address: Address = Address::decode(address)?;
-    let forwarding_addr = address.noble_forwarding_address(channel);
-    Ok(forwarding_addr.to_string())
 }
