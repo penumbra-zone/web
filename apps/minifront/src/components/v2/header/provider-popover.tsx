@@ -1,12 +1,26 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link2Off } from 'lucide-react';
 import { Popover } from '@penumbra-zone/ui/Popover';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
-import { penumbra, usePraxManifest } from '../../../prax.ts';
+import { penumbra } from '../../../penumbra.ts';
+import { PenumbraManifest } from '@penumbra-zone/client';
+
+const usePenumbraManifest = (): PenumbraManifest | undefined => {
+  const [manifest, setManifest] = useState<PenumbraManifest>();
+
+  useEffect(() => {
+    setManifest(penumbra.manifest);
+    penumbra.onConnectionStateChange(() => {
+      setManifest(penumbra.manifest);
+    });
+  }, []);
+
+  return manifest;
+};
 
 export const ProviderPopover = () => {
-  const manifest = usePraxManifest();
+  const manifest = usePenumbraManifest();
 
   const icon = useMemo(() => {
     const icons = manifest?.icons;

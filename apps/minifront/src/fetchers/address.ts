@@ -1,7 +1,7 @@
 import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
-import { penumbra } from '../prax';
+import { penumbra } from '../penumbra';
 
 type Index = number;
 type Bech32Address = string;

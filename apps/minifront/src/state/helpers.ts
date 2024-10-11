@@ -27,7 +27,7 @@ import {
 } from '@penumbra-zone/getters/balances-response';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import { PromiseClient } from '@connectrpc/connect';
-import { penumbra } from '../prax';
+import { penumbra } from '../penumbra';
 
 /**
  * Handles the common use case of planning, building, and broadcasting a

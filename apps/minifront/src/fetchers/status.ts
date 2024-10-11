@@ -1,5 +1,5 @@
 import { ViewService } from '@penumbra-zone/protobuf';
-import { penumbra } from '../prax';
+import { penumbra } from '../penumbra';
 
 const getInitialStatus = () =>
   penumbra

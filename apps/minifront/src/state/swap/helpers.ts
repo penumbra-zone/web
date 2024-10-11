@@ -18,7 +18,7 @@ import { assetPatterns } from '@penumbra-zone/types/assets';
 import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { isKnown } from '../helpers';
 import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
-import { penumbra } from '../../prax';
+import { penumbra } from '../../penumbra';
 import { DexService, SimulationService } from '@penumbra-zone/protobuf';
 import { sortByPriorityScoreAndAccountIndex } from '../../fetchers/balances/by-priority-score.ts';
 

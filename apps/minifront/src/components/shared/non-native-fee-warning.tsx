@@ -11,7 +11,7 @@ import {
 import { ViewService } from '@penumbra-zone/protobuf';
 import { GasPrices } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
 import { getAssetId } from '@penumbra-zone/getters/metadata';
-import { penumbra } from '../../prax';
+import { penumbra } from '../../penumbra';
 
 const hasTokenBalance = ({
   source,

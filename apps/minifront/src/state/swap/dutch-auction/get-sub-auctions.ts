@@ -14,7 +14,7 @@ import { splitLoHi } from '@penumbra-zone/types/lo-hi';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { BigNumber } from 'bignumber.js';
 import { SwapSlice } from '..';
-import { penumbra } from '../../../prax';
+import { penumbra } from '../../../penumbra';
 
 /**
  * The start height of an auction must be, at minimum, the current block height.

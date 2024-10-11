@@ -20,7 +20,7 @@ import { EncodeObject } from '@cosmjs/proto-signing';
 import { MsgTransfer } from 'osmo-query/ibc/applications/transfer/v1/tx';
 import { parseRevisionNumberFromChainId } from './parse-revision-number-from-chain-id';
 import { bech32ChainIds } from '../shared.ts';
-import { penumbra } from '../../prax.ts';
+import { penumbra } from '../../penumbra.ts';
 import { TendermintProxyService } from '@penumbra-zone/protobuf';
 
 export interface IbcInSlice {
