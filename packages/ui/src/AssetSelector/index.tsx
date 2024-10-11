@@ -7,7 +7,7 @@ import { isBalancesResponse, isMetadata } from './shared/helpers.ts';
 import { filterMetadataOrBalancesResponseByText } from './shared/filterMetadataOrBalancesResponseByText.ts';
 import { AssetSelectorBaseProps, AssetSelectorValue } from './shared/types.ts';
 import { AssetSelectorCustom, AssetSelectorCustomProps } from './Custom.tsx';
-import { ListItem, ListItemProps } from './ListItem.tsx';
+import { Item, AssetSelectorItemProps } from './SelectItem.tsx';
 import { Text } from '../Text';
 import { filterAssets, groupAndSortBalances } from './shared/groupAndSort.ts';
 
@@ -35,7 +35,6 @@ export interface AssetSelectorProps extends AssetSelectorBaseProps {
    */
   balances?: BalancesResponse[];
 }
-
 /**
  * Allows users to choose an asset for e.g., the swap and send forms. Note that
  * it can render an array of just `Metadata`s, or a mixed array of
@@ -85,7 +84,7 @@ export interface AssetSelectorProps extends AssetSelectorBaseProps {
  *   >
  *     {({ getKeyHash }) =>
  *       filteredOptions.map(option => (
- *         <AssetSelector.ListItem key={getKeyHash(option)} value={option} />
+ *         <AssetSelector.Item key={getKeyHash(option)} value={option} />
  *       ))
  *     }
  *   </AssetSelector>
@@ -134,7 +133,7 @@ export const AssetSelector = ({
           {filteredBalances.map(([account, balances]) => (
             <ListItemGroup key={account}>
               {balances.map(balance => (
-                <ListItem key={getKeyHash(balance)} value={balance} />
+                <Item key={getKeyHash(balance)} value={balance} />
               ))}
             </ListItemGroup>
           ))}
@@ -146,7 +145,7 @@ export const AssetSelector = ({
           )}
 
           {filteredAssets.map(asset => (
-            <ListItem key={getKeyHash(asset)} value={asset} />
+            <Item key={getKeyHash(asset)} value={asset} />
           ))}
         </SelectorList>
       )}
@@ -155,8 +154,8 @@ export const AssetSelector = ({
 };
 
 AssetSelector.Custom = AssetSelectorCustom;
-AssetSelector.ListItem = ListItem;
+AssetSelector.Item = Item;
 
 export { isBalancesResponse, isMetadata, groupAndSortBalances, filterAssets };
 
-export type { AssetSelectorValue, AssetSelectorCustomProps, ListItemProps };
+export type { AssetSelectorValue, AssetSelectorCustomProps, AssetSelectorItemProps };
