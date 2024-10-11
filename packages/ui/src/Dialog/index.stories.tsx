@@ -83,21 +83,21 @@ export const Basic: Story = {
 export const WithRadioItems: Story = {
   render: function Render() {
     return (
-<Dialog>
-  <Dialog.Trigger asChild>
-    <Button>Open dialog</Button>
-  </Dialog.Trigger>
+      <Dialog>
+        <Dialog.Trigger asChild>
+          <Button>Open dialog</Button>
+        </Dialog.Trigger>
 
-  <Dialog.Content title='Select wallet'>
-    <Dialog.RadioGroup>
-      <Column>
-        <Dialog.RadioItem value='1' title='Wallet 1' />
-        <Dialog.RadioItem value='2' title='Wallet 2' />
-        <Dialog.RadioItem value='3' title='Wallet 3' />
-      </Column>
-    </Dialog.RadioGroup>
-  </Dialog.Content>
-</Dialog>
+        <Dialog.Content title='Select wallet'>
+          <Dialog.RadioGroup>
+            <Column>
+              <Dialog.RadioItem value='1' title='Wallet 1' />
+              <Dialog.RadioItem value='2' title='Wallet 2' />
+              <Dialog.RadioItem value='3' title='Wallet 3' />
+            </Column>
+          </Dialog.RadioGroup>
+        </Dialog.Content>
+      </Dialog>
     );
   },
 };
