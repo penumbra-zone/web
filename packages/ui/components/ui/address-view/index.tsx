@@ -11,7 +11,7 @@ interface AddressViewProps {
 
 // Renders an address or an address view.
 // If the view is given and is "visible", the account information will be displayed instead.
-export const AddressViewComponent = ({ view, copyable = true }: AddressViewProps) => {
+export const AddressViewComponent = ({ view, copyable }: AddressViewProps) => {
   if (!view?.addressView.value?.address) {
     return;
   }
@@ -27,7 +27,7 @@ export const AddressViewComponent = ({ view, copyable = true }: AddressViewProps
 
   const addressIndexLabel = isOneTimeAddress ? 'IBC Deposit Address for Account #' : 'Account #';
 
-  const isCopyable = isOneTimeAddress ? false : copyable;
+  const isCopyable = isOneTimeAddress ? false : copyable ?? true;
 
   return (
     <div className='flex items-center gap-2 overflow-hidden'>
