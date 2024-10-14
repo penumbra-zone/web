@@ -27,7 +27,7 @@ export const AddressViewComponent = ({ view, copyable }: AddressViewProps) => {
 
   const addressIndexLabel = isOneTimeAddress ? 'IBC Deposit Address for Account #' : 'Account #';
 
-  const isCopyable = isOneTimeAddress ? false : copyable ?? true;
+  const isCopyable = isOneTimeAddress ? false : (copyable ?? true);
 
   return (
     <div className='flex items-center gap-2 overflow-hidden'>
