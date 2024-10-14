@@ -6,8 +6,7 @@
     "outDir": "dist",
     "preserveWatchOutput": true,
     "rootDir": "src",
-    "target": "ESNext",
-    "lib": ["ESNext", "DOM"]
+    "target": "ESNext"
   },
   "extends": "@tsconfig/strictest/tsconfig.json",
   "include": ["src"]
