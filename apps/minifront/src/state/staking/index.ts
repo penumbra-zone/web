@@ -34,7 +34,7 @@ import { getValueView as getValueViewFromDelegationsByAddressIndexResponse } fro
 import { getValueView as getValueViewFromUnbondingTokensByAddressIndexResponse } from '@penumbra-zone/getters/unbonding-tokens-by-address-index-response';
 import { getStakingTokenMetadata } from '../../fetchers/registry';
 import { zeroValueView } from '../../utils/zero-value-view';
-import { penumbra } from '../../prax';
+import { penumbra } from '../../penumbra';
 
 interface UnbondingTokensForAccount {
   claimable: {

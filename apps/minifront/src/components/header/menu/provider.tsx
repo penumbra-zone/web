@@ -4,7 +4,7 @@ import { getChainId } from '../../../fetchers/chain-id';
 import { useEffect, useState } from 'react';
 import { itemStyle, triggerStyle, dropdownStyle, linkStyle, viewportStyle } from './nav-style';
 import { LinkBreak1Icon } from '@radix-ui/react-icons';
-import { penumbra } from '../../../prax';
+import { penumbra } from '../../../penumbra';
 
 export const ProviderMenu = () => {
   const [chainId, setChainId] = useState<string | undefined>();

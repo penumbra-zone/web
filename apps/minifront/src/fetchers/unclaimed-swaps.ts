@@ -5,7 +5,7 @@ import { UnclaimedSwapsWithMetadata } from '../state/unclaimed-swaps';
 import { getSwapAsset1, getSwapAsset2 } from '@penumbra-zone/getters/swap-record';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
-import { penumbra } from '../prax';
+import { penumbra } from '../penumbra';
 
 const fetchMetadataForSwap = async (swap: SwapRecord): Promise<UnclaimedSwapsWithMetadata> => {
   const assetId1 = getSwapAsset1(swap);

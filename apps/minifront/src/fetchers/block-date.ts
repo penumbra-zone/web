@@ -1,5 +1,5 @@
 import { SctService } from '@penumbra-zone/protobuf';
-import { penumbra } from '../prax';
+import { penumbra } from '../penumbra';
 
 export const getBlockDate = async (
   height: bigint,

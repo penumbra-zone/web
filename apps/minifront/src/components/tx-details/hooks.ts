@@ -2,7 +2,7 @@ import { asReceiverTransactionView } from '@penumbra-zone/perspective/translator
 import { ViewService } from '@penumbra-zone/protobuf';
 import { TransactionView } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { TransactionInfo } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { penumbra } from '../../prax';
+import { penumbra } from '../../penumbra';
 
 const fetchReceiverView = async (txInfo: TransactionInfo): Promise<TransactionView> => {
   return await asReceiverTransactionView(txInfo.view, {

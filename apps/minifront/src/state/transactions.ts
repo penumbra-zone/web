@@ -8,7 +8,7 @@ import {
   TransactionInfoResponse,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { getTxInfoByHash } from '../fetchers/tx-info-by-hash';
-import { penumbra } from '../prax';
+import { penumbra } from '../penumbra';
 
 export interface TransactionSummary {
   height: number;

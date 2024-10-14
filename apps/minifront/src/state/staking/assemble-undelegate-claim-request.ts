@@ -10,7 +10,7 @@ import {
   getMetadata,
 } from '@penumbra-zone/getters/value-view';
 import { getUnbondingStartHeight } from '@penumbra-zone/types/assets';
-import { penumbra } from '../../prax';
+import { penumbra } from '../../penumbra';
 import { SctService, StakeService, ViewService } from '@penumbra-zone/protobuf';
 
 const getUndelegateClaimPlannerRequest =
