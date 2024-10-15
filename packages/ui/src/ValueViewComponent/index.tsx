@@ -50,6 +50,7 @@ const Content = styled.div<{ $context: Context; $priority: 'primary' | 'secondar
 const SymbolWrapper = styled.div`
   flex-grow: 1;
   flex-shrink: 1;
+  min-width: 50px;
 
   overflow: hidden;
   text-overflow: ellipsis;
@@ -118,7 +119,9 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
         </AssetIconWrapper>
 
         <Content $context={context ?? 'default'} $priority={priority}>
-          <ValueText density={density}>{formattedAmount} </ValueText>
+          <SymbolWrapper title={formattedAmount}>
+            <ValueText density={density}>{formattedAmount} </ValueText>
+          </SymbolWrapper>
           <SymbolWrapper title={symbol}>
             <ValueText density={density}>{symbol}</ValueText>
           </SymbolWrapper>
