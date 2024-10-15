@@ -1,5 +1,18 @@
 # @penumbra-zone/wasm
 
+## 30.0.0
+
+### Major Changes
+
+- e0db143: API updates, renames, and test coverage
+
+### Patch Changes
+
+- Updated dependencies [e543db4]
+  - @penumbra-zone/protobuf@6.2.0
+  - @penumbra-zone/bech32m@9.0.0
+  - @penumbra-zone/types@25.0.0
+
 ## 29.1.0
 
 ### Minor Changes

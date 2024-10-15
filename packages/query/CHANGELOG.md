@@ -1,5 +1,19 @@
 # @penumbra-zone/query
 
+## 34.0.0
+
+### Patch Changes
+
+- 8bf66ea: Remove validator info throttle
+- Updated dependencies [e0db143]
+- Updated dependencies [e543db4]
+  - @penumbra-zone/wasm@30.0.0
+  - @penumbra-zone/protobuf@6.2.0
+  - @penumbra-zone/bech32m@9.0.0
+  - @penumbra-zone/getters@19.0.0
+  - @penumbra-zone/types@25.0.0
+  - @penumbra-zone/crypto-web@26.0.0
+
 ## 33.0.0
 
 ### Minor Changes
