@@ -1,6 +1,8 @@
 import { IDBPDatabase, StoreNames } from 'idb';
 import type { IdbUpdate, PenumbraDb } from '@penumbra-zone/types/indexed-db';
 
+let dbWriteCount = 0;
+
 export class IbdUpdates {
   constructor(readonly all: IdbUpdate<PenumbraDb, StoreNames<PenumbraDb>>[] = []) {}
 
@@ -37,16 +39,21 @@ export class IbdUpdater {
     return subscriber(this.subscribers);
   }
 
-  async updateAll(updates: IbdUpdates): Promise<void> {
+  async updateAll(updates: IbdUpdates, bool: Boolean): Promise<void> {
+    // console.log("updates: ", updates)
     const tables = updates.all.map(u => u.table);
     const tx = this.db.transaction(tables, 'readwrite');
 
     for (const update of updates.all) {
       await tx.objectStore(update.table).put(update.value, update.key);
+      if (bool) {
+        dbWriteCount++;
+      }
       this.notifySubscribers(update);
     }
 
     await tx.done;
+    // console.log(`Total DB Write Operations: ${dbWriteCount}`);
   }
 
   async update<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>>(
@@ -54,7 +61,7 @@ export class IbdUpdater {
   ): Promise<void> {
     const updates = new IbdUpdates();
     updates.add(update);
-    await this.updateAll(updates);
+    await this.updateAll(updates, false);
   }
 
   private notifySubscribers<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>>(

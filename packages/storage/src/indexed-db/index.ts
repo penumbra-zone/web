@@ -66,6 +66,10 @@ import { isZero } from '@penumbra-zone/types/amount';
 import { IDB_VERSION } from './config.js';
 import { typeRegistry } from '@penumbra-zone/protobuf';
 
+let dbWriteCount = 0;
+let dbReadCount = 0;
+let dbTransactionCount = 0
+
 const assertBytes = (v?: Uint8Array, expect?: number, name = 'value'): v is Uint8Array => {
   if (expect !== undefined && v?.length !== expect) {
     throw new Error(`Expected ${name} of ${expect} bytes, but got ${v?.length} bytes`);
@@ -209,12 +213,58 @@ export class IndexedDb implements IndexedDbInterface {
   public async saveScanResult(updates: ScanBlockResult): Promise<void> {
     const txs = new IbdUpdates();
 
+    // performance.mark('start_addSctUpdates');
     this.addSctUpdates(txs, updates.sctUpdates);
-    this.addNewNotes(txs, updates.newNotes);
-    await this.addNewSwaps(txs, updates.newSwaps, updates.height);
-    txs.add({ table: 'FULL_SYNC_HEIGHT', value: updates.height, key: 'height' });
+    // performance.mark('end_addSctUpdates');
+    // performance.measure('SCT Updates Duration', 'start_addSctUpdates', 'end_addSctUpdates');
 
-    await this.u.updateAll(txs);
+    // const measure1 = performance.getEntriesByName('SCT Updates Duration').pop(); // Get the latest measure
+    // if (measure1) {
+    //   accumulatedDuration1 += measure1.duration;
+    // }
+    // console.log('sctUpdates: ', updates.sctUpdates);
+    // console.log('Measure1 Duration: ' + measure1!.duration);
+    // console.log('addSctUpdates Accumulated Duration: ' + accumulatedDuration1);
+
+    // performance.mark('start_addNewNotes');
+    this.addNewNotes(txs, updates.newNotes);
+    // performance.mark('end_addNewNotes');
+    // performance.measure('addNewNotes', 'start_addNewNotes', 'end_addNewNotes');
+    // const measure2 = performance.getEntriesByName('addNewNotes').pop(); // Get the latest measure
+    // if (measure2) {
+    //   accumulatedDuration2 += measure2.duration;
+    // }
+    // console.log('addNewNotes Accumulated Duration: ' + accumulatedDuration2);
+
+    // performance.mark('start_addNewSwaps');
+    await this.addNewSwaps(txs, updates.newSwaps, updates.height);
+    // performance.mark('end_addNewSwaps');
+    // performance.measure('addNewSwaps', 'start_addNewSwaps', 'end_addNewSwaps');
+    // const measure3 = performance.getEntriesByName('addNewSwaps').pop(); // Get the latest measure
+    // if (measure3) {
+    //   accumulatedDuration3 += measure3.duration;
+    // }
+    // console.log('addNewSwaps Accumulated Duration: ' + accumulatedDuration3);
+
+    // performance.mark('start_fullSyncHeight');
+    txs.add({ table: 'FULL_SYNC_HEIGHT', value: updates.height, key: 'height' });
+    // performance.mark('end_fullSyncHeight');
+    // performance.measure('fullSyncHeight', 'start_fullSyncHeight', 'end_fullSyncHeight');
+    // const measure4 = performance.getEntriesByName('addNewSwaps').pop(); // Get the latest measure
+    // if (measure4) {
+    //   accumulatedDuration4 += measure4.duration;
+    // }
+    // console.log('fullSyncHeight Accumulated Duration: ' + accumulatedDuration4);
+
+    // performance.mark('start_updateAll');
+    await this.u.updateAll(txs, true);
+    // performance.mark('end_updateAll');
+    // performance.measure('updateAll', 'start_updateAll', 'end_updateAll');
+    // const measure5 = performance.getEntriesByName('updateAll').pop(); // Get the latest measure
+    // if (measure5) {
+    //   accumulatedDuration5 += measure5.duration;
+    // }
+    // console.log('updateAll Accumulated Duration: ' + accumulatedDuration5);
   }
 
   async getFullSyncHeight() {
@@ -265,6 +315,9 @@ export class IndexedDb implements IndexedDbInterface {
    * metadata in the `ASSETS` table until it finds a match.
    */
   async getAssetsMetadata(assetId: AssetId): Promise<Metadata | undefined> {
+    // console.log("dbReadCount for getAssetsMetadata: ", dbReadCount)
+    // console.log("dbWriteCount for getAssetsMetadata: ", dbWriteCount)
+
     if (!assetId.inner.length && !assetId.altBaseDenom && !assetId.altBech32m) {
       return undefined;
     }
@@ -272,6 +325,8 @@ export class IndexedDb implements IndexedDbInterface {
     if (assetId.inner.length) {
       const key = uint8ArrayToBase64(assetId.inner);
       const json = await this.db.get('ASSETS', key);
+      dbReadCount++
+      // console.log("dbReadCount for getAssetsMetadata: ", dbReadCount)
       if (!json) {
         return undefined;
       }
@@ -280,6 +335,8 @@ export class IndexedDb implements IndexedDbInterface {
 
     if (assetId.altBaseDenom || assetId.altBech32m) {
       for await (const cursor of this.db.transaction('ASSETS').store) {
+        dbTransactionCount++
+        // console.log("dbTransactionCount for getAssetsMetadata: ", dbTransactionCount)
         const metadata = Metadata.fromJson(cursor.value);
 
         if (metadata.base === assetId.altBaseDenom) {
@@ -310,6 +367,8 @@ export class IndexedDb implements IndexedDbInterface {
       table: 'ASSETS',
       value: new Metadata(metadata).toJson() as Jsonified<Metadata>,
     });
+    dbWriteCount++
+    // console.log("dbWriteCount for getAssetsMetadata: ", dbWriteCount)
   }
 
   // creates a local copy of the asset list from registry (https://github.com/prax-wallet/registry)
