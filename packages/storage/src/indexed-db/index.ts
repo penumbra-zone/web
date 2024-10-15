@@ -66,9 +66,9 @@ import { isZero } from '@penumbra-zone/types/amount';
 import { IDB_VERSION } from './config.js';
 import { typeRegistry } from '@penumbra-zone/protobuf';
 
-let dbWriteCount = 0;
-let dbReadCount = 0;
-let dbTransactionCount = 0
+// let dbWriteCount = 0;
+// let dbReadCount = 0;
+// let dbTransactionCount = 0
 
 const assertBytes = (v?: Uint8Array, expect?: number, name = 'value'): v is Uint8Array => {
   if (expect !== undefined && v?.length !== expect) {
@@ -212,9 +212,10 @@ export class IndexedDb implements IndexedDbInterface {
   // All updates must be atomic in order to prevent invalid tree state
   public async saveScanResult(updates: ScanBlockResult): Promise<void> {
     const txs = new IbdUpdates();
+    const saveOperations = [];
 
     // performance.mark('start_addSctUpdates');
-    this.addSctUpdates(txs, updates.sctUpdates);
+    saveOperations.push(this.addSctUpdates(txs, updates.sctUpdates));
     // performance.mark('end_addSctUpdates');
     // performance.measure('SCT Updates Duration', 'start_addSctUpdates', 'end_addSctUpdates');
 
@@ -227,7 +228,7 @@ export class IndexedDb implements IndexedDbInterface {
     // console.log('addSctUpdates Accumulated Duration: ' + accumulatedDuration1);
 
     // performance.mark('start_addNewNotes');
-    this.addNewNotes(txs, updates.newNotes);
+    saveOperations.push(this.addNewNotes(txs, updates.newNotes));
     // performance.mark('end_addNewNotes');
     // performance.measure('addNewNotes', 'start_addNewNotes', 'end_addNewNotes');
     // const measure2 = performance.getEntriesByName('addNewNotes').pop(); // Get the latest measure
@@ -237,7 +238,7 @@ export class IndexedDb implements IndexedDbInterface {
     // console.log('addNewNotes Accumulated Duration: ' + accumulatedDuration2);
 
     // performance.mark('start_addNewSwaps');
-    await this.addNewSwaps(txs, updates.newSwaps, updates.height);
+    saveOperations.push(this.addNewSwaps(txs, updates.newSwaps, updates.height));
     // performance.mark('end_addNewSwaps');
     // performance.measure('addNewSwaps', 'start_addNewSwaps', 'end_addNewSwaps');
     // const measure3 = performance.getEntriesByName('addNewSwaps').pop(); // Get the latest measure
@@ -256,6 +257,8 @@ export class IndexedDb implements IndexedDbInterface {
     // }
     // console.log('fullSyncHeight Accumulated Duration: ' + accumulatedDuration4);
 
+    await Promise.all(saveOperations);
+    
     // performance.mark('start_updateAll');
     await this.u.updateAll(txs, true);
     // performance.mark('end_updateAll');
@@ -325,7 +328,7 @@ export class IndexedDb implements IndexedDbInterface {
     if (assetId.inner.length) {
       const key = uint8ArrayToBase64(assetId.inner);
       const json = await this.db.get('ASSETS', key);
-      dbReadCount++
+      // dbReadCount++
       // console.log("dbReadCount for getAssetsMetadata: ", dbReadCount)
       if (!json) {
         return undefined;
@@ -335,7 +338,7 @@ export class IndexedDb implements IndexedDbInterface {
 
     if (assetId.altBaseDenom || assetId.altBech32m) {
       for await (const cursor of this.db.transaction('ASSETS').store) {
-        dbTransactionCount++
+        // dbTransactionCount++
         // console.log("dbTransactionCount for getAssetsMetadata: ", dbTransactionCount)
         const metadata = Metadata.fromJson(cursor.value);
 
@@ -367,8 +370,8 @@ export class IndexedDb implements IndexedDbInterface {
       table: 'ASSETS',
       value: new Metadata(metadata).toJson() as Jsonified<Metadata>,
     });
-    dbWriteCount++
-    // console.log("dbWriteCount for getAssetsMetadata: ", dbWriteCount)
+    // dbWriteCount++
+    // console.log("dbWriteCount: ", dbWriteCount)
   }
 
   // creates a local copy of the asset list from registry (https://github.com/prax-wallet/registry)
@@ -420,6 +423,8 @@ export class IndexedDb implements IndexedDbInterface {
       table: 'TRANSACTIONS',
       value: tx.toJson({ typeRegistry }) as Jsonified<TransactionInfo>,
     });
+    // dbWriteCount++
+    // console.log("dbWriteCount!: ", dbWriteCount)
   }
 
   async getTransaction(txId: TransactionId): Promise<TransactionInfo | undefined> {
@@ -453,6 +458,8 @@ export class IndexedDb implements IndexedDbInterface {
     if (!json) {
       return undefined;
     }
+    // dbReadCount++
+    // console.log("dbReadCount: ", dbReadCount)
     const appParams = AppParameters.fromJson(json);
     if (!appParams.chainId) {
       return undefined;
@@ -638,12 +645,16 @@ export class IndexedDb implements IndexedDbInterface {
       position: position.toJson() as Jsonified<Position>,
     };
     await this.u.update({ table: 'POSITIONS', value: positionRecord });
+    // dbWriteCount++
+    // console.log("dbWriteCount: ", dbWriteCount)
   }
 
   async updatePosition(positionId: PositionId, newState: PositionState): Promise<void> {
     assertPositionId(positionId);
     const key = uint8ArrayToBase64(positionId.inner);
     const positionRecord = await this.db.get('POSITIONS', key);
+    // dbReadCount++
+    // console.log("dbReadCount: ", dbReadCount)
 
     if (!positionRecord) {
       throw new Error('Position not found when trying to change its state');
@@ -659,6 +670,8 @@ export class IndexedDb implements IndexedDbInterface {
         position: position.toJson() as Jsonified<Position>,
       },
     });
+    // dbWriteCount++
+    // console.log("dbWriteCount: ", dbWriteCount)
   }
 
   /**
@@ -922,6 +935,8 @@ export class IndexedDb implements IndexedDbInterface {
     assertAuctionId(auctionId);
     const key = uint8ArrayToBase64(auctionId.inner);
     const existingRecord = await this.db.get('AUCTIONS', key);
+    // dbReadCount++
+    // console.log("dbReadCount: ", dbReadCount)
     const auction =
       (value.auction?.toJson() as Jsonified<T> | undefined) ?? existingRecord?.auction;
     const noteCommitment =
@@ -938,6 +953,9 @@ export class IndexedDb implements IndexedDbInterface {
         seqNum,
       },
     });
+
+    // dbWriteCount++
+    // console.log("dbWriteCount: ", dbWriteCount)
   }
 
   async getAuction(auctionId: AuctionId): Promise<{
@@ -971,10 +989,14 @@ export class IndexedDb implements IndexedDbInterface {
       },
       uint8ArrayToBase64(auctionId.inner),
     );
+    // dbWriteCount++
+    // console.log("dbWriteCount: ", dbWriteCount)
   }
 
   async deleteAuctionOutstandingReserves(auctionId: AuctionId): Promise<void> {
     await this.db.delete('AUCTION_OUTSTANDING_RESERVES', uint8ArrayToBase64(auctionId.inner));
+    // dbWriteCount++
+    // console.log("dbWriteCount: ", dbWriteCount)
   }
 
   async getAuctionOutstandingReserves(

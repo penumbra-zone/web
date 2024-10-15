@@ -14,6 +14,8 @@ import {
   getUnfilled2Amount,
 } from '@penumbra-zone/getters/batch-swap-output-data';
 
+// let dbWrite = 0
+
 /**
  *
  * @param delta -  total amount of 'pricedAsset' that was input to the batch swap
@@ -95,5 +97,7 @@ export const deriveAndSavePriceFromBSOD = async (
     }
 
     await indexedDb.updatePrice(pricedAsset, numeraireAssetId, numerairePerUnit, height);
+    // dbWrite++
+    // console.log("dbWrite :): ", dbWrite)
   }
 };

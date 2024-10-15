@@ -42,14 +42,14 @@ import { shouldSkipTrialDecrypt } from './helpers/skip-trial-decrypt.js';
 import { identifyTransactions, RelevantTx } from './helpers/identify-txs.js';
 
 let flushCount = 0;
-let accumulatedDuration0 = 0
-let accumulatedDuration1 = 0
-let accumulatedDuration2 = 0
+// let accumulatedDuration0 = 0
+// let accumulatedDuration1 = 0
+// let accumulatedDuration2 = 0
 // let dbWriteCount = 0;
 // let dbReadCount = 0;
 // let dbTransactionCount = 0
-let dbWriteCount1 = 0;
-let dbReadCount1 = 0;
+// let dbWriteCount1 = 0;
+// let dbReadCount1 = 0;
 // let dbTransactionCount1 = 0
 
 declare global {
@@ -159,6 +159,8 @@ export class BlockProcessor implements BlockProcessorInterface {
 
     // start at next block, or genesis if height is undefined
     let currentHeight = (await this.indexedDb.getFullSyncHeight()) ?? PRE_GENESIS_SYNC_HEIGHT;
+    // dbReadCount++
+    // console.log("dbReadCount: ", dbReadCount)
 
     // this is the first network query of the block processor. use backoff to
     // delay until network is available
@@ -245,26 +247,39 @@ export class BlockProcessor implements BlockProcessorInterface {
     latestKnownBlockHeight,
     skipTrialDecrypt = false,
   }: ProcessBlockParams) {
+    const saveOperations = [];
+
     if (compactBlock.appParametersUpdated) {
-      await this.indexedDb.saveAppParams(await this.querier.app.appParams());
+      saveOperations.push(this.indexedDb.saveAppParams(await this.querier.app.appParams()));
+      // dbWriteCount++
+      // console.log("dbWriteCount: ", dbWriteCount)
     }
     if (compactBlock.fmdParameters) {
-      await this.indexedDb.saveFmdParams(compactBlock.fmdParameters);
+      saveOperations.push(this.indexedDb.saveFmdParams(compactBlock.fmdParameters));
+      // dbWriteCount++
+      // console.log("dbWriteCount: ", dbWriteCount)
     }
     if (compactBlock.gasPrices) {
-      await this.indexedDb.saveGasPrices({
+      saveOperations.push(this.indexedDb.saveGasPrices({
         ...toPlainMessage(compactBlock.gasPrices),
         assetId: toPlainMessage(this.stakingAssetId),
-      });
+      }));
+      // dbWriteCount++
+      // console.log("dbWriteCount: ", dbWriteCount)
     }
     if (compactBlock.altGasPrices.length) {
       for (const altGas of compactBlock.altGasPrices) {
-        await this.indexedDb.saveGasPrices({
+        saveOperations.push(this.indexedDb.saveGasPrices({
           ...toPlainMessage(altGas),
           assetId: getAssetIdFromGasPrices(altGas),
-        });
+        }));
+        // dbWriteCount++
+        // console.log("dbWriteCount: ", dbWriteCount)
       }
     }
+
+    await Promise.all(saveOperations);
+
 
     // wasm view server scan
     // - decrypts new notes
@@ -301,28 +316,28 @@ export class BlockProcessor implements BlockProcessorInterface {
       // - saves new decrypted swaps
       // - updates last block synced
 
-      performance.mark('start_saveScanResult');
+      // performance.mark('start_saveScanResult');
       await this.indexedDb.saveScanResult(flush);
-      performance.mark('end_saveScanResult');
-      performance.measure('saveScanResult', 'start_saveScanResult', 'end_saveScanResult');
-      const measure1 = performance.getEntriesByName('saveScanResult').pop(); // Get the latest measure
-      if (measure1) {
-        accumulatedDuration0 += measure1.duration;
-      }
+      // performance.mark('end_saveScanResult');
+      // performance.measure('saveScanResult', 'start_saveScanResult', 'end_saveScanResult');
+      // const measure1 = performance.getEntriesByName('saveScanResult').pop(); // Get the latest measure
+      // if (measure1) {
+      //   accumulatedDuration0 += measure1.duration;
+      // }
       // console.log('saveScanResult Accumulated Duration: ' + accumulatedDuration0);
 
       // - detect unknown asset types
       // - shielded pool for asset metadata
       // - or, generate default fallback metadata
       // - update idb
-      performance.mark('start_identifyNewAssets');
+      // performance.mark('start_identifyNewAssets');
       await this.identifyNewAssets(flush.newNotes);
-      performance.mark('end_identifyNewAssets');
-      performance.measure('identifyNewAssets', 'start_identifyNewAssets', 'end_identifyNewAssets');
-      const measure2 = performance.getEntriesByName('identifyNewAssets').pop(); // Get the latest measure
-      if (measure2) {
-        accumulatedDuration1 += measure2.duration;
-      }
+      // performance.mark('end_identifyNewAssets');
+      // performance.measure('identifyNewAssets', 'start_identifyNewAssets', 'end_identifyNewAssets');
+      // const measure2 = performance.getEntriesByName('identifyNewAssets').pop(); // Get the latest measure
+      // if (measure2) {
+      //   accumulatedDuration1 += measure2.duration;
+      // }
       // console.log('identifyNewAssets Accumulated Duration: ' + accumulatedDuration1);
 
       for (const spendableNoteRecord of flush.newNotes) {
@@ -338,21 +353,21 @@ export class BlockProcessor implements BlockProcessorInterface {
     // nullifiers on this block may match notes or swaps from db
     // - update idb, mark as spent/claimed
     // - return nullifiers used in this way
-    performance.mark('start_resolveNullifiers');
+    // performance.mark('start_resolveNullifiers');
     const spentNullifiers = await this.resolveNullifiers(
       compactBlock.nullifiers,
       compactBlock.height,
     );    
-    performance.mark('end_resolveNullifiers');
-    performance.measure('resolveNullifiers', 'start_resolveNullifiers', 'end_resolveNullifiers');
-    const measure3 = performance.getEntriesByName('resolveNullifiers').pop(); // Get the latest measure
-    if (measure3) {
-      accumulatedDuration2 += measure3.duration;
-    }
+    // performance.mark('end_resolveNullifiers');
+    // performance.measure('resolveNullifiers', 'start_resolveNullifiers', 'end_resolveNullifiers');
+    // const measure3 = performance.getEntriesByName('resolveNullifiers').pop(); // Get the latest measure
+    // if (measure3) {
+    //   accumulatedDuration2 += measure3.duration;
+    // }
 
-    if (compactBlock.height > latestKnownBlockHeight) {
-      console.log('resolveNullifiers Accumulated Duration: ' + accumulatedDuration2);
-    }
+    // if (compactBlock.height > latestKnownBlockHeight) {
+    //   console.log('resolveNullifiers Accumulated Duration: ' + accumulatedDuration2);
+    // }
 
     // if a new record involves a state commitment, scan all block tx
     if (spentNullifiers.size || recordsByCommitment.size) {
@@ -466,11 +481,15 @@ export class BlockProcessor implements BlockProcessorInterface {
           ...toPlainMessage(record),
           noteCommitment: toPlainMessage(getSpendableNoteRecordCommitment(record)),
         });
+        // dbWriteCount1++
+        // console.log("dbWriteCount1: ", dbWriteCount1)
       } else if (isSwapRecordWithSwapCommitment(record)) {
         await this.indexedDb.saveSwap({
           ...toPlainMessage(record),
           swapCommitment: toPlainMessage(getSwapRecordCommitment(record)),
         });
+        // dbWriteCount1++
+        // console.log("dbWriteCount1: ", dbWriteCount1)
       } else {
         throw new Error('Unexpected record type');
       }
@@ -478,14 +497,18 @@ export class BlockProcessor implements BlockProcessorInterface {
   }
 
   private async identifyNewAssets(notes: SpendableNoteRecord[]) {
+    const saveOperations = [];
+
     for (const note of notes) {
       const assetId = note.note?.value?.assetId;
       if (!assetId) {
         continue;
       }
 
-      await this.saveAndReturnMetadata(assetId);
+      saveOperations.push(this.saveAndReturnMetadata(assetId));
     }
+
+    await Promise.all(saveOperations);
   }
 
   // TODO: refactor. there is definitely a better way to do this.  batch
@@ -524,6 +547,8 @@ export class BlockProcessor implements BlockProcessorInterface {
     if (metadataAlreadyInDb) {
       return metadataAlreadyInDb;
     }
+    // dbReadCount++
+    // console.log("dbReadCount :(", dbReadCount)
 
     const generatedMetadata = getDelegationTokenMetadata(identityKey);
 
@@ -532,44 +557,63 @@ export class BlockProcessor implements BlockProcessorInterface {
       ...customized,
       penumbraAssetId: getAssetId(customized),
     });
+    // dbWriteCount++
+    // console.log("dbWriteCount :(", dbWriteCount)
     return generatedMetadata;
   }
 
   // Nullifier is published in network when a note is spent or swap is claimed.
-  private async resolveNullifiers(nullifiers: Nullifier[], height: bigint) {
+  private async resolveNullifiers(nullifiers: Nullifier[], height: bigint): Promise<Set<Nullifier>> {
     const spentNullifiers = new Set<Nullifier>();
-
+  
+    // Create an array to hold promises for all read operations
+    const readOperations = [];
+  
+    // Collect all the database reads (for both SpendableNote and Swap)
     for (const nullifier of nullifiers) {
-      const record =
-        (await this.indexedDb.getSpendableNoteByNullifier(nullifier)) ??
-        (await this.indexedDb.getSwapByNullifier(nullifier));
-      dbReadCount1++
-      console.log("dbReadCount1: ", dbReadCount1)
+      const readPromise = (async () => {
+        const record = (await this.indexedDb.getSpendableNoteByNullifier(nullifier)) ??
+                       (await this.indexedDb.getSwapByNullifier(nullifier));
+        return { nullifier, record };
+      })();
+  
+      readOperations.push(readPromise);
+    }
+  
+    // Await all reads in parallel
+    const readResults = await Promise.all(readOperations);
+  
+    // Create an array to hold promises for all write operations
+    const writeOperations: Promise<void>[] = [];
+  
+    // Process the read results and queue up write operations
+    for (const { nullifier, record } of readResults) {
       if (!record) {
         continue;
       }
-
+  
       spentNullifiers.add(nullifier);
-
+  
       if (record instanceof SpendableNoteRecord) {
         record.heightSpent = height;
-        await this.indexedDb.saveSpendableNote({
+        const writePromise = this.indexedDb.saveSpendableNote({
           ...toPlainMessage(record),
           noteCommitment: toPlainMessage(getSpendableNoteRecordCommitment(record)),
         });
-        dbWriteCount1++
-        console.log("dbWriteCount1: ", dbWriteCount1)
+        writeOperations.push(writePromise);
       } else if (record instanceof SwapRecord) {
         record.heightClaimed = height;
-        await this.indexedDb.saveSwap({
+        const writePromise = this.indexedDb.saveSwap({
           ...toPlainMessage(record),
           swapCommitment: toPlainMessage(getSwapRecordCommitment(record)),
         });
-        dbWriteCount1++
-        console.log("dbWriteCount1: ", dbWriteCount1)
+        writeOperations.push(writePromise);
       }
     }
-
+  
+    // Await all writes in parallel
+    await Promise.all(writeOperations);
+  
     return spentNullifiers;
   }
 
@@ -659,6 +703,8 @@ export class BlockProcessor implements BlockProcessorInterface {
     }
 
     const metadata = await this.indexedDb.getAssetsMetadata(assetId);
+    // dbReadCount++
+    // console.log("dbReadCount: ", dbReadCount)
     const captureGroups = assetPatterns.auctionNft.capture(metadata?.display ?? '');
     if (!captureGroups) {
       return;
@@ -669,6 +715,10 @@ export class BlockProcessor implements BlockProcessorInterface {
     await this.indexedDb.upsertAuction(auctionId, {
       noteCommitment: spendableNoteRecord.noteCommitment,
     });
+    // dbWriteCount++
+    // console.log("dbWriteCount: ", dbWriteCount)
+    // dbReadCount++
+    // console.log("dbReadCount: ", dbReadCount)
   }
 
   private async saveTransactions(height: bigint, relevantTx: RelevantTx[]) {
@@ -683,8 +733,12 @@ export class BlockProcessor implements BlockProcessorInterface {
   ): Promise<void> {
     const nextEpochStartHeight = endHeightOfPreviousEpoch + 1n;
     await this.indexedDb.addEpoch(nextEpochStartHeight);
+    // dbWriteCount++
+    // console.log("dbWriteCount :(: ", dbWriteCount)
 
     const { sctParams } = (await this.indexedDb.getAppParams()) ?? {};
+    // dbReadCount++
+    // console.log("dbReadCount: ", dbReadCount)
     const nextEpochIsLatestKnownEpoch =
       sctParams && latestKnownBlockHeight - nextEpochStartHeight < sctParams.epochDuration;
 
@@ -702,6 +756,8 @@ export class BlockProcessor implements BlockProcessorInterface {
   private async updateValidatorInfos(nextEpochStartHeight: bigint): Promise<void> {
     // It's important to clear the table so any stale (jailed, tombstoned, etc) entries are filtered out.
     await this.indexedDb.clearValidatorInfos();
+    // dbWriteCount++
+    // console.log("dbWriteCount :(: ", dbWriteCount)
 
     for await (const validatorInfoResponse of this.querier.stake.allValidatorInfos()) {
       if (!validatorInfoResponse.validatorInfo) {
@@ -709,6 +765,8 @@ export class BlockProcessor implements BlockProcessorInterface {
       }
 
       await this.indexedDb.upsertValidatorInfo(validatorInfoResponse.validatorInfo);
+      // dbWriteCount++
+      // console.log("dbWriteCount :(: ", dbWriteCount)
 
       await this.updatePriceForValidatorDelegationToken(
         validatorInfoResponse,
@@ -735,6 +793,8 @@ export class BlockProcessor implements BlockProcessorInterface {
         toDecimalExchangeRate(exchangeRate),
         nextEpochStartHeight,
       );
+      // dbWriteCount++
+      // console.log("dbWriteCount :(: ", dbWriteCount)
     }
   }
 }
