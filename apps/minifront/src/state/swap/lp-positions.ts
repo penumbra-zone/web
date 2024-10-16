@@ -1,6 +1,6 @@
 import { SliceCreator, useStore } from '..';
 import { createZQuery, ZQueryState } from '@penumbra-zone/zquery';
-import { penumbra } from '../../prax.ts';
+import { penumbra } from '../../penumbra.ts';
 import { ViewService } from '@penumbra-zone/protobuf/penumbra/view/v1/view_connect';
 import {
   OwnedPositionIdsResponse,

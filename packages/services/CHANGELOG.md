@@ -1,5 +1,30 @@
 # @penumbra-zone/router
 
+## 38.0.0
+
+### Patch Changes
+
+- Updated dependencies [48725e3]
+  - @penumbra-zone/wasm@30.1.0
+  - @penumbra-zone/query@35.0.0
+  - @penumbra-zone/storage@34.0.0
+
+## 37.0.0
+
+### Patch Changes
+
+- Updated dependencies [e0db143]
+- Updated dependencies [e543db4]
+- Updated dependencies [8bf66ea]
+  - @penumbra-zone/wasm@30.0.0
+  - @penumbra-zone/protobuf@6.2.0
+  - @penumbra-zone/query@34.0.0
+  - @penumbra-zone/storage@33.0.0
+  - @penumbra-zone/bech32m@9.0.0
+  - @penumbra-zone/getters@19.0.0
+  - @penumbra-zone/types@25.0.0
+  - @penumbra-zone/crypto-web@26.0.0
+
 ## 36.0.0
 
 ### Patch Changes

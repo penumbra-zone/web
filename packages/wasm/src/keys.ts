@@ -3,6 +3,7 @@ import {
   get_address_by_index,
   get_ephemeral_address,
   get_full_viewing_key,
+  get_noble_forwarding_addr,
   get_wallet_id,
 } from '../wasm/index.js';
 import {
@@ -30,3 +31,27 @@ export const getEphemeralByIndex = (fullViewingKey: FullViewingKey, index: numbe
 
 export const getWalletId = (fullViewingKey: FullViewingKey) =>
   WalletId.fromBinary(get_wallet_id(fullViewingKey.toBinary()));
+
+export interface NobleAddrResponse {
+  // A noble address that will be used for registration on the noble network
+  nobleAddrBech32: string;
+  // Byte representation of the noble forwarding address. Used for broadcasting cosmos message.
+  nobleAddrBytes: Uint8Array;
+  // The penumbra address that a deposit to the noble address with forward to
+  penumbraAddr: Address;
+}
+
+// Generates an address that can be used as a forwarding address for Noble
+export const getNobleForwardingAddr = (
+  sequence: number,
+  fvk: FullViewingKey,
+  channel: string,
+  account?: number,
+): NobleAddrResponse => {
+  const res = get_noble_forwarding_addr(sequence, fvk.toBinary(), channel, account);
+  return {
+    nobleAddrBech32: res.noble_addr_bech32,
+    nobleAddrBytes: res.noble_addr_bytes,
+    penumbraAddr: Address.fromBinary(res.penumbra_addr_bytes),
+  };
+};

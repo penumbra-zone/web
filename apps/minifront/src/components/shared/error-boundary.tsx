@@ -1,14 +1,14 @@
 import { isRouteErrorResponse, useRouteError } from 'react-router-dom';
+import { Code, ConnectError } from '@connectrpc/connect';
 import {
   PenumbraNotInstalledError,
   PenumbraProviderNotConnectedError,
 } from '@penumbra-zone/client';
-import { ExtensionNotConnected } from '../extension-not-connected';
+import { SplashPage } from '@penumbra-zone/ui/components/ui/splash-page';
 import { NotFound } from '../not-found';
 import { ExtensionTransportDisconnected } from '../extension-transport-disconnected';
 import { ExtensionNotInstalled } from '../extension-not-installed';
-import { Code, ConnectError } from '@connectrpc/connect';
-import { SplashPage } from '@penumbra-zone/ui/components/ui/splash-page';
+import { ExtensionNotConnected } from '../extension-not-connected';
 
 export const ErrorBoundary = () => {
   const error = useRouteError();

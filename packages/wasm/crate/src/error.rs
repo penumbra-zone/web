@@ -1,9 +1,6 @@
-use std::convert::Infallible;
 use std::num::TryFromIntError;
 
-use base64::DecodeError as Base64DecodeError;
-use hex::FromHexError;
-use penumbra_tct::error::{InsertBlockError, InsertEpochError, InsertError};
+use penumbra_tct::error::InsertError;
 use prost::DecodeError as ProstDecodeError;
 use serde_wasm_bindgen::Error;
 use thiserror::Error;
@@ -18,22 +15,7 @@ pub enum WasmError {
     Anyhow(#[from] anyhow::Error),
 
     #[error("{0}")]
-    Base64DecodeError(#[from] Base64DecodeError),
-
-    #[error("{0}")]
     Dom(#[from] DomError),
-
-    #[error("{0}")]
-    FromHexError(#[from] FromHexError),
-
-    #[error("{0}")]
-    Infallible(#[from] Infallible),
-
-    #[error("{0}")]
-    InsertBlockError(#[from] InsertBlockError),
-
-    #[error("{0}")]
-    InsertEpochError(#[from] InsertEpochError),
 
     #[error("{0}")]
     InsertError(#[from] InsertError),

@@ -4,11 +4,20 @@ import { Dialog } from '.';
 import { Button } from '../Button';
 import { ComponentType } from 'react';
 import { Text } from '../Text';
+import { AssetIcon } from '../AssetIcon';
 import { styled } from 'styled-components';
 import { Ban, Handshake, ThumbsUp } from 'lucide-react';
+import { OSMO_METADATA, PENUMBRA_METADATA, PIZZA_METADATA } from '../utils/bufs';
 
 const WhiteTextWrapper = styled.div`
   color: ${props => props.theme.color.text.primary};
+`;
+
+const Column = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${props => props.theme.spacing(1)};
+  padding-top: ${props => props.theme.spacing(1)};
 `;
 
 const meta: Meta<typeof Dialog> = {
@@ -65,6 +74,43 @@ export const Basic: Story = {
               massa mi.
             </Text>
           </WhiteTextWrapper>
+        </Dialog.Content>
+      </Dialog>
+    );
+  },
+};
+
+export const WithRadioItems: Story = {
+  render: function Render() {
+    return (
+      <Dialog>
+        <Dialog.Trigger asChild>
+          <Button>Open dialog</Button>
+        </Dialog.Trigger>
+
+        <Dialog.Content title='Select wallet'>
+          <Dialog.RadioGroup>
+            <Column>
+              <Dialog.RadioItem
+                value='1'
+                title='Wallet 1'
+                description='Some description'
+                startAdornment={<AssetIcon metadata={PIZZA_METADATA} size='lg' />}
+              />
+              <Dialog.RadioItem
+                value='2'
+                title='Wallet 2'
+                description='Some description'
+                startAdornment={<AssetIcon metadata={PENUMBRA_METADATA} size='lg' />}
+              />
+              <Dialog.RadioItem
+                value='3'
+                title='Wallet 3'
+                description='Some description'
+                startAdornment={<AssetIcon metadata={OSMO_METADATA} size='lg' />}
+              />
+            </Column>
+          </Dialog.RadioGroup>
         </Dialog.Content>
       </Dialog>
     );

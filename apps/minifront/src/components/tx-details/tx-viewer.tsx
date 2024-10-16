@@ -11,7 +11,7 @@ import fetchReceiverView from './hooks';
 import { classifyTransaction } from '@penumbra-zone/perspective/transaction/classify';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
-import { penumbra } from '../../prax';
+import { penumbra } from '../../penumbra';
 
 export enum TxDetailsTab {
   PUBLIC = 'public',

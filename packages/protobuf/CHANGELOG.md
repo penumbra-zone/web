@@ -1,5 +1,11 @@
 # @penumbra-zone/protobuf
 
+## 6.2.0
+
+### Minor Changes
+
+- e543db4: Add noble forwarding protobufs
+
 ## 6.1.0
 
 ### Minor Changes

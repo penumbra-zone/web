@@ -1,5 +1,13 @@
 # @penumbra-zone/getters
 
+## 19.0.0
+
+### Patch Changes
+
+- Updated dependencies [e543db4]
+  - @penumbra-zone/protobuf@6.2.0
+  - @penumbra-zone/bech32m@9.0.0
+
 ## 18.0.0
 
 ### Patch Changes

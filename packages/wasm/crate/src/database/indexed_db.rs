@@ -26,6 +26,7 @@ pub async fn open_idb_database(constants: &DbConstants) -> WasmResult<IdbDatabas
 
 // Previous method of testing that requires features in prod code to seed indexed db for tests
 // TODO: Swap out with new MockDb utility for testing
+#[allow(dead_code)]
 async fn mock_test_database(mut db_req: OpenDbRequest) -> OpenDbRequest {
     db_req.set_on_upgrade_needed(Some(|evt: &IdbVersionChangeEvent| -> Result<(), JsValue> {
         // Check if the object store exists; create it if it doesn't
@@ -39,10 +40,12 @@ async fn mock_test_database(mut db_req: OpenDbRequest) -> OpenDbRequest {
                 .create_object_store_with_params("SPENDABLE_NOTES", &note_object_store_params)?;
 
             let nullifier_key: JsValue = serde_wasm_bindgen::to_value("nullifier.inner")?;
+            let params = web_sys::IdbIndexParameters::new();
+            params.set_unique(false);
             note_object_store.create_index_with_params(
                 "nullifier",
                 &IdbKeyPath::new(nullifier_key),
-                web_sys::IdbIndexParameters::new().unique(false),
+                &params,
             )?;
             evt.db().create_object_store("TREE_LAST_POSITION")?;
             evt.db().create_object_store("TREE_LAST_FORGOTTEN")?;

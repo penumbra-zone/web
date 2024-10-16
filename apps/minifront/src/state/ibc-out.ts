@@ -25,7 +25,7 @@ import { BLOCKS_PER_HOUR } from './constants';
 import { createZQuery, ZQueryState } from '@penumbra-zone/zquery';
 import { getChains } from '../fetchers/registry';
 import { bech32ChainIds } from './shared';
-import { penumbra } from '../prax';
+import { penumbra } from '../penumbra';
 import {
   IbcChannelService,
   IbcClientService,

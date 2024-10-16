@@ -1,5 +1,12 @@
 # @penumbra-zone/client
 
+## 20.0.0
+
+### Patch Changes
+
+- Updated dependencies [e543db4]
+  - @penumbra-zone/protobuf@6.2.0
+
 ## 19.0.0
 
 ### Patch Changes
