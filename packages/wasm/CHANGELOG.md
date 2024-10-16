@@ -1,5 +1,11 @@
 # @penumbra-zone/wasm
 
+## 30.1.0
+
+### Minor Changes
+
+- 48725e3: Added noble forwarding address wasm helpers
+
 ## 30.0.0
 
 ### Major Changes
