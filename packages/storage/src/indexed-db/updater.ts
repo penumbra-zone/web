@@ -45,17 +45,17 @@ export class IbdUpdater {
 
     // Batch all the updates into promises
     for (const update of updates.all) {
-      const putOperation = tx
-        .objectStore(update.table)
-        .put(update.value, update.key)
-        .then(() => {
-          this.notifySubscribers(update);
-        });
+      const putOperation = tx.objectStore(update.table).put(update.value, update.key);
       batchOperations.push(putOperation);
     }
     await Promise.all(batchOperations);
 
     await tx.done;
+
+    // Notify subscribers after the transaction has successfully committed
+    for (const update of updates.all) {
+      this.notifySubscribers(update);
+    }
   }
 
   async update<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>>(
