@@ -41,10 +41,19 @@ export class IbdUpdater {
     const tables = updates.all.map(u => u.table);
     const tx = this.db.transaction(tables, 'readwrite');
 
+    const batchOperations = [];
+
+    // Batch all the updates into promises
     for (const update of updates.all) {
-      await tx.objectStore(update.table).put(update.value, update.key);
-      this.notifySubscribers(update);
+      const putOperation = tx
+        .objectStore(update.table)
+        .put(update.value, update.key)
+        .then(() => {
+          this.notifySubscribers(update);
+        });
+      batchOperations.push(putOperation);
     }
+    await Promise.all(batchOperations);
 
     await tx.done;
   }

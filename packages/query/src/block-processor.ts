@@ -263,11 +263,11 @@ export class BlockProcessor implements BlockProcessorInterface {
 
     // flushing is slow, avoid it until
     // - wasm says
-    // - every 1000th block
+    // - every 5000th block
     // - every block at tip
     const flushReasons = {
       scannerWantsFlush,
-      interval: compactBlock.height % 1000n === 0n,
+      interval: compactBlock.height % 5000n === 0n,
       new: compactBlock.height > latestKnownBlockHeight,
     };
 
@@ -431,14 +431,18 @@ export class BlockProcessor implements BlockProcessorInterface {
   }
 
   private async identifyNewAssets(notes: SpendableNoteRecord[]) {
+    const saveOperations = [];
+
     for (const note of notes) {
       const assetId = note.note?.value?.assetId;
       if (!assetId) {
         continue;
       }
 
-      await this.saveAndReturnMetadata(assetId);
+      saveOperations.push(this.saveAndReturnMetadata(assetId));
     }
+
+    await Promise.all(saveOperations);
   }
 
   // TODO: refactor. there is definitely a better way to do this.  batch
@@ -491,11 +495,25 @@ export class BlockProcessor implements BlockProcessorInterface {
   // Nullifier is published in network when a note is spent or swap is claimed.
   private async resolveNullifiers(nullifiers: Nullifier[], height: bigint) {
     const spentNullifiers = new Set<Nullifier>();
+    const readOperations = [];
+    const writeOperations = [];
 
     for (const nullifier of nullifiers) {
-      const record =
-        (await this.indexedDb.getSpendableNoteByNullifier(nullifier)) ??
-        (await this.indexedDb.getSwapByNullifier(nullifier));
+      const readPromise = (async () => {
+        const record =
+          (await this.indexedDb.getSpendableNoteByNullifier(nullifier)) ??
+          (await this.indexedDb.getSwapByNullifier(nullifier));
+        return { nullifier, record };
+      })();
+
+      readOperations.push(readPromise);
+    }
+
+    // Await all reads in parallel
+    const readResults = await Promise.all(readOperations);
+
+    // Process the read results and queue up write operations
+    for (const { nullifier, record } of readResults) {
       if (!record) {
         continue;
       }
@@ -504,18 +522,23 @@ export class BlockProcessor implements BlockProcessorInterface {
 
       if (record instanceof SpendableNoteRecord) {
         record.heightSpent = height;
-        await this.indexedDb.saveSpendableNote({
+        const writePromise = this.indexedDb.saveSpendableNote({
           ...toPlainMessage(record),
           noteCommitment: toPlainMessage(getSpendableNoteRecordCommitment(record)),
         });
+        writeOperations.push(writePromise);
       } else if (record instanceof SwapRecord) {
         record.heightClaimed = height;
-        await this.indexedDb.saveSwap({
+        const writePromise = this.indexedDb.saveSwap({
           ...toPlainMessage(record),
           swapCommitment: toPlainMessage(getSwapRecordCommitment(record)),
         });
+        writeOperations.push(writePromise);
       }
     }
+
+    // Await all writes in parallel
+    await Promise.all(writeOperations);
 
     return spentNullifiers;
   }
