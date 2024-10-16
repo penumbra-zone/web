@@ -1,5 +1,12 @@
 # minifront
 
+## 6.23.1
+
+### Patch Changes
+
+- @penumbra-zone/perspective@34.0.0
+- @penumbra-zone/ui@11.0.1
+
 ## 6.23.0
 
 ### Minor Changes

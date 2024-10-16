@@ -1,5 +1,11 @@
 # node-status
 
+## 4.1.32
+
+### Patch Changes
+
+- @penumbra-zone/ui@11.0.1
+
 ## 4.1.31
 
 ### Patch Changes
