@@ -123,3 +123,61 @@ fn test_forwarding_addr_account_variation() {
     // Check that the addresses are different
     assert_ne!(address1, address2);
 }
+
+#[test]
+fn test_forwarding_addr_sequence_boundaries() {
+    let spend_key = generate_spend_key(TEST_SEED_PHRASE).unwrap();
+    let fvk_bytes = get_full_viewing_key(spend_key.as_slice()).unwrap();
+    let fvk = FullViewingKey::decode(fvk_bytes.as_slice()).unwrap();
+
+    let account = Some(1);
+
+    let sequence_min = 0;
+    let sequence_max = u16::MAX;
+
+    let address_min = forwarding_addr_inner(sequence_min, account, &fvk);
+    let address_max = forwarding_addr_inner(sequence_max, account, &fvk);
+
+    // Check that the addresses are different
+    assert_ne!(address_min, address_max);
+}
+
+#[test]
+fn test_forwarding_addr_same_sequence_and_account() {
+    let spend_key = generate_spend_key(TEST_SEED_PHRASE).unwrap();
+    let fvk_bytes = get_full_viewing_key(spend_key.as_slice()).unwrap();
+    let fvk = FullViewingKey::decode(fvk_bytes.as_slice()).unwrap();
+
+    let sequence = 1234;
+    let account = Some(1);
+
+    let address1 = forwarding_addr_inner(sequence, account, &fvk);
+    let address2 = forwarding_addr_inner(sequence, account, &fvk);
+
+    // Check that the addresses are the same
+    assert_eq!(address1, address2);
+}
+
+#[test]
+fn test_forwarding_addr_different_fvks() {
+    // Generate first Full Viewing Key
+    let spend_key1 = generate_spend_key(TEST_SEED_PHRASE).unwrap();
+    let fvk_bytes1 = get_full_viewing_key(spend_key1.as_slice()).unwrap();
+    let fvk1 = FullViewingKey::decode(fvk_bytes1.as_slice()).unwrap();
+
+    // Generate second Full Viewing Key with different seed phrase
+    const TEST_SEED_PHRASE_2: &str =
+        "flag public tonight parrot gospel treat tiny section useless smoke swim armor";
+    let spend_key2 = generate_spend_key(TEST_SEED_PHRASE_2).unwrap();
+    let fvk_bytes2 = get_full_viewing_key(spend_key2.as_slice()).unwrap();
+    let fvk2 = FullViewingKey::decode(fvk_bytes2.as_slice()).unwrap();
+
+    let sequence = 1234;
+    let account = Some(1);
+
+    let address1 = forwarding_addr_inner(sequence, account, &fvk1);
+    let address2 = forwarding_addr_inner(sequence, account, &fvk2);
+
+    // Check that the addresses are different
+    assert_ne!(address1, address2);
+}
