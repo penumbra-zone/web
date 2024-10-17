@@ -10,33 +10,35 @@ import { observer } from 'mobx-react-lite';
 export const ProviderPopover = observer(() => {
   const { manifest } = connectionStore;
 
-  const name = manifest?.['name'] as string;
-  const version = manifest?.['version'] as string;
-  const description = manifest?.['description'] as string;
-
   const icon = useMemo(() => {
-    const icons = (manifest?.['icons'] ?? {}) as Record<string, Blob>;
+    const icons = (manifest?.icons ?? {}) as Record<string, Blob>;
     const blob = icons['32'] ?? icons['128'];
     const element = !blob ? null : (
-      <Image width={16} height={16} src={URL.createObjectURL(blob)} alt={name} className='size-4' />
+      <Image
+        width={16}
+        height={16}
+        src={URL.createObjectURL(blob)}
+        alt={manifest?.name ?? ''}
+        className='size-4'
+      />
     );
     return () => element;
-  }, [manifest, name]);
+  }, [manifest]);
 
   return (
     <Popover>
       <Popover.Trigger>
         <Button icon={icon} iconOnly>
-          {name}
+          {manifest?.name ?? ''}
         </Button>
       </Popover.Trigger>
       <Popover.Content align='end' side='bottom'>
         {manifest ? (
           <div className='flex flex-col gap-2'>
             <Text body>
-              {name} v{version}
+              {manifest.name} v{manifest.version}
             </Text>
-            <Text small>{description}</Text>
+            <Text small>{manifest.description}</Text>
           </div>
         ) : (
           <Text body>Loading provider manifest...</Text>
