@@ -3,8 +3,6 @@ import { AllSlices, Middleware, SliceCreator, useStore } from '..';
 import {
   BalancesResponse,
   TransactionPlannerRequest,
-  TransactionPlannerRequest_Output,
-  TransactionPlannerRequest_Spend,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { BigNumber } from 'bignumber.js';
 import { MemoPlaintext } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
@@ -23,9 +21,10 @@ import { getAddress, getAddressIndex } from '@penumbra-zone/getters/address-view
 import { toBaseUnit } from '@penumbra-zone/types/lo-hi';
 import { isAddress } from '@penumbra-zone/bech32m/penumbra';
 import { checkSendMaxInvariants, transferableBalancesResponsesSelector } from './helpers';
-import { PartialMessage } from '@bufbuild/protobuf';
-import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { Metadata, Value } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getAssetTokenMetadata } from '../../fetchers/registry';
+import { getGasPrices } from '../../fetchers/gas-prices';
+import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 export interface SendSlice {
   selection: BalancesResponse | undefined;
@@ -44,9 +43,13 @@ export interface SendSlice {
   txInProgress: boolean;
   assetFeeMetadata: Metadata | undefined;
   gasPrices: GasPrices[] | undefined;
-  setGasPrices: (prices: GasPrices[]) => void;
   stakingToken: boolean | undefined;
   setStakingToken: (stakingToken: boolean) => void;
+}
+
+interface SpendOrOutput {
+  address: Address;
+  value: Value;
 }
 
 export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
@@ -83,6 +86,10 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
     },
     refreshFee: async () => {
       const { amount, recipient, selection } = get().send;
+      const prices = await getGasPrices();
+      set(state => {
+        state.send.gasPrices = prices;
+      });
 
       if (!amount || !recipient || !selection) {
         set(state => {
@@ -132,11 +139,6 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
         });
       }
     },
-    setGasPrices: prices => {
-      set(state => {
-        state.send.gasPrices = prices;
-      });
-    },
     setStakingToken: stakingToken => {
       set(state => {
         state.send.stakingToken = stakingToken;
@@ -154,17 +156,15 @@ const assembleRequest = ({
   gasPrices,
   stakingToken,
 }: SendSlice) => {
-  const spendOrOutput:
-    | PartialMessage<TransactionPlannerRequest_Spend>
-    | PartialMessage<TransactionPlannerRequest_Output> = {
-    address: { altBech32m: recipient },
-    value: {
+  const spendOrOutput: SpendOrOutput = {
+    address: new Address({ altBech32m: recipient }),
+    value: new Value({
       amount: toBaseUnit(
         BigNumber(amount),
         getDisplayDenomExponentFromValueView.optional(selection?.balanceView),
       ),
       assetId: getAssetIdFromValueView(selection?.balanceView),
-    },
+    }),
   };
 
   const isSendingMax = checkSendMaxInvariants({

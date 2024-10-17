@@ -7,7 +7,7 @@ import { useEffect, useMemo } from 'react';
 import { penumbraAddrValidation } from '../helpers';
 import InputToken from '../../shared/input-token';
 import { GasFee } from '../../shared/gas-fee';
-import { useBalancesResponses, useGasPrices, useStakingTokenMetadata } from '../../../state/shared';
+import { useBalancesResponses, useStakingTokenMetadata } from '../../../state/shared';
 import { NonNativeFeeWarning } from '../../shared/non-native-fee-warning';
 import { transferableBalancesResponsesSelector } from '../../../state/send/helpers';
 import { useRefreshFee } from '../../v2/transfer-layout/send-page/use-refresh-fee';
@@ -16,7 +16,6 @@ import { hasStakingToken } from '../../../fetchers/gas-prices';
 export const SendForm = () => {
   // Retrieve the staking token metadata and gas prices from the zustand
   const stakingTokenMetadata = useStakingTokenMetadata();
-  const gasPrices = useGasPrices();
 
   const transferableBalancesResponses = useBalancesResponses({
     select: transferableBalancesResponsesSelector,
@@ -35,7 +34,6 @@ export const SendForm = () => {
     setFeeTier,
     setMemo,
     sendTx,
-    setGasPrices,
     setStakingToken,
     txInProgress,
   } = useStore(sendSelector);
@@ -52,22 +50,17 @@ export const SendForm = () => {
   // useEffect here defers the state updates until after the rendering phase is complete,
   // preventing direct state modifications during rendering.
   useEffect(() => {
-    const updateStakingTokenAndGasPrices = () => {
+    const updateStakingToken = () => {
       // Update the zustand store and local state
       setStakingToken(isStakingToken);
-      if (gasPrices.data) {
-        setGasPrices(gasPrices.data);
-      }
     };
 
-    updateStakingTokenAndGasPrices();
+    updateStakingToken();
   }, [
     transferableBalancesResponses,
     stakingTokenMetadata,
     selection,
-    gasPrices,
     isStakingToken,
-    setGasPrices,
     setStakingToken,
   ]);
 

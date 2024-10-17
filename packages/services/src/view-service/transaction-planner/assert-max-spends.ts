@@ -55,14 +55,14 @@ export const assertSpendMax = async (
   });
 
   // Constraint: validate the requested spend amount is equal to the accumulated note balance.
-  const accumulatedBalance = await indexedDb.accumulateNoteBalance(
+  const totalNoteBalance = await indexedDb.totalNoteBalance(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- already asserted source existence
     req.source!.account,
     feeAssetId,
   );
   if (
-    accumulatedBalance.lo !== req.spends[0]?.value?.amount?.lo ||
-    accumulatedBalance.hi !== req.spends[0]?.value?.amount?.hi
+    totalNoteBalance.lo !== req.spends[0]?.value?.amount?.lo ||
+    totalNoteBalance.hi !== req.spends[0]?.value?.amount?.hi
   ) {
     throw new ConnectError('Invalid transaction: Spend transaction was constructed improperly.');
   }

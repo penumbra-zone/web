@@ -959,7 +959,7 @@ export class IndexedDb implements IndexedDbInterface {
     });
   }
 
-  async accumulateNoteBalance(accountIndex: number, assetId: AssetId): Promise<Amount> {
+  async totalNoteBalance(accountIndex: number, assetId: AssetId): Promise<Amount> {
     assertAssetId(assetId);
     const spendableNotes = await this.db.getAllFromIndex(
       'SPENDABLE_NOTES',
@@ -967,36 +967,30 @@ export class IndexedDb implements IndexedDbInterface {
       uint8ArrayToBase64(assetId.inner),
     );
 
-    const spendableNotesSet: SpendableNoteRecord[] = [];
-
-    spendableNotes.forEach(note => {
-      const spendableNote = SpendableNoteRecord.fromJson(note);
-
-      // randomizer should be ignored
-      if (
-        spendableNote.heightSpent === 0n &&
-        !isZero(getAmountFromRecord(spendableNote)) &&
-        spendableNote.addressIndex?.account === accountIndex
-      ) {
-        spendableNotesSet.push(spendableNote);
-      }
-    });
-
-    let accumulator = new Amount({ hi: 0n, lo: 0n });
-
-    // Accumulate the total value from the spendable note set
-    spendableNotesSet.forEach(noteRecord => {
-      if (noteRecord.note?.value?.amount) {
-        const noteAmount = noteRecord.note.value.amount;
-        const newAmount = addLoHi(
-          { lo: accumulator.lo, hi: accumulator.hi },
-          { lo: BigInt(noteAmount.lo), hi: BigInt(noteAmount.hi) },
+    return spendableNotes
+      .map(json => SpendableNoteRecord.fromJson(json))
+      .filter(note => {
+        return (
+          note.heightSpent === 0n &&
+          !isZero(getAmountFromRecord(note)) &&
+          // randomizer should be ignored
+          note.addressIndex?.account === accountIndex
         );
-
-        accumulator = new Amount(newAmount);
-      }
-    });
-
-    return accumulator;
+      })
+      .reduce(
+        (acc, curr) => {
+          if (curr.note?.value?.amount) {
+            const noteAmount = curr.note.value.amount;
+            const newAmount = addLoHi(
+              { lo: acc.lo, hi: acc.hi },
+              { lo: BigInt(noteAmount.lo), hi: BigInt(noteAmount.hi) },
+            );
+            return new Amount(newAmount);
+          } else {
+            return acc;
+          }
+        },
+        new Amount({ hi: 0n, lo: 0n }),
+      );
   }
 }

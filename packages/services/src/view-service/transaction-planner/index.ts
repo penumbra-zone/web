@@ -9,7 +9,6 @@ import { extractAltFee } from '../fees.js';
 import { assertTransactionSource } from './assert-transaction-source.js';
 import { TransactionPlan } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { assertSpendMax } from './assert-max-spends.js';
-// import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
 
 export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) => {
