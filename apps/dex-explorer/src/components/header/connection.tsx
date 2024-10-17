@@ -1,15 +1,11 @@
-import { Button } from '@penumbra-zone/ui/Button';
-import { ProviderPopover } from './provider-popover';
-import { connectionStore } from '@/shared/state/connection';
 import { observer } from 'mobx-react-lite';
+import { connectionStore } from '@/shared/state/connection';
+import { ProviderPopover } from './provider-popover';
+import { ConnectButton } from './connect-button';
 
 export const Connection = observer(() => {
   if (!connectionStore.connected) {
-    return (
-      <Button actionType='accent' onClick={() => void connectionStore.connect()}>
-        Connect
-      </Button>
-    );
+    return <ConnectButton />;
   }
 
   return <ProviderPopover />;
