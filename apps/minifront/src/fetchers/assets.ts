@@ -6,7 +6,9 @@ import { penumbra } from '../penumbra';
 
 export const getAllAssets = async (): Promise<Metadata[]> => {
   const responses = await Array.fromAsync(penumbra.service(ViewService).assets({}));
-  return responses.map(getDenomMetadata);
+  return responses
+    .map(getDenomMetadata)
+    .toSorted((a, b) => Number(b.priorityScore) - Number(a.priorityScore));
 };
 
 export const getAssetMetadataById = async (assetId: AssetId): Promise<Metadata | undefined> => {
