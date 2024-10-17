@@ -61,9 +61,13 @@ export default function AssetsTable() {
     return (
       <div className='mt-5 flex flex-col items-center gap-6'>
         <p>
-          No balances found.{' '}
+          No balances found. Try shielding funds via{' '}
           <Link to='/ibc' style={{ color: '#aaaaff' }}>
-            Try shielding funds
+            shield page
+          </Link>{' '}
+          or{' '}
+          <Link to='https://go.skip.build' style={{ color: '#aaaaff' }} target='_blank'>
+            go.skip.build
           </Link>
           .
         </p>
