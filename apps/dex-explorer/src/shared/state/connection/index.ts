@@ -1,5 +1,10 @@
-import { PenumbraRequestFailure, PenumbraState, PenumbraManifest } from '@penumbra-zone/client';
-import { penumbra, PRAX_ORIGIN } from '@/shared/penumbra';
+import {
+  PenumbraRequestFailure,
+  PenumbraState,
+  PenumbraManifest,
+  PenumbraClient,
+} from '@penumbra-zone/client';
+import { penumbra } from '@/shared/penumbra';
 import { makeAutoObservable } from 'mobx';
 
 class ConnectionStateStore {
@@ -23,22 +28,26 @@ class ConnectionStateStore {
   }
 
   async reconnect() {
-    await penumbra.attach(PRAX_ORIGIN);
-    if (!penumbra.connected) {
+    const providers = PenumbraClient.getProviders();
+    const connected = Object.keys(providers).find(origin =>
+      PenumbraClient.isProviderConnected(origin),
+    );
+
+    if (!connected) {
       return;
     }
 
     try {
-      await penumbra.connect();
+      await penumbra.connect(connected);
       this.setConnected(true);
     } catch (error) {
       /* no-op */
     }
   }
 
-  async connect() {
+  async connect(provider: string) {
     try {
-      await penumbra.connect();
+      await penumbra.connect(provider);
     } catch (error) {
       if (error instanceof Error && error.cause) {
         if (error.cause === PenumbraRequestFailure.Denied) {

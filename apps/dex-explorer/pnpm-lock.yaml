@@ -38,26 +38,26 @@ importers:
         specifier: ^11.3.1
         version: 11.3.1
       '@penumbra-zone/client':
-        specifier: ^19.0.0
-        version: 19.0.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/transport-dom@7.5.0)
+        specifier: ^20.0.0
+        version: 20.0.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/transport-dom@7.5.0)
       '@penumbra-zone/getters':
-        specifier: ^18.0.0
-        version: 18.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@8.0.0(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0))
+        specifier: ^19.0.0
+        version: 19.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@9.0.0(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0))
       '@penumbra-zone/protobuf':
-        specifier: ^6.1.0
-        version: 6.1.0(@bufbuild/protobuf@1.10.0)
+        specifier: ^6.2.0
+        version: 6.2.0(@bufbuild/protobuf@1.10.0)
       '@penumbra-zone/transport-dom':
         specifier: ^7.5.0
         version: 7.5.0
       '@penumbra-zone/types':
-        specifier: ^24.0.0
-        version: 24.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@8.0.0(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@18.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@8.0.0(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0))
+        specifier: ^25.0.0
+        version: 25.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@9.0.0(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@19.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@9.0.0(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0))
       '@penumbra-zone/ui':
-        specifier: ^10.0.2
-        version: 10.0.2(3s777c5y3x3kxw4ccrksxdytpm)
+        specifier: ^11.0.0
+        version: 11.0.0(lvfl3uckvlxyaqf5ykyn3gvw2q)
       '@penumbra-zone/wasm':
-        specifier: ^26.2.0
-        version: 26.2.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@8.0.0(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@24.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@8.0.0(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@18.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@8.0.0(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))
+        specifier: ^30.0.0
+        version: 30.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@9.0.0(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@25.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@9.0.0(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@19.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@9.0.0(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))
       '@radix-ui/react-icons':
         specifier: ^1.3.0
         version: 1.3.0(react@18.3.1)
@@ -191,6 +191,9 @@ importers:
       '@svgr/webpack':
         specifier: ^8.1.0
         version: 8.1.0(typescript@5.6.2)
+      '@types/chrome':
+        specifier: ^0.0.278
+        version: 0.0.278
       '@types/date-fns':
         specifier: ^2.6.0
         version: 2.6.0
@@ -2736,34 +2739,34 @@ packages:
         integrity: sha512-0hBfPZW4Y3my6RzYSBGI3cwutW+C7KJXn5OLXOhhXPsH+VlexrxvKIWc8nJeUwRCTtBkRR0lUSwuIhnaw0tsyQ==,
       }
 
-  '@penumbra-zone/bech32m@8.0.0':
+  '@penumbra-zone/bech32m@9.0.0':
     resolution:
       {
-        integrity: sha512-1MBJClwos7QGFlY/MH7HOfsY1F99FR/OqeYmkL+1NuTCEHrUENi/pS+WOx56rmVIokqSfRPj8zQCh6gd7aQVuw==,
+        integrity: sha512-4ZYCGgEq1IAxI2ff3zUP/2CAbQTpTIisFT6JRmhNvVko1rWFeG2uT+1rStoX87dNzzhCcTRmADJuMYfOG26fmg==,
       }
     peerDependencies:
-      '@penumbra-zone/protobuf': 6.1.0
+      '@penumbra-zone/protobuf': 6.2.0
 
-  '@penumbra-zone/client@19.0.0':
+  '@penumbra-zone/client@20.0.0':
     resolution:
       {
-        integrity: sha512-SQOEPJ6XYxzPhoxMG4RKz/dC2zHwW6ldOTpEsJxp1nBIa0gvBjkD7olo2OoX/y3aUBKC5xUxuf44JE9L7p1vLg==,
+        integrity: sha512-BW942t0sbcSdNk+RSUA+yYX5oAXjt2tfPcf+G7eOs0CjE7XF17lpmGMfsV8EpGh0swu9SFQlORBN3VThR/ne7Q==,
       }
     peerDependencies:
       '@bufbuild/protobuf': ^1.10.0
       '@connectrpc/connect': ^1.4.0
-      '@penumbra-zone/protobuf': 6.1.0
+      '@penumbra-zone/protobuf': 6.2.0
       '@penumbra-zone/transport-dom': 7.5.0
 
-  '@penumbra-zone/getters@18.0.0':
+  '@penumbra-zone/getters@19.0.0':
     resolution:
       {
-        integrity: sha512-qd421V84hZG8ELMTKvis3WCTBwD8zi7jJm9quYSMe9UhQaJwxD6iQS4X+20w2SUoIOsDKDFc/xIMOSl9rAwSxQ==,
+        integrity: sha512-TxJa82i40SAhTMrOCHxeWsJshDDaogzno9imfdo3hia0AJJn1hbe/A2ZDoMuUTDCK2J/bRlIs0fMdCz37IK5IQ==,
       }
     peerDependencies:
       '@bufbuild/protobuf': ^1.10.0
-      '@penumbra-zone/bech32m': 8.0.0
-      '@penumbra-zone/protobuf': 6.1.0
+      '@penumbra-zone/bech32m': 9.0.0
+      '@penumbra-zone/protobuf': 6.2.0
 
   '@penumbra-zone/keys@4.2.1':
     resolution:
@@ -2772,22 +2775,22 @@ packages:
       }
     hasBin: true
 
-  '@penumbra-zone/perspective@32.0.0':
+  '@penumbra-zone/perspective@33.0.0':
     resolution:
       {
-        integrity: sha512-jedibnOvEeVzOfNaI3lOLhjLz3oNUg3bd7ER5vzPKasY2CBXGF0c7P/ps5ZQshXsI0MIoH8vKWpehmD1JLGSbA==,
+        integrity: sha512-GKToicddSDHwLfC9ZzhAhSLAns+r9IG3TFTlltM+6i0RwEL5gKoAMtsxb0sc0xYCdTj904mdJZEI7SjY1TcUeA==,
       }
     peerDependencies:
       '@bufbuild/protobuf': ^1.10.0
-      '@penumbra-zone/bech32m': 8.0.0
-      '@penumbra-zone/getters': 18.0.0
-      '@penumbra-zone/protobuf': 6.1.0
-      '@penumbra-zone/wasm': 29.1.0
+      '@penumbra-zone/bech32m': 9.0.0
+      '@penumbra-zone/getters': 19.0.0
+      '@penumbra-zone/protobuf': 6.2.0
+      '@penumbra-zone/wasm': 30.0.0
 
-  '@penumbra-zone/protobuf@6.1.0':
+  '@penumbra-zone/protobuf@6.2.0':
     resolution:
       {
-        integrity: sha512-0aVpa0VvodqGERXRNfD0Q3VawfjH77E86e/aDIc/7FjhZB+9TGvhfVVFFBaaRWwOmueQxH2iT5IY/3p+eXQGXA==,
+        integrity: sha512-OCIvrXtRBK20lG32A62KNg9daOlpr4fEtB5uTENVuf3IAyemjETMJpz1To86KgCv2sR2kYiVNfazdRKh9whNWQ==,
       }
     peerDependencies:
       '@bufbuild/protobuf': ^1.10.0
@@ -2798,25 +2801,25 @@ packages:
         integrity: sha512-8xFIEDeXODl18AITfiIrJJoE8Y6y/+apO+BhrqCmXP+yqGo8LBzcW3iWDQkOc6Go2c1MGJT97B25r079Km1kuA==,
       }
 
-  '@penumbra-zone/types@24.0.0':
+  '@penumbra-zone/types@25.0.0':
     resolution:
       {
-        integrity: sha512-iD7K0e34gVrkNvfAOoEUctFMtAfXfofynOSngNqDGqZmu3MMRmKfBFiSAfouloJpf+1lT7h92AJo1vmpUV2VIw==,
+        integrity: sha512-PrJ7fg1sRemT9e99ugYhsu6x2qpjYJ2ZIeVVn1k0TcatfKWH3xJMp/f59SlxPC75xsvuuCVIAnctUObiNwmirQ==,
       }
     peerDependencies:
       '@bufbuild/protobuf': ^1.10.0
-      '@penumbra-zone/bech32m': 8.0.0
-      '@penumbra-zone/getters': 18.0.0
-      '@penumbra-zone/protobuf': 6.1.0
+      '@penumbra-zone/bech32m': 9.0.0
+      '@penumbra-zone/getters': 19.0.0
+      '@penumbra-zone/protobuf': 6.2.0
 
-  '@penumbra-zone/ui@10.0.2':
+  '@penumbra-zone/ui@11.0.0':
     resolution:
       {
-        integrity: sha512-/c3JZTLfjTaZZrqg8OCXqTTyaOCBL/5tf1v9CDJbo3MkIprnNj2DKQok9yLRrThTxGnls/gu3aVVcHFx4xcuTg==,
+        integrity: sha512-ME7/KMOhBNm86y0X14TJy92mJ6udX2UkaVLmb6UMypPrpjGCcPIUoKDJqEsPa2Mc2NFB7RkOHpe35d0AnSAjjQ==,
       }
     peerDependencies:
       '@bufbuild/protobuf': ^1.10.0
-      '@penumbra-zone/protobuf': 6.1.0
+      '@penumbra-zone/protobuf': 6.2.0
       framer-motion: ^11.2.4
       lucide-react: ^0.378.0
       postcss: ^8.4.38
@@ -2824,16 +2827,16 @@ packages:
       styled-components: ^6.1.11
       tailwindcss: ^3.4.3
 
-  '@penumbra-zone/wasm@26.2.0':
+  '@penumbra-zone/wasm@30.0.0':
     resolution:
       {
-        integrity: sha512-WimfNxVe9NXJMJnvoEyxSbOixW8x8YIcrIiXmaMBPPrkC3p8Bq3UzJqgg8FBtDEycU8oVOehs9MN3lLVMbgagQ==,
+        integrity: sha512-sCJ1kfaIXqGrplZsug0v4ZUdThh4PSbkPZvFCwIM2g/mTpzaEqPVU/5c+ngt6ddsKPbHbusGs2r1YOqm/sPw5w==,
       }
     peerDependencies:
       '@bufbuild/protobuf': ^1.10.0
-      '@penumbra-zone/bech32m': 7.0.0
-      '@penumbra-zone/protobuf': 6.0.0
-      '@penumbra-zone/types': 21.0.0
+      '@penumbra-zone/bech32m': 9.0.0
+      '@penumbra-zone/protobuf': 6.2.0
+      '@penumbra-zone/types': 25.0.0
 
   '@pkgjs/parseargs@0.11.0':
     resolution:
@@ -4067,6 +4070,12 @@ packages:
         integrity: sha512-AFynAtE1Un3Rko20Ghe2mVC/QWD4rStJ2PnyIZU2kzC4UyWpf1YhAEY87GojH/XPZCY8Mdt27gsYyy+6l6HV+w==,
       }
 
+  '@types/chrome@0.0.278':
+    resolution:
+      {
+        integrity: sha512-PDIJodOu7o54PpSOYLybPW/MDZBCjM1TKgf31I3Q/qaEbNpIH09rOM3tSEH3N7Q+FAqb1933LhF8ksUPYeQLNg==,
+      }
+
   '@types/d3-array@3.0.3':
     resolution:
       {
@@ -4146,10 +4155,28 @@ packages:
         integrity: sha512-/kYRxGDLWzHOB7q+wtSUQlFrtcdUccpfy+X+9iMBpHK8QLLhx2wIPYuS5DYtR9Wa/YlZAbIovy7qVdB1Aq6Lyw==,
       }
 
+  '@types/filesystem@0.0.36':
+    resolution:
+      {
+        integrity: sha512-vPDXOZuannb9FZdxgHnqSwAG/jvdGM8Wq+6N4D/d80z+D4HWH+bItqsZaVRQykAn6WEVeEkLm2oQigyHtgb0RA==,
+      }
+
+  '@types/filewriter@0.0.33':
+    resolution:
+      {
+        integrity: sha512-xFU8ZXTw4gd358lb2jw25nxY9QAgqn2+bKKjKOYfNCzN4DKCFetK7sPtrlpg66Ywe3vWY9FNxprZawAh9wfJ3g==,
+      }
+
   '@types/geojson@7946.0.14':
     resolution:
       {
         integrity: sha512-WCfD5Ht3ZesJUsONdhvm84dmzWOiOzOAqOncN0++w0lBw1o8OuDNJF2McvvCef/yBqb/HYRahp1BYtODFQ8bRg==,
+      }
+
+  '@types/har-format@1.2.16':
+    resolution:
+      {
+        integrity: sha512-fluxdy7ryD3MV6h8pTfTYpy/xQzCFC7m89nOH9y94cNqJ1mDIDPut7MnRHI3F6qRmh/cT2fUjG1MLdCNb4hE9A==,
       }
 
   '@types/json-schema@7.0.15':
@@ -11389,36 +11416,36 @@ snapshots:
 
   '@penumbra-labs/registry@11.3.1': {}
 
-  '@penumbra-zone/bech32m@8.0.0(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0))':
+  '@penumbra-zone/bech32m@9.0.0(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0))':
     dependencies:
-      '@penumbra-zone/protobuf': 6.1.0(@bufbuild/protobuf@1.10.0)
+      '@penumbra-zone/protobuf': 6.2.0(@bufbuild/protobuf@1.10.0)
       bech32: 2.0.0
 
-  '@penumbra-zone/client@19.0.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/transport-dom@7.5.0)':
+  '@penumbra-zone/client@20.0.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/transport-dom@7.5.0)':
     dependencies:
       '@bufbuild/protobuf': 1.10.0
       '@connectrpc/connect': 1.4.0(@bufbuild/protobuf@1.10.0)
-      '@penumbra-zone/protobuf': 6.1.0(@bufbuild/protobuf@1.10.0)
+      '@penumbra-zone/protobuf': 6.2.0(@bufbuild/protobuf@1.10.0)
       '@penumbra-zone/transport-dom': 7.5.0
 
-  '@penumbra-zone/getters@18.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@8.0.0(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0))':
+  '@penumbra-zone/getters@19.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@9.0.0(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0))':
     dependencies:
       '@bufbuild/protobuf': 1.10.0
-      '@penumbra-zone/bech32m': 8.0.0(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0))
-      '@penumbra-zone/protobuf': 6.1.0(@bufbuild/protobuf@1.10.0)
+      '@penumbra-zone/bech32m': 9.0.0(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0))
+      '@penumbra-zone/protobuf': 6.2.0(@bufbuild/protobuf@1.10.0)
 
   '@penumbra-zone/keys@4.2.1':
     optional: true
 
-  '@penumbra-zone/perspective@32.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@8.0.0(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@18.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@8.0.0(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/wasm@26.2.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@8.0.0(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@24.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@8.0.0(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@18.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@8.0.0(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0))))':
+  '@penumbra-zone/perspective@33.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@9.0.0(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@19.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@9.0.0(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/wasm@30.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@9.0.0(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@25.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@9.0.0(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@19.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@9.0.0(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0))))':
     dependencies:
       '@bufbuild/protobuf': 1.10.0
-      '@penumbra-zone/bech32m': 8.0.0(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0))
-      '@penumbra-zone/getters': 18.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@8.0.0(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0))
-      '@penumbra-zone/protobuf': 6.1.0(@bufbuild/protobuf@1.10.0)
-      '@penumbra-zone/wasm': 26.2.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@8.0.0(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@24.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@8.0.0(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@18.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@8.0.0(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))
+      '@penumbra-zone/bech32m': 9.0.0(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0))
+      '@penumbra-zone/getters': 19.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@9.0.0(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0))
+      '@penumbra-zone/protobuf': 6.2.0(@bufbuild/protobuf@1.10.0)
+      '@penumbra-zone/wasm': 30.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@9.0.0(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@25.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@9.0.0(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@19.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@9.0.0(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))
 
-  '@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)':
+  '@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)':
     dependencies:
       '@bufbuild/protobuf': 1.10.0
 
@@ -11427,25 +11454,25 @@ snapshots:
       '@bufbuild/protobuf': 1.10.0
       '@connectrpc/connect': 1.4.0(@bufbuild/protobuf@1.10.0)
 
-  '@penumbra-zone/types@24.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@8.0.0(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@18.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@8.0.0(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0))':
+  '@penumbra-zone/types@25.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@9.0.0(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@19.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@9.0.0(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0))':
     dependencies:
       '@bufbuild/protobuf': 1.10.0
-      '@penumbra-zone/bech32m': 8.0.0(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0))
-      '@penumbra-zone/getters': 18.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@8.0.0(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0))
-      '@penumbra-zone/protobuf': 6.1.0(@bufbuild/protobuf@1.10.0)
+      '@penumbra-zone/bech32m': 9.0.0(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0))
+      '@penumbra-zone/getters': 19.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@9.0.0(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0))
+      '@penumbra-zone/protobuf': 6.2.0(@bufbuild/protobuf@1.10.0)
       bignumber.js: 9.1.2
       idb: 8.0.0
       zod: 3.23.8
 
-  '@penumbra-zone/ui@10.0.2(3s777c5y3x3kxw4ccrksxdytpm)':
+  '@penumbra-zone/ui@11.0.0(lvfl3uckvlxyaqf5ykyn3gvw2q)':
     dependencies:
       '@bufbuild/protobuf': 1.10.0
       '@emotion/react': 11.13.3(@types/react@18.3.5)(react@18.3.1)
       '@emotion/styled': 11.13.0(@emotion/react@11.13.3(@types/react@18.3.5)(react@18.3.1))(@types/react@18.3.5)(react@18.3.1)
-      '@penumbra-zone/bech32m': 8.0.0(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0))
-      '@penumbra-zone/perspective': 32.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@8.0.0(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@18.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@8.0.0(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/wasm@26.2.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@8.0.0(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@24.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@8.0.0(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@18.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@8.0.0(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0))))
-      '@penumbra-zone/protobuf': 6.1.0(@bufbuild/protobuf@1.10.0)
-      '@penumbra-zone/types': 24.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@8.0.0(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@18.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@8.0.0(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0))
+      '@penumbra-zone/bech32m': 9.0.0(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0))
+      '@penumbra-zone/perspective': 33.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@9.0.0(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@19.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@9.0.0(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/wasm@30.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@9.0.0(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@25.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@9.0.0(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@19.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@9.0.0(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0))))
+      '@penumbra-zone/protobuf': 6.2.0(@bufbuild/protobuf@1.10.0)
+      '@penumbra-zone/types': 25.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@9.0.0(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@19.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@9.0.0(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0))
       '@radix-ui/react-avatar': 1.1.0(@types/react-dom@18.3.0)(@types/react@18.3.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-checkbox': 1.1.1(@types/react-dom@18.3.0)(@types/react@18.3.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-dialog': 1.0.5(@types/react-dom@18.3.0)(@types/react@18.3.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -11502,12 +11529,12 @@ snapshots:
       - immer
       - supports-color
 
-  '@penumbra-zone/wasm@26.2.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@8.0.0(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@24.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@8.0.0(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@18.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@8.0.0(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))':
+  '@penumbra-zone/wasm@30.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@9.0.0(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@25.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@9.0.0(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@19.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@9.0.0(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))':
     dependencies:
       '@bufbuild/protobuf': 1.10.0
-      '@penumbra-zone/bech32m': 8.0.0(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0))
-      '@penumbra-zone/protobuf': 6.1.0(@bufbuild/protobuf@1.10.0)
-      '@penumbra-zone/types': 24.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@8.0.0(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@18.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@8.0.0(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.1.0(@bufbuild/protobuf@1.10.0))
+      '@penumbra-zone/bech32m': 9.0.0(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0))
+      '@penumbra-zone/protobuf': 6.2.0(@bufbuild/protobuf@1.10.0)
+      '@penumbra-zone/types': 25.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@9.0.0(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@19.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@9.0.0(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@6.2.0(@bufbuild/protobuf@1.10.0))
     optionalDependencies:
       '@penumbra-zone/keys': 4.2.1
 
@@ -12447,6 +12474,11 @@ snapshots:
 
   '@tsconfig/vite-react@3.0.2': {}
 
+  '@types/chrome@0.0.278':
+    dependencies:
+      '@types/filesystem': 0.0.36
+      '@types/har-format': 1.2.16
+
   '@types/d3-array@3.0.3': {}
 
   '@types/d3-color@3.1.0': {}
@@ -12483,7 +12515,15 @@ snapshots:
 
   '@types/estree@1.0.5': {}
 
+  '@types/filesystem@0.0.36':
+    dependencies:
+      '@types/filewriter': 0.0.33
+
+  '@types/filewriter@0.0.33': {}
+
   '@types/geojson@7946.0.14': {}
+
+  '@types/har-format@1.2.16': {}
 
   '@types/json-schema@7.0.15': {}
 
@@ -13785,8 +13825,8 @@ snapshots:
       '@typescript-eslint/parser': 7.2.0(eslint@8.57.0)(typescript@5.6.2)
       eslint: 8.57.0
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.6.3(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import-x@0.5.3(eslint@8.57.0)(typescript@5.6.2))(eslint-plugin-import@2.30.0(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.6.2))(eslint-import-resolver-typescript@3.6.3)(eslint@9.10.0(jiti@1.21.6)))(eslint@8.57.0)
-      eslint-plugin-import: 2.30.0(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.6.2))(eslint-import-resolver-typescript@3.6.3(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import-x@0.5.3(eslint@8.57.0)(typescript@5.6.2))(eslint-plugin-import@2.30.0(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.6.2))(eslint-import-resolver-typescript@3.6.3)(eslint@9.10.0(jiti@1.21.6)))(eslint@8.57.0))(eslint@8.57.0)
+      eslint-import-resolver-typescript: 3.6.3(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import-x@0.5.3(eslint@8.57.0)(typescript@5.6.2))(eslint-plugin-import@2.30.0)(eslint@8.57.0)
+      eslint-plugin-import: 2.30.0(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.6.2))(eslint-import-resolver-typescript@3.6.3)(eslint@8.57.0)
       eslint-plugin-jsx-a11y: 6.10.0(eslint@8.57.0)
       eslint-plugin-react: 7.35.2(eslint@8.57.0)
       eslint-plugin-react-hooks: 4.6.2(eslint@8.57.0)
@@ -13829,19 +13869,19 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-import-resolver-typescript@3.6.3(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import-x@0.5.3(eslint@8.57.0)(typescript@5.6.2))(eslint-plugin-import@2.30.0(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.6.2))(eslint-import-resolver-typescript@3.6.3)(eslint@9.10.0(jiti@1.21.6)))(eslint@8.57.0):
+  eslint-import-resolver-typescript@3.6.3(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import-x@0.5.3(eslint@8.57.0)(typescript@5.6.2))(eslint-plugin-import@2.30.0)(eslint@8.57.0):
     dependencies:
       '@nolyfill/is-core-module': 1.0.39
       debug: 4.3.7
       enhanced-resolve: 5.17.1
       eslint: 8.57.0
-      eslint-module-utils: 2.11.0(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.3(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import-x@0.5.3(eslint@8.57.0)(typescript@5.6.2))(eslint-plugin-import@2.30.0(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.6.2))(eslint-import-resolver-typescript@3.6.3)(eslint@9.10.0(jiti@1.21.6)))(eslint@8.57.0))(eslint@8.57.0)
+      eslint-module-utils: 2.11.0(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.3(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import-x@0.5.3(eslint@8.57.0)(typescript@5.6.2))(eslint-plugin-import@2.30.0)(eslint@8.57.0))(eslint@8.57.0)
       fast-glob: 3.3.2
       get-tsconfig: 4.8.0
       is-bun-module: 1.2.1
       is-glob: 4.0.3
     optionalDependencies:
-      eslint-plugin-import: 2.30.0(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.6.2))(eslint@8.57.0)
+      eslint-plugin-import: 2.30.0(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.6.2))(eslint-import-resolver-typescript@3.6.3)(eslint@8.57.0)
       eslint-plugin-import-x: 0.5.3(eslint@9.10.0(jiti@1.21.6))(typescript@5.6.2)
     transitivePeerDependencies:
       - '@typescript-eslint/parser'
@@ -13870,14 +13910,14 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.11.0(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.3(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import-x@0.5.3(eslint@8.57.0)(typescript@5.6.2))(eslint-plugin-import@2.30.0(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.6.2))(eslint-import-resolver-typescript@3.6.3)(eslint@9.10.0(jiti@1.21.6)))(eslint@8.57.0))(eslint@8.57.0):
+  eslint-module-utils@2.11.0(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.3(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import-x@0.5.3(eslint@8.57.0)(typescript@5.6.2))(eslint-plugin-import@2.30.0)(eslint@8.57.0))(eslint@8.57.0):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
       '@typescript-eslint/parser': 7.2.0(eslint@8.57.0)(typescript@5.6.2)
       eslint: 8.57.0
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.6.3(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import-x@0.5.3(eslint@8.57.0)(typescript@5.6.2))(eslint-plugin-import@2.30.0(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.6.2))(eslint-import-resolver-typescript@3.6.3)(eslint@9.10.0(jiti@1.21.6)))(eslint@8.57.0)
+      eslint-import-resolver-typescript: 3.6.3(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import-x@0.5.3(eslint@8.57.0)(typescript@5.6.2))(eslint-plugin-import@2.30.0)(eslint@8.57.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -13926,7 +13966,7 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-plugin-import@2.30.0(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.6.2))(eslint-import-resolver-typescript@3.6.3(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import-x@0.5.3(eslint@8.57.0)(typescript@5.6.2))(eslint-plugin-import@2.30.0(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.6.2))(eslint-import-resolver-typescript@3.6.3)(eslint@9.10.0(jiti@1.21.6)))(eslint@8.57.0))(eslint@8.57.0):
+  eslint-plugin-import@2.30.0(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.6.2))(eslint-import-resolver-typescript@3.6.3)(eslint@8.57.0):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.8
@@ -13937,7 +13977,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 8.57.0
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.11.0(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.3(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import-x@0.5.3(eslint@8.57.0)(typescript@5.6.2))(eslint-plugin-import@2.30.0(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.6.2))(eslint-import-resolver-typescript@3.6.3)(eslint@9.10.0(jiti@1.21.6)))(eslint@8.57.0))(eslint@8.57.0)
+      eslint-module-utils: 2.11.0(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.3(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.6.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import-x@0.5.3(eslint@8.57.0)(typescript@5.6.2))(eslint-plugin-import@2.30.0)(eslint@8.57.0))(eslint@8.57.0)
       hasown: 2.0.2
       is-core-module: 2.15.1
       is-glob: 4.0.3
