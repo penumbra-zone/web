@@ -23,7 +23,6 @@ import { isAddress } from '@penumbra-zone/bech32m/penumbra';
 import { checkSendMaxInvariants, transferableBalancesResponsesSelector } from './helpers';
 import { Metadata, Value } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getAssetTokenMetadata } from '../../fetchers/registry';
-import { getGasPrices } from '../../fetchers/gas-prices';
 import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 export interface SendSlice {
@@ -43,6 +42,7 @@ export interface SendSlice {
   txInProgress: boolean;
   assetFeeMetadata: Metadata | undefined;
   gasPrices: GasPrices[] | undefined;
+  setGasPrices: (prices: GasPrices[]) => void;
   stakingToken: boolean | undefined;
   setStakingToken: (stakingToken: boolean) => void;
 }
@@ -86,11 +86,6 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
     },
     refreshFee: async () => {
       const { amount, recipient, selection } = get().send;
-      const prices = await getGasPrices();
-      set(state => {
-        state.send.gasPrices = prices;
-      });
-
       if (!amount || !recipient || !selection) {
         set(state => {
           state.send.fee = undefined;
@@ -138,6 +133,11 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
           state.send.txInProgress = false;
         });
       }
+    },
+    setGasPrices: prices => {
+      set(state => {
+        state.send.gasPrices = prices;
+      });
     },
     setStakingToken: stakingToken => {
       set(state => {
