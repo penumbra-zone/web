@@ -1,5 +1,11 @@
 # @penumbra-zone/storage
 
+## 34.1.0
+
+### Minor Changes
+
+- 8c036f5: batching storage operations with promises
+
 ## 34.0.0
 
 ### Patch Changes
