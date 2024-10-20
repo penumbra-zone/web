@@ -43,7 +43,7 @@ export class IbdUpdater {
 
     // Batch all the updates into promises
     for (const update of updates.all) {
-      tx.objectStore(update.table).put(update.value, update.key);
+      void tx.objectStore(update.table).put(update.value, update.key);
     }
 
     // Await the atomic transaction to complete
