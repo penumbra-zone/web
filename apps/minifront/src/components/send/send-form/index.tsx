@@ -17,7 +17,7 @@ export const SendForm = () => {
   // Retrieve the staking token metadata and gas prices from the zustand
   const stakingTokenMetadata = useStakingTokenMetadata();
   const gasPrices = useGasPrices();
-  
+
   const transferableBalancesResponses = useBalancesResponses({
     select: transferableBalancesResponsesSelector,
   });
