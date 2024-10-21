@@ -16,6 +16,7 @@ import { transactionPlanner } from './index.js';
 import { fvkCtx } from '../../ctx/full-viewing-key.js';
 import { AssetId, Value } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { TransactionPlan } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 
 const mockPlanTransaction = vi.hoisted(() => vi.fn());
 vi.mock('@penumbra-zone/wasm/planner', () => ({
@@ -102,6 +103,19 @@ describe('TransactionPlanner request handler', () => {
 
     mockIndexedDb.stakingTokenAssetId?.mockResolvedValueOnce(true);
     mockIndexedDb.hasTokenBalance?.mockResolvedValueOnce(true);
+
+    mockPlanTransaction.mockResolvedValueOnce(
+      new TransactionPlan({
+        transactionParameters: {
+          fee: {
+            assetId: new AssetId({ altBaseDenom: 'UM' }),
+            amount: { hi: 0n, lo: 0n },
+          },
+          chainId: 'mainnet',
+          expiryHeight: 100n,
+        },
+      }),
+    );
 
     await transactionPlanner(req, mockCtx);
 
