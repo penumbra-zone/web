@@ -1,5 +1,13 @@
 # @penumbra-zone/router
 
+## 39.0.0
+
+### Patch Changes
+
+- Updated dependencies [8c036f5]
+  - @penumbra-zone/storage@34.1.0
+  - @penumbra-zone/query@35.1.0
+
 ## 38.0.0
 
 ### Patch Changes
