@@ -44,6 +44,7 @@ import {
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { PlainMessage } from '@bufbuild/protobuf';
 import type { Jsonified } from './jsonified.js';
+import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 
 export interface IdbUpdate<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>> {
   table: StoreName;
@@ -150,6 +151,8 @@ export interface IndexedDbInterface {
   ): Promise<{ input: Value; output: Value } | undefined>;
 
   hasTokenBalance(addressIndex: number, assetId: AssetId): Promise<boolean>;
+
+  totalNoteBalance(accountIndex: number, assetId: AssetId): Promise<Amount>;
 }
 
 export interface PenumbraDb extends DBSchema {

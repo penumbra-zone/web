@@ -13,10 +13,13 @@ import { transferableBalancesResponsesSelector } from '../../../state/send/helpe
 import { useRefreshFee } from '../../v2/transfer-layout/send-page/use-refresh-fee';
 
 export const SendForm = () => {
+  // Retrieve the staking token metadata and gas prices from the zustand
   const stakingTokenMetadata = useStakingTokenMetadata();
+
   const transferableBalancesResponses = useBalancesResponses({
     select: transferableBalancesResponsesSelector,
   });
+
   const {
     selection,
     amount,

@@ -15,7 +15,7 @@ import { zeroValueView } from '../../../utils/zero-value-view';
 import { isValidAmount } from '../../../state/helpers';
 import { NonNativeFeeWarning } from '../../shared/non-native-fee-warning';
 import { NumberInput } from '../../shared/number-input';
-import { useBalancesResponses, useAssets } from '../../../state/shared';
+import { useAssets, useBalancesResponses } from '../../../state/shared';
 import { getBalanceByMatchingMetadataAndAddressIndex } from '../../../state/swap/getters';
 import {
   swappableAssetsSelector,
@@ -141,12 +141,13 @@ export const TokenSwapInput = () => {
       </div>
 
       <NonNativeFeeWarning
-        balancesResponses={balancesResponses?.data}
         amount={Number(amount)}
+        balancesResponses={balancesResponses?.data}
         source={assetIn}
         wrap={children => (
           <>
-            {/* This div adds an empty line */} <div className='h-4' />
+            {/* This div adds an empty line */}
+            <div className='h-4' />
             {children}
           </>
         )}

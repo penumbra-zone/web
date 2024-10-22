@@ -22,6 +22,7 @@ const hoisted = vi.hoisted(() => ({
     addressByIndex: vi.fn(),
     transactionPlanner: vi.fn(),
     transactionPanner: vi.fn(),
+    gasPrices: vi.fn().mockResolvedValue([]),
   },
 }));
 
