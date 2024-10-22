@@ -1,4 +1,4 @@
-import { KeyboardEventHandler, MouseEventHandler, ReactNode, useMemo } from 'react';
+import React, { ReactNode, useMemo } from 'react';
 import { RadioGroupItem } from '@radix-ui/react-radio-group';
 import { styled } from 'styled-components';
 import { motion } from 'framer-motion';
@@ -97,22 +97,20 @@ export const RadioItem = ({
   onClose,
   onSelect,
 }: DialogRadioItemProps) => {
-  const onEnter: KeyboardEventHandler<HTMLButtonElement> = event => {
-    if (event.key === 'Enter') {
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    // Is a click and not an arrow key up/down
+    if (event.detail > 0) {
+      onSelect?.();
       onClose?.();
     }
   };
 
-  const onMouseDown: MouseEventHandler<HTMLButtonElement> = () => {
-    // close only after the value is selected by onClick
-    setTimeout(() => {
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      onSelect?.();
       onClose?.();
-    }, 0);
-  };
-
-  // click is triggered by radix-ui on focus, click, arrow selection, etc. – basically always
-  const onClick = () => {
-    onSelect?.();
+    }
   };
 
   const descriptionText = useMemo(() => {
@@ -135,9 +133,8 @@ export const RadioItem = ({
     <RadioGroupItem key={value} disabled={disabled} value={value} asChild>
       <Root
         {...asTransientProps({ actionType, disabled })}
-        onKeyDown={onEnter}
-        onMouseDown={onMouseDown}
-        onClick={onClick}
+        onClick={handleClick}
+        onKeyDown={handleKeyDown}
       >
         <Info>
           {startAdornment}
