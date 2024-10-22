@@ -1,5 +1,11 @@
 # @penumbra-zone/ui
 
+## 11.0.2
+
+### Patch Changes
+
+- 74b53af: Fix asset selector not firing onChange event
+
 ## 11.0.1
 
 ### Patch Changes

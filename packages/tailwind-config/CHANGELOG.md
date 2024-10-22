@@ -1,5 +1,12 @@
 # @penumbra-zone/tailwind-config
 
+## 3.1.8
+
+### Patch Changes
+
+- Updated dependencies [74b53af]
+  - @penumbra-zone/ui@11.0.2
+
 ## 3.1.7
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/query",
-  "version": "35.0.0",
+  "version": "35.1.0",
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "engine": {
