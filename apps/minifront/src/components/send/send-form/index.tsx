@@ -3,24 +3,23 @@ import { Input } from '@penumbra-zone/ui/components/ui/input';
 import { useStore } from '../../../state';
 import { sendSelector, sendValidationErrors } from '../../../state/send';
 import { InputBlock } from '../../shared/input-block';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { penumbraAddrValidation } from '../helpers';
 import InputToken from '../../shared/input-token';
 import { GasFee } from '../../shared/gas-fee';
-import { useBalancesResponses, useGasPrices, useStakingTokenMetadata } from '../../../state/shared';
+import { useBalancesResponses, useStakingTokenMetadata } from '../../../state/shared';
 import { NonNativeFeeWarning } from '../../shared/non-native-fee-warning';
 import { transferableBalancesResponsesSelector } from '../../../state/send/helpers';
 import { useRefreshFee } from '../../v2/transfer-layout/send-page/use-refresh-fee';
-import { hasStakingToken } from '../../../fetchers/gas-prices';
 
 export const SendForm = () => {
   // Retrieve the staking token metadata and gas prices from the zustand
   const stakingTokenMetadata = useStakingTokenMetadata();
-  const gasPrices = useGasPrices();
 
   const transferableBalancesResponses = useBalancesResponses({
     select: transferableBalancesResponsesSelector,
   });
+
   const {
     selection,
     amount,
@@ -35,41 +34,10 @@ export const SendForm = () => {
     setFeeTier,
     setMemo,
     sendTx,
-    setGasPrices,
-    setStakingToken,
     txInProgress,
   } = useStore(sendSelector);
 
   useRefreshFee();
-
-  // Determine if the selected token is the staking token based on the current balances and metadata
-  const isStakingToken = hasStakingToken(
-    transferableBalancesResponses?.data,
-    stakingTokenMetadata.data,
-    selection,
-  );
-
-  // useEffect here defers the state updates until after the rendering phase is complete,
-  // preventing direct state modifications during rendering.
-  useEffect(() => {
-    const updateStakingTokenAndGasPrices = () => {
-      // Update the zustand store and local state
-      setStakingToken(isStakingToken);
-      if (gasPrices.data) {
-        setGasPrices(gasPrices.data);
-      }
-    };
-
-    updateStakingTokenAndGasPrices();
-  }, [
-    transferableBalancesResponses,
-    stakingTokenMetadata,
-    selection,
-    gasPrices,
-    isStakingToken,
-    setGasPrices,
-    setStakingToken,
-  ]);
 
   const validationErrors = useMemo(() => {
     return sendValidationErrors(selection, amount, recipient);
@@ -126,7 +94,11 @@ export const SendForm = () => {
         loading={transferableBalancesResponses?.loading}
       />
 
-      <NonNativeFeeWarning amount={Number(amount)} hasStakingToken={isStakingToken} />
+      <NonNativeFeeWarning
+        balancesResponses={transferableBalancesResponses?.data}
+        amount={Number(amount)}
+        source={selection}
+      />
 
       <GasFee
         fee={fee}

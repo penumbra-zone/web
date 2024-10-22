@@ -1,18 +1,13 @@
-import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import {
-  BalancesResponse,
-  TransactionPlannerRequest_Output,
-  TransactionPlannerRequest_Spend,
-} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { Metadata, Value } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { getDisplay } from '@penumbra-zone/getters/metadata';
 import { getAmount, getMetadata } from '@penumbra-zone/getters/value-view';
 import { assetPatterns } from '@penumbra-zone/types/assets';
 import { isKnown } from '../helpers';
 import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
 import { chainRegistryClient } from '../../fetchers/registry';
-import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
-import { PartialMessage } from '@bufbuild/protobuf';
 import { GasPrices } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
+import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 const nonTransferableAssetPatterns = [
   assetPatterns.proposalNft,
@@ -33,37 +28,31 @@ export const transferableBalancesResponsesSelector = (
   ),
 });
 
+export interface SpendOrOutput {
+  value: Value;
+  address: Address;
+}
+
 // Check if the selected balance equals the specified amount.
 const isMaxAmount = (
   selection: BalancesResponse | undefined,
-  spendOrOutput:
-    | PartialMessage<TransactionPlannerRequest_Spend>
-    | PartialMessage<TransactionPlannerRequest_Output>,
+  spendOrOutput: SpendOrOutput,
 ): boolean => {
-  return getAmount(selection?.balanceView).equals(spendOrOutput.value?.amount as Amount);
+  return getAmount(selection?.balanceView).equals(spendOrOutput.value.amount);
 };
 
 // Check if the asset is the native staking token (UM).
-const isUmAsset = (
-  spendOrOutput:
-    | PartialMessage<TransactionPlannerRequest_Spend>
-    | PartialMessage<TransactionPlannerRequest_Output>,
-): boolean => {
+const isUmAsset = (spendOrOutput: SpendOrOutput): boolean => {
   const { stakingAssetId } = chainRegistryClient.bundled.globals();
-  return stakingAssetId.equals(spendOrOutput.value?.assetId as AssetId);
+  return stakingAssetId.equals(spendOrOutput.value.assetId);
 };
 
 // Check whether the asset you're sending is an alternative asset used for fees.
 const isAlternativeAssetUsedForFees = (
-  spendOrOutput:
-    | PartialMessage<TransactionPlannerRequest_Spend>
-    | PartialMessage<TransactionPlannerRequest_Output>,
+  spendOrOutput: SpendOrOutput,
   gasPrices: GasPrices[] | undefined,
 ): boolean => {
-  return (
-    gasPrices?.some(price => price.assetId?.equals(spendOrOutput.value?.assetId as AssetId)) ??
-    false
-  );
+  return gasPrices?.some(price => price.assetId?.equals(spendOrOutput.value.assetId)) ?? false;
 };
 
 // Check whether the transaction meets the "send max" conditions, which determines if the request
@@ -74,14 +63,12 @@ export const checkSendMaxInvariants = ({
   selection,
   spendOrOutput,
   gasPrices,
-  stakingToken,
+  hasStakingToken,
 }: {
   selection: BalancesResponse | undefined;
-  spendOrOutput:
-    | PartialMessage<TransactionPlannerRequest_Spend>
-    | PartialMessage<TransactionPlannerRequest_Output>;
+  spendOrOutput: SpendOrOutput;
   gasPrices: GasPrices[] | undefined;
-  stakingToken: boolean | undefined;
+  hasStakingToken: boolean | undefined;
 }): boolean => {
   // Checks if the transaction involves sending the maximum amount of the native
   // staking token (UM). This condition is met if the selected asset's amount equals the maximum
@@ -91,7 +78,7 @@ export const checkSendMaxInvariants = ({
   // This condition ensures that the transaction is treated as a "send max" operation using a
   // non-native asset for covering fees.
   const invariantTwo =
-    !stakingToken &&
+    !hasStakingToken &&
     isAlternativeAssetUsedForFees(spendOrOutput, gasPrices) &&
     isMaxAmount(selection, spendOrOutput);
 

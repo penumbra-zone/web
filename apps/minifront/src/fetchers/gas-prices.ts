@@ -15,9 +15,9 @@ export const getGasPrices = async (): Promise<GasPrices[]> => {
 
 // Determines if the user has UM token in their account balances
 export const hasStakingToken = (
-  balancesResponses?: BalancesResponse[],
-  stakingAssetMetadata?: Metadata,
-  source?: BalancesResponse,
+  balancesResponses: BalancesResponse[] | undefined,
+  stakingAssetMetadata: Metadata | undefined,
+  source: BalancesResponse | undefined,
 ): boolean => {
   if (!balancesResponses || !stakingAssetMetadata || !source) {
     return false;

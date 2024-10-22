@@ -2,19 +2,16 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   AssetId,
   Metadata,
+  Value,
   ValueView,
 } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import {
-  BalancesResponse,
-  TransactionPlannerRequest_Output,
-  TransactionPlannerRequest_Spend,
-} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { GasPrices } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
-import { checkSendMaxInvariants } from './helpers.js';
+import { checkSendMaxInvariants, SpendOrOutput } from './helpers.js';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
-import { PartialMessage } from '@bufbuild/protobuf';
 import { getAssetIdFromValueView } from '@penumbra-zone/getters/value-view';
 import { base64ToUint8Array } from '@penumbra-zone/types/base64';
+import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 describe('sendMax', () => {
   beforeEach(() => {
@@ -39,23 +36,22 @@ describe('sendMax', () => {
       }),
     });
 
-    const request:
-      | PartialMessage<TransactionPlannerRequest_Spend>
-      | PartialMessage<TransactionPlannerRequest_Output> = {
-      value: {
+    const request: SpendOrOutput = {
+      value: new Value({
         amount: new Amount({
           lo: 0n,
           hi: 1n,
         }),
         assetId: getAssetIdFromValueView(selectionExample.balanceView),
-      },
+      }),
+      address: new Address({ altBech32m: 'xyz_recipient' }),
     };
 
     const result = checkSendMaxInvariants({
       selection: selectionExample,
       spendOrOutput: request,
       gasPrices: [stakingTokenPrice, AltTokenPrice1, AltTokenPrice2],
-      stakingToken: true,
+      hasStakingToken: true,
     });
 
     // invariantOne:  false (isUmAsset: false, isMaxAmount: false)
@@ -83,23 +79,22 @@ describe('sendMax', () => {
       }),
     });
 
-    const request:
-      | PartialMessage<TransactionPlannerRequest_Spend>
-      | PartialMessage<TransactionPlannerRequest_Output> = {
-      value: {
-        amount: new Amount({
+    const request: SpendOrOutput = {
+      value: new Value({
+        amount: {
           lo: 0n,
           hi: 20000n,
-        }),
+        },
         assetId: getAssetIdFromValueView(selectionExample.balanceView),
-      },
+      }),
+      address: new Address({ altBech32m: 'xyz_recipient' }),
     };
 
     const result = checkSendMaxInvariants({
       selection: selectionExample,
       spendOrOutput: request,
       gasPrices: [stakingTokenPrice, AltTokenPrice1, AltTokenPrice2],
-      stakingToken: true,
+      hasStakingToken: true,
     });
 
     // invariantOne:  false (isUmAsset: false, isMaxAmount: true)
@@ -127,23 +122,22 @@ describe('sendMax', () => {
       }),
     });
 
-    const request:
-      | PartialMessage<TransactionPlannerRequest_Spend>
-      | PartialMessage<TransactionPlannerRequest_Output> = {
-      value: {
-        amount: new Amount({
+    const request: SpendOrOutput = {
+      value: new Value({
+        amount: {
           lo: 0n,
           hi: 1n,
-        }),
+        },
         assetId: getAssetIdFromValueView(selectionExample.balanceView),
-      },
+      }),
+      address: new Address({ altBech32m: 'xyz_recipient' }),
     };
 
     const result = checkSendMaxInvariants({
       selection: selectionExample,
       spendOrOutput: request,
       gasPrices: [stakingTokenPrice, AltTokenPrice1, AltTokenPrice2],
-      stakingToken: false,
+      hasStakingToken: false,
     });
 
     // invariantOne:  false (isUmAsset: false, isMaxAmount: false)
@@ -171,23 +165,22 @@ describe('sendMax', () => {
       }),
     });
 
-    const request:
-      | PartialMessage<TransactionPlannerRequest_Spend>
-      | PartialMessage<TransactionPlannerRequest_Output> = {
-      value: {
-        amount: new Amount({
+    const request: SpendOrOutput = {
+      value: new Value({
+        amount: {
           lo: 0n,
           hi: 20000n,
-        }),
+        },
         assetId: getAssetIdFromValueView(selectionExample.balanceView),
-      },
+      }),
+      address: new Address({ altBech32m: 'xyz_recipient' }),
     };
 
     const result = checkSendMaxInvariants({
       selection: selectionExample,
       spendOrOutput: request,
       gasPrices: [stakingTokenPrice, AltTokenPrice1, AltTokenPrice2],
-      stakingToken: false,
+      hasStakingToken: false,
     });
 
     // invariantOne:  false (isUmAsset: false, isMaxAmount: true)
@@ -215,23 +208,22 @@ describe('sendMax', () => {
       }),
     });
 
-    const request:
-      | PartialMessage<TransactionPlannerRequest_Spend>
-      | PartialMessage<TransactionPlannerRequest_Output> = {
-      value: {
-        amount: new Amount({
+    const request: SpendOrOutput = {
+      value: new Value({
+        amount: {
           lo: 0n,
           hi: 1n,
-        }),
+        },
         assetId: getAssetIdFromValueView(selectionExample.balanceView),
-      },
+      }),
+      address: new Address({ altBech32m: 'xyz_recipient' }),
     };
 
     const result = checkSendMaxInvariants({
       selection: selectionExample,
       spendOrOutput: request,
       gasPrices: [stakingTokenPrice, AltTokenPrice1, AltTokenPrice2],
-      stakingToken: true,
+      hasStakingToken: true,
     });
 
     // invariantOne:  false (isUmAsset: true, isMaxAmount: false)
@@ -259,23 +251,22 @@ describe('sendMax', () => {
       }),
     });
 
-    const request:
-      | PartialMessage<TransactionPlannerRequest_Spend>
-      | PartialMessage<TransactionPlannerRequest_Output> = {
-      value: {
-        amount: new Amount({
+    const request: SpendOrOutput = {
+      value: new Value({
+        amount: {
           lo: 0n,
           hi: 20000n,
-        }),
+        },
         assetId: getAssetIdFromValueView(selectionExample.balanceView),
-      },
+      }),
+      address: new Address({ altBech32m: 'xyz_recipient' }),
     };
 
     const result = checkSendMaxInvariants({
       selection: selectionExample,
       spendOrOutput: request,
       gasPrices: [stakingTokenPrice, AltTokenPrice1, AltTokenPrice2],
-      stakingToken: true,
+      hasStakingToken: true,
     });
 
     // invariantOne:  false (isUmAsset: true, isMaxAmount: true)
@@ -303,23 +294,22 @@ describe('sendMax', () => {
       }),
     });
 
-    const request:
-      | PartialMessage<TransactionPlannerRequest_Spend>
-      | PartialMessage<TransactionPlannerRequest_Output> = {
-      value: {
-        amount: new Amount({
+    const request: SpendOrOutput = {
+      value: new Value({
+        amount: {
           lo: 0n,
           hi: 1n,
-        }),
+        },
         assetId: getAssetIdFromValueView(selectionExample.balanceView),
-      },
+      }),
+      address: new Address({ altBech32m: 'xyz_recipient' }),
     };
 
     const result = checkSendMaxInvariants({
       selection: selectionExample,
       spendOrOutput: request,
       gasPrices: [stakingTokenPrice, AltTokenPrice1, AltTokenPrice2],
-      stakingToken: false,
+      hasStakingToken: false,
     });
 
     // invariantOne:  false (isUmAsset: false, isMaxAmount: false)
@@ -347,23 +337,22 @@ describe('sendMax', () => {
       }),
     });
 
-    const request:
-      | PartialMessage<TransactionPlannerRequest_Spend>
-      | PartialMessage<TransactionPlannerRequest_Output> = {
-      value: {
-        amount: new Amount({
+    const request: SpendOrOutput = {
+      value: new Value({
+        amount: {
           lo: 0n,
           hi: 20000n,
-        }),
+        },
         assetId: getAssetIdFromValueView(selectionExample.balanceView),
-      },
+      }),
+      address: new Address({ altBech32m: 'xyz_recipient' }),
     };
 
     const result = checkSendMaxInvariants({
       selection: selectionExample,
       spendOrOutput: request,
       gasPrices: [stakingTokenPrice, AltTokenPrice1, AltTokenPrice2],
-      stakingToken: false,
+      hasStakingToken: false,
     });
 
     // invariantOne:  false (isUmAsset: false, isMaxAmount: false)
