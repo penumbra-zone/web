@@ -1,4 +1,4 @@
-import { KeyboardEventHandler, ReactNode, useMemo } from 'react';
+import React, { ReactNode, useMemo } from 'react';
 import { RadioGroupItem } from '@radix-ui/react-radio-group';
 import { styled } from 'styled-components';
 import { motion } from 'framer-motion';
@@ -97,15 +97,20 @@ export const RadioItem = ({
   onClose,
   onSelect,
 }: DialogRadioItemProps) => {
-  const onEnter: KeyboardEventHandler<HTMLButtonElement> = event => {
-    if (event.key === 'Enter') {
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    // Is a click and not an arrow key up/down
+    if (event.detail > 0) {
+      onSelect?.();
       onClose?.();
     }
   };
 
-  const onClick = () => {
-    onSelect?.();
-    onClose?.();
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      onSelect?.();
+      onClose?.();
+    }
   };
 
   const descriptionText = useMemo(() => {
@@ -126,7 +131,11 @@ export const RadioItem = ({
 
   return (
     <RadioGroupItem key={value} disabled={disabled} value={value} asChild>
-      <Root {...asTransientProps({ actionType, disabled })} onKeyDown={onEnter} onClick={onClick}>
+      <Root
+        {...asTransientProps({ actionType, disabled })}
+        onClick={handleClick}
+        onKeyDown={handleKeyDown}
+      >
         <Info>
           {startAdornment}
           <div>
