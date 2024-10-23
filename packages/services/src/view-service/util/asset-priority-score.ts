@@ -24,11 +24,12 @@ export const getAssetPriorityScore = (
     return 0n;
   }
 
-  if (
-    metadata.penumbraAssetId?.equals(nativeTokenId) ||
-    assetPatterns.ibc.matches(metadata.display)
-  ) {
-    return metadata.priorityScore;
+  if (metadata.penumbraAssetId?.equals(nativeTokenId)) {
+    return 50n;
+  }
+
+  if (assetPatterns.ibc.matches(metadata.display)) {
+    return 40n;
   }
 
   if (
