@@ -1,5 +1,5 @@
 import { useBook } from '@/fetchers/book';
-import { fromBaseUnit } from '@/old/utils/math/hiLo';
+import { fromBaseUnit } from '@/shared/old-utils/math/hiLo';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import {
   Position,
@@ -8,8 +8,8 @@ import {
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
-import { innerToBech32Address } from '@/old/utils/math/bech32';
-import { uint8ArrayToBase64 } from '@/old/utils/math/base64';
+import { innerToBech32Address } from '@/shared/old-utils/math/bech32';
+import { uint8ArrayToBase64 } from '@/shared/old-utils/math/base64';
 import { round } from '@/shared/round';
 import { useComputePositionId } from '@/shared/useComputePositionId';
 import { usePathToMetadata } from '@/shared/usePagePath.ts';

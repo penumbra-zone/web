@@ -1,12 +1,12 @@
 import { usePagePath } from '@/shared/usePagePath.ts';
 
 export enum PagePath {
-  Home = '/v2',
-  Explore = '/v2/explore',
-  Trade = '/v2/trade',
-  Inspect = '/v2/inspect',
-  Portfolio = '/v2/portfolio',
-  TradePair = '/v2/trade/:primary/:numeraire',
+  Home = '',
+  Explore = '/explore',
+  Trade = '/trade',
+  Inspect = '/inspect',
+  Portfolio = '/portfolio',
+  TradePair = '/trade/:primary/:numeraire',
 }
 
 const basePath: Partial<Record<PagePath, PagePath>> = {

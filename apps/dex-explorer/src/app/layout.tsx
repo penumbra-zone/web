@@ -1,12 +1,18 @@
 import { ReactNode } from 'react';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
+
 import '@/v2.css';
-import { Providers } from './Providers';
+import { App } from './app';
 
 const RootLayout = ({ children }: { children: ReactNode }) => {
   return (
     <html lang='en'>
       <body>
-        <Providers>{children}</Providers>
+        <App>{children}</App>
+
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
