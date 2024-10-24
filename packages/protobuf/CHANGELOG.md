@@ -1,5 +1,11 @@
 # @penumbra-zone/protobuf
 
+## 6.3.0
+
+### Minor Changes
+
+- 3269282: Updating to latest penumbra definitions (with new badges field on Metadata)
+
 ## 6.2.0
 
 ### Minor Changes
