@@ -10,9 +10,9 @@ import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import { innerToBech32Address } from '@/old/utils/math/bech32';
 import { uint8ArrayToBase64 } from '@/old/utils/math/base64';
-import { useAssets } from '@/shared/state/assets';
 import { round } from '@/shared/round';
 import { useComputePositionId } from '@/shared/useComputePositionId';
+import { usePathToMetadata } from '@/shared/usePagePath.ts';
 
 interface Route {
   lpId: string;
@@ -117,27 +117,38 @@ function getDisplayData({
   return getTotals(routes, isBuySide, limit);
 }
 
-export function RouteBook() {
-  const { data: assets } = useAssets();
-  const asset1 = assets?.find(asset => asset.symbol === 'UM');
-  const asset2 = assets?.find(asset => asset.symbol === 'GM');
-  const asset1Exponent = asset1 ? getDisplayDenomExponent(asset1) : 0;
-  const asset2Exponent = asset2 ? getDisplayDenomExponent(asset2) : 0;
+const RouteBookLoadingState = () => {
+  return (
+    <div>
+      <div className='text-gray-500'>Loading...</div>
+    </div>
+  );
+};
+
+const RouteBookData = ({
+  baseAsset,
+  quoteAsset,
+}: {
+  baseAsset: Metadata;
+  quoteAsset: Metadata;
+}) => {
+  const asset1Exponent = getDisplayDenomExponent(baseAsset);
+  const asset2Exponent = getDisplayDenomExponent(quoteAsset);
   const { data: computePositionId } = useComputePositionId();
-  const { data } = useBook(asset1?.symbol, asset2?.symbol, 100, 50);
+  const { data } = useBook(baseAsset.symbol, quoteAsset.symbol, 100, 50);
   const asks = getDisplayData({
     data: data?.asks ?? [],
     computePositionId,
-    asset1,
-    asset2,
+    asset1: baseAsset,
+    asset2: quoteAsset,
     isBuySide: false,
     limit: 8,
   });
   const bids = getDisplayData({
     data: data?.bids ?? [],
     computePositionId,
-    asset1,
-    asset2,
+    asset1: baseAsset,
+    asset2: quoteAsset,
     isBuySide: true,
     limit: 8,
   });
@@ -171,4 +182,17 @@ export function RouteBook() {
       </table>
     </div>
   );
+};
+
+export function RouteBook() {
+  const { baseAsset, quoteAsset, error, isLoading: pairIsLoading } = usePathToMetadata();
+  if (pairIsLoading || !baseAsset || !quoteAsset) {
+    return <RouteBookLoadingState />;
+  }
+
+  if (error) {
+    return <div>Error loading route book: ${String(error)}</div>;
+  }
+
+  return <RouteBookData baseAsset={baseAsset} quoteAsset={quoteAsset} />;
 }
