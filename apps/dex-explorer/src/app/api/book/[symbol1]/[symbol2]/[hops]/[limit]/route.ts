@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { DexQueryServiceClient } from '@/old/utils/protos/services/dex/dex-query-service-client';
+import { DexQueryServiceClient } from '@/shared/old-utils/protos/services/dex/dex-query-service-client';
 import { DirectedTradingPair } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
