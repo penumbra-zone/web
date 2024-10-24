@@ -1,5 +1,5 @@
 import { CandlestickData } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
-import { Token } from '@/old/utils/types/token';
+import { Token } from '@/shared/old-utils/types/token';
 
 export interface VolumeCandle extends CandlestickData {
   volume: number;

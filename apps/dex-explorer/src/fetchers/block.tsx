@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { BlockInfo } from '@/old/utils/indexer/types/lps';
+import { BlockInfo } from '@/shared/old-utils/indexer/types/lps';
 
 export const useBlockInfo = (startHeight: number | string, endHeight?: number | string) => {
   return useQuery({

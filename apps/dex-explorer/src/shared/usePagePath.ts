@@ -26,7 +26,7 @@ const matchPagePath = (str: string): PagePath => {
     }
   }
 
-  throw new Error(`No match found for path: ${str}`);
+  return PagePath.Home;
 };
 
 export const usePagePath = <T extends PagePath>() => {
