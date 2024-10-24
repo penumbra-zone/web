@@ -1,5 +1,19 @@
 # @penumbra-zone/router
 
+## 40.0.0
+
+### Patch Changes
+
+- Updated dependencies [3269282]
+  - @penumbra-zone/protobuf@6.3.0
+  - @penumbra-zone/bech32m@10.0.0
+  - @penumbra-zone/getters@20.0.0
+  - @penumbra-zone/query@36.0.0
+  - @penumbra-zone/storage@35.0.0
+  - @penumbra-zone/types@26.0.0
+  - @penumbra-zone/wasm@31.0.0
+  - @penumbra-zone/crypto-web@27.0.0
+
 ## 39.0.0
 
 ### Patch Changes
