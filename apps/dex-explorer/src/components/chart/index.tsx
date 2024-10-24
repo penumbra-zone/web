@@ -1,8 +1,9 @@
-import { useRef, useEffect } from 'react';
-import { createChart, IChartApi, CandlestickData } from 'lightweight-charts';
+import { useEffect, useRef } from 'react';
+import { CandlestickData, createChart, IChartApi } from 'lightweight-charts';
 import { tailwindConfig } from '@penumbra-zone/ui/tailwind';
-import { Token } from '@/old/utils/types/token';
 import { useCandles } from '@/fetchers/candles';
+import { usePathToMetadata } from '@/shared/usePagePath.ts';
+import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
 const { colors } = tailwindConfig.theme.extend;
 
@@ -10,23 +11,33 @@ interface ChartProps {
   height: number;
 }
 
-const asset1: Token = {
-  display: 'Penumbra',
-  symbol: 'um',
-  decimals: 5,
-  inner: '',
-};
-const asset2: Token = {
-  display: 'GM Wagmi',
-  symbol: 'gm',
-  decimals: 5,
-  inner: '',
+const ChartLoadingState = ({ height }: ChartProps) => {
+  return (
+    <div style={{ height }}>
+      <div className='flex w-full items-center justify-center' style={{ height }}>
+        <div className='text-gray-500'>Loading...</div>
+      </div>
+    </div>
+  );
 };
 
-export function Chart({ height }: ChartProps) {
+const ChartData = ({
+  height,
+  baseAsset,
+  quoteAsset,
+}: {
+  height: number;
+  baseAsset: Metadata;
+  quoteAsset: Metadata;
+}) => {
   const chartElRef = useRef<HTMLInputElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
-  const { data: candles, isLoading } = useCandles(asset1.symbol, asset2.symbol, 0, 10000);
+
+  const {
+    data: candles,
+    isLoading,
+    error,
+  } = useCandles(baseAsset.symbol, quoteAsset.symbol, 0, 10000);
 
   useEffect(() => {
     if (chartElRef.current && !chartRef.current) {
@@ -80,6 +91,24 @@ export function Chart({ height }: ChartProps) {
           <div className='text-gray-500'>Loading...</div>
         </div>
       )}
+      {error && (
+        <div className='flex w-full items-center justify-center' style={{ height }}>
+          <div className='text-red-600'>{String(error)}</div>
+        </div>
+      )}
     </div>
   );
+};
+
+export function Chart({ height }: ChartProps) {
+  const { baseAsset, quoteAsset, error, isLoading: pairIsLoading } = usePathToMetadata();
+  if (pairIsLoading || !baseAsset || !quoteAsset) {
+    return <ChartLoadingState height={height} />;
+  }
+
+  if (error) {
+    return <div>Error loading pair selector: ${String(error)}</div>;
+  }
+
+  return <ChartData height={height} baseAsset={baseAsset} quoteAsset={quoteAsset} />;
 }
