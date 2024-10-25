@@ -63,3 +63,7 @@ Using https://buf.build/penumbra-zone/penumbra/sdks/main
 [NextJS]: https://nextjs.org/
 [pnpm]: https://pnpm.io/
 [Nix]: https://nixos.org/download/
+
+## Code structure
+
+Read the sub-article about the code structure [here](./pages/readme.md).
