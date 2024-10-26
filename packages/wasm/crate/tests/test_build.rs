@@ -1,5 +1,4 @@
 extern crate penumbra_wasm;
-mod utils;
 use penumbra_asset::STAKING_TOKEN_ASSET_ID;
 use penumbra_dex::DexParameters;
 use penumbra_keys::keys::SpendKey;
