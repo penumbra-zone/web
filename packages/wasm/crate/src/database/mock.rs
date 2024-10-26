@@ -24,6 +24,9 @@ pub fn get_mock_tables() -> Tables {
         full_sync_height: "full_sync_height".to_string(),
         auctions: "auctions".to_string(),
         auction_outstanding_reserves: "auction_outstanding_reserves".to_string(),
+        tree_commitments: "tree_commitments".to_string(),
+        tree_last_position: "tree_last_position".to_string(),
+        tree_last_forgotten: "tree_last_forgotten".to_string(),
     }
 }
 
