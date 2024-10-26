@@ -58,7 +58,7 @@ pub fn build_action_inner(
 ///     auth_data: `AuthorizationData`
 /// Returns: `Transaction`
 #[wasm_bindgen]
-pub fn build(
+pub fn build_serial(
     full_viewing_key: &[u8],
     transaction_plan: &[u8],
     witness_data: &[u8],
@@ -71,12 +71,12 @@ pub fn build(
     let auth = AuthorizationData::decode(auth_data)?;
     let fvk = FullViewingKey::decode(full_viewing_key)?;
 
-    let tx: Transaction = build_inner(fvk, plan, witness, auth)?;
+    let tx: Transaction = build_serial_inner(fvk, plan, witness, auth)?;
 
     Ok(tx.encode_to_vec())
 }
 
-pub fn build_inner(
+pub fn build_serial_inner(
     fvk: FullViewingKey,
     plan: TransactionPlan,
     witness: WitnessData,

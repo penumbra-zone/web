@@ -47,6 +47,9 @@ pub struct Tables {
     pub full_sync_height: String,
     pub auctions: String,
     pub auction_outstanding_reserves: String,
+    pub tree_commitments: String,
+    pub tree_last_position: String,
+    pub tree_last_forgotten: String,
 }
 
 pub async fn init_idb_storage(constants: DbConstants) -> WasmResult<Storage<IdbDatabase>> {
