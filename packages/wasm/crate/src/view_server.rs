@@ -24,10 +24,10 @@ use crate::utils;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct StoredTree {
-    last_position: Option<StoredPosition>,
-    last_forgotten: Option<Forgotten>,
-    hashes: Vec<StoreHash>,
-    commitments: Vec<StoreCommitment>,
+    pub last_position: Option<StoredPosition>,
+    pub last_forgotten: Option<Forgotten>,
+    pub hashes: Vec<StoreHash>,
+    pub commitments: Vec<StoreCommitment>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
