@@ -3,6 +3,7 @@
 This MD file discusses the agreed code structure of the project. It combines the NextJS file structure with the Feature-Sliced Design (FSD) principles.
 
 Main ideas:
+
 - To comply with the NextJS file structure, the `app` and `pages` directories are used in the root of the project. However, it should only export the code defined in other directories.
 - The `src` directory mainly follows the [Feature-Sliced Design (FSD)](https://feature-sliced.design/docs/get-started/overview) methodology. It defines the layers, slices and segments instead of splitting the files by its type (e.g. "components" or "state").
 - All file names should use **kebab-case**.
