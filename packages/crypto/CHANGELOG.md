@@ -1,5 +1,17 @@
 # @penumbra-zone/crypto-web
 
+## 27.0.0
+
+### Patch Changes
+
+- @penumbra-zone/types@26.0.0
+
+## 26.0.0
+
+### Patch Changes
+
+- @penumbra-zone/types@25.0.0
+
 ## 25.0.0
 
 ### Patch Changes

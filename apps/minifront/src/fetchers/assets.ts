@@ -2,11 +2,13 @@ import { AssetMetadataByIdRequest } from '@penumbra-zone/protobuf/penumbra/view/
 import { ViewService } from '@penumbra-zone/protobuf';
 import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getDenomMetadata } from '@penumbra-zone/getters/assets-response';
-import { penumbra } from '../prax';
+import { penumbra } from '../penumbra';
 
 export const getAllAssets = async (): Promise<Metadata[]> => {
   const responses = await Array.fromAsync(penumbra.service(ViewService).assets({}));
-  return responses.map(getDenomMetadata);
+  return responses
+    .map(getDenomMetadata)
+    .toSorted((a, b) => Number(b.priorityScore) - Number(a.priorityScore));
 };
 
 export const getAssetMetadataById = async (assetId: AssetId): Promise<Metadata | undefined> => {

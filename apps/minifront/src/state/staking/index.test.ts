@@ -148,7 +148,7 @@ vi.mock('../../fetchers/balances', () => ({
   })),
 }));
 
-vi.mock('../../prax', () => ({
+vi.mock('../../penumbra', () => ({
   penumbra: {
     service: vi.fn(() => hoisted.mockViewClient),
   },

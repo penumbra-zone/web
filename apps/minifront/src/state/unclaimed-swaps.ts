@@ -6,7 +6,7 @@ import { createZQuery, ZQueryState } from '@penumbra-zone/zquery';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { fetchUnclaimedSwaps } from '../fetchers/unclaimed-swaps';
 import { ViewService } from '@penumbra-zone/protobuf';
-import { penumbra } from '../prax';
+import { penumbra } from '../penumbra';
 
 type SwapCommitmentId = string;
 

@@ -45,6 +45,7 @@ const EXAMPLE_VIEW_OPAQUE = new AddressView({
 
 export const Decoded: Story = {
   args: {
+    copyable: false,
     view: EXAMPLE_VIEW,
   },
 };

@@ -1,5 +1,57 @@
 # @penumbra-zone/ui
 
+## 12.0.0
+
+### Patch Changes
+
+- Updated dependencies [3269282]
+  - @penumbra-zone/protobuf@6.3.0
+  - @penumbra-zone/bech32m@10.0.0
+  - @penumbra-zone/perspective@35.0.0
+  - @penumbra-zone/types@26.0.0
+
+## 11.0.2
+
+### Patch Changes
+
+- 74b53af: Fix asset selector not firing onChange event
+
+## 11.0.1
+
+### Patch Changes
+
+- @penumbra-zone/perspective@34.0.0
+
+## 11.0.0
+
+### Minor Changes
+
+- deb04f5: Add `Dialog.RadioGroup` and `Dialog.RadioItem` components
+
+### Patch Changes
+
+- 9d68f48: fix `copyable` prop on `AddressViewComponent`
+- dad8165: Add ellipsis to `ValueViewComponent`
+- Updated dependencies [e543db4]
+  - @penumbra-zone/protobuf@6.2.0
+  - @penumbra-zone/perspective@33.0.0
+  - @penumbra-zone/bech32m@9.0.0
+  - @penumbra-zone/types@25.0.0
+
+## 10.0.2
+
+### Patch Changes
+
+- 4885420: Fix AssetSelector filtering and display
+
+## 10.0.1
+
+### Patch Changes
+
+- 4295109: - Add a temporary zIndex prop to the Dialog component. It is only needed for minifront v1 and must be removed when we stop supporting the v1.
+  - Improve the styles of the v2 sync bar and popover
+  - @penumbra-zone/perspective@32.0.0
+
 ## 10.0.0
 
 ### Patch Changes

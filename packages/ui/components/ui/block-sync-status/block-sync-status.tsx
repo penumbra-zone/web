@@ -42,6 +42,10 @@ export const CondensedBlockSyncStatus = ({
 };
 
 const BlockSyncErrorState = ({ error }: { error: unknown }) => {
+  const reload = () => {
+    window.location.reload();
+  };
+
   return (
     <motion.div
       className='flex w-full select-none flex-col'
@@ -49,9 +53,18 @@ const BlockSyncErrorState = ({ error }: { error: unknown }) => {
       animate={{ opacity: 1, transition: { duration: 0.5, ease: 'easeOut' } }}
     >
       <Progress status='error' value={100} shape='squared' />
-      <div className='absolute flex w-full justify-between px-2'>
-        <div className='mt-[-5.5px] font-mono text-[10px] text-red-300'>
-          Block sync error: {String(error)}
+      <div className='absolute w-full px-2'>
+        <div className='mt-[-5.5px] flex gap-2'>
+          <span className='font-mono text-[10px] text-red-300'>
+            Block sync error: {String(error)}
+          </span>
+          <button
+            type='button'
+            className='border-none bg-none font-mono text-[10px] text-red-300 underline'
+            onClick={reload}
+          >
+            Reload
+          </button>
         </div>
       </div>
     </motion.div>

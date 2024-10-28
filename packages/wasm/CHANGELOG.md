@@ -1,5 +1,39 @@
 # @penumbra-zone/wasm
 
+## 31.0.0
+
+### Patch Changes
+
+- Updated dependencies [3269282]
+  - @penumbra-zone/protobuf@6.3.0
+  - @penumbra-zone/bech32m@10.0.0
+  - @penumbra-zone/types@26.0.0
+
+## 30.1.0
+
+### Minor Changes
+
+- 48725e3: Added noble forwarding address wasm helpers
+
+## 30.0.0
+
+### Major Changes
+
+- e0db143: API updates, renames, and test coverage
+
+### Patch Changes
+
+- Updated dependencies [e543db4]
+  - @penumbra-zone/protobuf@6.2.0
+  - @penumbra-zone/bech32m@9.0.0
+  - @penumbra-zone/types@25.0.0
+
+## 29.1.0
+
+### Minor Changes
+
+- 735e22b: add support for spend transaction planner requests in wasm
+
 ## 29.0.0
 
 ### Minor Changes

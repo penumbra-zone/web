@@ -1,5 +1,72 @@
 # minifront
 
+## 6.23.3
+
+### Patch Changes
+
+- 0745845: Sort assets by priority score
+- Updated dependencies [3269282]
+  - @penumbra-zone/protobuf@6.3.0
+  - @penumbra-zone/bech32m@10.0.0
+  - @penumbra-zone/client@21.0.0
+  - @penumbra-zone/getters@20.0.0
+  - @penumbra-zone/perspective@35.0.0
+  - @penumbra-zone/types@26.0.0
+  - @penumbra-zone/ui@12.0.0
+  - @penumbra-zone/crypto-web@27.0.0
+
+## 6.23.2
+
+### Patch Changes
+
+- Updated dependencies [74b53af]
+  - @penumbra-zone/ui@11.0.2
+
+## 6.23.1
+
+### Patch Changes
+
+- @penumbra-zone/perspective@34.0.0
+- @penumbra-zone/ui@11.0.1
+
+## 6.23.0
+
+### Minor Changes
+
+- 45c6751: Add multiwallet support to minifront
+
+### Patch Changes
+
+- Updated dependencies [9d68f48]
+- Updated dependencies [deb04f5]
+- Updated dependencies [e543db4]
+- Updated dependencies [dad8165]
+  - @penumbra-zone/ui@11.0.0
+  - @penumbra-zone/protobuf@6.2.0
+  - @penumbra-zone/perspective@33.0.0
+  - @penumbra-zone/bech32m@9.0.0
+  - @penumbra-zone/client@20.0.0
+  - @penumbra-zone/getters@19.0.0
+  - @penumbra-zone/types@25.0.0
+  - @penumbra-zone/crypto-web@26.0.0
+
+## 6.22.4
+
+### Patch Changes
+
+- Updated dependencies [4885420]
+  - @penumbra-zone/ui@10.0.2
+
+## 6.22.3
+
+### Patch Changes
+
+- 4295109: - Add a temporary zIndex prop to the Dialog component. It is only needed for minifront v1 and must be removed when we stop supporting the v1.
+  - Improve the styles of the v2 sync bar and popover
+- Updated dependencies [4295109]
+  - @penumbra-zone/ui@10.0.1
+  - @penumbra-zone/perspective@32.0.0
+
 ## 6.22.2
 
 ### Patch Changes

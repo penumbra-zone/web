@@ -138,14 +138,16 @@ export class BlockProcessor implements BlockProcessorInterface {
    * Sync local state to present. This method will
    * - identify current synced height (or `-1n` to represent a 'pre-genesis' state)
    * - query remote rpc for the chain's latest block height
-   * - pre-genesis, initialize validator info
+   * - pre-genesis, initialize 0th epoch and validator info
    * - pre-genesis, process a local genesis block if provided
    * - query remote rpc to begin streaming at the next block
    * - iterate
    */
   private async syncAndStore() {
+    const PRE_GENESIS_SYNC_HEIGHT = -1n;
+
     // start at next block, or genesis if height is undefined
-    let currentHeight = (await this.indexedDb.getFullSyncHeight()) ?? -1n;
+    let currentHeight = (await this.indexedDb.getFullSyncHeight()) ?? PRE_GENESIS_SYNC_HEIGHT;
 
     // this is the first network query of the block processor. use backoff to
     // delay until network is available
@@ -160,13 +162,18 @@ export class BlockProcessor implements BlockProcessorInterface {
       { retry: () => true },
     );
 
-    // special case genesis sync
-    if (currentHeight === -1n) {
+    // handle the special case where no syncing has been done yet, and
+    // prepares for syncing and checks for a bundled genesis block,
+    // which can save time by avoiding an initial network request.
+    if (currentHeight === PRE_GENESIS_SYNC_HEIGHT) {
+      // create first epoch
+      await this.indexedDb.addEpoch(0n);
+
       // initialize validator info at genesis
       // TODO: use batch endpoint https://github.com/penumbra-zone/penumbra/issues/4688
-      void this.updateValidatorInfos(currentHeight + 1n);
+      void this.updateValidatorInfos(0n);
 
-      // begin the chain with local genesis block if provided
+      // conditional only runs if there is a bundled genesis block provided for the chain
       if (this.genesisBlock?.height === currentHeight + 1n) {
         currentHeight = this.genesisBlock.height;
 
@@ -256,11 +263,11 @@ export class BlockProcessor implements BlockProcessorInterface {
 
     // flushing is slow, avoid it until
     // - wasm says
-    // - every 1000th block
+    // - every 5000th block
     // - every block at tip
     const flushReasons = {
       scannerWantsFlush,
-      interval: compactBlock.height % 1000n === 0n,
+      interval: compactBlock.height % 5000n === 0n,
       new: compactBlock.height > latestKnownBlockHeight,
     };
 
@@ -373,8 +380,8 @@ export class BlockProcessor implements BlockProcessorInterface {
       );
     }
 
-    const isLastBlockOfEpoch = !!compactBlock.epochRoot;
-    if (isLastBlockOfEpoch) {
+    // The presence of `epochRoot` indicates that this is the final block of the current epoch.
+    if (compactBlock.epochRoot) {
       await this.handleEpochTransition(compactBlock.height, latestKnownBlockHeight);
     }
 
@@ -424,14 +431,18 @@ export class BlockProcessor implements BlockProcessorInterface {
   }
 
   private async identifyNewAssets(notes: SpendableNoteRecord[]) {
+    const saveOperations = [];
+
     for (const note of notes) {
       const assetId = note.note?.value?.assetId;
       if (!assetId) {
         continue;
       }
 
-      await this.saveAndReturnMetadata(assetId);
+      saveOperations.push(this.saveAndReturnMetadata(assetId));
     }
+
+    await Promise.all(saveOperations);
   }
 
   // TODO: refactor. there is definitely a better way to do this.  batch
@@ -484,11 +495,25 @@ export class BlockProcessor implements BlockProcessorInterface {
   // Nullifier is published in network when a note is spent or swap is claimed.
   private async resolveNullifiers(nullifiers: Nullifier[], height: bigint) {
     const spentNullifiers = new Set<Nullifier>();
+    const readOperations = [];
+    const writeOperations = [];
 
     for (const nullifier of nullifiers) {
-      const record =
-        (await this.indexedDb.getSpendableNoteByNullifier(nullifier)) ??
-        (await this.indexedDb.getSwapByNullifier(nullifier));
+      const readPromise = (async () => {
+        const record =
+          (await this.indexedDb.getSpendableNoteByNullifier(nullifier)) ??
+          (await this.indexedDb.getSwapByNullifier(nullifier));
+        return { nullifier, record };
+      })();
+
+      readOperations.push(readPromise);
+    }
+
+    // Await all reads in parallel
+    const readResults = await Promise.all(readOperations);
+
+    // Process the read results and queue up write operations
+    for (const { nullifier, record } of readResults) {
       if (!record) {
         continue;
       }
@@ -497,18 +522,23 @@ export class BlockProcessor implements BlockProcessorInterface {
 
       if (record instanceof SpendableNoteRecord) {
         record.heightSpent = height;
-        await this.indexedDb.saveSpendableNote({
+        const writePromise = this.indexedDb.saveSpendableNote({
           ...toPlainMessage(record),
           noteCommitment: toPlainMessage(getSpendableNoteRecordCommitment(record)),
         });
+        writeOperations.push(writePromise);
       } else if (record instanceof SwapRecord) {
         record.heightClaimed = height;
-        await this.indexedDb.saveSwap({
+        const writePromise = this.indexedDb.saveSwap({
           ...toPlainMessage(record),
           swapCommitment: toPlainMessage(getSwapRecordCommitment(record)),
         });
+        writeOperations.push(writePromise);
       }
     }
+
+    // Await all writes in parallel
+    await Promise.all(writeOperations);
 
     return spentNullifiers;
   }
@@ -639,8 +669,6 @@ export class BlockProcessor implements BlockProcessorInterface {
     }
   }
 
-  // TODO: refactor. there is definitely a better way to do this.  batch
-  // endpoint issue https://github.com/penumbra-zone/penumbra/issues/4688
   private async updateValidatorInfos(nextEpochStartHeight: bigint): Promise<void> {
     // It's important to clear the table so any stale (jailed, tombstoned, etc) entries are filtered out.
     await this.indexedDb.clearValidatorInfos();
@@ -655,18 +683,6 @@ export class BlockProcessor implements BlockProcessorInterface {
       await this.updatePriceForValidatorDelegationToken(
         validatorInfoResponse,
         nextEpochStartHeight,
-      );
-
-      // this loop requests delegation token metadata for each validator
-      // individually. there may be very many, so we must artificially delay
-      // this loop or the RPC may hard-ratelimit us.
-      await new Promise(
-        resolve =>
-          void setTimeout(
-            resolve,
-            // an entire second
-            1000,
-          ),
       );
     }
   }

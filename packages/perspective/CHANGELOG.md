@@ -1,5 +1,40 @@
 # @penumbra-zone/perspective
 
+## 35.0.0
+
+### Patch Changes
+
+- Updated dependencies [3269282]
+  - @penumbra-zone/protobuf@6.3.0
+  - @penumbra-zone/bech32m@10.0.0
+  - @penumbra-zone/getters@20.0.0
+  - @penumbra-zone/wasm@31.0.0
+
+## 34.0.0
+
+### Patch Changes
+
+- Updated dependencies [48725e3]
+  - @penumbra-zone/wasm@30.1.0
+
+## 33.0.0
+
+### Patch Changes
+
+- Updated dependencies [e0db143]
+- Updated dependencies [e543db4]
+  - @penumbra-zone/wasm@30.0.0
+  - @penumbra-zone/protobuf@6.2.0
+  - @penumbra-zone/bech32m@9.0.0
+  - @penumbra-zone/getters@19.0.0
+
+## 32.0.0
+
+### Patch Changes
+
+- Updated dependencies [735e22b]
+  - @penumbra-zone/wasm@29.1.0
+
 ## 31.0.0
 
 ### Patch Changes

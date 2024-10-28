@@ -32,7 +32,7 @@ import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { SwapSlice } from '.';
 import { sendSimulateTradeRequest } from './helpers';
 import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { penumbra } from '../../prax';
+import { penumbra } from '../../penumbra';
 
 const getMetadataByAssetId = async (
   traces: SwapExecution_Trace[] = [],

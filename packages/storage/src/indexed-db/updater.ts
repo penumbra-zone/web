@@ -41,12 +41,18 @@ export class IbdUpdater {
     const tables = updates.all.map(u => u.table);
     const tx = this.db.transaction(tables, 'readwrite');
 
+    // Batch all the updates into promises
     for (const update of updates.all) {
-      await tx.objectStore(update.table).put(update.value, update.key);
-      this.notifySubscribers(update);
+      void tx.objectStore(update.table).put(update.value, update.key);
     }
 
+    // Await the atomic transaction to complete
     await tx.done;
+
+    // Notify subscribers after the transaction has successfully committed
+    for (const update of updates.all) {
+      this.notifySubscribers(update);
+    }
   }
 
   async update<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>>(

@@ -6,7 +6,7 @@ import { ViewService } from '@penumbra-zone/protobuf';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getInputAssetId, getOutputAssetId } from '@penumbra-zone/getters/dutch-auction';
 import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { penumbra } from '../prax';
+import { penumbra } from '../penumbra';
 
 export interface AuctionInfo {
   id: AuctionId;

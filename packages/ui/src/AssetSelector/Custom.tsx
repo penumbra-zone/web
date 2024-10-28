@@ -1,6 +1,5 @@
 import { ReactNode, useId, useState } from 'react';
 import { styled } from 'styled-components';
-import { RadioGroup } from '@radix-ui/react-radio-group';
 import { Dialog } from '../Dialog';
 import { IsAnimatingProvider } from '../IsAnimatingProvider';
 import { getHash } from './shared/helpers.ts';
@@ -125,13 +124,13 @@ export const AssetSelectorCustom = ({
                 )
               }
             >
-              <RadioGroup value={value ? getHash(value) : undefined} asChild>
+              <Dialog.RadioGroup value={value ? getHash(value) : undefined}>
                 <OptionsWrapper>
                   {typeof children === 'function'
                     ? children({ onClose, getKeyHash: getHash })
                     : children}
                 </OptionsWrapper>
-              </RadioGroup>
+              </Dialog.RadioGroup>
             </Dialog.Content>
           )}
         </IsAnimatingProvider>
