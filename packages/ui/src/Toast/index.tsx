@@ -1,3 +1,3 @@
-export { ToastProvider } from './Provider';
-export type { ToastProps } from './Toast';
-export { useToast } from './Context';
+export { ToastProvider } from './provider';
+export { openToast } from './open';
+export type { Toast, ToastProps, ToastType } from './open';
