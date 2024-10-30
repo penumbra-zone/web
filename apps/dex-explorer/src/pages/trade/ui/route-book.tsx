@@ -13,6 +13,7 @@ import { round } from '@/shared/utils/round';
 import { useComputePositionId } from '@/shared/utils/useComputePositionId';
 import { usePathToMetadata } from '../model/use-path-to-metadata';
 import { useBook } from '../api/book';
+import { observer } from 'mobx-react-lite';
 
 interface Route {
   lpId: string;
@@ -125,66 +126,62 @@ const RouteBookLoadingState = () => {
   );
 };
 
-const RouteBookData = ({
-  baseAsset,
-  quoteAsset,
-}: {
-  baseAsset: Metadata;
-  quoteAsset: Metadata;
-}) => {
-  const asset1Exponent = getDisplayDenomExponent(baseAsset);
-  const asset2Exponent = getDisplayDenomExponent(quoteAsset);
-  const { data: computePositionId } = useComputePositionId();
-  const { data } = useBook(baseAsset.symbol, quoteAsset.symbol, 100, 50);
-  const asks = getDisplayData({
-    data: data?.asks ?? [],
-    computePositionId,
-    asset1: baseAsset,
-    asset2: quoteAsset,
-    isBuySide: false,
-    limit: 8,
-  });
-  const bids = getDisplayData({
-    data: data?.bids ?? [],
-    computePositionId,
-    asset1: baseAsset,
-    asset2: quoteAsset,
-    isBuySide: true,
-    limit: 8,
-  });
+const RouteBookData = observer(
+  ({ baseAsset, quoteAsset }: { baseAsset: Metadata; quoteAsset: Metadata }) => {
+    const asset1Exponent = getDisplayDenomExponent(baseAsset);
+    const asset2Exponent = getDisplayDenomExponent(quoteAsset);
+    const { data: computePositionId } = useComputePositionId();
+    const { data } = useBook(baseAsset.symbol, quoteAsset.symbol, 100, 50);
+    const asks = getDisplayData({
+      data: data?.asks ?? [],
+      computePositionId,
+      asset1: baseAsset,
+      asset2: quoteAsset,
+      isBuySide: false,
+      limit: 8,
+    });
+    const bids = getDisplayData({
+      data: data?.bids ?? [],
+      computePositionId,
+      asset1: baseAsset,
+      asset2: quoteAsset,
+      isBuySide: true,
+      limit: 8,
+    });
 
-  return (
-    <div className='h-[512px] text-white'>
-      <table className='w-full'>
-        <thead>
-          <tr>
-            <th>Price</th>
-            <th className='text-right'>Amount</th>
-            <th className='text-right'>Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          {asks.map(route => (
-            <tr key={route.price} style={{ color: 'red' }}>
-              <td className='text-left tabular-nums'>{round(route.price, asset2Exponent)}</td>
-              <td className='text-right tabular-nums'>{round(route.amount, asset1Exponent)}</td>
-              <td className='text-right tabular-nums'>{round(route.total, asset1Exponent)}</td>
+    return (
+      <div className='h-[512px] text-white'>
+        <table className='w-full'>
+          <thead>
+            <tr>
+              <th>Price</th>
+              <th className='text-right'>Amount</th>
+              <th className='text-right'>Total</th>
             </tr>
-          ))}
-          {bids.map(route => (
-            <tr key={route.price} style={{ color: 'green' }}>
-              <td className='text-left tabular-nums'>{round(route.price, asset2Exponent)}</td>
-              <td className='text-right tabular-nums'>{round(route.amount, asset1Exponent)}</td>
-              <td className='text-right tabular-nums'>{round(route.total, asset1Exponent)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-};
+          </thead>
+          <tbody>
+            {asks.map(route => (
+              <tr key={route.price} style={{ color: 'red' }}>
+                <td className='text-left tabular-nums'>{round(route.price, asset2Exponent)}</td>
+                <td className='text-right tabular-nums'>{round(route.amount, asset1Exponent)}</td>
+                <td className='text-right tabular-nums'>{round(route.total, asset1Exponent)}</td>
+              </tr>
+            ))}
+            {bids.map(route => (
+              <tr key={route.price} style={{ color: 'green' }}>
+                <td className='text-left tabular-nums'>{round(route.price, asset2Exponent)}</td>
+                <td className='text-right tabular-nums'>{round(route.amount, asset1Exponent)}</td>
+                <td className='text-right tabular-nums'>{round(route.total, asset1Exponent)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  },
+);
 
-export function RouteBook() {
+export const RouteBook = observer(() => {
   const { baseAsset, quoteAsset, error, isLoading: pairIsLoading } = usePathToMetadata();
   if (pairIsLoading || !baseAsset || !quoteAsset) {
     return <RouteBookLoadingState />;
@@ -195,4 +192,4 @@ export function RouteBook() {
   }
 
   return <RouteBookData baseAsset={baseAsset} quoteAsset={quoteAsset} />;
-}
+});

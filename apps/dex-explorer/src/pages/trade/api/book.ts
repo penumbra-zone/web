@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Position } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { JsonValue } from '@bufbuild/protobuf';
+import { useRefetchOnNewBlock } from '@/shared/api/compact-block.ts';
 
 interface BookResponse {
   asks: Position[];
@@ -18,7 +19,7 @@ export const useBook = (
   hops: number | undefined,
   limit: number | undefined,
 ) => {
-  return useQuery({
+  const query = useQuery({
     queryKey: ['book', symbol1, symbol2, hops, limit],
     queryFn: async (): Promise<BookResponse> => {
       if (!symbol1 || !symbol2 || !limit) {
@@ -36,4 +37,8 @@ export const useBook = (
       };
     },
   });
+
+  useRefetchOnNewBlock(query);
+
+  return query;
 };
