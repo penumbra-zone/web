@@ -9,8 +9,10 @@
   },
   "packageManager": "pnpm@9.7.0+sha512.dc09430156b427f5ecfc79888899e1c39d2d690f004be70e05230b72cb173d96839587545d09429b55ac3c429c801b4dc3c0e002f653830a420fa2dd4e3cf9cf",
   "scripts": {
+    "add:tgz": "tsx scripts/add-tgz.ts",
     "build": "next build",
     "dev": "next dev",
+    "dev:local": "WEBPACK_WATCH=true next dev",
     "start": "next start",
     "format": "prettier --write .",
     "lint": "eslint src",
@@ -102,8 +104,10 @@
     "styled-components": "^6.1.13",
     "tailwindcss": "^3.4.12",
     "ts-loader": "^9.5.1",
+    "tsx": "^4.19.2",
     "typescript": "^5.5.4",
     "typescript-eslint": "^8.4.0",
-    "vitest": "^2.1.3"
+    "vitest": "^2.1.3",
+    "webpack-watch-external-files-plugin": "^3.1.0"
   }
 }
