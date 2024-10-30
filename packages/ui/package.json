@@ -124,6 +124,7 @@
     "@types/styled-components": "^5.1.34",
     "@types/tinycolor2": "^1.4.6",
     "@types/ua-parser-js": "^0.7.39",
+    "execa": "^9.5.1",
     "prop-types": "^15.8.1",
     "storybook": "^8.1.1",
     "vite": "^5.2.11",

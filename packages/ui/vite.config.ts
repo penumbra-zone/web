@@ -2,8 +2,8 @@ import { defineConfig } from 'vite';
 import { resolve, join } from 'path';
 import { readdirSync, existsSync } from 'fs';
 import dts from 'vite-plugin-dts';
-import { exec } from 'child_process';
 import * as path from 'node:path';
+import { execa } from 'execa';
 
 /**
  * Returns an object with keys as resulting component build paths and values as
@@ -68,8 +68,9 @@ export default defineConfig({
       closeBundle: () => {
         const isWatch = process.env.VITE_WATCH === 'true';
         if (isWatch) {
-          const cmd = exec('$npm_execpath pack');
-          cmd.unref();
+          execa({ preferLocal: true })`pnpm pack`.then(() => {
+            console.info(`@penumbra-zone/ui library is built and packed!`);
+          });
         }
       },
     },
