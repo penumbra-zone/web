@@ -1,29 +1,19 @@
 {
-  "name": "prax-configs",
+  "name": "configs",
   "version": "1.0.0",
-  "description": "Prax Wallet configurations",
+  "license": "MIT",
+  "description": "Shared Penumbra configurations",
+  "repository": "penumbra-zone/web",
   "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "exports": {
     "./eslint": "./eslint.config.js",
     "./prettier": "./prettier.config.js"
   },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/prax-wallet/configs.git"
-  },
-  "author": "Josef Vacek",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/prax-wallet/configs/issues"
-  },
-  "homepage": "https://github.com/prax-wallet/configs#readme",
-  "devDependencies": {
-    "prettier": "^3.3.3",
-    "typescript": "^5.5.4"
-  },
+  "author": "Penumbra Labs",
+  "bugs": "https://github.com/penumbra-zone/web/",
   "dependencies": {
     "@eslint-community/eslint-plugin-eslint-comments": "^4.4.0",
     "@eslint/compat": "^1.1.0",
@@ -42,5 +32,10 @@
     "eslint-plugin-turbo": "^2.0.12",
     "eslint-plugin-vitest": "^0.5.4",
     "typescript-eslint": "^7.16.0"
-  }
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3",
+    "typescript": "^5.5.4"
+  },
+  "homepage": "https://github.com/penumbra-zone/web/packages/configs#readme"
 }

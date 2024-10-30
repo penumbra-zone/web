@@ -1,6 +1,6 @@
 # Prax Wallet Configs
 
-This repo contains all the configs that are shared across the Prax ecosystem. 
+This repo contains all the configs that are shared across the Prax ecosystem.
 
 ## Consuming this repo
 

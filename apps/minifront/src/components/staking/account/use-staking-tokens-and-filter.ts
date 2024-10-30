@@ -86,7 +86,9 @@ export const useStakingTokensAndFilter = (
     );
   }, [balancesByAccount, stakingTokenMetadata]);
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- todo
   const stakingTokens = stakingTokensByAccount.get(account);
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- todo
   return { stakingTokens, accountSwitcherFilter };
 };
