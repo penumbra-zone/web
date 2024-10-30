@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
 
 export default function RedirectPage() {
-  redirect('/trade/UM/USDC');
+  redirect('/trade/UM/GM');
 }
