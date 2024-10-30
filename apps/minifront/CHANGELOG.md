@@ -1,5 +1,21 @@
 # minifront
 
+## 6.24.0
+
+### Minor Changes
+
+- b5d2922: send max feature
+
+### Patch Changes
+
+- Updated dependencies [e3778eb]
+- Updated dependencies [7c1d4e7]
+- Updated dependencies [b5d2922]
+  - @penumbra-zone/ui@12.1.0
+  - @penumbra-zone/types@26.1.0
+  - @penumbra-zone/crypto-web@28.0.0
+  - @penumbra-zone/perspective@36.0.0
+
 ## 6.23.3
 
 ### Patch Changes

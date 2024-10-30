@@ -1,5 +1,11 @@
 # @penumbra-zone/types
 
+## 26.1.0
+
+### Minor Changes
+
+- b5d2922: send max feature
+
 ## 26.0.0
 
 ### Patch Changes

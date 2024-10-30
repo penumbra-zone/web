@@ -1,5 +1,20 @@
 # @penumbra-zone/router
 
+## 41.0.0
+
+### Minor Changes
+
+- b5d2922: send max feature
+
+### Patch Changes
+
+- Updated dependencies [b5d2922]
+  - @penumbra-zone/storage@36.0.0
+  - @penumbra-zone/types@26.1.0
+  - @penumbra-zone/crypto-web@28.0.0
+  - @penumbra-zone/query@37.0.0
+  - @penumbra-zone/wasm@32.0.0
+
 ## 40.0.0
 
 ### Patch Changes

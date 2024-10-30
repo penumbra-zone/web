@@ -1,5 +1,18 @@
 # @penumbra-zone/ui
 
+## 12.1.0
+
+### Minor Changes
+
+- e3778eb: Add `ToastProvider` and `openToast` function to the v2 UI components
+
+### Patch Changes
+
+- 7c1d4e7: Improve hot reloading
+- Updated dependencies [b5d2922]
+  - @penumbra-zone/types@26.1.0
+  - @penumbra-zone/perspective@36.0.0
+
 ## 12.0.0
 
 ### Patch Changes
