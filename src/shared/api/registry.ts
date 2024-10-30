@@ -1,32 +1,30 @@
-import { ChainRegistryClient, Registry } from '@penumbra-labs/registry';
+import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { useQuery } from '@tanstack/react-query';
-import { useEnv } from './env/env';
+import { envQueryFn } from './env/env';
+import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
 export const chainRegistryClient = new ChainRegistryClient();
 
-export const useRegistry = () => {
-  const { data: env, isLoading: isEnvLoading, error: envError } = useEnv();
+const registryQueryFn = async () => {
+  const env = await envQueryFn();
+  return chainRegistryClient.remote.get(env.PENUMBRA_CHAIN_ID);
+};
 
-  const {
-    data: registry,
-    isLoading: isRegistryLoading,
-    error: registryError,
-  } = useQuery({
-    queryKey: ['penumbraRegistry', env],
-    queryFn: async (): Promise<Registry> => {
-      const chainId = env?.PENUMBRA_CHAIN_ID;
-      if (!chainId) {
-        throw new Error('chain id not available to query registry');
-      }
-      return chainRegistryClient.remote.get(chainId);
+export const useRegistryAssets = () => {
+  return useQuery({
+    queryKey: ['penumbraRegistryAssets'],
+    queryFn: async (): Promise<Metadata[]> => {
+      const registry = await registryQueryFn();
+      return registry.getAllAssets();
     },
     staleTime: Infinity,
-    enabled: Boolean(env),
   });
+};
 
-  return {
-    data: registry,
-    isLoading: isEnvLoading || isRegistryLoading,
-    error: envError ?? registryError,
-  };
+export const useRegistry = () => {
+  return useQuery({
+    queryKey: ['penumbraRegistry'],
+    queryFn: registryQueryFn,
+    staleTime: Infinity,
+  });
 };
