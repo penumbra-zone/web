@@ -1,5 +1,5 @@
 {
-  "name": "configs",
+  "name": "@penumbra-zone/configs",
   "version": "1.0.0",
   "license": "MIT",
   "description": "Shared Penumbra configurations",

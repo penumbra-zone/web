@@ -1,4 +1,4 @@
-import eslintConfig from 'configs/eslint';
+import eslintConfig from '@penumbra-zone/configs/eslint';
 import { createRequire } from 'node:module';
 import tailwindcss from 'eslint-plugin-tailwindcss';
 

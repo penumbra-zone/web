@@ -17,7 +17,7 @@ This will keep the configs up to date by always pulling from main.
 In your `eslint.config.js`:
 
 ```javascript
-import eslintConfig from 'configs/eslint';
+import eslintConfig from '@penumbra-zone/configs/eslint';
 
 export default [
   ...eslintConfig,
@@ -28,7 +28,7 @@ export default [
 In your `prettier.config.js`:
 
 ```javascript
-import prettierConfig from 'configs/prettier';
+import prettierConfig from '@penumbra-zone/configs/prettier';
 
 export default {
   ...prettierConfig,
