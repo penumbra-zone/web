@@ -3,8 +3,6 @@ import { AllSlices, Middleware, SliceCreator, useStore } from '..';
 import {
   BalancesResponse,
   TransactionPlannerRequest,
-  TransactionPlannerRequest_Output,
-  TransactionPlannerRequest_Spend,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { BigNumber } from 'bignumber.js';
 import { MemoPlaintext } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
@@ -18,10 +16,15 @@ import {
 import { getAddress, getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { toBaseUnit } from '@penumbra-zone/types/lo-hi';
 import { isAddress } from '@penumbra-zone/bech32m/penumbra';
-import { transferableBalancesResponsesSelector } from './helpers';
-import { PartialMessage } from '@bufbuild/protobuf';
-import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import {
+  checkSendMaxInvariants,
+  SpendOrOutput,
+  transferableBalancesResponsesSelector,
+} from './helpers';
+import { Metadata, Value } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getAssetTokenMetadata } from '../../fetchers/registry';
+import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { getGasPrices, hasStakingToken } from '../../fetchers/gas-prices.ts';
 
 export interface SendSlice {
   selection: BalancesResponse | undefined;
@@ -73,7 +76,6 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
     },
     refreshFee: async () => {
       const { amount, recipient, selection } = get().send;
-
       if (!amount || !recipient || !selection) {
         set(state => {
           state.send.fee = undefined;
@@ -82,7 +84,8 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
         return;
       }
 
-      const txPlan = await plan(assembleRequest(get().send));
+      const req = await assembleRequest(get());
+      const txPlan = await plan(req);
       const fee = txPlan.transactionParameters?.fee;
 
       // Fetch the asset metadata for the fee if assetId is defined; otherwise, set it to undefined.
@@ -109,7 +112,7 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
       });
 
       try {
-        const req = assembleRequest(get().send);
+        const req = await assembleRequest(get());
         await planBuildBroadcast('send', req);
 
         set(state => {
@@ -125,25 +128,31 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
   };
 };
 
-const assembleRequest = ({ amount, feeTier, recipient, selection, memo }: SendSlice) => {
-  const spendOrOutput:
-    | PartialMessage<TransactionPlannerRequest_Spend>
-    | PartialMessage<TransactionPlannerRequest_Output> = {
-    address: { altBech32m: recipient },
-    value: {
+const assembleRequest = async (state: AllSlices) => {
+  const {
+    send: { amount, feeTier, recipient, selection, memo },
+  } = state;
+
+  const spendOrOutput: SpendOrOutput = {
+    address: new Address({ altBech32m: recipient }),
+    value: new Value({
       amount: toBaseUnit(
         BigNumber(amount),
         getDisplayDenomExponentFromValueView.optional(selection?.balanceView),
       ),
       assetId: getAssetIdFromValueView(selection?.balanceView),
-    },
+    }),
   };
-  // TODO MAX functionality is temporarily disabled due to a bug
-  // const isSendingMax = getAmount(selection?.balanceView).equals(
-  //   spendOrOutput.value?.amount as Amount,
-  // );
+
+  const isSendingMax = checkSendMaxInvariants({
+    selection,
+    spendOrOutput,
+    gasPrices: await getGasPrices(),
+    hasStakingToken: selectedStakingTokenSelector(state),
+  });
+
   return new TransactionPlannerRequest({
-    ...{ outputs: [spendOrOutput] },
+    ...(isSendingMax ? { spends: [spendOrOutput] } : { outputs: [spendOrOutput] }),
     source: getAddressIndex(selection?.accountAddress),
     // Note: we currently don't provide a UI for setting the fee manually. Thus,
     // a `feeMode` of `manualFee` is not supported here.
@@ -183,6 +192,17 @@ export const sendValidationErrors = (
     // so 512-80=432 bytes for memo text
     memoErr: new TextEncoder().encode(memo).length > 432,
   };
+};
+
+// Determine if the selected token is the staking token based on the current balances and metadata
+export const selectedStakingTokenSelector = (state: AllSlices) => {
+  const transferableBalancesResponses = transferableBalancesResponsesSelector(
+    state.shared.balancesResponses,
+  ).data;
+  const stakingTokenMetadata = state.shared.stakingTokenMetadata.data;
+  const selection = state.send.selection;
+
+  return hasStakingToken(transferableBalancesResponses, stakingTokenMetadata, selection);
 };
 
 export const sendSelector = (state: AllSlices) => state.send;

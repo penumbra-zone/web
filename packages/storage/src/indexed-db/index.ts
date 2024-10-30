@@ -64,6 +64,8 @@ import { PartialMessage, PlainMessage } from '@bufbuild/protobuf';
 import { getAmountFromRecord } from '@penumbra-zone/getters/spendable-note-record';
 import { isZero } from '@penumbra-zone/types/amount';
 import { IDB_VERSION } from './config.js';
+import { addLoHi } from '@penumbra-zone/types/lo-hi';
+import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { typeRegistry } from '@penumbra-zone/protobuf';
 
 const assertBytes = (v?: Uint8Array, expect?: number, name = 'value'): v is Uint8Array => {
@@ -955,5 +957,40 @@ export class IndexedDb implements IndexedDbInterface {
         spendableNote.addressIndex?.account === accountIndex
       );
     });
+  }
+
+  async totalNoteBalance(accountIndex: number, assetId: AssetId): Promise<Amount> {
+    assertAssetId(assetId);
+    const spendableNotes = await this.db.getAllFromIndex(
+      'SPENDABLE_NOTES',
+      'assetId',
+      uint8ArrayToBase64(assetId.inner),
+    );
+
+    return spendableNotes
+      .map(json => SpendableNoteRecord.fromJson(json))
+      .filter(note => {
+        return (
+          note.heightSpent === 0n &&
+          !isZero(getAmountFromRecord(note)) &&
+          // randomizer should be ignored
+          note.addressIndex?.account === accountIndex
+        );
+      })
+      .reduce(
+        (acc, curr) => {
+          if (curr.note?.value?.amount) {
+            const noteAmount = curr.note.value.amount;
+            const newAmount = addLoHi(
+              { lo: acc.lo, hi: acc.hi },
+              { lo: BigInt(noteAmount.lo), hi: BigInt(noteAmount.hi) },
+            );
+            return new Amount(newAmount);
+          } else {
+            return acc;
+          }
+        },
+        new Amount({ hi: 0n, lo: 0n }),
+      );
   }
 }
