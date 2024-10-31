@@ -1,5 +1,12 @@
 # minifront
 
+## 6.24.1
+
+### Patch Changes
+
+- Updated dependencies [ef1a89d]
+  - @penumbra-zone/ui@12.2.0
+
 ## 6.24.0
 
 ### Minor Changes
