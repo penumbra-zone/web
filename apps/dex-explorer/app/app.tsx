@@ -4,6 +4,7 @@ import { ReactNode } from 'react';
 import { enableStaticRendering } from 'mobx-react-lite';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { PenumbraUIProvider } from '@penumbra-zone/ui/PenumbraUIProvider';
+import { ToastProvider } from '@penumbra-zone/ui/Toast';
 import { Display } from '@penumbra-zone/ui/Display';
 import { Header, SyncBar } from '@/widgets/header';
 import { queryClient } from '@/shared/const/queryClient';
@@ -23,6 +24,7 @@ export const App = ({ children }: { children: ReactNode }) => {
             <Header />
             {children}
           </Display>
+          <ToastProvider />
         </QueryClientProvider>
       </PenumbraUIProvider>
     </StyledComponentsRegistry>
