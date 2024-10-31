@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import Image from 'next/image';
+import { Wallet2 } from 'lucide-react';
 import { Text } from '@penumbra-zone/ui/Text';
 import { Button } from '@penumbra-zone/ui/Button';
+import { Density } from '@penumbra-zone/ui/Density';
 import { Dialog } from '@penumbra-zone/ui/Dialog';
 import { PenumbraClient } from '@penumbra-zone/client';
 import { connectionStore } from '@/shared/model/connection';
@@ -30,9 +32,11 @@ export const ConnectButton = observer(() => {
 
   return (
     <>
-      <Button actionType='accent' onClick={onClick}>
-        Connect
-      </Button>
+      <Density sparse>
+        <Button icon={Wallet2} actionType='accent' onClick={onClick}>
+          Connect wallet
+        </Button>
+      </Density>
 
       <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <Dialog.Content title='Choose wallet'>
