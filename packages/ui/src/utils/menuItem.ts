@@ -38,7 +38,7 @@ export const MenuItem = styled.div<StyledItemProps>`
   }
 
   &[aria-checked='false'],
-  &[role='menuitem'] {
+  &[role='menuitem'][data-icon='false'] {
     padding-left: ${props => props.theme.spacing(9)};
   }
 
