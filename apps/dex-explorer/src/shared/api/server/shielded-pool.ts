@@ -1,6 +1,6 @@
 import { ShieldedPoolQuerier } from '@/shared/utils/protos/services/app/shielded-pool';
-import { base64ToUint8Array } from '@/shared/utils/base64';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 import { NextRequest, NextResponse } from 'next/server';
 
 interface Params {
