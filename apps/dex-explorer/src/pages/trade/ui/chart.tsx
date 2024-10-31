@@ -71,7 +71,7 @@ const ChartData = observer(
     }, [chartElRef]);
 
     useEffect(() => {
-      if (chartRef.current && !isLoading) {
+      if (chartRef.current && !isLoading && candles) {
         chartRef.current
           .addCandlestickSeries({
             upColor: colors.success.light,

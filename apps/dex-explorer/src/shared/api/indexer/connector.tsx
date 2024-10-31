@@ -1,11 +1,11 @@
-// @ts-nocheck
-/* eslint-disable -- disabling this file as this was created before our strict rules */
-import { Pool } from 'pg';
+import { Pool, QueryConfigValues, QueryResultRow } from 'pg';
 import fs from 'fs';
 import { BlockInfo, LiquidityPositionEvent } from './lps';
-import { bech32ToInner } from '../../utils/bech32';
+import { positionIdFromBech32 } from '@penumbra-zone/bech32m/plpid';
+import { PositionId } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
+import { JsonValue } from '@bufbuild/protobuf';
 
-const ca = process.env.PENUMBRA_INDEXER_CA_CERT;
+const INDEXER_CERT = process.env['PENUMBRA_INDEXER_CA_CERT'];
 
 export class IndexerQuerier {
   private pool: Pool;
@@ -17,12 +17,12 @@ export class IndexerQuerier {
       // Be advised that if PENUMBRA_INDEXER_CA_CERT is set, then PENUMBRA_INDEXER_ENDPOINT must
       // *lack* an `sslmode` param! This is documented here:
       // https://node-postgres.com/features/ssl#usage-with-connectionstring
-      ...(ca && {
+      ...(INDEXER_CERT && {
         ssl: {
           rejectUnauthorized: true,
-          ca: ca.startsWith('-----BEGIN CERTIFICATE-----')
-            ? ca
-            : fs.readFileSync(process.env.PENUMBRA_INDEXER_CA_CERT, 'utf-8'),
+          ca: INDEXER_CERT.startsWith('-----BEGIN CERTIFICATE-----')
+            ? INDEXER_CERT
+            : fs.readFileSync(INDEXER_CERT, 'utf-8'),
         },
       }),
     };
@@ -33,11 +33,12 @@ export class IndexerQuerier {
    * @param {string} query - The SQL query string.
    * @returns {Promise<Array<any>>} - The result set of the query as an array.
    */
-  private async query(queryText: string, params: any[] = []): Promise<any[]> {
+  private async query<P, T>(queryText: string, params: QueryConfigValues<P>): Promise<T> {
     const client = await this.pool.connect();
     try {
-      const res = await client.query(queryText, params);
+      const res = await client.query<QueryResultRow, P>(queryText, params);
 
+      // TODO: This feels like a bad pattern
       // convert timestamps to ISO strings
       res.rows.forEach(row => {
         Object.keys(row).forEach(key => {
@@ -47,17 +48,17 @@ export class IndexerQuerier {
         });
       });
 
-      return this.recursivelyParseJSON(res.rows);
+      return this.recursivelyParseJSON(res.rows) as T;
     } finally {
       client.release();
     }
   }
 
-  private recursivelyParseJSON(value: any): any {
+  private recursivelyParseJSON(value: JsonValue): JsonValue {
     if (typeof value === 'string') {
       try {
         // Attempt to parse the string as JSON
-        const parsed = JSON.parse(value);
+        const parsed = JSON.parse(value) as JsonValue;
         // If parsing succeeds, continue recursively parsing this object
         return this.recursivelyParseJSON(parsed);
       } catch (error) {
@@ -69,11 +70,15 @@ export class IndexerQuerier {
       return value.map(item => this.recursivelyParseJSON(item));
     } else if (typeof value === 'object' && value !== null) {
       // If it's an object, apply recursively to each value
-      const parsedObject: Record<string, any> = {};
-      Object.keys(value).forEach(key => {
-        parsedObject[key] = this.recursivelyParseJSON(value[key]);
-      });
-      return parsedObject;
+      const parsedObject: Record<string, JsonValue> = {};
+      for (const key of Object.keys(value)) {
+        const fieldValue = value[key];
+        if (fieldValue === undefined) {
+          continue;
+        }
+        parsedObject[key] = this.recursivelyParseJSON(fieldValue);
+      }
+      return parsedObject as JsonValue;
     }
     // If none of the above, return the value as is (e.g., numbers, null)
     return value;
@@ -103,12 +108,10 @@ export class IndexerQuerier {
     GROUP BY a.event_id, e.block_id, e.tx_id, e.type, tr.tx_hash, tr.created_at, tr.index, b.height;
   `;
 
-    const inner = bech32ToInner(bech32);
+    const inner = new PositionId(positionIdFromBech32(bech32));
 
     // Use parameterized query to prevent SQL injection
-    const res = await this.query(queryText, [`{"inner":"${inner}"}`]);
-
-    return res;
+    return this.query(queryText, [inner.toJson()]);
   }
 
   public async fetchLiquidityPositionExecutionEventsOnBech32(
@@ -153,12 +156,10 @@ export class IndexerQuerier {
       cnt = 1 OR rn > 1; -- Exclude the lowest tr.index when there are duplicates for an event_id
   `;
 
-    const inner = bech32ToInner(bech32);
+    const inner = new PositionId(positionIdFromBech32(bech32));
 
     // Use parameterized query to prevent SQL injection
-    const res = await this.query(queryText, [`{"inner":"${inner}"}`]);
-
-    return res;
+    return this.query(queryText, [inner.toJson()]);
   }
 
   public async fetchLiquidityPositionOpenCloseEventsOnBlockHeightRange(
@@ -188,8 +189,7 @@ export class IndexerQuerier {
 
     // Use parameterized query to prevent SQL injection
     // const res = await this.query(queryText);
-    const res = await this.query(queryText, [`${startHeight}`, `${endHeight}`]);
-    return res;
+    return this.query(queryText, [`${startHeight}`, `${endHeight}`]);
   }
 
   public async fetchLiquidityPositionExecutionEventsOnBlockHeight(
@@ -235,8 +235,7 @@ export class IndexerQuerier {
       cnt = 1 OR rn > 1 AND type like '%EventPosition.positionId%' OR type like '%EventQueuePositionClose.positionId%'; -- Exclude the lowest tr.index when there are duplicates for an event_id
   `;
     // Use parameterized query to prevent SQL injection
-    const res = await this.query(queryText, [`${blockHeight}`]);
-    return res;
+    return await this.query(queryText, [`${blockHeight}`]);
   }
 
   public async fetchMostRecentNBlocks(n: number): Promise<BlockInfo[]> {
@@ -248,8 +247,7 @@ export class IndexerQuerier {
     ORDER BY height DESC
     LIMIT $1;
     `;
-    const res = await this.query(queryText, [`${n}`]);
-    return res;
+    return await this.query(queryText, [`${n}`]);
   }
 
   public async fetchBlocksWithinRange(
@@ -264,8 +262,7 @@ export class IndexerQuerier {
     WHERE height >= $1 and height < $2
     ORDER BY height DESC
     `;
-    const res = await this.query(queryText, [`${startHeight}`, `${endHeight}`]);
-    return res;
+    return this.query(queryText, [`${startHeight}`, `${endHeight}`]);
   }
 
   public async fetchBlocksByHeight(heights: number[]): Promise<BlockInfo[]> {
@@ -277,8 +274,7 @@ export class IndexerQuerier {
     WHERE height = ANY($1)
     ORDER BY height DESC
     `;
-    const res = await this.query(queryText, [heights]);
-    return res;
+    return this.query(queryText, [heights]);
   }
 
   /**

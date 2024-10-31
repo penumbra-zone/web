@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { DexQueryServiceClient } from '@/shared/utils/protos/services/dex/dex-query-service-client';
 import { DirectedTradingPair } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { base64ToUint8Array } from '@/shared/utils/base64';
-import { fetchAllTokenAssets } from '@/shared/api/server/token-fetch';
+import { fetchAllTokenAssets_deprecated } from '@/shared/api/server/token-fetch';
+import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 
 interface Params {
   params: string[];
@@ -23,7 +23,7 @@ export async function GET(_req: NextRequest, context: { params: Promise<Params> 
   const limit = params[3] ?? null;
 
   try {
-    const tokenAssets = fetchAllTokenAssets(chainId);
+    const tokenAssets = fetchAllTokenAssets_deprecated(chainId);
     if (!startHeight || !tokenIn || !tokenOut || !limit) {
       return NextResponse.json({ error: 'Invalid query parameters' }, { status: 400 });
     }
