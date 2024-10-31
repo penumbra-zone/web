@@ -26,6 +26,11 @@ const getAllUIComponents = (): Record<string, string> => {
   );
 };
 
+const getAllLibToastComponents = (): Record<string, string> => {
+  const source = resolve(__dirname, 'lib', 'toast');
+  return getRecursiveTsxFiles(source, 'lib/toast');
+};
+
 const getDeprecatedUIComponents = (): Record<string, string> => {
   const source = resolve(__dirname, 'components/ui');
   return getRecursiveTsxFiles(source, 'components/ui');
@@ -54,6 +59,8 @@ const getAllEntries = (): Record<string, string> => {
   return {
     tailwindconfig: resolve('../tailwind-config'),
     'src/tailwindConfig': join(__dirname, 'src', 'tailwindConfig.ts'),
+    'src/PenumbraUIProvider/theme': join(__dirname, 'src', 'PenumbraUIProvider', 'theme.ts'),
+    ...getAllLibToastComponents(),
     ...getDeprecatedUIComponents(),
     ...getAllUIComponents(),
   };
