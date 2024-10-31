@@ -1,4 +1,4 @@
-import { uint8ArrayToBase64 } from '../../utils/base64';
+import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { AssetImage, DenomUnit } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { ChainRegistryClient, Registry } from '@penumbra-labs/registry';
 import { Token } from '../../const/token';
@@ -8,7 +8,8 @@ const getRegistry = (chainId: string): Registry => {
   return registryClient.bundled.get(chainId);
 };
 
-export const fetchAllTokenAssets = (chainId: string): Token[] => {
+// TODO: Deprecated. Use remote ChainRegistryClient directly.
+export const fetchAllTokenAssets_deprecated = (chainId: string): Token[] => {
   const registry = getRegistry(chainId);
   const metadata = registry.getAllAssets();
   const tokens: Token[] = [];

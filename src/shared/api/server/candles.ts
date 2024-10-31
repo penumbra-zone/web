@@ -6,10 +6,10 @@ import {
   DirectedTradingPair,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { base64ToUint8Array } from '@/shared/utils/base64';
-import { fetchAllTokenAssets } from '@/shared/api/server/token-fetch';
+import { fetchAllTokenAssets_deprecated } from '@/shared/api/server/token-fetch';
 import { createMergeCandles } from '@/shared/utils/candles';
 import { Token } from '@/shared/const/token';
+import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 
 interface QueryParams {
   symbol1?: string;
@@ -92,7 +92,7 @@ export async function GET(_req: NextRequest, context: { params: Promise<QueryPar
     return NextResponse.json({ error: 'Limit exceeded' }, { status: 400 });
   }
 
-  const tokenAssets = fetchAllTokenAssets(process.env['PENUMBRA_CHAIN_ID'] ?? '');
+  const tokenAssets = fetchAllTokenAssets_deprecated(process.env['PENUMBRA_CHAIN_ID'] ?? '');
   const asset1 = getTokenAssetBySymbol(tokenAssets, symbol1);
   const asset2 = getTokenAssetBySymbol(tokenAssets, symbol2);
 

@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { DexQueryServiceClient } from '@/shared/utils/protos/services/dex/dex-query-service-client';
 import { DirectedTradingPair } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
-import { base64ToUint8Array } from '@/shared/utils/base64';
-import { fetchAllTokenAssets } from '@/shared/api/server/token-fetch';
+import { fetchAllTokenAssets_deprecated } from '@/shared/api/server/token-fetch';
+import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 
 interface Params {
   params: string[];
@@ -26,7 +26,7 @@ export async function GET(_req: NextRequest, context: { params: Promise<Params> 
     }
 
     // Get token 1 & 2
-    const tokenAssets = fetchAllTokenAssets(chainId);
+    const tokenAssets = fetchAllTokenAssets_deprecated(chainId);
     const asset1Token = tokenAssets.find(
       x => x.display.toLocaleLowerCase() === token1.toLocaleLowerCase(),
     );
