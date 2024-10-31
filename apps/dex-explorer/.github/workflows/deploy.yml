@@ -51,6 +51,6 @@ jobs:
       - name: deploy dex-explorer
         run: >
           nix develop --command
-          kubectl rollout restart deployment dex-explorer-testnet &&
+          kubectl -n testnet rollout restart deployment dex-explorer &&
           nix develop --command
-          kubectl rollout status deployment dex-explorer-testnet
+          kubectl -n testnet rollout status deployment dex-explorer
