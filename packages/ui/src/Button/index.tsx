@@ -19,10 +19,11 @@ const iconOnlyAdornment = css<StyledButtonProps>`
 
 const sparse = css<StyledButtonProps>`
   border-radius: ${props => props.theme.borderRadius.sm};
-  padding-left: ${props => props.theme.spacing(4)};
-  padding-right: ${props => props.theme.spacing(4)};
+  padding-left: ${props => (props.$iconOnly ? 'none' : props.theme.spacing(4))};
+  padding-right: ${props => (props.$iconOnly ? 'none' : props.theme.spacing(4))};
   height: 48px;
   width: ${props => (props.$iconOnly ? '48px' : '100%')};
+  ${props => props.$iconOnly && 'min-width: 48px;'}
 `;
 
 const compact = css<StyledButtonProps>`

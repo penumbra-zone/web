@@ -16,11 +16,16 @@ const Root = styled.div`
 export interface AddressViewProps {
   addressView: AddressView | undefined;
   copyable?: boolean;
+  hideIcon?: boolean;
 }
 
 // Renders an address or an address view.
 // If the view is given and is "visible", the account information will be displayed instead.
-export const AddressViewComponent = ({ addressView, copyable = true }: AddressViewProps) => {
+export const AddressViewComponent = ({
+  addressView,
+  copyable = true,
+  hideIcon,
+}: AddressViewProps) => {
   if (!addressView?.addressView.value?.address) {
     return null;
   }
@@ -34,14 +39,16 @@ export const AddressViewComponent = ({ addressView, copyable = true }: AddressVi
 
   return (
     <Root>
-      <Shrink0>
-        <AddressIcon address={addressView.addressView.value.address} size={24} />
-      </Shrink0>
+      {!hideIcon && (
+        <Shrink0>
+          <AddressIcon address={addressView.addressView.value.address} size={24} />
+        </Shrink0>
+      )}
 
       {addressIndex ? (
         <Text strong truncate>
           {isRandomized && 'IBC Deposit Address for '}
-          {`Account #${addressIndex.account}`}
+          {`Sub-Account #${addressIndex.account}`}
         </Text>
       ) : (
         <Text technical truncate>
