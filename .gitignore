@@ -35,6 +35,7 @@ yarn-error.log*
 
 # Support direnv, as well
 .envrc
+.direnv
 
 # webpack
 /dist
@@ -44,3 +45,4 @@ tsconfig.tsbuildinfo
 
 # ignore database CA certificate, required for some db backends
 ca-cert.pem
+*.pem

@@ -1,7 +1,17 @@
-Containerfile
-.dockerignore
-node_modules
-npm-debug.log
-README.md
-.next
-.git
+# ignore everything by default
+**
+
+# allow JS files
+!*.ts
+!*.js
+!*.mjs
+!*.json
+!pnpm-lock.yaml
+!pnpm-workspace.yaml
+
+# allow app source code
+!.next/
+!app/
+!pages/
+!public/
+!src/
