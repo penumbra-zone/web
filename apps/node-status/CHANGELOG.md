@@ -1,5 +1,12 @@
 # node-status
 
+## 4.1.36
+
+### Patch Changes
+
+- Updated dependencies [ef1a89d]
+  - @penumbra-zone/ui@12.2.0
+
 ## 4.1.35
 
 ### Patch Changes

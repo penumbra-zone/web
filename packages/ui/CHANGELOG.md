@@ -1,5 +1,11 @@
 # @penumbra-zone/ui
 
+## 12.2.0
+
+### Minor Changes
+
+- ef1a89d: Add theme and lib/toast exports
+
 ## 12.1.0
 
 ### Minor Changes
