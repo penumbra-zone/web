@@ -5,15 +5,16 @@
 # Should match what's in .nvmrc for development.
 ARG NODE_MAJOR_VERSION=18.20
 FROM docker.io/node:${NODE_MAJOR_VERSION}-alpine AS base
+RUN corepack enable pnpm
+
 # Install dependencies only when needed
 FROM base AS deps
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
-
 # Install dependencies
 COPY package.json pnpm-lock.yaml* ./
-RUN corepack enable pnpm && pnpm install  --frozen-lockfile
+RUN pnpm install  --frozen-lockfile
 
 # Rebuild the source code only when needed
 FROM base AS builder
@@ -26,8 +27,8 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED 1
 
 # Build the website as standalone output.
-RUN npm --version && node --version
-RUN npm run build
+RUN pnpm --version && node --version
+RUN pnpm run build
 
 # Production image, copy all the files and run next
 FROM base AS runner
