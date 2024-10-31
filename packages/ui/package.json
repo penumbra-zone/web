@@ -57,8 +57,8 @@
         "default": "./dist/lib/toast/*.js"
       },
       "./utils/*": {
-        "types": "./src/utils/*.d.ts",
-        "default": "./src/utils/*.js"
+        "types": "./dist/src/utils/*.d.ts",
+        "default": "./dist/src/utils/*.js"
       },
       "./*": {
         "types": "./dist/src/*/index.d.ts",
