@@ -33,6 +33,8 @@
     "./tailwind": "./src/tailwindConfig.ts",
     "./postcss.config.js": "./postcss.config.js",
     "./styles/*": "./styles/*",
+    "./theme": "./src/PenumbraUIProvider/theme.ts",
+    "./utils/*": "./src/utils/*.ts",
     "./hooks/*": "./src/hooks/*/index.ts",
     "./*": "./src/*/index.tsx"
   },
@@ -45,6 +47,18 @@
       "./components/*": {
         "types": "./dist/components/ui/*.d.ts",
         "default": "./dist/components/ui/*.js"
+      },
+      "./theme": {
+        "types": "./dist/src/PenumbraUIProvider/theme.d.ts",
+        "default": "./dist/src/PenumbraUIProvider/theme.js"
+      },
+      "./lib/toast/*": {
+        "types": "./dist/lib/toast/*.d.ts",
+        "default": "./dist/lib/toast/*.js"
+      },
+      "./utils/*": {
+        "types": "./dist/src/utils/*.d.ts",
+        "default": "./dist/src/utils/*.js"
       },
       "./*": {
         "types": "./dist/src/*/index.d.ts",
