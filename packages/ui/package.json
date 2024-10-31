@@ -34,6 +34,7 @@
     "./postcss.config.js": "./postcss.config.js",
     "./styles/*": "./styles/*",
     "./theme": "./src/PenumbraUIProvider/theme.ts",
+    "./utils/*": "./src/utils/*.ts",
     "./hooks/*": "./src/hooks/*/index.ts",
     "./*": "./src/*/index.tsx"
   },
@@ -54,6 +55,10 @@
       "./lib/toast/*": {
         "types": "./dist/lib/toast/*.d.ts",
         "default": "./dist/lib/toast/*.js"
+      },
+      "./utils/*": {
+        "types": "./src/utils/*.d.ts",
+        "default": "./src/utils/*.js"
       },
       "./*": {
         "types": "./dist/src/*/index.d.ts",
