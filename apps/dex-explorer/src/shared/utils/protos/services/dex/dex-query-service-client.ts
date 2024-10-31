@@ -47,7 +47,7 @@ export class DexQueryServiceClient implements DexQueryServiceClientInterface {
 
     const positions: Position[] = [];
     // Res is Symbol(Symbol.asyncIterator)]: [Function: [Symbol.asyncIterator]]
-    for await (const position of res as Readable) {
+    for await (const position of res) {
       positions.push(position.data);
     }
     return positions;
