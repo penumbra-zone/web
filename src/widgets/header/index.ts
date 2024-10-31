@@ -1,2 +1,2 @@
-export { Header } from './header';
-export { SyncBar } from './sync-bar';
+export { Header } from './ui/header';
+export { SyncBar } from './ui/sync-bar';

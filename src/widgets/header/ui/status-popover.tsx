@@ -34,33 +34,35 @@ export const StatusPopover = observer(() => {
   }
 
   return (
-    <Popover>
-      <Popover.Trigger>
-        <Button icon={Blocks} iconOnly>
-          Status
-        </Button>
-      </Popover.Trigger>
-      <Popover.Content align='end' side='bottom'>
-        <Density compact>
-          <div className='flex flex-col gap-4'>
-            <div className='flex flex-col gap-2'>
-              <Text technical>Status</Text>
-              {pill}
-              {error}
-            </div>
-            {!loading && (
+    <Density sparse>
+      <Popover>
+        <Popover.Trigger>
+          <Button icon={Blocks} iconOnly>
+            Status
+          </Button>
+        </Popover.Trigger>
+        <Popover.Content align='end' side='bottom'>
+          <Density compact>
+            <div className='flex flex-col gap-4'>
               <div className='flex flex-col gap-2'>
-                <Text technical>Block Height</Text>
-                <Pill context='technical-default'>
-                  {latestKnownBlockHeight !== fullSyncHeight
-                    ? `${fullSyncHeight} of ${latestKnownBlockHeight}`
-                    : `${latestKnownBlockHeight}`}
-                </Pill>
+                <Text technical>Status</Text>
+                {pill}
+                {error}
               </div>
-            )}
-          </div>
-        </Density>
-      </Popover.Content>
-    </Popover>
+              {!loading && (
+                <div className='flex flex-col gap-2'>
+                  <Text technical>Block Height</Text>
+                  <Pill context='technical-default'>
+                    {latestKnownBlockHeight !== fullSyncHeight
+                      ? `${fullSyncHeight} of ${latestKnownBlockHeight}`
+                      : `${latestKnownBlockHeight}`}
+                  </Pill>
+                </div>
+              )}
+            </div>
+          </Density>
+        </Popover.Content>
+      </Popover>
+    </Density>
   );
 });
