@@ -4,12 +4,16 @@ import {
   PenumbraManifest,
   PenumbraClient,
 } from '@penumbra-zone/client';
-import { penumbra } from '@/shared/const/penumbra';
 import { makeAutoObservable } from 'mobx';
+import { openToast } from '@penumbra-zone/ui/Toast';
+import { penumbra } from '@/shared/const/penumbra';
 
 class ConnectionStateStore {
   connected = false;
   manifest: PenumbraManifest | undefined;
+
+  /** Index of the selected subaccount */
+  subaccount = 0;
 
   constructor() {
     makeAutoObservable(this);
@@ -26,6 +30,10 @@ class ConnectionStateStore {
   private setConnected(connected: boolean) {
     this.connected = connected;
   }
+
+  setSubaccount = (subaccount: string) => {
+    this.subaccount = parseInt(subaccount, 10);
+  };
 
   async reconnect() {
     const providers = PenumbraClient.getProviders();
@@ -51,13 +59,18 @@ class ConnectionStateStore {
     } catch (error) {
       if (error instanceof Error && error.cause) {
         if (error.cause === PenumbraRequestFailure.Denied) {
-          // TODO: replace these alerts with toasts
-          alert(
-            'Connection denied: you may need to un-ignore this site in your extension settings.',
-          );
+          openToast({
+            type: 'error',
+            message: 'Connection denied',
+            description: 'You may need to un-ignore this site in your extension settings.',
+          });
         }
         if (error.cause === PenumbraRequestFailure.NeedsLogin) {
-          alert('Not logged in: please login into the extension and try again');
+          openToast({
+            type: 'error',
+            message: 'Not logged in',
+            description: 'Please login into the extension and try again.',
+          });
         }
       }
     }
