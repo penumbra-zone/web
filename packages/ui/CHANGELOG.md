@@ -1,5 +1,11 @@
 # @penumbra-zone/ui
 
+## 12.2.1
+
+### Patch Changes
+
+- 185728a: Fix and improve UI components to prepare them for sub-account selector
+
 ## 12.2.0
 
 ### Minor Changes
