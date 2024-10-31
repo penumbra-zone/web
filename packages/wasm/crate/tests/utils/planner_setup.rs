@@ -9,6 +9,7 @@ use penumbra_wasm::database::interface::Database;
 use penumbra_wasm::database::mock::MockDb;
 use penumbra_wasm::storage::{byte_array_to_base64, Tables};
 
+#[allow(dead_code)]
 pub async fn seed_params_in_db(mock_db: &MockDb, tables: &Tables) {
     let app_params = AppParameters {
         chain_id: "penumbra-deimos-8".to_string(),

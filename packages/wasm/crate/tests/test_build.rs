@@ -1,4 +1,5 @@
 extern crate penumbra_wasm;
+mod utils;
 use penumbra_asset::STAKING_TOKEN_ASSET_ID;
 use penumbra_dex::DexParameters;
 use penumbra_keys::keys::SpendKey;
@@ -14,7 +15,6 @@ use penumbra_proto::{
 };
 use penumbra_sct::params::SctParameters;
 use penumbra_shielded_pool::fmd::Parameters;
-use penumbra_tct::structure::Hash;
 use penumbra_tct::Forgotten;
 use penumbra_transaction::{Action, ActionPlan, AuthorizationData, WitnessData};
 use penumbra_wasm::build::{build_action_inner, build_parallel_inner, build_serial_inner};
@@ -26,8 +26,8 @@ use penumbra_wasm::{
     keys::load_proving_key,
     tx::{authorize, witness},
 };
-use serde::{Deserialize, Serialize};
 use std::str::FromStr;
+pub use utils::sct::*;
 use wasm_bindgen_test::*;
 
 wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
@@ -52,62 +52,6 @@ async fn mock_build_serial_and_parallel() {
     // MockDb
     let mock_db = MockDb::new();
     let tables = get_mock_tables();
-
-    // Define SCT-related structs.
-    #[derive(Clone, Debug, Serialize, Deserialize)]
-    pub struct Position {
-        pub epoch: u64,
-        pub block: u64,
-        pub commitment: u64,
-    }
-
-    #[derive(Clone, Debug, Serialize, Deserialize)]
-    #[allow(non_snake_case)]
-    pub struct StoredPosition {
-        pub Position: Position,
-    }
-
-    #[derive(Clone, Debug, Serialize, Deserialize)]
-    pub struct StoreHash {
-        pub position: Position,
-        pub height: u64,
-        pub hash: Hash,
-        pub essential: bool,
-    }
-
-    #[derive(Clone, Debug, Serialize, Deserialize)]
-    pub struct StoreCommitment {
-        pub commitment: Commitment,
-        pub position: Position,
-    }
-
-    #[derive(Clone, Debug, Serialize, Deserialize)]
-    pub struct Commitment {
-        pub inner: String,
-    }
-
-    #[derive(Clone, Debug, Serialize, Deserialize)]
-    pub struct StateCommitmentTree {
-        pub last_position: Position,
-        pub last_forgotten: u64,
-        pub hashes: StoreHash,
-        pub commitments: StoreCommitment,
-    }
-
-    #[derive(Clone, Debug, Serialize, Deserialize)]
-    pub struct SctUpdates {
-        pub store_commitments: StoreCommitment,
-        pub set_position: StoredPosition,
-        pub set_forgotten: u64,
-    }
-
-    #[derive(Clone, Debug, Serialize, Deserialize)]
-    pub struct StoredTree {
-        pub last_position: Option<StoredPosition>,
-        pub last_forgotten: Option<Forgotten>,
-        pub hashes: Vec<StoreHash>,
-        pub commitments: Vec<StoreCommitment>,
-    }
 
     // Sample chain and fmd parameters.
     let app_params = AppParameters {
