@@ -1,5 +1,11 @@
 # @penumbra-zone/storage
 
+## 36.0.1
+
+### Patch Changes
+
+- 6e3fc9d: Supporting forward compatible parsing of Metadata from remote registry
+
 ## 36.0.0
 
 ### Minor Changes
