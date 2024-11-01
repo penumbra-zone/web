@@ -1,12 +1,11 @@
 import { Pool, QueryConfigValues, QueryResultRow } from 'pg';
 import fs from 'fs';
-import { BlockInfo, LiquidityPositionEvent } from './lps';
-import { positionIdFromBech32 } from '@penumbra-zone/bech32m/plpid';
-import { PositionId } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
+import { BlockInfo } from './lps';
 import { JsonValue } from '@bufbuild/protobuf';
 
 const INDEXER_CERT = process.env['PENUMBRA_INDEXER_CA_CERT'];
 
+// TODO: Delete when possible, this is deprecated
 export class IndexerQuerier {
   private pool: Pool;
 
@@ -84,160 +83,6 @@ export class IndexerQuerier {
     return value;
   }
 
-  public async fetchLiquidityPositionEventsOnBech32(
-    bech32: string,
-  ): Promise<LiquidityPositionEvent[]> {
-    const queryText = `
-    SELECT 
-      a.event_id,
-      e.block_id, 
-      e.tx_id,
-      e.type,
-      jsonb_object_agg(additional_attributes.key, additional_attributes.value) AS lpevent_attributes,
-      tr.tx_hash,
-      tr.created_at,
-      tr.index,
-      b.height as block_height
-    FROM attributes a
-    INNER JOIN events e ON a.event_id = e.rowid
-    INNER JOIN tx_events te ON a.value = te.value and te.composite_key = a.composite_key
-    INNER JOIN tx_results tr ON e.block_id = tr.block_id and te.index = tr.index
-    INNER JOIN block_events b ON e.block_id = b.block_id and b.key = 'height' and b.type = 'block'
-    LEFT JOIN attributes additional_attributes ON additional_attributes.event_id = a.event_id
-    WHERE a.value = $1 and a.composite_key not like '%EventPositionExecution%'
-    GROUP BY a.event_id, e.block_id, e.tx_id, e.type, tr.tx_hash, tr.created_at, tr.index, b.height;
-  `;
-
-    const inner = new PositionId(positionIdFromBech32(bech32));
-
-    // Use parameterized query to prevent SQL injection
-    return this.query(queryText, [inner.toJson()]);
-  }
-
-  public async fetchLiquidityPositionExecutionEventsOnBech32(
-    bech32: string,
-  ): Promise<LiquidityPositionEvent[]> {
-    // TODO: Refractor once more events are emitted around trades
-    // This basically pops off the first instance of a trade event for each event_id assuming that was the EventPositionExecution event for opening a position
-    const queryText = `
-    WITH RankedTrades AS (
-      SELECT 
-          a.event_id,
-          e.block_id, 
-          e.tx_id,
-          e.type,
-          jsonb_object_agg(additional_attributes.key, additional_attributes.value) AS execution_event_attributes,
-          tr.tx_hash,
-          tr.created_at,
-          tr.index,
-          b.height as block_height,
-          ROW_NUMBER() OVER(PARTITION BY a.event_id ORDER BY tr.index ASC) AS rn,
-          COUNT(*) OVER(PARTITION BY a.event_id) AS cnt
-      FROM attributes a
-      INNER JOIN events e ON a.event_id = e.rowid
-      INNER JOIN block_events b ON e.block_id = b.block_id AND b.key = 'height'
-      INNER JOIN tx_results tr ON tr.block_id = e.block_id
-      LEFT JOIN attributes additional_attributes ON additional_attributes.event_id = a.event_id
-      WHERE a.value = $1 AND a.composite_key LIKE '%EventPositionExecution%'
-      GROUP BY a.event_id, e.block_id, e.tx_id, e.type, tr.tx_hash, tr.created_at, tr.index, b.height
-  )
-  SELECT 
-      event_id,
-      block_id, 
-      tx_id,
-      type,
-      execution_event_attributes,
-      tx_hash,
-      created_at,
-      index,
-      block_height
-  FROM RankedTrades
-  WHERE 
-      cnt = 1 OR rn > 1; -- Exclude the lowest tr.index when there are duplicates for an event_id
-  `;
-
-    const inner = new PositionId(positionIdFromBech32(bech32));
-
-    // Use parameterized query to prevent SQL injection
-    return this.query(queryText, [inner.toJson()]);
-  }
-
-  public async fetchLiquidityPositionOpenCloseEventsOnBlockHeightRange(
-    startHeight: number,
-    endHeight: number,
-  ): Promise<LiquidityPositionEvent[]> {
-    const queryText = `
-    SELECT
-      a.event_id,
-      e.block_id,
-      e.tx_id,
-      e.type,
-      jsonb_object_agg(additional_attributes.key, additional_attributes.value) AS lpevent_attributes,
-      tr.tx_hash,
-      tr.created_at,
-      tr.index,
-      b.height as block_height
-    FROM attributes a
-    INNER JOIN events e ON a.event_id = e.rowid
-    INNER JOIN block_events b ON e.block_id = b.block_id and b.key = 'height' and b.type = 'block'
-    LEFT JOIN attributes additional_attributes ON additional_attributes.event_id = a.event_id
-    INNER JOIN tx_events te ON a.value = te.value and te.composite_key = a.composite_key
-    INNER JOIN tx_results tr ON tr.block_id = e.block_id and te.index = tr.index
-    WHERE b.height >= $1 and b.height < $2 and (a.composite_key like '%PositionOpen.positionId%' or a.composite_key like '%PositionWithdraw.positionId%' or a.composite_key like '%PositionClose.positionId%')
-    GROUP BY a.event_id, e.block_id, e.tx_id, e.type, tr.tx_hash, tr.created_at, tr.index, b.height;
-  `;
-
-    // Use parameterized query to prevent SQL injection
-    // const res = await this.query(queryText);
-    return this.query(queryText, [`${startHeight}`, `${endHeight}`]);
-  }
-
-  public async fetchLiquidityPositionExecutionEventsOnBlockHeight(
-    blockHeight: number,
-  ): Promise<LiquidityPositionEvent[]> {
-    // TODO: Refractor once more events are emitted around trades
-    // This basically pops off the first instance of a trade event for each event_id assuming that was the EventPositionExecution event for opening a position
-    const queryText = `
-    WITH RankedTrades AS (
-      SELECT 
-          a.event_id,
-          e.block_id, 
-          e.tx_id,
-          e.type,
-          jsonb_object_agg(additional_attributes.key, additional_attributes.value) AS execution_event_attributes,
-          tr.tx_hash,
-          tr.created_at,
-          tr.index,
-          b.height as block_height,
-          ROW_NUMBER() OVER(PARTITION BY a.event_id ORDER BY tr.index ASC) AS rn,
-          COUNT(*) OVER(PARTITION BY a.event_id) AS cnt
-      FROM attributes a
-      INNER JOIN events e ON a.event_id = e.rowid
-      INNER JOIN block_events b ON e.block_id = b.block_id AND b.key = 'height'
-      INNER JOIN tx_events te ON a.value = te.value and te.composite_key = a.composite_key
-      INNER JOIN tx_results tr ON tr.block_id = e.block_id and te.index = tr.index
-      LEFT JOIN attributes additional_attributes ON additional_attributes.event_id = a.event_id
-      WHERE b.height = $1 AND a.composite_key LIKE '%dex%' 
-      GROUP BY a.event_id, e.block_id, e.tx_id, e.type, tr.tx_hash, tr.created_at, tr.index, b.height
-  )
-  SELECT 
-      event_id,
-      block_id, 
-      tx_id,
-      type,
-      execution_event_attributes,
-      tx_hash,
-      created_at,
-      index,
-      block_height
-  FROM RankedTrades
-  WHERE 
-      cnt = 1 OR rn > 1 AND type like '%EventPosition.positionId%' OR type like '%EventQueuePositionClose.positionId%'; -- Exclude the lowest tr.index when there are duplicates for an event_id
-  `;
-    // Use parameterized query to prevent SQL injection
-    return await this.query(queryText, [`${blockHeight}`]);
-  }
-
   public async fetchMostRecentNBlocks(n: number): Promise<BlockInfo[]> {
     const queryText = `
     SELECT
@@ -248,21 +93,6 @@ export class IndexerQuerier {
     LIMIT $1;
     `;
     return await this.query(queryText, [`${n}`]);
-  }
-
-  public async fetchBlocksWithinRange(
-    startHeight: number,
-    endHeight: number,
-  ): Promise<BlockInfo[]> {
-    const queryText = `
-    SELECT
-      height,
-      created_at
-    FROM blocks
-    WHERE height >= $1 and height < $2
-    ORDER BY height DESC
-    `;
-    return this.query(queryText, [`${startHeight}`, `${endHeight}`]);
   }
 
   public async fetchBlocksByHeight(heights: number[]): Promise<BlockInfo[]> {
@@ -284,7 +114,3 @@ export class IndexerQuerier {
     await this.pool.end();
   }
 }
-
-// Example usage:
-// const indexerQuerier = new IndexerQuerier('postgresql://user:password@host:port/database?sslmode=require');
-// indexerQuerier.query('SELECT * FROM your_table').then(data => console.log(data)).catch(error => console.error(error));
