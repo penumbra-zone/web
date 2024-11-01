@@ -4,12 +4,16 @@ import { Card } from '@penumbra-zone/ui/Card';
 import { PairSelector } from './pair-selector';
 import { RouteBook } from './route-book';
 import { Chart } from './chart';
+import { Summary } from '@/pages/trade/ui/summary.tsx';
 
 export const TradePage = () => {
   return (
     <div>
       <div className='flex gap-2'>
         <PairSelector />
+      </div>
+      <div>
+        <Summary />
       </div>
 
       <div className='flex flex-wrap lg:gap-2'>

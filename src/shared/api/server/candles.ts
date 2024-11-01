@@ -45,6 +45,7 @@ async function getTimestampsByBlockheight(
   startHeight: number,
   limit: number,
 ): Promise<Record<string, string>> {
+  // TODO: Old indexer is deprecated
   const indexerQuerier = new IndexerQuerier(process.env['PENUMBRA_INDEXER_ENDPOINT'] ?? '');
 
   if (startHeight === 0) {
