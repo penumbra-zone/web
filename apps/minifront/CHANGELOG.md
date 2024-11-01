@@ -1,5 +1,11 @@
 # minifront
 
+## 6.24.3
+
+### Patch Changes
+
+- 6e3fc9d: Supporting forward compatible parsing of Metadata from remote registry
+
 ## 6.24.2
 
 ### Patch Changes
