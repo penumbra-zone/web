@@ -44,21 +44,13 @@
         "types": "./dist/src/tailwindConfig.d.ts",
         "default": "./dist/src/tailwindConfig.js"
       },
-      "./components/*": {
+      "./componsents/*": {
         "types": "./dist/components/ui/*.d.ts",
         "default": "./dist/components/ui/*.js"
       },
-      "./theme": {
-        "types": "./dist/src/PenumbraUIProvider/theme.d.ts",
-        "default": "./dist/src/PenumbraUIProvider/theme.js"
-      },
-      "./lib/toast/*": {
-        "types": "./dist/lib/toast/*.d.ts",
-        "default": "./dist/lib/toast/*.js"
-      },
-      "./utils/*": {
-        "types": "./dist/src/utils/*.d.ts",
-        "default": "./dist/src/utils/*.js"
+      "./utils/typography": {
+        "types": "./dist/src/utils/typography.d.ts",
+        "default": "./dist/src/utils/typography.js"
       },
       "./*": {
         "types": "./dist/src/*/index.d.ts",

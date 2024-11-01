@@ -20,3 +20,5 @@ export const PenumbraUIProvider = ({ children }: PropsWithChildren) => (
     </MotionConfig>
   </ThemeProvider>
 );
+
+export { theme } from './theme';
