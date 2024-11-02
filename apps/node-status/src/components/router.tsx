@@ -3,7 +3,7 @@ import { ErrorBoundary } from './error-boundary';
 import { Index } from '.';
 import { IndexLoader } from '../fetching/loader';
 
-export const router = createHashRouter([
+export const router: ReturnType<typeof createHashRouter> = createHashRouter([
   {
     path: '/',
     loader: IndexLoader,
