@@ -4,7 +4,7 @@ import { useBook } from '../api/book';
 import { observer } from 'mobx-react-lite';
 import { RouteBookResponse, Trace } from '@/shared/api/server/book/types';
 import { ChevronRight } from 'lucide-react';
-
+import { getSymbolFromValueView } from '@penumbra-zone/getters/value-view';
 const TabButton = ({ active, children }: { active: boolean; children: React.ReactNode }) => {
   return (
     <button
@@ -43,13 +43,11 @@ const RouteDisplay = ({ tokens }: { tokens: string[] }) => {
 const TradeRow = ({
   trace,
   isSell,
-  tokens,
   liquidityPercentage = 50,
   isDirect = false,
 }: {
   trace: Trace;
   isSell: boolean;
-  tokens: string[];
   liquidityPercentage?: number;
   isDirect?: boolean;
 }) => {
@@ -60,25 +58,22 @@ const TradeRow = ({
     <tr
       className={`group relative h-[33px]  border-b border-[rgba(250,250,250,0.15)]
         ${showRoute ? 'bg-[rgba(250,250,250,0.05)]' : ''}`}
-      onMouseEnter={() => setShowRoute(true)}
-      onMouseLeave={() => setShowRoute(false)}
+      onClick={() => setShowRoute(prev => !prev)}
     >
       {/*/!* Liquidity progress bar *!/*/}
-      {/*<div className='absolute inset-0 p-0'>*/}
-      {/*  <div*/}
-      {/*    className='absolute inset-0 opacity-24'*/}
-      {/*    style={{*/}
-      {/*      background: bgColor,*/}
-      {/*      right: `${100 - liquidityPercentage}%`,*/}
-      {/*    }}*/}
-      {/*  />*/}
-      {/*</div>*/}
+      {/*<div className='absolute inset-0 p-0'>
+        <div
+          className='absolute inset-0 opacity-24'
+          style={{
+            background: bgColor,
+            right: `${100 - liquidityPercentage}%`,
+          }}
+        />
+      </div>*/}
 
       {showRoute ? (
         <td colSpan={4} className='relative px-4'>
-          <RouteDisplay
-            tokens={isDirect ? tokens.filter((_, i) => i === 0 || i === tokens.length - 1) : tokens}
-          />
+          <RouteDisplay tokens={trace.hops.map(valueView => getSymbolFromValueView(valueView))} />
         </td>
       ) : (
         <>
@@ -151,11 +146,11 @@ const RouteBookData = observer(
         <div className='flex-1'>
           <table className='w-full'>
             <thead>
-              <tr className='text-xs font-normal text-gray-400'>
-                <th className='py-[8px] text-left'>Price({pair[0]})</th>
-                <th className='py-[8px] text-right'>Amount({pair[1]})</th>
-                <th className='py-[8px] text-right'>Total</th>
-                <th className='py-[8px] text-right'>Route</th>
+              <tr className='text-xs text-gray-400'>
+                <th className='py-[8px] font-normal  text-left'>Price({pair[0]})</th>
+                <th className='py-[8px] font-normal  text-right'>Amount({pair[1]})</th>
+                <th className='py-[8px] font-normal  text-right'>Total</th>
+                <th className='py-[8px] font-normal  text-right'>Route</th>
               </tr>
             </thead>
 
@@ -165,7 +160,6 @@ const RouteBookData = observer(
                   key={`${trace.price}-${trace.total}-${idx}-${trace.isDirect}`}
                   trace={trace}
                   isSell={true}
-                  tokens={tokens}
                   liquidityPercentage={(sellOrders.length - idx) * (100 / sellOrders.length)}
                   isDirect={trace.isDirect}
                 />
