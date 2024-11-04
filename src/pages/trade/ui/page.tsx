@@ -13,7 +13,7 @@ export const TradePage = () => {
         <PairSelector />
       </div>
       <div>
-        {/*<Summary />*/}
+        <Summary />
       </div>
 
       <div className='flex flex-wrap lg:gap-2'>
