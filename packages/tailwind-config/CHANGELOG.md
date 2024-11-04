@@ -1,5 +1,12 @@
 # @penumbra-zone/tailwind-config
 
+## 3.1.14
+
+### Patch Changes
+
+- Updated dependencies [fcb025d]
+  - @penumbra-zone/ui@12.4.0
+
 ## 3.1.13
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @penumbra-zone/ui
 
+## 12.4.0
+
+### Minor Changes
+
+- fcb025d: Update @penumbra-zone/ui exports
+
 ## 12.3.0
 
 ### Minor Changes
