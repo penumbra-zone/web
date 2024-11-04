@@ -1,5 +1,11 @@
 # @penumbra-zone/ui
 
+## 12.3.0
+
+### Minor Changes
+
+- 2484bdc: Add ReactNode proptype to description Toast prop
+
 ## 12.2.1
 
 ### Patch Changes
