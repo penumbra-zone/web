@@ -16,7 +16,7 @@ const toastFnMap: Record<ToastType, ToastFn> = {
 export interface ToastProps {
   type: ToastType;
   message: string;
-  description?: string | ReactNode;
+  description?: ReactNode;
   persistent?: boolean;
   dismissible?: boolean;
   action?: ExternalToast['action'];
