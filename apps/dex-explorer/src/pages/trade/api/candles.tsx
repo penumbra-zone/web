@@ -1,21 +1,29 @@
 import { useQuery } from '@tanstack/react-query';
-import { CandlestickData } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { useRefetchOnNewBlock } from '@/shared/api/compact-block.ts';
+import { CandleApiResponse } from '@/shared/api/server/candles/types.ts';
+import { usePathSymbols } from '@/pages/trade/model/use-path.ts';
+import { OhlcData } from 'lightweight-charts';
+import { DurationWindow } from '@/shared/database/schema.ts';
 
-export const useCandles = (
-  symbol1: string,
-  symbol2: string,
-  startBlock: number | undefined,
-  limit: number,
-) => {
+export const useCandles = (durationWindow: DurationWindow) => {
+  const { baseSymbol, quoteSymbol } = usePathSymbols();
+
   const query = useQuery({
-    queryKey: ['candles', symbol1, symbol2, startBlock, limit],
-    queryFn: async (): Promise<CandlestickData[]> => {
-      if (startBlock === undefined) {
-        return [];
+    queryKey: ['candles', baseSymbol, quoteSymbol, durationWindow],
+    queryFn: async (): Promise<OhlcData[]> => {
+      const paramsObj = {
+        baseAsset: baseSymbol,
+        quoteAsset: quoteSymbol,
+        durationWindow,
+      };
+      const baseUrl = '/api/candles';
+      const urlParams = new URLSearchParams(paramsObj).toString();
+      const res = await fetch(`${baseUrl}?${urlParams}`);
+      const jsonRes = (await res.json()) as CandleApiResponse;
+      if ('error' in jsonRes) {
+        throw new Error(jsonRes.error);
       }
-      const res = await fetch(`/api/candles/${symbol1}/${symbol2}/${startBlock}/${limit}`);
-      return (await res.json()) as CandlestickData[];
+      return jsonRes;
     },
   });
 

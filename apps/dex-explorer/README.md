@@ -18,7 +18,7 @@ However, you still need a database to connect to.
 ## Connecting to a database
 
 The DEX explorer application requires a PostgreSQL database containing ABCI event information
-[as emitted by a Penumbra node](https://guide.penumbra.zone/node/pd/indexing-events).
+as written by [pindexer].
 You can set up a local devnet by following the [Penumbra devnet quickstart guide](https://guide.penumbra.zone/dev/devnet-quickstart),
 or plug in credentials for an already running database via environment variables:
 
@@ -60,10 +60,11 @@ It'd be nice to have a cool name for the DEX explorer. We don't have one yet.
 
 Using https://buf.build/penumbra-zone/penumbra/sdks/main
 
-[NextJS]: https://nextjs.org/
-[pnpm]: https://pnpm.io/
-[Nix]: https://nixos.org/download/
-
 ## Code structure
 
 Read the sub-article about the code structure [here](./pages/readme.md).
+
+[NextJS]: https://nextjs.org/
+[Nix]: https://nixos.org/download/
+[pindexer]: https://guide.penumbra.zone/node/pd/indexing-events#using-pindexer
+[pnpm]: https://pnpm.io/

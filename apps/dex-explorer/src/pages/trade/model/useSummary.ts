@@ -1,22 +1,17 @@
 import { useQuery } from '@tanstack/react-query';
-import { usePathToMetadata } from '@/pages/trade/model/use-path-to-metadata.ts';
+import { usePathSymbols } from '@/pages/trade/model/use-path.ts';
 import { SummaryResponse } from '@/shared/api/server/summary.ts';
 
 export const useSummary = () => {
-  const { baseAsset, quoteAsset, error: pathError } = usePathToMetadata();
+  const { baseSymbol, quoteSymbol } = usePathSymbols();
 
-  const res = useQuery({
-    queryKey: ['summary', baseAsset, quoteAsset],
-    enabled: !!baseAsset && !!quoteAsset,
+  return useQuery({
+    queryKey: ['summary', baseSymbol, quoteSymbol],
     retry: 1,
     queryFn: async () => {
-      if (!baseAsset || !quoteAsset) {
-        throw new Error('Missing assets to get summary for');
-      }
-
       const paramsObj = {
-        baseAsset: baseAsset.symbol,
-        quoteAsset: quoteAsset.symbol,
+        baseAsset: baseSymbol,
+        quoteAsset: quoteSymbol,
       };
       const baseUrl = '/api/summary';
       const urlParams = new URLSearchParams(paramsObj).toString();
@@ -28,9 +23,4 @@ export const useSummary = () => {
       return jsonRes;
     },
   });
-
-  return {
-    ...res,
-    error: pathError ?? res.error,
-  };
 };
