@@ -1,5 +1,3 @@
-import { redirect } from 'next/navigation';
+import { RedirectToPair } from '@/pages/trade/redirect.tsx';
 
-export default function RedirectPage() {
-  redirect('/trade/UM/GM');
-}
+export default RedirectToPair;

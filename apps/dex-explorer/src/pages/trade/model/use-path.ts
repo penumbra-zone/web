@@ -8,17 +8,25 @@ interface PathParams {
   [key: string]: string; // required for useParams signature
 }
 
+export const usePathSymbols = () => {
+  const params = useParams<PathParams>();
+  if (!params) {
+    throw new Error('No symbol params in path');
+  }
+  return { baseSymbol: params.baseSymbol, quoteSymbol: params.quoteSymbol };
+};
+
 // Converts symbol to Metadata
 export const usePathToMetadata = () => {
   const { data, error, isLoading } = useAssets();
-  const params = useParams<PathParams>();
+  const { baseSymbol, quoteSymbol } = usePathSymbols();
 
   const query = useQuery({
-    queryKey: ['pathToMetadata', data, params],
+    queryKey: ['pathToMetadata', data, baseSymbol, quoteSymbol],
     queryFn: () => {
       return {
-        baseAsset: data?.find(a => a.symbol === params?.baseSymbol),
-        quoteAsset: data?.find(a => a.symbol === params?.quoteSymbol),
+        baseAsset: data?.find(m => m.symbol === baseSymbol),
+        quoteAsset: data?.find(a => a.symbol === quoteSymbol),
       };
     },
   });
