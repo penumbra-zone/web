@@ -30,13 +30,18 @@ export interface DexExCandlesticks {
   swap_volume: number;
 }
 
+export const durationWindows = ['1m', '15m', '1h', '4h', '1d', '1w', '1mo'] as const;
+export type DurationWindow = (typeof durationWindows)[number];
+export const isDurationWindow = (str: string): str is DurationWindow =>
+  durationWindows.includes(str as DurationWindow);
+
 export interface DexExPriceCharts {
   asset_end: Buffer;
   asset_start: Buffer;
   candlestick_id: number | null;
   id: Generated<number>;
   start_time: Timestamp;
-  the_window: string;
+  the_window: DurationWindow;
 }
 
 export interface DexExSummary {
