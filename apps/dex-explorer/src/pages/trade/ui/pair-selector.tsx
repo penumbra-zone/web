@@ -14,7 +14,7 @@ import { Button } from '@penumbra-zone/ui/Button';
 import { useAssets } from '@/shared/api/assets';
 import { useBalances } from '@/shared/api/balances';
 import { PagePath } from '@/shared/const/pages.ts';
-import { usePathToMetadata } from '../model/use-path-to-metadata';
+import { usePathToMetadata } from '../model/use-path.ts';
 
 const handleRouting = ({
   router,

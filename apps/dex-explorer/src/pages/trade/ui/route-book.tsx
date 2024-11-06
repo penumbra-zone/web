@@ -1,4 +1,3 @@
-import { usePathToMetadata } from '../model/use-path-to-metadata';
 import { useBook } from '../api/book';
 import { observer } from 'mobx-react-lite';
 import { RouteBookResponse } from '@/shared/api/server/book/types';
@@ -47,20 +46,15 @@ const RouteBookData = observer(({ bookData: { multiHops } }: { bookData: RouteBo
 });
 
 export const RouteBook = observer(() => {
-  const { baseAsset, quoteAsset, error: pairError } = usePathToMetadata();
-  const {
-    data: bookData,
-    isLoading: bookIsLoading,
-    error: bookErr,
-  } = useBook(baseAsset?.symbol, quoteAsset?.symbol);
+  const { data, isLoading, error } = useBook();
 
-  if (bookIsLoading || !bookData) {
+  if (error) {
+    return <div>Error loading route book: ${String(error)}</div>;
+  }
+
+  if (isLoading || !data) {
     return <RouteBookLoadingState />;
   }
 
-  if (bookErr ?? pairError) {
-    return <div>Error loading route book: ${String(bookErr ?? pairError)}</div>;
-  }
-
-  return <RouteBookData bookData={bookData} />;
+  return <RouteBookData bookData={data} />;
 });

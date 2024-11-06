@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
-import { SimulationQuerier } from '@/shared/utils/protos/services/dex/simulated-trades.ts';
 import {
   SimulateTradeRequest,
   SimulateTradeResponse,
@@ -10,13 +9,16 @@ import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { RouteBookResponseJson } from '@/shared/api/server/book/types.ts';
 import { processSimulation } from '@/shared/api/server/book/helpers.ts';
 import { serializeResponse } from '@/shared/api/server/book/serialization.ts';
+import { SimulationService } from '@penumbra-zone/protobuf';
+import { PromiseClient } from '@connectrpc/connect';
+import { createClient } from '@/shared/utils/protos/utils.ts';
 
 export const VERY_HIGH_AMOUNT = new Amount({ hi: 10000n }); // Used as default to generate sufficient amount of traces
 export const TRACE_LIMIT_DEFAULT = 8;
 
-type AllResponses = RouteBookResponseJson | { error: string };
+export type RouteBookApiResponse = RouteBookResponseJson | { error: string };
 
-export async function GET(req: NextRequest): Promise<NextResponse<AllResponses>> {
+export async function GET(req: NextRequest): Promise<NextResponse<RouteBookApiResponse>> {
   const grpcEndpoint = process.env['PENUMBRA_GRPC_ENDPOINT'];
   const chainId = process.env['PENUMBRA_CHAIN_ID'];
   if (!grpcEndpoint || !chainId) {
@@ -72,10 +74,10 @@ export async function GET(req: NextRequest): Promise<NextResponse<AllResponses>>
     output: baseAssetMetadata.penumbraAssetId,
   });
 
-  const simQuerier = new SimulationQuerier({ grpcEndpoint });
+  const client = createClient(grpcEndpoint, SimulationService);
   const [buyRes, sellRes] = await Promise.all([
-    simulateTrade(simQuerier, buySideRequest),
-    simulateTrade(simQuerier, sellSideRequest),
+    simulateTrade(client, buySideRequest),
+    simulateTrade(client, sellSideRequest),
   ]);
   const buyMulti = processSimulation({ res: buyRes, registry, limit });
   const sellMulti = processSimulation({ res: sellRes, registry, limit, invertPrice: true });
@@ -91,9 +93,12 @@ export async function GET(req: NextRequest): Promise<NextResponse<AllResponses>>
   );
 }
 
-const simulateTrade = async (querier: SimulationQuerier, req: SimulateTradeRequest) => {
+const simulateTrade = async (
+  client: PromiseClient<typeof SimulationService>,
+  req: SimulateTradeRequest,
+) => {
   try {
-    return await querier.simulateTrade(req);
+    return await client.simulateTrade(req);
   } catch (e) {
     // If the error contains 'there are no orders to fulfill this swap', there are no orders to fulfill the trade,
     // so just return an empty array
