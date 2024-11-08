@@ -1,5 +1,5 @@
 import { ValidatorState_ValidatorStateEnum } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
-import { cn } from '@penumbra-zone/ui-old/lib/utils';
+import { cn } from '@penumbra-zone/ui-deprecated/lib/utils';
 
 interface LabelInfo {
   label: string;

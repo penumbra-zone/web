@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import { Input, InputProps } from '@penumbra-zone/ui-old/components/ui/input';
+import { Input, InputProps } from '@penumbra-zone/ui-deprecated/components/ui/input';
 import { useWheelPrevent } from './use-wheel-prevent';
 
 export const NumberInput: FC<InputProps> = props => {

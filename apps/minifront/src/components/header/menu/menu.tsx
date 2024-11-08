@@ -1,4 +1,4 @@
-import { cn } from '@penumbra-zone/ui-old/lib/utils';
+import { cn } from '@penumbra-zone/ui-deprecated/lib/utils';
 import { DesktopNav } from './desktop-nav';
 import { MobileNav } from './mobile-nav';
 import { ProviderMenu } from './provider';

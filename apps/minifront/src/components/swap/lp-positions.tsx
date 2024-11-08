@@ -1,5 +1,5 @@
-import { Card } from '@penumbra-zone/ui-old/components/ui/card';
-import { GradientHeader } from '@penumbra-zone/ui-old/components/ui/gradient-header';
+import { Card } from '@penumbra-zone/ui-deprecated/components/ui/card';
+import { GradientHeader } from '@penumbra-zone/ui-deprecated/components/ui/gradient-header';
 import { useOwnedPositions } from '../../state/swap/lp-positions.ts';
 import { bech32mPositionId } from '@penumbra-zone/bech32m/plpid';
 

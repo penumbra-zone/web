@@ -31,7 +31,7 @@
     "@penumbra-zone/protobuf": "workspace:*",
     "@penumbra-zone/transport-dom": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
-    "@penumbra-zone/ui-old": "workspace:*",
+    "@penumbra-zone/ui-deprecated": "workspace:*",
     "@penumbra-zone/zquery": "workspace:*",
     "@radix-ui/react-dialog": "1.0.5",
     "@radix-ui/react-icons": "^1.3.0",

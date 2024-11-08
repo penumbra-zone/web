@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { LineWave } from 'react-loader-spinner';
-import { cn } from '@penumbra-zone/ui-old/lib/utils';
+import { cn } from '@penumbra-zone/ui-deprecated/lib/utils';
 import { useDelayedIsLoading } from '../fetching/refetch-hook';
 
 export const Header = () => {

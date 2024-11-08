@@ -1,7 +1,7 @@
-import { cn } from '@penumbra-zone/ui-old/lib/utils';
+import { cn } from '@penumbra-zone/ui-deprecated/lib/utils';
 import { Validation, validationResult } from './validation-result';
 import { ReactNode } from 'react';
-import { Box } from '@penumbra-zone/ui-old/components/ui/box';
+import { Box } from '@penumbra-zone/ui-deprecated/components/ui/box';
 
 interface InputBlockProps {
   label: string;

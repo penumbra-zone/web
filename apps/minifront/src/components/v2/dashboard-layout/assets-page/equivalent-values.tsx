@@ -1,7 +1,7 @@
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { asValueView } from '@penumbra-zone/getters/equivalent-value';
 import { getDisplayDenomFromView, getEquivalentValues } from '@penumbra-zone/getters/value-view';
-import { ValueViewComponent } from '@penumbra-zone/ui-old/ValueViewComponent';
+import { ValueViewComponent } from '@penumbra-zone/ui-deprecated/ValueViewComponent';
 
 export const EquivalentValues = ({ valueView }: { valueView?: ValueView }) => {
   const equivalentValuesAsValueViews = (getEquivalentValues.optional(valueView) ?? []).map(

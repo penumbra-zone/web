@@ -1,6 +1,6 @@
-import { CondensedBlockSyncStatus } from '@penumbra-zone/ui-old/components/ui/block-sync-status';
-import { IncompatibleBrowserBanner } from '@penumbra-zone/ui-old/components/ui/incompatible-browser-banner';
-import { TestnetBanner } from '@penumbra-zone/ui-old/components/ui/testnet-banner';
+import { CondensedBlockSyncStatus } from '@penumbra-zone/ui-deprecated/components/ui/block-sync-status';
+import { IncompatibleBrowserBanner } from '@penumbra-zone/ui-deprecated/components/ui/incompatible-browser-banner';
+import { TestnetBanner } from '@penumbra-zone/ui-deprecated/components/ui/testnet-banner';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getChainId } from '../../fetchers/chain-id';

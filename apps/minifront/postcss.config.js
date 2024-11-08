@@ -1,1 +1,1 @@
-export { default } from '@penumbra-zone/ui-old/postcss.config.js';
+export { default } from '@penumbra-zone/ui-deprecated/postcss.config.js';

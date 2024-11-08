@@ -1,6 +1,6 @@
-import { SplashPage } from '@penumbra-zone/ui-old/components/ui/splash-page';
+import { SplashPage } from '@penumbra-zone/ui-deprecated/components/ui/splash-page';
 import { HeadTag } from './metadata/head-tag';
-import { Button } from '@penumbra-zone/ui-old/components/ui/button';
+import { Button } from '@penumbra-zone/ui-deprecated/components/ui/button';
 
 export const ExtensionTransportDisconnected = () => {
   return (

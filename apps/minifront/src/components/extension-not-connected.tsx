@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { Dialog } from '@penumbra-zone/ui-old/Dialog';
-import { Button } from '@penumbra-zone/ui-old/components/ui/button';
-import { Toaster } from '@penumbra-zone/ui-old/components/ui/toaster';
-import { SplashPage } from '@penumbra-zone/ui-old/components/ui/splash-page';
-import { errorToast, warningToast } from '@penumbra-zone/ui-old/lib/toast/presets';
+import { Dialog } from '@penumbra-zone/ui-deprecated/Dialog';
+import { Button } from '@penumbra-zone/ui-deprecated/components/ui/button';
+import { Toaster } from '@penumbra-zone/ui-deprecated/components/ui/toaster';
+import { SplashPage } from '@penumbra-zone/ui-deprecated/components/ui/splash-page';
+import { errorToast, warningToast } from '@penumbra-zone/ui-deprecated/lib/toast/presets';
 import {
   PenumbraRequestFailure,
   PenumbraClient,

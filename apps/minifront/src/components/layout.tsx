@@ -1,10 +1,10 @@
 import { Outlet } from 'react-router-dom';
 import { HeadTag } from './metadata/head-tag';
 import { Header } from './header/header';
-import { Toaster } from '@penumbra-zone/ui-old/components/ui/toaster';
+import { Toaster } from '@penumbra-zone/ui-deprecated/components/ui/toaster';
 import { Footer } from './footer/footer';
 import { SyncingDialog } from './syncing-dialog';
-import '@penumbra-zone/ui-old/styles/globals.css';
+import '@penumbra-zone/ui-deprecated/styles/globals.css';
 
 export const Layout = () => {
   return (

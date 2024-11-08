@@ -1,4 +1,4 @@
-import { Card } from '@penumbra-zone/ui-old/components/ui/card';
+import { Card } from '@penumbra-zone/ui-deprecated/components/ui/card';
 import { dashboardTabs, dashboardTabsHelper } from './constants';
 import { Outlet } from 'react-router-dom';
 import { EduInfoCard } from '../shared/edu-panels/edu-info-card';

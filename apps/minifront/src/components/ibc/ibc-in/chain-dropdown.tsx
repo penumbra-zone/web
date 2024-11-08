@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useMemo } from 'react';
 import { useManager } from '@cosmos-kit/react';
-import { Popover, PopoverContent, PopoverTrigger } from '@penumbra-zone/ui-old/components/ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@penumbra-zone/ui-deprecated/components/ui/popover';
 import { ChevronsUpDown } from 'lucide-react';
 import {
   Command,
@@ -9,12 +9,12 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
-} from '@penumbra-zone/ui-old/components/ui/command';
-import { Button } from '@penumbra-zone/ui-old/components/ui/button';
+} from '@penumbra-zone/ui-deprecated/components/ui/command';
+import { Button } from '@penumbra-zone/ui-deprecated/components/ui/button';
 import { ibcInSelector } from '../../../state/ibc-in';
 import { useStore } from '../../../state';
-import { Avatar, AvatarImage } from '@penumbra-zone/ui-old/components/ui/avatar';
-import { Identicon } from '@penumbra-zone/ui-old/components/ui/identicon';
+import { Avatar, AvatarImage } from '@penumbra-zone/ui-deprecated/components/ui/avatar';
+import { Identicon } from '@penumbra-zone/ui-deprecated/components/ui/identicon';
 
 export interface ChainInfo {
   chainName: string;

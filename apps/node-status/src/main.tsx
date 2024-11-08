@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
 import { router } from './components/router';
 
-import '@penumbra-zone/ui-old/styles/globals.css';
+import '@penumbra-zone/ui-deprecated/styles/globals.css';
 
 const Main = () => (
   <React.StrictMode>

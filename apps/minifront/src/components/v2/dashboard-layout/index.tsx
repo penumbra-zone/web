@@ -1,7 +1,7 @@
-import { Card } from '@penumbra-zone/ui-old/Card';
+import { Card } from '@penumbra-zone/ui-deprecated/Card';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { Grid } from '@penumbra-zone/ui-old/Grid';
-import { Tabs } from '@penumbra-zone/ui-old/Tabs';
+import { Grid } from '@penumbra-zone/ui-deprecated/Grid';
+import { Tabs } from '@penumbra-zone/ui-deprecated/Tabs';
 import { usePagePath } from '../../../fetchers/page-path';
 import { PagePath } from '../../metadata/paths';
 import { AssetsCardTitle } from './assets-card-title';

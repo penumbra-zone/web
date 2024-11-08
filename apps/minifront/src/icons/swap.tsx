@@ -1,4 +1,4 @@
-import { cn } from '@penumbra-zone/ui-old/lib/utils';
+import { cn } from '@penumbra-zone/ui-deprecated/lib/utils';
 
 export const SwapIcon = ({
   stroke = '#BDB8B8',

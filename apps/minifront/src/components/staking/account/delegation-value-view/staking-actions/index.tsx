@@ -1,4 +1,4 @@
-import { Button } from '@penumbra-zone/ui-old/components/ui/button';
+import { Button } from '@penumbra-zone/ui-deprecated/components/ui/button';
 import { ValidatorInfo } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { FormDialog } from './form-dialog';

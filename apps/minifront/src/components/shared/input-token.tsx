@@ -1,6 +1,6 @@
 import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { BalanceValueView } from '@penumbra-zone/ui-old/components/ui/balance-value-view';
-import { cn } from '@penumbra-zone/ui-old/lib/utils';
+import { BalanceValueView } from '@penumbra-zone/ui-deprecated/components/ui/balance-value-view';
+import { cn } from '@penumbra-zone/ui-deprecated/lib/utils';
 import BalanceSelector from './selectors/balance-selector';
 import { Validation } from './validation-result';
 import { InputBlock } from './input-block';

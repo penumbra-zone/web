@@ -1,5 +1,5 @@
-import { Button } from '@penumbra-zone/ui-old/components/ui/button';
-import { SplashPage } from '@penumbra-zone/ui-old/components/ui/splash-page';
+import { Button } from '@penumbra-zone/ui-deprecated/components/ui/button';
+import { SplashPage } from '@penumbra-zone/ui-deprecated/components/ui/splash-page';
 import { HeadTag } from './metadata/head-tag';
 
 const CHROME_EXTENSION_ID = 'lkpmkhpnhknhmibgnmmhdhgdilepfghe';

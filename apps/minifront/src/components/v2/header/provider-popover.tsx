@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link2Off } from 'lucide-react';
-import { Popover } from '@penumbra-zone/ui-old/Popover';
-import { Button } from '@penumbra-zone/ui-old/Button';
-import { Text } from '@penumbra-zone/ui-old/Text';
+import { Popover } from '@penumbra-zone/ui-deprecated/Popover';
+import { Button } from '@penumbra-zone/ui-deprecated/Button';
+import { Text } from '@penumbra-zone/ui-deprecated/Text';
 import { penumbra } from '../../../penumbra.ts';
 import { PenumbraManifest } from '@penumbra-zone/client';
 

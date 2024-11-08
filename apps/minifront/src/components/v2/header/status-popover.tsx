@@ -1,9 +1,9 @@
 import { Blocks } from 'lucide-react';
-import { Popover, PopoverContext } from '@penumbra-zone/ui-old/Popover';
-import { Button } from '@penumbra-zone/ui-old/Button';
-import { Density } from '@penumbra-zone/ui-old/Density';
-import { Pill } from '@penumbra-zone/ui-old/Pill';
-import { Text } from '@penumbra-zone/ui-old/Text';
+import { Popover, PopoverContext } from '@penumbra-zone/ui-deprecated/Popover';
+import { Button } from '@penumbra-zone/ui-deprecated/Button';
+import { Density } from '@penumbra-zone/ui-deprecated/Density';
+import { Pill } from '@penumbra-zone/ui-deprecated/Pill';
+import { Text } from '@penumbra-zone/ui-deprecated/Text';
 import { statusSelector, useStatus } from '../../../state/status.ts';
 import { useMemo } from 'react';
 

@@ -1,6 +1,7 @@
 {
-  "name": "@penumbra-zone/ui-old",
+  "name": "@penumbra-zone/ui-deprecated",
   "version": "12.4.0",
+  "private": true,
   "license": "(MIT OR Apache-2.0)",
   "description": "UI components for Penumbra",
   "type": "module",

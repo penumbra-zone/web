@@ -1,4 +1,4 @@
-import { cn } from '@penumbra-zone/ui-old/lib/utils';
+import { cn } from '@penumbra-zone/ui-deprecated/lib/utils';
 import * as NavigationMenu from '@radix-ui/react-navigation-menu';
 import { usePagePath } from '../../../fetchers/page-path';
 import { dashboardLink, headerLinks } from '../constants';
