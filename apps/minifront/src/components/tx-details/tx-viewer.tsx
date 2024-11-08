@@ -1,5 +1,8 @@
 import { JsonViewer } from '@penumbra-zone/ui-deprecated/components/ui/json-viewer';
-import { MetadataFetchFn, TransactionViewComponent } from '@penumbra-zone/ui-deprecated/components/ui/tx';
+import {
+  MetadataFetchFn,
+  TransactionViewComponent,
+} from '@penumbra-zone/ui-deprecated/components/ui/tx';
 import { TransactionInfo } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import type { Jsonified } from '@penumbra-zone/types/jsonified';
 import { useState } from 'react';

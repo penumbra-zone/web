@@ -1,7 +1,11 @@
 import * as React from 'react';
 import { useMemo } from 'react';
 import { useManager } from '@cosmos-kit/react';
-import { Popover, PopoverContent, PopoverTrigger } from '@penumbra-zone/ui-deprecated/components/ui/popover';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@penumbra-zone/ui-deprecated/components/ui/popover';
 import { ChevronsUpDown } from 'lucide-react';
 import {
   Command,

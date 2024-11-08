@@ -1,7 +1,11 @@
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { useId, useState } from 'react';
 import { IconInput } from '@penumbra-zone/ui-deprecated/components/ui/icon-input';
-import { Dialog, DialogContent, DialogHeader } from '@penumbra-zone/ui-deprecated/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+} from '@penumbra-zone/ui-deprecated/components/ui/dialog';
 import { ValueViewComponent } from '@penumbra-zone/ui-deprecated/components/ui/value';
 import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { Box } from '@penumbra-zone/ui-deprecated/components/ui/box';

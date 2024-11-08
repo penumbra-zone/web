@@ -15,7 +15,12 @@ import { motion } from 'framer-motion';
 import { metadataBySearch } from './search-filters';
 import { cn } from '@penumbra-zone/ui-deprecated/lib/utils';
 import { LoadingIndicator } from './loading-indicator';
-import { Table, TableBody, TableCell, TableRow } from '@penumbra-zone/ui-deprecated/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+} from '@penumbra-zone/ui-deprecated/components/ui/table';
 
 interface AssetSelectorProps {
   assets: Metadata[];
