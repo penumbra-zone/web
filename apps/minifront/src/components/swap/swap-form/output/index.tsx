@@ -1,4 +1,4 @@
-import { Box } from '@penumbra-zone/ui/components/ui/box';
+import { Box } from '@penumbra-zone/ui-old/components/ui/box';
 import { AllSlices } from '../../../../state';
 import { useStoreShallow } from '../../../../utils/use-store-shallow';
 import { EstimateButton } from '../estimate-button';

@@ -1,7 +1,7 @@
-import { Button } from '@penumbra-zone/ui/components/ui/button';
-import { Card, CardContent } from '@penumbra-zone/ui/components/ui/card';
-import { AccountSwitcher } from '@penumbra-zone/ui/components/ui/account-switcher';
-import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/value';
+import { Button } from '@penumbra-zone/ui-old/components/ui/button';
+import { Card, CardContent } from '@penumbra-zone/ui-old/components/ui/card';
+import { AccountSwitcher } from '@penumbra-zone/ui-old/components/ui/account-switcher';
+import { ValueViewComponent } from '@penumbra-zone/ui-old/components/ui/value';
 import { Stat } from './stat';
 import { AllSlices } from '../../../../state';
 import { UnbondingTokens } from './unbonding-tokens';

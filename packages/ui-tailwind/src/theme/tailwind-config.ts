@@ -7,7 +7,6 @@ import { theme } from './theme';
  */
 export const tailwindConfig = {
   content: [
-    './node_modules/@penumbra-zone/ui-tailwind/**/*.{js,ts,jsx,tsx,mdx,css}',
     './node_modules/@penumbra-zone/ui/**/*.{js,ts,jsx,tsx,mdx,css}',
   ],
   theme: {

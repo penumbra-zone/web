@@ -1,5 +1,5 @@
-import { Button } from '@penumbra-zone/ui/components/ui/button';
-import { Input } from '@penumbra-zone/ui/components/ui/input';
+import { Button } from '@penumbra-zone/ui-old/components/ui/button';
+import { Input } from '@penumbra-zone/ui-old/components/ui/input';
 import { ChainSelector } from './chain-selector';
 import { useStore } from '../../../state';
 import {

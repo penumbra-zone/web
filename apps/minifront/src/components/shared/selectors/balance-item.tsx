@@ -2,11 +2,11 @@ import { BalanceOrMetadata, isBalance, isMetadata } from './helpers';
 import { getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { getMetadataFromBalancesResponse } from '@penumbra-zone/getters/balances-response';
 import { useMemo } from 'react';
-import { DialogClose } from '@penumbra-zone/ui/components/ui/dialog';
-import { cn } from '@penumbra-zone/ui/lib/utils';
-import { AssetIcon } from '@penumbra-zone/ui/components/ui/asset-icon';
-import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/value';
-import { TableCell, TableRow } from '@penumbra-zone/ui/components/ui/table';
+import { DialogClose } from '@penumbra-zone/ui-old/components/ui/dialog';
+import { cn } from '@penumbra-zone/ui-old/lib/utils';
+import { AssetIcon } from '@penumbra-zone/ui-old/components/ui/asset-icon';
+import { ValueViewComponent } from '@penumbra-zone/ui-old/components/ui/value';
+import { TableCell, TableRow } from '@penumbra-zone/ui-old/components/ui/table';
 import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 
 interface BalanceItemProps {

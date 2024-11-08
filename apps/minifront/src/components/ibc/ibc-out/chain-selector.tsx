@@ -4,8 +4,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@penumbra-zone/ui/components/ui/select';
-import { cn } from '@penumbra-zone/ui/lib/utils';
+} from '@penumbra-zone/ui-old/components/ui/select';
+import { cn } from '@penumbra-zone/ui-old/lib/utils';
 import { AllSlices } from '../../../state';
 import { Chain } from '@penumbra-labs/registry';
 import { useStoreShallow } from '../../../utils/use-store-shallow';

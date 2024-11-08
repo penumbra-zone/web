@@ -1,6 +1,6 @@
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { ValidatorInfoComponent } from './validator-info-component';
-import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/value';
+import { ValueViewComponent } from '@penumbra-zone/ui-old/components/ui/value';
 import { StakingActions } from './staking-actions';
 import { memo, useMemo } from 'react';
 import {

@@ -1,6 +1,6 @@
 import { useAuctionInfos } from '../../../state/swap/dutch-auction';
 import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { Button } from '@penumbra-zone/ui/components/ui/button';
+import { Button } from '@penumbra-zone/ui-old/components/ui/button';
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow.ts';
 import { filterWithLimit } from './helpers.ts';
@@ -9,7 +9,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@penumbra-zone/ui/components/ui/tooltip';
+} from '@penumbra-zone/ui-old/components/ui/tooltip';
 import { AuctionInfo } from '../../../fetchers/auction-infos.ts';
 
 const endOrWithdrawAllButtonSelector = (state: AllSlices) => ({

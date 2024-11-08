@@ -1,11 +1,11 @@
-import { buttonVariants } from '@penumbra-zone/ui/components/ui/button';
+import { buttonVariants } from '@penumbra-zone/ui-old/components/ui/button';
 import {
   Tooltip,
   TooltipProvider,
   TooltipTrigger,
   TooltipContent,
-} from '@penumbra-zone/ui/components/ui/tooltip';
-import { cn } from '@penumbra-zone/ui/lib/utils';
+} from '@penumbra-zone/ui-old/components/ui/tooltip';
+import { cn } from '@penumbra-zone/ui-old/lib/utils';
 
 export const EstimateButton = ({
   disabled,

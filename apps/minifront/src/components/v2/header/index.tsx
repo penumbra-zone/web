@@ -1,4 +1,4 @@
-import { Density } from '@penumbra-zone/ui/Density';
+import { Density } from '@penumbra-zone/ui-old/Density';
 import { HeaderLogo } from './logo.tsx';
 import { ProviderPopover } from './provider-popover.tsx';
 import { StatusPopover } from './status-popover.tsx';

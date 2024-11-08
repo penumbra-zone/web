@@ -9,7 +9,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState } from 'react';
 import { RouterProvider } from 'react-router-dom';
 import { rootRouter } from './components/root-router';
-import { PenumbraUIProvider } from '@penumbra-zone/ui/PenumbraUIProvider';
+import { PenumbraUIProvider } from '@penumbra-zone/ui-old/PenumbraUIProvider';
 
 const Main = () => {
   const [queryClient] = useState(() => new QueryClient());

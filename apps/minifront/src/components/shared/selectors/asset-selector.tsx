@@ -3,19 +3,19 @@ import {
   DialogClose,
   DialogContent,
   DialogHeader,
-} from '@penumbra-zone/ui/components/ui/dialog';
-import { AssetIcon } from '@penumbra-zone/ui/components/ui/asset-icon';
+} from '@penumbra-zone/ui-old/components/ui/dialog';
+import { AssetIcon } from '@penumbra-zone/ui-old/components/ui/asset-icon';
 import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/value';
+import { ValueViewComponent } from '@penumbra-zone/ui-old/components/ui/value';
 import { useCallback, useEffect, useId, useMemo, useState } from 'react';
-import { IconInput } from '@penumbra-zone/ui/components/ui/icon-input';
+import { IconInput } from '@penumbra-zone/ui-old/components/ui/icon-input';
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
-import { Box } from '@penumbra-zone/ui/components/ui/box';
+import { Box } from '@penumbra-zone/ui-old/components/ui/box';
 import { motion } from 'framer-motion';
 import { metadataBySearch } from './search-filters';
-import { cn } from '@penumbra-zone/ui/lib/utils';
+import { cn } from '@penumbra-zone/ui-old/lib/utils';
 import { LoadingIndicator } from './loading-indicator';
-import { Table, TableBody, TableCell, TableRow } from '@penumbra-zone/ui/components/ui/table';
+import { Table, TableBody, TableCell, TableRow } from '@penumbra-zone/ui-old/components/ui/table';
 
 interface AssetSelectorProps {
   assets: Metadata[];

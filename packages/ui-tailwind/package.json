@@ -1,6 +1,6 @@
 {
-  "name": "@penumbra-zone/ui-tailwind",
-  "version": "0.1.0",
+  "name": "@penumbra-zone/ui",
+  "version": "12.4.0",
   "license": "(MIT OR Apache-2.0)",
   "description": "UI components for Penumbra",
   "type": "module",

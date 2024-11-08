@@ -1,10 +1,10 @@
-import { Table } from '@penumbra-zone/ui/Table';
+import { Table } from '@penumbra-zone/ui-old/Table';
 import { useSummaries } from '../../../../state/transactions';
-import { Text } from '@penumbra-zone/ui/Text';
+import { Text } from '@penumbra-zone/ui-old/Text';
 import { Link } from 'react-router-dom';
 import { SquareArrowOutUpRight } from 'lucide-react';
-import { Button } from '@penumbra-zone/ui/Button';
-import { useAnimationDeferredValue } from '@penumbra-zone/ui/hooks/useAnimationDeferredValue';
+import { Button } from '@penumbra-zone/ui-old/Button';
+import { useAnimationDeferredValue } from '@penumbra-zone/ui-old/hooks/useAnimationDeferredValue';
 import { LayoutGroup } from 'framer-motion';
 
 export const TransactionsPage = () => {

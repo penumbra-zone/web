@@ -1,4 +1,4 @@
-import { AddressViewComponent } from '@penumbra-zone/ui/AddressViewComponent';
+import { AddressViewComponent } from '@penumbra-zone/ui-old/AddressViewComponent';
 import { BalancesByAccount } from '../../../../state/shared';
 import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { useMemo } from 'react';

@@ -1,11 +1,11 @@
-import { Card } from '@penumbra-zone/ui/Card';
-import { FormField } from '@penumbra-zone/ui/FormField';
-import { SegmentedControl } from '@penumbra-zone/ui/SegmentedControl';
-import { TextInput } from '@penumbra-zone/ui/TextInput';
+import { Card } from '@penumbra-zone/ui-old/Card';
+import { FormField } from '@penumbra-zone/ui-old/FormField';
+import { SegmentedControl } from '@penumbra-zone/ui-old/SegmentedControl';
+import { TextInput } from '@penumbra-zone/ui-old/TextInput';
 import { AllSlices } from '../../../../state';
 import { sendValidationErrors } from '../../../../state/send';
 import { FeeTier_Tier } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
-import { Button } from '@penumbra-zone/ui/Button';
+import { Button } from '@penumbra-zone/ui-old/Button';
 import { ArrowUpFromDot } from 'lucide-react';
 import { useMemo } from 'react';
 import { useStoreShallow } from '../../../../utils/use-store-shallow';

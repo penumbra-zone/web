@@ -1,4 +1,4 @@
-import { Card } from '@penumbra-zone/ui/components/ui/card';
+import { Card } from '@penumbra-zone/ui-old/components/ui/card';
 import { sendTabs, sendTabsHelper } from './constants';
 import { SendTab } from './types';
 import { usePagePath } from '../../fetchers/page-path';
