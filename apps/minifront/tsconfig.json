@@ -4,7 +4,8 @@
     "exactOptionalPropertyTypes": false,
     "lib": ["ESNext", "DOM", "DOM.Iterable", "DOM.AsyncIterable"],
     "noEmit": true,
-    "target": "ESNext"
+    "target": "ESNext",
+    "types": ["vitest/globals", "@testing-library/jest-dom"]
   },
   "extends": ["@tsconfig/strictest/tsconfig.json", "@tsconfig/vite-react/tsconfig.json"],
   "include": ["src", "tests-setup.ts", "__mocks__", "vite.config.ts", "vitest.config.ts"]
