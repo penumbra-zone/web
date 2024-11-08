@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from '@storybook/react';
 
 import { Card } from '.';
 
-// import storiesBg from './storiesBg.jpg';
 import { Text } from '../Text';
 import { useState } from 'react';
 import { Button } from '../Button';
@@ -40,7 +39,6 @@ export const Basic: Story = {
 
   render: function Render({ as, title }) {
     const [tab, setTab] = useState('one');
-    // const [textInput, setTextInput] = useState('');
 
     return (
       <Card as={as} title={title}>
