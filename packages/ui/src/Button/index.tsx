@@ -1,99 +1,17 @@
 import { FC, forwardRef, MouseEventHandler, ReactNode } from 'react';
-import { styled, css, DefaultTheme } from 'styled-components';
-import { asTransientProps } from '../utils/asTransientProps';
-import { Priority, focusOutline, overlays, buttonBase } from '../utils/button';
-import { getBackgroundColor } from './helpers';
-import { button } from '../utils/typography';
 import { LucideIcon } from 'lucide-react';
-import { Density } from '../types/Density';
-import { useDensity } from '../hooks/useDensity';
-import { ActionType } from '../utils/ActionType';
-import { MotionProp } from '../utils/MotionProp';
-import { motion } from 'framer-motion';
+import cn from 'clsx';
+import { getOutlineColorByActionType, ActionType } from '../utils/action-type';
+import { Priority, buttonBase, getBackground, getFocusOutline, getOverlays } from '../utils/button';
+import { button } from '../utils/typography';
+import { useDensity } from '../utils/density';
 
-const iconOnlyAdornment = css<StyledButtonProps>`
-  border-radius: ${props => props.theme.borderRadius.full};
-  padding: ${props => props.theme.spacing(1)};
-  width: max-content;
-`;
+const iconOnlyAdornment = cn('rounded-full p-1 w-max');
+const sparse = (iconOnly?: boolean | 'adornment') =>
+  cn('rounded-sm h-12', iconOnly ? 'w-12 min-w-12 pl-0 pr-0' : 'w-full pl-4 pr-4');
 
-const sparse = css<StyledButtonProps>`
-  border-radius: ${props => props.theme.borderRadius.sm};
-  padding-left: ${props => (props.$iconOnly ? 'none' : props.theme.spacing(4))};
-  padding-right: ${props => (props.$iconOnly ? 'none' : props.theme.spacing(4))};
-  height: 48px;
-  width: ${props => (props.$iconOnly ? '48px' : '100%')};
-  ${props => props.$iconOnly && 'min-width: 48px;'}
-`;
-
-const compact = css<StyledButtonProps>`
-  border-radius: ${props => props.theme.borderRadius.full};
-  padding-left: ${props => props.theme.spacing(props.$iconOnly ? 2 : 4)};
-  padding-right: ${props => props.theme.spacing(props.$iconOnly ? 2 : 4)};
-  height: 32px;
-  min-width: 32px;
-  width: max-content;
-`;
-
-const outlineColorByActionType: Record<ActionType, keyof DefaultTheme['color']['action']> = {
-  default: 'neutralFocusOutline',
-  accent: 'primaryFocusOutline',
-  unshield: 'unshieldFocusOutline',
-  destructive: 'destructiveFocusOutline',
-};
-
-const borderColorByActionType: Record<
-  ActionType,
-  'neutral' | 'primary' | 'unshield' | 'destructive'
-> = {
-  default: 'neutral',
-  accent: 'primary',
-  unshield: 'unshield',
-  destructive: 'destructive',
-};
-
-interface StyledButtonProps {
-  $iconOnly?: boolean | 'adornment';
-  $actionType: ActionType;
-  $priority: Priority;
-  $density: Density;
-  $getFocusOutlineColor: (theme: DefaultTheme) => string;
-  $getFocusOutlineOffset?: (theme: DefaultTheme) => string | undefined;
-  $getBorderRadius: (theme: DefaultTheme) => string;
-}
-
-const StyledButton = styled(motion.button)<StyledButtonProps>`
-  ${buttonBase}
-  ${button}
-
-    background-color: ${props =>
-    getBackgroundColor(props.$actionType, props.$priority, props.theme, props.$iconOnly)};
-  outline: ${props =>
-    props.$priority === 'secondary'
-      ? `1px solid ${props.theme.color[borderColorByActionType[props.$actionType]].main}`
-      : 'none'};
-  outline-offset: -1px;
-  display: flex;
-  gap: ${props => props.theme.spacing(2)};
-  align-items: center;
-  justify-content: center;
-  color: ${props => props.theme.color.neutral.contrast};
-  position: relative;
-
-  ${props =>
-    // eslint-disable-next-line no-nested-ternary -- readable ternary
-    props.$iconOnly === 'adornment'
-      ? iconOnlyAdornment
-      : props.$density === 'sparse'
-        ? sparse
-        : compact}
-  &::after {
-    outline-offset: -2px;
-  }
-
-  ${focusOutline}
-  ${overlays}
-`;
+const compact = (iconOnly?: boolean | 'adornment') =>
+  cn('rounded-full h-8 min-w-8 w-max', iconOnly ? 'pl-2 pr-2' : 'pl-4 pr-4');
 
 interface BaseButtonProps {
   type?: HTMLButtonElement['type'];
@@ -162,7 +80,7 @@ interface RegularProps {
   icon?: LucideIcon | FC;
 }
 
-export type ButtonProps = BaseButtonProps & (IconOnlyProps | RegularProps) & MotionProp;
+export type ButtonProps = BaseButtonProps & (IconOnlyProps | RegularProps);
 
 /**
  * A component for all your button needs!
@@ -184,40 +102,53 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       actionType = 'default',
       type = 'button',
       priority = 'primary',
-      motion,
+      ...attrs
       // needed for the Radix's `asChild` prop to work correctly
       // https://www.radix-ui.com/primitives/docs/guides/composition#composing-with-your-own-react-components
-      ...props
     },
     ref,
   ) => {
     const density = useDensity();
 
     return (
-      <StyledButton
-        {...props}
-        {...motion}
-        {...asTransientProps({ iconOnly, density, actionType, priority })}
+      <button
         ref={ref}
         type={type}
         disabled={disabled}
         onClick={onClick}
         aria-label={iconOnly && typeof children === 'string' ? children : undefined}
         title={iconOnly && typeof children === 'string' ? children : undefined}
-        $getFocusOutlineColor={theme => theme.color.action[outlineColorByActionType[actionType]]}
-        $getFocusOutlineOffset={() => (iconOnly === 'adornment' ? '0px' : undefined)}
-        $getBorderRadius={theme =>
-          density === 'sparse' && iconOnly !== 'adornment'
-            ? theme.borderRadius.sm
-            : theme.borderRadius.full
-        }
+        {...attrs}
+        className={cn(
+          buttonBase,
+          button,
+          getBackground(actionType, priority, iconOnly),
+          getFocusOutline({ density, iconOnly, actionType }),
+          getOverlays({ actionType, iconOnly, density }),
+
+          '-outline-offset-1',
+          priority === 'secondary' && 'outline-1',
+          priority === 'secondary' && getOutlineColorByActionType(actionType),
+          'after:-outline-offset-2',
+
+          'relative',
+          'flex gap-2 items-center justify-center',
+          'text-neutral-contrast',
+
+          // eslint-disable-next-line no-nested-ternary -- allow
+          iconOnly === 'adornment'
+            ? iconOnlyAdornment
+            : density === 'sparse'
+              ? sparse(iconOnly)
+              : compact(iconOnly),
+        )}
       >
         {IconComponent && (
           <IconComponent size={density === 'sparse' && iconOnly === true ? 24 : 16} />
         )}
 
         {!iconOnly && children}
-      </StyledButton>
+      </button>
     );
   },
 );

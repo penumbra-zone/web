@@ -1,6 +1,6 @@
-import { AccountSelector } from '@penumbra-zone/ui/AccountSelector';
-import { Card } from '@penumbra-zone/ui/Card';
-import { FormField } from '@penumbra-zone/ui/FormField';
+import { AccountSelector } from '@penumbra-zone/ui-deprecated/AccountSelector';
+import { Card } from '@penumbra-zone/ui-deprecated/Card';
+import { FormField } from '@penumbra-zone/ui-deprecated/FormField';
 import { getAddrByIndex } from '../../../../fetchers/address';
 
 export const ReceivePage = () => {

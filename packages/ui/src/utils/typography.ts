@@ -1,4 +1,5 @@
-import { css, DefaultTheme } from 'styled-components';
+import cn from 'clsx';
+import { getThemeColorClass, ThemeColor } from './color';
 
 /**
  * This file contains styles that are used throughout the Penumbra UI library.
@@ -6,169 +7,42 @@ import { css, DefaultTheme } from 'styled-components';
  * etc.), while others are base styles shared by a number of components.
  */
 
-const base = css<{
-  $color?: (color: DefaultTheme['color']) => string;
-}>`
-  margin: 0;
-  color: ${props =>
-    props.$color ? props.$color(props.theme.color) : props.theme.color.text.primary};
-`;
+export const getTextBase = (color?: ThemeColor) =>
+  cn('m-0 transition-colors duration-150', color ? getThemeColorClass(color).text : '');
 
-export const h1 = css`
-  ${base}
+export const h1 = cn('font-heading text-text6xl font-medium leading-text6xl');
 
-  font-family: ${props => props.theme.font.heading};
-  font-size: ${props => props.theme.fontSize.text6xl};
-  font-weight: 500;
-  line-height: ${props => props.theme.lineHeight.text6xl};
-`;
+export const h2 = cn('font-heading text-text5xl font-medium leading-text5xl');
 
-export const h2 = css`
-  ${base}
+export const h3 = cn('font-heading text-text4xl font-medium leading-text4xl');
 
-  font-family: ${props => props.theme.font.heading};
-  font-size: ${props => props.theme.fontSize.text5xl};
-  font-weight: 500;
-  line-height: ${props => props.theme.lineHeight.text5xl};
-`;
+export const h4 = cn('font-heading text-text3xl font-medium leading-text3xl');
 
-export const h3 = css`
-  ${base}
+export const large = cn('font-default text-textLg font-medium leading-textLg');
 
-  font-family: ${props => props.theme.font.heading};
-  font-size: ${props => props.theme.fontSize.text4xl};
-  font-weight: 500;
-  line-height: ${props => props.theme.lineHeight.text4xl};
-`;
+export const body = cn('font-default text-textBase font-normal leading-textBase');
 
-export const h4 = css`
-  ${base}
+export const strong = cn('font-default text-textBase font-medium leading-textBase');
 
-  font-family: ${props => props.theme.font.heading};
-  font-size: ${props => props.theme.fontSize.text3xl};
-  font-weight: 500;
-  line-height: ${props => props.theme.lineHeight.text3xl};
-`;
+export const detail = cn('font-default text-textXs font-medium leading-textXs');
 
-export const large = css`
-  ${base}
+export const detailTechnical = cn('font-mono text-textXs font-normal leading-textXs');
 
-  font-family: ${props => props.theme.font.default};
-  font-size: ${props => props.theme.fontSize.textLg};
-  font-weight: 500;
-  line-height: ${props => props.theme.lineHeight.textLg};
-`;
+export const small = cn('font-default text-textSm font-normal leading-textXs');
 
-export const body = css`
-  ${base}
+export const tab = cn('font-default text-textLg font-normal leading-textLg');
 
-  font-family: ${props => props.theme.font.default};
-  font-size: ${props => props.theme.fontSize.textBase};
-  font-weight: 400;
-  line-height: ${props => props.theme.lineHeight.textBase};
-`;
+export const tabSmall = cn('font-default text-textSm font-medium leading-textSm');
 
-export const strong = css`
-  ${base}
+export const tableItem = cn('font-default text-textBase font-normal leading-textBase');
 
-  font-family: ${props => props.theme.font.default};
-  font-size: ${props => props.theme.fontSize.textBase};
-  font-weight: 500;
-  line-height: ${props => props.theme.lineHeight.textBase};
-`;
+export const tableHeading = cn('font-default text-textBase font-medium leading-textBase');
 
-export const detail = css`
-  ${base}
+export const technical = cn('font-mono text-textBase font-medium leading-textBase');
 
-  font-family: ${props => props.theme.font.default};
-  font-size: ${props => props.theme.fontSize.textXs};
-  font-weight: 500;
-  line-height: ${props => props.theme.lineHeight.textXs};
-`;
+export const xxl = cn('font-default text-text2xl font-medium leading-text2xl');
 
-export const detailTechnical = css`
-  ${base}
+export const button = cn('font-default text-textBase font-medium leading-textBase');
 
-  font-family: ${props => props.theme.font.mono};
-  font-size: ${props => props.theme.fontSize.textXs};
-  font-weight: 400;
-  line-height: ${props => props.theme.lineHeight.textXs};
-`;
-
-export const small = css`
-  ${base}
-
-  font-family: ${props => props.theme.font.default};
-  font-size: ${props => props.theme.fontSize.textSm};
-  font-weight: 400;
-  line-height: ${props => props.theme.lineHeight.textSm};
-`;
-
-export const tab = css`
-  ${base}
-
-  font-family: ${props => props.theme.font.default};
-  font-size: ${props => props.theme.fontSize.textLg};
-  font-weight: 400;
-  line-height: ${props => props.theme.lineHeight.textLg};
-`;
-
-export const tabSmall = css`
-  ${base}
-
-  font-family: ${props => props.theme.font.default};
-  font-size: ${props => props.theme.fontSize.textSm};
-  font-weight: 500;
-  line-height: ${props => props.theme.lineHeight.textSm};
-`;
-
-export const tableItem = css`
-  ${base}
-
-  font-family: ${props => props.theme.font.default};
-  font-size: ${props => props.theme.fontSize.textBase};
-  font-weight: 400;
-  line-height: ${props => props.theme.lineHeight.textBase};
-`;
-
-export const tableHeading = css`
-  ${base}
-
-  font-family: ${props => props.theme.font.default};
-  font-size: ${props => props.theme.fontSize.textBase};
-  font-weight: 500;
-  line-height: ${props => props.theme.lineHeight.textBase};
-`;
-
-export const technical = css`
-  ${base}
-
-  font-family: ${props => props.theme.font.mono};
-  font-size: ${props => props.theme.fontSize.textBase};
-  font-weight: 500;
-  line-height: ${props => props.theme.lineHeight.textBase};
-`;
-
-export const xxl = css`
-  ${base}
-
-  font-family: ${props => props.theme.font.default};
-  font-size: ${props => props.theme.fontSize.text2xl};
-  font-weight: 500;
-  line-height: ${props => props.theme.lineHeight.text2xl};
-`;
-
-export const button = css`
-  ${base}
-
-  font-family: ${props => props.theme.font.default};
-  font-size: ${props => props.theme.fontSize.textBase};
-  font-weight: 500;
-  line-height: ${props => props.theme.lineHeight.textBase};
-`;
-
-export const truncate = `
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
+// equals to body with the bottom margin
+export const p = cn('font-default text-textBase font-normal leading-textBase mb-6 last:mb-0');

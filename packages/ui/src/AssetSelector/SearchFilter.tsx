@@ -12,7 +12,7 @@ export const AssetSelectorSearchFilter = ({ value, onChange }: AssetSelectorSear
 
   return (
     <TextInput
-      startAdornment={<Icon size='sm' IconComponent={Search} color={color => color.text.primary} />}
+      startAdornment={<Icon size='sm' IconComponent={Search} color='text.primary' />}
       value={value ?? ''}
       onChange={handleSearch}
       placeholder='Search...'

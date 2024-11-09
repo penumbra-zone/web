@@ -1,4 +1,4 @@
-import { cn } from '@penumbra-zone/ui/lib/utils';
+import { cn } from '@penumbra-zone/ui-deprecated/lib/utils';
 
 export const DragHandleDotsIcon = ({
   stroke = '#BDB8B8',

@@ -1,82 +1,8 @@
-import { styled } from 'styled-components';
-import { small } from '../utils/typography';
-import { ActionType, getOutlineColorByActionType } from '../utils/ActionType';
-import { useDisabled } from '../hooks/useDisabled';
 import { forwardRef, ReactNode } from 'react';
-
-const Wrapper = styled.div<{
-  $hasStartAdornment: boolean;
-  $hasEndAdornment: boolean;
-  $actionType: ActionType;
-}>`
-  background-color: ${props => props.theme.color.other.tonalFill5};
-  display: flex;
-  align-items: center;
-  gap: ${props => props.theme.spacing(2)};
-  transition:
-    outline 0.15s,
-    background-color 0.15s;
-
-  ${props => props.$hasStartAdornment && `padding-left: ${props.theme.spacing(3)};`}
-  ${props => props.$hasEndAdornment && `padding-right: ${props.theme.spacing(3)};`}
-  
-  &:focus-within {
-    outline: 2px solid ${props => getOutlineColorByActionType(props.theme, props.$actionType)};
-  }
-
-  &:hover {
-    background-color: ${props => props.theme.color.action.hoverOverlay};
-  }
-`;
-
-const StyledInput = styled.input<{
-  $actionType: ActionType;
-  $hasStartAdornment: boolean;
-  $hasEndAdornment: boolean;
-}>`
-  appearance: none;
-  border: none;
-  color: ${props =>
-    props.disabled ? props.theme.color.text.muted : props.theme.color.text.primary};
-  background-color: ${props => props.theme.color.base.transparent};
-
-  padding-left: ${props => (props.$hasStartAdornment ? '0' : props.theme.spacing(3))};
-  padding-right: ${props => (props.$hasEndAdornment ? '0' : props.theme.spacing(3))};
-  padding-top: ${props => props.theme.spacing(2)};
-  padding-bottom: ${props => props.theme.spacing(2)};
-  transition: border-color 0.15s;
-
-  box-sizing: border-box;
-  flex-grow: 1;
-
-  ${small}
-
-  &::placeholder {
-    color: ${props => props.theme.color.text.secondary};
-  }
-
-  &:disabled {
-    cursor: not-allowed;
-  }
-
-  &:disabled::placeholder {
-    color: ${props => props.theme.color.text.muted};
-  }
-
-  &:focus {
-    outline: none;
-  }
-
-  &::-webkit-outer-spin-button,
-  &::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-
-  &[type='number'] {
-    -moz-appearance: textfield;
-  }
-`;
+import { small } from '../utils/typography';
+import { ActionType, getFocusWithinOutlineColorByActionType } from '../utils/action-type';
+import { useDisabled } from '../utils/disabled-context';
+import cn from 'clsx';
 
 export interface TextInputProps {
   value?: string;
@@ -122,14 +48,20 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
     }: TextInputProps,
     ref,
   ) => (
-    <Wrapper
-      $actionType={actionType}
-      $hasStartAdornment={!!startAdornment}
-      $hasEndAdornment={!!endAdornment}
+    <div
+      className={cn(
+        'flex items-center gap-2 bg-other-tonalFill5',
+        startAdornment && 'pl-3',
+        endAdornment && 'pr-3',
+        'outline outline-2 outline-transparent',
+        'hover:bg-action-hoverOverlay',
+        'transition-[background-color,outline-color] duration-150',
+        getFocusWithinOutlineColorByActionType(actionType),
+      )}
     >
       {startAdornment}
 
-      <StyledInput
+      <input
         value={value}
         onChange={e => onChange?.(e.target.value)}
         placeholder={placeholder}
@@ -138,12 +70,21 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
         max={max}
         min={min}
         ref={ref}
-        $actionType={actionType}
-        $hasStartAdornment={!!startAdornment}
-        $hasEndAdornment={!!endAdornment}
+        className={cn(
+          'box-border grow appearance-none border-none bg-base-transparent py-2',
+          startAdornment ? 'pl-0' : 'pl-3',
+          endAdornment ? 'pr-0' : 'pr-3',
+          disabled ? 'text-text-muted' : 'text-text-primary',
+          small,
+          'placeholder:text-text-secondary',
+          'disabled:cursor-not-allowed',
+          'disabled:placeholder:text-text-muted',
+          'focus:outline-0',
+          '[&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
+        )}
       />
 
       {endAdornment}
-    </Wrapper>
+    </div>
   ),
 );

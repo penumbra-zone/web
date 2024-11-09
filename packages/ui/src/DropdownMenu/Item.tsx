@@ -1,8 +1,7 @@
 import { ReactNode } from 'react';
 import { Item as RadixDropdownMenuItem } from '@radix-ui/react-dropdown-menu';
-import { asTransientProps } from '../utils/asTransientProps.ts';
 import { Text } from '../Text';
-import { DropdownMenuItemBase, MenuItem } from '../utils/menuItem.ts';
+import { DropdownMenuItemBase, getMenuItem } from '../utils/menu-item.ts';
 
 export interface DropdownMenuItemProps extends DropdownMenuItemBase {
   children?: ReactNode;
@@ -19,10 +18,10 @@ export const Item = ({
 }: DropdownMenuItemProps) => {
   return (
     <RadixDropdownMenuItem disabled={disabled} asChild onSelect={onSelect}>
-      <MenuItem data-icon={!!icon} {...asTransientProps({ actionType, disabled })}>
+      <div data-icon={!!icon} className={getMenuItem(actionType)}>
         {icon}
         <Text small>{children}</Text>
-      </MenuItem>
+      </div>
     </RadixDropdownMenuItem>
   );
 };

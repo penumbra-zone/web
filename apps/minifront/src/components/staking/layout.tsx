@@ -1,6 +1,11 @@
 import { useEffect } from 'react';
 import { AllSlices } from '../../state';
-import { Card, CardContent, CardHeader, CardTitle } from '@penumbra-zone/ui/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@penumbra-zone/ui-deprecated/components/ui/card';
 import { Header } from './account/header';
 import { Delegations } from './account/delegations';
 import { useStoreShallow } from '../../utils/use-store-shallow';

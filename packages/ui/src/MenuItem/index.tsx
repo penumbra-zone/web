@@ -1,18 +1,7 @@
 import type { LucideIcon } from 'lucide-react';
 import type { FC, MouseEventHandler } from 'react';
-import { MenuItem as SharedMenuItem, DropdownMenuItemBase } from '../utils/menuItem';
+import { getMenuItem, DropdownMenuItemBase } from '../utils/menu-item';
 import { Text } from '../Text';
-import { styled } from 'styled-components';
-import { asTransientProps } from '../utils/asTransientProps.ts';
-
-const IconAdornment = styled.i`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: ${props => props.theme.spacing(1)};
-  width: ${props => props.theme.spacing(6)};
-  height: ${props => props.theme.spacing(6)};
-`;
 
 export interface MenuItemProps extends DropdownMenuItemBase {
   label: string;
@@ -31,18 +20,13 @@ export const MenuItem = ({
   disabled,
 }: MenuItemProps) => {
   return (
-    <SharedMenuItem
-      as='button'
-      {...asTransientProps({ actionType, disabled })}
-      disabled={disabled}
-      onClick={onClick}
-    >
+    <button disabled={disabled} onClick={onClick} className={getMenuItem(actionType)}>
       {IconComponent && (
-        <IconAdornment>
+        <i className='flex size-6 items-center justify-center p-1'>
           <IconComponent size={16} />
-        </IconAdornment>
+        </i>
       )}
       <Text small>{label}</Text>
-    </SharedMenuItem>
+    </button>
   );
 };

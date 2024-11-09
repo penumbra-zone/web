@@ -5,7 +5,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@penumbra-zone/ui/components/ui/table';
+} from '@penumbra-zone/ui-deprecated/components/ui/table';
 import { Oval } from 'react-loader-spinner';
 import { ValidatorInfoRow } from './validator-info-row';
 import { ValidatorInfo } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';

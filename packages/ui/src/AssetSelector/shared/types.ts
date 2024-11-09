@@ -1,6 +1,6 @@
 import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { ActionType } from '../../utils/ActionType.ts';
+import { ActionType } from '../../utils/action-type';
 
 export type AssetSelectorValue = BalancesResponse | Metadata;
 

@@ -1,6 +1,6 @@
 import type { MouseEventHandler } from 'react';
-import { styled, type DefaultTheme } from 'styled-components';
 import { Wallet } from 'lucide-react';
+import cn from 'clsx';
 import type { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
 import {
@@ -8,77 +8,18 @@ import {
   getBalanceView,
   getMetadataFromBalancesResponse,
 } from '@penumbra-zone/getters/balances-response';
+import { ActionType, getOutlineColorByActionType } from '../utils/action-type';
 import { Text } from '../Text';
-import { ActionType, getOutlineColorByActionType } from '../utils/ActionType.ts';
-import { asTransientProps } from '../utils/asTransientProps.ts';
 
-interface StyledProps {
-  $actionType: ActionType;
-  $disabled?: boolean;
-}
-
-const getColorByActionType = (
-  theme: DefaultTheme,
-  actionType: ActionType,
-  disabled?: boolean,
-): string => {
+const getColorByActionType = (actionType: ActionType, disabled?: boolean): string => {
   if (disabled) {
-    return theme.color.text.muted;
+    return cn('text-text-muted');
   }
   if (actionType === 'destructive') {
-    return theme.color.destructive.light;
+    return cn('text-destructive-light');
   }
-  return theme.color.text.secondary;
+  return cn('text-text-secondary');
 };
-
-const Wrapper = styled.div<StyledProps>`
-  display: flex;
-  align-items: center;
-  gap: ${props => props.theme.spacing(1)};
-  color: ${props => getColorByActionType(props.theme, props.$actionType, props.$disabled)};
-  transition: color 0.15s;
-`;
-
-const AccountWrapper = styled.button<StyledProps>`
-  display: flex;
-  align-items: center;
-  gap: ${props => props.theme.spacing(1)};
-  padding: ${props => props.theme.spacing(1)} ${props => props.theme.spacing(2)};
-
-  color: inherit;
-  border: none;
-  border-radius: ${props => props.theme.borderRadius.full};
-  background-color: ${props => props.theme.color.other.tonalFill5};
-  transition:
-    color 0.15s,
-    background 0.15s,
-    outline 0.15s;
-
-  &:hover {
-    background-color: ${props => props.theme.color.action.hoverOverlay};
-  }
-
-  &:focus {
-    color: ${props => props.theme.color.text.secondary};
-    background-color: ${props => props.theme.color.other.tonalFill5};
-    outline: 2px solid ${props => getOutlineColorByActionType(props.theme, props.$actionType)};
-  }
-
-  &:focus + span {
-    color: ${props => props.theme.color.text.secondary};
-  }
-`;
-
-const ValueText = styled(Text)`
-  color: inherit;
-  transition: color 0.15s;
-`;
-
-const WalletIcon = styled(Wallet)`
-  width: ${props => props.theme.spacing(4)};
-  height: ${props => props.theme.spacing(4)};
-  transition: color 0.15s;
-`;
 
 export interface WalletBalanceProps {
   balance?: BalancesResponse;
@@ -108,20 +49,35 @@ export const WalletBalance = ({
   }
 
   return (
-    <Wrapper {...asTransientProps({ actionType, disabled })}>
-      <AccountWrapper
-        {...asTransientProps({ actionType, disabled })}
-        disabled={disabled}
+    <div
+      className={cn(
+        'flex items-center gap-1',
+        'transition-colors duration-150',
+        'focus-within:text-text-secondary',
+        getColorByActionType(actionType, disabled),
+      )}
+    >
+      <button
         type='button'
+        disabled={disabled}
         onClick={onClick}
+        className={cn(
+          'peer',
+          'flex items-center gap-1 py-1 px-2',
+          'transition-colors duration-150',
+          'border-none rounded-full bg-other-tonalFill5',
+          'hover:bg-action-hoverOverlay',
+          'outline-0 focus:outline focus:bg-other-tonalFill5 focus:outline-2',
+          getOutlineColorByActionType(actionType),
+        )}
       >
-        <WalletIcon />
-        <ValueText detailTechnical>#{account.account}</ValueText>
-      </AccountWrapper>
+        <Wallet className='size-4 transition-colors duration-150' />
+        <Text detailTechnical>#{account.account}</Text>
+      </button>
 
-      <ValueText detailTechnical>
+      <Text detailTechnical>
         {getFormattedAmtFromValueView(valueView, true)} {metadata.symbol || 'Unknown'}
-      </ValueText>
-    </Wrapper>
+      </Text>
+    </div>
   );
 };

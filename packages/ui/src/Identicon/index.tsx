@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import { generateGradient, generateSolidColor } from './generate';
-import { styled } from 'styled-components';
 
 /**
  * The view box size is separate from the passed-in `size` prop.
@@ -10,22 +9,6 @@ import { styled } from 'styled-components';
  * a whole is.
  */
 const VIEW_BOX_SIZE = 24;
-
-const Svg = styled.svg.attrs<{ $size: number }>(props => ({
-  width: props.$size,
-  height: props.$size,
-  viewBox: `0 0 ${VIEW_BOX_SIZE} ${VIEW_BOX_SIZE}`,
-  version: '1.1',
-  xmlns: 'http://www.w3.org/2000/svg',
-}))`
-  display: block;
-  border-radius: ${props => props.theme.borderRadius.full};
-`;
-
-const SvgText = styled.text`
-  text-transform: uppercase;
-  font-family: ${props => props.theme.font.default};
-`;
 
 export interface IdenticonProps {
   /**
@@ -63,7 +46,14 @@ const IdenticonGradient = ({ uniqueIdentifier, size = 120 }: IdenticonProps) => 
   const gradientId = useMemo(() => `gradient-${uniqueIdentifier}`, [uniqueIdentifier]);
 
   return (
-    <Svg $size={size}>
+    <svg
+      width={size}
+      height={size}
+      className='block rounded-full'
+      version='1.1'
+      xmlns='http://www.w3.org/2000/svg'
+      viewBox={`0 0 ${VIEW_BOX_SIZE} ${VIEW_BOX_SIZE}`}
+    >
       <g>
         <defs>
           <linearGradient id={gradientId} x1='0' y1='0' x2='1' y2='1'>
@@ -79,7 +69,7 @@ const IdenticonGradient = ({ uniqueIdentifier, size = 120 }: IdenticonProps) => 
           height={VIEW_BOX_SIZE}
         />
       </g>
-    </Svg>
+    </svg>
   );
 };
 
@@ -87,11 +77,18 @@ const IdenticonSolid = ({ uniqueIdentifier, size = 120 }: IdenticonProps) => {
   const color = useMemo(() => generateSolidColor(uniqueIdentifier), [uniqueIdentifier]);
 
   return (
-    <Svg $size={size}>
+    <svg
+      width={size}
+      height={size}
+      className='block rounded-full'
+      version='1.1'
+      xmlns='http://www.w3.org/2000/svg'
+      viewBox={`0 0 ${VIEW_BOX_SIZE} ${VIEW_BOX_SIZE}`}
+    >
       <rect fill={color.bg} x='0' y='0' width={VIEW_BOX_SIZE} height={VIEW_BOX_SIZE} />
-      <SvgText x='50%' y='50%' textAnchor='middle' dy='.35em'>
+      <text className='font-default uppercase' x='50%' y='50%' textAnchor='middle' dy='.35em'>
         {uniqueIdentifier[0]}
-      </SvgText>
-    </Svg>
+      </text>
+    </svg>
   );
 };

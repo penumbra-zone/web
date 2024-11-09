@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Grid } from '.';
-import { styled } from 'styled-components';
 import { Text } from '../Text';
 
 const meta: Meta<typeof Grid> = {
@@ -21,31 +20,23 @@ export default meta;
 
 type Story = StoryObj<typeof Grid>;
 
-const Item = styled.div`
-  background-color: ${props => props.theme.color.neutral.main};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: ${props => props.theme.spacing(2)};
-`;
-
 export const Demo: Story = {
   render: function Render() {
     return (
       <Grid container as='main'>
         <Grid mobile={12} as='section'>
-          <Item>
+          <div className='flex items-center justify-center bg-neutral-main p-2'>
             <Text technical>mobile=12</Text>
-          </Item>
+          </div>
         </Grid>
 
         {Array(2)
           .fill(null)
           .map((_, index) => (
             <Grid mobile={12} tablet={6} key={index}>
-              <Item>
+              <div className='flex items-center justify-center bg-neutral-main p-2'>
                 <Text technical>mobile=12 tablet=6</Text>
-              </Item>
+              </div>
             </Grid>
           ))}
 
@@ -53,9 +44,9 @@ export const Demo: Story = {
           .fill(null)
           .map((_, index) => (
             <Grid mobile={6} tablet={6} desktop={3} key={index}>
-              <Item>
+              <div className='flex items-center justify-center bg-neutral-main p-2'>
                 <Text technical>mobile=6 tablet=6 desktop=3</Text>
-              </Item>
+              </div>
             </Grid>
           ))}
 
@@ -63,9 +54,9 @@ export const Demo: Story = {
           .fill(null)
           .map((_, index) => (
             <Grid key={index} lg={1}>
-              <Item>
+              <div className='flex items-center justify-center bg-neutral-main p-2'>
                 <Text technical>lg=1</Text>
-              </Item>
+              </div>
             </Grid>
           ))}
       </Grid>

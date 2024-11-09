@@ -1,7 +1,7 @@
-import { BalanceValueView } from '@penumbra-zone/ui/components/ui/balance-value-view';
+import { BalanceValueView } from '@penumbra-zone/ui-deprecated/components/ui/balance-value-view';
 import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { Box } from '@penumbra-zone/ui/components/ui/box';
+import { Box } from '@penumbra-zone/ui-deprecated/components/ui/box';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
 import { getAmount, getBalanceView } from '@penumbra-zone/getters/balances-response';
 import { ArrowRight } from 'lucide-react';

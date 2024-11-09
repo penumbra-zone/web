@@ -1,5 +1,5 @@
 import { ValidatorInfo } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
-import { TableCell, TableRow } from '@penumbra-zone/ui/components/ui/table';
+import { TableCell, TableRow } from '@penumbra-zone/ui-deprecated/components/ui/table';
 import { ReactNode } from 'react';
 import { Oval } from 'react-loader-spinner';
 import { getValidator } from '@penumbra-zone/getters/validator-info';

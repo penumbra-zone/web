@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "exactOptionalPropertyTypes": false,
+    "noEmit": true,
+    "composite": true,
+    "types": ["vitest/globals", "@testing-library/jest-dom"]
+  },
+  "extends": ["@tsconfig/strictest/tsconfig.json", "@tsconfig/vite-react/tsconfig.json"],
+  "include": ["components", "lib", "src", "tests-setup.ts"]
+}

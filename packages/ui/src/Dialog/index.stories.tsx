@@ -5,20 +5,8 @@ import { Button } from '../Button';
 import { ComponentType } from 'react';
 import { Text } from '../Text';
 import { AssetIcon } from '../AssetIcon';
-import { styled } from 'styled-components';
 import { Ban, Handshake, ThumbsUp } from 'lucide-react';
 import { OSMO_METADATA, PENUMBRA_METADATA, PIZZA_METADATA } from '../utils/bufs';
-
-const WhiteTextWrapper = styled.div`
-  color: ${props => props.theme.color.text.primary};
-`;
-
-const Column = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${props => props.theme.spacing(1)};
-  padding-top: ${props => props.theme.spacing(1)};
-`;
 
 const meta: Meta<typeof Dialog> = {
   component: Dialog,
@@ -48,16 +36,21 @@ export const Basic: Story = {
 
         <Dialog.Content
           title='This is the heading'
-          buttonGroupProps={{
-            buttons: [
-              { label: 'Primary CTA', icon: ThumbsUp },
-              { label: 'Secondary CTA', icon: Handshake },
-              { label: 'Another secondary CTA', icon: Ban },
-            ],
-            hasPrimaryButton: true,
-          }}
+          buttons={
+            <>
+              <Button priority='primary' icon={ThumbsUp}>
+                Primary CTA
+              </Button>
+              <Button priority='secondary' icon={Handshake}>
+                Secondary CTA
+              </Button>
+              <Button priority='secondary' icon={Ban}>
+                Another secondary CTA
+              </Button>
+            </>
+          }
         >
-          <WhiteTextWrapper>
+          <div className='text-text-primary'>
             <Text large as='h3'>
               This is a subheading
             </Text>
@@ -73,7 +66,7 @@ export const Basic: Story = {
               elit. Ut et massa mi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et
               massa mi.
             </Text>
-          </WhiteTextWrapper>
+          </div>
         </Dialog.Content>
       </Dialog>
     );
@@ -90,7 +83,7 @@ export const WithRadioItems: Story = {
 
         <Dialog.Content title='Select wallet'>
           <Dialog.RadioGroup>
-            <Column>
+            <div className='flex flex-col gap-1 pt-1'>
               <Dialog.RadioItem
                 value='1'
                 title='Wallet 1'
@@ -109,7 +102,7 @@ export const WithRadioItems: Story = {
                 description='Some description'
                 startAdornment={<AssetIcon metadata={OSMO_METADATA} size='lg' />}
               />
-            </Column>
+            </div>
           </Dialog.RadioGroup>
         </Dialog.Content>
       </Dialog>

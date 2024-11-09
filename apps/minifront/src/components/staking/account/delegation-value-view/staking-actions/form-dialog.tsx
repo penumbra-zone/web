@@ -1,18 +1,18 @@
-import { Button } from '@penumbra-zone/ui/components/ui/button';
+import { Button } from '@penumbra-zone/ui-deprecated/components/ui/button';
 import {
   Dialog,
   DialogClose,
   DialogContent,
   DialogHeader,
-} from '@penumbra-zone/ui/components/ui/dialog';
-import { IdentityKeyComponent } from '@penumbra-zone/ui/components/ui/identity-key-component';
+} from '@penumbra-zone/ui-deprecated/components/ui/dialog';
+import { IdentityKeyComponent } from '@penumbra-zone/ui-deprecated/components/ui/identity-key-component';
 import { InputBlock } from '../../../../shared/input-block';
 import { Validator } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { FormEvent } from 'react';
 import { getIdentityKey } from '@penumbra-zone/getters/validator';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
-import { BalanceValueView } from '@penumbra-zone/ui/components/ui/balance-value-view';
+import { BalanceValueView } from '@penumbra-zone/ui-deprecated/components/ui/balance-value-view';
 import { NumberInput } from '../../../../shared/number-input';
 import { CircleAlert } from 'lucide-react';
 import { useStoreShallow } from '../../../../../utils/use-store-shallow.ts';

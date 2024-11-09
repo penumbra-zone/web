@@ -2,8 +2,8 @@ import { defineConfig } from 'vite';
 import { resolve, join } from 'path';
 import { readdirSync, existsSync } from 'fs';
 import dts from 'vite-plugin-dts';
-import * as path from 'node:path';
-import { execa } from 'execa';
+import path from 'node:path';
+import tailwindcss from 'tailwindcss';
 
 /**
  * Returns an object with keys as resulting component build paths and values as
@@ -26,59 +26,23 @@ const getAllUIComponents = (): Record<string, string> => {
   );
 };
 
-const getDeprecatedUIComponents = (): Record<string, string> => {
-  const source = resolve(__dirname, 'components/ui');
-  return getRecursiveTsxFiles(source, 'components/ui');
-};
-
-const getRecursiveTsxFiles = (dir: string, baseDir: string): Record<string, string> => {
-  const files = readdirSync(dir, { withFileTypes: true });
-  return files.reduce(
-    (accum, file) => {
-      const fullPath = join(dir, file.name);
-      const relativePath = path.relative(resolve(__dirname, baseDir), fullPath);
-      if (file.isDirectory()) {
-        return { ...accum, ...getRecursiveTsxFiles(fullPath, baseDir) };
-      } else if (file.isFile() && file.name.endsWith('.tsx')) {
-        const key = `${baseDir}/${relativePath.replace(/\.tsx$/, '')}`;
-        accum[key] = fullPath;
-      }
-      return accum;
-    },
-    {} as Record<string, string>,
-  );
-};
-
 /** Extends the `getAllUIComponents` function to add support for other useful files */
 const getAllEntries = (): Record<string, string> => {
   return {
-    tailwindconfig: resolve('../tailwind-config'),
-    'src/tailwindConfig': join(__dirname, 'src', 'tailwindConfig.ts'),
-    'src/utils/typography': join(__dirname, 'src', 'utils', 'typography.ts'),
-    ...getDeprecatedUIComponents(),
     ...getAllUIComponents(),
   };
 };
 
 export default defineConfig({
-  plugins: [
-    dts(),
-    {
-      // runs 'pnpm pack' after the build in watch mode
-      name: 'postbuild-pack',
-      closeBundle: () => {
-        const isWatch = process.env.VITE_WATCH === 'true';
-        if (isWatch) {
-          execa({ preferLocal: true })`pnpm pack`.then(() => {
-            console.info(`@penumbra-zone/ui library is built and packed!`);
-          });
-        }
-      },
-    },
-  ],
+  plugins: [dts()],
   resolve: {
     alias: {
       '@repo/tailwind-config': path.resolve(__dirname, '../', 'tailwind-config'),
+    },
+  },
+  css: {
+    postcss: {
+      plugins: [tailwindcss],
     },
   },
   build: {
@@ -89,16 +53,14 @@ export default defineConfig({
       name: '@penumbra-zone/ui',
     },
     rollupOptions: {
-      external: [
-        '@bufbuild/protobuf',
-        '@penumbra-zone/protobuf',
-        'react',
-        'react-dom',
-        'framer-motion',
-        'styled-components',
-        'lucide-react',
-        'react-router-dom',
-      ],
+      external: ['react', 'react-dom', 'react/jsx-runtime'],
+      output: {
+        globals: {
+          react: 'React',
+          'react-dom': 'ReactDOM',
+          tailwindcss: 'tailwindcss',
+        },
+      },
     },
   },
 });

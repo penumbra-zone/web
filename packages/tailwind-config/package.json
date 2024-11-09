@@ -5,7 +5,7 @@
   "license": "(MIT OR Apache-2.0)",
   "main": "index.js",
   "dependencies": {
-    "@penumbra-zone/ui": "workspace:*",
+    "@penumbra-zone/ui-deprecated": "workspace:*",
     "tailwindcss": "^3.4.3",
     "tailwindcss-animate": "^1.0.7"
   }

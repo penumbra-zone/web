@@ -15,9 +15,7 @@ const SampleButton = () => (
   </Density>
 );
 
-const addressBookIcon = (
-  <Icon IconComponent={BookUser} size='sm' color={color => color.text.primary} />
-);
+const addressBookIcon = <Icon IconComponent={BookUser} size='sm' color='text.primary' />;
 
 const meta: Meta<typeof TextInput> = {
   component: TextInput,

@@ -1,8 +1,7 @@
 import { ReactNode } from 'react';
 import * as RadixPopover from '@radix-ui/react-popover';
 import type { PopoverContentProps as RadixPopoverContentProps } from '@radix-ui/react-popover';
-import { useTheme } from 'styled-components';
-import { PopoverContent, PopoverContext } from '../utils/popover.ts';
+import { getPopoverContent, PopoverContext } from '../utils/popover.ts';
 
 interface ControlledPopoverProps {
   /**
@@ -115,17 +114,10 @@ export interface PopoverContentProps {
  * `side` and `align` props.
  */
 const Content = ({ children, side, align, context = 'default' }: PopoverContentProps) => {
-  const theme = useTheme();
-
   return (
     <RadixPopover.Portal>
-      <RadixPopover.Content
-        sideOffset={theme.spacing(1, 'number')}
-        side={side}
-        align={align}
-        asChild
-      >
-        <PopoverContent $context={context}>{children}</PopoverContent>
+      <RadixPopover.Content sideOffset={4} side={side} align={align} asChild>
+        <div className={getPopoverContent(context)}>{children}</div>
       </RadixPopover.Content>
     </RadixPopover.Portal>
   );

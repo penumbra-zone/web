@@ -1,4 +1,4 @@
-import { SelectAccount } from '@penumbra-zone/ui/components/ui/select';
+import { SelectAccount } from '@penumbra-zone/ui-deprecated/components/ui/select';
 import { getAddrByIndex } from '../../fetchers/address';
 
 export const Receive = () => {

@@ -1,27 +1,14 @@
 import { useMemo, useState } from 'react';
-import { styled } from 'styled-components';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 
-import { isBalancesResponse, isMetadata } from './shared/helpers.ts';
-import { filterMetadataOrBalancesResponseByText } from './shared/filterMetadataOrBalancesResponseByText.ts';
-import { AssetSelectorBaseProps, AssetSelectorValue } from './shared/types.ts';
-import { AssetSelectorCustom, AssetSelectorCustomProps } from './Custom.tsx';
-import { Item, AssetSelectorItemProps } from './SelectItem.tsx';
+import { isBalancesResponse, isMetadata } from './shared/helpers';
+import { filterMetadataOrBalancesResponseByText } from './shared/filterMetadataOrBalancesResponseByText';
+import { AssetSelectorBaseProps, AssetSelectorValue } from './shared/types';
+import { AssetSelectorCustom, AssetSelectorCustomProps } from './Custom';
+import { Item, AssetSelectorItemProps } from './SelectItem';
 import { Text } from '../Text';
-import { filterAssets, groupAndSortBalances } from './shared/groupAndSort.ts';
-
-const ListItemGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${props => props.theme.spacing(1)};
-`;
-
-const SelectorList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${props => props.theme.spacing(4)};
-`;
+import { filterAssets, groupAndSortBalances } from './shared/groupAndSort';
 
 export interface AssetSelectorProps extends AssetSelectorBaseProps {
   /**
@@ -123,23 +110,23 @@ export const AssetSelector = ({
       onChange={onChange}
     >
       {({ getKeyHash }) => (
-        <SelectorList>
+        <div className='flex flex-col gap-4'>
           {!!filteredBalances.length && (
-            <Text small color={color => color.text.secondary}>
+            <Text small color='text.secondary'>
               Your Tokens
             </Text>
           )}
 
           {filteredBalances.map(([account, balances]) => (
-            <ListItemGroup key={account}>
+            <div key={account} className='flex flex-col gap-1'>
               {balances.map(balance => (
                 <Item key={getKeyHash(balance)} value={balance} />
               ))}
-            </ListItemGroup>
+            </div>
           ))}
 
           {!!filteredAssets.length && (
-            <Text small color={color => color.text.secondary}>
+            <Text small color='text.secondary'>
               All Tokens
             </Text>
           )}
@@ -147,7 +134,7 @@ export const AssetSelector = ({
           {filteredAssets.map(asset => (
             <Item key={getKeyHash(asset)} value={asset} />
           ))}
-        </SelectorList>
+        </div>
       )}
     </AssetSelectorCustom>
   );
