@@ -3,6 +3,8 @@ import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 
 import './v2.css';
+import '@penumbra-zone/ui/style.css';
+
 import { App } from './app';
 
 const RootLayout = ({ children }: { children: ReactNode }) => {

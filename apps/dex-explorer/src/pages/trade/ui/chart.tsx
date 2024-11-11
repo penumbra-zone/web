@@ -1,12 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { createChart, IChartApi, OhlcData } from 'lightweight-charts';
-import { tailwindConfig } from '@penumbra-zone/ui/tailwind';
+import { theme } from '@penumbra-zone/ui/theme';
 import { useCandles } from '../api/candles';
 import { observer } from 'mobx-react-lite';
 import { DurationWindow, durationWindows } from '@/shared/database/schema.ts';
 import { Button } from '@penumbra-zone/ui/Button';
-
-const { colors } = tailwindConfig.theme.extend;
 
 const CHART_HEIGHT = 512;
 
@@ -29,17 +27,17 @@ const ChartData = observer(({ candles }: { candles: OhlcData[] }) => {
       chartRef.current = createChart(chartElRef.current, {
         autoSize: true,
         layout: {
-          textColor: colors.text.primary,
+          textColor: theme.color.text.primary,
           background: {
             color: 'transparent',
           },
         },
         grid: {
           vertLines: {
-            color: colors.other.tonalStroke,
+            color: theme.color.other.tonalStroke,
           },
           horzLines: {
-            color: colors.other.tonalStroke,
+            color: theme.color.other.tonalStroke,
           },
         },
       });
@@ -57,11 +55,11 @@ const ChartData = observer(({ candles }: { candles: OhlcData[] }) => {
     if (chartRef.current) {
       chartRef.current
         .addCandlestickSeries({
-          upColor: colors.success.light,
-          downColor: colors.destructive.light,
+          upColor: theme.color.success.light,
+          downColor: theme.color.destructive.light,
           borderVisible: false,
-          wickUpColor: colors.success.light,
-          wickDownColor: colors.destructive.light,
+          wickUpColor: theme.color.success.light,
+          wickDownColor: theme.color.destructive.light,
         })
         .setData(candles);
 
