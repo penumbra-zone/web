@@ -24,10 +24,12 @@ export const AddressViewComponent = ({ view, copyable }: AddressViewProps) => {
     view.addressView.case === 'decoded'
       ? !view.addressView.value.index?.randomizer.every(v => v === 0) // Randomized (and thus, a one-time address) if the randomizer is not all zeros.
       : undefined;
-
-  const addressIndexLabel = isOneTimeAddress ? 'IBC Deposit Address for Account #' : 'Account #';
-
   const isCopyable = isOneTimeAddress ? false : (copyable ?? true);
+
+  const accountIndexLabel = accountIndex === 0 ? 'Main Account' : `Sub-Account #${accountIndex}`;
+  const addressIndexLabel = isOneTimeAddress
+    ? `IBC Deposit Address for ${accountIndexLabel}`
+    : accountIndexLabel;
 
   return (
     <div className='flex items-center gap-2 overflow-hidden'>
@@ -36,10 +38,7 @@ export const AddressViewComponent = ({ view, copyable }: AddressViewProps) => {
           <div className='shrink-0'>
             <AddressIcon address={view.addressView.value.address} size={14} />
           </div>
-          <span className='break-keep font-bold'>
-            {addressIndexLabel}
-            {accountIndex}
-          </span>
+          <span className='break-keep font-bold'>{addressIndexLabel}</span>
         </>
       ) : (
         <AddressComponent address={view.addressView.value.address} />
