@@ -1,5 +1,11 @@
 # minifront
 
+## 6.24.6
+
+### Patch Changes
+
+- ebdacb9: Use Sub-Account terminology
+
 ## 6.24.5
 
 ### Patch Changes
