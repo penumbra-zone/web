@@ -46,9 +46,9 @@ export const ConnectButton = observer(() => {
                 <Dialog.RadioItem
                   key={key}
                   value={key}
-                  title={<Text color={color => color.text.primary}>{manifest.name}</Text>}
+                  title={<Text color='text.primary'>{manifest.name}</Text>}
                   description={
-                    <Text detail color={color => color.text.secondary}>
+                    <Text detail color='text.secondary'>
                       {manifest.description}
                     </Text>
                   }
