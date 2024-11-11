@@ -43,7 +43,9 @@ export const BalanceItem = ({ asset, value, onSelect }: BalanceItemProps) => {
           isSelected && 'bg-light-brown',
         )}
       >
-        <TableCell className='pl-4'>{account}</TableCell>
+        <TableCell className='pl-4'>
+          {account !== undefined && (account === 0 ? 'Main' : account)}
+        </TableCell>
 
         <TableCell>
           <div className='col-span-2 flex items-center justify-start gap-1'>

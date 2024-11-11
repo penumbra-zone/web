@@ -66,6 +66,7 @@ export const TokenSwapInput = () => {
 
   const maxAmount = getAmount.optional(assetIn);
   const maxAmountAsString = maxAmount ? joinLoHiAmount(maxAmount).toString() : undefined;
+  const assetInAccount = assetIn && getAddressIndex(assetIn.accountAddress).account;
 
   const setInputToBalanceMax = () => {
     if (assetIn?.balanceView) {
@@ -93,7 +94,7 @@ export const TokenSwapInput = () => {
           {assetIn && (
             <div className='ml-auto hidden h-full flex-col justify-end self-end sm:flex'>
               <span className='mr-2 block whitespace-nowrap text-xs text-muted-foreground'>
-                Account #{getAddressIndex(assetIn.accountAddress).account}
+                {assetInAccount === 0 ? 'Main Account' : `Sub-Account #${assetInAccount}`}
               </span>
             </div>
           )}
