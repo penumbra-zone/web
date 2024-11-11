@@ -87,7 +87,7 @@ export default function AssetsTable() {
                     <div className='flex items-center justify-center gap-2'>
                       <AddressIcon address={account.address} size={20} />
                       <h2 className='whitespace-nowrap font-bold md:text-base xl:text-xl'>
-                        Account #{account.account}
+                        {account.account === 0 ? 'Main Account' : `Sub-Account ${account.account}`}
                       </h2>
                     </div>
 

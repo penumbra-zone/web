@@ -6,7 +6,7 @@ describe('<AccountSwitcher />', () => {
   it('renders the current account', () => {
     const { getByLabelText } = render(<AccountSwitcher account={123} onChange={vi.fn()} />);
 
-    expect(getByLabelText('Account #123')).toHaveValue(123);
+    expect(getByLabelText('Sub-Account #123')).toHaveValue(123);
   });
 
   describe('changing the account via the input field', () => {
@@ -15,14 +15,14 @@ describe('<AccountSwitcher />', () => {
       const { getByLabelText } = render(<AccountSwitcher account={123} onChange={onChange} />);
 
       expect(onChange).not.toHaveBeenCalled();
-      fireEvent.change(getByLabelText('Account #123'), { target: { value: 456 } });
+      fireEvent.change(getByLabelText('Sub-Account #123'), { target: { value: 456 } });
       expect(onChange).toHaveBeenCalledWith(456);
     });
 
     it('has aria-disabled=false', () => {
       const { getByLabelText } = render(<AccountSwitcher account={123} onChange={vi.fn()} />);
 
-      expect(getByLabelText('Account #123')).toHaveAttribute('aria-disabled', 'false');
+      expect(getByLabelText('Sub-Account #123')).toHaveAttribute('aria-disabled', 'false');
     });
 
     describe('when a filter has been passed', () => {
@@ -32,7 +32,7 @@ describe('<AccountSwitcher />', () => {
           <AccountSwitcher account={123} onChange={onChange} filter={[1, 2, 3]} />,
         );
 
-        fireEvent.change(getByLabelText('Account #123'), { target: { value: 456 } });
+        fireEvent.change(getByLabelText('Sub-Account #123'), { target: { value: 456 } });
         expect(onChange).not.toHaveBeenCalled();
       });
 
@@ -41,7 +41,7 @@ describe('<AccountSwitcher />', () => {
           <AccountSwitcher account={123} onChange={vi.fn()} filter={[1, 2, 3]} />,
         );
 
-        expect(getByLabelText('Account #123')).toHaveAttribute('aria-disabled', 'true');
+        expect(getByLabelText('Sub-Account #123')).toHaveAttribute('aria-disabled', 'true');
       });
     });
   });
@@ -52,14 +52,14 @@ describe('<AccountSwitcher />', () => {
       const { getByLabelText } = render(<AccountSwitcher account={123} onChange={onChange} />);
 
       expect(onChange).not.toHaveBeenCalled();
-      fireEvent.click(getByLabelText('Previous account'));
+      fireEvent.click(getByLabelText('Previous sub-account'));
       expect(onChange).toHaveBeenCalledWith(122);
     });
 
     it("is disabled when we're at account 0", () => {
       const { queryByLabelText } = render(<AccountSwitcher account={0} onChange={vi.fn()} />);
 
-      expect(queryByLabelText('Previous account')?.parentElement).toBeDisabled();
+      expect(queryByLabelText('Previous sub-account')?.parentElement).toBeDisabled();
     });
 
     describe('when a filter has been passed', () => {
@@ -70,7 +70,7 @@ describe('<AccountSwitcher />', () => {
         );
 
         expect(onChange).not.toHaveBeenCalled();
-        fireEvent.click(getByLabelText('Previous account'));
+        fireEvent.click(getByLabelText('Previous sub-account'));
         expect(onChange).toHaveBeenCalledWith(100);
       });
 
@@ -79,7 +79,7 @@ describe('<AccountSwitcher />', () => {
           <AccountSwitcher account={100} onChange={vi.fn()} filter={[123, 100]} />,
         );
 
-        expect(queryByLabelText('Previous account')?.parentElement).toBeDisabled();
+        expect(queryByLabelText('Previous sub-account')?.parentElement).toBeDisabled();
       });
     });
   });
@@ -90,14 +90,14 @@ describe('<AccountSwitcher />', () => {
       const { getByLabelText } = render(<AccountSwitcher account={123} onChange={onChange} />);
 
       expect(onChange).not.toHaveBeenCalled();
-      fireEvent.click(getByLabelText('Next account'));
+      fireEvent.click(getByLabelText('Next sub-account'));
       expect(onChange).toHaveBeenCalledWith(124);
     });
 
     it("is disabled when we're at the maximum account index", () => {
       const { queryByLabelText } = render(<AccountSwitcher account={2 ** 32} onChange={vi.fn()} />);
 
-      expect(queryByLabelText('Next account')?.parentElement).toBeDisabled();
+      expect(queryByLabelText('Next sub-account')?.parentElement).toBeDisabled();
     });
 
     describe('when a filter has been passed', () => {
@@ -108,7 +108,7 @@ describe('<AccountSwitcher />', () => {
         );
 
         expect(onChange).not.toHaveBeenCalled();
-        fireEvent.click(getByLabelText('Next account'));
+        fireEvent.click(getByLabelText('Next sub-account'));
         expect(onChange).toHaveBeenCalledWith(123);
       });
 
@@ -117,7 +117,7 @@ describe('<AccountSwitcher />', () => {
           <AccountSwitcher account={123} onChange={vi.fn()} filter={[123, 100]} />,
         );
 
-        expect(queryByLabelText('Next account')?.parentElement).toBeDisabled();
+        expect(queryByLabelText('Next sub-account')?.parentElement).toBeDisabled();
       });
     });
   });
