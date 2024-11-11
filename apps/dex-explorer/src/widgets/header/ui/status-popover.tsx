@@ -43,7 +43,7 @@ export const StatusPopover = observer(() => {
         </Popover.Trigger>
         <Popover.Content align='end' side='bottom'>
           <Density compact>
-            <div className='flex flex-col gap-4'>
+            <div className='flex flex-col gap-4 text-text-primary'>
               <div className='flex flex-col gap-2'>
                 <Text technical>Status</Text>
                 {pill}

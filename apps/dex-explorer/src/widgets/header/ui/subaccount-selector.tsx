@@ -4,7 +4,7 @@ import { DropdownMenu } from '@penumbra-zone/ui/DropdownMenu';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Density } from '@penumbra-zone/ui/Density';
 import { Text } from '@penumbra-zone/ui/Text';
-import { AddressViewComponent } from '@penumbra-zone/ui/AddressViewComponent';
+import { AddressViewComponent } from '@penumbra-zone/ui/AddressView';
 import { getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { connectionStore } from '@/shared/model/connection';
 import { useSubaccounts } from '../api/subaccounts';
@@ -55,7 +55,7 @@ export const SubaccountSelector = observer(() => {
               icon={<Link2Off size={24} />}
               onSelect={() => void connectionStore.disconnect()}
             >
-              <Text strong color={color => color.destructive.light}>
+              <Text strong color='destructive.light'>
                 Disconnect
               </Text>
             </DropdownMenu.Item>
