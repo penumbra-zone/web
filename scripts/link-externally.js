@@ -2,6 +2,17 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+/**
+ * This script is used to link dependencies from this monorepo to other repos.
+ *
+ * @usage:
+ *   node scripts/link-externally.js enable
+ *   node scripts/link-externally.js disable
+ *
+ *   // when enabled, you can link the package to another repo like this:
+ *   cd other/repo && pnpm link ../penumbra-zone/web/packages/ui
+ */
+
 // Base directory for packages in the monorepo
 const __filename = fileURLToPath(import.meta.url);
 const packagesDir = path.join(path.dirname(__filename), '..', 'packages');
