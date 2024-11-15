@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { Text } from '../Text';
 import * as RadixSlider from '@radix-ui/react-slider';
-import { ThemeColor, getThemeColorClass } from '../utils/color';
+import { ThemeColor, getThemeColorClass, getThemeColor } from '../utils/color';
 import cn from 'clsx';
 
 interface SliderProps {
@@ -33,9 +34,7 @@ export const Slider: React.FC<SliderProps> = ({
   showFill = false,
   showTrackGaps = true,
   trackGapBackground = 'base.black',
-  focusedOutlineColor = 'action.neutralFocusOutline',
   valueDetails,
-  fontSize = 'textXs',
   disabled = false,
 }) => {
   const [value, setValue] = useState(defaultValue);
@@ -51,8 +50,12 @@ export const Slider: React.FC<SliderProps> = ({
     <div>
       {(!!leftLabel || !!rightLabel) && (
         <div className='flex justify-between w-full mb-2'>
-          <div className={cn('text-text-secondary', `leading-[${fontSize}]`)}>{leftLabel}</div>
-          <div className={cn('text-text-secondary', `leading-[${fontSize}]`)}>{rightLabel}</div>
+          <Text detailTechnical as='div' color='text.secondary'>
+            {leftLabel}
+          </Text>
+          <Text detailTechnical as='div' color='text.secondary'>
+            {rightLabel}
+          </Text>
         </div>
       )}
       <RadixSlider.Root
@@ -92,21 +95,24 @@ export const Slider: React.FC<SliderProps> = ({
           className={cn(
             'block w-4 h-4 rounded-full bg-neutral-contrast',
             !disabled && 'cursor-grab hover:bg-neutral-contrast focus:outline focus:outline-2',
-            !disabled && `focus:${getThemeColorClass(focusedOutlineColor).outline}`,
+            !disabled && `focus:outline-primary-main`,
             disabled &&
               "after:content-[''] after:absolute after:inset-0 after:bg-action-disabledOverlay",
           )}
         />
       </RadixSlider.Root>
       {showValue && (
-        <div
-          className={cn(
-            'flex mt-4 border border-tonalStroke text-text-primary p-4',
-            `leading-[${fontSize}]`,
+        <div className='flex mt-4 border border-other-tonalStroke text-text-primary px-3 py-2 rounded-sm'>
+          <Text as='div' detail color='text.primary'>
+            {value}
+          </Text>
+          {valueDetails && (
+            <div className='ml-2'>
+              <Text as='div' detail color='text.secondary'>
+                · {valueDetails}
+              </Text>
+            </div>
           )}
-        >
-          <div className='text-text-primary'>{value}</div>
-          {valueDetails && <div className='ml-2 text-text-secondary'>· {valueDetails}</div>}
         </div>
       )}
     </div>
