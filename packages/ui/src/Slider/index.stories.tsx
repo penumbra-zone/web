@@ -20,7 +20,6 @@ export const Default: Story = {
     rightLabel: 'Right label',
     showValue: true,
     valueDetails: 'dummy text',
-    focusedOutlineColor: 'primary.main',
     showTrackGaps: true,
     trackGapBackground: 'base.black',
     showFill: true,
