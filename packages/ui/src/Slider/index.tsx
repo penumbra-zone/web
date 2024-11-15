@@ -49,7 +49,7 @@ export const Slider: React.FC<SliderProps> = ({
   return (
     <div>
       {(!!leftLabel || !!rightLabel) && (
-        <div className='flex justify-between w-full mb-2'>
+        <div className='mb-2 flex w-full justify-between'>
           <Text detailTechnical as='div' color='text.secondary'>
             {leftLabel}
           </Text>
@@ -59,7 +59,7 @@ export const Slider: React.FC<SliderProps> = ({
         </div>
       )}
       <RadixSlider.Root
-        className='relative flex items-center w-full h-8'
+        className='relative flex h-8 w-full items-center'
         min={min}
         max={max}
         step={step}
@@ -67,9 +67,9 @@ export const Slider: React.FC<SliderProps> = ({
         onValueChange={handleValueChange}
         disabled={disabled}
       >
-        <RadixSlider.Track className='relative w-full h-2 bg-other-tonalFill10 rounded-full px-2'>
+        <RadixSlider.Track className='relative h-2 w-full rounded-full bg-other-tonalFill10 px-2'>
           {showFill && (
-            <RadixSlider.Range className='absolute h-full bg-primary-main rounded-full' />
+            <RadixSlider.Range className='absolute h-full rounded-full bg-primary-main' />
           )}
           <div className='relative'>
             {showTrackGaps &&
@@ -102,7 +102,7 @@ export const Slider: React.FC<SliderProps> = ({
         />
       </RadixSlider.Root>
       {showValue && (
-        <div className='flex mt-4 border border-other-tonalStroke text-text-primary px-3 py-2 rounded-sm'>
+        <div className='mt-4 flex rounded-sm border border-other-tonalStroke px-3 py-2 text-text-primary'>
           <Text as='div' detail color='text.primary'>
             {value}
           </Text>
