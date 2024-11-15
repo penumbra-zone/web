@@ -101,7 +101,7 @@ export const COLOR_CLASS_MAP: Record<ThemeColor, [string, string]> = {
 
 /**
  * Takes a color string in the format of `primary.light` and
- * returns the tailwind classes for text, background, and outline.
+ * returns the tailwind classes for text and background.
  */
 export const getThemeColorClass = (color: ThemeColor) => {
   const mapped = COLOR_CLASS_MAP[color] as [string, string] | undefined;
