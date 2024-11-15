@@ -30,81 +30,71 @@ export const getThemeColor = (color: ThemeColor): string => {
   }
 };
 
+/** Helper function to generate class names based on a consistent pattern. */
+const generateClassNames = (base: string): [string, string, string] => {
+  return [`text-${base}`, `bg-${base}`, `outline-${base}`];
+};
+
 /** This mapper class is needed to help Tailwind statically analyze the classes that could
  * be produced from the `getThemeColorClass` function. */
-export const COLOR_CLASS_MAP: Record<ThemeColor, [string, string]> = {
-  'neutral.main': ['text-neutral-main', 'bg-neutral-main'],
-  'neutral.light': ['text-neutral-light', 'bg-neutral-light'],
-  'neutral.dark': ['text-neutral-dark', 'bg-neutral-dark'],
-  'neutral.contrast': ['text-neutral-contrast', 'bg-neutral-contrast'],
-  'primary.main': ['text-primary-main', 'bg-primary-main'],
-  'primary.light': ['text-primary-light', 'bg-primary-light'],
-  'primary.dark': ['text-primary-dark', 'bg-primary-dark'],
-  'primary.contrast': ['text-primary-contrast', 'bg-primary-contrast'],
-  'secondary.main': ['text-secondary-main', 'bg-secondary-main'],
-  'secondary.light': ['text-secondary-light', 'bg-secondary-light'],
-  'secondary.dark': ['text-secondary-dark', 'bg-secondary-dark'],
-  'secondary.contrast': ['text-secondary-contrast', 'bg-secondary-contrast'],
-  'unshield.main': ['text-unshield-main', 'bg-unshield-main'],
-  'unshield.light': ['text-unshield-light', 'bg-unshield-light'],
-  'unshield.dark': ['text-unshield-dark', 'bg-unshield-dark'],
-  'unshield.contrast': ['text-unshield-contrast', 'bg-unshield-contrast'],
-  'destructive.main': ['text-destructive-main', 'bg-destructive-main'],
-  'destructive.light': ['text-destructive-light', 'bg-destructive-light'],
-  'destructive.dark': ['text-destructive-dark', 'bg-destructive-dark'],
-  'destructive.contrast': ['text-destructive-contrast', 'bg-destructive-contrast'],
-  'caution.main': ['text-caution-main', 'bg-caution-main'],
-  'caution.light': ['text-caution-light', 'bg-caution-light'],
-  'caution.dark': ['text-caution-dark', 'bg-caution-dark'],
-  'caution.contrast': ['text-caution-contrast', 'bg-caution-contrast'],
-  'success.main': ['text-success-main', 'bg-success-main'],
-  'success.light': ['text-success-light', 'bg-success-light'],
-  'success.dark': ['text-success-dark', 'bg-success-dark'],
-  'success.contrast': ['text-success-contrast', 'bg-success-contrast'],
-  'base.black': ['text-base-black', 'bg-base-black'],
-  'base.white': ['text-base-white', 'bg-base-white'],
-  'base.transparent': ['text-base-transparent', 'bg-base-transparent'],
-  'text.primary': ['text-text-primary', 'bg-text-primary'],
-  'text.secondary': ['text-text-secondary', 'bg-text-secondary'],
-  'text.muted': ['text-text-muted', 'bg-text-muted'],
-  'text.special': ['text-text-special', 'bg-text-special'],
-  'action.hoverOverlay': ['text-action-hoverOverlay', 'bg-action-hoverOverlay'],
-  'action.activeOverlay': ['text-action-activeOverlay', 'bg-action-activeOverlay'],
-  'action.disabledOverlay': ['text-action-disabledOverlay', 'bg-action-disabledOverlay'],
-  'action.primaryFocusOutline': [
-    'text-action-primaryFocusOutline',
-    'bg-action-primaryFocusOutline',
-  ],
-  'action.secondaryFocusOutline': [
-    'text-action-secondaryFocusOutline',
-    'bg-action-secondaryFocusOutline',
-  ],
-  'action.unshieldFocusOutline': [
-    'text-action-unshieldFocusOutline',
-    'bg-action-unshieldFocusOutline',
-  ],
-  'action.neutralFocusOutline': [
-    'text-action-neutralFocusOutline',
-    'bg-action-neutralFocusOutline',
-  ],
-  'action.destructiveFocusOutline': [
-    'text-action-destructiveFocusOutline',
-    'bg-action-destructiveFocusOutline',
-  ],
-  'other.tonalStroke': ['text-other-tonalStroke', 'bg-other-tonalStroke'],
-  'other.tonalFill5': ['text-other-tonalFill5', 'bg-other-tonalFill5'],
-  'other.tonalFill10': ['text-other-tonalFill10', 'bg-other-tonalFill10'],
-  'other.solidStroke': ['text-other-solidStroke', 'bg-other-solidStroke'],
-  'other.dialogBackground': ['text-other-dialogBackground', 'bg-other-dialogBackground'],
-  'other.overlay': ['text-other-overlay', 'bg-other-overlay'],
+export const COLOR_CLASS_MAP: Record<ThemeColor, [string, string, string]> = {
+  'neutral.main': generateClassNames('neutral-main'),
+  'neutral.light': generateClassNames('neutral-light'),
+  'neutral.dark': generateClassNames('neutral-dark'),
+  'neutral.contrast': generateClassNames('neutral-contrast'),
+  'primary.main': generateClassNames('primary-main'),
+  'primary.light': generateClassNames('primary-light'),
+  'primary.dark': generateClassNames('primary-dark'),
+  'primary.contrast': generateClassNames('primary-contrast'),
+  'secondary.main': generateClassNames('secondary-main'),
+  'secondary.light': generateClassNames('secondary-light'),
+  'secondary.dark': generateClassNames('secondary-dark'),
+  'secondary.contrast': generateClassNames('secondary-contrast'),
+  'unshield.main': generateClassNames('unshield-main'),
+  'unshield.light': generateClassNames('unshield-light'),
+  'unshield.dark': generateClassNames('unshield-dark'),
+  'unshield.contrast': generateClassNames('unshield-contrast'),
+  'destructive.main': generateClassNames('destructive-main'),
+  'destructive.light': generateClassNames('destructive-light'),
+  'destructive.dark': generateClassNames('destructive-dark'),
+  'destructive.contrast': generateClassNames('destructive-contrast'),
+  'caution.main': generateClassNames('caution-main'),
+  'caution.light': generateClassNames('caution-light'),
+  'caution.dark': generateClassNames('caution-dark'),
+  'caution.contrast': generateClassNames('caution-contrast'),
+  'success.main': generateClassNames('success-main'),
+  'success.light': generateClassNames('success-light'),
+  'success.dark': generateClassNames('success-dark'),
+  'success.contrast': generateClassNames('success-contrast'),
+  'base.black': generateClassNames('base-black'),
+  'base.white': generateClassNames('base-white'),
+  'base.transparent': generateClassNames('base-transparent'),
+  'text.primary': generateClassNames('text-primary'),
+  'text.secondary': generateClassNames('text-secondary'),
+  'text.muted': generateClassNames('text-muted'),
+  'text.special': generateClassNames('text-special'),
+  'action.hoverOverlay': generateClassNames('action-hoverOverlay'),
+  'action.activeOverlay': generateClassNames('action-activeOverlay'),
+  'action.disabledOverlay': generateClassNames('action-disabledOverlay'),
+  'action.primaryFocusOutline': generateClassNames('action-primaryFocusOutline'),
+  'action.secondaryFocusOutline': generateClassNames('action-secondaryFocusOutline'),
+  'action.unshieldFocusOutline': generateClassNames('action-unshieldFocusOutline'),
+  'action.neutralFocusOutline': generateClassNames('action-neutralFocusOutline'),
+  'action.destructiveFocusOutline': generateClassNames('action-destructiveFocusOutline'),
+  'other.tonalStroke': generateClassNames('other-tonalStroke'),
+  'other.tonalFill5': generateClassNames('other-tonalFill5'),
+  'other.tonalFill10': generateClassNames('other-tonalFill10'),
+  'other.solidStroke': generateClassNames('other-solidStroke'),
+  'other.dialogBackground': generateClassNames('other-dialogBackground'),
+  'other.overlay': generateClassNames('other-overlay'),
 };
 
 /**
  * Takes a color string in the format of `primary.light` and
- * returns the tailwind classes for text and background.
+ * returns the tailwind classes for text, background, and outline.
  */
 export const getThemeColorClass = (color: ThemeColor) => {
-  const mapped = COLOR_CLASS_MAP[color] as [string, string] | undefined;
+  const mapped = COLOR_CLASS_MAP[color] as [string, string, string] | undefined;
   if (!mapped) {
     throw new Error(`Color "${color}" does not exist`);
   }
@@ -112,5 +102,6 @@ export const getThemeColorClass = (color: ThemeColor) => {
   return {
     text: mapped[0],
     bg: mapped[1],
+    outline: mapped[2],
   };
 };
