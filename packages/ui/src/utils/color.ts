@@ -104,7 +104,7 @@ export const COLOR_CLASS_MAP: Record<ThemeColor, [string, string]> = {
  * returns the tailwind classes for text, background, and outline.
  */
 export const getThemeColorClass = (color: ThemeColor) => {
-  const mapped = COLOR_CLASS_MAP[color] as [string, string, string] | undefined;
+  const mapped = COLOR_CLASS_MAP[color] as [string, string] | undefined;
   if (!mapped) {
     throw new Error(`Color "${color}" does not exist`);
   }

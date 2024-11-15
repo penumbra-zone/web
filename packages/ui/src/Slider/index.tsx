@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Text } from '../Text';
 import * as RadixSlider from '@radix-ui/react-slider';
-import { ThemeColor, getThemeColorClass, getThemeColor } from '../utils/color';
+import { ThemeColor, getThemeColorClass } from '../utils/color';
 import cn from 'clsx';
 
 interface SliderProps {
