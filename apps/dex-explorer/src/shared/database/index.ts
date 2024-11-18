@@ -37,14 +37,11 @@ class Pindexer {
 
   async summary(window: DurationWindow, baseAsset: AssetId, quoteAsset: AssetId) {
     return this.db
-      .selectFrom('dex_ex_pairs_summary as s')
-      .leftJoin('dex_ex_price_charts as c', join =>
-        join.onRef('c.asset_start', '=', 's.asset_start').onRef('c.asset_end', '=', 's.asset_end'),
-      )
-      .select(['s.price', 's.direct_volume_over_window', 'c.high', 'c.low'])
-      .where('s.the_window', '=', window)
-      .where('s.asset_start', '=', Buffer.from(baseAsset.inner))
-      .where('s.asset_end', '=', Buffer.from(quoteAsset.inner))
+      .selectFrom('dex_ex_pairs_summary')
+      .selectAll()
+      .where('the_window', '=', window)
+      .where('asset_start', '=', Buffer.from(baseAsset.inner))
+      .where('asset_end', '=', Buffer.from(quoteAsset.inner))
       .execute();
   }
 
