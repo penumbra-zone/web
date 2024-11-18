@@ -1,25 +1,29 @@
 extern crate penumbra_wasm;
 mod utils;
-use penumbra_asset::STAKING_TOKEN_ASSET_ID;
+use decaf377::Fq;
+use penumbra_asset::asset::Id;
+use penumbra_asset::{Value, STAKING_TOKEN_ASSET_ID};
 use penumbra_dex::DexParameters;
-use penumbra_keys::keys::SpendKey;
+use penumbra_keys::keys::{AddressIndex, SpendKey};
+use penumbra_keys::Address;
 use penumbra_keys::FullViewingKey;
 use penumbra_proto::core::app::v1::AppParameters;
 use penumbra_proto::core::component::fee::v1::GasPrices;
+use penumbra_proto::core::keys::v1::Address as AddressProto;
+use penumbra_proto::core::transaction::v1::MemoPlaintext;
 use penumbra_proto::view::v1::transaction_planner_request::Output;
 use penumbra_proto::view::v1::TransactionPlannerRequest;
-use penumbra_proto::{
-    core::{asset::v1::Value, keys::v1::Address, transaction::v1::MemoPlaintext},
-    view::v1::SpendableNoteRecord,
-    DomainType,
-};
+use penumbra_proto::DomainType;
 use penumbra_sct::params::SctParameters;
+use penumbra_sct::{CommitmentSource, Nullifier};
 use penumbra_shielded_pool::fmd::Parameters;
-use penumbra_tct::Forgotten;
+use penumbra_shielded_pool::{Note, Rseed};
+use penumbra_tct::{Forgotten, StateCommitment};
 use penumbra_transaction::{Action, ActionPlan, AuthorizationData, WitnessData};
 use penumbra_wasm::build::{build_action_inner, build_parallel_inner, build_serial_inner};
 use penumbra_wasm::database::interface::Database;
 use penumbra_wasm::database::mock::{get_mock_tables, MockDb};
+use penumbra_wasm::note_record::SpendableNoteRecord;
 use penumbra_wasm::planner::plan_transaction_inner;
 use penumbra_wasm::storage::{byte_array_to_base64, Storage};
 use penumbra_wasm::{
@@ -96,80 +100,63 @@ async fn mock_build_serial_and_parallel() {
         execution_price: 0,
     };
 
-    // Create spendable UTXO note in JSON format.
-    let spendable_note_json = r#"
-    {
-        "note_commitment": {
-            "inner": "MY7PmcrH4fhjFOoMIKEdF+x9EUhZ9CS/CIfVco7Y5wU="
-        },
-        "note": {
-            "value": {
-                "amount": {
-                    "lo": "1000000",
-                    "hi": "0"
-                },
-                "asset_id": {
-                    "inner": "nwPDkQq3OvLnBwGTD+nmv1Ifb2GEmFCgNHrU++9BsRE=",
-                    "alt_bech32m": "",
-                    "alt_base_denom": ""
-                }
+    // Decode the Bech32m string into the `Id` type
+    let decoded_id =
+        Id::from_str("passet1nupu8yg2kua09ec8qxfsl60xhafp7mmpsjv9pgp50t20hm6pkygscjcqn2")
+            .expect("failed to decode assetId");
+
+    let sender_address = AddressProto{ inner: "".into(), alt_bech32m: "penumbra1z7j020uafn2s8ths6xsjjvcay57thkfsuyrksaxja0jjz3ch2hdzljd6hpju8vzyupld25fld2lzmpzqe576nsr35c82e0u9hgphc76ldxlt7amx4xfc636w9cnnasl9nl4u2j".to_string() };
+    let sender_address: Address = sender_address.try_into().expect("msg");
+
+    // Convert the bytes into Fq field elements
+    let field_element = Fq::from_le_bytes_mod_order(
+        &base64::decode("MY7PmcrH4fhjFOoMIKEdF+x9EUhZ9CS/CIfVco7Y5wU=").expect("msg"),
+    );
+    let field_element_nulifier = Fq::from_le_bytes_mod_order(
+        &base64::decode("8TvyFVKk16PHcOEAgl0QV4/92xdVpLdXI+zP87lBrQ8=").expect("msg"),
+    );
+    let rseed_array: [u8; 32] = base64::decode("p2w4O1ognDJtKVqhHK2qsUbV+1AEM/gn58uWYQ5v3sM=")
+        .expect("msg")
+        .try_into()
+        .expect("Decoded Base64 string is not 32 bytes long");
+
+    let spendable_note = SpendableNoteRecord {
+        note_commitment: StateCommitment(field_element),
+        note: Note::from_parts(
+            sender_address,
+            Value {
+                amount: 1000000u64.into(),
+                asset_id: decoded_id,
             },
-            "rseed": "p2w4O1ognDJtKVqhHK2qsUbV+1AEM/gn58uWYQ5v3sM=",
-            "address": {
-                "inner": "F6T1P51M1QOu8NGhKTMdJTy72TDhB2h00uvlIUcXVdovybq4ZcOwROB+1VE/ar4thEDNPanAcaYOrL+FugN8e19pvr93ZqmTjUdOLic+w+U=",
-                "alt_bech32m": ""
-            }
+            Rseed(rseed_array),
+        )
+        .expect("note"),
+        address_index: AddressIndex {
+            account: 0,
+            randomizer: [0; 12],
         },
-        "address_index": {
-            "account": "0",
-            "randomizer": "AAAAAAAAAAAAAAAA"
+        nullifier: Nullifier(field_element_nulifier),
+        height_created: 250305,
+        height_spent: None,
+        position: 3204061134848.into(),
+        source: CommitmentSource::Transaction {
+            id: Some([
+                160, 159, 65, 163, 219, 246, 218, 202, 237, 82, 98, 157, 76, 3, 21, 192, 243, 174,
+                26, 233, 150, 19, 103, 0, 184, 22, 217, 29, 200, 188, 7, 82,
+            ]),
         },
-        "nullifier": {
-            "inner": "8TvyFVKk16PHcOEAgl0QV4/92xdVpLdXI+zP87lBrQ8="
-        },
-        "height_created": "250305",
-        "height_spent": "0",
-        "position": "3204061134848",
-        "source": {
-            "transaction": {
-                "id": "oJ9Bo9v22srtUmKdTAMVwPOuGumWE2cAuBbZHci8B1I="
-            }
-        }
-    }
-    "#;
+        return_address: None,
+    };
 
-    // Convert note to `SpendableNoteRecord`.
-    let spendable_note: SpendableNoteRecord =
-        serde_json::from_str(spendable_note_json).expect("Failed to deserialize spendable note");
-
-    // Define neccessary parameters to mock `TransactionPlannerRequest` in JSON format.
-    let address_json = r#"
-    {
-        "alt_bech32m": "penumbra1dugkjttfezh4gfkqs77377gnjlvmkkehusx6953udxeescc0qpgk6gqc0jmrsjq8xphzrg938843p0e63z09vt8lzzmef0q330e5njuwh4290n8pemcmx70sasym0lcjkstgzc",
-        "inner": ""
-    }
-    "#;
-    let value_json = r#"
-    {
-        "amount": {
-            "lo": "1",
-            "hi": "0"
-        },
-        "asset_id": {
-            "inner": "nwPDkQq3OvLnBwGTD+nmv1Ifb2GEmFCgNHrU++9BsRE=",
-            "alt_bech32m": "",
-            "alt_base_denom": ""
-        }
-    }
-    "#;
-
-    // Convert fields to JsValue.
-    let address: Address = serde_json::from_str(address_json).unwrap();
-    let value: Value = serde_json::from_str(value_json).unwrap();
+    let recipient_value = Value {
+        amount: 1u64.into(),
+        asset_id: decoded_id,
+    };
+    let recipient_address = AddressProto { inner: "".into(), alt_bech32m: "penumbra1dugkjttfezh4gfkqs77377gnjlvmkkehusx6953udxeescc0qpgk6gqc0jmrsjq8xphzrg938843p0e63z09vt8lzzmef0q330e5njuwh4290n8pemcmx70sasym0lcjkstgzc".to_string() };
 
     // Add memo to plan.
     let memo: MemoPlaintext = MemoPlaintext {
-        return_address: Some(address.clone()),
+        return_address: Some(recipient_address.clone().into()),
         text: "sample memo".to_string(),
     };
 
@@ -261,8 +248,8 @@ async fn mock_build_serial_and_parallel() {
         memo: Some(memo),
         source: None,
         outputs: vec![Output {
-            address: Some(address),
-            value: Some(value),
+            address: Some(recipient_address.into()),
+            value: Some(recipient_value.into()),
         }],
         spends: vec![],
         swaps: vec![],
