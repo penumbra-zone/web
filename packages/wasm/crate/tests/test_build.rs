@@ -5,12 +5,10 @@ use penumbra_asset::asset::Id;
 use penumbra_asset::{Value, STAKING_TOKEN_ASSET_ID};
 use penumbra_dex::DexParameters;
 use penumbra_keys::keys::{AddressIndex, SpendKey};
-use penumbra_keys::Address;
 use penumbra_keys::FullViewingKey;
 use penumbra_proto::core::app::v1::AppParameters;
 use penumbra_proto::core::component::fee::v1::GasPrices;
 use penumbra_proto::core::keys::v1::Address as AddressProto;
-use penumbra_proto::core::transaction::v1::MemoPlaintext;
 use penumbra_proto::view::v1::transaction_planner_request::Output;
 use penumbra_proto::view::v1::TransactionPlannerRequest;
 use penumbra_proto::DomainType;
@@ -105,37 +103,37 @@ async fn mock_build_serial_and_parallel() {
         Id::from_str("passet1nupu8yg2kua09ec8qxfsl60xhafp7mmpsjv9pgp50t20hm6pkygscjcqn2")
             .expect("failed to decode assetId");
 
-    let sender_address = AddressProto{ inner: "".into(), alt_bech32m: "penumbra1z7j020uafn2s8ths6xsjjvcay57thkfsuyrksaxja0jjz3ch2hdzljd6hpju8vzyupld25fld2lzmpzqe576nsr35c82e0u9hgphc76ldxlt7amx4xfc636w9cnnasl9nl4u2j".to_string() };
-    let sender_address: Address = sender_address.try_into().expect("msg");
-
     // Convert the bytes into Fq field elements
-    let field_element = Fq::from_le_bytes_mod_order(
-        &base64::decode("MY7PmcrH4fhjFOoMIKEdF+x9EUhZ9CS/CIfVco7Y5wU=").expect("msg"),
+    #[allow(deprecated)]
+    let state_commitment = Fq::from_le_bytes_mod_order(
+        &base64::decode("MY7PmcrH4fhjFOoMIKEdF+x9EUhZ9CS/CIfVco7Y5wU=").expect("state commitment"),
     );
-    let field_element_nulifier = Fq::from_le_bytes_mod_order(
-        &base64::decode("8TvyFVKk16PHcOEAgl0QV4/92xdVpLdXI+zP87lBrQ8=").expect("msg"),
+    #[allow(deprecated)]
+    let nullifier = Fq::from_le_bytes_mod_order(
+        &base64::decode("8TvyFVKk16PHcOEAgl0QV4/92xdVpLdXI+zP87lBrQ8=").expect("nullifier"),
     );
-    let rseed_array: [u8; 32] = base64::decode("p2w4O1ognDJtKVqhHK2qsUbV+1AEM/gn58uWYQ5v3sM=")
-        .expect("msg")
+    #[allow(deprecated)]
+    let rseed: [u8; 32] = base64::decode("p2w4O1ognDJtKVqhHK2qsUbV+1AEM/gn58uWYQ5v3sM=")
+        .expect("rssed")
         .try_into()
-        .expect("Decoded Base64 string is not 32 bytes long");
+        .expect("Invalid base64 decoding");
 
     let spendable_note = SpendableNoteRecord {
-        note_commitment: StateCommitment(field_element),
+        note_commitment: StateCommitment(state_commitment),
         note: Note::from_parts(
-            sender_address,
+            AddressProto{ inner: "".into(), alt_bech32m: "penumbra1z7j020uafn2s8ths6xsjjvcay57thkfsuyrksaxja0jjz3ch2hdzljd6hpju8vzyupld25fld2lzmpzqe576nsr35c82e0u9hgphc76ldxlt7amx4xfc636w9cnnasl9nl4u2j".to_string() }.try_into().expect("msg"),
             Value {
                 amount: 1000000u64.into(),
                 asset_id: decoded_id,
             },
-            Rseed(rseed_array),
+            Rseed(rseed),
         )
         .expect("note"),
         address_index: AddressIndex {
             account: 0,
             randomizer: [0; 12],
         },
-        nullifier: Nullifier(field_element_nulifier),
+        nullifier: Nullifier(nullifier),
         height_created: 250305,
         height_spent: None,
         position: 3204061134848.into(),
@@ -146,18 +144,6 @@ async fn mock_build_serial_and_parallel() {
             ]),
         },
         return_address: None,
-    };
-
-    let recipient_value = Value {
-        amount: 1u64.into(),
-        asset_id: decoded_id,
-    };
-    let recipient_address = AddressProto { inner: "".into(), alt_bech32m: "penumbra1dugkjttfezh4gfkqs77377gnjlvmkkehusx6953udxeescc0qpgk6gqc0jmrsjq8xphzrg938843p0e63z09vt8lzzmef0q330e5njuwh4290n8pemcmx70sasym0lcjkstgzc".to_string() };
-
-    // Add memo to plan.
-    let memo: MemoPlaintext = MemoPlaintext {
-        return_address: Some(recipient_address.clone().into()),
-        text: "sample memo".to_string(),
     };
 
     // Define a sample SCT update.
@@ -245,11 +231,14 @@ async fn mock_build_serial_and_parallel() {
         epoch: None,
         epoch_index: 0,
         expiry_height: 0,
-        memo: Some(memo),
+        memo: None,
         source: None,
         outputs: vec![Output {
-            address: Some(recipient_address.into()),
-            value: Some(recipient_value.into()),
+            address: Some(AddressProto { inner: "".into(), alt_bech32m: "penumbra1dugkjttfezh4gfkqs77377gnjlvmkkehusx6953udxeescc0qpgk6gqc0jmrsjq8xphzrg938843p0e63z09vt8lzzmef0q330e5njuwh4290n8pemcmx70sasym0lcjkstgzc".to_string() }.into()),
+            value: Some(Value {
+                amount: 1u64.into(),
+                asset_id: decoded_id,
+            }.into()),
         }],
         spends: vec![],
         swaps: vec![],
