@@ -31,6 +31,9 @@ importers:
       '@emotion/styled':
         specifier: ^11.13.0
         version: 11.13.0(@emotion/react@11.13.3(@types/react@18.3.12)(react@18.3.1))(@types/react@18.3.12)(react@18.3.1)
+      '@formkit/auto-animate':
+        specifier: ^0.8.2
+        version: 0.8.2
       '@grpc/proto-loader':
         specifier: ^0.7.13
         version: 0.7.13
@@ -106,6 +109,9 @@ importers:
       chartjs-plugin-zoom:
         specifier: ^2.0.1
         version: 2.0.1(chart.js@4.4.6)
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
       configs:
         specifier: https://github.com/prax-wallet/configs.git#main
         version: prax-configs@https://codeload.github.com/prax-wallet/configs/tar.gz/28bb663aa5d042781e714288f28bf15a7075a990(@types/eslint@9.6.1)(@typescript-eslint/parser@7.18.0(eslint@9.14.0(jiti@1.21.6))(typescript@5.6.3))(jiti@1.21.6)(prettier@3.3.3)(tailwindcss@3.4.14)(typescript@5.6.3)(vitest@2.1.4(@types/node@22.9.0)(terser@5.36.0))
@@ -1900,6 +1906,12 @@ packages:
     resolution:
       {
         integrity: sha512-kym7SodPp8/wloecOpcmSnWJsK7M0E5Wg8UcFA+uO4B9s5d0ywXOEro/8HM9x0rW+TljRzul/14UYz3TleT3ig==,
+      }
+
+  '@formkit/auto-animate@0.8.2':
+    resolution:
+      {
+        integrity: sha512-SwPWfeRa5veb1hOIBMdzI+73te5puUBHmqqaF1Bu7FjvxlYSz/kJcZKSa9Cg60zL0uRNeJL2SbRxV6Jp6Q1nFQ==,
       }
 
   '@grpc/proto-loader@0.7.13':
@@ -9732,6 +9744,8 @@ snapshots:
       react-dom: 18.3.1(react@18.3.1)
 
   '@floating-ui/utils@0.2.8': {}
+
+  '@formkit/auto-animate@0.8.2': {}
 
   '@grpc/proto-loader@0.7.13':
     dependencies:
