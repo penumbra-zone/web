@@ -1,9 +1,8 @@
-import { tab, tabSmall } from '../utils/typography';
-import { buttonBase, getOverlays } from '../utils/button';
 import * as RadixTabs from '@radix-ui/react-tabs';
-import { ActionType } from '../utils/action-type';
-import { useDensity } from '../utils/density';
 import cn from 'clsx';
+import { tab, tabMedium, tabSmall } from '../utils/typography';
+import { ActionType, getFocusOutlineColorByActionType } from '../utils/action-type';
+import { Density, useDensity } from '../utils/density';
 
 type LimitedActionType = Exclude<ActionType, 'destructive'>;
 
@@ -25,6 +24,23 @@ const getBorderColor = (actionType: LimitedActionType): string => {
     return cn('border-action-unshieldFocusOutline');
   }
   return cn('border-action-neutralFocusOutline');
+};
+
+const getDensityClasses = (density: Density): string => {
+  if (density === 'compact') {
+    return cn('h-7');
+  }
+  return cn('h-[44px]');
+};
+
+const getDensityItemClasses = (density: Density): string => {
+  if (density === 'medium') {
+    return cn(tabMedium, 'grow shrink basis-0 p-2');
+  }
+  if (density === 'compact') {
+    return cn(tabSmall, 'py-1 px-2');
+  }
+  return cn(tab, 'grow shrink basis-0 p-2');
 };
 
 export interface TabsTab {
@@ -64,12 +80,7 @@ export const Tabs = ({ value, onChange, options, actionType = 'default' }: TabsP
   return (
     <RadixTabs.Root value={value} onValueChange={onChange}>
       <RadixTabs.List asChild>
-        <div
-          className={cn(
-            'flex items-stretch box-border gap-4',
-            density === 'sparse' ? 'h-[44px]' : 'h-7',
-          )}
-        >
+        <div className={cn(getDensityClasses(density), 'flex items-stretch box-border gap-4')}>
           {options.map(option => (
             <RadixTabs.Trigger
               value={option.value}
@@ -81,27 +92,25 @@ export const Tabs = ({ value, onChange, options, actionType = 'default' }: TabsP
                 onClick={() => onChange(option.value)}
                 disabled={option.disabled}
                 className={cn(
-                  buttonBase,
-                  getOverlays({ actionType, density }),
-                  'h-full relative whitespace-nowrap text-text-primary',
-                  density === 'sparse'
-                    ? cn(tab, 'grow shrink basis-0 p-2')
-                    : cn(tabSmall, 'py-1 px-2'),
-                  'before:rounded-tl-xs before:rounded-tr-xs before:rounded-bl-none before:rounded-br-none',
-                  'focus-within:outline-none',
-                  'after:inset-[2px]',
+                  'appearance-none border-none text-inherit cursor-pointer',
+                  'h-full relative whitespace-nowrap rounded-t-xs',
+                  'transition-[background-color,outline-color,color] duration-150',
+                  value === option.value ? 'text-text-primary' : 'text-text-secondary',
+                  getDensityItemClasses(density),
+                  getFocusOutlineColorByActionType(actionType),
+                  'focus:outline focus:outline-2',
+                  'hover:bg-action-hoverOverlay',
                 )}
               >
-                {value === option.value && (
-                  <div
-                    className={cn(
-                      'absolute inset-0 -z-[1]',
-                      'border-b-2 border-solid',
-                      getIndicatorColor(actionType),
-                      getBorderColor(actionType),
-                    )}
-                  />
-                )}
+                <div
+                  className={cn(
+                    value === option.value ? 'opacity-100' : 'opacity-0',
+                    'absolute inset-0 transition-opacity pointer-events-none',
+                    'border-b-2 border-solid',
+                    getIndicatorColor(actionType),
+                    getBorderColor(actionType),
+                  )}
+                />
                 {option.label}
               </button>
             </RadixTabs.Trigger>
