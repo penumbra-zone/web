@@ -1,9 +1,22 @@
-import { withPenumbra, tailwindConfig } from '@penumbra-zone/ui/theme';
+import { tailwindConfig, withPenumbra } from '@penumbra-zone/ui/theme';
 
 export default withPenumbra({
   content: ['./src/**/*.{js,ts,jsx,tsx,mdx,css}'],
   theme: {
     extend: {
+      colors: {
+        ...tailwindConfig.theme.extend.colors,
+        sell: {
+          bg: 'rgba(175, 38, 38, 0.24)',
+        },
+        buy: {
+          bg: 'rgba(28, 121, 63, 0.24)',
+        },
+        border: {
+          base: '#262626',
+          faded: 'rgba(250,250,250,0.15)',
+        },
+      },
       backgroundImage: {
         ...tailwindConfig.theme.extend.backgroundImage,
         shimmer:
