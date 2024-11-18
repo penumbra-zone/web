@@ -322,4 +322,7 @@ export const IDB_TABLES: Tables = {
   validator_infos: 'VALIDATOR_INFOS',
   transactions: 'TRANSACTIONS',
   full_sync_height: 'FULL_SYNC_HEIGHT',
+  tree_commitments: 'TREE_COMMITMENTS',
+  tree_last_position: 'TREE_LAST_POSITION',
+  tree_last_forgotten: 'TREE_LAST_FORGOTTEN',
 };
