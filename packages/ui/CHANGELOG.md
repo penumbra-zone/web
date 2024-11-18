@@ -1,5 +1,11 @@
 # @penumbra-zone/ui
 
+## 13.1.1
+
+### Patch Changes
+
+- 95a22f0: Update Toast description prop
+
 ## 13.1.0
 
 ### Minor Changes
