@@ -8,7 +8,7 @@ import { createContext, useContext } from 'react';
  *
  * See `<DensityContext />`
  */
-export type Density = 'compact' | 'sparse';
+export type Density = 'compact' | 'sparse' | 'medium';
 
 /**
  * This context is used internally by the `<Density />` component and the
