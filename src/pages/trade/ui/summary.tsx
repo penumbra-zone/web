@@ -48,16 +48,18 @@ export const Summary = () => {
   const { quoteAsset } = usePathToMetadata();
 
   const change24h = data && {
-    positive: data.price >= data.price,
-    change: round(data.price - data.price, 4),
-    percent: round(Math.abs(((data.price - data.price) / data.price) * 100), 2),
+    positive: data.price >= data.price_then,
+    change: round(data.price - data.price_then, 4),
+    percent: !data.price
+      ? '0'
+      : round(Math.abs(((data.price - data.price_then) / data.price_then) * 100), 2),
   };
 
   if (error) {
     return (
-      <SummaryCard title='Error'>
+      <SummaryCard title=''>
         <Text detail color='destructive.light'>
-          Error: {String(error)}
+          {String(error)}
         </Text>
       </SummaryCard>
     );
@@ -96,18 +98,16 @@ export const Summary = () => {
         )}
       </SummaryCard>
       <SummaryCard title='24h High' loading={isLoading}>
-        {data?.high && (
-          <Text detail color='text.primary'>
-            {round(data.high, 4)}
-          </Text>
-        )}
+        {/*  TODO: After added to DB, show here */}
+        <Text detail color='text.primary'>
+          -
+        </Text>
       </SummaryCard>
       <SummaryCard title='24h Low' loading={isLoading}>
-        {data?.low && (
-          <Text detail color='text.primary'>
-            {round(data.low, 4)}
-          </Text>
-        )}
+        {/*  TODO: After added to DB, show here */}
+        <Text detail color='text.primary'>
+          -
+        </Text>
       </SummaryCard>
       <SummaryCard title='24h Volume' loading={isLoading}>
         {data && (
