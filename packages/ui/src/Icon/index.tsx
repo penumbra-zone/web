@@ -1,6 +1,7 @@
 import { LucideIcon } from 'lucide-react';
-import { ComponentProps } from 'react';
-import { DefaultTheme, useTheme } from 'styled-components';
+import { ComponentProps, FC } from 'react';
+import { ThemeColor, getThemeColorClass } from '../utils/color';
+import cn from 'clsx';
 
 export type IconSize = 'sm' | 'md' | 'lg';
 
@@ -13,19 +14,15 @@ export interface IconProps {
    * <Icon IconComponent={ChevronRight} />
    * ```
    */
-  IconComponent: LucideIcon;
+  IconComponent: LucideIcon | FC;
   /**
    * - `sm`: 16px square
    * - `md`: 24px square
    * - `lg`: 32px square
    */
   size: IconSize;
-  /**
-   * A function that takes the `color` object of `theme`, and returns a CSS color to render
-   * the icon with. If left undefined, will default to the parent's text color
-   * (`currentColor` in SVG terms).
-   */
-  color?: (color: DefaultTheme['color']) => string;
+  /** A string representing the color key from the Tailwind theme (e.g. 'primary.light') */
+  color?: ThemeColor;
 }
 
 const PROPS_BY_SIZE: Record<IconSize, ComponentProps<LucideIcon>> = {
@@ -53,13 +50,17 @@ const PROPS_BY_SIZE: Record<IconSize, ComponentProps<LucideIcon>> = {
  * <Icon
  *   IconComponent={ArrowRightLeft}
  *   size='sm'
- *   color={color => color.primary.main}
+ *   color='text.primary'
  * />
  * ```
  */
 export const Icon = ({ IconComponent, size = 'sm', color }: IconProps) => {
-  const theme = useTheme();
-  const resolvedColor = color ? color(theme.color) : 'currentColor';
-
-  return <IconComponent absoluteStrokeWidth {...PROPS_BY_SIZE[size]} color={resolvedColor} />;
+  return (
+    <IconComponent
+      absoluteStrokeWidth
+      className={cn(color && getThemeColorClass(color).text)}
+      color={!color ? 'currentColor' : undefined}
+      {...PROPS_BY_SIZE[size]}
+    />
+  );
 };

@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
 import { Display } from '.';
-import { styled } from 'styled-components';
 import { Text } from '../Text';
 
 const meta: Meta<typeof Display> = {
@@ -12,9 +11,9 @@ const meta: Meta<typeof Display> = {
   },
   decorators: [
     Story => (
-      <OuterWidthIndicator>
+      <div className='border border-solid border-base-white'>
         <Story />
-      </OuterWidthIndicator>
+      </div>
     ),
   ],
 };
@@ -22,20 +21,10 @@ export default meta;
 
 type Story = StoryObj<typeof Display>;
 
-const OuterWidthIndicator = styled.div`
-  border: 1px solid ${props => props.theme.color.base.white};
-`;
-
-const InnerWidthIndicator = styled.div`
-  background: ${props => props.theme.color.base.white};
-  color: ${props => props.theme.color.base.black};
-  padding: ${props => props.theme.spacing(2)};
-`;
-
 export const FullWidth: Story = {
   args: {
     children: (
-      <InnerWidthIndicator>
+      <div className='bg-base-white p-2 text-base-black'>
         <Text p>
           The white background that this text sits inside of represents the{' '}
           <Text strong>inside</Text> width of the <Text technical>&lt;Display /&gt;</Text>{' '}
@@ -51,7 +40,7 @@ export const FullWidth: Story = {
           To test <Text technical>&lt;Display /&gt;</Text> at full width, click the &quot;Full
           Width&quot; item in the left sidebar, and try resizing your browser.
         </Text>
-      </InnerWidthIndicator>
+      </div>
     ),
   },
 };

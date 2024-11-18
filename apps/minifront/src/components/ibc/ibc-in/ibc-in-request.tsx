@@ -7,11 +7,11 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@penumbra-zone/ui/components/ui/select';
-import { Avatar, AvatarImage } from '@penumbra-zone/ui/components/ui/avatar';
-import { Identicon } from '@penumbra-zone/ui/components/ui/identicon';
+} from '@penumbra-zone/ui-deprecated/components/ui/select';
+import { Avatar, AvatarImage } from '@penumbra-zone/ui-deprecated/components/ui/avatar';
+import { Identicon } from '@penumbra-zone/ui-deprecated/components/ui/identicon';
 import { DestinationAddr } from './destination-addr';
-import { Button } from '@penumbra-zone/ui/components/ui/button';
+import { Button } from '@penumbra-zone/ui-deprecated/components/ui/button';
 import { LockClosedIcon } from '@radix-ui/react-icons';
 import { NumberInput } from '../../shared/number-input';
 import { getIconWithUmFallback } from './asset-utils.tsx';

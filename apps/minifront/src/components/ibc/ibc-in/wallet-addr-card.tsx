@@ -1,4 +1,4 @@
-import { Identicon } from '@penumbra-zone/ui/components/ui/identicon';
+import { Identicon } from '@penumbra-zone/ui-deprecated/components/ui/identicon';
 
 interface UserInfoProps {
   address: string;

@@ -4,7 +4,7 @@ import {
   PenumbraNotInstalledError,
   PenumbraProviderNotConnectedError,
 } from '@penumbra-zone/client';
-import { SplashPage } from '@penumbra-zone/ui/components/ui/splash-page';
+import { SplashPage } from '@penumbra-zone/ui-deprecated/components/ui/splash-page';
 import { NotFound } from '../not-found';
 import { ExtensionTransportDisconnected } from '../extension-transport-disconnected';
 import { ExtensionNotInstalled } from '../extension-not-installed';

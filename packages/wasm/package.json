@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/wasm",
-  "version": "31.0.0",
+  "version": "32.0.0",
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "engine": {
@@ -21,7 +21,7 @@
     "postcompile": "touch ./wasm/.npmignore",
     "test": "vitest run",
     "test:cargo": "cd crate && cargo test --release",
-    "test:wasm": "cd crate && wasm-pack test --headless --firefox -- --target wasm32-unknown-unknown --release --features 'mock-database'"
+    "test:wasm": "cd crate && wasm-pack test --headless --firefox -- --target wasm32-unknown-unknown --release"
   },
   "files": [
     "wasm",

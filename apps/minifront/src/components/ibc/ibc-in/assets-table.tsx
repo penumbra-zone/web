@@ -8,9 +8,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@penumbra-zone/ui/components/ui/table';
-import { Avatar, AvatarImage } from '@penumbra-zone/ui/components/ui/avatar';
-import { Identicon } from '@penumbra-zone/ui/components/ui/identicon';
+} from '@penumbra-zone/ui-deprecated/components/ui/table';
+import { Avatar, AvatarImage } from '@penumbra-zone/ui-deprecated/components/ui/avatar';
+import { Identicon } from '@penumbra-zone/ui-deprecated/components/ui/identicon';
 import { LineWave } from 'react-loader-spinner';
 import { getIconWithUmFallback } from './asset-utils.tsx';
 

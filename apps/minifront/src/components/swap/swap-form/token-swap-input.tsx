@@ -1,7 +1,7 @@
-import { BalanceValueView } from '@penumbra-zone/ui/components/ui/balance-value-view';
+import { BalanceValueView } from '@penumbra-zone/ui-deprecated/components/ui/balance-value-view';
 import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { Box } from '@penumbra-zone/ui/components/ui/box';
+import { Box } from '@penumbra-zone/ui-deprecated/components/ui/box';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
 import { getAmount, getBalanceView } from '@penumbra-zone/getters/balances-response';
 import { ArrowRight } from 'lucide-react';
@@ -15,7 +15,7 @@ import { zeroValueView } from '../../../utils/zero-value-view';
 import { isValidAmount } from '../../../state/helpers';
 import { NonNativeFeeWarning } from '../../shared/non-native-fee-warning';
 import { NumberInput } from '../../shared/number-input';
-import { useBalancesResponses, useAssets } from '../../../state/shared';
+import { useAssets, useBalancesResponses } from '../../../state/shared';
 import { getBalanceByMatchingMetadataAndAddressIndex } from '../../../state/swap/getters';
 import {
   swappableAssetsSelector,
@@ -66,6 +66,7 @@ export const TokenSwapInput = () => {
 
   const maxAmount = getAmount.optional(assetIn);
   const maxAmountAsString = maxAmount ? joinLoHiAmount(maxAmount).toString() : undefined;
+  const assetInAccount = assetIn && getAddressIndex(assetIn.accountAddress).account;
 
   const setInputToBalanceMax = () => {
     if (assetIn?.balanceView) {
@@ -93,7 +94,7 @@ export const TokenSwapInput = () => {
           {assetIn && (
             <div className='ml-auto hidden h-full flex-col justify-end self-end sm:flex'>
               <span className='mr-2 block whitespace-nowrap text-xs text-muted-foreground'>
-                Account #{getAddressIndex(assetIn.accountAddress).account}
+                {assetInAccount === 0 ? 'Main Account' : `Sub-Account #${assetInAccount}`}
               </span>
             </div>
           )}
@@ -141,12 +142,13 @@ export const TokenSwapInput = () => {
       </div>
 
       <NonNativeFeeWarning
-        balancesResponses={balancesResponses?.data}
         amount={Number(amount)}
+        balancesResponses={balancesResponses?.data}
         source={assetIn}
         wrap={children => (
           <>
-            {/* This div adds an empty line */} <div className='h-4' />
+            {/* This div adds an empty line */}
+            <div className='h-4' />
             {children}
           </>
         )}

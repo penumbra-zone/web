@@ -1,7 +1,7 @@
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
-import { AccountSwitcher } from '@penumbra-zone/ui/components/ui/account-switcher';
-import { CopyToClipboard } from '@penumbra-zone/ui/components/ui/copy-to-clipboard';
+import { AccountSwitcher } from '@penumbra-zone/ui-deprecated/components/ui/account-switcher';
+import { CopyToClipboard } from '@penumbra-zone/ui-deprecated/components/ui/copy-to-clipboard';
 import { useEffect } from 'react';
 
 const addrsSelector = ({ ibcIn }: AllSlices) => ({

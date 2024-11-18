@@ -1,6 +1,5 @@
 import { ReactNode } from 'react';
-import { Density as TDensity } from '../types/Density';
-import { DensityContext } from '../utils/DensityContext';
+import { Density as TDensity, DensityContext } from '../utils/density';
 
 export type DensityProps<SelectedDensity extends TDensity> = {
   children?: ReactNode;

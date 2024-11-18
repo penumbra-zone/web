@@ -1,16 +1,16 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { Dialog } from '@penumbra-zone/ui/Dialog';
-import { Button } from '@penumbra-zone/ui/components/ui/button';
-import { Toaster } from '@penumbra-zone/ui/components/ui/toaster';
-import { SplashPage } from '@penumbra-zone/ui/components/ui/splash-page';
-import { errorToast, warningToast } from '@penumbra-zone/ui/lib/toast/presets';
+import { Dialog } from '@penumbra-zone/ui-deprecated/Dialog';
+import { Button } from '@penumbra-zone/ui-deprecated/components/ui/button';
+import { Toaster } from '@penumbra-zone/ui-deprecated/components/ui/toaster';
+import { SplashPage } from '@penumbra-zone/ui-deprecated/components/ui/splash-page';
+import { errorToast, warningToast } from '@penumbra-zone/ui-deprecated/lib/toast/presets';
 import {
-  PenumbraRequestFailure,
   PenumbraClient,
   PenumbraManifest,
   PenumbraNotInstalledError,
+  PenumbraRequestFailure,
 } from '@penumbra-zone/client';
 
 import { penumbra } from '../penumbra.ts';
@@ -92,7 +92,7 @@ export const ExtensionNotConnected = () => {
 
       <SplashPage title='Connect to Penumbra'>
         <div className='flex items-center justify-between gap-[1em] text-lg'>
-          <div>To get started, connect the Penumbra Chrome extension.</div>
+          <div>To get started, connect to Prax Wallet.</div>
           {!result ? (
             <Button variant='gradient' onClick={checkProviders}>
               Connect

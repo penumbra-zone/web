@@ -1,5 +1,5 @@
 import { useLoaderData } from 'react-router-dom';
-import { Card } from '@penumbra-zone/ui/components/ui/card';
+import { Card } from '@penumbra-zone/ui-deprecated/components/ui/card';
 import { IndexLoaderResponse } from '../fetching/loader';
 import { PublicKey } from '@penumbra-zone/protobuf/tendermint/crypto/keys_pb';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';

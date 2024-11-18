@@ -7,8 +7,13 @@ import { TransactionPlannerRequest } from '@penumbra-zone/protobuf/penumbra/view
 import { fvkCtx } from '../../ctx/full-viewing-key.js';
 import { extractAltFee } from '../fees.js';
 import { assertTransactionSource } from './assert-transaction-source.js';
+import { TransactionPlan } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import { assertSpendMax } from './assert-max-spends.js';
+import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
 
 export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) => {
+  // Pre-checks before the transaction planning process begins.
+  // This ensures that the initial transaction planner request is valid.
   assertValidRequest(req);
 
   const services = await ctx.values.get(servicesCtx)();
@@ -51,6 +56,10 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
   const fvk = await ctx.values.get(fvkCtx)();
   const plan = await planTransaction(idbConstants, req, fvk, gasFeeToken);
 
+  // Post-checks after the transaction plan is fully formed, providing an extra layer of validation
+  // to ensure the plan adheres to all necessary rules.
+  await assertValidPlan(req, plan, indexedDb);
+
   return { plan };
 };
 
@@ -72,4 +81,14 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
 const assertValidRequest = (req: TransactionPlannerRequest): void => {
   assertSwapAssetsAreNotTheSame(req);
   assertTransactionSource(req);
+};
+
+const assertValidPlan = async (
+  req: TransactionPlannerRequest,
+  plan: TransactionPlan,
+  indexedDb: IndexedDbInterface,
+): Promise<void> => {
+  // Perform additional checks specifically focused on ensuring that
+  // transactions intending to spend the maximum amount are valid.
+  await assertSpendMax(req, plan, indexedDb);
 };

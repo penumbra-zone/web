@@ -1,80 +1,15 @@
 import { forwardRef, MouseEventHandler } from 'react';
-import { styled, css } from 'styled-components';
 import { ChevronsUpDownIcon } from 'lucide-react';
-import { motion } from 'framer-motion';
+import cn from 'clsx';
 import { getMetadataFromBalancesResponse } from '@penumbra-zone/getters/balances-response';
-import { ActionType, getOutlineColorByActionType } from '../utils/ActionType.ts';
-import { Density } from '../types/Density.ts';
-import { useDensity } from '../hooks/useDensity';
-import { asTransientProps } from '../utils/asTransientProps.ts';
+import { ActionType, getFocusOutlineColorByActionType } from '../utils/action-type';
+import { useDensity } from '../utils/density';
 import { Icon } from '../Icon';
 import { Text } from '../Text';
 import { AssetIcon } from '../AssetIcon';
 import { isMetadata } from './shared/helpers.ts';
-import { Dialog } from '../Dialog/index.tsx';
-import { AssetSelectorValue } from './shared/types.ts';
-
-const SparseButton = css`
-  height: ${props => props.theme.spacing(12)};
-  padding: 0 ${props => props.theme.spacing(3)};
-`;
-
-const CompactButton = css`
-  height: ${props => props.theme.spacing(8)};
-  padding: 0 ${props => props.theme.spacing(2)};
-`;
-
-const Trigger = styled(motion.button)<{ $density: Density; $actionType: ActionType }>`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: ${props => props.theme.spacing(1)};
-  min-width: ${props => props.theme.spacing(20)};
-  border-radius: ${props => props.theme.borderRadius.none};
-  background: ${props => props.theme.color.other.tonalFill5};
-  transition:
-    background 0.15s,
-    outline 0.15s;
-
-  ${props => (props.$density === 'sparse' ? SparseButton : CompactButton)};
-
-  &:hover {
-    background-color: ${props => props.theme.color.action.hoverOverlay};
-  }
-
-  &:focus {
-    color: ${props => props.theme.color.text.secondary};
-    background: ${props => props.theme.color.other.tonalFill5};
-    outline: 2px solid ${props => getOutlineColorByActionType(props.theme, props.$actionType)};
-  }
-
-  &:disabled {
-    background: linear-gradient(
-        0deg,
-        ${props => props.theme.color.action.disabledOverlay} 0%,
-        ${props => props.theme.color.action.disabledOverlay} 100%
-      ),
-      ${props => props.theme.color.other.tonalFill10};
-  }
-`;
-
-const Value = styled.div<{ $density: Density; $actionType: ActionType }>`
-  display: flex;
-  align-items: center;
-  gap: ${props => props.theme.spacing(props.$density === 'sparse' ? 2 : 1)};
-`;
-
-const IconAdornment = styled.i<{ $disabled?: boolean }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: ${props => props.theme.spacing(1)};
-  width: ${props => props.theme.spacing(6)};
-  height: ${props => props.theme.spacing(6)};
-  border-radius: ${props => props.theme.borderRadius.full};
-  background-color: ${props =>
-    props.$disabled ? props.theme.color.action.disabledOverlay : 'transparent'};
-`;
+import { Dialog } from '../Dialog';
+import { AssetSelectorValue } from './shared/types';
 
 export interface AssetSelectorTriggerProps {
   value?: AssetSelectorValue;
@@ -85,41 +20,53 @@ export interface AssetSelectorTriggerProps {
 }
 
 export const AssetSelectorTrigger = forwardRef<HTMLButtonElement, AssetSelectorTriggerProps>(
-  ({ value, actionType = 'default', disabled, onClick, layoutId }, ref) => {
+  ({ value, actionType = 'default', disabled, onClick }, ref) => {
     const density = useDensity();
 
     const metadata = isMetadata(value) ? value : getMetadataFromBalancesResponse.optional(value);
 
     return (
       <Dialog.Trigger asChild>
-        <Trigger
+        <button
           ref={ref}
-          layoutId={layoutId}
+          type='button'
           disabled={disabled}
-          {...asTransientProps({ density, actionType })}
           onClick={onClick}
+          className={cn(
+            'flex items-center justify-between gap-1 min-w-20 rounded-none bg-other-tonalFill5',
+            'transition-[background-color,outline-color] duration-150 outline outline-2 outline-transparent',
+            density === 'sparse' ? 'h-12 py-0 px-3' : 'h-8 py-0 px-2',
+            'hover:bg-action-hoverOverlay disabled:bg-buttonDisabled',
+            'focus:text-text-secondary focus:bg-other-tonalFill5',
+            getFocusOutlineColorByActionType(actionType),
+          )}
         >
           {!value ? (
-            <Text small color={color => (disabled ? color.text.muted : color.text.primary)}>
+            <Text small color={disabled ? 'text.muted' : 'text.primary'}>
               Asset
             </Text>
           ) : (
-            <Value {...asTransientProps({ density, actionType })}>
+            <div className={cn('flex items-center', density === 'sparse' ? 'gap-2' : 'gap-1')}>
               <AssetIcon metadata={metadata} size={density === 'sparse' ? 'lg' : 'md'} />
-              <Text color={color => (disabled ? color.text.muted : color.text.primary)}>
+              <Text color={disabled ? 'text.muted' : 'text.primary'}>
                 {metadata?.symbol ?? 'Unknown'}
               </Text>
-            </Value>
+            </div>
           )}
 
-          <IconAdornment $disabled={disabled}>
+          <i
+            className={cn(
+              'flex items-center justify-center p-1 size-6 rounded-full',
+              disabled ? 'bg-action-disabledOverlay' : 'bg-transparent',
+            )}
+          >
             <Icon
               IconComponent={ChevronsUpDownIcon}
               size='sm'
-              color={color => (disabled ? color.text.muted : color.text.primary)}
+              color={disabled ? 'text.muted' : 'text.primary'}
             />
-          </IconAdornment>
-        </Trigger>
+          </i>
+        </button>
       </Dialog.Trigger>
     );
   },

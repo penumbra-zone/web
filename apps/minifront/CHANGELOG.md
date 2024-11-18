@@ -1,5 +1,61 @@
 # minifront
 
+## 6.24.6
+
+### Patch Changes
+
+- ebdacb9: Use Sub-Account terminology
+
+## 6.24.5
+
+### Patch Changes
+
+- Updated dependencies [fcb025d]
+  - @penumbra-zone/ui@12.4.0
+
+## 6.24.4
+
+### Patch Changes
+
+- Updated dependencies [2484bdc]
+  - @penumbra-zone/ui@12.3.0
+
+## 6.24.3
+
+### Patch Changes
+
+- 6e3fc9d: Supporting forward compatible parsing of Metadata from remote registry
+
+## 6.24.2
+
+### Patch Changes
+
+- Updated dependencies [185728a]
+  - @penumbra-zone/ui@12.2.1
+
+## 6.24.1
+
+### Patch Changes
+
+- Updated dependencies [ef1a89d]
+  - @penumbra-zone/ui@12.2.0
+
+## 6.24.0
+
+### Minor Changes
+
+- b5d2922: send max feature
+
+### Patch Changes
+
+- Updated dependencies [e3778eb]
+- Updated dependencies [7c1d4e7]
+- Updated dependencies [b5d2922]
+  - @penumbra-zone/ui@12.1.0
+  - @penumbra-zone/types@26.1.0
+  - @penumbra-zone/crypto-web@28.0.0
+  - @penumbra-zone/perspective@36.0.0
+
 ## 6.23.3
 
 ### Patch Changes

@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
 import { Text } from '.';
-import { styled } from 'styled-components';
 import { useArgs } from '@storybook/preview-api';
 
 const meta: Meta<typeof Text> = {
@@ -28,13 +27,6 @@ const meta: Meta<typeof Text> = {
   },
 };
 export default meta;
-
-const Wrapper = styled.div<{ $dir: 'column' | 'row' }>`
-  display: flex;
-  flex-direction: ${props => props.$dir};
-  ${props => (props.$dir === 'row' ? `align-items: center;` : '')}
-  gap: ${props => props.theme.spacing(2)};
-`;
 
 const OPTIONS = [
   'h1',
@@ -95,16 +87,16 @@ export const KitchenSink: StoryObj<typeof Text> = {
       );
 
     return (
-      <Wrapper as='form' $dir='column'>
-        <Wrapper $dir='row'>
+      <form className='flex flex-col gap-2 text-text-primary'>
+        <div className='flex items-center gap-2'>
           <Text>Text style:</Text>
           {OPTIONS.map(option => (
             <Option key={option} value={option} checked={!!props[option]} onSelect={onSelect} />
           ))}
-        </Wrapper>
+        </div>
 
         <Text {...props} />
-      </Wrapper>
+      </form>
     );
   },
 };
@@ -112,7 +104,7 @@ export const KitchenSink: StoryObj<typeof Text> = {
 export const UsageExample: StoryObj<typeof Text> = {
   render: function Render() {
     return (
-      <>
+      <div className='text-text-primary'>
         <Text h1>h1. Typography</Text>
         <Text h2>h2. This is a section</Text>
         <Text p>
@@ -153,7 +145,7 @@ export const UsageExample: StoryObj<typeof Text> = {
           academy award day-for-night christopher nolan undercranking. Unreal engine visionary match
           cut grain vs. noise 35mm anti-hero production design.
         </Text>
-      </>
+      </div>
     );
   },
 };

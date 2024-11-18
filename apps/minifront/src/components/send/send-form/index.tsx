@@ -1,5 +1,5 @@
-import { Button } from '@penumbra-zone/ui/components/ui/button';
-import { Input } from '@penumbra-zone/ui/components/ui/input';
+import { Button } from '@penumbra-zone/ui-deprecated/components/ui/button';
+import { Input } from '@penumbra-zone/ui-deprecated/components/ui/input';
 import { useStore } from '../../../state';
 import { sendSelector, sendValidationErrors } from '../../../state/send';
 import { InputBlock } from '../../shared/input-block';
@@ -13,10 +13,13 @@ import { transferableBalancesResponsesSelector } from '../../../state/send/helpe
 import { useRefreshFee } from '../../v2/transfer-layout/send-page/use-refresh-fee';
 
 export const SendForm = () => {
+  // Retrieve the staking token metadata and gas prices from the zustand
   const stakingTokenMetadata = useStakingTokenMetadata();
+
   const transferableBalancesResponses = useBalancesResponses({
     select: transferableBalancesResponsesSelector,
   });
+
   const {
     selection,
     amount,

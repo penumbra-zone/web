@@ -16,7 +16,7 @@ import {
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
 import { PartialMessage } from '@bufbuild/protobuf';
-import { TransactionToast } from '@penumbra-zone/ui/lib/toast/transaction-toast';
+import { TransactionToast } from '@penumbra-zone/ui-deprecated/lib/toast/transaction-toast';
 import { TransactionClassification } from '@penumbra-zone/perspective/transaction/classification';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import { fromValueView } from '@penumbra-zone/types/amount';

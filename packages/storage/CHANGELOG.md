@@ -1,5 +1,23 @@
 # @penumbra-zone/storage
 
+## 36.0.1
+
+### Patch Changes
+
+- 6e3fc9d: Supporting forward compatible parsing of Metadata from remote registry
+
+## 36.0.0
+
+### Minor Changes
+
+- b5d2922: send max feature
+
+### Patch Changes
+
+- Updated dependencies [b5d2922]
+  - @penumbra-zone/types@26.1.0
+  - @penumbra-zone/wasm@32.0.0
+
 ## 35.0.0
 
 ### Patch Changes

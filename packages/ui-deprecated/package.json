@@ -1,0 +1,150 @@
+{
+  "name": "@penumbra-zone/ui-deprecated",
+  "version": "12.4.0",
+  "private": true,
+  "license": "(MIT OR Apache-2.0)",
+  "description": "UI components for Penumbra",
+  "type": "module",
+  "engine": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "vite build",
+    "build-storybook": "storybook build",
+    "dev:pack": "VITE_WATCH=true vite build --watch",
+    "lint": "eslint components lib src",
+    "lint:fix": "eslint components lib src --fix",
+    "lint:strict": "tsc --noEmit && eslint components lib src --max-warnings 0",
+    "storybook": "storybook dev -p 6006",
+    "test": "vitest run"
+  },
+  "files": [
+    "dist",
+    "components",
+    "lib",
+    "styles",
+    "postcss.config.js"
+  ],
+  "exports": {
+    "./components/ui/icons/*": "./components/ui/icons/*.tsx",
+    "./components/ui/*": "./components/ui/*/index.tsx",
+    "./lib/toast/*": "./lib/toast/*.ts",
+    "./lib/toast/transaction-toast": "./lib/toast/transaction-toast.tsx",
+    "./lib/utils": "./lib/utils.ts",
+    "./tailwind": "./src/tailwindConfig.ts",
+    "./postcss.config.js": "./postcss.config.js",
+    "./styles/*": "./styles/*",
+    "./theme": "./src/PenumbraUIProvider/theme.ts",
+    "./utils/*": "./src/utils/*.ts",
+    "./hooks/*": "./src/hooks/*/index.ts",
+    "./*": "./src/*/index.tsx"
+  },
+  "publishConfig": {
+    "exports": {
+      "./tailwind": {
+        "types": "./dist/src/tailwindConfig.d.ts",
+        "default": "./dist/src/tailwindConfig.js"
+      },
+      "./components/*": {
+        "types": "./dist/components/ui/*.d.ts",
+        "default": "./dist/components/ui/*.js"
+      },
+      "./utils/typography": {
+        "types": "./dist/src/utils/typography.d.ts",
+        "default": "./dist/src/utils/typography.js"
+      },
+      "./*": {
+        "types": "./dist/src/*/index.d.ts",
+        "default": "./dist/src/*/index.js"
+      }
+    }
+  },
+  "dependencies": {
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@penumbra-zone/bech32m": "workspace:*",
+    "@penumbra-zone/perspective": "workspace:*",
+    "@penumbra-zone/types": "workspace:*",
+    "@radix-ui/react-avatar": "^1.0.4",
+    "@radix-ui/react-checkbox": "^1.0.4",
+    "@radix-ui/react-dialog": "1.0.5",
+    "@radix-ui/react-dropdown-menu": "^2.1.1",
+    "@radix-ui/react-icons": "^1.3.0",
+    "@radix-ui/react-navigation-menu": "^1.1.4",
+    "@radix-ui/react-popover": "^1.0.7",
+    "@radix-ui/react-progress": "^1.0.3",
+    "@radix-ui/react-radio-group": "^1.2.0",
+    "@radix-ui/react-select": "^2.1.1",
+    "@radix-ui/react-slider": "^1.1.2",
+    "@radix-ui/react-slot": "^1.0.2",
+    "@radix-ui/react-switch": "^1.0.3",
+    "@radix-ui/react-tabs": "^1.0.4",
+    "@radix-ui/react-toast": "^1.1.5",
+    "@radix-ui/react-toggle": "^1.0.3",
+    "@radix-ui/react-tooltip": "^1.0.7",
+    "@textea/json-viewer": "^3.4.1",
+    "@visx/axis": "^3.10.1",
+    "@visx/curve": "^3.3.0",
+    "@visx/grid": "^3.5.0",
+    "@visx/group": "^3.3.0",
+    "@visx/responsive": "^3.10.2",
+    "@visx/scale": "^3.5.0",
+    "@visx/shape": "^3.5.0",
+    "@visx/stats": "^3.5.0",
+    "@visx/threshold": "^3.5.0",
+    "@visx/tooltip": "^3.3.0",
+    "bignumber.js": "^9.1.2",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
+    "cmdk": "0.2.0",
+    "framer-motion": "^11.2.4",
+    "humanize-duration": "^3.32.0",
+    "lucide-react": "^0.378.0",
+    "murmurhash3js": "^3.0.1",
+    "react-dom": "^18.3.1",
+    "react-loader-spinner": "^6.1.6",
+    "react-router-dom": "^6.23.1",
+    "sonner": "1.4.3",
+    "styled-components": "^6.1.11",
+    "tailwind-merge": "^2.3.0",
+    "tinycolor2": "^1.6.0",
+    "ua-parser-js": "^1.0.38"
+  },
+  "devDependencies": {
+    "@penumbra-zone/getters": "workspace:*",
+    "@penumbra-zone/protobuf": "workspace:*",
+    "@storybook/addon-essentials": "^8.4.2",
+    "@storybook/addon-interactions": "^8.4.2",
+    "@storybook/addon-links": "^8.1.1",
+    "@storybook/addon-postcss": "^2.0.0",
+    "@storybook/blocks": "^8.4.2",
+    "@storybook/manager-api": "^8.1.11",
+    "@storybook/preview-api": "^8.1.1",
+    "@storybook/react": "^8.4.2",
+    "@storybook/react-vite": "^8.4.2",
+    "@storybook/theming": "^8.1.11",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/humanize-duration": "^3.27.4",
+    "@types/murmurhash3js": "^3.0.7",
+    "@types/react": "^18.3.2",
+    "@types/react-dom": "^18.3.0",
+    "@types/styled-components": "^5.1.34",
+    "@types/tinycolor2": "^1.4.6",
+    "@types/ua-parser-js": "^0.7.39",
+    "execa": "^9.5.1",
+    "prop-types": "^15.8.1",
+    "storybook": "^8.4.2",
+    "vite": "^5.2.11",
+    "vite-plugin-dts": "^4.0.3"
+  },
+  "peerDependencies": {
+    "@bufbuild/protobuf": "^1.10.0",
+    "@penumbra-zone/protobuf": "workspace:*",
+    "framer-motion": "^11.2.4",
+    "lucide-react": "^0.378.0",
+    "postcss": "^8.4.38",
+    "react": "^18.3.1",
+    "styled-components": "^6.1.11",
+    "tailwindcss": "^3.4.3"
+  }
+}

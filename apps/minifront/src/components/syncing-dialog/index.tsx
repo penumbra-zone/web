@@ -1,9 +1,9 @@
-import { Dialog } from '@penumbra-zone/ui/Dialog';
+import { Dialog } from '@penumbra-zone/ui-deprecated/Dialog';
 import { statusSelector, useStatus } from '../../state/status';
 import { SyncAnimation } from './sync-animation';
-import { Text } from '@penumbra-zone/ui/Text';
+import { Text } from '@penumbra-zone/ui-deprecated/Text';
 import { useEffect, useState } from 'react';
-import { useSyncProgress } from '@penumbra-zone/ui/components/ui/block-sync-status';
+import { useSyncProgress } from '@penumbra-zone/ui-deprecated/components/ui/block-sync-status';
 
 export const SyncingDialog = () => {
   const status = useStatus({

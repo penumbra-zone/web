@@ -1,9 +1,7 @@
-import { styled, DefaultTheme } from 'styled-components';
-import { asTransientProps } from '../utils/asTransientProps';
 import { ReactNode } from 'react';
 import { body, technical, detail, detailTechnical } from '../utils/typography';
-import { Density } from '../types/Density';
-import { useDensity } from '../hooks/useDensity';
+import { Density, useDensity } from '../utils/density';
+import cn from 'clsx';
 
 type Priority = 'primary' | 'secondary';
 type Context =
@@ -20,66 +18,44 @@ const getFont = (context: Context, density: Density) => {
   return density === 'sparse' ? technical : detailTechnical;
 };
 
-const getXPadding = (priority: Priority, density: Density) => {
-  let padding = density === 'sparse' ? 3 : 2;
+const getXPadding = (priority: Priority, density: Density): string => {
   if (priority === 'secondary') {
-    padding = padding - 0.5;
+    return density === 'sparse' ? 'pr-[10px] pl-[10px]' : 'pr-[6px] pl-[6px]';
   }
-  return padding;
+  return density === 'sparse' ? 'pr-3 pl-3' : 'pr-2 pl-2';
 };
 
-const getBackgroundColor = (theme: DefaultTheme, priority: Priority, context: Context) => {
+const getBackgroundColor = (priority: Priority, context: Context) => {
   if (priority === 'secondary') {
-    return 'transparent';
+    return 'bg-transparent';
   }
+
   const colorMap: Record<Context, string> = {
-    default: theme.color.other.tonalFill10,
-    'technical-default': theme.color.other.tonalFill10,
-    'technical-success': theme.color.secondary.light,
-    'technical-caution': theme.color.caution.light,
-    'technical-destructive': theme.color.destructive.light,
+    default: cn('bg-other-tonalFill10'),
+    'technical-default': cn('bg-other-tonalFill10'),
+    'technical-success': cn('bg-secondary-light'),
+    'technical-caution': cn('bg-caution-light'),
+    'technical-destructive': cn('bg-destructive-light'),
   };
   return colorMap[context];
 };
 
-const getColor = (theme: DefaultTheme, priority: Priority, context: Context) => {
+const getColor = (priority: Priority, context: Context): string => {
   if (priority === 'primary') {
     return context === 'default' || context === 'technical-default'
-      ? theme.color.text.primary
-      : theme.color.secondary.dark;
+      ? cn('text-text-primary')
+      : cn('text-secondary-dark');
   }
 
   const colorMap: Record<Context, string> = {
-    default: theme.color.text.primary,
-    'technical-default': theme.color.text.primary,
-    'technical-success': theme.color.secondary.light,
-    'technical-caution': theme.color.caution.light,
-    'technical-destructive': theme.color.destructive.light,
+    default: cn('text-text-primary'),
+    'technical-default': cn('text-text-primary'),
+    'technical-success': cn('text-secondary-light'),
+    'technical-caution': cn('text-caution-light'),
+    'technical-destructive': cn('text-destructive-light'),
   };
   return colorMap[context];
 };
-
-const Root = styled.span<{ $density: Density; $priority: Priority; $context: Context }>`
-  box-sizing: border-box;
-
-  border: ${props =>
-    props.$priority === 'secondary' ? `2px dashed ${props.theme.color.other.tonalStroke}` : 'none'};
-  border-radius: ${props => props.theme.borderRadius.full};
-
-  display: inline-block;
-  max-width: 100%;
-  width: max-content;
-
-  padding-top: ${props => props.theme.spacing(props.$priority === 'secondary' ? 0.5 : 1)};
-  padding-bottom: ${props => props.theme.spacing(props.$priority === 'secondary' ? 0.5 : 1)};
-
-  padding-left: ${props => props.theme.spacing(getXPadding(props.$priority, props.$density))};
-  padding-right: ${props => props.theme.spacing(getXPadding(props.$priority, props.$density))};
-
-  ${props => getFont(props.$context, props.$density)};
-  color: ${props => getColor(props.theme, props.$priority, props.$context)};
-  background-color: ${props => getBackgroundColor(props.theme, props.$priority, props.$context)};
-`;
 
 export interface PillProps {
   children: ReactNode;
@@ -90,5 +66,21 @@ export interface PillProps {
 export const Pill = ({ children, priority = 'primary', context = 'default' }: PillProps) => {
   const density = useDensity();
 
-  return <Root {...asTransientProps({ density, priority, context })}>{children}</Root>;
+  return (
+    <span
+      className={cn(
+        getFont(context, density),
+        getColor(priority, context),
+        getBackgroundColor(priority, context),
+        'box-border inline-block max-w-full w-max rounded-full',
+        priority === 'secondary'
+          ? 'border-2 border-dashed border-other-tonalStroke'
+          : 'border-none',
+        priority === 'secondary' ? 'pt-[2px] pb-[2px]' : 'pt-1 pb-1',
+        getXPadding(priority, density),
+      )}
+    >
+      {children}
+    </span>
+  );
 };

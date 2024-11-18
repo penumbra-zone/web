@@ -1,7 +1,7 @@
-import { Button } from '@penumbra-zone/ui/Button';
-import { CharacterTransition } from '@penumbra-zone/ui/CharacterTransition';
-import { Dialog } from '@penumbra-zone/ui/Dialog';
-import { Text } from '@penumbra-zone/ui/Text';
+import { Button } from '@penumbra-zone/ui-deprecated/Button';
+import { CharacterTransition } from '@penumbra-zone/ui-deprecated/CharacterTransition';
+import { Dialog } from '@penumbra-zone/ui-deprecated/Dialog';
+import { Text } from '@penumbra-zone/ui-deprecated/Text';
 import { Info } from 'lucide-react';
 import { useId } from 'react';
 

@@ -2,7 +2,7 @@ import plugin from 'tailwindcss/plugin';
 import tailwindCssAnimatePlugin from 'tailwindcss-animate';
 
 // TODO: Replace the theme to v2 instead of partially using it
-import { tailwindConfig as v2TailwindConfig } from '@penumbra-zone/ui/tailwind';
+import { tailwindConfig as v2TailwindConfig } from '@penumbra-zone/ui-deprecated/tailwind';
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -11,7 +11,8 @@ export default {
     './components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
-    '../../packages/ui/components/**/*.{ts,tsx}',
+    '../../packages/ui-deprecated/components/**/*.{ts,tsx}',
+    './node_modules/@penumbra-zone/ui-deprecated/components/**/*.{ts,tsx}',
     './shared/**/*.{ts,tsx}',
   ],
   theme: {

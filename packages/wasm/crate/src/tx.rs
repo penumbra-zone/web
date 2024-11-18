@@ -116,64 +116,6 @@ pub fn witness_inner(plan: TransactionPlan, stored_tree: StoredTree) -> WasmResu
     Ok(witness_data)
 }
 
-/// Build serial tx
-/// Building a transaction may take some time,
-/// depending on CPU performance and number of actions in transaction_plan
-/// Arguments:
-///     full_viewing_key: `byte representation inner FullViewingKey`
-///     transaction_plan: `pb::TransactionPlan`
-///     witness_data: `pb::WitnessData`
-///     auth_data: `pb::AuthorizationData`
-/// Returns: `pb::Transaction`
-#[wasm_bindgen]
-pub fn build(
-    full_viewing_key: &[u8],
-    transaction_plan: &[u8],
-    witness_data: &[u8],
-    auth_data: &[u8],
-) -> WasmResult<Vec<u8>> {
-    utils::set_panic_hook();
-
-    let plan = TransactionPlan::decode(transaction_plan)?;
-    let witness = WitnessData::decode(witness_data)?;
-    let auth = AuthorizationData::decode(auth_data)?;
-    let fvk: FullViewingKey = FullViewingKey::decode(full_viewing_key)?;
-
-    let tx: Transaction = plan.build(&fvk, &witness, &auth)?;
-
-    Ok(tx.encode_to_vec())
-}
-
-/// Build parallel tx
-/// Building a transaction may take some time,
-/// depending on CPU performance and number of actions in transaction_plan
-/// Arguments:
-///     actions: `Vec<Actions>`
-///     transaction_plan: `pb::TransactionPlan`
-///     witness_data: `pb::WitnessData`
-///     auth_data: `pb::AuthorizationData`
-/// Returns: `pb::Transaction`
-#[wasm_bindgen]
-pub fn build_parallel(
-    actions: JsValue,
-    transaction_plan: &[u8],
-    witness_data: &[u8],
-    auth_data: &[u8],
-) -> WasmResult<Vec<u8>> {
-    utils::set_panic_hook();
-
-    let plan = TransactionPlan::decode(transaction_plan)?;
-    let witness = WitnessData::decode(witness_data)?;
-    let auth = AuthorizationData::decode(auth_data)?;
-    let actions: Vec<Action> = serde_wasm_bindgen::from_value(actions)?;
-
-    let transaction = plan.clone().build_unauth_with_actions(actions, &witness)?;
-
-    let tx = plan.apply_auth_data(&auth, transaction)?;
-
-    Ok(tx.encode_to_vec())
-}
-
 #[wasm_bindgen(getter_with_clone)]
 pub struct TxpAndTxvBytes {
     pub txp: Vec<u8>,

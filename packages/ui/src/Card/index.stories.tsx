@@ -2,39 +2,23 @@ import type { Meta, StoryObj } from '@storybook/react';
 
 import { Card } from '.';
 
-import storiesBg from './storiesBg.jpg';
-import { styled } from 'styled-components';
 import { Text } from '../Text';
-import { FormField } from '../FormField';
-import { TextInput } from '../TextInput';
 import { useState } from 'react';
 import { Button } from '../Button';
 import { Tabs } from '../Tabs';
 import { Send } from 'lucide-react';
-
-const BgWrapper = styled.div`
-  padding: ${props => props.theme.spacing(20)};
-  position: relative;
-
-  &::before {
-    content: '';
-    background: url(${storiesBg}) center / cover;
-    opacity: 0.6;
-    filter: blur(4px);
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-  }
-`;
 
 const meta: Meta<typeof Card> = {
   component: Card,
   tags: ['autodocs', '!dev'],
   decorators: [
     Story => (
-      <BgWrapper>
+      <div
+        className='text-text-primary -before:z-[1] before:bg-[url("https://images.unsplash.com/photo-1517405404692-6eddc8fb975f?q=80&w=2970&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D")] relative p-20 before:absolute before:inset-0 before:bg-caution-main before:opacity-60 before:blur-sm before:content-[""]'
+        style={{}}
+      >
         <Story />
-      </BgWrapper>
+      </div>
     ),
   ],
   argTypes: {
@@ -55,7 +39,6 @@ export const Basic: Story = {
 
   render: function Render({ as, title }) {
     const [tab, setTab] = useState('one');
-    const [textInput, setTextInput] = useState('');
 
     return (
       <Card as={as} title={title}>
@@ -89,18 +72,6 @@ export const Basic: Story = {
               Card sections in a stack are useful for forms: each field of the form can be wrapped
               in a <Text technical>&lt;Card.Section /&gt;</Text>.
             </Text>
-          </Card.Section>
-          <Card.Section>
-            <FormField
-              label='Sample form field'
-              helperText="Here's an example of a form field inside a card section."
-            >
-              <TextInput
-                value={textInput}
-                onChange={setTextInput}
-                placeholder='Type something...'
-              />
-            </FormField>
           </Card.Section>
         </Card.Stack>
         <Button actionType='accent' icon={Send}>
