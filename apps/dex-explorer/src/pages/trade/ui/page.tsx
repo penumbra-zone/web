@@ -9,10 +9,12 @@ import { Summary } from '@/pages/trade/ui/summary.tsx';
 export const TradePage = () => {
   return (
     <div>
-      <div className='flex gap-2'>
-        <PairSelector />
-      </div>
-      <div>
+      <hr className='h-[1px] w-full border-t border-t-other-solidStroke' />
+
+      <div className='flex flex-col items-start desktop:items-center desktop:flex-row p-4 gap-4 border-b border-b-other-solidStroke'>
+        <div className='flex gap-2 h-8'>
+          <PairSelector />
+        </div>
         <Summary />
       </div>
 
