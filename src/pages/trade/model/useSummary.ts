@@ -1,8 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { usePathSymbols } from '@/pages/trade/model/use-path.ts';
 import { SummaryResponse } from '@/shared/api/server/summary.ts';
+import { DurationWindow } from '@/shared/utils/duration.ts';
 
-export const useSummary = () => {
+export const useSummary = (window: DurationWindow) => {
   const { baseSymbol, quoteSymbol } = usePathSymbols();
 
   return useQuery({
@@ -10,6 +11,7 @@ export const useSummary = () => {
     retry: 1,
     queryFn: async () => {
       const paramsObj = {
+        durationWindow: window,
         baseAsset: baseSymbol,
         quoteAsset: quoteSymbol,
       };
