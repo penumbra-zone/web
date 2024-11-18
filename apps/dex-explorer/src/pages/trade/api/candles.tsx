@@ -3,7 +3,7 @@ import { useRefetchOnNewBlock } from '@/shared/api/compact-block.ts';
 import { CandleApiResponse } from '@/shared/api/server/candles/types.ts';
 import { usePathSymbols } from '@/pages/trade/model/use-path.ts';
 import { OhlcData } from 'lightweight-charts';
-import { DurationWindow } from '@/shared/database/schema.ts';
+import { DurationWindow } from '@/shared/utils/duration.ts';
 
 export const useCandles = (durationWindow: DurationWindow) => {
   const { baseSymbol, quoteSymbol } = usePathSymbols();

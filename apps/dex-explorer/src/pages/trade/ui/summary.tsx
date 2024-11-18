@@ -44,16 +44,13 @@ const SummaryCard = ({
 };
 
 export const Summary = () => {
-  const { data, isLoading, error } = useSummary();
+  const { data, isLoading, error } = useSummary('1d');
   const { quoteAsset } = usePathToMetadata();
 
   const change24h = data && {
-    positive: data.current_price >= data.price_24h_ago,
-    change: round(data.current_price - data.price_24h_ago, 4),
-    percent: round(
-      Math.abs(((data.current_price - data.price_24h_ago) / data.price_24h_ago) * 100),
-      2,
-    ),
+    positive: data.price >= data.price,
+    change: round(data.price - data.price, 4),
+    percent: round(Math.abs(((data.price - data.price) / data.price) * 100), 2),
   };
 
   if (error) {
@@ -71,7 +68,7 @@ export const Summary = () => {
       <SummaryCard title='Price' loading={isLoading}>
         {data && (
           <Text detail color='text.primary'>
-            {round(data.current_price, 6)}
+            {round(data.price, 6)}
           </Text>
         )}
       </SummaryCard>
@@ -99,16 +96,16 @@ export const Summary = () => {
         )}
       </SummaryCard>
       <SummaryCard title='24h High' loading={isLoading}>
-        {data && (
+        {data?.high && (
           <Text detail color='text.primary'>
-            {round(data.high_24h, 4)}
+            {round(data.high, 4)}
           </Text>
         )}
       </SummaryCard>
       <SummaryCard title='24h Low' loading={isLoading}>
-        {data && (
+        {data?.low && (
           <Text detail color='text.primary'>
-            {round(data.low_24h, 4)}
+            {round(data.low, 4)}
           </Text>
         )}
       </SummaryCard>
@@ -117,7 +114,7 @@ export const Summary = () => {
           <div className='flex items-center gap-1'>
             {quoteAsset && <AssetIcon metadata={quoteAsset} size='sm' />}
             <Text detail color='text.primary'>
-              {shortify(data.direct_volume_24h)}
+              {shortify(data.direct_volume_over_window)}
             </Text>
           </div>
         )}

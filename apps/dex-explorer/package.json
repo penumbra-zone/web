@@ -19,7 +19,8 @@
     "lint:fix": "eslint src --fix",
     "lint:strict": "tsc --noEmit && pnpm lint --max-warnings 0",
     "lint:prettier": "prettier --check .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "generate-pindexer-schema": "tsx ./scripts/generate-pindexer-schema.ts"
   },
   "dependencies": {
     "@bufbuild/protobuf": "^1.10.0",
@@ -104,6 +105,7 @@
     "eslint-config-next": "14.2.3",
     "eslint-plugin-react": "^7.35.2",
     "globals": "^15.9.0",
+    "kysely-codegen": "^0.17.0",
     "postcss": "^8.4.47",
     "styled-components": "^6.1.13",
     "tailwindcss": "^3.4.12",
