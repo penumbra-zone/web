@@ -234,7 +234,7 @@ async fn mock_build_serial_and_parallel() {
         memo: None,
         source: None,
         outputs: vec![Output {
-            address: Some(AddressProto { inner: "".into(), alt_bech32m: "penumbra1dugkjttfezh4gfkqs77377gnjlvmkkehusx6953udxeescc0qpgk6gqc0jmrsjq8xphzrg938843p0e63z09vt8lzzmef0q330e5njuwh4290n8pemcmx70sasym0lcjkstgzc".to_string() }.into()),
+            address: Some(AddressProto { inner: "".into(), alt_bech32m: "penumbra1dugkjttfezh4gfkqs77377gnjlvmkkehusx6953udxeescc0qpgk6gqc0jmrsjq8xphzrg938843p0e63z09vt8lzzmef0q330e5njuwh4290n8pemcmx70sasym0lcjkstgzc".to_string() }),
             value: Some(Value {
                 amount: 1u64.into(),
                 asset_id: decoded_id,
