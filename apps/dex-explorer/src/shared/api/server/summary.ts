@@ -1,18 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { pindexer } from '@/shared/database';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
-import { DexExPairsSummary, DexExPriceCharts } from '@/shared/database/schema.ts';
+import { DexExPairsSummary } from '@/shared/database/schema.ts';
 import { durationWindows, isDurationWindow } from '@/shared/utils/duration.ts';
 
-export interface PairSummaryWithPriceData {
-  price: DexExPairsSummary['price'];
-  direct_volume_over_window: DexExPairsSummary['direct_volume_over_window'];
-  // Null if join does not find match
-  high: DexExPriceCharts['high'] | null;
-  low: DexExPriceCharts['low'] | null;
-}
-
-export type SummaryResponse = PairSummaryWithPriceData | { error: string };
+export type SummaryResponse = DexExPairsSummary | { error: string };
 
 export async function GET(req: NextRequest): Promise<NextResponse<SummaryResponse>> {
   const chainId = process.env['PENUMBRA_CHAIN_ID'];
