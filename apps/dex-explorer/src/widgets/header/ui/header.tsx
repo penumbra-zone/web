@@ -7,7 +7,7 @@ import { Connection } from './connection';
 
 export const Header = () => {
   return (
-    <header className='flex items-center justify-between py-5'>
+    <header className='flex items-center justify-between p-4'>
       <HeaderLogo />
 
       <DesktopNav />
