@@ -29,6 +29,7 @@ use penumbra_wasm::{
     tx::{authorize, witness},
 };
 use std::str::FromStr;
+pub use utils::planner_setup::*;
 pub use utils::sct::*;
 use wasm_bindgen_test::*;
 
@@ -352,7 +353,6 @@ async fn mock_build_serial_and_parallel() {
         authorization_data.clone(),
     )
     .unwrap();
-    console_log!("Parallel transaction is: {:?}", parallel_transaction);
 
     // Execute serial spend transaction and generate proof.
     let serial_transaction = build_serial_inner(
@@ -362,7 +362,6 @@ async fn mock_build_serial_and_parallel() {
         authorization_data,
     )
     .unwrap();
-    console_log!("Serial transaction is: {:?}", serial_transaction);
 
     // Deserialize transactions and stringify actions in the transaction body into JSON
     let serial_json = serde_json::to_string(&serial_transaction.transaction_body.actions).unwrap();
