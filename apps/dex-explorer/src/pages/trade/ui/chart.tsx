@@ -3,8 +3,8 @@ import { createChart, IChartApi, OhlcData } from 'lightweight-charts';
 import { theme } from '@penumbra-zone/ui/theme';
 import { useCandles } from '../api/candles';
 import { observer } from 'mobx-react-lite';
-import { DurationWindow, durationWindows } from '@/shared/database/schema.ts';
 import { Button } from '@penumbra-zone/ui/Button';
+import { DurationWindow, durationWindows } from '@/shared/utils/duration.ts';
 
 const CHART_HEIGHT = 512;
 

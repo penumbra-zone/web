@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { pindexer } from '@/shared/database';
 import { CandleApiResponse } from '@/shared/api/server/candles/types.ts';
-import { durationWindows, isDurationWindow } from '@/shared/database/schema.ts';
 import { dbCandleToOhlc, mergeCandles } from '@/shared/api/server/candles/utils.ts';
+import { durationWindows, isDurationWindow } from '@/shared/utils/duration.ts';
 
 export async function GET(req: NextRequest): Promise<NextResponse<CandleApiResponse>> {
   const grpcEndpoint = process.env['PENUMBRA_GRPC_ENDPOINT'];
