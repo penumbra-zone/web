@@ -1,105 +1,31 @@
-import { styled, css, DefaultTheme } from 'styled-components';
 import { tab, tabSmall } from '../utils/typography';
-import { motion } from 'framer-motion';
-import { useId } from 'react';
-import { buttonBase, overlays } from '../utils/button';
+import { buttonBase, getOverlays } from '../utils/button';
 import * as RadixTabs from '@radix-ui/react-tabs';
-import { ActionType } from '../utils/ActionType';
-import { useDensity } from '../hooks/useDensity';
-import { Density } from '../types/Density.ts';
-
-const sparse = css`
-  ${tab};
-
-  flex-grow: 1;
-  flex-shrink: 1;
-  flex-basis: 0; /** Ensure equal widths */
-
-  padding: ${props => props.theme.spacing(2)};
-`;
-
-const compact = css`
-  ${tabSmall};
-
-  padding: ${props => props.theme.spacing(1)} ${props => props.theme.spacing(2)};
-`;
-
-const Root = styled.div<{
-  $density: Density;
-}>`
-  display: flex;
-  align-items: stretch;
-  box-sizing: border-box;
-  gap: ${props => props.theme.spacing(4)};
-  height: ${props => (props.$density === 'sparse' ? 44 : 28)}px;
-`;
+import { ActionType } from '../utils/action-type';
+import { useDensity } from '../utils/density';
+import cn from 'clsx';
 
 type LimitedActionType = Exclude<ActionType, 'destructive'>;
 
-const outlineColorByActionType: Record<LimitedActionType, keyof DefaultTheme['color']['action']> = {
-  default: 'neutralFocusOutline',
-  accent: 'primaryFocusOutline',
-  unshield: 'unshieldFocusOutline',
+const getIndicatorColor = (actionType: LimitedActionType): string => {
+  if (actionType === 'accent') {
+    return cn('bg-tabAccent');
+  }
+  if (actionType === 'unshield') {
+    return cn('bg-tabUnshield');
+  }
+  return cn('bg-tabNeutral');
 };
 
-const gradientColorByActionType: Record<LimitedActionType, 'neutral' | 'primary' | 'unshield'> = {
-  default: 'neutral',
-  accent: 'primary',
-  unshield: 'unshield',
+const getBorderColor = (actionType: LimitedActionType): string => {
+  if (actionType === 'accent') {
+    return cn('border-action-primaryFocusOutline');
+  }
+  if (actionType === 'unshield') {
+    return cn('border-action-unshieldFocusOutline');
+  }
+  return cn('border-action-neutralFocusOutline');
 };
-
-const Tab = styled.button<{
-  $actionType: LimitedActionType;
-  $getFocusOutlineColor: (theme: DefaultTheme) => string;
-  $getBorderRadius: (theme: DefaultTheme) => string;
-  $density: Density;
-}>`
-  ${buttonBase};
-
-  height: 100%;
-
-  color: ${props => {
-    switch (props.$actionType) {
-      case 'accent':
-        return props.theme.color.primary.light;
-      case 'unshield':
-        return props.theme.color.unshield.light;
-      default:
-        return props.theme.color.text.primary;
-    }
-  }};
-  position: relative;
-  white-space: nowrap;
-
-  ${overlays}
-
-  ${props => (props.$density === 'sparse' ? sparse : compact)}
-  
-  &:focus-within {
-    outline: none;
-  }
-
-  &::after {
-    inset: ${props => props.theme.spacing(0.5)};
-  }
-`;
-
-const THIRTY_FIVE_PERCENT_OPACITY_IN_HEX = '59';
-const SelectedIndicator = styled(motion.div)<{ $actionType: LimitedActionType }>`
-  background: radial-gradient(
-    at 50% 100%,
-    ${props =>
-        props.theme.color[gradientColorByActionType[props.$actionType]].light +
-        THIRTY_FIVE_PERCENT_OPACITY_IN_HEX}
-      0%,
-    transparent 50%
-  );
-  border-bottom: 2px solid
-    ${props => props.theme.color.action[outlineColorByActionType[props.$actionType]]};
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-`;
 
 export interface TabsTab {
   value: string;
@@ -133,13 +59,17 @@ export interface TabsProps {
  * ```
  */
 export const Tabs = ({ value, onChange, options, actionType = 'default' }: TabsProps) => {
-  const layoutId = useId();
   const density = useDensity();
 
   return (
     <RadixTabs.Root value={value} onValueChange={onChange}>
       <RadixTabs.List asChild>
-        <Root $density={density}>
+        <div
+          className={cn(
+            'flex items-stretch box-border gap-4',
+            density === 'sparse' ? 'h-[44px]' : 'h-7',
+          )}
+        >
           {options.map(option => (
             <RadixTabs.Trigger
               value={option.value}
@@ -147,26 +77,36 @@ export const Tabs = ({ value, onChange, options, actionType = 'default' }: TabsP
               disabled={option.disabled}
               asChild
             >
-              <Tab
+              <button
                 onClick={() => onChange(option.value)}
                 disabled={option.disabled}
-                $density={density}
-                $actionType={actionType}
-                $getFocusOutlineColor={theme =>
-                  theme.color.action[outlineColorByActionType[actionType]]
-                }
-                $getBorderRadius={theme =>
-                  `${theme.borderRadius.xs} ${theme.borderRadius.xs} ${theme.borderRadius.none} ${theme.borderRadius.none}`
-                }
+                className={cn(
+                  buttonBase,
+                  getOverlays({ actionType, density }),
+                  'h-full relative whitespace-nowrap text-text-primary',
+                  density === 'sparse'
+                    ? cn(tab, 'grow shrink basis-0 p-2')
+                    : cn(tabSmall, 'py-1 px-2'),
+                  'before:rounded-tl-xs before:rounded-tr-xs before:rounded-bl-none before:rounded-br-none',
+                  'focus-within:outline-none',
+                  'after:inset-[2px]',
+                )}
               >
                 {value === option.value && (
-                  <SelectedIndicator layout layoutId={layoutId} $actionType={actionType} />
+                  <div
+                    className={cn(
+                      'absolute inset-0 -z-[1]',
+                      'border-b-2 border-solid',
+                      getIndicatorColor(actionType),
+                      getBorderColor(actionType),
+                    )}
+                  />
                 )}
                 {option.label}
-              </Tab>
+              </button>
             </RadixTabs.Trigger>
           ))}
-        </Root>
+        </div>
       </RadixTabs.List>
     </RadixTabs.Root>
   );

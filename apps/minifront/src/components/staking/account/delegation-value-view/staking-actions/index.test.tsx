@@ -4,6 +4,7 @@ import { render } from '@testing-library/react';
 import { ValidatorInfo } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { AllSlices } from '../../../../../state';
+import { IdentityKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 const nonZeroBalance = new ValueView({
   valueView: {
@@ -23,7 +24,16 @@ const zeroBalance = new ValueView({
   },
 });
 
-const validatorInfo = new ValidatorInfo({ validator: {} });
+const validatorInfo = new ValidatorInfo({
+  validator: {
+    identityKey: new IdentityKey({
+      ik: new Uint8Array([
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4,
+        5,
+      ]),
+    }),
+  },
+});
 
 let MOCK_STAKING_TOKENS_AND_FILTER: {
   stakingTokens: ValueView | undefined;
@@ -44,7 +54,7 @@ type RecursivePartial<T> = {
 vi.mock('../../../../../utils/use-store-shallow', async () => ({
   ...(await vi.importActual('../../../../../utils/use-store-shallow')),
   useStoreShallow: (selector: (state: RecursivePartial<AllSlices>) => unknown) =>
-    selector({ staking: { account: 0 } }),
+    selector({ staking: { account: 0, votingPowerByValidatorInfo: { '': 0 } } }),
 }));
 
 describe('<StakingActions />', () => {

@@ -63,7 +63,7 @@ export const useStakingTokensAndFilter = (
     shouldReselect: (before, after) => before?.data !== after.data,
   });
 
-  const stakingTokensByAccount = useMemo(() => {
+  const stakingTokensByAccount = useMemo<Map<number, ValueView | undefined>>(() => {
     if (!stakingTokenMetadata || !balancesByAccount) {
       return new Map<number, ValueView | undefined>();
     }
@@ -71,7 +71,7 @@ export const useStakingTokensAndFilter = (
     return balancesByAccount.reduce(
       (acc: Map<number, ValueView | undefined>, cur: BalancesByAccount) =>
         toStakingTokensByAccount(acc, cur, stakingTokenMetadata),
-      new Map(),
+      new Map<number, ValueView | undefined>(),
     );
   }, [stakingTokenMetadata, balancesByAccount]);
 

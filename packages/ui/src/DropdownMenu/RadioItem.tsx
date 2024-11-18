@@ -4,9 +4,8 @@ import {
 } from '@radix-ui/react-dropdown-menu';
 import { ReactNode } from 'react';
 import { Check } from 'lucide-react';
-import { asTransientProps } from '../utils/asTransientProps.ts';
 import { Text } from '../Text';
-import { DropdownMenuItemBase, MenuItem } from '../utils/menuItem.ts';
+import { DropdownMenuItemBase, getMenuItem } from '../utils/menu-item.ts';
 
 export interface DropdownMenuRadioItemProps extends DropdownMenuItemBase {
   children?: ReactNode;
@@ -21,13 +20,13 @@ export const RadioItem = ({
 }: DropdownMenuRadioItemProps) => {
   return (
     <RadixDropdownMenuRadioItem value={value} disabled={disabled} asChild>
-      <MenuItem {...asTransientProps({ actionType, disabled })}>
+      <div className={getMenuItem(actionType)}>
         <RadixDropdownMenuItemIndicator>
           <Check />
         </RadixDropdownMenuItemIndicator>
 
         <Text small>{children}</Text>
-      </MenuItem>
+      </div>
     </RadixDropdownMenuRadioItem>
   );
 };

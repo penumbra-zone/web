@@ -1,29 +1,8 @@
-import { ReactNode } from 'react';
-import { styled, WebTarget } from 'styled-components';
-import { hexOpacity } from '../utils/hexOpacity';
-import { motion } from 'framer-motion';
-import { Title } from './Title';
-import { IsAnimatingProvider } from '../IsAnimatingProvider';
-import { MotionProp } from '../utils/MotionProp';
+import { ReactNode, ElementType } from 'react';
+import cn from 'clsx';
+import { large } from '../utils/typography';
 
-const Root = styled.section``;
-
-const Content = styled(motion.div)`
-  background: linear-gradient(
-    136deg,
-    ${props => props.theme.color.neutral.contrast + hexOpacity(0.1)} 6.32%,
-    ${props => props.theme.color.neutral.contrast + hexOpacity(0.01)} 75.55%
-  );
-  backdrop-filter: blur(${props => props.theme.blur.lg});
-  border-radius: ${props => props.theme.borderRadius.xl};
-  padding: ${props => props.theme.spacing(3)};
-
-  display: flex;
-  flex-direction: column;
-  gap: ${props => props.theme.spacing(4)};
-`;
-
-export interface CardProps extends MotionProp {
+export interface CardProps {
   children?: ReactNode;
   /**
    * Which component or HTML element to render this card as.
@@ -33,7 +12,7 @@ export interface CardProps extends MotionProp {
    * <Card as='main'>This is a main element with card styling</Card>
    * ```
    */
-  as?: WebTarget;
+  as?: ElementType;
   title?: ReactNode;
 }
 
@@ -72,40 +51,22 @@ export interface CardProps extends MotionProp {
  * </Card>
  * ```
  */
-export const Card = ({ children, as = 'section', title, motion }: CardProps) => {
+export const Card = ({ children, as: Wrapper = 'section', title }: CardProps) => {
   return (
-    <Root as={as}>
-      {title && <Title>{title}</Title>}
+    <Wrapper>
+      {title && <h2 className={cn(large, 'text-base-white p-3')}>{title}</h2>}
 
-      <IsAnimatingProvider>
-        {props => (
-          <Content {...motion} {...props}>
-            {children}
-          </Content>
-        )}
-      </IsAnimatingProvider>
-    </Root>
+      <div className='flex flex-col gap-4 rounded-xl bg-card p-3 backdrop-blur-lg'>{children}</div>
+    </Wrapper>
   );
 };
 
-const StyledStack = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${props => props.theme.spacing(1)};
-
-  border-radius: ${props => props.theme.borderRadius.sm};
-  overflow: hidden; /** To enforce the border-radius */
-`;
 const Stack = ({ children }: { children?: ReactNode }) => {
-  return <StyledStack>{children}</StyledStack>;
+  return <div className='flex flex-col gap-1 overflow-hidden rounded-sm'>{children}</div>;
 };
 Card.Stack = Stack;
 
-const StyledSection = styled.div`
-  background-color: ${props => props.theme.color.other.tonalFill5};
-  padding: ${props => props.theme.spacing(3)};
-`;
 const Section = ({ children }: { children?: ReactNode }) => (
-  <StyledSection>{children}</StyledSection>
+  <div className='bg-other-tonalFill5 p-3'>{children}</div>
 );
 Card.Section = Section;

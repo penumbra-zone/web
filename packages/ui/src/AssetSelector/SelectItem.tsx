@@ -1,4 +1,3 @@
-import { styled } from 'styled-components';
 import { AssetIcon } from '../AssetIcon';
 import { Text } from '../Text';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
@@ -7,31 +6,11 @@ import {
   getBalanceView,
   getMetadataFromBalancesResponse,
 } from '@penumbra-zone/getters/balances-response';
-import { ActionType } from '../utils/ActionType';
+import { ActionType } from '../utils/action-type';
 import { AssetSelectorValue } from './shared/types';
-import { media } from '../utils/media';
 import { getHash, isBalancesResponse } from './shared/helpers';
 import { RadioItem } from '../Dialog/RadioItem';
 import { useAssetsSelector } from './shared/Context';
-
-const AssetTitleText = styled(Text)`
-  display: inline-block;
-  max-width: 100px;
-
-  ${media.tablet`
-      max-width: 300px;
-  `}
-
-  ${media.lg`
-      max-width: 400px;
-  `}
-`;
-
-const Balance = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-`;
 
 export interface AssetSelectorItemProps {
   /**
@@ -77,25 +56,27 @@ export const Item = ({ value, disabled, actionType = 'default' }: AssetSelectorI
       title={
         <>
           {balance?.valueView && (
-            <Text body truncate>
+            <Text body truncate color='text.primary'>
               {getFormattedAmtFromValueView(balance.valueView, true)}{' '}
             </Text>
           )}
-          <AssetTitleText body truncate>
-            {metadata?.symbol ?? 'Unknown'}
-          </AssetTitleText>
+          <span className='inline-block max-w-[100px] tablet:max-w-[300px] lg:max-w-[400px]'>
+            <Text body truncate color='text.primary'>
+              {metadata?.symbol ?? 'Unknown'}
+            </Text>
+          </span>
         </>
       }
       endAdornment={
         balance?.addressIndexAccount !== undefined && (
-          <Balance>
-            <Text technical color={color => color.text.secondary}>
+          <div className='flex flex-col items-end'>
+            <Text technical color='text.secondary'>
               #{balance.addressIndexAccount}
             </Text>
-            <Text detailTechnical color={color => color.text.secondary}>
+            <Text detailTechnical color='text.secondary'>
               Account
             </Text>
-          </Balance>
+          </div>
         )
       }
     />

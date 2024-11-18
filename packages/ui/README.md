@@ -4,7 +4,7 @@ The Penumbra UI library is a set of UI components purpose-built for the Penumbra
 
 ## Storybook
 
-All Penumbra UI components (except some deprecated ones) in the latest tagged release can be found at the Penumbra UI Storybook site: https://ui.penumbra.zone/
+All Penumbra UI components in the latest tagged release can be found at the Penumbra UI Storybook site: https://ui.penumbra.zone/
 
 To view the latest components merged to `main` (even if they are not yet in a tagged release), check out the Storybook Preview site: https://preview.ui.penumbra.zone/
 
@@ -16,10 +16,23 @@ First, install the library:
 npm install @penumbra-zone/ui
 ```
 
-Then, use components by importing them from their specific files:
+Then, extend the Tailwind config of your app to include Penumbra UI's Tailwind config:
 
-```tsx
-import { ValueViewComponent } from '@penumbra-zone/ui/ValueViewComponent';
+```ts
+import { withPenumbra } from '@penumbra-zone/ui/theme';
+
+// Provide your own theme and plugins inside the `withPenumbra` hook
+export default withPenumbra({
+  content: ['./src/**/*.{js,ts,jsx,tsx,mdx,css}'],
+  theme: {},
+  plugins: [],
+});
+```
+
+In your main file, import Penumbra UI global styles:
+
+```ts
+import '@penumbra-zone/ui/style.css';
 ```
 
 ## Usage
@@ -249,65 +262,31 @@ Note that we do not use unit tests to test the visual appearance of components; 
 
 ### Code style and file organization guidelines
 
-#### Components must be located at `./components/v2/<ComponentName>/index.tsx`.
+#### Component directories must have `index.tsx` file with all necessary exports.
 
 This ensures that the Penumbra UI `package.json` `exports` field works as intended, so that components can be imported via `@penumbra-zone/ui/<ComponentName>`.
 
-Note that `<ComponentName>` should be replaced with the `UpperCamelCase` component name — e.g., `./components/v2/LoadingIndicator/index.tsx`.
+Note that `<ComponentName>` should be replaced with the `UpperCamelCase` component name — e.g., `./src/LoadingIndicator/index.tsx`.
 
 #### Internal-use components that are only used within a parent component must sit in the parent component's directory, rather than be a sibling of the parent directory.
 
 This guideline only applies to components that are _not_ intended to be used externally, but are only to be used as dependencies of other Penumbra UI library components.
 
 ```
-- src/components/
+- src/
   - HeaderWithDropdown/
     - index.tsx
     - Dropdown.tsx ✅ Correct, if Dropdown is only ever used inside HeaderWithDropdown
 ```
 
 ```
-- src/components/
+- src/
   - Dropdown.tsx ❌ Wrong, if Dropdown is only ever used inside HeaderWithDropdown
   - HeaderWithDropdown/
     - index.tsx
 ```
 
 (One exception to this rule: if you're developing a component that will eventually be used by multiple other components, and just happens to be a child of only a single component at the moment, you can leave it as a sibling of its parent.)
-
-#### Internal-use components should be located at the most specific possible directory level.
-
-This guideline only applies to components that are _not_ intended to be used externally, but are only to be used as dependencies of other Penumbra UI library components.
-
-For example, if the `Dropdown` component is used by both `HeaderWithDropdown` and `Menu` components, `Dropdown` should be placed in the lowest-level directory that contains both `HeaderWithDropdown` and `Menu`:
-
-```
-- src/components/
-  - SomeCommonParentOfBothHeaderWithDropdownAndMenu/
-    - index.tsx
-    - HeaderWithDropdown/
-      - index.tsx
-      - index.test.tsx
-    - Menu/
-      - index.tsx
-      - index.test.tsx
-    - Dropdown.tsx ✅ Correct - Dropdown is used by both Menu and HeaderWithDropdown, so it's a sibling to both
-```
-
-This, as opposed to e.g., placing it inside the `HeaderWithDropdown` directory (and then importing it from there in `Menu`), or inside a root-level directory. This way, components are nested as closely to the components using them as possible.
-
-```
-- src/components/
-  - SomeCommonParentOfBothHeaderWithDropdownAndMenu/
-    - index.tsx
-    - HeaderWithDropdown/
-      - index.tsx
-      - index.test.tsx
-      - Dropdown.tsx ❌ Wrong - Menu shouldn't be importing a child of HeaderWithDropdown
-    - Menu/
-      - index.tsx
-      - index.test.tsx
-```
 
 #### Component props must be exported from the component file as `<ComponentName>Props`.
 
@@ -328,7 +307,7 @@ export function MyComponent({ color }: MyComponentProps) {
 For example, a component designed to render a `ValueView` must be named `ValueViewComponent`, rather than `ValueView`, to avoid awkward naming collisions for consumers:
 
 ```tsx
-// ValueViewComponent/index.tsx
+// ValueView/index.tsx
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
 export interface ValueViewComponentProps {

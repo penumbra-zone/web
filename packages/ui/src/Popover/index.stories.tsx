@@ -4,16 +4,8 @@ import { Popover } from '.';
 import { Button } from '../Button';
 import { ComponentType, useState } from 'react';
 import { Text } from '../Text';
-import { styled } from 'styled-components';
 import { Shield } from 'lucide-react';
 import { Density } from '../Density';
-
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${props => props.theme.spacing(4)};
-  color: ${props => props.theme.color.text.primary};
-`;
 
 const meta: Meta<typeof Popover> = {
   component: Popover,
@@ -44,7 +36,7 @@ export const Basic: Story = {
         </Popover.Trigger>
 
         <Popover.Content>
-          <Wrapper>
+          <div className='flex flex-col gap-4 text-text-primary'>
             <Text body as='h3'>
               This is a heading
             </Text>
@@ -59,7 +51,7 @@ export const Basic: Story = {
                 </Button>
               </Density>
             </div>
-          </Wrapper>
+          </div>
         </Popover.Content>
       </Popover>
     );

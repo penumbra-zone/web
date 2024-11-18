@@ -3,7 +3,7 @@ import {
   SheetContent,
   SheetHeader,
   SheetTrigger,
-} from '@penumbra-zone/ui/components/ui/sheet';
+} from '@penumbra-zone/ui-deprecated/components/ui/sheet';
 import { HamburgerMenuIcon } from '@radix-ui/react-icons';
 import { headerLinks } from '../constants';
 import { Link } from 'react-router-dom';

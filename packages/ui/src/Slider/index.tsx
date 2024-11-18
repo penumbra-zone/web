@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { styled, css } from 'styled-components';
+import { Text } from '../Text';
 import * as RadixSlider from '@radix-ui/react-slider';
-import { detail, detailTechnical } from '../utils/typography';
-import { theme } from '../PenumbraUIProvider/theme';
+import { ThemeColor, getThemeColorClass } from '../utils/color';
+import cn from 'clsx';
 
 interface SliderProps {
   min?: number;
@@ -14,115 +14,13 @@ interface SliderProps {
   rightLabel?: string;
   showValue?: boolean;
   valueDetails?: string;
-  focusedOutlineColor?: string;
+  focusedOutlineColor?: ThemeColor;
   showTrackGaps?: boolean;
-  trackGapBackground?: string;
+  trackGapBackground?: ThemeColor;
   showFill?: boolean;
   fontSize?: string;
   disabled?: boolean;
 }
-
-const THUMB_SIZE = theme.spacing(4);
-const TRACK_HEIGHT = theme.spacing(1);
-
-const SliderContainer = styled(RadixSlider.Root)`
-  position: relative;
-  display: flex;
-  align-items: center;
-  width: 100%;
-  height: ${THUMB_SIZE};
-`;
-
-const Track = styled(RadixSlider.Track)`
-  background-color: ${props => props.theme.color.other.tonalFill10};
-  position: relative;
-  width: 100%;
-  height: ${TRACK_HEIGHT};
-`;
-
-const TrackGap = styled.div<{ $left: number; $gapBackground?: string }>`
-  position: absolute;
-  width: 2px;
-  height: ${TRACK_HEIGHT};
-  left: ${props => props.$left}%;
-  transform: translateX(-50%);
-  background-color: ${props => props.$gapBackground};
-`;
-
-const Range = styled(RadixSlider.Range)`
-  position: absolute;
-  background-color: ${props => props.theme.color.primary.main};
-  height: 100%;
-`;
-
-const Thumb = styled(RadixSlider.Thumb)<{
-  $focusedOutlineColor: string;
-  $disabled: boolean;
-}>`
-  display: block;
-  width: ${THUMB_SIZE};
-  height: ${THUMB_SIZE};
-  background-color: ${props => props.theme.color.neutral.contrast};
-  border-radius: 50%;
-
-  ${props =>
-    props.$disabled
-      ? css`
-          &:after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: ${props => props.theme.color.action.disabledOverlay};
-          }
-        `
-      : css<{ $focusedOutlineColor: string }>`
-          cursor: grab;
-
-          &:hover {
-            background-color: ${props => props.theme.color.neutral.contrast};
-          }
-
-          &:focus {
-            outline: 2px solid ${props => props.$focusedOutlineColor};
-          }
-        `}
-`;
-
-const LabelContainer = styled.div`
-  display: flex;
-  width: 100%;
-  justify-content: space-between;
-  margin-bottom: ${props => props.theme.spacing(1)};
-`;
-
-const Label = styled.div<{ $position: 'left' | 'right'; $fontSize: string }>`
-  ${detailTechnical}
-  font-size: ${props => props.$fontSize};
-  color: ${props => props.theme.color.text.secondary};
-  justify-self: ${props => (props.$position === 'left' ? 'flex-start' : 'flex-end')};
-`;
-
-const ValueContainer = styled.div<{ $fontSize: string }>`
-  ${detail}
-  display: flex;
-  margin-top: ${props => props.theme.spacing(2)};
-  border: 1px solid ${props => props.theme.color.other.tonalStroke};
-  font-size: ${props => props.$fontSize};
-  color: ${props => props.theme.color.text.primary};
-  padding: ${props => props.theme.spacing(2)} ${props => props.theme.spacing(3)};
-`;
-
-const ValueDisplay = styled.div`
-  color: ${props => props.theme.color.text.primary};
-`;
-
-const ValueDetails = styled.div`
-  margin-left: ${props => props.theme.spacing(1)};
-  color: ${props => props.theme.color.text.secondary};
-`;
 
 export const Slider: React.FC<SliderProps> = ({
   min = 0,
@@ -135,10 +33,8 @@ export const Slider: React.FC<SliderProps> = ({
   showValue = true,
   showFill = false,
   showTrackGaps = true,
-  trackGapBackground = theme.color.base.black,
-  focusedOutlineColor = theme.color.action.neutralFocusOutline,
+  trackGapBackground = 'base.black',
   valueDetails,
-  fontSize = theme.fontSize.textXs,
   disabled = false,
 }) => {
   const [value, setValue] = useState(defaultValue);
@@ -153,16 +49,17 @@ export const Slider: React.FC<SliderProps> = ({
   return (
     <div>
       {(!!leftLabel || !!rightLabel) && (
-        <LabelContainer>
-          <Label $fontSize={fontSize} $position='left'>
+        <div className='mb-2 flex w-full justify-between'>
+          <Text detailTechnical as='div' color='text.secondary'>
             {leftLabel}
-          </Label>
-          <Label $fontSize={fontSize} $position='right'>
+          </Text>
+          <Text detailTechnical as='div' color='text.secondary'>
             {rightLabel}
-          </Label>
-        </LabelContainer>
+          </Text>
+        </div>
       )}
-      <SliderContainer
+      <RadixSlider.Root
+        className='relative flex h-8 w-full items-center'
         min={min}
         max={max}
         step={step}
@@ -170,22 +67,53 @@ export const Slider: React.FC<SliderProps> = ({
         onValueChange={handleValueChange}
         disabled={disabled}
       >
-        <Track>
-          {showFill && <Range />}
-          {showTrackGaps &&
-            Array.from({ length: totalSteps - 1 })
-              .map((_, i): number => ((i + 1) / totalSteps) * 100)
-              .map(left => (
-                <TrackGap key={left} $left={left} $gapBackground={trackGapBackground} />
-              ))}
-        </Track>
-        <Thumb $disabled={disabled} $focusedOutlineColor={focusedOutlineColor} />
-      </SliderContainer>
+        <RadixSlider.Track className='relative h-2 w-full rounded-full bg-other-tonalFill10 px-2'>
+          {showFill && (
+            <RadixSlider.Range className='absolute h-full rounded-full bg-primary-main' />
+          )}
+          <div className='relative'>
+            {showTrackGaps &&
+              Array.from({ length: totalSteps + 1 })
+                .map((_, i): number => (i / totalSteps) * 100)
+                .map(left => {
+                  return (
+                    <div
+                      key={left}
+                      className={cn(
+                        'absolute w-1 h-2 -translate-x-1/2',
+                        getThemeColorClass(trackGapBackground).bg,
+                      )}
+                      style={{
+                        left: `${left}%`,
+                      }}
+                    />
+                  );
+                })}
+          </div>
+        </RadixSlider.Track>
+        <RadixSlider.Thumb
+          className={cn(
+            'block w-4 h-4 rounded-full bg-neutral-contrast',
+            !disabled && 'cursor-grab hover:bg-neutral-contrast focus:outline focus:outline-2',
+            !disabled && `focus:outline-primary-main`,
+            disabled &&
+              "after:content-[''] after:absolute after:inset-0 after:bg-action-disabledOverlay",
+          )}
+        />
+      </RadixSlider.Root>
       {showValue && (
-        <ValueContainer $fontSize={fontSize}>
-          <ValueDisplay>{value}</ValueDisplay>
-          {valueDetails && <ValueDetails>· {valueDetails}</ValueDetails>}
-        </ValueContainer>
+        <div className='mt-4 flex rounded-sm border border-other-tonalStroke px-3 py-2 text-text-primary'>
+          <Text as='div' detail color='text.primary'>
+            {value}
+          </Text>
+          {valueDetails && (
+            <div className='ml-2'>
+              <Text as='div' detail color='text.secondary'>
+                · {valueDetails}
+              </Text>
+            </div>
+          )}
+        </div>
       )}
     </div>
   );

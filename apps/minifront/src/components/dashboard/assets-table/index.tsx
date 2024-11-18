@@ -1,6 +1,6 @@
 import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { AddressComponent, AddressIcon } from '@penumbra-zone/ui/components/ui/address';
-import { Button } from '@penumbra-zone/ui/components/ui/button';
+import { AddressComponent, AddressIcon } from '@penumbra-zone/ui-deprecated/components/ui/address';
+import { Button } from '@penumbra-zone/ui-deprecated/components/ui/button';
 import {
   Table,
   TableBody,
@@ -8,8 +8,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@penumbra-zone/ui/components/ui/table';
-import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/value';
+} from '@penumbra-zone/ui-deprecated/components/ui/table';
+import { ValueViewComponent } from '@penumbra-zone/ui-deprecated/components/ui/value';
 import { EquivalentValues } from './equivalent-values';
 import { Fragment } from 'react';
 import { PagePath } from '../../metadata/paths';
@@ -21,7 +21,7 @@ import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
 import { shouldDisplay } from '../../../fetchers/balances/should-display';
 import { sortByPriorityScore } from '../../../fetchers/balances/by-priority-score';
 import { LineWave } from 'react-loader-spinner';
-import { cn } from '@penumbra-zone/ui/lib/utils';
+import { cn } from '@penumbra-zone/ui-deprecated/lib/utils';
 
 const getTradeLink = (balance: BalancesResponse): string => {
   const metadata = getMetadataFromBalancesResponse.optional(balance);
@@ -87,7 +87,7 @@ export default function AssetsTable() {
                     <div className='flex items-center justify-center gap-2'>
                       <AddressIcon address={account.address} size={20} />
                       <h2 className='whitespace-nowrap font-bold md:text-base xl:text-xl'>
-                        Account #{account.account}
+                        {account.account === 0 ? 'Main Account' : `Sub-Account ${account.account}`}
                       </h2>
                     </div>
 

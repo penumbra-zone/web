@@ -1,18 +1,10 @@
 import { ReactNode, useId, useState } from 'react';
-import { styled } from 'styled-components';
 import { Dialog } from '../Dialog';
-import { IsAnimatingProvider } from '../IsAnimatingProvider';
-import { getHash } from './shared/helpers.ts';
-import { AssetSelectorContext } from './shared/Context.tsx';
-import { AssetSelectorSearchFilter } from './SearchFilter.tsx';
-import { AssetSelectorTrigger } from './Trigger.tsx';
-import { AssetSelectorBaseProps } from './shared/types.ts';
-
-const OptionsWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${props => props.theme.spacing(1)};
-`;
+import { getHash } from './shared/helpers';
+import { AssetSelectorContext } from './shared/Context';
+import { AssetSelectorSearchFilter } from './SearchFilter';
+import { AssetSelectorTrigger } from './Trigger';
+import { AssetSelectorBaseProps } from './shared/types';
 
 interface ChildrenArguments {
   onClose: VoidFunction;
@@ -112,28 +104,22 @@ export const AssetSelectorCustom = ({
           onClick={() => setIsOpen(true)}
         />
 
-        <IsAnimatingProvider>
-          {props => (
-            <Dialog.Content
-              title={dialogTitle}
-              motion={{ ...props, layoutId }}
-              key={layoutId}
-              headerChildren={
-                !!onSearchChange && (
-                  <AssetSelectorSearchFilter value={search} onChange={onSearchChange} />
-                )
-              }
-            >
-              <Dialog.RadioGroup value={value ? getHash(value) : undefined}>
-                <OptionsWrapper>
-                  {typeof children === 'function'
-                    ? children({ onClose, getKeyHash: getHash })
-                    : children}
-                </OptionsWrapper>
-              </Dialog.RadioGroup>
-            </Dialog.Content>
-          )}
-        </IsAnimatingProvider>
+        <Dialog.Content
+          title={dialogTitle}
+          headerChildren={
+            !!onSearchChange && (
+              <AssetSelectorSearchFilter value={search} onChange={onSearchChange} />
+            )
+          }
+        >
+          <Dialog.RadioGroup value={value ? getHash(value) : undefined}>
+            <div className='flex flex-col gap-1'>
+              {typeof children === 'function'
+                ? children({ onClose, getKeyHash: getHash })
+                : children}
+            </div>
+          </Dialog.RadioGroup>
+        </Dialog.Content>
       </AssetSelectorContext.Provider>
     </Dialog>
   );

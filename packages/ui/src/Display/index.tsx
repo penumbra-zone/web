@@ -1,19 +1,4 @@
 import { ReactNode } from 'react';
-import { styled } from 'styled-components';
-import { media } from '../utils/media';
-
-const Root = styled.section`
-  padding: 0 ${props => props.theme.spacing(4)};
-
-  ${props => media.desktop`
-    padding: 0 ${props.theme.spacing(8)};
-  `}
-`;
-
-const ContentsWrapper = styled.div`
-  max-width: 1600px;
-  margin: 0 auto;
-`;
 
 export interface DisplayProps {
   children?: ReactNode;
@@ -35,8 +20,8 @@ export interface DisplayProps {
  */
 export const Display = ({ children }: DisplayProps) => {
   return (
-    <Root>
-      <ContentsWrapper>{children}</ContentsWrapper>
-    </Root>
+    <section className='px-4 py-0 desktop:px-8'>
+      <div className='max-w-screen-xl'>{children}</div>
+    </section>
   );
 };

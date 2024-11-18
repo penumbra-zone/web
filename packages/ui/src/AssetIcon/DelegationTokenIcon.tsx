@@ -1,15 +1,4 @@
 import { assetPatterns } from '@penumbra-zone/types/assets';
-import { styled } from 'styled-components';
-
-const Svg = styled.svg.attrs({
-  id: 'delegation',
-  xmlns: 'http://www.w3.org/2000/svg',
-  xmlnsXlink: 'http://www.w3.org/1999/xlink',
-  viewBox: '0 0 32 32',
-})`
-  display: block;
-  border-radius: ${props => props.theme.borderRadius.full};
-`;
 
 const getFirstEightCharactersOfValidatorId = (displayDenom = ''): [string, string] => {
   const id = (assetPatterns.delegationToken.capture(displayDenom)?.id ?? '').substring(0, 8);
@@ -28,7 +17,13 @@ export const DelegationTokenIcon = ({ displayDenom }: DelegationTokenIconProps) 
   const [firstFour, lastFour] = getFirstEightCharactersOfValidatorId(displayDenom);
 
   return (
-    <Svg>
+    <svg
+      id='delegation'
+      className='block rounded-full'
+      xmlns='http://www.w3.org/2000/svg'
+      xmlnsXlink='http://www.w3.org/1999/xlink'
+      viewBox='0 0 32 32'
+    >
       <defs>
         <radialGradient
           id='logoGradient'
@@ -104,6 +99,6 @@ export const DelegationTokenIcon = ({ displayDenom }: DelegationTokenIconProps) 
           strokeWidth='.75'
         />
       </g>
-    </Svg>
+    </svg>
   );
 };

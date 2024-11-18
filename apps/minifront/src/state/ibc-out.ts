@@ -17,7 +17,7 @@ import { amountMoreThanBalance, isIncorrectDecimal, planBuildBroadcast } from '.
 import { getAssetId } from '@penumbra-zone/getters/metadata';
 import { assetPatterns } from '@penumbra-zone/types/assets';
 import { bech32, bech32m } from 'bech32';
-import { errorToast } from '@penumbra-zone/ui/lib/toast/presets';
+import { errorToast } from '@penumbra-zone/ui-deprecated/lib/toast/presets';
 import { Chain } from '@penumbra-labs/registry';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { Channel } from '@penumbra-zone/protobuf/ibc/core/channel/v1/channel_pb';

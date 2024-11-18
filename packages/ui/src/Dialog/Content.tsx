@@ -1,113 +1,32 @@
-import { MotionProp } from '../utils/MotionProp.ts';
+import { Title as RadixDialogTitle, Close as RadixDialogClose } from '@radix-ui/react-dialog';
 import { ReactNode, useContext } from 'react';
-import { ButtonGroup, ButtonGroupProps } from '../ButtonGroup';
+import { X } from 'lucide-react';
 import { DialogContext } from './Context.tsx';
 import { EmptyContent } from './EmptyContent.tsx';
 import { Display } from '../Display';
 import { Grid } from '../Grid';
-import { Title as RadixDialogTitle, Close as RadixDialogClose } from '@radix-ui/react-dialog';
 import { Text } from '../Text';
 import { Density } from '../Density';
 import { Button } from '../Button';
-import { X } from 'lucide-react';
-import { styled } from 'styled-components';
-import { motion } from 'framer-motion';
 
-const FullHeightWrapper = styled.div`
-  height: 100%;
-  min-height: 100svh;
-  max-height: 100lvh;
-  position: relative;
-
-  display: flex;
-  align-items: center;
-`;
-
-const DialogContentCard = styled(motion.div)`
-  position: relative;
-  width: 100%;
-  max-height: 75%;
-  box-sizing: border-box;
-
-  background: ${props => props.theme.color.other.dialogBackground};
-  border: 1px solid ${props => props.theme.color.other.tonalStroke};
-  border-radius: ${props => props.theme.borderRadius.xl};
-  backdrop-filter: blur(${props => props.theme.blur.xl});
-
-  display: flex;
-  flex-direction: column;
-
-  /**
-   * We add 'pointer-events: auto' here so that clicks _inside_ the content card
-   * work, even though the _outside_ clicks pass through to the underlying
-   * '<Overlay />'.
-   */
-  pointer-events: auto;
-`;
-
-const DialogChildrenWrap = styled.div`
-  overflow-y: auto;
-
-  display: flex;
-  flex-direction: column;
-  gap: ${props => props.theme.spacing(6)};
-
-  padding-bottom: ${props => props.theme.spacing(8)};
-  padding-left: ${props => props.theme.spacing(6)};
-  padding-right: ${props => props.theme.spacing(6)};
-`;
-
-const DialogHeader = styled.header`
-  position: sticky;
-  top: 0;
-
-  display: flex;
-  flex-direction: column;
-  gap: ${props => props.theme.spacing(4)};
-  color: ${props => props.theme.color.text.primary};
-
-  padding-top: ${props => props.theme.spacing(8)};
-  padding-bottom: ${props => props.theme.spacing(6)};
-  padding-left: ${props => props.theme.spacing(6)};
-  padding-right: ${props => props.theme.spacing(6)};
-`;
-
-/**
- * Opening the dialog focuses the first focusable element in the dialog. That's why the Close button
- * should be positioned absolutely and rendered as the last element in the dialog content.
- */
-const DialogClose = styled.div`
-  position: absolute;
-  top: ${props => props.theme.spacing(8)};
-  right: ${props => props.theme.spacing(6)};
-`;
-
-export interface DialogContentProps<IconOnlyButtonGroupProps extends boolean | undefined>
-  extends MotionProp {
+export interface DialogContentProps {
   children?: ReactNode;
   /** Renders the element after the dialog title. These elements will be sticky to the top of the dialog */
   headerChildren?: ReactNode;
   title: string;
-  /**
-   * If you want to render CTA buttons in the dialog footer, use
-   * `buttonGroupProps`. The dialog will then render a `<ButtonGroup />` using
-   * these props.
-   */
-  buttonGroupProps?: IconOnlyButtonGroupProps extends boolean
-    ? ButtonGroupProps<IconOnlyButtonGroupProps>
-    : undefined;
+  /** Buttons rendered in the footer of a dialog */
+  buttons?: ReactNode;
   /** @deprecated this prop will be removed in the future */
   zIndex?: number;
 }
 
-export const Content = <IconOnlyButtonGroupProps extends boolean | undefined>({
+export const Content = ({
   children,
   headerChildren,
   title,
-  buttonGroupProps,
-  motion,
+  buttons,
   zIndex,
-}: DialogContentProps<IconOnlyButtonGroupProps>) => {
+}: DialogContentProps) => {
   const { showCloseButton } = useContext(DialogContext);
 
   return (
@@ -117,36 +36,40 @@ export const Content = <IconOnlyButtonGroupProps extends boolean | undefined>({
           <Grid mobile={0} tablet={2} desktop={3} xl={4} />
 
           <Grid mobile={12} tablet={8} desktop={6} xl={4}>
-            <FullHeightWrapper>
-              <DialogContentCard {...motion}>
-                <DialogHeader>
+            <div className='relative flex h-full max-h-lvh min-h-svh items-center'>
+              <div className='pointer-events-auto relative box-border flex max-h-[75%] w-full flex-col rounded-xl border border-solid border-other-tonalStroke bg-other-dialogBackground backdrop-blur-xl'>
+                <header className='sticky top-0 flex flex-col gap-4 px-6 pb-6 pt-8 text-text-primary'>
                   <RadixDialogTitle asChild>
                     <Text xxl as='h2'>
                       {title}
                     </Text>
                   </RadixDialogTitle>
                   {headerChildren}
-                </DialogHeader>
+                </header>
 
-                <DialogChildrenWrap>
+                <div className='flex flex-col gap-6 overflow-y-auto px-6 pb-8'>
                   {children}
 
-                  {buttonGroupProps && <ButtonGroup {...buttonGroupProps} column />}
-                </DialogChildrenWrap>
+                  {buttons && <div className='flex flex-col gap-2'>{buttons}</div>}
+                </div>
 
+                {/**
+                 * Opening the dialog focuses the first focusable element in the dialog. That's why the Close button
+                 * should be positioned absolutely and rendered as the last element in the dialog content.
+                 */}
                 {showCloseButton && (
                   <Density compact>
                     <RadixDialogClose asChild>
-                      <DialogClose>
+                      <div className='absolute right-6 top-8'>
                         <Button icon={X} iconOnly priority='secondary'>
                           Close
                         </Button>
-                      </DialogClose>
+                      </div>
                     </RadixDialogClose>
                   </Density>
                 )}
-              </DialogContentCard>
-            </FullHeightWrapper>
+              </div>
+            </div>
           </Grid>
 
           <Grid mobile={0} tablet={2} desktop={3} xl={4} />

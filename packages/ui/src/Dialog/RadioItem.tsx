@@ -1,72 +1,12 @@
 import React, { ReactNode, useMemo } from 'react';
+import cn from 'clsx';
 import { RadioGroupItem } from '@radix-ui/react-radio-group';
-import { styled } from 'styled-components';
-import { motion } from 'framer-motion';
 import { Text } from '../Text';
-import { ActionType, getOutlineColorByActionType } from '../utils/ActionType';
-import { asTransientProps } from '../utils/asTransientProps';
-
-const Root = styled(motion.button)<{
-  $actionType: ActionType;
-  $disabled?: boolean;
-}>`
-  border-radius: ${props => props.theme.borderRadius.sm};
-  background-color: ${props => props.theme.color.other.tonalFill5};
-  padding: ${props => props.theme.spacing(3)};
-
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  text-align: left;
-  transition:
-    background 0.15s,
-    outline 0.15s;
-
-  &:hover {
-    background: linear-gradient(
-        0deg,
-        ${props => props.theme.color.action.hoverOverlay} 0%,
-        ${props => props.theme.color.action.hoverOverlay} 100%
-      ),
-      ${props => props.theme.color.other.tonalFill5};
-  }
-
-  &:focus {
-    background: linear-gradient(
-        0deg,
-        ${props => props.theme.color.action.hoverOverlay} 0%,
-        ${props => props.theme.color.action.hoverOverlay} 100%
-      ),
-      ${props => props.theme.color.other.tonalFill5};
-    outline: 2px solid ${props => getOutlineColorByActionType(props.theme, props.$actionType)};
-  }
-
-  &[aria-checked='true'] {
-    outline: 2px solid ${props => getOutlineColorByActionType(props.theme, props.$actionType)};
-  }
-
-  &:disabled {
-    background: linear-gradient(
-        0deg,
-        ${props => props.theme.color.action.disabledOverlay} 0%,
-        ${props => props.theme.color.action.disabledOverlay} 100%
-      ),
-      ${props => props.theme.color.other.tonalFill5};
-  }
-`;
-
-const Info = styled.div`
-  display: flex;
-  gap: ${props => props.theme.spacing(2)};
-  align-items: center;
-`;
-
-const Title = styled.div`
-  display: flex;
-  align-items: center;
-  white-space: nowrap;
-  gap: ${props => props.theme.spacing(1)};
-`;
+import {
+  ActionType,
+  getAriaCheckedOutlineColorByActionType,
+  getFocusOutlineColorByActionType,
+} from '../utils/action-type';
 
 export interface DialogRadioItemProps {
   /** A required unique string value defining the radio item */
@@ -120,7 +60,7 @@ export const RadioItem = ({
 
     if (typeof description === 'string') {
       return (
-        <Text detail color={color => color.text.secondary} as='div'>
+        <Text detail color='text.secondary' as='div'>
           {description}
         </Text>
       );
@@ -131,21 +71,30 @@ export const RadioItem = ({
 
   return (
     <RadioGroupItem key={value} disabled={disabled} value={value} asChild>
-      <Root
-        {...asTransientProps({ actionType, disabled })}
+      <button
+        type='button'
         onClick={handleClick}
         onKeyDown={handleKeyDown}
+        className={cn(
+          'flex justify-between items-center text-left transition-all duration-150',
+          'rounded-sm bg-other-tonalFill5 p-3',
+          'outline outline-2 outline-transparent',
+          'hover:bg-buttonHover focus:bg-buttonHover',
+          'disabled:bg-buttonDisabled',
+          getFocusOutlineColorByActionType(actionType),
+          getAriaCheckedOutlineColorByActionType(actionType),
+        )}
       >
-        <Info>
+        <div className='flex items-center gap-2'>
           {startAdornment}
           <div>
-            <Title>{title}</Title>
+            <div className='flex items-center gap-1 whitespace-nowrap'>{title}</div>
             {descriptionText}
           </div>
-        </Info>
+        </div>
 
         {endAdornment}
-      </Root>
+      </button>
     </RadioGroupItem>
   );
 };
