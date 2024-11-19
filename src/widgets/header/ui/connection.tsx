@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react-lite';
 import { connectionStore } from '@/shared/model/connection';
-import { ConnectButton } from './connect-button';
+import { ConnectButton } from '@/features/connect/connect-button';
 import { SubaccountSelector } from '@/widgets/header/ui/subaccount-selector';
 
 export const Connection = observer(() => {
