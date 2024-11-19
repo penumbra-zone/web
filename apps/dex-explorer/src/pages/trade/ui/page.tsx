@@ -1,20 +1,19 @@
 'use client';
 
 import { Card } from '@penumbra-zone/ui/Card';
+import { OrderForm } from './order-form';
 import { PairSelector } from './pair-selector';
 import { RouteBook } from './route-book';
 import { Chart } from './chart';
-import { Summary } from '@/pages/trade/ui/summary.tsx';
+import { Summary } from './summary';
 
 export const TradePage = () => {
   return (
     <div>
-      <hr className='h-[1px] w-full border-t border-t-other-solidStroke' />
-
-      <div className='flex flex-col items-start desktop:items-center desktop:flex-row p-4 gap-4 border-b border-b-other-solidStroke'>
-        <div className='flex gap-2 h-8'>
-          <PairSelector />
-        </div>
+      <div className='flex gap-2'>
+        <PairSelector />
+      </div>
+      <div>
         <Summary />
       </div>
 
@@ -31,7 +30,7 @@ export const TradePage = () => {
         </div>
         <div className='w-full sm:w-1/2 sm:pl-1 lg:w-[304px] lg:pl-0 mb-2'>
           <Card title='Order Form'>
-            <div className='h-[512px]'>-</div>
+            <OrderForm />
           </Card>
         </div>
       </div>
