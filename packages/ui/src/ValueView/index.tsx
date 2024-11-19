@@ -8,6 +8,8 @@ import { Text } from '../Text';
 import { AssetIcon } from '../AssetIcon';
 import { Density, useDensity } from '../utils/density';
 import cn from 'clsx';
+import { shortify } from '@penumbra-zone/types/shortify';
+import { detailTechnical, technical } from '../utils/typography.ts';
 
 type Context = 'default' | 'table';
 
@@ -33,6 +35,18 @@ export interface ValueViewComponentProps<SelectedContext extends Context> {
    * numeraire.
    */
   priority?: PillProps['priority'];
+  /**
+   * If true, the asset icon will be hidden.
+   */
+  hideIcon?: boolean;
+  /**
+   * If true, the asset symbol will be hidden.
+   */
+  hideSymbol?: boolean;
+  /**
+   * If true, the displayed amount will be shortened.
+   */
+  abbreviate?: boolean;
 }
 
 /**
@@ -46,6 +60,9 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
   valueView,
   context,
   priority = 'primary',
+  hideIcon = false,
+  hideSymbol = false,
+  abbreviate = false,
 }: ValueViewComponentProps<SelectedContext>) => {
   const density = useDensity();
 
@@ -53,7 +70,14 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
     return null;
   }
 
-  const formattedAmount = getFormattedAmtFromValueView(valueView, true);
+  let formattedAmount: string;
+  if (abbreviate) {
+    const amount = getFormattedAmtFromValueView(valueView, false);
+    formattedAmount = shortify(Number(amount));
+  } else {
+    formattedAmount = getFormattedAmtFromValueView(valueView, true);
+  }
+
   const metadata = getMetadata.optional(valueView);
   // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- possibly empty string
   const symbol = metadata?.symbol || 'Unknown';
@@ -63,16 +87,30 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
       if={!context || context === 'default'}
       then={children => (
         <Pill priority={priority}>
-          <div className={cn('-ml-2', density === 'sparse' ? 'mt-0 mb-0' : '-mt-1 -mb-1')}>
+          <div
+            className={cn(!hideIcon && '-ml-2', density === 'sparse' ? 'mt-0 mb-0' : '-mt-1 -mb-1')}
+          >
             {children}
           </div>
         </Pill>
       )}
+      else={children => (
+        <span
+          className={cn(
+            density === 'sparse' ? technical : detailTechnical,
+            priority === 'primary' ? 'text-text-primary' : 'text-secondary-dark',
+          )}
+        >
+          {children}
+        </span>
+      )}
     >
       <span className='flex w-max max-w-full items-center gap-2 text-ellipsis'>
-        <div className='shrink-0'>
-          <AssetIcon size={density === 'sparse' ? 'lg' : 'md'} metadata={metadata} />
-        </div>
+        {!hideIcon && (
+          <div className='shrink-0'>
+            <AssetIcon size={density === 'sparse' ? 'lg' : 'md'} metadata={metadata} />
+          </div>
+        )}
 
         <div
           className={cn(
@@ -82,12 +120,14 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
               'border-b-2 border-dashed border-other-tonalStroke',
           )}
         >
-          <div className='min-w-[50px] shrink grow truncate' title={formattedAmount}>
-            <ValueText density={density}>{formattedAmount} </ValueText>
+          <div className='shrink grow' title={formattedAmount}>
+            <ValueText density={density}>{formattedAmount}</ValueText>
           </div>
-          <div className='min-w-[50px] shrink grow truncate' title={symbol}>
-            <ValueText density={density}>{symbol}</ValueText>
-          </div>
+          {!hideSymbol && (
+            <div className='shrink grow truncate' title={symbol}>
+              <ValueText density={density}>{symbol}</ValueText>
+            </div>
+          )}
         </div>
       </span>
     </ConditionalWrap>
