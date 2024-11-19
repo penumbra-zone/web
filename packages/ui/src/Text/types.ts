@@ -12,6 +12,7 @@ interface NeverTextTypes {
   p?: never;
   strong?: never;
   detail?: never;
+  xxs?: never;
   small?: never;
   detailTechnical?: never;
   technical?: never;
@@ -92,6 +93,15 @@ export type TextType =
        * HTML element with the same styling.
        */
       detail: true;
+    })
+  | (Omit<NeverTextTypes, 'xxs'> & {
+      /**
+       * xxs text used for extra small bits of tertiary information.
+       *
+       * Renders a `<span />` by default; pass the `as` prop to use a different
+       * HTML element with the same styling.
+       */
+      xxs: true;
     })
   | (Omit<NeverTextTypes, 'small'> & {
       /**

@@ -253,6 +253,7 @@ export const theme = {
     textBase: '1rem',
     textSm: '0.875rem',
     textXs: '0.75rem',
+    textXxs: '0.6875rem',
   },
   lineHeight: {
     text9xl: '8.25rem',
@@ -268,6 +269,7 @@ export const theme = {
     textBase: '1.5rem',
     textSm: '1.25rem',
     textXs: '1rem',
+    textXxs: '1rem',
   },
   spacing,
   zIndex: {

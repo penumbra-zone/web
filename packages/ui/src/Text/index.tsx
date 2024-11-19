@@ -15,6 +15,7 @@ import {
   xxl,
   p,
   getTextBase,
+  xxs,
 } from '../utils/typography';
 import { ElementType, ReactNode } from 'react';
 import { ThemeColor } from '../utils/color';
@@ -179,6 +180,9 @@ export const Text = (props: TextProps) => {
   }
   if (props.detail) {
     return <SpanElement className={cn(detail, classes)}>{props.children}</SpanElement>;
+  }
+  if (props.xxs) {
+    return <SpanElement className={cn(xxs, classes)}>{props.children}</SpanElement>;
   }
   if (props.small) {
     return <SpanElement className={cn(small, classes)}>{props.children}</SpanElement>;
