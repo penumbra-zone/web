@@ -28,14 +28,17 @@ const getBorderColor = (actionType: LimitedActionType): string => {
 
 const getDensityClasses = (density: Density): string => {
   if (density === 'compact') {
-    return cn('h-7');
+    return cn('h-7 gap-4');
   }
-  return cn('h-[44px]');
+  if (density === 'medium') {
+    return cn('h-[44px] gap-2');
+  }
+  return cn('h-[44px] gap-4');
 };
 
 const getDensityItemClasses = (density: Density): string => {
   if (density === 'medium') {
-    return cn(tabMedium, 'grow shrink basis-0 p-2');
+    return cn(tabMedium, 'p-2');
   }
   if (density === 'compact') {
     return cn(tabSmall, 'py-1 px-2');
@@ -80,7 +83,7 @@ export const Tabs = ({ value, onChange, options, actionType = 'default' }: TabsP
   return (
     <RadixTabs.Root value={value} onValueChange={onChange}>
       <RadixTabs.List asChild>
-        <div className={cn(getDensityClasses(density), 'flex items-stretch box-border gap-4')}>
+        <div className={cn(getDensityClasses(density), 'flex items-stretch box-border')}>
           {options.map(option => (
             <RadixTabs.Trigger
               value={option.value}

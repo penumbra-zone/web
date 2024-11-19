@@ -1,25 +1,10 @@
 import { ReactNode } from 'react';
 import { Density as TDensity, DensityContext } from '../utils/density';
 
-/**
- * Utility interface to be used below to ensure that only one density type is used at a time.
- */
-interface NeverDensityTypes {
-  sparse?: never;
-  medium?: never;
-  compact?: never;
-}
-
 export type DensityPropType =
-  | (Omit<NeverDensityTypes, 'sparse'> & {
-      sparse: true;
-    })
-  | (Omit<NeverDensityTypes, 'medium'> & {
-      medium: true;
-    })
-  | (Omit<NeverDensityTypes, 'compact'> & {
-      compact: true;
-    });
+  | { sparse: true; medium?: never; compact?: never }
+  | { medium: true; sparse?: never; compact?: never }
+  | { compact: true; sparse?: never; medium?: never };
 
 export type DensityProps = DensityPropType & {
   children?: ReactNode;
