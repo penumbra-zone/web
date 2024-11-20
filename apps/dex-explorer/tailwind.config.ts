@@ -1,11 +1,14 @@
-import { tailwindConfig, withPenumbra } from '@penumbra-zone/ui/theme';
+import { withPenumbra, tailwindConfig } from '@penumbra-zone/ui/theme';
 
 export default withPenumbra({
-  content: ['./src/**/*.{js,ts,jsx,tsx,mdx,css}'],
+  content: ['./src/**/*.{js,ts,jsx,tsx,mdx,css}', './app/**/*.{js,ts,jsx,tsx,mdx,css}'],
   theme: {
     extend: {
       colors: {
         ...tailwindConfig.theme.extend.colors,
+        app: {
+          main: '#0d0d0d',
+        },
         sell: {
           bg: 'rgba(175, 38, 38, 0.24)',
         },
