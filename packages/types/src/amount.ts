@@ -3,6 +3,7 @@ import { fromBaseUnit, joinLoHi, splitLoHi, toBaseUnit } from './lo-hi.js';
 import { BigNumber } from 'bignumber.js';
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getAmount, getDisplayDenomExponentFromValueView } from '@penumbra-zone/getters/value-view';
+import { removeTrailingZeros } from './shortify.js';
 
 export const joinLoHiAmount = (amount: Amount): bigint => {
   return joinLoHi(amount.lo, amount.hi);
@@ -79,10 +80,6 @@ export const formatNumber = (number: number, options: FormatOptions): string => 
   return precision === 0
     ? number.toFixed(precision)
     : parseFloat(number.toFixed(precision)).toString();
-};
-
-export const removeTrailingZeros = (strNum: string): string => {
-  return strNum.replace(/(\.\d*?[1-9])0+$|\.0*$/, '$1');
 };
 
 export const formatAmount = ({
