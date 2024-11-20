@@ -1,5 +1,14 @@
 # @penumbra-zone/ui
 
+## 13.2.0
+
+### Minor Changes
+
+- bf2e541: - Add Toggle UI component
+  - Add `medium` density
+  - Add `xxs` Text style
+  - Improve the styles of `Tabs` component
+
 ## 13.1.1
 
 ### Patch Changes

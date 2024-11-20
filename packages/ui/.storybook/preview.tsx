@@ -16,30 +16,35 @@ import '../src/theme/globals.css';
 const DensityWrapper = ({ children, showDensityControl }) => {
   const [density, setDensity] = useState('sparse');
 
-  return (
-    <ConditionalWrap
-      if={density === 'sparse'}
-      then={children => <Density sparse>{children}</Density>}
-      else={children => <Density compact>{children}</Density>}
-    >
-      <div className='flex flex-col gap-4'>
-        {showDensityControl && (
-          <Density sparse>
-            <Tabs
-              options={[
-                { label: 'Sparse', value: 'sparse' },
-                { label: 'Compact', value: 'compact' },
-              ]}
-              value={density}
-              onChange={setDensity}
-            />
-          </Density>
-        )}
+  const densityTabs = (
+    <div className='flex flex-col gap-4'>
+      {showDensityControl && (
+        <Density sparse>
+          <Tabs
+            options={[
+              { label: 'Sparse', value: 'sparse' },
+              { label: 'Medium', value: 'medium' },
+              { label: 'Compact', value: 'compact' },
+            ]}
+            value={density}
+            onChange={setDensity}
+          />
+        </Density>
+      )}
 
-        {children}
-      </div>
-    </ConditionalWrap>
+      {children}
+    </div>
   );
+
+  if (density === 'medium') {
+    return <Density medium>{densityTabs}</Density>;
+  }
+
+  if (density === 'compact') {
+    return <Density compact>{densityTabs}</Density>;
+  }
+
+  return <Density sparse>{densityTabs}</Density>;
 };
 
 const preview: Preview = {

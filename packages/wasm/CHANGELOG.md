@@ -1,5 +1,11 @@
 # @penumbra-zone/wasm
 
+## 32.1.0
+
+### Minor Changes
+
+- fa39e46: migrate wasm unit test for action building to use mockDb
+
 ## 32.0.0
 
 ### Patch Changes

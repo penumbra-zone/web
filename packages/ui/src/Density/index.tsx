@@ -1,11 +1,14 @@
 import { ReactNode } from 'react';
 import { Density as TDensity, DensityContext } from '../utils/density';
 
-export type DensityProps<SelectedDensity extends TDensity> = {
+export type DensityPropType =
+  | { sparse: true; medium?: never; compact?: never }
+  | { medium: true; sparse?: never; compact?: never }
+  | { compact: true; sparse?: never; medium?: never };
+
+export type DensityProps = DensityPropType & {
   children?: ReactNode;
-} & (SelectedDensity extends 'sparse'
-  ? { sparse: true; compact?: never }
-  : { compact: true; sparse?: never });
+};
 
 /**
  * Use the `<Density />` component to set the density for all descendants in the
@@ -21,9 +24,9 @@ export type DensityProps<SelectedDensity extends TDensity> = {
  * which contain nested components with density variants. If we used a `density`
  * prop, you'd need to set that prop on every single component in that tree.
  *
- * Instead, you can simply wrap the entire `<Table />` with `<Density sparse />`
- * or `<Density compact />`, and it will set a density context value for all
- * descendant components:
+ * Instead, you can simply wrap the entire `<Table />` with `<Density sparse />`,
+ * `<Density medium />` or `<Density compact />`, and it will set a density context value
+ * for all descendant components:
  *
  * ```tsx
  * <Density compact>
@@ -37,19 +40,15 @@ export type DensityProps<SelectedDensity extends TDensity> = {
  * </Density>
  * ```
  *
- * Components that support density variants are recognizable because the use the
+ * Components that support density variants are recognizable because they use the
  * `useDensity()` hook, and then style their elements based on the value they
  * receive from that hook:
  *
  * ```tsx
- * const SomeStyledComponent = styled.div<{ $density: Density }>`
- *   padding: ${props => props.theme.spacing(props.$density === 'sparse' ? 4 : 2)};
- * `
- *
  * const MyComponent = () => {
  *   const density = useDensity();
  *
- *   return <SomeStyledComponent $density={density} />
+ *   return <div className={density === 'sparse' ? 'p-4' : 'p-1' } />
  * }
  * ```
  *
@@ -72,11 +71,9 @@ export type DensityProps<SelectedDensity extends TDensity> = {
  * />
  * ```
  */
-export const Density = <SelectedDensity extends TDensity>({
-  children,
-  sparse,
-}: DensityProps<SelectedDensity>) => (
-  <DensityContext.Provider value={sparse ? 'sparse' : 'compact'}>
-    {children}
-  </DensityContext.Provider>
-);
+export const Density = ({ children, sparse, medium, compact }: DensityProps) => {
+  const density: TDensity =
+    (sparse && 'sparse') ?? (medium && 'medium') ?? (compact && 'compact') ?? 'sparse';
+
+  return <DensityContext.Provider value={density}>{children}</DensityContext.Provider>;
+};

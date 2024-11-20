@@ -30,9 +30,13 @@ export const detailTechnical = cn('font-mono text-textXs font-normal leading-tex
 
 export const small = cn('font-default text-textSm font-normal leading-textXs');
 
+export const xxs = cn('font-default text-textXxs font-normal leading-textXxs');
+
 export const tab = cn('font-default text-textLg font-normal leading-textLg');
 
 export const tabSmall = cn('font-default text-textSm font-medium leading-textSm');
+
+export const tabMedium = cn('font-default text-textSm font-medium leading-textLg');
 
 export const tableItem = cn('font-default text-textBase font-normal leading-textBase');
 
