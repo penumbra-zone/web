@@ -1,5 +1,12 @@
 # @penumbra-zone/crypto-web
 
+## 29.0.0
+
+### Patch Changes
+
+- Updated dependencies [291bc7d]
+  - @penumbra-zone/types@26.2.0
+
 ## 28.0.0
 
 ### Patch Changes

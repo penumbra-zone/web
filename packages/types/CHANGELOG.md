@@ -1,5 +1,11 @@
 # @penumbra-zone/types
 
+## 26.2.0
+
+### Minor Changes
+
+- 291bc7d: Adding shortify + round utilities
+
 ## 26.1.0
 
 ### Minor Changes

@@ -1,5 +1,16 @@
 # @penumbra-zone/ui
 
+## 13.3.0
+
+### Minor Changes
+
+- 291bc7d: Updating ValueViewComponent to support shortening symbols
+
+### Patch Changes
+
+- Updated dependencies [291bc7d]
+  - @penumbra-zone/types@26.2.0
+
 ## 13.2.0
 
 ### Minor Changes
