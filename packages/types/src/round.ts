@@ -1,4 +1,5 @@
 import { ceil as lodashCeil, floor as lodashFloor, round as lodashRound } from 'lodash';
+import { removeTrailingZeros } from './shortify.js';
 
 export type RoundingMode = 'round' | 'ceil' | 'floor';
 
@@ -35,5 +36,6 @@ const roundingStrategies = {
 export function round({ value, decimals, roundingMode = 'round' }: RoundOptions): string {
   const roundingFn = roundingStrategies[roundingMode];
   const roundedNumber = roundingFn(value, decimals);
-  return roundedNumber.toFixed(decimals);
+  const result = roundedNumber.toFixed(decimals);
+  return removeTrailingZeros(result);
 }
