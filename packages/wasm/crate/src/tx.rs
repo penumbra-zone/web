@@ -95,6 +95,7 @@ pub fn witness_inner(plan: TransactionPlan, stored_tree: StoredTree) -> WasmResu
     // Release the read lock on the SCT
     drop(sct);
 
+    // Construct witness data
     let mut witness_data = WitnessData {
         anchor,
         state_commitment_proofs: auth_paths

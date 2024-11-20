@@ -1,22 +1,22 @@
+mod utils;
+use decaf377::Fq;
+use penumbra_asset::asset::Id;
 use penumbra_asset::{Value, STAKING_TOKEN_ASSET_ID};
 use penumbra_dex::DexParameters;
-use penumbra_keys::Address;
+use penumbra_keys::keys::AddressIndex;
 use penumbra_keys::FullViewingKey;
 use penumbra_proto::core::app::v1::AppParameters;
 use penumbra_proto::core::component::fee::v1::GasPrices;
-use penumbra_proto::core::transaction::v1::MemoPlaintext;
+use penumbra_proto::core::keys::v1::Address as AddressProto;
 use penumbra_proto::view::v1::transaction_planner_request::Output;
 use penumbra_proto::view::v1::TransactionPlannerRequest;
 use penumbra_proto::DomainType;
 use penumbra_sct::params::SctParameters;
 use penumbra_sct::{CommitmentSource, Nullifier};
 use penumbra_shielded_pool::fmd::Parameters;
-use penumbra_shielded_pool::Note;
-use penumbra_tct::storage::StoreCommitment;
+use penumbra_shielded_pool::{Note, Rseed};
 use penumbra_tct::storage::StoredPosition;
-use penumbra_tct::Forgotten;
-use penumbra_tct::Position;
-use penumbra_tct::StateCommitment;
+use penumbra_tct::{Forgotten, Position, StateCommitment};
 use penumbra_wasm::database::interface::Database;
 use penumbra_wasm::database::mock::{get_mock_tables, MockDb};
 use penumbra_wasm::note_record::SpendableNoteRecord;
@@ -24,13 +24,14 @@ use penumbra_wasm::planner::plan_transaction_inner;
 use penumbra_wasm::storage::{byte_array_to_base64, Storage};
 use penumbra_wasm::tx::witness_inner;
 use penumbra_wasm::view_server::StoredTree;
-use rand_core::OsRng;
-use serde::Deserialize;
-use serde::Serialize;
 use std::str::FromStr;
+pub use utils::planner_setup::*;
+use utils::sct::{
+    Commitment, Position as PositionProto, SctUpdates, StoreCommitment,
+    StoredPosition as StoredPositionProto, StoredTree as StoredTreeProto,
+};
 
 use wasm_bindgen_test::wasm_bindgen_test;
-use wasm_bindgen_test::*;
 wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
 
 #[wasm_bindgen_test]
@@ -38,14 +39,6 @@ async fn test_witness() {
     // MockDb
     let mock_db = MockDb::new();
     let tables = get_mock_tables();
-
-    // Define SCT-related structs.
-    #[derive(Clone, Debug, Serialize, Deserialize)]
-    pub struct SctUpdates {
-        pub store_commitments: StoreCommitment,
-        pub set_position: StoredPosition,
-        pub set_forgotten: u64,
-    }
 
     // Sample chain and fmd parameters.
     let app_params = AppParameters {
@@ -90,45 +83,74 @@ async fn test_witness() {
         execution_price: 0,
     };
 
-    let address = &Address::dummy(&mut OsRng);
+    // Decode the Bech32m string into the `Id` type
+    let decoded_id =
+        Id::from_str("passet1nupu8yg2kua09ec8qxfsl60xhafp7mmpsjv9pgp50t20hm6pkygscjcqn2")
+            .expect("failed to decode assetId");
+
+    // Convert the bytes into Fq field elements
+    #[allow(deprecated)]
+    let state_commitment = Fq::from_le_bytes_mod_order(
+        &base64::decode("MY7PmcrH4fhjFOoMIKEdF+x9EUhZ9CS/CIfVco7Y5wU=").expect("state commitment"),
+    );
+    #[allow(deprecated)]
+    let nullifier = Fq::from_le_bytes_mod_order(
+        &base64::decode("8TvyFVKk16PHcOEAgl0QV4/92xdVpLdXI+zP87lBrQ8=").expect("nullifier"),
+    );
+    #[allow(deprecated)]
+    let rseed: [u8; 32] = base64::decode("p2w4O1ognDJtKVqhHK2qsUbV+1AEM/gn58uWYQ5v3sM=")
+        .expect("rssed")
+        .try_into()
+        .expect("Invalid base64 decoding");
 
     let spendable_note = SpendableNoteRecord {
-        note_commitment: StateCommitment::try_from([1; 32]).unwrap(),
-        note: Note::generate(
-            &mut OsRng,
-            address,
+        note_commitment: StateCommitment(state_commitment),
+        note: Note::from_parts(
+            AddressProto{ inner: "".into(), alt_bech32m: "penumbra1z7j020uafn2s8ths6xsjjvcay57thkfsuyrksaxja0jjz3ch2hdzljd6hpju8vzyupld25fld2lzmpzqe576nsr35c82e0u9hgphc76ldxlt7amx4xfc636w9cnnasl9nl4u2j".to_string() }.try_into().expect("msg"),
             Value {
-                amount: 1u64.into(),
-                asset_id: *STAKING_TOKEN_ASSET_ID,
+                amount: 1000000u64.into(),
+                asset_id: decoded_id,
             },
-        ),
-        address_index: Default::default(),
-        nullifier: Nullifier::try_from(vec![
-            76, 12, 37, 160, 207, 93, 129, 238, 230, 254, 29, 227, 107, 97, 138, 12, 172, 130, 138,
-            66, 123, 217, 253, 148, 178, 91, 112, 125, 247, 32, 189, 2,
-        ])
-        .unwrap(),
-        height_created: 0,
+            Rseed(rseed),
+        )
+        .expect("note"),
+        address_index: AddressIndex {
+            account: 0,
+            randomizer: [0; 12],
+        },
+        nullifier: Nullifier(nullifier),
+        height_created: 250305,
         height_spent: None,
-        position: Default::default(),
-        source: CommitmentSource::Genesis,
+        position: 3204061134848.into(),
+        source: CommitmentSource::Transaction {
+            id: Some([
+                160, 159, 65, 163, 219, 246, 218, 202, 237, 82, 98, 157, 76, 3, 21, 192, 243, 174,
+                26, 233, 150, 19, 103, 0, 184, 22, 217, 29, 200, 188, 7, 82,
+            ]),
+        },
         return_address: None,
-    };
-
-    // Add memo to plan.
-    let memo: MemoPlaintext = MemoPlaintext {
-        return_address: Some(address.clone().into()),
-        text: "sample memo".to_string(),
     };
 
     // Define a sample SCT update.
     #[allow(non_snake_case)]
     let sctUpdates = SctUpdates {
         store_commitments: StoreCommitment {
-            commitment: StateCommitment::try_from([1; 32]).unwrap(),
-            position: Position::default(),
+            commitment: Commitment {
+                inner: "MY7PmcrH4fhjFOoMIKEdF+x9EUhZ9CS/CIfVco7Y5wU=".to_string(),
+            },
+            position: PositionProto {
+                epoch: 746u64,
+                block: 237u64,
+                commitment: 0u64,
+            },
         },
-        set_position: StoredPosition::Position(Position::default()),
+        set_position: StoredPositionProto {
+            Position: PositionProto {
+                epoch: 750u64,
+                block: 710u64,
+                commitment: 0u64,
+            },
+        },
         set_forgotten: 3u64,
     };
 
@@ -194,17 +216,14 @@ async fn test_witness() {
         epoch: None,
         epoch_index: 0,
         expiry_height: 0,
-        memo: Some(memo),
+        memo: None,
         source: None,
         outputs: vec![Output {
-            address: Some(address.into()),
-            value: Some(
-                Value {
-                    amount: 1u64.into(),
-                    asset_id: *STAKING_TOKEN_ASSET_ID,
-                }
-                .into(),
-            ),
+            address: Some(AddressProto { inner: "".into(), alt_bech32m: "penumbra1dugkjttfezh4gfkqs77377gnjlvmkkehusx6953udxeescc0qpgk6gqc0jmrsjq8xphzrg938843p0e63z09vt8lzzmef0q330e5njuwh4290n8pemcmx70sasym0lcjkstgzc".to_string() }),
+            value: Some(Value {
+                amount: 1u64.into(),
+                asset_id: decoded_id,
+            }.into()),
         }],
         spends: vec![],
         swaps: vec![],
@@ -239,7 +258,7 @@ async fn test_witness() {
     // 2. Generate witness.
 
     // Retrieve SCT from storage.
-    let tx_last_position: StoredPosition = mock_db
+    let tx_last_position: StoredPositionProto = mock_db
         .get(&tables.tree_last_position, "last_position")
         .await
         .unwrap()
@@ -257,14 +276,25 @@ async fn test_witness() {
 
     // Reconstruct SCT struct.
     let vec_store_commitments: Vec<StoreCommitment> = vec![tx_tree_commitments.clone()];
-    let sct = StoredTree {
+    let sct_proto = StoredTreeProto {
         last_position: Some(tx_last_position.clone()),
         last_forgotten: Some(tx_last_forgotten),
         hashes: [].to_vec(),
         commitments: vec_store_commitments,
     };
 
+    let mut sct_tree: StoredTree =
+        serde_wasm_bindgen::from_value(serde_wasm_bindgen::to_value(&sct_proto).unwrap())
+            .expect("roundtrip tree conversion");
+
     // Generate witness data from SCT and specific transaction plan.
-    let witness_data = witness_inner(transaction_plan, sct).unwrap();
-    console_log!("witness_data: {:?}", witness_data);
+    witness_inner(transaction_plan.clone(), sct_tree.clone()).unwrap();
+
+    // Modify the witness to use the default position. This will cause a failure
+    // because the position must be witnessed in the tree to be valid.
+    //
+    // It's unclear how to test this because this results in a panic deeper in the
+    // call stack that isn't propogated back to the caller?
+    let s = StoredPosition::Position(Position::default());
+    sct_tree.last_position = Some(s);
 }
