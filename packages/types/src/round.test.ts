@@ -66,11 +66,16 @@ describe('round function', () => {
       expected: '1',
     },
     // Edge Cases
-    // {
-    //   description: 'should handle very large numbers',
-    //   options: { value: 5.770789431026099e23, decimals: 4, roundingMode: 'round' },
-    //   expected: '12345678900.00',
-    // },
+    {
+      description: 'should handle large numbers',
+      options: { value: 1.23456789e10, decimals: 4, roundingMode: 'round' },
+      expected: '12345678900',
+    },
+    {
+      description: 'should handle extremely large numbers',
+      options: { value: 5.770789431026099e23, decimals: 4, roundingMode: 'round' },
+      expected: '5.7708e+23',
+    },
     {
       description: 'should remove trailing zeros',
       options: { value: 1.0000000001, decimals: 4, roundingMode: 'round' },

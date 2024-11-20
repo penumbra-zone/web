@@ -15,6 +15,8 @@ const roundingStrategies = {
   round: lodashRound,
 } as const;
 
+const EXPONENTIAL_NOTATION_THRESHOLD = 1e21;
+
 /**
  * Rounds a number based on the specified options.
  *
@@ -36,6 +38,17 @@ const roundingStrategies = {
 export function round({ value, decimals, roundingMode = 'round' }: RoundOptions): string {
   const roundingFn = roundingStrategies[roundingMode];
   const roundedNumber = roundingFn(value, decimals);
-  const result = roundedNumber.toFixed(decimals);
+
+  let result: string;
+
+  const isLargeNumber = Math.abs(roundedNumber) >= EXPONENTIAL_NOTATION_THRESHOLD;
+  const isSmallNumber = Math.abs(roundedNumber) < 1e-4 && roundedNumber !== 0;
+
+  if (isLargeNumber || isSmallNumber) {
+    result = roundedNumber.toExponential(decimals);
+  } else {
+    result = roundedNumber.toFixed(decimals);
+  }
+
   return removeTrailingZeros(result);
 }
