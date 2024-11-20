@@ -1,6 +1,8 @@
-use std::collections::{BTreeMap, BTreeSet};
-use std::convert::TryInto;
-
+use crate::error::{WasmError, WasmResult};
+use crate::storage::Storage;
+use crate::storage::{init_idb_storage, DbConstants};
+use crate::utils;
+use crate::view_server::{load_tree, StoredTree};
 use anyhow::anyhow;
 use indexed_db_futures::IdbDatabase;
 use penumbra_auction::auction::dutch::actions::view::{
@@ -23,14 +25,10 @@ use penumbra_transaction::Action;
 use penumbra_transaction::{AuthorizationData, Transaction, WitnessData};
 use prost::Message;
 use rand_core::OsRng;
+use std::collections::{BTreeMap, BTreeSet};
+use std::convert::TryInto;
 use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::JsValue;
-
-use crate::error::{WasmError, WasmResult};
-use crate::storage::Storage;
-use crate::storage::{init_idb_storage, DbConstants};
-use crate::utils;
-use crate::view_server::{load_tree, StoredTree};
 
 /// authorize transaction (sign  transaction using  spend key)
 /// Arguments:
@@ -59,7 +57,14 @@ pub fn witness(transaction_plan: &[u8], stored_tree: JsValue) -> WasmResult<Vec<
     utils::set_panic_hook();
 
     let plan = TransactionPlan::decode(transaction_plan)?;
-    let stored_tree: StoredTree = serde_wasm_bindgen::from_value(stored_tree)?;
+    let stored_tree = serde_wasm_bindgen::from_value(stored_tree)?;
+
+    let witness_data = witness_inner(plan, stored_tree)?;
+
+    Ok(witness_data.encode_to_vec())
+}
+
+pub fn witness_inner(plan: TransactionPlan, stored_tree: StoredTree) -> WasmResult<WitnessData> {
     let sct = load_tree(stored_tree);
 
     let note_commitments: Vec<StateCommitment> = plan
@@ -79,7 +84,6 @@ pub fn witness(transaction_plan: &[u8], stored_tree: JsValue) -> WasmResult<Vec<
     let anchor = sct.root();
 
     // Obtain an auth path for each requested note commitment
-
     let auth_paths = note_commitments
         .iter()
         .map(|nc| {
@@ -91,6 +95,7 @@ pub fn witness(transaction_plan: &[u8], stored_tree: JsValue) -> WasmResult<Vec<
     // Release the read lock on the SCT
     drop(sct);
 
+    // Construct witness data
     let mut witness_data = WitnessData {
         anchor,
         state_commitment_proofs: auth_paths
@@ -109,7 +114,7 @@ pub fn witness(transaction_plan: &[u8], stored_tree: JsValue) -> WasmResult<Vec<
         witness_data.add_proof(nc, Proof::dummy(&mut OsRng, nc));
     }
 
-    Ok(witness_data.encode_to_vec())
+    Ok(witness_data)
 }
 
 #[wasm_bindgen(getter_with_clone)]
