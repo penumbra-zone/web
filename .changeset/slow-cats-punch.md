@@ -2,4 +2,4 @@
 '@penumbra-zone/types': patch
 ---
 
-Removing trailing zeroes from round func
+Round func updates: remove trailing zeros + exponent notation support

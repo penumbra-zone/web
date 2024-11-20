@@ -595,6 +595,9 @@ importers:
       bignumber.js:
         specifier: ^9.1.2
         version: 9.1.2
+      decimal.js:
+        specifier: ^10.4.3
+        version: 10.4.3
       idb:
         specifier: ^8.0.0
         version: 8.0.0
