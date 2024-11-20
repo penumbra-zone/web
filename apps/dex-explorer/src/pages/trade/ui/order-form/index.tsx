@@ -46,7 +46,7 @@ export const OrderForm = observer(() => {
   } = useOrderFormStore();
 
   return (
-    <div>
+    <div className='p-4'>
       <SegmentedControl direction={direction} setDirection={setDirection} />
       <OrderInput
         label={direction}
