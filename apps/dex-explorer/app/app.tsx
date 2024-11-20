@@ -16,9 +16,11 @@ export const App = ({ children }: { children: ReactNode }) => {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <SyncBar />
-        <Header />
-        {children}
+        <main className='relative z-0'>
+          <SyncBar />
+          <Header />
+          {children}
+        </main>
         <ToastProvider />
       </TooltipProvider>
     </QueryClientProvider>
