@@ -6,6 +6,9 @@ describe('shortify Function', () => {
     it('should return the integer part for positive numbers', () => {
       expect(shortify(0)).toBe('0');
       expect(shortify(999)).toBe('999');
+      expect(shortify(999.9999)).toBe('999');
+      expect(shortify(99.9999)).toBe('99.9');
+      expect(shortify(9.9999)).toBe('9.99');
       expect(shortify(123.456)).toBe('123'); // floor rounding
     });
 

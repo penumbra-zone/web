@@ -36,10 +36,6 @@ export interface ValueViewComponentProps<SelectedContext extends Context> {
    */
   priority?: PillProps['priority'];
   /**
-   * If true, the asset icon will be hidden.
-   */
-  hideIcon?: boolean;
-  /**
    * If true, the asset symbol will be hidden.
    */
   hideSymbol?: boolean;
@@ -60,7 +56,6 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
   valueView,
   context,
   priority = 'primary',
-  hideIcon = false,
   hideSymbol = false,
   abbreviate = false,
 }: ValueViewComponentProps<SelectedContext>) => {
@@ -87,37 +82,31 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
       if={!context || context === 'default'}
       then={children => (
         <Pill priority={priority}>
-          <div
-            className={cn(!hideIcon && '-ml-2', density === 'sparse' ? 'mt-0 mb-0' : '-mt-1 -mb-1')}
-          >
+          <div className={cn('-ml-2', density === 'sparse' ? 'mt-0 mb-0' : '-mt-1 -mb-1')}>
             {children}
           </div>
         </Pill>
       )}
       else={children => (
         <span
-          className={cn(
-            density === 'sparse' ? technical : detailTechnical,
-            priority === 'primary' ? 'text-text-primary' : 'text-secondary-dark',
-          )}
+          className={cn(density === 'sparse' ? technical : detailTechnical, 'text-text-primary')}
         >
           {children}
         </span>
       )}
     >
-      <span className='flex w-max max-w-full items-center gap-2 text-ellipsis'>
-        {!hideIcon && (
-          <div className='shrink-0'>
-            <AssetIcon size={density === 'sparse' ? 'lg' : 'md'} metadata={metadata} />
-          </div>
-        )}
+      <span className={cn('flex w-max max-w-full items-center text-ellipsis', getGap(density))}>
+        <div className='shrink-0'>
+          <AssetIcon size={getIconSize(density)} metadata={metadata} />
+        </div>
 
         <div
           className={cn(
-            'grow shrink flex items-center gap-2 overflow-hidden',
+            'grow shrink flex items-center overflow-hidden',
             context === 'table' &&
               priority === 'secondary' &&
               'border-b-2 border-dashed border-other-tonalStroke',
+            getGap(density),
           )}
         >
           <div className='shrink grow' title={formattedAmount}>
@@ -132,4 +121,24 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
       </span>
     </ConditionalWrap>
   );
+};
+
+const getGap = (density: Density) => {
+  if (density === 'sparse') {
+    return 'gap-2';
+  }
+  if (density === 'medium') {
+    return 'gap-1.5';
+  }
+  return 'gap-1';
+};
+
+const getIconSize = (density: Density) => {
+  if (density === 'sparse') {
+    return 'lg';
+  }
+  if (density === 'medium') {
+    return 'md';
+  }
+  return 'sm';
 };

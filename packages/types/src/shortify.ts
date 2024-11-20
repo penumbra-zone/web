@@ -32,8 +32,8 @@ export const shortify = (value: number): string => {
   let decimals = 0;
 
   if (value < 1_000 && value > -1_000) {
-    // No suffix needed, round to integer
-    return round({ value, decimals: 0, roundingMode });
+    shortValue = value;
+    suffix = '';
   } else if (value < 1_000_000 && value > -1_000_000) {
     shortValue = value / 1_000;
     suffix = 'K';
@@ -52,7 +52,7 @@ export const shortify = (value: number): string => {
   const absShortValue = Math.abs(shortValue);
   const integerDigits = Math.floor(absShortValue).toString().length;
 
-  // Set decimals to ensure up to three significant digits
+  // Set decimals to set significant digits
   if (integerDigits >= 3) {
     decimals = 0;
   } else {
