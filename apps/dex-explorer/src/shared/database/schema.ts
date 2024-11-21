@@ -83,8 +83,10 @@ export interface DexExPairsSummary {
   asset_end: Buffer;
   asset_start: Buffer;
   direct_volume_over_window: number;
+  high: number;
   liquidity: number;
   liquidity_then: number;
+  low: number;
   price: number;
   price_then: number;
   swap_volume_over_window: number;
