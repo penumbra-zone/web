@@ -86,6 +86,21 @@ describe('round function', () => {
       options: { value: -5.770789431026099e23, decimals: 4, roundingMode: 'half-up' },
       expected: '-5.7708e+23',
     },
+    {
+      description: 'should handle extremely large numbers with round mode',
+      options: { value: -5.770789431026099e23, decimals: 4, roundingMode: 'half-up' },
+      expected: '-5.7708e+23',
+    },
+    {
+      description: 'should handle extremely small negative numbers with floor mode',
+      options: { value: -5.770789431026099e23, decimals: 4, roundingMode: 'down' },
+      expected: '-5.7707e+23',
+    },
+    {
+      description: 'should handle extremely small negative numbers with ceil mode',
+      options: { value: -5.770789431026099e23, decimals: 4, roundingMode: 'up' },
+      expected: '-5.7708e+23',
+    },
     // Edge Cases
     {
       description: 'should handle large numbers',
