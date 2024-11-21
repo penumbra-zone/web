@@ -2,12 +2,12 @@ import { ReactNode } from 'react';
 import cn from 'clsx';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { Text } from '@penumbra-zone/ui/Text';
-import { AssetIcon } from '@penumbra-zone/ui/AssetIcon';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { useSummary } from '../model/useSummary';
-import { usePathToMetadata } from '../model/use-path';
-import { shortify } from '@/shared/utils/numbers/shortify';
-import { round } from '@/shared/utils/numbers/round';
+import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
+import { round } from '@penumbra-zone/types/round';
+import { Density } from '@penumbra-zone/ui/Density';
+import { SummaryDataResponse } from '@/shared/api/server/types.ts';
 
 const SummaryCard = ({
   title,
@@ -45,15 +45,6 @@ const SummaryCard = ({
 
 export const Summary = () => {
   const { data, isLoading, error } = useSummary('1d');
-  const { quoteAsset } = usePathToMetadata();
-
-  const change24h = data && {
-    positive: data.price >= data.price_then,
-    change: round(data.price - data.price_then, 4),
-    percent: !data.price
-      ? '0'
-      : round(Math.abs(((data.price - data.price_then) / data.price_then) * 100), 2),
-  };
 
   if (error) {
     return (
@@ -68,57 +59,76 @@ export const Summary = () => {
   return (
     <div className='flex flex-wrap items-center gap-x-4 gap-y-2'>
       <SummaryCard title='Price' loading={isLoading}>
-        {data && (
-          <Text detail color='text.primary'>
-            {round(data.price, 6)}
-          </Text>
-        )}
+        <Text detail color='text.primary'>
+          {data && 'price' in data ? round({ value: data.price, decimals: 6 }) : '-'}
+        </Text>
       </SummaryCard>
       <SummaryCard title='24h Change' loading={isLoading}>
-        {change24h && (
-          <div
-            className={cn(
-              'flex items-center gap-1',
-              change24h.positive ? 'text-success-light' : 'text-destructive-light',
-            )}
-          >
-            <Text detail>{change24h.change}</Text>
+        {data && 'noData' in data && (
+          <Text detail color='text.primary'>
+            -
+          </Text>
+        )}
+        {data && 'change' in data && (
+          <div className={cn('flex items-center gap-1', getColor(data, false))}>
+            <Text detail>{round({ value: data.change.value, decimals: 6 })}</Text>
             <span
-              className={cn(
-                'flex h-4 px-1 rounded-full text-success-dark',
-                change24h.positive ? 'bg-success-light' : 'bg-destructive-light',
-              )}
+              className={cn('flex h-4 px-1 rounded-full text-success-dark', getColor(data, true))}
             >
               <Text detail>
-                {change24h.positive ? '+' : '-'}
-                {change24h.percent}%
+                {getTextSign(data)}
+                {data.change.percent}%
               </Text>
             </span>
           </div>
         )}
       </SummaryCard>
       <SummaryCard title='24h High' loading={isLoading}>
-        {/*  TODO: After added to DB, show here */}
         <Text detail color='text.primary'>
-          -
+          {data && 'high' in data ? round({ value: data.high, decimals: 6 }) : '-'}
         </Text>
       </SummaryCard>
       <SummaryCard title='24h Low' loading={isLoading}>
-        {/*  TODO: After added to DB, show here */}
         <Text detail color='text.primary'>
-          -
+          {data && 'low' in data ? round({ value: data.low, decimals: 6 }) : '-'}
         </Text>
       </SummaryCard>
       <SummaryCard title='24h Volume' loading={isLoading}>
-        {data && (
-          <div className='flex items-center gap-1'>
-            {quoteAsset && <AssetIcon metadata={quoteAsset} size='sm' />}
-            <Text detail color='text.primary'>
-              {shortify(data.direct_volume_over_window)}
-            </Text>
-          </div>
+        {data && 'directVolume' in data ? (
+          <Density compact>
+            <ValueViewComponent
+              valueView={data.directVolume}
+              context='table'
+              abbreviate
+              hideSymbol
+            />
+          </Density>
+        ) : (
+          <Text detail color='text.primary'>
+            -
+          </Text>
         )}
       </SummaryCard>
     </div>
   );
+};
+
+const getTextSign = (res: SummaryDataResponse) => {
+  if (res.change.sign === 'positive') {
+    return '+';
+  }
+  if (res.change.sign === 'negative') {
+    return '-';
+  }
+  return '';
+};
+
+const getColor = (res: SummaryDataResponse, isBg = false): string => {
+  if (res.change.sign === 'positive') {
+    return isBg ? 'bg-success-light' : 'text-success-light';
+  }
+  if (res.change.sign === 'negative') {
+    return isBg ? 'bg-destructive-light' : 'text-destructive-light';
+  }
+  return isBg ? 'bg-neutral-light' : 'text-neutral-light';
 };
