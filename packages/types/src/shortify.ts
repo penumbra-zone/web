@@ -24,9 +24,6 @@ export const removeTrailingZeros = (str: string): string => {
  * - 1_000_000_000_000 -> 1T
  */
 export const shortify = (value: number): string => {
-  // Rounding toward zero
-  const roundingMode = value >= 0 ? 'floor' : 'ceil';
-
   let shortValue: number;
   let suffix = '';
   let decimals = 0;
@@ -63,7 +60,7 @@ export const shortify = (value: number): string => {
   const roundedShortValueStr = round({
     value: shortValue,
     decimals: decimals,
-    roundingMode,
+    roundingMode: 'down', // Rounding toward zero
   });
 
   // Remove trailing zeros and append the suffix

@@ -1,6 +1,7 @@
-import { ceil as lodashCeil, floor as lodashFloor, round as lodashRound } from 'lodash';
+import { Decimal } from 'decimal.js';
+import { removeTrailingZeros } from './shortify.js';
 
-export type RoundingMode = 'round' | 'ceil' | 'floor';
+export type RoundingMode = 'half-up' | 'up' | 'down';
 
 export interface RoundOptions {
   value: number;
@@ -8,32 +9,49 @@ export interface RoundOptions {
   roundingMode?: RoundingMode;
 }
 
-const roundingStrategies = {
-  ceil: lodashCeil,
-  floor: lodashFloor,
-  round: lodashRound,
-} as const;
+const EXPONENTIAL_NOTATION_THRESHOLD = new Decimal('1e21');
+
+Decimal.set({ precision: 30 });
+
+const getDecimalRoundingMode = (mode: RoundingMode): Decimal.Rounding => {
+  switch (mode) {
+    case 'up':
+      return Decimal.ROUND_UP;
+    case 'down':
+      return Decimal.ROUND_DOWN;
+    case 'half-up':
+    default:
+      return Decimal.ROUND_HALF_UP;
+  }
+};
 
 /**
- * Rounds a number based on the specified options.
- *
  * @param options - An object containing the properties:
  *   - value: The number to round.
  *   - decimals: The number of decimal places to round to.
- *   - roundingMode: The mode of rounding ('round', 'ceil', 'floor'). Defaults to 'round'.
- *
- * @returns A string representation of the rounded number.
- *
- * @example
- *
- * ```typescript
- * round({ value: 1.2345, decimals: 2, roundingMode: 'ceil' }); // "1.24"
- * round({ value: 1.2345, decimals: 2, roundingMode: 'floor' }); // "1.23"
- * round({ value: 1.2345, decimals: 2 }); // "1.23" (default rounding)
- * ```
+ *   - roundingMode:
+ *      - half-up: Default. Rounds towards nearest neighbour. If equidistant, rounds away from zero.
+ *      - down: Rounds towards zero
+ *      - up: Rounds way from zero
  */
-export function round({ value, decimals, roundingMode = 'round' }: RoundOptions): string {
-  const roundingFn = roundingStrategies[roundingMode];
-  const roundedNumber = roundingFn(value, decimals);
-  return roundedNumber.toFixed(decimals);
+export function round({ value, decimals, roundingMode = 'half-up' }: RoundOptions): string {
+  const decimalValue = new Decimal(value);
+
+  // Determine if exponential notation is needed
+  const isLargeNumber = decimalValue.abs().gte(EXPONENTIAL_NOTATION_THRESHOLD);
+  const isSmallNumber = decimalValue.abs().lt(new Decimal('1e-4')) && !decimalValue.isZero();
+
+  let result: string;
+
+  if (isLargeNumber || isSmallNumber) {
+    result = decimalValue.toExponential(decimals, getDecimalRoundingMode(roundingMode));
+  } else {
+    const roundedDecimal = decimalValue.toDecimalPlaces(
+      decimals,
+      getDecimalRoundingMode(roundingMode),
+    );
+    result = roundedDecimal.toFixed(decimals, getDecimalRoundingMode(roundingMode));
+  }
+
+  return removeTrailingZeros(result);
 }
