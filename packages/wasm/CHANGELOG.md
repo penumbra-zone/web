@@ -1,5 +1,16 @@
 # @penumbra-zone/wasm
 
+## 33.1.0
+
+### Minor Changes
+
+- ccbe3a5: migrate wasm unit test for witness to use mockDb
+
+### Patch Changes
+
+- Updated dependencies [838de8a]
+  - @penumbra-zone/types@26.2.1
+
 ## 33.0.0
 
 ### Patch Changes
