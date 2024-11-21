@@ -1,5 +1,5 @@
 import { Trace } from '@/shared/api/server/book/types.ts';
-import { round } from '@/shared/utils/numbers/round.ts';
+import { round } from '@penumbra-zone/types/round';
 
 export const calculateSpread = (sellOrders: Trace[], buyOrders: Trace[]) => {
   if (!sellOrders.length || !buyOrders.length) {
@@ -21,8 +21,8 @@ export const calculateSpread = (sellOrders: Trace[], buyOrders: Trace[]) => {
   const spreadPercentage = (spread / midPrice) * 100;
 
   return {
-    amount: round(spread, 8),
-    percentage: round(spreadPercentage, 2),
-    midPrice: round(midPrice, 8),
+    amount: round({ value: spread, decimals: 8 }),
+    percentage: round({ value: spreadPercentage, decimals: 2 }),
+    midPrice: round({ value: midPrice, decimals: 8 }),
   };
 };

@@ -8,7 +8,8 @@ import { Trace, TraceHash } from '@/shared/api/server/book/types.ts';
 import { getAssetIdFromValueView } from '@penumbra-zone/getters/value-view';
 import { Value, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
-import { formatAmount, removeTrailingZeros } from '@penumbra-zone/types/amount';
+import { formatAmount } from '@penumbra-zone/types/amount';
+import { removeTrailingZeros } from '@penumbra-zone/types/shortify';
 
 // Used to aggregate equal prices along the same route
 const getTraceHash = (trace: Trace): TraceHash => {
