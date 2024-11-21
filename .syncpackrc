@@ -36,6 +36,13 @@
   ],
   "versionGroups": [
     {
+      "label": "Ignore @tanstack/react-query",
+      "dependencies": [
+        "@tanstack/react-query"
+      ],
+      "isIgnored": true
+    },
+    {
       "label": "Use workspace protocol for local packages",
       "dependencies": [
         "$LOCAL"
