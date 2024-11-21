@@ -1,5 +1,11 @@
 # @penumbra-zone/types
 
+## 26.2.1
+
+### Patch Changes
+
+- 838de8a: Round func updates: remove trailing zeros + exponent notation support
+
 ## 26.2.0
 
 ### Minor Changes
