@@ -2,7 +2,7 @@ import { SwapExecution_Trace } from '@penumbra-zone/protobuf/penumbra/core/compo
 import { Trace } from './trace';
 import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { ValueViewComponent } from '@penumbra-zone/ui-deprecated/components/ui/value';
-import { ArrowDown, ArrowUp } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 export const Traces = ({
   traces,
@@ -29,17 +29,14 @@ export const Traces = ({
 
       <div className='mt-4 flex overflow-auto [scrollbar-width:thin]'>
         <div className='mx-2 w-min grow'>
-          <div className='-mx-2 -mb-8 flex justify-between'>
-            <div className='flex flex-col items-start gap-2'>
-              <ValueViewComponent view={input} size='sm' />
-              <ArrowDown size={17} className='relative z-10' />
+          <div className='relative flex items-center justify-between'>
+            <ValueViewComponent view={input} size='sm' />
+            <div className='absolute left-1/2 -translate-x-1/2 flex items-center'>
+              <ArrowRight size={20} strokeWidth={2.5} className='text-white' />
             </div>
-            <div className='flex flex-col items-end gap-2'>
-              <ValueViewComponent view={output} size='sm' />
-              <ArrowUp size={17} className='relative z-10' />
-            </div>
+            <ValueViewComponent view={output} size='sm' />
           </div>
-          <div className='inline-flex w-max min-w-full flex-col pb-10'>
+          <div className='inline-flex w-max min-w-full flex-col pb-10 mt-2'>
             {traces.map((trace, index) => (
               <div
                 key={index}
