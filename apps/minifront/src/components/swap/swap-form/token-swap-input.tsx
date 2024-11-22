@@ -13,7 +13,6 @@ import { AssetSelector } from '../../shared/selectors/asset-selector';
 import BalanceSelector from '../../shared/selectors/balance-selector';
 import { zeroValueView } from '../../../utils/zero-value-view';
 import { isValidAmount } from '../../../state/helpers';
-import { NonNativeFeeWarning } from '../../shared/non-native-fee-warning';
 import { NumberInput } from '../../shared/number-input';
 import { useAssets, useBalancesResponses } from '../../../state/shared';
 import { getBalanceByMatchingMetadataAndAddressIndex } from '../../../state/swap/getters';
@@ -140,19 +139,6 @@ export const TokenSwapInput = () => {
           </div>
         </div>
       </div>
-
-      <NonNativeFeeWarning
-        amount={Number(amount)}
-        balancesResponses={balancesResponses?.data}
-        source={assetIn}
-        wrap={children => (
-          <>
-            {/* This div adds an empty line */}
-            <div className='h-4' />
-            {children}
-          </>
-        )}
-      />
     </Box>
   );
 };
