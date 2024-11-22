@@ -31,12 +31,12 @@ export const Traces = ({
         <div className='mx-2 w-min grow'>
           <div className='relative flex items-center justify-between'>
             <ValueViewComponent view={input} size='sm' />
-            <div className='absolute left-1/2 -translate-x-1/2 flex items-center'>
+            <div className='absolute left-1/2 flex -translate-x-1/2 items-center'>
               <ArrowRight size={20} strokeWidth={2.5} className='text-white' />
             </div>
             <ValueViewComponent view={output} size='sm' />
           </div>
-          <div className='inline-flex w-max min-w-full flex-col pb-10 mt-2'>
+          <div className='mt-2 inline-flex w-max min-w-full flex-col pb-10'>
             {traces.map((trace, index) => (
               <div
                 key={index}
