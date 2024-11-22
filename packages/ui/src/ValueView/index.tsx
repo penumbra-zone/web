@@ -43,6 +43,10 @@ export interface ValueViewComponentProps<SelectedContext extends Context> {
    * If true, the displayed amount will be shortened.
    */
   abbreviate?: boolean;
+  /**
+   * If false, the amount will not be displayed.
+   */
+  showValue?: boolean;
 }
 
 /**
@@ -58,6 +62,7 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
   priority = 'primary',
   hideSymbol = false,
   abbreviate = false,
+  showValue = true,
 }: ValueViewComponentProps<SelectedContext>) => {
   const density = useDensity();
 
@@ -65,12 +70,14 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
     return null;
   }
 
-  let formattedAmount: string;
-  if (abbreviate) {
-    const amount = getFormattedAmtFromValueView(valueView, false);
-    formattedAmount = shortify(Number(amount));
-  } else {
-    formattedAmount = getFormattedAmtFromValueView(valueView, true);
+  let formattedAmount: string | undefined;
+  if (showValue) {
+    if (abbreviate) {
+      const amount = getFormattedAmtFromValueView(valueView, false);
+      formattedAmount = shortify(Number(amount));
+    } else {
+      formattedAmount = getFormattedAmtFromValueView(valueView, true);
+    }
   }
 
   const metadata = getMetadata.optional(valueView);
@@ -109,9 +116,11 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
             getGap(density),
           )}
         >
-          <div className='shrink grow' title={formattedAmount}>
-            <ValueText density={density}>{formattedAmount}</ValueText>
-          </div>
+          {showValue && (
+            <div className='shrink grow' title={formattedAmount ?? undefined}>
+              <ValueText density={density}>{formattedAmount}</ValueText>
+            </div>
+          )}
           {!hideSymbol && (
             <div className='shrink grow truncate' title={symbol}>
               <ValueText density={density}>{symbol}</ValueText>
