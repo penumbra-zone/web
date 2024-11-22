@@ -27,9 +27,12 @@ export const Trace = ({
   metadataByAssetId: Record<string, Metadata>;
 }) => {
   return (
-    <div className='flex w-full items-center justify-between gap-8'>
+    <div className='flex w-full justify-between gap-8'>
       {trace.value.map((value, index) => (
-        <div key={index} className='flex shrink-0 flex-col gap-1'>
+        <div
+          key={index}
+          className='flex min-w-[60px] max-w-[150px] shrink-0 grow basis-auto flex-col items-center gap-1'
+        >
           <ValueViewComponent view={getValueView(metadataByAssetId, value)} size='sm' />
 
           {index === 0 && <Price trace={trace} metadataByAssetId={metadataByAssetId} />}
