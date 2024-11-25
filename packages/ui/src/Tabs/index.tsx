@@ -101,7 +101,7 @@ export const Tabs = ({ value, onChange, options, actionType = 'default' }: TabsP
                   value === option.value ? 'text-text-primary' : 'text-text-secondary',
                   getDensityItemClasses(density),
                   getFocusOutlineColorByActionType(actionType),
-                  'focus:outline focus:outline-2',
+                  'focus-visible:outline focus-visible:outline-2',
                   'hover:bg-action-hoverOverlay',
                 )}
               >
