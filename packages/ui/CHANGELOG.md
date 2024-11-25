@@ -1,5 +1,15 @@
 # @penumbra-zone/ui
 
+## 13.4.0
+
+### Minor Changes
+
+- ebc9f59: Only display tab outline when focused via keyboard, not otherwise.
+
+### Patch Changes
+
+- 5cf7c55: showValue prop for ValueViewComponent to display amounts
+
 ## 13.3.1
 
 ### Patch Changes

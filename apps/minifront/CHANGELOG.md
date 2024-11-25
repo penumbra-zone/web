@@ -1,5 +1,12 @@
 # minifront
 
+## 6.25.0
+
+### Minor Changes
+
+- 29ceb15: automatically perform swap estimation on user input
+- 4ca4671: remove non-native-fee-warning from minifront
+
 ## 6.24.9
 
 ### Patch Changes
