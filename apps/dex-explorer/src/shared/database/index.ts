@@ -61,7 +61,8 @@ class Pindexer {
       .select(['start_time', 'open', 'close', 'low', 'high', 'swap_volume', 'direct_volume'])
       .where('the_window', '=', window)
       .where('asset_start', '=', Buffer.from(baseAsset.inner))
-      .where('asset_end', '=', Buffer.from(quoteAsset.inner));
+      .where('asset_end', '=', Buffer.from(quoteAsset.inner))
+      .orderBy('start_time', 'asc');
 
     // Due to a lot of price volatility at the launch of the chain, manually setting start date a few days later
     if (chainId === MAINNET_CHAIN_ID) {
