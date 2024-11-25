@@ -36,9 +36,9 @@ export interface ValueViewComponentProps<SelectedContext extends Context> {
    */
   priority?: PillProps['priority'];
   /**
-   * If true, the asset symbol will be hidden.
+   * If true, the asset symbol will be visible.
    */
-  hideSymbol?: boolean;
+  showSymbol?: boolean;
   /**
    * If true, the displayed amount will be shortened.
    */
@@ -60,7 +60,7 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
   valueView,
   context,
   priority = 'primary',
-  hideSymbol = false,
+  showSymbol = true,
   abbreviate = false,
   showValue = true,
 }: ValueViewComponentProps<SelectedContext>) => {
@@ -72,12 +72,8 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
 
   let formattedAmount: string | undefined;
   if (showValue) {
-    if (abbreviate) {
-      const amount = getFormattedAmtFromValueView(valueView, false);
-      formattedAmount = shortify(Number(amount));
-    } else {
-      formattedAmount = getFormattedAmtFromValueView(valueView, true);
-    }
+    const amount = getFormattedAmtFromValueView(valueView, !abbreviate);
+    formattedAmount = abbreviate ? shortify(Number(amount)) : amount;
   }
 
   const metadata = getMetadata.optional(valueView);
@@ -121,7 +117,7 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
               <ValueText density={density}>{formattedAmount}</ValueText>
             </div>
           )}
-          {!hideSymbol && (
+          {showSymbol && (
             <div className='shrink grow truncate' title={symbol}>
               <ValueText density={density}>{symbol}</ValueText>
             </div>
