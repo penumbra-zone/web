@@ -1,3 +1,3 @@
-import { ExplorePage } from '@/pages/explore';
+import { ExplorePage } from '@/pages/explore/ui/page';
 
 export default ExplorePage;

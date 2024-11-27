@@ -1,9 +1,9 @@
 import { Pool, types } from 'pg';
 import fs from 'fs';
 import { Kysely, PostgresDialect } from 'kysely';
-import { DB } from '@/shared/database/schema.ts';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { DurationWindow } from '@/shared/utils/duration.ts';
+import { DB, DexExAggregateSummary } from './schema';
 
 const MAINNET_CHAIN_ID = 'penumbra-1';
 
@@ -42,6 +42,14 @@ class Pindexer {
       .where('the_window', '=', window)
       .where('asset_start', '=', Buffer.from(baseAsset.inner))
       .where('asset_end', '=', Buffer.from(quoteAsset.inner))
+      .execute();
+  }
+
+  async stats(window: DurationWindow): Promise<DexExAggregateSummary[]> {
+    return this.db
+      .selectFrom('dex_ex_aggregate_summary')
+      .selectAll()
+      .where('the_window', '=', window)
       .execute();
   }
 
