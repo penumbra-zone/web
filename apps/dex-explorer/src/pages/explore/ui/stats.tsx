@@ -1,0 +1,81 @@
+import { round } from '@penumbra-zone/types/round';
+import { Text } from '@penumbra-zone/ui/Text';
+import { InfoCard } from './info-card';
+import { pluralizeAndShortify } from '@/shared/utils/pluralize';
+import { shortify } from '@penumbra-zone/types/shortify';
+import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
+import { getStats } from '../api/get-stats';
+
+export const ExploreStats = async () => {
+  const stats = await getStats();
+
+  if ('error' in stats) {
+    return (
+      <Text large color='destructive.light'>
+        {stats.error}
+      </Text>
+    );
+  }
+
+  return (
+    <div className='grid grid-cols-1 tablet:grid-cols-2 desktop:grid-cols-3 gap-2'>
+      <InfoCard title='Total Trading Volume (24h)'>
+        <Text large color='text.primary'>
+          <Text large color='text.primary'>
+            {shortify(Number(getFormattedAmtFromValueView(stats.directVolume)))}
+          </Text>
+        </Text>
+      </InfoCard>
+      <InfoCard title='Number of Trades (24h)'>
+        <Text large color='text.primary'>
+          {pluralizeAndShortify(stats.trades, 'trade', 'trades')}
+        </Text>
+      </InfoCard>
+      <InfoCard title='Largest Trading Pair (24h volume)'>
+        {stats.largestPair ? (
+          <>
+            <Text large color='text.primary'>
+              {stats.largestPair.start}/{stats.largestPair.end}
+            </Text>
+            {stats.largestPairLiquidity && (
+              <Text large color='success.light'>
+                {shortify(Number(getFormattedAmtFromValueView(stats.largestPairLiquidity)))}
+              </Text>
+            )}
+          </>
+        ) : (
+          <Text large color='text.primary'>
+            -
+          </Text>
+        )}
+      </InfoCard>
+      <InfoCard title='Total Liquidity Available'>
+        <Text large color='text.primary'>
+          {shortify(Number(getFormattedAmtFromValueView(stats.liquidity)))}
+        </Text>
+      </InfoCard>
+      <InfoCard title='Number of Active Pairs'>
+        <Text large color='text.primary'>
+          {pluralizeAndShortify(stats.activePairs, 'pair', 'pairs')}
+        </Text>
+      </InfoCard>
+      <InfoCard title='Top Price Mover (24h)'>
+        {stats.topPriceMover ? (
+          <>
+            <Text large color='text.primary'>
+              {stats.topPriceMover.start}/{stats.topPriceMover.end}
+            </Text>
+            <Text large color={stats.topPriceMover.percent ? 'success.light' : 'destructive.light'}>
+              {stats.topPriceMover.percent && '+'}
+              {round({ value: stats.topPriceMover.percent, decimals: 1 })}%
+            </Text>
+          </>
+        ) : (
+          <Text large color='text.primary'>
+            -
+          </Text>
+        )}
+      </InfoCard>
+    </div>
+  );
+};
