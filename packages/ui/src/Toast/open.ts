@@ -73,7 +73,6 @@ export const openToast = (props: ToastProps): Toast => {
 
   const open = () => {
     const fn = toastFnMap[options.type];
-    console.log('TCL: open -> options', options);
 
     id = fn(options.message, {
       id,
