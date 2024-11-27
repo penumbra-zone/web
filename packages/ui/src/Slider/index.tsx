@@ -40,7 +40,6 @@ export const Slider: React.FC<SliderProps> = ({
   disabled = false,
 }) => {
   const [value, setValue] = useState(valueProp || defaultValue);
-  console.log('TCL: value', value);
   const handleValueChange = (newValue: number[]) => {
     const updatedValue = newValue[0] ?? defaultValue;
     setValue(updatedValue);
@@ -48,7 +47,6 @@ export const Slider: React.FC<SliderProps> = ({
   };
 
   useEffect(() => {
-    console.log('TCL: valueProp', valueProp);
     setValue(valueProp);
   }, [valueProp]);
 
