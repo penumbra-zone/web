@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Text } from '../Text';
 import * as RadixSlider from '@radix-ui/react-slider';
 import { ThemeColor, getThemeColorClass } from '../utils/color';
@@ -8,6 +8,7 @@ interface SliderProps {
   min?: number;
   max?: number;
   step?: number;
+  value?: number;
   defaultValue?: number;
   onChange?: (value: number) => void;
   leftLabel?: string;
@@ -26,6 +27,7 @@ export const Slider: React.FC<SliderProps> = ({
   min = 0,
   max = 100,
   step = 1,
+  value: valueProp = 0,
   defaultValue = 0,
   onChange,
   leftLabel,
@@ -37,12 +39,18 @@ export const Slider: React.FC<SliderProps> = ({
   valueDetails,
   disabled = false,
 }) => {
-  const [value, setValue] = useState(defaultValue);
+  const [value, setValue] = useState(valueProp || defaultValue);
+  console.log('TCL: value', value);
   const handleValueChange = (newValue: number[]) => {
     const updatedValue = newValue[0] ?? defaultValue;
     setValue(updatedValue);
     onChange?.(updatedValue);
   };
+
+  useEffect(() => {
+    console.log('TCL: valueProp', valueProp);
+    setValue(valueProp);
+  }, [valueProp]);
 
   const totalSteps = (max - min) / step;
 
@@ -63,7 +71,7 @@ export const Slider: React.FC<SliderProps> = ({
         min={min}
         max={max}
         step={step}
-        defaultValue={[defaultValue]}
+        value={[value]}
         onValueChange={handleValueChange}
         disabled={disabled}
       >
