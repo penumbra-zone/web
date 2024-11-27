@@ -27,8 +27,8 @@ export const Slider: React.FC<SliderProps> = ({
   min = 0,
   max = 100,
   step = 1,
-  value: valueProp = 0,
-  defaultValue = 0,
+  value: valueProp,
+  defaultValue,
   onChange,
   leftLabel,
   rightLabel,
@@ -39,15 +39,17 @@ export const Slider: React.FC<SliderProps> = ({
   valueDetails,
   disabled = false,
 }) => {
-  const [value, setValue] = useState(valueProp || defaultValue);
+  const [value, setValue] = useState(valueProp ?? defaultValue ?? 0);
   const handleValueChange = (newValue: number[]) => {
-    const updatedValue = newValue[0] ?? defaultValue;
+    const updatedValue = newValue[0] ?? defaultValue ?? 0;
     setValue(updatedValue);
     onChange?.(updatedValue);
   };
 
   useEffect(() => {
-    setValue(valueProp);
+    if (valueProp !== undefined) {
+      setValue(valueProp);
+    }
   }, [valueProp]);
 
   const totalSteps = (max - min) / step;
