@@ -27,6 +27,10 @@ export interface Toast {
   dismiss: VoidFunction;
 }
 
+function truncateString(str: string, maxLength: number): string {
+  return str.length > maxLength ? `${str.slice(0, maxLength)}...` : str;
+}
+
 /**
  * If `<ToastProvider />` exists in the document, opens a toast with provided type and options.
  * By default, the toast is dismissible and has a duration of 4000 milliseconds. It can
@@ -69,10 +73,14 @@ export const openToast = (props: ToastProps): Toast => {
 
   const open = () => {
     const fn = toastFnMap[options.type];
+    console.log('TCL: open -> options', options);
 
     id = fn(options.message, {
       id,
-      description: options.description,
+      description:
+        typeof options.description === 'string'
+          ? truncateString(options.description, 200)
+          : options.description,
       closeButton: options.dismissible ?? true,
       dismissible: options.dismissible ?? true,
       duration: options.persistent ? Infinity : 4000,
