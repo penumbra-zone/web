@@ -10,7 +10,7 @@
   "scripts": {
     "build": "vite build",
     "build-storybook": "storybook build",
-    "dev:pack": "VITE_WATCH=true vite build --watch",
+    "dev:pack": "vite build --watch",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "lint:strict": "tsc --noEmit && eslint src --max-warnings 0",
