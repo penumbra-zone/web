@@ -1,5 +1,11 @@
 # @penumbra-zone/ui
 
+## 13.4.1
+
+### Patch Changes
+
+- dd2bc86: Controller Slider
+
 ## 13.4.0
 
 ### Minor Changes
