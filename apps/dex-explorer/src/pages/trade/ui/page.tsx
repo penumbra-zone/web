@@ -29,7 +29,7 @@ export const TradePage = () => {
         <PairInfo />
       </div>
 
-      <div className='hidden desktop:block desktop:row-start-2 desktop:col-span-2 lg:col-span-1 border-b border-b-other-solidStroke desktop:border-r desktop:border-r-other-solidStroke'>
+      <div className='desktop:block desktop:row-start-2 desktop:col-span-2 lg:col-span-1 border-b border-b-other-solidStroke desktop:border-r desktop:border-r-other-solidStroke'>
         <Chart />
       </div>
 
