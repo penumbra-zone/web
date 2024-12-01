@@ -6,7 +6,6 @@ import * as import_ from 'eslint-plugin-import';
 import prettier from 'eslint-config-prettier';
 import react from 'eslint-plugin-react';
 import react_hooks from 'eslint-plugin-react-hooks';
-import react_refresh from 'eslint-plugin-react-refresh';
 import storybook from 'eslint-plugin-storybook';
 import turbo from 'eslint-plugin-turbo';
 import vitest from 'eslint-plugin-vitest';
@@ -70,7 +69,6 @@ export default tseslint.config(
       react: fixupPluginRules(react),
       // @ts-expect-error - react_hooks is incorrectly typed
       'react-hooks': fixupPluginRules(react_hooks),
-      'react-refresh': react_refresh,
     },
     // @ts-expect-error - rules are incorrectly typed
     rules: {
@@ -84,7 +82,6 @@ export default tseslint.config(
           allowExpressions: true,
         },
       ],
-      'react-refresh/only-export-components': 'off',
     },
   },
 
