@@ -29,10 +29,9 @@ wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
 /// To comprehensively cover the domain space, construct various accounts with note balances comprising:             ///
 ///     1. Only the native staking token,                                                                            ///
 ///     2. Only the alternative fee token,                                                                           ///
-///     3. Both the native staking token and the alternative fee token,                                              ///    
+///     3. Both the native staking token and the alternative fee token,                                              ///
 ///     4. Empty note balance                                                                                        ///
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 /// Populate database with only native staking token.
 async fn setup_env_native_staking_only(mock_db: &MockDb, tables: &Tables) {
     seed_params_in_db(mock_db, tables).await;
@@ -256,11 +255,10 @@ async fn setup_env_zero_val_notes(mock_db: &MockDb, tables: &Tables) {
 /////////////////////////////////////////////// CONSTRAINT 1: EMPTY ACTIONLIST /////////////////////////////////////////
 ///                                                                                                                  ///
 /// This is the first safety check we have in-place, enforcing that the Spend transaction planner request            ///
-/// is constructed in isolation. ie. the Spend transaction will fail if you attempt to construct a transaction       ///
+/// is constructed in isolation. i.e. the Spend transaction will fail if you attempt to construct a transaction       ///
 /// planner request with multiple different actions plans.                                                           ///
 ///                                                                                                                  ///
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 #[wasm_bindgen_test]
 async fn test_multiple_action_plans_in_transaction_request() {
     let mock_db = MockDb::new();
@@ -416,12 +414,11 @@ async fn test_multiple_spend_requests() {
 ///                                                                                                                  ///
 /// This is the first safety check we have in-place, verifying that the user's request spend amount                  ///
 /// is exactly equal to the total accumulated note balance.                                                          ///
-///                                                                                                                  ///  
+///                                                                                                                  ///
 /// (1) "Exact Match": requested spend amount === total accumulated notes, planner is constructed successfully.      ///
 /// (2) "Non-Exact Match": requested spend amount !=== total accumulated notes, planner handles the error properly.  ///
 ///                                                                                                                  ///
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 /// Sends the entire balance of the native staking token, successfully creating a fully-formed transaction plan.
 #[wasm_bindgen_test]
 async fn test_valid_spend_amount_validation_with_native_token() {
@@ -709,7 +706,6 @@ async fn test_spend_amount_validation_with_alternative_token() {
 /// matches the fee asset ID.                                                                                         ///
 ///                                                                                                                   ///
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 /// Constructs a transaction planner request where the asset ID does not match the fee asset ID, results
 /// in an appropriate error.
 #[wasm_bindgen_test]
@@ -804,7 +800,6 @@ async fn test_invalid_fee_asset_id_validation() {
 /// It also checks the planner's behavior when no spendable notes are available.                                     ///
 ///                                                                                                                  ///
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 #[wasm_bindgen_test]
 async fn test_filter_zero_value_notes() {
     let mock_db = MockDb::new();
