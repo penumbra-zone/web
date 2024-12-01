@@ -1,7 +1,3 @@
-export default {
-  singleQuote: true,
-  jsxSingleQuote: true,
-  printWidth: 100,
-  trailingComma: 'all',
-  arrowParens: 'avoid',
-};
+import prettierConfig from '@penumbra-zone/configs/prettier';
+
+export default prettierConfig;

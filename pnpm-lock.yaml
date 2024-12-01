@@ -32,6 +32,9 @@ importers:
       '@microsoft/api-extractor':
         specifier: ^7.47.0
         version: 7.47.0(@types/node@22.8.6)
+      '@penumbra-zone/configs':
+        specifier: workspace:*
+        version: link:packages/configs
       '@repo/tailwind-config':
         specifier: workspace:*
         version: link:packages/tailwind-config
@@ -383,6 +386,61 @@ importers:
       '@types/chrome':
         specifier: ^0.0.268
         version: 0.0.268
+
+  packages/configs:
+    dependencies:
+      '@eslint-community/eslint-plugin-eslint-comments':
+        specifier: ^4.4.0
+        version: 4.4.0(eslint@9.6.0)
+      '@eslint/compat':
+        specifier: ^1.1.0
+        version: 1.1.0
+      '@eslint/js':
+        specifier: ^9.6.0
+        version: 9.6.0
+      eslint:
+        specifier: ^9.6.0
+        version: 9.6.0
+      eslint-config-prettier:
+        specifier: ^9.1.0
+        version: 9.1.0(eslint@9.6.0)
+      eslint-import-resolver-typescript:
+        specifier: ^3.6.1
+        version: 3.6.1(@typescript-eslint/parser@7.16.0(eslint@9.6.0)(typescript@5.5.3))(eslint-plugin-import@2.29.1)(eslint@9.6.0)
+      eslint-plugin-import:
+        specifier: ^2.29.1
+        version: 2.29.1(@typescript-eslint/parser@7.16.0(eslint@9.6.0)(typescript@5.5.3))(eslint-import-resolver-typescript@3.6.1)(eslint@9.6.0)
+      eslint-plugin-import-x:
+        specifier: ^0.5.3
+        version: 0.5.3(eslint@9.6.0)(typescript@5.5.3)
+      eslint-plugin-prettier:
+        specifier: ^5.1.3
+        version: 5.1.3(@types/eslint@9.6.1)(eslint-config-prettier@9.1.0(eslint@9.6.0))(eslint@9.6.0)(prettier@3.3.3)
+      eslint-plugin-react:
+        specifier: ^7.35.0
+        version: 7.35.0(eslint@9.6.0)
+      eslint-plugin-react-hooks:
+        specifier: 5.1.0-rc-c3cdbec0a7-20240708
+        version: 5.1.0-rc-c3cdbec0a7-20240708(eslint@9.6.0)
+      eslint-plugin-storybook:
+        specifier: 0.9.0--canary.156.ed236ca.0
+        version: 0.9.0--canary.156.ed236ca.0(eslint@9.6.0)(typescript@5.5.3)
+      eslint-plugin-tailwindcss:
+        specifier: ^3.17.4
+        version: 3.17.4(tailwindcss@3.4.4(ts-node@10.9.2(@swc/core@1.6.13(@swc/helpers@0.5.11))(@types/node@22.8.6)(typescript@5.5.3)))
+      eslint-plugin-turbo:
+        specifier: ^2.0.12
+        version: 2.0.12(eslint@9.6.0)
+      eslint-plugin-vitest:
+        specifier: ^0.5.4
+        version: 0.5.4(eslint@9.6.0)(typescript@5.5.3)(vitest@1.6.0)
+    devDependencies:
+      prettier:
+        specifier: ^3.3.3
+        version: 3.3.3
+      typescript:
+        specifier: 5.5.3
+        version: 5.5.3
 
   packages/crypto:
     dependencies:
@@ -17527,7 +17585,7 @@ snapshots:
   eslint-plugin-import-x@0.5.3(eslint@9.6.0)(typescript@5.5.3):
     dependencies:
       '@typescript-eslint/utils': 7.16.0(eslint@9.6.0)(typescript@5.5.3)
-      debug: 4.3.5
+      debug: 4.3.6
       doctrine: 3.0.0
       eslint: 9.6.0
       eslint-import-resolver-node: 0.3.9

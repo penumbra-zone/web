@@ -44,6 +44,7 @@
     "@eslint/compat": "^1.1.0",
     "@eslint/js": "^9.6.0",
     "@microsoft/api-extractor": "^7.47.0",
+    "@penumbra-zone/configs": "workspace:*",
     "@repo/tailwind-config": "workspace:*",
     "@storybook/react-vite": "^8.4.2",
     "@testing-library/jest-dom": "^6.4.5",
