@@ -5,7 +5,6 @@
   "description": "Shared Penumbra configurations",
   "repository": "penumbra-zone/web",
   "type": "module",
-  "scripts": {},
   "exports": {
     "./eslint": "./eslint.config.js",
     "./prettier": "./prettier.config.js"
@@ -33,7 +32,7 @@
   },
   "devDependencies": {
     "prettier": "^3.3.3",
-    "typescript": "^5.5.4"
+    "typescript": "5.5.3"
   },
   "homepage": "https://github.com/penumbra-zone/web/packages/configs#readme"
 }
