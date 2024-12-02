@@ -3,7 +3,7 @@ import { ReactNode } from 'react';
 import { Skeleton } from '@/shared/ui/skeleton';
 
 export const Cell = ({ children }: { children: ReactNode }) => {
-  return <div className='flex items-center py-1 px-3 h-8'>{children}</div>;
+  return <div className='flex items-center py-2.5 px-3 min-h-8'>{children}</div>;
 };
 
 export const HeaderCell = ({ children }: { children: ReactNode }) => {
