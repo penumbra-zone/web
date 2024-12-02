@@ -5,7 +5,7 @@ import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_p
 
 export const chainRegistryClient = new ChainRegistryClient();
 
-const registryQueryFn = async () => {
+export const registryQueryFn = async () => {
   const env = await envQueryFn();
   return chainRegistryClient.remote.get(env.PENUMBRA_CHAIN_ID);
 };
