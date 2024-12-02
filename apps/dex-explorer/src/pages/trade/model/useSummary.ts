@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { usePathSymbols } from '@/pages/trade/model/use-path.ts';
 import { DurationWindow } from '@/shared/utils/duration.ts';
-import { SummaryDataResponse, SummaryResponse } from '@/shared/api/server/types.ts';
+import { SummaryDataResponse, SummaryResponse } from '@/shared/api/server/summary/types.ts';
 import { useRefetchOnNewBlock } from '@/shared/api/compact-block.ts';
 
 export const useSummary = (window: DurationWindow) => {

@@ -1,10 +1,9 @@
 export interface ShortChartProps {
-  /** Percentage change value. If positive, renders green chart. Otherwise, renders red chart */
-  change: number;
+  sign: 'positive' | 'negative' | 'neutral';
 }
 
-export const ShortChart = ({ change }: ShortChartProps) => {
-  if (change >= 0) {
+export const ShortChart = ({ sign }: ShortChartProps) => {
+  if (sign === 'positive') {
     return (
       <svg
         xmlns='http://www.w3.org/2000/svg'

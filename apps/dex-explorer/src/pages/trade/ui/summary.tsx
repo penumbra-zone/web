@@ -7,7 +7,7 @@ import { useSummary } from '../model/useSummary';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { round } from '@penumbra-zone/types/round';
 import { Density } from '@penumbra-zone/ui/Density';
-import { SummaryDataResponse } from '@/shared/api/server/types.ts';
+import { SummaryDataResponse } from '@/shared/api/server/summary/types.ts';
 
 const SummaryCard = ({
   title,
