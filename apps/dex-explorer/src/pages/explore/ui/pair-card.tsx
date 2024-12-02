@@ -1,4 +1,3 @@
-import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { Star, CandlestickChart } from 'lucide-react';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
@@ -7,76 +6,82 @@ import { AssetIcon } from '@penumbra-zone/ui/AssetIcon';
 import SparklineChart from './sparkline-chart.svg';
 import { ShortChart } from './short-chart';
 import ChevronDown from './chevron-down.svg';
-
-const u8 = (length: number) => Uint8Array.from({ length }, () => Math.floor(Math.random() * 256));
-export const PENUMBRA_METADATA = new Metadata({
-  base: 'upenumbra',
-  name: 'Penumbra',
-  display: 'penumbra',
-  symbol: 'UM',
-  penumbraAssetId: new AssetId({ inner: u8(32) }),
-  images: [
-    {
-      svg: 'https://raw.githubusercontent.com/prax-wallet/registry/main/images/um.svg',
-    },
-  ],
-});
-
-export const OSMO_METADATA = new Metadata({
-  symbol: 'OSMO',
-  name: 'Osmosis',
-  penumbraAssetId: new AssetId({ inner: u8(32) }),
-  base: 'uosmo',
-  display: 'osmo',
-  denomUnits: [{ denom: 'uosmo' }, { denom: 'osmo', exponent: 6 }],
-  images: [
-    { svg: 'https://raw.githubusercontent.com/prax-wallet/registry/main/images/test-usd.svg ' },
-  ],
-});
+import { SummaryDataResponse } from '@/shared/api/server/summary/types';
+import { Skeleton } from '@/shared/ui/skeleton';
+import { shortify } from '@penumbra-zone/types/shortify';
+import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
+import { round } from '@penumbra-zone/types/round';
+import { ReactNode } from 'react';
+import cn from 'clsx';
 
 const ShimmeringBars = () => {
   return (
     <>
-      <div className='w-16 h-4 my-1 bg-shimmer rounded-xs' />
-      <div className='w-10 h-4 bg-shimmer rounded-xs' />
+      <div className='w-16 h-4 my-1'>
+        <Skeleton />
+      </div>
+      <div className='w-10 h-4'>
+        <Skeleton />
+      </div>
     </>
   );
 };
 
-export interface PairCardProps {
-  loading?: boolean;
-}
+const getTextSign = (summary: SummaryDataResponse): ReactNode => {
+  if (summary.change.sign === 'positive') {
+    return <ChevronDown className='size-3 rotate-180 inline-block' />;
+  }
+  if (summary.change.sign === 'negative') {
+    return <ChevronDown className='size-3 inline-block' />;
+  }
+  return null;
+};
 
-export const PairCard = ({ loading }: PairCardProps) => {
-  const change = Number(-5.35);
+const getColor = (summary: SummaryDataResponse): string => {
+  if (summary.change.sign === 'positive') {
+    return 'text-success-light';
+  }
+  if (summary.change.sign === 'negative') {
+    return 'text-destructive-light';
+  }
+  return 'text-neutral-light';
+};
 
+export type PairCardProps =
+  | {
+      loading: true;
+      summary: undefined;
+    }
+  | {
+      loading: false;
+      summary: SummaryDataResponse;
+    };
+
+export const PairCard = ({ loading, summary }: PairCardProps) => {
   return (
     <div className='grid grid-cols-subgrid col-span-6 p-3 rounded-sm cursor-pointer transition-colors hover:bg-action-hoverOverlay'>
       <div className='relative h-10 flex items-center gap-2 text-text-primary'>
-        <Density compact>
-          <Button icon={Star} iconOnly>
-            Favorite
-          </Button>
-        </Density>
-
-        <div className='z-10'>
-          <AssetIcon metadata={PENUMBRA_METADATA} size='lg' />
-        </div>
-        <div className='-ml-4'>
-          <AssetIcon metadata={OSMO_METADATA} size='lg' />
-        </div>
-
-        <Text body>UM/TestUSD</Text>
-      </div>
-
-      <div className='h-10 flex flex-col items-end justify-center'>
         {loading ? (
-          <ShimmeringBars />
+          <div className='h-6 w-20'>
+            <Skeleton />
+          </div>
         ) : (
           <>
-            <Text color='text.primary'>0.23</Text>
-            <Text detail color='text.secondary'>
-              delUM
+            <Density compact>
+              <Button icon={Star} iconOnly>
+                Favorite
+              </Button>
+            </Density>
+
+            <div className='z-10'>
+              <AssetIcon metadata={summary.baseAsset} size='lg' />
+            </div>
+            <div className='-ml-4'>
+              <AssetIcon metadata={summary.quoteAsset} size='lg' />
+            </div>
+
+            <Text body>
+              {summary.baseAsset.symbol}/{summary.quoteAsset.symbol}
             </Text>
           </>
         )}
@@ -87,9 +92,9 @@ export const PairCard = ({ loading }: PairCardProps) => {
           <ShimmeringBars />
         ) : (
           <>
-            <Text color='text.primary'>2.34M</Text>
+            <Text color='text.primary'>{round({ value: summary.price, decimals: 6 })}</Text>
             <Text detail color='text.secondary'>
-              USDC
+              {summary.quoteAsset.symbol}
             </Text>
           </>
         )}
@@ -100,9 +105,26 @@ export const PairCard = ({ loading }: PairCardProps) => {
           <ShimmeringBars />
         ) : (
           <>
-            <Text color='text.primary'>1.37K</Text>
+            <Text color='text.primary'>
+              {shortify(Number(getFormattedAmtFromValueView(summary.liquidity)))}
+            </Text>
             <Text detail color='text.secondary'>
-              USDC
+              {summary.quoteAsset.symbol}
+            </Text>
+          </>
+        )}
+      </div>
+
+      <div className='h-10 flex flex-col items-end justify-center'>
+        {loading ? (
+          <ShimmeringBars />
+        ) : (
+          <>
+            <Text color='text.primary'>
+              {shortify(Number(getFormattedAmtFromValueView(summary.directVolume)))}
+            </Text>
+            <Text detail color='text.secondary'>
+              {summary.quoteAsset.symbol}
             </Text>
           </>
         )}
@@ -116,19 +138,12 @@ export const PairCard = ({ loading }: PairCardProps) => {
           </>
         ) : (
           <>
-            {change >= 0 ? (
-              <div className='flex items-center text-success-light'>
-                <ChevronDown className='size-3 rotate-180 inline-block' />
-                <Text>{change}%</Text>
-              </div>
-            ) : (
-              <div className='flex items-center text-destructive-light'>
-                <ChevronDown className='size-3 inline-block ' />
-                <Text>{Math.abs(change)}%</Text>
-              </div>
-            )}
+            <div className={cn('flex items-center', getColor(summary))}>
+              {getTextSign(summary)}
+              <Text>{summary.change.percent}%</Text>
+            </div>
 
-            <ShortChart change={change} />
+            <ShortChart sign={summary.change.sign} />
           </>
         )}
       </div>

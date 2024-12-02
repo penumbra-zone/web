@@ -6,8 +6,13 @@ import { Text } from '@penumbra-zone/ui/Text';
 import { TextInput } from '@penumbra-zone/ui/TextInput';
 import { Icon } from '@penumbra-zone/ui/Icon';
 import { PairCard } from '@/pages/explore/ui/pair-card';
+import { useSummaries } from '@/pages/explore/api/use-summaries';
+import { useAutoAnimate } from '@formkit/auto-animate/react';
 
 export const ExplorePairs = () => {
+  const [parent] = useAutoAnimate();
+  const { data, isLoading } = useSummaries();
+
   const [search, setSearch] = useState('');
 
   return (
@@ -24,7 +29,7 @@ export const ExplorePairs = () => {
         />
       </div>
 
-      <div className='grid grid-cols-[1fr_1fr_1fr_1fr_128px_56px] gap-2 overflow-auto'>
+      <div ref={parent} className='grid grid-cols-[1fr_1fr_1fr_1fr_128px_56px] gap-2 overflow-auto'>
         <div className='grid grid-cols-subgrid col-span-6 py-2 px-3'>
           <Text detail color='text.secondary' align='left'>
             Pair
@@ -46,8 +51,20 @@ export const ExplorePairs = () => {
           </Text>
         </div>
 
-        <PairCard />
-        <PairCard />
+        {isLoading && (
+          <>
+            <PairCard loading summary={undefined} />
+            <PairCard loading summary={undefined} />
+          </>
+        )}
+
+        {data?.map(summary => (
+          <PairCard
+            loading={false}
+            summary={summary}
+            key={`${summary.baseAsset.symbol}/${summary.quoteAsset.symbol}`}
+          />
+        ))}
       </div>
     </div>
   );
