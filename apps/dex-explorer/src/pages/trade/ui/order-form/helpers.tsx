@@ -49,14 +49,15 @@ const getBuildStatusDescription = (
   if (status?.case === 'buildProgress') {
     return (
       <div className='mt-2'>
-        <Progress value={Math.round(status.value.progress * 100)} />
+        <Progress value={status.value.progress} />
       </div>
     );
   }
+
   if (status?.case === 'complete') {
     return (
       <div className='mt-2'>
-        <Progress value={100} />
+        <Progress value={1} />
       </div>
     );
   }
@@ -92,6 +93,8 @@ export const planBuildBroadcast = async (
   const toast = openToast({
     type: 'loading',
     message: `Building ${label} transaction`,
+    dismissible: false,
+    persistent: true,
   });
 
   const rpcMethod = options?.skipAuth
@@ -123,27 +126,36 @@ export const planBuildBroadcast = async (
       message: `${label} transaction succeeded! 🎉`,
       description: `Transaction ${shortenedTxHash} appeared on chain${detectionHeight ? ` at height ${detectionHeight}` : ''}.`,
       // action: <Link to={`/tx/${this._txHash}`}>See details</Link>
+      dismissible: true,
+      persistent: false,
     });
 
     return transaction;
   } catch (e) {
+    console.error(e);
     if (userDeniedTransaction(e)) {
       toast.update({
         type: 'error',
         message: 'Transaction canceled',
         description: undefined,
+        dismissible: true,
+        persistent: false,
       });
     } else if (unauthenticated(e)) {
       toast.update({
         type: 'warning',
         message: 'Not logged in',
         description: 'Please log into the extension to continue.',
+        dismissible: true,
+        persistent: false,
       });
     } else {
       toast.update({
         type: 'error',
         message: 'Transaction failed',
         description: String(e),
+        dismissible: true,
+        persistent: false,
       });
     }
   }
