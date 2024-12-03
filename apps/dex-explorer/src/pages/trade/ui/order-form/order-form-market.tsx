@@ -1,38 +1,15 @@
-import { useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { connectionStore } from '@/shared/model/connection';
-import { useBalances } from '@/shared/api/balances';
-import { usePathToMetadata } from '../../model/use-path';
 import { OrderInput } from './order-input';
 import { SegmentedControl } from './segmented-control';
 import { ConnectButton } from '@/features/connect/connect-button';
 import { Slider } from './slider';
 import { InfoRow } from './info-row';
-import { orderFormStore, Direction } from './order-form-store';
+import { useOrderFormStore, FormType, Direction } from './store';
 
-const useOrderFormStore = () => {
-  const { baseAsset, quoteAsset } = usePathToMetadata();
-  const { data: balances } = useBalances();
-  const { setAssets, setBalances } = orderFormStore;
-
-  useEffect(() => {
-    if (baseAsset && quoteAsset) {
-      setAssets(baseAsset, quoteAsset);
-    }
-  }, [baseAsset, quoteAsset, setAssets]);
-
-  useEffect(() => {
-    if (balances) {
-      setBalances(balances);
-    }
-  }, [balances, setBalances]);
-
-  return orderFormStore;
-};
-
-export const OrderForm = observer(() => {
+export const MarketOrderForm = observer(() => {
   const { connected } = connectionStore;
   const {
     baseAsset,
@@ -43,30 +20,36 @@ export const OrderForm = observer(() => {
     isLoading,
     gasFee,
     exchangeRate,
-  } = useOrderFormStore();
+  } = useOrderFormStore(FormType.Market);
+
+  const isBuy = direction === Direction.Buy;
 
   return (
     <div className='p-4'>
       <SegmentedControl direction={direction} setDirection={setDirection} />
-      <OrderInput
-        label={direction}
-        value={baseAsset.amount}
-        onChange={baseAsset.setAmount as (amount: string, ...args: unknown[]) => void}
-        min={0}
-        max={1000}
-        isEstimating={baseAsset.isEstimating}
-        isApproximately={baseAsset.isApproximately}
-        denominator={baseAsset.symbol}
-      />
-      <OrderInput
-        label={direction === Direction.Buy ? 'Pay with' : 'Receive'}
-        value={quoteAsset.amount}
-        onChange={quoteAsset.setAmount as (amount: string, ...args: unknown[]) => void}
-        isEstimating={quoteAsset.isEstimating}
-        isApproximately={quoteAsset.isApproximately}
-        denominator={quoteAsset.symbol}
-      />
-      <Slider steps={8} asset={quoteAsset} />
+      <div className='mb-4'>
+        <OrderInput
+          label={direction}
+          value={baseAsset.amount}
+          onChange={amount => baseAsset.setAmount(amount)}
+          min={0}
+          max={1000}
+          isEstimating={isBuy ? baseAsset.isEstimating : false}
+          isApproximately={isBuy}
+          denominator={baseAsset.symbol}
+        />
+      </div>
+      <div className='mb-4'>
+        <OrderInput
+          label={isBuy ? 'Pay with' : 'Receive'}
+          value={quoteAsset.amount}
+          onChange={amount => quoteAsset.setAmount(amount)}
+          isEstimating={isBuy ? false : quoteAsset.isEstimating}
+          isApproximately={!isBuy}
+          denominator={quoteAsset.symbol}
+        />
+      </div>
+      <Slider steps={8} asset={isBuy ? quoteAsset : baseAsset} />
       <div className='mb-4'>
         <InfoRow
           label='Trading Fee'
@@ -74,7 +57,6 @@ export const OrderForm = observer(() => {
           valueColor='success'
           toolTip='On Penumbra, trading fees are completely free.'
         />
-        {/* @TODO: Add gas fee */}
         <InfoRow
           label='Gas Fee'
           isLoading={gasFee === null}
@@ -85,7 +67,11 @@ export const OrderForm = observer(() => {
       </div>
       <div className='mb-4'>
         {connected ? (
-          <Button actionType='accent' disabled={isLoading} onClick={submitOrder}>
+          <Button
+            actionType='accent'
+            disabled={isLoading || !baseAsset.amount || !quoteAsset.amount}
+            onClick={submitOrder}
+          >
             {direction} {baseAsset.symbol}
           </Button>
         ) : (

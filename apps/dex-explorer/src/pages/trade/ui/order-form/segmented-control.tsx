@@ -1,5 +1,5 @@
 import React from 'react';
-import { Direction } from './order-form-store';
+import { Direction } from './store';
 import cn from 'clsx';
 
 export const SegmentedControl: React.FC<{

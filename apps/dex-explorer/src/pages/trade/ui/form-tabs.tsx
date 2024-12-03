@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { Tabs } from '@penumbra-zone/ui/Tabs';
 import { Density } from '@penumbra-zone/ui/Density';
-import { OrderForm } from './order-form';
+import { MarketOrderForm } from './order-form/order-form-market';
+import { RangeLiquidityOrderForm } from './order-form/order-form-range-liquidity';
 
 enum FormTabsType {
   Market = 'market',
@@ -31,13 +32,13 @@ export const FormTabs = () => {
         </Density>
       </div>
 
-      {tab === FormTabsType.Market && <OrderForm />}
-      {tab === FormTabsType.Limit && (
-        <div className='h-[380px] p-4 text-text-secondary'>Limit order form</div>
-      )}
-      {tab === FormTabsType.Range && (
-        <div className='h-[380px] p-4 text-text-secondary'>Range liquidity form</div>
-      )}
+      <div className='overflow-y-auto'>
+        {tab === FormTabsType.Market && <MarketOrderForm />}
+        {tab === FormTabsType.Limit && (
+          <div className='h-[380px] p-4 text-text-secondary'>Limit order form</div>
+        )}
+        {tab === FormTabsType.Range && <RangeLiquidityOrderForm />}
+      </div>
     </div>
   );
 };
