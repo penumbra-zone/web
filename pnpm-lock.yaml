@@ -508,40 +508,6 @@ importers:
         specifier: ^1.4.0
         version: 1.4.0(@bufbuild/protoc-gen-es@1.10.0(@bufbuild/protobuf@1.10.0))(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
 
-  packages/query:
-    dependencies:
-      '@bufbuild/protobuf':
-        specifier: ^1.10.0
-        version: 1.10.0
-      '@connectrpc/connect':
-        specifier: ^1.4.0
-        version: 1.4.0(@bufbuild/protobuf@1.10.0)
-      '@connectrpc/connect-web':
-        specifier: ^1.4.0
-        version: 1.4.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0))
-      exponential-backoff:
-        specifier: ^3.1.1
-        version: 3.1.1
-    devDependencies:
-      '@penumbra-zone/bech32m':
-        specifier: workspace:*
-        version: link:../bech32m
-      '@penumbra-zone/crypto-web':
-        specifier: workspace:*
-        version: link:../crypto
-      '@penumbra-zone/getters':
-        specifier: workspace:*
-        version: link:../getters
-      '@penumbra-zone/protobuf':
-        specifier: workspace:*
-        version: link:../protobuf
-      '@penumbra-zone/types':
-        specifier: workspace:*
-        version: link:../types
-      '@penumbra-zone/wasm':
-        specifier: workspace:*
-        version: link:../wasm
-
   packages/services:
     devDependencies:
       '@bufbuild/protobuf':
@@ -562,9 +528,6 @@ importers:
       '@penumbra-zone/protobuf':
         specifier: workspace:*
         version: link:../protobuf
-      '@penumbra-zone/query':
-        specifier: workspace:*
-        version: link:../query
       '@penumbra-zone/storage':
         specifier: workspace:*
         version: link:../storage
@@ -6217,9 +6180,6 @@ packages:
   execa@9.5.1:
     resolution: {integrity: sha512-QY5PPtSonnGwhhHDNI7+3RvY285c7iuJFFB+lU+oEzMY/gEGJ808owqJsrr8Otd1E/x07po1LkUBmdAc5duPAg==}
     engines: {node: ^18.19.0 || >=20.5.0}
-
-  exponential-backoff@3.1.1:
-    resolution: {integrity: sha512-dX7e/LHVJ6W3DE1MHWi9S1EYzDESENfLrYohG2G++ovZrYOkm4Knwa0mc1cn84xJOR4KEU0WSchhLbd0UklbHw==}
 
   extendable-error@0.1.7:
     resolution: {integrity: sha512-UOiS2in6/Q0FK0R0q6UY9vYpQ21mr/Qn1KOnte7vsACuNJf514WvCCUHSRCPcgjPT2bAhNIJdlE6bVap1GKmeg==}
@@ -17869,8 +17829,6 @@ snapshots:
       signal-exit: 4.1.0
       strip-final-newline: 4.0.0
       yoctocolors: 2.1.1
-
-  exponential-backoff@3.1.1: {}
 
   extendable-error@0.1.7: {}
 
