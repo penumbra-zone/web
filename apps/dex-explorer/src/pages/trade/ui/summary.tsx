@@ -96,12 +96,7 @@ export const Summary = () => {
       <SummaryCard title='24h Volume' loading={isLoading}>
         {data && 'directVolume' in data ? (
           <Density compact>
-            <ValueViewComponent
-              valueView={data.directVolume}
-              context='table'
-              abbreviate
-              hideSymbol
-            />
+            <ValueViewComponent valueView={data.directVolume} context='table' abbreviate />
           </Density>
         ) : (
           <Text detail color='text.primary'>
