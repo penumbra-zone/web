@@ -8,7 +8,7 @@ import { InfoIcon } from 'lucide-react';
 interface InfoRowProps {
   label: string;
   isLoading?: boolean;
-  value: string;
+  value?: string | number;
   valueColor?: 'success' | 'error';
   toolTip: string;
 }
