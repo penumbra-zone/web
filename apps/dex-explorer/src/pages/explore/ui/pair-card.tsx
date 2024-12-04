@@ -1,18 +1,22 @@
+import { ReactNode } from 'react';
 import { Star, CandlestickChart } from 'lucide-react';
+import cn from 'clsx';
+import { subDays } from 'date-fns';
+import Link from 'next/link';
+
+import { shortify } from '@penumbra-zone/types/shortify';
+import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
+import { round } from '@penumbra-zone/types/round';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { Density } from '@penumbra-zone/ui/Density';
 import { AssetIcon } from '@penumbra-zone/ui/AssetIcon';
-import SparklineChart from './sparkline-chart.svg';
-import { ShortChart } from './short-chart';
-import ChevronDown from './chevron-down.svg';
+
 import { SummaryDataResponse } from '@/shared/api/server/summary/types';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { shortify } from '@penumbra-zone/types/shortify';
-import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
-import { round } from '@penumbra-zone/types/round';
-import { ReactNode } from 'react';
-import cn from 'clsx';
+import SparklineChart from './sparkline-chart.svg';
+import ChevronDown from './chevron-down.svg';
+import { PreviewChart } from './preview-chart';
 
 const ShimmeringBars = () => {
   return (
@@ -58,8 +62,14 @@ export type PairCardProps =
     };
 
 export const PairCard = ({ loading, summary }: PairCardProps) => {
+  const today = new Date();
+  const yesterday = subDays(new Date(), 1);
+
   return (
-    <div className='grid grid-cols-subgrid col-span-6 p-3 rounded-sm cursor-pointer transition-colors hover:bg-action-hoverOverlay'>
+    <Link
+      href={loading ? `/trade` : `/trade/${summary.baseAsset.symbol}/${summary.quoteAsset.symbol}`}
+      className='grid grid-cols-subgrid col-span-6 p-3 rounded-sm cursor-pointer transition-colors hover:bg-action-hoverOverlay'
+    >
       <div className='relative h-10 flex items-center gap-2 text-text-primary'>
         {loading ? (
           <div className='h-6 w-20'>
@@ -143,7 +153,14 @@ export const PairCard = ({ loading, summary }: PairCardProps) => {
               <Text>{summary.change.percent}%</Text>
             </div>
 
-            <ShortChart sign={summary.change.sign} />
+            <PreviewChart
+              sign={summary.change.sign}
+              values={summary.candles ?? []}
+              dates={summary.candleTimes ?? []}
+              intervals={24}
+              from={yesterday}
+              to={today}
+            />
           </>
         )}
       </div>
@@ -155,6 +172,6 @@ export const PairCard = ({ loading, summary }: PairCardProps) => {
           </Button>
         </Density>
       </div>
-    </div>
+    </Link>
   );
 };
