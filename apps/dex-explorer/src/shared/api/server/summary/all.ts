@@ -26,11 +26,17 @@ export const getAllSummaries = async (
   }
 
   const registryClient = new ChainRegistryClient();
+  const registry = await registryClient.remote.get(chainId);
 
-  const [registry, results] = await Promise.all([
-    registryClient.remote.get(chainId),
-    pindexer.summaries(params),
-  ]);
+  const stablecoins = registry
+    .getAllAssets()
+    .filter(asset => ['USDT', 'USDC', 'USDY'].includes(asset.symbol))
+    .map(asset => asset.penumbraAssetId) as AssetId[];
+
+  const results = await pindexer.summaries({
+    ...params,
+    stablecoins,
+  });
 
   const allAssets = registry.getAllAssets();
 
@@ -42,7 +48,13 @@ export const getAllSummaries = async (
         return undefined;
       }
 
-      const data = SummaryDataResponse.build(summary, baseAsset, quoteAsset);
+      const data = SummaryDataResponse.build(
+        summary,
+        baseAsset,
+        quoteAsset,
+        summary.candles,
+        summary.candle_times,
+      );
       return data.toJson();
     }),
   );
