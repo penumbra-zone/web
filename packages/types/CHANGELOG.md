@@ -1,5 +1,11 @@
 # @penumbra-zone/types
 
+## 26.3.0
+
+### Minor Changes
+
+- 712e7b1: Add pnum
+
 ## 26.2.1
 
 ### Patch Changes
