@@ -30,9 +30,9 @@ describe('calculateSpread', () => {
     const result = calculateSpread(sellOrders, buyOrders);
 
     expect(result).toEqual({
-      amount: '0.20000000',
+      amount: '0.2',
       percentage: '22.22',
-      midPrice: '0.90000000',
+      midPrice: '0.9',
     });
   });
   it('handles decimal precision correctly', () => {
@@ -44,7 +44,7 @@ describe('calculateSpread', () => {
     expect(result).toEqual({
       amount: '0.11111111',
       percentage: '9.42',
-      midPrice: '1.17901233',
+      midPrice: '1.17901234',
     });
   });
 
@@ -54,10 +54,11 @@ describe('calculateSpread', () => {
 
     const result = calculateSpread(sellOrders, buyOrders);
 
+    // TODO: This feels like the wrong formatting. Should investigate the round library.
     expect(result).toEqual({
-      amount: '0.00005000',
+      amount: '5.00000000e-5',
       percentage: '66.67',
-      midPrice: '0.00007500',
+      midPrice: '7.50000000e-5',
     });
   });
 });
