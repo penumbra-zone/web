@@ -95,12 +95,12 @@ export class SummaryDataResponse {
     candleTimes?: Date[],
   ): SummaryDataResponse {
     const directVolume = toValueView({
-      amount: summary.direct_volume_over_window,
+      amount: Math.floor(summary.direct_volume_over_window),
       metadata: quoteAsset,
     });
 
     const liquidity = toValueView({
-      amount: summary.liquidity,
+      amount: Math.floor(summary.liquidity),
       metadata: quoteAsset,
     });
 
