@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { pindexer } from '@/shared/database';
 import { CandleApiResponse } from '@/shared/api/server/candles/types.ts';
-import { dbCandleToOhlc } from '@/shared/api/server/candles/utils.ts';
+import { dbCandleToOhlc, insertEmptyCandles } from '@/shared/api/server/candles/utils.ts';
 import { durationWindows, isDurationWindow } from '@/shared/utils/duration.ts';
 
 export async function GET(req: NextRequest): Promise<NextResponse<CandleApiResponse>> {
@@ -58,7 +58,7 @@ export async function GET(req: NextRequest): Promise<NextResponse<CandleApiRespo
     chainId,
   });
 
-  const response = candles.map(dbCandleToOhlc);
+  const response = insertEmptyCandles(durationWindow, candles.map(dbCandleToOhlc));
 
   return NextResponse.json(response);
 }

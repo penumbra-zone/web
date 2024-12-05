@@ -51,21 +51,21 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
 
-  # test:
-  #   name: test
-  #   runs-on: buildjet-4vcpu-ubuntu-2204
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - id: tested
-  #       uses: buildjet/cache@v4
-  #       with:
-  #         path: .next
-  #         key: ${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-test
-  #         restore-keys: ${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-compiled
-  #     - uses: pnpm/action-setup@v4
-  #     - uses: buildjet/setup-node@v4
-  #       with:
-  #         node-version: "22"
-  #         cache: "pnpm"
-  #     - run: pnpm install --frozen-lockfile
-  #     - run: pnpm test
+  test:
+    name: test
+    runs-on: buildjet-4vcpu-ubuntu-2204
+    steps:
+      - uses: actions/checkout@v4
+      - id: tested
+        uses: buildjet/cache@v4
+        with:
+          path: .next
+          key: ${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-test
+          restore-keys: ${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-compiled
+      - uses: pnpm/action-setup@v4
+      - uses: buildjet/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test

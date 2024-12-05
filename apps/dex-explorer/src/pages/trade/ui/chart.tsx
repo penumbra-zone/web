@@ -120,9 +120,11 @@ const ChartLoadingState = () => {
 };
 
 const ChartData = observer(({ candles }: { candles: OhlcData[] }) => {
-  const chartElRef = useRef<HTMLInputElement>(null);
-  const chartRef = useRef<IChartApi | null>(null);
+  const chartElRef = useRef<HTMLDivElement>(null);
+  const chartRef = useRef<IChartApi>();
+  const seriesRef = useRef<ReturnType<IChartApi['addCandlestickSeries']>>();
 
+  // Initialize the chart once when the component mounts
   useEffect(() => {
     if (chartElRef.current && !chartRef.current) {
       chartRef.current = createChart(chartElRef.current, {
@@ -142,31 +144,34 @@ const ChartData = observer(({ candles }: { candles: OhlcData[] }) => {
           },
         },
       });
+
+      // Initialize the series
+      seriesRef.current = chartRef.current.addCandlestickSeries({
+        upColor: theme.color.success.light,
+        downColor: theme.color.destructive.light,
+        borderVisible: false,
+        wickUpColor: theme.color.success.light,
+        wickDownColor: theme.color.destructive.light,
+      });
+
+      chartRef.current.timeScale().fitContent();
     }
 
     return () => {
       if (chartRef.current) {
         chartRef.current.remove();
-        chartRef.current = null;
+        chartRef.current = undefined;
       }
     };
   }, [chartElRef]);
 
+  // Update chart when candles change
   useEffect(() => {
-    if (chartRef.current) {
-      chartRef.current
-        .addCandlestickSeries({
-          upColor: theme.color.success.light,
-          downColor: theme.color.destructive.light,
-          borderVisible: false,
-          wickUpColor: theme.color.success.light,
-          wickDownColor: theme.color.destructive.light,
-        })
-        .setData(candles);
-
-      chartRef.current.timeScale().fitContent();
+    if (seriesRef.current) {
+      seriesRef.current.setData(candles);
+      chartRef.current?.timeScale().fitContent();
     }
-  }, [chartRef, candles]);
+  }, [candles]);
 
   return <div className='h-full w-full' ref={chartElRef} />;
 });
@@ -177,14 +182,14 @@ export const Chart = observer(() => {
 
   return (
     <div className='flex flex-col grow h-full'>
-      <div className='flex gap-3 py-3 px-4 border-b border-b-other-solidStroke'>
+      <div className='flex px-3 border-b border-b-other-solidStroke'>
         {durationWindows.map(w => (
           <button
             key={w}
             type='button'
             className={cn(
-              'flex items-center h-4 hover:text-text-primary transition-colors',
-              w === duration ? 'text-text-primary' : 'text-text-secondary',
+              'flex items-center px-1.5 py-3 rounded hover:text-text-primary hover:bg-other-hover transition-colors',
+              w === duration ? 'text-text-primary bg-other-active' : 'text-text-secondary',
             )}
             onClick={() => setDuration(w)}
           >
