@@ -88,6 +88,8 @@ class Pindexer {
     limit,
     offset,
     stablecoins,
+    // TODO: implement search of assets
+    // search,
   }: {
     /** Window duration of information of the pairs */
     window: DurationWindow;
@@ -97,6 +99,8 @@ class Pindexer {
     candlesInterval?: `${number}${number} hours` | `${number} hour`;
     /** The list of AssetIDs to exclude from base assets (stable coins can only be quote assets) */
     stablecoins: AssetId[];
+    /** A string that filters the assets by name */
+    search: string;
     limit: number;
     offset: number;
   }) {

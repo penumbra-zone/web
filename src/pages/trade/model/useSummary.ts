@@ -1,8 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { usePathSymbols } from '@/pages/trade/model/use-path.ts';
 import { DurationWindow } from '@/shared/utils/duration.ts';
-import { SummaryDataResponse, SummaryResponse } from '@/shared/api/server/summary/types.ts';
+import { NoSummaryData, SummaryData } from '@/shared/api/server/summary/types.ts';
 import { useRefetchOnNewBlock } from '@/shared/api/compact-block.ts';
+import { apiFetch } from '@/shared/utils/api-fetch';
 
 export const useSummary = (window: DurationWindow) => {
   const { baseSymbol, quoteSymbol } = usePathSymbols();
@@ -11,24 +12,11 @@ export const useSummary = (window: DurationWindow) => {
     queryKey: ['summary', baseSymbol, quoteSymbol],
     retry: 1,
     queryFn: async () => {
-      const paramsObj = {
+      return apiFetch<SummaryData | NoSummaryData>('/api/summary', {
         durationWindow: window,
         baseAsset: baseSymbol,
         quoteAsset: quoteSymbol,
-      };
-      const baseUrl = '/api/summary';
-      const urlParams = new URLSearchParams(paramsObj).toString();
-      const fetchRes = await fetch(`${baseUrl}?${urlParams}`);
-      const jsonRes = (await fetchRes.json()) as SummaryResponse;
-      if ('error' in jsonRes) {
-        throw new Error(jsonRes.error);
-      }
-
-      if ('noData' in jsonRes) {
-        return jsonRes;
-      }
-
-      return SummaryDataResponse.fromJson(jsonRes);
+      });
     },
   });
 
