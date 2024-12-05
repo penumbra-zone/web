@@ -4,9 +4,10 @@ import { removeTrailingZeros } from './shortify.js';
 export type RoundingMode = 'half-up' | 'up' | 'down';
 
 export interface RoundOptions {
-  value: number;
+  value: number | string;
   decimals: number;
   roundingMode?: RoundingMode;
+  trailingZeros?: boolean;
 }
 
 const EXPONENTIAL_NOTATION_THRESHOLD = new Decimal('1e21');
@@ -34,7 +35,12 @@ const getDecimalRoundingMode = (mode: RoundingMode): Decimal.Rounding => {
  *      - down: Rounds towards zero
  *      - up: Rounds way from zero
  */
-export function round({ value, decimals, roundingMode = 'half-up' }: RoundOptions): string {
+export function round({
+  value,
+  decimals,
+  roundingMode = 'half-up',
+  trailingZeros = false,
+}: RoundOptions): string {
   const decimalValue = new Decimal(value);
 
   // Determine if exponential notation is needed
@@ -51,6 +57,10 @@ export function round({ value, decimals, roundingMode = 'half-up' }: RoundOption
       getDecimalRoundingMode(roundingMode),
     );
     result = roundedDecimal.toFixed(decimals, getDecimalRoundingMode(roundingMode));
+  }
+
+  if (trailingZeros) {
+    return result;
   }
 
   return removeTrailingZeros(result);

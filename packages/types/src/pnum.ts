@@ -24,11 +24,11 @@ import { removeTrailingZeros } from '@penumbra-zone/types/shortify';
  * @param exponent
  */
 function pnum(
-  input: string | number | LoHi | bigint | Amount | ValueView | undefined,
-  exponentInput = 0,
+  input?: string | number | LoHi | bigint | Amount | ValueView | undefined,
+  options: { exponent?: number } = { exponent: 0 },
 ) {
   let value: BigNumber;
-  let exponent = exponentInput;
+  let exponent = options.exponent ?? 0;
 
   if (typeof input === 'string' || typeof input === 'number') {
     value = new BigNumber(input).shiftedBy(exponent);
@@ -41,7 +41,11 @@ function pnum(
       input.valueView.case === 'knownAssetId' ? getDisplayDenomExponentFromValueView(input) : 0;
   } else if (
     input instanceof Amount ||
-    (typeof input === 'object' && 'lo' in input && 'hi' in input && input.lo && input.hi)
+    (typeof input === 'object' &&
+      'lo' in input &&
+      'hi' in input &&
+      typeof input.lo === 'bigint' &&
+      typeof input.hi === 'bigint')
   ) {
     value = new BigNumber(joinLoHi(input.lo, input.hi).toString());
   } else {
@@ -49,12 +53,20 @@ function pnum(
   }
 
   return {
-    toBigInt(): bigint {
-      return BigInt(value.toString());
+    toNumber(): number {
+      const number = value.shiftedBy(-exponent).toNumber();
+      if (!Number.isFinite(number)) {
+        throw new Error('Number exceeds JavaScript numeric limits, convert to other type instead.');
+      }
+      return number;
     },
 
-    toBigNumber(): BigNumber {
-      return value.shiftedBy(-exponent);
+    toRoundedNumber(decimals = exponent): number {
+      const number = value.shiftedBy(-exponent).toNumber();
+      if (!Number.isFinite(number)) {
+        throw new Error('Number exceeds JavaScript numeric limits, convert to other type instead.');
+      }
+      return Number(round({ value: number, decimals }));
     },
 
     toString(): string {
@@ -62,14 +74,16 @@ function pnum(
     },
 
     toRoundedString(decimals = exponent): string {
-      return round({ value: value.shiftedBy(-exponent).toNumber(), decimals });
+      return round({ value: value.shiftedBy(-exponent).toString(), decimals, trailingZeros: true });
     },
 
-    toFormattedString(options: {
-      commas?: boolean;
-      decimals?: number;
-      trailingZeros?: boolean;
-    } = {}): string {
+    toFormattedString(
+      options: {
+        commas?: boolean;
+        decimals?: number;
+        trailingZeros?: boolean;
+      } = {},
+    ): string {
       const defaultOptions = {
         commas: true,
         decimals: exponent,
@@ -90,24 +104,20 @@ function pnum(
       return trailingZeros ? number : removeTrailingZeros(number);
     },
 
-    toNumber(): number {
-      const number = value.shiftedBy(-exponent).toNumber();
-      if (!Number.isFinite(number)) {
-        throw new Error('Number exceeds JavaScript numeric limits, convert to other type instead.');
-      }
-      return number;
+    toBigInt(): bigint {
+      return BigInt(value.toFixed(0));
     },
 
-    toRoundedNumber(decimals = exponent): number {
-      return Number(round({ value: value.shiftedBy(-exponent).toNumber(), decimals }));
+    toBigNumber(): BigNumber {
+      return value.shiftedBy(-exponent);
     },
 
     toLoHi(): LoHi {
-      return splitLoHi(BigInt(value.toString()));
+      return splitLoHi(BigInt(value.toFixed(0)));
     },
 
     toAmount(): Amount {
-      return new Amount(splitLoHi(BigInt(value.toString())));
+      return new Amount(splitLoHi(BigInt(value.toFixed(0))));
     },
   };
 }
