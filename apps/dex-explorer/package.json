@@ -14,6 +14,7 @@
     "dev": "next dev",
     "dev:local": "WEBPACK_WATCH=true next dev",
     "start": "next start",
+    "preview": "next build && cp -r public .next/standalone/ && cp -r .next/static .next/standalone/.next/ && cp -r ca-cert.pem .next/standalone/ && node .next/standalone/server.js",
     "format": "prettier --write .",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
