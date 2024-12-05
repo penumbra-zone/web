@@ -15,11 +15,13 @@ export const apiFetch = async <RES extends object>(
 
   const jsonRes = (await fetchRes.json()) as Serialized<RES | { error: string }>;
 
-  const res = deserialize(jsonRes);
-
-  if ('error' in res) {
-    throw new Error(res.error);
+  if ('error' in jsonRes) {
+    throw new Error(jsonRes.error);
   }
 
-  return res;
+  if (Array.isArray(jsonRes)) {
+    return jsonRes.map(deserialize) as RES;
+  }
+
+  return deserialize(jsonRes);
 };

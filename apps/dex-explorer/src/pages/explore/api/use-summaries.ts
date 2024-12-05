@@ -1,33 +1,29 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
-import { SummaryDataResponse } from '@/shared/api/server/summary/types';
-import { SummariesResponse } from '@/shared/api/server/summary/all';
+import { InfiniteData, QueryKey, useInfiniteQuery } from '@tanstack/react-query';
+import { SummaryData } from '@/shared/api/server/summary/types';
 import { DurationWindow } from '@/shared/utils/duration';
+import { apiFetch } from '@/shared/utils/api-fetch';
 
 const BASE_LIMIT = 15;
-const BASE_OFFSET = 0;
+const BASE_PAGE = 0;
 const BASE_WINDOW: DurationWindow = '1d';
 
-export const useSummaries = () => {
-  return useQuery({
-    queryKey: ['summaries', BASE_LIMIT, BASE_OFFSET],
-    queryFn: async () => {
-      const paramsObj = {
+export const useSummaries = (search: string) => {
+  return useInfiniteQuery<SummaryData[], Error, InfiniteData<SummaryData[]>, QueryKey, number>({
+    queryKey: ['summaries', search],
+    staleTime: 1000 * 60 * 5,
+    initialPageParam: BASE_PAGE,
+    getNextPageParam: (lastPage, _, lastPageParam) => {
+      return lastPage.length ? lastPageParam + 1 : undefined;
+    },
+    queryFn: async ({ pageParam }) => {
+      return apiFetch<SummaryData[]>('/api/summaries', {
+        search,
         limit: BASE_LIMIT.toString(),
-        offset: BASE_OFFSET.toString(),
+        offset: (pageParam * BASE_LIMIT).toString(),
         durationWindow: BASE_WINDOW,
-      };
-
-      const baseUrl = '/api/summaries';
-      const urlParams = new URLSearchParams(paramsObj).toString();
-      const fetchRes = await fetch(`${baseUrl}?${urlParams}`);
-      const jsonRes = (await fetchRes.json()) as SummariesResponse;
-      if ('error' in jsonRes) {
-        throw new Error(jsonRes.error);
-      }
-
-      return jsonRes.map(res => SummaryDataResponse.fromJson(res));
+      });
     },
   });
 };
