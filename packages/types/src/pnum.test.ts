@@ -122,4 +122,18 @@ describe('pnum', () => {
       }),
     );
   });
+
+  it('should correctly parse exponent as number or options', () => {
+    const result1 = pnum(123455678, 4);
+    const result2 = pnum(123455678n, { exponent: 4 });
+    const result3 = pnum(123455678n, 4);
+
+    expect(result1.toString()).toBe('123455678');
+    expect(result1.toRoundedString()).toBe('123455678.0000');
+    expect(result1.toFormattedString()).toBe('123,455,678.0000');
+
+    expect(result2.toFormattedString()).toBe('12,345.5678');
+    expect(result2.toFormattedString()).toBe(result3.toFormattedString());
+    expect(result3.toString()).toBe('12345.5678');
+  });
 });
