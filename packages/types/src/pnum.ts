@@ -25,10 +25,11 @@ import { removeTrailingZeros } from '@penumbra-zone/types/shortify';
  */
 function pnum(
   input?: string | number | LoHi | bigint | Amount | ValueView | undefined,
-  options: { exponent?: number } | number = { exponent: 0 },
+  optionsOrExponent: { exponent?: number } | number = { exponent: 0 },
 ) {
   let value: BigNumber;
-  let exponent = typeof options === 'number' ? options : (options.exponent ?? 0);
+  let exponent =
+    typeof optionsOrExponent === 'number' ? optionsOrExponent : (optionsOrExponent.exponent ?? 0);
 
   if (typeof input === 'string' || typeof input === 'number') {
     value = new BigNumber(input).shiftedBy(exponent);
