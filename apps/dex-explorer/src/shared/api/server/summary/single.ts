@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { pindexer } from '@/shared/database';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { durationWindows, isDurationWindow } from '@/shared/utils/duration.ts';
-import { SummaryDataResponse, SummaryResponse } from '@/shared/api/server/summary/types.ts';
+import { adaptSummary, SummaryResponse } from '@/shared/api/server/summary/types.ts';
+import { serialize, Serialized } from '@/shared/utils/serializer';
 
-export async function GET(req: NextRequest): Promise<NextResponse<SummaryResponse>> {
+export async function GET(req: NextRequest): Promise<NextResponse<Serialized<SummaryResponse>>> {
   const chainId = process.env['PENUMBRA_CHAIN_ID'];
   if (!chainId) {
     return NextResponse.json({ error: 'PENUMBRA_CHAIN_ID is not set' }, { status: 500 });
@@ -57,6 +58,6 @@ export async function GET(req: NextRequest): Promise<NextResponse<SummaryRespons
     return NextResponse.json({ window: durationWindow, noData: true });
   }
 
-  const dataResponse = SummaryDataResponse.build(summary, baseAssetMetadata, quoteAssetMetadata);
-  return NextResponse.json(dataResponse.toJson());
+  const adapted = adaptSummary(summary, baseAssetMetadata, quoteAssetMetadata);
+  return NextResponse.json(serialize(adapted));
 }

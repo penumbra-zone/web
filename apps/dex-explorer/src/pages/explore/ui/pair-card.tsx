@@ -12,7 +12,7 @@ import { Text } from '@penumbra-zone/ui/Text';
 import { Density } from '@penumbra-zone/ui/Density';
 import { AssetIcon } from '@penumbra-zone/ui/AssetIcon';
 
-import { SummaryDataResponse } from '@/shared/api/server/summary/types';
+import { SummaryData } from '@/shared/api/server/summary/types';
 import { Skeleton } from '@/shared/ui/skeleton';
 import SparklineChart from './sparkline-chart.svg';
 import ChevronDown from './chevron-down.svg';
@@ -31,7 +31,7 @@ const ShimmeringBars = () => {
   );
 };
 
-const getTextSign = (summary: SummaryDataResponse): ReactNode => {
+const getTextSign = (summary: SummaryData): ReactNode => {
   if (summary.change.sign === 'positive') {
     return <ChevronDown className='size-3 rotate-180 inline-block' />;
   }
@@ -41,7 +41,7 @@ const getTextSign = (summary: SummaryDataResponse): ReactNode => {
   return null;
 };
 
-const getColor = (summary: SummaryDataResponse): string => {
+const getColor = (summary: SummaryData): string => {
   if (summary.change.sign === 'positive') {
     return 'text-success-light';
   }
@@ -58,7 +58,7 @@ export type PairCardProps =
     }
   | {
       loading: false;
-      summary: SummaryDataResponse;
+      summary: SummaryData;
     };
 
 export const PairCard = ({ loading, summary }: PairCardProps) => {
