@@ -1,4 +1,3 @@
-/* eslint-disable no-bitwise -- expected bitwise operations */
 import { describe, expect, it } from 'vitest';
 import { pnum } from './pnum.js';
 import { BigNumber } from 'bignumber.js';
