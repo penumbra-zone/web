@@ -196,16 +196,16 @@ const TEST_DATA_3: PreviewChartAdapterOptions = {
 
 const RESULT_DATA_3 = [
   {
-    date: new Date('2024-12-01T08:00:00.000Z'),
+    date: new Date('2024-12-01T12:00:00.000Z'),
     value: 1,
   },
   // This is a mid-data generated from the adapter function
   {
-    date: new Date('2024-12-01T09:00:00.000Z'),
+    date: new Date('2024-12-01T13:00:00.000Z'),
     value: 1,
   },
   {
-    date: new Date('2024-12-01T10:00:00.000Z'),
+    date: new Date('2024-12-01T14:00:00.000Z'),
     value: 3,
   },
 ];
