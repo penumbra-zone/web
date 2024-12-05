@@ -21,7 +21,7 @@ import { removeTrailingZeros } from '@penumbra-zone/types/shortify';
  * - in display form with decimals for string and number
  *
  * @param input
- * @param exponent
+ * @param optionsOrExponent
  */
 function pnum(
   input?: string | number | LoHi | bigint | Amount | ValueView | undefined,
