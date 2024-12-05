@@ -5,17 +5,15 @@ import { Density } from '@penumbra-zone/ui/Density';
 import { Toggle } from '@penumbra-zone/ui/Toggle';
 import { Text } from '@penumbra-zone/ui/Text';
 import Positions from './positions';
-import { History } from './history';
 
-enum HistoryTabsType {
-  Positions = 'positions',
-  History = 'history',
+enum PositionsTabsType {
+  MY_POSITIONS = 'MY_POSITIONS',
 }
 
 export const HistoryTabs = () => {
   const [parent] = useAutoAnimate();
-  const [tab, setTab] = useState<HistoryTabsType>(HistoryTabsType.Positions);
-  const [showAll, setShowAll] = useState(false);
+  const [tab, setTab] = useState<PositionsTabsType>(PositionsTabsType.MY_POSITIONS);
+  const [showInactive, setshowInactive] = useState(false);
 
   return (
     <div ref={parent} className='flex flex-col'>
@@ -24,22 +22,18 @@ export const HistoryTabs = () => {
           <Tabs
             value={tab}
             actionType='accent'
-            onChange={value => setTab(value as HistoryTabsType)}
-            options={[
-              { value: HistoryTabsType.Positions, label: 'Positions' },
-              { value: HistoryTabsType.History, label: 'History' },
-            ]}
+            onChange={value => setTab(value as PositionsTabsType)}
+            options={[{ value: PositionsTabsType.MY_POSITIONS, label: 'My Positions' }]}
           />
         </Density>
 
         <label className='flex gap-2 h-[42px] items-center py-2 text-text-secondary cursor-pointer'>
-          <Text small>Show all</Text>
-          <Toggle label='Show all' value={showAll} onChange={setShowAll} />
+          <Text small>Show Inactive</Text>
+          <Toggle label='Show Inactive' value={showInactive} onChange={setshowInactive} />
         </label>
       </div>
 
-      {tab === HistoryTabsType.Positions && <Positions />}
-      {tab === HistoryTabsType.History && <History />}
+      <Positions showInactive={showInactive} />
     </div>
   );
 };

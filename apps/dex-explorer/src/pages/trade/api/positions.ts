@@ -8,20 +8,19 @@ import {
   PositionState_PositionStateEnum,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { AssetId, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { bech32mPositionId } from '@penumbra-zone/bech32m/plpid';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { registryQueryFn } from '@/shared/api/registry.ts';
 import { isZero } from '@penumbra-zone/types/amount';
 
-interface Order {
+export interface Order {
   side: 'Buy' | 'Sell';
   tradeAmount: ValueView;
   effectivePrice: ValueView;
 }
 
-interface PositionData {
-  positionId: string;
-  positionState: PositionStateStr;
+export interface PositionData {
+  positionId: PositionId;
+  positionState: PositionState_PositionStateEnum;
   fee: number;
   orders: Order[];
 }
@@ -98,10 +97,10 @@ const getOrders = async (position: Position): Promise<Order[]> => {
   return [];
 };
 
-const positionToDisplayData = async (id: PositionId, position: Position): Promise<PositionData> => {
+export const getPositionData = async (id: PositionId, position: Position) => {
   return {
-    positionId: bech32mPositionId(id),
-    positionState: stateToString(position.state?.state),
+    positionId: id,
+    positionState: position.state?.state ?? PositionState_PositionStateEnum.UNSPECIFIED,
     fee: position.phi?.component?.fee ?? 0,
     orders: await getOrders(position),
   };
@@ -130,7 +129,7 @@ const fetchQuery = async (): Promise<PositionData[]> => {
     if (!id || !position) {
       throw new Error(`No corresponding position or id for index ${i}`);
     }
-    const data = await positionToDisplayData(id, position);
+    const data = await getPositionData(id, position);
     positionData.push(data);
   }
 
@@ -144,31 +143,30 @@ export const usePositions = () => {
   return useQuery({
     queryKey: ['positions'],
     queryFn: fetchQuery,
+    retry: 1,
     enabled: connectionStore.connected,
   });
 };
 
-type PositionStateStr = 'unspecified' | 'opened' | 'closed' | 'withdrawn' | 'claimed';
-
-export const stateToString = (state?: PositionState_PositionStateEnum): PositionStateStr => {
+export const stateToString = (state?: PositionState_PositionStateEnum) => {
   switch (state) {
     case PositionState_PositionStateEnum.UNSPECIFIED: {
-      return 'unspecified';
+      return 'Unspecified';
     }
     case PositionState_PositionStateEnum.OPENED: {
-      return 'opened';
+      return 'Opened';
     }
     case PositionState_PositionStateEnum.CLOSED: {
-      return 'closed';
+      return 'Closed';
     }
     case PositionState_PositionStateEnum.WITHDRAWN: {
-      return 'withdrawn';
+      return 'Withdrawn';
     }
     case PositionState_PositionStateEnum.CLAIMED: {
-      return 'claimed';
+      return 'Claimed';
     }
     case undefined: {
-      return 'unspecified';
+      return 'Unspecified';
     }
   }
 };
