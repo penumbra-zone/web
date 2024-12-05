@@ -2,13 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { pindexer } from '@/shared/database';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { DurationWindow, durationWindows, isDurationWindow } from '@/shared/utils/duration.ts';
-import { SummaryDataResponse, SummaryDataResponseJson } from '@/shared/api/server/summary/types.ts';
+import { adaptSummary, SummaryData } from '@/shared/api/server/summary/types.ts';
 import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { serialize, Serialized } from '@/shared/utils/serializer';
 
 interface GetPairsParams {
   window: DurationWindow;
   limit: number;
   offset: number;
+  search: string;
 }
 
 const getAssetById = (allAssets: Metadata[], id: Buffer): Metadata | undefined => {
@@ -19,7 +21,7 @@ const getAssetById = (allAssets: Metadata[], id: Buffer): Metadata | undefined =
 
 export const getAllSummaries = async (
   params: GetPairsParams,
-): Promise<SummaryDataResponseJson[]> => {
+): Promise<Serialized<SummaryData>[]> => {
   const chainId = process.env['PENUMBRA_CHAIN_ID'];
   if (!chainId) {
     throw new Error('PENUMBRA_CHAIN_ID is not set');
@@ -48,27 +50,29 @@ export const getAllSummaries = async (
         return undefined;
       }
 
-      const data = SummaryDataResponse.build(
+      const data = adaptSummary(
         summary,
         baseAsset,
         quoteAsset,
         summary.candles,
         summary.candle_times,
       );
-      return data.toJson();
+
+      return serialize(data);
     }),
   );
 
-  return summaries.filter(Boolean) as SummaryDataResponseJson[];
+  return summaries.filter(Boolean) as Serialized<SummaryData>[];
 };
 
-export type SummariesResponse = SummaryDataResponseJson[] | { error: string };
+export type SummariesResponse = Serialized<SummaryData>[] | { error: string };
 
 export const GET = async (req: NextRequest): Promise<NextResponse<SummariesResponse>> => {
   try {
     const { searchParams } = new URL(req.url);
     const limit = Number(searchParams.get('limit')) || 15;
     const offset = Number(searchParams.get('offset')) || 0;
+    const search = searchParams.get('search') ?? '';
     const window = searchParams.get('durationWindow');
 
     if (!window || !isDurationWindow(window)) {
@@ -84,6 +88,7 @@ export const GET = async (req: NextRequest): Promise<NextResponse<SummariesRespo
       window,
       limit,
       offset,
+      search,
     });
 
     return NextResponse.json(result);

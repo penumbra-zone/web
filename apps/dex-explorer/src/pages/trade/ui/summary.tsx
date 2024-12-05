@@ -7,7 +7,7 @@ import { useSummary } from '../model/useSummary';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { round } from '@penumbra-zone/types/round';
 import { Density } from '@penumbra-zone/ui/Density';
-import { SummaryDataResponse } from '@/shared/api/server/summary/types.ts';
+import { SummaryData } from '@/shared/api/server/summary/types.ts';
 
 const SummaryCard = ({
   title,
@@ -108,7 +108,7 @@ export const Summary = () => {
   );
 };
 
-const getTextSign = (res: SummaryDataResponse) => {
+const getTextSign = (res: SummaryData) => {
   if (res.change.sign === 'positive') {
     return '+';
   }
@@ -118,7 +118,7 @@ const getTextSign = (res: SummaryDataResponse) => {
   return '';
 };
 
-const getColor = (res: SummaryDataResponse, isBg = false): string => {
+const getColor = (res: SummaryData, isBg = false): string => {
   if (res.change.sign === 'positive') {
     return isBg ? 'bg-success-light' : 'text-success-light';
   }
