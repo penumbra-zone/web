@@ -1,5 +1,11 @@
 # @penumbra-zone/perspective
 
+## 40.0.0
+
+### Patch Changes
+
+- @penumbra-zone/wasm@34.0.0
+
 ## 39.0.0
 
 ### Patch Changes
