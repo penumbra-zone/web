@@ -1,3 +1,3 @@
-import { InspectPage } from '@/pages/inspect';
+import { InspectSearch } from '@/pages/inspect';
 
-export default InspectPage;
+export default InspectSearch;

@@ -1,11 +1,33 @@
 import { Pool, types } from 'pg';
 import fs from 'fs';
-import { Kysely, PostgresDialect, sql } from 'kysely';
+import { Kysely, PostgresDialect, Selectable, sql } from 'kysely';
+import {
+  DB,
+  DexExAggregateSummary,
+  DexExPositionExecutions,
+  DexExPositionReserves,
+  DexExPositionWithdrawals,
+} from '@/shared/database/schema.ts';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { DurationWindow } from '@/shared/utils/duration.ts';
-import { DB, DexExAggregateSummary } from './schema';
+import { PositionId } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 
 const MAINNET_CHAIN_ID = 'penumbra-1';
+
+export interface ExecutionWithReserves {
+  execution: Selectable<DexExPositionExecutions>;
+  reserves: Selectable<DexExPositionReserves>;
+}
+
+export interface VolumeAndFees {
+  volume1: string;
+  volume2: string;
+  fees1: string;
+  fees2: string;
+  context_asset_start: Buffer;
+  context_asset_end: Buffer;
+  executionCount: number;
+}
 
 class Pindexer {
   private db: Kysely<DB>;
@@ -171,6 +193,135 @@ class Pindexer {
       .offset(offset);
 
     return joinedTable.execute();
+  }
+
+  async getPositionState(positionId: PositionId) {
+    const stateQuery = this.db
+      .selectFrom('dex_ex_position_state as state')
+      .innerJoin(
+        'dex_ex_position_reserves as reserves',
+        'state.opening_reserves_rowid',
+        'reserves.rowid',
+      )
+      .selectAll('state')
+      .selectAll('reserves')
+      .where('state.position_id', '=', Buffer.from(positionId.inner))
+      .executeTakeFirst();
+
+    const reservesQuery = this.db
+      .selectFrom('dex_ex_position_reserves')
+      .selectAll()
+      .where('position_id', '=', Buffer.from(positionId.inner))
+      .orderBy('height', 'desc')
+      .orderBy('rowid', 'desc')
+      .limit(1)
+      .executeTakeFirst();
+
+    const [state, latestReserves] = await Promise.all([stateQuery, reservesQuery]);
+    if (!state || !latestReserves) {
+      return undefined;
+    }
+
+    return { state, latestReserves };
+  }
+
+  async getPositionExecutionsWithReserves(
+    positionId: PositionId,
+  ): Promise<{ items: ExecutionWithReserves[]; skippedRows: number }> {
+    const maxCount = 100;
+
+    // First, get the total count
+    const totalCount = await this.db
+      .selectFrom('dex_ex_position_executions')
+      .select(sql`count(*)`.as('count'))
+      .where('position_id', '=', Buffer.from(positionId.inner))
+      .executeTakeFirstOrThrow();
+
+    // Then get the actual items
+    const results = await this.db
+      .selectFrom('dex_ex_position_executions as executions')
+      .innerJoin(
+        'dex_ex_position_reserves as reserves',
+        'executions.reserves_rowid',
+        'reserves.rowid',
+      )
+      .selectAll('executions')
+      .selectAll('reserves')
+      .where('executions.position_id', '=', Buffer.from(positionId.inner))
+      .orderBy('executions.height', 'desc')
+      .orderBy('executions.rowid', 'desc')
+      .limit(maxCount)
+      .execute();
+
+    const items = results.map(row => ({
+      execution: {
+        context_asset_end: row.context_asset_end,
+        context_asset_start: row.context_asset_start,
+        delta_1: row.delta_1,
+        delta_2: row.delta_2,
+        fee_1: row.fee_1,
+        fee_2: row.fee_2,
+        height: row.height,
+        lambda_1: row.lambda_1,
+        lambda_2: row.lambda_2,
+        position_id: row.position_id,
+        reserves_rowid: row.reserves_rowid,
+        rowid: row.rowid,
+        time: row.time,
+      },
+      reserves: {
+        height: row.height,
+        position_id: row.position_id,
+        reserves_1: row.reserves_1,
+        reserves_2: row.reserves_2,
+        rowid: row.reserves_rowid,
+        time: row.time,
+      },
+    }));
+
+    return {
+      items,
+      skippedRows: Math.max(0, Number(totalCount.count) - maxCount),
+    };
+  }
+
+  async getPositionWithdrawals(
+    positionId: PositionId,
+  ): Promise<Selectable<DexExPositionWithdrawals>[]> {
+    return this.db
+      .selectFrom('dex_ex_position_withdrawals')
+      .selectAll()
+      .where('position_id', '=', Buffer.from(positionId.inner))
+      .orderBy('height', 'desc')
+      .orderBy('rowid', 'desc')
+      .execute();
+  }
+
+  async getPositionVolumeAndFees(positionId: PositionId): Promise<VolumeAndFees[]> {
+    const results = await this.db
+      .selectFrom('dex_ex_position_executions')
+      .select([
+        'context_asset_start',
+        'context_asset_end',
+        sql<string>`sum(delta_1 + lambda_1)`.as('volume1'),
+        sql<string>`sum(delta_2 + lambda_2)`.as('volume2'),
+        sql<string>`sum(fee_1)`.as('fees1'),
+        sql<string>`sum(fee_2)`.as('fees2'),
+        sql<number>`CAST(count(*) AS INTEGER)`.as('executionCount'),
+      ])
+      .where('position_id', '=', Buffer.from(positionId.inner))
+      .groupBy(['context_asset_start', 'context_asset_end'])
+      .orderBy('executionCount', 'desc')
+      .execute();
+
+    return results.map(row => ({
+      ...row,
+      volume1: row.volume1,
+      volume2: row.volume2,
+      fees1: row.fees1,
+      fees2: row.fees2,
+      executionCount: row.executionCount,
+    }));
   }
 }
 
