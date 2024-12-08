@@ -7,10 +7,12 @@ export enum PagePath {
   Inspect = '/inspect',
   Portfolio = '/portfolio',
   TradePair = '/trade/:primary/:numeraire',
+  InspectLp = '/inspect/lp/:id',
 }
 
 const basePath: Partial<Record<PagePath, PagePath>> = {
   [PagePath.TradePair]: PagePath.Trade,
+  '/inspect/lp/:id': PagePath.Inspect,
 };
 
 // Used for dynamic routing when wanting to exclude the dynamic elements
