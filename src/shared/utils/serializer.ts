@@ -18,19 +18,25 @@ export type Serialized<T> =
 
 /** Serializes an object with Protobuf values, turning them into `JsonValue` */
 export const serialize = <VAL>(value: VAL): Serialized<VAL> => {
-  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
-    throw new Error('Value must be an object');
+  if (typeof value !== 'object' || value === null) {
+    return value as Serialized<VAL>;
+  }
+
+  if (Array.isArray(value)) {
+    return value.map(v => serialize(v) as Serialized<unknown>) as Serialized<VAL>;
+  }
+
+  if (isMessage(value)) {
+    return {
+      proto: value.getType().typeName,
+      value: value.toJson(),
+    } as Serialized<VAL>;
   }
 
   const obj = {} as Record<string, unknown>;
   for (const key in value) {
     const val = value[key];
-    if (isMessage(val)) {
-      // @ts-ignore
-      obj[key] = { proto: val.getType().typeName, value: val.toJSON() };
-    } else {
-      obj[key] = val;
-    }
+    obj[key] = serialize(val);
   }
 
   return obj as Serialized<VAL>;
@@ -56,20 +62,24 @@ const isSerializedProto = (value: unknown): value is SerializedProto => {
   return !!(value as SerializedProto | undefined)?.proto;
 };
 
-/**
- * Deserializes an object with serialized Protobufs.
- * Use it on `Serialized<T>` types
- */
 export const deserialize = <VAL>(value: Serialized<VAL>): VAL => {
-  const obj = {} as Record<string, unknown>;
+  if (typeof value !== 'object' || value === null) {
+    return value as VAL;
+  }
 
+  if (Array.isArray(value)) {
+    return value.map(v => deserialize(v) as unknown) as VAL;
+  }
+
+  if (isSerializedProto(value)) {
+    return deserializeProto(value) as VAL;
+  }
+
+  const obj = {} as Record<string, unknown>;
   for (const key in value) {
     const val = value[key];
-    if (isSerializedProto(val)) {
-      obj[key] = deserializeProto(val);
-    } else {
-      obj[key] = val;
-    }
+    obj[key] = deserialize(val as Serialized<unknown>);
   }
+
   return obj as VAL;
 };

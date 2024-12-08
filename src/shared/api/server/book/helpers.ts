@@ -17,7 +17,7 @@ const getTraceHash = (trace: Trace): TraceHash => {
   return `${trace.price}-${hopsHash}`;
 };
 
-const getValueView = (registry: Registry, { amount, assetId }: Value) => {
+export const getValueView = (registry: Registry, { amount, assetId }: Value) => {
   const metadata = assetId ? registry.tryGetMetadata(assetId) : undefined;
   return new ValueView({
     valueView: metadata
