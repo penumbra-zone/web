@@ -26,6 +26,10 @@ export const serialize = <VAL>(value: VAL): Serialized<VAL> => {
     return value.map(v => serialize(v) as Serialized<unknown>) as Serialized<VAL>;
   }
 
+  if (value instanceof Date) {
+    return value.toString() as Serialized<VAL>;
+  }
+
   if (isMessage(value)) {
     return {
       proto: value.getType().typeName,
