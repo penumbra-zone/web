@@ -58,7 +58,7 @@ export const Summary = () => {
 
   return (
     <div className='flex flex-wrap items-center gap-x-4 gap-y-2'>
-      <SummaryCard title='Price' loading={isLoading}>
+      <SummaryCard title='Last price' loading={isLoading}>
         <Text detail color='text.primary'>
           {data && 'price' in data ? round({ value: data.price, decimals: 6 }) : '-'}
         </Text>
