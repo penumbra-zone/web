@@ -99,10 +99,11 @@ const PALETTE = {
   },
   base: {
     black: '#000000',
+    blackAlt: '#0D0D0D',
     white: '#ffffff',
     transparent: 'transparent',
   },
-};
+} as const;
 
 /**
  * Call `theme.spacing(x)`, where `x` is the number of spacing units (in the
@@ -192,6 +193,7 @@ export const theme = {
     },
     base: {
       black: PALETTE.base.black,
+      blackAlt: PALETTE.base.blackAlt,
       white: PALETTE.base.white,
       transparent: PALETTE.base.transparent,
     },
@@ -204,12 +206,13 @@ export const theme = {
     action: {
       hoverOverlay: PALETTE.teal['400'] + hexOpacity(0.15),
       activeOverlay: PALETTE.neutral['950'] + hexOpacity(0.15),
-      disabledOverlay: PALETTE.neutral['950'] + hexOpacity(0.8),
+      disabledOverlay: PALETTE.neutral['950'] + hexOpacity(0.6),
       primaryFocusOutline: PALETTE.orange['400'],
       secondaryFocusOutline: PALETTE.teal['400'],
       unshieldFocusOutline: PALETTE.purple['400'],
       neutralFocusOutline: PALETTE.neutral['400'],
       destructiveFocusOutline: PALETTE.red['400'],
+      successFocusOutline: PALETTE.green['400'],
     },
     other: {
       tonalStroke: PALETTE.neutral['50'] + hexOpacity(0.15),
