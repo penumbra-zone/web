@@ -10,7 +10,7 @@ import { useLpIdInUrl } from '@/pages/inspect/ui/result.tsx';
 import { useLpPosition } from '@/pages/inspect/lp/api/position.ts';
 import { Skeleton } from '@/shared/ui/skeleton.tsx';
 
-const PositionClosed = ({
+export const PositionClosed = ({
   closingTx,
   closingTime,
   closingHeight,
@@ -20,67 +20,78 @@ const PositionClosed = ({
   closingTx?: string;
 }) => {
   return (
-    <Card title='Position Closed'>
-      <div className='flex justify-between items-center'>
-        <div className='flex flex-col gap-2 flex-shrink min-w-0'>
-          {closingTx && (
-            <Text color='text.secondary' truncate>
-              Tx: {closingTx}
-            </Text>
-          )}
-        </div>
+    <div className='grid grid-cols-6 items-center mb-4'>
+      <div className='col-span-4'>
+        <Card title='Position Closed'>
+          <div className='flex justify-between items-center'>
+            <div className='flex flex-col gap-2 flex-shrink min-w-0'>
+              {closingTx && (
+                <Text color='text.secondary' truncate>
+                  Tx: {closingTx}
+                </Text>
+              )}
+            </div>
 
-        <div className='ml-4 flex-shrink-0'>
-          <TimeDisplay dateStr={closingTime} height={closingHeight} />
-        </div>
+            <div className='ml-4 flex-shrink-0'></div>
+          </div>
+        </Card>
       </div>
-    </Card>
+      <div className='col-span-2'>
+        <TimeDisplay dateStr={closingTime} height={closingHeight} />
+      </div>
+    </div>
   );
 };
 
-const PositionWithdraw = ({ withdrawal }: { withdrawal: PositionWithdrawal }) => {
+export const PositionWithdraw = ({ withdrawal }: { withdrawal: PositionWithdrawal }) => {
   return (
-    <Card title='Position Withdraw'>
-      <div className='flex justify-between items-center'>
-        <div className='flex flex-col gap-2 flex-shrink min-w-0'>
-          <div className='flex items-center gap-2'>
-            <ValueViewComponent valueView={withdrawal.reserves1} abbreviate={false} />
-            <ValueViewComponent valueView={withdrawal.reserves2} abbreviate={false} />
+    <div className='grid grid-cols-6 items-center mb-4'>
+      <div className='col-span-4'>
+        <Card title='Position Withdraw'>
+          <div className='flex justify-between items-center'>
+            <div className='flex flex-col gap-2 flex-shrink min-w-0'>
+              <div className='flex items-center gap-2'>
+                <ValueViewComponent valueView={withdrawal.reserves1} abbreviate={false} />
+                <ValueViewComponent valueView={withdrawal.reserves2} abbreviate={false} />
+              </div>
+
+              <Text color='text.secondary' truncate>
+                Tx: {withdrawal.txHash}
+              </Text>
+            </div>
           </div>
-
-          <Text color='text.secondary' truncate>
-            Tx: {withdrawal.txHash}
-          </Text>
-        </div>
-
-        <div className='ml-4 flex-shrink-0'>
-          <TimeDisplay dateStr={withdrawal.time} height={withdrawal.height} />
-        </div>
+        </Card>
       </div>
-    </Card>
+      <div className='col-span-2'>
+        <TimeDisplay dateStr={withdrawal.time} height={withdrawal.height} />
+      </div>
+    </div>
   );
 };
 
-const PositionOpen = ({ state }: { state: PositionStateResponse }) => {
+export const PositionOpen = ({ state }: { state: PositionStateResponse }) => {
   return (
-    <Card title='Position Open'>
-      <div className='flex justify-between items-center'>
-        <div className='flex flex-col gap-2 flex-shrink min-w-0'>
-          <div className='flex items-center gap-2'>
-            <ValueViewComponent valueView={state.reserves1} abbreviate={false} />
-            <ValueViewComponent valueView={state.reserves2} abbreviate={false} />
+    <div className='grid grid-cols-6 items-center mb-4'>
+      <div className='col-span-4'>
+        <Card title='Position Open'>
+          <div className='flex justify-between items-center'>
+            <div className='flex flex-col gap-2 flex-shrink min-w-0'>
+              <div className='flex items-center gap-2'>
+                <ValueViewComponent valueView={state.reserves1} abbreviate={false} />
+                <ValueViewComponent valueView={state.reserves2} abbreviate={false} />
+              </div>
+
+              <Text color='text.secondary' truncate>
+                Tx: {state.openingTx}
+              </Text>
+            </div>
           </div>
-
-          <Text color='text.secondary' truncate>
-            Tx: {state.openingTx}
-          </Text>
-        </div>
-
-        <div className='ml-4 flex-shrink-0'>
-          <TimeDisplay dateStr={state.openingTime} height={state.openingHeight} />
-        </div>
+        </Card>
       </div>
-    </Card>
+      <div className='col-span-2'>
+        <TimeDisplay dateStr={state.openingTime} height={state.openingHeight} />
+      </div>
+    </div>
   );
 };
 
