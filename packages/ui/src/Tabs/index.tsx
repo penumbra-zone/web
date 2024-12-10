@@ -8,12 +8,12 @@ type LimitedActionType = Exclude<ActionType, 'destructive'>;
 
 const getIndicatorColor = (actionType: LimitedActionType): string => {
   if (actionType === 'accent') {
-    return cn('bg-tabAccent');
+    return cn('bg-accentRadialGradient');
   }
   if (actionType === 'unshield') {
-    return cn('bg-tabUnshield');
+    return cn('bg-unshieldRadialGradient');
   }
-  return cn('bg-tabNeutral');
+  return cn('bg-neutralRadialGradient');
 };
 
 const getBorderColor = (actionType: LimitedActionType): string => {
