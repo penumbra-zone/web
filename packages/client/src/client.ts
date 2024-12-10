@@ -202,8 +202,8 @@ export class PenumbraClient {
         }
       }
 
-      // todo: clean up existing connection resources and attempt to establish reconnection
-
+      // Clean up dangling connection resources and attempt to establish reconnection
+      this.destroyConnection();
       this.connection = this.createConnection();
       await this.connection.port;
     }
