@@ -1,14 +1,11 @@
 import { Text } from '@penumbra-zone/ui/Text';
-import {
-  PositionStateResponse,
-  PositionWithdrawal,
-} from '@/shared/api/server/position/timeline/types.ts';
 import { Card } from '@penumbra-zone/ui/Card';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { TimeDisplay } from '@/pages/inspect/ui/time.tsx';
 import { useLpIdInUrl } from '@/pages/inspect/ui/result.tsx';
 import { useLpPosition } from '@/pages/inspect/lp/api/position.ts';
 import { Skeleton } from '@/shared/ui/skeleton.tsx';
+import { PositionStateVV, PositionWithdrawalVV } from '@/pages/inspect/lp/api/types.ts';
 
 export const PositionClosed = ({
   closingTx,
@@ -43,7 +40,7 @@ export const PositionClosed = ({
   );
 };
 
-export const PositionWithdraw = ({ withdrawal }: { withdrawal: PositionWithdrawal }) => {
+export const PositionWithdraw = ({ withdrawal }: { withdrawal: PositionWithdrawalVV }) => {
   return (
     <div className='grid grid-cols-6 items-center mb-4'>
       <div className='col-span-4'>
@@ -69,7 +66,7 @@ export const PositionWithdraw = ({ withdrawal }: { withdrawal: PositionWithdrawa
   );
 };
 
-export const PositionOpen = ({ state }: { state: PositionStateResponse }) => {
+export const PositionOpen = ({ state }: { state: PositionStateVV }) => {
   return (
     <div className='grid grid-cols-6 items-center mb-4'>
       <div className='col-span-4'>
@@ -99,8 +96,8 @@ const DataBody = ({
   state,
   withdrawals,
 }: {
-  state: PositionStateResponse;
-  withdrawals: PositionWithdrawal[];
+  state: PositionStateVV;
+  withdrawals: PositionWithdrawalVV[];
 }) => {
   return (
     <div className='flex flex-col gap-4 justify-center'>
