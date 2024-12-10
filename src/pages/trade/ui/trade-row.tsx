@@ -3,11 +3,22 @@ import { getSymbolFromValueView } from '@penumbra-zone/getters/value-view';
 import React from 'react';
 import { ChevronRight } from 'lucide-react';
 
-function padPrice(price: string): string {
-  const [whole, decimal = ''] = price.split('.');
-  const maxDigits = 8; // Maximum decimals commonly used for crypto prices
-  const paddedDecimal = decimal.padEnd(maxDigits, '0');
-  return `${whole}.${paddedDecimal}`;
+function formatPrice(price: string): string {
+  const num = parseFloat(price);
+  const parts = num.toString().split('.');
+  const whole = parts[0] ?? '0';
+  const totalDigits = 7;
+  const availableDecimals = Math.max(0, totalDigits - whole.length);
+  return num.toFixed(availableDecimals);
+}
+
+function formatNumber(value: string): string {
+  const num = parseFloat(value);
+  const parts = num.toString().split('.');
+  const whole = parts[0] ?? '0';
+  const totalDigits = 6;
+  const availableDecimals = Math.max(0, totalDigits - whole.length);
+  return num.toFixed(availableDecimals);
 }
 
 const SELL_BG_COLOR = 'rgba(175, 38, 38, 0.24)';
@@ -21,29 +32,28 @@ export const TradeRow = ({
   relativeSize: number;
 }) => {
   const bgColor = isSell ? SELL_BG_COLOR : 'rgba(28, 121, 63, 0.24)';
-  const paddedPrice = padPrice(trace.price);
 
   return (
-    <tr
-      className='h-[33px] border-b border-border-faded group'
+    <div
+      className='px-4 group relative h-[33px] border-b border-border-faded text-xs grid grid-cols-[1fr_1fr_1fr_1fr] items-center'
       style={{
         backgroundImage: `linear-gradient(to right, ${bgColor} ${relativeSize}%, transparent ${relativeSize}%)`,
       }}
     >
-      <td className={`${isSell ? 'text-red-400' : 'text-green-400'} text-xs`}>{paddedPrice}</td>
-      <td className='text-xs text-right text-white'>{trace.amount}</td>
-      <td className='text-xs text-right text-white'>{trace.total}</td>
-      <td className='text-xs text-right'>
+      <div className={isSell ? 'text-red-400' : 'text-green-400'}>{formatPrice(trace.price)}</div>
+      <div className='text-right text-white'>{formatNumber(trace.amount)}</div>
+      <div className='text-right text-white'>{formatNumber(trace.total)}</div>
+      <div className='text-right'>
         <HopCount count={trace.hops.length} />
-      </td>
+      </div>
 
-      {/* Overlay row that appears on hover */}
-      {/* eslint-disable-next-line react/no-unknown-property -- JSX style is valid in nextjs */}
+      {/* Overlay that appears on hover */}
+      {/* eslint-disable-next-line react/no-unknown-property -- jsx is, in fact, a property */}
       <style jsx>{`
-        tr:hover td {
+        .group:hover > div:not(:last-child) {
           visibility: hidden;
         }
-        tr:hover::after {
+        .group:hover::after {
           content: '';
           position: absolute;
           left: 0;
@@ -54,14 +64,13 @@ export const TradeRow = ({
       `}</style>
 
       {/* Route display that shows on hover */}
-      <td
+      <div
         className='hidden group-hover:flex justify-center absolute left-0 right-0 px-4 select-none z-30'
-        colSpan={4}
         style={{ visibility: 'visible' }}
       >
         <RouteDisplay tokens={trace.hops.map(valueView => getSymbolFromValueView(valueView))} />
-      </td>
-    </tr>
+      </div>
+    </div>
   );
 };
 
