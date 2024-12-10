@@ -1,5 +1,12 @@
 # @penumbra-zone/ui
 
+## 13.5.0
+
+### Minor Changes
+
+- 7af1ec8: Update Address View component to match the latest designs
+- be8b50c: Update Button component to match the latest designs
+
 ## 13.4.2
 
 ### Patch Changes

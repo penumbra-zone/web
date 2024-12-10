@@ -1,5 +1,11 @@
 # @penumbra-zone/client
 
+## 21.1.0
+
+### Minor Changes
+
+- 0cadc3c: attempt to reconnect on broken client connection
+
 ## 21.0.0
 
 ### Patch Changes
