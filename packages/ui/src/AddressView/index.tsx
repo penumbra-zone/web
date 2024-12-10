@@ -5,7 +5,6 @@ import { CopyToClipboardButton } from '../CopyToClipboardButton';
 import { AddressIcon } from './AddressIcon';
 import { Text } from '../Text';
 import { Density, useDensity } from '../utils/density';
-import cn from 'clsx';
 
 export interface AddressViewProps {
   addressView: AddressView | undefined;
@@ -22,16 +21,6 @@ export const getIconSize = (density: Density): number => {
     return 12;
   }
   return 24;
-};
-
-export const getFont = (density: Density): string => {
-  if (density === 'compact') {
-    return cn('flex items-center gap-1.5 text-sm text-text-primary');
-  }
-  if (density === 'slim') {
-    return cn('flex items-center gap-1 text-xs text-text-primary');
-  }
-  return cn('flex items-center gap-2 text-base text-text-primary');
 };
 
 // Renders an address or an address view.
@@ -60,7 +49,7 @@ export const AddressViewComponent = ({
     index === 0 ? 'Main Account' : `Sub-Account ${index}`;
 
   return (
-    <div className={cn(getFont(density))}>
+    <div className={'flex items-center gap-2 text-text-primary'}>
       {!hideIcon && (
         <div className='shrink'>
           <AddressIcon
@@ -70,16 +59,29 @@ export const AddressViewComponent = ({
         </div>
       )}
 
-      {addressIndex ? (
-        <Text strong truncate={truncate}>
-          {isRandomized && 'IBC Deposit Address for '}
-          {getAccountLabel(addressIndex.account)}
-        </Text>
-      ) : (
-        <Text technical truncate={truncate}>
-          {encodedAddress}
-        </Text>
-      )}
+      <div className={truncate ? 'truncate max-w-[150px]' : ''}>
+        {addressIndex ? (
+          density === 'sparse' ? (
+            <Text strong-bold truncate={truncate}>
+              {isRandomized && 'IBC Deposit Address for '}
+              {getAccountLabel(addressIndex.account)}
+            </Text>
+          ) : (
+            <Text small truncate={truncate}>
+              {isRandomized && 'IBC Deposit Address for '}
+              {getAccountLabel(addressIndex.account)}
+            </Text>
+          )
+        ) : density === 'sparse' ? (
+          <Text strong-bold truncate={truncate}>
+            {encodedAddress}
+          </Text>
+        ) : (
+          <Text small truncate={truncate}>
+            {encodedAddress}
+          </Text>
+        )}
+      </div>
 
       {copyable && !isRandomized && (
         <div className='shrink'>
