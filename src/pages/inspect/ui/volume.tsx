@@ -7,9 +7,9 @@ import { Table } from '@penumbra-zone/ui/Table';
 import { AssetIcon } from '@penumbra-zone/ui/AssetIcon';
 import { useLpIdInUrl } from '@/pages/inspect/ui/result.tsx';
 import { useLpPosition } from '@/pages/inspect/lp/api/position.ts';
-import { VolumeAndFeesResponse } from '@/shared/api/server/position/timeline/types.ts';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Card } from '@penumbra-zone/ui/Card';
+import { VolumeAndFeesAll } from '@/pages/inspect/lp/api/types.ts';
 
 const skeletonRows = 4;
 
@@ -52,7 +52,7 @@ const LoadingState = () => {
   );
 };
 
-const DataBody = ({ v }: { v: VolumeAndFeesResponse }) => {
+const DataBody = ({ v }: { v: VolumeAndFeesAll }) => {
   return (
     <Density compact>
       <Table>
@@ -116,9 +116,15 @@ const DataBody = ({ v }: { v: VolumeAndFeesResponse }) => {
               <Table.Tr key={i}>
                 <Table.Td>
                   <div className='flex items-center gap-2'>
-                    <AssetIcon metadata={row.contextAssetStart} />
+                    <div className='flex gap-1'>
+                      <AssetIcon metadata={row.contextAssetStart} />
+                      {row.contextAssetStart.symbol}
+                    </div>
                     <Icon IconComponent={ArrowRight} color='text.primary' size='sm' />
-                    <AssetIcon metadata={row.contextAssetEnd} />
+                    <div className='flex gap-1'>
+                      <AssetIcon metadata={row.contextAssetEnd} />
+                      {row.contextAssetEnd.symbol}
+                    </div>
                   </div>
                 </Table.Td>
                 <Table.Td hAlign='center'>
