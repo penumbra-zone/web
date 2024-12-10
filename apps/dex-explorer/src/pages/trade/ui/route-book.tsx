@@ -5,37 +5,49 @@ import { RouteBookResponse, Trace } from '@/shared/api/server/book/types';
 import { usePathSymbols } from '@/pages/trade/model/use-path.ts';
 import { calculateSpread } from '@/pages/trade/model/trace.ts';
 import { TradeRow } from '@/pages/trade/ui/trade-row.tsx';
+import { Skeleton } from '@/shared/ui/skeleton';
 
 const SkeletonRow = (props: { isSpread: boolean }) =>
   props.isSpread ? (
-    <tr>
-      <td colSpan={4} className='border-y border-l-other-solidStroke'>
-        <div className='flex items-center justify-center gap-2 px-3 py-3 text-xs'>
-          <div className='w-full h-[22px] bg-neutral-800 rounded animate-pulse ml-auto'></div>
-
-          <div className='w-full h-[22px] bg-neutral-800 rounded animate-pulse ml-auto'></div>
-
-          <div className='w-full h-[22px] bg-neutral-800 rounded animate-pulse ml-auto'></div>
-
-          <div className='w-full h-[22px] bg-neutral-800 rounded animate-pulse ml-auto'></div>
+    <div className='border-y border-l-other-solidStroke'>
+      <div className='flex items-center justify-center gap-2 px-3 py-3 text-xs'>
+        <div className='w-[78px] h-[16px]'>
+          <Skeleton />
         </div>
-      </td>
-    </tr>
+        <div className='w-[54px] h-[16px]'>
+          <Skeleton />
+        </div>
+        <div className='w-[69px] h-[16px]'>
+          <Skeleton />
+        </div>
+        <div className='w-[39px] h-[16px]'>
+          <Skeleton />
+        </div>
+      </div>
+    </div>
   ) : (
-    <tr className={`group relative h-[33px] border-b border-b-other-tonalStroke`}>
-      <td>
-        <div className='w-full h-[22px] bg-neutral-800 rounded animate-pulse ml-auto'></div>
-      </td>
-      <td className='relative text-xs text-right text-white'>
-        <div className='w-full h-[22px] bg-neutral-800 rounded animate-pulse ml-auto'></div>
-      </td>
-      <td className='relative text-xs text-right text-white'>
-        <div className='w-full h-[22px] bg-neutral-800 rounded animate-pulse ml-auto'></div>
-      </td>
-      <td className='relative text-xs text-right'>
-        <div className='w-full h-[22px] bg-neutral-800 rounded animate-pulse ml-auto'></div>
-      </td>
-    </tr>
+    <div className='group relative h-[33px] border-b border-b-other-tonalStroke grid grid-cols-[1fr_1fr_1fr_1fr] items-center'>
+      <div className='pl-4'>
+        <div className='w-[56px] h-[16px]'>
+          <Skeleton />
+        </div>
+      </div>
+      <div className='relative text-xs text-right pl-4'>
+        <div className='w-[56px] h-[16px] ml-auto'>
+          <Skeleton />
+        </div>
+      </div>
+      <div className='relative text-xs text-right pl-4'>
+        <div className='w-[56px] h-[16px] ml-auto'>
+          <Skeleton />
+        </div>
+      </div>
+      <div className='relative text-xs text-right pl-4'>
+        <div className='w-[24px] h-[16px] ml-auto'>
+          <Skeleton />
+        </div>
+      </div>
+    </div>
   );
 
 const RouteBookData = observer(({ bookData }: { bookData?: RouteBookResponse }) => {
@@ -46,17 +58,17 @@ const RouteBookData = observer(({ bookData }: { bookData?: RouteBookResponse }) 
   const buyRelativeSizes = calculateRelativeSizes(multiHops?.buy ?? []);
 
   return (
-    <table className='w-full'>
-      <thead>
-        <tr className='text-xs text-gray-400'>
-          <th className='py-2 font-normal text-left'>Price({pair.quoteSymbol})</th>
-          <th className='py-2 font-normal text-right'>Amount({pair.baseSymbol})</th>
-          <th className='py-2 font-normal text-right'>Total</th>
-          <th className='py-2 font-normal text-right'>Route</th>
-        </tr>
-      </thead>
+    <div className='w-full'>
+      {/* Header */}
+      <div className='grid grid-cols-[1fr_1fr_1fr_1fr] h-[33px] mt-1 text-xs text-gray-400 px-4'>
+        <div className='py-2 font-normal text-left'>Price({pair.quoteSymbol})</div>
+        <div className='py-2 font-normal text-right'>Amount({pair.baseSymbol})</div>
+        <div className='py-2 font-normal text-right'>Total</div>
+        <div className='py-2 font-normal text-right'>Route</div>
+      </div>
 
-      <tbody className='relative'>
+      {/* Body */}
+      <div className='relative'>
         {multiHops ? (
           <>
             {multiHops.sell.map((trace, idx) => (
@@ -84,8 +96,8 @@ const RouteBookData = observer(({ bookData }: { bookData?: RouteBookResponse }) 
             .fill(1)
             .map((_, i) => <SkeletonRow isSpread={i === 8} key={i} />)
         )}
-      </tbody>
-    </table>
+      </div>
+    </div>
   );
 });
 
@@ -99,27 +111,41 @@ export const RouteBook = observer(() => {
   return <RouteBookData bookData={data} />;
 });
 
+function formatPrice(price: string): string {
+  const num = parseFloat(price);
+  const [whole] = num.toString().split('.');
+  const totalDigits = 7;
+  const availableDecimals = Math.max(0, totalDigits - (whole?.length ?? 0));
+  return num.toFixed(availableDecimals);
+}
+
+function formatNumber(value: string): string {
+  const num = parseFloat(value);
+  const [whole] = num.toString().split('.');
+  const totalDigits = 6;
+  const availableDecimals = Math.max(0, totalDigits - (whole?.length ?? 0));
+  return num.toFixed(availableDecimals);
+}
+
 const SpreadRow = ({ sellOrders, buyOrders }: { sellOrders: Trace[]; buyOrders: Trace[] }) => {
   const spreadInfo = calculateSpread(sellOrders, buyOrders);
   const pair = usePathSymbols();
 
   if (!spreadInfo) {
-    return;
+    return null;
   }
 
   return (
-    <tr>
-      <td colSpan={4} className='border-y border-y-other-solidStroke'>
-        <div className='flex items-center justify-center gap-2 px-3 py-3 text-xs'>
-          <span className='text-green-400'>{parseFloat(spreadInfo.midPrice)}</span>
-          <span className='text-gray-400'>Spread:</span>
-          <span className='text-white'>
-            {parseFloat(spreadInfo.amount)} {pair.quoteSymbol}
-          </span>
-          <span className='text-gray-400'>({spreadInfo.percentage}%)</span>
-        </div>
-      </td>
-    </tr>
+    <div className='border-b border-y-other-solidStroke'>
+      <div className='flex items-center justify-center gap-2 px-3 py-3 text-xs'>
+        <span className='text-green-400'>{formatPrice(spreadInfo.midPrice)}</span>
+        <span className='text-gray-400'>Spread:</span>
+        <span className='text-white'>
+          {formatNumber(spreadInfo.amount)} {pair.quoteSymbol}
+        </span>
+        <span className='text-gray-400'>({parseFloat(spreadInfo.percentage).toFixed(2)}%)</span>
+      </div>
+    </div>
   );
 };
 
