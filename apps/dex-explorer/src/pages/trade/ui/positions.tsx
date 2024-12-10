@@ -15,6 +15,8 @@ import {
 import { bech32mPositionId } from '@penumbra-zone/bech32m/plpid';
 import { Button } from '@penumbra-zone/ui/Button';
 import { positionsStore } from '@/pages/trade/model/positions';
+import Link from 'next/link';
+import { SquareArrowOutUpRight } from 'lucide-react';
 
 const LoadingRow = () => {
   return (
@@ -260,6 +262,9 @@ const PositionsInner = observer(({ showInactive }: { showInactive: boolean }) =>
                   <Text detail color='text.secondary' truncate>
                     {bech32PositionId}
                   </Text>
+                  <Link href={`/inspect/lp/${bech32PositionId}`}>
+                    <SquareArrowOutUpRight className='w-4 h-4 text-text-secondary' />
+                  </Link>
                 </Cell>
                 <Cell>
                   <ActionButton state={p.positionState} id={p.positionId} />

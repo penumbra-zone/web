@@ -9,18 +9,15 @@ import { TimeDisplay } from '@/pages/inspect/ui/time.tsx';
 import { useLpIdInUrl } from '@/pages/inspect/ui/result.tsx';
 import { useLpPosition } from '@/pages/inspect/lp/api/position.ts';
 import { Skeleton } from '@/shared/ui/skeleton.tsx';
+import { PositionClosed, PositionOpen, PositionWithdraw } from '@/pages/inspect/ui/actions.tsx';
 import {
-  PositionExecutions,
-  PositionStateResponse,
-  PositionWithdrawal,
-} from '@/shared/api/server/position/timeline/types.ts';
-import { PositionWithdraw, PositionClosed, PositionOpen } from '@/pages/inspect/ui/actions.tsx';
+  PositionExecutionsVV,
+  PositionExecutionVV,
+  PositionStateVV,
+  PositionWithdrawalVV,
+} from '@/pages/inspect/lp/api/types.ts';
 
-interface ExecutionProps {
-  execution: PositionExecutions['items'][0];
-}
-
-const Execution = ({ execution: e }: ExecutionProps) => {
+const Execution = ({ execution: e }: { execution: PositionExecutionVV }) => {
   return (
     <div className='grid grid-cols-6 items-center mb-4'>
       <div className='col-span-2'>
@@ -93,9 +90,9 @@ const DataBody = ({
   withdrawals,
   executions,
 }: {
-  state: PositionStateResponse;
-  withdrawals: PositionWithdrawal[];
-  executions: PositionExecutions;
+  state: PositionStateVV;
+  withdrawals: PositionWithdrawalVV[];
+  executions: PositionExecutionsVV;
 }) => {
   return (
     <div>

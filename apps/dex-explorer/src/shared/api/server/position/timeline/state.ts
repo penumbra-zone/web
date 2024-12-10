@@ -2,7 +2,6 @@ import { pindexer } from '@/shared/database';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { AssetId, Value } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { PositionId } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
-import { getValueView } from '../../book/helpers';
 import { pnum } from '@penumbra-zone/types/pnum';
 import { PositionStateResponse } from '@/shared/api/server/position/timeline/types.ts';
 import { sha256HashStr } from '@penumbra-zone/crypto-web/sha256';
@@ -44,76 +43,46 @@ export const getPositionState = async (id: PositionId): Promise<PositionStateRes
 
   const response: PositionStateResponse = {
     feeBps: result.state.fee_bps,
-    reserves1: getValueView(
-      registry,
-      new Value({
-        assetId: assetId1,
-        amount: pnum(result.latestReserves.reserves_1).toAmount(),
-      }),
-    ),
-    reserves2: getValueView(
-      registry,
-      new Value({
-        assetId: assetId2,
-        amount: pnum(result.latestReserves.reserves_2).toAmount(),
-      }),
-    ),
-    unit1: getValueView(
-      registry,
-      new Value({
-        assetId: assetId1,
-        amount: pnum(unit1Amount).toAmount(),
-      }),
-    ),
-    unit2: getValueView(
-      registry,
-      new Value({
-        assetId: assetId2,
-        amount: pnum(unit2Amount).toAmount(),
-      }),
-    ),
-    offer1: getValueView(
-      registry,
-      new Value({
-        assetId: assetId1,
-        amount: pnum(offer1Amount).toAmount(),
-      }),
-    ),
-    offer2: getValueView(
-      registry,
-      new Value({
-        assetId: assetId2,
-        amount: pnum(offer2Amount).toAmount(),
-      }),
-    ),
-    priceRef1: getValueView(
-      registry,
-      new Value({
-        assetId: assetId1,
-        amount: pnum(priceRef1Amount).toAmount(),
-      }),
-    ),
-    priceRef2: getValueView(
-      registry,
-      new Value({
-        assetId: assetId2,
-        amount: pnum(priceRef2Amount).toAmount(),
-      }),
-    ),
-    priceRef1Inv: getValueView(
-      registry,
-      new Value({
-        assetId: assetId2,
-        amount: pnum(priceRef1AmountInv).toAmount(),
-      }),
-    ),
-    priceRef2Inv: getValueView(
-      registry,
-      new Value({
-        assetId: assetId1,
-        amount: pnum(priceRef2AmountInv).toAmount(),
-      }),
-    ),
+    reserves1: new Value({
+      assetId: assetId1,
+      amount: pnum(result.latestReserves.reserves_1).toAmount(),
+    }),
+    reserves2: new Value({
+      assetId: assetId2,
+      amount: pnum(result.latestReserves.reserves_2).toAmount(),
+    }),
+    unit1: new Value({
+      assetId: assetId1,
+      amount: pnum(unit1Amount).toAmount(),
+    }),
+    unit2: new Value({
+      assetId: assetId2,
+      amount: pnum(unit2Amount).toAmount(),
+    }),
+    offer1: new Value({
+      assetId: assetId1,
+      amount: pnum(offer1Amount).toAmount(),
+    }),
+    offer2: new Value({
+      assetId: assetId2,
+      amount: pnum(offer2Amount).toAmount(),
+    }),
+    priceRef1: new Value({
+      assetId: assetId1,
+      amount: pnum(priceRef1Amount).toAmount(),
+    }),
+    priceRef2: new Value({
+      assetId: assetId2,
+      amount: pnum(priceRef2Amount).toAmount(),
+    }),
+    priceRef1Inv: new Value({
+      assetId: assetId2,
+      amount: pnum(priceRef1AmountInv).toAmount(),
+    }),
+    priceRef2Inv: new Value({
+      assetId: assetId1,
+      amount: pnum(priceRef2AmountInv).toAmount(),
+    }),
     openingHeight: result.state.opening_height,
     openingTime: result.state.opening_time.toISOString(),
   };

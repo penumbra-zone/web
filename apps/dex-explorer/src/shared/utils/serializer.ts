@@ -1,7 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any -- Message<any> cannot be pre-determined */
 
 import { Message, isMessage, JsonValue } from '@bufbuild/protobuf';
-import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import {
+  AssetId,
+  Metadata,
+  Value,
+  ValueView,
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
 interface SerializedProto {
   proto: string;
@@ -49,6 +54,8 @@ export const serialize = <VAL>(value: VAL): Serialized<VAL> => {
 const ProtosByType = {
   'penumbra.core.asset.v1.ValueView': ValueView,
   'penumbra.core.asset.v1.Metadata': Metadata,
+  'penumbra.core.asset.v1.Value': Value,
+  'penumbra.core.asset.v1.AssetId': AssetId,
 } as const;
 
 const deserializeProto = (value: SerializedProto): Message<any> => {
