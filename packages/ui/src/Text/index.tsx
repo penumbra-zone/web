@@ -102,7 +102,9 @@ const getTextOptionClasses = ({
   break: breakProp,
   whitespace,
 }: TextProps): string => {
-  const truncateClass = truncate ? cn('truncate') : '';
+  const truncateClass = truncate
+    ? cn('truncate max-w-[150px] overflow-hidden whitespace-nowrap')
+    : ''; // Adds max-width for aggressive truncation
   const alignClass = align && ALIGN_MAP[align];
   const decorationClass = decoration && DECORATION_MAP[decoration];
   const transformClass = transform && TRANSFORM_MAP[transform];

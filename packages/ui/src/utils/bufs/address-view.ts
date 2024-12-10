@@ -14,13 +14,13 @@ export const ADDRESS_VIEW_DECODED = new AddressView({
   },
 });
 
-export const ADDRESS2_VIEW_DECODED = new AddressView({
+export const ADDRESS1_VIEW_DECODED = new AddressView({
   addressView: {
     case: 'decoded',
     value: {
       address: { inner: new Uint8Array(80) },
       index: {
-        account: 2,
+        account: 1,
         randomizer: new Uint8Array([0, 0, 0]),
       },
     },
