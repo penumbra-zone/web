@@ -2,9 +2,9 @@ import { ReactNode } from 'react';
 import { Density as TDensity, DensityContext } from '../utils/density';
 
 export type DensityPropType =
-  | { sparse: true; medium?: never; compact?: never }
-  | { medium: true; sparse?: never; compact?: never }
-  | { compact: true; sparse?: never; medium?: never };
+  | { sparse: true; slim?: never; compact?: never }
+  | { slim: true; sparse?: never; compact?: never }
+  | { compact: true; sparse?: never; slim?: never };
 
 export type DensityProps = DensityPropType & {
   children?: ReactNode;
@@ -71,9 +71,9 @@ export type DensityProps = DensityPropType & {
  * />
  * ```
  */
-export const Density = ({ children, sparse, medium, compact }: DensityProps) => {
+export const Density = ({ children, sparse, slim, compact }: DensityProps) => {
   const density: TDensity =
-    (sparse && 'sparse') ?? (medium && 'medium') ?? (compact && 'compact') ?? 'sparse';
+    (sparse && 'sparse') ?? (compact && 'compact') ?? (slim && 'slim') ?? 'sparse';
 
   return <DensityContext.Provider value={density}>{children}</DensityContext.Provider>;
 };

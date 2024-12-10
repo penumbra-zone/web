@@ -3,12 +3,12 @@ import { createContext, useContext } from 'react';
 /**
  * The density for a given layout. Generally, `sparse` is the correct size
  * choice (and is thus the default for any components that use the
- * `useDensity()` hook). But you can use `compact` for layouts containing a lot
+ * `useDensity()` hook). But you can use `compact` and `slim` for layouts containing a lot
  * of data that should be presented in a denser layout.
  *
  * See `<DensityContext />`
  */
-export type Density = 'compact' | 'sparse' | 'medium';
+export type Density = 'sparse' | 'compact' | 'slim';
 
 /**
  * This context is used internally by the `<Density />` component and the

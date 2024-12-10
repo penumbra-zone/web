@@ -132,7 +132,7 @@ const getGap = (density: Density) => {
   if (density === 'sparse') {
     return 'gap-2';
   }
-  if (density === 'medium') {
+  if (density === 'compact') {
     return 'gap-1.5';
   }
   return 'gap-1';
@@ -142,7 +142,7 @@ const getIconSize = (density: Density) => {
   if (density === 'sparse') {
     return 'lg';
   }
-  if (density === 'medium') {
+  if (density === 'compact') {
     return 'md';
   }
   return 'sm';
