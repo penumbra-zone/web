@@ -22,7 +22,7 @@ const meta: Meta<typeof AddressViewComponent> = {
   },
   decorators: [
     Story => (
-      <div className='w-full overflow-hidden'>
+      <div className='w-full overflow-hidden p-4'>
         <Story />
       </div>
     ),
