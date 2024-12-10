@@ -190,11 +190,11 @@ export class PenumbraClient {
     this.connection ??= this.createConnection();
 
     try {
-        await this.connection.port;
+      await this.connection.port;
     } catch (error) {
-        this.disconnect();
-        this.connection = this.createConnection();
-        await this.connection.port;
+      await this.disconnect();
+      this.connection = this.createConnection();
+      await this.connection.port;
     }
   }
 
