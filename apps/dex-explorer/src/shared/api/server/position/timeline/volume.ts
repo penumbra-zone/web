@@ -1,63 +1,43 @@
-import { VolumeAndFees } from '@/shared/database';
-import { ChainRegistryClient, Registry } from '@penumbra-labs/registry';
+import { pindexer, VolumeAndFees } from '@/shared/database';
 import {
   PositionStateResponse,
   VolumeAndFeesResponse,
-  VolumeAndFeesVV,
+  VolumeAndFeesValue,
 } from '@/shared/api/server/position/timeline/types.ts';
-import { getValueView } from '@/shared/api/server/book/helpers.ts';
 import { pnum } from '@penumbra-zone/types/pnum';
 import { AssetId, Value } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { getMetadata } from '@penumbra-zone/getters/value-view';
-import { getAssetId } from '@penumbra-zone/getters/metadata';
+import { PositionId } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
+import { getAssetIdFromValue } from '@penumbra-zone/getters/value';
 
-const addValueView = (
-  registry: Registry,
-  raw: VolumeAndFees,
-  asset1: AssetId,
-  asset2: AssetId,
-): VolumeAndFeesVV => {
+const addValue = (raw: VolumeAndFees, asset1: AssetId, asset2: AssetId): VolumeAndFeesValue => {
   return {
-    contextAssetStart: registry.getMetadata(new AssetId({ inner: raw.context_asset_start })),
-    contextAssetEnd: registry.getMetadata(new AssetId({ inner: raw.context_asset_end })),
+    contextAssetStart: new AssetId({ inner: raw.context_asset_start }),
+    contextAssetEnd: new AssetId({ inner: raw.context_asset_end }),
     executionCount: raw.executionCount,
-    volume1: getValueView(
-      registry,
-      new Value({
-        amount: pnum(raw.volume1).toAmount(),
-        assetId: asset1,
-      }),
-    ),
-    volume2: getValueView(
-      registry,
-      new Value({
-        amount: pnum(raw.volume2).toAmount(),
-        assetId: asset2,
-      }),
-    ),
-    fees1: getValueView(
-      registry,
-      new Value({
-        amount: pnum(raw.fees1).toAmount(),
-        assetId: asset1,
-      }),
-    ),
-    fees2: getValueView(
-      registry,
-      new Value({
-        amount: pnum(raw.fees2).toAmount(),
-        assetId: asset2,
-      }),
-    ),
+    volume1: new Value({
+      amount: pnum(raw.volume1).toAmount(),
+      assetId: asset1,
+    }),
+    volume2: new Value({
+      amount: pnum(raw.volume2).toAmount(),
+      assetId: asset2,
+    }),
+    fees1: new Value({
+      amount: pnum(raw.fees1).toAmount(),
+      assetId: asset1,
+    }),
+    fees2: new Value({
+      amount: pnum(raw.fees2).toAmount(),
+      assetId: asset2,
+    }),
   };
 };
 
 const getTotals = (
-  registry: Registry,
   all: VolumeAndFees[],
   asset1: AssetId,
   asset2: AssetId,
-): Omit<VolumeAndFeesVV, 'contextAssetStart' | 'contextAssetEnd'> => {
+): Omit<VolumeAndFeesValue, 'contextAssetStart' | 'contextAssetEnd'> => {
   const totalRaw = all.reduce(
     (acc, curr) => {
       return {
@@ -79,60 +59,40 @@ const getTotals = (
 
   return {
     executionCount: totalRaw.executionCount,
-    volume1: getValueView(
-      registry,
-      new Value({
-        amount: pnum(totalRaw.volume1).toAmount(),
-        assetId: asset1,
-      }),
-    ),
-    volume2: getValueView(
-      registry,
-      new Value({
-        amount: pnum(totalRaw.volume2).toAmount(),
-        assetId: asset2,
-      }),
-    ),
-    fees1: getValueView(
-      registry,
-      new Value({
-        amount: pnum(totalRaw.fees1).toAmount(),
-        assetId: asset1,
-      }),
-    ),
-    fees2: getValueView(
-      registry,
-      new Value({
-        amount: pnum(totalRaw.fees2).toAmount(),
-        assetId: asset2,
-      }),
-    ),
+    volume1: new Value({
+      amount: pnum(totalRaw.volume1).toAmount(),
+      assetId: asset1,
+    }),
+    volume2: new Value({
+      amount: pnum(totalRaw.volume2).toAmount(),
+      assetId: asset2,
+    }),
+    fees1: new Value({
+      amount: pnum(totalRaw.fees1).toAmount(),
+      assetId: asset1,
+    }),
+    fees2: new Value({
+      amount: pnum(totalRaw.fees2).toAmount(),
+      assetId: asset2,
+    }),
   };
 };
 
-export const addValueViewsToVolume = async (
+export const addValueToVolume = async (
+  id: PositionId,
   state: PositionStateResponse,
-  raw: VolumeAndFees[],
 ): Promise<VolumeAndFeesResponse> => {
-  const chainId = process.env['PENUMBRA_CHAIN_ID'];
-  if (!chainId) {
-    throw new Error('PENUMBRA_CHAIN_ID is not set');
-  }
+  const result = await pindexer.getPositionVolumeAndFees(id);
 
-  const registryClient = new ChainRegistryClient();
-  const registry = await registryClient.remote.get(chainId);
+  const asset1 = getAssetIdFromValue(state.reserves1);
+  const asset2 = getAssetIdFromValue(state.reserves2);
 
-  const asset1Metadata = getMetadata(state.reserves1);
-  const asset2Metadata = getMetadata(state.reserves2);
-  const asset1Id = getAssetId(asset1Metadata);
-  const asset2Id = getAssetId(asset2Metadata);
-
-  const volumeAndFees = raw.map(r => addValueView(registry, r, asset1Id, asset2Id));
-  const totals = getTotals(registry, raw, asset1Id, asset2Id);
+  const volumeAndFees = result.map(r => addValue(r, asset1, asset2));
+  const totals = getTotals(result, asset1, asset2);
 
   return {
-    asset1: asset1Metadata,
-    asset2: asset2Metadata,
+    asset1,
+    asset2,
     all: volumeAndFees,
     totals,
   };
