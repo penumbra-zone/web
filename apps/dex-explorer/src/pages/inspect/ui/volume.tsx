@@ -93,7 +93,7 @@ const DataBody = ({ v }: { v: VolumeAndFeesResponse }) => {
         <Table.Tbody>
           <Table.Tr>
             <Table.Td hAlign='center'>
-              <Text color='text.secondary'>Total</Text>
+              <Text color='text.secondary'>Total (All Routes)</Text>
             </Table.Td>
             <Table.Td hAlign='center'>
               <Text color='text.secondary'>{v.totals.executionCount}</Text>

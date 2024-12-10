@@ -48,14 +48,14 @@ export const getPositionState = async (id: PositionId): Promise<PositionStateRes
       registry,
       new Value({
         assetId: assetId1,
-        amount: pnum(result.state.reserves_1).toAmount(),
+        amount: pnum(result.latestReserves.reserves_1).toAmount(),
       }),
     ),
     reserves2: getValueView(
       registry,
       new Value({
         assetId: assetId2,
-        amount: pnum(result.state.reserves_2).toAmount(),
+        amount: pnum(result.latestReserves.reserves_2).toAmount(),
       }),
     ),
     unit1: getValueView(
