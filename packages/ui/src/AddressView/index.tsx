@@ -59,7 +59,8 @@ export const AddressViewComponent = ({
         </div>
       )}
 
-      <div className={truncate ? 'truncate max-w-[150px]' : ''}>
+      <div className={truncate ? 'max-w-[150px] truncate' : ''}>
+        {/* eslint-disable-next-line no-nested-ternary -- can alternatively use dynamic prop object like {...fontProps} */}
         {addressIndex ? (
           density === 'sparse' ? (
             <Text strong-bold truncate={truncate}>
