@@ -5,10 +5,10 @@ import { Icon } from '@penumbra-zone/ui/Icon';
 import { Density } from '@penumbra-zone/ui/Density';
 import { useLpPosition } from '@/pages/inspect/lp/api/position.ts';
 import { useLpIdInUrl } from '@/pages/inspect/ui/result.tsx';
-import { PositionStateResponse } from '@/shared/api/server/position/timeline/types.ts';
 import { Skeleton } from '@/shared/ui/skeleton.tsx';
+import { PositionStateVV } from '@/pages/inspect/lp/api/types.ts';
 
-const DataBody = ({ state }: { state: PositionStateResponse }) => {
+const DataBody = ({ state }: { state: PositionStateVV }) => {
   return (
     <>
       <div className='flex items-start justify-between gap-2'>
