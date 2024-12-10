@@ -188,7 +188,14 @@ export class PenumbraClient {
       await this.attach(providerOrigin);
     }
     this.connection ??= this.createConnection();
-    await this.connection.port;
+
+    try {
+        await this.connection.port;
+    } catch (error) {
+        this.disconnect();
+        this.connection = this.createConnection();
+        await this.connection.port;
+    }
   }
 
   /** Call `disconnect` on the associated provider to release connection
