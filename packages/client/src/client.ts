@@ -17,6 +17,7 @@ import {
 import { PenumbraManifest } from './manifest.js';
 import { PenumbraProvider } from './provider.js';
 import { PenumbraState } from './state.js';
+import { PenumbraRequestFailure } from './error.js';
 
 const isLegacyProvider = (
   provider: PenumbraProvider,
@@ -188,7 +189,24 @@ export class PenumbraClient {
       await this.attach(providerOrigin);
     }
     this.connection ??= this.createConnection();
-    await this.connection.port;
+
+    // Connection timeouts, provider detachments, etc. appear similar to a connection denial.
+    // Explicitly handle denial errors and propagate them back to the caller. Without this,
+    // a denied connection would immediately trigger an attempt to re-establish the connection.
+    try {
+      await this.connection.port;
+    } catch (error) {
+      if (error instanceof Error && error.cause) {
+        if (error.cause === PenumbraRequestFailure.Denied) {
+          throw error;
+        }
+      }
+
+      // Clean up dangling connection resources and attempt to establish reconnection
+      this.destroyConnection();
+      this.connection = this.createConnection();
+      await this.connection.port;
+    }
   }
 
   /** Call `disconnect` on the associated provider to release connection
