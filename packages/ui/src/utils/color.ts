@@ -62,6 +62,7 @@ export const COLOR_CLASS_MAP: Record<ThemeColor, [string, string]> = {
   'success.dark': ['text-success-dark', 'bg-success-dark'],
   'success.contrast': ['text-success-contrast', 'bg-success-contrast'],
   'base.black': ['text-base-black', 'bg-base-black'],
+  'base.blackAlt': ['text-base-blackAlt', 'bg-base-blackAlt'],
   'base.white': ['text-base-white', 'bg-base-white'],
   'base.transparent': ['text-base-transparent', 'bg-base-transparent'],
   'text.primary': ['text-text-primary', 'bg-text-primary'],
@@ -90,6 +91,10 @@ export const COLOR_CLASS_MAP: Record<ThemeColor, [string, string]> = {
   'action.destructiveFocusOutline': [
     'text-action-destructiveFocusOutline',
     'bg-action-destructiveFocusOutline',
+  ],
+  'action.successFocusOutline': [
+    'text-action-successFocusOutline',
+    'bg-action-successFocusOutline',
   ],
   'other.tonalStroke': ['text-other-tonalStroke', 'bg-other-tonalStroke'],
   'other.tonalFill5': ['text-other-tonalFill5', 'bg-other-tonalFill5'],

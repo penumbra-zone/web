@@ -46,7 +46,5 @@ export const technical = cn('font-mono text-textBase font-medium leading-textBas
 
 export const xxl = cn('font-default text-text2xl font-medium leading-text2xl');
 
-export const button = cn('font-default text-textBase font-medium leading-textBase');
-
 // equals to body with the bottom margin
 export const p = cn('font-default text-textBase font-normal leading-textBase mb-6 last:mb-0');

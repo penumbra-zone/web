@@ -23,8 +23,8 @@ const DensityWrapper = ({ children, showDensityControl }) => {
           <Tabs
             options={[
               { label: 'Sparse', value: 'sparse' },
-              { label: 'Medium', value: 'medium' },
               { label: 'Compact', value: 'compact' },
+              { label: 'Slim', value: 'slim' },
             ]}
             value={density}
             onChange={setDensity}
@@ -36,12 +36,12 @@ const DensityWrapper = ({ children, showDensityControl }) => {
     </div>
   );
 
-  if (density === 'medium') {
-    return <Density medium>{densityTabs}</Density>;
-  }
-
   if (density === 'compact') {
     return <Density compact>{densityTabs}</Density>;
+  }
+
+  if (density === 'slim') {
+    return <Density slim>{densityTabs}</Density>;
   }
 
   return <Density sparse>{densityTabs}</Density>;

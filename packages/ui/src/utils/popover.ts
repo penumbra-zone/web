@@ -4,13 +4,13 @@ export type PopoverContext = 'default' | 'success' | 'caution' | 'error';
 
 const getPopoverBackground = (context: PopoverContext): string => {
   if (context === 'success') {
-    return cn('bg-dialogSuccess');
+    return cn('bg-secondaryRadialBackground');
   }
   if (context === 'caution') {
-    return cn('bg-dialogCaution');
+    return cn('bg-cautionRadialBackground');
   }
   if (context === 'error') {
-    return cn('bg-dialogError');
+    return cn('bg-destructiveRadialBackground');
   }
   return cn('bg-other-dialogBackground');
 };

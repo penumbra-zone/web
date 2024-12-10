@@ -8,12 +8,12 @@ type LimitedActionType = Exclude<ActionType, 'destructive'>;
 
 const getIndicatorColor = (actionType: LimitedActionType): string => {
   if (actionType === 'accent') {
-    return cn('bg-tabAccent');
+    return cn('bg-accentRadialGradient');
   }
   if (actionType === 'unshield') {
-    return cn('bg-tabUnshield');
+    return cn('bg-unshieldRadialGradient');
   }
-  return cn('bg-tabNeutral');
+  return cn('bg-neutralRadialGradient');
 };
 
 const getBorderColor = (actionType: LimitedActionType): string => {
@@ -27,20 +27,20 @@ const getBorderColor = (actionType: LimitedActionType): string => {
 };
 
 const getDensityClasses = (density: Density): string => {
-  if (density === 'compact') {
+  if (density === 'slim') {
     return cn('h-7 gap-4');
   }
-  if (density === 'medium') {
+  if (density === 'compact') {
     return cn('h-[44px] gap-2');
   }
   return cn('h-[44px] gap-4');
 };
 
 const getDensityItemClasses = (density: Density): string => {
-  if (density === 'medium') {
+  if (density === 'compact') {
     return cn(tabMedium, 'p-2');
   }
-  if (density === 'compact') {
+  if (density === 'slim') {
     return cn(tabSmall, 'py-1 px-2');
   }
   return cn(tab, 'grow shrink basis-0 p-2');

@@ -11,6 +11,7 @@ const OUTLINE_COLOR_MAP: Record<ActionType, string> = {
   accent: cn('[&:focus:not(:disabled)]:outline-action-primaryFocusOutline'),
   unshield: cn('[&:focus:not(:disabled)]:outline-action-unshieldFocusOutline'),
   destructive: cn('[&:focus:not(:disabled)]:outline-action-destructiveFocusOutline'),
+  success: cn('[&:focus:not(:disabled)]:outline-action-successFocusOutline'),
 };
 
 export const getMenuItem = (actionType: ActionType): string =>

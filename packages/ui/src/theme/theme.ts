@@ -99,10 +99,11 @@ const PALETTE = {
   },
   base: {
     black: '#000000',
+    blackAlt: '#0D0D0D',
     white: '#ffffff',
     transparent: 'transparent',
   },
-};
+} as const;
 
 /**
  * Call `theme.spacing(x)`, where `x` is the number of spacing units (in the
@@ -192,6 +193,7 @@ export const theme = {
     },
     base: {
       black: PALETTE.base.black,
+      blackAlt: PALETTE.base.blackAlt,
       white: PALETTE.base.white,
       transparent: PALETTE.base.transparent,
     },
@@ -210,24 +212,35 @@ export const theme = {
       unshieldFocusOutline: PALETTE.purple['400'],
       neutralFocusOutline: PALETTE.neutral['400'],
       destructiveFocusOutline: PALETTE.red['400'],
+      successFocusOutline: PALETTE.green['400'],
     },
     other: {
       tonalStroke: PALETTE.neutral['50'] + hexOpacity(0.15),
       tonalFill5: PALETTE.neutral['50'] + hexOpacity(0.05),
       tonalFill10: PALETTE.neutral['50'] + hexOpacity(0.1),
-      solidStroke: PALETTE.neutral['700'],
+      solidStroke: PALETTE.neutral['900'],
       dialogBackground: PALETTE.teal['700'] + hexOpacity(0.1),
       overlay: PALETTE.base.black + hexOpacity(0.5),
     },
   },
   gradient: {
     card: 'linear-gradient(136deg, rgba(250, 250, 250, 0.1) 6.32%, rgba(250, 250, 250, 0.01) 75.55%)',
-    tabNeutral: 'radial-gradient(at 50% 100%, rgba(163, 163, 163, 0.35) 0%, transparent 50%)',
-    tabAccent: 'radial-gradient(at 50% 100%, rgba(244, 156, 67, 0.35) 0%, transparent 50%)',
-    tabUnshield: 'radial-gradient(at 50% 100%, rgba(193, 166, 204, 0.35) 0%, transparent 50%)',
-    dialogSuccess: `radial-gradient(100% 100% at 0% 0%, rgba(83, 174, 168, 0.20) 0%, rgba(83, 174, 168, 0.02) 100%)`,
-    dialogCaution: `radial-gradient(100% 100% at 0% 0%, rgba(153, 97, 15, 0.20) 0%, rgba(153, 97, 15, 0.02) 100%)`,
-    dialogError: `radial-gradient(100% 100% at 0% 0%, rgba(175, 38, 38, 0.20) 0%, rgba(175, 38, 38, 0.02) 100%)`,
+    neutralRadialGradient:
+      'radial-gradient(50% 100% at 50% 100%, rgba(163, 163, 163, 0.35) 0%, rgba(163, 163, 163, 0.00) 95%)',
+    accentRadialGradient:
+      'radial-gradient(50% 100% at 50% 100%, rgba(186, 77, 20, 0.35) 0%, rgba(186, 77, 20, 0.00) 95%)',
+    unshieldRadialGradient:
+      'radial-gradient(50% 100% at 50% 100%, rgba(112, 82, 121, 0.35) 0%, rgba(112, 82, 121, 0.00) 95%)',
+    accentRadialBackground:
+      'radial-gradient(100% 100% at 0% 0%, rgba(244, 156, 67, 0.25) 0%, rgba(244, 156, 67, 0.03) 100%)',
+    unshieldRadialBackground:
+      'radial-gradient(100% 100% at 0% 0%, rgba(193, 166, 204, 0.25) 0%, rgba(193, 166, 204, 0.03) 100%)',
+    secondaryRadialBackground:
+      'radial-gradient(100% 100% at 0% 0%, rgba(83, 174, 168, 0.25) 0%, rgba(83, 174, 168, 0.03) 100%)',
+    cautionRadialBackground:
+      'radial-gradient(100% 100% at 0% 0%, rgba(153, 97, 15, 0.25) 0%, rgba(153, 97, 15, 0.03) 100%)',
+    destructiveRadialBackground:
+      'radial-gradient(100% 100% at 0% 0%, rgba(175, 38, 38, 0.25) 0%, rgba(175, 38, 38, 0.03) 100%)',
     buttonHover:
       'linear-gradient(0deg, rgba(83, 174, 168, 0.15) 0%, rgba(83, 174, 168, 0.15) 100%)',
     buttonDisabled: 'linear-gradient(0deg, rgba(10, 10, 10, 0.8) 0%, rgba(10, 10, 10, 0.8) 100%)',

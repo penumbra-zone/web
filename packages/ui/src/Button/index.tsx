@@ -2,16 +2,16 @@ import { FC, forwardRef, MouseEventHandler, ReactNode } from 'react';
 import { LucideIcon } from 'lucide-react';
 import cn from 'clsx';
 import { getOutlineColorByActionType, ActionType } from '../utils/action-type';
-import { Priority, buttonBase, getBackground, getFocusOutline, getOverlays } from '../utils/button';
-import { button } from '../utils/typography';
+import {
+  Priority,
+  buttonBase,
+  getBackground,
+  getOverlays,
+  getFont,
+  getSize,
+  getIconSize,
+} from '../utils/button';
 import { useDensity } from '../utils/density';
-
-const iconOnlyAdornment = cn('rounded-full p-1 w-max');
-const sparse = (iconOnly?: boolean | 'adornment') =>
-  cn('rounded-sm h-12', iconOnly ? 'w-12 min-w-12 pl-0 pr-0' : 'w-full pl-4 pr-4');
-
-const compact = (iconOnly?: boolean | 'adornment') =>
-  cn('rounded-full h-8 min-w-8 w-max', iconOnly ? 'pl-2 pr-2' : 'pl-4 pr-4');
 
 interface BaseButtonProps {
   type?: HTMLButtonElement['type'];
@@ -109,6 +109,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref,
   ) => {
     const density = useDensity();
+    const styleAttrs = { actionType, iconOnly, density, priority };
 
     return (
       <button
@@ -121,31 +122,22 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {...attrs}
         className={cn(
           buttonBase,
-          button,
-          getBackground(actionType, priority, iconOnly),
-          getFocusOutline({ density, iconOnly, actionType }),
-          getOverlays({ actionType, iconOnly, density }),
+          getFont(styleAttrs),
+          getSize(styleAttrs),
+          getBackground(styleAttrs),
+          getOverlays(styleAttrs),
 
-          '-outline-offset-1',
-          priority === 'secondary' && 'outline-1',
+          '-outline-offset-1 focus:outline-none',
+          priority === 'secondary' && 'outline outline-1',
           priority === 'secondary' && getOutlineColorByActionType(actionType),
-          'after:-outline-offset-2',
 
           'relative',
-          'flex gap-2 items-center justify-center',
           'text-neutral-contrast',
-
-          // eslint-disable-next-line no-nested-ternary -- allow
-          iconOnly === 'adornment'
-            ? iconOnlyAdornment
-            : density === 'sparse'
-              ? sparse(iconOnly)
-              : compact(iconOnly),
+          'flex items-center justify-center',
+          density === 'sparse' ? 'gap-2' : 'gap-1',
         )}
       >
-        {IconComponent && (
-          <IconComponent size={density === 'sparse' && iconOnly === true ? 24 : 16} />
-        )}
+        {IconComponent && <IconComponent size={getIconSize(density)} />}
 
         {!iconOnly && children}
       </button>
