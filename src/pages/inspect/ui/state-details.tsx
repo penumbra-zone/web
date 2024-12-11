@@ -23,8 +23,8 @@ const DataBody = ({ state }: { state: PositionStateVV }) => {
         <div className='flex flex-col gap-2'>
           <Text color='text.secondary'>Current Reserves</Text>
           <div className='flex flex-col gap-6'>
-            <ValueViewComponent valueView={state.reserves1} abbreviate={false} />
-            <ValueViewComponent valueView={state.reserves2} abbreviate={false} />
+            <ValueViewComponent valueView={state.currentReserves1} abbreviate={false} />
+            <ValueViewComponent valueView={state.currentReserves2} abbreviate={false} />
           </div>
         </div>
 

@@ -37,8 +37,8 @@ export const addValueViewsToWithdrawals = async (
 ): Promise<PositionWithdrawal[]> => {
   const result = await pindexer.getPositionWithdrawals(id);
 
-  const asset1Id = getAssetIdFromValue(state.reserves1);
-  const asset2Id = getAssetIdFromValue(state.reserves2);
+  const asset1Id = getAssetIdFromValue(state.currentReserves1);
+  const asset2Id = getAssetIdFromValue(state.currentReserves2);
 
   return await Promise.all(result.map(w => addValue(w, asset1Id, asset2Id)));
 };
