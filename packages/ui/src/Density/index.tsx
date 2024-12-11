@@ -1,10 +1,16 @@
 import { ReactNode } from 'react';
 import { Density as TDensity, DensityContext } from '../utils/density';
 
-export type DensityPropType =
-  | { sparse: true; slim?: never; compact?: never }
-  | { slim: true; sparse?: never; compact?: never }
-  | { compact: true; sparse?: never; slim?: never };
+type DensityType = {
+  [K in TDensity]: Record<K, true> & Partial<Record<Exclude<TDensity, K>, never>>;
+}[TDensity];
+
+type DensityPropType =
+  | (DensityType & { variant?: never })
+  | (Partial<Record<TDensity, never>> & {
+      /** dynamic density variant as a string: `'sparse' | 'compact' | 'slim'` */
+      variant?: TDensity;
+    });
 
 export type DensityProps = DensityPropType & {
   children?: ReactNode;
@@ -70,10 +76,16 @@ export type DensityProps = DensityPropType & {
  *   }
  * />
  * ```
+ *
+ * If you need to change density dynamically, you can use the `variant` property.
+ *
+ * ```tsx
+ * <Density variant={isDense ? 'compact' : 'sparse'} />
+ * ```
  */
-export const Density = ({ children, sparse, slim, compact }: DensityProps) => {
+export const Density = ({ children, sparse, slim, compact, variant }: DensityProps) => {
   const density: TDensity =
-    (sparse && 'sparse') ?? (compact && 'compact') ?? (slim && 'slim') ?? 'sparse';
+    variant ?? (sparse && 'sparse') ?? (compact && 'compact') ?? (slim && 'slim') ?? 'sparse';
 
   return <DensityContext.Provider value={density}>{children}</DensityContext.Provider>;
 };

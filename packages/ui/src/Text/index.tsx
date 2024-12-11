@@ -19,9 +19,9 @@ import {
 } from '../utils/typography';
 import { ElementType, ReactNode } from 'react';
 import { ThemeColor } from '../utils/color';
-import { TextType } from './types';
+import { TextVariant, TypographyProps } from './types';
 
-export type TextProps = TextType & {
+export type TextProps = TypographyProps & {
   children?: ReactNode;
   /**
    * Which component or HTML element to render this text as.
@@ -120,6 +120,23 @@ const getTextOptionClasses = ({
   );
 };
 
+const VARIANT_MAP: Record<TextVariant, { element: ElementType; classes: string }> = {
+  h1: { element: 'h1', classes: h1 },
+  h2: { element: 'h2', classes: h2 },
+  h3: { element: 'h3', classes: h3 },
+  h4: { element: 'h4', classes: h4 },
+  xxl: { element: 'span', classes: xxl },
+  large: { element: 'span', classes: large },
+  p: { element: 'p', classes: p },
+  strong: { element: 'span', classes: strong },
+  detail: { element: 'span', classes: detail },
+  xxs: { element: 'span', classes: xxs },
+  small: { element: 'span', classes: small },
+  detailTechnical: { element: 'span', classes: detailTechnical },
+  technical: { element: 'span', classes: technical },
+  body: { element: 'span', classes: body },
+};
+
 /**
  * All-purpose text wrapper for quickly styling text per the Penumbra UI
  * guidelines.
@@ -147,57 +164,22 @@ const getTextOptionClasses = ({
  *   This will render with the h1 style, but inside an inline span tag.
  * </Text>
  * ```
+ *
+ * If you need to use dynamic Text styles, use `variant` property with a string value.
+ * However, it is recommended to use the static Text styles for most cases:
+ *
+ * ```tsx
+ * <Text variant={emphasized ? 'strong' : 'body'}>Content</Text>
+ * ```
  */
 export const Text = (props: TextProps) => {
   const classes = getTextOptionClasses(props);
-  const SpanElement = props.as ?? 'span';
 
-  if (props.h1) {
-    const Element = props.as ?? 'h1';
-    return <Element className={cn(h1, classes)}>{props.children}</Element>;
-  }
-  if (props.h2) {
-    const Element = props.as ?? 'h2';
-    return <Element className={cn(h2, classes)}>{props.children}</Element>;
-  }
-  if (props.h3) {
-    const Element = props.as ?? 'h3';
-    return <Element className={cn(h3, classes)}>{props.children}</Element>;
-  }
-  if (props.h4) {
-    const Element = props.as ?? 'h4';
-    return <Element className={cn(h4, classes)}>{props.children}</Element>;
-  }
+  const variantKey: TextVariant =
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- the default fallback is necessary
+    (Object.keys(props).find(key => VARIANT_MAP[key as TextVariant]) as TextVariant) ?? 'body';
+  const variant = VARIANT_MAP[variantKey];
+  const Element = props.as ?? variant.element;
 
-  if (props.xxl) {
-    return <SpanElement className={cn(xxl, classes)}>{props.children}</SpanElement>;
-  }
-  if (props.large) {
-    return <SpanElement className={cn(large, classes)}>{props.children}</SpanElement>;
-  }
-  if (props.strong) {
-    return <SpanElement className={cn(strong, classes)}>{props.children}</SpanElement>;
-  }
-  if (props.detail) {
-    return <SpanElement className={cn(detail, classes)}>{props.children}</SpanElement>;
-  }
-  if (props.xxs) {
-    return <SpanElement className={cn(xxs, classes)}>{props.children}</SpanElement>;
-  }
-  if (props.small) {
-    return <SpanElement className={cn(small, classes)}>{props.children}</SpanElement>;
-  }
-  if (props.detailTechnical) {
-    return <SpanElement className={cn(detailTechnical, classes)}>{props.children}</SpanElement>;
-  }
-  if (props.technical) {
-    return <SpanElement className={cn(technical, classes)}>{props.children}</SpanElement>;
-  }
-
-  if (props.p) {
-    const Element = props.as ?? 'p';
-    return <Element className={cn(p, classes)}>{props.children}</Element>;
-  }
-
-  return <SpanElement className={cn(body, classes)}>{props.children}</SpanElement>;
+  return <Element className={cn(variant.classes, classes)}>{props.children}</Element>;
 };

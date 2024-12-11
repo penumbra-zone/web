@@ -1,5 +1,6 @@
 import cn from 'clsx';
 import type { Density } from './density';
+import { button, buttonMedium, buttonSmall } from './typography';
 import {
   getBeforeOutlineColorByActionType,
   ActionType,
@@ -20,12 +21,12 @@ export const buttonBase = cn('appearance-none border-none text-inherit cursor-po
 
 export const getFont = ({ density }: ButtonStyleAttributes): string => {
   if (density === 'compact') {
-    return cn('font-default text-textSm font-medium leading-textSm');
+    return buttonMedium;
   }
   if (density === 'slim') {
-    return cn('font-default text-textXs font-medium leading-textXs');
+    return buttonSmall;
   }
-  return cn('font-default text-textBase font-medium leading-textBase');
+  return button;
 };
 
 /** Adds overlays to a button for when it's hovered, active, or disabled. */
@@ -59,6 +60,14 @@ export const getBackground = ({
 };
 
 export const getSize = ({ iconOnly, density }: ButtonStyleAttributes) => {
+  if (iconOnly === 'adornment' && density === 'compact') {
+    return cn('rounded-full size-6 min-w-6 p-1');
+  }
+
+  if (iconOnly === 'adornment' && density === 'slim') {
+    return cn('rounded-full size-4 min-w-4 p-[2px]');
+  }
+
   if (density === 'compact') {
     return cn('rounded-full h-8 min-w-8 w-max', iconOnly ? 'pl-2 pr-2' : 'pl-4 pr-4');
   }

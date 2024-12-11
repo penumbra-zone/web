@@ -15,7 +15,7 @@ const SampleButton = () => (
   </Density>
 );
 
-const addressBookIcon = <Icon IconComponent={BookUser} size='sm' color='text.primary' />;
+const addressBookIcon = <Icon IconComponent={BookUser} size='sm' />;
 
 const meta: Meta<typeof TextInput> = {
   component: TextInput,
@@ -47,6 +47,7 @@ export const Basic: Story = {
   args: {
     actionType: 'default',
     placeholder: 'penumbra1abc123...',
+    label: '',
     value: '',
     disabled: false,
     type: 'text',
