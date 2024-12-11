@@ -1,28 +1,25 @@
 import { Card } from '@penumbra-zone/ui-deprecated/components/ui/card';
-import { IbcOutForm } from './ibc-out/ibc-out-form';
-import { InterchainUi } from './ibc-in/interchain-ui';
-import { LongArrowIcon } from './long-arrow';
+import { Tabs } from '../shared/tabs.tsx';
+import { usePagePath } from '../../fetchers/page-path.ts';
+import { ShieldTab, shieldTabs } from './tabs.ts';
+import { PagePath } from '../metadata/paths.ts';
+import { InterchainUi } from './deposit-manual/interchain-ui.tsx';
+import { IbcOutForm } from './withdraw/ibc-out-form.tsx';
+import { DepositSkip } from './deposit-skip';
 
 export const IbcLayout = () => {
+  const pathname = usePagePath<ShieldTab>();
+
   return (
-    <>
-      <div className="fixed inset-0 z-[-100] size-full bg-[url('penumbra-logo.svg')] bg-[length:160vmax] bg-fixed bg-[top_50%_left_25vw] bg-no-repeat" />
-      <div className='flex flex-1 flex-col gap-4 md:flex-row md:place-content-around'>
-        <Card light className='relative overflow-visible md:self-start'>
-          <LongArrowIcon
-            direction='right'
-            className='invisible absolute -top-32 right-0 -z-10 -mr-80 size-80 text-stone-300 md:visible'
-          />
-          <InterchainUi />
-        </Card>
-        <Card gradient className='relative overflow-visible md:mt-40 md:self-start'>
-          <LongArrowIcon
-            direction='left'
-            className='invisible absolute -bottom-32 left-0 -z-10 my-auto -ml-80 size-80 text-stone-700 md:visible'
-          />
-          <IbcOutForm />
-        </Card>
-      </div>
-    </>
+    <div className='mx-auto w-full max-w-[500px]'>
+      <Card gradient className='flex flex-col gap-4'>
+        <Tabs tabs={shieldTabs} activeTab={pathname} />
+        <div className='flex flex-col items-center justify-center'>
+          {pathname === PagePath.DEPOSIT_SKIP && <DepositSkip />}
+          {pathname === PagePath.DEPOSIT_MANUAL && <InterchainUi />}
+          {pathname === PagePath.WITHDRAW && <IbcOutForm />}
+        </div>
+      </Card>
+    </div>
   );
 };

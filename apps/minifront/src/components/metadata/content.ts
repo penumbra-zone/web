@@ -31,8 +31,16 @@ export const metadata: Record<PagePath, PageMetadata> = {
     title: 'Receive',
     description: eduPanelContent[EduPanel.RECEIVING_FUNDS],
   },
-  [PagePath.IBC]: {
+  [PagePath.DEPOSIT_SKIP]: {
     title: 'Shield Funds',
+    description: eduPanelContent[EduPanel.TEMP_FILLER],
+  },
+  [PagePath.DEPOSIT_MANUAL]: {
+    title: 'Shield Funds',
+    description: eduPanelContent[EduPanel.TEMP_FILLER],
+  },
+  [PagePath.WITHDRAW]: {
+    title: 'Unshield Funds',
     description: eduPanelContent[EduPanel.TEMP_FILLER],
   },
   [PagePath.SWAP]: {

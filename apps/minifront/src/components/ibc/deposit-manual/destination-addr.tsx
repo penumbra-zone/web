@@ -19,20 +19,20 @@ export const DestinationAddr = () => {
   }, [setAccount]);
 
   return (
-    <div className='mb-2 flex w-full flex-col gap-1 text-stone-700'>
+    <div className='mb-2 flex w-full flex-col gap-1 text-white'>
       <div className='flex items-center justify-between'>
         <p className='font-bold'>Sending to</p>
         <AccountSwitcher compact account={account} onChange={setAccount} />
       </div>
 
       {address && (
-        <div className='text-sm text-stone-700 [&>button]:inline-block [&>button]:p-0'>
+        <div className='text-sm text-white [&>button]:inline-block [&>button]:p-0'>
           The deposit will be made to a freshly generated address belonging to you. You can inspect
           what account it points to inside of Prax.{' '}
           <CopyToClipboard
             text={address}
             successLabel={<span className='text-sm'>Copied</span>}
-            label={<span className='text-sm text-stone-700 underline'>Copy address</span>}
+            label={<span className='text-sm text-white underline'>Copy address</span>}
           />
         </div>
       )}

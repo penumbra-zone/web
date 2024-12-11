@@ -38,7 +38,7 @@ const useChainInfos = (): ChainInfo[] => {
 
         return {
           chainName: r.name,
-          label: r.chain.pretty_name,
+          label: r.chain.pretty_name ?? r.name,
           icon: getChainLogo(r.name),
           chainId: r.chain.chain_id,
         };
