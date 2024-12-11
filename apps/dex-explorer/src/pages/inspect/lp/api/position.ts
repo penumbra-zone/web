@@ -20,8 +20,10 @@ import { getValueView } from '@/shared/api/server/book/helpers.ts';
 
 const positionsStateAddVV = (res: PositionStateResponse, registry: Registry): PositionStateVV => {
   return {
-    reserves1: getValueView(registry, res.reserves1),
-    reserves2: getValueView(registry, res.reserves2),
+    openingReserves1: getValueView(registry, res.openingReserves1),
+    openingReserves2: getValueView(registry, res.openingReserves2),
+    currentReserves1: getValueView(registry, res.currentReserves1),
+    currentReserves2: getValueView(registry, res.currentReserves2),
     unit1: getValueView(registry, res.unit1),
     unit2: getValueView(registry, res.unit2),
     offer1: getValueView(registry, res.offer1),
