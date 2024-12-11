@@ -40,7 +40,15 @@ export const tabMedium = cn('font-default text-textSm font-medium leading-textLg
 
 export const tableItem = cn('font-default text-textBase font-normal leading-textBase');
 
+export const tableItemMedium = cn('font-default text-textSm font-normal leading-textSm');
+
+export const tableItemSmall = cn('font-default text-textXs font-normal leading-textXs');
+
 export const tableHeading = cn('font-default text-textBase font-medium leading-textBase');
+
+export const tableHeadingMedium = cn('font-default text-textSm font-medium leading-textSm');
+
+export const tableHeadingSmall = cn('font-default text-textXs font-medium leading-textXs');
 
 export const technical = cn('font-mono text-textBase font-medium leading-textBase');
 
@@ -48,3 +56,9 @@ export const xxl = cn('font-default text-text2xl font-medium leading-text2xl');
 
 // equals to body with the bottom margin
 export const p = cn('font-default text-textBase font-normal leading-textBase mb-6 last:mb-0');
+
+export const button = cn('font-default text-textBase font-medium leading-textBase');
+
+export const buttonMedium = cn('font-default text-textBase font-medium leading-textBase');
+
+export const buttonSmall = cn('font-default text-textBase font-medium leading-textBase');

@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 
 import { Text } from '.';
 import { useArgs } from '@storybook/preview-api';
+import { TextVariant } from './types';
 
 const meta: Meta<typeof Text> = {
   component: Text,
@@ -41,7 +42,7 @@ const OPTIONS = [
   'small',
   'technical',
   'detailTechnical',
-] as const;
+] as TextVariant[];
 
 const Option = ({
   value,
@@ -57,7 +58,6 @@ const Option = ({
       type='radio'
       name='textStyle'
       value={value}
-      defaultChecked={checked}
       checked={checked}
       onChange={() => onSelect(value)}
     />
@@ -86,12 +86,15 @@ export const KitchenSink: StoryObj<typeof Text> = {
         ),
       );
 
+    const isChecked = (option: TextVariant): boolean =>
+      Object.keys(props).some(key => key === option);
+
     return (
       <form className='flex flex-col gap-2 text-text-primary'>
         <div className='flex items-center gap-2'>
           <Text>Text style:</Text>
           {OPTIONS.map(option => (
-            <Option key={option} value={option} checked={!!props[option]} onSelect={onSelect} />
+            <Option key={option} value={option} checked={isChecked(option)} onSelect={onSelect} />
           ))}
         </div>
 
