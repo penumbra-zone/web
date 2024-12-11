@@ -36,7 +36,7 @@ export const InspectSearch = () => {
   };
 
   return (
-    <Density medium>
+    <Density compact>
       <div className='flex justify-center mt-4'>
         <div className='max-w-[600px] w-full mx-4 flex gap-2 flex-col'>
           <form onSubmit={handleSearch} className='flex gap-2 items-center'>

@@ -26,7 +26,7 @@ export const TradesTabs = ({ withChart = false }: { withChart?: boolean }) => {
   return (
     <div ref={parent} className='flex flex-col'>
       <div className='flex justify-between items-center px-4 border-b border-b-other-solidStroke'>
-        <Density medium>
+        <Density compact>
           <Tabs
             value={tab}
             actionType='accent'
