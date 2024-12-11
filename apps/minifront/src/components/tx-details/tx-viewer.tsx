@@ -43,24 +43,19 @@ export const TxViewer = ({ txInfo }: { txInfo?: TransactionInfo }) => {
   // classify the transaction type
   const transactionClassification = classifyTransaction(txInfo?.view);
 
-  // filter for reciever view
+  // filter for receiver view
   const showReceiverTransactionView = transactionClassification === 'send';
   const filteredOptions = showReceiverTransactionView
     ? OPTIONS
     : OPTIONS.filter(option => option.value !== TxDetailsTab.RECEIVER);
 
   // use React-Query to invoke custom hooks that call async translators.
-  const { data: receiverView } = useQuery(
-    ['receiverView', txInfo?.toJson({ typeRegistry }), option],
-    () =>
-      fetchReceiverView(
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify
-        txInfo!,
-      ),
-    {
-      enabled: option === TxDetailsTab.RECEIVER && !!txInfo,
-    },
-  );
+  const { data: receiverView } = useQuery({
+    queryKey: ['receiverView', txInfo?.toJson({ typeRegistry }), option],
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify
+    queryFn: () => fetchReceiverView(txInfo!),
+    enabled: option === TxDetailsTab.RECEIVER && !!txInfo,
+  });
 
   return (
     <div>
