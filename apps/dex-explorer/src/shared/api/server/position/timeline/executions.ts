@@ -27,11 +27,11 @@ const addValue = (
 
   const output = isAsset1Input
     ? new Value({
-        amount: pnum(raw.execution.delta_2).toAmount(),
+        amount: pnum(raw.execution.lambda_2).toAmount(),
         assetId: assetId2,
       })
     : new Value({
-        amount: pnum(raw.execution.delta_1).toAmount(),
+        amount: pnum(raw.execution.lambda_1).toAmount(),
         assetId: assetId1,
       });
 
@@ -81,8 +81,8 @@ export const getExecutions = async (
 ): Promise<PositionExecutions> => {
   const result = await pindexer.getPositionExecutionsWithReserves(id);
 
-  const asset1Id = getAssetIdFromValue(state.reserves1);
-  const asset2Id = getAssetIdFromValue(state.reserves2);
+  const asset1Id = getAssetIdFromValue(state.currentReserves1);
+  const asset2Id = getAssetIdFromValue(state.currentReserves2);
 
   return {
     skipped: result.skippedRows,
