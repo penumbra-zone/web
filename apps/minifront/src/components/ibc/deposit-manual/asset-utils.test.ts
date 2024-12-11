@@ -2,10 +2,11 @@ import { describe, expect, test } from 'vitest';
 import { fromDisplayAmount, toDisplayAmount } from './asset-utils';
 import { bigNumConfig } from '@penumbra-zone/types/lo-hi';
 import { BigNumber } from 'bignumber.js';
+import { Asset } from '@chain-registry/types';
 
 BigNumber.config(bigNumConfig);
 
-const osmoMetadata = {
+const osmoMetadata: Asset = {
   denom_units: [
     { denom: 'osmo', exponent: 6 },
     { denom: 'uosmo', exponent: 0 },
@@ -14,9 +15,10 @@ const osmoMetadata = {
   name: 'Osmosis',
   display: 'osmo',
   symbol: 'OSMO',
+  type_asset: 'sdk.coin',
 };
 
-const usdyMetadata = {
+const usdyMetadata: Asset = {
   denom_units: [
     {
       denom: 'ausdy',
@@ -32,6 +34,7 @@ const usdyMetadata = {
   display: 'usdy',
   name: 'Ondo US Dollar Yield',
   symbol: 'USDY',
+  type_asset: 'sdk.coin',
 };
 
 describe('toDisplayAmount', () => {
@@ -81,12 +84,13 @@ describe('fromDisplayAmount', () => {
   });
 
   test('defaults base exponent to zero when base exponent not found in denom units array', () => {
-    const noExponentForBase = {
+    const noExponentForBase: Asset = {
       denom_units: [{ denom: 'osmo', exponent: 6 }],
       base: 'uosmo',
       name: 'Osmosis',
       display: 'osmo',
       symbol: 'OSMO',
+      type_asset: 'sdk.coin',
     };
     const result = fromDisplayAmount(noExponentForBase, 'osmo', '100');
     expect(result).toEqual({ denom: 'uosmo', amount: '100000000' });
