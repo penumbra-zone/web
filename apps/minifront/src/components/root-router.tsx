@@ -67,7 +67,15 @@ export const rootRouter: Router = createHashRouter([
         element: <StakingLayout />,
       },
       {
-        path: PagePath.IBC,
+        path: PagePath.DEPOSIT_SKIP,
+        element: <IbcLayout />,
+      },
+      {
+        path: PagePath.DEPOSIT_MANUAL,
+        element: <IbcLayout />,
+      },
+      {
+        path: PagePath.WITHDRAW,
         element: <IbcLayout />,
       },
     ],

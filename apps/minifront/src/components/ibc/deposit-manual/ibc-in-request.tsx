@@ -38,7 +38,7 @@ export const IbcInRequest = () => {
 
   return (
     <div className='flex flex-col items-center gap-2'>
-      <div className='font-bold text-stone-700'>Issue Ibc-in Request</div>
+      <div className='font-bold text-white'>Issue Ibc-in Request</div>
       {isUnsupportedAsset && (
         <div className='justify-center rounded bg-amber-200 p-2 text-center italic text-stone-700'>
           Note: only <b>native</b> assets at this time are eligible for ibc&apos;ing in. Unwind them
@@ -67,7 +67,7 @@ export const IbcInRequest = () => {
         <AmountInput />
       </div>
       <DestinationAddr />
-      <Button variant='onLight' disabled={!isReady} className='w-full' type='submit'>
+      <Button variant='gradient' disabled={!isReady} className='w-full' type='submit'>
         <div className='flex items-center gap-2'>
           <LockClosedIcon />
           <span className='-mb-1'>Shield Assets</span>

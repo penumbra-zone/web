@@ -2,8 +2,8 @@ import { PagePath } from '../metadata/paths';
 import { SwapIcon } from '../../icons/swap';
 import { ReactElement } from 'react';
 import {
-  CubeIcon,
   ArrowTopRightIcon,
+  CubeIcon,
   MixerHorizontalIcon,
   TextAlignLeftIcon,
 } from '@radix-ui/react-icons';
@@ -18,7 +18,7 @@ export interface HeaderLink {
 
 export const headerLinks: HeaderLink[] = [
   {
-    href: PagePath.IBC,
+    href: PagePath.DEPOSIT_SKIP,
     label: 'Shield Funds',
     active: true,
     mobileIcon: <MixerHorizontalIcon className='size-5 text-muted-foreground' />,
