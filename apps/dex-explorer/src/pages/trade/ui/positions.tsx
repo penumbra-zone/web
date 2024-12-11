@@ -200,7 +200,7 @@ const PositionsInner = observer(({ showInactive }: { showInactive: boolean }) =>
   }
 
   return (
-    <Density medium>
+    <Density compact>
       <div className='pt-4 px-4 pb-0 overflow-x-auto'>
         <div className='sticky top-0 z-10 grid grid-cols-8 text-text-secondary border-b border-other-tonalStroke bg-app-main'>
           <HeaderCell>Side</HeaderCell>

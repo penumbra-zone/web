@@ -8,9 +8,10 @@ import { AddressViewComponent } from '@penumbra-zone/ui/AddressView';
 import { getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { connectionStore } from '@/shared/model/connection';
 import { useSubaccounts } from '../api/subaccounts';
+import SpinnerIcon from '@/shared/assets/spinner-icon.svg';
 
 export const SubaccountSelector = observer(() => {
-  const { data: subaccounts } = useSubaccounts();
+  const { data: subaccounts, isLoading } = useSubaccounts();
   const { subaccount, setSubaccount } = connectionStore;
 
   const value = subaccount.toString();
@@ -23,7 +24,13 @@ export const SubaccountSelector = observer(() => {
       <DropdownMenu>
         <DropdownMenu.Trigger>
           <Button>
-            <AddressViewComponent copyable={false} addressView={valueAddress} />
+            {isLoading ? (
+              <div className='min-w-[170px] flex justify-center'>
+                <SpinnerIcon className='animate-spin' />
+              </div>
+            ) : (
+              <AddressViewComponent copyable={false} addressView={valueAddress} />
+            )}
           </Button>
         </DropdownMenu.Trigger>
 

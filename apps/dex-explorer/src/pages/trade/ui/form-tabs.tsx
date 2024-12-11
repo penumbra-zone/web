@@ -18,7 +18,7 @@ export const FormTabs = () => {
   return (
     <div ref={parent} className='h-full flex flex-col'>
       <div className='px-4 lg:pt-2 border-b border-b-other-solidStroke'>
-        <Density medium>
+        <Density compact>
           <Tabs
             value={tab}
             actionType='accent'

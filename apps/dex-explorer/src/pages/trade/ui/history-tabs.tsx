@@ -18,7 +18,7 @@ export const HistoryTabs = () => {
   return (
     <div ref={parent} className='flex flex-col'>
       <div className='flex justify-between gap-2 px-4 border-b border-b-other-solidStroke'>
-        <Density medium>
+        <Density compact>
           <Tabs
             value={tab}
             actionType='accent'
