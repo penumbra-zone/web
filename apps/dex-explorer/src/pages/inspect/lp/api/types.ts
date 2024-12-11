@@ -1,8 +1,10 @@
 import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
 export interface PositionStateVV {
-  reserves1: ValueView;
-  reserves2: ValueView;
+  openingReserves1: ValueView;
+  openingReserves2: ValueView;
+  currentReserves1: ValueView;
+  currentReserves2: ValueView;
   unit1: ValueView;
   unit2: ValueView;
   offer1: ValueView;

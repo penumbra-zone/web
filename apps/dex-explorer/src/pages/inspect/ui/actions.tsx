@@ -74,8 +74,8 @@ export const PositionOpen = ({ state }: { state: PositionStateVV }) => {
           <div className='flex justify-between items-center'>
             <div className='flex flex-col gap-2 flex-shrink min-w-0'>
               <div className='flex items-center gap-2'>
-                <ValueViewComponent valueView={state.reserves1} abbreviate={false} />
-                <ValueViewComponent valueView={state.reserves2} abbreviate={false} />
+                <ValueViewComponent valueView={state.openingReserves1} abbreviate={false} />
+                <ValueViewComponent valueView={state.openingReserves2} abbreviate={false} />
               </div>
 
               <Text color='text.secondary' truncate>

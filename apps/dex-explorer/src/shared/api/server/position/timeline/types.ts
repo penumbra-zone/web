@@ -2,8 +2,10 @@ import { Serialized } from '@/shared/utils/serializer.ts';
 import { AssetId, Value } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
 export interface PositionStateResponse {
-  reserves1: Value;
-  reserves2: Value;
+  openingReserves1: Value;
+  openingReserves2: Value;
+  currentReserves1: Value;
+  currentReserves2: Value;
   unit1: Value;
   unit2: Value;
   offer1: Value;

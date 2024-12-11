@@ -84,8 +84,8 @@ export const addValueToVolume = async (
 ): Promise<VolumeAndFeesResponse> => {
   const result = await pindexer.getPositionVolumeAndFees(id);
 
-  const asset1 = getAssetIdFromValue(state.reserves1);
-  const asset2 = getAssetIdFromValue(state.reserves2);
+  const asset1 = getAssetIdFromValue(state.currentReserves1);
+  const asset2 = getAssetIdFromValue(state.currentReserves2);
 
   const volumeAndFees = result.map(r => addValue(r, asset1, asset2));
   const totals = getTotals(result, asset1, asset2);

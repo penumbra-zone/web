@@ -43,11 +43,19 @@ export const getPositionState = async (id: PositionId): Promise<PositionStateRes
 
   const response: PositionStateResponse = {
     feeBps: result.state.fee_bps,
-    reserves1: new Value({
+    openingReserves1: new Value({
+      assetId: assetId1,
+      amount: pnum(result.state.reserves_1).toAmount(),
+    }),
+    openingReserves2: new Value({
+      assetId: assetId2,
+      amount: pnum(result.state.reserves_2).toAmount(),
+    }),
+    currentReserves1: new Value({
       assetId: assetId1,
       amount: pnum(result.latestReserves.reserves_1).toAmount(),
     }),
-    reserves2: new Value({
+    currentReserves2: new Value({
       assetId: assetId2,
       amount: pnum(result.latestReserves.reserves_2).toAmount(),
     }),
