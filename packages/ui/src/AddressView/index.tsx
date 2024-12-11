@@ -4,7 +4,8 @@ import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 import { CopyToClipboardButton } from '../CopyToClipboardButton';
 import { AddressIcon } from './AddressIcon';
 import { Text } from '../Text';
-import { Density, useDensity } from '../utils/density';
+import { useDensity } from '../utils/density';
+import { Density } from '../Density';
 
 export interface AddressViewProps {
   addressView: AddressView | undefined;
@@ -12,16 +13,6 @@ export interface AddressViewProps {
   hideIcon?: boolean;
   truncate?: boolean;
 }
-
-export const getIconSize = (density: Density): number => {
-  if (density === 'compact') {
-    return 16;
-  }
-  if (density === 'slim') {
-    return 12;
-  }
-  return 24;
-};
 
 // Renders an address or an address view.
 // If the view is given and is "visible", the account information will be displayed instead.
@@ -54,31 +45,19 @@ export const AddressViewComponent = ({
         <div className='shrink'>
           <AddressIcon
             address={addressView.addressView.value.address}
-            size={getIconSize(density)}
+            size={density === 'sparse' ? 24 : 16}
           />
         </div>
       )}
 
       <div className={truncate ? 'max-w-[150px] truncate' : ''}>
-        {/* eslint-disable-next-line no-nested-ternary -- can alternatively use dynamic prop object like {...fontProps} */}
         {addressIndex ? (
-          density === 'sparse' ? (
-            <Text strong-bold truncate={truncate}>
-              {isRandomized && 'IBC Deposit Address for '}
-              {getAccountLabel(addressIndex.account)}
-            </Text>
-          ) : (
-            <Text small truncate={truncate}>
-              {isRandomized && 'IBC Deposit Address for '}
-              {getAccountLabel(addressIndex.account)}
-            </Text>
-          )
-        ) : density === 'sparse' ? (
-          <Text strong-bold truncate={truncate}>
-            {encodedAddress}
+          <Text variant={density === 'sparse' ? 'strong' : 'small'} truncate={truncate}>
+            {isRandomized && 'IBC Deposit Address for '}
+            {getAccountLabel(addressIndex.account)}
           </Text>
         ) : (
-          <Text small truncate={truncate}>
+          <Text variant={density === 'sparse' ? 'strong' : 'small'} truncate={truncate}>
             {encodedAddress}
           </Text>
         )}
@@ -86,7 +65,9 @@ export const AddressViewComponent = ({
 
       {copyable && !isRandomized && (
         <div className='shrink'>
-          <CopyToClipboardButton text={encodedAddress} />
+          <Density variant={density === 'sparse' ? 'compact' : 'slim'}>
+            <CopyToClipboardButton text={encodedAddress} />
+          </Density>
         </div>
       )}
     </div>
