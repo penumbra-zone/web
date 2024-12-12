@@ -11,6 +11,7 @@ export interface SegmentedPickerOption<ValueType> {
   value: ValueType;
   label: string;
 }
+
 const getRoundedClasses = (index: number, optionsLength: number, size: 'md' | 'lg') =>
   cn(
     index === 0 && size === 'md' && 'rounded-l-sm',
@@ -83,7 +84,7 @@ export const SegmentedPicker = <ValueType extends { toString: () => string }>({
             size === 'md' && 'text-sm px-3 h-8',
             size === 'lg' && 'px-4 h-10',
             value !== option.value && 'text-light-grey',
-            grow && 'grow',
+            grow && 'flex-1', // Use 'flex-1' for equal growth
           )}
         >
           {value === option.value && (
@@ -93,7 +94,7 @@ export const SegmentedPicker = <ValueType extends { toString: () => string }>({
             />
           )}
 
-          <div className='absolute inset-0 z-20 flex items-center justify-center'>
+          <div className='absolute inset-0 z-10 flex items-center justify-center'>
             {option.label}
           </div>
 

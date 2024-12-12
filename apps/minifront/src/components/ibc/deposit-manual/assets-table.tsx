@@ -26,9 +26,9 @@ export const AssetsTable = () => {
 
   if (isLoading) {
     return (
-      <div className='flex justify-center text-stone-700'>
-        <span className='text-purple-700'>Loading balances...</span>
-        <LineWave visible={true} height='70' width='70' color='#7e22ce' wrapperClass='-mt-9' />
+      <div className='flex justify-center text-white'>
+        <span className='text-white'>Loading balances...</span>
+        <LineWave visible={true} height='70' width='70' color='white' wrapperClass='-mt-9' />
       </div>
     );
   }
@@ -38,7 +38,7 @@ export const AssetsTable = () => {
   }
 
   return (
-    <div className='text-stone-700'>
+    <div className='text-white'>
       <div className='flex justify-center italic text-stone-400'>
         Balances on {selectedChain.label}
       </div>

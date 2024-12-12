@@ -1,11 +1,10 @@
 import { assets as cosmosAssetList } from 'chain-registry';
-import { Coin } from 'osmo-query';
-import { Asset } from '@chain-registry/types';
+import { Asset, DenomUnit } from '@chain-registry/types';
 import { BigNumber } from 'bignumber.js';
-import { AssetDenomUnit } from '@chain-registry/types/assets';
 import { CosmosAssetBalance } from './hooks.ts';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { bigNumConfig } from '@penumbra-zone/types/lo-hi';
+import { Coin } from '@cosmjs/stargate';
 
 // Searches for corresponding denom in asset registry and returns the metadata
 export const augmentToAsset = (denom: string, chainName: string): Asset => {
@@ -23,6 +22,7 @@ const fallbackAsset = (denom: string): Asset => {
     display: denom,
     name: denom,
     symbol: denom,
+    type_asset: 'sdk.coin',
   };
 };
 
@@ -61,7 +61,7 @@ export const fromDisplayAmount = (
   return { denom: asset.base, amount };
 };
 
-const getExponent = (denomUnits: AssetDenomUnit[], denom: string): number | undefined => {
+const getExponent = (denomUnits: DenomUnit[], denom: string): number | undefined => {
   return denomUnits.find(unit => unit.denom === denom)?.exponent;
 };
 
