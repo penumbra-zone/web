@@ -10,19 +10,26 @@ export const Header = () => {
   return (
     <>
       <AlphaDevelopmentBanner />
-      <header className='flex items-center justify-between p-4'>
-        <HeaderLogo />
-        <DesktopNav />
+      <header className='grid grid-cols-3 items-center p-4'>
+        <div className='flex items-center'>
+          <HeaderLogo />
+        </div>
 
-        <Density compact>
-          <div className='hidden gap-2 lg:flex'>
-            <StatusPopover />
-            <Connection />
-          </div>
-          <div className='block lg:hidden'>
-            <MobileNav />
-          </div>
-        </Density>
+        <div className='flex justify-center'>
+          <DesktopNav />
+        </div>
+
+        <div className='flex items-center justify-end gap-2'>
+          <Density compact>
+            <div className='hidden lg:flex items-center gap-2'>
+              <StatusPopover />
+              <Connection />
+            </div>
+            <div className='block lg:hidden'>
+              <MobileNav />
+            </div>
+          </Density>
+        </div>
       </header>
     </>
   );

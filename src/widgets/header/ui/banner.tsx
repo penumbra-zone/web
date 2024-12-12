@@ -36,7 +36,7 @@ export const Banner = ({ type, title, content, className, ...props }: BannerProp
     )}
     {...props}
   >
-    <div className='m-auto max-w-prose p-2'>
+    <div className='m-auto p-3'>
       <p className={cn('text-base font-bold', titleColorMapping[type])}>{title}</p>
       <p className={cn('text-sm', contentColorMapping[type])}>{content}</p>
     </div>
