@@ -2,22 +2,30 @@ import { OhlcData, UTCTimestamp } from 'lightweight-charts';
 import { DbCandle } from '@/shared/api/server/candles/types.ts';
 import { addDurationWindow, DurationWindow } from '@/shared/utils/duration.ts';
 
-export const dbCandleToOhlc = (c: DbCandle): OhlcData<UTCTimestamp> => {
+export interface CandleWithVolume {
+  ohlc: OhlcData<UTCTimestamp>;
+  volume: number;
+}
+
+export const dbCandleToOhlc = (c: DbCandle): CandleWithVolume => {
   return {
-    close: c.close,
-    high: c.high,
-    low: c.low,
-    open: c.open,
-    time: (c.start_time.getTime() / 1000) as UTCTimestamp,
+    ohlc: {
+      close: c.close,
+      high: c.high,
+      low: c.low,
+      open: c.open,
+      time: (c.start_time.getTime() / 1000) as UTCTimestamp,
+    },
+    volume: c.direct_volume + c.swap_volume,
   };
 };
 
 /** Insert empty candles so that every timestamp as one candle. */
 export const insertEmptyCandles = (
   window: DurationWindow,
-  data: OhlcData<UTCTimestamp>[],
-): OhlcData<UTCTimestamp>[] => {
-  const out: OhlcData<UTCTimestamp>[] = [];
+  data: CandleWithVolume[],
+): CandleWithVolume[] => {
+  const out: CandleWithVolume[] = [];
   let i = 0;
 
   while (i < data.length) {
@@ -32,24 +40,27 @@ export const insertEmptyCandles = (
         throw new Error('the impossible happened');
       }
 
-      let nextTime = (addDurationWindow(window, new Date(prev.time * 1000)).getTime() /
+      let nextTime = (addDurationWindow(window, new Date(prev.ohlc.time * 1000)).getTime() /
         1000) as UTCTimestamp;
 
       // Ensure we don't go backwards in time
-      if (nextTime <= prev.time) {
+      if (nextTime <= prev.ohlc.time) {
         i += 1;
         continue;
       }
 
-      while (nextTime < candle.time) {
+      while (nextTime < candle.ohlc.time) {
         // Ensure we're not adding a candle before the previous one
-        if (nextTime > prev.time) {
+        if (nextTime > prev.ohlc.time) {
           out.push({
-            time: nextTime,
-            open: prev.close,
-            close: prev.close,
-            low: prev.close,
-            high: prev.close,
+            ohlc: {
+              time: nextTime,
+              open: prev.ohlc.close,
+              close: prev.ohlc.close,
+              low: prev.ohlc.close,
+              high: prev.ohlc.close,
+            },
+            volume: 0,
           });
         }
         nextTime = (addDurationWindow(window, new Date(nextTime * 1000)).getTime() /

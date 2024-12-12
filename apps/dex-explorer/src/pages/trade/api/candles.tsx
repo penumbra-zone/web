@@ -2,15 +2,15 @@ import { useQuery } from '@tanstack/react-query';
 import { useRefetchOnNewBlock } from '@/shared/api/compact-block.ts';
 import { CandleApiResponse } from '@/shared/api/server/candles/types.ts';
 import { usePathSymbols } from '@/pages/trade/model/use-path.ts';
-import { OhlcData } from 'lightweight-charts';
 import { DurationWindow } from '@/shared/utils/duration.ts';
+import { CandleWithVolume } from '@/shared/api/server/candles/utils.ts';
 
 export const useCandles = (durationWindow: DurationWindow) => {
   const { baseSymbol, quoteSymbol } = usePathSymbols();
 
   const query = useQuery({
     queryKey: ['candles', baseSymbol, quoteSymbol, durationWindow],
-    queryFn: async (): Promise<OhlcData[]> => {
+    queryFn: async (): Promise<CandleWithVolume[]> => {
       const paramsObj = {
         baseAsset: baseSymbol,
         quoteAsset: quoteSymbol,

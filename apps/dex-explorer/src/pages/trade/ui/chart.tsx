@@ -1,11 +1,12 @@
 import cn from 'clsx';
 import { useEffect, useRef, useState } from 'react';
-import { createChart, IChartApi, OhlcData } from 'lightweight-charts';
+import { createChart, IChartApi } from 'lightweight-charts';
 import { theme } from '@penumbra-zone/ui/theme';
 import { Text } from '@penumbra-zone/ui/Text';
 import { useCandles } from '../api/candles';
 import { observer } from 'mobx-react-lite';
 import { DurationWindow, durationWindows } from '@/shared/utils/duration.ts';
+import { CandleWithVolume } from '@/shared/api/server/candles/utils';
 
 const ChartLoadingState = () => {
   return (
@@ -119,10 +120,11 @@ const ChartLoadingState = () => {
   );
 };
 
-const ChartData = observer(({ candles }: { candles: OhlcData[] }) => {
+const ChartData = observer(({ candles }: { candles: CandleWithVolume[] }) => {
   const chartElRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi>();
   const seriesRef = useRef<ReturnType<IChartApi['addCandlestickSeries']>>();
+  const volumeSeriesRef = useRef<ReturnType<IChartApi['addHistogramSeries']>>();
 
   // Initialize the chart once when the component mounts
   useEffect(() => {
@@ -145,7 +147,7 @@ const ChartData = observer(({ candles }: { candles: OhlcData[] }) => {
         },
       });
 
-      // Initialize the series
+      // Initialize the candlestick series
       seriesRef.current = chartRef.current.addCandlestickSeries({
         upColor: theme.color.success.light,
         downColor: theme.color.destructive.light,
@@ -153,6 +155,42 @@ const ChartData = observer(({ candles }: { candles: OhlcData[] }) => {
         wickUpColor: theme.color.success.light,
         wickDownColor: theme.color.destructive.light,
       });
+
+      // Set the price scale margins for the candlestick series
+      seriesRef.current.priceScale().applyOptions({
+        autoScale: true,
+      });
+
+      // Initialize the volume series
+      volumeSeriesRef.current = chartRef.current.addHistogramSeries({
+        color: theme.color.success.light + '80',
+        priceFormat: {
+          type: 'volume',
+        },
+        priceScaleId: '',
+        lastValueVisible: false,
+        priceLineVisible: false,
+      });
+
+      // Set the price scale margins for the candlestick series
+      volumeSeriesRef.current.priceScale().applyOptions({
+        scaleMargins: {
+          top: 0.8, // highest point of the series will be 70% away from the top
+          bottom: 0,
+        },
+      });
+
+      // Update volume colors based on price movement
+      volumeSeriesRef.current.setData(
+        candles.map(candle => ({
+          time: candle.ohlc.time,
+          value: candle.volume,
+          color:
+            candle.ohlc.close >= candle.ohlc.open
+              ? theme.color.success.light + '80'
+              : theme.color.destructive.light + '80',
+        })),
+      );
 
       chartRef.current.timeScale().fitContent();
     }
@@ -163,12 +201,25 @@ const ChartData = observer(({ candles }: { candles: OhlcData[] }) => {
         chartRef.current = undefined;
       }
     };
-  }, [chartElRef]);
+  }, [chartElRef, candles]);
 
   // Update chart when candles change
   useEffect(() => {
-    if (seriesRef.current) {
-      seriesRef.current.setData(candles);
+    if (seriesRef.current && volumeSeriesRef.current) {
+      // Set OHLC data
+      seriesRef.current.setData(candles.map(c => c.ohlc));
+
+      // Set volume data with colors based on price movement
+      volumeSeriesRef.current.setData(
+        candles.map(candle => ({
+          time: candle.ohlc.time,
+          value: candle.volume,
+          color:
+            candle.ohlc.close >= candle.ohlc.open
+              ? theme.color.success.light + '80'
+              : theme.color.destructive.light + '80',
+        })),
+      );
       chartRef.current?.timeScale().fitContent();
     }
   }, [candles]);
