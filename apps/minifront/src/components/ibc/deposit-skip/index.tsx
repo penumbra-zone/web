@@ -2,7 +2,7 @@ import { Widget } from '@skip-go/widget';
 
 const defaultRoute = {
   srcChainId: 'osmosis-1',
-  srcAssetDenom: 'ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4', // $USDC on osmosis
+  srcAssetDenom: 'ibc/23104D411A6EB6031FA92FB75F227422B84989969E91DCAD56A535DD7FF0A373', // $USDY on osmosis
   destChainId: 'penumbra-1',
   destAssetDenom: 'ibc/F082B65C88E4B6D5EF1DB243CDA1D331D002759E938A0F5CD3FFDC5D53B3E349', // $UM on penumbra
 };
