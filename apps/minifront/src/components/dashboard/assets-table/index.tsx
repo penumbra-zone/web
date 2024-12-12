@@ -62,7 +62,7 @@ export default function AssetsTable() {
       <div className='mt-5 flex flex-col items-center gap-6'>
         <p>
           No balances found. Try shielding funds via{' '}
-          <Link to='/ibc' style={{ color: '#aaaaff' }}>
+          <Link to='/deposit/skip' style={{ color: '#aaaaff' }}>
             shield page
           </Link>{' '}
           or{' '}
