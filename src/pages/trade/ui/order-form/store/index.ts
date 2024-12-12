@@ -70,7 +70,9 @@ class OrderFormStore {
 
   private setBalancesOfAssets = (): void => {
     const baseAssetBalance = this.balances?.find(resp =>
-      getAssetIdFromValueView(resp.balanceView).equals(getAssetId(this.baseAsset.metadata)),
+      getAssetIdFromValueView(resp.balanceView).equals(
+        getAssetId.optional(this.baseAsset.metadata),
+      ),
     );
     if (baseAssetBalance?.balanceView) {
       this.baseAsset.setBalanceView(baseAssetBalance.balanceView);
@@ -80,7 +82,9 @@ class OrderFormStore {
     }
 
     const quoteAssetBalance = this.balances?.find(resp =>
-      getAssetIdFromValueView(resp.balanceView).equals(getAssetId(this.quoteAsset.metadata)),
+      getAssetIdFromValueView(resp.balanceView).equals(
+        getAssetId.optional(this.quoteAsset.metadata),
+      ),
     );
     if (quoteAssetBalance?.balanceView) {
       this.quoteAsset.setBalanceView(quoteAssetBalance.balanceView);
