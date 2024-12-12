@@ -173,6 +173,17 @@ const ChartData = observer(({ candles }: { candles: OhlcData[] }) => {
     }
   }, [candles]);
 
+  // Handle window resize to re-fit content
+  useEffect(() => {
+    const handleResize = () => {
+      if (chartRef.current) {
+        chartRef.current.timeScale().fitContent();
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return <div className='h-full w-full' ref={chartElRef} />;
 });
 
