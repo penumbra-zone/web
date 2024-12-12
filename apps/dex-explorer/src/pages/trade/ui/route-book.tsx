@@ -9,7 +9,7 @@ import { Skeleton } from '@/shared/ui/skeleton';
 
 const SkeletonRow = (props: { isSpread: boolean }) =>
   props.isSpread ? (
-    <div className='border-y border-l-other-solidStroke'>
+    <div className='border-y border-y-text-muted'>
       <div className='flex items-center justify-center gap-2 px-3 py-3 text-xs'>
         <div className='w-[78px] h-[16px]'>
           <Skeleton />
