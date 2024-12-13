@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import Image from 'next/image';
 import { Wallet2 } from 'lucide-react';
@@ -9,21 +9,20 @@ import { Dialog } from '@penumbra-zone/ui/Dialog';
 import { PenumbraClient } from '@penumbra-zone/client';
 import { connectionStore } from '@/shared/model/connection';
 import { useProviderManifests } from '@/shared/api/providerManifests';
+import dynamic from 'next/dynamic';
 
-export const ConnectButton = observer(
+const ConnectButtonInner = observer(
   ({ actionType = 'accent' }: { actionType?: ButtonProps['actionType'] }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const { data: providers } = useProviderManifests();
+    const { data: providerManifests } = useProviderManifests();
 
-    const onClick = () => {
-      const providers = PenumbraClient.getProviders();
-      const length = Object.keys(providers).length;
-      const first = Object.keys(providers)[0];
+    const providerOrigins = useMemo(() => Object.keys(PenumbraClient.getProviders()), []);
 
-      if (length > 1) {
+    const onConnectClick = () => {
+      if (providerOrigins.length > 1) {
         setIsOpen(true);
-      } else if (length === 1 && first) {
-        connect(first);
+      } else if (providerOrigins.length === 1 && providerOrigins[0]) {
+        connect(providerOrigins[0]);
       }
     };
 
@@ -34,16 +33,28 @@ export const ConnectButton = observer(
     return (
       <>
         <Density sparse>
-          <Button icon={Wallet2} actionType={actionType} onClick={onClick}>
-            Connect wallet
-          </Button>
+          {providerOrigins.length === 0 ? (
+            <Button
+              icon={Wallet2}
+              actionType={actionType}
+              onClick={() =>
+                window.open('https://praxwallet.com/', '_blank', 'noopener,noreferrer')
+              }
+            >
+              Install Prax
+            </Button>
+          ) : (
+            <Button icon={Wallet2} actionType={actionType} onClick={onConnectClick}>
+              Connect wallet
+            </Button>
+          )}
         </Density>
 
         <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)}>
           <Dialog.Content title='Choose wallet'>
             <Dialog.RadioGroup>
               <div className='flex flex-col gap-2 pt-1'>
-                {Object.entries(providers ?? {}).map(([key, manifest]) => (
+                {Object.entries(providerManifests ?? {}).map(([key, manifest]) => (
                   <Dialog.RadioItem
                     key={key}
                     value={key}
@@ -72,3 +83,8 @@ export const ConnectButton = observer(
     );
   },
 );
+
+// Need to disable SSR given usage of window access in getProviders()
+export const ConnectButton = dynamic(() => Promise.resolve(ConnectButtonInner), {
+  ssr: false,
+});
