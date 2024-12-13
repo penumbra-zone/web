@@ -25,7 +25,7 @@ export const useBook = () => {
     },
   });
 
-  useRefetchOnNewBlock(query);
+  useRefetchOnNewBlock('routeBook', query);
 
   return query;
 };
