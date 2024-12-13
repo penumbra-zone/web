@@ -1,6 +1,4 @@
 import { ReactNode } from 'react';
-import { Analytics } from '@vercel/analytics/react';
-import { SpeedInsights } from '@vercel/speed-insights/next';
 
 import './v2.css';
 import '@penumbra-zone/ui/style.css';
@@ -12,9 +10,6 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
     <html lang='en'>
       <body>
         <App>{children}</App>
-
-        <Analytics />
-        <SpeedInsights />
       </body>
     </html>
   );
