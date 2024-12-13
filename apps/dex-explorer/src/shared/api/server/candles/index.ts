@@ -58,7 +58,10 @@ export async function GET(req: NextRequest): Promise<NextResponse<CandleApiRespo
     chainId,
   });
 
-  const response = insertEmptyCandles(durationWindow, candles.map(dbCandleToOhlc));
+  const displayAdjusted = candles.map(c =>
+    dbCandleToOhlc(c, baseAssetMetadata, quoteAssetMetadata),
+  );
+  const response = insertEmptyCandles(durationWindow, displayAdjusted);
 
   return NextResponse.json(response);
 }

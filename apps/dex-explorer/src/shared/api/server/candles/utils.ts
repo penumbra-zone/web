@@ -1,22 +1,24 @@
 import { OhlcData, UTCTimestamp } from 'lightweight-charts';
 import { DbCandle } from '@/shared/api/server/candles/types.ts';
 import { addDurationWindow, DurationWindow } from '@/shared/utils/duration.ts';
+import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { calculateDisplayPrice } from '@/shared/utils/price-conversion.ts';
 
 export interface CandleWithVolume {
   ohlc: OhlcData<UTCTimestamp>;
   volume: number;
 }
 
-export const dbCandleToOhlc = (c: DbCandle): CandleWithVolume => {
+export const dbCandleToOhlc = (c: DbCandle, base: Metadata, quote: Metadata): CandleWithVolume => {
   return {
     ohlc: {
-      close: c.close,
-      high: c.high,
-      low: c.low,
-      open: c.open,
+      close: calculateDisplayPrice(c.close, base, quote),
+      high: calculateDisplayPrice(c.high, base, quote),
+      low: calculateDisplayPrice(c.low, base, quote),
+      open: calculateDisplayPrice(c.open, base, quote),
       time: (c.start_time.getTime() / 1000) as UTCTimestamp,
     },
-    volume: c.direct_volume + c.swap_volume,
+    volume: calculateDisplayPrice(c.direct_volume + c.swap_volume, base, quote),
   };
 };
 
