@@ -20,7 +20,7 @@ export const useSummary = (window: DurationWindow) => {
     },
   });
 
-  useRefetchOnNewBlock(query);
+  useRefetchOnNewBlock('summary', query);
 
   return query;
 };

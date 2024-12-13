@@ -27,7 +27,7 @@ export const useCandles = (durationWindow: DurationWindow) => {
     },
   });
 
-  useRefetchOnNewBlock(query);
+  useRefetchOnNewBlock('candles', query);
 
   return query;
 };
