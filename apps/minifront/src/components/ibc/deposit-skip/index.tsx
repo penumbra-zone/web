@@ -1,10 +1,9 @@
 import { Widget } from '@skip-go/widget';
 
 const defaultRoute = {
-  srcChainId: 'osmosis-1',
-  srcAssetDenom: 'ibc/23104D411A6EB6031FA92FB75F227422B84989969E91DCAD56A535DD7FF0A373', // $USDY on osmosis
+  srcChainId: 'noble-1',
+  srcAssetDenom: 'ausdy',
   destChainId: 'penumbra-1',
-  destAssetDenom: 'ibc/F082B65C88E4B6D5EF1DB243CDA1D331D002759E938A0F5CD3FFDC5D53B3E349', // $UM on penumbra
 };
 
 const filter = {
