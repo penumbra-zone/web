@@ -40,14 +40,23 @@ const startBlockHeightStream = async (transport: Transport, signal: AbortSignal)
   }
 };
 
-export const useRefetchOnNewBlock = ({ refetch }: UseQueryResult) => {
+const lastRefetchedBlockHeights = new Map<string, number>();
+
+export const useRefetchOnNewBlock = (queryKey: string, { refetch }: UseQueryResult) => {
   const { data: blockHeight } = useLatestBlockHeight();
+  const queryKeyString = JSON.stringify(queryKey);
 
   useEffect(() => {
-    if (blockHeight) {
+    if (!blockHeight) {
+      return;
+    }
+
+    const lastHeight = lastRefetchedBlockHeights.get(queryKeyString) ?? -1;
+    if (blockHeight > lastHeight) {
+      lastRefetchedBlockHeights.set(queryKeyString, blockHeight);
       void refetch();
     }
-  }, [blockHeight, refetch]);
+  }, [blockHeight, refetch, queryKeyString]);
 };
 
 export const LATEST_HEIGHT_QUERY_KEY = ['latestBlockHeight'];
