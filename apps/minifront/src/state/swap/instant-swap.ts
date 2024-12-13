@@ -186,16 +186,22 @@ const assembleSwapRequest = async ({
   }
 
   const addressIndex = getAddressIndex(assetIn.accountAddress);
+  const exponent = getDisplayDenomExponentFromValueView(assetIn.balanceView);
+  
+  // Convert amount to BigNumber and subtract 0.1
+  const adjustedAmount = BigNumber(amount).minus(0.1);
+  
+  // Ensure we don't go negative
+  if (adjustedAmount.isLessThan(0)) {
+    throw new Error('Amount too small for swap');
+  }
 
   return new TransactionPlannerRequest({
     swaps: [
       {
         targetAsset: getAssetId(assetOut),
         value: {
-          amount: toBaseUnit(
-            BigNumber(amount),
-            getDisplayDenomExponentFromValueView(assetIn.balanceView),
-          ),
+          amount: toBaseUnit(adjustedAmount, exponent),
           assetId: getAssetIdFromValueView(assetIn.balanceView),
         },
         claimAddress: await getAddressByIndex(addressIndex.account),
