@@ -1,5 +1,11 @@
 # @penumbra-zone/ui
 
+## 12.4.5
+
+### Patch Changes
+
+- 39a9fd9: Fixed tab width grow setting
+
 ## 12.4.4
 
 ### Patch Changes

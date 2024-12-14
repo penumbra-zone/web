@@ -1,5 +1,11 @@
 # @penumbra-zone/ui
 
+## 13.6.0
+
+### Minor Changes
+
+- 7969f77: Sync TextInput with the latest designs
+
 ## 13.5.0
 
 ### Minor Changes

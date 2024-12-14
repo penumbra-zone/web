@@ -1,5 +1,17 @@
 # minifront
 
+## 6.26.0
+
+### Minor Changes
+
+- 39a9fd9: Integrate skip widget for shielding
+- 4b82524: updates the IBC route from /ibc to /deposit/skip
+
+### Patch Changes
+
+- Updated dependencies [39a9fd9]
+  - @penumbra-zone/ui-deprecated@12.4.5
+
 ## 6.25.2
 
 ### Patch Changes
