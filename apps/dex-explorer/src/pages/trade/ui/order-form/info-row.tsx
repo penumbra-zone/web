@@ -20,7 +20,7 @@ const getValueColor = (valueColor: InfoRowProps['valueColor']) => {
   if (valueColor === 'error') {
     return 'destructive.main';
   }
-  return 'text.secondary';
+  return 'text.primary';
 };
 
 export const InfoRow = observer(
