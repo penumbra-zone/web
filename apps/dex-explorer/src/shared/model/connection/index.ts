@@ -17,10 +17,6 @@ class ConnectionStateStore {
 
   constructor() {
     makeAutoObservable(this);
-
-    if (typeof window !== 'undefined') {
-      this.setup();
-    }
   }
 
   private setManifest(manifest: PenumbraManifest | undefined) {
