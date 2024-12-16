@@ -65,7 +65,15 @@ export const PairSelector = observer(({ disabled, dialogTitle }: PairSelectorPro
   const { data: balances } = useBalances();
   const { baseAsset, quoteAsset, error, isLoading } = usePathToMetadata();
 
-  if (error) {
+  if (
+    error instanceof Error &&
+    ![
+      'ConnectError',
+      'PenumbraNotInstalledError',
+      'PenumbraProviderNotAvailableError',
+      'PenumbraProviderNotConnectedError',
+    ].includes(error.name)
+  ) {
     return <div>Error loading pair selector: ${String(error)}</div>;
   }
 
