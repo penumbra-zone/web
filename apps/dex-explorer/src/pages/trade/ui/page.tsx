@@ -7,6 +7,7 @@ import { RouteTabs } from './route-tabs';
 import { TradesTabs } from './trades-tabs';
 import { HistoryTabs } from './history-tabs';
 import { FormTabs } from './form-tabs';
+import { useEffect, useState } from 'react';
 
 const sharedStyle = 'w-full border-t border-t-other-solidStroke overflow-x-hidden';
 
@@ -143,13 +144,36 @@ const MobileLayout = () => {
 };
 
 export const TradePage = () => {
-  return (
-    <>
-      <XlLayout />
-      <LLayout />
-      <DesktopLayout />
-      <TabletLayout />
-      <MobileLayout />
-    </>
-  );
+  const [width, setWidth] = useState(1366);
+
+  useEffect(() => {
+    const resize = () => {
+      setWidth(document.body.clientWidth);
+    };
+
+    window.addEventListener('resize', resize);
+    resize();
+
+    return () => {
+      window.removeEventListener('resize', resize);
+    };
+  }, []);
+
+  if (width > 1600) {
+    return <XlLayout />;
+  }
+
+  if (width > 1200) {
+    return <LLayout />;
+  }
+
+  if (width > 900) {
+    return <DesktopLayout />;
+  }
+
+  if (width > 600) {
+    return <TabletLayout />;
+  }
+
+  return <MobileLayout />;
 };

@@ -5,55 +5,15 @@ import { connectionStore } from '@/shared/model/connection';
 import { OrderInput } from './order-input';
 import { SegmentedControl } from './segmented-control';
 import { ConnectButton } from '@/features/connect/connect-button';
-import { InfoRowGasFee } from './info-row-gas-fee';
 import { InfoRowTradingFee } from './info-row-trading-fee';
+import { InfoRowGasFee } from './info-row-gas-fee';
+import { SelectGroup } from './select-group';
 import { OrderFormStore } from './store/OrderFormStore';
-import { Slider as PenumbraSlider } from '@penumbra-zone/ui/Slider';
+import { BuyLimitOrderOptions, SellLimitOrderOptions } from './store/LimitOrderFormStore';
 
-interface SliderProps {
-  inputValue: string;
-  balance?: number;
-  balanceDisplay?: string;
-  setBalanceFraction: (fraction: number) => void;
-}
-const Slider = observer(
-  ({ inputValue, balance, balanceDisplay, setBalanceFraction }: SliderProps) => {
-    const value =
-      inputValue && balance ? Math.round((Number(inputValue) / Number(balance)) * 10) : 0;
-
-    return (
-      <div className='mb-4'>
-        <div className='mb-1'>
-          <PenumbraSlider
-            min={0}
-            max={10}
-            step={1}
-            value={value}
-            showValue={false}
-            onChange={x => setBalanceFraction(x / 10)}
-            showTrackGaps={true}
-            trackGapBackground='base.black'
-            showFill={true}
-          />
-        </div>
-        <div className='flex flex-row items-center justify-between py-1'>
-          <Text small color='text.secondary'>
-            Available Balance
-          </Text>
-          <button type='button' className='text-primary' onClick={() => setBalanceFraction(1.0)}>
-            <Text small color='text.primary'>
-              {balanceDisplay ?? '--'}
-            </Text>
-          </button>
-        </div>
-      </div>
-    );
-  },
-);
-
-export const MarketOrderForm = observer(({ parentStore }: { parentStore: OrderFormStore }) => {
+export const LimitOrderForm = observer(({ parentStore }: { parentStore: OrderFormStore }) => {
   const { connected } = connectionStore;
-  const store = parentStore.marketForm;
+  const store = parentStore.limitForm;
 
   const isBuy = store.direction === 'buy';
 
@@ -61,12 +21,27 @@ export const MarketOrderForm = observer(({ parentStore }: { parentStore: OrderFo
     <div className='p-4'>
       <SegmentedControl direction={store.direction} setDirection={store.setDirection} />
       <div className='mb-4'>
+        <div className='mb-2'>
+          <OrderInput
+            label={`When ${store.baseAsset?.symbol} is`}
+            value={store.priceInput}
+            onChange={price => store.setPriceInput(price)}
+            denominator={store.quoteAsset?.symbol}
+          />
+        </div>
+        <SelectGroup
+          options={Object.values(isBuy ? BuyLimitOrderOptions : SellLimitOrderOptions)}
+          value={store.priceInputOption}
+          onChange={option =>
+            store.setPriceInputOption(option as BuyLimitOrderOptions | SellLimitOrderOptions)
+          }
+        />
+      </div>
+      <div className='mb-4'>
         <OrderInput
           label={isBuy ? 'Buy' : 'Sell'}
           value={store.baseInput}
           onChange={store.setBaseInput}
-          isEstimating={store.baseEstimating}
-          isApproximately={isBuy}
           denominator={store.baseAsset?.symbol}
         />
       </div>
@@ -75,17 +50,9 @@ export const MarketOrderForm = observer(({ parentStore }: { parentStore: OrderFo
           label={isBuy ? 'Pay with' : 'Receive'}
           value={store.quoteInput}
           onChange={store.setQuoteInput}
-          isEstimating={store.quoteEstimating}
-          isApproximately={!isBuy}
           denominator={store.quoteAsset?.symbol}
         />
       </div>
-      <Slider
-        inputValue={store.quoteInput}
-        balance={store.quoteBalance}
-        balanceDisplay={store.balance}
-        setBalanceFraction={x => store.setBalanceFraction(x)}
-      />
       <div className='mb-4'>
         <InfoRowTradingFee />
         <InfoRowGasFee
