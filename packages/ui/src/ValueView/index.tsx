@@ -116,7 +116,7 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
           )}
         >
           {showValue && (
-            <div className='shrink grow' title={formattedAmount ?? undefined}>
+            <div className='shrink grow' title={formattedAmount}>
               <ValueText density={density}>{formattedAmount}</ValueText>
             </div>
           )}
