@@ -25,7 +25,6 @@ import { Channel } from '@penumbra-zone/protobuf/ibc/core/channel/v1/channel_pb'
 import { BLOCKS_PER_HOUR } from './constants';
 import { createZQuery, ZQueryState } from '@penumbra-zone/zquery';
 import { getChains } from '../fetchers/registry';
-import { bech32ChainIds } from './shared';
 import { penumbra } from '../penumbra';
 import {
   IbcChannelService,
@@ -33,7 +32,7 @@ import {
   IbcConnectionService,
   ViewService,
 } from '@penumbra-zone/protobuf';
-import { PartialMessage } from '@bufbuild/protobuf';
+import { bech32ChainIds } from './shared';
 
 export const { chains, useChains } = createZQuery({
   name: 'chains',
@@ -208,7 +207,7 @@ const getPlanRequest = async ({
   }
 
   const addressIndex = getAddressIndex(selection.accountAddress);
-  const { address: returnAddress } = await penumbra
+  let { address: returnAddress } = await penumbra
     .service(ViewService)
     .ephemeralAddress({ addressIndex });
   if (!returnAddress) {
@@ -225,9 +224,20 @@ const getPlanRequest = async ({
     throw new Error('Error with generating IBC transparent address');
   }
 
-  // Detect USDC Noble withdrawals, and use transparent (t-addr) addresses
-  // to ensure compatibility. Prepare the  ICS20 withdrawal messages with the t-addr
-  // flag set to 'true'
+  // IBC-related fields
+  let denom = getMetadata(selection.balanceView).base;
+  let useTransparentAddress = false;
+
+  // Temporary: detect USDC Noble withdrawals, and use transparent (t-addr) addresses
+  // to ensure bech32m encoding compatibility.
+
+  if (denom.includes('uusdc') && chain.chainId == 'noble-1') {
+    // Use the t-addr for USDC withdrawals, and don't override existing
+    // 'useCompatAddress' field to maintain backwards compatibility.
+    useTransparentAddress = true;
+    // Set the return address to the t-addr.
+    returnAddress = t_addr;
+  }
 
   return new TransactionPlannerRequest({
     ics20Withdrawals: [
@@ -236,14 +246,14 @@ const getPlanRequest = async ({
           BigNumber(amount),
           getDisplayDenomExponentFromValueView(selection.balanceView),
         ),
-        denom: { denom: getMetadata(selection.balanceView).base },
+        denom: { denom },
         destinationChainAddress,
         returnAddress,
         timeoutHeight,
         timeoutTime,
         sourceChannel: chain.channelId,
-        useCompatAddress: false,
-        useTransparentAddress: true, // temporarily hardcoding for testing purposes
+        useCompatAddress: bech32ChainIds.includes(chain.chainId),
+        useTransparentAddress,
       },
     ],
     source: addressIndex,

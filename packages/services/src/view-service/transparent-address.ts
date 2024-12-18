@@ -10,9 +10,4 @@ export const transparentAddress: Impl['transparentAddress'] = async (_, ctx) => 
     address: t_addr.address,
     encoding: t_addr.encoding,
   };
-
-  //   return new TransparentAddressResponse({
-  //     address: t_addr.address,
-  //     encoding: t_addr.encoding,
-  //   });
 };
