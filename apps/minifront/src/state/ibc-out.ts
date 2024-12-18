@@ -2,6 +2,7 @@ import { AllSlices, SliceCreator, useStore } from '.';
 import {
   BalancesResponse,
   TransactionPlannerRequest,
+  TransparentAddressRequest,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { BigNumber } from 'bignumber.js';
 import { ClientState } from '@penumbra-zone/protobuf/ibc/lightclients/tendermint/v1/tendermint_pb';
@@ -32,6 +33,7 @@ import {
   IbcConnectionService,
   ViewService,
 } from '@penumbra-zone/protobuf';
+import { PartialMessage } from '@bufbuild/protobuf';
 
 export const { chains, useChains } = createZQuery({
   name: 'chains',
@@ -215,6 +217,18 @@ const getPlanRequest = async ({
 
   const { timeoutHeight, timeoutTime } = await getTimeout(chain.channelId);
 
+  // Request transparent address from view service
+  const { address: t_addr, encoding: _encoding } = await penumbra
+    .service(ViewService)
+    .transparentAddress(new TransparentAddressRequest({}));
+  if (!t_addr) {
+    throw new Error('Error with generating IBC transparent address');
+  }
+
+  // Detect USDC Noble withdrawals, and use transparent (t-addr) addresses
+  // to ensure compatibility. Prepare the  ICS20 withdrawal messages with the t-addr
+  // flag set to 'true'
+
   return new TransactionPlannerRequest({
     ics20Withdrawals: [
       {
@@ -228,7 +242,8 @@ const getPlanRequest = async ({
         timeoutHeight,
         timeoutTime,
         sourceChannel: chain.channelId,
-        useCompatAddress: bech32ChainIds.includes(chain.chainId),
+        useCompatAddress: false,
+        useTransparentAddress: true, // temporarily hardcoding for testing purposes
       },
     ],
     source: addressIndex,
