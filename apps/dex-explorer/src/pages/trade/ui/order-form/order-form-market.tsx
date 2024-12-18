@@ -66,7 +66,7 @@ export const MarketOrderForm = observer(({ parentStore }: { parentStore: OrderFo
           value={store.baseInput}
           onChange={store.setBaseInput}
           isEstimating={store.baseEstimating}
-          isApproximately={isBuy}
+          isApproximately={isBuy && store.baseInputAmount !== 0}
           denominator={store.baseAsset?.symbol}
         />
       </div>
@@ -76,7 +76,7 @@ export const MarketOrderForm = observer(({ parentStore }: { parentStore: OrderFo
           value={store.quoteInput}
           onChange={store.setQuoteInput}
           isEstimating={store.quoteEstimating}
-          isApproximately={!isBuy}
+          isApproximately={!isBuy && store.quoteInputAmount !== 0}
           denominator={store.quoteAsset?.symbol}
         />
       </div>
