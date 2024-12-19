@@ -1,5 +1,11 @@
 # @penumbra-zone/types
 
+## 26.4.0
+
+### Minor Changes
+
+- d619836: Add toValueView() to pnum
+
 ## 26.3.0
 
 ### Minor Changes
