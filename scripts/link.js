@@ -6,8 +6,13 @@ import { fileURLToPath } from 'url';
  * This script is used to link dependencies from this monorepo to other repos.
  *
  * @usage:
- *   node scripts/link 1|true|enable|link
+ *   node scripts/link 1|true|enable|link|undefined
  *   node scripts/link 0|false|disable|unlink
+ *
+ *   or
+ *
+ *   node scripts/link
+ *   node scripts/unlink
  *
  *   // when enabled, you can link the package to another repo like this:
  *   cd other/repo && pnpm link ../penumbra-zone/web/packages/ui
