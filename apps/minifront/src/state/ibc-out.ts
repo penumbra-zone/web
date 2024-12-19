@@ -217,7 +217,7 @@ const getPlanRequest = async ({
   const { timeoutHeight, timeoutTime } = await getTimeout(chain.channelId);
 
   // Request transparent address from view service
-  const { address: t_addr, encoding: _encoding } = await penumbra
+  const { address: t_addr } = await penumbra
     .service(ViewService)
     .transparentAddress(new TransparentAddressRequest({}));
   if (!t_addr) {
@@ -225,12 +225,12 @@ const getPlanRequest = async ({
   }
 
   // IBC-related fields
-  let denom = getMetadata(selection.balanceView).base;
+  const denom = getMetadata(selection.balanceView).base;
   let useTransparentAddress = false;
 
   // Temporary: detect USDC Noble withdrawals, and use a transparent (t-addr) address
   // to ensure bech32m encoding compatibility.
-  if (denom.includes('uusdc') && (chain.chainId == 'noble-1' || chain.chainId == 'grand-1')) {
+  if (denom.includes('uusdc') && (chain.chainId === 'noble-1' || chain.chainId === 'grand-1')) {
     // Use the t-addr for USDC withdrawals, and don't override existing
     // 'useCompatAddress' field to maintain backwards compatibility.
     useTransparentAddress = true;

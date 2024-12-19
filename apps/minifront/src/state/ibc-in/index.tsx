@@ -220,7 +220,7 @@ async function execute(
   // to ensure bech32m encoding compatibility.
   if (
     transferToken.denom.includes('uusdc') &&
-    (selectedChain.chainId == 'noble-1' || selectedChain.chainId == 'grand-1')
+    (selectedChain.chainId === 'noble-1' || selectedChain.chainId === 'grand-1')
   ) {
     // Set the reciever address to the t-addr encoding.
     penumbraAddress = encoding;
@@ -230,7 +230,7 @@ async function execute(
     sourcePort: 'transfer',
     sourceChannel: await getCounterpartyChannelId(selectedChain, penumbraChainId),
     sender,
-    receiver: penumbraAddress!,
+    receiver: penumbraAddress,
     token: transferToken,
     timeoutHeight,
     timeoutTimestamp,
