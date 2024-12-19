@@ -228,10 +228,9 @@ const getPlanRequest = async ({
   let denom = getMetadata(selection.balanceView).base;
   let useTransparentAddress = false;
 
-  // Temporary: detect USDC Noble withdrawals, and use transparent (t-addr) addresses
+  // Temporary: detect USDC Noble withdrawals, and use a transparent (t-addr) address
   // to ensure bech32m encoding compatibility.
-
-  if (denom.includes('uusdc') && chain.chainId == 'noble-1') {
+  if (denom.includes('uusdc') && (chain.chainId == 'noble-1' || chain.chainId == 'grand-1')) {
     // Use the t-addr for USDC withdrawals, and don't override existing
     // 'useCompatAddress' field to maintain backwards compatibility.
     useTransparentAddress = true;

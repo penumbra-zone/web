@@ -21,7 +21,8 @@ import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
 import { parseRevisionNumberFromChainId } from './parse-revision-number-from-chain-id';
 import { bech32ChainIds } from '../shared.ts';
 import { penumbra } from '../../penumbra.ts';
-import { TendermintProxyService } from '@penumbra-zone/protobuf';
+import { TendermintProxyService, ViewService } from '@penumbra-zone/protobuf';
+import { TransparentAddressRequest } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 
 export interface IbcInSlice {
   selectedChain?: ChainInfo;
@@ -198,7 +199,7 @@ async function execute(
     throw new Error('Penumbra chain id could not be retrieved');
   }
 
-  const penumbraAddress = await getPenumbraAddress(account, selectedChain.chainId);
+  let penumbraAddress = await getPenumbraAddress(account, selectedChain.chainId);
   if (!penumbraAddress) {
     throw new Error('Penumbra address not available');
   }
@@ -207,11 +208,29 @@ async function execute(
   const assetMetadata = augmentToAsset(coin.raw.denom, selectedChain.chainName);
 
   const transferToken = fromDisplayAmount(assetMetadata, coin.displayDenom, amount);
+
+  const { address: t_addr, encoding: encoding } = await penumbra
+    .service(ViewService)
+    .transparentAddress(new TransparentAddressRequest({}));
+  if (!t_addr) {
+    throw new Error('Error with generating IBC transparent address');
+  }
+
+  // Temporary: detect USDC Noble inbound transfers, and use transparent (t-addr) encoding
+  // to ensure bech32m encoding compatibility.
+  if (
+    transferToken.denom.includes('uusdc') &&
+    (selectedChain.chainId == 'noble-1' || selectedChain.chainId == 'grand-1')
+  ) {
+    // Set the reciever address to the t-addr encoding.
+    penumbraAddress = encoding;
+  }
+
   const params: MsgTransfer = {
     sourcePort: 'transfer',
     sourceChannel: await getCounterpartyChannelId(selectedChain, penumbraChainId),
     sender,
-    receiver: penumbraAddress,
+    receiver: penumbraAddress!,
     token: transferToken,
     timeoutHeight,
     timeoutTimestamp,
