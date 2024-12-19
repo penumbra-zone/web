@@ -6,11 +6,20 @@ import { fileURLToPath } from 'url';
  * This script is used to link dependencies from this monorepo to other repos.
  *
  * @usage:
- *   node scripts/link-externally.js enable
- *   node scripts/link-externally.js disable
+ *   node scripts/link 1|true|enable|link|undefined
+ *   node scripts/link 0|false|disable|unlink
+ *
+ *   or
+ *
+ *   node scripts/link
+ *   node scripts/unlink
  *
  *   // when enabled, you can link the package to another repo like this:
  *   cd other/repo && pnpm link ../penumbra-zone/web/packages/ui
+ *
+ *   // watch inside packages
+ *   cd packages/ui && pnpm dev:pack
+ *   cd packages/types && pnpm dev:pack
  */
 
 // Base directory for packages in the monorepo
@@ -19,8 +28,8 @@ const packagesDir = path.join(path.dirname(__filename), '..', 'packages');
 
 // Get the command-line argument to determine action
 const action = process.argv[2];
-const enableLinking = action === 'enable';
-const disableLinking = action === 'disable';
+const enableLinking = ['enable', 'link', '1', 'true', undefined].includes(action);
+const disableLinking = ['disable', 'unlink', '0', 'false'].includes(action);
 
 // Helper function to enable linked exports
 function enableLinkedExports(packageJsonPath) {

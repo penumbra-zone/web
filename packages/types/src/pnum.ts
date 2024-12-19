@@ -35,7 +35,11 @@ function pnum(
     value = new BigNumber(input).shiftedBy(exponent);
   } else if (typeof input === 'bigint') {
     value = new BigNumber(input.toString());
-  } else if (input instanceof ValueView) {
+  } else if (
+    typeof input === 'object' &&
+    'valueView' in input &&
+    typeof input.valueView === 'object'
+  ) {
     const amount = getAmount(input);
     value = new BigNumber(joinLoHi(amount.lo, amount.hi).toString());
     exponent =
