@@ -11,6 +11,10 @@ import { fileURLToPath } from 'url';
  *
  *   // when enabled, you can link the package to another repo like this:
  *   cd other/repo && pnpm link ../penumbra-zone/web/packages/ui
+ *
+ *   // watch inside packages
+ *   cd packages/ui && pnpm dev:pack
+ *   cd packages/types && pnpm dev:pack
  */
 
 // Base directory for packages in the monorepo
