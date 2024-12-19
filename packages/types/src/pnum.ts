@@ -121,13 +121,24 @@ function pnum(
       return new Amount(splitLoHi(BigInt(value.toFixed(0))));
     },
 
-    toValueView(metadata: Metadata): ValueView {
+    toValueView(metadata?: Metadata): ValueView {
+      if (metadata) {
+        return new ValueView({
+          valueView: {
+            case: 'knownAssetId',
+            value: {
+              amount: new Amount(splitLoHi(BigInt(value.toFixed(0)))),
+              metadata,
+            },
+          },
+        });
+      }
+
       return new ValueView({
         valueView: {
-          case: 'knownAssetId',
+          case: 'unknownAssetId',
           value: {
             amount: new Amount(splitLoHi(BigInt(value.toFixed(0)))),
-            metadata,
           },
         },
       });
