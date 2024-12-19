@@ -8,6 +8,8 @@ import { TooltipProvider } from '@penumbra-zone/ui/Tooltip';
 import { Header, SyncBar } from '@/widgets/header';
 import { queryClient } from '@/shared/const/queryClient';
 import { connectionStore } from '@/shared/model/connection';
+import { recentPairsStore } from '@/pages/trade/ui/pair-selector/store';
+import { starStore } from '@/features/star-pair';
 
 // Used so that observer() won't subscribe to any observables used in an SSR environment
 // and no garbage collection problems are introduced.
@@ -16,6 +18,8 @@ enableStaticRendering(typeof window === 'undefined');
 export const App = observer(({ children }: { children: ReactNode }) => {
   useEffect(() => {
     connectionStore.setup();
+    recentPairsStore.setup();
+    starStore.setup();
   }, []);
 
   return (

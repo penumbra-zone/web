@@ -10,7 +10,7 @@ export const DesktopNav = () => {
 
   return (
     <nav className='hidden rounded-full bg-v2-other-tonalFill5 px-4 py-1 backdrop-blur-xl lg:flex bg-other-tonalFill5'>
-      <Density compact>
+      <Density slim>
         <Tabs
           value={currentPath}
           onChange={value => router.push(value)}
