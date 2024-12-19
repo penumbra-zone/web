@@ -1,5 +1,11 @@
 # @penumbra-zone/tailwind-config
 
+## 3.1.20
+
+### Patch Changes
+
+- @penumbra-zone/ui-deprecated@12.4.6
+
 ## 3.1.19
 
 ### Patch Changes

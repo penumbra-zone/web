@@ -2,7 +2,7 @@ import { BigNumber } from 'bignumber.js';
 import { round } from '@penumbra-zone/types/round';
 import { LoHi, joinLoHi, splitLoHi } from '@penumbra-zone/types/lo-hi';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
-import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getAmount, getDisplayDenomExponentFromValueView } from '@penumbra-zone/getters/value-view';
 import { removeTrailingZeros } from '@penumbra-zone/types/shortify';
 
@@ -119,6 +119,29 @@ function pnum(
 
     toAmount(): Amount {
       return new Amount(splitLoHi(BigInt(value.toFixed(0))));
+    },
+
+    toValueView(metadata?: Metadata): ValueView {
+      if (metadata) {
+        return new ValueView({
+          valueView: {
+            case: 'knownAssetId',
+            value: {
+              amount: new Amount(splitLoHi(BigInt(value.toFixed(0)))),
+              metadata,
+            },
+          },
+        });
+      }
+
+      return new ValueView({
+        valueView: {
+          case: 'unknownAssetId',
+          value: {
+            amount: new Amount(splitLoHi(BigInt(value.toFixed(0)))),
+          },
+        },
+      });
     },
   };
 }
