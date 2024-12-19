@@ -142,6 +142,34 @@ describe('pnum', () => {
     expect(result3.toString()).toBe('12345.5678');
   });
 
+  it('should correctly parse ViewView', () => {
+    const result = pnum(
+      new ValueView({
+        valueView: {
+          case: 'knownAssetId',
+          value: {
+            amount: new Amount({
+              lo: 123455678n,
+              hi: 0n,
+            }),
+            metadata: new Metadata({
+              base: 'UM',
+              display: 'penumbra',
+              denomUnits: [
+                new DenomUnit({
+                  exponent: 4,
+                  denom: 'penumbra',
+                }),
+              ],
+            }),
+          },
+        },
+      }),
+    );
+
+    expect(result.toString()).toBe('12345.5678');
+  });
+
   it('should correctly convert to ValueView', () => {
     const unknown = pnum(12345.5678, { exponent: 4 }).toValueView();
     const metadata = new Metadata({
