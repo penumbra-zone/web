@@ -804,8 +804,8 @@ dependencies = [
 
 [[package]]
 name = "decaf377-fmd"
-version = "0.80.5"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=5e8ea2b12777e5956db6ea5c620877e5d1aa2de5#5e8ea2b12777e5956db6ea5c620877e5d1aa2de5"
+version = "0.81.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.81.0#8df36a4247ae90acc8aecc48bfa37e55785f779f"
 dependencies = [
  "ark-ff",
  "ark-serialize",
@@ -818,8 +818,8 @@ dependencies = [
 
 [[package]]
 name = "decaf377-ka"
-version = "0.80.5"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=5e8ea2b12777e5956db6ea5c620877e5d1aa2de5#5e8ea2b12777e5956db6ea5c620877e5d1aa2de5"
+version = "0.81.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.81.0#8df36a4247ae90acc8aecc48bfa37e55785f779f"
 dependencies = [
  "ark-ff",
  "decaf377",
@@ -1043,8 +1043,9 @@ dependencies = [
 
 [[package]]
 name = "f4jumble"
-version = "0.0.0"
-source = "git+https://github.com/zcash/librustzcash?rev=2425a0869098e3b0588ccd73c42716bcf418612c#2425a0869098e3b0588ccd73c42716bcf418612c"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0d42773cb15447644d170be20231a3268600e0c4cea8987d013b93ac973d3cf7"
 dependencies = [
  "blake2b_simd 1.0.2",
 ]
@@ -2103,8 +2104,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-asset"
-version = "0.80.5"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=5e8ea2b12777e5956db6ea5c620877e5d1aa2de5#5e8ea2b12777e5956db6ea5c620877e5d1aa2de5"
+version = "0.81.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.81.0#8df36a4247ae90acc8aecc48bfa37e55785f779f"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2121,6 +2122,7 @@ dependencies = [
  "decaf377-rdsa",
  "derivative",
  "ethnum",
+ "getrandom",
  "hex",
  "ibig",
  "num-bigint",
@@ -2141,8 +2143,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-auction"
-version = "0.80.5"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=5e8ea2b12777e5956db6ea5c620877e5d1aa2de5#5e8ea2b12777e5956db6ea5c620877e5d1aa2de5"
+version = "0.81.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.81.0#8df36a4247ae90acc8aecc48bfa37e55785f779f"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2186,8 +2188,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-community-pool"
-version = "0.80.5"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=5e8ea2b12777e5956db6ea5c620877e5d1aa2de5#5e8ea2b12777e5956db6ea5c620877e5d1aa2de5"
+version = "0.81.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.81.0#8df36a4247ae90acc8aecc48bfa37e55785f779f"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2216,8 +2218,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-compact-block"
-version = "0.80.5"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=5e8ea2b12777e5956db6ea5c620877e5d1aa2de5#5e8ea2b12777e5956db6ea5c620877e5d1aa2de5"
+version = "0.81.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.81.0#8df36a4247ae90acc8aecc48bfa37e55785f779f"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2247,8 +2249,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-dex"
-version = "0.80.5"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=5e8ea2b12777e5956db6ea5c620877e5d1aa2de5#5e8ea2b12777e5956db6ea5c620877e5d1aa2de5"
+version = "0.81.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.81.0#8df36a4247ae90acc8aecc48bfa37e55785f779f"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2300,8 +2302,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-distributions"
-version = "0.80.5"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=5e8ea2b12777e5956db6ea5c620877e5d1aa2de5#5e8ea2b12777e5956db6ea5c620877e5d1aa2de5"
+version = "0.81.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.81.0#8df36a4247ae90acc8aecc48bfa37e55785f779f"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2316,8 +2318,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-fee"
-version = "0.80.5"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=5e8ea2b12777e5956db6ea5c620877e5d1aa2de5#5e8ea2b12777e5956db6ea5c620877e5d1aa2de5"
+version = "0.81.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.81.0#8df36a4247ae90acc8aecc48bfa37e55785f779f"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2340,8 +2342,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-governance"
-version = "0.80.5"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=5e8ea2b12777e5956db6ea5c620877e5d1aa2de5#5e8ea2b12777e5956db6ea5c620877e5d1aa2de5"
+version = "0.81.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.81.0#8df36a4247ae90acc8aecc48bfa37e55785f779f"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2389,8 +2391,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-ibc"
-version = "0.80.5"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=5e8ea2b12777e5956db6ea5c620877e5d1aa2de5#5e8ea2b12777e5956db6ea5c620877e5d1aa2de5"
+version = "0.81.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.81.0#8df36a4247ae90acc8aecc48bfa37e55785f779f"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2424,8 +2426,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-keys"
-version = "0.80.5"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=5e8ea2b12777e5956db6ea5c620877e5d1aa2de5#5e8ea2b12777e5956db6ea5c620877e5d1aa2de5"
+version = "0.81.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.81.0#8df36a4247ae90acc8aecc48bfa37e55785f779f"
 dependencies = [
  "aes",
  "anyhow",
@@ -2468,8 +2470,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-num"
-version = "0.80.5"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=5e8ea2b12777e5956db6ea5c620877e5d1aa2de5#5e8ea2b12777e5956db6ea5c620877e5d1aa2de5"
+version = "0.81.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.81.0#8df36a4247ae90acc8aecc48bfa37e55785f779f"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2504,8 +2506,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-proof-params"
-version = "0.80.5"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=5e8ea2b12777e5956db6ea5c620877e5d1aa2de5#5e8ea2b12777e5956db6ea5c620877e5d1aa2de5"
+version = "0.81.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.81.0#8df36a4247ae90acc8aecc48bfa37e55785f779f"
 dependencies = [
  "anyhow",
  "ark-ec",
@@ -2529,8 +2531,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-proto"
-version = "0.80.5"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=5e8ea2b12777e5956db6ea5c620877e5d1aa2de5#5e8ea2b12777e5956db6ea5c620877e5d1aa2de5"
+version = "0.81.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.81.0#8df36a4247ae90acc8aecc48bfa37e55785f779f"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2556,8 +2558,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sct"
-version = "0.80.5"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=5e8ea2b12777e5956db6ea5c620877e5d1aa2de5#5e8ea2b12777e5956db6ea5c620877e5d1aa2de5"
+version = "0.81.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.81.0#8df36a4247ae90acc8aecc48bfa37e55785f779f"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2589,8 +2591,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-shielded-pool"
-version = "0.80.5"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=5e8ea2b12777e5956db6ea5c620877e5d1aa2de5#5e8ea2b12777e5956db6ea5c620877e5d1aa2de5"
+version = "0.81.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.81.0#8df36a4247ae90acc8aecc48bfa37e55785f779f"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2640,8 +2642,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-stake"
-version = "0.80.5"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=5e8ea2b12777e5956db6ea5c620877e5d1aa2de5#5e8ea2b12777e5956db6ea5c620877e5d1aa2de5"
+version = "0.81.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.81.0#8df36a4247ae90acc8aecc48bfa37e55785f779f"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2681,8 +2683,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-tct"
-version = "0.80.5"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=5e8ea2b12777e5956db6ea5c620877e5d1aa2de5#5e8ea2b12777e5956db6ea5c620877e5d1aa2de5"
+version = "0.81.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.81.0#8df36a4247ae90acc8aecc48bfa37e55785f779f"
 dependencies = [
  "ark-ed-on-bls12-377",
  "ark-ff",
@@ -2694,6 +2696,7 @@ dependencies = [
  "decaf377",
  "derivative",
  "futures",
+ "getrandom",
  "hash_hasher",
  "hex",
  "im",
@@ -2709,8 +2712,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-transaction"
-version = "0.80.5"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=5e8ea2b12777e5956db6ea5c620877e5d1aa2de5#5e8ea2b12777e5956db6ea5c620877e5d1aa2de5"
+version = "0.81.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.81.0#8df36a4247ae90acc8aecc48bfa37e55785f779f"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2760,8 +2763,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-txhash"
-version = "0.80.5"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=5e8ea2b12777e5956db6ea5c620877e5d1aa2de5#5e8ea2b12777e5956db6ea5c620877e5d1aa2de5"
+version = "0.81.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.81.0#8df36a4247ae90acc8aecc48bfa37e55785f779f"
 dependencies = [
  "anyhow",
  "blake2b_simd 1.0.2",
