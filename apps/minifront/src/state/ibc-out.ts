@@ -2,6 +2,7 @@ import { AllSlices, SliceCreator, useStore } from '.';
 import {
   BalancesResponse,
   TransactionPlannerRequest,
+  TransparentAddressRequest,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { BigNumber } from 'bignumber.js';
 import { ClientState } from '@penumbra-zone/protobuf/ibc/lightclients/tendermint/v1/tendermint_pb';
@@ -24,7 +25,6 @@ import { Channel } from '@penumbra-zone/protobuf/ibc/core/channel/v1/channel_pb'
 import { BLOCKS_PER_HOUR } from './constants';
 import { createZQuery, ZQueryState } from '@penumbra-zone/zquery';
 import { getChains } from '../fetchers/registry';
-import { bech32ChainIds } from './shared';
 import { penumbra } from '../penumbra';
 import {
   IbcChannelService,
@@ -206,7 +206,7 @@ const getPlanRequest = async ({
   }
 
   const addressIndex = getAddressIndex(selection.accountAddress);
-  const { address: returnAddress } = await penumbra
+  let { address: returnAddress } = await penumbra
     .service(ViewService)
     .ephemeralAddress({ addressIndex });
   if (!returnAddress) {
@@ -215,6 +215,25 @@ const getPlanRequest = async ({
 
   const { timeoutHeight, timeoutTime } = await getTimeout(chain.channelId);
 
+  // Request transparent address from view service
+  const { address: t_addr } = await penumbra
+    .service(ViewService)
+    .transparentAddress(new TransparentAddressRequest({}));
+  if (!t_addr) {
+    throw new Error('Error with generating IBC transparent address');
+  }
+
+  // IBC-related fields
+  const denom = getMetadata(selection.balanceView).base;
+  let useTransparentAddress = false;
+
+  // Temporary: detect USDC Noble withdrawals, and use a transparent (t-addr) return
+  // address to ensure bech32m encoding compatibility.
+  if (denom.includes('uusdc') && (chain.chainId === 'noble-1' || chain.chainId === 'grand-1')) {
+    useTransparentAddress = true;
+    returnAddress = t_addr;
+  }
+
   return new TransactionPlannerRequest({
     ics20Withdrawals: [
       {
@@ -222,13 +241,13 @@ const getPlanRequest = async ({
           BigNumber(amount),
           getDisplayDenomExponentFromValueView(selection.balanceView),
         ),
-        denom: { denom: getMetadata(selection.balanceView).base },
+        denom: { denom },
         destinationChainAddress,
         returnAddress,
         timeoutHeight,
         timeoutTime,
         sourceChannel: chain.channelId,
-        useCompatAddress: bech32ChainIds.includes(chain.chainId),
+        useTransparentAddress,
       },
     ],
     source: addressIndex,
