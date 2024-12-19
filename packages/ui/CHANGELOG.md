@@ -1,5 +1,16 @@
 # @penumbra-zone/ui
 
+## 13.7.0
+
+### Minor Changes
+
+- 6f74253: Add trailingZeros option to ValueView
+
+### Patch Changes
+
+- Updated dependencies [d619836]
+  - @penumbra-zone/types@26.4.0
+
 ## 13.6.0
 
 ### Minor Changes
