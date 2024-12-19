@@ -2,6 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { pnum } from './pnum.js';
 import { BigNumber } from 'bignumber.js';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import {
+  DenomUnit,
+  Metadata,
+  ValueView,
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
 describe('pnum', () => {
   it('should correctly parse and convert a number with decimals', () => {
@@ -135,5 +140,49 @@ describe('pnum', () => {
     expect(result2.toFormattedString()).toBe('12,345.5678');
     expect(result2.toFormattedString()).toBe(result3.toFormattedString());
     expect(result3.toString()).toBe('12345.5678');
+  });
+
+  it('should correctly convert to ValueView', () => {
+    const unknown = pnum(12345.5678, { exponent: 4 }).toValueView();
+    const metadata = new Metadata({
+      base: 'UM',
+      display: 'penumbra',
+      denomUnits: [
+        new DenomUnit({
+          exponent: 0,
+          denom: 'UM',
+        }),
+      ],
+    });
+    const known = pnum(12345.5678, { exponent: 4 }).toValueView(metadata);
+
+    expect(unknown).toStrictEqual(
+      new ValueView({
+        valueView: {
+          case: 'unknownAssetId',
+          value: {
+            amount: new Amount({
+              lo: 123455678n,
+              hi: 0n,
+            }),
+          },
+        },
+      }),
+    );
+
+    expect(known).toStrictEqual(
+      new ValueView({
+        valueView: {
+          case: 'knownAssetId',
+          value: {
+            amount: new Amount({
+              lo: 123455678n,
+              hi: 0n,
+            }),
+            metadata,
+          },
+        },
+      }),
+    );
   });
 });
