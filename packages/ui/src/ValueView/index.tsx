@@ -1,7 +1,6 @@
 import { ReactNode } from 'react';
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getMetadata } from '@penumbra-zone/getters/value-view';
-import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
 import { ConditionalWrap } from '../ConditionalWrap';
 import { Pill, PillProps } from '../Pill';
 import { Text } from '../Text';
@@ -10,6 +9,7 @@ import { Density, useDensity } from '../utils/density';
 import cn from 'clsx';
 import { shortify } from '@penumbra-zone/types/shortify';
 import { detailTechnical, technical } from '../utils/typography.ts';
+import { pnum } from '@penumbra-zone/types/pnum';
 
 type Context = 'default' | 'table';
 
@@ -47,6 +47,10 @@ export interface ValueViewComponentProps<SelectedContext extends Context> {
    * If false, the amount will not be displayed.
    */
   showValue?: boolean;
+  /**
+   * If true, the amount will have trailing zeros.
+   */
+  trailingZeros?: boolean;
 }
 
 /**
@@ -63,6 +67,7 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
   showSymbol = true,
   abbreviate = false,
   showValue = true,
+  trailingZeros = false,
 }: ValueViewComponentProps<SelectedContext>) => {
   const density = useDensity();
 
@@ -70,11 +75,9 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
     return null;
   }
 
-  let formattedAmount: string | undefined;
-  if (showValue) {
-    const amount = getFormattedAmtFromValueView(valueView, !abbreviate);
-    formattedAmount = abbreviate ? shortify(Number(amount)) : amount;
-  }
+  const formattedAmount = abbreviate
+    ? shortify(pnum(valueView).toNumber())
+    : pnum(valueView).toFormattedString({ trailingZeros });
 
   const metadata = getMetadata.optional(valueView);
   // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- possibly empty string
@@ -113,7 +116,7 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
           )}
         >
           {showValue && (
-            <div className='shrink grow' title={formattedAmount ?? undefined}>
+            <div className='shrink grow' title={formattedAmount}>
               <ValueText density={density}>{formattedAmount}</ValueText>
             </div>
           )}
