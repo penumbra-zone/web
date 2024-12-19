@@ -32,7 +32,6 @@ import {
   IbcConnectionService,
   ViewService,
 } from '@penumbra-zone/protobuf';
-import { bech32ChainIds } from './shared';
 
 export const { chains, useChains } = createZQuery({
   name: 'chains',
@@ -228,13 +227,10 @@ const getPlanRequest = async ({
   const denom = getMetadata(selection.balanceView).base;
   let useTransparentAddress = false;
 
-  // Temporary: detect USDC Noble withdrawals, and use a transparent (t-addr) address
-  // to ensure bech32m encoding compatibility.
+  // Temporary: detect USDC Noble withdrawals, and use a transparent (t-addr) return
+  // address to ensure bech32m encoding compatibility.
   if (denom.includes('uusdc') && (chain.chainId === 'noble-1' || chain.chainId === 'grand-1')) {
-    // Use the t-addr for USDC withdrawals, and don't override existing
-    // 'useCompatAddress' field to maintain backwards compatibility.
     useTransparentAddress = true;
-    // Set the return address to the t-addr.
     returnAddress = t_addr;
   }
 
@@ -251,7 +247,6 @@ const getPlanRequest = async ({
         timeoutHeight,
         timeoutTime,
         sourceChannel: chain.channelId,
-        useCompatAddress: bech32ChainIds.includes(chain.chainId),
         useTransparentAddress,
       },
     ],
