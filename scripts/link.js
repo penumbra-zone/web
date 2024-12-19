@@ -28,7 +28,6 @@ const packagesDir = path.join(path.dirname(__filename), '..', 'packages');
 
 // Get the command-line argument to determine action
 const action = process.argv[2];
-console.log('TCL: action', action, typeof action);
 const enableLinking = ['enable', 'link', '1', 'true', undefined].includes(action);
 const disableLinking = ['disable', 'unlink', '0', 'false'].includes(action);
 
