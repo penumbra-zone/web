@@ -32,6 +32,7 @@ import {
   IbcConnectionService,
   ViewService,
 } from '@penumbra-zone/protobuf';
+import { bech32ChainIds } from './shared';
 
 export const { chains, useChains } = createZQuery({
   name: 'chains',
@@ -229,7 +230,7 @@ const getPlanRequest = async ({
 
   // Temporary: detect USDC Noble withdrawals, and use a transparent (t-addr) return
   // address to ensure bech32m encoding compatibility.
-  if (denom.includes('uusdc') && (chain.chainId === 'noble-1' || chain.chainId === 'grand-1')) {
+  if (denom.includes('uusdc') && bech32ChainIds.includes(chain.chainId)) {
     useTransparentAddress = true;
     returnAddress = t_addr;
   }

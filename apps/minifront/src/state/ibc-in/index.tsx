@@ -20,6 +20,7 @@ import { parseRevisionNumberFromChainId } from './parse-revision-number-from-cha
 import { penumbra } from '../../penumbra.ts';
 import { TendermintProxyService, ViewService } from '@penumbra-zone/protobuf';
 import { TransparentAddressRequest } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { bech32ChainIds } from '../shared.ts';
 
 export interface IbcInSlice {
   selectedChain?: ChainInfo;
@@ -211,10 +212,7 @@ async function execute(
 
   // Temporary: detect USDC Noble inbound transfers, and use transparent (t-addr) encoding
   // to ensure bech32m encoding compatibility.
-  if (
-    transferToken.denom.includes('uusdc') &&
-    (selectedChain.chainId === 'noble-1' || selectedChain.chainId === 'grand-1')
-  ) {
+  if (transferToken.denom.includes('uusdc') && bech32ChainIds.includes(selectedChain.chainId)) {
     // Set the reciever address to the t-addr encoding.
     penumbraAddress = encoding;
   }
