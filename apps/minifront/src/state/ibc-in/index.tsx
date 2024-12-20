@@ -6,8 +6,6 @@ import { getAddrByIndex } from '../../fetchers/address';
 import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 import { Toast } from '@penumbra-zone/ui-deprecated/lib/toast/toast';
 import { shorten } from '@penumbra-zone/types/string';
-import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { bech32CompatAddress } from '@penumbra-zone/bech32m/penumbracompat1';
 import { calculateFee, GasPrice, SigningStargateClient } from '@cosmjs/stargate';
 import { chains } from 'chain-registry';
 import { getChainId } from '../../fetchers/chain-id';
@@ -19,7 +17,6 @@ import { currentTimePlusTwoDaysRounded } from '../ibc-out';
 import { EncodeObject } from '@cosmjs/proto-signing';
 import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
 import { parseRevisionNumberFromChainId } from './parse-revision-number-from-chain-id';
-import { bech32ChainIds } from '../shared.ts';
 import { penumbra } from '../../penumbra.ts';
 import { TendermintProxyService, ViewService } from '@penumbra-zone/protobuf';
 import { TransparentAddressRequest } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
@@ -136,10 +133,6 @@ const getExplorerPage = (txHash: string, chainId?: string) => {
   return txPage.replace('${txHash}', txHash);
 };
 
-const getCompatibleBech32 = (chainId: string, address: Address): string => {
-  return bech32ChainIds.includes(chainId) ? bech32CompatAddress(address) : bech32mAddress(address);
-};
-
 export const getPenumbraAddress = async (
   account: number,
   chainId?: string,
@@ -148,7 +141,7 @@ export const getPenumbraAddress = async (
     return undefined;
   }
   const receiverAddress = await getAddrByIndex(account, true);
-  return getCompatibleBech32(chainId, receiverAddress);
+  return bech32mAddress(receiverAddress);
 };
 
 const estimateFee = async ({
