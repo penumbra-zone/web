@@ -210,8 +210,8 @@ async function execute(
     throw new Error('Error with generating IBC transparent address');
   }
 
-  // Temporary: detect USDC Noble inbound transfers, and use transparent (t-addr) encoding
-  // to ensure bech32m encoding compatibility.
+  // Temporary: detect USDC Noble inbound transfers, and use a transparent (t-addr) encoding
+  // to ensure Bech32 encoding compatibility.
   if (transferToken.denom.includes('uusdc') && bech32ChainIds.includes(selectedChain.chainId)) {
     // Set the reciever address to the t-addr encoding.
     penumbraAddress = encoding;

@@ -229,7 +229,7 @@ const getPlanRequest = async ({
   let useTransparentAddress = false;
 
   // Temporary: detect USDC Noble withdrawals, and use a transparent (t-addr) return
-  // address to ensure bech32m encoding compatibility.
+  // address to ensure Bech32 encoding compatibility.
   if (denom.includes('uusdc') && bech32ChainIds.includes(chain.chainId)) {
     useTransparentAddress = true;
     returnAddress = t_addr;
