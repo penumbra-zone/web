@@ -2,14 +2,6 @@ import { describe, expect, test } from 'vitest';
 import { parseIntoAddr } from './address.js';
 
 describe('parseIntoAddr', () => {
-  test('works with compat', () => {
-    expect(() =>
-      parseIntoAddr(
-        'penumbracompat1147mfall0zr6am5r45qkwht7xqqrdsp50czde7empv7yq2nk3z8yyfh9k9520ddgswkmzar22vhz9dwtuem7uxw0qytfpv7lk3q9dp8ccaw2fn5c838rfackazmgf3ahhwqq0da',
-      ),
-    ).not.toThrow();
-  });
-
   test('works with normal addresses', () => {
     expect(() =>
       parseIntoAddr(

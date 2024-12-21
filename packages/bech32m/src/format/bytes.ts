@@ -4,7 +4,6 @@ export const ByteLength = {
   passet: 32,
   pauctid: 32,
   penumbra: 80,
-  penumbracompat1: 80,
   penumbrafullviewingkey: 64,
   penumbragovern: 32,
   penumbraspendkey: 32,
