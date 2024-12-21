@@ -231,6 +231,7 @@ const getPlanRequest = async ({
   // Temporary: detect USDC Noble withdrawals, and use a transparent (t-addr) return
   // address to ensure Bech32 encoding compatibility.
   if (denom.includes('uusdc') && bech32ChainIds.includes(chain.chainId)) {
+    // Outbound IBC transfers timeout without setting either of these fields.
     useTransparentAddress = true;
     returnAddress = t_addr;
   }
