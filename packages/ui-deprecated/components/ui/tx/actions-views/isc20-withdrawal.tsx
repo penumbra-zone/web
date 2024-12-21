@@ -41,8 +41,8 @@ export const Ics20WithdrawalComponent = ({ value }: { value: Ics20Withdrawal }) 
             </ActionDetails.Row>
           )}
 
-          <ActionDetails.Row label='Use Compat Address'>
-            {value.useCompatAddress ? 'TRUE' : 'FALSE'}
+          <ActionDetails.Row label='Use Transparent Address'>
+            {value.useTransparentAddress ? 'TRUE' : 'FALSE'}
           </ActionDetails.Row>
 
           {value.timeoutHeight && (

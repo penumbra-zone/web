@@ -4,7 +4,6 @@ export const Inner = {
   passet: 'inner',
   pauctid: 'inner',
   penumbra: 'inner',
-  penumbracompat1: 'inner',
   penumbrafullviewingkey: 'inner',
   penumbragovern: 'gk',
   penumbraspendkey: 'inner',

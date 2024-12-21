@@ -6,8 +6,6 @@ import { getAddrByIndex } from '../../fetchers/address';
 import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 import { Toast } from '@penumbra-zone/ui-deprecated/lib/toast/toast';
 import { shorten } from '@penumbra-zone/types/string';
-import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { bech32CompatAddress } from '@penumbra-zone/bech32m/penumbracompat1';
 import { calculateFee, GasPrice, SigningStargateClient } from '@cosmjs/stargate';
 import { chains } from 'chain-registry';
 import { getChainId } from '../../fetchers/chain-id';
@@ -19,9 +17,10 @@ import { currentTimePlusTwoDaysRounded } from '../ibc-out';
 import { EncodeObject } from '@cosmjs/proto-signing';
 import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
 import { parseRevisionNumberFromChainId } from './parse-revision-number-from-chain-id';
-import { bech32ChainIds } from '../shared.ts';
 import { penumbra } from '../../penumbra.ts';
-import { TendermintProxyService } from '@penumbra-zone/protobuf';
+import { TendermintProxyService, ViewService } from '@penumbra-zone/protobuf';
+import { TransparentAddressRequest } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { bech32ChainIds } from '../shared.ts';
 
 export interface IbcInSlice {
   selectedChain?: ChainInfo;
@@ -135,10 +134,6 @@ const getExplorerPage = (txHash: string, chainId?: string) => {
   return txPage.replace('${txHash}', txHash);
 };
 
-const getCompatibleBech32 = (chainId: string, address: Address): string => {
-  return bech32ChainIds.includes(chainId) ? bech32CompatAddress(address) : bech32mAddress(address);
-};
-
 export const getPenumbraAddress = async (
   account: number,
   chainId?: string,
@@ -147,7 +142,7 @@ export const getPenumbraAddress = async (
     return undefined;
   }
   const receiverAddress = await getAddrByIndex(account, true);
-  return getCompatibleBech32(chainId, receiverAddress);
+  return bech32mAddress(receiverAddress);
 };
 
 const estimateFee = async ({
@@ -198,7 +193,7 @@ async function execute(
     throw new Error('Penumbra chain id could not be retrieved');
   }
 
-  const penumbraAddress = await getPenumbraAddress(account, selectedChain.chainId);
+  let penumbraAddress = await getPenumbraAddress(account, selectedChain.chainId);
   if (!penumbraAddress) {
     throw new Error('Penumbra address not available');
   }
@@ -207,6 +202,21 @@ async function execute(
   const assetMetadata = augmentToAsset(coin.raw.denom, selectedChain.chainName);
 
   const transferToken = fromDisplayAmount(assetMetadata, coin.displayDenom, amount);
+
+  const { address: t_addr, encoding: encoding } = await penumbra
+    .service(ViewService)
+    .transparentAddress(new TransparentAddressRequest({}));
+  if (!t_addr) {
+    throw new Error('Error with generating IBC transparent address');
+  }
+
+  // Temporary: detect USDC Noble inbound transfers, and use a transparent (t-addr) encoding
+  // to ensure Bech32 encoding compatibility.
+  if (transferToken.denom.includes('uusdc') && bech32ChainIds.includes(selectedChain.chainId)) {
+    // Set the reciever address to the t-addr encoding.
+    penumbraAddress = encoding;
+  }
+
   const params: MsgTransfer = {
     sourcePort: 'transfer',
     sourceChannel: await getCounterpartyChannelId(selectedChain, penumbraChainId),
