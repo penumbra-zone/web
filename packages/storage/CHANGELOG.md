@@ -1,5 +1,16 @@
 # @penumbra-zone/storage
 
+## 42.0.0
+
+### Patch Changes
+
+- Updated dependencies [95d5fd9]
+  - @penumbra-zone/protobuf@7.0.0
+  - @penumbra-zone/bech32m@11.0.0
+  - @penumbra-zone/types@27.0.0
+  - @penumbra-zone/wasm@36.0.0
+  - @penumbra-zone/getters@21.0.0
+
 ## 41.0.0
 
 ### Patch Changes
