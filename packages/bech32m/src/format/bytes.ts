@@ -11,4 +11,5 @@ export const ByteLength = {
   penumbravalid: 32,
   penumbrawalletid: 32,
   plpid: 32,
+  tpenumbra: 32,
 } as const satisfies Required<Record<Prefix, number>>;

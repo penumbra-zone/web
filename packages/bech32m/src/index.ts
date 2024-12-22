@@ -28,3 +28,6 @@ export const PENUMBRA_BECH32M_WALLETID_PREFIX = SPEC.penumbrawalletid.prefix;
 
 export const PENUMBRA_BECH32M_POSITIONID_LENGTH = SPEC.plpid.stringLength;
 export const PENUMBRA_BECH32M_POSITIONID_PREFIX = SPEC.plpid.prefix;
+
+export const PENUMBRA_BECH32M_TRANSPARENT_LENGTH = SPEC.tpenumbra.stringLength;
+export const PENUMBRA_BECH32M_TRANSPARENT_PREFIX = SPEC.tpenumbra.prefix;
