@@ -5,6 +5,7 @@ import {
   get_full_viewing_key,
   get_noble_forwarding_addr,
   get_transparent_address,
+  get_transmission_key_by_address,
   get_wallet_id,
 } from '../wasm/index.js';
 import {
@@ -64,4 +65,9 @@ export const getTransparentAddress = (fvk: FullViewingKey) => {
     address: Address.fromBinary(res.address),
     encoding: res.encoding,
   };
+};
+
+export const getTransmissionKeyByAddress = (address: Address) => {
+  const transmission_key = get_transmission_key_by_address(address.toBinary());
+  return transmission_key;
 };

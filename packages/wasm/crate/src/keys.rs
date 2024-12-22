@@ -202,3 +202,16 @@ pub fn get_transparent_address(full_viewing_key: &[u8]) -> WasmResult<Transparen
         encoding: encoding.to_string(),
     })
 }
+
+/// get transmission key (public key for this payment address)
+/// Arguments:
+///     address: `byte representation inner Address`
+/// Returns: `Uint8Array representing inner Address`
+#[wasm_bindgen]
+pub fn get_transmission_key_by_address(address: &[u8]) -> WasmResult<Vec<u8>> {
+    utils::set_panic_hook();
+
+    let address: Address = Address::decode(address)?;
+    let transmission_key = address.transmission_key();
+    Ok(transmission_key.0.to_vec())
+}
