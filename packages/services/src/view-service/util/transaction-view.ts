@@ -5,9 +5,11 @@ import { getTransmissionKeyByAddress } from '@penumbra-zone/wasm/keys';
 // in the UI component library. For example, when handling IBC withdrawals with transparent
 // addresses, this component transforms ephemeral addresses into their bech32-encoded
 // transparent form to ensure the proper data is being displayed.
-export const txvTranslator = async (view: TransactionView): Promise<TransactionView> => {
+export const txvTranslator = (view: TransactionView): TransactionView => {
   // 'Ics20Withdrawal' action view
-  const withdrawalAction = view?.bodyView?.actionViews?.find(
+  if (!view.bodyView) return view;
+
+  const withdrawalAction = view.bodyView.actionViews.find(
     action => action.actionView.case === 'ics20Withdrawal',
   );
 

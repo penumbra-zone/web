@@ -24,13 +24,14 @@ export const transactionInfoByHash: Impl['transactionInfoByHash'] = async (req, 
     throw new ConnectError('Transaction not available', Code.NotFound);
   }
 
-  let { txp: perspective, txv: view } = await generateTransactionInfo(
+  const { txp: perspective, txv } = await generateTransactionInfo(
     await fvk(),
     transaction,
     indexedDb.constants(),
   );
 
   // Invoke a higher-level translator on the transaction view.
+  let view = txv;
   view = await txvTranslator(view);
 
   const txInfo = new TransactionInfo({ height, id: req.id, transaction, perspective, view });
