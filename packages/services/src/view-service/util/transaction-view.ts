@@ -7,7 +7,9 @@ import { getTransmissionKeyByAddress } from '@penumbra-zone/wasm/keys';
 // transparent form to ensure the proper data is being displayed.
 export const txvTranslator = (view: TransactionView): TransactionView => {
   // 'Ics20Withdrawal' action view
-  if (!view.bodyView) return view;
+  if (!view.bodyView) {
+    return view;
+  }
 
   const withdrawalAction = view.bodyView.actionViews.find(
     action => action.actionView.case === 'ics20Withdrawal',
