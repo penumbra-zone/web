@@ -1,5 +1,16 @@
 # @penumbra-zone/bech32
 
+## 11.0.0
+
+### Minor Changes
+
+- 95d5fd9: support transparent addresses for usdc noble IBC withdrawals
+
+### Patch Changes
+
+- Updated dependencies [95d5fd9]
+  - @penumbra-zone/protobuf@7.0.0
+
 ## 10.0.0
 
 ### Patch Changes

@@ -1,5 +1,23 @@
 # minifront
 
+## 6.27.0
+
+### Minor Changes
+
+- 95d5fd9: support transparent addresses for usdc noble IBC withdrawals
+
+### Patch Changes
+
+- Updated dependencies [95d5fd9]
+  - @penumbra-zone/protobuf@7.0.0
+  - @penumbra-zone/bech32m@11.0.0
+  - @penumbra-zone/types@27.0.0
+  - @penumbra-zone/client@22.0.0
+  - @penumbra-zone/getters@21.0.0
+  - @penumbra-zone/perspective@42.0.0
+  - @penumbra-zone/ui-deprecated@13.0.0
+  - @penumbra-zone/crypto-web@32.0.0
+
 ## 6.26.1
 
 ### Patch Changes

@@ -1,5 +1,22 @@
 # @penumbra-zone/router
 
+## 47.0.0
+
+### Minor Changes
+
+- 95d5fd9: support transparent addresses for usdc noble IBC withdrawals
+
+### Patch Changes
+
+- Updated dependencies [95d5fd9]
+  - @penumbra-zone/protobuf@7.0.0
+  - @penumbra-zone/bech32m@11.0.0
+  - @penumbra-zone/types@27.0.0
+  - @penumbra-zone/wasm@36.0.0
+  - @penumbra-zone/getters@21.0.0
+  - @penumbra-zone/storage@42.0.0
+  - @penumbra-zone/crypto-web@32.0.0
+
 ## 46.0.0
 
 ### Patch Changes
