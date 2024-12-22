@@ -31,8 +31,7 @@ export const transactionInfoByHash: Impl['transactionInfoByHash'] = async (req, 
   );
 
   // Invoke a higher-level translator on the transaction view.
-  let view = txv;
-  view = await txvTranslator(view);
+  const view = txvTranslator(txv);
 
   const txInfo = new TransactionInfo({ height, id: req.id, transaction, perspective, view });
   return { txInfo };
