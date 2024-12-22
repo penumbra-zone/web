@@ -4,6 +4,7 @@ import { Code, ConnectError } from '@connectrpc/connect';
 import { generateTransactionInfo } from '@penumbra-zone/wasm/transaction';
 import { TransactionInfo } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { fvkCtx } from '../ctx/full-viewing-key.js';
+import { txvTranslator } from './util/transaction-view.js';
 
 export const transactionInfoByHash: Impl['transactionInfoByHash'] = async (req, ctx) => {
   if (!req.id) {
@@ -23,11 +24,15 @@ export const transactionInfoByHash: Impl['transactionInfoByHash'] = async (req, 
     throw new ConnectError('Transaction not available', Code.NotFound);
   }
 
-  const { txp: perspective, txv: view } = await generateTransactionInfo(
+  let { txp: perspective, txv: view } = await generateTransactionInfo(
     await fvk(),
     transaction,
     indexedDb.constants(),
   );
+
+  // Invoke a higher-level translator on the transaction view.
+  view = await txvTranslator(view);
+
   const txInfo = new TransactionInfo({ height, id: req.id, transaction, perspective, view });
   return { txInfo };
 };
