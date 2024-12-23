@@ -2,6 +2,7 @@ import { AllSlices, SliceCreator, useStore } from '.';
 import {
   BalancesResponse,
   TransactionPlannerRequest,
+  TransparentAddressRequest,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { BigNumber } from 'bignumber.js';
 import { ClientState } from '@penumbra-zone/protobuf/ibc/lightclients/tendermint/v1/tendermint_pb';
@@ -24,7 +25,6 @@ import { Channel } from '@penumbra-zone/protobuf/ibc/core/channel/v1/channel_pb'
 import { BLOCKS_PER_HOUR } from './constants';
 import { createZQuery, ZQueryState } from '@penumbra-zone/zquery';
 import { getChains } from '../fetchers/registry';
-import { bech32ChainIds } from './shared';
 import { penumbra } from '../penumbra';
 import {
   IbcChannelService,
@@ -32,6 +32,7 @@ import {
   IbcConnectionService,
   ViewService,
 } from '@penumbra-zone/protobuf';
+import { bech32ChainIds } from './shared';
 
 export const { chains, useChains } = createZQuery({
   name: 'chains',
@@ -206,7 +207,7 @@ const getPlanRequest = async ({
   }
 
   const addressIndex = getAddressIndex(selection.accountAddress);
-  const { address: returnAddress } = await penumbra
+  let { address: returnAddress } = await penumbra
     .service(ViewService)
     .ephemeralAddress({ addressIndex });
   if (!returnAddress) {
@@ -215,6 +216,30 @@ const getPlanRequest = async ({
 
   const { timeoutHeight, timeoutTime } = await getTimeout(chain.channelId);
 
+  // IBC-related fields
+  const denom = getMetadata(selection.balanceView).base;
+  let useTransparentAddress = false;
+
+  // Temporary: detect USDC Noble withdrawals, and use a transparent (t-addr) return
+  // address to ensure Bech32 encoding compatibility.
+  if (denom.includes('uusdc') && bech32ChainIds.includes(chain.chainId)) {
+    // Outbound IBC transfers timeout without setting either of these fields.
+    useTransparentAddress = true;
+
+    // Request transparent address from view service
+    try {
+      const { address: t_addr } = await penumbra
+        .service(ViewService)
+        .transparentAddress(new TransparentAddressRequest({}));
+      if (!t_addr) {
+        throw new Error('Error with generating IBC transparent address');
+      }
+      returnAddress = t_addr;
+    } catch (e) {
+      throw new Error('Error with generating IBC transparent address');
+    }
+  }
+
   return new TransactionPlannerRequest({
     ics20Withdrawals: [
       {
@@ -222,13 +247,13 @@ const getPlanRequest = async ({
           BigNumber(amount),
           getDisplayDenomExponentFromValueView(selection.balanceView),
         ),
-        denom: { denom: getMetadata(selection.balanceView).base },
+        denom: { denom },
         destinationChainAddress,
         returnAddress,
         timeoutHeight,
         timeoutTime,
         sourceChannel: chain.channelId,
-        useCompatAddress: bech32ChainIds.includes(chain.chainId),
+        useTransparentAddress,
       },
     ],
     source: addressIndex,

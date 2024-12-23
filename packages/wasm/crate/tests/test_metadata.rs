@@ -39,6 +39,7 @@ fn get_metadata_for(display_denom: &str, base_denom_is_display_denom: bool) -> p
         penumbra_asset_id: None,
         symbol: String::from(""),
         priority_score: 0,
+        badges: Vec::new(),
     }
 }
 

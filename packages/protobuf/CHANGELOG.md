@@ -1,5 +1,11 @@
 # @penumbra-zone/protobuf
 
+## 7.0.0
+
+### Major Changes
+
+- 95d5fd9: support transparent addresses for usdc noble IBC withdrawals
+
 ## 6.3.0
 
 ### Minor Changes

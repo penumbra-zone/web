@@ -1,5 +1,15 @@
 # @penumbra-zone/ui
 
+## 13.0.0
+
+### Patch Changes
+
+- Updated dependencies [95d5fd9]
+  - @penumbra-zone/protobuf@7.0.0
+  - @penumbra-zone/bech32m@11.0.0
+  - @penumbra-zone/types@27.0.0
+  - @penumbra-zone/perspective@42.0.0
+
 ## 12.4.6
 
 ### Patch Changes

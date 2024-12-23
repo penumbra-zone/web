@@ -4,6 +4,8 @@ import {
   get_ephemeral_address,
   get_full_viewing_key,
   get_noble_forwarding_addr,
+  get_transparent_address,
+  get_transmission_key_by_address,
   get_wallet_id,
 } from '../wasm/index.js';
 import {
@@ -54,4 +56,18 @@ export const getNobleForwardingAddr = (
     nobleAddrBytes: res.noble_addr_bytes,
     penumbraAddr: Address.fromBinary(res.penumbra_addr_bytes),
   };
+};
+
+// Generates a transparent address that ensures bech32m encoding compatibility.
+export const getTransparentAddress = (fvk: FullViewingKey) => {
+  const res = get_transparent_address(fvk.toBinary());
+  return {
+    address: Address.fromBinary(res.address),
+    encoding: res.encoding,
+  };
+};
+
+export const getTransmissionKeyByAddress = (address: Address) => {
+  const transmission_key = get_transmission_key_by_address(address.toBinary());
+  return transmission_key;
 };

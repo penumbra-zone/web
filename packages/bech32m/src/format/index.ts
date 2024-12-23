@@ -31,12 +31,6 @@ export default {
     byteLength: ByteLength.penumbra,
     innerName: Inner.penumbra,
   },
-  penumbracompat1: {
-    prefix: Prefixes.penumbracompat1,
-    stringLength: StringLength.penumbracompat1,
-    byteLength: ByteLength.penumbracompat1,
-    innerName: Inner.penumbracompat1,
-  },
   penumbrafullviewingkey: {
     prefix: Prefixes.penumbrafullviewingkey,
     stringLength: StringLength.penumbrafullviewingkey,
@@ -72,5 +66,17 @@ export default {
     stringLength: StringLength.plpid,
     byteLength: ByteLength.plpid,
     innerName: Inner.plpid,
+  },
+  penumbracompat1: {
+    prefix: Prefixes.penumbracompat1,
+    stringLength: StringLength.penumbracompat1,
+    byteLength: ByteLength.penumbracompat1,
+    innerName: Inner.penumbracompat1,
+  },
+  tpenumbra: {
+    prefix: Prefixes.tpenumbra,
+    stringLength: StringLength.tpenumbra,
+    byteLength: ByteLength.tpenumbra,
+    innerName: Inner.tpenumbra,
   },
 } as const satisfies PenumbraBech32mSpec;

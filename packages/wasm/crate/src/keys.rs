@@ -181,3 +181,37 @@ pub fn forwarding_addr_inner(sequence: u16, account: Option<u32>, fvk: &FullView
 
     address
 }
+
+#[wasm_bindgen(getter_with_clone)]
+pub struct TransparentAddrResponse {
+    /// The raw (binary) transparent address
+    pub address: Vec<u8>,
+    /// The t-address encoding of the transparent address
+    pub encoding: String,
+}
+
+/// Returns the "truncated" address (t-addr) associated with the account.
+#[wasm_bindgen]
+pub fn get_transparent_address(full_viewing_key: &[u8]) -> WasmResult<TransparentAddrResponse> {
+    let fvk: FullViewingKey = FullViewingKey::decode(full_viewing_key)?;
+    let encoding = fvk.incoming().transparent_address();
+    let address: Address = encoding.parse().expect("encoding transparent address");
+
+    Ok(TransparentAddrResponse {
+        address: address.encode_to_vec(),
+        encoding: encoding.to_string(),
+    })
+}
+
+/// get transmission key (public key for this payment address)
+/// Arguments:
+///     address: `byte representation inner Address`
+/// Returns: `Uint8Array representing inner Address`
+#[wasm_bindgen]
+pub fn get_transmission_key_by_address(address: &[u8]) -> WasmResult<Vec<u8>> {
+    utils::set_panic_hook();
+
+    let address: Address = Address::decode(address)?;
+    let transmission_key = address.transmission_key();
+    Ok(transmission_key.0.to_vec())
+}

@@ -29,6 +29,7 @@ import { unclaimedSwaps } from './unclaimed-swaps.js';
 import { walletId } from './wallet-id.js';
 import { witness } from './witness.js';
 import { witnessAndBuild } from './witness-and-build.js';
+import { transparentAddress } from './transparent-address.js';
 
 export type Impl = ServiceImpl<typeof ViewService>;
 
@@ -62,4 +63,5 @@ export const viewImpl: Impl = {
   walletId,
   witness,
   witnessAndBuild,
+  transparentAddress,
 };
