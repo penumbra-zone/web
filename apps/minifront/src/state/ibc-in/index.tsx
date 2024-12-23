@@ -203,18 +203,22 @@ async function execute(
 
   const transferToken = fromDisplayAmount(assetMetadata, coin.displayDenom, amount);
 
-  const { address: t_addr, encoding: encoding } = await penumbra
-    .service(ViewService)
-    .transparentAddress(new TransparentAddressRequest({}));
-  if (!t_addr) {
-    throw new Error('Error with generating IBC transparent address');
-  }
-
   // Temporary: detect USDC Noble inbound transfers, and use a transparent (t-addr) encoding
   // to ensure Bech32 encoding compatibility.
   if (transferToken.denom.includes('uusdc') && bech32ChainIds.includes(selectedChain.chainId)) {
-    // Set the reciever address to the t-addr encoding.
-    penumbraAddress = encoding;
+    // Set the receiver address to the t-addr encoding.
+    try {
+      const { address: t_addr, encoding: encoding } = await penumbra
+        .service(ViewService)
+        .transparentAddress(new TransparentAddressRequest({}));
+      if (!t_addr) {
+        throw new Error('Error with generating IBC transparent address');
+      }
+
+      penumbraAddress = encoding;
+    } catch (_) {
+      throw new Error('Error with generating IBC transparent address');
+    }
   }
 
   const params: MsgTransfer = {

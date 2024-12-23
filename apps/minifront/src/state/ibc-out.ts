@@ -216,14 +216,6 @@ const getPlanRequest = async ({
 
   const { timeoutHeight, timeoutTime } = await getTimeout(chain.channelId);
 
-  // Request transparent address from view service
-  const { address: t_addr } = await penumbra
-    .service(ViewService)
-    .transparentAddress(new TransparentAddressRequest({}));
-  if (!t_addr) {
-    throw new Error('Error with generating IBC transparent address');
-  }
-
   // IBC-related fields
   const denom = getMetadata(selection.balanceView).base;
   let useTransparentAddress = false;
@@ -233,7 +225,19 @@ const getPlanRequest = async ({
   if (denom.includes('uusdc') && bech32ChainIds.includes(chain.chainId)) {
     // Outbound IBC transfers timeout without setting either of these fields.
     useTransparentAddress = true;
-    returnAddress = t_addr;
+
+    // Request transparent address from view service
+    try {
+      const { address: t_addr } = await penumbra
+        .service(ViewService)
+        .transparentAddress(new TransparentAddressRequest({}));
+      if (!t_addr) {
+        throw new Error('Error with generating IBC transparent address');
+      }
+      returnAddress = t_addr;
+    } catch (e) {
+      throw new Error('Error with generating IBC transparent address');
+    }
   }
 
   return new TransactionPlannerRequest({
