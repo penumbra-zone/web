@@ -15,7 +15,10 @@ export type TextVariant =
   | 'body'
   | 'tableHeading'
   | 'tableHeadingMedium'
-  | 'tableHeadingSmall';
+  | 'tableHeadingSmall'
+  | 'tableItem'
+  | 'tableItemMedium'
+  | 'tableItemSmall';
 
 type TextType = {
   [K in TextVariant]: Record<K, true> & Partial<Record<Exclude<TextVariant, K>, never>>;

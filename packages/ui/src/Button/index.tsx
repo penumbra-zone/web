@@ -136,7 +136,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
           'relative',
           'text-neutral-contrast',
-          'inline-flex items-center justify-center',
+          'flex items-center justify-center',
           density === 'sparse' ? 'gap-2' : 'gap-1',
         )}
       >
