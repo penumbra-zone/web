@@ -11,7 +11,7 @@ import {
   getSize,
   getIconSize,
 } from '../utils/button';
-import { useDensity } from '../utils/density';
+import { Density, useDensity } from '../utils/density';
 
 interface BaseButtonProps {
   type?: HTMLButtonElement['type'];
@@ -32,6 +32,7 @@ interface BaseButtonProps {
   disabled?: boolean;
   onClick?: MouseEventHandler<HTMLButtonElement>;
   priority?: Priority;
+  density?: Density;
 }
 
 interface IconOnlyProps {
