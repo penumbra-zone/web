@@ -61,4 +61,4 @@ export const button = cn('font-default text-textBase font-medium leading-textBas
 
 export const buttonMedium = cn('font-default text-textBase font-medium leading-textBase');
 
-export const buttonSmall = cn('font-default text-textBase font-medium leading-textBase');
+export const buttonSmall = cn('font-default text-textXs font-medium leading-textBase');

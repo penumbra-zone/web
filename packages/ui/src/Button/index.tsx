@@ -102,13 +102,15 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       actionType = 'default',
       type = 'button',
       priority = 'primary',
+      density: densityProp,
       ...attrs
       // needed for the Radix's `asChild` prop to work correctly
       // https://www.radix-ui.com/primitives/docs/guides/composition#composing-with-your-own-react-components
     },
     ref,
   ) => {
-    const density = useDensity();
+    const densityContext = useDensity();
+    const density = densityProp ?? densityContext;
     const styleAttrs = { actionType, iconOnly, density, priority };
 
     return (
@@ -133,7 +135,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
           'relative',
           'text-neutral-contrast',
-          'flex items-center justify-center',
+          'inline-flex items-center justify-center',
           density === 'sparse' ? 'gap-2' : 'gap-1',
         )}
       >
