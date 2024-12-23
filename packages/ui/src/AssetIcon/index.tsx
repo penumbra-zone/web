@@ -12,7 +12,7 @@ type Size = 'lg' | 'md' | 'sm';
 const sizeMap: Record<Size, string> = {
   lg: cn('w-8 h-8'),
   md: cn('w-6 h-6'),
-  sm: cn('w-4 h-4'),
+  sm: cn('w-6 h-6'),
 };
 
 export interface AssetIconProps {
