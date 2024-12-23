@@ -1,5 +1,11 @@
 # minifront
 
+## 6.27.1
+
+### Patch Changes
+
+- 0402d31: Hotfix IBC withdrawals
+
 ## 6.27.0
 
 ### Minor Changes
