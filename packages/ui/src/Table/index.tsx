@@ -3,6 +3,7 @@ import cn from 'clsx';
 import { tableHeading, tableItem } from '../utils/typography';
 import { Density, useDensity } from '../utils/density';
 import { ConditionalWrap } from '../ConditionalWrap';
+import { getThemeColorClass, ThemeColor } from '../utils/color';
 
 export interface TableProps {
   /** Content that will appear above the table. */
@@ -10,6 +11,8 @@ export interface TableProps {
   children: ReactNode;
   /** Which CSS `table-layout` property to use. */
   tableLayout?: 'fixed' | 'auto';
+  /** The background color of the table. */
+  bgColor?: ThemeColor;
 }
 
 /**
@@ -53,7 +56,12 @@ export interface TableProps {
  * </Table>
  * ```
  */
-export const Table = ({ title, children, tableLayout }: TableProps) => (
+export const Table = ({
+  title,
+  children,
+  tableLayout,
+  bgColor = 'other.tonalFill5',
+}: TableProps) => (
   <ConditionalWrap
     if={!!title}
     then={children => (
@@ -67,7 +75,8 @@ export const Table = ({ title, children, tableLayout }: TableProps) => (
       cellSpacing={0}
       cellPadding={0}
       className={cn(
-        'w-full bg-other-tonalFill5 pl-3 pr-3 rounded-sm',
+        getThemeColorClass(bgColor).bg,
+        'w-full pl-3 pr-3 rounded-sm',
         tableLayout === 'fixed' ? 'table-fixed' : 'table-auto',
       )}
     >
@@ -82,16 +91,22 @@ Table.Thead = Thead;
 const Tbody = ({ children }: PropsWithChildren) => <tbody>{children}</tbody>;
 Table.Tbody = Tbody;
 
-const Tr = ({ children }: PropsWithChildren) => (
-  <tr className='[&>td:last-child]:border-b-0'>{children}</tr>
-);
+const Tr = ({ children }: PropsWithChildren) => <tr>{children}</tr>;
 Table.Tr = Tr;
 
 type HAlign = 'left' | 'center' | 'right';
 type VAlign = 'top' | 'middle' | 'bottom';
 
-const getCell = (density: Density) =>
-  cn('box-border', 'pl-3 pr-3', density === 'sparse' ? 'pt-4 pb-4' : 'pt-3 pb-3');
+const densityPaddingMapping = {
+  slim: 'px-3 py-2',
+  compact: 'px-3 py-3',
+  sparse: 'px-3 py-4',
+};
+
+const getCell = (density: Density) => {
+  const padding = densityPaddingMapping[density];
+  return cn('box-border', padding);
+};
 
 const Th = ({
   children,
@@ -99,6 +114,7 @@ const Th = ({
   hAlign,
   vAlign,
   width,
+  density: densityProp,
 }: PropsWithChildren<{
   colSpan?: number;
   /** A CSS `width` value to use for this cell. */
@@ -107,8 +123,10 @@ const Th = ({
   hAlign?: HAlign;
   /** Controls the CSS `vertical-align` property for this cell. */
   vAlign?: VAlign;
+  density?: Density;
 }>) => {
-  const density = useDensity();
+  const densityContext = useDensity();
+  const density = densityProp ?? densityContext;
 
   return (
     <th
@@ -133,6 +151,7 @@ const Td = ({
   hAlign,
   vAlign,
   width,
+  density: densityProp,
 }: PropsWithChildren<{
   colSpan?: number;
   /** A CSS `width` value to use for this cell. */
@@ -141,8 +160,10 @@ const Td = ({
   hAlign?: HAlign;
   /** Controls the CSS `vertical-align` property for this cell. */
   vAlign?: VAlign;
+  density?: Density;
 }>) => {
-  const density = useDensity();
+  const densityContext = useDensity();
+  const density = densityProp ?? densityContext;
 
   return (
     <td

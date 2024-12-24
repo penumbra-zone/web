@@ -11,7 +11,7 @@ import {
   getSize,
   getIconSize,
 } from '../utils/button';
-import { useDensity } from '../utils/density';
+import { Density, useDensity } from '../utils/density';
 
 interface BaseButtonProps {
   type?: HTMLButtonElement['type'];
@@ -32,6 +32,7 @@ interface BaseButtonProps {
   disabled?: boolean;
   onClick?: MouseEventHandler<HTMLButtonElement>;
   priority?: Priority;
+  density?: Density;
 }
 
 interface IconOnlyProps {
@@ -102,13 +103,15 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       actionType = 'default',
       type = 'button',
       priority = 'primary',
+      density: densityProp,
       ...attrs
       // needed for the Radix's `asChild` prop to work correctly
       // https://www.radix-ui.com/primitives/docs/guides/composition#composing-with-your-own-react-components
     },
     ref,
   ) => {
-    const density = useDensity();
+    const densityContext = useDensity();
+    const density = densityProp ?? densityContext;
     const styleAttrs = { actionType, iconOnly, density, priority };
 
     return (

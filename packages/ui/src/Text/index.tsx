@@ -16,6 +16,12 @@ import {
   p,
   getTextBase,
   xxs,
+  tableHeading,
+  tableHeadingMedium,
+  tableHeadingSmall,
+  tableItem,
+  tableItemSmall,
+  tableItemMedium,
 } from '../utils/typography';
 import { ElementType, ReactNode } from 'react';
 import { ThemeColor } from '../utils/color';
@@ -135,6 +141,12 @@ const VARIANT_MAP: Record<TextVariant, { element: ElementType; classes: string }
   detailTechnical: { element: 'span', classes: detailTechnical },
   technical: { element: 'span', classes: technical },
   body: { element: 'span', classes: body },
+  tableHeading: { element: 'span', classes: tableHeading },
+  tableHeadingMedium: { element: 'span', classes: tableHeadingMedium },
+  tableHeadingSmall: { element: 'span', classes: tableHeadingSmall },
+  tableItem: { element: 'span', classes: tableItem },
+  tableItemMedium: { element: 'span', classes: tableItemMedium },
+  tableItemSmall: { element: 'span', classes: tableItemSmall },
 };
 
 /**

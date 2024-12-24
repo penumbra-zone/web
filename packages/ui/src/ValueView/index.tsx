@@ -18,6 +18,10 @@ const ValueText = ({ children, density }: { children: ReactNode; density: Densit
     return <Text body>{children}</Text>;
   }
 
+  if (density === 'slim') {
+    return <Text detailTechnical>{children}</Text>;
+  }
+
   return <Text detail>{children}</Text>;
 };
 
@@ -36,6 +40,10 @@ export interface ValueViewComponentProps<SelectedContext extends Context> {
    */
   priority?: PillProps['priority'];
   /**
+   * If true, the asset icon will be visible.
+   */
+  showIcon?: boolean;
+  /**
    * If true, the asset symbol will be visible.
    */
   showSymbol?: boolean;
@@ -51,6 +59,11 @@ export interface ValueViewComponentProps<SelectedContext extends Context> {
    * If true, the amount will have trailing zeros.
    */
   trailingZeros?: boolean;
+  /**
+   * The density to use for the component. If not provided, the density will be
+   * determined by the `Density` context.
+   */
+  density?: Density;
 }
 
 /**
@@ -64,12 +77,15 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
   valueView,
   context,
   priority = 'primary',
+  showIcon = true,
   showSymbol = true,
   abbreviate = false,
   showValue = true,
   trailingZeros = false,
+  density: densityProps,
 }: ValueViewComponentProps<SelectedContext>) => {
-  const density = useDensity();
+  const densityContext = useDensity();
+  const density = densityProps ?? densityContext;
 
   if (!valueView) {
     return null;
@@ -102,9 +118,11 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
       )}
     >
       <span className={cn('flex w-max max-w-full items-center text-ellipsis', getGap(density))}>
-        <div className='shrink-0'>
-          <AssetIcon size={getIconSize(density)} metadata={metadata} />
-        </div>
+        {showIcon && (
+          <div className='shrink-0'>
+            <AssetIcon size={getIconSize(density)} metadata={metadata} />
+          </div>
+        )}
 
         <div
           className={cn(
