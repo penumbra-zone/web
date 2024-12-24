@@ -1,5 +1,15 @@
 # minifront
 
+## 6.27.2
+
+### Patch Changes
+
+- Updated dependencies [ebc58d2]
+  - @penumbra-zone/types@27.1.0
+  - @penumbra-zone/crypto-web@33.0.0
+  - @penumbra-zone/ui-deprecated@13.0.1
+  - @penumbra-zone/perspective@43.0.0
+
 ## 6.27.1
 
 ### Patch Changes

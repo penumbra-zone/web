@@ -1,5 +1,16 @@
 # @penumbra-zone/ui
 
+## 13.8.0
+
+### Minor Changes
+
+- 8b4e31e: Updates for Positions Table
+
+### Patch Changes
+
+- Updated dependencies [ebc58d2]
+  - @penumbra-zone/types@27.1.0
+
 ## 13.7.1
 
 ### Patch Changes

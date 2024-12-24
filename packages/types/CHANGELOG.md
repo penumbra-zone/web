@@ -1,5 +1,11 @@
 # @penumbra-zone/types
 
+## 27.1.0
+
+### Minor Changes
+
+- ebc58d2: Fix pnum parsing ValueView
+
 ## 27.0.0
 
 ### Minor Changes
