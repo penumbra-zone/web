@@ -18,14 +18,14 @@ import { penumbra } from '../../penumbra';
 
 export enum TxDetailsTab {
   PUBLIC = 'public',
-  PRIVATE = 'private',
   RECEIVER = 'receiver',
+  PRIVATE = 'private',
 }
 
 const OPTIONS = [
   { label: 'Your View', value: TxDetailsTab.PRIVATE },
-  { label: 'Public View', value: TxDetailsTab.PUBLIC },
   { label: 'Receiver View', value: TxDetailsTab.RECEIVER },
+  { label: 'Public View', value: TxDetailsTab.PUBLIC },
 ];
 
 const getMetadata: MetadataFetchFn = async ({ assetId }) => {
@@ -84,7 +84,8 @@ export const TxViewer = ({ txInfo }: { txInfo?: TransactionInfo }) => {
         <>
           <TransactionViewComponent
             txv={
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion --
+              // transaction view component will always be populated.
               txInfo.view!
             }
             metadataFetcher={getMetadata}
