@@ -84,8 +84,7 @@ export const TxViewer = ({ txInfo }: { txInfo?: TransactionInfo }) => {
         <>
           <TransactionViewComponent
             txv={
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion --
-              // transaction view component will always be populated.
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- txInfo.view is guaranteed to be populated
               txInfo.view!
             }
             metadataFetcher={getMetadata}
