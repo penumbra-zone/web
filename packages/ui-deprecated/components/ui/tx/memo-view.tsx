@@ -13,11 +13,14 @@ export const MemoViewComponent = ({ memo: { memoView } }: { memo: MemoView }) =>
             <div className='flex flex-col gap-4'>
               <ActionDetails>
                 <ActionDetails.Row label='Return Address'>
-                  {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify not using '?' operator */}
+                  {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- field is always populated when the component is rendered */}
                   <AddressViewComponent view={memoView.value.plaintext!.returnAddress} />
                 </ActionDetails.Row>
                 <ActionDetails.Row label='Memo Text'>
-                  <span className='italic' style={{ wordBreak: 'normal' }}>
+                  <span
+                    className='overflow-visible pr-2 italic text-gray-300'
+                    style={{ wordBreak: 'normal' }}
+                  >
                     {memoView.value.plaintext?.text}
                   </span>
                 </ActionDetails.Row>
