@@ -12,7 +12,7 @@ export interface TooltipProps {
    * A string message to show in the tooltip. Note that only strings are
    * allowed; for interactive content, use a `<Popover />` or a `<Dialog />`.
    */
-  message: string;
+  message: string | ReactNode;
   /**
    * The trigger for the tooltip.
    *
