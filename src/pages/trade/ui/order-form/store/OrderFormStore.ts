@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { makeAutoObservable, reaction, runInAction } from 'mobx';
 import { LimitOrderFormStore } from './LimitOrderFormStore';
 import { MarketOrderFormStore } from './MarketOrderFormStore';
@@ -15,7 +15,6 @@ import {
 } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { usePathToMetadata } from '@/pages/trade/model/use-path';
 import { useBalances } from '@/shared/api/balances';
-import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { connectionStore } from '@/shared/model/connection';
 import { useSubaccounts } from '@/widgets/header/api/subaccounts';
 import { useMarketPrice } from '@/pages/trade/model/useMarketPrice';
@@ -25,6 +24,13 @@ import debounce from 'lodash/debounce';
 import { useRegistryAssets } from '@/shared/api/registry';
 import { plan, planBuildBroadcast } from '../helpers';
 import { openToast } from '@penumbra-zone/ui/Toast';
+import {
+  getMetadataFromBalancesResponse,
+  getAmount,
+  getAddressIndex,
+} from '@penumbra-zone/getters/balances-response';
+import { isMetadataEqual } from '@/shared/utils/is-metadata-equal';
+import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
 export type WhichForm = 'Market' | 'Limit' | 'Range';
 
@@ -239,21 +245,6 @@ export class OrderFormStore {
   }
 }
 
-const pluckAssetBalance = (symbol: string, balances: BalancesResponse[]): undefined | Amount => {
-  for (const balance of balances) {
-    if (!balance.balanceView?.valueView || balance.balanceView.valueView.case !== 'knownAssetId') {
-      continue;
-    }
-    if (balance.balanceView.valueView.value.metadata?.symbol === symbol) {
-      const amount = balance.balanceView.valueView.value.amount;
-      if (amount) {
-        return amount;
-      }
-    }
-  }
-  return undefined;
-};
-
 function getAccountAddress(subAccounts: AddressView[] | undefined) {
   const subAccount = subAccounts ? subAccounts[connectionStore.subaccount] : undefined;
   let addressIndex = undefined;
@@ -279,6 +270,20 @@ export const useOrderFormStore = () => {
   const { baseAsset, quoteAsset } = usePathToMetadata();
   const marketPrice = useMarketPrice();
 
+  // Finds a balance by given asset metadata and selected sub-account
+  const balanceFinder = useCallback(
+    (asset: Metadata, balance: BalancesResponse): boolean => {
+      const metadata = getMetadataFromBalancesResponse.optional(balance);
+      const address = getAddressIndex.optional(balance);
+      if (!metadata || !address || !addressIndex) {
+        return false;
+      }
+
+      return isMetadataEqual(metadata, asset) && addressIndex.equals(address);
+    },
+    [addressIndex],
+  );
+
   useEffect(() => {
     if (
       baseAsset?.symbol &&
@@ -286,8 +291,8 @@ export const useOrderFormStore = () => {
       quoteAsset?.symbol &&
       quoteAsset.penumbraAssetId
     ) {
-      const baseBalance = balances && pluckAssetBalance(baseAsset.symbol, balances);
-      const quoteBalance = balances && pluckAssetBalance(quoteAsset.symbol, balances);
+      const baseBalance = getAmount.optional(balances?.find(balanceFinder.bind(null, baseAsset)));
+      const quoteBalance = getAmount.optional(balances?.find(balanceFinder.bind(null, quoteAsset)));
 
       const baseAssetInfo = AssetInfo.fromMetadata(baseAsset, baseBalance);
       const quoteAssetInfo = AssetInfo.fromMetadata(quoteAsset, quoteBalance);
@@ -312,7 +317,7 @@ export const useOrderFormStore = () => {
         orderFormStore.setAssets(baseAssetInfo, quoteAssetInfo, isChangingAssetPair);
       }
     }
-  }, [baseAsset, quoteAsset, balances]);
+  }, [baseAsset, quoteAsset, balances, balanceFinder]);
 
   useEffect(() => {
     if (address && addressIndex) {
