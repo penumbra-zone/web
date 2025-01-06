@@ -1,43 +1,12 @@
 {
   "name": "@penumbra-zone/tmp-cosmos-kit",
-  "version": "2.21.1-penumbra-patch",
-  "description": "cosmos-kit wallet connector",
-  "author": "developers@cosmology.zone",
-  "contributors": [
-    {
-      "name": "Jun Liu"
-    },
-    {
-      "name": "Tom Wang"
-    },
-    {
-      "name": "Dan Lynch"
-    },
-    {
-      "name": "Noah Saso"
-    },
-    {
-      "name": "Eliot Baker"
-    },
-    {
-      "name": "Delivan Jeonghyeok Yoo"
-    }
-  ],
-  "homepage": "https://github.com/cosmology-tech/cosmos-kit#readme",
-  "license": "SEE LICENSE IN LICENSE",
-  "main": "cjs/index.js",
-  "module": "esm/index.js",
-  "types": "cjs/index.d.ts",
-  "directories": {
-    "lib": "src",
-    "test": "test"
+  "version": "1.0.0",
+  "license": "(MIT OR Apache-2.0)",
+  "description": "tmp patched cosmos-kit wallet connector",
+  "type": "module",
+  "engine": {
+    "node": ">=22"
   },
-  "files": [
-    "cjs",
-    "esm",
-    "!CHANGELOG.md",
-    "!LICENSE"
-  ],
   "scripts": {
     "dev:pack": "exit 0",
     "lint": "exit 0",
@@ -45,23 +14,22 @@
     "lint:strict": "exit 0",
     "test": "exit 0"
   },
-  "publishConfig": {
-    "access": "public"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/cosmology-tech/cosmos-kit"
-  },
-  "keywords": [
-    "cosmos-kit",
-    "cosmos",
-    "keplr",
-    "leap",
-    "cosmostation",
-    "wallet"
+  "files": [
+    "cjs",
+    "esm",
+    "!CHANGELOG.md",
+    "!LICENSE"
   ],
-  "bugs": {
-    "url": "https://github.com/cosmology-tech/cosmos-kit/issues"
+  "exports": {
+    "./*": "./esm/*.js"
+  },
+  "publishConfig": {
+    "exports": {
+      "./*": {
+        "types": "./esm/*.d.ts",
+        "default": "./esm/*.js"
+      }
+    }
   },
   "dependencies": {
     "@cosmos-kit/cdcwallet": "^2.15.1",
@@ -83,6 +51,5 @@
     "@cosmos-kit/trust": "^2.13.0",
     "@cosmos-kit/vectis": "^2.13.1",
     "@cosmos-kit/xdefi": "^2.12.0"
-  },
-  "gitHead": "9eae4d77b4e4492009bf8cde92beb07eb97e2d03"
+  }
 }
