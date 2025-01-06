@@ -12,7 +12,13 @@ import { useProviderManifests } from '@/shared/api/providerManifests';
 import dynamic from 'next/dynamic';
 
 const ConnectButtonInner = observer(
-  ({ actionType = 'accent' }: { actionType?: ButtonProps['actionType'] }) => {
+  ({
+    actionType = 'accent',
+    variant = 'default',
+  }: {
+    actionType?: ButtonProps['actionType'];
+    variant?: 'default' | 'minimal';
+  }) => {
     const [isOpen, setIsOpen] = useState(false);
     const { data: providerManifests } = useProviderManifests();
 
@@ -32,7 +38,7 @@ const ConnectButtonInner = observer(
 
     return (
       <>
-        <Density sparse>
+        <Density variant={variant === 'default' ? 'sparse' : 'compact'}>
           {providerOrigins.length === 0 ? (
             <Button
               icon={Wallet2}
