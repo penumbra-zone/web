@@ -21,13 +21,13 @@ import { wallets as vectisExtension } from '@cosmos-kit/vectis-extension';
 import { wallets as xdefiExtension } from '@cosmos-kit/xdefi-extension';
 import { wallets as exodusExtension } from '@cosmos-kit/exodus-extension';
 import { wallets as tailwindWallet } from '@cosmos-kit/tailwind';
-import { wallets as galaxyStationExtension } from '@cosmos-kit/galaxy-station-extension';
+// import { wallets as galaxyStationExtension } from '@cosmos-kit/galaxy-station-extension';
 import { wallets as cdcwalletExtension } from '@cosmos-kit/cdcwallet-extension';
 export function createWalletList(extension, mobile, snap) {
-    const list = [extension, mobile, snap].filter((wallet) => Boolean(wallet));
-    list.mobile = mobile;
-    list.extension = extension;
-    return list;
+  const list = [extension, mobile, snap].filter(wallet => Boolean(wallet));
+  list.mobile = mobile;
+  list.extension = extension;
+  return list;
 }
 export const keplr = createWalletList(keplrExtension[0], keplrMobile[0]);
 export const cosmostation = createWalletList(cosmostationExtension[0], cosmostationMobile[0]);
@@ -47,74 +47,76 @@ export const compass = createWalletList(compassExtension[0], null);
 export const exodus = createWalletList(exodusExtension[0], null);
 export const tailwind = createWalletList(tailwindWallet[0], null);
 export const owallet = createWalletList(owalletExtension[0], null);
-export const galaxystation = createWalletList(galaxyStationExtension[0], null);
+// export const galaxystation = createWalletList(galaxyStationExtension[0], null);
 export const cdcwallet = createWalletList(cdcwalletExtension[0], null);
 export function defineGetters(wallets) {
-    return Object.defineProperties(wallets, {
-        mobile: {
-            get() {
-                return this.filter((wallet) => wallet.isModeWalletConnect);
-            },
-        },
-        extension: {
-            get() {
-                return this.filter((wallet) => wallet.isModeExtension);
-            },
-        },
-    });
+  return Object.defineProperties(wallets, {
+    mobile: {
+      get() {
+        return this.filter(wallet => wallet.isModeWalletConnect);
+      },
+    },
+    extension: {
+      get() {
+        return this.filter(wallet => wallet.isModeExtension);
+      },
+    },
+  });
 }
 export function createAllWalletList(ws) {
-    const wallets = ws.slice();
-    wallets.keplr = keplr;
-    wallets.cosmostation = cosmostation;
-    wallets.ledger = ledger;
-    wallets.okxwallet = okxwallet;
-    wallets.station = station;
-    wallets.leap = leap;
-    wallets.trust = trust;
-    wallets.xdefi = xdefi;
-    wallets.vectis = vectis;
-    wallets.frontier = frontier;
-    wallets.fin = fin;
-    wallets.omni = omni;
-    wallets.coin98 = coin98;
-    wallets.compass = compass;
-    wallets.exodus = exodus;
-    wallets.tailwind = tailwind;
-    wallets.owallet = owallet;
-    wallets.galaxystation = galaxystation;
-    wallets.cdcwallet = cdcwallet;
-    defineGetters(wallets);
-    wallets.for = function (...ns) {
-        const names = Array.from(new Set(ns));
-        return defineGetters(names
-            .map((name) => wallets.filter((wallet) => wallet.walletInfo.name.startsWith(name)))
-            .flat());
-    };
-    wallets.not = function (...ns) {
-        const names = Array.from(new Set(ns));
-        return defineGetters(wallets.filter((wallet) => !names.some((name) => wallet.walletInfo.name.startsWith(name))));
-    };
-    return wallets;
+  const wallets = ws.slice();
+  wallets.keplr = keplr;
+  wallets.cosmostation = cosmostation;
+  wallets.ledger = ledger;
+  wallets.okxwallet = okxwallet;
+  wallets.station = station;
+  wallets.leap = leap;
+  wallets.trust = trust;
+  wallets.xdefi = xdefi;
+  wallets.vectis = vectis;
+  wallets.frontier = frontier;
+  wallets.fin = fin;
+  wallets.omni = omni;
+  wallets.coin98 = coin98;
+  wallets.compass = compass;
+  wallets.exodus = exodus;
+  wallets.tailwind = tailwind;
+  wallets.owallet = owallet;
+  // wallets.galaxystation = galaxystation;
+  wallets.cdcwallet = cdcwallet;
+  defineGetters(wallets);
+  wallets.for = function (...ns) {
+    const names = Array.from(new Set(ns));
+    return defineGetters(
+      names.map(name => wallets.filter(wallet => wallet.walletInfo.name.startsWith(name))).flat(),
+    );
+  };
+  wallets.not = function (...ns) {
+    const names = Array.from(new Set(ns));
+    return defineGetters(
+      wallets.filter(wallet => !names.some(name => wallet.walletInfo.name.startsWith(name))),
+    );
+  };
+  return wallets;
 }
 export const wallets = createAllWalletList([
-    ...keplr,
-    ...leap,
-    ...ledger,
-    ...okxwallet,
-    ...station,
-    ...trust,
-    ...cosmostation,
-    ...xdefi,
-    ...vectis,
-    ...frontier,
-    ...fin,
-    ...omni,
-    ...coin98,
-    ...compass,
-    ...exodus,
-    ...tailwind,
-    ...owallet,
-    ...galaxystation,
-    ...cdcwallet,
+  ...keplr,
+  ...leap,
+  ...ledger,
+  ...okxwallet,
+  ...station,
+  ...trust,
+  ...cosmostation,
+  ...xdefi,
+  ...vectis,
+  ...frontier,
+  ...fin,
+  ...omni,
+  ...coin98,
+  ...compass,
+  ...exodus,
+  ...tailwind,
+  ...owallet,
+  // ...galaxystation,
+  ...cdcwallet,
 ]);
