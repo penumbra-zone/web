@@ -33,7 +33,8 @@
   },
   "pnpm": {
     "overrides": {
-      "typescript": "5.5.3"
+      "typescript": "5.5.3",
+      "@hexxagon/feather.js": "npm:@terra-money/feather.js@1.0.9"
     }
   },
   "devDependencies": {
