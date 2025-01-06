@@ -14,10 +14,8 @@
     "preview": "vite preview",
     "test": "vitest run"
   },
-  "pnpm": {
-    "overrides": {
-      "@hexxagon/feather.js": "npm:@terra-money/feather.js@1.0.9"
-    }
+  "resolutions": {
+    "**/@cosmjs/stargate": "npm:@liftedinit/stargate@0.32.4-ll.3"
   },
   "dependencies": {
     "@bufbuild/protobuf": "^1.10.0",
