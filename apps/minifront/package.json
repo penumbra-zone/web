@@ -16,7 +16,7 @@
   },
   "pnpm": {
     "overrides": {
-      "**/@hexxagon/feather.js": "npm:@terra-money/feather.js@1.0.9"
+      "@hexxagon/feather.js": "npm:@terra-money/feather.js@1.0.9"
     }
   },
   "dependencies": {
