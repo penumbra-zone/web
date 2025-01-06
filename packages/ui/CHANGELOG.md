@@ -1,5 +1,11 @@
 # @penumbra-zone/ui
 
+## 13.8.1
+
+### Patch Changes
+
+- e754ce4: Update Tooltip message prop to support ReactNode
+
 ## 13.8.0
 
 ### Minor Changes
