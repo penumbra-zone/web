@@ -8,6 +8,7 @@ import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { round } from '@penumbra-zone/types/round';
 import { Density } from '@penumbra-zone/ui/Density';
 import { SummaryData } from '@/shared/api/server/summary/types.ts';
+import { BlockchainError } from '@/shared/ui/blockchain-error';
 
 const SummaryCard = ({
   title,
@@ -49,9 +50,7 @@ export const Summary = () => {
   if (error) {
     return (
       <SummaryCard title=''>
-        <Text detail color='destructive.light'>
-          {String(error)}
-        </Text>
+        <BlockchainError />
       </SummaryCard>
     );
   }
@@ -95,7 +94,7 @@ export const Summary = () => {
       </SummaryCard>
       <SummaryCard title='24h Volume' loading={isLoading}>
         {data && 'directVolume' in data ? (
-          <Density slim>
+          <Density compact>
             <ValueViewComponent valueView={data.directVolume} context='table' abbreviate />
           </Density>
         ) : (
