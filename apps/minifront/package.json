@@ -14,8 +14,10 @@
     "preview": "vite preview",
     "test": "vitest run"
   },
-  "resolutions": {
-    "**/@hexxagon/feather.js": "npm:@terra-money/feather.js@1.0.9"
+  "pnpm": {
+    "overrides": {
+      "**/@hexxagon/feather.js": "npm:@terra-money/feather.js@1.0.9"
+    }
   },
   "dependencies": {
     "@bufbuild/protobuf": "^1.10.0",
