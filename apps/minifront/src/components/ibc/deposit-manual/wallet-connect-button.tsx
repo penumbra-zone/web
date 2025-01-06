@@ -1,4 +1,4 @@
-import { WalletStatus } from 'cosmos-kit';
+import { WalletStatus } from '@cosmos-kit/core';
 import { WalletIcon } from '@penumbra-zone/ui-deprecated/components/ui/icons/wallet';
 import { MouseEventHandler } from 'react';
 import { useStore } from '../../../state';
