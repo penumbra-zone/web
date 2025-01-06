@@ -7,6 +7,7 @@ import { useCandles } from '../api/candles';
 import { observer } from 'mobx-react-lite';
 import { DurationWindow, durationWindows } from '@/shared/utils/duration.ts';
 import { CandleWithVolume } from '@/shared/api/server/candles/utils';
+import { BlockchainError } from '@/shared/ui/blockchain-error';
 
 const ChartLoadingState = () => {
   return (
@@ -260,7 +261,13 @@ export const Chart = observer(() => {
         ))}
       </div>
 
-      {error && <div className='text-white'>Error loading pair selector: ${String(error)}</div>}
+      {error && (
+        <div className='w-full h-full flex items-center justify-center'>
+          <div className='w-[450px] h-full flex items-center justify-center'>
+            <BlockchainError />
+          </div>
+        </div>
+      )}
 
       <div className='grow w-full h-full max-h-full pt-2 pl-4 pb-4 self-center flex items-center'>
         {isLoading && <ChartLoadingState />}
