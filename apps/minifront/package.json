@@ -14,9 +14,6 @@
     "preview": "vite preview",
     "test": "vitest run"
   },
-  "resolutions": {
-    "**/@cosmjs/stargate": "npm:@liftedinit/stargate@0.32.4-ll.3"
-  },
   "dependencies": {
     "@bufbuild/protobuf": "^1.10.0",
     "@connectrpc/connect": "^1.4.0",
