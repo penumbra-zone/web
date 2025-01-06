@@ -1,7 +1,7 @@
 import { ChainProvider } from '@cosmos-kit/react';
 import { aminoTypes, registry as CosmosRegistry } from './config/defaults';
 import { assets, chains } from 'chain-registry';
-import { SignerOptions, wallets } from 'cosmos-kit';
+import { SignerOptions } from '@cosmos-kit/core';
 import { ReactNode, useMemo } from 'react';
 import { Registry as PenumbraRegistry } from '@penumbra-labs/registry';
 
@@ -29,7 +29,7 @@ export const IbcChainProvider = ({ registry, children }: IbcProviderProps) => {
       chains={chainsToDisplay}
       assetLists={assets}
       // Not using mobile wallets as WalletConnect is a centralized service that requires an account
-      wallets={wallets.extension}
+      wallets={[]} // tmp not using any wallets in order to publish @penumbra-zone/tmp-cosmos-kit
       signerOptions={signerOptions}
       modalTheme={{ defaultTheme: 'light' }}
       logLevel={'NONE'}
