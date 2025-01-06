@@ -4,7 +4,8 @@
 // cosmos-kit has a dependency issue with @hexxagon/feather.js@1.0.11:
 // https://github.com/cosmology-tech/cosmos-kit/issues/526
 // this file is a copy of the cosmos-kit/wallets.js file, but with the
-// @hexxagon/feather.js dependency removed.
+// @hexxagon/feather.js dependency temporarily removed.
+// TODO: remove this file once the dependency issue is resolved.
 
 'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
@@ -12,7 +13,7 @@ exports.wallets =
   exports.createAllWalletList =
   exports.defineGetters =
   exports.cdcwallet =
-  exports.galaxystation =
+  // exports.galaxystation =
   exports.owallet =
   exports.tailwind =
   exports.exodus =
@@ -126,7 +127,7 @@ function createAllWalletList(ws) {
   wallets.exodus = exports.exodus;
   wallets.tailwind = exports.tailwind;
   wallets.owallet = exports.owallet;
-  wallets.galaxystation = exports.galaxystation;
+  // wallets.galaxystation = exports.galaxystation;
   wallets.cdcwallet = exports.cdcwallet;
   defineGetters(wallets);
   wallets.for = function (...ns) {
@@ -162,6 +163,6 @@ exports.wallets = createAllWalletList([
   ...exports.exodus,
   ...exports.tailwind,
   ...exports.owallet,
-  ...exports.galaxystation,
+  // ...exports.galaxystation,
   ...exports.cdcwallet,
 ]);
