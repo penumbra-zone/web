@@ -38,6 +38,13 @@
     "!CHANGELOG.md",
     "!LICENSE"
   ],
+  "scripts": {
+    "dev:pack": "exit 0",
+    "lint": "exit 0",
+    "lint:fix": "exit 0",
+    "lint:strict": "exit 0",
+    "test": "exit 0"
+  },
   "publishConfig": {
     "access": "public"
   },
