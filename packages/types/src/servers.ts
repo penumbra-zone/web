@@ -6,6 +6,14 @@ import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 export interface ViewServerInterface {
   scanBlock(compactBlock: CompactBlock, skipTrialDecrypt: boolean): Promise<boolean>;
 
+  trialDecryptGenesisChunk(
+    start: bigint,
+    partialCompactBlock: CompactBlock,
+    skipTrialDecrypt: boolean,
+  ): Promise<void>;
+
+  genesisAdvice(fullCompactBlock: CompactBlock): Promise<boolean>;
+
   flushUpdates(): ScanBlockResult;
 
   resetTreeToStored(): Promise<void>;

@@ -55,6 +55,24 @@ export class ViewServer implements ViewServerInterface {
   // Decrypts blocks with viewing key for notes, swaps, and updates revealed for user
   // Makes update to internal state-commitment-tree as a side effect.
   // Should extract updates via this.flushUpdates().
+  async trialDecryptGenesisChunk(
+    start: bigint,
+    partialCompactBlock: CompactBlock,
+    skipTrialDecrypt: boolean,
+  ) {
+    const res = partialCompactBlock.toBinary();
+    return this.wasmViewServer.trial_decrypt_genesis_chunk(start, res, skipTrialDecrypt);
+  }
+
+  // Processes accumulated genesis notes by constructing the state commitment tree (SCT).
+  async genesisAdvice(fullCompactBlock: CompactBlock) {
+    const res = fullCompactBlock.toBinary();
+    return this.wasmViewServer.genesis_advice(res);
+  }
+
+  // Decrypts blocks with viewing key for notes, swaps, and updates revealed for user
+  // Makes update to internal state-commitment-tree as a side effect.
+  // Should extract updates via this.flushUpdates().
   async scanBlock(compactBlock: CompactBlock, skipTrialDecrypt: boolean): Promise<boolean> {
     const res = compactBlock.toBinary();
     return this.wasmViewServer.scan_block(res, skipTrialDecrypt);

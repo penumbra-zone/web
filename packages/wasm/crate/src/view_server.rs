@@ -5,9 +5,9 @@ use penumbra_compact_block::{CompactBlock, StatePayload};
 use penumbra_keys::{Address, FullViewingKey};
 use penumbra_proto::DomainType;
 use penumbra_sct::Nullifier;
-use penumbra_shielded_pool::note;
-use penumbra_tct as tct;
+use penumbra_shielded_pool::{note, Note};
 use penumbra_tct::Witness::*;
+use penumbra_tct::{self as tct, StateCommitment};
 use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen::Serializer;
 use tct::storage::{StoreCommitment, StoreHash, StoredPosition, Updates};
@@ -64,6 +64,7 @@ pub struct ViewServer {
     storage: Storage<IdbDatabase>,
     last_position: Option<StoredPosition>,
     last_forgotten: Option<Forgotten>,
+    genesis_advice: Option<BTreeMap<StateCommitment, Note>>,
 }
 
 #[wasm_bindgen]
@@ -97,8 +98,126 @@ impl ViewServer {
             storage: init_idb_storage(constants).await?,
             last_position: None,
             last_forgotten: None,
+            genesis_advice: None,
         };
         Ok(view_server)
+    }
+
+    /// Scans a chunk of the genesis block for notes that can be trial decrypted with the viewing key.
+    #[wasm_bindgen]
+    pub async fn trial_decrypt_genesis_chunk(
+        &mut self,
+        start: u64,
+        partial_compact_block: &[u8],
+        skip_trial_decrypt: bool,
+    ) {
+        utils::set_panic_hook();
+
+        let partial_block =
+            CompactBlock::decode(partial_compact_block).expect("decode genesis compact block");
+
+        // Initialize advice storage on first chunk
+        if start == 0 {
+            self.genesis_advice = Some(BTreeMap::new());
+        }
+
+        let genesis_advice = self
+            .genesis_advice
+            .as_mut()
+            .ok_or_else(|| anyhow::anyhow!("genesis_advice not initialized"))
+            .expect("genesis advice");
+
+        // Attempt to decrypt each state payload in this chunk
+        for state_payload in &partial_block.state_payloads {
+            if let StatePayload::Note { note: payload, .. } = state_payload {
+                let note_opt = (!skip_trial_decrypt)
+                    .then(|| payload.trial_decrypt(&self.fvk))
+                    .flatten();
+                if let Some(note) = note_opt {
+                    // It's safe to avoid recomputing the note commitment here because
+                    // trial_decrypt checks that the decrypted data is consistent
+                    genesis_advice.insert(payload.note_commitment, note);
+                }
+            }
+        }
+    }
+
+    /// Reconstructs the state commitment tree (SCT) from the full genesis block using
+    /// previously decrypted notes.
+    #[wasm_bindgen]
+    pub async fn genesis_advice(&mut self, full_compact_block: &[u8]) -> WasmResult<bool> {
+        utils::set_panic_hook();
+
+        let full_block = CompactBlock::decode(full_compact_block)?;
+
+        let mut found_new_data: bool = false;
+
+        let genesis_advice = self
+            .genesis_advice
+            .as_mut()
+            .ok_or_else(|| anyhow::anyhow!("genesis_advice not initialized"))?;
+
+        if genesis_advice.is_empty() {
+            // If there are no notes we care about in this block, just insert the block root into the
+            // tree instead of processing each commitment individually
+            self.sct
+                .insert_block(full_block.block_root)
+                .expect("inserting a block root must succeed");
+        } else {
+            // If we found at least one note for us in this block, we have to explicitly construct the
+            // whole block in the SCT by inserting each commitment one at a time
+            for payload in full_block.state_payloads.into_iter() {
+                // We proceed commitment by commitment, querying our in-memory advice
+                // to see if we have any data for the commitment and act accordingly
+                match genesis_advice.get(payload.commitment()) {
+                    Some(note) => {
+                        let position = self.sct.insert(Keep, *payload.commitment())?;
+
+                        let source = payload.source().clone();
+                        let nullifier = Nullifier::derive(
+                            self.fvk.nullifier_key(),
+                            position,
+                            payload.commitment(),
+                        );
+                        let address_index = self
+                            .fvk
+                            .incoming()
+                            .index_for_diversifier(note.diversifier());
+
+                        let note_record = SpendableNoteRecord {
+                            note_commitment: *payload.commitment(),
+                            height_spent: None,
+                            height_created: full_block.height,
+                            note: note.clone(),
+                            address_index,
+                            nullifier,
+                            position,
+                            source,
+                            return_address: None,
+                        };
+                        self.notes
+                            .insert(*payload.commitment(), note_record.clone());
+
+                        found_new_data = true;
+                    }
+                    None => {
+                        // Don't remember this commitment; it wasn't ours, and
+                        // it doesn't matter what kind of payload it was either.
+                        // Just insert and forget
+                        self.sct
+                            .insert(tct::Witness::Forget, *payload.commitment())
+                            .expect("inserting a commitment must succeed");
+                    }
+                }
+
+                // End the block in the commitment tree
+                self.sct.end_block().expect("ending the block must succed");
+            }
+        }
+
+        self.latest_height = full_block.height;
+
+        Ok(found_new_data)
     }
 
     /// Scans block for notes, swaps
