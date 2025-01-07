@@ -52,9 +52,7 @@ export class ViewServer implements ViewServerInterface {
     return new this(wvs, fullViewingKey, getStoredTree, idbConstants);
   }
 
-  // Decrypts blocks with viewing key for notes, swaps, and updates revealed for user
-  // Makes update to internal state-commitment-tree as a side effect.
-  // Should extract updates via this.flushUpdates().
+  // Trial decrypts a chunk of state payloads in the genesis block.
   async trialDecryptGenesisChunk(
     start: bigint,
     partialCompactBlock: CompactBlock,
