@@ -1,5 +1,11 @@
 # minifront
 
+## 6.28.0
+
+### Minor Changes
+
+- a7b0c29: transaction view ui fixes
+
 ## 6.27.2
 
 ### Patch Changes
