@@ -1,7 +1,7 @@
 import { useSummary } from './useSummary';
 
-export const useMarketPrice = () => {
-  const { data: summary } = useSummary('1d');
+export const useMarketPrice = (baseSymbol?: string, quoteSymbol?: string) => {
+  const { data: summary } = useSummary('1d', baseSymbol, quoteSymbol);
   if (!summary || 'noData' in summary) {
     return undefined;
   }
