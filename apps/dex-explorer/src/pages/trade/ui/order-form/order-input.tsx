@@ -17,6 +17,7 @@ export interface OrderInputProps {
   denominator?: string;
   max?: string | number;
   min?: string | number;
+  disabled?: boolean;
 }
 
 /**
@@ -35,6 +36,7 @@ export const OrderInput = forwardRef<HTMLInputElement, OrderInputProps>(
       denominator,
       max,
       min,
+      disabled,
     }: OrderInputProps,
     ref,
   ) => {
@@ -83,12 +85,15 @@ export const OrderInput = forwardRef<HTMLInputElement, OrderInputProps>(
                 'p-2 pt-7',
                 isApproximately && value ? 'pl-7' : 'pl-3',
                 'font-default text-textLg font-medium leading-textLg',
-                'hover:bg-other-tonalFill5 focus:outline-none focus:bg-other-tonalFill10',
+                !disabled &&
+                  'hover:bg-other-tonalFill5 focus:outline-none focus:bg-other-tonalFill10',
+                disabled && 'cursor-not-allowed',
                 '[&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
                 "[&[type='number']]:[-moz-appearance:textfield]",
               )}
               style={{ paddingRight: denomWidth + 20 }}
               value={value}
+              disabled={disabled}
               onChange={e => onChange?.(e.target.value)}
               onWheel={e => {
                 // Remove focus to prevent scroll changes

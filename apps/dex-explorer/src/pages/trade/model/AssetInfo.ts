@@ -13,6 +13,7 @@ export class AssetInfo {
    * @param the exponent to convert from base units to display units.
    */
   constructor(
+    public metadata: Metadata,
     public id: AssetId,
     public exponent: number,
     public symbol: string,
@@ -25,6 +26,7 @@ export class AssetInfo {
       return undefined;
     }
     return new AssetInfo(
+      metadata,
       metadata.penumbraAssetId,
       displayDenom.exponent,
       metadata.symbol,

@@ -1,53 +1,13 @@
-import { makeAutoObservable, reaction, runInAction } from 'mobx';
-import { AssetId, Value } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { pnum } from '@penumbra-zone/types/pnum';
 import debounce from 'lodash/debounce';
+import { makeAutoObservable, reaction, runInAction } from 'mobx';
+import { AssetId, Value, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { pnum } from '@penumbra-zone/types/pnum';
 import { parseNumber } from '@/shared/utils/num';
-import { penumbra } from '@/shared/const/penumbra';
-import { SimulationService } from '@penumbra-zone/protobuf';
-import { SimulateTradeRequest } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
-import { openToast } from '@penumbra-zone/ui/Toast';
-import { AssetInfo } from '@/pages/trade/model/AssetInfo';
-
-const estimateAmount = async (
-  from: AssetInfo,
-  to: AssetInfo,
-  input: number,
-): Promise<number | undefined> => {
-  try {
-    const req = new SimulateTradeRequest({
-      input: from.value(input),
-      output: to.id,
-    });
-
-    const res = await penumbra.service(SimulationService).simulateTrade(req);
-
-    const amount = res.output?.output?.amount;
-    if (amount === undefined) {
-      throw new Error('Amount returned from swap simulation was undefined');
-    }
-    return pnum(amount, to.exponent).toNumber();
-  } catch (e) {
-    if (
-      e instanceof Error &&
-      ![
-        'ConnectError',
-        'PenumbraNotInstalledError',
-        'PenumbraProviderNotAvailableError',
-        'PenumbraProviderNotConnectedError',
-      ].includes(e.name)
-    ) {
-      openToast({
-        type: 'error',
-        message: e.name,
-        description: e.message,
-      });
-    }
-    return undefined;
-  }
-};
-
-export type Direction = 'buy' | 'sell';
+import { AssetInfo } from '../../../model/AssetInfo';
+import { estimateAmount } from './estimate-amount';
+import { formatNumber } from '@penumbra-zone/types/amount';
+import { getMetadata } from '@penumbra-zone/getters/value-view';
+import { Direction } from './types';
 
 export type LastEdited = 'Base' | 'Quote';
 
@@ -67,6 +27,8 @@ export class MarketOrderFormStore {
   private _quoteAssetInput = '';
   private _baseEstimating = false;
   private _quoteEstimating = false;
+  private _priceImpact: number | undefined = undefined;
+  private _unfilled: ValueView | undefined = undefined;
   direction: Direction = 'buy';
   private _lastEdited: LastEdited = 'Base';
 
@@ -100,12 +62,14 @@ export class MarketOrderFormStore {
       this._quoteEstimating = true;
     });
     try {
-      const res = await estimateAmount(this._quoteAsset, this._baseAsset, input);
+      const res = await estimateAmount(this._baseAsset, this._quoteAsset, input, this.direction);
       if (res === undefined) {
         return;
       }
       runInAction(() => {
-        this._quoteAssetInput = res.toString();
+        this._quoteAssetInput = res.amount.toString();
+        this._priceImpact = res.priceImpact;
+        this._unfilled = res.unfilled;
       });
     } finally {
       runInAction(() => {
@@ -126,12 +90,14 @@ export class MarketOrderFormStore {
       this._baseEstimating = true;
     });
     try {
-      const res = await estimateAmount(this._baseAsset, this._quoteAsset, input);
+      const res = await estimateAmount(this._quoteAsset, this._baseAsset, input, this.direction);
       if (res === undefined) {
         return;
       }
       runInAction(() => {
-        this._baseAssetInput = res.toString();
+        this._baseAssetInput = res.amount.toString();
+        this._priceImpact = res.priceImpact;
+        this._unfilled = res.unfilled;
       });
     } finally {
       runInAction(() => {
@@ -142,6 +108,9 @@ export class MarketOrderFormStore {
 
   setDirection = (x: Direction) => {
     this.direction = x;
+    this._unfilled = undefined;
+    this._priceImpact = undefined;
+    void this.estimateQuote();
   };
 
   get baseInput(): string {
@@ -212,12 +181,18 @@ export class MarketOrderFormStore {
     return this._lastEdited;
   }
 
+  clear() {
+    this._baseAssetInput = '';
+    this._quoteAssetInput = '';
+    this._unfilled = undefined;
+    this._priceImpact = undefined;
+  }
+
   setAssets(base: AssetInfo, quote: AssetInfo, resetInputs = false) {
     this._baseAsset = base;
     this._quoteAsset = quote;
     if (resetInputs) {
-      this._baseAssetInput = '';
-      this._quoteAssetInput = '';
+      this.clear();
     }
   }
 
@@ -227,6 +202,22 @@ export class MarketOrderFormStore {
 
   get quoteAsset(): undefined | AssetInfo {
     return this._quoteAsset;
+  }
+
+  get unfilled(): undefined | string {
+    if (!this._unfilled) {
+      return undefined;
+    }
+    const symbol = getMetadata(this._unfilled).symbol;
+    return `${pnum(this._unfilled).toNumber()} ${symbol}`;
+  }
+
+  get priceImpact(): undefined | string {
+    if (this._priceImpact === undefined || Math.abs(this._priceImpact) < 0.001) {
+      return;
+    }
+    const percent = formatNumber(this._priceImpact * 100, { precision: 3 });
+    return `${percent}%`;
   }
 
   get plan(): undefined | MarketOrderPlan {
