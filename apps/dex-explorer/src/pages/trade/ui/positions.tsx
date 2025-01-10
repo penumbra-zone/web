@@ -23,10 +23,11 @@ import { usePathToMetadata } from '../model/use-path';
 import { PositionsCurrentValue } from './positions-current-value';
 import { SquareArrowOutUpRight, Wallet2 } from 'lucide-react';
 import { ConnectButton } from '@/features/connect/connect-button';
+import { BlockchainError } from '@/shared/ui/blockchain-error';
 
 const NotConnectedNotice = () => {
   return (
-    <div className='flex flex-col items-center justify-center h-[400px] gap-4'>
+    <div className='flex flex-col items-center justify-center min-h-screen gap-4'>
       <div className='w-12 h-12 text-text-secondary'>
         <Wallet2 className='w-full h-full' />
       </div>
@@ -50,12 +51,13 @@ const NoPositions = () => {
   );
 };
 
-const ErrorNotice = ({ error }: { error: unknown }) => {
+const ErrorNotice = () => {
   return (
-    <div className='p-5'>
-      <Text small color='destructive.light'>
-        {String(error)}
-      </Text>
+    <div className='min-h-screen flex items-center justify-center'>
+      <BlockchainError
+        message='An error occurred while loading data from the blockchain'
+        direction='column'
+      />
     </div>
   );
 };
@@ -181,7 +183,7 @@ const Positions = observer(({ showInactive }: { showInactive: boolean }) => {
   }
 
   if (error) {
-    return <ErrorNotice error={error} />;
+    return <ErrorNotice />;
   }
 
   if (!displayPositions.length) {
