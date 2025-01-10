@@ -1,14 +1,15 @@
 import { observer } from 'mobx-react-lite';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
+import { Slider as PenumbraSlider } from '@penumbra-zone/ui/Slider';
 import { connectionStore } from '@/shared/model/connection';
+import { ConnectButton } from '@/features/connect/connect-button';
 import { OrderInput } from './order-input';
 import { SegmentedControl } from './segmented-control';
-import { ConnectButton } from '@/features/connect/connect-button';
 import { InfoRowGasFee } from './info-row-gas-fee';
 import { InfoRowTradingFee } from './info-row-trading-fee';
 import { OrderFormStore } from './store/OrderFormStore';
-import { Slider as PenumbraSlider } from '@penumbra-zone/ui/Slider';
+import { InfoRow } from './info-row';
 
 interface SliderProps {
   inputValue: string;
@@ -93,6 +94,20 @@ export const MarketOrderForm = observer(({ parentStore }: { parentStore: OrderFo
           symbol={parentStore.gasFee.symbol}
           isLoading={parentStore.gasFeeLoading}
         />
+        {store.priceImpact && (
+          <InfoRow
+            label='Price impact'
+            value={store.priceImpact}
+            toolTip='This percentage represents the effect of your trade on the token’s price.'
+          />
+        )}
+        {store.unfilled && (
+          <InfoRow
+            label='Unfilled amount'
+            value={store.unfilled}
+            toolTip='The portion of your trade that cannot be completed due to insufficient liquidity.'
+          />
+        )}
       </div>
       <div className='mb-4'>
         {connected ? (
