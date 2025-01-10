@@ -10,14 +10,13 @@ import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { planBuildBroadcast } from '@/pages/trade/ui/order-form/helpers.tsx';
 import { connectionStore } from '@/shared/model/connection';
 import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { queryClient } from '@/shared/const/queryClient.ts';
 import { isZero } from '@penumbra-zone/types/amount';
 import { penumbra } from '@/shared/const/penumbra.ts';
 import { DexService } from '@penumbra-zone/protobuf';
 import { openToast } from '@penumbra-zone/ui/Toast';
 import { pnum } from '@penumbra-zone/types/pnum';
-import { bech32mPositionId } from '@penumbra-zone/bech32m/plpid';
-
+import { positionIdFromBech32 } from '@penumbra-zone/bech32m/plpid';
+import { updatePositionsQuery } from '@/pages/trade/api/positions';
 export interface DisplayPosition {
   id: PositionId;
   idString: string;
@@ -45,7 +44,7 @@ export interface DisplayAsset {
 
 class PositionsStore {
   public loading = false;
-  public positionsById = new Map<PositionId, Position>();
+  public positionsById = new Map<string, Position>();
   private assets: Metadata[] = [];
   private currentPair: [Metadata, Metadata] | null = null;
 
@@ -67,7 +66,7 @@ class PositionsStore {
       });
 
       await planBuildBroadcast('positionClose', planReq);
-      await this.updatePositionsInCache(positions);
+      await updatePositionsQuery();
     } catch (e) {
       openToast({
         type: 'error',
@@ -99,7 +98,7 @@ class PositionsStore {
       });
 
       await planBuildBroadcast('positionWithdraw', planReq);
-      await this.updatePositionsInCache(positions);
+      await updatePositionsQuery();
     } catch (e) {
       openToast({
         type: 'error',
@@ -111,23 +110,7 @@ class PositionsStore {
     }
   };
 
-  private async updatePositionsInCache(positions: PositionId[]): Promise<void> {
-    const promises = positions.map(id => this.updatePositionInCache(id));
-    await Promise.all(promises);
-  }
-
-  // After a successful action, update the position state in the cache
-  private async updatePositionInCache(positionId: PositionId) {
-    const { data } = await penumbra.service(DexService).liquidityPositionById({ positionId });
-    if (data) {
-      queryClient.setQueryData(['positions'], (positionsById: Map<PositionId, Position>) => {
-        positionsById.set(positionId, data);
-        return positionsById;
-      });
-    }
-  }
-
-  setPositions = (positionsById: Map<PositionId, Position>) => {
+  setPositions = (positionsById: Map<string, Position>) => {
     this.positionsById = positionsById;
   };
 
@@ -323,8 +306,8 @@ class PositionsStore {
         });
 
         return {
-          id: id,
-          idString: bech32mPositionId(id),
+          id: new PositionId(positionIdFromBech32(id)),
+          idString: id,
           orders: orders.map(({ direction, baseAsset, quoteAsset }) => ({
             direction,
             amount:
