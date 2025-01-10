@@ -24,7 +24,7 @@ export const App = observer(({ children }: { children: ReactNode }) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
+      <TooltipProvider delayDuration={0}>
         <main className='relative z-0'>
           <SyncBar />
           <Header />

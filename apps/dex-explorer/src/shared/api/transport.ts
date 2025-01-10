@@ -6,6 +6,7 @@ import { ViewService } from '@penumbra-zone/protobuf/penumbra/view/v1/view_conne
 import { envQueryFn } from '@/shared/api/env/env.ts';
 import { penumbra } from '@/shared/const/penumbra.ts';
 import { connectionStore } from '@/shared/model/connection';
+import { queryClient } from '@/shared/const/queryClient';
 
 const registryRpcChoices = async () => {
   const env = await envQueryFn();
@@ -67,10 +68,16 @@ const grpcTransportQueryFn = async () => {
   };
 };
 
+const getGrpcQueryOptions = () => ({
+  queryKey: ['grpcTransport', connectionStore.connected],
+  queryFn: grpcTransportQueryFn,
+  staleTime: Infinity,
+});
+
+export const getGrpcTransport = () => {
+  return queryClient.fetchQuery(getGrpcQueryOptions());
+};
+
 export const useGrpcTransport = () => {
-  return useQuery({
-    queryKey: ['grpcTransport', connectionStore.connected],
-    queryFn: grpcTransportQueryFn,
-    staleTime: Infinity,
-  });
+  return useQuery(getGrpcQueryOptions());
 };
