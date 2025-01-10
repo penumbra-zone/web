@@ -46,3 +46,4 @@ tsconfig.tsbuildinfo
 # ignore database CA certificate, required for some db backends
 ca-cert.pem
 *.pem
+.eslintcache
