@@ -63,7 +63,9 @@ export const TradesTabs = ({ withChart = false }: { withChart?: boolean }) => {
             </div>
           )}
           {tab === TradesTabsType.MarketTrades && <MarketTrades />}
-          {tab === TradesTabsType.MyTrades && <MarketTrades />}
+          {tab === TradesTabsType.MyTrades && (
+            <div className='text-text-secondary p-4'>Coming soon...</div>
+          )}
         </>
       )}
     </div>
