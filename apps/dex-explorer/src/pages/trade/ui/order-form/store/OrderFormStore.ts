@@ -263,10 +263,11 @@ function getAccountAddress(subAccounts: AddressView[] | undefined) {
 const orderFormStore = new OrderFormStore();
 
 export const useOrderFormStore = () => {
+  const { subaccount } = connectionStore;
   const { data: assets } = useRegistryAssets();
   const { data: subAccounts } = useSubaccounts();
   const { address, addressIndex } = getAccountAddress(subAccounts);
-  const { data: balances } = useBalances(addressIndex);
+  const { data: balances } = useBalances(addressIndex?.account ?? subaccount);
   const { baseAsset, quoteAsset } = usePathToMetadata();
   const marketPrice = useMarketPrice();
 
