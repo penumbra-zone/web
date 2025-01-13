@@ -75,3 +75,68 @@ describe('planToPosition', () => {
     expect(pnum(position.reserves?.r2).toNumber()).toEqual(7e8);
   });
 });
+
+describe('renderPositions', () => {
+  it('works for plans with no exponent', () => {
+    const position = planToPosition({
+      baseAsset: {
+        id: ASSET_A,
+        exponent: 0,
+      },
+      quoteAsset: {
+        id: ASSET_B,
+        exponent: 0,
+      },
+      price: 20.5,
+      feeBps: 100,
+      baseReserves: 1000,
+      quoteReserves: 2000,
+    });
+    expect(position.phi?.component?.fee).toEqual(100);
+    expect(getPrice(position)).toEqual(20.5);
+    expect(pnum(position.reserves?.r1).toNumber()).toEqual(1000);
+    expect(pnum(position.reserves?.r2).toNumber()).toEqual(2000);
+  });
+
+  it('works for plans with identical exponent', () => {
+    const position = planToPosition({
+      baseAsset: {
+        id: ASSET_A,
+        exponent: 6,
+      },
+      quoteAsset: {
+        id: ASSET_B,
+        exponent: 6,
+      },
+      price: 12.34,
+      feeBps: 100,
+      baseReserves: 5,
+      quoteReserves: 7,
+    });
+    expect(position.phi?.component?.fee).toEqual(100);
+    expect(getPrice(position)).toEqual(12.34);
+    expect(pnum(position.reserves?.r1).toNumber()).toEqual(5e6);
+    expect(pnum(position.reserves?.r2).toNumber()).toEqual(7e6);
+  });
+
+  it('works for plans with different exponents', () => {
+    const position = planToPosition({
+      baseAsset: {
+        id: ASSET_A,
+        exponent: 6,
+      },
+      quoteAsset: {
+        id: ASSET_B,
+        exponent: 8,
+      },
+      price: 12.34,
+      feeBps: 100,
+      baseReserves: 5,
+      quoteReserves: 7,
+    });
+    expect(position.phi?.component?.fee).toEqual(100);
+    expect(getPrice(position) * 10 ** (6 - 8)).toEqual(12.34);
+    expect(pnum(position.reserves?.r1).toNumber()).toEqual(5e6);
+    expect(pnum(position.reserves?.r2).toNumber()).toEqual(7e8);
+  });
+});

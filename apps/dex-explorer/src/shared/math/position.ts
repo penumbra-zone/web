@@ -10,6 +10,7 @@ import { pnum } from '@penumbra-zone/types/pnum';
 import BigNumber from 'bignumber.js';
 
 export const compareAssetId = (a: AssetId, b: AssetId): number => {
+  // The asset ids are serialized using LE, so this is checking the MSB.
   for (let i = 31; i >= 0; --i) {
     const a_i = a.inner[i] ?? -Infinity;
     const b_i = b.inner[i] ?? -Infinity;
