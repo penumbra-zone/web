@@ -3,7 +3,7 @@ import cn from 'clsx';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { Text } from '@penumbra-zone/ui/Text';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { useSummary } from '../model/useSummary';
+import { useSummary } from '../api/use-summary';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { round } from '@penumbra-zone/types/round';
 import { Density } from '@penumbra-zone/ui/Density';
