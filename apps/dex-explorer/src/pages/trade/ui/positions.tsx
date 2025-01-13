@@ -258,7 +258,7 @@ const Positions = observer(({ showInactive }: { showInactive: boolean }) => {
                             <ValueViewComponent
                               key={i}
                               valueView={order.amount}
-                              trailingZeros={true}
+                              trailingZeros={false}
                               density='slim'
                             />
                           ))}
@@ -293,7 +293,7 @@ const Positions = observer(({ showInactive }: { showInactive: boolean }) => {
                               <div>
                                 <ValueViewComponent
                                   valueView={order.effectivePrice}
-                                  trailingZeros={true}
+                                  trailingZeros={false}
                                   density='slim'
                                 />
                               </div>
@@ -309,27 +309,19 @@ const Positions = observer(({ showInactive }: { showInactive: boolean }) => {
                       <Table.Td density='slim'>
                         <div className='flex flex-col gap-4'>
                           {position.orders.map((order, i) => (
-                            <Text
+                            <ValueViewComponent
                               key={i}
-                              as='div'
-                              detailTechnical
-                              color='text.primary'
-                              whitespace='nowrap'
-                            >
-                              {pnum(order.basePrice).toFormattedString()}{' '}
-                              {order.baseAsset.asset.symbol}
-                            </Text>
+                              valueView={order.basePrice}
+                              trailingZeros={false}
+                              density='slim'
+                            />
                           ))}
                         </div>
                       </Table.Td>
                       <Table.Td density='slim'>
                         <div className='flex flex-col gap-4'>
                           {position.orders.map((order, i) => (
-                            <PositionsCurrentValue
-                              key={i}
-                              baseAsset={order.baseAsset}
-                              quoteAsset={order.quoteAsset}
-                            />
+                            <PositionsCurrentValue key={i} order={order} />
                           ))}
                         </div>
                       </Table.Td>
