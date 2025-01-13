@@ -3,23 +3,33 @@ import { useMarketPrice } from '../model/useMarketPrice';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { LoadingCell } from './market-trades';
 import { pnum } from '@penumbra-zone/types/pnum';
-import { DisplayAsset } from '../model/positions';
+import { DisplayPosition } from '../model/positions';
 
-export const PositionsCurrentValue = ({
-  baseAsset,
-  quoteAsset,
-}: {
-  baseAsset: DisplayAsset;
-  quoteAsset: DisplayAsset;
-}) => {
+export const PositionsCurrentValue = ({ order }: { order: DisplayPosition['orders'][number] }) => {
+  const { baseAsset, quoteAsset } = order;
   const marketPrice = useMarketPrice(baseAsset.asset.symbol, quoteAsset.asset.symbol);
 
-  return marketPrice ? (
+  if (!marketPrice) {
+    return <LoadingCell />;
+  }
+
+  if (order.direction === 'Buy') {
+    return (
+      <ValueViewComponent
+        valueView={pnum(quoteAsset.amount.toNumber(), quoteAsset.exponent).toValueView(
+          quoteAsset.asset,
+        )}
+        density='slim'
+      />
+    );
+  }
+
+  return (
     <ValueViewComponent
-      valueView={pnum(marketPrice, quoteAsset.exponent).toValueView(quoteAsset.asset)}
+      valueView={pnum(baseAsset.amount.toNumber() * marketPrice, quoteAsset.exponent).toValueView(
+        quoteAsset.asset,
+      )}
       density='slim'
     />
-  ) : (
-    <LoadingCell />
   );
 };
