@@ -17,6 +17,7 @@ import { Skeleton } from '@/shared/ui/skeleton';
 import SparklineChart from './sparkline-chart.svg';
 import ChevronDown from './chevron-down.svg';
 import { PreviewChart } from './preview-chart';
+import { useRegistryAssets } from '@/shared/api/registry';
 
 const ShimmeringBars = () => {
   return (
@@ -64,6 +65,9 @@ export type PairCardProps =
 export const PairCard = ({ loading, summary }: PairCardProps) => {
   const today = new Date();
   const yesterday = subDays(new Date(), 1);
+
+  const { data: assets } = useRegistryAssets();
+  const usdcMetadata = assets?.find(asset => asset.symbol === 'USDC');
 
   return (
     <Link
@@ -119,7 +123,7 @@ export const PairCard = ({ loading, summary }: PairCardProps) => {
               {shortify(Number(getFormattedAmtFromValueView(summary.liquidity)))}
             </Text>
             <Text detail color='text.secondary'>
-              {summary.quoteAsset.symbol}
+              {usdcMetadata?.symbol}
             </Text>
           </>
         )}
@@ -134,7 +138,7 @@ export const PairCard = ({ loading, summary }: PairCardProps) => {
               {shortify(Number(getFormattedAmtFromValueView(summary.directVolume)))}
             </Text>
             <Text detail color='text.secondary'>
-              {summary.quoteAsset.symbol}
+              {usdcMetadata?.symbol}
             </Text>
           </>
         )}
