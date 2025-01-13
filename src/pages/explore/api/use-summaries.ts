@@ -5,7 +5,8 @@ import { SummaryData } from '@/shared/api/server/summary/types';
 import { DurationWindow } from '@/shared/utils/duration';
 import { apiFetch } from '@/shared/utils/api-fetch';
 
-const BASE_LIMIT = 15;
+/// The base limit will need to be increased as more trading pairs are added to the explore page.
+const BASE_LIMIT = 20;
 const BASE_PAGE = 0;
 const BASE_WINDOW: DurationWindow = '1d';
 

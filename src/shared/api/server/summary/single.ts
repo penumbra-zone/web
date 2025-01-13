@@ -34,6 +34,9 @@ export async function GET(req: NextRequest): Promise<NextResponse<Serialized<Sum
 
   // TODO: Add getMetadataBySymbol() helper to registry npm package
   const allAssets = registry.getAllAssets();
+  const stablecoins = allAssets.filter(asset => ['USDT', 'USDC', 'USDY'].includes(asset.symbol));
+  const usdc = stablecoins.find(asset => asset.symbol === 'USDC');
+
   const baseAssetMetadata = allAssets.find(
     a => a.symbol.toLowerCase() === baseAssetSymbol.toLowerCase(),
   );
@@ -58,6 +61,6 @@ export async function GET(req: NextRequest): Promise<NextResponse<Serialized<Sum
     return NextResponse.json({ window: durationWindow, noData: true });
   }
 
-  const adapted = adaptSummary(summary, baseAssetMetadata, quoteAssetMetadata);
+  const adapted = adaptSummary(summary, baseAssetMetadata, quoteAssetMetadata, usdc);
   return NextResponse.json(serialize(adapted));
 }
