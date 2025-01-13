@@ -51,14 +51,14 @@ export async function GET(): Promise<NextResponse<PairsResponse>> {
         return undefined;
       }
 
+      // TODO: should this be `direct_volume_over_window`?
       let volume = toValueView({
         amount: summary.liquidity,
         metadata: quoteAsset,
       });
 
+      // Converts liquidity and trading volume to their equivalent USDC prices if `usdc_price` is available
       if (summary.usdc_price) {
-        // Custom volume calculation for USDC pairs
-        // TODO: change to a better method (probably create `pnum.multiply()` method and use it)
         const expDiff = Math.abs(
           getDisplayDenomExponent(quoteAsset) - getDisplayDenomExponent(usdc),
         );

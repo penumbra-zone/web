@@ -29,18 +29,17 @@ export const getAllSummaries = async (
 
   const registryClient = new ChainRegistryClient();
   const registry = await registryClient.remote.get(chainId);
+  const allAssets = registry.getAllAssets();
 
-  const stablecoins = registry
-    .getAllAssets()
-    .filter(asset => ['USDT', 'USDC', 'USDY'].includes(asset.symbol))
-    .map(asset => asset.penumbraAssetId) as AssetId[];
+  const stablecoins = allAssets.filter(asset => ['USDT', 'USDC', 'USDY'].includes(asset.symbol));
+  const usdc = stablecoins.find(asset => asset.symbol === 'USDC');
 
   const results = await pindexer.summaries({
     ...params,
-    stablecoins,
+    stablecoins: stablecoins.map(asset => asset.penumbraAssetId) as AssetId[],
+    // eslint-disable-next-line @typescript-eslint/non-nullable-type-assertion-style -- usdc is defined
+    usdc: usdc?.penumbraAssetId as AssetId,
   });
-
-  const allAssets = registry.getAllAssets();
 
   const summaries = await Promise.all(
     results.map(summary => {
@@ -54,9 +53,18 @@ export const getAllSummaries = async (
         summary,
         baseAsset,
         quoteAsset,
+        usdc,
         summary.candles,
         summary.candle_times,
       );
+
+      // Filter out pairs with zero liquidity and trading volume
+      if (
+        (data.liquidity.valueView.value?.amount?.lo &&
+          data.directVolume.valueView.value?.amount?.lo) === 0n
+      ) {
+        return;
+      }
 
       return serialize(data);
     }),

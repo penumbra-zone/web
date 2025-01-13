@@ -7,9 +7,12 @@ import { pluralizeAndShortify } from '@/shared/utils/pluralize';
 import { shortify } from '@penumbra-zone/types/shortify';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
 import { useStats } from '@/pages/explore/api/use-stats';
+import { useRegistryAssets } from '@/shared/api/registry';
 
 export const ExploreStats = () => {
   const { data: stats, isLoading, error } = useStats();
+  const { data: assets } = useRegistryAssets();
+  const usdcMetadata = assets?.find(asset => asset.symbol === 'USDC');
 
   if (error) {
     return (
@@ -23,10 +26,9 @@ export const ExploreStats = () => {
     <div className='grid grid-cols-1 tablet:grid-cols-2 desktop:grid-cols-3 gap-2'>
       <InfoCard title='Total Trading Volume (24h)' loading={isLoading}>
         {stats && (
-          <Text large color='text.primary'>
-            <Text large color='text.primary'>
-              {shortify(Number(getFormattedAmtFromValueView(stats.directVolume)))}
-            </Text>
+          <Text large color='success.light'>
+            {shortify(Number(getFormattedAmtFromValueView(stats.directVolume)))}{' '}
+            {usdcMetadata?.symbol}
           </Text>
         )}
       </InfoCard>
@@ -45,7 +47,8 @@ export const ExploreStats = () => {
             </Text>
             {stats.largestPairLiquidity && (
               <Text large color='success.light'>
-                {shortify(Number(getFormattedAmtFromValueView(stats.largestPairLiquidity)))}
+                {shortify(Number(getFormattedAmtFromValueView(stats.largestPairLiquidity)))}{' '}
+                {usdcMetadata?.symbol}
               </Text>
             )}
           </>
@@ -57,8 +60,8 @@ export const ExploreStats = () => {
       </InfoCard>
       <InfoCard title='Total Liquidity Available' loading={isLoading}>
         {stats && (
-          <Text large color='text.primary'>
-            {shortify(Number(getFormattedAmtFromValueView(stats.liquidity)))}
+          <Text large color='success.light'>
+            {shortify(Number(getFormattedAmtFromValueView(stats.liquidity)))} {usdcMetadata?.symbol}
           </Text>
         )}
       </InfoCard>
