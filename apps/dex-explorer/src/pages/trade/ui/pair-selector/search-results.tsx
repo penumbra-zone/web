@@ -14,6 +14,7 @@ import {
   groupAndSortBalances,
   AssetSelectorValue,
   isBalancesResponse,
+  filterAssets as filterUnswappableAssets,
 } from '@penumbra-zone/ui/AssetSelector';
 import { Button } from '@penumbra-zone/ui/Button';
 import { useAssets } from '@/shared/api/assets';
@@ -54,7 +55,7 @@ const mergeOptions = (
 ): AssetSelectorValue[] => {
   const grouped = groupAndSortBalances(balances);
   const balancesPerAccount = grouped.find(group => group[0] === account.toString())?.[1] ?? [];
-  const filteredAssets = assets
+  const filteredAssets = filterUnswappableAssets(assets)
     .filter(
       asset =>
         !balancesPerAccount.some(
@@ -71,7 +72,7 @@ export const SearchResults = observer(
     const { subaccount } = connectionStore;
 
     const { data: assets } = useAssets();
-    const { data: balances } = useBalances();
+    const { data: balances } = useBalances(subaccount);
 
     const merged = mergeOptions(assets ?? [], balances ?? [], subaccount);
     const filtered = useFilteredAssets(merged, search ?? '');
@@ -99,8 +100,8 @@ export const SearchResults = observer(
               <div className='flex flex-col gap-1'>
                 {recent.map(asset => (
                   <Dialog.RadioItem
-                    key={asset.symbol}
-                    value={asset.symbol}
+                    key={`${asset.symbol}-${asset.display}`}
+                    value={`${asset.symbol}-${asset.display}`}
                     startAdornment={<AssetIcon metadata={asset} size='lg' />}
                     title={
                       <div className={asset.name ? '' : 'h-10 flex items-center'}>
@@ -141,18 +142,17 @@ export const SearchResults = observer(
 
                 return (
                   <Dialog.RadioItem
-                    key={asset.symbol}
-                    value={asset.symbol}
+                    key={`${asset.symbol}-${asset.display}`}
+                    value={`${asset.symbol}-${asset.display}`}
                     startAdornment={<AssetIcon metadata={asset} size='lg' />}
                     endAdornment={
                       balance && (
-                        <div className='[&_img]:hidden'>
-                          <ValueViewComponent
-                            showSymbol={false}
-                            context='table'
-                            valueView={balance.valueView}
-                          />
-                        </div>
+                        <ValueViewComponent
+                          showSymbol={false}
+                          showIcon={false}
+                          context='table'
+                          valueView={balance.valueView}
+                        />
                       )
                     }
                     title={
