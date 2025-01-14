@@ -146,6 +146,10 @@ const ChartData = observer(({ candles }: { candles: CandleWithVolume[] }) => {
             color: theme.color.other.tonalStroke,
           },
         },
+        timeScale: {
+          timeVisible: true,
+          secondsVisible: false,
+        },
       });
 
       // Initialize the candlestick series
