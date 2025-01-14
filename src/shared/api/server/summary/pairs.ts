@@ -8,7 +8,8 @@ import {
 } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { toValueView } from '@/shared/utils/value-view';
-import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
+import { getStablecoins } from '@/shared/utils/stables';
+import { calculateEquivalentInUSDC } from '@/shared/utils/price-conversion';
 
 const getAssetById = (allAssets: Metadata[], id: Buffer): Metadata | undefined => {
   return allAssets.find(asset => {
@@ -34,8 +35,7 @@ export async function GET(): Promise<NextResponse<PairsResponse>> {
   const registry = await registryClient.remote.get(chainId);
   const allAssets = registry.getAllAssets();
 
-  const stablecoins = allAssets.filter(asset => ['USDT', 'USDC', 'USDY'].includes(asset.symbol));
-  const usdc = stablecoins.find(asset => asset.symbol === 'USDC');
+  const { stablecoins, usdc } = getStablecoins(allAssets, 'USDC');
 
   const results = await pindexer.pairs({
     // eslint-disable-next-line @typescript-eslint/non-nullable-type-assertion-style -- usdc is defined
@@ -58,15 +58,8 @@ export async function GET(): Promise<NextResponse<PairsResponse>> {
       });
 
       // Converts liquidity and trading volume to their equivalent USDC prices if `usdc_price` is available
-      if (summary.usdc_price) {
-        const expDiff = Math.abs(
-          getDisplayDenomExponent(quoteAsset) - getDisplayDenomExponent(usdc),
-        );
-        const result = summary.liquidity * summary.usdc_price * 10 ** expDiff;
-        volume = toValueView({
-          amount: Math.floor(result),
-          metadata: quoteAsset,
-        });
+      if (summary.usdc_price && usdc) {
+        volume = calculateEquivalentInUSDC(summary.liquidity, summary.usdc_price, quoteAsset, usdc);
       }
 
       return serialize({
