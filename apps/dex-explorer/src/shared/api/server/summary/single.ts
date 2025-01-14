@@ -4,6 +4,7 @@ import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { durationWindows, isDurationWindow } from '@/shared/utils/duration.ts';
 import { adaptSummary, SummaryResponse } from '@/shared/api/server/summary/types.ts';
 import { serialize, Serialized } from '@/shared/utils/serializer';
+import { getStablecoins } from '@/shared/utils/stables';
 
 export async function GET(req: NextRequest): Promise<NextResponse<Serialized<SummaryResponse>>> {
   const chainId = process.env['PENUMBRA_CHAIN_ID'];
@@ -34,8 +35,8 @@ export async function GET(req: NextRequest): Promise<NextResponse<Serialized<Sum
 
   // TODO: Add getMetadataBySymbol() helper to registry npm package
   const allAssets = registry.getAllAssets();
-  const stablecoins = allAssets.filter(asset => ['USDT', 'USDC', 'USDY'].includes(asset.symbol));
-  const usdc = stablecoins.find(asset => asset.symbol === 'USDC');
+
+  const { usdc } = getStablecoins(allAssets, 'USDC');
 
   const baseAssetMetadata = allAssets.find(
     a => a.symbol.toLowerCase() === baseAssetSymbol.toLowerCase(),
