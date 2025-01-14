@@ -5,6 +5,8 @@ import { DurationWindow, durationWindows, isDurationWindow } from '@/shared/util
 import { adaptSummary, SummaryData } from '@/shared/api/server/summary/types.ts';
 import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { serialize, Serialized } from '@/shared/utils/serializer';
+import { getStablecoins } from '@/shared/utils/stables';
+import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
 
 interface GetPairsParams {
   window: DurationWindow;
@@ -31,8 +33,7 @@ export const getAllSummaries = async (
   const registry = await registryClient.remote.get(chainId);
   const allAssets = registry.getAllAssets();
 
-  const stablecoins = allAssets.filter(asset => ['USDT', 'USDC', 'USDY'].includes(asset.symbol));
-  const usdc = stablecoins.find(asset => asset.symbol === 'USDC');
+  const { stablecoins, usdc } = getStablecoins(allAssets, 'USDC');
 
   const results = await pindexer.summaries({
     ...params,
@@ -66,11 +67,24 @@ export const getAllSummaries = async (
         return;
       }
 
-      return serialize(data);
+      return data;
     }),
   );
 
-  return summaries.filter(Boolean) as Serialized<SummaryData>[];
+  // Sorting by decreasing liquidity in the pool
+  // TODO: sort directly in SQL to avoid breaking server-side pagination
+  const sortedSummaries = summaries.filter(Boolean).sort((a, b) => {
+    if (!a || !b) {
+      return 0;
+    }
+
+    const aLiquidity = Number(getFormattedAmtFromValueView(a.liquidity)) || 0;
+    const bLiquidity = Number(getFormattedAmtFromValueView(b.liquidity)) || 0;
+
+    return bLiquidity - aLiquidity;
+  });
+
+  return sortedSummaries.map(data => serialize(data)) as Serialized<SummaryData>[];
 };
 
 export type SummariesResponse = Serialized<SummaryData>[] | { error: string };
