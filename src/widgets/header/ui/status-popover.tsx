@@ -19,7 +19,7 @@ export const StatusPopover = observer(() => {
     }
 
     if (loading) {
-      return null;
+      return <Pill context='technical-caution'>Loading...</Pill>;
     }
 
     if (!syncing) {
@@ -54,7 +54,7 @@ export const StatusPopover = observer(() => {
                   <Text technical>Block Height</Text>
                   <Pill context='technical-default'>
                     {latestKnownBlockHeight !== fullSyncHeight
-                      ? `${fullSyncHeight} of ${latestKnownBlockHeight}`
+                      ? `${fullSyncHeight}${latestKnownBlockHeight ? ` of ${latestKnownBlockHeight}` : ''}`
                       : `${latestKnownBlockHeight}`}
                   </Pill>
                 </div>
