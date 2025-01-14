@@ -136,32 +136,59 @@ const NotConnectedNotice = () => {
   );
 };
 
-const calculateAssetDistribution = async (balances: BalancesResponse[]) => {
+interface AssetDistribution {
+  percentage: number;
+  color: string;
+  hasError: boolean;
+  isOther: boolean;
+}
+
+interface DistributionResult {
+  distribution: AssetDistribution[];
+  sortedBalances: BalancesResponse[];
+}
+
+interface ValueWithMetadata {
+  value: number;
+  balance: BalancesResponse;
+  hasError: boolean;
+}
+
+/** Minimum percentage threshold for an asset to be shown individually. Assets below this are grouped into "Other". Unit: % */
+const SMALL_ASSET_THRESHOLD = 2;
+
+/** HSL color saturation for asset bars. Unit: % */
+const COLOR_SATURATION = 95;
+
+/** HSL color lightness for asset bars. Unit: % */
+const COLOR_LIGHTNESS = 53;
+
+/** Angle used in the golden ratio color distribution algorithm to ensure visually distinct colors. Unit: degrees */
+const GOLDEN_RATIO_ANGLE = 137.5;
+
+const calculateAssetDistribution = (balances: BalancesResponse[]): DistributionResult => {
   // First filter out NFTs and special assets
   const displayableBalances = balances.filter(balance => {
     const metadata = getMetadataFromBalancesResponse.optional(balance);
+    // If we don't have a symbol, we can't display it
     if (!metadata?.symbol) {
       return false;
     }
+
     // Filter out LP NFTs, unbonding tokens, and auction tokens
-    const isSpecialAsset =
-      metadata.symbol.startsWith('lpNft') ||
-      metadata.symbol.startsWith('unbond') ||
-      metadata.symbol.startsWith('auction');
-    return !isSpecialAsset;
+    return (
+      !metadata.symbol.startsWith('lpNft') &&
+      !metadata.symbol.startsWith('unbond') &&
+      !metadata.symbol.startsWith('auction')
+    );
   });
 
-  const validBalances = displayableBalances.filter(balance => {
-    const valueView = getBalanceView.optional(balance);
-    const metadata = getMetadataFromBalancesResponse.optional(balance);
-    return valueView && metadata;
-  });
-
-  // Calculate values first
-  const valuesWithMetadata = validBalances.map(balance => {
+  // Calculate values and handle errors
+  const valuesWithMetadata: ValueWithMetadata[] = displayableBalances.map(balance => {
     const valueView = getBalanceView.optional(balance);
     const metadata = getMetadataFromBalancesResponse.optional(balance);
     const amount = valueView?.valueView.value?.amount;
+
     if (!amount || !metadata) {
       console.warn(
         'Missing amount or metadata for balance',
@@ -181,15 +208,7 @@ const calculateAssetDistribution = async (balances: BalancesResponse[]) => {
       );
 
       if (Number.isNaN(formattedAmount)) {
-        console.warn(
-          'Failed to format amount for',
-          metadata.symbol,
-          'amount:',
-          amount.toJsonString(),
-          'exponent:',
-          getDisplayDenomExponent(metadata),
-        );
-        return { value: 0, balance, hasError: true };
+        throw new Error('Failed to format amount');
       }
 
       return {
@@ -216,70 +235,43 @@ const calculateAssetDistribution = async (balances: BalancesResponse[]) => {
     return { distribution: [], sortedBalances: [] };
   }
 
-  // Take the first 4 bytes of the hash and convert to an integer
-  const getHueFromHash = (buffer: ArrayBuffer) => {
-    const view = new DataView(buffer);
-    const num = view.getUint32(0, true); // true for little-endian
-    // Offset the hue by the hash value to make UM naturally orange
-    return (num * 83) % 360;
-  };
+  // Sort by value percentage in descending order and calculate distribution
+  const sorted = valuesWithMetadata
+    .map((item, index) => ({
+      ...item,
+      percentage: (item.value / totalValue) * 100,
+      color: `hsl(${(index * GOLDEN_RATIO_ANGLE) % 360}, ${COLOR_SATURATION}%, ${COLOR_LIGHTNESS}%)`,
+    }))
+    .sort((a, b) => b.percentage - a.percentage);
 
-  const distributionWithMetadata = await Promise.all(
-    valuesWithMetadata.map(async ({ value, balance, hasError }) => {
-      const metadata = getMetadataFromBalancesResponse.optional(balance);
-      const assetIdHex = metadata?.penumbraAssetId?.inner.toString() ?? '';
-
-      // Use Web Crypto API to hash the hex string
-      const hashBuffer = await crypto.subtle.digest(
-        'SHA-256',
-        new TextEncoder().encode(assetIdHex),
-      );
-      const hue = getHueFromHash(hashBuffer);
-
-      const percentage = (value / totalValue) * 100;
-
-      return {
-        percentage,
-        color: `hsl(${hue}, 70%, 50%)`,
-        balance,
-        hasError,
-      };
-    }),
-  );
-
-  // Sort by value percentage in descending order
-  const sorted = distributionWithMetadata.sort((a, b) => b.percentage - a.percentage);
-
-  // Group small assets (less than 2%) into "Other" category for distribution only
-  const SMALL_ASSET_THRESHOLD = 2;
+  // Split into main assets and small assets
   const mainAssets = sorted.filter(asset => asset.percentage >= SMALL_ASSET_THRESHOLD);
   const smallAssets = sorted.filter(asset => asset.percentage < SMALL_ASSET_THRESHOLD);
 
   const otherPercentage = smallAssets.reduce((acc, asset) => acc + asset.percentage, 0);
 
-  const distributionWithOther = [
+  const distribution: AssetDistribution[] = [
     ...mainAssets.map(({ percentage, color, hasError }) => ({
       percentage,
       color,
       hasError,
-      isOther: false as const,
+      isOther: false,
     })),
-    // Only add Other if there are small assets
     ...(otherPercentage > 0
       ? [
           {
             percentage: otherPercentage,
-            color: 'hsl(0, 0%, 50%)', // Gray color for Other
+            color: `hsl(0, 0%, ${COLOR_LIGHTNESS}%)`,
             hasError: false,
-            isOther: true as const,
+            isOther: true,
           },
         ]
       : []),
   ];
 
   return {
-    distribution: distributionWithOther,
-    sortedBalances: sorted.map(({ balance }) => balance), // Keep all assets in the table
+    distribution,
+    sortedBalances: sorted.map(({ balance }) => balance),
   };
 };
 
@@ -290,19 +282,11 @@ export const AssetsTable = observer(() => {
   const { data: balances, isLoading: balancesLoading } = useBalances(addressIndex.account);
   const { data: assets, isLoading: assetsLoading } = useAssets();
   const { data: chainId } = useChainId();
-  const [distribution, setDistribution] = useState<{
-    distribution: {
-      percentage: number;
-      color: string;
-      hasError: boolean;
-      isOther: boolean;
-    }[];
-    sortedBalances: BalancesResponse[];
-  }>();
+  const [distribution, setDistribution] = useState<DistributionResult>();
 
   useEffect(() => {
     if (balances) {
-      void calculateAssetDistribution(balances).then(setDistribution);
+      setDistribution(calculateAssetDistribution(balances));
     }
   }, [balances]);
 
@@ -314,7 +298,6 @@ export const AssetsTable = observer(() => {
   if (isLoading) {
     return <LoadingState />;
   }
-
   if (!connected) {
     return <NotConnectedNotice />;
   }
@@ -328,7 +311,7 @@ export const AssetsTable = observer(() => {
           </Text>
 
           {/* Asset distribution bar */}
-          <div className='flex w-full h-2 mt-4 mb-6 rounded-full overflow-hidden'>
+          <div className='flex w-full h-4 mt-4 mb-6 gap-[5px]'>
             {distribution.distribution.map((asset, index) => (
               <div
                 key={index}
@@ -336,7 +319,7 @@ export const AssetsTable = observer(() => {
                   width: `${asset.percentage}%`,
                   backgroundColor: asset.color,
                 }}
-                className='h-full first:rounded-l-full last:rounded-r-full'
+                className='h-full rounded'
               />
             ))}
           </div>
