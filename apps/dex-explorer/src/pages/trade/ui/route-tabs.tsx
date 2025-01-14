@@ -24,7 +24,7 @@ export const RouteTabs = () => {
             onChange={value => setTab(value as RouteTabsType)}
             options={[
               { value: RouteTabsType.Book, label: 'Route Book' },
-              { value: RouteTabsType.Depth, label: 'Route Depth', disabled: true },
+              { value: RouteTabsType.Depth, label: 'Route Depth' },
             ]}
           />
         </Density>
