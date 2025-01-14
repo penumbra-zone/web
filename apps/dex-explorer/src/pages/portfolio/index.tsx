@@ -5,6 +5,7 @@ import { XCircle } from 'lucide-react';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { Density } from '@penumbra-zone/ui/Density';
+import { AssetsTable } from './ui/assets-table';
 
 interface PortfolioPageProps {
   isMobile: boolean;
@@ -53,5 +54,9 @@ function MobilePortfolioPage() {
 }
 
 function DesktopPortfolioPage() {
-  return 'Hi from desktop!';
+  return (
+    <div className='sm:container mx-auto py-8'>
+      <AssetsTable />
+    </div>
+  );
 }
