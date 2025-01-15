@@ -993,4 +993,15 @@ export class IndexedDb implements IndexedDbInterface {
         new Amount({ hi: 0n, lo: 0n }),
       );
   }
+
+  async getPosition(positionId: PositionId): Promise<Position | undefined> {
+    assertPositionId(positionId);
+    const position = await this.db.get('POSITIONS', uint8ArrayToBase64(positionId.inner));
+
+    if (!position) {
+      return undefined;
+    }
+
+    return Position.fromJson(position.position);
+  }
 }

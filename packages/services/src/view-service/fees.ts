@@ -89,6 +89,40 @@ export const extractAltFee = async (
     }
   }
 
+  const positionOpen = request.positionOpens
+    .map(assetIn => assetIn.position?.phi?.pair?.asset1)
+    .find(Boolean);
+  if (positionOpen) {
+    const assetId = await getAssetFromGasPriceTable(request, indexedDb, swapAsset);
+    if (assetId) {
+      return assetId;
+    }
+  }
+
+  const positionClose = request.positionCloses.map(a => a.positionId).find(Boolean);
+  if (positionClose) {
+    const closePosition = await indexedDb.getPosition(positionClose);
+    if (closePosition?.phi?.pair?.asset1) {
+      const inputAssetId = closePosition.phi.pair.asset1;
+      const assetId = await getAssetFromGasPriceTable(request, indexedDb, inputAssetId);
+      if (assetId) {
+        return assetId;
+      }
+    }
+  }
+
+  const positonWithdraw = request.positionWithdraws.map(a => a.positionId).find(Boolean);
+  if (positonWithdraw) {
+    const withdrawPosition = await indexedDb.getPosition(positonWithdraw);
+    if (withdrawPosition?.phi?.pair?.asset1) {
+      const inputAssetId = withdrawPosition.phi.pair.asset1;
+      const assetId = await getAssetFromGasPriceTable(request, indexedDb, inputAssetId);
+      if (assetId) {
+        return assetId;
+      }
+    }
+  }
+
   if (request.undelegations.length > 0) {
     const assetId = await getAssetFromGasPriceTable(request, indexedDb);
     if (assetId) {
