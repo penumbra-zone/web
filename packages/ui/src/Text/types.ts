@@ -13,6 +13,7 @@ export type TextVariant =
   | 'detailTechnical'
   | 'technical'
   | 'body'
+  | 'bodyTechnical'
   | 'tableHeading'
   | 'tableHeadingMedium'
   | 'tableHeadingSmall'
