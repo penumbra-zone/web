@@ -34,7 +34,7 @@ export interface DisplayPosition {
     quoteAsset: CalculatedAsset;
   }[];
   fee: string;
-  isActive: boolean;
+  isWithdrawn: boolean;
   state: PositionState_PositionStateEnum;
 }
 
@@ -416,7 +416,7 @@ class PositionsStore {
         // We do not yet filter `Closed` positions to allow auto-closing position to provide visual
         // feedback about execution. This is probably best later replaced by either a notification, or a
         // dedicated view. Fine for now.
-        isActive: state.state !== PositionState_PositionStateEnum.WITHDRAWN,
+        isWithdrawn: state.state === PositionState_PositionStateEnum.WITHDRAWN,
         state: state.state,
       };
     });
