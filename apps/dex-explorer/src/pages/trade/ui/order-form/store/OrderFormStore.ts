@@ -245,8 +245,28 @@ export class OrderFormStore {
   }
 }
 
+/**
+ * Finds the subaccount in subAccounts where the address index matches `connectionStore.subaccount`, properly
+ * handling non-1:1 mappings by iterating through address views.
+ */
+const findMatchingSubaccount = (subaccounts: AddressView[] | undefined, targetAccount: number) => {
+  if (!subaccounts) {
+    return undefined;
+  }
+
+  return subaccounts.find(subaccount => {
+    const addressView = subaccount.addressView;
+    if (addressView.case === 'decoded') {
+      return addressView.value.index?.account === targetAccount;
+    } else {
+      return undefined;
+    }
+  });
+};
+
 function getAccountAddress(subAccounts: AddressView[] | undefined) {
-  const subAccount = subAccounts ? subAccounts[connectionStore.subaccount] : undefined;
+  const matchedSubaccount = findMatchingSubaccount(subAccounts, connectionStore.subaccount);
+  const subAccount = subAccounts ? matchedSubaccount : undefined;
   let addressIndex = undefined;
   let address = undefined;
   const addressView = subAccount?.addressView;
