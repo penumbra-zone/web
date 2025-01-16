@@ -31,6 +31,7 @@ const Slider = observer(
             step={1}
             value={value}
             showValue={false}
+            disabled={!balance}
             onChange={x => setBalanceFraction(x / 10)}
             showTrackGaps={true}
             trackGapBackground='base.black'
@@ -82,8 +83,8 @@ export const MarketOrderForm = observer(({ parentStore }: { parentStore: OrderFo
         />
       </div>
       <Slider
-        inputValue={store.quoteInput}
-        balance={store.quoteBalance}
+        inputValue={isBuy ? store.quoteInput : store.baseInput}
+        balance={isBuy ? store.quoteBalance : store.baseBalance}
         balanceDisplay={store.balance}
         setBalanceFraction={x => store.setBalanceFraction(x)}
       />
