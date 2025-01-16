@@ -178,6 +178,7 @@ export const plan = async (
 
 const build = async (
   req: PartialMessage<AuthorizeAndBuildRequest> | PartialMessage<WitnessAndBuildRequest>,
+  // TODO: investigate @connectrpc/connect versions (1.6.1 vs 1.4.0)
   buildFn: PromiseClient<typeof ViewService>['authorizeAndBuild' | 'witnessAndBuild'],
   onStatusUpdate: (
     status?: (AuthorizeAndBuildResponse | WitnessAndBuildResponse)['status'],
