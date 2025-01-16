@@ -2,7 +2,6 @@ import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { sample } from 'lodash';
 import { useQuery } from '@tanstack/react-query';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
-import { ViewService } from '@penumbra-zone/protobuf/penumbra/view/v1/view_connect';
 import { envQueryFn } from '@/shared/api/env/env.ts';
 import { penumbra } from '@/shared/const/penumbra.ts';
 import { connectionStore } from '@/shared/model/connection';
@@ -22,34 +21,12 @@ const registryRpcChoices = async () => {
   }
 };
 
-// Verifies that the Dex explorer backend chain id matches the one Prax is connected to
-const walletOnWrongChain = async () => {
-  // If wallet is not connected, nothing to compare it to
-  if (!connectionStore.connected) {
-    return false;
-  }
-
-  const { parameters } = await penumbra.service(ViewService).appParameters({});
-  const walletChainId = parameters?.chainId;
-  if (!walletChainId) {
-    throw new Error('Unable to retrieve chain id from wallet');
-  }
-
-  const env = await envQueryFn();
-  return !!walletChainId && env.PENUMBRA_CHAIN_ID !== walletChainId;
-};
-
 enum TransportType {
   PRAX,
   GRPC_WEB,
 }
 
 const grpcTransportQueryFn = async () => {
-  const wrongChain = await walletOnWrongChain();
-  if (wrongChain) {
-    throw new Error('Wallet connected to a different chain than backend');
-  }
-
   if (connectionStore.connected && penumbra.transport) {
     return { transport: penumbra.transport, type: TransportType.PRAX };
   }
