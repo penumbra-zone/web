@@ -228,8 +228,12 @@ export class MarketOrderFormStore {
   }
 
   get plan(): undefined | MarketOrderPlan {
+    // necessary for clearing the gas fee when the input for market orders is cleared
     if (!this._baseAsset || !this._quoteAsset) {
-      return;
+      return undefined;
+    }
+    if (!this._baseAssetInput || !this._quoteAssetInput) {
+      return undefined;
     }
     const { inputAsset, inputAmount, output } =
       this.direction === 'buy'
