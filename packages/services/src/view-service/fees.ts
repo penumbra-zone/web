@@ -149,7 +149,7 @@ export const getAssetFromGasPriceTable = async (
   const altGasPrices = await indexedDb.getAltGasPrices();
 
   // If a specific asset ID is provided, extracted from the transaction request, check its balance is
-  // positive and GasPrices for that asset exist – valid only for 'spend' and 'output' transaction planner requests.
+  // positive and GasPrices for that asset exist.
   if (!prioritySelection(request)) {
     if (assetId) {
       const balance = await indexedDb.hasTokenBalance(request.source.account, assetId);
