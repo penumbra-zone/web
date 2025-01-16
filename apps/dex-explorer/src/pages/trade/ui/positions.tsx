@@ -77,6 +77,12 @@ const getStateLabel = (
   }
 };
 
+const Dash = () => (
+  <Text detail color='text.secondary'>
+    -
+  </Text>
+);
+
 const ActionButton = observer(
   ({ state, id }: { state: PositionState_PositionStateEnum; id: PositionId }) => {
     const { loading, closePositions, withdrawPositions } = positionsStore;
@@ -94,11 +100,7 @@ const ActionButton = observer(
         </Button>
       );
     } else {
-      return (
-        <Text detail color='text.secondary'>
-          -
-        </Text>
-      );
+      return <Dash />;
     }
   },
 );
@@ -237,13 +239,14 @@ const Positions = observer(({ showInactive }: { showInactive: boolean }) => {
                   </Table.Tr>
                 ))}
               {displayPositions
-                .filter(position => (showInactive ? true : position.isActive))
+                .filter(position => (showInactive ? true : !position.isWithdrawn))
                 .map(position => {
                   return (
                     <Table.Tr key={position.idString}>
                       <Table.Td density='slim'>
                         <div className='flex flex-col gap-4'>
                           {position.orders
+                            .slice(0, position.isWithdrawn ? 1 : position.orders.length - 1)
                             .map(order => getStateLabel(position.state, order.direction))
                             .map(({ label, color }, i) => (
                               <Text as='div' detail color={color} key={i}>
@@ -254,51 +257,59 @@ const Positions = observer(({ showInactive }: { showInactive: boolean }) => {
                       </Table.Td>
                       <Table.Td density='slim'>
                         <div className='flex flex-col gap-4'>
-                          {position.orders.map((order, i) => (
-                            <ValueViewComponent
-                              key={i}
-                              valueView={order.amount}
-                              trailingZeros={false}
-                              density='slim'
-                            />
-                          ))}
+                          {position.isWithdrawn ? (
+                            <Dash />
+                          ) : (
+                            position.orders.map((order, i) => (
+                              <ValueViewComponent
+                                key={i}
+                                valueView={order.amount}
+                                trailingZeros={false}
+                                density='slim'
+                              />
+                            ))
+                          )}
                         </div>
                       </Table.Td>
                       <Table.Td density='slim'>
                         {/* Fight display inline 4 px spacing */}
                         <div className='flex flex-col gap-2 -mb-1 items-start'>
-                          {position.orders.map((order, i) => (
-                            <Tooltip
-                              key={i}
-                              message={
-                                <>
-                                  <Text as='div' detail color='text.primary'>
-                                    Base price: {pnum(order.basePrice).toFormattedString()}
-                                  </Text>
-                                  <Text as='div' detail color='text.primary'>
-                                    Fee:{' '}
-                                    {pnum(order.basePrice)
-                                      .toBigNumber()
-                                      .minus(pnum(order.effectivePrice).toBigNumber())
-                                      .toString()}{' '}
-                                    ({position.fee})
-                                  </Text>
-                                  <Text as='div' detail color='text.primary'>
-                                    Effective price:{' '}
-                                    {pnum(order.effectivePrice).toFormattedString()}
-                                  </Text>
-                                </>
-                              }
-                            >
-                              <div>
-                                <ValueViewComponent
-                                  valueView={order.effectivePrice}
-                                  trailingZeros={false}
-                                  density='slim'
-                                />
-                              </div>
-                            </Tooltip>
-                          ))}
+                          {position.isWithdrawn ? (
+                            <Dash />
+                          ) : (
+                            position.orders.map((order, i) => (
+                              <Tooltip
+                                key={i}
+                                message={
+                                  <>
+                                    <Text as='div' detail color='text.primary'>
+                                      Base price: {pnum(order.basePrice).toFormattedString()}
+                                    </Text>
+                                    <Text as='div' detail color='text.primary'>
+                                      Fee:{' '}
+                                      {pnum(order.basePrice)
+                                        .toBigNumber()
+                                        .minus(pnum(order.effectivePrice).toBigNumber())
+                                        .toString()}{' '}
+                                      ({position.fee})
+                                    </Text>
+                                    <Text as='div' detail color='text.primary'>
+                                      Effective price:{' '}
+                                      {pnum(order.effectivePrice).toFormattedString()}
+                                    </Text>
+                                  </>
+                                }
+                              >
+                                <div>
+                                  <ValueViewComponent
+                                    valueView={order.effectivePrice}
+                                    trailingZeros={false}
+                                    density='slim'
+                                  />
+                                </div>
+                              </Tooltip>
+                            ))
+                          )}
                         </div>
                       </Table.Td>
                       <Table.Td density='slim'>
@@ -308,21 +319,29 @@ const Positions = observer(({ showInactive }: { showInactive: boolean }) => {
                       </Table.Td>
                       <Table.Td density='slim'>
                         <div className='flex flex-col gap-4'>
-                          {position.orders.map((order, i) => (
-                            <ValueViewComponent
-                              key={i}
-                              valueView={order.basePrice}
-                              trailingZeros={false}
-                              density='slim'
-                            />
-                          ))}
+                          {position.isWithdrawn ? (
+                            <Dash />
+                          ) : (
+                            position.orders.map((order, i) => (
+                              <ValueViewComponent
+                                key={i}
+                                valueView={order.basePrice}
+                                trailingZeros={false}
+                                density='slim'
+                              />
+                            ))
+                          )}
                         </div>
                       </Table.Td>
                       <Table.Td density='slim'>
                         <div className='flex flex-col gap-4'>
-                          {position.orders.map((order, i) => (
-                            <PositionsCurrentValue key={i} order={order} />
-                          ))}
+                          {position.isWithdrawn ? (
+                            <Dash />
+                          ) : (
+                            position.orders.map((order, i) => (
+                              <PositionsCurrentValue key={i} order={order} />
+                            ))
+                          )}
                         </div>
                       </Table.Td>
                       <Table.Td density='slim'>
