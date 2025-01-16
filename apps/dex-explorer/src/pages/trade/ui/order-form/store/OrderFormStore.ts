@@ -86,28 +86,6 @@ export class OrderFormStore {
         };
       });
     } catch (e) {
-      if (e instanceof Error && e.message.includes('insufficient funds')) {
-        openToast({
-          type: 'error',
-          message: 'Gas fee estimation failed',
-          description: 'The amount exceeds your balance',
-        });
-      }
-      if (
-        e instanceof Error &&
-        ![
-          'ConnectError',
-          'PenumbraNotInstalledError',
-          'PenumbraProviderNotAvailableError',
-          'PenumbraProviderNotConnectedError',
-        ].includes(e.name)
-      ) {
-        openToast({
-          type: 'error',
-          message: e.name,
-          description: e.message,
-        });
-      }
       return undefined;
     } finally {
       runInAction(() => {
@@ -237,6 +215,30 @@ export class OrderFormStore {
         source,
       });
       await planBuildBroadcast('swapClaim', req, { skipAuth: true });
+    } catch (e) {
+      if (e instanceof Error && e.message.includes('insufficient funds')) {
+        openToast({
+          type: 'error',
+          message: 'Transaction failed',
+          description: 'The amount exceeds your balance',
+        });
+      }
+      if (
+        e instanceof Error &&
+        ![
+          'ConnectError',
+          'PenumbraNotInstalledError',
+          'PenumbraProviderNotAvailableError',
+          'PenumbraProviderNotConnectedError',
+        ].includes(e.name)
+      ) {
+        openToast({
+          type: 'error',
+          message: e.name,
+          description: e.message,
+        });
+      }
+      throw e;
     } finally {
       runInAction(() => {
         this._submitting = false;
