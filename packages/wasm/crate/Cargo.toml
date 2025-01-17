@@ -51,3 +51,6 @@ web-sys = { version = "0.3.70", features = ["console"] }
 [dev-dependencies]
 wasm-bindgen-test = "0.3.43"
 serde_json = "1.0.128"
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(wasm_bindgen_unstable_test_coverage)'] }
