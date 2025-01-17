@@ -472,9 +472,17 @@ export class IndexedDb implements IndexedDbInterface {
 
   async getAltGasPrices(): Promise<GasPrices[]> {
     const allGasPrices = await this.db.getAll('GAS_PRICES');
+    const usdcPriorityAssetId = 'drPksQaBNYwSOzgfkGOEdrd4kEDkeALeh58Ps+7cjQs=';
+
+    // Retrieve gas prices from the database and prioritize USDC as the preferred asset.
     return allGasPrices
       .map(gp => GasPrices.fromJson(gp))
-      .filter(gp => !gp.assetId?.equals(this.stakingTokenAssetId));
+      .filter(gp => !gp.assetId?.equals(this.stakingTokenAssetId))
+      .sort(
+        (a, b) =>
+          (uint8ArrayToBase64(a.assetId?.inner!) === usdcPriorityAssetId ? -1 : 0) -
+          (uint8ArrayToBase64(b.assetId?.inner!) === usdcPriorityAssetId ? -1 : 0),
+      );
   }
 
   async saveGasPrices(value: Required<PlainMessage<GasPrices>>): Promise<void> {
