@@ -10,6 +10,7 @@ import { InfoRowGasFee } from './info-row-gas-fee';
 import { SelectGroup } from './select-group';
 import { OrderFormStore } from './store/OrderFormStore';
 import { BuyLimitOrderOptions, SellLimitOrderOptions } from './store/LimitOrderFormStore';
+import { InfoRow } from '@/pages/trade/ui/order-form/info-row';
 
 export const LimitOrderForm = observer(({ parentStore }: { parentStore: OrderFormStore }) => {
   const { connected } = connectionStore;
@@ -54,6 +55,7 @@ export const LimitOrderForm = observer(({ parentStore }: { parentStore: OrderFor
         />
       </div>
       <div className='mb-4'>
+        <InfoRow label='Available balance' value={store.balance} />
         <InfoRowTradingFee />
         <InfoRowGasFee
           gasFee={parentStore.gasFee.display}

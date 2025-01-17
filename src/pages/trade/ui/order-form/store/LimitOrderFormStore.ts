@@ -141,6 +141,16 @@ export class LimitOrderFormStore {
     });
   }
 
+  get balance(): string {
+    if (this.direction === 'buy' && this._quoteAsset?.balance) {
+      return this._quoteAsset.formatDisplayAmount(this._quoteAsset.balance);
+    }
+    if (this.direction === 'sell' && this._baseAsset?.balance) {
+      return this._baseAsset.formatDisplayAmount(this._baseAsset.balance);
+    }
+    return '--';
+  }
+
   setAssets(base: AssetInfo, quote: AssetInfo, resetInputs = false) {
     this._baseAsset = base;
     this._quoteAsset = quote;
