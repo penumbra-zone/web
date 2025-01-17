@@ -25,6 +25,7 @@ import { BigNumber } from 'bignumber.js';
 export interface DisplayPosition {
   id: PositionId;
   idString: string;
+  position: Position;
   orders: {
     direction: string;
     amount: ValueView;
@@ -35,6 +36,8 @@ export interface DisplayPosition {
   }[];
   fee: string;
   isWithdrawn: boolean;
+  isOpened: boolean;
+  isClosed: boolean;
   state: PositionState_PositionStateEnum;
 }
 
@@ -76,12 +79,12 @@ class PositionsStore {
     this.loading = state;
   }
 
-  closePositions = async (positions: PositionId[]): Promise<void> => {
+  closePositions = async (positions: { id: PositionId; position: Position }[]): Promise<void> => {
     try {
       this.setLoading(true);
 
       const planReq = new TransactionPlannerRequest({
-        positionCloses: positions.map(positionId => ({ positionId })),
+        positionCloses: positions.map(({ id }) => ({ positionId: id })),
         source: new AddressIndex({ account: connectionStore.subaccount }),
       });
 
@@ -98,22 +101,49 @@ class PositionsStore {
     }
   };
 
-  withdrawPositions = async (positions: PositionId[]): Promise<void> => {
+  withdrawPositions = async (
+    positions: { id: PositionId; position: Position }[],
+  ): Promise<void> => {
     try {
       this.setLoading(true);
 
       // Fetching latest position data as the planner request requires current reserves + pair
-      const promises = positions.map(positionId =>
-        penumbra.service(DexService).liquidityPositionById({ positionId }),
+      const promises = positions.map(({ id }) =>
+        penumbra.service(DexService).liquidityPositionById({ positionId: id }),
       );
       const latestPositionData = await Promise.all(promises);
 
+      // a position can be closed remotely, but not yet closed locally
+      // in this case we need to generate an nft to be able to withdraw
+      // it and include it in the planner request
+      const positionIdsToClose = positions
+        .map(({ id, position }, i) => ({
+          positionId: id,
+          prevState: position.state,
+          nextState: latestPositionData[i]?.data?.state,
+        }))
+        .filter(
+          ({ prevState, nextState }) =>
+            prevState?.state === PositionState_PositionStateEnum.OPENED &&
+            nextState?.state === PositionState_PositionStateEnum.CLOSED,
+        )
+        .map(({ positionId }) => positionId);
+
+      const positionWithdraws = positions.map(({ id }, i) => ({
+        positionId: id,
+        tradingPair: latestPositionData[i]?.data?.phi?.pair,
+        reserves: latestPositionData[i]?.data?.reserves,
+      }));
+
+      const positionCloses = positionIdsToClose.length
+        ? positionWithdraws.filter(position =>
+            positionIdsToClose.some(id => id.equals(position.positionId)),
+          )
+        : undefined;
+
       const planReq = new TransactionPlannerRequest({
-        positionWithdraws: positions.map((positionId, i) => ({
-          positionId,
-          tradingPair: latestPositionData[i]?.data?.phi?.pair,
-          reserves: latestPositionData[i]?.data?.reserves,
-        })),
+        positionWithdraws,
+        positionCloses,
         source: new AddressIndex({ account: connectionStore.subaccount }),
       });
 
@@ -410,6 +440,7 @@ class PositionsStore {
       return {
         id: new PositionId(positionIdFromBech32(id)),
         idString: id,
+        position,
         orders,
         fee: `${pnum(component.fee / 100).toFormattedString({ decimals: 2 })}%`,
         // TODO:
@@ -417,11 +448,11 @@ class PositionsStore {
         // feedback about execution. This is probably best later replaced by either a notification, or a
         // dedicated view. Fine for now.
         isWithdrawn: state.state === PositionState_PositionStateEnum.WITHDRAWN,
+        isOpened: state.state === PositionState_PositionStateEnum.OPENED,
+        isClosed: state.state === PositionState_PositionStateEnum.CLOSED,
         state: state.state,
       };
     });
-    // TODO: filter position view using trading pair route.
-    // .filter(displayPosition => displayPosition !== undefined)
   }
 }
 
