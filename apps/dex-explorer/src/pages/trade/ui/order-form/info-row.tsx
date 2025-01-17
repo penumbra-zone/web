@@ -10,7 +10,7 @@ interface InfoRowProps {
   isLoading?: boolean;
   value?: string | number;
   valueColor?: 'success' | 'error';
-  toolTip: string;
+  toolTip?: string;
 }
 
 const getValueColor = (valueColor: InfoRowProps['valueColor']) => {
@@ -42,9 +42,11 @@ export const InfoRow = observer(
               </Text>
             )}
           </div>
-          <Tooltip message={toolTip}>
-            <Icon IconComponent={InfoIcon} size='sm' color='text.primary' />
-          </Tooltip>
+          {toolTip && (
+            <Tooltip message={toolTip}>
+              <Icon IconComponent={InfoIcon} size='sm' color='text.primary' />
+            </Tooltip>
+          )}
         </div>
       </div>
     );
