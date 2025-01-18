@@ -8,7 +8,7 @@ export interface Trace {
   hops: ValueView[];
 }
 
-export type TraceHash = string;
+export type TraceIndex = string;
 
 export interface BuySellTraces {
   buy: Trace[];
