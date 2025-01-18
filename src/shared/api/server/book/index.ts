@@ -58,8 +58,15 @@ export async function GET(req: NextRequest): Promise<NextResponse<RouteBookApiRe
     );
   }
 
+  // We use the simulate trade queries with an absurd amount of input
+  // to exhaust the liquidity at every price point. The RPC will return
+  // a stack of traces that will let us represent the amount of inventory
+  // available at every price relevant price point.
+  //
+  // To do this, we simulate two large trades in opposite directions.
   const buySideRequest = new SimulateTradeRequest({
     input: new Value({
+      // We sell the base asset, to discover traces of the buy side (quote asset).
       assetId: baseAssetMetadata.penumbraAssetId,
       amount: VERY_HIGH_AMOUNT,
     }),
@@ -68,6 +75,7 @@ export async function GET(req: NextRequest): Promise<NextResponse<RouteBookApiRe
 
   const sellSideRequest = new SimulateTradeRequest({
     input: new Value({
+      // We simulate a buy of the base asset, to discover traces of the sell side.
       assetId: quoteAssetMetadata.penumbraAssetId,
       amount: VERY_HIGH_AMOUNT,
     }),
@@ -79,8 +87,8 @@ export async function GET(req: NextRequest): Promise<NextResponse<RouteBookApiRe
     simulateTrade(client, buySideRequest),
     simulateTrade(client, sellSideRequest),
   ]);
-  const buyMulti = processSimulation({ res: buyRes, registry, limit });
-  const sellMulti = processSimulation({ res: sellRes, registry, limit, invertPrice: true });
+  const buyMulti = processSimulation({ res: buyRes, registry, limit, quote_to_base: false });
+  const sellMulti = processSimulation({ res: sellRes, registry, limit, quote_to_base: true });
 
   return NextResponse.json(
     serializeResponse({
