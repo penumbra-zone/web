@@ -1,5 +1,14 @@
 # @penumbra-zone/ui
 
+## 13.9.0
+
+### Minor Changes
+
+- 62eff53: - Make Typography font sizes responsive
+  - Add `bodyTechnical` Text variant
+  - Add Skeleton component
+- cab203e: Add `TableCell` UI component
+
 ## 13.8.1
 
 ### Patch Changes
