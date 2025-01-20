@@ -482,8 +482,12 @@ export class IndexedDb implements IndexedDbInterface {
         const assetA = a.assetId?.inner ? uint8ArrayToBase64(a.assetId.inner) : '';
         const assetB = b.assetId?.inner ? uint8ArrayToBase64(b.assetId.inner) : '';
 
-        if (assetA === usdcPriorityAssetId) {return -1;}
-        if (assetB === usdcPriorityAssetId) {return 1;}
+        if (assetA === usdcPriorityAssetId) {
+          return -1;
+        }
+        if (assetB === usdcPriorityAssetId) {
+          return 1;
+        }
         return 0;
       });
   }
