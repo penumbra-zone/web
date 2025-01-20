@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/ui",
-  "version": "13.8.1",
+  "version": "13.9.0",
   "license": "(MIT OR Apache-2.0)",
   "description": "UI components for Penumbra",
   "type": "module",
