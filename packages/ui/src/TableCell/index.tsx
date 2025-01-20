@@ -1,5 +1,5 @@
 import cn from 'clsx';
-import { ReactNode } from 'react';
+import { ElementType, ReactNode } from 'react';
 import { Density, useDensity } from '../utils/density';
 import { Skeleton } from '../Skeleton';
 import {
@@ -26,6 +26,7 @@ type TableCellPropType =
 
 export type TableCellProps = TableCellPropType & {
   children: ReactNode;
+  as?: ElementType;
   loading?: boolean;
   /** Renders numbers in a monospace font with letters of equal size */
   numeric?: boolean;
@@ -92,7 +93,13 @@ const headingFont: Record<Density, string> = {
  * </div>
  * ```
  */
-export const TableCell = ({ children, loading, numeric, ...props }: TableCellProps) => {
+export const TableCell = ({
+  children,
+  loading,
+  numeric,
+  as: Container = 'div',
+  ...props
+}: TableCellProps) => {
   const density = useDensity();
   const type: TableCellVariant =
     props.variant ??
@@ -104,7 +111,7 @@ export const TableCell = ({ children, loading, numeric, ...props }: TableCellPro
     'cell';
 
   return (
-    <div
+    <Container
       className={cn(
         'flex items-center gap-2',
         classesByVariant[type],
@@ -120,7 +127,7 @@ export const TableCell = ({ children, loading, numeric, ...props }: TableCellPro
       ) : (
         children
       )}
-    </div>
+    </Container>
   );
 };
 TableCell.displayName = 'TableCell';
