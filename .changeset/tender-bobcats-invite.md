@@ -2,4 +2,4 @@
 '@penumbra-zone/wasm': minor
 ---
 
-bump deps to v0.81.2
+bump deps to v0.81.3
