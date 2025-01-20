@@ -1,5 +1,11 @@
 # @penumbra-zone/wasm
 
+## 37.1.0
+
+### Minor Changes
+
+- fd4f34a: bump deps to v0.81.3
+
 ## 37.0.0
 
 ### Patch Changes
