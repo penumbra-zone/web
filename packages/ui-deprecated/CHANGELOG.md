@@ -1,5 +1,11 @@
 # @penumbra-zone/ui
 
+## 13.0.2
+
+### Patch Changes
+
+- @penumbra-zone/perspective@44.0.0
+
 ## 13.0.1
 
 ### Patch Changes
