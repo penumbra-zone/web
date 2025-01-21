@@ -1,9 +1,10 @@
 import { Fragment } from 'react';
 import cn from 'clsx';
 import { ChevronRight } from 'lucide-react';
+import { getSymbolFromValueView } from '@penumbra-zone/getters/value-view';
 import { Text } from '@penumbra-zone/ui/Text';
 import { Trace } from '@/shared/api/server/book/types.ts';
-import { getSymbolFromValueView } from '@penumbra-zone/getters/value-view';
+import { pluralize } from '@/shared/utils/pluralize';
 import { formatNumber } from './utils';
 
 const SELL_BG_COLOR = 'rgba(175, 38, 38, 0.24)';
@@ -46,7 +47,7 @@ export const TradeRow = ({
         align='right'
         color={trace.hops.length <= 2 ? 'text.primary' : 'text.special'}
       >
-        {trace.hops.length === 2 ? 'Direct' : `${trace.hops.length - 2} Hops`}
+        {trace.hops.length === 2 ? 'Direct' : pluralize(trace.hops.length - 2, 'Hop', 'Hops')}
       </Text>
 
       {/* Route display that shows on hover */}

@@ -66,8 +66,8 @@ importers:
         specifier: ^27.1.0
         version: 27.1.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@11.0.0(@penumbra-zone/protobuf@7.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@21.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@11.0.0(@penumbra-zone/protobuf@7.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@7.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@7.0.0(@bufbuild/protobuf@1.10.0))
       '@penumbra-zone/ui':
-        specifier: ^13.8.1
-        version: 13.8.1(@bufbuild/protobuf@1.10.0)(@types/react-dom@18.3.2)(@types/react@18.3.14)
+        specifier: ^13.9.0
+        version: 13.9.0(@bufbuild/protobuf@1.10.0)(@types/react-dom@18.3.2)(@types/react@18.3.14)
       '@penumbra-zone/wasm':
         specifier: ^37.0.0
         version: 37.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@11.0.0(@penumbra-zone/protobuf@7.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@7.0.0(@bufbuild/protobuf@1.10.0))(@penumbra-zone/types@27.1.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@11.0.0(@penumbra-zone/protobuf@7.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/getters@21.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@11.0.0(@penumbra-zone/protobuf@7.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@7.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@7.0.0(@bufbuild/protobuf@1.10.0)))
@@ -1776,8 +1776,8 @@ packages:
       '@penumbra-zone/getters': 21.0.0
       '@penumbra-zone/protobuf': 7.0.0
 
-  '@penumbra-zone/ui@13.8.1':
-    resolution: {integrity: sha512-nJ8IHq1gOkfYiSBCfpPF6/mAHQKU5GO/XB0lHADBltPrJzzkzQVkEyt8sJ3I8n3VkSiqZzhffngsfxNOT1/SSg==}
+  '@penumbra-zone/ui@13.9.0':
+    resolution: {integrity: sha512-NtI4GVps1jLYuX9Vggq2TNodBkZt/1VwQcgNFGBc2F6OUTRSnOl0xqESBguMtZJsHB6rM93w5UYsK8IlrbXKCw==}
 
   '@penumbra-zone/wasm@37.0.0':
     resolution: {integrity: sha512-UEnvAzGdNqai2ZTe+GCfRdJ2DAZlxRYmp6/ZnbeW4q6PSoGaLmX+KqtS2lWOBYqkJh6x+xQvIrb7HGY6jxk/Cg==}
@@ -7418,7 +7418,7 @@ snapshots:
       lodash: 4.17.21
       zod: 3.23.8
 
-  '@penumbra-zone/ui@13.8.1(@bufbuild/protobuf@1.10.0)(@types/react-dom@18.3.2)(@types/react@18.3.14)':
+  '@penumbra-zone/ui@13.9.0(@bufbuild/protobuf@1.10.0)(@types/react-dom@18.3.2)(@types/react@18.3.14)':
     dependencies:
       '@penumbra-zone/bech32m': 11.0.0(@penumbra-zone/protobuf@7.0.0(@bufbuild/protobuf@1.10.0))
       '@penumbra-zone/getters': 21.0.0(@bufbuild/protobuf@1.10.0)(@penumbra-zone/bech32m@11.0.0(@penumbra-zone/protobuf@7.0.0(@bufbuild/protobuf@1.10.0)))(@penumbra-zone/protobuf@7.0.0(@bufbuild/protobuf@1.10.0))
