@@ -1,64 +1,81 @@
+import BigNumber from 'bignumber.js';
 import { NextRequest, NextResponse } from 'next/server';
-import { pindexer } from '@/shared/database';
-import { ChainRegistryClient } from '@penumbra-labs/registry';
-import { serialize, Serialized } from '@/shared/utils/serializer';
+import { ChainRegistryClient, Registry } from '@penumbra-labs/registry';
 import { AssetId, Value } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { pnum } from '@penumbra-zone/types/pnum';
+import { serialize, Serialized } from '@/shared/utils/serializer';
+import { formatAmount } from '@penumbra-zone/types/amount';
+import { pindexer } from '@/shared/database';
+import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
+import { calculateDisplayPrice } from '@/shared/utils/price-conversion';
 
-const transformDbVal = ({
-  context_asset_end,
-  context_asset_start,
-  delta_1,
-  delta_2,
-  lambda_1,
-  lambda_2,
-  time,
-}: {
-  context_asset_end: Buffer;
-  context_asset_start: Buffer;
-  delta_1: string;
-  delta_2: string;
-  lambda_1: string;
-  lambda_2: string;
-  time: Date;
-}): RecentExecution => {
-  const baseAssetId = new AssetId({
-    inner: Uint8Array.from(context_asset_start),
-  });
-  const quoteAssetId = new AssetId({ inner: Uint8Array.from(context_asset_end) });
-
-  // Determine trade direction
-  const isBaseAssetInput = BigInt(delta_1) !== 0n;
-  const kind = isBaseAssetInput ? 'sell' : 'buy';
-
-  // Amount of base & quote asset being traded in or out of
-  const baseAmount = isBaseAssetInput ? pnum(delta_1) : pnum(lambda_1);
-  const quoteAmount = isBaseAssetInput ? pnum(lambda_2) : pnum(delta_2);
-
-  const price = baseAmount.toBigNumber().div(quoteAmount.toBigNumber()).toNumber();
-  const timestamp = time.toISOString();
-
-  return {
-    kind,
-    amount: new Value({ amount: baseAmount.toAmount(), assetId: baseAssetId }),
-    price: { amount: price, assetId: quoteAssetId },
-    timestamp,
-  };
-};
+type FromPromise<T> = T extends Promise<(infer U)[]> ? U : T;
+type RecentExecutionData = FromPromise<ReturnType<typeof pindexer.recentExecutions>>;
 
 export type RecentExecutionsResponse = RecentExecution[] | { error: string };
 
-interface FloatValue {
-  assetId: AssetId;
-  amount: number;
-}
-
 export interface RecentExecution {
   kind: 'buy' | 'sell';
-  amount: Value;
-  price: FloatValue;
+  amount: string;
+  price: string;
   timestamp: string;
+  hops: string[];
 }
+
+const transformData = (
+  data: RecentExecutionData,
+  direction: 'buy' | 'sell',
+  registry: Registry,
+): RecentExecution => {
+  const baseAssetId = new AssetId({
+    inner: Uint8Array.from(data.asset_start),
+  });
+  const baseMetadata = registry.getMetadata(baseAssetId);
+  const baseDisplayDenomExponent = getDisplayDenomExponent.optional(baseMetadata) ?? 0;
+
+  const quoteAssetId = new AssetId({ inner: Uint8Array.from(data.asset_end) });
+  const quoteMetadata = registry.getMetadata(quoteAssetId);
+
+  const timestamp = data.time.toISOString();
+
+  // When we go from quote to base, we need to invert the price.
+  // This makes sense: a UX-friendly price is always denominated in quote assets.
+  let priceNum: number;
+  if (direction === 'sell') {
+    priceNum = data.price_float;
+  } else {
+    priceNum = data.price_float === 0 ? 0 : 1 / data.price_float;
+  }
+  const price = calculateDisplayPrice(priceNum, baseMetadata, quoteMetadata);
+
+  // We always want to render the base amount in the trade, regardless of the direction.
+  // The `kind` field informs on the direction.
+  const baseAmount = direction === 'sell' ? data.input : data.output;
+  const amountValue = new Value({ amount: pnum(baseAmount).toAmount(), assetId: baseAssetId })
+    .amount;
+  const amount = formatAmount({
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- amount created by `new Value` always defined
+    amount: amountValue!,
+    exponent: baseDisplayDenomExponent,
+    decimalPlaces: 4,
+  });
+
+  const hops = data.asset_hops
+    .reverse()
+    .map(buffer => {
+      const assetId = new AssetId({ inner: Uint8Array.from(buffer) });
+      return registry.tryGetMetadata(assetId)?.symbol;
+    })
+    .filter(Boolean) as string[];
+
+  return {
+    hops,
+    timestamp,
+    amount,
+    kind: direction,
+    price: new BigNumber(price).toFormat(4),
+  };
+};
 
 export async function GET(
   req: NextRequest,
@@ -82,7 +99,6 @@ export async function GET(
   const registryClient = new ChainRegistryClient();
   const registry = await registryClient.remote.get(chainId);
 
-  // TODO: Add getMetadataBySymbol() helper to registry npm package
   const allAssets = registry.getAllAssets();
   const baseAssetMetadata = allAssets.find(
     a => a.symbol.toLowerCase() === baseAssetSymbol.toLowerCase(),
@@ -97,13 +113,29 @@ export async function GET(
     );
   }
 
-  const results = await pindexer.recentExecutions(
+  // We need two queries: * base -> quote (sell)
+  //                      * quote -> base (buy)
+  const sellStream = await pindexer.recentExecutions(
     baseAssetMetadata.penumbraAssetId,
     quoteAssetMetadata.penumbraAssetId,
     Number(limit),
   );
 
-  const response = results.map(transformDbVal);
+  const buyStream = await pindexer.recentExecutions(
+    quoteAssetMetadata.penumbraAssetId,
+    baseAssetMetadata.penumbraAssetId,
+    Number(limit),
+  );
 
-  return NextResponse.json(serialize(response));
+  const responses = await Promise.all([
+    sellStream.map(data => transformData(data, 'sell', registry)),
+    buyStream.map(data => transformData(data, 'buy', registry)),
+  ]);
+
+  // Weave the two responses together based on timestamps
+  const allResponse = responses
+    .flat()
+    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+  return NextResponse.json(serialize(allResponse));
 }
