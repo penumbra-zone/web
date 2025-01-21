@@ -237,11 +237,17 @@ const calculateAssetDistribution = (balances: BalancesResponse[]): DistributionR
 
   // Sort by value percentage in descending order and calculate distribution
   const sorted = valuesWithMetadata
-    .map((item, index) => ({
-      ...item,
-      percentage: (item.value / totalValue) * 100,
-      color: `hsl(${(index * GOLDEN_RATIO_ANGLE) % 360}, ${COLOR_SATURATION}%, ${COLOR_LIGHTNESS}%)`,
-    }))
+    .map((item, index) => {
+      const metadata = getMetadataFromBalancesResponse.optional(item.balance);
+      const primaryColor = metadata?.images[0]?.theme?.primaryColorHex;
+      return {
+        ...item,
+        percentage: (item.value / totalValue) * 100,
+        color:
+          primaryColor ??
+          `hsl(${(index * GOLDEN_RATIO_ANGLE) % 360}, ${COLOR_SATURATION}%, ${COLOR_LIGHTNESS}%)`,
+      };
+    })
     .sort((a, b) => b.percentage - a.percentage);
 
   // Split into main assets and small assets
