@@ -7,12 +7,40 @@ import { pluralizeAndShortify } from '@/shared/utils/pluralize';
 import { shortify } from '@penumbra-zone/types/shortify';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
 import { useStats } from '@/pages/explore/api/use-stats';
-import { useRegistryAssets } from '@/shared/api/registry';
+import { useRegistry } from '@/shared/api/registry';
+import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { DirectedTradingPair } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
+import { Registry } from '@penumbra-labs/registry';
+
+const GreenValueText = ({ value }: { value: ValueView }) => {
+  const symbol =
+    value.valueView.case === 'knownAssetId' ? value.valueView.value.metadata?.symbol : undefined;
+  return (
+    <Text large color='success.light'>
+      {shortify(Number(getFormattedAmtFromValueView(value)))} {symbol ?? 'unknown'}
+    </Text>
+  );
+};
+
+const DirectedTradingPairText = ({
+  registry,
+  pair,
+}: {
+  registry: Registry;
+  pair: DirectedTradingPair;
+}) => {
+  const startSymbol = (pair.start && registry.tryGetMetadata(pair.start)?.symbol) ?? 'unknown';
+  const endSymbol = (pair.end && registry.tryGetMetadata(pair.end)?.symbol) ?? 'unknown';
+  return (
+    <Text large color='text.primary'>
+      {startSymbol}/{endSymbol}
+    </Text>
+  );
+};
 
 export const ExploreStats = () => {
   const { data: stats, isLoading, error } = useStats();
-  const { data: assets } = useRegistryAssets();
-  const usdcMetadata = assets?.find(asset => asset.symbol === 'USDC');
+  const { data: registry } = useRegistry();
 
   if (error) {
     return (
@@ -25,12 +53,7 @@ export const ExploreStats = () => {
   return (
     <div className='grid grid-cols-1 tablet:grid-cols-2 desktop:grid-cols-3 gap-2'>
       <InfoCard title='Total Trading Volume (24h)' loading={isLoading}>
-        {stats && (
-          <Text large color='success.light'>
-            {shortify(Number(getFormattedAmtFromValueView(stats.directVolume)))}{' '}
-            {usdcMetadata?.symbol}
-          </Text>
-        )}
+        {stats && <GreenValueText value={stats.volume} />}
       </InfoCard>
       <InfoCard title='Number of Trades (24h)' loading={isLoading}>
         {stats && (
@@ -40,17 +63,10 @@ export const ExploreStats = () => {
         )}
       </InfoCard>
       <InfoCard title='Largest Trading Pair (24h volume)' loading={isLoading}>
-        {stats?.largestPair ? (
+        {registry && stats?.largestPair ? (
           <>
-            <Text large color='text.primary'>
-              {stats.largestPair.start}/{stats.largestPair.end}
-            </Text>
-            {stats.largestPairLiquidity && (
-              <Text large color='success.light'>
-                {shortify(Number(getFormattedAmtFromValueView(stats.largestPairLiquidity)))}{' '}
-                {usdcMetadata?.symbol}
-              </Text>
-            )}
+            <DirectedTradingPairText registry={registry} pair={stats.largestPair.pair} />
+            <GreenValueText value={stats.largestPair.volume} />
           </>
         ) : (
           <Text large color='text.primary'>
@@ -59,11 +75,7 @@ export const ExploreStats = () => {
         )}
       </InfoCard>
       <InfoCard title='Total Liquidity Available' loading={isLoading}>
-        {stats && (
-          <Text large color='success.light'>
-            {shortify(Number(getFormattedAmtFromValueView(stats.liquidity)))} {usdcMetadata?.symbol}
-          </Text>
-        )}
+        {stats && <GreenValueText value={stats.liquidity} />}
       </InfoCard>
       <InfoCard title='Number of Active Pairs' loading={isLoading}>
         {stats && (
@@ -73,11 +85,9 @@ export const ExploreStats = () => {
         )}
       </InfoCard>
       <InfoCard title='Top Price Mover (24h)' loading={isLoading}>
-        {stats?.topPriceMover ? (
+        {registry && stats?.topPriceMover ? (
           <>
-            <Text large color='text.primary'>
-              {stats.topPriceMover.start}/{stats.topPriceMover.end}
-            </Text>
+            <DirectedTradingPairText registry={registry} pair={stats.largestPair.pair} />
             <Text large color={stats.topPriceMover.percent ? 'success.light' : 'destructive.light'}>
               {stats.topPriceMover.percent && '+'}
               {round({ value: stats.topPriceMover.percent, decimals: 1 })}%
