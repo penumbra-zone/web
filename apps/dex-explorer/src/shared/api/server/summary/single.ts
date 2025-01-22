@@ -37,6 +37,9 @@ export async function GET(req: NextRequest): Promise<NextResponse<Serialized<Sum
   const allAssets = registry.getAllAssets();
 
   const { usdc } = getStablecoins(allAssets, 'USDC');
+  if (!usdc) {
+    return NextResponse.json({ error: 'USDC asset does not exist' }, { status: 500 });
+  }
 
   const baseAssetMetadata = allAssets.find(
     a => a.symbol.toLowerCase() === baseAssetSymbol.toLowerCase(),
