@@ -22,6 +22,7 @@ import { ErrorNotice } from './error-notice';
 import { NoPositions } from './no-positions';
 import { HeaderActionButton } from './header-action-button';
 import { ActionButton } from './action-button';
+import { Dash } from './dash';
 
 const Positions = observer(({ showInactive }: { showInactive: boolean }) => {
   const { connected } = connectionStore;
@@ -136,7 +137,9 @@ const Positions = observer(({ showInactive }: { showInactive: boolean }) => {
                           {position.orders.map((order, i) => (
                             <ValueViewComponent
                               key={i}
-                              valueView={order.amount}
+                              valueView={
+                                position.isClosed && i === 1 ? order.basePrice : order.amount
+                              }
                               trailingZeros={false}
                               density='slim'
                             />
@@ -146,55 +149,63 @@ const Positions = observer(({ showInactive }: { showInactive: boolean }) => {
                       <Table.Td density='slim'>
                         {/* Fight display inline 4 px spacing */}
                         <div className='flex flex-col gap-2 -mb-1 items-start'>
-                          {position.orders.map((order, i) => (
-                            <Tooltip
-                              key={i}
-                              message={
-                                <>
-                                  <Text as='div' detail color='text.primary'>
-                                    Base price: {pnum(order.basePrice).toFormattedString()}
-                                  </Text>
-                                  <Text as='div' detail color='text.primary'>
-                                    Fee:{' '}
-                                    {pnum(order.basePrice)
-                                      .toBigNumber()
-                                      .minus(pnum(order.effectivePrice).toBigNumber())
-                                      .toString()}{' '}
-                                    ({position.fee})
-                                  </Text>
-                                  <Text as='div' detail color='text.primary'>
-                                    Effective price:{' '}
-                                    {pnum(order.effectivePrice).toFormattedString()}
-                                  </Text>
-                                </>
-                              }
-                            >
-                              <div>
-                                <ValueViewComponent
-                                  valueView={order.effectivePrice}
-                                  trailingZeros={false}
-                                  density='slim'
-                                />
-                              </div>
-                            </Tooltip>
-                          ))}
+                          {!position.isClosed ? (
+                            position.orders.map((order, i) => (
+                              <Tooltip
+                                key={i}
+                                message={
+                                  <>
+                                    <Text as='div' detail color='text.primary'>
+                                      Base price: {pnum(order.basePrice).toFormattedString()}
+                                    </Text>
+                                    <Text as='div' detail color='text.primary'>
+                                      Fee:{' '}
+                                      {pnum(order.basePrice)
+                                        .toBigNumber()
+                                        .minus(pnum(order.effectivePrice).toBigNumber())
+                                        .toString()}{' '}
+                                      ({position.fee})
+                                    </Text>
+                                    <Text as='div' detail color='text.primary'>
+                                      Effective price:{' '}
+                                      {pnum(order.effectivePrice).toFormattedString()}
+                                    </Text>
+                                  </>
+                                }
+                              >
+                                <div>
+                                  <ValueViewComponent
+                                    valueView={order.effectivePrice}
+                                    trailingZeros={false}
+                                    density='slim'
+                                  />
+                                </div>
+                              </Tooltip>
+                            ))
+                          ) : (
+                            <Dash />
+                          )}
                         </div>
                       </Table.Td>
                       <Table.Td density='slim'>
                         <Text as='div' detailTechnical color='text.primary'>
-                          {position.fee}
+                          {!position.isClosed ? position.fee : <Dash />}
                         </Text>
                       </Table.Td>
                       <Table.Td density='slim'>
                         <div className='flex flex-col gap-4'>
-                          {position.orders.map((order, i) => (
-                            <ValueViewComponent
-                              key={i}
-                              valueView={order.basePrice}
-                              trailingZeros={false}
-                              density='slim'
-                            />
-                          ))}
+                          {!position.isClosed ? (
+                            position.orders.map((order, i) => (
+                              <ValueViewComponent
+                                key={i}
+                                valueView={order.basePrice}
+                                trailingZeros={false}
+                                density='slim'
+                              />
+                            ))
+                          ) : (
+                            <Dash />
+                          )}
                         </div>
                       </Table.Td>
                       <Table.Td density='slim'>
