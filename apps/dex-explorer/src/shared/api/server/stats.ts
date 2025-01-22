@@ -28,7 +28,7 @@ export const getStats = async (): Promise<Serialized<StatsResponse>> => {
     const chainId = getClientSideEnv().PENUMBRA_CHAIN_ID;
     const registryClient = new ChainRegistryClient();
     const registry = await registryClient.remote.get(chainId);
-    const usdcMetadata = getStablecoins(registry.getAllAssets(), 'usdc').usdc;
+    const usdcMetadata = getStablecoins(registry.getAllAssets(), 'USDC').usdc;
     if (!usdcMetadata) {
       return { error: 'USDC not found in registry' };
     }
