@@ -61,7 +61,6 @@ const transformData = (
   });
 
   const hops = data.asset_hops
-    .reverse()
     .map(buffer => {
       const assetId = new AssetId({ inner: Uint8Array.from(buffer) });
       return registry.tryGetMetadata(assetId)?.symbol;
