@@ -67,19 +67,10 @@ class Pindexer {
       .execute();
   }
 
-  async stats(window: DurationWindow, usdc: AssetId): Promise<DexExAggregateSummary[]> {
-    const usdcTable = this.db
-      .selectFrom('dex_ex_pairs_summary')
-      .where('asset_end', '=', Buffer.from(usdc.inner))
-      .where('the_window', '=', '1m')
-      .groupBy(['asset_end', 'asset_start', 'the_window'])
-      .selectAll();
-
+  async stats(window: DurationWindow): Promise<DexExAggregateSummary[]> {
     return this.db
       .selectFrom('dex_ex_aggregate_summary as agg')
       .selectAll()
-      .leftJoin(usdcTable.as('usdc'), 'agg.largest_dv_trading_pair_end', 'usdc.asset_start')
-      .select('usdc.price as usdc_price')
       .where('agg.the_window', '=', window)
       .execute();
   }

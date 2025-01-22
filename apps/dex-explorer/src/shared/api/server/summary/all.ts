@@ -34,12 +34,15 @@ export const getAllSummaries = async (
   const allAssets = registry.getAllAssets();
 
   const { stablecoins, usdc } = getStablecoins(allAssets, 'USDC');
+  if (!usdc) {
+    throw new Error('usdc asset does not exist');
+  }
 
   const results = await pindexer.summaries({
     ...params,
     stablecoins: stablecoins.map(asset => asset.penumbraAssetId) as AssetId[],
     // eslint-disable-next-line @typescript-eslint/non-nullable-type-assertion-style -- usdc is defined
-    usdc: usdc?.penumbraAssetId as AssetId,
+    usdc: usdc.penumbraAssetId as AssetId,
   });
 
   const summaries = await Promise.all(
