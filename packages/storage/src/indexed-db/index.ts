@@ -472,9 +472,24 @@ export class IndexedDb implements IndexedDbInterface {
 
   async getAltGasPrices(): Promise<GasPrices[]> {
     const allGasPrices = await this.db.getAll('GAS_PRICES');
+    const usdcPriorityAssetId = 'drPksQaBNYwSOzgfkGOEdrd4kEDkeALeh58Ps+7cjQs=';
+
+    // Retrieve gas prices from the database and prioritize USDC as the preferred asset.
     return allGasPrices
       .map(gp => GasPrices.fromJson(gp))
-      .filter(gp => !gp.assetId?.equals(this.stakingTokenAssetId));
+      .filter(gp => gp.assetId?.inner && !gp.assetId.equals(this.stakingTokenAssetId))
+      .sort((a, b) => {
+        const assetA = a.assetId?.inner ? uint8ArrayToBase64(a.assetId.inner) : '';
+        const assetB = b.assetId?.inner ? uint8ArrayToBase64(b.assetId.inner) : '';
+
+        if (assetA === usdcPriorityAssetId) {
+          return -1;
+        }
+        if (assetB === usdcPriorityAssetId) {
+          return 1;
+        }
+        return 0;
+      });
   }
 
   async saveGasPrices(value: Required<PlainMessage<GasPrices>>): Promise<void> {
@@ -992,5 +1007,16 @@ export class IndexedDb implements IndexedDbInterface {
         },
         new Amount({ hi: 0n, lo: 0n }),
       );
+  }
+
+  async getPosition(positionId: PositionId): Promise<Position | undefined> {
+    assertPositionId(positionId);
+    const position = await this.db.get('POSITIONS', uint8ArrayToBase64(positionId.inner));
+
+    if (!position) {
+      return undefined;
+    }
+
+    return Position.fromJson(position.position);
   }
 }

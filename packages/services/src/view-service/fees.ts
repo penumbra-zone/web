@@ -3,6 +3,16 @@ import { TransactionPlannerRequest } from '@penumbra-zone/protobuf/penumbra/view
 import { assetIdFromBaseDenom } from '@penumbra-zone/wasm/asset';
 import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
 
+// TODO: change other transaction planner request types to default to priority fee selection
+// that's agonsitic to the underlying action.
+const prioritySelection = (request: TransactionPlannerRequest): boolean => {
+  return (
+    request.positionOpens.length > 0 ||
+    request.positionCloses.length > 0 ||
+    request.positionWithdraws.length > 0
+  );
+};
+
 // Attempts to extract a fee token, with priority in descending order, from the assets used
 // in the actions of the transaction planner request (TPR). If no fee token is found from the
 // specified assets, it falls back to checking the gas prices table for an asset with a positive balance.
@@ -89,6 +99,30 @@ export const extractAltFee = async (
     }
   }
 
+  const positionOpen = request.positionOpens.map(assetIn => assetIn.position).find(Boolean);
+  if (positionOpen) {
+    const assetId = await getAssetFromGasPriceTable(request, indexedDb);
+    if (assetId) {
+      return assetId;
+    }
+  }
+
+  const positionClose = request.positionCloses.map(a => a.positionId).find(Boolean);
+  if (positionClose) {
+    const assetId = await getAssetFromGasPriceTable(request, indexedDb);
+    if (assetId) {
+      return assetId;
+    }
+  }
+
+  const positonWithdraw = request.positionWithdraws.map(a => a.positionId).find(Boolean);
+  if (positonWithdraw) {
+    const assetId = await getAssetFromGasPriceTable(request, indexedDb);
+    if (assetId) {
+      return assetId;
+    }
+  }
+
   if (request.undelegations.length > 0) {
     const assetId = await getAssetFromGasPriceTable(request, indexedDb);
     if (assetId) {
@@ -116,12 +150,14 @@ export const getAssetFromGasPriceTable = async (
 
   // If a specific asset ID is provided, extracted from the transaction request, check its balance is
   // positive and GasPrices for that asset exist.
-  if (assetId) {
-    const balance = await indexedDb.hasTokenBalance(request.source.account, assetId);
-    // This check ensures that the alternative fee token is a valid fee token, for example, TestUSD is not.
-    const isInGasTable = altGasPrices.find(gp => gp.assetId?.equals(assetId));
-    if (balance && isInGasTable) {
-      return assetId;
+  if (!prioritySelection(request)) {
+    if (assetId) {
+      const balance = await indexedDb.hasTokenBalance(request.source.account, assetId);
+      // This check ensures that the alternative fee token is a valid fee token, for example, TestUSD is not.
+      const isInGasTable = altGasPrices.find(gp => gp.assetId?.equals(assetId));
+      if (balance && isInGasTable) {
+        return assetId;
+      }
     }
   }
 
