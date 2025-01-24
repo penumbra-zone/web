@@ -7,10 +7,10 @@ import { OrderInput } from './order-input';
 import { SegmentedControl } from './segmented-control';
 import { InfoRowTradingFee } from './info-row-trading-fee';
 import { InfoRowGasFee } from './info-row-gas-fee';
+import { InfoRow } from './info-row';
 import { SelectGroup } from './select-group';
 import { OrderFormStore } from './store/OrderFormStore';
 import { BuyLimitOrderOptions, SellLimitOrderOptions } from './store/LimitOrderFormStore';
-import { InfoRow } from '@/pages/trade/ui/order-form/info-row';
 
 export const LimitOrderForm = observer(({ parentStore }: { parentStore: OrderFormStore }) => {
   const { connected } = connectionStore;
@@ -61,6 +61,18 @@ export const LimitOrderForm = observer(({ parentStore }: { parentStore: OrderFor
           gasFee={parentStore.gasFee.display}
           symbol={parentStore.gasFee.symbol}
           isLoading={parentStore.gasFeeLoading}
+        />
+        <InfoRow
+          label='Receive'
+          value={isBuy ? store.baseInput || '--' : store.quoteInput || '--'}
+          toolTip={
+            // eslint-disable-next-line no-nested-ternary -- allow nested ternary
+            store.quoteInput
+              ? isBuy
+                ? `Receive ${store.baseInput} ${store.baseAsset?.symbol}`
+                : `Receive ${store.quoteInput} ${store.quoteAsset?.symbol}`
+              : 'Enter the form fields to see the amount.'
+          }
         />
       </div>
       <div className='mb-4'>
