@@ -1,12 +1,12 @@
 import { observer } from 'mobx-react-lite';
 import { Button } from '@penumbra-zone/ui/Button';
-import { Text } from '@penumbra-zone/ui/Text';
 import {
   Position,
   PositionId,
   PositionState_PositionStateEnum,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { positionsStore } from '@/pages/trade/model/positions';
+import { Dash } from './dash';
 
 export const ActionButton = observer(({ id, position }: { id: PositionId; position: Position }) => {
   const { loading, closePositions, withdrawPositions } = positionsStore;
@@ -33,10 +33,6 @@ export const ActionButton = observer(({ id, position }: { id: PositionId; positi
       </Button>
     );
   } else {
-    return (
-      <Text detail color='text.secondary'>
-        -
-      </Text>
-    );
+    return <Dash />;
   }
 });
