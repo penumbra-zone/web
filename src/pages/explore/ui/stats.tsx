@@ -87,7 +87,7 @@ export const ExploreStats = () => {
       <InfoCard title='Top Price Mover (24h)' loading={isLoading}>
         {registry && stats?.topPriceMover ? (
           <>
-            <DirectedTradingPairText registry={registry} pair={stats.largestPair.pair} />
+            <DirectedTradingPairText registry={registry} pair={stats.topPriceMover.pair} />
             <Text large color={stats.topPriceMover.percent ? 'success.light' : 'destructive.light'}>
               {stats.topPriceMover.percent && '+'}
               {round({ value: stats.topPriceMover.percent, decimals: 1 })}%
