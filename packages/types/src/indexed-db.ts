@@ -33,7 +33,11 @@ import {
 } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 import { ValidatorInfo } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 import { AddressIndex, IdentityKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { Transaction } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import {
+  Transaction,
+  TransactionPerspective,
+  TransactionView,
+} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
 import { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
 import {
@@ -153,6 +157,18 @@ export interface IndexedDbInterface {
   hasTokenBalance(addressIndex: number, assetId: AssetId): Promise<boolean>;
 
   totalNoteBalance(accountIndex: number, assetId: AssetId): Promise<Amount>;
+
+  saveTransactionInfo(
+    id: TransactionId,
+    txp: TransactionPerspective,
+    txv: TransactionView,
+  ): Promise<void>;
+
+  getTransactionInfo(
+    id: TransactionId,
+  ): Promise<
+    { id: TransactionId; perspective: TransactionPerspective; view: TransactionView } | undefined
+  >;
 }
 
 export interface PenumbraDb extends DBSchema {
@@ -189,6 +205,15 @@ export interface PenumbraDb extends DBSchema {
     value: Jsonified<TransactionInfo>; // TransactionInfo with undefined view and perspective
     indexes: {
       height: string;
+    };
+  };
+  TRANSACTION_INFO: {
+    key: string; // base64 TransactionInfo['id']['inner'];
+    value: {
+      // transaction perspective and view
+      id: Jsonified<TransactionId>;
+      perspective: Jsonified<TransactionPerspective>;
+      view: Jsonified<TransactionView>;
     };
   };
   REGISTRY_VERSION: {
