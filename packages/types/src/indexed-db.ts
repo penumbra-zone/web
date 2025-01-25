@@ -187,6 +187,9 @@ export interface PenumbraDb extends DBSchema {
   TRANSACTIONS: {
     key: string; // base64 TransactionInfo['id']['inner'];
     value: Jsonified<TransactionInfo>; // TransactionInfo with undefined view and perspective
+    indexes: {
+      height: string;
+    };
   };
   REGISTRY_VERSION: {
     key: 'commit';

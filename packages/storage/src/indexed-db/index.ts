@@ -135,7 +135,10 @@ export class IndexedDb implements IndexedDbInterface {
         });
         spendableNoteStore.createIndex('nullifier', 'nullifier.inner');
         spendableNoteStore.createIndex('assetId', 'note.value.assetId.inner');
-        db.createObjectStore('TRANSACTIONS', { keyPath: 'id.inner' });
+        db.createObjectStore('TRANSACTIONS', { keyPath: 'id.inner' }).createIndex(
+          'height',
+          'height',
+        );
         db.createObjectStore('TREE_LAST_POSITION');
         db.createObjectStore('TREE_LAST_FORGOTTEN');
         db.createObjectStore('TREE_COMMITMENTS', { keyPath: 'commitment.inner' });
@@ -337,18 +340,12 @@ export class IndexedDb implements IndexedDbInterface {
     }
   }
 
-  async *iterateSpendableNotes() {
-    yield* new ReadableStream(
-      new IdbCursorSource(
-        this.db.transaction('SPENDABLE_NOTES').store.openCursor(),
-        SpendableNoteRecord,
-      ),
-    );
-  }
-
   async *iterateTransactions() {
     yield* new ReadableStream(
-      new IdbCursorSource(this.db.transaction('TRANSACTIONS').store.openCursor(), TransactionInfo),
+      new IdbCursorSource(
+        this.db.transaction('TRANSACTIONS').store.index('height').openCursor(),
+        TransactionInfo,
+      ),
     );
   }
 
