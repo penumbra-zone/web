@@ -39,7 +39,7 @@ repo, in which case they use turbo or the monorepo configuration.
 
 ## Tools used
 
-- **pnpm**: a package manger
+- **pnpm**: a package manager
   - pnpm's workspace feature is the foundation of the monorepo
 - **turborepo**: a monorepo scripting tool
   - parallelize script execution

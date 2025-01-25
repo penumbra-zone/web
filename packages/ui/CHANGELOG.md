@@ -1,5 +1,11 @@
 # @penumbra-zone/ui
 
+## 13.9.1
+
+### Patch Changes
+
+- f3ee52a: Stop XL screen size responsiveness
+
 ## 13.9.0
 
 ### Minor Changes
