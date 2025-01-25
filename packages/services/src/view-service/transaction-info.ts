@@ -14,23 +14,23 @@ export const transactionInfo: Impl['transactionInfo'] = async function* (_req, c
   const fullViewingKey = await ctx.values.get(fvkCtx)();
 
   for await (const txRecord of indexedDb.iterateTransactions()) {
-    if (!txRecord.transaction) {
+    if (!txRecord.transaction || !txRecord.id) {
       continue;
     }
 
-    // Retrieve transaction perspective and view from indexdb
-    // rather than crossing the wasm boundry and regenerating on the
+    // Retrieve the transaction perspective (TxP) and view (TxV) from IndexDB,
+    // if it exists, rather than crossing the wasm boundry and regenerating on the
     // fly every page reload.
-    let tx_info = await indexedDb.getTransactionInfo(txRecord.id!);
+    const tx_info = await indexedDb.getTransactionInfo(txRecord.id);
     let perspective: TransactionPerspective;
     let view: TransactionView;
 
-    // If TxP + TxV already exist in database, then yield them.
+    // If TxP + TxV already exist in database, then simply yield them.
     if (tx_info) {
       perspective = tx_info.perspective;
       view = tx_info.view;
-      // Otherwise, generate the TxP + TxV from the transaction
-      // and store them in the table.
+      // Otherwise, generate the TxP + TxV from the transaction in wasm
+      // and store them.
     } else {
       const { txp, txv } = await generateTransactionInfo(
         fullViewingKey,
@@ -38,20 +38,19 @@ export const transactionInfo: Impl['transactionInfo'] = async function* (_req, c
         indexedDb.constants(),
       );
 
-      await indexedDb.saveTransactionInfo(txRecord.id!, txp, txv);
-
+      await indexedDb.saveTransactionInfo(txRecord.id, txp, txv);
       perspective = txp;
       view = txv;
     }
 
-    const txInfo = new TransactionInfo({
-      height: txRecord.height,
-      id: txRecord.id,
-      transaction: txRecord.transaction,
-      perspective,
-      view,
-    });
-
-    yield { txInfo };
+    yield {
+      txInfo: new TransactionInfo({
+        height: txRecord.height,
+        id: txRecord.id,
+        transaction: txRecord.transaction,
+        perspective,
+        view,
+      }),
+    };
   }
 };

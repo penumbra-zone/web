@@ -368,18 +368,14 @@ export class IndexedDb implements IndexedDbInterface {
   ): Promise<
     { id: TransactionId; perspective: TransactionPerspective; view: TransactionView } | undefined
   > {
-    // check if existing entries exist
     const existingData = await this.db.get('TRANSACTION_INFO', uint8ArrayToBase64(id.inner));
-    console.log('existingData: ', existingData);
     if (existingData) {
       return {
         id: TransactionId.fromJson(existingData.id, { typeRegistry }),
         perspective: TransactionPerspective.fromJson(existingData.perspective, { typeRegistry }),
         view: TransactionView.fromJson(existingData.view, { typeRegistry }),
       };
-    }
-    // otherwise return undefined and calculate the TxV and TxP
-    else {
+    } else {
       return undefined;
     }
   }
