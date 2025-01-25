@@ -14,6 +14,10 @@ export const transactionInfo: Impl['transactionInfo'] = async function* (_req, c
       continue;
     }
 
+    // todo: retrieve transaction perspective and views from indexdb
+    // rather than crossing the wasm boundry and regenerating on the
+    // fly every page reload.
+
     const { txp: perspective, txv: view } = await generateTransactionInfo(
       fullViewingKey,
       txRecord.transaction,
