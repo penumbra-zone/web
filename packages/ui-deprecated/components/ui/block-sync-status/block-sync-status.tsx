@@ -5,6 +5,7 @@ import { LineWave } from 'react-loader-spinner';
 import { cn } from '../../../lib/utils';
 import { Progress } from '../progress';
 import { useNewBlockDelay, useSyncProgress } from './hooks';
+import { useEffect } from 'react';
 
 export const CondensedBlockSyncStatus = ({
   latestKnownBlockHeight,
@@ -16,7 +17,7 @@ export const CondensedBlockSyncStatus = ({
   error?: unknown;
 }) => {
   if (error) {
-    return <BlockSyncErrorState error={error} />;
+    return <BlockSyncErrorState />;
   }
   if (!latestKnownBlockHeight || !fullSyncHeight) {
     return <AwaitingSyncState genesisSyncing={!fullSyncHeight} />;
@@ -41,10 +42,14 @@ export const CondensedBlockSyncStatus = ({
   );
 };
 
-const BlockSyncErrorState = ({ error }: { error: unknown }) => {
-  const reload = () => {
-    window.location.reload();
-  };
+const BlockSyncErrorState = () => {
+  useEffect(() => {
+    const reloadTimeout = setTimeout(() => {
+      window.location.reload();
+    }, 5000);
+
+    return () => clearTimeout(reloadTimeout);
+  }, []);
 
   return (
     <motion.div
@@ -56,15 +61,8 @@ const BlockSyncErrorState = ({ error }: { error: unknown }) => {
       <div className='absolute w-full px-2'>
         <div className='mt-[-5.5px] flex gap-2'>
           <span className='font-mono text-[10px] text-red-300'>
-            Block sync error: {String(error)}
+            Sync error detected. Reloading page...
           </span>
-          <button
-            type='button'
-            className='border-none bg-none font-mono text-[10px] text-red-300 underline'
-            onClick={reload}
-          >
-            Reload
-          </button>
         </div>
       </div>
     </motion.div>
