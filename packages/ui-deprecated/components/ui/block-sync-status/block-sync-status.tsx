@@ -5,7 +5,6 @@ import { LineWave } from 'react-loader-spinner';
 import { cn } from '../../../lib/utils';
 import { Progress } from '../progress';
 import { useNewBlockDelay, useSyncProgress } from './hooks';
-import { useEffect } from 'react';
 
 export const CondensedBlockSyncStatus = ({
   latestKnownBlockHeight,
@@ -43,13 +42,9 @@ export const CondensedBlockSyncStatus = ({
 };
 
 const BlockSyncErrorState = () => {
-  useEffect(() => {
-    const reloadTimeout = setTimeout(() => {
-      window.location.reload();
-    }, 5000);
-
-    return () => clearTimeout(reloadTimeout);
-  }, []);
+  const reload = () => {
+    window.location.reload();
+  };
 
   return (
     <motion.div
@@ -61,8 +56,15 @@ const BlockSyncErrorState = () => {
       <div className='absolute w-full px-2'>
         <div className='mt-[-5.5px] flex gap-2'>
           <span className='font-mono text-[10px] text-red-300'>
-            Sync error detected. Reloading page...
+            Block sync error. Ensure your internet connection is stable.
           </span>
+          <button
+            type='button'
+            className='border-none bg-none font-mono text-[10px] text-red-300 underline'
+            onClick={reload}
+          >
+            Reload
+          </button>
         </div>
       </div>
     </motion.div>
