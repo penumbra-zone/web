@@ -11,6 +11,7 @@ import { useRegistry } from '@/shared/api/registry';
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { DirectedTradingPair } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { Registry } from '@penumbra-labs/registry';
+import { isNumeraireSymbol, isStablecoinSymbol } from '@/shared/utils/is-symbol';
 
 const GreenValueText = ({ value }: { value: ValueView }) => {
   const symbol =
@@ -31,6 +32,16 @@ const DirectedTradingPairText = ({
 }) => {
   const startSymbol = (pair.start && registry.tryGetMetadata(pair.start)?.symbol) ?? 'unknown';
   const endSymbol = (pair.end && registry.tryGetMetadata(pair.end)?.symbol) ?? 'unknown';
+
+  // swap direction if start is a stablecoin or an important numeraire
+  if (isStablecoinSymbol(startSymbol) && isNumeraireSymbol(startSymbol)) {
+    return (
+      <Text large color='text.primary'>
+        {endSymbol}/{startSymbol}
+      </Text>
+    );
+  }
+
   return (
     <Text large color='text.primary'>
       {startSymbol}/{endSymbol}
