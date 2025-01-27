@@ -21,6 +21,7 @@ import { pnum } from '@penumbra-zone/types/pnum';
 import { bech32mPositionId, positionIdFromBech32 } from '@penumbra-zone/bech32m/plpid';
 import { updatePositionsQuery } from '@/pages/trade/api/positions';
 import { BigNumber } from 'bignumber.js';
+import { isStablecoinSymbol, isNumeraireSymbol } from '@/shared/utils/is-symbol';
 
 export interface DisplayPosition {
   id: PositionId;
@@ -294,13 +295,11 @@ class PositionsStore {
     // that is for the "UM/USDY" pair.
     // In that case, we want to handle this by deciding if the position contain a well-known numeraire,
     // or default to canonical ordering since this is both rare and can be filtered at a higher-level
-    const asset1IsStablecoin = ['USDC', 'USDY', 'USDT'].includes(asset1.asset.symbol.toUpperCase());
-    const asset2IsStablecoin = ['USDC', 'USDY', 'USDT'].includes(asset2.asset.symbol.toUpperCase());
+    const asset1IsStablecoin = isStablecoinSymbol(asset1.asset.symbol);
+    const asset2IsStablecoin = isStablecoinSymbol(asset2.asset.symbol);
 
-    const asset1IsNumeraire =
-      asset1IsStablecoin || ['BTC', 'UM'].includes(asset1.asset.symbol.toUpperCase());
-    const asset2IsNumeraire =
-      asset2IsStablecoin || ['BTC', 'UM'].includes(asset2.asset.symbol.toUpperCase());
+    const asset1IsNumeraire = asset1IsStablecoin || isNumeraireSymbol(asset1.asset.symbol);
+    const asset2IsNumeraire = asset2IsStablecoin || isNumeraireSymbol(asset2.asset.symbol);
 
     // If both assets are numeraires, we adjudicate based on priority score:
     if (asset1IsNumeraire && asset2IsNumeraire) {
