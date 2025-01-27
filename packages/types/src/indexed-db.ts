@@ -153,6 +153,8 @@ export interface IndexedDbInterface {
   hasTokenBalance(addressIndex: number, assetId: AssetId): Promise<boolean>;
 
   totalNoteBalance(accountIndex: number, assetId: AssetId): Promise<Amount>;
+
+  getPosition(positionId: PositionId): Promise<Position | undefined>;
 }
 
 export interface PenumbraDb extends DBSchema {
