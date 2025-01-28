@@ -117,7 +117,7 @@ pub fn get_index_by_address(full_viewing_key: &[u8], address: &[u8]) -> WasmResu
 
     let address: Address = Address::decode(address)?;
     let fvk: FullViewingKey = FullViewingKey::decode(full_viewing_key)?;
-    let index: Option<pb::AddressIndex> = fvk.address_index(&address).map(Into::into);
+    let index: Option<pb::AddressIndex> = controlled_by_index(&fvk, &address).map(Into::into);
     let result = serde_wasm_bindgen::to_value(&index)?;
     Ok(result)
 }
@@ -129,11 +129,11 @@ pub fn is_controlled_address(full_viewing_key: &[u8], address: &[u8]) -> WasmRes
 
     let address: Address = Address::decode(address)?;
     let fvk: FullViewingKey = FullViewingKey::decode(full_viewing_key)?;
-    Ok(is_controlled_inner(&fvk, &address))
+    Ok(controlled_by_index(&fvk, &address).is_some())
 }
 
-pub fn is_controlled_inner(fvk: &FullViewingKey, address: &Address) -> bool {
-    fvk.address_index(address).is_some()
+pub fn controlled_by_index(fvk: &FullViewingKey, address: &Address) -> Option<AddressIndex> {
+    fvk.address_index(address)
 }
 
 #[wasm_bindgen(getter_with_clone)]

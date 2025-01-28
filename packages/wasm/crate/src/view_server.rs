@@ -3,6 +3,7 @@ use std::collections::BTreeMap;
 use indexed_db_futures::IdbDatabase;
 use penumbra_compact_block::{CompactBlock, StatePayload};
 use penumbra_keys::{Address, FullViewingKey};
+use penumbra_keys::keys::AddressIndex;
 use penumbra_proto::DomainType;
 use penumbra_sct::Nullifier;
 use penumbra_shielded_pool::note;
@@ -16,7 +17,7 @@ use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::JsValue;
 
 use crate::error::WasmResult;
-use crate::keys::is_controlled_inner;
+use crate::keys::controlled_by_index;
 use crate::note_record::SpendableNoteRecord;
 use crate::storage::{init_idb_storage, Storage};
 use crate::swap_record::SwapRecord;
@@ -307,13 +308,17 @@ impl ViewServer {
         Ok(root.encode_to_vec())
     }
 
-    /// Checks if address is controlled by view server full viewing key
+    /// Get the address index by provided address
+    /// Returns: `Uint8Array representing inner Address`
     #[wasm_bindgen]
-    pub fn is_controlled_address(&self, address: &[u8]) -> WasmResult<bool> {
+    pub fn get_index_by_address(full_viewing_key: &[u8], address: &[u8]) -> WasmResult<JsValue> {
         utils::set_panic_hook();
 
         let address: Address = Address::decode(address)?;
-        Ok(is_controlled_inner(&self.fvk, &address))
+        let fvk: FullViewingKey = FullViewingKey::decode(full_viewing_key)?;
+        let index: Option<AddressIndex> = controlled_by_index(&fvk, &address).map(Into::into);
+        let result = serde_wasm_bindgen::to_value(&index)?;
+        Ok(result)
     }
 }
 

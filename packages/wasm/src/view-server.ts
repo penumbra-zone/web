@@ -10,8 +10,12 @@ import {
 } from '@penumbra-zone/types/state-commitment-tree';
 import type { IdbConstants } from '@penumbra-zone/types/indexed-db';
 import type { ViewServerInterface } from '@penumbra-zone/types/servers';
-import { Address, FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { isControlledAddress } from './address.js';
+import {
+  Address,
+  AddressIndex,
+  FullViewingKey,
+} from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { getAddressIndexByAddress } from './address.js';
 
 declare global {
   // eslint-disable-next-line no-var -- TODO: explain
@@ -89,7 +93,7 @@ export class ViewServer implements ViewServerInterface {
     };
   }
 
-  isControlledAddress(address: Address): boolean {
-    return isControlledAddress(this.fullViewingKey, address);
+  getIndexByAddress(address: Address): AddressIndex | undefined {
+    return getAddressIndexByAddress(this.fullViewingKey, address);
   }
 }
