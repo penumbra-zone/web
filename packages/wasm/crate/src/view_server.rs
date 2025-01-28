@@ -2,8 +2,8 @@ use std::collections::BTreeMap;
 
 use indexed_db_futures::IdbDatabase;
 use penumbra_compact_block::{CompactBlock, StatePayload};
-use penumbra_keys::{Address, FullViewingKey};
 use penumbra_keys::keys::AddressIndex;
+use penumbra_keys::{Address, FullViewingKey};
 use penumbra_proto::DomainType;
 use penumbra_sct::Nullifier;
 use penumbra_shielded_pool::note;
