@@ -1,5 +1,12 @@
 # @penumbra-zone/bech32
 
+## 12.0.0
+
+### Patch Changes
+
+- Updated dependencies [29dd11a]
+  - @penumbra-zone/protobuf@7.1.0
+
 ## 11.0.0
 
 ### Minor Changes

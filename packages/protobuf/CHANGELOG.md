@@ -1,5 +1,14 @@
 # @penumbra-zone/protobuf
 
+## 7.1.0
+
+### Minor Changes
+
+- 29dd11a: - storage: add subaccount filter to `getOwnedPositionIds` method
+  - protobuf: sync latest changes in penumbra protobufs
+  - services: add subaccount filter to `ownedPositionIds` method in ViewService
+  - types: update indexedDB schema
+
 ## 7.0.0
 
 ### Major Changes
