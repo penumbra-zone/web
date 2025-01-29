@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useRouter } from 'next/navigation';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
@@ -8,6 +8,7 @@ import { Dialog } from '@penumbra-zone/ui/Dialog';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Density } from '@penumbra-zone/ui/Density';
 import { Text } from '@penumbra-zone/ui/Text';
+import { Button } from '@penumbra-zone/ui/Button';
 import { StarButton } from '@/features/star-pair';
 import { usePathToMetadata } from '../../model/use-path.ts';
 import { handleRouting } from './handle-routing.ts';
@@ -38,6 +39,13 @@ export const PairSelector = observer(() => {
     setSelectedBase(undefined);
   }, [clearFocus]);
 
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedBase(baseAsset);
+      setSelectedQuote(quoteAsset);
+    }
+  }, [baseAsset, isOpen, quoteAsset]);
+
   const onSelect = useCallback(
     (base: Metadata, quote: Metadata) => {
       handleRouting({ router, baseAsset: base, quoteAsset: quote });
@@ -47,10 +55,33 @@ export const PairSelector = observer(() => {
   );
 
   const onClear = () => {
-    clearFocus();
+    onFocusClear();
     setQuoteFilter('');
     setBaseFilter('');
   };
+
+  const onFocusClear = () => {
+    clearFocus();
+
+    // Scroll to top after selecting an asset
+    const scrollable = (baseRef.current ?? quoteRef.current)?.closest('.overflow-y-auto');
+    setTimeout(() => scrollable?.scrollTo({ top: 0 }), 0);
+  };
+
+  const onBaseReset = () => {
+    setSelectedBase(undefined);
+    setTimeout(() => baseRef.current?.focus(), 0);
+  };
+
+  const onQuoteReset = () => {
+    setSelectedQuote(undefined);
+    setTimeout(() => quoteRef.current?.focus(), 0);
+  };
+
+  const showConfirm =
+    !!selectedBase &&
+    !!selectedQuote &&
+    (selectedBase.symbol !== baseAsset?.symbol || selectedQuote.symbol !== quoteAsset?.symbol);
 
   const onConfirm = () => {
     if (selectedBase && selectedQuote) {
@@ -97,7 +128,7 @@ export const PairSelector = observer(() => {
                 asset={selectedBase}
                 placeholder='Base asset'
                 onChange={setBaseFilter}
-                onClear={() => setSelectedBase(undefined)}
+                onClear={onBaseReset}
               />
 
               <Text body color='text.primary' align='center'>
@@ -110,7 +141,7 @@ export const PairSelector = observer(() => {
                 asset={selectedQuote}
                 placeholder='Quote asset'
                 onChange={setQuoteFilter}
-                onClear={() => setSelectedQuote(undefined)}
+                onClear={onQuoteReset}
               />
             </div>
           </Density>
@@ -118,13 +149,13 @@ export const PairSelector = observer(() => {
           {focusedType === 'base' && (
             <SearchResults
               search={baseFilter}
-              showConfirm={!!(selectedQuote && selectedBase)}
               onClear={onClear}
-              onConfirm={onConfirm}
               onSelect={asset => {
                 setSelectedBase(asset);
                 if (!selectedQuote) {
                   quoteRef.current?.focus();
+                } else {
+                  onFocusClear();
                 }
               }}
             />
@@ -133,19 +164,27 @@ export const PairSelector = observer(() => {
           {focusedType === 'quote' && (
             <SearchResults
               search={quoteFilter}
-              showConfirm={!!(selectedQuote && selectedBase)}
               onClear={onClear}
-              onConfirm={onConfirm}
               onSelect={asset => {
                 setSelectedQuote(asset);
                 if (!selectedBase) {
                   baseRef.current?.focus();
+                } else {
+                  onFocusClear();
                 }
               }}
             />
           )}
 
           {!focusedType && <DefaultResults onSelect={pair => onSelect(pair.base, pair.quote)} />}
+
+          {showConfirm && (
+            <div className='flex flex-col gap-4 sticky bottom-0 w-full rounded-sm z-10'>
+              <Button onClick={onConfirm} priority='primary' actionType='accent'>
+                Confirm
+              </Button>
+            </div>
+          )}
         </Dialog.Content>
       </Dialog>
     </div>
