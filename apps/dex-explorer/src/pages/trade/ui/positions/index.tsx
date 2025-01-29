@@ -12,7 +12,7 @@ import { Tooltip, TooltipProvider } from '@penumbra-zone/ui/Tooltip';
 import { stateToString, usePositions } from '@/pages/trade/api/positions.ts';
 import { positionsStore } from '@/pages/trade/model/positions';
 import { pnum } from '@penumbra-zone/types/pnum';
-import { useRegistryAssets } from '@/shared/api/registry';
+import { useAssets } from '@/shared/api/assets';
 import { SquareArrowOutUpRight } from 'lucide-react';
 import { usePathToMetadata } from '../../model/use-path';
 import { PositionsCurrentValue } from '../positions-current-value';
@@ -27,7 +27,7 @@ import { Dash } from './dash';
 const Positions = observer(({ showInactive }: { showInactive: boolean }) => {
   const { connected } = connectionStore;
   const { baseAsset, quoteAsset } = usePathToMetadata();
-  const { data: assets } = useRegistryAssets();
+  const { data: assets } = useAssets();
   const { data, isLoading, error } = usePositions();
   const { displayPositions, setPositions, setAssets } = positionsStore;
 

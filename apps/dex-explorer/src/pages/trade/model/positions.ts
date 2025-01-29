@@ -451,13 +451,22 @@ class PositionsStore {
       return [];
     }
 
-    return [...this.positionsById.entries()].map(([id, position]) => {
+    const positions = [...this.positionsById.entries()].map(([id, position]) => {
       const { phi, state } = position as ExecutedPosition;
       const { component } = phi;
-      const [asset1, asset2] = this.getCalculatedAssets(position as ExecutedPosition);
 
-      if (!this.currentPair) {
-        throw new Error('No current pair or assets');
+      const [asset1, asset2] = (() => {
+        try {
+          return this.getCalculatedAssets(position as ExecutedPosition);
+        } catch (e) {
+          // this.getCalculatedAssets() throws if the assets are not found in the registry
+          // e.g. if the position was created in `pcli`
+          return [];
+        }
+      })();
+
+      if (!this.currentPair || !asset1 || !asset2) {
+        return undefined;
       }
 
       const [baseAsset, quoteAsset] = this.currentPair;
@@ -487,6 +496,8 @@ class PositionsStore {
         state: state.state,
       };
     });
+
+    return positions.filter(Boolean) as DisplayPosition[];
   }
 }
 
