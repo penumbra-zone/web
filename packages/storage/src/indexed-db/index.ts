@@ -570,6 +570,7 @@ export class IndexedDb implements IndexedDbInterface {
   async *getOwnedPositionIds(
     positionState: PositionState | undefined,
     tradingPair: TradingPair | undefined,
+    subaccount: AddressIndex | undefined,
   ) {
     yield* new ReadableStream({
       start: async cont => {
@@ -578,7 +579,10 @@ export class IndexedDb implements IndexedDbInterface {
           const position = Position.fromJson(cursor.value.position);
           if (
             (!positionState || positionState.equals(position.state)) &&
-            (!tradingPair || tradingPair.equals(position.phi?.pair))
+            (!tradingPair || tradingPair.equals(position.phi?.pair)) &&
+            (!subaccount ||
+              (cursor.value.subaccount &&
+                subaccount.equals(AddressIndex.fromJson(cursor.value.subaccount))))
           ) {
             cont.enqueue(PositionId.fromJson(cursor.value.id));
           }
@@ -589,16 +593,25 @@ export class IndexedDb implements IndexedDbInterface {
     });
   }
 
-  async addPosition(positionId: PositionId, position: Position): Promise<void> {
+  async addPosition(
+    positionId: PositionId,
+    position: Position,
+    subaccount?: AddressIndex,
+  ): Promise<void> {
     assertPositionId(positionId);
     const positionRecord = {
       id: positionId.toJson() as Jsonified<PositionId>,
       position: position.toJson() as Jsonified<Position>,
+      subaccount: subaccount && (subaccount.toJson() as Jsonified<AddressIndex>),
     };
     await this.u.update({ table: 'POSITIONS', value: positionRecord });
   }
 
-  async updatePosition(positionId: PositionId, newState: PositionState): Promise<void> {
+  async updatePosition(
+    positionId: PositionId,
+    newState: PositionState,
+    subaccount?: AddressIndex,
+  ): Promise<void> {
     assertPositionId(positionId);
     const key = uint8ArrayToBase64(positionId.inner);
     const positionRecord = await this.db.get('POSITIONS', key);
@@ -615,6 +628,7 @@ export class IndexedDb implements IndexedDbInterface {
       value: {
         id: positionId.toJson() as Jsonified<PositionId>,
         position: position.toJson() as Jsonified<Position>,
+        subaccount: subaccount ? (subaccount.toJson() as Jsonified<AddressIndex>) : undefined,
       },
     });
   }

@@ -28,6 +28,8 @@ import {
   tradingPairGmGn,
   transaction,
   transactionId,
+  mainAccount,
+  firstSubaccount,
 } from './indexed-db.test-data.js';
 import { AddressIndex, WalletId } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import {
@@ -493,16 +495,26 @@ describe('IndexedDb', () => {
   });
 
   describe('positions', () => {
+    it('returns empty array for zero positions', async () => {
+      const db = await IndexedDb.initialize({ ...generateInitialProps() });
+
+      const ownedPositions: PositionId[] = [];
+      for await (const positionId of db.getOwnedPositionIds(undefined, undefined, undefined)) {
+        ownedPositions.push(positionId as PositionId);
+      }
+      expect(ownedPositions.length).toBe(0);
+    });
+
     it('position should be added and their state should change', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
-      await db.addPosition(positionIdGmPenumbraBuy, positionGmPenumbraBuy);
+      await db.addPosition(positionIdGmPenumbraBuy, positionGmPenumbraBuy, mainAccount);
       await db.updatePosition(
         positionIdGmPenumbraBuy,
         new PositionState({ state: PositionState_PositionStateEnum.CLOSED }),
       );
       const ownedPositions: PositionId[] = [];
-      for await (const positionId of db.getOwnedPositionIds(undefined, undefined)) {
+      for await (const positionId of db.getOwnedPositionIds(undefined, undefined, undefined)) {
         ownedPositions.push(positionId as PositionId);
       }
       expect(ownedPositions.length).toBe(1);
@@ -521,12 +533,12 @@ describe('IndexedDb', () => {
 
     it('should get all position ids', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
-      await db.addPosition(positionIdGmPenumbraBuy, positionGmPenumbraBuy);
-      await db.addPosition(positionIdGnPenumbraSell, positionGnPenumbraSell);
-      await db.addPosition(positionIdGmGnSell, positionGmGnSell);
+      await db.addPosition(positionIdGmPenumbraBuy, positionGmPenumbraBuy, mainAccount);
+      await db.addPosition(positionIdGnPenumbraSell, positionGnPenumbraSell, mainAccount);
+      await db.addPosition(positionIdGmGnSell, positionGmGnSell, firstSubaccount);
 
       const ownedPositions: PositionId[] = [];
-      for await (const positionId of db.getOwnedPositionIds(undefined, undefined)) {
+      for await (const positionId of db.getOwnedPositionIds(undefined, undefined, undefined)) {
         ownedPositions.push(positionId as PositionId);
       }
       expect(ownedPositions.length).toBe(3);
@@ -534,13 +546,14 @@ describe('IndexedDb', () => {
 
     it('should get all position with given position state', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
-      await db.addPosition(positionIdGmPenumbraBuy, positionGmPenumbraBuy);
-      await db.addPosition(positionIdGnPenumbraSell, positionGnPenumbraSell);
-      await db.addPosition(positionIdGmGnSell, positionGmGnSell);
+      await db.addPosition(positionIdGmPenumbraBuy, positionGmPenumbraBuy, mainAccount);
+      await db.addPosition(positionIdGnPenumbraSell, positionGnPenumbraSell, mainAccount);
+      await db.addPosition(positionIdGmGnSell, positionGmGnSell, firstSubaccount);
 
       const ownedPositions: PositionId[] = [];
       for await (const positionId of db.getOwnedPositionIds(
         new PositionState({ state: PositionState_PositionStateEnum.CLOSED }),
+        undefined,
         undefined,
       )) {
         ownedPositions.push(positionId as PositionId);
@@ -550,15 +563,51 @@ describe('IndexedDb', () => {
 
     it('should get all position with given trading pair', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
-      await db.addPosition(positionIdGmPenumbraBuy, positionGmPenumbraBuy);
-      await db.addPosition(positionIdGnPenumbraSell, positionGnPenumbraSell);
-      await db.addPosition(positionIdGmGnSell, positionGmGnSell);
+      await db.addPosition(positionIdGmPenumbraBuy, positionGmPenumbraBuy, mainAccount);
+      await db.addPosition(positionIdGnPenumbraSell, positionGnPenumbraSell, mainAccount);
+      await db.addPosition(positionIdGmGnSell, positionGmGnSell, firstSubaccount);
 
       const ownedPositions: PositionId[] = [];
-      for await (const positionId of db.getOwnedPositionIds(undefined, tradingPairGmGn)) {
+      for await (const positionId of db.getOwnedPositionIds(
+        undefined,
+        tradingPairGmGn,
+        undefined,
+      )) {
         ownedPositions.push(positionId as PositionId);
       }
       expect(ownedPositions.length).toBe(1);
+    });
+
+    it('should get all position with given subaccount index', async () => {
+      const db = await IndexedDb.initialize({ ...generateInitialProps() });
+      await db.addPosition(positionIdGmPenumbraBuy, positionGmPenumbraBuy, mainAccount);
+      await db.addPosition(positionIdGnPenumbraSell, positionGnPenumbraSell, mainAccount);
+      await db.addPosition(positionIdGmGnSell, positionGmGnSell, firstSubaccount);
+
+      const ownedPositions: PositionId[] = [];
+      for await (const positionId of db.getOwnedPositionIds(undefined, undefined, mainAccount)) {
+        ownedPositions.push(positionId as PositionId);
+      }
+      expect(ownedPositions.length).toBe(2);
+    });
+
+    it('should filter positions correctly when all filters applied together', async () => {
+      const db = await IndexedDb.initialize({ ...generateInitialProps() });
+      await db.addPosition(positionIdGmPenumbraBuy, positionGmPenumbraBuy, mainAccount);
+      await db.addPosition(positionIdGnPenumbraSell, positionGnPenumbraSell, mainAccount);
+      await db.addPosition(positionIdGmGnSell, positionGmGnSell, firstSubaccount);
+
+      const ownedPositions: PositionId[] = [];
+      for await (const positionId of db.getOwnedPositionIds(
+        new PositionState({ state: PositionState_PositionStateEnum.CLOSED }),
+        tradingPairGmGn,
+        firstSubaccount,
+      )) {
+        ownedPositions.push(positionId as PositionId);
+      }
+
+      expect(ownedPositions.length).toBe(1);
+      expect(ownedPositions[0]?.equals(positionIdGmGnSell)).toBeTruthy();
     });
   });
 
