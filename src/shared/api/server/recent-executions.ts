@@ -1,13 +1,11 @@
 import BigNumber from 'bignumber.js';
 import { NextRequest, NextResponse } from 'next/server';
 import { ChainRegistryClient, Registry } from '@penumbra-labs/registry';
-import { AssetId, Value } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { pnum } from '@penumbra-zone/types/pnum';
 import { serialize, Serialized } from '@/shared/utils/serializer';
-import { formatAmount } from '@penumbra-zone/types/amount';
 import { pindexer } from '@/shared/database';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
-import { calculateDisplayPrice } from '@/shared/utils/price-conversion';
 
 type FromPromise<T> = T extends Promise<(infer U)[]> ? U : T;
 type RecentExecutionData = FromPromise<ReturnType<typeof pindexer.recentExecutions>>;
@@ -22,6 +20,8 @@ export interface RecentExecution {
   hops: string[];
 }
 
+const DECIMALS = 4;
+
 const transformData = (
   data: RecentExecutionData,
   direction: 'buy' | 'sell',
@@ -31,10 +31,11 @@ const transformData = (
     inner: Uint8Array.from(data.asset_start),
   });
   const baseMetadata = registry.getMetadata(baseAssetId);
-  const baseDisplayDenomExponent = getDisplayDenomExponent.optional(baseMetadata) ?? 0;
+  const baseExponent = getDisplayDenomExponent.optional(baseMetadata) ?? 0;
 
   const quoteAssetId = new AssetId({ inner: Uint8Array.from(data.asset_end) });
   const quoteMetadata = registry.getMetadata(quoteAssetId);
+  const quoteExponent = getDisplayDenomExponent.optional(quoteMetadata) ?? 0;
 
   const timestamp = data.time.toISOString();
 
@@ -46,18 +47,18 @@ const transformData = (
   } else {
     priceNum = data.price_float === 0 ? 0 : 1 / data.price_float;
   }
-  const price = calculateDisplayPrice(priceNum, baseMetadata, quoteMetadata);
 
-  // We always want to render the base amount in the trade, regardless of the direction.
-  // The `kind` field informs on the direction.
-  const baseAmount = direction === 'sell' ? data.input : data.output;
-  const amountValue = new Value({ amount: pnum(baseAmount).toAmount(), assetId: baseAssetId })
-    .amount;
-  const amount = formatAmount({
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- amount created by `new Value` always defined
-    amount: amountValue!,
-    exponent: baseDisplayDenomExponent,
-    decimalPlaces: 4,
+  const exponentDifference =
+    direction === 'sell' ? baseExponent - quoteExponent : quoteExponent - baseExponent;
+  const price = new BigNumber(priceNum).shiftedBy(exponentDifference).toFormat(DECIMALS);
+
+  const amount = pnum(
+    // convert string to bigint so that pnum parses it in base units
+    // which means we can use the exponent to format it in display units
+    BigInt(direction === 'sell' ? data.input : data.output),
+    direction === 'sell' ? baseExponent : quoteExponent,
+  ).toFormattedString({
+    decimals: DECIMALS,
   });
 
   const hops = data.asset_hops
@@ -72,7 +73,7 @@ const transformData = (
     timestamp,
     amount,
     kind: direction,
-    price: new BigNumber(price).toFormat(4),
+    price,
   };
 };
 
