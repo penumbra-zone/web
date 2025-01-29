@@ -4,8 +4,8 @@ import { AssetId, Value } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/a
 import { PositionId } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { pnum } from '@penumbra-zone/types/pnum';
 import { PositionStateResponse } from '@/shared/api/server/position/timeline/types.ts';
-import { sha256HashStr } from '@penumbra-zone/crypto-web/sha256';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
+import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 
 export const getPositionState = async (id: PositionId): Promise<PositionStateResponse> => {
   const result = await pindexer.getPositionState(id);
@@ -96,7 +96,7 @@ export const getPositionState = async (id: PositionId): Promise<PositionStateRes
   };
 
   if (result.state.opening_tx) {
-    response.openingTx = await sha256HashStr(result.state.opening_tx);
+    response.openingTx = uint8ArrayToHex(Uint8Array.from(result.state.opening_tx));
   }
 
   if (result.state.closing_height) {
@@ -104,7 +104,7 @@ export const getPositionState = async (id: PositionId): Promise<PositionStateRes
   }
 
   if (result.state.closing_tx) {
-    response.closingTx = await sha256HashStr(result.state.closing_tx);
+    response.closingTx = uint8ArrayToHex(Uint8Array.from(result.state.closing_tx));
   }
 
   if (result.state.closing_time) {
