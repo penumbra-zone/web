@@ -1,5 +1,15 @@
 # @penumbra-zone/perspective
 
+## 45.0.0
+
+### Patch Changes
+
+- Updated dependencies [29dd11a]
+  - @penumbra-zone/protobuf@7.1.0
+  - @penumbra-zone/wasm@38.0.0
+  - @penumbra-zone/bech32m@12.0.0
+  - @penumbra-zone/getters@22.0.0
+
 ## 44.0.0
 
 ### Patch Changes
