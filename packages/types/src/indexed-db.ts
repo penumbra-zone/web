@@ -97,9 +97,14 @@ export interface IndexedDbInterface {
   getOwnedPositionIds(
     positionState: PositionState | undefined,
     tradingPair: TradingPair | undefined,
+    subaccount: AddressIndex | undefined,
   ): AsyncGenerator<PositionId, void>;
-  addPosition(positionId: PositionId, position: Position): Promise<void>;
-  updatePosition(positionId: PositionId, newState: PositionState): Promise<void>;
+  addPosition(positionId: PositionId, position: Position, subaccount?: AddressIndex): Promise<void>;
+  updatePosition(
+    positionId: PositionId,
+    newState: PositionState,
+    subaccount?: AddressIndex,
+  ): Promise<void>;
   addEpoch(startHeight: bigint): Promise<void>;
   getEpochByHeight(height: bigint): Promise<Epoch | undefined>;
   upsertValidatorInfo(validatorInfo: ValidatorInfo): Promise<void>;
@@ -297,6 +302,7 @@ export interface PenumbraDb extends DBSchema {
 export interface PositionRecord {
   id: Jsonified<PositionId>; // PositionId (must be JsonValue because ['id']['inner'] is a key )
   position: Jsonified<Position>; // Position
+  subaccount?: Jsonified<AddressIndex>; // Position AddressIndex
 }
 
 export type Tables = Record<string, StoreNames<PenumbraDb>>;
