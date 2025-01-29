@@ -90,11 +90,16 @@ export const MarketTrades = () => {
               variant={index !== data.length - 1 ? 'cell' : 'lastCell'}
               loading={isLoading}
             >
-              <span className={trade.hops.length <= 2 ? 'text-text-primary' : 'text-text-special'}>
+              <Text
+                as='span'
+                color={trade.hops.length <= 2 ? 'text.primary' : 'text.special'}
+                whitespace='nowrap'
+                detailTechnical
+              >
                 {trade.hops.length === 2
                   ? 'Direct'
                   : pluralize(trade.hops.length - 2, 'Hop', 'Hops')}
-              </span>
+              </Text>
             </TableCell>
 
             {/* Route display that shows on hover */}
