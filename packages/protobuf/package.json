@@ -16,7 +16,7 @@
     "gen:ibc": "buf generate buf.build/cosmos/ibc:7ab44ae956a0488ea04e04511efa5f70",
     "gen:ics23": "buf generate buf.build/cosmos/ics23:55085f7c710a45f58fa09947208eb70b",
     "gen:noble": "buf generate buf.build/noble-assets/forwarding:5a8609a6772d417584a9c60cd8b80881",
-    "gen:penumbra": "buf generate buf.build/penumbra-zone/penumbra:0a56a4f32c244e7eb277e02f6e85afbd",
+    "gen:penumbra": "buf generate buf.build/penumbra-zone/penumbra:adb116eefae84c1abd53a1594b895360",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "lint:strict": "tsc --noEmit && eslint src --max-warnings 0",
