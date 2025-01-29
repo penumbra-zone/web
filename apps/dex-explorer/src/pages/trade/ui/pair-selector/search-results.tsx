@@ -27,8 +27,6 @@ export interface SearchResultsProps {
   onSelect: (asset: Metadata) => void;
   onClear: VoidFunction;
   search?: string;
-  showConfirm: boolean;
-  onConfirm: VoidFunction;
 }
 
 const filterAsset = (asset: Metadata, search: string): boolean => {
@@ -66,131 +64,123 @@ const mergeOptions = (
   return [...balancesPerAccount, ...filteredAssets];
 };
 
-export const SearchResults = observer(
-  ({ onSelect, onClear, search, showConfirm, onConfirm }: SearchResultsProps) => {
-    const { recent, add } = recentPairsStore;
-    const { subaccount } = connectionStore;
+export const SearchResults = observer(({ onSelect, onClear, search }: SearchResultsProps) => {
+  const { recent, add } = recentPairsStore;
+  const { subaccount } = connectionStore;
 
-    const { data: assets } = useAssets();
-    const { data: balances } = useBalances(subaccount);
+  const { data: assets } = useAssets();
+  const { data: balances } = useBalances(subaccount);
 
-    const merged = mergeOptions(assets ?? [], balances ?? [], subaccount);
-    const filtered = useFilteredAssets(merged, search ?? '');
+  const merged = mergeOptions(assets ?? [], balances ?? [], subaccount);
+  const filtered = useFilteredAssets(merged, search ?? '');
 
-    const onClick = (asset: Metadata) => {
-      add(asset);
-      onSelect(asset);
-    };
+  const onClick = (asset: Metadata) => {
+    add(asset);
+    onSelect(asset);
+  };
 
-    if (!filtered.length) {
-      return (
-        <div className='grow flex flex-col items-center justify-center gap-2 py-4 text-text-secondary'>
-          <Search className='size-8' />
-          <Text small>No results</Text>
-        </div>
-      );
-    }
-
+  if (!filtered.length) {
     return (
-      <>
-        {!search && !!recent.length && (
-          <div className='flex flex-col gap-2 text-text-secondary'>
-            <Text small>Recent</Text>
-            <Dialog.RadioGroup>
-              <div className='flex flex-col gap-1'>
-                {recent.map(asset => (
-                  <Dialog.RadioItem
-                    key={`${asset.symbol}-${asset.display}`}
-                    value={`${asset.symbol}-${asset.display}`}
-                    startAdornment={<AssetIcon metadata={asset} size='lg' />}
-                    title={
-                      <div className={asset.name ? '' : 'h-10 flex items-center'}>
-                        <Text color='text.primary'>{asset.symbol}</Text>
-                      </div>
-                    }
-                    description={
-                      asset.name && (
-                        <div className='-mt-2'>
-                          <Text detail color='text.secondary'>
-                            {asset.name}
-                          </Text>
-                        </div>
-                      )
-                    }
-                    onSelect={() => onClick(asset)}
-                  />
-                ))}
-              </div>
-            </Dialog.RadioGroup>
-          </div>
-        )}
+      <div className='grow flex flex-col items-center justify-center gap-2 py-4 text-text-secondary'>
+        <Search className='size-8' />
+        <Text small>No results</Text>
+      </div>
+    );
+  }
 
+  return (
+    <>
+      {!search && !!recent.length && (
         <div className='flex flex-col gap-2 text-text-secondary'>
-          <Text small>Search results</Text>
+          <Text small>Recent</Text>
           <Dialog.RadioGroup>
             <div className='flex flex-col gap-1'>
-              {filtered.map(option => {
-                const asset = isBalancesResponse(option)
-                  ? getMetadataFromBalancesResponse(option)
-                  : option;
-                const balance = isBalancesResponse(option)
-                  ? {
-                      addressIndexAccount: getAddressIndex.optional(option)?.account,
-                      valueView: getBalanceView.optional(option),
-                    }
-                  : undefined;
-
-                return (
-                  <Dialog.RadioItem
-                    key={`${asset.symbol}-${asset.display}`}
-                    value={`${asset.symbol}-${asset.display}`}
-                    startAdornment={<AssetIcon metadata={asset} size='lg' />}
-                    endAdornment={
-                      balance && (
-                        <ValueViewComponent
-                          showSymbol={false}
-                          showIcon={false}
-                          context='table'
-                          valueView={balance.valueView}
-                        />
-                      )
-                    }
-                    title={
-                      <div className={asset.name ? '' : 'h-10 flex items-center'}>
-                        <Text color='text.primary'>{asset.symbol}</Text>
+              {recent.map(asset => (
+                <Dialog.RadioItem
+                  key={`${asset.symbol}-${asset.display}`}
+                  value={`${asset.symbol}-${asset.display}`}
+                  startAdornment={<AssetIcon metadata={asset} size='lg' />}
+                  title={
+                    <div className={asset.name ? '' : 'h-10 flex items-center'}>
+                      <Text color='text.primary'>{asset.symbol}</Text>
+                    </div>
+                  }
+                  description={
+                    asset.name && (
+                      <div className='-mt-2'>
+                        <Text detail color='text.secondary'>
+                          {asset.name}
+                        </Text>
                       </div>
-                    }
-                    description={
-                      asset.name && (
-                        <div className='-mt-2'>
-                          <Text detail color='text.secondary'>
-                            {asset.name}
-                          </Text>
-                        </div>
-                      )
-                    }
-                    onSelect={() => onClick(asset)}
-                  />
-                );
-              })}
+                    )
+                  }
+                  onSelect={() => onClick(asset)}
+                />
+              ))}
             </div>
           </Dialog.RadioGroup>
         </div>
+      )}
 
-        <div className='flex flex-col gap-4 sticky bottom-0 w-full rounded-sm z-10'>
-          {showConfirm && (
-            <Button onClick={onConfirm} priority='primary' actionType='accent'>
-              Confirm
-            </Button>
-          )}
+      <div className='flex flex-col gap-2 text-text-secondary'>
+        <Text small>Search results</Text>
+        <Dialog.RadioGroup>
+          <div className='flex flex-col gap-1'>
+            {filtered.map(option => {
+              const asset = isBalancesResponse(option)
+                ? getMetadataFromBalancesResponse(option)
+                : option;
+              const balance = isBalancesResponse(option)
+                ? {
+                    addressIndexAccount: getAddressIndex.optional(option)?.account,
+                    valueView: getBalanceView.optional(option),
+                  }
+                : undefined;
 
-          <div className='bg-neutral-dark'>
-            <Button onClick={onClear} priority='primary'>
-              Clear
-            </Button>
+              return (
+                <Dialog.RadioItem
+                  key={`${asset.symbol}-${asset.display}`}
+                  value={`${asset.symbol}-${asset.display}`}
+                  startAdornment={<AssetIcon metadata={asset} size='lg' />}
+                  endAdornment={
+                    balance && (
+                      <ValueViewComponent
+                        showSymbol={false}
+                        showIcon={false}
+                        context='table'
+                        valueView={balance.valueView}
+                      />
+                    )
+                  }
+                  title={
+                    <div className={asset.name ? '' : 'h-10 flex items-center'}>
+                      <Text color='text.primary'>{asset.symbol}</Text>
+                    </div>
+                  }
+                  description={
+                    asset.name && (
+                      <div className='-mt-2'>
+                        <Text detail color='text.secondary'>
+                          {asset.name}
+                        </Text>
+                      </div>
+                    )
+                  }
+                  onSelect={() => onClick(asset)}
+                />
+              );
+            })}
           </div>
+        </Dialog.RadioGroup>
+      </div>
+
+      <div className='flex flex-col gap-4 sticky bottom-0 w-full rounded-sm z-10'>
+        <div className='bg-neutral-dark'>
+          <Button onClick={onClear} priority='primary'>
+            Clear
+          </Button>
         </div>
-      </>
-    );
-  },
-);
+      </div>
+    </>
+  );
+});
