@@ -25,10 +25,10 @@ import { ActionButton } from './action-button';
 import { Dash } from './dash';
 
 const Positions = observer(({ showInactive }: { showInactive: boolean }) => {
-  const { connected } = connectionStore;
+  const { connected, subaccount } = connectionStore;
   const { baseAsset, quoteAsset } = usePathToMetadata();
   const { data: assets } = useAssets();
-  const { data, isLoading, error } = usePositions();
+  const { data, isLoading, error } = usePositions(subaccount);
   const { displayPositions, setPositions, setAssets } = positionsStore;
 
   useEffect(() => {
