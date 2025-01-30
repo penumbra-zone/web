@@ -9,12 +9,19 @@ import {
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { bech32mPositionId } from '@penumbra-zone/bech32m/plpid';
 import { queryClient } from '@/shared/const/queryClient';
+import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 // 1) Query prax to get position ids
 // 2) Take those position ids and get position info from the node
 // Context on two-step fetching process: https://github.com/penumbra-zone/penumbra/pull/4837
-const fetchQuery = async (): Promise<Map<string, Position>> => {
-  const ownedRes = await Array.fromAsync(penumbra.service(ViewService).ownedPositionIds({}));
+const fetchQuery = async (subaccount?: number): Promise<Map<string, Position>> => {
+  const ownedRes = await Array.fromAsync(
+    penumbra.service(ViewService).ownedPositionIds({
+      // In the future, it might change to `subaccount === 0`, so that the main account will become default
+      subaccount:
+        typeof subaccount === 'undefined' ? undefined : new AddressIndex({ account: subaccount }),
+    }),
+  );
   const positionIds = ownedRes.map(r => r.positionId).filter(Boolean) as PositionId[];
 
   const positionsRes = await Array.fromAsync(
@@ -40,10 +47,10 @@ const fetchQuery = async (): Promise<Map<string, Position>> => {
 /**
  * Must be used within the `observer` mobX HOC
  */
-export const usePositions = () => {
+export const usePositions = (subaccount?: number) => {
   return useQuery({
-    queryKey: ['positions'],
-    queryFn: fetchQuery,
+    queryKey: ['positions', subaccount],
+    queryFn: () => fetchQuery(subaccount),
     retry: 1,
     enabled: connectionStore.connected,
   });
