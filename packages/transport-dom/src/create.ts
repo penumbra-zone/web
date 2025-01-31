@@ -77,7 +77,7 @@ const rejectOnSignal = (...signals: (AbortSignal | undefined)[]) => {
 export const createChannelTransport = ({
   getPort,
   jsonOptions,
-  defaultTimeoutMs = 60_000,
+  defaultTimeoutMs = 30_000,
 }: ChannelTransportOptions): Transport => {
   const pending = new Map<string, (response: TransportEvent) => void>();
 
