@@ -1,5 +1,11 @@
 # @penumbra-zone/router
 
+## 51.0.0
+
+### Major Changes
+
+- 25a2c6b: add latestSwaps view server method
+
 ## 50.0.0
 
 ### Minor Changes
