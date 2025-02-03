@@ -3,9 +3,11 @@
 
 # Provide specific arg for setting the version of nodejs to use.
 # Should match what's in .nvmrc for development.
-ARG NODE_MAJOR_VERSION=22.11
+ARG NODE_MAJOR_VERSION=22
 FROM docker.io/node:${NODE_MAJOR_VERSION}-alpine AS base
-RUN corepack enable pnpm
+# We no longer use `corepack enable pnpm` due to breakage documented in
+# https://github.com/nodejs/corepack/issues/612
+RUN npm install -g pnpm@${PNPM_VERSION}
 
 # Install dependencies only when needed
 FROM base AS deps
