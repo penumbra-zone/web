@@ -46,7 +46,7 @@ export const Banner = ({ type, title, content, className, ...props }: BannerProp
 export const AlphaDevelopmentBanner = () => (
   <Banner
     type='warning'
-    title='Pre-Alpha Development Preview'
-    content='This software is experimental and under active development. Features may be incomplete, subject to change, or even totally broken.'
+    title='Alpha Development'
+    content='This software is currently in its alpha stage and under continuous development. Features will continue to improve for an enhanced user experience.'
   />
 );
