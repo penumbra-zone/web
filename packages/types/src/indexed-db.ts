@@ -174,7 +174,7 @@ export interface IndexedDbInterface {
   ): Promise<
     { id: TransactionId; perspective: TransactionPerspective; view: TransactionView } | undefined
   >;
-  
+
   getPosition(positionId: PositionId): Promise<Position | undefined>;
 }
 

@@ -143,7 +143,7 @@ export class IndexedDb implements IndexedDbInterface {
           'height',
           'height',
         );
-        db.createObjectStore('TRANSACTION_INFO', { keyPath: 'id' });
+        db.createObjectStore('TRANSACTION_INFO', { keyPath: 'id.inner' });
         db.createObjectStore('TREE_LAST_POSITION');
         db.createObjectStore('TREE_LAST_FORGOTTEN');
         db.createObjectStore('TREE_COMMITMENTS', { keyPath: 'commitment.inner' });
