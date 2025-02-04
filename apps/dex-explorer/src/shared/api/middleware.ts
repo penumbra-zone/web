@@ -4,12 +4,12 @@ import { getClientSideEnv } from '@/shared/api/env/getClientSideEnv';
 import { assetPatterns } from '@penumbra-zone/types/assets';
 
 export const routingMiddleware = async (request: NextRequest) => {
-  const { pathname, origin } = request.nextUrl;
+  const { pathname } = request.nextUrl;
 
   if (pathname === '/') {
     // Redirect the default homepage to the 'explore' page.
     // TODO: Replace this with a path to a fully designed landing page.
-    return NextResponse.redirect(`${origin}/explore`);
+    return NextResponse.redirect(new URL(`/explore`, request.url));
   }
 
   // Otherwise, route to the default trading pair on the trading page.
