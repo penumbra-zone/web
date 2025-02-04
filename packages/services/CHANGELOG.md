@@ -1,5 +1,19 @@
 # @penumbra-zone/router
 
+## 53.0.0
+
+### Minor Changes
+
+- e51bc61: transaction table indexes by height and save txp and txv in indexdb
+
+### Patch Changes
+
+- Updated dependencies [e51bc61]
+  - @penumbra-zone/storage@47.0.0
+  - @penumbra-zone/types@29.1.0
+  - @penumbra-zone/crypto-web@36.0.0
+  - @penumbra-zone/wasm@40.0.0
+
 ## 52.0.0
 
 ### Patch Changes

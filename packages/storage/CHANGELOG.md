@@ -1,5 +1,17 @@
 # @penumbra-zone/storage
 
+## 47.0.0
+
+### Major Changes
+
+- e51bc61: transaction table indexes by height and save txp and txv in indexdb
+
+### Patch Changes
+
+- Updated dependencies [e51bc61]
+  - @penumbra-zone/types@29.1.0
+  - @penumbra-zone/wasm@40.0.0
+
 ## 46.0.0
 
 ### Patch Changes
