@@ -1,5 +1,11 @@
 # @penumbra-zone/types
 
+## 29.1.0
+
+### Minor Changes
+
+- e51bc61: transaction table indexes by height and save txp and txv in indexdb
+
 ## 29.0.0
 
 ### Patch Changes

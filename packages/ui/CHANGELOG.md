@@ -1,5 +1,12 @@
 # @penumbra-zone/ui
 
+## 13.9.4
+
+### Patch Changes
+
+- Updated dependencies [e51bc61]
+  - @penumbra-zone/types@29.1.0
+
 ## 13.9.3
 
 ### Patch Changes
