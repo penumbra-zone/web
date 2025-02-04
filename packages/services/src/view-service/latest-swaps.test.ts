@@ -321,6 +321,7 @@ const getSwap = ({ account, to, from, height, input, output }: GetSwapOptions) =
       claimAddress: getAddressByIndex(testFullViewingKey, account),
     },
     outputData: {
+      height: BigInt(height),
       tradingPair: {
         asset1: from.penumbraAssetId,
         asset2: to.penumbraAssetId,

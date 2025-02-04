@@ -42,7 +42,7 @@ export const latestSwaps: Impl['latestSwaps'] = async function* (_req, ctx) {
       counter++;
       yield {
         id: new TransactionId({ inner: swapRecord.source.source.value.id }),
-        blockHeight: swapRecord.heightClaimed,
+        blockHeight: swapRecord.outputData.height,
         pair: new DirectedTradingPair({
           start: swapRecord.outputData.tradingPair.asset1,
           end: swapRecord.outputData.tradingPair.asset2,
