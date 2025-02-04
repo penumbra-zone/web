@@ -34,7 +34,11 @@ import { IbdUpdater, IbdUpdates } from './updater.js';
 import { IdbCursorSource } from './stream.js';
 
 import { ValidatorInfo } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
-import { Transaction } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import {
+  Transaction,
+  TransactionPerspective,
+  TransactionView,
+} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { bech32mIdentityKey, identityKeyFromBech32m } from '@penumbra-zone/bech32m/penumbravalid';
 import { bech32mWalletId } from '@penumbra-zone/bech32m/penumbrawalletid';
@@ -135,7 +139,11 @@ export class IndexedDb implements IndexedDbInterface {
         });
         spendableNoteStore.createIndex('nullifier', 'nullifier.inner');
         spendableNoteStore.createIndex('assetId', 'note.value.assetId.inner');
-        db.createObjectStore('TRANSACTIONS', { keyPath: 'id.inner' });
+        db.createObjectStore('TRANSACTIONS', { keyPath: 'id.inner' }).createIndex(
+          'height',
+          'height',
+        );
+        db.createObjectStore('TRANSACTION_INFO', { keyPath: 'id.inner' });
         db.createObjectStore('TREE_LAST_POSITION');
         db.createObjectStore('TREE_LAST_FORGOTTEN');
         db.createObjectStore('TREE_COMMITMENTS', { keyPath: 'commitment.inner' });
@@ -348,8 +356,45 @@ export class IndexedDb implements IndexedDbInterface {
 
   async *iterateTransactions() {
     yield* new ReadableStream(
-      new IdbCursorSource(this.db.transaction('TRANSACTIONS').store.openCursor(), TransactionInfo),
+      new IdbCursorSource(
+        this.db.transaction('TRANSACTIONS').store.index('height').openCursor(),
+        TransactionInfo,
+      ),
     );
+  }
+
+  async getTransactionInfo(
+    id: TransactionId,
+  ): Promise<
+    { id: TransactionId; perspective: TransactionPerspective; view: TransactionView } | undefined
+  > {
+    const existingData = await this.db.get('TRANSACTION_INFO', uint8ArrayToBase64(id.inner));
+    if (existingData) {
+      return {
+        id: TransactionId.fromJson(existingData.id, { typeRegistry }),
+        perspective: TransactionPerspective.fromJson(existingData.perspective, { typeRegistry }),
+        view: TransactionView.fromJson(existingData.view, { typeRegistry }),
+      };
+    } else {
+      return undefined;
+    }
+  }
+
+  async saveTransactionInfo(
+    id: TransactionId,
+    txp: TransactionPerspective,
+    txv: TransactionView,
+  ): Promise<void> {
+    assertTransactionId(id);
+    const value = {
+      id: id.toJson({ typeRegistry }) as Jsonified<TransactionId>,
+      perspective: txp.toJson({ typeRegistry }) as Jsonified<TransactionPerspective>,
+      view: txv.toJson({ typeRegistry }) as Jsonified<TransactionView>,
+    };
+    await this.u.update({
+      table: 'TRANSACTION_INFO',
+      value,
+    });
   }
 
   async saveTransaction(
