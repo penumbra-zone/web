@@ -1,5 +1,14 @@
 # @penumbra-zone/wasm
 
+## 39.0.0
+
+### Patch Changes
+
+- Updated dependencies [68b8f36]
+  - @penumbra-zone/protobuf@7.2.0
+  - @penumbra-zone/bech32m@13.0.0
+  - @penumbra-zone/types@29.0.0
+
 ## 38.0.0
 
 ### Patch Changes
