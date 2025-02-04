@@ -1,5 +1,11 @@
 # @penumbra-zone/protobuf
 
+## 7.2.0
+
+### Minor Changes
+
+- 68b8f36: Update protos to the latest version
+
 ## 7.1.0
 
 ### Minor Changes

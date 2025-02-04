@@ -1,5 +1,19 @@
 # @penumbra-zone/router
 
+## 52.0.0
+
+### Patch Changes
+
+- dd09e58: Fix latestSwaps method by picking initial swap block height instead of claim height
+- Updated dependencies [68b8f36]
+  - @penumbra-zone/protobuf@7.2.0
+  - @penumbra-zone/bech32m@13.0.0
+  - @penumbra-zone/getters@23.0.0
+  - @penumbra-zone/storage@46.0.0
+  - @penumbra-zone/types@29.0.0
+  - @penumbra-zone/wasm@39.0.0
+  - @penumbra-zone/crypto-web@35.0.0
+
 ## 51.0.0
 
 ### Major Changes
