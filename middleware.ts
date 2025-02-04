@@ -1,6 +1,6 @@
-// Redirects "/" and "/trade" paths to "/trade/:primary/:numeraire"
+// Redirects "/" and "/trade" paths to paths defined in the routing middleware.
 export const config = {
   matcher: ['/', '/trade'],
 };
 
-export { tradeMiddleware as middleware } from '@/pages/trade/index.server';
+export { routingMiddleware as middleware } from '@/shared/index.server';
