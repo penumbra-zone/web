@@ -74,17 +74,17 @@ export const getAllSummaries = async (
     }),
   );
 
-  // Sorting by decreasing liquidity in the pool
+  // Sorting by decreasing 24 hour volume in the pool
   // TODO: sort directly in SQL to avoid breaking server-side pagination
   const sortedSummaries = summaries.filter(Boolean).sort((a, b) => {
     if (!a || !b) {
       return 0;
     }
 
-    const aLiquidity = Number(getFormattedAmtFromValueView(a.liquidity)) || 0;
-    const bLiquidity = Number(getFormattedAmtFromValueView(b.liquidity)) || 0;
+    const aVolume = Number(getFormattedAmtFromValueView(a.directVolume)) || 0;
+    const bVolume = Number(getFormattedAmtFromValueView(b.directVolume)) || 0;
 
-    return bLiquidity - aLiquidity;
+    return bVolume - aVolume;
   });
 
   return sortedSummaries.map(data => serialize(data)) as Serialized<SummaryData>[];
