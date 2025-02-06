@@ -64,14 +64,10 @@ export const LimitOrderForm = observer(({ parentStore }: { parentStore: OrderFor
         />
         <InfoRow
           label='Receive'
-          value={isBuy ? store.baseInput || '--' : store.quoteInput || '--'}
-          toolTip={
-            // eslint-disable-next-line no-nested-ternary -- allow nested ternary
-            store.quoteInput
-              ? isBuy
-                ? `Receive ${store.baseInput} ${store.baseAsset?.symbol}`
-                : `Receive ${store.quoteInput} ${store.quoteAsset?.symbol}`
-              : 'Enter the form fields to see the amount.'
+          value={
+            isBuy
+              ? `${store.baseInput} ${store.baseAsset?.symbol ?? '--'}`
+              : `${store.quoteInput} ${store.quoteAsset?.symbol ?? '--'}`
           }
         />
       </div>
