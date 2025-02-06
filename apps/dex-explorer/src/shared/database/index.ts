@@ -146,8 +146,7 @@ class Pindexer {
     offset,
     stablecoins,
     usdc,
-    // TODO: implement search of assets
-    // search,
+    searchAssets,
   }: {
     /** Window duration of information of the pairs */
     window: DurationWindow;
@@ -157,8 +156,8 @@ class Pindexer {
     candlesInterval?: `${number}${number} hours` | `${number} hour`;
     /** The list of AssetIDs to exclude from base assets (stable coins can only be quote assets) */
     stablecoins: AssetId[];
-    /** A string that filters the assets by name */
-    search: string;
+    /** An array of assetId to filter by */
+    searchAssets?: AssetId[];
     limit: number;
     offset: number;
     usdc: AssetId;
@@ -171,23 +170,30 @@ class Pindexer {
       .selectAll();
 
     // Selects only distinct pairs (USDT/USDC, but not reverse) with its data
-    const summaryTable = this.db
+    let summaryTable = this.db
       .selectFrom('dex_ex_pairs_summary')
       // Filters out the reversed pairs (e.g. if found UM/OSMO, then there won't be OSMO/UM)
       .distinctOn(sql<string>`least(asset_start, asset_end), greatest(asset_start, asset_end)`)
       .selectAll()
+      .where('the_window', '=', window)
+      .where('price', '!=', 0)
+      // Make sure pair bases are not stablecoins
+      .where(
+        'asset_start',
+        'not in',
+        stablecoins.map(asset => Buffer.from(asset.inner)),
+      )
       .where(exp =>
-        exp.and([
-          exp.eb('the_window', '=', window),
-          exp.eb('price', '!=', 0),
-          // Filters out pairs where stablecoins are base assets (e.g. no USDC/UM, only UM/USDC)
-          exp.eb(
-            exp.ref('asset_start'),
-            'not in',
-            stablecoins.map(asset => Buffer.from(asset.inner)),
-          ),
-        ]),
+        exp.or([exp.eb('liquidity', '!=', 0), exp.eb('direct_volume_over_window', '!=', 0)]),
       );
+
+    // Filter the assets if searchAssets is provided
+    if (typeof searchAssets !== 'undefined') {
+      const buffers = searchAssets.map(asset => Buffer.from(asset.inner));
+      summaryTable = summaryTable.where(exp =>
+        exp.or([exp.eb('asset_start', 'in', buffers), exp.eb('asset_end', 'in', buffers)]),
+      );
+    }
 
     // Selects 1h-candles for the last 24 hours and aggregates them into a single array, ordering by assets
     const candlesTable = this.db
@@ -210,13 +216,12 @@ class Pindexer {
     // Joins summaryTable with candlesTable to get pair info with the latest candles
     const joinedTable = this.db
       .selectFrom(summaryTable.as('summary'))
-      .innerJoin(candlesTable.as('candles'), join =>
+      .leftJoin(candlesTable.as('candles'), join =>
         join
           .onRef('candles.asset_start', '=', 'summary.asset_start')
           .onRef('candles.asset_end', '=', 'summary.asset_end'),
       )
       .leftJoin(usdcTable.as('usdc'), 'summary.asset_end', 'usdc.asset_start')
-      .orderBy('trades_over_window', 'desc')
       .select([
         'summary.asset_start',
         'summary.asset_end',
@@ -236,7 +241,7 @@ class Pindexer {
         'candles.candle_times',
         'usdc.price as usdc_price',
       ])
-      .orderBy('summary.liquidity', 'desc')
+      .orderBy('summary.direct_volume_indexing_denom_over_window', 'desc')
       .limit(limit)
       .offset(offset);
 
