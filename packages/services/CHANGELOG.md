@@ -1,5 +1,12 @@
 # @penumbra-zone/router
 
+## 53.0.1
+
+### Patch Changes
+
+- Updated dependencies [4a883bf]
+  - @penumbra-zone/storage@47.0.1
+
 ## 53.0.0
 
 ### Minor Changes

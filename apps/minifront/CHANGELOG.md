@@ -1,5 +1,11 @@
 # minifront
 
+## 6.28.5
+
+### Patch Changes
+
+- 4a883bf: bump registry versions in web packages
+
 ## 6.28.4
 
 ### Patch Changes

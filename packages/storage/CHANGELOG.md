@@ -1,5 +1,11 @@
 # @penumbra-zone/storage
 
+## 47.0.1
+
+### Patch Changes
+
+- 4a883bf: bump registry versions in web packages
+
 ## 47.0.0
 
 ### Major Changes
