@@ -1,7 +1,7 @@
 /**
- * @see https://developer.mozilla.org/en-US/docs/Web/API/Streams_API
- *
  * This source and sink provide a way to stream json through the chrome runtime.
+ *
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/Streams_API
  */
 
 import type { JsonValue } from '@bufbuild/protobuf';
@@ -18,6 +18,7 @@ export class PortStreamSource implements UnderlyingDefaultSource<JsonValue> {
     );
     this.incoming.onMessage.addListener(chunk => {
       if (isStreamAbort(chunk)) {
+        this.incoming.disconnect();
         cont.error(errorFromJson(chunk.abort, undefined, ConnectError.from(chunk.abort)));
       } else if (isStreamValue(chunk)) {
         cont.enqueue(chunk.value);
