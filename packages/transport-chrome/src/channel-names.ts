@@ -22,15 +22,12 @@
  *
  */
 
-// TODO: check delimiter for label substring?
-export enum ChannelLabel {
-  TRANSPORT = 'TRANSPORT',
-  STREAM = 'STREAM',
-}
-
 const delimiter = ' ';
 
-const isChannelLabel = (label: string): label is ChannelLabel => label in ChannelLabel;
+type ChannelLabel = 'TRANSPORT' | 'STREAM';
+
+const isChannelLabel = (label: string): label is ChannelLabel =>
+  ['TRANSPORT', 'STREAM'].includes(label);
 
 // types package indicates `${string}-${string}-${string}-${string}-${string}`
 const reUUIDv4 = /^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/i;

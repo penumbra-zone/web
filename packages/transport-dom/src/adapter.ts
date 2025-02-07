@@ -222,6 +222,9 @@ export const connectChannelAdapter = (opt: ChannelAdapterOptions): ChannelHandle
         break;
       case MethodKind.BiDiStreaming:
       case MethodKind.ClientStreaming:
+        if (globalThis.__DEV__) {
+          console.warn('Client streaming unimplemented', { methodType, request });
+        }
         response = await transport.stream(
           // only uses service.typeName, so this cast is ok
           methodType.service as ServiceType,

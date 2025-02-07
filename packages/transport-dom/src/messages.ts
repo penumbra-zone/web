@@ -2,11 +2,10 @@ import type { JsonValue } from '@bufbuild/protobuf';
 
 // transport meta
 
-export interface TransportError<I extends string | undefined> extends Partial<TransportEvent> {
-  requestId: I extends string ? string : string | undefined;
+export type TransportError<I extends string | undefined> = {
   error: JsonValue;
-  metadata?: HeadersInit;
-}
+  metadata?: HeadersInit & JsonValue;
+} & (I extends string ? TransportEvent<I> : Partial<TransportEvent>);
 
 // transport content
 
@@ -34,16 +33,21 @@ export interface TransportStream<I = string> extends TransportEvent<I extends st
 
 // guards
 
-const isObj = (o: unknown): o is object => typeof o === 'object' && o !== null;
-
-export const isTransportError = <I extends string>(e: unknown, id?: I): e is TransportError<I> =>
-  isObj(e) && 'error' in e && (!id || ('requestId' in e && e.requestId === id));
+export const isTransportError = <I extends string | undefined>(
+  e: unknown,
+  id?: I,
+): e is TransportError<I> =>
+  e != null &&
+  typeof e === 'object' &&
+  'error' in e &&
+  (!id || ('requestId' in e && e.requestId === id));
 
 export const isTransportData = (t: unknown): t is TransportData =>
   isTransportMessage(t) || isTransportStream(t);
 
 export const isTransportEvent = <I extends string>(t: unknown, id?: I): t is TransportEvent<I> =>
-  isObj(t) &&
+  t != null &&
+  typeof t === 'object' &&
   'requestId' in t &&
   typeof t.requestId === 'string' &&
   (id ? t.requestId === id : true);

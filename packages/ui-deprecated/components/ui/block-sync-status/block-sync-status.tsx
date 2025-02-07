@@ -16,6 +16,7 @@ export const CondensedBlockSyncStatus = ({
   error?: unknown;
 }) => {
   if (error) {
+    console.warn('Block sync error', error);
     return <BlockSyncErrorState />;
   }
   if (!latestKnownBlockHeight || !fullSyncHeight) {
