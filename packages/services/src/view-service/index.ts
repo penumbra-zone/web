@@ -31,6 +31,8 @@ import { witness } from './witness.js';
 import { witnessAndBuild } from './witness-and-build.js';
 import { transparentAddress } from './transparent-address.js';
 import { latestSwaps } from './latest-swaps.js';
+import { lqtVotingNotes } from './lqt-voting-notes.js';
+import { tournamentVotes } from './tournament-votes.js';
 
 export type Impl = ServiceImpl<typeof ViewService>;
 
@@ -66,4 +68,6 @@ export const viewImpl: Impl = {
   witnessAndBuild,
   transparentAddress,
   latestSwaps,
+  lqtVotingNotes,
+  tournamentVotes,
 };
