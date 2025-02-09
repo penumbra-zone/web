@@ -47,6 +47,7 @@ const CASE_TO_LABEL: Record<Case, string> = {
   communityPoolDeposit: 'Community Pool Deposit',
   communityPoolOutput: 'Community Pool Output',
   communityPoolSpend: 'Community Pool Spend',
+  actionLiquidityTournamentVote: ''
 };
 
 const getLabelForActionCase = (actionCase: ActionView['actionView']['case']): string => {
