@@ -14,7 +14,6 @@ export const lqtVotingNotes: Impl['lqtVotingNotes'] = async function* (req, ctx)
 
   // Get the starting block height for the corresponding epoch index.
   let epoch = await indexedDb.getBlockHeightByEpoch(req.epochIndex);
-  console.log('starting_block_height {} for epoch index {}', epoch?.startHeight, req.epochIndex);
 
   // Retrieve SNRs from storage ('ASSETS' in IndexedDB) that are eligible for voting at the start height
   // of the current epoch. Alternatively, a wasm helper `get_voting_notes` can be used to perform the same function.
@@ -28,14 +27,14 @@ export const lqtVotingNotes: Impl['lqtVotingNotes'] = async function* (req, ctx)
 
   // Iterate through each voting note and check if it has already been used for voting
   // by performing a nullifier point query against the rpc provided by the funding service.
-  for await (const voting_note of votingNotes) {
-    if (voting_note.noteRecord) {
+  for await (const votingNote of votingNotes) {
+    if (votingNote.noteRecord) {
       const lqtCheckNullifierResponse = await querier.funding.lqtCheckNullifier(
         epoch?.index!,
-        voting_note.noteRecord.nullifier as Nullifier,
+        votingNote.noteRecord.nullifier as Nullifier,
       );
       if (lqtCheckNullifierResponse.alreadyVoted == false) {
-        spendableNoteRecords.push(voting_note.noteRecord as SpendableNoteRecord);
+        spendableNoteRecords.push(votingNote.noteRecord as SpendableNoteRecord);
       }
     }
   }
