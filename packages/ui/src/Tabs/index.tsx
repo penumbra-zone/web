@@ -50,6 +50,8 @@ export interface TabsTab {
   value: string;
   label: string;
   disabled?: boolean;
+  as?: React.ElementType;
+  tabProps?: Record<string, React.HTMLAttributes<HTMLElement>>;
 }
 
 export interface TabsProps {
@@ -84,40 +86,45 @@ export const Tabs = ({ value, onChange, options, actionType = 'default' }: TabsP
     <RadixTabs.Root value={value} onValueChange={onChange}>
       <RadixTabs.List asChild>
         <div className={cn(getDensityClasses(density), 'flex items-stretch box-border')}>
-          {options.map(option => (
-            <RadixTabs.Trigger
-              value={option.value}
-              key={option.value.toString()}
-              disabled={option.disabled}
-              asChild
-            >
-              <button
-                onClick={() => onChange(option.value)}
+          {options.map(option => {
+            console.log('TCL: option', option);
+            const Component = option.as ?? 'button';
+            return (
+              <RadixTabs.Trigger
+                value={option.value}
+                key={option.value.toString()}
                 disabled={option.disabled}
-                className={cn(
-                  'appearance-none border-none text-inherit cursor-pointer',
-                  'h-full relative whitespace-nowrap rounded-t-xs',
-                  'transition-[background-color,outline-color,color] duration-150',
-                  value === option.value ? 'text-text-primary' : 'text-text-secondary',
-                  getDensityItemClasses(density),
-                  getFocusOutlineColorByActionType(actionType),
-                  'focus-visible:outline focus-visible:outline-2',
-                  'hover:bg-action-hoverOverlay',
-                )}
+                asChild
               >
-                <div
+                <Component
+                  onClick={() => onChange(option.value)}
+                  disabled={option.disabled}
                   className={cn(
-                    value === option.value ? 'opacity-100' : 'opacity-0',
-                    'absolute inset-0 transition-opacity pointer-events-none',
-                    'border-b-2 border-solid',
-                    getIndicatorColor(actionType),
-                    getBorderColor(actionType),
+                    'appearance-none border-none text-inherit cursor-pointer',
+                    'h-full relative whitespace-nowrap rounded-t-xs',
+                    'transition-[background-color,outline-color,color] duration-150',
+                    value === option.value ? 'text-text-primary' : 'text-text-secondary',
+                    getDensityItemClasses(density),
+                    getFocusOutlineColorByActionType(actionType),
+                    'focus-visible:outline focus-visible:outline-2',
+                    'hover:bg-action-hoverOverlay',
                   )}
-                />
-                {option.label}
-              </button>
-            </RadixTabs.Trigger>
-          ))}
+                  {...(option.tabProps ?? {})}
+                >
+                  <div
+                    className={cn(
+                      value === option.value ? 'opacity-100' : 'opacity-0',
+                      'absolute inset-0 transition-opacity pointer-events-none',
+                      'border-b-2 border-solid',
+                      getIndicatorColor(actionType),
+                      getBorderColor(actionType),
+                    )}
+                  />
+                  {option.label}
+                </Component>
+              </RadixTabs.Trigger>
+            );
+          })}
         </div>
       </RadixTabs.List>
     </RadixTabs.Root>
