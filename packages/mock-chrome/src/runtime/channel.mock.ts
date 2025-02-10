@@ -7,13 +7,21 @@ import {
   throwDisconnectedPortError,
 } from './channel.fixtures.js';
 
-type MockSendersImpl = typeof mockSendersDefault;
-type MockPortsImpl = typeof mockPortsDefault;
-
-type MockedChromeConnect = (info?: ChromeConnectInfo) => MockedPort;
+export type MockConnectImpl = (info?: ChromeConnectInfo) => MockedPort;
+export type MockSendersImpl = (info?: ChromeConnectInfo) => {
+  connectSender: ChromeSender;
+  onConnectSender: ChromeSender;
+};
+export type MockPortsImpl = (
+  mockSenders: MockedFunction<MockSendersImpl>,
+  connectInfo?: ChromeConnectInfo,
+) => {
+  connectPort: MockedPort;
+  onConnectPort: MockedPort;
+};
 
 export interface MockedChannel {
-  connect: MockedChromeConnect;
+  connect: MockedFunction<MockConnectImpl>;
   onConnect: MockedChromeEvent<chrome.runtime.ExtensionConnectEvent>;
   mockSenders: MockedFunction<MockSendersImpl>;
   mockPorts: MockedFunction<MockPortsImpl>;
@@ -36,7 +44,7 @@ export type MockedPort = Omit<ChromePort, 'onDisconnect' | 'onMessage'> & {
  * @param connectInfo info passed to the `chrome.runtime.connect` call
  * @returns a pair of `chrome.runtime.MessageSender` objects
  */
-export const mockSendersDefault = (
+export const mockSendersDefault: MockSendersImpl = (
   connectInfo?: ChromeConnectInfo,
 ): {
   connectSender: ChromeSender;
@@ -54,7 +62,7 @@ export const mockSendersDefault = (
  * @param connectInfo info passed to the `chrome.runtime.connect` call
  * @param onConnectSender function to create a 'sender' representing the listener of `chrome.runtime.onConnect`
  */
-export const mockPortsDefault = (
+export const mockPortsDefault: MockPortsImpl = (
   mockSenders = mockSendersDefault,
   connectInfo?: ChromeConnectInfo,
 ): {
@@ -74,7 +82,9 @@ export const mockPortsDefault = (
     disconnect: vi.fn<[], void>(() => {
       onConnectPort.onDisconnect.dispatch(onConnectPort.asPort);
       connectPort.postMessage.mockImplementation(throwDisconnectedPortError);
+      connectPort.disconnect.mockImplementation(() => void null);
       onConnectPort.postMessage.mockImplementation(throwDisconnectedPortError);
+      onConnectPort.disconnect.mockImplementation(() => void null);
     }),
 
     postMessage: vi.fn<[unknown], void>(message =>
@@ -93,10 +103,11 @@ export const mockPortsDefault = (
     onMessage: mockEvent<chrome.runtime.PortMessageEvent>(),
 
     disconnect: vi.fn<[], void>(() => {
-      const x = connectPort.onDisconnect;
-      x.dispatch(connectPort.asPort);
+      connectPort.onDisconnect.dispatch(connectPort.asPort);
       connectPort.postMessage.mockImplementation(throwDisconnectedPortError);
+      connectPort.disconnect.mockImplementation(() => void null);
       onConnectPort.postMessage.mockImplementation(throwDisconnectedPortError);
+      onConnectPort.disconnect.mockImplementation(() => void null);
     }),
 
     postMessage: vi.fn<[unknown], void>(message =>
@@ -142,7 +153,11 @@ export const mockChannel = ({
   // create the chrome.runtime.connect(...) function
   const connect = vi.fn((info?: ChromeConnectInfo) => {
     const { connectPort, onConnectPort } = mockPorts(mockSenders, info);
-    onConnect.dispatch(onConnectPort.asPort); // send the .onConnect listener's port
+    try {
+      onConnect.dispatch(onConnectPort.asPort); // send the .onConnect listener's port
+    } catch (e) {
+      console.debug('onConnect dispatch failed', e);
+    }
     return connectPort; // return the .connect() caller's port
   });
 
