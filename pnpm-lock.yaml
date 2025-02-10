@@ -36,6 +36,9 @@ importers:
       '@penumbra-zone/configs':
         specifier: workspace:*
         version: link:packages/configs
+      '@penumbra-zone/mock-chrome':
+        specifier: workspace:*
+        version: link:packages/mock-chrome
       '@repo/tailwind-config':
         specifier: workspace:*
         version: link:packages/tailwind-config
@@ -613,10 +616,6 @@ importers:
         version: 1.0.7(tailwindcss@3.4.4(ts-node@10.9.2(@swc/core@1.6.13(@swc/helpers@0.5.11))(@types/node@22.10.2)(typescript@5.5.3)))
 
   packages/transport-chrome:
-    dependencies:
-      '@penumbra-zone/mock-chrome':
-        specifier: workspace:*
-        version: link:../mock-chrome
     devDependencies:
       '@bufbuild/protobuf':
         specifier: ^1.10.0
