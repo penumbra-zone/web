@@ -1,4 +1,4 @@
-import type { ServiceImpl } from '@connectrpc/connect';
+import type { HandlerContext, ServiceImpl } from '@connectrpc/connect';
 import type { ViewService } from '@penumbra-zone/protobuf';
 import { addressByIndex } from './address-by-index.js';
 import { appParameters } from './app-parameters.js';
@@ -31,6 +31,13 @@ import { witness } from './witness.js';
 import { witnessAndBuild } from './witness-and-build.js';
 import { transparentAddress } from './transparent-address.js';
 import { latestSwaps } from './latest-swaps.js';
+import { PartialMessage } from '@bufbuild/protobuf';
+import {
+  TournamentVotesRequest,
+  TournamentVotesResponse,
+  LqtVotingNotesRequest,
+  LqtVotingNotesResponse,
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 
 export type Impl = ServiceImpl<typeof ViewService>;
 
@@ -66,4 +73,19 @@ export const viewImpl: Impl = {
   witnessAndBuild,
   transparentAddress,
   latestSwaps,
+  tournamentVotes: function (
+    _request: TournamentVotesRequest,
+    _context: HandlerContext,
+  ):
+    | TournamentVotesResponse
+    | PartialMessage<TournamentVotesResponse>
+    | Promise<TournamentVotesResponse | PartialMessage<TournamentVotesResponse>> {
+    throw new Error('Function not implemented.');
+  },
+  lqtVotingNotes: function (
+    _request: LqtVotingNotesRequest,
+    _context: HandlerContext,
+  ): AsyncIterable<LqtVotingNotesResponse | PartialMessage<LqtVotingNotesResponse>> {
+    throw new Error('Function not implemented.');
+  },
 };
