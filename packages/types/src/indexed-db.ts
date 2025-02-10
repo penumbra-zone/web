@@ -111,6 +111,7 @@ export interface IndexedDbInterface {
   ): Promise<void>;
   addEpoch(startHeight: bigint): Promise<void>;
   getEpochByHeight(height: bigint): Promise<Epoch | undefined>;
+  getBlockHeightByEpoch(epoch_index: bigint): Promise<Epoch | undefined>;
   upsertValidatorInfo(validatorInfo: ValidatorInfo): Promise<void>;
   iterateValidatorInfos(): AsyncGenerator<ValidatorInfo, void>;
   clearValidatorInfos(): Promise<void>;
