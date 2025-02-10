@@ -81,6 +81,7 @@ const Positions = observer(({ showInactive }: { showInactive: boolean }) => {
           >
             <Text
               tableHeadingSmall
+              whitespace='nowrap'
               color={sortBy.key === sortKey ? 'text.primary' : 'text.secondary'}
             >
               {children}
@@ -132,7 +133,7 @@ const Positions = observer(({ showInactive }: { showInactive: boolean }) => {
   return (
     <TooltipProvider>
       <Density variant='slim'>
-        <div className='flex justify-center px-4 overflow-x-auto'>
+        <div className='px-4 overflow-x-auto'>
           <Table bgColor='base.blackAlt'>
             <Table.Thead>
               <Table.Tr>

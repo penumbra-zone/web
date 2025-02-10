@@ -16,7 +16,7 @@ export const HistoryTabs = () => {
   const [showInactive, setshowInactive] = useState(false);
 
   return (
-    <div ref={parent} className='flex flex-col'>
+    <div ref={parent} className='flex flex-col w-screen desktop:w-auto'>
       <div className='flex justify-between gap-2 px-4 border-b border-b-other-solidStroke'>
         <Density compact>
           <Tabs
