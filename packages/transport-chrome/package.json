@@ -40,6 +40,7 @@
   "peerDependencies": {
     "@bufbuild/protobuf": "^1.10.0",
     "@connectrpc/connect": "^1.4.0",
-    "@penumbra-zone/transport-dom": "workspace:*"
+    "@penumbra-zone/transport-dom": "workspace:*",
+    "@penumbra-zone/mock-chrome": "workspace:*"
   }
 }
