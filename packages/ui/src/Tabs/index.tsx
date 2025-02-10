@@ -87,7 +87,6 @@ export const Tabs = ({ value, onChange, options, actionType = 'default' }: TabsP
       <RadixTabs.List asChild>
         <div className={cn(getDensityClasses(density), 'flex items-stretch box-border')}>
           {options.map(option => {
-            console.log('TCL: option', option);
             const Component = option.as ?? 'button';
             return (
               <RadixTabs.Trigger
