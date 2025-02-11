@@ -1,27 +1,13 @@
-import { useAutoAnimate } from '@formkit/auto-animate/react';
-import { Fragment, ReactNode } from 'react';
-import { ChevronRight } from 'lucide-react';
 import cn from 'clsx';
+import { Fragment } from 'react';
+import { ChevronRight } from 'lucide-react';
+import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { TableCell } from '@penumbra-zone/ui/TableCell';
 import { Density } from '@penumbra-zone/ui/Density';
-import { Skeleton } from '@penumbra-zone/ui/Skeleton';
 import { Text } from '@penumbra-zone/ui/Text';
 import { pluralize } from '@/shared/utils/pluralize';
-import { useRecentExecutions } from '../api/recent-executions.ts';
-
-export const Cell = ({ children }: { children: ReactNode }) => {
-  return <div className='flex items-center py-1.5 px-3 min-h-12'>{children}</div>;
-};
-
-export const LoadingCell = () => {
-  return (
-    <Cell>
-      <div className='w-12 h-4'>
-        <Skeleton />
-      </div>
-    </Cell>
-  );
-};
+import type { RecentExecution } from '@/shared/api/server/recent-executions';
+import { EmptyTrades } from './empty';
 
 const ErrorState = ({ error }: { error: Error }) => {
   return <div className='text-red-500'>{String(error)}</div>;
@@ -37,9 +23,20 @@ const formatLocalTime = (isoString: string): string => {
   });
 };
 
-export const MarketTrades = () => {
-  const { data, isLoading, error } = useRecentExecutions();
+export interface TradesTableProps {
+  error: Error | null;
+  data?: RecentExecution[];
+  isLoading: boolean;
+}
+
+export const TradesTable = ({ error, data, isLoading }: TradesTableProps) => {
   const [parent] = useAutoAnimate();
+
+  const rows = data ?? (new Array(10).fill({ hops: [] }) as RecentExecution[]);
+
+  if (!isLoading && !data?.length) {
+    return <EmptyTrades />;
+  }
 
   return (
     <Density slim>
@@ -53,9 +50,9 @@ export const MarketTrades = () => {
 
         {error && <ErrorState error={error} />}
 
-        {data?.map((trade, index) => (
+        {rows.map((trade, index) => (
           <div
-            key={trade.timestamp + trade.amount}
+            key={data ? trade.timestamp + trade.amount + trade.kind : index}
             className={cn(
               'relative grid grid-cols-subgrid col-span-4',
               'group [&:hover>div:not(:last-child)]:invisible',
@@ -63,7 +60,7 @@ export const MarketTrades = () => {
           >
             <TableCell
               numeric
-              variant={index !== data.length - 1 ? 'cell' : 'lastCell'}
+              variant={index !== rows.length - 1 ? 'cell' : 'lastCell'}
               loading={isLoading}
             >
               <span
@@ -73,21 +70,21 @@ export const MarketTrades = () => {
               </span>
             </TableCell>
             <TableCell
-              variant={index !== data.length - 1 ? 'cell' : 'lastCell'}
+              variant={index !== rows.length - 1 ? 'cell' : 'lastCell'}
               numeric
               loading={isLoading}
             >
               {trade.amount}
             </TableCell>
             <TableCell
-              variant={index !== data.length - 1 ? 'cell' : 'lastCell'}
+              variant={index !== rows.length - 1 ? 'cell' : 'lastCell'}
               numeric
               loading={isLoading}
             >
               {formatLocalTime(trade.timestamp)}
             </TableCell>
             <TableCell
-              variant={index !== data.length - 1 ? 'cell' : 'lastCell'}
+              variant={index !== rows.length - 1 ? 'cell' : 'lastCell'}
               loading={isLoading}
             >
               <Text

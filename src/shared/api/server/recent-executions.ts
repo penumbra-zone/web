@@ -22,7 +22,7 @@ export interface RecentExecution {
 
 const DECIMALS = 4;
 
-const transformData = (
+export const transformData = (
   data: RecentExecutionData,
   direction: 'buy' | 'sell',
   registry: Registry,
@@ -77,6 +77,12 @@ const transformData = (
   };
 };
 
+/**
+ * Returns swap traces array for the given asset pair. Params:
+ * 1. `baseAsset` (string, required): base asset symbol
+ * 2. `quoteAsset` (string, required): quote asset symbol
+ * 3. `limit` (number, required): number of recent executions to return
+ */
 export async function GET(
   req: NextRequest,
 ): Promise<NextResponse<Serialized<RecentExecutionsResponse>>> {
