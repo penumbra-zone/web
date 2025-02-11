@@ -4,7 +4,7 @@ import cn from 'clsx';
 import { PairInfo } from './pair-info';
 import { Chart } from './chart';
 import { RouteTabs } from './route-tabs';
-import { TradesTabs } from './trades-tabs';
+import { TradesTabs } from './trades';
 import { HistoryTabs } from './history-tabs';
 import { FormTabs } from './form-tabs';
 import { useEffect, useState } from 'react';
