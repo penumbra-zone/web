@@ -4,8 +4,9 @@ import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { Tabs } from '@penumbra-zone/ui/Tabs';
 import { Density } from '@penumbra-zone/ui/Density';
 import { Button } from '@penumbra-zone/ui/Button';
-import { Chart } from './chart';
+import { Chart } from '../chart';
 import { MarketTrades } from './market-trades';
+import { MyTrades } from '@/pages/trade/ui/trades/my-trades';
 
 enum TradesTabsType {
   Chart = 'chart',
@@ -63,9 +64,7 @@ export const TradesTabs = ({ withChart = false }: { withChart?: boolean }) => {
             </div>
           )}
           {tab === TradesTabsType.MarketTrades && <MarketTrades />}
-          {tab === TradesTabsType.MyTrades && (
-            <div className='text-text-secondary p-4'>Coming soon...</div>
-          )}
+          {tab === TradesTabsType.MyTrades && <MyTrades />}
         </>
       )}
     </div>

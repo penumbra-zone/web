@@ -1,9 +1,9 @@
 import React from 'react';
-import { useMarketPrice } from '../model/useMarketPrice';
+import { useMarketPrice } from '../../model/useMarketPrice';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
-import { LoadingCell } from './market-trades';
+import { LoadingCell } from './cell';
 import { pnum } from '@penumbra-zone/types/pnum';
-import { DisplayPosition } from '../model/positions';
+import { DisplayPosition } from '../../model/positions';
 
 export const PositionsCurrentValue = ({ order }: { order: DisplayPosition['orders'][number] }) => {
   const { baseAsset, quoteAsset } = order;
