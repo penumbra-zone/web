@@ -5,8 +5,11 @@ import { deserializeRouteBookResponseJson } from '@/shared/api/server/book/seria
 import { RouteBookApiResponse } from '@/shared/api/server/book';
 import { usePathSymbols } from '@/pages/trade/model/use-path.ts';
 
-export const useBook = () => {
-  const { baseSymbol, quoteSymbol } = usePathSymbols();
+export const useBook = (overrideBase?: string, overrideQuote?: string) => {
+  const pathSymbols = usePathSymbols();
+  const baseSymbol = overrideBase ?? pathSymbols.baseSymbol;
+  const quoteSymbol = overrideQuote ?? pathSymbols.quoteSymbol;
+
   const query = useQuery({
     queryKey: ['book', baseSymbol, quoteSymbol],
     queryFn: async (): Promise<RouteBookResponse> => {
