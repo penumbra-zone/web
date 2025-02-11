@@ -242,7 +242,8 @@ describe('CRSessionClient', () => {
     expect(domMessageErrorHandler).not.toHaveBeenCalled(); // and the messageerror handler was not called
   });
 
-  it.skip('should respond with failures if the extension channel disconnects', async () => {
+  /** @todo: ensure failures are reported to clients */
+  it.todo('should respond with failures if the extension channel disconnects', async () => {
     domPort = CRSessionClient.init(testName);
 
     expect(mockedConnect).toHaveBeenCalled();
