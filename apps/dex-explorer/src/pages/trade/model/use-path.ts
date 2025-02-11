@@ -33,6 +33,8 @@ export const usePathToMetadata = () => {
 
   return {
     ...query,
+    baseSymbol,
+    quoteSymbol,
     baseAsset: query.data?.baseAsset,
     quoteAsset: query.data?.quoteAsset,
     isLoading: isLoading || query.isLoading,
