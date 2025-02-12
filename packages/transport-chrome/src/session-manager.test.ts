@@ -9,21 +9,8 @@ import {
 import type { ChannelHandlerFn } from '@penumbra-zone/transport-dom/adapter';
 import { beforeEach, describe, expect, it, type MockedFunction, vi } from 'vitest';
 import { ChannelLabel, nameConnection } from './channel-names.js';
-import { CRSessionManager as CRSessionManagerOriginal } from './session-manager.js';
+import { CRSessionManager } from './session-manager.js';
 import { lastResult } from './util/test-utils.js';
-
-const CRSessionManager: typeof CRSessionManagerOriginal & {
-  // forward-compatible type. third parameter of init is required in new
-  // signature, but absent in old signature.  a new implementation will use it,
-  // an old implementation will ignore it.
-  init: (
-    prefix: string,
-    handler: ChannelHandlerFn,
-    approvePort: (
-      port: chrome.runtime.Port,
-    ) => Promise<chrome.runtime.Port & { sender: { origin: string } }>,
-  ) => ReturnType<typeof CRSessionManagerOriginal.init>;
-} = CRSessionManagerOriginal;
 
 const getOnlySession = (sessions: ReturnType<typeof CRSessionManager.init>) => {
   expect(sessions.size).toBe(1);
@@ -148,7 +135,7 @@ describe('CRSessionManager', () => {
     const testRequest = { requestId: '123', message: 'test' };
     const allSenders = [extClient, localhostClient, httpsClient, httpClient];
 
-    it.each(allSenders)(
+    it.fails.each(allSenders)(
       'should accept or reject $origin according to internal sender validation logic',
       async someSender => {
         const badSenders = [httpClient];
@@ -199,7 +186,7 @@ describe('CRSessionManager', () => {
     );
 
     const badSenders = allSenders.sort(() => Math.random() - 0.5).slice(2);
-    it.fails.each(allSenders)(
+    it.each(allSenders)(
       `should accept or reject sender %# according to external sender validation callback permitting ${badSenders.map(s => allSenders.indexOf(s)).join(', ')}`,
       async someSender => {
         checkPortSender.mockImplementationOnce(port => {

@@ -28,25 +28,6 @@ type SenderWithOrigin = chrome.runtime.MessageSender & { origin: string };
 type PortWithOrigin = chrome.runtime.Port & { sender: SenderWithOrigin };
 export type CheckPortSenderFn = (port: chrome.runtime.Port) => Promise<PortWithOrigin>;
 
-// Move port validation logic to a distinct function, anticipating to parameterize it.
-const defaultCheckPortSender: CheckPortSenderFn = port => {
-  // Allow connections from the same extension, from https pages, or from http://localhost
-  if (port.sender?.origin) {
-    const fromThisExtension = port.sender.id === chrome.runtime.id;
-    const fromPageHttps =
-      !port.sender.frameId && !!port.sender.tab?.id && port.sender.origin.startsWith('https://');
-    const isLocalhost =
-      port.sender.origin.startsWith('http://localhost:') ||
-      port.sender.origin === 'http://localhost';
-
-    if (isLocalhost || fromPageHttps || fromThisExtension) {
-      return Promise.resolve(port as unknown as PortWithOrigin);
-    }
-  }
-
-  throw new Error('Invalid sender');
-};
-
 /**
  * Only for use as an extension-level singleton by the extension's main
  * background worker.
@@ -81,7 +62,7 @@ export class CRSessionManager {
    * @param handler your router entry function
    * @param checkPortSender a function used to validate the sender of a connection
    */
-  private constructor(
+  constructor(
     private readonly managerId: string,
     private readonly handler: ChannelHandlerFn,
     private readonly checkPortSender: CheckPortSenderFn,
@@ -98,9 +79,14 @@ export class CRSessionManager {
    *
    * @param managerId a string identifying this manager
    * @param handler your router entry function
+   * @param checkPortSender function to assert validity of a sender
    */
-  public static init = (managerId: string, handler: ChannelHandlerFn) => {
-    CRSessionManager.singleton ??= new CRSessionManager(managerId, handler, defaultCheckPortSender);
+  public static init = (
+    managerId: string,
+    handler: ChannelHandlerFn,
+    checkPortSender: CheckPortSenderFn,
+  ) => {
+    CRSessionManager.singleton ??= new CRSessionManager(managerId, handler, checkPortSender);
     return CRSessionManager.singleton.sessions;
   };
 
@@ -272,17 +258,12 @@ export class CRSessionManager {
       throw new ConnectError('Unknown request kind', Code.Unimplemented);
     }
 
-    return this.handler(request, AbortSignal.any([session.signal, ac.signal]))
-      .then(response =>
-        response instanceof ReadableStream
-          ? { requestId, channel: this.makeChannelStreamResponse(response) }
-          : { requestId, message: response },
-      )
-      .catch((error: unknown) => ({
-        requestId,
-        error: errorToJson(ConnectError.from(error), undefined),
-      }))
-      .finally(() => session.requests.delete(requestId));
+    const response = await this.handler(request, AbortSignal.any([session.signal, ac.signal]));
+    if (response instanceof ReadableStream) {
+      return { requestId, channel: this.makeChannelStreamResponse(response) };
+    } else {
+      return { requestId, message: response };
+    }
   };
 
   /**

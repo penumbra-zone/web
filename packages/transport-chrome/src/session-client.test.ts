@@ -411,7 +411,7 @@ describe('CRSessionClient', () => {
       await expectChannelClosed();
     });
 
-    it('sends `false` to dom when the port is disconnected by something else', async () => {
+    it.fails('sends `false` to dom when the port is disconnected by something else', async () => {
       expectNoActivity();
 
       // extension-side disconnect
@@ -433,7 +433,7 @@ describe('CRSessionClient', () => {
       await expectChannelClosed();
     });
 
-    it.fails('reconnects silently if the port is disconnected by something else', async () => {
+    it('reconnects silently if the port is disconnected by something else', async () => {
       const testRequest: TransportMessage = { message: 'hello', requestId: '123' };
 
       expectNoActivity();

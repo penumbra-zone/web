@@ -48,7 +48,7 @@ export class CRSessionClient {
       includeTlsChannelId: true,
       name: this.sessionName,
     });
-    this.servicePort.onDisconnect.addListener(this.disconnect);
+    this.servicePort.onDisconnect.addListener(this.reconnect);
     this.servicePort.onMessage.addListener(this.serviceListener);
 
     // listen to client
@@ -108,8 +108,7 @@ export class CRSessionClient {
   };
 
   /**
-   * Used to tear down this session when the client announces channel closure,
-   * or when the extension channel disconnects.
+   * Used to tear down this session when the client announces channel closure.
    *
    * Announces closure from this side towards the document, and ensures closure
    * of both ports. Listeners are automatically gargbage-collected. This session
@@ -122,6 +121,19 @@ export class CRSessionClient {
 
     this.clientPort.close();
     this.servicePort.disconnect();
+  };
+
+  /**
+   * Used when the service port disconnects. Tears down the service port and
+   * reconnects, creating a new service port.
+   */
+  private reconnect = () => {
+    this.servicePort = chrome.runtime.connect({
+      name: this.sessionName,
+      includeTlsChannelId: true,
+    });
+    this.servicePort.onMessage.addListener(this.serviceListener);
+    this.servicePort.onDisconnect.addListener(this.reconnect);
   };
 
   /**
