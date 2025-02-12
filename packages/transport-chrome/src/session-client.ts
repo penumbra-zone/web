@@ -15,6 +15,11 @@ import { ChannelLabel, nameConnection } from './channel-names.js';
 import { isTransportInitChannel, type TransportInitChannel } from './message.js';
 import { PortStreamSink, PortStreamSource } from './stream.js';
 
+declare global {
+  // eslint-disable-next-line no-var -- dev mode global
+  var __DEV__: boolean | undefined;
+}
+
 /**
  * Transparently adapts `Transport`s using `MessageChannel` DOM connections to
  * use Chrome `chrome.runtime.Port` extension connections.
