@@ -47,7 +47,7 @@ const CASE_TO_LABEL: Record<Case, string> = {
   communityPoolDeposit: 'Community Pool Deposit',
   communityPoolOutput: 'Community Pool Output',
   communityPoolSpend: 'Community Pool Spend',
-  actionLiquidityTournamentVote: ''
+  actionLiquidityTournamentVote: 'Liquidity Tournament Vote',
 };
 
 const getLabelForActionCase = (actionCase: ActionView['actionView']['case']): string => {
@@ -145,6 +145,9 @@ export const ActionViewComponent = ({
 
     case 'communityPoolDeposit':
       return <UnimplementedView label='Community Deposit' />;
+
+    case 'actionLiquidityTournamentVote':
+      return <UnimplementedView label='Liquidity Tournament Vote' />;
 
     default:
       return <UnimplementedView label={getLabelForActionCase(actionView.case)} />;
