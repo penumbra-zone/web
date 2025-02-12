@@ -53,7 +53,14 @@ export const buildActionParallel = async (
     throw new Error('No action key provided');
   }
   if (keyPath) {
-    await loadProvingKey(actionPlan.action.case, keyPath);
+    // temporary workaround (normalize action casing)
+    // TODO: remove after updating protos with proper naming convention
+    const normalizedCase =
+      actionPlan.action.case === 'actionLiquidityTournamentVotePlan'
+        ? 'actionLiquidityTournamentVote'
+        : actionPlan.action.case;
+
+    await loadProvingKey(normalizedCase, keyPath);
   }
 
   const result = build_action(

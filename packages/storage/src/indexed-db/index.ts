@@ -166,6 +166,9 @@ export class IndexedDb implements IndexedDbInterface {
         db.createObjectStore('AUCTIONS');
         db.createObjectStore('AUCTION_OUTSTANDING_RESERVES');
         db.createObjectStore('REGISTRY_VERSION');
+        db.createObjectStore('LQT_HISTORICAL_VOTES', {
+          keyPath: 'epoch',
+        });
       },
     });
     const constants = {
@@ -407,6 +410,34 @@ export class IndexedDb implements IndexedDbInterface {
     await this.u.update({
       table: 'TRANSACTIONS',
       value: tx.toJson({ typeRegistry }) as Jsonified<TransactionInfo>,
+    });
+  }
+
+  /**
+   * Retrieves historical liquidity tournament votes for a given epoch.
+   * Populates all fields during sync; `RewardValue` is `None` during voting.
+   * Supports multiple entries per epoch.
+   */
+  async saveLQTHistoricalVotes(
+    epoch: string,
+    transactionId: TransactionId,
+    assetMetadata: Metadata,
+    voteValue: Value,
+    rewardValue?: Amount,
+  ): Promise<void> {
+    assertTransactionId(transactionId);
+
+    const value = {
+      epoch,
+      TransactionId: transactionId.toJson({ typeRegistry }) as Jsonified<TransactionId>,
+      AssetMetadata: assetMetadata.toJson({ typeRegistry }) as Jsonified<Metadata>,
+      VoteValue: voteValue.toJson({ typeRegistry }) as Jsonified<Value>,
+      RewardValue: rewardValue ? (rewardValue.toJson({ typeRegistry }) as Jsonified<Amount>) : null,
+    };
+
+    await this.u.update({
+      table: 'LQT_HISTORICAL_VOTES',
+      value,
     });
   }
 
