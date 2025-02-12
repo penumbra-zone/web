@@ -51,7 +51,7 @@ export interface TabsTab {
   label: string;
   disabled?: boolean;
   as?: React.ElementType;
-  tabProps?: Record<string, React.HTMLAttributes<HTMLElement>>;
+  tabProps?: Record<string, unknown>;
 }
 
 export interface TabsProps {
