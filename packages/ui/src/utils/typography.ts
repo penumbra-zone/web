@@ -61,6 +61,6 @@ export const p = cn('font-default text-textBase font-normal leading-textBase mb-
 
 export const button = cn('font-default text-textBase font-medium leading-textBase');
 
-export const buttonMedium = cn('font-default text-textBase font-medium leading-textBase');
+export const buttonMedium = cn('font-default text-textSm font-medium leading-textBase');
 
-export const buttonSmall = cn('font-default text-textSm font-medium leading-textBase');
+export const buttonSmall = cn('font-default text-textXs font-medium leading-textBase');
