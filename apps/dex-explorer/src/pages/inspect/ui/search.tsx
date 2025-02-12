@@ -9,6 +9,20 @@ import { isPositionId } from '@penumbra-zone/bech32m/plpid';
 import { Button, ButtonProps } from '@penumbra-zone/ui/Button';
 import { Density } from '@penumbra-zone/ui/Density';
 
+const isTransactionId = (input: string) => {
+  // 64-character hex string
+  return /^[a-fA-F0-9]{64}$/.test(input);
+};
+
+const isBlockHeight = (input: string) => {
+  // test string if it contains only positive numbers
+  return /^\d+$/.test(input);
+};
+
+const isValidId = (input: string) => {
+  return isPositionId(input) || isTransactionId(input) || isBlockHeight(input);
+};
+
 const getActionType = (searchQuery: string, isValidId: boolean): ButtonProps['actionType'] => {
   if (!searchQuery) {
     return 'default';
@@ -24,14 +38,16 @@ export const InspectSearch = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const isValidId = isPositionId(searchQuery);
-
   const handleSearch = (e: FormEvent) => {
     e.preventDefault();
+    setLoading(true);
 
-    if (isValidId) {
-      setLoading(true);
+    if (isPositionId(searchQuery)) {
       router.push(`/inspect/lp/${searchQuery}`);
+    } else if (isTransactionId(searchQuery)) {
+      router.push(`/inspect/tx/${searchQuery}`);
+    } else if (isBlockHeight(searchQuery)) {
+      router.push(`/inspect/block/${searchQuery}`);
     }
   };
 
@@ -45,13 +61,13 @@ export const InspectSearch = () => {
                 type='text'
                 value={searchQuery}
                 actionType='accent'
-                placeholder='Enter LP position ID'
+                placeholder='Search by transaction hash, block height and LP position ids'
                 onChange={setSearchQuery}
               />
             </div>
             <div className='max-w-[200px]'>
-              <Button type='submit' actionType={getActionType(searchQuery, isValidId)}>
-                {!!searchQuery && !isValidId ? (
+              <Button type='submit' actionType={getActionType(searchQuery, isValidId(searchQuery))}>
+                {!!searchQuery && !isValidId(searchQuery) ? (
                   <Icon size='md' IconComponent={Ban} color='base.white' />
                 ) : (
                   <Icon size='md' IconComponent={Search} color='base.white' />
