@@ -1,5 +1,11 @@
 # @penumbra-zone/ui
 
+## 13.10.0
+
+### Minor Changes
+
+- 8f89abd: Make Tabs component extensible
+
 ## 13.9.4
 
 ### Patch Changes
