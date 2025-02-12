@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment -- tests */
 import { mockChannel, MockedChannel } from '@penumbra-zone/mock-chrome/runtime/connect';
 import type { TransportMessage, TransportStream } from '@penumbra-zone/transport-dom/messages';
-import { beforeEach, describe, expect, it, type Mock, type MockedFunction, vi } from 'vitest';
+import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
 import type { TransportInitChannel } from './message.js';
 import { CRSessionClient } from './session-client.js';
+import { lastResult } from './last-result.js';
 
 Object.assign(CRSessionClient, {
   clearSingleton() {
@@ -23,15 +24,6 @@ const clearSingleton = (): void => CRSessionClient.clearSingleton();
 // @ts-expect-error -- manipulating private property
 // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
 const currentSingleton = (): CRSessionClient | undefined => CRSessionClient.currentSingleton();
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const lastResult = <T extends (...args: any[]) => any>(mfn: MockedFunction<T>): ReturnType<T> => {
-  const last = mfn.mock.results.at(-1);
-  if (last?.type === 'return') {
-    return last.value as never;
-  }
-  throw last?.value;
-};
 
 describe('CRSessionClient', () => {
   let testName: string = undefined as never;

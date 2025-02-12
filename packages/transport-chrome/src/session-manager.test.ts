@@ -12,6 +12,7 @@ import type { ChannelHandlerFn } from '@penumbra-zone/transport-dom/adapter';
 import { beforeEach, describe, expect, it, type MockedFunction, vi } from 'vitest';
 import { ChannelLabel, nameConnection } from './channel-names.js';
 import { CRSessionManager } from './session-manager.js';
+import { lastResult } from './last-result.js';
 
 Object.assign(CRSessionManager, {
   clearSingleton() {
@@ -35,15 +36,6 @@ const getOnlySession = (sessions: ReturnType<typeof CRSessionManager.init>) => {
     return onlySession.value;
   }
   expect.unreachable('No session found');
-};
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const lastResult = <T extends (...args: any[]) => any>(mfn: MockedFunction<T>): ReturnType<T> => {
-  const last = mfn.mock.results.at(-1);
-  if (last?.type === 'return') {
-    return last.value as never;
-  }
-  throw last?.value;
 };
 
 describe('CRSessionManager', () => {
