@@ -415,7 +415,7 @@ describe('CRSessionClient', () => {
       );
     });
 
-    it.skip('when receiving a stream request, should try to open stream subchannels', async () => {
+    it.skip('when receiving a stream request, should try to open stream subchannels', () => {
       const streamRequest: TransportStream = { stream: new ReadableStream(), requestId: '123' };
 
       domPort = CRSessionClient.init(testName);
