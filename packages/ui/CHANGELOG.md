@@ -1,5 +1,11 @@
 # @penumbra-zone/ui
 
+## 13.11.0
+
+### Minor Changes
+
+- a6094b6: Change tabProps prop type
+
 ## 13.10.0
 
 ### Minor Changes
