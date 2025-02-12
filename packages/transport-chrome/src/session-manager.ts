@@ -75,6 +75,22 @@ export class CRSessionManager {
   }
 
   /**
+   * Initialize the singleton session manager.
+   *
+   * @param managerId a string identifying this manager
+   * @param checkPortSender function to assert validity of a sender
+   * @param handler your router entry function
+   */
+  public static init = (
+    managerId: string,
+    checkPortSender: CheckPortSenderFn,
+    handler: ChannelHandlerFn,
+  ) => {
+    CRSessionManager.singleton ??= new CRSessionManager(managerId, checkPortSender, handler);
+    return CRSessionManager.singleton.sessions;
+  };
+
+  /**
    * Abort all sessions from a given origin presently active in this instance.
    *
    * @param targetOrigin the origin to kill

@@ -89,6 +89,12 @@ describe('CRSessionManager', () => {
     tab,
   };
 
+  const checkPortSender = vi.fn(
+    (port: chrome.runtime.Port): Promise<chrome.runtime.Port & { sender: { origin: string } }> => {
+      return Promise.resolve(port as chrome.runtime.Port & { sender: { origin: string } });
+    },
+  );
+
   const mockHandler: MockedFunction<ChannelHandlerFn> = vi.fn(
     async (
       req: JsonValue | ReadableStream<JsonValue>,
@@ -124,16 +130,16 @@ describe('CRSessionManager', () => {
   });
 
   it('should be a singleton', () => {
-    const sessions1 = CRSessionManager.init(testName, mockHandler);
+    const sessions1 = CRSessionManager.init(testName, checkPortSender, mockHandler);
     expect(sessions1).toBeDefined();
     expect(sessions1).toBeInstanceOf(Map);
 
-    const sessions2 = CRSessionManager.init(testName, mockHandler);
+    const sessions2 = CRSessionManager.init(testName, checkPortSender, mockHandler);
     expect(sessions2).toBe(sessions1);
   });
 
   it('should accept connections from valid origins', () => {
-    const sessions = CRSessionManager.init(testName, mockHandler);
+    const sessions = CRSessionManager.init(testName, checkPortSender, mockHandler);
     expect(sessions.size).toBe(0);
 
     let clientPort: MockedPort | undefined;
@@ -164,7 +170,7 @@ describe('CRSessionManager', () => {
   });
 
   it('should ignore connections from invalid origins', async () => {
-    const sessions = CRSessionManager.init(testName, mockHandler);
+    const sessions = CRSessionManager.init(testName, checkPortSender, mockHandler);
     expect(sessions.size).toBe(0);
 
     const channelName = nameConnection(testName, ChannelLabel.TRANSPORT);
@@ -186,7 +192,7 @@ describe('CRSessionManager', () => {
     const testRequest = { requestId: '123', message: 'test-request' };
     const clientListener = vi.fn();
 
-    const sessions = CRSessionManager.init(testName, mockHandler);
+    const sessions = CRSessionManager.init(testName, checkPortSender, mockHandler);
     expect(sessions.size).toBe(0);
 
     const testResponse = { requestId: '123', message: 'test-response' };
@@ -207,7 +213,7 @@ describe('CRSessionManager', () => {
     const testRequest = { requestId: '123', message: 'test-request' };
     const clientListener = vi.fn();
 
-    const sessions = CRSessionManager.init(testName, mockHandler);
+    const sessions = CRSessionManager.init(testName, checkPortSender, mockHandler);
     expect(sessions.size).toBe(0);
 
     mockHandler.mockResolvedValueOnce(new ReadableStream({ pull: cont => cont.close() }));
@@ -238,7 +244,7 @@ describe('CRSessionManager', () => {
     };
     const clientListener = vi.fn();
 
-    CRSessionManager.init(testName, mockHandler);
+    CRSessionManager.init(testName, checkPortSender, mockHandler);
 
     const channelName = nameConnection(testName, ChannelLabel.TRANSPORT);
     const clientPort = mockedChannel.connect({ name: channelName });
@@ -255,7 +261,7 @@ describe('CRSessionManager', () => {
   });
 
   it('should abort sessions on client disconnect', async () => {
-    const sessions = CRSessionManager.init(testName, mockHandler);
+    const sessions = CRSessionManager.init(testName, checkPortSender, mockHandler);
     expect(sessions.size).toBe(0);
 
     const channelName = nameConnection(testName, ChannelLabel.TRANSPORT);
@@ -276,7 +282,7 @@ describe('CRSessionManager', () => {
   it('should abort all sessions for specific origin when killOrigin is called', async () => {
     const testRequest = { requestId: '123', message: 'test' };
 
-    const sessions = CRSessionManager.init(testName, mockHandler);
+    const sessions = CRSessionManager.init(testName, checkPortSender, mockHandler);
     expect(sessions.size).toBe(0);
 
     // Create a session for some other origin
