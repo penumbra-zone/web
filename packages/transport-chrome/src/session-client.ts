@@ -15,17 +15,23 @@ import { ChannelLabel, nameConnection } from './channel-names.js';
 import { isTransportInitChannel, type TransportInitChannel } from './message.js';
 import { PortStreamSink, PortStreamSource } from './stream.js';
 
-declare global {
-  // eslint-disable-next-line no-var -- dev mode global
-  var __DEV__: boolean | undefined;
-}
-
+const getHeader = (o: unknown): HeadersInit | undefined => {
+  let header: HeadersInit | undefined = undefined;
+  if (o != null && typeof o === 'object' && 'header' in o) {
+    try {
+      header = new Headers(o.header as never);
+    } catch (e) {
+      // not headers
+    }
+  }
+  return header;
+};
 /**
  * Transparently adapts `Transport`s using `MessageChannel` DOM connections to
  * use Chrome `chrome.runtime.Port` extension connections.
  *
  * Simple handlers unconditionally forward messages back and forth. Channel
- * disconnects are detected, and will terminate the session.
+ * disconnects are detected, and transparently re-established if possible.
  *
  * Content scripts are ultimately untrusted, so the counterpart session manager
  * is considered responsible for all validation.
@@ -37,7 +43,8 @@ declare global {
  */
 export class CRSessionClient {
   private readonly sessionName: string;
-  private readonly servicePort: chrome.runtime.Port;
+  private servicePort: chrome.runtime.Port;
+  private pendingChannels = new Map<string, AbortController>();
 
   /** Private constructor. Launch a session with `CRSessionClient.init`. */
   private constructor(
@@ -52,7 +59,7 @@ export class CRSessionClient {
       includeTlsChannelId: true,
       name: this.sessionName,
     });
-    this.servicePort.onDisconnect.addListener(this.disconnect);
+    this.servicePort.onDisconnect.addListener(this.reconnect);
     this.servicePort.onMessage.addListener(this.serviceListener);
 
     // listen to client
@@ -80,7 +87,7 @@ export class CRSessionClient {
   /** Just some typed wrappers for consistency, in a namespace. */
   private send = {
     /** Forward a service-emitted response or error (response failure) to the client. */
-    response: (msg: TransportMessage | TransportStream | TransportError<string>) => {
+    response: (msg: TransportMessage | TransportStream | TransportError) => {
       'stream' in msg
         ? this.clientPort.postMessage(msg, [msg.stream])
         : this.clientPort.postMessage(msg);
@@ -100,7 +107,7 @@ export class CRSessionClient {
         console.warn('CRSessionClient failure', cause);
       }
       const connectError = ConnectError.from(cause);
-      const msg: TransportError<string | undefined> = {
+      const msg: TransportError = {
         requestId,
         metadata: Array.from(connectError.metadata.entries()),
         error: errorToJson(connectError, undefined),
@@ -110,8 +117,7 @@ export class CRSessionClient {
   };
 
   /**
-   * Used when the client announces channel closure, or when the extension
-   * channel disconnects.
+   * Used to tear down this session.
    *
    * Announces closure from this side towards the document, and ensures closure
    * of both ports. Listeners are automatically gargbage-collected. This session
@@ -120,9 +126,23 @@ export class CRSessionClient {
   private disconnect = () => {
     // announce closure, ok even if already closed
     this.clientPort.postMessage(false);
+    this.pendingChannels.forEach(ac => ac.abort());
 
     this.clientPort.close();
     this.servicePort.disconnect();
+  };
+
+  /**
+   * Used when the service port disconnects. Tears down the service port and
+   * reconnects, creating a new service port.
+   */
+  private reconnect = () => {
+    this.servicePort = chrome.runtime.connect({
+      name: this.sessionName,
+      includeTlsChannelId: true,
+    });
+    this.servicePort.onMessage.addListener(this.serviceListener);
+    this.servicePort.onDisconnect.addListener(this.reconnect);
   };
 
   /**
@@ -148,6 +168,12 @@ export class CRSessionClient {
         if (isTransportAbort(tev, requestId)) {
           // abort control for a specific request
           this.send.request(tev);
+
+          // only pending client-stream requests are aborted here.
+          // - active client-stream requests abort via stream control.
+          // - server-stream responses abort via stream control.
+          // - non-streaming messages need no abort control.
+          this.pendingChannels.get(requestId)?.abort();
         } else if (isTransportMessage(tev, requestId)) {
           // request, client message
           this.send.request(tev);
@@ -159,7 +185,7 @@ export class CRSessionClient {
           const unsupported = new ConnectError(
             'Unsupported request from client',
             Code.Unimplemented,
-            tev.header,
+            getHeader(tev),
             undefined,
             tev,
           );
@@ -201,14 +227,14 @@ export class CRSessionClient {
           const unsupported = new ConnectError(
             'Unsupported response from service',
             Code.Unimplemented,
-            tev.header,
+            getHeader(tev),
             undefined,
             tev,
           );
           this.send.failure(unsupported, requestId);
         }
-      } catch (failure) {
-        this.send.failure(failure, requestId);
+      } catch (cause) {
+        this.send.failure(cause, requestId);
       }
     } else {
       this.send.failure(new TypeError('Unknown item from service', { cause: tev }));
@@ -241,7 +267,13 @@ export class CRSessionClient {
    * @returns a message identifying the subchannel
    */
   private requestChannelStream = ({ requestId, stream }: TransportStream): TransportInitChannel => {
+    if (!globalThis.__DEV__) {
+      throw new ConnectError('Unknown request kind', Code.Unimplemented);
+    }
     const channel = nameConnection(this.managerId, ChannelLabel.STREAM);
+
+    const ac = new AbortController();
+    this.pendingChannels.set(requestId, ac);
 
     /** Listen for connection by unique name, accepting this client-stream
      * request. Content scripts only connect to the parent extension. */
@@ -249,18 +281,16 @@ export class CRSessionClient {
       if (sinkPort.name === channel) {
         chrome.runtime.onConnect.removeListener(sinkListener);
         void stream
-          .pipeTo(new WritableStream(new PortStreamSink(sinkPort)))
-          // stream failure is handled in-band, but this might cover unknowns.
+          .pipeTo(new WritableStream(new PortStreamSink(sinkPort)), { signal: ac.signal })
           .catch((cause: unknown) => this.send.failure(cause, requestId))
-          // port closure is handled in-band, but this should prevent leaks.
           .finally(() => sinkPort.disconnect());
       }
     };
 
     chrome.runtime.onConnect.addListener(sinkListener);
-
-    /** avoid leak. @todo improve more */
-    setTimeout(() => chrome.runtime.onConnect.removeListener(sinkListener), 60_000);
+    AbortSignal.any([ac.signal, AbortSignal.timeout(60_000)]).addEventListener('abort', () => {
+      chrome.runtime.onConnect.removeListener(sinkListener);
+    });
 
     return { requestId, channel };
   };
