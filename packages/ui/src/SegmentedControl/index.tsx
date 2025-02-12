@@ -5,7 +5,9 @@ import { Density, useDensity } from '../utils/density';
 import { buttonMedium, button } from '../utils/typography';
 
 export interface SegmentedControlItemProps {
+  /** A string that is prompted into SegmentedControl's `onChange` when an Item is pressed */
   value: string;
+  /** Visual identity, gives a color to a selected Item */
   style?: 'red' | 'green' | 'filled' | 'unfilled';
   as?: ElementType;
   disabled?: boolean;
@@ -13,10 +15,11 @@ export interface SegmentedControlItemProps {
 }
 
 export interface SegmentedControlProps {
-  as?: ElementType;
-  children: ReactNode;
-  onChange: (value: string) => void;
+  /** A value that selects one of the items within SegmentedControl */
   value: string;
+  onChange: (value: string) => void;
+  children: ReactNode;
+  as?: ElementType;
 }
 
 const getItemClassesByDensity = (density: Density): string => {
@@ -81,6 +84,27 @@ export const SegmentedControlItem = ({
   );
 };
 
+/**
+ * SegmentedControl is a single-choice selector, consisting of multiple button-looking checkboxes.
+ * Use it to fit a list of options in a small space.
+ *
+ * Example:
+ *
+ * ```tsx
+ * const Component = () => {
+ *   const [value, setValue] = useState('one');
+ *
+ *   return (
+ *     <SegmentedControl value={value} onChange={setValue}>
+ *       <SegmentedControl.Item value='one' style='unfilled' disabled />
+ *       <SegmentedControl.Item value='two' style='filled' />
+ *       <SegmentedControl.Item value='three' style='red' />
+ *       <SegmentedControl.Item value='four' style='green' />
+ *     </SegmentedControl>
+ *   );
+ * },
+ * ```
+ */
 export const SegmentedControl = ({
   children,
   as: Container = 'div',
