@@ -1,4 +1,4 @@
-import type { HandlerContext, ServiceImpl } from '@connectrpc/connect';
+import type { ServiceImpl } from '@connectrpc/connect';
 import type { ViewService } from '@penumbra-zone/protobuf';
 import { addressByIndex } from './address-by-index.js';
 import { appParameters } from './app-parameters.js';
