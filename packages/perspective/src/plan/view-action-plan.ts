@@ -456,5 +456,8 @@ export const viewActionPlan =
         return new ActionView({
           actionView: actionPlan.action,
         });
+
+      default:
+        throw new Error(`Unsupported action case: ${actionPlan.action.case}`);
     }
   };
