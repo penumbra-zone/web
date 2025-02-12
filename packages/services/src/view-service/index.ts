@@ -31,13 +31,8 @@ import { witness } from './witness.js';
 import { witnessAndBuild } from './witness-and-build.js';
 import { transparentAddress } from './transparent-address.js';
 import { latestSwaps } from './latest-swaps.js';
-import { PartialMessage } from '@bufbuild/protobuf';
-import {
-  TournamentVotesRequest,
-  TournamentVotesResponse,
-  LqtVotingNotesRequest,
-  LqtVotingNotesResponse,
-} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { lqtVotingNotes } from './lqt-voting-notes.js';
+import { tournamentVotes } from './tournament-votes.js';
 
 export type Impl = ServiceImpl<typeof ViewService>;
 
@@ -73,19 +68,6 @@ export const viewImpl: Impl = {
   witnessAndBuild,
   transparentAddress,
   latestSwaps,
-  tournamentVotes: function (
-    _request: TournamentVotesRequest,
-    _context: HandlerContext,
-  ):
-    | TournamentVotesResponse
-    | PartialMessage<TournamentVotesResponse>
-    | Promise<TournamentVotesResponse | PartialMessage<TournamentVotesResponse>> {
-    throw new Error('Function not implemented.');
-  },
-  lqtVotingNotes: function (
-    _request: LqtVotingNotesRequest,
-    _context: HandlerContext,
-  ): AsyncIterable<LqtVotingNotesResponse | PartialMessage<LqtVotingNotesResponse>> {
-    throw new Error('Function not implemented.');
-  },
+  lqtVotingNotes,
+  tournamentVotes,
 };
