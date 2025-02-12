@@ -7,12 +7,12 @@ import {
   throwDisconnectedPortError,
 } from './channel.fixtures.js';
 
-type MockConnectImpl = (info?: ChromeConnectInfo) => MockedPort;
-type MockSendersImpl = (info?: ChromeConnectInfo) => {
+export type MockConnectImpl = (info?: ChromeConnectInfo) => MockedPort;
+export type MockSendersImpl = (info?: ChromeConnectInfo) => {
   connectSender: ChromeSender;
   onConnectSender: ChromeSender;
 };
-type MockPortsImpl = (
+export type MockPortsImpl = (
   mockSenders: MockedFunction<MockSendersImpl>,
   connectInfo?: ChromeConnectInfo,
 ) => {

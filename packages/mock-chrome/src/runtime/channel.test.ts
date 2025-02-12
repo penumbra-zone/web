@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, test, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { mockChannel, MockedChannel } from './channel.mock.js';
 
 describe('mockChannel', () => {
@@ -146,10 +146,12 @@ describe('mockChannel', () => {
 
     const bigintMessage = { test: 'bigintMessage', data: BigInt(1234567890) };
 
-    expect(() => clientPort.postMessage(bigintMessage)).toThrow(
+    expect(() => clientPort.postMessage(bigintMessage)).toThrowError(
       /**
-       * @todo: difference between vitest and chrome. in chrome, this is actually:
+       * @todo difference between vitest and chrome. in chrome, this is actually:
+       * ```
        * Uncaught TypeError: Error in invocation of runtime.sendMessage(optional string extensionId, any message, optional object options, optional function callback): Could not serialize message.
+       * ```
        */
       TypeError('Do not know how to serialize a BigInt'),
     );

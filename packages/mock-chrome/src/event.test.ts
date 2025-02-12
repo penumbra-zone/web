@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { mockEvent, eventMocked } from './event.mock.js';
+import { describe, expect, it, vi } from 'vitest';
+import { mockEvent } from './event.mock.js';
 
 describe('mockEvent', () => {
   it('should manage listeners', () => {
