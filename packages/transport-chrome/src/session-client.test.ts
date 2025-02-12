@@ -149,7 +149,7 @@ describe('CRSessionClient', () => {
         messageEventError = domMessageHandler?.mock.lastCall?.[0]?.data;
       });
 
-      it('responds with failure missing a `requestId`', () => {
+      it.fails('responds with failure missing a `requestId`', () => {
         expect(messageEventError).not.toHaveProperty('requestId');
         expect(messageEventError).toMatchObject({
           error: {
@@ -165,7 +165,7 @@ describe('CRSessionClient', () => {
         });
       });
 
-      it.fails('responds with failure including a `requestId`', () => {
+      it('responds with failure including a `requestId`', () => {
         expect(messageEventError).toMatchObject({
           requestId: testMessage.requestId,
           error: errorToJson(ConnectError.from(postThrowError), undefined),
@@ -188,7 +188,7 @@ describe('CRSessionClient', () => {
         throwObjectResponse = domMessageHandler?.mock.lastCall?.[0].data;
       });
 
-      it('incorrectly responds with failure missing a `requestId`', () => {
+      it.fails('incorrectly responds with failure missing a `requestId`', () => {
         expect(throwObjectResponse).not.toHaveProperty('requestId');
         expect(throwObjectResponse).toMatchObject({
           error: {
@@ -204,7 +204,7 @@ describe('CRSessionClient', () => {
         });
       });
 
-      it.fails('correctly responds with failure including a `requestId`', () => {
+      it('correctly responds with failure including a `requestId`', () => {
         expect(throwObjectResponse).toMatchObject({
           requestId: testMessage.requestId,
           error: errorToJson(ConnectError.from(postThrowObject), undefined),
@@ -220,7 +220,7 @@ describe('CRSessionClient', () => {
         });
       });
 
-      it('does not report failure and throws an uncaught `DataCloneError`', async () => {
+      it.fails('does not report failure and throws an uncaught `DataCloneError`', async () => {
         const { uncaughtExceptionListener, restoreUncaughtExceptionListener } =
           replaceUncaughtExceptionListener();
         onTestFinished(restoreUncaughtExceptionListener);
@@ -238,7 +238,7 @@ describe('CRSessionClient', () => {
         expect(domMessageHandler).not.toHaveBeenCalled();
       });
 
-      it.fails('reports failure', async () => {
+      it('reports failure', async () => {
         const { uncaughtExceptionListener, restoreUncaughtExceptionListener } =
           replaceUncaughtExceptionListener();
         onTestFinished(restoreUncaughtExceptionListener);
@@ -296,7 +296,7 @@ describe('CRSessionClient', () => {
           expect(domMessageErrorHandler).not.toHaveBeenCalled();
         });
 
-        it('does not respond and only prints a console warning', async () => {
+        it.fails('does not respond and only prints a console warning', async () => {
           expect(mockWarn).not.toHaveBeenCalled();
           domPort.postMessage(badRequest);
           await vi.waitFor(() => expect(mockWarn).toHaveBeenCalled());
@@ -304,7 +304,7 @@ describe('CRSessionClient', () => {
           expect(domMessageHandler).not.toHaveBeenCalled();
         });
 
-        it.fails('responds with a failure and prints a console warning', async () => {
+        it('responds with a failure and prints a console warning', async () => {
           expect(mockWarn).not.toHaveBeenCalled();
           domPort.postMessage(badRequest);
           await vi.waitFor(() => expect(mockWarn).toHaveBeenCalled());

@@ -395,7 +395,7 @@ describe('CRSessionManager', () => {
       expect(clientPort.onDisconnect.dispatch).toHaveBeenCalled();
     });
 
-    it.fails('should remove aborted sessions from the session list', async () => {
+    it('should remove aborted sessions from the session list', async () => {
       const sessions = CRSessionManager.init(testName, mockHandler, checkPortSender);
       expect(sessions.size).toBe(0);
 
