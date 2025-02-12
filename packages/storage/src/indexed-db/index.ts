@@ -741,6 +741,23 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   /**
+   * Get the block height for the correspinding epoch index.
+   */
+  async getBlockHeightByEpoch(epoch_index: bigint): Promise<Epoch | undefined> {
+    let epoch: Epoch | undefined;
+
+    // Iterate over epochs and return the one with the matching epoch index.
+    for await (const cursor of this.db.transaction('EPOCHS', 'readonly').store) {
+      const currentEpoch = Epoch.fromJson(cursor.value);
+      if (currentEpoch.index == epoch_index) {
+        epoch = currentEpoch;
+      }
+    }
+
+    return epoch;
+  }
+
+  /**
    * Inserts the validator info into the database, or updates an existing
    * validator info if one with the same identity key exists.
    */
