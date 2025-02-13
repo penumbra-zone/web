@@ -5,7 +5,6 @@ import { errorToJson } from '@connectrpc/connect/protocol-connect';
 import {
   mockChannel,
   type MockedChannel,
-  type MockedPort,
   type MockSendersImpl,
 } from '@penumbra-zone/mock-chrome/runtime/connect';
 import type { ChannelHandlerFn } from '@penumbra-zone/transport-dom/adapter';
@@ -18,10 +17,6 @@ Object.assign(CRSessionManager, {
   clearSingleton() {
     // @ts-expect-error -- manipulating private property
     CRSessionManager.singleton = undefined;
-  },
-  currentSingleton(): CRSessionManager | undefined {
-    // @ts-expect-error -- manipulating private property
-    return CRSessionManager.singleton;
   },
 });
 
@@ -83,11 +78,11 @@ describe('CRSessionManager', () => {
     tab,
   };
 
-  const httpClient = {
-    origin: 'http://example.com',
-    url: 'http://example.com/index.html',
-    tab,
-  };
+  const checkPortSender = vi.fn(
+    (port: chrome.runtime.Port): Promise<chrome.runtime.Port & { sender: { origin: string } }> => {
+      return Promise.resolve(port as chrome.runtime.Port & { sender: { origin: string } });
+    },
+  );
 
   const mockHandler: MockedFunction<ChannelHandlerFn> = vi.fn(
     async (
@@ -124,61 +119,54 @@ describe('CRSessionManager', () => {
   });
 
   it('should be a singleton', () => {
-    const sessions1 = CRSessionManager.init(testName, mockHandler);
+    const sessions1 = CRSessionManager.init(testName, checkPortSender, mockHandler);
     expect(sessions1).toBeDefined();
     expect(sessions1).toBeInstanceOf(Map);
 
-    const sessions2 = CRSessionManager.init(testName, mockHandler);
+    const sessions2 = CRSessionManager.init(testName, checkPortSender, mockHandler);
     expect(sessions2).toBe(sessions1);
   });
 
-  it('should accept connections from valid origins', () => {
-    const sessions = CRSessionManager.init(testName, mockHandler);
-    expect(sessions.size).toBe(0);
+  it('should accept connections from valid origins', async () => {
+    const testRequest = { requestId: '123', message: 'test' };
 
-    let clientPort: MockedPort | undefined;
-
-    let channelName = nameConnection(testName, ChannelLabel.TRANSPORT);
-    mockedChannel.mockSenders.mockReturnValueOnce({
-      connectSender: extClient,
-      onConnectSender: extHost,
-    });
-    clientPort = mockedChannel.connect({ name: channelName });
-    expect(clientPort).toMatchObject({ name: channelName, sender: extHost });
-
-    channelName = nameConnection(testName, ChannelLabel.TRANSPORT);
-    mockedChannel.mockSenders.mockReturnValueOnce({
-      connectSender: localhostClient,
-      onConnectSender: extHost,
-    });
-    clientPort = mockedChannel.connect({ name: channelName });
-    expect(clientPort).toMatchObject({ name: channelName, sender: extHost });
-
-    channelName = nameConnection(testName, ChannelLabel.TRANSPORT);
-    mockedChannel.mockSenders.mockReturnValueOnce({
-      connectSender: httpsClient,
-      onConnectSender: extHost,
-    });
-    clientPort = mockedChannel.connect({ name: channelName });
-    expect(clientPort).toMatchObject({ name: channelName, sender: extHost });
-  });
-
-  it('should ignore connections from invalid origins', async () => {
-    const sessions = CRSessionManager.init(testName, mockHandler);
+    const sessions = CRSessionManager.init(testName, checkPortSender, mockHandler);
     expect(sessions.size).toBe(0);
 
     const channelName = nameConnection(testName, ChannelLabel.TRANSPORT);
-    mockedChannel.mockSenders.mockReturnValueOnce({
-      connectSender: httpClient,
-      onConnectSender: undefined as never,
+    const clientPort = mockedChannel.connect({ name: channelName });
+
+    expect(checkPortSender).toHaveBeenCalledWith(expect.objectContaining({ name: channelName }));
+    await vi.waitFor(() => {
+      expect(mockedChannel.onConnect.dispatch).toHaveBeenCalled();
+      expect(sessions.size).toBe(1);
     });
 
+    clientPort.postMessage(testRequest);
+    await vi.waitFor(() =>
+      expect(mockHandler).toHaveBeenLastCalledWith(testRequest.message, expect.any(AbortSignal)),
+    );
+  });
+
+  it('should ignore connections from invalid origins', async () => {
+    checkPortSender.mockImplementationOnce(() => Promise.reject(new Error('its badguys')));
+    const testRequest = { requestId: '123', message: 'test' };
+    const sessions = CRSessionManager.init(testName, checkPortSender, mockHandler);
+    expect(sessions.size).toBe(0);
+
+    const channelName = nameConnection(testName, ChannelLabel.TRANSPORT);
     const clientPort = mockedChannel.connect({ name: channelName });
-    await vi.waitFor(() => expect(mockedChannel.onConnect.dispatch).toHaveBeenCalled());
+    const mgrPort = lastResult(mockedChannel.mockPorts).onConnectPort;
 
-    expect(lastResult(mockedChannel.mockPorts).onConnectPort.onMessage.listeners.size).toBe(0);
+    expect(checkPortSender).toHaveBeenCalledWith(expect.objectContaining({ name: channelName }));
+    await vi.waitFor(() => {
+      expect(mockedChannel.onConnect.dispatch).toHaveBeenCalled();
+      expect(sessions.size).toBe(0);
+    });
 
-    clientPort.postMessage({ requestId: '123', message: 'test' });
+    clientPort.postMessage(testRequest);
+    await vi.waitFor(() => expect(mgrPort.onMessage.dispatch).toHaveBeenCalled());
+    expect(mgrPort.onMessage.addListener).not.toHaveBeenCalled();
     expect(mockHandler).not.toHaveBeenCalled();
   });
 
@@ -186,7 +174,7 @@ describe('CRSessionManager', () => {
     const testRequest = { requestId: '123', message: 'test-request' };
     const clientListener = vi.fn();
 
-    const sessions = CRSessionManager.init(testName, mockHandler);
+    const sessions = CRSessionManager.init(testName, checkPortSender, mockHandler);
     expect(sessions.size).toBe(0);
 
     const testResponse = { requestId: '123', message: 'test-response' };
@@ -196,6 +184,8 @@ describe('CRSessionManager', () => {
     const clientPort = mockedChannel.connect({ name: channelName });
     clientPort.onMessage.addListener(clientListener);
 
+    await vi.waitFor(() => expect(sessions.size).toBe(1));
+    expect(mockHandler).not.toHaveBeenCalled();
     clientPort.postMessage(testRequest);
 
     await vi.waitFor(() => expect(clientListener).toHaveBeenCalled());
@@ -207,19 +197,38 @@ describe('CRSessionManager', () => {
     const testRequest = { requestId: '123', message: 'test-request' };
     const clientListener = vi.fn();
 
-    const sessions = CRSessionManager.init(testName, mockHandler);
+    const sessions = CRSessionManager.init(testName, checkPortSender, mockHandler);
     expect(sessions.size).toBe(0);
 
-    mockHandler.mockResolvedValueOnce(new ReadableStream({ pull: cont => cont.close() }));
+    mockHandler.mockResolvedValueOnce(
+      new ReadableStream({
+        start: cont => {
+          cont.enqueue({ value: 'a' });
+          cont.enqueue({ value: 'b' });
+          cont.enqueue({ value: 'c' });
+          cont.enqueue({ done: true });
+          cont.close();
+        },
+      }),
+    );
+
     const channelName = nameConnection(testName, ChannelLabel.TRANSPORT);
     const clientPort = mockedChannel.connect({ name: channelName });
     clientPort.onMessage.addListener(clientListener);
 
     expect(mockedChannel.onConnect.addListener).toHaveBeenCalledTimes(1);
+    const mgrPort = lastResult(mockedChannel.mockPorts).onConnectPort;
+    await vi.waitFor(() => expect(mgrPort.onMessage.addListener).toHaveBeenCalled());
+
     clientPort.postMessage(testRequest);
-    await vi.waitFor(() => expect(mockedChannel.onConnect.addListener).toHaveBeenCalledTimes(2));
+
+    await vi.waitFor(() => expect(mockHandler).toHaveBeenCalled());
+
+    // await vi.waitFor(() => expect(mockedChannel.onConnect.addListener).toHaveBeenCalledTimes(2));
 
     expect(mockHandler).toHaveBeenLastCalledWith(testRequest.message, expect.any(AbortSignal));
+    await vi.waitFor(() => expect(clientPort.onMessage.dispatch).toHaveBeenCalled());
+
     expect(clientListener).toHaveBeenLastCalledWith(
       expect.objectContaining({
         requestId: testRequest.requestId,
@@ -238,14 +247,16 @@ describe('CRSessionManager', () => {
     };
     const clientListener = vi.fn();
 
-    CRSessionManager.init(testName, mockHandler);
+    const sessions = CRSessionManager.init(testName, checkPortSender, mockHandler);
 
     const channelName = nameConnection(testName, ChannelLabel.TRANSPORT);
     const clientPort = mockedChannel.connect({ name: channelName });
     clientPort.onMessage.addListener(clientListener);
 
-    // make a request that triggers an error from the handler
     mockHandler.mockRejectedValueOnce(handlerError);
+
+    await vi.waitFor(() => expect(sessions.size).toBe(1));
+    // make a request that triggers an error from the handler
     clientPort.postMessage(testRequest);
     // wait for the serialized error response
     await vi.waitFor(() => expect(clientListener).toHaveBeenCalled());
@@ -255,12 +266,13 @@ describe('CRSessionManager', () => {
   });
 
   it('should abort sessions on client disconnect', async () => {
-    const sessions = CRSessionManager.init(testName, mockHandler);
+    const sessions = CRSessionManager.init(testName, checkPortSender, mockHandler);
     expect(sessions.size).toBe(0);
 
     const channelName = nameConnection(testName, ChannelLabel.TRANSPORT);
     const clientPort = mockedChannel.connect({ name: channelName });
-    expect(sessions.size).toBe(1);
+
+    await vi.waitFor(() => expect(sessions.size).toBe(1));
     const testSession = getOnlySession(sessions);
 
     clientPort.disconnect();
@@ -276,7 +288,7 @@ describe('CRSessionManager', () => {
   it('should abort all sessions for specific origin when killOrigin is called', async () => {
     const testRequest = { requestId: '123', message: 'test' };
 
-    const sessions = CRSessionManager.init(testName, mockHandler);
+    const sessions = CRSessionManager.init(testName, checkPortSender, mockHandler);
     expect(sessions.size).toBe(0);
 
     // Create a session for some other origin
@@ -307,7 +319,8 @@ describe('CRSessionManager', () => {
     const extClientListener = vi.fn();
     extClientPort.onMessage.addListener(extClientListener);
 
-    expect(sessions.size).toBe(5);
+    await vi.waitFor(() => expect(sessions.size).toBe(5));
+    expect(checkPortSender).toHaveBeenCalledTimes(5);
 
     for (const session of sessions.values()) {
       expect(session.signal.aborted).toBe(false);
@@ -337,5 +350,7 @@ describe('CRSessionManager', () => {
       );
       expect(mockHandler).not.toHaveBeenCalled();
     }
+
+    expect(sessions.size).toBe(2);
   });
 });
