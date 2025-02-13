@@ -150,7 +150,11 @@ export const mockChannel = ({
   // create the chrome.runtime.connect(...) function
   const connect = vi.fn((info?: ChromeConnectInfo) => {
     const { connectPort, onConnectPort } = mockPorts(mockSenders, info);
-    onConnect.dispatch(onConnectPort.asPort); // send the .onConnect listener's port
+    try {
+      onConnect.dispatch(onConnectPort.asPort); // send the .onConnect listener's port
+    } catch (e) {
+      console.log('onConnect mock threw', e);
+    }
     return connectPort; // return the .connect() caller's port
   });
 
