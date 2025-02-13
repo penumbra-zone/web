@@ -112,6 +112,7 @@ export class CRSessionClient {
         console.warn('Unknown item from client', ev.data);
       }
     } catch (e) {
+      console.error('Error in client listener', e);
       this.clientPort.postMessage({ error: localErrorJson(e, ev.data) });
     }
   };

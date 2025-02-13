@@ -1,19 +1,18 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment -- tests */
+import { ConnectError } from '@connectrpc/connect';
+import { errorToJson } from '@connectrpc/connect/protocol-connect';
 import { mockChannel, MockedChannel } from '@penumbra-zone/mock-chrome/runtime/connect';
 import type { TransportMessage, TransportStream } from '@penumbra-zone/transport-dom/messages';
 import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
+import { ChannelLabel, nameConnection } from './channel-names.js';
+import { lastResult } from './last-result.js';
 import type { TransportInitChannel } from './message.js';
 import { CRSessionClient } from './session-client.js';
-import { lastResult } from './last-result.js';
 
 Object.assign(CRSessionClient, {
   clearSingleton() {
     // @ts-expect-error -- manipulating private property
     CRSessionClient.singleton = undefined;
-  },
-  currentSingleton(): CRSessionClient | undefined {
-    // @ts-expect-error -- manipulating private property
-    return CRSessionClient.singleton;
   },
 });
 
@@ -21,25 +20,12 @@ Object.assign(CRSessionClient, {
 // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
 const clearSingleton = (): void => CRSessionClient.clearSingleton();
 
-// @ts-expect-error -- manipulating private property
-// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
-const currentSingleton = (): CRSessionClient | undefined => CRSessionClient.currentSingleton();
-
 describe('CRSessionClient', () => {
   let testName: string = undefined as never;
 
-  let mockedConnect: MockedChannel['connect'];
-  let mockedOnConnect: MockedChannel['onConnect'];
   let domPort: MessagePort | undefined;
 
   let mockedChannel: MockedChannel;
-
-  const extOnDisconnectListener = vi.fn<[chrome.runtime.Port], void>();
-  const extOnMessageListener = vi.fn<[unknown, chrome.runtime.Port], void>();
-  const extOnConnectListener = vi.fn((p: chrome.runtime.Port) => {
-    p.onMessage.addListener(extOnMessageListener);
-    p.onDisconnect.addListener(extOnDisconnectListener);
-  });
 
   let domMessageHandler: undefined | Mock<[MessageEvent<unknown>], void>;
   let domMessageErrorHandler: undefined | Mock<[MessageEvent<unknown>], void>;
@@ -47,6 +33,7 @@ describe('CRSessionClient', () => {
   beforeEach(({ expect }) => {
     vi.unstubAllGlobals();
     vi.restoreAllMocks();
+    vi.stubGlobal('__DEV__', true);
 
     clearSingleton();
 
@@ -58,44 +45,46 @@ describe('CRSessionClient', () => {
     domPort = undefined;
 
     mockedChannel = mockChannel();
-    mockedConnect = mockedChannel.connect;
-    mockedOnConnect = mockedChannel.onConnect;
-    mockedOnConnect.addListener(extOnConnectListener);
 
-    vi.stubGlobal('chrome', { runtime: { connect: mockedConnect } });
-  });
-
-  it('should be a singleton', () => {
-    expect(CRSessionClient).toBeDefined();
-    expect(currentSingleton()).not.toBeDefined();
-
-    const porty = CRSessionClient.init('test');
-    expect(porty).toBeDefined();
-    expect(currentSingleton()).toBeDefined();
-
-    const singleton = currentSingleton();
-
-    const porty2 = CRSessionClient.init('test2');
-    expect(porty2).toBeDefined();
-    expect(currentSingleton()).toBe(singleton);
-
-    clearSingleton();
-    expect(currentSingleton()).not.toBeDefined();
-    const porty3 = CRSessionClient.init('test3');
-    expect(porty3).toBeDefined();
-    expect(currentSingleton()).toBeDefined();
-    expect(currentSingleton()).not.toBe(singleton);
+    vi.stubGlobal('chrome', { runtime: { connect: mockedChannel.connect } });
   });
 
   it('should return `MessagePort` on init, and connect the extension', () => {
-    expect(mockedConnect).not.toHaveBeenCalled();
-    expect(extOnConnectListener).not.toHaveBeenCalled();
+    expect(mockedChannel.connect).not.toHaveBeenCalled();
+    expect(mockedChannel.onConnect.dispatch).not.toHaveBeenCalled();
 
     domPort = CRSessionClient.init(testName);
     expect(domPort).toBeDefined();
 
-    expect(mockedConnect).toHaveBeenCalled();
-    expect(extOnConnectListener).toHaveBeenCalled();
+    expect(mockedChannel.connect).toHaveBeenCalledOnce();
+    expect(mockedChannel.onConnect.dispatch).toHaveBeenCalledOnce();
+  });
+
+  it('should return the same port for multiple calls', () => {
+    const ports: MessagePort[] = [];
+
+    for (let i = 0; i < 3; i++) {
+      ports.push(CRSessionClient.init(testName));
+      ports.map(porty => expect(porty).toBeInstanceOf(MessagePort));
+      expect(ports.every(porty => ports.every(porty2 => porty === porty2))).toBe(true);
+      expect(mockedChannel.connect).toHaveBeenCalledTimes(1);
+    }
+  });
+
+  it.todo('should not return the same port for multiple calls', () => {
+    const ports: MessagePort[] = [];
+
+    for (let i = 0; i < 3; i++) {
+      ports.push(CRSessionClient.init(testName));
+      ports.map(porty => expect(porty).toBeInstanceOf(MessagePort));
+      expect(
+        ports.every((porty, index) => {
+          const portsWithoutPorty = ports.slice(0, index).concat(ports.slice(index + 1));
+          return portsWithoutPorty.every(notPorty => porty !== notPorty);
+        }),
+      ).toBe(false);
+      expect(mockedChannel.connect).toHaveBeenCalledTimes(ports.length);
+    }
   });
 
   it('should attach callbacks to the port and forward messages', async () => {
@@ -103,11 +92,13 @@ describe('CRSessionClient', () => {
 
     domPort = CRSessionClient.init(testName);
 
-    expect(extOnMessageListener).not.toHaveBeenCalled();
-    domPort.postMessage(exampleMessage);
-    await vi.waitFor(() => expect(extOnMessageListener).toHaveBeenCalled());
+    const extPort = lastResult(mockedChannel.mockPorts).onConnectPort;
 
-    expect(extOnMessageListener).toHaveBeenLastCalledWith(
+    expect(extPort.onMessage.dispatch).not.toHaveBeenCalled();
+    domPort.postMessage(exampleMessage);
+    await vi.waitFor(() => expect(extPort.onMessage.dispatch).toHaveBeenCalled());
+
+    expect(extPort.onMessage.dispatch).toHaveBeenLastCalledWith(
       exampleMessage,
       expect.objectContaining({
         name: expect.stringContaining(testName),
@@ -140,7 +131,7 @@ describe('CRSessionClient', () => {
       domPort.addEventListener('message', domMessageHandler);
       domPort.addEventListener('messageerror', domMessageErrorHandler);
 
-      connectPortPostMessage = lastResult(mockedConnect).postMessage;
+      connectPortPostMessage = lastResult(mockedChannel.connect).postMessage;
 
       domPort.start();
     });
@@ -175,6 +166,51 @@ describe('CRSessionClient', () => {
       });
     });
 
+    it.todo(
+      'updated: should respond with failure if forwarding the input throws an error',
+      async () => {
+        const postThrowError = Error('wololo');
+        connectPortPostMessage.mockImplementationOnce(() => {
+          throw postThrowError;
+        });
+
+        expect(domMessageHandler).not.toHaveBeenCalled();
+        domPort.postMessage(testMessage);
+        await vi.waitFor(() => expect(domMessageHandler).toHaveBeenCalled());
+
+        expect(domMessageHandler).toHaveBeenLastCalledWith(expect.any(MessageEvent));
+        const [{ data: throwErrorResponse }]: [MessageEvent] = domMessageHandler.mock.lastCall!;
+
+        expect(throwErrorResponse).toMatchObject({
+          requestId: testMessage.requestId,
+          error: errorToJson(ConnectError.from(postThrowError), undefined),
+        });
+      },
+    );
+
+    it.todo(
+      'updated: should respond with failure if forwarding the input throws an error with cause detail',
+      async () => {
+        const postThrowError = new Error('bad thing', { cause: 'indeed' });
+
+        connectPortPostMessage.mockImplementationOnce(() => {
+          throw postThrowError;
+        });
+
+        expect(domMessageHandler).not.toHaveBeenCalled();
+        domPort.postMessage(testMessage);
+        await vi.waitFor(() => expect(domMessageHandler).toHaveBeenCalled());
+
+        expect(domMessageHandler).toHaveBeenLastCalledWith(expect.any(MessageEvent));
+        const [{ data: throwObjectResponse }]: [MessageEvent] = domMessageHandler.mock.lastCall!;
+
+        expect(throwObjectResponse).toMatchObject({
+          requestId: testMessage.requestId,
+          error: { ...errorToJson(ConnectError.from(postThrowError), undefined) },
+        });
+      },
+    );
+
     it('should respond with failure if forwarding the input throws a non-error object', async () => {
       connectPortPostMessage.mockImplementationOnce(() => {
         // eslint-disable-next-line @typescript-eslint/only-throw-error
@@ -200,6 +236,30 @@ describe('CRSessionClient', () => {
         },
       });
     });
+
+    it.todo(
+      'updated: should respond with failure if forwarding the input throws a non-error object',
+      async () => {
+        const postThrowObject = { seriously: 'you should probably be throwing errors' };
+
+        connectPortPostMessage.mockImplementationOnce(() => {
+          // eslint-disable-next-line @typescript-eslint/only-throw-error
+          throw postThrowObject;
+        });
+
+        expect(domMessageHandler).not.toHaveBeenCalled();
+        domPort.postMessage(testMessage);
+        await vi.waitFor(() => expect(domMessageHandler).toHaveBeenCalled());
+
+        expect(domMessageHandler).toHaveBeenLastCalledWith(expect.any(MessageEvent));
+        const [{ data: throwObjectResponse }]: [MessageEvent] = domMessageHandler.mock.lastCall!;
+
+        expect(throwObjectResponse).toMatchObject({
+          requestId: testMessage.requestId,
+          error: errorToJson(ConnectError.from(postThrowObject), undefined),
+        });
+      },
+    );
 
     it.fails.skip(
       'will incorrectly fail to respond, throwing an uncaught `DataCloneError` when attempting to report some throwables',
@@ -230,6 +290,29 @@ describe('CRSessionClient', () => {
         });
       },
     );
+
+    it.todo(
+      'updated: should respond with failure if forwarding the input throws a non-serializeable object',
+      async () => {
+        const postThrowFunction = () => 'why would you do this';
+        connectPortPostMessage.mockImplementationOnce(() => {
+          // eslint-disable-next-line @typescript-eslint/only-throw-error
+          throw postThrowFunction;
+        });
+
+        expect(domMessageHandler).not.toHaveBeenCalled();
+        domPort.postMessage(testMessage);
+        await vi.waitFor(() => expect(domMessageHandler).toHaveBeenCalled());
+
+        expect(domMessageHandler).toHaveBeenLastCalledWith(expect.any(MessageEvent));
+        const [{ data: throwFunctionResponse }]: [MessageEvent] = domMessageHandler.mock.lastCall!;
+
+        expect(throwFunctionResponse).toMatchObject({
+          requestId: testMessage.requestId,
+          error: errorToJson(ConnectError.from(postThrowFunction), undefined),
+        });
+      },
+    );
   });
 
   describe("should respond with failure if the input isn't a valid message", () => {
@@ -247,16 +330,47 @@ describe('CRSessionClient', () => {
       domPort.addEventListener('messageerror', domMessageErrorHandler);
       domPort.start();
 
+      const extPort = lastResult(mockedChannel.mockPorts).onConnectPort;
+
       vi.stubGlobal('console', { warn: mockWarn });
       domPort.postMessage(bustedMessage);
       await vi.waitFor(() =>
         expect(mockWarn).toHaveBeenCalledWith('Unknown item from client', bustedMessage),
       );
 
-      expect(extOnMessageListener).not.toHaveBeenCalled();
+      expect(extPort.onMessage.dispatch).not.toHaveBeenCalled();
       expect(domMessageErrorHandler).not.toHaveBeenCalled();
       expect(domMessageHandler).not.toHaveBeenCalled();
     });
+
+    it.fails.todo(
+      'updated: should no longer silently fail if the input is not a `TransportEvent`',
+      async () => {
+        const mockWarn = vi.fn();
+
+        const bustedMessage = { busted: true };
+
+        domMessageHandler = vi.fn();
+        domMessageErrorHandler = vi.fn();
+
+        domPort = CRSessionClient.init(testName);
+        domPort.addEventListener('message', domMessageHandler);
+        domPort.addEventListener('messageerror', domMessageErrorHandler);
+        domPort.start();
+
+        const extPort = lastResult(mockedChannel.mockPorts).onConnectPort;
+
+        vi.stubGlobal('console', { warn: mockWarn });
+        domPort.postMessage(bustedMessage);
+        await vi.waitFor(() =>
+          expect(mockWarn).toHaveBeenCalledWith('Unknown item from client', bustedMessage),
+        );
+
+        expect(extPort.onMessage.dispatch).not.toHaveBeenCalled();
+        expect(domMessageErrorHandler).not.toHaveBeenCalled();
+        expect(domMessageHandler).not.toHaveBeenCalled();
+      },
+    );
 
     it.todo('should respond with failure if the input is not a `TransportEvent`', async () => {
       domMessageHandler = vi.fn();
@@ -267,6 +381,8 @@ describe('CRSessionClient', () => {
       domPort.addEventListener('messageerror', domMessageErrorHandler);
       domPort.start();
 
+      const extPort = lastResult(mockedChannel.mockPorts).onConnectPort;
+
       const bustedMessage = { busted: true };
       domPort.postMessage(bustedMessage);
 
@@ -275,7 +391,7 @@ describe('CRSessionClient', () => {
       expect(domMessageHandler).toHaveBeenCalledWith(
         expect.objectContaining({ data: expect.objectContaining({ error: expect.anything() }) }),
       );
-      expect(extOnMessageListener).not.toHaveBeenCalled();
+      expect(extPort.onMessage.dispatch).not.toHaveBeenCalled();
       expect(domMessageErrorHandler).not.toHaveBeenCalled();
     });
 
@@ -288,6 +404,8 @@ describe('CRSessionClient', () => {
       domPort.addEventListener('messageerror', domMessageErrorHandler);
       domPort.start();
 
+      const extPort = lastResult(mockedChannel.mockPorts).onConnectPort;
+
       const badMessage = { message: 'requestId absent' };
       domPort.postMessage(badMessage);
 
@@ -296,7 +414,7 @@ describe('CRSessionClient', () => {
       expect(domMessageHandler).toHaveBeenCalledWith(
         expect.objectContaining({ data: expect.objectContaining({ error: expect.anything() }) }),
       );
-      expect(extOnMessageListener).not.toHaveBeenCalled();
+      expect(extPort.onMessage.dispatch).not.toHaveBeenCalled();
       expect(domMessageErrorHandler).not.toHaveBeenCalled();
     });
 
@@ -311,10 +429,12 @@ describe('CRSessionClient', () => {
       domPort.addEventListener('messageerror', domMessageErrorHandler);
       domPort.start();
 
-      domPort.postMessage(goodMessage);
-      await vi.waitFor(() => expect(extOnMessageListener).toHaveBeenCalled());
+      const extPort = lastResult(mockedChannel.mockPorts).onConnectPort;
 
-      expect(extOnMessageListener).toHaveBeenLastCalledWith(
+      domPort.postMessage(goodMessage);
+      await vi.waitFor(() => expect(extPort.onMessage.dispatch).toHaveBeenCalled());
+
+      expect(extPort.onMessage.dispatch).toHaveBeenLastCalledWith(
         goodMessage,
         expect.objectContaining({
           name: expect.stringContaining(testName),
@@ -324,25 +444,29 @@ describe('CRSessionClient', () => {
       domPort.postMessage(badMessage);
       await vi.waitFor(() => expect(domMessageHandler).toHaveBeenCalled());
 
-      expect(extOnMessageListener).toHaveBeenCalledOnce(); // no new event on the extension side
+      expect(extPort.onMessage.dispatch).toHaveBeenCalledOnce(); // no new event on the extension side
       expect(domMessageHandler).toHaveBeenCalledOnce(); // but the message handler received an error
       expect(domMessageErrorHandler).not.toHaveBeenCalled(); // and the messageerror handler was not called
     });
   });
 
-  describe('should respond with failure when the port is disconnected', () => {
+  describe('situations where the port is disconnected', () => {
+    /**
+     * there is no good way to identify that a closed `MessagePort` is closed.
+     * so, this must be guarded against by logic in transport-dom.
+     */
     // present behavior
     it('should silently drop messages if the port is disconnected by client', async () => {
       const testMessage: TransportMessage = { message: 'going nowhere', requestId: '123' };
       domPort = CRSessionClient.init(testName);
-
       domPort.start();
+      const extPort = lastResult(mockedChannel.mockPorts).onConnectPort;
 
       // disconnect port from client page
-      expect(extOnDisconnectListener).not.toHaveBeenCalled();
+      expect(extPort.onDisconnect.dispatch).not.toHaveBeenCalled();
       domPort.postMessage(false);
-      await vi.waitFor(() => expect(extOnDisconnectListener).toHaveBeenCalledOnce());
-      expect(extOnMessageListener).not.toHaveBeenCalled();
+      await vi.waitFor(() => expect(extPort.onDisconnect.dispatch).toHaveBeenCalledOnce());
+      expect(extPort.onMessage.dispatch).not.toHaveBeenCalled();
 
       const clientPort = lastResult(mockedChannel.mockPorts).connectPort;
       expect(clientPort.disconnect).toHaveBeenCalledOnce();
@@ -355,9 +479,13 @@ describe('CRSessionClient', () => {
       await new Promise(resolve => void setTimeout(resolve, 50));
 
       expect(clientPort.postMessage).not.toHaveBeenCalled();
-      expect(extOnMessageListener).not.toHaveBeenCalled();
+      expect(extPort.onMessage.dispatch).not.toHaveBeenCalled();
     });
 
+    /**
+     * the chrome message system will emit both a disconnect event to notify
+     * listeners, and synchronous errors on use of a closed `chrome.runtime.Port`.
+     */
     // present behavior
     it('should respond with failures if the extension disconnects from the client', async () => {
       const testRequest: TransportMessage = { message: 'hello', requestId: '123' };
@@ -365,13 +493,11 @@ describe('CRSessionClient', () => {
 
       domPort = CRSessionClient.init(testName);
 
-      expect(mockedConnect).toHaveBeenCalledWith(
+      expect(mockedChannel.connect).toHaveBeenCalledWith(
         expect.objectContaining({
           name: expect.stringContaining(testName),
         }),
       );
-
-      const connectOnDisconnectDispatch = lastResult(mockedConnect).onDisconnect.dispatch;
 
       domMessageHandler = vi.fn();
       domMessageErrorHandler = vi.fn();
@@ -379,85 +505,164 @@ describe('CRSessionClient', () => {
       domPort.addEventListener('messageerror', domMessageErrorHandler);
       domPort.start();
 
-      // just disconnect immediately
-      lastResult(mockedChannel.mockPorts).onConnectPort.disconnect();
+      const { connectPort: sessionPort, onConnectPort: extPort } = lastResult(
+        mockedChannel.mockPorts,
+      );
+      const expectStateAtDisconnect = () => {
+        expect(domMessageErrorHandler).not.toHaveBeenCalled();
+        expect(domMessageHandler).toHaveBeenCalledOnce();
+        expect(domMessageHandler).toHaveBeenLastCalledWith(
+          expect.objectContaining({ data: false }),
+        );
 
-      // page will be notified of the disconnect
+        expect(extPort.onMessage.dispatch).not.toHaveBeenCalled();
+        expect(extPort.onDisconnect.dispatch).toHaveBeenCalledOnce();
+        expect(sessionPort.onDisconnect.dispatch).toHaveBeenCalledOnce();
+      };
+
+      expect(domMessageHandler).not.toHaveBeenCalled();
+
+      // extension-side disconnect
+      extPort.disconnect();
+      // page will be notified of the extension-side disconnect
       await vi.waitFor(() => expect(domMessageHandler).toHaveBeenCalled());
-      expect(domMessageHandler).toHaveBeenCalledWith(expect.objectContaining({ data: false }));
+
+      // state at disconnect
+      expectStateAtDisconnect();
 
       // try to send a message again
       domPort.postMessage(testRequest);
-
-      expect(extOnMessageListener).not.toHaveBeenCalled();
-      expect(extOnDisconnectListener).toHaveBeenCalledOnce();
-      expect(connectOnDisconnectDispatch).toHaveBeenCalledOnce();
-      expect(domMessageErrorHandler).not.toHaveBeenCalled();
-
-      // attempt to use the port again
       domPort.postMessage(testRequest2);
       await new Promise(resolve => void setTimeout(resolve, 10));
 
-      // nothing will happen
-      expect(extOnMessageListener).not.toHaveBeenCalled();
-      expect(extOnDisconnectListener).toHaveBeenCalledOnce();
-      expect(connectOnDisconnectDispatch).toHaveBeenCalledOnce();
-      expect(domMessageErrorHandler).not.toHaveBeenCalled();
-      expect(domMessageHandler).toHaveBeenCalledOnce();
+      // same state as before
+      expectStateAtDisconnect();
     });
 
+    it.todo(
+      'updated: should respond with failures if the extension port is disconnected by the client',
+      async () => {
+        const testRequest: TransportMessage = { message: 'hello', requestId: '123' };
+        const testRequest2: TransportMessage = { message: 'hello again', requestId: '456' };
+
+        domPort = CRSessionClient.init(testName);
+
+        expect(mockedChannel.connect).toHaveBeenCalledWith(
+          expect.objectContaining({
+            name: expect.stringContaining(testName),
+          }),
+        );
+
+        const sessionPort = lastResult(mockedChannel.connect);
+
+        domMessageHandler = vi.fn();
+        domMessageErrorHandler = vi.fn();
+        domPort.addEventListener('message', domMessageHandler);
+        domPort.addEventListener('messageerror', domMessageErrorHandler);
+        domPort.start();
+
+        await vi.waitFor(() => expect(extOnConnectListener).toHaveBeenCalled());
+
+        // just disconnect immediately
+        lastResult(mockedChannel.mockPorts).onConnectPort.disconnect();
+
+        // page will not be notified of the disconnect
+        await vi.waitFor(() => expect(domMessageHandler).not.toHaveBeenCalled());
+
+        // try to send a message again
+        domPort.postMessage(testRequest);
+
+        expect(sessionPort.onDisconnect.dispatch).toHaveBeenCalledOnce();
+        expect(domMessageErrorHandler).not.toHaveBeenCalled();
+
+        // attempt to use the port again
+        domPort.postMessage(testRequest2);
+        await new Promise(resolve => void setTimeout(resolve, 10));
+
+        // nothing will happen
+        expect(sessionPort.onDisconnect.dispatch).toHaveBeenCalledOnce();
+        expect(sessionPort.postMessage).not.toHaveBeenCalled();
+        expect(domMessageErrorHandler).not.toHaveBeenCalled();
+        expect(domMessageHandler).not.toHaveBeenCalled();
+      },
+    );
+
     it.todo('should transparently reconnect if the extension disconnects from the client', () =>
-      expect.fail(),
+      expect.fail('not yet implemented'),
     );
 
     it.todo('should respond with failures if the client disconnects from the extension', () =>
-      expect.fail(),
+      expect.fail('not yet implemented'),
     );
   });
 
   describe('stream subchannels', () => {
-    it('when receiving a stream response, should try to connect to stream subchannels', async () => {
+    it('when receiving a stream channel response, should connect to stream subchannels', async () => {
       const unaryRequest: TransportMessage = { message: 'unary message', requestId: '123' };
-      const streamResponse: TransportInitChannel = { channel: 'some-channel', requestId: '123' };
+      const streamResponse: TransportInitChannel = {
+        channel: nameConnection(testName, ChannelLabel.STREAM),
+        requestId: '123',
+      };
+
+      const extStreamConnectListener = vi.fn<[ChromePort]>();
+      const extOnMessageListener = vi.fn<[unknown, ChromePort]>();
+      const extSessionConnectListener = vi.fn((port: ChromePort) => {
+        if (port.name.startsWith(testName)) {
+          port.onMessage.addListener(extOnMessageListener);
+        }
+      });
+
+      mockedChannel.onConnect.addListener(extSessionConnectListener);
 
       domPort = CRSessionClient.init(testName);
       expect(domPort).toBeDefined();
-      expect(mockedConnect).toHaveBeenCalledOnce();
-      expect(extOnConnectListener).toHaveBeenCalledOnce();
+      expect(mockedChannel.connect).toHaveBeenCalledTimes(1);
+      expect(mockedChannel.onConnect.dispatch).toHaveBeenCalledTimes(1);
 
-      extOnMessageListener.mockImplementationOnce((_, port) => port.postMessage(streamResponse));
-
+      extOnMessageListener.mockImplementationOnce((_, port) => {
+        mockedChannel.onConnect.addListener(extStreamConnectListener);
+        port.postMessage(streamResponse);
+      });
       domPort.postMessage(unaryRequest);
-      await vi.waitFor(() => expect(extOnMessageListener).toHaveBeenCalled());
+      await vi.waitFor(() => expect(mockedChannel.onConnect.dispatch).toHaveBeenCalledTimes(2));
 
+      expect(mockedChannel.connect).toHaveBeenCalledTimes(2);
       expect(extOnMessageListener).toHaveBeenCalledOnce();
-      expect(extOnConnectListener).toHaveBeenCalledTimes(2);
-      expect(mockedConnect).toHaveBeenCalledTimes(2);
-      expect(mockedConnect).toHaveBeenCalledWith(
+      expect(extStreamConnectListener).toHaveBeenCalledOnce();
+      expect(extSessionConnectListener).toHaveBeenLastCalledWith(
         expect.objectContaining({
-          name: expect.stringContaining(streamResponse.channel),
+          name: streamResponse.channel,
         }),
+      );
+      expect(mockedChannel.connect).toHaveBeenLastCalledWith(
+        expect.objectContaining({ name: streamResponse.channel }),
       );
     });
 
-    // presently fails, but in the wrong way.
-    it.fails.todo(
-      'when receiving a stream request, should try to open stream subchannels',
+    it.todo(
+      'when making a stream channel request, should listen for stream subchannels',
       async () => {
+        const mockedChannel2 = mockChannel();
+
+        // stub the chrome runtime in both directions, for this test
+        vi.stubGlobal('chrome', {
+          runtime: { connect: mockedChannel.connect, onConnect: mockedChannel2.onConnect },
+        });
+
         const streamRequest: TransportStream = { stream: new ReadableStream(), requestId: '123' };
 
         domPort = CRSessionClient.init(testName);
         expect(domPort).toBeDefined();
-        expect(mockedConnect).toHaveBeenCalledOnce();
-        expect(extOnConnectListener).toHaveBeenCalledOnce();
+        expect(mockedChannel.connect).toHaveBeenCalledOnce();
+        expect(lastResult(mockedChannel.mockPorts).onConnectPort).toBeDefined();
 
         domPort.postMessage(streamRequest, [streamRequest.stream]);
-        await vi.waitFor(() => expect(extOnMessageListener).toHaveBeenCalled());
+        await vi.waitFor(() => expect(mockedChannel2.onConnect.addListener).toHaveBeenCalled());
 
-        expect(extOnMessageListener).toHaveBeenCalledWith(
+        expect(lastResult(mockedChannel2.mockPorts).onConnectPort).toHaveBeenCalledWith(
           expect.objectContaining({
             requestId: streamRequest.requestId,
-            channel: expect.stringContaining('STREAM'),
+            channel: expect.stringContaining(ChannelLabel.STREAM),
           }),
         );
       },
