@@ -24,11 +24,14 @@ export const PositionsCurrentValue = ({ order }: { order: DisplayPosition['order
     );
   }
 
+  const computedValue = baseAsset.amount.toNumber() * marketPrice;
+  if (!Number.isFinite(computedValue)) {
+    return <LoadingCell />;
+  }
+
   return (
     <ValueViewComponent
-      valueView={pnum(baseAsset.amount.toNumber() * marketPrice, quoteAsset.exponent).toValueView(
-        quoteAsset.asset,
-      )}
+      valueView={pnum(computedValue, quoteAsset.exponent).toValueView(quoteAsset.asset)}
       density='slim'
     />
   );
