@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Text } from '@penumbra-zone/ui/Text';
 import { Card } from '@penumbra-zone/ui/Card';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
@@ -24,7 +25,10 @@ export const PositionClosed = ({
             <div className='flex flex-col gap-2 flex-shrink min-w-0'>
               {closingTx && (
                 <Text color='text.secondary' truncate>
-                  Tx: {closingTx}
+                  Tx:{' '}
+                  <Link href={`/inspect/tx/${closingTx}`} className='hover:underline'>
+                    {closingTx}
+                  </Link>
                 </Text>
               )}
             </div>
@@ -53,7 +57,10 @@ export const PositionWithdraw = ({ withdrawal }: { withdrawal: PositionWithdrawa
               </div>
 
               <Text color='text.secondary' truncate>
-                Tx: {withdrawal.txHash}
+                Tx:{' '}
+                <Link href={`/inspect/tx/${withdrawal.txHash}`} className='hover:underline'>
+                  {withdrawal.txHash}
+                </Link>
               </Text>
             </div>
           </div>
@@ -79,7 +86,10 @@ export const PositionOpen = ({ state }: { state: PositionStateVV }) => {
               </div>
 
               <Text color='text.secondary' truncate>
-                Tx: {state.openingTx}
+                Tx:{' '}
+                <Link href={`/inspect/tx/${state.openingTx}`} className='hover:underline'>
+                  {state.openingTx}
+                </Link>
               </Text>
             </div>
           </div>
