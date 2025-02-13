@@ -44,6 +44,7 @@ describe('CRSessionClient', () => {
     mockedOnConnect.addListener(extOnConnectListener);
 
     vi.stubGlobal('chrome', { runtime: { connect: mockedConnect } });
+    vi.stubGlobal('__DEV__', true);
   });
 
   it('should not be a singleton', () => {
@@ -120,8 +121,6 @@ describe('CRSessionClient', () => {
 
     it('should respond with failure if forwarding the input throws an error', async () => {
       const postThrowError = Error('wololo');
-      console.log('connectPortPostMessage.mock.calls', connectPortPostMessage.mock.calls);
-      console.log('last mocked connect', lastResult(mockedConnect));
       connectPortPostMessage.mockImplementationOnce(() => {
         throw postThrowError;
       });
@@ -153,7 +152,6 @@ describe('CRSessionClient', () => {
       expect(domMessageHandler).toHaveBeenLastCalledWith(expect.any(MessageEvent));
       const [{ data: throwObjectResponse }]: [MessageEvent] = domMessageHandler.mock.lastCall!;
 
-      console.log('throwObjectResponse', throwObjectResponse);
       expect(throwObjectResponse).toMatchObject({
         requestId: testMessage.requestId,
         error: { ...errorToJson(ConnectError.from(postThrowError), undefined) },
@@ -334,7 +332,7 @@ describe('CRSessionClient', () => {
      * the chrome message system will emit both a disconnect event to notify
      * listeners, and synchronous errors on use of a closed `chrome.runtime.Port`.
      */
-    it('should respond with failures if the extension disconnects from the client', async () => {
+    it('should respond with failures if the extension port is disconnected', async () => {
       const testRequest: TransportMessage = { message: 'hello', requestId: '123' };
       const testRequest2: TransportMessage = { message: 'hello again', requestId: '456' };
 
@@ -346,7 +344,7 @@ describe('CRSessionClient', () => {
         }),
       );
 
-      const connectOnDisconnectDispatch = lastResult(mockedConnect).onDisconnect.dispatch;
+      const sessionPort = lastResult(mockedConnect);
 
       domMessageHandler = vi.fn();
       domMessageErrorHandler = vi.fn();
@@ -354,19 +352,18 @@ describe('CRSessionClient', () => {
       domPort.addEventListener('messageerror', domMessageErrorHandler);
       domPort.start();
 
+      await vi.waitFor(() => expect(extOnConnectListener).toHaveBeenCalled());
+
       // just disconnect immediately
       lastResult(mockedChannel.mockPorts).onConnectPort.disconnect();
 
-      // page will be notified of the disconnect
-      await vi.waitFor(() => expect(domMessageHandler).toHaveBeenCalled());
-      expect(domMessageHandler).toHaveBeenCalledWith(expect.objectContaining({ data: false }));
+      // page will not be notified of the disconnect
+      await vi.waitFor(() => expect(domMessageHandler).not.toHaveBeenCalled());
 
       // try to send a message again
       domPort.postMessage(testRequest);
 
-      expect(extOnMessageListener).not.toHaveBeenCalled();
-      expect(extOnDisconnectListener).toHaveBeenCalledOnce();
-      expect(connectOnDisconnectDispatch).toHaveBeenCalledOnce();
+      expect(sessionPort.onDisconnect.dispatch).toHaveBeenCalledOnce();
       expect(domMessageErrorHandler).not.toHaveBeenCalled();
 
       // attempt to use the port again
@@ -374,11 +371,10 @@ describe('CRSessionClient', () => {
       await new Promise(resolve => void setTimeout(resolve, 10));
 
       // nothing will happen
-      expect(extOnMessageListener).not.toHaveBeenCalled();
-      expect(extOnDisconnectListener).toHaveBeenCalledOnce();
-      expect(connectOnDisconnectDispatch).toHaveBeenCalledOnce();
+      expect(sessionPort.onDisconnect.dispatch).toHaveBeenCalledOnce();
+      expect(sessionPort.postMessage).not.toHaveBeenCalled();
       expect(domMessageErrorHandler).not.toHaveBeenCalled();
-      expect(domMessageHandler).toHaveBeenCalledOnce();
+      expect(domMessageHandler).not.toHaveBeenCalled();
     });
 
     it.todo('should transparently reconnect if the extension disconnects from the client', () =>
@@ -415,7 +411,7 @@ describe('CRSessionClient', () => {
       );
     });
 
-    it.skip('when receiving a stream request, should try to open stream subchannels', () => {
+    it.todo('when making a stream request, should try to open stream subchannels', () => {
       const streamRequest: TransportStream = { stream: new ReadableStream(), requestId: '123' };
 
       domPort = CRSessionClient.init(testName);
