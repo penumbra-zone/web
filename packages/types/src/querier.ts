@@ -9,7 +9,9 @@ import {
   DutchAuction,
 } from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
 import { CompactBlock } from '@penumbra-zone/protobuf/penumbra/core/component/compact_block/v1/compact_block_pb';
+import { LqtCheckNullifierResponse } from '@penumbra-zone/protobuf/penumbra/core/component/funding/v1/funding_pb';
 import {
+  Nullifier,
   TimestampByHeightRequest,
   TimestampByHeightResponse,
 } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
@@ -35,6 +37,7 @@ export interface RootQuerierInterface {
   sct: SctQuerierInterface;
   cnidarium: CnidariumQuerierInterface;
   auction: AuctionQuerierInterface;
+  funding: FundingQuerierInterface;
 }
 
 export interface AppQuerierInterface {
@@ -82,4 +85,8 @@ export interface AuctionQuerierInterface {
 
 export interface SctQuerierInterface {
   timestampByHeight(req: TimestampByHeightRequest): Promise<TimestampByHeightResponse>;
+}
+
+export interface FundingQuerierInterface {
+  lqtCheckNullifier(epochIndex: bigint, nullifier: Nullifier): Promise<LqtCheckNullifierResponse>;
 }

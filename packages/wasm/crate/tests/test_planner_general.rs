@@ -44,6 +44,7 @@ async fn test_planner_without_actions() {
         dutch_auction_end_actions: vec![],
         dutch_auction_withdraw_actions: vec![],
         delegator_votes: vec![],
+        action_liquidity_tournament_vote: vec![],
         epoch_index: 0,
         epoch: None,
         fee_mode: None,

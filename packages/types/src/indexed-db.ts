@@ -111,6 +111,7 @@ export interface IndexedDbInterface {
   ): Promise<void>;
   addEpoch(startHeight: bigint): Promise<void>;
   getEpochByHeight(height: bigint): Promise<Epoch | undefined>;
+  getBlockHeightByEpoch(epoch_index: bigint): Promise<Epoch | undefined>;
   upsertValidatorInfo(validatorInfo: ValidatorInfo): Promise<void>;
   iterateValidatorInfos(): AsyncGenerator<ValidatorInfo, void>;
   clearValidatorInfos(): Promise<void>;
@@ -176,6 +177,24 @@ export interface IndexedDbInterface {
   >;
 
   getPosition(positionId: PositionId): Promise<Position | undefined>;
+
+  saveLQTHistoricalVotes(
+    epoch: bigint,
+    transactionId: TransactionId,
+    assetMetadata: Metadata,
+    voteValue: Value,
+    rewardValue?: Amount,
+  ): Promise<void>;
+
+  getLQTHistoricalVotes(epoch: bigint): Promise<
+    | {
+        TransactionId: TransactionId;
+        AssetMetadata: Metadata;
+        VoteValue: Value;
+        RewardValue: Amount | undefined;
+      }
+    | undefined
+  >;
 }
 
 export interface PenumbraDb extends DBSchema {
@@ -324,6 +343,16 @@ export interface PenumbraDb extends DBSchema {
       output: Jsonified<Value>;
     };
   };
+  LQT_HISTORICAL_VOTES: {
+    key: string; // epoch index
+    value: {
+      epoch: string;
+      TransactionId: Jsonified<TransactionId>;
+      AssetMetadata: Jsonified<Metadata>;
+      VoteValue: Jsonified<Value>;
+      RewardValue: Jsonified<Amount> | null;
+    };
+  };
 }
 
 // need to store PositionId and Position in the same table
@@ -361,4 +390,5 @@ export const IDB_TABLES: Tables = {
   tree_commitments: 'TREE_COMMITMENTS',
   tree_last_position: 'TREE_LAST_POSITION',
   tree_last_forgotten: 'TREE_LAST_FORGOTTEN',
+  lqt_historical_votes: 'LQT_HISTORICAL_VOTES',
 };

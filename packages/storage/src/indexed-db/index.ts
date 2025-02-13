@@ -166,6 +166,9 @@ export class IndexedDb implements IndexedDbInterface {
         db.createObjectStore('AUCTIONS');
         db.createObjectStore('AUCTION_OUTSTANDING_RESERVES');
         db.createObjectStore('REGISTRY_VERSION');
+        db.createObjectStore('LQT_HISTORICAL_VOTES', {
+          keyPath: 'epoch',
+        });
       },
     });
     const constants = {
@@ -407,6 +410,56 @@ export class IndexedDb implements IndexedDbInterface {
     await this.u.update({
       table: 'TRANSACTIONS',
       value: tx.toJson({ typeRegistry }) as Jsonified<TransactionInfo>,
+    });
+  }
+
+  /**
+   * Retrieves liquidity tournament votes and rewards for a given epoch.
+   */
+  async getLQTHistoricalVotes(epoch: bigint): Promise<
+    | {
+        TransactionId: TransactionId;
+        AssetMetadata: Metadata;
+        VoteValue: Value;
+        RewardValue: Amount | undefined;
+      }
+    | undefined
+  > {
+    const tournamentVote = await this.db.get('LQT_HISTORICAL_VOTES', epoch.toString());
+    if (tournamentVote) {
+      return {
+        TransactionId: TransactionId.fromJson(tournamentVote.TransactionId, { typeRegistry }),
+        AssetMetadata: Metadata.fromJson(tournamentVote.AssetMetadata, { typeRegistry }),
+        VoteValue: Value.fromJson(tournamentVote.VoteValue, { typeRegistry }),
+        RewardValue: Amount.fromJson(tournamentVote.RewardValue, { typeRegistry }),
+      };
+    } else {
+      return undefined;
+    }
+  }
+
+  /**
+   * Saves historical liquidity tournament votes and rewards for a given epoch.
+   */
+  async saveLQTHistoricalVotes(
+    epoch: bigint,
+    transactionId: TransactionId,
+    assetMetadata: Metadata,
+    voteValue: Value,
+    rewardValue?: Amount,
+  ): Promise<void> {
+    assertTransactionId(transactionId);
+    const tournamentVote = {
+      epoch: epoch.toString(),
+      TransactionId: transactionId.toJson({ typeRegistry }) as Jsonified<TransactionId>,
+      AssetMetadata: assetMetadata.toJson({ typeRegistry }) as Jsonified<Metadata>,
+      VoteValue: voteValue.toJson({ typeRegistry }) as Jsonified<Value>,
+      RewardValue: rewardValue ? (rewardValue.toJson({ typeRegistry }) as Jsonified<Amount>) : null,
+    };
+
+    await this.u.update({
+      table: 'LQT_HISTORICAL_VOTES',
+      value: tournamentVote,
     });
   }
 
@@ -734,6 +787,23 @@ export class IndexedDb implements IndexedDbInterface {
         epoch = currentEpoch;
       } else if (currentEpoch.startHeight > height) {
         break;
+      }
+    }
+
+    return epoch;
+  }
+
+  /**
+   * Get the block height for the correspinding epoch index.
+   */
+  async getBlockHeightByEpoch(epoch_index: bigint): Promise<Epoch | undefined> {
+    let epoch: Epoch | undefined;
+
+    // Iterate over epochs and return the one with the matching epoch index.
+    for await (const cursor of this.db.transaction('EPOCHS', 'readonly').store) {
+      const currentEpoch = Epoch.fromJson(cursor.value);
+      if (currentEpoch.index === epoch_index) {
+        epoch = currentEpoch;
       }
     }
 
