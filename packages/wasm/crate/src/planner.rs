@@ -565,7 +565,6 @@ pub async fn plan_transaction_inner<Db: Database>(
                 validator_start_rate_data.unbonded_amount(record.note.amount());
 
             let domain_vote = vote
-                .clone()
                 .map(TryInto::try_into)
                 .transpose()?
                 .ok_or_else(|| anyhow::anyhow!("missing vote param"))?;
@@ -664,6 +663,14 @@ pub async fn plan_transaction_inner<Db: Database>(
         epoch_index,
     } in request.action_liquidity_tournament_vote
     {
+        if staked_notes.is_empty() {
+            let error_message =
+                "Invalid transaction: zero delegation notes for voting in the liquidity tournament"
+                    .to_string();
+            return Err(WasmError::Anyhow(anyhow!(error_message)));
+        }
+
+        // TODO: Consolidate staking notes into a single note and create a single action plan.
         for staked_note in staked_notes {
             let incentivized: Denom = incentivized
                 .clone()
