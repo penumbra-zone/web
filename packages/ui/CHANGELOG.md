@@ -1,5 +1,11 @@
 # @penumbra-zone/ui
 
+## 13.12.0
+
+### Minor Changes
+
+- 28e2ccb: Create new `SegmentedControl` UI component
+
 ## 13.11.0
 
 ### Minor Changes
