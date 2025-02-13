@@ -1,5 +1,11 @@
 # minifront
 
+## 6.29.0
+
+### Minor Changes
+
+- 03597b7: bump skip widget to latest to fix penumbra noble transparent addresses issue
+
 ## 6.28.5
 
 ### Patch Changes
