@@ -179,12 +179,22 @@ export interface IndexedDbInterface {
   getPosition(positionId: PositionId): Promise<Position | undefined>;
 
   saveLQTHistoricalVotes(
-    epoch: string,
+    epoch: bigint,
     transactionId: TransactionId,
     assetMetadata: Metadata,
     voteValue: Value,
     rewardValue?: Amount,
   ): Promise<void>;
+
+  getLQTHistoricalVotes(epoch: bigint): Promise<
+    | {
+        TransactionId: TransactionId;
+        AssetMetadata: Metadata;
+        VoteValue: Value;
+        RewardValue: Amount | undefined;
+      }
+    | undefined
+  >;
 }
 
 export interface PenumbraDb extends DBSchema {

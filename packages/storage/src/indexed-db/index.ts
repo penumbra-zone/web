@@ -414,21 +414,43 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   /**
-   * Retrieves historical liquidity tournament votes for a given epoch.
-   * Populates all fields during sync; `RewardValue` is `None` during voting.
-   * Supports multiple entries per epoch.
+   * Retrieves liquidity tournament votes and rewards for a given epoch.
+   */
+  async getLQTHistoricalVotes(epoch: bigint): Promise<
+    | {
+        TransactionId: TransactionId;
+        AssetMetadata: Metadata;
+        VoteValue: Value;
+        RewardValue: Amount | undefined;
+      }
+    | undefined
+  > {
+    const tournamentVote = await this.db.get('LQT_HISTORICAL_VOTES', epoch.toString());
+    if (tournamentVote) {
+      return {
+        TransactionId: TransactionId.fromJson(tournamentVote.TransactionId, { typeRegistry }),
+        AssetMetadata: Metadata.fromJson(tournamentVote.AssetMetadata, { typeRegistry }),
+        VoteValue: Value.fromJson(tournamentVote.VoteValue, { typeRegistry }),
+        RewardValue: Amount.fromJson(tournamentVote.RewardValue, { typeRegistry }),
+      };
+    } else {
+      return undefined;
+    }
+  }
+
+  /**
+   * Saves historical liquidity tournament votes and rewards for a given epoch.
    */
   async saveLQTHistoricalVotes(
-    epoch: string,
+    epoch: bigint,
     transactionId: TransactionId,
     assetMetadata: Metadata,
     voteValue: Value,
     rewardValue?: Amount,
   ): Promise<void> {
     assertTransactionId(transactionId);
-
-    const value = {
-      epoch,
+    const tournamentVote = {
+      epoch: epoch.toString(),
       TransactionId: transactionId.toJson({ typeRegistry }) as Jsonified<TransactionId>,
       AssetMetadata: assetMetadata.toJson({ typeRegistry }) as Jsonified<Metadata>,
       VoteValue: voteValue.toJson({ typeRegistry }) as Jsonified<Value>,
@@ -437,7 +459,7 @@ export class IndexedDb implements IndexedDbInterface {
 
     await this.u.update({
       table: 'LQT_HISTORICAL_VOTES',
-      value,
+      value: tournamentVote,
     });
   }
 
@@ -780,7 +802,7 @@ export class IndexedDb implements IndexedDbInterface {
     // Iterate over epochs and return the one with the matching epoch index.
     for await (const cursor of this.db.transaction('EPOCHS', 'readonly').store) {
       const currentEpoch = Epoch.fromJson(cursor.value);
-      if (currentEpoch.index == epoch_index) {
+      if (currentEpoch.index === epoch_index) {
         epoch = currentEpoch;
       }
     }
