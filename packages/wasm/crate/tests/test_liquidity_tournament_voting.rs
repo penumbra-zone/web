@@ -25,7 +25,7 @@ mod utils;
 wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
 
 async fn setup_env(mock_db: &MockDb, tables: &Tables) {
-    seed_params_in_db(&mock_db, &tables).await;
+    seed_params_in_db(mock_db, tables).await;
 
     let fee_note = SpendableNoteRecord {
         note_commitment: StateCommitment::try_from([0; 32]).unwrap(),
