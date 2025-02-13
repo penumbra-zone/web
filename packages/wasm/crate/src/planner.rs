@@ -660,39 +660,43 @@ pub async fn plan_transaction_inner<Db: Database>(
     for tpr::ActionLiquidityTournamentVote {
         incentivized,
         rewards_recipient,
-        staked_note,
+        staked_notes,
         epoch_index,
     } in request.action_liquidity_tournament_vote
     {
-        let incentivized: Denom = incentivized
-            .into_iter()
-            .next()
-            .ok_or_else(|| anyhow!("missing incentivized asset in liquidity tournament"))?
-            .try_into()?;
-        let rewards_recipient: Address = rewards_recipient
-            .ok_or_else(|| anyhow!("missing rewards recipient in liquidity tournament"))?
-            .try_into()?;
-        let spendable_note_record = staked_note
-            .ok_or_else(|| anyhow!("missing spendable note record in liquidity tournament"))?;
-        let staked_note: Note = spendable_note_record
-            .note
-            .ok_or_else(|| anyhow!("missing note in liquidity tournament"))?
-            .try_into()?;
-        let staked_note_position: Position = spendable_note_record.position.into();
-        let start_position: Position = epoch_index.into();
+        for staked_note in staked_notes {
+            let incentivized: Denom = incentivized
+                .clone()
+                .into_iter()
+                .next()
+                .ok_or_else(|| anyhow!("missing incentivized asset in liquidity tournament"))?
+                .try_into()?;
+            let rewards_recipient: Address = rewards_recipient
+                .clone()
+                .ok_or_else(|| anyhow!("missing rewards recipient in liquidity tournament"))?
+                .try_into()?;
+            // let spendable_note_record = staked_note
+            //     .ok_or_else(|| anyhow!("missing spendable note record in liquidity tournament"))?;
+            let note: Note = staked_note
+                .note
+                .ok_or_else(|| anyhow!("missing note in liquidity tournament"))?
+                .try_into()?;
+            let staked_note_position: Position = staked_note.position.into();
+            let start_position: Position = epoch_index.into();
 
-        actions_list.push(ActionPlan::ActionLiquidityTournamentVote(
-            ActionLiquidityTournamentVotePlan {
-                incentivized,
-                rewards_recipient,
-                staked_note,
-                staked_note_position,
-                start_position,
-                randomizer: Fr::rand(&mut OsRng),
-                proof_blinding_r: Fq::rand(&mut OsRng),
-                proof_blinding_s: Fq::rand(&mut OsRng),
-            },
-        ));
+            actions_list.push(ActionPlan::ActionLiquidityTournamentVote(
+                ActionLiquidityTournamentVotePlan {
+                    incentivized,
+                    rewards_recipient,
+                    staked_note: note,
+                    staked_note_position,
+                    start_position,
+                    randomizer: Fr::rand(&mut OsRng),
+                    proof_blinding_r: Fq::rand(&mut OsRng),
+                    proof_blinding_s: Fq::rand(&mut OsRng),
+                },
+            ));
+        }
     }
 
     // Phase 2: balance the transaction with information from the view service.
