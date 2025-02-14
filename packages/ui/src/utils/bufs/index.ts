@@ -7,3 +7,4 @@ export * from './metadata';
 export * from './value-view';
 export * from './address-view';
 export * from './balances-responses';
+export * from './action-view';

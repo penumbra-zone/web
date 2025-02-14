@@ -10,6 +10,7 @@ export type TextVariant =
   | 'detail'
   | 'xxs'
   | 'small'
+  | 'smallTechnical'
   | 'detailTechnical'
   | 'technical'
   | 'body'
