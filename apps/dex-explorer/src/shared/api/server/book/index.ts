@@ -90,15 +90,15 @@ export async function GET(req: NextRequest): Promise<NextResponse<RouteBookApiRe
   const buyMulti = processSimulation({ res: buyRes, registry, limit, quote_to_base: false });
   const sellMulti = processSimulation({ res: sellRes, registry, limit, quote_to_base: true });
 
-  return NextResponse.json(
-    serializeResponse({
-      singleHops: {
-        buy: buyMulti.filter(t => t.hops.length === 2),
-        sell: sellMulti.filter(t => t.hops.length === 2),
-      },
-      multiHops: { buy: buyMulti, sell: sellMulti },
-    }),
-  );
+  const response = {
+    singleHops: {
+      buy: buyMulti.filter(t => t.hops.length === 2),
+      sell: sellMulti.filter(t => t.hops.length === 2),
+    },
+    multiHops: { buy: buyMulti, sell: sellMulti },
+  };
+  console.log(JSON.stringify(response));
+  return NextResponse.json(serializeResponse(response));
 }
 
 const simulateTrade = async (
