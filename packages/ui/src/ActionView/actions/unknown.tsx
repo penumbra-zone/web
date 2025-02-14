@@ -6,10 +6,12 @@ export interface UnknownActionProps {
   opaque?: boolean;
 }
 
-export const UnknownAction = ({ label, opaque }: UnknownActionProps) => {
+export const UnknownAction = ({ label = 'Unknown action', opaque }: UnknownActionProps) => {
   return (
     <ActionWrapper opaque={opaque} title={label}>
-      <Text smallTechnical>Unimplemented</Text>
+      <Text smallTechnical color='text.secondary'>
+        Unimplemented
+      </Text>
     </ActionWrapper>
   );
 };

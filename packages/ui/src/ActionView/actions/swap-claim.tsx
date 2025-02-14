@@ -6,5 +6,5 @@ export interface SwapClaimActionProps {
 }
 
 export const SwapClaimAction = ({ value }: SwapClaimActionProps) => {
-  return <UnknownAction label='Swap Claim' opaque={value.swapClaimView.case === 'opaque'} />
+  return <UnknownAction label='Swap Claim' opaque={value.swapClaimView.case === 'opaque'} />;
 };

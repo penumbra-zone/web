@@ -107,14 +107,16 @@ export const SwapAction = ({ value }: SwapActionProps) => {
     <ActionWrapper
       title='Swap'
       opaque={!isVisible}
-      infoRows={isVisible &&
-        <>
-          {!!fee && <ActionRow label='Swap Claim fee' info={fee} />}
-          {!!txId && (
-            <ActionRow label='Swap Claim Transaction' info={shorten(txId, 8)} copyText={txId} />
-          )}
-          {unfilled && <ActionRow label='Unfilled Amount' info={unfilled} />}
-        </>
+      infoRows={
+        isVisible && (
+          <>
+            {!!fee && <ActionRow label='Swap Claim fee' info={fee} />}
+            {!!txId && (
+              <ActionRow label='Swap Claim Transaction' info={shorten(txId, 8)} copyText={txId} />
+            )}
+            {unfilled && <ActionRow label='Unfilled Amount' info={unfilled} />}
+          </>
+        )
       }
     >
       {swap && (

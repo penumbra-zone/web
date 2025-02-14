@@ -4,7 +4,10 @@ import {
   OutputView,
   SpendView,
 } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
-import { SwapView } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
+import {
+  SwapClaimView,
+  SwapView,
+} from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { ADDRESS_VIEW_DECODED } from './address-view';
 import { PENUMBRA_VALUE_VIEW, PENUMBRA_VALUE_VIEW_ZERO, USDC_VALUE_VIEW } from './value-view';
 import { PENUMBRA_METADATA, USDC_METADATA } from './metadata';
@@ -119,7 +122,39 @@ export const SwapActionOpaque = new ActionView({
             body: {
               delta1I: AMOUNT_123_456_789,
               delta2I: AMOUNT_ZERO,
-            }
+            },
+          },
+        },
+      },
+    }),
+  },
+});
+
+export const SwapClaimAction = new ActionView({
+  actionView: {
+    case: 'swapClaim',
+    value: new SwapClaimView({
+      swapClaimView: {
+        case: 'visible',
+        value: {
+          output1: new NoteView({
+            address: ADDRESS_VIEW_DECODED,
+            value: USDC_VALUE_VIEW,
+          }),
+          output2: new NoteView({
+            address: ADDRESS_VIEW_DECODED,
+            value: PENUMBRA_VALUE_VIEW_ZERO,
+          }),
+          swapTx: new TransactionId({
+            inner: new Uint8Array([0, 1, 2, 3, 4, 5, 6, 7]),
+          }),
+          swapClaim: {
+            body: {
+              fee: new Fee({
+                amount: AMOUNT_999,
+                assetId: PENUMBRA_METADATA.penumbraAssetId,
+              }),
+            },
           },
         },
       },
