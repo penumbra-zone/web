@@ -7,9 +7,9 @@ import {
 import { Trace, TraceIndex } from '@/shared/api/server/book/types.ts';
 import { getAssetIdFromValueView } from '@penumbra-zone/getters/value-view';
 import { Value, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
-import { formatAmount } from '@penumbra-zone/types/amount';
 import { removeTrailingZeros } from '@penumbra-zone/types/shortify';
+import { pnum } from '@penumbra-zone/types/pnum';
+import { registryView } from '@/shared/utils/value-view';
 
 // Build an index for this trace based on the price and the hops.
 // The index is a concatenation of the price and the asset IDs of each hops.
@@ -55,27 +55,17 @@ export const buildTrace = (
     throw new Error('Missing required value fields');
   }
 
-  const baseMetadata = registry.getMetadata(baseValue.assetId);
-  const quoteMetadata = registry.getMetadata(quoteValue.assetId);
+  const baseValueView = registryView(registry, baseValue);
+  const quoteValueView = registryView(registry, quoteValue);
 
-  const baseDisplayDenomExponent = getDisplayDenomExponent.optional(baseMetadata) ?? 0;
-  const quoteDisplayDenomExponent = getDisplayDenomExponent.optional(quoteMetadata) ?? 0;
-  const formattedBaseAmount = formatAmount({
-    amount: baseValue.amount,
-    exponent: baseDisplayDenomExponent,
-  });
-  const formattedQuoteAmount = formatAmount({
-    amount: quoteValue.amount,
-    exponent: quoteDisplayDenomExponent,
-  });
-
-  const price = new BigNumber(formattedQuoteAmount)
-    .dividedBy(formattedBaseAmount)
-    .toFormat(quoteDisplayDenomExponent);
+  const price = pnum(quoteValueView)
+    .toBigNumber()
+    .dividedBy(pnum(baseValueView).toBigNumber())
+    .toFormat(6);
 
   return {
     price: removeTrailingZeros(price),
-    amount: formattedBaseAmount,
+    amount: pnum(baseValueView).toFormattedString(),
     total: 'TBD',
     hops: trace.value.map(v => getValueView(registry, v)),
   };
