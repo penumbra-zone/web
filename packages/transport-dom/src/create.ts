@@ -173,9 +173,9 @@ export const createChannelTransport = ({
         ),
         new Promise<TransportMessage>((resolve, reject) => {
           pending.set(requestId, (tev: TransportEvent) => {
-            if (isTransportMessage(tev, requestId)) {
+            if (isTransportMessage(tev) && tev.requestId === requestId) {
               resolve(tev);
-            } else if (isTransportError(tev, requestId)) {
+            } else if (isTransportError(tev)) {
               reject(errorFromJson(tev.error, tev.metadata, new ConnectError('Unary failed')));
             } else {
               reject(ConnectError.from(tev));
@@ -242,9 +242,9 @@ export const createChannelTransport = ({
         ),
         new Promise<TransportStream>((resolve, reject) => {
           pending.set(requestId, (tev: TransportEvent) => {
-            if (isTransportStream(tev, requestId)) {
+            if (isTransportStream(tev) && tev.requestId === requestId) {
               resolve(tev);
-            } else if (isTransportError(tev, requestId)) {
+            } else if (isTransportError(tev)) {
               reject(errorFromJson(tev.error, tev.metadata, new ConnectError('Stream failed')));
             } else {
               reject(ConnectError.from(tev));
