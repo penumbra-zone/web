@@ -1,7 +1,6 @@
 /**
  * CRSessionClient is a Chrome runtime session client: it handles channel
- * Transport client sessions in the Chrome runtime.  Intended for use as a
- * document singleton, in a content script.
+ * Transport client sessions in the Chrome runtime.
  *
  * Simple handlers unconditionally forward messages back and forth. Chrome
  * runtime disconnect is detected and surfaced as an error.
@@ -56,27 +55,22 @@ const localErrorJson = (err: unknown, relevantMessage?: unknown) =>
       };
 
 export class CRSessionClient {
-  private static singleton?: CRSessionClient;
-  private servicePort: chrome.runtime.Port;
-  private clientPort: MessagePort;
-  public inputPort: MessagePort;
+  private readonly sessionName: string;
+  private readonly servicePort: chrome.runtime.Port;
 
-  private constructor(private prefix: string) {
-    if (CRSessionClient.singleton) {
-      throw new Error('Already constructed');
-    }
-
-    const { port1, port2 } = new MessageChannel();
-    this.clientPort = port1;
-    this.inputPort = port2;
+  private constructor(
+    private readonly managerId: string,
+    private readonly clientPort: MessagePort,
+  ) {
+    this.sessionName = nameConnection(managerId, ChannelLabel.TRANSPORT);
 
     this.servicePort = chrome.runtime.connect({
       includeTlsChannelId: true,
-      name: nameConnection(prefix, ChannelLabel.TRANSPORT),
+      name: this.sessionName,
     });
-
-    this.servicePort.onMessage.addListener(this.serviceListener);
     this.servicePort.onDisconnect.addListener(this.disconnect);
+    this.servicePort.onMessage.addListener(this.serviceListener);
+
     this.clientPort.addEventListener('message', this.clientListener);
     this.clientPort.start();
   }
@@ -84,27 +78,28 @@ export class CRSessionClient {
   /**
    * Establishes a new connection from this document to the extension.
    *
-   * @param prefix a string containing no spaces
+   * @param managerId string identifying the counterpart `CRSessionManager`
    * @returns a `MessagePort` that can be provided to DOM channel transports
    */
-  public static init(prefix: string): MessagePort {
-    CRSessionClient.singleton ??= new CRSessionClient(prefix);
-    return CRSessionClient.singleton.inputPort;
+  public static init(managerId: string): MessagePort {
+    const { port1, port2 } = new MessageChannel();
+    new CRSessionClient(managerId, port1);
+    return port2;
   }
 
   private disconnect = () => {
-    this.clientPort.removeEventListener('message', this.clientListener);
     this.clientPort.postMessage(false);
     this.clientPort.close();
     this.servicePort.disconnect();
-    CRSessionClient.singleton = undefined;
   };
 
   private clientListener = (ev: MessageEvent<unknown>) => {
     try {
       if (ev.data === false) {
         this.disconnect();
-      } else if (isTransportAbort(ev.data) || isTransportMessage(ev.data)) {
+      } else if (isTransportAbort(ev.data)) {
+        this.servicePort.postMessage(ev.data);
+      } else if (isTransportMessage(ev.data)) {
         this.servicePort.postMessage(ev.data);
       } else if (isTransportStream(ev.data)) {
         this.servicePort.postMessage(this.makeChannelStreamRequest(ev.data));
@@ -138,7 +133,7 @@ export class CRSessionClient {
   };
 
   private makeChannelStreamRequest = ({ requestId, stream }: TransportStream) => {
-    const channel = nameConnection(this.prefix, ChannelLabel.STREAM);
+    const channel = nameConnection(this.managerId, ChannelLabel.STREAM);
     const sinkListener = (p: chrome.runtime.Port) => {
       if (p.name !== channel) {
         return;
