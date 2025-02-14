@@ -173,9 +173,9 @@ export const createChannelTransport = ({
         ),
         new Promise<TransportMessage>((resolve, reject) => {
           pending.set(requestId, (tev: TransportEvent) => {
-            if (isTransportMessage(tev) && tev.requestId === requestId) {
+            if (isTransportMessage(tev, requestId)) {
               resolve(tev);
-            } else if (isTransportError(tev)) {
+            } else if (isTransportError(tev, requestId)) {
               reject(errorFromJson(tev.error, tev.metadata, new ConnectError('Unary failed')));
             } else {
               reject(ConnectError.from(tev));
@@ -242,9 +242,9 @@ export const createChannelTransport = ({
         ),
         new Promise<TransportStream>((resolve, reject) => {
           pending.set(requestId, (tev: TransportEvent) => {
-            if (isTransportStream(tev) && tev.requestId === requestId) {
+            if (isTransportStream(tev, requestId)) {
               resolve(tev);
-            } else if (isTransportError(tev)) {
+            } else if (isTransportError(tev, requestId)) {
               reject(errorFromJson(tev.error, tev.metadata, new ConnectError('Stream failed')));
             } else {
               reject(ConnectError.from(tev));
@@ -278,10 +278,9 @@ export const createChannelTransport = ({
               }
               break;
             case MethodKind.ClientStreaming:
-            // @ts-expect-error -- deliberate fallthrough
             case MethodKind.BiDiStreaming:
+              // send as an actual stream
               if (globalThis.__DEV__) {
-                // send as an actual stream
                 const stream: ReadableStream<JsonValue> = ReadableStream.from(input).pipeThrough(
                   new TransformStream({
                     transform: (chunk: PartialMessage<I>, cont) =>
@@ -291,7 +290,7 @@ export const createChannelTransport = ({
                 port.postMessage({ requestId, stream, header } satisfies TransportStream, [stream]);
                 break;
               }
-            // eslint-disable-next-line no-fallthrough -- deliberate fallthrough
+              throw new ConnectError('MethodKind not supported', Code.Unimplemented);
             default:
               throw new ConnectError('MethodKind not supported', Code.Unimplemented);
           }
