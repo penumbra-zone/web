@@ -97,7 +97,6 @@ export async function GET(req: NextRequest): Promise<NextResponse<RouteBookApiRe
     },
     multiHops: { buy: buyMulti, sell: sellMulti },
   };
-  console.log(JSON.stringify(response));
   return NextResponse.json(serializeResponse(response));
 }
 
