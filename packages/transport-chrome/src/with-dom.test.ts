@@ -17,7 +17,7 @@ import {
 import type { TransportMessage } from '@penumbra-zone/transport-dom/messages';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { ChannelLabel, nameConnection } from './channel-names.js';
-import { lastResult } from './last-result.js';
+import { lastResult } from './util/test-utils.js';
 
 import ReadableStream from '@penumbra-zone/transport-dom/ReadableStream.from';
 import { PortStreamSink } from './stream.js';
