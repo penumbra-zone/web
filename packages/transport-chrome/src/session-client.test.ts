@@ -77,16 +77,12 @@ describe('CRSessionClient', () => {
       const ports: MessagePort[] = [];
 
       for (let i = 0; i < 3; i++) {
-        ports.push(CRSessionClient.init(testName));
-        ports.map(porty => expect(porty).toBeInstanceOf(MessagePort));
-        expect(
-          ports.every((porty, index) => {
-            const portsWithoutPorty = ports.slice(0, index).concat(ports.slice(index + 1));
-            return portsWithoutPorty.every(notPorty => porty !== notPorty);
-          }),
-        ).toBe(false);
-        expect(mockedChannel.connect).toHaveBeenCalledTimes(ports.length);
+        const newPort = CRSessionClient.init(testName);
+        expect(ports.every(porty => porty !== newPort)).toBe(true);
+        ports.push(newPort);
       }
+
+      expect(mockedChannel.connect).toHaveBeenCalledTimes(ports.length);
     });
   });
 
