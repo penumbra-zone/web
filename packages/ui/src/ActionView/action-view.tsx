@@ -1,10 +1,11 @@
+import { FC } from 'react';
 import { ActionView as ActionViewMessage } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { ActionViewType, ActionViewValueType } from './types';
 import { UnknownAction } from './unknown';
 
 import { SpendAction } from './actions/spend';
 import { OutputAction } from './actions/output';
-import { FC } from 'react';
+import { SwapAction } from './actions/swap';
 
 export interface ActionViewProps {
   action: ActionViewMessage;
@@ -13,6 +14,8 @@ export interface ActionViewProps {
 const componentMap = {
   spend: SpendAction,
   output: OutputAction,
+  swap: SwapAction,
+  swapClaim: UnknownAction,
   delegate: UnknownAction,
   delegatorVote: UnknownAction,
   ibcRelayAction: UnknownAction,
@@ -24,8 +27,6 @@ const componentMap = {
   proposalDepositClaim: UnknownAction,
   proposalSubmit: UnknownAction,
   proposalWithdraw: UnknownAction,
-  swap: UnknownAction,
-  swapClaim: UnknownAction,
   undelegate: UnknownAction,
   undelegateClaim: UnknownAction,
   validatorDefinition: UnknownAction,

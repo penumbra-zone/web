@@ -5,11 +5,11 @@ import { ActionWrapper } from './wrapper';
 import { ValueViewComponent } from '../../ValueView';
 import { AddressViewComponent } from '../../AddressView';
 
-export interface SpendActionProps {
+export interface OutputActionProps {
   value: OutputView;
 }
 
-export const OutputAction = ({ value }: SpendActionProps) => {
+export const OutputAction = ({ value }: OutputActionProps) => {
   const density = useDensity();
 
   return (
