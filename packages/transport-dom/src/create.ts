@@ -155,13 +155,15 @@ export const createChannelTransport = ({
       method: MethodInfo<I, O>,
       signal: AbortSignal | undefined,
       timeoutMs: number | undefined = defaultTimeoutMs,
-      header: HeadersInit | undefined,
+      headersInit: HeadersInit | undefined,
       input: PartialMessage<I>,
     ): Promise<UnaryResponse<I, O>> {
       transportFailure.signal.throwIfAborted();
       port ??= await connect();
 
       const requestId = crypto.randomUUID();
+      const header = headersInit instanceof Headers ? Array.from(headersInit) : headersInit;
+
       const requestFailure = new AbortController();
 
       const response = Promise.race([
@@ -223,13 +225,14 @@ export const createChannelTransport = ({
       method: MethodInfo<I, O>,
       signal: AbortSignal | undefined,
       timeoutMs: number | undefined = defaultTimeoutMs,
-      header: HeadersInit | undefined,
+      headersInit: HeadersInit | undefined,
       input: AsyncIterable<PartialMessage<I>>,
     ): Promise<StreamResponse<I, O>> {
       transportFailure.signal.throwIfAborted();
       port ??= await connect();
 
       const requestId = crypto.randomUUID();
+      const header = headersInit instanceof Headers ? Array.from(headersInit) : headersInit;
 
       const requestFailure = new AbortController();
 
