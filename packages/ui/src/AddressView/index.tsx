@@ -1,3 +1,4 @@
+import cn from 'clsx';
 import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
@@ -50,7 +51,7 @@ export const AddressViewComponent = ({
         </div>
       )}
 
-      <div className={truncate ? 'max-w-[150px] truncate' : ''}>
+      <div className={cn('flex items-center', truncate && 'max-w-[150px] truncate')}>
         {addressIndex ? (
           <Text variant={density === 'sparse' ? 'strong' : 'small'} truncate={truncate}>
             {isRandomized && 'IBC Deposit Address for '}

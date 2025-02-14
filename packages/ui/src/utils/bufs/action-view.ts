@@ -1,5 +1,10 @@
 import { ActionView } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
-import { SpendView } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
+import {
+  OutputView,
+  SpendView,
+} from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
+import { ADDRESS_VIEW_DECODED } from './address-view';
+import { PENUMBRA_VALUE_VIEW } from './value-view';
 
 export const SpendAction = new ActionView({
   actionView: {
@@ -9,40 +14,25 @@ export const SpendAction = new ActionView({
         case: 'visible',
         value: {
           note: {
-            address: {
-              addressView: {
-                case: 'decoded',
-                value: {
-                  address: {
-                    inner: Uint8Array.from([0, 1, 2, 3]),
-                  },
-                  index: {
-                    account: 0,
-                  },
-                },
-              },
-            },
-            value: {
-              valueView: {
-                case: 'unknownAssetId',
-                value: {
-                  amount: {
-                    hi: 1n,
-                    lo: 0n,
-                  },
-                  assetId: {
-                    inner: Uint8Array.from([0, 1, 2, 3]),
-                  },
-                },
-              },
-            },
+            address: ADDRESS_VIEW_DECODED,
+            value: PENUMBRA_VALUE_VIEW,
           },
-          spend: {
-            body: {
-              balanceCommitment: {
-                inner: Uint8Array.from([0, 1, 2, 3]),
-              },
-            },
+        },
+      },
+    }),
+  },
+});
+
+export const OutputAction = new ActionView({
+  actionView: {
+    case: 'output',
+    value: new OutputView({
+      outputView: {
+        case: 'visible',
+        value: {
+          note: {
+            address: ADDRESS_VIEW_DECODED,
+            value: PENUMBRA_VALUE_VIEW,
           },
         },
       },

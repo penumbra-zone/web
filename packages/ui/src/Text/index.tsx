@@ -193,7 +193,9 @@ export const Text = (props: TextProps) => {
 
   const variantKey: TextVariant =
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- the default fallback is necessary
-    (Object.keys(props).find(key => VARIANT_MAP[key as TextVariant]) as TextVariant) ?? 'body';
+    (Object.keys(props).find(key => VARIANT_MAP[key as TextVariant]) as TextVariant) ??
+    props.variant ??
+    'body';
   const variant = VARIANT_MAP[variantKey];
   const Element = props.as ?? variant.element;
 
