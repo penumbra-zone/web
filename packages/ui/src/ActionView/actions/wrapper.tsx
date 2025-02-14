@@ -27,7 +27,7 @@ const ActionWrapperHeader = ({ opaque, children, title }: ActionWrapperProps) =>
         </Text>
       </div>
 
-      {!opaque && <div className='flex items-center gap-1'>{children}</div>}
+      <div className='flex items-center gap-1'>{children}</div>
     </>
   );
 };

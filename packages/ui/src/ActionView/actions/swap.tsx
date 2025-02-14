@@ -38,6 +38,7 @@ export const SwapAction = ({ value }: SwapActionProps) => {
   const isOneWay = isOneWaySwap(value);
   const swap = isOneWay ? getOneWaySwapValues(value) : undefined;
   const showOutput = !!getAmount.optional(swap?.output) && !isZero(getAmount(swap?.output));
+  const isVisible = value.swapView.case === 'visible';
 
   const unfilled = useMemo(() => {
     return renderAmount(swap?.unfilled);
@@ -105,8 +106,8 @@ export const SwapAction = ({ value }: SwapActionProps) => {
   return (
     <ActionWrapper
       title='Swap'
-      opaque={value.swapView.case === 'opaque'}
-      infoRows={
+      opaque={!isVisible}
+      infoRows={isVisible &&
         <>
           {!!fee && <ActionRow label='Swap Claim fee' info={fee} />}
           {!!txId && (
@@ -116,7 +117,7 @@ export const SwapAction = ({ value }: SwapActionProps) => {
         </>
       }
     >
-      {value.swapView.case === 'visible' && swap && (
+      {swap && (
         <Density slim>
           <ValueViewComponent
             valueView={swap.input}

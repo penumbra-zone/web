@@ -29,6 +29,18 @@ export const SpendAction = new ActionView({
   },
 });
 
+export const SpendActionOpaque = new ActionView({
+  actionView: {
+    case: 'spend',
+    value: new SpendView({
+      spendView: {
+        case: 'opaque',
+        value: {},
+      },
+    }),
+  },
+});
+
 export const OutputAction = new ActionView({
   actionView: {
     case: 'output',
@@ -41,6 +53,18 @@ export const OutputAction = new ActionView({
             value: PENUMBRA_VALUE_VIEW,
           },
         },
+      },
+    }),
+  },
+});
+
+export const OutputActionOpaque = new ActionView({
+  actionView: {
+    case: 'output',
+    value: new OutputView({
+      outputView: {
+        case: 'opaque',
+        value: {},
       },
     }),
   },
@@ -73,6 +97,29 @@ export const SwapAction = new ActionView({
             }),
             delta1I: AMOUNT_123_456_789,
             delta2I: AMOUNT_ZERO,
+          },
+        },
+      },
+    }),
+  },
+});
+
+export const SwapActionOpaque = new ActionView({
+  actionView: {
+    case: 'swap',
+    value: new SwapView({
+      swapView: {
+        case: 'opaque',
+        value: {
+          asset1Metadata: USDC_METADATA,
+          asset2Metadata: PENUMBRA_METADATA,
+          output1Value: USDC_VALUE_VIEW,
+          output2Value: PENUMBRA_VALUE_VIEW_ZERO,
+          swap: {
+            body: {
+              delta1I: AMOUNT_123_456_789,
+              delta2I: AMOUNT_ZERO,
+            }
           },
         },
       },

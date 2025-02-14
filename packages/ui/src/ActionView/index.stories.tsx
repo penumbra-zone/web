@@ -2,12 +2,15 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { ActionView as ActionViewMessage } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 
 import { ActionView } from '.';
-import { SpendAction, OutputAction, SwapAction } from '../utils/bufs';
+import { SpendAction, OutputAction, SwapAction, SpendActionOpaque, OutputActionOpaque, SwapActionOpaque } from '../utils/bufs';
 
 const OPTIONS: Record<string, ActionViewMessage> = {
   Spend: SpendAction,
   Output: OutputAction,
   Swap: SwapAction,
+  'Opaque: Spend': SpendActionOpaque,
+  'Opaque: Output': OutputActionOpaque,
+  'Opaque: Swap': SwapActionOpaque,
 };
 
 const meta: Meta<typeof ActionView> = {
