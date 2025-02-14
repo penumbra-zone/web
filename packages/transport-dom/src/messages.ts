@@ -2,59 +2,45 @@ import type { JsonValue } from '@bufbuild/protobuf';
 
 // transport meta
 
-export interface TransportError<I extends string | undefined> extends Partial<TransportEvent> {
-  requestId: I extends string ? string : string | undefined;
+export interface TransportError extends Partial<TransportEvent> {
   error: JsonValue;
-  metadata?: HeadersInit;
+  metadata?: [string, string][] | Record<string, string>;
 }
 
 // transport content
 
-export type TransportData = TransportMessage | TransportStream;
-
-export interface TransportEvent<I extends string = string> {
-  requestId: I;
-  header?: HeadersInit;
-  trailer?: HeadersInit;
+export interface TransportEvent {
+  requestId: string;
+  header?: [string, string][] | Record<string, string>;
+  trailer?: [string, string][] | Record<string, string>;
   // contextValues?: object;
 }
 
-export interface TransportAbort<I = string> extends TransportEvent<I extends string ? I : never> {
+export interface TransportAbort extends TransportEvent {
   abort: true;
 }
 
-export interface TransportMessage<I = string> extends TransportEvent<I extends string ? I : never> {
+export interface TransportMessage extends TransportEvent {
   message: JsonValue;
 }
 
 // in-channel stream
-export interface TransportStream<I = string> extends TransportEvent<I extends string ? I : never> {
+export interface TransportStream extends TransportEvent {
   stream: ReadableStream<JsonValue>;
 }
 
 // guards
+export const isTransportEvent = (t: unknown): t is TransportEvent =>
+  typeof t === 'object' && t != null && 'requestId' in t && typeof t.requestId === 'string';
 
-const isObj = (o: unknown): o is object => typeof o === 'object' && o !== null;
+export const isTransportError = (e: unknown): e is TransportError =>
+  typeof e === 'object' && e != null && 'error' in e;
 
-export const isTransportError = <I extends string>(e: unknown, id?: I): e is TransportError<I> =>
-  isObj(e) && 'error' in e && (!id || ('requestId' in e && e.requestId === id));
+export const isTransportMessage = (m: unknown): m is TransportMessage =>
+  isTransportEvent(m) && 'message' in m;
 
-export const isTransportData = (t: unknown): t is TransportData =>
-  isTransportMessage(t) || isTransportStream(t);
+export const isTransportStream = (s: unknown): s is TransportStream =>
+  isTransportEvent(s) && 'stream' in s && s.stream instanceof ReadableStream;
 
-export const isTransportEvent = <I extends string>(t: unknown, id?: I): t is TransportEvent<I> =>
-  isObj(t) &&
-  'requestId' in t &&
-  typeof t.requestId === 'string' &&
-  (id ? t.requestId === id : true);
-
-export const isTransportMessage = <I extends string>(
-  m: unknown,
-  id?: I,
-): m is TransportMessage<I> => isTransportEvent(m, id) && 'message' in m;
-
-export const isTransportStream = <I extends string>(s: unknown, id?: I): s is TransportStream<I> =>
-  isTransportEvent(s, id) && 'stream' in s && s.stream instanceof ReadableStream;
-
-export const isTransportAbort = <I extends string>(a: unknown, id?: I): a is TransportAbort<I> =>
-  isTransportEvent(a, id) && 'abort' in a && a.abort === true;
+export const isTransportAbort = (a: unknown): a is TransportAbort =>
+  isTransportEvent(a) && 'abort' in a && a.abort === true;
