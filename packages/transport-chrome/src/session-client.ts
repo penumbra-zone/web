@@ -25,6 +25,11 @@ import { ChannelLabel, nameConnection } from './channel-names.js';
 import { isTransportInitChannel, TransportInitChannel } from './message.js';
 import { PortStreamSink, PortStreamSource } from './stream.js';
 
+declare global {
+  // eslint-disable-next-line no-var -- global dev mode flag
+  var __DEV__: boolean | undefined;
+}
+
 const localErrorJson = (err: unknown, relevantMessage?: unknown) =>
   err instanceof Error
     ? {
@@ -106,7 +111,7 @@ export class CRSessionClient {
         this.disconnect();
       } else if (isTransportAbort(ev.data) || isTransportMessage(ev.data)) {
         this.servicePort.postMessage(ev.data);
-      } else if (isTransportStream(ev.data)) {
+      } else if (isTransportStream(ev.data) && globalThis.__DEV__) {
         this.servicePort.postMessage(this.makeChannelStreamRequest(ev.data));
       } else {
         console.warn('Unknown item from client', ev.data);
