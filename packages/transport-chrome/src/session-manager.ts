@@ -12,6 +12,11 @@ import {
   TransportStream,
 } from '@penumbra-zone/transport-dom/messages';
 
+declare global {
+  // eslint-disable-next-line no-var -- global dev mode flag
+  var __DEV__: boolean | undefined;
+}
+
 interface CRSession extends AbortController {
   clientId: string;
   port: chrome.runtime.Port;
@@ -135,8 +140,10 @@ export class CRSessionManager {
           this.requests.get(i.requestId)?.abort();
         } else if (isTransportMessage(i)) {
           void this.clientMessageHandler(session, i).then(res => p.postMessage(res));
-        } else if (isTransportInitChannel(i)) {
-          console.warn('Client streaming unimplemented', this.acceptChannelStreamRequest(i));
+        } else if (isTransportInitChannel(i) && globalThis.__DEV__) {
+          void this.clientMessageHandler(session, this.acceptChannelStreamRequest(i) as never).then(
+            res => p.postMessage(res),
+          );
         } else {
           console.warn('Unknown item in transport', i);
         }
