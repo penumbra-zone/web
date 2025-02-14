@@ -62,7 +62,7 @@ describe('CRSessionClient', () => {
   });
 
   describe('repeated calls to init', () => {
-    it('should return the same port for each call', () => {
+    it.fails('should return the same port for each call', () => {
       const ports: MessagePort[] = [];
 
       for (let i = 0; i < 3; i++) {
@@ -73,20 +73,16 @@ describe('CRSessionClient', () => {
       }
     });
 
-    it.fails('fails: should return a new port for each call', () => {
+    it('should return a new port for each call', () => {
       const ports: MessagePort[] = [];
 
       for (let i = 0; i < 3; i++) {
-        ports.push(CRSessionClient.init(testName));
-        ports.map(porty => expect(porty).toBeInstanceOf(MessagePort));
-        expect(
-          ports.every((porty, index) => {
-            const portsWithoutPorty = ports.slice(0, index).concat(ports.slice(index + 1));
-            return portsWithoutPorty.every(notPorty => porty !== notPorty);
-          }),
-        ).toBe(false);
-        expect(mockedChannel.connect).toHaveBeenCalledTimes(ports.length);
+        const newPort = CRSessionClient.init(testName);
+        expect(ports.every(porty => porty !== newPort)).toBe(true);
+        ports.push(newPort);
       }
+
+      expect(mockedChannel.connect).toHaveBeenCalledTimes(ports.length);
     });
   });
 
