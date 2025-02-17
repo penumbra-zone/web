@@ -2,7 +2,7 @@ import cn from 'clsx';
 import { ReactNode } from 'react';
 import { Text } from '../../Text';
 import { IncognitoIcon } from './incognito-icon';
-import { useDensity } from '../../utils/density';
+import { Density, useDensity } from '../../utils/density';
 
 export interface ActionWrapperProps {
   title: string;
@@ -12,7 +12,11 @@ export interface ActionWrapperProps {
   infoRows?: ReactNode;
 }
 
-const ActionWrapperHeader = ({ opaque, children, title }: ActionWrapperProps) => {
+export interface ActionWrapperHeaderProps extends ActionWrapperProps {
+  density: Density;
+}
+
+const ActionWrapperHeader = ({ opaque, children, title, density }: ActionWrapperHeaderProps) => {
   return (
     <>
       {opaque && (
@@ -21,8 +25,11 @@ const ActionWrapperHeader = ({ opaque, children, title }: ActionWrapperProps) =>
         </i>
       )}
 
-      <div className='grow truncate'>
-        <Text smallTechnical color={opaque ? 'text.secondary' : 'text.primary'}>
+      <div className='flex grow items-center truncate'>
+        <Text
+          variant={density === 'sparse' ? 'smallTechnical' : 'detailTechnical'}
+          color={opaque ? 'text.secondary' : 'text.primary'}
+        >
           {title}
         </Text>
       </div>
@@ -39,7 +46,7 @@ export const ActionWrapper = (props: ActionWrapperProps) => {
   if (!infoRows) {
     return (
       <div className='flex h-10 w-full items-center justify-between gap-1 rounded-sm bg-other-tonalFill5 px-3 py-2'>
-        <ActionWrapperHeader {...props} />
+        <ActionWrapperHeader density={density} {...props} />
       </div>
     );
   }
@@ -52,7 +59,7 @@ export const ActionWrapper = (props: ActionWrapperProps) => {
       )}
     >
       <div className='flex w-full items-center justify-between gap-1'>
-        <ActionWrapperHeader {...props} />
+        <ActionWrapperHeader density={density} {...props} />
       </div>
 
       {infoRows}
