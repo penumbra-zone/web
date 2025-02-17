@@ -1,5 +1,6 @@
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
 import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 
 const u8 = (length: number) => Uint8Array.from({ length }, () => Math.floor(Math.random() * 256));
 const validatorIk = { ik: u8(32) };
@@ -53,6 +54,38 @@ export const PENUMBRA_METADATA = new Metadata({
       svg: 'https://raw.githubusercontent.com/prax-wallet/registry/main/images/um.svg',
     },
   ],
+});
+
+export const USDC_METADATA = new Metadata({
+  description: 'USD Coin',
+  denomUnits: [
+    {
+      denom: 'transfer/channel-2/uusdc',
+    },
+    {
+      denom: 'transfer/channel-2/usdc',
+      exponent: 6,
+    },
+  ],
+  base: 'transfer/channel-2/uusdc',
+  display: 'transfer/channel-2/usdc',
+  name: 'USDC',
+  symbol: 'USDC',
+  penumbraAssetId: {
+    inner: base64ToUint8Array('drPksQaBNYwSOzgfkGOEdrd4kEDkeALeh58Ps+7cjQs='),
+  },
+  images: [
+    {
+      png: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/usdc.png',
+      svg: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/usdc.svg',
+      theme: {
+        primaryColorHex: '#2775CA',
+        circle: true,
+      },
+    },
+  ],
+  priorityScore: 800000000100n,
+  coingeckoId: 'usd-coin',
 });
 
 export const OSMO_METADATA = new Metadata({
