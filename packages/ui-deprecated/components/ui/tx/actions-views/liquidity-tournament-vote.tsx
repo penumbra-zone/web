@@ -34,5 +34,5 @@ export const LiquidityTournamentVoteComponent = ({
     return <ViewBox label='Liquidity Tournament Vote' />;
   }
 
-  return <div>Invalid SpendView</div>;
+  return <div>Invalid ActionLiquidityTournamentVoteView</div>;
 };
