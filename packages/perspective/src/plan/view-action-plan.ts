@@ -452,12 +452,18 @@ export const viewActionPlan =
         });
       }
 
+      case 'actionLiquidityTournamentVote': {
+        return new ActionView({
+          actionView: {
+            case: 'actionLiquidityTournamentVote',
+            value: {},
+          },
+        });
+      }
+
       case undefined:
         return new ActionView({
           actionView: actionPlan.action,
         });
-
-      default:
-        throw new Error(`Unsupported action case: ${actionPlan.action.case}`);
     }
   };
