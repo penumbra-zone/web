@@ -10,6 +10,4 @@ export const Inner = {
   penumbravalid: 'ik',
   penumbrawalletid: 'inner',
   plpid: 'inner',
-  penumbracompat1: 'inner',
-  tpenumbra: 'inner',
 } as const satisfies Required<Record<Prefix, string>>;

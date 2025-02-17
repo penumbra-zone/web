@@ -21,7 +21,6 @@ fn height_properly_serializes_from_json() {
           },
           "timeoutTime": "1701471437169",
           "sourceChannel": "channel-0",
-          "useTransparentAddress": false
         }
     "#;
 
