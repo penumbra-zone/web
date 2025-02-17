@@ -416,7 +416,7 @@ export class IndexedDb implements IndexedDbInterface {
   /**
    * Retrieves liquidity tournament votes and rewards for a given epoch.
    */
-  async getLQTHistoricalVotes(epoch: bigint): Promise<
+  async getLQTHistoricalVote(epoch: bigint): Promise<
     | {
         TransactionId: TransactionId;
         AssetMetadata: Metadata;
@@ -431,7 +431,9 @@ export class IndexedDb implements IndexedDbInterface {
         TransactionId: TransactionId.fromJson(tournamentVote.TransactionId, { typeRegistry }),
         AssetMetadata: Metadata.fromJson(tournamentVote.AssetMetadata, { typeRegistry }),
         VoteValue: Value.fromJson(tournamentVote.VoteValue, { typeRegistry }),
-        RewardValue: Amount.fromJson(tournamentVote.RewardValue, { typeRegistry }),
+        RewardValue: tournamentVote.RewardValue
+          ? Amount.fromJson(tournamentVote.RewardValue, { typeRegistry })
+          : undefined,
       };
     } else {
       return undefined;
@@ -441,7 +443,7 @@ export class IndexedDb implements IndexedDbInterface {
   /**
    * Saves historical liquidity tournament votes and rewards for a given epoch.
    */
-  async saveLQTHistoricalVotes(
+  async saveLQTHistoricalVote(
     epoch: bigint,
     transactionId: TransactionId,
     assetMetadata: Metadata,
@@ -804,6 +806,7 @@ export class IndexedDb implements IndexedDbInterface {
       const currentEpoch = Epoch.fromJson(cursor.value);
       if (currentEpoch.index === epoch_index) {
         epoch = currentEpoch;
+        break;
       }
     }
 

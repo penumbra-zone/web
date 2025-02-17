@@ -178,7 +178,7 @@ export interface IndexedDbInterface {
 
   getPosition(positionId: PositionId): Promise<Position | undefined>;
 
-  saveLQTHistoricalVotes(
+  saveLQTHistoricalVote(
     epoch: bigint,
     transactionId: TransactionId,
     assetMetadata: Metadata,
@@ -186,7 +186,7 @@ export interface IndexedDbInterface {
     rewardValue?: Amount,
   ): Promise<void>;
 
-  getLQTHistoricalVotes(epoch: bigint): Promise<
+  getLQTHistoricalVote(epoch: bigint): Promise<
     | {
         TransactionId: TransactionId;
         AssetMetadata: Metadata;

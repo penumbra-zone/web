@@ -17,7 +17,7 @@ export const tournamentVotes: Impl['tournamentVotes'] = async (req, ctx) => {
   // Retrieve the vote cast in the liquidity tournament for the current epoch.
   const tournamentVote = new TournamentVotesResponse();
   if (epoch?.index) {
-    const vote = await indexedDb.getLQTHistoricalVotes(epoch.index);
+    const vote = await indexedDb.getLQTHistoricalVote(epoch.index);
     if (vote) {
       tournamentVote.votes.push(
         new TournamentVotesResponse_Vote({

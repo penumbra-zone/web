@@ -670,20 +670,15 @@ pub async fn plan_transaction_inner<Db: Database>(
             return Err(WasmError::Anyhow(anyhow!(error_message)));
         }
 
-        // TODO: Consolidate staking notes into a single note and create a single action plan.
         for staked_note in staked_notes {
             let incentivized: Denom = incentivized
                 .clone()
-                .into_iter()
-                .next()
                 .ok_or_else(|| anyhow!("missing incentivized asset in liquidity tournament"))?
                 .try_into()?;
             let rewards_recipient: Address = rewards_recipient
                 .clone()
                 .ok_or_else(|| anyhow!("missing rewards recipient in liquidity tournament"))?
                 .try_into()?;
-            // let spendable_note_record = staked_note
-            //     .ok_or_else(|| anyhow!("missing spendable note record in liquidity tournament"))?;
             let note: Note = staked_note
                 .note
                 .ok_or_else(|| anyhow!("missing note in liquidity tournament"))?
