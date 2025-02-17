@@ -21,7 +21,7 @@ export const LiquidityTournamentVoteComponent = ({
             )}
             {value.liquidityTournamentVote.value.vote?.body?.incentivized && (
               <ActionDetails.Row label='Voted Asset'>
-                {value.liquidityTournamentVote.value.vote?.body?.incentivized.denom}
+                {value.liquidityTournamentVote.value.vote.body.incentivized.denom}
               </ActionDetails.Row>
             )}
           </ActionDetails>

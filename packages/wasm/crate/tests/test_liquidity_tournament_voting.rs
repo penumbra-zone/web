@@ -69,11 +69,11 @@ async fn test_liquidity_voting_no_delegation_notes() {
     let spendable_notes_proto: Vec<SpendableNoteRecordProto> =
         notes.into_iter().map(|(note, _)| note.into()).collect();
 
-    let denom = vec![pb::Denom {
+    let denom = pb::Denom {
         denom:
             "udelegation_penumbravalid1hz2hqlgx4w55vkxzv0n3u93czlkvm6zpgftyny2psg3dp8vcygxqd7fedt"
                 .to_string(),
-    }];
+    };
 
     let rewards_recipient: AddressProto = Address::dummy(&mut OsRng).into();
 
@@ -99,7 +99,7 @@ async fn test_liquidity_voting_no_delegation_notes() {
         dutch_auction_withdraw_actions: vec![],
         delegator_votes: vec![],
         action_liquidity_tournament_vote: vec![ActionLiquidityTournamentVote {
-            incentivized: denom,
+            incentivized: Some(denom),
             rewards_recipient: Some(rewards_recipient),
             staked_notes: spendable_notes_proto,
             epoch_index: 1,
@@ -176,11 +176,11 @@ async fn test_liquidity_voting_single_delegation_note() {
 
     assert_eq!(spendable_notes.len(), 1);
 
-    let denom = vec![pb::Denom {
+    let denom = pb::Denom {
         denom:
             "udelegation_penumbravalid1hz2hqlgx4w55vkxzv0n3u93czlkvm6zpgftyny2psg3dp8vcygxqd7fedt"
                 .to_string(),
-    }];
+    };
 
     let rewards_recipient: AddressProto = Address::dummy(&mut OsRng).into();
 
@@ -206,7 +206,7 @@ async fn test_liquidity_voting_single_delegation_note() {
         dutch_auction_withdraw_actions: vec![],
         delegator_votes: vec![],
         action_liquidity_tournament_vote: vec![ActionLiquidityTournamentVote {
-            incentivized: denom,
+            incentivized: Some(denom),
             rewards_recipient: Some(rewards_recipient),
             staked_notes: spendable_notes_proto,
             epoch_index: 1,
@@ -311,11 +311,11 @@ async fn test_liquidity_voting_multiple_delegation_note() {
 
     assert_eq!(spendable_notes.len(), 2);
 
-    let denom = vec![pb::Denom {
+    let denom = pb::Denom {
         denom:
             "udelegation_penumbravalid1hz2hqlgx4w55vkxzv0n3u93czlkvm6zpgftyny2psg3dp8vcygxqd7fedt"
                 .to_string(),
-    }];
+    };
 
     let rewards_recipient: AddressProto = Address::dummy(&mut OsRng).into();
 
@@ -341,7 +341,7 @@ async fn test_liquidity_voting_multiple_delegation_note() {
         dutch_auction_withdraw_actions: vec![],
         delegator_votes: vec![],
         action_liquidity_tournament_vote: vec![ActionLiquidityTournamentVote {
-            incentivized: denom,
+            incentivized: Some(denom),
             rewards_recipient: Some(rewards_recipient),
             staked_notes: spendable_notes_proto,
             epoch_index: 1,
