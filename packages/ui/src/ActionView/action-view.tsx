@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { ActionView as ActionViewMessage } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
-import { ActionViewType, ActionViewValueType } from './types';
+import { ActionViewType, ActionViewValueType, GetMetadataByAssetId } from './types';
 import { UnknownAction } from './actions/unknown';
 
 import { SpendAction } from './actions/spend';
@@ -30,15 +30,24 @@ import { CommunityPoolOutputAction } from './actions/community-pool-output';
 import { CommunityPoolSpendAction } from './actions/community-pool-spend';
 
 export interface ActionViewProps {
+  /**
+   * The `ActionViewMessage` protobuf describing an action within a transaction in Penumbra.
+   * Can be one of multiple types: Spend, Output, Swap, SwapClaim, etc.
+   */
   action: ActionViewMessage;
+  /**
+   * A helper function that is needed for better fees calculation.
+   * Can be omitted, but it generally improves the rendering logic, especially for opaque views.
+   */
+  getMetadataByAssetId?: GetMetadataByAssetId;
 }
 
 const componentMap = {
   spend: SpendAction,
   output: OutputAction,
   swap: SwapAction,
-  // TODO: Implement the actions below
   swapClaim: SwapClaimAction,
+  // TODO: Implement the actions below
   delegate: DelegateAction,
   delegatorVote: DelegatorVoteAction,
   undelegate: UndelegateAction,
@@ -67,9 +76,12 @@ const componentMap = {
  * In Penumbra, each transaction has 'actions' of different types,
  * representing a blockchain state change performed by a transaction.
  */
-export const ActionView = ({ action }: ActionViewProps) => {
+export const ActionView = ({ action, getMetadataByAssetId }: ActionViewProps) => {
   const type = action.actionView.case ?? 'unknown';
-  const Component = componentMap[type] as FC<{ value?: ActionViewValueType }>;
+  const Component = componentMap[type] as FC<{
+    value?: ActionViewValueType;
+    getMetadataByAssetId?: GetMetadataByAssetId;
+  }>;
 
-  return <Component value={action.actionView.value} />;
+  return <Component value={action.actionView.value} getMetadataByAssetId={getMetadataByAssetId} />;
 };
