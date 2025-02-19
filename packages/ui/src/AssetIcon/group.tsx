@@ -4,7 +4,7 @@ import cn from 'clsx';
 import { Size, AssetIcon } from './index';
 
 export interface AssetGroupProps {
-  assets?: Metadata[];
+  assets?: (Metadata | undefined)[];
   as?: ElementType;
   size?: Size;
   variant?: 'overlay' | 'split';
@@ -22,20 +22,46 @@ const SPLIT_SIZE_MAP: Record<Size, string> = {
   sm: 'w-2 max-w-2',
 };
 
-export const AssetGroup = ({ assets, as: Container = 'div', size = 'md', variant = 'overlay' }: AssetGroupProps) => {
+const LEFT_BADGE_SIZE_MAP: Record<Size, string> = {
+  lg: '[&_*[data-badge="true"]]:-left-[3px] right-unset',
+  md: '[&_*[data-badge="true"]]:-left-[2px] right-unset',
+  sm: '[&_*[data-badge="true"]]:-left-[1px] right-unset',
+};
+
+const MARGIN_SIZE_MAP: Record<Size, string> = {
+  lg: '-ml-4',
+  md: '-ml-3',
+  sm: '-ml-2',
+};
+
+const LEFT_CLIP_PATH = cn(
+  '[&_img:not([data-badge="true"])]:[clip-path:inset(0px_0px_0px_50%)] [&_svg]:[clip-path:inset(0px_0px_0px_50%)]',
+);
+const RIGHT_CLIP_PATH = cn(
+  '[&_img:not([data-badge="true"])]:[clip-path:inset(0px_50%_0px_0px)] [&_svg]:[clip-path:inset(0px_50%_0px_0px)]',
+);
+
+export const AssetGroup = ({
+  assets,
+  as: Container = 'div',
+  size = 'md',
+  variant = 'overlay',
+}: AssetGroupProps) => {
   if (variant === 'split') {
-    return (<Container className={cn('relative flex items-center gap-[1px]')}>
-      {assets?.[0] && (
-        <div className={cn(SPLIT_SIZE_MAP[size], 'overflow-hidden')}>
-          <AssetIcon metadata={assets[0]} size={size} />
-        </div>
-      )}
-      {assets?.[1] && (
-        <div className={cn(SPLIT_SIZE_MAP[size], 'overflow-hidden [&>*]:-translate-x-1/2')}>
-          <AssetIcon metadata={assets[1]} size={size} />
-        </div>
-      )}
-    </Container>);
+    return (
+      <Container className={cn('relative flex items-center gap-[1px]')}>
+        {assets?.[0] && (
+          <div className={cn(SPLIT_SIZE_MAP[size], LEFT_BADGE_SIZE_MAP[size], RIGHT_CLIP_PATH)}>
+            <AssetIcon metadata={assets[0]} size={size} />
+          </div>
+        )}
+        {assets?.[1] && (
+          <div className={cn(SPLIT_SIZE_MAP[size], MARGIN_SIZE_MAP[size], LEFT_CLIP_PATH)}>
+            <AssetIcon metadata={assets[1]} size={size} />
+          </div>
+        )}
+      </Container>
+    );
   }
 
   return (
@@ -44,5 +70,5 @@ export const AssetGroup = ({ assets, as: Container = 'div', size = 'md', variant
         <AssetIcon metadata={asset} key={index} size={size} zIndex={assets.length - index} />
       ))}
     </Container>
-  )
+  );
 };

@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useMemo } from 'react';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getDisplay } from '@penumbra-zone/getters/metadata';
 import { assetPatterns } from '@penumbra-zone/types/assets';
@@ -14,7 +14,13 @@ export type Size = 'lg' | 'md' | 'sm';
 const sizeMap: Record<Size, string> = {
   lg: cn('w-8 h-8'),
   md: cn('w-6 h-6'),
-  sm: cn('w-6 h-6'),
+  sm: cn('w-4 h-4'),
+};
+
+const badgeSizeMap: Record<Size, string> = {
+  lg: cn('size-4 -bottom-[3px] -right-[3px]'),
+  md: cn('size-3 -bottom-[2px] -right-[2px]'),
+  sm: cn('size-2 -bottom-[1px] -right-[1px]'),
 };
 
 export interface AssetIconProps {
@@ -33,7 +39,7 @@ export const AssetIcon = ({ metadata, size = 'md', zIndex }: AssetIconProps) => 
 
   let assetIcon: ReactNode;
   if (icon) {
-    assetIcon = <img src={icon} className='block' alt='Asset icon' />;
+    assetIcon = <img src={icon} className='block rounded-full' alt='Asset icon' />;
   } else if (isDelegationToken) {
     assetIcon = <DelegationTokenIcon displayDenom={display} />;
   } else if (isUnbondingToken) {
@@ -46,9 +52,28 @@ export const AssetIcon = ({ metadata, size = 'md', zIndex }: AssetIconProps) => 
     assetIcon = <Identicon uniqueIdentifier={metadata?.symbol ?? '?'} type='solid' />;
   }
 
+  const badge = useMemo(() => {
+    if (!metadata?.badges.length) {
+      return undefined;
+    }
+    const badge = metadata.badges[0];
+    return badge?.svg ?? badge?.png;
+  }, [metadata]);
+
   return (
-    <div style={{ zIndex }} className={cn(sizeMap[size], 'rounded-full overflow-hidden', '[&>*]:w-full [&>*]:h-full')} title={metadata?.symbol}>
+    <div
+      style={{ zIndex }}
+      className={cn(
+        sizeMap[size],
+        'relative rounded-full',
+        '[&>*:first-child]:w-full [&>*:first-child]:h-full',
+      )}
+      title={metadata?.symbol}
+    >
       {assetIcon}
+      {badge && (
+        <img src={badge} data-badge='true' alt='' className={cn(badgeSizeMap[size], 'absolute')} />
+      )}
     </div>
   );
 };

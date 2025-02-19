@@ -1,10 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import {
-  PENUMBRA_METADATA,
-  PIZZA_METADATA,
-  USDC_METADATA,
-} from '../utils/bufs';
+import { PENUMBRA_METADATA, PIZZA_METADATA, USDC_METADATA } from '../utils/bufs';
 import { AssetGroup } from '.';
 
 const meta: Meta<typeof AssetGroup> = {
