@@ -62,7 +62,7 @@ describe('CRSessionClient', () => {
   });
 
   describe('repeated calls to init', () => {
-    it('should return the same port for each call', () => {
+    it.fails('should return the same port for each call', () => {
       const ports: MessagePort[] = [];
 
       for (let i = 0; i < 3; i++) {
@@ -73,7 +73,7 @@ describe('CRSessionClient', () => {
       }
     });
 
-    it.fails('should return a new port for each call', () => {
+    it('should return a new port for each call', () => {
       const ports: MessagePort[] = [];
 
       for (let i = 0; i < 3; i++) {
