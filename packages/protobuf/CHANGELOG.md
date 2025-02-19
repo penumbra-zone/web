@@ -1,5 +1,11 @@
 # @penumbra-zone/protobuf
 
+## 8.0.0
+
+### Major Changes
+
+- 49ae3ab: LQT integration in web packages
+
 ## 7.2.0
 
 ### Minor Changes

@@ -1,5 +1,23 @@
 # minifront
 
+## 6.29.0
+
+### Minor Changes
+
+- 03597b7: bump skip widget to latest to fix penumbra noble transparent addresses issue
+
+### Patch Changes
+
+- Updated dependencies [49ae3ab]
+  - @penumbra-zone/protobuf@8.0.0
+  - @penumbra-zone/types@30.0.0
+  - @penumbra-zone/ui-deprecated@16.0.0
+  - @penumbra-zone/perspective@48.0.0
+  - @penumbra-zone/bech32m@14.0.0
+  - @penumbra-zone/client@25.0.0
+  - @penumbra-zone/getters@24.0.0
+  - @penumbra-zone/crypto-web@37.0.0
+
 ## 6.28.5
 
 ### Patch Changes
