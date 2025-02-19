@@ -10,6 +10,7 @@ import {
 } from '../utils/bufs';
 
 const meta: Meta<typeof AssetIcon> = {
+  title: 'AssetIcon/Single',
   component: AssetIcon,
   tags: ['autodocs', '!dev'],
   argTypes: {

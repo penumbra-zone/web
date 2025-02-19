@@ -7,7 +7,9 @@ import { DelegationTokenIcon } from './DelegationTokenIcon';
 import { UnbondingTokenIcon } from './UnbondingTokenIcon';
 import cn from 'clsx';
 
-type Size = 'lg' | 'md' | 'sm';
+export { AssetGroup, type AssetGroupProps } from './group';
+
+export type Size = 'lg' | 'md' | 'sm';
 
 const sizeMap: Record<Size, string> = {
   lg: cn('w-8 h-8'),
@@ -18,9 +20,11 @@ const sizeMap: Record<Size, string> = {
 export interface AssetIconProps {
   size?: Size;
   metadata?: Metadata;
+  /** Technical property, needed for `AssetGroup` component only */
+  zIndex?: number;
 }
 
-export const AssetIcon = ({ metadata, size = 'md' }: AssetIconProps) => {
+export const AssetIcon = ({ metadata, size = 'md', zIndex }: AssetIconProps) => {
   // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- possibly empty string
   const icon = metadata?.images[0]?.png || metadata?.images[0]?.svg;
   const display = getDisplay.optional(metadata);
@@ -43,7 +47,7 @@ export const AssetIcon = ({ metadata, size = 'md' }: AssetIconProps) => {
   }
 
   return (
-    <div className={cn(sizeMap[size], 'rounded-full overflow-hidden', '[&>*]:w-full [&>*]:h-full')}>
+    <div style={{ zIndex }} className={cn(sizeMap[size], 'rounded-full overflow-hidden', '[&>*]:w-full [&>*]:h-full')} title={metadata?.symbol}>
       {assetIcon}
     </div>
   );
