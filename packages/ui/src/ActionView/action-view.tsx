@@ -28,6 +28,7 @@ import { DutchAuctionWithdrawAction } from './actions/dutch-auction-withdraw';
 import { CommunityPoolDepositAction } from './actions/community-pool-deposit';
 import { CommunityPoolOutputAction } from './actions/community-pool-output';
 import { CommunityPoolSpendAction } from './actions/community-pool-spend';
+import { LiquidityTournamentVoteAction, LiquidityTournmentVoteAction } from './actions/liquidity-tournament-vote';
 
 export interface ActionViewProps {
   action: ActionViewMessage;
@@ -60,6 +61,7 @@ const componentMap = {
   communityPoolDeposit: CommunityPoolDepositAction,
   communityPoolOutput: CommunityPoolOutputAction,
   communityPoolSpend: CommunityPoolSpendAction,
+  actionLiquidityTournamentVote: LiquidityTournamentVoteAction,
   unknown: UnknownAction,
 } as const satisfies Record<ActionViewType | 'unknown', unknown>;
 
