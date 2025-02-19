@@ -1,5 +1,21 @@
 # @penumbra-zone/ui
 
+## 13.12.0
+
+### Minor Changes
+
+- 49ae3ab: LQT integration in web packages
+- 07aa2fe: Implement ActionView component
+- 28e2ccb: Create new `SegmentedControl` UI component
+
+### Patch Changes
+
+- Updated dependencies [49ae3ab]
+  - @penumbra-zone/protobuf@8.0.0
+  - @penumbra-zone/types@30.0.0
+  - @penumbra-zone/bech32m@14.0.0
+  - @penumbra-zone/getters@24.0.0
+
 ## 13.11.0
 
 ### Minor Changes
