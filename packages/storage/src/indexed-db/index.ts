@@ -167,8 +167,8 @@ export class IndexedDb implements IndexedDbInterface {
         db.createObjectStore('AUCTION_OUTSTANDING_RESERVES');
         db.createObjectStore('REGISTRY_VERSION');
         db.createObjectStore('LQT_HISTORICAL_VOTES', {
-          keyPath: 'epoch',
-        });
+          keyPath: 'id',
+        }).createIndex('epoch', 'epoch');
       },
     });
     const constants = {
@@ -422,9 +422,14 @@ export class IndexedDb implements IndexedDbInterface {
       AssetMetadata: Metadata;
       VoteValue: Value;
       RewardValue: Amount | undefined;
+      id: string | undefined;
     }[]
   > {
-    const tournamentVotes = await this.db.getAll('LQT_HISTORICAL_VOTES', epoch.toString());
+    const tournamentVotes = await this.db.getAllFromIndex(
+      'LQT_HISTORICAL_VOTES',
+      'epoch',
+      epoch.toString(),
+    );
 
     return tournamentVotes.map(tournamentVote => ({
       TransactionId: TransactionId.fromJson(tournamentVote.TransactionId, { typeRegistry }),
@@ -433,6 +438,7 @@ export class IndexedDb implements IndexedDbInterface {
       RewardValue: tournamentVote.RewardValue
         ? Amount.fromJson(tournamentVote.RewardValue, { typeRegistry })
         : undefined,
+      id: tournamentVote.id,
     }));
   }
 
@@ -445,14 +451,21 @@ export class IndexedDb implements IndexedDbInterface {
     assetMetadata: Metadata,
     voteValue: Value,
     rewardValue?: Amount,
+    id?: string,
   ): Promise<void> {
     assertTransactionId(transactionId);
+
+    // This is a unique identifier to force unique primary keys. If the field isn't provided,
+    // a random one is generated and used to store an object.
+    const uniquePrimaryKey = id ?? Math.random().toString(36).substring(2, 10);
+
     const tournamentVote = {
       epoch: epoch.toString(),
       TransactionId: transactionId.toJson({ typeRegistry }) as Jsonified<TransactionId>,
       AssetMetadata: assetMetadata.toJson({ typeRegistry }) as Jsonified<Metadata>,
       VoteValue: voteValue.toJson({ typeRegistry }) as Jsonified<Value>,
       RewardValue: rewardValue ? (rewardValue.toJson({ typeRegistry }) as Jsonified<Amount>) : null,
+      id: uniquePrimaryKey,
     };
 
     await this.u.update({

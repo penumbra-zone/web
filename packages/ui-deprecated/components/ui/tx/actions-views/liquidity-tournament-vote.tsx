@@ -17,9 +17,9 @@ export const LiquidityTournamentVoteComponent = ({
     globalValueView = value.liquidityTournamentVote.value.note?.value;
     const address = getAddress(value.liquidityTournamentVote.value.note);
 
-    // Note: LQT action view is currently implemented in the deprecated-ui library 
-    // for testng purposes, and the actual implementation will display all the relevant 
-    // fields that are lacking here. 
+    // Note: LQT action view is currently implemented in the deprecated-ui library
+    // for testng purposes, and the actual implementation will display all the relevant
+    // fields that are lacking here.
     return (
       <ViewBox
         label='Liquidity Tournament Vote'
