@@ -14,38 +14,41 @@ import { PortStreamSink, PortStreamSource } from './stream.js';
 import { rethrowOrSuppressDisconnectedPortError } from './suppress-disconnected.js';
 import { assertSenderWithOrigin } from './util/senders.js';
 
+const isReadableStream = (value: unknown): value is ReadableStream =>
+  value instanceof ReadableStream;
+
 /**
- * Listeners and abort control for a single session.
- *
- * @param manager - the parent session manager
- * @param unvalidatedPort - for synchronous listener attach
- * @param approved - port validation promise
+ * Listeners and abort control for a single transport-chrome session.
  */
 export class CRSession {
+  /**
+   * Abort the session.
+   *
+   * This closes the session channel, cancels all pending requests, and closes
+   * all sub-channels.
+   */
   public readonly abort: (r?: unknown) => void;
+
+  /** The session abort signal. */
   public readonly signal: AbortSignal;
 
+  /** The session port sender. */
   public readonly sender: chrome.runtime.MessageSender & { origin: string };
-  public get origin() {
-    return this.sender.origin;
-  }
 
+  /** Abort controllers to cancel pending requests, by requestId. */
   public readonly pending = new Map<string, AbortController>();
 
   constructor(
-    /** reference to the parent session manager */
+    // reference to the parent session manager
     private readonly manager: CRSessionManager,
     {
-      /**
-       * this unvalidated port is used to synchronously attach listeners, to
-       * avoid a race against incoming messages.
-       *
-       * the unvalidated port must not leave the constructor scope.
-       */
+      // this unvalidated port is used to synchronously attach listeners, to
+      // avoid a race against incoming messages. it should not be used to send
+      // messages, and it should not leave the constructor scope.
       port: unvalidatedPort,
       portAc: sessionAc,
     }: ManagedPort,
-    /** blocks listener execution until the port is validated. */
+    // blocks listener execution until the port is validated
     private readonly approved = manager.validateSessionPort(unvalidatedPort),
   ) {
     this.sender = assertSenderWithOrigin(unvalidatedPort.sender);
@@ -84,8 +87,10 @@ export class CRSession {
    * This listener is attached immediately, but blocks on sender validation.
    *
    * Basic filtering and transport control are handled here. Valid requests are
-   * passed to `sessionRequestHandler`. Failures are caught here and serialized
-   * for response.
+   * passed to `sessionRequestHandler`, which issues successful responses
+   * independently.
+   *
+   * Failures are caught here and serialized for response.
    */
   private sessionListener = (tev: unknown) =>
     void this.approved.then(async () => {
@@ -128,9 +133,19 @@ export class CRSession {
     });
 
   /**
-   * Accepts a request, queries the method router for a response, and posts it
-   * back to the session channel. Any errors thrown from here should be caught
-   * and serialized into responses by `sessionListener`.
+   * Accepts a request, queries the manager's handler for a response, and posts
+   * a successful response back to the session channel.
+   *
+   * Will independently emit:
+   * - `TransportMessage` for message responses
+   * - `TransportInitChannel` for streaming responses
+   *
+   * Requests are abortable through the entire process. The manager's handler
+   * should respect abort requests when provided. After, response stream sinking
+   * is interruptable by the same signal.
+   *
+   * All actions are awaited, to capture errors under the serialization provided
+   * by `sessionListener`.
    */
   private async sessionHandler(
     tev: TransportMessage | TransportInitChannel,
@@ -138,22 +153,40 @@ export class CRSession {
   ): Promise<void> {
     const requestId = tev.requestId;
 
-    const request = isTransportMessage(tev)
-      ? tev.message
-      : await this.manager
+    const request = !isTransportInitChannel(tev)
+      ? // simple message request
+        tev.message
+      : // streaming request
+        await this.manager
           .acceptSubChannel(tev.channel, this.sender)
           .then(({ port: approvedPort }) => new ReadableStream(new PortStreamSource(approvedPort)));
 
     const response = await this.manager.handler(request, requestAc.signal);
-    if (response instanceof ReadableStream) {
+
+    if (!isReadableStream(response)) {
+      // simple message response
+      await this.postResponse({ requestId, message: response });
+    } else {
+      // streaming response
       const channel = nameConnection(this.manager.managerId, ChannelLabel.STREAM);
+
+      // begin listening for the sink channel
       const responseSink = this.manager
         .offerSubChannel(channel, this.sender)
         .then(({ port: approvedPort }) => new WritableStream(new PortStreamSink(approvedPort)));
+
+      // announce sink channel to the client
       await this.postResponse({ requestId, channel });
+
+      // stream the response, maintaining the request abort signal
       await response.pipeTo(await responseSink, { signal: requestAc.signal });
-    } else {
-      await this.postResponse({ requestId, message: response });
     }
+  }
+
+  /**
+   * The session port sender's origin.
+   */
+  public get origin() {
+    return this.sender.origin;
   }
 }
