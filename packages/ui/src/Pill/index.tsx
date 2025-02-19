@@ -3,7 +3,7 @@ import { body, technical, detail, detailTechnical } from '../utils/typography';
 import { Density, useDensity } from '../utils/density';
 import cn from 'clsx';
 
-type Priority = 'primary' | 'secondary';
+type Priority = 'primary' | 'secondary' | 'tertiary';
 type Context =
   | 'default'
   | 'technical-default'
@@ -26,7 +26,7 @@ const getXPadding = (priority: Priority, density: Density): string => {
 };
 
 const getBackgroundColor = (priority: Priority, context: Context) => {
-  if (priority === 'secondary') {
+  if (priority === 'secondary' || priority === 'tertiary') {
     return 'bg-transparent';
   }
 
