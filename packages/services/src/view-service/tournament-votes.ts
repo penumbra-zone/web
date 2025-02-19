@@ -17,20 +17,22 @@ export const tournamentVotes: Impl['tournamentVotes'] = async (req, ctx) => {
   // Retrieve the vote cast in the liquidity tournament for the current epoch.
   const tournamentVote = new TournamentVotesResponse();
   if (epoch?.index) {
-    const vote = await indexedDb.getLQTHistoricalVote(epoch.index);
-    if (vote) {
-      tournamentVote.votes.push(
-        new TournamentVotesResponse_Vote({
-          transaction: vote.TransactionId,
-          incentivizedAsset: vote.AssetMetadata.penumbraAssetId,
-          votePower: vote.VoteValue.amount,
-          reward: vote.RewardValue
-            ? new Value({
-                amount: new Amount({ lo: vote.RewardValue.lo, hi: vote.RewardValue.hi }),
-                assetId: indexedDb.stakingTokenAssetId,
-              })
-            : undefined,
-        }),
+    const votes = await indexedDb.getLQTHistoricalVotes(epoch.index);
+
+    if (votes.length > 0) {
+      tournamentVote.votes = votes.map(
+        vote =>
+          new TournamentVotesResponse_Vote({
+            transaction: vote.TransactionId,
+            incentivizedAsset: vote.AssetMetadata.penumbraAssetId,
+            votePower: vote.VoteValue.amount,
+            reward: vote.RewardValue
+              ? new Value({
+                  amount: new Amount({ lo: vote.RewardValue.lo, hi: vote.RewardValue.hi }),
+                  assetId: indexedDb.stakingTokenAssetId,
+                })
+              : undefined,
+          }),
       );
     }
   }

@@ -186,14 +186,13 @@ export interface IndexedDbInterface {
     rewardValue?: Amount,
   ): Promise<void>;
 
-  getLQTHistoricalVote(epoch: bigint): Promise<
-    | {
-        TransactionId: TransactionId;
-        AssetMetadata: Metadata;
-        VoteValue: Value;
-        RewardValue: Amount | undefined;
-      }
-    | undefined
+  getLQTHistoricalVotes(epoch: bigint): Promise<
+    {
+      TransactionId: TransactionId;
+      AssetMetadata: Metadata;
+      VoteValue: Value;
+      RewardValue: Amount | undefined;
+    }[]
   >;
 }
 

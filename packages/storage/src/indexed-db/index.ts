@@ -416,28 +416,24 @@ export class IndexedDb implements IndexedDbInterface {
   /**
    * Retrieves liquidity tournament votes and rewards for a given epoch.
    */
-  async getLQTHistoricalVote(epoch: bigint): Promise<
-    | {
-        TransactionId: TransactionId;
-        AssetMetadata: Metadata;
-        VoteValue: Value;
-        RewardValue: Amount | undefined;
-      }
-    | undefined
+  async getLQTHistoricalVotes(epoch: bigint): Promise<
+    {
+      TransactionId: TransactionId;
+      AssetMetadata: Metadata;
+      VoteValue: Value;
+      RewardValue: Amount | undefined;
+    }[]
   > {
-    const tournamentVote = await this.db.get('LQT_HISTORICAL_VOTES', epoch.toString());
-    if (tournamentVote) {
-      return {
-        TransactionId: TransactionId.fromJson(tournamentVote.TransactionId, { typeRegistry }),
-        AssetMetadata: Metadata.fromJson(tournamentVote.AssetMetadata, { typeRegistry }),
-        VoteValue: Value.fromJson(tournamentVote.VoteValue, { typeRegistry }),
-        RewardValue: tournamentVote.RewardValue
-          ? Amount.fromJson(tournamentVote.RewardValue, { typeRegistry })
-          : undefined,
-      };
-    } else {
-      return undefined;
-    }
+    const tournamentVotes = await this.db.getAll('LQT_HISTORICAL_VOTES', epoch.toString());
+
+    return tournamentVotes.map(tournamentVote => ({
+      TransactionId: TransactionId.fromJson(tournamentVote.TransactionId, { typeRegistry }),
+      AssetMetadata: Metadata.fromJson(tournamentVote.AssetMetadata, { typeRegistry }),
+      VoteValue: Value.fromJson(tournamentVote.VoteValue, { typeRegistry }),
+      RewardValue: tournamentVote.RewardValue
+        ? Amount.fromJson(tournamentVote.RewardValue, { typeRegistry })
+        : undefined,
+    }));
   }
 
   /**
