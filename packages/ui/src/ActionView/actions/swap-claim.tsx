@@ -120,7 +120,7 @@ export const SwapClaimAction = ({ value, getMetadataByAssetId }: SwapClaimAction
         <>
           {!!fee && <ActionRow label='Swap Claim Fee' info={fee} />}
           {!!txId && (
-            <ActionRow label='Swap Claim Transaction' info={shorten(txId, 8)} copyText={txId} />
+            <ActionRow label='Swap Transaction' info={shorten(txId, 8)} copyText={txId} />
           )}
         </>
       }
