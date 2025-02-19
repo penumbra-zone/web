@@ -7,10 +7,6 @@ import { Translator } from './types.js';
 export const asOpaqueLiquidityTournamentVoteView: Translator<
   ActionLiquidityTournamentVoteView
 > = liquidityTournamentVoteView => {
-  if (liquidityTournamentVoteView?.liquidityTournamentVote.case === 'opaque') {
-    return liquidityTournamentVoteView;
-  }
-
   return new ActionLiquidityTournamentVoteView({
     liquidityTournamentVote: {
       case: 'opaque',
