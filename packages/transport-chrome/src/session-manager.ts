@@ -1,52 +1,35 @@
-import type { JsonValue } from '@bufbuild/protobuf';
-import { Code, ConnectError } from '@connectrpc/connect';
+import { ConnectError } from '@connectrpc/connect';
 import { errorToJson } from '@connectrpc/connect/protocol-connect';
-import type { ChannelHandlerFn } from '@penumbra-zone/transport-dom/adapter';
+import { ChannelHandlerFn } from '@penumbra-zone/transport-dom/adapter';
 import {
   isTransportAbort,
-  isTransportEvent,
   isTransportMessage,
-  TransportEvent,
-  type TransportError,
-  type TransportMessage,
-  type TransportStream,
+  TransportError,
+  TransportMessage,
+  TransportStream,
 } from '@penumbra-zone/transport-dom/messages';
 import { ChannelLabel, nameConnection, parseConnectionName } from './channel-names.js';
-import { isTransportInitChannel, type TransportInitChannel } from './message.js';
+import type { TransportInitChannel } from './message.js';
 import { PortStreamSink } from './stream/sink.js';
-import { PortStreamSource } from './stream/source.js';
 
 interface CRSession {
-  abort: (reason?: unknown) => void;
+  abort: AbortController['abort'];
   signal: AbortSignal;
   sessionId: string;
-  port: chrome.runtime.Port;
+  verifiedPort: ReturnType<ValidateSenderFn>;
+  sender: chrome.runtime.MessageSender;
   origin: string;
   requests: Map<string, AbortController>;
 }
 
-type SenderWithOrigin = chrome.runtime.MessageSender & { origin: string };
-type PortWithOrigin = chrome.runtime.Port & { sender: SenderWithOrigin };
-export type CheckPortSenderFn = (port: chrome.runtime.Port) => Promise<PortWithOrigin>;
-
-// Move port validation logic to a distinct function, anticipating to parameterize it.
-const defaultCheckPortSender: CheckPortSenderFn = port => {
-  // Allow connections from the same extension, from https pages, or from http://localhost
-  if (port.sender?.origin) {
-    const fromThisExtension = port.sender.id === chrome.runtime.id;
-    const fromPageHttps =
-      !port.sender.frameId && !!port.sender.tab?.id && port.sender.origin.startsWith('https://');
-    const isLocalhost =
-      port.sender.origin.startsWith('http://localhost:') ||
-      port.sender.origin === 'http://localhost';
-
-    if (isLocalhost || fromPageHttps || fromThisExtension) {
-      return Promise.resolve(port as unknown as PortWithOrigin);
-    }
-  }
-
-  throw new Error('Invalid sender');
+type PortWithSenderOrigin = chrome.runtime.Port & {
+  sender: chrome.runtime.MessageSender & { origin: string };
 };
+
+const isPortWithSenderOrigin = (p?: chrome.runtime.Port): p is PortWithSenderOrigin =>
+  Boolean(p?.sender?.origin);
+
+export type ValidateSenderFn = (port: chrome.runtime.Port) => Promise<PortWithSenderOrigin>;
 
 /**
  * Only for use as an extension-level singleton by the extension's main
@@ -78,14 +61,14 @@ export class CRSessionManager {
   /**
    * Create a new session manager to accept connections from `CRSessionClient`.
    *
-   * @param managerId a string containing no spaces, matching the prefix used in your content script
+   * @param prefix a string containing no spaces, matching the prefix used in your content script
    * @param handler your router entry function
-   * @param checkPortSender a function used to validate the sender of a connection
+   * @param validateSender a function used to validate the sender of a connection
    */
   private constructor(
-    private readonly managerId: string,
+    private readonly prefix: string,
     private readonly handler: ChannelHandlerFn,
-    private readonly checkPortSender: CheckPortSenderFn,
+    private readonly validateSender: ValidateSenderFn,
   ) {
     if (CRSessionManager.singleton) {
       throw new Error('Already constructed');
@@ -99,9 +82,14 @@ export class CRSessionManager {
    *
    * @param managerId a string identifying this manager
    * @param handler your router entry function
+   * @param validateSender function to assert validity of a sender
    */
-  public static init = (managerId: string, handler: ChannelHandlerFn) => {
-    CRSessionManager.singleton ??= new CRSessionManager(managerId, handler, defaultCheckPortSender);
+  public static init = (
+    managerId: string,
+    handler: ChannelHandlerFn,
+    validateSender: ValidateSenderFn,
+  ) => {
+    CRSessionManager.singleton ??= new CRSessionManager(managerId, handler, validateSender);
     return CRSessionManager.singleton.sessions;
   };
 
@@ -114,19 +102,7 @@ export class CRSessionManager {
     if (CRSessionManager.singleton) {
       CRSessionManager.singleton.sessions.forEach(session => {
         if (session.origin === targetOrigin) {
-          session.requests.forEach(request => {
-            if (!request.signal.aborted) {
-              request.abort(
-                new Error('Kill origin request', {
-                  cause: targetOrigin,
-                }),
-              );
-            }
-          });
-          if (!session.signal.aborted) {
-            session.abort(new Error('Kill origin session', { cause: targetOrigin }));
-            session.port.disconnect();
-          }
+          session.abort();
         }
       });
     } else {
@@ -143,109 +119,73 @@ export class CRSessionManager {
    */
   private transportConnection = (port: chrome.runtime.Port) => {
     // require an identified origin
-    if (!port.sender?.origin) {
+    if (!isPortWithSenderOrigin(port)) {
       return;
     }
 
     // fast and simple name test
-    if (!port.name.startsWith(this.managerId)) {
+    if (!port.name.startsWith(this.prefix)) {
       return;
     }
 
     // parse the name
     const { label: channelLabel, uuid: clientId } =
-      parseConnectionName(this.managerId, port.name) ?? {};
+      parseConnectionName(this.prefix, port.name) ?? {};
     if (channelLabel !== ChannelLabel.TRANSPORT || !clientId) {
       return;
     }
 
-    // client is re-using a present session??
     if (this.sessions.has(clientId)) {
-      port.disconnect();
       throw new Error(`Session collision: ${clientId}`);
     }
 
-    // checking port sender is async
-    void this.checkPortSender(port).then(
-      okPort => {
-        console.debug('Accepted connection', port.name);
-        this.acceptSession(okPort, clientId);
-      },
-      (e: unknown) => console.warn('Attempted connection was rejected', port.name, e),
-    );
+    // checking port sender is async, but listeners must attach immediately
+    this.attachListeners(port, this.validateSender(port), clientId);
   };
 
-  private acceptSession = (port: PortWithOrigin, sessionId: string) => {
-    console.debug('acceptSession', port.name, sessionId);
-    const senderOrigin = port.sender.origin;
+  private attachListeners = (
+    unverifiedPort: PortWithSenderOrigin,
+    verifiedPort: Promise<PortWithSenderOrigin>,
+    sessionId: string,
+  ) => {
+    const sender = unverifiedPort.sender;
 
     const ac = new AbortController();
     const session: CRSession = {
       abort: (r?: unknown) => ac.abort(r),
       signal: ac.signal,
       sessionId,
-      origin: senderOrigin,
-      port,
+      origin: sender.origin,
+      sender,
+      verifiedPort,
       requests: new Map(),
-    };
-
-    const sessionAbortListener = () => {
-      console.debug('sessionAbortListener', sessionId);
-      session.requests.forEach(request => request.abort(session.signal.reason));
-      if (this.sessions.delete(sessionId)) {
-        port.disconnect();
-      }
-    };
-
-    const sessionDisconnectListener = () => {
-      console.debug('sessionDisconnectListener', sessionId);
-      if (this.sessions.delete(sessionId)) {
-        session.abort(new Error('Session port disconnected'));
-      }
-    };
-
-    const sessionMessageListener = (tev: unknown) => {
-      console.debug('sessionMessageListener', tev);
-      if (isTransportEvent(tev)) {
-        void this.acceptRequest(session, tev);
-      } else {
-        console.warn('Unknown item in transport', tev);
-      }
     };
 
     this.sessions.set(sessionId, session);
 
-    session.signal.addEventListener('abort', sessionAbortListener);
-    port.onDisconnect.addListener(sessionDisconnectListener);
-    port.onMessage.addListener(sessionMessageListener);
-  };
+    session.signal.addEventListener('abort', () => {
+      unverifiedPort.disconnect();
+      session.requests.forEach(request => request.abort(session.signal.reason));
+      this.sessions.delete(sessionId);
+    });
+    unverifiedPort.onDisconnect.addListener(() => session.abort());
 
-  private acceptRequest = async (session: CRSession, tev: TransportEvent) => {
-    console.debug('acceptRequest', session.port.name, tev);
-    const { requestId } = tev;
-
-    try {
-      if (isTransportAbort(tev, requestId)) {
-        session.requests
-          .get(requestId)
-          ?.abort(ConnectError.from('Client requested abort', Code.Canceled));
-      } else if (session.requests.has(requestId)) {
-        throw new ConnectError('Request collision', Code.Internal);
-      } else {
-        const ac = new AbortController();
-        session.requests.set(requestId, ac);
-        const response = await this.sessionRequestHandler(session, ac, tev);
-        session.port.postMessage(response);
-      }
-    } catch (cause) {
-      console.debug('acceptRequest error', cause);
-      session.port.postMessage({
-        requestId,
-        error: errorToJson(ConnectError.from(cause), undefined),
-      });
-    } finally {
-      session.requests.delete(requestId);
-    }
+    unverifiedPort.onMessage.addListener(
+      (i: unknown) =>
+        void verifiedPort.then(p => {
+          try {
+            if (isTransportAbort(i)) {
+              session.requests.get(i.requestId)?.abort();
+            } else if (isTransportMessage(i)) {
+              void this.clientMessageHandler(session, i).then(res => p.postMessage(res));
+            } else {
+              console.warn('Unknown item in transport', i);
+            }
+          } catch (e) {
+            session.abort(e);
+          }
+        }),
+    );
   };
 
   /**
@@ -256,27 +196,23 @@ export class CRSessionManager {
    * `TransportEvent`, containing json representing a response or json
    * representing an error.
    */
-  private sessionRequestHandler = async (
+  private clientMessageHandler(
     session: CRSession,
-    ac: AbortController,
-    tev: TransportEvent,
-  ): Promise<TransportMessage | TransportInitChannel | TransportError<string>> => {
-    console.debug('sessionRequestHandler', session.port.name, tev);
-    const { requestId } = tev;
-
-    let request: JsonValue | ReadableStream<JsonValue>;
-    if (isTransportMessage(tev, requestId)) {
-      request = tev.message;
-    } else if (isTransportInitChannel(tev) && globalThis.__DEV__) {
-      request = await this.acceptChannelStreamRequest(session.port.sender?.tab?.id, tev.channel);
-    } else {
-      throw new ConnectError('Unknown request kind', Code.Unimplemented);
+    { requestId, message }: TransportMessage,
+  ): Promise<TransportMessage | TransportInitChannel | TransportError<string | undefined>> {
+    if (session.requests.has(requestId)) {
+      throw new Error(`Request collision: ${requestId}`);
     }
+    const requestController = new AbortController();
 
-    return this.handler(request, AbortSignal.any([session.signal, ac.signal]))
+    session.requests.set(requestId, requestController);
+    return this.handler(message, AbortSignal.any([session.signal, requestController.signal]))
       .then(response =>
         response instanceof ReadableStream
-          ? { requestId, channel: this.makeChannelStreamResponse(response) }
+          ? this.responseChannelStream(requestController.signal, {
+              requestId,
+              stream: response,
+            })
           : { requestId, message: response },
       )
       .catch((error: unknown) => ({
@@ -284,7 +220,7 @@ export class CRSessionManager {
         error: errorToJson(ConnectError.from(error), undefined),
       }))
       .finally(() => session.requests.delete(requestId));
-  };
+  }
 
   /**
    * Streams are not jsonifiable, so this function sinks a response stream
@@ -294,45 +230,24 @@ export class CRSessionManager {
    * A jsonifiable message identifying a unique connection name is returned
    * and should be transported to the client.  The client should open a
    * connection bearing this name to source the stream.
+   *
+   * TODO: time out if the client fails to initiate a connection
    */
-  private makeChannelStreamResponse = (
-    stream: TransportStream['stream'],
-  ): TransportInitChannel['channel'] => {
-    const channel = nameConnection(this.managerId, ChannelLabel.STREAM);
-    console.debug('responseChannelStream', channel);
-    const sinkListener = (sinkPort: chrome.runtime.Port) => {
-      if (sinkPort.name === channel) {
-        chrome.runtime.onConnect.removeListener(sinkListener);
-        void this.checkPortSender(sinkPort)
-          .then(
-            () =>
-              stream
-                .pipeTo(new WritableStream(new PortStreamSink(sinkPort)))
-                .catch((e: unknown) => console.debug('response channel stream error', e)),
-            (e: unknown) => console.warn('Attempted stream was rejected', sinkPort.name, e),
-          )
-          .finally(() => sinkPort.disconnect());
+  private responseChannelStream(
+    signal: AbortSignal,
+    { requestId, stream }: TransportStream,
+  ): TransportInitChannel {
+    const channel = nameConnection(this.prefix, ChannelLabel.STREAM);
+    const sinkListener = (p: chrome.runtime.Port) => {
+      if (p.name !== channel) {
+        return;
       }
+      chrome.runtime.onConnect.removeListener(sinkListener);
+      void stream
+        .pipeTo(new WritableStream(new PortStreamSink(p)), { signal })
+        .catch((e: unknown) => console.debug('session-manager makeChannelStreamResponse', e));
     };
-
-    AbortSignal.any([AbortSignal.timeout(60_000)]).addEventListener('abort', () =>
-      chrome.runtime.onConnect.removeListener(sinkListener),
-    );
-
     chrome.runtime.onConnect.addListener(sinkListener);
-
-    return channel;
-  };
-
-  private acceptChannelStreamRequest = async (
-    tabId: number | undefined,
-    channel: TransportInitChannel['channel'],
-  ): Promise<TransportStream['stream']> => {
-    console.debug('requestChannelStream', channel);
-    const streamPort = tabId
-      ? chrome.tabs.connect(tabId, { name: channel })
-      : chrome.runtime.connect({ name: channel });
-
-    return new ReadableStream(new PortStreamSource(await this.checkPortSender(streamPort)));
-  };
+    return { requestId, channel };
+  }
 }

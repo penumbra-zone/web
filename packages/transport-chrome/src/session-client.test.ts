@@ -451,7 +451,7 @@ describe('CRSessionClient', () => {
       await expectChannelClosed(sessionPort, extPort, domPort);
     });
 
-    it.fails('reconnects silently if the port is disconnected by something else', async () => {
+    it('reconnects silently if the port is disconnected by something else', async () => {
       const testRequest: TransportMessage = { message: 'hello', requestId: '123' };
 
       expectNoActivity(sessionPort, extPort, domMessageHandler);
