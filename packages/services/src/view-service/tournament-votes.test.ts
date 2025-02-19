@@ -46,7 +46,7 @@ describe('tournamentVotes request handler', () => {
   test('returns historical liquidity tournament votes that have been previously been saved to storage', async () => {
     mockIndexedDb.getBlockHeightByEpoch?.mockResolvedValueOnce(epoch);
     mockIndexedDb.saveLQTHistoricalVote?.mockResolvedValueOnce(mockVote);
-    mockIndexedDb.getLQTHistoricalVotes?.mockResolvedValueOnce(mockVote);
+    mockIndexedDb.getLQTHistoricalVotes?.mockResolvedValueOnce([mockVote]);
 
     const req = new TournamentVotesRequest({});
     const vote = await tournamentVotes(req, mockCtx);
@@ -61,6 +61,8 @@ const epoch = new Epoch({
 });
 
 const mockVote = {
+  id: 'test-uuid-or-any-string',
+  epoch: 100n,
   TransactionId: {
     inner: new Uint8Array([1, 2, 3, 4]),
   },

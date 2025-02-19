@@ -457,7 +457,7 @@ export class IndexedDb implements IndexedDbInterface {
 
     // This is a unique identifier to force unique primary keys. If the field isn't provided,
     // a random one is generated and used to store an object.
-    const uniquePrimaryKey = id ?? Math.random().toString(36).substring(2, 10);
+    const uniquePrimaryKey = id ?? crypto.randomUUID();
 
     const tournamentVote = {
       epoch: epoch.toString(),
