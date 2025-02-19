@@ -152,16 +152,12 @@ export class CRSessionManager {
 
     // checking port sender is async
     void this.checkPortSender(port).then(
-      okPort => {
-        console.debug('Accepted connection', port.name);
-        this.acceptSession(okPort, clientId);
-      },
+      okPort => this.acceptSession(okPort, clientId),
       (e: unknown) => console.warn('Attempted connection was rejected', port.name, e),
     );
   };
 
   private acceptSession = (port: PortWithOrigin, sessionId: string) => {
-    console.debug('acceptSession', port.name, sessionId);
     const senderOrigin = port.sender.origin;
 
     const ac = new AbortController();
@@ -175,7 +171,6 @@ export class CRSessionManager {
     };
 
     const sessionAbortListener = () => {
-      console.debug('sessionAbortListener', sessionId);
       session.requests.forEach(request => request.abort(session.signal.reason));
       if (this.sessions.delete(sessionId)) {
         port.disconnect();
@@ -183,14 +178,12 @@ export class CRSessionManager {
     };
 
     const sessionDisconnectListener = () => {
-      console.debug('sessionDisconnectListener', sessionId);
       if (this.sessions.delete(sessionId)) {
         session.abort(new Error('Session port disconnected'));
       }
     };
 
     const sessionMessageListener = (tev: unknown) => {
-      console.debug('sessionMessageListener', tev);
       if (isTransportEvent(tev)) {
         void this.acceptRequest(session, tev);
       } else {
@@ -206,7 +199,6 @@ export class CRSessionManager {
   };
 
   private acceptRequest = async (session: CRSession, tev: TransportEvent) => {
-    console.debug('acceptRequest', session.port.name, tev);
     const { requestId } = tev;
 
     try {
@@ -223,7 +215,6 @@ export class CRSessionManager {
         session.port.postMessage(response);
       }
     } catch (cause) {
-      console.debug('acceptRequest error', cause);
       session.port.postMessage({
         requestId,
         error: errorToJson(ConnectError.from(cause), undefined),
@@ -246,7 +237,6 @@ export class CRSessionManager {
     ac: AbortController,
     tev: TransportEvent,
   ): Promise<TransportMessage | TransportInitChannel | TransportError<string>> => {
-    console.debug('sessionRequestHandler', session.port.name, tev);
     const { requestId } = tev;
 
     let request: JsonValue | ReadableStream<JsonValue>;
@@ -279,7 +269,6 @@ export class CRSessionManager {
     stream: TransportStream['stream'],
   ): TransportInitChannel['channel'] => {
     const channel = nameConnection(this.managerId, ChannelLabel.STREAM);
-    console.debug('responseChannelStream', channel);
     const sinkListener = (sinkPort: chrome.runtime.Port) => {
       if (sinkPort.name === channel) {
         chrome.runtime.onConnect.removeListener(sinkListener);
@@ -308,7 +297,6 @@ export class CRSessionManager {
     tabId: number | undefined,
     channel: TransportInitChannel['channel'],
   ): Promise<TransportStream['stream']> => {
-    console.debug('requestChannelStream', channel);
     const streamPort = tabId
       ? chrome.tabs.connect(tabId, { name: channel })
       : chrome.runtime.connect({ name: channel });
