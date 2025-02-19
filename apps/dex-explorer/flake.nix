@@ -17,6 +17,7 @@
             jq
             just
             pnpm
+            nodejs_22
             postgresql
 
             # for deployment/ci
