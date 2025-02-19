@@ -5,6 +5,7 @@ import {
   SpendView,
 } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 import {
+  PositionOpen,
   SwapClaimView,
   SwapView,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
@@ -184,6 +185,22 @@ export const SwapClaimActionOpaque = new ActionView({
                 lambda2: AMOUNT_999,
               },
             },
+          },
+        },
+      },
+    }),
+  },
+});
+
+export const PositionOpenAction = new ActionView({
+  actionView: {
+    case: 'positionOpen',
+    value: new PositionOpen({
+      position: {
+        phi: {
+          pair: {
+            asset1: USDC_METADATA.penumbraAssetId,
+            asset2: PENUMBRA_METADATA.penumbraAssetId,
           },
         },
       },
