@@ -259,9 +259,9 @@ export class CRSessionClient {
         chrome.runtime.onConnect.removeListener(sinkListener);
         void stream
           .pipeTo(new WritableStream(new PortStreamSink(sinkPort)), { signal: ac.signal })
-          // stream failure is handled in-band, but this might cover unknowns.
-          .catch((cause: unknown) => this.clientPortPostError(cause, requestId))
-          // port closure is handled in-band, but this should prevent leaks.
+          .catch((cause: unknown) =>
+            console.debug('session-client makeChannelStreamRequest', cause),
+          )
           .finally(() => sinkPort.disconnect());
       }
     };

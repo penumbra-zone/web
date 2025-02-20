@@ -14,12 +14,13 @@ import {
 import { ChannelLabel, nameConnection, parseConnectionName } from './channel-names.js';
 import { isTransportInitChannel, TransportInitChannel } from './message.js';
 import { PortStreamSink, PortStreamSource } from './stream.js';
+import { captureDisconnectedPortError } from './util/capture-error.js';
 
 interface CRSession {
   abort: (reason?: unknown) => void;
   signal: AbortSignal;
   sessionId: string;
-  port: chrome.runtime.Port;
+  verifiedPort: Promise<chrome.runtime.Port>;
   origin: string;
   requests: Map<string, AbortController>;
 }
@@ -101,16 +102,11 @@ export class CRSessionManager {
         if (session.origin === targetOrigin) {
           session.requests.forEach(request => {
             if (!request.signal.aborted) {
-              request.abort(
-                new Error('Kill origin request', {
-                  cause: targetOrigin,
-                }),
-              );
+              request.abort();
             }
           });
           if (!session.signal.aborted) {
-            session.abort(new Error('Kill origin session', { cause: targetOrigin }));
-            session.port.disconnect();
+            session.abort();
           }
         }
       });
@@ -126,39 +122,41 @@ export class CRSessionManager {
    * Here we make an effort to identify these connections. If the name indicates
    * the connection is for this manager, a handler is connected to the port.
    */
-  private transportConnection = (port: chrome.runtime.Port) => {
+  private transportConnection = (unverifiedPort: chrome.runtime.Port) => {
     // require an identified origin
-    if (!port.sender?.origin) {
+    if (!unverifiedPort.sender?.origin) {
       return;
     }
 
     // fast and simple name test
-    if (!port.name.startsWith(this.managerId)) {
+    if (!unverifiedPort.name.startsWith(this.managerId)) {
       return;
     }
 
     // parse the name
     const { label: channelLabel, uuid: clientId } =
-      parseConnectionName(this.managerId, port.name) ?? {};
+      parseConnectionName(this.managerId, unverifiedPort.name) ?? {};
     if (channelLabel !== ChannelLabel.TRANSPORT || !clientId) {
       return;
     }
 
     // client is re-using a present session??
     if (this.sessions.has(clientId)) {
-      port.disconnect();
+      unverifiedPort.disconnect();
       throw new Error(`Session collision: ${clientId}`);
     }
 
-    // checking port sender is async
-    void this.checkPortSender(port).then(
-      okPort => this.acceptSession(okPort, clientId),
-      (e: unknown) => console.warn('Attempted connection was rejected', port.name, e),
-    );
+    // checking port sender is async, but listeners must attach immediately
+    this.acceptSession(unverifiedPort, this.checkPortSender(unverifiedPort), clientId);
   };
 
-  private acceptSession = (port: PortWithOrigin, sessionId: string) => {
-    const senderOrigin = port.sender.origin;
+  private acceptSession = (
+    unverifiedPort: chrome.runtime.Port,
+    verifiedPort: Promise<chrome.runtime.Port>,
+    sessionId: string,
+  ) => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- checked above
+    const senderOrigin = unverifiedPort.sender!.origin!;
 
     const ac = new AbortController();
     const session: CRSession = {
@@ -166,37 +164,52 @@ export class CRSessionManager {
       signal: ac.signal,
       sessionId,
       origin: senderOrigin,
-      port,
+      verifiedPort,
       requests: new Map(),
     };
 
     const sessionAbortListener = () => {
       session.requests.forEach(request => request.abort(session.signal.reason));
       if (this.sessions.delete(sessionId)) {
-        port.disconnect();
+        unverifiedPort.disconnect();
       }
     };
 
     const sessionDisconnectListener = () => {
       if (this.sessions.delete(sessionId)) {
-        session.abort(new Error('Session port disconnected'));
+        session.abort();
       }
     };
 
-    const sessionMessageListener = (tev: unknown) => {
-      if (isTransportEvent(tev)) {
-        void this.acceptRequest(session, tev);
-      } else {
-        console.warn('Unknown item in transport', tev);
-      }
-    };
+    const sessionMessageListener = (tev: unknown) =>
+      void verifiedPort.then(() => {
+        if (isTransportEvent(tev)) {
+          void this.acceptRequest(session, tev);
+        } else {
+          console.warn('Unknown item in transport', tev);
+        }
+      });
 
     this.sessions.set(sessionId, session);
 
     session.signal.addEventListener('abort', sessionAbortListener);
-    port.onDisconnect.addListener(sessionDisconnectListener);
-    port.onMessage.addListener(sessionMessageListener);
+    unverifiedPort.onDisconnect.addListener(sessionDisconnectListener);
+    unverifiedPort.onMessage.addListener(sessionMessageListener);
   };
+
+  private postResponse = (session: CRSession, response: TransportMessage | TransportInitChannel) =>
+    void session.verifiedPort
+      .then(port => {
+        port.postMessage(response);
+      })
+      .catch(captureDisconnectedPortError);
+
+  private postFailure = (session: CRSession, failure: TransportError<string | undefined>) =>
+    void session.verifiedPort
+      .then(port => {
+        port.postMessage(failure);
+      })
+      .catch(captureDisconnectedPortError);
 
   private acceptRequest = async (session: CRSession, tev: TransportEvent) => {
     const { requestId } = tev;
@@ -212,10 +225,14 @@ export class CRSessionManager {
         const ac = new AbortController();
         session.requests.set(requestId, ac);
         const response = await this.sessionRequestHandler(session, ac, tev);
-        session.port.postMessage(response);
+        if ('error' in response) {
+          this.postFailure(session, response);
+        } else {
+          this.postResponse(session, response);
+        }
       }
     } catch (cause) {
-      session.port.postMessage({
+      this.postFailure(session, {
         requestId,
         error: errorToJson(ConnectError.from(cause), undefined),
       });
@@ -243,7 +260,8 @@ export class CRSessionManager {
     if (isTransportMessage(tev, requestId)) {
       request = tev.message;
     } else if (isTransportInitChannel(tev) && globalThis.__DEV__) {
-      request = await this.acceptChannelStreamRequest(session.port.sender?.tab?.id, tev.channel);
+      const tabId = (await session.verifiedPort).sender?.tab?.id;
+      request = await this.acceptChannelStreamRequest(tabId, tev.channel);
     } else {
       throw new ConnectError('Unknown request kind', Code.Unimplemented);
     }
@@ -272,19 +290,14 @@ export class CRSessionManager {
     const sinkListener = (sinkPort: chrome.runtime.Port) => {
       if (sinkPort.name === channel) {
         chrome.runtime.onConnect.removeListener(sinkListener);
-        void this.checkPortSender(sinkPort)
-          .then(
-            () =>
-              stream
-                .pipeTo(new WritableStream(new PortStreamSink(sinkPort)))
-                .catch((e: unknown) => console.debug('response channel stream error', e)),
-            (e: unknown) => console.warn('Attempted stream was rejected', sinkPort.name, e),
-          )
+        stream
+          .pipeTo(new WritableStream(new PortStreamSink(sinkPort)))
+          .catch((e: unknown) => console.debug('session-manager makeChannelStreamResponse', e))
           .finally(() => sinkPort.disconnect());
       }
     };
 
-    AbortSignal.any([AbortSignal.timeout(60_000)]).addEventListener('abort', () =>
+    AbortSignal.timeout(10_000).addEventListener('abort', () =>
       chrome.runtime.onConnect.removeListener(sinkListener),
     );
 
@@ -293,14 +306,16 @@ export class CRSessionManager {
     return channel;
   };
 
-  private acceptChannelStreamRequest = async (
+  private acceptChannelStreamRequest = (
     tabId: number | undefined,
     channel: TransportInitChannel['channel'],
   ): Promise<TransportStream['stream']> => {
     const streamPort = tabId
       ? chrome.tabs.connect(tabId, { name: channel })
       : chrome.runtime.connect({ name: channel });
-
-    return new ReadableStream(new PortStreamSource(await this.checkPortSender(streamPort)));
+    const validPort = this.checkPortSender(streamPort);
+    const stream = new ReadableStream(new PortStreamSource(streamPort));
+    validPort.catch(() => stream.cancel());
+    return validPort.then(() => stream);
   };
 }
