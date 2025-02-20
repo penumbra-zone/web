@@ -9,7 +9,10 @@ import { Code, ConnectError } from '@connectrpc/connect';
 import { errorFromJson, errorToJson } from '@connectrpc/connect/protocol-connect';
 
 export class PortStreamSource implements UnderlyingDefaultSource<JsonValue> {
-  constructor(private incoming: chrome.runtime.Port) {}
+  constructor(
+    private incoming: chrome.runtime.Port,
+    private timeoutMs = 20_000,
+  ) {}
 
   // A port can't pull like a normal source, so handlers are attached at start
   start(cont: ReadableStreamDefaultController<JsonValue>) {
@@ -20,6 +23,7 @@ export class PortStreamSource implements UnderlyingDefaultSource<JsonValue> {
       if (isStreamAbort(chunk)) {
         cont.error(errorFromJson(chunk.abort, undefined, ConnectError.from(chunk.abort)));
       } else if (isStreamValue(chunk)) {
+        this.updateTimeout(cont);
         cont.enqueue(chunk.value);
       } else if (isStreamEnd(chunk)) {
         this.incoming.disconnect();
@@ -41,6 +45,17 @@ export class PortStreamSource implements UnderlyingDefaultSource<JsonValue> {
   cancel() {
     this.incoming.disconnect();
   }
+
+  private timeout = setTimeout(() => void 0, 0);
+  private updateTimeout = (cont: ReadableStreamDefaultController<JsonValue>) => {
+    if (this.timeoutMs) {
+      clearTimeout(this.timeout);
+      this.timeout = setTimeout(
+        () => cont.error(ConnectError.from('Source timeout', Code.DeadlineExceeded)),
+        this.timeoutMs,
+      );
+    }
+  };
 }
 
 export class PortStreamSink implements UnderlyingSink<JsonValue> {
