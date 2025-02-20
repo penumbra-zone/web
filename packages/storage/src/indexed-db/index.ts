@@ -34,7 +34,11 @@ import { IbdUpdater, IbdUpdates } from './updater.js';
 import { IdbCursorSource } from './stream.js';
 
 import { ValidatorInfo } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
-import { Transaction } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import {
+  Transaction,
+  TransactionPerspective,
+  TransactionView,
+} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { bech32mIdentityKey, identityKeyFromBech32m } from '@penumbra-zone/bech32m/penumbravalid';
 import { bech32mWalletId } from '@penumbra-zone/bech32m/penumbrawalletid';
@@ -135,7 +139,11 @@ export class IndexedDb implements IndexedDbInterface {
         });
         spendableNoteStore.createIndex('nullifier', 'nullifier.inner');
         spendableNoteStore.createIndex('assetId', 'note.value.assetId.inner');
-        db.createObjectStore('TRANSACTIONS', { keyPath: 'id.inner' });
+        db.createObjectStore('TRANSACTIONS', { keyPath: 'id.inner' }).createIndex(
+          'height',
+          'height',
+        );
+        db.createObjectStore('TRANSACTION_INFO', { keyPath: 'id.inner' });
         db.createObjectStore('TREE_LAST_POSITION');
         db.createObjectStore('TREE_LAST_FORGOTTEN');
         db.createObjectStore('TREE_COMMITMENTS', { keyPath: 'commitment.inner' });
@@ -158,6 +166,9 @@ export class IndexedDb implements IndexedDbInterface {
         db.createObjectStore('AUCTIONS');
         db.createObjectStore('AUCTION_OUTSTANDING_RESERVES');
         db.createObjectStore('REGISTRY_VERSION');
+        db.createObjectStore('LQT_HISTORICAL_VOTES', {
+          keyPath: 'id',
+        }).createIndex('epoch', 'epoch');
       },
     });
     const constants = {
@@ -348,8 +359,45 @@ export class IndexedDb implements IndexedDbInterface {
 
   async *iterateTransactions() {
     yield* new ReadableStream(
-      new IdbCursorSource(this.db.transaction('TRANSACTIONS').store.openCursor(), TransactionInfo),
+      new IdbCursorSource(
+        this.db.transaction('TRANSACTIONS').store.index('height').openCursor(),
+        TransactionInfo,
+      ),
     );
+  }
+
+  async getTransactionInfo(
+    id: TransactionId,
+  ): Promise<
+    { id: TransactionId; perspective: TransactionPerspective; view: TransactionView } | undefined
+  > {
+    const existingData = await this.db.get('TRANSACTION_INFO', uint8ArrayToBase64(id.inner));
+    if (existingData) {
+      return {
+        id: TransactionId.fromJson(existingData.id, { typeRegistry }),
+        perspective: TransactionPerspective.fromJson(existingData.perspective, { typeRegistry }),
+        view: TransactionView.fromJson(existingData.view, { typeRegistry }),
+      };
+    } else {
+      return undefined;
+    }
+  }
+
+  async saveTransactionInfo(
+    id: TransactionId,
+    txp: TransactionPerspective,
+    txv: TransactionView,
+  ): Promise<void> {
+    assertTransactionId(id);
+    const value = {
+      id: id.toJson({ typeRegistry }) as Jsonified<TransactionId>,
+      perspective: txp.toJson({ typeRegistry }) as Jsonified<TransactionPerspective>,
+      view: txv.toJson({ typeRegistry }) as Jsonified<TransactionView>,
+    };
+    await this.u.update({
+      table: 'TRANSACTION_INFO',
+      value,
+    });
   }
 
   async saveTransaction(
@@ -362,6 +410,67 @@ export class IndexedDb implements IndexedDbInterface {
     await this.u.update({
       table: 'TRANSACTIONS',
       value: tx.toJson({ typeRegistry }) as Jsonified<TransactionInfo>,
+    });
+  }
+
+  /**
+   * Retrieves liquidity tournament votes and rewards for a given epoch.
+   */
+  async getLQTHistoricalVotes(epoch: bigint): Promise<
+    {
+      TransactionId: TransactionId;
+      AssetMetadata: Metadata;
+      VoteValue: Value;
+      RewardValue: Amount | undefined;
+      id: string | undefined;
+    }[]
+  > {
+    const tournamentVotes = await this.db.getAllFromIndex(
+      'LQT_HISTORICAL_VOTES',
+      'epoch',
+      epoch.toString(),
+    );
+
+    return tournamentVotes.map(tournamentVote => ({
+      TransactionId: TransactionId.fromJson(tournamentVote.TransactionId, { typeRegistry }),
+      AssetMetadata: Metadata.fromJson(tournamentVote.AssetMetadata, { typeRegistry }),
+      VoteValue: Value.fromJson(tournamentVote.VoteValue, { typeRegistry }),
+      RewardValue: tournamentVote.RewardValue
+        ? Amount.fromJson(tournamentVote.RewardValue, { typeRegistry })
+        : undefined,
+      id: tournamentVote.id,
+    }));
+  }
+
+  /**
+   * Saves historical liquidity tournament votes and rewards for a given epoch.
+   */
+  async saveLQTHistoricalVote(
+    epoch: bigint,
+    transactionId: TransactionId,
+    assetMetadata: Metadata,
+    voteValue: Value,
+    rewardValue?: Amount,
+    id?: string,
+  ): Promise<void> {
+    assertTransactionId(transactionId);
+
+    // This is a unique identifier to force unique primary keys. If the field isn't provided,
+    // a random one is generated and used to store an object.
+    const uniquePrimaryKey = id ?? crypto.randomUUID();
+
+    const tournamentVote = {
+      epoch: epoch.toString(),
+      TransactionId: transactionId.toJson({ typeRegistry }) as Jsonified<TransactionId>,
+      AssetMetadata: assetMetadata.toJson({ typeRegistry }) as Jsonified<Metadata>,
+      VoteValue: voteValue.toJson({ typeRegistry }) as Jsonified<Value>,
+      RewardValue: rewardValue ? (rewardValue.toJson({ typeRegistry }) as Jsonified<Amount>) : null,
+      id: uniquePrimaryKey,
+    };
+
+    await this.u.update({
+      table: 'LQT_HISTORICAL_VOTES',
+      value: tournamentVote,
     });
   }
 
@@ -570,6 +679,7 @@ export class IndexedDb implements IndexedDbInterface {
   async *getOwnedPositionIds(
     positionState: PositionState | undefined,
     tradingPair: TradingPair | undefined,
+    subaccount: AddressIndex | undefined,
   ) {
     yield* new ReadableStream({
       start: async cont => {
@@ -578,7 +688,10 @@ export class IndexedDb implements IndexedDbInterface {
           const position = Position.fromJson(cursor.value.position);
           if (
             (!positionState || positionState.equals(position.state)) &&
-            (!tradingPair || tradingPair.equals(position.phi?.pair))
+            (!tradingPair || tradingPair.equals(position.phi?.pair)) &&
+            (!subaccount ||
+              (cursor.value.subaccount &&
+                subaccount.equals(AddressIndex.fromJson(cursor.value.subaccount))))
           ) {
             cont.enqueue(PositionId.fromJson(cursor.value.id));
           }
@@ -589,16 +702,25 @@ export class IndexedDb implements IndexedDbInterface {
     });
   }
 
-  async addPosition(positionId: PositionId, position: Position): Promise<void> {
+  async addPosition(
+    positionId: PositionId,
+    position: Position,
+    subaccount?: AddressIndex,
+  ): Promise<void> {
     assertPositionId(positionId);
     const positionRecord = {
       id: positionId.toJson() as Jsonified<PositionId>,
       position: position.toJson() as Jsonified<Position>,
+      subaccount: subaccount && (subaccount.toJson() as Jsonified<AddressIndex>),
     };
     await this.u.update({ table: 'POSITIONS', value: positionRecord });
   }
 
-  async updatePosition(positionId: PositionId, newState: PositionState): Promise<void> {
+  async updatePosition(
+    positionId: PositionId,
+    newState: PositionState,
+    subaccount?: AddressIndex,
+  ): Promise<void> {
     assertPositionId(positionId);
     const key = uint8ArrayToBase64(positionId.inner);
     const positionRecord = await this.db.get('POSITIONS', key);
@@ -615,6 +737,7 @@ export class IndexedDb implements IndexedDbInterface {
       value: {
         id: positionId.toJson() as Jsonified<PositionId>,
         position: position.toJson() as Jsonified<Position>,
+        subaccount: subaccount ? (subaccount.toJson() as Jsonified<AddressIndex>) : undefined,
       },
     });
   }
@@ -674,6 +797,24 @@ export class IndexedDb implements IndexedDbInterface {
       if (currentEpoch.startHeight <= height) {
         epoch = currentEpoch;
       } else if (currentEpoch.startHeight > height) {
+        break;
+      }
+    }
+
+    return epoch;
+  }
+
+  /**
+   * Get the block height for the correspinding epoch index.
+   */
+  async getBlockHeightByEpoch(epoch_index: bigint): Promise<Epoch | undefined> {
+    let epoch: Epoch | undefined;
+
+    // Iterate over epochs and return the one with the matching epoch index.
+    for await (const cursor of this.db.transaction('EPOCHS', 'readonly').store) {
+      const currentEpoch = Epoch.fromJson(cursor.value);
+      if (currentEpoch.index === epoch_index) {
+        epoch = currentEpoch;
         break;
       }
     }

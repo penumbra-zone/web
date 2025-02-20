@@ -10,9 +10,10 @@
 # -o Output directory for the zipped files. (default: present directory)
 # -r Root directory of the repo, if you're not running this script from the repo
 # root. (default: present directory)
+set -euo pipefail
 
-OUTPUT_DIR=$(pwd)
-REPO_ROOT=$(pwd)
+OUTPUT_DIR="$(pwd)"
+REPO_ROOT="$(pwd)"
 
 while getopts "o:r:" opt; do
   case $opt in
@@ -20,16 +21,20 @@ while getopts "o:r:" opt; do
     ;;
     r) REPO_ROOT="$OPTARG"
     ;;
+    *)
+      >&2 echo "ERROR: option '$opt' not supported"
+      exit 1
+    ;;
   esac
 done
 
-cd $REPO_ROOT
+cd "$REPO_ROOT" || exit 2
 pnpm build
 
-cd $REPO_ROOT/apps/minifront/dist
-zip -r minifront.zip *
-mv minifront.zip ${OUTPUT_DIR}
+cd "$REPO_ROOT/apps/minifront/dist" || exit 2
+zip -r minifront.zip ./*
+mv minifront.zip "${OUTPUT_DIR}"
 
-cd $REPO_ROOT/apps/node-status/dist
-zip -r node-status.zip *
-mv node-status.zip ${OUTPUT_DIR}
+cd "$REPO_ROOT/apps/node-status/dist" || exit 2
+zip -r node-status.zip ./*
+mv node-status.zip "${OUTPUT_DIR}"

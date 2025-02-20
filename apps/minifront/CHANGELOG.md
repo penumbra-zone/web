@@ -1,5 +1,68 @@
 # minifront
 
+## 6.29.0
+
+### Minor Changes
+
+- 03597b7: bump skip widget to latest to fix penumbra noble transparent addresses issue
+
+### Patch Changes
+
+- Updated dependencies [49ae3ab]
+  - @penumbra-zone/protobuf@8.0.0
+  - @penumbra-zone/types@30.0.0
+  - @penumbra-zone/ui-deprecated@16.0.0
+  - @penumbra-zone/perspective@48.0.0
+  - @penumbra-zone/bech32m@14.0.0
+  - @penumbra-zone/client@25.0.0
+  - @penumbra-zone/getters@24.0.0
+  - @penumbra-zone/crypto-web@37.0.0
+
+## 6.28.5
+
+### Patch Changes
+
+- 4a883bf: bump registry versions in web packages
+
+## 6.28.4
+
+### Patch Changes
+
+- Updated dependencies [e51bc61]
+  - @penumbra-zone/types@29.1.0
+  - @penumbra-zone/crypto-web@36.0.0
+  - @penumbra-zone/ui-deprecated@15.0.1
+  - @penumbra-zone/perspective@47.0.0
+
+## 6.28.3
+
+### Patch Changes
+
+- Updated dependencies [68b8f36]
+  - @penumbra-zone/protobuf@7.2.0
+  - @penumbra-zone/bech32m@13.0.0
+  - @penumbra-zone/client@24.0.0
+  - @penumbra-zone/getters@23.0.0
+  - @penumbra-zone/perspective@46.0.0
+  - @penumbra-zone/types@29.0.0
+  - @penumbra-zone/ui-deprecated@15.0.0
+  - @penumbra-zone/crypto-web@35.0.0
+
+## 6.28.2
+
+### Patch Changes
+
+- Updated dependencies [6869c52]
+- Updated dependencies [29dd11a]
+  - @penumbra-zone/types@28.0.0
+  - @penumbra-zone/protobuf@7.1.0
+  - @penumbra-zone/crypto-web@34.0.0
+  - @penumbra-zone/ui-deprecated@14.0.0
+  - @penumbra-zone/bech32m@12.0.0
+  - @penumbra-zone/client@23.0.0
+  - @penumbra-zone/getters@22.0.0
+  - @penumbra-zone/perspective@45.0.0
+
 ## 6.28.1
 
 ### Patch Changes

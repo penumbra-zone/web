@@ -1,5 +1,72 @@
 # @penumbra-zone/storage
 
+## 48.0.0
+
+### Major Changes
+
+- 49ae3ab: LQT integration in web packages
+
+### Patch Changes
+
+- Updated dependencies [49ae3ab]
+  - @penumbra-zone/protobuf@8.0.0
+  - @penumbra-zone/types@30.0.0
+  - @penumbra-zone/wasm@41.0.0
+  - @penumbra-zone/bech32m@14.0.0
+  - @penumbra-zone/getters@24.0.0
+
+## 47.0.1
+
+### Patch Changes
+
+- 4a883bf: bump registry versions in web packages
+
+## 47.0.0
+
+### Major Changes
+
+- e51bc61: transaction table indexes by height and save txp and txv in indexdb
+
+### Patch Changes
+
+- Updated dependencies [e51bc61]
+  - @penumbra-zone/types@29.1.0
+  - @penumbra-zone/wasm@40.0.0
+
+## 46.0.0
+
+### Patch Changes
+
+- Updated dependencies [68b8f36]
+  - @penumbra-zone/protobuf@7.2.0
+  - @penumbra-zone/bech32m@13.0.0
+  - @penumbra-zone/getters@23.0.0
+  - @penumbra-zone/types@29.0.0
+  - @penumbra-zone/wasm@39.0.0
+
+## 45.0.0
+
+### Major Changes
+
+- 29dd11a: - storage: add subaccount filter to `getOwnedPositionIds` method
+  - protobuf: sync latest changes in penumbra protobufs
+  - services: add subaccount filter to `ownedPositionIds` method in ViewService
+  - types: update indexedDB schema
+
+### Minor Changes
+
+- 6869c52: extend alternative fees to LPs
+
+### Patch Changes
+
+- Updated dependencies [6869c52]
+- Updated dependencies [29dd11a]
+  - @penumbra-zone/types@28.0.0
+  - @penumbra-zone/protobuf@7.1.0
+  - @penumbra-zone/wasm@38.0.0
+  - @penumbra-zone/bech32m@12.0.0
+  - @penumbra-zone/getters@22.0.0
+
 ## 44.0.0
 
 ### Patch Changes

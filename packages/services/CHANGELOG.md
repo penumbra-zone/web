@@ -1,5 +1,85 @@
 # @penumbra-zone/router
 
+## 54.0.0
+
+### Major Changes
+
+- 49ae3ab: LQT integration in web packages
+
+### Patch Changes
+
+- Updated dependencies [49ae3ab]
+  - @penumbra-zone/protobuf@8.0.0
+  - @penumbra-zone/storage@48.0.0
+  - @penumbra-zone/types@30.0.0
+  - @penumbra-zone/wasm@41.0.0
+  - @penumbra-zone/bech32m@14.0.0
+  - @penumbra-zone/getters@24.0.0
+  - @penumbra-zone/crypto-web@37.0.0
+
+## 53.0.1
+
+### Patch Changes
+
+- Updated dependencies [4a883bf]
+  - @penumbra-zone/storage@47.0.1
+
+## 53.0.0
+
+### Minor Changes
+
+- e51bc61: transaction table indexes by height and save txp and txv in indexdb
+
+### Patch Changes
+
+- Updated dependencies [e51bc61]
+  - @penumbra-zone/storage@47.0.0
+  - @penumbra-zone/types@29.1.0
+  - @penumbra-zone/crypto-web@36.0.0
+  - @penumbra-zone/wasm@40.0.0
+
+## 52.0.0
+
+### Patch Changes
+
+- dd09e58: Fix latestSwaps method by picking initial swap block height instead of claim height
+- Updated dependencies [68b8f36]
+  - @penumbra-zone/protobuf@7.2.0
+  - @penumbra-zone/bech32m@13.0.0
+  - @penumbra-zone/getters@23.0.0
+  - @penumbra-zone/storage@46.0.0
+  - @penumbra-zone/types@29.0.0
+  - @penumbra-zone/wasm@39.0.0
+  - @penumbra-zone/crypto-web@35.0.0
+
+## 51.0.0
+
+### Major Changes
+
+- 25a2c6b: add latestSwaps view server method
+
+## 50.0.0
+
+### Minor Changes
+
+- 6869c52: extend alternative fees to LPs
+- 29dd11a: - storage: add subaccount filter to `getOwnedPositionIds` method
+  - protobuf: sync latest changes in penumbra protobufs
+  - services: add subaccount filter to `ownedPositionIds` method in ViewService
+  - types: update indexedDB schema
+
+### Patch Changes
+
+- Updated dependencies [6869c52]
+- Updated dependencies [29dd11a]
+  - @penumbra-zone/storage@45.0.0
+  - @penumbra-zone/types@28.0.0
+  - @penumbra-zone/protobuf@7.1.0
+  - @penumbra-zone/crypto-web@34.0.0
+  - @penumbra-zone/wasm@38.0.0
+  - @penumbra-zone/bech32m@12.0.0
+  - @penumbra-zone/getters@22.0.0
+
 ## 49.0.0
 
 ### Patch Changes

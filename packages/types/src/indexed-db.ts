@@ -33,7 +33,11 @@ import {
 } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 import { ValidatorInfo } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 import { AddressIndex, IdentityKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { Transaction } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import {
+  Transaction,
+  TransactionPerspective,
+  TransactionView,
+} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
 import { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
 import {
@@ -97,11 +101,17 @@ export interface IndexedDbInterface {
   getOwnedPositionIds(
     positionState: PositionState | undefined,
     tradingPair: TradingPair | undefined,
+    subaccount: AddressIndex | undefined,
   ): AsyncGenerator<PositionId, void>;
-  addPosition(positionId: PositionId, position: Position): Promise<void>;
-  updatePosition(positionId: PositionId, newState: PositionState): Promise<void>;
+  addPosition(positionId: PositionId, position: Position, subaccount?: AddressIndex): Promise<void>;
+  updatePosition(
+    positionId: PositionId,
+    newState: PositionState,
+    subaccount?: AddressIndex,
+  ): Promise<void>;
   addEpoch(startHeight: bigint): Promise<void>;
   getEpochByHeight(height: bigint): Promise<Epoch | undefined>;
+  getBlockHeightByEpoch(epoch_index: bigint): Promise<Epoch | undefined>;
   upsertValidatorInfo(validatorInfo: ValidatorInfo): Promise<void>;
   iterateValidatorInfos(): AsyncGenerator<ValidatorInfo, void>;
   clearValidatorInfos(): Promise<void>;
@@ -154,7 +164,38 @@ export interface IndexedDbInterface {
 
   totalNoteBalance(accountIndex: number, assetId: AssetId): Promise<Amount>;
 
+  saveTransactionInfo(
+    id: TransactionId,
+    txp: TransactionPerspective,
+    txv: TransactionView,
+  ): Promise<void>;
+
+  getTransactionInfo(
+    id: TransactionId,
+  ): Promise<
+    { id: TransactionId; perspective: TransactionPerspective; view: TransactionView } | undefined
+  >;
+
   getPosition(positionId: PositionId): Promise<Position | undefined>;
+
+  saveLQTHistoricalVote(
+    epoch: bigint,
+    transactionId: TransactionId,
+    assetMetadata: Metadata,
+    voteValue: Value,
+    rewardValue?: Amount,
+    id?: string | undefined,
+  ): Promise<void>;
+
+  getLQTHistoricalVotes(epoch: bigint): Promise<
+    {
+      TransactionId: TransactionId;
+      AssetMetadata: Metadata;
+      VoteValue: Value;
+      RewardValue: Amount | undefined;
+      id: string | undefined;
+    }[]
+  >;
 }
 
 export interface PenumbraDb extends DBSchema {
@@ -189,6 +230,18 @@ export interface PenumbraDb extends DBSchema {
   TRANSACTIONS: {
     key: string; // base64 TransactionInfo['id']['inner'];
     value: Jsonified<TransactionInfo>; // TransactionInfo with undefined view and perspective
+    indexes: {
+      height: string;
+    };
+  };
+  TRANSACTION_INFO: {
+    key: string; // base64 TransactionInfo['id']['inner'];
+    value: {
+      // transaction perspective and view
+      id: Jsonified<TransactionId>;
+      perspective: Jsonified<TransactionPerspective>;
+      view: Jsonified<TransactionView>;
+    };
   };
   REGISTRY_VERSION: {
     key: 'commit';
@@ -291,12 +344,27 @@ export interface PenumbraDb extends DBSchema {
       output: Jsonified<Value>;
     };
   };
+  LQT_HISTORICAL_VOTES: {
+    key: string;
+    value: {
+      id: string;
+      epoch: string;
+      TransactionId: Jsonified<TransactionId>;
+      AssetMetadata: Jsonified<Metadata>;
+      VoteValue: Jsonified<Value>;
+      RewardValue: Jsonified<Amount> | null;
+    };
+    indexes: {
+      epoch: string;
+    };
+  };
 }
 
 // need to store PositionId and Position in the same table
 export interface PositionRecord {
   id: Jsonified<PositionId>; // PositionId (must be JsonValue because ['id']['inner'] is a key )
   position: Jsonified<Position>; // Position
+  subaccount?: Jsonified<AddressIndex>; // Position AddressIndex
 }
 
 export type Tables = Record<string, StoreNames<PenumbraDb>>;
@@ -327,4 +395,5 @@ export const IDB_TABLES: Tables = {
   tree_commitments: 'TREE_COMMITMENTS',
   tree_last_position: 'TREE_LAST_POSITION',
   tree_last_forgotten: 'TREE_LAST_FORGOTTEN',
+  lqt_historical_votes: 'LQT_HISTORICAL_VOTES',
 };

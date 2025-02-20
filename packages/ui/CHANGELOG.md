@@ -1,5 +1,61 @@
 # @penumbra-zone/ui
 
+## 13.12.0
+
+### Minor Changes
+
+- 49ae3ab: LQT integration in web packages
+- 07aa2fe: Implement ActionView component
+- 28e2ccb: Create new `SegmentedControl` UI component
+
+### Patch Changes
+
+- Updated dependencies [49ae3ab]
+  - @penumbra-zone/protobuf@8.0.0
+  - @penumbra-zone/types@30.0.0
+  - @penumbra-zone/bech32m@14.0.0
+  - @penumbra-zone/getters@24.0.0
+
+## 13.11.0
+
+### Minor Changes
+
+- a6094b6: Change tabProps prop type
+
+## 13.10.0
+
+### Minor Changes
+
+- 8f89abd: Make Tabs component extensible
+
+## 13.9.4
+
+### Patch Changes
+
+- Updated dependencies [e51bc61]
+  - @penumbra-zone/types@29.1.0
+
+## 13.9.3
+
+### Patch Changes
+
+- Updated dependencies [68b8f36]
+  - @penumbra-zone/protobuf@7.2.0
+  - @penumbra-zone/bech32m@13.0.0
+  - @penumbra-zone/getters@23.0.0
+  - @penumbra-zone/types@29.0.0
+
+## 13.9.2
+
+### Patch Changes
+
+- Updated dependencies [6869c52]
+- Updated dependencies [29dd11a]
+  - @penumbra-zone/types@28.0.0
+  - @penumbra-zone/protobuf@7.1.0
+  - @penumbra-zone/bech32m@12.0.0
+  - @penumbra-zone/getters@22.0.0
+
 ## 13.9.1
 
 ### Patch Changes
