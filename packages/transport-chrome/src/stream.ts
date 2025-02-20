@@ -32,13 +32,16 @@ export class PortStreamSource implements UnderlyingDefaultSource<JsonValue> {
    */
   constructor(
     incoming: chrome.runtime.Port,
-    private timeoutMs = 10_000,
+    private timeoutMs = 20_000,
   ) {
     this.streamName = incoming.name;
 
     incoming.onDisconnect.addListener(this.onDisconnect);
     incoming.onMessage.addListener(this.onMessage);
     this.disconnect = () => {
+      if (globalThis.__DEV__) {
+        console.debug('Source disconnect', this.streamName);
+      }
       incoming.onDisconnect.removeListener(this.onDisconnect);
       incoming.onMessage.removeListener(this.onMessage);
       incoming.disconnect();
@@ -48,6 +51,9 @@ export class PortStreamSource implements UnderlyingDefaultSource<JsonValue> {
 
   /** Make controller available to other methods. */
   start(cont: ReadableStreamDefaultController<JsonValue>) {
+    if (globalThis.__DEV__) {
+      console.debug('Source start', this.streamName);
+    }
     this.started.resolve(cont);
   }
 
@@ -60,13 +66,24 @@ export class PortStreamSource implements UnderlyingDefaultSource<JsonValue> {
   }
 
   private onDisconnect = () =>
-    void this.started.promise.then(cont =>
-      cont.error(ConnectError.from('Source disconnected', Code.Aborted)),
-    );
+    void this.started.promise.then(cont => {
+      if (globalThis.__DEV__) {
+        console.debug('Source onDisconnect', this.streamName);
+      }
+      cont.error(ConnectError.from('Source disconnected', Code.Aborted));
+    });
+
   /** Enqueues chunks for value messages, or effects state for control messages. */
   private onMessage = (item: unknown) => {
     if (isStreamValue(item)) {
       void this.started.promise.then(cont => {
+        if (globalThis.__DEV__) {
+          console.debug(
+            'Source onMessage enqueue',
+            this.streamName,
+            item.value?.['@type' as keyof typeof item.value],
+          );
+        }
         this.updateTimeout(cont);
         cont.enqueue(item.value);
       });
@@ -74,10 +91,16 @@ export class PortStreamSource implements UnderlyingDefaultSource<JsonValue> {
       this.disconnect();
       void this.started.promise.then(cont => {
         if (isStreamAbort(item)) {
+          if (globalThis.__DEV__) {
+            console.debug('Source onMessage abort', this.streamName, item.abort);
+          }
           cont.error(
             errorFromJson(item.abort, undefined, ConnectError.from('Stream aborted', Code.Aborted)),
           );
         } else if (isStreamEnd(item)) {
+          if (globalThis.__DEV__) {
+            console.debug('Source onMessage end', this.streamName);
+          }
           cont.close();
         } else {
           cont.error(new TypeError('Unexpected item in stream', { cause: item }));
@@ -118,10 +141,12 @@ export class PortStreamSink implements UnderlyingSink<JsonValue> {
    */
   constructor(
     outgoing: chrome.runtime.Port,
-    private timeoutMs = 10_000,
+    private timeoutMs = 20_000,
   ) {
     this.streamName = outgoing.name;
-    console.debug('Sink construct', this.streamName);
+    if (globalThis.__DEV__) {
+      console.debug('Sink construct', this.streamName);
+    }
 
     this.disconnect = () => outgoing.disconnect();
 
@@ -152,7 +177,7 @@ export class PortStreamSink implements UnderlyingSink<JsonValue> {
 
   write(chunk: JsonValue, cont: WritableStreamDefaultController) {
     if (globalThis.__DEV__) {
-      console.debug('Sink write', this.streamName, chunk);
+      console.debug('Sink write', this.streamName, chunk?.['@type' as keyof typeof chunk]);
     }
     this.updateTimeout(cont);
     this.postChunk({ value: chunk });
