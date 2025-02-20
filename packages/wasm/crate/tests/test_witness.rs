@@ -241,6 +241,7 @@ async fn test_witness() {
         dutch_auction_end_actions: vec![],
         dutch_auction_withdraw_actions: vec![],
         delegator_votes: vec![],
+        action_liquidity_tournament_vote: vec![],
     };
 
     // Viewing key to reveal asset balances and transactions.

@@ -32,4 +32,5 @@ export type TransactionClassification =
   | 'positionRewardClaim'
   | 'communityPoolSpend'
   | 'communityPoolOutput'
-  | 'communityPoolDeposit';
+  | 'communityPoolDeposit'
+  | 'liquidityTournamentVote';

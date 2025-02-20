@@ -40,6 +40,7 @@ fn get_metadata_for(display_denom: &str, base_denom_is_display_denom: bool) -> p
         symbol: String::from(""),
         priority_score: 0,
         badges: Vec::new(),
+        coingecko_id: String::new(),
     }
 }
 

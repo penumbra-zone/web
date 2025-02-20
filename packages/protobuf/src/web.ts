@@ -9,6 +9,7 @@ import {
 import type { CustodyService } from './services/penumbra-custody.js';
 import type { ViewService } from './services/penumbra-view.js';
 import type {
+  FundingService,
   AppService,
   AuctionService,
   CommunityPoolService,
@@ -43,4 +44,5 @@ export type PenumbraService =
   | typeof SimulationService
   | typeof StakeService
   | typeof TendermintProxyService
-  | typeof ViewService;
+  | typeof ViewService
+  | typeof FundingService;

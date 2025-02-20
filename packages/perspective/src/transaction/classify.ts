@@ -78,6 +78,9 @@ export const classifyTransaction = (txv?: TransactionView): TransactionClassific
   if (allActionCases.has('communityPoolOutput')) {
     return 'communityPoolOutput';
   }
+  if (allActionCases.has('actionLiquidityTournamentVote')) {
+    return 'liquidityTournamentVote';
+  }
 
   const hasOpaqueSpend = txv.bodyView?.actionViews.some(
     a => a.actionView.case === 'spend' && a.actionView.value.spendView.case === 'opaque',
@@ -167,6 +170,7 @@ export const TRANSACTION_LABEL_BY_CLASSIFICATION: Record<TransactionClassificati
   proposalSubmit: 'Proposal Submit',
   proposalWithdraw: 'Proposal Withdraw',
   validatorDefinition: 'Validator Definition',
+  liquidityTournamentVote: 'Liquidity Tournament Vote',
 };
 
 export const getTransactionClassificationLabel = (txv?: TransactionView): string =>
