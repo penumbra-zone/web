@@ -1,7 +1,6 @@
 import type { JsonValue } from '@bufbuild/protobuf';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { errorFromJson, errorToJson } from '@connectrpc/connect/protocol-connect';
-import { captureDisconnectedPortError } from './util/capture-error.js';
 
 /**
  * Sources a `ReadableStream` of `JsonValue` from a `chrome.runtime.Port` backed
@@ -132,9 +131,8 @@ export class PortStreamSink implements UnderlyingSink<JsonValue> {
 
   private disconnect: () => void;
 
-  private postAbort: (reason: StreamAbort) => void;
-  private postChunk: (chunk: StreamValue) => void;
-  private postEnd: (end: StreamEnd) => void;
+  private postOutgoing: (chunk: StreamValue) => void;
+  private postFinal: (end: StreamAbort | StreamEnd) => void;
 
   /**
    * @param outgoing port to write to
@@ -148,20 +146,45 @@ export class PortStreamSink implements UnderlyingSink<JsonValue> {
       console.debug('Sink construct', this.streamName);
     }
 
-    this.disconnect = () => outgoing.disconnect();
-
-    const postOutgoing = (message: unknown) => outgoing.postMessage(message);
-    const postOutgoingSuppressed = (message: unknown) => {
-      try {
-        outgoing.postMessage(message);
-      } catch (e) {
-        captureDisconnectedPortError(e);
-      }
+    this.disconnect = () => {
+      outgoing.disconnect();
+      clearTimeout(this.timeout);
     };
 
-    this.postAbort = postOutgoingSuppressed;
-    this.postChunk = postOutgoing;
-    this.postEnd = postOutgoingSuppressed;
+    this.postOutgoing = (item: StreamValue) => outgoing.postMessage(item);
+    this.postFinal = (item: StreamAbort | StreamEnd) => {
+      try {
+        outgoing.postMessage(item);
+      } catch (e) {
+        if (globalThis.__DEV__) {
+          console.debug('Sink postFinal', this.streamName, e);
+        }
+      } finally {
+        this.disconnect();
+      }
+    };
+  }
+
+  write(chunk: JsonValue, cont: WritableStreamDefaultController) {
+    if (globalThis.__DEV__) {
+      console.debug('Sink write', this.streamName, chunk?.['@type' as keyof typeof chunk]);
+    }
+    this.updateTimeout(cont);
+    this.postOutgoing({ value: chunk });
+  }
+
+  close() {
+    if (globalThis.__DEV__) {
+      console.debug('Sink close', this.streamName);
+    }
+    this.postFinal({ done: true });
+  }
+
+  abort(reason?: unknown) {
+    if (globalThis.__DEV__) {
+      console.debug('Sink abort', this.streamName, reason);
+    }
+    this.postFinal({ abort: errorToJson(ConnectError.from(reason), undefined) });
   }
 
   private timeout = setTimeout(() => void 0, 0);
@@ -174,36 +197,6 @@ export class PortStreamSink implements UnderlyingSink<JsonValue> {
       );
     }
   };
-
-  write(chunk: JsonValue, cont: WritableStreamDefaultController) {
-    if (globalThis.__DEV__) {
-      console.debug('Sink write', this.streamName, chunk?.['@type' as keyof typeof chunk]);
-    }
-    this.updateTimeout(cont);
-    this.postChunk({ value: chunk });
-  }
-
-  close() {
-    if (globalThis.__DEV__) {
-      console.debug('Sink close', this.streamName);
-    }
-    try {
-      this.postEnd({ done: true });
-    } finally {
-      this.disconnect();
-    }
-  }
-
-  abort(reason?: unknown) {
-    if (globalThis.__DEV__) {
-      console.debug('Sink abort', this.streamName, reason);
-    }
-    try {
-      this.postAbort({ abort: errorToJson(ConnectError.from(reason), undefined) });
-    } finally {
-      this.disconnect();
-    }
-  }
 }
 
 // control message types below
