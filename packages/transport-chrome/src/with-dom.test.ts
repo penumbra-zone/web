@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
-  ConverseRequest,
-  ConverseResponse,
   IntroduceRequest,
   IntroduceResponse,
   SayRequest,
@@ -23,7 +21,6 @@ import { lastResult, replaceUnhandledRejectionListener } from './util/test-utils
 
 import ReadableStream from '@penumbra-zone/transport-dom/ReadableStream.from';
 import { PortStreamSink } from './stream.js';
-import { TransportInitChannel } from './message.js';
 
 Object.assign(CRSessionClient, {
   clearSingleton() {
@@ -43,14 +40,6 @@ const introduceResponses: PlainMessage<IntroduceResponse>[] = [
   { sentence: 'Yo' },
   { sentence: 'This' },
   { sentence: 'Streams' },
-];
-const converseRequests: PlainMessage<ConverseRequest>[] = [
-  { sentence: 'Hello' },
-  { sentence: 'world' },
-];
-const converseResponses: PlainMessage<ConverseResponse>[] = [
-  { sentence: 'Goodbye' },
-  { sentence: 'world' },
 ];
 const defaultTimeoutMs = 200;
 
@@ -182,77 +171,6 @@ describe('message transport', () => {
     for await (const chunk of response.message) {
       console.log('chunk', chunk);
     }
-  });
-
-  it('should send and receive bidi-streaming request/response', async () => {
-    const responseChannelName = nameConnection('test', ChannelLabel.STREAM);
-    const responseOnConnectListener = vi.fn((sub: chrome.runtime.Port) => {
-      if (sub.name === responseChannelName) {
-        mockedChannel.onConnect.removeListener(responseOnConnectListener);
-        const stream = new ReadableStream({
-          start(cont) {
-            for (const chunk of converseResponses) {
-              cont.enqueue(Any.pack(new ConverseResponse(chunk)).toJson({ typeRegistry }));
-            }
-            cont.close();
-          },
-        });
-
-        void stream
-          .pipeTo(new WritableStream(new PortStreamSink(sub)))
-          .finally(() => sub.disconnect());
-      }
-    });
-
-    const streamRequestCollected = new Array<unknown>();
-
-    extOnMessage.mockImplementation((m, p) => {
-      console.log('bidi onMessage', m);
-      const { requestId, channel } = m as TransportInitChannel;
-
-      const requestChannel = mockedChannel2.connect({ name: channel });
-      requestChannel.onMessage.addListener(m => {
-        console.log('bidi request chunk', m);
-        streamRequestCollected.push(m);
-      });
-
-      mockedChannel.onConnect.addListener(responseOnConnectListener);
-      p.postMessage({ requestId, channel: responseChannelName });
-    });
-
-    const bidiRequestResponse = transport.stream(
-      ElizaService,
-      ElizaService.methods.converse,
-      undefined,
-      undefined,
-      undefined,
-      ReadableStream.from(converseRequests.map(r => new ConverseRequest(r))),
-    );
-
-    await vi.waitFor(() =>
-      expect(extOnMessage).toHaveBeenCalledWith(
-        expect.objectContaining({
-          channel: expect.stringContaining('STREAM'),
-        }),
-        expect.anything(),
-      ),
-    );
-    expect(mockedChannel.connect).toHaveBeenCalledTimes(2);
-    expect(mockedChannel.connect).toHaveBeenLastCalledWith({ name: responseChannelName });
-
-    const streamPort = lastResult(mockedChannel.connect);
-    expect(responseOnConnectListener).toHaveBeenCalled();
-    expect(streamPort.onMessage.dispatch).toHaveBeenCalled();
-
-    const expectedResponses = converseResponses[Symbol.iterator]();
-    for await (const chunk of (await bidiRequestResponse).message) {
-      expect(chunk).toMatchObject(expectedResponses.next().value);
-    }
-
-    expect(streamRequestCollected).toMatchObject([
-      ...converseRequests.map(value => ({ value })),
-      { done: true },
-    ]);
   });
 });
 

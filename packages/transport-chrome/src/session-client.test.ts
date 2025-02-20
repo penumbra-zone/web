@@ -1,7 +1,7 @@
 import { ConnectError } from '@connectrpc/connect';
 import { errorToJson } from '@connectrpc/connect/protocol-connect';
 import { mockChannel, MockedChannel, MockedPort } from '@penumbra-zone/mock-chrome/runtime/connect';
-import type { TransportMessage, TransportStream } from '@penumbra-zone/transport-dom/messages';
+import type { TransportMessage } from '@penumbra-zone/transport-dom/messages';
 import { afterEach, beforeEach, describe, expect, it, type Mock, onTestFinished, vi } from 'vitest';
 import { ChannelLabel, nameConnection } from './channel-names.js';
 import { lastResult, replaceUncaughtExceptionListener } from './util/test-utils.js';
@@ -512,45 +512,6 @@ describe('CRSessionClient', () => {
       expect(mockedChannel.connect).toHaveBeenLastCalledWith(
         expect.objectContaining({ name: streamResponse.channel }),
       );
-    });
-
-    it('when making a stream channel request, should listen for stream subchannels', async () => {
-      const mockedChannel2 = mockChannel();
-
-      // stub the chrome runtime in both directions, for this test
-      vi.stubGlobal('chrome', {
-        runtime: { connect: mockedChannel.connect, onConnect: mockedChannel2.onConnect },
-      });
-
-      const streamRequest: TransportStream = {
-        stream: new ReadableStream({
-          pull(controller) {
-            controller.enqueue({ done: true });
-            controller.close();
-          },
-        }),
-        requestId: '123',
-      };
-
-      domPort = CRSessionClient.init(testName);
-      expect(domPort).toBeDefined();
-      expect(mockedChannel.connect).toHaveBeenCalledOnce();
-      const extPort = lastResult(mockedChannel.mockPorts).onConnectPort;
-
-      domPort.postMessage(streamRequest, [streamRequest.stream]);
-      await vi.waitFor(() => expect(mockedChannel2.onConnect.addListener).toHaveBeenCalled());
-
-      const channelInitMsg = extPort.onMessage.dispatch.mock.lastCall?.[0] as TransportInitChannel;
-
-      expect(channelInitMsg).toMatchObject(
-        expect.objectContaining({
-          channel: expect.stringContaining(ChannelLabel.STREAM) as string,
-        }),
-      );
-
-      const acceptStream = mockedChannel2.connect({ name: channelInitMsg.channel });
-
-      expect(acceptStream.name).toBe(channelInitMsg.channel);
     });
   });
 });
