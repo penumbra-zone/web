@@ -1,152 +1,218 @@
-/**
- * CRSessionClient is a Chrome runtime session client: it handles channel
- * Transport client sessions in the Chrome runtime.  Intended for use as a
- * document singleton, in a content script.
- *
- * Simple handlers unconditionally forward messages back and forth. Chrome
- * runtime disconnect is detected and surfaced as an error.
- *
- * Only a basic same-window origin check and structural typing are performed.
- * Content scripts are ultimately untrusted, so services are responsible for
- * confirming legitimacy.
- *
- * A `ReadableStream` or `AsyncIterable` cannot cross the runtime, so streaming
- * methods sink/source a dedicated `chrome.runtime.Port` at this boundary.
- */
-
+import { Code, ConnectError } from '@connectrpc/connect';
+import { errorToJson } from '@connectrpc/connect/protocol-connect';
 import {
   isTransportAbort,
   isTransportError,
+  isTransportEvent,
   isTransportMessage,
-  isTransportStream,
+  TransportAbort,
+  TransportError,
+  TransportMessage,
   TransportStream,
 } from '@penumbra-zone/transport-dom/messages';
 import { ChannelLabel, nameConnection } from './channel-names.js';
 import { isTransportInitChannel, TransportInitChannel } from './message.js';
-import { PortStreamSink, PortStreamSource } from './stream.js';
+import { PortStreamSource } from './stream.js';
 
-const localErrorJson = (err: unknown, relevantMessage?: unknown) =>
-  err instanceof Error
-    ? {
-        message: err.message,
-        details: [
-          {
-            type: err.name,
-            value: err.cause,
-          },
-          relevantMessage,
-        ],
-      }
-    : {
-        message: String(err),
-        details: [
-          {
-            type: String(
-              // eslint-disable-next-line no-nested-ternary -- readable ternary nesting
-              typeof err === 'function'
-                ? err.name
-                : typeof err === 'object'
-                  ? ((Object.getPrototypeOf(err) as unknown)?.constructor?.name ?? String(err))
-                  : typeof err,
-            ),
-            value: err,
-          },
-          relevantMessage,
-        ],
-      };
-
+/**
+ * Transparently adapts `Transport`s using `MessageChannel` DOM connections to
+ * use Chrome `chrome.runtime.Port` extension connections.
+ *
+ * Simple handlers unconditionally forward messages back and forth. Channel
+ * disconnects are detected, and transparently re-established if possible.
+ *
+ * Content scripts are ultimately untrusted, so the counterpart session manager
+ * is considered responsible for all validation.
+ *
+ * The chrome runtime does not support object transfer, so `ReadableStream` or
+ * `AsyncIterable` cannot cross the message boundary. Instead, `PortStreamSink`
+ * and `PortStreamSource` are used with dedicated sub-channels to encapsulate
+ * streams.
+ */
 export class CRSessionClient {
-  private static singleton?: CRSessionClient;
+  private readonly sessionName: string;
   private servicePort: chrome.runtime.Port;
-  private clientPort: MessagePort;
-  public inputPort: MessagePort;
 
-  private constructor(private prefix: string) {
-    if (CRSessionClient.singleton) {
-      throw new Error('Already constructed');
-    }
+  /** Private constructor. Launch a session with `CRSessionClient.init`. */
+  private constructor(
+    private readonly managerId: string,
+    private readonly clientPort: MessagePort,
+  ) {
+    // create a permanent, unique session name
+    this.sessionName = nameConnection(this.managerId, ChannelLabel.TRANSPORT);
 
-    const { port1, port2 } = new MessageChannel();
-    this.clientPort = port1;
-    this.inputPort = port2;
-
+    // listen to service
     this.servicePort = chrome.runtime.connect({
       includeTlsChannelId: true,
-      name: nameConnection(prefix, ChannelLabel.TRANSPORT),
+      name: this.sessionName,
     });
-
+    this.servicePort.onDisconnect.addListener(this.reconnect);
     this.servicePort.onMessage.addListener(this.serviceListener);
-    this.servicePort.onDisconnect.addListener(this.disconnect);
+
+    // listen to client
     this.clientPort.addEventListener('message', this.clientListener);
+    if (globalThis.__DEV__) {
+      this.clientPort.addEventListener('messageerror', ev =>
+        console.debug('session-client messageerror', ev),
+      );
+    }
     this.clientPort.start();
   }
 
   /**
-   * Establishes a new connection from this document to the extension.
+   * Establishes a new session client.
    *
-   * @param prefix a string containing no spaces
+   * @param managerId identifies the counterpart session manager
    * @returns a `MessagePort` that can be provided to DOM channel transports
    */
-  public static init(prefix: string): MessagePort {
-    CRSessionClient.singleton ??= new CRSessionClient(prefix);
-    return CRSessionClient.singleton.inputPort;
+  public static init(managerId: string): MessagePort {
+    const { port1, port2 } = new MessageChannel();
+    new CRSessionClient(managerId, port1);
+    return port2;
   }
 
+  /**
+   * Serialize and report a local error to the client. If `requestId` is
+   * provided, it will be used to reject that pending request.
+   */
+  private clientPostError = (cause: unknown, requestId?: string) => {
+    const connectError = ConnectError.from(cause);
+    if (globalThis.__DEV__) {
+      console.warn('session-client error', cause, connectError);
+    }
+    const metadata: [string, string][] = Array.from(connectError.metadata);
+    const msg: TransportError<string | undefined> = {
+      requestId,
+      metadata: metadata.length ? metadata : undefined,
+      error: errorToJson(connectError, undefined),
+    };
+    this.clientPort.postMessage(msg);
+  };
+
+  /**
+   * Used to tear down this session when the client announces channel closure.
+   *
+   * Announces closure from this side towards the document, and ensures closure
+   * of both ports. Listeners are automatically gargbage-collected. This session
+   * is complete.
+   */
   private disconnect = () => {
-    this.clientPort.removeEventListener('message', this.clientListener);
     this.clientPort.postMessage(false);
+
     this.clientPort.close();
     this.servicePort.disconnect();
-    CRSessionClient.singleton = undefined;
   };
 
+  /**
+   * Used when the service port disconnects. Tears down the service port and
+   * reconnects, creating a new service port.
+   */
+  private reconnect = () => {
+    this.servicePort = chrome.runtime.connect({
+      name: this.sessionName,
+      includeTlsChannelId: true,
+    });
+    this.servicePort.onMessage.addListener(this.serviceListener);
+    this.servicePort.onDisconnect.addListener(this.reconnect);
+  };
+
+  /**
+   * Listens for messages from the client, and forwards them to the service.
+   *
+   * If an unidentifiable message arrives, this handler will report the failure
+   * back to the specific request if possible, or, as a top-level transport
+   * error.
+   *
+   * Since a `MessagePort` has no event or callback indicating closure, the
+   * client may announce port closure by posting a `false` value.
+   *
+   * @param tev `TransportEvent` or `false` message payload
+   */
   private clientListener = (ev: MessageEvent<unknown>) => {
-    try {
-      if (ev.data === false) {
-        this.disconnect();
-      } else if (isTransportAbort(ev.data) || isTransportMessage(ev.data)) {
-        this.servicePort.postMessage(ev.data);
-      } else if (isTransportStream(ev.data)) {
-        this.servicePort.postMessage(this.makeChannelStreamRequest(ev.data));
-      } else {
-        console.warn('Unknown item from client', ev.data);
+    if (ev.data === false) {
+      // client announced closure
+      this.disconnect();
+    } else if (isTransportEvent(ev.data)) {
+      const tev = ev.data;
+      try {
+        if (
+          // abort control for a specific request
+          isTransportAbort(tev) ||
+          // request, client message
+          isTransportMessage(tev)
+        ) {
+          this.servicePostRequest(tev);
+        } else {
+          // something unsupported
+          throw new ConnectError('Unsupported request from client', Code.Unimplemented);
+        }
+      } catch (cause) {
+        this.clientPostError(cause, tev.requestId);
       }
-    } catch (e) {
-      this.clientPort.postMessage({ error: localErrorJson(e, ev.data) });
+    } else {
+      this.clientPostError(new ConnectError('Unknown item from client', Code.Unknown));
     }
   };
 
+  /**
+   * Listens for events from the service, and forwards them to the client.
+   *
+   * If an unidentifiable event arrives, this handler will report the failure
+   * back to the specific request if possible, or, as a top-level transport
+   * error.
+   *
+   * @param msg service-emitted event
+   */
   private serviceListener = (msg: unknown) => {
-    try {
-      if (msg === true) {
-        this.clientPort.postMessage(true);
-      } else if (isTransportError(msg) || isTransportMessage(msg)) {
-        this.clientPort.postMessage(msg);
-      } else if (isTransportInitChannel(msg)) {
-        this.clientPort.postMessage(...this.acceptChannelStreamResponse(msg));
-      } else {
-        console.warn('Unknown item from service', msg);
+    if (isTransportEvent(msg)) {
+      // event contains a requestId
+      const { requestId } = msg;
+      try {
+        if (isTransportError(msg)) {
+          // error control for a specific request
+          this.clientPostResponse(msg);
+        } else if (isTransportMessage(msg)) {
+          // response, server message
+          this.clientPostResponse(msg);
+        } else if (isTransportInitChannel(msg)) {
+          // response, server stream
+          this.clientPostResponse(this.acceptChannelStreamResponse(msg));
+        } else {
+          // something unsupported
+          throw ConnectError.from('Unsupported response from service', Code.Unimplemented);
+        }
+      } catch (failure) {
+        this.clientPostError(failure, requestId);
       }
-    } catch (e) {
-      this.clientPort.postMessage({ error: localErrorJson(e, msg) });
+    } else {
+      this.clientPostError(ConnectError.from('Unknown item from service'), undefined);
     }
   };
 
+  /**
+   * Support server-stream responses. Takes a message representing a subchannel,
+   * and sources that into a stream.
+   *
+   * @param channel a name identifying the subchannel
+   * @param requestId a request identifier
+   * @returns a response stream
+   */
   private acceptChannelStreamResponse = ({ requestId, channel: name }: TransportInitChannel) => {
     const stream = new ReadableStream(new PortStreamSource(chrome.runtime.connect({ name })));
-    return [{ requestId, stream }, [stream]] satisfies [TransportStream, [Transferable]];
+    return { requestId, stream };
   };
 
-  private makeChannelStreamRequest = ({ requestId, stream }: TransportStream) => {
-    const channel = nameConnection(this.prefix, ChannelLabel.STREAM);
-    const sinkListener = (p: chrome.runtime.Port) => {
-      if (p.name !== channel) {
-        return;
-      }
-      chrome.runtime.onConnect.removeListener(sinkListener);
-      void stream.pipeTo(new WritableStream(new PortStreamSink(p))).catch(() => null);
-    };
-    chrome.runtime.onConnect.addListener(sinkListener);
-    return { requestId, channel } satisfies TransportInitChannel;
+  /** Forward a service-emitted response or error (response failure) to the client. */
+  private clientPostResponse = (
+    msg: TransportMessage | TransportStream | TransportError<string>,
+  ) => {
+    'stream' in msg
+      ? this.clientPort.postMessage(msg, [msg.stream])
+      : this.clientPort.postMessage(msg);
+  };
+
+  /** Forward a client-emitted request or abort (request cancel) to the service. */
+  private servicePostRequest = (msg: TransportMessage | TransportInitChannel | TransportAbort) => {
+    this.servicePort.postMessage(msg);
   };
 }

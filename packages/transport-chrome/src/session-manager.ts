@@ -1,22 +1,35 @@
 import { ConnectError } from '@connectrpc/connect';
 import { errorToJson } from '@connectrpc/connect/protocol-connect';
 import { ChannelLabel, nameConnection, parseConnectionName } from './channel-names.js';
-import { isTransportInitChannel, TransportInitChannel } from './message.js';
-import { PortStreamSink, PortStreamSource } from './stream.js';
+import { TransportInitChannel } from './message.js';
+import { PortStreamSink } from './stream.js';
 import { ChannelHandlerFn } from '@penumbra-zone/transport-dom/adapter';
 import {
   isTransportAbort,
   isTransportMessage,
-  TransportEvent,
+  TransportError,
   TransportMessage,
   TransportStream,
 } from '@penumbra-zone/transport-dom/messages';
 
-interface CRSession extends AbortController {
-  clientId: string;
-  port: chrome.runtime.Port;
+interface CRSession {
+  abort: AbortController['abort'];
+  signal: AbortSignal;
+  sessionId: string;
+  verifiedPort: ReturnType<ValidateSenderFn>;
+  sender: chrome.runtime.MessageSender;
   origin: string;
+  requests: Map<string, AbortController>;
 }
+
+type PortWithSenderOrigin = chrome.runtime.Port & {
+  sender: chrome.runtime.MessageSender & { origin: string };
+};
+
+const isPortWithSenderOrigin = (p?: chrome.runtime.Port): p is PortWithSenderOrigin =>
+  Boolean(p?.sender?.origin);
+
+export type ValidateSenderFn = (port: chrome.runtime.Port) => Promise<PortWithSenderOrigin>;
 
 /**
  * Only for use as an extension-level singleton by the extension's main
@@ -37,39 +50,59 @@ interface CRSession extends AbortController {
  *
  * If you are connecting from the same worker running this script (currently,
  * service-to-service communication) you cannot make a `chrome.runtime.connect`
- * call that activates this manager, and you should use normal DOM messaging.
+ * call that activates this manager, and you should use normal DOM messaging to
+ * enter your router.
  */
 
 export class CRSessionManager {
   private static singleton?: CRSessionManager;
   private sessions = new Map<string, CRSession>();
-  private requests = new Map<string, AbortController>();
 
+  /**
+   * Create a new session manager to accept connections from `CRSessionClient`.
+   *
+   * @param prefix a string containing no spaces, matching the prefix used in your content script
+   * @param handler your router entry function
+   * @param validateSender a function used to validate the sender of a connection
+   */
   private constructor(
-    private prefix: string,
-    private handler: ChannelHandlerFn,
+    private readonly prefix: string,
+    private readonly handler: ChannelHandlerFn,
+    private readonly validateSender: ValidateSenderFn,
   ) {
     if (CRSessionManager.singleton) {
       throw new Error('Already constructed');
     }
+    CRSessionManager.singleton = this;
     chrome.runtime.onConnect.addListener(this.transportConnection);
   }
 
   /**
+   * Initialize the singleton session manager.
    *
-   * @param prefix a string containing no spaces, matching the prefix used in your content script
+   * @param managerId a string identifying this manager
    * @param handler your router entry function
+   * @param validateSender function to assert validity of a sender
    */
-  public static init = (prefix: string, handler: ChannelHandlerFn) => {
-    CRSessionManager.singleton ??= new CRSessionManager(prefix, handler);
+  public static init = (
+    managerId: string,
+    handler: ChannelHandlerFn,
+    validateSender: ValidateSenderFn,
+  ) => {
+    CRSessionManager.singleton ??= new CRSessionManager(managerId, handler, validateSender);
     return CRSessionManager.singleton.sessions;
   };
 
+  /**
+   * Abort all sessions from a given origin presently active in the singleton.
+   *
+   * @param targetOrigin the origin to kill
+   */
   public static killOrigin = (targetOrigin: string) => {
     if (CRSessionManager.singleton) {
       CRSessionManager.singleton.sessions.forEach(session => {
         if (session.origin === targetOrigin) {
-          session.abort(targetOrigin);
+          session.abort();
         }
       });
     } else {
@@ -86,25 +119,12 @@ export class CRSessionManager {
    */
   private transportConnection = (port: chrome.runtime.Port) => {
     // require an identified origin
-    const sender = port.sender;
-    if (!sender?.origin) {
+    if (!isPortWithSenderOrigin(port)) {
       return;
     }
 
-    // fast and simple name test, parse later
+    // fast and simple name test
     if (!port.name.startsWith(this.prefix)) {
-      return;
-    }
-
-    const fromThisExtension = sender.id === chrome.runtime.id;
-    const fromPageHttps =
-      !sender.frameId && !!sender.tab?.id && sender.origin.startsWith('https://');
-    const isLocalhost =
-      sender.origin.startsWith('http://localhost:') || sender.origin === 'http://localhost';
-
-    // Allow connections from the same extension, from https pages, or from http://localhost
-    const validOrigin = isLocalhost || fromPageHttps || fromThisExtension;
-    if (!validOrigin) {
       return;
     }
 
@@ -119,31 +139,53 @@ export class CRSessionManager {
       throw new Error(`Session collision: ${clientId}`);
     }
 
-    const session: CRSession = Object.assign(new AbortController(), {
-      clientId,
+    // checking port sender is async, but listeners must attach immediately
+    this.attachListeners(port, this.validateSender(port), clientId);
+  };
+
+  private attachListeners = (
+    unverifiedPort: PortWithSenderOrigin,
+    verifiedPort: Promise<PortWithSenderOrigin>,
+    sessionId: string,
+  ) => {
+    const sender = unverifiedPort.sender;
+
+    const ac = new AbortController();
+    const session: CRSession = {
+      abort: (r?: unknown) => ac.abort(r),
+      signal: ac.signal,
+      sessionId,
       origin: sender.origin,
-      port: port,
-    });
-    this.sessions.set(clientId, session);
+      sender,
+      verifiedPort,
+      requests: new Map(),
+    };
 
-    session.signal.addEventListener('abort', () => port.disconnect());
-    port.onDisconnect.addListener(() => session.abort('Disconnect'));
+    this.sessions.set(sessionId, session);
 
-    port.onMessage.addListener((i, p) => {
-      try {
-        if (isTransportAbort(i)) {
-          this.requests.get(i.requestId)?.abort();
-        } else if (isTransportMessage(i)) {
-          void this.clientMessageHandler(session, i).then(res => p.postMessage(res));
-        } else if (isTransportInitChannel(i)) {
-          console.warn('Client streaming unimplemented', this.acceptChannelStreamRequest(i));
-        } else {
-          console.warn('Unknown item in transport', i);
-        }
-      } catch (e) {
-        session.abort(e);
-      }
+    session.signal.addEventListener('abort', () => {
+      unverifiedPort.disconnect();
+      session.requests.forEach(request => request.abort(session.signal.reason));
+      this.sessions.delete(sessionId);
     });
+    unverifiedPort.onDisconnect.addListener(() => session.abort());
+
+    unverifiedPort.onMessage.addListener(
+      (i: unknown) =>
+        void verifiedPort.then(p => {
+          try {
+            if (isTransportAbort(i)) {
+              session.requests.get(i.requestId)?.abort();
+            } else if (isTransportMessage(i)) {
+              void this.clientMessageHandler(session, i).then(res => p.postMessage(res));
+            } else {
+              console.warn('Unknown item in transport', i);
+            }
+          } catch (e) {
+            session.abort(e);
+          }
+        }),
+    );
   };
 
   /**
@@ -157,27 +199,27 @@ export class CRSessionManager {
   private clientMessageHandler(
     session: CRSession,
     { requestId, message }: TransportMessage,
-  ): Promise<TransportEvent> {
-    if (this.requests.has(requestId)) {
+  ): Promise<TransportMessage | TransportInitChannel | TransportError<string | undefined>> {
+    if (session.requests.has(requestId)) {
       throw new Error(`Request collision: ${requestId}`);
     }
     const requestController = new AbortController();
-    session.signal.addEventListener('abort', () => requestController.abort());
-    this.requests.set(requestId, requestController);
+
+    session.requests.set(requestId, requestController);
     return this.handler(message, AbortSignal.any([session.signal, requestController.signal]))
       .then(response =>
         response instanceof ReadableStream
           ? this.responseChannelStream(requestController.signal, {
               requestId,
-              stream: response as unknown,
-            } as TransportStream)
-          : ({ requestId, message: response as unknown } as TransportEvent),
+              stream: response,
+            })
+          : { requestId, message: response },
       )
       .catch((error: unknown) => ({
         requestId,
         error: errorToJson(ConnectError.from(error), undefined),
       }))
-      .finally(() => this.requests.delete(requestId));
+      .finally(() => session.requests.delete(requestId));
   }
 
   /**
@@ -201,17 +243,11 @@ export class CRSessionManager {
         return;
       }
       chrome.runtime.onConnect.removeListener(sinkListener);
-      void stream.pipeTo(new WritableStream(new PortStreamSink(p)), { signal }).catch(() => null);
+      void stream
+        .pipeTo(new WritableStream(new PortStreamSink(p)), { signal })
+        .catch((e: unknown) => console.debug('session-manager makeChannelStreamResponse', e));
     };
     chrome.runtime.onConnect.addListener(sinkListener);
     return { requestId, channel };
   }
-
-  private acceptChannelStreamRequest = ({
-    requestId,
-    channel: name,
-  }: TransportInitChannel): TransportStream => ({
-    requestId,
-    stream: new ReadableStream(new PortStreamSource(chrome.runtime.connect({ name }))),
-  });
 }

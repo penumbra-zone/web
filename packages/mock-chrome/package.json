@@ -1,0 +1,23 @@
+{
+  "name": "@penumbra-zone/mock-chrome",
+  "version": "0.0.1",
+  "private": true,
+  "license": "(MIT OR Apache-2.0)",
+  "type": "module",
+  "engine": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "lint:strict": "tsc --noEmit && eslint src --max-warnings 0",
+    "test": "vitest run"
+  },
+  "exports": {
+    "./*": "./src/*.api..ts",
+    "./runtime/*": "./src/runtime/*.api.ts"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.268"
+  }
+}
