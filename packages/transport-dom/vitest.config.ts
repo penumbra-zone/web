@@ -3,6 +3,7 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+  define: { __DEV__: true },
   test: {
     include: ['src/*.test.ts'],
     browser: {

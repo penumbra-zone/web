@@ -26,6 +26,11 @@ import {
 
 import ReadableStream from './ReadableStream.from.js';
 
+declare global {
+  // eslint-disable-next-line no-var -- global dev mode flag
+  var __DEV__: boolean | undefined;
+}
+
 const forceTransportOptions = {
   httpClient: null as never,
   baseUrl: 'https://in-memory',
@@ -150,13 +155,15 @@ export const createChannelTransport = ({
       method: MethodInfo<I, O>,
       signal: AbortSignal | undefined,
       timeoutMs: number | undefined = defaultTimeoutMs,
-      header: HeadersInit | undefined,
+      headersInit: HeadersInit | undefined,
       input: PartialMessage<I>,
     ): Promise<UnaryResponse<I, O>> {
       transportFailure.signal.throwIfAborted();
       port ??= await connect();
 
       const requestId = crypto.randomUUID();
+      const header = headersInit instanceof Headers ? Array.from(headersInit) : headersInit;
+
       const requestFailure = new AbortController();
 
       const response = Promise.race([
@@ -218,13 +225,14 @@ export const createChannelTransport = ({
       method: MethodInfo<I, O>,
       signal: AbortSignal | undefined,
       timeoutMs: number | undefined = defaultTimeoutMs,
-      header: HeadersInit | undefined,
+      headersInit: HeadersInit | undefined,
       input: AsyncIterable<PartialMessage<I>>,
     ): Promise<StreamResponse<I, O>> {
       transportFailure.signal.throwIfAborted();
       port ??= await connect();
 
       const requestId = crypto.randomUUID();
+      const header = headersInit instanceof Headers ? Array.from(headersInit) : headersInit;
 
       const requestFailure = new AbortController();
 
@@ -275,7 +283,7 @@ export const createChannelTransport = ({
             case MethodKind.ClientStreaming:
             case MethodKind.BiDiStreaming:
               // send as an actual stream
-              {
+              if (globalThis.__DEV__) {
                 const stream: ReadableStream<JsonValue> = ReadableStream.from(input).pipeThrough(
                   new TransformStream({
                     transform: (chunk: PartialMessage<I>, cont) =>
@@ -283,8 +291,9 @@ export const createChannelTransport = ({
                   }),
                 );
                 port.postMessage({ requestId, stream, header } satisfies TransportStream, [stream]);
+                break;
               }
-              break;
+              throw new ConnectError('MethodKind not supported', Code.Unimplemented);
             default:
               throw new ConnectError('MethodKind not supported', Code.Unimplemented);
           }
