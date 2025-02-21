@@ -1,5 +1,18 @@
 # @penumbra-zone/wasm
 
+## 41.0.0
+
+### Minor Changes
+
+- 49ae3ab: LQT integration in web packages
+
+### Patch Changes
+
+- Updated dependencies [49ae3ab]
+  - @penumbra-zone/protobuf@8.0.0
+  - @penumbra-zone/types@30.0.0
+  - @penumbra-zone/bech32m@14.0.0
+
 ## 40.0.0
 
 ### Patch Changes

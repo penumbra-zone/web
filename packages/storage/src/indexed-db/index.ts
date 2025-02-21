@@ -166,6 +166,9 @@ export class IndexedDb implements IndexedDbInterface {
         db.createObjectStore('AUCTIONS');
         db.createObjectStore('AUCTION_OUTSTANDING_RESERVES');
         db.createObjectStore('REGISTRY_VERSION');
+        db.createObjectStore('LQT_HISTORICAL_VOTES', {
+          keyPath: 'id',
+        }).createIndex('epoch', 'epoch');
       },
     });
     const constants = {
@@ -407,6 +410,67 @@ export class IndexedDb implements IndexedDbInterface {
     await this.u.update({
       table: 'TRANSACTIONS',
       value: tx.toJson({ typeRegistry }) as Jsonified<TransactionInfo>,
+    });
+  }
+
+  /**
+   * Retrieves liquidity tournament votes and rewards for a given epoch.
+   */
+  async getLQTHistoricalVotes(epoch: bigint): Promise<
+    {
+      TransactionId: TransactionId;
+      AssetMetadata: Metadata;
+      VoteValue: Value;
+      RewardValue: Amount | undefined;
+      id: string | undefined;
+    }[]
+  > {
+    const tournamentVotes = await this.db.getAllFromIndex(
+      'LQT_HISTORICAL_VOTES',
+      'epoch',
+      epoch.toString(),
+    );
+
+    return tournamentVotes.map(tournamentVote => ({
+      TransactionId: TransactionId.fromJson(tournamentVote.TransactionId, { typeRegistry }),
+      AssetMetadata: Metadata.fromJson(tournamentVote.AssetMetadata, { typeRegistry }),
+      VoteValue: Value.fromJson(tournamentVote.VoteValue, { typeRegistry }),
+      RewardValue: tournamentVote.RewardValue
+        ? Amount.fromJson(tournamentVote.RewardValue, { typeRegistry })
+        : undefined,
+      id: tournamentVote.id,
+    }));
+  }
+
+  /**
+   * Saves historical liquidity tournament votes and rewards for a given epoch.
+   */
+  async saveLQTHistoricalVote(
+    epoch: bigint,
+    transactionId: TransactionId,
+    assetMetadata: Metadata,
+    voteValue: Value,
+    rewardValue?: Amount,
+    id?: string,
+  ): Promise<void> {
+    assertTransactionId(transactionId);
+
+    // This is a unique identifier to force unique primary keys. If the field isn't provided,
+    // a random one is generated and used to store an object.
+    const uniquePrimaryKey = id ?? crypto.randomUUID();
+
+    const tournamentVote = {
+      epoch: epoch.toString(),
+      TransactionId: transactionId.toJson({ typeRegistry }) as Jsonified<TransactionId>,
+      AssetMetadata: assetMetadata.toJson({ typeRegistry }) as Jsonified<Metadata>,
+      VoteValue: voteValue.toJson({ typeRegistry }) as Jsonified<Value>,
+      RewardValue: rewardValue ? (rewardValue.toJson({ typeRegistry }) as Jsonified<Amount>) : null,
+      id: uniquePrimaryKey,
+    };
+
+    await this.u.update({
+      table: 'LQT_HISTORICAL_VOTES',
+      value: tournamentVote,
     });
   }
 
@@ -733,6 +797,24 @@ export class IndexedDb implements IndexedDbInterface {
       if (currentEpoch.startHeight <= height) {
         epoch = currentEpoch;
       } else if (currentEpoch.startHeight > height) {
+        break;
+      }
+    }
+
+    return epoch;
+  }
+
+  /**
+   * Get the block height for the correspinding epoch index.
+   */
+  async getBlockHeightByEpoch(epoch_index: bigint): Promise<Epoch | undefined> {
+    let epoch: Epoch | undefined;
+
+    // Iterate over epochs and return the one with the matching epoch index.
+    for await (const cursor of this.db.transaction('EPOCHS', 'readonly').store) {
+      const currentEpoch = Epoch.fromJson(cursor.value);
+      if (currentEpoch.index === epoch_index) {
+        epoch = currentEpoch;
         break;
       }
     }

@@ -1,5 +1,19 @@
 # @penumbra-zone/ui
 
+## 16.0.0
+
+### Minor Changes
+
+- 49ae3ab: LQT integration in web packages
+
+### Patch Changes
+
+- Updated dependencies [49ae3ab]
+  - @penumbra-zone/protobuf@8.0.0
+  - @penumbra-zone/types@30.0.0
+  - @penumbra-zone/perspective@48.0.0
+  - @penumbra-zone/bech32m@14.0.0
+
 ## 15.0.1
 
 ### Patch Changes
