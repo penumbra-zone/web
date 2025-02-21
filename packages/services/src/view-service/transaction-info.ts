@@ -8,6 +8,7 @@ import {
 import { fvkCtx } from '../ctx/full-viewing-key.js';
 import {
   TransactionPerspective,
+  TransactionSummary,
   TransactionView,
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 
@@ -27,11 +28,13 @@ export const transactionInfo: Impl['transactionInfo'] = async function* (_req, c
     const tx_info = await indexedDb.getTransactionInfo(txRecord.id);
     let perspective: TransactionPerspective;
     let view: TransactionView;
+    let summary: TransactionSummary;
 
-    // If TxP + TxV already exist in database, then simply yield them.
-    if (tx_info) {
+    // If TxP + TxV + summary already exist in database, then simply yield them.
+    if (tx_info && tx_info.summary) {
       perspective = tx_info.perspective;
       view = tx_info.view;
+      summary = tx_info.summary;
       // Otherwise, generate the TxP + TxV from the transaction in wasm
       // and store them.
     } else {
@@ -41,10 +44,10 @@ export const transactionInfo: Impl['transactionInfo'] = async function* (_req, c
         indexedDb.constants(),
       );
 
-      let tx_summary = await generateTransactionSummary(txv);
-      console.log('tx_summary: ', tx_summary);
+      // Generate and save transaction info summary from the TxV.
+      summary = await generateTransactionSummary(txv);
+      await indexedDb.saveTransactionInfo(txRecord.id, txp, txv, summary);
 
-      await indexedDb.saveTransactionInfo(txRecord.id, txp, txv);
       perspective = txp;
       view = txv;
     }
@@ -56,6 +59,7 @@ export const transactionInfo: Impl['transactionInfo'] = async function* (_req, c
         transaction: txRecord.transaction,
         perspective,
         view,
+        summary,
       }),
     };
   }
