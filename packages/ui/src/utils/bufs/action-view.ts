@@ -143,7 +143,7 @@ export const SwapClaimAction = new ActionView({
           }),
           output2: new NoteView({
             address: ADDRESS_VIEW_DECODED,
-            value: PENUMBRA_VALUE_VIEW_ZERO,
+            value: PENUMBRA_VALUE_VIEW,
           }),
           swapTx: new TransactionId({
             inner: new Uint8Array([0, 1, 2, 3, 4, 5, 6, 7]),
@@ -154,6 +154,35 @@ export const SwapClaimAction = new ActionView({
                 amount: AMOUNT_999,
                 assetId: PENUMBRA_METADATA.penumbraAssetId,
               }),
+            },
+          },
+        },
+      },
+    }),
+  },
+});
+
+export const SwapClaimActionOpaque = new ActionView({
+  actionView: {
+    case: 'swapClaim',
+    value: new SwapClaimView({
+      swapClaimView: {
+        case: 'opaque',
+        value: {
+          swapClaim: {
+            body: {
+              fee: new Fee({
+                amount: AMOUNT_999,
+                assetId: PENUMBRA_METADATA.penumbraAssetId,
+              }),
+              outputData: {
+                tradingPair: {
+                  asset1: USDC_METADATA.penumbraAssetId,
+                  asset2: PENUMBRA_METADATA.penumbraAssetId,
+                },
+                lambda1: AMOUNT_123_456_789,
+                lambda2: AMOUNT_999,
+              },
             },
           },
         },
