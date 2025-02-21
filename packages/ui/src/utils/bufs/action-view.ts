@@ -197,7 +197,21 @@ export const PositionOpenAction = new ActionView({
     case: 'positionOpen',
     value: new PositionOpen({
       position: {
+        reserves: {
+          r1: {
+            lo: 695492n,
+          },
+          r2: {},
+        },
         phi: {
+          component: {
+            p: {
+              lo: 20000000n,
+            },
+            q: {
+              lo: 13909833n,
+            },
+          },
           pair: {
             asset1: USDC_METADATA.penumbraAssetId,
             asset2: PENUMBRA_METADATA.penumbraAssetId,
