@@ -1,5 +1,11 @@
 # @penumbra-zone/wasm
 
+## 42.0.0
+
+### Patch Changes
+
+- @penumbra-zone/types@31.0.0
+
 ## 41.0.0
 
 ### Minor Changes

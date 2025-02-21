@@ -1,5 +1,13 @@
 # node-status
 
+## 4.1.53
+
+### Patch Changes
+
+- @penumbra-zone/types@31.0.0
+- @penumbra-zone/ui-deprecated@16.0.1
+- @penumbra-zone/crypto-web@38.0.0
+
 ## 4.1.52
 
 ### Patch Changes

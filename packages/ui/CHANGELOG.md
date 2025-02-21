@@ -1,5 +1,17 @@
 # @penumbra-zone/ui
 
+## 13.13.0
+
+### Minor Changes
+
+- d0cc2ee: Implement `SwapClaim` action view
+
+### Patch Changes
+
+- Updated dependencies [d0cc2ee]
+  - @penumbra-zone/getters@24.1.0
+  - @penumbra-zone/types@31.0.0
+
 ## 13.12.0
 
 ### Minor Changes

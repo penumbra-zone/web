@@ -1,5 +1,11 @@
 # @penumbra-zone/getters
 
+## 24.1.0
+
+### Minor Changes
+
+- d0cc2ee: Implement `SwapClaim` action view
+
 ## 24.0.0
 
 ### Patch Changes
