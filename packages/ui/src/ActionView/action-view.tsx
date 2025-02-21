@@ -33,6 +33,7 @@ import { DutchAuctionWithdrawAction } from './actions/dutch-auction-withdraw';
 import { CommunityPoolDepositAction } from './actions/community-pool-deposit';
 import { CommunityPoolOutputAction } from './actions/community-pool-output';
 import { CommunityPoolSpendAction } from './actions/community-pool-spend';
+import { LiquidityTournamentVoteAction } from './actions/liquidity-tournament-vote';
 
 export interface ActionViewProps extends ActionViewBaseProps {
   /**
@@ -52,6 +53,7 @@ const componentMap = {
   positionWithdraw: PositionWithdrawAction,
   positionRewardClaim: PositionRewardClaimAction,
   // TODO: Implement the actions below
+  actionLiquidityTournamentVote: LiquidityTournamentVoteAction,
   delegate: DelegateAction,
   delegatorVote: DelegatorVoteAction,
   undelegate: UndelegateAction,
