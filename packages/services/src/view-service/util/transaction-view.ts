@@ -3,8 +3,11 @@ import { getTransmissionKeyByAddress } from '@penumbra-zone/wasm/keys';
 
 // Some transaction views (TXVs) require additional preprocessing before being rendered
 // in the UI component library. For example, when handling IBC withdrawals with transparent
-// addresses, this component transforms ephemeral addresses into their bech32-encoded
-// transparent form to ensure the proper data is being displayed.
+// addresses (now deprecated), this component transforms ephemeral addresses into their
+// bech32-encoded transparent form to ensure the proper data is being displayed.
+//
+// This translator is kept for backwards compatibility purposes for rendering
+// historical IBC transactions with t-addrs.
 export const txvTranslator = (view: TransactionView): TransactionView => {
   // 'Ics20Withdrawal' action view
   if (!view.bodyView) {

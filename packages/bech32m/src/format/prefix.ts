@@ -8,8 +8,6 @@ export const Prefixes = {
   penumbravalid: 'penumbravalid',
   penumbrawalletid: 'penumbrawalletid',
   plpid: 'plpid',
-  penumbracompat1: 'penumbracompat1',
-  tpenumbra: 'tpenumbra',
 } as const;
 
 export type Prefix = keyof typeof Prefixes;
