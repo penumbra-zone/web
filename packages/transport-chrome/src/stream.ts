@@ -1,89 +1,187 @@
-/**
- * @see https://developer.mozilla.org/en-US/docs/Web/API/Streams_API
- *
- * This source and sink provide a way to stream json through the chrome runtime.
- */
-
 import type { JsonValue } from '@bufbuild/protobuf';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { errorFromJson, errorToJson } from '@connectrpc/connect/protocol-connect';
 
 export class PortStreamSource implements UnderlyingDefaultSource<JsonValue> {
+  private cont?: ReadableStreamDefaultController<JsonValue>;
+  private timeout?: AbortSignal;
+
   constructor(
     private incoming: chrome.runtime.Port,
-    private timeoutMs = 20_000,
-  ) {}
+    private timeoutMs = 30_000,
+  ) {
+    incoming.onDisconnect.addListener(this.onDisconnect);
+    incoming.onMessage.addListener(this.onMessage);
 
-  // A port can't pull like a normal source, so handlers are attached at start
-  start(cont: ReadableStreamDefaultController<JsonValue>) {
-    this.incoming.onDisconnect.addListener(port =>
-      cont.error(new ConnectError('Source disconnected', Code.Aborted, undefined, undefined, port)),
-    );
-    this.incoming.onMessage.addListener(chunk => {
-      if (isStreamAbort(chunk)) {
-        cont.error(errorFromJson(chunk.abort, undefined, ConnectError.from(chunk.abort)));
-      } else if (isStreamValue(chunk)) {
-        this.updateTimeout(cont);
-        cont.enqueue(chunk.value);
-      } else if (isStreamEnd(chunk)) {
-        this.incoming.disconnect();
-        cont.close();
-      } else {
-        cont.error(
-          new ConnectError(
-            'Unexpected subchannel transport',
-            Code.Unimplemented,
-            undefined,
-            undefined,
-            chunk,
-          ),
-        );
-      }
-    });
-  }
-
-  cancel() {
-    this.incoming.disconnect();
-  }
-
-  private timeout = setTimeout(() => void 0, 0);
-  private updateTimeout = (cont: ReadableStreamDefaultController<JsonValue>) => {
     if (this.timeoutMs) {
-      clearTimeout(this.timeout);
-      this.timeout = setTimeout(
-        () => cont.error(ConnectError.from('Source timeout', Code.DeadlineExceeded)),
-        this.timeoutMs,
-      );
+      this.timeout = AbortSignal.timeout(this.timeoutMs);
+    }
+  }
+
+  start(cont: ReadableStreamDefaultController<JsonValue>) {
+    this.cont = cont;
+    this.resetTimeout();
+  }
+
+  cancel(reason?: unknown) {
+    this.incoming.disconnect();
+    this.cont?.error(ConnectError.from(reason, Code.Canceled));
+  }
+
+  pull(cont: ReadableStreamDefaultController<JsonValue>, chunk?: JsonValue) {
+    this.timeout?.throwIfAborted();
+    if (chunk != null) {
+      if (isStreamValue(chunk)) {
+        cont.enqueue(chunk.value);
+        this.resetTimeout();
+      } else {
+        // any other kind of message is a disconnect
+        this.incoming.disconnect();
+
+        if (isStreamAbort(chunk)) {
+          cont.error(errorFromJson(chunk.abort, undefined, ConnectError.from(chunk.abort)));
+        } else if (isStreamEnd(chunk)) {
+          cont.close();
+        } else {
+          cont.error(
+            new ConnectError(
+              'Unexpected subchannel transport',
+              Code.Unimplemented,
+              undefined,
+              undefined,
+              chunk,
+            ),
+          );
+        }
+      }
+    }
+  }
+
+  private onDisconnect = () =>
+    this.cont?.error(ConnectError.from('Source disconnected', Code.Unavailable));
+
+  private onMessage = (message: unknown) => {
+    if (this.cont) {
+      this.pull(this.cont, message as JsonValue);
+    } else {
+      console.error('Source not started!', message);
+      this.incoming.disconnect();
+    }
+  };
+
+  // setup or reset the timeout clock.
+  private resetTimeout() {
+    this.timeout?.throwIfAborted();
+    if (this.timeoutMs) {
+      // remove the old timeout listener
+      this.timeout?.removeEventListener('abort', this.timeoutListener);
+      // clobber the timeout signal
+      this.timeout = AbortSignal.timeout(this.timeoutMs);
+      this.timeout.addEventListener('abort', this.timeoutListener);
+    }
+  }
+
+  private timeoutListener = () => {
+    if (this.timeout?.aborted) {
+      this.incoming.disconnect();
+      this.cont?.error(this.timeout.reason);
     }
   };
 }
 
 export class PortStreamSink implements UnderlyingSink<JsonValue> {
-  /**
-   * @param outgoing port to write to
-   * @param reasonToJson abort reason to jsonifiable
-   */
-  constructor(private outgoing: chrome.runtime.Port) {}
+  private cont?: WritableStreamDefaultController;
 
-  write(chunk: JsonValue) {
-    this.outgoing.postMessage({
-      value: chunk,
-    } satisfies StreamValue);
+  private postChunk: (item: StreamValue | StreamEnd | StreamAbort) => void;
+
+  private timeout?: AbortSignal;
+
+  constructor(
+    private outgoing: chrome.runtime.Port,
+    private timeoutMs = 60_000,
+  ) {
+    this.outgoing.onDisconnect.addListener(() =>
+      this.cont?.error(ConnectError.from('Sink disconnected', Code.Canceled)),
+    );
+
+    this.postChunk = item => {
+      try {
+        this.outgoing.postMessage(item);
+      } catch (e) {
+        if (this.cont) {
+          this.cont.error(ConnectError.from(e, Code.Canceled));
+        } else {
+          throw e;
+        }
+      }
+    };
+
+    if (this.timeoutMs) {
+      this.timeout = AbortSignal.timeout(this.timeoutMs);
+    }
+  }
+
+  start(cont: WritableStreamDefaultController) {
+    try {
+      this.cont = cont;
+      this.resetTimeout();
+    } catch (e) {
+      this.outgoing.disconnect();
+      throw e;
+    }
+  }
+
+  write(chunk: JsonValue, cont: WritableStreamDefaultController) {
+    this.cont ??= cont;
+    try {
+      this.resetTimeout();
+      this.postChunk({ value: chunk });
+    } catch (e) {
+      this.outgoing.disconnect();
+      cont.error(e);
+    }
   }
 
   close() {
-    this.outgoing.postMessage({
-      done: true,
-    } satisfies StreamEnd);
-    this.outgoing.disconnect();
+    try {
+      this.timeout?.throwIfAborted();
+      this.postChunk({ done: true });
+    } catch (e) {
+      this.outgoing.disconnect();
+      throw e;
+    }
   }
 
   abort(reason?: unknown) {
-    this.outgoing.postMessage({
-      abort: errorToJson(ConnectError.from(reason), undefined),
-    } satisfies StreamAbort);
-    this.outgoing.disconnect();
+    try {
+      this.timeout?.throwIfAborted();
+      this.postChunk({
+        abort: errorToJson(ConnectError.from(reason), undefined),
+      });
+    } catch (e) {
+      this.outgoing.disconnect();
+      throw e;
+    }
   }
+
+  // setup or reset the timeout clock.
+  private resetTimeout() {
+    this.timeout?.throwIfAborted();
+    if (this.timeoutMs) {
+      // remove listener from the old timeout
+      this.timeout?.removeEventListener('abort', this.timeoutListener);
+      // clobber the old timeout
+      this.timeout = AbortSignal.timeout(this.timeoutMs);
+      this.timeout.addEventListener('abort', this.timeoutListener);
+    }
+  }
+
+  private timeoutListener = () => {
+    if (this.timeout?.aborted) {
+      this.outgoing.disconnect();
+      this.cont?.error(this.timeout.reason);
+    }
+  };
 }
 
 // control message types below
