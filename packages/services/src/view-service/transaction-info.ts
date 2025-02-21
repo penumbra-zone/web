@@ -1,7 +1,10 @@
 import type { Impl } from './index.js';
 import { servicesCtx } from '../ctx/prax.js';
 import { TransactionInfo } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { generateTransactionInfo } from '@penumbra-zone/wasm/transaction';
+import {
+  generateTransactionInfo,
+  generateTransactionSummary,
+} from '@penumbra-zone/wasm/transaction';
 import { fvkCtx } from '../ctx/full-viewing-key.js';
 import {
   TransactionPerspective,
@@ -37,6 +40,9 @@ export const transactionInfo: Impl['transactionInfo'] = async function* (_req, c
         txRecord.transaction,
         indexedDb.constants(),
       );
+
+      let tx_summary = await generateTransactionSummary(txv);
+      console.log('tx_summary: ', tx_summary);
 
       await indexedDb.saveTransactionInfo(txRecord.id, txp, txv);
       perspective = txp;
