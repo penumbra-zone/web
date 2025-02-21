@@ -6,8 +6,9 @@ import {
 } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 import {
   PositionClose,
-  PositionId,
   PositionOpen,
+  PositionRewardClaim,
+  PositionWithdraw,
   SwapClaimView,
   SwapView,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
@@ -228,12 +229,40 @@ export const PositionCloseAction = new ActionView({
   actionView: {
     case: 'positionClose',
     value: new PositionClose({
-      positionId: new PositionId({
+      positionId: {
         inner: new Uint8Array([
           0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5,
           6, 7,
         ]),
-      }),
+      },
+    }),
+  },
+});
+
+export const PositionWithdrawAction = new ActionView({
+  actionView: {
+    case: 'positionWithdraw',
+    value: new PositionWithdraw({
+      positionId: {
+        inner: new Uint8Array([
+          0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5,
+          6, 7,
+        ]),
+      },
+    }),
+  },
+});
+
+export const PositionRewardClaimAction = new ActionView({
+  actionView: {
+    case: 'positionRewardClaim',
+    value: new PositionRewardClaim({
+      positionId: {
+        inner: new Uint8Array([
+          0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5,
+          6, 7,
+        ]),
+      },
     }),
   },
 });

@@ -1,11 +1,28 @@
 import { PositionRewardClaim } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
-import { UnknownAction } from '../actions/unknown';
+import { ActionWrapper } from '../shared/wrapper';
+import { ActionRow } from '../shared/action-row';
+import { shorten } from '@penumbra-zone/types/string';
+import { bech32mPositionId } from '@penumbra-zone/bech32m/plpid';
 
 export interface PositionRewardClaimActionProps {
   value: PositionRewardClaim;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- unimplemented
-export const PositionRewardClaimAction = (_: PositionRewardClaimActionProps) => {
-  return <UnknownAction label='Position Reward Claim' opaque={false} />;
+export const PositionRewardClaimAction = ({ value }: PositionRewardClaimActionProps) => {
+  return (
+    <ActionWrapper
+      title='Position Reward Claim'
+      infoRows={
+        <>
+          {value.positionId && (
+            <ActionRow
+              label='Position ID'
+              info={shorten(bech32mPositionId(value.positionId), 8)}
+              copyText={bech32mPositionId(value.positionId)}
+            />
+          )}
+        </>
+      }
+    />
+  );
 };
