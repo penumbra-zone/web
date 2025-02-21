@@ -1,5 +1,5 @@
 import { PositionRewardClaim } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
-import { UnknownAction } from './unknown';
+import { UnknownAction } from '../actions/unknown';
 
 export interface PositionRewardClaimActionProps {
   value: PositionRewardClaim;

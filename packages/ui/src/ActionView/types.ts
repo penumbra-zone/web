@@ -6,3 +6,12 @@ export type ActionViewType = Exclude<ActionView['actionView']['case'], undefined
 export type ActionViewValueType = Exclude<ActionView['actionView']['value'], undefined>;
 
 export type GetMetadataByAssetId = (assetId: AssetId) => Metadata | undefined;
+
+export interface ActionViewBaseProps {
+  /**
+   * A helper function that is needed to match action assets with their metadata.
+   * Can be omitted, but it generally improves the rendering logic, especially for opaque views.
+   * If omitted, some assets may be rendered as unknown.
+   */
+  getMetadataByAssetId?: GetMetadataByAssetId;
+}

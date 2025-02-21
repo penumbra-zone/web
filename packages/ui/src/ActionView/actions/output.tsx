@@ -3,9 +3,9 @@ import { getNote } from '@penumbra-zone/getters/output-view';
 import { getAddress } from '@penumbra-zone/getters/note-view';
 import { Density } from '../../Density';
 import { useDensity } from '../../utils/density';
-import { ActionWrapper } from './wrapper';
 import { ValueViewComponent } from '../../ValueView';
 import { AddressViewComponent } from '../../AddressView';
+import { ActionWrapper } from '../shared/wrapper';
 
 export interface OutputActionProps {
   value: OutputView;

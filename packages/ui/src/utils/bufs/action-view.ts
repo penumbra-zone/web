@@ -5,6 +5,8 @@ import {
   SpendView,
 } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 import {
+  PositionClose,
+  PositionId,
   PositionOpen,
   SwapClaimView,
   SwapView,
@@ -218,6 +220,20 @@ export const PositionOpenAction = new ActionView({
           },
         },
       },
+    }),
+  },
+});
+
+export const PositionCloseAction = new ActionView({
+  actionView: {
+    case: 'positionClose',
+    value: new PositionClose({
+      positionId: new PositionId({
+        inner: new Uint8Array([
+          0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5,
+          6, 7,
+        ]),
+      }),
     }),
   },
 });

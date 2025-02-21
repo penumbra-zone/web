@@ -13,6 +13,7 @@ import {
   SwapClaimActionOpaque,
   registry,
   PositionOpenAction,
+  PositionCloseAction,
 } from '../utils/bufs';
 
 const OPTIONS: Record<string, ActionViewMessage> = {
@@ -21,6 +22,7 @@ const OPTIONS: Record<string, ActionViewMessage> = {
   Swap: SwapAction,
   SwapClaim: SwapClaimAction,
   PositionOpen: PositionOpenAction,
+  PositionClose: PositionCloseAction,
   'Opaque: Spend': SpendActionOpaque,
   'Opaque: Output': OutputActionOpaque,
   'Opaque: Swap': SwapActionOpaque,

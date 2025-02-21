@@ -6,13 +6,12 @@ import { AssetGroup } from '../../AssetIcon';
 import { Density } from '../../Density';
 import { Pill } from '../../Pill';
 import { Text } from '../../Text';
-import { GetMetadataByAssetId } from '../types';
-import { ActionWrapper } from './wrapper';
-import { ActionRow } from './action-row';
+import { ActionViewBaseProps } from '../types';
+import { ActionWrapper } from '../shared/wrapper';
+import { ActionRow } from '../shared/action-row';
 
-export interface PositionOpenActionProps {
+export interface PositionOpenActionProps extends ActionViewBaseProps {
   value: PositionOpen;
-  getMetadataByAssetId?: GetMetadataByAssetId;
 }
 
 export const PositionOpenAction = ({ value, getMetadataByAssetId }: PositionOpenActionProps) => {
