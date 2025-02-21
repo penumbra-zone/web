@@ -139,7 +139,7 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
       <span className={cn('flex w-max max-w-full items-center text-ellipsis', getGap(density))}>
         {showIcon && (
           <div className='shrink-0'>
-            <AssetIcon size={getIconSize(density)} metadata={metadata} />
+            <AssetIcon hideBadge size={getIconSize(density)} metadata={metadata} />
           </div>
         )}
 
@@ -187,5 +187,5 @@ const getIconSize = (density: Density) => {
   if (density === 'compact') {
     return 'md';
   }
-  return 'sm';
+  return 'md';
 };

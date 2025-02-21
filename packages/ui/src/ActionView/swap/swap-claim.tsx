@@ -5,6 +5,7 @@ import { shorten } from '@penumbra-zone/types/string';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import { getAmount, getMetadata } from '@penumbra-zone/getters/value-view';
 import { SwapClaimView } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
+import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import {
   getOutput1Value,
   getOutput2Value,
@@ -14,16 +15,13 @@ import {
 import { Density } from '../../Density';
 import { ValueViewComponent } from '../../ValueView';
 import { useDensity } from '../../utils/density';
-import { ActionRow } from './action-row';
-import { ActionWrapper } from './wrapper';
-import { parseSwapFees } from './swap';
-import { GetMetadataByAssetId } from '../types';
-import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { ActionRow } from '../shared/action-row';
+import { ActionWrapper } from '../shared/wrapper';
+import { parseSwapFees } from './utils';
+import { ActionViewBaseProps } from '../types';
 
-export interface SwapClaimActionProps {
+export interface SwapClaimActionProps extends ActionViewBaseProps {
   value: SwapClaimView;
-  /** A helper needed to calculate the SwapClaim fees */
-  getMetadataByAssetId?: GetMetadataByAssetId;
 }
 
 /**

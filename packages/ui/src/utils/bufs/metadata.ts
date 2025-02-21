@@ -54,6 +54,11 @@ export const PENUMBRA_METADATA = new Metadata({
       svg: 'https://raw.githubusercontent.com/prax-wallet/registry/main/images/um.svg',
     },
   ],
+  badges: [
+    {
+      svg: 'https://raw.githubusercontent.com/prax-wallet/registry/refs/heads/main/images/full-moon-face.svg',
+    },
+  ],
 });
 
 export const USDC_METADATA = new Metadata({
@@ -82,6 +87,11 @@ export const USDC_METADATA = new Metadata({
         primaryColorHex: '#2775CA',
         circle: true,
       },
+    },
+  ],
+  badges: [
+    {
+      svg: 'https://raw.githubusercontent.com/prax-wallet/registry/refs/heads/main/images/pizza.svg',
     },
   ],
   priorityScore: 800000000100n,

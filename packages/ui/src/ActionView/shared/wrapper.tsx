@@ -1,7 +1,7 @@
 import cn from 'clsx';
 import { ReactNode } from 'react';
 import { Text } from '../../Text';
-import { IncognitoIcon } from './incognito-icon';
+import { IncognitoIcon } from '../actions/incognito-icon';
 import { Density, useDensity } from '../../utils/density';
 
 export interface ActionWrapperProps {
