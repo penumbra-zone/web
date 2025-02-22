@@ -90,7 +90,7 @@ https://excalidraw.com/#json=_3b4K0RpWFJWAtVCH5ymB,CHegLkto1X_NdKG67LNh2A
 ### Some critical details
 
 Prax and Minifront [share React components](./ui-library.md) and some other
-reuseable dependencies.
+reusable dependencies.
 
 Both Prax and Minifront manage running state with Zustand. For storage, Prax
 uses extension storage and idb. Minifront does not store anything.
