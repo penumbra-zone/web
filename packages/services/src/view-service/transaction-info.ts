@@ -31,10 +31,11 @@ export const transactionInfo: Impl['transactionInfo'] = async function* (_req, c
     let summary: TransactionSummary;
 
     // If TxP + TxV + summary already exist in database, then simply yield them.
-    if (tx_info && tx_info.summary) {
+    if (tx_info) {
       perspective = tx_info.perspective;
       view = tx_info.view;
       summary = tx_info.summary;
+
       // Otherwise, generate the TxP + TxV from the transaction in wasm
       // and store them.
     } else {

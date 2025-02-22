@@ -367,30 +367,26 @@ export class IndexedDb implements IndexedDbInterface {
     );
   }
 
-  async getTransactionInfo(
-    id: TransactionId,
-  ): Promise<
+  async getTransactionInfo(id: TransactionId): Promise<
     | {
         id: TransactionId;
         perspective: TransactionPerspective;
         view: TransactionView;
-        summary: TransactionSummary | undefined;
+        summary: TransactionSummary;
       }
     | undefined
   > {
     const existingData = await this.db.get('TRANSACTION_INFO', uint8ArrayToBase64(id.inner));
-    if (existingData) {
-      return {
-        id: TransactionId.fromJson(existingData.id, { typeRegistry }),
-        perspective: TransactionPerspective.fromJson(existingData.perspective, { typeRegistry }),
-        view: TransactionView.fromJson(existingData.view, { typeRegistry }),
-        summary: existingData.summary
-          ? TransactionSummary.fromJson(existingData.summary, { typeRegistry })
-          : undefined,
-      };
-    } else {
+    if (!existingData) {
       return undefined;
     }
+
+    return {
+      id: TransactionId.fromJson(existingData.id, { typeRegistry }),
+      perspective: TransactionPerspective.fromJson(existingData.perspective, { typeRegistry }),
+      view: TransactionView.fromJson(existingData.view, { typeRegistry }),
+      summary: TransactionSummary.fromJson(existingData.summary, { typeRegistry }),
+    };
   }
 
   async saveTransactionInfo(

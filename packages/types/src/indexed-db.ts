@@ -172,14 +172,12 @@ export interface IndexedDbInterface {
     summary: TransactionSummary,
   ): Promise<void>;
 
-  getTransactionInfo(
-    id: TransactionId,
-  ): Promise<
+  getTransactionInfo(id: TransactionId): Promise<
     | {
         id: TransactionId;
         perspective: TransactionPerspective;
         view: TransactionView;
-        summary: TransactionSummary | undefined;
+        summary: TransactionSummary;
       }
     | undefined
   >;
