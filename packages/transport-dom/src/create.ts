@@ -267,6 +267,9 @@ export const createChannelTransport = ({
                 // confirm the input stream ended after one message with content
                 if (done && typeof value === 'object' && value !== null) {
                   const message = Any.pack(new method.I(value as object)).toJson(jsonOptions);
+                  signal.addEventListener('abort', () =>
+                    port?.postMessage({ requestId, abort: true } satisfies TransportAbort),
+                  );
                   port.postMessage({
                     requestId,
                     message,
@@ -292,6 +295,9 @@ export const createChannelTransport = ({
                     transform: (chunk: PartialMessage<I>, cont) =>
                       cont.enqueue(Any.pack(new method.I(chunk)).toJson(jsonOptions)),
                   }),
+                );
+                signal.addEventListener('abort', () =>
+                  port?.postMessage({ requestId, abort: true } satisfies TransportAbort),
                 );
                 port.postMessage(
                   {
