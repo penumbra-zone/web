@@ -10,6 +10,8 @@ import {
   OutputActionOpaque,
   SwapActionOpaque,
   SwapClaimAction,
+  SwapClaimActionOpaque,
+  registry,
 } from '../utils/bufs';
 
 const OPTIONS: Record<string, ActionViewMessage> = {
@@ -20,6 +22,7 @@ const OPTIONS: Record<string, ActionViewMessage> = {
   'Opaque: Spend': SpendActionOpaque,
   'Opaque: Output': OutputActionOpaque,
   'Opaque: Swap': SwapActionOpaque,
+  'Opaque: SwapClaim': SwapClaimActionOpaque,
 };
 
 const meta: Meta<typeof ActionView> = {
@@ -39,5 +42,6 @@ type Story = StoryObj<typeof ActionView>;
 export const Basic: Story = {
   args: {
     action: SpendAction,
+    getMetadataByAssetId: registry.tryGetMetadata,
   },
 };
