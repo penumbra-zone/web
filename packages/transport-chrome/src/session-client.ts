@@ -14,6 +14,8 @@
  * methods sink/source a dedicated `chrome.runtime.Port` at this boundary.
  */
 
+import { Code, ConnectError } from '@connectrpc/connect';
+import { errorToJson } from '@connectrpc/connect/protocol-connect';
 import {
   isTransportAbort,
   isTransportError,
@@ -25,35 +27,13 @@ import { ChannelLabel, nameConnection } from './channel-names.js';
 import { isTransportInitChannel, TransportInitChannel } from './message.js';
 import { PortStreamSink, PortStreamSource } from './stream.js';
 
-const localErrorJson = (err: unknown, relevantMessage?: unknown) =>
-  err instanceof Error
-    ? {
-        message: err.message,
-        details: [
-          {
-            type: err.name,
-            value: err.cause,
-          },
-          relevantMessage,
-        ],
-      }
-    : {
-        message: String(err),
-        details: [
-          {
-            type: String(
-              // eslint-disable-next-line no-nested-ternary -- readable ternary nesting
-              typeof err === 'function'
-                ? err.name
-                : typeof err === 'object'
-                  ? ((Object.getPrototypeOf(err) as unknown)?.constructor?.name ?? String(err))
-                  : typeof err,
-            ),
-            value: err,
-          },
-          relevantMessage,
-        ],
-      };
+const getRequestId = (item?: unknown): string | undefined =>
+  item != null &&
+  typeof item === 'object' &&
+  'requestId' in item &&
+  typeof item.requestId === 'string'
+    ? item.requestId
+    : undefined;
 
 export class CRSessionClient {
   private static singleton?: CRSessionClient;
@@ -104,31 +84,42 @@ export class CRSessionClient {
     try {
       if (ev.data === false) {
         this.disconnect();
-      } else if (isTransportAbort(ev.data) || isTransportMessage(ev.data)) {
+      } else if (isTransportAbort(ev.data)) {
+        this.servicePort.postMessage(ev.data);
+      } else if (isTransportMessage(ev.data)) {
         this.servicePort.postMessage(ev.data);
       } else if (isTransportStream(ev.data)) {
         this.servicePort.postMessage(this.makeChannelStreamRequest(ev.data));
       } else {
-        console.warn('Unknown item from client', ev.data);
+        throw ConnectError.from(
+          new TypeError('Unknown item from client', { cause: ev.data }),
+          Code.Unimplemented,
+        );
       }
     } catch (e) {
-      this.clientPort.postMessage({ error: localErrorJson(e, ev.data) });
+      this.clientPort.postMessage({
+        requestId: getRequestId(ev.data),
+        error: errorToJson(ConnectError.from(e), undefined),
+      });
     }
   };
 
   private serviceListener = (msg: unknown) => {
     try {
-      if (msg === true) {
-        this.clientPort.postMessage(true);
-      } else if (isTransportError(msg) || isTransportMessage(msg)) {
+      if (isTransportError(msg)) {
+        this.clientPort.postMessage(msg);
+      } else if (isTransportMessage(msg)) {
         this.clientPort.postMessage(msg);
       } else if (isTransportInitChannel(msg)) {
         this.clientPort.postMessage(...this.acceptChannelStreamResponse(msg));
       } else {
-        console.warn('Unknown item from service', msg);
+        throw new TypeError('Unknown item from service', { cause: msg });
       }
     } catch (e) {
-      this.clientPort.postMessage({ error: localErrorJson(e, msg) });
+      this.clientPort.postMessage({
+        requestId: getRequestId(msg),
+        error: errorToJson(ConnectError.from(e), undefined),
+      });
     }
   };
 
