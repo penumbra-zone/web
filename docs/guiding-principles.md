@@ -26,7 +26,7 @@ code quality high. See [CI/CD guide](ci-cd.md) for running commands locally.
 
 ## Modularity from the beginning
 
-We should attempt to be liberal about adding packages if we think it can get re-use from another
+We should attempt to be liberal about adding packages if we think it can get reuse from another
 app in this repo or even outside. This will allow us to expose critical functionality
 that can make developing further apps easier.
 
