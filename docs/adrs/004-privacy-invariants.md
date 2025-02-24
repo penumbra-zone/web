@@ -41,10 +41,10 @@ Generally, the local and session storage need to be more restricted.
 ```
 Invariant 2.
 
-The Content Security Policy (CSP) defined in the Manifest V3 file must restrict permissions to only those that are necessary, ensuring no extranous security risks are introduced.
+The Content Security Policy (CSP) defined in the Manifest V3 file must restrict permissions to only those that are necessary, ensuring no extraneous security risks are introduced.
 ```
 
-Currently, we define `wasm-unsafe-eval` in the manifest file to enable dynamic loading of WebAssembly modules. Without the `wasm-unsafe-eval` CSP directive, WebAssembly is blocked from loading and executing on the page. However, `wasm-unsafe-eval` opens up the possiblity for attackers to inject and execute malicious WebAssembly code:
+Currently, we define `wasm-unsafe-eval` in the manifest file to enable dynamic loading of WebAssembly modules. Without the `wasm-unsafe-eval` CSP directive, WebAssembly is blocked from loading and executing on the page. However, `wasm-unsafe-eval` opens up the possibility for attackers to inject and execute malicious WebAssembly code:
 
 ```
 const maliciousCode = "(wasm binary code)";

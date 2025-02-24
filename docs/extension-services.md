@@ -1,6 +1,6 @@
 ## Service Implementation
 
-Services in this repository should eventually be re-useable, but you can also
+Services in this repository should eventually be reusable, but you can also
 implement your own services. Implementation is much like developing a web
 service, using the normal ConnectRPC server-side metaphors and types.
 
