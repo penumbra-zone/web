@@ -208,6 +208,7 @@ export const PositionOpenAction = new ActionView({
         },
         phi: {
           component: {
+            fee: 3000000,
             p: {
               lo: 20000000n,
             },

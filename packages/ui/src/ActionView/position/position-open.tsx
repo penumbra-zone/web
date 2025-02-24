@@ -83,10 +83,6 @@ export const PositionOpenAction = ({ value, getMetadataByAssetId }: PositionOpen
         <>
           {positionId && <ActionRow label='Position ID' info={positionId} />}
 
-          {!!value.position?.phi?.component?.fee && (
-            <ActionRow label='Fee' info={value.position.phi.component.fee} />
-          )}
-
           <Density slim>
             {r1 && (
               <ActionRow
@@ -101,6 +97,10 @@ export const PositionOpenAction = ({ value, getMetadataByAssetId }: PositionOpen
               />
             )}
           </Density>
+
+          {!!value.position?.phi?.component?.fee && (
+            <ActionRow label='Fee' info={value.position.phi.component.fee} />
+          )}
         </>
       }
     >
