@@ -5,6 +5,10 @@ import {
   SpendView,
 } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 import {
+  PositionClose,
+  PositionOpen,
+  PositionRewardClaim,
+  PositionWithdraw,
   SwapClaimView,
   SwapView,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
@@ -186,6 +190,79 @@ export const SwapClaimActionOpaque = new ActionView({
             },
           },
         },
+      },
+    }),
+  },
+});
+
+export const PositionOpenAction = new ActionView({
+  actionView: {
+    case: 'positionOpen',
+    value: new PositionOpen({
+      position: {
+        reserves: {
+          r1: {
+            lo: 695492n,
+          },
+          r2: {},
+        },
+        phi: {
+          component: {
+            fee: 3000000,
+            p: {
+              lo: 20000000n,
+            },
+            q: {
+              lo: 13909833n,
+            },
+          },
+          pair: {
+            asset1: USDC_METADATA.penumbraAssetId,
+            asset2: PENUMBRA_METADATA.penumbraAssetId,
+          },
+        },
+      },
+    }),
+  },
+});
+
+export const PositionCloseAction = new ActionView({
+  actionView: {
+    case: 'positionClose',
+    value: new PositionClose({
+      positionId: {
+        inner: new Uint8Array([
+          0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5,
+          6, 7,
+        ]),
+      },
+    }),
+  },
+});
+
+export const PositionWithdrawAction = new ActionView({
+  actionView: {
+    case: 'positionWithdraw',
+    value: new PositionWithdraw({
+      positionId: {
+        inner: new Uint8Array([
+          0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5,
+          6, 7,
+        ]),
+      },
+    }),
+  },
+});
+
+export const PositionRewardClaimAction = new ActionView({
+  actionView: {
+    case: 'positionRewardClaim',
+    value: new PositionRewardClaim({
+      positionId: {
+        inner: new Uint8Array([
+          0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5,
+          6, 7,
+        ]),
       },
     }),
   },

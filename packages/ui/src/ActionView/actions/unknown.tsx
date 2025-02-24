@@ -1,5 +1,5 @@
 import { Text } from '../../Text';
-import { ActionWrapper } from './wrapper';
+import { ActionWrapper } from '../shared/wrapper';
 
 export interface UnknownActionProps {
   label: string;

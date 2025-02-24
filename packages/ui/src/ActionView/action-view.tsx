@@ -1,22 +1,27 @@
 import { FC } from 'react';
 import { ActionView as ActionViewMessage } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
-import { ActionViewType, ActionViewValueType, GetMetadataByAssetId } from './types';
+import {
+  ActionViewBaseProps,
+  ActionViewType,
+  ActionViewValueType,
+  GetMetadataByAssetId,
+} from './types';
 import { UnknownAction } from './actions/unknown';
 
 import { SpendAction } from './actions/spend';
 import { OutputAction } from './actions/output';
-import { SwapAction } from './actions/swap';
-import { SwapClaimAction } from './actions/swap-claim';
+import { SwapAction } from './swap/swap';
+import { SwapClaimAction } from './swap/swap-claim';
 import { DelegateAction } from './actions/delegate';
 import { DelegatorVoteAction } from './actions/delegator-vote';
 import { IbcRelayAction } from './actions/ibc-relay';
 import { Ics20WithdrawalAction } from './actions/ics-20-withdrawal';
 import { UndelegateAction } from './actions/undelegate';
 import { UndelegateClaimAction } from './actions/undelegate-claim';
-import { PositionCloseAction } from './actions/position-close';
-import { PositionOpenAction } from './actions/position-open';
-import { PositionRewardClaimAction } from './actions/position-reward-claim';
-import { PositionWithdrawAction } from './actions/position-withdraw';
+import { PositionCloseAction } from './position/position-close';
+import { PositionOpenAction } from './position/position-open';
+import { PositionRewardClaimAction } from './position/position-reward-claim';
+import { PositionWithdrawAction } from './position/position-withdraw';
 import { ProposalDepositClaimAction } from './actions/proposal-deposit-claim';
 import { ProposalSubmitAction } from './actions/proposal-submit';
 import { ProposalWithdrawAction } from './actions/proposal-withdraw';
@@ -30,17 +35,12 @@ import { CommunityPoolOutputAction } from './actions/community-pool-output';
 import { CommunityPoolSpendAction } from './actions/community-pool-spend';
 import { LiquidityTournamentVoteAction } from './actions/liquidity-tournament-vote';
 
-export interface ActionViewProps {
+export interface ActionViewProps extends ActionViewBaseProps {
   /**
    * The `ActionViewMessage` protobuf describing an action within a transaction in Penumbra.
    * Can be one of multiple types: Spend, Output, Swap, SwapClaim, etc.
    */
   action: ActionViewMessage;
-  /**
-   * A helper function that is needed for better fees calculation.
-   * Can be omitted, but it generally improves the rendering logic, especially for opaque views.
-   */
-  getMetadataByAssetId?: GetMetadataByAssetId;
 }
 
 const componentMap = {
@@ -48,17 +48,18 @@ const componentMap = {
   output: OutputAction,
   swap: SwapAction,
   swapClaim: SwapClaimAction,
+  positionOpen: PositionOpenAction,
+  positionClose: PositionCloseAction,
+  positionWithdraw: PositionWithdrawAction,
+  positionRewardClaim: PositionRewardClaimAction,
   // TODO: Implement the actions below
+  actionLiquidityTournamentVote: LiquidityTournamentVoteAction,
   delegate: DelegateAction,
   delegatorVote: DelegatorVoteAction,
   undelegate: UndelegateAction,
   undelegateClaim: UndelegateClaimAction,
   ibcRelayAction: IbcRelayAction,
   ics20Withdrawal: Ics20WithdrawalAction,
-  positionClose: PositionCloseAction,
-  positionOpen: PositionOpenAction,
-  positionRewardClaim: PositionRewardClaimAction,
-  positionWithdraw: PositionWithdrawAction,
   proposalDepositClaim: ProposalDepositClaimAction,
   proposalSubmit: ProposalSubmitAction,
   proposalWithdraw: ProposalWithdrawAction,
@@ -70,7 +71,6 @@ const componentMap = {
   communityPoolDeposit: CommunityPoolDepositAction,
   communityPoolOutput: CommunityPoolOutputAction,
   communityPoolSpend: CommunityPoolSpendAction,
-  actionLiquidityTournamentVote: LiquidityTournamentVoteAction,
   unknown: UnknownAction,
 } as const satisfies Record<ActionViewType | 'unknown', unknown>;
 
