@@ -17,8 +17,10 @@ import {
 import { fvkCtx } from '../ctx/full-viewing-key.js';
 
 const mockTransactionInfo = vi.hoisted(() => vi.fn());
+const mockTransactionSummary = vi.hoisted(() => vi.fn());
 vi.mock('@penumbra-zone/wasm/transaction', () => ({
   generateTransactionInfo: mockTransactionInfo,
+  generateTransactionSummary: mockTransactionSummary,
 }));
 describe('TransactionInfoByHash request handler', () => {
   let mockServices: MockServices;
