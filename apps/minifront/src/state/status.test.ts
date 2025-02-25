@@ -32,7 +32,7 @@ describe('Status Slice', () => {
       expect(newStreamState.timer).toBeUndefined();
     });
 
-    test('scheduleReconnect sets timer and updates running state', () => {
+    test('scheduleRefetch sets timer and updates running state', () => {
       vi.useFakeTimers();
 
       const revalidateMock = vi.fn<[], void>();
@@ -43,7 +43,7 @@ describe('Status Slice', () => {
 
       const { streamState } = useStore.getState().status;
 
-      streamState.scheduleReconnect();
+      streamState.scheduleRefetch();
 
       // Should have set timer and running state to false
       expect(useStore.getState().status.streamState.timer).toBeDefined();
@@ -58,7 +58,7 @@ describe('Status Slice', () => {
       vi.useRealTimers();
     });
 
-    test('scheduleReconnect does not call revalidate if stream is running', () => {
+    test('scheduleRefetch does not call revalidate if stream is running', () => {
       vi.useFakeTimers();
 
       const revalidateMock = vi.fn<[], void>();
@@ -74,7 +74,7 @@ describe('Status Slice', () => {
         state.status.streamState.running = true;
       });
 
-      streamState.scheduleReconnect();
+      streamState.scheduleRefetch();
 
       vi.advanceTimersByTime(1000);
 

@@ -15,7 +15,7 @@ export interface StatusStreamState {
   error?: unknown;
   running: boolean;
   timer?: ReturnType<typeof setTimeout>;
-  scheduleReconnect: () => void;
+  scheduleRefetch: () => void;
   setStreamError: (error: unknown) => void;
   setStreamRunning: () => void;
 }
@@ -47,27 +47,18 @@ export const { status, useStatus, useRevalidateStatus } = createZQuery({
       prevData: PlainMessage<StatusStreamResponse> | undefined,
       item: PlainMessage<StatusStreamResponse>,
     ): PlainMessage<StatusStreamResponse> => {
-      console.debug('status stream onValue', { prevData, item });
-      // Mark the stream as running whenever we receive a value
       useStore.getState().status.streamState.setStreamRunning();
-
       return {
         ...prevData,
         ...item,
       };
     },
     onError: (prevData, error) => {
-      console.debug('status stream onError', prevData, error);
       useStore.getState().status.streamState.setStreamError(error);
       return prevData;
     },
-    onAbort: prevData => {
-      console.debug('status stream onAbort', prevData);
-      return prevData;
-    },
     onEnd: prevData => {
-      console.debug('status stream onEnd', prevData);
-      useStore.getState().status.streamState.scheduleReconnect();
+      useStore.getState().status.streamState.scheduleRefetch();
       return prevData;
     },
   }),
@@ -106,7 +97,7 @@ export const createStatusSlice = (): SliceCreator<StatusSlice> => (set, get) => 
         });
       },
 
-      scheduleReconnect: () => {
+      scheduleRefetch: () => {
         clearTimeout(get().status.streamState.timer);
 
         const timer = setTimeout(() => {
@@ -135,16 +126,11 @@ export const syncPercentSelector = (
 ) => {
   const { fullSyncHeight, latestKnownBlockHeight } = { ...zQueryState.data };
 
-  let percentSyncedNumber = 0;
-  if (latestKnownBlockHeight) {
-    percentSyncedNumber = Number(fullSyncHeight) / Number(latestKnownBlockHeight);
-    if (percentSyncedNumber > 1) {
-      percentSyncedNumber = 1;
-    }
-  }
+  const synced =
+    Number(latestKnownBlockHeight ?? 0) &&
+    Math.min(1, Number(fullSyncHeight) / Number(latestKnownBlockHeight));
 
-  // Round down to ensure whole numbers
-  const roundedPercentSyncedNumber = Math.floor(percentSyncedNumber * 100);
+  const roundedPercentSyncedNumber = Math.floor(synced * 100);
 
   return {
     ...zQueryState,

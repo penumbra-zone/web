@@ -1,10 +1,11 @@
 import { Dialog } from '@penumbra-zone/ui-deprecated/Dialog';
-import { statusStreamStateSelector, useInitialStatus, useStatus } from '../../state/status';
-import { SyncAnimation } from './sync-animation';
 import { Text } from '@penumbra-zone/ui-deprecated/Text';
-import { useEffect, useState, useMemo } from 'react';
-import { useSyncProgress } from '@penumbra-zone/ui-deprecated/components/ui/block-sync-status';
+import { useEffect, useMemo, useState } from 'react';
 import { useStore } from '../../state';
+import { statusStreamStateSelector, useInitialStatus, useStatus } from '../../state/status';
+import { BlockProgress } from './block-progress';
+import { RemainingTime } from './remaining-time';
+import { SyncAnimation } from './sync-animation';
 
 export const SyncingDialog = () => {
   const initialStatus = useInitialStatus();
@@ -36,7 +37,7 @@ export const SyncingDialog = () => {
     } else if (!status.data) {
       setDialogText('Getting remote block height...');
     } else if (!isSynced) {
-      setDialogText('Syncing...');
+      setDialogText('Processing blocks to update local state...');
     }
 
     const shouldShow = !isSynced || !!streamError;
@@ -51,12 +52,12 @@ export const SyncingDialog = () => {
         <div className='text-center'>
           <Text body>
             {dialogText}
-            {streamError ? (
+            {!!streamError && (
               <Text technical color={theme => theme.caution.main} as='div'>
                 {streamError instanceof Error ? streamError.message : String(streamError)}
               </Text>
-            ) : undefined}
-            {syncData.fullSyncHeight && syncData.latestKnownBlockHeight ? (
+            )}
+            {!!(syncData.fullSyncHeight && syncData.latestKnownBlockHeight) && (
               <>
                 <BlockProgress
                   fullSyncHeight={syncData.fullSyncHeight}
@@ -67,7 +68,7 @@ export const SyncingDialog = () => {
                   latestKnownBlockHeight={syncData.latestKnownBlockHeight}
                 />
               </>
-            ) : undefined}
+            )}
           </Text>
           <Text small as='p'>
             You can click away, but your data <i>may</i> not be current
@@ -75,35 +76,5 @@ export const SyncingDialog = () => {
         </div>
       </Dialog.Content>
     </Dialog>
-  );
-};
-
-const BlockProgress = ({
-  fullSyncHeight,
-  latestKnownBlockHeight,
-}: {
-  fullSyncHeight: bigint;
-  latestKnownBlockHeight: bigint;
-}) => {
-  const formattedBlockProgress = `Block ${fullSyncHeight} of ${latestKnownBlockHeight}`;
-  return (
-    <Text technical as='div'>
-      {formattedBlockProgress}
-    </Text>
-  );
-};
-
-const RemainingTime = ({
-  fullSyncHeight,
-  latestKnownBlockHeight,
-}: {
-  fullSyncHeight: bigint;
-  latestKnownBlockHeight: bigint;
-}) => {
-  const { formattedTimeRemaining } = useSyncProgress(fullSyncHeight, latestKnownBlockHeight);
-  return (
-    <Text technical as='div'>
-      Estimated time remaining: {formattedTimeRemaining}
-    </Text>
   );
 };
