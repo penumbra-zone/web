@@ -159,7 +159,9 @@ export const createChannelTransport = ({
       header: HeadersInit | undefined,
       input: PartialMessage<I>,
     ): Promise<UnaryResponse<I, O>> {
-      transportFailure.signal.throwIfAborted();
+      if (transportFailure.signal.aborted) {
+        throw transportFailure.signal.reason;
+      }
       port ??= await connect();
 
       const requestId = crypto.randomUUID();
@@ -229,7 +231,9 @@ export const createChannelTransport = ({
       header: HeadersInit | undefined,
       input: AsyncIterable<PartialMessage<I>>,
     ): Promise<StreamResponse<I, O>> {
-      transportFailure.signal.throwIfAborted();
+      if (transportFailure.signal.aborted) {
+        throw transportFailure.signal.reason;
+      }
       port ??= await connect();
 
       const requestId = crypto.randomUUID();
