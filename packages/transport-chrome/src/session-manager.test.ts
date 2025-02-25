@@ -10,7 +10,7 @@ import type { ChannelHandlerFn } from '@penumbra-zone/transport-dom/adapter';
 import { beforeEach, describe, expect, it, type MockedFunction, vi } from 'vitest';
 import { ChannelLabel, nameConnection } from './channel-names.js';
 import { CRSessionManager as CRSessionManagerOriginal } from './session-manager.js';
-import { lastResult } from './util/test-utils.js';
+import { lastResult } from './test-utils/last-result.js';
 
 const CRSessionManager: typeof CRSessionManagerOriginal & {
   // forward-compatible type. third parameter of init is required in new

@@ -1,13 +1,14 @@
+import { JsonValue } from '@bufbuild/protobuf';
 import { ConnectError } from '@connectrpc/connect';
 import { errorToJson } from '@connectrpc/connect/protocol-connect';
 import { mockChannel, MockedChannel, MockedPort } from '@penumbra-zone/mock-chrome/runtime/connect';
 import type { TransportMessage, TransportStream } from '@penumbra-zone/transport-dom/messages';
 import { afterEach, beforeEach, describe, expect, it, type Mock, onTestFinished, vi } from 'vitest';
 import { ChannelLabel, nameConnection } from './channel-names.js';
-import { lastResult, replaceUncaughtExceptionListener } from './util/test-utils.js';
 import type { TransportInitChannel } from './message.js';
 import { CRSessionClient } from './session-client.js';
-import { JsonValue } from '@bufbuild/protobuf';
+import { lastResult } from './test-utils/last-result.js';
+import { replaceUncaughtExceptionListener } from './test-utils/unhandled.js';
 
 Object.assign(CRSessionClient, {
   clearSingleton() {

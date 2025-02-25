@@ -19,11 +19,12 @@ import {
 import type { TransportMessage } from '@penumbra-zone/transport-dom/messages';
 import { beforeEach, describe, expect, it, Mock, onTestFinished, vi } from 'vitest';
 import { ChannelLabel, nameConnection } from './channel-names.js';
-import { lastResult, replaceUnhandledRejectionListener } from './util/test-utils.js';
+import { TransportInitChannel } from './message.js';
+import { PortStreamSink } from './stream.js';
+import { lastResult } from './test-utils/last-result.js';
+import { replaceUnhandledRejectionListener } from './test-utils/unhandled.js';
 
 import ReadableStream from '@penumbra-zone/transport-dom/ReadableStream.from';
-import { PortStreamSink } from './stream.js';
-import { TransportInitChannel } from './message.js';
 
 Object.assign(CRSessionClient, {
   clearSingleton() {
