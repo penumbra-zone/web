@@ -480,7 +480,7 @@ describe('channel transport', () => {
     });
 
     describe("doesn't  emit abort events", () => {
-      it('can cancel streams before they begin, but does not emit an abort event', async () => {
+      it('can cancel streams before init, but does not emit an abort', async () => {
         expect(otherEnd).not.toHaveBeenCalled();
 
         const ac = new AbortController();
@@ -536,7 +536,7 @@ describe('channel transport', () => {
             );
             otherEndPort.postMessage({ requestId, stream }, [stream]);
           } else if (isTransportAbort(tev)) {
-            expect(tev.abort).toBe(true);
+            expect.unreachable();
           }
         });
 
@@ -561,13 +561,16 @@ describe('channel transport', () => {
           'a good reason',
         );
 
-        // but the remote session does not know
+        // kill some time
+        await new Promise(resolve => void setTimeout(resolve, 50));
+
+        // the remote session did not find out
         expect(otherEnd).not.toHaveBeenCalledTimes(2);
       });
     });
 
     describe('emits abort events', () => {
-      it.fails('can cancel streams before they begin, and emits an abort event', async () => {
+      it.fails('can cancel streams before init, and emits an abort', async () => {
         expect(otherEnd).not.toHaveBeenCalled();
 
         const ac = new AbortController();
@@ -603,7 +606,7 @@ describe('channel transport', () => {
         );
       });
 
-      it.fails('can cancel streams already in progress, and emits an abort event', async () => {
+      it.fails('can cancel streams already in progress, and emits an abort', async () => {
         const defaultTimeoutMs = 200;
         const responses: PlainMessage<IntroduceResponse>[] = [
           { sentence: 'something remarkably similar' },
@@ -612,6 +615,8 @@ describe('channel transport', () => {
           { sentence: 'something remarkably similar' },
           { sentence: 'something remarkably similar' },
         ];
+
+        const ac = new AbortController();
 
         otherEnd.mockImplementation((event: MessageEvent<unknown>) => {
           const tev = event.data as TransportEvent;
@@ -636,11 +641,15 @@ describe('channel transport', () => {
         const streamRequest = transport.stream(
           ElizaService,
           ElizaService.methods.introduce,
-          AbortSignal.timeout(defaultTimeoutMs / 2),
+          ac.signal,
           undefined,
           undefined,
           ReadableStream.from([new IntroduceRequest(introduceRequest)]),
         );
+
+        await vi.waitFor(() => expect(otherEnd).toHaveBeenCalledOnce());
+
+        ac.abort('a bad reason');
 
         await expect(streamRequest).resolves.not.toThrow();
         await expect(streamRequest.then(({ message }) => Array.fromAsync(message))).rejects.toThrow(
