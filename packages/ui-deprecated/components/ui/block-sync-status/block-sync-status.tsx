@@ -1,6 +1,7 @@
 import { CheckIcon } from '@radix-ui/react-icons';
 import { BigNumber } from 'bignumber.js';
 import { motion } from 'framer-motion';
+import { useMemo } from 'react';
 import { LineWave } from 'react-loader-spinner';
 import { cn } from '../../../lib/utils';
 import { Progress } from '../progress';
@@ -16,7 +17,7 @@ export const CondensedBlockSyncStatus = ({
   error?: unknown;
 }) => {
   if (error) {
-    return <BlockSyncErrorState />;
+    return <BlockSyncErrorState error={error} />;
   }
   if (!latestKnownBlockHeight || !fullSyncHeight) {
     return <AwaitingSyncState genesisSyncing={!fullSyncHeight} />;
@@ -41,10 +42,17 @@ export const CondensedBlockSyncStatus = ({
   );
 };
 
-const BlockSyncErrorState = () => {
-  const reload = () => {
-    window.location.reload();
-  };
+const BlockSyncErrorState = ({ error }: { error: unknown }) => {
+  if (globalThis.__DEV__) {
+    console.warn('BlockSyncErrorState', error);
+  }
+
+  const reload = () => window.location.reload();
+
+  const errorText = useMemo(
+    () => (error instanceof Error ? error.message : String(error)),
+    [error],
+  );
 
   return (
     <motion.div
@@ -56,7 +64,7 @@ const BlockSyncErrorState = () => {
       <div className='absolute w-full px-2'>
         <div className='mt-[-5.5px] flex gap-2'>
           <span className='font-mono text-[10px] text-red-300'>
-            Block sync error. Ensure your internet connection is stable.
+            Block sync error -- {errorText} -- Ensure your internet connection is stable.
           </span>
           <button
             type='button'
