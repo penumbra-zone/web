@@ -10,7 +10,7 @@ import {
 import { ElizaService } from '@buf/connectrpc_eliza.connectrpc_es/connectrpc/eliza/v1/eliza_connect.js';
 import { Any, createRegistry, type PlainMessage } from '@bufbuild/protobuf';
 import { Code, ConnectError, type Transport } from '@connectrpc/connect';
-import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
+import { beforeEach, describe, expect, it, Mock, onTestFinished, vi } from 'vitest';
 import { createChannelTransport, type ChannelTransportOptions } from './create.js';
 import {
   isTransportAbort,
@@ -479,7 +479,7 @@ describe('channel transport', () => {
       await expect(unaryRequest).rejects.toThrow('[data_loss] different reason');
     });
 
-    describe("doesn't  emit abort events", () => {
+    describe("doesn't emit abort events", () => {
       it('can cancel streams before init, but does not emit an abort', async () => {
         expect(otherEnd).not.toHaveBeenCalled();
 
@@ -509,6 +509,10 @@ describe('channel transport', () => {
       });
 
       it('can cancel streams already in progress, but does not emit an abort', async () => {
+        const errorEventListener = vi.fn();
+        window.addEventListener('error', errorEventListener);
+        onTestFinished(() => window.removeEventListener('error', errorEventListener));
+
         const ac = new AbortController();
 
         const defaultTimeoutMs = 200;
@@ -566,6 +570,7 @@ describe('channel transport', () => {
 
         // the remote session did not find out
         expect(otherEnd).not.toHaveBeenCalledTimes(2);
+        expect(errorEventListener).not.toHaveBeenCalled();
       });
     });
 
