@@ -479,9 +479,95 @@ describe('channel transport', () => {
       await expect(unaryRequest).rejects.toThrow('[data_loss] different reason');
     });
 
-    it.fails(
-      "can cancel streaming requests after they're received but before they begin",
-      async () => {
+    describe("doesn't  emit abort events", () => {
+      it('can cancel streams before they begin, but does not emit an abort event', async () => {
+        expect(otherEnd).not.toHaveBeenCalled();
+
+        const ac = new AbortController();
+
+        const signalAdd = vi.spyOn(ac.signal, 'addEventListener');
+
+        const streamRequest = transport.stream(
+          ElizaService,
+          ElizaService.methods.introduce,
+          ac.signal,
+          undefined,
+          undefined,
+          ReadableStream.from([new IntroduceRequest(introduceRequest)]),
+        );
+
+        await vi.waitFor(() => expect(otherEnd).toHaveBeenCalledOnce());
+
+        ac.abort('a bad reason');
+
+        // the local request aborts,
+        await expect(streamRequest).rejects.toThrow('a bad reason');
+
+        // but the remote session does not know
+        expect(signalAdd).not.toHaveBeenCalled();
+        expect(otherEnd).toHaveBeenCalledOnce();
+      });
+
+      it('can cancel streams already in progress, but does not emit an abort', async () => {
+        const ac = new AbortController();
+
+        const defaultTimeoutMs = 200;
+        const responses: PlainMessage<IntroduceResponse>[] = [
+          { sentence: 'something remarkably similar' },
+          { sentence: 'something remarkably similar' },
+          { sentence: 'something remarkably similar' },
+          { sentence: 'something remarkably similar' },
+          { sentence: 'something remarkably similar' },
+        ];
+
+        otherEnd.mockImplementation((event: MessageEvent<unknown>) => {
+          const tev = event.data as TransportEvent;
+          const { requestId } = tev;
+
+          if (isTransportMessage(tev)) {
+            expect(tev.message).toMatchObject(introduceRequest);
+            const stream = ReadableStream.from(
+              (async function* () {
+                for (const r of responses) {
+                  await new Promise(resolve => void setTimeout(resolve, defaultTimeoutMs / 3));
+                  yield Any.pack(new IntroduceResponse(r)).toJson({ typeRegistry });
+                }
+              })(),
+            );
+            otherEndPort.postMessage({ requestId, stream }, [stream]);
+          } else if (isTransportAbort(tev)) {
+            expect(tev.abort).toBe(true);
+          }
+        });
+
+        const streamRequest = transport.stream(
+          ElizaService,
+          ElizaService.methods.introduce,
+          ac.signal,
+          undefined,
+          undefined,
+          ReadableStream.from([new IntroduceRequest(introduceRequest)]),
+        );
+
+        await vi.waitFor(() => expect(otherEnd).toHaveBeenCalledOnce());
+
+        ac.abort('a good reason');
+
+        // the stream is initialized
+        await expect(streamRequest).resolves.not.toThrow();
+
+        // and the local request aborts
+        await expect(streamRequest.then(({ message }) => Array.fromAsync(message))).rejects.toThrow(
+          'a good reason',
+        );
+
+        // but the remote session does not know
+        expect(otherEnd).not.toHaveBeenCalledTimes(2);
+      });
+    });
+
+    describe('emits abort events', () => {
+      it.fails('can cancel streams before they begin, and emits an abort event', async () => {
         expect(otherEnd).not.toHaveBeenCalled();
 
         const ac = new AbortController();
@@ -499,76 +585,25 @@ describe('channel transport', () => {
 
         await vi.waitFor(() => expect(signalAdd).toHaveBeenCalledOnce());
 
-        await vi.waitFor(() => expect(otherEnd).toHaveBeenCalledOnce());
+        await vi.waitFor(() => {
+          expect(otherEnd).toHaveBeenCalledOnce();
+        });
 
-        ac.abort('bad reason');
-        await expect(streamRequest).rejects.toThrow('[aborted] bad reason');
+        ac.abort('a bad reason');
+
+        await expect(streamRequest).rejects.toThrow('a bad reason');
 
         await vi.waitFor(() => expect(otherEnd).toHaveBeenCalledTimes(2));
-
-        console.log(
-          'calls',
-          otherEnd.mock.calls.map(c => c[0].data),
+        expect(otherEnd).toHaveBeenCalledWith(
+          expect.objectContaining({
+            data: expect.objectContaining({
+              abort: true,
+            }),
+          }),
         );
-      },
-    );
-
-    it('can cancel streaming requests already in progress, but does not emit an abort event', async () => {
-      const ac = new AbortController();
-
-      const defaultTimeoutMs = 200;
-      const responses: PlainMessage<IntroduceResponse>[] = [
-        { sentence: 'something remarkably similar' },
-        { sentence: 'something remarkably similar' },
-        { sentence: 'something remarkably similar' },
-        { sentence: 'something remarkably similar' },
-        { sentence: 'something remarkably similar' },
-      ];
-
-      otherEnd.mockImplementation((event: MessageEvent<unknown>) => {
-        const tev = event.data as TransportEvent;
-        const { requestId } = tev;
-
-        if (isTransportMessage(tev)) {
-          expect(tev.message).toMatchObject(introduceRequest);
-          const stream = ReadableStream.from(
-            (async function* () {
-              for (const r of responses) {
-                await new Promise(resolve => void setTimeout(resolve, defaultTimeoutMs / 3));
-                yield Any.pack(new IntroduceResponse(r)).toJson({ typeRegistry });
-              }
-            })(),
-          );
-          otherEndPort.postMessage({ requestId, stream }, [stream]);
-        } else if (isTransportAbort(tev)) {
-          expect(tev.abort).toBe(true);
-        }
       });
 
-      const streamRequest = transport.stream(
-        ElizaService,
-        ElizaService.methods.introduce,
-        ac.signal,
-        undefined,
-        undefined,
-        ReadableStream.from([new IntroduceRequest(introduceRequest)]),
-      );
-
-      await vi.waitFor(() => expect(otherEnd).toHaveBeenCalledOnce());
-
-      ac.abort('a good reason');
-
-      await expect(streamRequest).resolves.not.toThrow();
-      await expect(streamRequest.then(({ message }) => Array.fromAsync(message))).rejects.toThrow(
-        'a good reason',
-      );
-
-      await vi.waitFor(() => expect(otherEnd).toHaveBeenCalledOnce());
-    });
-
-    it.fails(
-      'can cancel streaming requests already in progress, and actually cancels the stream',
-      async () => {
+      it.fails('can cancel streams already in progress, and emits an abort event', async () => {
         const defaultTimeoutMs = 200;
         const responses: PlainMessage<IntroduceResponse>[] = [
           { sentence: 'something remarkably similar' },
@@ -620,8 +655,8 @@ describe('channel transport', () => {
             }),
           );
         });
-      },
-    );
+      });
+    });
   });
 
   describe('transport headers', () => {
@@ -644,7 +679,6 @@ describe('channel transport', () => {
       expect(otherEnd).not.toHaveBeenCalled();
 
       otherEnd.mockImplementation((ev: MessageEvent<unknown>) => {
-        console.log('otherEnd', ev.data);
         const { requestId } = ev.data as TransportMessage;
         otherEndPort.postMessage({
           requestId,
