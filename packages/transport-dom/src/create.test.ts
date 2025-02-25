@@ -623,4 +623,126 @@ describe('channel transport', () => {
       },
     );
   });
+
+  describe('transport headers', () => {
+    let transportOptions: ChannelTransportOptions;
+    let transport: Transport;
+    let header: Headers;
+
+    beforeEach(() => {
+      transportOptions = {
+        getPort: () => Promise.resolve(clientPort),
+        jsonOptions: { typeRegistry },
+      };
+      transport = createChannelTransport(transportOptions);
+
+      header = new Headers();
+      header.set('x-test', 'test');
+    });
+
+    it.fails('should send headers', async () => {
+      expect(otherEnd).not.toHaveBeenCalled();
+
+      otherEnd.mockImplementation((ev: MessageEvent<unknown>) => {
+        console.log('otherEnd', ev.data);
+        const { requestId } = ev.data as TransportMessage;
+        otherEndPort.postMessage({
+          requestId,
+          message: {
+            ...sayResponse,
+            '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayResponse',
+          },
+        });
+      });
+
+      const unaryRequest = transport.unary(
+        ElizaService,
+        ElizaService.methods.say,
+        undefined,
+        undefined,
+        header,
+        new SayRequest(sayRequest),
+      );
+
+      await expect(unaryRequest).resolves.toMatchObject({ message: sayResponse });
+
+      const lastCallData = otherEnd.mock.lastCall?.[0].data as TransportMessage;
+      expect(lastCallData).toHaveProperty('header');
+
+      const calledHeaders = new Headers(lastCallData.header);
+
+      expect(calledHeaders.get('x-test')).toBe('test');
+    });
+
+    it.fails('should send timeout headers', async () => {
+      expect(otherEnd).not.toHaveBeenCalled();
+
+      otherEnd.mockImplementation((ev: MessageEvent<unknown>) => {
+        console.log('otherEnd', ev.data);
+        const { requestId } = ev.data as TransportMessage;
+        otherEndPort.postMessage({
+          requestId,
+          message: {
+            ...sayResponse,
+            '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayResponse',
+          },
+        });
+      });
+
+      const unaryRequest = transport.unary(
+        ElizaService,
+        ElizaService.methods.say,
+        undefined,
+        200,
+        undefined,
+        new SayRequest(sayRequest),
+      );
+
+      await expect(unaryRequest).resolves.toMatchObject({ message: sayResponse });
+
+      const lastCallData = otherEnd.mock.lastCall?.[0].data as TransportMessage;
+
+      expect(lastCallData).toHaveProperty('header');
+
+      const calledHeaders = new Headers(lastCallData.header);
+
+      expect(calledHeaders.get('headerTimeout')).toBe('200');
+    });
+
+    it.fails('should send collected headers', async () => {
+      expect(otherEnd).not.toHaveBeenCalled();
+
+      otherEnd.mockImplementation((ev: MessageEvent<unknown>) => {
+        console.log('otherEnd', ev.data);
+        const { requestId } = ev.data as TransportMessage;
+        otherEndPort.postMessage({
+          requestId,
+          message: {
+            ...sayResponse,
+            '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayResponse',
+          },
+        });
+      });
+
+      const unaryRequest = transport.unary(
+        ElizaService,
+        ElizaService.methods.say,
+        undefined,
+        200,
+        header,
+        new SayRequest(sayRequest),
+      );
+
+      await expect(unaryRequest).resolves.toMatchObject({ message: sayResponse });
+
+      const lastCallData = otherEnd.mock.lastCall?.[0].data as TransportMessage;
+
+      expect(lastCallData).toHaveProperty('header');
+
+      const calledHeaders = new Headers(lastCallData.header);
+
+      expect(calledHeaders.get('headerTimeout')).toBe('200');
+      expect(calledHeaders.get('x-test')).toBe('test');
+    });
+  });
 });
