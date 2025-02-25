@@ -513,7 +513,9 @@ describe('channel transport', () => {
       },
     );
 
-    it.fails('can cancel streaming requests already in progress', async () => {
+    it('can cancel streaming requests already in progress, but does not emit an abort event', async () => {
+      const ac = new AbortController();
+
       const defaultTimeoutMs = 200;
       const responses: PlainMessage<IntroduceResponse>[] = [
         { sentence: 'something remarkably similar' },
@@ -546,25 +548,79 @@ describe('channel transport', () => {
       const streamRequest = transport.stream(
         ElizaService,
         ElizaService.methods.introduce,
-        AbortSignal.timeout(defaultTimeoutMs / 2),
+        ac.signal,
         undefined,
         undefined,
         ReadableStream.from([new IntroduceRequest(introduceRequest)]),
       );
 
+      await vi.waitFor(() => expect(otherEnd).toHaveBeenCalledOnce());
+
+      ac.abort('a good reason');
+
       await expect(streamRequest).resolves.not.toThrow();
       await expect(streamRequest.then(({ message }) => Array.fromAsync(message))).rejects.toThrow(
-        'a bad reason',
+        'a good reason',
       );
-      await vi.waitFor(() => {
-        expect(otherEnd).toHaveBeenCalledWith(
-          expect.objectContaining({
-            data: expect.objectContaining({
-              abort: true,
-            }),
-          }),
-        );
-      });
+
+      await vi.waitFor(() => expect(otherEnd).toHaveBeenCalledOnce());
     });
+
+    it.fails(
+      'can cancel streaming requests already in progress, and actually cancels the stream',
+      async () => {
+        const defaultTimeoutMs = 200;
+        const responses: PlainMessage<IntroduceResponse>[] = [
+          { sentence: 'something remarkably similar' },
+          { sentence: 'something remarkably similar' },
+          { sentence: 'something remarkably similar' },
+          { sentence: 'something remarkably similar' },
+          { sentence: 'something remarkably similar' },
+        ];
+
+        otherEnd.mockImplementation((event: MessageEvent<unknown>) => {
+          const tev = event.data as TransportEvent;
+          const { requestId } = tev;
+
+          if (isTransportMessage(tev)) {
+            expect(tev.message).toMatchObject(introduceRequest);
+            const stream = ReadableStream.from(
+              (async function* () {
+                for (const r of responses) {
+                  await new Promise(resolve => void setTimeout(resolve, defaultTimeoutMs / 3));
+                  yield Any.pack(new IntroduceResponse(r)).toJson({ typeRegistry });
+                }
+              })(),
+            );
+            otherEndPort.postMessage({ requestId, stream }, [stream]);
+          } else if (isTransportAbort(tev)) {
+            expect(tev.abort).toBe(true);
+          }
+        });
+
+        const streamRequest = transport.stream(
+          ElizaService,
+          ElizaService.methods.introduce,
+          AbortSignal.timeout(defaultTimeoutMs / 2),
+          undefined,
+          undefined,
+          ReadableStream.from([new IntroduceRequest(introduceRequest)]),
+        );
+
+        await expect(streamRequest).resolves.not.toThrow();
+        await expect(streamRequest.then(({ message }) => Array.fromAsync(message))).rejects.toThrow(
+          'a bad reason',
+        );
+        await vi.waitFor(() => {
+          expect(otherEnd).toHaveBeenCalledWith(
+            expect.objectContaining({
+              data: expect.objectContaining({
+                abort: true,
+              }),
+            }),
+          );
+        });
+      },
+    );
   });
 });
