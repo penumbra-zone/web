@@ -36,7 +36,7 @@ importers:
       '@penumbra-zone/configs':
         specifier: workspace:*
         version: link:packages/configs
-      '@penumbra-zone/mock-chrome':
+      '@repo/mock-chrome':
         specifier: workspace:*
         version: link:packages/mock-chrome
       '@repo/tailwind-config':
@@ -3320,6 +3320,7 @@ packages:
   '@mui/base@5.0.0-beta.40':
     resolution: {integrity: sha512-I/lGHztkCzvwlXpjD2+SNmvNQvB4227xBXhISPjEaJUXGImOQ9f3D2Yj/T3KasSI/h0MLWy74X0J6clhPmsRbQ==}
     engines: {node: '>=12.0.0'}
+    deprecated: This package has been replaced by @base-ui-components/react
     peerDependencies:
       '@types/react': ^17.0.0 || ^18.0.0
       react: ^17.0.0 || ^18.0.0
