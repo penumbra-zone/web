@@ -33,7 +33,6 @@ describe('CRSessionClient', () => {
   beforeEach(({ expect }) => {
     vi.unstubAllGlobals();
     vi.restoreAllMocks();
-    vi.stubGlobal('__DEV__', true);
 
     clearSingleton();
 
