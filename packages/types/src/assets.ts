@@ -77,7 +77,7 @@ export const assetPatterns: AssetPatterns = {
   lpNft: new RegexMatcher(/^lpnft_/),
   // TODO: This should be a regex on the base denom and not the display denom
   delegationToken: new RegexMatcher(
-    /^u?delegation_(?<idKey>penumbravalid1(?<id>[a-zA-HJ-NP-Z0-9]+))$/,
+    /^delegation_(?<idKey>penumbravalid1(?<id>[a-zA-HJ-NP-Z0-9]+))$/,
   ),
   proposalNft: new RegexMatcher(/^proposal_/),
   unbondingToken: new RegexMatcher(

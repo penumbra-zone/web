@@ -77,7 +77,7 @@ export const findRelevantAssets = (action?: ActionView): RelevantAsset[] => {
     return returnAssets([
       view.value.validatorIdentity &&
         new Metadata({
-          display: `udelegation_${bech32mIdentityKey(view.value.validatorIdentity)}`,
+          display: `delegation_${bech32mIdentityKey(view.value.validatorIdentity)}`,
         }),
     ]);
   }
