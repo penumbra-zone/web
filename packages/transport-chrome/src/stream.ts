@@ -2,13 +2,15 @@ import type { JsonValue } from '@bufbuild/protobuf';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { errorFromJson, errorToJson } from '@connectrpc/connect/protocol-connect';
 
+const DEFAULT_STREAM_TIMEOUT_MS = 60_000;
+
 export class PortStreamSource implements UnderlyingDefaultSource<JsonValue> {
   private cont?: ReadableStreamDefaultController<JsonValue>;
   private timeout?: AbortSignal;
 
   constructor(
     private incoming: chrome.runtime.Port,
-    private timeoutMs = 30_000,
+    private timeoutMs = DEFAULT_STREAM_TIMEOUT_MS,
   ) {
     incoming.onDisconnect.addListener(this.onDisconnect);
     incoming.onMessage.addListener(this.onMessage);
@@ -98,7 +100,7 @@ export class PortStreamSink implements UnderlyingSink<JsonValue> {
 
   constructor(
     private outgoing: chrome.runtime.Port,
-    private timeoutMs = 60_000,
+    private timeoutMs = DEFAULT_STREAM_TIMEOUT_MS,
   ) {
     this.outgoing.onDisconnect.addListener(() =>
       this.cont?.error(ConnectError.from('Sink disconnected', Code.Canceled)),
