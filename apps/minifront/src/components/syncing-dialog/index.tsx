@@ -33,11 +33,11 @@ export const SyncingDialog = () => {
     if (streamError) {
       setDialogText('Retrying...');
     } else if (!initialStatus.data) {
-      setDialogText('Getting local block height...');
+      setDialogText('Querying local block height...');
     } else if (!status.data) {
-      setDialogText('Getting remote block height...');
+      setDialogText('Fetching remote block height...');
     } else if (!isSynced) {
-      setDialogText('Processing blocks to update local state...');
+      setDialogText('Streaming new blocks to update private state...');
     }
 
     const shouldShow = !isSynced || !!streamError;
