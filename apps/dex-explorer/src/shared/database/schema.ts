@@ -197,6 +197,28 @@ export interface DexExPriceCharts {
   the_window: DurationWindow;
 }
 
+export interface BatchSwapSummary {
+  asset_start: Buffer;
+  asset_end: Buffer;
+  input: string;
+  output: string;
+  num_swaps: number;
+  price_float: number;
+}
+
+export interface DexExBlockSummary {
+  rowid: number;
+  height: number;
+  time: Date;
+  batch_swaps: BatchSwapSummary[];
+  num_open_lps: number;
+  num_closed_lps: number;
+  num_withdrawn_lps: number;
+  num_swaps: number;
+  num_swap_claims: number;
+  num_txs: number;
+}
+
 export interface DexExTransactions {
   transaction_id: Buffer;
   transaction: Buffer;
@@ -349,6 +371,7 @@ interface RawDB {
   dex_ex_position_state: DexExPositionState;
   dex_ex_position_withdrawals: DexExPositionWithdrawals;
   dex_ex_price_charts: DexExPriceCharts;
+  dex_ex_block_summary: DexExBlockSummary;
   dex_ex_transactions: DexExTransactions;
   governance_delegator_votes: GovernanceDelegatorVotes;
   governance_proposals: GovernanceProposals;
@@ -379,5 +402,6 @@ export type DB = Pick<
   | 'dex_ex_position_withdrawals'
   | 'dex_ex_batch_swap_traces'
   | 'dex_ex_metadata'
+  | 'dex_ex_block_summary'
   | 'dex_ex_transactions'
 >;

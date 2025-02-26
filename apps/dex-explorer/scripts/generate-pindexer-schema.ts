@@ -14,6 +14,7 @@ const pindexerTableWhitelist = [
   'dex_ex_position_withdrawals',
   'dex_ex_batch_swap_traces',
   'dex_ex_metadata',
+  'dex_ex_block_summary',
 ];
 
 const envFileReady = (): boolean => {
