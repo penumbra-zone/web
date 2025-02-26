@@ -23,6 +23,7 @@ import {
   TransportMessage,
   TransportStream,
 } from './messages.js';
+import { normalizeHeader } from './util/normalize-header.js';
 
 import ReadableStream from './ReadableStream.from.js';
 
@@ -162,15 +163,12 @@ export const createChannelTransport = ({
       port ??= await connect();
 
       const requestId = crypto.randomUUID();
+
       const requestFailure = new AbortController();
+      const deadline = timeoutMs ? AbortSignal.timeout(timeoutMs) : undefined;
 
       const response = Promise.race([
-        rejectOnSignal(
-          transportFailure.signal,
-          requestFailure.signal,
-          timeoutMs > 0 ? AbortSignal.timeout(timeoutMs) : undefined,
-          signal,
-        ),
+        rejectOnSignal(transportFailure.signal, requestFailure.signal, deadline, signal),
         new Promise<TransportMessage>((resolve, reject) => {
           pending.set(requestId, (tev: TransportEvent) => {
             if (isTransportMessage(tev, requestId)) {
@@ -193,7 +191,12 @@ export const createChannelTransport = ({
                 signal?.addEventListener('abort', () =>
                   port?.postMessage({ requestId, abort: true } satisfies TransportAbort),
                 );
-                port.postMessage({ requestId, message, header } satisfies TransportMessage);
+
+                port.postMessage({
+                  requestId,
+                  message,
+                  header: normalizeHeader(timeoutMs, header),
+                } satisfies TransportMessage);
               }
               break;
             default:
@@ -232,14 +235,10 @@ export const createChannelTransport = ({
       const requestId = crypto.randomUUID();
 
       const requestFailure = new AbortController();
+      const deadline = timeoutMs ? AbortSignal.timeout(timeoutMs) : undefined;
 
       const response = Promise.race([
-        rejectOnSignal(
-          transportFailure.signal,
-          requestFailure.signal,
-          timeoutMs > 0 ? AbortSignal.timeout(timeoutMs) : undefined,
-          signal,
-        ),
+        rejectOnSignal(transportFailure.signal, requestFailure.signal, deadline, signal),
         new Promise<TransportStream>((resolve, reject) => {
           pending.set(requestId, (tev: TransportEvent) => {
             if (isTransportStream(tev, requestId)) {
@@ -268,7 +267,11 @@ export const createChannelTransport = ({
                 // confirm the input stream ended after one message with content
                 if (done && typeof value === 'object' && value !== null) {
                   const message = Any.pack(new method.I(value as object)).toJson(jsonOptions);
-                  port.postMessage({ requestId, message, header } satisfies TransportMessage);
+                  port.postMessage({
+                    requestId,
+                    message,
+                    header: normalizeHeader(timeoutMs, header),
+                  } satisfies TransportMessage);
                 } else {
                   throw new ConnectError(
                     'MethodKind.ServerStreaming expects a single request message',
@@ -290,7 +293,14 @@ export const createChannelTransport = ({
                       cont.enqueue(Any.pack(new method.I(chunk)).toJson(jsonOptions)),
                   }),
                 );
-                port.postMessage({ requestId, stream, header } satisfies TransportStream, [stream]);
+                port.postMessage(
+                  {
+                    requestId,
+                    stream,
+                    header: normalizeHeader(timeoutMs, header),
+                  } satisfies TransportStream,
+                  [stream],
+                );
               }
               break;
             default:
