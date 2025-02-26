@@ -7,6 +7,7 @@ import {
   DexExPositionExecutions,
   DexExPositionReserves,
   DexExPositionWithdrawals,
+  DexExBlockSummary,
   DexExTransactions,
 } from '@/shared/database/schema.ts';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
@@ -464,6 +465,14 @@ class Pindexer {
       fees2: row.fees2,
       executionCount: row.executionCount,
     }));
+  }
+
+  async getBlockSummary(height: number): Promise<Selectable<DexExBlockSummary> | undefined> {
+    return this.db
+      .selectFrom('dex_ex_block_summary')
+      .selectAll()
+      .where('height', '=', height)
+      .executeTakeFirst();
   }
 
   async getTransaction(txHash: string): Promise<Selectable<DexExTransactions> | undefined> {
