@@ -1,4 +1,7 @@
-import { TransactionSummary, TransactionView } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import {
+  TransactionSummary,
+  TransactionView,
+} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { Balance, Value } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { TransactionInfo } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { ADDRESS_VIEW_DECODED } from './address-view';
@@ -18,10 +21,10 @@ export const TxSummary = new TransactionSummary({
               amount: AMOUNT_999,
               assetId: PENUMBRA_METADATA.penumbraAssetId,
             }),
-          }
+          },
         ],
       }),
-    }
+    },
   ],
 });
 
