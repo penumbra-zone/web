@@ -470,7 +470,7 @@ describe('session client with transport-dom', () => {
     });
 
     describe("doesn't emit abort events", () => {
-      it('can cancel streams before init, but does not emit an abort', async () => {
+      it.fails('can cancel streams before init, but does not emit an abort', async () => {
         const { uncaughtExceptionListener, restoreUncaughtExceptionListener } =
           replaceUncaughtExceptionListener();
         onTestFinished(restoreUncaughtExceptionListener);
@@ -503,7 +503,7 @@ describe('session client with transport-dom', () => {
         expect(uncaughtExceptionListener).not.toHaveBeenCalled();
       });
 
-      it('can cancel streams already in progress, but does not emit an abort', async () => {
+      it.fails('can cancel streams already in progress, but does not emit an abort', async () => {
         const { uncaughtExceptionListener, restoreUncaughtExceptionListener } =
           replaceUncaughtExceptionListener();
         onTestFinished(restoreUncaughtExceptionListener);
@@ -577,7 +577,7 @@ describe('session client with transport-dom', () => {
     });
 
     describe('emits abort events', () => {
-      it.fails('can cancel streams before init, and emits an abort', async () => {
+      it('can cancel streams before init, and emits an abort', async () => {
         const { uncaughtExceptionListener, restoreUncaughtExceptionListener } =
           replaceUncaughtExceptionListener();
         onTestFinished(restoreUncaughtExceptionListener);
@@ -629,7 +629,7 @@ describe('session client with transport-dom', () => {
         expect(uncaughtExceptionListener).not.toHaveBeenCalled();
       });
 
-      it.fails('can cancel streams already in progress, and emits an abort', async () => {
+      it('can cancel streams already in progress, and emits an abort', async () => {
         const { uncaughtExceptionListener, restoreUncaughtExceptionListener } =
           replaceUncaughtExceptionListener();
         onTestFinished(restoreUncaughtExceptionListener);
