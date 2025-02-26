@@ -1,6 +1,6 @@
 # Streams
 
-The classes Source and Sink provide a way to stream jsonifiable values between documents through the chrome runtime.
+The classes `PortStreamSource` and `PortStreamSink` provide a way to stream jsonifiable values between documents through the chrome runtime.
 
 In [the stream spec's model](https://streams.spec.whatwg.org/#model):
 
