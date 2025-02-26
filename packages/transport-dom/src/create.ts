@@ -26,6 +26,11 @@ import {
 
 import ReadableStream from './ReadableStream.from.js';
 
+declare global {
+  // eslint-disable-next-line no-var -- global dev mode flag
+  var __DEV__: boolean | undefined;
+}
+
 const forceTransportOptions = {
   httpClient: null as never,
   baseUrl: 'https://in-memory',
@@ -276,6 +281,9 @@ export const createChannelTransport = ({
             case MethodKind.BiDiStreaming:
               // send as an actual stream
               {
+                if (!globalThis.__DEV__) {
+                  throw new ConnectError('MethodKind not supported', Code.Unimplemented);
+                }
                 const stream: ReadableStream<JsonValue> = ReadableStream.from(input).pipeThrough(
                   new TransformStream({
                     transform: (chunk: PartialMessage<I>, cont) =>
