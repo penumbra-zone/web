@@ -1,20 +1,24 @@
+import { Fragment, useEffect, useMemo, useState } from 'react';
+import { observer } from 'mobx-react-lite';
+import Link from 'next/link';
 import { JsonViewer } from '@textea/json-viewer';
-import { MetadataFetchFn, TransactionViewComponent } from './tx-view-component';
+import { asPublicTransactionView } from '@penumbra-zone/perspective/translators/transaction-view';
+import { classifyTransaction } from '@penumbra-zone/perspective/transaction/classify';
 import { TransactionInfo } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import type { Jsonified } from '@penumbra-zone/types/jsonified';
-import { useEffect, useState } from 'react';
-import { SegmentedPicker } from './tx-view-component/segmented-picker';
-import { asPublicTransactionView } from '@penumbra-zone/perspective/translators/transaction-view';
-import { typeRegistry } from '@penumbra-zone/protobuf';
-import { useQuery } from '@tanstack/react-query';
-import { classifyTransaction } from '@penumbra-zone/perspective/transaction/classify';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
-import { ChainRegistryClient } from '@penumbra-labs/registry';
-import Link from 'next/link';
-import fetchReceiverView from './tx-view-component/tx-details';
-import { observer } from 'mobx-react-lite';
+import { typeRegistry } from '@penumbra-zone/protobuf';
+import { Text } from '@penumbra-zone/ui/Text';
+import { Density } from '@penumbra-zone/ui/Density';
+import { SegmentedControl } from '@penumbra-zone/ui/SegmentedControl';
+import { AddressViewComponent } from '@penumbra-zone/ui/AddressView';
+import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
+import { ActionView } from '@penumbra-zone/ui/ActionView';
 import { connectionStore } from '@/shared/model/connection';
-import { envQueryFn } from '@/shared/api/env/env';
+import { shorten } from '@penumbra-zone/types/string';
+import { useReceiverView } from '../api/use-receiver-view';
+import { useFee } from '../api/use-fee';
+import { InfoRow } from './info-row';
 
 export enum TxDetailsTab {
   PUBLIC = 'public',
@@ -23,120 +27,169 @@ export enum TxDetailsTab {
 }
 
 const OPTIONS = [
-  { label: 'Your View', value: TxDetailsTab.PRIVATE },
+  { label: 'My View', value: TxDetailsTab.PRIVATE },
   { label: 'Receiver View', value: TxDetailsTab.RECEIVER },
   { label: 'Public View', value: TxDetailsTab.PUBLIC },
 ];
 
-const getMetadata: MetadataFetchFn = async ({ assetId }) => {
-  const env = await envQueryFn();
-  const chainId = env.PENUMBRA_CHAIN_ID;
-
-  const registryClient = new ChainRegistryClient();
-  const feeAssetId = assetId ? assetId : registryClient.bundled.globals().stakingAssetId;
-
-  const registry = await registryClient.remote.get(chainId);
-  const denomMetadata = registry.getMetadata(feeAssetId);
-
-  return denomMetadata;
-};
-
 export const TxViewer = observer(({ txInfo }: { txInfo?: TransactionInfo }) => {
   const { connected } = connectionStore;
-  const [option, setOption] = useState(connected ? TxDetailsTab.PRIVATE : TxDetailsTab.PUBLIC);
-
-  useEffect(() => {
-    setOption(connected ? TxDetailsTab.PRIVATE : TxDetailsTab.PUBLIC);
-  }, [connected]);
 
   // classify the transaction type
   const transactionClassification = classifyTransaction(txInfo?.view);
+  const txId = txInfo?.id && uint8ArrayToHex(txInfo.id.inner);
+  const fee = useFee(txInfo?.view);
 
-  // filter for receiver view
+  // prepare options for SegmentedControl
+  const [option, setOption] = useState(connected ? TxDetailsTab.PRIVATE : TxDetailsTab.PUBLIC);
   const showReceiverTransactionView = transactionClassification === 'send';
   const filteredOptions = showReceiverTransactionView
     ? OPTIONS
     : OPTIONS.filter(option => option.value !== TxDetailsTab.RECEIVER);
 
-  // use React-Query to invoke custom hooks that call async translators.
-  const { data: receiverView } = useQuery({
-    queryKey: ['receiverView', txInfo?.toJson({ typeRegistry }), option],
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify
-    queryFn: () => fetchReceiverView(txInfo!),
-    enabled: option === TxDetailsTab.RECEIVER && !!txInfo,
-  });
+  useEffect(() => {
+    setOption(connected ? TxDetailsTab.PRIVATE : TxDetailsTab.PUBLIC);
+  }, [connected]);
+
+  // load receiver view if this tab is available to user
+  const { data: receiverView } = useReceiverView(
+    connected && showReceiverTransactionView && !!txInfo,
+    txInfo,
+  );
+
+  const txv = useMemo(() => {
+    if (option === TxDetailsTab.RECEIVER) {
+      return receiverView;
+    }
+    if (option === TxDetailsTab.PUBLIC) {
+      return asPublicTransactionView(txInfo?.view);
+    }
+    return txInfo?.view;
+  }, [option, receiverView, txInfo?.view]);
 
   return (
-    <div>
-      <div className='text-xl font-bold'>Transaction View</div>
-      <div className={'mb-8 flex items-center justify-between'}>
-        <div className=' break-all font-mono italic text-muted-foreground'>
-          {txInfo?.id && uint8ArrayToHex(txInfo.id.inner)}
-        </div>
-        <Link
-          className={'rounded-lg border bg-black px-3 py-2 font-mono italic text-muted-foreground'}
-          href={`/inspect/block/${txInfo?.height.toString()}`}
-        >
-          block {txInfo?.height.toString()}
-        </Link>
+    <div className='flex flex-col gap-4'>
+      <div className='flex flex-col gap-2 text-text-primary'>
+        <Text strong>Transaction View</Text>
+        {txId && <Text technical>{txId}</Text>}
       </div>
 
       {connected && (
-        <div className='mx-auto mb-4 max-w-[70%]'>
-          <SegmentedPicker
-            options={filteredOptions}
-            value={option}
-            onChange={setOption}
-            grow
-            size='lg'
-          />
+        <div className='flex justify-center'>
+          <Density sparse>
+            <SegmentedControl value={option} onChange={opt => setOption(opt as TxDetailsTab)}>
+              {filteredOptions.map(option => (
+                <SegmentedControl.Item key={option.value} value={option.value} style='filled'>
+                  {option.label}
+                </SegmentedControl.Item>
+              ))}
+            </SegmentedControl>
+          </Density>
         </div>
       )}
-      {option === TxDetailsTab.PRIVATE && txInfo && (
-        <>
-          <TransactionViewComponent
-            txv={
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- txInfo.view is guaranteed to be populated
-              txInfo.view!
+
+      <div className='flex flex-col gap-1 p-3 rounded-sm bg-other-tonalFill5 text-text-secondary'>
+        {txId && <InfoRow label='Transaction Hash' info={shorten(txId, 8)} copyText={txId} />}
+        {!!txInfo?.height && (
+          <InfoRow
+            label='Block Height'
+            info={
+              <Text detailTechnical decoration='underline'>
+                <Link href={`/inspect/block/${txInfo.height.toString()}`}>
+                  {txInfo.height.toString()}
+                </Link>
+              </Text>
             }
-            metadataFetcher={getMetadata}
           />
-          <div className='mt-8'>
-            <div className='text-xl font-bold'>Raw JSON</div>
+        )}
+      </div>
+
+      {txv?.bodyView?.memoView?.memoView && (
+        <div className='flex flex-col gap-2'>
+          <Text small color='text.primary'>
+            Memo
+          </Text>
+          <div className='flex flex-col gap-1 p-3 rounded-sm bg-other-tonalFill5 text-text-secondary'>
+            {txv.bodyView.memoView.memoView.case === 'visible' &&
+            txv.bodyView.memoView.memoView.value.plaintext?.returnAddress ? (
+              <InfoRow
+                label='Return Address'
+                info={
+                  <Density slim>
+                    <AddressViewComponent
+                      addressView={txv.bodyView.memoView.memoView.value.plaintext.returnAddress}
+                    />
+                  </Density>
+                }
+              />
+            ) : (
+              <InfoRow label='Return Address' info='Incognito' />
+            )}
+            {txv.bodyView.memoView.memoView.case === 'visible' &&
+              txv.bodyView.memoView.memoView.value.plaintext?.text && (
+                <InfoRow
+                  label='Message'
+                  info={txv.bodyView.memoView.memoView.value.plaintext.text}
+                />
+              )}
+          </div>
+        </div>
+      )}
+
+      <div className='flex flex-col gap-2'>
+        <Text small color='text.primary'>
+          Actions
+        </Text>
+        <div className='flex flex-col'>
+          {txv?.bodyView?.actionViews.map((action, index) => (
+            <Fragment key={index}>
+              <ActionView action={action} />
+              <div className='h-2 w-full px-5'>
+                <div className='h-full w-px border-l border-solid border-l-other-tonalStroke' />
+              </div>
+            </Fragment>
+          ))}
+        </div>
+      </div>
+
+      <div className='flex flex-col gap-2'>
+        <Text small color='text.primary'>
+          Parameters
+        </Text>
+        <div className='flex flex-col gap-1 p-3 rounded-sm bg-other-tonalFill5 text-text-secondary'>
+          <InfoRow
+            label='Transaction Fee'
+            info={
+              <Density slim>
+                <ValueViewComponent valueView={fee} />
+              </Density>
+            }
+          />
+          {txv?.bodyView?.transactionParameters?.chainId && (
+            <InfoRow label='Chain ID' info={txv.bodyView.transactionParameters.chainId} />
+          )}
+        </div>
+      </div>
+
+      {option === TxDetailsTab.PRIVATE && txInfo && (
+        <div className='flex flex-col gap-2'>
+          <Text small color='text.primary'>
+            Raw JSON
+          </Text>
+          <div>
             <JsonViewer
               value={txInfo.toJson({ typeRegistry }) as Jsonified<TransactionInfo>}
-              enableClipboard
-              defaultInspectDepth={1}
-              displayDataTypes={false}
               theme='dark'
+              className='p-3'
+              style={{ backgroundColor: '#fafafa0d' }}
+              enableClipboard
+              defaultInspectDepth={0}
+              displayDataTypes={false}
               rootName={false}
               quotesOnKeys={false}
             />
           </div>
-        </>
-      )}
-      {option === TxDetailsTab.RECEIVER && receiverView && showReceiverTransactionView && (
-        <TransactionViewComponent txv={receiverView} metadataFetcher={getMetadata} />
-      )}
-      {option === TxDetailsTab.PUBLIC && txInfo && (
-        <>
-          <TransactionViewComponent
-            txv={asPublicTransactionView(txInfo.view)}
-            metadataFetcher={getMetadata}
-          />
-          <div className='mt-8'>
-            <div className='text-xl font-bold'>Raw JSON</div>
-            <JsonViewer
-              value={txInfo.toJson({ typeRegistry }) as Jsonified<TransactionInfo>}
-              enableClipboard
-              defaultInspectDepth={1}
-              displayDataTypes={false}
-              theme='dark'
-              rootName={false}
-              quotesOnKeys={false}
-            />
-          </div>
-        </>
+        </div>
       )}
     </div>
   );
