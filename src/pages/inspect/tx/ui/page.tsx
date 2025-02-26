@@ -23,7 +23,7 @@ const InspectTx = observer(() => {
             </div>
           </Card>
         ) : (
-          <Card title={`Transaction ${isLoading ? 'Loading...' : params?.hash}`}>
+          <Card>
             <div className='w-[840px] min-h-[300px] text-white p-2'>
               {isLoading ? (
                 <div>
