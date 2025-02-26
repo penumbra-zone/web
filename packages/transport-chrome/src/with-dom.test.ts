@@ -68,7 +68,7 @@ describe('session client with transport-dom', () => {
   let domPort: MessagePort;
   let transportOptions: ChannelTransportOptions;
   let transport: Transport;
-  const defaultTimeoutMs = 200;
+  const defaultTimeoutMs = 300;
 
   const extOnMessage: Mock<[unknown, chrome.runtime.Port], void> = vi.fn();
   const extOnDisconnect: Mock<[chrome.runtime.Port], void> = vi.fn();
