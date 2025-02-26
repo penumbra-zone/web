@@ -1,7 +1,7 @@
 import { JsonValue } from '@bufbuild/protobuf';
 import { ConnectError } from '@connectrpc/connect';
 import { errorToJson } from '@connectrpc/connect/protocol-connect';
-import { mockChannel, MockedChannel, MockedPort } from '@penumbra-zone/mock-chrome/runtime/connect';
+import { mockChannel, MockedChannel, MockedPort } from '@repo/mock-chrome/runtime/connect';
 import type { TransportMessage, TransportStream } from '@penumbra-zone/transport-dom/messages';
 import { afterEach, beforeEach, describe, expect, it, type Mock, onTestFinished, vi } from 'vitest';
 import { ChannelLabel, nameConnection } from './channel-names.js';

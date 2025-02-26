@@ -5,7 +5,7 @@ import {
   mockChannel,
   type MockedChannel,
   type MockSendersImpl,
-} from '@penumbra-zone/mock-chrome/runtime/connect';
+} from '@repo/mock-chrome/runtime/connect';
 import type { ChannelHandlerFn } from '@penumbra-zone/transport-dom/adapter';
 import { beforeEach, describe, expect, it, type MockedFunction, vi } from 'vitest';
 import { ChannelLabel, nameConnection } from './channel-names.js';

@@ -23,7 +23,7 @@ import {
 } from '@penumbra-zone/transport-dom/messages';
 
 import ReadableStream from '@penumbra-zone/transport-dom/ReadableStream.from';
-import { mockChannel, MockedChannel } from '@penumbra-zone/mock-chrome/runtime/connect';
+import { mockChannel, MockedChannel } from '@repo/mock-chrome/runtime/connect';
 import { lastResult } from './test-utils/last-result.js';
 import { PortStreamSink } from './stream.js';
 import { isTransportInitChannel } from './message.js';
