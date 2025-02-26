@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   ConverseRequest,
   ConverseResponse,
@@ -8,9 +9,9 @@ import {
 } from '@buf/connectrpc_eliza.bufbuild_es/connectrpc/eliza/v1/eliza_pb.js';
 import { ElizaService } from '@buf/connectrpc_eliza.connectrpc_es/connectrpc/eliza/v1/eliza_connect.js';
 import { Any, createRegistry, type PlainMessage } from '@bufbuild/protobuf';
-import type { Transport } from '@connectrpc/connect';
-import { beforeEach, describe, expect, it } from 'vitest';
-import { type ChannelTransportOptions, createChannelTransport } from './create.js';
+import { Code, ConnectError, type Transport } from '@connectrpc/connect';
+import { beforeEach, describe, expect, it, Mock, onTestFinished, vi } from 'vitest';
+import { createChannelTransport, type ChannelTransportOptions } from './create.js';
 import {
   isTransportAbort,
   isTransportMessage,
@@ -21,624 +22,775 @@ import {
 
 import ReadableStream from './ReadableStream.from.js';
 
-const PRINT_TEST_TIMES = false;
-
 const typeRegistry = createRegistry(ElizaService);
 
-describe('message transport', () => {
-  let port1: MessagePort;
-  let port2: MessagePort;
-  let transportOptions: ChannelTransportOptions;
-  let transport: Transport;
+const sayRequest: PlainMessage<SayRequest> = { sentence: 'hello' };
+const sayResponse: PlainMessage<SayResponse> = { sentence: 'world' };
 
-  beforeEach(() => {
-    ({ port1, port2 } = new MessageChannel());
-    transportOptions = {
-      getPort: () => Promise.resolve(port2),
-      jsonOptions: { typeRegistry },
-    };
-    transport = createChannelTransport(transportOptions);
-  });
+const introduceRequest: PlainMessage<IntroduceRequest> = { name: 'Sue' };
+const introduceResponse: PlainMessage<IntroduceResponse>[] = [
+  { sentence: 'Son, this world is rough' },
+  { sentence: "And if a man's gonna make it, he's gotta be tough" },
+  { sentence: "And I knew I wouldn't be there to help you along" },
+];
 
-  it('should send and receive unary messages', async () => {
-    const input: PlainMessage<SayRequest> = { sentence: 'hello' };
-    const response: PlainMessage<SayResponse> = { sentence: 'world' };
+const converseRequest: PlainMessage<ConverseRequest>[] = [
+  { sentence: 'You oughta thank me, before I die' },
+  { sentence: 'For the gravel in your guts and the spit in your eye' },
+  { sentence: "Because I'm the son-of-a-bitch that named you Sue" },
+];
+const converseResponse: PlainMessage<ConverseResponse>[] = [
+  { sentence: 'I got all choked up and I threw down my gun' },
+  { sentence: 'And I called him my pa, and he called me his son' },
+  { sentence: 'And I came away with a different point of view' },
+];
 
-    const unaryRequest = transport.unary(
-      ElizaService,
-      ElizaService.methods.say,
-      undefined,
-      undefined,
-      undefined,
-      new SayRequest(input),
-    );
-
-    const otherEnd = new Promise<void>((resolve, reject) => {
-      port1.onmessage = (event: MessageEvent<unknown>) => {
-        try {
-          const { requestId, message } = event.data as TransportMessage;
-
-          expect(requestId).toBeTypeOf('string');
-          expect(message).toMatchObject({
-            ...input,
-            '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayRequest',
-          });
-
-          port1.postMessage({
-            requestId,
-            message: {
-              ...response,
-              '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayResponse',
-            },
-          });
-
-          resolve();
-        } catch (e) {
-          reject(e);
-        }
-      };
-    });
-
-    await expect(otherEnd).resolves.not.toThrow();
-    await expect(unaryRequest.then(({ message }) => message)).resolves.toMatchObject(response);
-  });
-
-  it('should send and receive streaming requests', async () => {
-    const input: PlainMessage<IntroduceRequest> = { name: 'Prax' };
-    const responses: PlainMessage<IntroduceResponse>[] = [
-      { sentence: 'Yo' },
-      { sentence: 'This' },
-      { sentence: 'Streams' },
-    ];
-
-    const streamRequest = transport.stream(
-      ElizaService,
-      ElizaService.methods.introduce,
-      undefined,
-      undefined,
-      undefined,
-      ReadableStream.from([new IntroduceRequest(input)]),
-    );
-
-    const otherEnd = new Promise<void>((resolve, reject) => {
-      port1.onmessage = (event: MessageEvent<unknown>) => {
-        try {
-          const { requestId, message } = event.data as TransportMessage;
-
-          expect(requestId).toBeTypeOf('string');
-          expect(message).toMatchObject({
-            name: 'Prax',
-            '@type': 'type.googleapis.com/connectrpc.eliza.v1.IntroduceRequest',
-          });
-
-          const stream = ReadableStream.from(
-            responses.map(r => Any.pack(new IntroduceResponse(r)).toJson({ typeRegistry })),
-          );
-
-          port1.postMessage({ requestId, stream }, [stream]);
-
-          resolve();
-        } catch (e) {
-          reject(e);
-        }
-      };
-    });
-
-    await expect(otherEnd).resolves.not.toThrow();
-    await expect(streamRequest).resolves.toMatchObject({ stream: true });
-    await expect(
-      streamRequest.then(({ message }) => Array.fromAsync(message)),
-    ).resolves.toMatchObject(responses);
-  });
-
-  it('should require streaming requests to contain at least one message', async () => {
-    const streamRequest = transport.stream(
-      ElizaService,
-      ElizaService.methods.introduce,
-      undefined,
-      undefined,
-      undefined,
-      (async function* () {})(),
-    );
-
-    await expect(streamRequest).rejects.toThrow();
-  });
-
-  it('should require server-streaming requests to contain only one message', async () => {
-    const inputs: PlainMessage<IntroduceRequest>[] = [{ name: 'Ananke' }, { name: 'Harpalyke' }];
-
-    const streamRequest = transport.stream(
-      ElizaService,
-      ElizaService.methods.introduce,
-      undefined,
-      undefined,
-      undefined,
-      ReadableStream.from(inputs.map(i => new IntroduceRequest(i))),
-    );
-
-    await expect(streamRequest).rejects.toThrow();
-  });
-
-  it('should handle bidirectional streaming requests', async () => {
-    const { port1, port2 } = new MessageChannel();
-    const transportOptions = {
-      getPort: () => Promise.resolve(port2),
-      jsonOptions: { typeRegistry },
-    };
-
-    const transport = createChannelTransport(transportOptions);
-
-    const inputs: PlainMessage<ConverseRequest>[] = [
-      { sentence: 'homomorphic?' },
-      { sentence: 'gemini double text' },
-    ];
-    const responses: PlainMessage<ConverseResponse>[] = [
-      { sentence: 'no' },
-      { sentence: 'im bi' },
-      { sentence: 'directional' },
-    ];
-
-    const streamRequest = transport.stream(
-      ElizaService,
-      ElizaService.methods.converse,
-      undefined,
-      undefined,
-      undefined,
-      ReadableStream.from(inputs),
-    );
-
-    const otherEnd = new Promise<void>((resolve, reject) => {
-      port1.onmessage = async (event: MessageEvent<unknown>) => {
-        try {
-          const { requestId, stream: inputStream } = event.data as TransportStream;
-
-          expect(requestId).toBeTypeOf('string');
-          await expect(Array.fromAsync(inputStream)).resolves.toMatchObject(inputs);
-
-          const responseStream = ReadableStream.from(
-            responses.map(r => Any.pack(new ConverseResponse(r)).toJson({ typeRegistry })),
-          );
-
-          port1.postMessage({ requestId, stream: responseStream }, [responseStream]);
-
-          resolve();
-        } catch (e) {
-          reject(e);
-        }
-      };
-    });
-
-    await expect(otherEnd).resolves.not.toThrow();
-    await expect(streamRequest).resolves.toMatchObject({ stream: true });
-    await expect(
-      streamRequest.then(({ message }) => Array.fromAsync(message)),
-    ).resolves.toMatchObject(responses);
-  });
-});
-
-describe('transport timeouts', () => {
-  let port1: MessagePort;
-  let port2: MessagePort;
-  let transportOptions: ChannelTransportOptions;
-  const defaultTimeoutMs = 200;
-  let transport: Transport;
+describe('channel transport', () => {
+  let clientPort: MessagePort;
+  let otherEndPort: MessagePort;
+  let otherEnd: Mock<[MessageEvent<unknown>], void>;
 
   beforeEach(() => {
     performance.clearMarks();
-    ({ port1, port2 } = new MessageChannel());
-    transportOptions = {
-      getPort: () => Promise.resolve(port2),
-      jsonOptions: { typeRegistry },
-      defaultTimeoutMs,
-    };
-  });
-
-  it('should time out unary requests', async () => {
-    transport = createChannelTransport(transportOptions);
-
-    const input = { sentence: 'hello' };
-    const response = { sentence: '.........hello' };
-
-    const unaryRequest = transport.unary(
-      ElizaService,
-      ElizaService.methods.say,
-      undefined,
-      undefined,
-      undefined,
-      new SayRequest(input),
-    );
-
-    const otherEnd = new Promise<void>((resolve, reject) => {
-      port1.onmessage = (event: MessageEvent<unknown>) => {
-        try {
-          const { requestId, message } = event.data as TransportMessage;
-
-          expect(requestId).toBeTypeOf('string');
-          expect(message).toMatchObject({
-            ...input,
-            '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayRequest',
-          });
-
-          setTimeout(() => {
-            port1.postMessage({
-              requestId,
-              message: {
-                ...response,
-                '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayResponse',
-              },
-            });
-            resolve();
-          }, defaultTimeoutMs * 2);
-        } catch (e) {
-          reject(e);
-        }
-      };
-    });
-
-    await expect(unaryRequest).rejects.toThrow('[deadline_exceeded]');
-    await expect(otherEnd).resolves.not.toThrow();
-  });
-
-  it('should time out unary requests at a specified custom time', async () => {
-    transport = createChannelTransport(transportOptions);
-    const customTimeoutMs = 100;
-
-    const input: PlainMessage<SayRequest> = { sentence: 'hello' };
-    const response: PlainMessage<SayResponse> = { sentence: '.........hello' };
-
-    const unaryRequest = transport.unary(
-      ElizaService,
-      ElizaService.methods.say,
-      undefined,
-      customTimeoutMs,
-      undefined,
-      new SayRequest(input),
-    );
-
-    const otherEnd = new Promise<void>((resolve, reject) => {
-      port1.onmessage = (event: MessageEvent<unknown>) => {
-        try {
-          const { requestId, message } = event.data as TransportMessage;
-
-          expect(requestId).toBeTypeOf('string');
-          expect(message).toMatchObject({
-            ...input,
-            '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayRequest',
-          });
-
-          setTimeout(() => {
-            port1.postMessage({
-              requestId,
-              message: {
-                ...response,
-                '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayResponse',
-              },
-            });
-            resolve();
-          }, defaultTimeoutMs / 2);
-        } catch (e) {
-          reject(e);
-        }
-      };
-    });
-
-    await expect(unaryRequest).rejects.toThrow('[deadline_exceeded]');
-    await expect(otherEnd).resolves.not.toThrow();
-  });
-
-  it('should time out streaming requests', async () => {
-    transport = createChannelTransport(transportOptions);
-
-    const input: PlainMessage<IntroduceRequest> = { name: 'hello' };
-    const responses: PlainMessage<IntroduceResponse>[] = [
-      { sentence: 'this wont send before timeout' },
-    ];
-
-    const streamRequest = transport.stream(
-      ElizaService,
-      ElizaService.methods.introduce,
-      undefined,
-      undefined,
-      undefined,
-      ReadableStream.from([new IntroduceRequest(input)]),
-    );
-
-    const otherEnd = new Promise<void>((resolve, reject) => {
-      port1.onmessage = (event: MessageEvent<unknown>) => {
-        try {
-          const { requestId, message } = event.data as TransportMessage;
-
-          expect(requestId).toBeTypeOf('string');
-          expect(message).toMatchObject({
-            ...input,
-            '@type': 'type.googleapis.com/connectrpc.eliza.v1.IntroduceRequest',
-          });
-
-          const stream = ReadableStream.from(
-            responses.map(r => Any.pack(new IntroduceResponse(r)).toJson({ typeRegistry })),
-          );
-
-          setTimeout(() => {
-            port1.postMessage({ requestId, stream }, [stream]);
-            resolve();
-          }, defaultTimeoutMs * 2);
-        } catch (e) {
-          reject(e);
-        }
-      };
-    });
-
-    await expect(streamRequest.then(({ message }) => message)).rejects.toThrow(
-      '[deadline_exceeded]',
-    );
-    await expect(otherEnd).resolves.not.toThrow();
-  });
-
-  it('should not time out streaming responses that are already streaming', async () => {
-    transport = createChannelTransport(transportOptions);
-
-    const input: PlainMessage<IntroduceRequest> = { name: 'hello' };
-    const responses: PlainMessage<IntroduceResponse>[] = [
-      { sentence: 'thiswillarrivebeforetimeout!!!' },
-      { sentence: 'and so will this,' },
-      { sentence: 'but this one is right on the edge' },
-      { sentence: '.....and this will arrive waaaaaay after timeout' },
-    ];
-
-    const streamRequest = transport.stream(
-      ElizaService,
-      ElizaService.methods.introduce,
-      undefined,
-      undefined,
-      undefined,
-      ReadableStream.from([new IntroduceRequest(input)]),
-    );
-
-    const streamDone = Promise.withResolvers<void>();
-
-    const otherEnd = new Promise<void>((resolve, reject) => {
-      port1.onmessage = (event: MessageEvent<unknown>) => {
-        try {
-          const { requestId, message } = event.data as TransportMessage;
-
-          expect(requestId).toBeTypeOf('string');
-          expect(message).toMatchObject({
-            ...input,
-            '@type': 'type.googleapis.com/connectrpc.eliza.v1.IntroduceRequest',
-          });
-
-          const stream = ReadableStream.from(
-            (async function* (
-              streamFinished: PromiseWithResolvers<void>['resolve'],
-              streamFailed: PromiseWithResolvers<void>['reject'],
-            ) {
-              performance.mark('stream');
-              try {
-                for (const [i, r] of responses.entries()) {
-                  await new Promise(resolve => void setTimeout(resolve, defaultTimeoutMs / 3));
-                  performance.measure(`chunk ${i}`, 'stream');
-                  yield Any.pack(new IntroduceResponse(r)).toJson({ typeRegistry });
-                }
-                streamFinished();
-              } catch (e) {
-                streamFailed(e);
-              }
-              performance.measure('end', 'stream');
-            })(streamDone.resolve, streamDone.reject),
-          );
-
-          port1.postMessage({ requestId, stream }, [stream]);
-          resolve();
-        } catch (e) {
-          reject(e);
-        }
-      };
-    });
-
-    await expect(otherEnd).resolves.not.toThrow();
-    await expect(
-      streamRequest.then(({ message }) => Array.fromAsync(message)),
-    ).resolves.not.toThrow();
-    await expect(streamDone.promise).resolves.not.toThrow();
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- tests
-    if (PRINT_TEST_TIMES) {
-      console.log('measure', [
-        { defaultTimeoutMs },
-        ...performance
-          .getEntriesByType('measure')
-          .map(({ name, duration }) => ({ name, duration })),
-      ]);
+    vi.restoreAllMocks();
+    if ((otherEnd as unknown) && (clientPort as unknown) && (otherEndPort as unknown)) {
+      otherEndPort.removeEventListener('message', otherEnd);
+      clientPort.close();
+      otherEndPort.close();
     }
-  });
-});
 
-describe('transport aborts', () => {
-  let port1: MessagePort;
-  let port2: MessagePort;
-  let transportOptions: ChannelTransportOptions;
-  let transport: Transport;
-  let ac: AbortController;
-  const defaultTimeoutMs = 200;
+    const newChannel = new MessageChannel();
+    clientPort = newChannel.port1;
+    otherEndPort = newChannel.port2;
 
-  beforeEach(() => {
-    ({ port1, port2 } = new MessageChannel());
-    transportOptions = {
-      getPort: () => Promise.resolve(port2),
-      jsonOptions: { typeRegistry },
-      defaultTimeoutMs,
-    };
-    transport = createChannelTransport(transportOptions);
-    ac = new AbortController();
+    otherEnd = vi.fn();
+    otherEndPort.addEventListener('message', otherEnd);
+    otherEndPort.start();
   });
 
-  it('should cancel unary requests if missing reason', async () => {
-    const input: PlainMessage<SayRequest> = { sentence: 'hello' };
+  describe('message transport', () => {
+    let transportOptions: ChannelTransportOptions;
+    let transport: Transport;
 
-    ac.abort();
+    beforeEach(() => {
+      transportOptions = {
+        getPort: () => Promise.resolve(clientPort),
+        jsonOptions: { typeRegistry },
+      };
+      transport = createChannelTransport(transportOptions);
+    });
 
-    const unaryRequest = transport.unary(
-      ElizaService,
-      ElizaService.methods.say,
-      ac.signal,
-      undefined,
-      undefined,
-      new SayRequest(input),
-    );
+    it('should send and receive unary messages', async () => {
+      expect(otherEnd).not.toHaveBeenCalled();
+      otherEnd.mockImplementation((ev: MessageEvent<unknown>) => {
+        const { requestId } = ev.data as TransportMessage;
+        otherEndPort.postMessage({
+          requestId,
+          message: {
+            ...sayResponse,
+            '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayResponse',
+          },
+        });
+      });
 
-    const gotRequest = Promise.withResolvers<void>();
-    const gotAbort = Promise.withResolvers<void>();
+      const unaryRequest = transport.unary(
+        ElizaService,
+        ElizaService.methods.say,
+        undefined,
+        undefined,
+        undefined,
+        new SayRequest(sayRequest),
+      );
 
-    port1.onmessage = (event: MessageEvent<unknown>) => {
-      const tev = event.data as TransportEvent;
-      expect(tev.requestId).toBeTypeOf('string');
+      await vi.waitFor(() => expect(otherEnd).toHaveBeenCalled());
 
-      if (isTransportMessage(tev)) {
-        expect(tev.message).toMatchObject(input);
-        gotRequest.resolve();
-      } else if (isTransportAbort(tev)) {
-        expect(tev.abort).toBe(true);
-        gotAbort.resolve();
-      } else {
-        throw new Error('unexpected event');
-      }
-    };
+      expect(otherEnd).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            requestId: expect.any(String) as string,
+            message: {
+              ...sayRequest,
+              '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayRequest',
+            },
+          }),
+        }),
+      );
 
-    await expect(unaryRequest).rejects.toThrow('[canceled]');
-    await expect(Promise.all([gotRequest, gotAbort])).resolves.not.toThrow();
+      await expect(unaryRequest.then(({ message }) => message)).resolves.toMatchObject(sayResponse);
+      expect(otherEnd).toHaveBeenCalledOnce();
+    });
+
+    it('should send and receive streaming requests', async () => {
+      const introduceRequestStream = ReadableStream.from([new IntroduceRequest(introduceRequest)]);
+      const introduceResponseStream = ReadableStream.from(
+        introduceResponse.map(r => Any.pack(new IntroduceResponse(r)).toJson({ typeRegistry })),
+      );
+      expect(otherEnd).not.toHaveBeenCalled();
+      otherEnd.mockImplementation((ev: MessageEvent<unknown>) => {
+        const { requestId } = ev.data as TransportMessage;
+        otherEndPort.postMessage({ requestId, stream: introduceResponseStream }, [
+          introduceResponseStream,
+        ]);
+      });
+
+      const streamRequest = transport.stream(
+        ElizaService,
+        ElizaService.methods.introduce,
+        undefined,
+        undefined,
+        undefined,
+        introduceRequestStream,
+      );
+
+      await vi.waitFor(() => expect(otherEnd).toHaveBeenCalled());
+
+      expect(otherEnd).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            requestId: expect.any(String) as string,
+            message: {
+              ...introduceRequest,
+              '@type': 'type.googleapis.com/connectrpc.eliza.v1.IntroduceRequest',
+            },
+          }),
+        }),
+      );
+
+      await expect(streamRequest).resolves.toMatchObject({ stream: true });
+      await expect(
+        streamRequest.then(({ message }) => Array.fromAsync(message)),
+      ).resolves.toMatchObject(introduceResponse);
+      expect(otherEnd).toHaveBeenCalledOnce();
+    });
+
+    it('should require streaming requests to contain at least one message', async () => {
+      const streamRequest = transport.stream(
+        ElizaService,
+        ElizaService.methods.introduce,
+        undefined,
+        undefined,
+        undefined,
+        (async function* () {})(),
+      );
+
+      await expect(streamRequest).rejects.toThrow();
+    });
+
+    it('should require server-streaming requests to contain only one message', async () => {
+      const introduceRequestToo: PlainMessage<IntroduceRequest>[] = [
+        { name: 'Sue' },
+        { name: 'How do you do?' },
+      ];
+
+      const streamRequest = transport.stream(
+        ElizaService,
+        ElizaService.methods.introduce,
+        undefined,
+        undefined,
+        undefined,
+        ReadableStream.from(introduceRequestToo.map(i => new IntroduceRequest(i))),
+      );
+
+      await expect(streamRequest).rejects.toThrow();
+    });
+
+    it('should handle bidirectional streaming requests', async () => {
+      let otherEndRequestStream: ReadableStream | undefined;
+      otherEnd.mockImplementation(event => {
+        const tev = event.data as TransportStream;
+        otherEndRequestStream = tev.stream;
+        const requestId = tev.requestId;
+
+        const responseStream = ReadableStream.from(
+          converseResponse.map(r => Any.pack(new ConverseResponse(r)).toJson({ typeRegistry })),
+        );
+
+        otherEndPort.postMessage({ requestId, stream: responseStream }, [responseStream]);
+      });
+
+      expect(otherEnd).not.toHaveBeenCalled();
+      const streamRequest = transport.stream(
+        ElizaService,
+        ElizaService.methods.converse,
+        undefined,
+        undefined,
+        undefined,
+        ReadableStream.from(converseRequest),
+      );
+      await vi.waitFor(() => expect(otherEnd).toHaveBeenCalled());
+
+      const otherEndFromAsync = await Array.fromAsync(otherEndRequestStream ?? []);
+      expect(otherEndFromAsync).toMatchObject(converseRequest);
+
+      await expect(streamRequest).resolves.toMatchObject({ stream: true });
+      await expect(
+        streamRequest.then(({ message }) => Array.fromAsync(message)),
+      ).resolves.toMatchObject(converseResponse);
+      expect(otherEnd).toHaveBeenCalledOnce();
+    });
   });
 
-  it('should abort unary requests with propagating reason', async () => {
-    const input: PlainMessage<SayRequest> = { sentence: 'hello' };
+  describe('timeouts', () => {
+    let transportOptions: ChannelTransportOptions;
+    let transport: Transport;
+    const defaultTimeoutMs = 200;
 
-    ac.abort('some reason');
+    beforeEach(() => {
+      transportOptions = {
+        getPort: () => Promise.resolve(clientPort),
+        jsonOptions: { typeRegistry },
+        defaultTimeoutMs,
+      };
+      transport = createChannelTransport(transportOptions);
+    });
 
-    const unaryRequest = transport.unary(
-      ElizaService,
-      ElizaService.methods.say,
-      ac.signal,
-      undefined,
-      undefined,
-      new SayRequest(input),
-    );
+    it('should not time out unary requests that are fast enough', async () => {
+      otherEnd.mockImplementation((event: MessageEvent<unknown>) => {
+        const { requestId } = event.data as TransportMessage;
+        setTimeout(() => {
+          otherEndPort.postMessage({
+            requestId,
+            message: {
+              ...sayResponse,
+              '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayResponse',
+            },
+          });
+        }, defaultTimeoutMs / 2);
+      });
 
-    const gotRequest = Promise.withResolvers<void>();
-    const gotAbort = Promise.withResolvers<void>();
+      const unaryRequest = transport.unary(
+        ElizaService,
+        ElizaService.methods.say,
+        undefined,
+        undefined,
+        undefined,
+        new SayRequest(sayRequest),
+      );
 
-    port1.onmessage = (event: MessageEvent<unknown>) => {
-      const tev = event.data as TransportEvent;
-      expect(tev.requestId).toBeTypeOf('string');
+      await expect(unaryRequest).resolves.toMatchObject({ message: sayResponse });
+    });
 
-      if (isTransportMessage(tev)) {
-        expect(tev.message).toMatchObject(input);
-        gotRequest.resolve();
-      } else if (isTransportAbort(tev)) {
-        expect(tev.abort).toBe(true);
-        gotAbort.resolve();
-      } else {
-        throw new Error('unexpected event');
-      }
-    };
+    it('should time out unary requests', async () => {
+      otherEnd.mockImplementation((event: MessageEvent<unknown>) => {
+        const { requestId } = event.data as TransportMessage;
+        setTimeout(() => {
+          otherEndPort.postMessage({
+            requestId,
+            message: {
+              ...sayResponse,
+              '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayResponse',
+            },
+          });
+        }, defaultTimeoutMs * 2);
+      });
 
-    await expect(unaryRequest).rejects.toThrow('some reason');
-    await expect(unaryRequest).rejects.toThrow('[aborted]');
-    await expect(Promise.all([gotRequest, gotAbort])).resolves.not.toThrow();
-  });
+      const unaryRequest = transport.unary(
+        ElizaService,
+        ElizaService.methods.say,
+        undefined,
+        undefined,
+        undefined,
+        new SayRequest(sayRequest),
+      );
 
-  it('can cancel streaming requests before they begin', async () => {
-    const input: PlainMessage<IntroduceRequest> = {
-      name: 'and now for something completely different',
-    };
+      await expect(unaryRequest).rejects.toThrow('[deadline_exceeded]');
 
-    ac.abort('another reason');
+      await vi.waitFor(() => {
+        expect(otherEnd).toHaveBeenCalledWith(
+          expect.objectContaining({
+            data: expect.objectContaining({
+              message: expect.objectContaining({
+                ...sayRequest,
+                '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayRequest',
+              }),
+            }),
+          }),
+        );
+      });
+    });
 
-    const streamRequest = transport.stream(
-      ElizaService,
-      ElizaService.methods.introduce,
-      ac.signal,
-      undefined,
-      undefined,
-      ReadableStream.from([new IntroduceRequest(input)]),
-    );
+    it('should time out unary requests at a specified custom time', async () => {
+      otherEnd.mockImplementation((event: MessageEvent<unknown>) => {
+        const { requestId } = event.data as TransportMessage;
+        setTimeout(() => {
+          otherEndPort.postMessage({
+            requestId,
+            message: {
+              ...sayResponse,
+              '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayResponse',
+            },
+          });
+        }, defaultTimeoutMs / 2);
+      });
 
-    const gotRequest = Promise.withResolvers<void>();
-    const gotAbort = Promise.withResolvers<void>();
+      const unaryRequest = transport.unary(
+        ElizaService,
+        ElizaService.methods.say,
+        undefined,
+        defaultTimeoutMs / 3,
+        undefined,
+        new SayRequest(sayRequest),
+      );
 
-    port1.onmessage = (event: MessageEvent<unknown>) => {
-      const tev = event.data as TransportEvent;
-      expect(tev.requestId).toBeTypeOf('string');
+      await expect(unaryRequest).rejects.toThrow('[deadline_exceeded]');
+      expect(otherEnd).toHaveBeenCalledOnce();
+    });
 
-      if (isTransportMessage(tev)) {
-        expect(tev.message).toMatchObject(input);
-        gotRequest.resolve();
-      } else if (isTransportAbort(tev)) {
-        expect(tev.abort).toBe(true);
-        gotAbort.resolve();
-      } else {
-        throw new Error('unexpected event');
-      }
-    };
+    it('should time out streaming requests', async () => {
+      otherEnd.mockImplementation((event: MessageEvent<unknown>) => {
+        const { requestId } = event.data as TransportMessage;
+        const stream = ReadableStream.from(
+          introduceResponse.map(r => Any.pack(new IntroduceResponse(r)).toJson({ typeRegistry })),
+        );
 
-    await expect(streamRequest).rejects.toThrow('another reason');
-    await expect(streamRequest).rejects.toThrow('[aborted]');
-    await expect(Promise.all([gotRequest, gotAbort])).resolves.not.toThrow();
-  });
+        setTimeout(() => {
+          otherEndPort.postMessage({ requestId, stream }, [stream]);
+        }, defaultTimeoutMs * 2);
+      });
 
-  it('can cancel streaming requests already in progress', async () => {
-    const input: PlainMessage<IntroduceRequest> = {
-      name: 'and now for something remarkably similar',
-    };
+      const streamRequest = transport.stream(
+        ElizaService,
+        ElizaService.methods.introduce,
+        undefined,
+        undefined,
+        undefined,
+        ReadableStream.from([new IntroduceRequest(introduceRequest)]),
+      );
 
-    const responses: PlainMessage<IntroduceResponse>[] = [
-      { sentence: 'something remarkably similar' },
-      { sentence: 'something remarkably similar' },
-      { sentence: 'something remarkably similar' },
-      { sentence: 'something remarkably similar' },
-      { sentence: 'something remarkably similar' },
-    ];
+      await expect(streamRequest).rejects.toThrow('[deadline_exceeded]');
+      expect(otherEnd).toHaveBeenCalledOnce();
+    });
 
-    setTimeout(() => ac.abort('a bad reason'), defaultTimeoutMs / 2);
-
-    const streamRequest = transport.stream(
-      ElizaService,
-      ElizaService.methods.introduce,
-      ac.signal,
-      undefined,
-      undefined,
-      ReadableStream.from([new IntroduceRequest(input)]),
-    );
-
-    const gotRequest = Promise.withResolvers<void>();
-    const gotAbort = Promise.withResolvers<void>();
-
-    port1.onmessage = (event: MessageEvent<unknown>) => {
-      const tev = event.data as TransportEvent;
-      const { requestId } = tev;
-      expect(requestId).toBeTypeOf('string');
-
-      if (isTransportMessage(tev)) {
-        expect(tev.message).toMatchObject(input);
-        gotRequest.resolve();
+    it('should not time out streaming responses that are already streaming', async () => {
+      otherEnd.mockImplementation((event: MessageEvent<unknown>) => {
+        const { requestId } = event.data as TransportMessage;
         const stream = ReadableStream.from(
           (async function* () {
-            for (const r of responses) {
-              await new Promise(resolve => void setTimeout(resolve, defaultTimeoutMs / 3));
-              yield Any.pack(new IntroduceResponse(r)).toJson({ typeRegistry });
+            for (const chunk of introduceResponse) {
+              await new Promise(resolve => void setTimeout(resolve, defaultTimeoutMs / 2));
+              yield Any.pack(new IntroduceResponse(chunk)).toJson({ typeRegistry });
             }
           })(),
         );
-        port1.postMessage({ requestId, stream }, [stream]);
-      } else if (isTransportAbort(tev)) {
-        expect(tev.abort).toBe(true);
-        gotAbort.resolve();
-      } else {
-        throw new Error('unexpected event');
-      }
-    };
+        otherEndPort.postMessage({ requestId, stream }, [stream]);
+      });
 
-    await expect(streamRequest).resolves.not.toThrow();
-    await expect(streamRequest.then(({ message }) => Array.fromAsync(message))).rejects.toThrow(
-      'a bad reason',
-    );
-    await expect(Promise.all([gotRequest, gotAbort])).resolves.not.toThrow();
+      const streamRequest = transport.stream(
+        ElizaService,
+        ElizaService.methods.introduce,
+        undefined,
+        undefined,
+        undefined,
+        ReadableStream.from([new IntroduceRequest(introduceRequest)]),
+      );
+
+      await vi.waitFor(() => expect(otherEnd).toHaveBeenCalled());
+
+      const result = await streamRequest;
+      const messages = await Array.fromAsync(result.message);
+      expect(messages).toMatchObject(introduceResponse);
+    });
+
+    it.fails('should time out streaming requests that stall', async () => {
+      otherEnd.mockImplementation((event: MessageEvent<unknown>) => {
+        const { requestId } = event.data as TransportMessage;
+        const stream = ReadableStream.from(
+          (async function* () {
+            // first one quick
+            yield Any.pack(new IntroduceResponse(introduceResponse[0])).toJson({ typeRegistry });
+            // second slower
+            await new Promise(resolve => void setTimeout(resolve, defaultTimeoutMs / 2));
+            yield Any.pack(new IntroduceResponse(introduceResponse[1])).toJson({ typeRegistry });
+            // then stall
+            await new Promise(resolve => void setTimeout(resolve, defaultTimeoutMs * 2));
+            yield Any.pack(new IntroduceResponse(introduceResponse[2])).toJson({ typeRegistry });
+          })(),
+        );
+        otherEndPort.postMessage({ requestId, stream }, [stream]);
+      });
+
+      const streamRequest = transport.stream(
+        ElizaService,
+        ElizaService.methods.introduce,
+        undefined,
+        undefined,
+        undefined,
+        ReadableStream.from([new IntroduceRequest(introduceRequest)]),
+      );
+
+      await expect(streamRequest).resolves.toMatchObject({ stream: true });
+
+      await expect(streamRequest.then(({ message }) => Array.fromAsync(message))).rejects.toThrow(
+        '[deadline_exceeded]',
+      );
+
+      await vi.waitFor(() => expect(otherEnd).toHaveBeenCalledOnce());
+    });
+  });
+
+  describe('transport aborts', () => {
+    let transportOptions: ChannelTransportOptions;
+    let transport: Transport;
+
+    beforeEach(() => {
+      transportOptions = {
+        getPort: () => Promise.resolve(clientPort),
+        jsonOptions: { typeRegistry },
+      };
+      transport = createChannelTransport(transportOptions);
+    });
+
+    it('should cancel requests aborted for no reason', async () => {
+      const unaryRequest = transport.unary(
+        ElizaService,
+        ElizaService.methods.say,
+        AbortSignal.abort(),
+        undefined,
+        undefined,
+        new SayRequest(sayRequest),
+      );
+
+      await expect(unaryRequest).rejects.toThrow('[canceled]');
+    });
+
+    it('should propagate abort reason', async () => {
+      const unaryRequest = transport.unary(
+        ElizaService,
+        ElizaService.methods.say,
+        AbortSignal.abort(new TypeError('some reason')),
+        undefined,
+        undefined,
+        new SayRequest(sayRequest),
+      );
+
+      await expect(unaryRequest).rejects.toThrow('[aborted] some reason');
+    });
+
+    it('should maintain specific error codes', async () => {
+      const unaryRequest = transport.unary(
+        ElizaService,
+        ElizaService.methods.say,
+        AbortSignal.abort(ConnectError.from('different reason', Code.DataLoss)),
+        undefined,
+        undefined,
+        new SayRequest(sayRequest),
+      );
+
+      await expect(unaryRequest).rejects.toThrow('[data_loss] different reason');
+    });
+
+    describe("doesn't emit abort events", () => {
+      it('can cancel streams before init, but does not emit an abort', async () => {
+        expect(otherEnd).not.toHaveBeenCalled();
+
+        const ac = new AbortController();
+
+        const signalAdd = vi.spyOn(ac.signal, 'addEventListener');
+
+        const streamRequest = transport.stream(
+          ElizaService,
+          ElizaService.methods.introduce,
+          ac.signal,
+          undefined,
+          undefined,
+          ReadableStream.from([new IntroduceRequest(introduceRequest)]),
+        );
+
+        await vi.waitFor(() => expect(otherEnd).toHaveBeenCalledOnce());
+
+        ac.abort('a bad reason');
+
+        // the local request aborts,
+        await expect(streamRequest).rejects.toThrow('a bad reason');
+
+        // but the remote session does not know
+        expect(signalAdd).not.toHaveBeenCalled();
+        expect(otherEnd).toHaveBeenCalledOnce();
+      });
+
+      it('can cancel streams already in progress, but does not emit an abort', async () => {
+        const errorEventListener = vi.fn();
+        window.addEventListener('error', errorEventListener);
+        onTestFinished(() => window.removeEventListener('error', errorEventListener));
+
+        const ac = new AbortController();
+
+        const defaultTimeoutMs = 200;
+        const responses: PlainMessage<IntroduceResponse>[] = [
+          { sentence: 'something remarkably similar' },
+          { sentence: 'something remarkably similar' },
+          { sentence: 'something remarkably similar' },
+          { sentence: 'something remarkably similar' },
+          { sentence: 'something remarkably similar' },
+        ];
+
+        otherEnd.mockImplementation((event: MessageEvent<unknown>) => {
+          const tev = event.data as TransportEvent;
+          const { requestId } = tev;
+
+          if (isTransportMessage(tev)) {
+            expect(tev.message).toMatchObject(introduceRequest);
+            const stream = ReadableStream.from(
+              (async function* () {
+                for (const r of responses) {
+                  await new Promise(resolve => void setTimeout(resolve, defaultTimeoutMs / 3));
+                  yield Any.pack(new IntroduceResponse(r)).toJson({ typeRegistry });
+                }
+              })(),
+            );
+            otherEndPort.postMessage({ requestId, stream }, [stream]);
+          } else if (isTransportAbort(tev)) {
+            expect.unreachable();
+          }
+        });
+
+        const streamRequest = transport.stream(
+          ElizaService,
+          ElizaService.methods.introduce,
+          ac.signal,
+          undefined,
+          undefined,
+          ReadableStream.from([new IntroduceRequest(introduceRequest)]),
+        );
+
+        await vi.waitFor(() => expect(otherEnd).toHaveBeenCalledOnce());
+
+        ac.abort('a good reason');
+
+        // the stream is initialized
+        await expect(streamRequest).resolves.not.toThrow();
+
+        // and the local request aborts
+        await expect(streamRequest.then(({ message }) => Array.fromAsync(message))).rejects.toThrow(
+          'a good reason',
+        );
+
+        // kill some time
+        await new Promise(resolve => void setTimeout(resolve, 50));
+
+        // the remote session did not find out
+        expect(otherEnd).not.toHaveBeenCalledTimes(2);
+        expect(errorEventListener).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('emits abort events', () => {
+      it.fails('can cancel streams before init, and emits an abort', async () => {
+        expect(otherEnd).not.toHaveBeenCalled();
+
+        const ac = new AbortController();
+
+        const signalAdd = vi.spyOn(ac.signal, 'addEventListener');
+
+        const streamRequest = transport.stream(
+          ElizaService,
+          ElizaService.methods.introduce,
+          ac.signal,
+          undefined,
+          undefined,
+          ReadableStream.from([new IntroduceRequest(introduceRequest)]),
+        );
+
+        await vi.waitFor(() => expect(signalAdd).toHaveBeenCalledOnce());
+
+        await vi.waitFor(() => {
+          expect(otherEnd).toHaveBeenCalledOnce();
+        });
+
+        ac.abort('a bad reason');
+
+        await expect(streamRequest).rejects.toThrow('a bad reason');
+
+        await vi.waitFor(() => expect(otherEnd).toHaveBeenCalledTimes(2));
+        expect(otherEnd).toHaveBeenCalledWith(
+          expect.objectContaining({
+            data: expect.objectContaining({
+              abort: true,
+            }),
+          }),
+        );
+      });
+
+      it.fails('can cancel streams already in progress, and emits an abort', async () => {
+        const defaultTimeoutMs = 200;
+        const responses: PlainMessage<IntroduceResponse>[] = [
+          { sentence: 'something remarkably similar' },
+          { sentence: 'something remarkably similar' },
+          { sentence: 'something remarkably similar' },
+          { sentence: 'something remarkably similar' },
+          { sentence: 'something remarkably similar' },
+        ];
+
+        const ac = new AbortController();
+
+        otherEnd.mockImplementation((event: MessageEvent<unknown>) => {
+          const tev = event.data as TransportEvent;
+          const { requestId } = tev;
+
+          if (isTransportMessage(tev)) {
+            expect(tev.message).toMatchObject(introduceRequest);
+            const stream = ReadableStream.from(
+              (async function* () {
+                for (const r of responses) {
+                  await new Promise(resolve => void setTimeout(resolve, defaultTimeoutMs / 3));
+                  yield Any.pack(new IntroduceResponse(r)).toJson({ typeRegistry });
+                }
+              })(),
+            );
+            otherEndPort.postMessage({ requestId, stream }, [stream]);
+          } else if (isTransportAbort(tev)) {
+            expect(tev.abort).toBe(true);
+          }
+        });
+
+        const streamRequest = transport.stream(
+          ElizaService,
+          ElizaService.methods.introduce,
+          ac.signal,
+          undefined,
+          undefined,
+          ReadableStream.from([new IntroduceRequest(introduceRequest)]),
+        );
+
+        await vi.waitFor(() => expect(otherEnd).toHaveBeenCalledOnce());
+
+        ac.abort('a bad reason');
+
+        await expect(streamRequest).resolves.not.toThrow();
+        await expect(streamRequest.then(({ message }) => Array.fromAsync(message))).rejects.toThrow(
+          'a bad reason',
+        );
+        await vi.waitFor(() => {
+          expect(otherEnd).toHaveBeenCalledWith(
+            expect.objectContaining({
+              data: expect.objectContaining({
+                abort: true,
+              }),
+            }),
+          );
+        });
+      });
+    });
+  });
+
+  describe('transport headers', () => {
+    let transportOptions: ChannelTransportOptions;
+    let transport: Transport;
+    let header: Headers;
+
+    beforeEach(() => {
+      transportOptions = {
+        getPort: () => Promise.resolve(clientPort),
+        jsonOptions: { typeRegistry },
+      };
+      transport = createChannelTransport(transportOptions);
+
+      header = new Headers();
+      header.set('x-test', 'test');
+    });
+
+    it.fails('should send headers', async () => {
+      expect(otherEnd).not.toHaveBeenCalled();
+
+      otherEnd.mockImplementation((ev: MessageEvent<unknown>) => {
+        const { requestId } = ev.data as TransportMessage;
+        otherEndPort.postMessage({
+          requestId,
+          message: {
+            ...sayResponse,
+            '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayResponse',
+          },
+        });
+      });
+
+      const unaryRequest = transport.unary(
+        ElizaService,
+        ElizaService.methods.say,
+        undefined,
+        undefined,
+        header,
+        new SayRequest(sayRequest),
+      );
+
+      await expect(unaryRequest).resolves.toMatchObject({ message: sayResponse });
+
+      const lastCallData = otherEnd.mock.lastCall?.[0].data as TransportMessage;
+      expect(lastCallData).toHaveProperty('header');
+
+      const calledHeaders = new Headers(lastCallData.header);
+
+      expect(calledHeaders.get('x-test')).toBe('test');
+    });
+
+    it.fails('should send timeout headers', async () => {
+      expect(otherEnd).not.toHaveBeenCalled();
+
+      otherEnd.mockImplementation((ev: MessageEvent<unknown>) => {
+        console.log('otherEnd', ev.data);
+        const { requestId } = ev.data as TransportMessage;
+        otherEndPort.postMessage({
+          requestId,
+          message: {
+            ...sayResponse,
+            '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayResponse',
+          },
+        });
+      });
+
+      const unaryRequest = transport.unary(
+        ElizaService,
+        ElizaService.methods.say,
+        undefined,
+        200,
+        undefined,
+        new SayRequest(sayRequest),
+      );
+
+      await expect(unaryRequest).resolves.toMatchObject({ message: sayResponse });
+
+      const lastCallData = otherEnd.mock.lastCall?.[0].data as TransportMessage;
+
+      expect(lastCallData).toHaveProperty('header');
+
+      const calledHeaders = new Headers(lastCallData.header);
+
+      expect(calledHeaders.get('headerTimeout')).toBe('200');
+    });
+
+    it.fails('should send collected headers', async () => {
+      expect(otherEnd).not.toHaveBeenCalled();
+
+      otherEnd.mockImplementation((ev: MessageEvent<unknown>) => {
+        console.log('otherEnd', ev.data);
+        const { requestId } = ev.data as TransportMessage;
+        otherEndPort.postMessage({
+          requestId,
+          message: {
+            ...sayResponse,
+            '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayResponse',
+          },
+        });
+      });
+
+      const unaryRequest = transport.unary(
+        ElizaService,
+        ElizaService.methods.say,
+        undefined,
+        200,
+        header,
+        new SayRequest(sayRequest),
+      );
+
+      await expect(unaryRequest).resolves.toMatchObject({ message: sayResponse });
+
+      const lastCallData = otherEnd.mock.lastCall?.[0].data as TransportMessage;
+
+      expect(lastCallData).toHaveProperty('header');
+
+      const calledHeaders = new Headers(lastCallData.header);
+
+      expect(calledHeaders.get('headerTimeout')).toBe('200');
+      expect(calledHeaders.get('x-test')).toBe('test');
+    });
   });
 });
