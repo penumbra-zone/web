@@ -1,1 +1,1 @@
-export { InspectTx } from './ui';
+export { InspectTx } from './ui/page';
