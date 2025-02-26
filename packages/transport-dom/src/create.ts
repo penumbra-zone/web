@@ -23,7 +23,7 @@ import {
   TransportMessage,
   TransportStream,
 } from './messages.js';
-import { normalizeHeader } from './util.js';
+import { normalizeHeader } from './util/normalize-header.js';
 
 import ReadableStream from './ReadableStream.from.js';
 

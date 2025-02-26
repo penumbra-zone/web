@@ -8,7 +8,7 @@ export const normalizeHeader = (timeoutMs?: number, userProvidedHeaders?: Header
     headers.set('headerTimeout', `${timeoutMs}`);
   }
 
-  const entries = Array.from(headers);
+  const entries = Array.from(headers.entries());
 
   return entries.length ? Object.fromEntries(entries) : undefined;
 };
