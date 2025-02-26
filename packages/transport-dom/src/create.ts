@@ -23,8 +23,14 @@ import {
   TransportMessage,
   TransportStream,
 } from './messages.js';
+import { normalizeHeader } from './util/normalize-header.js';
 
 import ReadableStream from './ReadableStream.from.js';
+
+declare global {
+  // eslint-disable-next-line no-var -- global dev mode flag
+  var __DEV__: boolean | undefined;
+}
 
 const forceTransportOptions = {
   httpClient: null as never,
@@ -148,24 +154,23 @@ export const createChannelTransport = ({
     async unary<I extends Message<I> = AnyMessage, O extends Message<O> = AnyMessage>(
       service: ServiceType,
       method: MethodInfo<I, O>,
-      signal: AbortSignal | undefined,
+      signal: AbortSignal | undefined = new AbortController().signal,
       timeoutMs: number | undefined = defaultTimeoutMs,
       header: HeadersInit | undefined,
       input: PartialMessage<I>,
     ): Promise<UnaryResponse<I, O>> {
-      transportFailure.signal.throwIfAborted();
+      if (transportFailure.signal.aborted) {
+        throw transportFailure.signal.reason;
+      }
       port ??= await connect();
 
       const requestId = crypto.randomUUID();
+
       const requestFailure = new AbortController();
+      const requestDeadline = timeoutMs ? AbortSignal.timeout(timeoutMs) : undefined;
 
       const response = Promise.race([
-        rejectOnSignal(
-          transportFailure.signal,
-          requestFailure.signal,
-          timeoutMs > 0 ? AbortSignal.timeout(timeoutMs) : undefined,
-          signal,
-        ),
+        rejectOnSignal(transportFailure.signal, requestFailure.signal, requestDeadline, signal),
         new Promise<TransportMessage>((resolve, reject) => {
           pending.set(requestId, (tev: TransportEvent) => {
             if (isTransportMessage(tev, requestId)) {
@@ -179,16 +184,21 @@ export const createChannelTransport = ({
         }),
       ]).finally(() => pending.delete(requestId));
 
-      if (!signal?.aborted) {
+      if (!signal.aborted) {
         try {
           switch (method.kind) {
             case MethodKind.Unary:
               {
                 const message = Any.pack(new method.I(input)).toJson(jsonOptions);
-                signal?.addEventListener('abort', () =>
+                signal.addEventListener('abort', () =>
                   port?.postMessage({ requestId, abort: true } satisfies TransportAbort),
                 );
-                port.postMessage({ requestId, message, header } satisfies TransportMessage);
+
+                port.postMessage({
+                  requestId,
+                  message,
+                  header: normalizeHeader(timeoutMs, header),
+                } satisfies TransportMessage);
               }
               break;
             default:
@@ -216,25 +226,23 @@ export const createChannelTransport = ({
     async stream<I extends Message<I> = AnyMessage, O extends Message<O> = AnyMessage>(
       service: ServiceType,
       method: MethodInfo<I, O>,
-      signal: AbortSignal | undefined,
+      signal: AbortSignal | undefined = new AbortController().signal,
       timeoutMs: number | undefined = defaultTimeoutMs,
       header: HeadersInit | undefined,
       input: AsyncIterable<PartialMessage<I>>,
     ): Promise<StreamResponse<I, O>> {
-      transportFailure.signal.throwIfAborted();
+      if (transportFailure.signal.aborted) {
+        throw transportFailure.signal.reason;
+      }
       port ??= await connect();
 
       const requestId = crypto.randomUUID();
 
       const requestFailure = new AbortController();
+      const requestDeadline = timeoutMs ? AbortSignal.timeout(timeoutMs) : undefined;
 
       const response = Promise.race([
-        rejectOnSignal(
-          transportFailure.signal,
-          requestFailure.signal,
-          timeoutMs > 0 ? AbortSignal.timeout(timeoutMs) : undefined,
-          signal,
-        ),
+        rejectOnSignal(transportFailure.signal, requestFailure.signal, requestDeadline, signal),
         new Promise<TransportStream>((resolve, reject) => {
           pending.set(requestId, (tev: TransportEvent) => {
             if (isTransportStream(tev, requestId)) {
@@ -248,7 +256,7 @@ export const createChannelTransport = ({
         }),
       ]).finally(() => pending.delete(requestId));
 
-      if (!signal?.aborted) {
+      if (!signal.aborted) {
         try {
           switch (method.kind) {
             case MethodKind.ServerStreaming:
@@ -263,7 +271,14 @@ export const createChannelTransport = ({
                 // confirm the input stream ended after one message with content
                 if (done && typeof value === 'object' && value !== null) {
                   const message = Any.pack(new method.I(value as object)).toJson(jsonOptions);
-                  port.postMessage({ requestId, message, header } satisfies TransportMessage);
+                  signal.addEventListener('abort', () =>
+                    port?.postMessage({ requestId, abort: true } satisfies TransportAbort),
+                  );
+                  port.postMessage({
+                    requestId,
+                    message,
+                    header: normalizeHeader(timeoutMs, header),
+                  } satisfies TransportMessage);
                 } else {
                   throw new ConnectError(
                     'MethodKind.ServerStreaming expects a single request message',
@@ -276,13 +291,26 @@ export const createChannelTransport = ({
             case MethodKind.BiDiStreaming:
               // send as an actual stream
               {
+                if (!globalThis.__DEV__) {
+                  throw new ConnectError('MethodKind not supported', Code.Unimplemented);
+                }
                 const stream: ReadableStream<JsonValue> = ReadableStream.from(input).pipeThrough(
                   new TransformStream({
                     transform: (chunk: PartialMessage<I>, cont) =>
                       cont.enqueue(Any.pack(new method.I(chunk)).toJson(jsonOptions)),
                   }),
                 );
-                port.postMessage({ requestId, stream, header } satisfies TransportStream, [stream]);
+                signal.addEventListener('abort', () =>
+                  port?.postMessage({ requestId, abort: true } satisfies TransportAbort),
+                );
+                port.postMessage(
+                  {
+                    requestId,
+                    stream,
+                    header: normalizeHeader(timeoutMs, header),
+                  } satisfies TransportStream,
+                  [stream],
+                );
               }
               break;
             default:
@@ -293,24 +321,35 @@ export const createChannelTransport = ({
         }
       }
 
+      const chunkAc = new AbortController();
+      const chunkDeadline = chunkAc.signal;
+      const chunkDeadlineExceeded = () => {
+        if (timeoutMs) {
+          chunkAc.abort(ConnectError.from('Stream stalled', Code.DeadlineExceeded));
+        }
+      };
+
       return {
         service,
         method,
         stream: true,
         header: new Headers((await response).header),
         trailer: new Headers((await response).trailer),
-        message: await response.then(({ stream }) =>
-          stream.pipeThrough(
+        message: await response.then(({ stream }) => {
+          let chunkTimeout = setTimeout(chunkDeadlineExceeded, timeoutMs);
+          return stream.pipeThrough(
             new TransformStream({
               transform: (chunk, cont) => {
+                clearTimeout(chunkTimeout);
+                chunkTimeout = setTimeout(chunkDeadlineExceeded, timeoutMs);
                 const o = new method.O();
                 Any.fromJson(chunk, jsonOptions).unpackTo(o);
                 cont.enqueue(o);
               },
             }),
-            { signal },
-          ),
-        ),
+            { signal: AbortSignal.any([signal, chunkDeadline]) },
+          );
+        }),
       };
     },
   };

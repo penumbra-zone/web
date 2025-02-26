@@ -1,9 +1,9 @@
 import { SpendView } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 import { Density } from '../../Density';
-import { ActionWrapper } from './wrapper';
 import { ValueViewComponent } from '../../ValueView';
 import { AddressViewComponent } from '../../AddressView';
 import { useDensity } from '../../utils/density';
+import { ActionWrapper } from '../shared/wrapper';
 
 export interface SpendActionProps {
   value: SpendView;

@@ -5,7 +5,7 @@ import type { JsonValue } from '@bufbuild/protobuf';
 export interface TransportError<I extends string | undefined> extends Partial<TransportEvent> {
   requestId: I extends string ? string : string | undefined;
   error: JsonValue;
-  metadata?: HeadersInit;
+  metadata?: Extract<HeadersInit, JsonValue>;
 }
 
 // transport content
@@ -14,9 +14,8 @@ export type TransportData = TransportMessage | TransportStream;
 
 export interface TransportEvent<I extends string = string> {
   requestId: I;
-  header?: HeadersInit;
-  trailer?: HeadersInit;
-  // contextValues?: object;
+  header?: Extract<HeadersInit, JsonValue>;
+  trailer?: Extract<HeadersInit, JsonValue>;
 }
 
 export interface TransportAbort<I = string> extends TransportEvent<I extends string ? I : never> {
