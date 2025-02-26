@@ -391,7 +391,7 @@ describe('channel transport', () => {
       expect(messages).toMatchObject(introduceResponse);
     });
 
-    it.fails('should time out streaming requests that stall', async () => {
+    it('should time out streaming requests that stall', async () => {
       otherEnd.mockImplementation((event: MessageEvent<unknown>) => {
         const { requestId } = event.data as TransportMessage;
         const stream = ReadableStream.from(
@@ -480,7 +480,7 @@ describe('channel transport', () => {
     });
 
     describe("doesn't emit abort events", () => {
-      it('can cancel streams before init, but does not emit an abort', async () => {
+      it.fails('can cancel streams before init, but does not emit an abort', async () => {
         expect(otherEnd).not.toHaveBeenCalled();
 
         const ac = new AbortController();
@@ -508,7 +508,7 @@ describe('channel transport', () => {
         expect(otherEnd).toHaveBeenCalledOnce();
       });
 
-      it('can cancel streams already in progress, but does not emit an abort', async () => {
+      it.fails('can cancel streams already in progress, but does not emit an abort', async () => {
         const errorEventListener = vi.fn();
         window.addEventListener('error', errorEventListener);
         onTestFinished(() => window.removeEventListener('error', errorEventListener));
@@ -575,7 +575,7 @@ describe('channel transport', () => {
     });
 
     describe('emits abort events', () => {
-      it.fails('can cancel streams before init, and emits an abort', async () => {
+      it('can cancel streams before init, and emits an abort', async () => {
         expect(otherEnd).not.toHaveBeenCalled();
 
         const ac = new AbortController();
@@ -611,7 +611,7 @@ describe('channel transport', () => {
         );
       });
 
-      it.fails('can cancel streams already in progress, and emits an abort', async () => {
+      it('can cancel streams already in progress, and emits an abort', async () => {
         const defaultTimeoutMs = 200;
         const responses: PlainMessage<IntroduceResponse>[] = [
           { sentence: 'something remarkably similar' },
