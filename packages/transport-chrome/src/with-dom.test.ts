@@ -701,9 +701,7 @@ describe('session client with transport-dom', () => {
     });
   });
 
-  // can't execute these on recent node 22 for some reason, even when catching
-  // unhandled exceptions
-  describe.skip('transport headers', () => {
+  describe('transport headers', () => {
     let header: Headers;
 
     beforeEach(() => {
@@ -711,7 +709,7 @@ describe('session client with transport-dom', () => {
       header.set('x-test', testName);
     });
 
-    it.fails('should send headers', async () => {
+    it('should send headers', async () => {
       const { uncaughtExceptionListener, restoreUncaughtExceptionListener } =
         replaceUncaughtExceptionListener();
       onTestFinished(restoreUncaughtExceptionListener);
@@ -758,7 +756,7 @@ describe('session client with transport-dom', () => {
       expect(uncaughtExceptionListener).not.toHaveBeenCalled();
     });
 
-    it.fails('should send timeout headers', async () => {
+    it('should send timeout headers', async () => {
       const { uncaughtExceptionListener, restoreUncaughtExceptionListener } =
         replaceUncaughtExceptionListener();
       onTestFinished(restoreUncaughtExceptionListener);
@@ -801,7 +799,7 @@ describe('session client with transport-dom', () => {
       expect(uncaughtExceptionListener).not.toHaveBeenCalled();
     });
 
-    it.fails('should send collected headers', async () => {
+    it('should send collected headers', async () => {
       const { uncaughtExceptionListener, restoreUncaughtExceptionListener } =
         replaceUncaughtExceptionListener();
       onTestFinished(restoreUncaughtExceptionListener);

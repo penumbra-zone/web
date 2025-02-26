@@ -689,7 +689,7 @@ describe('channel transport', () => {
       header.set('x-test', 'test');
     });
 
-    it.fails('should send headers', async () => {
+    it('should send headers', async () => {
       expect(otherEnd).not.toHaveBeenCalled();
 
       otherEnd.mockImplementation((ev: MessageEvent<unknown>) => {
@@ -722,7 +722,7 @@ describe('channel transport', () => {
       expect(calledHeaders.get('x-test')).toBe('test');
     });
 
-    it.fails('should send timeout headers', async () => {
+    it('should send timeout headers', async () => {
       expect(otherEnd).not.toHaveBeenCalled();
 
       otherEnd.mockImplementation((ev: MessageEvent<unknown>) => {
@@ -757,7 +757,7 @@ describe('channel transport', () => {
       expect(calledHeaders.get('headerTimeout')).toBe('200');
     });
 
-    it.fails('should send collected headers', async () => {
+    it('should send collected headers', async () => {
       expect(otherEnd).not.toHaveBeenCalled();
 
       otherEnd.mockImplementation((ev: MessageEvent<unknown>) => {
