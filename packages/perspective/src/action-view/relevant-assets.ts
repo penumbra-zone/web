@@ -7,7 +7,7 @@ import { getNote as getOutputNote } from '@penumbra-zone/getters/output-view';
 import { getMetadata } from '@penumbra-zone/getters/value-view';
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
 
-type RelevantAsset = AssetId | Metadata;
+export type RelevantAsset = AssetId | Metadata;
 
 const returnAssets = (assets: (RelevantAsset | undefined)[]): RelevantAsset[] =>
   assets.filter(Boolean) as RelevantAsset[];

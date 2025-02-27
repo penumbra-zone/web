@@ -5,4 +5,3 @@
 
 perspective: update Transaction classification, implement `findRelevantAssets` function
 ui: add `TransactionSummary` components
-```

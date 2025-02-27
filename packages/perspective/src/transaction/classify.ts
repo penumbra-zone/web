@@ -2,6 +2,7 @@ import {
   TransactionView,
   ActionView,
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import { MsgRecvPacket } from '@penumbra-zone/protobuf/ibc/core/channel/v1/tx_pb';
 import { TransactionClassification } from './classification.js';
 
 export interface ClassificationReturn {
@@ -98,9 +99,16 @@ export const classifyTransaction = (txv?: TransactionView): ClassificationReturn
     };
   }
   if (allActionCases.has('ibcRelayAction')) {
+    // IBC deposits usually output multiple ibcRelayActions, but the most important of them is MsgRecvPacket
+    const depositAction = txv.bodyView?.actionViews.find(
+      action =>
+        action.actionView.case === 'ibcRelayAction' &&
+        action.actionView.value.rawAction?.is(MsgRecvPacket.typeName),
+    );
+
     return {
       type: 'ibcRelayAction',
-      action: allActionCases.get('ibcRelayAction'),
+      action: depositAction ?? allActionCases.get('ibcRelayAction'),
     };
   }
   if (allActionCases.has('proposalSubmit')) {
