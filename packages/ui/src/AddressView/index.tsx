@@ -13,6 +13,8 @@ export interface AddressViewProps {
   copyable?: boolean;
   hideIcon?: boolean;
   truncate?: boolean;
+  /** If true, takes the `altBech32m` field from the address and renders it as-is */
+  external?: boolean;
 }
 
 // Renders an address or an address view.
@@ -22,10 +24,12 @@ export const AddressViewComponent = ({
   copyable = true,
   hideIcon,
   truncate = false,
+  external = false,
 }: AddressViewProps) => {
   const density = useDensity();
+  const address = addressView?.addressView.value?.address;
 
-  if (!addressView?.addressView.value?.address) {
+  if (!address) {
     return null;
   }
 
@@ -34,7 +38,7 @@ export const AddressViewComponent = ({
   // A randomized index has nonzero randomizer bytes
   const isRandomized = addressIndex?.randomizer.some(v => v);
 
-  const encodedAddress = bech32mAddress(addressView.addressView.value.address);
+  const encodedAddress = external ? address.altBech32m : bech32mAddress(address);
 
   // Sub-account selector logic
   const getAccountLabel = (index: number) =>
@@ -42,12 +46,9 @@ export const AddressViewComponent = ({
 
   return (
     <div className={'flex items-center gap-2 text-text-primary'}>
-      {!hideIcon && (
+      {!hideIcon && !external && (
         <div className='shrink'>
-          <AddressIcon
-            address={addressView.addressView.value.address}
-            size={density === 'sparse' ? 24 : 16}
-          />
+          <AddressIcon address={address} size={density === 'sparse' ? 24 : 16} />
         </div>
       )}
 
