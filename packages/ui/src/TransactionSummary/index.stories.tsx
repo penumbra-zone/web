@@ -2,10 +2,11 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { TransactionInfo } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 
 import { TransactionSummary } from '.';
-import { registry, TxInfo } from '../utils/bufs';
+import { registry, TxInfo, TxIbcRelay } from '../utils/bufs';
 
 const OPTIONS: Record<string, TransactionInfo> = {
-  'Transaction Summary': TxInfo,
+  'Swap Tx': TxInfo,
+  'Deposit Tx': TxIbcRelay,
 };
 
 const meta: Meta<typeof TransactionSummary> = {

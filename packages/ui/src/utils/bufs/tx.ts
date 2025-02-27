@@ -7,7 +7,11 @@ import { TransactionInfo } from '@penumbra-zone/protobuf/penumbra/view/v1/view_p
 import { ADDRESS_VIEW_DECODED } from './address-view';
 import { PENUMBRA_METADATA } from './metadata';
 import { AMOUNT_999 } from './amount';
-import { SwapAction } from './action-view';
+import {
+  SwapAction,
+  IbcRelayMsgUpdateClientAction,
+  IbcRelayMsgRecvPacketAction,
+} from './action-view';
 
 export const TxSummary = new TransactionSummary({
   effects: [
@@ -28,6 +32,7 @@ export const TxSummary = new TransactionSummary({
   ],
 });
 
+// Swap: 999 uUSDC -> 0 Penumbra
 export const TxInfo = new TransactionInfo({
   view: new TransactionView({
     bodyView: {
@@ -35,4 +40,14 @@ export const TxInfo = new TransactionInfo({
     },
   }),
   summary: TxSummary,
+});
+
+// IBC deposit: 0.5 OSMO
+export const TxIbcRelay = new TransactionInfo({
+  height: 3729031n,
+  view: {
+    bodyView: {
+      actionViews: [IbcRelayMsgUpdateClientAction, IbcRelayMsgRecvPacketAction],
+    },
+  },
 });
