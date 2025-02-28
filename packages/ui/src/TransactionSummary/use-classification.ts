@@ -5,7 +5,10 @@ import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_
 import { TransactionInfo } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { classifyTransaction } from '@penumbra-zone/perspective/transaction/classify';
 import { findRelevantAssets } from '@penumbra-zone/perspective/action-view/relevant-assets';
-import { IbcRelay } from '@penumbra-zone/protobuf/penumbra/core/component/ibc/v1/ibc_pb';
+import {
+  IbcRelay,
+  Ics20Withdrawal,
+} from '@penumbra-zone/protobuf/penumbra/core/component/ibc/v1/ibc_pb';
 import { unpackIbcRelay } from '@penumbra-zone/perspective/action-view/ibc';
 import { GetMetadataByAssetId } from '../ActionView/types';
 import { isMetadata } from '../AssetSelector';
@@ -35,25 +38,28 @@ const CLASSIFICATION_LABEL_MAP: Record<TransactionClassification, string> = {
   delegate: 'Delegate',
   undelegate: 'Undelegate',
   undelegateClaim: 'Undelegate Claim',
-  dutchAuctionSchedule: 'Dutch Auction Schedule',
-  dutchAuctionEnd: 'Dutch Auction End',
-  dutchAuctionWithdraw: 'Dutch Auction Withdraw',
-  delegatorVote: 'Delegator Vote',
-  validatorVote: 'Validator Vote',
+  dutchAuctionSchedule: 'Auction Schedule',
+  dutchAuctionEnd: 'Auction End',
+  dutchAuctionWithdraw: 'Auction Withdraw',
+  delegatorVote: 'Vote',
+  validatorVote: 'Vote',
   communityPoolDeposit: 'Community Pool Deposit',
   communityPoolOutput: 'Community Pool Output',
   communityPoolSpend: 'Community Pool Spend',
-  positionClose: 'Position Close',
-  positionOpen: 'Position Open',
-  positionRewardClaim: 'Position Reward Claim',
-  positionWithdraw: 'Position Withdraw',
+  positionClose: 'Close Position',
+  positionOpen: 'Open Position',
+  positionWithdraw: 'Withdraw Position',
+  positionRewardClaim: 'Claim Position Reward',
   proposalDepositClaim: 'Proposal Deposit Claim',
-  proposalSubmit: 'Proposal Submit',
-  proposalWithdraw: 'Proposal Withdraw',
+  proposalSubmit: 'Create Proposal',
+  proposalWithdraw: 'Withdraw Proposal',
   validatorDefinition: 'Validator Definition',
   liquidityTournamentVote: 'Liquidity Tournament Vote',
 };
 
+/**
+ * A hook that prepares data from TransactionInfo to be rendered in TransactionSummary.
+ */
 export const useClassification = (
   info: TransactionInfo,
   getMetadataByAssetId?: GetMetadataByAssetId,
@@ -102,7 +108,7 @@ export const useClassification = (
     };
   }
 
-  if (type === 'swap' || type === 'swapClaim') {
+  if (type === 'swap' || type === 'swapClaim' || type === 'dutchAuctionSchedule') {
     data = {
       ...data,
       tickers: assets.map(asset => asset.symbol),
@@ -128,6 +134,35 @@ export const useClassification = (
         }),
       };
     }
+  }
+
+  if (type === 'ics20Withdrawal' && action?.actionView.value) {
+    const value = action.actionView.value as Ics20Withdrawal;
+
+    data = {
+      ...data,
+      additionalText: 'to',
+      memo: value.ics20Memo || memoText || DEFAULT_MEMO,
+      address: new AddressView({
+        addressView: {
+          case: 'opaque',
+          value: {
+            address: {
+              altBech32m: value.destinationChainAddress,
+            },
+          },
+        },
+      }),
+    };
+  }
+
+  if (type === 'delegate' && action?.actionView.value) {
+    // const value = action.actionView.value as Delegate;
+    data = {
+      ...data,
+      // additionalText: 'to',
+      // TODO: map validator IdentityKey to an address (how?)
+    };
   }
 
   return data;
