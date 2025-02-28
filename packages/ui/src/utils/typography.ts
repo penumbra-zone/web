@@ -32,7 +32,7 @@ export const small = cn('font-default text-textSm font-normal leading-textXs');
 
 export const smallTechnical = cn('font-mono text-textSm font-normal leading-textSm');
 
-export const detail = cn('font-default text-textXs font-medium leading-textXs');
+export const detail = cn('font-default text-textXs font-normal leading-textXs');
 
 export const detailTechnical = cn('font-mono text-textXs font-normal leading-textXs');
 

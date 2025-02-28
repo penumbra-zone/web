@@ -5,8 +5,19 @@ import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 import { CopyToClipboardButton } from '../CopyToClipboardButton';
 import { AddressIcon } from './AddressIcon';
 import { Text } from '../Text';
-import { useDensity } from '../utils/density';
+import { TextVariant } from '../Text/types';
+import { useDensity, Density as DensityType } from '../utils/density';
 import { Density } from '../Density';
+
+const textVariantByDensity = (density: DensityType): TextVariant => {
+  if (density === 'slim') {
+    return 'detail';
+  }
+  if (density === 'compact') {
+    return 'small';
+  }
+  return 'strong';
+};
 
 export interface AddressViewProps {
   addressView: AddressView | undefined;
@@ -54,12 +65,12 @@ export const AddressViewComponent = ({
 
       <div className={cn('flex items-center', truncate && 'max-w-[150px] truncate')}>
         {addressIndex ? (
-          <Text variant={density === 'sparse' ? 'strong' : 'small'} truncate={truncate}>
+          <Text variant={textVariantByDensity(density)} truncate={truncate}>
             {isRandomized && 'IBC Deposit Address for '}
             {getAccountLabel(addressIndex.account)}
           </Text>
         ) : (
-          <Text variant={density === 'sparse' ? 'strong' : 'small'} truncate={truncate}>
+          <Text variant={textVariantByDensity(density)} truncate={truncate}>
             {encodedAddress}
           </Text>
         )}

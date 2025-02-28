@@ -38,6 +38,13 @@ const getSign = (signed: ValueViewComponentProps<Context>['signed']) => {
   return signed === 'positive' ? <Plus className={classes} /> : <Minus className={classes} />;
 };
 
+const getPosition = (density: Density, priority: PillProps['priority']): string => {
+  if (density === 'slim') {
+    return priority === 'tertiary' ? '' : '-ml-1';
+  }
+  return '-ml-2';
+};
+
 export interface ValueViewComponentProps<SelectedContext extends Context> {
   valueView?: ValueView;
   /**
@@ -123,9 +130,7 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
       if={!context || context === 'default'}
       then={children => (
         <Pill priority={priority}>
-          <div className={cn('-ml-2', density === 'sparse' ? 'mt-0 mb-0' : '-mt-1 -mb-1')}>
-            {children}
-          </div>
+          <div className={getPosition(density, priority)}>{children}</div>
         </Pill>
       )}
       else={children => (
