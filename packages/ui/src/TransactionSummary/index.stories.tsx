@@ -2,16 +2,16 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { TransactionInfo } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 
 import { TransactionSummary } from '.';
-import { registry, TxInfo, TxIbcRelay } from '../utils/bufs';
+import { registry, TxSwap, TxIbcRelay } from '../utils/bufs';
 
 const OPTIONS: Record<string, TransactionInfo> = {
-  'Swap Tx': TxInfo,
+  'Swap Tx': TxSwap,
   'Deposit Tx': TxIbcRelay,
 };
 
 const meta: Meta<typeof TransactionSummary> = {
   component: TransactionSummary,
-  tags: ['autodocs', '!dev'],
+  tags: ['autodocs', '!dev', 'density'],
   argTypes: {
     info: {
       options: Object.keys(OPTIONS),
@@ -25,7 +25,7 @@ type Story = StoryObj<typeof TransactionSummary>;
 
 export const Basic: Story = {
   args: {
-    info: TxInfo,
+    info: TxSwap,
     getMetadataByAssetId: registry.tryGetMetadata,
   },
 };
