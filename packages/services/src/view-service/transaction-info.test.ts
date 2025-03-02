@@ -16,8 +16,12 @@ import { transactionInfo } from './transaction-info.js';
 import { fvkCtx } from '../ctx/full-viewing-key.js';
 
 const mockTransactionInfo = vi.hoisted(() => vi.fn());
+const mockTransactionSummary = vi.hoisted(() => vi.fn());
+const mockSaveTransactionInfo = vi.hoisted(() => vi.fn());
 vi.mock('@penumbra-zone/wasm/transaction', () => ({
   generateTransactionInfo: mockTransactionInfo,
+  generateTransactionSummary: mockTransactionSummary,
+  saveTransactionInfo: mockSaveTransactionInfo,
 }));
 
 describe('TransactionInfo request handler', () => {
@@ -40,7 +44,9 @@ describe('TransactionInfo request handler', () => {
       getTransactionInfo: vi.fn().mockResolvedValue({
         txp: {},
         txv: {},
+        summary: {},
       }),
+      saveTransactionInfo: vi.fn().mockResolvedValue(undefined),
     };
 
     mockServices = {

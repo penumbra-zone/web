@@ -372,7 +372,7 @@ export class IndexedDb implements IndexedDbInterface {
         id: TransactionId;
         perspective: TransactionPerspective;
         view: TransactionView;
-        summary: TransactionSummary;
+        summary?: TransactionSummary;
       }
     | undefined
   > {
@@ -385,7 +385,9 @@ export class IndexedDb implements IndexedDbInterface {
       id: TransactionId.fromJson(existingData.id, { typeRegistry }),
       perspective: TransactionPerspective.fromJson(existingData.perspective, { typeRegistry }),
       view: TransactionView.fromJson(existingData.view, { typeRegistry }),
-      summary: TransactionSummary.fromJson(existingData.summary, { typeRegistry }),
+      summary: existingData.summary
+        ? TransactionSummary.fromJson(existingData.summary, { typeRegistry })
+        : undefined,
     };
   }
 
@@ -402,6 +404,7 @@ export class IndexedDb implements IndexedDbInterface {
       view: txv.toJson({ typeRegistry }) as Jsonified<TransactionView>,
       summary: summary.toJson({ typeRegistry }) as Jsonified<TransactionSummary>,
     };
+
     await this.u.update({
       table: 'TRANSACTION_INFO',
       value,

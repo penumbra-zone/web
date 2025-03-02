@@ -28,10 +28,10 @@ export const transactionInfo: Impl['transactionInfo'] = async function* (_req, c
     const tx_info = await indexedDb.getTransactionInfo(txRecord.id);
     let perspective: TransactionPerspective;
     let view: TransactionView;
-    let summary: TransactionSummary;
+    let summary: TransactionSummary | undefined;
 
     // If TxP + TxV + summary already exist in database, then simply yield them.
-    if (tx_info) {
+    if (tx_info && tx_info.summary) {
       perspective = tx_info.perspective;
       view = tx_info.view;
       summary = tx_info.summary;

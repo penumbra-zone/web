@@ -177,7 +177,7 @@ export interface IndexedDbInterface {
         id: TransactionId;
         perspective: TransactionPerspective;
         view: TransactionView;
-        summary: TransactionSummary;
+        summary?: TransactionSummary;
       }
     | undefined
   >;
@@ -247,7 +247,7 @@ export interface PenumbraDb extends DBSchema {
       id: Jsonified<TransactionId>;
       perspective: Jsonified<TransactionPerspective>;
       view: Jsonified<TransactionView>;
-      summary: Jsonified<TransactionSummary>;
+      summary?: Jsonified<TransactionSummary>;
     };
   };
   REGISTRY_VERSION: {

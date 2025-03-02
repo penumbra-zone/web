@@ -18,8 +18,8 @@ export const transactionInfoByHash: Impl['transactionInfoByHash'] = async (req, 
   const { indexedDb, querier } = await services.getWalletServices();
   const fvk = ctx.values.get(fvkCtx);
 
-  // Check database for transaction first
-  // if not in database, query tendermint for public info on the transaction
+  // First, check the database for the transaction.
+  // If not found, query Tendermint for public transaction details.
   const { transaction, height } =
     (await indexedDb.getTransaction(req.id)) ?? (await querier.tendermint.getTransaction(req.id));
 
@@ -27,6 +27,8 @@ export const transactionInfoByHash: Impl['transactionInfoByHash'] = async (req, 
     throw new ConnectError('Transaction not available', Code.NotFound);
   }
 
+  // TODO: avoid regenerating the transaction info (TxV, TxP, summary)
+  // and query from database if it already exists.
   const { txp: perspective, txv } = await generateTransactionInfo(
     await fvk(),
     transaction,
