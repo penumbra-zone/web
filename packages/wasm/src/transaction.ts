@@ -1,7 +1,8 @@
-import { transaction_perspective_and_view } from '../wasm/index.js';
+import { transaction_perspective_and_view, transaction_summary } from '../wasm/index.js';
 import {
   Transaction,
   TransactionPerspective,
+  TransactionSummary,
   TransactionView,
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import type { IdbConstants } from '@penumbra-zone/types/indexed-db';
@@ -22,4 +23,10 @@ export const generateTransactionInfo = async (
     txp: TransactionPerspective.fromBinary(txp),
     txv: TransactionView.fromBinary(txv),
   };
+};
+
+export const generateTransactionSummary = async (txv: TransactionView) => {
+  const tx_summary = await transaction_summary(txv.toBinary());
+
+  return TransactionSummary.fromBinary(tx_summary);
 };

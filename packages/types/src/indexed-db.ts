@@ -36,6 +36,7 @@ import { AddressIndex, IdentityKey } from '@penumbra-zone/protobuf/penumbra/core
 import {
   Transaction,
   TransactionPerspective,
+  TransactionSummary,
   TransactionView,
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
@@ -168,12 +169,17 @@ export interface IndexedDbInterface {
     id: TransactionId,
     txp: TransactionPerspective,
     txv: TransactionView,
+    summary: TransactionSummary,
   ): Promise<void>;
 
-  getTransactionInfo(
-    id: TransactionId,
-  ): Promise<
-    { id: TransactionId; perspective: TransactionPerspective; view: TransactionView } | undefined
+  getTransactionInfo(id: TransactionId): Promise<
+    | {
+        id: TransactionId;
+        perspective: TransactionPerspective;
+        view: TransactionView;
+        summary?: TransactionSummary;
+      }
+    | undefined
   >;
 
   getPosition(positionId: PositionId): Promise<Position | undefined>;
@@ -241,6 +247,7 @@ export interface PenumbraDb extends DBSchema {
       id: Jsonified<TransactionId>;
       perspective: Jsonified<TransactionPerspective>;
       view: Jsonified<TransactionView>;
+      summary?: Jsonified<TransactionSummary>;
     };
   };
   REGISTRY_VERSION: {
