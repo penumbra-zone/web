@@ -1,8 +1,8 @@
 ---
 '@penumbra-zone/protobuf': major
-'@penumbra-zone/storage': major
-'@penumbra-zone/types': major
 '@penumbra-zone/services': minor
+'@penumbra-zone/storage': minor
+'@penumbra-zone/types': minor
 '@penumbra-zone/wasm': minor
 ---
 
