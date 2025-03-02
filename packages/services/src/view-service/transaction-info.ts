@@ -31,7 +31,9 @@ export const transactionInfo: Impl['transactionInfo'] = async function* (_req, c
     let summary: TransactionSummary | undefined;
 
     // If TxP + TxV + summary already exist in database, then simply yield them.
-    if (tx_info && tx_info.summary) {
+    // If the summary is missing, regenerate the transaction info once and update
+    // the table with the new field.
+    if (tx_info?.summary) {
       perspective = tx_info.perspective;
       view = tx_info.view;
       summary = tx_info.summary;
