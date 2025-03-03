@@ -10,6 +10,11 @@ import {
 export const getInitialStatus = async (opt?: CallOptions): Promise<PlainMessage<StatusResponse>> =>
   toPlainMessage(await penumbra.service(ViewService).status({}, opt));
 
+/**
+ * Stream status updates. Default timeout of 15 seconds unless specified.
+ *
+ * @param opt connectrpc call options
+ */
 export async function* getStatusStream(
   opt?: CallOptions,
 ): AsyncGenerator<PlainMessage<StatusStreamResponse>> {
