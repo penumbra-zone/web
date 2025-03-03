@@ -45,6 +45,7 @@ export const SyncingDialog = () => {
     }
   }, [streamError]);
 
+  /** @todo do we need to show all of these distinct states? */
   const dialogSyncingText = useMemo(() => {
     if (isUnavailable) {
       return 'Connection unavailable.';
