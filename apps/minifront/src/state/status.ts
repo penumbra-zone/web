@@ -54,6 +54,7 @@ export const { status, useStatus, useRevalidateStatus } = createZQuery({
       };
     },
     onError: (prevData, error) => {
+      console.warn('Status stream error', error);
       useStore.getState().status.streamState.setStreamError(error);
       return prevData;
     },
