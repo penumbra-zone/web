@@ -4,7 +4,7 @@ import { JsonValue } from '@bufbuild/protobuf';
 const parseResponse = async <RES extends object>(response: Response) => {
   const jsonRes = (await response.json()) as Serialized<RES | { error: string }>;
 
-  if ('error' in jsonRes) {
+  if (typeof jsonRes === 'object' && 'error' in jsonRes) {
     throw new Error(jsonRes.error);
   }
 

@@ -29,7 +29,9 @@ export const useRegistryAssets = () => {
     queryKey: ['penumbraRegistryAssets'],
     queryFn: async (): Promise<Metadata[]> => {
       const registry = await registryQueryFn();
-      return registry.getAllAssets();
+      return registry
+        .getAllAssets()
+        .sort((a, b) => Number(b.priorityScore) - Number(a.priorityScore));
     },
     staleTime: Infinity,
   });
