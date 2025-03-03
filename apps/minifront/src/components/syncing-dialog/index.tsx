@@ -73,11 +73,11 @@ export const SyncingDialog = () => {
   return (
     <Dialog isOpen={(!isSynced || !!streamError) && !didClose} onClose={() => setDidClose(true)}>
       <Dialog.Content
-        title={dialogErrorMessage ? 'Syncing interrupted' : 'Syncing...'}
+        title={streamError != null ? 'Syncing interrupted' : 'Syncing...'}
         zIndex={9999}
       >
         <div className='text-center'>
-          {!!streamError && (
+          {streamError != null && globalThis.__DEV__ && (
             <Text technical color={theme => theme.caution.main} as='div'>
               Error: {dialogErrorMessage}
             </Text>
