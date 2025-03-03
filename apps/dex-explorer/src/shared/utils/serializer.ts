@@ -18,9 +18,11 @@ interface SerializedProto {
 export type Serialized<T> =
   T extends Message<any>
     ? SerializedProto
-    : T extends object
-      ? { [KEY in keyof T]: Serialized<T[KEY]> }
-      : T;
+    : T extends Date | Error
+      ? string
+      : T extends object
+        ? { [KEY in keyof T]: Serialized<T[KEY]> }
+        : T;
 
 /** Serializes an object with Protobuf values, turning them into `JsonValue` */
 export const serialize = <VAL>(value: VAL): Serialized<VAL> => {
@@ -33,6 +35,10 @@ export const serialize = <VAL>(value: VAL): Serialized<VAL> => {
   }
 
   if (value instanceof Date) {
+    return value.toString() as Serialized<VAL>;
+  }
+
+  if (value instanceof Error) {
     return value.toString() as Serialized<VAL>;
   }
 
