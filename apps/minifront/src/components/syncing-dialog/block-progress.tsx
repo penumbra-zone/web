@@ -7,10 +7,15 @@ export const BlockProgress = ({
   fullSyncHeight: bigint;
   latestKnownBlockHeight: bigint;
 }) => {
-  const blockProgressString = `Block ${fullSyncHeight} of ${latestKnownBlockHeight}`;
+  const percentSynced = `${(
+    latestKnownBlockHeight && Number(fullSyncHeight) / Number(latestKnownBlockHeight)
+  ).toLocaleString(undefined, { style: 'percent' })} Synced`;
+
+  const blockSyncedOfLatest = `Block ${fullSyncHeight.toLocaleString()} of ${latestKnownBlockHeight.toLocaleString()}`;
+
   return (
     <Text technical as='div'>
-      {blockProgressString}
+      {`${percentSynced} - ${blockSyncedOfLatest}`}
     </Text>
   );
 };

@@ -9,10 +9,9 @@ export const RemainingTime = ({
   latestKnownBlockHeight: bigint;
 }) => {
   const { formattedTimeRemaining } = useSyncProgress(fullSyncHeight, latestKnownBlockHeight);
-  const remainingTimeString = `(Estimated time remaining: ${formattedTimeRemaining})`;
   return (
     <Text technical as='div'>
-      {remainingTimeString}
+      {`(Estimated time remaining: ${formattedTimeRemaining})`}
     </Text>
   );
 };
