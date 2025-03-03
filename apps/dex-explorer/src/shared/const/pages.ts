@@ -8,6 +8,7 @@ export enum PagePath {
   Portfolio = '/portfolio',
   TradePair = '/trade/:primary/:numeraire',
   InspectLp = '/inspect/lp/:id',
+  LpLeaderboard = '/inspect/lp-leaderboard',
 }
 
 const basePath: Partial<Record<PagePath, PagePath>> = {
