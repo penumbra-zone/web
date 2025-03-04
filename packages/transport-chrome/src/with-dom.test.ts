@@ -19,7 +19,7 @@ import {
   isTransportMessage,
   type TransportMessage,
 } from '@penumbra-zone/transport-dom/messages';
-import { mockChannel, MockedChannel } from '@repo/mock-chrome/runtime/connect';
+import { mockChannel, type MockedChannel } from '@repo/mock-chrome/runtime/connect';
 import { beforeEach, describe, expect, it, Mock, onTestFinished, vi } from 'vitest';
 import { ChannelLabel, nameConnection } from './channel-names.js';
 import { isTransportInitChannel } from './message.js';
