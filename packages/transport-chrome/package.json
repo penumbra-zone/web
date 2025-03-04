@@ -18,7 +18,8 @@
   },
   "files": [
     "dist",
-    "!dist/*.test.*"
+    "!dist/*.test.*",
+    "!dist/util/test"
   ],
   "exports": {
     "./*": "./src/*.ts"
