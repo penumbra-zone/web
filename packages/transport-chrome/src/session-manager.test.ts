@@ -2,15 +2,12 @@ import type { JsonValue } from '@bufbuild/protobuf';
 import { ConnectError } from '@connectrpc/connect';
 import { errorToJson } from '@connectrpc/connect/protocol-connect';
 import type { ChannelHandlerFn } from '@penumbra-zone/transport-dom/adapter';
-import {
-  mockChannel,
-  type MockedChannel,
-  type MockSendersImpl,
-} from '@repo/mock-chrome/runtime/connect';
+import { mockChannel, type MockedChannel } from '@repo/mock-chrome/runtime/channel.mock';
 import { beforeEach, describe, expect, it, type MockedFunction, vi } from 'vitest';
 import { ChannelLabel, nameConnection } from './channel-names.js';
 import { CRSessionManager as CRSessionManagerOriginal } from './session-manager.js';
 import { lastResult } from './util/test/last-result.js';
+import { getOnlyMapItem } from './util/test/get-only-item.js';
 
 const CRSessionManager: typeof CRSessionManagerOriginal & {
   // forward-compatible type. third parameter of init is required in new
@@ -24,15 +21,6 @@ const CRSessionManager: typeof CRSessionManagerOriginal & {
     ) => Promise<chrome.runtime.Port & { sender: { origin: string } }>,
   ) => ReturnType<typeof CRSessionManagerOriginal.init>;
 } = CRSessionManagerOriginal;
-
-const getOnlySession = (sessions: ReturnType<typeof CRSessionManager.init>) => {
-  expect(sessions.size).toBe(1);
-  const onlySession = sessions.values().next();
-  if (!onlySession.done) {
-    return onlySession.value;
-  }
-  expect.unreachable('No session found');
-};
 
 describe('CRSessionManager', () => {
   let testName: string;
@@ -121,7 +109,7 @@ describe('CRSessionManager', () => {
     expect(testName).toBeDefined();
 
     mockedChannel = mockChannel({
-      mockSenders: vi.fn<Parameters<MockSendersImpl>>(() => ({
+      mockSenders: vi.fn(() => ({
         connectSender: httpsClient,
         onConnectSender: extHost,
       })),
@@ -367,7 +355,7 @@ describe('CRSessionManager', () => {
       const clientPort = mockedChannel.connect({ name: channelName });
 
       await vi.waitFor(() => expect(sessions.size).toBe(1));
-      const testSession = getOnlySession(sessions);
+      const testSession = getOnlyMapItem(sessions);
 
       clientPort.disconnect();
       await vi.waitFor(() =>
@@ -387,7 +375,7 @@ describe('CRSessionManager', () => {
       const clientPort = mockedChannel.connect({ name: channelName });
 
       await vi.waitFor(() => expect(sessions.size).toBe(1));
-      const testSession = getOnlySession(sessions);
+      const testSession = getOnlyMapItem(sessions);
 
       testSession.abort();
 
@@ -404,7 +392,7 @@ describe('CRSessionManager', () => {
       const clientPort = mockedChannel.connect({ name: channelName });
 
       await vi.waitFor(() => expect(sessions.size).toBe(1));
-      const testSession = getOnlySession(sessions);
+      const testSession = getOnlyMapItem(sessions);
 
       clientPort.disconnect();
 

@@ -1,16 +1,15 @@
-import { JsonValue } from '@bufbuild/protobuf';
+import type { JsonValue } from '@bufbuild/protobuf';
 import { ConnectError } from '@connectrpc/connect';
 import { errorToJson } from '@connectrpc/connect/protocol-connect';
 import type { TransportMessage, TransportStream } from '@penumbra-zone/transport-dom/messages';
-import {
-  mockChannel,
-  type MockedChannel,
-  type MockedPort,
-} from '@repo/mock-chrome/runtime/connect';
-import { afterEach, beforeEach, describe, expect, it, type Mock, onTestFinished, vi } from 'vitest';
+import { mockChannel, type MockedChannel } from '@repo/mock-chrome/runtime/channel.mock';
+import type { MockedPort } from '@repo/mock-chrome/runtime/port.mock';
+import { afterEach, beforeEach, describe, expect, it, onTestFinished, vi, type Mock } from 'vitest';
 import { ChannelLabel, nameConnection } from './channel-names.js';
 import type { TransportInitChannel } from './message.js';
 import { CRSessionClient } from './session-client.js';
+import { expectChannelClosed } from './util/test/expect-channel-closed.js';
+import { expectNoActivity } from './util/test/expect-no-activity.js';
 import { lastResult } from './util/test/last-result.js';
 import { replaceUncaughtExceptionListener } from './util/test/unhandled.js';
 
@@ -20,10 +19,6 @@ Object.assign(CRSessionClient, {
     CRSessionClient.singleton = undefined;
   },
 });
-
-// @ts-expect-error -- manipulating private property
-// eslint-disable-next-line @typescript-eslint/no-unsafe-call -- manipulating private property
-const clearSingleton = () => void CRSessionClient.clearSingleton();
 
 describe('CRSessionClient', () => {
   let testName: string = undefined as never;
@@ -39,7 +34,9 @@ describe('CRSessionClient', () => {
     vi.unstubAllGlobals();
     vi.restoreAllMocks();
 
-    clearSingleton();
+    // @ts-expect-error -- manipulating private property
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- manipulating private property
+    void CRSessionClient.clearSingleton();
 
     testName = (expect.getState().currentTestName ?? 'no test name').split(' ').join('_');
     expect(testName).toBeDefined();
@@ -385,34 +382,6 @@ describe('CRSessionClient', () => {
     let extPort: MockedPort;
     let domPort: MessagePort;
 
-    const expectChannelClosed = async () => {
-      const messageAfterDisconnect: TransportMessage = {
-        message: 'going nowhere',
-        requestId: '123',
-      };
-      sessionPort.postMessage.mockClear();
-      extPort.onMessage.dispatch.mockClear();
-
-      // try to send a message again.
-      domPort.postMessage(messageAfterDisconnect);
-
-      // can't wait for the absence of an event, so just give it a moment
-      await new Promise(resolve => void setTimeout(resolve, 50));
-
-      // the messages don't get through.
-      expect(sessionPort.postMessage).not.toHaveBeenCalled();
-      expect(extPort.onMessage.dispatch).not.toHaveBeenCalled();
-    };
-
-    const expectNoActivity = () => {
-      // not disconnected yet, no messages yet
-      expect(domMessageHandler).not.toHaveBeenCalled();
-      expect(extPort.onDisconnect.dispatch).not.toHaveBeenCalled();
-      expect(extPort.onMessage.dispatch).not.toHaveBeenCalled();
-      expect(sessionPort.onDisconnect.dispatch).not.toHaveBeenCalled();
-      expect(sessionPort.onMessage.dispatch).not.toHaveBeenCalled();
-    };
-
     beforeEach(() => {
       domPort = CRSessionClient.init(testName);
 
@@ -436,7 +405,7 @@ describe('CRSessionClient', () => {
     // closed. the dom transport should handle this, and clients should not
     // persist in using transports that indicate they are disconnected.
     it('disconnects from the extension when the client transmits `false` message, and transmits a confirming `false` back to the dom', async () => {
-      expectNoActivity();
+      expectNoActivity(sessionPort, extPort, domMessageHandler);
 
       // announce disconnect
       domPort.postMessage(false);
@@ -453,11 +422,11 @@ describe('CRSessionClient', () => {
       expect(sessionPort.postMessage).not.toHaveBeenCalled();
       expect(extPort.onMessage.dispatch).not.toHaveBeenCalled();
 
-      await expectChannelClosed();
+      await expectChannelClosed(sessionPort, extPort, domPort);
     });
 
     it('sends `false` to dom when the port is disconnected by something else', async () => {
-      expectNoActivity();
+      expectNoActivity(sessionPort, extPort, domMessageHandler);
 
       // extension-side disconnect
       extPort.disconnect();
@@ -475,13 +444,13 @@ describe('CRSessionClient', () => {
       expect(extPort.onMessage.dispatch).not.toHaveBeenCalled();
       expect(extPort.onDisconnect.dispatch).toHaveBeenCalledOnce();
 
-      await expectChannelClosed();
+      await expectChannelClosed(sessionPort, extPort, domPort);
     });
 
     it.fails('reconnects silently if the port is disconnected by something else', async () => {
       const testRequest: TransportMessage = { message: 'hello', requestId: '123' };
 
-      expectNoActivity();
+      expectNoActivity(sessionPort, extPort, domMessageHandler);
 
       const nextOnMessageListener = vi.fn<[unknown, chrome.runtime.Port]>();
       const nextOnConnectListener = vi.fn((port: chrome.runtime.Port) =>
