@@ -192,10 +192,9 @@ describe('session client with transport-dom', () => {
       expect(streamPort.onMessage.dispatch).toHaveBeenCalled();
 
       const response = await streamRequest;
-      console.log('response.message', response.message);
 
       for await (const chunk of response.message) {
-        console.log('chunk', chunk);
+        expect(chunk).toBeDefined();
       }
     });
 
@@ -229,7 +228,6 @@ describe('session client with transport-dom', () => {
 
           const requestChannel = mockedChannel2.connect({ name: channel });
           requestChannel.onMessage.addListener(m => {
-            console.log('bidi request chunk', m);
             streamRequestCollected.push(m);
           });
 
@@ -389,7 +387,6 @@ describe('session client with transport-dom', () => {
       const streamChannel = nameConnection('test', ChannelLabel.STREAM);
 
       extOnConnect.mockImplementationOnce((sub: chrome.runtime.Port) => {
-        console.log('extOnConnect', streamChannel);
         if (sub.name === streamChannel) {
           void (async () => {
             const stream = new ReadableStream({
