@@ -1,10 +1,14 @@
 import type { Impl } from './index.js';
 import { servicesCtx } from '../ctx/prax.js';
 import { TransactionInfo } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { generateTransactionInfo } from '@penumbra-zone/wasm/transaction';
+import {
+  generateTransactionInfo,
+  generateTransactionSummary,
+} from '@penumbra-zone/wasm/transaction';
 import { fvkCtx } from '../ctx/full-viewing-key.js';
 import {
   TransactionPerspective,
+  TransactionSummary,
   TransactionView,
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 
@@ -24,11 +28,16 @@ export const transactionInfo: Impl['transactionInfo'] = async function* (_req, c
     const tx_info = await indexedDb.getTransactionInfo(txRecord.id);
     let perspective: TransactionPerspective;
     let view: TransactionView;
+    let summary: TransactionSummary | undefined;
 
-    // If TxP + TxV already exist in database, then simply yield them.
-    if (tx_info) {
+    // If TxP + TxV + summary already exist in database, then simply yield them.
+    // If the summary is missing, regenerate the transaction info once and update
+    // the table with the new field.
+    if (tx_info?.summary) {
       perspective = tx_info.perspective;
       view = tx_info.view;
+      summary = tx_info.summary;
+
       // Otherwise, generate the TxP + TxV from the transaction in wasm
       // and store them.
     } else {
@@ -38,7 +47,10 @@ export const transactionInfo: Impl['transactionInfo'] = async function* (_req, c
         indexedDb.constants(),
       );
 
-      await indexedDb.saveTransactionInfo(txRecord.id, txp, txv);
+      // Generate and save transaction info summary from the TxV.
+      summary = await generateTransactionSummary(txv);
+      await indexedDb.saveTransactionInfo(txRecord.id, txp, txv, summary);
+
       perspective = txp;
       view = txv;
     }
@@ -50,6 +62,7 @@ export const transactionInfo: Impl['transactionInfo'] = async function* (_req, c
         transaction: txRecord.transaction,
         perspective,
         view,
+        summary,
       }),
     };
   }

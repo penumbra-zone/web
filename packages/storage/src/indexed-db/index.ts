@@ -37,6 +37,7 @@ import { ValidatorInfo } from '@penumbra-zone/protobuf/penumbra/core/component/s
 import {
   Transaction,
   TransactionPerspective,
+  TransactionSummary,
   TransactionView,
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
@@ -366,34 +367,44 @@ export class IndexedDb implements IndexedDbInterface {
     );
   }
 
-  async getTransactionInfo(
-    id: TransactionId,
-  ): Promise<
-    { id: TransactionId; perspective: TransactionPerspective; view: TransactionView } | undefined
+  async getTransactionInfo(id: TransactionId): Promise<
+    | {
+        id: TransactionId;
+        perspective: TransactionPerspective;
+        view: TransactionView;
+        summary?: TransactionSummary;
+      }
+    | undefined
   > {
     const existingData = await this.db.get('TRANSACTION_INFO', uint8ArrayToBase64(id.inner));
-    if (existingData) {
-      return {
-        id: TransactionId.fromJson(existingData.id, { typeRegistry }),
-        perspective: TransactionPerspective.fromJson(existingData.perspective, { typeRegistry }),
-        view: TransactionView.fromJson(existingData.view, { typeRegistry }),
-      };
-    } else {
+    if (!existingData) {
       return undefined;
     }
+
+    return {
+      id: TransactionId.fromJson(existingData.id, { typeRegistry }),
+      perspective: TransactionPerspective.fromJson(existingData.perspective, { typeRegistry }),
+      view: TransactionView.fromJson(existingData.view, { typeRegistry }),
+      summary: existingData.summary
+        ? TransactionSummary.fromJson(existingData.summary, { typeRegistry })
+        : undefined,
+    };
   }
 
   async saveTransactionInfo(
     id: TransactionId,
     txp: TransactionPerspective,
     txv: TransactionView,
+    summary: TransactionSummary,
   ): Promise<void> {
     assertTransactionId(id);
     const value = {
       id: id.toJson({ typeRegistry }) as Jsonified<TransactionId>,
       perspective: txp.toJson({ typeRegistry }) as Jsonified<TransactionPerspective>,
       view: txv.toJson({ typeRegistry }) as Jsonified<TransactionView>,
+      summary: summary.toJson({ typeRegistry }) as Jsonified<TransactionSummary>,
     };
+
     await this.u.update({
       table: 'TRANSACTION_INFO',
       value,
