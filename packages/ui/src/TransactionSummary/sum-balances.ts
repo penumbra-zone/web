@@ -54,10 +54,16 @@ export const sumBalances = (
         }
 
         // hash needs to combine similar assets together,
-        // e.g. LPNFTs get summed up even though they have different assetIds
+        // e.g. LPNFTs of the same status get summed up even though they have different assetIds
         let hash = uint8ArrayToBase64(asset.penumbraAssetId.inner);
-        if (assetPatterns.lpNft.matches(asset.display)) {
-          hash = LPNFT_SYMBOL;
+        if (assetPatterns.lpNftOpened.matches(asset.display)) {
+          hash = `${LPNFT_SYMBOL}-opened`;
+          asset.symbol = LPNFT_SYMBOL;
+        } else if (assetPatterns.lpNftClosed.matches(asset.display)) {
+          hash = `${LPNFT_SYMBOL}-closed`;
+          asset.symbol = LPNFT_SYMBOL;
+        } else if (assetPatterns.lpNftWithdrawn.matches(asset.display)) {
+          hash = `${LPNFT_SYMBOL}-withdrawn`;
           asset.symbol = LPNFT_SYMBOL;
         } else if (assetPatterns.auctionNft.matches(asset.display)) {
           hash = AUCTION_SYMBOL;
@@ -101,14 +107,24 @@ export const sumBalances = (
       [],
     );
 
+    // filter out zero balances
     const summed = Array.from(valueByAsset.values()).filter(value => {
       const amount = getAmount.optional(value.view);
       return amount && (amount.hi !== 0n || amount.lo !== 0n);
     });
 
+    // concatenate the unknown (reduced) values with the summed values, sort non-negative first
+    const balances = summed.concat(reduced);
+    balances.sort((a, b) => {
+      if (a.negative === b.negative) {
+        return 0;
+      }
+      return a.negative ? 1 : -1;
+    });
+
     return {
+      balances,
       address: effect.address,
-      balances: summed.concat(reduced),
     };
   });
 };
