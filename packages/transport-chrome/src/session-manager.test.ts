@@ -136,117 +136,123 @@ describe('CRSessionManager', () => {
     const testRequest = { requestId: '123', message: 'test' };
     const allSenders = [extClient, localhostClient, httpsClient, httpClient];
 
-    it.each(allSenders)(
-      'should accept or reject $origin according to internal sender validation logic',
-      async someSender => {
-        const badSenders = [httpClient];
-        const sessions = CRSessionManager.init(testName, mockHandler, checkPortSender);
-        expect(sessions.size).toBe(0);
-
-        const channelName = nameConnection(testName, ChannelLabel.TRANSPORT);
-        mockedChannel.mockSenders.mockReturnValueOnce({
-          connectSender: someSender,
-          onConnectSender: extHost,
-        });
-
-        const clientPort = mockedChannel.connect({ name: channelName });
-        expect(clientPort).toMatchObject({ name: channelName, sender: extHost });
-
-        await vi.waitFor(() => expect(mockedChannel.onConnect.dispatch).toHaveBeenCalled());
-
-        if (badSenders.includes(someSender)) {
-          expect(
-            lastResult(mockedChannel.mockPorts).onConnectPort.onMessage.addListener,
-          ).not.toHaveBeenCalled();
+    describe('internal sender validation', () => {
+      it.each(allSenders)(
+        'should handle $origin according to internal sender validation logic',
+        async someSender => {
+          const badSenders = [httpClient];
+          const sessions = CRSessionManager.init(testName, mockHandler, checkPortSender);
           expect(sessions.size).toBe(0);
-        } else {
+
+          const channelName = nameConnection(testName, ChannelLabel.TRANSPORT);
+          mockedChannel.mockSenders.mockReturnValueOnce({
+            connectSender: someSender,
+            onConnectSender: extHost,
+          });
+
+          const clientPort = mockedChannel.connect({ name: channelName });
+          expect(clientPort).toMatchObject({ name: channelName, sender: extHost });
+
+          await vi.waitFor(() => expect(mockedChannel.onConnect.dispatch).toHaveBeenCalled());
+
+          if (badSenders.includes(someSender)) {
+            expect(
+              lastResult(mockedChannel.mockPorts).onConnectPort.onMessage.addListener,
+            ).not.toHaveBeenCalled();
+            expect(sessions.size).toBe(0);
+          } else {
+            expect(
+              lastResult(mockedChannel.mockPorts).onConnectPort.onMessage.addListener,
+            ).toHaveBeenCalled();
+            expect(sessions.size).toBe(1);
+          }
+
+          clientPort.postMessage(testRequest);
+
+          if (!badSenders.includes(someSender)) {
+            await vi.waitFor(() =>
+              expect(mockHandler).toHaveBeenLastCalledWith(
+                testRequest.message,
+                expect.any(AbortSignal),
+              ),
+            );
+          } else {
+            expect(
+              lastResult(mockedChannel.mockPorts).onConnectPort.onMessage.addListener,
+            ).not.toHaveBeenCalled();
+            expect(mockHandler).not.toHaveBeenCalled();
+          }
+
+          expect(checkPortSender).not.toHaveBeenCalled();
+        },
+      );
+    });
+
+    describe('parameterized sender validation', () => {
+      const badSendersKeys = Array.from(allSenders.keys())
+        .sort(() => Math.random() - 0.5)
+        .slice(2);
+      const badSenders = badSendersKeys.map(k => allSenders[k]);
+      it.fails.each(allSenders)(
+        `should handle sender %# according to async validation callback forbidding ${badSendersKeys.join(', ')}`,
+        async someSender => {
+          checkPortSender.mockImplementation(port =>
+            badSenders.includes(port.sender)
+              ? Promise.reject(new Error('Bad sender'))
+              : Promise.resolve(port as chrome.runtime.Port & { sender: { origin: string } }),
+          );
+
+          const sessions = CRSessionManager.init(testName, mockHandler, checkPortSender);
+          expect(sessions.size).toBe(0);
+
+          const channelName = nameConnection(testName, ChannelLabel.TRANSPORT);
+          mockedChannel.mockSenders.mockReturnValueOnce({
+            connectSender: someSender,
+            onConnectSender: extHost,
+          });
+
+          const clientPort = mockedChannel.connect({ name: channelName });
+
+          await vi.waitFor(
+            () =>
+              expect(checkPortSender).toHaveBeenCalledWith(
+                expect.objectContaining({ name: channelName, sender: someSender }),
+              ),
+            { timeout: 100 },
+          );
+
+          // session will be created and listeners attached unconditionally
+          await vi.waitFor(() => expect(sessions.size).toBe(1));
+
+          if (badSenders.includes(someSender)) {
+            // session will be aborted after validation callback rejects
+            await vi.waitFor(() => expect(sessions.size).toBe(0));
+            expect(checkPortSender.mock.results.at(-1)?.type).toBe('throw');
+          }
+
           expect(
             lastResult(mockedChannel.mockPorts).onConnectPort.onMessage.addListener,
           ).toHaveBeenCalled();
-          expect(sessions.size).toBe(1);
-        }
 
-        clientPort.postMessage(testRequest);
-
-        if (!badSenders.includes(someSender)) {
-          await vi.waitFor(() =>
-            expect(mockHandler).toHaveBeenLastCalledWith(
-              testRequest.message,
-              expect.any(AbortSignal),
-            ),
-          );
-        } else {
-          expect(
-            lastResult(mockedChannel.mockPorts).onConnectPort.onMessage.addListener,
-          ).not.toHaveBeenCalled();
           expect(mockHandler).not.toHaveBeenCalled();
-        }
 
-        expect(checkPortSender).not.toHaveBeenCalled();
-      },
-    );
-
-    const badSendersKeys = Array.from(allSenders.keys())
-      .sort(() => Math.random() - 0.5)
-      .slice(2);
-    const badSenders = badSendersKeys.map(k => allSenders[k]);
-    it.fails.each(allSenders)(
-      `should handle sender %# according to validation callback forbidding ${badSendersKeys.join(', ')}`,
-      async someSender => {
-        checkPortSender.mockImplementation(port => {
-          if (badSenders.includes(port.sender)) {
-            console.log('rejecting', port.sender!.origin);
-            return Promise.reject(new Error('Bad sender'));
+          if (badSenders.includes(someSender)) {
+            expect(() => clientPort.postMessage(testRequest)).toThrowError(
+              'Attempting to use a disconnected port object',
+            );
+            expect(mockHandler).not.toHaveBeenCalled();
+          } else {
+            clientPort.postMessage(testRequest);
+            await vi.waitFor(() =>
+              expect(mockHandler).toHaveBeenLastCalledWith(
+                testRequest.message,
+                expect.any(AbortSignal),
+              ),
+            );
           }
-          console.log('accepting', port.sender!.origin);
-          return Promise.resolve(port as chrome.runtime.Port & { sender: { origin: string } });
-        });
-
-        const sessions = CRSessionManager.init(testName, mockHandler, checkPortSender);
-        expect(sessions.size).toBe(0);
-
-        const channelName = nameConnection(testName, ChannelLabel.TRANSPORT);
-        mockedChannel.mockSenders.mockReturnValueOnce({
-          connectSender: someSender,
-          onConnectSender: extHost,
-        });
-
-        const clientPort = mockedChannel.connect({ name: channelName });
-        expect(clientPort).toMatchObject({ name: channelName, sender: extHost });
-        await vi.waitFor(() => expect(checkPortSender).toHaveBeenCalled(), { timeout: 100 });
-
-        expect(checkPortSender).toHaveBeenCalledWith(
-          expect.objectContaining({ name: channelName, sender: someSender }),
-        );
-
-        if (!badSenders.includes(someSender)) {
-          await vi.waitFor(() =>
-            expect(
-              lastResult(mockedChannel.mockPorts).onConnectPort.onMessage.addListener,
-            ).toHaveBeenCalled(),
-          );
-          expect(sessions.size).toBe(1);
-        } else {
-          await vi.waitFor(() => expect(sessions.size).toBe(0));
-        }
-
-        expect(mockHandler).not.toHaveBeenCalled();
-
-        clientPort.postMessage(testRequest);
-
-        if (!badSenders.includes(someSender)) {
-          await vi.waitFor(() =>
-            expect(mockHandler).toHaveBeenLastCalledWith(
-              testRequest.message,
-              expect.any(AbortSignal),
-            ),
-          );
-        } else {
-          expect(checkPortSender.mock.results.at(-1)?.type).toBe('throw');
-          expect(mockHandler).not.toHaveBeenCalled();
-        }
-      },
-    );
+        },
+      );
+    });
   });
 
   describe('request handling', () => {

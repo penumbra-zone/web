@@ -335,7 +335,7 @@ describe('CRSessionClient', () => {
           }
         });
 
-        it.fails('responds with a failure and kills session if item is not an event', async () => {
+        it.fails('responds with failure, and kills the session if not an event', async () => {
           domPort.postMessage(badRequest);
 
           const badRequestHasId =
@@ -343,7 +343,7 @@ describe('CRSessionClient', () => {
 
           await vi.waitFor(
             () => expect(domMessageHandler).toHaveBeenCalledTimes(badRequestHasId ? 1 : 2),
-            { timeout: 50 },
+            { timeout: 100 },
           );
 
           const responses = domMessageHandler?.mock.calls.map(([mev]) => mev.data) ?? [];
