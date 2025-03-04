@@ -1,21 +1,19 @@
 import cn from 'clsx';
 import { Fragment, useState } from 'react';
 import { CircleEllipsis } from 'lucide-react';
-import { TransactionSummary_Effects } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
-import { GetMetadataByAssetId } from '../ActionView/types';
 import { AddressViewComponent } from '../AddressView';
 import { useDensity } from '../utils/density';
 import { Popover } from '../Popover';
 import { Button } from '../Button';
 import { SummaryBalance } from './balance';
 import { Density } from '../Density';
+import { SummaryEffect } from './sum-balances';
 
 export interface SummaryEffectsProps {
-  effects: TransactionSummary_Effects[];
-  getMetadataByAssetId?: GetMetadataByAssetId;
+  effects: SummaryEffect[];
 }
 
-export const SummaryEffects = ({ effects, getMetadataByAssetId }: SummaryEffectsProps) => {
+export const SummaryEffects = ({ effects }: SummaryEffectsProps) => {
   const density = useDensity();
   const compact = density !== 'sparse';
   const [isOpen, setIsOpen] = useState(false);
@@ -27,12 +25,8 @@ export const SummaryEffects = ({ effects, getMetadataByAssetId }: SummaryEffects
           <div
             className={cn('flex items-center gap-1', compact && 'max-w-[150px] overflow-hidden')}
           >
-            {effect.balance?.values.map((balance, index) => (
-              <SummaryBalance
-                key={index}
-                balance={balance}
-                getMetadataByAssetId={getMetadataByAssetId}
-              />
+            {effect.balances.map((balance, index) => (
+              <SummaryBalance key={index} balance={balance} />
             ))}
           </div>
 
@@ -51,12 +45,8 @@ export const SummaryEffects = ({ effects, getMetadataByAssetId }: SummaryEffects
                 </Popover.Trigger>
                 <Popover.Content>
                   <div className='flex flex-col gap-1'>
-                    {effect.balance?.values.map((balance, index) => (
-                      <SummaryBalance
-                        key={index}
-                        balance={balance}
-                        getMetadataByAssetId={getMetadataByAssetId}
-                      />
+                    {effect.balances.map((balance, index) => (
+                      <SummaryBalance key={index} balance={balance} />
                     ))}
                   </div>
                 </Popover.Content>
@@ -65,7 +55,7 @@ export const SummaryEffects = ({ effects, getMetadataByAssetId }: SummaryEffects
           )}
 
           <Density slim>
-            <AddressViewComponent hideIcon addressView={effect.address} />
+            <AddressViewComponent truncate hideIcon addressView={effect.address} />
           </Density>
         </Fragment>
       ))}

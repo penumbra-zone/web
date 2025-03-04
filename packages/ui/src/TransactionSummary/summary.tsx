@@ -45,10 +45,8 @@ export const TransactionSummary = ({
   endAdornment,
   as: Container = 'div',
 }: TransactionSummaryProps) => {
-  const { label, assets, additionalText, address, memo, type, tickers } = useClassification(
-    info,
-    getMetadataByAssetId,
-  );
+  const { label, assets, additionalText, address, memo, type, tickers, effects } =
+    useClassification(info, getMetadataByAssetId);
 
   return (
     <Container
@@ -92,10 +90,7 @@ export const TransactionSummary = ({
           </Density>
         </div>
 
-        <SummaryEffects
-          effects={info.summary?.effects ?? []}
-          getMetadataByAssetId={getMetadataByAssetId}
-        />
+        <SummaryEffects effects={effects} />
 
         {memo && (
           <Text as='em' color='text.secondary' detailTechnical>

@@ -165,7 +165,7 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
             </div>
           )}
           {showSymbol && (
-            <div className='shrink grow truncate' title={symbol}>
+            <div className='max-w-24 shrink grow truncate' title={symbol}>
               <ValueText density={density}>{symbol}</ValueText>
             </div>
           )}
