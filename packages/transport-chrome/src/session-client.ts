@@ -23,7 +23,8 @@ import {
 } from '@penumbra-zone/transport-dom/messages';
 import { ChannelLabel, nameConnection } from './channel-names.js';
 import { isTransportInitChannel, TransportInitChannel } from './message.js';
-import { PortStreamSink, PortStreamSource } from './stream.js';
+import { PortStreamSink } from './stream/sink.js';
+import { PortStreamSource } from './stream/source.js';
 
 const localErrorJson = (err: unknown, relevantMessage?: unknown) =>
   err instanceof Error
