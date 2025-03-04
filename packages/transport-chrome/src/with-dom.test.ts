@@ -19,12 +19,13 @@ import {
   isTransportMessage,
   type TransportMessage,
 } from '@penumbra-zone/transport-dom/messages';
-import { mockChannel, type MockedChannel } from '@repo/mock-chrome/runtime/connect';
+import { mockChannel, type MockedChannel } from '@repo/mock-chrome/runtime/channel.mock';
 import { beforeEach, describe, expect, it, Mock, onTestFinished, vi } from 'vitest';
 import { ChannelLabel, nameConnection } from './channel-names.js';
 import { isTransportInitChannel } from './message.js';
 import { CRSessionClient } from './session-client.js';
 import { PortStreamSink } from './stream.js';
+import { failsOrUnreachable } from './util/test/acceptable-unreachable.js';
 import { lastResult } from './util/test/last-result.js';
 import {
   replaceUncaughtExceptionListener,
@@ -39,10 +40,6 @@ Object.assign(CRSessionClient, {
     CRSessionClient.singleton = undefined;
   },
 });
-
-// @ts-expect-error -- manipulating private property
-// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
-const clearSingleton = (): void => CRSessionClient.clearSingleton();
 
 const typeRegistry = createRegistry(ElizaService);
 
@@ -92,7 +89,9 @@ describe('session client with transport-dom', () => {
     vi.unstubAllGlobals();
     vi.restoreAllMocks();
 
-    clearSingleton();
+    // @ts-expect-error -- manipulating private property
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    void CRSessionClient.clearSingleton();
 
     mockedChannel = mockChannel();
     mockedChannel2 = mockChannel();
@@ -172,7 +171,7 @@ describe('session client with transport-dom', () => {
           const { requestId } = m;
           p.postMessage({ requestId, channel: streamChannel });
         } else {
-          expect.unreachable();
+          expect.unreachable('no other event types');
         }
       });
       const streamRequest = transport.stream(
@@ -234,7 +233,7 @@ describe('session client with transport-dom', () => {
           mockedChannel.onConnect.addListener(responseOnConnectListener);
           p.postMessage({ requestId, channel: responseChannelName });
         } else {
-          expect.unreachable();
+          expect.unreachable('no other event types');
         }
       });
 
@@ -375,7 +374,7 @@ describe('session client with transport-dom', () => {
             '@type': 'type.googleapis.com/connectrpc.eliza.v1.IntroduceRequest',
           });
         } else {
-          expect.unreachable();
+          expect.unreachable('no other event types');
         }
       });
 
@@ -470,7 +469,7 @@ describe('session client with transport-dom', () => {
     });
 
     describe("doesn't emit abort events", () => {
-      it.fails('can cancel streams before init, but does not emit an abort', async () => {
+      it.fails('can cancel streams before init, but does not emit an abort', async ctx => {
         const { uncaughtExceptionListener, restoreUncaughtExceptionListener } =
           replaceUncaughtExceptionListener(vi.fn());
         onTestFinished(restoreUncaughtExceptionListener);
@@ -480,7 +479,7 @@ describe('session client with transport-dom', () => {
 
         extOnMessage.mockImplementation(m => {
           if (!isTransportMessage(m)) {
-            expect.unreachable();
+            failsOrUnreachable(ctx, 'no other event types');
           }
         });
 
@@ -503,7 +502,7 @@ describe('session client with transport-dom', () => {
         expect(uncaughtExceptionListener).not.toHaveBeenCalled();
       });
 
-      it.fails('can cancel streams already in progress, but does not emit an abort', async () => {
+      it.fails('can cancel streams already in progress, but does not emit an abort', async ctx => {
         const { uncaughtExceptionListener, restoreUncaughtExceptionListener } =
           replaceUncaughtExceptionListener(vi.fn());
         onTestFinished(restoreUncaughtExceptionListener);
@@ -537,7 +536,7 @@ describe('session client with transport-dom', () => {
             const { requestId } = m;
             p.postMessage({ requestId, channel: streamChannel });
           } else {
-            expect.unreachable();
+            failsOrUnreachable(ctx, 'no other event types');
           }
         });
 
@@ -571,7 +570,7 @@ describe('session client with transport-dom', () => {
     });
 
     describe('emits abort events', () => {
-      it('can cancel streams before init, and emits an abort', async () => {
+      it('can cancel streams before init, and emits an abort', async ctx => {
         const { uncaughtExceptionListener, restoreUncaughtExceptionListener } =
           replaceUncaughtExceptionListener(vi.fn());
         onTestFinished(restoreUncaughtExceptionListener);
@@ -590,7 +589,7 @@ describe('session client with transport-dom', () => {
               abort: true,
             });
           } else {
-            expect.unreachable();
+            failsOrUnreachable(ctx, 'no other event types');
           }
         });
 
@@ -623,7 +622,7 @@ describe('session client with transport-dom', () => {
         expect(uncaughtExceptionListener).not.toHaveBeenCalled();
       });
 
-      it('can cancel streams already in progress, and emits an abort', async () => {
+      it('can cancel streams already in progress, and emits an abort', async ctx => {
         const { uncaughtExceptionListener, restoreUncaughtExceptionListener } =
           replaceUncaughtExceptionListener(vi.fn());
         onTestFinished(restoreUncaughtExceptionListener);
@@ -660,7 +659,7 @@ describe('session client with transport-dom', () => {
           } else if (isTransportMessage(m)) {
             p.postMessage({ requestId: m.requestId, channel: streamChannel });
           } else {
-            expect.unreachable();
+            failsOrUnreachable(ctx, 'no other event types');
           }
         });
 
@@ -703,7 +702,7 @@ describe('session client with transport-dom', () => {
       header.set('x-test', testName);
     });
 
-    it('should send headers', async () => {
+    it('should send headers', async ctx => {
       const { uncaughtExceptionListener, restoreUncaughtExceptionListener } =
         replaceUncaughtExceptionListener(vi.fn());
       onTestFinished(restoreUncaughtExceptionListener);
@@ -729,7 +728,7 @@ describe('session client with transport-dom', () => {
             },
           });
         } else {
-          expect.unreachable();
+          failsOrUnreachable(ctx, 'no other event types');
         }
       });
 
@@ -793,7 +792,7 @@ describe('session client with transport-dom', () => {
       expect(uncaughtExceptionListener).not.toHaveBeenCalled();
     });
 
-    it('should send collected headers', async () => {
+    it('should send collected headers', async ctx => {
       const { uncaughtExceptionListener, restoreUncaughtExceptionListener } =
         replaceUncaughtExceptionListener(vi.fn());
       onTestFinished(restoreUncaughtExceptionListener);
@@ -820,7 +819,7 @@ describe('session client with transport-dom', () => {
             },
           });
         } else {
-          expect.unreachable();
+          failsOrUnreachable(ctx, 'no other event types');
         }
       });
 

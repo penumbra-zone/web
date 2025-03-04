@@ -16,9 +16,21 @@ type ChromeEventListener<E> = E extends ChromeEvent<infer T> ? T : never;
 export const mockEvent = <E extends ChromeEvent>(
   listeners = new Set<ChromeEventListener<E>>(),
 ): MockedChromeEvent<E> => {
-  const dispatch = (...i: Parameters<ChromeEventListener<E>>): void =>
-    // eslint-disable-next-line @typescript-eslint/require-await -- sever the exception stack for 'remote' dispatch
-    void (async () => listeners.forEach(listener => listener(...i)))();
+  const dispatch = (...params: Parameters<ChromeEventListener<E>>): void =>
+    listeners.forEach(listener => {
+      try {
+        listener(...params);
+      } catch (error) {
+        // this is pretending to be 'remote' dispatch, so the exception should
+        // not propagate across the dispatch boundary. instead of suppressing
+        // it, a voided reject passes it to the unhandled rejection listener.
+        void Promise.reject(
+          new Error(`MockedChromeEvent dispatch to listener "${listener.name}" failed`, {
+            cause: { listener, params, error },
+          }),
+        );
+      }
+    });
 
   const addListener = (i: ChromeEventListener<E>): void => void listeners.add(i);
   const hasListener = (i: ChromeEventListener<E>): boolean => listeners.has(i);
