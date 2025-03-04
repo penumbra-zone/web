@@ -475,7 +475,7 @@ describe('session client with transport-dom', () => {
     describe("doesn't emit abort events", () => {
       it.fails('can cancel streams before init, but does not emit an abort', async () => {
         const { uncaughtExceptionListener, restoreUncaughtExceptionListener } =
-          replaceUncaughtExceptionListener();
+          replaceUncaughtExceptionListener(vi.fn());
         onTestFinished(restoreUncaughtExceptionListener);
 
         const ac = new AbortController();
@@ -508,10 +508,10 @@ describe('session client with transport-dom', () => {
 
       it.fails('can cancel streams already in progress, but does not emit an abort', async () => {
         const { uncaughtExceptionListener, restoreUncaughtExceptionListener } =
-          replaceUncaughtExceptionListener();
+          replaceUncaughtExceptionListener(vi.fn());
         onTestFinished(restoreUncaughtExceptionListener);
         const { unhandledRejectionListener, restoreUnhandledRejectionListener } =
-          replaceUnhandledRejectionListener();
+          replaceUnhandledRejectionListener(vi.fn());
         onTestFinished(restoreUnhandledRejectionListener);
 
         const ac = new AbortController();
@@ -540,7 +540,7 @@ describe('session client with transport-dom', () => {
             const { requestId } = m;
             p.postMessage({ requestId, channel: streamChannel });
           } else {
-            expect.unreachable('no other event types');
+            expect.unreachable();
           }
         });
 
@@ -576,7 +576,7 @@ describe('session client with transport-dom', () => {
     describe('emits abort events', () => {
       it('can cancel streams before init, and emits an abort', async () => {
         const { uncaughtExceptionListener, restoreUncaughtExceptionListener } =
-          replaceUncaughtExceptionListener();
+          replaceUncaughtExceptionListener(vi.fn());
         onTestFinished(restoreUncaughtExceptionListener);
 
         const ac = new AbortController();
@@ -628,7 +628,7 @@ describe('session client with transport-dom', () => {
 
       it('can cancel streams already in progress, and emits an abort', async () => {
         const { uncaughtExceptionListener, restoreUncaughtExceptionListener } =
-          replaceUncaughtExceptionListener();
+          replaceUncaughtExceptionListener(vi.fn());
         onTestFinished(restoreUncaughtExceptionListener);
 
         const streamChannel = nameConnection('test', ChannelLabel.STREAM);
@@ -708,7 +708,7 @@ describe('session client with transport-dom', () => {
 
     it('should send headers', async () => {
       const { uncaughtExceptionListener, restoreUncaughtExceptionListener } =
-        replaceUncaughtExceptionListener();
+        replaceUncaughtExceptionListener(vi.fn());
       onTestFinished(restoreUncaughtExceptionListener);
 
       extOnMessage.mockImplementation((m, p) => {
@@ -755,7 +755,7 @@ describe('session client with transport-dom', () => {
 
     it('should send timeout headers', async () => {
       const { uncaughtExceptionListener, restoreUncaughtExceptionListener } =
-        replaceUncaughtExceptionListener();
+        replaceUncaughtExceptionListener(vi.fn());
       onTestFinished(restoreUncaughtExceptionListener);
 
       extOnMessage.mockImplementation((m, p) => {
@@ -798,7 +798,7 @@ describe('session client with transport-dom', () => {
 
     it('should send collected headers', async () => {
       const { uncaughtExceptionListener, restoreUncaughtExceptionListener } =
-        replaceUncaughtExceptionListener();
+        replaceUncaughtExceptionListener(vi.fn());
       onTestFinished(restoreUncaughtExceptionListener);
 
       extOnMessage.mockImplementation((m, p) => {

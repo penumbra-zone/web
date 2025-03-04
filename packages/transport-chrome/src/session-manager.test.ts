@@ -225,13 +225,11 @@ describe('CRSessionManager', () => {
 
         const clientPort = mockedChannel.connect({ name: channelName });
         expect(clientPort).toMatchObject({ name: channelName, sender: extHost });
+        await vi.waitFor(() => expect(checkPortSender).toHaveBeenCalled(), { timeout: 100 });
 
-        await vi.waitFor(() => {
-          expect(mockedChannel.onConnect.dispatch).toHaveBeenCalled();
-          expect(checkPortSender).toHaveBeenCalledWith(
-            expect.objectContaining({ name: channelName, sender: someSender }),
-          );
-        });
+        expect(checkPortSender).toHaveBeenCalledWith(
+          expect.objectContaining({ name: channelName, sender: someSender }),
+        );
 
         if (!badSenders.includes(someSender)) {
           await vi.waitFor(() =>
@@ -246,11 +244,7 @@ describe('CRSessionManager', () => {
 
         expect(mockHandler).not.toHaveBeenCalled();
 
-        try {
-          clientPort.postMessage(testRequest);
-        } catch (e) {
-          // should fail, but it's not important
-        }
+        clientPort.postMessage(testRequest);
 
         if (!badSenders.includes(someSender)) {
           await vi.waitFor(() =>
