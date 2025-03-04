@@ -570,7 +570,7 @@ describe('session client with transport-dom', () => {
     });
 
     describe('emits abort events', () => {
-      it('can cancel streams before init, and emits an abort', async ctx => {
+      it('can cancel streams before init, and emits an abort', async () => {
         const { uncaughtExceptionListener, restoreUncaughtExceptionListener } =
           replaceUncaughtExceptionListener(vi.fn());
         onTestFinished(restoreUncaughtExceptionListener);
@@ -589,7 +589,7 @@ describe('session client with transport-dom', () => {
               abort: true,
             });
           } else {
-            failsOrUnreachable(ctx, 'no other event types');
+            expect.unreachable('no other event types');
           }
         });
 
@@ -622,7 +622,7 @@ describe('session client with transport-dom', () => {
         expect(uncaughtExceptionListener).not.toHaveBeenCalled();
       });
 
-      it('can cancel streams already in progress, and emits an abort', async ctx => {
+      it('can cancel streams already in progress, and emits an abort', async () => {
         const { uncaughtExceptionListener, restoreUncaughtExceptionListener } =
           replaceUncaughtExceptionListener(vi.fn());
         onTestFinished(restoreUncaughtExceptionListener);
@@ -659,7 +659,7 @@ describe('session client with transport-dom', () => {
           } else if (isTransportMessage(m)) {
             p.postMessage({ requestId: m.requestId, channel: streamChannel });
           } else {
-            failsOrUnreachable(ctx, 'no other event types');
+            expect.unreachable('no other event types');
           }
         });
 
@@ -702,7 +702,7 @@ describe('session client with transport-dom', () => {
       header.set('x-test', testName);
     });
 
-    it('should send headers', async ctx => {
+    it('should send headers', async () => {
       const { uncaughtExceptionListener, restoreUncaughtExceptionListener } =
         replaceUncaughtExceptionListener(vi.fn());
       onTestFinished(restoreUncaughtExceptionListener);
@@ -728,7 +728,7 @@ describe('session client with transport-dom', () => {
             },
           });
         } else {
-          failsOrUnreachable(ctx, 'no other event types');
+          expect.unreachable('no other event types');
         }
       });
 
@@ -792,7 +792,7 @@ describe('session client with transport-dom', () => {
       expect(uncaughtExceptionListener).not.toHaveBeenCalled();
     });
 
-    it('should send collected headers', async ctx => {
+    it('should send collected headers', async () => {
       const { uncaughtExceptionListener, restoreUncaughtExceptionListener } =
         replaceUncaughtExceptionListener(vi.fn());
       onTestFinished(restoreUncaughtExceptionListener);
@@ -819,7 +819,7 @@ describe('session client with transport-dom', () => {
             },
           });
         } else {
-          failsOrUnreachable(ctx, 'no other event types');
+          expect.unreachable('no other event types');
         }
       });
 
