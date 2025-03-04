@@ -1,14 +1,14 @@
 import { JsonValue } from '@bufbuild/protobuf';
 import { ConnectError } from '@connectrpc/connect';
 import { errorToJson } from '@connectrpc/connect/protocol-connect';
-import { mockChannel, MockedChannel, MockedPort } from '@repo/mock-chrome/runtime/connect';
 import type { TransportMessage, TransportStream } from '@penumbra-zone/transport-dom/messages';
+import { mockChannel, MockedChannel, MockedPort } from '@repo/mock-chrome/runtime/connect';
 import { afterEach, beforeEach, describe, expect, it, type Mock, onTestFinished, vi } from 'vitest';
 import { ChannelLabel, nameConnection } from './channel-names.js';
 import type { TransportInitChannel } from './message.js';
 import { CRSessionClient } from './session-client.js';
-import { lastResult } from './test-utils/last-result.js';
-import { replaceUncaughtExceptionListener } from './test-utils/unhandled.js';
+import { lastResult } from './util/test/last-result.js';
+import { replaceUncaughtExceptionListener } from './util/test/unhandled.js';
 
 Object.assign(CRSessionClient, {
   clearSingleton() {
@@ -276,6 +276,8 @@ describe('CRSessionClient', () => {
       (badRequest: JsonValue) => {
         let domPort: MessagePort;
         let extPort: MockedPort;
+
+        const console = globalThis.console;
         const mockWarn = vi.fn();
 
         beforeEach(() => {
@@ -286,7 +288,11 @@ describe('CRSessionClient', () => {
           domPort.addEventListener('messageerror', domMessageErrorHandler);
           domPort.start();
 
-          vi.stubGlobal('console', { log: console.log, warn: mockWarn });
+          vi.stubGlobal('console', {
+            error: (...args: unknown[]) => console.error(...args),
+            debug: (...args: unknown[]) => console.debug(...args),
+            warn: mockWarn,
+          });
 
           extPort = lastResult(mockedChannel.mockPorts).onConnectPort;
         });
@@ -330,6 +336,44 @@ describe('CRSessionClient', () => {
                   }) as unknown,
                 },
           });
+        });
+
+        it.fails('responds with a failure and kills session if item is not an event', async () => {
+          domPort.postMessage(badRequest);
+
+          const badRequestHasId =
+            !!badRequest && typeof badRequest === 'object' && 'requestId' in badRequest;
+
+          await vi.waitFor(() =>
+            expect(domMessageHandler).toHaveBeenCalledTimes(badRequestHasId ? 1 : 2),
+          );
+
+          const responses = domMessageHandler?.mock.calls.map(([mev]) => mev.data) ?? [];
+
+          if (!badRequestHasId) {
+            // transport closed if a very invalid message was sent
+            expect(responses.pop()).toBe(false);
+          }
+
+          // in all cases, an error returns
+          expect(responses.pop()).toMatchObject(
+            badRequestHasId
+              ? {
+                  // if the event had an id, it is unsupported
+                  requestId: badRequest['requestId'],
+                  error: {
+                    code: 'unimplemented',
+                    message: 'Unsupported request from client',
+                  },
+                }
+              : {
+                  // if the event did not have an id, it was not an event
+                  error: {
+                    code: 'unknown',
+                    message: 'Unknown item from client',
+                  },
+                },
+          );
         });
       },
     );
@@ -438,8 +482,8 @@ describe('CRSessionClient', () => {
 
       expectNoActivity();
 
-      const nextOnMessageListener = vi.fn<[unknown, ChromePort]>();
-      const nextOnConnectListener = vi.fn((port: ChromePort) =>
+      const nextOnMessageListener = vi.fn<[unknown, chrome.runtime.Port]>();
+      const nextOnConnectListener = vi.fn((port: chrome.runtime.Port) =>
         port.onMessage.addListener(nextOnMessageListener),
       );
       mockedChannel.onConnect.addListener(nextOnConnectListener);
@@ -479,9 +523,9 @@ describe('CRSessionClient', () => {
         requestId: '123',
       };
 
-      const extStreamConnectListener = vi.fn<[ChromePort]>();
-      const extOnMessageListener = vi.fn<[unknown, ChromePort]>();
-      const extSessionConnectListener = vi.fn((port: ChromePort) => {
+      const extStreamConnectListener = vi.fn<[chrome.runtime.Port]>();
+      const extOnMessageListener = vi.fn<[unknown, chrome.runtime.Port]>();
+      const extSessionConnectListener = vi.fn((port: chrome.runtime.Port) => {
         if (port.name.startsWith(testName)) {
           port.onMessage.addListener(extOnMessageListener);
         }
