@@ -10,8 +10,6 @@ import {
 import { ElizaService } from '@buf/connectrpc_eliza.connectrpc_es/connectrpc/eliza/v1/eliza_connect.js';
 import { Any, createRegistry, type PlainMessage } from '@bufbuild/protobuf';
 import type { Transport } from '@connectrpc/connect';
-import { beforeEach, describe, expect, it, Mock, onTestFinished, vi } from 'vitest';
-import { CRSessionClient } from './session-client.js';
 import {
   createChannelTransport,
   type ChannelTransportOptions,
@@ -21,14 +19,19 @@ import {
   isTransportMessage,
   type TransportMessage,
 } from '@penumbra-zone/transport-dom/messages';
+import { mockChannel, MockedChannel } from '@repo/mock-chrome/runtime/connect';
+import { beforeEach, describe, expect, it, Mock, onTestFinished, vi } from 'vitest';
+import { ChannelLabel, nameConnection } from './channel-names.js';
+import { isTransportInitChannel } from './message.js';
+import { CRSessionClient } from './session-client.js';
+import { PortStreamSink } from './stream.js';
+import { lastResult } from './util/test/last-result.js';
+import {
+  replaceUncaughtExceptionListener,
+  replaceUnhandledRejectionListener,
+} from './util/test/unhandled.js';
 
 import ReadableStream from '@penumbra-zone/transport-dom/ReadableStream.from';
-import { mockChannel, MockedChannel } from '@repo/mock-chrome/runtime/connect';
-import { lastResult } from './test-utils/last-result.js';
-import { PortStreamSink } from './stream.js';
-import { isTransportInitChannel } from './message.js';
-import { ChannelLabel, nameConnection } from './channel-names.js';
-import { replaceUncaughtExceptionListener } from './test-utils/unhandled.js';
 
 Object.assign(CRSessionClient, {
   clearSingleton() {
@@ -146,7 +149,7 @@ describe('session client with transport-dom', () => {
       await expect(unaryRequest).resolves.toMatchObject({ message: sayResponse });
     });
 
-    it('should send and receive streaming requests', async () => {
+    it('should receive streaming responses', async () => {
       const streamChannel = nameConnection('test', ChannelLabel.STREAM);
       extOnConnect.mockImplementationOnce((sub: chrome.runtime.Port) => {
         if (sub.name === streamChannel) {
@@ -507,24 +510,19 @@ describe('session client with transport-dom', () => {
         const { uncaughtExceptionListener, restoreUncaughtExceptionListener } =
           replaceUncaughtExceptionListener();
         onTestFinished(restoreUncaughtExceptionListener);
+        const { unhandledRejectionListener, restoreUnhandledRejectionListener } =
+          replaceUnhandledRejectionListener();
+        onTestFinished(restoreUnhandledRejectionListener);
 
         const ac = new AbortController();
         const streamChannel = nameConnection('test', ChannelLabel.STREAM);
-
-        const responses: PlainMessage<IntroduceResponse>[] = [
-          { sentence: 'something remarkably similar' },
-          { sentence: 'something remarkably similar' },
-          { sentence: 'something remarkably similar' },
-          { sentence: 'something remarkably similar' },
-          { sentence: 'something remarkably similar' },
-        ];
 
         extOnConnect.mockImplementationOnce((sub: chrome.runtime.Port) => {
           if (sub.name === streamChannel) {
             void (async () => {
               const stream = new ReadableStream({
                 async start(cont) {
-                  for (const r of responses) {
+                  for (const r of introduceResponse) {
                     await new Promise(resolve => void setTimeout(resolve, defaultTimeoutMs / 3));
                     cont.enqueue(Any.pack(new IntroduceResponse(r)).toJson({ typeRegistry }));
                   }
@@ -532,9 +530,7 @@ describe('session client with transport-dom', () => {
                 },
               });
 
-              await expect(
-                stream.pipeTo(new WritableStream(new PortStreamSink(sub))),
-              ).rejects.toThrow();
+              await stream.pipeTo(new WritableStream(new PortStreamSink(sub)));
             })();
           }
         });
@@ -544,7 +540,7 @@ describe('session client with transport-dom', () => {
             const { requestId } = m;
             p.postMessage({ requestId, channel: streamChannel });
           } else {
-            expect.unreachable();
+            expect.unreachable('no other event types');
           }
         });
 
@@ -573,6 +569,7 @@ describe('session client with transport-dom', () => {
         await new Promise(resolve => void setTimeout(resolve, 50));
 
         expect(uncaughtExceptionListener).not.toHaveBeenCalled();
+        expect(unhandledRejectionListener).not.toHaveBeenCalled();
       });
     });
 

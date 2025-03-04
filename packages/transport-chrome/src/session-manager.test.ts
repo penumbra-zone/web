@@ -1,16 +1,16 @@
 import type { JsonValue } from '@bufbuild/protobuf';
 import { ConnectError } from '@connectrpc/connect';
 import { errorToJson } from '@connectrpc/connect/protocol-connect';
+import type { ChannelHandlerFn } from '@penumbra-zone/transport-dom/adapter';
 import {
   mockChannel,
   type MockedChannel,
   type MockSendersImpl,
 } from '@repo/mock-chrome/runtime/connect';
-import type { ChannelHandlerFn } from '@penumbra-zone/transport-dom/adapter';
 import { beforeEach, describe, expect, it, type MockedFunction, vi } from 'vitest';
 import { ChannelLabel, nameConnection } from './channel-names.js';
 import { CRSessionManager as CRSessionManagerOriginal } from './session-manager.js';
-import { lastResult } from './test-utils/last-result.js';
+import { lastResult } from './util/test/last-result.js';
 
 const CRSessionManager: typeof CRSessionManagerOriginal & {
   // forward-compatible type. third parameter of init is required in new
@@ -198,14 +198,17 @@ describe('CRSessionManager', () => {
       },
     );
 
-    const badSenders = allSenders.sort(() => Math.random() - 0.5).slice(2);
+    const badSendersKeys = Array.from(allSenders.keys())
+      .sort(() => Math.random() - 0.5)
+      .slice(2);
+    const badSenders = badSendersKeys.map(k => allSenders[k]);
     it.fails.each(allSenders)(
-      `should accept or reject sender %# according to external sender validation callback permitting ${badSenders.map(s => allSenders.indexOf(s)).join(', ')}`,
+      `should handle sender %# according to validation callback forbidding ${badSendersKeys.join(', ')}`,
       async someSender => {
-        checkPortSender.mockImplementationOnce(port => {
-          if (badSenders.includes(port.sender!)) {
+        checkPortSender.mockImplementation(port => {
+          if (badSenders.includes(port.sender)) {
             console.log('rejecting', port.sender!.origin);
-            throw new Error('Bad sender');
+            return Promise.reject(new Error('Bad sender'));
           }
           console.log('accepting', port.sender!.origin);
           return Promise.resolve(port as chrome.runtime.Port & { sender: { origin: string } });
@@ -238,12 +241,16 @@ describe('CRSessionManager', () => {
           );
           expect(sessions.size).toBe(1);
         } else {
-          expect(sessions.size).toBe(0);
+          await vi.waitFor(() => expect(sessions.size).toBe(0));
         }
 
         expect(mockHandler).not.toHaveBeenCalled();
 
-        clientPort.postMessage(testRequest);
+        try {
+          clientPort.postMessage(testRequest);
+        } catch (e) {
+          // should fail, but it's not important
+        }
 
         if (!badSenders.includes(someSender)) {
           await vi.waitFor(() =>
