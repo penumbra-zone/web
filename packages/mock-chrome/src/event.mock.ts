@@ -1,5 +1,9 @@
 import { vi, MockedFunction, Mocked } from 'vitest';
 
+// eslint-disable-next-line @typescript-eslint/ban-types -- meeting external type
+type ChromeEvent<T extends Function = (...args: unknown[]) => void> = chrome.events.Event<T>;
+type ChromeEventListener<E> = E extends ChromeEvent<infer T> ? T : never;
+
 /**
  * Mock the listeners manager for any `chrome.events.Event` type, such as
  * `chrome.runtime.ExtensionConnectEvent` or `chrome.runtime.PortMessageEvent`.
