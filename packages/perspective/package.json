@@ -23,7 +23,8 @@
   "exports": {
     "./plan/*": "./src/plan/*.ts",
     "./transaction/*": "./src/transaction/*.ts",
-    "./translators/*": "./src/translators/*.ts"
+    "./translators/*": "./src/translators/*.ts",
+    "./action-view/*": "./src/action-view/*.ts"
   },
   "publishConfig": {
     "exports": {
@@ -38,6 +39,10 @@
       "./translators/*": {
         "types": "./dist/translators/*.d.ts",
         "default": "./dist/translators/*.js"
+      },
+      "./action-view/*": {
+        "types": "./dist/action-view/*.d.ts",
+        "default": "./dist/action-view/*.js"
       }
     }
   },

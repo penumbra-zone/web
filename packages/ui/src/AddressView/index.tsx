@@ -5,14 +5,27 @@ import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 import { CopyToClipboardButton } from '../CopyToClipboardButton';
 import { AddressIcon } from './AddressIcon';
 import { Text } from '../Text';
-import { useDensity } from '../utils/density';
+import { TextVariant } from '../Text/types';
+import { useDensity, Density as DensityType } from '../utils/density';
 import { Density } from '../Density';
+
+const textVariantByDensity = (density: DensityType): TextVariant => {
+  if (density === 'slim') {
+    return 'detail';
+  }
+  if (density === 'compact') {
+    return 'small';
+  }
+  return 'strong';
+};
 
 export interface AddressViewProps {
   addressView: AddressView | undefined;
   copyable?: boolean;
   hideIcon?: boolean;
   truncate?: boolean;
+  /** If true, takes the `altBech32m` field from the address and renders it as-is */
+  external?: boolean;
 }
 
 // Renders an address or an address view.
@@ -22,10 +35,12 @@ export const AddressViewComponent = ({
   copyable = true,
   hideIcon,
   truncate = false,
+  external = false,
 }: AddressViewProps) => {
   const density = useDensity();
+  const address = addressView?.addressView.value?.address;
 
-  if (!addressView?.addressView.value?.address) {
+  if (!address) {
     return null;
   }
 
@@ -34,7 +49,7 @@ export const AddressViewComponent = ({
   // A randomized index has nonzero randomizer bytes
   const isRandomized = addressIndex?.randomizer.some(v => v);
 
-  const encodedAddress = bech32mAddress(addressView.addressView.value.address);
+  const encodedAddress = external ? address.altBech32m : bech32mAddress(address);
 
   // Sub-account selector logic
   const getAccountLabel = (index: number) =>
@@ -42,23 +57,20 @@ export const AddressViewComponent = ({
 
   return (
     <div className={'flex items-center gap-2 text-text-primary'}>
-      {!hideIcon && (
+      {!hideIcon && !external && (
         <div className='shrink'>
-          <AddressIcon
-            address={addressView.addressView.value.address}
-            size={density === 'sparse' ? 24 : 16}
-          />
+          <AddressIcon address={address} size={density === 'sparse' ? 24 : 16} />
         </div>
       )}
 
       <div className={cn('flex items-center', truncate && 'max-w-[150px] truncate')}>
         {addressIndex ? (
-          <Text variant={density === 'sparse' ? 'strong' : 'small'} truncate={truncate}>
+          <Text variant={textVariantByDensity(density)} truncate={truncate}>
             {isRandomized && 'IBC Deposit Address for '}
             {getAccountLabel(addressIndex.account)}
           </Text>
         ) : (
-          <Text variant={density === 'sparse' ? 'strong' : 'small'} truncate={truncate}>
+          <Text variant={textVariantByDensity(density)} truncate={truncate}>
             {encodedAddress}
           </Text>
         )}

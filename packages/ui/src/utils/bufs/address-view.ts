@@ -52,3 +52,14 @@ export const ADDRESS_VIEW_OPAQUE = new AddressView({
     },
   },
 });
+
+export const ADDRESS_VIEW_EXTERNAL = new AddressView({
+  addressView: {
+    case: 'opaque',
+    value: {
+      address: {
+        altBech32m: 'osmo112131243124213412',
+      },
+    },
+  },
+});

@@ -16,6 +16,11 @@ import {
   PositionCloseAction,
   PositionWithdrawAction,
   PositionRewardClaimAction,
+  IbcRelayMsgUpdateClientAction,
+  IbcRelayMsgRecvPacketAction,
+  IbcRelayMsgAcknowledgementAction,
+  IbcRelayMsgTimeoutAction,
+  IbcRelayMsgTimeoutOnCloseAction,
 } from '../utils/bufs';
 
 const OPTIONS: Record<string, ActionViewMessage> = {
@@ -27,6 +32,11 @@ const OPTIONS: Record<string, ActionViewMessage> = {
   PositionClose: PositionCloseAction,
   PositionWithdraw: PositionWithdrawAction,
   PositionRewardClaim: PositionRewardClaimAction,
+  IbcRelayMsgUpdateClient: IbcRelayMsgUpdateClientAction,
+  IbcRelayMsgRecvPacket: IbcRelayMsgRecvPacketAction,
+  IbcRelayMsgAcknowledgement: IbcRelayMsgAcknowledgementAction,
+  IbcRelayMsgTimeout: IbcRelayMsgTimeoutAction,
+  IbcRelayMsgTimeoutOnClose: IbcRelayMsgTimeoutOnCloseAction,
   'Opaque: Spend': SpendActionOpaque,
   'Opaque: Output': OutputActionOpaque,
   'Opaque: Swap': SwapActionOpaque,

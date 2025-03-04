@@ -36,6 +36,7 @@
   "dependencies": {
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
+    "@penumbra-zone/perspective": "workspace:*",
     "@penumbra-zone/protobuf": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
     "@radix-ui/react-dialog": "1.0.5",
@@ -57,6 +58,7 @@
     "tinycolor2": "^1.6.0"
   },
   "devDependencies": {
+    "@bufbuild/protobuf": "^1.10.0",
     "@chromatic-com/storybook": "^3.2.2",
     "@storybook/addon-essentials": "^8.4.2",
     "@storybook/addon-interactions": "^8.4.2",
