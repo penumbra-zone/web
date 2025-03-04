@@ -7,14 +7,16 @@ import {
   throwDisconnectedPortError,
 } from './channel.fixtures.js';
 
-export type MockConnectImpl = (info?: ChromeConnectInfo) => MockedPort;
-export type MockSendersImpl = (info?: ChromeConnectInfo) => {
-  connectSender: ChromeSender;
-  onConnectSender: ChromeSender;
+export type MockConnectImpl = (info?: chrome.runtime.ConnectInfo) => MockedPort;
+
+export type MockSendersImpl = (info?: chrome.runtime.ConnectInfo) => {
+  connectSender: chrome.runtime.MessageSender;
+  onConnectSender: chrome.runtime.MessageSender;
 };
+
 export type MockPortsImpl = (
   mockSenders: MockedFunction<MockSendersImpl>,
-  connectInfo?: ChromeConnectInfo,
+  connectInfo?: chrome.runtime.ConnectInfo,
 ) => {
   connectPort: MockedPort;
   onConnectPort: MockedPort;
@@ -27,15 +29,14 @@ export interface MockedChannel {
   mockPorts: MockedFunction<MockPortsImpl>;
 }
 
-export type MockedPort = Omit<ChromePort, 'onDisconnect' | 'onMessage'> & {
+export interface MockedPort extends chrome.runtime.Port {
   name: string;
-  sender: ChromeSender;
-  disconnect: MockedFunction<ChromePort['disconnect']>;
-  postMessage: MockedFunction<ChromePort['postMessage']>;
+  sender: chrome.runtime.MessageSender;
+  disconnect: MockedFunction<chrome.runtime.Port['disconnect']>;
+  postMessage: MockedFunction<chrome.runtime.Port['postMessage']>;
   onDisconnect: MockedChromeEvent<chrome.runtime.PortDisconnectEvent>;
   onMessage: MockedChromeEvent<chrome.runtime.PortMessageEvent>;
-  asPort: ChromePort;
-};
+}
 
 /**
  * Create a pair of `chrome.runtime.MessageSender` objects, one for the caller
@@ -45,10 +46,10 @@ export type MockedPort = Omit<ChromePort, 'onDisconnect' | 'onMessage'> & {
  * @returns a pair of `chrome.runtime.MessageSender` objects
  */
 export const mockSendersDefault: MockSendersImpl = (
-  connectInfo?: ChromeConnectInfo,
+  connectInfo?: chrome.runtime.ConnectInfo,
 ): {
-  connectSender: ChromeSender;
-  onConnectSender: ChromeSender;
+  connectSender: chrome.runtime.MessageSender;
+  onConnectSender: chrome.runtime.MessageSender;
 } => ({
   connectSender: addTlsChannelId(tabSender, connectInfo),
   onConnectSender: crxSender,
@@ -64,7 +65,7 @@ export const mockSendersDefault: MockSendersImpl = (
  */
 export const mockPortsDefault: MockPortsImpl = (
   mockSenders = mockSendersDefault,
-  connectInfo?: ChromeConnectInfo,
+  connectInfo?: chrome.runtime.ConnectInfo,
 ): {
   connectPort: MockedPort;
   onConnectPort: MockedPort;
@@ -80,20 +81,24 @@ export const mockPortsDefault: MockPortsImpl = (
     onMessage: mockEvent<chrome.runtime.PortMessageEvent>(),
 
     disconnect: vi.fn<[], void>(() => {
-      onConnectPort.onDisconnect.dispatch(onConnectPort.asPort);
+      // nothing is going to arrive anymore
+      connectPort.onDisconnect.listeners.clear();
+      connectPort.onMessage.listeners.clear();
+
+      onConnectPort.onDisconnect.dispatch(onConnectPort);
       connectPort.postMessage.mockImplementation(throwDisconnectedPortError);
       connectPort.disconnect.mockImplementation(() => void null);
       onConnectPort.postMessage.mockImplementation(throwDisconnectedPortError);
       onConnectPort.disconnect.mockImplementation(() => void null);
+
+      // after activation, clean up counterpart listeners
+      onConnectPort.onDisconnect.listeners.clear();
+      onConnectPort.onMessage.listeners.clear();
     }),
 
     postMessage: vi.fn<[unknown], void>(message =>
-      onConnectPort.onMessage.dispatch(JSON.parse(JSON.stringify(message)), onConnectPort.asPort),
+      onConnectPort.onMessage.dispatch(JSON.parse(JSON.stringify(message)), onConnectPort),
     ),
-
-    get asPort() {
-      return connectPort as unknown as ChromePort;
-    },
   };
 
   const onConnectPort: MockedPort = {
@@ -103,45 +108,57 @@ export const mockPortsDefault: MockPortsImpl = (
     onMessage: mockEvent<chrome.runtime.PortMessageEvent>(),
 
     disconnect: vi.fn<[], void>(() => {
-      connectPort.onDisconnect.dispatch(connectPort.asPort);
+      // nothing is going to arrive anymore
+      onConnectPort.onDisconnect.listeners.clear();
+      onConnectPort.onMessage.listeners.clear();
+
+      connectPort.onDisconnect.dispatch(connectPort);
       connectPort.postMessage.mockImplementation(throwDisconnectedPortError);
       connectPort.disconnect.mockImplementation(() => void null);
       onConnectPort.postMessage.mockImplementation(throwDisconnectedPortError);
       onConnectPort.disconnect.mockImplementation(() => void null);
+
+      // after activation, clean up counterpart listeners
+      connectPort.onDisconnect.listeners.clear();
+      connectPort.onMessage.listeners.clear();
     }),
 
     postMessage: vi.fn<[unknown], void>(message =>
-      connectPort.onMessage.dispatch(JSON.parse(JSON.stringify(message)), connectPort.asPort),
+      connectPort.onMessage.dispatch(JSON.parse(JSON.stringify(message)), connectPort),
     ),
-
-    get asPort() {
-      return onConnectPort as unknown as ChromePort;
-    },
   };
 
   return { connectPort, onConnectPort };
 };
 
 /**
- * Call this to mock the chrome.runtime.connect and chrome.runtime.onConnect
- * APIs. To avoid clobbering other stubs, they aren't automatically injected.
+ * Mock the `chrome.runtime.connect` and `chrome.runtime.onConnect` APIs. To
+ * avoid clobbering other stubs, they aren't automatically injected.
+ *
+ * You probably only want to stub one end, and use the other end in your test
+ * functions. If you need bi-directional connections, mock two channels.
+ *
  * You'll need to stub them like this:
  *
  * ```ts
+ * const channel1 = mockChannel({ mockSenders: vi.fn(mySendersImpl) });
+ * const channel2 = mockChannel({ mockSenders: vi.fn(flipSendersImpl(mySendersImpl)) });
  * vi.stubGlobal('chrome', {
  *   // collect all your `chrome` stubs in the same `stubGlobal` call
- *   runtime: { connect: mockConnect, onConnect: mockOnConnect },
+ *   runtime: { connect: channel1.connect, onConnect: channel2.onConnect },
  * });
  * ```
  *
- * You may only want to stub one end, and use the other in your test functions.
+ * If you're just mocking one direction, you can leave out the `mockSenders`
+ * option and it will use the default senders implementation, in which the
+ * extension listens for `onConnect`.
  *
  * Each set of mocks is scoped, and each `connect` call will create a new scoped
  * channel. If multiple mocks must be injected into the same global scope to
  * host different scripts simultaneously, you might manage it with an
  * intermediate layer of mocks.
  *
- * @returns a pair of mocks for chrome.runtime.connect and chrome.runtime.onConnect
+ * @returns a pair of mocks for `chrome.runtime.connect` and `chrome.runtime.onConnect`
  */
 export const mockChannel = ({
   mockSenders = vi.fn(mockSendersDefault),
@@ -151,15 +168,19 @@ export const mockChannel = ({
   const onConnect = mockEvent<chrome.runtime.ExtensionConnectEvent>();
 
   // create the chrome.runtime.connect(...) function
-  const connect = vi.fn((info?: ChromeConnectInfo) => {
+  const connect = vi.fn((info?: chrome.runtime.ConnectInfo) => {
     const { connectPort, onConnectPort } = mockPorts(mockSenders, info);
-    try {
-      onConnect.dispatch(onConnectPort.asPort); // send the .onConnect listener's port
-    } catch (e) {
-      console.debug('onConnect dispatch failed', e);
-    }
+    // send the .onConnect listener's port
+    onConnect.dispatch(onConnectPort);
     return connectPort; // return the .connect() caller's port
   });
 
   return { connect, onConnect, mockSenders, mockPorts };
 };
+
+export const flipSendersImpl =
+  (mockSendersImpl: MockSendersImpl): MockSendersImpl =>
+  (...i) => {
+    const { connectSender, onConnectSender } = mockSendersImpl(...i);
+    return { connectSender: onConnectSender, onConnectSender: connectSender };
+  };
