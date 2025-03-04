@@ -162,6 +162,29 @@ export const useClassification = (
     };
   }
 
+  // for position close/withdraw actions, there are usually no icons – create stub metadata
+  if (type === 'positionClose') {
+    data = {
+      ...data,
+      assets: [
+        new Metadata({
+          display: 'lpnft_closed_',
+        }),
+      ],
+    };
+  }
+
+  if (type === 'positionWithdraw') {
+    data = {
+      ...data,
+      assets: [
+        new Metadata({
+          display: 'lpnft_withdrawn_',
+        }),
+      ],
+    };
+  }
+
   if (type === 'delegate' && action?.actionView.value) {
     // const value = action.actionView.value as Delegate;
     data = {
