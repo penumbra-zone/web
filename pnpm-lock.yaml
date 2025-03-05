@@ -629,6 +629,9 @@ importers:
       '@types/chrome':
         specifier: ^0.0.268
         version: 0.0.268
+      exponential-backoff:
+        specifier: ^3.1.2
+        version: 3.1.2
 
   packages/transport-dom:
     dependencies:

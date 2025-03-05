@@ -5,22 +5,9 @@ import type { ChannelHandlerFn } from '@penumbra-zone/transport-dom/adapter';
 import { mockChannel, type MockedChannel } from '@repo/mock-chrome/runtime/channel.mock';
 import { beforeEach, describe, expect, it, type MockedFunction, vi } from 'vitest';
 import { ChannelLabel, nameConnection } from './channel-names.js';
-import { CRSessionManager as CRSessionManagerOriginal } from './session-manager.js';
+import { CRSessionManager } from './session-manager.js';
 import { lastResult } from './util/test/last-result.js';
 import { getSingleMapItem } from './util/test/get-single-map-item.js';
-
-const CRSessionManager: typeof CRSessionManagerOriginal & {
-  // forward-compatible type. third parameter of init is required in new
-  // signature, but absent in old signature.  a new implementation will use it,
-  // an old implementation will ignore it.
-  init: (
-    prefix: string,
-    handler: ChannelHandlerFn,
-    approvePort: (
-      port: chrome.runtime.Port,
-    ) => Promise<chrome.runtime.Port & { sender: { origin: string } }>,
-  ) => ReturnType<typeof CRSessionManagerOriginal.init>;
-} = CRSessionManagerOriginal;
 
 describe('CRSessionManager', () => {
   let testName: string;
@@ -137,7 +124,7 @@ describe('CRSessionManager', () => {
     const allSenders = [extClient, localhostClient, httpsClient, httpClient];
 
     describe('internal sender validation', () => {
-      it.each(allSenders)(
+      it.fails.each(allSenders)(
         'should handle $origin according to internal sender validation logic',
         async someSender => {
           const badSenders = [httpClient];
@@ -193,7 +180,7 @@ describe('CRSessionManager', () => {
         .sort(() => Math.random() - 0.5)
         .slice(2);
       const badSenders = badSendersKeys.map(k => allSenders[k]);
-      it.fails.each(allSenders)(
+      it.each(allSenders)(
         `should handle sender %# according to async validation callback forbidding ${badSendersKeys.join(', ')}`,
         async someSender => {
           checkPortSender.mockImplementation(port =>
@@ -391,7 +378,7 @@ describe('CRSessionManager', () => {
       expect(clientPort.onDisconnect.dispatch).toHaveBeenCalled();
     });
 
-    it.fails('should remove aborted sessions from the session list', async () => {
+    it('should remove aborted sessions from the session list', async () => {
       const sessions = CRSessionManager.init(testName, mockHandler, checkPortSender);
       expect(sessions.size).toBe(0);
 
@@ -456,7 +443,7 @@ describe('CRSessionManager', () => {
 
       expect(
         sessionsSnapshot.every(
-          session => session.signal.aborted === (session.origin === targetOrigin),
+          session => session.signal.aborted === (session.sender.origin === targetOrigin),
         ),
       ).toBeTruthy();
 
