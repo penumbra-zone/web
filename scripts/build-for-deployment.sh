@@ -29,12 +29,16 @@ while getopts "o:r:" opt; do
 done
 
 cd "$REPO_ROOT" || exit 2
+pnpm install
 pnpm build
 
 cd "$REPO_ROOT/apps/minifront/dist" || exit 2
-zip -r minifront.zip ./*
+# clobber timestamps for the input files to unix epoch, for reproducible zip files.
+find . -type f -exec touch -t 197001010000.00 {} +
+zip -r -X minifront.zip ./*
 mv minifront.zip "${OUTPUT_DIR}"
 
 cd "$REPO_ROOT/apps/node-status/dist" || exit 2
-zip -r node-status.zip ./*
+find . -type f -exec touch -t 197001010000.00 {} +
+zip -r -X node-status.zip ./*
 mv node-status.zip "${OUTPUT_DIR}"
