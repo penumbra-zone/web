@@ -229,11 +229,13 @@ describe('CRSessionClient', () => {
         expect(domMessageHandler).not.toHaveBeenCalled();
         domPort.postMessage(testMessage);
 
-        await vi.waitFor(() =>
-          expect(uncaughtExceptionListener).toHaveBeenLastCalledWith(
-            expect.objectContaining({ name: 'DataCloneError' }),
-            'uncaughtException',
-          ),
+        await vi.waitFor(
+          () =>
+            expect(uncaughtExceptionListener).toHaveBeenLastCalledWith(
+              expect.objectContaining({ name: 'DataCloneError' }),
+              'uncaughtException',
+            ),
+          { timeout: 100 },
         );
 
         expect(domMessageHandler).not.toHaveBeenCalled();
@@ -435,10 +437,12 @@ describe('CRSessionClient', () => {
       await vi.waitFor(() => expect(sessionPort.onDisconnect.dispatch).toHaveBeenCalled());
 
       // disconnect is reported back to the dom. this would poison a typical transport.
-      await vi.waitFor(() =>
-        expect(domMessageHandler).toHaveBeenLastCalledWith(
-          expect.objectContaining({ data: false }),
-        ),
+      await vi.waitFor(
+        () =>
+          expect(domMessageHandler).toHaveBeenLastCalledWith(
+            expect.objectContaining({ data: false }),
+          ),
+        { timeout: 100 },
       );
 
       expect(extPort.onMessage.dispatch).not.toHaveBeenCalled();
@@ -466,10 +470,13 @@ describe('CRSessionClient', () => {
       expect(domMessageHandler).not.toHaveBeenCalled();
 
       // the session should reconnect
-      await vi.waitFor(() => {
-        expect(sessionPort.onDisconnect.dispatch).toHaveBeenCalledOnce();
-        expect(mockedChannel.onConnect.dispatch).toHaveBeenCalledTimes(2);
-      });
+      await vi.waitFor(
+        () => {
+          expect(sessionPort.onDisconnect.dispatch).toHaveBeenCalledOnce();
+          expect(mockedChannel.onConnect.dispatch).toHaveBeenCalledTimes(2);
+        },
+        { timeout: 100 },
+      );
 
       expect(nextOnConnectListener).toHaveBeenCalledOnce();
       expect(nextOnMessageListener).not.toHaveBeenCalled();
