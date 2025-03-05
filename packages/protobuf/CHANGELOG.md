@@ -1,5 +1,11 @@
 # @penumbra-zone/protobuf
 
+## 9.0.0
+
+### Major Changes
+
+- 15d768f: transaction summary support for transaction info rpc
+
 ## 8.0.0
 
 ### Major Changes

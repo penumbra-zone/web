@@ -1,5 +1,18 @@
 # @penumbra-zone/client
 
+## 26.0.0
+
+### Patch Changes
+
+- Updated dependencies [521caaa]
+- Updated dependencies [a51a752]
+- Updated dependencies [521caaa]
+- Updated dependencies [ca71c02]
+- Updated dependencies [a11bfe3]
+- Updated dependencies [15d768f]
+  - @penumbra-zone/transport-dom@7.5.1
+  - @penumbra-zone/protobuf@9.0.0
+
 ## 25.0.0
 
 ### Patch Changes
