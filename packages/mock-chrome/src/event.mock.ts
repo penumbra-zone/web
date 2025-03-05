@@ -20,14 +20,18 @@ export const mockEvent = <E extends ChromeEvent>(
     listeners.forEach(listener => {
       try {
         listener(...params);
-      } catch (error) {
+      } catch (cause) {
         // this is pretending to be 'remote' dispatch, so the exception should
         // not propagate across the dispatch boundary. instead of suppressing
         // it, a voided reject passes it to the unhandled rejection listener.
         void Promise.reject(
-          new Error(`MockedChromeEvent dispatch to listener "${listener.name}" failed`, {
-            cause: { listener, params, error },
-          }),
+          new Error(`MockedChromeEvent dispatch to listener "${listener.name}" failed`, { cause }),
+        );
+
+        console.warn(
+          `MockedChromeEvent dispatch to listener "${listener.name}" failed`,
+          { listener, params },
+          cause,
         );
       }
     });

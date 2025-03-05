@@ -62,7 +62,7 @@ describe('CRSessionClient', () => {
   });
 
   describe('repeated calls to init', () => {
-    it('should return the same port for each call', () => {
+    it.fails('should return the same port for each call', () => {
       const ports: MessagePort[] = [];
 
       for (let i = 0; i < 3; i++) {
@@ -73,7 +73,7 @@ describe('CRSessionClient', () => {
       }
     });
 
-    it.fails('should return a new port for each call', () => {
+    it('should return a new port for each call', () => {
       const ports: MessagePort[] = [];
 
       for (let i = 0; i < 3; i++) {
@@ -148,7 +148,7 @@ describe('CRSessionClient', () => {
         messageEventError = domMessageHandler?.mock.lastCall?.[0]?.data;
       });
 
-      it('responds with failure missing a `requestId`', () => {
+      it.fails('responds with failure missing a `requestId`', () => {
         expect(messageEventError).not.toHaveProperty('requestId');
         expect(messageEventError).toMatchObject({
           error: {
@@ -164,7 +164,7 @@ describe('CRSessionClient', () => {
         });
       });
 
-      it.fails('responds with failure including a `requestId`', () => {
+      it('responds with failure including a `requestId`', () => {
         expect(messageEventError).toMatchObject({
           requestId: testMessage.requestId,
           error: errorToJson(ConnectError.from(postThrowError), undefined),
@@ -188,7 +188,7 @@ describe('CRSessionClient', () => {
         throwObjectResponse = domMessageHandler?.mock.lastCall?.[0].data;
       });
 
-      it('incorrectly responds with failure missing a `requestId`', () => {
+      it.fails('incorrectly responds with failure missing a `requestId`', () => {
         expect(throwObjectResponse).not.toHaveProperty('requestId');
         expect(throwObjectResponse).toMatchObject({
           error: {
@@ -204,7 +204,7 @@ describe('CRSessionClient', () => {
         });
       });
 
-      it.fails('correctly responds with failure including a `requestId`', () => {
+      it('correctly responds with failure including a `requestId`', () => {
         expect(throwObjectResponse).toMatchObject({
           requestId: testMessage.requestId,
           error: errorToJson(ConnectError.from(postThrowObject), undefined),
@@ -221,7 +221,7 @@ describe('CRSessionClient', () => {
         });
       });
 
-      it('does not report failure and throws an uncaught `DataCloneError`', async () => {
+      it.fails('does not report failure and throws an uncaught `DataCloneError`', async () => {
         const { uncaughtExceptionListener, restoreUncaughtExceptionListener } =
           replaceUncaughtExceptionListener(vi.fn());
         onTestFinished(restoreUncaughtExceptionListener);
@@ -229,17 +229,19 @@ describe('CRSessionClient', () => {
         expect(domMessageHandler).not.toHaveBeenCalled();
         domPort.postMessage(testMessage);
 
-        await vi.waitFor(() =>
-          expect(uncaughtExceptionListener).toHaveBeenLastCalledWith(
-            expect.objectContaining({ name: 'DataCloneError' }),
-            'uncaughtException',
-          ),
+        await vi.waitFor(
+          () =>
+            expect(uncaughtExceptionListener).toHaveBeenLastCalledWith(
+              expect.objectContaining({ name: 'DataCloneError' }),
+              'uncaughtException',
+            ),
+          { timeout: 100 },
         );
 
         expect(domMessageHandler).not.toHaveBeenCalled();
       });
 
-      it.fails('reports failure', async () => {
+      it('reports failure', async () => {
         const { uncaughtExceptionListener, restoreUncaughtExceptionListener } =
           replaceUncaughtExceptionListener(vi.fn());
         onTestFinished(restoreUncaughtExceptionListener);
@@ -293,7 +295,7 @@ describe('CRSessionClient', () => {
           expect(domMessageErrorHandler).not.toHaveBeenCalled();
         });
 
-        it('does not respond', async () => {
+        it.fails('does not respond', async () => {
           domPort.postMessage(badRequest);
 
           // can't wait for the absence of an event, so just give it a moment
@@ -335,7 +337,7 @@ describe('CRSessionClient', () => {
           }
         });
 
-        it.fails('responds with failure, and kills the session if not an event', async () => {
+        it('responds with failure, and kills the session if not an event', async () => {
           domPort.postMessage(badRequest);
 
           const badRequestHasId =
@@ -425,7 +427,7 @@ describe('CRSessionClient', () => {
       await expectChannelClosed(sessionPort, extPort, domPort);
     });
 
-    it('sends `false` to dom when the port is disconnected by something else', async () => {
+    it.fails('sends `false` to dom when the port is disconnected by something else', async () => {
       expectNoActivity(sessionPort, extPort, domMessageHandler);
 
       // extension-side disconnect
@@ -435,10 +437,12 @@ describe('CRSessionClient', () => {
       await vi.waitFor(() => expect(sessionPort.onDisconnect.dispatch).toHaveBeenCalled());
 
       // disconnect is reported back to the dom. this would poison a typical transport.
-      await vi.waitFor(() =>
-        expect(domMessageHandler).toHaveBeenLastCalledWith(
-          expect.objectContaining({ data: false }),
-        ),
+      await vi.waitFor(
+        () =>
+          expect(domMessageHandler).toHaveBeenLastCalledWith(
+            expect.objectContaining({ data: false }),
+          ),
+        { timeout: 100 },
       );
 
       expect(extPort.onMessage.dispatch).not.toHaveBeenCalled();
@@ -447,7 +451,7 @@ describe('CRSessionClient', () => {
       await expectChannelClosed(sessionPort, extPort, domPort);
     });
 
-    it.fails('reconnects silently if the port is disconnected by something else', async () => {
+    it('reconnects silently if the port is disconnected by something else', async () => {
       const testRequest: TransportMessage = { message: 'hello', requestId: '123' };
 
       expectNoActivity(sessionPort, extPort, domMessageHandler);
@@ -466,10 +470,13 @@ describe('CRSessionClient', () => {
       expect(domMessageHandler).not.toHaveBeenCalled();
 
       // the session should reconnect
-      await vi.waitFor(() => {
-        expect(sessionPort.onDisconnect.dispatch).toHaveBeenCalledOnce();
-        expect(mockedChannel.onConnect.dispatch).toHaveBeenCalledTimes(2);
-      });
+      await vi.waitFor(
+        () => {
+          expect(sessionPort.onDisconnect.dispatch).toHaveBeenCalledOnce();
+          expect(mockedChannel.onConnect.dispatch).toHaveBeenCalledTimes(2);
+        },
+        { timeout: 100 },
+      );
 
       expect(nextOnConnectListener).toHaveBeenCalledOnce();
       expect(nextOnMessageListener).not.toHaveBeenCalled();
