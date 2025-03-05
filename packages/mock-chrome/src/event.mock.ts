@@ -20,14 +20,25 @@ export const mockEvent = <E extends ChromeEvent>(
     listeners.forEach(listener => {
       try {
         listener(...params);
-      } catch (error) {
-        // this is pretending to be 'remote' dispatch, so the exception should
-        // not propagate across the dispatch boundary. instead of suppressing
-        // it, a voided reject passes it to the unhandled rejection listener.
-        void Promise.reject(
-          new Error(`MockedChromeEvent dispatch to listener "${listener.name}" failed`, {
-            cause: { listener, params, error },
-          }),
+      } catch (cause) {
+        /**
+         * this is pretending to be 'remote' dispatch, so the exception should
+         * not propagate across the dispatch boundary. instead of suppressing
+         * it, a voided reject rethrows it to the unhandled rejection listener.
+         *
+         * the try-catch block is used, instead of simply voiding a promisifed
+         * listener call, to simulate the 'synchronous' properties of chrome
+         * runtime messaging.
+         */
+
+        // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- rethrow
+        void Promise.reject(cause);
+
+        console.warn(
+          'MockedChromeEvent dispatch to',
+          vi.isMockFunction(listener) ? listener.getMockName() : listener.name,
+          'failed',
+          { params, cause },
         );
       }
     });
