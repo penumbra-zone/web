@@ -1,6 +1,6 @@
 import { ValueViewComponent } from '../ValueView';
 import { Density } from '../Density';
-import { SummaryBalance as SummaryBalanceType } from './sum-balances';
+import { SummaryBalance as SummaryBalanceType } from './adapt-effects';
 
 export interface SummaryBalanceProps {
   balance: SummaryBalanceType;

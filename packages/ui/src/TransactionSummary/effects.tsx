@@ -7,7 +7,7 @@ import { Popover } from '../Popover';
 import { Button } from '../Button';
 import { SummaryBalance } from './balance';
 import { Density } from '../Density';
-import { SummaryEffect } from './sum-balances';
+import { SummaryEffect } from './adapt-effects';
 
 export interface SummaryEffectsProps {
   effects: SummaryEffect[];

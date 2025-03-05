@@ -12,7 +12,7 @@ import {
 import { unpackIbcRelay } from '@penumbra-zone/perspective/action-view/ibc';
 import { GetMetadataByAssetId } from '../ActionView/types';
 import { isMetadata } from '../AssetSelector';
-import { sumBalances, SummaryEffect } from './sum-balances';
+import { adaptEffects, SummaryEffect } from './adapt-effects';
 
 interface SummaryData {
   type: TransactionClassification;
@@ -70,7 +70,7 @@ export const useClassification = (
   const { type, action } = classifyTransaction(info.view);
 
   // categorize and sum up transaction summary effects
-  const effects = sumBalances(info.summary?.effects ?? [], getMetadataByAssetId);
+  const effects = adaptEffects(info.summary?.effects ?? [], getMetadataByAssetId);
 
   // extract the assets from the main transaction action
   const relevantAssets = findRelevantAssets(action);
