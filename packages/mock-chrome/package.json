@@ -14,8 +14,9 @@
     "test": "vitest run"
   },
   "exports": {
-    "./*": "./src/*.api..ts",
-    "./runtime/*": "./src/runtime/*.api.ts"
+    "./*.mock": "./src/*.mock.ts",
+    "./runtime/*.mock": "./src/runtime/*.mock.ts",
+    "./runtime/connect": "./src/runtime/connect.api.ts"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.268"
