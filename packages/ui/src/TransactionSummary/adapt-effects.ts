@@ -46,22 +46,24 @@ export const adaptEffects = (
 
         // filter out the LpNFT and AuctionNFT assets
         if (
-          !assetPatterns.lpNft.matches(asset.display) ||
-          !assetPatterns.auctionNft.matches(asset.display)
+          assetPatterns.lpNft.matches(asset.display) ||
+          assetPatterns.auctionNft.matches(asset.display)
         ) {
-          accum.push({
-            negative: isNegative,
-            view: new ValueView({
-              valueView: {
-                case: 'knownAssetId',
-                value: {
-                  metadata: asset,
-                  amount: balance.value?.amount,
-                },
-              },
-            }),
-          });
+          return accum;
         }
+
+        accum.push({
+          negative: isNegative,
+          view: new ValueView({
+            valueView: {
+              case: 'knownAssetId',
+              value: {
+                metadata: asset,
+                amount: balance.value?.amount,
+              },
+            },
+          }),
+        });
 
         return accum;
       },
