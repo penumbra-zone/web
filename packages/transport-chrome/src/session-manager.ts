@@ -2,7 +2,8 @@ import { ConnectError } from '@connectrpc/connect';
 import { errorToJson } from '@connectrpc/connect/protocol-connect';
 import { ChannelLabel, nameConnection, parseConnectionName } from './channel-names.js';
 import { isTransportInitChannel, TransportInitChannel } from './message.js';
-import { PortStreamSink, PortStreamSource } from './stream.js';
+import { PortStreamSink } from './stream/sink.js';
+import { PortStreamSource } from './stream/source.js';
 import { ChannelHandlerFn } from '@penumbra-zone/transport-dom/adapter';
 import {
   isTransportAbort,

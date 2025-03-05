@@ -24,7 +24,7 @@ import { beforeEach, describe, expect, it, Mock, onTestFinished, vi } from 'vite
 import { ChannelLabel, nameConnection } from './channel-names.js';
 import { isTransportInitChannel } from './message.js';
 import { CRSessionClient } from './session-client.js';
-import { PortStreamSink } from './stream.js';
+import { PortStreamSink } from './stream/sink.js';
 import { failsOrUnreachable } from './util/test/acceptable-unreachable.js';
 import { lastResult } from './util/test/last-result.js';
 import {
