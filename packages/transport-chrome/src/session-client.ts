@@ -5,13 +5,16 @@ import {
   isTransportError,
   isTransportEvent,
   isTransportMessage,
-  TransportAbort,
-  TransportError,
-  TransportMessage,
-  TransportStream,
+  isTransportStream,
+  type TransportAbort,
+  type TransportError,
+  type TransportMessage,
+  type TransportStream,
 } from '@penumbra-zone/transport-dom/messages';
+import { backOff } from 'exponential-backoff';
 import { ChannelLabel, nameConnection } from './channel-names.js';
 import { isTransportInitChannel, type TransportInitChannel } from './message.js';
+import { PortStreamSink } from './stream/sink.js';
 import { PortStreamSource } from './stream/source.js';
 
 /**
@@ -31,7 +34,8 @@ import { PortStreamSource } from './stream/source.js';
  */
 export class CRSessionClient {
   private readonly sessionName: string;
-  private servicePort: chrome.runtime.Port;
+  private servicePort?: chrome.runtime.Port;
+  private sessionAc = new AbortController();
 
   /** Private constructor. Launch a session with `CRSessionClient.init`. */
   private constructor(
@@ -41,13 +45,27 @@ export class CRSessionClient {
     // create a permanent, unique session name
     this.sessionName = nameConnection(this.managerId, ChannelLabel.TRANSPORT);
 
-    // listen to service
-    this.servicePort = chrome.runtime.connect({
-      includeTlsChannelId: true,
-      name: this.sessionName,
+    // connect to service
+    this.servicePort = this.connect();
+
+    this.sessionAc.signal.addEventListener('abort', () => {
+      if (this.sessionAc.signal.reason !== false) {
+        console.error('session-client aborted', this.sessionAc.signal.reason);
+        this.reportError({
+          requestId: undefined,
+          error: errorToJson(ConnectError.from(this.sessionAc.signal.reason), undefined),
+        });
+      }
+      this.clientPort.postMessage(false);
+      this.clientPort.close();
+      this.servicePort?.disconnect();
+
+      // destroy this instance
+      // @ts-expect-error -- violating type
+      delete this.reconnect;
+      // @ts-expect-error -- violating type
+      delete this.connect;
     });
-    this.servicePort.onDisconnect.addListener(this.reconnect);
-    this.servicePort.onMessage.addListener(this.serviceListener);
 
     // listen to client
     this.clientPort.addEventListener('message', this.clientListener);
@@ -58,6 +76,16 @@ export class CRSessionClient {
     }
     this.clientPort.start();
   }
+
+  private connect = () => {
+    const port = chrome.runtime.connect({
+      name: this.sessionName,
+      includeTlsChannelId: true,
+    });
+    port.onMessage.addListener(this.serviceListener);
+    port.onDisconnect.addListener(this.reconnect);
+    return port;
+  };
 
   /**
    * Establishes a new session client.
@@ -72,49 +100,25 @@ export class CRSessionClient {
   }
 
   /**
-   * Serialize and report a local error to the client. If `requestId` is
-   * provided, it will be used to reject that pending request.
-   */
-  private clientPostError = (cause: unknown, requestId?: string) => {
-    const connectError = ConnectError.from(cause);
-    if (globalThis.__DEV__) {
-      console.warn('session-client error', cause, connectError);
-    }
-    const metadata: [string, string][] = Array.from(connectError.metadata);
-    const msg: TransportError<string | undefined> = {
-      requestId,
-      metadata: metadata.length ? metadata : undefined,
-      error: errorToJson(connectError, undefined),
-    };
-    this.clientPort.postMessage(msg);
-  };
-
-  /**
-   * Used to tear down this session when the client announces channel closure.
-   *
-   * Announces closure from this side towards the document, and ensures closure
-   * of both ports. Listeners are automatically gargbage-collected. This session
-   * is complete.
-   */
-  private disconnect = () => {
-    this.clientPort.postMessage(false);
-
-    this.clientPort.close();
-    this.servicePort.disconnect();
-  };
-
-  /**
    * Used when the service port disconnects. Tears down the service port and
    * reconnects, creating a new service port.
    */
-  private reconnect = () => {
-    this.servicePort = chrome.runtime.connect({
-      name: this.sessionName,
-      includeTlsChannelId: true,
-    });
-    this.servicePort.onMessage.addListener(this.serviceListener);
-    this.servicePort.onDisconnect.addListener(this.reconnect);
-  };
+  private reconnect = () =>
+    void backOff(
+      () => {
+        this.servicePort = this.connect();
+        return Promise.resolve();
+      },
+      {
+        maxDelay: 10000,
+        numOfAttempts: 10,
+        retry: (e, attemptNumber) => {
+          console.error('session-client reconnect failed', e, attemptNumber);
+          this.servicePort = undefined;
+          return true;
+        },
+      },
+    );
 
   /**
    * Listens for messages from the client, and forwards them to the service.
@@ -131,26 +135,41 @@ export class CRSessionClient {
   private clientListener = (ev: MessageEvent<unknown>) => {
     if (ev.data === false) {
       // client announced closure
-      this.disconnect();
-    } else if (isTransportEvent(ev.data)) {
+      this.sessionAc.abort(false);
+    } else if (!isTransportEvent(ev.data)) {
+      // something is wrong, and we can't scope it to a request
+      this.sessionAc.abort(new Error('Unknown item from client', { cause: ev.data }));
+    } else {
       const tev = ev.data;
       try {
-        if (
-          // abort control for a specific request
-          isTransportAbort(tev) ||
-          // request, client message
-          isTransportMessage(tev)
-        ) {
-          this.servicePostRequest(tev);
+        if (isTransportAbort(tev)) {
+          // abort control for some request
+          this.postAbort(tev);
+        } else if (isTransportMessage(tev)) {
+          // message request
+          this.postRequest(tev);
+        } else if (isTransportStream(tev) && globalThis.__DEV__) {
+          // streaming request
+          this.postRequest(this.offerStreamRequest(tev));
         } else {
-          // something unsupported
-          throw new ConnectError('Unsupported request from client', Code.Unimplemented);
+          throw new ConnectError(
+            'Unsupported request from client',
+            Code.Unimplemented,
+            undefined,
+            undefined,
+            tev,
+          );
         }
       } catch (cause) {
-        this.clientPostError(cause, tev.requestId);
+        // something went wrong, but it's scoped to this event
+        if (globalThis.__DEV__) {
+          console.debug('session-client request error', cause, tev);
+        }
+        this.reportError({
+          requestId: tev.requestId,
+          error: errorToJson(ConnectError.from(cause), undefined),
+        });
       }
-    } else {
-      this.clientPostError(new ConnectError('Unknown item from client', Code.Unknown));
     }
   };
 
@@ -160,32 +179,41 @@ export class CRSessionClient {
    * If an unidentifiable event arrives, this handler will report the failure
    * back to the specific request if possible, or, as a top-level transport
    * error.
-   *
-   * @param msg service-emitted event
    */
-  private serviceListener = (msg: unknown) => {
-    if (isTransportEvent(msg)) {
-      // event contains a requestId
-      const { requestId } = msg;
-      try {
-        if (isTransportError(msg)) {
-          // error control for a specific request
-          this.clientPostResponse(msg);
-        } else if (isTransportMessage(msg)) {
-          // response, server message
-          this.clientPostResponse(msg);
-        } else if (isTransportInitChannel(msg)) {
-          // response, server stream
-          this.clientPostResponse(this.acceptChannelStreamResponse(msg));
-        } else {
-          // something unsupported
-          throw ConnectError.from('Unsupported response from service', Code.Unimplemented);
-        }
-      } catch (failure) {
-        this.clientPostError(failure, requestId);
-      }
+  private serviceListener = (tev: unknown) => {
+    if (!isTransportEvent(tev)) {
+      // something is wrong, and we can't scope it to a request
+      this.sessionAc.abort(new Error('Unknown item from service', { cause: tev }));
     } else {
-      this.clientPostError(ConnectError.from('Unknown item from service'), undefined);
+      try {
+        if (isTransportError(tev)) {
+          // error control for some request
+          this.reportError(tev);
+        } else if (isTransportMessage(tev)) {
+          // message response
+          this.reportResponse(tev);
+        } else if (isTransportInitChannel(tev)) {
+          // streaming response
+          this.reportResponse(this.acceptStreamResponse(tev));
+        } else {
+          throw new ConnectError(
+            'Unsupported response from service',
+            Code.Unimplemented,
+            undefined,
+            undefined,
+            tev,
+          );
+        }
+      } catch (cause) {
+        // something went wrong, but it's scoped to this event
+        if (globalThis.__DEV__) {
+          console.debug('session-client response error', cause, tev);
+        }
+        this.reportError({
+          requestId: tev.requestId,
+          error: errorToJson(ConnectError.from(cause), undefined),
+        });
+      }
     }
   };
 
@@ -197,22 +225,70 @@ export class CRSessionClient {
    * @param requestId a request identifier
    * @returns a response stream
    */
-  private acceptChannelStreamResponse = ({ requestId, channel: name }: TransportInitChannel) => {
-    const stream = new ReadableStream(new PortStreamSource(chrome.runtime.connect({ name })));
-    return { requestId, stream };
+  private acceptStreamResponse = ({ channel, ...rest }: TransportInitChannel): TransportStream => {
+    const sourcePort = chrome.runtime.connect({ name: channel });
+    const stream = new ReadableStream(new PortStreamSource(sourcePort));
+    return { ...rest, stream };
   };
 
-  /** Forward a service-emitted response or error (response failure) to the client. */
-  private clientPostResponse = (
-    msg: TransportMessage | TransportStream | TransportError<string>,
-  ) => {
+  /**
+   * Support client-stream requests. Sinks a stream into a subchannel,
+   * represented by the returned channel init message.
+   *
+   * @param stream a stream of JSON messages
+   * @param requestId a request identifier
+   * @returns a message identifying the subchannel
+   */
+  private offerStreamRequest = ({ stream, ...rest }: TransportStream): TransportInitChannel => {
+    const channel = nameConnection(this.managerId, ChannelLabel.STREAM);
+
+    const initTimeoutMs = Number(new Headers(rest.header).get('headerTimeout') ?? 60_000);
+
+    /** Listen for connection by unique name, accepting this client-stream
+     * request. Content scripts only connect to the parent extension. */
+    const sinkListener = (sinkPort: chrome.runtime.Port) => {
+      if (sinkPort.name === channel) {
+        chrome.runtime.onConnect.removeListener(sinkListener);
+        const sink = new WritableStream(new PortStreamSink(sinkPort));
+        void stream.pipeTo(sink, { signal: this.sessionAc.signal }).catch((cause: unknown) => {
+          if (globalThis.__DEV__) {
+            console.debug('offerStreamRequest pipe failed', cause);
+          }
+        });
+      }
+    };
+
+    chrome.runtime.onConnect.addListener(sinkListener);
+
+    AbortSignal.any([this.sessionAc.signal, AbortSignal.timeout(initTimeoutMs)]).addEventListener(
+      'abort',
+      () => chrome.runtime.onConnect.removeListener(sinkListener),
+    );
+
+    return { ...rest, channel };
+  };
+
+  private assertService = (): chrome.runtime.Port => {
+    if (!this.servicePort) {
+      throw ConnectError.from('Not connected', Code.Unavailable);
+    }
+    return this.servicePort;
+  };
+
+  /** Forward a client-emitted request or request cancellation to the service. */
+  private postRequest = (msg: TransportMessage | TransportInitChannel) =>
+    this.assertService().postMessage(msg);
+
+  /** Forward a client-emitted cancellation to the service. */
+  private postAbort = (msg: TransportAbort) => this.assertService().postMessage(msg);
+
+  /** Report an service-emitted error or a locally-raised error to the client. */
+  private reportError = (msg: TransportError<string | undefined>) =>
+    this.clientPort.postMessage(msg);
+
+  /** Forward a service-emitted response to the client. */
+  private reportResponse = (msg: TransportMessage | TransportStream) =>
     'stream' in msg
       ? this.clientPort.postMessage(msg, [msg.stream])
       : this.clientPort.postMessage(msg);
-  };
-
-  /** Forward a client-emitted request or abort (request cancel) to the service. */
-  private servicePostRequest = (msg: TransportMessage | TransportInitChannel | TransportAbort) => {
-    this.servicePort.postMessage(msg);
-  };
 }
