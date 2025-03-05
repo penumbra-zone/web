@@ -119,3 +119,23 @@ export const PIZZA_METADATA = new Metadata({
 export const UNKNOWN_TOKEN_METADATA = new Metadata({
   penumbraAssetId: { inner: new Uint8Array([]) },
 });
+
+export const LPNFT_METADATA = Metadata.fromJson({
+  name: '',
+  description: '',
+  base: 'lpnft_opened_plpid1m6ur4fdafnmv2fp65rvwxhx6gztm4pghczesxs4xy89se85gqn3qv4sdjp',
+  display: 'lpnft_opened_plpid1m6ur4fdafnmv2fp65rvwxhx6gztm4pghczesxs4xy89se85gqn3qv4sdjp',
+  symbol: 'lpNft:opened(m6ur4fdafnmv2fp65rvwxhx6gztm4pghczesxs4xy89se85gqn3qv4sdjp)',
+  images: [],
+  priorityScore: '30',
+  denomUnits: [
+    {
+      denom: 'lpnft_opened_plpid1m6ur4fdafnmv2fp65rvwxhx6gztm4pghczesxs4xy89se85gqn3qv4sdjp',
+      exponent: 0,
+      aliases: [],
+    },
+  ],
+  penumbraAssetId: {
+    inner: 'rtchIR1VaNZpAxSMh7+Wf2VU8Kfs9b5qDE+kMTGsRww=',
+  },
+});

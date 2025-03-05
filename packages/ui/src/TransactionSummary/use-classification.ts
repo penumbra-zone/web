@@ -12,9 +12,11 @@ import {
 import { unpackIbcRelay } from '@penumbra-zone/perspective/action-view/ibc';
 import { GetMetadataByAssetId } from '../ActionView/types';
 import { isMetadata } from '../AssetSelector';
+import { adaptEffects, SummaryEffect } from './adapt-effects';
 
 interface SummaryData {
   type: TransactionClassification;
+  effects: SummaryEffect[];
   label: string;
   memo?: string;
   additionalText?: string;
@@ -67,6 +69,9 @@ export const useClassification = (
   // classify the transaction and extract the main action
   const { type, action } = classifyTransaction(info.view);
 
+  // categorize and sum up transaction summary effects
+  const effects = adaptEffects(info.summary?.effects ?? [], getMetadataByAssetId);
+
   // extract the assets from the main transaction action
   const relevantAssets = findRelevantAssets(action);
   const assets = useMemo(() => {
@@ -87,6 +92,7 @@ export const useClassification = (
   let data: SummaryData = {
     type,
     assets,
+    effects,
     label: CLASSIFICATION_LABEL_MAP[type],
   };
 
@@ -153,6 +159,29 @@ export const useClassification = (
           },
         },
       }),
+    };
+  }
+
+  // for position close/withdraw actions, there are usually no icons – create stub metadata
+  if (type === 'positionClose') {
+    data = {
+      ...data,
+      assets: [
+        new Metadata({
+          display: 'lpnft_closed_',
+        }),
+      ],
+    };
+  }
+
+  if (type === 'positionWithdraw') {
+    data = {
+      ...data,
+      assets: [
+        new Metadata({
+          display: 'lpnft_withdrawn_',
+        }),
+      ],
     };
   }
 

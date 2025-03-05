@@ -1,3 +1,4 @@
+import cn from 'clsx';
 import { ReactNode, useMemo } from 'react';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getDisplay } from '@penumbra-zone/getters/metadata';
@@ -5,7 +6,7 @@ import { assetPatterns } from '@penumbra-zone/types/assets';
 import { Identicon } from '../Identicon';
 import { DelegationTokenIcon } from './delegation-token';
 import { UnbondingTokenIcon } from './unbonding-token';
-import cn from 'clsx';
+import { CharacterIcon } from './character-icon';
 
 export type Size = 'lg' | 'md' | 'sm';
 
@@ -35,6 +36,8 @@ export const AssetIcon = ({ metadata, size = 'md', hideBadge, zIndex }: AssetIco
   const display = getDisplay.optional(metadata);
   const isDelegationToken = display ? assetPatterns.delegationToken.matches(display) : false;
   const isUnbondingToken = display ? assetPatterns.unbondingToken.matches(display) : false;
+  const isPositionToken = display ? assetPatterns.lpNft.matches(display) : false;
+  const isAuctionToken = display ? assetPatterns.auctionNft.matches(display) : false;
 
   let assetIcon: ReactNode;
   if (icon) {
@@ -47,6 +50,10 @@ export const AssetIcon = ({ metadata, size = 'md', hideBadge, zIndex }: AssetIco
      * logo -- e.g., with the validator ID superimposed over the validator logo.
      */
     assetIcon = <UnbondingTokenIcon displayDenom={display} />;
+  } else if (isPositionToken) {
+    assetIcon = <CharacterIcon character='P' />;
+  } else if (isAuctionToken) {
+    assetIcon = <CharacterIcon character='A' />;
   } else {
     assetIcon = <Identicon uniqueIdentifier={metadata?.symbol ?? '?'} type='solid' />;
   }

@@ -30,6 +30,9 @@ export interface UnbondingCaptureGroups {
 export interface AssetPatterns {
   auctionNft: RegexMatcher<AuctionNftCaptureGroups>;
   lpNft: RegexMatcher;
+  lpNftOpened: RegexMatcher;
+  lpNftClosed: RegexMatcher;
+  lpNftWithdrawn: RegexMatcher;
   delegationToken: RegexMatcher<DelegationCaptureGroups>;
   proposalNft: RegexMatcher;
   unbondingToken: RegexMatcher<UnbondingCaptureGroups>;
@@ -75,6 +78,9 @@ export const assetPatterns: AssetPatterns = {
     /^auctionnft_(?<seqNum>[0-9]+)_(?<auctionId>pauctid1[a-zA-HJ-NP-Z0-9]+)$/,
   ),
   lpNft: new RegexMatcher(/^lpnft_/),
+  lpNftOpened: new RegexMatcher(/^lpnft_opened_/),
+  lpNftClosed: new RegexMatcher(/^lpnft_closed_/),
+  lpNftWithdrawn: new RegexMatcher(/^lpnft_withdrawn_/),
   // TODO: This should be a regex on the base denom and not the display denom
   delegationToken: new RegexMatcher(
     /^delegation_(?<idKey>penumbravalid1(?<id>[a-zA-HJ-NP-Z0-9]+))$/,

@@ -45,15 +45,13 @@ export const TransactionSummary = ({
   endAdornment,
   as: Container = 'div',
 }: TransactionSummaryProps) => {
-  const { label, assets, additionalText, address, memo, type, tickers } = useClassification(
-    info,
-    getMetadataByAssetId,
-  );
+  const { label, assets, additionalText, address, memo, type, tickers, effects } =
+    useClassification(info, getMetadataByAssetId);
 
   return (
     <Container
       className={cn(
-        'h-[72px] w-full px-3  rounded-sm flex items-center gap-2 text-text-primary',
+        'group h-[72px] w-full px-3  rounded-sm flex items-center gap-2 text-text-primary',
         'bg-other-tonalFill5 transition-colors',
         onClick && 'hover:bg-action-hoverOverlay cursor-pointer',
       )}
@@ -92,10 +90,7 @@ export const TransactionSummary = ({
           </Density>
         </div>
 
-        <SummaryEffects
-          effects={info.summary?.effects ?? []}
-          getMetadataByAssetId={getMetadataByAssetId}
-        />
+        <SummaryEffects effects={effects} />
 
         {memo && (
           <Text as='em' color='text.secondary' detailTechnical>
@@ -104,7 +99,11 @@ export const TransactionSummary = ({
         )}
       </div>
 
-      {endAdornment}
+      {endAdornment && (
+        <div className='flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100'>
+          {endAdornment}
+        </div>
+      )}
     </Container>
   );
 };
