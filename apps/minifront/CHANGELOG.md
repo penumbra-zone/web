@@ -1,5 +1,32 @@
 # minifront
 
+## 6.30.0
+
+### Minor Changes
+
+- 68a1cd5: reduce status stream timeout
+- 871eeba: re-request status stream when failed
+
+### Patch Changes
+
+- Updated dependencies [521caaa]
+- Updated dependencies [a51a752]
+- Updated dependencies [521caaa]
+- Updated dependencies [ca71c02]
+- Updated dependencies [a11bfe3]
+- Updated dependencies [2dac6ab]
+- Updated dependencies [15d768f]
+- Updated dependencies [aaaa775]
+  - @penumbra-zone/transport-dom@7.5.1
+  - @penumbra-zone/ui-deprecated@17.0.0
+  - @penumbra-zone/protobuf@9.0.0
+  - @penumbra-zone/types@32.0.0
+  - @penumbra-zone/perspective@50.0.0
+  - @penumbra-zone/client@26.0.0
+  - @penumbra-zone/bech32m@15.0.0
+  - @penumbra-zone/getters@25.0.0
+  - @penumbra-zone/crypto-web@39.0.0
+
 ## 6.29.1
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @penumbra-zone/transport-dom
 
+## 7.5.1
+
+### Patch Changes
+
+- 521caaa: convey timeout in request headers
+- a51a752: disable unsupported client-streaming requests. if you are experimenting with
+  development of client-streaming requests, define the `globalThis.__DEV__` flag
+  in your bundler to enable them.
+- 521caaa: exclude non-transferable type member from internal message types
+- ca71c02: added tests (no external change)
+- a11bfe3: response streams will now respect the request's timeout configuration.
+
 ## 7.5.0
 
 ### Minor Changes

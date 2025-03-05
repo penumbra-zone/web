@@ -1,5 +1,23 @@
 # @penumbra-zone/ui
 
+## 13.14.0
+
+### Minor Changes
+
+- aaaa775: perspective: update Transaction classification, implement `findRelevantAssets` function
+  ui: add `TransactionSummary` components
+
+### Patch Changes
+
+- fb5dcb6: Fix TransactionSummary component by improving transaction rendering related to positions and auctions
+- Updated dependencies [15d768f]
+- Updated dependencies [aaaa775]
+  - @penumbra-zone/protobuf@9.0.0
+  - @penumbra-zone/types@32.0.0
+  - @penumbra-zone/perspective@50.0.0
+  - @penumbra-zone/bech32m@15.0.0
+  - @penumbra-zone/getters@25.0.0
+
 ## 13.13.0
 
 ### Minor Changes

@@ -1,5 +1,20 @@
 # @penumbra-zone/storage
 
+## 50.0.0
+
+### Minor Changes
+
+- 15d768f: transaction summary support for transaction info rpc
+
+### Patch Changes
+
+- Updated dependencies [15d768f]
+  - @penumbra-zone/protobuf@9.0.0
+  - @penumbra-zone/types@32.0.0
+  - @penumbra-zone/wasm@43.0.0
+  - @penumbra-zone/bech32m@15.0.0
+  - @penumbra-zone/getters@25.0.0
+
 ## 49.0.0
 
 ### Patch Changes

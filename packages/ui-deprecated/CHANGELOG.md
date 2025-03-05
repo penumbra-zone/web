@@ -1,5 +1,17 @@
 # @penumbra-zone/ui
 
+## 17.0.0
+
+### Patch Changes
+
+- 2dac6ab: detect genesis sync state more accurately
+- Updated dependencies [15d768f]
+- Updated dependencies [aaaa775]
+  - @penumbra-zone/protobuf@9.0.0
+  - @penumbra-zone/types@32.0.0
+  - @penumbra-zone/perspective@50.0.0
+  - @penumbra-zone/bech32m@15.0.0
+
 ## 16.0.1
 
 ### Patch Changes
