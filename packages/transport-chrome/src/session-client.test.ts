@@ -491,6 +491,90 @@ describe('CRSessionClient', () => {
         ),
       );
     });
+
+    it.fails('reconnects for new requests if necessary', async () => {
+      const testRequest: TransportMessage = { message: 'hello', requestId: '123' };
+
+      expectNoActivity(sessionPort, extPort, domMessageHandler);
+
+      const nextOnMessageListener = vi.fn<[unknown, chrome.runtime.Port]>();
+      const nextOnConnectListener = vi.fn((port: chrome.runtime.Port) =>
+        port.onMessage.addListener(nextOnMessageListener),
+      );
+      mockedChannel.onConnect.addListener(nextOnConnectListener);
+
+      // extension-side disconnect
+      extPort.disconnect();
+      // the session should be disconnected,
+      await vi.waitFor(() => expect(sessionPort.onDisconnect.dispatch).toHaveBeenCalledOnce(), {
+        timeout: 100,
+      });
+
+      // page will not be notified of the disconnect
+      expect(domMessageHandler).not.toHaveBeenCalled();
+
+      // kill some time for async
+      await new Promise(resolve => void setTimeout(resolve, 50));
+
+      // and should not have immediately reconnected
+      expect(nextOnConnectListener).not.toHaveBeenCalled();
+      expect(mockedChannel.onConnect.dispatch).toHaveBeenCalledOnce();
+
+      // try to send a message after disconnect
+      domPort.postMessage(testRequest);
+
+      // the session should reconnect and deliver the message
+      await vi.waitFor(
+        () => {
+          expect(nextOnConnectListener).toHaveBeenCalled();
+          expect(nextOnMessageListener).toHaveBeenCalledWith(
+            testRequest,
+            lastResult(mockedChannel.mockPorts).onConnectPort,
+          );
+        },
+        { timeout: 100 },
+      );
+
+      // total number of `onConnect` expected
+      expect(mockedChannel.onConnect.dispatch).toHaveBeenCalledTimes(2);
+    });
+
+    it.fails('kills the transport if the session experiences context loss', async () => {
+      const transportError = {
+        requestId: undefined,
+        error: { code: 'unavailable', message: 'Extension context invalidated.' },
+      };
+
+      expectNoActivity(sessionPort, extPort, domMessageHandler);
+
+      const testRequest: TransportMessage = { message: 'hello', requestId: '123' };
+
+      expectNoActivity(sessionPort, extPort, domMessageHandler);
+
+      mockedChannel.connect.mockImplementation(() => {
+        throw new Error(transportError.error.message);
+      });
+
+      // extension-side disconnect
+      extPort.disconnect();
+
+      // the session should be disconnected
+      await vi.waitFor(() => expect(sessionPort.onDisconnect.dispatch).toHaveBeenCalledOnce(), {
+        timeout: 100,
+      });
+
+      // try to send a message after disconnect
+      domPort.postMessage(testRequest);
+
+      // the session will respond twice
+      await vi.waitFor(() => expect(domMessageHandler).toHaveBeenCalledTimes(2), { timeout: 100 });
+
+      // by reporting an error with `Code.Unavailable`, then closing the transport
+      const requiredResponses = [false, transportError];
+      for (const [{ data: tev }] of domMessageHandler!.mock.calls) {
+        expect(tev).toMatchObject(requiredResponses.pop()!);
+      }
+    });
   });
 
   describe('stream subchannels', () => {
