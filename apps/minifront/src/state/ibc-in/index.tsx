@@ -18,9 +18,7 @@ import { EncodeObject } from '@cosmjs/proto-signing';
 import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
 import { parseRevisionNumberFromChainId } from './parse-revision-number-from-chain-id';
 import { penumbra } from '../../penumbra.ts';
-import { TendermintProxyService, ViewService } from '@penumbra-zone/protobuf';
-import { TransparentAddressRequest } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { bech32ChainIds } from '../shared.ts';
+import { TendermintProxyService } from '@penumbra-zone/protobuf';
 
 export interface IbcInSlice {
   selectedChain?: ChainInfo;
@@ -193,7 +191,7 @@ async function execute(
     throw new Error('Penumbra chain id could not be retrieved');
   }
 
-  let penumbraAddress = await getPenumbraAddress(account, selectedChain.chainId);
+  const penumbraAddress = await getPenumbraAddress(account, selectedChain.chainId);
   if (!penumbraAddress) {
     throw new Error('Penumbra address not available');
   }
@@ -202,24 +200,6 @@ async function execute(
   const assetMetadata = augmentToAsset(coin.raw.denom, selectedChain.chainName);
 
   const transferToken = fromDisplayAmount(assetMetadata, coin.displayDenom, amount);
-
-  // Temporary: detect USDC Noble inbound transfers, and use a transparent (t-addr) encoding
-  // to ensure Bech32 encoding compatibility.
-  if (transferToken.denom.includes('uusdc') && bech32ChainIds.includes(selectedChain.chainId)) {
-    // Set the receiver address to the t-addr encoding.
-    try {
-      const { address: t_addr, encoding: encoding } = await penumbra
-        .service(ViewService)
-        .transparentAddress(new TransparentAddressRequest({}));
-      if (!t_addr) {
-        throw new Error('Error with generating IBC transparent address');
-      }
-
-      penumbraAddress = encoding;
-    } catch (_) {
-      throw new Error('Error with generating IBC transparent address');
-    }
-  }
 
   const params: MsgTransfer = {
     sourcePort: 'transfer',

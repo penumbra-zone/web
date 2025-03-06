@@ -10,6 +10,4 @@ export const StringLength = {
   penumbravalid: 72,
   penumbrawalletid: 75,
   plpid: 64,
-  penumbracompat1: 150,
-  tpenumbra: 68,
 } as const satisfies Required<Record<Prefix, number>>;
