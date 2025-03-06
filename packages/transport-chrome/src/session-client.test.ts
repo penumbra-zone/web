@@ -17,6 +17,8 @@ Object.assign(CRSessionClient, {
   clearSingleton() {
     // @ts-expect-error -- manipulating private property
     CRSessionClient.singleton = undefined;
+    // @ts-expect-error -- manipulating private property
+    CRSessionClient.managerId = undefined;
   },
 });
 

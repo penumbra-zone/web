@@ -128,16 +128,22 @@ export class CRSessionManager {
   };
 
   /**
-   * Kill all connections with a given origin.
+   * Kill all connections with a given origin. Returns the collection of senders
+   * associated with the killed sessions, for further cleanup.
    *
    * @param targetOrigin the origin to kill
    */
   public static killOrigin(targetOrigin: string) {
-    for (const [port, ac] of CRSessionManager.assertInitialized().ports.entries()) {
-      if (port.sender?.origin === targetOrigin) {
-        ac.abort();
+    const killed = new Set<chrome.runtime.MessageSender>();
+
+    for (const session of CRSessionManager.assertInitialized().sessions.values()) {
+      if (session.sender.origin === targetOrigin) {
+        session.abort();
+        killed.add(session.sender);
       }
     }
+
+    return killed;
   }
 
   private trackPort(

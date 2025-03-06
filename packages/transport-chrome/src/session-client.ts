@@ -15,8 +15,8 @@ import { ChannelLabel, nameConnection } from './channel-names.js';
 import { isTransportInitChannel, type TransportInitChannel } from './message.js';
 import { PortStreamSink } from './stream/sink.js';
 import { PortStreamSource } from './stream/source.js';
+import { isCanceledError } from './util/rpc-errors.js';
 import { isContextLossError } from './util/chrome-errors.js';
-import { isTransportCancelledError } from './util/rpc-errors.js';
 
 /**
  * Transparently adapts `Transport`s using `MessageChannel` DOM connections to
@@ -34,68 +34,18 @@ import { isTransportCancelledError } from './util/rpc-errors.js';
  * streams.
  */
 export class CRSessionClient {
-  private readonly sessionName: string;
-  private servicePort?: chrome.runtime.Port;
-  private ac = new AbortController();
+  private static managerId?: string;
 
-  /** Private constructor. Launch a session with `CRSessionClient.init`. */
-  private constructor(
-    private readonly managerId: string,
-    private readonly clientPort: MessagePort,
-  ) {
-    // create a permanent, unique session name
-    this.sessionName = nameConnection(this.managerId, ChannelLabel.TRANSPORT);
+  private static abort: AbortController['abort'];
+  private static signal: AbortSignal;
 
-    // connect to service
-    this.servicePort = this.connect();
+  private static connectingSince?: number;
 
-    this.ac.signal.addEventListener('abort', () => {
-      if (!isTransportCancelledError(this.ac.signal.reason)) {
-        console.error('session-client signal', this.ac.signal.reason);
-        this.reportError({
-          requestId: undefined,
-          error: errorToJson(ConnectError.from(this.ac.signal.reason), undefined),
-        });
-      }
-      // announce closure to client
-      this.clientPort.postMessage(false);
-      this.clientPort.close();
-      this.servicePort?.disconnect();
-    });
-
-    // listen to client
-    this.clientPort.addEventListener('message', this.clientListener);
-    if (globalThis.__DEV__) {
-      console.debug('CRSessionClient', this.sessionName);
-      this.clientPort.addEventListener('messageerror', ev =>
-        console.debug('session-client messageerror', ev),
-      );
-    }
-    this.clientPort.start();
+  static {
+    const staticAc = new AbortController();
+    CRSessionClient.abort = r => staticAc.abort(r);
+    CRSessionClient.signal = staticAc.signal;
   }
-
-  private connect = () => {
-    this.ac.signal.throwIfAborted();
-    if (globalThis.__DEV__) {
-      console.debug('session-client connecting', this.sessionName);
-    }
-    try {
-      const port = chrome.runtime.connect({
-        name: this.sessionName,
-        includeTlsChannelId: true,
-      });
-      port.onMessage.addListener(this.serviceListener);
-      port.onDisconnect.addListener(() => {
-        // clear the port so subsequent requests may reconnect
-        this.servicePort = undefined;
-      });
-      return port;
-    } catch (failedConnect) {
-      throw isContextLossError(failedConnect)
-        ? ConnectError.from(failedConnect, Code.Unavailable)
-        : failedConnect;
-    }
-  };
 
   /**
    * Establishes a new session client.
@@ -104,10 +54,123 @@ export class CRSessionClient {
    * @returns a `MessagePort` that can be provided to DOM channel transports
    */
   public static init(managerId: string): MessagePort {
+    CRSessionClient.managerId ??= managerId;
+    if (CRSessionClient.managerId !== managerId) {
+      throw new Error('Session client already initialized');
+    }
     const { port1, port2 } = new MessageChannel();
-    new CRSessionClient(managerId, port1);
+    new CRSessionClient(port1);
     return port2;
   }
+
+  /**
+   * Destroy active session clients, and set up a new abort controller.
+   */
+  public static end(managerId: string) {
+    if (CRSessionClient.managerId !== managerId) {
+      throw new Error('Session client already initialized');
+    }
+
+    CRSessionClient.abort(new ConnectError('Connection ended', Code.Unavailable));
+
+    const staticAc = new AbortController();
+    CRSessionClient.abort = r => staticAc.abort(r);
+    CRSessionClient.signal = staticAc.signal;
+  }
+
+  private readonly managerId: string;
+  private readonly sessionName: string;
+  private servicePort?: chrome.runtime.Port;
+
+  private abort: AbortController['abort'];
+  private signal: AbortSignal;
+
+  /** Private constructor. Launch a session with `CRSessionClient.init`. */
+  private constructor(private readonly clientPort: MessagePort) {
+    const staticSignal = CRSessionClient.signal;
+    staticSignal.throwIfAborted();
+
+    if (!CRSessionClient.managerId) {
+      throw new Error('Session client not initialized');
+    }
+    this.managerId = CRSessionClient.managerId;
+
+    // create a permanent, unique session name
+    this.sessionName = nameConnection(this.managerId, ChannelLabel.TRANSPORT);
+
+    const ac = new AbortController();
+    this.abort = r => ac.abort(r);
+    this.signal = ac.signal;
+
+    staticSignal.addEventListener('abort', () => this.abort(staticSignal.reason));
+
+    this.signal.addEventListener('abort', () => {
+      if (!isCanceledError(this.signal.reason)) {
+        console.warn('session-client signal', this.signal.reason);
+        this.reportError({
+          requestId: undefined,
+          error: errorToJson(ConnectError.from(this.signal.reason), undefined),
+        });
+      }
+      this.clientPort.postMessage(false);
+      this.clientPort.close();
+      // don't clear the port, destroying the session.
+      this.servicePort?.disconnect();
+    });
+
+    // connect to service
+    this.servicePort = this.connect();
+
+    // listen to client
+    this.clientPort.addEventListener('message', this.clientListener);
+
+    this.clientPort.start();
+  }
+
+  private connect = () => {
+    CRSessionClient.connectingSince ??= Date.now();
+
+    if (globalThis.__DEV__) {
+      console.debug('session-client connecting', this.sessionName);
+      console.debug({
+        sessionSignal: {
+          aborted: this.signal.aborted,
+          reason: this.signal.reason as unknown,
+        },
+        staticSignal: {
+          aborted: CRSessionClient.signal.aborted,
+          reason: CRSessionClient.signal.reason as unknown,
+        },
+      });
+    }
+
+    this.signal.throwIfAborted();
+
+    if (CRSessionClient.connectingSince + 60_000 < Date.now()) {
+      CRSessionClient.abort(new ConnectError("Can't connect", Code.Unavailable));
+    }
+
+    try {
+      const port = chrome.runtime.connect({
+        name: this.sessionName,
+        includeTlsChannelId: true,
+      });
+
+      port.onMessage.addListener(this.serviceListener);
+      port.onDisconnect.addListener(() => {
+        // clean up for reconnect
+        this.servicePort = undefined;
+      });
+
+      return port;
+    } catch (e) {
+      console.error('connect error', e);
+      if (isContextLossError(e)) {
+        throw ConnectError.from(e, Code.Unavailable);
+      }
+      throw e;
+    }
+  };
 
   /**
    * Listens for messages from the client, and forwards them to the service.
@@ -128,12 +191,14 @@ export class CRSessionClient {
       } else if (!isTransportEvent(ev.data)) {
         throw new TypeError('Unknown item from client', { cause: ev.data });
       } else {
-        // ensure a connection is established
-        this.servicePort ??= this.connect();
+        this.signal.throwIfAborted();
 
         // begin handling the event
         const tev = ev.data;
         try {
+          // reconnect, if disconnected.
+          this.servicePort ??= this.connect();
+
           if (isTransportAbort(tev)) {
             // abort control for some request
             this.postAbort(tev);
@@ -151,9 +216,6 @@ export class CRSessionClient {
           }
         } catch (cause) {
           // something went wrong, but it's scoped to this event
-          if (globalThis.__DEV__) {
-            console.debug('session-client request error', cause, tev);
-          }
           this.reportError({
             requestId: tev.requestId,
             error: errorToJson(ConnectError.from(cause), undefined),
@@ -161,8 +223,8 @@ export class CRSessionClient {
         }
       }
     } catch (failedHandling) {
-      // something went wrong, and we can't scope it to a request
-      this.ac.abort(failedHandling);
+      // something went wrong, and we can't scope it
+      this.abort(failedHandling);
     }
   };
 
@@ -174,39 +236,44 @@ export class CRSessionClient {
    * error.
    */
   private serviceListener = (tev: unknown) => {
-    if (!isTransportEvent(tev)) {
-      // something is wrong, and we can't scope it to a request
-      this.ac.abort(new Error('Unknown item from service', { cause: tev }));
-    } else {
-      try {
-        if (isTransportError(tev)) {
-          // error control for some request
-          this.reportError(tev);
-        } else if (isTransportMessage(tev)) {
-          // message response
-          this.reportResponse(tev);
-        } else if (isTransportInitChannel(tev)) {
-          // streaming response
-          this.reportResponse(this.acceptStreamResponse(tev));
-        } else {
-          throw new ConnectError(
-            'Unsupported response from service',
-            Code.Unimplemented,
-            undefined,
-            undefined,
-            tev,
-          );
+    // response clears the pending connection state
+    CRSessionClient.connectingSince = undefined;
+    try {
+      if (tev === false) {
+        throw ConnectError.from('Provider disconnected', Code.Unavailable);
+      } else if (!isTransportEvent(tev)) {
+        throw new Error('Unknown item from service', { cause: tev });
+      } else {
+        try {
+          if (isTransportError(tev)) {
+            // error control for some request
+            this.reportError(tev);
+          } else if (isTransportMessage(tev)) {
+            // message response
+            this.reportResponse(tev);
+          } else if (isTransportInitChannel(tev)) {
+            // streaming response
+            this.reportResponse(this.acceptStreamResponse(tev));
+          } else {
+            throw new ConnectError(
+              'Unsupported response from service',
+              Code.Unimplemented,
+              undefined,
+              undefined,
+              tev,
+            );
+          }
+        } catch (cause) {
+          // something went wrong, but it's scoped to this event
+          this.reportError({
+            requestId: tev.requestId,
+            error: errorToJson(ConnectError.from(cause), undefined),
+          });
         }
-      } catch (cause) {
-        // something went wrong, but it's scoped to this event
-        if (globalThis.__DEV__) {
-          console.debug('session-client response error', cause, tev);
-        }
-        this.reportError({
-          requestId: tev.requestId,
-          error: errorToJson(ConnectError.from(cause), undefined),
-        });
       }
+    } catch (failedHandling) {
+      // something went wrong, and we can't scope it
+      this.abort(failedHandling);
     }
   };
 
@@ -243,7 +310,7 @@ export class CRSessionClient {
       if (sinkPort.name === channel) {
         chrome.runtime.onConnect.removeListener(sinkListener);
         const sink = new WritableStream(new PortStreamSink(sinkPort));
-        void stream.pipeTo(sink, { signal: this.ac.signal }).catch((cause: unknown) => {
+        void stream.pipeTo(sink, { signal: this.signal }).catch((cause: unknown) => {
           if (globalThis.__DEV__) {
             console.debug('offerStreamRequest pipe failed', cause);
           }
@@ -253,7 +320,7 @@ export class CRSessionClient {
 
     chrome.runtime.onConnect.addListener(sinkListener);
 
-    AbortSignal.any([this.ac.signal, AbortSignal.timeout(initTimeoutMs)]).addEventListener(
+    AbortSignal.any([this.signal, AbortSignal.timeout(initTimeoutMs)]).addEventListener(
       'abort',
       () => chrome.runtime.onConnect.removeListener(sinkListener),
     );
@@ -276,8 +343,12 @@ export class CRSessionClient {
   private postAbort = (msg: TransportAbort) => this.assertService().postMessage(msg);
 
   /** Report an service-emitted error or a locally-raised error to the client. */
-  private reportError = (msg: TransportError<string | undefined>) =>
+  private reportError = (msg: TransportError<string | undefined>) => {
+    if (globalThis.__DEV__) {
+      console.warn('session-client reportError', msg.requestId, msg);
+    }
     this.clientPort.postMessage(msg);
+  };
 
   /** Forward a service-emitted response to the client. */
   private reportResponse = (msg: TransportMessage | TransportStream) =>
