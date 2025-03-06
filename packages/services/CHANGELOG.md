@@ -1,5 +1,28 @@
 # @penumbra-zone/router
 
+## 56.0.0
+
+### Minor Changes
+
+- 15d768f: transaction summary support for transaction info rpc
+
+### Patch Changes
+
+- Updated dependencies [521caaa]
+- Updated dependencies [a51a752]
+- Updated dependencies [521caaa]
+- Updated dependencies [ca71c02]
+- Updated dependencies [a11bfe3]
+- Updated dependencies [15d768f]
+  - @penumbra-zone/transport-dom@7.5.1
+  - @penumbra-zone/protobuf@9.0.0
+  - @penumbra-zone/storage@50.0.0
+  - @penumbra-zone/types@32.0.0
+  - @penumbra-zone/wasm@43.0.0
+  - @penumbra-zone/bech32m@15.0.0
+  - @penumbra-zone/getters@25.0.0
+  - @penumbra-zone/crypto-web@39.0.0
+
 ## 55.0.0
 
 ### Patch Changes

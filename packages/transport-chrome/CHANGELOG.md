@@ -1,5 +1,20 @@
 # @penumbra-zone/transport-chrome
 
+## 8.0.2
+
+### Patch Changes
+
+- a51a752: disable unsupported client-streaming requests. if you are experimenting with
+  development of client-streaming requests, define the `globalThis.__DEV__` flag
+  in your bundler to enable them.
+- ca71c02: added tests (no external change)
+- Updated dependencies [521caaa]
+- Updated dependencies [a51a752]
+- Updated dependencies [521caaa]
+- Updated dependencies [ca71c02]
+- Updated dependencies [a11bfe3]
+  - @penumbra-zone/transport-dom@7.5.1
+
 ## 8.0.1
 
 ### Patch Changes
