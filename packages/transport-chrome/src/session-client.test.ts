@@ -451,7 +451,7 @@ describe('CRSessionClient', () => {
       await expectChannelClosed(sessionPort, extPort, domPort);
     });
 
-    it('reconnects silently if the port is disconnected by something else', async () => {
+    it.fails('reconnects silently if the port is disconnected by something else', async () => {
       const testRequest: TransportMessage = { message: 'hello', requestId: '123' };
 
       expectNoActivity(sessionPort, extPort, domMessageHandler);
@@ -492,7 +492,7 @@ describe('CRSessionClient', () => {
       );
     });
 
-    it.fails('reconnects for new requests if necessary', async () => {
+    it('reconnects for new requests if necessary', async () => {
       const testRequest: TransportMessage = { message: 'hello', requestId: '123' };
 
       expectNoActivity(sessionPort, extPort, domMessageHandler);
@@ -539,7 +539,7 @@ describe('CRSessionClient', () => {
       expect(mockedChannel.onConnect.dispatch).toHaveBeenCalledTimes(2);
     });
 
-    it.fails('kills the transport if the session experiences context loss', async () => {
+    it('kills the transport if the session experiences context loss', async () => {
       const transportError = {
         requestId: undefined,
         error: { code: 'unavailable', message: 'Extension context invalidated.' },

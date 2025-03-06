@@ -12,7 +12,7 @@ import {
 import { ChannelLabel, nameConnection } from './channel-names.js';
 import { isTransportInitChannel, type TransportInitChannel } from './message.js';
 import type { CRSessionManager, ManagedPort } from './session-manager.js';
-import { suppressDisconnectError } from './util/suppress-disconnect.js';
+import { suppressDisconnectedPortError } from './util/suppress-disconnect.js';
 import { assertMatchingSenders } from './util/senders.js';
 
 const isReadableStream = (value: unknown): value is ReadableStream =>
@@ -181,24 +181,16 @@ export class CRSession {
    * Suppresses 'disconnected' errors.
    */
   private postResponse = (m: TransportMessage | TransportInitChannel) =>
-    this.approved.then(approvedPort => {
-      try {
-        approvedPort.postMessage(m);
-      } catch (e) {
-        suppressDisconnectError(e);
-      }
-    });
+    this.approved
+      .then(approvedPort => approvedPort.postMessage(m))
+      .catch(suppressDisconnectedPortError);
 
   /**
    * Typed wrapper to post failure responses to the session port.
    * Suppresses 'disconnected' errors.
    */
   private postError = (e: TransportError<string | undefined>) =>
-    this.approved.then(approvedPort => {
-      try {
-        approvedPort.postMessage(e);
-      } catch (e) {
-        suppressDisconnectError(e);
-      }
-    });
+    this.approved
+      .then(approvedPort => approvedPort.postMessage(e))
+      .catch(suppressDisconnectedPortError);
 }

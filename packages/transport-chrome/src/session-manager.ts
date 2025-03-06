@@ -71,6 +71,7 @@ export class CRSessionManager {
     ) {
       throw new Error("Init parameters don't match singleton parameters");
     }
+
     return CRSessionManager.singleton.sessions;
   };
 
@@ -84,6 +85,10 @@ export class CRSessionManager {
     CRSessionManager.assertUninitialized();
     CRSessionManager.singleton = this;
     chrome.runtime.onConnect.addListener(this.transportConnection);
+
+    if (globalThis.__DEV__) {
+      console.debug('CRSessionManager sessions', this.sessions);
+    }
   }
 
   /**
@@ -214,7 +219,7 @@ export class CRSessionManager {
     expectedSender: chrome.runtime.MessageSender,
     subAc = new AbortController(),
   ): Promise<PortStreamSink> {
-    const { promise: validSink, resolve, reject } = Promise.withResolvers<PortStreamSink>();
+    const { promise: validSink, ...validation } = Promise.withResolvers<PortStreamSink>();
 
     const sinkListener = (unvalidatedPort: chrome.runtime.Port) => {
       // expect a port with the given channel name
@@ -225,14 +230,14 @@ export class CRSessionManager {
         this.validateSessionPort(unvalidatedPort).then(
           validPort => {
             this.trackPort(assertPortWithSenderOrigin(validPort), subAc);
-            resolve(unvalidatedSink);
+            validation.resolve(unvalidatedSink);
           },
           cause => {
             if (globalThis.__DEV__) {
               console.debug('offerSubChannel invalid port', unvalidatedPort.name, cause);
             }
             unvalidatedPort.disconnect();
-            reject(cause);
+            validation.reject(cause);
           },
         );
       }
