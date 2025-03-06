@@ -30,6 +30,8 @@ export const optimisticBuild = async function* (
       ),
   );
 
+  const startTime = performance.now(); // Use high-resolution time
+
   // kick off the parallel actions build
   const offscreenTasks = offscreenClient.buildActions(transactionPlan, witnessData, fvk, cancel);
 
@@ -43,6 +45,9 @@ export const optimisticBuild = async function* (
     witnessData,
     await authorizationRequest,
   );
+
+  console.log(`buildActions started at: ${new Date().toISOString()}`);
+  console.log(`Elapsed time (ms) since function call: ${performance.now() - startTime}`);
 
   yield {
     status: {

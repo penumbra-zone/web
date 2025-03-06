@@ -3,7 +3,7 @@ use std::mem;
 
 use anyhow::anyhow;
 use decaf377::{Fq, Fr};
-use penumbra_asset::asset::{Denom, Id, Metadata};
+use penumbra_asset::asset::{Id, Metadata};
 use penumbra_asset::Value;
 use penumbra_auction::auction::dutch::actions::ActionDutchAuctionWithdrawPlan;
 use penumbra_auction::auction::dutch::{
@@ -17,10 +17,10 @@ use penumbra_dex::{
     PositionClose, PositionOpen, TradingPair,
 };
 use penumbra_fee::FeeTier;
-use penumbra_funding::liquidity_tournament::ActionLiquidityTournamentVotePlan;
+// use penumbra_funding::liquidity_tournament::ActionLiquidityTournamentVotePlan;
 use penumbra_governance::DelegatorVotePlan;
 use penumbra_keys::keys::AddressIndex;
-use penumbra_keys::{Address, FullViewingKey};
+use penumbra_keys::FullViewingKey;
 use penumbra_num::Amount;
 use penumbra_proto::core::app::v1::AppParameters;
 use penumbra_proto::core::component::ibc;
@@ -29,10 +29,10 @@ use penumbra_proto::view::v1::{
 };
 use penumbra_proto::{DomainType, Message};
 use penumbra_sct::params::SctParameters;
-use penumbra_shielded_pool::{fmd, Note, OutputPlan, SpendPlan};
+use penumbra_shielded_pool::{fmd, OutputPlan, SpendPlan};
 use penumbra_stake::rate::RateData;
 use penumbra_stake::{IdentityKey, Penalty, Undelegate, UndelegateClaimPlan};
-use penumbra_tct::Position;
+// use penumbra_tct::Position;
 use penumbra_transaction::gas::swap_claim_gas_cost;
 use penumbra_transaction::memo::MemoPlaintext;
 use penumbra_transaction::{plan::MemoPlan, ActionPlan, TransactionParameters};
@@ -656,50 +656,50 @@ pub async fn plan_transaction_inner<Db: Database>(
         change_address = address.try_into()?;
     }
 
-    for tpr::ActionLiquidityTournamentVote {
-        incentivized,
-        rewards_recipient,
-        staked_notes,
-        epoch_index,
-    } in request.action_liquidity_tournament_vote
-    {
-        if staked_notes.is_empty() {
-            let error_message =
-                "Invalid transaction: zero delegation notes for voting in the liquidity tournament"
-                    .to_string();
-            return Err(WasmError::Anyhow(anyhow!(error_message)));
-        }
+    // for tpr::ActionLiquidityTournamentVote {
+    //     incentivized,
+    //     rewards_recipient,
+    //     staked_notes,
+    //     epoch_index,
+    // } in request.action_liquidity_tournament_vote
+    // {
+    //     if staked_notes.is_empty() {
+    //         let error_message =
+    //             "Invalid transaction: zero delegation notes for voting in the liquidity tournament"
+    //                 .to_string();
+    //         return Err(WasmError::Anyhow(anyhow!(error_message)));
+    //     }
 
-        for staked_note in staked_notes {
-            let incentivized: Denom = incentivized
-                .clone()
-                .ok_or_else(|| anyhow!("missing incentivized asset in liquidity tournament"))?
-                .try_into()?;
-            let rewards_recipient: Address = rewards_recipient
-                .clone()
-                .ok_or_else(|| anyhow!("missing rewards recipient in liquidity tournament"))?
-                .try_into()?;
-            let note: Note = staked_note
-                .note
-                .ok_or_else(|| anyhow!("missing note in liquidity tournament"))?
-                .try_into()?;
-            let staked_note_position: Position = staked_note.position.into();
-            let start_position: Position = epoch_index.into();
+    //     for staked_note in staked_notes {
+    //         let incentivized: Denom = incentivized
+    //             .clone()
+    //             .ok_or_else(|| anyhow!("missing incentivized asset in liquidity tournament"))?
+    //             .try_into()?;
+    //         let rewards_recipient: Address = rewards_recipient
+    //             .clone()
+    //             .ok_or_else(|| anyhow!("missing rewards recipient in liquidity tournament"))?
+    //             .try_into()?;
+    //         let note: Note = staked_note
+    //             .note
+    //             .ok_or_else(|| anyhow!("missing note in liquidity tournament"))?
+    //             .try_into()?;
+    //         let staked_note_position: Position = staked_note.position.into();
+    //         let start_position: Position = epoch_index.into();
 
-            actions_list.push(ActionPlan::ActionLiquidityTournamentVote(
-                ActionLiquidityTournamentVotePlan {
-                    incentivized,
-                    rewards_recipient,
-                    staked_note: note,
-                    staked_note_position,
-                    start_position,
-                    randomizer: Fr::rand(&mut OsRng),
-                    proof_blinding_r: Fq::rand(&mut OsRng),
-                    proof_blinding_s: Fq::rand(&mut OsRng),
-                },
-            ));
-        }
-    }
+    //         actions_list.push(ActionPlan::ActionLiquidityTournamentVote(
+    //             ActionLiquidityTournamentVotePlan {
+    //                 incentivized,
+    //                 rewards_recipient,
+    //                 staked_note: note,
+    //                 staked_note_position,
+    //                 start_position,
+    //                 randomizer: Fr::rand(&mut OsRng),
+    //                 proof_blinding_r: Fq::rand(&mut OsRng),
+    //                 proof_blinding_s: Fq::rand(&mut OsRng),
+    //             },
+    //         ));
+    //     }
+    // }
 
     // Phase 2: balance the transaction with information from the view service.
     //
