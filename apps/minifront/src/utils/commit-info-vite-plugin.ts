@@ -11,9 +11,9 @@ export const commitInfoPlugin = (): Plugin => {
     .trim()
     .replace(/\.git$/, ''); // Origin urls often appended with .git
 
-    if (gitOriginUrl.startsWith('git@github.com:')) {
-      gitOriginUrl = gitOriginUrl.replace('git@github.com:', 'https://github.com/');
-    }
+  if (gitOriginUrl.startsWith('git@github.com:')) {
+    gitOriginUrl = gitOriginUrl.replace('git@github.com:', 'https://github.com/');
+  }
   return {
     name: 'vite-plugin-commit-info',
     enforce: 'pre',
