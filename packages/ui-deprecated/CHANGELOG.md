@@ -1,5 +1,11 @@
 # @penumbra-zone/ui
 
+## 17.1.0
+
+### Minor Changes
+
+- e272767: minimal reversion to disable t-addr support in minifront
+
 ## 17.0.0
 
 ### Patch Changes

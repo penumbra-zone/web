@@ -1,5 +1,16 @@
 # minifront
 
+## 6.31.0
+
+### Minor Changes
+
+- e272767: minimal reversion to disable t-addr support in minifront
+
+### Patch Changes
+
+- Updated dependencies [e272767]
+  - @penumbra-zone/ui-deprecated@17.1.0
+
 ## 6.30.0
 
 ### Minor Changes
