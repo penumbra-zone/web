@@ -193,12 +193,12 @@ export class CRSessionClient {
       } else {
         this.signal.throwIfAborted();
 
+        // reconnect, if disconnected.
+        this.servicePort ??= this.connect();
+
         // begin handling the event
         const tev = ev.data;
         try {
-          // reconnect, if disconnected.
-          this.servicePort ??= this.connect();
-
           if (isTransportAbort(tev)) {
             // abort control for some request
             this.postAbort(tev);
