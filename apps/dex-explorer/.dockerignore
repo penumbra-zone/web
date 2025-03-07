@@ -1,0 +1,17 @@
+# ignore everything by default
+**
+
+# allow JS files
+!*.ts
+!*.js
+!*.mjs
+!*.json
+!pnpm-lock.yaml
+!pnpm-workspace.yaml
+
+# allow app source code
+!.next/
+!app/
+!pages/
+!public/
+!src/
