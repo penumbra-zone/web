@@ -1,5 +1,5 @@
 ---
-'minifront': minor
+'minifront': patch
 ---
 
 reduce status stream timeout
