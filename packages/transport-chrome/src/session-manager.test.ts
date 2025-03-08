@@ -7,7 +7,7 @@ import { beforeEach, describe, expect, it, type MockedFunction, vi } from 'vites
 import { ChannelLabel, nameConnection } from './channel-names.js';
 import { CRSessionManager as CRSessionManagerOriginal } from './session-manager.js';
 import { lastResult } from './util/test/last-result.js';
-import { getOnlyMapItem } from './util/test/get-only-item.js';
+import { getSingleMapItem } from './util/test/get-single-map-item.js';
 
 const CRSessionManager: typeof CRSessionManagerOriginal & {
   // forward-compatible type. third parameter of init is required in new
@@ -361,16 +361,17 @@ describe('CRSessionManager', () => {
       const clientPort = mockedChannel.connect({ name: channelName });
 
       await vi.waitFor(() => expect(sessions.size).toBe(1));
-      const testSession = getOnlyMapItem(sessions);
+      const testSession = getSingleMapItem(sessions);
 
       clientPort.disconnect();
+
       await vi.waitFor(() =>
         expect(
           lastResult(mockedChannel.mockPorts).onConnectPort.onDisconnect.dispatch,
         ).toHaveBeenCalled(),
       );
 
-      expect(testSession.signal.aborted).toBe(true);
+      await vi.waitFor(() => expect(testSession.signal.aborted).toBe(true));
     });
 
     it('should disconnect sessions on session abort', async () => {
@@ -381,7 +382,7 @@ describe('CRSessionManager', () => {
       const clientPort = mockedChannel.connect({ name: channelName });
 
       await vi.waitFor(() => expect(sessions.size).toBe(1));
-      const testSession = getOnlyMapItem(sessions);
+      const testSession = getSingleMapItem(sessions);
 
       testSession.abort();
 
@@ -398,7 +399,7 @@ describe('CRSessionManager', () => {
       const clientPort = mockedChannel.connect({ name: channelName });
 
       await vi.waitFor(() => expect(sessions.size).toBe(1));
-      const testSession = getOnlyMapItem(sessions);
+      const testSession = getSingleMapItem(sessions);
 
       clientPort.disconnect();
 
@@ -447,11 +448,11 @@ describe('CRSessionManager', () => {
       const targetOrigin = httpsClient.origin!;
 
       const sessionsSnapshot = Array.from(sessions.values());
-      expect(sessionsSnapshot.some(({ signal }) => signal.aborted)).toBeFalsy();
+      expect(sessionsSnapshot.some(session => session.signal.aborted)).toBeFalsy();
 
       // kill
       CRSessionManager.killOrigin(targetOrigin);
-      expect(sessionsSnapshot.some(({ signal }) => signal.aborted)).toBeTruthy();
+      expect(sessionsSnapshot.some(session => session.signal.aborted)).toBeTruthy();
 
       expect(
         sessionsSnapshot.every(
