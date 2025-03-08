@@ -42,10 +42,10 @@ export class CRSessionClient {
   private static signal: AbortSignal;
 
   /**
-   * Document-level recorded time of earliest pending connection attempt.
+   * Document-level timeout since earliest pending connection attempt.
    * Cleared when any service message arrives.
    */
-  private static connectingSince?: number;
+  private static timeout?: ReturnType<typeof setTimeout>;
 
   static {
     const staticAc = new AbortController();
@@ -134,7 +134,10 @@ export class CRSessionClient {
   }
 
   private connect = () => {
-    CRSessionClient.connectingSince ??= Date.now();
+    CRSessionClient.timeout ??= setTimeout(
+      () => CRSessionClient.abort(new ConnectError("Can't connect", Code.Unavailable)),
+      SESSION_CLIENT_TIMEOUT,
+    );
 
     if (globalThis.__DEV__) {
       console.debug('session-client connecting', this.sessionName);
@@ -151,10 +154,6 @@ export class CRSessionClient {
     }
 
     this.signal.throwIfAborted();
-
-    if (CRSessionClient.connectingSince + SESSION_CLIENT_TIMEOUT < Date.now()) {
-      CRSessionClient.abort(new ConnectError("Can't connect", Code.Unavailable));
-    }
 
     try {
       const port = chrome.runtime.connect({
@@ -242,8 +241,9 @@ export class CRSessionClient {
    * error.
    */
   private serviceListener = (tev: unknown) => {
-    // response clears the pending connection state
-    CRSessionClient.connectingSince = undefined;
+    // any response clears the document-level timeout progress
+    clearTimeout(CRSessionClient.timeout);
+    CRSessionClient.timeout = undefined;
     try {
       if (tev === false) {
         throw ConnectError.from('Provider disconnected', Code.Unavailable);
