@@ -1,5 +1,12 @@
 # @penumbra-zone/transport-chrome
 
+## 8.0.3
+
+### Patch Changes
+
+- 3827b67: improve and document stream implementation. no external change
+- 987547a: improved tests, no external change
+
 ## 8.0.2
 
 ### Patch Changes
