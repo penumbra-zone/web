@@ -183,11 +183,13 @@ describe('CRSessionManager', () => {
       it.each(allSenders)(
         `should handle sender %# according to async validation callback forbidding ${badSendersKeys.join(', ')}`,
         async someSender => {
-          checkPortSender.mockImplementation(port =>
-            badSenders.includes(port.sender)
-              ? Promise.reject(new Error('Bad sender'))
-              : Promise.resolve(port as chrome.runtime.Port & { sender: { origin: string } }),
-          );
+          checkPortSender.mockImplementation(port => {
+            if (badSenders.includes(port.sender)) {
+              console.error('Mocking sender validation failure', port.name);
+              return Promise.reject(new Error('Mocked sender validation failure'));
+            }
+            return Promise.resolve(port as chrome.runtime.Port & { sender: { origin: string } });
+          });
 
           const sessions = CRSessionManager.init(testName, mockHandler, checkPortSender);
           expect(sessions.size).toBe(0);
@@ -216,6 +218,9 @@ describe('CRSessionManager', () => {
             await vi.waitFor(() => expect(sessions.size).toBe(0));
             expect(checkPortSender.mock.results.at(-1)?.type).toBe('throw');
           }
+
+          console.log('checkPortSender calls', checkPortSender.mock.calls);
+          console.log('checkPortSender results', checkPortSender.mock.results);
 
           expect(
             lastResult(mockedChannel.mockPorts).onConnectPort.onMessage.addListener,

@@ -13,7 +13,6 @@ import { ChannelLabel, nameConnection } from './channel-names.js';
 import { isTransportInitChannel, type TransportInitChannel } from './message.js';
 import type { CRSessionManager, ManagedPort } from './session-manager.js';
 import { suppressDisconnectedPortError } from './util/suppress-disconnect.js';
-import { assertMatchingSenders } from './util/senders.js';
 
 const isReadableStream = (value: unknown): value is ReadableStream =>
   value instanceof ReadableStream;
@@ -32,7 +31,7 @@ export class CRSession {
   /** Abort will close the session channel, close all sub-channels, and cancel all pending requests. */
   public readonly abort: AbortController['abort'];
 
-  private readonly approved: Promise<chrome.runtime.Port>;
+  private readonly port: Promise<chrome.runtime.Port>;
 
   /**
    * @param manager the parent session manager
@@ -44,31 +43,32 @@ export class CRSession {
     /** the parent session manager */
     private readonly manager: CRSessionManager,
     /**
-     * this `unvalidated` port is used to synchronously attach listeners, which
+     * the managed `unvalid` port is used to synchronously attach listeners, which
      * prevents a race against incoming messages. it should not be used to
-     * send messages, and it should not leave this constructor scope.
+     * send messages, and it should not leave the constructor scope. the 'valid'
+     * promise is used to block listener execution until the port is validated.
      */
-    unvalidated: ManagedPort,
-    /** the `approved` parameter is used to block listener execution until the
-     * port is validated. it should resolve to match the unvalidated port. */
-    managerApproval = manager.validateSessionPort(unvalidated.port),
+    managedPort: ManagedPort,
   ) {
-    this.signal = unvalidated.portAc.signal;
-    this.abort = r => unvalidated.portAc.abort(r);
+    this.sender = managedPort.unvalid.sender;
 
-    this.signal.addEventListener('abort', () => this.pending.forEach(ac => ac.abort()));
+    const ac = new AbortController();
+    this.signal = ac.signal;
+    this.abort = r => ac.abort(r);
 
-    this.sender = unvalidated.port.sender;
-
-    this.approved = managerApproval.then(p => {
-      assertMatchingSenders(p.sender, unvalidated.port.sender);
-      return p;
+    this.signal.addEventListener('abort', () => {
+      this.pending.forEach(ac => ac.abort());
+      managedPort.abort(this.signal.reason);
     });
-    void this.approved.catch((disapproval: unknown) =>
-      this.abort(ConnectError.from(disapproval, Code.Unauthenticated)),
-    );
 
-    unvalidated.port.onMessage.addListener(this.onMessage);
+    managedPort.valid.catch((failedValidation: unknown) =>
+      this.abort(ConnectError.from(failedValidation, Code.Unauthenticated)),
+    );
+    this.port = managedPort.valid;
+
+    managedPort.signal.addEventListener('abort', () => this.abort(managedPort.signal.reason));
+
+    managedPort.unvalid.onMessage.addListener(this.onMessage);
   }
 
   /**
@@ -81,10 +81,10 @@ export class CRSession {
    * Failures are caught here and serialized for response.
    */
   private onMessage = (tev: unknown) =>
-    void this.approved.then(async () => {
+    void this.port.then(async () => {
       try {
-        // unknown event
         if (!isTransportEvent(tev)) {
+          // unknown event
           throw new ConnectError(
             'Unknown item in transport',
             Code.Unimplemented,
@@ -94,7 +94,7 @@ export class CRSession {
           );
         } else if (isTransportAbort(tev)) {
           // abort control message. no-op if absent
-          this.pending.get(tev.requestId)?.abort();
+          this.pending.get(tev.requestId)?.abort(ConnectError.from('Client cancel', Code.Canceled));
           this.pending.delete(tev.requestId);
         } else if (this.pending.has(tev.requestId)) {
           // request collision would be very strange
@@ -122,11 +122,9 @@ export class CRSession {
           }
           // end request lifecycle
         }
-      } catch (e) {
+      } catch (failedHandling) {
         // something really weird happened
-        console.error('CRSession.onMessage failed', e);
-        // might be sensitive so don't propagate
-        this.abort(ConnectError.from(undefined, Code.Internal));
+        this.abort(failedHandling);
       }
     });
 
@@ -139,12 +137,10 @@ export class CRSession {
       const { message } = tev;
       return this.manager.handler(message, pendingAc.signal);
     } else if (isTransportInitChannel(tev) && globalThis.__DEV__) {
-      // handle a streamng request
+      // handle a streaming request
       const { channel } = tev;
-      return this.manager.handler(
-        new ReadableStream(await this.manager.acceptSubChannel(channel, this.sender, pendingAc)),
-        pendingAc.signal,
-      );
+      const source = this.manager.acceptSubChannel(channel, this.sender, pendingAc);
+      return this.manager.handler(await source, pendingAc.signal);
     } else {
       throw new ConnectError('Unknown request kind', Code.Unimplemented);
     }
@@ -167,12 +163,14 @@ export class CRSession {
     requestAc: AbortController,
   ): Promise<void> {
     if (!isReadableStream(response)) {
+      // send a message response
       await this.postResponse({ ...responseInit, message: response });
     } else {
+      // send a streaming response
       const channel = nameConnection(this.manager.managerId, ChannelLabel.STREAM);
       const sink = this.manager.offerSubChannel(channel, this.sender, requestAc);
       await this.postResponse({ ...responseInit, channel });
-      await response.pipeTo(new WritableStream(await sink), { signal: requestAc.signal });
+      await response.pipeTo(await sink, { signal: requestAc.signal });
     }
   }
 
@@ -181,16 +179,12 @@ export class CRSession {
    * Suppresses 'disconnected' errors.
    */
   private postResponse = (m: TransportMessage | TransportInitChannel) =>
-    this.approved
-      .then(approvedPort => approvedPort.postMessage(m))
-      .catch(suppressDisconnectedPortError);
+    this.port.then(p => p.postMessage(m)).catch(suppressDisconnectedPortError);
 
   /**
    * Typed wrapper to post failure responses to the session port.
    * Suppresses 'disconnected' errors.
    */
   private postError = (e: TransportError<string | undefined>) =>
-    this.approved
-      .then(approvedPort => approvedPort.postMessage(e))
-      .catch(suppressDisconnectedPortError);
+    this.port.then(p => p.postMessage(e)).catch(suppressDisconnectedPortError);
 }

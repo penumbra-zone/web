@@ -17,17 +17,32 @@ const compareSenders = (
 
 /**
  * Assertion that two senders are identical.
+ * @returns a is typeof b
  * @throws if either sender is falsy, or if {@link compareSenders} returns false
  */
 export const assertMatchingSenders = (
   a?: chrome.runtime.MessageSender,
   b?: chrome.runtime.MessageSender,
-) => {
+): a is typeof b => {
   if (!a || !b) {
     throw new Error('Missing sender');
   } else if (!compareSenders(a, b)) {
     throw new Error('Sender mismatch');
   }
+  return true;
+};
+
+/**
+ * Assertion that two ports have matching senders.
+ * @returns the first port parameter
+ * @throws if {@link assertMatchingSenders} throws
+ */
+export const assertMatchingPortSenders = (
+  p: chrome.runtime.Port,
+  b?: chrome.runtime.Port,
+): typeof p => {
+  assertMatchingSenders(p.sender, b?.sender);
+  return p;
 };
 
 /**
