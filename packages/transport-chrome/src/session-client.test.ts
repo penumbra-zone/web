@@ -429,7 +429,7 @@ describe('CRSessionClient', () => {
       await expectChannelClosed(sessionPort, extPort, domPort);
     });
 
-    it.fails('sends `false` to dom when the port is disconnected by something else', async () => {
+    it('sends `false` to dom when an inactive port is disconnected by something else', async () => {
       expectNoActivity(sessionPort, extPort, domMessageHandler);
 
       // extension-side disconnect
@@ -499,6 +499,16 @@ describe('CRSessionClient', () => {
 
       expectNoActivity(sessionPort, extPort, domMessageHandler);
 
+      const extOnMessageListener = vi.fn((m: unknown, p: chrome.runtime.Port) => p.postMessage(m));
+      extPort.onMessage.addListener(extOnMessageListener);
+
+      // try to send a message before disconnect
+      domPort.postMessage(testRequest);
+
+      // a reply should arrive
+      await vi.waitFor(() => expect(domMessageHandler).toHaveBeenCalledOnce());
+      expect(domMessageHandler?.mock.lastCall?.[0].data).toMatchObject(testRequest);
+
       const nextOnMessageListener = vi.fn<[unknown, chrome.runtime.Port]>();
       const nextOnConnectListener = vi.fn((port: chrome.runtime.Port) =>
         port.onMessage.addListener(nextOnMessageListener),
@@ -513,7 +523,7 @@ describe('CRSessionClient', () => {
       });
 
       // page will not be notified of the disconnect
-      expect(domMessageHandler).not.toHaveBeenCalled();
+      expect(domMessageHandler).toHaveBeenCalledOnce();
 
       // kill some time for async
       await new Promise(resolve => void setTimeout(resolve, 50));
@@ -553,6 +563,16 @@ describe('CRSessionClient', () => {
 
       expectNoActivity(sessionPort, extPort, domMessageHandler);
 
+      const extOnMessageListener = vi.fn((m: unknown, p: chrome.runtime.Port) => p.postMessage(m));
+      extPort.onMessage.addListener(extOnMessageListener);
+
+      // try to send a message before disconnect
+      domPort.postMessage(testRequest);
+
+      // a reply should arrive
+      await vi.waitFor(() => expect(domMessageHandler).toHaveBeenCalledOnce());
+      expect(domMessageHandler?.mock.lastCall?.[0].data).toMatchObject(testRequest);
+
       mockedChannel.connect.mockImplementation(() => {
         throw new Error(transportError.error.message);
       });
@@ -569,10 +589,10 @@ describe('CRSessionClient', () => {
       domPort.postMessage(testRequest);
 
       // the session will respond twice
-      await vi.waitFor(() => expect(domMessageHandler).toHaveBeenCalledTimes(2), { timeout: 100 });
+      await vi.waitFor(() => expect(domMessageHandler).toHaveBeenCalledTimes(3), { timeout: 100 });
 
       // by reporting an error with `Code.Unavailable`, then closing the transport
-      const requiredResponses = [false, transportError];
+      const requiredResponses = [false, transportError, testRequest];
       for (const [{ data: tev }] of domMessageHandler!.mock.calls) {
         expect(tev).toMatchObject(requiredResponses.pop()!);
       }
