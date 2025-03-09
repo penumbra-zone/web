@@ -68,3 +68,8 @@ export const parseConnectionName = (prefix: string, name: string) => {
     uuid,
   };
 };
+
+export const parseConnectionId = (label: ChannelLabel, prefix: string, name: string) => {
+  const parsed = parseConnectionName(prefix, name);
+  return parsed?.label === label ? parsed.uuid : undefined;
+};
