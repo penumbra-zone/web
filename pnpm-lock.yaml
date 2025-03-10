@@ -235,8 +235,8 @@ importers:
         specifier: ^1.16.1
         version: 1.17.1
       '@skip-go/widget':
-        specifier: ^3.4.0
-        version: 3.4.0(yljgh6wa5prhsh4o2fqtlwtizy)
+        specifier: ^3.4.1
+        version: 3.4.1(yljgh6wa5prhsh4o2fqtlwtizy)
       '@tanstack/react-query':
         specifier: 5.62.7
         version: 5.62.7(react@18.3.1)
@@ -1099,6 +1099,30 @@ packages:
   '@alloc/quick-lru@5.2.0':
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
     engines: {node: '>=10'}
+
+  '@amplitude/analytics-browser@2.11.13':
+    resolution: {integrity: sha512-vzGu0I5E8d5hM1PUsCK9RstLSrmUx11MsDBu+L7fqqdLfPKxyQJ4abzkRae/hyV7FRFIM368Hq0NtGd9GRiHRw==}
+
+  '@amplitude/analytics-client-common@2.3.8':
+    resolution: {integrity: sha512-O8V9BPYIeREkKYXakVXFqkeIQ6EiEeezhY5IuYRzAOEklASidmjClXYrfRSF3R3ceBjsxAJL9CiIc0tiglN7/Q==}
+
+  '@amplitude/analytics-connector@1.6.4':
+    resolution: {integrity: sha512-SpIv0IQMNIq6SH3UqFGiaZyGSc7PBZwRdq7lvP0pBxW8i4Ny+8zwI0pV+VMfMHQwWY3wdIbWw5WQphNjpdq1/Q==}
+
+  '@amplitude/analytics-core@2.5.6':
+    resolution: {integrity: sha512-ZRHdigLStkJm3VBfhOtblLaXSi0Cc7nqmtq1yjb3w3s2H8LryuqTLSlF6M03Py01+d5LuYzuEPGcL7ejlmwbWA==}
+
+  '@amplitude/analytics-remote-config@0.4.1':
+    resolution: {integrity: sha512-BYl6kQ9qjztrCACsugpxO+foLaQIC0aSEzoXEAb/gwOzInmqkyyI+Ub+aWTBih4xgB/lhWlOcidWHAmNiTJTNw==}
+
+  '@amplitude/analytics-types@2.9.0':
+    resolution: {integrity: sha512-5ySe6UxHWguUCCIZNFUh+7lx5284LStrRbVGvS69woZcvo/DFRZj5/Zqt5viyA3C7H0P1dSFigRSqOW5yeoi9A==}
+
+  '@amplitude/plugin-autocapture-browser@1.0.5':
+    resolution: {integrity: sha512-cCATQra+orFjqh+X0SUvEIH0Z+VFqG254EVTt0waoUqtroVQqylzFfS7d0mjlTXbpANMAUDIDntid31vMCG5gQ==}
+
+  '@amplitude/plugin-page-view-tracking-browser@2.3.9':
+    resolution: {integrity: sha512-VFy6jZgdVNEhEOqctUeAZIYJN289GOkG2ztmfhSElmgeZ6I5Pc9lVenLGCSGQQEyJHGLZAVv4CLAeGGO23pmCg==}
 
   '@ampproject/remapping@2.3.0':
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
@@ -5234,14 +5258,14 @@ packages:
   '@sinonjs/fake-timers@10.3.0':
     resolution: {integrity: sha512-V4BG07kuYSUkTCSBHG8G8TNhM+F19jXFWnQtzj+we8DrkpSBCee9Z3Ms8yiGer/dlmhe35/Xdgyo3/0rQKg7YA==}
 
-  '@skip-go/client@0.16.16':
-    resolution: {integrity: sha512-3TyMkB1fHZXpo/R3XaQtB4w1SSL8PRmamW7T6nEASlHcXXTM9lQ3GJmZ6WRWxc1QoqXt2UNWDfasAN3a5CkRKg==}
+  '@skip-go/client@0.16.17':
+    resolution: {integrity: sha512-KZohRsKelOwMgzlALph7tHi64N6aZiPS2bHO5VTheAkiDu4p/ZL1Zy8j2aw0jD53l9IRdR2hapzjdXsVOPSPgw==}
     peerDependencies:
       '@solana/web3.js': ^1.95.8
       viem: 2.x
 
-  '@skip-go/widget@3.4.0':
-    resolution: {integrity: sha512-BOFPTUMIgpgbBW03/gCzw8PaTvHmMfWc2m1uEW1gb5CTD2+BIY84MRJMX3+pFKc+N3AZFRlXEgCyBSbM3KsQXQ==}
+  '@skip-go/widget@3.4.1':
+    resolution: {integrity: sha512-B2HEBJDDACrqHJULtPvEkJrp60/AVW58QBjJFrbygoXHbmI7o0vHJbLhag6AIZaDQB8VHoPhH+jVpRsSqqmWAg==}
     peerDependencies:
       '@tanstack/react-query': ^5.51.21
       react: '>=17.0.0'
@@ -6753,6 +6777,9 @@ packages:
     resolution: {integrity: sha512-cl669nCJTZBsL97OF4kUQm5g5hC2uihk0NxY3WENAC0TYdILVkAyHymAntgxGkl7K+t0cXIrH5siy5S4XkFycA==}
     engines: {node: '>=0.4.0'}
     hasBin: true
+
+  add@2.0.6:
+    resolution: {integrity: sha512-j5QzrmsokwWWp6kUcJQySpbG+xfOBqqKnup3OIk1pz+kB/80SLorZ9V8zHFLO92Lcd+hbvq8bT+zOGoPkmBV0Q==}
 
   aes-js@3.0.0:
     resolution: {integrity: sha512-H7wUZRn8WpTq9jocdxQ2c8x2sKo9ZVmzfRE13GiNJXfp7NcKYEdvl3vspKjXox6RIG2VtaRe4JFvxG4rqp2Zuw==}
@@ -12623,6 +12650,11 @@ packages:
     resolution: {integrity: sha512-7dSzzRQ++CKnNI/krKnYRV7JKKPUXMEh61soaHKg9mrWEhzFWhFnxPxGl+69cD1Ou63C13NUPCnmIcrvqCuM6w==}
     engines: {node: '>=12'}
 
+  yarn@1.22.22:
+    resolution: {integrity: sha512-prL3kGtyG7o9Z9Sv8IPfBNrWTDmXB4Qbes8A9rEzt6wkJV8mUvoirjU0Mp3GGAU06Y0XQyA3/2/RQFVuK7MTfg==}
+    engines: {node: '>=4.0.0'}
+    hasBin: true
+
   yn@3.1.1:
     resolution: {integrity: sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==}
     engines: {node: '>=6'}
@@ -12721,6 +12753,52 @@ snapshots:
   '@adraffy/ens-normalize@1.11.0': {}
 
   '@alloc/quick-lru@5.2.0': {}
+
+  '@amplitude/analytics-browser@2.11.13':
+    dependencies:
+      '@amplitude/analytics-client-common': 2.3.8
+      '@amplitude/analytics-core': 2.5.6
+      '@amplitude/analytics-remote-config': 0.4.1
+      '@amplitude/analytics-types': 2.9.0
+      '@amplitude/plugin-autocapture-browser': 1.0.5
+      '@amplitude/plugin-page-view-tracking-browser': 2.3.9
+      tslib: 2.8.1
+
+  '@amplitude/analytics-client-common@2.3.8':
+    dependencies:
+      '@amplitude/analytics-connector': 1.6.4
+      '@amplitude/analytics-core': 2.5.6
+      '@amplitude/analytics-types': 2.9.0
+      tslib: 2.8.1
+
+  '@amplitude/analytics-connector@1.6.4': {}
+
+  '@amplitude/analytics-core@2.5.6':
+    dependencies:
+      '@amplitude/analytics-types': 2.9.0
+      tslib: 2.8.1
+
+  '@amplitude/analytics-remote-config@0.4.1':
+    dependencies:
+      '@amplitude/analytics-client-common': 2.3.8
+      '@amplitude/analytics-core': 2.5.6
+      '@amplitude/analytics-types': 2.9.0
+      tslib: 2.8.1
+
+  '@amplitude/analytics-types@2.9.0': {}
+
+  '@amplitude/plugin-autocapture-browser@1.0.5':
+    dependencies:
+      '@amplitude/analytics-client-common': 2.3.8
+      '@amplitude/analytics-types': 2.9.0
+      rxjs: 7.8.1
+      tslib: 2.8.1
+
+  '@amplitude/plugin-page-view-tracking-browser@2.3.9':
+    dependencies:
+      '@amplitude/analytics-client-common': 2.3.8
+      '@amplitude/analytics-types': 2.9.0
+      tslib: 2.8.1
 
   '@ampproject/remapping@2.3.0':
     dependencies:
@@ -20207,7 +20285,7 @@ snapshots:
       '@sinonjs/commons': 3.0.1
     optional: true
 
-  '@skip-go/client@0.16.16(@solana/web3.js@1.95.8(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@types/react@18.3.3)(bufferutil@4.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(starknet@6.11.0)(utf-8-validate@5.0.10)(viem@2.21.54(bufferutil@4.0.8)(typescript@5.5.3)(utf-8-validate@5.0.10)(zod@3.23.8))':
+  '@skip-go/client@0.16.17(@solana/web3.js@1.95.8(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@types/react@18.3.3)(bufferutil@4.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(starknet@6.11.0)(utf-8-validate@5.0.10)(viem@2.21.54(bufferutil@4.0.8)(typescript@5.5.3)(utf-8-validate@5.0.10)(zod@3.23.8))':
     dependencies:
       '@cosmjs/amino': 0.32.4
       '@cosmjs/cosmwasm-stargate': 0.32.4(bufferutil@4.0.8)(utf-8-validate@5.0.10)
@@ -20238,8 +20316,9 @@ snapshots:
       - subscriptions-transport-ws
       - utf-8-validate
 
-  '@skip-go/widget@3.4.0(yljgh6wa5prhsh4o2fqtlwtizy)':
+  '@skip-go/widget@3.4.1(yljgh6wa5prhsh4o2fqtlwtizy)':
     dependencies:
+      '@amplitude/analytics-browser': 2.11.13
       '@cosmjs/amino': 0.31.3
       '@cosmjs/cosmwasm-stargate': 0.31.3(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@cosmjs/launchpad': 0.27.1
@@ -20256,7 +20335,7 @@ snapshots:
       '@penumbra-zone/transport-dom': 7.5.0
       '@r2wc/react-to-web-component': 2.0.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@sentry/react': 8.55.0(react@18.3.1)
-      '@skip-go/client': 0.16.16(@solana/web3.js@1.95.8(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@types/react@18.3.3)(bufferutil@4.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(starknet@6.11.0)(utf-8-validate@5.0.10)(viem@2.21.54(bufferutil@4.0.8)(typescript@5.5.3)(utf-8-validate@5.0.10)(zod@3.23.8))
+      '@skip-go/client': 0.16.17(@solana/web3.js@1.95.8(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@types/react@18.3.3)(bufferutil@4.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(starknet@6.11.0)(utf-8-validate@5.0.10)(viem@2.21.54(bufferutil@4.0.8)(typescript@5.5.3)(utf-8-validate@5.0.10)(zod@3.23.8))
       '@solana/spl-token': 0.4.9(@solana/web3.js@1.95.8(bufferutil@4.0.8)(utf-8-validate@5.0.10))(bufferutil@4.0.8)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.5.3)(utf-8-validate@5.0.10)
       '@solana/wallet-adapter-backpack': 0.1.14(@solana/web3.js@1.95.8(bufferutil@4.0.8)(utf-8-validate@5.0.10))
       '@solana/wallet-adapter-coinbase': 0.1.19(@solana/web3.js@1.95.8(bufferutil@4.0.8)(utf-8-validate@5.0.10))
@@ -20270,6 +20349,7 @@ snapshots:
       '@walletconnect/modal': 2.7.0(@types/react@18.3.3)(react@18.3.1)
       '@walletconnect/sign-client': 2.17.2(@react-native-async-storage/async-storage@1.24.0(react-native@0.76.5(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.3.1)(utf-8-validate@5.0.10)))(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@walletconnect/solana-adapter': 0.0.6(@react-native-async-storage/async-storage@1.24.0(react-native@0.76.5(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.3.1)(utf-8-validate@5.0.10)))(@solana/wallet-adapter-base@0.9.23(@solana/web3.js@1.95.8(bufferutil@4.0.8)(utf-8-validate@5.0.10)))(@solana/web3.js@1.95.8(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.3.1)(utf-8-validate@5.0.10)
+      add: 2.0.6
       bech32: 2.0.0
       graz: 0.1.31(@cosmjs/amino@0.31.3)(@cosmjs/cosmwasm-stargate@0.31.3(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@cosmjs/launchpad@0.27.1)(@cosmjs/proto-signing@0.31.3)(@cosmjs/stargate@0.31.3(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@cosmjs/tendermint-rpc@0.31.3(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@leapwallet/cosmos-social-login-capsule-provider@0.0.44(@cosmjs/encoding@0.32.4)(@cosmjs/proto-signing@0.31.3)(fp-ts@2.16.9))(@react-native-async-storage/async-storage@1.24.0(react-native@0.76.5(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.3.1)(utf-8-validate@5.0.10)))(@terra-money/feather.js@1.2.1)(@types/react@18.3.3)(axios@1.7.2)(bufferutil@4.0.8)(immer@10.1.1)(react-dom@18.3.1(react@18.3.1))(react-native@0.76.5(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.3.1)(utf-8-validate@5.0.10))(react@18.3.1)(starknet@6.11.0)(utf-8-validate@5.0.10)
       jotai: 2.10.3(@types/react@18.3.3)(react@18.3.1)
@@ -20285,6 +20365,7 @@ snapshots:
       styled-components: 6.1.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       viem: 2.21.54(bufferutil@4.0.8)(typescript@5.5.3)(utf-8-validate@5.0.10)(zod@3.23.8)
       wagmi: 2.14.0(@react-native-async-storage/async-storage@1.24.0(react-native@0.76.5(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.3.1)(utf-8-validate@5.0.10)))(@tanstack/query-core@5.62.7)(@tanstack/react-query@5.62.7(react@18.3.1))(@types/react@18.3.3)(bufferutil@4.0.8)(immer@10.1.1)(react@18.3.1)(typescript@5.5.3)(utf-8-validate@5.0.10)(viem@2.21.54(bufferutil@4.0.8)(typescript@5.5.3)(utf-8-validate@5.0.10)(zod@3.23.8))(zod@3.23.8)
+      yarn: 1.22.22
       zod: 3.23.8
     transitivePeerDependencies:
       - '@azure/app-configuration'
@@ -22972,6 +23053,8 @@ snapshots:
   acorn@8.12.1: {}
 
   acorn@8.14.0: {}
+
+  add@2.0.6: {}
 
   aes-js@3.0.0: {}
 
@@ -30131,6 +30214,8 @@ snapshots:
       string-width: 4.2.3
       y18n: 5.0.8
       yargs-parser: 21.1.1
+
+  yarn@1.22.22: {}
 
   yn@3.1.1: {}
 
