@@ -1,5 +1,32 @@
 # @penumbra-zone/transport-chrome
 
+## 9.0.0
+
+### Major Changes
+
+- de2fe5c: significant updates to sessions:
+
+  - improvement of session-client
+  - session-client can now be terminated by static method
+  - improvement of session-manager
+  - individual session logic now encapsulated in dedicated class
+  - session-manager killOrigin returns set of senders
+  - session-manager now primarily concerned with port lifecycles
+
+### Minor Changes
+
+- de2fe5c: Transport session reliability improvements.
+
+  - No external API change.
+  - Remove singleton restriction of `CRSessionClient`.
+  - Don't retain port reference to respect object transfer rules.
+
+### Patch Changes
+
+- 3827b67: improve and document stream implementation. no external change
+- de2fe5c: avoid global session timeouts
+- 987547a: improved tests, no external change
+
 ## 8.0.2
 
 ### Patch Changes
