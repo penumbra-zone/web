@@ -1,5 +1,11 @@
 # minifront
 
+## 6.31.1
+
+### Patch Changes
+
+- 987547a: reduce status stream timeout
+
 ## 6.31.0
 
 ### Minor Changes
