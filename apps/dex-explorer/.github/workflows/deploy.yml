@@ -1,0 +1,93 @@
+---
+# Workflow for deploying the DEX explorer webapp https://github.com/penumbra-zone/dex-explorer
+# Bounces a container deployment, to repull the latest image.
+name: deploy dex-explorer
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-container:
+    name: build container
+    uses: ./.github/workflows/container.yml
+    secrets: inherit
+    permissions:
+      contents: read
+      packages: write
+
+  deploy-testnet:
+    name: deploy dex-explorer to testnet
+    env:
+      DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+    needs:
+      - build-container
+    runs-on: buildjet-8vcpu-ubuntu-2204
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: install nix
+        uses: nixbuild/nix-quick-install-action@v28
+
+      - name: setup nix cache
+        uses: nix-community/cache-nix-action@v5
+        with:
+          primary-key: nix-${{ runner.os }}-${{ hashFiles('**/*.nix') }}
+          restore-prefixes-first-match: nix-${{ runner.os }}-
+          backend: buildjet
+
+      # Confirm that the nix devshell is buildable and runs at all.
+      - name: validate nix env
+        run: nix develop --command echo hello
+
+      - name: save DigitalOcean kubeconfig with short-lived credentials
+        run: >
+          nix develop --command
+          doctl kubernetes cluster kubeconfig save --expiry-seconds 600 plinfra
+
+      # We assume that dex-explorer has been deployed to the cluster already.
+      # This task merely "bounces" the service, so that a fresh container is pulled.
+      - name: deploy dex-explorer
+        run: >
+          nix develop --command
+          kubectl -n testnet rollout restart deployment dex-explorer &&
+          nix develop --command
+          kubectl -n testnet rollout status deployment dex-explorer
+  deploy-mainnet:
+    name: deploy dex-explorer to mainnet
+    env:
+      DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+    needs:
+      - build-container
+    runs-on: buildjet-8vcpu-ubuntu-2204
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: install nix
+        uses: nixbuild/nix-quick-install-action@v28
+
+      - name: setup nix cache
+        uses: nix-community/cache-nix-action@v5
+        with:
+          primary-key: nix-${{ runner.os }}-${{ hashFiles('**/*.nix') }}
+          restore-prefixes-first-match: nix-${{ runner.os }}-
+          backend: buildjet
+
+      # Confirm that the nix devshell is buildable and runs at all.
+      - name: validate nix env
+        run: nix develop --command echo hello
+
+      - name: save DigitalOcean kubeconfig with short-lived credentials
+        run: >
+          nix develop --command
+          doctl kubernetes cluster kubeconfig save --expiry-seconds 600 plinfra
+
+      # We assume that dex-explorer has been deployed to the cluster already.
+      # This task merely "bounces" the service, so that a fresh container is pulled.
+      - name: deploy dex-explorer
+        run: >
+          nix develop --command
+          kubectl -n mainnet rollout restart deployment dex-explorer &&
+          nix develop --command
+          kubectl -n mainnet rollout status deployment dex-explorer
