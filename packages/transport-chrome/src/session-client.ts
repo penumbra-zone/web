@@ -15,10 +15,7 @@ import { ChannelLabel, nameConnection } from './channel-names.js';
 import { isTransportInitChannel, type TransportInitChannel } from './message.js';
 import { PortStreamSink } from './stream/sink.js';
 import { PortStreamSource } from './stream/source.js';
-import { isCanceledError } from './util/rpc-errors.js';
 import { isContextLossError } from './util/chrome-errors.js';
-
-const SESSION_CLIENT_TIMEOUT = 60_000;
 
 /**
  * Transparently adapts `Transport`s using `MessageChannel` DOM connections to
@@ -40,12 +37,6 @@ export class CRSessionClient {
 
   private static abort: AbortController['abort'];
   private static signal: AbortSignal;
-
-  /**
-   * Document-level timeout since earliest pending connection attempt.
-   * Cleared when any service message arrives.
-   */
-  private static timeout?: ReturnType<typeof setTimeout>;
 
   static {
     const staticAc = new AbortController();
@@ -77,7 +68,7 @@ export class CRSessionClient {
       throw new Error('Session client already initialized');
     }
 
-    CRSessionClient.abort(new ConnectError('Connection ended', Code.Unavailable));
+    CRSessionClient.abort();
 
     const staticAc = new AbortController();
     CRSessionClient.abort = r => staticAc.abort(r);
@@ -91,11 +82,10 @@ export class CRSessionClient {
   private abort: AbortController['abort'];
   private signal: AbortSignal;
 
+  private active?: number;
+
   /** Private constructor. Launch a session with `CRSessionClient.init`. */
   private constructor(private readonly clientPort: MessagePort) {
-    const staticSignal = CRSessionClient.signal;
-    staticSignal.throwIfAborted();
-
     if (!CRSessionClient.managerId) {
       throw new Error('Session client not initialized');
     }
@@ -104,25 +94,22 @@ export class CRSessionClient {
     // create a permanent, unique session name
     this.sessionName = nameConnection(this.managerId, ChannelLabel.TRANSPORT);
 
-    const ac = new AbortController();
-    this.abort = r => ac.abort(r);
-    this.signal = ac.signal;
-
-    staticSignal.addEventListener('abort', () => this.abort(staticSignal.reason));
+    const instanceAc = new AbortController();
+    this.abort = r => instanceAc.abort(r);
+    this.signal = instanceAc.signal;
 
     this.signal.addEventListener('abort', () => {
-      if (!isCanceledError(this.signal.reason)) {
-        console.warn('session-client signal', this.signal.reason);
-        this.reportError({
-          requestId: undefined,
-          error: errorToJson(ConnectError.from(this.signal.reason), undefined),
-        });
+      if (globalThis.__DEV__) {
+        console.warn('session-client signal', this.sessionName, instanceAc.signal.reason);
       }
-      this.clientPort.postMessage(false);
-      this.clientPort.close();
-      // don't clear the port, destroying the session.
-      this.servicePort?.disconnect();
+      this.reportError({
+        requestId: undefined,
+        error: errorToJson(ConnectError.from(this.signal.reason), undefined),
+      });
+      this.close();
     });
+
+    CRSessionClient.signal.addEventListener('abort', () => this.close(), { signal: this.signal });
 
     // connect to service
     this.servicePort = this.connect();
@@ -133,24 +120,10 @@ export class CRSessionClient {
     this.clientPort.start();
   }
 
+  /** Attempt connection to session manager. */
   private connect = () => {
-    CRSessionClient.timeout ??= setTimeout(
-      () => CRSessionClient.abort(new ConnectError("Can't connect", Code.Unavailable)),
-      SESSION_CLIENT_TIMEOUT,
-    );
-
     if (globalThis.__DEV__) {
       console.debug('session-client connecting', this.sessionName);
-      console.debug({
-        sessionSignal: {
-          aborted: this.signal.aborted,
-          reason: this.signal.reason as unknown,
-        },
-        staticSignal: {
-          aborted: CRSessionClient.signal.aborted,
-          reason: CRSessionClient.signal.reason as unknown,
-        },
-      });
     }
 
     this.signal.throwIfAborted();
@@ -163,18 +136,32 @@ export class CRSessionClient {
 
       port.onMessage.addListener(this.serviceListener);
       port.onDisconnect.addListener(() => {
-        // clean up for reconnect
-        this.servicePort = undefined;
+        if (this.active) {
+          // clean up for reconnect
+          this.servicePort = undefined;
+          this.active = undefined;
+        } else {
+          this.close();
+        }
       });
 
       return port;
     } catch (e) {
-      console.error('connect error', e);
+      if (globalThis.__DEV__) {
+        console.error('session-client connect error', e);
+      }
       if (isContextLossError(e)) {
         throw ConnectError.from(e, Code.Unavailable);
       }
       throw e;
     }
+  };
+
+  /** Inform the page the connection is closed. */
+  private close = () => {
+    this.servicePort?.disconnect();
+    this.clientPort.postMessage(false);
+    this.clientPort.close();
   };
 
   /**
@@ -192,12 +179,10 @@ export class CRSessionClient {
   private clientListener = (ev: MessageEvent<unknown>) => {
     try {
       if (ev.data === false) {
-        throw ConnectError.from('Transport closed', Code.Canceled);
+        this.close();
       } else if (!isTransportEvent(ev.data)) {
         throw new TypeError('Unknown item from client', { cause: ev.data });
       } else {
-        this.signal.throwIfAborted();
-
         // reconnect, if disconnected.
         this.servicePort ??= this.connect();
 
@@ -241,12 +226,10 @@ export class CRSessionClient {
    * error.
    */
   private serviceListener = (tev: unknown) => {
-    // any response clears the document-level timeout progress
-    clearTimeout(CRSessionClient.timeout);
-    CRSessionClient.timeout = undefined;
+    this.active ??= Date.now();
     try {
       if (tev === false) {
-        throw ConnectError.from('Provider disconnected', Code.Unavailable);
+        this.close();
       } else if (!isTransportEvent(tev)) {
         throw new Error('Unknown item from service', { cause: tev });
       } else {
@@ -318,7 +301,7 @@ export class CRSessionClient {
         const sink = new WritableStream(new PortStreamSink(sinkPort));
         void stream.pipeTo(sink, { signal: this.signal }).catch((cause: unknown) => {
           if (globalThis.__DEV__) {
-            console.debug('offerStreamRequest pipe failed', cause);
+            console.debug('session-client offerStreamRequest pipe failed', cause);
           }
         });
       }
