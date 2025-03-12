@@ -42,14 +42,14 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@bufbuild/protobuf": "^1.10.0",
+    "@bufbuild/protobuf": "^2.2.2",
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
     "@penumbra-zone/protobuf": "workspace:*",
     "@types/lodash": "^4.17.7"
   },
   "peerDependencies": {
-    "@bufbuild/protobuf": "^1.10.0",
+    "@bufbuild/protobuf": "^2.2.2",
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
     "@penumbra-zone/protobuf": "workspace:*"
