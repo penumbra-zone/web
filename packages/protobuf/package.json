@@ -12,15 +12,11 @@
     "clean": "rm -rfv dist *.tsbuildinfo package penumbra-zone-*.tgz",
     "clean:proto": "rm -rfv gen",
     "dev:pack": "tsc-watch --onSuccess \"$npm_execpath pack\"",
-    "gen:cosmos-sdk": "buf generate buf.build/cosmos/cosmos-sdk:e7a85cef453e4b999ad9aff8714ae05f",
-    "gen:ibc": "buf generate buf.build/cosmos/ibc:7ab44ae956a0488ea04e04511efa5f70",
-    "gen:ics23": "buf generate buf.build/cosmos/ics23:55085f7c710a45f58fa09947208eb70b",
-    "gen:noble": "buf generate buf.build/noble-assets/forwarding:5a8609a6772d417584a9c60cd8b80881",
-    "gen:penumbra": "buf generate buf.build/penumbra-zone/penumbra:f6682d4ef839bb06e2da4fae487eb9d565ea04d6",
+    "gen": "buf generate",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "lint:strict": "tsc --noEmit && eslint src --max-warnings 0",
-    "proto": "$npm_execpath run gen:cosmos-sdk --clean && $npm_execpath run gen:ibc && $npm_execpath run gen:ics23 && $npm_execpath run gen:penumbra && $npm_execpath run gen:noble && touch gen/.npmignore",
+    "proto": "$npm_execpath run gen && touch gen/.npmignore",
     "test": "vitest run"
   },
   "files": [
@@ -53,12 +49,11 @@
     }
   },
   "devDependencies": {
-    "@bufbuild/buf": "^1.0",
-    "@bufbuild/protobuf": "^1.10.0",
-    "@bufbuild/protoc-gen-es": "^1.10.0",
-    "@connectrpc/protoc-gen-connect-es": "^1.4.0"
+    "@bufbuild/buf": "^1.50.1",
+    "@bufbuild/protobuf": "^2.2.2",
+    "@bufbuild/protoc-gen-es": "^2.2.2"
   },
   "peerDependencies": {
-    "@bufbuild/protobuf": "^1.10.0"
+    "@bufbuild/protobuf": "^2.2.2"
   }
 }

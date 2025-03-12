@@ -1,12 +1,19 @@
-# buf.gen.yaml defines a local generation template.
-# For details, see https://docs.buf.build/configuration/v1/buf-gen-yaml
-version: v1
+# This file defines a Buf generation schema. Calling it with `pnpm gen`
+# results in downloading common protobuf definitions from the Penumbra protocol repo
+# and transforming them into a comfortable TypeScript format.
+
+# Learn more: https://buf.build/docs/configuration/v2/buf-gen-yaml
+version: v2
+clean: true
+inputs:
+  - module: buf.build/penumbra-zone/penumbra:f6682d4ef839bb06e2da4fae487eb9d565ea04d6
+  - module: buf.build/cosmos/cosmos-sdk:e7a85cef453e4b999ad9aff8714ae05f
+  - module: buf.build/cosmos/ibc:7ab44ae956a0488ea04e04511efa5f70
+  - module: buf.build/cosmos/ics23:55085f7c710a45f58fa09947208eb70b
+  - module: buf.build/noble-assets/forwarding:5a8609a6772d417584a9c60cd8b80881
 plugins:
-  # This will invoke protoc-gen-es and write output to src/gen
-  - plugin: es
+  - local: protoc-gen-es
     out: gen
-    opt: target=ts
-  # This will invoke protoc-gen-connect-es
-  - plugin: connect-es
-    out: gen
-    opt: target=ts
+    opt:
+      - import_extension=js
+      - target=js+dts
