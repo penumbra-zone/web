@@ -1,14 +1,14 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
-  ConverseRequest,
-  ConverseResponse,
-  IntroduceRequest,
-  IntroduceResponse,
-  SayRequest,
-  SayResponse,
+  ConverseRequestSchema,
+  ConverseResponseSchema,
+  IntroduceRequestSchema,
+  IntroduceResponseSchema,
+  SayRequestSchema,
+  SayResponseSchema,
+  ElizaService,
 } from '@buf/connectrpc_eliza.bufbuild_es/connectrpc/eliza/v1/eliza_pb.js';
-import { ElizaService } from '@buf/connectrpc_eliza.connectrpc_es/connectrpc/eliza/v1/eliza_connect.js';
-import { Any, createRegistry, type PlainMessage } from '@bufbuild/protobuf';
+
+import { createRegistry, create, toJson } from '@bufbuild/protobuf';
 import { Code, ConnectError, type Transport } from '@connectrpc/connect';
 import { beforeEach, describe, expect, it, Mock, onTestFinished, vi } from 'vitest';
 import { createChannelTransport, type ChannelTransportOptions } from './create.js';
@@ -24,25 +24,23 @@ import ReadableStream from './ReadableStream.from.js';
 
 const typeRegistry = createRegistry(ElizaService);
 
-const sayRequest: PlainMessage<SayRequest> = { sentence: 'hello' };
-const sayResponse: PlainMessage<SayResponse> = { sentence: 'world' };
-
-const introduceRequest: PlainMessage<IntroduceRequest> = { name: 'Sue' };
-const introduceResponse: PlainMessage<IntroduceResponse>[] = [
-  { sentence: 'Son, this world is rough' },
-  { sentence: "And if a man's gonna make it, he's gotta be tough" },
-  { sentence: "And I knew I wouldn't be there to help you along" },
+const sayRequest = create(SayRequestSchema, { sentence: 'hello' });
+const sayResponse = create(SayResponseSchema, { sentence: 'world' });
+const introduceRequest = create(IntroduceRequestSchema, { name: 'Sue' });
+const introduceResponse = [
+  create(IntroduceResponseSchema, { sentence: 'Son, this world is rough' }),
+  create(IntroduceResponseSchema, { sentence: "And if a man's gonna make it, he's gotta be tough" }),
+  create(IntroduceResponseSchema, { sentence: "And I knew I wouldn't be there to help you along" }),
 ];
-
-const converseRequest: PlainMessage<ConverseRequest>[] = [
-  { sentence: 'You oughta thank me, before I die' },
-  { sentence: 'For the gravel in your guts and the spit in your eye' },
-  { sentence: "Because I'm the son-of-a-bitch that named you Sue" },
-];
-const converseResponse: PlainMessage<ConverseResponse>[] = [
-  { sentence: 'I got all choked up and I threw down my gun' },
-  { sentence: 'And I called him my pa, and he called me his son' },
-  { sentence: 'And I came away with a different point of view' },
+const converseRequest = [
+  create(ConverseRequestSchema, { sentence: 'You oughta thank me, before I die' }),
+  create(ConverseRequestSchema, { sentence: 'For the gravel in your guts and the spit in your eye' }),
+  create(ConverseRequestSchema, { sentence: "Because I'm the son-of-a-bitch that named you Sue" }),
+]
+const converseResponse = [
+  create(ConverseResponseSchema, { sentence: 'I got all choked up and I threw down my gun' }),
+  create(ConverseResponseSchema, { sentence: 'And I called him my pa, and he called me his son' }),
+  create(ConverseResponseSchema, { sentence: 'And I came away with a different point of view' }),
 ];
 
 describe('channel transport', () => {
@@ -86,20 +84,16 @@ describe('channel transport', () => {
         const { requestId } = ev.data as TransportMessage;
         otherEndPort.postMessage({
           requestId,
-          message: {
-            ...sayResponse,
-            '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayResponse',
-          },
+          message: sayResponse,
         });
       });
 
       const unaryRequest = transport.unary(
-        ElizaService,
-        ElizaService.methods.say,
+        ElizaService.method.say,
         undefined,
         undefined,
         undefined,
-        new SayRequest(sayRequest),
+        sayRequest,
       );
 
       await vi.waitFor(() => expect(otherEnd).toHaveBeenCalled());
@@ -108,10 +102,7 @@ describe('channel transport', () => {
         expect.objectContaining({
           data: expect.objectContaining({
             requestId: expect.any(String) as string,
-            message: {
-              ...sayRequest,
-              '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayRequest',
-            },
+            message: toJson(SayRequestSchema, sayRequest, { registry: typeRegistry }),
           }),
         }),
       );
@@ -121,9 +112,9 @@ describe('channel transport', () => {
     });
 
     it('should send and receive streaming requests', async () => {
-      const introduceRequestStream = ReadableStream.from([new IntroduceRequest(introduceRequest)]);
+      const introduceRequestStream = ReadableStream.from([create(IntroduceRequestSchema, introduceRequest)]);
       const introduceResponseStream = ReadableStream.from(
-        introduceResponse.map(r => Any.pack(new IntroduceResponse(r)).toJson({ typeRegistry })),
+        introduceResponse.map(r => toJson(IntroduceResponseSchema, r, { registry: typeRegistry })),
       );
       expect(otherEnd).not.toHaveBeenCalled();
       otherEnd.mockImplementation((ev: MessageEvent<unknown>) => {
@@ -134,8 +125,7 @@ describe('channel transport', () => {
       });
 
       const streamRequest = transport.stream(
-        ElizaService,
-        ElizaService.methods.introduce,
+        ElizaService.method.introduce,
         undefined,
         undefined,
         undefined,
@@ -148,10 +138,7 @@ describe('channel transport', () => {
         expect.objectContaining({
           data: expect.objectContaining({
             requestId: expect.any(String) as string,
-            message: {
-              ...introduceRequest,
-              '@type': 'type.googleapis.com/connectrpc.eliza.v1.IntroduceRequest',
-            },
+            message: toJson(IntroduceRequestSchema, introduceRequest, { registry: typeRegistry }),
           }),
         }),
       );
@@ -165,8 +152,7 @@ describe('channel transport', () => {
 
     it('should require streaming requests to contain at least one message', async () => {
       const streamRequest = transport.stream(
-        ElizaService,
-        ElizaService.methods.introduce,
+        ElizaService.method.introduce,
         undefined,
         undefined,
         undefined,
@@ -177,18 +163,17 @@ describe('channel transport', () => {
     });
 
     it('should require server-streaming requests to contain only one message', async () => {
-      const introduceRequestToo: PlainMessage<IntroduceRequest>[] = [
-        { name: 'Sue' },
-        { name: 'How do you do?' },
+      const introduceRequestToo = [
+        create(IntroduceRequestSchema, { name: 'Sue' }),
+        create(IntroduceRequestSchema, { name: 'How do you do?' }),
       ];
 
       const streamRequest = transport.stream(
-        ElizaService,
-        ElizaService.methods.introduce,
+        ElizaService.method.introduce,
         undefined,
         undefined,
         undefined,
-        ReadableStream.from(introduceRequestToo.map(i => new IntroduceRequest(i))),
+        ReadableStream.from(introduceRequestToo.map(i => create(IntroduceRequestSchema, i))),
       );
 
       await expect(streamRequest).rejects.toThrow();
@@ -202,7 +187,7 @@ describe('channel transport', () => {
         const requestId = tev.requestId;
 
         const responseStream = ReadableStream.from(
-          converseResponse.map(r => Any.pack(new ConverseResponse(r)).toJson({ typeRegistry })),
+          converseResponse.map(r => toJson(ConverseResponseSchema, r, { registry: typeRegistry })),
         );
 
         otherEndPort.postMessage({ requestId, stream: responseStream }, [responseStream]);
@@ -210,8 +195,7 @@ describe('channel transport', () => {
 
       expect(otherEnd).not.toHaveBeenCalled();
       const streamRequest = transport.stream(
-        ElizaService,
-        ElizaService.methods.converse,
+        ElizaService.method.converse,
         undefined,
         undefined,
         undefined,
@@ -220,7 +204,7 @@ describe('channel transport', () => {
       await vi.waitFor(() => expect(otherEnd).toHaveBeenCalled());
 
       const otherEndFromAsync = await Array.fromAsync(otherEndRequestStream ?? []);
-      expect(otherEndFromAsync).toMatchObject(converseRequest);
+      expect(otherEndFromAsync).toMatchObject(converseRequest.map((r) => toJson(ConverseRequestSchema, r, { registry: typeRegistry })));
 
       await expect(streamRequest).resolves.toMatchObject({ stream: true });
       await expect(
@@ -250,21 +234,17 @@ describe('channel transport', () => {
         setTimeout(() => {
           otherEndPort.postMessage({
             requestId,
-            message: {
-              ...sayResponse,
-              '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayResponse',
-            },
+            message: toJson(SayResponseSchema, sayResponse, { registry: typeRegistry }),
           });
         }, defaultTimeoutMs / 2);
       });
 
       const unaryRequest = transport.unary(
-        ElizaService,
-        ElizaService.methods.say,
+        ElizaService.method.say,
         undefined,
         undefined,
         undefined,
-        new SayRequest(sayRequest),
+        sayRequest,
       );
 
       await expect(unaryRequest).resolves.toMatchObject({ message: sayResponse });
@@ -276,21 +256,17 @@ describe('channel transport', () => {
         setTimeout(() => {
           otherEndPort.postMessage({
             requestId,
-            message: {
-              ...sayResponse,
-              '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayResponse',
-            },
+            message: sayResponse,
           });
         }, defaultTimeoutMs * 2);
       });
 
       const unaryRequest = transport.unary(
-        ElizaService,
-        ElizaService.methods.say,
+        ElizaService.method.say,
         undefined,
         undefined,
         undefined,
-        new SayRequest(sayRequest),
+        sayRequest,
       );
 
       await expect(unaryRequest).rejects.toThrow('[deadline_exceeded]');
@@ -299,10 +275,7 @@ describe('channel transport', () => {
         expect(otherEnd).toHaveBeenCalledWith(
           expect.objectContaining({
             data: expect.objectContaining({
-              message: expect.objectContaining({
-                ...sayRequest,
-                '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayRequest',
-              }),
+              message: toJson(SayRequestSchema, sayRequest, { registry: typeRegistry }),
             }),
           }),
         );
@@ -315,21 +288,17 @@ describe('channel transport', () => {
         setTimeout(() => {
           otherEndPort.postMessage({
             requestId,
-            message: {
-              ...sayResponse,
-              '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayResponse',
-            },
+            message: toJson(SayResponseSchema, sayResponse, { registry: typeRegistry }),
           });
         }, defaultTimeoutMs / 2);
       });
 
       const unaryRequest = transport.unary(
-        ElizaService,
-        ElizaService.methods.say,
+        ElizaService.method.say,
         undefined,
         defaultTimeoutMs / 3,
         undefined,
-        new SayRequest(sayRequest),
+        sayRequest,
       );
 
       await expect(unaryRequest).rejects.toThrow('[deadline_exceeded]');
@@ -340,7 +309,7 @@ describe('channel transport', () => {
       otherEnd.mockImplementation((event: MessageEvent<unknown>) => {
         const { requestId } = event.data as TransportMessage;
         const stream = ReadableStream.from(
-          introduceResponse.map(r => Any.pack(new IntroduceResponse(r)).toJson({ typeRegistry })),
+          introduceResponse.map(r => toJson(IntroduceResponseSchema, r, { registry: typeRegistry })),
         );
 
         setTimeout(() => {
@@ -349,12 +318,11 @@ describe('channel transport', () => {
       });
 
       const streamRequest = transport.stream(
-        ElizaService,
-        ElizaService.methods.introduce,
+        ElizaService.method.introduce,
         undefined,
         undefined,
         undefined,
-        ReadableStream.from([new IntroduceRequest(introduceRequest)]),
+        ReadableStream.from([create(IntroduceRequestSchema, introduceRequest)]),
       );
 
       await expect(streamRequest).rejects.toThrow('[deadline_exceeded]');
@@ -368,7 +336,11 @@ describe('channel transport', () => {
           (async function* () {
             for (const chunk of introduceResponse) {
               await new Promise(resolve => void setTimeout(resolve, defaultTimeoutMs / 2));
-              yield Any.pack(new IntroduceResponse(chunk)).toJson({ typeRegistry });
+              yield toJson(
+                IntroduceResponseSchema,
+                create(IntroduceResponseSchema, chunk),
+                { registry: typeRegistry },
+              );
             }
           })(),
         );
@@ -376,12 +348,11 @@ describe('channel transport', () => {
       });
 
       const streamRequest = transport.stream(
-        ElizaService,
-        ElizaService.methods.introduce,
+        ElizaService.method.introduce,
         undefined,
         undefined,
         undefined,
-        ReadableStream.from([new IntroduceRequest(introduceRequest)]),
+        ReadableStream.from([create(IntroduceRequestSchema, introduceRequest)]),
       );
 
       await vi.waitFor(() => expect(otherEnd).toHaveBeenCalled());
@@ -397,25 +368,36 @@ describe('channel transport', () => {
         const stream = ReadableStream.from(
           (async function* () {
             // first one quick
-            yield Any.pack(new IntroduceResponse(introduceResponse[0])).toJson({ typeRegistry });
+            yield toJson(
+              IntroduceResponseSchema,
+              create(IntroduceResponseSchema, introduceResponse[0]),
+              { registry: typeRegistry },
+            );
             // second slower
             await new Promise(resolve => void setTimeout(resolve, defaultTimeoutMs / 2));
-            yield Any.pack(new IntroduceResponse(introduceResponse[1])).toJson({ typeRegistry });
+            yield toJson(
+              IntroduceResponseSchema,
+              create(IntroduceResponseSchema, introduceResponse[1]),
+              { registry: typeRegistry },
+            );
             // then stall
             await new Promise(resolve => void setTimeout(resolve, defaultTimeoutMs * 2));
-            yield Any.pack(new IntroduceResponse(introduceResponse[2])).toJson({ typeRegistry });
+            yield toJson(
+              IntroduceResponseSchema,
+              create(IntroduceResponseSchema, introduceResponse[2]),
+              { registry: typeRegistry },
+            );
           })(),
         );
         otherEndPort.postMessage({ requestId, stream }, [stream]);
       });
 
       const streamRequest = transport.stream(
-        ElizaService,
-        ElizaService.methods.introduce,
+        ElizaService.method.introduce,
         undefined,
         undefined,
         undefined,
-        ReadableStream.from([new IntroduceRequest(introduceRequest)]),
+        ReadableStream.from([create(IntroduceRequestSchema, introduceRequest)]),
       );
 
       await expect(streamRequest).resolves.toMatchObject({ stream: true });
@@ -442,12 +424,11 @@ describe('channel transport', () => {
 
     it('should cancel requests aborted for no reason', async () => {
       const unaryRequest = transport.unary(
-        ElizaService,
-        ElizaService.methods.say,
+        ElizaService.method.say,
         AbortSignal.abort(),
         undefined,
         undefined,
-        new SayRequest(sayRequest),
+        create(SayRequestSchema, sayRequest),
       );
 
       await expect(unaryRequest).rejects.toThrow('[canceled]');
@@ -455,12 +436,11 @@ describe('channel transport', () => {
 
     it('should propagate abort reason', async () => {
       const unaryRequest = transport.unary(
-        ElizaService,
-        ElizaService.methods.say,
+        ElizaService.method.say,
         AbortSignal.abort(new TypeError('some reason')),
         undefined,
         undefined,
-        new SayRequest(sayRequest),
+        create(SayRequestSchema, sayRequest),
       );
 
       await expect(unaryRequest).rejects.toThrow('[aborted] some reason');
@@ -468,12 +448,11 @@ describe('channel transport', () => {
 
     it('should maintain specific error codes', async () => {
       const unaryRequest = transport.unary(
-        ElizaService,
-        ElizaService.methods.say,
+        ElizaService.method.say,
         AbortSignal.abort(ConnectError.from('different reason', Code.DataLoss)),
         undefined,
         undefined,
-        new SayRequest(sayRequest),
+        create(SayRequestSchema, sayRequest),
       );
 
       await expect(unaryRequest).rejects.toThrow('[data_loss] different reason');
@@ -488,12 +467,11 @@ describe('channel transport', () => {
         const signalAdd = vi.spyOn(ac.signal, 'addEventListener');
 
         const streamRequest = transport.stream(
-          ElizaService,
-          ElizaService.methods.introduce,
+          ElizaService.method.introduce,
           ac.signal,
           undefined,
           undefined,
-          ReadableStream.from([new IntroduceRequest(introduceRequest)]),
+          ReadableStream.from([create(IntroduceRequestSchema, introduceRequest)]),
         );
 
         await vi.waitFor(() => expect(otherEnd).toHaveBeenCalledOnce());
@@ -516,12 +494,12 @@ describe('channel transport', () => {
         const ac = new AbortController();
 
         const defaultTimeoutMs = 200;
-        const responses: PlainMessage<IntroduceResponse>[] = [
-          { sentence: 'something remarkably similar' },
-          { sentence: 'something remarkably similar' },
-          { sentence: 'something remarkably similar' },
-          { sentence: 'something remarkably similar' },
-          { sentence: 'something remarkably similar' },
+        const responses = [
+          create(IntroduceResponseSchema, { sentence: 'something remarkably similar' }),
+          create(IntroduceResponseSchema, { sentence: 'something remarkably similar' }),
+          create(IntroduceResponseSchema, { sentence: 'something remarkably similar' }),
+          create(IntroduceResponseSchema, { sentence: 'something remarkably similar' }),
+          create(IntroduceResponseSchema, { sentence: 'something remarkably similar' }),
         ];
 
         otherEnd.mockImplementation((event: MessageEvent<unknown>) => {
@@ -534,7 +512,7 @@ describe('channel transport', () => {
               (async function* () {
                 for (const r of responses) {
                   await new Promise(resolve => void setTimeout(resolve, defaultTimeoutMs / 3));
-                  yield Any.pack(new IntroduceResponse(r)).toJson({ typeRegistry });
+                  yield toJson(IntroduceResponseSchema, r, { registry: typeRegistry });
                 }
               })(),
             );
@@ -545,12 +523,11 @@ describe('channel transport', () => {
         });
 
         const streamRequest = transport.stream(
-          ElizaService,
-          ElizaService.methods.introduce,
+          ElizaService.method.introduce,
           ac.signal,
           undefined,
           undefined,
-          ReadableStream.from([new IntroduceRequest(introduceRequest)]),
+          ReadableStream.from([create(IntroduceRequestSchema, introduceRequest)]),
         );
 
         await vi.waitFor(() => expect(otherEnd).toHaveBeenCalledOnce());
@@ -583,12 +560,11 @@ describe('channel transport', () => {
         const signalAdd = vi.spyOn(ac.signal, 'addEventListener');
 
         const streamRequest = transport.stream(
-          ElizaService,
-          ElizaService.methods.introduce,
+          ElizaService.method.introduce,
           ac.signal,
           undefined,
           undefined,
-          ReadableStream.from([new IntroduceRequest(introduceRequest)]),
+          ReadableStream.from([IntroduceRequestSchema]),
         );
 
         await vi.waitFor(() => expect(signalAdd).toHaveBeenCalledOnce());
@@ -613,12 +589,12 @@ describe('channel transport', () => {
 
       it('can cancel streams already in progress, and emits an abort', async () => {
         const defaultTimeoutMs = 200;
-        const responses: PlainMessage<IntroduceResponse>[] = [
-          { sentence: 'something remarkably similar' },
-          { sentence: 'something remarkably similar' },
-          { sentence: 'something remarkably similar' },
-          { sentence: 'something remarkably similar' },
-          { sentence: 'something remarkably similar' },
+        const responses = [
+          create(IntroduceResponseSchema, { sentence: 'something remarkably similar' }),
+          create(IntroduceResponseSchema, { sentence: 'something remarkably similar' }),
+          create(IntroduceResponseSchema, { sentence: 'something remarkably similar' }),
+          create(IntroduceResponseSchema, { sentence: 'something remarkably similar' }),
+          create(IntroduceResponseSchema, { sentence: 'something remarkably similar' }),
         ];
 
         const ac = new AbortController();
@@ -628,12 +604,12 @@ describe('channel transport', () => {
           const { requestId } = tev;
 
           if (isTransportMessage(tev)) {
-            expect(tev.message).toMatchObject(introduceRequest);
+            expect(tev.message).toMatchObject(toJson(IntroduceRequestSchema, introduceRequest, { registry: typeRegistry }) as object);
             const stream = ReadableStream.from(
               (async function* () {
                 for (const r of responses) {
                   await new Promise(resolve => void setTimeout(resolve, defaultTimeoutMs / 3));
-                  yield Any.pack(new IntroduceResponse(r)).toJson({ typeRegistry });
+                  yield toJson(IntroduceResponseSchema, r, { registry: typeRegistry });
                 }
               })(),
             );
@@ -644,12 +620,11 @@ describe('channel transport', () => {
         });
 
         const streamRequest = transport.stream(
-          ElizaService,
-          ElizaService.methods.introduce,
+          ElizaService.method.introduce,
           ac.signal,
           undefined,
           undefined,
-          ReadableStream.from([new IntroduceRequest(introduceRequest)]),
+          ReadableStream.from([introduceRequest]),
         );
 
         await vi.waitFor(() => expect(otherEnd).toHaveBeenCalledOnce());
@@ -696,20 +671,16 @@ describe('channel transport', () => {
         const { requestId } = ev.data as TransportMessage;
         otherEndPort.postMessage({
           requestId,
-          message: {
-            ...sayResponse,
-            '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayResponse',
-          },
+          message: toJson(SayResponseSchema, sayResponse, { registry: typeRegistry }),
         });
       });
 
       const unaryRequest = transport.unary(
-        ElizaService,
-        ElizaService.methods.say,
+        ElizaService.method.say,
         undefined,
         undefined,
         header,
-        new SayRequest(sayRequest),
+        sayRequest,
       );
 
       await expect(unaryRequest).resolves.toMatchObject({ message: sayResponse });
@@ -726,24 +697,19 @@ describe('channel transport', () => {
       expect(otherEnd).not.toHaveBeenCalled();
 
       otherEnd.mockImplementation((ev: MessageEvent<unknown>) => {
-        console.log('otherEnd', ev.data);
         const { requestId } = ev.data as TransportMessage;
         otherEndPort.postMessage({
           requestId,
-          message: {
-            ...sayResponse,
-            '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayResponse',
-          },
+          message: toJson(SayResponseSchema, sayResponse, { registry: typeRegistry }),
         });
       });
 
       const unaryRequest = transport.unary(
-        ElizaService,
-        ElizaService.methods.say,
+        ElizaService.method.say,
         undefined,
         200,
         undefined,
-        new SayRequest(sayRequest),
+        sayRequest,
       );
 
       await expect(unaryRequest).resolves.toMatchObject({ message: sayResponse });
@@ -761,24 +727,19 @@ describe('channel transport', () => {
       expect(otherEnd).not.toHaveBeenCalled();
 
       otherEnd.mockImplementation((ev: MessageEvent<unknown>) => {
-        console.log('otherEnd', ev.data);
         const { requestId } = ev.data as TransportMessage;
         otherEndPort.postMessage({
           requestId,
-          message: {
-            ...sayResponse,
-            '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayResponse',
-          },
+          message: toJson(SayResponseSchema, sayResponse, { registry: typeRegistry }),
         });
       });
 
       const unaryRequest = transport.unary(
-        ElizaService,
-        ElizaService.methods.say,
+        ElizaService.method.say,
         undefined,
         200,
         header,
-        new SayRequest(sayRequest),
+        sayRequest,
       );
 
       await expect(unaryRequest).resolves.toMatchObject({ message: sayResponse });

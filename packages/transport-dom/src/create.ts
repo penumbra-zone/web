@@ -1,15 +1,10 @@
 import {
-  Any,
-  AnyMessage,
   JsonReadOptions,
   type JsonValue,
   JsonWriteOptions,
-  Message,
-  MethodInfo,
-  MethodKind,
-  PartialMessage,
-  ServiceType,
+  fromJson, toJson, type DescMessage, type DescMethodUnary, type MessageInitShape, create, DescMethodStreaming, MessageShape,
 } from '@bufbuild/protobuf';
+
 import { Code, ConnectError, StreamResponse, Transport, UnaryResponse } from '@connectrpc/connect';
 import { CommonTransportOptions } from '@connectrpc/connect/protocol';
 import { errorFromJson } from '@connectrpc/connect/protocol-connect';
@@ -47,7 +42,7 @@ const forceTransportOptions = {
 export interface ChannelTransportOptions
   extends Omit<CommonTransportOptions, keyof typeof forceTransportOptions> {
   jsonOptions?: CommonTransportOptions['jsonOptions'] & {
-    typeRegistry: NonNullable<(JsonReadOptions & JsonWriteOptions)['typeRegistry']>;
+    typeRegistry: NonNullable<(JsonReadOptions & JsonWriteOptions)['registry']>;
   };
   getPort: () => PromiseLike<MessagePort>;
 }
@@ -151,13 +146,12 @@ export const createChannelTransport = ({
   };
 
   return {
-    async unary<I extends Message<I> = AnyMessage, O extends Message<O> = AnyMessage>(
-      service: ServiceType,
-      method: MethodInfo<I, O>,
+    async unary<I extends DescMessage, O extends DescMessage>(
+      method: DescMethodUnary<I, O>,
       signal: AbortSignal | undefined = new AbortController().signal,
       timeoutMs: number | undefined = defaultTimeoutMs,
       header: HeadersInit | undefined,
-      input: PartialMessage<I>,
+      message: MessageInitShape<I>,
     ): Promise<UnaryResponse<I, O>> {
       if (transportFailure.signal.aborted) {
         throw transportFailure.signal.reason;
@@ -186,17 +180,16 @@ export const createChannelTransport = ({
 
       if (!signal.aborted) {
         try {
-          switch (method.kind) {
-            case MethodKind.Unary:
+          switch (method.methodKind) {
+            case 'unary':
               {
-                const message = Any.pack(new method.I(input)).toJson(jsonOptions);
                 signal.addEventListener('abort', () =>
                   port?.postMessage({ requestId, abort: true } satisfies TransportAbort),
                 );
 
                 port.postMessage({
                   requestId,
-                  message,
+                  message: toJson(method.input, create(method.input, message), jsonOptions),
                   header: normalizeHeader(timeoutMs, header),
                 } satisfies TransportMessage);
               }
@@ -209,27 +202,29 @@ export const createChannelTransport = ({
         }
       }
 
+      const res = await response.then(({ message }) => {
+        if (message && typeof message === 'object' && '$typeName' in message) {
+          delete message['$typeName'];
+        }
+        return fromJson(method.output, message, jsonOptions);
+      });
+
       return {
-        service,
+        service: method.parent,
         method,
         stream: false,
         header: new Headers((await response).header),
         trailer: new Headers((await response).trailer),
-        message: await response.then(({ message }) => {
-          const o = new method.O();
-          Any.fromJson(message, jsonOptions).unpackTo(o);
-          return o;
-        }),
+        message: res,
       };
     },
 
-    async stream<I extends Message<I> = AnyMessage, O extends Message<O> = AnyMessage>(
-      service: ServiceType,
-      method: MethodInfo<I, O>,
+    async stream<I extends DescMessage, O extends DescMessage>(
+      method: DescMethodStreaming<I, O>,
       signal: AbortSignal | undefined = new AbortController().signal,
       timeoutMs: number | undefined = defaultTimeoutMs,
       header: HeadersInit | undefined,
-      input: AsyncIterable<PartialMessage<I>>,
+      input: AsyncIterable<MessageInitShape<I>>,
     ): Promise<StreamResponse<I, O>> {
       if (transportFailure.signal.aborted) {
         throw transportFailure.signal.reason;
@@ -258,8 +253,8 @@ export const createChannelTransport = ({
 
       if (!signal.aborted) {
         try {
-          switch (method.kind) {
-            case MethodKind.ServerStreaming:
+          switch (method.methodKind) {
+            case 'server_streaming':
               // send as a single message
               {
                 // consume the input stream, which should have only one message
@@ -270,7 +265,7 @@ export const createChannelTransport = ({
                 ];
                 // confirm the input stream ended after one message with content
                 if (done && typeof value === 'object' && value !== null) {
-                  const message = Any.pack(new method.I(value as object)).toJson(jsonOptions);
+                  const message = toJson(method.input, create(method.input, value as MessageShape<I>), jsonOptions)
                   signal.addEventListener('abort', () =>
                     port?.postMessage({ requestId, abort: true } satisfies TransportAbort),
                   );
@@ -287,8 +282,8 @@ export const createChannelTransport = ({
                 }
               }
               break;
-            case MethodKind.ClientStreaming:
-            case MethodKind.BiDiStreaming:
+            case 'client_streaming':
+            case 'bidi_streaming':
               // send as an actual stream
               {
                 if (!globalThis.__DEV__) {
@@ -296,8 +291,8 @@ export const createChannelTransport = ({
                 }
                 const stream: ReadableStream<JsonValue> = ReadableStream.from(input).pipeThrough(
                   new TransformStream({
-                    transform: (chunk: PartialMessage<I>, cont) =>
-                      cont.enqueue(Any.pack(new method.I(chunk)).toJson(jsonOptions)),
+                    transform: (chunk: MessageInitShape<I>, cont) =>
+                      cont.enqueue(toJson(method.input, create(method.input, chunk), jsonOptions)),
                   }),
                 );
                 signal.addEventListener('abort', () =>
@@ -330,7 +325,7 @@ export const createChannelTransport = ({
       };
 
       return {
-        service,
+        service: method.parent,
         method,
         stream: true,
         header: new Headers((await response).header),
@@ -342,9 +337,7 @@ export const createChannelTransport = ({
               transform: (chunk, cont) => {
                 clearTimeout(chunkTimeout);
                 chunkTimeout = setTimeout(chunkDeadlineExceeded, timeoutMs);
-                const o = new method.O();
-                Any.fromJson(chunk, jsonOptions).unpackTo(o);
-                cont.enqueue(o);
+                cont.enqueue(fromJson(method.output, chunk, jsonOptions));
               },
             }),
             { signal: AbortSignal.any([signal, chunkDeadline]) },
