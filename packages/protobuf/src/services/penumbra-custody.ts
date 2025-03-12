@@ -1,1 +1,1 @@
-export { CustodyService } from '../../gen/penumbra/custody/v1/custody_connect.js';
+export { CustodyService } from '../../gen/penumbra/custody/v1/custody_pb.js';

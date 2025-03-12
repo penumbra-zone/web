@@ -1,1 +1,1 @@
-export { ViewService } from '../../gen/penumbra/view/v1/view_connect.js';
+export { ViewService } from '../../gen/penumbra/view/v1/view_pb.js';
