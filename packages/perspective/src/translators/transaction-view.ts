@@ -1,15 +1,17 @@
 import { asOpaqueMemoView, asReceiverMemoView } from './memo-view.js';
+import { create } from '@bufbuild/protobuf';
 import { asPublicActionView, asReceiverActionView } from './action-view.js';
-import { TransactionView } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import { TransactionViewSchema } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import type { TransactionView } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { Translator } from './types.js';
 import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 export const asPublicTransactionView: Translator<TransactionView> = transactionView => {
   if (!transactionView?.bodyView) {
-    return new TransactionView();
+    return create(TransactionViewSchema);
   }
 
-  return new TransactionView({
+  return create(TransactionViewSchema, {
     bodyView: {
       memoView: asOpaqueMemoView(transactionView.bodyView.memoView),
       actionViews: transactionView.bodyView.actionViews.map(asPublicActionView),
@@ -27,10 +29,10 @@ export const asReceiverTransactionView: Translator<
   { isControlledAddress: (address: Address) => Promise<boolean> }
 > = async (transactionView, ctx) => {
   if (!transactionView?.bodyView) {
-    return new TransactionView();
+    return create(TransactionViewSchema);
   }
 
-  return new TransactionView({
+  return create(TransactionViewSchema, {
     bodyView: {
       memoView: asReceiverMemoView(transactionView.bodyView.memoView),
       actionViews: await Promise.all(

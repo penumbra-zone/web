@@ -1,8 +1,9 @@
 import { describe, expect, test, vi } from 'vitest';
+import { create, toJson } from '@bufbuild/protobuf';
 import { viewActionPlan } from './view-action-plan.js';
 import {
-  ActionPlan,
-  ActionView,
+  ActionPlanSchema,
+  ActionViewSchema,
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import {
   OutputView,
@@ -10,43 +11,54 @@ import {
   SpendView,
   SpendView_Visible,
 } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
-import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { Address, FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import {
-  SwapPlaintext,
-  BatchSwapOutputData,
+  AssetIdSchema,
+  MetadataSchema,
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import type { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import {
+  AddressSchema,
+  FullViewingKeySchema,
+} from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import {
+  SwapPlaintextSchema,
+  BatchSwapOutputDataSchema,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import {
-  Delegate,
-  Undelegate,
+  DelegateSchema,
+  UndelegateSchema,
 } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
 import { fullViewingKeyFromBech32m } from '@penumbra-zone/bech32m/penumbrafullviewingkey';
+
 import {
-  ActionDutchAuctionSchedule,
-  ActionDutchAuctionWithdrawPlan,
-  AuctionId,
+  ActionDutchAuctionScheduleSchema,
+  ActionDutchAuctionWithdrawPlanSchema,
+  ActionDutchAuctionWithdrawSchema,
+  AuctionIdSchema,
 } from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
+import { AmountSchema } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 
 vi.mock('@penumbra-zone/wasm/auction', () => ({
-  getAuctionId: () => new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) }),
+  getAuctionId: () => create(AuctionIdSchema, { inner: new Uint8Array([0, 1, 2, 3]) }),
 }));
 
 describe('viewActionPlan()', () => {
   const addressAsBech32 =
     'penumbra147mfall0zr6am5r45qkwht7xqqrdsp50czde7empv7yq2nk3z8yyfh9k9520ddgswkmzar22vhz9dwtuem7uxw0qytfpv7lk3q9dp8ccaw2fn5c838rfackazmgf3ahh09cxmz';
-  const address = new Address(addressFromBech32m(addressAsBech32));
-  const assetId = new AssetId({ inner: new Uint8Array() });
-  const metadata = new Metadata({ penumbraAssetId: assetId });
+  const address = create(AddressSchema, addressFromBech32m(addressAsBech32));
+  const assetId = create(AssetIdSchema, { inner: new Uint8Array() });
+  const metadata = create(MetadataSchema, { penumbraAssetId: assetId });
   const metadataByAssetId = vi.fn(() => Promise.resolve(metadata));
-  const mockFvk = new FullViewingKey(
+  const mockFvk = create(
+    FullViewingKeySchema,
     fullViewingKeyFromBech32m(
       'penumbrafullviewingkey1vzfytwlvq067g2kz095vn7sgcft47hga40atrg5zu2crskm6tyyjysm28qg5nth2fqmdf5n0q530jreumjlsrcxjwtfv6zdmfpe5kqsa5lg09',
     ),
   );
 
   describe('`spend` action', () => {
-    const validSpendActionPlan = new ActionPlan({
+    const validSpendActionPlan = create(ActionPlanSchema, {
       action: {
         case: 'spend',
         value: {
@@ -62,7 +74,7 @@ describe('viewActionPlan()', () => {
     });
 
     test('throws if the address is missing', async () => {
-      const actionPlan = new ActionPlan({
+      const actionPlan = create(ActionPlanSchema, {
         action: {
           case: 'spend',
           value: {
@@ -81,14 +93,16 @@ describe('viewActionPlan()', () => {
       const spendView = actionView.actionView.value as SpendView;
       const spendViewVisible = spendView.spendView.value as SpendView_Visible;
 
-      expect(spendViewVisible.note!.value?.valueView.value?.amount).toEqual({
-        hi: 1n,
-        lo: 0n,
-      });
+      expect(spendViewVisible.note!.value?.valueView.value?.amount).toEqual(
+        create(AmountSchema, {
+          hi: 1n,
+          lo: 0n,
+        }),
+      );
     });
 
     test('throws if the amount is missing', async () => {
-      const actionPlan = new ActionPlan({
+      const actionPlan = create(ActionPlanSchema, {
         action: {
           case: 'spend',
           value: {
@@ -113,7 +127,7 @@ describe('viewActionPlan()', () => {
       ));
 
     test('throws if the asset ID is missing', async () => {
-      const actionPlan = new ActionPlan({
+      const actionPlan = create(ActionPlanSchema, {
         action: {
           case: 'spend',
           value: {
@@ -134,8 +148,8 @@ describe('viewActionPlan()', () => {
   describe('`output` action', () => {
     const addressAsBech32 =
       'penumbra147mfall0zr6am5r45qkwht7xqqrdsp50czde7empv7yq2nk3z8yyfh9k9520ddgswkmzar22vhz9dwtuem7uxw0qytfpv7lk3q9dp8ccaw2fn5c838rfackazmgf3ahh09cxmz';
-    const destAddress = new Address(addressFromBech32m(addressAsBech32));
-    const validOutputActionPlan = new ActionPlan({
+    const destAddress = create(AddressSchema, addressFromBech32m(addressAsBech32));
+    const validOutputActionPlan = create(ActionPlanSchema, {
       action: {
         case: 'output',
         value: {
@@ -157,7 +171,7 @@ describe('viewActionPlan()', () => {
     });
 
     test('throws if the destAddress is missing', async () => {
-      const actionPlan = new ActionPlan({
+      const actionPlan = create(ActionPlanSchema, {
         action: {
           case: 'output',
           value: {
@@ -179,14 +193,16 @@ describe('viewActionPlan()', () => {
       const outputView = actionView.actionView.value as OutputView;
       const outputViewVisible = outputView.outputView.value as OutputView_Visible;
 
-      expect(outputViewVisible.note?.value?.valueView.value?.amount).toEqual({
-        hi: 1n,
-        lo: 0n,
-      });
+      expect(outputViewVisible.note?.value?.valueView.value?.amount).toEqual(
+        create(AmountSchema, {
+          hi: 1n,
+          lo: 0n,
+        }),
+      );
     });
 
     test('throws if the amount is missing', async () => {
-      const actionPlan = new ActionPlan({
+      const actionPlan = create(ActionPlanSchema, {
         action: {
           case: 'output',
           value: {
@@ -209,7 +225,7 @@ describe('viewActionPlan()', () => {
       ));
 
     test('throws if the asset ID is missing', async () => {
-      const actionPlan = new ActionPlan({
+      const actionPlan = create(ActionPlanSchema, {
         action: {
           case: 'output',
           value: {
@@ -229,7 +245,7 @@ describe('viewActionPlan()', () => {
 
   describe('`swap` action', () => {
     test('returns an action view with the `swap` case', async () => {
-      const swapPlaintext = new SwapPlaintext({
+      const swapPlaintext = create(SwapPlaintextSchema, {
         claimAddress: {
           inner: new Uint8Array([0, 1, 2, 3]),
         },
@@ -261,7 +277,7 @@ describe('viewActionPlan()', () => {
         },
       });
 
-      const actionPlan = new ActionPlan({
+      const actionPlan = create(ActionPlanSchema, {
         action: {
           case: 'swap',
           value: {
@@ -275,7 +291,7 @@ describe('viewActionPlan()', () => {
 
       const actionView = viewActionPlan(metadataByAssetId, mockFvk)(actionPlan);
 
-      const expected = new ActionView({
+      const expected = create(ActionViewSchema, {
         actionView: {
           case: 'swap',
           value: {
@@ -304,13 +320,13 @@ describe('viewActionPlan()', () => {
 
   describe('`swapClaim` action', () => {
     test('returns an action view with the `swapClaim` case', async () => {
-      const asset1Id = new AssetId({ inner: new Uint8Array([0, 1, 2, 3]) });
-      const asset2Id = new AssetId({ inner: new Uint8Array([4, 5, 6, 7]) });
+      const asset1Id = create(AssetIdSchema, { inner: new Uint8Array([0, 1, 2, 3]) });
+      const asset2Id = create(AssetIdSchema, { inner: new Uint8Array([4, 5, 6, 7]) });
       const metadataByAssetId = vi.fn((id: AssetId) =>
-        Promise.resolve(new Metadata({ penumbraAssetId: id })),
+        Promise.resolve(create(MetadataSchema, { penumbraAssetId: id })),
       );
 
-      const swapPlaintext = new SwapPlaintext({
+      const swapPlaintext = create(SwapPlaintextSchema, {
         claimAddress: address,
         claimFee: {
           amount: {
@@ -336,7 +352,7 @@ describe('viewActionPlan()', () => {
         },
       });
 
-      const outputData = new BatchSwapOutputData({
+      const outputData = create(BatchSwapOutputDataSchema, {
         delta1: swapPlaintext.delta1I,
         delta2: swapPlaintext.delta2I,
         epochStartingHeight: 1n,
@@ -354,7 +370,7 @@ describe('viewActionPlan()', () => {
         tradingPair: swapPlaintext.tradingPair,
       });
 
-      const actionPlan = new ActionPlan({
+      const actionPlan = create(ActionPlanSchema, {
         action: {
           case: 'swapClaim',
           value: {
@@ -370,7 +386,7 @@ describe('viewActionPlan()', () => {
 
       const actionView = await viewActionPlan(metadataByAssetId, mockFvk)(actionPlan);
 
-      const expected = new ActionView({
+      const expected = create(ActionViewSchema, {
         actionView: {
           case: 'swapClaim',
           value: {
@@ -433,13 +449,13 @@ describe('viewActionPlan()', () => {
       // Since these are such big objects, we'll compare their JSON outputs
       // rather than using `expect(actionView.equals(expected)).toBe(true)`,
       // since the former gives us much more useful output when the test fails.
-      expect(actionView.toJson()).toEqual(expected.toJson());
+      expect(toJson(ActionViewSchema, actionView)).toEqual(toJson(ActionViewSchema, expected));
     });
   });
 
   describe('`withdrawal` action', () => {
     test('returns an action view with the `ics20Withdrawal` case as-is', async () => {
-      const actionPlan = new ActionPlan({
+      const actionPlan = create(ActionPlanSchema, {
         action: {
           case: 'ics20Withdrawal',
           value: { amount: { hi: 1n, lo: 0n } },
@@ -449,7 +465,7 @@ describe('viewActionPlan()', () => {
       const actionView = viewActionPlan(metadataByAssetId, mockFvk)(actionPlan);
 
       await expect(actionView).resolves.toEqual(
-        new ActionView({
+        create(ActionViewSchema, {
           actionView: {
             case: 'ics20Withdrawal',
             value: { amount: { hi: 1n, lo: 0n } },
@@ -461,11 +477,11 @@ describe('viewActionPlan()', () => {
 
   describe('`delegate` action', () => {
     test('returns an action view with the action as-is', async () => {
-      const delegate = new Delegate({
+      const delegate = create(DelegateSchema, {
         epochIndex: 0n,
         delegationAmount: { hi: 123n, lo: 456n },
       });
-      const actionPlan = new ActionPlan({
+      const actionPlan = create(ActionPlanSchema, {
         action: {
           case: 'delegate',
           value: delegate,
@@ -475,7 +491,7 @@ describe('viewActionPlan()', () => {
       const actionView = viewActionPlan(metadataByAssetId, mockFvk)(actionPlan);
 
       await expect(actionView).resolves.toEqual(
-        new ActionView({
+        create(ActionViewSchema, {
           actionView: {
             case: 'delegate',
             value: delegate,
@@ -487,11 +503,11 @@ describe('viewActionPlan()', () => {
 
   describe('`undelegate` action', () => {
     test('returns an action view with the action as-is', async () => {
-      const undelegate = new Undelegate({
+      const undelegate = create(UndelegateSchema, {
         startEpochIndex: 0n,
         delegationAmount: { hi: 123n, lo: 456n },
       });
-      const actionPlan = new ActionPlan({
+      const actionPlan = create(ActionPlanSchema, {
         action: {
           case: 'undelegate',
           value: undelegate,
@@ -501,7 +517,7 @@ describe('viewActionPlan()', () => {
       const actionView = viewActionPlan(metadataByAssetId, mockFvk)(actionPlan);
 
       await expect(actionView).resolves.toEqual(
-        new ActionView({
+        create(ActionViewSchema, {
           actionView: {
             case: 'undelegate',
             value: undelegate,
@@ -513,7 +529,7 @@ describe('viewActionPlan()', () => {
 
   describe('`actionDutchAuctionSchedule` action', () => {
     test('returns an action view with the appropriate view', async () => {
-      const schedule = new ActionDutchAuctionSchedule({
+      const schedule = create(ActionDutchAuctionScheduleSchema, {
         description: {
           input: {
             amount: { hi: 0n, lo: 1n },
@@ -522,7 +538,7 @@ describe('viewActionPlan()', () => {
           outputId: {},
         },
       });
-      const actionPlan = new ActionPlan({
+      const actionPlan = create(ActionPlanSchema, {
         action: {
           case: 'actionDutchAuctionSchedule',
           value: schedule,
@@ -532,7 +548,7 @@ describe('viewActionPlan()', () => {
       const actionView = viewActionPlan(metadataByAssetId, mockFvk)(actionPlan);
 
       await expect(actionView).resolves.toEqual(
-        new ActionView({
+        create(ActionViewSchema, {
           actionView: {
             case: 'actionDutchAuctionSchedule',
             value: {
@@ -549,7 +565,7 @@ describe('viewActionPlan()', () => {
 
   describe('`actionDutchAuctionWithdraw` action', () => {
     test('returns an action view with the action and reserves', async () => {
-      const withdraw = new ActionDutchAuctionWithdrawPlan({
+      const withdraw = create(ActionDutchAuctionWithdrawPlanSchema, {
         auctionId: {},
         seq: 0n,
         reservesInput: {
@@ -561,7 +577,7 @@ describe('viewActionPlan()', () => {
           assetId: {},
         },
       });
-      const actionPlan = new ActionPlan({
+      const actionPlan = create(ActionPlanSchema, {
         action: {
           case: 'actionDutchAuctionWithdraw',
           value: withdraw,
@@ -571,11 +587,14 @@ describe('viewActionPlan()', () => {
       const actionView = viewActionPlan(metadataByAssetId, mockFvk)(actionPlan);
 
       await expect(actionView).resolves.toEqual(
-        new ActionView({
+        create(ActionViewSchema, {
           actionView: {
             case: 'actionDutchAuctionWithdraw',
             value: {
-              action: withdraw,
+              action: create(ActionDutchAuctionWithdrawSchema, {
+                auctionId: {},
+                seq: 0n,
+              }),
               reserves: [
                 {
                   valueView: {
@@ -605,7 +624,7 @@ describe('viewActionPlan()', () => {
 
   describe('all other action cases', () => {
     test('returns an action view with the case but no value', async () => {
-      const actionPlan = new ActionPlan({
+      const actionPlan = create(ActionPlanSchema, {
         action: {
           case: 'proposalSubmit',
           value: {},
@@ -615,7 +634,7 @@ describe('viewActionPlan()', () => {
       const actionView = viewActionPlan(metadataByAssetId, mockFvk)(actionPlan);
 
       await expect(actionView).resolves.toEqual(
-        new ActionView({
+        create(ActionViewSchema, {
           actionView: {
             case: 'proposalSubmit',
             value: {},

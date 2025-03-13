@@ -1,19 +1,31 @@
 import {
-  FungibleTokenPacketData,
+  FungibleTokenPacketDataSchema,
   IbcRelay,
+  FungibleTokenPacketData,
 } from '@penumbra-zone/protobuf/penumbra/core/component/ibc/v1/ibc_pb';
+import { create, fromJsonString } from '@bufbuild/protobuf';
+import { anyIs, anyUnpackTo } from '@bufbuild/protobuf/wkt';
+
 import {
+  MsgAcknowledgementSchema,
+  MsgRecvPacketSchema,
+  MsgTimeoutSchema,
+  MsgTimeoutOnCloseSchema,
+} from '@penumbra-zone/protobuf/ibc/core/channel/v1/tx_pb';
+
+import type {
   MsgAcknowledgement,
   MsgRecvPacket,
   MsgTimeout,
   MsgTimeoutOnClose,
 } from '@penumbra-zone/protobuf/ibc/core/channel/v1/tx_pb';
-import { MsgUpdateClient } from '@penumbra-zone/protobuf/ibc/core/client/v1/tx_pb';
+import { MsgUpdateClientSchema } from '@penumbra-zone/protobuf/ibc/core/client/v1/tx_pb';
+import type { MsgUpdateClient } from '@penumbra-zone/protobuf/ibc/core/client/v1/tx_pb';
 import { Packet } from '@penumbra-zone/protobuf/ibc/core/channel/v1/channel_pb';
 
 export const parsePacketTokenData = (packet: Packet): FungibleTokenPacketData => {
   const dataString = new TextDecoder().decode(packet.data);
-  return FungibleTokenPacketData.fromJsonString(dataString);
+  return fromJsonString(FungibleTokenPacketDataSchema, dataString);
 };
 
 export interface IbcRelayData {
@@ -33,9 +45,9 @@ export const unpackIbcRelay = (value: IbcRelay): IbcRelayData | undefined => {
     return undefined;
   }
 
-  if (value.rawAction.is(MsgUpdateClient.typeName)) {
-    const message = new MsgUpdateClient();
-    value.rawAction.unpackTo(message);
+  if (anyIs(value.rawAction, MsgUpdateClientSchema)) {
+    const message = create(MsgUpdateClientSchema);
+    anyUnpackTo(value.rawAction, MsgUpdateClientSchema, message);
     return {
       message,
     };
@@ -43,19 +55,21 @@ export const unpackIbcRelay = (value: IbcRelay): IbcRelayData | undefined => {
 
   let message: MsgRecvPacket | MsgTimeout | MsgTimeoutOnClose | MsgAcknowledgement;
 
-  if (value.rawAction.is(MsgRecvPacket.typeName)) {
-    message = new MsgRecvPacket();
-  } else if (value.rawAction.is(MsgTimeout.typeName)) {
-    message = new MsgTimeout();
-  } else if (value.rawAction.is(MsgTimeoutOnClose.typeName)) {
-    message = new MsgTimeoutOnClose();
-  } else if (value.rawAction.is(MsgAcknowledgement.typeName)) {
-    message = new MsgAcknowledgement();
+  if (anyIs(value.rawAction, MsgRecvPacketSchema)) {
+    message = create(MsgRecvPacketSchema);
+    anyUnpackTo(value.rawAction, MsgRecvPacketSchema, message);
+  } else if (anyIs(value.rawAction, MsgTimeoutSchema)) {
+    message = create(MsgTimeoutSchema);
+    anyUnpackTo(value.rawAction, MsgTimeoutSchema, message);
+  } else if (anyIs(value.rawAction, MsgTimeoutOnCloseSchema)) {
+    message = create(MsgTimeoutOnCloseSchema);
+    anyUnpackTo(value.rawAction, MsgTimeoutOnCloseSchema, message);
+  } else if (anyIs(value.rawAction, MsgAcknowledgementSchema)) {
+    message = create(MsgAcknowledgementSchema);
+    anyUnpackTo(value.rawAction, MsgAcknowledgementSchema, message);
   } else {
     return undefined;
   }
-
-  value.rawAction.unpackTo(message);
 
   return {
     message,

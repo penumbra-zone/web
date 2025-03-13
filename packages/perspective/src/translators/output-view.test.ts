@@ -1,16 +1,19 @@
 import { describe, expect, test, vi } from 'vitest';
+import { create, equals } from '@bufbuild/protobuf';
 import { asOpaqueOutputView, asReceiverOutputView } from './output-view.js';
-import { OutputView } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
+import { OutputViewSchema } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 
 describe('asOpaqueOutputView()', () => {
   describe('when passed `undefined`', () => {
     test('returns a blank output view', () => {
-      expect(asOpaqueOutputView(undefined).equals(new OutputView())).toBe(true);
+      expect(
+        equals(OutputViewSchema, asOpaqueOutputView(undefined), create(OutputViewSchema)),
+      ).toBe(true);
     });
   });
 
   describe('when passed an already-opaque output view', () => {
-    const outputView = new OutputView({
+    const outputView = create(OutputViewSchema, {
       outputView: {
         case: 'opaque',
         value: {
@@ -31,7 +34,7 @@ describe('asOpaqueOutputView()', () => {
   });
 
   describe('when passed a visible output view', () => {
-    const outputView = new OutputView({
+    const outputView = create(OutputViewSchema, {
       outputView: {
         case: 'visible',
         value: {
@@ -91,12 +94,12 @@ describe('asReceiverOutputView()', () => {
       const isControlledAddress = vi.fn();
       const result = await asReceiverOutputView(undefined, { isControlledAddress });
 
-      expect(result.equals(new OutputView())).toBe(true);
+      expect(equals(OutputViewSchema, result, create(OutputViewSchema))).toBe(true);
     });
   });
 
   describe('when passed an already-opaque output view', () => {
-    const outputView = new OutputView({
+    const outputView = create(OutputViewSchema, {
       outputView: {
         case: 'opaque',
         value: {
@@ -120,7 +123,7 @@ describe('asReceiverOutputView()', () => {
   });
 
   describe('when passed a visible output view', () => {
-    const outputView = new OutputView({
+    const outputView = create(OutputViewSchema, {
       outputView: {
         case: 'visible',
         value: {

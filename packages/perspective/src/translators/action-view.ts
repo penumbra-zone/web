@@ -1,4 +1,6 @@
-import { ActionView } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import { ActionViewSchema } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import { create } from '@bufbuild/protobuf';
+import type { ActionView } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { Translator } from './types.js';
 import { asOpaqueSpendView } from './spend-view.js';
 import { asOpaqueOutputView, asReceiverOutputView } from './output-view.js';
@@ -11,7 +13,7 @@ import { asOpaqueLiquidityTournamentVoteView } from './liquidity-tournament-vote
 export const asPublicActionView: Translator<ActionView> = actionView => {
   switch (actionView?.actionView.case) {
     case 'spend':
-      return new ActionView({
+      return create(ActionViewSchema, {
         actionView: {
           case: 'spend',
           value: asOpaqueSpendView(actionView.actionView.value),
@@ -19,7 +21,7 @@ export const asPublicActionView: Translator<ActionView> = actionView => {
       });
 
     case 'output':
-      return new ActionView({
+      return create(ActionViewSchema, {
         actionView: {
           case: 'output',
           value: asOpaqueOutputView(actionView.actionView.value),
@@ -27,7 +29,7 @@ export const asPublicActionView: Translator<ActionView> = actionView => {
       });
 
     case 'swap':
-      return new ActionView({
+      return create(ActionViewSchema, {
         actionView: {
           case: 'swap',
           value: asOpaqueSwapView(actionView.actionView.value),
@@ -35,7 +37,7 @@ export const asPublicActionView: Translator<ActionView> = actionView => {
       });
 
     case 'swapClaim':
-      return new ActionView({
+      return create(ActionViewSchema, {
         actionView: {
           case: 'swapClaim',
           value: asOpaqueSwapClaimView(actionView.actionView.value),
@@ -43,7 +45,7 @@ export const asPublicActionView: Translator<ActionView> = actionView => {
       });
 
     case 'delegatorVote':
-      return new ActionView({
+      return create(ActionViewSchema, {
         actionView: {
           case: 'delegatorVote',
           value: asOpaqueDelegatorVoteView(actionView.actionView.value),
@@ -51,7 +53,7 @@ export const asPublicActionView: Translator<ActionView> = actionView => {
       });
 
     case 'actionLiquidityTournamentVote':
-      return new ActionView({
+      return create(ActionViewSchema, {
         actionView: {
           case: 'actionLiquidityTournamentVote',
           value: asOpaqueLiquidityTournamentVoteView(actionView.actionView.value),
@@ -74,7 +76,7 @@ export const asReceiverActionView: Translator<
 > = async (actionView, ctx) => {
   switch (actionView?.actionView.case) {
     case 'output':
-      return new ActionView({
+      return create(ActionViewSchema, {
         actionView: {
           case: 'output',
           value: await asReceiverOutputView(actionView.actionView.value, ctx),

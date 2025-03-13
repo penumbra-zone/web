@@ -1,11 +1,13 @@
-import { MemoView } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import { MemoViewSchema } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import { create } from '@bufbuild/protobuf';
+import type { MemoView } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { Translator } from './types.js';
 import { asOpaqueAddressView } from './address-view.js';
 
 export const asOpaqueMemoView: Translator<MemoView> = memoView =>
   memoView?.memoView.case === 'opaque'
     ? memoView
-    : new MemoView({
+    : create(MemoViewSchema, {
         memoView: {
           case: 'opaque',
           value: {},
@@ -15,7 +17,7 @@ export const asOpaqueMemoView: Translator<MemoView> = memoView =>
 export const asReceiverMemoView: Translator<MemoView> = memoView =>
   memoView?.memoView.case === 'opaque'
     ? memoView
-    : new MemoView({
+    : create(MemoViewSchema, {
         memoView: {
           case: 'visible',
           value: {

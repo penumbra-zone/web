@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest';
+import { create } from '@bufbuild/protobuf';
 import { classifyTransaction } from './classify.js';
-import { TransactionView } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import { TransactionViewSchema } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 
 describe('classifyTransaction()', () => {
   it('returns `receive` for transactions with an opaque spend and a visible output + address', () => {
-    const transactionView = new TransactionView({
+    const transactionView = create(TransactionViewSchema, {
       bodyView: {
         actionViews: [
           {
@@ -46,7 +47,7 @@ describe('classifyTransaction()', () => {
   });
 
   it('returns `send` for transactions with visible spends but at least one opaque output', () => {
-    const transactionView = new TransactionView({
+    const transactionView = create(TransactionViewSchema, {
       bodyView: {
         actionViews: [
           {
@@ -117,7 +118,7 @@ describe('classifyTransaction()', () => {
   });
 
   it('returns `internalTransfer` for transactions with fully visible spends, outputs, and addresses', () => {
-    const transactionView = new TransactionView({
+    const transactionView = create(TransactionViewSchema, {
       bodyView: {
         actionViews: [
           {
@@ -179,7 +180,7 @@ describe('classifyTransaction()', () => {
   });
 
   it('returns `swap` for transactions with a `swap` action', () => {
-    const transactionView = new TransactionView({
+    const transactionView = create(TransactionViewSchema, {
       bodyView: {
         actionViews: [
           {
@@ -208,7 +209,7 @@ describe('classifyTransaction()', () => {
   });
 
   it('returns `swapClaim` for transactions with a `swapClaim` action', () => {
-    const transactionView = new TransactionView({
+    const transactionView = create(TransactionViewSchema, {
       bodyView: {
         actionViews: [
           {
@@ -231,7 +232,7 @@ describe('classifyTransaction()', () => {
   });
 
   it('returns `delegate` for transactions with a `delegate` action', () => {
-    const transactionView = new TransactionView({
+    const transactionView = create(TransactionViewSchema, {
       bodyView: {
         actionViews: [
           {
@@ -260,7 +261,7 @@ describe('classifyTransaction()', () => {
   });
 
   it('returns `undelegate` for transactions with an `undelegate` action', () => {
-    const transactionView = new TransactionView({
+    const transactionView = create(TransactionViewSchema, {
       bodyView: {
         actionViews: [
           {
@@ -289,7 +290,7 @@ describe('classifyTransaction()', () => {
   });
 
   it('returns `undelegateClaim` for transactions with an `undelegateClaim` action', () => {
-    const transactionView = new TransactionView({
+    const transactionView = create(TransactionViewSchema, {
       bodyView: {
         actionViews: [
           {
@@ -318,7 +319,7 @@ describe('classifyTransaction()', () => {
   });
 
   it('returns `dutchAuctionSchedule` for transactions with an `actionDutchAuctionSchedule` action', () => {
-    const transactionView = new TransactionView({
+    const transactionView = create(TransactionViewSchema, {
       bodyView: {
         actionViews: [{ actionView: { case: 'actionDutchAuctionSchedule', value: {} } }],
       },
@@ -328,7 +329,7 @@ describe('classifyTransaction()', () => {
   });
 
   it('returns `dutchAuctionEnd` for transactions with an `actionDutchAuctionEnd` action', () => {
-    const transactionView = new TransactionView({
+    const transactionView = create(TransactionViewSchema, {
       bodyView: {
         actionViews: [{ actionView: { case: 'actionDutchAuctionEnd', value: {} } }],
       },
@@ -338,7 +339,7 @@ describe('classifyTransaction()', () => {
   });
 
   it('returns `dutchAuctionWithdraw` for transactions with an `actionDutchAuctionWithdraw` action', () => {
-    const transactionView = new TransactionView({
+    const transactionView = create(TransactionViewSchema, {
       bodyView: {
         actionViews: [{ actionView: { case: 'actionDutchAuctionWithdraw', value: {} } }],
       },
@@ -348,7 +349,7 @@ describe('classifyTransaction()', () => {
   });
 
   it("returns `unknown` for transactions that don't fit the above categories", () => {
-    const transactionView = new TransactionView({
+    const transactionView = create(TransactionViewSchema, {
       bodyView: {
         actionViews: [
           {

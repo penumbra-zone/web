@@ -1,27 +1,38 @@
 import {
   ActionPlan,
+  ActionViewSchema,
   ActionView,
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import { create } from '@bufbuild/protobuf';
 import {
   AssetId,
   Metadata,
   Value,
   ValueView,
+  ValueSchema,
+  ValueViewSchema,
 } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getAddressView } from './get-address-view.js';
+
 import {
   Note,
-  NoteView,
-  OutputPlan,
+  NoteViewSchema,
   OutputView,
-  SpendPlan,
   SpendView,
+  OutputPlan,
+  OutputViewSchema,
+  SpendPlan,
+  SpendViewSchema,
 } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
+
 import {
   SwapClaimPlan,
-  SwapClaimView,
+  SwapClaimViewSchema,
   SwapPlan,
+  SwapViewSchema,
+  SwapClaimView,
   SwapView,
+  PositionWithdrawSchema,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { getAuctionId } from '@penumbra-zone/wasm/auction';
@@ -31,13 +42,16 @@ import {
 } from '@penumbra-zone/getters/dutch-auction-description';
 import {
   ActionDutchAuctionWithdrawPlan,
+  ActionDutchAuctionWithdrawSchema,
   ActionDutchAuctionWithdrawView,
+  ActionDutchAuctionWithdrawViewSchema,
 } from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
-import type { PartialMessage } from '@bufbuild/protobuf';
 import {
   DelegatorVotePlan,
+  DelegatorVoteViewSchema,
   DelegatorVoteView,
 } from '@penumbra-zone/protobuf/penumbra/core/component/governance/v1/governance_pb';
+import { UndelegateClaimBodySchema } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 
 const getValueView = async (
   value: Value | undefined,
@@ -53,7 +67,7 @@ const getValueView = async (
     throw new Error('No amount in value');
   }
 
-  return new ValueView({
+  return create(ValueViewSchema, {
     valueView: {
       case: 'knownAssetId',
       value: {
@@ -79,7 +93,7 @@ const getNoteView = async (
     throw new Error('No value in note');
   }
 
-  return new NoteView({
+  return create(NoteViewSchema, {
     address: getAddressView(note.address, fullViewingKey),
     value: await getValueView(note.value, denomMetadataByAssetId),
   });
@@ -94,7 +108,7 @@ const getSpendView = async (
     throw new Error('No address in spend plan');
   }
 
-  return new SpendView({
+  return create(SpendViewSchema, {
     spendView: {
       case: 'visible',
       value: {
@@ -113,7 +127,7 @@ const getOutputView = async (
     throw new Error('No destAddress in output plan');
   }
 
-  return new OutputView({
+  return create(OutputViewSchema, {
     outputView: {
       case: 'visible',
 
@@ -140,7 +154,7 @@ const getSwapView = async (
       : undefined,
   ]);
 
-  return new SwapView({
+  return create(SwapViewSchema, {
     swapView: {
       case: 'visible',
       value: {
@@ -162,7 +176,7 @@ const getSwapView = async (
 const getActionDutchAuctionWithdrawView = async (
   action: ActionDutchAuctionWithdrawPlan,
   denomMetadataByAssetId: (id: AssetId) => Promise<Metadata>,
-): Promise<PartialMessage<ActionDutchAuctionWithdrawView>> => {
+): Promise<ActionDutchAuctionWithdrawView> => {
   const reserves = [];
 
   if (action.reservesInput) {
@@ -172,10 +186,13 @@ const getActionDutchAuctionWithdrawView = async (
     reserves.push(getValueView(action.reservesOutput, denomMetadataByAssetId));
   }
 
-  return {
-    action,
+  return create(ActionDutchAuctionWithdrawViewSchema, {
+    action: create(ActionDutchAuctionWithdrawSchema, {
+      seq: action.seq,
+      auctionId: action.auctionId,
+    }),
     reserves: await Promise.all(reserves),
-  };
+  });
 };
 
 const getSwapClaimView = async (
@@ -183,7 +200,7 @@ const getSwapClaimView = async (
   denomMetadataByAssetId: (id: AssetId) => Promise<Metadata>,
   fullViewingKey: FullViewingKey,
 ): Promise<SwapClaimView> => {
-  return new SwapClaimView({
+  return create(SwapClaimViewSchema, {
     swapClaimView: {
       case: 'visible',
       value: {
@@ -193,7 +210,7 @@ const getSwapClaimView = async (
             : undefined,
           value: swapClaimPlan.outputData?.lambda1
             ? await getValueView(
-                new Value({
+                create(ValueSchema, {
                   amount: swapClaimPlan.outputData.lambda1,
                   assetId: swapClaimPlan.outputData.tradingPair?.asset1,
                 }),
@@ -207,7 +224,7 @@ const getSwapClaimView = async (
             : undefined,
           value: swapClaimPlan.outputData?.lambda2
             ? await getValueView(
-                new Value({
+                create(ValueSchema, {
                   amount: swapClaimPlan.outputData.lambda2,
                   assetId: swapClaimPlan.outputData.tradingPair?.asset2,
                 }),
@@ -232,7 +249,7 @@ const getDelegatorVoteView = async (
   denomMetadataByAssetId: (id: AssetId) => Promise<Metadata>,
   fullViewingKey: FullViewingKey,
 ): Promise<DelegatorVoteView> => {
-  return new DelegatorVoteView({
+  return create(DelegatorVoteViewSchema, {
     delegatorVote: {
       case: 'visible',
       value: {
@@ -256,7 +273,7 @@ export const viewActionPlan =
   async (actionPlan: ActionPlan): Promise<ActionView> => {
     switch (actionPlan.action.case) {
       case 'spend':
-        return new ActionView({
+        return create(ActionViewSchema, {
           actionView: {
             case: 'spend',
             value: await getSpendView(
@@ -267,7 +284,7 @@ export const viewActionPlan =
           },
         });
       case 'output':
-        return new ActionView({
+        return create(ActionViewSchema, {
           actionView: {
             case: 'output',
             value: await getOutputView(
@@ -278,14 +295,14 @@ export const viewActionPlan =
           },
         });
       case 'swap':
-        return new ActionView({
+        return create(ActionViewSchema, {
           actionView: {
             case: 'swap',
             value: await getSwapView(actionPlan.action.value, denomMetadataByAssetId),
           },
         });
       case 'swapClaim':
-        return new ActionView({
+        return create(ActionViewSchema, {
           actionView: {
             case: 'swapClaim',
             value: await getSwapClaimView(
@@ -303,7 +320,7 @@ export const viewActionPlan =
          * This should probably be renamed for consistency. See
          * https://github.com/penumbra-zone/penumbra/issues/3614.
          */
-        return new ActionView({
+        return create(ActionViewSchema, {
           actionView: {
             case: 'ics20Withdrawal',
             value: actionPlan.action.value,
@@ -311,14 +328,19 @@ export const viewActionPlan =
         });
       case 'delegate':
       case 'undelegate':
-        return new ActionView({ actionView: actionPlan.action });
+        return create(ActionViewSchema, { actionView: actionPlan.action });
 
       case 'undelegateClaim':
-        return new ActionView({
+        return create(ActionViewSchema, {
           actionView: {
             case: 'undelegateClaim',
             value: {
-              body: actionPlan.action.value,
+              body: create(UndelegateClaimBodySchema, {
+                validatorIdentity: actionPlan.action.value.validatorIdentity,
+                penalty: actionPlan.action.value.penalty,
+                startEpochIndex: actionPlan.action.value.startEpochIndex,
+                unbondingStartHeight: actionPlan.action.value.unbondingStartHeight,
+              }),
             },
           },
         });
@@ -331,7 +353,7 @@ export const viewActionPlan =
           outputAssetId ? await denomMetadataByAssetId(outputAssetId) : undefined,
         ]);
 
-        return new ActionView({
+        return create(ActionViewSchema, {
           actionView: {
             case: 'actionDutchAuctionSchedule',
             value: {
@@ -347,7 +369,7 @@ export const viewActionPlan =
       }
 
       case 'actionDutchAuctionWithdraw':
-        return new ActionView({
+        return create(ActionViewSchema, {
           actionView: {
             case: 'actionDutchAuctionWithdraw',
             value: await getActionDutchAuctionWithdrawView(
@@ -358,12 +380,12 @@ export const viewActionPlan =
         });
 
       case 'actionDutchAuctionEnd':
-        return new ActionView({
+        return create(ActionViewSchema, {
           actionView: actionPlan.action,
         });
 
       case 'delegatorVote':
-        return new ActionView({
+        return create(ActionViewSchema, {
           actionView: {
             case: 'delegatorVote',
             value: await getDelegatorVoteView(
@@ -375,76 +397,82 @@ export const viewActionPlan =
         });
 
       case 'validatorVote':
-        return new ActionView({
+        return create(ActionViewSchema, {
           actionView: actionPlan.action,
         });
 
       case 'positionOpen':
-        return new ActionView({
+        return create(ActionViewSchema, {
           actionView: actionPlan.action,
         });
 
       case 'positionClose':
-        return new ActionView({
+        return create(ActionViewSchema, {
           actionView: actionPlan.action,
         });
 
       case 'positionWithdraw':
-        return new ActionView({
-          actionView: actionPlan.action,
+        return create(ActionViewSchema, {
+          actionView: {
+            case: 'positionWithdraw',
+            value: create(PositionWithdrawSchema, {
+              positionId: actionPlan.action.value.positionId,
+              sequence: actionPlan.action.value.sequence,
+            }),
+          },
         });
 
       case 'validatorDefinition': {
-        return new ActionView({
+        return create(ActionViewSchema, {
           actionView: actionPlan.action,
         });
       }
 
       case 'ibcRelayAction': {
-        return new ActionView({
+        return create(ActionViewSchema, {
           actionView: actionPlan.action,
         });
       }
 
       case 'proposalSubmit': {
-        return new ActionView({
+        return create(ActionViewSchema, {
           actionView: actionPlan.action,
         });
       }
 
       case 'proposalWithdraw': {
-        return new ActionView({
+        return create(ActionViewSchema, {
           actionView: actionPlan.action,
         });
       }
 
       case 'proposalDepositClaim': {
-        return new ActionView({
+        return create(ActionViewSchema, {
           actionView: actionPlan.action,
         });
       }
 
       case 'communityPoolSpend': {
-        return new ActionView({
+        return create(ActionViewSchema, {
           actionView: actionPlan.action,
         });
       }
 
       case 'communityPoolOutput': {
-        return new ActionView({
+        return create(ActionViewSchema, {
           actionView: actionPlan.action,
         });
       }
 
       case 'communityPoolDeposit': {
-        return new ActionView({
+        return create(ActionViewSchema, {
           actionView: actionPlan.action,
         });
       }
 
       // Deprecated
       case 'positionRewardClaim': {
-        return new ActionView({
+        return create(ActionViewSchema, {
           actionView: {
             case: 'positionRewardClaim',
             value: {},
@@ -453,7 +481,7 @@ export const viewActionPlan =
       }
 
       case 'actionLiquidityTournamentVote': {
-        return new ActionView({
+        return create(ActionViewSchema, {
           actionView: {
             case: 'actionLiquidityTournamentVote',
             value: {},
@@ -462,7 +490,7 @@ export const viewActionPlan =
       }
 
       case undefined:
-        return new ActionView({
+        return create(ActionViewSchema, {
           actionView: actionPlan.action,
         });
     }

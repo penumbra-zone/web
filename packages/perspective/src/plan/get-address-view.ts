@@ -1,15 +1,17 @@
 import {
   Address,
   AddressView,
+  AddressViewSchema,
   FullViewingKey,
 } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { create } from '@bufbuild/protobuf';
 import { getAddressIndexByAddress } from '@penumbra-zone/wasm/address';
 
 export const getAddressView = (address: Address, fullViewingKey: FullViewingKey): AddressView => {
   const index = getAddressIndexByAddress(fullViewingKey, address);
 
   if (index) {
-    return new AddressView({
+    return create(AddressViewSchema, {
       addressView: {
         case: 'decoded',
         value: {
@@ -19,7 +21,7 @@ export const getAddressView = (address: Address, fullViewingKey: FullViewingKey)
       },
     });
   } else {
-    return new AddressView({
+    return create(AddressViewSchema, {
       addressView: {
         case: 'opaque',
         value: {

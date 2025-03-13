@@ -1,17 +1,19 @@
-import { OutputView } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
+import { OutputViewSchema } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
+import { create } from '@bufbuild/protobuf';
+import type { OutputView } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 import { Translator } from './types.js';
 import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 export const asOpaqueOutputView: Translator<OutputView> = outputView => {
   if (!outputView) {
-    return new OutputView();
+    return create(OutputViewSchema);
   }
 
   if (outputView.outputView.case === 'opaque') {
     return outputView;
   }
 
-  return new OutputView({
+  return create(OutputViewSchema, {
     outputView: {
       case: 'opaque',
       value: outputView.outputView.value?.output
@@ -29,7 +31,7 @@ export const asReceiverOutputView: Translator<
   { isControlledAddress: (address: Address) => Promise<boolean> }
 > = async (outputView, { isControlledAddress }) => {
   if (!outputView) {
-    return new OutputView();
+    return create(OutputViewSchema);
   }
 
   if (outputView.outputView.case === 'opaque') {

@@ -1,7 +1,9 @@
 import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { create } from '@bufbuild/protobuf';
 import { getAddressView } from './get-address-view.js';
 import {
   TransactionPlan,
+  TransactionViewSchema,
   TransactionView,
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { viewActionPlan } from './view-action-plan.js';
@@ -28,7 +30,7 @@ export const viewTransactionPlan = async (
     throw new Error('No fee found in transaction plan');
   }
 
-  return new TransactionView({
+  return create(TransactionViewSchema, {
     bodyView: {
       actionViews: await Promise.all(
         txPlan.actions.map(viewActionPlan(metadataByAssetId, fullViewingKey)),

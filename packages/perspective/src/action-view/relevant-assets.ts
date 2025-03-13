@@ -1,5 +1,10 @@
 import { ActionView } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
-import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { create } from '@bufbuild/protobuf';
+import {
+  AssetId,
+  MetadataSchema,
+  Metadata,
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getAsset1Metadata, getAsset2Metadata } from '@penumbra-zone/getters/swap-view';
 import { getOutputData } from '@penumbra-zone/getters/swap-claim-view';
 import { getNote as getSpendNote } from '@penumbra-zone/getters/spend-view';
@@ -76,7 +81,7 @@ export const findRelevantAssets = (action?: ActionView): RelevantAsset[] => {
   if (view.case === 'delegate') {
     return returnAssets([
       view.value.validatorIdentity &&
-        new Metadata({
+        create(MetadataSchema, {
           display: `delegation_${bech32mIdentityKey(view.value.validatorIdentity)}`,
         }),
     ]);
@@ -87,7 +92,7 @@ export const findRelevantAssets = (action?: ActionView): RelevantAsset[] => {
     return returnAssets([
       view.value.validatorIdentity &&
         view.value.fromEpoch &&
-        new Metadata({
+        create(MetadataSchema, {
           display: `unbonding_start_at_${view.value.fromEpoch.startHeight}_${bech32mIdentityKey(view.value.validatorIdentity)}`,
         }),
     ]);
