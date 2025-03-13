@@ -8,31 +8,37 @@ import {
   get_transmission_key_by_address,
   get_wallet_id,
 } from '../wasm/index.js';
+import { fromBinary, toBinary } from '@bufbuild/protobuf';
 import {
+  AddressSchema,
+  FullViewingKeySchema,
+  SpendKeySchema,
+  WalletIdSchema,
+} from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import type {
   Address,
   FullViewingKey,
   SpendKey,
-  WalletId,
 } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 export const generateSpendKey = (seedPhrase: string) =>
-  SpendKey.fromBinary(generate_spend_key(seedPhrase));
+  fromBinary(SpendKeySchema, generate_spend_key(seedPhrase));
 
 export const getFullViewingKey = (spendKey: SpendKey) =>
-  FullViewingKey.fromBinary(get_full_viewing_key(spendKey.toBinary()));
+  fromBinary(FullViewingKeySchema, get_full_viewing_key(toBinary(SpendKeySchema, spendKey)));
 
 export const getAddressByIndex = (fullViewingKey: FullViewingKey, index: number) => {
-  const bytes = get_address_by_index(fullViewingKey.toBinary(), index);
-  return Address.fromBinary(bytes);
+  const bytes = get_address_by_index(toBinary(FullViewingKeySchema, fullViewingKey), index);
+  return fromBinary(AddressSchema, bytes);
 };
 
 export const getEphemeralByIndex = (fullViewingKey: FullViewingKey, index: number) => {
-  const bytes = get_ephemeral_address(fullViewingKey.toBinary(), index);
-  return Address.fromBinary(bytes);
+  const bytes = get_ephemeral_address(toBinary(FullViewingKeySchema, fullViewingKey), index);
+  return fromBinary(AddressSchema, bytes);
 };
 
 export const getWalletId = (fullViewingKey: FullViewingKey) =>
-  WalletId.fromBinary(get_wallet_id(fullViewingKey.toBinary()));
+  fromBinary(WalletIdSchema, get_wallet_id(toBinary(FullViewingKeySchema, fullViewingKey)));
 
 export interface NobleAddrResponse {
   // A noble address that will be used for registration on the noble network
@@ -50,24 +56,29 @@ export const getNobleForwardingAddr = (
   channel: string,
   account?: number,
 ): NobleAddrResponse => {
-  const res = get_noble_forwarding_addr(sequence, fvk.toBinary(), channel, account);
+  const res = get_noble_forwarding_addr(
+    sequence,
+    toBinary(FullViewingKeySchema, fvk),
+    channel,
+    account,
+  );
   return {
     nobleAddrBech32: res.noble_addr_bech32,
     nobleAddrBytes: res.noble_addr_bytes,
-    penumbraAddr: Address.fromBinary(res.penumbra_addr_bytes),
+    penumbraAddr: fromBinary(AddressSchema, res.penumbra_addr_bytes),
   };
 };
 
 // Generates a transparent address that ensures bech32m encoding compatibility.
 export const getTransparentAddress = (fvk: FullViewingKey) => {
-  const res = get_transparent_address(fvk.toBinary());
+  const res = get_transparent_address(toBinary(FullViewingKeySchema, fvk));
   return {
-    address: Address.fromBinary(res.address),
+    address: fromBinary(AddressSchema, res.address),
     encoding: res.encoding,
   };
 };
 
 export const getTransmissionKeyByAddress = (address: Address) => {
-  const transmission_key = get_transmission_key_by_address(address.toBinary());
+  const transmission_key = get_transmission_key_by_address(toBinary(AddressSchema, address));
   return transmission_key;
 };

@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest';
+import { create } from '@bufbuild/protobuf';
 import { generateSpendKey, getAddressByIndex, getFullViewingKey } from './keys.js';
 import { getAddressIndexByAddress, isControlledAddress } from './address.js';
 import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
-import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { AddressSchema } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 describe('address', () => {
   const seedPhrase =
@@ -18,7 +19,8 @@ describe('address', () => {
     });
 
     it('returns undefined with uncontrolled addr', () => {
-      const address = new Address(
+      const address = create(
+        AddressSchema,
         addressFromBech32m(
           'penumbra1ftmn2a3hf8pxe0e48es8u9rqhny4xggq9wn2caxcjnfwfhwr5s0t3y6nzs9gx3ty5czd0sd9ssfgjt2pcxrq93yvgk2gu3ynmayuwgddkxthce8l445v8x6v07y2sjd8djcr6v',
         ),
@@ -38,7 +40,8 @@ describe('address', () => {
     it('returns false if the address is not controlled', () => {
       const spendKey = generateSpendKey(seedPhrase);
       const fullViewingKey = getFullViewingKey(spendKey);
-      const address = new Address(
+      const address = create(
+        AddressSchema,
         addressFromBech32m(
           'penumbra1ftmn2a3hf8pxe0e48es8u9rqhny4xggq9wn2caxcjnfwfhwr5s0t3y6nzs9gx3ty5czd0sd9ssfgjt2pcxrq93yvgk2gu3ynmayuwgddkxthce8l445v8x6v07y2sjd8djcr6v',
         ),

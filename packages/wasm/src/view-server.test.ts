@@ -1,8 +1,10 @@
 import 'fake-indexeddb/auto'; // Instanitating ViewServer requires opening up IndexedDb connection
 import { describe, expect, it } from 'vitest';
+import { IDB_TABLES, IdbConstants } from '@penumbra-zone/types/indexed-db';
+import { toBinary } from '@bufbuild/protobuf';
+import { FullViewingKeySchema } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { generateSpendKey, getFullViewingKey } from './keys.js';
 import { ViewServer } from '../wasm/index.js';
-import { IDB_TABLES, IdbConstants } from '@penumbra-zone/types/indexed-db';
 
 describe('wasmViewServer', () => {
   it('does not raise zod validation error', async () => {
@@ -30,7 +32,11 @@ describe('wasmViewServer', () => {
       },
     };
 
-    const vsServer = ViewServer.new(fullViewingKey.toBinary(), storedTree, idbConstants);
+    const vsServer = ViewServer.new(
+      toBinary(FullViewingKeySchema, fullViewingKey),
+      storedTree,
+      idbConstants,
+    );
     await expect(vsServer).resolves.not.toThrow();
   });
 });

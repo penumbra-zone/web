@@ -26,7 +26,10 @@
     ".": "./src/index.ts",
     "./web": "./src/web.ts",
     "./registry": "./src/registry.ts",
-    "./*": "./gen/*.ts"
+    "./*": {
+      "import": "./gen/*.js",
+      "types": "./gen/*.d.ts"
+    }
   },
   "publishConfig": {
     "exports": {

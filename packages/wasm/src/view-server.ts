@@ -1,8 +1,15 @@
 import { ViewServer as WasmViewServer } from '../wasm/index.js';
-import { CompactBlock } from '@penumbra-zone/protobuf/penumbra/core/component/compact_block/v1/compact_block_pb';
-import { MerkleRoot } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
-import { JsonObject, JsonValue } from '@bufbuild/protobuf';
-import { SpendableNoteRecord, SwapRecord } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import {
+  CompactBlock,
+  CompactBlockSchema,
+} from '@penumbra-zone/protobuf/penumbra/core/component/compact_block/v1/compact_block_pb';
+import { MerkleRootSchema } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
+import type { MerkleRoot } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
+import { JsonObject, JsonValue, fromBinary, fromJson, toBinary } from '@bufbuild/protobuf';
+import {
+  SpendableNoteRecordSchema,
+  SwapRecordSchema,
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import {
   ScanBlockResult,
   SctUpdatesSchema,
@@ -10,7 +17,11 @@ import {
 } from '@penumbra-zone/types/state-commitment-tree';
 import type { IdbConstants } from '@penumbra-zone/types/indexed-db';
 import type { ViewServerInterface } from '@penumbra-zone/types/servers';
-import { Address, FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import {
+  Address,
+  FullViewingKey,
+  FullViewingKeySchema,
+} from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { isControlledAddress } from './address.js';
 
 declare global {
@@ -45,7 +56,7 @@ export class ViewServer implements ViewServerInterface {
     idbConstants,
   }: ViewServerProps): Promise<ViewServer> {
     const wvs = await WasmViewServer.new(
-      fullViewingKey.toBinary(),
+      toBinary(FullViewingKeySchema, fullViewingKey),
       await getStoredTree(),
       idbConstants,
     );
@@ -56,14 +67,14 @@ export class ViewServer implements ViewServerInterface {
   // Makes update to internal state-commitment-tree as a side effect.
   // Should extract updates via this.flushUpdates().
   async scanBlock(compactBlock: CompactBlock, skipTrialDecrypt: boolean): Promise<boolean> {
-    const res = compactBlock.toBinary();
+    const res = toBinary(CompactBlockSchema, compactBlock);
     return this.wasmViewServer.scan_block(res, skipTrialDecrypt);
   }
 
   // Resets the state of the wasmViewServer to the one set in storage
   async resetTreeToStored() {
     this.wasmViewServer = await WasmViewServer.new(
-      this.fullViewingKey.toBinary(),
+      toBinary(FullViewingKeySchema, this.fullViewingKey),
       await this.getStoredTree(),
       this.idbConstants,
     );
@@ -71,7 +82,7 @@ export class ViewServer implements ViewServerInterface {
 
   getSctRoot(): MerkleRoot {
     const bytes = this.wasmViewServer.get_sct_root();
-    return MerkleRoot.fromBinary(bytes);
+    return fromBinary(MerkleRootSchema, bytes);
   }
 
   // As blocks are scanned, the internal wasmViewServer tree is being updated.
@@ -84,8 +95,8 @@ export class ViewServer implements ViewServerInterface {
       sctUpdates: globalThis.__DEV__
         ? SctUpdatesSchema.parse(sct_updates)
         : (sct_updates as unknown as ScanBlockResult['sctUpdates']),
-      newNotes: (new_notes ?? []).map(n => SpendableNoteRecord.fromJson(n)),
-      newSwaps: (new_swaps ?? []).map(s => SwapRecord.fromJson(s)),
+      newNotes: (new_notes ?? []).map(n => fromJson(SpendableNoteRecordSchema, n)),
+      newSwaps: (new_swaps ?? []).map(s => fromJson(SwapRecordSchema, s)),
     };
   }
 

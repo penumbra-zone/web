@@ -1,10 +1,18 @@
 import {
+  ActionSchema,
+  AuthorizationDataSchema,
+  TransactionSchema,
+  TransactionPlan,
+  WitnessDataSchema,
   Action,
   AuthorizationData,
   Transaction,
-  TransactionPlan,
   WitnessData,
+  TransactionPlanSchema,
+  ActionPlanSchema,
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+
+import { fromBinary, toBinary, toJson } from '@bufbuild/protobuf';
 import type { StateCommitmentTree } from '@penumbra-zone/types/state-commitment-tree';
 import {
   authorize,
@@ -13,16 +21,24 @@ import {
   load_proving_key,
   witness,
 } from '../wasm/index.js';
-import { FullViewingKey, SpendKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import {
+  FullViewingKey,
+  FullViewingKeySchema,
+  SpendKey,
+  SpendKeySchema,
+} from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 export const authorizePlan = (spendKey: SpendKey, txPlan: TransactionPlan): AuthorizationData => {
-  const result = authorize(spendKey.toBinary(), txPlan.toBinary());
-  return AuthorizationData.fromBinary(result);
+  const result = authorize(
+    toBinary(SpendKeySchema, spendKey),
+    toBinary(TransactionPlanSchema, txPlan),
+  );
+  return fromBinary(AuthorizationDataSchema, result);
 };
 
 export const getWitness = (txPlan: TransactionPlan, sct: StateCommitmentTree): WitnessData => {
-  const result = witness(txPlan.toBinary(), sct);
-  return WitnessData.fromBinary(result);
+  const result = witness(toBinary(TransactionPlanSchema, txPlan), sct);
+  return fromBinary(WitnessDataSchema, result);
 };
 
 export const buildParallel = (
@@ -32,12 +48,12 @@ export const buildParallel = (
   authData: AuthorizationData,
 ): Transaction => {
   const result = build_parallel(
-    batchActions.map(action => action.toJson()),
-    txPlan.toBinary(),
-    witnessData.toBinary(),
-    authData.toBinary(),
+    batchActions.map(action => toJson(ActionSchema, action)),
+    toBinary(TransactionPlanSchema, txPlan),
+    toBinary(WitnessDataSchema, witnessData),
+    toBinary(AuthorizationDataSchema, authData),
   );
-  return Transaction.fromBinary(result);
+  return fromBinary(TransactionSchema, result);
 };
 
 export const buildActionParallel = async (
@@ -57,13 +73,13 @@ export const buildActionParallel = async (
   }
 
   const result = build_action(
-    txPlan.toBinary(),
-    actionPlan.toBinary(),
-    fullViewingKey.toBinary(),
-    witnessData.toBinary(),
+    toBinary(TransactionPlanSchema, txPlan),
+    toBinary(ActionPlanSchema, actionPlan),
+    toBinary(FullViewingKeySchema, fullViewingKey),
+    toBinary(WitnessDataSchema, witnessData),
   );
 
-  return Action.fromBinary(result);
+  return fromBinary(ActionSchema, result);
 };
 
 const loadProvingKey = async (

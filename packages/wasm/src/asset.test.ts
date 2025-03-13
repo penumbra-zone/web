@@ -1,6 +1,7 @@
 import { describe, test, expect } from 'vitest';
+import { create, equals, isMessage } from '@bufbuild/protobuf';
 import { assetIdFromBaseDenom } from './asset.js';
-import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { AssetIdSchema } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { randomBytes } from 'crypto';
 import { assetIdFromBech32m } from '@penumbra-zone/bech32m/passet';
 
@@ -10,13 +11,14 @@ const randomString = (byteLength = 32) =>
 
 describe('assetIdFromBaseDenom', () => {
   test('should return the correct asset id for a known asset id', () => {
-    const upenumbraFromBech32m = new AssetId(
+    const upenumbraFromBech32m = create(
+      AssetIdSchema,
       assetIdFromBech32m('passet1984fctenw8m2fpl8a9wzguzp7j34d7vravryuhft808nyt9fdggqxmanqm'),
     );
 
     const upenumbraFromBaseDenom = assetIdFromBaseDenom('upenumbra');
 
-    expect(AssetId.equals(upenumbraFromBech32m, upenumbraFromBaseDenom)).toBeTruthy();
+    expect(equals(AssetIdSchema, upenumbraFromBech32m, upenumbraFromBaseDenom)).toBeTruthy();
   });
 
   test('should return a 32-byte asset id for any string', () => {
@@ -24,7 +26,8 @@ describe('assetIdFromBaseDenom', () => {
 
     expect(
       randomIds.every(
-        id => id instanceof AssetId && id.inner instanceof Uint8Array && id.inner.length === 32,
+        id =>
+          isMessage(id, AssetIdSchema) && id.inner instanceof Uint8Array && id.inner.length === 32,
       ),
     ).toBeTruthy();
   });

@@ -1,4 +1,5 @@
-import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { AssetIdSchema } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { create, fromBinary, toBinary } from '@bufbuild/protobuf';
 import { get_asset_id } from '../wasm/index.js';
 
 /**
@@ -7,7 +8,7 @@ import { get_asset_id } from '../wasm/index.js';
  * @returns the appropriate `AssetId`
  */
 export const assetIdFromBaseDenom = (altBaseDenom: string) => {
-  const inputBytes = new AssetId({ altBaseDenom }).toBinary();
+  const inputBytes = toBinary(AssetIdSchema, create(AssetIdSchema, { altBaseDenom }));
   const outputBytes = get_asset_id(inputBytes);
-  return AssetId.fromBinary(outputBytes);
+  return fromBinary(AssetIdSchema, outputBytes);
 };
