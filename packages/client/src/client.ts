@@ -1,5 +1,5 @@
-import type { ServiceType } from '@bufbuild/protobuf';
-import { createPromiseClient, PromiseClient, Transport } from '@connectrpc/connect';
+import type { DescService } from '@bufbuild/protobuf';
+import { createClient, Client, Transport } from '@connectrpc/connect';
 import { jsonOptions } from '@penumbra-zone/protobuf';
 import {
   ChannelTransportOptions,
@@ -108,7 +108,7 @@ export class PenumbraClient {
 
   // instance features
 
-  private readonly serviceClients: Map<ServiceType, PromiseClient<ServiceType>>;
+  private readonly serviceClients: Map<DescService, Client<DescService>>;
   private readonly stateListeners: Set<(detail: PenumbraEventDetail<'penumbrastate'>) => void>;
   private readonly providerEventListener: PenumbraEventListener;
 
@@ -223,12 +223,12 @@ export class PenumbraClient {
    * If you call this method while this client is not `Connected`, this method
    * will throw.
    */
-  public service<T extends ServiceType>(service: T): PromiseClient<T> {
+  public service<T extends DescService>(service: T): Client<T> {
     // TODO: find a way to remove this type cast
-    let serviceClient = this.serviceClients.get(service) as PromiseClient<T> | undefined;
+    let serviceClient = this.serviceClients.get(service) as Client<T> | undefined;
 
     if (!serviceClient) {
-      serviceClient = createPromiseClient(service, this.assertConnected().transport);
+      serviceClient = createClient(service, this.assertConnected().transport);
       this.serviceClients.set(service, serviceClient);
     }
 
