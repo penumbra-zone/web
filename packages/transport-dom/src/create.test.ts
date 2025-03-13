@@ -29,14 +29,18 @@ const sayResponse = create(SayResponseSchema, { sentence: 'world' });
 const introduceRequest = create(IntroduceRequestSchema, { name: 'Sue' });
 const introduceResponse = [
   create(IntroduceResponseSchema, { sentence: 'Son, this world is rough' }),
-  create(IntroduceResponseSchema, { sentence: "And if a man's gonna make it, he's gotta be tough" }),
+  create(IntroduceResponseSchema, {
+    sentence: "And if a man's gonna make it, he's gotta be tough",
+  }),
   create(IntroduceResponseSchema, { sentence: "And I knew I wouldn't be there to help you along" }),
 ];
 const converseRequest = [
   create(ConverseRequestSchema, { sentence: 'You oughta thank me, before I die' }),
-  create(ConverseRequestSchema, { sentence: 'For the gravel in your guts and the spit in your eye' }),
+  create(ConverseRequestSchema, {
+    sentence: 'For the gravel in your guts and the spit in your eye',
+  }),
   create(ConverseRequestSchema, { sentence: "Because I'm the son-of-a-bitch that named you Sue" }),
-]
+];
 const converseResponse = [
   create(ConverseResponseSchema, { sentence: 'I got all choked up and I threw down my gun' }),
   create(ConverseResponseSchema, { sentence: 'And I called him my pa, and he called me his son' }),
@@ -112,7 +116,9 @@ describe('channel transport', () => {
     });
 
     it('should send and receive streaming requests', async () => {
-      const introduceRequestStream = ReadableStream.from([create(IntroduceRequestSchema, introduceRequest)]);
+      const introduceRequestStream = ReadableStream.from([
+        create(IntroduceRequestSchema, introduceRequest),
+      ]);
       const introduceResponseStream = ReadableStream.from(
         introduceResponse.map(r => toJson(IntroduceResponseSchema, r, { registry: typeRegistry })),
       );
@@ -204,7 +210,9 @@ describe('channel transport', () => {
       await vi.waitFor(() => expect(otherEnd).toHaveBeenCalled());
 
       const otherEndFromAsync = await Array.fromAsync(otherEndRequestStream ?? []);
-      expect(otherEndFromAsync).toMatchObject(converseRequest.map((r) => toJson(ConverseRequestSchema, r, { registry: typeRegistry })));
+      expect(otherEndFromAsync).toMatchObject(
+        converseRequest.map(r => toJson(ConverseRequestSchema, r, { registry: typeRegistry })),
+      );
 
       await expect(streamRequest).resolves.toMatchObject({ stream: true });
       await expect(
@@ -309,7 +317,9 @@ describe('channel transport', () => {
       otherEnd.mockImplementation((event: MessageEvent<unknown>) => {
         const { requestId } = event.data as TransportMessage;
         const stream = ReadableStream.from(
-          introduceResponse.map(r => toJson(IntroduceResponseSchema, r, { registry: typeRegistry })),
+          introduceResponse.map(r =>
+            toJson(IntroduceResponseSchema, r, { registry: typeRegistry }),
+          ),
         );
 
         setTimeout(() => {
@@ -336,11 +346,9 @@ describe('channel transport', () => {
           (async function* () {
             for (const chunk of introduceResponse) {
               await new Promise(resolve => void setTimeout(resolve, defaultTimeoutMs / 2));
-              yield toJson(
-                IntroduceResponseSchema,
-                create(IntroduceResponseSchema, chunk),
-                { registry: typeRegistry },
-              );
+              yield toJson(IntroduceResponseSchema, create(IntroduceResponseSchema, chunk), {
+                registry: typeRegistry,
+              });
             }
           })(),
         );
@@ -604,7 +612,11 @@ describe('channel transport', () => {
           const { requestId } = tev;
 
           if (isTransportMessage(tev)) {
-            expect(tev.message).toMatchObject(toJson(IntroduceRequestSchema, introduceRequest, { registry: typeRegistry }) as object);
+            expect(tev.message).toMatchObject(
+              toJson(IntroduceRequestSchema, introduceRequest, {
+                registry: typeRegistry,
+              }) as object,
+            );
             const stream = ReadableStream.from(
               (async function* () {
                 for (const r of responses) {

@@ -6,7 +6,10 @@ import * as penumbraCore from './services/penumbra-core.js';
 import * as penumbraCustody from './services/penumbra-custody.js';
 import * as penumbraUtil from './services/penumbra-util.js';
 import * as penumbraView from './services/penumbra-view.js';
-import { ClientStateSchema, HeaderSchema } from '../gen/ibc/lightclients/tendermint/v1/tendermint_pb.js';
+import {
+  ClientStateSchema,
+  HeaderSchema,
+} from '../gen/ibc/lightclients/tendermint/v1/tendermint_pb.js';
 import { DutchAuctionSchema } from '../gen/penumbra/core/component/auction/v1/auction_pb.js';
 
 /**

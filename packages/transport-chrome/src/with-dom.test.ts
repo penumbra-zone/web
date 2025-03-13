@@ -1,14 +1,14 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
-  ConverseRequest,
-  ConverseResponse,
-  IntroduceRequest,
-  IntroduceResponse,
-  SayRequest,
-  SayResponse,
+  ConverseRequestSchema,
+  ConverseResponseSchema,
+  IntroduceRequestSchema,
+  IntroduceResponseSchema,
+  SayRequestSchema,
+  SayResponseSchema,
+  ElizaService,
 } from '@buf/connectrpc_eliza.bufbuild_es/connectrpc/eliza/v1/eliza_pb.js';
-import { ElizaService } from '@buf/connectrpc_eliza.connectrpc_es/connectrpc/eliza/v1/eliza_connect.js';
-import { Any, createRegistry, type PlainMessage } from '@bufbuild/protobuf';
+
+import { createRegistry, create, toJson } from '@bufbuild/protobuf';
 import type { Transport } from '@connectrpc/connect';
 import {
   createChannelTransport,
@@ -43,25 +43,35 @@ Object.assign(CRSessionClient, {
 
 const typeRegistry = createRegistry(ElizaService);
 
-const sayRequest: PlainMessage<SayRequest> = { sentence: 'hello' };
-const sayResponse: PlainMessage<SayResponse> = { sentence: 'world' };
+const sayRequest = create(SayRequestSchema, { sentence: 'hello' });
+const sayRequestJson = toJson(SayRequestSchema, sayRequest, { registry: typeRegistry }) as object;
+const sayResponse = create(SayResponseSchema, { sentence: 'world' });
+const sayResponseJson = toJson(SayResponseSchema, sayResponse, {
+  registry: typeRegistry,
+}) as object;
 
-const introduceRequest: PlainMessage<IntroduceRequest> = { name: 'Sue' };
-const introduceResponse: PlainMessage<IntroduceResponse>[] = [
-  { sentence: 'Son, this world is rough' },
-  { sentence: "And if a man's gonna make it, he's gotta be tough" },
-  { sentence: "And I knew I wouldn't be there to help you along" },
+const introduceRequest = create(IntroduceRequestSchema, { name: 'Sue' });
+const introduceRequestJson = toJson(IntroduceRequestSchema, introduceRequest, {
+  registry: typeRegistry,
+}) as object;
+const introduceResponse = [
+  create(IntroduceResponseSchema, { sentence: 'Son, this world is rough' }),
+  create(IntroduceResponseSchema, {
+    sentence: "And if a man's gonna make it, he's gotta be tough",
+  }),
+  create(IntroduceResponseSchema, { sentence: "And I knew I wouldn't be there to help you along" }),
 ];
-
-const converseRequest: PlainMessage<ConverseRequest>[] = [
-  { sentence: 'You oughta thank me, before I die' },
-  { sentence: 'For the gravel in your guts and the spit in your eye' },
-  { sentence: "Because I'm the son-of-a-bitch that named you Sue" },
+const converseRequest = [
+  create(ConverseRequestSchema, { sentence: 'You oughta thank me, before I die' }),
+  create(ConverseRequestSchema, {
+    sentence: 'For the gravel in your guts and the spit in your eye',
+  }),
+  create(ConverseRequestSchema, { sentence: "Because I'm the son-of-a-bitch that named you Sue" }),
 ];
-const converseResponse: PlainMessage<ConverseResponse>[] = [
-  { sentence: 'I got all choked up and I threw down my gun' },
-  { sentence: 'And I called him my pa, and he called me his son' },
-  { sentence: 'And I came away with a different point of view' },
+const converseResponse = [
+  create(ConverseResponseSchema, { sentence: 'I got all choked up and I threw down my gun' }),
+  create(ConverseResponseSchema, { sentence: 'And I called him my pa, and he called me his son' }),
+  create(ConverseResponseSchema, { sentence: 'And I came away with a different point of view' }),
 ];
 
 describe('session client with transport-dom', () => {
@@ -118,34 +128,31 @@ describe('session client with transport-dom', () => {
   describe('message transport', () => {
     it('should send and receive unary messages', async () => {
       const unaryRequest = transport.unary(
-        ElizaService,
-        ElizaService.methods.say,
+        ElizaService.method.say,
         undefined,
         undefined,
         undefined,
-        new SayRequest(sayRequest),
+        sayRequest,
       );
 
       extOnMessage.mockImplementation((m, p) => {
         const { requestId, message } = m as TransportMessage;
         expect(requestId).toBeTypeOf('string');
-        expect(message).toMatchObject({
-          ...sayRequest,
-          '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayRequest',
-        });
+        expect(message).toMatchObject(sayRequestJson);
 
         p.postMessage({
           requestId,
-          message: {
-            ...sayResponse,
-            '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayResponse',
-          },
+          message: sayResponse,
         });
       });
 
       await vi.waitFor(() => expect(extOnMessage).toHaveBeenCalled());
 
-      await expect(unaryRequest).resolves.toMatchObject({ message: sayResponse });
+      await expect(unaryRequest).resolves.toMatchObject(
+        expect.objectContaining({
+          message: sayResponse,
+        }),
+      );
     });
 
     it('should receive streaming responses', async () => {
@@ -156,7 +163,7 @@ describe('session client with transport-dom', () => {
             const stream = new ReadableStream({
               start(cont) {
                 for (const chunk of introduceResponse) {
-                  cont.enqueue(Any.pack(new IntroduceResponse(chunk)).toJson({ typeRegistry }));
+                  cont.enqueue(toJson(IntroduceResponseSchema, chunk, { registry: typeRegistry }));
                 }
                 cont.close();
               },
@@ -175,12 +182,11 @@ describe('session client with transport-dom', () => {
         }
       });
       const streamRequest = transport.stream(
-        ElizaService,
-        ElizaService.methods.introduce,
+        ElizaService.method.introduce,
         undefined,
         undefined,
         undefined,
-        ReadableStream.from([new IntroduceRequest(introduceRequest)]),
+        ReadableStream.from([introduceRequest]),
       );
 
       await vi.waitFor(() => {
@@ -206,7 +212,7 @@ describe('session client with transport-dom', () => {
             const stream = new ReadableStream({
               start(cont) {
                 for (const chunk of converseResponse) {
-                  cont.enqueue(Any.pack(new ConverseResponse(chunk)).toJson({ typeRegistry }));
+                  cont.enqueue(toJson(ConverseResponseSchema, chunk, { registry: typeRegistry }));
                 }
                 cont.close();
               },
@@ -238,12 +244,11 @@ describe('session client with transport-dom', () => {
       });
 
       const bidiRequestResponse = transport.stream(
-        ElizaService,
-        ElizaService.methods.converse,
+        ElizaService.method.converse,
         undefined,
         undefined,
         undefined,
-        ReadableStream.from(converseRequest.map(r => new ConverseRequest(r))),
+        ReadableStream.from(converseRequest.map(r => create(ConverseRequestSchema, r))),
       );
 
       await vi.waitFor(() =>
@@ -267,7 +272,9 @@ describe('session client with transport-dom', () => {
       }
 
       expect(streamRequestCollected).toMatchObject([
-        ...converseRequest.map(value => ({ value })),
+        ...converseRequest.map(value => ({
+          value: toJson(ConverseRequestSchema, value, { registry: typeRegistry }),
+        })),
         { done: true },
       ]);
     });
@@ -278,12 +285,11 @@ describe('session client with transport-dom', () => {
       let timeout: ReturnType<typeof setTimeout> | undefined = undefined;
 
       const unaryRequest = transport.unary(
-        ElizaService,
-        ElizaService.methods.say,
+        ElizaService.method.say,
         undefined,
         undefined,
         undefined,
-        new SayRequest(sayRequest),
+        sayRequest,
       );
 
       extOnMessage.mockImplementation((m, p) => {
@@ -291,18 +297,12 @@ describe('session client with transport-dom', () => {
           const { requestId, message } = m;
 
           expect(requestId).toBeTypeOf('string');
-          expect(message).toMatchObject({
-            ...sayRequest,
-            '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayRequest',
-          });
+          expect(message).toMatchObject(sayRequestJson);
 
           timeout = setTimeout(() => {
             p.postMessage({
               requestId,
-              message: {
-                ...sayResponse,
-                '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayResponse',
-              },
+              message: sayResponse,
             });
           }, defaultTimeoutMs * 2);
         }
@@ -323,30 +323,23 @@ describe('session client with transport-dom', () => {
           const { requestId, message } = m;
 
           expect(requestId).toBeTypeOf('string');
-          expect(message).toMatchObject({
-            ...sayRequest,
-            '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayRequest',
-          });
+          expect(message).toMatchObject(sayRequestJson);
 
           timeout = setTimeout(() => {
             p.postMessage({
               requestId,
-              message: {
-                ...sayResponse,
-                '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayResponse',
-              },
+              message: sayResponse,
             });
           }, defaultTimeoutMs / 2);
         }
       });
 
       const unaryRequest = transport.unary(
-        ElizaService,
-        ElizaService.methods.say,
+        ElizaService.method.say,
         undefined,
         customTimeoutMs,
         undefined,
-        new SayRequest(sayRequest),
+        sayRequest,
       );
 
       await expect(unaryRequest).rejects.toThrow('[deadline_exceeded]');
@@ -356,12 +349,11 @@ describe('session client with transport-dom', () => {
 
     it('should time out streaming requests', async () => {
       const streamRequest = transport.stream(
-        ElizaService,
-        ElizaService.methods.introduce,
+        ElizaService.method.introduce,
         undefined,
         undefined,
         undefined,
-        ReadableStream.from([new IntroduceRequest(introduceRequest)]),
+        ReadableStream.from([introduceRequest]),
       );
 
       extOnMessage.mockImplementation(m => {
@@ -369,10 +361,7 @@ describe('session client with transport-dom', () => {
           const { requestId, message } = m;
 
           expect(requestId).toBeTypeOf('string');
-          expect(message).toMatchObject({
-            ...introduceRequest,
-            '@type': 'type.googleapis.com/connectrpc.eliza.v1.IntroduceRequest',
-          });
+          expect(message).toMatchObject(introduceRequestJson);
         } else {
           expect.unreachable('no other event types');
         }
@@ -392,7 +381,9 @@ describe('session client with transport-dom', () => {
               start(cont) {
                 void (async () => {
                   for (const chunk of introduceResponse) {
-                    cont.enqueue(Any.pack(new IntroduceResponse(chunk)).toJson({ typeRegistry }));
+                    cont.enqueue(
+                      toJson(IntroduceResponseSchema, chunk, { registry: typeRegistry }),
+                    );
                     await new Promise(resolve => void setTimeout(resolve, defaultTimeoutMs / 2));
                   }
                   cont.close();
@@ -411,12 +402,11 @@ describe('session client with transport-dom', () => {
       });
 
       const streamRequest = transport.stream(
-        ElizaService,
-        ElizaService.methods.introduce,
+        ElizaService.method.introduce,
         undefined,
         undefined,
         undefined,
-        ReadableStream.from([new IntroduceRequest(introduceRequest)]),
+        ReadableStream.from([introduceRequest]),
       );
 
       await vi.waitFor(() => {
@@ -436,19 +426,18 @@ describe('session client with transport-dom', () => {
       const ac = new AbortController();
 
       const unaryRequest = transport.unary(
-        ElizaService,
-        ElizaService.methods.say,
+        ElizaService.method.say,
         ac.signal,
         undefined,
         undefined,
-        new SayRequest(sayRequest),
+        sayRequest,
       );
 
       await vi.waitFor(() => {
         expect(extOnMessage).toHaveBeenCalledWith(
           expect.objectContaining({
             requestId: expect.any(String),
-            message: expect.objectContaining(sayRequest),
+            message: expect.objectContaining(sayRequestJson),
           }),
           expect.anything(),
         );
@@ -484,12 +473,11 @@ describe('session client with transport-dom', () => {
         });
 
         const streamRequest = transport.stream(
-          ElizaService,
-          ElizaService.methods.introduce,
+          ElizaService.method.introduce,
           ac.signal,
           undefined,
           undefined,
-          ReadableStream.from([new IntroduceRequest(introduceRequest)]),
+          ReadableStream.from([introduceRequest]),
         );
 
         await vi.waitFor(() => expect(extOnMessage).toHaveBeenCalled());
@@ -520,7 +508,7 @@ describe('session client with transport-dom', () => {
                 async start(cont) {
                   for (const r of introduceResponse) {
                     await new Promise(resolve => void setTimeout(resolve, defaultTimeoutMs / 3));
-                    cont.enqueue(Any.pack(new IntroduceResponse(r)).toJson({ typeRegistry }));
+                    cont.enqueue(toJson(IntroduceResponseSchema, r, { registry: typeRegistry }));
                   }
                   cont.close();
                 },
@@ -541,12 +529,11 @@ describe('session client with transport-dom', () => {
         });
 
         const streamRequest = transport.stream(
-          ElizaService,
-          ElizaService.methods.introduce,
+          ElizaService.method.introduce,
           ac.signal,
           undefined,
           undefined,
-          ReadableStream.from([new IntroduceRequest(introduceRequest)]),
+          ReadableStream.from([introduceRequest]),
         );
 
         await vi.waitFor(() => {
@@ -581,7 +568,7 @@ describe('session client with transport-dom', () => {
           if (isTransportMessage(m)) {
             expect(m).toMatchObject({
               requestId: expect.any(String),
-              message: introduceRequest,
+              message: introduceRequestJson,
             });
           } else if (isTransportAbort(m)) {
             expect(m).toMatchObject({
@@ -594,12 +581,11 @@ describe('session client with transport-dom', () => {
         });
 
         const streamRequest = transport.stream(
-          ElizaService,
-          ElizaService.methods.introduce,
+          ElizaService.method.introduce,
           ac.signal,
           undefined,
           undefined,
-          ReadableStream.from([new IntroduceRequest(introduceRequest)]),
+          ReadableStream.from([introduceRequest]),
         );
 
         await vi.waitFor(() => expect(extOnMessage).toHaveBeenCalledOnce());
@@ -636,7 +622,9 @@ describe('session client with transport-dom', () => {
               const stream = new ReadableStream({
                 async start(cont) {
                   for (const chunk of introduceResponse) {
-                    cont.enqueue(Any.pack(new IntroduceResponse(chunk)).toJson({ typeRegistry }));
+                    cont.enqueue(
+                      toJson(IntroduceResponseSchema, chunk, { registry: typeRegistry }),
+                    );
                     await new Promise(resolve => void setTimeout(resolve, defaultTimeoutMs / 3));
                   }
                   cont.close();
@@ -664,12 +652,11 @@ describe('session client with transport-dom', () => {
         });
 
         const streamRequest = transport.stream(
-          ElizaService,
-          ElizaService.methods.introduce,
+          ElizaService.method.introduce,
           ac.signal,
           undefined,
           undefined,
-          ReadableStream.from([new IntroduceRequest(introduceRequest)]),
+          ReadableStream.from([introduceRequest]),
         );
 
         await vi.waitFor(() => expect(extOnMessage).toHaveBeenCalled());
@@ -711,10 +698,7 @@ describe('session client with transport-dom', () => {
         if (isTransportMessage(m)) {
           const { requestId, message, header } = m;
           expect(requestId).toBeTypeOf('string');
-          expect(message).toMatchObject({
-            ...sayRequest,
-            '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayRequest',
-          });
+          expect(message).toMatchObject(sayRequestJson);
 
           expect(header).toBeDefined();
           expect(new Headers(header).get('x-test')).toBe(testName);
@@ -722,10 +706,7 @@ describe('session client with transport-dom', () => {
           p.postMessage({
             requestId,
             header: { anotherMusic: 'in a different kitchen' },
-            message: {
-              ...sayResponse,
-              '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayResponse',
-            },
+            message: sayResponse,
           });
         } else {
           expect.unreachable('no other event types');
@@ -733,17 +714,16 @@ describe('session client with transport-dom', () => {
       });
 
       const unaryRequest = transport.unary(
-        ElizaService,
-        ElizaService.methods.say,
+        ElizaService.method.say,
         undefined,
         undefined,
         header,
-        new SayRequest(sayRequest),
+        sayRequest,
       );
 
       await vi.waitFor(() => expect(extOnMessage).toHaveBeenCalled());
       const response = await unaryRequest;
-      expect(response.message).toMatchObject(sayResponse);
+      expect(response.message).toMatchObject(sayResponseJson);
       expect(response.header.get('anotherMusic')).toBe('in a different kitchen');
 
       expect(uncaughtExceptionListener).not.toHaveBeenCalled();
@@ -757,10 +737,7 @@ describe('session client with transport-dom', () => {
       extOnMessage.mockImplementation((m, p) => {
         const { requestId, message, header } = m as TransportMessage & { header?: HeadersInit };
         expect(requestId).toBeTypeOf('string');
-        expect(message).toMatchObject({
-          ...sayRequest,
-          '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayRequest',
-        });
+        expect(message).toMatchObject(sayRequestJson);
 
         expect(header).toBeDefined();
         const headers = new Headers(header);
@@ -768,26 +745,22 @@ describe('session client with transport-dom', () => {
 
         p.postMessage({
           requestId,
-          message: {
-            ...sayResponse,
-            '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayResponse',
-          },
+          message: sayResponse,
         });
       });
 
       const unaryRequest = transport.unary(
-        ElizaService,
-        ElizaService.methods.say,
+        ElizaService.method.say,
         undefined,
         200,
         undefined,
-        new SayRequest(sayRequest),
+        sayRequest,
       );
 
       await vi.waitFor(() => expect(extOnMessage).toHaveBeenCalled());
 
       const response = await unaryRequest;
-      expect(response.message).toMatchObject(sayResponse);
+      expect(response.message).toMatchObject(sayResponseJson);
 
       expect(uncaughtExceptionListener).not.toHaveBeenCalled();
     });
@@ -801,10 +774,7 @@ describe('session client with transport-dom', () => {
         if (isTransportMessage(m)) {
           const { requestId, message, header } = m;
           expect(requestId).toBeTypeOf('string');
-          expect(message).toMatchObject({
-            ...sayRequest,
-            '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayRequest',
-          });
+          expect(message).toMatchObject(sayRequestJson);
 
           expect(header).toBeDefined();
           const headers = new Headers(header);
@@ -813,10 +783,7 @@ describe('session client with transport-dom', () => {
 
           p.postMessage({
             requestId,
-            message: {
-              ...sayResponse,
-              '@type': 'type.googleapis.com/connectrpc.eliza.v1.SayResponse',
-            },
+            message: sayResponse,
           });
         } else {
           expect.unreachable('no other event types');
@@ -824,16 +791,15 @@ describe('session client with transport-dom', () => {
       });
 
       const unaryRequest = transport.unary(
-        ElizaService,
-        ElizaService.methods.say,
+        ElizaService.method.say,
         undefined,
         200,
         header,
-        new SayRequest(sayRequest),
+        sayRequest,
       );
 
       await vi.waitFor(() => expect(extOnMessage).toHaveBeenCalled());
-      await expect(unaryRequest).resolves.toMatchObject({ message: sayResponse });
+      await expect(unaryRequest).resolves.toMatchObject({ message: sayResponseJson });
 
       expect(uncaughtExceptionListener).not.toHaveBeenCalled();
     });

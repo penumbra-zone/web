@@ -2,7 +2,14 @@ import {
   JsonReadOptions,
   type JsonValue,
   JsonWriteOptions,
-  fromJson, toJson, type DescMessage, type DescMethodUnary, type MessageInitShape, create, DescMethodStreaming, MessageShape,
+  fromJson,
+  toJson,
+  type DescMessage,
+  type DescMethodUnary,
+  type MessageInitShape,
+  create,
+  DescMethodStreaming,
+  MessageShape,
 } from '@bufbuild/protobuf';
 
 import { Code, ConnectError, StreamResponse, Transport, UnaryResponse } from '@connectrpc/connect';
@@ -265,7 +272,11 @@ export const createChannelTransport = ({
                 ];
                 // confirm the input stream ended after one message with content
                 if (done && typeof value === 'object' && value !== null) {
-                  const message = toJson(method.input, create(method.input, value as MessageShape<I>), jsonOptions)
+                  const message = toJson(
+                    method.input,
+                    create(method.input, value as MessageShape<I>),
+                    jsonOptions,
+                  );
                   signal.addEventListener('abort', () =>
                     port?.postMessage({ requestId, abort: true } satisfies TransportAbort),
                   );
