@@ -9,13 +9,6 @@ import {
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { toValueView } from '@/shared/utils/value-view';
 import { getStablecoins } from '@/shared/utils/stables';
-import { calculateEquivalentInUSDC } from '@/shared/utils/price-conversion';
-
-const getAssetById = (allAssets: Metadata[], id: Buffer): Metadata | undefined => {
-  return allAssets.find(asset => {
-    return asset.penumbraAssetId?.equals(new AssetId({ inner: id }));
-  });
-};
 
 export interface PairData {
   baseAsset: Metadata;
@@ -35,32 +28,24 @@ export async function GET(): Promise<NextResponse<PairsResponse>> {
   const registry = await registryClient.remote.get(chainId);
   const allAssets = registry.getAllAssets();
 
-  const { stablecoins, usdc } = getStablecoins(allAssets, 'USDC');
+  const { stablecoins } = getStablecoins(allAssets, 'USDC');
 
   const results = await pindexer.pairs({
-    // eslint-disable-next-line @typescript-eslint/non-nullable-type-assertion-style -- usdc is defined
-    usdc: usdc?.penumbraAssetId as AssetId,
     stablecoins: stablecoins.map(asset => asset.penumbraAssetId) as AssetId[],
   });
 
   const pairs = (await Promise.all(
     results.map(summary => {
-      const baseAsset = getAssetById(allAssets, summary.asset_start);
-      const quoteAsset = getAssetById(allAssets, summary.asset_end);
+      const baseAsset = registry.tryGetMetadata(new AssetId({ inner: summary.asset_start }));
+      const quoteAsset = registry.tryGetMetadata(new AssetId({ inner: summary.asset_end }));
       if (!baseAsset || !quoteAsset) {
         return undefined;
       }
 
-      // TODO: should this be `direct_volume_over_window`?
-      let volume = toValueView({
-        amount: summary.liquidity,
+      const volume = toValueView({
+        amount: Math.max(Math.floor(summary.direct_volume_indexing_denom_over_window), 0.0),
         metadata: quoteAsset,
       });
-
-      // Converts liquidity and trading volume to their equivalent USDC prices if `usdc_price` is available
-      if (summary.usdc_price && usdc) {
-        volume = calculateEquivalentInUSDC(summary.liquidity, summary.usdc_price, quoteAsset, usdc);
-      }
 
       return serialize({
         baseAsset,

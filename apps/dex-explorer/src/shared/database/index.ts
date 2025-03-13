@@ -56,39 +56,25 @@ class Pindexer {
       .execute();
   }
 
-  async pairs({ usdc, stablecoins }: { usdc: AssetId; stablecoins: AssetId[] }) {
-    const usdcTable = this.db
+  async pairs({ stablecoins }: { stablecoins: AssetId[] }) {
+    return this.db
       .selectFrom('dex_ex_pairs_summary')
-      .where('asset_end', '=', Buffer.from(usdc.inner))
-      .where('the_window', '=', '1m')
-      .groupBy(['asset_end', 'asset_start', 'the_window'])
-      .selectAll();
-
-    const joined = this.db
-      .selectFrom('dex_ex_pairs_summary as outer')
-      .selectAll('outer')
-      // get the usdc price of the quote asset
-      .leftJoin(usdcTable.as('usdc'), 'outer.asset_end', 'usdc.asset_start')
-      .select(['usdc.price as usdc_price'])
+      .selectAll()
       .where(exp =>
         exp.and([
-          exp.eb('outer.the_window', '=', '1m'),
-          exp.eb('outer.price', '!=', 0),
+          exp.eb('the_window', '=', '1d'),
+          exp.eb('price', '!=', 0),
           // Filters out pairs where stablecoins are base assets (e.g. no USDC/UM, only UM/USDC)
           exp.eb(
-            exp.ref('outer.asset_start'),
+            exp.ref('asset_start'),
             'not in',
             stablecoins.map(asset => Buffer.from(asset.inner)),
           ),
         ]),
       )
-      // sort desc by USDC equivalent of liquidity
-      .orderBy(
-        exp => sql`COALESCE(${exp.ref('usdc.price')}, 1) * ${exp.ref('outer.liquidity')} desc`,
-      )
-      .limit(15);
-
-    return joined.execute();
+      .orderBy('direct_volume_indexing_denom_over_window', 'desc')
+      .limit(15)
+      .execute();
   }
 
   async candles({
