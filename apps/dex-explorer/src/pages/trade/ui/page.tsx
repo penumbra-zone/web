@@ -1,13 +1,13 @@
 'use client';
 
 import cn from 'clsx';
+import { useViewport } from '@/shared/utils/use-viewport';
 import { PairInfo } from './pair-info';
 import { Chart } from './chart';
 import { RouteTabs } from './route-tabs';
 import { TradesTabs } from './trades';
 import { HistoryTabs } from './history-tabs';
 import { FormTabs } from './form-tabs';
-import { useEffect, useState } from 'react';
 
 const sharedStyle = 'w-full border-t border-t-other-solidStroke overflow-x-hidden';
 
@@ -144,36 +144,13 @@ const MobileLayout = () => {
 };
 
 export const TradePage = () => {
-  const [width, setWidth] = useState(1366);
+  const viewport = useViewport();
 
-  useEffect(() => {
-    const resize = () => {
-      setWidth(document.body.clientWidth);
-    };
-
-    window.addEventListener('resize', resize);
-    resize();
-
-    return () => {
-      window.removeEventListener('resize', resize);
-    };
-  }, []);
-
-  if (width >= 1600) {
-    return <XlLayout />;
-  }
-
-  if (width >= 1200) {
-    return <LLayout />;
-  }
-
-  if (width >= 900) {
-    return <DesktopLayout />;
-  }
-
-  if (width >= 600) {
-    return <TabletLayout />;
-  }
-
-  return <MobileLayout />;
+  return {
+    mobile: <MobileLayout />,
+    tablet: <TabletLayout />,
+    desktop: <DesktopLayout />,
+    lg: <LLayout />,
+    xl: <XlLayout />,
+  }[viewport];
 };

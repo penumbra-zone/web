@@ -17,7 +17,7 @@ const ConnectButtonInner = observer(
     variant = 'default',
   }: {
     actionType?: ButtonProps['actionType'];
-    variant?: 'default' | 'minimal';
+    variant?: 'default' | 'minimal' | 'mobile';
   }) => {
     const [isOpen, setIsOpen] = useState(false);
     const { data: providerManifests } = useProviderManifests();
@@ -43,6 +43,7 @@ const ConnectButtonInner = observer(
             <Button
               icon={Wallet2}
               actionType={actionType}
+              iconOnly={variant === 'mobile'}
               onClick={() =>
                 window.open('https://praxwallet.com/', '_blank', 'noopener,noreferrer')
               }
@@ -50,7 +51,12 @@ const ConnectButtonInner = observer(
               Install Prax
             </Button>
           ) : (
-            <Button icon={Wallet2} actionType={actionType} onClick={onConnectClick}>
+            <Button
+              icon={Wallet2}
+              iconOnly={variant === 'mobile'}
+              actionType={actionType}
+              onClick={onConnectClick}
+            >
               Connect wallet
             </Button>
           )}

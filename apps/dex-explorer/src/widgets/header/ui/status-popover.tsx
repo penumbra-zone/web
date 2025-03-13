@@ -34,35 +34,33 @@ export const StatusPopover = observer(() => {
   }
 
   return (
-    <Density sparse>
-      <Popover>
-        <Popover.Trigger>
-          <Button icon={Blocks} iconOnly>
-            Status
-          </Button>
-        </Popover.Trigger>
-        <Popover.Content align='end' side='bottom'>
-          <Density compact>
-            <div className='flex flex-col gap-4 text-text-primary'>
-              <div className='flex flex-col gap-2'>
-                <Text technical>Status</Text>
-                {pill}
-                {error}
-              </div>
-              {!loading && (
-                <div className='flex flex-col gap-2'>
-                  <Text technical>Block Height</Text>
-                  <Pill context='technical-default'>
-                    {latestKnownBlockHeight !== fullSyncHeight
-                      ? `${fullSyncHeight}${latestKnownBlockHeight ? ` of ${latestKnownBlockHeight}` : ''}`
-                      : `${latestKnownBlockHeight}`}
-                  </Pill>
-                </div>
-              )}
+    <Popover>
+      <Popover.Trigger>
+        <Button icon={Blocks} iconOnly>
+          Status
+        </Button>
+      </Popover.Trigger>
+      <Popover.Content align='end' side='bottom'>
+        <Density compact>
+          <div className='flex flex-col gap-4 text-text-primary'>
+            <div className='flex flex-col gap-2'>
+              <Text technical>Status</Text>
+              {pill}
+              {error}
             </div>
-          </Density>
-        </Popover.Content>
-      </Popover>
-    </Density>
+            {!loading && (
+              <div className='flex flex-col gap-2'>
+                <Text technical>Block Height</Text>
+                <Pill context='technical-default'>
+                  {latestKnownBlockHeight !== fullSyncHeight
+                    ? `${fullSyncHeight}${latestKnownBlockHeight ? ` of ${latestKnownBlockHeight}` : ''}`
+                    : `${latestKnownBlockHeight}`}
+                </Pill>
+              </div>
+            )}
+          </div>
+        </Density>
+      </Popover.Content>
+    </Popover>
   );
 });
