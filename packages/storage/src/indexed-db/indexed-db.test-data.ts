@@ -1,17 +1,26 @@
-import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { SpendableNoteRecord, SwapRecord } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import {
-  Position,
-  PositionId,
-  TradingPair,
+  AssetId,
+  MetadataSchema,
+  Metadata,
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { create, fromJson } from '@bufbuild/protobuf';
+import {
+  SpendableNoteRecordSchema,
+  SwapRecordSchema,
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import type { SpendableNoteRecord } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import {
+  PositionSchema,
+  PositionIdSchema,
+  TradingPairSchema,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
-import { Epoch } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
-import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
-import { Transaction } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import { EpochSchema } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
+import { TransactionIdSchema } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
+import { TransactionSchema } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import type { ScanBlockResult } from '@penumbra-zone/types/state-commitment-tree';
 import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 import { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
-import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { AddressIndexSchema } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 const hash3312332298 = base64ToUint8Array('JbOzRkf0VKm4eIM0DS27N5igX8jxvPhAMpBWSr2bj/Q=');
 
@@ -59,7 +68,7 @@ export const scanResultWithNewSwaps: ScanBlockResult = {
   height: 1092n,
   newNotes: [],
   newSwaps: [
-    SwapRecord.fromJson({
+    fromJson(SwapRecordSchema, {
       swapCommitment: { inner: 'A6VBVkrk+s18q+Sjhl8uEGfS3i0dwF1FrkNm8Db6VAA=' },
       swap: {
         tradingPair: {
@@ -123,14 +132,14 @@ export const scanResultWithNewSwaps: ScanBlockResult = {
   },
 };
 
-export const metadataA = Metadata.fromJson({
+export const metadataA = fromJson(MetadataSchema, {
   denomUnits: [{ denom: 'mars', exponent: 6 }, { denom: 'mmars', exponent: 3 }, { denom: 'umars' }],
   base: 'umars',
   display: 'mars',
   penumbraAssetId: { inner: 'fptGlCc8DHGYGzC0SGI9RJPkTcOhlwEgmTYlWKqG6RE=' },
 }) as Metadata & { penumbraAssetId: AssetId };
 
-export const metadataB = Metadata.fromJson({
+export const metadataB = fromJson(MetadataSchema, {
   denomUnits: [
     { denom: 'jupiter', exponent: 6 },
     { denom: 'mjupiter', exponent: 3 },
@@ -141,7 +150,7 @@ export const metadataB = Metadata.fromJson({
   penumbraAssetId: { inner: 'tC8UkRa/CMAtIft8TgIHRTWS7D8KNA+nYlixMl0mYjU=' },
 }) as Metadata & { penumbraAssetId: AssetId };
 
-export const metadataC = Metadata.fromJson({
+export const metadataC = fromJson(MetadataSchema, {
   denom_units: [
     {
       aliases: [],
@@ -171,7 +180,7 @@ export const metadataC = Metadata.fromJson({
   },
 }) as Metadata & { penumbraAssetId: AssetId };
 
-export const delegationMetadataA = Metadata.fromJson({
+export const delegationMetadataA = fromJson(MetadataSchema, {
   denomUnits: [
     {
       denom: 'delegation_penumbravalid12s9lanucncnyasrsqgy6z532q7nwsw3aqzzeqas55kkpyf6lhsqs2w0zar',
@@ -190,7 +199,7 @@ export const delegationMetadataA = Metadata.fromJson({
   penumbraAssetId: { inner: '9gOwzeyGwav8YydzDGlEZyZkN8ITX2IerjVy0YjAIw8=' },
 }) as Metadata & { penumbraAssetId: AssetId };
 
-export const delegationMetadataB = Metadata.fromJson({
+export const delegationMetadataB = fromJson(MetadataSchema, {
   denomUnits: [
     {
       denom: 'delegation_penumbravalid15ex9m38fl5gv48vwszyhgsvp9q83wc7nl4z274u6atyfwtlaeqgqpjwkkm',
@@ -209,7 +218,7 @@ export const delegationMetadataB = Metadata.fromJson({
   penumbraAssetId: { inner: 'brSeAgTVPCTJsjLKNFWhRSnJOJQgumMRksEe34sJfgc=' },
 }) as Metadata & { penumbraAssetId: AssetId };
 
-export const newNote = SpendableNoteRecord.fromJson({
+export const newNote = fromJson(SpendableNoteRecordSchema, {
   noteCommitment: {
     inner: 'pXS1k2kvlph+vuk9uhqeoP1mZRc+f526a06/bg3EBwQ=',
   },
@@ -244,7 +253,7 @@ export const newNote = SpendableNoteRecord.fromJson({
   },
 }) as SpendableNoteRecord & { noteCommitment: StateCommitment };
 
-export const noteWithDelegationAssetA = SpendableNoteRecord.fromJson({
+export const noteWithDelegationAssetA = fromJson(SpendableNoteRecordSchema, {
   noteCommitment: { inner: 'n86D13I1rRUDoLCkX7LKl/AG8/F+2MV76p4XgPD++xA=' },
   note: {
     value: {
@@ -264,7 +273,7 @@ export const noteWithDelegationAssetA = SpendableNoteRecord.fromJson({
   source: { transaction: { id: 'i++POrLfH1e5t+ys2ytLAJKi41HLt1s39Rj/bCFrMTI=' } },
 }) as SpendableNoteRecord & { noteCommitment: StateCommitment };
 
-export const noteWithDelegationAssetB = SpendableNoteRecord.fromJson({
+export const noteWithDelegationAssetB = fromJson(SpendableNoteRecordSchema, {
   noteCommitment: { inner: 'O5vXQyhaImbVKHuhpZqT5QYVA6HDlY4P+Hz/z3Xc5gU=' },
   note: {
     value: {
@@ -284,7 +293,7 @@ export const noteWithDelegationAssetB = SpendableNoteRecord.fromJson({
   source: { transaction: { id: 'OVtt3KUg5v+yF/O/2pwE1/740EhFGZ3mK74LUvRfcL0=' } },
 }) as SpendableNoteRecord & { noteCommitment: StateCommitment };
 
-export const noteWithGmAsset = SpendableNoteRecord.fromJson({
+export const noteWithGmAsset = fromJson(SpendableNoteRecordSchema, {
   noteCommitment: { inner: 'HPA48ggmSUsVVm5u871Y2qpURUZ60ic7/eL32ej0gQo=' },
   note: {
     value: {
@@ -304,11 +313,11 @@ export const noteWithGmAsset = SpendableNoteRecord.fromJson({
   source: { transaction: { id: 'NNKqIUJRgSI1dS1VbWLNZeQpmQUG6pInn3sFqPNrFDA=' } },
 }) as SpendableNoteRecord & { noteCommitment: StateCommitment };
 
-export const transactionId = TransactionId.fromJson({
+export const transactionId = fromJson(TransactionIdSchema, {
   inner: '9MI8IG5D3MQj3s1j0MXTwCQtAaVbwTlPkW8Qdz1EVIo=',
 });
 
-export const transaction = Transaction.fromJson({
+export const transaction = fromJson(TransactionSchema, {
   body: {
     actions: [
       {
@@ -651,7 +660,7 @@ export const transaction = Transaction.fromJson({
   },
 });
 
-export const positionGmPenumbraBuy = Position.fromJson({
+export const positionGmPenumbraBuy = fromJson(PositionSchema, {
   phi: {
     component: { p: { lo: '1000000' }, q: { lo: '1000000' } },
     pair: {
@@ -663,11 +672,11 @@ export const positionGmPenumbraBuy = Position.fromJson({
   state: { state: 'POSITION_STATE_ENUM_OPENED' },
   reserves: { r1: {}, r2: { lo: '1000000' } },
 });
-export const positionIdGmPenumbraBuy = PositionId.fromJson({
+export const positionIdGmPenumbraBuy = fromJson(PositionIdSchema, {
   inner: 'qE/PCp65S+GHi2HFO74G8Gx5ansmxeMwEdNUgn3GXYE=',
 });
 
-export const positionGnPenumbraSell = Position.fromJson({
+export const positionGnPenumbraSell = fromJson(PositionSchema, {
   phi: {
     component: { p: { lo: '2000000' }, q: { lo: '2000000' } },
     pair: {
@@ -679,11 +688,11 @@ export const positionGnPenumbraSell = Position.fromJson({
   state: { state: 'POSITION_STATE_ENUM_OPENED' },
   reserves: { r1: {}, r2: { lo: '2000000' } },
 });
-export const positionIdGnPenumbraSell = PositionId.fromJson({
+export const positionIdGnPenumbraSell = fromJson(PositionIdSchema, {
   inner: 'jPb6+hLkYgwIs4sVxhyYUmpbvIyPOXATqL/hiKGwhbg=',
 });
 
-export const positionGmGnSell = Position.fromJson({
+export const positionGmGnSell = fromJson(PositionSchema, {
   phi: {
     component: { p: { lo: '2000000' }, q: { lo: '4000000' } },
     pair: {
@@ -695,29 +704,29 @@ export const positionGmGnSell = Position.fromJson({
   state: { state: 'POSITION_STATE_ENUM_CLOSED' },
   reserves: { r1: {}, r2: { lo: '2000000' } },
 });
-export const positionIdGmGnSell = PositionId.fromJson({
+export const positionIdGmGnSell = fromJson(PositionIdSchema, {
   inner: '8hpmQDWRJFAqYI1NaKltjbFqCRiI4eEQT5DzzNUkDXQ=',
 });
 
-export const tradingPairGmGn = TradingPair.fromJson({
+export const tradingPairGmGn = fromJson(TradingPairSchema, {
   asset1: { inner: 'HW2Eq3UZVSBttoUwUi/MUtE7rr2UU7/UH500byp7OAc=' },
   asset2: { inner: 'nwPDkQq3OvLnBwGTD+nmv1Ifb2GEmFCgNHrU++9BsRE=' },
 });
 
-export const epoch1 = new Epoch({
+export const epoch1 = create(EpochSchema, {
   index: 1n,
   startHeight: 100n,
 });
 
-export const epoch2 = new Epoch({
+export const epoch2 = create(EpochSchema, {
   index: 2n,
   startHeight: 200n,
 });
 
-export const epoch3 = new Epoch({
+export const epoch3 = create(EpochSchema, {
   index: 3n,
   startHeight: 300n,
 });
 
-export const mainAccount = new AddressIndex({ account: 0 });
-export const firstSubaccount = new AddressIndex({ account: 1 });
+export const mainAccount = create(AddressIndexSchema, { account: 0 });
+export const firstSubaccount = create(AddressIndexSchema, { account: 1 });
