@@ -1,9 +1,9 @@
-import { beforeAll, describe, expect, it } from 'vitest';
+import { BigNumber } from 'bignumber.js';
+import { describe, expect, it } from 'vitest';
 import {
   Position,
   PositionState_PositionStateEnum,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
-import { ExecutedPosition, positionsStore } from './positions';
 import {
   Metadata,
   AssetId,
@@ -11,9 +11,16 @@ import {
 } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { compareAssetId } from '@/shared/math/position';
 import { pnum } from '@penumbra-zone/types/pnum';
-import { BigNumber } from 'bignumber.js';
+import { ExecutedPosition } from './types';
+import { GetMetadataByAssetId } from '@/shared/api/assets';
+import { getCalculatedAssets } from './get-calculated-assets';
+import {
+  getDirectionalOrders,
+  getOrdersByBaseQuoteAssets,
+  getOrderValueViews,
+} from './get-display-positions';
 
-describe('positionsStore', () => {
+describe('position modeling functions', () => {
   const id1 = new Uint8Array(Array(32).fill(0xaa));
   const id2 = new Uint8Array(Array(32).fill(0xbb));
   const id3 = new Uint8Array(Array(32).fill(0xcc));
@@ -95,20 +102,22 @@ describe('positionsStore', () => {
     });
   };
 
-  beforeAll(() => {
-    positionsStore.setAssets([
+  const getMetadataByAssetId: GetMetadataByAssetId = assetId => {
+    if (!assetId) {
+      return undefined;
+    }
+
+    const allAssets = [
       metadataWithId1,
       metadataWithId2,
       metadataWithId3,
       metadataWithId4,
       metadataWithStableCoin,
-    ]);
-
-    // Assert that id1 and id2 are in canonical order
-    expect(
-      compareAssetId(new AssetId({ inner: id1 }), new AssetId({ inner: id2 })),
-    ).toBeLessThanOrEqual(0);
-  });
+    ];
+    return allAssets.find(
+      asset => asset.penumbraAssetId && compareAssetId(assetId, asset.penumbraAssetId) === 0,
+    );
+  };
 
   describe('getOrdersByBaseQuoteAssets', () => {
     it('should return a buy and sell order when both assets have reserves', () => {
@@ -117,8 +126,11 @@ describe('positionsStore', () => {
         r2: 100n,
       });
 
-      const [asset1, asset2] = positionsStore.getCalculatedAssets(position as ExecutedPosition);
-      const orders = positionsStore.getOrdersByBaseQuoteAssets(asset1, asset2);
+      const [asset1, asset2] = getCalculatedAssets(
+        position as ExecutedPosition,
+        getMetadataByAssetId,
+      );
+      const orders = getOrdersByBaseQuoteAssets(asset1, asset2);
       expect(orders[0]?.direction).toEqual('Buy');
       expect(orders[1]?.direction).toEqual('Sell');
     });
@@ -129,8 +141,11 @@ describe('positionsStore', () => {
         r2: 100n,
       });
 
-      const [asset1, asset2] = positionsStore.getCalculatedAssets(position as ExecutedPosition);
-      const orders = positionsStore.getOrdersByBaseQuoteAssets(asset1, asset2);
+      const [asset1, asset2] = getCalculatedAssets(
+        position as ExecutedPosition,
+        getMetadataByAssetId,
+      );
+      const orders = getOrdersByBaseQuoteAssets(asset1, asset2);
       expect(orders[0]?.direction).toEqual('Buy');
       expect(orders[1]).toEqual(undefined);
     });
@@ -141,8 +156,11 @@ describe('positionsStore', () => {
         r2: 0n,
       });
 
-      const [asset1, asset2] = positionsStore.getCalculatedAssets(position as ExecutedPosition);
-      const orders = positionsStore.getOrdersByBaseQuoteAssets(asset1, asset2);
+      const [asset1, asset2] = getCalculatedAssets(
+        position as ExecutedPosition,
+        getMetadataByAssetId,
+      );
+      const orders = getOrdersByBaseQuoteAssets(asset1, asset2);
       expect(orders[0]?.direction).toEqual('Sell');
       expect(orders[1]).toEqual(undefined);
     });
@@ -155,11 +173,14 @@ describe('positionsStore', () => {
         r2: pnum(12.123, exponent2).toBigInt(),
       });
 
-      const [asset1, asset2] = positionsStore.getCalculatedAssets(position as ExecutedPosition);
-      const orders = positionsStore.getOrdersByBaseQuoteAssets(asset1, asset2);
+      const [asset1, asset2] = getCalculatedAssets(
+        position as ExecutedPosition,
+        getMetadataByAssetId,
+      );
+      const orders = getOrdersByBaseQuoteAssets(asset1, asset2);
       const buyOrder = orders[0];
 
-      const valueViews = positionsStore.getOrderValueViews(buyOrder!);
+      const valueViews = getOrderValueViews(buyOrder!);
 
       const basePrice = (p1 / p2) * 10 ** (exponent1 - exponent2);
       const effectivePrice = BigNumber(basePrice)
@@ -185,11 +206,14 @@ describe('positionsStore', () => {
         r2: 0n,
       });
 
-      const [asset1, asset2] = positionsStore.getCalculatedAssets(position as ExecutedPosition);
-      const orders = positionsStore.getOrdersByBaseQuoteAssets(asset1, asset2);
+      const [asset1, asset2] = getCalculatedAssets(
+        position as ExecutedPosition,
+        getMetadataByAssetId,
+      );
+      const orders = getOrdersByBaseQuoteAssets(asset1, asset2);
       const sellOrder = orders[0];
 
-      const valueViews = positionsStore.getOrderValueViews(sellOrder!);
+      const valueViews = getOrderValueViews(sellOrder!);
       const basePrice = (p1 / p2) * 10 ** (exponent1 - exponent2);
       const effectivePrice = BigNumber(basePrice)
         .minus(BigNumber(basePrice).times(feeBps).div(10000))
@@ -208,8 +232,11 @@ describe('positionsStore', () => {
         r2: 100n,
       });
 
-      const [asset1, asset2] = positionsStore.getCalculatedAssets(position as ExecutedPosition);
-      const directionalOrders = positionsStore.getDirectionalOrders({
+      const [asset1, asset2] = getCalculatedAssets(
+        position as ExecutedPosition,
+        getMetadataByAssetId,
+      );
+      const directionalOrders = getDirectionalOrders({
         asset1,
         asset2,
         baseAsset: metadataWithId1,
@@ -231,8 +258,11 @@ describe('positionsStore', () => {
         r2: 100n,
       });
 
-      const [asset1, asset2] = positionsStore.getCalculatedAssets(position as ExecutedPosition);
-      const directionalOrders = positionsStore.getDirectionalOrders({
+      const [asset1, asset2] = getCalculatedAssets(
+        position as ExecutedPosition,
+        getMetadataByAssetId,
+      );
+      const directionalOrders = getDirectionalOrders({
         asset1,
         asset2,
         baseAsset: metadataWithId2,
@@ -256,8 +286,11 @@ describe('positionsStore', () => {
         asset2Id: id2,
       });
 
-      const [asset1, asset2] = positionsStore.getCalculatedAssets(position as ExecutedPosition);
-      const directionalOrders = positionsStore.getDirectionalOrders({
+      const [asset1, asset2] = getCalculatedAssets(
+        position as ExecutedPosition,
+        getMetadataByAssetId,
+      );
+      const directionalOrders = getDirectionalOrders({
         asset1,
         asset2,
         baseAsset: metadataWithId1,
@@ -281,8 +314,11 @@ describe('positionsStore', () => {
         asset2Id: stableId,
       });
 
-      const [asset1, asset2] = positionsStore.getCalculatedAssets(position as ExecutedPosition);
-      const directionalOrders = positionsStore.getDirectionalOrders({
+      const [asset1, asset2] = getCalculatedAssets(
+        position as ExecutedPosition,
+        getMetadataByAssetId,
+      );
+      const directionalOrders = getDirectionalOrders({
         asset1,
         asset2,
         baseAsset: metadataWithId1,

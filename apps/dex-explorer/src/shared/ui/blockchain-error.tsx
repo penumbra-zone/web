@@ -9,11 +9,13 @@ import cn from 'clsx';
 interface BlockchainErrorProps {
   message?: string;
   direction?: 'row' | 'column';
+  hideDetails?: boolean;
 }
 
 export function BlockchainError({
   message = 'An error occurred when loading data from the blockchain',
   direction = 'row',
+  hideDetails,
 }: BlockchainErrorProps) {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
@@ -30,11 +32,14 @@ export function BlockchainError({
           <Text small color='text.secondary'>
             {message}
           </Text>
-          <Button onClick={() => setIsDetailsOpen(true)}>Details</Button>
+
+          {!hideDetails && <Button onClick={() => setIsDetailsOpen(true)}>Details</Button>}
         </div>
       </Density>
 
-      <ErrorDetailsModal isOpen={isDetailsOpen} onClose={() => setIsDetailsOpen(false)} />
+      {!hideDetails && (
+        <ErrorDetailsModal isOpen={isDetailsOpen} onClose={() => setIsDetailsOpen(false)} />
+      )}
     </>
   );
 }

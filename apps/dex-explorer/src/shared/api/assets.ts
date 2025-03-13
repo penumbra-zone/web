@@ -4,6 +4,9 @@ import { penumbra } from '@/shared/const/penumbra';
 import { connectionStore } from '@/shared/model/connection';
 import { useQuery } from '@tanstack/react-query';
 import { useRegistryAssets } from '@/shared/api/registry';
+import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { useMemo } from 'react';
+import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 
 const useViewServiceAssets = () =>
   useQuery({
@@ -27,4 +30,32 @@ export const useAssets = () => {
   const accountAssets = useViewServiceAssets();
 
   return connectionStore.connected ? accountAssets : registryAssets;
+};
+
+export type GetMetadataByAssetId = (assetId?: AssetId) => Metadata | undefined;
+
+/**
+ * A hook that returns a synchronous function for querying the metadata by assetId.
+ * Needed for an optimized client-side asset fetching.
+ */
+export const useGetMetadataByAssetId = (): GetMetadataByAssetId => {
+  const { data } = useAssets();
+
+  const assetIdMap = useMemo(() => {
+    return data?.reduce<Map<string, Metadata>>((accum, asset) => {
+      if (!asset.penumbraAssetId?.inner) {
+        return accum;
+      }
+      accum.set(uint8ArrayToBase64(asset.penumbraAssetId.inner), asset);
+      return accum;
+    }, new Map());
+  }, [data]);
+
+  return (assetId?: AssetId): Metadata | undefined => {
+    if (!assetId?.inner) {
+      return undefined;
+    }
+
+    return assetIdMap?.get(uint8ArrayToBase64(assetId.inner));
+  };
 };

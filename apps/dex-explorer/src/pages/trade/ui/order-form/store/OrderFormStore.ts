@@ -22,7 +22,7 @@ import { getSwapCommitmentFromTx } from '@penumbra-zone/getters/transaction';
 import { pnum } from '@penumbra-zone/types/pnum';
 import debounce from 'lodash/debounce';
 import { useStakingTokenMetadata } from '@/shared/api/registry';
-import { plan, planBuildBroadcast } from '../helpers';
+import { planTransaction, planBuildBroadcast } from '@/entities/transaction';
 import { openToast } from '@penumbra-zone/ui/Toast';
 import {
   getMetadataFromBalancesResponse,
@@ -32,6 +32,7 @@ import {
 import { isMetadataEqual } from '@/shared/utils/is-metadata-equal';
 import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getAssetMetadataById } from '@/shared/api/metadata';
+import { updatePositionsQuery } from '@/entities/position';
 
 export type WhichForm = 'Market' | 'Limit' | 'Range';
 
@@ -73,7 +74,7 @@ export class OrderFormStore {
       this._gasFeeLoading = true;
     });
     try {
-      const res = await plan(this.plan);
+      const res = await planTransaction(this.plan);
       const fee = res.transactionParameters?.fee;
       if (!fee) {
         this.resetGasFee();
@@ -243,6 +244,8 @@ export class OrderFormStore {
     });
     try {
       const tx = await planBuildBroadcast(wasSwap ? 'swap' : 'positionOpen', plan);
+      await updatePositionsQuery();
+
       if (!wasSwap || !tx) {
         return;
       }
@@ -252,6 +255,7 @@ export class OrderFormStore {
         source,
       });
       await planBuildBroadcast('swapClaim', req, { skipAuth: true });
+      await updatePositionsQuery();
     } catch (e) {
       if (e instanceof Error && e.message.includes('insufficient funds')) {
         openToast({

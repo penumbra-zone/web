@@ -6,6 +6,7 @@ import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { Density } from '@penumbra-zone/ui/Density';
 import { AssetsTable } from './ui/assets-table';
+import { PortfolioPositionTabs } from './ui/position-tabs';
 
 interface PortfolioPageProps {
   isMobile: boolean;
@@ -55,8 +56,9 @@ function MobilePortfolioPage() {
 
 function DesktopPortfolioPage() {
   return (
-    <div className='sm:container mx-auto py-8'>
+    <div className='sm:container mx-auto py-8 flex flex-col gap-4'>
       <AssetsTable />
+      <PortfolioPositionTabs />
     </div>
   );
 }

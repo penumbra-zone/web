@@ -42,7 +42,7 @@ export const TxViewer = observer(({ txInfo }: { txInfo?: TransactionInfo }) => {
 
   // prepare options for SegmentedControl
   const [option, setOption] = useState(connected ? TxDetailsTab.PRIVATE : TxDetailsTab.PUBLIC);
-  const showReceiverTransactionView = transactionClassification === 'send';
+  const showReceiverTransactionView = transactionClassification.type === 'send';
   const filteredOptions = showReceiverTransactionView
     ? OPTIONS
     : OPTIONS.filter(option => option.value !== TxDetailsTab.RECEIVER);

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { Search } from 'lucide-react';
 import { Text } from '@penumbra-zone/ui/Text';
@@ -9,42 +9,7 @@ import { Icon } from '@penumbra-zone/ui/Icon';
 import { PairCard } from '@/pages/explore/ui/pair-card';
 import { useSummaries } from '@/pages/explore/api/use-summaries';
 import SpinnerIcon from '@/shared/assets/spinner-icon.svg';
-
-/** A hook that fires the callback when observed element (on the bottom of the page) is in the view */
-const useObserver = (disabled: boolean, cb: VoidFunction) => {
-  const observerEl = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    const ref = observerEl.current;
-    const observer = new IntersectionObserver(
-      entries => {
-        const [entry] = entries;
-        if (entry?.isIntersecting && !disabled) {
-          cb();
-        }
-      },
-      {
-        root: null,
-        rootMargin: '20px',
-        threshold: 1.0,
-      },
-    );
-
-    if (ref) {
-      observer.observe(ref);
-    }
-
-    return () => {
-      if (ref) {
-        observer.unobserve(ref);
-      }
-    };
-  }, [cb, disabled]);
-
-  return {
-    observerEl,
-  };
-};
+import { useObserver } from '@/shared/utils/use-observer';
 
 export const ExplorePairs = () => {
   const [parent] = useAutoAnimate();

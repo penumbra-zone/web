@@ -13,7 +13,7 @@ const compat = new FlatCompat({
 
 const excludePlugins = eslintConfig.flatMap(config => Object.keys(config.plugins || {}));
 
-export default [
+const config = [
   ...compat
     .extends('next/core-web-vitals')
     .filter(config =>
@@ -29,3 +29,20 @@ export default [
     },
   },
 ];
+
+/**
+ * The next block of code is a workaround that enables the outdated eslint config in the DEX code.
+ * In the future, we must bring the ESLint config to the repo and keep the dependencies up to date.
+ * TODO: Remove this workaround when the ESLint config is moved to the repo.
+ */
+const IGNORE_RULES = ['@typescript-eslint/dot-notation', '@typescript-eslint/no-empty-function'];
+config.forEach(option => {
+  IGNORE_RULES.forEach(rule => {
+    if (option.rules?.[rule]) {
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete -- required here
+      delete option.rules[rule];
+    }
+  });
+});
+
+export default config;
