@@ -1,9 +1,17 @@
 import {
-  TransactionSummary,
-  TransactionView,
+  TransactionSummarySchema,
+  TransactionViewSchema,
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
-import { Balance, Value } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { TransactionInfo } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { create, fromJson, toJson } from '@bufbuild/protobuf';
+import {
+  BalanceSchema,
+  MetadataSchema,
+  ValueSchema,
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { TransactionInfoSchema } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { base64ToUint8Array } from '@penumbra-zone/types/base64';
+import { PositionState_PositionStateEnum } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
+import { AddressViewSchema } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { ADDRESS1_VIEW_DECODED, ADDRESS_VIEW_DECODED } from './address-view';
 import { LPNFT_METADATA, PENUMBRA_METADATA, USDC_METADATA } from './metadata';
 import { AMOUNT_123_456_789, AMOUNT_999 } from './amount';
@@ -12,26 +20,24 @@ import {
   IbcRelayMsgUpdateClientAction,
   IbcRelayMsgRecvPacketAction,
 } from './action-view';
-import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 import { PENUMBRA_VALUE_VIEW, USDC_VALUE_VIEW } from './value-view';
-import { PositionState_PositionStateEnum } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 
-export const TxSummary = new TransactionSummary({
+export const TxSummary = create(TransactionSummarySchema, {
   effects: [
     {
       address: ADDRESS_VIEW_DECODED,
-      balance: new Balance({
+      balance: create(BalanceSchema, {
         values: [
           {
             negated: true,
-            value: new Value({
+            value: create(ValueSchema, {
               amount: AMOUNT_999,
               assetId: USDC_METADATA.penumbraAssetId,
             }),
           },
           {
             negated: false,
-            value: new Value({
+            value: create(ValueSchema, {
               amount: AMOUNT_999,
               assetId: PENUMBRA_METADATA.penumbraAssetId,
             }),
@@ -43,8 +49,8 @@ export const TxSummary = new TransactionSummary({
 });
 
 // Swap: 999 uUSDC -> 0 Penumbra
-export const TxSwap = new TransactionInfo({
-  view: new TransactionView({
+export const TxSwap = create(TransactionInfoSchema, {
+  view: create(TransactionViewSchema, {
     bodyView: {
       actionViews: [SwapAction],
     },
@@ -53,7 +59,7 @@ export const TxSwap = new TransactionInfo({
 });
 
 // IBC deposit: 0.5 OSMO
-export const TxIbcRelay = new TransactionInfo({
+export const TxIbcRelay = create(TransactionInfoSchema, {
   height: 3729031n,
   view: {
     bodyView: {
@@ -74,8 +80,8 @@ export const TxIbcRelay = new TransactionInfo({
 });
 
 // Inner transfer from opaque address to a decoded address
-export const TxReceive = new TransactionInfo({
-  view: TransactionView.fromJson({
+export const TxReceive = create(TransactionInfoSchema, {
+  view: fromJson(TransactionViewSchema, {
     bodyView: {
       actionViews: [
         {
@@ -113,10 +119,10 @@ export const TxReceive = new TransactionInfo({
                     amount: {
                       lo: '1900000',
                     },
-                    metadata: PENUMBRA_METADATA.toJson(),
+                    metadata: toJson(MetadataSchema, PENUMBRA_METADATA),
                   },
                 },
-                address: ADDRESS1_VIEW_DECODED.toJson(),
+                address: toJson(AddressViewSchema, ADDRESS1_VIEW_DECODED),
               },
             },
           },
@@ -160,15 +166,15 @@ export const TxReceive = new TransactionInfo({
       },
     },
   }),
-  summary: new TransactionSummary({
+  summary: create(TransactionSummarySchema, {
     effects: [
       {
         address: ADDRESS1_VIEW_DECODED,
-        balance: new Balance({
+        balance: create(BalanceSchema, {
           values: [
             {
               negated: false,
-              value: new Value({
+              value: create(ValueSchema, {
                 amount: AMOUNT_123_456_789,
                 assetId: PENUMBRA_METADATA.penumbraAssetId,
               }),
@@ -181,7 +187,7 @@ export const TxReceive = new TransactionInfo({
 });
 
 // USDC/UM Position with 1 LPNFT as an output
-export const TxPositionOpen = new TransactionInfo({
+export const TxPositionOpen = create(TransactionInfoSchema, {
   height: 3630671n,
   id: {
     inner: base64ToUint8Array('5/9XEqusVwsA3kqi18KhJ0pF8nYgb16YQLoSU88uFDU='),

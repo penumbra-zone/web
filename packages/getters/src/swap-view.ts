@@ -4,6 +4,8 @@ import {
   SwapView,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { createGetter } from './utils/create-getter.js';
+import { Getter } from './utils/getter.js';
+import { Fee } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
 
 // Generic getter function for 'Output1'
 export const getOutput1Value = createGetter((swapView?: SwapView) => {
@@ -67,7 +69,7 @@ export const getDelta1IFromSwapView = createSwapGetter('delta1I');
 export const getDelta2IFromSwapView = createSwapGetter('delta2I');
 
 // Generic getter function for 'claimFee'
-export const getClaimFeeFromSwapView = createSwapGetter('claimFee');
+export const getClaimFeeFromSwapView: Getter<SwapView, Fee> = createSwapGetter('claimFee');
 
 // Generic getter function for 'Asset1Metadata'
 export const getAsset1Metadata = createGetter((swapView?: SwapView) =>

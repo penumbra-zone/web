@@ -1,6 +1,12 @@
 import { getMetadata } from '@penumbra-zone/getters/value-view';
+import { create, equals } from '@bufbuild/protobuf';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
-import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import {
+  AssetIdSchema,
+  Metadata,
+  ValueView,
+  ValueViewSchema,
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { Fee } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
 import type { SwapActionProps } from './swap';
 
@@ -28,10 +34,18 @@ export const parseSwapFees = (
   }
 
   let metadata: Metadata | undefined = undefined;
-  if (fee.assetId?.equals(asset1?.penumbraAssetId)) {
+  if (
+    fee.assetId &&
+    asset1?.penumbraAssetId &&
+    equals(AssetIdSchema, fee.assetId, asset1.penumbraAssetId)
+  ) {
     metadata = asset1;
   }
-  if (fee.assetId?.equals(asset2?.penumbraAssetId)) {
+  if (
+    fee.assetId &&
+    asset2?.penumbraAssetId &&
+    equals(AssetIdSchema, fee.assetId, asset2.penumbraAssetId)
+  ) {
     metadata = asset1;
   }
 
@@ -41,7 +55,7 @@ export const parseSwapFees = (
 
   if (metadata) {
     return renderAmount(
-      new ValueView({
+      create(ValueViewSchema, {
         valueView: {
           case: 'knownAssetId',
           value: {
@@ -54,7 +68,7 @@ export const parseSwapFees = (
   }
 
   return renderAmount(
-    new ValueView({
+    create(ValueViewSchema, {
       valueView: {
         case: 'unknownAssetId',
         value: {

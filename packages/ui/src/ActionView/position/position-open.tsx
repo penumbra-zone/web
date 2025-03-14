@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
+import { create } from '@bufbuild/protobuf';
 import { PositionOpen } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
-import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { ValueViewSchema } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { ValueViewComponent } from '../../ValueView';
 import { AssetGroup } from '../../AssetIcon';
 import { Density } from '../../Density';
@@ -34,7 +35,7 @@ export const PositionOpenAction = ({ value, getMetadataByAssetId }: PositionOpen
     if (!value.position?.reserves?.r1?.lo) {
       return undefined;
     }
-    return new ValueView({
+    return create(ValueViewSchema, {
       valueView: asset1
         ? {
             case: 'knownAssetId',
@@ -57,7 +58,7 @@ export const PositionOpenAction = ({ value, getMetadataByAssetId }: PositionOpen
     if (!value.position?.reserves?.r2?.lo) {
       return undefined;
     }
-    return new ValueView({
+    return create(ValueViewSchema, {
       valueView: asset2
         ? {
             case: 'knownAssetId',
