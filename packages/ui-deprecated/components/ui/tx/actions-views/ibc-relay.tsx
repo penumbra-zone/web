@@ -1,22 +1,33 @@
 import { ViewBox } from '../viewbox';
+import { create, fromJsonString, isMessage } from '@bufbuild/protobuf';
 import { ActionDetails } from './action-details';
 import {
-  FungibleTokenPacketData,
+  FungibleTokenPacketDataSchema,
   IbcRelay,
 } from '@penumbra-zone/protobuf/penumbra/core/component/ibc/v1/ibc_pb';
+
 import {
-  MsgAcknowledgement,
+  MsgAcknowledgementSchema,
+  MsgRecvPacketSchema,
+  MsgTimeoutSchema,
+  MsgTimeoutOnCloseSchema,
   MsgRecvPacket,
   MsgTimeout,
+  MsgAcknowledgement,
   MsgTimeoutOnClose,
 } from '@penumbra-zone/protobuf/ibc/core/channel/v1/tx_pb';
-import { MsgUpdateClient } from '@penumbra-zone/protobuf/ibc/core/client/v1/tx_pb';
+
+import {
+  MsgUpdateClient,
+  MsgUpdateClientSchema,
+} from '@penumbra-zone/protobuf/ibc/core/client/v1/tx_pb';
 import { UnimplementedView } from './unimplemented-view.tsx';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { ReactElement } from 'react';
 import { Packet } from '@penumbra-zone/protobuf/ibc/core/channel/v1/channel_pb';
 import { getUtcTime } from './isc20-withdrawal.tsx';
 import { CircleX } from 'lucide-react';
+import { anyUnpackTo } from '@bufbuild/protobuf/wkt';
 
 // Attempt to parse data w/ fallbacks if unknown or failures
 const ParsedPacketData = ({
@@ -76,7 +87,7 @@ const PacketRows = ({
 // Packet data stored as json string encoded into bytes
 const parseFungibleTokenData = (packetData: Uint8Array) => {
   const dataString = new TextDecoder().decode(packetData);
-  const parsed = FungibleTokenPacketData.fromJsonString(dataString);
+  const parsed = fromJsonString(FungibleTokenPacketDataSchema, dataString);
   return (
     <>
       <ActionDetails.Row label='Sender'>
@@ -138,7 +149,7 @@ const UpdateClientComponent = ({ update }: { update: MsgUpdateClient }) => {
   );
 };
 
-const MsgTimeoutComponent = ({ timeout }: { timeout: MsgTimeout }) => {
+const MsgTimeoutComponent = ({ timeout }: { timeout: MsgTimeout | MsgTimeoutOnClose }) => {
   return (
     <ViewBox
       label='IBC Relay: Msg Timeout'
@@ -208,33 +219,33 @@ const MsgAckComponent = ({ ack }: { ack: MsgAcknowledgement }) => {
 
 export const IbcRelayComponent = ({ value }: { value: IbcRelay }) => {
   try {
-    if (value.rawAction?.is(MsgRecvPacket.typeName)) {
-      const packet = new MsgRecvPacket();
-      value.rawAction.unpackTo(packet);
+    if (isMessage(value.rawAction, MsgRecvPacketSchema)) {
+      const packet = create(MsgRecvPacketSchema);
+      anyUnpackTo(value.rawAction, MsgRecvPacketSchema, packet);
       return <MsgResvComponent packet={packet} />;
     }
 
-    if (value.rawAction?.is(MsgUpdateClient.typeName)) {
-      const update = new MsgUpdateClient();
-      value.rawAction.unpackTo(update);
+    if (isMessage(value.rawAction, MsgUpdateClientSchema)) {
+      const update = create(MsgUpdateClientSchema);
+      anyUnpackTo(value.rawAction, MsgUpdateClientSchema, update);
       return <UpdateClientComponent update={update} />;
     }
 
-    if (value.rawAction?.is(MsgTimeout.typeName)) {
-      const timeout = new MsgTimeout();
-      value.rawAction.unpackTo(timeout);
+    if (isMessage(value.rawAction, MsgTimeoutSchema)) {
+      const timeout = create(MsgTimeoutSchema);
+      anyUnpackTo(value.rawAction, MsgTimeoutSchema, timeout);
       return <MsgTimeoutComponent timeout={timeout} />;
     }
 
-    if (value.rawAction?.is(MsgTimeoutOnClose.typeName)) {
-      const timeout = new MsgTimeoutOnClose();
-      value.rawAction.unpackTo(timeout);
+    if (isMessage(value.rawAction, MsgTimeoutOnCloseSchema)) {
+      const timeout = create(MsgTimeoutOnCloseSchema);
+      anyUnpackTo(value.rawAction, MsgTimeoutOnCloseSchema, timeout);
       return <MsgTimeoutComponent timeout={timeout} />;
     }
 
-    if (value.rawAction?.is(MsgAcknowledgement.typeName)) {
-      const ack = new MsgAcknowledgement();
-      value.rawAction.unpackTo(ack);
+    if (isMessage(value.rawAction, MsgAcknowledgementSchema)) {
+      const ack = create(MsgAcknowledgementSchema);
+      anyUnpackTo(value.rawAction, MsgAcknowledgementSchema, ack);
       return <MsgAckComponent ack={ack} />;
     }
   } catch (e) {

@@ -1,4 +1,5 @@
 import { TransactionView } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import { create } from '@bufbuild/protobuf';
 import { MemoViewComponent } from './memo-view';
 import { ActionViewComponent } from './action-view';
 import { ViewBox, ViewSection } from './viewbox';
@@ -6,6 +7,7 @@ import {
   AssetId,
   Metadata,
   ValueView,
+  ValueViewSchema,
 } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { ValueViewComponent } from '../value';
 import { useEffect, useState } from 'react';
@@ -20,7 +22,7 @@ export type MetadataFetchFn = (arg: {
 const useFeeMetadata = (txv: TransactionView, getMetadata: MetadataFetchFn) => {
   const amount = txv.bodyView?.transactionParameters?.fee?.amount;
   const [feeValueView, setFeeValueView] = useState<ValueView>(
-    new ValueView({
+    create(ValueViewSchema, {
       valueView: {
         case: 'unknownAssetId',
         value: { amount },
@@ -38,7 +40,7 @@ const useFeeMetadata = (txv: TransactionView, getMetadata: MetadataFetchFn) => {
     void getMetadata({ chainId, assetId })
       .then(metadata => {
         if (metadata) {
-          const feeValueView = new ValueView({
+          const feeValueView = create(ValueViewSchema, {
             valueView: {
               case: 'knownAssetId',
               value: { amount, metadata },

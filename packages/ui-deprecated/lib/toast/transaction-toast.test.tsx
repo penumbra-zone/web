@@ -1,9 +1,10 @@
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
+import { create } from '@bufbuild/protobuf';
 import { TransactionToast } from './transaction-toast';
 import { Link } from 'react-router-dom';
 import {
-  AuthorizeAndBuildResponse,
-  BroadcastTransactionResponse,
+  AuthorizeAndBuildResponseSchema,
+  BroadcastTransactionResponseSchema,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { Progress } from '../../components/ui/progress';
 
@@ -54,7 +55,7 @@ describe('TransactionToast', () => {
       const toast = new TransactionToast('send');
       toast.onStart();
 
-      const buildStatus = new AuthorizeAndBuildResponse({
+      const buildStatus = create(AuthorizeAndBuildResponseSchema, {
         status: {
           case: 'buildProgress',
           value: { progress: 0.5 },
@@ -81,7 +82,7 @@ describe('TransactionToast', () => {
       const toast = new TransactionToast('send');
       toast.onStart();
 
-      const buildStatus = new AuthorizeAndBuildResponse({
+      const buildStatus = create(AuthorizeAndBuildResponseSchema, {
         status: {
           case: 'complete',
           value: {},
@@ -110,7 +111,7 @@ describe('TransactionToast', () => {
       const toast = new TransactionToast('send');
       toast.onStart();
 
-      const broadcastStatus = new BroadcastTransactionResponse({
+      const broadcastStatus = create(BroadcastTransactionResponseSchema, {
         status: {
           case: undefined,
         },
@@ -133,7 +134,7 @@ describe('TransactionToast', () => {
       toast.onStart();
       toast.txHash('abc123');
 
-      const broadcastStatus = new BroadcastTransactionResponse({
+      const broadcastStatus = create(BroadcastTransactionResponseSchema, {
         status: {
           case: undefined,
         },

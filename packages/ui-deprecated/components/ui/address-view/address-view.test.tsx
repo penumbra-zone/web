@@ -1,20 +1,22 @@
 import {
-  Address,
-  AddressIndex,
-  AddressView,
-  AddressView_Decoded,
+  AddressSchema,
+  AddressIndexSchema,
+  AddressViewSchema,
+  AddressView_DecodedSchema,
 } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+
+import { create } from '@bufbuild/protobuf';
 import { AddressViewComponent } from '.';
 import { describe, expect, test } from 'vitest';
 import { render } from '@testing-library/react';
 
-const addressViewWithOneTimeAddress = new AddressView({
+const addressViewWithOneTimeAddress = create(AddressViewSchema, {
   addressView: {
     case: 'decoded',
 
-    value: new AddressView_Decoded({
-      address: new Address({ inner: new Uint8Array(80) }),
-      index: new AddressIndex({
+    value: create(AddressView_DecodedSchema, {
+      address: create(AddressSchema, { inner: new Uint8Array(80) }),
+      index: create(AddressIndexSchema, {
         account: 0,
         // A one-time address is defined by a randomizer with at least one
         // non-zero byte.
@@ -24,13 +26,13 @@ const addressViewWithOneTimeAddress = new AddressView({
   },
 });
 
-const addressViewWithNormalAddress = new AddressView({
+const addressViewWithNormalAddress = create(AddressViewSchema, {
   addressView: {
     case: 'decoded',
 
-    value: new AddressView_Decoded({
-      address: new Address({ inner: new Uint8Array(80) }),
-      index: new AddressIndex({
+    value: create(AddressView_DecodedSchema, {
+      address: create(AddressSchema, { inner: new Uint8Array(80) }),
+      index: create(AddressIndexSchema, {
         account: 0,
         randomizer: new Uint8Array([0, 0, 0]),
       }),

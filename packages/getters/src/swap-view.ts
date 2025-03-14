@@ -34,7 +34,7 @@ export const getOutput2Value = createGetter((swapView?: SwapView) => {
 // of 'SwapView'. These parameterized types can represent an intersection of multiple types.
 type SwapBodyCombined = SwapPlaintext & SwapBody;
 const createSwapGetter = <K extends keyof SwapBodyCombined>(property: K) => {
-  return createGetter((swapView?: SwapView) => {
+  return createGetter<SwapView, SwapBodyCombined[K]>((swapView?: SwapView) => {
     let swapValue: SwapBodyCombined[K] | undefined;
 
     switch (swapView?.swapView.case) {
@@ -52,7 +52,7 @@ const createSwapGetter = <K extends keyof SwapBodyCombined>(property: K) => {
         return undefined;
     }
 
-    if (swapValue === undefined) {
+    if (typeof swapValue === 'undefined') {
       return undefined;
     }
 

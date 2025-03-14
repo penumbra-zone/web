@@ -1,8 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
+import { create } from '@bufbuild/protobuf';
+
 import { ValueViewComponent } from '.';
-import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import {
+  MetadataSchema,
+  ValueViewSchema,
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { AmountSchema } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 
 const meta: Meta<typeof ValueViewComponent> = {
   component: ValueViewComponent,
@@ -13,7 +18,7 @@ export default meta;
 
 type Story = StoryObj<typeof ValueViewComponent>;
 
-const EXAMPLE_METADATA = new Metadata({
+const EXAMPLE_METADATA = create(MetadataSchema, {
   base: 'upenumbra',
   display: 'penumbra',
   symbol: 'UM',
@@ -24,11 +29,11 @@ const EXAMPLE_METADATA = new Metadata({
   ],
 });
 
-const EXAMPLE_VALUE = new ValueView({
+const EXAMPLE_VALUE = create(ValueViewSchema, {
   valueView: {
     case: 'knownAssetId',
     value: {
-      amount: new Amount({
+      amount: create(AmountSchema, {
         lo: 17000000n,
       }),
       metadata: EXAMPLE_METADATA,

@@ -1,7 +1,8 @@
-import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { AddressViewSchema } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { create } from '@bufbuild/protobuf';
 import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
 
-export const ADDRESS_VIEW_DECODED = new AddressView({
+export const ADDRESS_VIEW_DECODED = create(AddressViewSchema, {
   addressView: {
     case: 'decoded',
     value: {
@@ -14,7 +15,7 @@ export const ADDRESS_VIEW_DECODED = new AddressView({
   },
 });
 
-export const ADDRESS2_VIEW_DECODED = new AddressView({
+export const ADDRESS2_VIEW_DECODED = create(AddressViewSchema, {
   addressView: {
     case: 'decoded',
     value: {
@@ -27,7 +28,7 @@ export const ADDRESS2_VIEW_DECODED = new AddressView({
   },
 });
 
-export const ADDRESS_VIEW_DECODED_ONE_TIME = new AddressView({
+export const ADDRESS_VIEW_DECODED_ONE_TIME = create(AddressViewSchema, {
   addressView: {
     case: 'decoded',
     value: {
@@ -42,7 +43,7 @@ export const ADDRESS_VIEW_DECODED_ONE_TIME = new AddressView({
   },
 });
 
-export const ADDRESS_VIEW_OPAQUE = new AddressView({
+export const ADDRESS_VIEW_OPAQUE = create(AddressViewSchema, {
   addressView: {
     case: 'opaque',
     value: {

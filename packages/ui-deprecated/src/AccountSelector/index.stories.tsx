@@ -1,7 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
+import { create } from '@bufbuild/protobuf';
+
 import { AccountSelector } from '.';
-import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { AddressSchema, Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { Text } from '../Text';
 import { styled } from 'styled-components';
 
@@ -14,7 +16,9 @@ const Column = styled.div`
 `;
 
 const mockGetAddressByIndex = (): Promise<Address> =>
-  new Promise(resolve => void setTimeout(() => resolve(new Address({ inner: u8(80) })), 1000));
+  new Promise(
+    resolve => void setTimeout(() => resolve(create(AddressSchema, { inner: u8(80) })), 1000),
+  );
 
 const meta: Meta<typeof AccountSelector> = {
   component: AccountSelector,

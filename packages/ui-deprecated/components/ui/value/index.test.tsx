@@ -1,11 +1,15 @@
 import { describe, expect, test } from 'vitest';
+import { create } from '@bufbuild/protobuf';
 import { ValueViewComponent } from '.';
 import { render } from '@testing-library/react';
-import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import {
+  MetadataSchema,
+  ValueViewSchema,
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 
 describe('<ValueViewComponent />', () => {
-  const penumbraMetadata = new Metadata({
+  const penumbraMetadata = create(MetadataSchema, {
     base: 'upenumbra',
     display: 'penumbra',
     symbol: 'UM',
@@ -34,7 +38,7 @@ describe('<ValueViewComponent />', () => {
   });
 
   describe('when rendering a known denomination', () => {
-    const valueView = new ValueView({
+    const valueView = create(ValueViewSchema, {
       valueView: {
         case: 'knownAssetId',
         value: {
@@ -55,7 +59,7 @@ describe('<ValueViewComponent />', () => {
   });
 
   describe('when rendering an unknown denomination', () => {
-    const valueView = new ValueView({
+    const valueView = create(ValueViewSchema, {
       valueView: {
         case: 'unknownAssetId',
         value: {

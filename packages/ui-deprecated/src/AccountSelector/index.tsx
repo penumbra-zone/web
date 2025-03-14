@@ -17,7 +17,7 @@ const Root = styled.div`
 `;
 
 const StartAdornment = styled.div`
-  ${body}
+  ${body};
 
   color: ${props => props.theme.color.text.secondary};
   cursor: pointer;
@@ -158,7 +158,6 @@ export const AccountSelector = (props: AccountSelectorProps) => {
           </EndAdornment>
         }
       />
-
       {props.getAddressByIndex && (
         <>
           <AccountSelectorAddress address={address} ephemeral={ephemeral} loading={loading} />
