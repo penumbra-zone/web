@@ -1,8 +1,10 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { create, fromJson } from '@bufbuild/protobuf';
 import {
-  NotesForVotingRequest,
-  NotesForVotingResponse,
+  NotesForVotingRequestSchema,
+  NotesForVotingResponseSchema,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import type { NotesForVotingResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
@@ -28,7 +30,7 @@ describe('NotesForVoting request handler', () => {
     };
     mockCtx = createHandlerContext({
       service: ViewService,
-      method: ViewService.methods.notesForVoting,
+      method: ViewService.method.notesForVoting,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
@@ -41,16 +43,16 @@ describe('NotesForVoting request handler', () => {
   test('should successfully get notes for voting', async () => {
     mockIndexedDb.getNotesForVoting?.mockResolvedValueOnce(testData);
     const responses: NotesForVotingResponse[] = [];
-    const req = new NotesForVotingRequest({});
+    const req = create(NotesForVotingRequestSchema, {});
     for await (const res of notesForVoting(req, mockCtx)) {
-      responses.push(new NotesForVotingResponse(res));
+      responses.push(create(NotesForVotingResponseSchema, res));
     }
     expect(responses.length).toBe(2);
   });
 });
 
 const testData: NotesForVotingResponse[] = [
-  NotesForVotingResponse.fromJson({
+  fromJson(NotesForVotingResponseSchema, {
     noteRecord: {
       noteCommitment: {
         inner: 'pXS1k2kvlph+vuk9uhqeoP1mZRc+f526a06/bg3EBwQ=',
@@ -60,7 +62,7 @@ const testData: NotesForVotingResponse[] = [
       ik: 'VAv+z5ieJk7AcAIJoVIqB6boOj0AhZB2FKWsEidfvAE=',
     },
   }),
-  NotesForVotingResponse.fromJson({
+  fromJson(NotesForVotingResponseSchema, {
     noteRecord: {
       noteCommitment: {
         inner: '2XS1k2kvlph+vuk9uhqeoP1mZRc+f526a06/bg3EBwQ=',

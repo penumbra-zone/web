@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest';
+import { create } from '@bufbuild/protobuf';
 import { assertSwapAssetsAreNotTheSame } from './assert-swap-assets-are-not-the-same.js';
 import {
-  TransactionPlannerRequest,
-  TransactionPlannerRequest_Swap,
+  TransactionPlannerRequestSchema,
+  TransactionPlannerRequest_SwapSchema,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 
-const swapWithSameAssets = new TransactionPlannerRequest_Swap({
+const swapWithSameAssets = create(TransactionPlannerRequest_SwapSchema, {
   value: {
     assetId: {
       inner: new Uint8Array([0, 1, 2, 3]),
@@ -16,7 +17,7 @@ const swapWithSameAssets = new TransactionPlannerRequest_Swap({
   },
 });
 
-const swapWithDifferentAssets = new TransactionPlannerRequest_Swap({
+const swapWithDifferentAssets = create(TransactionPlannerRequest_SwapSchema, {
   value: {
     assetId: {
       inner: new Uint8Array([0, 1, 2, 3]),
@@ -27,15 +28,15 @@ const swapWithDifferentAssets = new TransactionPlannerRequest_Swap({
   },
 });
 
-const transactionPlanContainingSwapWithSameAssets = new TransactionPlannerRequest({
+const transactionPlanContainingSwapWithSameAssets = create(TransactionPlannerRequestSchema, {
   swaps: [swapWithSameAssets],
 });
 
-const transactionPlanContainingSwapWithDifferentAssets = new TransactionPlannerRequest({
+const transactionPlanContainingSwapWithDifferentAssets = create(TransactionPlannerRequestSchema, {
   swaps: [swapWithDifferentAssets],
 });
 
-const transactionPlanContainingBothSwapTypes = new TransactionPlannerRequest({
+const transactionPlanContainingBothSwapTypes = create(TransactionPlannerRequestSchema, {
   swaps: [swapWithDifferentAssets, swapWithSameAssets],
 });
 

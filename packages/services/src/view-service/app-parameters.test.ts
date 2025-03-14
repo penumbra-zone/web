@@ -1,15 +1,16 @@
 import { Mock, beforeEach, describe, expect, test, vi } from 'vitest';
+import { create, equals } from '@bufbuild/protobuf';
 import {
-  AppParametersRequest,
-  AppParametersResponse,
+  AppParametersRequestSchema,
+  AppParametersResponseSchema,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
-import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 import { appParameters } from './app-parameters.js';
 import { IndexedDbMock, MockServices } from '../test-utils.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
+import { AppParametersSchema } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 
 describe('AppParameters request handler', () => {
   let mockServices: MockServices;
@@ -44,7 +45,7 @@ describe('AppParameters request handler', () => {
     };
     mockCtx = createHandlerContext({
       service: ViewService,
-      method: ViewService.methods.appParameters,
+      method: ViewService.method.appParameters,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
@@ -56,22 +57,26 @@ describe('AppParameters request handler', () => {
 
   test('should successfully get appParameters when idb has them', async () => {
     mockIndexedDb.getAppParams?.mockResolvedValue(testData);
-    const appParameterResponse = new AppParametersResponse(
-      await appParameters(new AppParametersRequest(), mockCtx),
+    const appParameterResponse = create(
+      AppParametersResponseSchema,
+      await appParameters(create(AppParametersRequestSchema), mockCtx),
     );
-    expect(appParameterResponse.parameters?.equals(testData)).toBeTruthy();
+    expect(
+      appParameterResponse.parameters &&
+        equals(AppParametersSchema, appParameterResponse.parameters, testData),
+    ).toBeTruthy();
   });
 
   test('should wait for appParameters when idb has none', async () => {
     mockIndexedDb.getAppParams?.mockResolvedValue(undefined);
     apSubNext.mockResolvedValueOnce({
-      value: { value: new AppParametersRequest(), table: 'APP_PARAMETERS' },
+      value: { value: create(AppParametersRequestSchema), table: 'APP_PARAMETERS' },
     });
-    await expect(appParameters(new AppParametersRequest(), mockCtx)).resolves.toBeTruthy();
+    await expect(appParameters(create(AppParametersRequestSchema), mockCtx)).resolves.toBeTruthy();
   });
 });
 
-const testData = new AppParameters({
+const testData = create(AppParametersSchema, {
   chainId: 'penumbra-testnet-titan',
   sctParams: {
     epochDuration: 719n,

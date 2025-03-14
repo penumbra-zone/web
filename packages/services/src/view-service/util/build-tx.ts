@@ -7,13 +7,13 @@ import {
 import { buildParallel } from '@penumbra-zone/wasm/build';
 import { offscreenClient } from '../../offscreen-client.js';
 import {
-  AuthorizeAndBuildResponse,
-  WitnessAndBuildResponse,
+  AuthorizeAndBuildResponseSchema,
+  WitnessAndBuildResponseSchema,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { PartialMessage } from '@bufbuild/protobuf';
 import { ConnectError } from '@connectrpc/connect';
 
 import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { MessageInitShape } from '@bufbuild/protobuf';
 
 export const optimisticBuild = async function* (
   transactionPlan: TransactionPlan,
@@ -50,7 +50,9 @@ export const optimisticBuild = async function* (
       value: { transaction },
     },
     // TODO: satisfies type parameter?
-  } satisfies PartialMessage<AuthorizeAndBuildResponse | WitnessAndBuildResponse>;
+  } satisfies
+    | MessageInitShape<typeof AuthorizeAndBuildResponseSchema>
+    | MessageInitShape<typeof WitnessAndBuildResponseSchema>;
 };
 
 const progressStream = async function* <T>(tasks: PromiseLike<T>[], cancel: PromiseLike<never>) {
@@ -70,6 +72,8 @@ const progressStream = async function* <T>(tasks: PromiseLike<T>[], cancel: Prom
         value: { progress: (tasks.length - tasksRemaining.length) / (tasks.length + 1) },
       },
       // TODO: satisfies type parameter?
-    } satisfies PartialMessage<AuthorizeAndBuildResponse | WitnessAndBuildResponse>;
+    } satisfies
+      | MessageInitShape<typeof AuthorizeAndBuildResponseSchema>
+      | MessageInitShape<typeof WitnessAndBuildResponseSchema>;
   }
 };

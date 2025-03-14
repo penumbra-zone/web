@@ -1,25 +1,28 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { create, equals, fromJson } from '@bufbuild/protobuf';
+import { AssetIdSchema } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+
 import {
-  SwapRecord,
-  TransactionPlannerRequest,
-  TransactionPlannerRequest_ActionDutchAuctionEnd,
-  TransactionPlannerRequest_ActionDutchAuctionSchedule,
-  TransactionPlannerRequest_ActionDutchAuctionWithdraw,
-  TransactionPlannerRequest_Output,
-  TransactionPlannerRequest_Swap,
+  SwapRecordSchema,
+  TransactionPlannerRequestSchema,
+  TransactionPlannerRequest_ActionDutchAuctionEndSchema,
+  TransactionPlannerRequest_ActionDutchAuctionScheduleSchema,
+  TransactionPlannerRequest_ActionDutchAuctionWithdrawSchema,
+  TransactionPlannerRequest_OutputSchema,
+  TransactionPlannerRequest_SwapSchema,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+
 import {
-  AuctionId,
-  DutchAuctionDescription,
+  AuctionIdSchema,
+  DutchAuctionDescriptionSchema,
 } from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
 import { extractAltFee } from './fees.js';
-import { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
+import { StateCommitmentSchema } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
 import { IndexedDbMock } from '../test-utils.js';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
-import { GasPrices } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
-import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { GasPricesSchema } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
+import { AddressIndexSchema } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 describe('extractAltFee', () => {
   let mockIndexedDb: IndexedDbMock;
@@ -39,23 +42,23 @@ describe('extractAltFee', () => {
   });
 
   it('extracts the alternative asset fee from outputs', async () => {
-    const inputAssetId = new AssetId({
+    const inputAssetId = create(AssetIdSchema, {
       inner: new Uint8Array([
         29, 109, 132, 171, 117, 25, 85, 32, 109, 182, 133, 48, 82, 47, 204, 82, 209, 59, 174, 189,
         148, 83, 191, 212, 31, 157, 52, 111, 42, 123, 56, 7,
       ]),
     });
-    const request = new TransactionPlannerRequest({
+    const request = create(TransactionPlannerRequestSchema, {
       outputs: [
         {
           value: { assetId: inputAssetId },
         },
       ],
-      source: new AddressIndex({ account: 0 }),
+      source: create(AddressIndexSchema, { account: 0 }),
     });
 
     const gasPrices = [
-      new GasPrices({
+      create(GasPricesSchema, {
         assetId: inputAssetId,
         blockSpacePrice: 1n,
         compactBlockSpacePrice: 1n,
@@ -69,28 +72,28 @@ describe('extractAltFee', () => {
     mockIndexedDb.hasTokenBalance?.mockResolvedValue(true);
 
     const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
-    expect(result.equals(inputAssetId)).toBeTruthy();
+    expect(equals(AssetIdSchema, result, inputAssetId)).toBeTruthy();
   });
 
   it('skips over outputs that do not have assetIds', async () => {
-    const inputAssetId = new AssetId({
+    const inputAssetId = create(AssetIdSchema, {
       inner: new Uint8Array([
         41, 234, 156, 47, 51, 113, 246, 164, 135, 231, 233, 92, 36, 112, 65, 244, 163, 86, 249, 131,
         235, 6, 78, 93, 43, 59, 207, 50, 44, 169, 106, 16,
       ]),
     });
-    const request = new TransactionPlannerRequest({
+    const request = create(TransactionPlannerRequestSchema, {
       outputs: [
-        new TransactionPlannerRequest_Output({}),
-        new TransactionPlannerRequest_Output({
+        create(TransactionPlannerRequest_OutputSchema, {}),
+        create(TransactionPlannerRequest_OutputSchema, {
           value: { assetId: inputAssetId },
         }),
       ],
-      source: new AddressIndex({ account: 0 }),
+      source: create(AddressIndexSchema, { account: 0 }),
     });
 
     const gasPrices = [
-      new GasPrices({
+      create(GasPricesSchema, {
         assetId: inputAssetId,
         blockSpacePrice: 1n,
         compactBlockSpacePrice: 1n,
@@ -104,47 +107,49 @@ describe('extractAltFee', () => {
     mockIndexedDb.hasTokenBalance?.mockResolvedValue(true);
 
     const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
-    expect(result.equals(inputAssetId)).toBeTruthy();
+    expect(equals(AssetIdSchema, result, inputAssetId)).toBeTruthy();
   });
 
   it('prioritizes outputs over all else', async () => {
-    const outputAssetId = new AssetId({ altBaseDenom: 'output' });
-    const swapAssetId = new AssetId({ altBaseDenom: 'swap' });
-    const auctionScheduleAssetId = new AssetId({ altBaseDenom: 'auction-schedule' });
-    const auctionEndAuctionId = new AuctionId({ inner: new Uint8Array([3, 2, 5, 2]) });
-    const auctionWithdrawAuctiontId = new AuctionId({ inner: new Uint8Array([9, 9, 6, 3]) });
+    const outputAssetId = create(AssetIdSchema, { altBaseDenom: 'output' });
+    const swapAssetId = create(AssetIdSchema, { altBaseDenom: 'swap' });
+    const auctionScheduleAssetId = create(AssetIdSchema, { altBaseDenom: 'auction-schedule' });
+    const auctionEndAuctionId = create(AuctionIdSchema, { inner: new Uint8Array([3, 2, 5, 2]) });
+    const auctionWithdrawAuctiontId = create(AuctionIdSchema, {
+      inner: new Uint8Array([9, 9, 6, 3]),
+    });
 
-    const request = new TransactionPlannerRequest({
+    const request = create(TransactionPlannerRequestSchema, {
       outputs: [
-        new TransactionPlannerRequest_Output({
+        create(TransactionPlannerRequest_OutputSchema, {
           value: { assetId: outputAssetId },
         }),
       ],
       swaps: [
-        new TransactionPlannerRequest_Swap({
+        create(TransactionPlannerRequest_SwapSchema, {
           value: { assetId: swapAssetId },
         }),
       ],
       dutchAuctionScheduleActions: [
-        new TransactionPlannerRequest_ActionDutchAuctionSchedule({
+        create(TransactionPlannerRequest_ActionDutchAuctionScheduleSchema, {
           description: { outputId: auctionScheduleAssetId },
         }),
       ],
       dutchAuctionEndActions: [
-        new TransactionPlannerRequest_ActionDutchAuctionEnd({
+        create(TransactionPlannerRequest_ActionDutchAuctionEndSchema, {
           auctionId: auctionEndAuctionId,
         }),
       ],
       dutchAuctionWithdrawActions: [
-        new TransactionPlannerRequest_ActionDutchAuctionWithdraw({
+        create(TransactionPlannerRequest_ActionDutchAuctionWithdrawSchema, {
           auctionId: auctionWithdrawAuctiontId,
         }),
       ],
-      source: new AddressIndex({ account: 0 }),
+      source: create(AddressIndexSchema, { account: 0 }),
     });
 
     const gasPrices = [
-      new GasPrices({
+      create(GasPricesSchema, {
         assetId: outputAssetId,
         blockSpacePrice: 1n,
         compactBlockSpacePrice: 1n,
@@ -158,29 +163,29 @@ describe('extractAltFee', () => {
     mockIndexedDb.hasTokenBalance?.mockResolvedValue(true);
 
     const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
-    expect(result.equals(outputAssetId)).toBeTruthy();
+    expect(equals(AssetIdSchema, result, outputAssetId)).toBeTruthy();
   });
 
   it('extracts the staking asset fee from swaps', async () => {
     mockIndexedDb.getSwapByCommitment?.mockResolvedValue(mockSwapNativeStakingToken);
 
-    const inputAssetId = new AssetId({
+    const inputAssetId = create(AssetIdSchema, {
       inner: new Uint8Array([
         41, 234, 156, 47, 51, 113, 246, 164, 135, 231, 233, 92, 36, 112, 65, 244, 163, 86, 249, 131,
         235, 6, 78, 93, 43, 59, 207, 50, 44, 169, 106, 16,
       ]),
     });
-    const request = new TransactionPlannerRequest({
+    const request = create(TransactionPlannerRequestSchema, {
       swaps: [
-        new TransactionPlannerRequest_Swap({
+        create(TransactionPlannerRequest_SwapSchema, {
           value: { assetId: inputAssetId },
         }),
       ],
-      source: new AddressIndex({ account: 0 }),
+      source: create(AddressIndexSchema, { account: 0 }),
     });
 
     const gasPrices = [
-      new GasPrices({
+      create(GasPricesSchema, {
         assetId: inputAssetId,
         blockSpacePrice: 1n,
         compactBlockSpacePrice: 1n,
@@ -194,29 +199,29 @@ describe('extractAltFee', () => {
     mockIndexedDb.hasTokenBalance?.mockResolvedValue(true);
 
     const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
-    expect(result.equals(inputAssetId)).toBeTruthy();
+    expect(equals(AssetIdSchema, result, inputAssetId)).toBeTruthy();
   });
 
   it('extracts the alternative asset fee from swaps', async () => {
     mockIndexedDb.getSwapByCommitment?.mockResolvedValue(mockSwapAlternativeToken);
 
-    const inputAssetId = new AssetId({
+    const inputAssetId = create(AssetIdSchema, {
       inner: new Uint8Array([
         29, 109, 132, 171, 117, 25, 85, 32, 109, 182, 133, 48, 82, 47, 204, 82, 209, 59, 174, 189,
         148, 83, 191, 212, 31, 157, 52, 111, 42, 123, 56, 7,
       ]),
     });
-    const request = new TransactionPlannerRequest({
+    const request = create(TransactionPlannerRequestSchema, {
       swaps: [
         {
           value: { assetId: inputAssetId },
         },
       ],
-      source: new AddressIndex({ account: 0 }),
+      source: create(AddressIndexSchema, { account: 0 }),
     });
 
     const gasPrices = [
-      new GasPrices({
+      create(GasPricesSchema, {
         assetId: inputAssetId,
         blockSpacePrice: 1n,
         compactBlockSpacePrice: 1n,
@@ -230,64 +235,64 @@ describe('extractAltFee', () => {
     mockIndexedDb.hasTokenBalance?.mockResolvedValue(true);
 
     const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
-    expect(result.equals(inputAssetId)).toBeTruthy();
+    expect(equals(AssetIdSchema, result, inputAssetId)).toBeTruthy();
   });
 
   it('extracts the staking asset fee from swap claims', async () => {
     mockIndexedDb.getSwapByCommitment?.mockResolvedValue(mockSwapNativeStakingToken);
 
-    const inputAssetId = new AssetId({
+    const inputAssetId = create(AssetIdSchema, {
       inner: new Uint8Array([
         41, 234, 156, 47, 51, 113, 246, 164, 135, 231, 233, 92, 36, 112, 65, 244, 163, 86, 249, 131,
         235, 6, 78, 93, 43, 59, 207, 50, 44, 169, 106, 16,
       ]),
     });
 
-    const request = new TransactionPlannerRequest({
+    const request = create(TransactionPlannerRequestSchema, {
       swapClaims: [
         {
           swapCommitment: mockSwapCommitmentNativeStakingToken,
         },
       ],
-      source: new AddressIndex({ account: 0 }),
+      source: create(AddressIndexSchema, { account: 0 }),
     });
 
     const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
-    expect(result.equals(inputAssetId)).toBeTruthy();
+    expect(equals(AssetIdSchema, result, inputAssetId)).toBeTruthy();
   });
 
   it('extracts the alternative asset fee from swap claims', async () => {
     mockIndexedDb.getSwapByCommitment?.mockResolvedValue(mockSwapAlternativeToken);
 
-    const inputAssetId = new AssetId({
+    const inputAssetId = create(AssetIdSchema, {
       inner: new Uint8Array([
         29, 109, 132, 171, 117, 25, 85, 32, 109, 182, 133, 48, 82, 47, 204, 82, 209, 59, 174, 189,
         148, 83, 191, 212, 31, 157, 52, 111, 42, 123, 56, 7,
       ]),
     });
 
-    const request = new TransactionPlannerRequest({
+    const request = create(TransactionPlannerRequestSchema, {
       swapClaims: [
         {
           swapCommitment: mockSwapCommitmentAlternativeToken,
         },
       ],
-      source: new AddressIndex({ account: 0 }),
+      source: create(AddressIndexSchema, { account: 0 }),
     });
 
     const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
-    expect(result.equals(inputAssetId)).toBeTruthy();
+    expect(equals(AssetIdSchema, result, inputAssetId)).toBeTruthy();
   });
 
   it('extracts the asset fee from dutchAuctionScheduleActions', async () => {
-    const inputAssetId = new AssetId({
+    const inputAssetId = create(AssetIdSchema, {
       inner: new Uint8Array([
         29, 109, 132, 171, 117, 25, 85, 32, 109, 182, 133, 48, 82, 47, 204, 82, 209, 59, 174, 189,
         148, 83, 191, 212, 31, 157, 52, 111, 42, 123, 56, 7,
       ]),
     });
 
-    const request = new TransactionPlannerRequest({
+    const request = create(TransactionPlannerRequestSchema, {
       dutchAuctionScheduleActions: [
         {
           description: {
@@ -298,11 +303,11 @@ describe('extractAltFee', () => {
           },
         },
       ],
-      source: new AddressIndex({ account: 0 }),
+      source: create(AddressIndexSchema, { account: 0 }),
     });
 
     const gasPrices = [
-      new GasPrices({
+      create(GasPricesSchema, {
         assetId: inputAssetId,
         blockSpacePrice: 1n,
         compactBlockSpacePrice: 1n,
@@ -316,18 +321,18 @@ describe('extractAltFee', () => {
     mockIndexedDb.hasTokenBalance?.mockResolvedValue(true);
 
     const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
-    expect(result.equals(inputAssetId)).toBeTruthy();
+    expect(equals(AssetIdSchema, result, inputAssetId)).toBeTruthy();
   });
 
   it('extracts the asset fee from dutchAuctionEndActions', async () => {
-    const inputAssetId = new AssetId({
+    const inputAssetId = create(AssetIdSchema, {
       inner: new Uint8Array([
         29, 109, 132, 171, 117, 25, 85, 32, 109, 182, 133, 48, 82, 47, 204, 82, 209, 59, 174, 189,
         148, 83, 191, 212, 31, 157, 52, 111, 42, 123, 56, 7,
       ]),
     });
 
-    const auction = new DutchAuctionDescription({
+    const auction = create(DutchAuctionDescriptionSchema, {
       input: {
         assetId: inputAssetId,
       },
@@ -341,17 +346,17 @@ describe('extractAltFee', () => {
 
     mockIndexedDb.hasTokenBalance?.mockResolvedValueOnce(true);
 
-    const request = new TransactionPlannerRequest({
+    const request = create(TransactionPlannerRequestSchema, {
       dutchAuctionEndActions: [
         {
           auctionId: { inner: new Uint8Array([]) },
         },
       ],
-      source: new AddressIndex({ account: 0 }),
+      source: create(AddressIndexSchema, { account: 0 }),
     });
 
     const gasPrices = [
-      new GasPrices({
+      create(GasPricesSchema, {
         assetId: inputAssetId,
         blockSpacePrice: 1n,
         compactBlockSpacePrice: 1n,
@@ -365,18 +370,18 @@ describe('extractAltFee', () => {
     mockIndexedDb.hasTokenBalance?.mockResolvedValue(true);
 
     const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
-    expect(result.equals(inputAssetId)).toBeTruthy();
+    expect(equals(AssetIdSchema, result, inputAssetId)).toBeTruthy();
   });
 
   it('extracts a different asset fee from dutchAuctionEndActions', async () => {
-    const inputAssetId = new AssetId({
+    const inputAssetId = create(AssetIdSchema, {
       inner: new Uint8Array([
         29, 109, 132, 171, 117, 25, 85, 32, 109, 182, 133, 48, 82, 47, 204, 82, 209, 59, 174, 189,
         148, 83, 191, 212, 31, 157, 52, 111, 42, 123, 56, 7,
       ]),
     });
 
-    const auction = new DutchAuctionDescription({
+    const auction = create(DutchAuctionDescriptionSchema, {
       input: {
         assetId: inputAssetId,
       },
@@ -389,12 +394,12 @@ describe('extractAltFee', () => {
     });
 
     // Retrieve a different asset ID than the original scheduled auction.
-    const anotherAssetId = new AssetId({
+    const anotherAssetId = create(AssetIdSchema, {
       inner: new Uint8Array([0, 1, 2, 3]),
     });
 
     const gasPrices = [
-      new GasPrices({
+      create(GasPricesSchema, {
         assetId: anotherAssetId,
         blockSpacePrice: 1n,
         compactBlockSpacePrice: 1n,
@@ -410,28 +415,28 @@ describe('extractAltFee', () => {
     mockIndexedDb.hasTokenBalance?.mockResolvedValueOnce(false); // For the specificAssetId check
     mockIndexedDb.hasTokenBalance?.mockResolvedValueOnce(true); // For the altGasPrices check
 
-    const request = new TransactionPlannerRequest({
+    const request = create(TransactionPlannerRequestSchema, {
       dutchAuctionEndActions: [
         {
           auctionId: { inner: new Uint8Array([]) },
         },
       ],
-      source: new AddressIndex({ account: 0 }),
+      source: create(AddressIndexSchema, { account: 0 }),
     });
 
     const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
-    expect(result.equals(anotherAssetId)).toBeTruthy();
+    expect(equals(AssetIdSchema, result, anotherAssetId)).toBeTruthy();
   });
 
   it('extracts the asset fee from dutchAuctionWithdrawAuctions', async () => {
-    const inputAssetId = new AssetId({
+    const inputAssetId = create(AssetIdSchema, {
       inner: new Uint8Array([
         29, 109, 132, 171, 117, 25, 85, 32, 109, 182, 133, 48, 82, 47, 204, 82, 209, 59, 174, 189,
         148, 83, 191, 212, 31, 157, 52, 111, 42, 123, 56, 7,
       ]),
     });
 
-    const auction = new DutchAuctionDescription({
+    const auction = create(DutchAuctionDescriptionSchema, {
       input: {
         assetId: inputAssetId,
       },
@@ -444,7 +449,7 @@ describe('extractAltFee', () => {
     });
 
     const gasPrices = [
-      new GasPrices({
+      create(GasPricesSchema, {
         assetId: inputAssetId,
         blockSpacePrice: 1n,
         compactBlockSpacePrice: 1n,
@@ -457,28 +462,28 @@ describe('extractAltFee', () => {
     mockIndexedDb.getAltGasPrices?.mockResolvedValueOnce(gasPrices);
     mockIndexedDb.hasTokenBalance?.mockResolvedValue(true);
 
-    const request = new TransactionPlannerRequest({
+    const request = create(TransactionPlannerRequestSchema, {
       dutchAuctionWithdrawActions: [
         {
           auctionId: { inner: new Uint8Array([]) },
         },
       ],
-      source: new AddressIndex({ account: 0 }),
+      source: create(AddressIndexSchema, { account: 0 }),
     });
 
     const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
-    expect(result.equals(inputAssetId)).toBeTruthy();
+    expect(equals(AssetIdSchema, result, inputAssetId)).toBeTruthy();
   });
 
   it('extracts a different asset fee from dutchAuctionWithdrawAuctions', async () => {
-    const inputAssetId = new AssetId({
+    const inputAssetId = create(AssetIdSchema, {
       inner: new Uint8Array([
         29, 109, 132, 171, 117, 25, 85, 32, 109, 182, 133, 48, 82, 47, 204, 82, 209, 59, 174, 189,
         148, 83, 191, 212, 31, 157, 52, 111, 42, 123, 56, 7,
       ]),
     });
 
-    const auction = new DutchAuctionDescription({
+    const auction = create(DutchAuctionDescriptionSchema, {
       input: {
         assetId: inputAssetId,
       },
@@ -491,12 +496,12 @@ describe('extractAltFee', () => {
     });
 
     // Retrieve a different asset ID than the original scheduled auction.
-    const anotherAssetId = new AssetId({
+    const anotherAssetId = create(AssetIdSchema, {
       inner: new Uint8Array([0, 1, 2, 3]),
     });
 
     const gasPrices = [
-      new GasPrices({
+      create(GasPricesSchema, {
         assetId: anotherAssetId,
         blockSpacePrice: 1n,
         compactBlockSpacePrice: 1n,
@@ -512,33 +517,33 @@ describe('extractAltFee', () => {
     mockIndexedDb.hasTokenBalance?.mockResolvedValueOnce(false); // For the specificAssetId check
     mockIndexedDb.hasTokenBalance?.mockResolvedValueOnce(true); // For the altGasPrices check
 
-    const request = new TransactionPlannerRequest({
+    const request = create(TransactionPlannerRequestSchema, {
       dutchAuctionWithdrawActions: [
         {
           auctionId: { inner: new Uint8Array([]) },
         },
       ],
-      source: new AddressIndex({ account: 0 }),
+      source: create(AddressIndexSchema, { account: 0 }),
     });
 
     const result = await extractAltFee(request, mockIndexedDb as unknown as IndexedDbInterface);
-    expect(result.equals(anotherAssetId)).toBeTruthy();
+    expect(equals(AssetIdSchema, result, anotherAssetId)).toBeTruthy();
   });
 });
 
-const mockAuctionEndCommitment = StateCommitment.fromJson({
+const mockAuctionEndCommitment = fromJson(StateCommitmentSchema, {
   inner: 'A6VBVkrk+s18q+Sjhl8uEGfS3i0dwF1FrkNm8Db6VAA=',
 });
 
-const mockSwapCommitmentNativeStakingToken = StateCommitment.fromJson({
+const mockSwapCommitmentNativeStakingToken = fromJson(StateCommitmentSchema, {
   inner: 'A6VBVkrk+s18q+Sjhl8uEGfS3i0dwF1FrkNm8Db6VAA=',
 });
 
-const mockSwapCommitmentAlternativeToken = StateCommitment.fromJson({
+const mockSwapCommitmentAlternativeToken = fromJson(StateCommitmentSchema, {
   inner: 'B6VBVkrk+s18q+Sjhl8uEGfS3i0dwF1FrkNm8Db6VAA=',
 });
 
-const mockSwapNativeStakingToken = SwapRecord.fromJson({
+const mockSwapNativeStakingToken = fromJson(SwapRecordSchema, {
   swapCommitment: { inner: 'A6VBVkrk+s18q+Sjhl8uEGfS3i0dwF1FrkNm8Db6VAA=' },
   swap: {
     tradingPair: {
@@ -587,7 +592,7 @@ const mockSwapNativeStakingToken = SwapRecord.fromJson({
   },
 });
 
-const mockSwapAlternativeToken = SwapRecord.fromJson({
+const mockSwapAlternativeToken = fromJson(SwapRecordSchema, {
   swapCommitment: { inner: 'B6VBVkrk+s18q+Sjhl8uEGfS3i0dwF1FrkNm8Db6VAA=' },
   swap: {
     tradingPair: {

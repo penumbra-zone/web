@@ -1,14 +1,16 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { WitnessRequest, WitnessResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { create, fromJson } from '@bufbuild/protobuf';
+import {
+  WitnessRequestSchema,
+  WitnessResponseSchema,
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import type { WitnessRequest } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
 import { IndexedDbMock, MockServices } from '../test-utils.js';
 import { witness } from './witness.js';
-import {
-  TransactionPlan,
-  WitnessData,
-} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import { TransactionPlanSchema } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 describe('Witness request handler', () => {
@@ -30,7 +32,7 @@ describe('Witness request handler', () => {
     };
     mockCtx = createHandlerContext({
       service: ViewService,
-      method: ViewService.methods.witness,
+      method: ViewService.method.witness,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
@@ -38,19 +40,19 @@ describe('Witness request handler', () => {
         Promise.resolve(mockServices as unknown as ServicesInterface),
       ),
     });
-    req = new WitnessRequest({
+    req = create(WitnessRequestSchema, {
       transactionPlan: testPlan,
     });
   });
 
   test('should successfully create witness data', async () => {
     mockIndexedDb.getStateCommitmentTree?.mockResolvedValue(testSct);
-    const witnessResponse = new WitnessResponse(await witness(req, mockCtx));
-    expect(witnessResponse.witnessData).instanceof(WitnessData);
+    const witnessResponse = create(WitnessResponseSchema, await witness(req, mockCtx));
+    expect(witnessResponse.witnessData).toBeTruthy();
   });
 
   test('should throw error if transaction plan is missing in request', async () => {
-    await expect(witness(new WitnessRequest(), mockCtx)).rejects.toThrow();
+    await expect(witness(create(WitnessRequestSchema), mockCtx)).rejects.toThrow();
   });
 });
 
@@ -67,7 +69,7 @@ const testSct = {
     },
   ],
 };
-const testPlan = TransactionPlan.fromJson({
+const testPlan = fromJson(TransactionPlanSchema, {
   actions: [
     {
       output: {

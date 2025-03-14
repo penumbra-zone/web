@@ -1,5 +1,16 @@
-import { Denom, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { AssetsRequest, AssetsResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import {
+  DenomSchema,
+  MetadataSchema,
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { create, fromJson } from '@bufbuild/protobuf';
+import {
+  AssetsRequestSchema,
+  AssetsResponseSchema,
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import type {
+  AssetsRequest,
+  AssetsResponse,
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
@@ -23,6 +34,7 @@ describe('Assets request handler', () => {
     };
 
     const mockIndexedDb: IndexedDbMock = {
+      stakingTokenAssetId: UM_METADATA.penumbraAssetId,
       iterateAssetsMetadata: () => mockIterateMetadata,
     };
 
@@ -34,7 +46,7 @@ describe('Assets request handler', () => {
 
     mockCtx = createHandlerContext({
       service: ViewService,
-      method: ViewService.methods.assets,
+      method: ViewService.method.assets,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
@@ -51,95 +63,95 @@ describe('Assets request handler', () => {
     mockIterateMetadata.next.mockResolvedValueOnce({
       done: true,
     });
-    req = new AssetsRequest({});
+    req = create(AssetsRequestSchema, {});
   });
 
   test('empty req return all asset', async () => {
     const responses: AssetsResponse[] = [];
     for await (const res of assets(req, mockCtx)) {
-      responses.push(new AssetsResponse(res));
+      responses.push(create(AssetsResponseSchema, res));
     }
     expect(responses.length).toBe(8);
   });
 
   test('req with filtered as false return all asset', async () => {
     const responses: AssetsResponse[] = [];
-    const req = new AssetsRequest({
+    const req = create(AssetsRequestSchema, {
       filtered: false,
     });
     for await (const res of assets(req, mockCtx)) {
-      responses.push(new AssetsResponse(res));
+      responses.push(create(AssetsResponseSchema, res));
     }
     expect(responses.length).toBe(8);
   });
 
   test('returns only matching denominations when `filtered` is `true`', async () => {
     const responses: AssetsResponse[] = [];
-    const req = new AssetsRequest({
+    const req = create(AssetsRequestSchema, {
       filtered: true,
       includeLpNfts: true,
     });
     for await (const res of assets(req, mockCtx)) {
-      responses.push(new AssetsResponse(res));
+      responses.push(create(AssetsResponseSchema, res));
     }
     expect(responses.length).toBe(4);
   });
 
   test('req with filtered as false and includeLpNfts as true returns all assets', async () => {
     const responses: AssetsResponse[] = [];
-    const req = new AssetsRequest({
+    const req = create(AssetsRequestSchema, {
       filtered: false,
       includeLpNfts: true,
     });
     for await (const res of assets(req, mockCtx)) {
-      responses.push(new AssetsResponse(res));
+      responses.push(create(AssetsResponseSchema, res));
     }
     expect(responses.length).toBe(8);
   });
 
   test('includeLpNfts as true returns all LpNfts assets', async () => {
     const responses: AssetsResponse[] = [];
-    const req = new AssetsRequest({
+    const req = create(AssetsRequestSchema, {
       filtered: true,
       includeLpNfts: true,
     });
     for await (const res of assets(req, mockCtx)) {
-      responses.push(new AssetsResponse(res));
+      responses.push(create(AssetsResponseSchema, res));
     }
     expect(responses.length).toBe(4);
   });
 
   test('includeDelegationTokens as true returns all Delegation Tokens', async () => {
     const responses: AssetsResponse[] = [];
-    const req = new AssetsRequest({
+    const req = create(AssetsRequestSchema, {
       filtered: true,
       includeDelegationTokens: true,
     });
     for await (const res of assets(req, mockCtx)) {
-      responses.push(new AssetsResponse(res));
+      responses.push(create(AssetsResponseSchema, res));
     }
     expect(responses.length).toBe(1);
   });
 
   test('includeSpecificDenominations include penumbra return only penumbra asset', async () => {
     const responses: AssetsResponse[] = [];
-    const req = new AssetsRequest({
+    const req = create(AssetsRequestSchema, {
       filtered: true,
       includeSpecificDenominations: [
-        new Denom({
+        create(DenomSchema, {
           denom: 'penumbra',
         }),
       ],
     });
     for await (const res of assets(req, mockCtx)) {
-      responses.push(new AssetsResponse(res));
+      responses.push(create(AssetsResponseSchema, res));
     }
     expect(responses.length).toBe(1);
   });
 });
 
 const testData = [
-  Metadata.fromJson({
+  fromJson(MetadataSchema, {
     description: '',
     denomUnits: [
       {
@@ -156,7 +168,7 @@ const testData = [
       inner: '+q9m+F1um57vD6mtzpp4zsr4uY6llawZK4osfpNimQc=',
     },
   }),
-  Metadata.fromJson({
+  fromJson(MetadataSchema, {
     description: '',
     denomUnits: [
       { denom: 'gm', exponent: 6, aliases: [] },
@@ -171,7 +183,7 @@ const testData = [
       inner: 'HW2Eq3UZVSBttoUwUi/MUtE7rr2UU7/UH500byp7OAc=',
     },
   }),
-  Metadata.fromJson({
+  fromJson(MetadataSchema, {
     description: '',
     denomUnits: [
       {
@@ -189,7 +201,7 @@ const testData = [
     },
   }),
   UM_METADATA,
-  Metadata.fromJson({
+  fromJson(MetadataSchema, {
     description: '',
     denomUnits: [
       {
@@ -206,7 +218,7 @@ const testData = [
       inner: 'ZagbowbVlBeZi5bMUZ3jCf5KDaOipWMSP7iVM/O+PQc=',
     },
   }),
-  Metadata.fromJson({
+  fromJson(MetadataSchema, {
     description: '',
     denomUnits: [
       {
@@ -236,7 +248,7 @@ const testData = [
       inner: 'hByoL6SVVg9HOwBcMy3TiiJ3Z+OTjhQVi5APR020BAM=',
     },
   }),
-  Metadata.fromJson({
+  fromJson(MetadataSchema, {
     description: '',
     denomUnits: [
       {
@@ -253,7 +265,7 @@ const testData = [
       inner: 'mNS0j9YDbrEsQLitqlA9aDJq1NHFJRgYQQCZMgBjlgM=',
     },
   }),
-  Metadata.fromJson({
+  fromJson(MetadataSchema, {
     description: '',
     denomUnits: [
       { denom: 'gn', exponent: 6, aliases: [] },

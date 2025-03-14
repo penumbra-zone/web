@@ -1,17 +1,21 @@
 import {
-  AppParametersRequest,
-  BalancesResponse,
-  StatusRequest,
+  AppParametersRequestSchema,
+  BalancesResponseSchema,
+  StatusRequestSchema,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { PartialMessage } from '@bufbuild/protobuf';
+import { create, MessageInitShape } from '@bufbuild/protobuf';
 import { HandlerContext } from '@connectrpc/connect';
 import { assetPatterns } from '@penumbra-zone/types/assets';
 import { getDisplayFromBalancesResponse } from '@penumbra-zone/getters/balances-response';
 import { status } from '../status.js';
 import { appParameters } from '../app-parameters.js';
 
-export const isUnbondingTokenBalance = (balancesResponse: PartialMessage<BalancesResponse>) => {
-  const display = getDisplayFromBalancesResponse.optional(new BalancesResponse(balancesResponse));
+export const isUnbondingTokenBalance = (
+  balancesResponse: MessageInitShape<typeof BalancesResponseSchema>,
+) => {
+  const display = getDisplayFromBalancesResponse.optional(
+    create(BalancesResponseSchema, balancesResponse),
+  );
   return display ? assetPatterns.unbondingToken.matches(display) : false;
 };
 
@@ -28,19 +32,21 @@ export const isUnbondingTokenBalance = (balancesResponse: PartialMessage<Balance
  * earlier unbonding, this should be updated to account for those cases.
  */
 export const getIsClaimable = async (
-  balancesResponse: PartialMessage<BalancesResponse>,
+  balancesResponse: MessageInitShape<typeof BalancesResponseSchema>,
   ctx: HandlerContext,
 ): Promise<boolean> => {
   const [{ fullSyncHeight }, { parameters }] = await Promise.all([
-    status(new StatusRequest(), ctx),
-    appParameters(new AppParametersRequest(), ctx),
+    status(create(StatusRequestSchema), ctx),
+    appParameters(create(AppParametersRequestSchema), ctx),
   ]);
 
   if (!fullSyncHeight || !parameters?.stakeParams?.unbondingDelay) {
     return false;
   }
 
-  const display = getDisplayFromBalancesResponse.optional(new BalancesResponse(balancesResponse));
+  const display = getDisplayFromBalancesResponse.optional(
+    create(BalancesResponseSchema, balancesResponse),
+  );
   if (!display) {
     return false;
   }

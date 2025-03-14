@@ -1,16 +1,23 @@
 import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
+import { create, equals, fromJson, toJson } from '@bufbuild/protobuf';
+
 import {
+  BroadcastTransactionRequestSchema,
+  BroadcastTransactionResponseSchema,
+  TransactionInfoSchema,
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+
+import type {
   BroadcastTransactionRequest,
   BroadcastTransactionResponse,
-  TransactionInfo,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
-import { Transaction } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import { TransactionSchema } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { broadcastTransaction } from './broadcast-transaction.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
-import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
+import { TransactionIdSchema } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
 import { IndexedDbMock, MockServices, TendermintMock } from '../test-utils.js';
 
 const mockSha256 = vi.hoisted(() => vi.fn());
@@ -62,7 +69,7 @@ describe('BroadcastTransaction request handler', () => {
 
     mockCtx = createHandlerContext({
       service: ViewService,
-      method: ViewService.methods.broadcastTransaction,
+      method: ViewService.method.broadcastTransaction,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
@@ -71,7 +78,7 @@ describe('BroadcastTransaction request handler', () => {
       ),
     });
 
-    broadcastTransactionRequest = new BroadcastTransactionRequest({
+    broadcastTransactionRequest = create(BroadcastTransactionRequestSchema, {
       transaction: transactionData,
     });
   });
@@ -81,7 +88,7 @@ describe('BroadcastTransaction request handler', () => {
 
     const broadcastResponses: BroadcastTransactionResponse[] = [];
     for await (const response of broadcastTransaction(broadcastTransactionRequest, mockCtx)) {
-      broadcastResponses.push(new BroadcastTransactionResponse(response));
+      broadcastResponses.push(create(BroadcastTransactionResponseSchema, response));
     }
     expect(broadcastResponses.length === 1).toBeTruthy();
     expect(broadcastResponses[0]?.status.case === 'broadcastSuccess').toBeTruthy();
@@ -89,7 +96,7 @@ describe('BroadcastTransaction request handler', () => {
 
   test('should successfully broadcastTransaction with await detection', async () => {
     const detectionHeight = 222n;
-    const txRecord = new TransactionInfo({
+    const txRecord = create(TransactionInfoSchema, {
       transaction: transactionData,
       height: detectionHeight,
       id: transactionIdData,
@@ -97,23 +104,26 @@ describe('BroadcastTransaction request handler', () => {
 
     mockTendermint.broadcastTx?.mockResolvedValue(transactionIdData);
     txSubNext.mockResolvedValueOnce({
-      value: { value: txRecord.toJson(), table: 'TRANSACTIONS' },
+      value: { value: toJson(TransactionInfoSchema, txRecord), table: 'TRANSACTIONS' },
     });
 
     broadcastTransactionRequest.awaitDetection = true;
 
     const broadcastResponses: BroadcastTransactionResponse[] = [];
     for await (const response of broadcastTransaction(broadcastTransactionRequest, mockCtx)) {
-      broadcastResponses.push(new BroadcastTransactionResponse(response));
+      broadcastResponses.push(create(BroadcastTransactionResponseSchema, response));
     }
     expect(broadcastResponses.length === 2).toBeTruthy();
     expect(broadcastResponses[0]?.status.case === 'broadcastSuccess').toBeTruthy();
     expect(broadcastResponses[1]?.status.case === 'confirmed').toBeTruthy();
-    expect(broadcastResponses[1]?.status.value?.id?.equals(transactionIdData)).toBeTruthy();
+    expect(
+      broadcastResponses[1]?.status.value?.id &&
+        equals(TransactionIdSchema, transactionIdData, broadcastResponses[1].status.value.id),
+    ).toBeTruthy();
   });
 
   test('should throw error if broadcast transaction id disagrees', async () => {
-    mockTendermint.broadcastTx?.mockResolvedValue(new TransactionId());
+    mockTendermint.broadcastTx?.mockResolvedValue(create(TransactionIdSchema));
     await expect(
       (async () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -137,10 +147,10 @@ describe('BroadcastTransaction request handler', () => {
   });
 });
 
-const transactionIdData = TransactionId.fromJson({
+const transactionIdData = fromJson(TransactionIdSchema, {
   inner: 'BbfE5hIr5e0Qv9K36lCoSIdFy55OnI4guuySeSX6C5s=',
 });
-const transactionData = Transaction.fromJson({
+const transactionData = fromJson(TransactionSchema, {
   body: {
     actions: [
       {

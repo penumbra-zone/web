@@ -1,11 +1,12 @@
 import type { Impl } from './index.js';
+import { create } from '@bufbuild/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
 import { Code, ConnectError } from '@connectrpc/connect';
 import {
   generateTransactionInfo,
   generateTransactionSummary,
 } from '@penumbra-zone/wasm/transaction';
-import { TransactionInfo } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { TransactionInfoSchema } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { fvkCtx } from '../ctx/full-viewing-key.js';
 import { txvTranslator } from './util/transaction-view.js';
 
@@ -41,7 +42,7 @@ export const transactionInfoByHash: Impl['transactionInfoByHash'] = async (req, 
   // Generate transaction info summary from the TxV.
   const summary = await generateTransactionSummary(txv);
 
-  const txInfo = new TransactionInfo({
+  const txInfo = create(TransactionInfoSchema, {
     height,
     id: req.id,
     transaction,

@@ -3,6 +3,8 @@ import { TransactionPlan } from '@penumbra-zone/protobuf/penumbra/core/transacti
 import { TransactionPlannerRequest } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
 import { addLoHi } from '@penumbra-zone/types/lo-hi';
+import { equals } from '@bufbuild/protobuf';
+import { AssetIdSchema } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
 export const assertSpendMax = async (
   req: TransactionPlannerRequest,
@@ -52,9 +54,13 @@ export const assertSpendMax = async (
 
   plan.actions.forEach(action => {
     if (action.action.case === 'spend') {
-      // prettier-ignore
-      if (!(action.action.value.note?.value?.assetId?.equals(feeAssetId))) {
-        throw new ConnectError('Invalid transaction: Spend transaction was constructed improperly.');
+      if (
+        !action.action.value.note?.value?.assetId ||
+        !equals(AssetIdSchema, action.action.value.note.value.assetId, feeAssetId)
+      ) {
+        throw new ConnectError(
+          'Invalid transaction: Spend transaction was constructed improperly.',
+        );
       }
 
       // Accumulate the spend amounts
@@ -71,9 +77,13 @@ export const assertSpendMax = async (
   });
   plan.actions.forEach(action => {
     if (action.action.case === 'output') {
-      // prettier-ignore
-      if (!(action.action.value.value?.assetId?.equals(feeAssetId))) {
-        throw new ConnectError('Invalid transaction: Spend transaction was constructed improperly.');
+      if (
+        !action.action.value.value?.assetId ||
+        !equals(AssetIdSchema, feeAssetId, action.action.value.value.assetId)
+      ) {
+        throw new ConnectError(
+          'Invalid transaction: Spend transaction was constructed improperly.',
+        );
       }
     }
   });

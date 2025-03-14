@@ -1,30 +1,42 @@
 import type { Impl } from './index.js';
+import { create } from '@bufbuild/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
 import { getAmount } from '@penumbra-zone/getters/value-view';
 import {
   getAmountFromRecord,
   getAssetIdFromRecord,
 } from '@penumbra-zone/getters/spendable-note-record';
+
 import {
   AssetId,
-  EquivalentValue,
+  EquivalentValueSchema,
   EstimatedPrice,
   Metadata,
-  ValueView,
+  ValueViewSchema,
   ValueView_KnownAssetId,
+  EquivalentValue,
+  ValueView,
 } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { AddressIndex, AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+
 import {
-  AddressByIndexRequest,
-  AssetMetadataByIdRequest,
+  AddressIndex,
+  AddressViewSchema,
+  AddressView,
+} from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+
+import {
+  AddressByIndexRequestSchema,
+  AssetMetadataByIdRequestSchema,
   BalancesRequest,
-  BalancesResponse,
+  BalancesResponseSchema,
   SpendableNoteRecord,
+  BalancesResponse,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+
 import { HandlerContext } from '@connectrpc/connect';
 import { assetMetadataById } from './asset-metadata-by-id.js';
 import { addressByIndex } from './address-by-index.js';
-import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import { AmountSchema } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { Base64Str, uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { addLoHi } from '@penumbra-zone/types/lo-hi';
 import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
@@ -172,7 +184,7 @@ class BalancesAggregator {
       }
 
       const numeraire = await assetMetadataById(
-        new AssetMetadataByIdRequest({ assetId: price.numeraire }),
+        create(AssetMetadataByIdRequestSchema, { assetId: price.numeraire }),
         this.ctx,
       );
       if (!numeraire.denomMetadata) {
@@ -182,7 +194,7 @@ class BalancesAggregator {
       const equivalentAmount = multiplyAmountByNumber(amount, price.numerairePerUnit);
 
       equivalentValues.push(
-        new EquivalentValue({
+        create(EquivalentValueSchema, {
           asOfHeight: price.asOfHeight,
           numeraire: numeraire.denomMetadata,
           equivalentAmount,
@@ -198,17 +210,17 @@ class BalancesAggregator {
       this.initializeAddressView(this.ctx, n.addressIndex),
       this.initializeValueView(this.ctx, getAssetIdFromRecord(n)),
     ]);
-    return new BalancesResponse({ accountAddress, balanceView });
+    return create(BalancesResponseSchema, { accountAddress, balanceView });
   }
 
   // Amount initialized to 0
   private async initializeValueView(ctx: HandlerContext, assetId: AssetId): Promise<ValueView> {
-    const req = new AssetMetadataByIdRequest({ assetId });
+    const req = create(AssetMetadataByIdRequestSchema, { assetId });
     const { denomMetadata } = await assetMetadataById(req, ctx);
 
     if (!denomMetadata) {
-      return new ValueView({
-        valueView: { case: 'unknownAssetId', value: { assetId, amount: new Amount() } },
+      return create(ValueViewSchema, {
+        valueView: { case: 'unknownAssetId', value: { assetId, amount: create(AmountSchema) } },
       });
     } else {
       if (
@@ -223,12 +235,12 @@ class BalancesAggregator {
         this.estimatedPriceByPricedAsset[uint8ArrayToBase64(assetId.inner)] = prices;
       }
 
-      return new ValueView({
+      return create(ValueViewSchema, {
         valueView: {
           case: 'knownAssetId',
           value: {
             metadata: denomMetadata,
-            amount: new Amount(),
+            amount: create(AmountSchema),
           },
         },
       });
@@ -239,9 +251,9 @@ class BalancesAggregator {
     ctx: HandlerContext,
     addressIndex?: AddressIndex,
   ): Promise<AddressView> {
-    const req = new AddressByIndexRequest({ addressIndex });
+    const req = create(AddressByIndexRequestSchema, { addressIndex });
     const { address } = await addressByIndex(req, ctx);
-    return new AddressView({
+    return create(AddressViewSchema, {
       addressView: {
         case: 'decoded',
         value: {

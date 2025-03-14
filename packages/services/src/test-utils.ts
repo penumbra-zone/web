@@ -1,6 +1,12 @@
 import { Mock } from 'vitest';
-import { FullViewingKey, SpendKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { create } from '@bufbuild/protobuf';
+import {
+  FullViewingKeySchema,
+  SpendKeySchema,
+} from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import type { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { fullViewingKeyFromBech32m } from '@penumbra-zone/bech32m/penumbrafullviewingkey';
+import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
 export interface IndexedDbMock {
   constants?: Mock;
@@ -30,7 +36,7 @@ export interface IndexedDbMock {
   getPricesForAsset?: Mock;
   getAuction?: Mock;
   getAuctionOutstandingReserves?: Mock;
-  stakingTokenAssetId?: Mock;
+  stakingTokenAssetId?: AssetId;
   upsertAuction?: Mock;
   hasTokenBalance?: Mock;
   saveGasPrices?: Mock;
@@ -95,13 +101,14 @@ export interface MockApproverCtx {
   get: Mock;
 }
 
-export const testFullViewingKey = new FullViewingKey(
+export const testFullViewingKey = create(
+  FullViewingKeySchema,
   fullViewingKeyFromBech32m(
     'penumbrafullviewingkey1vzfytwlvq067g2kz095vn7sgcft47hga40atrg5zu2crskm6tyyjysm28qg5nth2fqmdf5n0q530jreumjlsrcxjwtfv6zdmfpe5kqsa5lg09',
   ),
 );
 
-export const testSpendKey = new SpendKey({
+export const testSpendKey = create(SpendKeySchema, {
   inner: new Uint8Array([
     204, 36, 107, 26, 105, 251, 139, 204, 14, 247, 98, 33, 115, 24, 32, 181, 165, 4, 171, 182, 171,
     238, 171, 186, 29, 152, 153, 61, 26, 149, 83, 166,

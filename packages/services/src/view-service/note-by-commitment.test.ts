@@ -1,14 +1,18 @@
 import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
+import { create, equals, fromJson, toJson } from '@bufbuild/protobuf';
+
 import {
-  NoteByCommitmentRequest,
-  NoteByCommitmentResponse,
-  SpendableNoteRecord,
+  NoteByCommitmentRequestSchema,
+  NoteByCommitmentResponseSchema,
+  SpendableNoteRecordSchema,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+
+import type { NoteByCommitmentRequest } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
 import { IndexedDbMock, MockServices } from '../test-utils.js';
-import { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
+import { StateCommitmentSchema } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
 import { noteByCommitment } from './note-by-commitment.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 
@@ -39,7 +43,7 @@ describe('NoteByCommitment request handler', () => {
     };
     mockCtx = createHandlerContext({
       service: ViewService,
-      method: ViewService.methods.noteByCommitment,
+      method: ViewService.method.noteByCommitment,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
@@ -48,19 +52,22 @@ describe('NoteByCommitment request handler', () => {
       ),
     });
 
-    request = new NoteByCommitmentRequest({ noteCommitment: testCommitment });
+    request = create(NoteByCommitmentRequestSchema, { noteCommitment: testCommitment });
   });
 
   test('should successfully get note by commitment when idb has them', async () => {
     mockIndexedDb.getSpendableNoteByCommitment?.mockResolvedValue(testNote);
-    const noteByCommitmentResponse = new NoteByCommitmentResponse(
+    const noteByCommitmentResponse = create(
+      NoteByCommitmentResponseSchema,
       await noteByCommitment(request, mockCtx),
     );
-    expect(noteByCommitmentResponse.spendableNote?.equals(testNote)).toBeTruthy();
+    expect(
+      equals(SpendableNoteRecordSchema, noteByCommitmentResponse.spendableNote!, testNote),
+    ).toBeTruthy();
   });
 
   test('should throw error if commitment is missing in request', async () => {
-    await expect(noteByCommitment(new NoteByCommitmentRequest(), mockCtx)).rejects.toThrow(
+    await expect(noteByCommitment(create(NoteByCommitmentRequestSchema), mockCtx)).rejects.toThrow(
       'Missing note commitment in request',
     );
   });
@@ -75,12 +82,15 @@ describe('NoteByCommitment request handler', () => {
     mockIndexedDb.getSpendableNoteByCommitment?.mockResolvedValue(undefined);
     request.awaitDetection = true;
     noteSubNext.mockResolvedValueOnce({
-      value: { value: testNote.toJson() },
+      value: { value: toJson(SpendableNoteRecordSchema, testNote) },
     });
-    const noteByCommitmentResponse = new NoteByCommitmentResponse(
+    const noteByCommitmentResponse = create(
+      NoteByCommitmentResponseSchema,
       await noteByCommitment(request, mockCtx),
     );
-    expect(noteByCommitmentResponse.spendableNote?.equals(testNote)).toBeTruthy();
+    expect(
+      equals(SpendableNoteRecordSchema, noteByCommitmentResponse.spendableNote!, testNote),
+    ).toBeTruthy();
   });
 
   test('should throw error if note is not found in idb, and has not been detected', async () => {
@@ -88,7 +98,7 @@ describe('NoteByCommitment request handler', () => {
     request.awaitDetection = true;
 
     noteSubNext.mockResolvedValueOnce({
-      value: { value: noteWithAnotherCommitment.toJson() },
+      value: { value: toJson(SpendableNoteRecordSchema, noteWithAnotherCommitment) },
     });
     noteSubNext.mockResolvedValueOnce({
       done: true,
@@ -97,11 +107,11 @@ describe('NoteByCommitment request handler', () => {
   });
 });
 
-const testCommitment = StateCommitment.fromJson({
+const testCommitment = fromJson(StateCommitmentSchema, {
   inner: 'pXS1k2kvlph+vuk9uhqeoP1mZRc+f526a06/bg3EBwQ=',
 });
 
-const testNote = SpendableNoteRecord.fromJson({
+const testNote = fromJson(SpendableNoteRecordSchema, {
   noteCommitment: {
     inner: 'pXS1k2kvlph+vuk9uhqeoP1mZRc+f526a06/bg3EBwQ=',
   },
@@ -136,7 +146,7 @@ const testNote = SpendableNoteRecord.fromJson({
   },
 });
 
-const noteWithAnotherCommitment = SpendableNoteRecord.fromJson({
+const noteWithAnotherCommitment = fromJson(SpendableNoteRecordSchema, {
   noteCommitment: {
     inner: '2x5KAgUMdC2Gg2aZmj0bZFa5eQv2z9pQlSFfGXcgHQk=',
   },

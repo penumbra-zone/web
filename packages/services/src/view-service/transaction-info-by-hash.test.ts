@@ -1,18 +1,19 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { create, equals, fromJson } from '@bufbuild/protobuf';
 import {
-  TransactionInfoByHashRequest,
-  TransactionInfoByHashResponse,
+  TransactionInfoByHashRequestSchema,
+  TransactionInfoByHashResponseSchema,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
 import { IndexedDbMock, MockServices, TendermintMock, testFullViewingKey } from '../test-utils.js';
 import { transactionInfoByHash } from './transaction-info-by-hash.js';
-import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
+import { TransactionIdSchema } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 import {
-  Transaction,
-  TransactionPerspective,
+  TransactionSchema,
+  TransactionPerspectiveSchema,
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { fvkCtx } from '../ctx/full-viewing-key.js';
 
@@ -51,7 +52,7 @@ describe('TransactionInfoByHash request handler', () => {
 
     mockCtx = createHandlerContext({
       service: ViewService,
-      method: ViewService.methods.transactionInfoByHash,
+      method: ViewService.method.transactionInfoByHash,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
@@ -71,11 +72,17 @@ describe('TransactionInfoByHash request handler', () => {
       id: transactionId,
       transaction,
     });
-    const txInfoByHashResponse = new TransactionInfoByHashResponse(
-      await transactionInfoByHash(new TransactionInfoByHashRequest({ id: transactionId }), mockCtx),
+    const txInfoByHashResponse = create(
+      TransactionInfoByHashResponseSchema,
+      await transactionInfoByHash(
+        create(TransactionInfoByHashRequestSchema, { id: transactionId }),
+        mockCtx,
+      ),
     );
 
-    expect(txInfoByHashResponse.txInfo?.transaction!.equals(transaction)).toBeTruthy();
+    expect(
+      equals(TransactionSchema, txInfoByHashResponse.txInfo!.transaction!, transaction),
+    ).toBeTruthy();
   });
 
   test('should get TransactionInfo from tendermint if  record is not found in indexed-db', async () => {
@@ -85,24 +92,30 @@ describe('TransactionInfoByHash request handler', () => {
       transaction: transaction,
     });
 
-    const txInfoByHashResponse = new TransactionInfoByHashResponse(
-      await transactionInfoByHash(new TransactionInfoByHashRequest({ id: transactionId }), mockCtx),
+    const txInfoByHashResponse = create(
+      TransactionInfoByHashResponseSchema,
+      await transactionInfoByHash(
+        create(TransactionInfoByHashRequestSchema, { id: transactionId }),
+        mockCtx,
+      ),
     );
-    expect(txInfoByHashResponse.txInfo?.transaction!.equals(transaction)).toBeTruthy();
+    expect(
+      equals(TransactionSchema, txInfoByHashResponse.txInfo!.transaction!, transaction),
+    ).toBeTruthy();
   });
 
   test('should get an error if TransactionId is not passed', async () => {
     await expect(
-      transactionInfoByHash(new TransactionInfoByHashRequest(), mockCtx),
+      transactionInfoByHash(create(TransactionInfoByHashRequestSchema), mockCtx),
     ).rejects.toThrow('Missing transaction ID in request');
   });
 });
 
-const transactionId = TransactionId.fromJson({
+const transactionId = fromJson(TransactionIdSchema, {
   inner: 'v5fO5kM6B/VYpaLyy/cXvlqtSb4/i8WWlwbfrSPTDlI=',
 });
 
-const transaction = Transaction.fromJson({
+const transaction = fromJson(TransactionSchema, {
   body: {
     actions: [
       {
@@ -234,7 +247,7 @@ const transaction = Transaction.fromJson({
   },
 });
 
-const transactionPerspective = TransactionPerspective.fromJson({
+const transactionPerspective = fromJson(TransactionPerspectiveSchema, {
   payloadKeys: [
     {
       payloadKey: {

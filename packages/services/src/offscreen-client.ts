@@ -1,8 +1,15 @@
-import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import {
-  Action,
+  FullViewingKey,
+  FullViewingKeySchema,
+} from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { fromJson, toJson } from '@bufbuild/protobuf';
+import {
+  ActionSchema,
   TransactionPlan,
   WitnessData,
+  Action,
+  TransactionPlanSchema,
+  WitnessDataSchema,
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { ConnectError } from '@connectrpc/connect';
 import { errorFromJson } from '@connectrpc/connect/protocol-connect';
@@ -69,9 +76,9 @@ const buildActions = (
   // this json serialization involves a lot of binary -> base64 which is slow,
   // so just do it once and reuse
   const partialRequest = {
-    transactionPlan: transactionPlan.toJson() as Jsonified<TransactionPlan>,
-    witness: witness.toJson() as Jsonified<WitnessData>,
-    fullViewingKey: fullViewingKey.toJson() as Jsonified<FullViewingKey>,
+    transactionPlan: toJson(TransactionPlanSchema, transactionPlan) as Jsonified<TransactionPlan>,
+    witness: toJson(WitnessDataSchema, witness) as Jsonified<WitnessData>,
+    fullViewingKey: toJson(FullViewingKeySchema, fullViewingKey) as Jsonified<FullViewingKey>,
   };
 
   const buildTasks = transactionPlan.actions.map(async (_, actionPlanIndex) => {
@@ -87,7 +94,7 @@ const buildActions = (
     await activation;
 
     const buildRes = await sendOffscreenMessage(buildReq);
-    return Action.fromJson(buildRes);
+    return fromJson(ActionSchema, buildRes);
   });
 
   void Promise.race([Promise.all(buildTasks), cancel])

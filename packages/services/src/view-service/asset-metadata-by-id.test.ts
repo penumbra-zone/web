@@ -1,15 +1,21 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { create, equals, fromJson } from '@bufbuild/protobuf';
 import {
-  AssetMetadataByIdRequest,
-  AssetMetadataByIdResponse,
+  AssetMetadataByIdRequestSchema,
+  AssetMetadataByIdResponseSchema,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import type { AssetMetadataByIdRequest } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
 import { IndexedDbMock, MockServices, ShieldedPoolMock } from '../test-utils.js';
-import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { assetMetadataById } from './asset-metadata-by-id.js';
+import {
+  AssetIdSchema,
+  MetadataSchema,
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
+import { assetMetadataById } from './asset-metadata-by-id.js';
+import { UM_METADATA } from './util/data.js';
 
 describe('AssetMetadataById request handler', () => {
   let mockServices: MockServices;
@@ -22,6 +28,7 @@ describe('AssetMetadataById request handler', () => {
     vi.resetAllMocks();
 
     mockIndexedDb = {
+      stakingTokenAssetId: UM_METADATA.penumbraAssetId,
       getAssetsMetadata: vi.fn(),
       saveAssetsMetadata: vi.fn(),
     };
@@ -40,7 +47,7 @@ describe('AssetMetadataById request handler', () => {
     };
     mockCtx = createHandlerContext({
       service: ViewService,
-      method: ViewService.methods.assetMetadataById,
+      method: ViewService.method.assetMetadataById,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
@@ -49,34 +56,40 @@ describe('AssetMetadataById request handler', () => {
       ),
     });
 
-    request = new AssetMetadataByIdRequest({
+    request = create(AssetMetadataByIdRequestSchema, {
       assetId: assetId,
     });
   });
 
   test('should successfully respond with metadata when idb record is present', async () => {
     mockIndexedDb.getAssetsMetadata?.mockResolvedValue(metadataFromIdb);
-    const metadataByIdResponse = new AssetMetadataByIdResponse(
-      await assetMetadataById(request, mockCtx),
-    );
-    expect(metadataByIdResponse.equals({ denomMetadata: metadataFromIdb })).toBeTruthy();
+    const metadataByIdResponse = await assetMetadataById(request, mockCtx);
+    expect(
+      equals(
+        AssetMetadataByIdResponseSchema,
+        create(AssetMetadataByIdResponseSchema, metadataByIdResponse),
+        create(AssetMetadataByIdResponseSchema, { denomMetadata: metadataFromIdb }),
+      ),
+    ).toBeTruthy();
   });
 
   test('should successfully respond with metadata when idb record is absent, but metadata is available from remote rpc', async () => {
     mockIndexedDb.getAssetsMetadata?.mockResolvedValue(undefined);
     mockShieldedPool.assetMetadataById.mockResolvedValueOnce(metadataFromNode);
-    const metadataByIdResponse = new AssetMetadataByIdResponse(
-      await assetMetadataById(request, mockCtx),
-    );
-    expect(metadataByIdResponse.equals({ denomMetadata: metadataFromNode })).toBeTruthy();
+    const metadataByIdResponse = await assetMetadataById(request, mockCtx);
+    expect(
+      equals(
+        AssetMetadataByIdResponseSchema,
+        create(AssetMetadataByIdResponseSchema, metadataByIdResponse),
+        create(AssetMetadataByIdResponseSchema, { denomMetadata: metadataFromNode }),
+      ),
+    ).toBeTruthy();
   });
 
   test('should customize symbols', async () => {
     mockIndexedDb.getAssetsMetadata?.mockResolvedValue(undefined);
     mockShieldedPool.assetMetadataById.mockResolvedValueOnce(delegationMetadata);
-    const metadataByIdResponse = new AssetMetadataByIdResponse(
-      await assetMetadataById(request, mockCtx),
-    );
+    const metadataByIdResponse = await assetMetadataById(request, mockCtx);
     expect(metadataByIdResponse.denomMetadata!.symbol).toBe(
       'delUM(2s9lanucncnyasrsqgy6z532q7nwsw3aqzzeqas55kkpyf6lhsqs2w0zar)',
     );
@@ -85,24 +98,22 @@ describe('AssetMetadataById request handler', () => {
   test('should successfully respond even when no metadata is available', async () => {
     mockIndexedDb.getAssetsMetadata?.mockResolvedValue(undefined);
     mockShieldedPool.assetMetadataById.mockResolvedValueOnce(undefined);
-    const metadataByIdResponse = new AssetMetadataByIdResponse(
-      await assetMetadataById(request, mockCtx),
-    );
-    expect(metadataByIdResponse.equals({})).toBeTruthy();
+    const metadataByIdResponse = await assetMetadataById(request, mockCtx);
+    expect(metadataByIdResponse.denomMetadata).toBeUndefined();
   });
 
   test('should fail if assetId is missing in request', async () => {
-    await expect(assetMetadataById(new AssetMetadataByIdRequest(), mockCtx)).rejects.toThrow(
-      'No asset id passed in request',
-    );
+    await expect(
+      assetMetadataById(create(AssetMetadataByIdRequestSchema), mockCtx),
+    ).rejects.toThrow('No asset id passed in request');
   });
 });
 
-const assetId = AssetId.fromJson({
+const assetId = fromJson(AssetIdSchema, {
   inner: 'nwPDkQq3OvLnBwGTD+nmv1Ifb2GEmFCgNHrU++9BsRE=',
 });
 
-const metadataFromNode = Metadata.fromJson({
+const metadataFromNode = fromJson(MetadataSchema, {
   description: '',
   denomUnits: [
     { denom: 'gm', exponent: 9, aliases: [] },
@@ -118,7 +129,7 @@ const metadataFromNode = Metadata.fromJson({
   },
 });
 
-export const delegationMetadata = Metadata.fromJson({
+export const delegationMetadata = fromJson(MetadataSchema, {
   denomUnits: [
     {
       denom: 'delegation_penumbravalid12s9lanucncnyasrsqgy6z532q7nwsw3aqzzeqas55kkpyf6lhsqs2w0zar',
@@ -137,7 +148,7 @@ export const delegationMetadata = Metadata.fromJson({
   penumbraAssetId: { inner: '9gOwzeyGwav8YydzDGlEZyZkN8ITX2IerjVy0YjAIw8=' },
 });
 
-const metadataFromIdb = Metadata.fromJson({
+const metadataFromIdb = fromJson(MetadataSchema, {
   description: '',
   denomUnits: [
     { denom: 'gn', exponent: 6, aliases: [] },
@@ -148,6 +159,7 @@ const metadataFromIdb = Metadata.fromJson({
   display: 'gn',
   name: '',
   symbol: '',
+  priorityScore: '50',
   penumbraAssetId: {
     inner: 'nwPDkQq3OvLnBwGTD+nmv1Ifb2GEmFCgNHrU++9BsRE=',
   },

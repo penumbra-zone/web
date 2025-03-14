@@ -1,13 +1,17 @@
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
+import { create } from '@bufbuild/protobuf';
 import { IndexedDbMock, MockServices } from '../test-utils.js';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { StakeService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
+
 import {
-  GetValidatorInfoRequest,
-  GetValidatorInfoResponse,
+  GetValidatorInfoRequestSchema,
+  GetValidatorInfoResponseSchema,
   ValidatorState_ValidatorStateEnum,
+  GetValidatorInfoRequest,
 } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
+
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { getValidatorInfo } from './get-validator-info.js';
 
@@ -17,7 +21,7 @@ describe('GetValidatorInfo request handler', () => {
   let mockStakingQuerierValidatorInfo: Mock;
   let mockCtx: HandlerContext;
   let req: GetValidatorInfoRequest;
-  const mockGetValidatorInfoResponse = new GetValidatorInfoResponse({
+  const mockGetValidatorInfoResponse = create(GetValidatorInfoResponseSchema, {
     validatorInfo: {
       validator: { name: 'Validator 1', identityKey: { ik: new Uint8Array(32) } },
       status: { state: { state: ValidatorState_ValidatorStateEnum.ACTIVE } },
@@ -45,7 +49,7 @@ describe('GetValidatorInfo request handler', () => {
     } satisfies MockServices;
     mockCtx = createHandlerContext({
       service: StakeService,
-      method: StakeService.methods.validatorInfo,
+      method: StakeService.method.validatorInfo,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
@@ -54,13 +58,13 @@ describe('GetValidatorInfo request handler', () => {
       ),
     });
 
-    req = new GetValidatorInfoRequest({
+    req = create(GetValidatorInfoRequestSchema, {
       identityKey: mockGetValidatorInfoResponse.validatorInfo?.validator?.identityKey,
     });
   });
 
   it('should fail to get validator info if identity key is not passed', async () => {
-    await expect(getValidatorInfo(new GetValidatorInfoRequest(), mockCtx)).rejects.toThrow(
+    await expect(getValidatorInfo(create(GetValidatorInfoRequestSchema), mockCtx)).rejects.toThrow(
       'Missing identityKey in request',
     );
   });

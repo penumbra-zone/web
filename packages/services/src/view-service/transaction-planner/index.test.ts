@@ -1,22 +1,27 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { create } from '@bufbuild/protobuf';
 import {
-  TransactionPlannerRequest,
-  TransactionPlannerRequest_Swap,
+  TransactionPlannerRequestSchema,
+  TransactionPlannerRequest_SwapSchema,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import type { TransactionPlannerRequest } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../../ctx/prax.js';
 import { IndexedDbMock, MockServices, testFullViewingKey } from '../../test-utils.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
-import { FmdParameters } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
-import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
-import { SctParameters } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
-import { GasPrices } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
+import { FmdParametersSchema } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
+import { AppParametersSchema } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
+import { SctParametersSchema } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
+import { GasPricesSchema } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
 import { transactionPlanner } from './index.js';
 import { fvkCtx } from '../../ctx/full-viewing-key.js';
-import { AssetId, Value } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { TransactionPlan } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import {
+  AssetIdSchema,
+  ValueSchema,
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { AddressIndexSchema } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { TransactionPlanSchema } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 
 const mockPlanTransaction = vi.hoisted(() => vi.fn());
 vi.mock('@penumbra-zone/wasm/planner', () => ({
@@ -49,7 +54,7 @@ describe('TransactionPlanner request handler', () => {
 
     mockCtx = createHandlerContext({
       service: ViewService,
-      method: ViewService.methods.transactionPlanner,
+      method: ViewService.method.transactionPlanner,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
@@ -58,17 +63,17 @@ describe('TransactionPlanner request handler', () => {
         .set(fvkCtx, () => Promise.resolve(testFullViewingKey)),
     });
 
-    req = new TransactionPlannerRequest({
-      source: new AddressIndex({ account: 0 }),
+    req = create(TransactionPlannerRequestSchema, {
+      source: create(AddressIndexSchema, { account: 0 }),
     });
   });
 
   test('should throw if request is not valid', async () => {
     // Swap assets are the same
-    const assetAbc = new AssetId({ altBaseDenom: 'UM' });
+    const assetAbc = create(AssetIdSchema, { altBaseDenom: 'UM' });
     req.swaps = [
-      new TransactionPlannerRequest_Swap({
-        value: new Value({ assetId: assetAbc }),
+      create(TransactionPlannerRequest_SwapSchema, {
+        value: create(ValueSchema, { assetId: assetAbc }),
         targetAsset: assetAbc,
       }),
     ];
@@ -79,21 +84,21 @@ describe('TransactionPlanner request handler', () => {
 
   test('should create a transaction plan if all necessary data exists in indexed-db', async () => {
     mockIndexedDb.getFmdParams?.mockResolvedValueOnce(
-      new FmdParameters({
+      create(FmdParametersSchema, {
         precisionBits: 12,
         asOfBlockHeight: 2n,
       }),
     );
     mockIndexedDb.getAppParams?.mockResolvedValueOnce(
-      new AppParameters({
+      create(AppParametersSchema, {
         chainId: 'penumbra-testnet-mock',
-        sctParams: new SctParameters({
+        sctParams: create(SctParametersSchema, {
           epochDuration: 719n,
         }),
       }),
     );
     mockIndexedDb.getNativeGasPrices?.mockResolvedValueOnce(
-      new GasPrices({
+      create(GasPricesSchema, {
         verificationPrice: 22n,
         executionPrice: 222n,
         blockSpacePrice: 2n,
@@ -101,14 +106,13 @@ describe('TransactionPlanner request handler', () => {
       }),
     );
 
-    mockIndexedDb.stakingTokenAssetId?.mockResolvedValueOnce(true);
     mockIndexedDb.hasTokenBalance?.mockResolvedValueOnce(true);
 
     mockPlanTransaction.mockResolvedValueOnce(
-      new TransactionPlan({
+      create(TransactionPlanSchema, {
         transactionParameters: {
           fee: {
-            assetId: new AssetId({ altBaseDenom: 'UM' }),
+            assetId: create(AssetIdSchema, { altBaseDenom: 'UM' }),
             amount: { hi: 0n, lo: 0n },
           },
           chainId: 'mainnet',

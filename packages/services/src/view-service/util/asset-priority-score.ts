@@ -1,5 +1,10 @@
 import { assetPatterns } from '@penumbra-zone/types/assets';
-import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import {
+  AssetId,
+  AssetIdSchema,
+  Metadata,
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { equals } from '@bufbuild/protobuf';
 
 /**
  * Assigns a priority score to an asset based on its metadata.
@@ -24,7 +29,7 @@ export const getAssetPriorityScore = (
     return 0n;
   }
 
-  if (metadata.penumbraAssetId?.equals(nativeTokenId)) {
+  if (metadata.penumbraAssetId && equals(AssetIdSchema, metadata.penumbraAssetId, nativeTokenId)) {
     return 50n;
   }
 

@@ -1,8 +1,12 @@
 import { beforeEach, describe, expect, test } from 'vitest';
-import { IndexByAddressRequest } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { create } from '@bufbuild/protobuf';
+import { IndexByAddressRequestSchema } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
-import { Address, FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import {
+  Address,
+  FullViewingKeySchema,
+} from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { indexByAddress } from './index-by-address.js';
 import { getAddressByIndex, getEphemeralByIndex } from '@penumbra-zone/wasm/keys';
 import { fullViewingKeyFromBech32m } from '@penumbra-zone/bech32m/penumbrafullviewingkey';
@@ -16,7 +20,7 @@ describe('IndexByAddress request handler', () => {
   beforeEach(() => {
     mockCtx = createHandlerContext({
       service: ViewService,
-      method: ViewService.methods.indexByAddress,
+      method: ViewService.method.indexByAddress,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
@@ -28,7 +32,7 @@ describe('IndexByAddress request handler', () => {
 
   test('should successfully get index for a given address', async () => {
     const addressByIndexResponse = await indexByAddress(
-      new IndexByAddressRequest({ address: testAddress }),
+      create(IndexByAddressRequestSchema, { address: testAddress }),
       mockCtx,
     );
     expect(addressByIndexResponse.addressIndex?.account === 0).toBeTruthy();
@@ -38,14 +42,15 @@ describe('IndexByAddress request handler', () => {
     testAddress = getEphemeralByIndex(testFullViewingKey, 2);
 
     const addressByIndexResponse = await indexByAddress(
-      new IndexByAddressRequest({ address: testAddress }),
+      create(IndexByAddressRequestSchema, { address: testAddress }),
       mockCtx,
     );
     expect(addressByIndexResponse.addressIndex?.account === 2).toBeTruthy();
   });
 
   test('should return empty index for address that is associated with another FVK', async () => {
-    const anotherFVK = new FullViewingKey(
+    const anotherFVK = create(
+      FullViewingKeySchema,
       fullViewingKeyFromBech32m(
         'penumbrafullviewingkey1f33fr3zrquh869s3h8d0pjx4fpa9fyut2utw7x5y7xdcxz6z7c8sgf5hslrkpf3mh8d26vufsq8y666chx0x0su06ay3rkwu74zuwqq9w8aza',
       ),
@@ -54,7 +59,7 @@ describe('IndexByAddress request handler', () => {
     testAddress = getEphemeralByIndex(anotherFVK, 5);
 
     const addressByIndexResponse = await indexByAddress(
-      new IndexByAddressRequest({ address: testAddress }),
+      create(IndexByAddressRequestSchema, { address: testAddress }),
       mockCtx,
     );
     expect(addressByIndexResponse.addressIndex).toBeUndefined();

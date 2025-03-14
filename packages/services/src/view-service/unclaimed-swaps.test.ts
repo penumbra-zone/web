@@ -1,4 +1,5 @@
 import { ViewService } from '@penumbra-zone/protobuf';
+import { create, fromJson } from '@bufbuild/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
 
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
@@ -6,6 +7,12 @@ import { createContextValues, createHandlerContext, HandlerContext } from '@conn
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 
 import {
+  SwapRecordSchema,
+  UnclaimedSwapsRequestSchema,
+  UnclaimedSwapsResponseSchema,
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+
+import type {
   SwapRecord,
   UnclaimedSwapsRequest,
   UnclaimedSwapsResponse,
@@ -40,7 +47,7 @@ describe('UnclaimedSwaps request handler', () => {
 
     mockCtx = createHandlerContext({
       service: ViewService,
-      method: ViewService.methods.unclaimedSwaps,
+      method: ViewService.method.unclaimedSwaps,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
@@ -57,29 +64,29 @@ describe('UnclaimedSwaps request handler', () => {
     mockIterateSwaps.next.mockResolvedValueOnce({
       done: true,
     });
-    req = new UnclaimedSwapsRequest();
+    req = create(UnclaimedSwapsRequestSchema);
   });
 
   test('should get all swaps with undefined heightClaimed', async () => {
     const responses: UnclaimedSwapsResponse[] = [];
     for await (const res of unclaimedSwaps(req, mockCtx)) {
-      responses.push(new UnclaimedSwapsResponse(res));
+      responses.push(create(UnclaimedSwapsResponseSchema, res));
     }
     expect(responses.length).toBe(2);
   });
 });
 
 const testData: SwapRecord[] = [
-  SwapRecord.fromJson({
+  fromJson(SwapRecordSchema, {
     swapCommitment: { inner: '16VBVkrk+s18q+Sjhl8uEGfS3i0dwF1FrkNm8Db6VAA=' },
     heightClaimed: 122,
     nullifier: { inner: '1E7LbhBDgDXHiRvreFyCllcKOOQeuIVsbn2aw8uKhww=' },
   }),
-  SwapRecord.fromJson({
+  fromJson(SwapRecordSchema, {
     swapCommitment: { inner: '26VBVkrk+s18q+Sjhl8uEGfS3i0dwF1FrkNm8Db6VAA=' },
     nullifier: { inner: '2E7LbhBDgDXHiRvreFyCllcKOOQeuIVsbn2aw8uKhww=' },
   }),
-  SwapRecord.fromJson({
+  fromJson(SwapRecordSchema, {
     swapCommitment: { inner: '36VBVkrk+s18q+Sjhl8uEGfS3i0dwF1FrkNm8Db6VAA=' },
     nullifier: { inner: '3E7LbhBDgDXHiRvreFyCllcKOOQeuIVsbn2aw8uKhww=' },
   }),

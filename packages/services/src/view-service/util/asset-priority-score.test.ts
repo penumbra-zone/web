@@ -1,11 +1,15 @@
 import { describe, expect, it } from 'vitest';
+import { create } from '@bufbuild/protobuf';
 import { getAssetPriorityScore } from './asset-priority-score.js';
-import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import {
+  AssetIdSchema,
+  MetadataSchema,
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 
 describe('getAssetPriorityScore', () => {
   const umTokenId = 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=';
-  const umToken = new AssetId({ inner: base64ToUint8Array(umTokenId) });
+  const umToken = create(AssetIdSchema, { inner: base64ToUint8Array(umTokenId) });
   const delegationTokenId = '/5AHh95RAybBbUhQ5zXMWCvstH4rRK/5KMVIVGQltAw=';
   const usdcTokenId = 'A/8PdbaWqFds9NiYzmAN75SehGpkLwr7tgoVmwaIVgg=';
 
@@ -14,7 +18,7 @@ describe('getAssetPriorityScore', () => {
   });
 
   it('returns 10 for an unbonding token', () => {
-    const metadata = new Metadata({
+    const metadata = create(MetadataSchema, {
       display: 'unbonding_start_at_100_penumbravalid1abc123',
     });
 
@@ -22,7 +26,7 @@ describe('getAssetPriorityScore', () => {
   });
 
   it('returns 20 for a delegation token', () => {
-    const metadata = new Metadata({
+    const metadata = create(MetadataSchema, {
       display:
         'delegation_penumbravalid1sqwq8p8fqxx4aflthtwmu6kte8je7sh4tj7pyd82qpvdap5ajgrsv0q0ja',
       penumbraAssetId: {
@@ -34,7 +38,7 @@ describe('getAssetPriorityScore', () => {
   });
 
   it('returns 30 for an auction token', () => {
-    const metadata = new Metadata({
+    const metadata = create(MetadataSchema, {
       display: 'auctionnft_0_pauctid1abc123',
     });
 
@@ -42,7 +46,7 @@ describe('getAssetPriorityScore', () => {
   });
 
   it('returns 40 for an token within registry', () => {
-    const metadata = new Metadata({
+    const metadata = create(MetadataSchema, {
       display: 'transfer/channel-7/usdc',
       penumbraAssetId: {
         inner: base64ToUint8Array(usdcTokenId),
@@ -53,7 +57,7 @@ describe('getAssetPriorityScore', () => {
   });
 
   it('returns 50 for the UM token', () => {
-    const metadata = new Metadata({
+    const metadata = create(MetadataSchema, {
       penumbraAssetId: {
         inner: base64ToUint8Array(umTokenId),
       },

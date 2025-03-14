@@ -1,11 +1,14 @@
 import type { Impl } from './index.js';
+import { create } from '@bufbuild/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
 import { notesForVoting } from './notes-for-voting.js';
+
 import {
-  LqtVotingNotesResponse,
-  NotesForVotingRequest,
+  LqtVotingNotesResponseSchema,
+  NotesForVotingRequestSchema,
   SpendableNoteRecord,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+
 import { Nullifier } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
 
 export const lqtVotingNotes: Impl['lqtVotingNotes'] = async function* (req, ctx) {
@@ -18,7 +21,7 @@ export const lqtVotingNotes: Impl['lqtVotingNotes'] = async function* (req, ctx)
   // Retrieve SNRs from storage ('ASSETS' in IndexedDB) for the specified subaccount that are eligible for voting
   // at the start height of the current epoch. Alternatively, a wasm helper `get_voting_notes` can be used to
   // perform the same function.
-  const notesForVotingRequest = new NotesForVotingRequest({
+  const notesForVotingRequest = create(NotesForVotingRequestSchema, {
     addressIndex: req.accountFilter,
     votableAtHeight: epoch?.startHeight,
   });
@@ -41,6 +44,6 @@ export const lqtVotingNotes: Impl['lqtVotingNotes'] = async function* (req, ctx)
     const noteRecord = votingNote.noteRecord as SpendableNoteRecord;
 
     // Yield the SNRs that haven't been used for voting yet.
-    yield new LqtVotingNotesResponse({ noteRecord });
+    yield create(LqtVotingNotesResponseSchema, { noteRecord });
   }
 };

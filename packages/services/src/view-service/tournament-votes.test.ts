@@ -1,14 +1,15 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { TournamentVotesRequest } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { create, fromJson } from '@bufbuild/protobuf';
+import { TournamentVotesRequestSchema } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
 import { IndexedDbMock, MockServices } from '../test-utils.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
-import { Epoch } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
+import { EpochSchema } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
 import { tournamentVotes } from './tournament-votes.js';
-import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
-import { Value } from '@bufbuild/protobuf';
+import { AmountSchema } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import { ValueSchema } from '@bufbuild/protobuf/wkt';
 
 describe('tournamentVotes request handler', () => {
   let mockServices: MockServices;
@@ -33,7 +34,7 @@ describe('tournamentVotes request handler', () => {
 
     mockCtx = createHandlerContext({
       service: ViewService,
-      method: ViewService.methods.tournamentVotes,
+      method: ViewService.method.tournamentVotes,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
@@ -48,14 +49,14 @@ describe('tournamentVotes request handler', () => {
     mockIndexedDb.saveLQTHistoricalVote?.mockResolvedValueOnce(mockVote);
     mockIndexedDb.getLQTHistoricalVotes?.mockResolvedValueOnce([mockVote]);
 
-    const req = new TournamentVotesRequest({});
+    const req = create(TournamentVotesRequestSchema, {});
     const vote = await tournamentVotes(req, mockCtx);
 
     expect(vote.votes?.length).toBe(1);
   });
 });
 
-const epoch = new Epoch({
+const epoch = create(EpochSchema, {
   index: 100n,
   startHeight: 5000n,
 });
@@ -71,13 +72,13 @@ const mockVote = {
       inner: new Uint8Array(new Array(32).fill(1)),
     },
   },
-  VoteValue: Value.fromJson({
+  VoteValue: fromJson(ValueSchema, {
     amount: {
       lo: '1000',
       hi: '0',
     },
   }),
-  RewardValue: Amount.fromJson({
+  RewardValue: fromJson(AmountSchema, {
     lo: '500',
     hi: '0',
   }),

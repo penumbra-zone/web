@@ -1,11 +1,12 @@
 import type { Impl } from './index.js';
+import { create } from '@bufbuild/protobuf';
 import {
-  TournamentVotesResponse,
-  TournamentVotesResponse_Vote,
+  TournamentVotesResponseSchema,
+  TournamentVotesResponse_VoteSchema,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { servicesCtx } from '../ctx/prax.js';
-import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
-import { Value } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { AmountSchema } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import { ValueSchema } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
 export const tournamentVotes: Impl['tournamentVotes'] = async (req, ctx) => {
   const services = await ctx.values.get(servicesCtx)();
@@ -15,24 +16,23 @@ export const tournamentVotes: Impl['tournamentVotes'] = async (req, ctx) => {
   const epoch = await indexedDb.getBlockHeightByEpoch(req.epochIndex);
 
   // Retrieve the vote cast in the liquidity tournament for the current epoch.
-  const tournamentVote = new TournamentVotesResponse();
+  const tournamentVote = create(TournamentVotesResponseSchema);
   if (epoch?.index) {
     const votes = await indexedDb.getLQTHistoricalVotes(epoch.index);
 
     if (votes.length > 0) {
-      tournamentVote.votes = votes.map(
-        vote =>
-          new TournamentVotesResponse_Vote({
-            transaction: vote.TransactionId,
-            incentivizedAsset: vote.AssetMetadata.penumbraAssetId,
-            votePower: vote.VoteValue.amount,
-            reward: vote.RewardValue
-              ? new Value({
-                  amount: new Amount({ lo: vote.RewardValue.lo, hi: vote.RewardValue.hi }),
-                  assetId: indexedDb.stakingTokenAssetId,
-                })
-              : undefined,
-          }),
+      tournamentVote.votes = votes.map(vote =>
+        create(TournamentVotesResponse_VoteSchema, {
+          transaction: vote.TransactionId,
+          incentivizedAsset: vote.AssetMetadata.penumbraAssetId,
+          votePower: vote.VoteValue.amount,
+          reward: vote.RewardValue
+            ? create(ValueSchema, {
+                amount: create(AmountSchema, { lo: vote.RewardValue.lo, hi: vote.RewardValue.hi }),
+                assetId: indexedDb.stakingTokenAssetId,
+              })
+            : undefined,
+        }),
       );
     }
   }

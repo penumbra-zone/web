@@ -1,10 +1,16 @@
 import { servicesCtx } from '../ctx/prax.js';
+import { create, equals, fromJson } from '@bufbuild/protobuf';
 import { balances } from './balances.js';
 
 import { ViewService } from '@penumbra-zone/protobuf';
 
-import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { AddressIndexSchema } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import {
+  BalancesRequestSchema,
+  BalancesResponseSchema,
+  SpendableNoteRecordSchema,
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import type {
   BalancesRequest,
   BalancesResponse,
   SpendableNoteRecord,
@@ -15,10 +21,11 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { IndexedDbMock, MockServices, TendermintMock, testFullViewingKey } from '../test-utils.js';
 import {
+  AssetIdSchema,
+  EquivalentValueSchema,
+  EstimatedPriceSchema,
+  MetadataSchema,
   AssetId,
-  EquivalentValue,
-  EstimatedPrice,
-  Metadata,
 } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import {
   getAmount,
@@ -30,7 +37,8 @@ import { getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 import { multiplyAmountByNumber } from '@penumbra-zone/types/amount';
 import { fvkCtx } from '../ctx/full-viewing-key.js';
-import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
+import { AppParametersSchema } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
+import { UM_METADATA } from './util/data.js';
 
 const assertOnlyUniqueAssetIds = (responses: BalancesResponse[], accountId: number) => {
   const account0Res = responses.filter(
@@ -60,6 +68,7 @@ describe('Balances request handler', () => {
     };
 
     mockIndexedDb = {
+      stakingTokenAssetId: UM_METADATA.penumbraAssetId,
       getAppParams: vi.fn(),
       getAssetsMetadata: vi.fn(),
       getPricesForAsset: vi.fn(),
@@ -90,7 +99,7 @@ describe('Balances request handler', () => {
 
     mockCtx = createHandlerContext({
       service: ViewService,
-      method: ViewService.methods.balances,
+      method: ViewService.method.balances,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
@@ -110,20 +119,20 @@ describe('Balances request handler', () => {
 
     mockIndexedDb.getAssetsMetadata?.mockImplementation((assetId: AssetId) => {
       return Promise.resolve(
-        new Metadata({
+        create(MetadataSchema, {
           penumbraAssetId: assetId,
         }),
       );
     });
 
     mockIndexedDb.getPricesForAsset?.mockImplementation(() => Promise.resolve([]));
-    req = new BalancesRequest();
+    req = create(BalancesRequestSchema);
   });
 
   test('aggregation, with no filtering', async () => {
     const responses: BalancesResponse[] = [];
     for await (const res of balances(req, mockCtx)) {
-      responses.push(new BalancesResponse(res));
+      responses.push(create(BalancesResponseSchema, res));
     }
     expect(responses.length).toBe(4);
     assertOnlyUniqueAssetIds(responses, 0);
@@ -133,25 +142,27 @@ describe('Balances request handler', () => {
   });
 
   test('filtering asset id', async () => {
-    const assetId = new AssetId({
+    const assetId = create(AssetIdSchema, {
       inner: base64ToUint8Array('KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA='),
     });
     req.assetIdFilter = assetId;
     const responses: BalancesResponse[] = [];
     for await (const res of balances(req, mockCtx)) {
-      responses.push(new BalancesResponse(res));
+      responses.push(create(BalancesResponseSchema, res));
     }
     expect(responses.length).toBe(3);
     responses.forEach(r => {
-      expect(getMetadata(r.balanceView).penumbraAssetId?.equals(assetId)).toBeTruthy();
+      expect(
+        equals(AssetIdSchema, getMetadata(r.balanceView).penumbraAssetId!, assetId),
+      ).toBeTruthy();
     });
   });
 
   test('filtering account', async () => {
-    req.accountFilter = new AddressIndex({ account: 12 });
+    req.accountFilter = create(AddressIndexSchema, { account: 12 });
     const responses: BalancesResponse[] = [];
     for await (const res of balances(req, mockCtx)) {
-      responses.push(new BalancesResponse(res));
+      responses.push(create(BalancesResponseSchema, res));
     }
     expect(responses.length).toBe(1);
     responses.forEach(r => {
@@ -160,10 +171,10 @@ describe('Balances request handler', () => {
   });
 
   test('spent notes', async () => {
-    req.accountFilter = new AddressIndex({ account: 99 });
+    req.accountFilter = create(AddressIndexSchema, { account: 99 });
     const responses: BalancesResponse[] = [];
     for await (const res of balances(req, mockCtx)) {
-      responses.push(new BalancesResponse(res));
+      responses.push(create(BalancesResponseSchema, res));
     }
     expect(responses.length).toBe(0);
   });
@@ -171,12 +182,12 @@ describe('Balances request handler', () => {
   test('equivalent values', async () => {
     expect.assertions(3);
 
-    const numeraire = new AssetId({ inner: new Uint8Array([1, 2, 3, 4]) });
-    const pricedAsset = new AssetId({ inner: new Uint8Array([5, 6, 7, 8]) });
+    const numeraire = create(AssetIdSchema, { inner: new Uint8Array([1, 2, 3, 4]) });
+    const pricedAsset = create(AssetIdSchema, { inner: new Uint8Array([5, 6, 7, 8]) });
     const mockNumerairePerUnit = 2.5;
 
     mockIndexedDb.getAppParams?.mockResolvedValue(
-      new AppParameters({
+      create(AppParametersSchema, {
         sctParams: {
           epochDuration: 719n,
         },
@@ -185,7 +196,7 @@ describe('Balances request handler', () => {
     // We'll just mock the same response for every call -- we're just testing
     // that the equivalent prices get included in the RPC response.
     mockIndexedDb.getPricesForAsset?.mockResolvedValue([
-      new EstimatedPrice({
+      create(EstimatedPriceSchema, {
         asOfHeight: 123n,
         numerairePerUnit: mockNumerairePerUnit,
         numeraire,
@@ -193,18 +204,18 @@ describe('Balances request handler', () => {
       }),
     ]);
 
-    const assetId = new AssetId({
+    const assetId = create(AssetIdSchema, {
       inner: base64ToUint8Array('KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA='),
     });
     req.assetIdFilter = assetId;
 
     for await (const res of balances(req, mockCtx)) {
-      const response = new BalancesResponse(res);
+      const response = create(BalancesResponseSchema, res);
       const amount = getAmount(response.balanceView);
       const equivalentAmount = multiplyAmountByNumber(amount, mockNumerairePerUnit);
 
       expect(getEquivalentValues(response.balanceView)).toEqual([
-        new EquivalentValue({
+        create(EquivalentValueSchema, {
           asOfHeight: 123n,
           numeraire: { penumbraAssetId: numeraire, priorityScore: 40n },
           equivalentAmount,
@@ -215,7 +226,7 @@ describe('Balances request handler', () => {
 });
 
 const testData: SpendableNoteRecord[] = [
-  SpendableNoteRecord.fromJson({
+  fromJson(SpendableNoteRecordSchema, {
     noteCommitment: {
       inner: 'pXS1k2kvlph+vuk9uhqeoP1mZRc+f526a06/bg3EBwQ=',
     },
@@ -248,7 +259,7 @@ const testData: SpendableNoteRecord[] = [
       transaction: { id: '3CBS08dM9eLHH45Z9loZciZ9RaG9x1fc26Qnv0lQlto=' },
     },
   }),
-  SpendableNoteRecord.fromJson({
+  fromJson(SpendableNoteRecordSchema, {
     noteCommitment: {
       inner: 'pXS1k2kvlph+vuk9uhqeoP1mZRc+f526a06/bg3EBwQ=',
     },
@@ -282,7 +293,7 @@ const testData: SpendableNoteRecord[] = [
       },
     },
   }),
-  SpendableNoteRecord.fromJson({
+  fromJson(SpendableNoteRecordSchema, {
     noteCommitment: {
       inner: '2x5KAgUMdC2Gg2aZmj0bZFa5eQv2z9pQlSFfGXcgHQk=',
     },
@@ -316,7 +327,7 @@ const testData: SpendableNoteRecord[] = [
       },
     },
   }),
-  SpendableNoteRecord.fromJson({
+  fromJson(SpendableNoteRecordSchema, {
     noteCommitment: {
       inner: '2x5KAgUMdC2Gg2aZmj0bZFa5eQv2z9pQlSFfGXcgHQk=',
     },
@@ -350,7 +361,7 @@ const testData: SpendableNoteRecord[] = [
       },
     },
   }),
-  SpendableNoteRecord.fromJson({
+  fromJson(SpendableNoteRecordSchema, {
     noteCommitment: {
       inner: '9ykyJTT1AMzrEdmpeHlLdiKO6Atrzrw4UBHsy6uwyAE=',
     },
@@ -383,7 +394,7 @@ const testData: SpendableNoteRecord[] = [
       },
     },
   }),
-  SpendableNoteRecord.fromJson({
+  fromJson(SpendableNoteRecordSchema, {
     noteCommitment: {
       inner: '1hzgmsvqLjwE8oUKqwjvjioP/NjBw7gA559qH1vXfAs=',
     },

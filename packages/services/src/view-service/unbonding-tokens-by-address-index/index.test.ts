@@ -1,18 +1,20 @@
 import {
-  AppParametersResponse,
-  BalancesResponse,
-  StatusResponse,
-  UnbondingTokensByAddressIndexRequest,
+  AppParametersResponseSchema,
+  BalancesResponseSchema,
+  StatusResponseSchema,
+  UnbondingTokensByAddressIndexRequestSchema,
   UnbondingTokensByAddressIndexRequest_Filter,
-  UnbondingTokensByAddressIndexResponse,
+  UnbondingTokensByAddressIndexResponseSchema,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+
+import { create } from '@bufbuild/protobuf';
 import { ViewService, StakeService } from '@penumbra-zone/protobuf';
-import { createContextValues, createHandlerContext, PromiseClient } from '@connectrpc/connect';
+import { createContextValues, createHandlerContext, Client } from '@connectrpc/connect';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { unbondingTokensByAddressIndex } from './index.js';
 import { getDisplayDenomFromView } from '@penumbra-zone/getters/value-view';
 import { stakeClientCtx } from '../../ctx/stake-client.js';
-import { ValidatorInfoResponse } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
+import { ValidatorInfoResponseSchema } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 
 const mockBalances = vi.hoisted(() => vi.fn());
 vi.mock('../balances', () => ({
@@ -35,17 +37,17 @@ const mockStakingClient = {
 
 const mockCtx = createHandlerContext({
   service: ViewService,
-  method: ViewService.methods.unbondingTokensByAddressIndex,
+  method: ViewService.method.unbondingTokensByAddressIndex,
   protocolName: 'mock',
   requestMethod: 'MOCK',
   url: '/mock',
   contextValues: createContextValues().set(
     stakeClientCtx,
-    mockStakingClient as unknown as PromiseClient<typeof StakeService>,
+    mockStakingClient as unknown as Client<typeof StakeService>,
   ),
 });
 
-const mockBalancesResponse1 = new BalancesResponse({
+const mockBalancesResponse1 = create(BalancesResponseSchema, {
   balanceView: {
     valueView: {
       case: 'knownAssetId',
@@ -59,7 +61,7 @@ const mockBalancesResponse1 = new BalancesResponse({
   },
 });
 
-const mockBalancesResponse2 = new BalancesResponse({
+const mockBalancesResponse2 = create(BalancesResponseSchema, {
   balanceView: {
     valueView: {
       case: 'knownAssetId',
@@ -74,7 +76,7 @@ const mockBalancesResponse2 = new BalancesResponse({
   },
 });
 
-const mockBalancesResponse3 = new BalancesResponse({
+const mockBalancesResponse3 = create(BalancesResponseSchema, {
   balanceView: {
     valueView: {
       case: 'knownAssetId',
@@ -89,7 +91,7 @@ const mockBalancesResponse3 = new BalancesResponse({
   },
 });
 
-const mockBalancesResponse4 = new BalancesResponse({
+const mockBalancesResponse4 = create(BalancesResponseSchema, {
   balanceView: {
     valueView: {
       case: 'unknownAssetId',
@@ -105,11 +107,13 @@ describe('Unbonding Tokens by Address Index handler', () => {
     vi.resetAllMocks();
 
     mockAppParameters.mockResolvedValue(
-      new AppParametersResponse({ parameters: { stakeParams: { unbondingDelay: 100n } } }),
+      create(AppParametersResponseSchema, {
+        parameters: { stakeParams: { unbondingDelay: 100n } },
+      }),
     );
 
     mockStakingClient.getValidatorInfo.mockResolvedValue(
-      new ValidatorInfoResponse({
+      create(ValidatorInfoResponseSchema, {
         validatorInfo: {
           validator: {
             name: 'Validator 1',
@@ -117,7 +121,7 @@ describe('Unbonding Tokens by Address Index handler', () => {
         },
       }),
     );
-    mockStatus.mockResolvedValue(new StatusResponse({ fullSyncHeight: 250n }));
+    mockStatus.mockResolvedValue(create(StatusResponseSchema, { fullSyncHeight: 250n }));
 
     const mockBalancesResponse = {
       next: vi.fn(),
@@ -143,7 +147,7 @@ describe('Unbonding Tokens by Address Index handler', () => {
   describe('when passed no filter', () => {
     it('returns all unbonding tokens, along with their claimable status', async () => {
       const responses = await Array.fromAsync(
-        unbondingTokensByAddressIndex(new UnbondingTokensByAddressIndexRequest(), mockCtx),
+        unbondingTokensByAddressIndex(create(UnbondingTokensByAddressIndexRequestSchema), mockCtx),
       );
 
       expect(responses.length).toBe(2);
@@ -156,7 +160,7 @@ describe('Unbonding Tokens by Address Index handler', () => {
     it('returns only claimable unbonding tokens', async () => {
       const responses = await Array.fromAsync(
         unbondingTokensByAddressIndex(
-          new UnbondingTokensByAddressIndexRequest({
+          create(UnbondingTokensByAddressIndexRequestSchema, {
             filter: UnbondingTokensByAddressIndexRequest_Filter.CLAIMABLE,
           }),
           mockCtx,
@@ -172,7 +176,7 @@ describe('Unbonding Tokens by Address Index handler', () => {
     it('returns only not-yet-claimable unbonding tokens', async () => {
       const responses = await Array.fromAsync(
         unbondingTokensByAddressIndex(
-          new UnbondingTokensByAddressIndexRequest({
+          create(UnbondingTokensByAddressIndexRequestSchema, {
             filter: UnbondingTokensByAddressIndexRequest_Filter.NOT_YET_CLAIMABLE,
           }),
           mockCtx,
@@ -186,10 +190,10 @@ describe('Unbonding Tokens by Address Index handler', () => {
 
   it("excludes any tokens that aren't unbonding tokens", async () => {
     const responses = await Array.fromAsync(
-      unbondingTokensByAddressIndex(new UnbondingTokensByAddressIndexRequest(), mockCtx),
+      unbondingTokensByAddressIndex(create(UnbondingTokensByAddressIndexRequestSchema), mockCtx),
     );
-    const responseObjects = responses.map(
-      response => new UnbondingTokensByAddressIndexResponse(response),
+    const responseObjects = responses.map(response =>
+      create(UnbondingTokensByAddressIndexResponseSchema, response),
     );
 
     expect(responses.length).toBe(2);

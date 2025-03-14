@@ -1,8 +1,13 @@
-import { SpendableNoteRecord, SwapRecord } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import {
+  SpendableNoteRecordSchema,
+  SwapRecordSchema,
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { equals, fromJson } from '@bufbuild/protobuf';
 import type { Impl } from './index.js';
 import { servicesCtx } from '../ctx/prax.js';
 
 import { Code, ConnectError } from '@connectrpc/connect';
+import { NullifierSchema } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
 
 const watchStream = async <U>(
   subscription: AsyncGenerator<U>,
@@ -46,12 +51,20 @@ export const nullifierStatus: Impl['nullifierStatus'] = async (req, ctx) => {
     // we might double-check very recent items, but we won't miss any.
     const eventuallySpent = Promise.race([
       watchStream(swapStream, ({ value: swapJson }) => {
-        const swap = SwapRecord.fromJson(swapJson);
-        return Boolean(swap.heightClaimed) && nullifier.equals(swap.nullifier);
+        const swap = fromJson(SwapRecordSchema, swapJson);
+        return (
+          !!swap.heightClaimed &&
+          !!swap.nullifier &&
+          equals(NullifierSchema, nullifier, swap.nullifier)
+        );
       }),
       watchStream(noteStream, ({ value: noteJson }) => {
-        const note = SpendableNoteRecord.fromJson(noteJson);
-        return Boolean(note.heightSpent) && nullifier.equals(note.nullifier);
+        const note = fromJson(SpendableNoteRecordSchema, noteJson);
+        return (
+          !!note.heightSpent &&
+          !!note.nullifier &&
+          equals(NullifierSchema, nullifier, note.nullifier)
+        );
       }),
     ]);
     return eventuallySpent.then(() => ({ spent: true }));
