@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest';
+import { create } from '@bufbuild/protobuf';
 import { calculateCommissionAsPercentage, getVotingPowerByValidatorInfo } from './staking.js';
-import { ValidatorInfo } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
+import { ValidatorInfoSchema } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
 import { getIdentityKeyFromValidatorInfo } from '@penumbra-zone/getters/validator-info';
 
 describe('calculateCommission()', () => {
-  const validatorInfo = new ValidatorInfo({
+  const validatorInfo = create(ValidatorInfoSchema, {
     validator: {
       fundingStreams: [
         {
@@ -42,7 +43,7 @@ describe('calculateCommission()', () => {
 });
 
 describe('getVotingPowerByValidatorInfo()', () => {
-  const validatorInfo1 = new ValidatorInfo({
+  const validatorInfo1 = create(ValidatorInfoSchema, {
     status: {
       votingPower: { hi: 0n, lo: 2n },
     },
@@ -52,7 +53,7 @@ describe('getVotingPowerByValidatorInfo()', () => {
     },
   });
 
-  const validatorInfo2 = new ValidatorInfo({
+  const validatorInfo2 = create(ValidatorInfoSchema, {
     status: {
       votingPower: { hi: 0n, lo: 2n },
     },
@@ -62,7 +63,7 @@ describe('getVotingPowerByValidatorInfo()', () => {
     },
   });
 
-  const validatorInfo3 = new ValidatorInfo({
+  const validatorInfo3 = create(ValidatorInfoSchema, {
     status: {
       votingPower: { hi: 0n, lo: 1n },
     },
