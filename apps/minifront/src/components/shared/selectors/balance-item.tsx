@@ -7,7 +7,12 @@ import { cn } from '@penumbra-zone/ui-deprecated/lib/utils';
 import { AssetIcon } from '@penumbra-zone/ui-deprecated/components/ui/asset-icon';
 import { ValueViewComponent } from '@penumbra-zone/ui-deprecated/components/ui/value';
 import { TableCell, TableRow } from '@penumbra-zone/ui-deprecated/components/ui/table';
-import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import {
+  BalancesResponse,
+  BalancesResponseSchema,
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { equals } from '@bufbuild/protobuf';
+import { MetadataSchema } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
 interface BalanceItemProps {
   asset: BalanceOrMetadata;
@@ -27,10 +32,14 @@ export const BalanceItem = ({ asset, value, onSelect }: BalanceItemProps) => {
       return false;
     }
     if (isBalance(asset)) {
-      return value.equals(asset);
+      return equals(BalancesResponseSchema, value, asset);
     }
     if (isMetadata(asset)) {
-      return metadataFromValue?.equals(metadataFromAsset);
+      return (
+        !!metadataFromValue &&
+        !!metadataFromAsset &&
+        equals(MetadataSchema, metadataFromValue, metadataFromAsset)
+      );
     }
     return false;
   }, [asset, metadataFromAsset, metadataFromValue, value]);

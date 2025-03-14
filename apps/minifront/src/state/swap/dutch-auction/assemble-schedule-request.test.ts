@@ -1,8 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
+import { create } from '@bufbuild/protobuf';
 import { assembleScheduleRequest } from './assemble-schedule-request';
-import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { BalancesResponseSchema } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { MetadataSchema } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { AddressIndexSchema } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 const MOCK_START_HEIGHT = vi.hoisted(() => 1234n);
 
@@ -18,7 +19,7 @@ vi.mock('../../../penumbra', () => ({
   },
 }));
 
-const metadata = new Metadata({
+const metadata = create(MetadataSchema, {
   base: 'uasset',
   display: 'asset',
   denomUnits: [
@@ -34,7 +35,7 @@ const metadata = new Metadata({
   penumbraAssetId: {},
 });
 
-const balancesResponse = new BalancesResponse({
+const balancesResponse = create(BalancesResponseSchema, {
   balanceView: {
     valueView: {
       case: 'knownAssetId',
@@ -68,6 +69,6 @@ describe('assembleScheduleRequest()', () => {
   it('uses the correct source for the transaction', async () => {
     const req = await assembleScheduleRequest(ARGS);
 
-    expect(req.source).toEqual(new AddressIndex({ account: 1234 }));
+    expect(req.source).toEqual(create(AddressIndexSchema, { account: 1234 }));
   });
 });

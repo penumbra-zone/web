@@ -3,7 +3,10 @@ import {
   MetadataFetchFn,
   TransactionViewComponent,
 } from '@penumbra-zone/ui-deprecated/components/ui/tx';
-import { TransactionInfo } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import {
+  TransactionInfo,
+  TransactionInfoSchema,
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import type { Jsonified } from '@penumbra-zone/types/jsonified';
 import { useState } from 'react';
 import { SegmentedPicker } from '@penumbra-zone/ui-deprecated/components/ui/segmented-picker';
@@ -15,6 +18,7 @@ import { classifyTransaction } from '@penumbra-zone/perspective/transaction/clas
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { penumbra } from '../../penumbra';
+import { toJson, toJsonString } from '@bufbuild/protobuf';
 
 export enum TxDetailsTab {
   PUBLIC = 'public',
@@ -50,8 +54,10 @@ export const TxViewer = ({ txInfo }: { txInfo?: TransactionInfo }) => {
     : OPTIONS.filter(option => option.value !== TxDetailsTab.RECEIVER);
 
   // use React-Query to invoke custom hooks that call async translators.
+  const infohash =
+    (txInfo && toJsonString(TransactionInfoSchema, txInfo, { registry: typeRegistry })) ?? '';
   const { data: receiverView } = useQuery({
-    queryKey: ['receiverView', txInfo?.toJson({ typeRegistry }), option],
+    queryKey: ['receiverView', infohash, option],
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify
     queryFn: () => fetchReceiverView(txInfo!),
     enabled: option === TxDetailsTab.RECEIVER && !!txInfo,
@@ -91,7 +97,13 @@ export const TxViewer = ({ txInfo }: { txInfo?: TransactionInfo }) => {
           />
           <div className='mt-8'>
             <div className='text-xl font-bold'>Raw JSON</div>
-            <JsonViewer jsonObj={txInfo.toJson({ typeRegistry }) as Jsonified<TransactionInfo>} />
+            <JsonViewer
+              jsonObj={
+                toJson(TransactionInfoSchema, txInfo, {
+                  registry: typeRegistry,
+                }) as Jsonified<TransactionInfo>
+              }
+            />
           </div>
         </>
       )}

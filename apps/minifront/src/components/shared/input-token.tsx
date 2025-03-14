@@ -6,6 +6,8 @@ import { Validation } from './validation-result';
 import { InputBlock } from './input-block';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
 import { NumberInput } from './number-input';
+import { equals } from '@bufbuild/protobuf';
+import { ValueViewSchema } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
 interface InputTokenProps {
   label: string;
@@ -35,7 +37,12 @@ export default function InputToken({
   loading,
 }: InputTokenProps) {
   const setInputToBalanceMax = () => {
-    const match = balances.find(b => b.balanceView?.equals(selection?.balanceView));
+    const match = balances.find(
+      b =>
+        b.balanceView &&
+        selection?.balanceView &&
+        equals(ValueViewSchema, b.balanceView, selection.balanceView),
+    );
     if (match?.balanceView) {
       const formattedAmt = getFormattedAmtFromValueView(match.balanceView);
       onInputChange(formattedAmt);

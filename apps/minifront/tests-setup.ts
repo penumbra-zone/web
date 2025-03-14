@@ -8,11 +8,9 @@ vi.mock('zustand');
 vi.mock('@penumbra-zone/client');
 
 vi.mock('./src/penumbra', async () => {
-  const { createPromiseClient } =
-    await vi.importActual<typeof import('@connectrpc/connect')>('@connectrpc/connect');
   return {
     penumbra: {
-      service: vi.fn(s => createPromiseClient(s, { unary: vi.fn(), stream: vi.fn() })),
+      service: vi.fn(),
     },
   };
 });

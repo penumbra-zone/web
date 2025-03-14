@@ -1,9 +1,10 @@
 import { ViewService } from '@penumbra-zone/protobuf';
+import { create } from '@bufbuild/protobuf';
 import { SwapRecord } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { getUnclaimedSwaps } from '@penumbra-zone/getters/unclaimed-swaps-response';
 import { UnclaimedSwapsWithMetadata } from '../state/unclaimed-swaps';
 import { getSwapAsset1, getSwapAsset2 } from '@penumbra-zone/getters/swap-record';
-import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { MetadataSchema } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { penumbra } from '../penumbra';
 
@@ -21,10 +22,10 @@ const fetchMetadataForSwap = async (swap: SwapRecord): Promise<UnclaimedSwapsWit
     // If no metadata, uses assetId for asset icon display
     asset1: asset1Metadata
       ? asset1Metadata
-      : new Metadata({ display: uint8ArrayToBase64(assetId1.inner) }),
+      : create(MetadataSchema, { display: uint8ArrayToBase64(assetId1.inner) }),
     asset2: asset2Metadata
       ? asset2Metadata
-      : new Metadata({ display: uint8ArrayToBase64(assetId2.inner) }),
+      : create(MetadataSchema, { display: uint8ArrayToBase64(assetId2.inner) }),
   };
 };
 

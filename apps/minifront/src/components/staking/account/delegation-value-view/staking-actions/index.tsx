@@ -1,5 +1,8 @@
 import { Button } from '@penumbra-zone/ui-deprecated/components/ui/button';
-import { ValidatorInfo } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
+import {
+  ValidatorInfo,
+  ValidatorSchema,
+} from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { FormDialog } from './form-dialog';
 import { useMemo } from 'react';
@@ -9,6 +12,7 @@ import { getValidator } from '@penumbra-zone/getters/validator-info';
 import { getAmount } from '@penumbra-zone/getters/value-view';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
 import { useStakingTokensAndFilter } from '../../use-staking-tokens-and-filter';
+import { equals } from '@bufbuild/protobuf';
 
 const stakingActionsSelector = (state: AllSlices) => ({
   account: state.staking.account,
@@ -84,7 +88,11 @@ export const StakingActions = ({
 
       <FormDialog
         action={state.action}
-        open={!!state.action && validator.equals(getValidator(state.validatorInfo))}
+        open={
+          !!state.action &&
+          !!state.validatorInfo &&
+          equals(ValidatorSchema, validator, getValidator(state.validatorInfo))
+        }
         validator={validator}
         amount={state.amount}
         delegationTokens={delegationTokens}

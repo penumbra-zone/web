@@ -1,21 +1,22 @@
 import {
-  AuthorizeAndBuildRequest,
+  AuthorizeAndBuildRequestSchema,
   AuthorizeAndBuildResponse,
   BalancesResponse,
-  BroadcastTransactionRequest,
+  BroadcastTransactionRequestSchema,
   BroadcastTransactionResponse,
-  TransactionPlannerRequest,
-  WitnessAndBuildRequest,
+  TransactionPlannerRequestSchema,
+  WitnessAndBuildRequestSchema,
   WitnessAndBuildResponse,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { sha256Hash } from '@penumbra-zone/crypto-web/sha256';
 import {
-  Transaction,
+  TransactionSchema,
   TransactionPlan,
+  Transaction,
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
-import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
-import { PartialMessage } from '@bufbuild/protobuf';
+import { TransactionIdSchema } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
+import { create, equals, isMessage, MessageInitShape, toBinary } from '@bufbuild/protobuf';
 import { TransactionToast } from '@penumbra-zone/ui-deprecated/lib/toast/transaction-toast';
 import { TransactionClassification } from '@penumbra-zone/perspective/transaction/classification';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
@@ -26,7 +27,7 @@ import {
   getValueViewCaseFromBalancesResponse,
 } from '@penumbra-zone/getters/balances-response';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
-import { PromiseClient } from '@connectrpc/connect';
+import { Client } from '@connectrpc/connect';
 import { penumbra } from '../penumbra';
 
 /**
@@ -38,7 +39,7 @@ import { penumbra } from '../penumbra';
  */
 export const planBuildBroadcast = async (
   transactionClassification: TransactionClassification,
-  req: PartialMessage<TransactionPlannerRequest>,
+  req: MessageInitShape<typeof TransactionPlannerRequestSchema>,
   options?: {
     /**
      * If set to `true`, the `ViewService#witnessAndBuild` method will be used,
@@ -88,7 +89,7 @@ export const planBuildBroadcast = async (
 };
 
 export const plan = async (
-  req: PartialMessage<TransactionPlannerRequest>,
+  req: MessageInitShape<typeof TransactionPlannerRequestSchema>,
 ): Promise<TransactionPlan> => {
   const { plan } = await penumbra.service(ViewService).transactionPlanner(req);
   if (!plan) {
@@ -98,8 +99,12 @@ export const plan = async (
 };
 
 const build = async (
-  req: PartialMessage<AuthorizeAndBuildRequest> | PartialMessage<WitnessAndBuildRequest>,
-  buildFn: PromiseClient<typeof ViewService>['authorizeAndBuild' | 'witnessAndBuild'],
+  req: Omit<
+    | MessageInitShape<typeof AuthorizeAndBuildRequestSchema>
+    | MessageInitShape<typeof WitnessAndBuildRequestSchema>,
+    '$typeName'
+  >,
+  buildFn: Client<typeof ViewService>['authorizeAndBuild' | 'witnessAndBuild'],
   onStatusUpdate: (
     status?: (AuthorizeAndBuildResponse | WitnessAndBuildResponse)['status'],
   ) => void,
@@ -123,7 +128,7 @@ const build = async (
 };
 
 const broadcast = async (
-  req: PartialMessage<BroadcastTransactionRequest>,
+  req: MessageInitShape<typeof BroadcastTransactionRequestSchema>,
   onStatusUpdate: (status?: BroadcastTransactionResponse['status']) => void,
 ): Promise<{ txHash: string; detectionHeight?: bigint }> => {
   const { awaitDetection, transaction } = req;
@@ -137,7 +142,7 @@ const broadcast = async (
     awaitDetection,
     transaction,
   })) {
-    if (!txId.equals(status.value?.id)) {
+    if (!status.value?.id || !equals(TransactionIdSchema, txId, status.value.id)) {
       throw new Error('unexpected transaction id');
     }
     onStatusUpdate(status);
@@ -150,17 +155,21 @@ const broadcast = async (
       case 'confirmed':
         return { txHash, detectionHeight: status.value.detectionHeight };
       default:
-        console.warn(`unknown broadcastTransaction status: ${status.case}`);
+        console.warn(
+          `unknown broadcastTransaction status: ${(status as BroadcastTransactionResponse['status']).case}`,
+        );
     }
   }
   // TODO: detail broadcastSuccess status
   throw new Error('did not broadcast transaction');
 };
 
-const txSha256 = (tx: Transaction | PartialMessage<Transaction>) =>
-  sha256Hash(tx instanceof Transaction ? tx.toBinary() : new Transaction(tx).toBinary()).then(
-    inner => new TransactionId({ inner }),
-  );
+const txSha256 = (tx: Transaction | MessageInitShape<typeof TransactionSchema>) =>
+  sha256Hash(
+    isMessage(tx, TransactionSchema)
+      ? toBinary(TransactionSchema, tx)
+      : toBinary(TransactionSchema, create(TransactionSchema, tx)),
+  ).then(inner => create(TransactionIdSchema, { inner }));
 
 // We don't have ConnectError in this scope, so we only detect standard Error.
 // Any ConnectError code is named at the beginning of the message value.

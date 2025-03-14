@@ -1,16 +1,22 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
-import { create, StoreApi, UseBoundStore } from 'zustand';
+import { clone, create } from '@bufbuild/protobuf';
+import { create as createStore, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '..';
-import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import { AmountSchema } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { sendValidationErrors } from '.';
-import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { AddressViewSchema } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import {
-  AddressByIndexResponse,
-  BalancesResponse,
-  TransactionPlannerResponse,
+  MetadataSchema,
+  ValueViewSchema,
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+
+import {
+  AddressByIndexResponseSchema,
+  BalancesResponseSchema,
+  TransactionPlannerResponseSchema,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { Fee } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
+
+import { FeeSchema } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
 import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
 
 vi.mock('../fetchers/address', () => ({
@@ -33,16 +39,16 @@ vi.mock('../../penumbra', () => ({
 }));
 
 describe('Send Slice', () => {
-  const selectionExample = new BalancesResponse({
-    balanceView: new ValueView({
+  const selectionExample = create(BalancesResponseSchema, {
+    balanceView: create(ValueViewSchema, {
       valueView: {
         case: 'knownAssetId',
         value: {
-          amount: new Amount({
+          amount: create(AmountSchema, {
             lo: 0n,
             hi: 0n,
           }),
-          metadata: new Metadata({
+          metadata: create(MetadataSchema, {
             display: 'xyz',
             denomUnits: [{ denom: 'xyz', exponent: 6 }],
             penumbraAssetId: { inner: new Uint8Array(32) },
@@ -50,7 +56,7 @@ describe('Send Slice', () => {
         },
       },
     }),
-    accountAddress: new AddressView({
+    accountAddress: create(AddressViewSchema, {
       addressView: {
         case: 'decoded',
         value: {
@@ -66,7 +72,7 @@ describe('Send Slice', () => {
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
 
   beforeEach(() => {
-    useStore = create<AllSlices>()(initializeStore()) as UseBoundStore<StoreApi<AllSlices>>;
+    useStore = createStore<AllSlices>()(initializeStore()) as UseBoundStore<StoreApi<AllSlices>>;
   });
 
   test('the default is empty, false or undefined', () => {
@@ -96,8 +102,8 @@ describe('Send Slice', () => {
     });
 
     test('validate high enough amount validates', () => {
-      const assetBalance = new Amount({ hi: 1n });
-      const state = selectionExample.clone();
+      const assetBalance = create(AmountSchema, { hi: 1n });
+      const state = clone(BalancesResponseSchema, selectionExample);
       state.balanceView!.valueView.value!.amount = assetBalance;
 
       useStore.getState().send.setSelection(state);
@@ -109,8 +115,8 @@ describe('Send Slice', () => {
     });
 
     test('validate error when too low the balance of the asset', () => {
-      const assetBalance = new Amount({ lo: 2n });
-      const state = selectionExample.clone();
+      const assetBalance = create(AmountSchema, { lo: 2n });
+      const state = clone(BalancesResponseSchema, selectionExample);
       state.balanceView!.valueView.value!.amount = assetBalance;
 
       useStore.getState().send.setSelection(state);
@@ -183,15 +189,17 @@ describe('Send Slice', () => {
     const recipient =
       'penumbra1lsqlh43cxh6amvtu0g84v9s8sq0zef4mz8jvje9lxwarancqg9qjf6nthhnjzlwngplepq7vaam8h4z530gys7x2s82zn0sgvxneea442q63sumem7r096p7rd2tywm2v6ppc4';
     const memo = 'hello';
-    const mockFee = new Fee({ amount: { hi: 1n, lo: 2n } });
+    const mockFee = create(FeeSchema, { amount: { hi: 1n, lo: 2n } });
 
     beforeEach(() => {
       vi.spyOn(hoisted.mockViewClient, 'addressByIndex').mockResolvedValue(
-        new AddressByIndexResponse(),
+        create(AddressByIndexResponseSchema),
       );
 
       vi.spyOn(hoisted.mockViewClient, 'transactionPlanner').mockResolvedValue(
-        new TransactionPlannerResponse({ plan: { transactionParameters: { fee: mockFee } } }),
+        create(TransactionPlannerResponseSchema, {
+          plan: { transactionParameters: { fee: mockFee } },
+        }),
       );
     });
 
@@ -307,7 +315,7 @@ describe('Send Slice', () => {
             recipient,
             selection: selectionExample,
             memo,
-            fee: new Fee({ amount: { hi: 0n, lo: 0n } }),
+            fee: create(FeeSchema, { amount: { hi: 0n, lo: 0n } }),
           },
         });
 
@@ -326,7 +334,7 @@ describe('Send Slice', () => {
             recipient,
             selection: selectionExample,
             memo: '',
-            fee: new Fee({ amount: { hi: 0n, lo: 0n } }),
+            fee: create(FeeSchema, { amount: { hi: 0n, lo: 0n } }),
           },
         });
 
@@ -345,7 +353,7 @@ describe('Send Slice', () => {
             recipient,
             selection: selectionExample,
             memo,
-            fee: new Fee({ amount: { hi: 0n, lo: 0n } }),
+            fee: create(FeeSchema, { amount: { hi: 0n, lo: 0n } }),
           },
         });
 
@@ -364,7 +372,7 @@ describe('Send Slice', () => {
             recipient: '',
             selection: selectionExample,
             memo,
-            fee: new Fee({ amount: { hi: 0n, lo: 0n } }),
+            fee: create(FeeSchema, { amount: { hi: 0n, lo: 0n } }),
           },
         });
 
@@ -383,7 +391,7 @@ describe('Send Slice', () => {
             recipient,
             selection: undefined,
             memo,
-            fee: new Fee({ amount: { hi: 0n, lo: 0n } }),
+            fee: create(FeeSchema, { amount: { hi: 0n, lo: 0n } }),
           },
         });
 

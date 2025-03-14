@@ -1,11 +1,12 @@
 import { AllSlices, Middleware, SliceCreator, useStore } from '..';
 
+import { create } from '@bufbuild/protobuf';
 import {
   BalancesResponse,
-  TransactionPlannerRequest,
+  TransactionPlannerRequestSchema,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { BigNumber } from 'bignumber.js';
-import { MemoPlaintext } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import { MemoPlaintextSchema } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { amountMoreThanBalance, isIncorrectDecimal, plan, planBuildBroadcast } from '../helpers';
 
 import { Fee, FeeTier_Tier } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
@@ -21,9 +22,9 @@ import {
   SpendOrOutput,
   transferableBalancesResponsesSelector,
 } from './helpers';
-import { Metadata, Value } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { Metadata, ValueSchema } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getAssetTokenMetadata } from '../../fetchers/registry';
-import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { AddressSchema } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { getGasPrices, hasStakingToken } from '../../fetchers/gas-prices.ts';
 
 export interface SendSlice {
@@ -134,8 +135,8 @@ const assembleRequest = async (state: AllSlices) => {
   } = state;
 
   const spendOrOutput: SpendOrOutput = {
-    address: new Address({ altBech32m: recipient }),
-    value: new Value({
+    address: create(AddressSchema, { altBech32m: recipient }),
+    value: create(ValueSchema, {
       amount: toBaseUnit(
         BigNumber(amount),
         getDisplayDenomExponentFromValueView.optional(selection?.balanceView),
@@ -151,7 +152,7 @@ const assembleRequest = async (state: AllSlices) => {
     hasStakingToken: selectedStakingTokenSelector(state),
   });
 
-  return new TransactionPlannerRequest({
+  return create(TransactionPlannerRequestSchema, {
     ...(isSendingMax ? { spends: [spendOrOutput] } : { outputs: [spendOrOutput] }),
     source: getAddressIndex(selection?.accountAddress),
     // Note: we currently don't provide a UI for setting the fee manually. Thus,
@@ -163,7 +164,7 @@ const assembleRequest = async (state: AllSlices) => {
             case: 'autoFee',
             value: { feeTier },
           },
-    memo: new MemoPlaintext({
+    memo: create(MemoPlaintextSchema, {
       returnAddress: getAddress(selection?.accountAddress),
       text: memo,
     }),

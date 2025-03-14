@@ -1,9 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { StoreApi, UseBoundStore, create } from 'zustand';
+import { create } from '@bufbuild/protobuf';
+import { StoreApi, UseBoundStore, create as createStore } from 'zustand';
 import { AllSlices, initializeStore } from '../..';
-import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import { BalancesResponseSchema } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { MetadataSchema } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { AmountSchema } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { OUTPUT_LIMIT } from '.';
 
 const hoisted = vi.hoisted(() => ({
@@ -22,7 +23,7 @@ describe('Dutch auction slice', () => {
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
 
   beforeEach(() => {
-    useStore = create<AllSlices>()(initializeStore()) as UseBoundStore<StoreApi<AllSlices>>;
+    useStore = createStore<AllSlices>()(initializeStore()) as UseBoundStore<StoreApi<AllSlices>>;
   });
 
   describe('estimate()', () => {
@@ -31,7 +32,7 @@ describe('Dutch auction slice', () => {
         ...state,
         swap: {
           ...state.swap,
-          assetIn: new BalancesResponse({
+          assetIn: create(BalancesResponseSchema, {
             balanceView: {
               valueView: {
                 case: 'knownAssetId',
@@ -50,7 +51,7 @@ describe('Dutch auction slice', () => {
               },
             },
           }),
-          assetOut: new Metadata({
+          assetOut: create(MetadataSchema, {
             base: 'ugm',
             display: 'gm',
             denomUnits: [{ denom: 'ugm' }, { denom: 'gm', exponent: 6 }],
@@ -126,13 +127,13 @@ describe('Dutch auction slice', () => {
 
     beforeEach(() => {
       useStore.setState(state => {
-        state.swap.assetOut = new Metadata({
+        state.swap.assetOut = create(MetadataSchema, {
           base: 'uasset',
           display: 'asset',
           denomUnits: [{ denom: 'uasset' }, { denom: 'asset', exponent: DISPLAY_DENOM_EXPONENT }],
         });
         state.swap.dutchAuction.maxOutput = '1.234';
-        state.swap.dutchAuction.estimatedOutput = new Amount({ hi: 0n, lo: 123n });
+        state.swap.dutchAuction.estimatedOutput = create(AmountSchema, { hi: 0n, lo: 123n });
         return state;
       });
     });
@@ -186,13 +187,13 @@ describe('Dutch auction slice', () => {
 
     beforeEach(() => {
       useStore.setState(state => {
-        state.swap.assetOut = new Metadata({
+        state.swap.assetOut = create(MetadataSchema, {
           base: 'uasset',
           display: 'asset',
           denomUnits: [{ denom: 'uasset' }, { denom: 'asset', exponent: DISPLAY_DENOM_EXPONENT }],
         });
         state.swap.dutchAuction.minOutput = '1.234';
-        state.swap.dutchAuction.estimatedOutput = new Amount({ hi: 0n, lo: 123n });
+        state.swap.dutchAuction.estimatedOutput = create(AmountSchema, { hi: 0n, lo: 123n });
         return state;
       });
     });

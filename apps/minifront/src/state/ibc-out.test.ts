@@ -1,31 +1,35 @@
 import { beforeEach, describe, expect, test } from 'vitest';
-import { create, StoreApi, UseBoundStore } from 'zustand';
+import { create } from '@bufbuild/protobuf';
+import { create as createStore, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '.';
-import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import {
+  MetadataSchema,
+  ValueViewSchema,
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { AmountSchema } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { sendValidationErrors } from './send';
-import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { AddressViewSchema } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { produce } from 'immer';
-import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { BalancesResponseSchema } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
 import { Chain } from '@penumbra-labs/registry';
 import { currentTimePlusTwoDaysRounded, ibcValidationErrors } from './ibc-out';
 
 describe('IBC Slice', () => {
-  const selectionExample = new BalancesResponse({
-    balanceView: new ValueView({
+  const selectionExample = create(BalancesResponseSchema, {
+    balanceView: create(ValueViewSchema, {
       valueView: {
         case: 'knownAssetId',
         value: {
-          amount: new Amount({
+          amount: create(AmountSchema, {
             lo: 0n,
             hi: 0n,
           }),
-          metadata: new Metadata({ display: 'test_usd', denomUnits: [{ exponent: 18 }] }),
+          metadata: create(MetadataSchema, { display: 'test_usd', denomUnits: [{ exponent: 18 }] }),
         },
       },
     }),
-    accountAddress: new AddressView({
+    accountAddress: create(AddressViewSchema, {
       addressView: {
         case: 'opaque',
         value: {
@@ -40,7 +44,7 @@ describe('IBC Slice', () => {
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
 
   beforeEach(() => {
-    useStore = create<AllSlices>()(initializeStore()) as UseBoundStore<StoreApi<AllSlices>>;
+    useStore = createStore<AllSlices>()(initializeStore()) as UseBoundStore<StoreApi<AllSlices>>;
   });
 
   test('the default is empty, false or undefined', () => {
@@ -57,7 +61,7 @@ describe('IBC Slice', () => {
 
     // TODO [vanishmax, 2024-06-04]: Remove test skipping
     test.skip('validate high enough amount validates', () => {
-      const assetBalance = new Amount({ hi: 1n });
+      const assetBalance = create(AmountSchema, { hi: 1n });
       const state = produce(selectionExample, draft => {
         draft.balanceView!.valueView.value!.amount = assetBalance;
       });
@@ -70,7 +74,7 @@ describe('IBC Slice', () => {
     });
 
     test.skip('validate error when too low the balance of the asset', () => {
-      const assetBalance = new Amount({ lo: 2n });
+      const assetBalance = create(AmountSchema, { lo: 2n });
       const state = produce(selectionExample, draft => {
         draft.balanceView!.valueView.value!.amount = assetBalance;
       });

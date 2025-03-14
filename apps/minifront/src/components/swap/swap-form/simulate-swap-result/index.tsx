@@ -1,4 +1,5 @@
 import { ValueViewComponent } from '@penumbra-zone/ui-deprecated/components/ui/value';
+import { create } from '@bufbuild/protobuf';
 import { PriceImpact } from './price-impact';
 import { motion } from 'framer-motion';
 import { SimulateSwapResult as TSimulateSwapResult } from '../../../../state/swap';
@@ -10,7 +11,7 @@ import {
 } from '@penumbra-zone/getters/value-view';
 import { Traces } from './traces';
 import { AllSlices } from '../../../../state';
-import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { ValueViewSchema } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { toBaseUnit } from '@penumbra-zone/types/lo-hi';
 import BigNumber from 'bignumber.js';
 import { useStoreShallow } from '../../../../utils/use-store-shallow';
@@ -19,7 +20,7 @@ const HIDE = { clipPath: 'polygon(0 0, 100% 0, 100% 0, 0 0)' };
 const SHOW = { clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)' };
 
 const simulateSwapResultSelector = (state: AllSlices) => ({
-  input: new ValueView({
+  input: create(ValueViewSchema, {
     valueView: {
       case: 'knownAssetId',
       value: {

@@ -4,8 +4,13 @@ import {
   DialogContent,
   DialogHeader,
 } from '@penumbra-zone/ui-deprecated/components/ui/dialog';
+import { create, equals } from '@bufbuild/protobuf';
 import { AssetIcon } from '@penumbra-zone/ui-deprecated/components/ui/asset-icon';
-import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import {
+  Metadata,
+  MetadataSchema,
+  ValueViewSchema,
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { ValueViewComponent } from '@penumbra-zone/ui-deprecated/components/ui/value';
 import { useCallback, useEffect, useId, useMemo, useState } from 'react';
 import { IconInput } from '@penumbra-zone/ui-deprecated/components/ui/icon-input';
@@ -102,13 +107,14 @@ export const AssetSelector = ({ assets, loading, onChange, value, filter }: Asse
    * just display an asset icon/symbol without a value.
    */
   const valueView = useMemo(
-    () => new ValueView({ valueView: { case: 'knownAssetId', value: { metadata: value } } }),
+    () =>
+      create(ValueViewSchema, { valueView: { case: 'knownAssetId', value: { metadata: value } } }),
     [value],
   );
 
   const isSelected = useCallback(
     (metadata: Metadata) => {
-      return value?.equals(metadata);
+      return !!value && equals(MetadataSchema, value, metadata);
     },
     [value],
   );

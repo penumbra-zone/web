@@ -1,4 +1,5 @@
 import { SctService } from '@penumbra-zone/protobuf';
+import { timestampDate } from '@bufbuild/protobuf/wkt';
 import { penumbra } from '../penumbra';
 
 export const getBlockDate = async (
@@ -8,5 +9,5 @@ export const getBlockDate = async (
   const { timestamp } = await penumbra
     .service(SctService)
     .timestampByHeight({ height }, { signal });
-  return timestamp?.toDate();
+  return timestamp && timestampDate(timestamp);
 };

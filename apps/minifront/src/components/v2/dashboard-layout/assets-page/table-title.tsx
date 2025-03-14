@@ -1,12 +1,13 @@
 import { AddressViewComponent } from '@penumbra-zone/ui-deprecated/AddressViewComponent';
+import { create } from '@bufbuild/protobuf';
 import { BalancesByAccount } from '../../../../state/shared';
-import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { AddressViewSchema } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { useMemo } from 'react';
 
 export const TableTitle = ({ account }: { account: BalancesByAccount }) => {
   const addressView = useMemo(
     () =>
-      new AddressView({
+      create(AddressViewSchema, {
         addressView: {
           case: 'decoded',
           value: {

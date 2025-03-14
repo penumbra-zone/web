@@ -1,12 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { create } from '@bufbuild/protobuf';
 import { StakingActions } from '.';
 import { render } from '@testing-library/react';
-import { ValidatorInfo } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
-import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { ValidatorInfoSchema } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
+import {
+  ValueView,
+  ValueViewSchema,
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { AllSlices } from '../../../../../state';
-import { IdentityKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { IdentityKeySchema } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
-const nonZeroBalance = new ValueView({
+const nonZeroBalance = create(ValueViewSchema, {
   valueView: {
     case: 'knownAssetId',
     value: {
@@ -15,7 +19,7 @@ const nonZeroBalance = new ValueView({
   },
 });
 
-const zeroBalance = new ValueView({
+const zeroBalance = create(ValueViewSchema, {
   valueView: {
     case: 'knownAssetId',
     value: {
@@ -24,9 +28,9 @@ const zeroBalance = new ValueView({
   },
 });
 
-const validatorInfo = new ValidatorInfo({
+const validatorInfo = create(ValidatorInfoSchema, {
   validator: {
-    identityKey: new IdentityKey({
+    identityKey: create(IdentityKeySchema, {
       ik: new Uint8Array([
         1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4,
         5,

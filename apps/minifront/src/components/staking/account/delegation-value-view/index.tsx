@@ -1,4 +1,4 @@
-import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { AssetIdSchema, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { ValidatorInfoComponent } from './validator-info-component';
 import { ValueViewComponent } from '@penumbra-zone/ui-deprecated/components/ui/value';
 import { StakingActions } from './staking-actions';
@@ -11,6 +11,7 @@ import {
 } from '@penumbra-zone/getters/value-view';
 import { asValueView } from '@penumbra-zone/getters/equivalent-value';
 import { useStakingTokenMetadata } from '../../../../state/shared';
+import { equals } from '@bufbuild/protobuf';
 
 /**
  * Renders a `ValueView` that contains a delegation token, along with the
@@ -37,10 +38,15 @@ export const DelegationValueView = memo(
     const metadata = getMetadata(valueView);
 
     const equivalentValueOfStakingToken = useMemo(() => {
-      const equivalentValue = getEquivalentValues(valueView).find(equivalentValue =>
-        equivalentValue.numeraire?.penumbraAssetId?.equals(
-          stakingTokenMetadata.data?.penumbraAssetId,
-        ),
+      const equivalentValue = getEquivalentValues(valueView).find(
+        equivalentValue =>
+          equivalentValue.numeraire?.penumbraAssetId &&
+          stakingTokenMetadata.data?.penumbraAssetId &&
+          equals(
+            AssetIdSchema,
+            equivalentValue.numeraire.penumbraAssetId,
+            stakingTokenMetadata.data.penumbraAssetId,
+          ),
       );
 
       if (equivalentValue) {

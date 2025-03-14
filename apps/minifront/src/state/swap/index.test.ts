@@ -1,27 +1,32 @@
-import { create, StoreApi, UseBoundStore } from 'zustand';
+import { create as createStore, StoreApi, UseBoundStore } from 'zustand';
+import { create } from '@bufbuild/protobuf';
 import { AllSlices, initializeStore } from '..';
 import { beforeEach, describe, expect, it, test, vi } from 'vitest';
-import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
-import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import {
+  MetadataSchema,
+  ValueViewSchema,
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import type { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { AmountSchema } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import { AddressViewSchema } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { BalancesResponseSchema } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
 
 describe('Swap Slice', () => {
-  const metadata1 = new Metadata({
+  const metadata1 = create(MetadataSchema, {
     base: 'uasset1',
     display: 'asset1',
     penumbraAssetId: { inner: new Uint8Array([1]) },
     denomUnits: [{ denom: 'uasset1' }, { denom: 'asset1', exponent: 6 }],
   });
-  const metadata2 = new Metadata({
+  const metadata2 = create(MetadataSchema, {
     base: 'uasset2',
     display: 'asset2',
     penumbraAssetId: { inner: new Uint8Array([2]) },
     denomUnits: [{ denom: 'uasset2' }, { denom: 'asset2', exponent: 6 }],
   });
 
-  const balancesResponseWithMetadata1 = new BalancesResponse({
+  const balancesResponseWithMetadata1 = create(BalancesResponseSchema, {
     balanceView: {
       valueView: {
         case: 'knownAssetId',
@@ -29,7 +34,7 @@ describe('Swap Slice', () => {
       },
     },
   });
-  const balancesResponseWithMetadata2 = new BalancesResponse({
+  const balancesResponseWithMetadata2 = create(BalancesResponseSchema, {
     balanceView: {
       valueView: {
         case: 'knownAssetId',
@@ -38,20 +43,20 @@ describe('Swap Slice', () => {
     },
   });
 
-  const selectionExample = new BalancesResponse({
-    balanceView: new ValueView({
+  const selectionExample = create(BalancesResponseSchema, {
+    balanceView: create(ValueViewSchema, {
       valueView: {
         case: 'knownAssetId',
         value: {
-          amount: new Amount({
+          amount: create(AmountSchema, {
             lo: 0n,
             hi: 0n,
           }),
-          metadata: new Metadata({ display: 'test_usd', denomUnits: [{ exponent: 18 }] }),
+          metadata: create(MetadataSchema, { display: 'test_usd', denomUnits: [{ exponent: 18 }] }),
         },
       },
     }),
-    accountAddress: new AddressView({
+    accountAddress: create(AddressViewSchema, {
       addressView: {
         case: 'opaque',
         value: {
@@ -68,7 +73,7 @@ describe('Swap Slice', () => {
 
   beforeEach(() => {
     registryAssets = [];
-    useStore = create<AllSlices>()(initializeStore()) as UseBoundStore<StoreApi<AllSlices>>;
+    useStore = createStore<AllSlices>()(initializeStore()) as UseBoundStore<StoreApi<AllSlices>>;
   });
 
   test('the defaults are correct', () => {
@@ -102,15 +107,15 @@ describe('Swap Slice', () => {
       expect(useStore.getState().swap.instantSwap.simulateSwapResult).toBeUndefined();
       useStore.setState(state => {
         state.swap.instantSwap.simulateSwapResult = {
-          output: new ValueView(),
-          unfilled: new ValueView(),
+          output: create(ValueViewSchema),
+          unfilled: create(ValueViewSchema),
           priceImpact: undefined,
           metadataByAssetId: {},
         };
         return state;
       });
       expect(useStore.getState().swap.instantSwap.simulateSwapResult).toBeDefined();
-      useStore.getState().swap.setAssetIn(new BalancesResponse());
+      useStore.getState().swap.setAssetIn(create(BalancesResponseSchema));
       expect(useStore.getState().swap.instantSwap.simulateSwapResult).toBeUndefined();
     });
 
@@ -152,8 +157,8 @@ describe('Swap Slice', () => {
       expect(useStore.getState().swap.instantSwap.simulateSwapResult).toBeUndefined();
       useStore.setState(state => {
         state.swap.instantSwap.simulateSwapResult = {
-          output: new ValueView(),
-          unfilled: new ValueView(),
+          output: create(ValueViewSchema),
+          unfilled: create(ValueViewSchema),
           priceImpact: undefined,
           metadataByAssetId: {},
         };
@@ -201,8 +206,8 @@ describe('Swap Slice', () => {
     expect(useStore.getState().swap.instantSwap.simulateSwapResult).toBeUndefined();
     useStore.setState(state => {
       state.swap.instantSwap.simulateSwapResult = {
-        output: new ValueView(),
-        unfilled: new ValueView(),
+        output: create(ValueViewSchema),
+        unfilled: create(ValueViewSchema),
         priceImpact: undefined,
         metadataByAssetId: {},
       };

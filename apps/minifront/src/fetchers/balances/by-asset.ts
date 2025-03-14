@@ -1,10 +1,15 @@
-import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import {
+  AssetIdSchema,
+  ValueView,
+  ValueViewSchema,
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { getAssetIdFromValueView } from '@penumbra-zone/getters/value-view';
 import { addAmounts } from '@penumbra-zone/types/amount';
+import { clone, equals } from '@bufbuild/protobuf';
 
 const hasMatchingAssetId = (vA: ValueView, vB: ValueView) => {
-  return getAssetIdFromValueView(vA).equals(getAssetIdFromValueView(vB));
+  return equals(AssetIdSchema, getAssetIdFromValueView(vA), getAssetIdFromValueView(vB));
 };
 
 // Use for doing a .reduce() on BalancesResponse[]
@@ -28,7 +33,7 @@ export const groupByAsset = (acc: ValueView[], curr: BalancesResponse): ValueVie
   } else {
     // Add a new entry to the array
     // clone so we don't mutate the original
-    acc.push(curr.balanceView.clone());
+    acc.push(clone(ValueViewSchema, curr.balanceView));
   }
 
   return acc;

@@ -1,14 +1,18 @@
 import { ValidatorInfo } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
+import { create } from '@bufbuild/protobuf';
 import { SliceCreator } from '..';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
-import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { Metadata, ValueViewSchema } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import type { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { AddressIndexSchema } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { planBuildBroadcast } from '../helpers';
+
 import {
   DelegationsByAddressIndexRequest_Filter,
-  TransactionPlannerRequest,
+  TransactionPlannerRequestSchema,
   UnbondingTokensByAddressIndexResponse,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+
 import { BigNumber } from 'bignumber.js';
 import { assembleUndelegateClaimRequest } from './assemble-undelegate-claim-request';
 import throttle from 'lodash/throttle';
@@ -189,7 +193,7 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
       state.staking.loadDelegationsForCurrentAccountAbortController = newAbortController;
     });
 
-    const addressIndex = new AddressIndex({ account: get().staking.account });
+    const addressIndex = create(AddressIndexSchema, { account: get().staking.account });
     const validatorInfos: ValidatorInfo[] = [];
 
     set(state => {
@@ -266,7 +270,7 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
       state.staking.loadUnbondingTokensForCurrentAccountAbortController = newAbortController;
     });
 
-    const addressIndex = new AddressIndex({ account: get().staking.account });
+    const addressIndex = create(AddressIndexSchema, { account: get().staking.account });
 
     set(state => {
       state.staking.unbondingTokensByAccount.delete(addressIndex.account);
@@ -376,7 +380,7 @@ const assembleDelegateRequest = (
   { account, amount, validatorInfo }: StakingSlice,
   stakingAssetMetadata: Metadata,
 ) => {
-  return new TransactionPlannerRequest({
+  return create(TransactionPlannerRequestSchema, {
     delegations: [
       {
         amount: toBaseUnit(BigNumber(amount), getDisplayDenomExponent(stakingAssetMetadata)),
@@ -401,7 +405,7 @@ const assembleUndelegateRequest = ({
     throw new Error('Tried to assemble undelegate request from account with no delegation tokens');
   }
 
-  return new TransactionPlannerRequest({
+  return create(TransactionPlannerRequestSchema, {
     undelegations: [
       {
         rateData: getRateData(validatorInfo),
@@ -437,7 +441,7 @@ const toUnbondingTokensForAccount = (
     0n,
   );
 
-  unbondingTokensForAccount.claimable.total = new ValueView({
+  unbondingTokensForAccount.claimable.total = create(ValueViewSchema, {
     valueView: {
       case: 'knownAssetId',
       value: {
@@ -452,7 +456,7 @@ const toUnbondingTokensForAccount = (
     0n,
   );
 
-  unbondingTokensForAccount.notYetClaimable.total = new ValueView({
+  unbondingTokensForAccount.notYetClaimable.total = create(ValueViewSchema, {
     valueView: {
       case: 'knownAssetId',
       value: {

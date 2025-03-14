@@ -1,7 +1,9 @@
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { create } from '@bufbuild/protobuf';
+
 import {
-  TransactionPlannerRequest,
-  TransactionPlannerRequest_UndelegateClaim,
+  TransactionPlannerRequestSchema,
+  TransactionPlannerRequest_UndelegateClaimSchema,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 
 import {
@@ -27,7 +29,7 @@ const getUndelegateClaimPlannerRequest =
       identityKey,
     });
 
-    return new TransactionPlannerRequest_UndelegateClaim({
+    return create(TransactionPlannerRequest_UndelegateClaimSchema, {
       validatorIdentity: identityKey,
       unbondingStartHeight,
       penalty,
@@ -49,7 +51,7 @@ export const assembleUndelegateClaimRequest = async ({
     return;
   }
 
-  return new TransactionPlannerRequest({
+  return create(TransactionPlannerRequestSchema, {
     undelegationClaims: await Promise.all(
       unbondingTokens.map(getUndelegateClaimPlannerRequest(endEpochIndex)),
     ),

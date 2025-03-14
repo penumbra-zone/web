@@ -6,7 +6,6 @@ import {
   StatusResponse,
   StatusStreamResponse,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { PlainMessage, toPlainMessage } from '@bufbuild/protobuf';
 
 // Time in milliseconds to wait before attempting to reconnect the status stream
 const RECONNECT_TIMEOUT = 5_000;
@@ -21,14 +20,14 @@ export interface StatusStreamState {
 }
 
 export interface StatusSlice {
-  initialStatus: ZQueryState<PlainMessage<StatusResponse>>;
-  status: ZQueryState<PlainMessage<StatusStreamResponse>>;
+  initialStatus: ZQueryState<StatusResponse>;
+  status: ZQueryState<StatusStreamResponse>;
   streamState: StatusStreamState;
 }
 
 export const { initialStatus, useInitialStatus, useRevalidateInitialStatus } = createZQuery({
   name: 'initialStatus',
-  fetch: async () => toPlainMessage(await getInitialStatus()),
+  fetch: getInitialStatus,
   getUseStore: () => useStore,
   get: state => state.status.initialStatus,
   set: setter => {
@@ -44,9 +43,9 @@ export const { status, useStatus, useRevalidateStatus } = createZQuery({
   fetch: getStatusStream,
   stream: () => ({
     onValue: (
-      prevData: PlainMessage<StatusStreamResponse> | undefined,
-      item: PlainMessage<StatusStreamResponse>,
-    ): PlainMessage<StatusStreamResponse> => {
+      prevData: StatusStreamResponse | undefined,
+      item: StatusStreamResponse,
+    ): StatusStreamResponse => {
       useStore.getState().status.streamState.setStreamRunning();
       return {
         ...prevData,
@@ -122,9 +121,7 @@ export const statusStreamStateSelector = ({ status }: AllSlices) => ({
   running: status.streamState.running,
 });
 
-export const syncPercentSelector = (
-  zQueryState: AbridgedZQueryState<PlainMessage<StatusStreamResponse>>,
-) => {
+export const syncPercentSelector = (zQueryState: AbridgedZQueryState<StatusStreamResponse>) => {
   const { fullSyncHeight, latestKnownBlockHeight } = { ...zQueryState.data };
 
   const synced =

@@ -1,7 +1,9 @@
 import {
   AuctionId,
   DutchAuction,
+  DutchAuctionSchema,
 } from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
+import { fromBinary } from '@bufbuild/protobuf';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getInputAssetId, getOutputAssetId } from '@penumbra-zone/getters/dutch-auction';
@@ -29,7 +31,7 @@ export const getAuctionInfos = async function* ({
       continue;
     }
 
-    const auction = DutchAuction.fromBinary(response.auction.value);
+    const auction = fromBinary(DutchAuctionSchema, response.auction.value);
 
     const inputAssetId = getInputAssetId.optional(auction);
     const outputAssetId = getOutputAssetId.optional(auction);

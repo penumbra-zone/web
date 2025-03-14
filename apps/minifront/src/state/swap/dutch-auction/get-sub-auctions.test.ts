@@ -1,8 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
+import { create } from '@bufbuild/protobuf';
 import { getSubAuctions } from './get-sub-auctions';
-import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import { BalancesResponseSchema } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { MetadataSchema } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { AmountSchema } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 
 const MOCK_START_HEIGHT = vi.hoisted(() => 1234n);
 
@@ -19,7 +20,7 @@ vi.mock('../../../penumbra', () => ({
 }));
 
 describe('getSubAuctions()', () => {
-  const inputAssetMetadata = new Metadata({
+  const inputAssetMetadata = create(MetadataSchema, {
     display: 'input',
     base: 'input',
     denomUnits: [
@@ -28,7 +29,7 @@ describe('getSubAuctions()', () => {
     ],
     penumbraAssetId: { inner: new Uint8Array([1]) },
   });
-  const outputAssetMetadata = new Metadata({
+  const outputAssetMetadata = create(MetadataSchema, {
     display: 'output',
     base: 'uoutput',
     denomUnits: [
@@ -43,7 +44,7 @@ describe('getSubAuctions()', () => {
     duration: '10min',
     maxOutput: '1000',
     minOutput: '1',
-    assetIn: new BalancesResponse({
+    assetIn: create(BalancesResponseSchema, {
       balanceView: {
         valueView: {
           case: 'knownAssetId',
@@ -74,7 +75,7 @@ describe('getSubAuctions()', () => {
 
     subAuctions.forEach(subAuction => {
       expect(subAuction.description?.input?.amount).toEqual(
-        new Amount({ hi: 0n, lo: 25_000_000n }),
+        create(AmountSchema, { hi: 0n, lo: 25_000_000n }),
       );
     });
   });
@@ -85,7 +86,9 @@ describe('getSubAuctions()', () => {
     const subAuctions = await getSubAuctions({ ...ARGS, duration: '10min', amount: '2.666666' });
 
     subAuctions.forEach(subAuction => {
-      expect(subAuction.description?.input?.amount).toEqual(new Amount({ hi: 0n, lo: 666_666n }));
+      expect(subAuction.description?.input?.amount).toEqual(
+        create(AmountSchema, { hi: 0n, lo: 666_666n }),
+      );
     });
   });
 
@@ -100,8 +103,10 @@ describe('getSubAuctions()', () => {
     });
 
     subAuctions.forEach(subAuction => {
-      expect(subAuction.description?.minOutput).toEqual(new Amount({ hi: 0n, lo: 250n }));
-      expect(subAuction.description?.maxOutput).toEqual(new Amount({ hi: 0n, lo: 2_500n }));
+      expect(subAuction.description?.minOutput).toEqual(create(AmountSchema, { hi: 0n, lo: 250n }));
+      expect(subAuction.description?.maxOutput).toEqual(
+        create(AmountSchema, { hi: 0n, lo: 2_500n }),
+      );
     });
   });
 
@@ -116,8 +121,10 @@ describe('getSubAuctions()', () => {
     });
 
     subAuctions.forEach(subAuction => {
-      expect(subAuction.description?.minOutput).toEqual(new Amount({ hi: 0n, lo: 666n }));
-      expect(subAuction.description?.maxOutput).toEqual(new Amount({ hi: 0n, lo: 2_666n }));
+      expect(subAuction.description?.minOutput).toEqual(create(AmountSchema, { hi: 0n, lo: 666n }));
+      expect(subAuction.description?.maxOutput).toEqual(
+        create(AmountSchema, { hi: 0n, lo: 2_666n }),
+      );
     });
   });
 
@@ -133,9 +140,13 @@ describe('getSubAuctions()', () => {
     });
 
     subAuctions.forEach(subAuction => {
-      expect(subAuction.description?.input?.amount).toEqual(new Amount({ hi: 0n, lo: 666_666n }));
-      expect(subAuction.description?.minOutput).toEqual(new Amount({ hi: 0n, lo: 666n }));
-      expect(subAuction.description?.maxOutput).toEqual(new Amount({ hi: 0n, lo: 2_666n }));
+      expect(subAuction.description?.input?.amount).toEqual(
+        create(AmountSchema, { hi: 0n, lo: 666_666n }),
+      );
+      expect(subAuction.description?.minOutput).toEqual(create(AmountSchema, { hi: 0n, lo: 666n }));
+      expect(subAuction.description?.maxOutput).toEqual(
+        create(AmountSchema, { hi: 0n, lo: 2_666n }),
+      );
     });
   });
 });
