@@ -11,7 +11,12 @@ import {
 } from '@penumbra-zone/getters/swap-view';
 import { ValueViewComponent } from '../../../value';
 import { ActionDetails } from '../action-details';
-import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import {
+  ValueView,
+  ValueViewSchema,
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { clone } from '@bufbuild/protobuf';
+import { Fee } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
 
 export const SwapViewComponent = ({
   value,
@@ -30,9 +35,11 @@ export const SwapViewComponent = ({
     // and pass it to the ActionViewComponent for swaps to render the prepaid claim fee.
     // A deep clone of the `feeValueView` object is necessary because objects in TypeScript
     // are passed by reference, meaning they point to the same object in memory.
-    const prepaidClaimFee = feeValueView.clone();
+    const prepaidClaimFee = clone(ValueViewSchema, feeValueView);
     if (prepaidClaimFee.valueView.value) {
-      prepaidClaimFee.valueView.value.amount = getClaimFeeFromSwapView(value).amount;
+      prepaidClaimFee.valueView.value.amount = (
+        getClaimFeeFromSwapView(value) as unknown as Fee
+      ).amount;
     }
 
     return (

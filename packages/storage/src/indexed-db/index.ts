@@ -1,27 +1,55 @@
-import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
+import { AppParametersSchema } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
+import type { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 import {
+  AssetIdSchema,
+  EstimatedPriceSchema,
+  MetadataSchema,
+  ValueSchema,
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import type {
   AssetId,
   EstimatedPrice,
   Metadata,
   Value,
 } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import {
-  Position,
-  PositionId,
+  PositionSchema,
+  PositionIdSchema,
   PositionState,
   TradingPair,
+  PositionId,
+  Position,
+  PositionStateSchema,
+  TradingPairSchema,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
-import { GasPrices } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
-import { Epoch, Nullifier } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
-import { FmdParameters } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
+import { GasPricesSchema } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
+import type { GasPrices } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
 import {
-  AddressIndex,
+  Epoch,
+  EpochSchema,
+  Nullifier,
+} from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
+import { FmdParametersSchema } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
+import type { FmdParameters } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
+import {
+  AddressIndexSchema,
   IdentityKey,
   WalletId,
+  AddressIndex,
 } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
-import { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
+import { TransactionIdSchema } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
+import type { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
+import { StateCommitmentSchema } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
+import type { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
+
 import {
+  NotesForVotingResponseSchema,
+  SpendableNoteRecordSchema,
+  SwapRecordSchema,
+  TransactionInfoSchema,
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+
+import type {
   NotesForVotingResponse,
   SpendableNoteRecord,
   SwapRecord,
@@ -33,9 +61,14 @@ import { IbdUpdater, IbdUpdates } from './updater.js';
 
 import { IdbCursorSource } from './stream.js';
 
-import { ValidatorInfo } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
+import { ValidatorInfoSchema } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
+import type { ValidatorInfo } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
+
 import {
   Transaction,
+  TransactionPerspectiveSchema,
+  TransactionSummarySchema,
+  TransactionViewSchema,
   TransactionPerspective,
   TransactionSummary,
   TransactionView,
@@ -62,15 +95,17 @@ import type {
 import { sctPosition } from '@penumbra-zone/wasm/tree';
 import {
   AuctionId,
+  DutchAuctionDescriptionSchema,
   DutchAuctionDescription,
 } from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
-import { PartialMessage, PlainMessage } from '@bufbuild/protobuf';
+import { create, equals, fromJson, toJson } from '@bufbuild/protobuf';
 import { getAmountFromRecord } from '@penumbra-zone/getters/spendable-note-record';
 import { isZero } from '@penumbra-zone/types/amount';
 import { IDB_VERSION } from './config.js';
 import { addLoHi } from '@penumbra-zone/types/lo-hi';
-import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import { AmountSchema } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import type { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { typeRegistry } from '@penumbra-zone/protobuf';
 
 const assertBytes = (v?: Uint8Array, expect?: number, name = 'value'): v is Uint8Array => {
@@ -83,24 +118,18 @@ const assertBytes = (v?: Uint8Array, expect?: number, name = 'value'): v is Uint
 };
 
 // yes these are all 32 bytes
-const assertAssetId = (assetId?: PartialMessage<AssetId>): assetId is PlainMessage<AssetId> =>
+const assertAssetId = (assetId?: AssetId): assetId is AssetId =>
   assertBytes(assetId?.inner, 32, 'AssetId');
-const assertAuctionId = (
-  auctionId?: PartialMessage<AuctionId>,
-): auctionId is PlainMessage<AuctionId> => assertBytes(auctionId?.inner, 32, 'AuctionId');
-const assertCommitment = (
-  commitment?: PartialMessage<StateCommitment>,
-): commitment is PlainMessage<StateCommitment> =>
+const assertAuctionId = (auctionId?: AuctionId): auctionId is AuctionId =>
+  assertBytes(auctionId?.inner, 32, 'AuctionId');
+const assertCommitment = (commitment?: StateCommitment): commitment is StateCommitment =>
   assertBytes(commitment?.inner, 32, 'StateCommitment');
-const assertNullifier = (
-  nullifier?: PartialMessage<Nullifier>,
-): nullifier is PartialMessage<Nullifier> => assertBytes(nullifier?.inner, 32, 'Nullifier');
-const assertTransactionId = (
-  txId?: PartialMessage<TransactionId>,
-): txId is PartialMessage<TransactionId> => assertBytes(txId?.inner, 32, 'TransactionId');
-const assertPositionId = (
-  positionId?: PartialMessage<PositionId>,
-): positionId is PlainMessage<PositionId> => assertBytes(positionId?.inner, 32, 'PositionId');
+const assertNullifier = (nullifier?: Nullifier): nullifier is Nullifier =>
+  assertBytes(nullifier?.inner, 32, 'Nullifier');
+const assertTransactionId = (txId?: TransactionId): txId is TransactionId =>
+  assertBytes(txId?.inner, 32, 'TransactionId');
+const assertPositionId = (positionId?: PositionId): positionId is PositionId =>
+  assertBytes(positionId?.inner, 32, 'PositionId');
 
 interface IndexedDbProps {
   chainId: string;
@@ -184,7 +213,7 @@ export class IndexedDb implements IndexedDbInterface {
       new IbdUpdater(db),
       constants,
       chainId,
-      new AssetId(stakingAssetId),
+      create(AssetIdSchema, stakingAssetId),
     );
     await instance.saveRegistryAssets(registryClient, chainId); // Pre-load asset metadata from registry
 
@@ -244,7 +273,7 @@ export class IndexedDb implements IndexedDbInterface {
     if (!json) {
       return undefined;
     }
-    return SpendableNoteRecord.fromJson(json);
+    return fromJson(SpendableNoteRecordSchema, json);
   }
 
   async getSpendableNoteByCommitment(
@@ -256,16 +285,17 @@ export class IndexedDb implements IndexedDbInterface {
     if (!json) {
       return undefined;
     }
-    return SpendableNoteRecord.fromJson(json);
+    return fromJson(SpendableNoteRecordSchema, json);
   }
 
-  async saveSpendableNote(
-    note: PlainMessage<SpendableNoteRecord> & { noteCommitment: PlainMessage<StateCommitment> },
-  ) {
+  async saveSpendableNote(note: SpendableNoteRecord & { noteCommitment: StateCommitment }) {
     assertCommitment(note.noteCommitment);
     await this.u.update({
       table: 'SPENDABLE_NOTES',
-      value: new SpendableNoteRecord(note).toJson() as Jsonified<SpendableNoteRecord>,
+      value: toJson(
+        SpendableNoteRecordSchema,
+        create(SpendableNoteRecordSchema, note),
+      ) as Jsonified<SpendableNoteRecord>,
     });
   }
 
@@ -289,12 +319,12 @@ export class IndexedDb implements IndexedDbInterface {
       if (!json) {
         return undefined;
       }
-      return Metadata.fromJson(json);
+      return fromJson(MetadataSchema, json);
     }
 
     if (assetId.altBaseDenom || assetId.altBech32m) {
       for await (const cursor of this.db.transaction('ASSETS').store) {
-        const metadata = Metadata.fromJson(cursor.value);
+        const metadata = fromJson(MetadataSchema, cursor.value);
 
         if (metadata.base === assetId.altBaseDenom) {
           return metadata;
@@ -314,15 +344,15 @@ export class IndexedDb implements IndexedDbInterface {
 
   async *iterateAssetsMetadata() {
     yield* new ReadableStream(
-      new IdbCursorSource(this.db.transaction('ASSETS').store.openCursor(), Metadata),
+      new IdbCursorSource(this.db.transaction('ASSETS').store.openCursor(), MetadataSchema),
     );
   }
 
-  async saveAssetsMetadata(metadata: Required<PlainMessage<Metadata>>) {
+  async saveAssetsMetadata(metadata: Metadata) {
     assertAssetId(metadata.penumbraAssetId);
     await this.u.update({
       table: 'ASSETS',
-      value: new Metadata(metadata).toJson() as Jsonified<Metadata>,
+      value: toJson(MetadataSchema, create(MetadataSchema, metadata)) as Jsonified<Metadata>,
     });
   }
 
@@ -353,7 +383,7 @@ export class IndexedDb implements IndexedDbInterface {
     yield* new ReadableStream(
       new IdbCursorSource(
         this.db.transaction('SPENDABLE_NOTES').store.openCursor(),
-        SpendableNoteRecord,
+        SpendableNoteRecordSchema,
       ),
     );
   }
@@ -362,7 +392,7 @@ export class IndexedDb implements IndexedDbInterface {
     yield* new ReadableStream(
       new IdbCursorSource(
         this.db.transaction('TRANSACTIONS').store.index('height').openCursor(),
-        TransactionInfo,
+        TransactionInfoSchema,
       ),
     );
   }
@@ -382,11 +412,13 @@ export class IndexedDb implements IndexedDbInterface {
     }
 
     return {
-      id: TransactionId.fromJson(existingData.id, { typeRegistry }),
-      perspective: TransactionPerspective.fromJson(existingData.perspective, { typeRegistry }),
-      view: TransactionView.fromJson(existingData.view, { typeRegistry }),
+      id: fromJson(TransactionIdSchema, existingData.id, { registry: typeRegistry }),
+      perspective: fromJson(TransactionPerspectiveSchema, existingData.perspective, {
+        registry: typeRegistry,
+      }),
+      view: fromJson(TransactionViewSchema, existingData.view, { registry: typeRegistry }),
       summary: existingData.summary
-        ? TransactionSummary.fromJson(existingData.summary, { typeRegistry })
+        ? fromJson(TransactionSummarySchema, existingData.summary, { registry: typeRegistry })
         : undefined,
     };
   }
@@ -399,10 +431,16 @@ export class IndexedDb implements IndexedDbInterface {
   ): Promise<void> {
     assertTransactionId(id);
     const value = {
-      id: id.toJson({ typeRegistry }) as Jsonified<TransactionId>,
-      perspective: txp.toJson({ typeRegistry }) as Jsonified<TransactionPerspective>,
-      view: txv.toJson({ typeRegistry }) as Jsonified<TransactionView>,
-      summary: summary.toJson({ typeRegistry }) as Jsonified<TransactionSummary>,
+      id: toJson(TransactionIdSchema, id, { registry: typeRegistry }) as Jsonified<TransactionId>,
+      perspective: toJson(TransactionPerspectiveSchema, txp, {
+        registry: typeRegistry,
+      }) as Jsonified<TransactionPerspective>,
+      view: toJson(TransactionViewSchema, txv, {
+        registry: typeRegistry,
+      }) as Jsonified<TransactionView>,
+      summary: toJson(TransactionSummarySchema, summary, {
+        registry: typeRegistry,
+      }) as Jsonified<TransactionSummary>,
     };
 
     await this.u.update({
@@ -417,10 +455,12 @@ export class IndexedDb implements IndexedDbInterface {
     transaction: Transaction,
   ): Promise<void> {
     assertTransactionId(id);
-    const tx = new TransactionInfo({ id, height, transaction });
+    const tx = create(TransactionInfoSchema, { id, height, transaction });
     await this.u.update({
       table: 'TRANSACTIONS',
-      value: tx.toJson({ typeRegistry }) as Jsonified<TransactionInfo>,
+      value: toJson(TransactionInfoSchema, tx, {
+        registry: typeRegistry,
+      }) as Jsonified<TransactionInfo>,
     });
   }
 
@@ -443,11 +483,15 @@ export class IndexedDb implements IndexedDbInterface {
     );
 
     return tournamentVotes.map(tournamentVote => ({
-      TransactionId: TransactionId.fromJson(tournamentVote.TransactionId, { typeRegistry }),
-      AssetMetadata: Metadata.fromJson(tournamentVote.AssetMetadata, { typeRegistry }),
-      VoteValue: Value.fromJson(tournamentVote.VoteValue, { typeRegistry }),
+      TransactionId: fromJson(TransactionIdSchema, tournamentVote.TransactionId, {
+        registry: typeRegistry,
+      }),
+      AssetMetadata: fromJson(MetadataSchema, tournamentVote.AssetMetadata, {
+        registry: typeRegistry,
+      }),
+      VoteValue: fromJson(ValueSchema, tournamentVote.VoteValue, { registry: typeRegistry }),
       RewardValue: tournamentVote.RewardValue
-        ? Amount.fromJson(tournamentVote.RewardValue, { typeRegistry })
+        ? fromJson(AmountSchema, tournamentVote.RewardValue, { registry: typeRegistry })
         : undefined,
       id: tournamentVote.id,
     }));
@@ -472,10 +516,16 @@ export class IndexedDb implements IndexedDbInterface {
 
     const tournamentVote = {
       epoch: epoch.toString(),
-      TransactionId: transactionId.toJson({ typeRegistry }) as Jsonified<TransactionId>,
-      AssetMetadata: assetMetadata.toJson({ typeRegistry }) as Jsonified<Metadata>,
-      VoteValue: voteValue.toJson({ typeRegistry }) as Jsonified<Value>,
-      RewardValue: rewardValue ? (rewardValue.toJson({ typeRegistry }) as Jsonified<Amount>) : null,
+      TransactionId: toJson(TransactionIdSchema, transactionId, {
+        registry: typeRegistry,
+      }) as Jsonified<TransactionId>,
+      AssetMetadata: toJson(MetadataSchema, assetMetadata, {
+        registry: typeRegistry,
+      }) as Jsonified<Metadata>,
+      VoteValue: toJson(ValueSchema, voteValue, { registry: typeRegistry }) as Jsonified<Value>,
+      RewardValue: rewardValue
+        ? (toJson(AmountSchema, rewardValue, { registry: typeRegistry }) as Jsonified<Amount>)
+        : null,
       id: uniquePrimaryKey,
     };
 
@@ -492,7 +542,7 @@ export class IndexedDb implements IndexedDbInterface {
     if (!jsonRecord) {
       return undefined;
     }
-    return TransactionInfo.fromJson(jsonRecord, { typeRegistry });
+    return fromJson(TransactionInfoSchema, jsonRecord, { registry: typeRegistry });
   }
 
   async getFmdParams(): Promise<FmdParameters | undefined> {
@@ -500,13 +550,15 @@ export class IndexedDb implements IndexedDbInterface {
     if (!json) {
       return undefined;
     }
-    return FmdParameters.fromJson(json);
+    return fromJson(FmdParametersSchema, json);
   }
 
   async saveFmdParams(fmd: FmdParameters): Promise<void> {
     await this.u.update({
       table: 'FMD_PARAMETERS',
-      value: fmd.toJson() as Jsonified<FmdParameters>,
+      value: toJson(FmdParametersSchema, fmd, {
+        registry: typeRegistry,
+      }) as Jsonified<FmdParameters>,
       key: 'params',
     });
   }
@@ -516,7 +568,7 @@ export class IndexedDb implements IndexedDbInterface {
     if (!json) {
       return undefined;
     }
-    const appParams = AppParameters.fromJson(json);
+    const appParams = fromJson(AppParametersSchema, json);
     if (!appParams.chainId) {
       return undefined;
     }
@@ -531,14 +583,16 @@ export class IndexedDb implements IndexedDbInterface {
     }
     await this.u.update({
       table: 'APP_PARAMETERS',
-      value: app.toJson() as Jsonified<AppParameters>,
+      value: toJson(AppParametersSchema, app, {
+        registry: typeRegistry,
+      }) as Jsonified<AppParameters>,
       key: 'params',
     });
   }
 
   async *iterateSwaps() {
     yield* new ReadableStream(
-      new IdbCursorSource(this.db.transaction('SWAPS').store.openCursor(), SwapRecord),
+      new IdbCursorSource(this.db.transaction('SWAPS').store.openCursor(), SwapRecordSchema),
     );
   }
 
@@ -555,16 +609,16 @@ export class IndexedDb implements IndexedDbInterface {
     if (!json) {
       return undefined;
     }
-    return SwapRecord.fromJson(json);
+    return fromJson(SwapRecordSchema, json);
   }
 
-  async saveSwap(
-    swap: PlainMessage<SwapRecord> & { swapCommitment: PlainMessage<StateCommitment> },
-  ) {
+  async saveSwap(swap: SwapRecord & { swapCommitment: StateCommitment }) {
     assertCommitment(swap.swapCommitment);
     await this.u.update({
       table: 'SWAPS',
-      value: new SwapRecord(swap).toJson() as Jsonified<SwapRecord>,
+      value: toJson(SwapRecordSchema, create(SwapRecordSchema, swap), {
+        registry: typeRegistry,
+      }) as Jsonified<SwapRecord>,
     });
   }
 
@@ -575,7 +629,7 @@ export class IndexedDb implements IndexedDbInterface {
     if (!json) {
       return undefined;
     }
-    return SwapRecord.fromJson(json);
+    return fromJson(SwapRecordSchema, json);
   }
 
   async getNativeGasPrices(): Promise<GasPrices | undefined> {
@@ -587,7 +641,7 @@ export class IndexedDb implements IndexedDbInterface {
     if (!jsonGasPrices) {
       return undefined;
     }
-    return GasPrices.fromJson(jsonGasPrices);
+    return fromJson(GasPricesSchema, jsonGasPrices);
   }
 
   async getAltGasPrices(): Promise<GasPrices[]> {
@@ -596,8 +650,10 @@ export class IndexedDb implements IndexedDbInterface {
 
     // Retrieve gas prices from the database and prioritize USDC as the preferred asset.
     return allGasPrices
-      .map(gp => GasPrices.fromJson(gp))
-      .filter(gp => gp.assetId?.inner && !gp.assetId.equals(this.stakingTokenAssetId))
+      .map(gp => fromJson(GasPricesSchema, gp))
+      .filter(
+        gp => gp.assetId?.inner && !equals(AssetIdSchema, gp.assetId, this.stakingTokenAssetId),
+      )
       .sort((a, b) => {
         const assetA = a.assetId?.inner ? uint8ArrayToBase64(a.assetId.inner) : '';
         const assetB = b.assetId?.inner ? uint8ArrayToBase64(b.assetId.inner) : '';
@@ -612,10 +668,12 @@ export class IndexedDb implements IndexedDbInterface {
       });
   }
 
-  async saveGasPrices(value: Required<PlainMessage<GasPrices>>): Promise<void> {
+  async saveGasPrices(value: GasPrices): Promise<void> {
     await this.u.update({
       table: 'GAS_PRICES',
-      value: new GasPrices(value).toJson() as Jsonified<GasPrices>,
+      value: toJson(GasPricesSchema, create(GasPricesSchema, value), {
+        registry: typeRegistry,
+      }) as Jsonified<GasPrices>,
     });
   }
 
@@ -634,7 +692,7 @@ export class IndexedDb implements IndexedDbInterface {
     const delegationAssets = new Map<string, Metadata>();
 
     for await (const assetCursor of this.db.transaction('ASSETS').store) {
-      const denomMetadata = Metadata.fromJson(assetCursor.value);
+      const denomMetadata = fromJson(MetadataSchema, assetCursor.value);
       if (
         assetPatterns.delegationToken.matches(denomMetadata.display) &&
         denomMetadata.penumbraAssetId
@@ -645,10 +703,12 @@ export class IndexedDb implements IndexedDbInterface {
     const notesForVoting: NotesForVotingResponse[] = [];
 
     for await (const noteCursor of this.db.transaction('SPENDABLE_NOTES').store) {
-      const note = SpendableNoteRecord.fromJson(noteCursor.value);
+      const note = fromJson(SpendableNoteRecordSchema, noteCursor.value);
 
       if (
-        (addressIndex && !note.addressIndex?.equals(addressIndex)) ??
+        (addressIndex &&
+          note.addressIndex &&
+          !equals(AddressIndexSchema, note.addressIndex, addressIndex)) ??
         !note.note?.value?.assetId?.inner
       ) {
         continue;
@@ -677,7 +737,7 @@ export class IndexedDb implements IndexedDbInterface {
         }
 
         notesForVoting.push(
-          new NotesForVotingResponse({
+          create(NotesForVotingResponseSchema, {
             noteRecord: note,
             identityKey: identityKeyFromBech32m(regexResult.idKey),
           }),
@@ -696,15 +756,21 @@ export class IndexedDb implements IndexedDbInterface {
       start: async cont => {
         let cursor = await this.db.transaction('POSITIONS').store.openCursor();
         while (cursor) {
-          const position = Position.fromJson(cursor.value.position);
+          const position = fromJson(PositionSchema, cursor.value.position);
           if (
-            (!positionState || positionState.equals(position.state)) &&
-            (!tradingPair || tradingPair.equals(position.phi?.pair)) &&
+            (!positionState ||
+              (position.state && equals(PositionStateSchema, positionState, position.state))) &&
+            (!tradingPair ||
+              (position.phi?.pair && equals(TradingPairSchema, tradingPair, position.phi.pair))) &&
             (!subaccount ||
               (cursor.value.subaccount &&
-                subaccount.equals(AddressIndex.fromJson(cursor.value.subaccount))))
+                equals(
+                  AddressIndexSchema,
+                  subaccount,
+                  fromJson(AddressIndexSchema, cursor.value.subaccount),
+                )))
           ) {
-            cont.enqueue(PositionId.fromJson(cursor.value.id));
+            cont.enqueue(fromJson(PositionIdSchema, cursor.value.id));
           }
           cursor = await cursor.continue();
         }
@@ -720,9 +786,13 @@ export class IndexedDb implements IndexedDbInterface {
   ): Promise<void> {
     assertPositionId(positionId);
     const positionRecord = {
-      id: positionId.toJson() as Jsonified<PositionId>,
-      position: position.toJson() as Jsonified<Position>,
-      subaccount: subaccount && (subaccount.toJson() as Jsonified<AddressIndex>),
+      id: toJson(PositionIdSchema, positionId, { registry: typeRegistry }) as Jsonified<PositionId>,
+      position: toJson(PositionSchema, position, { registry: typeRegistry }) as Jsonified<Position>,
+      subaccount:
+        subaccount &&
+        (toJson(AddressIndexSchema, subaccount, {
+          registry: typeRegistry,
+        }) as Jsonified<AddressIndex>),
     };
     await this.u.update({ table: 'POSITIONS', value: positionRecord });
   }
@@ -740,15 +810,23 @@ export class IndexedDb implements IndexedDbInterface {
       throw new Error('Position not found when trying to change its state');
     }
 
-    const position = Position.fromJson(positionRecord.position);
+    const position = fromJson(PositionSchema, positionRecord.position);
     position.state = newState;
 
     await this.u.update({
       table: 'POSITIONS',
       value: {
-        id: positionId.toJson() as Jsonified<PositionId>,
-        position: position.toJson() as Jsonified<Position>,
-        subaccount: subaccount ? (subaccount.toJson() as Jsonified<AddressIndex>) : undefined,
+        id: toJson(PositionIdSchema, positionId, {
+          registry: typeRegistry,
+        }) as Jsonified<PositionId>,
+        position: toJson(PositionSchema, position, {
+          registry: typeRegistry,
+        }) as Jsonified<Position>,
+        subaccount: subaccount
+          ? (toJson(AddressIndexSchema, subaccount, {
+              registry: typeRegistry,
+            }) as Jsonified<AddressIndex>)
+          : undefined,
       },
     });
   }
@@ -759,7 +837,7 @@ export class IndexedDb implements IndexedDbInterface {
    */
   async addEpoch(startHeight: bigint): Promise<void> {
     const cursor = await this.db.transaction('EPOCHS', 'readonly').store.openCursor(null, 'prev');
-    const previousEpoch = cursor?.value ? Epoch.fromJson(cursor.value) : undefined;
+    const previousEpoch = cursor?.value ? fromJson(EpochSchema, cursor.value) : undefined;
     const index = previousEpoch?.index !== undefined ? previousEpoch.index + 1n : 0n;
 
     // avoid saving the same epoch twice
@@ -803,7 +881,7 @@ export class IndexedDb implements IndexedDbInterface {
      * have to just iterate over all epochs to find the correct starting height.
      */
     for await (const cursor of this.db.transaction('EPOCHS', 'readonly').store) {
-      const currentEpoch = Epoch.fromJson(cursor.value);
+      const currentEpoch = fromJson(EpochSchema, cursor.value);
 
       if (currentEpoch.startHeight <= height) {
         epoch = currentEpoch;
@@ -823,7 +901,7 @@ export class IndexedDb implements IndexedDbInterface {
 
     // Iterate over epochs and return the one with the matching epoch index.
     for await (const cursor of this.db.transaction('EPOCHS', 'readonly').store) {
-      const currentEpoch = Epoch.fromJson(cursor.value);
+      const currentEpoch = fromJson(EpochSchema, cursor.value);
       if (currentEpoch.index === epoch_index) {
         epoch = currentEpoch;
         break;
@@ -844,7 +922,9 @@ export class IndexedDb implements IndexedDbInterface {
     await this.u.update({
       table: 'VALIDATOR_INFOS',
       key: identityKeyAsBech32,
-      value: validatorInfo.toJson() as Jsonified<ValidatorInfo>,
+      value: toJson(ValidatorInfoSchema, validatorInfo, {
+        registry: typeRegistry,
+      }) as Jsonified<ValidatorInfo>,
     });
   }
 
@@ -853,7 +933,10 @@ export class IndexedDb implements IndexedDbInterface {
    */
   async *iterateValidatorInfos() {
     yield* new ReadableStream(
-      new IdbCursorSource(this.db.transaction('VALIDATOR_INFOS').store.openCursor(), ValidatorInfo),
+      new IdbCursorSource(
+        this.db.transaction('VALIDATOR_INFOS').store.openCursor(),
+        ValidatorInfoSchema,
+      ),
     );
   }
 
@@ -868,7 +951,7 @@ export class IndexedDb implements IndexedDbInterface {
     if (!json) {
       return undefined;
     }
-    return ValidatorInfo.fromJson(json);
+    return fromJson(ValidatorInfoSchema, json);
   }
 
   async updatePrice(
@@ -895,7 +978,7 @@ export class IndexedDb implements IndexedDbInterface {
   ) {
     assertAssetId(pricedAsset);
     assertAssetId(numeraire);
-    const estimatedPrice = new EstimatedPrice({
+    const estimatedPrice = create(EstimatedPriceSchema, {
       pricedAsset,
       numeraire,
       numerairePerUnit,
@@ -904,7 +987,9 @@ export class IndexedDb implements IndexedDbInterface {
 
     await this.u.update({
       table: 'PRICES',
-      value: estimatedPrice.toJson() as Jsonified<EstimatedPrice>,
+      value: toJson(EstimatedPriceSchema, estimatedPrice, {
+        registry: typeRegistry,
+      }) as Jsonified<EstimatedPrice>,
     });
   }
 
@@ -928,7 +1013,7 @@ export class IndexedDb implements IndexedDbInterface {
     const minHeight = latestBlockHeight - priceRelevanceThreshold;
 
     return results
-      .map(price => EstimatedPrice.fromJson(price))
+      .map(price => fromJson(EstimatedPriceSchema, price))
       .filter(price => price.asOfHeight >= minHeight);
   }
 
@@ -938,8 +1023,8 @@ export class IndexedDb implements IndexedDbInterface {
 
     let cursor = await store.openCursor();
     while (cursor) {
-      const price = EstimatedPrice.fromJson(cursor.value);
-      if (!price.numeraire?.equals(this.stakingTokenAssetId)) {
+      const price = fromJson(EstimatedPriceSchema, cursor.value);
+      if (!price.numeraire || !equals(AssetIdSchema, price.numeraire, this.stakingTokenAssetId)) {
         await cursor.delete();
       }
       cursor = await cursor.continue();
@@ -975,7 +1060,9 @@ export class IndexedDb implements IndexedDbInterface {
     }
 
     for (const c of sctUpdates.store_commitments) {
-      assertCommitment({ inner: base64ToUint8Array(c.commitment.inner) });
+      assertCommitment(
+        create(StateCommitmentSchema, { inner: base64ToUint8Array(c.commitment.inner) }),
+      );
       txs.add({ table: 'TREE_COMMITMENTS', value: c });
     }
 
@@ -990,7 +1077,12 @@ export class IndexedDb implements IndexedDbInterface {
   private addNewNotes(txs: IbdUpdates, notes: SpendableNoteRecord[]): void {
     for (const n of notes) {
       assertCommitment(n.noteCommitment);
-      txs.add({ table: 'SPENDABLE_NOTES', value: n.toJson() as Jsonified<SpendableNoteRecord> });
+      txs.add({
+        table: 'SPENDABLE_NOTES',
+        value: toJson(SpendableNoteRecordSchema, n, {
+          registry: typeRegistry,
+        }) as Jsonified<SpendableNoteRecord>,
+      });
     }
   }
 
@@ -1004,7 +1096,8 @@ export class IndexedDb implements IndexedDbInterface {
     }
 
     const epoch =
-      (await this.getEpochByHeight(blockHeight)) ?? new Epoch({ startHeight: 0n, index: 0n });
+      (await this.getEpochByHeight(blockHeight)) ??
+      create(EpochSchema, { startHeight: 0n, index: 0n });
 
     for (const n of swaps) {
       if (!n.outputData) {
@@ -1015,7 +1108,10 @@ export class IndexedDb implements IndexedDbInterface {
       n.outputData.sctPositionPrefix = sctPosition(blockHeight, epoch);
 
       assertCommitment(n.swapCommitment);
-      txs.add({ table: 'SWAPS', value: n.toJson() as Jsonified<SwapRecord> });
+      txs.add({
+        table: 'SWAPS',
+        value: toJson(SwapRecordSchema, n, { registry: typeRegistry }) as Jsonified<SwapRecord>,
+      });
     }
   }
 
@@ -1032,11 +1128,16 @@ export class IndexedDb implements IndexedDbInterface {
     assertAuctionId(auctionId);
     const key = uint8ArrayToBase64(auctionId.inner);
     const existingRecord = await this.db.get('AUCTIONS', key);
-    const auction =
-      (value.auction?.toJson() as Jsonified<T> | undefined) ?? existingRecord?.auction;
-    const noteCommitment =
-      (value.noteCommitment?.toJson() as Jsonified<StateCommitment> | undefined) ??
-      existingRecord?.noteCommitment;
+    const auction = value.auction
+      ? (toJson(DutchAuctionDescriptionSchema, value.auction, {
+          registry: typeRegistry,
+        }) as Jsonified<DutchAuctionDescription>)
+      : existingRecord?.auction;
+    const noteCommitment = value.noteCommitment
+      ? (toJson(StateCommitmentSchema, value.noteCommitment, {
+          registry: typeRegistry,
+        }) as Jsonified<StateCommitment>)
+      : existingRecord?.noteCommitment;
     const seqNum = value.seqNum ?? existingRecord?.seqNum;
 
     await this.u.update({
@@ -1060,9 +1161,11 @@ export class IndexedDb implements IndexedDbInterface {
     const result = await this.db.get('AUCTIONS', uint8ArrayToBase64(auctionId.inner));
 
     return {
-      auction: result?.auction ? DutchAuctionDescription.fromJson(result.auction) : undefined,
+      auction: result?.auction
+        ? fromJson(DutchAuctionDescriptionSchema, result.auction)
+        : undefined,
       noteCommitment: result?.noteCommitment
-        ? StateCommitment.fromJson(result.noteCommitment)
+        ? fromJson(StateCommitmentSchema, result.noteCommitment)
         : undefined,
       seqNum: result?.seqNum,
     };
@@ -1076,8 +1179,8 @@ export class IndexedDb implements IndexedDbInterface {
     await this.db.add(
       'AUCTION_OUTSTANDING_RESERVES',
       {
-        input: value.input.toJson() as Jsonified<Value>,
-        output: value.output.toJson() as Jsonified<Value>,
+        input: toJson(ValueSchema, value.input, { registry: typeRegistry }) as Jsonified<Value>,
+        output: toJson(ValueSchema, value.output, { registry: typeRegistry }) as Jsonified<Value>,
       },
       uint8ArrayToBase64(auctionId.inner),
     );
@@ -1101,8 +1204,8 @@ export class IndexedDb implements IndexedDbInterface {
     }
 
     return {
-      input: Value.fromJson(result.input),
-      output: Value.fromJson(result.output),
+      input: fromJson(ValueSchema, result.input),
+      output: fromJson(ValueSchema, result.output),
     };
   }
 
@@ -1115,7 +1218,7 @@ export class IndexedDb implements IndexedDbInterface {
     );
 
     return spendableNotes.some(note => {
-      const spendableNote = SpendableNoteRecord.fromJson(note);
+      const spendableNote = fromJson(SpendableNoteRecordSchema, note);
 
       // randomizer should be ignored
       return (
@@ -1135,7 +1238,7 @@ export class IndexedDb implements IndexedDbInterface {
     );
 
     return spendableNotes
-      .map(json => SpendableNoteRecord.fromJson(json))
+      .map(json => fromJson(SpendableNoteRecordSchema, json))
       .filter(note => {
         return (
           note.heightSpent === 0n &&
@@ -1152,12 +1255,12 @@ export class IndexedDb implements IndexedDbInterface {
               { lo: acc.lo, hi: acc.hi },
               { lo: BigInt(noteAmount.lo), hi: BigInt(noteAmount.hi) },
             );
-            return new Amount(newAmount);
+            return create(AmountSchema, newAmount);
           } else {
             return acc;
           }
         },
-        new Amount({ hi: 0n, lo: 0n }),
+        create(AmountSchema, { hi: 0n, lo: 0n }),
       );
   }
 
@@ -1169,6 +1272,6 @@ export class IndexedDb implements IndexedDbInterface {
       return undefined;
     }
 
-    return Position.fromJson(position.position);
+    return fromJson(PositionSchema, position.position);
   }
 }

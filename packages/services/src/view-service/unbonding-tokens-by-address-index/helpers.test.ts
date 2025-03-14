@@ -1,9 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
+import { create } from '@bufbuild/protobuf';
 import { getIsClaimable } from './helpers.js';
 import {
-  AppParametersResponse,
-  BalancesResponse,
-  StatusResponse,
+  AppParametersResponseSchema,
+  BalancesResponseSchema,
+  StatusResponseSchema,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { createHandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
@@ -20,7 +21,7 @@ vi.mock('../status', () => ({
 
 const mockCtx = createHandlerContext({
   service: ViewService,
-  method: ViewService.methods.unbondingTokensByAddressIndex,
+  method: ViewService.method.unbondingTokensByAddressIndex,
   protocolName: 'mock',
   requestMethod: 'MOCK',
   url: '/mock',
@@ -29,7 +30,7 @@ const mockCtx = createHandlerContext({
 describe('getIsClaimable()', () => {
   it("returns `true` when we've passed the unbonding delay period", async () => {
     mockAppParameters.mockResolvedValue(
-      new AppParametersResponse({
+      create(AppParametersResponseSchema, {
         parameters: {
           stakeParams: {
             unbondingDelay: 100n,
@@ -39,12 +40,12 @@ describe('getIsClaimable()', () => {
     );
 
     mockStatus.mockResolvedValue(
-      new StatusResponse({
+      create(StatusResponseSchema, {
         fullSyncHeight: 200n,
       }),
     );
 
-    const balancesResponse = new BalancesResponse({
+    const balancesResponse = create(BalancesResponseSchema, {
       balanceView: {
         valueView: {
           case: 'knownAssetId',
@@ -62,7 +63,7 @@ describe('getIsClaimable()', () => {
 
   it("returns `false` when we haven't yet passed the unbonding delay period", async () => {
     mockAppParameters.mockResolvedValue(
-      new AppParametersResponse({
+      create(AppParametersResponseSchema, {
         parameters: {
           stakeParams: {
             unbondingDelay: 100n,
@@ -72,12 +73,12 @@ describe('getIsClaimable()', () => {
     );
 
     mockStatus.mockResolvedValue(
-      new StatusResponse({
+      create(StatusResponseSchema, {
         fullSyncHeight: 200n,
       }),
     );
 
-    const balancesResponse = new BalancesResponse({
+    const balancesResponse = create(BalancesResponseSchema, {
       balanceView: {
         valueView: {
           case: 'knownAssetId',

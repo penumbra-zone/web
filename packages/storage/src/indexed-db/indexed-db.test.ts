@@ -1,8 +1,10 @@
-import { FmdParameters } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
+import { FmdParametersSchema } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 import {
-  SpendableNoteRecord,
+  SpendableNoteRecordSchema,
   SwapRecord,
+  SwapRecordSchema,
   TransactionInfo,
+  SpendableNoteRecord,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { afterAll, beforeEach, describe, expect, it } from 'vitest';
 import { IndexedDb } from './index.js';
@@ -31,61 +33,102 @@ import {
   mainAccount,
   firstSubaccount,
 } from './indexed-db.test-data.js';
-import { AddressIndex, WalletId } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import {
+  AddressIndexSchema,
+  WalletIdSchema,
+} from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import {
   PositionId,
-  PositionState,
+  PositionStateSchema,
   PositionState_PositionStateEnum,
+  PositionIdSchema,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import {
-  AssetId,
-  EstimatedPrice,
+  AssetIdSchema,
+  EstimatedPriceSchema,
   Metadata,
-  Value,
+  MetadataSchema,
+  ValueSchema,
 } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import type { IdbUpdate, PenumbraDb } from '@penumbra-zone/types/indexed-db';
 import {
-  AuctionId,
-  DutchAuctionDescription,
+  AuctionIdSchema,
+  DutchAuctionDescriptionSchema,
 } from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
-import { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
-import { ChainRegistryClient, Registry } from '@penumbra-labs/registry';
+import { StateCommitmentSchema } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
+import type { ChainRegistryClient, Registry } from '@penumbra-labs/registry';
 import fetchMock from 'fetch-mock';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
-import { JsonValue } from '@bufbuild/protobuf';
+import { create, fromJson, equals } from '@bufbuild/protobuf';
+import { TransactionSchema } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import { GasPricesSchema } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
 
 const inner0123 = Uint8Array.from({ length: 32 }, () => Math.floor(Math.random() * 256));
 const inner5678 = Uint8Array.from({ length: 32 }, () => Math.floor(Math.random() * 256));
 const inner1111 = Uint8Array.from({ length: 32 }, () => Math.floor(Math.random() * 256));
 const inner2222 = Uint8Array.from({ length: 32 }, () => Math.floor(Math.random() * 256));
 
-const registryClient = new ChainRegistryClient();
-const chainId = 'penumbra-testnet-phobos-1';
+const CHAIN_ID = 'penumbra-testnet-phobos-1';
+
+const registryMock: Partial<Registry> = {
+  chainId: CHAIN_ID,
+  ibcConnections: [],
+  numeraires: [],
+  getAllAssets() {
+    return [metadataA, metadataB, metadataC];
+  },
+};
+
+const getRegistryData = (chainId: string) => {
+  if (chainId !== CHAIN_ID) {
+    throw new Error('Cannot find chain data');
+  }
+  return registryMock as Registry;
+};
+const getRegistryGlobals = () => ({
+  version() {
+    return Promise.resolve('abc');
+  },
+  rpcs: [],
+  frontends: [],
+  stakingAssetId: metadataA.penumbraAssetId,
+});
+
+const registryClientMock: ChainRegistryClient = {
+  bundled: {
+    get: getRegistryData,
+    globals: getRegistryGlobals,
+  },
+  remote: {
+    get: (chainId: string) => {
+      if (chainId !== CHAIN_ID) {
+        return Promise.reject('Cannot find chain data');
+      }
+      return Promise.resolve(registryMock as Registry);
+    },
+    globals: () => Promise.resolve(getRegistryGlobals()),
+  } as unknown as ChainRegistryClient['remote'],
+};
 
 const jsonifyRegistry = (r: Registry) => {
-  const assetById = r.getAllAssets().reduce<Record<string, JsonValue>>((acc, m) => {
-    const assetIdStr = uint8ArrayToBase64(m.penumbraAssetId!.inner);
-    acc[assetIdStr] = m.toJson();
-    return acc;
-  }, {});
-
   const numeraires = r.numeraires.map(n => uint8ArrayToBase64(n.inner));
 
   return {
     chainId: r.chainId,
     ibcConnections: r.ibcConnections,
     numeraires,
-    assetById,
+    // eslint-disable-next-line @typescript-eslint/unbound-method -- fine here
+    assetById: r.tryGetMetadata,
   };
 };
 
 // uses different wallet ids so no collisions take place
 const generateInitialProps = () => ({
-  chainId,
-  walletId: new WalletId({
+  chainId: CHAIN_ID,
+  walletId: create(WalletIdSchema, {
     inner: Uint8Array.from({ length: 32 }, () => Math.floor(Math.random() * 256)),
   }),
-  registryClient,
+  registryClient: registryClientMock,
 });
 
 const registryEndpoint = 'https://raw.githubusercontent.com/prax-wallet/registry/main/registry';
@@ -93,9 +136,9 @@ const registryEndpoint = 'https://raw.githubusercontent.com/prax-wallet/registry
 describe('IndexedDb', () => {
   beforeEach(() => {
     fetchMock.reset();
-    fetchMock.mock(`${registryEndpoint}/chains/${chainId}.json`, {
+    fetchMock.mock(`${registryEndpoint}/chains/${CHAIN_ID}.json`, {
       status: 200,
-      body: jsonifyRegistry(registryClient.bundled.get(chainId)),
+      body: jsonifyRegistry(registryClientMock.bundled.get(CHAIN_ID)),
     });
   });
 
@@ -113,7 +156,7 @@ describe('IndexedDb', () => {
       const testnetDb = await IndexedDb.initialize(generateInitialProps());
       const mainnetDb = await IndexedDb.initialize({
         ...generateInitialProps(),
-        chainId,
+        chainId: CHAIN_ID,
       });
 
       await testnetDb.saveAssetsMetadata(metadataA);
@@ -141,9 +184,9 @@ describe('IndexedDb', () => {
       dbA.close();
 
       const version2Props = {
-        chainId,
+        chainId: CHAIN_ID,
         walletId: version1Props.walletId,
-        registryClient: new ChainRegistryClient(),
+        registryClient: registryClientMock,
       };
       const dbB = await IndexedDb.initialize(version2Props);
       expect((await dbB.getAssetsMetadata(metadataA.penumbraAssetId))?.name).toBeUndefined();
@@ -158,13 +201,13 @@ describe('IndexedDb', () => {
       // Save the new note and wait for the next update in parallel
       const [, resA] = await Promise.all([db.saveSpendableNote(newNote), subscription.next()]);
       const updateA = resA.value as IdbUpdate<PenumbraDb, 'SPENDABLE_NOTES'>;
-      expect(SpendableNoteRecord.fromJson(updateA.value)).toEqual(newNote);
+      expect(fromJson(SpendableNoteRecordSchema, updateA.value)).toEqual(newNote);
       expect(resA.done).toBeFalsy();
 
       // Try a second time
       const [, resB] = await Promise.all([db.saveSpendableNote(newNote), subscription.next()]);
       const updateB = resB.value as IdbUpdate<PenumbraDb, 'SPENDABLE_NOTES'>;
-      expect(SpendableNoteRecord.fromJson(updateB.value)).toEqual(newNote);
+      expect(fromJson(SpendableNoteRecordSchema, updateB.value)).toEqual(newNote);
       expect(resB.done).toBeFalsy();
     });
   });
@@ -186,7 +229,7 @@ describe('IndexedDb', () => {
       for await (const asset of db.iterateAssetsMetadata()) {
         assets.push(asset);
       }
-      const registryLength = registryClient.bundled.get(chainId).getAllAssets().length;
+      const registryLength = registryClientMock.bundled.get(CHAIN_ID).getAllAssets().length;
       expect(assets.length).toBe(registryLength + 1);
 
       await db.saveTransaction(transactionId, 1000n, transaction);
@@ -245,11 +288,11 @@ describe('IndexedDb', () => {
     it('should be able to set/get', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
-      const fmdParams = new FmdParameters({ asOfBlockHeight: 1n, precisionBits: 0 });
+      const fmdParams = create(FmdParametersSchema, { asOfBlockHeight: 1n, precisionBits: 0 });
       await db.saveFmdParams(fmdParams);
-      const savedParmas = await db.getFmdParams();
+      const savedParams = await db.getFmdParams();
 
-      expect(fmdParams.equals(savedParmas)).toBeTruthy();
+      expect(savedParams && equals(FmdParametersSchema, fmdParams, savedParams)).toBeTruthy();
     });
   });
 
@@ -271,7 +314,9 @@ describe('IndexedDb', () => {
       await db.saveSpendableNote(newNote);
       const savedSpendableNote = await db.getSpendableNoteByNullifier(newNote.nullifier!);
 
-      expect(newNote.equals(savedSpendableNote)).toBeTruthy();
+      expect(
+        savedSpendableNote && equals(SpendableNoteRecordSchema, newNote, savedSpendableNote),
+      ).toBeTruthy();
     });
 
     it('should be able to set/get all', async () => {
@@ -284,7 +329,7 @@ describe('IndexedDb', () => {
         notes.push(note);
       }
       expect(notes.length === 1).toBeTruthy();
-      expect(newNote.equals(notes[0])).toBeTruthy();
+      expect(notes[0] && equals(SpendableNoteRecordSchema, newNote, notes[0])).toBeTruthy();
     });
 
     it('should be able to set/get by commitment', async () => {
@@ -293,7 +338,9 @@ describe('IndexedDb', () => {
       await db.saveSpendableNote(newNote);
       const noteByCommitment = await db.getSpendableNoteByCommitment(newNote.noteCommitment);
 
-      expect(newNote.equals(noteByCommitment)).toBeTruthy();
+      expect(
+        noteByCommitment && equals(SpendableNoteRecordSchema, newNote, noteByCommitment),
+      ).toBeTruthy();
     });
 
     it('should return undefined by commitment', async () => {
@@ -323,11 +370,11 @@ describe('IndexedDb', () => {
   describe('assets', () => {
     it('should be pre-loaded with hardcoded assets', async () => {
       const propsWithAssets = {
-        chainId,
-        walletId: new WalletId({
+        chainId: CHAIN_ID,
+        walletId: create(WalletIdSchema, {
           inner: Uint8Array.from({ length: 32 }, () => Math.floor(Math.random() * 256)),
         }),
-        registryClient: new ChainRegistryClient(),
+        registryClient: registryClientMock,
       };
       const db = await IndexedDb.initialize(propsWithAssets);
 
@@ -336,7 +383,7 @@ describe('IndexedDb', () => {
         savedAssets.push(asset);
       }
 
-      const registry = await registryClient.remote.get(chainId);
+      const registry = await registryClientMock.remote.get(CHAIN_ID);
       const registryLength = registry.getAllAssets().length;
       expect(savedAssets.length === registryLength).toBeTruthy();
     });
@@ -347,7 +394,9 @@ describe('IndexedDb', () => {
       await db.saveAssetsMetadata(metadataC);
       const savedDenomMetadata = await db.getAssetsMetadata(metadataC.penumbraAssetId);
 
-      expect(metadataC.equals(savedDenomMetadata)).toBeTruthy();
+      expect(
+        savedDenomMetadata && equals(MetadataSchema, metadataC, savedDenomMetadata),
+      ).toBeTruthy();
     });
 
     it('should be able to set/get all', async () => {
@@ -361,7 +410,7 @@ describe('IndexedDb', () => {
       for await (const asset of db.iterateAssetsMetadata()) {
         savedAssets.push(asset);
       }
-      const registryLength = registryClient.bundled.get(chainId).getAllAssets().length;
+      const registryLength = registryClientMock.bundled.get(CHAIN_ID).getAllAssets().length;
       expect(savedAssets.length).toBe(registryLength + 3);
     });
   });
@@ -372,7 +421,10 @@ describe('IndexedDb', () => {
       await db.saveTransaction(transactionId, 1000n, transaction);
 
       const savedTransaction = await db.getTransaction(transactionId);
-      expect(transaction.equals(savedTransaction?.transaction)).toBeTruthy();
+      expect(
+        savedTransaction?.transaction &&
+          equals(TransactionSchema, transaction, savedTransaction.transaction),
+      ).toBeTruthy();
     });
 
     it('should be able to set/get all', async () => {
@@ -384,7 +436,10 @@ describe('IndexedDb', () => {
         savedTransactions.push(tx);
       }
       expect(savedTransactions.length === 1).toBeTruthy();
-      expect(transaction.equals(savedTransactions[0]?.transaction)).toBeTruthy();
+      expect(
+        savedTransactions[0]?.transaction &&
+          equals(TransactionSchema, transaction, savedTransactions[0].transaction),
+      ).toBeTruthy();
     });
   });
 
@@ -398,7 +453,11 @@ describe('IndexedDb', () => {
         savedSwaps.push(swap);
       }
       expect(savedSwaps.length === 1).toBeTruthy();
-      expect(savedSwaps[0]!.equals(scanResultWithNewSwaps.newSwaps[0])).toBeTruthy();
+      expect(
+        savedSwaps[0] &&
+          scanResultWithNewSwaps.newSwaps[0] &&
+          equals(SwapRecordSchema, scanResultWithNewSwaps.newSwaps[0], savedSwaps[0]),
+      ).toBeTruthy();
     });
 
     it('should be able to set/get by nullifier', async () => {
@@ -409,7 +468,11 @@ describe('IndexedDb', () => {
         scanResultWithNewSwaps.newSwaps[0]!.nullifier!,
       );
 
-      expect(swapByNullifier!.equals(scanResultWithNewSwaps.newSwaps[0])).toBeTruthy();
+      expect(
+        scanResultWithNewSwaps.newSwaps[0] &&
+          swapByNullifier &&
+          equals(SwapRecordSchema, scanResultWithNewSwaps.newSwaps[0], swapByNullifier),
+      ).toBeTruthy();
     });
 
     it('should be able to set/get by commitment', async () => {
@@ -420,7 +483,11 @@ describe('IndexedDb', () => {
         scanResultWithNewSwaps.newSwaps[0]!.swapCommitment!,
       );
 
-      expect(swapByCommitment!.equals(scanResultWithNewSwaps.newSwaps[0])).toBeTruthy();
+      expect(
+        scanResultWithNewSwaps.newSwaps[0] &&
+          swapByCommitment &&
+          equals(SwapRecordSchema, scanResultWithNewSwaps.newSwaps[0], swapByCommitment),
+      ).toBeTruthy();
     });
   });
 
@@ -428,17 +495,17 @@ describe('IndexedDb', () => {
     it('should be able to set/get', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
-      const gasPrices = {
+      const gasPrices = create(GasPricesSchema, {
         assetId: db.stakingTokenAssetId,
         blockSpacePrice: 0n,
         compactBlockSpacePrice: 0n,
         verificationPrice: 0n,
         executionPrice: 0n,
-      };
+      });
       await db.saveGasPrices(gasPrices);
       const savedPrices = await db.getNativeGasPrices();
 
-      expect(savedPrices?.equals(gasPrices)).toBeTruthy();
+      expect(savedPrices && equals(GasPricesSchema, gasPrices, savedPrices)).toBeTruthy();
     });
   });
 
@@ -488,7 +555,10 @@ describe('IndexedDb', () => {
       await db.saveSpendableNote(noteWithDelegationAssetA);
       await db.saveSpendableNote(noteWithDelegationAssetB);
 
-      const notesForVoting = await db.getNotesForVoting(new AddressIndex({ account: 2 }), 222n);
+      const notesForVoting = await db.getNotesForVoting(
+        create(AddressIndexSchema, { account: 2 }),
+        222n,
+      );
 
       expect(notesForVoting.length === 0).toBeTruthy();
     });
@@ -511,14 +581,16 @@ describe('IndexedDb', () => {
       await db.addPosition(positionIdGmPenumbraBuy, positionGmPenumbraBuy, mainAccount);
       await db.updatePosition(
         positionIdGmPenumbraBuy,
-        new PositionState({ state: PositionState_PositionStateEnum.CLOSED }),
+        create(PositionStateSchema, { state: PositionState_PositionStateEnum.CLOSED }),
       );
       const ownedPositions: PositionId[] = [];
       for await (const positionId of db.getOwnedPositionIds(undefined, undefined, undefined)) {
         ownedPositions.push(positionId as PositionId);
       }
       expect(ownedPositions.length).toBe(1);
-      expect(ownedPositions[0]?.equals(positionIdGmPenumbraBuy)).toBeTruthy();
+      expect(
+        ownedPositions[0] && equals(PositionIdSchema, positionIdGmPenumbraBuy, ownedPositions[0]),
+      ).toBeTruthy();
     });
 
     it('attempt to change state of a non-existent position should throw an error', async () => {
@@ -526,7 +598,7 @@ describe('IndexedDb', () => {
       await expect(
         db.updatePosition(
           positionIdGmPenumbraBuy,
-          new PositionState({ state: PositionState_PositionStateEnum.CLOSED }),
+          create(PositionStateSchema, { state: PositionState_PositionStateEnum.CLOSED }),
         ),
       ).rejects.toThrow('Position not found when trying to change its state');
     });
@@ -552,7 +624,7 @@ describe('IndexedDb', () => {
 
       const ownedPositions: PositionId[] = [];
       for await (const positionId of db.getOwnedPositionIds(
-        new PositionState({ state: PositionState_PositionStateEnum.CLOSED }),
+        create(PositionStateSchema, { state: PositionState_PositionStateEnum.CLOSED }),
         undefined,
         undefined,
       )) {
@@ -599,7 +671,7 @@ describe('IndexedDb', () => {
 
       const ownedPositions: PositionId[] = [];
       for await (const positionId of db.getOwnedPositionIds(
-        new PositionState({ state: PositionState_PositionStateEnum.CLOSED }),
+        create(PositionStateSchema, { state: PositionState_PositionStateEnum.CLOSED }),
         tradingPairGmGn,
         firstSubaccount,
       )) {
@@ -607,16 +679,18 @@ describe('IndexedDb', () => {
       }
 
       expect(ownedPositions.length).toBe(1);
-      expect(ownedPositions[0]?.equals(positionIdGmGnSell)).toBeTruthy();
+      expect(
+        ownedPositions[0] && equals(PositionIdSchema, positionIdGmGnSell, ownedPositions[0]),
+      ).toBeTruthy();
     });
   });
 
   describe('prices', () => {
     let db: IndexedDb;
 
-    const numeraireAssetId = new AssetId({ inner: inner5678 });
+    const numeraireAssetId = create(AssetIdSchema, { inner: inner5678 });
 
-    const stakingAssetId = AssetId.fromJson({
+    const stakingAssetId = fromJson(AssetIdSchema, {
       inner: 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=',
     });
     beforeEach(async () => {
@@ -629,7 +703,7 @@ describe('IndexedDb', () => {
       // This effectively tests both the save and the get, since we saved via
       // `updatePrice()` in the `beforeEach` above.
       await expect(db.getPricesForAsset(delegationMetadataA, 50n, 719n)).resolves.toEqual([
-        new EstimatedPrice({
+        create(EstimatedPriceSchema, {
           pricedAsset: delegationMetadataA.penumbraAssetId,
           numeraire: stakingAssetId,
           numerairePerUnit: 1.23,
@@ -645,7 +719,7 @@ describe('IndexedDb', () => {
     it('different types of assets should have different price relevance thresholds', async () => {
       await expect(db.getPricesForAsset(metadataA, 241n, 719n)).resolves.toEqual([]);
       await expect(db.getPricesForAsset(delegationMetadataA, 241n, 719n)).resolves.toEqual([
-        new EstimatedPrice({
+        create(EstimatedPriceSchema, {
           pricedAsset: delegationMetadataA.penumbraAssetId,
           numeraire: stakingAssetId,
           numerairePerUnit: 1.23,
@@ -668,8 +742,8 @@ describe('IndexedDb', () => {
     });
 
     it('inserts an auction', async () => {
-      const auctionId = new AuctionId({ inner: inner0123 });
-      const auction = new DutchAuctionDescription({ startHeight: 1234n });
+      const auctionId = create(AuctionIdSchema, { inner: inner0123 });
+      const auction = create(DutchAuctionDescriptionSchema, { startHeight: 1234n });
       await db.upsertAuction(auctionId, { auction });
 
       const fetchedAuction = await db.getAuction(auctionId);
@@ -679,8 +753,8 @@ describe('IndexedDb', () => {
     });
 
     it('inserts a note commitment', async () => {
-      const auctionId = new AuctionId({ inner: inner0123 });
-      const noteCommitment = new StateCommitment({ inner: inner0123 });
+      const auctionId = create(AuctionIdSchema, { inner: inner0123 });
+      const noteCommitment = create(StateCommitmentSchema, { inner: inner0123 });
       await db.upsertAuction(auctionId, { noteCommitment });
 
       const fetchedAuction = await db.getAuction(auctionId);
@@ -690,9 +764,9 @@ describe('IndexedDb', () => {
     });
 
     it('inserts both an auction and a note commitment', async () => {
-      const auctionId = new AuctionId({ inner: inner0123 });
-      const auction = new DutchAuctionDescription({ startHeight: 1234n });
-      const noteCommitment = new StateCommitment({ inner: inner0123 });
+      const auctionId = create(AuctionIdSchema, { inner: inner0123 });
+      const auction = create(DutchAuctionDescriptionSchema, { startHeight: 1234n });
+      const noteCommitment = create(StateCommitmentSchema, { inner: inner0123 });
       await db.upsertAuction(auctionId, { auction, noteCommitment });
 
       const fetchedAuction = await db.getAuction(auctionId);
@@ -703,15 +777,15 @@ describe('IndexedDb', () => {
     });
 
     it('inserts an auction and sequence number, and then updates with a note commitment when given the same auction ID', async () => {
-      const auctionId = new AuctionId({ inner: inner0123 });
-      const auction = new DutchAuctionDescription({ startHeight: 1234n });
+      const auctionId = create(AuctionIdSchema, { inner: inner0123 });
+      const auction = create(DutchAuctionDescriptionSchema, { startHeight: 1234n });
       const seqNum = 0n;
       await db.upsertAuction(auctionId, { auction, seqNum });
 
       let fetchedAuction = await db.getAuction(auctionId);
       expect(fetchedAuction).toBeTruthy();
 
-      const noteCommitment = new StateCommitment({ inner: inner0123 });
+      const noteCommitment = create(StateCommitmentSchema, { inner: inner0123 });
       await db.upsertAuction(auctionId, { noteCommitment });
 
       fetchedAuction = await db.getAuction(auctionId);
@@ -725,14 +799,14 @@ describe('IndexedDb', () => {
     });
 
     it('inserts a note commitment and then updates with an auction and sequence number when given the same auction ID', async () => {
-      const auctionId = new AuctionId({ inner: inner0123 });
-      const noteCommitment = new StateCommitment({ inner: inner0123 });
+      const auctionId = create(AuctionIdSchema, { inner: inner0123 });
+      const noteCommitment = create(StateCommitmentSchema, { inner: inner0123 });
       await db.upsertAuction(auctionId, { noteCommitment });
 
       let fetchedAuction = await db.getAuction(auctionId);
       expect(fetchedAuction).toBeTruthy();
 
-      const auction = new DutchAuctionDescription({ startHeight: 1234n });
+      const auction = create(DutchAuctionDescriptionSchema, { startHeight: 1234n });
       const seqNum = 0n;
       await db.upsertAuction(auctionId, { auction, seqNum });
 
@@ -747,9 +821,9 @@ describe('IndexedDb', () => {
     });
 
     it('inserts all data, and then updates with a sequence number when given the same auction ID', async () => {
-      const auctionId = new AuctionId({ inner: inner0123 });
-      const auction = new DutchAuctionDescription({ startHeight: 1234n });
-      const noteCommitment = new StateCommitment({ inner: inner0123 });
+      const auctionId = create(AuctionIdSchema, { inner: inner0123 });
+      const auction = create(DutchAuctionDescriptionSchema, { startHeight: 1234n });
+      const noteCommitment = create(StateCommitmentSchema, { inner: inner0123 });
       await db.upsertAuction(auctionId, { auction, noteCommitment, seqNum: 0n });
 
       let fetchedAuction = await db.getAuction(auctionId);
@@ -776,12 +850,12 @@ describe('IndexedDb', () => {
     });
 
     it('saves the outstanding reserves', async () => {
-      const auctionId = new AuctionId({ inner: inner0123 });
-      const input = new Value({
+      const auctionId = create(AuctionIdSchema, { inner: inner0123 });
+      const input = create(ValueSchema, {
         amount: { hi: 0n, lo: 1n },
         assetId: { inner: inner1111 },
       });
-      const output = new Value({
+      const output = create(ValueSchema, {
         amount: { hi: 0n, lo: 2n },
         assetId: { inner: inner2222 },
       });
@@ -799,12 +873,12 @@ describe('IndexedDb', () => {
     });
 
     it('deletes the reserves', async () => {
-      const auctionId = new AuctionId({ inner: inner0123 });
-      const input = new Value({
+      const auctionId = create(AuctionIdSchema, { inner: inner0123 });
+      const input = create(ValueSchema, {
         amount: { hi: 0n, lo: 1n },
         assetId: { inner: inner1111 },
       });
-      const output = new Value({
+      const output = create(ValueSchema, {
         amount: { hi: 0n, lo: 2n },
         assetId: { inner: inner2222 },
       });

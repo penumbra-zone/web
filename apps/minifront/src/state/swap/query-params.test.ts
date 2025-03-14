@@ -1,8 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { create } from '@bufbuild/protobuf';
 import { setSwapQueryParams, getSwapQueryParams } from './query-params';
 import { AllSlices } from '..';
 import { emptyBalanceResponse } from '../../utils/empty-balance-response';
-import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { MetadataSchema } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
 describe('swap query params', () => {
   beforeEach(() => {
@@ -49,8 +50,8 @@ describe('swap query params', () => {
   it('sets the hash query correctly', () => {
     const state = {
       swap: {
-        assetIn: emptyBalanceResponse(new Metadata({ symbol: 'UM' }), 1),
-        assetOut: new Metadata({ symbol: 'USDC' }),
+        assetIn: emptyBalanceResponse(create(MetadataSchema, { symbol: 'UM' }), 1),
+        assetOut: create(MetadataSchema, { symbol: 'USDC' }),
       },
     } as AllSlices;
 
@@ -63,7 +64,7 @@ describe('swap query params', () => {
   it('sets the hash query correctly on partial data', () => {
     const state = {
       swap: {
-        assetIn: emptyBalanceResponse(new Metadata({ symbol: 'UM' })),
+        assetIn: emptyBalanceResponse(create(MetadataSchema, { symbol: 'UM' })),
       },
     } as AllSlices;
 

@@ -1,4 +1,5 @@
-import { ActionView } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import { ActionViewSchema } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import { create, equals } from '@bufbuild/protobuf';
 import { asPublicActionView, asReceiverActionView } from './action-view.js';
 import { describe, expect, test, vi } from 'vitest';
 
@@ -13,16 +14,15 @@ describe('asPublicActionView()', () => {
 
   describe('when passed an action view with an `undefined` case', () => {
     test('returns an empty action view', () => {
-      expect(
-        asPublicActionView(new ActionView({ actionView: { case: undefined } })).equals(
-          new ActionView(),
-        ),
-      ).toBe(true);
+      const publicView = asPublicActionView(
+        create(ActionViewSchema, { actionView: { case: undefined } }),
+      );
+      expect(equals(ActionViewSchema, publicView, create(ActionViewSchema))).toBe(true);
     });
   });
 
   describe('when passed a spend action view', () => {
-    const actionView = new ActionView({
+    const actionView = create(ActionViewSchema, {
       actionView: {
         case: 'spend',
         value: {
@@ -72,7 +72,7 @@ describe('asPublicActionView()', () => {
     });
 
     test('returns an action view with an opaque spend view', () => {
-      const expected = new ActionView({
+      const expected = create(ActionViewSchema, {
         actionView: {
           case: 'spend',
           value: {
@@ -92,12 +92,12 @@ describe('asPublicActionView()', () => {
         },
       });
 
-      expect(asPublicActionView(actionView).equals(expected)).toBe(true);
+      expect(equals(ActionViewSchema, asPublicActionView(actionView), expected)).toBe(true);
     });
   });
 
   describe('when passed an output action view', () => {
-    const actionView = new ActionView({
+    const actionView = create(ActionViewSchema, {
       actionView: {
         case: 'output',
         value: {
@@ -147,7 +147,7 @@ describe('asPublicActionView()', () => {
     });
 
     test('returns an action view with an opaque output view', () => {
-      const expected = new ActionView({
+      const expected = create(ActionViewSchema, {
         actionView: {
           case: 'output',
           value: {
@@ -167,12 +167,12 @@ describe('asPublicActionView()', () => {
         },
       });
 
-      expect(asPublicActionView(actionView).equals(expected)).toBe(true);
+      expect(equals(ActionViewSchema, asPublicActionView(actionView), expected)).toBe(true);
     });
   });
 
   describe('when passed a delegate action view', () => {
-    const actionView = new ActionView({
+    const actionView = create(ActionViewSchema, {
       actionView: {
         case: 'delegate',
         value: {
@@ -183,12 +183,12 @@ describe('asPublicActionView()', () => {
     });
 
     test('returns the action view as-is', () => {
-      expect(asPublicActionView(actionView).equals(actionView)).toBe(true);
+      expect(equals(ActionViewSchema, asPublicActionView(actionView), actionView)).toBe(true);
     });
   });
 
   describe('when passed an undelegate action view', () => {
-    const actionView = new ActionView({
+    const actionView = create(ActionViewSchema, {
       actionView: {
         case: 'undelegate',
         value: {
@@ -199,7 +199,7 @@ describe('asPublicActionView()', () => {
     });
 
     test('returns the action view as-is', () => {
-      expect(asPublicActionView(actionView).equals(actionView)).toBe(true);
+      expect(equals(ActionViewSchema, asPublicActionView(actionView), actionView)).toBe(true);
     });
   });
 });
@@ -218,16 +218,16 @@ describe('asReceiverActionView()', () => {
     test('returns an empty action view', async () => {
       const isControlledAddress = vi.fn();
       const result = await asReceiverActionView(
-        new ActionView({ actionView: { case: undefined } }),
+        create(ActionViewSchema, { actionView: { case: undefined } }),
         { isControlledAddress },
       );
 
-      expect(result.equals(new ActionView())).toBe(true);
+      expect(equals(ActionViewSchema, result, create(ActionViewSchema))).toBe(true);
     });
   });
 
   describe('when passed a spend action view', () => {
-    const actionView = new ActionView({
+    const actionView = create(ActionViewSchema, {
       actionView: {
         case: 'spend',
         value: {
@@ -277,7 +277,7 @@ describe('asReceiverActionView()', () => {
     });
 
     test('returns an action view with an opaque spend view', async () => {
-      const expected = new ActionView({
+      const expected = create(ActionViewSchema, {
         actionView: {
           case: 'spend',
           value: {
@@ -300,12 +300,12 @@ describe('asReceiverActionView()', () => {
       const isControlledAddress = vi.fn();
       const result = await asReceiverActionView(actionView, { isControlledAddress });
 
-      expect(result.equals(expected)).toBe(true);
+      expect(equals(ActionViewSchema, result, expected)).toBe(true);
     });
   });
 
   describe('when passed an output action view', () => {
-    const actionView = new ActionView({
+    const actionView = create(ActionViewSchema, {
       actionView: {
         case: 'output',
         value: {
@@ -358,12 +358,12 @@ describe('asReceiverActionView()', () => {
       const isControlledAddress = () => Promise.resolve(false);
       const result = await asReceiverActionView(actionView, { isControlledAddress });
 
-      expect(result.equals(actionView)).toBe(true);
+      expect(equals(ActionViewSchema, result, actionView)).toBe(true);
     });
   });
 
   describe('when passed a delegate action view', () => {
-    const actionView = new ActionView({
+    const actionView = create(ActionViewSchema, {
       actionView: {
         case: 'delegate',
         value: {
@@ -377,12 +377,12 @@ describe('asReceiverActionView()', () => {
       const isControlledAddress = () => Promise.resolve(false);
       const result = await asReceiverActionView(actionView, { isControlledAddress });
 
-      expect(result.equals(actionView)).toBe(true);
+      expect(equals(ActionViewSchema, result, actionView)).toBe(true);
     });
   });
 
   describe('when passed an undelegate action view', () => {
-    const actionView = new ActionView({
+    const actionView = create(ActionViewSchema, {
       actionView: {
         case: 'undelegate',
         value: {
@@ -396,7 +396,7 @@ describe('asReceiverActionView()', () => {
       const isControlledAddress = () => Promise.resolve(false);
       const result = await asReceiverActionView(actionView, { isControlledAddress });
 
-      expect(result.equals(actionView)).toBe(true);
+      expect(equals(ActionViewSchema, result, actionView)).toBe(true);
     });
   });
 });

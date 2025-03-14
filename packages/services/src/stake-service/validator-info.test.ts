@@ -4,25 +4,27 @@ import { IndexedDbMock, MockServices } from '../test-utils.js';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { StakeService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
+
 import {
-  ValidatorInfoRequest,
-  ValidatorInfoResponse,
+  ValidatorInfoRequestSchema,
+  ValidatorInfoResponseSchema,
   ValidatorState_ValidatorStateEnum,
 } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
-import { PartialMessage } from '@bufbuild/protobuf';
+
+import { create, MessageInitShape } from '@bufbuild/protobuf';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 describe('ValidatorInfo request handler', () => {
   let mockServices: MockServices;
   let mockIndexedDb: IndexedDbMock;
   let mockCtx: HandlerContext;
-  const mockValidatorInfoResponse1 = new ValidatorInfoResponse({
+  const mockValidatorInfoResponse1 = create(ValidatorInfoResponseSchema, {
     validatorInfo: {
       validator: { name: 'Validator 1' },
       status: { state: { state: ValidatorState_ValidatorStateEnum.ACTIVE } },
     },
   });
-  const mockValidatorInfoResponse2 = new ValidatorInfoResponse({
+  const mockValidatorInfoResponse2 = create(ValidatorInfoResponseSchema, {
     validatorInfo: {
       validator: { name: 'Validator 2' },
       status: { state: { state: ValidatorState_ValidatorStateEnum.INACTIVE } },
@@ -54,7 +56,7 @@ describe('ValidatorInfo request handler', () => {
     };
     mockCtx = createHandlerContext({
       service: StakeService,
-      method: StakeService.methods.validatorInfo,
+      method: StakeService.method.validatorInfo,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
@@ -65,9 +67,9 @@ describe('ValidatorInfo request handler', () => {
   });
 
   it('streams `ValidatorInfoResponse`s from the results of the database query', async () => {
-    const req = new ValidatorInfoRequest({ showInactive: true });
+    const req = create(ValidatorInfoRequestSchema, { showInactive: true });
 
-    const results: (ValidatorInfoResponse | PartialMessage<ValidatorInfoResponse>)[] = [];
+    const results: MessageInitShape<typeof ValidatorInfoResponseSchema>[] = [];
     for await (const result of validatorInfo(req, mockCtx)) {
       results.push(result);
     }
@@ -76,9 +78,9 @@ describe('ValidatorInfo request handler', () => {
   });
 
   it('does not include inactive validators by default', async () => {
-    const req = new ValidatorInfoRequest();
+    const req = create(ValidatorInfoRequestSchema);
 
-    const results: (ValidatorInfoResponse | PartialMessage<ValidatorInfoResponse>)[] = [];
+    const results: MessageInitShape<typeof ValidatorInfoResponseSchema>[] = [];
     for await (const result of validatorInfo(req, mockCtx)) {
       results.push(result);
     }

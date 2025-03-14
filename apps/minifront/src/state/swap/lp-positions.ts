@@ -1,10 +1,11 @@
 import { SliceCreator, useStore } from '..';
+import { create } from '@bufbuild/protobuf';
 import { createZQuery, ZQueryState } from '@penumbra-zone/zquery';
 import { penumbra } from '../../penumbra.ts';
-import { ViewService } from '@penumbra-zone/protobuf/penumbra/view/v1/view_connect';
 import {
   OwnedPositionIdsResponse,
-  TransactionPlannerRequest,
+  TransactionPlannerRequestSchema,
+  ViewService,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { SwapSlice } from './index.ts';
 import { isValidAmount, planBuildBroadcast } from '../helpers.ts';
@@ -87,7 +88,7 @@ const assembleLimitOrderReq = ({ assetIn, amount, assetOut }: SwapSlice) => {
     throw new Error('Invalid amount');
   }
 
-  return new TransactionPlannerRequest({
+  return create(TransactionPlannerRequestSchema, {
     positionOpens: [
       {
         position: {

@@ -1,5 +1,7 @@
 import { notes } from './notes.js';
 
+import { create, fromJson } from '@bufbuild/protobuf';
+
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
 
@@ -7,10 +9,14 @@ import { createContextValues, createHandlerContext, HandlerContext } from '@conn
 
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 
-import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { AssetIdSchema } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { AddressIndexSchema } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import {
-  NotesRequest,
+  NotesRequestSchema,
+  NotesResponseSchema,
+  SpendableNoteRecordSchema,
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import type {
   NotesResponse,
   SpendableNoteRecord,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
@@ -42,7 +48,7 @@ describe('Notes request handler', () => {
 
     mockCtx = createHandlerContext({
       service: ViewService,
-      method: ViewService.methods.notes,
+      method: ViewService.method.notes,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
@@ -63,31 +69,31 @@ describe('Notes request handler', () => {
 
   test('should get all unspent notes if the query is empty', async () => {
     const responses: NotesResponse[] = [];
-    const req = new NotesRequest({});
+    const req = create(NotesRequestSchema, {});
     for await (const res of notes(req, mockCtx)) {
-      responses.push(new NotesResponse(res));
+      responses.push(create(NotesResponseSchema, res));
     }
     expect(responses.length).toBe(5);
   });
 
   test('should get all unspent notes if if includeSpent is false', async () => {
     const responses: NotesResponse[] = [];
-    const req = new NotesRequest({
+    const req = create(NotesRequestSchema, {
       includeSpent: false,
     });
     for await (const res of notes(req, mockCtx)) {
-      responses.push(new NotesResponse(res));
+      responses.push(create(NotesResponseSchema, res));
     }
     expect(responses.length).toBe(5);
   });
 
   test('should get both spent and unspent notes, if includeSpent is true', async () => {
     const responses: NotesResponse[] = [];
-    const req = new NotesRequest({
+    const req = create(NotesRequestSchema, {
       includeSpent: true,
     });
     for await (const res of notes(req, mockCtx)) {
-      responses.push(new NotesResponse(res));
+      responses.push(create(NotesResponseSchema, res));
     }
     expect(responses.length).toBe(6);
   });
@@ -95,15 +101,15 @@ describe('Notes request handler', () => {
   test('should get unspent notes with a given assetId', async () => {
     const responses: NotesResponse[] = [];
 
-    const assetId = AssetId.fromJson({
+    const assetId = fromJson(AssetIdSchema, {
       inner: 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=',
     });
 
-    const req = new NotesRequest({
+    const req = create(NotesRequestSchema, {
       assetId,
     });
     for await (const res of notes(req, mockCtx)) {
-      responses.push(new NotesResponse(res));
+      responses.push(create(NotesResponseSchema, res));
     }
     expect(responses.length).toBe(4);
   });
@@ -111,16 +117,16 @@ describe('Notes request handler', () => {
   test('should get unspent and spent notes with a given assetId and includeSpent is true', async () => {
     const responses: NotesResponse[] = [];
 
-    const assetId = AssetId.fromJson({
+    const assetId = fromJson(AssetIdSchema, {
       inner: 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=',
     });
 
-    const req = new NotesRequest({
+    const req = create(NotesRequestSchema, {
       includeSpent: true,
       assetId,
     });
     for await (const res of notes(req, mockCtx)) {
-      responses.push(new NotesResponse(res));
+      responses.push(create(NotesResponseSchema, res));
     }
     expect(responses.length).toBe(5);
   });
@@ -128,17 +134,17 @@ describe('Notes request handler', () => {
   test('should get unspent and spent notes with a given addressIndex and includeSpent is true', async () => {
     const responses: NotesResponse[] = [];
 
-    const addressIndex = AddressIndex.fromJson({
+    const addressIndex = fromJson(AddressIndexSchema, {
       account: 99,
       randomizer: 'AAAAAAAAAAAAAAAA',
     });
 
-    const req = new NotesRequest({
+    const req = create(NotesRequestSchema, {
       includeSpent: true,
       addressIndex,
     });
     for await (const res of notes(req, mockCtx)) {
-      responses.push(new NotesResponse(res));
+      responses.push(create(NotesResponseSchema, res));
     }
     expect(responses.length).toBe(1);
   });
@@ -146,16 +152,16 @@ describe('Notes request handler', () => {
   test('should get unspent notes with a given addressIndex', async () => {
     const responses: NotesResponse[] = [];
 
-    const addressIndex = AddressIndex.fromJson({
+    const addressIndex = fromJson(AddressIndexSchema, {
       account: 99,
       randomizer: 'AAAAAAAAAAAAAAAA',
     });
 
-    const req = new NotesRequest({
+    const req = create(NotesRequestSchema, {
       addressIndex,
     });
     for await (const res of notes(req, mockCtx)) {
-      responses.push(new NotesResponse(res));
+      responses.push(create(NotesResponseSchema, res));
     }
     expect(responses.length).toBe(0);
   });
@@ -163,21 +169,21 @@ describe('Notes request handler', () => {
   test('should get unspent and spent notes with a given addressIndex and given assetId  and includeSpent is true', async () => {
     const responses: NotesResponse[] = [];
 
-    const addressIndex = AddressIndex.fromJson({
+    const addressIndex = fromJson(AddressIndexSchema, {
       account: 99,
       randomizer: 'AAAAAAAAAAAAAAAA',
     });
-    const assetId = AssetId.fromJson({
+    const assetId = fromJson(AssetIdSchema, {
       inner: 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=',
     });
 
-    const req = new NotesRequest({
+    const req = create(NotesRequestSchema, {
       includeSpent: true,
       addressIndex,
       assetId,
     });
     for await (const res of notes(req, mockCtx)) {
-      responses.push(new NotesResponse(res));
+      responses.push(create(NotesResponseSchema, res));
     }
     expect(responses.length).toBe(1);
   });
@@ -185,20 +191,20 @@ describe('Notes request handler', () => {
   test('should get unspent notes with a given addressIndex and given assetId', async () => {
     const responses: NotesResponse[] = [];
 
-    const addressIndex = AddressIndex.fromJson({
+    const addressIndex = fromJson(AddressIndexSchema, {
       account: 99,
       randomizer: 'AAAAAAAAAAAAAAAA',
     });
-    const assetId = AssetId.fromJson({
+    const assetId = fromJson(AssetIdSchema, {
       inner: 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=',
     });
 
-    const req = new NotesRequest({
+    const req = create(NotesRequestSchema, {
       addressIndex,
       assetId,
     });
     for await (const res of notes(req, mockCtx)) {
-      responses.push(new NotesResponse(res));
+      responses.push(create(NotesResponseSchema, res));
     }
     expect(responses.length).toBe(0);
   });
@@ -206,7 +212,7 @@ describe('Notes request handler', () => {
   test('should get notes total exceeding the specified amountToSpend given assetId and amountToSpend', async () => {
     const responses: NotesResponse[] = [];
 
-    const assetId = AssetId.fromJson({
+    const assetId = fromJson(AssetIdSchema, {
       inner: 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=',
     });
 
@@ -215,12 +221,12 @@ describe('Notes request handler', () => {
       ho: 0n,
     };
 
-    const req = new NotesRequest({
+    const req = create(NotesRequestSchema, {
       assetId,
       amountToSpend,
     });
     for await (const res of notes(req, mockCtx)) {
-      responses.push(new NotesResponse(res));
+      responses.push(create(NotesResponseSchema, res));
     }
     expect(responses.length).toBe(2);
   });
@@ -228,7 +234,7 @@ describe('Notes request handler', () => {
   test('should get an empty array when assetId is set and amountToSpend is zero', async () => {
     const responses: NotesResponse[] = [];
 
-    const assetId = AssetId.fromJson({
+    const assetId = fromJson(AssetIdSchema, {
       inner: 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=',
     });
 
@@ -237,12 +243,12 @@ describe('Notes request handler', () => {
       ho: 0n,
     };
 
-    const req = new NotesRequest({
+    const req = create(NotesRequestSchema, {
       assetId,
       amountToSpend,
     });
     for await (const res of notes(req, mockCtx)) {
-      responses.push(new NotesResponse(res));
+      responses.push(create(NotesResponseSchema, res));
     }
     expect(responses.length).toBe(1);
   });
@@ -255,11 +261,11 @@ describe('Notes request handler', () => {
       ho: 0n,
     };
 
-    const req = new NotesRequest({
+    const req = create(NotesRequestSchema, {
       amountToSpend,
     });
     for await (const res of notes(req, mockCtx)) {
-      responses.push(new NotesResponse(res));
+      responses.push(create(NotesResponseSchema, res));
     }
     expect(responses.length).toBe(5);
   });
@@ -267,7 +273,7 @@ describe('Notes request handler', () => {
   test('should ignore the filter when assetId, amountToSpend are set but includeSpent is true', async () => {
     const responses: NotesResponse[] = [];
 
-    const assetId = AssetId.fromJson({
+    const assetId = fromJson(AssetIdSchema, {
       inner: 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=',
     });
 
@@ -276,14 +282,14 @@ describe('Notes request handler', () => {
       ho: 0n,
     };
 
-    const req = new NotesRequest({
+    const req = create(NotesRequestSchema, {
       assetId,
       amountToSpend,
       includeSpent: true,
     });
 
     for await (const res of notes(req, mockCtx)) {
-      responses.push(new NotesResponse(res));
+      responses.push(create(NotesResponseSchema, res));
     }
 
     expect(responses.length).toBe(5);
@@ -291,7 +297,7 @@ describe('Notes request handler', () => {
 });
 
 const testData: SpendableNoteRecord[] = [
-  SpendableNoteRecord.fromJson({
+  fromJson(SpendableNoteRecordSchema, {
     noteCommitment: {
       inner: 'pXS1k2kvlph+vuk9uhqeoP1mZRc+f526a06/bg3EBwQ=',
     },
@@ -324,7 +330,7 @@ const testData: SpendableNoteRecord[] = [
       transaction: { id: '3CBS08dM9eLHH45Z9loZciZ9RaG9x1fc26Qnv0lQlto=' },
     },
   }),
-  SpendableNoteRecord.fromJson({
+  fromJson(SpendableNoteRecordSchema, {
     noteCommitment: {
       inner: 'pXS1k2kvlph+vuk9uhqeoP1mZRc+f526a06/bg3EBwQ=',
     },
@@ -358,7 +364,7 @@ const testData: SpendableNoteRecord[] = [
       },
     },
   }),
-  SpendableNoteRecord.fromJson({
+  fromJson(SpendableNoteRecordSchema, {
     noteCommitment: {
       inner: '2x5KAgUMdC2Gg2aZmj0bZFa5eQv2z9pQlSFfGXcgHQk=',
     },
@@ -392,7 +398,7 @@ const testData: SpendableNoteRecord[] = [
       },
     },
   }),
-  SpendableNoteRecord.fromJson({
+  fromJson(SpendableNoteRecordSchema, {
     noteCommitment: {
       inner: '2x5KAgUMdC2Gg2aZmj0bZFa5eQv2z9pQlSFfGXcgHQk=',
     },
@@ -426,7 +432,7 @@ const testData: SpendableNoteRecord[] = [
       },
     },
   }),
-  SpendableNoteRecord.fromJson({
+  fromJson(SpendableNoteRecordSchema, {
     noteCommitment: {
       inner: '9ykyJTT1AMzrEdmpeHlLdiKO6Atrzrw4UBHsy6uwyAE=',
     },
@@ -459,7 +465,7 @@ const testData: SpendableNoteRecord[] = [
       },
     },
   }),
-  SpendableNoteRecord.fromJson({
+  fromJson(SpendableNoteRecordSchema, {
     noteCommitment: {
       inner: '1hzgmsvqLjwE8oUKqwjvjioP/NjBw7gA559qH1vXfAs=',
     },

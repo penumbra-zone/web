@@ -1,7 +1,8 @@
 import {
   ActionDutchAuctionScheduleView,
-  DutchAuction,
+  DutchAuctionSchema,
 } from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
+import { create } from '@bufbuild/protobuf';
 import { DutchAuctionComponent } from '../../dutch-auction-component';
 import { ViewBox } from '../viewbox';
 
@@ -15,7 +16,7 @@ export const ActionDutchAuctionScheduleViewComponent = ({
       label='Schedule a Dutch Auction'
       visibleContent={
         <DutchAuctionComponent
-          dutchAuction={new DutchAuction({ description: value.action?.description })}
+          dutchAuction={create(DutchAuctionSchema, { description: value.action?.description })}
           inputMetadata={value.inputMetadata}
           outputMetadata={value.outputMetadata}
           auctionId={value.auctionId}

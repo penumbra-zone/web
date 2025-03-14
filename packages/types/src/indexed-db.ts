@@ -40,14 +40,19 @@ import {
   TransactionView,
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
-import { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
+import {
+  StateCommitment,
+  StateCommitmentSchema,
+} from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
 import {
   NotesForVotingResponse,
   SpendableNoteRecord,
+  SpendableNoteRecordSchema,
   SwapRecord,
+  SwapRecordSchema,
   TransactionInfo,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { PlainMessage } from '@bufbuild/protobuf';
+import { MessageInitShape } from '@bufbuild/protobuf';
 import type { Jsonified } from './jsonified.js';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 
@@ -71,14 +76,16 @@ export interface IndexedDbInterface {
     commitment: StateCommitment,
   ): Promise<SpendableNoteRecord | undefined>;
   saveSpendableNote(
-    note: PlainMessage<SpendableNoteRecord> & { noteCommitment: PlainMessage<StateCommitment> },
+    note: MessageInitShape<typeof SpendableNoteRecordSchema> & {
+      noteCommitment: MessageInitShape<typeof StateCommitmentSchema>;
+    },
   ): Promise<void>;
   iterateSpendableNotes(): AsyncGenerator<SpendableNoteRecord, void>;
   saveTransaction(id: TransactionId, height: bigint, tx: Transaction): Promise<void>;
   getTransaction(txId: TransactionId): Promise<TransactionInfo | undefined>;
   iterateTransactions(): AsyncGenerator<TransactionInfo, void>;
   getAssetsMetadata(assetId: AssetId): Promise<Metadata | undefined>;
-  saveAssetsMetadata(metadata: Required<PlainMessage<Metadata>>): Promise<void>;
+  saveAssetsMetadata(metadata: Metadata): Promise<void>;
   iterateAssetsMetadata(): AsyncGenerator<Metadata, void>;
   getStateCommitmentTree(): Promise<StateCommitmentTree>;
   saveScanResult(updates: ScanBlockResult): Promise<void>;
@@ -89,12 +96,14 @@ export interface IndexedDbInterface {
   iterateSwaps(): AsyncGenerator<SwapRecord, void>;
   getSwapByNullifier(nullifier: Nullifier): Promise<SwapRecord | undefined>;
   saveSwap(
-    swap: PlainMessage<SwapRecord> & { swapCommitment: PlainMessage<StateCommitment> },
+    swap: MessageInitShape<typeof SwapRecordSchema> & {
+      swapCommitment: MessageInitShape<typeof StateCommitmentSchema>;
+    },
   ): Promise<void>;
   getSwapByCommitment(commitment: StateCommitment): Promise<SwapRecord | undefined>;
   getNativeGasPrices(): Promise<GasPrices | undefined>;
   getAltGasPrices(): Promise<GasPrices[]>;
-  saveGasPrices(value: Required<PlainMessage<GasPrices>>): Promise<void>;
+  saveGasPrices(value: GasPrices): Promise<void>;
   getNotesForVoting(
     addressIndex: AddressIndex | undefined,
     votableAtHeight: bigint,

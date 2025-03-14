@@ -1,11 +1,12 @@
 import { useLoaderData } from 'react-router-dom';
+import { SyncInfo as SyncInfoProto } from '@penumbra-zone/protobuf/penumbra/util/tendermint_proxy/v1/tendermint_proxy_pb';
+import { timestampDate } from '@bufbuild/protobuf/wkt';
 import { IndexLoaderResponse } from '../fetching/loader';
 import { Card } from '@penumbra-zone/ui-deprecated/components/ui/card';
 import { format } from 'date-fns';
-import { SyncInfo as SyncInfoProto } from '@penumbra-zone/protobuf/penumbra/util/tendermint_proxy/v1/tendermint_proxy_pb';
 
 const getFormattedTime = (syncInfo: SyncInfoProto): { date?: string; time?: string } => {
-  const dateObj = syncInfo.latestBlockTime?.toDate();
+  const dateObj = syncInfo.latestBlockTime && timestampDate(syncInfo.latestBlockTime);
   if (!dateObj) {
     return {};
   }

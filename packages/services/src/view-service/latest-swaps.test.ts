@@ -1,4 +1,5 @@
 import { ViewService } from '@penumbra-zone/protobuf';
+import { create, equals } from '@bufbuild/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
 import { fvkCtx } from '../ctx/full-viewing-key.js';
 
@@ -7,6 +8,11 @@ import { createContextValues, createHandlerContext, HandlerContext } from '@conn
 import { beforeEach, describe, expect, vi, it } from 'vitest';
 
 import {
+  LatestSwapsRequestSchema,
+  LatestSwapsResponseSchema,
+  SwapRecordSchema,
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import type {
   LatestSwapsRequest,
   LatestSwapsResponse,
   SwapRecord,
@@ -14,14 +20,14 @@ import {
 import { IndexedDbMock, MockServices, testFullViewingKey } from '../test-utils.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { latestSwaps } from './latest-swaps.js';
-import { CommitmentSource } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
-import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { CommitmentSourceSchema } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
+import { AssetIdSchema, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getAddressByIndex } from '@penumbra-zone/wasm/keys';
 import { pnum } from '@penumbra-zone/types/pnum';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import { SHITMOS_METADATA, UM_METADATA, USDC_METADATA } from './util/data.js';
-import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { DirectedTradingPair } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
+import { AddressIndexSchema } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { DirectedTradingPairSchema } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 
 describe('LatestSwaps request handler', () => {
   let mockServices: MockServices;
@@ -33,7 +39,7 @@ describe('LatestSwaps request handler', () => {
     const responses: LatestSwapsResponse[] = [];
 
     for await (const res of latestSwaps(req, mockCtx)) {
-      responses.push(new LatestSwapsResponse(res));
+      responses.push(create(LatestSwapsResponseSchema, res));
     }
 
     return responses;
@@ -59,7 +65,7 @@ describe('LatestSwaps request handler', () => {
 
     mockCtx = createHandlerContext({
       service: ViewService,
-      method: ViewService.methods.latestSwaps,
+      method: ViewService.method.latestSwaps,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
@@ -101,11 +107,11 @@ describe('LatestSwaps request handler', () => {
       }),
     ]);
 
-    const res = await request(new LatestSwapsRequest({}));
+    const res = await request(create(LatestSwapsRequestSchema, {}));
 
     expect(res.length).toBe(2);
-    expect(res[0]?.pair?.start?.equals(UM_METADATA.penumbraAssetId)).toBeTruthy();
-    expect(res[0]?.pair?.end?.equals(USDC_METADATA.penumbraAssetId)).toBeTruthy();
+    expect(equals(AssetIdSchema, res[0]!.pair!.start!, UM_METADATA.penumbraAssetId!)).toBeTruthy();
+    expect(equals(AssetIdSchema, res[0]!.pair!.end!, USDC_METADATA.penumbraAssetId!)).toBeTruthy();
     expect(res[0]?.blockHeight).toEqual(100n);
   });
 
@@ -130,7 +136,7 @@ describe('LatestSwaps request handler', () => {
     ]);
 
     const res = await request(
-      new LatestSwapsRequest({
+      create(LatestSwapsRequestSchema, {
         responseLimit: 1n,
       }),
     );
@@ -160,7 +166,7 @@ describe('LatestSwaps request handler', () => {
     ]);
 
     const res = await request(
-      new LatestSwapsRequest({
+      create(LatestSwapsRequestSchema, {
         afterHeight: 50n,
       }),
     );
@@ -190,8 +196,8 @@ describe('LatestSwaps request handler', () => {
     ]);
 
     const res = await request(
-      new LatestSwapsRequest({
-        accountFilter: new AddressIndex({ account: 0 }),
+      create(LatestSwapsRequestSchema, {
+        accountFilter: create(AddressIndexSchema, { account: 0 }),
       }),
     );
 
@@ -219,8 +225,8 @@ describe('LatestSwaps request handler', () => {
     ]);
 
     const res = await request(
-      new LatestSwapsRequest({
-        pair: new DirectedTradingPair({
+      create(LatestSwapsRequestSchema, {
+        pair: create(DirectedTradingPairSchema, {
           start: UM_METADATA.penumbraAssetId,
           end: USDC_METADATA.penumbraAssetId,
         }),
@@ -278,11 +284,11 @@ describe('LatestSwaps request handler', () => {
     ]);
 
     const res = await request(
-      new LatestSwapsRequest({
+      create(LatestSwapsRequestSchema, {
         afterHeight: 50n,
         responseLimit: 1n,
-        accountFilter: new AddressIndex({ account: 0 }),
-        pair: new DirectedTradingPair({
+        accountFilter: create(AddressIndexSchema, { account: 0 }),
+        pair: create(DirectedTradingPairSchema, {
           start: UM_METADATA.penumbraAssetId,
           end: USDC_METADATA.penumbraAssetId,
         }),
@@ -305,11 +311,11 @@ interface GetSwapOptions {
 
 // Constructs correct SwapRecord with the most essential data needed for `latestSwaps`
 const getSwap = ({ account, to, from, height, input, output }: GetSwapOptions) => {
-  return new SwapRecord({
+  return create(SwapRecordSchema, {
     heightClaimed: BigInt(height),
     swapCommitment: { inner: new Uint8Array([1, 2, 3]) },
     nullifier: { inner: new Uint8Array([1, 2, 3]) },
-    source: new CommitmentSource({
+    source: create(CommitmentSourceSchema, {
       source: {
         case: 'transaction',
         value: {
@@ -333,10 +339,10 @@ const getSwap = ({ account, to, from, height, input, output }: GetSwapOptions) =
 };
 
 // Irrelevant – wrong source (should be 'transaction')
-const IRRELEVANT_SWAP = new SwapRecord({
+const IRRELEVANT_SWAP = create(SwapRecordSchema, {
   swapCommitment: { inner: new Uint8Array([1, 2, 3]) },
   nullifier: { inner: new Uint8Array([1, 2, 3]) },
-  source: new CommitmentSource({
+  source: create(CommitmentSourceSchema, {
     source: {
       case: 'ics20Transfer',
       value: { channelId: '', sender: '' },

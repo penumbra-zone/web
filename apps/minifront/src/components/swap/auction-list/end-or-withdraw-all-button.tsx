@@ -1,5 +1,8 @@
 import { useAuctionInfos } from '../../../state/swap/dutch-auction';
-import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import {
+  AddressIndex,
+  AddressIndexSchema,
+} from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { Button } from '@penumbra-zone/ui-deprecated/components/ui/button';
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow.ts';
@@ -11,6 +14,7 @@ import {
   TooltipTrigger,
 } from '@penumbra-zone/ui-deprecated/components/ui/tooltip';
 import { AuctionInfo } from '../../../fetchers/auction-infos.ts';
+import { equals } from '@bufbuild/protobuf';
 
 const endOrWithdrawAllButtonSelector = (state: AllSlices) => ({
   endAllAuctions: state.swap.dutchAuction.endAllAuctions,
@@ -37,7 +41,9 @@ export const assembleAuctionBatch = (
 
   const filteredBySeqAndAddressIndexAuctions = filterWithLimit(
     filteredBySeqAuctions,
-    a => a.addressIndex.equals(firstFoundAddressIndex),
+    a =>
+      !!firstFoundAddressIndex &&
+      equals(AddressIndexSchema, a.addressIndex, firstFoundAddressIndex),
     batchLimit,
   );
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify

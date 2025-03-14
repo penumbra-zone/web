@@ -1,34 +1,36 @@
 import {
-  AuctionsResponse,
-  BalancesRequest,
-  BalancesResponse,
+  AuctionsResponseSchema,
+  BalancesRequestSchema,
+  BalancesResponseSchema,
   SpendableNoteRecord,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+
 import { Impl } from './index.js';
 import {
-  AuctionId,
-  DutchAuction,
+  AuctionIdSchema,
+  DutchAuctionSchema,
   DutchAuctionState,
 } from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
 import { balances } from './balances.js';
 import { getDisplayDenomFromView } from '@penumbra-zone/getters/value-view';
-import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { ValueViewSchema } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { assetPatterns } from '@penumbra-zone/types/assets';
-import { Any, PartialMessage } from '@bufbuild/protobuf';
+import { create, MessageInitShape } from '@bufbuild/protobuf';
+import { Any, anyPack } from '@bufbuild/protobuf/wkt';
 import { servicesCtx } from '../ctx/prax.js';
 import { auctionIdFromBech32 } from '@penumbra-zone/bech32m/pauctid';
 import { HandlerContext } from '@connectrpc/connect';
 import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 const getBech32mAuctionId = (
-  balancesResponse: PartialMessage<BalancesResponse>,
+  balancesResponse: MessageInitShape<typeof BalancesResponseSchema>,
 ): string | undefined => {
   if (!balancesResponse.balanceView) {
     return;
   }
 
   const captureGroups = assetPatterns.auctionNft.capture(
-    getDisplayDenomFromView(new ValueView(balancesResponse.balanceView)),
+    getDisplayDenomFromView(create(ValueViewSchema, balancesResponse.balanceView)),
   );
 
   if (!captureGroups) {
@@ -44,7 +46,10 @@ const iterateAuctionsThisUserControls = async function* (
   ctx: HandlerContext,
   accountFilter?: AddressIndex,
 ) {
-  for await (const balancesResponse of balances(new BalancesRequest({ accountFilter }), ctx)) {
+  for await (const balancesResponse of balances(
+    create(BalancesRequestSchema, { accountFilter }),
+    ctx,
+  )) {
     const auctionId = getBech32mAuctionId(balancesResponse);
     if (auctionId) {
       yield auctionId;
@@ -59,7 +64,7 @@ export const auctions: Impl['auctions'] = async function* (req, ctx) {
   const { indexedDb, querier } = await services.getWalletServices();
 
   for await (const auctionId of iterateAuctionsThisUserControls(ctx, accountFilter)) {
-    const id = new AuctionId(auctionIdFromBech32(auctionId));
+    const id = create(AuctionIdSchema, auctionIdFromBech32(auctionId));
     const value = await indexedDb.getAuction(id);
     if (!includeInactive && isInactive(value.seqNum)) {
       continue;
@@ -79,8 +84,9 @@ export const auctions: Impl['auctions'] = async function* (req, ctx) {
     let auction: Any | undefined;
     if (!!value.auction || state) {
       const outstandingReserves = await indexedDb.getAuctionOutstandingReserves(id);
-      auction = Any.pack(
-        new DutchAuction({
+      auction = anyPack(
+        DutchAuctionSchema,
+        create(DutchAuctionSchema, {
           state: state ?? {
             seq: value.seqNum,
             inputReserves: outstandingReserves?.input.amount,
@@ -91,7 +97,7 @@ export const auctions: Impl['auctions'] = async function* (req, ctx) {
       );
     }
 
-    yield new AuctionsResponse({
+    yield create(AuctionsResponseSchema, {
       id,
       auction,
       noteRecord,

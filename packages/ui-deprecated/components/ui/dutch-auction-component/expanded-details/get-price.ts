@@ -1,5 +1,7 @@
 import { DutchAuctionDescription } from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
-import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import { create } from '@bufbuild/protobuf';
+import { AmountSchema } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import type { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { getStepIndex } from './get-step-index';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
 import { splitLoHi } from '@penumbra-zone/types/lo-hi';
@@ -50,5 +52,5 @@ export const getPrice = (
   const multiplier = 10 ** (inputDisplayDenomExponent ?? 0);
   const price = Math.round((Number(targetOutputScaled) / Number(inputScaled)) * multiplier);
 
-  return new Amount(splitLoHi(BigInt(price)));
+  return create(AmountSchema, splitLoHi(BigInt(price)));
 };

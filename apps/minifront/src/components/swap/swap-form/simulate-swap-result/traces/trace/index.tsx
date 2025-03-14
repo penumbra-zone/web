@@ -1,15 +1,16 @@
 import {
   Metadata,
   Value,
-  ValueView,
+  ValueViewSchema,
 } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { create } from '@bufbuild/protobuf';
 import { SwapExecution_Trace } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { ValueViewComponent } from '@penumbra-zone/ui-deprecated/components/ui/value';
 import { Price } from './price';
 
 const getValueView = (metadataByAssetId: Record<string, Metadata>, { amount, assetId }: Value) =>
-  new ValueView({
+  create(ValueViewSchema, {
     valueView: {
       case: 'knownAssetId',
       value: {

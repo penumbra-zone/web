@@ -1,11 +1,12 @@
 import { Fee, FeeTier_Tier } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
+import { create } from '@bufbuild/protobuf';
 import {
   SegmentedPicker,
   SegmentedPickerOption,
 } from '@penumbra-zone/ui-deprecated/components/ui/segmented-picker';
 import { InputBlock } from './input-block';
 import { ValueViewComponent } from '@penumbra-zone/ui-deprecated/components/ui/value';
-import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { Metadata, ValueViewSchema } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
 const FEE_TIER_OPTIONS: SegmentedPickerOption<FeeTier_Tier>[] = [
   {
@@ -38,7 +39,7 @@ export const GasFee = ({
   // If the metadata for the fee asset is undefined, fallback to using the bundled staking asset metadata.
   const feeMetadata = assetFeeMetadata ?? stakingAssetMetadata;
 
-  const feeValueView = new ValueView({
+  const feeValueView = create(ValueViewSchema, {
     valueView: {
       case: 'knownAssetId',
       value: {

@@ -1,4 +1,5 @@
 import { ViewBox } from '../viewbox';
+import { create } from '@bufbuild/protobuf';
 import { ValueViewComponent } from '../../value';
 import { getAddress } from '@penumbra-zone/getters/note-view';
 import { ActionDetails } from './action-details';
@@ -10,14 +11,17 @@ import {
 } from '@penumbra-zone/protobuf/penumbra/core/component/governance/v1/governance_pb';
 import { getDelegatorVoteBody } from '@penumbra-zone/getters/delegator-vote-view';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
-import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import {
+  MetadataSchema,
+  ValueViewSchema,
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { AddressViewComponent } from '../../address-view';
 import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 
 // TODO: This is sad, but at the moment, we aren't provided the metadata to have a rich display.
 //       Given the high-priority of getting action view support, this is added.
 //       We should properly implement ValueViews into the protos for DelegatorVote action view and delete this code.
-const umMetadata = new Metadata({
+const umMetadata = create(MetadataSchema, {
   denomUnits: [
     {
       denom: 'penumbra',
@@ -42,7 +46,7 @@ const umMetadata = new Metadata({
 });
 
 const umValueView = (amount?: Amount) => {
-  return new ValueView({
+  return create(ValueViewSchema, {
     valueView: {
       case: 'knownAssetId',
       value: {

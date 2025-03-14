@@ -1,8 +1,9 @@
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { create } from '@bufbuild/protobuf';
 import { WalletIcon } from '../icons/wallet';
 import { getAmount, getDisplayDenomExponentFromValueView } from '@penumbra-zone/getters/value-view';
 import { formatAmount } from '@penumbra-zone/types/amount';
-import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import { AmountSchema } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { cn } from '../../../lib/utils';
 
 /**
@@ -19,7 +20,7 @@ export const BalanceValueView = ({
   onClick?: (valueView: ValueView) => void;
 }) => {
   const exponent = getDisplayDenomExponentFromValueView.optional(valueView);
-  const amount = getAmount.optional(valueView) ?? new Amount({ hi: 0n, lo: 0n });
+  const amount = getAmount.optional(valueView) ?? create(AmountSchema, { hi: 0n, lo: 0n });
   const formattedAmount = formatAmount({ amount, exponent, commas: true });
 
   return (

@@ -1,28 +1,33 @@
-import { Address, FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import {
+  AddressSchema,
+  FullViewingKeySchema,
+} from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { create, equals } from '@bufbuild/protobuf';
 import { describe, expect, test, vi } from 'vitest';
 import { viewTransactionPlan } from './view-transaction-plan.js';
 import {
   MemoView_Visible,
-  TransactionPlan,
+  TransactionPlanSchema,
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
-import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { MetadataSchema } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { fullViewingKeyFromBech32m } from '@penumbra-zone/bech32m/penumbrafullviewingkey';
 
 describe('viewTransactionPlan()', () => {
   const returnAddressAsBech32 =
     'penumbra147mfall0zr6am5r45qkwht7xqqrdsp50czde7empv7yq2nk3z8yyfh9k9520ddgswkmzar22vhz9dwtuem7uxw0qytfpv7lk3q9dp8ccaw2fn5c838rfackazmgf3ahh09cxmz';
-  const returnAddress = new Address(addressFromBech32m(returnAddressAsBech32));
+  const returnAddress = create(AddressSchema, addressFromBech32m(returnAddressAsBech32));
   const chainId = 'testnet';
   const expiryHeight = 100n;
-  const metadataByAssetId = vi.fn(() => Promise.resolve(new Metadata()));
-  const mockFvk = new FullViewingKey(
+  const metadataByAssetId = vi.fn(() => Promise.resolve(create(MetadataSchema)));
+  const mockFvk = create(
+    FullViewingKeySchema,
     fullViewingKeyFromBech32m(
       'penumbrafullviewingkey1vzfytwlvq067g2kz095vn7sgcft47hga40atrg5zu2crskm6tyyjysm28qg5nth2fqmdf5n0q530jreumjlsrcxjwtfv6zdmfpe5kqsa5lg09',
     ),
   );
 
-  const validTxnPlan = new TransactionPlan({
+  const validTxnPlan = create(TransactionPlanSchema, {
     memo: {
       plaintext: {
         returnAddress,
@@ -41,13 +46,18 @@ describe('viewTransactionPlan()', () => {
     const memoViewValue = txnView.bodyView!.memoView!.memoView.value! as MemoView_Visible;
 
     expect(
-      memoViewValue.plaintext!.returnAddress?.addressView.value?.address!.equals(returnAddress),
+      memoViewValue.plaintext!.returnAddress?.addressView.value?.address &&
+        equals(
+          AddressSchema,
+          returnAddress,
+          memoViewValue.plaintext!.returnAddress.addressView.value.address,
+        ),
     ).toBe(true);
   });
 
   test('leaves out the return address when it does not exist', async () => {
     const view = viewTransactionPlan(
-      new TransactionPlan({
+      create(TransactionPlanSchema, {
         transactionParameters: {
           fee: {
             amount: {
@@ -63,7 +73,7 @@ describe('viewTransactionPlan()', () => {
     await expect(
       view.then(({ bodyView }) => bodyView?.memoView?.memoView.value),
     ).resolves.toMatchObject({
-      plaintext: { text: '', returnAddress: undefined },
+      plaintext: { text: '' },
     });
   });
 
@@ -75,7 +85,7 @@ describe('viewTransactionPlan()', () => {
   test('throws when there is no fee', () =>
     expect(
       viewTransactionPlan(
-        new TransactionPlan({
+        create(TransactionPlanSchema, {
           memo: {
             plaintext: {
               returnAddress,

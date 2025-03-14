@@ -1,10 +1,14 @@
 import { describe, expect, it, vi } from 'vitest';
+import { create } from '@bufbuild/protobuf';
 import { DelegationValueView } from '.';
 import { render } from '@testing-library/react';
-import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { ValidatorInfo } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
+import {
+  MetadataSchema,
+  ValueViewSchema,
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { ValidatorInfoSchema } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
-import { Any } from '@bufbuild/protobuf';
+import { anyPack } from '@bufbuild/protobuf/wkt';
 
 const u8 = (length: number) => Uint8Array.from({ length }, () => Math.floor(Math.random() * 256));
 
@@ -16,7 +20,7 @@ const delAsset = { inner: u8(32) };
 
 const otherAsset = { inner: u8(32) };
 
-const DELEGATION_TOKEN_METADATA = new Metadata({
+const DELEGATION_TOKEN_METADATA = create(MetadataSchema, {
   display: delString,
   base: udelString,
   denomUnits: [{ denom: udelString }, { denom: delString, exponent: 6 }],
@@ -25,7 +29,7 @@ const DELEGATION_TOKEN_METADATA = new Metadata({
   symbol: 'delUM(abc...xyz)',
 });
 
-const SOME_OTHER_TOKEN_METADATA = new Metadata({
+const SOME_OTHER_TOKEN_METADATA = create(MetadataSchema, {
   display: 'someOtherToken',
   base: 'usomeOtherToken',
   denomUnits: [{ denom: 'usomeOtherToken' }, { denom: 'someOtherToken', exponent: 6 }],
@@ -34,7 +38,7 @@ const SOME_OTHER_TOKEN_METADATA = new Metadata({
   symbol: 'SOT',
 });
 
-const STAKING_TOKEN_METADATA = new Metadata({
+const STAKING_TOKEN_METADATA = create(MetadataSchema, {
   display: 'penumbra',
   base: 'penumbra',
   denomUnits: [{ denom: 'upenumbra' }, { denom: 'penumbra', exponent: 6 }],
@@ -43,7 +47,7 @@ const STAKING_TOKEN_METADATA = new Metadata({
   symbol: 'UM',
 });
 
-const validatorInfo = new ValidatorInfo({
+const validatorInfo = create(ValidatorInfoSchema, {
   validator: {
     identityKey: validatorIk,
     fundingStreams: [
@@ -59,7 +63,7 @@ const validatorInfo = new ValidatorInfo({
   },
 });
 
-const valueView = new ValueView({
+const valueView = create(ValueViewSchema, {
   valueView: {
     case: 'knownAssetId',
     value: {
@@ -88,7 +92,7 @@ const valueView = new ValueView({
         },
       ],
 
-      extendedMetadata: Any.pack(validatorInfo),
+      extendedMetadata: anyPack(ValidatorInfoSchema, validatorInfo),
     },
   },
 });

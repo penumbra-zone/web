@@ -1,16 +1,20 @@
 import { describe, expect, it } from 'vitest';
-import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import { create, toJson } from '@bufbuild/protobuf';
+import {
+  MetadataSchema,
+  ValueViewSchema,
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { AmountSchema } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { getFormattedAmtFromValueView } from './value-view.js';
 
 describe('getFormattedAmtFromValueView', () => {
   it('should format amount with known asset ID and metadata', () => {
-    const valueView = new ValueView({
+    const valueView = create(ValueViewSchema, {
       valueView: {
         case: 'knownAssetId',
         value: {
-          amount: new Amount({ lo: 1000000n }),
-          metadata: new Metadata({
+          amount: create(AmountSchema, { lo: 1000000n }),
+          metadata: create(MetadataSchema, {
             display: 'test_usd',
             denomUnits: [{ denom: 'test_usd', exponent: 6 }],
           }),
@@ -23,11 +27,11 @@ describe('getFormattedAmtFromValueView', () => {
   });
 
   it('should format amount with known asset ID, but no metadata', () => {
-    const valueView = new ValueView({
+    const valueView = create(ValueViewSchema, {
       valueView: {
         case: 'knownAssetId',
         value: {
-          amount: new Amount({ lo: 1000000n }),
+          amount: create(AmountSchema, { lo: 1000000n }),
         },
       },
     });
@@ -37,11 +41,11 @@ describe('getFormattedAmtFromValueView', () => {
   });
 
   it('should format amount with unknown asset ID', () => {
-    const valueView = new ValueView({
+    const valueView = create(ValueViewSchema, {
       valueView: {
         case: 'unknownAssetId',
         value: {
-          amount: new Amount({ lo: 1000000n }),
+          amount: create(AmountSchema, { lo: 1000000n }),
         },
       },
     });
@@ -51,19 +55,19 @@ describe('getFormattedAmtFromValueView', () => {
   });
 
   it('should throw an error when value view is undefined', () => {
-    const valueView = new ValueView();
+    const valueView = create(ValueViewSchema);
 
     expect(() => getFormattedAmtFromValueView(valueView)).toThrowError(
-      `Cannot derive formatted amount from value view: ${JSON.stringify(valueView.toJson())}`,
+      `Cannot derive formatted amount from value view: ${JSON.stringify(toJson(ValueViewSchema, valueView))}`,
     );
   });
 
   it('should format amount with commas when specified', () => {
-    const valueView = new ValueView({
+    const valueView = create(ValueViewSchema, {
       valueView: {
         case: 'unknownAssetId',
         value: {
-          amount: new Amount({ lo: 1000000n }),
+          amount: create(AmountSchema, { lo: 1000000n }),
         },
       },
     });
