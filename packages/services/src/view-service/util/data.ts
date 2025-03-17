@@ -1,6 +1,7 @@
-import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { MetadataSchema } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { fromJson } from '@bufbuild/protobuf';
 
-export const UM_METADATA = Metadata.fromJson({
+export const UM_METADATA = fromJson(MetadataSchema, {
   description: 'The native token of Penumbra',
   denomUnits: [
     {
@@ -34,7 +35,7 @@ export const UM_METADATA = Metadata.fromJson({
   coingeckoId: 'penumbra',
 });
 
-export const USDC_METADATA = Metadata.fromJson({
+export const USDC_METADATA = fromJson(MetadataSchema, {
   description: 'USD Coin',
   denomUnits: [
     {
@@ -66,7 +67,7 @@ export const USDC_METADATA = Metadata.fromJson({
   coingeckoId: 'usd-coin',
 });
 
-export const SHITMOS_METADATA = Metadata.fromJson({
+export const SHITMOS_METADATA = fromJson(MetadataSchema, {
   description: "The Cosmos Network's premier self-hatred memecoin.",
   denomUnits: [
     {

@@ -1,4 +1,6 @@
-import { TransactionPlannerRequest_ActionDutchAuctionSchedule } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { TransactionPlannerRequest_ActionDutchAuctionScheduleSchema } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { create } from '@bufbuild/protobuf';
+import type { TransactionPlannerRequest_ActionDutchAuctionSchedule } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { getAssetId, getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import {
   getAssetIdFromValueView,
@@ -11,7 +13,7 @@ import { GDA_RECIPES, GdaRecipe, STEP_COUNT } from '../constants';
 import { BLOCKS_PER_MINUTE } from '../../constants';
 import { timeUntilNextEvent } from './time-until-next-event';
 import { splitLoHi } from '@penumbra-zone/types/lo-hi';
-import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import { AmountSchema } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { BigNumber } from 'bignumber.js';
 import { SwapSlice } from '..';
 import { penumbra } from '../../../penumbra';
@@ -70,7 +72,7 @@ export const getSubAuctions = async ({
 
   const scaledInputAmount = splitLoHi(
     BigInt(
-      divideAmounts(inputAmount, new Amount(splitLoHi(recipe.numberOfSubAuctions)))
+      divideAmounts(inputAmount, create(AmountSchema, splitLoHi(recipe.numberOfSubAuctions)))
         .decimalPlaces(0, BigNumber.ROUND_FLOOR)
         .toString(),
     ),
@@ -78,7 +80,7 @@ export const getSubAuctions = async ({
 
   const scaledMinOutputAmount = splitLoHi(
     BigInt(
-      divideAmounts(minOutputAmount, new Amount(splitLoHi(recipe.numberOfSubAuctions)))
+      divideAmounts(minOutputAmount, create(AmountSchema, splitLoHi(recipe.numberOfSubAuctions)))
         .decimalPlaces(0, BigNumber.ROUND_FLOOR)
         .toString(),
     ),
@@ -86,7 +88,7 @@ export const getSubAuctions = async ({
 
   const scaledMaxOutputAmount = splitLoHi(
     BigInt(
-      divideAmounts(maxOutputAmount, new Amount(splitLoHi(recipe.numberOfSubAuctions)))
+      divideAmounts(maxOutputAmount, create(AmountSchema, splitLoHi(recipe.numberOfSubAuctions)))
         .decimalPlaces(0, BigNumber.ROUND_FLOOR)
         .toString(),
     ),
@@ -97,7 +99,7 @@ export const getSubAuctions = async ({
   const overallStartHeight = getStartHeight(fullSyncHeight);
 
   return getSubAuctionStartHeights(overallStartHeight, recipe).map(startHeight => {
-    return new TransactionPlannerRequest_ActionDutchAuctionSchedule({
+    return create(TransactionPlannerRequest_ActionDutchAuctionScheduleSchema, {
       description: {
         startHeight,
         endHeight: startHeight + recipe.subAuctionDurationInBlocks,

@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest';
+import { create } from '@bufbuild/protobuf';
 import { pnum } from './pnum.js';
 import { BigNumber } from 'bignumber.js';
-import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import { AmountSchema } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import {
-  DenomUnit,
-  Metadata,
-  ValueView,
+  DenomUnitSchema,
+  MetadataSchema,
+  ValueViewSchema,
 } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
 describe('pnum', () => {
@@ -18,7 +19,7 @@ describe('pnum', () => {
     expect(result.toBigNumber()).toStrictEqual(new BigNumber('123.456'));
     expect(result.toLoHi().lo).toBe(123456n);
     expect(result.toAmount()).toStrictEqual(
-      new Amount({
+      create(AmountSchema, {
         lo: 123456n,
         hi: 0n,
       }),
@@ -38,7 +39,7 @@ describe('pnum', () => {
     expect(result.toBigNumber()).toStrictEqual(new BigNumber('123456789.0123'));
     expect(result.toLoHi().lo).toBe(123456789012300n);
     expect(result.toAmount()).toStrictEqual(
-      new Amount({
+      create(AmountSchema, {
         lo: 123456789012300n,
         hi: 0n,
       }),
@@ -57,7 +58,7 @@ describe('pnum', () => {
     expect(result.toBigNumber()).toStrictEqual(new BigNumber('9123.456789'));
     expect(result.toLoHi().lo).toBe(9123456789n);
     expect(result.toAmount()).toStrictEqual(
-      new Amount({
+      create(AmountSchema, {
         lo: 9123456789n,
         hi: 0n,
       }),
@@ -77,7 +78,7 @@ describe('pnum', () => {
     expect(result.toLoHi().lo).toBe(99999n);
     expect(result.toLoHi().hi).toBe(99999n);
     expect(result.toAmount()).toStrictEqual(
-      new Amount({
+      create(AmountSchema, {
         lo: 99999n,
         hi: 99999n,
       }),
@@ -86,7 +87,7 @@ describe('pnum', () => {
 
   it('should correctly parse and convert an Amount', () => {
     const result = pnum(
-      new Amount({
+      create(AmountSchema, {
         lo: 9123456789n,
         hi: 0n,
       }),
@@ -102,7 +103,7 @@ describe('pnum', () => {
     expect(result.toBigNumber()).toStrictEqual(new BigNumber('9123.456789'));
     expect(result.toLoHi().lo).toBe(9123456789n);
     expect(result.toAmount()).toStrictEqual(
-      new Amount({
+      create(AmountSchema, {
         lo: 9123456789n,
         hi: 0n,
       }),
@@ -121,7 +122,7 @@ describe('pnum', () => {
     expect(result.toBigInt()).toBe(0n);
     expect(result.toBigNumber()).toStrictEqual(new BigNumber('0'));
     expect(result.toAmount()).toStrictEqual(
-      new Amount({
+      create(AmountSchema, {
         lo: 0n,
         hi: 0n,
       }),
@@ -144,19 +145,19 @@ describe('pnum', () => {
 
   it('should correctly parse ViewView', () => {
     const result = pnum(
-      new ValueView({
+      create(ValueViewSchema, {
         valueView: {
           case: 'knownAssetId',
           value: {
-            amount: new Amount({
+            amount: create(AmountSchema, {
               lo: 123455678n,
               hi: 0n,
             }),
-            metadata: new Metadata({
+            metadata: create(MetadataSchema, {
               base: 'UM',
               display: 'penumbra',
               denomUnits: [
-                new DenomUnit({
+                create(DenomUnitSchema, {
                   exponent: 4,
                   denom: 'penumbra',
                 }),
@@ -172,11 +173,11 @@ describe('pnum', () => {
 
   it('should correctly convert to ValueView', () => {
     const unknown = pnum(12345.5678, { exponent: 4 }).toValueView();
-    const metadata = new Metadata({
+    const metadata = create(MetadataSchema, {
       base: 'UM',
       display: 'penumbra',
       denomUnits: [
-        new DenomUnit({
+        create(DenomUnitSchema, {
           exponent: 0,
           denom: 'UM',
         }),
@@ -185,11 +186,11 @@ describe('pnum', () => {
     const known = pnum(12345.5678, { exponent: 4 }).toValueView(metadata);
 
     expect(unknown).toStrictEqual(
-      new ValueView({
+      create(ValueViewSchema, {
         valueView: {
           case: 'unknownAssetId',
           value: {
-            amount: new Amount({
+            amount: create(AmountSchema, {
               lo: 123455678n,
               hi: 0n,
             }),
@@ -199,11 +200,11 @@ describe('pnum', () => {
     );
 
     expect(known).toStrictEqual(
-      new ValueView({
+      create(ValueViewSchema, {
         valueView: {
           case: 'knownAssetId',
           value: {
-            amount: new Amount({
+            amount: create(AmountSchema, {
               lo: 123455678n,
               hi: 0n,
             }),

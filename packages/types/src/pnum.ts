@@ -1,8 +1,14 @@
 import { BigNumber } from 'bignumber.js';
+import { create, isMessage } from '@bufbuild/protobuf';
 import { round } from '@penumbra-zone/types/round';
 import { LoHi, joinLoHi, splitLoHi } from '@penumbra-zone/types/lo-hi';
-import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
-import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { AmountSchema } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import type { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import {
+  Metadata,
+  ValueView,
+  ValueViewSchema,
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getAmount, getDisplayDenomExponentFromValueView } from '@penumbra-zone/getters/value-view';
 import { removeTrailingZeros } from '@penumbra-zone/types/shortify';
 
@@ -45,7 +51,7 @@ function pnum(
     exponent =
       input.valueView.case === 'knownAssetId' ? getDisplayDenomExponentFromValueView(input) : 0;
   } else if (
-    input instanceof Amount ||
+    isMessage(input, AmountSchema) ||
     (typeof input === 'object' &&
       'lo' in input &&
       'hi' in input &&
@@ -122,27 +128,27 @@ function pnum(
     },
 
     toAmount(): Amount {
-      return new Amount(splitLoHi(BigInt(value.toFixed(0))));
+      return create(AmountSchema, splitLoHi(BigInt(value.toFixed(0))));
     },
 
     toValueView(metadata?: Metadata): ValueView {
       if (metadata) {
-        return new ValueView({
+        return create(ValueViewSchema, {
           valueView: {
             case: 'knownAssetId',
             value: {
-              amount: new Amount(splitLoHi(BigInt(value.toFixed(0)))),
+              amount: create(AmountSchema, splitLoHi(BigInt(value.toFixed(0)))),
               metadata,
             },
           },
         });
       }
 
-      return new ValueView({
+      return create(ValueViewSchema, {
         valueView: {
           case: 'unknownAssetId',
           value: {
-            amount: new Amount(splitLoHi(BigInt(value.toFixed(0)))),
+            amount: create(AmountSchema, splitLoHi(BigInt(value.toFixed(0)))),
           },
         },
       });

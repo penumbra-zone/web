@@ -1,6 +1,13 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { create, fromJson } from '@bufbuild/protobuf';
+
 import {
-  LqtVotingNotesRequest,
+  LqtVotingNotesRequestSchema,
+  LqtVotingNotesResponseSchema,
+  NotesForVotingResponseSchema,
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+
+import type {
   LqtVotingNotesResponse,
   NotesForVotingResponse,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
@@ -10,9 +17,9 @@ import { servicesCtx } from '../ctx/prax.js';
 import { IndexedDbMock, MockQuerier, MockServices } from '../test-utils.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { lqtVotingNotes } from './lqt-voting-notes.js';
-import { Epoch } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
-import { LqtCheckNullifierResponse } from '@penumbra-zone/protobuf/penumbra/core/component/funding/v1/funding_pb';
-import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
+import { EpochSchema } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
+import { LqtCheckNullifierResponseSchema } from '@penumbra-zone/protobuf/penumbra/core/component/funding/v1/funding_pb';
+import { TransactionIdSchema } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
 
 describe('lqtVotingNotes request handler', () => {
   let mockServices: MockServices;
@@ -37,7 +44,7 @@ describe('lqtVotingNotes request handler', () => {
 
     mockCtx = createHandlerContext({
       service: ViewService,
-      method: ViewService.methods.lqtVotingNotes,
+      method: ViewService.method.lqtVotingNotes,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
@@ -56,8 +63,8 @@ describe('lqtVotingNotes request handler', () => {
     mockQuerier = {
       funding: {
         lqtCheckNullifier: vi.fn().mockResolvedValue(
-          new LqtCheckNullifierResponse({
-            transaction: new TransactionId({
+          create(LqtCheckNullifierResponseSchema, {
+            transaction: create(TransactionIdSchema, {
               inner: new Uint8Array([]),
             }),
             alreadyVoted: true,
@@ -74,9 +81,9 @@ describe('lqtVotingNotes request handler', () => {
     };
 
     const responses: LqtVotingNotesResponse[] = [];
-    const req = new LqtVotingNotesRequest({});
+    const req = create(LqtVotingNotesRequestSchema, {});
     for await (const res of lqtVotingNotes(req, mockCtx)) {
-      responses.push(new LqtVotingNotesResponse(res));
+      responses.push(create(LqtVotingNotesResponseSchema, res));
     }
 
     expect(responses.length).toBe(0);
@@ -89,8 +96,8 @@ describe('lqtVotingNotes request handler', () => {
     mockQuerier = {
       funding: {
         lqtCheckNullifier: vi.fn().mockResolvedValue(
-          new LqtCheckNullifierResponse({
-            transaction: new TransactionId({
+          create(LqtCheckNullifierResponseSchema, {
+            transaction: create(TransactionIdSchema, {
               inner: new Uint8Array([]),
             }),
             alreadyVoted: false,
@@ -107,9 +114,9 @@ describe('lqtVotingNotes request handler', () => {
     };
 
     const responses: LqtVotingNotesResponse[] = [];
-    const req = new LqtVotingNotesRequest({});
+    const req = create(LqtVotingNotesRequestSchema, {});
     for await (const res of lqtVotingNotes(req, mockCtx)) {
-      responses.push(new LqtVotingNotesResponse(res));
+      responses.push(create(LqtVotingNotesResponseSchema, res));
     }
 
     expect(responses.length).toBe(2);
@@ -117,7 +124,7 @@ describe('lqtVotingNotes request handler', () => {
 });
 
 const testData: NotesForVotingResponse[] = [
-  NotesForVotingResponse.fromJson({
+  fromJson(NotesForVotingResponseSchema, {
     noteRecord: {
       noteCommitment: {
         inner: 'pXS1k2kvlph+vuk9uhqeoP1mZRc+f526a06/bg3EBwQ=',
@@ -127,7 +134,7 @@ const testData: NotesForVotingResponse[] = [
       ik: 'VAv+z5ieJk7AcAIJoVIqB6boOj0AhZB2FKWsEidfvAE=',
     },
   }),
-  NotesForVotingResponse.fromJson({
+  fromJson(NotesForVotingResponseSchema, {
     noteRecord: {
       noteCommitment: {
         inner: '2XS1k2kvlph+vuk9uhqeoP1mZRc+f526a06/bg3EBwQ=',
@@ -139,7 +146,7 @@ const testData: NotesForVotingResponse[] = [
   }),
 ];
 
-const epoch = new Epoch({
+const epoch = create(EpochSchema, {
   index: 100n,
   startHeight: 5000n,
 });

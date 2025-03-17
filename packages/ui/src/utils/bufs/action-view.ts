@@ -1,38 +1,43 @@
-import { ActionView } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import { ActionViewSchema } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import { create } from '@bufbuild/protobuf';
 import {
-  NoteView,
-  OutputView,
-  SpendView,
+  NoteViewSchema,
+  OutputViewSchema,
+  SpendViewSchema,
 } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
+
 import {
-  PositionClose,
-  PositionOpen,
-  PositionRewardClaim,
-  PositionWithdraw,
-  SwapClaimView,
-  SwapView,
+  PositionCloseSchema,
+  PositionOpenSchema,
+  PositionRewardClaimSchema,
+  PositionWithdrawSchema,
+  SwapClaimViewSchema,
+  SwapViewSchema,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
+
 import { ADDRESS_VIEW_DECODED } from './address-view';
 import { PENUMBRA_VALUE_VIEW, PENUMBRA_VALUE_VIEW_ZERO, USDC_VALUE_VIEW } from './value-view';
 import { PENUMBRA_METADATA, USDC_METADATA } from './metadata';
 import { AMOUNT_123_456_789, AMOUNT_999, AMOUNT_ZERO } from './amount';
-import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
-import { Fee } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
-import { Any } from '@bufbuild/protobuf';
-import { MsgUpdateClient } from '@penumbra-zone/protobuf/ibc/core/client/v1/tx_pb';
+import { TransactionIdSchema } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
+import { FeeSchema } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
+import { MsgUpdateClientSchema } from '@penumbra-zone/protobuf/ibc/core/client/v1/tx_pb';
+
 import {
-  MsgAcknowledgement,
-  MsgRecvPacket,
-  MsgTimeout,
-  MsgTimeoutOnClose,
+  MsgAcknowledgementSchema,
+  MsgRecvPacketSchema,
+  MsgTimeoutSchema,
+  MsgTimeoutOnCloseSchema,
 } from '@penumbra-zone/protobuf/ibc/core/channel/v1/tx_pb';
+
 import { base64ToUint8Array } from '@penumbra-zone/types/base64';
-import { Packet } from '@penumbra-zone/protobuf/ibc/core/channel/v1/channel_pb';
+import { PacketSchema } from '@penumbra-zone/protobuf/ibc/core/channel/v1/channel_pb';
+import { anyPack } from '@bufbuild/protobuf/wkt';
 
-export const SpendAction = new ActionView({
+export const SpendAction = create(ActionViewSchema, {
   actionView: {
     case: 'spend',
-    value: new SpendView({
+    value: create(SpendViewSchema, {
       spendView: {
         case: 'visible',
         value: {
@@ -46,10 +51,10 @@ export const SpendAction = new ActionView({
   },
 });
 
-export const SpendActionOpaque = new ActionView({
+export const SpendActionOpaque = create(ActionViewSchema, {
   actionView: {
     case: 'spend',
-    value: new SpendView({
+    value: create(SpendViewSchema, {
       spendView: {
         case: 'opaque',
         value: {},
@@ -58,10 +63,10 @@ export const SpendActionOpaque = new ActionView({
   },
 });
 
-export const OutputAction = new ActionView({
+export const OutputAction = create(ActionViewSchema, {
   actionView: {
     case: 'output',
-    value: new OutputView({
+    value: create(OutputViewSchema, {
       outputView: {
         case: 'visible',
         value: {
@@ -75,10 +80,10 @@ export const OutputAction = new ActionView({
   },
 });
 
-export const OutputActionOpaque = new ActionView({
+export const OutputActionOpaque = create(ActionViewSchema, {
   actionView: {
     case: 'output',
-    value: new OutputView({
+    value: create(OutputViewSchema, {
       outputView: {
         case: 'opaque',
         value: {},
@@ -87,28 +92,28 @@ export const OutputActionOpaque = new ActionView({
   },
 });
 
-export const SwapAction = new ActionView({
+export const SwapAction = create(ActionViewSchema, {
   actionView: {
     case: 'swap',
-    value: new SwapView({
+    value: create(SwapViewSchema, {
       swapView: {
         case: 'visible',
         value: {
-          claimTx: new TransactionId({
+          claimTx: create(TransactionIdSchema, {
             inner: new Uint8Array([0, 1, 2, 3, 4, 5, 6, 7]),
           }),
           asset1Metadata: USDC_METADATA,
           asset2Metadata: PENUMBRA_METADATA,
-          output1: new NoteView({
+          output1: create(NoteViewSchema, {
             address: ADDRESS_VIEW_DECODED,
             value: USDC_VALUE_VIEW,
           }),
-          output2: new NoteView({
+          output2: create(NoteViewSchema, {
             address: ADDRESS_VIEW_DECODED,
             value: PENUMBRA_VALUE_VIEW_ZERO,
           }),
           swapPlaintext: {
-            claimFee: new Fee({
+            claimFee: create(FeeSchema, {
               amount: AMOUNT_999,
               assetId: PENUMBRA_METADATA.penumbraAssetId,
             }),
@@ -121,10 +126,10 @@ export const SwapAction = new ActionView({
   },
 });
 
-export const SwapActionOpaque = new ActionView({
+export const SwapActionOpaque = create(ActionViewSchema, {
   actionView: {
     case: 'swap',
-    value: new SwapView({
+    value: create(SwapViewSchema, {
       swapView: {
         case: 'opaque',
         value: {
@@ -144,27 +149,27 @@ export const SwapActionOpaque = new ActionView({
   },
 });
 
-export const SwapClaimAction = new ActionView({
+export const SwapClaimAction = create(ActionViewSchema, {
   actionView: {
     case: 'swapClaim',
-    value: new SwapClaimView({
+    value: create(SwapClaimViewSchema, {
       swapClaimView: {
         case: 'visible',
         value: {
-          output1: new NoteView({
+          output1: create(NoteViewSchema, {
             address: ADDRESS_VIEW_DECODED,
             value: USDC_VALUE_VIEW,
           }),
-          output2: new NoteView({
+          output2: create(NoteViewSchema, {
             address: ADDRESS_VIEW_DECODED,
             value: PENUMBRA_VALUE_VIEW,
           }),
-          swapTx: new TransactionId({
+          swapTx: create(TransactionIdSchema, {
             inner: new Uint8Array([0, 1, 2, 3, 4, 5, 6, 7]),
           }),
           swapClaim: {
             body: {
-              fee: new Fee({
+              fee: create(FeeSchema, {
                 amount: AMOUNT_999,
                 assetId: PENUMBRA_METADATA.penumbraAssetId,
               }),
@@ -176,16 +181,16 @@ export const SwapClaimAction = new ActionView({
   },
 });
 
-export const SwapClaimActionOpaque = new ActionView({
+export const SwapClaimActionOpaque = create(ActionViewSchema, {
   actionView: {
     case: 'swapClaim',
-    value: new SwapClaimView({
+    value: create(SwapClaimViewSchema, {
       swapClaimView: {
         case: 'opaque',
         value: {
           swapClaim: {
             body: {
-              fee: new Fee({
+              fee: create(FeeSchema, {
                 amount: AMOUNT_999,
                 assetId: PENUMBRA_METADATA.penumbraAssetId,
               }),
@@ -205,10 +210,10 @@ export const SwapClaimActionOpaque = new ActionView({
   },
 });
 
-export const PositionOpenAction = new ActionView({
+export const PositionOpenAction = create(ActionViewSchema, {
   actionView: {
     case: 'positionOpen',
-    value: new PositionOpen({
+    value: create(PositionOpenSchema, {
       position: {
         reserves: {
           r1: {
@@ -236,10 +241,10 @@ export const PositionOpenAction = new ActionView({
   },
 });
 
-export const PositionCloseAction = new ActionView({
+export const PositionCloseAction = create(ActionViewSchema, {
   actionView: {
     case: 'positionClose',
-    value: new PositionClose({
+    value: create(PositionCloseSchema, {
       positionId: {
         inner: new Uint8Array([
           0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5,
@@ -250,10 +255,10 @@ export const PositionCloseAction = new ActionView({
   },
 });
 
-export const PositionWithdrawAction = new ActionView({
+export const PositionWithdrawAction = create(ActionViewSchema, {
   actionView: {
     case: 'positionWithdraw',
-    value: new PositionWithdraw({
+    value: create(PositionWithdrawSchema, {
       positionId: {
         inner: new Uint8Array([
           0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5,
@@ -264,10 +269,10 @@ export const PositionWithdrawAction = new ActionView({
   },
 });
 
-export const PositionRewardClaimAction = new ActionView({
+export const PositionRewardClaimAction = create(ActionViewSchema, {
   actionView: {
     case: 'positionRewardClaim',
-    value: new PositionRewardClaim({
+    value: create(PositionRewardClaimSchema, {
       positionId: {
         inner: new Uint8Array([
           0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5,
@@ -282,12 +287,13 @@ export const PositionRewardClaimAction = new ActionView({
 // IBC actions
 //
 
-export const IbcRelayMsgUpdateClientAction = new ActionView({
+export const IbcRelayMsgUpdateClientAction = create(ActionViewSchema, {
   actionView: {
     case: 'ibcRelayAction',
     value: {
-      rawAction: Any.pack(
-        new MsgUpdateClient({
+      rawAction: anyPack(
+        MsgUpdateClientSchema,
+        create(MsgUpdateClientSchema, {
           clientId: '07-tendermint-4',
           signer: 'cosmos000000000000000000000000000000000000000',
         }),
@@ -296,7 +302,7 @@ export const IbcRelayMsgUpdateClientAction = new ActionView({
   },
 });
 
-const IbcPacket = new Packet({
+const IbcPacket = create(PacketSchema, {
   sequence: 4480n,
   sourcePort: 'transfer',
   sourceChannel: 'channel-79703',
@@ -310,12 +316,13 @@ const IbcPacket = new Packet({
 });
 
 // An Ibc deposit of 0.5 OSMO
-export const IbcRelayMsgRecvPacketAction = new ActionView({
+export const IbcRelayMsgRecvPacketAction = create(ActionViewSchema, {
   actionView: {
     case: 'ibcRelayAction',
     value: {
-      rawAction: Any.pack(
-        new MsgRecvPacket({
+      rawAction: anyPack(
+        MsgRecvPacketSchema,
+        create(MsgRecvPacketSchema, {
           signer: 'cosmos000000000000000000000000000000000000000',
           proofHeight: {
             revisionNumber: 1n,
@@ -328,12 +335,13 @@ export const IbcRelayMsgRecvPacketAction = new ActionView({
   },
 });
 
-export const IbcRelayMsgAcknowledgementAction = new ActionView({
+export const IbcRelayMsgAcknowledgementAction = create(ActionViewSchema, {
   actionView: {
     case: 'ibcRelayAction',
     value: {
-      rawAction: Any.pack(
-        new MsgAcknowledgement({
+      rawAction: anyPack(
+        MsgAcknowledgementSchema,
+        create(MsgAcknowledgementSchema, {
           signer: 'cosmos000000000000000000000000000000000000000',
           proofHeight: {
             revisionNumber: 1n,
@@ -348,12 +356,13 @@ export const IbcRelayMsgAcknowledgementAction = new ActionView({
   },
 });
 
-export const IbcRelayMsgTimeoutAction = new ActionView({
+export const IbcRelayMsgTimeoutAction = create(ActionViewSchema, {
   actionView: {
     case: 'ibcRelayAction',
     value: {
-      rawAction: Any.pack(
-        new MsgTimeout({
+      rawAction: anyPack(
+        MsgTimeoutSchema,
+        create(MsgTimeoutSchema, {
           signer: 'cosmos000000000000000000000000000000000000000',
           proofHeight: {
             revisionNumber: 1n,
@@ -368,12 +377,13 @@ export const IbcRelayMsgTimeoutAction = new ActionView({
   },
 });
 
-export const IbcRelayMsgTimeoutOnCloseAction = new ActionView({
+export const IbcRelayMsgTimeoutOnCloseAction = create(ActionViewSchema, {
   actionView: {
     case: 'ibcRelayAction',
     value: {
-      rawAction: Any.pack(
-        new MsgTimeoutOnClose({
+      rawAction: anyPack(
+        MsgTimeoutOnCloseSchema,
+        create(MsgTimeoutOnCloseSchema, {
           signer: 'cosmos000000000000000000000000000000000000000',
           proofHeight: {
             revisionNumber: 1n,

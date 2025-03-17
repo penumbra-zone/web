@@ -1,4 +1,5 @@
 import type { Impl } from './index.js';
+import { create } from '@bufbuild/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
 
 import { optimisticBuild } from './util/build-tx.js';
@@ -6,7 +7,7 @@ import { optimisticBuild } from './util/build-tx.js';
 import { getWitness } from '@penumbra-zone/wasm/build';
 
 import { Code, ConnectError } from '@connectrpc/connect';
-import { AuthorizationData } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import { AuthorizationDataSchema } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { fvkCtx } from '../ctx/full-viewing-key.js';
 
 export const witnessAndBuild: Impl['witnessAndBuild'] = async function* (
@@ -28,7 +29,7 @@ export const witnessAndBuild: Impl['witnessAndBuild'] = async function* (
   yield* optimisticBuild(
     transactionPlan,
     witnessData,
-    Promise.resolve(authorizationData ?? new AuthorizationData()),
+    Promise.resolve(authorizationData ?? create(AuthorizationDataSchema)),
     await fvk(),
   );
 };

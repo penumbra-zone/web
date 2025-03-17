@@ -31,7 +31,7 @@
     }
   },
   "dependencies": {
-    "@bufbuild/protobuf": "^1.10.0",
+    "@bufbuild/protobuf": "^2.2.2",
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
@@ -44,7 +44,7 @@
     "fetch-mock": "^10.0.7"
   },
   "peerDependencies": {
-    "@bufbuild/protobuf": "^1.10.0",
+    "@bufbuild/protobuf": "^2.2.2",
     "@penumbra-labs/registry": "^12.4.0",
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",

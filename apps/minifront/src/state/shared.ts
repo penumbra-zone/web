@@ -1,7 +1,10 @@
 import { getAddress, getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import {
+  BalancesResponse,
+  BalancesResponseSchema,
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { ZQueryState, createZQuery } from '@penumbra-zone/zquery';
 import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
 import { SliceCreator, useStore } from '.';
@@ -11,6 +14,7 @@ import { getAllAssets } from '../fetchers/assets';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import { GasPrices } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
 import { getGasPrices } from '../fetchers/gas-prices';
+import { toBinary } from '@bufbuild/protobuf';
 
 /**
  * For Noble specifically we need to use a Bech32 encoding rather than Bech32m,
@@ -36,7 +40,7 @@ export const { stakingTokenMetadata, useStakingTokenMetadata } = createZQuery({
   },
 });
 
-const getHash = (bal: BalancesResponse) => uint8ArrayToHex(bal.toBinary());
+const getHash = (bal: BalancesResponse) => uint8ArrayToHex(toBinary(BalancesResponseSchema, bal));
 
 export const { balancesResponses, useBalancesResponses } = createZQuery({
   name: 'balancesResponses',

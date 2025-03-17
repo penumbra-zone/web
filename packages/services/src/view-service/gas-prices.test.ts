@@ -1,13 +1,14 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { create, equals } from '@bufbuild/protobuf';
 import {
-  GasPricesRequest,
-  GasPricesResponse,
+  GasPricesRequestSchema,
+  GasPricesResponseSchema,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
 import { IndexedDbMock, MockServices } from '../test-utils.js';
-import { GasPrices } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
+import { GasPricesSchema } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
 import { gasPrices } from './gas-prices.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 
@@ -30,7 +31,7 @@ describe('GasPrices request handler', () => {
     };
     mockCtx = createHandlerContext({
       service: ViewService,
-      method: ViewService.methods.gasPrices,
+      method: ViewService.method.gasPrices,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
@@ -42,21 +43,22 @@ describe('GasPrices request handler', () => {
 
   test('should successfully get gas prices when idb has them', async () => {
     mockIndexedDb.getNativeGasPrices?.mockResolvedValue(testData);
-    const gasPricesResponse = new GasPricesResponse(
-      await gasPrices(new GasPricesRequest(), mockCtx),
+    const gasPricesResponse = create(
+      GasPricesResponseSchema,
+      await gasPrices(create(GasPricesRequestSchema), mockCtx),
     );
-    expect(gasPricesResponse.gasPrices?.equals(testData)).toBeTruthy();
+    expect(equals(GasPricesSchema, gasPricesResponse.gasPrices!, testData)).toBeTruthy();
   });
 
   test('should fail to get gas prices when idb has none', async () => {
     mockIndexedDb.getNativeGasPrices?.mockResolvedValue(undefined);
-    await expect(gasPrices(new GasPricesRequest(), mockCtx)).rejects.toThrow(
+    await expect(gasPrices(create(GasPricesRequestSchema), mockCtx)).rejects.toThrow(
       'Gas prices is not available',
     );
   });
 });
 
-const testData = new GasPrices({
+const testData = create(GasPricesSchema, {
   blockSpacePrice: 22n,
   executionPrice: 12n,
   verificationPrice: 222n,

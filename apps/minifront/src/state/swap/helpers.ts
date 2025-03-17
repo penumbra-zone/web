@@ -1,10 +1,17 @@
-import { Value, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import {
-  CandlestickData,
+  ValueSchema,
+  Metadata,
+  AssetIdSchema,
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { clone, create, equals } from '@bufbuild/protobuf';
+
+import {
+  CandlestickDataSchema,
   CandlestickDataResponse,
-  SimulateTradeRequest,
+  SimulateTradeRequestSchema,
   SimulateTradeResponse,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
+
 import { getAssetId, getDisplay } from '@penumbra-zone/getters/metadata';
 import {
   getAssetIdFromValueView,
@@ -31,7 +38,7 @@ export const sendSimulateTradeRequest = ({
     throw new Error('Both asset in and out need to be set');
   }
 
-  const swapInValue = new Value({
+  const swapInValue = create(ValueSchema, {
     assetId: getAssetIdFromValueView(assetIn.balanceView),
     amount: toBaseUnit(
       BigNumber(amount || 0),
@@ -39,7 +46,7 @@ export const sendSimulateTradeRequest = ({
     ),
   });
 
-  const req = new SimulateTradeRequest({
+  const req = create(SimulateTradeRequestSchema, {
     input: swapInValue,
     output: getAssetId(assetOut),
   });
@@ -79,7 +86,7 @@ export const sendCandlestickDataRequest = async (
   if (!start || !end) {
     throw new Error('Asset pair incomplete');
   }
-  if (start.equals(end)) {
+  if (equals(AssetIdSchema, start, end)) {
     throw new Error('Asset pair equivalent');
   }
 
@@ -99,7 +106,7 @@ export const combinedCandlestickDataSelector = (
     const corrected = zQueryState.data.inverse.data.map(
       // flip inverse data to match orientation of direct data
       inverseCandle => {
-        const correctedCandle = inverseCandle.clone();
+        const correctedCandle = clone(CandlestickDataSchema, inverseCandle);
         // comparative values are reciprocal
         correctedCandle.open = 1 / inverseCandle.open;
         correctedCandle.close = 1 / inverseCandle.close;
@@ -133,7 +140,7 @@ export const combinedCandlestickDataSelector = (
           acc.close += cur.close;
           return acc;
         },
-        new CandlestickData({ height, low: Infinity, high: -Infinity }),
+        create(CandlestickDataSchema, { height, low: Infinity, high: -Infinity }),
       );
 
       // average accumulated open/close

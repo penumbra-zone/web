@@ -1,17 +1,18 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { create } from '@bufbuild/protobuf';
 import {
-  AssetId,
-  Metadata,
-  Value,
-  ValueView,
+  AssetIdSchema,
+  MetadataSchema,
+  ValueSchema,
+  ValueViewSchema,
 } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { GasPrices } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
+import { BalancesResponseSchema } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { GasPricesSchema } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
 import { checkSendMaxInvariants, SpendOrOutput } from './helpers.js';
-import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import { AmountSchema } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { getAssetIdFromValueView } from '@penumbra-zone/getters/value-view';
 import { base64ToUint8Array } from '@penumbra-zone/types/base64';
-import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { AddressSchema } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 describe('sendMax', () => {
   beforeEach(() => {
@@ -19,16 +20,16 @@ describe('sendMax', () => {
   });
 
   it('sends the non-maximum amount of an alternative fee asset (GM), and pays fees with the native asset (UM).', () => {
-    const selectionExample = new BalancesResponse({
-      balanceView: new ValueView({
+    const selectionExample = create(BalancesResponseSchema, {
+      balanceView: create(ValueViewSchema, {
         valueView: {
           case: 'knownAssetId',
           value: {
-            amount: new Amount({
+            amount: create(AmountSchema, {
               lo: 0n,
               hi: 20000n,
             }),
-            metadata: new Metadata({
+            metadata: create(MetadataSchema, {
               penumbraAssetId: { inner: assetId1.inner },
             }),
           },
@@ -37,14 +38,14 @@ describe('sendMax', () => {
     });
 
     const request: SpendOrOutput = {
-      value: new Value({
-        amount: new Amount({
+      value: create(ValueSchema, {
+        amount: create(AmountSchema, {
           lo: 0n,
           hi: 1n,
         }),
         assetId: getAssetIdFromValueView(selectionExample.balanceView),
       }),
-      address: new Address({ altBech32m: 'xyz_recipient' }),
+      address: create(AddressSchema, { altBech32m: 'xyz_recipient' }),
     };
 
     const result = checkSendMaxInvariants({
@@ -62,16 +63,16 @@ describe('sendMax', () => {
   });
 
   it('sends the maximum amount of an alternative fee asset (GM), and pays fees with the native asset (UM).', () => {
-    const selectionExample = new BalancesResponse({
-      balanceView: new ValueView({
+    const selectionExample = create(BalancesResponseSchema, {
+      balanceView: create(ValueViewSchema, {
         valueView: {
           case: 'knownAssetId',
           value: {
-            amount: new Amount({
+            amount: create(AmountSchema, {
               lo: 0n,
               hi: 20000n,
             }),
-            metadata: new Metadata({
+            metadata: create(MetadataSchema, {
               penumbraAssetId: { inner: assetId1.inner },
             }),
           },
@@ -80,14 +81,14 @@ describe('sendMax', () => {
     });
 
     const request: SpendOrOutput = {
-      value: new Value({
+      value: create(ValueSchema, {
         amount: {
           lo: 0n,
           hi: 20000n,
         },
         assetId: getAssetIdFromValueView(selectionExample.balanceView),
       }),
-      address: new Address({ altBech32m: 'xyz_recipient' }),
+      address: create(AddressSchema, { altBech32m: 'xyz_recipient' }),
     };
 
     const result = checkSendMaxInvariants({
@@ -105,16 +106,16 @@ describe('sendMax', () => {
   });
 
   it('sends the non-maximum amount of an another asset (Pizza), and pays fees with an alternative fee asset (GN).', () => {
-    const selectionExample = new BalancesResponse({
-      balanceView: new ValueView({
+    const selectionExample = create(BalancesResponseSchema, {
+      balanceView: create(ValueViewSchema, {
         valueView: {
           case: 'knownAssetId',
           value: {
-            amount: new Amount({
+            amount: create(AmountSchema, {
               lo: 0n,
               hi: 20000n,
             }),
-            metadata: new Metadata({
+            metadata: create(MetadataSchema, {
               penumbraAssetId: { inner: assetId3.inner },
             }),
           },
@@ -123,14 +124,14 @@ describe('sendMax', () => {
     });
 
     const request: SpendOrOutput = {
-      value: new Value({
+      value: create(ValueSchema, {
         amount: {
           lo: 0n,
           hi: 1n,
         },
         assetId: getAssetIdFromValueView(selectionExample.balanceView),
       }),
-      address: new Address({ altBech32m: 'xyz_recipient' }),
+      address: create(AddressSchema, { altBech32m: 'xyz_recipient' }),
     };
 
     const result = checkSendMaxInvariants({
@@ -148,16 +149,16 @@ describe('sendMax', () => {
   });
 
   it('sends the maximum amount of an another asset (Pizza), and pays fees with an alternative fee asset (GN).', () => {
-    const selectionExample = new BalancesResponse({
-      balanceView: new ValueView({
+    const selectionExample = create(BalancesResponseSchema, {
+      balanceView: create(ValueViewSchema, {
         valueView: {
           case: 'knownAssetId',
           value: {
-            amount: new Amount({
+            amount: create(AmountSchema, {
               lo: 0n,
               hi: 20000n,
             }),
-            metadata: new Metadata({
+            metadata: create(MetadataSchema, {
               penumbraAssetId: { inner: assetId3.inner },
             }),
           },
@@ -166,14 +167,14 @@ describe('sendMax', () => {
     });
 
     const request: SpendOrOutput = {
-      value: new Value({
+      value: create(ValueSchema, {
         amount: {
           lo: 0n,
           hi: 20000n,
         },
         assetId: getAssetIdFromValueView(selectionExample.balanceView),
       }),
-      address: new Address({ altBech32m: 'xyz_recipient' }),
+      address: create(AddressSchema, { altBech32m: 'xyz_recipient' }),
     };
 
     const result = checkSendMaxInvariants({
@@ -191,16 +192,16 @@ describe('sendMax', () => {
   });
 
   it('sends the non-maximum amount of the native asset (UM).', () => {
-    const selectionExample = new BalancesResponse({
-      balanceView: new ValueView({
+    const selectionExample = create(BalancesResponseSchema, {
+      balanceView: create(ValueViewSchema, {
         valueView: {
           case: 'knownAssetId',
           value: {
-            amount: new Amount({
+            amount: create(AmountSchema, {
               lo: 0n,
               hi: 20000n,
             }),
-            metadata: new Metadata({
+            metadata: create(MetadataSchema, {
               penumbraAssetId: { inner: stakingAssetId.inner },
             }),
           },
@@ -209,14 +210,14 @@ describe('sendMax', () => {
     });
 
     const request: SpendOrOutput = {
-      value: new Value({
+      value: create(ValueSchema, {
         amount: {
           lo: 0n,
           hi: 1n,
         },
         assetId: getAssetIdFromValueView(selectionExample.balanceView),
       }),
-      address: new Address({ altBech32m: 'xyz_recipient' }),
+      address: create(AddressSchema, { altBech32m: 'xyz_recipient' }),
     };
 
     const result = checkSendMaxInvariants({
@@ -234,16 +235,16 @@ describe('sendMax', () => {
   });
 
   it('sends the maximum amount of the native asset (UM).', () => {
-    const selectionExample = new BalancesResponse({
-      balanceView: new ValueView({
+    const selectionExample = create(BalancesResponseSchema, {
+      balanceView: create(ValueViewSchema, {
         valueView: {
           case: 'knownAssetId',
           value: {
-            amount: new Amount({
+            amount: create(AmountSchema, {
               lo: 0n,
               hi: 20000n,
             }),
-            metadata: new Metadata({
+            metadata: create(MetadataSchema, {
               penumbraAssetId: { inner: stakingAssetId.inner },
             }),
           },
@@ -252,14 +253,14 @@ describe('sendMax', () => {
     });
 
     const request: SpendOrOutput = {
-      value: new Value({
+      value: create(ValueSchema, {
         amount: {
           lo: 0n,
           hi: 20000n,
         },
         assetId: getAssetIdFromValueView(selectionExample.balanceView),
       }),
-      address: new Address({ altBech32m: 'xyz_recipient' }),
+      address: create(AddressSchema, { altBech32m: 'xyz_recipient' }),
     };
 
     const result = checkSendMaxInvariants({
@@ -277,16 +278,16 @@ describe('sendMax', () => {
   });
 
   it('sends the non-maximum amount of alternative asset (GM), and pays fees with the same alternative asset (GM) since the native token (UM) is absent.', () => {
-    const selectionExample = new BalancesResponse({
-      balanceView: new ValueView({
+    const selectionExample = create(BalancesResponseSchema, {
+      balanceView: create(ValueViewSchema, {
         valueView: {
           case: 'knownAssetId',
           value: {
-            amount: new Amount({
+            amount: create(AmountSchema, {
               lo: 0n,
               hi: 20000n,
             }),
-            metadata: new Metadata({
+            metadata: create(MetadataSchema, {
               penumbraAssetId: { inner: assetId1.inner },
             }),
           },
@@ -295,14 +296,14 @@ describe('sendMax', () => {
     });
 
     const request: SpendOrOutput = {
-      value: new Value({
+      value: create(ValueSchema, {
         amount: {
           lo: 0n,
           hi: 1n,
         },
         assetId: getAssetIdFromValueView(selectionExample.balanceView),
       }),
-      address: new Address({ altBech32m: 'xyz_recipient' }),
+      address: create(AddressSchema, { altBech32m: 'xyz_recipient' }),
     };
 
     const result = checkSendMaxInvariants({
@@ -320,16 +321,16 @@ describe('sendMax', () => {
   });
 
   it('sends the maximum amount of alternative asset (GM), and pays fees with the same alternative asset (GM) since the native token (UM) is absent.', () => {
-    const selectionExample = new BalancesResponse({
-      balanceView: new ValueView({
+    const selectionExample = create(BalancesResponseSchema, {
+      balanceView: create(ValueViewSchema, {
         valueView: {
           case: 'knownAssetId',
           value: {
-            amount: new Amount({
+            amount: create(AmountSchema, {
               lo: 0n,
               hi: 20000n,
             }),
-            metadata: new Metadata({
+            metadata: create(MetadataSchema, {
               penumbraAssetId: { inner: assetId1.inner },
             }),
           },
@@ -338,14 +339,14 @@ describe('sendMax', () => {
     });
 
     const request: SpendOrOutput = {
-      value: new Value({
+      value: create(ValueSchema, {
         amount: {
           lo: 0n,
           hi: 20000n,
         },
         assetId: getAssetIdFromValueView(selectionExample.balanceView),
       }),
-      address: new Address({ altBech32m: 'xyz_recipient' }),
+      address: create(AddressSchema, { altBech32m: 'xyz_recipient' }),
     };
 
     const result = checkSendMaxInvariants({
@@ -364,11 +365,11 @@ describe('sendMax', () => {
 });
 
 // UM
-const stakingAssetId = new AssetId({
+const stakingAssetId = create(AssetIdSchema, {
   inner: base64ToUint8Array('KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA='),
 });
 
-const stakingTokenPrice = new GasPrices({
+const stakingTokenPrice = create(GasPricesSchema, {
   assetId: stakingAssetId,
   blockSpacePrice: 60n,
   compactBlockSpacePrice: 1556n,
@@ -377,11 +378,11 @@ const stakingTokenPrice = new GasPrices({
 });
 
 // GM
-const assetId1 = new AssetId({
+const assetId1 = create(AssetIdSchema, {
   inner: base64ToUint8Array('HW2Eq3UZVSBttoUwUi/MUtE7rr2UU7/UH500byp7OAc='),
 });
 
-const AltTokenPrice1 = new GasPrices({
+const AltTokenPrice1 = create(GasPricesSchema, {
   assetId: assetId1,
   blockSpacePrice: 120n,
   compactBlockSpacePrice: 3112n,
@@ -390,11 +391,11 @@ const AltTokenPrice1 = new GasPrices({
 });
 
 // GN
-const assetId2 = new AssetId({
+const assetId2 = create(AssetIdSchema, {
   inner: base64ToUint8Array('nwPDkQq3OvLnBwGTD+nmv1Ifb2GEmFCgNHrU++9BsRE='),
 });
 
-const AltTokenPrice2 = new GasPrices({
+const AltTokenPrice2 = create(GasPricesSchema, {
   assetId: assetId2,
   blockSpacePrice: 120n,
   compactBlockSpacePrice: 3112n,
@@ -403,6 +404,6 @@ const AltTokenPrice2 = new GasPrices({
 });
 
 // PIZZA
-const assetId3 = new AssetId({
+const assetId3 = create(AssetIdSchema, {
   inner: base64ToUint8Array('nDjzm+ldIrNMJha1anGMDVxpA5cLCPnUYQ1clmHF1gw='),
 });

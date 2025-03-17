@@ -1,5 +1,9 @@
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
-import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { create } from '@bufbuild/protobuf';
+import {
+  AssetIdSchema,
+  MetadataSchema,
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
 const u8 = (length: number) => Uint8Array.from({ length }, () => Math.floor(Math.random() * 256));
 const validatorIk = { ik: u8(32) };
@@ -11,7 +15,7 @@ const unbondString = 'unbonding_start_at_123_' + validatorIkString;
 const uunbondString = 'uunbonding_start_at_123_' + validatorIkString;
 const unbondAsset = { inner: u8(32) };
 
-export const DELEGATION_TOKEN_METADATA = new Metadata({
+export const DELEGATION_TOKEN_METADATA = create(MetadataSchema, {
   display: delString,
   base: udelString,
   denomUnits: [{ denom: udelString }, { denom: delString, exponent: 6 }],
@@ -20,7 +24,7 @@ export const DELEGATION_TOKEN_METADATA = new Metadata({
   symbol: `delUM(${validatorIkString})`,
 });
 
-export const UNBONDING_TOKEN_METADATA = new Metadata({
+export const UNBONDING_TOKEN_METADATA = create(MetadataSchema, {
   display: unbondString,
   base: uunbondString,
   denomUnits: [{ denom: uunbondString }, { denom: unbondString, exponent: 6 }],
@@ -29,7 +33,7 @@ export const UNBONDING_TOKEN_METADATA = new Metadata({
   symbol: `unbondUMat123(${validatorIkString})`,
 });
 
-export const PENUMBRA_METADATA = new Metadata({
+export const PENUMBRA_METADATA = create(MetadataSchema, {
   denomUnits: [
     {
       denom: 'penumbra',
@@ -47,7 +51,7 @@ export const PENUMBRA_METADATA = new Metadata({
   name: 'Penumbra',
   display: 'penumbra',
   symbol: 'UM',
-  penumbraAssetId: new AssetId({ inner: u8(32) }),
+  penumbraAssetId: create(AssetIdSchema, { inner: u8(32) }),
   images: [
     {
       svg: 'https://raw.githubusercontent.com/prax-wallet/registry/main/images/um.svg',
@@ -55,24 +59,24 @@ export const PENUMBRA_METADATA = new Metadata({
   ],
 });
 
-export const OSMO_METADATA = new Metadata({
+export const OSMO_METADATA = create(MetadataSchema, {
   symbol: 'OSMO',
   name: 'Osmosis',
-  penumbraAssetId: new AssetId({ inner: u8(32) }),
+  penumbraAssetId: create(AssetIdSchema, { inner: u8(32) }),
   base: 'uosmo',
   display: 'osmo',
   denomUnits: [{ denom: 'uosmo' }, { denom: 'osmo', exponent: 6 }],
 });
 
-export const PIZZA_METADATA = new Metadata({
+export const PIZZA_METADATA = create(MetadataSchema, {
   symbol: 'PIZZA',
   name: 'Pizza',
-  penumbraAssetId: new AssetId({ inner: u8(32) }),
+  penumbraAssetId: create(AssetIdSchema, { inner: u8(32) }),
   base: 'upizza',
   display: 'pizza',
   denomUnits: [{ denom: 'upizza' }, { denom: 'pizza', exponent: 6 }],
 });
 
-export const UNKNOWN_TOKEN_METADATA = new Metadata({
+export const UNKNOWN_TOKEN_METADATA = create(MetadataSchema, {
   penumbraAssetId: { inner: new Uint8Array([]) },
 });

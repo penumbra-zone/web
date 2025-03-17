@@ -1,7 +1,10 @@
 import { useMemo } from 'react';
+import { create } from '@bufbuild/protobuf';
 import { TransactionClassification } from '@penumbra-zone/perspective/transaction/classification';
-import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { MetadataSchema } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import type { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { AddressViewSchema } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import type { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { TransactionInfo } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { classifyTransaction } from '@penumbra-zone/perspective/transaction/classify';
 import { findRelevantAssets } from '@penumbra-zone/perspective/action-view/relevant-assets';
@@ -128,7 +131,7 @@ export const useClassification = (
         ...data,
         additionalText: 'from',
         memo: unpacked.tokenData.memo || memoText || DEFAULT_MEMO,
-        address: new AddressView({
+        address: create(AddressViewSchema, {
           addressView: {
             case: 'opaque',
             value: {
@@ -149,7 +152,7 @@ export const useClassification = (
       ...data,
       additionalText: 'to',
       memo: value.ics20Memo || memoText || DEFAULT_MEMO,
-      address: new AddressView({
+      address: create(AddressViewSchema, {
         addressView: {
           case: 'opaque',
           value: {
@@ -167,7 +170,7 @@ export const useClassification = (
     data = {
       ...data,
       assets: [
-        new Metadata({
+        create(MetadataSchema, {
           display: 'lpnft_closed_',
         }),
       ],
@@ -178,7 +181,7 @@ export const useClassification = (
     data = {
       ...data,
       assets: [
-        new Metadata({
+        create(MetadataSchema, {
           display: 'lpnft_withdrawn_',
         }),
       ],

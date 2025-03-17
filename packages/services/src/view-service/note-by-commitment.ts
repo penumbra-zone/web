@@ -1,9 +1,11 @@
 import type { Impl } from './index.js';
+import { equals, fromJson } from '@bufbuild/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
 
-import { SpendableNoteRecord } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { SpendableNoteRecordSchema } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 
 import { Code, ConnectError } from '@connectrpc/connect';
+import { StateCommitmentSchema } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
 
 export const noteByCommitment: Impl['noteByCommitment'] = async (req, ctx) => {
   const services = await ctx.values.get(servicesCtx)();
@@ -20,8 +22,11 @@ export const noteByCommitment: Impl['noteByCommitment'] = async (req, ctx) => {
   // Wait until our DB encounters a new note with this commitment
   if (req.awaitDetection) {
     for await (const update of indexedDb.subscribe('SPENDABLE_NOTES')) {
-      const spendableNote = SpendableNoteRecord.fromJson(update.value);
-      if (spendableNote.noteCommitment?.equals(req.noteCommitment)) {
+      const spendableNote = fromJson(SpendableNoteRecordSchema, update.value);
+      if (
+        spendableNote.noteCommitment &&
+        equals(StateCommitmentSchema, spendableNote.noteCommitment, req.noteCommitment)
+      ) {
         return { spendableNote };
       }
     }

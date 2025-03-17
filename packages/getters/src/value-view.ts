@@ -1,9 +1,10 @@
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { create } from '@bufbuild/protobuf';
 import { createGetter } from './utils/create-getter.js';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { getDisplayDenomExponent, getSymbol } from './metadata.js';
-import { Any } from '@bufbuild/protobuf';
-import { ValidatorInfo } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
+import { Any, anyUnpackTo } from '@bufbuild/protobuf/wkt';
+import { ValidatorInfoSchema } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 import { getIdentityKeyFromValidatorInfo } from './validator-info.js';
 
 export const getMetadata = createGetter((valueView?: ValueView) =>
@@ -28,8 +29,8 @@ export const getEquivalentValues = createGetter((valueView?: ValueView) =>
  */
 export const getValidatorInfoFromValueView = getExtendedMetadata.pipe(
   createGetter((a?: Any) => {
-    const validatorInfo = new ValidatorInfo();
-    if (a?.unpackTo(validatorInfo)) {
+    const validatorInfo = create(ValidatorInfoSchema);
+    if (a && anyUnpackTo(a, ValidatorInfoSchema, validatorInfo)) {
       return validatorInfo;
     }
     return undefined;

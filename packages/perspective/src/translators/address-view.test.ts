@@ -1,4 +1,8 @@
-import { Address, AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import {
+  AddressSchema,
+  AddressViewSchema,
+} from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { create, equals } from '@bufbuild/protobuf';
 import { describe, expect, test } from 'vitest';
 import { asOpaqueAddressView } from './address-view.js';
 
@@ -10,7 +14,7 @@ const sameAddress = {
 
 describe('asOpaqueAddressView()', () => {
   describe('when the address view is visible', () => {
-    const addressView = new AddressView({
+    const addressView = create(AddressViewSchema, {
       addressView: {
         case: 'decoded',
         value: {
@@ -26,7 +30,7 @@ describe('asOpaqueAddressView()', () => {
     });
 
     test('returns an opaque address view', () => {
-      const expected = new AddressView({
+      const expected = create(AddressViewSchema, {
         addressView: {
           case: 'opaque',
           value: {
@@ -35,16 +39,16 @@ describe('asOpaqueAddressView()', () => {
         },
       });
 
-      expect(asOpaqueAddressView(addressView).equals(expected)).toBe(true);
+      expect(equals(AddressViewSchema, asOpaqueAddressView(addressView), expected)).toBe(true);
     });
   });
 
   describe('when the address view is already opaque', () => {
-    const addressView = new AddressView({
+    const addressView = create(AddressViewSchema, {
       addressView: {
         case: 'opaque',
         value: {
-          address: new Address(),
+          address: create(AddressSchema),
         },
       },
     });
@@ -58,7 +62,9 @@ describe('asOpaqueAddressView()', () => {
     const addressView = undefined;
 
     test('returns an empty address view', () => {
-      expect(asOpaqueAddressView(addressView).equals(new AddressView())).toBe(true);
+      expect(
+        equals(AddressViewSchema, asOpaqueAddressView(addressView), create(AddressViewSchema)),
+      ).toBe(true);
     });
   });
 });

@@ -1,4 +1,6 @@
-import { TransactionPlannerRequest } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { TransactionPlannerRequestSchema } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { create } from '@bufbuild/protobuf';
+import type { TransactionPlannerRequest } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { DutchAuctionSlice } from '.';
 import { getSubAuctions } from './get-sub-auctions';
 import { getAddressIndex } from '@penumbra-zone/getters/balances-response';
@@ -15,7 +17,7 @@ export const assembleScheduleRequest = async ({
   Pick<DutchAuctionSlice, 'minOutput' | 'maxOutput'>): Promise<TransactionPlannerRequest> => {
   const source = getAddressIndex.optional(assetIn);
 
-  return new TransactionPlannerRequest({
+  return create(TransactionPlannerRequestSchema, {
     dutchAuctionScheduleActions: await getSubAuctions({
       amount,
       assetIn,

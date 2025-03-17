@@ -1,5 +1,9 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { StatusRequest, StatusResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { create } from '@bufbuild/protobuf';
+import {
+  StatusRequestSchema,
+  StatusResponseSchema,
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
@@ -37,7 +41,7 @@ describe('Status request handler', () => {
 
     mockCtx = createHandlerContext({
       service: ViewService,
-      method: ViewService.methods.status,
+      method: ViewService.method.status,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
@@ -50,7 +54,10 @@ describe('Status request handler', () => {
   test('should get status when view service is synchronized with last known block in tendermint', async () => {
     mockIndexedDb.getFullSyncHeight?.mockResolvedValue(222n);
     mockTendermint.latestBlockHeight?.mockResolvedValue(222n);
-    const statusResponse = new StatusResponse(await status(new StatusRequest(), mockCtx));
+    const statusResponse = create(
+      StatusResponseSchema,
+      await status(create(StatusRequestSchema), mockCtx),
+    );
     expect(statusResponse.catchingUp).toBe(false);
     expect(statusResponse.fullSyncHeight === 222n).toBeTruthy();
   });
@@ -58,7 +65,10 @@ describe('Status request handler', () => {
   test('should receive status when view service synchronizes and lags behind last known block in tendermint', async () => {
     mockIndexedDb.getFullSyncHeight?.mockResolvedValue(111n);
     mockTendermint.latestBlockHeight?.mockResolvedValue(222n);
-    const statusResponse = new StatusResponse(await status(new StatusRequest(), mockCtx));
+    const statusResponse = create(
+      StatusResponseSchema,
+      await status(create(StatusRequestSchema), mockCtx),
+    );
     expect(statusResponse.catchingUp).toBe(true);
     expect(statusResponse.partialSyncHeight === 111n).toBeTruthy();
   });

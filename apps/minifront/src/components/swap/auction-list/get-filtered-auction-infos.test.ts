@@ -1,13 +1,14 @@
 import { describe, expect, it } from 'vitest';
+import { create } from '@bufbuild/protobuf';
 import { getFilteredAuctionInfos } from './get-filtered-auction-infos';
 import {
-  AuctionId,
-  DutchAuction,
+  AuctionIdSchema,
+  DutchAuctionSchema,
 } from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
 import { AuctionInfo } from '../../../fetchers/auction-infos';
-import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { AddressIndexSchema } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
-const MOCK_AUCTION_1 = new DutchAuction({
+const MOCK_AUCTION_1 = create(DutchAuctionSchema, {
   description: {
     startHeight: 11n,
     endHeight: 20n,
@@ -16,52 +17,52 @@ const MOCK_AUCTION_1 = new DutchAuction({
     seq: 0n,
   },
 });
-const MOCK_AUCTION_ID_1 = new AuctionId({ inner: new Uint8Array([1]) });
+const MOCK_AUCTION_ID_1 = create(AuctionIdSchema, { inner: new Uint8Array([1]) });
 
 const MOCK_AUCTION_INFO_1: AuctionInfo = {
   auction: MOCK_AUCTION_1,
   id: MOCK_AUCTION_ID_1,
   localSeqNum: 0n,
-  addressIndex: new AddressIndex({ account: 0 }),
+  addressIndex: create(AddressIndexSchema, { account: 0 }),
 };
 
-const MOCK_AUCTION_2 = new DutchAuction({
+const MOCK_AUCTION_2 = create(DutchAuctionSchema, {
   state: {
     seq: 1n,
   },
 });
-const MOCK_AUCTION_ID_2 = new AuctionId({ inner: new Uint8Array([2]) });
+const MOCK_AUCTION_ID_2 = create(AuctionIdSchema, { inner: new Uint8Array([2]) });
 const MOCK_AUCTION_INFO_2: AuctionInfo = {
   auction: MOCK_AUCTION_2,
   id: MOCK_AUCTION_ID_2,
   localSeqNum: 1n,
-  addressIndex: new AddressIndex({ account: 0 }),
+  addressIndex: create(AddressIndexSchema, { account: 0 }),
 };
 
-const MOCK_AUCTION_3 = new DutchAuction({
+const MOCK_AUCTION_3 = create(DutchAuctionSchema, {
   state: {
     seq: 1n,
   },
 });
-const MOCK_AUCTION_ID_3 = new AuctionId({ inner: new Uint8Array([3]) });
+const MOCK_AUCTION_ID_3 = create(AuctionIdSchema, { inner: new Uint8Array([3]) });
 const MOCK_AUCTION_INFO_3: AuctionInfo = {
   auction: MOCK_AUCTION_3,
   id: MOCK_AUCTION_ID_3,
   localSeqNum: 1n,
-  addressIndex: new AddressIndex({ account: 0 }),
+  addressIndex: create(AddressIndexSchema, { account: 0 }),
 };
 
-const MOCK_AUCTION_4 = new DutchAuction({
+const MOCK_AUCTION_4 = create(DutchAuctionSchema, {
   state: {
     seq: 2n,
   },
 });
-const MOCK_AUCTION_ID_4 = new AuctionId({ inner: new Uint8Array([4]) });
+const MOCK_AUCTION_ID_4 = create(AuctionIdSchema, { inner: new Uint8Array([4]) });
 const MOCK_AUCTION_INFO_4: AuctionInfo = {
   auction: MOCK_AUCTION_4,
   id: MOCK_AUCTION_ID_4,
   localSeqNum: 2n,
-  addressIndex: new AddressIndex({ account: 0 }),
+  addressIndex: create(AddressIndexSchema, { account: 0 }),
 };
 
 const AUCTION_INFOS: AuctionInfo[] = [

@@ -92,7 +92,7 @@ export default tseslint.config(
     rules: {
       // be aware this rule doesn't always provide correct fixes. its bad fixes
       // will fail to compile, and are easy to correct manually.
-      'import/no-duplicates': ['error', { 'prefer-inline': true }],
+      'import/no-duplicates': ['error', { 'prefer-inline': false }],
 
       // import plugin rules
       'import/first': 'error',

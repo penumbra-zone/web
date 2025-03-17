@@ -1,14 +1,18 @@
 import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
+import { create, equals, fromJson, toJson } from '@bufbuild/protobuf';
+
 import {
-  SwapByCommitmentRequest,
-  SwapByCommitmentResponse,
-  SwapRecord,
+  SwapByCommitmentRequestSchema,
+  SwapByCommitmentResponseSchema,
+  SwapRecordSchema,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+
+import type { SwapByCommitmentRequest } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
 import { IndexedDbMock, MockServices } from '../test-utils.js';
-import { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
+import { StateCommitmentSchema } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
 import { swapByCommitment } from './swap-by-commitment.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 
@@ -39,7 +43,7 @@ describe('SwapByCommitment request handler', () => {
     };
     mockCtx = createHandlerContext({
       service: ViewService,
-      method: ViewService.methods.swapByCommitment,
+      method: ViewService.method.swapByCommitment,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
@@ -48,19 +52,20 @@ describe('SwapByCommitment request handler', () => {
       ),
     });
 
-    request = new SwapByCommitmentRequest({ swapCommitment: testCommitment });
+    request = create(SwapByCommitmentRequestSchema, { swapCommitment: testCommitment });
   });
 
   test('should successfully get swap by commitment when idb has them', async () => {
     mockIndexedDb.getSwapByCommitment?.mockResolvedValue(testSwap);
-    const swapByCommitmentResponse = new SwapByCommitmentResponse(
+    const swapByCommitmentResponse = create(
+      SwapByCommitmentResponseSchema,
       await swapByCommitment(request, mockCtx),
     );
-    expect(swapByCommitmentResponse.swap?.equals(testSwap)).toBeTruthy();
+    expect(equals(SwapRecordSchema, testSwap, swapByCommitmentResponse.swap!)).toBeTruthy();
   });
 
   test('should throw error if idb has none', async () => {
-    await expect(swapByCommitment(new SwapByCommitmentRequest(), mockCtx)).rejects.toThrow(
+    await expect(swapByCommitment(create(SwapByCommitmentRequestSchema), mockCtx)).rejects.toThrow(
       'Missing swap commitment in request',
     );
   });
@@ -75,12 +80,13 @@ describe('SwapByCommitment request handler', () => {
     mockIndexedDb.getSwapByCommitment?.mockResolvedValue(undefined);
     request.awaitDetection = true;
     swapSubNext.mockResolvedValueOnce({
-      value: { value: testSwap.toJson() },
+      value: { value: toJson(SwapRecordSchema, testSwap) },
     });
-    const swapByCommitmentResponse = new SwapByCommitmentResponse(
+    const swapByCommitmentResponse = create(
+      SwapByCommitmentResponseSchema,
       await swapByCommitment(request, mockCtx),
     );
-    expect(swapByCommitmentResponse.swap?.equals(testSwap)).toBeTruthy();
+    expect(equals(SwapRecordSchema, swapByCommitmentResponse.swap!, testSwap)).toBeTruthy();
   });
 
   test('should throw error if swap is not found in idb, and has not been detected', async () => {
@@ -88,7 +94,7 @@ describe('SwapByCommitment request handler', () => {
     request.awaitDetection = true;
 
     swapSubNext.mockResolvedValueOnce({
-      value: { value: swapWithAnotherCommitment.toJson() },
+      value: { value: toJson(SwapRecordSchema, swapWithAnotherCommitment) },
     });
     swapSubNext.mockResolvedValueOnce({
       done: true,
@@ -97,11 +103,11 @@ describe('SwapByCommitment request handler', () => {
   });
 });
 
-const testCommitment = StateCommitment.fromJson({
+const testCommitment = fromJson(StateCommitmentSchema, {
   inner: 'A6VBVkrk+s18q+Sjhl8uEGfS3i0dwF1FrkNm8Db6VAA=',
 });
 
-const testSwap = SwapRecord.fromJson({
+const testSwap = fromJson(SwapRecordSchema, {
   swapCommitment: { inner: 'A6VBVkrk+s18q+Sjhl8uEGfS3i0dwF1FrkNm8Db6VAA=' },
   swap: {
     tradingPair: {
@@ -140,7 +146,7 @@ const testSwap = SwapRecord.fromJson({
   },
 });
 
-const swapWithAnotherCommitment = SwapRecord.fromJson({
+const swapWithAnotherCommitment = fromJson(SwapRecordSchema, {
   swapCommitment: {
     inner: 'n86D13I1rRUDoLCkX7LKl/AG8/F+2MV76p4XgPD++xA=',
   },

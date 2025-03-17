@@ -1,4 +1,5 @@
 import { ViewService } from '@penumbra-zone/protobuf';
+import { create, fromJson } from '@bufbuild/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
 
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
@@ -6,6 +7,12 @@ import { createContextValues, createHandlerContext, HandlerContext } from '@conn
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 
 import {
+  TransactionInfoSchema,
+  TransactionInfoRequestSchema,
+  TransactionInfoResponseSchema,
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+
+import type {
   TransactionInfo,
   TransactionInfoRequest,
   TransactionInfoResponse,
@@ -57,7 +64,7 @@ describe('TransactionInfo request handler', () => {
 
     mockCtx = createHandlerContext({
       service: ViewService,
-      method: ViewService.methods.transactionInfo,
+      method: ViewService.method.transactionInfo,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
@@ -79,13 +86,13 @@ describe('TransactionInfo request handler', () => {
     mockIterateTransactionInfo.next.mockResolvedValueOnce({
       done: true,
     });
-    req = new TransactionInfoRequest();
+    req = create(TransactionInfoRequestSchema);
   });
 
   test('should get all transactions if startHeight and endHeight are not set in request', async () => {
     const responses: TransactionInfoResponse[] = [];
     for await (const res of transactionInfo(req, mockCtx)) {
-      responses.push(new TransactionInfoResponse(res));
+      responses.push(create(TransactionInfoResponseSchema, res));
     }
     expect(responses.length).toBe(4);
   });
@@ -94,7 +101,7 @@ describe('TransactionInfo request handler', () => {
     const responses: TransactionInfoResponse[] = [];
     req.endHeight = 2525n;
     for await (const res of transactionInfo(req, mockCtx)) {
-      responses.push(new TransactionInfoResponse(res));
+      responses.push(create(TransactionInfoResponseSchema, res));
     }
     expect(responses.length).toBe(4);
   });
@@ -103,7 +110,7 @@ describe('TransactionInfo request handler', () => {
     const responses: TransactionInfoResponse[] = [];
     req.startHeight = 2525n;
     for await (const res of transactionInfo(req, mockCtx)) {
-      responses.push(new TransactionInfoResponse(res));
+      responses.push(create(TransactionInfoResponseSchema, res));
     }
     expect(responses.length).toBe(4);
   });
@@ -113,35 +120,35 @@ describe('TransactionInfo request handler', () => {
     req.startHeight = 998n;
     req.endHeight = 2525n;
     for await (const res of transactionInfo(req, mockCtx)) {
-      responses.push(new TransactionInfoResponse(res));
+      responses.push(create(TransactionInfoResponseSchema, res));
     }
     expect(responses.length).toBe(4);
   });
 });
 
 const testData: TransactionInfo[] = [
-  TransactionInfo.fromJson({
+  fromJson(TransactionInfoSchema, {
     height: '222',
     id: {
       inner: '1MI8IG5D3MQj3s1j0MXTwCQtAaVbwTlPkW8Qdz1EVIo=',
     },
     transaction: {},
   }),
-  TransactionInfo.fromJson({
+  fromJson(TransactionInfoSchema, {
     height: '1000',
     id: {
       inner: '2MI8IG5D3MQj3s1j0MXTwCQtAaVbwTlPkW8Qdz1EVIo=',
     },
     transaction: {},
   }),
-  TransactionInfo.fromJson({
+  fromJson(TransactionInfoSchema, {
     height: '2525',
     id: {
       inner: '3MI8IG5D3MQj3s1j0MXTwCQtAaVbwTlPkW8Qdz1EVIo=',
     },
     transaction: {},
   }),
-  TransactionInfo.fromJson({
+  fromJson(TransactionInfoSchema, {
     height: '12255',
     id: {
       inner: '4MI8IG5D3MQj3s1j0MXTwCQtAaVbwTlPkW8Qdz1EVIo=',

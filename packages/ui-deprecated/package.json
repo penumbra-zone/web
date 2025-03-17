@@ -138,7 +138,7 @@
     "vite-plugin-dts": "^4.0.3"
   },
   "peerDependencies": {
-    "@bufbuild/protobuf": "^1.10.0",
+    "@bufbuild/protobuf": "^2.2.2",
     "@penumbra-zone/protobuf": "workspace:*",
     "framer-motion": "^11.2.4",
     "lucide-react": "^0.378.0",

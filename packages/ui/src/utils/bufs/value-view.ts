@@ -1,4 +1,5 @@
-import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { ValueViewSchema } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { create } from '@bufbuild/protobuf';
 import {
   DELEGATION_TOKEN_METADATA,
   OSMO_METADATA,
@@ -8,7 +9,7 @@ import {
 } from './metadata.ts';
 import { AMOUNT_123_456_789, AMOUNT_999, AMOUNT_ZERO } from './amount';
 
-export const PENUMBRA_VALUE_VIEW = new ValueView({
+export const PENUMBRA_VALUE_VIEW = create(ValueViewSchema, {
   valueView: {
     case: 'knownAssetId',
     value: {
@@ -18,7 +19,7 @@ export const PENUMBRA_VALUE_VIEW = new ValueView({
   },
 });
 
-export const PENUMBRA_VALUE_VIEW_ZERO = new ValueView({
+export const PENUMBRA_VALUE_VIEW_ZERO = create(ValueViewSchema, {
   valueView: {
     case: 'knownAssetId',
     value: {
@@ -28,7 +29,7 @@ export const PENUMBRA_VALUE_VIEW_ZERO = new ValueView({
   },
 });
 
-export const USDC_VALUE_VIEW = new ValueView({
+export const USDC_VALUE_VIEW = create(ValueViewSchema, {
   valueView: {
     case: 'knownAssetId',
     value: {
@@ -38,7 +39,7 @@ export const USDC_VALUE_VIEW = new ValueView({
   },
 });
 
-export const OSMO_VALUE_VIEW = new ValueView({
+export const OSMO_VALUE_VIEW = create(ValueViewSchema, {
   valueView: {
     case: 'knownAssetId',
     value: {
@@ -48,7 +49,7 @@ export const OSMO_VALUE_VIEW = new ValueView({
   },
 });
 
-export const DELEGATION_VALUE_VIEW = new ValueView({
+export const DELEGATION_VALUE_VIEW = create(ValueViewSchema, {
   valueView: {
     case: 'knownAssetId',
     value: {
@@ -58,7 +59,7 @@ export const DELEGATION_VALUE_VIEW = new ValueView({
   },
 });
 
-export const UNBONDING_VALUE_VIEW = new ValueView({
+export const UNBONDING_VALUE_VIEW = create(ValueViewSchema, {
   valueView: {
     case: 'knownAssetId',
     value: {
@@ -68,7 +69,7 @@ export const UNBONDING_VALUE_VIEW = new ValueView({
   },
 });
 
-export const UNKNOWN_ASSET_VALUE_VIEW = new ValueView({
+export const UNKNOWN_ASSET_VALUE_VIEW = create(ValueViewSchema, {
   valueView: {
     case: 'knownAssetId',
     value: {
@@ -80,7 +81,7 @@ export const UNKNOWN_ASSET_VALUE_VIEW = new ValueView({
   },
 });
 
-export const UNKNOWN_ASSET_ID_VALUE_VIEW = new ValueView({
+export const UNKNOWN_ASSET_ID_VALUE_VIEW = create(ValueViewSchema, {
   valueView: {
     case: 'unknownAssetId',
     value: {

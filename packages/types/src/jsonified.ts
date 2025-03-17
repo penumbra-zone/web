@@ -1,4 +1,5 @@
-import type { JsonValue, JsonObject, AnyMessage } from '@bufbuild/protobuf';
+import type { JsonValue, JsonObject } from '@bufbuild/protobuf';
+import type { Any } from '@bufbuild/protobuf/wkt';
 
 export const isJsonObject = (res: unknown): res is JsonObject =>
   res != null &&
@@ -47,7 +48,7 @@ export type Stringified<J> = Jsonified<J> extends JsonValue ? string : never;
 export type Jsonified<T> = T extends JsonValue ? T                          // JsonValue members equivalent
                          : T extends (Date | Uint8Array | bigint) ? string  // these types stringify
                          : T extends (infer U)[] ? Jsonified<U>[]           // recurse into array members
-                         : T extends AnyMessage ? JsonObject                // AnyMessage is a black box
+                         : T extends Any ? JsonObject                // AnyMessage is a black box
                          : T extends object ? {                             // any object...
                             [P in keyof T as                                // ...index into...
                               // eslint-disable-next-line @typescript-eslint/ban-types -- expected use of never

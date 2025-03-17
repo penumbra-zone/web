@@ -1,11 +1,14 @@
 import { AllSlices, SliceCreator } from '..';
-import { TransactionPlannerRequest } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { create, equals } from '@bufbuild/protobuf';
+import { TransactionPlannerRequestSchema } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { isValidAmount, planBuildBroadcast } from '../helpers';
 import {
   AssetId,
   Metadata,
   Value,
+  ValueViewSchema,
   ValueView,
+  AssetIdSchema,
 } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { BigNumber } from 'bignumber.js';
 import { getAddressByIndex } from '../../fetchers/address';
@@ -99,7 +102,7 @@ export const createInstantSwapSlice = (): SliceCreator<InstantSwapSlice> => (set
 
         const res = await sendSimulateTradeRequest(get().swap);
 
-        const output = new ValueView({
+        const output = create(ValueViewSchema, {
           valueView: {
             case: 'knownAssetId',
             value: {
@@ -109,7 +112,7 @@ export const createInstantSwapSlice = (): SliceCreator<InstantSwapSlice> => (set
           },
         });
 
-        const unfilled = new ValueView({
+        const unfilled = create(ValueViewSchema, {
           valueView: {
             case: 'knownAssetId',
             value: {
@@ -187,7 +190,7 @@ const assembleSwapRequest = async ({
 
   const addressIndex = getAddressIndex(assetIn.accountAddress);
 
-  return new TransactionPlannerRequest({
+  return create(TransactionPlannerRequestSchema, {
     swaps: [
       {
         targetAsset: getAssetId(assetOut),
@@ -212,7 +215,7 @@ export const issueSwapClaim = async (
   swapCommitment: StateCommitment,
   source: AddressIndex | undefined,
 ) => {
-  const req = new TransactionPlannerRequest({ swapClaims: [{ swapCommitment }], source });
+  const req = create(TransactionPlannerRequestSchema, { swapClaims: [{ swapCommitment }], source });
   await planBuildBroadcast('swapClaim', req, { skipAuth: true });
 };
 
@@ -249,7 +252,7 @@ const calculatePriceImpact = (swapExec?: SwapExecution): number | undefined => {
 };
 
 const getMatchingAmount = (values: Value[], toMatch: AssetId): Amount => {
-  const match = values.find(v => toMatch.equals(v.assetId));
+  const match = values.find(v => v.assetId && equals(AssetIdSchema, toMatch, v.assetId));
   if (!match?.amount) {
     throw new Error('No match in values array found');
   }
