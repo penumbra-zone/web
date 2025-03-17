@@ -98,7 +98,7 @@ import {
   DutchAuctionDescriptionSchema,
   DutchAuctionDescription,
 } from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
-import { ChainRegistryClient } from '@penumbra-labs/registry';
+import type { ChainRegistryClient } from '@penumbra-labs/registry';
 import { create, equals, fromJson, toJson } from '@bufbuild/protobuf';
 import { getAmountFromRecord } from '@penumbra-zone/getters/spendable-note-record';
 import { isZero } from '@penumbra-zone/types/amount';

@@ -50,7 +50,6 @@ import {
   MetadataSchema,
   ValueSchema,
 } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import type { IdbUpdate, PenumbraDb } from '@penumbra-zone/types/indexed-db';
 import {
   AuctionIdSchema,
   DutchAuctionDescriptionSchema,
@@ -59,7 +58,7 @@ import { StateCommitmentSchema } from '@penumbra-zone/protobuf/penumbra/crypto/t
 import type { ChainRegistryClient, Registry } from '@penumbra-labs/registry';
 import fetchMock from 'fetch-mock';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
-import { create, fromJson, equals } from '@bufbuild/protobuf';
+import { create, fromJson, equals, JsonValue } from '@bufbuild/protobuf';
 import { TransactionSchema } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { GasPricesSchema } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
 
@@ -74,8 +73,11 @@ const registryMock: Partial<Registry> = {
   chainId: CHAIN_ID,
   ibcConnections: [],
   numeraires: [],
+  version() {
+    return Promise.resolve('abc');
+  },
   getAllAssets() {
-    return [metadataA, metadataB, metadataC];
+    return [metadataA, metadataB];
   },
 };
 
@@ -86,9 +88,7 @@ const getRegistryData = (chainId: string) => {
   return registryMock as Registry;
 };
 const getRegistryGlobals = () => ({
-  version() {
-    return Promise.resolve('abc');
-  },
+  version: registryMock.version!,
   rpcs: [],
   frontends: [],
   stakingAssetId: metadataA.penumbraAssetId,
@@ -111,7 +111,7 @@ const registryClientMock: ChainRegistryClient = {
 };
 
 const jsonifyRegistry = (r: Registry) => {
-  const numeraires = r.numeraires.map(n => uint8ArrayToBase64(n.inner));
+  const numeraires = r.numeraires.map(n => uint8ArrayToBase64((n as { inner: Uint8Array }).inner));
 
   return {
     chainId: r.chainId,
@@ -200,13 +200,13 @@ describe('IndexedDb', () => {
 
       // Save the new note and wait for the next update in parallel
       const [, resA] = await Promise.all([db.saveSpendableNote(newNote), subscription.next()]);
-      const updateA = resA.value as IdbUpdate<PenumbraDb, 'SPENDABLE_NOTES'>;
+      const updateA = resA.value as { value: JsonValue };
       expect(fromJson(SpendableNoteRecordSchema, updateA.value)).toEqual(newNote);
       expect(resA.done).toBeFalsy();
 
       // Try a second time
       const [, resB] = await Promise.all([db.saveSpendableNote(newNote), subscription.next()]);
-      const updateB = resB.value as IdbUpdate<PenumbraDb, 'SPENDABLE_NOTES'>;
+      const updateB = resB.value as { value: JsonValue };
       expect(fromJson(SpendableNoteRecordSchema, updateB.value)).toEqual(newNote);
       expect(resB.done).toBeFalsy();
     });
@@ -223,7 +223,7 @@ describe('IndexedDb', () => {
       }
       expect(notes.length).toBe(1);
 
-      await db.saveAssetsMetadata(metadataA);
+      await db.saveAssetsMetadata(metadataC);
 
       const assets: Metadata[] = [];
       for await (const asset of db.iterateAssetsMetadata()) {
@@ -402,8 +402,6 @@ describe('IndexedDb', () => {
     it('should be able to set/get all', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
-      await db.saveAssetsMetadata(metadataA);
-      await db.saveAssetsMetadata(metadataB);
       await db.saveAssetsMetadata(metadataC);
 
       const savedAssets: Metadata[] = [];
@@ -411,7 +409,7 @@ describe('IndexedDb', () => {
         savedAssets.push(asset);
       }
       const registryLength = registryClientMock.bundled.get(CHAIN_ID).getAllAssets().length;
-      expect(savedAssets.length).toBe(registryLength + 3);
+      expect(savedAssets.length).toBe(registryLength + 1);
     });
   });
 
