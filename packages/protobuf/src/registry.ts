@@ -1,4 +1,4 @@
-import { createRegistry } from '@bufbuild/protobuf';
+import { createRegistry, DescFile, DescMessage, DescService } from '@bufbuild/protobuf';
 
 import * as ibcCore from './services/cosmos-ibc-core.js';
 import * as penumbraCnidarium from './services/penumbra-cnidarium.js';
@@ -10,7 +10,32 @@ import {
   ClientStateSchema,
   HeaderSchema,
 } from '../gen/ibc/lightclients/tendermint/v1/tendermint_pb.js';
-import { DutchAuctionSchema } from '../gen/penumbra/core/component/auction/v1/auction_pb.js';
+
+type MessageOrService = DescMessage | DescService;
+
+const collectSchemasFromFile = (file: DescFile, checked: Set<string>): MessageOrService[] => {
+  if (checked.has(file.name)) {
+    return [];
+  }
+
+  const schemas: MessageOrService[] = [...file.messages];
+  for (const dependent of file.dependencies) {
+    if (!file.name.startsWith('google/')) {
+      schemas.push(...collectSchemasFromFile(dependent, checked));
+    }
+  }
+
+  checked.add(file.name);
+  return schemas;
+};
+
+export const collectSchemasFromService = (service: DescService): MessageOrService[] => {
+  const schemas: MessageOrService[] = [service];
+  const parsed = new Set<string>();
+
+  schemas.push(...collectSchemasFromFile(service.file, parsed));
+  return schemas;
+};
 
 /**
  * This type registry is for JSON serialization of protobuf messages.
@@ -23,25 +48,16 @@ import { DutchAuctionSchema } from '../gen/penumbra/core/component/auction/v1/au
  * encountered.
  */
 
-export const typeRegistry = createRegistry(
+const allMessages = [
   ...Object.values(ibcCore),
   ...Object.values(penumbraCnidarium),
   ...Object.values(penumbraCore),
   ...Object.values(penumbraCustody),
   ...Object.values(penumbraUtil),
   ...Object.values(penumbraView),
+].flatMap(collectSchemasFromService);
 
-  // Types not explicitly referenced by any above services should be added here.
-  // Otherwise, it will not be possible to serialize/deserialize these types if,
-  // e.g., they're used in an `Any` protobuf.
-
-  // gen/ibc/lightclients/tendermint/v1/tendermint_pb
-  ClientStateSchema,
-  HeaderSchema,
-
-  // penumbra/core/component/auction/v1/auction_pb
-  DutchAuctionSchema,
-);
+export const typeRegistry = createRegistry(...allMessages, ClientStateSchema, HeaderSchema);
 
 /**
  * Appropriate for any ConnectRPC `Transport` object or protobuf `Any`
