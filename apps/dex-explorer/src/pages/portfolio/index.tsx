@@ -1,20 +1,24 @@
 'use client';
 
 import React from 'react';
+import { observer } from 'mobx-react-lite';
 import { XCircle } from 'lucide-react';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { Density } from '@penumbra-zone/ui/Density';
 import { AssetsTable } from './ui/assets-table';
+import { useRegistry } from '@/shared/api/registry.ts';
+import { IbcChainProvider } from '@/features/cosmos/chain-provider.tsx';
+import { Onboarding } from './ui/onboarding';
 import { PortfolioPositionTabs } from './ui/position-tabs';
 
 interface PortfolioPageProps {
   isMobile: boolean;
 }
 
-export function PortfolioPage({ isMobile }: PortfolioPageProps): React.ReactNode {
+export const PortfolioPage = ({ isMobile }: PortfolioPageProps): React.ReactNode => {
   return isMobile ? <MobilePortfolioPage /> : <DesktopPortfolioPage />;
-}
+};
 
 function MobilePortfolioPage() {
   return (
@@ -54,11 +58,20 @@ function MobilePortfolioPage() {
   );
 }
 
-function DesktopPortfolioPage() {
+const DesktopPortfolioPage = observer(() => {
+  const { data } = useRegistry();
+
+  if (!data) {
+    return;
+  }
+
   return (
-    <div className='sm:container mx-auto py-8 flex flex-col gap-4'>
-      <AssetsTable />
-      <PortfolioPositionTabs />
-    </div>
+    <IbcChainProvider registry={data}>
+      <div className='sm:container mx-auto py-8 flex flex-col gap-4'>
+        <Onboarding />
+        <AssetsTable />
+        <PortfolioPositionTabs />
+      </div>
+    </IbcChainProvider>
   );
-}
+});
