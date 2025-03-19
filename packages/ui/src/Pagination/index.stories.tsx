@@ -10,14 +10,45 @@ const meta: Meta<typeof Pagination> = {
 
 export default meta;
 
+const ArrayList = ({ array }: { array: number[] }) => {
+  if (array.length < 10) {
+    return (
+      <ol className='text-text-secondary'>
+        {array.map(v => (
+          <li className='text-xs' key={v}>
+            {v}
+          </li>
+        ))}
+      </ol>
+    );
+  }
+
+  return (
+    <ol className='text-text-secondary'>
+      {array.slice(0, 3).map(v => (
+        <li className='text-xs' key={v}>
+          {v}
+        </li>
+      ))}
+      <li key='...' className='text-xs'>
+        ...
+      </li>
+      {array.slice(-3).map(v => (
+        <li className='text-xs' key={v}>
+          {v}
+        </li>
+      ))}
+    </ol>
+  );
+};
+
 export const Basic: StoryObj<typeof Pagination> = {
   render: args => {
     const [value, setValue] = useState(args.value);
     const [limit, setLimit] = useState<number>(args.limit);
 
-    const array = Array.from({ length: 300 }, (_, i) => i + 1);
+    const array = Array.from({ length: 305 }, (_, i) => i + 1);
     const values = array.slice(limit * (value - 1), limit * value);
-    const pages = Math.ceil(array.length / limit);
 
     const onLimit = (limit: number) => {
       setLimit(limit);
@@ -28,28 +59,13 @@ export const Basic: StoryObj<typeof Pagination> = {
       <div className='flex flex-col gap-2'>
         <Pagination
           {...args}
-          pages={pages}
+          totalItems={array.length}
           value={value}
           onChange={setValue}
-          limit={args.limit}
+          limit={limit}
           onLimitChange={onLimit}
         />
-
-        <ol className='text-text-secondary'>
-          {values.slice(0, 3).map(v => (
-            <li className='text-xs' key={v}>
-              {v}
-            </li>
-          ))}
-          <li key='...' className='text-xs'>
-            ...
-          </li>
-          {values.slice(-3).map(v => (
-            <li className='text-xs' key={v}>
-              {v}
-            </li>
-          ))}
-        </ol>
+        <ArrayList array={values} />
       </div>
     );
   },
@@ -64,29 +80,19 @@ export const Short: StoryObj<typeof Pagination> = {
     const [value, setValue] = useState(args.value);
 
     const limit = args.limit;
-    const array = Array.from({ length: 300 }, (_, i) => i + 1);
+    const array = Array.from({ length: 305 }, (_, i) => i + 1);
     const values = array.slice(limit * (value - 1), limit * value);
-    const pages = Math.ceil(array.length / limit);
 
     return (
       <div className='flex flex-col gap-2'>
-        <Pagination {...args} pages={pages} value={value} onChange={setValue} limit={limit} />
-
-        <ol className='text-text-secondary'>
-          {values.slice(0, 3).map(v => (
-            <li className='text-xs' key={v}>
-              {v}
-            </li>
-          ))}
-          <li key='...' className='text-xs'>
-            ...
-          </li>
-          {values.slice(-3).map(v => (
-            <li className='text-xs' key={v}>
-              {v}
-            </li>
-          ))}
-        </ol>
+        <Pagination
+          {...args}
+          totalItems={array.length}
+          value={value}
+          onChange={setValue}
+          limit={limit}
+        />
+        <ArrayList array={values} />
       </div>
     );
   },

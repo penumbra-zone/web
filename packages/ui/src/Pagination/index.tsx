@@ -22,8 +22,8 @@ export interface PaginationProps {
   onChange: (value: number) => void;
   /** The number of items per page. If 0 or less, doesn't render the limit selector */
   limit: number;
-  /** The total number of pages */
-  pages: number;
+  /** The total number of items. If provided, will be used to calculate the total number of pages */
+  totalItems: number;
   /** Callback function to update the number of items per page */
   onLimitChange?: (limit: number) => void;
   /** The available options list for the limit */
@@ -52,9 +52,6 @@ export interface PaginationProps {
  *   const array = Array.from({ length: 300 }, (_, i) => i + 1);
  *   const values = array.slice(limit * (value - 1), limit * value);
  *
- *   // Calculate the total number of pages
- *   const pages = Math.ceil(array.length / limit);
- *
  *   // Reset the page value when the limit changes
  *   const onLimit = (limit: number) => {
  *     setLimit(limit);
@@ -64,7 +61,7 @@ export interface PaginationProps {
  *   return (
  *     <div className='flex flex-col gap-2'>
  *       <Pagination
- *         pages={pages}
+ *         totalItems={array.length}
  *         value={value}
  *         onChange={setValue}
  *         limit={limit}
@@ -87,7 +84,7 @@ export const Pagination = ({
   as: Container = 'div',
   value,
   onChange,
-  pages,
+  totalItems,
   hidePageInfo,
   hidePageButtons,
   hideLimitSelector,
@@ -97,6 +94,9 @@ export const Pagination = ({
 }: PaginationProps) => {
   const selectId = useId();
   const selectEl = useRef<HTMLSelectElement>(null);
+  const pages = useMemo(() => {
+    return Math.ceil((totalItems < 1 ? 1 : totalItems) / limit);
+  }, [limit, totalItems]);
 
   const limitOptionsSet = useMemo(() => {
     const options = limitOptions ?? LIMIT_OPTIONS;
@@ -167,14 +167,6 @@ export const Pagination = ({
     onLimitChange?.(parseInt(event.target.value));
   };
 
-  const pageInfo = pages ? (
-    <Text small>
-      {value} out of {pages}
-    </Text>
-  ) : (
-    <Text small>Page {value}</Text>
-  );
-
   return (
     <Container
       className={cn(
@@ -184,7 +176,11 @@ export const Pagination = ({
       )}
     >
       <div className='col-start-1 row-start-1 whitespace-nowrap'>
-        {hidePageInfo ? null : pageInfo}
+        {hidePageInfo ? null : (
+          <Text small>
+            {limit} out of {totalItems}
+          </Text>
+        )}
       </div>
 
       <nav
@@ -200,7 +196,9 @@ export const Pagination = ({
         </Density>
 
         {hidePageButtons ? (
-          pageInfo
+          <Text small>
+            {value} of {pages}
+          </Text>
         ) : (
           <div className='flex items-center tablet:gap-3'>
             {buttons.map((key, index) => (
@@ -242,6 +240,7 @@ export const Pagination = ({
             <select
               ref={selectEl}
               id={selectId}
+              value={limit}
               onChange={onSelect}
               className='invisible absolute left-0 top-0'
             >
