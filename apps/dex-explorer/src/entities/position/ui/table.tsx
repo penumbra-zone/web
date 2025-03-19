@@ -127,7 +127,10 @@ export const PositionsTable = observer(({ base, quote, stateFilter }: PositionsT
   }
 
   return (
-    <div className='grid grid-cols-[80px_1fr_1fr_80px_1fr_1fr_1fr_1fr] overflow-y-auto overflow-x-auto'>
+    <div
+      className='grid grid-cols-[80px_1fr_1fr_80px_1fr_1fr_1fr_1fr] overflow-y-auto overflow-x-auto'
+      style={{ overflowAnchor: 'none' }}
+    >
       <Density slim>
         <div className='grid grid-cols-subgrid col-span-8'>
           <SortableTableHeader sortKey='type'>Type</SortableTableHeader>

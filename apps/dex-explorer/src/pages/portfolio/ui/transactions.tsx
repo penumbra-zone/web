@@ -13,7 +13,6 @@ import { connectionStore } from '@/shared/model/connection';
 import { useGetMetadataByAssetId } from '@/shared/api/assets';
 import { BlockchainError } from '@/shared/ui/blockchain-error';
 import { useObserver } from '@/shared/utils/use-observer';
-import SpinnerIcon from '@/shared/assets/spinner-icon.svg';
 import { useTransactions } from '../api/use-transactions';
 import { NoData } from './no-data';
 
@@ -42,18 +41,22 @@ export const PortfolioTransactions = observer(() => {
     isRefetching,
     isFetchingNextPage,
     fetchNextPage,
+    hasNextPage,
   } = useTransactions(subaccount);
 
-  const { observerEl } = useObserver(isLoading || isRefetching || isFetchingNextPage, () => {
-    void fetchNextPage();
-  });
+  const { observerEl } = useObserver(
+    isLoading || isRefetching || isFetchingNextPage || !hasNextPage,
+    () => {
+      void fetchNextPage();
+    },
+  );
 
   const getTxId = (tx: TransactionInfo): string => {
     return tx.id?.inner ? uint8ArrayToHex(tx.id.inner) : '';
   };
 
   return (
-    <div className='flex flex-col gap-1'>
+    <div className='flex flex-col gap-1' style={{ overflowAnchor: 'none' }}>
       {isLoading &&
         Array.from({ length: 3 }).map((_, index) => (
           <div key={index} className='h-[72px]'>
@@ -88,12 +91,6 @@ export const PortfolioTransactions = observer(() => {
             }
           />
         )),
-      )}
-
-      {isFetchingNextPage && (
-        <div className='flex items-center justify-center h-6 my-1'>
-          <SpinnerIcon className='animate-spin' />
-        </div>
       )}
 
       {/* An element that triggers the infinite scroll when visible */}
