@@ -1,5 +1,11 @@
 # @penumbra-zone/wasm
 
+## 43.1.0
+
+### Minor Changes
+
+- 62a7767: bump wasm deps to latest tagged release
+
 ## 43.0.0
 
 ### Minor Changes
