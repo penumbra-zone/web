@@ -1,5 +1,13 @@
 # minifront
 
+## 6.31.2
+
+### Patch Changes
+
+- 3f8d59f: bump ski-go widget dep
+  - @penumbra-zone/perspective@51.0.0
+  - @penumbra-zone/ui-deprecated@17.1.1
+
 ## 6.31.1
 
 ### Patch Changes

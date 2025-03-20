@@ -1,5 +1,12 @@
 # @penumbra-zone/perspective
 
+## 51.0.0
+
+### Patch Changes
+
+- Updated dependencies [62a7767]
+  - @penumbra-zone/wasm@43.1.0
+
 ## 50.0.0
 
 ### Major Changes
