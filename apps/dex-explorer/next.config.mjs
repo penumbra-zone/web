@@ -99,6 +99,17 @@ const nextConfig = {
       hmrRefreshes: true,
     },
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'raw.githubusercontent.com',
+        port: '',
+        pathname: '/cosmos/chain-registry/master/**',
+        search: '',
+      },
+    ],
+  },
   // Disabling HMR in local dev requires NextJS >= v15.x, so disabling for now.
   // experimental: {
   //   // Don't cache the HMR in local dev.
