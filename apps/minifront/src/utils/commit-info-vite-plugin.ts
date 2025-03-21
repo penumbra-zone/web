@@ -6,11 +6,14 @@ import { execSync } from 'child_process';
 export const commitInfoPlugin = (): Plugin => {
   const commitHash = execSync('git rev-parse HEAD').toString().trim();
   const commitDate = execSync('git log -1 --format=%cI').toString().trim();
-  const gitOriginUrl = execSync('git remote get-url origin')
+  let gitOriginUrl = execSync('git remote get-url origin')
     .toString()
     .trim()
     .replace(/\.git$/, ''); // Origin urls often appended with .git
 
+  if (gitOriginUrl.startsWith('git@github.com:')) {
+    gitOriginUrl = gitOriginUrl.replace('git@github.com:', 'https://github.com/');
+  }
   return {
     name: 'vite-plugin-commit-info',
     enforce: 'pre',
