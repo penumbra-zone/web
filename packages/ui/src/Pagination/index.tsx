@@ -24,6 +24,8 @@ export interface PaginationProps {
   limit: number;
   /** The total number of items. If provided, will be used to calculate the total number of pages */
   totalItems: number;
+  /** Actual amount of items per page. Provide it if different from `limit`. It doesn't affect page calculation, only the rendering of page info */
+  visibleItems?: number;
   /** Callback function to update the number of items per page */
   onLimitChange?: (limit: number) => void;
   /** The available options list for the limit */
@@ -85,6 +87,7 @@ export const Pagination = ({
   value,
   onChange,
   totalItems,
+  visibleItems,
   hidePageInfo,
   hidePageButtons,
   hideLimitSelector,
@@ -178,7 +181,7 @@ export const Pagination = ({
       <div className='col-start-1 row-start-1 whitespace-nowrap'>
         {hidePageInfo ? null : (
           <Text small>
-            {limit} out of {totalItems}
+            {visibleItems ?? (limit < totalItems ? limit : totalItems)} out of {totalItems}
           </Text>
         )}
       </div>
