@@ -31,7 +31,12 @@ const CosmosConnectButtonInner = observer(
     return (
       <Density variant={variant === 'default' ? 'sparse' : 'compact'}>
         {isWalletConnected && address ? (
-          <Button actionType={actionType} onClick={() => void disconnect()}>
+          <Button
+            icon={Wallet2}
+            aria-description={address}
+            actionType={actionType}
+            onClick={() => void disconnect()}
+          >
             {`${address.slice(0, 8)}...${address.slice(-4)}`}
           </Button>
         ) : (

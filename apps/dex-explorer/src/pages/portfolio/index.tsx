@@ -7,17 +7,29 @@ import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { Density } from '@penumbra-zone/ui/Density';
 import { AssetsTable } from './ui/assets-table';
+import { WalletConnect } from './ui/wallet-connect';
 import { useRegistry } from '@/shared/api/registry.ts';
 import { IbcChainProvider } from '@/features/cosmos/chain-provider.tsx';
 import { Onboarding } from './ui/onboarding';
 import { PortfolioPositionTabs } from './ui/position-tabs';
+import { AssetBars } from './ui/asset-bars';
+import { useUnifiedAssets } from '@/pages/portfolio/api/use-unified-assets';
 
 interface PortfolioPageProps {
   isMobile: boolean;
 }
 
 export const PortfolioPage = ({ isMobile }: PortfolioPageProps): React.ReactNode => {
-  return isMobile ? <MobilePortfolioPage /> : <DesktopPortfolioPage />;
+  const { data } = useRegistry();
+  if (isMobile) {
+    return <MobilePortfolioPage />;
+  }
+
+  return data ? (
+    <IbcChainProvider registry={data}>
+      <DesktopPortfolioPage />
+    </IbcChainProvider>
+  ) : null;
 };
 
 function MobilePortfolioPage() {
@@ -50,7 +62,6 @@ function MobilePortfolioPage() {
         </Density>
       </div>
 
-      {/* Go Back Button */}
       <Button>
         <Text body>Go Back</Text>
       </Button>
@@ -59,19 +70,23 @@ function MobilePortfolioPage() {
 }
 
 const DesktopPortfolioPage = observer(() => {
-  const { data } = useRegistry();
-
-  if (!data) {
-    return;
-  }
-
+  const { isPenumbraConnected, isCosmosConnected } = useUnifiedAssets();
   return (
-    <IbcChainProvider registry={data}>
-      <div className='sm:container mx-auto py-8 flex flex-col gap-4'>
-        <Onboarding />
-        <AssetsTable />
-        <PortfolioPositionTabs />
-      </div>
-    </IbcChainProvider>
+    <div className='sm:container mx-auto py-8 flex flex-col gap-4'>
+      <Onboarding />
+
+      <WalletConnect />
+
+      {/* Asset Allocation Bars */}
+      {isPenumbraConnected ||
+        (isCosmosConnected && (
+          <div className='mb-8'>
+            <AssetBars />
+          </div>
+        ))}
+
+      <AssetsTable />
+      <PortfolioPositionTabs />
+    </div>
   );
 });

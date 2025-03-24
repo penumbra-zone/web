@@ -4,7 +4,7 @@ import { SummaryData } from '@/shared/api/server/summary/types';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { useMemo } from 'react';
 
-interface AssetPrice {
+export interface AssetPrice {
   symbol: string;
   price: number;
   quoteSymbol: string;

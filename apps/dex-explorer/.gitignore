@@ -49,3 +49,9 @@ ca-cert.pem
 
 # eslint
 .eslintcache
+
+# Local libraries for testing
+/lib
+
+# Cursor rules
+.cursor
