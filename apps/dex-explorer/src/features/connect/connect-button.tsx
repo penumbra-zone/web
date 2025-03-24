@@ -15,9 +15,11 @@ const ConnectButtonInner = observer(
   ({
     actionType = 'accent',
     variant = 'default',
+    children,
   }: {
     actionType?: ButtonProps['actionType'];
     variant?: 'default' | 'minimal' | 'mobile';
+    children?: React.ReactNode;
   }) => {
     const [isOpen, setIsOpen] = useState(false);
     const { data: providerManifests } = useProviderManifests();
@@ -57,7 +59,7 @@ const ConnectButtonInner = observer(
               actionType={actionType}
               onClick={onConnectClick}
             >
-              Connect wallet
+              {children ?? 'Connect wallet'}
             </Button>
           )}
         </Density>
