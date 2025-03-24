@@ -1,5 +1,15 @@
 # @penumbra-zone/ui
 
+## 13.15.0
+
+### Minor Changes
+
+- 4adb7aa: Add Pagination UI component
+
+### Patch Changes
+
+- @penumbra-zone/perspective@51.0.0
+
 ## 13.14.0
 
 ### Minor Changes
