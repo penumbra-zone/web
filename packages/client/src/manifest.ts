@@ -21,7 +21,7 @@ export type PenumbraManifestJson = chrome.runtime.ManifestV3 & {
   [k in 'name' | 'version' | 'description' | 'icons']-?: NonNullable<chrome.runtime.ManifestV3[k]>;
 };
 
-type IconBlobs = { [size in `${number}`]?: Blob } & { [size128 in `${128}`]-?: NonNullable<Blob> };
+type IconBlobs = Partial<Record<`${number}`, Blob>> & Required<Record<`128`, NonNullable<Blob>>>;
 
 export type PenumbraManifest = {
   [k in keyof PenumbraManifestJson]: k extends 'icons' ? IconBlobs : PenumbraManifestJson[k];

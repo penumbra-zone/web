@@ -10,12 +10,12 @@ interface SpecificEventTarget<SpecificTypeName extends string, SpecificEvent ext
   addEventListener: (
     type: SpecificTypeName,
     listener: SpecificEventListener<SpecificEvent> | EventListenerObject | null,
-    options?: boolean | AddEventListenerOptions | undefined,
+    options?: boolean | AddEventListenerOptions,
   ) => void;
   removeEventListener: (
     type: SpecificTypeName,
     listener: SpecificEventListener<SpecificEvent> | EventListenerObject | null,
-    options?: boolean | EventListenerOptions | undefined,
+    options?: boolean | EventListenerOptions,
   ) => void;
   dispatchEvent: (event: SpecificEvent) => boolean;
 }

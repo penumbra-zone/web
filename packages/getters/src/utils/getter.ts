@@ -55,7 +55,7 @@ export interface Getter<SourceType, TargetType> {
   readonly pipe: <PipeTargetType>(
     pipeSelector:
       | Getter<TargetType, PipeTargetType>
-      | ((value?: TargetType | NonNullable<TargetType> | undefined) => PipeTargetType),
+      | ((value?: TargetType | NonNullable<TargetType>) => PipeTargetType),
   ) => Getter<
     SourceType,
     TargetType extends undefined ? PipeTargetType | undefined : PipeTargetType

@@ -7,6 +7,7 @@ export const removeTrailingSlash = (url: string): string => {
   return url.endsWith('/') ? url.slice(0, -1) : url;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters -- useful type narrowing
 export const usePagePath = <T extends PagePath>() => {
   const location = useLocation();
   return matchPagePath(removeTrailingSlash(location.pathname)) as T;

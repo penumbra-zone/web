@@ -36,7 +36,7 @@ const ParsedPacketData = ({
 
   try {
     return dataParser(data);
-  } catch (e) {
+  } catch (_) {
     return <ActionDetails.Row label='Data'>Error while parsing data</ActionDetails.Row>;
   }
 };
@@ -237,7 +237,7 @@ export const IbcRelayComponent = ({ value }: { value: IbcRelay }) => {
       value.rawAction.unpackTo(ack);
       return <MsgAckComponent ack={ack} />;
     }
-  } catch (e) {
+  } catch (_) {
     return (
       <ViewBox
         label='IBC Relay'

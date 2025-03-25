@@ -33,7 +33,7 @@
     "@connectrpc/connect": "^1.6.1",
     "@penumbra-zone/protobuf": "workspace:*",
     "@penumbra-zone/transport-dom": "workspace:*",
-    "@types/chrome": "^0.0.287"
+    "@types/chrome": "^0.0.268"
   },
   "peerDependencies": {
     "@bufbuild/protobuf": "^1.10.0",

@@ -281,8 +281,8 @@ importers:
         specifier: ^8.1.0
         version: 8.1.0(typescript@5.5.3)
       '@types/chrome':
-        specifier: ^0.0.287
-        version: 0.0.287
+        specifier: ^0.0.268
+        version: 0.0.268
       '@types/lodash':
         specifier: ^4.17.13
         version: 4.17.13
@@ -587,8 +587,8 @@ importers:
         specifier: workspace:*
         version: link:../transport-dom
       '@types/chrome':
-        specifier: ^0.0.287
-        version: 0.0.287
+        specifier: ^0.0.268
+        version: 0.0.268
 
   packages/configs:
     dependencies:
@@ -681,8 +681,8 @@ importers:
   packages/mock-chrome:
     devDependencies:
       '@types/chrome':
-        specifier: ^0.0.287
-        version: 0.0.287
+        specifier: ^0.0.268
+        version: 0.0.268
 
   packages/perspective:
     devDependencies:
@@ -750,8 +750,8 @@ importers:
         specifier: workspace:*
         version: link:../wasm
       '@types/chrome':
-        specifier: ^0.0.287
-        version: 0.0.287
+        specifier: ^0.0.268
+        version: 0.0.268
 
   packages/storage:
     dependencies:
@@ -808,8 +808,8 @@ importers:
         specifier: workspace:*
         version: link:../transport-dom
       '@types/chrome':
-        specifier: ^0.0.287
-        version: 0.0.287
+        specifier: ^0.0.268
+        version: 0.0.268
 
   packages/transport-dom:
     dependencies:
@@ -6341,8 +6341,8 @@ packages:
   '@types/bn.js@5.1.6':
     resolution: {integrity: sha512-Xh8vSwUeMKeYYrj3cX4lGQgFSF/N03r+tv4AiLl1SucqV+uTQpxRcnM8AkXKHwYP9ZPXOYXRr2KPXpVlIvqh9w==}
 
-  '@types/chrome@0.0.287':
-    resolution: {integrity: sha512-wWhBNPNXZHwycHKNYnexUcpSbrihVZu++0rdp6GEk5ZgAglenLx+RwdEouh6FrHS0XQiOxSd62yaujM1OoQlZQ==}
+  '@types/chrome@0.0.268':
+    resolution: {integrity: sha512-7N1QH9buudSJ7sI8Pe4mBHJr5oZ48s0hcanI9w3wgijAlv1OZNUZve9JR4x42dn5lJ5Sm87V1JNfnoh10EnQlA==}
 
   '@types/connect@3.4.38':
     resolution: {integrity: sha512-K6uROf1LD88uDQqJCktA4yzL1YYAK6NgfsI0v/mTgyPKWsX1CnJ0XPSDhViejru1GcRkLWb8RlzFYJRqGUbaug==}
@@ -22064,7 +22064,7 @@ snapshots:
     dependencies:
       '@types/node': 22.10.2
 
-  '@types/chrome@0.0.287':
+  '@types/chrome@0.0.268':
     dependencies:
       '@types/filesystem': 0.0.36
       '@types/har-format': 1.2.15

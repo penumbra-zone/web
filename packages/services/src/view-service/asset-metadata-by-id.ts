@@ -42,6 +42,7 @@ export const assetMetadataById: Impl['assetMetadataById'] = async ({ assetId }, 
 
   if (remoteMetadata && !isIbcAsset) {
     const customized = customizeSymbol(remoteMetadata);
+    // eslint-disable-next-line @typescript-eslint/no-misused-spread -- expected behavior
     void indexedDb.saveAssetsMetadata({ ...customized, penumbraAssetId: getAssetId(customized) });
     return { denomMetadata: customized };
   }
