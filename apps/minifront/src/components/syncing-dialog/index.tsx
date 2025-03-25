@@ -39,7 +39,7 @@ export const SyncingDialog = () => {
     } else if (streamError instanceof Error) {
       return streamError.message;
     } else if (streamError != null) {
-      return String(streamError);
+      return String(streamError as string);
     } else {
       return null;
     }

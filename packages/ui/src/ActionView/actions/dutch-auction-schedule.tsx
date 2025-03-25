@@ -5,7 +5,6 @@ export interface DutchAuctionScheduleActionProps {
   value: ActionDutchAuctionScheduleView;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- unimplemented
 export const DutchAuctionScheduleAction = (_: DutchAuctionScheduleActionProps) => {
   return <UnknownAction label='Dutch Auction Schedule' opaque={false} />;
 };

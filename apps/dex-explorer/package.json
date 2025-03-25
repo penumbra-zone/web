@@ -61,7 +61,7 @@
   "devDependencies": {
     "@eslint/js": "^9.16.0",
     "@svgr/webpack": "^8.1.0",
-    "@types/chrome": "^0.0.287",
+    "@types/chrome": "^0.0.268",
     "@types/lodash": "^4.17.13",
     "@types/milliseconds": "^0.0.33",
     "@types/node": "^22.10.1",

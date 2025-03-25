@@ -5,7 +5,6 @@ export interface ProposalWithdrawActionProps {
   value: ProposalWithdraw;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- unimplemented
 export const ProposalWithdrawAction = (_: ProposalWithdrawActionProps) => {
   return <UnknownAction label='Proposal Withdraw' opaque={false} />;
 };

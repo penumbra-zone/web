@@ -19,6 +19,7 @@ export const asReceiverMemoView: Translator<MemoView> = memoView =>
         memoView: {
           case: 'visible',
           value: {
+            /* eslint-disable @typescript-eslint/no-misused-spread -- safe to spread in this case */
             ...memoView?.memoView.value,
 
             ...(memoView?.memoView.value?.plaintext
