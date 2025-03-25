@@ -19,6 +19,6 @@
     "./runtime/connect": "./src/runtime/connect.api.ts"
   },
   "devDependencies": {
-    "@types/chrome": "^0.0.268"
+    "@types/chrome": "^0.0.287"
   }
 }
