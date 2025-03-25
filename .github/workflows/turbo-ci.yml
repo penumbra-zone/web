@@ -28,27 +28,6 @@ jobs:
     name: Compile
     uses: ./.github/workflows/compile-wasm.yml
 
-  turbo-lint:
-    name: Lint
-    runs-on: buildjet-8vcpu-ubuntu-2204
-    needs: turbo-compile
-    steps:
-      - uses: actions/checkout@v4
-      - id: lint
-        uses: buildjet/cache@v4
-        with:
-          path: .turbo
-          key: ${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-lint
-          restore-keys: ${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-compiled
-      - uses: pnpm/action-setup@v4
-      - uses: buildjet/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm turbo telemetry disable
-      - run: pnpm turbo lint:strict --cache-dir=.turbo
-
   turbo-build:
     name: Build
     runs-on: buildjet-8vcpu-ubuntu-2204
@@ -70,10 +49,31 @@ jobs:
       - run: pnpm turbo telemetry disable
       - run: pnpm turbo build --cache-dir=.turbo
 
+  turbo-lint:
+    name: Lint
+    runs-on: buildjet-8vcpu-ubuntu-2204
+    needs: turbo-build
+    steps:
+      - uses: actions/checkout@v4
+      - id: lint
+        uses: buildjet/cache@v4
+        with:
+          path: .turbo
+          key: ${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-lint
+          restore-keys: ${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-compiled
+      - uses: pnpm/action-setup@v4
+      - uses: buildjet/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm turbo telemetry disable
+      - run: pnpm turbo lint:strict --cache-dir=.turbo
+
   turbo-test:
     name: test
     runs-on: buildjet-4vcpu-ubuntu-2204
-    needs: turbo-compile
+    needs: turbo-build
     steps:
       - uses: actions/checkout@v4
       - id: tested
