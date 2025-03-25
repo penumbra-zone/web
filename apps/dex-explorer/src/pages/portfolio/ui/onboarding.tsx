@@ -12,7 +12,7 @@ import { useUnifiedAssets } from '../api/use-unified-assets';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 export const dismissedKey = 'veil-portfolio-onboarding-dismissed';
-const isPhase2 = true;
+const isPhase2 = false;
 
 const OnboardingCard = ({
   title,
