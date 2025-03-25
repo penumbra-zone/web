@@ -44,7 +44,8 @@
       "persistent": true
     },
     "dev:pack": {
-      "dependsOn": ["build"],
+      "dependsOn": ["compile", "proto"],
+      "outputs": ["dist/**", "*.tsbuildinfo"],
       "persistent": true
     },
     "format": {

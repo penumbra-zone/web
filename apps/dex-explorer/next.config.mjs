@@ -37,18 +37,8 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   logging: {
-    fetches: {
-      // Display URLs for external targets of fetch requests
-      fullUrl: true,
-      // Also display URLs even when a cache is hit for the hot-module-reloading in dev.
-      hmrRefreshes: true,
-    },
+    incomingRequests: false,
   },
-  // Disabling HMR in local dev requires NextJS >= v15.x, so disabling for now.
-  // experimental: {
-  //   // Don't cache the HMR in local dev.
-  //   serverComponentsHmrCache: false,
-  // },
 };
 
 export default nextConfig;
