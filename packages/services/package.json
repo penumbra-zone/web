@@ -19,19 +19,13 @@
     "dist"
   ],
   "exports": {
-    "./ctx/*": "./src/ctx/*.ts",
-    "./*": "./src/*/index.ts"
-  },
-  "publishConfig": {
-    "exports": {
-      "./ctx/*": {
-        "types": "./dist/ctx/*.d.ts",
-        "default": "./dist/ctx/*.js"
-      },
-      "./*": {
-        "types": "./dist/*/index.d.ts",
-        "default": "./dist/*/index.js"
-      }
+    "./ctx/*": {
+      "types": "./dist/ctx/*.d.ts",
+      "default": "./dist/ctx/*.js"
+    },
+    "./*": {
+      "types": "./dist/*/index.d.ts",
+      "default": "./dist/*/index.js"
     }
   },
   "devDependencies": {

@@ -19,19 +19,13 @@
     "dist"
   ],
   "exports": {
-    "./internal-msg/*": "./src/internal-msg/*.ts",
-    "./*": "./src/*.ts"
-  },
-  "publishConfig": {
-    "exports": {
-      "./*": {
-        "types": "./dist/*.d.ts",
-        "default": "./dist/*.js"
-      },
-      "./internal-msg/*": {
-        "types": "./dist/internal-msg/*.d.ts",
-        "default": "./dist/internal-msg/*.js"
-      }
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "default": "./dist/*.js"
+    },
+    "./internal-msg/*": {
+      "types": "./dist/internal-msg/*.d.ts",
+      "default": "./dist/internal-msg/*.js"
     }
   },
   "dependencies": {

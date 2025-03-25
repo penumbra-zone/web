@@ -20,14 +20,9 @@
     "!dist/**/*.test*"
   ],
   "exports": {
-    "./indexed-db": "./src/indexed-db/index.ts"
-  },
-  "publishConfig": {
-    "exports": {
-      "./indexed-db": {
-        "types": "./dist/indexed-db/index.d.ts",
-        "default": "./dist/indexed-db/index.js"
-      }
+    "./indexed-db": {
+      "types": "./dist/indexed-db/index.d.ts",
+      "default": "./dist/indexed-db/index.js"
     }
   },
   "dependencies": {
