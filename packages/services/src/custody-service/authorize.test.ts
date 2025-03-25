@@ -1,17 +1,19 @@
 import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
+import { create, fromJson, isMessage } from '@bufbuild/protobuf';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { approverCtx } from '../ctx/approver.js';
 import { servicesCtx } from '../ctx/prax.js';
 import { testFullViewingKey, testSpendKey } from '../test-utils.js';
 import { authorize } from './authorize.js';
-import { AuthorizeRequest } from '@penumbra-zone/protobuf/penumbra/custody/v1/custody_pb';
+import { AuthorizeRequestSchema } from '@penumbra-zone/protobuf/penumbra/custody/v1/custody_pb';
+import type { AuthorizeRequest } from '@penumbra-zone/protobuf/penumbra/custody/v1/custody_pb';
 import { CustodyService } from '@penumbra-zone/protobuf';
 import {
-  AuthorizationData,
-  TransactionPlan,
+  AuthorizationDataSchema,
+  TransactionPlanSchema,
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
-import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { MetadataSchema } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { fvkCtx } from '../ctx/full-viewing-key.js';
 import { skCtx } from '../ctx/spend-key.js';
@@ -26,7 +28,7 @@ describe('Authorize request handler', () => {
 
   const handlerContextInit = {
     service: CustodyService,
-    method: CustodyService.methods.authorize,
+    method: CustodyService.method.authorize,
     protocolName: 'mock',
     requestMethod: 'MOCK',
     url: '/mock',
@@ -67,14 +69,14 @@ describe('Authorize request handler', () => {
       done: true,
     });
 
-    req = new AuthorizeRequest({ plan: testTxPlanData });
+    req = create(AuthorizeRequestSchema, { plan: testTxPlanData });
   });
 
   test('should successfully authorize request', async () => {
     const authData = authorize(req, mockCtx);
     await expect(authData).resolves.toHaveProperty('data');
     const { data } = await authData;
-    expect(data).toBeInstanceOf(AuthorizationData);
+    expect(isMessage(data, AuthorizationDataSchema)).toBeTruthy();
   });
 
   test('should fail if user denies request', async () => {
@@ -83,7 +85,7 @@ describe('Authorize request handler', () => {
   });
 
   test('should fail if plan is missing in request', async () => {
-    await expect(authorize(new AuthorizeRequest(), mockCtx)).rejects.toThrow(
+    await expect(authorize(create(AuthorizeRequestSchema), mockCtx)).rejects.toThrow(
       'No plan included in request',
     );
   });
@@ -127,7 +129,7 @@ describe('Authorize request handler', () => {
   });
 });
 
-const testTxPlanData = TransactionPlan.fromJson({
+const testTxPlanData = fromJson(TransactionPlanSchema, {
   actions: [
     {
       output: {
@@ -231,7 +233,7 @@ const testTxPlanData = TransactionPlan.fromJson({
 });
 
 const testAssetsMetadata = [
-  Metadata.fromJson({
+  fromJson(MetadataSchema, {
     description: '',
     denomUnits: [
       { denom: 'penumbra', exponent: 6, aliases: [] },

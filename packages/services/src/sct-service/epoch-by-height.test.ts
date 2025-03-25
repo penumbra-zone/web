@@ -1,13 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { create, equals, isMessage } from '@bufbuild/protobuf';
 import { epochByHeight } from './epoch-by-height.js';
 import { IndexedDbMock, MockServices } from '../test-utils.js';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { SctService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
 import {
-  Epoch,
-  EpochByHeightRequest,
+  EpochSchema,
+  EpochByHeightRequestSchema,
 } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
+import type { Epoch } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 describe('EpochByHeight request handler', () => {
@@ -28,7 +30,7 @@ describe('EpochByHeight request handler', () => {
     };
     mockCtx = createHandlerContext({
       service: SctService,
-      method: SctService.methods.epochByHeight,
+      method: SctService.method.epochByHeight,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
@@ -39,14 +41,14 @@ describe('EpochByHeight request handler', () => {
   });
 
   it('returns an `EpochByHeightResponse` with the result of the database query', async () => {
-    const expected = new Epoch({ startHeight: 0n, index: 0n });
+    const expected = create(EpochSchema, { startHeight: 0n, index: 0n });
 
     mockIndexedDb.getEpochByHeight?.mockResolvedValue(expected);
-    const req = new EpochByHeightRequest({ height: 0n });
+    const req = create(EpochByHeightRequestSchema, { height: 0n });
 
     const result = await epochByHeight(req, mockCtx);
 
-    expect(result.epoch).toBeInstanceOf(Epoch);
-    expect((result.epoch as Epoch).toJson()).toEqual(expected.toJson());
+    expect(isMessage(result.epoch, EpochSchema)).toBeTruthy();
+    expect(equals(EpochSchema, result.epoch as Epoch, expected)).toBeTruthy();
   });
 });

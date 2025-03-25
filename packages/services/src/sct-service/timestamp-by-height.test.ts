@@ -1,22 +1,24 @@
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
+import { create } from '@bufbuild/protobuf';
 import { MockServices } from '../test-utils.js';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { SctService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 import {
-  TimestampByHeightRequest,
-  TimestampByHeightResponse,
+  TimestampByHeightRequestSchema,
+  TimestampByHeightResponseSchema,
 } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
-import { Timestamp } from '@bufbuild/protobuf';
+import type { TimestampByHeightResponse } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
+import { timestampNow } from '@bufbuild/protobuf/wkt';
 import { timestampByHeight } from './timestamp-by-height.js';
 
 describe('TimestampByHeight request handler', () => {
   let mockServices: MockServices;
   let mockSctQuerierTimestampByHeight: Mock;
   let mockCtx: HandlerContext;
-  const mockTimestampByHeighResponse = new TimestampByHeightResponse({
-    timestamp: Timestamp.now(),
+  const mockTimestampByHeighResponse = create(TimestampByHeightResponseSchema, {
+    timestamp: timestampNow(),
   });
 
   beforeEach(() => {
@@ -36,7 +38,7 @@ describe('TimestampByHeight request handler', () => {
 
     mockCtx = createHandlerContext({
       service: SctService,
-      method: SctService.methods.timestampByHeight,
+      method: SctService.method.timestampByHeight,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
@@ -47,7 +49,7 @@ describe('TimestampByHeight request handler', () => {
   });
 
   it("returns the response from the sct querier's `timestampByHeight` method", async () => {
-    const req = new TimestampByHeightRequest({
+    const req = create(TimestampByHeightRequestSchema, {
       height: 729n,
     });
     const result = await timestampByHeight(req, mockCtx);

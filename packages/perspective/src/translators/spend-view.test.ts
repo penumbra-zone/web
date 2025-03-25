@@ -1,23 +1,24 @@
 import { asOpaqueSpendView } from './spend-view.js';
+import { create, equals } from '@bufbuild/protobuf';
 import { describe, expect, test } from 'vitest';
-import { SpendView } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
+import { SpendViewSchema } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 
 describe('asOpaqueSpendView', () => {
   describe('when passed `undefined`', () => {
     test('returns an empty, opaque spend view', () => {
-      const expected = new SpendView({
+      const expected = create(SpendViewSchema, {
         spendView: {
           case: 'opaque',
           value: {},
         },
       });
 
-      expect(asOpaqueSpendView(undefined).equals(expected)).toBe(true);
+      expect(equals(SpendViewSchema, asOpaqueSpendView(undefined), expected)).toBe(true);
     });
   });
 
   describe('when passed an already-opaque spend view', () => {
-    const spendView = new SpendView({
+    const spendView = create(SpendViewSchema, {
       spendView: {
         case: 'opaque',
         value: {
@@ -38,7 +39,7 @@ describe('asOpaqueSpendView', () => {
   });
 
   describe('when passed a visible spend view', () => {
-    const spendView = new SpendView({
+    const spendView = create(SpendViewSchema, {
       spendView: {
         case: 'visible',
         value: {

@@ -1,4 +1,8 @@
-import { Metadata, Value } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import {
+  AssetIdSchema,
+  Metadata,
+  Value,
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { getDisplay } from '@penumbra-zone/getters/metadata';
 import { getAmount, getMetadata } from '@penumbra-zone/getters/value-view';
@@ -8,6 +12,8 @@ import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
 import { chainRegistryClient } from '../../fetchers/registry';
 import { GasPrices } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
 import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { equals } from '@bufbuild/protobuf';
+import { AmountSchema } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 
 const nonTransferableAssetPatterns = [
   assetPatterns.proposalNft,
@@ -38,13 +44,17 @@ const isMaxAmount = (
   selection: BalancesResponse | undefined,
   spendOrOutput: SpendOrOutput,
 ): boolean => {
-  return getAmount(selection?.balanceView).equals(spendOrOutput.value.amount);
+  const amount = getAmount(selection?.balanceView);
+  return !!spendOrOutput.value.amount && equals(AmountSchema, amount, spendOrOutput.value.amount);
 };
 
 // Check if the asset is the native staking token (UM).
 const isUmAsset = (spendOrOutput: SpendOrOutput): boolean => {
   const { stakingAssetId } = chainRegistryClient.bundled.globals();
-  return stakingAssetId.equals(spendOrOutput.value.assetId);
+  return (
+    !!spendOrOutput.value.assetId &&
+    equals(AssetIdSchema, stakingAssetId, spendOrOutput.value.assetId)
+  );
 };
 
 // Check whether the asset you're sending is an alternative asset used for fees.
@@ -52,7 +62,14 @@ const isAlternativeAssetUsedForFees = (
   spendOrOutput: SpendOrOutput,
   gasPrices: GasPrices[] | undefined,
 ): boolean => {
-  return gasPrices?.some(price => price.assetId?.equals(spendOrOutput.value.assetId)) ?? false;
+  return (
+    gasPrices?.some(
+      price =>
+        price.assetId &&
+        spendOrOutput.value.assetId &&
+        equals(AssetIdSchema, price.assetId, spendOrOutput.value.assetId),
+    ) ?? false
+  );
 };
 
 // Check whether the transaction meets the "send max" conditions, which determines if the request

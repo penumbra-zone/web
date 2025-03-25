@@ -2,10 +2,10 @@ import { ViewService } from '@penumbra-zone/protobuf';
 import { GasPrices } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
 import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { getAssetIdFromValueView } from '@penumbra-zone/getters/value-view';
-import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { AssetIdSchema, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getAddressIndex } from '@penumbra-zone/getters/balances-response';
-import { getAssetId } from '@penumbra-zone/getters/metadata';
 import { penumbra } from '../penumbra';
+import { equals } from '@bufbuild/protobuf';
 
 // Fetches gas prices
 export const getGasPrices = async (): Promise<GasPrices[]> => {
@@ -28,11 +28,15 @@ export const hasStakingToken = (
     return false;
   }
 
-  return balancesResponses.some(
-    asset =>
-      getAssetIdFromValueView
-        .optional(asset.balanceView)
-        ?.equals(getAssetId.optional(stakingAssetMetadata)) &&
-      getAddressIndex.optional(asset)?.account === account,
-  );
+  return balancesResponses.some(asset => {
+    const assetId = getAssetIdFromValueView.optional(asset.balanceView);
+    const stakingAssetId = getAssetIdFromValueView.optional(asset.balanceView);
+    const index = getAddressIndex.optional(asset);
+    return (
+      stakingAssetId &&
+      assetId &&
+      equals(AssetIdSchema, assetId, stakingAssetId) &&
+      index?.account === account
+    );
+  });
 };

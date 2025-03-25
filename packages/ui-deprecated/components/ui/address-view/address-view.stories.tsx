@@ -1,12 +1,16 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
+import { create } from '@bufbuild/protobuf';
+
 import { AddressViewComponent } from '.';
+
 import {
-  Address,
-  AddressIndex,
-  AddressView,
-  AddressView_Decoded,
+  AddressSchema,
+  AddressIndexSchema,
+  AddressViewSchema,
+  AddressView_DecodedSchema,
 } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+
 import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
 
 const meta: Meta<typeof AddressViewComponent> = {
@@ -18,13 +22,13 @@ export default meta;
 
 type Story = StoryObj<typeof AddressViewComponent>;
 
-const EXAMPLE_VIEW = new AddressView({
+const EXAMPLE_VIEW = create(AddressViewSchema, {
   addressView: {
     case: 'decoded',
 
-    value: new AddressView_Decoded({
-      address: new Address({ inner: new Uint8Array(80) }),
-      index: new AddressIndex({
+    value: create(AddressView_DecodedSchema, {
+      address: create(AddressSchema, { inner: new Uint8Array(80) }),
+      index: create(AddressIndexSchema, {
         account: 0,
         randomizer: new Uint8Array([0, 0, 0]),
       }),
@@ -32,7 +36,7 @@ const EXAMPLE_VIEW = new AddressView({
   },
 });
 
-const EXAMPLE_VIEW_OPAQUE = new AddressView({
+const EXAMPLE_VIEW_OPAQUE = create(AddressViewSchema, {
   addressView: {
     case: 'opaque',
     value: {

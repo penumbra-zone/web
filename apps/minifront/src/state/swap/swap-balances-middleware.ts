@@ -7,6 +7,8 @@ import {
 } from '@penumbra-zone/getters/balances-response';
 import { swappableAssetsSelector, swappableBalancesResponsesSelector } from './helpers';
 import { emptyBalanceResponse } from '../../utils/empty-balance-response';
+import { equals } from '@bufbuild/protobuf';
+import { MetadataSchema } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
 const byAccount = (account: number) => (balancesResponse: BalancesResponse) =>
   getAddressIndex(balancesResponse).account === account;
@@ -73,7 +75,12 @@ const getAssetOut = (state: AllSlices, to?: string, assetIn?: BalancesResponse) 
     return state.swap.assetOut;
   }
 
-  if (getMetadataFromBalancesResponse.optional(assetIn)?.equals(swappableAssets[0])) {
+  const assetInMetadata = getMetadataFromBalancesResponse.optional(assetIn);
+  if (
+    assetInMetadata &&
+    swappableAssets[0] &&
+    equals(MetadataSchema, assetInMetadata, swappableAssets[0])
+  ) {
     return swappableAssets[1];
   }
 

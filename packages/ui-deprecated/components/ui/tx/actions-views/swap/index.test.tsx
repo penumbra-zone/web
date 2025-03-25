@@ -1,12 +1,13 @@
 import { describe, expect, it } from 'vitest';
+import { create } from '@bufbuild/protobuf';
 import { SwapViewComponent } from '.';
-import { SwapView } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
+import { SwapViewSchema } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { render } from '@testing-library/react';
-import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { ValueViewSchema } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
 describe('<SwapViewComponent />', () => {
   describe('when the swap view is visible', () => {
-    const swapView = new SwapView({
+    const swapView = create(SwapViewSchema, {
       swapView: {
         case: 'visible',
         value: {
@@ -43,7 +44,7 @@ describe('<SwapViewComponent />', () => {
 
     it.skip('shows the correct fee in upenumbra', () => {
       const { container } = render(
-        <SwapViewComponent value={swapView} feeValueView={new ValueView()} />,
+        <SwapViewComponent value={swapView} feeValueView={create(ValueViewSchema)} />,
       );
 
       expect(container).toHaveTextContent('123 upenumbra');

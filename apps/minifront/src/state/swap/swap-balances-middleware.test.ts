@@ -1,28 +1,34 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { create } from '@bufbuild/protobuf';
 import { ZQueryState } from '@penumbra-zone/zquery';
-import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import {
+  MetadataSchema,
+  ValueViewSchema,
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import type { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { BalancesResponseSchema } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import type { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { AddressViewSchema } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { emptyBalanceResponse } from '../../utils/empty-balance-response';
-import { create } from 'zustand';
+import { create as createStore } from 'zustand';
 import { AllSlices, initializeStore } from '..';
 
 describe('swapBalancesMiddleware()', () => {
-  const umToken = new Metadata({
+  const umToken = create(MetadataSchema, {
     base: 'upenumbra',
     display: 'penumbra',
     denomUnits: [{ denom: 'upenumbra' }, { denom: 'penumbra', exponent: 6 }],
     symbol: 'UM',
     penumbraAssetId: { inner: new Uint8Array([1]) },
   });
-  const usdcToken = new Metadata({
+  const usdcToken = create(MetadataSchema, {
     base: 'uusdc',
     display: 'usdc',
     denomUnits: [{ denom: 'uusdc' }, { denom: 'usdc', exponent: 6 }],
     symbol: 'USDC',
     penumbraAssetId: { inner: new Uint8Array([2]) },
   });
-  const osmoToken = new Metadata({
+  const osmoToken = create(MetadataSchema, {
     base: 'uosmo',
     display: 'osmo',
     denomUnits: [{ denom: 'uosmo' }, { denom: 'osmo', exponent: 6 }],
@@ -39,8 +45,8 @@ describe('swapBalancesMiddleware()', () => {
     loading: false,
   } as ZQueryState<Metadata[]>;
 
-  const umBalance = new BalancesResponse({
-    balanceView: new ValueView({
+  const umBalance = create(BalancesResponseSchema, {
+    balanceView: create(ValueViewSchema, {
       valueView: {
         case: 'knownAssetId',
         value: {
@@ -49,7 +55,7 @@ describe('swapBalancesMiddleware()', () => {
         },
       },
     }),
-    accountAddress: new AddressView({
+    accountAddress: create(AddressViewSchema, {
       addressView: {
         case: 'decoded',
         value: {
@@ -69,12 +75,12 @@ describe('swapBalancesMiddleware()', () => {
     loading: false,
   } as ZQueryState<BalancesResponse[]>;
 
-  let useStore = create<AllSlices>()(initializeStore());
+  let useStore = createStore<AllSlices>()(initializeStore());
   beforeEach(() => {
     // `initializeStore()` initializes the store with all middlewares already
     // attached, so there's no need to set up a test rig for
     // `swapBalancesMiddleware` specifically
-    useStore = create<AllSlices>()(initializeStore());
+    useStore = createStore<AllSlices>()(initializeStore());
     vi.restoreAllMocks();
     vi.stubGlobal('location', { hash: '#swap' });
   });

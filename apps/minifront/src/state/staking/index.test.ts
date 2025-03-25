@@ -1,19 +1,26 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { create, StoreApi, UseBoundStore } from 'zustand';
+import { create } from '@bufbuild/protobuf';
+import { create as createStore, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '..';
-import { ValidatorInfo } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
-import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { ValidatorInfoSchema } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
+import {
+  MetadataSchema,
+  ValueViewSchema,
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
 import { getValidatorInfoFromValueView } from '@penumbra-zone/getters/value-view';
-import { AddressView, IdentityKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import {
+  AddressViewSchema,
+  IdentityKeySchema,
+} from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { THROTTLE_MS } from '.';
-import { DelegationsByAddressIndexResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { Any } from '@bufbuild/protobuf';
+import { DelegationsByAddressIndexResponseSchema } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { anyPack } from '@bufbuild/protobuf/wkt';
 
 const u8 = (length: number) => Uint8Array.from({ length }, () => Math.floor(Math.random() * 256));
-const validator1IdentityKey = new IdentityKey({ ik: u8(32) });
+const validator1IdentityKey = create(IdentityKeySchema, { ik: u8(32) });
 const validator1Bech32IdentityKey = bech32mIdentityKey(validator1IdentityKey);
-const validatorInfo1 = new ValidatorInfo({
+const validatorInfo1 = create(ValidatorInfoSchema, {
   status: {
     votingPower: { hi: 0n, lo: 2n },
   },
@@ -23,11 +30,11 @@ const validatorInfo1 = new ValidatorInfo({
   },
 });
 
-const validator2IdentityKey = new IdentityKey({
+const validator2IdentityKey = create(IdentityKeySchema, {
   ik: u8(32),
 });
 const validator2Bech32IdentityKey = bech32mIdentityKey(validator2IdentityKey);
-const validatorInfo2 = new ValidatorInfo({
+const validatorInfo2 = create(ValidatorInfoSchema, {
   status: {
     votingPower: { hi: 0n, lo: 5n },
   },
@@ -37,10 +44,10 @@ const validatorInfo2 = new ValidatorInfo({
   },
 });
 
-const validator3IdentityKey = new IdentityKey({
+const validator3IdentityKey = create(IdentityKeySchema, {
   ik: u8(32),
 });
-const validatorInfo3 = new ValidatorInfo({
+const validatorInfo3 = create(ValidatorInfoSchema, {
   status: {
     votingPower: { hi: 0n, lo: 3n },
   },
@@ -50,8 +57,8 @@ const validatorInfo3 = new ValidatorInfo({
   },
 });
 
-const validator4IdentityKey = new IdentityKey({ ik: u8(32) });
-const validatorInfo4 = new ValidatorInfo({
+const validator4IdentityKey = create(IdentityKeySchema, { ik: u8(32) });
+const validatorInfo4 = create(ValidatorInfoSchema, {
   status: {
     votingPower: { hi: 0n, lo: 9n },
   },
@@ -63,7 +70,7 @@ const validatorInfo4 = new ValidatorInfo({
 
 vi.mock('../../fetchers/registry', async () => ({
   ...(await vi.importActual('../../fetchers/registry')),
-  getStakingTokenMetadata: vi.fn(async () => Promise.resolve(new Metadata())),
+  getStakingTokenMetadata: vi.fn(async () => Promise.resolve(create(MetadataSchema))),
 }));
 
 vi.mock('../../fetchers/balances', () => ({
@@ -71,7 +78,7 @@ vi.mock('../../fetchers/balances', () => ({
     [Symbol.asyncIterator]: async function* () {
       await new Promise(resolve => void setTimeout(resolve, 0));
       yield {
-        balanceView: new ValueView({
+        balanceView: create(ValueViewSchema, {
           valueView: {
             case: 'knownAssetId',
             value: {
@@ -79,11 +86,11 @@ vi.mock('../../fetchers/balances', () => ({
               metadata: {
                 display: `delegation_${validator1Bech32IdentityKey}`,
               },
-              extendedMetadata: Any.pack(validatorInfo1),
+              extendedMetadata: anyPack(ValidatorInfoSchema, validatorInfo1),
             },
           },
         }),
-        accountAddress: new AddressView({
+        accountAddress: create(AddressViewSchema, {
           addressView: {
             case: 'decoded',
             value: {
@@ -96,7 +103,7 @@ vi.mock('../../fetchers/balances', () => ({
         }),
       };
       yield {
-        balanceView: new ValueView({
+        balanceView: create(ValueViewSchema, {
           valueView: {
             case: 'knownAssetId',
             value: {
@@ -104,11 +111,11 @@ vi.mock('../../fetchers/balances', () => ({
               metadata: {
                 display: `delegation_${validator2Bech32IdentityKey}`,
               },
-              extendedMetadata: Any.pack(validatorInfo2),
+              extendedMetadata: anyPack(ValidatorInfoSchema, validatorInfo2),
             },
           },
         }),
-        accountAddress: new AddressView({
+        accountAddress: create(AddressViewSchema, {
           addressView: {
             case: 'decoded',
             value: {
@@ -121,7 +128,7 @@ vi.mock('../../fetchers/balances', () => ({
         }),
       };
       yield {
-        balanceView: new ValueView({
+        balanceView: create(ValueViewSchema, {
           valueView: {
             case: 'knownAssetId',
             value: {
@@ -132,7 +139,7 @@ vi.mock('../../fetchers/balances', () => ({
             },
           },
         }),
-        accountAddress: new AddressView({
+        accountAddress: create(AddressViewSchema, {
           addressView: {
             case: 'decoded',
             value: {
@@ -156,55 +163,55 @@ vi.mock('../../penumbra', () => ({
 
 const hoisted = vi.hoisted(() => ({
   mockViewClient: {
-    assetMetadataById: vi.fn(() => new Metadata()),
+    assetMetadataById: vi.fn(() => create(MetadataSchema)),
     delegationsByAddressIndex: vi.fn(async function* () {
       yield await Promise.resolve(
-        new DelegationsByAddressIndexResponse({
+        create(DelegationsByAddressIndexResponseSchema, {
           valueView: {
             valueView: {
               case: 'knownAssetId',
               value: {
                 amount: { hi: 0n, lo: 1n },
-                extendedMetadata: Any.pack(validatorInfo1),
+                extendedMetadata: anyPack(ValidatorInfoSchema, validatorInfo1),
               },
             },
           },
         }),
       );
       yield await Promise.resolve(
-        new DelegationsByAddressIndexResponse({
+        create(DelegationsByAddressIndexResponseSchema, {
           valueView: {
             valueView: {
               case: 'knownAssetId',
               value: {
                 amount: { hi: 0n, lo: 2n },
-                extendedMetadata: Any.pack(validatorInfo2),
+                extendedMetadata: anyPack(ValidatorInfoSchema, validatorInfo2),
               },
             },
           },
         }),
       );
       yield await Promise.resolve(
-        new DelegationsByAddressIndexResponse({
+        create(DelegationsByAddressIndexResponseSchema, {
           valueView: {
             valueView: {
               case: 'knownAssetId',
               value: {
                 amount: { hi: 0n, lo: 0n },
-                extendedMetadata: Any.pack(validatorInfo3),
+                extendedMetadata: anyPack(ValidatorInfoSchema, validatorInfo3),
               },
             },
           },
         }),
       );
       yield await Promise.resolve(
-        new DelegationsByAddressIndexResponse({
+        create(DelegationsByAddressIndexResponseSchema, {
           valueView: {
             valueView: {
               case: 'knownAssetId',
               value: {
                 amount: { hi: 0n, lo: 0n },
-                extendedMetadata: Any.pack(validatorInfo4),
+                extendedMetadata: anyPack(ValidatorInfoSchema, validatorInfo4),
               },
             },
           },
@@ -218,7 +225,7 @@ describe('Staking Slice', () => {
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
 
   beforeEach(() => {
-    useStore = create<AllSlices>()(initializeStore()) as UseBoundStore<StoreApi<AllSlices>>;
+    useStore = createStore<AllSlices>()(initializeStore()) as UseBoundStore<StoreApi<AllSlices>>;
     vi.useFakeTimers();
   });
 

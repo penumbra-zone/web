@@ -1,11 +1,12 @@
 import { useMemo } from 'react';
+import { create } from '@bufbuild/protobuf';
 import { ArrowRight } from 'lucide-react';
 import { isZero } from '@penumbra-zone/types/amount';
 import { shorten } from '@penumbra-zone/types/string';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import { getAmount, getMetadata } from '@penumbra-zone/getters/value-view';
 import { SwapClaimView } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
-import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { ValueViewSchema } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import {
   getOutput1Value,
   getOutput2Value,
@@ -42,7 +43,7 @@ const useSwapClaimValues = ({ value, getMetadataByAssetId }: SwapClaimActionProp
   const outputData = getOutputData.optional(value);
   const value1 =
     outputData?.lambda1 &&
-    new ValueView({
+    create(ValueViewSchema, {
       valueView:
         outputData.tradingPair?.asset1 && getMetadataByAssetId
           ? {
@@ -63,7 +64,7 @@ const useSwapClaimValues = ({ value, getMetadataByAssetId }: SwapClaimActionProp
 
   const value2 =
     outputData?.lambda2 &&
-    new ValueView({
+    create(ValueViewSchema, {
       valueView:
         outputData.tradingPair?.asset2 && getMetadataByAssetId
           ? {

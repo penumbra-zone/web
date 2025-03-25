@@ -1,14 +1,15 @@
 import { describe, expect, test } from 'vitest';
+import { clone, create, equals } from '@bufbuild/protobuf';
 import { asOpaqueMemoView, asReceiverMemoView } from './memo-view.js';
 import {
-  MemoView,
+  MemoViewSchema,
   MemoView_Visible,
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { asOpaqueAddressView } from './address-view.js';
 
 describe('asOpaqueMemoView()', () => {
   describe('when passed a visible memo view', () => {
-    const memoView = new MemoView({
+    const memoView = create(MemoViewSchema, {
       memoView: {
         case: 'visible',
         value: {
@@ -37,15 +38,17 @@ describe('asOpaqueMemoView()', () => {
 
     test('returns an opaque, empty memo view', () => {
       expect(
-        asOpaqueMemoView(memoView).equals(
-          new MemoView({ memoView: { case: 'opaque', value: {} } }),
+        equals(
+          MemoViewSchema,
+          asOpaqueMemoView(memoView),
+          create(MemoViewSchema, { memoView: { case: 'opaque', value: {} } }),
         ),
       ).toBe(true);
     });
   });
 
   describe('when passed an already-opaque memo view', () => {
-    const memoView = new MemoView({
+    const memoView = create(MemoViewSchema, {
       memoView: {
         case: 'opaque',
         value: {
@@ -64,8 +67,10 @@ describe('asOpaqueMemoView()', () => {
   describe('when passed `undefined`', () => {
     test('returns an opaque, empty memo view', () => {
       expect(
-        asOpaqueMemoView(undefined).equals(
-          new MemoView({ memoView: { case: 'opaque', value: {} } }),
+        equals(
+          MemoViewSchema,
+          asOpaqueMemoView(undefined),
+          create(MemoViewSchema, { memoView: { case: 'opaque', value: {} } }),
         ),
       ).toBe(true);
     });
@@ -74,7 +79,7 @@ describe('asOpaqueMemoView()', () => {
 
 describe('asReceiverMemoView()', () => {
   describe('when passed a visible memo view', () => {
-    const memoView = new MemoView({
+    const memoView = create(MemoViewSchema, {
       memoView: {
         case: 'visible',
         value: {
@@ -105,17 +110,17 @@ describe('asReceiverMemoView()', () => {
     });
 
     test('makes the address view opaque, but leaves the rest as-is', () => {
-      const expected = memoView.clone();
+      const expected = clone(MemoViewSchema, memoView);
       (expected.memoView.value as MemoView_Visible).plaintext!.returnAddress = asOpaqueAddressView(
         (expected.memoView.value as MemoView_Visible).plaintext!.returnAddress,
       )!;
 
-      expect(asReceiverMemoView(memoView).equals(expected)).toBe(true);
+      expect(equals(MemoViewSchema, expected, asReceiverMemoView(memoView))).toBe(true);
     });
   });
 
   describe('when passed an opaque memo view', () => {
-    const memoView = new MemoView({
+    const memoView = create(MemoViewSchema, {
       memoView: {
         case: 'opaque',
         value: {
@@ -134,8 +139,10 @@ describe('asReceiverMemoView()', () => {
   describe('when passed `undefined`', () => {
     test('returns a visible, empty memo view', () => {
       expect(
-        asReceiverMemoView(undefined).equals(
-          new MemoView({ memoView: { case: 'visible', value: {} } }),
+        equals(
+          MemoViewSchema,
+          asReceiverMemoView(undefined),
+          create(MemoViewSchema, { memoView: { case: 'visible', value: {} } }),
         ),
       ).toBe(true);
     });

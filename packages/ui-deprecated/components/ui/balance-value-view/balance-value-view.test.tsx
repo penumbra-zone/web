@@ -1,6 +1,10 @@
 import { describe, expect, test, vi } from 'vitest';
+import { create } from '@bufbuild/protobuf';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import {
+  MetadataSchema,
+  ValueViewSchema,
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { BalanceValueView } from '.';
 import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 
@@ -12,7 +16,7 @@ vi.mock('../icons/wallet', () => ({
 }));
 
 describe('<BalanceValueView />', () => {
-  const penumbraMetadata = new Metadata({
+  const penumbraMetadata = create(MetadataSchema, {
     base: 'upenumbra',
     display: 'penumbra',
     symbol: 'UM',
@@ -40,7 +44,7 @@ describe('<BalanceValueView />', () => {
     ],
   });
 
-  const valueView = new ValueView({
+  const valueView = create(ValueViewSchema, {
     valueView: {
       case: 'knownAssetId',
       value: {

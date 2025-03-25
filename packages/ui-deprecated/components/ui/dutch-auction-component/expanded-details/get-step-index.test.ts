@@ -1,16 +1,17 @@
 import { describe, expect, it } from 'vitest';
+import { create } from '@bufbuild/protobuf';
 import { getStepIndex } from './get-step-index';
-import { DutchAuctionDescription } from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
+import { DutchAuctionDescriptionSchema } from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
 
 describe('getStepIndex()', () => {
-  const dutchAuctionDescription = new DutchAuctionDescription({
+  const dutchAuctionDescription = create(DutchAuctionDescriptionSchema, {
     startHeight: 1_001n,
     endHeight: 2_000n,
     stepCount: 100n, // 1000 blocks / 100 steps = 10 blocks per step
   });
 
   it('returns undefined if `fullSyncHeight` is undefined', () => {
-    expect(getStepIndex(new DutchAuctionDescription())).toBeUndefined();
+    expect(getStepIndex(create(DutchAuctionDescriptionSchema))).toBeUndefined();
   });
 
   it('returns the correct step index at various heights', () => {
@@ -20,7 +21,7 @@ describe('getStepIndex()', () => {
   });
 
   it('returns the correct step index when step sizes are small', () => {
-    const smallStepSize = new DutchAuctionDescription({
+    const smallStepSize = create(DutchAuctionDescriptionSchema, {
       startHeight: 1n,
       endHeight: 5n,
       stepCount: 5n,

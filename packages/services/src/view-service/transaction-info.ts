@@ -1,6 +1,7 @@
 import type { Impl } from './index.js';
+import { create } from '@bufbuild/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
-import { TransactionInfo } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { TransactionInfoSchema } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import {
   generateTransactionInfo,
   generateTransactionSummary,
@@ -56,7 +57,7 @@ export const transactionInfo: Impl['transactionInfo'] = async function* (_req, c
     }
 
     yield {
-      txInfo: new TransactionInfo({
+      txInfo: create(TransactionInfoSchema, {
         height: txRecord.height,
         id: txRecord.id,
         transaction: txRecord.transaction,

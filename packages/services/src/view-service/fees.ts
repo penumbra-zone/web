@@ -1,7 +1,8 @@
-import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { AssetId, AssetIdSchema } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { TransactionPlannerRequest } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { assetIdFromBaseDenom } from '@penumbra-zone/wasm/asset';
 import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
+import { equals } from '@bufbuild/protobuf';
 
 // TODO: change other transaction planner request types to default to priority fee selection
 // that's agonsitic to the underlying action.
@@ -154,7 +155,9 @@ export const getAssetFromGasPriceTable = async (
     if (assetId) {
       const balance = await indexedDb.hasTokenBalance(request.source.account, assetId);
       // This check ensures that the alternative fee token is a valid fee token, for example, TestUSD is not.
-      const isInGasTable = altGasPrices.find(gp => gp.assetId?.equals(assetId));
+      const isInGasTable = altGasPrices.find(
+        gp => gp.assetId && equals(AssetIdSchema, gp.assetId, assetId),
+      );
       if (balance && isInGasTable) {
         return assetId;
       }

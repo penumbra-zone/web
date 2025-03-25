@@ -1,21 +1,35 @@
-import { AddressIndex, IdentityKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import {
+  AddressIndex,
+  IdentityKeySchema,
+  IdentityKey,
+} from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { clone, create } from '@bufbuild/protobuf';
 import { customizeSymbol } from '@penumbra-zone/wasm/metadata';
 import { assetPatterns, DelegationCaptureGroups } from '@penumbra-zone/types/assets';
 import { bech32mIdentityKey, identityKeyFromBech32m } from '@penumbra-zone/bech32m/penumbravalid';
-import { Any } from '@bufbuild/protobuf';
+import { Any, anyPack } from '@bufbuild/protobuf/wkt';
 import { getValidatorInfo } from '@penumbra-zone/getters/validator-info-response';
 import { getIdentityKeyFromValidatorInfo } from '@penumbra-zone/getters/validator-info';
-import { ValidatorInfo } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 import {
-  AssetMetadataByIdRequest,
-  BalancesRequest,
-  BalancesResponse,
+  ValidatorInfo,
+  ValidatorInfoSchema,
+} from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
+
+import {
+  AssetMetadataByIdRequestSchema,
+  BalancesRequestSchema,
+  BalancesResponseSchema,
   DelegationsByAddressIndexRequest_Filter,
-  DelegationsByAddressIndexResponse,
+  DelegationsByAddressIndexResponseSchema,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+
 import { stakeClientCtx } from '../ctx/stake-client.js';
 import { balances } from './balances.js';
-import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import {
+  MetadataSchema,
+  ValueView,
+  ValueViewSchema,
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { assetMetadataById } from './asset-metadata-by-id.js';
 import { getDisplayDenomFromView } from '@penumbra-zone/getters/value-view';
 import { Impl } from './index.js';
@@ -25,12 +39,12 @@ const getDelegationTokenBaseDenom = (validatorInfo: ValidatorInfo) =>
   `udelegation_${bech32mIdentityKey(getIdentityKeyFromValidatorInfo(validatorInfo))}`;
 
 const responseWithExtMetadata = function* (delegation: ValueView, extendedMetadata: Any) {
-  const withValidatorInfo = delegation.clone();
+  const withValidatorInfo = clone(ValueViewSchema, delegation);
   if (withValidatorInfo.valueView.case !== 'knownAssetId') {
     throw new Error(`Unexpected ValueView case: ${withValidatorInfo.valueView.case}`);
   }
   withValidatorInfo.valueView.value.extendedMetadata = extendedMetadata;
-  yield new DelegationsByAddressIndexResponse({ valueView: withValidatorInfo });
+  yield create(DelegationsByAddressIndexResponseSchema, { valueView: withValidatorInfo });
 };
 
 export const delegationsByAddressIndex: Impl['delegationsByAddressIndex'] = async function* (
@@ -54,7 +68,7 @@ export const delegationsByAddressIndex: Impl['delegationsByAddressIndex'] = asyn
   // Step 1: Query the current validator list. Mark those that have matched what's in the balances.
   for await (const validatorInfoResponse of stakeClient.validatorInfo({ showInactive })) {
     const validatorInfo = getValidatorInfo(validatorInfoResponse);
-    const extendedMetadata = Any.pack(validatorInfo);
+    const extendedMetadata = anyPack(ValidatorInfoSchema, validatorInfo);
 
     const identityKey = getValidatorInfo.pipe(getIdentityKeyFromValidatorInfo)(
       validatorInfoResponse,
@@ -71,13 +85,13 @@ export const delegationsByAddressIndex: Impl['delegationsByAddressIndex'] = asyn
       }
 
       const { denomMetadata } = await assetMetadataById(
-        new AssetMetadataByIdRequest({
+        create(AssetMetadataByIdRequestSchema, {
           assetId: { altBaseDenom: getDelegationTokenBaseDenom(validatorInfo) },
         }),
         ctx,
       );
 
-      yield new DelegationsByAddressIndexResponse({
+      yield create(DelegationsByAddressIndexResponseSchema, {
         valueView: {
           valueView: {
             case: 'knownAssetId',
@@ -86,7 +100,9 @@ export const delegationsByAddressIndex: Impl['delegationsByAddressIndex'] = asyn
                 hi: 0n,
                 lo: 0n,
               },
-              metadata: denomMetadata ? customizeSymbol(new Metadata(denomMetadata)) : undefined,
+              metadata: denomMetadata
+                ? customizeSymbol(create(MetadataSchema, denomMetadata))
+                : undefined,
               extendedMetadata,
             },
           },
@@ -106,7 +122,7 @@ export const delegationsByAddressIndex: Impl['delegationsByAddressIndex'] = asyn
         continue;
       }
 
-      const extendedMetadata = Any.pack(validatorInfo);
+      const extendedMetadata = anyPack(ValidatorInfoSchema, validatorInfo);
       yield* responseWithExtMetadata(valueView, extendedMetadata);
     }
   }
@@ -136,19 +152,19 @@ class DelegationTokenTracker {
     ctx: HandlerContext;
   }): Promise<DelegationTokenTracker> {
     const allBalances = await Array.fromAsync(
-      balances(new BalancesRequest({ accountFilter: addressIndex }), ctx),
+      balances(create(BalancesRequestSchema, { accountFilter: addressIndex }), ctx),
     );
 
     const delTokenMap: DelTokenMap = {};
 
     for (const partialRes of allBalances) {
-      const res = new BalancesResponse(partialRes);
+      const res = create(BalancesResponseSchema, partialRes);
       const match = this.getDelTokenCaptureGroups(res.balanceView);
       if (match && res.balanceView) {
         delTokenMap[match.idKey] = {
           valueView: res.balanceView,
           queried: false,
-          identityKey: new IdentityKey(identityKeyFromBech32m(match.idKey)),
+          identityKey: create(IdentityKeySchema, identityKeyFromBech32m(match.idKey)),
         };
       }
     }

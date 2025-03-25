@@ -1,8 +1,10 @@
 import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
+import { create } from '@bufbuild/protobuf';
 import {
-  StatusStreamRequest,
-  StatusStreamResponse,
+  StatusStreamRequestSchema,
+  StatusStreamResponseSchema,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import type { StatusStreamRequest } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
@@ -48,7 +50,7 @@ describe('Status stream request handler', () => {
 
     mockCtx = createHandlerContext({
       service: ViewService,
-      method: ViewService.methods.statusStream,
+      method: ViewService.method.statusStream,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
@@ -57,7 +59,7 @@ describe('Status stream request handler', () => {
       ),
     });
 
-    request = new StatusStreamRequest();
+    request = create(StatusStreamRequestSchema);
 
     for (let i = 200; i < 222; i++) {
       lastBlockSubNext.mockResolvedValueOnce({
@@ -75,7 +77,7 @@ describe('Status stream request handler', () => {
   test('should receive a status stream when view service synchronizes and lags behind last known block in tendermint', async () => {
     mockTendermint.latestBlockHeight?.mockResolvedValue(222n);
     for await (const res of statusStream(request, mockCtx)) {
-      const response = new StatusStreamResponse(res);
+      const response = create(StatusStreamResponseSchema, res);
       expect(response.latestKnownBlockHeight === 222n).toBeTruthy();
       expect(response.partialSyncHeight === response.fullSyncHeight).toBeTruthy();
     }
@@ -84,7 +86,7 @@ describe('Status stream request handler', () => {
   test('should receive a status stream when view service is synchronized block by block', async () => {
     mockTendermint.latestBlockHeight?.mockResolvedValue(200n);
     for await (const res of statusStream(request, mockCtx)) {
-      const response = new StatusStreamResponse(res);
+      const response = create(StatusStreamResponseSchema, res);
       expect(response.partialSyncHeight === response.fullSyncHeight).toBeTruthy();
       expect(response.fullSyncHeight === response.latestKnownBlockHeight).toBeTruthy();
     }

@@ -1,8 +1,8 @@
 import { describe, expect, test, vi } from 'vitest';
 import { useStore } from '.';
 import { syncPercentSelector } from './status';
-import { PlainMessage } from '@bufbuild/protobuf';
-import { StatusStreamResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { StatusStreamResponseSchema } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { create } from '@bufbuild/protobuf';
 
 describe('Status Slice', () => {
   describe('stream state', () => {
@@ -95,11 +95,11 @@ describe('Status Slice', () => {
 
   describe('sync percent', () => {
     test('syncPercentSelector calculates percentage correctly', () => {
-      const mockState: PlainMessage<StatusStreamResponse> = {
+      const mockState = create(StatusStreamResponseSchema, {
         fullSyncHeight: 75n,
         partialSyncHeight: 75n,
         latestKnownBlockHeight: 100n,
-      };
+      });
 
       const result = syncPercentSelector({
         data: mockState,
@@ -121,11 +121,11 @@ describe('Status Slice', () => {
     });
 
     test('syncPercentSelector caps percentage at 100%', () => {
-      const mockState: PlainMessage<StatusStreamResponse> = {
+      const mockState = create(StatusStreamResponseSchema, {
         fullSyncHeight: 120n, // Higher than latest block
         partialSyncHeight: 120n,
         latestKnownBlockHeight: 100n,
-      };
+      });
 
       const result = syncPercentSelector({
         data: mockState,
@@ -137,11 +137,11 @@ describe('Status Slice', () => {
     });
 
     test('syncPercentSelector rounds down to whole numbers', () => {
-      const mockState: PlainMessage<StatusStreamResponse> = {
+      const mockState = create(StatusStreamResponseSchema, {
         fullSyncHeight: 761n,
         partialSyncHeight: 761n,
         latestKnownBlockHeight: 1000n,
-      };
+      });
 
       const result = syncPercentSelector({
         data: mockState,

@@ -1,19 +1,26 @@
-import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import {
+  AddressView_OpaqueSchema,
+  AddressViewSchema,
+} from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { create } from '@bufbuild/protobuf';
+import type { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { Translator } from './types.js';
 
 export const asOpaqueAddressView: Translator<AddressView> = addressView => {
   if (!addressView) {
-    return new AddressView();
+    return create(AddressViewSchema);
   }
 
   if (addressView.addressView.case === 'opaque') {
     return addressView;
   }
 
-  return new AddressView({
+  return create(AddressViewSchema, {
     addressView: {
       case: 'opaque',
-      value: addressView.addressView.value ? addressView.addressView.value : {},
+      value: create(AddressView_OpaqueSchema, {
+        address: addressView.addressView.value?.address,
+      }),
     },
   });
 };

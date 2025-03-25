@@ -1,11 +1,15 @@
 import { AllSlices, SliceCreator, useStore } from '.';
+import { create, equals } from '@bufbuild/protobuf';
 import {
   BalancesResponse,
   TransactionPlannerRequest,
+  TransactionPlannerRequestSchema,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { BigNumber } from 'bignumber.js';
-import { ClientState } from '@penumbra-zone/protobuf/ibc/lightclients/tendermint/v1/tendermint_pb';
-import { Height } from '@penumbra-zone/protobuf/ibc/core/client/v1/client_pb';
+import { ClientStateSchema } from '@penumbra-zone/protobuf/ibc/lightclients/tendermint/v1/tendermint_pb';
+import type { ClientState } from '@penumbra-zone/protobuf/ibc/lightclients/tendermint/v1/tendermint_pb';
+import { HeightSchema } from '@penumbra-zone/protobuf/ibc/core/client/v1/client_pb';
+import type { Height } from '@penumbra-zone/protobuf/ibc/core/client/v1/client_pb';
 import {
   getAssetIdFromValueView,
   getDisplayDenomExponentFromValueView,
@@ -19,7 +23,7 @@ import { assetPatterns } from '@penumbra-zone/types/assets';
 import { bech32, bech32m } from 'bech32';
 import { errorToast } from '@penumbra-zone/ui-deprecated/lib/toast/presets';
 import { Chain } from '@penumbra-labs/registry';
-import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { AssetIdSchema, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { Channel } from '@penumbra-zone/protobuf/ibc/core/channel/v1/channel_pb';
 import { BLOCKS_PER_HOUR } from './constants';
 import { createZQuery, ZQueryState } from '@penumbra-zone/zquery';
@@ -31,6 +35,7 @@ import {
   IbcConnectionService,
   ViewService,
 } from '@penumbra-zone/protobuf';
+import { anyUnpackTo } from '@bufbuild/protobuf/wkt';
 
 export const { chains, useChains } = createZQuery({
   name: 'chains',
@@ -156,8 +161,8 @@ const clientStateForChannel = async (channel?: Channel): Promise<ClientState> =>
     throw new Error(`Could not get state for client id ${clientId}`);
   }
 
-  const clientState = new ClientState();
-  const success = anyClientState.unpackTo(clientState); // Side effect of augmenting input clientState with data
+  const clientState = create(ClientStateSchema);
+  const success = anyUnpackTo(anyClientState, ClientStateSchema, clientState); // Side effect of augmenting input clientState with data
   if (!success) {
     throw new Error(`Error while trying to unpack Any to ClientState for client id ${clientId}`);
   }
@@ -181,7 +186,7 @@ const getTimeout = async (
 
   return {
     timeoutTime: currentTimePlusTwoDaysRounded(Date.now()),
-    timeoutHeight: new Height({
+    timeoutHeight: create(HeightSchema, {
       revisionHeight: clientState.latestHeight.revisionHeight + BLOCKS_PER_HOUR * 3n,
       revisionNumber: clientState.latestHeight.revisionNumber,
     }),
@@ -217,7 +222,7 @@ const getPlanRequest = async ({
   // IBC-related fields
   const denom = getMetadata(selection.balanceView).base;
 
-  return new TransactionPlannerRequest({
+  return create(TransactionPlannerRequestSchema, {
     ics20Withdrawals: [
       {
         amount: toBaseUnit(
@@ -306,7 +311,9 @@ export const filterBalancesPerChain = (
   }
 
   return allBalances.filter(({ balanceView }) => {
-    return assetIdsToCheck.some(assetId => assetId.equals(getAssetIdFromValueView(balanceView)));
+    return assetIdsToCheck.some(assetId =>
+      equals(AssetIdSchema, assetId, getAssetIdFromValueView(balanceView)),
+    );
   });
 };
 

@@ -1,12 +1,17 @@
 import {
-  TransactionPlannerRequest,
-  TransactionPlannerRequest_ActionDutchAuctionWithdraw,
-  TransactionPlannerRequest_ActionDutchAuctionEnd,
+  TransactionPlannerRequestSchema,
+  TransactionPlannerRequest_ActionDutchAuctionWithdrawSchema,
+  TransactionPlannerRequest_ActionDutchAuctionEndSchema,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+
+import { create, equals } from '@bufbuild/protobuf';
 import { AllSlices, SliceCreator, useStore } from '../..';
 import { planBuildBroadcast } from '../../helpers';
 import { assembleScheduleRequest } from './assemble-schedule-request';
-import { AuctionId } from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
+import {
+  AuctionId,
+  AuctionIdSchema,
+} from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
 import { sendSimulateTradeRequest } from '../helpers';
 import { fromBaseUnitAmount, isZero, multiplyAmountByNumber } from '@penumbra-zone/types/amount';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
@@ -74,7 +79,9 @@ export const { auctionInfos, useAuctionInfos, useRevalidateAuctionInfos } = crea
       onValue: (prevState: AuctionInfo[] | undefined = [], auctionInfo: AuctionInfo) => {
         auctionIdsToKeep.add(bech32mAuctionId(auctionInfo.id));
 
-        const existingIndex = prevState.findIndex(({ id }) => id.equals(auctionInfo.id));
+        const existingIndex = prevState.findIndex(({ id }) =>
+          equals(AuctionIdSchema, id, auctionInfo.id),
+        );
 
         // Update existing auctions in place, rather than appending duplicates.
         if (existingIndex >= 0) {
@@ -187,7 +194,7 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
   },
 
   endAuction: async (auctionId, addressIndex) => {
-    const req = new TransactionPlannerRequest({
+    const req = create(TransactionPlannerRequestSchema, {
       dutchAuctionEndActions: [{ auctionId }],
       source: addressIndex,
     });
@@ -197,7 +204,7 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
   },
 
   withdraw: async (auctionId, currentSeqNum, addressIndex) => {
-    const req = new TransactionPlannerRequest({
+    const req = create(TransactionPlannerRequestSchema, {
       dutchAuctionWithdrawActions: [{ auctionId, seq: currentSeqNum + 1n }],
       source: addressIndex,
     });
@@ -206,9 +213,9 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
     get().shared.balancesResponses.revalidate();
   },
   endAllAuctions: async (auctions: AuctionInfo[], addressIndex: AddressIndex) => {
-    const req = new TransactionPlannerRequest({
-      dutchAuctionEndActions: auctions.map(
-        au => new TransactionPlannerRequest_ActionDutchAuctionEnd({ auctionId: au.id }),
+    const req = create(TransactionPlannerRequestSchema, {
+      dutchAuctionEndActions: auctions.map(au =>
+        create(TransactionPlannerRequest_ActionDutchAuctionEndSchema, { auctionId: au.id }),
       ),
       source: addressIndex,
     });
@@ -216,13 +223,12 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
     get().swap.dutchAuction.auctionInfos.revalidate();
   },
   withdrawAllAuctions: async (auctions: AuctionInfo[], addressIndex: AddressIndex) => {
-    const req = new TransactionPlannerRequest({
-      dutchAuctionWithdrawActions: auctions.map(
-        au =>
-          new TransactionPlannerRequest_ActionDutchAuctionWithdraw({
-            auctionId: au.id,
-            seq: au.localSeqNum + 1n,
-          }),
+    const req = create(TransactionPlannerRequestSchema, {
+      dutchAuctionWithdrawActions: auctions.map(au =>
+        create(TransactionPlannerRequest_ActionDutchAuctionWithdrawSchema, {
+          auctionId: au.id,
+          seq: au.localSeqNum + 1n,
+        }),
       ),
       source: addressIndex,
     });

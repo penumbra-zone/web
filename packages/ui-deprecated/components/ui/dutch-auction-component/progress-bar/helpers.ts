@@ -1,4 +1,5 @@
-import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { Metadata, ValueViewSchema } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { create } from '@bufbuild/protobuf';
 import { DutchAuctionDescription } from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { getHumanReadableInterval } from './get-human-readable-interval';
@@ -6,7 +7,7 @@ import { getHumanReadableInterval } from './get-human-readable-interval';
 const APPROX_BLOCK_DURATION_SEC = 5n;
 
 export const getValueView = (amount?: Amount, metadata?: Metadata) =>
-  new ValueView({
+  create(ValueViewSchema, {
     valueView: {
       case: 'knownAssetId',
       value: {
@@ -17,7 +18,7 @@ export const getValueView = (amount?: Amount, metadata?: Metadata) =>
   });
 
 export const getEmptyValueView = (metadata: Metadata) =>
-  new ValueView({ valueView: { case: 'knownAssetId', value: { metadata } } });
+  create(ValueViewSchema, { valueView: { case: 'knownAssetId', value: { metadata } } });
 
 export const getTotalTime = (auction: DutchAuctionDescription) =>
   getHumanReadableInterval(

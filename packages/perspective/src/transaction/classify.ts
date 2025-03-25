@@ -2,8 +2,9 @@ import {
   TransactionView,
   ActionView,
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
-import { MsgRecvPacket } from '@penumbra-zone/protobuf/ibc/core/channel/v1/tx_pb';
+import { MsgRecvPacketSchema } from '@penumbra-zone/protobuf/ibc/core/channel/v1/tx_pb';
 import { TransactionClassification } from './classification.js';
+import { anyIs } from '@bufbuild/protobuf/wkt';
 
 export interface ClassificationReturn {
   /** A type of the main action that defines a transaction */
@@ -103,7 +104,8 @@ export const classifyTransaction = (txv?: TransactionView): ClassificationReturn
     const depositAction = txv.bodyView?.actionViews.find(
       action =>
         action.actionView.case === 'ibcRelayAction' &&
-        action.actionView.value.rawAction?.is(MsgRecvPacket.typeName),
+        action.actionView.value.rawAction &&
+        anyIs(action.actionView.value.rawAction, MsgRecvPacketSchema),
     );
 
     return {

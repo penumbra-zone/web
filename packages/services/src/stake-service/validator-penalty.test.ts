@@ -1,11 +1,13 @@
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
+import { create } from '@bufbuild/protobuf';
 import { validatorPenalty } from './validator-penalty.js';
 import { MockServices } from '../test-utils.js';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { StakeService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
 import {
-  ValidatorPenaltyRequest,
+  ValidatorPenaltyRequestSchema,
+  ValidatorPenaltyResponseSchema,
   ValidatorPenaltyResponse,
 } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
@@ -14,7 +16,7 @@ describe('ValidatorPenalty request handler', () => {
   let mockServices: MockServices;
   let mockStakingQuerierValidatorPenalty: Mock;
   let mockCtx: HandlerContext;
-  const mockValidatorPenaltyResponse = new ValidatorPenaltyResponse({
+  const mockValidatorPenaltyResponse = create(ValidatorPenaltyResponseSchema, {
     penalty: { inner: new Uint8Array([0, 1, 2, 3]) },
   });
 
@@ -35,7 +37,7 @@ describe('ValidatorPenalty request handler', () => {
 
     mockCtx = createHandlerContext({
       service: StakeService,
-      method: StakeService.methods.validatorInfo,
+      method: StakeService.method.validatorInfo,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
@@ -46,7 +48,7 @@ describe('ValidatorPenalty request handler', () => {
   });
 
   it("returns the response from the staking querier's `validatorPenalty` method", async () => {
-    const req = new ValidatorPenaltyRequest();
+    const req = create(ValidatorPenaltyRequestSchema);
     const result = await validatorPenalty(req, mockCtx);
 
     expect(mockStakingQuerierValidatorPenalty).toHaveBeenCalledWith(req);

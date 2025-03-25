@@ -1,7 +1,8 @@
 import { Impl } from './index.js';
+import { create } from '@bufbuild/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
 import {
-  ValidatorInfoResponse,
+  ValidatorInfoResponseSchema,
   ValidatorState_ValidatorStateEnum,
 } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 import { getStateEnumFromValidatorInfo } from '@penumbra-zone/getters/validator-info';
@@ -18,6 +19,6 @@ export const validatorInfo: Impl['validatorInfo'] = async function* (req, ctx) {
       continue;
     }
 
-    yield new ValidatorInfoResponse({ validatorInfo });
+    yield create(ValidatorInfoResponseSchema, { validatorInfo });
   }
 };

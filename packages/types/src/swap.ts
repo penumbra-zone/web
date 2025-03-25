@@ -6,7 +6,9 @@ import {
   getOutput1Value,
   getOutput2Value,
 } from '@penumbra-zone/getters/swap-view';
-import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { create } from '@bufbuild/protobuf';
+import { ValueViewSchema } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import type { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { SwapView } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { isZero } from './amount.js';
 import { getAmount } from '@penumbra-zone/getters/value-view';
@@ -75,7 +77,7 @@ export const getOneWaySwapValues = (
   const delta1I = getDelta1IFromSwapView(swapView);
   const delta2I = getDelta2IFromSwapView(swapView);
 
-  const input = new ValueView({
+  const input = create(ValueViewSchema, {
     valueView: {
       case: 'knownAssetId',
       value: {
@@ -88,7 +90,7 @@ export const getOneWaySwapValues = (
   let output = isZero(delta2I) ? output2 : output1;
 
   if (!output) {
-    output = new ValueView({
+    output = create(ValueViewSchema, {
       valueView: {
         case: 'knownAssetId',
         value: {
