@@ -17,12 +17,8 @@ jobs:
     if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: pnpm/action-setup@v4
-
-      - name: Install dependencies
-        run: pnpm install
+      - name: Install dependencies and compile
+        uses: ./.github/workflows/compile-wasm.yml
 
       - name: Build all packages that UI depends on
         run: pnpm exec  turbo build --filter=./packages/ui
