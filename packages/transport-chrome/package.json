@@ -22,14 +22,9 @@
     "!dist/util/test"
   ],
   "exports": {
-    "./*": "./src/*.ts"
-  },
-  "publishConfig": {
-    "exports": {
-      "./*": {
-        "types": "./dist/*.d.ts",
-        "default": "./dist/*.js"
-      }
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "default": "./dist/*.js"
     }
   },
   "devDependencies": {

@@ -6,7 +6,7 @@ import { theme } from './theme';
  * the Penumbra UI theme values.
  */
 export const tailwindConfig = {
-  content: ['./node_modules/@penumbra-zone/ui/**/*.{js,ts,jsx,tsx,mdx,css}'],
+  content: ['./node_modules/@penumbra-zone/ui/dist/**/*.{js,ts,jsx,tsx,mdx,css}'],
   theme: {
     extend: {
       borderRadius: theme.borderRadius,
