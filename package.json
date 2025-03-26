@@ -34,6 +34,7 @@
   "pnpm": {
     "overrides": {
       "typescript": "5.5.3",
+      "cosmos-kit": "2.23.9",
       "@hexxagon/feather.js": "npm:@terra-money/feather.js@1.0.9"
     }
   },

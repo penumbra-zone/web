@@ -20,7 +20,7 @@
     },
     "build": {
       "dependsOn": ["compile", "proto", "^build"],
-      "outputs": ["dist/**", "*.tsbuildinfo"]
+      "outputs": ["dist/**", "*.tsbuildinfo", ".next/**"]
     },
     "proto": {
       "dependsOn": ["^proto"],

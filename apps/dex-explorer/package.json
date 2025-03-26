@@ -3,7 +3,6 @@
   "version": "0.0.2",
   "private": true,
   "license": "(MIT OR Apache-2.0)",
-  "packageManager": "pnpm@9.7.0+sha512.dc09430156b427f5ecfc79888899e1c39d2d690f004be70e05230b72cb173d96839587545d09429b55ac3c429c801b4dc3c0e002f653830a420fa2dd4e3cf9cf",
   "type": "module",
   "scripts": {
     "add:tgz": "tsx scripts/add-tgz.ts",
@@ -18,11 +17,6 @@
     "preview": "next build && cp -r public .next/standalone/ && cp -r .next/static .next/standalone/.next/ && cp -r ca-cert.pem .next/standalone/ && node .next/standalone/server.js",
     "start": "next start",
     "test": "vitest run"
-  },
-  "pnpm": {
-    "overrides": {
-      "cosmos-kit": "2.23.9"
-    }
   },
   "dependencies": {
     "@bufbuild/protobuf": "^1.10.0",

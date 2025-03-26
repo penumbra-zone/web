@@ -21,7 +21,14 @@ export type PenumbraManifestJson = chrome.runtime.ManifestV3 & {
   [k in 'name' | 'version' | 'description' | 'icons']-?: NonNullable<chrome.runtime.ManifestV3[k]>;
 };
 
-type IconBlobs = Partial<Record<`${number}`, Blob>> & Required<Record<`128`, NonNullable<Blob>>>;
+type IconBlobs = { '128': Blob } & Partial<Record<`${number}`, Blob>>;
+
+// export interface PenumbraManifest extends Record<string, unknown> {
+//   name: string;
+//   version: string;
+//   description: string;
+//   icons: IconBlobs;
+// }
 
 export type PenumbraManifest = {
   [k in keyof PenumbraManifestJson]: k extends 'icons' ? IconBlobs : PenumbraManifestJson[k];
