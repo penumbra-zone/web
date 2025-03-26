@@ -5,7 +5,6 @@ export interface DutchAuctionWithdrawActionProps {
   value: ActionDutchAuctionWithdrawView;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- unimplemented
 export const DutchAuctionWithdrawAction = (_: DutchAuctionWithdrawActionProps) => {
   return <UnknownAction label='Dutch Auction Withdraw' opaque={false} />;
 };

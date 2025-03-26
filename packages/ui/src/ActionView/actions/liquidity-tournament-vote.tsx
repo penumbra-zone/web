@@ -5,7 +5,6 @@ export interface LiquidityTournamentVoteActionProps {
   value: ActionLiquidityTournamentVote;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- unimplemented
 export const LiquidityTournamentVoteAction = (_: LiquidityTournamentVoteActionProps) => {
   return <UnknownAction label='Liquidity Tournament Vote' opaque={false} />;
 };

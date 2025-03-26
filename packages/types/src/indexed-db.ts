@@ -131,10 +131,10 @@ export interface IndexedDbInterface {
   clearSwapBasedPrices(): Promise<void>;
 
   // Add more auction union types as they are created
-  upsertAuction<T extends DutchAuctionDescription>(
+  upsertAuction(
     auctionId: AuctionId,
     value: {
-      auction?: T;
+      auction?: DutchAuctionDescription;
       noteCommitment?: StateCommitment;
       seqNum?: bigint;
     },
@@ -190,7 +190,7 @@ export interface IndexedDbInterface {
     assetMetadata: Metadata,
     voteValue: Value,
     rewardValue?: Amount,
-    id?: string | undefined,
+    id?: string,
   ): Promise<void>;
 
   getLQTHistoricalVotes(epoch: bigint): Promise<

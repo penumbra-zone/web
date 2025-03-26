@@ -3,7 +3,7 @@ import type {
   CallOptions,
   HandlerContext,
   MethodImpl,
-  PromiseClient,
+  Client,
   ServiceImpl,
 } from '@connectrpc/connect';
 import { CreateAnyMethodImpl, makeAnyServiceImpl } from './any-impl.js';
@@ -65,9 +65,9 @@ export const simpleContextHandler: ProxyContextHandler = (i, ctx) => {
  */
 export const createProxyImpl = <S extends ServiceType>(
   service: S,
-  client: PromiseClient<S>,
+  client: Client<S>,
   contextHandler = defaultContextHandler,
-  makePartialServiceImpl?: (c: PromiseClient<S>) => Partial<ServiceImpl<S>>,
+  makePartialServiceImpl?: (c: Client<S>) => Partial<ServiceImpl<S>>,
 ) => {
   const makeAnyProxyMethod: CreateAnyMethodImpl<S> = (method, localName) => {
     const clientMethod = client[localName] as (cI: unknown, cOpt: CallOptions) => unknown;

@@ -5,7 +5,6 @@ export interface DelegateActionProps {
   value: Delegate;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- unimplemented
 export const DelegateAction = (_: DelegateActionProps) => {
   return <UnknownAction label='Delegate' opaque={false} />;
 };

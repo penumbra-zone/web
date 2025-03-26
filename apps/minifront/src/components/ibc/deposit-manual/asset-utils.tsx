@@ -12,7 +12,7 @@ export const augmentToAsset = (denom: string, chainName: string): Asset => {
     .find(({ chain_name }) => chain_name === chainName)
     ?.assets.find(asset => asset.base === denom);
 
-  return match ? match : fallbackAsset(denom);
+  return match ?? fallbackAsset(denom);
 };
 
 const fallbackAsset = (denom: string): Asset => {

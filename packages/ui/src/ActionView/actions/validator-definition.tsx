@@ -5,7 +5,6 @@ export interface ValidatorDefinitionActionProps {
   value: ValidatorDefinition;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- unimplemented
 export const ValidatorDefinitionAction = (_: ValidatorDefinitionActionProps) => {
   return <UnknownAction label='Validator Definition' opaque={false} />;
 };

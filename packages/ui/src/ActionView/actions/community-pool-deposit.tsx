@@ -5,7 +5,6 @@ export interface CommunityPoolDepositActionProps {
   value: CommunityPoolDeposit;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- unimplemented
 export const CommunityPoolDepositAction = (_: CommunityPoolDepositActionProps) => {
   return <UnknownAction label='Community Pool Deposit' opaque={false} />;
 };
