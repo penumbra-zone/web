@@ -2,14 +2,14 @@
 
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { CompactBlockService, TendermintProxyService } from '@penumbra-zone/protobuf';
-import { createPromiseClient, Transport } from '@connectrpc/connect';
+import { createClient, Transport } from '@connectrpc/connect';
 import { errorIsStreamAbort, useStream } from '@/shared/use-stream.ts';
 import { useCallback, useEffect } from 'react';
 import { queryClient } from '@/shared/const/queryClient.ts';
 import { useGrpcTransport } from '@/shared/api/transport.ts';
 
 const fetchLatestBlockHeight = async (transport: Transport) => {
-  const tendermintClient = createPromiseClient(TendermintProxyService, transport);
+  const tendermintClient = createClient(TendermintProxyService, transport);
   const { syncInfo } = await tendermintClient.getStatus({});
   if (!syncInfo?.latestBlockHeight) {
     throw new Error('Was not able to sync latest block height');
@@ -20,7 +20,7 @@ const fetchLatestBlockHeight = async (transport: Transport) => {
 const startBlockHeightStream = async (transport: Transport, signal: AbortSignal) => {
   try {
     const latestBlockHeight = await fetchLatestBlockHeight(transport);
-    const blockClient = createPromiseClient(CompactBlockService, transport);
+    const blockClient = createClient(CompactBlockService, transport);
     for await (const response of blockClient.compactBlockRange(
       {
         startHeight: BigInt(latestBlockHeight) + 1n,

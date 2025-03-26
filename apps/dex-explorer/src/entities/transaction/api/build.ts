@@ -5,13 +5,13 @@ import {
   WitnessAndBuildRequest,
   WitnessAndBuildResponse,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { PromiseClient } from '@connectrpc/connect';
+import { Client } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 
 export const buildTransaction = async (
   req: PartialMessage<AuthorizeAndBuildRequest> | PartialMessage<WitnessAndBuildRequest>,
   // TODO: investigate @connectrpc/connect versions (1.6.1 vs 1.4.0)
-  buildFn: PromiseClient<typeof ViewService>['authorizeAndBuild' | 'witnessAndBuild'],
+  buildFn: Client<typeof ViewService>['authorizeAndBuild' | 'witnessAndBuild'],
   onStatusUpdate: (
     status?: (AuthorizeAndBuildResponse | WitnessAndBuildResponse)['status'],
   ) => void,
