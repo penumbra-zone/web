@@ -10,7 +10,7 @@ import { RouteBookResponseJson } from '@/shared/api/server/book/types.ts';
 import { processSimulation } from '@/shared/api/server/book/helpers.ts';
 import { serializeResponse } from '@/shared/api/server/book/serialization.ts';
 import { SimulationService } from '@penumbra-zone/protobuf';
-import { PromiseClient } from '@connectrpc/connect';
+import { Client } from '@connectrpc/connect';
 import { createClient } from '@/shared/utils/protos/utils.ts';
 
 export const VERY_HIGH_AMOUNT = new Amount({ hi: 10000n }); // Used as default to generate sufficient amount of traces
@@ -101,7 +101,7 @@ export async function GET(req: NextRequest): Promise<NextResponse<RouteBookApiRe
 }
 
 const simulateTrade = async (
-  client: PromiseClient<typeof SimulationService>,
+  client: Client<typeof SimulationService>,
   req: SimulateTradeRequest,
 ) => {
   try {
