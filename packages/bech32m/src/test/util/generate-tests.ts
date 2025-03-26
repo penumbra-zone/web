@@ -6,10 +6,10 @@ export const generateTests = <N extends string = 'inner'>(
   innerName: N,
   okBytes: Uint8Array,
   okString: string,
-  testToBech32: (x: { [k in N]: Uint8Array }) => string,
-  testFromBech32: (x: string) => { [k in N]: Uint8Array },
+  testToBech32: (x: Record<N, Uint8Array>) => string,
+  testFromBech32: (x: string) => Record<N, Uint8Array>,
 ) => {
-  type NamedInner = { [key in N]: Uint8Array };
+  type NamedInner = Record<N, Uint8Array>;
   describe(`tests for ${prefix}`, () => {
     test('Converts to bech32m', () =>
       expect(testToBech32({ [innerName]: okBytes } as NamedInner)).toBe(okString));

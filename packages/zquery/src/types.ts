@@ -359,8 +359,9 @@ export interface CreateZQueryStreamingProps<
  */
 export type UseStore<State> = (<T>(selector: (state: State) => T) => T) & { getState(): State };
 
-export type ZQuery<Name extends string, DataType, FetchArgs extends unknown[]> = {
-  [key in `use${Capitalize<Name>}`]: <
+export type ZQuery<Name extends string, DataType, FetchArgs extends unknown[]> = Record<
+  `use${Capitalize<Name>}`,
+  <
     SelectorType extends
       | ((zQueryState: AbridgedZQueryState<DataType>) => unknown)
       | undefined = undefined,
@@ -371,7 +372,7 @@ export type ZQuery<Name extends string, DataType, FetchArgs extends unknown[]> =
     ? // Must include `| undefined` in the return type because the first pass
       // through `useStore` doesn't return a value at all.
       ReturnType | undefined
-    : AbridgedZQueryState<DataType>;
-} & {
-  [key in `useRevalidate${Capitalize<Name>}`]: () => (...fetchArgs: FetchArgs) => void;
-} & Record<Name, ZQueryState<DataType, FetchArgs>>;
+    : AbridgedZQueryState<DataType>
+> &
+  Record<`useRevalidate${Capitalize<Name>}`, () => (...fetchArgs: FetchArgs) => void> &
+  Record<Name, ZQueryState<DataType, FetchArgs>>;

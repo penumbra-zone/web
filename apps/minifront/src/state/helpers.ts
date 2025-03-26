@@ -26,7 +26,7 @@ import {
   getValueViewCaseFromBalancesResponse,
 } from '@penumbra-zone/getters/balances-response';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
-import { PromiseClient } from '@connectrpc/connect';
+import { Client } from '@connectrpc/connect';
 import { penumbra } from '../penumbra';
 
 /**
@@ -99,7 +99,7 @@ export const plan = async (
 
 const build = async (
   req: PartialMessage<AuthorizeAndBuildRequest> | PartialMessage<WitnessAndBuildRequest>,
-  buildFn: PromiseClient<typeof ViewService>['authorizeAndBuild' | 'witnessAndBuild'],
+  buildFn: Client<typeof ViewService>['authorizeAndBuild' | 'witnessAndBuild'],
   onStatusUpdate: (
     status?: (AuthorizeAndBuildResponse | WitnessAndBuildResponse)['status'],
   ) => void,

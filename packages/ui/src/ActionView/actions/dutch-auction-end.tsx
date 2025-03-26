@@ -5,7 +5,6 @@ export interface DutchAuctionEndActionProps {
   value: ActionDutchAuctionEnd;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- unimplemented
 export const DutchAuctionEndAction = (_: DutchAuctionEndActionProps) => {
   return <UnknownAction label='Dutch Auction End' opaque={false} />;
 };

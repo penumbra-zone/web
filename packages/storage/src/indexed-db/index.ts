@@ -340,6 +340,7 @@ export class IndexedDb implements IndexedDbInterface {
 
       const assets = registry.getAllAssets();
       const saveLocalMetadata = assets.map(m =>
+        // eslint-disable-next-line @typescript-eslint/no-misused-spread -- safe to spread here
         this.saveAssetsMetadata({ ...m, penumbraAssetId: getAssetId(m) }),
       );
       await Promise.all(saveLocalMetadata);
@@ -1020,10 +1021,10 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   // As more auction types are created, add them to T as a union type.
-  async upsertAuction<T extends DutchAuctionDescription>(
+  async upsertAuction(
     auctionId: AuctionId,
     value: {
-      auction?: T;
+      auction?: DutchAuctionDescription;
       noteCommitment?: StateCommitment;
       seqNum?: bigint;
       outstandingReserves?: { input: Value; output: Value };
@@ -1033,7 +1034,8 @@ export class IndexedDb implements IndexedDbInterface {
     const key = uint8ArrayToBase64(auctionId.inner);
     const existingRecord = await this.db.get('AUCTIONS', key);
     const auction =
-      (value.auction?.toJson() as Jsonified<T> | undefined) ?? existingRecord?.auction;
+      (value.auction?.toJson() as Jsonified<DutchAuctionDescription> | undefined) ??
+      existingRecord?.auction;
     const noteCommitment =
       (value.noteCommitment?.toJson() as Jsonified<StateCommitment> | undefined) ??
       existingRecord?.noteCommitment;

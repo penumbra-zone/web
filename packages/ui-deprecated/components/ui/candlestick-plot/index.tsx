@@ -261,9 +261,9 @@ export const CandlesticksTooltip = ({
   }, [data, getBlockDate]);
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify non-null assertion
-  const endBase = endMetadata.denomUnits.filter(d => !d.exponent)[0]!;
+  const endBase = endMetadata.denomUnits.find(d => !d.exponent)!;
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify non-null assertion
-  const startBase = startMetadata.denomUnits.filter(d => !d.exponent)[0]!;
+  const startBase = startMetadata.denomUnits.find(d => !d.exponent)!;
   return (
     <Tooltip
       unstyled={true}

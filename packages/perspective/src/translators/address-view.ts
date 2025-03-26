@@ -13,7 +13,7 @@ export const asOpaqueAddressView: Translator<AddressView> = addressView => {
   return new AddressView({
     addressView: {
       case: 'opaque',
-      value: addressView.addressView.value ? addressView.addressView.value : {},
+      value: addressView.addressView.value ?? {},
     },
   });
 };

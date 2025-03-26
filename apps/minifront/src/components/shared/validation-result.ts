@@ -13,5 +13,5 @@ export const validationResult = (
   }
   const results = validations.filter(v => v.checkFn(value));
   const error = results.find(v => v.type === 'error');
-  return error ? error : results.find(v => v.type === 'warn');
+  return error ?? results.find(v => v.type === 'warn');
 };

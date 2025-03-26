@@ -285,7 +285,6 @@ const omit = <ObjectType extends Record<string, unknown>>(
   object: ObjectType,
   key: keyof ObjectType,
 ) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- we're discarding the unused key
   const { [key]: _, ...rest } = object;
   return rest;
 };

@@ -87,16 +87,14 @@ export const getOneWaySwapValues = (
 
   let output = isZero(delta2I) ? output2 : output1;
 
-  if (!output) {
-    output = new ValueView({
-      valueView: {
-        case: 'knownAssetId',
-        value: {
-          metadata: isZero(delta2I) ? getAsset2Metadata(swapView) : getAsset1Metadata(swapView),
-        },
+  output ??= new ValueView({
+    valueView: {
+      case: 'knownAssetId',
+      value: {
+        metadata: isZero(delta2I) ? getAsset2Metadata(swapView) : getAsset1Metadata(swapView),
       },
-    });
-  }
+    },
+  });
 
   return {
     input,

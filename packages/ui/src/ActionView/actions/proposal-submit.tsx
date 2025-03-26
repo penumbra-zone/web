@@ -5,7 +5,6 @@ export interface ProposalSubmitActionProps {
   value: ProposalSubmit;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- unimplemented
 export const ProposalSubmitAction = (_: ProposalSubmitActionProps) => {
   return <UnknownAction label='Proposal Submit' opaque={false} />;
 };

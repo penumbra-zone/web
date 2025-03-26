@@ -5,7 +5,6 @@ export interface IbcRelayActionProps {
   value: IbcRelay;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- unimplemented
 export const IbcRelayAction = (_: IbcRelayActionProps) => {
   return <UnknownAction label='IBC Relay' opaque={false} />;
 };

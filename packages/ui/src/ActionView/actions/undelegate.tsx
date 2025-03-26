@@ -5,7 +5,6 @@ export interface UndelegateActionProps {
   value: Undelegate;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- unimplemented
 export const UndelegateAction = (_: UndelegateActionProps) => {
   return <UnknownAction label='Undelegate' opaque={false} />;
 };

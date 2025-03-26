@@ -17,7 +17,6 @@ import {
   osmosisProtoRegistry,
 } from 'osmo-query';
 
-// @ts-expect-error type error, but it works.
 import '@interchain-ui/react/styles';
 
 const protoRegistry: readonly [string, GeneratedType][] = [

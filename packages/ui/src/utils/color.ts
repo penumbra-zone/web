@@ -16,20 +16,6 @@ type MapColorsToDotNotation<Obj extends Record<string, Record<string, string>>> 
  */
 export type ThemeColor = MapColorsToDotNotation<Colors>;
 
-/**
- * Takes a color string in the format of `primary.light` and returns the color value from the theme.
- */
-export const getThemeColor = (color: ThemeColor): string => {
-  const colors = theme.color;
-
-  try {
-    const [group, shade] = color.split('.') as ['primary', keyof Colors['primary']];
-    return colors[group][shade];
-  } catch (_) {
-    throw new Error(`Color "${color}" not found in the registered Tailwind theme`);
-  }
-};
-
 /** This mapper class is needed to help Tailwind statically analyze the classes that could
  * be produced from the `getThemeColorClass` function. */
 export const COLOR_CLASS_MAP: Record<ThemeColor, [string, string]> = {
