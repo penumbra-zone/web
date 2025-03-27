@@ -15,7 +15,7 @@ export const TableRow = ({
   totalVotes: number;
 }) => {
   return (
-    <div key={item.symbol} className='grid grid-cols-subgrid col-span-5'>
+    <div className='grid grid-cols-subgrid col-span-5'>
       <TableCell>
         <div className='flex items-center gap-2'>
           <Image src={item.imgUrl} alt={item.symbol} width={32} height={32} />

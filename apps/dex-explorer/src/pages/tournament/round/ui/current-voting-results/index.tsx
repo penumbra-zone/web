@@ -3,6 +3,7 @@ import { Card } from '@penumbra-zone/ui/Card';
 import { Text } from '@penumbra-zone/ui/Text';
 import { TableCell } from '@penumbra-zone/ui/TableCell';
 import { Density } from '@penumbra-zone/ui/Density';
+import { Pagination } from '@penumbra-zone/ui/Pagination';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { ValueView, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
@@ -37,6 +38,8 @@ const valueView = new ValueView({
 
 export const CurrentVotingResults = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
 
   useEffect(() => {
     setTimeout(() => {
@@ -44,6 +47,7 @@ export const CurrentVotingResults = () => {
     }, 1000);
   }, []);
 
+  const totalPages = 100;
   const totalVotes = 10000;
 
   const data = [
@@ -162,6 +166,16 @@ export const CurrentVotingResults = () => {
                   .map(item => (
                     <TableRow key={item.symbol} item={item} totalVotes={totalVotes} />
                   ))}
+                <div className='col-span-5 pt-5'>
+                  <Pagination
+                    totalItems={totalPages}
+                    visibleItems={5}
+                    value={page}
+                    limit={limit}
+                    onChange={setPage}
+                    onLimitChange={setLimit}
+                  />
+                </div>
               </>
             )}
           </div>
