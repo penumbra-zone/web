@@ -8,7 +8,8 @@ import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 import { AddressViewComponent } from '@penumbra-zone/ui/AddressView';
 import { Text } from '@penumbra-zone/ui/Text';
 import { PenumbraWaves } from '@/pages/explore/ui/waves';
-import { Breadcrumbs } from '@/pages/tournament/ui/breadcrumbs';
+import { Breadcrumbs } from '../breadcrumbs';
+import { DelegatorRewards } from './delegator-rewards';
 
 export const DelegatorTablePage = () => {
   const router = useRouter();
@@ -54,16 +55,7 @@ export const DelegatorTablePage = () => {
         ]}
       />
 
-      <div className='flex flex-col gap-4 p-6 rounded-lg bg-other-tonalFill5 backdrop-blur-lg'>
-        <div className='flex flex-col gap-1'>
-          <Text xxl color='text.primary'>
-            Total Rewards Earned
-          </Text>
-          <Text small color='text.secondary'>
-            Cumulative from all epochs, voting and LPs rewards
-          </Text>
-        </div>
-      </div>
+      <DelegatorRewards />
     </section>
   );
 };

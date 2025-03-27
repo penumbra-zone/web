@@ -3,7 +3,6 @@ import { useQuery } from '@tanstack/react-query';
 import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getAmount } from '@penumbra-zone/getters/value-view';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
-import { connectionStore } from '@/shared/model/connection';
 import { DUMMY_VALUE_VIEW, DUMMY_UM_METADATA, DUMMY_USDC_METADATA } from './dummy';
 
 export const BASE_LIMIT = 10;
@@ -50,7 +49,6 @@ export const useVotingRewards = (
 ) => {
   const query = useQuery<Required<VotingReward>[]>({
     queryKey: ['my-voting-rewards', page, limit, sortKey, sortDirection],
-    enabled: connectionStore.connected,
     queryFn: async () => {
       // TODO: use backend API to fetch, filter, and sort rewards
       return new Promise(resolve => {

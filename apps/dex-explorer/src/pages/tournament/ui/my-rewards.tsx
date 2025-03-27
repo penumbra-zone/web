@@ -14,8 +14,8 @@ import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { connectionStore } from '@/shared/model/connection';
 import { useTotalRewards } from '../api/use-total-rewards';
-import { MyLpRewards } from './my-lp-rewards';
-import { MyVotingRewards } from './my-voting-rewards';
+import { LpRewards } from './lp-rewards';
+import { VotingRewards } from './voting-rewards';
 
 export const MyRewards = observer(() => {
   const { connected } = connectionStore;
@@ -84,9 +84,9 @@ export const MyRewards = observer(() => {
             </SegmentedControl>
           </div>
 
-          {tab === 'lp' && <MyLpRewards />}
+          {tab === 'lp' && <LpRewards />}
 
-          {tab === 'voting' && <MyVotingRewards />}
+          {tab === 'voting' && <VotingRewards />}
         </div>
       )}
     </section>
