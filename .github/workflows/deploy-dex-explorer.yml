@@ -51,9 +51,10 @@ jobs:
       - name: deploy veil
         run: >
           nix develop --command
-          kubectl -n testnet rollout restart deployment veil &&
+          kubectl -n testnet rollout restart deployment dex-explorer &&
           nix develop --command
-          kubectl -n testnet rollout status deployment veil
+          kubectl -n testnet rollout status deployment dex-explorer
+
   deploy-mainnet:
     name: deploy veil to mainnet
     env:
@@ -88,6 +89,6 @@ jobs:
       - name: deploy veil
         run: >
           nix develop --command
-          kubectl -n mainnet rollout restart deployment veil &&
+          kubectl -n mainnet rollout restart deployment dex-explorer &&
           nix develop --command
-          kubectl -n mainnet rollout status deployment veil
+          kubectl -n mainnet rollout status deployment dex-explorer
