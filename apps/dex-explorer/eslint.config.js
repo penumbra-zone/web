@@ -28,6 +28,13 @@ const config = [
       '@typescript-eslint/ban-ts-comment': 'off',
     },
   },
+
+  {
+    name: 'ignore-broken-rules',
+    rules: {
+      '@next/next/no-duplicate-head': 'off',
+    },
+  },
 ];
 
 /**
