@@ -3,6 +3,7 @@
 import { PenumbraWaves } from '@/pages/explore/ui/waves';
 import { MyRewards } from './my-rewards';
 import { LandingCard } from './landing-card';
+import { PreviousEpochs } from './previous-epochs';
 
 export const TournamentPage = () => {
   return (
@@ -10,6 +11,8 @@ export const TournamentPage = () => {
       <PenumbraWaves />
       <LandingCard />
       <MyRewards />
+
+      <PreviousEpochs />
     </section>
   );
 };
