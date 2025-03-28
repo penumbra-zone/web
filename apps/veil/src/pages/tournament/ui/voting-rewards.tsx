@@ -10,7 +10,7 @@ import { useVotingRewards, BASE_PAGE, BASE_LIMIT, VotingReward } from '../api/us
 import { Vote } from './vote';
 import { useSortableTableHeaders } from './sortable-table-header';
 
-export const MyVotingRewards = observer(() => {
+export const VotingRewards = observer(() => {
   const [page, setPage] = useState(BASE_PAGE);
   const [limit, setLimit] = useState(BASE_LIMIT);
   const { getTableHeader, sortBy } =
