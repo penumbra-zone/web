@@ -1,7 +1,7 @@
 ---
-# Workflow for deploying the DEX explorer webapp https://github.com/penumbra-zone/dex-explorer
+# Workflow for deploying the DEX explorer webapp https://github.com/penumbra-zone/web/apps/veil
 # Bounces a container deployment, to repull the latest image.
-name: deploy dex-explorer
+name: deploy veil
 on:
   workflow_dispatch:
   push:
@@ -18,7 +18,7 @@ jobs:
       packages: write
 
   deploy-testnet:
-    name: deploy dex-explorer to testnet
+    name: deploy veil to testnet
     env:
       DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
     needs:
@@ -46,16 +46,16 @@ jobs:
           nix develop --command
           doctl kubernetes cluster kubeconfig save --expiry-seconds 600 plinfra
 
-      # We assume that dex-explorer has been deployed to the cluster already.
+      # We assume that veil has been deployed to the cluster already.
       # This task merely "bounces" the service, so that a fresh container is pulled.
-      - name: deploy dex-explorer
+      - name: deploy veil
         run: >
           nix develop --command
-          kubectl -n testnet rollout restart deployment dex-explorer &&
+          kubectl -n testnet rollout restart deployment veil &&
           nix develop --command
-          kubectl -n testnet rollout status deployment dex-explorer
+          kubectl -n testnet rollout status deployment veil
   deploy-mainnet:
-    name: deploy dex-explorer to mainnet
+    name: deploy veil to mainnet
     env:
       DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
     needs:
@@ -83,11 +83,11 @@ jobs:
           nix develop --command
           doctl kubernetes cluster kubeconfig save --expiry-seconds 600 plinfra
 
-      # We assume that dex-explorer has been deployed to the cluster already.
+      # We assume that veil has been deployed to the cluster already.
       # This task merely "bounces" the service, so that a fresh container is pulled.
-      - name: deploy dex-explorer
+      - name: deploy veil
         run: >
           nix develop --command
-          kubectl -n mainnet rollout restart deployment dex-explorer &&
+          kubectl -n mainnet rollout restart deployment veil &&
           nix develop --command
-          kubectl -n mainnet rollout status deployment dex-explorer
+          kubectl -n mainnet rollout status deployment veil
