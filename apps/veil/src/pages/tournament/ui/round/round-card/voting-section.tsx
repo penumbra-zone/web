@@ -40,7 +40,9 @@ export const VotingSection = observer(({ isBanned, epoch }: { isBanned: boolean,
           description: 'um',
         }),
       },
-    });
+      case: 'knownAssetId',
+    },
+  });
 
   if (!connected) {
     return (
@@ -49,6 +51,9 @@ export const VotingSection = observer(({ isBanned, epoch }: { isBanned: boolean,
           <div className='size-8 text-text-secondary'>
             <Wallet2 className='w-full h-full' />
           </div>
+          <Text variant='small' color='text.secondary'>
+            Connect Prax Wallet to vote in this epoch.
+          </Text>
         </div>
         <div className='flex gap-2'>
           <ConnectButton actionType='accent' variant='default'>
@@ -105,6 +110,10 @@ export const VotingSection = observer(({ isBanned, epoch }: { isBanned: boolean,
           <div className='size-10 text-success-light'>
             <Check className='w-full h-full' />
           </div>
+          <Text variant='small' color='text.secondary'>
+            You have already voted in this epoch. Come back next epoch to vote again.
+          </Text>
+          <ValueViewComponent valueView={valueView} />
         </div>
       </>
     );
@@ -118,8 +127,9 @@ export const VotingSection = observer(({ isBanned, epoch }: { isBanned: boolean,
             <Coins className='w-full h-full' />
           </div>
           <Text variant='small' color='text.secondary'>
-            Delegate UM to vote and influence how incentives are distributed in this epoch.
+            You’ve delegated UM and now eligible to vote in this epoch.
           </Text>
+          <ValueViewComponent valueView={valueView} />
         </div>
         <div className='flex gap-2'>
           <Button actionType='accent' icon={ExternalLink}>
