@@ -14,8 +14,7 @@
     "lint": "eslint components lib src",
     "lint:fix": "eslint components lib src --fix",
     "lint:strict": "tsc --noEmit && eslint components lib src --max-warnings 0",
-    "storybook": "storybook dev -p 6006",
-    "test": "vitest run"
+    "storybook": "storybook dev -p 6006"
   },
   "files": [
     "dist",

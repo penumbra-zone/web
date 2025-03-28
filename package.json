@@ -60,7 +60,7 @@
     "@vitejs/plugin-react-swc": "^3.6.0",
     "@vitest/browser": "^1.6.0",
     "autoprefixer": "^10.4.20",
-    "eslint": "^8.57.1",
+    "eslint": "^9.6.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-import": "^2.29.1",
