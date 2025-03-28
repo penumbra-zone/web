@@ -58,7 +58,7 @@ export const VotingFooter = observer(
             <Button actionType='accent' disabled>
               Vote Now
             </Button>
-            <Link href={`${PagePath.TournamentRound.replace(':epoch', epoch.toString())}`}>
+            <Link href={PagePath.TournamentRound.replace(':epoch', epoch.toString())}>
               <Button actionType='default'>Details</Button>
             </Link>
           </div>
@@ -81,7 +81,7 @@ export const VotingFooter = observer(
             <ConnectButton actionType='accent' variant='default'>
               Connect Prax Wallet
             </ConnectButton>
-            <Link href={`${PagePath.TournamentRound.replace(':epoch', epoch.toString())}`}>
+            <Link href={PagePath.TournamentRound.replace(':epoch', epoch.toString())}>
               <Button actionType='default'>Details</Button>
             </Link>
           </div>
@@ -103,7 +103,7 @@ export const VotingFooter = observer(
             <ValueViewComponent valueView={valueView} />
           </div>
           <div className='flex gap-2'>
-            <Link href={`${PagePath.TournamentRound.replace(':epoch', epoch.toString())}`}>
+            <Link href={PagePath.TournamentRound.replace(':epoch', epoch.toString())}>
               <Button actionType='default'>Details</Button>
             </Link>
           </div>
@@ -128,7 +128,7 @@ export const VotingFooter = observer(
             <Button actionType='accent' icon={ExternalLink}>
               Delegate
             </Button>
-            <Link href={`${PagePath.TournamentRound.replace(':epoch', epoch.toString())}`}>
+            <Link href={PagePath.TournamentRound.replace(':epoch', epoch.toString())}>
               <Button actionType='default'>Details</Button>
             </Link>
           </div>
@@ -150,7 +150,7 @@ export const VotingFooter = observer(
           <Button actionType='accent' icon={ExternalLink}>
             Delegate
           </Button>
-          <Link href={`${PagePath.TournamentRound.replace(':epoch', epoch.toString())}`}>
+          <Link href={PagePath.TournamentRound.replace(':epoch', epoch.toString())}>
             <Button actionType='default'>Details</Button>
           </Link>
         </div>
