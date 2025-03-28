@@ -1,7 +1,7 @@
 {
-  description = "Dev shell for Penumbra DEX explorer web application";
-  # inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+  description = "Dev shell for Penumbra web development";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
+  # inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
   inputs.flake-utils.url = "github:numtide/flake-utils";
 
   outputs = { self, nixpkgs, flake-utils }:
