@@ -54,6 +54,7 @@ jobs:
           kubectl -n testnet rollout restart deployment dex-explorer &&
           nix develop --command
           kubectl -n testnet rollout status deployment dex-explorer
+
   deploy-mainnet:
     name: deploy dex-explorer to mainnet
     env:
