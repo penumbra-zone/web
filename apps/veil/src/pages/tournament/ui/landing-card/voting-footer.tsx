@@ -8,6 +8,7 @@ import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { ConnectButton } from '@/features/connect/connect-button';
+import { PagePath } from '@/shared/const/pages';
 
 export const VotingFooter = observer(
   ({ isBanned, epoch }: { isBanned: boolean; epoch: number }) => {
@@ -57,7 +58,7 @@ export const VotingFooter = observer(
             <Button actionType='accent' disabled>
               Vote Now
             </Button>
-            <Link href={`/tournament/${epoch}`}>
+            <Link href={`${PagePath.TournamentRound.replace(':epoch', epoch.toString())}`}>
               <Button actionType='default'>Details</Button>
             </Link>
           </div>
@@ -80,7 +81,7 @@ export const VotingFooter = observer(
             <ConnectButton actionType='accent' variant='default'>
               Connect Prax Wallet
             </ConnectButton>
-            <Link href={`/tournament/${epoch}`}>
+            <Link href={`${PagePath.TournamentRound.replace(':epoch', epoch.toString())}`}>
               <Button actionType='default'>Details</Button>
             </Link>
           </div>
@@ -102,7 +103,7 @@ export const VotingFooter = observer(
             <ValueViewComponent valueView={valueView} />
           </div>
           <div className='flex gap-2'>
-            <Link href={`/tournament/${epoch}`}>
+            <Link href={`${PagePath.TournamentRound.replace(':epoch', epoch.toString())}`}>
               <Button actionType='default'>Details</Button>
             </Link>
           </div>
@@ -127,7 +128,7 @@ export const VotingFooter = observer(
             <Button actionType='accent' icon={ExternalLink}>
               Delegate
             </Button>
-            <Link href={`/tournament/${epoch}`}>
+            <Link href={`${PagePath.TournamentRound.replace(':epoch', epoch.toString())}`}>
               <Button actionType='default'>Details</Button>
             </Link>
           </div>
@@ -149,7 +150,7 @@ export const VotingFooter = observer(
           <Button actionType='accent' icon={ExternalLink}>
             Delegate
           </Button>
-          <Link href={`/tournament/${epoch}`}>
+          <Link href={`${PagePath.TournamentRound.replace(':epoch', epoch.toString())}`}>
             <Button actionType='default'>Details</Button>
           </Link>
         </div>

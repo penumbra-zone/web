@@ -3,10 +3,11 @@ import { observer } from 'mobx-react-lite';
 import { GradientCard } from '../../shared/gradient-card';
 import { Icon } from '@penumbra-zone/ui/Icon';
 import { Text } from '@penumbra-zone/ui/Text';
-import { ArrowLeft, Wallet2 } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { pnum } from '@penumbra-zone/types/pnum';
 import { round } from '@penumbra-zone/types/round';
-import { ConnectButton } from '@/features/connect/connect-button';
+import { PagePath } from '@/shared/const/pages';
+import { VotingSection } from './voting-section';
 
 export const RoundCard = observer(() => {
   const epoch = 123;
@@ -24,7 +25,7 @@ export const RoundCard = observer(() => {
         <div className='flex flex-col w-full md:w-1/2 gap-6'>
           <div className='flex justify-between items-center'>
             <div className='flex gap-4 items-center'>
-              <Link href='/tournament'>
+              <Link href={PagePath.Tournament}>
                 <button className='w-8 h-8 rounded-full bg-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.15)] flex items-center justify-center transition-colors duration-200'>
                   <Icon IconComponent={ArrowLeft} size='sm' color='primary.contrast' />
                 </button>
@@ -107,19 +108,7 @@ export const RoundCard = observer(() => {
           <Text variant='h4' color='text.primary'>
             Cast Your Vote
           </Text>
-          <div className='flex gap-4 color-text-secondary items-center'>
-            <div className='size-8 text-text-secondary'>
-              <Wallet2 className='w-full h-full' />
-            </div>
-            <Text variant='small' color='text.secondary'>
-              Connect Prax Wallet to vote in this epoch.
-            </Text>
-          </div>
-          <div className='flex gap-2'>
-            <ConnectButton actionType='accent' variant='default'>
-              Connect Prax Wallet
-            </ConnectButton>
-          </div>
+          <VotingSection isBanned={false} epoch={epoch} />
         </div>
       </div>
     </GradientCard>
