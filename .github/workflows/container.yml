@@ -12,6 +12,9 @@ on:
   workflow_call:
   workflow_dispatch:
   repository_dispatch:
+
+  # Temporary: build on PRs, to make sure workflow succeeds
+  pull_request:
 jobs:
   veil:
     runs-on: buildjet-16vcpu-ubuntu-2204
