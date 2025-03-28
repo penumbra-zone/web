@@ -188,10 +188,10 @@ const RESULT_DATA_2 = [
 
 const TEST_DATA_3: PreviewChartAdapterOptions = {
   values: [1, 3],
-  dates: [new Date('2024-12-01T12:00:00'), new Date('2024-12-01T14:00:00')],
+  dates: [new Date('2024-12-01T12:00:00Z'), new Date('2024-12-01T14:00:00Z')],
   intervals: 3,
-  from: new Date('2024-12-01T12:00:00'),
-  to: new Date('2024-12-01T14:00:00'),
+  from: new Date('2024-12-01T12:00:00Z'),
+  to: new Date('2024-12-01T14:00:00Z'),
 };
 
 const RESULT_DATA_3 = [

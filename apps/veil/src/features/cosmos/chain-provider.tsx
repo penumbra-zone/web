@@ -37,7 +37,6 @@ const registry = new Registry(protoRegistry);
 const aminoTypes = new AminoTypes(aminoConverters);
 
 const signerOptions: SignerOptions = {
-  // @ts-expect-error type error, but it works.
   signingStargate: () => {
     return {
       aminoTypes,
@@ -59,6 +58,7 @@ export const IbcChainProvider = ({ registry, children }: IbcProviderProps) => {
 
   return (
     <ChainProvider
+      throwErrors={false}
       chains={chainsToDisplay}
       assetLists={assets}
       // Not using mobile wallets as WalletConnect is a centralized service that requires an account
