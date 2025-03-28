@@ -44,12 +44,13 @@ export const DelegatorTablePage = () => {
       <Breadcrumbs
         items={[
           <Link
+            key='link'
             href='/tournament'
             className='decoration-0 text-text-secondary hover:text-text-primary transition-colors'
           >
             <Text h4>Tournament</Text>
           </Link>,
-          <div className='[&_span]:text-3xl [&>div>div]:max-w-72'>
+          <div key='address' className='[&_span]:text-3xl [&>div>div]:max-w-72'>
             <AddressViewComponent addressView={address} truncate hideIcon copyable />
           </div>,
         ]}
