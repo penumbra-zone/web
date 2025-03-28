@@ -19,24 +19,18 @@
     "dist"
   ],
   "exports": {
-    "./ctx/*": "./src/ctx/*.ts",
-    "./*": "./src/*/index.ts"
-  },
-  "publishConfig": {
-    "exports": {
-      "./ctx/*": {
-        "types": "./dist/ctx/*.d.ts",
-        "default": "./dist/ctx/*.js"
-      },
-      "./*": {
-        "types": "./dist/*/index.d.ts",
-        "default": "./dist/*/index.js"
-      }
+    "./ctx/*": {
+      "types": "./dist/ctx/*.d.ts",
+      "default": "./dist/ctx/*.js"
+    },
+    "./*": {
+      "types": "./dist/*/index.d.ts",
+      "default": "./dist/*/index.js"
     }
   },
   "devDependencies": {
     "@bufbuild/protobuf": "^1.10.0",
-    "@connectrpc/connect": "^1.4.0",
+    "@connectrpc/connect": "^1.6.1",
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/crypto-web": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
@@ -49,7 +43,7 @@
   },
   "peerDependencies": {
     "@bufbuild/protobuf": "^1.10.0",
-    "@connectrpc/connect": "^1.4.0",
+    "@connectrpc/connect": "^1.6.1",
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/crypto-web": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",

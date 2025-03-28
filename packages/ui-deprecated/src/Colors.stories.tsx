@@ -62,7 +62,7 @@ const MAIN_COLORS: Exclude<TColor, 'text' | 'action' | 'other' | 'base'>[] = [
   'success',
 ];
 
-const Color = <T extends Exclude<TColor, 'action' | 'other' | 'base'>>({ color }: { color: T }) => (
+const Color = ({ color }: { color: Exclude<TColor, 'action' | 'other' | 'base'> }) => (
   <Fragment key={color}>
     <Grid mobile={6} tablet={2}>
       <Label>

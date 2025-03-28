@@ -21,29 +21,21 @@
     "!dist/**/*.test.*"
   ],
   "exports": {
-    "./plan/*": "./src/plan/*.ts",
-    "./transaction/*": "./src/transaction/*.ts",
-    "./translators/*": "./src/translators/*.ts",
-    "./action-view/*": "./src/action-view/*.ts"
-  },
-  "publishConfig": {
-    "exports": {
-      "./plan/*": {
-        "types": "./dist/plan/*.d.ts",
-        "default": "./dist/plan/*.js"
-      },
-      "./transaction/*": {
-        "types": "./dist/transaction/*.d.ts",
-        "default": "./dist/transaction/*.js"
-      },
-      "./translators/*": {
-        "types": "./dist/translators/*.d.ts",
-        "default": "./dist/translators/*.js"
-      },
-      "./action-view/*": {
-        "types": "./dist/action-view/*.d.ts",
-        "default": "./dist/action-view/*.js"
-      }
+    "./plan/*": {
+      "types": "./dist/plan/*.d.ts",
+      "default": "./dist/plan/*.js"
+    },
+    "./transaction/*": {
+      "types": "./dist/transaction/*.d.ts",
+      "default": "./dist/transaction/*.js"
+    },
+    "./translators/*": {
+      "types": "./dist/translators/*.d.ts",
+      "default": "./dist/translators/*.js"
+    },
+    "./action-view/*": {
+      "types": "./dist/action-view/*.d.ts",
+      "default": "./dist/action-view/*.js"
     }
   },
   "devDependencies": {

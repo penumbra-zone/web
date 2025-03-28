@@ -32,20 +32,20 @@ declare global {
   var __DEV__: boolean | undefined;
 }
 
-const forceTransportOptions = {
-  httpClient: null as never,
-  baseUrl: 'https://in-memory',
-  useBinaryFormat: false,
-  acceptCompression: [],
-  sendCompression: null,
-  compressMinBytes: Number.MAX_SAFE_INTEGER,
-  readMaxBytes: Number.MAX_SAFE_INTEGER,
-  writeMaxBytes: Number.MAX_SAFE_INTEGER,
-  interceptors: [],
-};
+interface ForceTransportOptions {
+  httpClient: never;
+  baseUrl: string;
+  useBinaryFormat: boolean;
+  acceptCompression: [];
+  sendCompression: null;
+  compressMinBytes: number;
+  readMaxBytes: number;
+  writeMaxBytes: number;
+  interceptors: [];
+}
 
 export interface ChannelTransportOptions
-  extends Omit<CommonTransportOptions, keyof typeof forceTransportOptions> {
+  extends Omit<CommonTransportOptions, keyof ForceTransportOptions> {
   jsonOptions?: CommonTransportOptions['jsonOptions'] & {
     typeRegistry: NonNullable<(JsonReadOptions & JsonWriteOptions)['typeRegistry']>;
   };

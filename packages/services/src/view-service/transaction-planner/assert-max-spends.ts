@@ -44,9 +44,7 @@ export const assertSpendMax = async (
   // Constraint: validate that each spend and output action's asset ID matches the fee asset ID
   // in the fully-formed transaction plan.
   let feeAssetId = plan.transactionParameters?.fee?.assetId;
-  if (feeAssetId === undefined) {
-    feeAssetId = indexedDb.stakingTokenAssetId;
-  }
+  feeAssetId ??= indexedDb.stakingTokenAssetId;
 
   let totalSpendAmount = { lo: 0n, hi: 0n };
 

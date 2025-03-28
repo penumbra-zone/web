@@ -4,7 +4,7 @@ import {
   isTransportMessage,
   isTransportStream,
 } from './messages.js';
-import { ConnectError, createPromiseClient } from '@connectrpc/connect';
+import { ConnectError, createClient } from '@connectrpc/connect';
 import { errorToJson } from '@connectrpc/connect/protocol-connect';
 import { ChannelHandlerFn } from './adapter.js';
 import { JsonReadOptions, JsonWriteOptions, ServiceType } from '@bufbuild/protobuf';
@@ -33,7 +33,7 @@ const directGetPort =
           response instanceof ReadableStream
             ? { requestId, stream: response }
             : { requestId, message: response },
-        error => ({
+        (error: unknown) => ({
           requestId,
           error: errorToJson(ConnectError.from(error), jsonOptions),
         }),
@@ -70,7 +70,7 @@ export const createDirectClient = <S extends ServiceType>(
   entry: ChannelHandlerFn,
   transportOptions: Omit<ChannelTransportOptions, 'getPort'>,
 ) =>
-  createPromiseClient(
+  createClient(
     serviceType,
     createChannelTransport({
       ...transportOptions,

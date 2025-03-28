@@ -272,6 +272,6 @@ export type TextColorVariant = keyof Theme['color']['text'];
  * import, they'll get the updated theme typings as well.
  */
 declare module 'styled-components' {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface -- declaration merge
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type -- declaration merge
   export interface DefaultTheme extends Theme {}
 }

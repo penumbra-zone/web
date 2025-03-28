@@ -32,8 +32,8 @@ export const fromBech32 = <P extends Prefix>(
   return fromBechWithLib(b32mStr, prefix, bech32);
 };
 
-const fromBechWithLib = <P extends Prefix>(
-  b32mStr: `${P}1${string}`,
+const fromBechWithLib = (
+  b32mStr: `${Prefix}1${string}`,
   prefix: Prefix,
   bechLib: BechLib,
 ): Uint8Array => {

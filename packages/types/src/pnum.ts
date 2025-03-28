@@ -24,7 +24,7 @@ import { removeTrailingZeros } from '@penumbra-zone/types/shortify';
  * @param optionsOrExponent
  */
 function pnum(
-  input?: string | number | LoHi | bigint | Amount | ValueView | undefined,
+  input?: string | number | LoHi | bigint | Amount | ValueView,
   optionsOrExponent: { exponent?: number } | number = { exponent: 0 },
 ) {
   let value: BigNumber;

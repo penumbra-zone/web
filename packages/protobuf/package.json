@@ -27,29 +27,21 @@
     "dist"
   ],
   "exports": {
-    ".": "./src/index.ts",
-    "./web": "./src/web.ts",
-    "./registry": "./src/registry.ts",
-    "./*": "./gen/*.ts"
-  },
-  "publishConfig": {
-    "exports": {
-      ".": {
-        "types": "./dist/src/index.d.ts",
-        "default": "./dist/src/index.js"
-      },
-      "./web": {
-        "types": "./dist/src/web.d.ts",
-        "default": "./dist/src/web.js"
-      },
-      "./registry": {
-        "types": "./dist/src/registry.d.ts",
-        "default": "./dist/src/registry.js"
-      },
-      "./*": {
-        "types": "./dist/gen/*.d.ts",
-        "default": "./dist/gen/*.js"
-      }
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "default": "./dist/src/index.js"
+    },
+    "./web": {
+      "types": "./dist/src/web.d.ts",
+      "default": "./dist/src/web.js"
+    },
+    "./registry": {
+      "types": "./dist/src/registry.d.ts",
+      "default": "./dist/src/registry.js"
+    },
+    "./*": {
+      "types": "./dist/gen/*.d.ts",
+      "default": "./dist/gen/*.js"
     }
   },
   "devDependencies": {

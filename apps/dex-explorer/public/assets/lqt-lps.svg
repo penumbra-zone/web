@@ -1,0 +1,39 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_1348_12137)">
+<line x1="35.21" y1="19.8494" x2="24.6894" y2="30.3701" stroke="url(#paint0_linear_1348_12137)" stroke-width="1.5"/>
+<line x1="37.5303" y1="23.5303" x2="25.0395" y2="36.0212" stroke="url(#paint1_linear_1348_12137)" stroke-width="1.5"/>
+<line x1="38.8897" y1="28.1708" x2="26.5302" y2="40.5303" stroke="url(#paint2_linear_1348_12137)" stroke-width="1.5"/>
+<line x1="39.1475" y1="33.9128" x2="28.9784" y2="44.0819" stroke="url(#paint3_linear_1348_12137)" stroke-width="1.5"/>
+<circle cx="20" cy="20" r="19.25" transform="matrix(-1 -2.18557e-08 -2.18557e-08 1 40 12)" stroke="url(#paint4_linear_1348_12137)" stroke-width="1.5"/>
+<circle cx="44" cy="32" r="19.25" stroke="url(#paint5_linear_1348_12137)" stroke-width="1.5"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_1348_12137" x1="23.8055" y1="29.4862" x2="34.3261" y2="18.9655" gradientUnits="userSpaceOnUse">
+<stop offset="0.384201" stop-color="white" stop-opacity="0.2"/>
+<stop offset="1" stop-color="white"/>
+</linearGradient>
+<linearGradient id="paint1_linear_1348_12137" x1="24.1556" y1="35.1373" x2="36.6465" y2="22.6465" gradientUnits="userSpaceOnUse">
+<stop offset="0.384201" stop-color="white" stop-opacity="0.2"/>
+<stop offset="1" stop-color="white"/>
+</linearGradient>
+<linearGradient id="paint2_linear_1348_12137" x1="25.6464" y1="39.6464" x2="38.0058" y2="27.287" gradientUnits="userSpaceOnUse">
+<stop offset="0.384201" stop-color="white" stop-opacity="0.2"/>
+<stop offset="1" stop-color="white"/>
+</linearGradient>
+<linearGradient id="paint3_linear_1348_12137" x1="28.0946" y1="43.198" x2="38.2636" y2="33.0289" gradientUnits="userSpaceOnUse">
+<stop offset="0.384201" stop-color="white" stop-opacity="0.2"/>
+<stop offset="1" stop-color="white"/>
+</linearGradient>
+<linearGradient id="paint4_linear_1348_12137" x1="40" y1="20" x2="-4.37121e-07" y2="20" gradientUnits="userSpaceOnUse">
+<stop stop-color="white" stop-opacity="0.2"/>
+<stop offset="0.813042" stop-color="white"/>
+</linearGradient>
+<linearGradient id="paint5_linear_1348_12137" x1="64" y1="32" x2="24" y2="32" gradientUnits="userSpaceOnUse">
+<stop stop-color="white" stop-opacity="0.2"/>
+<stop offset="0.813042" stop-color="white"/>
+</linearGradient>
+<clipPath id="clip0_1348_12137">
+<rect width="64" height="64" fill="white"/>
+</clipPath>
+</defs>
+</svg>

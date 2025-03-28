@@ -1,5 +1,5 @@
 import { TooltipProvider } from '@radix-ui/react-tooltip';
-import { ThemeProvider } from 'styled-components';
+import { ThemeProvider, DefaultTheme } from 'styled-components';
 import { theme } from './theme';
 import { PropsWithChildren } from 'react';
 import { FontFaces } from './FontFaces';
@@ -10,7 +10,7 @@ import { MotionConfig } from 'framer-motion';
  * a number of context values that they use.
  */
 export const PenumbraUIProvider = ({ children }: PropsWithChildren) => (
-  <ThemeProvider theme={theme}>
+  <ThemeProvider theme={theme as DefaultTheme}>
     <MotionConfig transition={{ duration: 0.15 }}>
       <TooltipProvider delayDuration={0}>
         <FontFaces />

@@ -5,7 +5,6 @@ export interface Ics20WithdrawalActionProps {
   value: Ics20Withdrawal;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- unimplemented
 export const Ics20WithdrawalAction = (_: Ics20WithdrawalActionProps) => {
   return <UnknownAction label='ICS 20 Withdrawal' opaque={false} />;
 };
