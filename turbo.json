@@ -60,15 +60,15 @@
       "persistent": true
     },
     "lint": {
-      "dependsOn": ["//#lint:syncpack", "//#lint:prettier", "compile", "proto"],
+      "dependsOn": ["//#lint:syncpack", "//#lint:prettier", "build"],
       "inputs": ["components", "lib", "src", "wasm", "package.json"]
     },
     "lint:strict": {
-      "dependsOn": ["//#lint:syncpack", "//#lint:prettier", "compile", "proto"],
+      "dependsOn": ["//#lint:syncpack", "//#lint:prettier", "build"],
       "cache": false
     },
     "lint:fix": {
-      "dependsOn": ["compile", "proto"],
+      "dependsOn": ["build"],
       "cache": false
     },
     "lint:rust": {
@@ -77,7 +77,7 @@
     },
     "test": {
       "cache": false,
-      "dependsOn": ["compile", "proto"]
+      "dependsOn": ["build"]
     },
     "test:wasm": {
       "dependsOn": ["compile"],
