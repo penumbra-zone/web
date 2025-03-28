@@ -1,22 +1,24 @@
 import Link from 'next/link';
+import { ConnectButton } from '@/features/connect/connect-button';
+import { connectionStore } from '@/shared/model/connection';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
-import { Ban, Coins, Check, Wallet2, ExternalLink } from 'lucide-react';
-import { observer } from 'mobx-react-lite';
-import { connectionStore } from '@/shared/model/connection';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
-import { ConnectButton } from '@/features/connect/connect-button';
+import { Ban, Coins, Check, Wallet2, ExternalLink } from 'lucide-react';
+import { observer } from 'mobx-react-lite';
 import { PagePath } from '@/shared/const/pages';
 
-export const VotingFooter = observer(
+export const VotingSection = observer(
   ({ isBanned, epoch }: { isBanned: boolean; epoch: number }) => {
     const { connected } = connectionStore;
 
     // dummy data
     const delegatedAmount = 1000;
+    const currentEpoch = 136;
     const didVote = false;
+    const epochEnded = currentEpoch > epoch;
     const valueView = new ValueView({
       valueView: {
         value: {
@@ -42,9 +44,29 @@ export const VotingFooter = observer(
       },
     });
 
+    if (!connected) {
+      return (
+        <>
+          <div className='flex gap-4 color-text-secondary items-center'>
+            <div className='size-8 text-text-secondary'>
+              <Wallet2 className='w-full h-full' />
+            </div>
+            <Text variant='small' color='text.secondary'>
+              Connect Prax Wallet to vote in this epoch.
+            </Text>
+          </div>
+          <div className='flex gap-2'>
+            <ConnectButton actionType='accent' variant='default'>
+              Connect Prax Wallet
+            </ConnectButton>
+          </div>
+        </>
+      );
+    }
+
     if (isBanned) {
       return (
-        <div className='flex flex-col gap-8'>
+        <>
           <div className='flex gap-4 color-text-secondary items-center'>
             <div className='size-14 text-destructive-light'>
               <Ban className='w-full h-full' />
@@ -58,55 +80,41 @@ export const VotingFooter = observer(
             <Button actionType='accent' disabled>
               Vote Now
             </Button>
-            <Link href={PagePath.TournamentRound.replace(':epoch', epoch.toString())}>
-              <Button actionType='default'>Details</Button>
-            </Link>
           </div>
-        </div>
-      );
-    }
-
-    if (!connected) {
-      return (
-        <div className='flex flex-col gap-8'>
-          <div className='flex gap-4 color-text-secondary items-center'>
-            <div className='size-8 text-text-secondary'>
-              <Wallet2 className='w-full h-full' />
-            </div>
-            <Text variant='small' color='text.secondary'>
-              Connect Prax Wallet to vote in this epoch.
-            </Text>
-          </div>
-          <div className='flex gap-2'>
-            <ConnectButton actionType='accent' variant='default'>
-              Connect Prax Wallet
-            </ConnectButton>
-            <Link href={PagePath.TournamentRound.replace(':epoch', epoch.toString())}>
-              <Button actionType='default'>Details</Button>
-            </Link>
-          </div>
-        </div>
+        </>
       );
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- temporary
     if (didVote) {
-      return (
-        <div className='flex flex-col gap-8'>
-          <div className='flex gap-4 color-text-secondary items-center'>
-            <div className='size-10 text-success-light'>
-              <Check className='w-full h-full' />
+      if (epochEnded) {
+        return (
+          <>
+            <div className='flex gap-4 color-text-secondary items-center'>
+              <div className='size-10 text-success-light'>
+                <Check className='w-full h-full' />
+              </div>
+              <Text variant='small' color='text.secondary'>
+                You have already voted in this epoch. Come back next epoch to vote again.
+              </Text>
+              <ValueViewComponent valueView={valueView} />
             </div>
-            <Text variant='small' color='text.secondary'>
-              You have already voted in this epoch. Come back next epoch to vote again.
-            </Text>
-            <ValueViewComponent valueView={valueView} />
-          </div>
-          <div className='flex gap-2'>
-            <Link href={PagePath.TournamentRound.replace(':epoch', epoch.toString())}>
-              <Button actionType='default'>Details</Button>
+            <Link href={PagePath.TournamentRound.replace(':epoch', currentEpoch.toString())}>
+              <Button actionType='default'>Go To Current Epoch #{currentEpoch}</Button>
             </Link>
+          </>
+        );
+      }
+
+      return (
+        <div className='flex gap-4 color-text-secondary items-center'>
+          <div className='size-10 text-success-light'>
+            <Check className='w-full h-full' />
           </div>
+          <Text variant='small' color='text.secondary'>
+            You have already voted in this epoch. Come back next epoch to vote again.
+          </Text>
+          <ValueViewComponent valueView={valueView} />
         </div>
       );
     }
@@ -114,7 +122,7 @@ export const VotingFooter = observer(
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- temporary
     if (delegatedAmount) {
       return (
-        <div className='flex flex-col gap-8'>
+        <>
           <div className='flex gap-4 color-text-secondary items-center'>
             <div className='size-10 text-text-secondary'>
               <Coins className='w-full h-full' />
@@ -128,16 +136,13 @@ export const VotingFooter = observer(
             <Button actionType='accent' icon={ExternalLink}>
               Delegate
             </Button>
-            <Link href={PagePath.TournamentRound.replace(':epoch', epoch.toString())}>
-              <Button actionType='default'>Details</Button>
-            </Link>
           </div>
-        </div>
+        </>
       );
     }
 
     return (
-      <div className='flex flex-col gap-8'>
+      <>
         <div className='flex gap-4 color-text-secondary items-center'>
           <div className='size-10 text-text-secondary'>
             <Coins className='w-full h-full' />
@@ -150,11 +155,8 @@ export const VotingFooter = observer(
           <Button actionType='accent' icon={ExternalLink}>
             Delegate
           </Button>
-          <Link href={PagePath.TournamentRound.replace(':epoch', epoch.toString())}>
-            <Button actionType='default'>Details</Button>
-          </Link>
         </div>
-      </div>
+      </>
     );
   },
 );

@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import { GradientCard } from './gradient-card';
+import { GradientCard } from '../shared/gradient-card';
 import { Explainer } from './explainer';
 import { Stats } from './stats';
 import { VotingFooter } from './voting-footer';
@@ -60,7 +60,7 @@ export const LandingCard = observer(() => {
             symbol={symbol}
             results={results}
           />
-          <VotingFooter isBanned={isBanned} />
+          <VotingFooter isBanned={isBanned} epoch={epoch} />
         </div>
       </div>
     </GradientCard>

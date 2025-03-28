@@ -7,6 +7,7 @@ export enum PagePath {
   Inspect = '/inspect',
   Portfolio = '/portfolio',
   Tournament = '/tournament',
+  TournamentRound = '/tournament/:epoch',
   TradePair = '/trade/:primary/:numeraire',
   InspectLp = '/inspect/lp/:id',
   LpLeaderboard = '/inspect/lp-leaderboard',
@@ -15,6 +16,7 @@ export enum PagePath {
 const basePath: Partial<Record<PagePath, PagePath>> = {
   [PagePath.TradePair]: PagePath.Trade,
   '/inspect/lp/:id': PagePath.Inspect,
+  '/tournament/:epoch': PagePath.Tournament,
 };
 
 // Used for dynamic routing when wanting to exclude the dynamic elements
