@@ -85,7 +85,6 @@ export const VotingSection = observer(({ isBanned, epoch }: { isBanned: boolean,
 
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- temporary
   if (didVote) {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- temporary
     if (epochEnded) {
       return (
         <>
