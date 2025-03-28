@@ -41,8 +41,8 @@ See context in #55. After configuring that information, run `just dev` again in 
 
 ## Deployment
 
-Merges to main will automatically build a container, hosted at `ghcr.io/penumbra-zone/dex-explorer`.
-In order to run the dex-explorer, you'll need to [deploy a Penumbra fullnode](https://guide.penumbra.zone/node/pd/running-node),
+Merges to main will automatically build a container, hosted at `ghcr.io/penumbra-zone/veil`.
+In order to run the veil, you'll need to [deploy a Penumbra fullnode](https://guide.penumbra.zone/node/pd/running-node),
 with [ABCI event indexing enabled](https://guide.penumbra.zone/node/pd/indexing-events). The relevant env vars
 you'll want to set are:
 
