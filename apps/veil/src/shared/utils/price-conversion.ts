@@ -37,7 +37,7 @@ export function calculateEquivalentInUSDC(
     getDisplayDenomExponent(quoteAssetMetadata) - getDisplayDenomExponent(usdcMetadata),
   );
 
-  // TODO: create `pnum.multiply()` utility: https://github.com/penumbra-zone/veil/issues/231
+  // TODO: create `pnum.multiply()` utility: https://github.com/penumbra-zone/web/apps/veil/issues/231
   const result = liquidityOrVolume * usdcPrice * 10 ** expDiff;
 
   return toValueView({

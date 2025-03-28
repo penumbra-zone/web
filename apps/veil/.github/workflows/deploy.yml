@@ -1,5 +1,5 @@
 ---
-# Workflow for deploying the DEX explorer webapp https://github.com/penumbra-zone/veil
+# Workflow for deploying the DEX explorer webapp https://github.com/penumbra-zone/web/apps/veil
 # Bounces a container deployment, to repull the latest image.
 name: deploy veil
 on:

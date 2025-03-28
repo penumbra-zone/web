@@ -40,7 +40,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/penumbra-zone/veil
+          images: ghcr.io/penumbra-zone/web/apps/veil
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
