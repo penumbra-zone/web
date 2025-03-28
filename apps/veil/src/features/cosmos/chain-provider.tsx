@@ -1,17 +1,46 @@
 import { ChainProvider } from '@cosmos-kit/react';
-import { aminoTypes, registry as CosmosRegistry } from './config/defaults';
 import { assets, chains } from 'chain-registry';
 import { SignerOptions, wallets } from 'cosmos-kit';
 import { ReactNode, useMemo } from 'react';
-import { Registry as PenumbraRegistry } from '@penumbra-labs/registry';
+import { Chain, Registry as PenumbraRegistry } from '@penumbra-labs/registry';
+
+import { GeneratedType, Registry } from '@cosmjs/proto-signing';
+import { AminoTypes } from '@cosmjs/stargate';
+import {
+  cosmosAminoConverters,
+  cosmosProtoRegistry,
+  cosmwasmAminoConverters,
+  cosmwasmProtoRegistry,
+  ibcAminoConverters,
+  ibcProtoRegistry,
+  osmosisAminoConverters,
+  osmosisProtoRegistry,
+} from 'osmo-query';
 
 import '@interchain-ui/react/styles';
+
+const protoRegistry: readonly [string, GeneratedType][] = [
+  ...cosmosProtoRegistry,
+  ...cosmwasmProtoRegistry,
+  ...ibcProtoRegistry,
+  ...osmosisProtoRegistry,
+];
+
+const aminoConverters = {
+  ...cosmosAminoConverters,
+  ...cosmwasmAminoConverters,
+  ...ibcAminoConverters,
+  ...osmosisAminoConverters,
+};
+
+const registry = new Registry(protoRegistry);
+const aminoTypes = new AminoTypes(aminoConverters);
 
 const signerOptions: SignerOptions = {
   signingStargate: () => {
     return {
       aminoTypes,
-      registry: CosmosRegistry,
+      registry,
     };
   },
 };
@@ -22,7 +51,10 @@ interface IbcProviderProps {
 }
 
 export const IbcChainProvider = ({ registry, children }: IbcProviderProps) => {
-  const chainsToDisplay = useMemo(() => chainsInPenumbraRegistry(registry), [registry]);
+  const chainsToDisplay = useMemo(
+    () => chainsInPenumbraRegistry(registry.ibcConnections),
+    [registry],
+  );
 
   return (
     <ChainProvider
@@ -41,6 +73,6 @@ export const IbcChainProvider = ({ registry, children }: IbcProviderProps) => {
 };
 
 // Searches cosmos registry for chains that have ibc connections to Penumbra
-const chainsInPenumbraRegistry = ({ ibcConnections }: PenumbraRegistry) => {
+export const chainsInPenumbraRegistry = (ibcConnections: Chain[]) => {
   return chains.filter(c => ibcConnections.some(i => c.chain_id === i.chainId));
 };
