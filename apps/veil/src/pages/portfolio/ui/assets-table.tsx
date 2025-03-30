@@ -10,6 +10,7 @@ import { observer } from 'mobx-react-lite';
 import { useUnifiedAssets } from '../api/use-unified-assets.ts';
 import { useAssetPrices } from '../api/use-asset-prices.ts';
 import { CosmosConnectButton } from '@/features/cosmos/cosmos-connect-button.tsx';
+import { ShieldButton, UnshieldButton } from './shield-unshield.tsx';
 
 const LoadingState = () => {
   return (
@@ -121,12 +122,15 @@ const AssetRow = observer(
         <TableCell variant={variant}>
           <div className='flex items-center'>
             {asset.shieldedBalance ? (
-              <ValueViewComponent
-                valueView={asset.shieldedBalance.valueView}
-                trailingZeros={false}
-                priority={'primary'}
-                context={'table'}
-              />
+              <>
+                <ValueViewComponent
+                  valueView={asset.shieldedBalance.valueView}
+                  trailingZeros={false}
+                  priority={'primary'}
+                  context={'table'}
+                />
+                {/* <UnshieldButton asset={asset} />*/}
+              </>
             ) : (
               <Text variant={'smallTechnical'} color='text.secondary'>
                 -
@@ -136,14 +140,17 @@ const AssetRow = observer(
         </TableCell>
         <TableCell variant={variant}>
           {isCosmosConnected ? (
-            <div className='flex items-center'>
+            <div className='flex items-center gap-3 justify-between w-full'>
               {asset.publicBalance ? (
-                <ValueViewComponent
-                  valueView={asset.publicBalance.valueView}
-                  trailingZeros={false}
-                  priority={'primary'}
-                  context={'table'}
-                />
+                <>
+                  <ValueViewComponent
+                    valueView={asset.publicBalance.valueView}
+                    trailingZeros={false}
+                    priority={'primary'}
+                    context={'table'}
+                  />
+                  <ShieldButton asset={asset} />
+                </>
               ) : (
                 <Text variant={'smallTechnical'} color='text.secondary'>
                   -
