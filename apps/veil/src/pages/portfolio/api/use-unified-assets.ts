@@ -14,13 +14,23 @@ import { useBalances as usePenumbraBalances } from '@/shared/api/balances';
 import { pnum } from '@penumbra-zone/types/pnum';
 import { assetPatterns } from '@penumbra-zone/types/assets';
 
+/* TODO: what do we need from an asset:
+ *  - the shielded balance, in a valueview
+ * - the public balance, in a valueview
+ * - the public chains it is on (chainIds, assetIds, denoms, and the respective balances (can be valueview)
+ * - metadata from penumbra
+ * - shielded balance on penumbra, in a valueView
+ * - a symbol, for deduplication.
+ * - the equivalent total USDC values for public and shielded
+ * */
+
 /**
  * Interface representing a unified asset with both shielded and public balances
  */
 export interface UnifiedAsset {
   // Common asset information
   symbol: string;
-  assetId?: string; // Penumbra asset ID if available
+  penumbraAssetId?: string; // Penumbra asset ID if available
   metadata: Metadata; // Display metadata (name, icon, etc.)
 
   // Balances
@@ -33,7 +43,7 @@ export interface UnifiedAsset {
   publicBalance: {
     amount: string;
     denom: string;
-    chain?: string; // Source chain information
+    chains: string[]; // All the chains the user has this public asset on
     valueView?: ValueView; // Converted to ValueView format
     hasError: boolean;
   } | null;
@@ -180,8 +190,7 @@ export const useUnifiedAssets = () => {
      * - write integration tests for the crucial calculations, with real data from different chains and assets */
 
     return cosmosBalances
-      .map(balance => {
-        const { asset, amount } = balance;
+      .map(({ asset, amount, chainId }) => {
         try {
           const metadata = new Metadata({
             base: asset.base,
@@ -206,14 +215,10 @@ export const useUnifiedAssets = () => {
             },
           });
 
-          // Get price information
           const priceData = prices[metadata.symbol]?.price ?? 0;
-
           const numericAmount = pnum(valueView).toNumber();
-
           const assetValue = numericAmount * priceData;
 
-          // Create asset object
           return {
             symbol: asset.symbol,
             assetId: '',
@@ -222,7 +227,7 @@ export const useUnifiedAssets = () => {
             publicBalance: {
               amount: pnum(amount).toString(),
               denom: asset.ibc?.source_denom,
-              chain: 'CHAIN',
+              chains: [chainId],
               valueView,
               hasError: false,
             },
@@ -231,7 +236,7 @@ export const useUnifiedAssets = () => {
             totalValue: assetValue,
             canDeposit: true,
             canWithdraw: false,
-            originChain: '',
+            originChain: chainId,
           };
         } catch (error) {
           console.error('Error processing Cosmos balance', error);
