@@ -39,7 +39,6 @@ export const fetchChainBalances = async (
           `Failed to use reliable endpoint for ${chain.chainName}, falling back to default RPC`,
           error,
         );
-        // Fall back to default RPC if reliable one fails
       }
     }
 
@@ -92,7 +91,12 @@ export const useBalances = () => {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- chains without a valid address were filtered out above
           const balances = await fetchChainBalances(chain.address!, chain);
           return balances.map(coin => {
-            return { asset: augmentToAsset(coin.denom, chain.chainName), amount: coin.amount };
+            // TODO: NEEDS TO PASS THE WHOLE IBC TRACE HERE, INCLUDING CHANNEL, FOR LATER CALCULATIONS
+            return {
+              asset: augmentToAsset(coin.denom, chain.chainName),
+              amount: coin.amount,
+              chainId: chain.chainId,
+            };
           });
         },
         enabled: status === WalletStatus.Connected && chainWallets.length > 0,
@@ -105,7 +109,7 @@ export const useBalances = () => {
         data: results
           .map(result => result.data)
           .flat(2)
-          .filter(Boolean) as { asset: Asset; amount: string }[],
+          .filter(Boolean) as { asset: Asset; amount: string; chainId: string }[],
         isLoading: results.some(result => result.isLoading),
         error: results.find(r => r.error !== null)?.error ?? null,
         refetch: () => Promise.all(results.map(result => result.refetch())),
