@@ -8,13 +8,15 @@ import { DUMMY_VALUE_VIEW, DUMMY_UM_METADATA, DUMMY_USDC_METADATA } from './dumm
 export const BASE_LIMIT = 10;
 export const BASE_PAGE = 1;
 
+export interface LQTVote {
+  percent: number;
+  asset: Metadata;
+}
+
 export interface VotingReward {
   epoch: number;
   reward: ValueView;
-  vote: {
-    percent: number;
-    asset: Metadata;
-  };
+  vote: LQTVote;
   sort?: {
     epoch: number;
     reward: number;
