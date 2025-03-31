@@ -128,7 +128,7 @@ export const VotingSection = observer(
               <Coins className='w-full h-full' />
             </div>
             <Text variant='small' color='text.secondary'>
-              You’ve delegated UM and now eligible to vote in this epoch.
+              You’ve delegated UM and are now eligible to vote in this epoch.
             </Text>
             <ValueViewComponent valueView={valueView} />
           </div>
