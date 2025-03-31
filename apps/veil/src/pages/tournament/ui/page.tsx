@@ -8,7 +8,7 @@ import { PreviousEpochs } from './previous-epochs';
 
 export const TournamentPage = () => {
   return (
-    <section className='flex flex-col gap-6 p-4 max-w-[1062px] mx-auto'>
+    <section className='flex flex-col gap-6 p-4 max-w-[1168px] mx-auto'>
       <PenumbraWaves />
       <LandingCard />
       <MyRewards />
