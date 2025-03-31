@@ -2,13 +2,24 @@ import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { Ban, Coins, Check, Wallet2, WalletMinimal, ExternalLink } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
+import { useState } from 'react';
 import { connectionStore } from '@/shared/model/connection';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import { VoteDialogueSelector } from '../vote-dialogue';
 
 export const VotingFooter = observer(({ isBanned }: { isBanned: boolean }) => {
   const { connected } = connectionStore;
+  const [isVoteDialogueOpen, setIsVoteDialogOpen] = useState(false);
+
+  const openVoteDialog = () => {
+    setIsVoteDialogOpen(true);
+  };
+
+  const closeVoteDialog = () => {
+    setIsVoteDialogOpen(false);
+  };
 
   // dummy data
   const delegatedAmount = 1000;
@@ -46,8 +57,8 @@ export const VotingFooter = observer(({ isBanned }: { isBanned: boolean }) => {
             <Ban className='w-full h-full' />
           </div>
           <Text variant='small' color='text.secondary'>
-            You can’t vote in this epoch because you delegated UM after the epoch started. You’ll be
-            able to vote next epoch.
+            You can&apos;t vote in this epoch because you delegated UM after the epoch started.
+            You&apos;ll be able to vote next epoch.
           </Text>
         </div>
         <div className='flex gap-2'>
@@ -72,8 +83,11 @@ export const VotingFooter = observer(({ isBanned }: { isBanned: boolean }) => {
           </Text>
         </div>
         <div className='flex gap-2'>
-          <Button actionType='accent' icon={WalletMinimal}>
-            Connect Prax Wallet
+          <Button actionType='accent'>
+            <div className='flex items-center gap-2 whitespace-nowrap'>
+              <WalletMinimal className='w-4 h-4' />
+              Connect Prax Wallet
+            </div>
           </Button>
           <Button actionType='default'>Details</Button>
         </div>
@@ -104,42 +118,50 @@ export const VotingFooter = observer(({ isBanned }: { isBanned: boolean }) => {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- temporary
   if (delegatedAmount) {
     return (
+      <>
+        <div className='flex flex-col gap-8'>
+          <div className='flex gap-4 color-text-secondary items-center'>
+            <div className='size-10 text-text-secondary'>
+              <Coins className='w-full h-full' />
+            </div>
+            <Text variant='small' color='text.secondary'>
+              You&apos;ve delegated UM and now eligible to vote in this epoch.
+            </Text>
+            <ValueViewComponent valueView={valueView} />
+          </div>
+          <div className='flex gap-2'>
+            <Button actionType='accent' icon={ExternalLink} onClick={openVoteDialog}>
+              Delegate
+            </Button>
+            <Button actionType='default'>Details</Button>
+          </div>
+        </div>
+
+        <VoteDialogueSelector isOpen={isVoteDialogueOpen} onClose={closeVoteDialog} />
+      </>
+    );
+  }
+
+  return (
+    <>
       <div className='flex flex-col gap-8'>
         <div className='flex gap-4 color-text-secondary items-center'>
           <div className='size-10 text-text-secondary'>
             <Coins className='w-full h-full' />
           </div>
           <Text variant='small' color='text.secondary'>
-            You’ve delegated UM and now eligible to vote in this epoch.
+            Delegate UM to vote and influence how incentives are distributed in this epoch.
           </Text>
-          <ValueViewComponent valueView={valueView} />
         </div>
         <div className='flex gap-2'>
-          <Button actionType='accent' icon={ExternalLink}>
+          <Button actionType='accent' icon={ExternalLink} onClick={openVoteDialog}>
             Delegate
           </Button>
           <Button actionType='default'>Details</Button>
         </div>
       </div>
-    );
-  }
 
-  return (
-    <div className='flex flex-col gap-8'>
-      <div className='flex gap-4 color-text-secondary items-center'>
-        <div className='size-10 text-text-secondary'>
-          <Coins className='w-full h-full' />
-        </div>
-        <Text variant='small' color='text.secondary'>
-          Delegate UM to vote and influence how incentives are distributed in this epoch.
-        </Text>
-      </div>
-      <div className='flex gap-2'>
-        <Button actionType='accent' icon={ExternalLink}>
-          Delegate
-        </Button>
-        <Button actionType='default'>Details</Button>
-      </div>
-    </div>
+      <VoteDialogueSelector isOpen={isVoteDialogueOpen} onClose={closeVoteDialog} />
+    </>
   );
 });
