@@ -14,14 +14,24 @@ FROM base AS deps
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
+
+# Copy the entire monorepo structure for dependencies
+COPY package.json pnpm-lock.yaml* pnpm-workspace.yaml ./
+COPY apps/veil/package.json ./apps/veil/
+# If you have other packages that veil depends on, copy their package.json too
+# COPY packages/shared/package.json ./packages/shared/
+
 # Install dependencies
-COPY package.json pnpm-lock.yaml* ./
-RUN pnpm install  --frozen-lockfile
+RUN pnpm install --frozen-lockfile
 
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+
+# Copy the entire deps directory including all node_modules
+COPY --from=deps /app ./
+
+# Copy source code (this won't overwrite node_modules)
 COPY . .
 
 # Next.js collects completely anonymous telemetry data about general usage.
@@ -29,6 +39,7 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED 1
 
 # Build the website as standalone output.
+WORKDIR /app/apps/veil
 RUN pnpm --version && node --version
 RUN pnpm run build
 
@@ -46,12 +57,12 @@ RUN adduser --system --uid 1001 nextjs
 # Set the correct permission for prerender cache
 RUN mkdir .next
 RUN chown nextjs:nodejs .next
-COPY --from=builder /app/public ./public
+COPY --from=builder /app/apps/veil/public ./apps/veil/public
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/apps/veil/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/apps/veil/.next/static ./.next/static
 
 # Hack to add a semblance of logging to the nextjs server-side node instance,
 # so that all route GETs are logged, which adds much-needed context when exceptions
@@ -64,7 +75,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 RUN sed -Ei \
     -e '/await requestHandler/iconst __start = new Date;' \
     -e '/await requestHandler/aconsole.log(`-- [${__start.toISOString()}] ${((new Date - __start) / 1000).toFixed(3)} ${req.method} ${req.url}`);' \
-    node_modules/next/dist/server/lib/start-server.js
+    apps/veil/node_modules/next/dist/server/lib/start-server.js
 
 USER nextjs
 EXPOSE 3000

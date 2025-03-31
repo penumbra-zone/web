@@ -8,7 +8,7 @@ dev:
 
 # build container image
 container:
-  podman build -t ghcr.io/penumbra-zone/veil -f Containerfile .
+  podman build -t ghcr.io/penumbra-zone/veil -f apps/veil/Containerfile ../..
 
 # build, then run the container image. uses local env vars.
 run-container: container

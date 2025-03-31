@@ -1,0 +1,23 @@
+# .dockerignore file for Penumbra web monorepo
+
+# ignore everything by default
+**
+
+# allow JS-related files at any depth
+!**/*.ts
+!**/*.js
+!**/*.mjs
+!**/*.json
+# allow dependency lockfiles
+!pnpm-lock.yaml
+!pnpm-workspace.yaml
+
+# allow general web deps
+!packages/
+
+# allow veil source app source code
+!apps/veil/.next/
+!apps/veil/app/
+!apps/veil/pages/
+!apps/veil/public/
+!apps/veil/src/
