@@ -154,12 +154,14 @@ export const CurrentVotingResults = () => {
                   .map(item => (
                     <TableRow key={item.symbol} item={item} totalVotes={totalVotes} />
                   ))}
-                <TableCell>
-                  <Text technical color='text.secondary'>
-                    Below threshold ({'<'}
-                    {THRESHOLD * 100}%)
-                  </Text>
-                </TableCell>
+                <div className='col-span-5'>
+                  <TableCell>
+                    <Text technical color='text.secondary'>
+                      Below threshold ({'<'}
+                      {THRESHOLD * 100}%)
+                    </Text>
+                  </TableCell>
+                </div>
                 {data
                   .filter(item => item.votes / totalVotes < THRESHOLD)
                   .sort((a, b) => b.votes - a.votes)

@@ -26,7 +26,7 @@ export const TableRow = ({
       </TableCell>
       <TableCell>
         <div className='flex items-center gap-2'>
-          <div className='flex min-w-[106px] h-[6px] bg-other-tonalFill5 rounded-full'>
+          <div className='flex w-[36px] sm:w-[64px] md:w-[106px] h-[6px] bg-other-tonalFill5 rounded-full'>
             <div
               className='h-[6px] bg-secondary-light rounded-full'
               style={{ width: `${(item.votes / totalVotes) * 100}%` }}
