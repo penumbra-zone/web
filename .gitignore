@@ -24,6 +24,8 @@ dist-ssr
 .env.production.local
 .direnv/
 .envrc
+./**/.envrc
+./**/.direnv/
 
 # turbo
 .turbo
