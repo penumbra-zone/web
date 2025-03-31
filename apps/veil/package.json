@@ -7,7 +7,7 @@
   "scripts": {
     "add:tgz": "tsx scripts/add-tgz.ts",
     "build": "next build",
-    "dev": "next dev",
+    "dev": "next dev --turbopack",
     "format": "prettier --write .",
     "generate-pindexer-schema": "tsx ./scripts/generate-pindexer-schema.ts",
     "lint": "eslint src",
@@ -65,7 +65,7 @@
     "lucide-react": "^0.468.0",
     "mobx": "^6.13.5",
     "mobx-react-lite": "^4.0.7",
-    "next": "^14.2.20",
+    "next": "15.2.4",
     "osmo-query": "^16.14.0",
     "pg": "^8.13.1",
     "react": "^18.3.1",
@@ -77,17 +77,18 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.16.0",
+    "@next/bundle-analyzer": "15.2.4",
     "@svgr/webpack": "^8.1.0",
     "@types/chrome": "^0.0.268",
     "@types/lodash": "^4.17.13",
     "@types/milliseconds": "^0.0.33",
     "@types/node": "^22.10.1",
     "@types/pg": "^8.11.10",
-    "@types/react": "^18.3.14",
-    "@types/react-dom": "^18.3.2",
+    "@types/react": "19.0.12",
+    "@types/react-dom": "19.0.4",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.6.0",
-    "eslint-config-next": "14.2.3",
+    "eslint-config-next": "15.2.4",
     "eslint-plugin-react": "^7.37.2",
     "globals": "^15.13.0",
     "kysely-codegen": "^0.17.0",
@@ -101,5 +102,8 @@
   },
   "engines": {
     "node": ">=22"
+  },
+  "pnpm": {
+    "overrides": {}
   }
 }

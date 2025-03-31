@@ -84,7 +84,6 @@ export const ShieldButton = ({ asset }: { asset: UnifiedAsset }) => {
   const [ibcDenom, setIbcDenom] = useState<string>();
   const { data: registry } = useRegistry();
 
-  console.debug(asset);
   useEffect(() => {
     const getIbcDenom = async () => {
       if (asset.publicBalance?.chains[0]) {
