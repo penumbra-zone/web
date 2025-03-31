@@ -1,0 +1,77 @@
+# Container image for Veil, a block explorer for Penumbra.
+ARG NODE_MAJOR_VERSION=22
+FROM docker.io/library/node:${NODE_MAJOR_VERSION} AS base
+
+# Install core deps
+# git-lfs and curl are needed for `prepare` script in `penumbra-zone/keys/`
+RUN apt-get update && apt-get install -y \
+  curl \
+  git-lfs \
+  && rm -rf /var/lib/apt/lists/*  # Fixed path to apt lists
+
+# Install pnpm globally
+ARG PNPM_VERSION=10.7.0
+RUN npm install -g pnpm@${PNPM_VERSION}
+
+# Prepare all node deps in a dependency stage.
+FROM base AS builder
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PATH="${PATH}:/root/.cargo/bin"
+RUN mkdir -p /root/.cargo/bin
+WORKDIR /app
+
+# Install wasm-pack for proto wrangling
+RUN npm install -g wasm-pack
+# Install rust for wasm-pack support
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+
+# Install dependencies first at the root level
+COPY . .
+
+# Install tooling so that build deps like `next` are available.
+RUN pnpm install --frozen-lockfile
+
+# Build everything, to verify that we can, within the container context.
+# This results in a large build context, but it ensures that all deps,
+# particularly the protos, are available for the subsequent veil-only
+# build command. TODO: use `prebuild` steps in the dep packages
+# to ensure a clean dependency graph.
+RUN pnpm build
+
+# Build the veil app, filtering for relevant dependencies.
+RUN pnpm -r --filter "penumbra-veil..." build
+
+# Production image
+FROM base AS runner
+LABEL maintainer="team@penumbralabs.xyz"
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Create normal user for app
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
+
+# Set the correct permission for prerender cache
+RUN mkdir -p .next && \
+   chown nextjs:nodejs .next
+
+# Copy standalone build
+COPY --from=builder --chown=nextjs:nodejs /app/apps/veil/.next/standalone ./
+# Copy public assets
+COPY --from=builder --chown=nextjs:nodejs /app/apps/veil/public /app/apps/veil/public
+COPY --from=builder --chown=nextjs:nodejs /app/apps/veil/.next/static /app/apps/veil/.next/static
+
+# Add logging to Next.js server
+RUN sed -Ei \
+    -e '/await requestHandler/iconst __start = new Date;' \
+    -e '/await requestHandler/aconsole.log(`-- [${__start.toISOString()}] ${((new Date - __start) / 1000).toFixed(3)} ${req.method} ${req.url}`);' \
+    apps/veil/node_modules/next/dist/server/lib/start-server.js
+
+USER nextjs
+EXPOSE 3000
+ENV PORT 3000
+
+# Start server
+CMD HOSTNAME="0.0.0.0" node /app/apps/veil/server.js

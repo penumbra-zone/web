@@ -40,14 +40,14 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/penumbra-zone/web/apps/veil
+          images: ghcr.io/penumbra-zone/veil
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: apps/dex-explorer
+          context: .
           platforms: linux/amd64
-          file: apps/dex-explorer/Containerfile
+          file: ci/containerfiles/Containerfile-veil
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

@@ -88,3 +88,6 @@ fi
 cp -v "$cacheDir/$keysVersion/"*_pk.bin "$outDir"
 
 check_keys "$outDir"
+
+echo "Finished 'download-keys' script from 'penumbra-zone/keys' package"
+exit 0

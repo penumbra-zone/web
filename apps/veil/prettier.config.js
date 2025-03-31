@@ -1,3 +1,3 @@
-import prettierConfig from 'configs/prettier';
+import prettierConfig from '@penumbra-zone/configs/prettier';
 
 export default prettierConfig;
