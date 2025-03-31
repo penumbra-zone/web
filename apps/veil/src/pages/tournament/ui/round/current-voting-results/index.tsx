@@ -114,36 +114,13 @@ export const CurrentVotingResults = () => {
             {isLoading ? (
               Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className='grid grid-cols-subgrid col-span-5'>
-                  <TableCell loading>
-                    <div className='flex items-center gap-2'>
-                      <div className='w-6 h-6 rounded-full overflow-hidden'>
+                  {Array.from({ length: 5 }).map((_, j) => (
+                    <TableCell loading key={j}>
+                      <div className='w-24 h-5'>
                         <Skeleton />
                       </div>
-                      <div className='w-20 h-5'>
-                        <Skeleton />
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell loading>
-                    <div className='w-24 h-5'>
-                      <Skeleton />
-                    </div>
-                  </TableCell>
-                  <TableCell loading>
-                    <div className='w-24 h-5'>
-                      <Skeleton />
-                    </div>
-                  </TableCell>
-                  <TableCell loading>
-                    <div className='w-24 h-5'>
-                      <Skeleton />
-                    </div>
-                  </TableCell>
-                  <TableCell loading>
-                    <div className='w-24 h-5'>
-                      <Skeleton />
-                    </div>
-                  </TableCell>
+                    </TableCell>
+                  ))}
                 </div>
               ))
             ) : (
