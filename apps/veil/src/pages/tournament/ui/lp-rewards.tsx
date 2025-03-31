@@ -11,7 +11,7 @@ import { Density } from '@penumbra-zone/ui/Density';
 import { useLpRewards, BASE_LIMIT, BASE_PAGE, Reward } from '../api/use-lp-rewards';
 import { useSortableTableHeaders } from './sortable-table-header';
 
-export const MyLpRewards = observer(() => {
+export const LpRewards = observer(() => {
   const [page, setPage] = useState(BASE_PAGE);
   const [limit, setLimit] = useState(BASE_LIMIT);
   const { getTableHeader, sortBy } = useSortableTableHeaders<keyof Required<Reward>['sort']>();
