@@ -11,6 +11,7 @@
 # allow dependency lockfiles
 !pnpm-lock.yaml
 !pnpm-workspace.yaml
+!.npmrc
 
 # allow general web deps
 !packages/

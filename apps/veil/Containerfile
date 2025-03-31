@@ -16,7 +16,7 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Copy the entire monorepo structure for dependencies
-COPY package.json pnpm-lock.yaml* pnpm-workspace.yaml ./
+COPY package.json pnpm-lock.yaml* pnpm-workspace.yaml .npmrc ./
 COPY apps/veil/package.json ./apps/veil/
 # If you have other packages that veil depends on, copy their package.json too
 # COPY packages/shared/package.json ./packages/shared/
@@ -75,7 +75,8 @@ COPY --from=builder --chown=nextjs:nodejs /app/apps/veil/.next/static ./.next/st
 RUN sed -Ei \
     -e '/await requestHandler/iconst __start = new Date;' \
     -e '/await requestHandler/aconsole.log(`-- [${__start.toISOString()}] ${((new Date - __start) / 1000).toFixed(3)} ${req.method} ${req.url}`);' \
-    apps/veil/node_modules/next/dist/server/lib/start-server.js
+    node_modules/next/dist/server/lib/start-server.js
+#    apps/veil/node_modules/next/dist/server/lib/start-server.js
 
 USER nextjs
 EXPOSE 3000
