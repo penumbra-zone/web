@@ -5,7 +5,6 @@ import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_
 import { bech32mPositionId } from '@penumbra-zone/bech32m/plpid';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
 import { getAmount } from '@penumbra-zone/getters/value-view';
-import { connectionStore } from '@/shared/model/connection';
 import { DUMMY_VALUE_VIEW, DUMMY_POSITION_ID } from './dummy';
 
 export const BASE_LIMIT = 10;
@@ -55,7 +54,6 @@ export const useLpRewards = (
 ) => {
   const query = useQuery<Required<Reward>[]>({
     queryKey: ['my-lp-rewards', page, limit, sortKey, sortDirection],
-    enabled: connectionStore.connected,
     queryFn: async () => {
       // TODO: use backend API to fetch, filter, and sort rewards
       return new Promise(resolve => {

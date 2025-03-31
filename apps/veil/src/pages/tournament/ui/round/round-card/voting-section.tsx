@@ -6,7 +6,6 @@ import { Text } from '@penumbra-zone/ui/Text';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
-// import { Wallet2 } from 'lucide-react';
 import { Ban, Coins, Check, Wallet2, ExternalLink } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 import { PagePath } from '@/shared/const/pages';
@@ -19,7 +18,7 @@ export const VotingSection = observer(
     const delegatedAmount = 1000;
     const currentEpoch = 136;
     const didVote = false;
-    const epochEnded = true;
+    const epochEnded = currentEpoch > epoch;
     const valueView = new ValueView({
       valueView: {
         value: {
@@ -73,7 +72,7 @@ export const VotingSection = observer(
               <Ban className='w-full h-full' />
             </div>
             <Text variant='small' color='text.secondary'>
-              You can't vote in this epoch because you delegated UM after the epoch started. You'll
+              You can’t vote in this epoch because you delegated UM after the epoch started. You’ll
               be able to vote next epoch.
             </Text>
           </div>
@@ -86,6 +85,7 @@ export const VotingSection = observer(
       );
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- temporary
     if (didVote) {
       if (epochEnded) {
         return (
@@ -99,7 +99,7 @@ export const VotingSection = observer(
               </Text>
               <ValueViewComponent valueView={valueView} />
             </div>
-            <Link href={`${PagePath.TournamentRound.replace(':epoch', currentEpoch.toString())}`}>
+            <Link href={PagePath.TournamentRound.replace(':epoch', currentEpoch.toString())}>
               <Button actionType='default'>Go To Current Epoch #{currentEpoch}</Button>
             </Link>
           </>
@@ -107,20 +107,19 @@ export const VotingSection = observer(
       }
 
       return (
-        <>
-          <div className='flex gap-4 color-text-secondary items-center'>
-            <div className='size-10 text-success-light'>
-              <Check className='w-full h-full' />
-            </div>
-            <Text variant='small' color='text.secondary'>
-              You have already voted in this epoch. Come back next epoch to vote again.
-            </Text>
-            <ValueViewComponent valueView={valueView} />
+        <div className='flex gap-4 color-text-secondary items-center'>
+          <div className='size-10 text-success-light'>
+            <Check className='w-full h-full' />
           </div>
-        </>
+          <Text variant='small' color='text.secondary'>
+            You have already voted in this epoch. Come back next epoch to vote again.
+          </Text>
+          <ValueViewComponent valueView={valueView} />
+        </div>
       );
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- temporary
     if (delegatedAmount) {
       return (
         <>
@@ -129,7 +128,7 @@ export const VotingSection = observer(
               <Coins className='w-full h-full' />
             </div>
             <Text variant='small' color='text.secondary'>
-              You’ve delegated UM and now eligible to vote in this epoch.
+              You’ve delegated UM and are now eligible to vote in this epoch.
             </Text>
             <ValueViewComponent valueView={valueView} />
           </div>
