@@ -11,9 +11,9 @@ import { Code, ConnectError } from '@connectrpc/connect';
 export const SyncingDialog = () => {
   const initialStatus = useInitialStatus();
   const status = useStatus();
-  const { error: streamError } = useStore(statusStreamStateSelector);
+  const stream = useStore(statusStreamStateSelector);
 
-  const [didClose, setDidClose] = useState(false);
+  const [didClose, setDidClose] = useState<boolean>(false);
 
   const syncData = useMemo(
     () => ({ ...initialStatus.data, ...status.data }),
@@ -29,82 +29,80 @@ export const SyncingDialog = () => {
   );
 
   const isUnavailable = useMemo(
-    () => streamError instanceof ConnectError && streamError.code === Code.Unavailable,
-    [streamError],
+    () => stream.error instanceof ConnectError && stream.error.code === Code.Unavailable,
+    [stream.error],
   );
 
-  const dialogErrorMessage = useMemo(() => {
-    if (streamError instanceof ConnectError) {
-      return streamError.rawMessage;
-    } else if (streamError instanceof Error) {
-      return streamError.message;
-    } else if (streamError != null) {
-      return String(streamError as string);
-    } else {
-      return null;
-    }
-  }, [streamError]);
+  const dialogText = useMemo(() => {
+    let detail: string;
 
-  /** @todo do we need to show all of these distinct states? */
-  const dialogSyncingText = useMemo(() => {
     if (isUnavailable) {
-      return 'Connection unavailable.';
-    } else if (streamError != null) {
-      return 'Retrying...';
+      detail = 'Connection unavailable.';
+    } else if (stream.error) {
+      detail = 'Retrying...';
     } else if (!initialStatus.data) {
-      return 'Querying local block height...';
+      detail = 'Querying local block height...';
     } else if (!status.data) {
-      return 'Fetching remote block height...';
+      detail = 'Fetching remote block height...';
     } else if (!isSynced) {
-      return 'Decrypting block stream...';
+      detail = 'Decrypting block stream...';
     } else {
-      return 'If you can read this, something is broken.';
+      detail = 'This dialog should not be visible.';
     }
-  }, [isUnavailable, streamError, initialStatus.data, status.data, isSynced]);
 
-  const dialogInstructionsText = useMemo(
-    () =>
-      isUnavailable
+    let errorMessage: string;
+    if (!(stream.error instanceof Error)) {
+      errorMessage = String(stream.error);
+    } else if (stream.error instanceof ConnectError) {
+      errorMessage = stream.error.rawMessage;
+    } else {
+      errorMessage = stream.error.message;
+    }
+
+    return {
+      title: stream.error ? 'Syncing interrupted' : 'Syncing...',
+      error: errorMessage,
+      instructions: isUnavailable
         ? 'Please reload the page.'
         : 'You can click away, but your data may not be current.',
-    [isUnavailable],
-  );
+      detail,
+    };
+  }, [initialStatus.data, isSynced, isUnavailable, status.data, stream.error]);
 
   return (
-    <Dialog isOpen={(!isSynced || !!streamError) && !didClose} onClose={() => setDidClose(true)}>
-      <Dialog.Content
-        title={streamError != null ? 'Syncing interrupted' : 'Syncing...'}
-        zIndex={9999}
-      >
-        <div className='text-center'>
-          {streamError != null && globalThis.__DEV__ && (
-            <Text technical color={theme => theme.caution.main} as='div'>
-              Error: {dialogErrorMessage}
+    <Dialog isOpen={!didClose && (!isSynced || !!stream.error)} onClose={() => setDidClose(true)}>
+      <Dialog.Content title={dialogText.title} zIndex={9999}>
+        <div className='p-16'>
+          <SyncAnimation error={stream.error} running={stream.running} />
+
+          <div className='text-center'>
+            {dialogText.error && globalThis.__DEV__ && (
+              <Text technical color={theme => theme.caution.main} as='div'>
+                Error: {dialogText.error}
+              </Text>
+            )}
+          </div>
+
+          <div className='text-center'>
+            <Text body as='p'>
+              {dialogText.detail}
             </Text>
-          )}
-        </div>
-
-        <SyncAnimation pause={!!streamError} />
-
-        <div className='text-center'>
-          <Text body as='p'>
-            {dialogSyncingText}
-          </Text>
-          <Text small as='p'>
-            {dialogInstructionsText}
-          </Text>
-          {!!(syncData.fullSyncHeight && syncData.latestKnownBlockHeight) && (
-            <div className='mt-6'>
-              <BlockProgress
-                fullSyncHeight={syncData.fullSyncHeight}
-                latestKnownBlockHeight={syncData.latestKnownBlockHeight}
-              />
-              <RemainingTime
-                fullSyncHeight={syncData.fullSyncHeight}
-                latestKnownBlockHeight={syncData.latestKnownBlockHeight}
-              />
-            </div>
-          )}
+            <Text small as='p'>
+              {dialogText.instructions}
+            </Text>
+            {!!(syncData.fullSyncHeight && syncData.latestKnownBlockHeight) && (
+              <div className='mt-6'>
+                <BlockProgress
+                  fullSyncHeight={syncData.fullSyncHeight}
+                  latestKnownBlockHeight={syncData.latestKnownBlockHeight}
+                />
+                <RemainingTime
+                  fullSyncHeight={syncData.fullSyncHeight}
+                  latestKnownBlockHeight={syncData.latestKnownBlockHeight}
+                />
+              </div>
+            )}
+          </div>
         </div>
       </Dialog.Content>
     </Dialog>
