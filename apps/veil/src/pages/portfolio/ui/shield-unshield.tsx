@@ -1,16 +1,23 @@
 import type { UnifiedAsset } from '@/pages/portfolio/api/use-unified-assets.ts';
 import { Button } from '@penumbra-zone/ui/Button';
+import { Tooltip } from '@penumbra-zone/ui/Tooltip';
 import { Widget } from '@skip-go/widget';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { X } from 'lucide-react';
 import { useRegistry } from '@/shared/api/registry.ts';
+import { getMetadata } from '@penumbra-zone/getters/value-view';
 
 /**
  * Computes the IBC denom hash for Penumbra-1
- * If the denom already starts with "transfer/", it's assumed to be a full trace path
- * Otherwise, constructs the trace path using channelId and denom
+ * If the denom already starts with "ibc/", it's assumed to be already computed.
+ * If the denom starts with "transfer/", it's assumed to be a full trace path.
+ * Otherwise, constructs the trace path using channelId and denom.
  */
 async function computeIbcDenom(denom: string, channelId: string): Promise<string> {
+  // Check if denom is already an IBC hash
+  if (denom.startsWith('ibc/')) {
+    return denom;
+  }
   // Check if denom already is a full trace path
   const ibcTraceStr = denom.startsWith('transfer/') ? denom : `transfer/${channelId}/${denom}`;
 
@@ -32,14 +39,14 @@ async function computeIbcDenom(denom: string, channelId: string): Promise<string
   return `ibc/${hashHex}`;
 }
 
-// @ts-expect-error TODO: implement
-export function UnshieldButton({ _asset }: { _asset: UnifiedAsset }) {
+export function UnshieldButton({ asset }: { asset: UnifiedAsset }) {
+  const handleClick = () => {
+    console.warn('Unshield button clicked for asset:', asset.symbol);
+    // TODO: invoke dialog from minifront here or call unshielding function
+  };
+
   return (
-    <Button
-      onClick={() => {
-        // invoke dialog from minifront here
-      }}
-    >
+    <Button onClick={handleClick} disabled={asset.shieldedBalances.length === 0}>
       Unshield
     </Button>
   );
@@ -81,47 +88,103 @@ const theme = {
 
 export const ShieldButton = ({ asset }: { asset: UnifiedAsset }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [ibcDenom, setIbcDenom] = useState<string>();
+  const [ibcDenom, setIbcDenom] = useState<string | null>(null);
+  const [isDisabled, setIsDisabled] = useState(true);
   const { data: registry } = useRegistry();
 
-  useEffect(() => {
-    const getIbcDenom = async () => {
-      if (asset.publicBalance?.chains[0]) {
-        try {
-          // Get the channelId for the asset's origin chain
-          const channelId =
-            registry?.ibcConnections.find(chain => chain.chainId === asset.publicBalance?.chains[0])
-              ?.channelId ?? '';
+  // Use the first public balance for the shielding operation
+  const firstBalance = asset.publicBalances[0];
+  const sourceChainId = firstBalance?.chainId;
 
-          // Use base denom if available, otherwise try to get from denomUnits
-          const originDenom = asset.metadata.base || (asset.metadata.denomUnits[0]?.denom ?? '');
-          if (originDenom === 'upenumbra') {
-            setIbcDenom('upenumbra');
-            return;
-          }
-          if (channelId && originDenom) {
-            const denom = await computeIbcDenom(originDenom, channelId);
-            setIbcDenom(denom);
-          }
-        } catch (error) {
-          // Fallback to undefined if computation fails
+  // Extract source denom information
+  const sourceDenom = useMemo(() => {
+    if (!firstBalance) {
+      return undefined;
+    }
+
+    // Try using the denom property directly
+    if (firstBalance.denom) {
+      return firstBalance.denom;
+    }
+
+    return getMetadata(firstBalance.valueView).base;
+  }, [firstBalance]);
+
+  useEffect(() => {
+    // Reset state on asset change
+    setIbcDenom(null);
+    setIsDisabled(true);
+
+    const getIbcDenom = async () => {
+      // Skip if no registry or public balances or source denom
+      if (!registry || !firstBalance || !sourceDenom) {
+        return;
+      }
+
+      try {
+        // Use base denom if available, otherwise try to get from denomUnits
+        const originDenom = asset.metadata.base || (asset.metadata.denomUnits[0]?.denom ?? '');
+
+        if (!originDenom) {
+          console.error('ShieldButton: Missing origin denom for asset:', asset.symbol);
+          return;
         }
+
+        // Native Penumbra asset doesn't need IBC calculation
+        if (originDenom === 'upenumbra') {
+          setIbcDenom('upenumbra');
+          setIsDisabled(false);
+          return;
+        }
+
+        // Find the connection for the source chain
+        const connection = registry.ibcConnections.find(chain => chain.chainId === sourceChainId);
+
+        if (!connection?.channelId) {
+          console.error(
+            `ShieldButton: Missing IBC channelId for source chain ${sourceChainId} for asset:`,
+            asset.symbol,
+          );
+          return;
+        }
+
+        // Calculate the IBC denom
+        const calculatedDenom = await computeIbcDenom(originDenom, connection.channelId);
+        setIbcDenom(calculatedDenom);
+        setIsDisabled(false);
+      } catch (error) {
+        console.error(
+          'ShieldButton: Failed to compute IBC denom for asset:',
+          asset.symbol,
+          'Error:',
+          error,
+        );
       }
     };
 
     void getIbcDenom();
-  }, [asset, registry?.ibcConnections]);
+  }, [asset.symbol, asset.metadata, sourceChainId, registry, firstBalance, sourceDenom]);
+
+  // Button with tooltip if needed
+  const buttonElement = (
+    <Button
+      actionType='accent'
+      density='slim'
+      priority='secondary'
+      onClick={() => setIsOpen(true)}
+      disabled={isDisabled}
+    >
+      Shield
+    </Button>
+  );
 
   return (
     <>
-      <Button
-        actionType={'accent'}
-        density='slim'
-        priority='secondary'
-        onClick={() => setIsOpen(true)}
-      >
-        Shield
-      </Button>
+      {isDisabled ? (
+        <Tooltip message='Cannot determine IBC path for shielding'>{buttonElement}</Tooltip>
+      ) : (
+        buttonElement
+      )}
 
       {isOpen && (
         <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50'>
@@ -132,30 +195,31 @@ export const ShieldButton = ({ asset }: { asset: UnifiedAsset }) => {
             >
               <X size={24} />
             </button>
-            <Widget
-              defaultRoute={{
-                srcChainId: asset.publicBalance?.chains[0],
-                destChainId: 'penumbra-1',
-                srcAssetDenom:
-                  asset.publicBalance?.valueView?.valueView.case === 'knownAssetId'
-                    ? asset.publicBalance.valueView.valueView.value.metadata?.denomUnits[0]?.denom
-                    : undefined,
-                destAssetDenom:
-                  ibcDenom ??
-                  (asset.publicBalance?.valueView?.valueView.case === 'knownAssetId'
-                    ? asset.publicBalance.valueView.valueView.value.metadata?.denomUnits[0]?.denom
-                    : undefined),
-              }}
-              filter={{
-                destination: {
-                  'penumbra-1': undefined,
-                },
-                source: {
-                  [asset.publicBalance?.chains[0] ?? '']: undefined,
-                },
-              }}
-              theme={theme}
-            />
+
+            {sourceChainId && sourceDenom && ibcDenom ? (
+              <Widget
+                key={`${sourceChainId}-${sourceDenom}-${ibcDenom}`}
+                defaultRoute={{
+                  srcChainId: sourceChainId,
+                  destChainId: 'penumbra-1',
+                  srcAssetDenom: sourceDenom,
+                  destAssetDenom: ibcDenom,
+                }}
+                filter={{
+                  destination: {
+                    'penumbra-1': undefined,
+                  },
+                  source: {
+                    [sourceChainId]: undefined,
+                  },
+                }}
+                theme={theme}
+              />
+            ) : (
+              <div className='text-red-500 p-4 text-center'>
+                Error: Could not determine valid shielding route information.
+              </div>
+            )}
           </div>
         </div>
       )}

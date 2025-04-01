@@ -7,10 +7,11 @@ import { Skeleton } from '@/shared/ui/skeleton';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 
 import { observer } from 'mobx-react-lite';
-import { useUnifiedAssets } from '../api/use-unified-assets.ts';
+import { UnifiedAsset, useUnifiedAssets } from '../api/use-unified-assets.ts';
 import { useAssetPrices } from '../api/use-asset-prices.ts';
 import { CosmosConnectButton } from '@/features/cosmos/cosmos-connect-button.tsx';
-import { ShieldButton, UnshieldButton } from './shield-unshield.tsx';
+import { ShieldButton } from './shield-unshield.tsx';
+import { pnum } from '@penumbra-zone/types/pnum';
 
 const LoadingState = () => {
   return (
@@ -110,21 +111,44 @@ const AssetRow = observer(
     isCosmosConnected,
     isLastRow,
   }: {
-    asset: ReturnType<typeof useUnifiedAssets>['unifiedAssets'][0];
+    asset: UnifiedAsset;
     price?: { price: number; quoteSymbol: string };
     isCosmosConnected: boolean;
     isLastRow: boolean;
   }) => {
     const variant = isLastRow ? 'lastCell' : 'cell';
 
+    // Calculate values on demand
+    const hasShieldedBalance = asset.shieldedBalances.length > 0;
+    const hasPublicBalance = asset.publicBalances.length > 0;
+
+    // Calculate values using price data
+    const shieldedValue =
+      hasShieldedBalance && price
+        ? asset.shieldedBalances.reduce((sum, balance) => {
+            const numericAmount = pnum(balance.valueView).toNumber();
+            return sum + numericAmount * price.price;
+          }, 0)
+        : 0;
+
+    const publicValue =
+      hasPublicBalance && price
+        ? asset.publicBalances.reduce((sum, balance) => {
+            const numericAmount = pnum(balance.valueView).toNumber();
+            return sum + numericAmount * price.price;
+          }, 0)
+        : 0;
+
+    const totalValue = shieldedValue + publicValue;
+
     return (
       <div className='grid grid-cols-subgrid col-span-6'>
         <TableCell variant={variant}>
           <div className='flex items-center'>
-            {asset.shieldedBalance ? (
+            {hasShieldedBalance ? (
               <>
                 <ValueViewComponent
-                  valueView={asset.shieldedBalance.valueView}
+                  valueView={asset.shieldedBalances[0]?.valueView}
                   trailingZeros={false}
                   priority={'primary'}
                   context={'table'}
@@ -141,10 +165,10 @@ const AssetRow = observer(
         <TableCell variant={variant}>
           {isCosmosConnected ? (
             <div className='flex items-center gap-3 justify-between w-full'>
-              {asset.publicBalance ? (
+              {hasPublicBalance ? (
                 <>
                   <ValueViewComponent
-                    valueView={asset.publicBalance.valueView}
+                    valueView={asset.publicBalances[0]?.valueView}
                     trailingZeros={false}
                     priority={'primary'}
                     context={'table'}
@@ -177,9 +201,9 @@ const AssetRow = observer(
           )}
         </TableCell>
         <TableCell variant={variant}>
-          {asset.shieldedValue > 0 ? (
+          {shieldedValue > 0 ? (
             <Text variant={'smallTechnical'} color='text.secondary'>
-              {asset.shieldedValue.toFixed(2)} USDC
+              {shieldedValue.toFixed(2)} USDC
             </Text>
           ) : (
             <Text variant={'smallTechnical'} color='text.secondary'>
@@ -188,9 +212,9 @@ const AssetRow = observer(
           )}
         </TableCell>
         <TableCell variant={variant}>
-          {asset.publicValue > 0 ? (
+          {publicValue > 0 ? (
             <Text variant={'smallTechnical'} color='text.secondary'>
-              {asset.publicValue.toFixed(2)} USDC
+              {publicValue.toFixed(2)} USDC
             </Text>
           ) : (
             <Text variant={'smallTechnical'} color='text.secondary'>
@@ -199,9 +223,9 @@ const AssetRow = observer(
           )}
         </TableCell>
         <TableCell variant={variant}>
-          {asset.totalValue > 0 ? (
+          {totalValue > 0 ? (
             <Text variant={'smallTechnical'} color='text.secondary'>
-              {asset.totalValue.toFixed(2)} USDC
+              {totalValue.toFixed(2)} USDC
             </Text>
           ) : (
             <Text variant={'smallTechnical'} color='text.secondary'>
