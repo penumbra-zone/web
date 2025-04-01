@@ -14,49 +14,26 @@ import { useBalances as usePenumbraBalances } from '@/shared/api/balances';
 import { pnum } from '@penumbra-zone/types/pnum';
 import { assetPatterns } from '@penumbra-zone/types/assets';
 
-/* TODO: what do we need from an asset:
- *  - the shielded balance, in a valueview
- * - the public balance, in a valueview
- * - the public chains it is on (chainIds, assetIds, denoms, and the respective balances (can be valueview)
- * - metadata from penumbra
- * - shielded balance on penumbra, in a valueView
- * - a symbol, for deduplication.
- * - the equivalent total USDC values for public and shielded
- * */
-
 /**
  * Interface representing a unified asset with both shielded and public balances
  */
 export interface UnifiedAsset {
   // Common asset information
   symbol: string;
-  penumbraAssetId?: string; // Penumbra asset ID if available
   metadata: Metadata; // Display metadata (name, icon, etc.)
 
   // Balances
-  shieldedBalance: {
-    amount: string;
+  shieldedBalances: {
     valueView: ValueView; // Penumbra ValueView for consistent display
-    hasError: boolean;
-  } | null;
+  }[];
 
-  publicBalance: {
-    amount: string;
-    denom: string;
-    chains: string[]; // All the chains the user has this public asset on
-    valueView?: ValueView; // Converted to ValueView format
-    hasError: boolean;
-  } | null;
+  publicBalances: PublicBalance[];
+}
 
-  // Values (priced in USD or stablecoin)
-  shieldedValue: number;
-  publicValue: number;
-  totalValue: number;
-
-  // Capabilities
-  canDeposit: boolean;
-  canWithdraw: boolean;
-  originChain?: string; // Origin chain for deposit/withdraw operations
+export interface PublicBalance {
+  chainId: string; // where this particular balance comes from
+  denom: string; // ibc denom, including channel
+  valueView: ValueView; // Converted to ValueView format
 }
 
 const normalizeSymbol = (symbol: string): string => {
@@ -75,13 +52,10 @@ export const shouldFilterAsset = (symbol: string): boolean => {
 };
 
 /**
- * Determines if an asset can be deposited to Penumbra based on IBC denoms
+ * Creates a unique key for a public balance using chainId and denom
  */
-// @ts-expect-error -- TODO: will be useful later
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- will be useful later
-const canDepositToPenumbra = (symbol: string, ibcDenoms: string[]): boolean => {
-  /*  TODO: can deposit to penumbra == has an IBC to penumbra - this can be decided from the ibc connections in the penumbra registry */
-  return ibcDenoms.some(denom => denom.includes(symbol));
+const getPublicBalanceKey = (chainId: string, denom: string): string => {
+  return `${chainId}:${denom}`;
 };
 
 /**
@@ -145,49 +119,30 @@ export const useUnifiedAssets = () => {
           const metadata = getMetadataFromBalancesResponse(balance);
           const valueView = getBalanceView(balance);
 
-          // Get price information
-          const priceData = prices[metadata.symbol]?.price ?? 0;
-
-          const numericAmount = pnum(valueView).toNumber();
-
-          const assetValue = numericAmount * priceData;
-
-          // Create asset object
+          // Create asset object with new structure
           return {
             symbol: metadata.symbol,
-            assetId: metadata.penumbraAssetId?.inner.toString(),
             metadata,
-            shieldedBalance: {
-              amount: numericAmount.toString(),
-              valueView,
-              hasError: false,
-            },
-            publicBalance: null,
-            shieldedValue: assetValue,
-            publicValue: 0,
-            totalValue: assetValue,
-            canDeposit: false,
-            canWithdraw: true,
-          };
+            shieldedBalances: [
+              {
+                valueView,
+              },
+            ],
+            publicBalances: [],
+          } as UnifiedAsset;
         } catch (error) {
           console.error('Error processing Penumbra balance', error);
           return null;
         }
       })
       .filter(Boolean) as UnifiedAsset[];
-  }, [isPenumbraConnected, penumbraBalances, prices]);
+  }, [isPenumbraConnected, penumbraBalances]);
 
   // Create unified assets from Cosmos (public) balances
   const publicAssets = useMemo(() => {
     if (!isCosmosConnected || !cosmosBalances.length || !registry) {
       return [];
     }
-
-    /* TODO: this should just match the assets to the asset registry from cosmos and maybe penumbra. no need for shenanigans.
-     *  also: simplify filtering and connection checking
-     * - use pnum as much as possible = keep the numbers in pnum for as long as possible
-     * - check and write tests for prices sourcing. is there a simpler way?
-     * - write integration tests for the crucial calculations, with real data from different chains and assets */
 
     return cosmosBalances
       .map(({ asset, amount, chainId }) => {
@@ -215,36 +170,26 @@ export const useUnifiedAssets = () => {
             },
           });
 
-          const priceData = prices[metadata.symbol]?.price ?? 0;
-          const numericAmount = pnum(valueView).toNumber();
-          const assetValue = numericAmount * priceData;
-
+          // Create asset object with new structure
           return {
             symbol: asset.symbol,
-            assetId: '',
             metadata,
-            shieldedBalance: null,
-            publicBalance: {
-              amount: pnum(amount).toString(),
-              denom: asset.ibc?.source_denom,
-              chains: [chainId],
-              valueView,
-              hasError: false,
-            },
-            shieldedValue: 0,
-            publicValue: assetValue,
-            totalValue: assetValue,
-            canDeposit: true,
-            canWithdraw: false,
-            originChain: chainId,
-          };
+            shieldedBalances: [],
+            publicBalances: [
+              {
+                chainId,
+                denom: asset.ibc?.source_denom ?? asset.base,
+                valueView,
+              },
+            ],
+          } as UnifiedAsset;
         } catch (error) {
           console.error('Error processing Cosmos balance', error);
           return null;
         }
       })
       .filter(Boolean) as UnifiedAsset[];
-  }, [isCosmosConnected, cosmosBalances, registry, prices]);
+  }, [isCosmosConnected, cosmosBalances, registry]);
 
   // Merge shielded and public assets
   const unifiedAssets = useMemo(() => {
@@ -262,30 +207,55 @@ export const useUnifiedAssets = () => {
       const existing = assetMap.get(key);
 
       if (existing) {
-        // Merge with existing shielded asset
-        existing.publicBalance = asset.publicBalance;
-        existing.publicValue = asset.publicValue;
-        existing.totalValue = existing.shieldedValue + asset.publicValue;
-        existing.canDeposit = asset.canDeposit;
-        existing.originChain = asset.originChain;
+        // Merge with existing asset by combining the public balances
+        // but deduplicating by chainId+denom combination
+        const balanceKeys = new Set<string>();
+
+        // Add keys for existing balances
+        existing.publicBalances.forEach(balance => {
+          balanceKeys.add(getPublicBalanceKey(balance.chainId, balance.denom));
+        });
+
+        // Only add public balances that don't already exist
+        asset.publicBalances.forEach(balance => {
+          const balanceKey = getPublicBalanceKey(balance.chainId, balance.denom);
+          if (!balanceKeys.has(balanceKey)) {
+            existing.publicBalances.push(balance);
+            balanceKeys.add(balanceKey);
+          }
+        });
       } else {
         // Add new public-only asset
         assetMap.set(key, asset);
       }
     });
 
-    // Convert to array and sort by total value
-    return Array.from(assetMap.values()).sort((a, b) => b.totalValue - a.totalValue);
+    // Convert to array
+    return Array.from(assetMap.values());
   }, [shieldedAssets, publicAssets]);
 
-  // Calculate totals
+  // Calculate totals based on prices
   const totalShieldedValue = useMemo(() => {
-    return unifiedAssets.reduce((total, asset) => total + asset.shieldedValue, 0);
-  }, [unifiedAssets]);
+    return unifiedAssets.reduce((total, asset) => {
+      const assetShieldedValue = asset.shieldedBalances.reduce((sum, balance) => {
+        const numericAmount = pnum(balance.valueView).toNumber();
+        const priceData = prices[asset.symbol]?.price ?? 0;
+        return sum + numericAmount * priceData;
+      }, 0);
+      return total + assetShieldedValue;
+    }, 0);
+  }, [unifiedAssets, prices]);
 
   const totalPublicValue = useMemo(() => {
-    return unifiedAssets.reduce((total, asset) => total + asset.publicValue, 0);
-  }, [unifiedAssets]);
+    return unifiedAssets.reduce((total, asset) => {
+      const assetPublicValue = asset.publicBalances.reduce((sum, balance) => {
+        const numericAmount = pnum(balance.valueView).toNumber();
+        const priceData = prices[asset.symbol]?.price ?? 0;
+        return sum + numericAmount * priceData;
+      }, 0);
+      return total + assetPublicValue;
+    }, 0);
+  }, [unifiedAssets, prices]);
 
   const totalValue = useMemo(() => {
     return totalShieldedValue + totalPublicValue;
