@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import type { LeaderboardPageInfo, LeaderboardSearchParams } from './utils';
-import { apiFetch } from '@/shared/utils/api-fetch';
+// import { apiFetch } from '@/shared/utils/api-fetch';
 import { PositionState_PositionStateEnum } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { DUMMY_UM_METADATA, DUMMY_USDC_METADATA } from '@/pages/tournament/api/dummy';

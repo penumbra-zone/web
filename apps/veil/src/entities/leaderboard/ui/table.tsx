@@ -18,9 +18,7 @@ import { useLeaderboard } from '@/entities/leaderboard/api/use-leaderboard';
 import { formatAge, getAssetId } from './utils';
 import { stateToString } from '@/entities/position/model/state-to-string';
 import { useSearchParams } from 'next/navigation';
-import { pnum } from '@penumbra-zone/types/pnum';
 import { Pagination } from '@penumbra-zone/ui/Pagination';
-import { PointsPnl } from './points-pnl';
 import { useSortableTableHeaders } from '@/pages/tournament/ui/sortable-table-header';
 
 export const LeaderboardTable = ({
@@ -66,12 +64,10 @@ export const LeaderboardTable = ({
       (positions ?? []).map(position => ({
         ...position,
         sortValues: {
-          positionId: position.positionId,
           executions: position.executions,
-          fees1: pnum(position.fees1).toNumber(),
-          volume1: pnum(position.volume1).toNumber(),
-          fees2: pnum(position.fees2).toNumber(),
-          volume2: pnum(position.volume2).toNumber(),
+          pnlPercentage: position.pnlPercentage,
+          points: Math.abs(position.pnlPercentage),
+          age: position.closingTime - position.openingTime,
         },
       })),
       `sortValues.${sortBy.key}`,
@@ -116,12 +112,12 @@ export const LeaderboardTable = ({
           <div className='grid grid-cols-subgrid col-span-8'>
             {getTableHeader('executions', 'Execs')}
             {getTableHeader('points', 'Points')}
-            {getTableHeader('pnl', 'PnL')}
+            {getTableHeader('pnlPercentage', 'PnL')}
             {getTableHeader('age', 'Age')}
-            {getTableHeader('volume', 'Volume')}
-            {getTableHeader('fees', 'Fees')}
-            {getTableHeader('state', 'State')}
-            {getTableHeader('positionId', 'Position ID')}
+            <TableCell heading>Volume</TableCell>
+            <TableCell heading>Fees</TableCell>
+            <TableCell heading>State</TableCell>
+            <TableCell heading>Position ID</TableCell>
           </div>
 
           {isLoading ? (
@@ -157,10 +153,17 @@ export const LeaderboardTable = ({
                         {position.executions}
                       </TableCell>
                       <TableCell numeric variant={variant} loading={isLoading}>
-                        {Math.abs(position.pnlPercentage)}
+                        {Math.abs(position.pnlPercentage)}%
                       </TableCell>
                       <TableCell numeric variant={variant} loading={isLoading}>
-                        {position.pnlPercentage}
+                        <Text
+                          smallTechnical
+                          color={
+                            position.pnlPercentage >= 0 ? 'success.light' : 'destructive.light'
+                          }
+                        >
+                          {position.pnlPercentage}%
+                        </Text>
                       </TableCell>
                       <TableCell numeric variant={variant}>
                         {formatAge(position.openingTime)}

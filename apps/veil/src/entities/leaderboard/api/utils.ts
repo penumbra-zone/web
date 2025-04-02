@@ -34,6 +34,7 @@ export interface LeaderboardData {
   openingTime: number;
   closingTime: number;
   state: PositionState_PositionStateEnum;
+  pnlPercentage: number;
 }
 
 export interface LeaderboardPageInfo {
