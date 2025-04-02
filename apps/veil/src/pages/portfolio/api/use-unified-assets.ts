@@ -60,7 +60,6 @@ export const shouldFilterAsset = (symbol: string): boolean => {
     assetPatterns.unbondingToken,
     assetPatterns.votingReceipt,
     assetPatterns.proposalNft,
-    assetPatterns.delegationToken,
   ].some(pattern => pattern.matches(symbol));
 };
 
@@ -86,7 +85,9 @@ export const useUnifiedAssets = () => {
 
   const { data: registry, isLoading: registryLoading } = useRegistry();
   const filteredAssetSymbols = [
-    ...penumbraBalances.map(getMetadataFromBalancesResponse),
+    ...penumbraBalances
+      .map(getMetadataFromBalancesResponse.optional)
+      .filter((m): m is Metadata => m !== undefined),
     ...cosmosBalances.map(
       ({ asset }) =>
         new Metadata({
@@ -117,6 +118,13 @@ export const useUnifiedAssets = () => {
     }
 
     return penumbraBalances
+      .filter(balance => {
+        const isKnownAsset = balance.balanceView?.valueView.case === 'knownAssetId';
+        if (!isKnownAsset) {
+          return false;
+        }
+        return true;
+      })
       .filter(balance => {
         const metadata = getMetadataFromBalancesResponse(balance);
         return !shouldFilterAsset(metadata.display);
