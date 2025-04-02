@@ -37,7 +37,7 @@ jobs:
         run: pnpm install
 
       - name: Build all packages that UI depends on
-        run: pnpm exec turbo build --filter=./packages/ui
+        run: pnpm exec turbo build --cache-dir=.turbo --filter=./packages/ui
 
       - name: Build static site
         run: pnpm build-storybook
