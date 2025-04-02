@@ -450,95 +450,83 @@ class Pindexer {
       .executeTakeFirst();
   }
 
-  // async queryLeaderboard(
-  //   limit: number,
-  //   offset: number,
-  //   quoteHex: string | undefined,
-  //   startBlock: number,
-  //   endBlock: number,
-  // ) {
-  //   return Promise.resolve({
-  //     totalCount: 0,
-  //     items: [],
-  //   });
-  //   // const positionExecutions = await this.db
-  //   //   .selectFrom('dex_ex_position_executions')
-  //   //   .select(exp => [
-  //   //     'position_id',
-  //   //     'context_asset_start',
-  //   //     'context_asset_end',
-  //   //     sql<number>`sum(${exp.ref('delta_1')} + ${exp.ref('lambda_1')})`.as('volume1'),
-  //   //     sql<number>`sum(${exp.ref('delta_2')} + ${exp.ref('lambda_2')})`.as('volume2'),
-  //   //     sql<number>`sum(${exp.ref('fee_1')})`.as('fees1'),
-  //   //     sql<number>`sum(${exp.ref('fee_2')})`.as('fees2'),
-  //   //     sql<number>`CAST(count(*) AS INTEGER)`.as('executionCount'),
-  //   //   ])
-  //   //   .$if(quoteHex !== undefined, qb =>
-  //   //     qb.where('context_asset_end', '=', Buffer.from(hexToUint8Array(quoteHex!))),
-  //   //   )
-  //   //   .groupBy(['position_id', 'context_asset_start', 'context_asset_end'])
-  //   //   .orderBy('executionCount', 'desc');
-  //   // console.log('TCL: positionExecutions', positionExecutions);
+  async queryLeaderboard(
+    limit: number,
+    offset: number,
+    quoteHex: string | undefined,
+    startBlock: number,
+    endBlock: number,
+  ) {
+    const positionExecutions = this.db
+      .selectFrom('dex_ex_position_executions')
+      .select(exp => [
+        'position_id',
+        'context_asset_start',
+        'context_asset_end',
+        sql<number>`sum(${exp.ref('delta_1')} + ${exp.ref('lambda_1')})`.as('volume1'),
+        sql<number>`sum(${exp.ref('delta_2')} + ${exp.ref('lambda_2')})`.as('volume2'),
+        sql<number>`sum(${exp.ref('fee_1')})`.as('fees1'),
+        sql<number>`sum(${exp.ref('fee_2')})`.as('fees2'),
+        sql<number>`CAST(count(*) AS INTEGER)`.as('executionCount'),
+      ])
+      .$if(quoteHex !== undefined, qb =>
+        qb.where('context_asset_end', '=', Buffer.from(hexToUint8Array(quoteHex!))),
+      )
+      .groupBy(['position_id', 'context_asset_start', 'context_asset_end'])
+      .orderBy('executionCount', 'desc');
 
-  //   // // Get total count first
-  //   // const totalCount = await this.db
-  //   //   .selectFrom('dex_ex_position_state as state')
-  //   //   .where(exp =>
-  //   //     exp.and([
-  //   //       exp.eb('opening_height', '>=', startBlock),
-  //   //       exp.eb('opening_height', '<=', endBlock),
-  //   //     ]),
-  //   //   )
-  //   //   .innerJoin(positionExecutions.as('executions'), 'state.position_id', 'executions.position_id')
-  //   //   .select(sql<number>`count(*)`.as('count'))
-  //   //   .executeTakeFirstOrThrow();
-  //   // console.log('TCL: totalCount', totalCount);
+    // Get total count first
+    const totalCount = await this.db
+      .selectFrom('dex_ex_position_state as state')
+      .where(exp =>
+        exp.and([
+          exp.eb('opening_height', '>=', startBlock),
+          exp.eb('opening_height', '<=', endBlock),
+        ]),
+      )
+      .innerJoin(positionExecutions.as('executions'), 'state.position_id', 'executions.position_id')
+      .select(sql<number>`count(*)`.as('count'))
+      .executeTakeFirstOrThrow();
 
-  //   // const results = await this.db
-  //   //   .selectFrom('dex_ex_position_state as state')
-  //   //   .where(exp =>
-  //   //     exp.and([
-  //   //       exp.eb('opening_height', '>=', startBlock),
-  //   //       exp.eb('opening_height', '<=', endBlock),
-  //   //     ]),
-  //   //   )
-  //   //   .innerJoin(positionExecutions.as('executions'), 'state.position_id', 'executions.position_id')
-  //   //   .selectAll('executions')
-  //   //   .selectAll('state')
-  //   //   .limit(limit)
-  //   //   .offset(offset)
-  //   //   .execute();
-  //   // console.log('TCL: results', results);
+    const results = await this.db
+      .selectFrom('dex_ex_position_state as state')
+      .where(exp =>
+        exp.and([
+          exp.eb('opening_height', '>=', startBlock),
+          exp.eb('opening_height', '<=', endBlock),
+        ]),
+      )
+      .innerJoin(positionExecutions.as('executions'), 'state.position_id', 'executions.position_id')
+      .selectAll('executions')
+      .selectAll('state')
+      .limit(limit)
+      .offset(offset)
+      .execute();
 
-  //   // const withdrawals = await this.db
-  //   //   .selectFrom('dex_ex_position_withdrawals')
-  //   //   .select(['position_id'])
-  //   //   .where(
-  //   //     'position_id',
-  //   //     'in',
-  //   //     results.map(r => r.position_id),
-  //   //   )
-  //   //   .execute();
+    const withdrawals = await this.db
+      .selectFrom('dex_ex_position_withdrawals')
+      .select(['position_id'])
+      .where(
+        'position_id',
+        'in',
+        results.map(r => r.position_id),
+      )
+      .execute();
 
-  //   // const withdrawalPositionIds = new Set(withdrawals.map(w => w.position_id.toString()));
+    const withdrawalPositionIds = new Set(withdrawals.map(w => w.position_id.toString()));
 
-  //   // return {
-  //   //   totalCount: Number(totalCount.count),
-  //   //   items: results.map(r => ({
-  //   //     ...r,
-  //   //     // eslint-disable-next-line no-nested-ternary -- allow nested ternary
-  //   //     state: withdrawalPositionIds.has(r.position_id.toString())
-  //   //       ? PositionState_PositionStateEnum.WITHDRAWN
-  //   //       : r.closing_height
-  //   //         ? PositionState_PositionStateEnum.CLOSED
-  //   //         : PositionState_PositionStateEnum.OPENED,
-  //   //   })),
-  //   // };
-  // }
-
-  async getNewResponse() {
-    console.log('TCL: getNewResponse -> getNewResponse');
-    return Promise.resolve({ success: true });
+    return {
+      totalCount: Number(totalCount.count),
+      items: results.map(r => ({
+        ...r,
+        // eslint-disable-next-line no-nested-ternary -- allow nested ternary
+        state: withdrawalPositionIds.has(r.position_id.toString())
+          ? PositionState_PositionStateEnum.WITHDRAWN
+          : r.closing_height
+            ? PositionState_PositionStateEnum.CLOSED
+            : PositionState_PositionStateEnum.OPENED,
+      })),
+    };
   }
 }
 

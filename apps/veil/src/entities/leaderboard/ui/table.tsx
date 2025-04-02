@@ -157,10 +157,10 @@ export const LeaderboardTable = ({
                         {position.executions}
                       </TableCell>
                       <TableCell numeric variant={variant} loading={isLoading}>
-                        {Math.abs(position.pnlPercentChange)}
+                        {Math.abs(position.pnlPercentage)}
                       </TableCell>
                       <TableCell numeric variant={variant} loading={isLoading}>
-                        {position.pnlPercentChange}
+                        {position.pnlPercentage}
                       </TableCell>
                       <TableCell numeric variant={variant}>
                         {formatAge(position.openingTime)}
