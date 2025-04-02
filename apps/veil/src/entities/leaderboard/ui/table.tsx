@@ -1,7 +1,7 @@
 'use client';
 
 import { useAutoAnimate } from '@formkit/auto-animate/react';
-import { useState, useMemo, useCallback, useRef } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import cn from 'clsx';
 import orderBy from 'lodash/orderBy';
 import { Text } from '@penumbra-zone/ui/Text';
@@ -10,30 +10,18 @@ import { TableCell } from '@penumbra-zone/ui/TableCell';
 import { SegmentedControl } from '@penumbra-zone/ui/SegmentedControl';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import Link from 'next/link';
-import { SquareArrowOutUpRight, ChevronUp, ChevronDown } from 'lucide-react';
+import { SquareArrowOutUpRight } from 'lucide-react';
 import { AssetSelector, AssetSelectorValue } from '@penumbra-zone/ui/AssetSelector';
 import { useAssets } from '@/shared/api/assets';
 import { useBalances } from '@/shared/api/balances';
 import { useLeaderboard } from '@/entities/leaderboard/api/use-leaderboard';
 import { formatAge, getAssetId } from './utils';
-// import { stateToString } from '@/pages/trade/api/positions';
+import { stateToString } from '@/entities/position/model/state-to-string';
 import { useSearchParams } from 'next/navigation';
 import { pnum } from '@penumbra-zone/types/pnum';
-import Pagination from './pagination';
+import { Pagination } from '@penumbra-zone/ui/Pagination';
 import { PointsPnl } from './points-pnl';
-
-const stateToString = (state: string) => {
-  switch (state) {
-    case 'open':
-      return 'Open';
-    case 'closed':
-      return 'Closed';
-    case 'liquidated':
-      return 'Liquidated';
-    default:
-      return state;
-  }
-};
+import { useSortableTableHeaders } from '@/pages/tournament/ui/sortable-table-header';
 
 export const LeaderboardTable = ({
   startBlock,
@@ -50,15 +38,9 @@ export const LeaderboardTable = ({
   const [parent] = useAutoAnimate();
   const [quote, setQuote] = useState<AssetSelectorValue>();
   const [tab, setTab] = useState<'All LPs' | 'My LPs'>('All LPs');
-  const [sortBy, setSortBy] = useState<{
-    key: string;
-    direction: 'desc' | 'asc';
-  }>({
-    key: 'volume2',
-    direction: 'desc',
-  });
   const [limit, setLimit] = useState(10);
   const quoteAssetId = getAssetId(quote);
+  const { getTableHeader, sortBy } = useSortableTableHeaders();
 
   const {
     data: leaderboard,
@@ -97,42 +79,6 @@ export const LeaderboardTable = ({
     );
   }, [positions, sortBy]);
 
-  const SortableTableHeader = useCallback(
-    ({ sortKey, children }: { sortKey: string; children: React.ReactNode }) => {
-      return (
-        <TableCell heading>
-          <button
-            className='flex'
-            onClick={() => {
-              setSortBy({
-                key: sortKey,
-                direction: sortBy.key === sortKey && sortBy.direction === 'desc' ? 'asc' : 'desc',
-              });
-            }}
-          >
-            <Text
-              tableHeadingSmall
-              whitespace='nowrap'
-              color={sortBy.key === sortKey ? 'text.primary' : 'text.secondary'}
-            >
-              {children}
-            </Text>
-            {sortKey === sortBy.key && (
-              <>
-                {sortBy.direction === 'asc' ? (
-                  <ChevronUp className='w-4 h-4 text-text-primary' />
-                ) : (
-                  <ChevronDown className='w-4 h-4 text-text-primary' />
-                )}
-              </>
-            )}
-          </button>
-        </TableCell>
-      );
-    },
-    [sortBy, setSortBy],
-  );
-
   if (error) {
     return (
       <Text large color='destructive.light'>
@@ -168,14 +114,14 @@ export const LeaderboardTable = ({
 
         <div ref={parent} className='grid grid-cols-8 h-auto overflow-auto'>
           <div className='grid grid-cols-subgrid col-span-8'>
-            <SortableTableHeader sortKey='executions'>Execs</SortableTableHeader>
-            <SortableTableHeader sortKey='points'>Points</SortableTableHeader>
-            <SortableTableHeader sortKey='pnl'>PnL</SortableTableHeader>
-            <SortableTableHeader sortKey='age'>Age</SortableTableHeader>
-            <SortableTableHeader sortKey='volume'>Volume</SortableTableHeader>
-            <SortableTableHeader sortKey='fees'>Fees</SortableTableHeader>
-            <SortableTableHeader sortKey='state'>State</SortableTableHeader>
-            <SortableTableHeader sortKey='positionId'>Position ID</SortableTableHeader>
+            {getTableHeader('executions', 'Execs')}
+            {getTableHeader('points', 'Points')}
+            {getTableHeader('pnl', 'PnL')}
+            {getTableHeader('age', 'Age')}
+            {getTableHeader('volume', 'Volume')}
+            {getTableHeader('fees', 'Fees')}
+            {getTableHeader('state', 'State')}
+            {getTableHeader('positionId', 'Position ID')}
           </div>
 
           {isLoading ? (
@@ -210,13 +156,12 @@ export const LeaderboardTable = ({
                       <TableCell numeric variant={variant}>
                         {position.executions}
                       </TableCell>
-                      <PointsPnl
-                        variant='cell'
-                        baseAsset={position.asset1}
-                        quoteAsset={position.asset2}
-                        startTime={position.openingTime}
-                        endTime={position.closingTime}
-                      />
+                      <TableCell numeric variant={variant} loading={isLoading}>
+                        {Math.abs(position.pnlPercentChange)}
+                      </TableCell>
+                      <TableCell numeric variant={variant} loading={isLoading}>
+                        {position.pnlPercentChange}
+                      </TableCell>
                       <TableCell numeric variant={variant}>
                         {formatAge(position.openingTime)}
                       </TableCell>
@@ -279,13 +224,15 @@ export const LeaderboardTable = ({
           )}
         </div>
 
-        <Pagination
-          currentPage={currentPage}
-          totalCount={totalCountRef.current}
-          limit={limit}
-          setLimit={setLimit}
-          onPageChange={setCurrentPage}
-        />
+        <div className='pt-4'>
+          <Pagination
+            value={currentPage}
+            totalItems={totalCountRef.current}
+            limit={limit}
+            onLimitChange={setLimit}
+            onChange={setCurrentPage}
+          />
+        </div>
       </div>
     </Card>
   );
