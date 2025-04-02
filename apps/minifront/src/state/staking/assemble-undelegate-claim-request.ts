@@ -88,7 +88,7 @@ const getUnbondingEndHeight = ({
   );
 };
 
-const assembleUndelegateClaimPlan = async ({
+const assembleUndelegationClaim = async ({
   currentHeight,
   appUnbondingDelay,
   unbondingToken,
@@ -151,7 +151,7 @@ export const assembleUndelegateClaimRequest = async ({
 
   const undelegationClaims = await Promise.all(
     unbondingTokens.map(unbondingToken =>
-      assembleUndelegateClaimPlan({
+      assembleUndelegationClaim({
         currentHeight: fullSyncHeight,
         appUnbondingDelay: unbondingDelay,
         unbondingToken,
