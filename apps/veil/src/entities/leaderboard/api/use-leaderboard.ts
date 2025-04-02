@@ -6,14 +6,24 @@ import { apiFetch } from '@/shared/utils/api-fetch';
 
 export const useLeaderboard = (filters: Partial<LeaderboardSearchParams>) => {
   return useQuery<LeaderboardPageInfo>({
-    queryKey: ['leaderboard', filters.interval, filters.base, filters.quote, filters.limit],
+    queryKey: [
+      'leaderboard',
+      filters.startBlock,
+      filters.endBlock,
+      filters.quote,
+      filters.limit,
+      filters.offset,
+    ],
     queryFn: async () => {
-      return apiFetch<LeaderboardPageInfo>('/api/position/leaderboard', {
-        interval: filters.interval,
-        limit: filters.limit,
-        ...(filters.base && { base: filters.base }),
+      const resp = await apiFetch<LeaderboardPageInfo>('/api/position/leaderboard', {
         ...(filters.quote && { quote: filters.quote }),
+        startBlock: filters.startBlock,
+        endBlock: filters.endBlock,
+        limit: filters.limit,
+        offset: filters.offset,
       } as unknown as Record<string, string>);
+
+      return resp;
     },
   });
 };

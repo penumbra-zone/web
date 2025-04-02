@@ -1,4 +1,5 @@
 import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { PositionState_PositionStateEnum } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 
 export const INTERVAL_FILTER = ['1h', '6h', '24h', '7d', '30d'] as const;
 export type LeaderboardIntervalFilter = (typeof INTERVAL_FILTER)[number];
@@ -14,10 +15,11 @@ export const DEFAULT_INTERVAL: LeaderboardIntervalFilter = '7d';
 export const DEFAULT_LIMIT = 30;
 
 export interface LeaderboardSearchParams {
-  interval: LeaderboardIntervalFilter;
   limit: number;
-  base?: string;
-  quote?: string;
+  offset: number;
+  quote: string | undefined;
+  startBlock: number;
+  endBlock: number;
 }
 
 export interface LeaderboardData {
@@ -29,23 +31,29 @@ export interface LeaderboardData {
   fees1: ValueView;
   fees2: ValueView;
   executions: number;
+  openingTime: number;
+  closingTime: number;
+  state: PositionState_PositionStateEnum;
 }
 
 export interface LeaderboardPageInfo {
   data: LeaderboardData[];
   filters: LeaderboardSearchParams;
+  totalCount: number;
 }
 
 export const getURLParams = (searchParams: URLSearchParams): LeaderboardSearchParams => {
   const limit = Number(searchParams.get('limit')) || DEFAULT_LIMIT;
-  const base = searchParams.get('base') ?? undefined;
+  const offset = Number(searchParams.get('offset')) || 0;
   const quote = searchParams.get('quote') ?? undefined;
-  const interval = (searchParams.get('interval') ?? DEFAULT_INTERVAL) as LeaderboardIntervalFilter;
+  const startBlock = Number(searchParams.get('startBlock')) || 0;
+  const endBlock = Number(searchParams.get('endBlock')) || 0;
 
   return {
     limit,
-    interval,
-    base,
+    offset,
     quote,
+    startBlock,
+    endBlock,
   };
 };
