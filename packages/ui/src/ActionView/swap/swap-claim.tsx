@@ -3,7 +3,10 @@ import { ArrowRight } from 'lucide-react';
 import { isZero } from '@penumbra-zone/types/amount';
 import { shorten } from '@penumbra-zone/types/string';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
-import { getAmount, getMetadata } from '@penumbra-zone/getters/value-view';
+import {
+  getAmount,
+  getMetadata as getMetadataFromValueView,
+} from '@penumbra-zone/getters/value-view';
 import { SwapClaimView } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import {
@@ -28,7 +31,7 @@ export interface SwapClaimActionProps extends ActionViewBaseProps {
  * Based on the visibility of the SwapClaim view, retrieves its values from the `value`
  * property for 'visible', and from `outputData` for 'opaque'.
  */
-const useSwapClaimValues = ({ value, getMetadataByAssetId }: SwapClaimActionProps) => {
+const useSwapClaimValues = ({ value, getMetadata }: SwapClaimActionProps) => {
   if (value.swapClaimView.case === 'visible') {
     const value1 = getOutput1Value.optional(value);
     const value2 = getOutput2Value.optional(value);
@@ -44,12 +47,12 @@ const useSwapClaimValues = ({ value, getMetadataByAssetId }: SwapClaimActionProp
     outputData?.lambda1 &&
     new ValueView({
       valueView:
-        outputData.tradingPair?.asset1 && getMetadataByAssetId
+        outputData.tradingPair?.asset1 && getMetadata
           ? {
               case: 'knownAssetId',
               value: {
                 amount: outputData.lambda1,
-                metadata: getMetadataByAssetId(outputData.tradingPair.asset1),
+                metadata: getMetadata(outputData.tradingPair.asset1),
               },
             }
           : {
@@ -65,12 +68,12 @@ const useSwapClaimValues = ({ value, getMetadataByAssetId }: SwapClaimActionProp
     outputData?.lambda2 &&
     new ValueView({
       valueView:
-        outputData.tradingPair?.asset2 && getMetadataByAssetId
+        outputData.tradingPair?.asset2 && getMetadata
           ? {
               case: 'knownAssetId',
               value: {
                 amount: outputData.lambda2,
-                metadata: getMetadataByAssetId(outputData.tradingPair.asset2),
+                metadata: getMetadata(outputData.tradingPair.asset2),
               },
             }
           : {
@@ -88,10 +91,10 @@ const useSwapClaimValues = ({ value, getMetadataByAssetId }: SwapClaimActionProp
   };
 };
 
-export const SwapClaimAction = ({ value, getMetadataByAssetId }: SwapClaimActionProps) => {
+export const SwapClaimAction = ({ value, getMetadata }: SwapClaimActionProps) => {
   const density = useDensity();
 
-  const { value1, value2 } = useSwapClaimValues({ value, getMetadataByAssetId });
+  const { value1, value2 } = useSwapClaimValues({ value, getMetadata });
 
   const amount1 = getAmount.optional(value1);
   const amount2 = getAmount.optional(value2);
@@ -105,10 +108,10 @@ export const SwapClaimAction = ({ value, getMetadataByAssetId }: SwapClaimAction
 
   const fee = useMemo(() => {
     const claimFee = getSwapClaimFee.optional(value);
-    const asset1 = getMetadata.optional(value1);
-    const asset2 = getMetadata.optional(value2);
-    return parseSwapFees(claimFee, asset1, asset2, getMetadataByAssetId);
-  }, [getMetadataByAssetId, value1, value2, value]);
+    const asset1 = getMetadataFromValueView.optional(value1);
+    const asset2 = getMetadataFromValueView.optional(value2);
+    return parseSwapFees(claimFee, asset1, asset2, getMetadata);
+  }, [getMetadata, value1, value2, value]);
 
   return (
     <ActionWrapper

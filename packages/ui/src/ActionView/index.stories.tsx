@@ -64,6 +64,6 @@ type Story = StoryObj<typeof ActionView>;
 export const Basic: Story = {
   args: {
     action: SpendAction,
-    getMetadataByAssetId: registry.tryGetMetadata,
+    getMetadata: registry.tryGetMetadata,
   },
 };

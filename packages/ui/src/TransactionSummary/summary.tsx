@@ -2,7 +2,7 @@ import cn from 'clsx';
 import { ElementType, Fragment, ReactNode } from 'react';
 import { Dot, ArrowRight } from 'lucide-react';
 import { TransactionInfo } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { GetMetadataByAssetId } from '../ActionView/types';
+import { GetMetadata } from '../ActionView/types';
 import { AddressViewComponent } from '../AddressView';
 import { AssetGroup } from '../AssetIcon';
 import { Density } from '../Density';
@@ -19,7 +19,7 @@ export interface TransactionSummaryProps {
    * Can be omitted, but it generally improves the rendering logic, especially for opaque views.
    * If omitted, some assets may be rendered as unknown or not rendered at all.
    */
-  getMetadataByAssetId?: GetMetadataByAssetId;
+  getMetadataByAssetId?: GetMetadata;
   as?: ElementType;
   /** Doesn't work if `as` prop is not provided – add `as='button'`, and the component will become hoverable and clickable */
   onClick?: VoidFunction;

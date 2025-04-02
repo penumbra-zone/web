@@ -10,7 +10,7 @@ import {
   Ics20Withdrawal,
 } from '@penumbra-zone/protobuf/penumbra/core/component/ibc/v1/ibc_pb';
 import { unpackIbcRelay } from '@penumbra-zone/perspective/action-view/ibc';
-import { GetMetadataByAssetId } from '../ActionView/types';
+import { GetMetadata } from '../ActionView/types';
 import { isMetadata } from '../AssetSelector';
 import { adaptEffects, SummaryEffect } from './adapt-effects';
 
@@ -62,10 +62,7 @@ const CLASSIFICATION_LABEL_MAP: Record<TransactionClassification, string> = {
 /**
  * A hook that prepares data from TransactionInfo to be rendered in TransactionSummary.
  */
-export const useClassification = (
-  info: TransactionInfo,
-  getMetadataByAssetId?: GetMetadataByAssetId,
-) => {
+export const useClassification = (info: TransactionInfo, getMetadataByAssetId?: GetMetadata) => {
   // classify the transaction and extract the main action
   const { type, action } = classifyTransaction(info.view);
 
