@@ -19,10 +19,9 @@ import {
 } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 
 /**
- * Get the unbonding start height index from the `ValueView` of an unbonding token
- * -- that is, the block height at which unbonding started.
+ * Parse the value's denom for its embedded unbonding start height.
  */
-const getUnbondingStartHeight = (unbondingToken: ValueView): bigint => {
+const parseUnbondingStartHeight = (unbondingToken: ValueView): bigint => {
   const unbondingMetadata = getMetadata(unbondingToken);
 
   const unbondingMatch = assetPatterns.unbondingToken.capture(unbondingMetadata.display);
@@ -102,7 +101,7 @@ const assembleUndelegationClaim = async ({
 
   const identityKey = getValidatorIdentityKeyFromValueView(unbondingToken);
 
-  const startHeight = getUnbondingStartHeight(unbondingToken);
+  const startHeight = parseUnbondingStartHeight(unbondingToken);
   const { epoch: startEpoch } = await sctClient.epochByHeight({ height: startHeight });
 
   const { status: validatorStatus } = await stakeClient.validatorStatus({ identityKey });
