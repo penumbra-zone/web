@@ -1,9 +1,7 @@
 'use server';
 
-import { useState } from 'react';
 import { LeaderboardTable } from './table';
 import { PenumbraWaves } from '@/pages/explore/ui/waves';
-import { useRouter } from 'next/router';
 
 export const LeaderboardPage = () => {
   const startBlock = 697684;

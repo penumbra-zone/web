@@ -4,22 +4,22 @@ import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { useState, useMemo, useRef } from 'react';
 import cn from 'clsx';
 import orderBy from 'lodash/orderBy';
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import { SquareArrowOutUpRight } from 'lucide-react';
 import { Text } from '@penumbra-zone/ui/Text';
 import { Card } from '@penumbra-zone/ui/Card';
 import { TableCell } from '@penumbra-zone/ui/TableCell';
 import { SegmentedControl } from '@penumbra-zone/ui/SegmentedControl';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
-import Link from 'next/link';
-import { SquareArrowOutUpRight } from 'lucide-react';
+import { Pagination } from '@penumbra-zone/ui/Pagination';
 import { AssetSelector, AssetSelectorValue } from '@penumbra-zone/ui/AssetSelector';
 import { useAssets } from '@/shared/api/assets';
 import { useBalances } from '@/shared/api/balances';
 import { useLeaderboard } from '@/entities/leaderboard/api/use-leaderboard';
-import { formatAge, getAssetId } from './utils';
 import { stateToString } from '@/entities/position/model/state-to-string';
-import { useSearchParams } from 'next/navigation';
-import { Pagination } from '@penumbra-zone/ui/Pagination';
 import { useSortableTableHeaders } from '@/pages/tournament/ui/sortable-table-header';
+import { formatAge, getAssetId } from './utils';
 
 export const LeaderboardTable = ({
   startBlock,
@@ -32,7 +32,6 @@ export const LeaderboardTable = ({
   const searchParams = useSearchParams();
   const page = Number(searchParams?.get('page') ?? 1);
   const [currentPage, setCurrentPage] = useState(page);
-  console.log('TCL: currentPage', currentPage);
   const [parent] = useAutoAnimate();
   const [quote, setQuote] = useState<AssetSelectorValue>();
   const [tab, setTab] = useState<'All LPs' | 'My LPs'>('All LPs');
@@ -56,8 +55,6 @@ export const LeaderboardTable = ({
   const { data: balances } = useBalances();
   const { data: positions, totalCount } = leaderboard ?? {};
   totalCountRef.current = totalCount ?? totalCountRef.current;
-  console.log('TCL: totalCount', totalCount);
-  console.log('TCL: positions', positions);
 
   const sortedPositions = useMemo(() => {
     return orderBy(
@@ -67,7 +64,7 @@ export const LeaderboardTable = ({
           executions: position.executions,
           pnlPercentage: position.pnlPercentage,
           points: Math.abs(position.pnlPercentage),
-          age: position.closingTime - position.openingTime,
+          age: (position.closingTime ?? 0) - position.openingTime,
         },
       })),
       `sortValues.${sortBy.key}`,

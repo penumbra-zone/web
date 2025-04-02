@@ -470,6 +470,7 @@ class Pindexer {
         sql<number>`CAST(count(*) AS INTEGER)`.as('executionCount'),
       ])
       .$if(quoteHex !== undefined, qb =>
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- quoteHex is guaranteed to be defined
         qb.where('context_asset_end', '=', Buffer.from(hexToUint8Array(quoteHex!))),
       )
       .groupBy(['position_id', 'context_asset_start', 'context_asset_end'])

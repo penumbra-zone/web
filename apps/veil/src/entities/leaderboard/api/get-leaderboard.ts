@@ -62,8 +62,9 @@ export const GET = async (
             metadata: metadata2,
           }),
           openingTime: new Date(position.opening_time).getTime(),
-          closingTime: new Date(position.closing_time).getTime(),
+          closingTime: position.closing_time ? new Date(position.closing_time).getTime() : null,
           state: position.state,
+          pnlPercentage: 0,
         } satisfies LeaderboardData;
       }),
     );

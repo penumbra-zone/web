@@ -128,7 +128,13 @@ export const useLeaderboard = (filters: Partial<LeaderboardSearchParams>) => {
             pnlPercentage: 7.25,
           },
         ],
-        filters: filters,
+        filters: {
+          limit: filters.limit ?? 30,
+          offset: filters.offset ?? 0,
+          quote: filters.quote ?? '',
+          startBlock: filters.startBlock ?? 0,
+          endBlock: filters.endBlock ?? 0,
+        },
         totalCount: 0,
       };
 

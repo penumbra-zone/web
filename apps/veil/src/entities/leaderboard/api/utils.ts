@@ -32,7 +32,7 @@ export interface LeaderboardData {
   fees2: ValueView;
   executions: number;
   openingTime: number;
-  closingTime: number;
+  closingTime: number | null;
   state: PositionState_PositionStateEnum;
   pnlPercentage: number;
 }
