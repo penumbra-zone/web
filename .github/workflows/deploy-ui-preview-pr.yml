@@ -22,7 +22,7 @@ jobs:
       - uses: pnpm/action-setup@v4
 
       - name: Install dependencies
-      - run: pnpm install
+        run: pnpm install
 
       - uses: ./.github/workflows/compile-wasm.yml
 
