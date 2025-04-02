@@ -516,6 +516,8 @@ class Pindexer {
 
     const withdrawalPositionIds = new Set(withdrawals.map(w => w.position_id.toString()));
 
+    // @TODO: add pnl percentage
+
     return {
       totalCount: Number(totalCount.count),
       items: results.map(r => ({
