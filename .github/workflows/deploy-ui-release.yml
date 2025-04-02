@@ -19,8 +19,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - uses: ./.github/workflows/compile-wasm.yml
+
       - name: Build all packages that UI depends on
-        run: pnpm exec  turbo build --filter=./packages/ui
+        run: pnpm exec turbo build --filter=./packages/ui
 
       - name: Build static site
         run: pnpm build-storybook
