@@ -131,11 +131,12 @@ class BalancesAggregator {
       .flatMap(([, balances]) =>
         Object.entries(balances)
           .filter(
-            ([assetId]) =>
-              !assetIdFilter || // No asset id filter requested
-              assetId === uint8ArrayToBase64(assetIdFilter.inner), // Asset id's match
+            ([assetId, balance]) =>
+              (!assetIdFilter || // No asset id filter requested
+                assetId === uint8ArrayToBase64(assetIdFilter.inner)) && // Asset id's match
+              balance.balanceView?.valueView.case === 'knownAssetId', // Filter out unknown assets
           )
-          .map(([, balances]) => balances),
+          .map(([, balance]) => balance),
       );
   }
 
