@@ -60,6 +60,7 @@ export const shouldFilterAsset = (symbol: string): boolean => {
     assetPatterns.unbondingToken,
     assetPatterns.votingReceipt,
     assetPatterns.proposalNft,
+    assetPatterns.delegationToken,
   ].some(pattern => pattern.matches(symbol));
 };
 
