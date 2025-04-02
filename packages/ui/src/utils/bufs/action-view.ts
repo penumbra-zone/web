@@ -12,14 +12,23 @@ import {
   SwapClaimView,
   SwapView,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
-import { ADDRESS_VIEW_DECODED } from './address-view';
-import { PENUMBRA_VALUE_VIEW, PENUMBRA_VALUE_VIEW_ZERO, USDC_VALUE_VIEW } from './value-view';
-import { PENUMBRA_METADATA, USDC_METADATA } from './metadata';
+import { ADDRESS_VIEW_DECODED, ADDRESS_VIEW_OPAQUE } from './address-view';
+import {
+  DELEGATION_TOKEN_VALUE,
+  PENUMBRA_VALUE_VIEW,
+  PENUMBRA_VALUE_VIEW_ZERO,
+  USDC_VALUE_VIEW,
+} from './value-view';
+import { DELEGATION_TOKEN_METADATA, PENUMBRA_METADATA, USDC_METADATA } from './metadata';
 import { AMOUNT_123_456_789, AMOUNT_999, AMOUNT_ZERO } from './amount';
 import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
 import { Fee } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
 import { Any } from '@bufbuild/protobuf';
 import { MsgUpdateClient } from '@penumbra-zone/protobuf/ibc/core/client/v1/tx_pb';
+import {
+  ActionLiquidityTournamentVote,
+  ActionLiquidityTournamentVoteView,
+} from '@penumbra-zone/protobuf/penumbra/core/component/funding/v1/funding_pb';
 import {
   MsgAcknowledgement,
   MsgRecvPacket,
@@ -205,6 +214,10 @@ export const SwapClaimActionOpaque = new ActionView({
   },
 });
 
+//
+// Position-related actions
+//
+
 export const PositionOpenAction = new ActionView({
   actionView: {
     case: 'positionOpen',
@@ -386,5 +399,59 @@ export const IbcRelayMsgTimeoutOnCloseAction = new ActionView({
         }),
       ),
     },
+  },
+});
+
+//
+// LQT actions
+//
+
+const LQT_VOTE = new ActionLiquidityTournamentVote({
+  body: {
+    startPosition: 100n,
+    value: DELEGATION_TOKEN_VALUE,
+    rewardsRecipient: ADDRESS_VIEW_OPAQUE.addressView.value?.address,
+    incentivized: {
+      denom: PENUMBRA_METADATA.display,
+    },
+  },
+});
+export const LiquidityTournamentVoteAction = new ActionView({
+  actionView: {
+    case: 'actionLiquidityTournamentVote',
+    value: new ActionLiquidityTournamentVoteView({
+      liquidityTournamentVote: {
+        case: 'visible',
+        value: {
+          note: {
+            address: ADDRESS_VIEW_DECODED,
+            value: {
+              valueView: {
+                case: 'knownAssetId',
+                value: {
+                  amount: DELEGATION_TOKEN_VALUE.amount,
+                  metadata: DELEGATION_TOKEN_METADATA,
+                },
+              },
+            },
+          },
+          vote: LQT_VOTE,
+        },
+      },
+    }),
+  },
+});
+
+export const LiquidityTournamentVoteActionOpaque = new ActionView({
+  actionView: {
+    case: 'actionLiquidityTournamentVote',
+    value: new ActionLiquidityTournamentVoteView({
+      liquidityTournamentVote: {
+        case: 'opaque',
+        value: {
+          vote: LQT_VOTE,
+        },
+      },
+    }),
   },
 });
