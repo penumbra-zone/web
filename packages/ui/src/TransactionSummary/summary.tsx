@@ -19,7 +19,7 @@ export interface TransactionSummaryProps {
    * Can be omitted, but it generally improves the rendering logic, especially for opaque views.
    * If omitted, some assets may be rendered as unknown or not rendered at all.
    */
-  getMetadataByAssetId?: GetMetadata;
+  getMetadata?: GetMetadata;
   as?: ElementType;
   /** Doesn't work if `as` prop is not provided – add `as='button'`, and the component will become hoverable and clickable */
   onClick?: VoidFunction;
@@ -40,13 +40,13 @@ export interface TransactionSummaryProps {
  */
 export const TransactionSummary = ({
   info,
-  getMetadataByAssetId,
+  getMetadata,
   onClick,
   endAdornment,
   as: Container = 'div',
 }: TransactionSummaryProps) => {
   const { label, assets, additionalText, address, memo, type, tickers, effects } =
-    useClassification(info, getMetadataByAssetId);
+    useClassification(info, getMetadata);
 
   return (
     <Container
