@@ -135,10 +135,9 @@ export const assembleUndelegateClaimRequest = async ({
 }: {
   account: number;
   unbondingTokens: ValueView[];
-}) => {
+}): Promise<TransactionPlannerRequest> => {
   const appClient = penumbra.service(AppService);
   const viewClient = penumbra.service(ViewService);
-  const sctClient = penumbra.service(SctService);
 
   const { appParameters } = await appClient.appParameters({});
   if (!appParameters?.stakeParams?.unbondingDelay) {
@@ -149,11 +148,6 @@ export const assembleUndelegateClaimRequest = async ({
   const { unbondingDelay } = appParameters.stakeParams;
 
   const { fullSyncHeight } = await viewClient.status({});
-
-  const { epoch: presentEpoch } = await sctClient.epochByHeight({ height: fullSyncHeight });
-  if (!presentEpoch?.index) {
-    return;
-  }
 
   const undelegationClaims = await Promise.all(
     unbondingTokens.map(unbondingToken =>
