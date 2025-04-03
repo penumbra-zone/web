@@ -13,7 +13,8 @@ export const SyncingDialog = () => {
   const streamStatus = useStatus();
   const { error: streamError } = useStore(statusStreamStateSelector);
 
-  const [didClose, setDidClose] = useState(false);
+  // contains the relevant error value if closed during an error state
+  const [didClose, setDidClose] = useState<Error | boolean>(false);
 
   const { fullSyncHeight = 0n, latestKnownBlockHeight = 0n } = useMemo(
     () => ({ ...initialStatus.data, ...streamStatus.data }),
@@ -29,6 +30,26 @@ export const SyncingDialog = () => {
     () => streamError instanceof ConnectError && streamError.code === Code.Unavailable,
     [streamError],
   );
+
+  const isOpen = useMemo(() => {
+    if (didClose) {
+      // the dialog should be able to reopen after certain conditions are met
+      if (
+        isSynced || // syncing has reached present, or
+        isUnavailable // the connection is terminated
+      ) {
+        setDidClose(false);
+      } else if (
+        streamError instanceof Error && // an error is present now, and
+        (!(didClose instanceof Error) || // the dialog was not closed during an error, or
+          streamError.message !== didClose.message) // the error has changed since it was closed
+      ) {
+        setDidClose(false);
+      }
+    }
+
+    return !didClose && (!isSynced || !!streamError);
+  }, [isUnavailable, isSynced, streamError, didClose]);
 
   const dialogText = useMemo(() => {
     const title = `Syncing ${streamError ? 'interrupted' : '. . .'}`;
@@ -66,7 +87,7 @@ export const SyncingDialog = () => {
   }, [didClose, initialStatus.data, isSynced, isUnavailable, streamStatus.data, streamError]);
 
   return (
-    <Dialog isOpen={!didClose && (!isSynced || !!streamError)} onClose={() => setDidClose(true)}>
+    <Dialog isOpen={isOpen} onClose={() => setDidClose(streamError ?? true)}>
       <Dialog.Content title={dialogText.title}>
         <div className='text-center'>
           {dialogText.error && (
