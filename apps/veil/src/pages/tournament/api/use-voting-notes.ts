@@ -22,10 +22,8 @@ const fetchQuery = async (
  * Must be used within the `observer` mobX HOC
  */
 export const useLQTNotes = (epochIndex: bigint, subaccount?: number) => {
-  const queryKey = ['lqt-notes', subaccount];
-
   const lqtNotesQuery = useQuery({
-    queryKey,
+    queryKey: ['lqt-notes', subaccount, Number(epochIndex)],
     staleTime: Infinity,
     enabled: connectionStore.connected,
     queryFn: () => fetchQuery(epochIndex, subaccount),

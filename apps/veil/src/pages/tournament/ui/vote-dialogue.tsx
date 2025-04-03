@@ -197,6 +197,11 @@ export const VoteDialogueSelector = observer(({ isOpen, onClose }: VoteDialogPro
       filteredAssets.length > 0 &&
       filteredAssets.every(a => a.percentage < threshold));
 
+  /**
+   * TODO: update checkbox with updated UI component
+   *
+   * @see https://github.com/penumbra-zone/web/issues/2192
+   */
   return (
     <div className='relative flex items-center gap-2 text-text-primary'>
       <Dialog isOpen={isOpen} onClose={handleClose}>
