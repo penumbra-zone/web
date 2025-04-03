@@ -12,7 +12,7 @@ import {
 import { compareAssetId } from '@/shared/math/position';
 import { pnum } from '@penumbra-zone/types/pnum';
 import { ExecutedPosition } from './types';
-import { GetMetadataByAssetId } from '@/shared/api/assets';
+import { GetMetadata, isDenom } from '@/shared/api/assets';
 import { getCalculatedAssets } from './get-calculated-assets';
 import {
   getDirectionalOrders,
@@ -102,8 +102,8 @@ describe('position modeling functions', () => {
     });
   };
 
-  const getMetadataByAssetId: GetMetadataByAssetId = assetId => {
-    if (!assetId) {
+  const getMetadata: GetMetadata = assetId => {
+    if (!assetId || isDenom(assetId)) {
       return undefined;
     }
 
@@ -126,10 +126,7 @@ describe('position modeling functions', () => {
         r2: 100n,
       });
 
-      const [asset1, asset2] = getCalculatedAssets(
-        position as ExecutedPosition,
-        getMetadataByAssetId,
-      );
+      const [asset1, asset2] = getCalculatedAssets(position as ExecutedPosition, getMetadata);
       const orders = getOrdersByBaseQuoteAssets(asset1, asset2);
       expect(orders[0]?.direction).toEqual('Buy');
       expect(orders[1]?.direction).toEqual('Sell');
@@ -141,10 +138,7 @@ describe('position modeling functions', () => {
         r2: 100n,
       });
 
-      const [asset1, asset2] = getCalculatedAssets(
-        position as ExecutedPosition,
-        getMetadataByAssetId,
-      );
+      const [asset1, asset2] = getCalculatedAssets(position as ExecutedPosition, getMetadata);
       const orders = getOrdersByBaseQuoteAssets(asset1, asset2);
       expect(orders[0]?.direction).toEqual('Buy');
       expect(orders[1]).toEqual(undefined);
@@ -156,10 +150,7 @@ describe('position modeling functions', () => {
         r2: 0n,
       });
 
-      const [asset1, asset2] = getCalculatedAssets(
-        position as ExecutedPosition,
-        getMetadataByAssetId,
-      );
+      const [asset1, asset2] = getCalculatedAssets(position as ExecutedPosition, getMetadata);
       const orders = getOrdersByBaseQuoteAssets(asset1, asset2);
       expect(orders[0]?.direction).toEqual('Sell');
       expect(orders[1]).toEqual(undefined);
@@ -173,10 +164,7 @@ describe('position modeling functions', () => {
         r2: pnum(12.123, exponent2).toBigInt(),
       });
 
-      const [asset1, asset2] = getCalculatedAssets(
-        position as ExecutedPosition,
-        getMetadataByAssetId,
-      );
+      const [asset1, asset2] = getCalculatedAssets(position as ExecutedPosition, getMetadata);
       const orders = getOrdersByBaseQuoteAssets(asset1, asset2);
       const buyOrder = orders[0];
 
@@ -206,10 +194,7 @@ describe('position modeling functions', () => {
         r2: 0n,
       });
 
-      const [asset1, asset2] = getCalculatedAssets(
-        position as ExecutedPosition,
-        getMetadataByAssetId,
-      );
+      const [asset1, asset2] = getCalculatedAssets(position as ExecutedPosition, getMetadata);
       const orders = getOrdersByBaseQuoteAssets(asset1, asset2);
       const sellOrder = orders[0];
 
@@ -232,10 +217,7 @@ describe('position modeling functions', () => {
         r2: 100n,
       });
 
-      const [asset1, asset2] = getCalculatedAssets(
-        position as ExecutedPosition,
-        getMetadataByAssetId,
-      );
+      const [asset1, asset2] = getCalculatedAssets(position as ExecutedPosition, getMetadata);
       const directionalOrders = getDirectionalOrders({
         asset1,
         asset2,
@@ -258,10 +240,7 @@ describe('position modeling functions', () => {
         r2: 100n,
       });
 
-      const [asset1, asset2] = getCalculatedAssets(
-        position as ExecutedPosition,
-        getMetadataByAssetId,
-      );
+      const [asset1, asset2] = getCalculatedAssets(position as ExecutedPosition, getMetadata);
       const directionalOrders = getDirectionalOrders({
         asset1,
         asset2,
@@ -286,10 +265,7 @@ describe('position modeling functions', () => {
         asset2Id: id2,
       });
 
-      const [asset1, asset2] = getCalculatedAssets(
-        position as ExecutedPosition,
-        getMetadataByAssetId,
-      );
+      const [asset1, asset2] = getCalculatedAssets(position as ExecutedPosition, getMetadata);
       const directionalOrders = getDirectionalOrders({
         asset1,
         asset2,
@@ -314,10 +290,7 @@ describe('position modeling functions', () => {
         asset2Id: stableId,
       });
 
-      const [asset1, asset2] = getCalculatedAssets(
-        position as ExecutedPosition,
-        getMetadataByAssetId,
-      );
+      const [asset1, asset2] = getCalculatedAssets(position as ExecutedPosition, getMetadata);
       const directionalOrders = getDirectionalOrders({
         asset1,
         asset2,

@@ -21,7 +21,7 @@ export const parseSwapFees = (
   fee?: Fee,
   asset1?: Metadata,
   asset2?: Metadata,
-  getMetadataByAssetId?: SwapActionProps['getMetadataByAssetId'],
+  getMetadataByAssetId?: SwapActionProps['getMetadata'],
 ): string | undefined => {
   if (!fee) {
     return undefined;

@@ -1,18 +1,18 @@
 import { pnum } from '@penumbra-zone/types/pnum';
-import { GetMetadataByAssetId } from '@/shared/api/assets';
+import { GetMetadata } from '@/shared/api/assets';
 import { CalculatedAsset, ExecutedPosition } from './types';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 
 /** Takes a Position and returns the assets involved in the position with their calculated value */
 export const getCalculatedAssets = (
   position: ExecutedPosition,
-  getMetadataByAssetId: GetMetadataByAssetId,
+  getMetadata: GetMetadata,
 ): [CalculatedAsset, CalculatedAsset] => {
   const { phi, reserves } = position;
   const { pair, component } = phi;
 
-  const asset1 = getMetadataByAssetId(pair.asset1);
-  const asset2 = getMetadataByAssetId(pair.asset2);
+  const asset1 = getMetadata(pair.asset1);
+  const asset2 = getMetadata(pair.asset2);
   if (!asset1?.penumbraAssetId || !asset2?.penumbraAssetId) {
     throw new Error('No assets found in registry that belong to the trading pair');
   }

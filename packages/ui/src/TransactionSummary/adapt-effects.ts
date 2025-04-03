@@ -2,7 +2,7 @@ import { TransactionSummary_Effects } from '@penumbra-zone/protobuf/penumbra/cor
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { assetPatterns } from '@penumbra-zone/types/assets';
-import { GetMetadataByAssetId } from '../ActionView/types';
+import { GetMetadata } from '../ActionView/types';
 
 export interface SummaryBalance {
   negative: boolean;
@@ -19,7 +19,7 @@ export interface SummaryEffect {
  */
 export const adaptEffects = (
   effects: TransactionSummary_Effects[],
-  getMetadataByAssetId?: GetMetadataByAssetId,
+  getMetadataByAssetId?: GetMetadata,
 ) => {
   return effects.map<SummaryEffect>(effect => {
     const reduced = (effect.balance?.values ?? []).reduce<SummaryEffect['balances']>(
