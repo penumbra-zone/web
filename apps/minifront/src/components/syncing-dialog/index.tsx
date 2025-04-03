@@ -13,7 +13,8 @@ export const SyncingDialog = () => {
   const status = useStatus();
   const stream = useStore(statusStreamStateSelector);
 
-  const [didClose, setDidClose] = useState<boolean>(false);
+  // contains the relevant error value if closed during an error state
+  const [didClose, setDidClose] = useState<Error | boolean>(false);
 
   const syncData = useMemo(
     () => ({ ...initialStatus.data, ...status.data }),
@@ -33,6 +34,21 @@ export const SyncingDialog = () => {
     [stream.error],
   );
 
+  const isOpen = useMemo(() => {
+    if (didClose) {
+      // the dialog should be able to reopen after certain conditions are met
+      if (
+        isSynced || // syncing has reached present
+        isUnavailable || // a terminal error has appeared
+        stream.error !== didClose // the error changed
+      ) {
+        setDidClose(false);
+      }
+    }
+
+    return !didClose && (!isSynced || !!stream.error);
+  }, [isUnavailable, isSynced, stream.error, didClose]);
+
   const dialogText = useMemo(() => {
     let detail: string;
 
@@ -50,18 +66,9 @@ export const SyncingDialog = () => {
       detail = 'This dialog should not be visible.';
     }
 
-    let errorMessage: string;
-    if (!(stream.error instanceof Error)) {
-      errorMessage = String(stream.error);
-    } else if (stream.error instanceof ConnectError) {
-      errorMessage = stream.error.rawMessage;
-    } else {
-      errorMessage = stream.error.message;
-    }
-
     return {
       title: stream.error ? 'Syncing interrupted' : 'Syncing...',
-      error: errorMessage,
+      error: stream.error instanceof ConnectError ? stream.error.rawMessage : stream.error?.message,
       instructions: isUnavailable
         ? 'Please reload the page.'
         : 'You can click away, but your data may not be current.',
@@ -70,7 +77,7 @@ export const SyncingDialog = () => {
   }, [initialStatus.data, isSynced, isUnavailable, status.data, stream.error]);
 
   return (
-    <Dialog isOpen={!didClose && (!isSynced || !!stream.error)} onClose={() => setDidClose(true)}>
+    <Dialog isOpen={isOpen} onClose={() => setDidClose(stream.error ?? true)}>
       <Dialog.Content title={dialogText.title} zIndex={9999}>
         <div className='p-16'>
           <SyncAnimation error={stream.error} running={stream.running} />

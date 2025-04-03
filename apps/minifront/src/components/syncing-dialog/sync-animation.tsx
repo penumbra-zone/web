@@ -7,7 +7,7 @@ import { Code, ConnectError } from '@connectrpc/connect';
  * @todo Use Penumbra UI values for rounding, etc. once its Tailwind config is
  * ready.
  */
-export const SyncAnimation = ({ error, running }: { error?: unknown; running?: boolean }) => {
+export const SyncAnimation = ({ error, running }: { error?: Error; running?: boolean }) => {
   const mode = useMemo(() => {
     if (error instanceof ConnectError && error.code === Code.Unavailable) {
       return 'stopped';

@@ -12,7 +12,7 @@ import { PlainMessage, toPlainMessage } from '@bufbuild/protobuf';
 const RECONNECT_TIMEOUT = 5_000;
 
 export interface StatusStreamState {
-  error?: unknown;
+  error?: Error;
   running: boolean;
   timer?: ReturnType<typeof setTimeout>;
   scheduleRefetch: () => void;
@@ -82,9 +82,10 @@ export const createStatusSlice = (): SliceCreator<StatusSlice> => (set, get) => 
       running: false,
       timer: undefined,
 
-      setStreamError: (error: unknown) => {
+      setStreamError: (cause: unknown) => {
         set(state => {
-          state.status.streamState.error = error;
+          state.status.streamState.error =
+            cause instanceof Error ? cause : new Error(`Sync error: ${String(cause)}`, { cause });
         });
       },
 
