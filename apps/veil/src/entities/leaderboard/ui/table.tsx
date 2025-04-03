@@ -141,7 +141,7 @@ export const LeaderboardTable = ({
                       href={`/inspect/lp/${position.positionId}`}
                       key={position.positionId}
                       className={cn(
-                        'relative grid grid-cols-subgrid col-span-8',
+                        'relative grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr] col-span-8',
                         'bg-transparent hover:bg-action-hoverOverlay transition-colors',
                         '[&>*]:h-auto',
                       )}
