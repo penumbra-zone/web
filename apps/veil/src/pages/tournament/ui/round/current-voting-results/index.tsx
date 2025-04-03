@@ -1,3 +1,4 @@
+import orderBy from 'lodash/orderBy';
 import { useEffect, useState } from 'react';
 import { Card } from '@penumbra-zone/ui/Card';
 import { Text } from '@penumbra-zone/ui/Text';
@@ -7,7 +8,9 @@ import { Pagination } from '@penumbra-zone/ui/Pagination';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { ValueView, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import { useSortableTableHeaders } from '../../sortable-table-header';
 import { TableRow } from './table-row';
+import { pnum } from '@penumbra-zone/types/pnum';
 
 const THRESHOLD = 0.05;
 
@@ -40,6 +43,7 @@ export const CurrentVotingResults = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
+  const { getTableHeader, sortBy } = useSortableTableHeaders();
 
   useEffect(() => {
     setTimeout(() => {
@@ -95,6 +99,16 @@ export const CurrentVotingResults = () => {
     },
   ];
 
+  const sortedData = orderBy(
+    data.map(item => ({
+      ...item,
+      gaugeValue: item.votes / totalVotes,
+      estimatedIncentiveNumber: pnum(item.estimatedIncentive).toNumber(),
+    })),
+    sortBy.key || 'votes',
+    sortBy.direction,
+  );
+
   return (
     <Card>
       <div className='flex flex-col p-3 gap-4'>
@@ -102,12 +116,12 @@ export const CurrentVotingResults = () => {
           Current Voting Results
         </Text>
         <Density compact>
-          <div className='grid grid-cols-5 h-auto overflow-auto'>
+          <div className='grid grid-cols-[1fr_1fr_1fr_1fr_1fr] h-auto overflow-auto'>
             <div className='grid grid-cols-subgrid col-span-5'>
-              <TableCell heading>Asset</TableCell>
-              <TableCell heading>Gauge Value</TableCell>
-              <TableCell heading>Casted Votes</TableCell>
-              <TableCell heading>Estimated Incentive</TableCell>
+              {getTableHeader('symbol', 'Asset')}
+              {getTableHeader('gaugeValue', 'Gauge Value')}
+              {getTableHeader('votes', 'Casted Votes')}
+              {getTableHeader('estimatedIncentiveNumber', 'Estimated Incentive')}
               <TableCell heading>Vote</TableCell>
             </div>
 
@@ -125,11 +139,10 @@ export const CurrentVotingResults = () => {
               ))
             ) : (
               <>
-                {data
+                {sortedData
                   .filter(item => item.votes / totalVotes >= THRESHOLD)
-                  .sort((a, b) => b.votes - a.votes)
                   .map(item => (
-                    <TableRow key={item.symbol} item={item} totalVotes={totalVotes} />
+                    <TableRow key={item.symbol} item={item} />
                   ))}
                 <div className='col-span-5'>
                   <TableCell>
@@ -139,11 +152,10 @@ export const CurrentVotingResults = () => {
                     </Text>
                   </TableCell>
                 </div>
-                {data
+                {sortedData
                   .filter(item => item.votes / totalVotes < THRESHOLD)
-                  .sort((a, b) => b.votes - a.votes)
                   .map(item => (
-                    <TableRow key={item.symbol} item={item} totalVotes={totalVotes} />
+                    <TableRow key={item.symbol} item={item} />
                   ))}
                 <div className='col-span-5 pt-5'>
                   <Pagination

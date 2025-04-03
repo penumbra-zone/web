@@ -9,10 +9,14 @@ import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_
 
 export const TableRow = ({
   item,
-  totalVotes,
 }: {
-  item: { symbol: string; imgUrl: string; votes: number; estimatedIncentive: ValueView };
-  totalVotes: number;
+  item: {
+    symbol: string;
+    imgUrl: string;
+    votes: number;
+    estimatedIncentive: ValueView;
+    gaugeValue: number;
+  };
 }) => {
   return (
     <div className='grid grid-cols-subgrid col-span-5'>
@@ -26,14 +30,14 @@ export const TableRow = ({
       </TableCell>
       <TableCell>
         <div className='flex items-center gap-2'>
-          <div className='flex w-[36px] sm:w-[64px] md:w-[106px] h-[6px] bg-other-tonalFill5 rounded-full'>
+          <div className='flex w-[64px] md:w-[106px] h-[6px] bg-other-tonalFill5 rounded-full'>
             <div
               className='h-[6px] bg-secondary-light rounded-full'
-              style={{ width: `${(item.votes / totalVotes) * 100}%` }}
+              style={{ width: `${item.gaugeValue * 100}%` }}
             />
           </div>
           <Text technical color='text.secondary'>
-            {round({ value: (item.votes / totalVotes) * 100, decimals: 0 })}%
+            {round({ value: item.gaugeValue * 100, decimals: 0 })}%
           </Text>
         </div>
       </TableCell>
