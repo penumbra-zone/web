@@ -12,7 +12,7 @@ import {
   SwapClaimView,
   SwapView,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
-import { ADDRESS_VIEW_DECODED, ADDRESS_VIEW_OPAQUE } from './address-view';
+import { ADDRESS_VIEW_DECODED } from './address-view';
 import {
   DELEGATION_TOKEN_VALUE,
   PENUMBRA_VALUE_VIEW,
@@ -410,7 +410,7 @@ const LQT_VOTE = new ActionLiquidityTournamentVote({
   body: {
     startPosition: 100n,
     value: DELEGATION_TOKEN_VALUE,
-    rewardsRecipient: ADDRESS_VIEW_OPAQUE.addressView.value?.address,
+    rewardsRecipient: ADDRESS_VIEW_DECODED.addressView.value?.address,
     incentivized: {
       denom: PENUMBRA_METADATA.display,
     },

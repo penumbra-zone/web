@@ -68,7 +68,14 @@ export const LiquidityTournamentVoteAction = ({
     });
   }, [vote, getMetadata]);
 
-  const address = useMemo(() => {
+  const spendAddress = useMemo(() => {
+    if (value.liquidityTournamentVote.case === 'opaque') {
+      return undefined;
+    }
+    return value.liquidityTournamentVote.value?.note?.address;
+  }, [value]);
+
+  const recipientAddress = useMemo(() => {
     const receipient = vote?.body?.rewardsRecipient;
     const defaultAddress = new AddressView({
       addressView: {
@@ -79,12 +86,13 @@ export const LiquidityTournamentVoteAction = ({
       },
     });
 
-    if (value.liquidityTournamentVote.case === 'visible') {
-      return value.liquidityTournamentVote.value.note?.address ?? defaultAddress;
+    const visible = spendAddress?.addressView.value?.address;
+    if (visible && receipient && visible.equals(receipient)) {
+      return spendAddress;
     }
 
     return defaultAddress;
-  }, [value, vote]);
+  }, [spendAddress, vote]);
 
   const epoch = useMemo(() => {
     return vote?.body?.startPosition;
@@ -106,6 +114,15 @@ export const LiquidityTournamentVoteAction = ({
             }
           />
         ),
+        <ActionRow
+          key='rewards-recipient'
+          label='Rewards Recipient'
+          info={
+            <Density slim>
+              <AddressViewComponent hideIcon addressView={recipientAddress} truncate />
+            </Density>
+          }
+        />,
       ]}
     >
       <Density slim>
@@ -114,7 +131,7 @@ export const LiquidityTournamentVoteAction = ({
             <ValueViewComponent valueView={voteAsset} showValue={false} />
           </div>
         )}
-        <AddressViewComponent addressView={address} truncate />
+        {spendAddress && <AddressViewComponent addressView={spendAddress} truncate />}
       </Density>
     </ActionWrapper>
   );
