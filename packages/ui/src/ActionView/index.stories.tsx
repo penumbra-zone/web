@@ -21,6 +21,8 @@ import {
   IbcRelayMsgAcknowledgementAction,
   IbcRelayMsgTimeoutAction,
   IbcRelayMsgTimeoutOnCloseAction,
+  LiquidityTournamentVoteAction,
+  LiquidityTournamentVoteActionOpaque,
 } from '../utils/bufs';
 
 const OPTIONS: Record<string, ActionViewMessage> = {
@@ -37,10 +39,12 @@ const OPTIONS: Record<string, ActionViewMessage> = {
   IbcRelayMsgAcknowledgement: IbcRelayMsgAcknowledgementAction,
   IbcRelayMsgTimeout: IbcRelayMsgTimeoutAction,
   IbcRelayMsgTimeoutOnClose: IbcRelayMsgTimeoutOnCloseAction,
+  LiquidityTournamentVote: LiquidityTournamentVoteAction,
   'Opaque: Spend': SpendActionOpaque,
   'Opaque: Output': OutputActionOpaque,
   'Opaque: Swap': SwapActionOpaque,
   'Opaque: SwapClaim': SwapClaimActionOpaque,
+  'Opaque: LQT Vote': LiquidityTournamentVoteActionOpaque,
 };
 
 const meta: Meta<typeof ActionView> = {
@@ -60,6 +64,6 @@ type Story = StoryObj<typeof ActionView>;
 export const Basic: Story = {
   args: {
     action: SpendAction,
-    getMetadataByAssetId: registry.tryGetMetadata,
+    getMetadata: registry.tryGetMetadata,
   },
 };

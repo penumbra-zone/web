@@ -5,14 +5,15 @@ import { Text } from '@penumbra-zone/ui/Text';
 export interface VoteProps {
   asset: Metadata;
   percent: number;
+  hideFor?: boolean;
 }
 
-export const Vote = ({ asset, percent }: VoteProps) => {
+export const Vote = ({ asset, percent, hideFor }: VoteProps) => {
   return (
     <div className='flex items-center gap-1'>
       <AssetIcon metadata={asset} />
       <Text smallTechnical color='text.primary'>
-        {percent}% for
+        {percent}% {hideFor ? '' : 'for'}
       </Text>
       <Text smallTechnical color='text.secondary'>
         {asset.symbol}

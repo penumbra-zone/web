@@ -2,6 +2,8 @@ import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { PositionId } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { base64ToUint8Array } from '@penumbra-zone/types/base64';
+import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
 
 // TODO: remove this file after applying actual data to the APIs
 
@@ -82,6 +84,31 @@ export const DUMMY_VALUE_VIEW = new ValueView({
         lo: 9_000_000_000n,
         hi: 0n,
       }),
+    },
+  },
+});
+
+export const DUMMY_ADDRESS_VIEW_DECODED = new AddressView({
+  addressView: {
+    case: 'decoded',
+    value: {
+      address: {
+        inner: new Uint8Array(80),
+      },
+      index: {
+        account: 0,
+      },
+    },
+  },
+});
+
+export const DUMMY_ADDRESS_VIEW_OPAQUE = new AddressView({
+  addressView: {
+    case: 'opaque',
+    value: {
+      address: addressFromBech32m(
+        'penumbra1e8k5cyds484dxvapeamwveh5khqv4jsvyvaf5wwxaaccgfghm229qw03pcar3ryy8smptevstycch0qk3uu0rgkvtjpxy3cu3rjd0agawqtlz6erev28a6sg69u7cxy0t02nd4',
+      ),
     },
   },
 });

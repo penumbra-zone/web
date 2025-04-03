@@ -14,16 +14,16 @@ export interface PositionOpenActionProps extends ActionViewBaseProps {
   value: PositionOpen;
 }
 
-export const PositionOpenAction = ({ value, getMetadataByAssetId }: PositionOpenActionProps) => {
+export const PositionOpenAction = ({ value, getMetadata }: PositionOpenActionProps) => {
   const asset1 = useMemo(() => {
     const id = value.position?.phi?.pair?.asset1;
-    return id ? getMetadataByAssetId?.(id) : undefined;
-  }, [value, getMetadataByAssetId]);
+    return id ? getMetadata?.(id) : undefined;
+  }, [value, getMetadata]);
 
   const asset2 = useMemo(() => {
     const id = value.position?.phi?.pair?.asset2;
-    return id ? getMetadataByAssetId?.(id) : undefined;
-  }, [value, getMetadataByAssetId]);
+    return id ? getMetadata?.(id) : undefined;
+  }, [value, getMetadata]);
 
   // TODO: find a way to compute positionId without WASM functions
   const positionId = useMemo(() => {
