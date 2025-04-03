@@ -24,7 +24,7 @@ export interface SwapActionProps extends ActionViewBaseProps {
   value: SwapView;
 }
 
-export const SwapAction = ({ value, getMetadataByAssetId }: SwapActionProps) => {
+export const SwapAction = ({ value, getMetadata }: SwapActionProps) => {
   const density = useDensity();
 
   const isOneWay = isOneWaySwap(value);
@@ -49,8 +49,8 @@ export const SwapAction = ({ value, getMetadataByAssetId }: SwapActionProps) => 
     const asset1 = getAsset1Metadata.optional(value);
     const asset2 = getAsset2Metadata.optional(value);
 
-    return parseSwapFees(claimFee, asset1, asset2, getMetadataByAssetId);
-  }, [getMetadataByAssetId, value]);
+    return parseSwapFees(claimFee, asset1, asset2, getMetadata);
+  }, [getMetadata, value]);
 
   if (!isOneWay) {
     return (

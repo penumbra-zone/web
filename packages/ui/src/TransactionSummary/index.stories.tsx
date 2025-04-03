@@ -28,6 +28,6 @@ type Story = StoryObj<typeof TransactionSummary>;
 export const Basic: Story = {
   args: {
     info: TxSwap,
-    getMetadataByAssetId: registry.tryGetMetadata,
+    getMetadata: registry.tryGetMetadata,
   },
 };

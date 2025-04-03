@@ -29,6 +29,7 @@ const ActionWrapperHeader = ({ opaque, children, title, density }: ActionWrapper
         <Text
           variant={density === 'sparse' ? 'smallTechnical' : 'detailTechnical'}
           color={opaque ? 'text.secondary' : 'text.primary'}
+          truncate
         >
           {title}
         </Text>

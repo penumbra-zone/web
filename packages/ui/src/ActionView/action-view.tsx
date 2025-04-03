@@ -1,11 +1,6 @@
 import { FC } from 'react';
 import { ActionView as ActionViewMessage } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
-import {
-  ActionViewBaseProps,
-  ActionViewType,
-  ActionViewValueType,
-  GetMetadataByAssetId,
-} from './types';
+import { ActionViewBaseProps, ActionViewType, ActionViewValueType, GetMetadata } from './types';
 import { UnknownAction } from './actions/unknown';
 
 import { SpendAction } from './actions/spend';
@@ -78,12 +73,12 @@ const componentMap = {
  * In Penumbra, each transaction has 'actions' of different types,
  * representing a blockchain state change performed by a transaction.
  */
-export const ActionView = ({ action, getMetadataByAssetId }: ActionViewProps) => {
+export const ActionView = ({ action, getMetadata }: ActionViewProps) => {
   const type = action.actionView.case ?? 'unknown';
   const Component = componentMap[type] as FC<{
     value?: ActionViewValueType;
-    getMetadataByAssetId?: GetMetadataByAssetId;
+    getMetadata?: GetMetadata;
   }>;
 
-  return <Component value={action.actionView.value} getMetadataByAssetId={getMetadataByAssetId} />;
+  return <Component value={action.actionView.value} getMetadata={getMetadata} />;
 };

@@ -4,7 +4,7 @@ import { penumbra } from '@/shared/const/penumbra';
 import { connectionStore } from '@/shared/model/connection';
 import { useQuery } from '@tanstack/react-query';
 import { useRegistryAssets } from '@/shared/api/registry';
-import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { AssetId, Metadata, Denom } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { useMemo } from 'react';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 
@@ -32,30 +32,36 @@ export const useAssets = () => {
   return connectionStore.connected ? accountAssets : registryAssets;
 };
 
-export type GetMetadataByAssetId = (assetId?: AssetId) => Metadata | undefined;
+export type GetMetadata = (assetId?: AssetId | Denom) => Metadata | undefined;
+
+export const isDenom = (value?: Denom | AssetId): value is Denom =>
+  value?.getType().typeName === Denom.typeName;
 
 /**
  * A hook that returns a synchronous function for querying the metadata by assetId.
  * Needed for an optimized client-side asset fetching.
  */
-export const useGetMetadataByAssetId = (): GetMetadataByAssetId => {
+export const useGetMetadata = (): GetMetadata => {
   const { data } = useAssets();
 
+  // An object with keys as base64 encoded assetId OR denom string, and values as Metadata
   const assetIdMap = useMemo(() => {
     return data?.reduce<Map<string, Metadata>>((accum, asset) => {
       if (!asset.penumbraAssetId?.inner) {
         return accum;
       }
       accum.set(uint8ArrayToBase64(asset.penumbraAssetId.inner), asset);
+      accum.set(asset.display, asset);
       return accum;
     }, new Map());
   }, [data]);
 
-  return (assetId?: AssetId): Metadata | undefined => {
-    if (!assetId?.inner) {
+  return (id?: AssetId | Denom): Metadata | undefined => {
+    const key = isDenom(id) ? id.denom : id?.inner && uint8ArrayToBase64(id.inner);
+    if (!key) {
       return undefined;
     }
 
-    return assetIdMap?.get(uint8ArrayToBase64(assetId.inner));
+    return assetIdMap?.get(key);
   };
 };

@@ -37,7 +37,7 @@
     "@grpc/proto-loader": "^0.7.13",
     "@interchain-ui/react": "^1.26.1",
     "@keplr-wallet/types": "^0.12.199",
-    "@penumbra-labs/registry": "^12.4.0",
+    "@penumbra-labs/registry": "^12.5.0",
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/client": "workspace:*",
     "@penumbra-zone/crypto-web": "workspace:*",
@@ -97,8 +97,5 @@
     "typescript": "5.5.3",
     "typescript-eslint": "^8.17.0",
     "vitest": "^1.6.0"
-  },
-  "engines": {
-    "node": ">=22"
   }
 }

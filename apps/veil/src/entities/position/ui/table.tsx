@@ -14,7 +14,7 @@ import { Tooltip } from '@penumbra-zone/ui/Tooltip';
 import { TableCell } from '@penumbra-zone/ui/TableCell';
 import { pnum } from '@penumbra-zone/types/pnum';
 import { connectionStore } from '@/shared/model/connection';
-import { useGetMetadataByAssetId } from '@/shared/api/assets';
+import { useGetMetadata } from '@/shared/api/assets';
 import { usePositions } from '../api/use-positions';
 import { stateToString } from '../model/state-to-string';
 import { getDisplayPositions, GetDisplayPositionsArgs } from '../model/get-display-positions';
@@ -37,7 +37,7 @@ export interface PositionsTableProps {
 
 export const PositionsTable = observer(({ base, quote, stateFilter }: PositionsTableProps) => {
   const { connected, subaccount } = connectionStore;
-  const getMetadataByAssetId = useGetMetadataByAssetId();
+  const getMetadata = useGetMetadata();
 
   const { data, isLoading, isRefetching, isFetchingNextPage, fetchNextPage, error } =
     usePositions(subaccount);
@@ -46,7 +46,7 @@ export const PositionsTable = observer(({ base, quote, stateFilter }: PositionsT
     asset1Filter: base,
     asset2Filter: quote,
     stateFilter,
-    getMetadataByAssetId,
+    getMetadata,
   });
 
   const { observerEl } = useObserver(isLoading || isRefetching || isFetchingNextPage, () => {
