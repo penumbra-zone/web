@@ -6,6 +6,7 @@ import { ActionWrapper } from '../shared/wrapper';
 import { ActionViewBaseProps } from '../types';
 import { ValueViewComponent } from '../../ValueView';
 import { AddressViewComponent } from '../../AddressView';
+import { useDensity } from '../../utils/density';
 import { Density } from '../../Density';
 import { ActionRow } from '../shared/action-row';
 
@@ -17,6 +18,8 @@ export const LiquidityTournamentVoteAction = ({
   value,
   getMetadata,
 }: LiquidityTournamentVoteActionProps) => {
+  const density = useDensity();
+
   const vote = value.liquidityTournamentVote.value?.vote;
 
   const voteAsset = useMemo(() => {
@@ -128,7 +131,11 @@ export const LiquidityTournamentVoteAction = ({
       <Density slim>
         {voteAsset && (
           <div className='flex items-center [&>span]:pr-2'>
-            <ValueViewComponent valueView={voteAsset} showValue={false} />
+            <ValueViewComponent
+              priority={density === 'sparse' ? 'primary' : 'tertiary'}
+              valueView={voteAsset}
+              showValue={false}
+            />
           </div>
         )}
         {spendAddress && <AddressViewComponent addressView={spendAddress} truncate />}
