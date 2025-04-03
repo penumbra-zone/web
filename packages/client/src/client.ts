@@ -118,7 +118,7 @@ export class PenumbraClient {
 
   // instance features
 
-  private readonly serviceClients: Map<ServiceType, Client<ServiceType>>;
+  private readonly serviceClients: PenumbraServiceClientMap;
   private readonly stateListeners: Set<(detail: PenumbraEventDetail<'penumbrastate'>) => void>;
   private readonly providerEventListener: PenumbraEventListener;
 
@@ -217,8 +217,7 @@ export class PenumbraClient {
    * will throw.
    */
   public service<T extends ServiceType>(service: T): Client<T> {
-    // TODO: find a way to remove this type cast
-    let serviceClient = this.serviceClients.get(service) as Client<T> | undefined;
+    let serviceClient = this.serviceClients.get(service);
 
     if (!serviceClient) {
       serviceClient = createClient(service, this.assertConnected().transport);
