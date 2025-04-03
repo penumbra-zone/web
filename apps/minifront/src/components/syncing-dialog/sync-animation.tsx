@@ -21,41 +21,39 @@ export const SyncAnimation = ({ error, running }: { error?: Error; running?: boo
   }, [error, running]);
 
   return (
-    <div className='flex flex-col gap-8 rounded-sm bg-black'>
-      <div className='relative h-0 overflow-hidden pb-[33%]'>
-        <div className='absolute left-1/2 top-0 w-full -translate-x-1/2 overflow-hidden'>
-          <img
-            src={illustration}
-            alt='A loading illustration'
-            className={cn(
-              'w-full',
-              mode === 'starting' && [
-                'animate-[spin_60s_infinite]',
-                '[animation-timing-function:steps(48,jump-start)]',
-                'blur-[1px]',
-              ],
-              mode === 'streaming' && [
-                'animate-[spin_5s_infinite]',
-                '[animation-timing-function:steps(48)]',
-                'brightness-100',
-              ],
-              mode === 'retrying' && [
-                '[animation-composition:accumulate]',
-                'animate-[spin_60s_infinite,spin_60s_infinite_reverse]',
-                '[animation-timing-function:steps(96),ease-in-out]',
-                'grayscale',
-              ],
-              mode === 'stopped' && [
-                '[animation-composition:accumulate]',
-                'animate-[spin_5s_infinite_alternate,spin_7s_infinite_alternate,spin_120s_infinite_reverse]',
-                '[animation-timing-function:steps(3),steps(5),ease-in-out]',
-                'opacity-50',
-                'blur-[2px]',
-                'sepia',
-              ],
-            )}
-          />
-        </div>
+    <div className={cn('absolute', 'left-0 top-0', 'size-full', '-z-10', 'overflow-hidden')}>
+      <div className={cn('pt-8 px-4', '[mask-image:linear-gradient(black,transparent_65%)]')}>
+        <img
+          src={illustration}
+          alt='A loading illustration'
+          className={cn(
+            'w-full',
+            mode === 'starting' && [
+              'animate-[spin_60s_infinite]',
+              '[animation-timing-function:steps(48,jump-start)]',
+            ],
+            mode === 'streaming' && [
+              'animate-[spin_5s_infinite]',
+              '[animation-timing-function:steps(48)]',
+              'brightness-100',
+            ],
+            mode === 'retrying' && [
+              '[animation-composition:accumulate]',
+              'animate-[spin_60s_infinite,spin_60s_infinite_reverse]',
+              '[animation-timing-function:steps(96),ease-in-out]',
+              'blur-[1px]',
+              'grayscale',
+            ],
+            mode === 'stopped' && [
+              '[animation-composition:accumulate]',
+              'animate-[spin_5s_infinite_alternate,spin_7s_infinite_alternate,spin_120s_infinite_reverse]',
+              '[animation-timing-function:steps(3),steps(5),ease-in-out]',
+              'opacity-50',
+              'blur-[2px]',
+              'sepia',
+            ],
+          )}
+        />
       </div>
     </div>
   );
