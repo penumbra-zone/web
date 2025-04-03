@@ -28,7 +28,6 @@ interface PenumbraClientOptions {
 }
 
 interface PenumbraClientConnection {
-  reject: (reason?: unknown) => void;
   port: Promise<MessagePort>;
   transport: Transport;
 }
@@ -38,6 +37,17 @@ interface PenumbraClientAttachment {
   provider: PenumbraProvider;
   confirmManifest: Promise<PenumbraManifest>;
   manifest?: PenumbraManifest;
+}
+
+interface PenumbraServiceClientMap<S extends ServiceType = ServiceType> extends Map<S, Client<S>> {
+  get<G extends S>(service: G): Client<G> | undefined;
+  set<G extends S>(service: G, client: Client<G>): this;
+
+  forEach(
+    callbackFn: <G extends S>(value: Client<G>, key: G, map: PenumbraServiceClientMap<S>) => void,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- extending interface
+    thisArg?: any,
+  ): void;
 }
 
 /**
@@ -129,6 +139,9 @@ export class PenumbraClient {
     this.stateListeners = new Set();
     this.providerEventListener = evt => {
       if (this.attached?.origin && isPenumbraStateEvent(evt, this.attached.origin)) {
+        if (evt.detail.state === PenumbraState.Disconnected) {
+          this.destroyConnection();
+        }
         this.stateListeners.forEach(listener => listener(evt.detail));
       }
     };
@@ -192,12 +205,9 @@ export class PenumbraClient {
     await this.connection.port;
   }
 
-  /** Call `disconnect` on the associated provider to release connection
-   * approval, and destroy any present connection. */
+  /** Call `disconnect` on the associated provider to release approval. */
   public async disconnect(): Promise<void> {
-    const request = this.attached?.provider.disconnect();
-    this.destroyConnection();
-    await request;
+    return this.attached?.provider.disconnect();
   }
 
   /** Return a `PromiseClient<T>` for some `T extends ServiceType`, using this
@@ -312,6 +322,8 @@ export class PenumbraClient {
   private createConnection(): PenumbraClientConnection {
     const { confirmManifest, provider } = this.assertAttached();
 
+    const portClosed = new AbortController();
+
     // requestPort will resolve to the provider's message port if connection
     // is successful. this promise is not awaited so that this method may be
     // called synchronously.
@@ -319,32 +331,28 @@ export class PenumbraClient {
       if (isLegacyProvider(provider)) {
         await provider.request();
       }
-      return provider.connect();
-    });
 
-    const { promise: portFailed, resolve, reject } = Promise.withResolvers<never>();
+      const port = await provider.connect();
 
-    void requestPort.then(port =>
+      // the provider may close the port, which should destroy the connection.
       port.addEventListener('message', evt => {
         if (evt.data === false) {
-          resolve(Promise.reject(ConnectError.from('Connection closed', Code.Unavailable)));
+          portClosed.abort(ConnectError.from('Connection closed', Code.Unavailable));
+          this.destroyConnection();
         }
-      }),
-    );
-
-    /**
-     * re-use the same port, but assert the connection status each time.
-     */
-    const getConnectedPort = () =>
-      Promise.race([portFailed, requestPort]).then(port => {
-        assertProviderConnected(this.attached?.origin);
-        return port;
       });
 
-    /**
-     * create a new transport on each access, using the same port, and assert
-     * the connection status each time.
-     */
+      return port;
+    });
+
+    // Re-use the same port, but check the connection status each time.
+    const getConnectedPort = async () => {
+      const port = await requestPort;
+      assertProviderConnected(this.attached?.origin);
+      return port;
+    };
+
+    // Create a new transport, re-using the same port.
     const getConnectedTransport = () =>
       createChannelTransport({
         ...this.options.transportOptions,
@@ -352,11 +360,12 @@ export class PenumbraClient {
       });
 
     const connection: PenumbraClientConnection = {
-      reject,
       get port() {
+        portClosed.signal.throwIfAborted();
         return getConnectedPort();
       },
       get transport() {
+        portClosed.signal.throwIfAborted();
         return getConnectedTransport();
       },
     };
@@ -366,13 +375,6 @@ export class PenumbraClient {
 
   /** Destroy any active connection and discard existing clients. */
   private destroyConnection() {
-    if (this.connection) {
-      void this.connection.port.then(port => {
-        port.postMessage(false);
-        port.close();
-      });
-      this.connection.reject(ConnectError.from('Connection destroyed', Code.Unavailable));
-    }
     this.connection = undefined;
     this.serviceClients.clear();
   }
