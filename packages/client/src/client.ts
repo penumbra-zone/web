@@ -1,5 +1,5 @@
 import type { ServiceType } from '@bufbuild/protobuf';
-import { createClient, Client, Transport } from '@connectrpc/connect';
+import { Code, ConnectError, createClient, Client, Transport } from '@connectrpc/connect';
 import { jsonOptions } from '@penumbra-zone/protobuf';
 import {
   ChannelTransportOptions,
@@ -28,6 +28,7 @@ interface PenumbraClientOptions {
 }
 
 interface PenumbraClientConnection {
+  reject: (reason?: unknown) => void;
   port: Promise<MessagePort>;
   transport: Transport;
 }
@@ -321,12 +322,43 @@ export class PenumbraClient {
       return provider.connect();
     });
 
-    const connection: PenumbraClientConnection = {
-      port: requestPort,
-      transport: createChannelTransport({
-        ...this.options.transportOptions,
-        getPort: () => requestPort,
+    const { promise: portFailed, resolve, reject } = Promise.withResolvers<never>();
+
+    void requestPort.then(port =>
+      port.addEventListener('message', evt => {
+        if (evt.data === false) {
+          resolve(Promise.reject(ConnectError.from('Connection closed', Code.Unavailable)));
+        }
       }),
+    );
+
+    /**
+     * re-use the same port, but assert the connection status each time.
+     */
+    const getConnectedPort = () =>
+      Promise.race([portFailed, requestPort]).then(port => {
+        assertProviderConnected(this.attached?.origin);
+        return port;
+      });
+
+    /**
+     * create a new transport on each access, using the same port, and assert
+     * the connection status each time.
+     */
+    const getConnectedTransport = () =>
+      createChannelTransport({
+        ...this.options.transportOptions,
+        getPort: getConnectedPort,
+      });
+
+    const connection: PenumbraClientConnection = {
+      reject,
+      get port() {
+        return getConnectedPort();
+      },
+      get transport() {
+        return getConnectedTransport();
+      },
     };
 
     return connection;
@@ -334,10 +366,13 @@ export class PenumbraClient {
 
   /** Destroy any active connection and discard existing clients. */
   private destroyConnection() {
-    void this.connection?.port.then(port => {
-      port.postMessage(false);
-      port.close();
-    });
+    if (this.connection) {
+      void this.connection.port.then(port => {
+        port.postMessage(false);
+        port.close();
+      });
+      this.connection.reject(ConnectError.from('Connection destroyed', Code.Unavailable));
+    }
     this.connection = undefined;
     this.serviceClients.clear();
   }
