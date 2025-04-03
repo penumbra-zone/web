@@ -7,7 +7,7 @@ import {
 import {
   getAmount,
   getValidatorIdentityKeyFromValueView,
-  getMetadata,
+  getDisplayDenomFromView,
 } from '@penumbra-zone/getters/value-view';
 import { getBondingState } from '@penumbra-zone/getters/validator-status';
 import { penumbra } from '../../penumbra';
@@ -19,42 +19,46 @@ import {
 } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 
 /**
- * Parse the value's denom for its embedded unbonding start height.
+ * Find the unbonding start height, for penalty calculation.
+ *
+ * Parses the value's denom for its embedded unbonding start height.
  */
-const parseUnbondingStartHeight = (unbondingToken: ValueView): bigint => {
-  const unbondingMetadata = getMetadata(unbondingToken);
-
-  const unbondingMatch = assetPatterns.unbondingToken.capture(unbondingMetadata.display);
+const parseUnbondingStartHeight = (unbondingValue: ValueView): bigint => {
+  const unbondingMatch = assetPatterns.unbondingToken.capture(
+    getDisplayDenomFromView(unbondingValue),
+  );
   if (!unbondingMatch?.startAt) {
-    throw TypeError('Not an unbonding token', { cause: unbondingMetadata });
+    throw TypeError('Value is not an unbonding token', { cause: unbondingValue });
   }
 
   return BigInt(unbondingMatch.startAt);
 };
 
 /**
- * Calculate the unbonding end height for a particular token, based on present
- * state of the validator.
+ * Find a reasonable unbonding end height, for penalty calculation.
+ *
+ * The unbonding may be old enough that the validator has since transitioned
+ * states, so the chosen end height depends on the validator's present state.
  *
  * @see https://github.com/penumbra-zone/penumbra/pull/5084
  */
-const getUnbondingEndHeight = ({
+const chooseUnbondingEndHeight = ({
   currentHeight,
   appUnbondingDelay,
   startHeight,
-  bondingState,
+  validatorBondingState,
 }: {
   currentHeight: bigint;
   appUnbondingDelay: bigint;
   startHeight: bigint;
-  bondingState: BondingState;
+  validatorBondingState: BondingState;
 }) => {
-  if (!bondingState.state) {
-    throw new ReferenceError('Validator bonding state must be available and specified', {
-      cause: bondingState,
+  if (!validatorBondingState.state) {
+    throw new ReferenceError('Validator bonding state must be available', {
+      cause: validatorBondingState,
     });
   }
-  const { state: validatorState, unbondsAtHeight: validatorUnbondingHeight } = bondingState;
+  const { state: validatorState, unbondsAtHeight: validatorHeight } = validatorBondingState;
 
   const appDelayHeight = startHeight + appUnbondingDelay;
 
@@ -64,12 +68,12 @@ const getUnbondingEndHeight = ({
       endHeight = appDelayHeight;
       break;
     case BondingState_BondingStateEnum.UNBONDING:
-      if (validatorUnbondingHeight > startHeight) {
+      if (validatorHeight > startHeight) {
         endHeight =
           // if the validator height exceeds the app delay height
-          validatorUnbondingHeight > appDelayHeight
+          validatorHeight > appDelayHeight
             ? appDelayHeight //  clamp to the app delay height
-            : validatorUnbondingHeight;
+            : validatorHeight;
       } else {
         endHeight = currentHeight;
       }
@@ -90,40 +94,58 @@ const getUnbondingEndHeight = ({
 const assembleUndelegationClaim = async ({
   currentHeight,
   appUnbondingDelay,
-  unbondingToken,
+  unbondingValue,
 }: {
   currentHeight: bigint;
   appUnbondingDelay: bigint;
-  unbondingToken: ValueView;
+  unbondingValue: ValueView;
 }): Promise<TransactionPlannerRequest_UndelegateClaim> => {
   const sctClient = penumbra.service(SctService);
   const stakeClient = penumbra.service(StakeService);
 
-  const identityKey = getValidatorIdentityKeyFromValueView(unbondingToken);
-
-  const startHeight = parseUnbondingStartHeight(unbondingToken);
-  const { epoch: startEpoch } = await sctClient.epochByHeight({ height: startHeight });
+  const identityKey = getValidatorIdentityKeyFromValueView(unbondingValue);
 
   const { status: validatorStatus } = await stakeClient.validatorStatus({ identityKey });
 
-  const endHeight = getUnbondingEndHeight({
+  const startHeight = parseUnbondingStartHeight(unbondingValue);
+  const { epoch: startEpoch } = await sctClient.epochByHeight({ height: startHeight });
+
+  const endHeight = chooseUnbondingEndHeight({
     currentHeight,
     appUnbondingDelay,
     startHeight,
-    bondingState: getBondingState(validatorStatus),
+    validatorBondingState: getBondingState(validatorStatus),
   });
   const { epoch: endEpoch } = await sctClient.epochByHeight({ height: endHeight });
 
+  if (!startEpoch || !endEpoch) {
+    throw new Error('Failed to identify an unbonding epoch range', {
+      cause: { startHeight, endHeight },
+    });
+  }
+
   const { penalty } = await stakeClient.validatorPenalty({
     identityKey,
-    startEpochIndex: startEpoch?.index,
-    endEpochIndex: endEpoch?.index,
+    startEpochIndex: startEpoch.index,
+    endEpochIndex: endEpoch.index,
   });
+
+  if (!penalty) {
+    throw new Error('No penalty for unbonding from validator', {
+      cause: {
+        unbondingValue,
+        startEpoch,
+        endEpoch,
+        validatorIdentity: identityKey,
+        validatorStatus,
+      },
+    });
+  }
 
   return new TransactionPlannerRequest_UndelegateClaim({
     validatorIdentity: identityKey,
     unbondingStartHeight: startHeight,
-    unbondingAmount: getAmount(unbondingToken),
+    unbondingAmount: getAmount(unbondingValue),
     penalty,
   });
 };
@@ -149,11 +171,11 @@ export const assembleUndelegateClaimRequest = async ({
   const { fullSyncHeight } = await viewClient.status({});
 
   const undelegationClaims = await Promise.all(
-    unbondingTokens.map(unbondingToken =>
+    unbondingTokens.map(unbondingValue =>
       assembleUndelegationClaim({
         currentHeight: fullSyncHeight,
         appUnbondingDelay: unbondingDelay,
-        unbondingToken,
+        unbondingValue,
       }),
     ),
   );
