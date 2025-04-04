@@ -1,5 +1,14 @@
 # @penumbra-zone/ui
 
+## 13.16.1
+
+### Patch Changes
+
+- 80148ae: Fix bugs related to transaction history and transaction/action views
+- Updated dependencies [b0e0eef]
+  - @penumbra-zone/types@32.1.0
+  - @penumbra-zone/perspective@52.0.0
+
 ## 13.16.0
 
 ### Minor Changes

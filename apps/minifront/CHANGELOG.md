@@ -1,5 +1,17 @@
 # minifront
 
+## 6.31.3
+
+### Patch Changes
+
+- 80148ae: Fix bugs related to transaction history and transaction/action views
+- Updated dependencies [80148ae]
+- Updated dependencies [b0e0eef]
+  - @penumbra-zone/ui-deprecated@17.1.2
+  - @penumbra-zone/types@32.1.0
+  - @penumbra-zone/crypto-web@40.0.0
+  - @penumbra-zone/perspective@52.0.0
+
 ## 6.31.2
 
 ### Patch Changes
