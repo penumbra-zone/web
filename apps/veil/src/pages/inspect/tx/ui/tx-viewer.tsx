@@ -119,6 +119,7 @@ export const TxViewer = observer(({ txInfo }: { txInfo?: TransactionInfo }) => {
                 info={
                   <Density slim>
                     <AddressViewComponent
+                      truncate
                       addressView={txv.bodyView.memoView.memoView.value.plaintext.returnAddress}
                     />
                   </Density>
