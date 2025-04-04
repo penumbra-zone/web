@@ -345,9 +345,6 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
 
     try {
       const req = await assembleUndelegateClaimRequest({ account, unbondingTokens });
-      if (!req) {
-        return;
-      }
 
       await planBuildBroadcast('undelegateClaim', req);
 

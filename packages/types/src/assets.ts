@@ -1,5 +1,3 @@
-import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-
 // PRICE_RELEVANCE_THRESHOLDS defines how long prices for different asset types remain relevant (in blocks)
 // 1 block = 5 seconds, 200 blocks approximately equals 17 minutes
 export const PRICE_RELEVANCE_THRESHOLDS = {
@@ -91,25 +89,4 @@ export const assetPatterns: AssetPatterns = {
   ),
   votingReceipt: new RegexMatcher(/^voted_on_/),
   ibc: new RegexMatcher(/^transfer\/(?<channel>channel-\d+)\/(?<denom>.*)/),
-};
-
-/**
- * Get the unbonding start height index from the metadata of an unbonding token
- * -- that is, the block height at which unbonding started.
- *
- * For metadata of a non-unbonding token, will return `undefined`.
- */
-export const getUnbondingStartHeight = (metadata?: Metadata) => {
-  if (!metadata) {
-    return undefined;
-  }
-
-  const unbondingMatch = assetPatterns.unbondingToken.capture(metadata.display);
-
-  if (unbondingMatch) {
-    const { startAt } = unbondingMatch;
-    return BigInt(startAt);
-  }
-
-  return undefined;
 };
