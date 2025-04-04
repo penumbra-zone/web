@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { EWMA } from './ewma';
 import humanizeDuration from 'humanize-duration';
 
+const TEN_MINUTES_MS = 10 * 60 * 1_000;
+
 /**
  * Custom hook to calculate synchronization speed and estimate the time remaining
  * for a synchronization process to complete, using the Exponential Weighted Moving Average (EWMA)
@@ -48,8 +50,19 @@ export const useSyncProgress = (
   // TODO: this may eventually need bigint
   const blocksRemaining = Number(latestKnownBlockHeight - fullSyncHeight);
   const timeRemaining = speed > 0 ? blocksRemaining / speed : Infinity;
+
   const formattedTimeRemaining =
-    timeRemaining === Infinity ? '' : humanizeDuration(timeRemaining * 1000, { round: true });
+    timeRemaining === Infinity
+      ? ''
+      : humanizeDuration(timeRemaining * 1000, {
+          // display up to this many units (largest first)
+          largest:
+            // if `timeRemaining` is under 10m
+            timeRemaining < TEN_MINUTES_MS
+              ? 2 // show minutes and seconds
+              : 1, // or, just the single largest unit
+          round: true,
+        });
 
   return { formattedTimeRemaining, confident };
 };
