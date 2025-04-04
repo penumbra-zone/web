@@ -47,7 +47,7 @@ export const voteTournament = async ({
       source: new AddressIndex({ account: connectionStore.subaccount }),
     });
 
-    await planBuildBroadcast('positionClose', planReq);
+    await planBuildBroadcast('liquidityTournamentVote', planReq);
   } catch (e) {
     openToast({
       type: 'error',

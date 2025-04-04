@@ -8,7 +8,9 @@ import Image from 'next/image';
 import { useLQTNotes } from '../api/use-voting-notes';
 import { voteTournament } from '../api/vote';
 import { SpendableNoteRecord } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { useSubaccounts } from '@/widgets/header/api/subaccounts';
+import { connectionStore } from '@/shared/model/connection';
+import { getAddressIndex } from '@penumbra-zone/getters/address-view';
 
 interface VoteDialogProps {
   isOpen: boolean;
@@ -100,13 +102,22 @@ export const VoteDialogueSelector = observer(({ isOpen, onClose }: VoteDialogPro
   const [selectedAsset, setSelectedAsset] = useState<string | null>(null);
   const [revealVote, setRevealVote] = useState(false);
 
+  const { data: subaccounts } = useSubaccounts();
+  const { subaccount } = connectionStore;
+  const valueAddress = subaccounts?.find(
+    account => getAddressIndex(account).account === subaccount,
+  );
+
+  // Temporarily hardcode the same account address as the reward recipient.
+  let rewardsRecipient = valueAddress?.addressView.value?.address!;
+
   // TODO: dynamically query latest epoch from `EPOCHS` indexedDB table.
   const epochIndex = 32182n;
 
   // Fetch user's spendable voting notes for this epoch
   const { data } = useLQTNotes(epochIndex);
 
-  // TODO: replace this static asset list with data from the API server.
+  // TODO: replace this dummy static asset list with actual data from the API server.
   const assets: Asset[] = [
     {
       id: 'usdc',
@@ -162,16 +173,15 @@ export const VoteDialogueSelector = observer(({ isOpen, onClose }: VoteDialogPro
 
   const handleVoteSubmit = async () => {
     if (selectedAsset) {
-      const stakedNotes: SpendableNoteRecord[] = data ? Array.from(data.values()) : [];
-
-      // TODO: replace with actual reward address
-      const rewardsRecipient = new Address({
-        inner: new Uint8Array([]),
-      });
+      const stakedNotes: SpendableNoteRecord[] = data
+        ? Array.from(data.values())
+            .map(res => res.noteRecord)
+            .filter((record): record is SpendableNoteRecord => !!record)
+        : [];
 
       // Craft LQT TPR and submit vote
       await voteTournament({
-        stakedNotes,
+        stakedNotes: stakedNotes,
         incentivized: selectedAsset,
         epochIndex,
         rewardsRecipient,

@@ -9,10 +9,22 @@ import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { ConnectButton } from '@/features/connect/connect-button';
 import { PagePath } from '@/shared/const/pages';
+import { useState } from 'react';
+import { VoteDialogueSelector } from '../vote-dialogue';
 
+// TODO: DRY – https://github.com/penumbra-zone/web/pull/2144#discussion_r2020747784
 export const VotingFooter = observer(
   ({ isBanned, epoch }: { isBanned: boolean; epoch: number }) => {
     const { connected } = connectionStore;
+    const [isVoteDialogueOpen, setIsVoteDialogOpen] = useState(false);
+
+    const openVoteDialog = () => {
+      setIsVoteDialogOpen(true);
+    };
+
+    const closeVoteDialog = () => {
+      setIsVoteDialogOpen(false);
+    };
 
     // dummy data
     const delegatedAmount = 1000;
@@ -114,25 +126,33 @@ export const VotingFooter = observer(
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- temporary
     if (delegatedAmount) {
       return (
-        <div className='flex flex-col gap-8'>
-          <div className='flex gap-4 color-text-secondary items-center'>
-            <div className='size-10 text-text-secondary'>
-              <Coins className='w-full h-full' />
+        <>
+          <div className='flex flex-col gap-8'>
+            <div className='flex gap-4 color-text-secondary items-center'>
+              <div className='size-10 text-text-secondary'>
+                <Coins className='w-full h-full' />
+              </div>
+              <Text variant='small' color='text.secondary'>
+                You’ve delegated UM and are now eligible to vote in this epoch.
+              </Text>
+              <ValueViewComponent valueView={valueView} />
             </div>
-            <Text variant='small' color='text.secondary'>
-              You’ve delegated UM and are now eligible to vote in this epoch.
-            </Text>
-            <ValueViewComponent valueView={valueView} />
+            <div className='flex gap-2 w-full'>
+              <div className='flex-1 max-w-[300px]'>
+                <Button actionType='accent' onClick={openVoteDialog}>
+                  Vote Now
+                </Button>
+              </div>
+              <div className='flex-1'>
+                <Link href={PagePath.TournamentRound.replace(':epoch', epoch.toString())}>
+                  <Button actionType='default'>Details</Button>
+                </Link>
+              </div>
+            </div>
           </div>
-          <div className='flex gap-2'>
-            <Button actionType='accent' icon={ExternalLink}>
-              Delegate
-            </Button>
-            <Link href={PagePath.TournamentRound.replace(':epoch', epoch.toString())}>
-              <Button actionType='default'>Details</Button>
-            </Link>
-          </div>
-        </div>
+
+          <VoteDialogueSelector isOpen={isVoteDialogueOpen} onClose={closeVoteDialog} />
+        </>
       );
     }
 
