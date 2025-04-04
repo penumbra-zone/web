@@ -8,6 +8,7 @@ export interface RoundOptions {
   decimals: number;
   roundingMode?: RoundingMode;
   trailingZeros?: boolean;
+  exponentialNotation?: boolean;
 }
 
 const EXPONENTIAL_NOTATION_THRESHOLD = new Decimal('1e21');
