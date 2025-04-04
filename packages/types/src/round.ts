@@ -40,6 +40,7 @@ export function round({
   decimals,
   roundingMode = 'half-up',
   trailingZeros = false,
+  exponentialNotation = true,
 }: RoundOptions): string {
   const decimalValue = new Decimal(value);
 
@@ -49,7 +50,7 @@ export function round({
 
   let result: string;
 
-  if (isLargeNumber || isSmallNumber) {
+  if (exponentialNotation && (isLargeNumber || isSmallNumber)) {
     result = decimalValue.toExponential(decimals, getDecimalRoundingMode(roundingMode));
   } else {
     const roundedDecimal = decimalValue.toDecimalPlaces(
