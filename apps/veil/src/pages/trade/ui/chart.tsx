@@ -149,6 +149,7 @@ const ChartData = observer(({ candles }: { candles: CandleWithVolume[] }) => {
         timeScale: {
           timeVisible: true,
           secondsVisible: false,
+          uniformDistribution: true,
         },
       });
 
@@ -196,8 +197,6 @@ const ChartData = observer(({ candles }: { candles: CandleWithVolume[] }) => {
               : theme.color.destructive.light + '80',
         })),
       );
-
-      chartRef.current.timeScale().fitContent();
     }
 
     return () => {
@@ -225,20 +224,8 @@ const ChartData = observer(({ candles }: { candles: CandleWithVolume[] }) => {
               : theme.color.destructive.light + '80',
         })),
       );
-      chartRef.current?.timeScale().fitContent();
     }
   }, [candles]);
-
-  // Handle window resize to re-fit content
-  useEffect(() => {
-    const handleResize = () => {
-      if (chartRef.current) {
-        chartRef.current.timeScale().fitContent();
-      }
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   return <div className='h-full w-full' ref={chartElRef} />;
 });
