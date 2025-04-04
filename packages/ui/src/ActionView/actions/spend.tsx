@@ -21,7 +21,7 @@ export const SpendAction = ({ value }: SpendActionProps) => {
             priority={density === 'sparse' ? 'primary' : 'tertiary'}
             valueView={value.spendView.value.note?.value}
           />
-          <AddressViewComponent addressView={value.spendView.value.note?.address} />
+          <AddressViewComponent truncate addressView={value.spendView.value.note?.address} />
         </Density>
       )}
     </ActionWrapper>
