@@ -1,5 +1,11 @@
 # @penumbra-zone/types
 
+## 32.1.0
+
+### Minor Changes
+
+- b0e0eef: Add exponentialNotation to round fn
+
 ## 32.0.0
 
 ### Minor Changes
