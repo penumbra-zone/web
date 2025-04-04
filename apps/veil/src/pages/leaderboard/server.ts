@@ -1,1 +1,1 @@
-export { GET } from './api/get-leaderboard';
+export { GET } from '@/entities/leaderboard/server';

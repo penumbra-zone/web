@@ -10,7 +10,10 @@ import {
 } from '@/shared/database/schema.ts';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { DurationWindow } from '@/shared/utils/duration.ts';
-import { PositionId } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
+import {
+  PositionId,
+  PositionState_PositionStateEnum,
+} from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { pindexerDb } from './client';
 import { hexToUint8Array } from '@penumbra-zone/types/hex';
 
@@ -449,9 +452,10 @@ class Pindexer {
 
   async queryLeaderboard(
     limit: number,
-    interval: string,
-    baseHex: string | undefined,
+    offset: number,
     quoteHex: string | undefined,
+    startBlock: number,
+    endBlock: number,
   ) {
     const positionExecutions = this.db
       .selectFrom('dex_ex_position_executions')
@@ -465,31 +469,67 @@ class Pindexer {
         sql<number>`sum(${exp.ref('fee_2')})`.as('fees2'),
         sql<number>`CAST(count(*) AS INTEGER)`.as('executionCount'),
       ])
-      .$if(baseHex !== undefined, qb =>
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- baseHex is defined
-        qb.where('context_asset_start', '=', Buffer.from(hexToUint8Array(baseHex!))),
-      )
       .$if(quoteHex !== undefined, qb =>
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- quoteHex is defined
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- quoteHex is guaranteed to be defined
         qb.where('context_asset_end', '=', Buffer.from(hexToUint8Array(quoteHex!))),
       )
       .groupBy(['position_id', 'context_asset_start', 'context_asset_end'])
       .orderBy('executionCount', 'desc');
 
+    // Get total count first
+    const totalCount = await this.db
+      .selectFrom('dex_ex_position_state as state')
+      .where(exp =>
+        exp.and([
+          exp.eb('opening_height', '>=', startBlock),
+          exp.eb('opening_height', '<=', endBlock),
+        ]),
+      )
+      .innerJoin(positionExecutions.as('executions'), 'state.position_id', 'executions.position_id')
+      .select(sql<number>`count(*)`.as('count'))
+      .executeTakeFirstOrThrow();
+
     const results = await this.db
       .selectFrom('dex_ex_position_state as state')
       .where(exp =>
         exp.and([
-          exp.eb('closing_height', 'is', null),
-          sql<boolean>`${exp.ref('state.opening_time')} >= NOW() - CAST(${interval} AS INTERVAL)`,
+          exp.eb('opening_height', '>=', startBlock),
+          exp.eb('opening_height', '<=', endBlock),
         ]),
       )
       .innerJoin(positionExecutions.as('executions'), 'state.position_id', 'executions.position_id')
       .selectAll('executions')
+      .selectAll('state')
       .limit(limit)
+      .offset(offset)
       .execute();
 
-    return results;
+    const withdrawals = await this.db
+      .selectFrom('dex_ex_position_withdrawals')
+      .select(['position_id'])
+      .where(
+        'position_id',
+        'in',
+        results.map(r => r.position_id),
+      )
+      .execute();
+
+    const withdrawalPositionIds = new Set(withdrawals.map(w => w.position_id.toString()));
+
+    // @TODO: add pnl percentage
+
+    return {
+      totalCount: Number(totalCount.count),
+      items: results.map(r => ({
+        ...r,
+        // eslint-disable-next-line no-nested-ternary -- allow nested ternary
+        state: withdrawalPositionIds.has(r.position_id.toString())
+          ? PositionState_PositionStateEnum.WITHDRAWN
+          : r.closing_height
+            ? PositionState_PositionStateEnum.CLOSED
+            : PositionState_PositionStateEnum.OPENED,
+      })),
+    };
   }
 }
 
