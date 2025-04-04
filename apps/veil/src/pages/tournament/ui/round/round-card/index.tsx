@@ -11,7 +11,6 @@ import { VotingSection } from './voting-section';
 
 export const RoundCard = observer(() => {
   const epoch = 123;
-
   const startBlock = 123;
   const endBlock = 123;
   const poolAmount = 123;
