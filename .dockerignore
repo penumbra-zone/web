@@ -1,0 +1,29 @@
+# ignore everything by default
+**
+
+# allow JS files
+!*.ts
+!*.js
+!*.mjs
+!*.json
+!pnpm*.yaml
+!.npmrc
+!.syncpackrc
+
+# allow all in-repo packages
+!packages/
+
+# allow veil source app source code
+!apps/veil/*.js
+!apps/veil/*.ts
+!apps/veil/*.mjs
+!apps/veil/*.json
+!apps/veil/src/
+!apps/veil/public/
+!apps/veil/app/
+!apps/veil/pages/
+
+# re-ignore node_modules within packages and apps
+/**/target/
+/**/node_modules/
+/**/.next/

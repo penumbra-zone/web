@@ -10,7 +10,7 @@ import { Button } from '@penumbra-zone/ui/Button';
 import { Skeleton } from '@penumbra-zone/ui/Skeleton';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import { connectionStore } from '@/shared/model/connection';
-import { useGetMetadataByAssetId } from '@/shared/api/assets';
+import { useGetMetadata } from '@/shared/api/assets';
 import { BlockchainError } from '@/shared/ui/blockchain-error';
 import { useObserver } from '@/shared/utils/use-observer';
 import { useTransactions } from '../api/use-transactions';
@@ -33,7 +33,7 @@ export const PortfolioTransactions = observer(() => {
   const router = useRouter();
 
   const { subaccount } = connectionStore;
-  const getMetadataByAssetId = useGetMetadataByAssetId();
+  const getMetadata = useGetMetadata();
   const {
     data: transactions,
     isLoading,
@@ -80,7 +80,7 @@ export const PortfolioTransactions = observer(() => {
             info={tx}
             key={getTxId(tx) || index}
             as={getTransactionLink(tx.id)}
-            getMetadataByAssetId={getMetadataByAssetId}
+            getMetadata={getMetadata}
             onClick={() =>
               tx.id?.inner && router.push(`/inspect/tx/${uint8ArrayToHex(tx.id.inner)}`)
             }
