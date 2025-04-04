@@ -5,7 +5,6 @@ import { Text } from '@penumbra-zone/ui/Text';
 import { TableCell } from '@penumbra-zone/ui/TableCell';
 import { Density } from '@penumbra-zone/ui/Density';
 import { Pagination } from '@penumbra-zone/ui/Pagination';
-import { Skeleton } from '@/shared/ui/skeleton';
 import { ValueView, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { useSortableTableHeaders } from '../../sortable-table-header';
@@ -99,15 +98,18 @@ export const CurrentVotingResults = () => {
     },
   ];
 
-  const sortedData = orderBy(
-    data.map(item => ({
-      ...item,
-      gaugeValue: item.votes / totalVotes,
-      estimatedIncentiveNumber: pnum(item.estimatedIncentive).toNumber(),
-    })),
-    sortBy.key || 'votes',
-    sortBy.direction,
-  );
+  const loadingArr = new Array(10).fill({ votes: 0 });
+  const sortedData =
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- tmp
+    orderBy(
+      data.map(item => ({
+        ...item,
+        gaugeValue: item.votes / totalVotes,
+        estimatedIncentiveNumber: pnum(item.estimatedIncentive).toNumber(),
+      })),
+      sortBy.key || 'votes',
+      sortBy.direction,
+    ) ?? loadingArr;
 
   return (
     <Card>
@@ -125,49 +127,37 @@ export const CurrentVotingResults = () => {
               <TableCell heading>Vote</TableCell>
             </div>
 
-            {isLoading ? (
-              Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className='grid grid-cols-subgrid col-span-5'>
-                  {Array.from({ length: 5 }).map((_, j) => (
-                    <TableCell loading key={j}>
-                      <div className='w-24 h-5'>
-                        <Skeleton />
-                      </div>
-                    </TableCell>
-                  ))}
-                </div>
-              ))
-            ) : (
-              <>
-                {sortedData
-                  .filter(item => item.votes / totalVotes >= THRESHOLD)
-                  .map(item => (
-                    <TableRow key={item.symbol} item={item} />
-                  ))}
-                <div className='col-span-5'>
-                  <TableCell>
-                    <Text technical color='text.secondary'>
-                      Below threshold ({'<'}
-                      {THRESHOLD * 100}%)
-                    </Text>
-                  </TableCell>
-                </div>
-                {sortedData
-                  .filter(item => item.votes / totalVotes < THRESHOLD)
-                  .map(item => (
-                    <TableRow key={item.symbol} item={item} />
-                  ))}
-                <div className='col-span-5 pt-5'>
-                  <Pagination
-                    totalItems={totalPages}
-                    visibleItems={5}
-                    value={page}
-                    limit={limit}
-                    onChange={setPage}
-                    onLimitChange={setLimit}
-                  />
-                </div>
-              </>
+            {sortedData
+              .filter(item => item.votes / totalVotes >= THRESHOLD)
+              .map(item => (
+                <TableRow key={item.symbol} item={item} loading={isLoading} />
+              ))}
+            {!isLoading && (
+              <div className='col-span-5'>
+                <TableCell>
+                  <Text technical color='text.secondary'>
+                    Below threshold ({'<'}
+                    {THRESHOLD * 100}%)
+                  </Text>
+                </TableCell>
+              </div>
+            )}
+            {sortedData
+              .filter(item => item.votes / totalVotes < THRESHOLD)
+              .map(item => (
+                <TableRow key={item.symbol} item={item} loading={isLoading} />
+              ))}
+            {!isLoading && (
+              <div className='col-span-5 pt-5'>
+                <Pagination
+                  totalItems={totalPages}
+                  visibleItems={5}
+                  value={page}
+                  limit={limit}
+                  onChange={setPage}
+                  onLimitChange={setLimit}
+                />
+              </div>
             )}
           </div>
         </Density>

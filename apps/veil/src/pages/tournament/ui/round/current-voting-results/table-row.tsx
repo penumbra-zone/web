@@ -9,6 +9,7 @@ import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_
 
 export const TableRow = ({
   item,
+  loading,
 }: {
   item: {
     symbol: string;
@@ -17,10 +18,11 @@ export const TableRow = ({
     estimatedIncentive: ValueView;
     gaugeValue: number;
   };
+  loading: boolean;
 }) => {
   return (
     <div className='grid grid-cols-subgrid col-span-5'>
-      <TableCell>
+      <TableCell loading={loading}>
         <div className='flex items-center gap-2'>
           <Image src={item.imgUrl} alt={item.symbol} width={32} height={32} />
           <Text technical color='text.primary'>
@@ -28,7 +30,7 @@ export const TableRow = ({
           </Text>
         </div>
       </TableCell>
-      <TableCell>
+      <TableCell loading={loading}>
         <div className='flex items-center gap-2'>
           <div className='flex w-[64px] md:w-[106px] h-[6px] bg-other-tonalFill5 rounded-full'>
             <div
@@ -41,11 +43,11 @@ export const TableRow = ({
           </Text>
         </div>
       </TableCell>
-      <TableCell>{pnum(item.votes).toFormattedString()}</TableCell>
-      <TableCell>
+      <TableCell loading={loading}>{pnum(item.votes).toFormattedString()}</TableCell>
+      <TableCell loading={loading}>
         <ValueViewComponent valueView={item.estimatedIncentive} />
       </TableCell>
-      <TableCell>
+      <TableCell loading={loading}>
         <Button actionType='default' density='slim'>
           Vote
         </Button>
