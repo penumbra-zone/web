@@ -70,7 +70,6 @@ export const adaptSummary = (
         : round({
             value: Math.abs(((summary.price - summary.price_then) / summary.price_then) * 100),
             decimals: 2,
-            exponentialNotation: false,
           }),
   };
 
