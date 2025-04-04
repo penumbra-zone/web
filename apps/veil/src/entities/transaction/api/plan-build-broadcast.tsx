@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { TransactionPlannerRequest } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { Transaction } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
@@ -79,7 +80,10 @@ export const planBuildBroadcast = async (
       type: 'success',
       message: `${label} transaction succeeded! 🎉`,
       description: `Transaction ${shortenedTxHash} appeared on chain${detectionHeight ? ` at height ${detectionHeight}` : ''}.`,
-      // action: <Link to={`/tx/${this._txHash}`}>See details</Link>
+      action: {
+        label: <Link href={`/inspect/tx/${txHash}`}>See details</Link>,
+        onClick: () => {},
+      },
       dismissible: true,
       persistent: false,
     });

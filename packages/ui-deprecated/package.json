@@ -102,7 +102,7 @@
     "react-dom": "^18.3.1",
     "react-loader-spinner": "^6.1.6",
     "react-router-dom": "^6.23.1",
-    "sonner": "1.4.3",
+    "sonner": "^2.0.3",
     "styled-components": "^6.1.13",
     "tailwind-merge": "^3.0.1",
     "tinycolor2": "^1.6.0",
