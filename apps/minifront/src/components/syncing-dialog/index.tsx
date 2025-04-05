@@ -84,7 +84,7 @@ export const SyncingDialog = () => {
           )}
         </div>
 
-        <SyncAnimation pause={!!streamError} />
+        <SyncAnimation />
 
         <div className='text-center'>
           <Text body as='p'>
