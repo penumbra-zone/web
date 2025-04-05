@@ -47,5 +47,12 @@ const theme = {
 };
 
 export const DepositSkip = () => {
-  return <Widget defaultRoute={defaultRoute} filter={filter} theme={theme} />;
+  return (
+    <Widget
+      defaultRoute={defaultRoute}
+      filter={filter}
+      theme={theme}
+      enableAmplitudeAnalytics={false}
+    />
+  );
 };
