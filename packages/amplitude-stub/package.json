@@ -1,0 +1,13 @@
+{
+  "name": "@repo/amplitude-stub",
+  "version": "1.0.0",
+  "private": true,
+  "license": "",
+  "description": "This package isn't @amplitude/analytics-browser",
+  "type": "module",
+  "exports": {
+    ".": "./empty.js"
+  },
+  "author": "",
+  "keywords": []
+}
