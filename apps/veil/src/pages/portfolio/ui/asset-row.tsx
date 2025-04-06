@@ -7,6 +7,7 @@ import { Text } from '@penumbra-zone/ui/Text';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
+import { useState } from 'react';
 
 export const AssetRow = observer(
   ({
@@ -21,6 +22,7 @@ export const AssetRow = observer(
     isLastRow: boolean;
   }) => {
     const variant = isLastRow ? 'lastCell' : 'cell';
+    const [isExpanded, setIsExpanded] = useState(true);
 
     // Calculate values on demand
     const hasShieldedBalance = asset.shieldedBalances.length > 0;
@@ -68,40 +70,29 @@ export const AssetRow = observer(
         },
       },
     });
+    /* TODO: fix private and public total values per-balance
+            Implement withdrawals
+            Fix styling of tablecells - too crowded.
+            add expand button
+            align styles to figma */
 
     return (
       <div className='grid grid-cols-subgrid col-span-6'>
-        <TableCell variant={variant}>
-          <div className='flex items-center'>
-            {hasShieldedBalance ? (
-              <>
-                <ValueViewComponent
-                  valueView={totalShieldedBalanceValueView}
-                  trailingZeros={false}
-                  priority={'primary'}
-                  context={'table'}
-                />
-                {/* <UnshieldButton asset={asset} />*/}
-              </>
-            ) : (
-              <Text variant={'smallTechnical'} color='text.secondary'>
-                -
-              </Text>
-            )}
-          </div>
-        </TableCell>
-        <TableCell variant={variant}>
-          {isCosmosConnected ? (
-            <div className='flex items-center gap-3 justify-between w-full'>
-              {hasPublicBalance ? (
+        <div
+          className={'col-span-6 grid grid-cols-subgrid'}
+          onClick={() => setIsExpanded(prev => !prev)}
+        >
+          <TableCell variant={variant}>
+            <div className='flex items-center'>
+              {hasShieldedBalance ? (
                 <>
                   <ValueViewComponent
-                    valueView={totalPublicBalanceValueView}
+                    valueView={totalShieldedBalanceValueView}
                     trailingZeros={false}
                     priority={'primary'}
                     context={'table'}
                   />
-                  <ShieldButton asset={asset} />
+                  {/* <UnshieldButton asset={asset} />*/}
                 </>
               ) : (
                 <Text variant={'smallTechnical'} color='text.secondary'>
@@ -109,58 +100,217 @@ export const AssetRow = observer(
                 </Text>
               )}
             </div>
-          ) : (
-            <Text variant={'smallTechnical'} color='text.secondary'>
-              Cosmos wallet not connected
-            </Text>
-          )}
-        </TableCell>
-        <TableCell variant={variant}>
-          {price ? (
-            <div className='flex flex-col'>
+          </TableCell>
+          <TableCell variant={variant}>
+            {isCosmosConnected ? (
+              <div className='flex items-center gap-3 justify-between w-full'>
+                {hasPublicBalance ? (
+                  <ValueViewComponent
+                    valueView={totalPublicBalanceValueView}
+                    trailingZeros={false}
+                    priority={'primary'}
+                    context={'table'}
+                  />
+                ) : (
+                  <Text variant={'smallTechnical'} color='text.secondary'>
+                    -
+                  </Text>
+                )}
+              </div>
+            ) : (
               <Text variant={'smallTechnical'} color='text.secondary'>
-                {price.price.toFixed(4)} {price.quoteSymbol}
+                Cosmos wallet not connected
               </Text>
+            )}
+          </TableCell>
+          <TableCell variant={variant}>
+            {price ? (
+              <div className='flex flex-col'>
+                <Text variant={'smallTechnical'} color='text.secondary'>
+                  {price.price.toFixed(4)} {price.quoteSymbol}
+                </Text>
+              </div>
+            ) : (
+              <Text variant={'smallTechnical'} color='text.secondary'>
+                -
+              </Text>
+            )}
+          </TableCell>
+          <TableCell variant={variant}>
+            {shieldedValue > 0 && price ? (
+              <Text variant={'smallTechnical'} color='text.secondary'>
+                {shieldedValue.toFixed(2)} {price.quoteSymbol}
+              </Text>
+            ) : (
+              <Text variant={'smallTechnical'} color='text.secondary'>
+                -
+              </Text>
+            )}
+          </TableCell>
+          <TableCell variant={variant}>
+            {publicValue > 0 && price ? (
+              <Text variant={'smallTechnical'} color='text.secondary'>
+                {publicValue.toFixed(2)} {price.quoteSymbol}
+              </Text>
+            ) : (
+              <Text variant={'smallTechnical'} color='text.secondary'>
+                -
+              </Text>
+            )}
+          </TableCell>
+          <TableCell variant={variant}>
+            {totalValue > 0 && price ? (
+              <Text variant={'smallTechnical'} color='text.secondary'>
+                {totalValue.toFixed(2)} {price.quoteSymbol}
+              </Text>
+            ) : (
+              <Text variant={'smallTechnical'} color='text.secondary'>
+                -
+              </Text>
+            )}
+          </TableCell>
+        </div>
+        {isExpanded &&
+          asset.publicBalances.map(bal => (
+            <div key={bal.denom} className={'col-span-6 grid grid-cols-subgrid'}>
+              <TableCell variant={variant}>
+                <div className='flex items-center'>
+                  <Text variant={'smallTechnical'} color='text.secondary'>
+                    -
+                  </Text>
+                </div>
+              </TableCell>
+              <TableCell variant={variant}>
+                <div className='flex items-center gap-3 justify-between w-full'>
+                  <div className={'py-3'}>
+                    <ValueViewComponent
+                      valueView={totalPublicBalanceValueView}
+                      trailingZeros={false}
+                      priority={'primary'}
+                      density={'slim'}
+                      context={'table'}
+                    />
+                    <Text color={'text.secondary'} small>
+                      on {bal.chainId}
+                    </Text>
+                  </div>
+                  <ShieldButton asset={asset} />
+                </div>
+              </TableCell>
+              <TableCell variant={variant}>
+                {price ? (
+                  <div className='flex flex-col'>
+                    <Text variant={'smallTechnical'} color='text.secondary'>
+                      {price.price.toFixed(4)} {price.quoteSymbol}
+                    </Text>
+                  </div>
+                ) : (
+                  <Text variant={'smallTechnical'} color='text.secondary'>
+                    -
+                  </Text>
+                )}
+              </TableCell>
+              <TableCell variant={variant}>
+                <Text variant={'smallTechnical'} color='text.secondary'>
+                  -
+                </Text>
+              </TableCell>
+              <TableCell variant={variant}>
+                {publicValue > 0 && price ? (
+                  <Text variant={'smallTechnical'} color='text.secondary'>
+                    {publicValue.toFixed(2)} {price.quoteSymbol}
+                  </Text>
+                ) : (
+                  <Text variant={'smallTechnical'} color='text.secondary'>
+                    -
+                  </Text>
+                )}
+              </TableCell>
+              <TableCell variant={variant}>
+                {totalValue > 0 && price ? (
+                  <Text variant={'smallTechnical'} color='text.secondary'>
+                    {totalValue.toFixed(2)} {price.quoteSymbol}
+                  </Text>
+                ) : (
+                  <Text variant={'smallTechnical'} color='text.secondary'>
+                    -
+                  </Text>
+                )}
+              </TableCell>
             </div>
-          ) : (
-            <Text variant={'smallTechnical'} color='text.secondary'>
-              -
-            </Text>
-          )}
-        </TableCell>
-        <TableCell variant={variant}>
-          {shieldedValue > 0 ? (
-            <Text variant={'smallTechnical'} color='text.secondary'>
-              {shieldedValue.toFixed(2)} USDC
-            </Text>
-          ) : (
-            <Text variant={'smallTechnical'} color='text.secondary'>
-              -
-            </Text>
-          )}
-        </TableCell>
-        <TableCell variant={variant}>
-          {publicValue > 0 ? (
-            <Text variant={'smallTechnical'} color='text.secondary'>
-              {publicValue.toFixed(2)} USDC
-            </Text>
-          ) : (
-            <Text variant={'smallTechnical'} color='text.secondary'>
-              -
-            </Text>
-          )}
-        </TableCell>
-        <TableCell variant={variant}>
-          {totalValue > 0 ? (
-            <Text variant={'smallTechnical'} color='text.secondary'>
-              {totalValue.toFixed(2)} USDC
-            </Text>
-          ) : (
-            <Text variant={'smallTechnical'} color='text.secondary'>
-              -
-            </Text>
-          )}
-        </TableCell>
+          ))}
+        {isExpanded &&
+          asset.shieldedBalances.map(bal => (
+            <div key={bal.valueView.toJsonString()} className={'col-span-6 grid grid-cols-subgrid'}>
+              <TableCell variant={variant}>
+                <div className=''>
+                  <ValueViewComponent
+                    valueView={totalShieldedBalanceValueView}
+                    trailingZeros={false}
+                    priority={'primary'}
+                    context={'table'}
+                  />
+                  <Text color={'text.secondary'} small>
+                    on Penumbra
+                  </Text>
+                  {/* <UnshieldButton asset={asset} />*/}
+                </div>
+              </TableCell>
+              <TableCell variant={variant}>
+                {isCosmosConnected ? (
+                  <div className='flex items-center gap-3 justify-between w-full'>
+                    <Text variant={'smallTechnical'} color='text.secondary'>
+                      -
+                    </Text>
+                  </div>
+                ) : (
+                  <Text variant={'smallTechnical'} color='text.secondary'>
+                    Cosmos wallet not connected
+                  </Text>
+                )}
+              </TableCell>
+              <TableCell variant={variant}>
+                {price ? (
+                  <div className='flex flex-col'>
+                    <Text variant={'smallTechnical'} color='text.secondary'>
+                      {price.price.toFixed(4)} {price.quoteSymbol}
+                    </Text>
+                  </div>
+                ) : (
+                  <Text variant={'smallTechnical'} color='text.secondary'>
+                    -
+                  </Text>
+                )}
+              </TableCell>
+              <TableCell variant={variant}>
+                {shieldedValue > 0 && price ? (
+                  <Text variant={'smallTechnical'} color='text.secondary'>
+                    {shieldedValue.toFixed(2)} {price.quoteSymbol}
+                  </Text>
+                ) : (
+                  <Text variant={'smallTechnical'} color='text.secondary'>
+                    -
+                  </Text>
+                )}
+              </TableCell>
+              <TableCell variant={variant}>
+                <Text variant={'smallTechnical'} color='text.secondary'>
+                  -
+                </Text>
+              </TableCell>
+              <TableCell variant={variant}>
+                {totalValue > 0 && price ? (
+                  <Text variant={'smallTechnical'} color='text.secondary'>
+                    {totalValue.toFixed(2)} {price.quoteSymbol}
+                  </Text>
+                ) : (
+                  <Text variant={'smallTechnical'} color='text.secondary'>
+                    -
+                  </Text>
+                )}
+              </TableCell>
+            </div>
+          ))}
       </div>
     );
   },
