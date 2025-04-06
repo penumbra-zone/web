@@ -4,14 +4,12 @@ import { Text } from '@penumbra-zone/ui/Text';
 
 import { Density } from '@penumbra-zone/ui/Density';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 
 import { observer } from 'mobx-react-lite';
-import { UnifiedAsset, useUnifiedAssets } from '../api/use-unified-assets.ts';
+import { useUnifiedAssets } from '../api/use-unified-assets.ts';
 import { useAssetPrices } from '../api/use-asset-prices.ts';
 import { CosmosConnectButton } from '@/features/cosmos/cosmos-connect-button.tsx';
-import { ShieldButton } from './shield-unshield.tsx';
-import { pnum } from '@penumbra-zone/types/pnum';
+import { AssetRow } from '@/pages/portfolio/ui/asset-row.tsx';
 
 const LoadingState = () => {
   return (
@@ -103,140 +101,6 @@ const NoAssetsNotice = () => {
     </div>
   );
 };
-
-const AssetRow = observer(
-  ({
-    asset,
-    price,
-    isCosmosConnected,
-    isLastRow,
-  }: {
-    asset: UnifiedAsset;
-    price?: { price: number; quoteSymbol: string };
-    isCosmosConnected: boolean;
-    isLastRow: boolean;
-  }) => {
-    const variant = isLastRow ? 'lastCell' : 'cell';
-
-    // Calculate values on demand
-    const hasShieldedBalance = asset.shieldedBalances.length > 0;
-    const hasPublicBalance = asset.publicBalances.length > 0;
-
-    // Calculate values using price data
-    const shieldedValue =
-      hasShieldedBalance && price
-        ? asset.shieldedBalances.reduce((sum, balance) => {
-            const numericAmount = pnum(balance.valueView).toNumber();
-            return sum + numericAmount * price.price;
-          }, 0)
-        : 0;
-
-    const publicValue =
-      hasPublicBalance && price
-        ? asset.publicBalances.reduce((sum, balance) => {
-            const numericAmount = pnum(balance.valueView).toNumber();
-            return sum + numericAmount * price.price;
-          }, 0)
-        : 0;
-
-    const totalValue = shieldedValue + publicValue;
-
-    return (
-      <div className='grid grid-cols-subgrid col-span-6'>
-        <TableCell variant={variant}>
-          <div className='flex items-center'>
-            {hasShieldedBalance ? (
-              <>
-                <ValueViewComponent
-                  valueView={asset.shieldedBalances[0]?.valueView}
-                  trailingZeros={false}
-                  priority={'primary'}
-                  context={'table'}
-                />
-                {/* <UnshieldButton asset={asset} />*/}
-              </>
-            ) : (
-              <Text variant={'smallTechnical'} color='text.secondary'>
-                -
-              </Text>
-            )}
-          </div>
-        </TableCell>
-        <TableCell variant={variant}>
-          {isCosmosConnected ? (
-            <div className='flex items-center gap-3 justify-between w-full'>
-              {hasPublicBalance ? (
-                <>
-                  <ValueViewComponent
-                    valueView={asset.publicBalances[0]?.valueView}
-                    trailingZeros={false}
-                    priority={'primary'}
-                    context={'table'}
-                  />
-                  <ShieldButton asset={asset} />
-                </>
-              ) : (
-                <Text variant={'smallTechnical'} color='text.secondary'>
-                  -
-                </Text>
-              )}
-            </div>
-          ) : (
-            <Text variant={'smallTechnical'} color='text.secondary'>
-              Cosmos wallet not connected
-            </Text>
-          )}
-        </TableCell>
-        <TableCell variant={variant}>
-          {price ? (
-            <div className='flex flex-col'>
-              <Text variant={'smallTechnical'} color='text.secondary'>
-                {price.price.toFixed(4)} {price.quoteSymbol}
-              </Text>
-            </div>
-          ) : (
-            <Text variant={'smallTechnical'} color='text.secondary'>
-              -
-            </Text>
-          )}
-        </TableCell>
-        <TableCell variant={variant}>
-          {shieldedValue > 0 ? (
-            <Text variant={'smallTechnical'} color='text.secondary'>
-              {shieldedValue.toFixed(2)} USDC
-            </Text>
-          ) : (
-            <Text variant={'smallTechnical'} color='text.secondary'>
-              -
-            </Text>
-          )}
-        </TableCell>
-        <TableCell variant={variant}>
-          {publicValue > 0 ? (
-            <Text variant={'smallTechnical'} color='text.secondary'>
-              {publicValue.toFixed(2)} USDC
-            </Text>
-          ) : (
-            <Text variant={'smallTechnical'} color='text.secondary'>
-              -
-            </Text>
-          )}
-        </TableCell>
-        <TableCell variant={variant}>
-          {totalValue > 0 ? (
-            <Text variant={'smallTechnical'} color='text.secondary'>
-              {totalValue.toFixed(2)} USDC
-            </Text>
-          ) : (
-            <Text variant={'smallTechnical'} color='text.secondary'>
-              -
-            </Text>
-          )}
-        </TableCell>
-      </div>
-    );
-  },
-);
 
 export const AssetsTable = observer(() => {
   const { unifiedAssets, isLoading, isPenumbraConnected, isCosmosConnected } = useUnifiedAssets();
