@@ -1,9 +1,9 @@
 {
-  "name": "@repo/amplitude-stub",
+  "name": "@repo/empty",
   "version": "1.0.0",
   "private": true,
   "license": "",
-  "description": "This package isn't @amplitude/analytics-browser",
+  "description": "",
   "type": "module",
   "exports": {
     ".": "./empty.js"
