@@ -77,9 +77,9 @@ export const AssetRow = observer(
             align styles to figma */
 
     return (
-      <div className='grid grid-cols-subgrid col-span-6'>
+      <div className={`grid grid-cols-subgrid col-span-6 `}>
         <div
-          className={'col-span-6 grid grid-cols-subgrid'}
+          className={'col-span-6 grid grid-cols-subgrid '}
           onClick={() => setIsExpanded(prev => !prev)}
         >
           <TableCell variant={variant}>
@@ -172,19 +172,20 @@ export const AssetRow = observer(
         </div>
         {isExpanded &&
           asset.publicBalances.map(bal => (
-            <div key={bal.denom} className={'col-span-6 grid grid-cols-subgrid'}>
-              <TableCell variant={variant}>
+            <div
+              key={bal.denom}
+              className={`col-span-6 grid grid-cols-subgrid bg-other-tonalFill5`}
+            >
+              <TableCell variant={'lastCell'}>
                 <div className='flex items-center'>
-                  <Text variant={'smallTechnical'} color='text.secondary'>
-                    -
-                  </Text>
+                  <Text variant={'smallTechnical'} color='text.secondary'></Text>
                 </div>
               </TableCell>
-              <TableCell variant={variant}>
+              <TableCell variant={'lastCell'}>
                 <div className='flex items-center gap-3 justify-between w-full'>
                   <div className={'py-3'}>
                     <ValueViewComponent
-                      valueView={totalPublicBalanceValueView}
+                      valueView={bal.valueView}
                       trailingZeros={false}
                       priority={'primary'}
                       density={'slim'}
@@ -197,7 +198,7 @@ export const AssetRow = observer(
                   <ShieldButton asset={asset} />
                 </div>
               </TableCell>
-              <TableCell variant={variant}>
+              <TableCell variant={'lastCell'}>
                 {price ? (
                   <div className='flex flex-col'>
                     <Text variant={'smallTechnical'} color='text.secondary'>
@@ -205,17 +206,15 @@ export const AssetRow = observer(
                     </Text>
                   </div>
                 ) : (
-                  <Text variant={'smallTechnical'} color='text.secondary'>
-                    -
-                  </Text>
+                  <Text variant={'smallTechnical'} color='text.secondary'></Text>
                 )}
               </TableCell>
-              <TableCell variant={variant}>
+              <TableCell variant={'lastCell'}>
                 <Text variant={'smallTechnical'} color='text.secondary'>
                   -
                 </Text>
               </TableCell>
-              <TableCell variant={variant}>
+              <TableCell variant={'lastCell'}>
                 {publicValue > 0 && price ? (
                   <Text variant={'smallTechnical'} color='text.secondary'>
                     {publicValue.toFixed(2)} {price.quoteSymbol}
@@ -226,7 +225,7 @@ export const AssetRow = observer(
                   </Text>
                 )}
               </TableCell>
-              <TableCell variant={variant}>
+              <TableCell variant={'lastCell'}>
                 {totalValue > 0 && price ? (
                   <Text variant={'smallTechnical'} color='text.secondary'>
                     {totalValue.toFixed(2)} {price.quoteSymbol}
@@ -241,11 +240,14 @@ export const AssetRow = observer(
           ))}
         {isExpanded &&
           asset.shieldedBalances.map(bal => (
-            <div key={bal.valueView.toJsonString()} className={'col-span-6 grid grid-cols-subgrid'}>
-              <TableCell variant={variant}>
+            <div
+              key={bal.valueView.toJsonString()}
+              className={'col-span-6 grid grid-cols-subgrid bg-other-tonalFill5'}
+            >
+              <TableCell variant={'lastCell'}>
                 <div className=''>
                   <ValueViewComponent
-                    valueView={totalShieldedBalanceValueView}
+                    valueView={bal.valueView}
                     trailingZeros={false}
                     priority={'primary'}
                     context={'table'}
@@ -256,20 +258,10 @@ export const AssetRow = observer(
                   {/* <UnshieldButton asset={asset} />*/}
                 </div>
               </TableCell>
-              <TableCell variant={variant}>
-                {isCosmosConnected ? (
-                  <div className='flex items-center gap-3 justify-between w-full'>
-                    <Text variant={'smallTechnical'} color='text.secondary'>
-                      -
-                    </Text>
-                  </div>
-                ) : (
-                  <Text variant={'smallTechnical'} color='text.secondary'>
-                    Cosmos wallet not connected
-                  </Text>
-                )}
+              <TableCell variant={'lastCell'}>
+                <Text variant={'smallTechnical'} color='text.secondary'></Text>
               </TableCell>
-              <TableCell variant={variant}>
+              <TableCell variant={'lastCell'}>
                 {price ? (
                   <div className='flex flex-col'>
                     <Text variant={'smallTechnical'} color='text.secondary'>
@@ -282,7 +274,7 @@ export const AssetRow = observer(
                   </Text>
                 )}
               </TableCell>
-              <TableCell variant={variant}>
+              <TableCell variant={'lastCell'}>
                 {shieldedValue > 0 && price ? (
                   <Text variant={'smallTechnical'} color='text.secondary'>
                     {shieldedValue.toFixed(2)} {price.quoteSymbol}
@@ -293,12 +285,10 @@ export const AssetRow = observer(
                   </Text>
                 )}
               </TableCell>
-              <TableCell variant={variant}>
-                <Text variant={'smallTechnical'} color='text.secondary'>
-                  -
-                </Text>
+              <TableCell variant={'lastCell'}>
+                <Text variant={'smallTechnical'} color='text.secondary'></Text>
               </TableCell>
-              <TableCell variant={variant}>
+              <TableCell variant={'lastCell'}>
                 {totalValue > 0 && price ? (
                   <Text variant={'smallTechnical'} color='text.secondary'>
                     {totalValue.toFixed(2)} {price.quoteSymbol}

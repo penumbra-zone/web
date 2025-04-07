@@ -78,12 +78,11 @@ const DesktopPortfolioPage = observer(() => {
       <WalletConnect />
 
       {/* Asset Allocation Bars */}
-      {isPenumbraConnected ||
-        (isCosmosConnected && (
-          <div className='mb-8'>
-            <AssetBars />
-          </div>
-        ))}
+      {(isPenumbraConnected || isCosmosConnected) && (
+        <div className='mb-8'>
+          <AssetBars />
+        </div>
+      )}
 
       <AssetsTable />
       <PortfolioPositionTabs />
