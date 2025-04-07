@@ -683,21 +683,12 @@ pub async fn plan_transaction_inner<Db: Database>(
                 .note
                 .ok_or_else(|| anyhow!("missing note in liquidity tournament"))?
                 .try_into()?;
-            let staked_note_position: Position = staked_note.position.into();
+            let note_position: Position = staked_note.position.into();
             let start_position: Position = epoch_index.into();
 
-            actions_list.push(ActionPlan::ActionLiquidityTournamentVote(
-                ActionLiquidityTournamentVotePlan {
-                    incentivized,
-                    rewards_recipient,
-                    staked_note: note,
-                    staked_note_position,
-                    start_position,
-                    randomizer: Fr::rand(&mut OsRng),
-                    proof_blinding_r: Fq::rand(&mut OsRng),
-                    proof_blinding_s: Fq::rand(&mut OsRng),
-                },
-            ));
+            let vote_plan = ActionLiquidityTournamentVotePlan::new(&mut OsRng, incentivized, rewards_recipient, note, note_position, start_position);
+            
+            actions_list.push(vote_plan);
         }
     }
 

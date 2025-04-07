@@ -1,6 +1,5 @@
 import {
   TransactionPlannerRequest,
-  TransactionPlannerRequest_ActionLiquidityTournamentVote,
   SpendableNoteRecord,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { AddressIndex, Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
@@ -35,15 +34,15 @@ export const voteTournament = async ({
     });
 
     // Construct the LQT voting actions
-    const voteAction = new TransactionPlannerRequest_ActionLiquidityTournamentVote({
+    const actionLiquidityTournamentVote = [{
       incentivized: denom,
       rewardsRecipient,
       stakedNotes,
       epochIndex,
-    });
+    }];
 
     const planReq = new TransactionPlannerRequest({
-      actionLiquidityTournamentVote: [voteAction],
+      actionLiquidityTournamentVote,
       source: new AddressIndex({ account: connectionStore.subaccount }),
     });
 

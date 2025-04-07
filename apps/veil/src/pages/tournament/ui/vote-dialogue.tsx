@@ -103,6 +103,7 @@ export const VoteDialogueSelector = observer(({ isOpen, onClose }: VoteDialogPro
   const [revealVote, setRevealVote] = useState(false);
 
   const { data: subaccounts } = useSubaccounts();
+  // const { subaccount } = connectionStore;
   const { subaccount } = connectionStore;
   const valueAddress = subaccounts?.find(
     account => getAddressIndex(account).account === subaccount,
@@ -111,11 +112,8 @@ export const VoteDialogueSelector = observer(({ isOpen, onClose }: VoteDialogPro
   // Temporarily hardcode the same account address as the reward recipient.
   let rewardsRecipient = valueAddress?.addressView.value?.address!;
 
-  // TODO: dynamically query latest epoch from `EPOCHS` indexedDB table.
-  const epochIndex = 32182n;
-
   // Fetch user's spendable voting notes for this epoch
-  const { data } = useLQTNotes(epochIndex);
+  const { notes, epochIndex } = useLQTNotes(subaccount);
 
   // TODO: replace this dummy static asset list with actual data from the API server.
   const assets: Asset[] = [
@@ -173,8 +171,8 @@ export const VoteDialogueSelector = observer(({ isOpen, onClose }: VoteDialogPro
 
   const handleVoteSubmit = async () => {
     if (selectedAsset) {
-      const stakedNotes: SpendableNoteRecord[] = data
-        ? Array.from(data.values())
+      const stakedNotes: SpendableNoteRecord[] = notes
+        ? Array.from(notes.values())
             .map(res => res.noteRecord)
             .filter((record): record is SpendableNoteRecord => !!record)
         : [];
@@ -183,7 +181,7 @@ export const VoteDialogueSelector = observer(({ isOpen, onClose }: VoteDialogPro
       await voteTournament({
         stakedNotes: stakedNotes,
         incentivized: selectedAsset,
-        epochIndex,
+        epochIndex: epochIndex!,
         rewardsRecipient,
       });
 
