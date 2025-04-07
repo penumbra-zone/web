@@ -1,19 +1,18 @@
-import {
-  Root,
-  CheckboxIndicator,
-  CheckboxProps as RadixCheckboxProps,
-} from '@radix-ui/react-checkbox';
+import { Root, CheckboxIndicator } from '@radix-ui/react-checkbox';
 import { CheckIcon, MinusIcon } from 'lucide-react';
 import { ReactNode } from 'react';
 import cn from 'clsx';
 import { Text } from '../Text';
 
+export type CheckedState = boolean | 'indeterminate';
+
 export interface CheckboxProps {
   title?: ReactNode;
   description?: ReactNode;
-  checked: RadixCheckboxProps['checked'];
-  onChange: RadixCheckboxProps['onCheckedChange'];
-  defaultChecked?: RadixCheckboxProps['defaultChecked'];
+  /** A boolean or 'indeterminate' string */
+  checked: CheckedState;
+  onChange?: (checked: CheckedState) => void;
+  defaultChecked?: CheckedState;
   required?: boolean;
   disabled?: boolean;
 }
@@ -49,23 +48,25 @@ export const Checkbox = ({
         </CheckboxIndicator>
       </Root>
 
-      <div className='flex grow flex-col gap-1'>
-        {typeof title === 'string' ? (
-          <Text small color='text.primary'>
-            {title}
-          </Text>
-        ) : (
-          title
-        )}
+      {(title ?? description) && (
+        <div className='flex grow flex-col gap-1'>
+          {typeof title === 'string' ? (
+            <Text small color='text.primary'>
+              {title}
+            </Text>
+          ) : (
+            title
+          )}
 
-        {typeof description === 'string' ? (
-          <Text detail color='text.secondary'>
-            {description}
-          </Text>
-        ) : (
-          description
-        )}
-      </div>
+          {typeof description === 'string' ? (
+            <Text detail color='text.secondary'>
+              {description}
+            </Text>
+          ) : (
+            description
+          )}
+        </div>
+      )}
     </label>
   );
 };
