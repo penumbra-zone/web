@@ -221,6 +221,8 @@ export const theme = {
       solidStroke: PALETTE.neutral['900'],
       dialogBackground: PALETTE.teal['700'] + hexOpacity(0.1),
       overlay: PALETTE.base.black + hexOpacity(0.5),
+      orangeOutline: PALETTE.orange['700'] + hexOpacity(0.15),
+      neutralOutline: PALETTE.neutral['700'] + hexOpacity(0.15),
     },
   },
   gradient: {

@@ -88,6 +88,8 @@ export const COLOR_CLASS_MAP: Record<ThemeColor, [string, string]> = {
   'other.solidStroke': ['text-other-solidStroke', 'bg-other-solidStroke'],
   'other.dialogBackground': ['text-other-dialogBackground', 'bg-other-dialogBackground'],
   'other.overlay': ['text-other-overlay', 'bg-other-overlay'],
+  'other.neutralOutline': ['text-other-neutralOutline', 'bg-other-neutralOutline'],
+  'other.orangeOutline': ['text-other-orangeOutline', 'bg-other-orangeOutline'],
 };
 
 /**
