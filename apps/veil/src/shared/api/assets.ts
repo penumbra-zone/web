@@ -51,7 +51,7 @@ export const useGetMetadata = (): GetMetadata => {
         return accum;
       }
       accum.set(uint8ArrayToBase64(asset.penumbraAssetId.inner), asset);
-      accum.set(asset.display, asset);
+      accum.set(asset.base, asset);
       return accum;
     }, new Map());
   }, [data]);

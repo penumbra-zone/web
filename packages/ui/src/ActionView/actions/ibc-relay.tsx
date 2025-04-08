@@ -89,17 +89,22 @@ export const IbcRelayAction = ({ value, getMetadata }: IbcRelayActionProps) => {
       return undefined;
     }
 
-    // sometimes denom comes in form of "uosmo", and sometimes as "transfer/channel-4/uosmo",
-    // where "transfer" is `sourcePort` and "channel-4" is `sourceChannel`.
-    // the next lines extract the denom part from and merges it with destination data.
-    // Penumbra is the only asset that doesn't have "transfer" in the denom – hardcode it here.
-    const denomMatch = /\/([^/]+)$/.exec(data.tokenData.denom);
-    let assetDenom = `${data.packet.destinationPort}/${data.packet.destinationChannel}/${denomMatch?.[1] ?? data.tokenData.denom}`;
-    if (data.tokenData.denom === 'upenumbra' || denomMatch?.[1] === 'upenumbra') {
-      assetDenom = 'upenumbra';
+    let assetDenom = data.tokenData.denom;
+    let asset: Metadata | undefined = getMetadata?.(new Denom({ denom: assetDenom }));
+    if (!asset) {
+      // sometimes denom comes in form of "uosmo", and sometimes as "transfer/channel-4/uosmo",
+      // where "transfer" is `sourcePort` and "channel-4" is `sourceChannel`.
+      // the next lines extract the denom part from and merges it with destination data.
+      // Penumbra is the only asset that doesn't have "transfer" in the denom – hardcode it here.
+      const denomMatch = /\/([^/]+)$/.exec(data.tokenData.denom);
+      assetDenom = `${data.packet.destinationPort}/${data.packet.destinationChannel}/${denomMatch?.[1] ?? data.tokenData.denom}`;
+      if (data.tokenData.denom === 'upenumbra' || denomMatch?.[1] === 'upenumbra') {
+        assetDenom = 'upenumbra';
+      }
+
+      asset = getMetadata?.(new Denom({ denom: assetDenom }));
     }
 
-    const asset = getMetadata?.(new Denom({ denom: assetDenom }));
     const amount = fromString(data.tokenData.amount);
 
     return new ValueView({
