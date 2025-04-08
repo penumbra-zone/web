@@ -431,7 +431,7 @@ export const Ics20WithdrawalAction = new ActionView({
       returnAddress: ADDRESS_VIEW_DECODED.addressView.value?.address,
       destinationChainAddress: 'osmo1dyrr4r42ql4em7d46srcmnn5ymxk9asvcv95sg',
       amount: AMOUNT_123_456_789,
-      denom: new Denom({ denom: PENUMBRA_METADATA.display }),
+      denom: new Denom({ denom: PENUMBRA_METADATA.base }),
       sourceChannel: 'channel-4',
     },
   },
@@ -447,7 +447,7 @@ const LQT_VOTE = new ActionLiquidityTournamentVote({
     value: DELEGATION_TOKEN_VALUE,
     rewardsRecipient: ADDRESS_VIEW_DECODED.addressView.value?.address,
     incentivized: {
-      denom: PENUMBRA_METADATA.display,
+      denom: PENUMBRA_METADATA.base,
     },
   },
 });
