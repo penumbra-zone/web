@@ -8,6 +8,7 @@ import { estimateAmount } from './estimate-amount';
 import { formatNumber } from '@penumbra-zone/types/amount';
 import { getMetadata } from '@penumbra-zone/getters/value-view';
 import { Direction } from './types';
+import { round } from '@penumbra-zone/types/round';
 
 export type LastEdited = 'Base' | 'Quote';
 
@@ -114,7 +115,9 @@ export class MarketOrderFormStore {
   };
 
   get baseInput(): string {
-    return this._baseAssetInput;
+    return this._baseAssetInput.length
+      ? round({ value: Number(this._baseAssetInput), decimals: this._baseAsset?.exponent ?? 6 })
+      : '';
   }
 
   setBaseInput = (x: string) => {
@@ -123,7 +126,9 @@ export class MarketOrderFormStore {
   };
 
   get quoteInput(): string {
-    return this._quoteAssetInput;
+    return this._quoteAssetInput.length
+      ? round({ value: Number(this._quoteAssetInput), decimals: this._quoteAsset?.exponent ?? 6 })
+      : '';
   }
 
   setQuoteInput = (x: string) => {

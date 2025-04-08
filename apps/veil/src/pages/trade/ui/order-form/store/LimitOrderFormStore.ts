@@ -4,7 +4,7 @@ import { limitOrderPosition } from '@/shared/math/position';
 import { makeAutoObservable, reaction } from 'mobx';
 import { AssetInfo } from '@/pages/trade/model/AssetInfo';
 import { parseNumber } from '@/shared/utils/num';
-
+import { round } from '@penumbra-zone/types/round';
 export type Direction = 'buy' | 'sell';
 
 export enum SellLimitOrderOptions {
@@ -73,7 +73,9 @@ export class LimitOrderFormStore {
   }
 
   get baseInput(): string {
-    return this._input.inputA;
+    return this._input.inputA.length
+      ? round({ value: Number(this._input.inputA), decimals: this._baseAsset?.exponent ?? 6 })
+      : '';
   }
 
   setBaseInput = (x: string) => {
@@ -81,7 +83,9 @@ export class LimitOrderFormStore {
   };
 
   get quoteInput(): string {
-    return this._input.inputB;
+    return this._input.inputB.length
+      ? round({ value: Number(this._input.inputB), decimals: this._quoteAsset?.exponent ?? 6 })
+      : '';
   }
 
   setQuoteInput = (x: string) => {
@@ -89,7 +93,9 @@ export class LimitOrderFormStore {
   };
 
   get priceInput(): string {
-    return this._priceInput;
+    return this._priceInput.length
+      ? round({ value: Number(this._priceInput), decimals: this._quoteAsset?.exponent ?? 6 })
+      : '';
   }
 
   get priceInputOption(): SellLimitOrderOptions | BuyLimitOrderOptions | undefined {

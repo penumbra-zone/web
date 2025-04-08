@@ -3,6 +3,7 @@ import { rangeLiquidityPositions } from '@/shared/math/position';
 import { parseNumber } from '@/shared/utils/num';
 import { Position } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { pnum } from '@penumbra-zone/types/pnum';
+import { round } from '@penumbra-zone/types/round';
 import { makeAutoObservable } from 'mobx';
 
 export enum UpperBoundOptions {
@@ -65,9 +66,9 @@ export const MAX_POSITION_COUNT = 15;
 export class RangeOrderFormStore {
   private _baseAsset?: AssetInfo;
   private _quoteAsset?: AssetInfo;
-  liquidityTargetInput = '';
-  upperPriceInput = '';
-  lowerPriceInput = '';
+  private _liquidityTargetInput = '';
+  private _upperPriceInput = '';
+  private _lowerPriceInput = '';
   upperPriceInputOption: UpperBoundOptions | undefined;
   lowerPriceInputOption: LowerBoundOptions | undefined;
   feeTierPercentInput = '';
@@ -89,19 +90,34 @@ export class RangeOrderFormStore {
   }
 
   get liquidityTarget(): number | undefined {
-    return parseNumber(this.liquidityTargetInput);
+    return parseNumber(this._liquidityTargetInput);
+  }
+
+  get liquidityTargetInput(): string {
+    return this._liquidityTargetInput.length
+      ? round({
+          value: Number(this._liquidityTargetInput),
+          decimals: this._baseAsset?.exponent ?? 6,
+        })
+      : '';
   }
 
   setLiquidityTargetInput = (x: string) => {
-    this.liquidityTargetInput = x;
+    this._liquidityTargetInput = x;
   };
 
   get upperPrice(): number | undefined {
-    return parseNumber(this.upperPriceInput);
+    return parseNumber(this._upperPriceInput);
+  }
+
+  get upperPriceInput(): string {
+    return this._upperPriceInput.length
+      ? round({ value: Number(this._upperPriceInput), decimals: this._quoteAsset?.exponent ?? 6 })
+      : '';
   }
 
   setUpperPriceInput = (x: string, fromOption = false) => {
-    this.upperPriceInput = x;
+    this._upperPriceInput = x;
     if (!fromOption) {
       this.upperPriceInputOption = undefined;
     }
@@ -123,8 +139,14 @@ export class RangeOrderFormStore {
     return parseNumber(this.lowerPriceInput);
   }
 
+  get lowerPriceInput(): string {
+    return this._lowerPriceInput.length
+      ? round({ value: Number(this._lowerPriceInput), decimals: this._quoteAsset?.exponent ?? 6 })
+      : '';
+  }
+
   setLowerPriceInput = (x: string, fromOption = false) => {
-    this.lowerPriceInput = x;
+    this._lowerPriceInput = x;
     if (!fromOption) {
       this.lowerPriceInputOption = undefined;
     }
@@ -229,8 +251,8 @@ export class RangeOrderFormStore {
     this._baseAsset = base;
     this._quoteAsset = quote;
     if (resetInputs) {
-      this.liquidityTargetInput = '';
-      this.upperPriceInput = '';
+      this._liquidityTargetInput = '';
+      this._upperPriceInput = '';
       this.upperPriceInputOption = undefined;
       this.lowerPriceInput = '';
       this.lowerPriceInputOption = undefined;
