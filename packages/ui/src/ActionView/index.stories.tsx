@@ -21,6 +21,7 @@ import {
   IbcRelayMsgAcknowledgementAction,
   IbcRelayMsgTimeoutAction,
   IbcRelayMsgTimeoutOnCloseAction,
+  Ics20WithdrawalAction,
   LiquidityTournamentVoteAction,
   LiquidityTournamentVoteActionOpaque,
 } from '../utils/bufs';
@@ -40,6 +41,7 @@ const OPTIONS: Record<string, ActionViewMessage> = {
   IbcRelayMsgTimeout: IbcRelayMsgTimeoutAction,
   IbcRelayMsgTimeoutOnClose: IbcRelayMsgTimeoutOnCloseAction,
   LiquidityTournamentVote: LiquidityTournamentVoteAction,
+  Withdraw: Ics20WithdrawalAction,
   'Opaque: Spend': SpendActionOpaque,
   'Opaque: Output': OutputActionOpaque,
   'Opaque: Swap': SwapActionOpaque,

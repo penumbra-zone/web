@@ -47,14 +47,14 @@ const componentMap = {
   positionClose: PositionCloseAction,
   positionWithdraw: PositionWithdrawAction,
   positionRewardClaim: PositionRewardClaimAction,
-  // TODO: Implement the actions below
   actionLiquidityTournamentVote: LiquidityTournamentVoteAction,
+  ibcRelayAction: IbcRelayAction,
+  ics20Withdrawal: Ics20WithdrawalAction,
+  // TODO: Implement the actions below
   delegate: DelegateAction,
   delegatorVote: DelegatorVoteAction,
   undelegate: UndelegateAction,
   undelegateClaim: UndelegateClaimAction,
-  ibcRelayAction: IbcRelayAction,
-  ics20Withdrawal: Ics20WithdrawalAction,
   proposalDepositClaim: ProposalDepositClaimAction,
   proposalSubmit: ProposalSubmitAction,
   proposalWithdraw: ProposalWithdrawAction,

@@ -37,6 +37,7 @@ import {
 } from '@penumbra-zone/protobuf/ibc/core/channel/v1/tx_pb';
 import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 import { Packet } from '@penumbra-zone/protobuf/ibc/core/channel/v1/channel_pb';
+import { Denom } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
 export const SpendAction = new ActionView({
   actionView: {
@@ -398,6 +399,19 @@ export const IbcRelayMsgTimeoutOnCloseAction = new ActionView({
           proofClose: new Uint8Array([0, 1, 2, 3, 4, 5, 6, 7]),
         }),
       ),
+    },
+  },
+});
+
+export const Ics20WithdrawalAction = new ActionView({
+  actionView: {
+    case: 'ics20Withdrawal',
+    value: {
+      returnAddress: ADDRESS_VIEW_DECODED.addressView.value?.address,
+      destinationChainAddress: 'osmo1dyrr4r42ql4em7d46srcmnn5ymxk9asvcv95sg',
+      amount: AMOUNT_123_456_789,
+      denom: new Denom({ denom: PENUMBRA_METADATA.display }),
+      sourceChannel: 'channel-4',
     },
   },
 });
