@@ -75,26 +75,49 @@ export const getOneWaySwapValues = (
   const delta1I = getDelta1IFromSwapView(swapView);
   const delta2I = getDelta2IFromSwapView(swapView);
 
-  const input = new ValueView({
-    valueView: {
-      case: 'knownAssetId',
-      value: {
-        amount: isZero(delta2I) ? delta1I : delta2I,
-        metadata: isZero(delta2I) ? getAsset1Metadata(swapView) : getAsset2Metadata(swapView),
-      },
-    },
-  });
+  const metadata1 = getAsset1Metadata.optional(swapView);
+  const metadata2 = getAsset2Metadata.optional(swapView);
+  const inputMetadata = isZero(delta2I) ? metadata1 : metadata2;
+  const outputMetadata = isZero(delta2I) ? metadata2 : metadata1;
+
+  const input = inputMetadata
+    ? new ValueView({
+        valueView: {
+          case: 'knownAssetId',
+          value: {
+            amount: isZero(delta2I) ? delta1I : delta2I,
+            metadata: inputMetadata,
+          },
+        },
+      })
+    : new ValueView({
+        valueView: {
+          case: 'unknownAssetId',
+          value: {
+            amount: isZero(delta2I) ? delta1I : delta2I,
+          },
+        },
+      });
 
   let output = isZero(delta2I) ? output2 : output1;
 
-  output ??= new ValueView({
-    valueView: {
-      case: 'knownAssetId',
-      value: {
-        metadata: isZero(delta2I) ? getAsset2Metadata(swapView) : getAsset1Metadata(swapView),
-      },
-    },
-  });
+  output ??= outputMetadata
+    ? new ValueView({
+        valueView: {
+          case: 'knownAssetId',
+          value: {
+            metadata: outputMetadata,
+          },
+        },
+      })
+    : new ValueView({
+        valueView: {
+          case: 'unknownAssetId',
+          value: {
+            amount: isZero(delta2I) ? delta1I : delta2I,
+          },
+        },
+      });
 
   return {
     input,
