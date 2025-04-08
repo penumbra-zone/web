@@ -29,7 +29,8 @@ export const SwapAction = ({ value, getMetadata }: SwapActionProps) => {
 
   const isOneWay = isOneWaySwap(value);
   const swap = isOneWay ? getOneWaySwapValues(value) : undefined;
-  const showOutput = !!getAmount.optional(swap?.output) && !isZero(getAmount(swap?.output));
+  const swapOutputAmount = getAmount.optional(swap?.output);
+  const showOutput = !!swapOutputAmount && !isZero(swapOutputAmount);
   const isVisible = value.swapView.case === 'visible';
 
   const unfilled = useMemo(() => {
