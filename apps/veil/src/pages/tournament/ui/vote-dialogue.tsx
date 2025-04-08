@@ -103,7 +103,6 @@ export const VoteDialogueSelector = observer(({ isOpen, onClose }: VoteDialogPro
   const [revealVote, setRevealVote] = useState(false);
 
   const { data: subaccounts } = useSubaccounts();
-  // const { subaccount } = connectionStore;
   const { subaccount } = connectionStore;
   const valueAddress = subaccounts?.find(
     account => getAddressIndex(account).account === subaccount,
@@ -118,7 +117,7 @@ export const VoteDialogueSelector = observer(({ isOpen, onClose }: VoteDialogPro
   // TODO: replace this dummy static asset list with actual data from the API server.
   const assets: Asset[] = [
     {
-      id: 'usdc',
+      id: 'uusdc',
       symbol: 'USDC',
       imgUrl:
         'https://raw.githubusercontent.com/cosmos/chain-registry/master/cosmoshub/images/atom.png',
@@ -263,6 +262,7 @@ export const VoteDialogueSelector = observer(({ isOpen, onClose }: VoteDialogPro
             <div className='pt-6 flex flex-col gap-4'>
               <Button
                 onClick={() => {
+                  onClose();
                   handleVoteSubmit().catch((err: unknown) => console.error(err));
                 }}
                 priority='primary'
