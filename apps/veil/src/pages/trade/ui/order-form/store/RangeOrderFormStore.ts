@@ -254,7 +254,7 @@ export class RangeOrderFormStore {
       this._liquidityTargetInput = '';
       this._upperPriceInput = '';
       this.upperPriceInputOption = undefined;
-      this.lowerPriceInput = '';
+      this._lowerPriceInput = '';
       this.lowerPriceInputOption = undefined;
       this.feeTierPercentInput = '';
       this._positionCountInput = '10';
