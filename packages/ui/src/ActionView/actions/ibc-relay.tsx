@@ -96,10 +96,9 @@ export const IbcRelayAction = ({ value, getMetadata }: IbcRelayActionProps) => {
     const denomMatch = /\/([^/]+)$/.exec(data.tokenData.denom);
     let assetDenom = `${data.packet.destinationPort}/${data.packet.destinationChannel}/${denomMatch?.[1] ?? data.tokenData.denom}`;
     if (data.tokenData.denom === 'upenumbra' || denomMatch?.[1] === 'upenumbra') {
-      assetDenom = 'penumbra';
+      assetDenom = 'upenumbra';
     }
 
-    // TODO: `getMetadata` should query by `Metadata.base` instead of `Metadata.display` in this case
     const asset = getMetadata?.(new Denom({ denom: assetDenom }));
     const amount = fromString(data.tokenData.amount);
 
@@ -130,7 +129,6 @@ export const IbcRelayAction = ({ value, getMetadata }: IbcRelayActionProps) => {
       title='IBC Relay'
       opaque={false}
       infoRows={[
-        message && <ActionRow key='message' label='Message' info={message} />,
         sender && (
           <ActionRow
             key='sender'
@@ -142,6 +140,7 @@ export const IbcRelayAction = ({ value, getMetadata }: IbcRelayActionProps) => {
             }
           />
         ),
+        message && <ActionRow key='message' label='Message' info={message} />,
       ]}
     >
       <Density slim>

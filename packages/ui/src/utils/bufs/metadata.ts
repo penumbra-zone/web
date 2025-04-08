@@ -99,12 +99,33 @@ export const USDC_METADATA = new Metadata({
 });
 
 export const OSMO_METADATA = new Metadata({
-  symbol: 'OSMO',
+  description: 'The native token of Osmosis',
+  denomUnits: [
+    {
+      denom: 'transfer/channel-4/uosmo',
+    },
+    {
+      denom: 'transfer/channel-4/osmo',
+      exponent: 6,
+    },
+  ],
+  base: 'transfer/channel-4/uosmo',
+  display: 'transfer/channel-4/osmo',
   name: 'Osmosis',
-  penumbraAssetId: new AssetId({ inner: u8(32) }),
-  base: 'uosmo',
-  display: 'osmo',
-  denomUnits: [{ denom: 'uosmo' }, { denom: 'osmo', exponent: 6 }],
+  symbol: 'OSMO',
+  penumbraAssetId: {
+    inner: base64ToUint8Array('KSOgqHs6JCHxZcyFPb9zqb2vtdoNlIVktgWcsCF8RAc='),
+  },
+  images: [
+    {
+      png: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/osmo.png',
+      svg: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/osmo.svg',
+      theme: {
+        primaryColorHex: '#760dbb',
+      },
+    },
+  ],
+  priorityScore: 800000000099n,
 });
 
 export const PIZZA_METADATA = new Metadata({
