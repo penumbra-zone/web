@@ -7,11 +7,14 @@ import {
   WitnessData,
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 
+/**
+ * Build transactions.
+ */
 export const buildCtx = createContextKey<{
   buildActions: (
     data: { transactionPlan: TransactionPlan; witnessData: WitnessData },
     signal?: AbortSignal,
-  ) => Promise<Action>[];
+  ) => Promise<Promise<Action>[]>;
 
   buildTransaction: (
     data: {

@@ -24,7 +24,7 @@ export const witnessAndBuild: Impl['witnessAndBuild'] = async function* (
   const witnessData = getWitness(transactionPlan, sct);
 
   const { buildActions, buildTransaction } = ctx.values.get(buildCtx);
-  const tasks = buildActions({ transactionPlan, witnessData }, ctx.signal);
+  const tasks = await buildActions({ transactionPlan, witnessData }, ctx.signal);
 
   // status updates
   yield* progressStream(tasks);

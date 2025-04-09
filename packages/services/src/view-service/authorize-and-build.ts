@@ -33,7 +33,7 @@ export const authorizeAndBuild: Impl['authorizeAndBuild'] = async function* (
     );
 
   const { buildActions, buildTransaction } = ctx.values.get(buildCtx);
-  const tasks = buildActions({ transactionPlan, witnessData }, ctx.signal);
+  const tasks = await buildActions({ transactionPlan, witnessData }, ctx.signal);
 
   // status updates
   yield* progressStream([...tasks, authorize]);
