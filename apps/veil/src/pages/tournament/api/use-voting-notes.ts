@@ -13,16 +13,18 @@ const fetchQuery = async (
   const accountFilter =
     typeof subaccount === 'undefined' ? undefined : new AddressIndex({ account: subaccount });
 
-  const { latestKnownBlockHeight } = statusStore
+  const { latestKnownBlockHeight } = statusStore;
 
-  const epoch = await penumbra.service(SctService).epochByHeight({ height: latestKnownBlockHeight});
+  const epoch = await penumbra
+    .service(SctService)
+    .epochByHeight({ height: latestKnownBlockHeight });
   const epochIndex = epoch.epoch?.index;
 
   const notes = await Array.fromAsync(
     penumbra.service(ViewService).lqtVotingNotes({ accountFilter, epochIndex }),
   );
 
-  return { notes, epochIndex }
+  return { notes, epochIndex };
 };
 
 /**
@@ -41,6 +43,6 @@ export const useLQTNotes = (subaccount?: number) => {
   return {
     ...lqtNotesQuery,
     notes: lqtNotesQuery.data?.notes,
-    epochIndex: lqtNotesQuery.data?.epochIndex
+    epochIndex: lqtNotesQuery.data?.epochIndex,
   };
 };

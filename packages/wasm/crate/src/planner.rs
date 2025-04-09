@@ -686,8 +686,15 @@ pub async fn plan_transaction_inner<Db: Database>(
             let note_position: Position = staked_note.position.into();
             let start_position: Position = Position::from((epoch_index as u16, 0, 0));
 
-            let vote_plan = ActionLiquidityTournamentVotePlan::new(&mut OsRng, incentivized, rewards_recipient, note, note_position, start_position);
-            
+            let vote_plan = ActionLiquidityTournamentVotePlan::new(
+                &mut OsRng,
+                incentivized,
+                rewards_recipient,
+                note,
+                note_position,
+                start_position,
+            );
+
             actions_list.push(vote_plan);
         }
     }
