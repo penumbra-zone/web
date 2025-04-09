@@ -108,8 +108,11 @@ export const VoteDialogueSelector = observer(({ isOpen, onClose }: VoteDialogPro
     account => getAddressIndex(account).account === subaccount,
   );
 
-  // Temporarily hardcode the same account address as the reward recipient.
-  let rewardsRecipient = valueAddress?.addressView.value?.address!;
+  // TODO: change from temporarily hardcode the same account address as the reward recipient.
+  if (!valueAddress?.addressView.value?.address) {
+    throw new Error('Missing rewards recipient address');
+  }
+  const rewardsRecipient = valueAddress.addressView.value.address;
 
   // Fetch user's spendable voting notes for this epoch
   const { notes, epochIndex } = useLQTNotes(subaccount);
@@ -124,36 +127,29 @@ export const VoteDialogueSelector = observer(({ isOpen, onClose }: VoteDialogPro
       percentage: 50,
     },
     {
-      id: 'osmo',
+      id: 'transfer/channel-34/uosmo',
       symbol: 'OSMO',
       imgUrl:
         'https://raw.githubusercontent.com/cosmos/chain-registry/master/cosmoshub/images/atom.png',
       percentage: 25,
     },
     {
-      id: 'btc',
-      symbol: 'BTC',
-      imgUrl:
-        'https://raw.githubusercontent.com/cosmos/chain-registry/master/cosmoshub/images/atom.png',
-      percentage: 11,
-    },
-    {
-      id: 'atom',
-      symbol: 'ATOM',
+      id: 'transfer/channel-26/ustake',
+      symbol: 'STAKE',
       imgUrl:
         'https://raw.githubusercontent.com/cosmos/chain-registry/master/cosmoshub/images/atom.png',
       percentage: 5,
     },
     {
-      id: 'xrp',
-      symbol: 'XRP',
+      id: 'transfer/channel-26/love',
+      symbol: 'LOVE',
       imgUrl:
         'https://raw.githubusercontent.com/cosmos/chain-registry/master/cosmoshub/images/atom.png',
       percentage: 4.5,
     },
     {
-      id: 'apt',
-      symbol: 'APT',
+      id: 'transfer/channel-26/ausdy',
+      symbol: 'USDY',
       imgUrl:
         'https://raw.githubusercontent.com/cosmos/chain-registry/master/cosmoshub/images/atom.png',
       percentage: 2.5,
@@ -170,6 +166,10 @@ export const VoteDialogueSelector = observer(({ isOpen, onClose }: VoteDialogPro
 
   const handleVoteSubmit = async () => {
     if (selectedAsset) {
+      if (!epochIndex) {
+        throw new Error('Missing epoch index');
+      }
+
       const stakedNotes: SpendableNoteRecord[] = notes
         ? Array.from(notes.values())
             .map(res => res.noteRecord)
@@ -180,7 +180,7 @@ export const VoteDialogueSelector = observer(({ isOpen, onClose }: VoteDialogPro
       await voteTournament({
         stakedNotes: stakedNotes,
         incentivized: selectedAsset,
-        epochIndex: epochIndex!,
+        epochIndex: epochIndex,
         rewardsRecipient,
       });
 

@@ -11,8 +11,6 @@ export const LandingCard = observer(() => {
   const poolAmount = poolLPs + poolDelegators;
   const symbol = 'UM';
 
-  const isBanned = false;
-
   const results = [
     {
       symbol: 'USDC',
@@ -60,7 +58,7 @@ export const LandingCard = observer(() => {
             symbol={symbol}
             results={results}
           />
-          <VotingFooter isBanned={isBanned} epoch={epoch} />
+          <VotingFooter epoch={epoch} />
         </div>
       </div>
     </GradientCard>

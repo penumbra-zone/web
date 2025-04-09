@@ -64,18 +64,20 @@ export const checkIfAlreadyVoted = ({
 }: {
   votingNotes: LqtVotingNotesResponse[] | undefined;
 }): boolean => {
-  const stakedNotes = votingNotes
-    ? Array.from(votingNotes.values())
-        .filter(res => !!res.noteRecord)
-        .map(res => ({
-          note: res.noteRecord as SpendableNoteRecord,
-          alreadyVoted: res.alreadyVoted,
-        }))
-    : [];
+  const stakedNotes =
+    votingNotes
+      ?.filter(res => res.noteRecord !== undefined)
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- filtering above
+      .map(res => ({
+        note: res.noteRecord!,
+        alreadyVoted: res.alreadyVoted,
+      })) ?? [];
 
   // Check if all notes have been used for voting in the current epoch.
   const allNotesVoted =
-    stakedNotes.length > 0 && stakedNotes.every(({ alreadyVoted }) => alreadyVoted === true);
+    stakedNotes.length > 0 &&
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-boolean-literal-compare -- explicit check for clarity
+    stakedNotes.every(({ alreadyVoted }) => alreadyVoted === true);
 
   return allNotesVoted;
 };
