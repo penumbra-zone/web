@@ -38,11 +38,11 @@ export const lqtVotingNotes: Impl['lqtVotingNotes'] = async function* (req, ctx)
     const alreadyVoted = lqtCheckNullifierResponse.alreadyVoted;
     const noteRecord = votingNote.noteRecord as SpendableNoteRecord;
 
-    // Rather than treating this view service implementation as a filtering 
+    // Rather than treating this view service implementation as a filtering
     // service that yields SNRs that haven't been used for voting yet, we
     // return a mapping of 'all' potentially eligible delegation note records
-    // and a a flag indicating whether each note was already used for voting
-    // in the current epoch. 
+    // and a flag indicating whether each note was already used for voting
+    // in the current epoch.
     yield new LqtVotingNotesResponse({ noteRecord, alreadyVoted });
   }
 };
