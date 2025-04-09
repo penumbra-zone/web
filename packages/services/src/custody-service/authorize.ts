@@ -1,27 +1,25 @@
-import type { Impl } from './index.js';
-import { approverCtx } from '../ctx/approver.js';
-import { authorizePlan } from '@penumbra-zone/wasm/build';
-import { Code, ConnectError } from '@connectrpc/connect';
-import { UserChoice } from '@penumbra-zone/types/user-choice';
+import { authorizeCtx } from '../ctx/authorize.js';
 import { fvkCtx } from '../ctx/full-viewing-key.js';
-import { skCtx } from '../ctx/spend-key.js';
-import { assertValidAuthorizeRequest } from './validation/authorize.js';
+import type { Impl } from './index.js';
+import { assertValidActionPlans } from './util/validate-request.js';
+import { assertValidAuthorizationData } from './util/validate-response.js';
+import { toPlainMessage } from '@bufbuild/protobuf';
 
-export const authorize: Impl['authorize'] = async (req, ctx) => {
-  if (!req.plan) {
-    throw new ConnectError('No plan included in request', Code.InvalidArgument);
-  }
+/**
+ * This is essentially a configurable stub. It performs some basic validation,
+ * and then trusts the service context to provide an appropriate implementation.
+ */
+export const authorize: Impl['authorize'] = async ({ plan, preAuthorizations }, ctx) => {
+  const fvk = await ctx.values.get(fvkCtx)();
 
-  const fullViewingKey = await ctx.values.get(fvkCtx)();
-  assertValidAuthorizeRequest(req, fullViewingKey);
+  const actionCounts = assertValidActionPlans(fvk, plan && toPlainMessage(plan).actions);
 
-  const choice = await ctx.values.get(approverCtx)(req);
-  if (choice !== UserChoice.Approved) {
-    throw new ConnectError('Transaction was not approved', Code.PermissionDenied);
-  }
+  const { data: authorizationData } = await ctx.values.get(authorizeCtx)({
+    plan,
+    preAuthorizations,
+  });
 
-  const spendKey = await ctx.values.get(skCtx)();
-
-  const data = authorizePlan(spendKey, req.plan);
-  return { data };
+  return {
+    data: assertValidAuthorizationData(actionCounts, authorizationData),
+  };
 };

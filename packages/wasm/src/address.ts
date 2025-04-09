@@ -14,10 +14,14 @@ export const getAddressIndexByAddress = (
   return res ? AddressIndex.fromJson(res) : undefined;
 };
 
-// Only an address controlled by the FVK can view its index
-export const isControlledAddress = (fullViewingKey: FullViewingKey, address?: Address): boolean => {
-  if (!address) {
-    return false;
-  }
-  return is_controlled_address(fullViewingKey.toBinary(), address.toBinary());
-};
+/**
+ * Only an address controlled by the FVK can view its index
+ *
+ * @note don't 'correct' the address parameter to be an optional parameter.
+ * `undefined` is a valid input, but input should be required.
+ */
+export const isControlledAddress = (
+  fullViewingKey: FullViewingKey,
+  address: Address | undefined,
+): address is Address =>
+  !!address && is_controlled_address(fullViewingKey.toBinary(), address.toBinary());
