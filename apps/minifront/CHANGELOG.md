@@ -1,5 +1,25 @@
 # minifront
 
+## 6.32.0
+
+### Minor Changes
+
+- 85022e1: fix unbonding penalty range calculation
+
+### Patch Changes
+
+- 80148ae: Fix bugs related to transaction history and transaction/action views
+- Updated dependencies [80148ae]
+- Updated dependencies [a5e14e9]
+- Updated dependencies [b0e0eef]
+- Updated dependencies [5c45f2c]
+- Updated dependencies [85022e1]
+- Updated dependencies [3c48120]
+  - @penumbra-zone/ui-deprecated@17.1.2
+  - @penumbra-zone/perspective@52.0.0
+  - @penumbra-zone/types@32.1.0
+  - @penumbra-zone/crypto-web@40.0.0
+
 ## 6.31.2
 
 ### Patch Changes

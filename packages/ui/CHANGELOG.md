@@ -1,5 +1,24 @@
 # @penumbra-zone/ui
 
+## 13.17.0
+
+### Minor Changes
+
+- 8e6e60c: Add Checkbox UI component
+- 5c45f2c: Implement `IbcRelay` and `Ics20Withdrawal` ActionViews
+
+### Patch Changes
+
+- 80148ae: Fix bugs related to transaction history and transaction/action views
+- 3c48120: Fix Swap getters for ActionViews
+- Updated dependencies [a5e14e9]
+- Updated dependencies [b0e0eef]
+- Updated dependencies [5c45f2c]
+- Updated dependencies [85022e1]
+- Updated dependencies [3c48120]
+  - @penumbra-zone/perspective@52.0.0
+  - @penumbra-zone/types@32.1.0
+
 ## 13.16.0
 
 ### Minor Changes

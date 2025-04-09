@@ -1,5 +1,15 @@
 # @penumbra-zone/perspective
 
+## 52.0.0
+
+### Minor Changes
+
+- a5e14e9: Add an adapter from LQT Plan to ActionView
+
+### Patch Changes
+
+- @penumbra-zone/wasm@44.0.0
+
 ## 51.0.0
 
 ### Patch Changes
