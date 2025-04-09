@@ -37,6 +37,7 @@ import {
 } from '@penumbra-zone/protobuf/ibc/core/channel/v1/tx_pb';
 import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 import { Packet } from '@penumbra-zone/protobuf/ibc/core/channel/v1/channel_pb';
+import { Denom } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
 export const SpendAction = new ActionView({
   actionView: {
@@ -309,7 +310,7 @@ export const IbcRelayMsgUpdateClientAction = new ActionView({
   },
 });
 
-const IbcPacket = new Packet({
+const OsmoIbcPacket = new Packet({
   sequence: 4480n,
   sourcePort: 'transfer',
   sourceChannel: 'channel-79703',
@@ -322,19 +323,40 @@ const IbcPacket = new Packet({
   timeoutTimestamp: 1740814200000000000n,
 });
 
+const PenumbraIbcPacket = new Packet({
+  sequence: 3810n,
+  sourcePort: 'transfer',
+  sourceChannel: 'channel-79703',
+  destinationPort: 'transfer',
+  destinationChannel: 'channel-4',
+  timeoutTimestamp: 1738993800000000000n,
+  // This data encodes FungibleTokenPacketData message
+  data: base64ToUint8Array(
+    'eyJhbW91bnQiOiI2NTA1MDAwMDAiLCJkZW5vbSI6InRyYW5zZmVyL2NoYW5uZWwtNzk3MDMvdXBlbnVtYnJhIiwicmVjZWl2ZXIiOiJwZW51bWJyYTFubmtsOThsNTgzdmsyZ3gwZHo2MnJlNTN5aHNrbHNwZGV3ZG53dXYya3pldDN5bndoOTR4ZnN2NWE2bjU2ejl1ZXFxbjRweHJmMjN2dWc0cjk5ZDN5eDAwZGhsZTZmamRtdHd5aHg2ZnVycjMwazRnaDVlbjVuMnQ1bDl3OXJ3NTZ6ZWgyZiIsInNlbmRlciI6Im9zbW8xejV0cDRhNTBxbjU5emp0OWM3ZGthMDgzNHo1bDNyc3lqcjJyNXIifQ==',
+  ),
+});
+
 // An Ibc deposit of 0.5 OSMO
-export const IbcRelayMsgRecvPacketAction = new ActionView({
+export const OsmoIbcRelayMsgRecvPacketAction = new ActionView({
   actionView: {
     case: 'ibcRelayAction',
     value: {
       rawAction: Any.pack(
         new MsgRecvPacket({
-          signer: 'cosmos000000000000000000000000000000000000000',
-          proofHeight: {
-            revisionNumber: 1n,
-            revisionHeight: 30444680n,
-          },
-          packet: IbcPacket,
+          packet: OsmoIbcPacket,
+        }),
+      ),
+    },
+  },
+});
+
+export const PenumbraIbcRelayMsgRecvPacketAction = new ActionView({
+  actionView: {
+    case: 'ibcRelayAction',
+    value: {
+      rawAction: Any.pack(
+        new MsgRecvPacket({
+          packet: PenumbraIbcPacket,
         }),
       ),
     },
@@ -354,7 +376,7 @@ export const IbcRelayMsgAcknowledgementAction = new ActionView({
           },
           proofAcked: new Uint8Array([0, 1, 2, 3, 4, 5, 6, 7]),
           acknowledgement: new Uint8Array([0, 1, 2, 3, 4, 5, 6, 7]),
-          packet: IbcPacket,
+          packet: OsmoIbcPacket,
         }),
       ),
     },
@@ -372,7 +394,7 @@ export const IbcRelayMsgTimeoutAction = new ActionView({
             revisionNumber: 1n,
             revisionHeight: 30444680n,
           },
-          packet: IbcPacket,
+          packet: OsmoIbcPacket,
           nextSequenceRecv: 100n,
           proofUnreceived: new Uint8Array([0, 1, 2, 3, 4, 5, 6, 7]),
         }),
@@ -392,12 +414,25 @@ export const IbcRelayMsgTimeoutOnCloseAction = new ActionView({
             revisionNumber: 1n,
             revisionHeight: 30444680n,
           },
-          packet: IbcPacket,
+          packet: OsmoIbcPacket,
           nextSequenceRecv: 1000n,
           proofUnreceived: new Uint8Array([0, 1, 2, 3, 4, 5, 6, 7]),
           proofClose: new Uint8Array([0, 1, 2, 3, 4, 5, 6, 7]),
         }),
       ),
+    },
+  },
+});
+
+export const Ics20WithdrawalAction = new ActionView({
+  actionView: {
+    case: 'ics20Withdrawal',
+    value: {
+      returnAddress: ADDRESS_VIEW_DECODED.addressView.value?.address,
+      destinationChainAddress: 'osmo1dyrr4r42ql4em7d46srcmnn5ymxk9asvcv95sg',
+      amount: AMOUNT_123_456_789,
+      denom: new Denom({ denom: PENUMBRA_METADATA.base }),
+      sourceChannel: 'channel-4',
     },
   },
 });
@@ -412,7 +447,7 @@ const LQT_VOTE = new ActionLiquidityTournamentVote({
     value: DELEGATION_TOKEN_VALUE,
     rewardsRecipient: ADDRESS_VIEW_DECODED.addressView.value?.address,
     incentivized: {
-      denom: PENUMBRA_METADATA.display,
+      denom: PENUMBRA_METADATA.base,
     },
   },
 });
