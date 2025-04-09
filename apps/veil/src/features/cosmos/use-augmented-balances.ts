@@ -88,6 +88,10 @@ export const useBalances = () => {
           registry ? 'registry-available' : 'no-registry',
         ],
         queryFn: async () => {
+          if (status !== WalletStatus.Connected && chainWallets.length === 0) {
+            return [];
+          }
+
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- chains without a valid address were filtered out above
           const balances = await fetchChainBalances(chain.address!, chain);
           return balances.map(coin => {
@@ -99,10 +103,6 @@ export const useBalances = () => {
             };
           });
         },
-        enabled: status === WalletStatus.Connected && chainWallets.length > 0,
-        retry: 3, // Retry failed requests 3 times
-        staleTime: 60000, // 1 minute stale time to reduce refetches
-        cacheTime: 300000, // 5 minutes cache time
       })),
     combine: results => {
       return {

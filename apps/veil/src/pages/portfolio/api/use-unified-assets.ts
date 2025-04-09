@@ -189,7 +189,7 @@ export const useUnifiedAssets = () => {
         }
       })
       .filter(Boolean) as UnifiedAsset[];
-  }, [isCosmosConnected, cosmosBalances, registry]);
+  }, [cosmosBalances, isCosmosConnected, registry]);
 
   // Merge shielded and public assets
   const unifiedAssets = useMemo(() => {
@@ -201,38 +201,45 @@ export const useUnifiedAssets = () => {
       assetMap.set(key, asset);
     });
 
-    // Merge in public assets
-    publicAssets.forEach(asset => {
-      const key = normalizeSymbol(asset.symbol);
-      const existing = assetMap.get(key);
+    // If Cosmos wallet is connected, merge in public assets
+    if (isCosmosConnected) {
+      publicAssets.forEach(asset => {
+        const key = normalizeSymbol(asset.symbol);
+        const existing = assetMap.get(key);
 
-      if (existing) {
-        // Merge with existing asset by combining the public balances
-        // but deduplicating by chainId+denom combination
-        const balanceKeys = new Set<string>();
+        if (existing) {
+          // Merge with existing asset by combining the public balances
+          // but deduplicating by chainId+denom combination
+          const balanceKeys = new Set<string>();
 
-        // Add keys for existing balances
-        existing.publicBalances.forEach(balance => {
-          balanceKeys.add(getPublicBalanceKey(balance.chainId, balance.denom));
-        });
+          // Add keys for existing balances
+          existing.publicBalances.forEach(balance => {
+            balanceKeys.add(getPublicBalanceKey(balance.chainId, balance.denom));
+          });
 
-        // Only add public balances that don't already exist
-        asset.publicBalances.forEach(balance => {
-          const balanceKey = getPublicBalanceKey(balance.chainId, balance.denom);
-          if (!balanceKeys.has(balanceKey)) {
-            existing.publicBalances.push(balance);
-            balanceKeys.add(balanceKey);
-          }
-        });
-      } else {
-        // Add new public-only asset
-        assetMap.set(key, asset);
-      }
-    });
+          // Only add public balances that don't already exist
+          asset.publicBalances.forEach(balance => {
+            const balanceKey = getPublicBalanceKey(balance.chainId, balance.denom);
+            if (!balanceKeys.has(balanceKey)) {
+              existing.publicBalances.push(balance);
+              balanceKeys.add(balanceKey);
+            }
+          });
+        } else {
+          // Add new public-only asset
+          assetMap.set(key, asset);
+        }
+      });
+    } else {
+      // When Cosmos wallet is disconnected, ensure all public balances are cleared
+      assetMap.forEach(asset => {
+        asset.publicBalances = [];
+      });
+    }
 
     // Convert to array
     return Array.from(assetMap.values());
-  }, [shieldedAssets, publicAssets]);
+  }, [shieldedAssets, publicAssets, isCosmosConnected]);
 
   // Calculate totals based on prices
   const totalShieldedValue = useMemo(() => {
