@@ -1,4 +1,5 @@
 {
+  "actionLiquidityTournamentVote": "delegator_vote_pk.bin",
   "delegatorVote": "delegator_vote_pk.bin",
   "output": "output_pk.bin",
   "spend": "spend_pk.bin",
