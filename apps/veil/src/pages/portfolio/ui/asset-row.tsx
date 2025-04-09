@@ -21,8 +21,8 @@ export const AssetRow = observer(
     isCosmosConnected: boolean;
     isLastRow: boolean;
   }) => {
-    const variant = isLastRow ? 'lastCell' : 'cell';
-    const [isExpanded, setIsExpanded] = useState(true);
+    const [isExpanded, setIsExpanded] = useState(false);
+    const variant = isLastRow ? 'lastCell' : 'lastCell';
 
     // Calculate values on demand
     const hasShieldedBalance = asset.shieldedBalances.length > 0;
@@ -75,16 +75,17 @@ export const AssetRow = observer(
         },
       },
     });
-    /* TODO: fix private and public total values per-balance
+    /* TODO:
             Implement withdrawals
-            Fix styling of tablecells - too crowded.
             add expand button
             align styles to figma */
 
     return (
-      <div className={`grid grid-cols-subgrid col-span-6 `}>
+      <div
+        className={`grid grid-cols-subgrid col-span-6 rounded-sm ${isExpanded ? 'bg-other-tonalFill5' : ''} `}
+      >
         <div
-          className={'col-span-6 grid grid-cols-subgrid '}
+          className={'col-span-6 grid grid-cols-subgrid border-b border-b-other-tonalStroke'}
           onClick={() => setIsExpanded(prev => !prev)}
         >
           <TableCell variant={variant}>
@@ -177,10 +178,7 @@ export const AssetRow = observer(
         </div>
         {isExpanded &&
           asset.publicBalances.map(bal => (
-            <div
-              key={bal.denom}
-              className={`col-span-6 grid grid-cols-subgrid bg-other-tonalFill5`}
-            >
+            <div key={bal.denom} className={`col-span-6 grid grid-cols-subgrid`}>
               <TableCell variant={'lastCell'}>
                 <div className='flex items-center'>
                   <Text variant={'smallTechnical'} color='text.secondary'></Text>
@@ -192,7 +190,7 @@ export const AssetRow = observer(
                     <ValueViewComponent
                       valueView={bal.valueView}
                       trailingZeros={false}
-                      priority={'primary'}
+                      priority={'tertiary'}
                       density={'slim'}
                       context={'table'}
                     />
@@ -215,9 +213,7 @@ export const AssetRow = observer(
                 )}
               </TableCell>
               <TableCell variant={'lastCell'}>
-                <Text variant={'smallTechnical'} color='text.secondary'>
-                  -
-                </Text>
+                <Text variant={'smallTechnical'} color='text.secondary'></Text>
               </TableCell>
               <TableCell variant={'lastCell'}>
                 {publicValue > 0 && price ? (
@@ -231,30 +227,20 @@ export const AssetRow = observer(
                 )}
               </TableCell>
               <TableCell variant={'lastCell'}>
-                {totalValue > 0 && price ? (
-                  <Text variant={'smallTechnical'} color='text.secondary'>
-                    {totalValue.toFixed(2)} {price.quoteSymbol}
-                  </Text>
-                ) : (
-                  <Text variant={'smallTechnical'} color='text.secondary'>
-                    -
-                  </Text>
-                )}
+                <Text variant={'smallTechnical'} color='text.secondary'></Text>
               </TableCell>
             </div>
           ))}
         {isExpanded &&
           asset.shieldedBalances.map(bal => (
-            <div
-              key={bal.valueView.toJsonString()}
-              className={'col-span-6 grid grid-cols-subgrid bg-other-tonalFill5'}
-            >
+            <div key={bal.valueView.toJsonString()} className={'col-span-6 grid grid-cols-subgrid'}>
               <TableCell variant={'lastCell'}>
                 <div className=''>
                   <ValueViewComponent
                     valueView={bal.valueView}
                     trailingZeros={false}
-                    priority={'primary'}
+                    priority={'tertiary'}
+                    density={'slim'}
                     context={'table'}
                   />
                   <Text color={'text.secondary'} small>
@@ -294,15 +280,7 @@ export const AssetRow = observer(
                 <Text variant={'smallTechnical'} color='text.secondary'></Text>
               </TableCell>
               <TableCell variant={'lastCell'}>
-                {totalValue > 0 && price ? (
-                  <Text variant={'smallTechnical'} color='text.secondary'>
-                    {totalValue.toFixed(2)} {price.quoteSymbol}
-                  </Text>
-                ) : (
-                  <Text variant={'smallTechnical'} color='text.secondary'>
-                    -
-                  </Text>
-                )}
+                <Text variant={'smallTechnical'} color='text.secondary'></Text>
               </TableCell>
             </div>
           ))}
