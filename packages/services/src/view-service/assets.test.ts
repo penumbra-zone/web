@@ -7,7 +7,40 @@ import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { servicesCtx } from '../ctx/prax.js';
 import { assets } from './assets.js';
 import { IndexedDbMock, MockServices } from '../test-utils.js';
-import { UM_METADATA } from './util/data.js';
+
+const UM_METADATA = Metadata.fromJson({
+  description: 'The native token of Penumbra',
+  denomUnits: [
+    {
+      denom: 'penumbra',
+      exponent: 6,
+    },
+    {
+      denom: 'mpenumbra',
+      exponent: 3,
+    },
+    {
+      denom: 'upenumbra',
+    },
+  ],
+  base: 'upenumbra',
+  display: 'penumbra',
+  name: 'Penumbra',
+  symbol: 'UM',
+  penumbraAssetId: {
+    inner: 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=',
+  },
+  images: [
+    {
+      svg: 'https://raw.githubusercontent.com/prax-wallet/registry/main/images/um.svg',
+      theme: {
+        primaryColorHex: '#c9a975',
+      },
+    },
+  ],
+  priorityScore: '999999999999',
+  coingeckoId: 'penumbra',
+});
 
 describe('Assets request handler', () => {
   let req: AssetsRequest;
