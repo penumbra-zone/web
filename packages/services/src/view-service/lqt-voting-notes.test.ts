@@ -3,6 +3,7 @@ import {
   LqtVotingNotesRequest,
   LqtVotingNotesResponse,
   NotesForVotingResponse,
+  SpendableNoteRecord,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
@@ -73,10 +74,12 @@ describe('lqtVotingNotes request handler', () => {
       ) as MockServices['getWalletServices'],
     };
 
-    const responses: LqtVotingNotesResponse[] = [];
+    const responses: SpendableNoteRecord[] = [];
     const req = new LqtVotingNotesRequest({});
-    for await (const res of lqtVotingNotes(req, mockCtx)) {
-      responses.push(new LqtVotingNotesResponse(res));
+    for await (const {noteRecord, alreadyVoted} of lqtVotingNotes(req, mockCtx)) {
+      if (!alreadyVoted) {
+        responses.push(noteRecord as SpendableNoteRecord);
+      }
     }
 
     expect(responses.length).toBe(0);
