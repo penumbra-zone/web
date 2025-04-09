@@ -13,187 +13,111 @@ import { PagePath } from '@/shared/const/pages';
 import { useLQTNotes } from '../../api/use-voting-notes';
 import { VoteDialogueSelector } from '../vote-dialogue';
 import { useGetMetadata } from '@/shared/api/assets';
+import { checkIfAlreadyVoted } from '../../api/vote';
 
-export const VotingFooter = observer(
-  ({ isBanned, epoch }: { isBanned: boolean; epoch: number }) => {
-    const { connected, subaccount } = connectionStore;
+export const VotingFooter = observer(({ epoch }: { epoch: number }) => {
+  const { connected, subaccount } = connectionStore;
 
-    const getMetadata = useGetMetadata();
-    const { notes } = useLQTNotes(subaccount);
+  const getMetadata = useGetMetadata();
+  const { notes } = useLQTNotes(subaccount);
 
-    const firstNoteValueView = useMemo(() => {
-      const value = notes?.[0]?.noteRecord?.note?.value;
-      const metadata = value?.assetId && getMetadata(value.assetId);
-      if (!value || !metadata) {
-        return undefined;
-      }
-      return new ValueView({
-        valueView: {
-          case: 'knownAssetId',
-          value: {
-            amount: value.amount,
-            metadata,
-          },
-        },
-      });
-    }, [getMetadata, notes]);
+  // Check if all notes have been used for voting in the current epoch.
+  const allNotesVoted = checkIfAlreadyVoted({ votingNotes: notes });
 
-    const [isVoteDialogueOpen, setIsVoteDialogOpen] = useState(false);
-
-    const openVoteDialog = () => {
-      setIsVoteDialogOpen(true);
-    };
-
-    const closeVoteDialog = () => {
-      setIsVoteDialogOpen(false);
-    };
-
-    // dummy data
-    const didVote = false;
-    const valueView = new ValueView({
+  // TODO: create a utility to aggregate delegation note balances for use in the footer.
+  const firstNoteValueView = useMemo(() => {
+    const value = notes?.[0]?.noteRecord?.note?.value;
+    const metadata = value?.assetId && getMetadata(value.assetId);
+    if (!value || !metadata) {
+      return undefined;
+    }
+    return new ValueView({
       valueView: {
-        value: {
-          amount: new Amount({ lo: 133700000n }),
-          metadata: new Metadata({
-            base: 'um',
-            display: 'um',
-            denomUnits: [
-              {
-                denom: 'um',
-                exponent: 6,
-              },
-            ],
-            symbol: 'um',
-            penumbraAssetId: { inner: new Uint8Array([1]) },
-            coingeckoId: 'um',
-            images: [],
-            name: 'um',
-            description: 'um',
-          }),
-        },
         case: 'knownAssetId',
+        value: {
+          amount: value.amount,
+          metadata,
+        },
       },
     });
+  }, [getMetadata, notes]);
 
-    if (!connected) {
-      return (
-        <div className='flex flex-col gap-8'>
-          <div className='flex gap-4 color-text-secondary items-center'>
-            <div className='size-8 text-text-secondary'>
-              <Wallet2 className='w-full h-full' />
-            </div>
-            <Text variant='small' color='text.secondary'>
-              Connect Prax Wallet to vote in this epoch and see your rewards from participating.
-            </Text>
-          </div>
-          <div className='flex gap-2'>
-            <ConnectButton actionType='accent' variant='default'>
-              Connect Prax Wallet
-            </ConnectButton>
-            <Link href={PagePath.TournamentRound.replace(':epoch', epoch.toString())}>
-              <Button actionType='default'>Details</Button>
-            </Link>
-          </div>
-        </div>
-      );
-    }
+  const [isVoteDialogueOpen, setIsVoteDialogOpen] = useState(false);
 
-    if (isBanned) {
-      return (
-        <div className='flex flex-col gap-8'>
-          <div className='flex gap-4 color-text-secondary items-center'>
-            <div className='size-14 text-destructive-light'>
-              <Ban className='w-full h-full' />
-            </div>
-            <Text variant='small' color='text.secondary'>
-              You can’t vote in this epoch because you delegated UM after the epoch started. You’ll
-              be able to vote next epoch.
-            </Text>
-          </div>
-          <div className='flex gap-2'>
-            <div className='flex-1'>
-              <Button actionType='accent' disabled>
-                Vote Now
-              </Button>
-            </div>
-            <div className='flex-1'>
-              <Link href={PagePath.TournamentRound.replace(':epoch', epoch.toString())}>
-                <Button actionType='default'>Details</Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      );
-    }
+  const openVoteDialog = () => {
+    setIsVoteDialogOpen(true);
+  };
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- temporary
-    if (didVote) {
-      return (
-        <div className='flex flex-col gap-8'>
-          <div className='flex gap-4 color-text-secondary items-center'>
-            <div className='size-10 text-success-light'>
-              <Check className='w-full h-full' />
-            </div>
-            <Text variant='small' color='text.secondary'>
-              You have already voted in this epoch. Come back next epoch to vote again.
-            </Text>
-            <ValueViewComponent valueView={valueView} />
-          </div>
-          <div className='flex gap-2'>
-            <Link href={PagePath.TournamentRound.replace(':epoch', epoch.toString())}>
-              <Button actionType='default'>Details</Button>
-            </Link>
-          </div>
-        </div>
-      );
-    }
+  const closeVoteDialog = () => {
+    setIsVoteDialogOpen(false);
+  };
 
-    if (notes?.length) {
-      return (
-        <>
-          <div className='flex flex-col gap-8'>
-            <div className='flex gap-4 color-text-secondary items-center'>
-              <div className='size-10 text-text-secondary'>
-                <Coins className='w-full h-full' />
-              </div>
-              <Text variant='small' color='text.secondary'>
-                You’ve delegated UM and are now eligible to vote in this epoch.
-              </Text>
-              {firstNoteValueView && <ValueViewComponent valueView={firstNoteValueView} />}
-            </div>
-            <div className='flex gap-2 w-full'>
-              <div className='flex-1 max-w-[300px]'>
-                <Button actionType='accent' onClick={openVoteDialog}>
-                  Vote Now
-                </Button>
-              </div>
-              <div className='flex-1'>
-                <Link href={PagePath.TournamentRound.replace(':epoch', epoch.toString())}>
-                  <Button actionType='default'>Details</Button>
-                </Link>
-              </div>
-            </div>
-          </div>
+  // dummy data
+  const didVote = false;
+  const valueView = new ValueView({
+    valueView: {
+      value: {
+        amount: new Amount({ lo: 133700000n }),
+        metadata: new Metadata({
+          base: 'um',
+          display: 'um',
+          denomUnits: [
+            {
+              denom: 'um',
+              exponent: 6,
+            },
+          ],
+          symbol: 'um',
+          penumbraAssetId: { inner: new Uint8Array([1]) },
+          coingeckoId: 'um',
+          images: [],
+          name: 'um',
+          description: 'um',
+        }),
+      },
+      case: 'knownAssetId',
+    },
+  });
 
-          <VoteDialogueSelector isOpen={isVoteDialogueOpen} onClose={closeVoteDialog} />
-        </>
-      );
-    }
-
+  if (!connected) {
     return (
       <div className='flex flex-col gap-8'>
         <div className='flex gap-4 color-text-secondary items-center'>
-          <div className='size-10 text-text-secondary'>
-            <Coins className='w-full h-full' />
+          <div className='size-8 text-text-secondary'>
+            <Wallet2 className='w-full h-full' />
           </div>
           <Text variant='small' color='text.secondary'>
-            Delegate UM to vote and influence how incentives are distributed in this epoch.
+            Connect Prax Wallet to vote in this epoch and see your rewards from participating.
+          </Text>
+        </div>
+        <div className='flex gap-2'>
+          <ConnectButton actionType='accent' variant='default'>
+            Connect Prax Wallet
+          </ConnectButton>
+          <Link href={PagePath.TournamentRound.replace(':epoch', epoch.toString())}>
+            <Button actionType='default'>Details</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (allNotesVoted) {
+    return (
+      <div className='flex flex-col gap-8'>
+        <div className='flex gap-4 color-text-secondary items-center'>
+          <div className='size-14 text-destructive-light'>
+            <Ban className='w-full h-full' />
+          </div>
+          <Text variant='small' color='text.secondary'>
+            You can’t vote in this epoch because you delegated UM after the epoch started. You’ll be
+            able to vote next epoch.
           </Text>
         </div>
         <div className='flex gap-2'>
           <div className='flex-1'>
-            <Button actionType='accent' icon={ExternalLink}>
-              Delegate
+            <Button actionType='accent' disabled>
+              Vote Now
             </Button>
           </div>
           <div className='flex-1'>
@@ -204,5 +128,84 @@ export const VotingFooter = observer(
         </div>
       </div>
     );
-  },
-);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- temporary
+  if (didVote) {
+    return (
+      <div className='flex flex-col gap-8'>
+        <div className='flex gap-4 color-text-secondary items-center'>
+          <div className='size-10 text-success-light'>
+            <Check className='w-full h-full' />
+          </div>
+          <Text variant='small' color='text.secondary'>
+            You have already voted in this epoch. Come back next epoch to vote again.
+          </Text>
+          <ValueViewComponent valueView={valueView} />
+        </div>
+        <div className='flex gap-2'>
+          <Link href={PagePath.TournamentRound.replace(':epoch', epoch.toString())}>
+            <Button actionType='default'>Details</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (notes?.length) {
+    return (
+      <>
+        <div className='flex flex-col gap-8'>
+          <div className='flex gap-4 color-text-secondary items-center'>
+            <div className='size-10 text-text-secondary'>
+              <Coins className='w-full h-full' />
+            </div>
+            <Text variant='small' color='text.secondary'>
+              You’ve delegated UM and are now eligible to vote in this epoch.
+            </Text>
+            {firstNoteValueView && <ValueViewComponent valueView={firstNoteValueView} />}
+          </div>
+          <div className='flex gap-2 w-full'>
+            <div className='flex-1 max-w-[300px]'>
+              <Button actionType='accent' onClick={openVoteDialog}>
+                Vote Now
+              </Button>
+            </div>
+            <div className='flex-1'>
+              <Link href={PagePath.TournamentRound.replace(':epoch', epoch.toString())}>
+                <Button actionType='default'>Details</Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        <VoteDialogueSelector isOpen={isVoteDialogueOpen} onClose={closeVoteDialog} />
+      </>
+    );
+  }
+
+  return (
+    <div className='flex flex-col gap-8'>
+      <div className='flex gap-4 color-text-secondary items-center'>
+        <div className='size-10 text-text-secondary'>
+          <Coins className='w-full h-full' />
+        </div>
+        <Text variant='small' color='text.secondary'>
+          Delegate UM to vote and influence how incentives are distributed in this epoch.
+        </Text>
+      </div>
+      <div className='flex gap-2'>
+        <div className='flex-1'>
+          <Button actionType='accent' icon={ExternalLink}>
+            Delegate
+          </Button>
+        </div>
+        <div className='flex-1'>
+          <Link href={PagePath.TournamentRound.replace(':epoch', epoch.toString())}>
+            <Button actionType='default'>Details</Button>
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+});

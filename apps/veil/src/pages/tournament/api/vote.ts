@@ -1,6 +1,7 @@
 import {
   TransactionPlannerRequest,
   SpendableNoteRecord,
+  LqtVotingNotesResponse,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { AddressIndex, Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { connectionStore } from '@/shared/model/connection';
@@ -56,4 +57,25 @@ export const voteTournament = async ({
       description: String(e),
     });
   }
+};
+
+export const checkIfAlreadyVoted = ({
+  votingNotes,
+}: {
+  votingNotes: LqtVotingNotesResponse[] | undefined;
+}): boolean => {
+  const stakedNotes = votingNotes
+    ? Array.from(votingNotes.values())
+        .filter(res => !!res.noteRecord)
+        .map(res => ({
+          note: res.noteRecord as SpendableNoteRecord,
+          alreadyVoted: res.alreadyVoted,
+        }))
+    : [];
+
+  // Check if all notes have been used for voting in the current epoch.
+  const allNotesVoted =
+    stakedNotes.length > 0 && stakedNotes.every(({ alreadyVoted }) => alreadyVoted === true);
+
+  return allNotesVoted;
 };
