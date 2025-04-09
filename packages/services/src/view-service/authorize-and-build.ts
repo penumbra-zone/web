@@ -1,10 +1,10 @@
 import type { Impl } from './index.js';
 import { servicesCtx } from '../ctx/prax.js';
-import { optimisticBuild } from './util/build-tx.js';
-import { custodyAuthorize } from './util/custody-authorize.js';
 import { getWitness } from '@penumbra-zone/wasm/build';
 import { Code, ConnectError } from '@connectrpc/connect';
-import { fvkCtx } from '../ctx/full-viewing-key.js';
+import { custodyClientCtx } from '../ctx/custody-client.js';
+import { buildCtx } from '../ctx/build.js';
+import { progressStream } from './util/progress-stream.js';
 
 export const authorizeAndBuild: Impl['authorizeAndBuild'] = async function* (
   { transactionPlan },
@@ -12,19 +12,46 @@ export const authorizeAndBuild: Impl['authorizeAndBuild'] = async function* (
 ) {
   const services = await ctx.values.get(servicesCtx)();
   if (!transactionPlan) {
-    throw new ConnectError('No tx plan in request', Code.InvalidArgument);
+    throw new ConnectError('Transaction plan required', Code.InvalidArgument);
+  }
+
+  const custodyClient = ctx.values.get(custodyClientCtx);
+  if (!custodyClient) {
+    throw new ConnectError('Cannot access custody service', Code.FailedPrecondition);
   }
 
   const { indexedDb } = await services.getWalletServices();
-  const fvk = ctx.values.get(fvkCtx);
-
   const sct = await indexedDb.getStateCommitmentTree();
+
   const witnessData = getWitness(transactionPlan, sct);
 
-  yield* optimisticBuild(
-    transactionPlan,
-    witnessData,
-    custodyAuthorize(ctx, transactionPlan),
-    await fvk(),
+  const authorize = custodyClient
+    .authorize({ plan: transactionPlan }, { timeoutMs: 0 })
+    .then(
+      ({ data }) =>
+        data ?? Promise.reject(ConnectError.from('Unauthorized', Code.PermissionDenied)),
+    );
+
+  const { buildActions, buildTransaction } = ctx.values.get(buildCtx);
+  const tasks = buildActions({ transactionPlan, witnessData }, ctx.signal);
+
+  // status updates
+  yield* progressStream([...tasks, authorize]);
+
+  const transaction = await buildTransaction(
+    {
+      transactionPlan,
+      witnessData,
+      actions: await Promise.all(tasks),
+      authorizationData: await authorize,
+    },
+    ctx.signal,
   );
+
+  yield {
+    status: {
+      case: 'complete',
+      value: { transaction },
+    },
+  };
 };

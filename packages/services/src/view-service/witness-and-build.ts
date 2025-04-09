@@ -1,13 +1,9 @@
 import type { Impl } from './index.js';
 import { servicesCtx } from '../ctx/prax.js';
-
-import { optimisticBuild } from './util/build-tx.js';
-
+import { buildCtx } from '../ctx/build.js';
 import { getWitness } from '@penumbra-zone/wasm/build';
-
 import { Code, ConnectError } from '@connectrpc/connect';
-import { AuthorizationData } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
-import { fvkCtx } from '../ctx/full-viewing-key.js';
+import { progressStream } from './util/progress-stream.js';
 
 export const witnessAndBuild: Impl['witnessAndBuild'] = async function* (
   { authorizationData, transactionPlan },
@@ -15,20 +11,33 @@ export const witnessAndBuild: Impl['witnessAndBuild'] = async function* (
 ) {
   const services = await ctx.values.get(servicesCtx)();
   if (!transactionPlan) {
-    throw new ConnectError('No tx plan', Code.InvalidArgument);
+    throw new ConnectError('Transaction plan required', Code.InvalidArgument);
+  }
+  if (!authorizationData) {
+    throw new ConnectError('Authorization data required', Code.Unauthenticated);
   }
 
   const { indexedDb } = await services.getWalletServices();
-  const fvk = ctx.values.get(fvkCtx);
 
   const sct = await indexedDb.getStateCommitmentTree();
 
   const witnessData = getWitness(transactionPlan, sct);
 
-  yield* optimisticBuild(
-    transactionPlan,
-    witnessData,
-    Promise.resolve(authorizationData ?? new AuthorizationData()),
-    await fvk(),
+  const { buildActions, buildTransaction } = ctx.values.get(buildCtx);
+  const tasks = buildActions({ transactionPlan, witnessData }, ctx.signal);
+
+  // status updates
+  yield* progressStream(tasks);
+
+  const transaction = await buildTransaction(
+    { transactionPlan, witnessData, actions: await Promise.all(tasks), authorizationData },
+    ctx.signal,
   );
+
+  yield {
+    status: {
+      case: 'complete',
+      value: { transaction },
+    },
+  };
 };
