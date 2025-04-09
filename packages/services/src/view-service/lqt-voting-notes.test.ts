@@ -76,7 +76,7 @@ describe('lqtVotingNotes request handler', () => {
 
     const responses: SpendableNoteRecord[] = [];
     const req = new LqtVotingNotesRequest({});
-    for await (const {noteRecord, alreadyVoted} of lqtVotingNotes(req, mockCtx)) {
+    for await (const { noteRecord, alreadyVoted } of lqtVotingNotes(req, mockCtx)) {
       if (!alreadyVoted) {
         responses.push(noteRecord as SpendableNoteRecord);
       }
