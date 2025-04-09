@@ -244,73 +244,68 @@ export const AssetRow = observer(
             </div>
           ))}
         {isExpanded &&
-          asset.shieldedBalances
-            .map(bal => {
-              console.log(bal);
-              return bal;
-            })
-            .map(bal => (
-              <div
-                key={bal.valueView.toJsonString()}
-                className={'col-span-6 grid grid-cols-subgrid bg-other-tonalFill5'}
-              >
-                <TableCell variant={'lastCell'}>
-                  <div className=''>
-                    <ValueViewComponent
-                      valueView={bal.valueView}
-                      trailingZeros={false}
-                      priority={'primary'}
-                      context={'table'}
-                    />
-                    <Text color={'text.secondary'} small>
-                      on Penumbra
+          asset.shieldedBalances.map(bal => (
+            <div
+              key={bal.valueView.toJsonString()}
+              className={'col-span-6 grid grid-cols-subgrid bg-other-tonalFill5'}
+            >
+              <TableCell variant={'lastCell'}>
+                <div className=''>
+                  <ValueViewComponent
+                    valueView={bal.valueView}
+                    trailingZeros={false}
+                    priority={'primary'}
+                    context={'table'}
+                  />
+                  <Text color={'text.secondary'} small>
+                    on Penumbra
+                  </Text>
+                  {/* <UnshieldButton asset={asset} />*/}
+                </div>
+              </TableCell>
+              <TableCell variant={'lastCell'}>
+                <Text variant={'smallTechnical'} color='text.secondary'></Text>
+              </TableCell>
+              <TableCell variant={'lastCell'}>
+                {price ? (
+                  <div className='flex flex-col'>
+                    <Text variant={'smallTechnical'} color='text.secondary'>
+                      {price.price.toFixed(4)} {price.quoteSymbol}
                     </Text>
-                    {/* <UnshieldButton asset={asset} />*/}
                   </div>
-                </TableCell>
-                <TableCell variant={'lastCell'}>
-                  <Text variant={'smallTechnical'} color='text.secondary'></Text>
-                </TableCell>
-                <TableCell variant={'lastCell'}>
-                  {price ? (
-                    <div className='flex flex-col'>
-                      <Text variant={'smallTechnical'} color='text.secondary'>
-                        {price.price.toFixed(4)} {price.quoteSymbol}
-                      </Text>
-                    </div>
-                  ) : (
-                    <Text variant={'smallTechnical'} color='text.secondary'>
-                      -
-                    </Text>
-                  )}
-                </TableCell>
-                <TableCell variant={'lastCell'}>
-                  {shieldedValue > 0 && price ? (
-                    <Text variant={'smallTechnical'} color='text.secondary'>
-                      {shieldedValue.toFixed(2)} {price.quoteSymbol}
-                    </Text>
-                  ) : (
-                    <Text variant={'smallTechnical'} color='text.secondary'>
-                      -
-                    </Text>
-                  )}
-                </TableCell>
-                <TableCell variant={'lastCell'}>
-                  <Text variant={'smallTechnical'} color='text.secondary'></Text>
-                </TableCell>
-                <TableCell variant={'lastCell'}>
-                  {totalValue > 0 && price ? (
-                    <Text variant={'smallTechnical'} color='text.secondary'>
-                      {totalValue.toFixed(2)} {price.quoteSymbol}
-                    </Text>
-                  ) : (
-                    <Text variant={'smallTechnical'} color='text.secondary'>
-                      -
-                    </Text>
-                  )}
-                </TableCell>
-              </div>
-            ))}
+                ) : (
+                  <Text variant={'smallTechnical'} color='text.secondary'>
+                    -
+                  </Text>
+                )}
+              </TableCell>
+              <TableCell variant={'lastCell'}>
+                {shieldedValue > 0 && price ? (
+                  <Text variant={'smallTechnical'} color='text.secondary'>
+                    {shieldedValue.toFixed(2)} {price.quoteSymbol}
+                  </Text>
+                ) : (
+                  <Text variant={'smallTechnical'} color='text.secondary'>
+                    -
+                  </Text>
+                )}
+              </TableCell>
+              <TableCell variant={'lastCell'}>
+                <Text variant={'smallTechnical'} color='text.secondary'></Text>
+              </TableCell>
+              <TableCell variant={'lastCell'}>
+                {totalValue > 0 && price ? (
+                  <Text variant={'smallTechnical'} color='text.secondary'>
+                    {totalValue.toFixed(2)} {price.quoteSymbol}
+                  </Text>
+                ) : (
+                  <Text variant={'smallTechnical'} color='text.secondary'>
+                    -
+                  </Text>
+                )}
+              </TableCell>
+            </div>
+          ))}
       </div>
     );
   },
