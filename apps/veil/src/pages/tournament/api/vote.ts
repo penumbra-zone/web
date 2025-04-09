@@ -34,12 +34,14 @@ export const voteTournament = async ({
     });
 
     // Construct the LQT voting actions
-    const actionLiquidityTournamentVote = [{
-      incentivized: denom,
-      rewardsRecipient,
-      stakedNotes,
-      epochIndex,
-    }];
+    const actionLiquidityTournamentVote = [
+      {
+        incentivized: denom,
+        rewardsRecipient,
+        stakedNotes,
+        epochIndex,
+      },
+    ];
 
     const planReq = new TransactionPlannerRequest({
       actionLiquidityTournamentVote,

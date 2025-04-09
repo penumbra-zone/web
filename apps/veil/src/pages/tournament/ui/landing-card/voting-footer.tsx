@@ -1,21 +1,43 @@
 import Link from 'next/link';
+import { useMemo, useState } from 'react';
+import { observer } from 'mobx-react-lite';
+import { Ban, Coins, Check, Wallet2, ExternalLink } from 'lucide-react';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
-import { Ban, Coins, Check, Wallet2, ExternalLink } from 'lucide-react';
-import { observer } from 'mobx-react-lite';
-import { connectionStore } from '@/shared/model/connection';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { ConnectButton } from '@/features/connect/connect-button';
+import { connectionStore } from '@/shared/model/connection';
 import { PagePath } from '@/shared/const/pages';
-import { useState } from 'react';
+import { useLQTNotes } from '../../api/use-voting-notes';
 import { VoteDialogueSelector } from '../vote-dialogue';
+import { useGetMetadata } from '@/shared/api/assets';
 
-// TODO: DRY – https://github.com/penumbra-zone/web/pull/2144#discussion_r2020747784
 export const VotingFooter = observer(
   ({ isBanned, epoch }: { isBanned: boolean; epoch: number }) => {
-    const { connected } = connectionStore;
+    const { connected, subaccount } = connectionStore;
+
+    const getMetadata = useGetMetadata();
+    const { notes } = useLQTNotes(subaccount);
+
+    const firstNoteValueView = useMemo(() => {
+      const value = notes?.[0]?.noteRecord?.note?.value;
+      const metadata = value?.assetId && getMetadata(value.assetId);
+      if (!value || !metadata) {
+        return undefined;
+      }
+      return new ValueView({
+        valueView: {
+          case: 'knownAssetId',
+          value: {
+            amount: value.amount,
+            metadata,
+          },
+        },
+      });
+    }, [getMetadata, notes]);
+
     const [isVoteDialogueOpen, setIsVoteDialogOpen] = useState(false);
 
     const openVoteDialog = () => {
@@ -27,7 +49,6 @@ export const VotingFooter = observer(
     };
 
     // dummy data
-    const delegatedAmount = 1000;
     const didVote = false;
     const valueView = new ValueView({
       valueView: {
@@ -54,6 +75,29 @@ export const VotingFooter = observer(
       },
     });
 
+    if (!connected) {
+      return (
+        <div className='flex flex-col gap-8'>
+          <div className='flex gap-4 color-text-secondary items-center'>
+            <div className='size-8 text-text-secondary'>
+              <Wallet2 className='w-full h-full' />
+            </div>
+            <Text variant='small' color='text.secondary'>
+              Connect Prax Wallet to vote in this epoch and see your rewards from participating.
+            </Text>
+          </div>
+          <div className='flex gap-2'>
+            <ConnectButton actionType='accent' variant='default'>
+              Connect Prax Wallet
+            </ConnectButton>
+            <Link href={PagePath.TournamentRound.replace(':epoch', epoch.toString())}>
+              <Button actionType='default'>Details</Button>
+            </Link>
+          </div>
+        </div>
+      );
+    }
+
     if (isBanned) {
       return (
         <div className='flex flex-col gap-8'>
@@ -70,29 +114,6 @@ export const VotingFooter = observer(
             <Button actionType='accent' disabled>
               Vote Now
             </Button>
-            <Link href={PagePath.TournamentRound.replace(':epoch', epoch.toString())}>
-              <Button actionType='default'>Details</Button>
-            </Link>
-          </div>
-        </div>
-      );
-    }
-
-    if (!connected) {
-      return (
-        <div className='flex flex-col gap-8'>
-          <div className='flex gap-4 color-text-secondary items-center'>
-            <div className='size-8 text-text-secondary'>
-              <Wallet2 className='w-full h-full' />
-            </div>
-            <Text variant='small' color='text.secondary'>
-              Connect Prax Wallet to vote in this epoch.
-            </Text>
-          </div>
-          <div className='flex gap-2'>
-            <ConnectButton actionType='accent' variant='default'>
-              Connect Prax Wallet
-            </ConnectButton>
             <Link href={PagePath.TournamentRound.replace(':epoch', epoch.toString())}>
               <Button actionType='default'>Details</Button>
             </Link>
@@ -123,8 +144,7 @@ export const VotingFooter = observer(
       );
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- temporary
-    if (delegatedAmount) {
+    if (notes?.length) {
       return (
         <>
           <div className='flex flex-col gap-8'>
@@ -135,7 +155,7 @@ export const VotingFooter = observer(
               <Text variant='small' color='text.secondary'>
                 You’ve delegated UM and are now eligible to vote in this epoch.
               </Text>
-              <ValueViewComponent valueView={valueView} />
+              {firstNoteValueView && <ValueViewComponent valueView={firstNoteValueView} />}
             </div>
             <div className='flex gap-2 w-full'>
               <div className='flex-1 max-w-[300px]'>

@@ -1,5 +1,4 @@
-import { ViewService } from '@penumbra-zone/protobuf';
-import { SctService } from '@penumbra-zone/protobuf';
+import { ViewService, SctService } from '@penumbra-zone/protobuf';
 import { penumbra } from '@/shared/const/penumbra';
 import { connectionStore } from '@/shared/model/connection';
 import { useQuery } from '@tanstack/react-query';
@@ -10,14 +9,14 @@ import { statusStore } from '@/shared/model/status';
 
 const fetchQuery = async (
   subaccount?: number,
-): Promise<{ notes: Map<string, LqtVotingNotesResponse>; epochIndex?: bigint }> => {
+): Promise<{ notes: LqtVotingNotesResponse[]; epochIndex?: bigint }> => {
   const accountFilter =
     typeof subaccount === 'undefined' ? undefined : new AddressIndex({ account: subaccount });
 
   const { latestKnownBlockHeight } = statusStore
 
-  let epoch = await penumbra.service(SctService).epochByHeight({ height: latestKnownBlockHeight});
-  let epochIndex = epoch.epoch?.index;
+  const epoch = await penumbra.service(SctService).epochByHeight({ height: latestKnownBlockHeight});
+  const epochIndex = epoch.epoch?.index;
 
   const notes = await Array.fromAsync(
     penumbra.service(ViewService).lqtVotingNotes({ accountFilter, epochIndex }),
