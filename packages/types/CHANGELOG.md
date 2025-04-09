@@ -1,5 +1,17 @@
 # @penumbra-zone/types
 
+## 32.1.0
+
+### Minor Changes
+
+- b0e0eef: Add exponentialNotation to round fn
+- 85022e1: remove `getUnbondingStartHeight` export from assets regex module
+
+### Patch Changes
+
+- 5c45f2c: Fix `pnum` failing on `undefined` in denom exponent
+- 3c48120: Fix Swap getters for ActionViews
+
 ## 32.0.0
 
 ### Minor Changes
