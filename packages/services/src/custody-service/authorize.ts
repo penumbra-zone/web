@@ -1,27 +1,25 @@
 import type { Impl } from './index.js';
-import { approverCtx } from '../ctx/approver.js';
-import { authorizePlan } from '@penumbra-zone/wasm/build';
 import { Code, ConnectError } from '@connectrpc/connect';
-import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { fvkCtx } from '../ctx/full-viewing-key.js';
-import { skCtx } from '../ctx/spend-key.js';
-import { assertValidAuthorizeRequest } from './validation/authorize.js';
+import { authorizeCtx } from '../ctx/authorize.js';
+import { assertValidActionPlans } from './util/validate-request.js';
+import { assertNonzeroSignature, assertNonzeroEffect } from './util/validate-response.js';
 
+/**
+ * This is essentially a configurable stub. It performs some basic validation,
+ * and then trusts the service context to provide an appropriate implementation.
+ */
 export const authorize: Impl['authorize'] = async (req, ctx) => {
   if (!req.plan) {
     throw new ConnectError('No plan included in request', Code.InvalidArgument);
   }
 
-  const fullViewingKey = await ctx.values.get(fvkCtx)();
-  assertValidAuthorizeRequest(req, fullViewingKey);
+  const fvk = await ctx.values.get(fvkCtx)();
+  assertValidActionPlans(fvk, req.plan.actions);
 
-  const choice = await ctx.values.get(approverCtx)(req);
-  if (choice !== UserChoice.Approved) {
-    throw new ConnectError('Transaction was not approved', Code.PermissionDenied);
-  }
+  const res = await ctx.values.get(authorizeCtx)(req);
+  assertNonzeroEffect(res.data?.effectHash);
+  assertNonzeroSignature(res.data);
 
-  const spendKey = await ctx.values.get(skCtx)();
-
-  const data = authorizePlan(spendKey, req.plan);
-  return { data };
+  return res;
 };
