@@ -115,6 +115,7 @@ export const IbcRelayAction = ({ value, getMetadata }: IbcRelayActionProps) => {
           metadata:
             asset ??
             new Metadata({
+              base: assetDenom,
               display: assetDenom,
               symbol: data.tokenData.denom,
               denomUnits: [
