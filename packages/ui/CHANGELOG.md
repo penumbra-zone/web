@@ -1,5 +1,11 @@
 # @penumbra-zone/ui
 
+## 13.16.0
+
+### Minor Changes
+
+- b430e10: Implement `LiquidityTournamentVoteAction` ActionView component
+
 ## 13.15.0
 
 ### Minor Changes

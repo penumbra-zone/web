@@ -119,6 +119,7 @@ export const TxViewer = observer(({ txInfo }: { txInfo?: TransactionInfo }) => {
                 info={
                   <Density slim>
                     <AddressViewComponent
+                      truncate
                       addressView={txv.bodyView.memoView.memoView.value.plaintext.returnAddress}
                     />
                   </Density>
@@ -146,9 +147,11 @@ export const TxViewer = observer(({ txInfo }: { txInfo?: TransactionInfo }) => {
           {txv?.bodyView?.actionViews.map((action, index) => (
             <Fragment key={index}>
               <ActionView action={action} getMetadata={getMetadata} />
-              <div className='h-2 w-full px-5'>
-                <div className='h-full w-px border-l border-solid border-l-other-tonalStroke' />
-              </div>
+              {index !== (txv.bodyView?.actionViews.length ?? 1) - 1 && (
+                <div className='h-2 w-full px-5'>
+                  <div className='h-full w-px border-l border-solid border-l-other-tonalStroke' />
+                </div>
+              )}
             </Fragment>
           ))}
         </div>

@@ -43,7 +43,9 @@ function pnum(
     const amount = getAmount(input);
     value = new BigNumber(joinLoHi(amount.lo, amount.hi).toString());
     exponent =
-      input.valueView.case === 'knownAssetId' ? getDisplayDenomExponentFromValueView(input) : 0;
+      input.valueView.case === 'knownAssetId'
+        ? (getDisplayDenomExponentFromValueView.optional(input) ?? 0)
+        : 0;
   } else if (
     input instanceof Amount ||
     (typeof input === 'object' &&

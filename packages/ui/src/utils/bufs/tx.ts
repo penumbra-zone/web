@@ -10,7 +10,7 @@ import { AMOUNT_123_456_789, AMOUNT_999 } from './amount';
 import {
   SwapAction,
   IbcRelayMsgUpdateClientAction,
-  IbcRelayMsgRecvPacketAction,
+  OsmoIbcRelayMsgRecvPacketAction,
 } from './action-view';
 import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 import { PENUMBRA_VALUE_VIEW, USDC_VALUE_VIEW } from './value-view';
@@ -68,7 +68,7 @@ export const TxIbcRelay = new TransactionInfo({
           },
         },
       },
-      actionViews: [IbcRelayMsgUpdateClientAction, IbcRelayMsgRecvPacketAction],
+      actionViews: [IbcRelayMsgUpdateClientAction, OsmoIbcRelayMsgRecvPacketAction],
     },
   },
 });

@@ -111,12 +111,16 @@ export const VotingFooter = observer(
             </Text>
           </div>
           <div className='flex gap-2'>
-            <Button actionType='accent' disabled>
-              Vote Now
-            </Button>
-            <Link href={PagePath.TournamentRound.replace(':epoch', epoch.toString())}>
-              <Button actionType='default'>Details</Button>
-            </Link>
+            <div className='flex-1'>
+              <Button actionType='accent' disabled>
+                Vote Now
+              </Button>
+            </div>
+            <div className='flex-1'>
+              <Link href={PagePath.TournamentRound.replace(':epoch', epoch.toString())}>
+                <Button actionType='default'>Details</Button>
+              </Link>
+            </div>
           </div>
         </div>
       );
@@ -187,12 +191,16 @@ export const VotingFooter = observer(
           </Text>
         </div>
         <div className='flex gap-2'>
-          <Button actionType='accent' icon={ExternalLink}>
-            Delegate
-          </Button>
-          <Link href={PagePath.TournamentRound.replace(':epoch', epoch.toString())}>
-            <Button actionType='default'>Details</Button>
-          </Link>
+          <div className='flex-1'>
+            <Button actionType='accent' icon={ExternalLink}>
+              Delegate
+            </Button>
+          </div>
+          <div className='flex-1'>
+            <Link href={PagePath.TournamentRound.replace(':epoch', epoch.toString())}>
+              <Button actionType='default'>Details</Button>
+            </Link>
+          </div>
         </div>
       </div>
     );
