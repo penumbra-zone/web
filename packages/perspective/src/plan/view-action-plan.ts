@@ -38,6 +38,10 @@ import {
   DelegatorVotePlan,
   DelegatorVoteView,
 } from '@penumbra-zone/protobuf/penumbra/core/component/governance/v1/governance_pb';
+import {
+  ActionLiquidityTournamentVotePlan,
+  ActionLiquidityTournamentVoteView,
+} from '@penumbra-zone/protobuf/penumbra/core/component/funding/v1/funding_pb';
 
 const getValueView = async (
   value: Value | undefined,
@@ -251,6 +255,29 @@ const getDelegatorVoteView = async (
   });
 };
 
+const getLQTVoteView = async (
+  plan: ActionLiquidityTournamentVotePlan,
+  denomMetadataByAssetId: (id: AssetId) => Promise<Metadata>,
+  fullViewingKey: FullViewingKey,
+): Promise<ActionLiquidityTournamentVoteView> => {
+  return new ActionLiquidityTournamentVoteView({
+    liquidityTournamentVote: {
+      case: 'visible',
+      value: {
+        note: await getNoteView(plan.stakedNote, denomMetadataByAssetId, fullViewingKey),
+        vote: {
+          body: {
+            incentivized: plan.incentivized,
+            value: plan.stakedNote?.value,
+            startPosition: plan.startPosition,
+            rewardsRecipient: plan.rewardsRecipient,
+          },
+        },
+      },
+    },
+  });
+};
+
 export const viewActionPlan =
   (denomMetadataByAssetId: (id: AssetId) => Promise<Metadata>, fullViewingKey: FullViewingKey) =>
   async (actionPlan: ActionPlan): Promise<ActionView> => {
@@ -456,7 +483,11 @@ export const viewActionPlan =
         return new ActionView({
           actionView: {
             case: 'actionLiquidityTournamentVote',
-            value: {},
+            value: await getLQTVoteView(
+              actionPlan.action.value,
+              denomMetadataByAssetId,
+              fullViewingKey,
+            ),
           },
         });
       }
