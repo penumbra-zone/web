@@ -1,40 +1,30 @@
-import { ValidatorInfo } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
-import { SliceCreator } from '..';
-import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
-import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { planBuildBroadcast } from '../helpers';
-import {
-  DelegationsByAddressIndexRequest_Filter,
-  TransactionPlannerRequest,
-  UnbondingTokensByAddressIndexResponse,
-} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { BigNumber } from 'bignumber.js';
-import { assembleUndelegateClaimRequest } from './assemble-undelegate-claim-request';
-import throttle from 'lodash/throttle';
-import {
-  getAmount,
-  getAssetIdFromValueView,
-  getDisplayDenomExponentFromValueView,
-  getValidatorInfoFromValueView,
-} from '@penumbra-zone/getters/value-view';
-import {
-  getRateData,
-  getVotingPowerFromValidatorInfo,
-} from '@penumbra-zone/getters/validator-info';
-import {
-  getVotingPowerByValidatorInfo,
-  isDelegationTokenForValidator,
-  VotingPowerAsIntegerPercentage,
-} from '@penumbra-zone/types/staking';
-import { joinLoHiAmount } from '@penumbra-zone/types/amount';
-import { splitLoHi, toBaseUnit } from '@penumbra-zone/types/lo-hi';
-import { ViewService } from '@penumbra-zone/protobuf';
 import { getValueView as getValueViewFromDelegationsByAddressIndexResponse } from '@penumbra-zone/getters/delegations-by-address-index-response';
 import { getValueView as getValueViewFromUnbondingTokensByAddressIndexResponse } from '@penumbra-zone/getters/unbonding-tokens-by-address-index-response';
+import { getVotingPowerFromValidatorInfo } from '@penumbra-zone/getters/validator-info';
+import { getAmount, getValidatorInfoFromValueView } from '@penumbra-zone/getters/value-view';
+import { ViewService } from '@penumbra-zone/protobuf';
+import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { ValidatorInfo } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
+import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import {
+  DelegationsByAddressIndexRequest_Filter,
+  UnbondingTokensByAddressIndexResponse,
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { joinLoHiAmount } from '@penumbra-zone/types/amount';
+import { splitLoHi } from '@penumbra-zone/types/lo-hi';
+import {
+  getVotingPowerByValidatorInfo,
+  VotingPowerAsIntegerPercentage,
+} from '@penumbra-zone/types/staking';
+import throttle from 'lodash/throttle';
+import { SliceCreator } from '..';
 import { getStakingTokenMetadata } from '../../fetchers/registry';
-import { zeroValueView } from '../../utils/zero-value-view';
 import { penumbra } from '../../penumbra';
+import { zeroValueView } from '../../utils/zero-value-view';
+import { planBuildBroadcast } from '../helpers';
+import { assembleDelegateRequest } from './assemble-delegate-request';
+import { assembleUndelegateClaimRequest } from './assemble-undelegate-claim-request';
+import { assembleUndelegateRequest } from './assemble-undelegate-request';
 
 interface UnbondingTokensForAccount {
   claimable: {
@@ -368,49 +358,6 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
   error: undefined,
   votingPowerByValidatorInfo: {},
 });
-
-const assembleDelegateRequest = (
-  { account, amount, validatorInfo }: StakingSlice,
-  stakingAssetMetadata: Metadata,
-) => {
-  return new TransactionPlannerRequest({
-    delegations: [
-      {
-        amount: toBaseUnit(BigNumber(amount), getDisplayDenomExponent(stakingAssetMetadata)),
-        rateData: getRateData(validatorInfo),
-      },
-    ],
-    source: { account },
-  });
-};
-
-const assembleUndelegateRequest = ({
-  account,
-  amount,
-  delegationsByAccount,
-  validatorInfo,
-}: StakingSlice) => {
-  const delegation = delegationsByAccount
-    .get(account)
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: justify
-    ?.find(delegation => isDelegationTokenForValidator(delegation, validatorInfo!));
-  if (!delegation) {
-    throw new Error('Tried to assemble undelegate request from account with no delegation tokens');
-  }
-
-  return new TransactionPlannerRequest({
-    undelegations: [
-      {
-        rateData: getRateData(validatorInfo),
-        value: {
-          amount: toBaseUnit(BigNumber(amount), getDisplayDenomExponentFromValueView(delegation)),
-          assetId: getAssetIdFromValueView(delegation),
-        },
-      },
-    ],
-    source: { account },
-  });
-};
 
 /**
  * Function to use with `reduce()` over an array of `BalancesByAccount` objects.
