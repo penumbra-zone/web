@@ -2,6 +2,7 @@ import { observer } from 'mobx-react-lite';
 import { UnifiedAsset } from '@/pages/portfolio/api/use-unified-assets.ts';
 import { pnum } from '@penumbra-zone/types/pnum';
 import { ShieldButton } from '@/pages/portfolio/ui/shield-unshield.tsx';
+import { UnshieldButton } from '@/features/ibc/unshield-button';
 import { TableCell } from '@penumbra-zone/ui/TableCell';
 import { Text } from '@penumbra-zone/ui/Text';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
@@ -91,15 +92,12 @@ export const AssetRow = observer(
           <TableCell variant={variant}>
             <div className='flex items-center'>
               {hasShieldedBalance ? (
-                <>
-                  <ValueViewComponent
-                    valueView={totalShieldedBalanceValueView}
-                    trailingZeros={false}
-                    priority={'primary'}
-                    context={'table'}
-                  />
-                  {/* <UnshieldButton asset={asset} />*/}
-                </>
+                <ValueViewComponent
+                  valueView={totalShieldedBalanceValueView}
+                  trailingZeros={false}
+                  priority={'primary'}
+                  context={'table'}
+                />
               ) : (
                 <Text variant={'smallTechnical'} color='text.secondary'>
                   -
@@ -235,18 +233,20 @@ export const AssetRow = observer(
           asset.shieldedBalances.map(bal => (
             <div key={bal.valueView.toJsonString()} className={'col-span-6 grid grid-cols-subgrid'}>
               <TableCell variant={'lastCell'}>
-                <div className=''>
-                  <ValueViewComponent
-                    valueView={bal.valueView}
-                    trailingZeros={false}
-                    priority={'tertiary'}
-                    density={'slim'}
-                    context={'table'}
-                  />
-                  <Text color={'text.secondary'} small>
-                    on Penumbra
-                  </Text>
-                  {/* <UnshieldButton asset={asset} />*/}
+                <div className='flex justify-between items-center w-full'>
+                  <div>
+                    <ValueViewComponent
+                      valueView={bal.valueView}
+                      trailingZeros={false}
+                      priority={'tertiary'}
+                      density={'slim'}
+                      context={'table'}
+                    />
+                    <Text color={'text.secondary'} small>
+                      on Penumbra
+                    </Text>
+                  </div>
+                  <UnshieldButton asset={asset} />
                 </div>
               </TableCell>
               <TableCell variant={'lastCell'}>
