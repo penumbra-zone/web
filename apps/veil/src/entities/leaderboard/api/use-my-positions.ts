@@ -1,18 +1,21 @@
 import { useQuery } from '@tanstack/react-query';
-import { ViewService } from '@penumbra-zone/protobuf';
-import { LatestSwapsResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { DirectedTradingPair } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import type { MyExecutionsRequestBody } from '@/shared/api/server/my-executions';
 import type { RecentExecution } from '@/shared/api/server/recent-executions';
 import { connectionStore } from '@/shared/model/connection';
-import { penumbra } from '@/shared/const/penumbra';
 import { useRefetchOnNewBlock } from '@/shared/api/compact-block';
 import { apiPostFetch } from '@/shared/utils/api-fetch';
 import { usePathToMetadata } from '@/pages/trade/model/use-path';
 import { queryClient } from '@/shared/const/queryClient';
 import { pnum } from '@penumbra-zone/types/pnum';
+import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { LatestSwapsResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { penumbra } from '@/shared/const/penumbra';
+import { ViewService } from '@penumbra-zone/protobuf';
+import { DirectedTradingPair } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
+
+const MY_TRADES_KEY = 'my-trades';
+const MY_EXECUTIONS_KEY = 'my-executions';
 
 const fetchQuery = async (
   subaccount = 0,
@@ -44,13 +47,10 @@ const fetchQuery = async (
   return swaps.flat();
 };
 
-const MY_TRADES_KEY = 'my-trades';
-const MY_EXECUTIONS_KEY = 'my-executions';
-
 /**
  * Must be used within the `observer` mobX HOC
  */
-export const useLatestSwaps = (subaccount?: number) => {
+export const useMyPositions = (subaccount?: number) => {
   const { baseAsset, quoteAsset, baseSymbol, quoteSymbol } = usePathToMetadata();
 
   const myTradesQuery = useQuery({
