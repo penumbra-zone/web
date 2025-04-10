@@ -153,6 +153,11 @@ describe('round function', () => {
       options: { value: 2.9, decimals: 0, roundingMode: 'down' },
       expected: '2',
     },
+    {
+      description: 'should handle empty string',
+      options: { value: '', decimals: 2, roundingMode: 'half-up' },
+      expected: '',
+    },
   ];
 
   testCases.forEach(({ description, options, expected }) => {
