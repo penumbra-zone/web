@@ -43,6 +43,10 @@ export function round({
   trailingZeros = false,
   exponentialNotation = true,
 }: RoundOptions): string {
+  if (typeof value === 'string' && value.length === 0) {
+    return '';
+  }
+
   const decimalValue = new Decimal(value);
 
   // Determine if exponential notation is needed
