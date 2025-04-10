@@ -1,5 +1,13 @@
 # @penumbra-zone/ui
 
+## 17.1.3
+
+### Patch Changes
+
+- Updated dependencies [ce4c43e]
+  - @penumbra-zone/types@32.2.0
+  - @penumbra-zone/perspective@53.0.0
+
 ## 17.1.2
 
 ### Patch Changes

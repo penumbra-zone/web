@@ -1,5 +1,11 @@
 # @penumbra-zone/types
 
+## 32.2.0
+
+### Minor Changes
+
+- ce4c43e: Add empty string case to round fn
+
 ## 32.1.0
 
 ### Minor Changes
