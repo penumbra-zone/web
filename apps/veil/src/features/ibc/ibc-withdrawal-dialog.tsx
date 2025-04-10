@@ -5,29 +5,17 @@ import { Button } from '@penumbra-zone/ui/Button';
 import { TextInput } from '@penumbra-zone/ui/TextInput';
 import { Text } from '@penumbra-zone/ui/Text';
 import { Card } from '@penumbra-zone/ui/Card';
-import { LockOpen2Icon } from '@radix-ui/react-icons';
 
 import { ChainSelector } from './chain-selector';
 import { InputToken } from './input-token';
 import { InputBlock } from './input-block';
-
-// This would come from a store or hook in the actual implementation
-interface Asset {
-  symbol: string;
-  displayDenom?: string;
-  balance?: string;
-  metadata: {
-    display: string;
-    base: string;
-    symbol: string;
-  };
-}
+import { PublicBalance } from '@/pages/portfolio/api/use-unified-assets.ts';
 
 interface IbcWithdrawalDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  preselectedAsset?: Asset;
-  assets: Asset[];
+  preselectedAsset?: PublicBalance;
+  assets: PublicBalance[];
 }
 
 export const IbcWithdrawalDialog = observer(
@@ -36,7 +24,7 @@ export const IbcWithdrawalDialog = observer(
     const [selectedChain, setSelectedChain] = useState<string>('');
     const [destinationAddress, setDestinationAddress] = useState('');
     const [amount, setAmount] = useState('');
-    const [selection, setSelection] = useState<Asset | null>(preselectedAsset ?? null);
+    const [selection, setSelection] = useState<PublicBalance | null>(preselectedAsset ?? null);
 
     // Reset form when opening with a preselected asset
     useEffect(() => {
@@ -54,9 +42,9 @@ export const IbcWithdrawalDialog = observer(
     };
 
     // Placeholder for the actual withdrawal function
-    const handleWithdraw = async () => {
+    const handleWithdraw = () => {
       try {
-        console.log('Withdrawal initiated', {
+        console.debug('Withdrawal initiated', {
           asset: selection,
           amount,
           destinationChain: selectedChain,
@@ -80,7 +68,7 @@ export const IbcWithdrawalDialog = observer(
               className='flex flex-col gap-4 p-4'
               onSubmit={e => {
                 e.preventDefault();
-                void handleWithdraw();
+                handleWithdraw();
               }}
             >
               <ChainSelector selectedChain={selectedChain} onChainSelect={setSelectedChain} />
@@ -140,10 +128,8 @@ export const IbcWithdrawalDialog = observer(
                   !!Object.values(validationErrors).find(Boolean) ||
                   !selection
                 }
-                className='flex items-center gap-2'
                 actionType='unshield'
               >
-                <LockOpen2Icon />
                 <span>Unshield Assets</span>
               </Button>
             </form>

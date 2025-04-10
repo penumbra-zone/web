@@ -3,7 +3,8 @@ import { Text } from '@penumbra-zone/ui/Text';
 import { Button } from '@penumbra-zone/ui/Button';
 import { TextInput } from '@penumbra-zone/ui/TextInput';
 import { InputBlock } from './input-block';
-import { UnifiedAsset } from '@/pages/portfolio/api/use-unified-assets';
+import { PublicBalance } from '@/pages/portfolio/api/use-unified-assets';
+import { getMetadata } from '@penumbra-zone/getters/value-view';
 
 interface Validation {
   type: 'error' | 'warning';
@@ -18,9 +19,9 @@ interface InputTokenProps {
   value: string;
   onInputChange: (value: string) => void;
   validations?: Validation[];
-  balances: UnifiedAsset[];
-  selection?: UnifiedAsset | null;
-  setSelection: (asset: UnifiedAsset | null) => void;
+  balances: PublicBalance[];
+  selection?: PublicBalance | null;
+  setSelection: (asset: PublicBalance | null) => void;
 }
 
 export const InputToken = ({
@@ -46,7 +47,7 @@ export const InputToken = ({
           type='number'
           endAdornment={
             <Button onClick={() => setIsOpen(!isOpen)} priority='secondary'>
-              {selection ? selection.metadata.display : 'Select asset'}
+              {selection ? getMetadata(selection.valueView).display : 'Select asset'}
               <span className='ml-2'>▼</span>
             </Button>
           }
@@ -65,8 +66,12 @@ export const InputToken = ({
                   priority='secondary'
                 >
                   <div className='flex items-center justify-between w-full'>
-                    <Text color='text.primary'>{asset.metadata.display}</Text>
-                    <Text color='text.secondary'>{asset.symbol}</Text>
+                    <Text color='text.primary'>
+                      {selection ? getMetadata(selection.valueView).display : ''}
+                    </Text>
+                    <Text color='text.secondary'>
+                      {selection ? getMetadata(selection.valueView).symbol : ''}
+                    </Text>
                   </div>
                 </Button>
               ))}
