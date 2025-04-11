@@ -67,8 +67,8 @@ export const checkIfAlreadyVoted = ({
   const stakedNotes =
     votingNotes
       ?.filter(res => res.noteRecord !== undefined)
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- filtering above
       .map(res => ({
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- filtering above
         note: res.noteRecord!,
         alreadyVoted: res.alreadyVoted,
       })) ?? [];
