@@ -39,8 +39,7 @@ export const Explainer = () => {
               Liquidity Providers
             </Text>
             <Text variant='small' color='text.secondary'>
-              Provide liquidity on Penumbra Veil to facilitate trading. Earn rewards from trade
-              volume in LPs that hold voted assets.
+              Provide liquidity on Penumbra Veil to deepen liquidity for trading. Earn rewards from trade volume in LPs that provide assets you vote on.
             </Text>
           </div>
         </div>
@@ -57,8 +56,7 @@ export const Explainer = () => {
               Automatic Rewards Distribution
             </Text>
             <Text variant='small' color='text.secondary'>
-              Delegators receive rewards directly to the balance, and Liquidity Providers get
-              rewards in LP reserves and withdraw when managing positions.
+              Delegators receive rewards directly to their balance, and Liquidity Providers get rewards distributed to their LP reserves and can withdraw when managing positions.
             </Text>
           </div>
         </div>

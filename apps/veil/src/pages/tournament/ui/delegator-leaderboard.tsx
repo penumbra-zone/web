@@ -1,7 +1,7 @@
 import cn from 'clsx';
 import { useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, ExternalLink } from 'lucide-react';
 import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { getAddressIndex, getAddress } from '@penumbra-zone/getters/address-view';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
@@ -80,11 +80,17 @@ export const DelegatorLeaderboard = observer(() => {
               </TableCell>
               <TableCell cell loading={isLoading}>
                 {!isLoading && (
-                  <AddressViewComponent
-                    addressView={row.address}
-                    truncate
-                    hideIcon={isExternal(row.address)}
-                  />
+                  <>
+                    <AddressViewComponent
+                      addressView={row.address}
+                      truncate
+                      hideIcon={isExternal(row.address)}
+                      copyable={false}
+                    />
+                    <i className='flex items-center justify-center size-4 text-text-secondary'>
+                      <ExternalLink className='size-3' />
+                    </i>
+                  </>
                 )}
               </TableCell>
               <TableCell cell loading={isLoading}>

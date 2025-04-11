@@ -2,20 +2,20 @@ import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { Ban, Coins, Check, Wallet2, ExternalLink } from 'lucide-react';
+import { ValueView, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
-import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { ConnectButton } from '@/features/connect/connect-button';
 import { connectionStore } from '@/shared/model/connection';
-import { PagePath } from '@/shared/const/pages';
-import { useLQTNotes } from '../../api/use-voting-notes';
-import { VoteDialogueSelector } from '../vote-dialogue';
 import { useGetMetadata } from '@/shared/api/assets';
-import { checkIfAlreadyVoted } from '../../api/vote';
+import { PagePath } from '@/shared/const/pages';
+import { useLQTNotes } from '../api/use-voting-notes';
+import { VoteDialogueSelector } from './vote-dialogue';
+import { checkIfAlreadyVoted } from '../api/vote';
 
-export const VotingFooter = observer(({ epoch }: { epoch: number }) => {
+export const VotingInfo = observer(({ epoch }: { epoch: number }) => {
   const { connected, subaccount } = connectionStore;
 
   const getMetadata = useGetMetadata();

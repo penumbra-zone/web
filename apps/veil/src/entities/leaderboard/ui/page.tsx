@@ -1,5 +1,3 @@
-'use server';
-
 import { LeaderboardTable } from './table';
 import { PenumbraWaves } from '@/pages/explore/ui/waves';
 
