@@ -367,6 +367,7 @@ class Pindexer {
 
     // stringify values to insert into a virtual table
     const swapsJson = JSON.stringify(buy.concat(sell));
+    console.log('TCL: swapsJson', swapsJson);
 
     // create virtual table from JSON, decode buffers again from base64 strings
     const latestSwaps = this.db.with('latest_swaps', db =>
@@ -390,6 +391,7 @@ class Pindexer {
           sql<Buffer>`decode(${exp.ref('latest_swaps.quote')}, 'base64')::bytea`.as('quote'),
         ]),
     );
+    console.log('TCL: latestSwaps', latestSwaps);
 
     // join virtual table with latest swaps
     return latestSwaps

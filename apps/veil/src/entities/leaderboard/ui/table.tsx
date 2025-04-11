@@ -20,9 +20,11 @@ import { useLeaderboard } from '@/entities/leaderboard/api/use-leaderboard';
 import { stateToString } from '@/entities/position/model/state-to-string';
 import { useSortableTableHeaders } from '@/pages/tournament/ui/sortable-table-header';
 import { formatAge, getAssetId } from './utils';
-import { useLatestSwaps } from '@/pages/trade/api/latest-swaps';
+// import { useLatestSwaps } from '@/pages/trade/api/latest-swaps';
+import { useMyPositions } from '@/entities/leaderboard/api/use-my-positions';
 import { connectionStore } from '@/shared/model/connection';
 import { observer } from 'mobx-react-lite';
+import { usePositions } from '@/entities/position/api/use-positions';
 
 export const LeaderboardTable = observer(
   ({ startBlock, endBlock }: { startBlock: number; endBlock: number }) => {
@@ -53,7 +55,16 @@ export const LeaderboardTable = observer(
     const { data: assets } = useAssets();
     const { data: balances } = useBalances();
     const { data: positions, totalCount } = leaderboard ?? {};
-    const { data, myPositions, error } = useLatestSwaps(subaccount);
+    const { data: myPositions, error: myPositionsError } = useMyPositions(
+      subaccount,
+      334866,
+      575403,
+      // startBlock,
+      // endBlock,
+    );
+    const { data: positions2 } = usePositions(subaccount);
+    console.log('TCL: myPositions', myPositions);
+    console.log('TCL: positions', positions2);
 
     totalCountRef.current = totalCount ?? totalCountRef.current;
 
