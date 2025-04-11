@@ -643,13 +643,15 @@ export class IndexedDb implements IndexedDbInterface {
         delegationAssets.set(uint8ArrayToHex(denomMetadata.penumbraAssetId.inner), denomMetadata);
       }
     }
+
     const notesForVoting: NotesForVotingResponse[] = [];
 
     for await (const noteCursor of this.db.transaction('SPENDABLE_NOTES').store) {
       const note = SpendableNoteRecord.fromJson(noteCursor.value);
 
+      // randomizer should be ignored
       if (
-        (addressIndex && !note.addressIndex?.equals(addressIndex)) ??
+        (addressIndex && !(note.addressIndex?.account === addressIndex.account)) ??
         !note.note?.value?.assetId?.inner
       ) {
         continue;

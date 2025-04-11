@@ -29,6 +29,7 @@ pub fn load_proving_key(key: &[u8], key_type: &str) -> WasmResult<()> {
         "swap" => &SWAP_PROOF_PROVING_KEY,
         "swapClaim" => &SWAPCLAIM_PROOF_PROVING_KEY,
         "undelegateClaim" => &CONVERT_PROOF_PROVING_KEY,
+        "actionLiquidityTournamentVote" => &DELEGATOR_VOTE_PROOF_PROVING_KEY,
         _ => return Err(anyhow::anyhow!("Unsupported key type").into()),
     };
 
