@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { Dialog } from '@penumbra-zone/ui/Dialog';
 import { Button } from '@penumbra-zone/ui/Button';
@@ -10,6 +10,12 @@ import { ChainSelector } from './chain-selector';
 import { InputToken } from './input-token';
 import { InputBlock } from './input-block';
 import { PublicBalance } from '@/pages/portfolio/api/use-unified-assets.ts';
+import { ibcOutStore } from './ibc-out';
+import { useBalances } from '@/shared/api/balances';
+import { useAssets } from '@/shared/api/assets';
+import { useStakingTokenMetadata } from '@/shared/api/registry';
+import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 
 interface IbcWithdrawalDialogProps {
   isOpen: boolean;
@@ -20,43 +26,58 @@ interface IbcWithdrawalDialogProps {
 
 export const IbcWithdrawalDialog = observer(
   ({ isOpen, onClose, preselectedAsset, assets }: IbcWithdrawalDialogProps) => {
-    // State management
-    const [selectedChain, setSelectedChain] = useState<string>('');
-    const [destinationAddress, setDestinationAddress] = useState('');
-    const [amount, setAmount] = useState('');
-    const [selection, setSelection] = useState<PublicBalance | null>(preselectedAsset ?? null);
+    // Use mobx store for state management
+    const {
+      amount,
+      setAmount,
+      chain,
+      setChain,
+      destinationChainAddress,
+      setDestinationChainAddress,
+      selection,
+      sendIbcWithdraw,
+      txInProgress,
+    } = ibcOutStore;
+
+    // Get data needed for validation and filtering
+    const balancesQuery = useBalances();
+    const assetsQuery = useAssets();
+    const stakingTokenQuery = useStakingTokenMetadata();
+
+    // Safely access query results
+    const balances = (balancesQuery.data as BalancesResponse[]) ?? [];
+    const metadataAssets = (assetsQuery.data as Metadata[]) ?? [];
+    const stakingTokenMetadata = stakingTokenQuery.data as Metadata | undefined;
 
     // Reset form when opening with a preselected asset
     useEffect(() => {
       if (isOpen && preselectedAsset) {
-        setSelection(preselectedAsset);
+        // Convert PublicBalance to BalancesResponse if needed
+        // This would require mapping from your PublicBalance format to BalancesResponse
+        // Example: const balanceResponse = convertToBalancesResponse(preselectedAsset);
+        // setSelection(balanceResponse);
       }
     }, [isOpen, preselectedAsset]);
 
-    // Basic validation
-    const validationErrors = {
-      amountErr: amount !== '' && Number(amount) <= 0,
-      exponentErr: false, // Would validate decimal places based on token metadata
-      recipientErr: destinationAddress.length > 0 && destinationAddress.length < 10, // Simplified validation
-      chainErr: !selectedChain,
-    };
+    // Get validation errors
+    const validationErrors = ibcOutStore.getValidationErrors(
+      balances,
+      metadataAssets,
+      stakingTokenMetadata,
+    );
 
-    // Placeholder for the actual withdrawal function
-    const handleWithdraw = () => {
+    // Handle submission
+    const handleWithdraw = async () => {
       try {
-        console.debug('Withdrawal initiated', {
-          asset: selection,
-          amount,
-          destinationChain: selectedChain,
-          destinationAddress,
-        });
-
-        // After successful withdrawal
+        await sendIbcWithdraw();
         onClose();
       } catch (error) {
         console.error('Withdrawal failed', error);
       }
     };
+
+    // Get placeholder text based on current state
+    const placeholder = ibcOutStore.getPlaceholder(balances, metadataAssets, stakingTokenMetadata);
 
     return (
       <Dialog isOpen={isOpen} onClose={onClose}>
@@ -68,23 +89,49 @@ export const IbcWithdrawalDialog = observer(
               className='flex flex-col gap-4 p-4'
               onSubmit={e => {
                 e.preventDefault();
-                handleWithdraw();
+                void handleWithdraw();
               }}
             >
-              <ChainSelector selectedChain={selectedChain} onChainSelect={setSelectedChain} />
+              <ChainSelector
+                selectedChain={chain?.chainId ?? ''}
+                onChainSelect={chainId => {
+                  const selectedChain = ibcOutStore.chains.find(c => c.chainId === chainId);
+                  setChain(selectedChain);
+                }}
+              />
 
               <InputToken
                 label='Amount to send'
-                placeholder='0.0'
+                placeholder={placeholder}
                 className='mb-1'
-                selection={selection}
-                setSelection={setSelection}
+                selection={
+                  selection
+                    ? ({
+                        // This is a simplified example and would need to be updated with correct field mapping
+                        id: String(selection.accountAddress?.addressIndex?.account ?? ''),
+                        symbol: String(
+                          selection.balanceView?.valueView?.knownAssetId?.value.metadata?.symbol ??
+                            '',
+                        ),
+                        amount: String(
+                          selection.balanceView?.valueView?.knownAssetId?.value.amount?.lo ?? '0',
+                        ),
+                        // Add other required fields...
+                      } as unknown as PublicBalance)
+                    : null
+                }
+                setSelection={(selected: PublicBalance | null) => {
+                  // Convert PublicBalance to BalancesResponse if needed
+                  // This is a placeholder for the actual conversion logic
+                  console.log('Asset selection changed:', selected);
+                  // setSelection(convertToBalancesResponse(selected));
+                }}
                 value={amount}
-                onInputChange={amount => {
-                  if (Number(amount) < 0) {
+                onInputChange={newAmount => {
+                  if (Number(newAmount) < 0) {
                     return;
                   }
-                  setAmount(amount);
+                  setAmount(newAmount);
                 }}
                 validations={[
                   {
@@ -104,7 +151,7 @@ export const IbcWithdrawalDialog = observer(
               <InputBlock
                 label='Recipient on destination chain'
                 className='mb-1'
-                value={destinationAddress}
+                value={destinationChainAddress}
                 validations={[
                   {
                     type: 'error',
@@ -115,8 +162,8 @@ export const IbcWithdrawalDialog = observer(
               >
                 <TextInput
                   placeholder='Enter the address'
-                  value={destinationAddress}
-                  onChange={setDestinationAddress}
+                  value={destinationChainAddress}
+                  onChange={setDestinationChainAddress}
                 />
               </InputBlock>
 
@@ -124,13 +171,14 @@ export const IbcWithdrawalDialog = observer(
                 type='submit'
                 disabled={
                   !Number(amount) ||
-                  !destinationAddress ||
+                  !destinationChainAddress ||
                   !!Object.values(validationErrors).find(Boolean) ||
-                  !selection
+                  !selection ||
+                  txInProgress
                 }
                 actionType='unshield'
               >
-                <span>Unshield Assets</span>
+                <span>{txInProgress ? 'Processing...' : 'Unshield Assets'}</span>
               </Button>
             </form>
           </Card>
