@@ -1,5 +1,15 @@
 # @penumbra-zone/ui
 
+## 13.17.2
+
+### Patch Changes
+
+- 405b5b1: Fix swap ActionViews not rendering values correctly
+- Updated dependencies [405b5b1]
+  - @penumbra-zone/getters@25.0.1
+  - @penumbra-zone/types@32.2.1
+  - @penumbra-zone/perspective@53.0.1
+
 ## 13.17.1
 
 ### Patch Changes
