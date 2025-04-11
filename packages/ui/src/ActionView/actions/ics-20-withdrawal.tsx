@@ -85,6 +85,7 @@ export const Ics20WithdrawalAction = ({ value, getMetadata }: Ics20WithdrawalAct
         receiverView && (
           <Density slim>
             <ActionRow
+              key='receiver'
               label='Receiver'
               info={<AddressViewComponent addressView={receiverView} external copyable truncate />}
             />

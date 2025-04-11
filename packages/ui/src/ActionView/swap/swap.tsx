@@ -28,7 +28,7 @@ export const SwapAction = ({ value, getMetadata }: SwapActionProps) => {
   const density = useDensity();
 
   const isOneWay = isOneWaySwap(value);
-  const swap = isOneWay ? getOneWaySwapValues(value) : undefined;
+  const swap = isOneWay ? getOneWaySwapValues(value, getMetadata) : undefined;
   const swapOutputAmount = getAmount.optional(swap?.output);
   const showOutput = !!swapOutputAmount && !isZero(swapOutputAmount);
   const isVisible = value.swapView.case === 'visible';
@@ -66,11 +66,16 @@ export const SwapAction = ({ value, getMetadata }: SwapActionProps) => {
       infoRows={
         isVisible && (
           <>
-            {!!fee && <ActionRow label='Swap Claim Fee' info={fee} />}
+            {!!fee && <ActionRow key='claim-fee' label='Swap Claim Fee' info={fee} />}
             {!!txId && (
-              <ActionRow label='Swap Claim Transaction' info={shorten(txId, 8)} copyText={txId} />
+              <ActionRow
+                key='claim-tx'
+                label='Swap Claim Transaction'
+                info={shorten(txId, 8)}
+                copyText={txId}
+              />
             )}
-            {unfilled && <ActionRow label='Unfilled Amount' info={unfilled} />}
+            {unfilled && <ActionRow key='unfilled' label='Unfilled Amount' info={unfilled} />}
           </>
         )
       }

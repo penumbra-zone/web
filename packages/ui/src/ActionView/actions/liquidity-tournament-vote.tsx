@@ -109,6 +109,7 @@ export const LiquidityTournamentVoteAction = ({
         !!epoch && <ActionRow label='Epoch' info={`#${epoch.toString()}`} />,
         !!voteValue && (
           <ActionRow
+            key='voting-power'
             label='Voting Power'
             info={
               <Density slim>

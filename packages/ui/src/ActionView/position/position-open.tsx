@@ -81,17 +81,19 @@ export const PositionOpenAction = ({ value, getMetadata }: PositionOpenActionPro
       title='Position Open'
       infoRows={
         <>
-          {positionId && <ActionRow label='Position ID' info={positionId} />}
+          {positionId && <ActionRow key='position-id' label='Position ID' info={positionId} />}
 
           <Density slim>
             {r1 && (
               <ActionRow
+                key='r1'
                 label='Reserves'
                 info={<ValueViewComponent valueView={r1} priority='tertiary' showIcon={false} />}
               />
             )}
             {r2 && (
               <ActionRow
+                key='r2'
                 label='Reserves'
                 info={<ValueViewComponent valueView={r2} priority='tertiary' showIcon={false} />}
               />
@@ -99,7 +101,7 @@ export const PositionOpenAction = ({ value, getMetadata }: PositionOpenActionPro
           </Density>
 
           {!!value.position?.phi?.component?.fee && (
-            <ActionRow label='Fee' info={value.position.phi.component.fee} />
+            <ActionRow key='fee' label='Fee' info={value.position.phi.component.fee} />
           )}
         </>
       }

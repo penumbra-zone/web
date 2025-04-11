@@ -16,6 +16,7 @@ export const PositionWithdrawAction = ({ value }: PositionWithdrawActionProps) =
         <>
           {value.positionId && (
             <ActionRow
+              key='position-id'
               label='Position ID'
               info={shorten(bech32mPositionId(value.positionId), 8)}
               copyText={bech32mPositionId(value.positionId)}
