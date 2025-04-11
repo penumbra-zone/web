@@ -1,5 +1,13 @@
 # @penumbra-zone/types
 
+## 32.2.1
+
+### Patch Changes
+
+- 405b5b1: Fix swap ActionViews not rendering values correctly
+- Updated dependencies [405b5b1]
+  - @penumbra-zone/getters@25.0.1
+
 ## 32.2.0
 
 ### Minor Changes

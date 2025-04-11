@@ -1,5 +1,17 @@
 # penumbra-veil
 
+## 0.0.6
+
+### Patch Changes
+
+- Updated dependencies [405b5b1]
+  - @penumbra-zone/getters@25.0.1
+  - @penumbra-zone/types@32.2.1
+  - @penumbra-zone/ui@13.17.2
+  - @penumbra-zone/perspective@53.0.1
+  - @penumbra-zone/crypto-web@41.0.1
+  - @penumbra-zone/wasm@45.0.1
+
 ## 0.0.5
 
 ### Patch Changes
