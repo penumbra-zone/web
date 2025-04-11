@@ -1,15 +1,18 @@
 import orderBy from 'lodash/orderBy';
+import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
 import { Card } from '@penumbra-zone/ui/Card';
 import { Text } from '@penumbra-zone/ui/Text';
 import { TableCell } from '@penumbra-zone/ui/TableCell';
 import { Density } from '@penumbra-zone/ui/Density';
 import { Pagination } from '@penumbra-zone/ui/Pagination';
-import { ValueView, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import { pnum } from '@penumbra-zone/types/pnum';
+import { connectionStore } from '@/shared/model/connection';
 import { useSortableTableHeaders } from '../../sortable-table-header';
 import { TableRow } from './table-row';
-import { pnum } from '@penumbra-zone/types/pnum';
+import cn from 'clsx';
 
 const THRESHOLD = 0.05;
 
@@ -38,11 +41,26 @@ const valueView = new ValueView({
   },
 });
 
-export const CurrentVotingResults = () => {
+const TABLE_CLASSES = {
+  table: {
+    default: cn('grid-cols-[1fr_1fr_1fr_1fr]'),
+    canVote: cn('grid-cols-[1fr_1fr_1fr_1fr_72px]'),
+  },
+  row: {
+    default: cn('col-span-4'),
+    canVote: cn('col-span-5'),
+  },
+};
+
+export const CurrentVotingResults = observer(() => {
   const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const { getTableHeader, sortBy } = useSortableTableHeaders();
+
+  // TODO: `canVote` should be true when connected and has delUM for this epoch
+  const { connected: canVote } = connectionStore;
+  const tableKey = canVote ? 'canVote' : 'default';
 
   useEffect(() => {
     setTimeout(() => {
@@ -118,22 +136,22 @@ export const CurrentVotingResults = () => {
           Current Voting Results
         </Text>
         <Density compact>
-          <div className='grid grid-cols-[1fr_1fr_1fr_1fr_1fr] h-auto overflow-auto'>
-            <div className='grid grid-cols-subgrid col-span-5'>
+          <div className={cn('grid h-auto overflow-auto', TABLE_CLASSES.table[tableKey])}>
+            <div className={cn('grid grid-cols-subgrid', TABLE_CLASSES.row[tableKey])}>
               {getTableHeader('symbol', 'Asset')}
-              {getTableHeader('gaugeValue', 'Gauge Value')}
-              {getTableHeader('votes', 'Casted Votes')}
+              {getTableHeader('gaugeValue', 'Percentage of Votes')}
+              {getTableHeader('votes', 'Votes Cast')}
               {getTableHeader('estimatedIncentiveNumber', 'Estimated Incentive')}
-              <TableCell heading>Vote</TableCell>
+              {canVote && <TableCell heading>Vote</TableCell>}
             </div>
 
             {sortedData
               .filter(item => item.votes / totalVotes >= THRESHOLD)
               .map(item => (
-                <TableRow key={item.symbol} item={item} loading={isLoading} />
+                <TableRow key={item.symbol} item={item} loading={isLoading} canVote={canVote} />
               ))}
             {!isLoading && (
-              <div className='col-span-5'>
+              <div className={cn(TABLE_CLASSES.row[tableKey])}>
                 <TableCell>
                   <Text technical color='text.secondary'>
                     Below threshold ({'<'}
@@ -145,10 +163,10 @@ export const CurrentVotingResults = () => {
             {sortedData
               .filter(item => item.votes / totalVotes < THRESHOLD)
               .map(item => (
-                <TableRow key={item.symbol} item={item} loading={isLoading} />
+                <TableRow key={item.symbol} item={item} loading={isLoading} canVote={canVote} />
               ))}
             {!isLoading && (
-              <div className='col-span-5 pt-5'>
+              <div className={cn('pt-5', TABLE_CLASSES.row[tableKey])}>
                 <Pagination
                   totalItems={totalPages}
                   visibleItems={5}
@@ -164,4 +182,4 @@ export const CurrentVotingResults = () => {
       </div>
     </Card>
   );
-};
+});
