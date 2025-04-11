@@ -8,6 +8,7 @@ export enum PagePath {
   Portfolio = '/portfolio',
   Tournament = '/tournament',
   TournamentRound = '/tournament/:epoch',
+  TournamentDelegator = '/tournament/delegator/:address',
   TradePair = '/trade/:primary/:numeraire',
   InspectLp = '/inspect/lp/:id',
   LpLeaderboard = '/inspect/lp-leaderboard',

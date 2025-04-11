@@ -15,6 +15,7 @@ import { useLQTNotes } from '../api/use-voting-notes';
 import { VoteDialogueSelector } from './vote-dialogue';
 import { checkIfAlreadyVoted } from '../api/vote';
 
+// TODO: use it for both landing and round page, apply all component states from Figma
 export const VotingInfo = observer(({ epoch }: { epoch: number }) => {
   const { connected, subaccount } = connectionStore;
 

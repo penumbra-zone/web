@@ -20,6 +20,7 @@ import {
 } from '../api/use-delegator-leaderboard';
 import { useSortableTableHeaders } from './sortable-table-header';
 import Link from 'next/link';
+import { PagePath } from '@/shared/const/pages';
 
 export const DelegatorLeaderboard = observer(() => {
   const [page, setPage] = useState(BASE_PAGE);
@@ -67,7 +68,11 @@ export const DelegatorLeaderboard = observer(() => {
 
           {leaderboard.map((row, index) => (
             <Link
-              href={isLoading ? '' : `/tournament/delegator/${getAddressString(row.address)}`}
+              href={
+                isLoading
+                  ? ''
+                  : PagePath.TournamentRound.replace(':address', getAddressString(row.address))
+              }
               key={index}
               className={cn(
                 'grid grid-cols-subgrid col-span-6',
