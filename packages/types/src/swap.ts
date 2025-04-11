@@ -5,8 +5,14 @@ import {
   getDelta2IFromSwapView,
   getOutput1Value,
   getOutput2Value,
+  getTradingPair,
 } from '@penumbra-zone/getters/swap-view';
-import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import {
+  Metadata,
+  AssetId,
+  Denom,
+  ValueView,
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { SwapView } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { isZero } from './amount.js';
 import { getAmount } from '@penumbra-zone/getters/value-view';
@@ -58,6 +64,7 @@ const getUnfilledAmount = (swapView: SwapView): ValueView | undefined => {
  */
 export const getOneWaySwapValues = (
   swapView: SwapView,
+  getMetadata?: (id: AssetId | Denom) => Metadata | undefined,
 ): {
   input: ValueView;
   output: ValueView;
@@ -75,8 +82,14 @@ export const getOneWaySwapValues = (
   const delta1I = getDelta1IFromSwapView(swapView);
   const delta2I = getDelta2IFromSwapView(swapView);
 
-  const metadata1 = getAsset1Metadata.optional(swapView);
-  const metadata2 = getAsset2Metadata.optional(swapView);
+  const tradingPair = getTradingPair.optional(swapView);
+  const metadata1 =
+    getAsset1Metadata.optional(swapView) ??
+    (tradingPair?.asset1 && getMetadata?.(tradingPair.asset1));
+  const metadata2 =
+    getAsset2Metadata.optional(swapView) ??
+    (tradingPair?.asset2 && getMetadata?.(tradingPair.asset2));
+
   const inputMetadata = isZero(delta2I) ? metadata1 : metadata2;
   const outputMetadata = isZero(delta2I) ? metadata2 : metadata1;
 
@@ -95,6 +108,7 @@ export const getOneWaySwapValues = (
           case: 'unknownAssetId',
           value: {
             amount: isZero(delta2I) ? delta1I : delta2I,
+            assetId: isZero(delta2I) ? tradingPair?.asset1 : tradingPair?.asset2,
           },
         },
       });
@@ -115,6 +129,7 @@ export const getOneWaySwapValues = (
           case: 'unknownAssetId',
           value: {
             amount: isZero(delta2I) ? delta1I : delta2I,
+            assetId: isZero(delta2I) ? tradingPair?.asset2 : tradingPair?.asset1,
           },
         },
       });
