@@ -119,8 +119,15 @@ export const SwapClaimAction = ({ value, getMetadata }: SwapClaimActionProps) =>
       opaque={value.swapClaimView.case === 'opaque'}
       infoRows={
         <>
-          {!!fee && <ActionRow label='Swap Claim Fee' info={fee} />}
-          {!!txId && <ActionRow label='Swap Transaction' info={shorten(txId, 8)} copyText={txId} />}
+          {!!fee && <ActionRow key='claim-fee' label='Swap Claim Fee' info={fee} />}
+          {!!txId && (
+            <ActionRow
+              key='swap-tx'
+              label='Swap Transaction'
+              info={shorten(txId, 8)}
+              copyText={txId}
+            />
+          )}
         </>
       }
     >
