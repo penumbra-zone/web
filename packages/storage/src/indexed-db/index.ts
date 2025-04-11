@@ -811,14 +811,14 @@ export class IndexedDb implements IndexedDbInterface {
    * @todo It seems like this could simply be calculated from duration.
    */
   async getEpochByHeight(findHeight: bigint): Promise<Epoch> {
-    const [latestHeight, epochDuration] = await Promise.all([
-      this.db.get('FULL_SYNC_HEIGHT', 'height'),
-      this.db
-        .get('APP_PARAMETERS', 'params')
-        .then(json => json && AppParameters.fromJson(json).sctParams?.epochDuration),
-    ]);
-    if (latestHeight == null || !epochDuration) {
-      throw new ReferenceError('Missing chain state', { cause: { latestHeight, epochDuration } });
+    const latestHeight = await this.getFullSyncHeight();
+    if (latestHeight == null) {
+      throw new ReferenceError('No synced blocks');
+    }
+
+    const epochDuration = await this.getAppParams().then(p => p?.sctParams?.epochDuration);
+    if (epochDuration == null) {
+      throw new ReferenceError('No epoch duration');
     }
 
     let nearPrev: Epoch | undefined = undefined;
