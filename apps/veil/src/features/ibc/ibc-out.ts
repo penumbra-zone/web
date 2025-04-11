@@ -257,7 +257,7 @@ export class IbcOutStore {
     try {
       const fetchedChains = await getChains();
       runInAction(() => {
-        this.chains = fetchedChains || [];
+        this.chains = fetchedChains;
       });
     } catch (error) {
       runInAction(() => {
@@ -324,15 +324,12 @@ export class IbcOutStore {
     return 'Enter an amount';
   }
 
-  getValidationErrors(
-    balances: BalancesResponse[],
-    assets: Metadata[],
-    stakingTokenMetadata?: Metadata,
-  ): {
+  getValidationErrors(): {
     recipientErr: boolean;
     amountErr: boolean;
     exponentErr: boolean;
   } {
+    // Use the selection from the store, not the passed parameters
     return {
       recipientErr: !this.destinationChainAddress
         ? false
