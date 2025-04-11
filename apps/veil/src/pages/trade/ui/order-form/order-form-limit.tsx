@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
+import { round } from '@penumbra-zone/types/round';
 import { connectionStore } from '@/shared/model/connection';
 import { ConnectButton } from '@/features/connect/connect-button';
 import { OrderInput } from './order-input';
@@ -14,7 +15,7 @@ import { BuyLimitOrderOptions, SellLimitOrderOptions } from './store/LimitOrderF
 
 export const LimitOrderForm = observer(({ parentStore }: { parentStore: OrderFormStore }) => {
   const { connected } = connectionStore;
-  const store = parentStore.limitForm;
+  const { defaultDecimals, limitForm: store } = parentStore;
 
   const isBuy = store.direction === 'buy';
 
@@ -25,7 +26,10 @@ export const LimitOrderForm = observer(({ parentStore }: { parentStore: OrderFor
         <div className='mb-2'>
           <OrderInput
             label={`When ${store.baseAsset?.symbol} is`}
-            value={store.priceInput}
+            value={round({
+              value: store.priceInput,
+              decimals: store.quoteAsset?.exponent ?? defaultDecimals,
+            })}
             onChange={price => store.setPriceInput(price)}
             denominator={store.quoteAsset?.symbol}
           />
@@ -41,7 +45,10 @@ export const LimitOrderForm = observer(({ parentStore }: { parentStore: OrderFor
       <div className='mb-4'>
         <OrderInput
           label={isBuy ? 'Buy' : 'Sell'}
-          value={store.baseInput}
+          value={round({
+            value: store.baseInput,
+            decimals: store.baseAsset?.exponent ?? defaultDecimals,
+          })}
           onChange={store.setBaseInput}
           denominator={store.baseAsset?.symbol}
         />
@@ -49,7 +56,10 @@ export const LimitOrderForm = observer(({ parentStore }: { parentStore: OrderFor
       <div className='mb-4'>
         <OrderInput
           label={isBuy ? 'Pay with' : 'Receive'}
-          value={store.quoteInput}
+          value={round({
+            value: store.quoteInput,
+            decimals: store.quoteAsset?.exponent ?? defaultDecimals,
+          })}
           onChange={store.setQuoteInput}
           denominator={store.quoteAsset?.symbol}
         />

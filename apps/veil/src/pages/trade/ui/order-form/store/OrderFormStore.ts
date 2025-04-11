@@ -54,6 +54,7 @@ export class OrderFormStore {
   private _feeAsset?: AssetInfo;
   private _gasFee: { symbol: string; display: string } = { symbol: 'UM', display: '--' };
   private _gasFeeLoading = false;
+  defaultDecimals = 6;
 
   constructor() {
     makeAutoObservable(this);
