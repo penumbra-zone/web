@@ -159,7 +159,10 @@ export class IndexedDb implements IndexedDbInterface {
         }).createIndex('nullifier', 'nullifier.inner');
         db.createObjectStore('GAS_PRICES', { keyPath: 'assetId.inner' });
         db.createObjectStore('POSITIONS', { keyPath: 'id.inner' });
+
+        /** @todo migrate to { autoIncrement: false }, and use Number(epoch.index) as key */
         db.createObjectStore('EPOCHS', { autoIncrement: true });
+
         db.createObjectStore('VALIDATOR_INFOS');
         db.createObjectStore('PRICES', {
           keyPath: ['pricedAsset.inner', 'numeraire.inner'],
@@ -755,65 +758,106 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   /**
-   * Adds a new epoch with the given start height. Automatically sets the epoch
-   * index by finding the previous epoch index, and adding 1n.
+   * Adds a new epoch with the given start height.
    */
   async addEpoch(startHeight: bigint): Promise<void> {
-    const cursor = await this.db.transaction('EPOCHS', 'readonly').store.openCursor(null, 'prev');
-    const previousEpoch = cursor?.value ? Epoch.fromJson(cursor.value) : undefined;
-    const index = previousEpoch?.index !== undefined ? previousEpoch.index + 1n : 0n;
+    const tx = this.db.transaction('EPOCHS', 'readwrite');
+    await tx.store.openCursor(null, 'prev').then(cursor => {
+      const lastKey = cursor?.key;
+      const lastEpoch = cursor?.value && Epoch.fromJson(cursor.value);
 
-    // avoid saving the same epoch twice
-    if (previousEpoch?.startHeight === startHeight) {
-      return;
-    }
+      /** @todo migrate to enforce this without manual check */
+      // avoid saving the same epoch twice
+      if (lastEpoch?.startHeight === startHeight) {
+        return;
+      }
 
-    const newEpoch = {
-      startHeight: startHeight.toString(),
-      index: index.toString(),
-    };
+      let addKey: number;
+      let addEpoch: Epoch;
 
-    await this.u.update({
-      table: 'EPOCHS',
-      value: newEpoch,
+      if (startHeight === 0n && lastKey == null && lastEpoch == null) {
+        // adding the genesis epoch
+        addKey = 0;
+        addEpoch = new Epoch({
+          startHeight: 0n,
+          index: 0n,
+        });
+      } else if (startHeight !== 0n && lastKey != null && lastEpoch != null) {
+        // adding a non-genesis epoch
+        addKey = lastKey + 1;
+        addEpoch = new Epoch({ startHeight, index: lastEpoch.index + 1n });
+      } else {
+        /** @todo migrate to enforce this structurally */
+        throw new RangeError('Invalid epoch height', {
+          cause: { lastEpoch, startHeight },
+        });
+      }
+
+      /** @todo migrate to require specifiation of key/index when adding */
+      // this is not a valid assumption for tables modified with `autoIncrement`
+      // if (BigInt(addKey) !== addEpoch.index) {
+      //   throw new RangeError('Invalid epoch index', { cause: { addKey, addEpoch } });
+      // }
+
+      return tx.store.add(addEpoch.toJson() as Jsonified<Epoch>, addKey);
     });
   }
 
   /**
-   * Get the epoch that contains the given block height.
+   * Get the actual recorded epoch for a given block height.
+   *
+   * @todo It seems like this could simply be calculated from duration.
    */
-  async getEpochByHeight(
-    /**
-     * The block height to query by. Will return the epoch with the largest
-     * start height smaller than `height` -- that is, the epoch that contains
-     * this height.
-     */
-    height: bigint,
-  ): Promise<Epoch | undefined> {
-    let epoch: Epoch | undefined;
+  async getEpochByHeight(findHeight: bigint): Promise<Epoch> {
+    const [latestHeight, epochDuration] = await Promise.all([
+      this.db.get('FULL_SYNC_HEIGHT', 'height'),
+      this.db
+        .get('APP_PARAMETERS', 'params')
+        .then(json => json && AppParameters.fromJson(json).sctParams?.epochDuration),
+    ]);
+    if (latestHeight == null || !epochDuration) {
+      throw new ReferenceError('Missing chain state', { cause: { latestHeight, epochDuration } });
+    }
 
-    /**
-     * Iterate over epochs and return the one with the largest start height
-     * smaller than `height`.
-     *
-     * Unfortunately, there doesn't appear to be a more efficient way of doing
-     * this. We tried using epochs' start heights as their key so that we could
-     * use a particular start height as a query bounds, but IndexedDB casts the
-     * `bigint` start height to a string, which messes up sorting (the string
-     * '11' is greater than the string '100', for example). For now, then, we
-     * have to just iterate over all epochs to find the correct starting height.
-     */
-    for await (const cursor of this.db.transaction('EPOCHS', 'readonly').store) {
-      const currentEpoch = Epoch.fromJson(cursor.value);
+    let nearPrev: Epoch | undefined = undefined;
+    let nearNext: Epoch | undefined = undefined;
 
-      if (currentEpoch.startHeight <= height) {
-        epoch = currentEpoch;
-      } else if (currentEpoch.startHeight > height) {
-        break;
+    // there's no good way to do this query.  epoch field values are bigints,
+    // which can't be idb keys.  they're stored as json, meaning they've become
+    // strings which sort lexically.
+    //
+    // but in general,
+    // - epochs should have been inserted in an order resembling actual height
+    // - the query is likely for a very recent epoch
+    // - duration can identify the range of the present epoch
+    // - adjacent indicies can identify the range of a historic epoch
+    for await (const { value } of this.db.transaction('EPOCHS').store.iterate(null, 'prev')) {
+      const epoch = Epoch.fromJson(value);
+
+      // update range
+      if (epoch.startHeight <= findHeight) {
+        if (!nearPrev || epoch.index > nearPrev.index) {
+          nearPrev = epoch;
+        }
+      } else if (epoch.startHeight > findHeight) {
+        if (!nearNext || epoch.index < nearNext.index) {
+          nearNext = epoch;
+        }
+      }
+
+      // check range
+      if (nearPrev) {
+        if (nearNext && nearPrev.index + 1n === nearNext.index) {
+          // range won't shrink
+          return nearPrev;
+        } else if (!nearNext && nearPrev.startHeight + epochDuration > findHeight) {
+          // range won't close
+          return nearPrev;
+        }
       }
     }
 
-    return epoch;
+    throw new Error('No epoch for height', { cause: { latestHeight, findHeight } });
   }
 
   /**
@@ -1004,8 +1048,7 @@ export class IndexedDb implements IndexedDbInterface {
       return;
     }
 
-    const epoch =
-      (await this.getEpochByHeight(blockHeight)) ?? new Epoch({ startHeight: 0n, index: 0n });
+    const epoch = await this.getEpochByHeight(blockHeight);
 
     for (const n of swaps) {
       if (!n.outputData) {
