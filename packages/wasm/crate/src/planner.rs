@@ -690,13 +690,23 @@ pub async fn plan_transaction_inner<Db: Database>(
                 &mut OsRng,
                 incentivized,
                 rewards_recipient,
-                note,
+                note.clone(),
                 note_position,
                 start_position,
             );
 
             actions_list.push(vote_plan);
+
+            // We also want to go ahead and do the consolidation thing,
+            // to reduce the number of votes we need in the next epoch.
+            // To do so, we need to spend all of these notes, and produce one output per
+            // delegator token.
+            actions_list.push(SpendPlan::new(&mut OsRng, note, note_position));
         }
+
+        // By setting the change address, all of the excess balance we've created
+        // from spending the notes will be directed back to our account.
+        change_address = fvk.ephemeral_address(OsRng, Default::default()).0;
     }
 
     // Phase 2: balance the transaction with information from the view service.
