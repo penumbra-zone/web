@@ -1,10 +1,12 @@
 import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
-import { approverCtx } from '../ctx/approver.js';
 import { servicesCtx } from '../ctx/prax.js';
 import { testFullViewingKey, testSpendKey } from '../test-utils.js';
 import { authorize } from './authorize.js';
-import { AuthorizeRequest } from '@penumbra-zone/protobuf/penumbra/custody/v1/custody_pb';
+import {
+  AuthorizeRequest,
+  AuthorizeResponse,
+} from '@penumbra-zone/protobuf/penumbra/custody/v1/custody_pb';
 import { CustodyService } from '@penumbra-zone/protobuf';
 import {
   AuthorizationData,
@@ -12,16 +14,17 @@ import {
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { fvkCtx } from '../ctx/full-viewing-key.js';
-import { skCtx } from '../ctx/spend-key.js';
+import { authorizeCtx } from '../ctx/authorize.js';
+import { authorizePlan } from '@penumbra-zone/wasm/build';
 
 describe('Authorize request handler', () => {
   let req: AuthorizeRequest;
 
-  const mockApproverCtx = vi.fn(() => Promise.resolve<UserChoice>(UserChoice.Approved));
   const mockFullViewingKeyCtx = vi.fn(() => Promise.resolve(testFullViewingKey));
-  const mockSpendKeyCtx = vi.fn(() => Promise.resolve(testSpendKey));
+  const mockAuthorizeCtx = vi.fn(({ plan }: AuthorizeRequest) =>
+    Promise.resolve(new AuthorizeResponse({ data: authorizePlan(testSpendKey, plan!) })),
+  );
   const mockServicesCtx: Mock<[], Promise<ServicesInterface>> = vi.fn();
 
   const handlerContextInit = {
@@ -33,10 +36,9 @@ describe('Authorize request handler', () => {
   };
 
   const contextValues = createContextValues()
-    .set(approverCtx, mockApproverCtx as unknown)
     .set(servicesCtx, mockServicesCtx)
     .set(fvkCtx, mockFullViewingKeyCtx)
-    .set(skCtx, mockSpendKeyCtx);
+    .set(authorizeCtx, mockAuthorizeCtx);
 
   const mockCtx: HandlerContext = createHandlerContext({
     ...handlerContextInit,
@@ -77,53 +79,15 @@ describe('Authorize request handler', () => {
     expect(data).toBeInstanceOf(AuthorizationData);
   });
 
-  test('should fail if user denies request', async () => {
-    mockApproverCtx.mockResolvedValueOnce(UserChoice.Denied);
-    await expect(authorize(req, mockCtx)).rejects.toThrow();
+  test('should fail if context does not authorize', async () => {
+    mockAuthorizeCtx.mockRejectedValueOnce(new Error('no'));
+    await expect(authorize(req, mockCtx)).rejects.toThrow('no');
   });
 
   test('should fail if plan is missing in request', async () => {
     await expect(authorize(new AuthorizeRequest(), mockCtx)).rejects.toThrow(
       'No plan included in request',
     );
-  });
-
-  test('should fail if fullViewingKey context is not configured', async () => {
-    const ctxWithoutFullViewingKey = createHandlerContext({
-      ...handlerContextInit,
-      contextValues: createContextValues()
-        .set(approverCtx, mockApproverCtx as unknown)
-        .set(servicesCtx, mockServicesCtx)
-        .set(skCtx, mockSpendKeyCtx),
-    });
-    await expect(authorize(req, ctxWithoutFullViewingKey)).rejects.toThrow('[failed_precondition]');
-  });
-
-  test('should fail if spendKey context is not configured', async () => {
-    const ctxWithoutSpendKey = createHandlerContext({
-      ...handlerContextInit,
-      contextValues: createContextValues()
-        .set(approverCtx, mockApproverCtx as unknown)
-        .set(servicesCtx, mockServicesCtx)
-        .set(fvkCtx, mockFullViewingKeyCtx),
-    });
-    await expect(authorize(req, ctxWithoutSpendKey)).rejects.toThrow('[failed_precondition]');
-  });
-
-  test('should fail if approver context is not configured', async () => {
-    const ctxWithoutApprover = createHandlerContext({
-      ...handlerContextInit,
-      contextValues: createContextValues()
-        .set(servicesCtx, mockServicesCtx)
-        .set(fvkCtx, mockFullViewingKeyCtx)
-        .set(skCtx, mockSpendKeyCtx),
-    });
-    await expect(authorize(req, ctxWithoutApprover)).rejects.toThrow('[failed_precondition]');
-  });
-
-  test('should fail with reason if spendKey is not available', async () => {
-    mockSpendKeyCtx.mockRejectedValueOnce(new Error('some reason'));
-    await expect(authorize(req, mockCtx)).rejects.toThrow('some reason');
   });
 });
 
