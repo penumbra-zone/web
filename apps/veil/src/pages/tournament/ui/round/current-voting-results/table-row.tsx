@@ -1,15 +1,17 @@
+import cn from 'clsx';
+import Image from 'next/image';
 import { TableCell } from '@penumbra-zone/ui/TableCell';
 import { Text } from '@penumbra-zone/ui/Text';
-import Image from 'next/image';
 import { round } from '@penumbra-zone/types/round';
 import { pnum } from '@penumbra-zone/types/pnum';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
-import { Button } from '@penumbra-zone/ui/Button';
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { VoteButton } from '@/pages/tournament/ui/round/current-voting-results/vote-button';
 
 export const TableRow = ({
   item,
   loading,
+  canVote,
 }: {
   item: {
     symbol: string;
@@ -18,10 +20,11 @@ export const TableRow = ({
     estimatedIncentive: ValueView;
     gaugeValue: number;
   };
+  canVote: boolean;
   loading: boolean;
 }) => {
   return (
-    <div className='grid grid-cols-subgrid col-span-5'>
+    <div className={cn('grid grid-cols-subgrid', canVote ? 'col-span-5' : 'col-span-4')}>
       <TableCell loading={loading}>
         <div className='flex items-center gap-2'>
           <Image src={item.imgUrl} alt={item.symbol} width={32} height={32} />
@@ -47,11 +50,11 @@ export const TableRow = ({
       <TableCell loading={loading}>
         <ValueViewComponent valueView={item.estimatedIncentive} />
       </TableCell>
-      <TableCell loading={loading}>
-        <Button actionType='default' density='slim'>
-          Vote
-        </Button>
-      </TableCell>
+      {canVote && (
+        <TableCell loading={loading}>
+          <VoteButton value={item.symbol} />
+        </TableCell>
+      )}
     </div>
   );
 };

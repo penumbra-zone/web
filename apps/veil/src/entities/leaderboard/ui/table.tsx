@@ -133,9 +133,7 @@ export const LeaderboardTable = ({
           ) : (
             <>
               {sortedPositions.length ? (
-                sortedPositions.map((position, index) => {
-                  const variant = index !== sortedPositions.length - 1 ? 'cell' : 'lastCell';
-
+                sortedPositions.map(position => {
                   return (
                     <Link
                       href={`/inspect/lp/${position.positionId}`}
@@ -146,13 +144,13 @@ export const LeaderboardTable = ({
                         '[&>*]:h-auto',
                       )}
                     >
-                      <TableCell numeric variant={variant}>
+                      <TableCell cell numeric>
                         {position.executions}
                       </TableCell>
-                      <TableCell numeric variant={variant} loading={isLoading}>
+                      <TableCell cell numeric loading={isLoading}>
                         {Math.abs(position.pnlPercentage)}%
                       </TableCell>
-                      <TableCell numeric variant={variant} loading={isLoading}>
+                      <TableCell cell numeric loading={isLoading}>
                         <Text
                           smallTechnical
                           color={
@@ -162,10 +160,10 @@ export const LeaderboardTable = ({
                           {position.pnlPercentage}%
                         </Text>
                       </TableCell>
-                      <TableCell numeric variant={variant}>
+                      <TableCell cell numeric>
                         {formatAge(position.openingTime)}
                       </TableCell>
-                      <TableCell numeric variant={variant}>
+                      <TableCell cell numeric>
                         <div className='flex flex-col gap-2 py-2'>
                           <ValueViewComponent
                             valueView={position.fees1}
@@ -179,7 +177,7 @@ export const LeaderboardTable = ({
                           />
                         </div>
                       </TableCell>
-                      <TableCell numeric variant={variant}>
+                      <TableCell cell numeric>
                         <div className='flex flex-col gap-2 py-2'>
                           <ValueViewComponent
                             valueView={position.volume1}
@@ -193,16 +191,10 @@ export const LeaderboardTable = ({
                           />
                         </div>
                       </TableCell>
-                      <TableCell
-                        numeric
-                        variant={index !== sortedPositions.length - 1 ? 'cell' : 'lastCell'}
-                      >
+                      <TableCell cell numeric>
                         {stateToString(position.state)}
                       </TableCell>
-                      <TableCell
-                        numeric
-                        variant={index !== sortedPositions.length - 1 ? 'cell' : 'lastCell'}
-                      >
+                      <TableCell cell numeric>
                         <div className='flex max-w-[104px]'>
                           <Text as='div' detailTechnical color='text.primary' truncate>
                             {position.positionId}
