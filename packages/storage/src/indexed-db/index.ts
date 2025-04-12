@@ -759,54 +759,53 @@ export class IndexedDb implements IndexedDbInterface {
 
   /**
    * Adds a new epoch with the given start height.
+   *
+   * Epochs are zero-indexed, so the new epoch's index field is equal to the
+   * number of items counted in the table.
+   *
+   * Epoch duration is specified in appParameters, but the actual duration of
+   * any given epoch may vary. Calculations using that parameter must be treated
+   * as estimates.
    */
   async addEpoch(startHeight: bigint): Promise<void> {
     const tx = this.db.transaction('EPOCHS', 'readwrite');
-    await tx.store.openCursor(null, 'prev').then(cursor => {
-      const lastKey = cursor?.key;
-      const lastEpoch = cursor?.value && Epoch.fromJson(cursor.value);
 
-      /** @todo migrate to enforce this without manual check */
-      // avoid saving the same epoch twice
-      if (lastEpoch?.startHeight === startHeight) {
-        return;
-      }
-
-      let addKey: number;
-      let addEpoch: Epoch;
-
-      if (startHeight === 0n && lastKey == null && lastEpoch == null) {
-        // adding the genesis epoch
-        addKey = 0;
-        addEpoch = new Epoch({
-          startHeight: 0n,
-          index: 0n,
-        });
-      } else if (startHeight !== 0n && lastKey != null && lastEpoch != null) {
-        // adding a non-genesis epoch
-        addKey = lastKey + 1;
-        addEpoch = new Epoch({ startHeight, index: lastEpoch.index + 1n });
-      } else {
-        /** @todo migrate to enforce this structurally */
-        throw new RangeError('Invalid epoch height', {
-          cause: { lastEpoch, startHeight },
-        });
-      }
-
-      /** @todo migrate to require specifiation of key/index when adding */
-      // this is not a valid assumption for tables modified with `autoIncrement`
-      // if (BigInt(addKey) !== addEpoch.index) {
-      //   throw new RangeError('Invalid epoch index', { cause: { addKey, addEpoch } });
-      // }
-
-      return tx.store.add(addEpoch.toJson() as Jsonified<Epoch>, addKey);
+    const epoch = new Epoch({
+      startHeight,
+      index: BigInt(await tx.store.count()),
     });
+
+    if (
+      (epoch.index === 0n && epoch.startHeight !== 0n) ||
+      (epoch.index !== 0n && epoch.startHeight === 0n)
+    ) {
+      throw new Error('Invalid epoch', { cause: { epoch } });
+    }
+
+    /**
+     * @todo
+     * create a migration:
+     * - remove `autoIncrement`
+     * - unique `startHeight`
+     * - unique `index`
+     * - relocate existing records to Number(`index`)
+     * until then, the following check is necessary.
+     */
+
+    // avoid saving a duplicate or old epoch
+    const last = await tx.store.openCursor(null, 'prev');
+    if (last) {
+      const lastEpoch = Epoch.fromJson(last.value);
+      if (lastEpoch.startHeight >= epoch.startHeight || lastEpoch.index >= epoch.index) {
+        throw new Error('Duplicate or old epoch', { cause: { lastEpoch, epoch } });
+      }
+    }
+
+    await tx.store.add(epoch.toJson() as Jsonified<Epoch>);
   }
 
   /**
    * Get the actual recorded epoch for a given block height.
-   *
-   * @todo It seems like this could simply be calculated from duration.
    */
   async getEpochByHeight(findHeight: bigint): Promise<Epoch> {
     const latestHeight = await this.getFullSyncHeight();
