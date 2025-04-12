@@ -1,5 +1,16 @@
 # @penumbra-zone/router
 
+## 59.1.0
+
+### Minor Changes
+
+- 7131df9: implement StakeService.validatorStatus
+
+### Patch Changes
+
+- @penumbra-zone/wasm@45.0.2
+- @penumbra-zone/storage@53.0.2
+
 ## 59.0.1
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # penumbra-veil
 
+## 0.0.7
+
+### Patch Changes
+
+- @penumbra-zone/wasm@45.0.2
+- @penumbra-zone/perspective@53.0.2
+- @penumbra-zone/ui@13.17.3
+
 ## 0.0.6
 
 ### Patch Changes

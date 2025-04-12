@@ -1,5 +1,7 @@
 # @penumbra-zone/wasm
 
+## 45.0.2
+
 ## 45.0.1
 
 ### Patch Changes

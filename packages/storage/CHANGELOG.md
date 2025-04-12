@@ -1,5 +1,11 @@
 # @penumbra-zone/storage
 
+## 53.0.2
+
+### Patch Changes
+
+- @penumbra-zone/wasm@45.0.2
+
 ## 53.0.1
 
 ### Patch Changes

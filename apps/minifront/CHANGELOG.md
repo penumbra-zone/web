@@ -1,5 +1,16 @@
 # minifront
 
+## 6.33.0
+
+### Minor Changes
+
+- 51516ba: addressing bug fixes with syncing modal
+
+### Patch Changes
+
+- @penumbra-zone/perspective@53.0.2
+- @penumbra-zone/ui-deprecated@17.1.5
+
 ## 6.32.2
 
 ### Patch Changes
