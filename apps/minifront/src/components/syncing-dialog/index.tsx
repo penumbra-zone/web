@@ -52,7 +52,7 @@ export const SyncingDialog = () => {
   }, [isUnavailable, isSynced, streamError, didClose]);
 
   const dialogText = useMemo(() => {
-    const title = `Syncing ${streamError ? 'interrupted' : '. . .'}`;
+    const title = `Syncing ${streamError ? 'interrupted' : '...'}`;
 
     let error = '';
     if (globalThis.__DEV__ && streamError) {
@@ -86,9 +86,10 @@ export const SyncingDialog = () => {
     return { title, error, detail, instructions };
   }, [didClose, initialStatus.data, isSynced, isUnavailable, streamStatus.data, streamError]);
 
+  // TODO: 'zIndex' is deprecated — update to use zIndex on buttons instead
   return (
     <Dialog isOpen={isOpen} onClose={() => setDidClose(streamError ?? true)}>
-      <Dialog.Content title={dialogText.title}>
+      <Dialog.Content title={dialogText.title} zIndex={9999}>
         <div className='text-center'>
           {dialogText.error && (
             <Text technical color={theme => theme.caution.main} as='div'>
