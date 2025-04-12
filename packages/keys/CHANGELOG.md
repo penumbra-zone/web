@@ -1,5 +1,11 @@
 # @penumbra-zone/keys
 
+## 4.2.2
+
+### Patch Changes
+
+- 1e98e03: update keys script
+
 ## 4.2.1
 
 ### Patch Changes
