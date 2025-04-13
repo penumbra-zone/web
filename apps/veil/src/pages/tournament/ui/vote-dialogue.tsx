@@ -151,9 +151,8 @@ export const VoteDialogueSelector = observer(
       account => getAddressIndex(account).account === subaccount,
     );
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion --
-    // temporarily hardcode the same account address as the reward recipient.
-    const rewardsRecipient = valueAddress?.addressView?.value?.address!;
+    // Temporarily hardcode the same account address as the reward recipient.
+    const rewardsRecipient = valueAddress?.addressView.value?.address;
 
     // Fetch user's spendable voting notes for this epoch
     const { notes, epochIndex } = useLQTNotes(subaccount);
