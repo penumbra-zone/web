@@ -706,6 +706,11 @@ pub async fn plan_transaction_inner<Db: Database>(
 
         // By setting the change address, all of the excess balance we've created
         // from spending the notes will be directed back to our account.
+        //
+        // Note: currently, we default to using the same account address as the reward recipient
+        // in the transaction planner request. If we decide to allow users to set the reward recipient
+        // address dynamically, we’ll need to detect when that field is set and bypass the change address
+        // mechanism accordingly.
         change_address = fvk.ephemeral_address(OsRng, Default::default()).0;
     }
 
