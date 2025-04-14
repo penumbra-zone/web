@@ -1,5 +1,35 @@
 # @penumbra-zone/perspective
 
+## 53.0.2
+
+### Patch Changes
+
+- @penumbra-zone/wasm@45.0.2
+
+## 53.0.1
+
+### Patch Changes
+
+- Updated dependencies [405b5b1]
+  - @penumbra-zone/getters@25.0.1
+  - @penumbra-zone/wasm@45.0.1
+
+## 53.0.0
+
+### Patch Changes
+
+- @penumbra-zone/wasm@45.0.0
+
+## 52.0.0
+
+### Minor Changes
+
+- a5e14e9: Add an adapter from LQT Plan to ActionView
+
+### Patch Changes
+
+- @penumbra-zone/wasm@44.0.0
+
 ## 51.0.0
 
 ### Patch Changes

@@ -80,6 +80,10 @@ pub fn witness_inner(plan: TransactionPlan, stored_tree: StoredTree) -> WasmResu
             plan.delegator_vote_plans()
                 .map(|vote_plan| vote_plan.staked_note.commit()),
         )
+        .chain(
+            plan.lqt_vote_plans()
+                .map(|vote_plan| vote_plan.staked_note.commit()),
+        )
         .collect();
 
     let anchor = sct.root();

@@ -1,23 +1,26 @@
 import Link from 'next/link';
 import { observer } from 'mobx-react-lite';
-import { GradientCard } from '../../shared/gradient-card';
+import { GradientCard } from '../shared/gradient-card';
 import { Icon } from '@penumbra-zone/ui/Icon';
 import { Text } from '@penumbra-zone/ui/Text';
 import { ArrowLeft } from 'lucide-react';
 import { pnum } from '@penumbra-zone/types/pnum';
 import { round } from '@penumbra-zone/types/round';
 import { PagePath } from '@/shared/const/pages';
-import { VotingSection } from './voting-section';
+import { VotingInfo } from '../voting-info';
 
-export const RoundCard = observer(() => {
-  const epoch = 123;
+export interface RoundCardProps {
+  epoch: number;
+}
 
+export const RoundCard = observer(({ epoch }: RoundCardProps) => {
   const startBlock = 123;
   const endBlock = 123;
   const poolAmount = 123;
   const poolLPs = 123;
   const poolDelegators = 123;
   const symbol = 'UM';
+  const ended = false as boolean;
 
   return (
     <GradientCard>
@@ -106,9 +109,9 @@ export const RoundCard = observer(() => {
         <div className='w-full h-[1px] md:w-[1px] md:h-auto bg-other-tonalStroke flex-shrink-0' />
         <div className='flex flex-col w-full md:w-1/2 md:justify-between gap-6 md:gap-0'>
           <Text variant='h4' color='text.primary'>
-            Cast Your Vote
+            {ended ? 'This Epoch is Ended' : 'Cast Your Vote'}
           </Text>
-          <VotingSection isBanned={false} epoch={epoch} />
+          <VotingInfo epoch={epoch} />
         </div>
       </div>
     </GradientCard>

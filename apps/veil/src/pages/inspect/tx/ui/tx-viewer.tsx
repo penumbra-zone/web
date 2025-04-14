@@ -14,8 +14,9 @@ import { SegmentedControl } from '@penumbra-zone/ui/SegmentedControl';
 import { AddressViewComponent } from '@penumbra-zone/ui/AddressView';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { ActionView } from '@penumbra-zone/ui/ActionView';
-import { connectionStore } from '@/shared/model/connection';
 import { shorten } from '@penumbra-zone/types/string';
+import { connectionStore } from '@/shared/model/connection';
+import { useGetMetadata } from '@/shared/api/assets';
 import { useReceiverView } from '../api/use-receiver-view';
 import { useFee } from '../api/use-fee';
 import { InfoRow } from './info-row';
@@ -34,6 +35,7 @@ const OPTIONS = [
 
 export const TxViewer = observer(({ txInfo }: { txInfo?: TransactionInfo }) => {
   const { connected } = connectionStore;
+  const getMetadata = useGetMetadata();
 
   // classify the transaction type
   const transactionClassification = classifyTransaction(txInfo?.view);
@@ -117,6 +119,7 @@ export const TxViewer = observer(({ txInfo }: { txInfo?: TransactionInfo }) => {
                 info={
                   <Density slim>
                     <AddressViewComponent
+                      truncate
                       addressView={txv.bodyView.memoView.memoView.value.plaintext.returnAddress}
                     />
                   </Density>
@@ -143,10 +146,12 @@ export const TxViewer = observer(({ txInfo }: { txInfo?: TransactionInfo }) => {
         <div className='flex flex-col'>
           {txv?.bodyView?.actionViews.map((action, index) => (
             <Fragment key={index}>
-              <ActionView action={action} />
-              <div className='h-2 w-full px-5'>
-                <div className='h-full w-px border-l border-solid border-l-other-tonalStroke' />
-              </div>
+              <ActionView action={action} getMetadata={getMetadata} />
+              {index !== (txv.bodyView?.actionViews.length ?? 1) - 1 && (
+                <div className='h-2 w-full px-5'>
+                  <div className='h-full w-px border-l border-solid border-l-other-tonalStroke' />
+                </div>
+              )}
             </Fragment>
           ))}
         </div>

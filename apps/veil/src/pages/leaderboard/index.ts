@@ -1,1 +1,1 @@
-export { LeaderboardPage } from './ui/page';
+export { LeaderboardPage } from '@/entities/leaderboard/ui/page';

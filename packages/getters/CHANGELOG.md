@@ -1,5 +1,11 @@
 # @penumbra-zone/getters
 
+## 25.0.1
+
+### Patch Changes
+
+- 405b5b1: Fix swap ActionViews not rendering values correctly
+
 ## 25.0.0
 
 ### Patch Changes

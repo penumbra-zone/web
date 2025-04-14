@@ -24,12 +24,13 @@ export interface SwapActionProps extends ActionViewBaseProps {
   value: SwapView;
 }
 
-export const SwapAction = ({ value, getMetadataByAssetId }: SwapActionProps) => {
+export const SwapAction = ({ value, getMetadata }: SwapActionProps) => {
   const density = useDensity();
 
   const isOneWay = isOneWaySwap(value);
-  const swap = isOneWay ? getOneWaySwapValues(value) : undefined;
-  const showOutput = !!getAmount.optional(swap?.output) && !isZero(getAmount(swap?.output));
+  const swap = isOneWay ? getOneWaySwapValues(value, getMetadata) : undefined;
+  const swapOutputAmount = getAmount.optional(swap?.output);
+  const showOutput = !!swapOutputAmount && !isZero(swapOutputAmount);
   const isVisible = value.swapView.case === 'visible';
 
   const unfilled = useMemo(() => {
@@ -49,8 +50,8 @@ export const SwapAction = ({ value, getMetadataByAssetId }: SwapActionProps) => 
     const asset1 = getAsset1Metadata.optional(value);
     const asset2 = getAsset2Metadata.optional(value);
 
-    return parseSwapFees(claimFee, asset1, asset2, getMetadataByAssetId);
-  }, [getMetadataByAssetId, value]);
+    return parseSwapFees(claimFee, asset1, asset2, getMetadata);
+  }, [getMetadata, value]);
 
   if (!isOneWay) {
     return (
@@ -65,11 +66,16 @@ export const SwapAction = ({ value, getMetadataByAssetId }: SwapActionProps) => 
       infoRows={
         isVisible && (
           <>
-            {!!fee && <ActionRow label='Swap Claim Fee' info={fee} />}
+            {!!fee && <ActionRow key='claim-fee' label='Swap Claim Fee' info={fee} />}
             {!!txId && (
-              <ActionRow label='Swap Claim Transaction' info={shorten(txId, 8)} copyText={txId} />
+              <ActionRow
+                key='claim-tx'
+                label='Swap Claim Transaction'
+                info={shorten(txId, 8)}
+                copyText={txId}
+              />
             )}
-            {unfilled && <ActionRow label='Unfilled Amount' info={unfilled} />}
+            {unfilled && <ActionRow key='unfilled' label='Unfilled Amount' info={unfilled} />}
           </>
         )
       }

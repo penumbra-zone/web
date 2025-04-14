@@ -5,7 +5,7 @@ import {
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { positionIdFromBech32 } from '@penumbra-zone/bech32m/plpid';
 import { pnum } from '@penumbra-zone/types/pnum';
-import { GetMetadataByAssetId } from '@/shared/api/assets';
+import { GetMetadata } from '@/shared/api/assets';
 import { isZero } from '@penumbra-zone/types/amount';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { isNumeraireSymbol, isStablecoinSymbol } from '@/shared/utils/is-symbol';
@@ -191,7 +191,7 @@ export const getOrderValueViews = ({
 
 export interface GetDisplayPositionsArgs {
   positions: Map<string, Position>[] | undefined;
-  getMetadataByAssetId: GetMetadataByAssetId;
+  getMetadata: GetMetadata;
   asset1Filter?: Metadata;
   asset2Filter?: Metadata;
   stateFilter?: PositionState_PositionStateEnum[];
@@ -203,7 +203,7 @@ export interface GetDisplayPositionsArgs {
  */
 export const getDisplayPositions = ({
   positions,
-  getMetadataByAssetId,
+  getMetadata,
   asset1Filter,
   asset2Filter,
   stateFilter,
@@ -242,10 +242,7 @@ export const getDisplayPositions = ({
     }
 
     try {
-      const [asset1, asset2] = getCalculatedAssets(
-        position as ExecutedPosition,
-        getMetadataByAssetId,
-      );
+      const [asset1, asset2] = getCalculatedAssets(position as ExecutedPosition, getMetadata);
 
       // Now that we have computed all the price information using the canonical ordering,
       // we can simply adjust our values if the directed pair is not the same as the canonical one:

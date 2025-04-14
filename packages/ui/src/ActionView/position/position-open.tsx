@@ -14,16 +14,16 @@ export interface PositionOpenActionProps extends ActionViewBaseProps {
   value: PositionOpen;
 }
 
-export const PositionOpenAction = ({ value, getMetadataByAssetId }: PositionOpenActionProps) => {
+export const PositionOpenAction = ({ value, getMetadata }: PositionOpenActionProps) => {
   const asset1 = useMemo(() => {
     const id = value.position?.phi?.pair?.asset1;
-    return id ? getMetadataByAssetId?.(id) : undefined;
-  }, [value, getMetadataByAssetId]);
+    return id ? getMetadata?.(id) : undefined;
+  }, [value, getMetadata]);
 
   const asset2 = useMemo(() => {
     const id = value.position?.phi?.pair?.asset2;
-    return id ? getMetadataByAssetId?.(id) : undefined;
-  }, [value, getMetadataByAssetId]);
+    return id ? getMetadata?.(id) : undefined;
+  }, [value, getMetadata]);
 
   // TODO: find a way to compute positionId without WASM functions
   const positionId = useMemo(() => {
@@ -81,17 +81,19 @@ export const PositionOpenAction = ({ value, getMetadataByAssetId }: PositionOpen
       title='Position Open'
       infoRows={
         <>
-          {positionId && <ActionRow label='Position ID' info={positionId} />}
+          {positionId && <ActionRow key='position-id' label='Position ID' info={positionId} />}
 
           <Density slim>
             {r1 && (
               <ActionRow
+                key='r1'
                 label='Reserves'
                 info={<ValueViewComponent valueView={r1} priority='tertiary' showIcon={false} />}
               />
             )}
             {r2 && (
               <ActionRow
+                key='r2'
                 label='Reserves'
                 info={<ValueViewComponent valueView={r2} priority='tertiary' showIcon={false} />}
               />
@@ -99,7 +101,7 @@ export const PositionOpenAction = ({ value, getMetadataByAssetId }: PositionOpen
           </Density>
 
           {!!value.position?.phi?.component?.fee && (
-            <ActionRow label='Fee' info={value.position.phi.component.fee} />
+            <ActionRow key='fee' label='Fee' info={value.position.phi.component.fee} />
           )}
         </>
       }

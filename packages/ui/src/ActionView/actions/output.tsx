@@ -23,7 +23,7 @@ export const OutputAction = ({ value }: OutputActionProps) => {
             priority={density === 'sparse' ? 'primary' : 'tertiary'}
             valueView={getNote(value).value}
           />
-          <AddressViewComponent addressView={getAddress(getNote(value))} />
+          <AddressViewComponent addressView={getAddress(getNote(value))} truncate />
         </Density>
       )}
     </ActionWrapper>

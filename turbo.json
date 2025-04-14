@@ -19,8 +19,11 @@
       "cache": false
     },
     "build": {
-      "dependsOn": ["compile", "proto", "^build"],
-      "outputs": ["dist/**", "*.tsbuildinfo", ".next/**"]
+      "dependsOn": ["compile", "proto", "^build", "^keys"],
+      "outputs": ["dist/**", "keys/*.bin", "*.tsbuildinfo", ".next/**"]
+    },
+    "keys": {
+      "outputs": ["keys/*.bin"]
     },
     "proto": {
       "dependsOn": ["^proto"],
@@ -32,6 +35,7 @@
       "dependsOn": ["//#clean:vitest-mjs"]
     },
     "compile": {
+      "dependsOn": ["^keys"],
       "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock"],
       "outputs": ["wasm/**"]
     },
@@ -84,6 +88,7 @@
       "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock", "crate/tests/**"]
     },
     "test:cargo": {
+      "dependsOn": ["^keys"],
       "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock", "crate/tests/**"]
     }
   }

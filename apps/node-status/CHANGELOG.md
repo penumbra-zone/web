@@ -1,5 +1,42 @@
 # node-status
 
+## 4.1.60
+
+### Patch Changes
+
+- @penumbra-zone/ui-deprecated@17.1.5
+
+## 4.1.59
+
+### Patch Changes
+
+- Updated dependencies [405b5b1]
+  - @penumbra-zone/types@32.2.1
+  - @penumbra-zone/ui-deprecated@17.1.4
+  - @penumbra-zone/crypto-web@41.0.1
+
+## 4.1.58
+
+### Patch Changes
+
+- Updated dependencies [ce4c43e]
+  - @penumbra-zone/types@32.2.0
+  - @penumbra-zone/crypto-web@41.0.0
+  - @penumbra-zone/ui-deprecated@17.1.3
+
+## 4.1.57
+
+### Patch Changes
+
+- Updated dependencies [80148ae]
+- Updated dependencies [b0e0eef]
+- Updated dependencies [5c45f2c]
+- Updated dependencies [85022e1]
+- Updated dependencies [3c48120]
+  - @penumbra-zone/ui-deprecated@17.1.2
+  - @penumbra-zone/types@32.1.0
+  - @penumbra-zone/crypto-web@40.0.0
+
 ## 4.1.56
 
 ### Patch Changes

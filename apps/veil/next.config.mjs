@@ -1,5 +1,7 @@
 const nextConfig = {
   webpack: config => {
+    config.externals.push('pino-pretty');
+
     config.module.rules.push({
       test: /\.svg$/i,
       issuer: /\.[jt]sx?$/,

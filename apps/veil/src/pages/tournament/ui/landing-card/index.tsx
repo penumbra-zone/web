@@ -2,7 +2,7 @@ import { observer } from 'mobx-react-lite';
 import { GradientCard } from '../shared/gradient-card';
 import { Explainer } from './explainer';
 import { Stats } from './stats';
-import { VotingFooter } from './voting-footer';
+import { VotingInfo } from '../voting-info';
 
 export const LandingCard = observer(() => {
   const epoch = 123;
@@ -10,8 +10,6 @@ export const LandingCard = observer(() => {
   const poolLPs = 8000;
   const poolAmount = poolLPs + poolDelegators;
   const symbol = 'UM';
-
-  const isBanned = false;
 
   const results = [
     {
@@ -60,7 +58,7 @@ export const LandingCard = observer(() => {
             symbol={symbol}
             results={results}
           />
-          <VotingFooter isBanned={isBanned} epoch={epoch} />
+          <VotingInfo epoch={epoch} />
         </div>
       </div>
     </GradientCard>

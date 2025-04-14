@@ -18,7 +18,7 @@ export const useTransactions = (subaccount = 0) => {
       const res = await Array.fromAsync(penumbra.service(ViewService).transactionInfo({}));
 
       // Filters and maps the array at the same time
-      const reduced = res.reduce<TransactionInfo[]>((accum, tx) => {
+      let reduced = res.reduce<TransactionInfo[]>((accum, tx) => {
         const addresses = tx.txInfo?.perspective?.addressViews;
 
         if (
@@ -42,7 +42,7 @@ export const useTransactions = (subaccount = 0) => {
       }, []);
 
       // TODO: implement sorting by height in the ViewService, and use `limitAsync` here after it
-      reduced.sort((a, b) => Number(a.height - b.height));
+      reduced = reduced.sort((a, b) => Number(b.height) - Number(a.height));
 
       const offset = BASE_LIMIT * (pageParam as number);
       return reduced.slice(offset, offset + BASE_LIMIT);

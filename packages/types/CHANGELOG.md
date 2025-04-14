@@ -1,5 +1,31 @@
 # @penumbra-zone/types
 
+## 32.2.1
+
+### Patch Changes
+
+- 405b5b1: Fix swap ActionViews not rendering values correctly
+- Updated dependencies [405b5b1]
+  - @penumbra-zone/getters@25.0.1
+
+## 32.2.0
+
+### Minor Changes
+
+- ce4c43e: Add empty string case to round fn
+
+## 32.1.0
+
+### Minor Changes
+
+- b0e0eef: Add exponentialNotation to round fn
+- 85022e1: remove `getUnbondingStartHeight` export from assets regex module
+
+### Patch Changes
+
+- 5c45f2c: Fix `pnum` failing on `undefined` in denom exponent
+- 3c48120: Fix Swap getters for ActionViews
+
 ## 32.0.0
 
 ### Minor Changes

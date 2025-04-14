@@ -1,5 +1,54 @@
 # @penumbra-zone/router
 
+## 59.1.0
+
+### Minor Changes
+
+- 7131df9: implement StakeService.validatorStatus
+
+### Patch Changes
+
+- @penumbra-zone/wasm@45.0.2
+- @penumbra-zone/storage@53.0.2
+
+## 59.0.1
+
+### Patch Changes
+
+- Updated dependencies [405b5b1]
+  - @penumbra-zone/getters@25.0.1
+  - @penumbra-zone/types@32.2.1
+  - @penumbra-zone/storage@53.0.1
+  - @penumbra-zone/crypto-web@41.0.1
+  - @penumbra-zone/wasm@45.0.1
+
+## 59.0.0
+
+### Patch Changes
+
+- Updated dependencies [ce4c43e]
+  - @penumbra-zone/types@32.2.0
+  - @penumbra-zone/crypto-web@41.0.0
+  - @penumbra-zone/storage@53.0.0
+  - @penumbra-zone/wasm@45.0.0
+
+## 58.0.0
+
+### Minor Changes
+
+- f2f8fb2: add 'already_voted' field to LQT view service implementation
+
+### Patch Changes
+
+- Updated dependencies [b0e0eef]
+- Updated dependencies [5c45f2c]
+- Updated dependencies [85022e1]
+- Updated dependencies [3c48120]
+  - @penumbra-zone/types@32.1.0
+  - @penumbra-zone/crypto-web@40.0.0
+  - @penumbra-zone/storage@52.0.0
+  - @penumbra-zone/wasm@44.0.0
+
 ## 57.0.0
 
 ### Patch Changes

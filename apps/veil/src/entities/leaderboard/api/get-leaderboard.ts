@@ -5,7 +5,7 @@ import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb
 import { PositionId } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { serialize, Serialized } from '@/shared/utils/serializer';
 import { toValueView } from '@/shared/utils/value-view';
-import { getURLParams, LeaderboardData, LeaderboardPageInfo, intervalFilterToSQL } from './utils';
+import { getURLParams, LeaderboardData, LeaderboardPageInfo } from './utils';
 import { pindexer } from '@/shared/database';
 
 export const GET = async (
@@ -23,13 +23,14 @@ export const GET = async (
     const filters = getURLParams(new URLSearchParams(req.nextUrl.search));
     const result = await pindexer.queryLeaderboard(
       filters.limit,
-      intervalFilterToSQL[filters.interval],
-      filters.base,
+      filters.offset,
       filters.quote,
+      filters.startBlock,
+      filters.endBlock,
     );
 
     const mapped = await Promise.all(
-      result.map(position => {
+      result.items.map(position => {
         const asset1 = new AssetId({ inner: position.context_asset_start });
         const asset2 = new AssetId({ inner: position.context_asset_end });
         const metadata1 = registry.tryGetMetadata(asset1);
@@ -60,6 +61,10 @@ export const GET = async (
             amount: position.fees2,
             metadata: metadata2,
           }),
+          openingTime: new Date(position.opening_time).getTime(),
+          closingTime: position.closing_time ? new Date(position.closing_time).getTime() : null,
+          state: position.state,
+          pnlPercentage: 0,
         } satisfies LeaderboardData;
       }),
     );
@@ -78,7 +83,9 @@ export const GET = async (
       ),
     );
 
-    return NextResponse.json(serialize({ data: uniquePositions, filters }));
+    return NextResponse.json(
+      serialize({ data: uniquePositions, filters, totalCount: result.totalCount }),
+    );
   } catch (error) {
     return NextResponse.json({ error: String(error) }, { status: 500 });
   }

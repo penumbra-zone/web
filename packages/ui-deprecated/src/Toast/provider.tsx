@@ -1,4 +1,4 @@
-import { Toaster } from 'sonner';
+import { Toaster, ToasterProps } from 'sonner';
 
 /**
  * If `<ToastProvider />` exists in the document, you can call `openToast` function to open a toast with provided type and options.
@@ -36,6 +36,6 @@ import { Toaster } from 'sonner';
  * };
  * ```
  */
-export const ToastProvider: typeof Toaster = ({ ...props }) => {
+export const ToastProvider = ({ ...props }: ToasterProps) => {
   return <Toaster theme='dark' richColors expand {...props} />;
 };

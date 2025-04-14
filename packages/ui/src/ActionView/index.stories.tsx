@@ -17,10 +17,14 @@ import {
   PositionWithdrawAction,
   PositionRewardClaimAction,
   IbcRelayMsgUpdateClientAction,
-  IbcRelayMsgRecvPacketAction,
+  OsmoIbcRelayMsgRecvPacketAction,
+  PenumbraIbcRelayMsgRecvPacketAction,
   IbcRelayMsgAcknowledgementAction,
   IbcRelayMsgTimeoutAction,
   IbcRelayMsgTimeoutOnCloseAction,
+  Ics20WithdrawalAction,
+  LiquidityTournamentVoteAction,
+  LiquidityTournamentVoteActionOpaque,
 } from '../utils/bufs';
 
 const OPTIONS: Record<string, ActionViewMessage> = {
@@ -32,15 +36,19 @@ const OPTIONS: Record<string, ActionViewMessage> = {
   PositionClose: PositionCloseAction,
   PositionWithdraw: PositionWithdrawAction,
   PositionRewardClaim: PositionRewardClaimAction,
-  IbcRelayMsgUpdateClient: IbcRelayMsgUpdateClientAction,
-  IbcRelayMsgRecvPacket: IbcRelayMsgRecvPacketAction,
-  IbcRelayMsgAcknowledgement: IbcRelayMsgAcknowledgementAction,
-  IbcRelayMsgTimeout: IbcRelayMsgTimeoutAction,
-  IbcRelayMsgTimeoutOnClose: IbcRelayMsgTimeoutOnCloseAction,
+  'Deposit: Osmo (MsgRecvPacket)': OsmoIbcRelayMsgRecvPacketAction,
+  'Deposit: UM (MsgRecvPacket)': PenumbraIbcRelayMsgRecvPacketAction,
+  'Deposit: Osmo (MsgAcknowledgement)': IbcRelayMsgAcknowledgementAction,
+  'Deposit: Osmo (MsgTimeout)': IbcRelayMsgTimeoutAction,
+  'Deposit: Osmo (MsgTimeoutOnClose)': IbcRelayMsgTimeoutOnCloseAction,
+  'Deposit: Osmo (MsgUpdateClient)': IbcRelayMsgUpdateClientAction,
+  Withdraw: Ics20WithdrawalAction,
+  LiquidityTournamentVote: LiquidityTournamentVoteAction,
   'Opaque: Spend': SpendActionOpaque,
   'Opaque: Output': OutputActionOpaque,
   'Opaque: Swap': SwapActionOpaque,
   'Opaque: SwapClaim': SwapClaimActionOpaque,
+  'Opaque: LQT Vote': LiquidityTournamentVoteActionOpaque,
 };
 
 const meta: Meta<typeof ActionView> = {
@@ -60,6 +68,6 @@ type Story = StoryObj<typeof ActionView>;
 export const Basic: Story = {
   args: {
     action: SpendAction,
-    getMetadataByAssetId: registry.tryGetMetadata,
+    getMetadata: registry.tryGetMetadata,
   },
 };

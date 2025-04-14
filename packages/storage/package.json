@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/storage",
-  "version": "51.0.0",
+  "version": "53.0.2",
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "engine": {
@@ -34,13 +34,13 @@
     "idb": "^8.0.0"
   },
   "devDependencies": {
-    "@penumbra-labs/registry": "^12.4.0",
+    "@penumbra-labs/registry": "^12.5.1",
     "@penumbra-zone/protobuf": "workspace:*",
     "fetch-mock": "10.0.7"
   },
   "peerDependencies": {
     "@bufbuild/protobuf": "^1.10.0",
-    "@penumbra-labs/registry": "^12.4.0",
+    "@penumbra-labs/registry": "^12.5.1",
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
     "@penumbra-zone/protobuf": "workspace:*",
