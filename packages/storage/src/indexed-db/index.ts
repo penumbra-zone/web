@@ -769,20 +769,8 @@ export class IndexedDb implements IndexedDbInterface {
    * any given epoch may vary. Calculations using that parameter must be treated
    * as estimates.
    */
-  async addEpoch(startHeight: bigint): Promise<void> {
+  async addEpoch(epoch: PlainMessage<Epoch>): Promise<void> {
     const tx = this.db.transaction('EPOCHS', 'readwrite');
-
-    const epoch = new Epoch({
-      startHeight,
-      index: BigInt(await tx.store.count()),
-    });
-
-    if (
-      (epoch.index === 0n && epoch.startHeight !== 0n) ||
-      (epoch.index !== 0n && epoch.startHeight === 0n)
-    ) {
-      throw new Error('Invalid epoch', { cause: { epoch } });
-    }
 
     /**
      * @todo
@@ -791,31 +779,30 @@ export class IndexedDb implements IndexedDbInterface {
      * - unique `startHeight`
      * - unique `index`
      * - relocate existing records to Number(`index`)
-     * until then, the following check is necessary.
      */
-
-    // avoid saving a duplicate or old epoch
-    const last = await tx.store.openCursor(null, 'prev');
-    if (last) {
-      const lastEpoch = Epoch.fromJson(last.value);
-      if (lastEpoch.startHeight >= epoch.startHeight || lastEpoch.index >= epoch.index) {
-        throw new Error('Duplicate or old epoch', { cause: { lastEpoch, epoch } });
-      }
+    const epochCount = await tx.store.count();
+    if (epochCount !== Number(epoch.index)) {
+      throw new Error('Database corrupt: Unexpected epoch index.', { cause: epoch });
     }
 
-    await tx.store.add(epoch.toJson() as Jsonified<Epoch>);
+    await tx.store.add(new Epoch(epoch).toJson() as Jsonified<Epoch>);
   }
 
   /**
    * Get the actual recorded epoch for a given block height.
    */
   async getEpochByHeight(findHeight: bigint): Promise<Epoch> {
-    const latestHeight = await this.getFullSyncHeight();
+    const tx = this.db.transaction(['FULL_SYNC_HEIGHT', 'EPOCHS', 'APP_PARAMETERS'], 'readonly');
+
+    const latestHeight = await tx.objectStore('FULL_SYNC_HEIGHT').get('height');
     if (latestHeight == null) {
       throw new ReferenceError('No synced blocks');
     }
 
-    const epochDuration = await this.getAppParams().then(p => p?.sctParams?.epochDuration);
+    const epochDuration = await tx
+      .objectStore('APP_PARAMETERS')
+      .get('params')
+      .then(json => json && AppParameters.fromJson(json).sctParams?.epochDuration);
     if (epochDuration == null) {
       throw new ReferenceError('No epoch duration');
     }
@@ -858,6 +845,7 @@ export class IndexedDb implements IndexedDbInterface {
       }
     }
 
+    // The whole table has been scanned.
     throw new Error('No epoch for height', { cause: { latestHeight, findHeight } });
   }
 
