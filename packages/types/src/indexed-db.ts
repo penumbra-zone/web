@@ -31,7 +31,10 @@ import {
   FmdParameters,
   Note,
 } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
-import { ValidatorInfo } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
+import {
+  ValidatorInfo,
+  ValidatorInfoResponse,
+} from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 import { AddressIndex, IdentityKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import {
   Transaction,
@@ -113,9 +116,8 @@ export interface IndexedDbInterface {
   addEpoch(epoch: PlainMessage<Epoch>): Promise<void>;
   getEpochByHeight(height: bigint): Promise<Epoch>;
   getBlockHeightByEpoch(epoch_index: bigint): Promise<Epoch | undefined>;
-  upsertValidatorInfo(validatorInfo: ValidatorInfo): Promise<void>;
+  updateValidatorInfo(validatorInfo: AsyncIterable<ValidatorInfoResponse>): Promise<void>;
   iterateValidatorInfos(): AsyncGenerator<ValidatorInfo, void>;
-  clearValidatorInfos(): Promise<void>;
   getValidatorInfo(identityKey: IdentityKey): Promise<ValidatorInfo | undefined>;
   updatePrice(
     pricedAsset: AssetId,
