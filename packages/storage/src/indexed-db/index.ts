@@ -33,7 +33,10 @@ import { IbdUpdater, IbdUpdates } from './updater.js';
 
 import { IdbCursorSource } from './stream.js';
 
-import { ValidatorInfo } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
+import {
+  ValidatorInfo,
+  ValidatorInfoResponse,
+} from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 import {
   Transaction,
   TransactionPerspective,
@@ -67,11 +70,14 @@ import {
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { PartialMessage, PlainMessage } from '@bufbuild/protobuf';
 import { getAmountFromRecord } from '@penumbra-zone/getters/spendable-note-record';
-import { isZero } from '@penumbra-zone/types/amount';
+import { isZero, toDecimalExchangeRate } from '@penumbra-zone/types/amount';
 import { IDB_VERSION } from './config.js';
 import { addLoHi } from '@penumbra-zone/types/lo-hi';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { typeRegistry } from '@penumbra-zone/protobuf';
+import { getDelegationTokenMetadata } from '@penumbra-zone/wasm/stake';
+import { customizeSymbol } from '@penumbra-zone/wasm/metadata';
+import { getValidatorExchangeRate } from '@penumbra-zone/getters/rate-data';
 
 const assertBytes = (v?: Uint8Array, expect?: number, name = 'value'): v is Uint8Array => {
   if (expect !== undefined && v?.length !== expect) {
@@ -865,19 +871,54 @@ export class IndexedDb implements IndexedDbInterface {
     return epoch;
   }
 
-  /**
-   * Inserts the validator info into the database, or updates an existing
-   * validator info if one with the same identity key exists.
-   */
-  async upsertValidatorInfo(validatorInfo: ValidatorInfo): Promise<void> {
-    // bech32m conversion asserts length
-    const identityKeyAsBech32 = bech32mIdentityKey(getIdentityKeyFromValidatorInfo(validatorInfo));
+  async updateValidatorInfo(
+    validatorInfoResponses: AsyncIterable<ValidatorInfoResponse>,
+  ): Promise<void> {
+    const validatorInfos = (await Array.fromAsync(validatorInfoResponses))
+      .map(({ validatorInfo }) => validatorInfo)
+      .filter(x => x != null);
 
-    await this.u.update({
-      table: 'VALIDATOR_INFOS',
-      key: identityKeyAsBech32,
-      value: validatorInfo.toJson() as Jsonified<ValidatorInfo>,
-    });
+    const tx = this.db.transaction(
+      ['VALIDATOR_INFOS', 'ASSETS', 'PRICES', 'FULL_SYNC_HEIGHT'],
+      'readwrite',
+    );
+    const syncHeight = await tx.objectStore('FULL_SYNC_HEIGHT').get('height');
+    if (syncHeight == null) {
+      throw ReferenceError('No sync height');
+    }
+
+    const infoStore = tx.objectStore('VALIDATOR_INFOS');
+    const assetStore = tx.objectStore('ASSETS');
+    const priceStore = tx.objectStore('PRICES');
+
+    void infoStore.clear();
+
+    for (const validatorInfo of validatorInfos) {
+      const identityKey = getIdentityKeyFromValidatorInfo(validatorInfo);
+
+      void infoStore.put(
+        validatorInfo.toJson() as Jsonified<ValidatorInfo>,
+        bech32mIdentityKey(identityKey),
+      );
+
+      const dtMetadata = getDelegationTokenMetadata(identityKey);
+      const customized = customizeSymbol(dtMetadata);
+      customized.penumbraAssetId = getAssetId(customized);
+
+      void assetStore.put(customized.toJson() as Jsonified<Metadata>);
+
+      const exchangeRate = getValidatorExchangeRate(validatorInfo.rateData);
+      const price = new EstimatedPrice({
+        pricedAsset: customized.penumbraAssetId,
+        numeraire: this.stakingTokenAssetId,
+        numerairePerUnit: toDecimalExchangeRate(exchangeRate),
+        asOfHeight: syncHeight + 1n,
+      });
+
+      void priceStore.put(price.toJson() as Jsonified<EstimatedPrice>);
+    }
+
+    return tx.done;
   }
 
   /**
@@ -887,10 +928,6 @@ export class IndexedDb implements IndexedDbInterface {
     yield* new ReadableStream(
       new IdbCursorSource(this.db.transaction('VALIDATOR_INFOS').store.openCursor(), ValidatorInfo),
     );
-  }
-
-  async clearValidatorInfos() {
-    await this.db.clear('VALIDATOR_INFOS');
   }
 
   async getValidatorInfo(identityKey: IdentityKey): Promise<ValidatorInfo | undefined> {
