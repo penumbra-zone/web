@@ -684,6 +684,8 @@ pub async fn plan_transaction_inner<Db: Database>(
                 .ok_or_else(|| anyhow!("missing note in liquidity tournament"))?
                 .try_into()?;
             let note_position: Position = staked_note.position.into();
+
+            // Domain type conversion: `Position(Tree { epoch: EPOCH_INDEX, block: 0, commitment: 0 })`
             let start_position: Position = Position::from((epoch_index as u16, 0, 0));
 
             let vote_plan = ActionLiquidityTournamentVotePlan::new(
@@ -695,23 +697,24 @@ pub async fn plan_transaction_inner<Db: Database>(
                 start_position,
             );
 
+            // For each staked delegation note, we create a corresponding vote plan and a spend plan.
+            //
+            // - The vote plan expresses the user's intent to vote in the liquidity tournament with this
+            //   specific delegation note in the current epoch, where `rewards_recipient` field determines
+            //   the address to mint rewards to.
+            // - The spend plan spends the note, enabling us to *roll over* its value into new notes.
+            //
+            // The latter has two purposes:
+            // (1) Enables note *consolidation*: if a user has multiple staked notes of the same asset,
+            //     they will all be spent and reissued in a smaller number of outputs, reducing note fragmentation
+            //     and minimizing the number of inputs required for future votes.
+            // (2) Prevents nullifier linkability: the voting action doesn't require a spend, but it does reveal
+            //     information about the note, making repeated use across epochs linkable. To avoid this, you can
+            //     optionally spend the notes during voting, consolidating your voting power into a single, unlinkable
+            //     note—allowing future votes with fewer actions.
             actions_list.push(vote_plan);
-
-            // We also want to go ahead and do the consolidation thing,
-            // to reduce the number of votes we need in the next epoch.
-            // To do so, we need to spend all of these notes, and produce one output per
-            // delegator token.
             actions_list.push(SpendPlan::new(&mut OsRng, note, note_position));
         }
-
-        // By setting the change address, all of the excess balance we've created
-        // from spending the notes will be directed back to our account.
-        //
-        // Note: currently, we default to using the same account address as the reward recipient
-        // in the transaction planner request. If we decide to allow users to set the reward recipient
-        // address dynamically, we’ll need to detect when that field is set and bypass the change address
-        // mechanism accordingly.
-        change_address = fvk.ephemeral_address(OsRng, Default::default()).0;
     }
 
     // Phase 2: balance the transaction with information from the view service.
