@@ -23,6 +23,18 @@ function shareToX(text: string, url: string) {
   window.open(tweetUrl, '_blank');
 }
 
+/**
+ * - One time per epoch modal
+ * - If you got a reward, this social card is displayed which can be shared on X
+ *
+ * 1. When would this happen
+ *    - This would happen specifically the first time that someone opens Veil if
+ *      - having voted in a recent delegation event
+ *      - and has not dismissed the social card modal
+ *    - It should be triggered by the delegator address receiving a rewards distribution,
+ *      - and is dismissable each epoch unless the delegator does not vote in the current
+ *        epoch (this will be evident by whether or not their receive a rewards distribution).
+ */
 export const SocialCardDialog = observer(
   ({ isOpen: isOpenProp, onClose }: { isOpen: boolean; onClose: () => void }) => {
     const [dontShowAgain, setDontShowAgain] = useState(false);
