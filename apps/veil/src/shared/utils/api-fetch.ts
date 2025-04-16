@@ -23,9 +23,16 @@ const parseResponse = async <RES extends object>(response: Response) => {
  */
 export const apiFetch = async <RES extends object>(
   url: string,
-  searchParams: Record<string, string> = {},
+  searchParams: Record<string, string | number | undefined> = {},
 ): Promise<RES> => {
-  const urlParams = new URLSearchParams(searchParams).toString();
+  const params = Object.entries(searchParams).reduce<Record<string, string>>((acc, [key, value]) => {
+    if (value !== undefined) {
+      acc[key] = value.toString();
+    }
+    return acc;
+  }, {});
+
+  const urlParams = new URLSearchParams(params).toString();
   const fetchRes = await fetch(`${url}${urlParams && `?${urlParams}`}`);
 
   return parseResponse<RES>(fetchRes);

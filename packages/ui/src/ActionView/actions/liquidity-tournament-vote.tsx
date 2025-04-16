@@ -24,6 +24,7 @@ export const LiquidityTournamentVoteAction = ({
 
   const voteAsset = useMemo(() => {
     const incentivized = vote?.body?.incentivized;
+    console.log('INCENTIVE', incentivized);
     const metadata = incentivized && getMetadata?.(incentivized);
     if (!metadata) {
       return undefined;

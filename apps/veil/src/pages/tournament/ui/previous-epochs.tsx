@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { ChevronRight } from 'lucide-react';
+import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { Pagination } from '@penumbra-zone/ui/Pagination';
 import { TableCell } from '@penumbra-zone/ui/TableCell';
@@ -31,13 +32,13 @@ export const PreviousEpochs = observer(() => {
   const [limit, setLimit] = useState(BASE_LIMIT);
   const { getTableHeader, sortBy } = useSortableTableHeaders<keyof Required<EpochVote>['sort']>();
 
-  const { connected } = connectionStore;
+  const { connected, address } = connectionStore;
   const tableKey = connected ? 'connected' : 'default';
 
   const {
     query: { data, isLoading },
     total,
-  } = usePreviousEpochs(connected, page, limit, sortBy.key, sortBy.direction);
+  } = usePreviousEpochs(connected, page, limit, address && bech32mAddress(address), sortBy.key, sortBy.direction);
 
   const loadingArr = new Array(10).fill({ votes: [] }) as EpochVote[];
   const epochs = data ?? loadingArr;

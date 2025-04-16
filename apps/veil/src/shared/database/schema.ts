@@ -357,6 +357,24 @@ export interface SupplyValidators {
   identity_key: string;
 }
 
+export interface FinishedEpochs {
+  epoch: number;
+}
+
+export interface Votes {
+  id: Generated<number>;
+  epoch: number;
+  power: number;
+  asset_id: Buffer;
+  address: Buffer;
+}
+
+export interface DelegatorRewards {
+  epoch: number;
+  address: Buffer;
+  amount: number;
+}
+
 interface RawDB {
   _insights_shielded_pool_depositors: _InsightsShieldedPoolDepositors;
   _insights_validators: _InsightsValidators;
@@ -388,6 +406,9 @@ interface RawDB {
   supply_total_staked: SupplyTotalStaked;
   supply_total_unstaked: SupplyTotalUnstaked;
   supply_validators: SupplyValidators;
+  'lqt._finished_epochs': FinishedEpochs;
+  'lqt._votes': Votes;
+  'lqt._delegator_rewards': DelegatorRewards;
 }
 
 export type DB = Pick<
@@ -404,4 +425,7 @@ export type DB = Pick<
   | 'dex_ex_metadata'
   | 'dex_ex_block_summary'
   | 'dex_ex_transactions'
+  | 'lqt._finished_epochs'
+  | 'lqt._votes'
+  | 'lqt._delegator_rewards'
 >;

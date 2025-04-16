@@ -5,6 +5,8 @@ import { getAmount } from '@penumbra-zone/getters/value-view';
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { DUMMY_UM_METADATA, DUMMY_USDC_METADATA, DUMMY_VALUE_VIEW } from './dummy';
 import { LQTVote } from './use-voting-rewards';
+import { apiFetch } from '@/shared/utils/api-fetch';
+import type { PreviousEpochsApiResponse, PreviousEpochsRequest } from '../server/previous-epochs';
 
 export const BASE_LIMIT = 10;
 export const BASE_PAGE = 1;
@@ -70,12 +72,22 @@ export const usePreviousEpochs = (
   connected: boolean,
   page = BASE_PAGE,
   limit = BASE_LIMIT,
+  address?: string,
   sortKey?: keyof Required<EpochVote>['sort'] | '',
   sortDirection?: 'asc' | 'desc',
 ) => {
   const query = useQuery<EpochVote[]>({
-    queryKey: ['previous-epochs', connected, page, limit, sortKey, sortDirection],
+    queryKey: ['previous-epochs', connected, page, limit, sortKey, sortDirection, address],
     queryFn: async () => {
+      const data = await apiFetch<PreviousEpochsApiResponse>('/api/tournament/previous-epochs', {
+        limit,
+        page,
+        address,
+        sortKey,
+        sortDirection,
+      } satisfies Partial<PreviousEpochsRequest>);
+      console.log('DATA', data);
+
       // TODO: use backend API to fetch, filter, and sort previous epochs
       return new Promise(resolve => {
         setTimeout(() => {

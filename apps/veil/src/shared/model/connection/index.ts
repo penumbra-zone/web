@@ -5,6 +5,7 @@ import {
   PenumbraClient,
 } from '@penumbra-zone/client';
 import { makeAutoObservable } from 'mobx';
+import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { openToast } from '@penumbra-zone/ui/Toast';
 import { penumbra } from '@/shared/const/penumbra';
 import { ViewService } from '@penumbra-zone/protobuf';
@@ -13,6 +14,7 @@ import { envQueryFn } from '@/shared/api/env/env';
 class ConnectionStateStore {
   connected = false;
   manifest: PenumbraManifest | undefined;
+  address: Address | undefined;
 
   /** Index of the selected subaccount */
   subaccount = 0;
@@ -27,10 +29,19 @@ class ConnectionStateStore {
 
   private setConnected(connected: boolean) {
     this.connected = connected;
+    if (connected) {
+      void this.setAddress();
+    }
   }
 
   setSubaccount = (subaccount: string) => {
     this.subaccount = parseInt(subaccount, 10);
+    void this.setAddress();
+  };
+
+  setAddress = async () => {
+    const address = await penumbra.service(ViewService).addressByIndex({ addressIndex: { account: this.subaccount }});
+    this.address = address.address;
   };
 
   async reconnect() {
