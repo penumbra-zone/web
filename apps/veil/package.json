@@ -53,6 +53,7 @@
     "@textea/json-viewer": "^4.0.0",
     "bech32": "^2.0.0",
     "bignumber.js": "^9.1.2",
+    "canvas": "^3.1.0",
     "chain-registry": "^1.69.59",
     "clsx": "^2.1.1",
     "configs": "github:prax-wallet/configs#main",
