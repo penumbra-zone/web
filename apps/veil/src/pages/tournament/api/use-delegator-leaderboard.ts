@@ -1,6 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { apiFetch } from '@/shared/utils/api-fetch';
-import type { DelegatorLeaderboardApiResponse, DelegatorLeaderboardRequest, DelegatorLeaderboardSortKey } from '../server/delegator-leaderboard';
+import type {
+  DelegatorLeaderboardApiResponse,
+  DelegatorLeaderboardRequest,
+  DelegatorLeaderboardSortKey,
+} from '../server/delegator-leaderboard';
 
 export const BASE_LIMIT = 10;
 export const BASE_PAGE = 1;

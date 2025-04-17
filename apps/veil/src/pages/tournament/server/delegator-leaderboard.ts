@@ -18,7 +18,8 @@ export interface DelegatorLeaderboardRequest {
   sortDirection: DelegatorLeaderboardSortDirection;
 }
 
-export interface DelegatorLeaderboardData extends Omit<DelegatorSummary, 'address' | 'epochs_voted_in'> {
+export interface DelegatorLeaderboardData
+  extends Omit<DelegatorSummary, 'address' | 'epochs_voted_in'> {
   place: number;
   epochs_voted_in: number;
   address: Address;
@@ -45,7 +46,8 @@ export const getQueryParams = (req: NextRequest): DelegatorLeaderboardRequest =>
 
   const sortDirectionParam = searchParams.get('sortDirection');
   const sortDirection =
-    sortDirectionParam && DIRECTIONS.includes(sortDirectionParam as DelegatorLeaderboardSortDirection)
+    sortDirectionParam &&
+    DIRECTIONS.includes(sortDirectionParam as DelegatorLeaderboardSortDirection)
       ? (sortDirectionParam as DelegatorLeaderboardSortDirection)
       : 'asc';
 
@@ -57,7 +59,12 @@ export const getQueryParams = (req: NextRequest): DelegatorLeaderboardRequest =>
   };
 };
 
-const previousEpochsQuery = async ({ limit, page, sortKey, sortDirection }: DelegatorLeaderboardRequest) => {
+const previousEpochsQuery = async ({
+  limit,
+  page,
+  sortKey,
+  sortDirection,
+}: DelegatorLeaderboardRequest) => {
   // 1. Create a virtual column "place" that ranks the delegators based on the amount of epochs they voted in
   const ranked = pindexerDb
     .selectFrom('lqt.delegator_summary')
@@ -89,21 +96,20 @@ export async function GET(
 ): Promise<NextResponse<Serialized<DelegatorLeaderboardApiResponse | { error: string }>>> {
   const params = getQueryParams(req);
 
-  const [results, total] = await Promise.all([
-    previousEpochsQuery(params),
-    totalDelegatorsQuery(),
-  ]);
+  const [results, total] = await Promise.all([previousEpochsQuery(params), totalDelegatorsQuery()]);
 
-  const mapped = results.map<DelegatorLeaderboardData>(item => ({
-    streak: item.streak,
-    total_rewards: item.total_rewards,
-    total_voting_power: item.total_voting_power,
-    epochs_voted_in: Number(item.epochs_voted_in),
-    place: Number(item.place),
-    address: new Address({
-      inner: item.address,
-    }),
-  })).filter(Boolean);
+  const mapped = results
+    .map<DelegatorLeaderboardData>(item => ({
+      streak: item.streak,
+      total_rewards: item.total_rewards,
+      total_voting_power: item.total_voting_power,
+      epochs_voted_in: Number(item.epochs_voted_in),
+      place: Number(item.place),
+      address: new Address({
+        inner: item.address,
+      }),
+    }))
+    .filter(Boolean);
 
   return NextResponse.json({
     total: Number(total?.total ?? 0),
