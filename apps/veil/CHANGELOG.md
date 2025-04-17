@@ -1,5 +1,14 @@
 # penumbra-veil
 
+## 0.0.8
+
+### Patch Changes
+
+- Updated dependencies [43249b0]
+  - @penumbra-zone/wasm@45.1.0
+  - @penumbra-zone/perspective@54.0.0
+  - @penumbra-zone/ui@13.17.4
+
 ## 0.0.7
 
 ### Patch Changes
