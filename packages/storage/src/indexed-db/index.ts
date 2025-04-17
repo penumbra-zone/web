@@ -109,7 +109,7 @@ interface IndexedDbProps {
 }
 
 export class IndexedDb implements IndexedDbInterface {
-  private constructor(
+  constructor(
     private readonly db: IDBPDatabase<PenumbraDb>,
     private readonly u: IbdUpdater,
     private readonly c: IdbConstants,
@@ -159,7 +159,10 @@ export class IndexedDb implements IndexedDbInterface {
         }).createIndex('nullifier', 'nullifier.inner');
         db.createObjectStore('GAS_PRICES', { keyPath: 'assetId.inner' });
         db.createObjectStore('POSITIONS', { keyPath: 'id.inner' });
+
+        /** @todo migrate to { autoIncrement: false }, and use Number(epoch.index) as key */
         db.createObjectStore('EPOCHS', { autoIncrement: true });
+
         db.createObjectStore('VALIDATOR_INFOS');
         db.createObjectStore('PRICES', {
           keyPath: ['pricedAsset.inner', 'numeraire.inner'],
@@ -757,65 +760,126 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   /**
-   * Adds a new epoch with the given start height. Automatically sets the epoch
-   * index by finding the previous epoch index, and adding 1n.
+   * Adds a new epoch with the given start height.
+   *
+   * Epochs are zero-indexed, so the new epoch's index field is equal to the
+   * number of items counted in the table.
+   *
+   * Epoch duration is specified in appParameters, but the actual duration of
+   * any given epoch may vary. Calculations using that parameter must be treated
+   * as estimates.
    */
-  async addEpoch(startHeight: bigint): Promise<void> {
-    const cursor = await this.db.transaction('EPOCHS', 'readonly').store.openCursor(null, 'prev');
-    const previousEpoch = cursor?.value ? Epoch.fromJson(cursor.value) : undefined;
-    const index = previousEpoch?.index !== undefined ? previousEpoch.index + 1n : 0n;
+  async addEpoch(epoch: PlainMessage<Epoch>): Promise<void> {
+    const tx = this.db.transaction('EPOCHS', 'readwrite');
 
-    // avoid saving the same epoch twice
-    if (previousEpoch?.startHeight === startHeight) {
-      return;
+    /**
+     * @todo
+     * create a migration:
+     * - remove `autoIncrement`
+     * - unique `startHeight`
+     * - unique `index`
+     * - relocate existing records to Number(`index`)
+     */
+    const epochCount = await tx.store.count();
+    if (epochCount !== Number(epoch.index)) {
+      throw new RangeError('Adding epoch with unexpected index', { cause: { epoch, epochCount } });
     }
 
-    const newEpoch = {
-      startHeight: startHeight.toString(),
-      index: index.toString(),
-    };
-
-    await this.u.update({
-      table: 'EPOCHS',
-      value: newEpoch,
-    });
+    await tx.store.add(new Epoch(epoch).toJson() as Jsonified<Epoch>);
   }
 
   /**
-   * Get the epoch that contains the given block height.
+   * Get the actual recorded epoch for a given block height.
    */
-  async getEpochByHeight(
-    /**
-     * The block height to query by. Will return the epoch with the largest
-     * start height smaller than `height` -- that is, the epoch that contains
-     * this height.
-     */
-    height: bigint,
-  ): Promise<Epoch | undefined> {
-    let epoch: Epoch | undefined;
+  async getEpochByHeight(findHeight: bigint): Promise<Epoch> {
+    const tx = this.db.transaction(['FULL_SYNC_HEIGHT', 'EPOCHS', 'APP_PARAMETERS'], 'readonly');
 
-    /**
-     * Iterate over epochs and return the one with the largest start height
-     * smaller than `height`.
-     *
-     * Unfortunately, there doesn't appear to be a more efficient way of doing
-     * this. We tried using epochs' start heights as their key so that we could
-     * use a particular start height as a query bounds, but IndexedDB casts the
-     * `bigint` start height to a string, which messes up sorting (the string
-     * '11' is greater than the string '100', for example). For now, then, we
-     * have to just iterate over all epochs to find the correct starting height.
-     */
-    for await (const cursor of this.db.transaction('EPOCHS', 'readonly').store) {
-      const currentEpoch = Epoch.fromJson(cursor.value);
+    const latestHeight = await tx.objectStore('FULL_SYNC_HEIGHT').get('height');
+    if (latestHeight == null) {
+      throw new ReferenceError('No synced blocks');
+    }
 
-      if (currentEpoch.startHeight <= height) {
-        epoch = currentEpoch;
-      } else if (currentEpoch.startHeight > height) {
-        break;
+    const epochDuration = await tx
+      .objectStore('APP_PARAMETERS')
+      .get('params')
+      .then(json => json && AppParameters.fromJson(json).sctParams?.epochDuration);
+    if (epochDuration == null) {
+      throw new ReferenceError('No epoch duration');
+    }
+
+    let nearPrev: Epoch | undefined = undefined;
+    let nearNext: Epoch | undefined = undefined;
+
+    // TODO: resolve these issues and delete this comment
+    //
+    // this query can't be made directly. probably, the schema should be
+    // changed.  but it was decided to not key the schema because: epoch field
+    // values are bigints, which can't be idb keys.  they're stored as json,
+    // meaning they've become strings which sort lexically.
+    //
+    // without changing the schema, the `addEpoch` method has been refactored to
+    // eliminate problems, which requires resync to destroy possibly invalid
+    // historical data. this method was written before that to assume the data
+    // may be inconsistent and needs update.
+    // new guarantees:
+    // - epoch indicies and start heights increase monotonically
+    // - adjacent indicies can identify the range of a historic epoch
+    //
+    // the query is likely for a very recent epoch. so, this implementation
+    // begins iterating the table from the end (recent insertions, present
+    // epoch) towards the beginning (oldest insertions, genesis epoch) and
+    // attempts to identify a valid pair of epochs bounding a range containing
+    // the queried height.
+    //
+    // a pair of bounding epochs will not be identified for a queried height
+    // within the last inserted epoch or in an epoch that is not yet inserted.
+    //
+    // epoch duration MAY allow estimation of the present epoch. so on
+    // iteration, if the range is only bounded in the past direction, which
+    // should occur only on the first iteration consuming the last inserted
+    // epoch when the queried height meets those conditions and the above
+    // guarantees, the expected epoch duration is used to predict if the queried
+    // height is within the expected range of the single bounding epoch.
+    //
+    // TODO: THIS MAY STILL RETURN A WRONG ANSWER if the last inserted epoch
+    // terminates earlier than the expected duration. ideally, this should
+    // always throw if it must estimate, but that seems to break some planner
+    // and sync logic...
+    for await (const { value } of this.db.transaction('EPOCHS').store.iterate(null, 'prev')) {
+      const epoch = Epoch.fromJson(value);
+
+      // update range
+      if (epoch.startHeight <= findHeight) {
+        if (!nearPrev || epoch.index > nearPrev.index) {
+          nearPrev = epoch;
+        }
+      } else if (epoch.startHeight > findHeight) {
+        if (!nearNext || epoch.index < nearNext.index) {
+          nearNext = epoch;
+        }
+      }
+
+      // check range
+      if (nearPrev) {
+        if (nearNext && nearPrev.index + 1n === nearNext.index) {
+          // range including the queried height is identified
+          return nearPrev;
+        } else if (!nearNext && nearPrev.startHeight + epochDuration > findHeight) {
+          // range is estimated to include the queried height
+          return nearPrev;
+          // TODO: conditions to check
+          // - is a queried height estimated to be within the last synced epoch far
+          //   enough behind the latest known height that the epoch should have
+          //   completed? the user should probably wait for sync.
+          // - is a queried height estimated to be within an unsynced epoch far enough
+          //   behind the latest known height that the epoch should have completed? the
+          //   user should probably wait for sync.
+        }
       }
     }
 
-    return epoch;
+    // The whole table has been scanned.
+    throw new Error('No epoch for height', { cause: { latestHeight, findHeight } });
   }
 
   /**
@@ -1006,8 +1070,7 @@ export class IndexedDb implements IndexedDbInterface {
       return;
     }
 
-    const epoch =
-      (await this.getEpochByHeight(blockHeight)) ?? new Epoch({ startHeight: 0n, index: 0n });
+    const epoch = await this.getEpochByHeight(blockHeight);
 
     for (const n of swaps) {
       if (!n.outputData) {
