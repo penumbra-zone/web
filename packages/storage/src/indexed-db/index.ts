@@ -782,7 +782,7 @@ export class IndexedDb implements IndexedDbInterface {
      */
     const epochCount = await tx.store.count();
     if (epochCount !== Number(epoch.index)) {
-      throw new Error('Database corrupt: Unexpected epoch index.', { cause: epoch });
+      throw new RangeError('Adding epoch with unexpected index', { cause: { epoch, epochCount } });
     }
 
     await tx.store.add(new Epoch(epoch).toJson() as Jsonified<Epoch>);
