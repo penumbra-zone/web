@@ -357,22 +357,12 @@ export interface SupplyValidators {
   identity_key: string;
 }
 
-export interface FinishedEpochs {
+export interface Gauge {
   epoch: number;
-}
-
-export interface Votes {
-  id: Generated<number>;
-  epoch: number;
-  power: number;
   asset_id: Buffer;
-  address: Buffer;
-}
-
-export interface DelegatorRewards {
-  epoch: number;
-  address: Buffer;
-  amount: number;
+  votes: number;
+  portion: number;
+  missing_votes: bigint;
 }
 
 interface RawDB {
@@ -406,9 +396,7 @@ interface RawDB {
   supply_total_staked: SupplyTotalStaked;
   supply_total_unstaked: SupplyTotalUnstaked;
   supply_validators: SupplyValidators;
-  'lqt._finished_epochs': FinishedEpochs;
-  'lqt._votes': Votes;
-  'lqt._delegator_rewards': DelegatorRewards;
+  'lqt.gauge': Gauge;
 }
 
 export type DB = Pick<
@@ -428,4 +416,5 @@ export type DB = Pick<
   | 'lqt._finished_epochs'
   | 'lqt._votes'
   | 'lqt._delegator_rewards'
+  | 'lqt.gauge'
 >;

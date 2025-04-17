@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { ChevronRight } from 'lucide-react';
-import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { Pagination } from '@penumbra-zone/ui/Pagination';
 import { TableCell } from '@penumbra-zone/ui/TableCell';
@@ -12,7 +11,8 @@ import { Density } from '@penumbra-zone/ui/Density';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { connectionStore } from '@/shared/model/connection';
-import { usePreviousEpochs, BASE_PAGE, BASE_LIMIT, EpochVote } from '../api/use-previous-epochs';
+import { usePreviousEpochs, BASE_PAGE, BASE_LIMIT } from '../api/use-previous-epochs';
+import type { PreviousEpochData } from '../server/previous-epochs';
 import { useSortableTableHeaders } from './sortable-table-header';
 import { Vote } from './vote';
 
@@ -30,17 +30,19 @@ const TABLE_CLASSES = {
 export const PreviousEpochs = observer(() => {
   const [page, setPage] = useState(BASE_PAGE);
   const [limit, setLimit] = useState(BASE_LIMIT);
-  const { getTableHeader, sortBy } = useSortableTableHeaders<keyof Required<EpochVote>['sort']>();
+  const { getTableHeader, sortBy } = useSortableTableHeaders<'epoch'>();
 
-  const { connected, address } = connectionStore;
+  const { connected } = connectionStore;
   const tableKey = connected ? 'connected' : 'default';
 
+  // TODO: use ViewService to request delegator rewards for connected users
   const {
-    query: { data, isLoading },
+    query: { isLoading },
+    data,
     total,
-  } = usePreviousEpochs(connected, page, limit, address && bech32mAddress(address), sortBy.key, sortBy.direction);
+  } = usePreviousEpochs(connected, page, limit, sortBy.key, sortBy.direction);
 
-  const loadingArr = new Array(10).fill({ votes: [] }) as EpochVote[];
+  const loadingArr = new Array(10).fill({ votes: [] }) as PreviousEpochData[];
   const epochs = data ?? loadingArr;
 
   const onLimitChange = (newLimit: number) => {
@@ -58,8 +60,8 @@ export const PreviousEpochs = observer(() => {
           <div className={cn('grid grid-cols-subgrid', TABLE_CLASSES.row[tableKey])}>
             {getTableHeader('epoch', 'Epoch')}
             <TableCell heading>Votes Summary</TableCell>
-            {connected && getTableHeader('lpReward', 'My LPs Rewards')}
-            {connected && getTableHeader('lpReward', 'My Voting Rewards')}
+            {connected && <TableCell heading>My LPs Rewards</TableCell>}
+            {connected && <TableCell heading>My Voting Rewards</TableCell>}
             <TableCell heading> </TableCell>
           </div>
 
@@ -77,44 +79,39 @@ export const PreviousEpochs = observer(() => {
                 Epoch #{epoch.epoch}
               </TableCell>
               <TableCell cell loading={isLoading}>
+                {!isLoading && !epoch.gauge.length && '-'}
                 {!isLoading &&
-                  epoch.votes.slice(0, 3).map((vote, index) => (
+                  epoch.gauge.slice(0, 3).map((vote, index) => (
                     <div key={index} className='flex items-center justify-start min-w-[88px] px-1'>
-                      <Vote asset={vote.asset} percent={vote.percent} hideFor />
+                      <Vote asset={vote.asset} percent={vote.portion} hideFor />
                     </div>
                   ))}
-                {!isLoading && epoch.votes.length > 3 && (
+                {!isLoading && epoch.gauge.length > 3 && (
                   <Tooltip
                     message={
                       <div className='flex flex-col gap-2'>
-                        {epoch.votes.slice(3).map((vote, index) => (
-                          <Vote key={index} asset={vote.asset} percent={vote.percent} hideFor />
+                        {epoch.gauge.slice(3).map((vote, index) => (
+                          <Vote key={index} asset={vote.asset} percent={vote.portion} hideFor />
                         ))}
                       </div>
                     }
                   >
                     <div className='flex items-center justify-start px-3 text-text-primary'>
-                      <Text smallTechnical>+{epoch.votes.length - 3}</Text>
+                      <Text smallTechnical>+{epoch.gauge.length - 3}</Text>
                     </div>
                   </Tooltip>
                 )}
               </TableCell>
               {connected && (
                 <TableCell cell loading={isLoading}>
-                  {typeof epoch.lpReward === 'undefined' ? (
-                    '–'
-                  ) : (
-                    <ValueViewComponent valueView={epoch.lpReward} priority='tertiary' />
-                  )}
+                  {/* eslint-disable-next-line -- TODO: implement delegator rewards by account */}
+                  {true ? '–' : <ValueViewComponent valueView={undefined} priority='tertiary' />}
                 </TableCell>
               )}
               {connected && (
                 <TableCell cell loading={isLoading}>
-                  {typeof epoch.votingReward === 'undefined' ? (
-                    '–'
-                  ) : (
-                    <ValueViewComponent valueView={epoch.votingReward} priority='tertiary' />
-                  )}
+                  {/* eslint-disable-next-line -- TODO: implement LP rewards by account */}
+                  {true ? '–' : <ValueViewComponent valueView={undefined} priority='tertiary' />}
                 </TableCell>
               )}
               <TableCell cell loading={isLoading}>
