@@ -1,48 +1,83 @@
 import cn from 'clsx';
+import Link from 'next/link';
 import { useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { ChevronRight, ExternalLink } from 'lucide-react';
-import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { getAddressIndex, getAddress } from '@penumbra-zone/getters/address-view';
+import { Address, AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { AddressViewComponent } from '@penumbra-zone/ui/AddressView';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { Pagination } from '@penumbra-zone/ui/Pagination';
 import { TableCell } from '@penumbra-zone/ui/TableCell';
+import { splitLoHi } from '@penumbra-zone/types/lo-hi';
 import { Density } from '@penumbra-zone/ui/Density';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
+import { PagePath } from '@/shared/const/pages';
+import type { DelegatorLeaderboardSortKey, DelegatorLeaderboardData } from '../server/delegator-leaderboard';
 import {
   useDelegatorLeaderboard,
   BASE_PAGE,
   BASE_LIMIT,
-  DelegatorLeaderboardInfo,
 } from '../api/use-delegator-leaderboard';
 import { useSortableTableHeaders } from './sortable-table-header';
-import Link from 'next/link';
-import { PagePath } from '@/shared/const/pages';
 
 export const DelegatorLeaderboard = observer(() => {
   const [page, setPage] = useState(BASE_PAGE);
   const [limit, setLimit] = useState(BASE_LIMIT);
   const { getTableHeader, sortBy } =
-    useSortableTableHeaders<keyof Required<DelegatorLeaderboardInfo>['sort']>();
+    useSortableTableHeaders<DelegatorLeaderboardSortKey>('place', 'asc');
 
   const {
-    query: { data, isLoading },
+    query: { isLoading },
+    data,
     total,
   } = useDelegatorLeaderboard(page, limit, sortBy.key, sortBy.direction);
 
-  const loadingArr = new Array(5).fill({}) as DelegatorLeaderboardInfo[];
+  const loadingArr = new Array(5).fill({}) as DelegatorLeaderboardData[];
   const leaderboard = data ?? loadingArr;
 
-  const getAddressString = (addressView: AddressView) => {
-    const address = getAddress.optional(addressView);
-    return address?.inner ? encodeURIComponent(uint8ArrayToBase64(address.inner)) : '';
+  const getAddressString = (address: Address) => {
+    return encodeURIComponent(uint8ArrayToBase64(address.inner));
   };
 
-  const isExternal = (address: AddressView): boolean => {
-    return !getAddressIndex.optional(address);
+  const getAddressView = (address: Address) => {
+    return new AddressView({
+      addressView: {
+        case: 'opaque',
+        value: {
+          address,
+        },
+      },
+    });
+  };
+
+  const getTotalRewards = (amount: number) => {
+    const RANDOM_DELUM_DENOM = 'delegation_penumbravalid12s9lanucncnyasrsqgy6z532q7nwsw3aqzzeqas55kkpyf6lhsqs2w0zar';
+    return new ValueView({
+      valueView: {
+        case: 'knownAssetId',
+        value: {
+          amount: splitLoHi(BigInt(amount)),
+          metadata: {
+            denomUnits: [
+              {
+                denom: RANDOM_DELUM_DENOM,
+                exponent: 6,
+              }
+            ],
+            display: RANDOM_DELUM_DENOM,
+            symbol: 'delUM',
+          },
+        },
+      },
+    });
+  };
+
+  const isExternal = (address: Address): boolean => {
+    return true;
+    // return !getAddressIndex.optional(address);
   };
 
   const onLimitChange = (newLimit: number) => {
@@ -60,9 +95,9 @@ export const DelegatorLeaderboard = observer(() => {
           <div className='grid grid-cols-subgrid col-span-6'>
             {getTableHeader('place', 'Place')}
             <TableCell heading>Delegator Address</TableCell>
-            {getTableHeader('rounds', 'Rounds Participated')}
+            {getTableHeader('epochs_voted_in', 'Rounds Participated')}
             {getTableHeader('streak', 'Voting Streak')}
-            {getTableHeader('reward', 'Rewards Earned')}
+            {getTableHeader('total_rewards', 'Rewards Earned')}
             <TableCell heading> </TableCell>
           </div>
 
@@ -87,10 +122,10 @@ export const DelegatorLeaderboard = observer(() => {
                 {!isLoading && (
                   <>
                     <AddressViewComponent
-                      addressView={row.address}
                       truncate
-                      hideIcon={isExternal(row.address)}
                       copyable={false}
+                      hideIcon={isExternal(row.address)}
+                      addressView={getAddressView(row.address)}
                     />
                     <i className='flex items-center justify-center size-4 text-text-secondary'>
                       <ExternalLink className='size-3' />
@@ -99,13 +134,15 @@ export const DelegatorLeaderboard = observer(() => {
                 )}
               </TableCell>
               <TableCell cell loading={isLoading}>
-                {row.rounds}
+                {row.epochs_voted_in}
               </TableCell>
               <TableCell cell loading={isLoading}>
                 {row.streak}
               </TableCell>
               <TableCell cell loading={isLoading}>
-                <ValueViewComponent valueView={row.reward} priority='tertiary' />
+                {row.total_rewards && (
+                  <ValueViewComponent valueView={getTotalRewards(row.total_rewards)} priority='tertiary' />
+                )}
               </TableCell>
               <TableCell cell loading={isLoading}>
                 <Density slim>
