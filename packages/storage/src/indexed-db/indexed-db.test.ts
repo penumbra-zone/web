@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { FmdParameters } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 import {
   SpendableNoteRecord,
@@ -52,7 +54,28 @@ import { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/
 import { ChainRegistryClient, Registry } from '@penumbra-labs/registry';
 import fetchMock from 'fetch-mock';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
-import { JsonValue } from '@bufbuild/protobuf';
+import { JsonValue, PartialMessage } from '@bufbuild/protobuf';
+import { IDBPDatabase } from 'idb';
+import { Epoch } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
+import { Jsonified } from '@penumbra-zone/types/jsonified';
+import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
+
+type IndexedDbTestable = typeof IndexedDb & {
+  setFullSyncHeight(
+    this: ThisParameterType<IndexedDb['getFullSyncHeight']>,
+    height: bigint,
+  ): Promise<void>;
+
+  setEpoch(
+    this: ThisParameterType<IndexedDb['addEpoch']>,
+    epoch: PartialMessage<Epoch>,
+  ): Promise<void>;
+
+  setEpochDuration(
+    this: ThisParameterType<IndexedDb['getAppParams']>,
+    epochDuration: bigint,
+  ): Promise<void>;
+};
 
 const inner0123 = Uint8Array.from({ length: 32 }, () => Math.floor(Math.random() * 256));
 const inner5678 = Uint8Array.from({ length: 32 }, () => Math.floor(Math.random() * 256));
@@ -90,13 +113,46 @@ const generateInitialProps = () => ({
 
 const registryEndpoint = 'https://raw.githubusercontent.com/prax-wallet/registry/main/registry';
 
+type ThisIndexedDb = ThisType<IndexedDb> & { db: IDBPDatabase<PenumbraDb> };
+
 describe('IndexedDb', () => {
-  beforeEach(() => {
+  let db: IndexedDb;
+
+  Object.defineProperty(IndexedDb.prototype, 'setFullSyncHeight', {
+    value: async function (this: ThisIndexedDb, height: bigint) {
+      return this.db.put('FULL_SYNC_HEIGHT', height, 'height');
+    },
+  });
+
+  Object.defineProperty(IndexedDb.prototype, 'setEpoch', {
+    value: async function (this: ThisIndexedDb, epoch: PartialMessage<Epoch>) {
+      return this.db.put(
+        'EPOCHS',
+        new Epoch(epoch).toJson() as Jsonified<Epoch>,
+        Number(epoch.index),
+      );
+    },
+  });
+
+  Object.defineProperty(IndexedDb.prototype, 'setEpochDuration', {
+    value: async function (this: ThisIndexedDb, epochDuration: bigint) {
+      const tx = this.db.transaction('APP_PARAMETERS', 'readwrite');
+      const json = await tx.store.get('params');
+      const params = AppParameters.fromJson(json!);
+      params.sctParams!.epochDuration = epochDuration;
+      await tx.store.put(new AppParameters(params).toJson() as Jsonified<Epoch>, 'params');
+      return tx.done;
+    },
+  });
+
+  beforeEach(async () => {
     fetchMock.reset();
     fetchMock.mock(`${registryEndpoint}/chains/${chainId}.json`, {
       status: 200,
       body: jsonifyRegistry(registryClient.bundled.get(chainId)),
     });
+
+    db = await IndexedDb.initialize(generateInitialProps());
   });
 
   afterAll(() => {
@@ -105,8 +161,7 @@ describe('IndexedDb', () => {
 
   describe('initializing', () => {
     it('sets up as expected in initialize()', async () => {
-      const db = await IndexedDb.initialize(generateInitialProps());
-      await expect(db.getFullSyncHeight()).resolves.not.toThrow();
+      await expect(db.getFullSyncHeight()).resolves.toBe(undefined);
     });
 
     it('different chain ids result in different databases', async () => {
@@ -152,7 +207,6 @@ describe('IndexedDb', () => {
 
   describe('Updater', () => {
     it('emits events on update', async () => {
-      const db = await IndexedDb.initialize(generateInitialProps());
       const subscription = db.subscribe('SPENDABLE_NOTES');
 
       // Save the new note and wait for the next update in parallel
@@ -171,7 +225,6 @@ describe('IndexedDb', () => {
 
   describe('Clear', () => {
     it('object store should be empty after clear', async () => {
-      const db = await IndexedDb.initialize({ ...generateInitialProps() });
       await db.saveSpendableNote(newNote);
 
       const notes: SpendableNoteRecord[] = [];
@@ -243,8 +296,6 @@ describe('IndexedDb', () => {
 
   describe('fmd params', () => {
     it('should be able to set/get', async () => {
-      const db = await IndexedDb.initialize({ ...generateInitialProps() });
-
       const fmdParams = new FmdParameters({ asOfBlockHeight: 1n, precisionBits: 0 });
       await db.saveFmdParams(fmdParams);
       const savedParmas = await db.getFmdParams();
@@ -255,8 +306,6 @@ describe('IndexedDb', () => {
 
   describe('last block', () => {
     it('should be able to set/get', async () => {
-      const db = await IndexedDb.initialize({ ...generateInitialProps() });
-
       await db.saveScanResult(emptyScanResult);
       const savedLastBlock = await db.getFullSyncHeight();
 
@@ -266,8 +315,6 @@ describe('IndexedDb', () => {
 
   describe('spendable notes', () => {
     it('should be able to set/get note by nullifier', async () => {
-      const db = await IndexedDb.initialize({ ...generateInitialProps() });
-
       await db.saveSpendableNote(newNote);
       const savedSpendableNote = await db.getSpendableNoteByNullifier(newNote.nullifier!);
 
@@ -275,8 +322,6 @@ describe('IndexedDb', () => {
     });
 
     it('should be able to set/get all', async () => {
-      const db = await IndexedDb.initialize({ ...generateInitialProps() });
-
       await db.saveSpendableNote(newNote);
 
       const notes: SpendableNoteRecord[] = [];
@@ -288,8 +333,6 @@ describe('IndexedDb', () => {
     });
 
     it('should be able to set/get by commitment', async () => {
-      const db = await IndexedDb.initialize({ ...generateInitialProps() });
-
       await db.saveSpendableNote(newNote);
       const noteByCommitment = await db.getSpendableNoteByCommitment(newNote.noteCommitment);
 
@@ -297,8 +340,6 @@ describe('IndexedDb', () => {
     });
 
     it('should return undefined by commitment', async () => {
-      const db = await IndexedDb.initialize({ ...generateInitialProps() });
-
       const noteByCommitment = await db.getSpendableNoteByCommitment(newNote.noteCommitment);
 
       expect(noteByCommitment).toBeUndefined();
@@ -307,7 +348,7 @@ describe('IndexedDb', () => {
 
   describe('state commitment tree', () => {
     it('should be able to set/get', async () => {
-      const db = await IndexedDb.initialize({ ...generateInitialProps() });
+      await (db as unknown as IndexedDbTestable).setFullSyncHeight(1091n);
 
       await db.saveScanResult(scanResultWithSctUpdates);
 
@@ -329,10 +370,10 @@ describe('IndexedDb', () => {
         }),
         registryClient: new ChainRegistryClient(),
       };
-      const db = await IndexedDb.initialize(propsWithAssets);
+      const dbWithAssets = await IndexedDb.initialize(propsWithAssets);
 
       const savedAssets: Metadata[] = [];
-      for await (const asset of db.iterateAssetsMetadata()) {
+      for await (const asset of dbWithAssets.iterateAssetsMetadata()) {
         savedAssets.push(asset);
       }
 
@@ -342,8 +383,6 @@ describe('IndexedDb', () => {
     });
 
     it('should be able to set/get by id', async () => {
-      const db = await IndexedDb.initialize({ ...generateInitialProps() });
-
       await db.saveAssetsMetadata(metadataC);
       const savedDenomMetadata = await db.getAssetsMetadata(metadataC.penumbraAssetId);
 
@@ -351,8 +390,6 @@ describe('IndexedDb', () => {
     });
 
     it('should be able to set/get all', async () => {
-      const db = await IndexedDb.initialize({ ...generateInitialProps() });
-
       await db.saveAssetsMetadata(metadataA);
       await db.saveAssetsMetadata(metadataB);
       await db.saveAssetsMetadata(metadataC);
@@ -368,7 +405,6 @@ describe('IndexedDb', () => {
 
   describe('transactions', () => {
     it('should be able to set/get by note source', async () => {
-      const db = await IndexedDb.initialize({ ...generateInitialProps() });
       await db.saveTransaction(transactionId, 1000n, transaction);
 
       const savedTransaction = await db.getTransaction(transactionId);
@@ -376,8 +412,6 @@ describe('IndexedDb', () => {
     });
 
     it('should be able to set/get all', async () => {
-      const db = await IndexedDb.initialize({ ...generateInitialProps() });
-
       await db.saveTransaction(transactionId, 1000n, transaction);
       const savedTransactions: TransactionInfo[] = [];
       for await (const tx of db.iterateTransactions()) {
@@ -390,7 +424,9 @@ describe('IndexedDb', () => {
 
   describe('swaps', () => {
     it('should be able to set/get all', async () => {
-      const db = await IndexedDb.initialize({ ...generateInitialProps() });
+      await (db as unknown as IndexedDbTestable).setFullSyncHeight(1092n);
+      await (db as unknown as IndexedDbTestable).setEpoch({ index: 13n, startHeight: 12n });
+      await (db as unknown as IndexedDbTestable).setEpochDuration(11n);
 
       await db.saveScanResult(scanResultWithNewSwaps);
       const savedSwaps: SwapRecord[] = [];
@@ -402,8 +438,6 @@ describe('IndexedDb', () => {
     });
 
     it('should be able to set/get by nullifier', async () => {
-      const db = await IndexedDb.initialize({ ...generateInitialProps() });
-
       await db.saveScanResult(scanResultWithNewSwaps);
       const swapByNullifier = await db.getSwapByNullifier(
         scanResultWithNewSwaps.newSwaps[0]!.nullifier!,
@@ -413,8 +447,6 @@ describe('IndexedDb', () => {
     });
 
     it('should be able to set/get by commitment', async () => {
-      const db = await IndexedDb.initialize({ ...generateInitialProps() });
-
       await db.saveScanResult(scanResultWithNewSwaps);
       const swapByCommitment = await db.getSwapByCommitment(
         scanResultWithNewSwaps.newSwaps[0]!.swapCommitment!,
@@ -426,8 +458,6 @@ describe('IndexedDb', () => {
 
   describe('gas prices', () => {
     it('should be able to set/get', async () => {
-      const db = await IndexedDb.initialize({ ...generateInitialProps() });
-
       const gasPrices = {
         assetId: db.stakingTokenAssetId,
         blockSpacePrice: 0n,
@@ -446,8 +476,6 @@ describe('IndexedDb', () => {
     // 'noteWithDelegationAssetA' and 'noteWithDelegationAssetB' can be votable at height 222,
     // but 'noteWithGmAsset' should not be used for voting since 'Gm' is not a delegation asset.
     it('should be able to get all notes for voting', async () => {
-      const db = await IndexedDb.initialize({ ...generateInitialProps() });
-
       await db.saveAssetsMetadata(delegationMetadataA);
       await db.saveAssetsMetadata(delegationMetadataB);
 
@@ -465,8 +493,6 @@ describe('IndexedDb', () => {
 
     // 'noteWithDelegationAssetB' has a creation height of 53 and cannot be votable at height 50
     it('votable_at_height parameter should screen out noteWithDelegationAssetB', async () => {
-      const db = await IndexedDb.initialize({ ...generateInitialProps() });
-
       await db.saveAssetsMetadata(delegationMetadataA);
       await db.saveAssetsMetadata(delegationMetadataB);
 
@@ -480,8 +506,6 @@ describe('IndexedDb', () => {
 
     // For all notes addressIndex=0, so we should get an empty list
     it('addressIndex parameter should screen out all notes', async () => {
-      const db = await IndexedDb.initialize({ ...generateInitialProps() });
-
       await db.saveAssetsMetadata(delegationMetadataA);
       await db.saveAssetsMetadata(delegationMetadataB);
 
@@ -496,8 +520,6 @@ describe('IndexedDb', () => {
 
   describe('positions', () => {
     it('returns empty array for zero positions', async () => {
-      const db = await IndexedDb.initialize({ ...generateInitialProps() });
-
       const ownedPositions: PositionId[] = [];
       for await (const positionId of db.getOwnedPositionIds(undefined, undefined, undefined)) {
         ownedPositions.push(positionId as PositionId);
@@ -506,8 +528,6 @@ describe('IndexedDb', () => {
     });
 
     it('position should be added and their state should change', async () => {
-      const db = await IndexedDb.initialize({ ...generateInitialProps() });
-
       await db.addPosition(positionIdGmPenumbraBuy, positionGmPenumbraBuy, mainAccount);
       await db.updatePosition(
         positionIdGmPenumbraBuy,
@@ -522,7 +542,6 @@ describe('IndexedDb', () => {
     });
 
     it('attempt to change state of a non-existent position should throw an error', async () => {
-      const db = await IndexedDb.initialize({ ...generateInitialProps() });
       await expect(
         db.updatePosition(
           positionIdGmPenumbraBuy,
@@ -532,7 +551,6 @@ describe('IndexedDb', () => {
     });
 
     it('should get all position ids', async () => {
-      const db = await IndexedDb.initialize({ ...generateInitialProps() });
       await db.addPosition(positionIdGmPenumbraBuy, positionGmPenumbraBuy, mainAccount);
       await db.addPosition(positionIdGnPenumbraSell, positionGnPenumbraSell, mainAccount);
       await db.addPosition(positionIdGmGnSell, positionGmGnSell, firstSubaccount);
@@ -545,7 +563,6 @@ describe('IndexedDb', () => {
     });
 
     it('should get all position with given position state', async () => {
-      const db = await IndexedDb.initialize({ ...generateInitialProps() });
       await db.addPosition(positionIdGmPenumbraBuy, positionGmPenumbraBuy, mainAccount);
       await db.addPosition(positionIdGnPenumbraSell, positionGnPenumbraSell, mainAccount);
       await db.addPosition(positionIdGmGnSell, positionGmGnSell, firstSubaccount);
@@ -562,7 +579,6 @@ describe('IndexedDb', () => {
     });
 
     it('should get all position with given trading pair', async () => {
-      const db = await IndexedDb.initialize({ ...generateInitialProps() });
       await db.addPosition(positionIdGmPenumbraBuy, positionGmPenumbraBuy, mainAccount);
       await db.addPosition(positionIdGnPenumbraSell, positionGnPenumbraSell, mainAccount);
       await db.addPosition(positionIdGmGnSell, positionGmGnSell, firstSubaccount);
@@ -579,7 +595,6 @@ describe('IndexedDb', () => {
     });
 
     it('should get all position with given subaccount index', async () => {
-      const db = await IndexedDb.initialize({ ...generateInitialProps() });
       await db.addPosition(positionIdGmPenumbraBuy, positionGmPenumbraBuy, mainAccount);
       await db.addPosition(positionIdGnPenumbraSell, positionGnPenumbraSell, mainAccount);
       await db.addPosition(positionIdGmGnSell, positionGmGnSell, firstSubaccount);
@@ -592,7 +607,6 @@ describe('IndexedDb', () => {
     });
 
     it('should filter positions correctly when all filters applied together', async () => {
-      const db = await IndexedDb.initialize({ ...generateInitialProps() });
       await db.addPosition(positionIdGmPenumbraBuy, positionGmPenumbraBuy, mainAccount);
       await db.addPosition(positionIdGnPenumbraSell, positionGnPenumbraSell, mainAccount);
       await db.addPosition(positionIdGmGnSell, positionGmGnSell, firstSubaccount);
@@ -620,7 +634,6 @@ describe('IndexedDb', () => {
       inner: 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=',
     });
     beforeEach(async () => {
-      db = await IndexedDb.initialize({ ...generateInitialProps() });
       await db.updatePrice(delegationMetadataA.penumbraAssetId, stakingAssetId, 1.23, 50n);
       await db.updatePrice(metadataA.penumbraAssetId, numeraireAssetId, 22.15, 40n);
     });
@@ -662,10 +675,6 @@ describe('IndexedDb', () => {
 
   describe('upsertAuction()', () => {
     let db: IndexedDb;
-
-    beforeEach(async () => {
-      db = await IndexedDb.initialize({ ...generateInitialProps() });
-    });
 
     it('inserts an auction', async () => {
       const auctionId = new AuctionId({ inner: inner0123 });
@@ -771,10 +780,6 @@ describe('IndexedDb', () => {
   describe('addAuctionOutstandingReserves()', () => {
     let db: IndexedDb;
 
-    beforeEach(async () => {
-      db = await IndexedDb.initialize({ ...generateInitialProps() });
-    });
-
     it('saves the outstanding reserves', async () => {
       const auctionId = new AuctionId({ inner: inner0123 });
       const input = new Value({
@@ -793,10 +798,6 @@ describe('IndexedDb', () => {
 
   describe('deleteAuctionOutstandingReserves()', () => {
     let db: IndexedDb;
-
-    beforeEach(async () => {
-      db = await IndexedDb.initialize({ ...generateInitialProps() });
-    });
 
     it('deletes the reserves', async () => {
       const auctionId = new AuctionId({ inner: inner0123 });

@@ -109,7 +109,7 @@ interface IndexedDbProps {
 }
 
 export class IndexedDb implements IndexedDbInterface {
-  private constructor(
+  constructor(
     private readonly db: IDBPDatabase<PenumbraDb>,
     private readonly u: IbdUpdater,
     private readonly c: IdbConstants,
