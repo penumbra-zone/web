@@ -810,15 +810,41 @@ export class IndexedDb implements IndexedDbInterface {
     let nearPrev: Epoch | undefined = undefined;
     let nearNext: Epoch | undefined = undefined;
 
-    // there's no good way to do this query.  epoch field values are bigints,
-    // which can't be idb keys.  they're stored as json, meaning they've become
-    // strings which sort lexically.
+    // TODO: resolve these issues and delete this comment
     //
-    // but in general,
-    // - epochs should have been inserted in an order resembling actual height
-    // - the query is likely for a very recent epoch
-    // - duration can identify the range of the present epoch
+    // this query can't be made directly. probably, the schema should be
+    // changed.  but it was decided to not key the schema because: epoch field
+    // values are bigints, which can't be idb keys.  they're stored as json,
+    // meaning they've become strings which sort lexically.
+    //
+    // without changing the schema, the `addEpoch` method has been refactored to
+    // eliminate problems, which requires resync to destroy possibly invalid
+    // historical data. this method was written before that to assume the data
+    // may be inconsistent and needs update.
+    // new guarantees:
+    // - epoch indicies and start heights increase monotonically
     // - adjacent indicies can identify the range of a historic epoch
+    //
+    // the query is likely for a very recent epoch. so, this implementation
+    // begins iterating the table from the end (recent insertions, present
+    // epoch) towards the beginning (oldest insertions, genesis epoch) and
+    // attempts to identify a valid pair of epochs bounding a range containing
+    // the queried height.
+    //
+    // a pair of bounding epochs will not be identified for a queried height
+    // within the last inserted epoch or in an epoch that is not yet inserted.
+    //
+    // epoch duration MAY allow estimation of the present epoch. so on
+    // iteration, if the range is only bounded in the past direction, which
+    // should occur only on the first iteration consuming the last inserted
+    // epoch when the queried height meets those conditions and the above
+    // guarantees, the expected epoch duration is used to predict if the queried
+    // height is within the expected range of the single bounding epoch.
+    //
+    // TODO: THIS MAY STILL RETURN A WRONG ANSWER if the last inserted epoch
+    // terminates earlier than the expected duration. ideally, this should
+    // always throw if it must estimate, but that seems to break some planner
+    // and sync logic...
     for await (const { value } of this.db.transaction('EPOCHS').store.iterate(null, 'prev')) {
       const epoch = Epoch.fromJson(value);
 
@@ -836,11 +862,18 @@ export class IndexedDb implements IndexedDbInterface {
       // check range
       if (nearPrev) {
         if (nearNext && nearPrev.index + 1n === nearNext.index) {
-          // range won't shrink
+          // range including the queried height is identified
           return nearPrev;
         } else if (!nearNext && nearPrev.startHeight + epochDuration > findHeight) {
-          // range won't close
+          // range is estimated to include the queried height
           return nearPrev;
+          // TODO: conditions to check
+          // - is a queried height estimated to be within the last synced epoch far
+          //   enough behind the latest known height that the epoch should have
+          //   completed? the user should probably wait for sync.
+          // - is a queried height estimated to be within an unsynced epoch far enough
+          //   behind the latest known height that the epoch should have completed? the
+          //   user should probably wait for sync.
         }
       }
     }
