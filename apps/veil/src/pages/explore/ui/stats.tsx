@@ -1,6 +1,6 @@
 'use client';
 
-// import { round } from '@penumbra-zone/types/round';
+import { round } from '@penumbra-zone/types/round';
 import { Text } from '@penumbra-zone/ui/Text';
 import { InfoCard } from './info-card';
 import { pluralizeAndShortify } from '@/shared/utils/pluralize';
@@ -96,9 +96,19 @@ export const ExploreStats = () => {
         )}
       </InfoCard>
       <InfoCard title='Top Price Mover (24h)' loading={isLoading}>
-        <Text large color='text.primary'>
-          -
-        </Text>
+        {registry && stats?.topPriceMover ? (
+          <>
+            <DirectedTradingPairText registry={registry} pair={stats.largestPair.pair} />
+            <Text large color={stats.topPriceMover.percent ? 'success.light' : 'destructive.light'}>
+              {stats.topPriceMover.percent && '+'}
+              {round({ value: stats.topPriceMover.percent, decimals: 1 })}%
+            </Text>
+          </>
+        ) : (
+          <Text large color='text.primary'>
+            -
+          </Text>
+        )}
       </InfoCard>
     </div>
   );
