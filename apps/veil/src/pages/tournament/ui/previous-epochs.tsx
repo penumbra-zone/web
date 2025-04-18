@@ -11,12 +11,12 @@ import { Tooltip } from '@penumbra-zone/ui/Tooltip';
 import { Density } from '@penumbra-zone/ui/Density';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
-import { useGetMetadata } from '@/shared/api/assets';
 import { connectionStore } from '@/shared/model/connection';
 import { usePreviousEpochs, BASE_PAGE, BASE_LIMIT } from '../api/use-previous-epochs';
 import type { PreviousEpochData } from '../server/previous-epochs';
 import { useSortableTableHeaders } from './sortable-table-header';
 import { usePersonalRewards } from '../api/use-personal-rewards';
+import { GENERIC_DELUM } from './shared/delum-metadata';
 import { Vote } from './vote';
 
 const TABLE_CLASSES = {
@@ -39,7 +39,6 @@ interface PreviousEpochsRowProps {
 
 const PreviousEpochsRow = ({ row, isLoading, className, connected }: PreviousEpochsRowProps) => {
   const { data: rewards, isLoading: rewardsLoading } = usePersonalRewards(row.epoch);
-  const getMetadata = useGetMetadata();
 
   const votingRewards = useMemo(() => {
     const reward = rewards?.[0];
@@ -47,30 +46,18 @@ const PreviousEpochsRow = ({ row, isLoading, className, connected }: PreviousEpo
       return '-';
     }
 
-    const asset = getMetadata(reward.reward.assetId);
-
-    const value = asset
-      ? new ValueView({
-          valueView: {
-            case: 'knownAssetId',
-            value: {
-              amount: reward.reward.amount,
-              metadata: getMetadata(reward.reward.assetId),
-            },
-          },
-        })
-      : new ValueView({
-          valueView: {
-            case: 'unknownAssetId',
-            value: {
-              amount: reward.reward.amount,
-              assetId: reward.reward.assetId,
-            },
-          },
-        });
+    const value = new ValueView({
+      valueView: {
+        case: 'knownAssetId',
+        value: {
+          amount: reward.reward.amount,
+          metadata: GENERIC_DELUM,
+        },
+      },
+    });
 
     return <ValueViewComponent valueView={value} priority='tertiary' />;
-  }, [getMetadata, rewards]);
+  }, [rewards]);
 
   return (
     <Link
