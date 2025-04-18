@@ -1,6 +1,14 @@
-import { dpi, drawText, getTextWidth, scaleCanvas } from '@/shared/ui/canvas-toolkit';
-import { TournamentParams } from '../join/page';
+import {
+  dpi,
+  drawText,
+  getTextWidth,
+  scaleCanvas,
+  registerFonts,
+} from '@/shared/ui/canvas-toolkit';
 import { theme } from '@penumbra-zone/ui/theme';
+import { TournamentParams } from '@/pages/tournament/ui/join/page';
+
+const baseUrl = process.env['NEXT_PUBLIC_BASE_URL'] ?? 'http://localhost:3000';
 
 export async function drawTournamentEarningsCanvas(
   canvas: HTMLCanvasElement,
@@ -12,18 +20,7 @@ export async function drawTournamentEarningsCanvas(
     return;
   }
 
-  console.debug('Canvas dimensions before scaling:', {
-    width: canvas.width,
-    height: canvas.height,
-  });
-
   scaleCanvas(canvas);
-
-  console.debug('Canvas dimensions after scaling:', {
-    width: canvas.width,
-    height: canvas.height,
-  });
-
   function draw(bgImage: CanvasImageSource) {
     if (!ctx) {
       console.error('Canvas context is null in draw function');
@@ -94,18 +91,14 @@ export async function drawTournamentEarningsCanvas(
     });
   }
 
+  const bgImageSrc = `${baseUrl}/assets/lqt-social-rewards-bg.png`;
   if (typeof window !== 'undefined') {
     const bgImage = new Image();
-    bgImage.src = 'http://localhost:3000/assets/lqt-social-rewards-bg.png';
+    bgImage.src = bgImageSrc;
     bgImage.onload = () => draw(bgImage);
-    bgImage.onerror = e => {
-      console.error('Failed to load background image:', e);
-      // Draw without background image
-      draw(new Image());
-    };
   } else {
     await import('canvas').then(async ({ loadImage }) => {
-      await loadImage('http://localhost:3000/assets/lqt-social-rewards-bg.png').then(bgImage => {
+      await loadImage(bgImageSrc).then(bgImage => {
         draw(bgImage as unknown as CanvasImageSource);
       });
     });
