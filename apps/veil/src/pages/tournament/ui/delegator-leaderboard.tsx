@@ -5,7 +5,7 @@ import { observer } from 'mobx-react-lite';
 import { ChevronRight, ExternalLink } from 'lucide-react';
 import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
+import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 import { AddressViewComponent } from '@penumbra-zone/ui/AddressView';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { Pagination } from '@penumbra-zone/ui/Pagination';
@@ -22,20 +22,23 @@ import type {
 import { useDelegatorLeaderboard, BASE_PAGE, BASE_LIMIT } from '../api/use-delegator-leaderboard';
 import { useSortableTableHeaders } from './sortable-table-header';
 import { useIndexByAddress } from '../api/use-index-by-address';
+import { connectionStore } from '@/shared/model/connection';
 
 const LeaderboardRow = observer(
   ({ row, loading }: { row: DelegatorLeaderboardData; loading: boolean }) => {
+    const { connected } = connectionStore;
     const { data: subaccountIndex, isLoading: indexLoading } = useIndexByAddress(row.address);
 
-    const addressString = useMemo(() => {
+    const addressLink = useMemo(() => {
       if (loading) {
         return '';
       }
-      return encodeURIComponent(uint8ArrayToBase64(row.address.inner));
+      const encoded = encodeURIComponent(bech32mAddress(row.address));
+      return PagePath.TournamentDelegator.replace(':address', encoded);
     }, [row.address, loading]);
 
     const addressView = useMemo(() => {
-      return subaccountIndex
+      return connected && subaccountIndex
         ? new AddressView({
             addressView: {
               case: 'decoded',
@@ -53,7 +56,7 @@ const LeaderboardRow = observer(
               },
             },
           });
-    }, [row.address, subaccountIndex]);
+    }, [row.address, subaccountIndex, connected]);
 
     const totalRewards = useMemo(() => {
       if (loading) {
@@ -84,7 +87,7 @@ const LeaderboardRow = observer(
 
     return (
       <Link
-        href={loading ? '' : PagePath.TournamentRound.replace(':address', addressString)}
+        href={addressLink}
         className={cn(
           'grid grid-cols-subgrid col-span-6',
           'hover:bg-action-hoverOverlay transition-colors cursor-pointer',
@@ -159,7 +162,7 @@ export const DelegatorLeaderboard = observer(() => {
       </Text>
       <Density compact>
         <div className='grid grid-cols-[auto_200px_1fr_1fr_1fr_48px]'>
-          <div className='grid grid-cols-subgrid col-span-6'>
+          <div key='header' className='grid grid-cols-subgrid col-span-6'>
             {getTableHeader('place', 'Place')}
             <TableCell heading>Delegator Address</TableCell>
             {getTableHeader('epochs_voted_in', 'Rounds Participated')}
@@ -168,8 +171,12 @@ export const DelegatorLeaderboard = observer(() => {
             <TableCell heading> </TableCell>
           </div>
 
-          {leaderboard.map(row => (
-            <LeaderboardRow key={row.place} row={row} loading={isLoading} />
+          {leaderboard.map((row, index) => (
+            <LeaderboardRow
+              key={isLoading ? `loading-${index}` : row.place}
+              row={row}
+              loading={isLoading}
+            />
           ))}
         </div>
       </Density>

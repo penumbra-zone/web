@@ -15,9 +15,10 @@ export const useIndexByAddress = (address?: Address) => {
   return useQuery({
     enabled: connected && !!addressString,
     queryKey: ['index-by-address', addressString],
+    staleTime: Infinity,
     queryFn: async () => {
       const res = await penumbra.service(ViewService).indexByAddress({ address });
-      return res.addressIndex;
+      return res.addressIndex ?? null;
     },
   });
 };
