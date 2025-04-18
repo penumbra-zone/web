@@ -1,10 +1,4 @@
-import {
-  dpi,
-  drawText,
-  getTextWidth,
-  scaleCanvas,
-  registerFonts,
-} from '@/shared/ui/canvas-toolkit';
+import { dpi, drawText, getTextWidth, scaleCanvas } from '@/shared/ui/canvas-toolkit';
 import { theme } from '@penumbra-zone/ui/theme';
 import { TournamentParams } from '@/pages/tournament/ui/join/page';
 
@@ -23,7 +17,7 @@ export async function drawTournamentEarningsCanvas(
   scaleCanvas(canvas);
   function draw(bgImage: CanvasImageSource) {
     if (!ctx) {
-      console.error('Canvas context is null in draw function');
+      console.error('Failed to get canvas context');
       return;
     }
 
@@ -91,7 +85,7 @@ export async function drawTournamentEarningsCanvas(
     });
   }
 
-  const bgImageSrc = `${baseUrl}/assets/lqt-social-rewards-bg.png`;
+  const bgImageSrc = `${baseUrl}/assets/lqt-social-rewards-bg-square.png`;
   if (typeof window !== 'undefined') {
     const bgImage = new Image();
     bgImage.src = bgImageSrc;
