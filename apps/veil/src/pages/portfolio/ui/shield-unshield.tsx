@@ -6,7 +6,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { X } from 'lucide-react';
 import { useRegistry } from '@/shared/api/registry.ts';
 import { getMetadata } from '@penumbra-zone/getters/value-view';
-
+import { theme as penumbraTheme } from '@penumbra-zone/ui/theme';
 /**
  * Computes the IBC denom hash for Penumbra-1
  * If the denom already starts with "ibc/", it's assumed to be already computed.
@@ -53,36 +53,30 @@ export function UnshieldButton({ asset }: { asset: UnifiedAsset }) {
 }
 
 const theme = {
-  brandColor: '#b463e9',
+  brandColor: penumbraTheme.color.primary.main,
   primary: {
     background: {
-      normal: '#000000',
-      transparent: 'rgba(30, 30, 30, 0.8)',
+      normal: penumbraTheme.gradient.accentRadialBackground,
+      transparent: penumbraTheme.color.base.transparent,
     },
     text: {
-      normal: '#FFFFFF',
-      lowContrast: '#CCCCCC',
-      ultraLowContrast: '#888888',
+      normal: penumbraTheme.color.text.primary,
+      lowContrast: penumbraTheme.color.text.primary,
+      ultraLowContrast: penumbraTheme.color.text.primary,
     },
-    ghostButtonHover: '#b463e9',
+    ghostButtonHover: penumbraTheme.color.primary.main,
   },
-  secondary: {
-    background: {
-      normal: '#2A2A2A',
-      transparent: 'rgba(42, 42, 42, 0.8)',
-      hover: '#3A3A3A',
-    },
-  },
+
   success: {
-    text: '#4CAF50',
+    text: penumbraTheme.color.success.main,
   },
   warning: {
-    background: '#FF9800',
-    text: '#FFFFFF',
+    background: penumbraTheme.color.caution.main,
+    text: penumbraTheme.color.text.primary,
   },
   error: {
-    background: '#F44336',
-    text: '#FFFFFF',
+    background: penumbraTheme.color.destructive.main,
+    text: penumbraTheme.color.text.primary,
   },
 };
 
