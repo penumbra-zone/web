@@ -365,6 +365,14 @@ export interface Gauge {
   missing_votes: bigint;
 }
 
+export interface DelegatorSummary {
+  address: Buffer;
+  epochs_voted_in: bigint;
+  total_rewards: number;
+  total_voting_power: number;
+  streak: number;
+}
+
 interface RawDB {
   _insights_shielded_pool_depositors: _InsightsShieldedPoolDepositors;
   _insights_validators: _InsightsValidators;
@@ -397,6 +405,7 @@ interface RawDB {
   supply_total_unstaked: SupplyTotalUnstaked;
   supply_validators: SupplyValidators;
   'lqt.gauge': Gauge;
+  'lqt.delegator_summary': DelegatorSummary;
 }
 
 export type DB = Pick<
@@ -417,4 +426,5 @@ export type DB = Pick<
   | 'lqt._votes'
   | 'lqt._delegator_rewards'
   | 'lqt.gauge'
+  | 'lqt.delegator_summary'
 >;

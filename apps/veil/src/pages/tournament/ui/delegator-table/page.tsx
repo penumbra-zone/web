@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { base64ToUint8Array } from '@penumbra-zone/types/base64';
+import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
 import { AddressViewComponent } from '@penumbra-zone/ui/AddressView';
 import { Text } from '@penumbra-zone/ui/Text';
 import { PenumbraWaves } from '@/pages/explore/ui/waves';
@@ -24,9 +24,7 @@ export const DelegatorTablePage = () => {
       addressView: {
         case: 'opaque',
         value: {
-          address: {
-            inner: base64ToUint8Array(decodeURIComponent(params.address)),
-          },
+          address: addressFromBech32m(decodeURIComponent(params.address)),
         },
       },
     });

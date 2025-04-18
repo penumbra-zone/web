@@ -57,13 +57,16 @@ export const SortableTableHeader = <KEY extends string = string>({
   );
 };
 
-export const useSortableTableHeaders = <KEY extends string = string>() => {
+export const useSortableTableHeaders = <KEY extends string = string>(
+  key: KEY | '' = '',
+  direction: SortDirection = 'desc',
+) => {
   const [sortBy, setSortBy] = useState<{
     key: KEY | '';
     direction: SortDirection;
   }>({
-    key: '',
-    direction: 'desc',
+    key,
+    direction,
   });
 
   const getTableHeader = useCallback(
