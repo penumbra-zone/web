@@ -103,6 +103,13 @@ export const VoteDialogueSelector = observer(
     // TODO: replace this dummy static asset list with actual data from the API server.
     const assets: Asset[] = [
       {
+        id: 'transfer/channel-1/uusdc',
+        symbol: 'Phobos 3 USDC',
+        imgUrl:
+          'https://raw.githubusercontent.com/cosmos/chain-registry/master/cosmoshub/images/atom.png',
+        percentage: 60,
+      },
+      {
         id: 'transfer/channel-37/uusdc',
         symbol: 'USDC',
         imgUrl:
