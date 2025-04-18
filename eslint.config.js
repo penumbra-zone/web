@@ -16,4 +16,10 @@ export default [
       'tailwindcss/no-custom-classname': ['error', { callees: ['cn', 'cva'] }],
     },
   },
+  {
+    name: 'custom:no-unused-vars',
+    rules: {
+      'no-unused-vars': 'off',
+    },
+  },
 ];

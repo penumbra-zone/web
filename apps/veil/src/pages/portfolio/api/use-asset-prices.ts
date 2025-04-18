@@ -30,16 +30,17 @@ export const useAssetPrices = (assets: Metadata[] = []) => {
 
       // Fetch from summaries API
       return apiFetch<SummaryData[]>('/api/summaries', {
-        search: '', // No search filter, get all pairs
-        limit: '200', // Increased limit to ensure we get all relevant pairs
+        search: '',
+        limit: '200',
         offset: '0',
-        durationWindow: '1d', // Use 1-day window
+        durationWindow: '1d',
       });
     },
     staleTime: 60000, // 1 minute
     enabled: symbols.length > 0,
   });
 
+  // TODO: this needs a rework to support any numeraire, not just USDC and USDY.
   // Process data to map symbols to prices
   const assetPrices: Record<string, AssetPrice> = useMemo(() => {
     if (!data) {

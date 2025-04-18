@@ -123,9 +123,9 @@ const ChartLoadingState = () => {
 
 const ChartData = observer(({ candles }: { candles: CandleWithVolume[] }) => {
   const chartElRef = useRef<HTMLDivElement>(null);
-  const chartRef = useRef<IChartApi>();
-  const seriesRef = useRef<ReturnType<IChartApi['addCandlestickSeries']>>();
-  const volumeSeriesRef = useRef<ReturnType<IChartApi['addHistogramSeries']>>();
+  const chartRef = useRef<IChartApi>(undefined);
+  const seriesRef = useRef<ReturnType<IChartApi['addCandlestickSeries']>>(undefined);
+  const volumeSeriesRef = useRef<ReturnType<IChartApi['addHistogramSeries']>>(undefined);
 
   // Initialize the chart once when the component mounts
   useEffect(() => {
