@@ -1,4 +1,6 @@
 import { theme } from '@penumbra-zone/ui/theme';
+import { registerFont } from 'canvas';
+import { join } from 'path';
 
 export const scale = typeof window !== 'undefined' ? window.devicePixelRatio : 1;
 
@@ -15,12 +17,11 @@ export const scaleCanvas = (canvas: HTMLCanvasElement) => {
   if (!ctx) {
     return;
   }
+  ctx.scale(scale, scale);
   const canvasWidth = canvas.width;
   const canvasHeight = canvas.height;
-
   canvas.width = dpi(canvasWidth);
   canvas.height = dpi(canvasHeight);
-  ctx.scale(scale, scale);
 };
 
 export function drawText(
@@ -79,4 +80,22 @@ export function getTextWidth(
   const width = Math.ceil(ctx.measureText(text).width);
   ctx.restore();
   return width;
+}
+
+export function registerFonts() {
+  if (typeof window === 'undefined') {
+    const fontsDir = join(
+      process.cwd(),
+      'node_modules',
+      '@penumbra-zone',
+      'ui',
+      'src',
+      'theme',
+      'fonts',
+    );
+    registerFont(join(fontsDir, 'IosevkaTerm-Regular.woff2'), { family: 'Iosevka Term' });
+    registerFont(join(fontsDir, 'Poppins-Bold.woff2'), { family: 'Poppins', weight: 'bold' });
+    registerFont(join(fontsDir, 'Poppins-Medium.woff2'), { family: 'Poppins', weight: 'medium' });
+    registerFont(join(fontsDir, 'Poppins-Regular.woff2'), { family: 'Poppins' });
+  }
 }
