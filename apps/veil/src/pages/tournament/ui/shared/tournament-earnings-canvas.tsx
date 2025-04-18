@@ -7,10 +7,26 @@ export async function drawTournamentEarningsCanvas(
   { epoch, earnings, votingStreak, incentivePool, lpPool, delegatorPool }: TournamentParams,
 ) {
   const ctx = canvas.getContext('2d');
+  if (!ctx) {
+    console.error('Failed to get canvas context');
+    return;
+  }
+
+  console.debug('Canvas dimensions before scaling:', {
+    width: canvas.width,
+    height: canvas.height,
+  });
+
   scaleCanvas(canvas);
+
+  console.debug('Canvas dimensions after scaling:', {
+    width: canvas.width,
+    height: canvas.height,
+  });
 
   function draw(bgImage: CanvasImageSource) {
     if (!ctx) {
+      console.error('Canvas context is null in draw function');
       return;
     }
 
@@ -82,11 +98,16 @@ export async function drawTournamentEarningsCanvas(
     const bgImage = new Image();
     bgImage.src = 'http://localhost:3000/assets/lqt-social-rewards-bg.png';
     bgImage.onload = () => draw(bgImage);
+    bgImage.onerror = e => {
+      console.error('Failed to load background image:', e);
+      // Draw without background image
+      draw(new Image());
+    };
   } else {
-    await import('canvas').then(({ Image }) => {
-      const bgImage = new Image();
-      bgImage.src = 'http://localhost:3000/assets/lqt-social-rewards-bg.png';
-      bgImage.onload = () => draw(bgImage as unknown as CanvasImageSource);
+    await import('canvas').then(async ({ loadImage }) => {
+      await loadImage('http://localhost:3000/assets/lqt-social-rewards-bg.png').then(bgImage => {
+        draw(bgImage as unknown as CanvasImageSource);
+      });
     });
   }
 }
