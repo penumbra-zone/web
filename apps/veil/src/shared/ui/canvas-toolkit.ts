@@ -5,18 +5,22 @@ export const scale = typeof window !== 'undefined' ? window.devicePixelRatio : 1
 export const dpi = (px: number) => px * scale;
 
 export const remToPx = (r: string) =>
-  parseFloat(r) * parseFloat(getComputedStyle(document.documentElement).fontSize);
+  parseFloat(r) *
+  parseFloat(
+    typeof window !== 'undefined' ? getComputedStyle(document.documentElement).fontSize : '16px',
+  );
 
 export const scaleCanvas = (canvas: HTMLCanvasElement) => {
   const ctx = canvas.getContext('2d');
   if (!ctx) {
     return;
   }
-  ctx.scale(scale, scale);
   const canvasWidth = canvas.width;
   const canvasHeight = canvas.height;
+
   canvas.width = dpi(canvasWidth);
   canvas.height = dpi(canvasHeight);
+  ctx.scale(scale, scale);
 };
 
 export function drawText(
