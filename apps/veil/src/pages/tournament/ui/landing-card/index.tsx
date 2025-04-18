@@ -5,7 +5,6 @@ import { Stats } from './stats';
 import { VotingInfo } from '../voting-info';
 
 export const LandingCard = observer(() => {
-  const epoch = 123;
   const poolDelegators = 2000;
   const poolLPs = 8000;
   const poolAmount = poolLPs + poolDelegators;
@@ -51,14 +50,13 @@ export const LandingCard = observer(() => {
         <div className='w-full h-[1px] md:w-[1px] md:h-auto bg-other-tonalStroke flex-shrink-0' />
         <div className='flex flex-col w-full md:w-1/2 gap-8'>
           <Stats
-            epoch={epoch}
             poolAmount={poolAmount}
             poolLPs={poolLPs}
             poolDelegators={poolDelegators}
             symbol={symbol}
             results={results}
           />
-          <VotingInfo epoch={epoch} />
+          <VotingInfo />
         </div>
       </div>
     </GradientCard>

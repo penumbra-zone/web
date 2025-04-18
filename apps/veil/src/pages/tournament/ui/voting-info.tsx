@@ -12,13 +12,15 @@ import { connectionStore } from '@/shared/model/connection';
 import { useGetMetadata } from '@/shared/api/assets';
 import { PagePath } from '@/shared/const/pages';
 import { useLQTNotes } from '../api/use-voting-notes';
+import { useCurrentEpoch } from '../api/use-current-epoch';
 import { VoteDialogueSelector } from './vote-dialogue';
 import { checkIfAlreadyVoted } from '../api/vote';
 
 // TODO: use it for both landing and round page, apply all component states from Figma
-export const VotingInfo = observer(({ epoch }: { epoch: number }) => {
+export const VotingInfo = observer(() => {
   const { connected, subaccount } = connectionStore;
 
+  const { data: epoch = 0 } = useCurrentEpoch();
   const getMetadata = useGetMetadata();
   const { notes } = useLQTNotes(subaccount);
 

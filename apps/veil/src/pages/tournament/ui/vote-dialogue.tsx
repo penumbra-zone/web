@@ -5,12 +5,13 @@ import { Text } from '@penumbra-zone/ui/Text';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Search } from 'lucide-react';
 import Image from 'next/image';
-import { useLQTNotes } from '../api/use-voting-notes';
-import { voteTournament } from '../api/vote';
 import { SpendableNoteRecord } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { useSubaccounts } from '@/widgets/header/api/subaccounts';
 import { connectionStore } from '@/shared/model/connection';
 import { getAddressIndex } from '@penumbra-zone/getters/address-view';
+import { useLQTNotes } from '../api/use-voting-notes';
+import { voteTournament } from '../api/vote';
+import { useCurrentEpoch } from '../api/use-current-epoch';
 
 interface VoteDialogProps {
   defaultValue?: string;
@@ -165,7 +166,8 @@ export const VoteDialogueSelector = observer(
     const rewardsRecipient = valueAddress.addressView.value.address;
 
     // Fetch user's spendable voting notes for this epoch
-    const { notes, epochIndex } = useLQTNotes(subaccount);
+    const { notes } = useLQTNotes(subaccount);
+    const { data: epochIndex } = useCurrentEpoch();
 
     const filteredAssets = searchQuery
       ? assets.filter(a => a.symbol.toLowerCase().includes(searchQuery.toLowerCase()))

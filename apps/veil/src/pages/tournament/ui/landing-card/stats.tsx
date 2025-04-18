@@ -2,32 +2,42 @@ import Image from 'next/image';
 import { Text } from '@penumbra-zone/ui/Text';
 import { pnum } from '@penumbra-zone/types/pnum';
 import { round } from '@penumbra-zone/types/round';
+import { Skeleton } from '@penumbra-zone/ui/Skeleton';
+import { useCurrentEpoch } from '../../api/use-current-epoch';
 
 export const Stats = ({
-  epoch,
   poolAmount,
   poolLPs,
   poolDelegators,
   symbol,
   results,
 }: {
-  epoch: number;
   poolAmount: number;
   poolLPs: number;
   poolDelegators: number;
   symbol: string;
   results: { symbol: string; amount: number; imgUrl: string }[];
 }) => {
+  const { data: epoch, isLoading } = useCurrentEpoch();
+
   return (
     <>
       <div className='flex justify-between'>
         <Text variant='h3' color='text.primary'>
           Current Epoch
         </Text>
-        <div className='rounded-sm bg-base-blackAlt px-2'>
-          <div className='font-default text-text2xl font-medium leading-text2xl text-transparent bg-clip-text [background-image:linear-gradient(90deg,rgb(244,156,67),rgb(83,174,168))]'>
-            #{epoch}
-          </div>
+        <div className='flex items-center rounded-sm bg-base-blackAlt px-2'>
+          {isLoading ? (
+            <div className='w-16 h-6'>
+              <Skeleton />
+            </div>
+          ) : (
+            <div className='text-transparent bg-clip-text [background-image:linear-gradient(90deg,rgb(244,156,67),rgb(83,174,168))]'>
+              <Text xxl>
+                #{epoch}
+              </Text>
+            </div>
+          )}
         </div>
       </div>
       <div className='flex flex-col gap-2'>
