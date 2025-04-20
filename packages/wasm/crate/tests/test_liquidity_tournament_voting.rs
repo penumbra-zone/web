@@ -223,7 +223,12 @@ async fn test_liquidity_voting_single_delegation_note() {
         .await
         .unwrap();
 
-    assert_eq!(res.actions.len(), 3);
+    // Spend: delegation note
+    // Spend: fee note
+    // Output: change fee note
+    // Output: consolidated delegation notes
+    // LQT: tournament vote
+    assert_eq!(res.actions.len(), 5);
 }
 
 #[wasm_bindgen_test]
@@ -358,5 +363,12 @@ async fn test_liquidity_voting_multiple_delegation_note() {
         .await
         .unwrap();
 
-    assert_eq!(res.actions.len(), 4);
+    // Spend: delegation note
+    // Spend: delegation note
+    // Spend: fee note
+    // Output: change fee note
+    // Output: consolidated delegation notes
+    // LQT: tournament vote
+    // LQT: tournament vote
+    assert_eq!(res.actions.len(), 7);
 }
