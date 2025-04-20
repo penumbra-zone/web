@@ -1,5 +1,8 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { TournamentVotesRequest } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import {
+  TournamentVotesRequest,
+  TournamentVotesResponse_Vote,
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
@@ -19,7 +22,8 @@ describe('tournamentVotes request handler', () => {
     vi.resetAllMocks();
 
     mockIndexedDb = {
-      getLQTHistoricalVotes: vi.fn(),
+      getLQTHistoricalVotesByEpoch: vi.fn(),
+      getVotesThroughEpochInclusive: vi.fn(),
       saveLQTHistoricalVote: vi.fn(),
       getBlockHeightByEpoch: vi.fn(),
       getNotesForVoting: vi.fn(),
@@ -46,12 +50,21 @@ describe('tournamentVotes request handler', () => {
   test('returns historical liquidity tournament votes that have been previously been saved to storage', async () => {
     mockIndexedDb.getBlockHeightByEpoch?.mockResolvedValueOnce(epoch);
     mockIndexedDb.saveLQTHistoricalVote?.mockResolvedValueOnce(mockVote);
-    mockIndexedDb.getLQTHistoricalVotes?.mockResolvedValueOnce([mockVote]);
+    mockIndexedDb.getLQTHistoricalVotesByEpoch?.mockResolvedValueOnce([mockVote]);
+    mockIndexedDb.getVotesThroughEpochInclusive?.mockResolvedValueOnce([mockVote]);
 
+    const res: TournamentVotesResponse_Vote[] = [];
     const req = new TournamentVotesRequest({});
-    const vote = await tournamentVotes(req, mockCtx);
 
-    expect(vote.votes?.length).toBe(1);
+    for await (const { votes } of tournamentVotes(req, mockCtx)) {
+      if (votes) {
+        for (const vote of votes) {
+          res.push(new TournamentVotesResponse_Vote(vote));
+        }
+      }
+    }
+
+    expect(res.length).toBe(1);
   });
 });
 

@@ -41,7 +41,7 @@ export const MyRewards = observer(() => {
             My Total Rewards
           </Text>
           <Text small color='text.secondary'>
-            Cumulative rewards (in UM) from all epochs, voting and LPs rewards
+            Cumulative rewards from all epochs, voting and LPs rewards
           </Text>
         </div>
 

@@ -101,37 +101,39 @@ const AssetListGroup = ({
 export const VoteDialogueSelector = observer(
   ({ isOpen, onClose, defaultValue }: VoteDialogProps) => {
     // TODO: replace this dummy static asset list with actual data from the API server.
+    // Channel names are currently hardcoded to the penumbra-testnet-phobos-3 IBC channel
+    // names in the chain registry.
     const assets: Asset[] = [
       {
-        id: 'transfer/channel-37/uusdc',
+        id: 'transfer/channel-1/uusdc',
         symbol: 'USDC',
         imgUrl:
           'https://raw.githubusercontent.com/cosmos/chain-registry/master/cosmoshub/images/atom.png',
         percentage: 50,
       },
       {
-        id: 'transfer/channel-34/uosmo',
+        id: 'transfer/channel-0/uosmo',
         symbol: 'OSMO',
         imgUrl:
           'https://raw.githubusercontent.com/cosmos/chain-registry/master/cosmoshub/images/atom.png',
         percentage: 25,
       },
       {
-        id: 'transfer/channel-26/ustake',
+        id: 'transfer/channel-1/ustake',
         symbol: 'STAKE',
         imgUrl:
           'https://raw.githubusercontent.com/cosmos/chain-registry/master/cosmoshub/images/atom.png',
         percentage: 5,
       },
       {
-        id: 'transfer/channel-26/love',
+        id: 'transfer/channel-1/love',
         symbol: 'LOVE',
         imgUrl:
           'https://raw.githubusercontent.com/cosmos/chain-registry/master/cosmoshub/images/atom.png',
         percentage: 4.5,
       },
       {
-        id: 'transfer/channel-26/ausdy',
+        id: 'transfer/channel-1/ausdy',
         symbol: 'USDY',
         imgUrl:
           'https://raw.githubusercontent.com/cosmos/chain-registry/master/cosmoshub/images/atom.png',

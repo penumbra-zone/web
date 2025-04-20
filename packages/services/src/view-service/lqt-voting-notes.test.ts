@@ -25,7 +25,8 @@ describe('lqtVotingNotes request handler', () => {
     vi.resetAllMocks();
 
     mockIndexedDb = {
-      getLQTHistoricalVotes: vi.fn(),
+      getLQTHistoricalVotesByEpoch: vi.fn(),
+      getVotesThroughEpochInclusive: vi.fn(),
       getBlockHeightByEpoch: vi.fn(),
       getNotesForVoting: vi.fn(),
     };

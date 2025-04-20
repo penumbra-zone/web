@@ -4,7 +4,7 @@ import { joinLoHiAmount } from '@penumbra-zone/types/amount';
 import { getAmount } from '@penumbra-zone/getters/value-view';
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { DUMMY_UM_METADATA, DUMMY_USDC_METADATA, DUMMY_VALUE_VIEW } from './dummy';
-import { LQTVote } from './use-voting-rewards';
+import { LQTVote } from './use-personal-rewards';
 
 export const BASE_LIMIT = 10;
 export const BASE_PAGE = 1;

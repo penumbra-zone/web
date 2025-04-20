@@ -428,13 +428,17 @@ export class IndexedDb implements IndexedDbInterface {
   /**
    * Retrieves liquidity tournament votes and rewards for a given epoch.
    */
-  async getLQTHistoricalVotes(epoch: bigint): Promise<
+  async getLQTHistoricalVotesByEpoch(
+    epoch: bigint,
+    subaccount?: AddressIndex,
+  ): Promise<
     {
       TransactionId: TransactionId;
       AssetMetadata: Metadata;
       VoteValue: Value;
       RewardValue: Amount | undefined;
       id: string | undefined;
+      subaccount?: AddressIndex;
     }[]
   > {
     const tournamentVotes = await this.db.getAllFromIndex(
@@ -451,7 +455,45 @@ export class IndexedDb implements IndexedDbInterface {
         ? Amount.fromJson(tournamentVote.RewardValue, { typeRegistry })
         : undefined,
       id: tournamentVote.id,
+      subaccount: subaccount
+        ? AddressIndex.fromJson(tournamentVote.subaccount!, { typeRegistry })
+        : undefined,
     }));
+  }
+
+  /**
+   * Streams tournament votes up to and including the specified epoch,
+   * filtering only those that have a reward.
+   */
+  async *getVotesThroughEpochInclusive(epoch?: bigint, subaccount?: AddressIndex) {
+    const bound = epoch !== undefined ? epoch.toString() : undefined;
+    const keyRange = bound !== undefined ? IDBKeyRange.upperBound(bound, true) : undefined;
+
+    yield* new ReadableStream({
+      start: async cont => {
+        let cursor = await this.db
+          .transaction('LQT_HISTORICAL_VOTES')
+          .store.index('epoch')
+          .openCursor(keyRange);
+
+        while (cursor) {
+          cont.enqueue({
+            TransactionId: TransactionId.fromJson(cursor.value.TransactionId, { typeRegistry }),
+            AssetMetadata: Metadata.fromJson(cursor.value.AssetMetadata, { typeRegistry }),
+            VoteValue: Value.fromJson(cursor.value.VoteValue, { typeRegistry }),
+            RewardValue: Amount.fromJson(cursor.value.RewardValue, { typeRegistry }),
+            id: cursor.value.id,
+            subaccount: subaccount
+              ? AddressIndex.fromJson(cursor.value.subaccount!, { typeRegistry })
+              : undefined,
+          });
+
+          cursor = await cursor.continue();
+        }
+
+        cont.close();
+      },
+    });
   }
 
   /**
@@ -464,6 +506,7 @@ export class IndexedDb implements IndexedDbInterface {
     voteValue: Value,
     rewardValue?: Amount,
     id?: string,
+    subaccount?: AddressIndex,
   ): Promise<void> {
     assertTransactionId(transactionId);
 
@@ -478,6 +521,7 @@ export class IndexedDb implements IndexedDbInterface {
       VoteValue: voteValue.toJson({ typeRegistry }) as Jsonified<Value>,
       RewardValue: rewardValue ? (rewardValue.toJson({ typeRegistry }) as Jsonified<Amount>) : null,
       id: uniquePrimaryKey,
+      subaccount: subaccount ? (subaccount.toJson() as Jsonified<AddressIndex>) : undefined,
     };
 
     await this.u.update({

@@ -7,17 +7,18 @@ import { servicesCtx } from '../ctx/prax.js';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { Value } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
-export const tournamentVotes: Impl['tournamentVotes'] = async (req, ctx) => {
+export const tournamentVotes: Impl['tournamentVotes'] = async function* (req, ctx) {
+  console.log('entered tournamentVotes!');
+  console.log('req: ', req);
   const services = await ctx.values.get(servicesCtx)();
   const { indexedDb } = await services.getWalletServices();
 
-  // Get the starting block height for the corresponding epoch index.
-  const epoch = await indexedDb.getBlockHeightByEpoch(req.epochIndex);
+  let tournamentVote = new TournamentVotesResponse() ?? undefined;
 
   // Retrieve the vote cast in the liquidity tournament for the current epoch.
-  const tournamentVote = new TournamentVotesResponse();
-  if (epoch?.index) {
-    const votes = await indexedDb.getLQTHistoricalVotes(epoch.index);
+  if (req.epochIndex) {
+    const votes = await indexedDb.getLQTHistoricalVotesByEpoch(req.epochIndex);
+    console.log('votes inside tournamentVotes: ', votes);
 
     if (votes.length > 0) {
       tournamentVote.votes = votes.map(
@@ -29,13 +30,45 @@ export const tournamentVotes: Impl['tournamentVotes'] = async (req, ctx) => {
             reward: vote.RewardValue
               ? new Value({
                   amount: new Amount({ lo: vote.RewardValue.lo, hi: vote.RewardValue.hi }),
-                  assetId: indexedDb.stakingTokenAssetId,
+                  assetId: vote.VoteValue.assetId,
                 })
               : undefined,
+            epochIndex: req.epochIndex,
           }),
       );
     }
   }
 
-  return tournamentVote;
+  // Retrieve votes cast in the liquidity tournament up to specified block height's starting epoch.
+  if (req.blockHeight) {
+    // todo: SCT query over indexedDB query instead
+    const epoch = await indexedDb.getEpochByHeight(req.blockHeight);
+
+    for await (const vote of indexedDb.getVotesThroughEpochInclusive(epoch!.index)) {
+      console.log('vote: ', vote);
+      tournamentVote.votes.push(
+        new TournamentVotesResponse_Vote({
+          transaction: vote.TransactionId,
+          incentivizedAsset: vote.AssetMetadata.penumbraAssetId,
+          votePower: vote.VoteValue.amount,
+          reward: vote.RewardValue
+            ? new Value({
+                amount: new Amount({
+                  lo: vote.RewardValue.lo,
+                  hi: vote.RewardValue.hi,
+                }),
+                assetId: vote.VoteValue.assetId,
+              })
+            : undefined,
+          epochIndex: req.epochIndex,
+        }),
+      );
+    }
+  }
+
+  console.log('length: ', tournamentVote.votes.length);
+
+  console.log('tournamentVote: ', tournamentVote);
+
+  yield tournamentVote;
 };
