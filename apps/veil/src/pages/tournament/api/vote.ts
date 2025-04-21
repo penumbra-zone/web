@@ -9,14 +9,6 @@ import { planBuildBroadcast } from '@/entities/transaction';
 import { openToast } from '@penumbra-zone/ui/Toast';
 import { Denom } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
-export interface VoteParams {
-  notes: SpendableNoteRecord[];
-  assetId: string;
-  epoch: number;
-  rewardsRecipient: Address;
-  reveal: boolean;
-}
-
 export const voteTournament = async ({
   incentivized,
   rewardsRecipient,
@@ -24,7 +16,7 @@ export const voteTournament = async ({
   epochIndex,
 }: {
   incentivized: string;
-  rewardsRecipient: Address;
+  rewardsRecipient: Address | undefined;
   stakedNotes: SpendableNoteRecord[];
   epochIndex: number;
 }): Promise<void> => {
@@ -68,7 +60,7 @@ export const checkIfAlreadyVoted = ({
     votingNotes
       ?.filter(res => res.noteRecord !== undefined)
       .map(res => ({
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- filtering above
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- note exists
         note: res.noteRecord!,
         alreadyVoted: res.alreadyVoted,
       })) ?? [];

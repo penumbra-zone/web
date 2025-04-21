@@ -15,6 +15,7 @@ import { Density } from '@penumbra-zone/ui/Density';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { PagePath } from '@/shared/const/pages';
+import { connectionStore } from '@/shared/model/connection';
 import type {
   DelegatorLeaderboardSortKey,
   DelegatorLeaderboardData,
@@ -22,7 +23,7 @@ import type {
 import { useDelegatorLeaderboard, BASE_PAGE, BASE_LIMIT } from '../api/use-delegator-leaderboard';
 import { useSortableTableHeaders } from './sortable-table-header';
 import { useIndexByAddress } from '../api/use-index-by-address';
-import { connectionStore } from '@/shared/model/connection';
+import { GENERIC_DELUM } from './shared/delum-metadata';
 
 const LeaderboardRow = observer(
   ({ row, loading }: { row: DelegatorLeaderboardData; loading: boolean }) => {
@@ -63,23 +64,12 @@ const LeaderboardRow = observer(
         return undefined;
       }
 
-      const RANDOM_DELUM_DENOM =
-        'delegation_penumbravalid12s9lanucncnyasrsqgy6z532q7nwsw3aqzzeqas55kkpyf6lhsqs2w0zar';
       return new ValueView({
         valueView: {
           case: 'knownAssetId',
           value: {
             amount: splitLoHi(BigInt(row.total_rewards)),
-            metadata: {
-              denomUnits: [
-                {
-                  denom: RANDOM_DELUM_DENOM,
-                  exponent: 6,
-                },
-              ],
-              display: RANDOM_DELUM_DENOM,
-              symbol: 'delUM',
-            },
+            metadata: GENERIC_DELUM,
           },
         },
       });
