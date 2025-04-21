@@ -5,6 +5,8 @@ import { PagePath } from '@/shared/const/pages';
 import { redirect, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+// this serves to keep the url short
+// as we will use it in an x post
 export const queryParamMap = {
   t: 'epoch',
   e: 'earnings',
@@ -12,7 +14,7 @@ export const queryParamMap = {
   i: 'incentivePool',
   l: 'lpPool',
   d: 'delegatorPool',
-} as const;
+};
 
 export interface TournamentParams extends Record<string, string> {
   epoch: string;
@@ -37,14 +39,14 @@ export function TournamentJoinPage({
     redirect(PagePath.Tournament);
   }
 
-  useEffect(() => {
-    setTimeout(() => {
-      if (seconds === 1) {
-        router.push(PagePath.Tournament);
-      }
-      setSeconds(seconds - 1);
-    }, 1000);
-  }, [seconds, router]);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     if (seconds === 1) {
+  //       router.push(PagePath.Tournament);
+  //     }
+  //     setSeconds(seconds - 1);
+  //   }, 1000);
+  // }, [seconds, router]);
 
   const url = `${imageUrl}?${new URLSearchParams(searchParams).toString()}`;
 
@@ -53,7 +55,7 @@ export function TournamentJoinPage({
       <PenumbraWaves />
       <div className='flex w-full justify-center'>
         {/* eslint-disable-next-line @next/next/no-img-element -- allow img */}
-        <img src={url} alt='Tournament Share Image' className='w-[512px] h-[512px]' />
+        <img src={url} alt='Tournament Share Image' className='w-[600px] h-[315px]' />
       </div>
       <p className='text-center text-sm text-text-secondary'>Redirecting in {seconds} seconds...</p>
     </section>

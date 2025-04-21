@@ -2,14 +2,14 @@ import { theme } from '@penumbra-zone/ui/theme';
 import { registerFont } from 'canvas';
 import { join } from 'path';
 
-export const scale = typeof window !== 'undefined' ? window.devicePixelRatio : 1;
+export const scale = typeof window !== 'undefined' ? window.devicePixelRatio : 2;
 
 export const dpi = (px: number) => px * scale;
 
 export const remToPx = (r: string) =>
   parseFloat(r) *
   parseFloat(
-    typeof window !== 'undefined' ? getComputedStyle(document.documentElement).fontSize : '16px',
+    typeof window !== 'undefined' ? getComputedStyle(document.documentElement).fontSize : '10px',
   );
 
 export const scaleCanvas = (canvas: HTMLCanvasElement) => {
@@ -34,6 +34,7 @@ export function drawText(
     fontSize = '1rem',
     fontFamily = theme.font.default,
     weight = 500,
+    gradient,
   }: {
     text: string;
     x?: number | 'center';
@@ -42,21 +43,34 @@ export function drawText(
     fontSize?: string;
     fontFamily?: string;
     weight?: number;
+    gradient?: {
+      startColor: string;
+      endColor: string;
+    };
   },
 ) {
   ctx.save();
   ctx.font = `${weight} ${dpi(remToPx(fontSize))}px ${fontFamily}`;
 
   let xPos: number;
+  const textWidth = Math.ceil(ctx.measureText(text).width);
   if (x === 'center') {
-    const textWidth = Math.ceil(ctx.measureText(text).width);
     xPos = ctx.canvas.width / 2 - textWidth / 2;
   } else {
     xPos = x;
   }
 
   ctx.textBaseline = 'top';
-  ctx.fillStyle = color;
+
+  if (gradient) {
+    const grd = ctx.createLinearGradient(xPos, 0, xPos + textWidth, 0);
+    grd.addColorStop(0, gradient.startColor);
+    grd.addColorStop(1, gradient.endColor);
+    ctx.fillStyle = grd;
+  } else {
+    ctx.fillStyle = color;
+  }
+
   ctx.fillText(text, xPos, dpi(y));
   ctx.restore();
 }
@@ -84,18 +98,13 @@ export function getTextWidth(
 
 export function registerFonts() {
   if (typeof window === 'undefined') {
-    const fontsDir = join(
-      process.cwd(),
-      'node_modules',
-      '@penumbra-zone',
-      'ui',
-      'src',
-      'theme',
-      'fonts',
-    );
-    registerFont(join(fontsDir, 'IosevkaTerm-Regular.woff2'), { family: 'Iosevka Term' });
-    registerFont(join(fontsDir, 'Poppins-Bold.woff2'), { family: 'Poppins', weight: 'bold' });
-    registerFont(join(fontsDir, 'Poppins-Medium.woff2'), { family: 'Poppins', weight: 'medium' });
-    registerFont(join(fontsDir, 'Poppins-Regular.woff2'), { family: 'Poppins' });
+    const fontsDir = join(process.cwd(), 'src', 'shared', 'assets', 'canvas-fonts');
+    registerFont(join(fontsDir, 'SGr-IosevkaTerm-Regular.ttc'), { family: 'Iosevka Term' });
+    registerFont(join(fontsDir, 'SGr-IosevkaTerm-Medium.ttc'), {
+      family: 'Iosevka Term',
+      weight: 'medium',
+    });
+    registerFont(join(fontsDir, 'Poppins-Medium.ttf'), { family: 'Poppins', weight: 'medium' });
+    registerFont(join(fontsDir, 'Poppins-Regular.ttf'), { family: 'Poppins' });
   }
 }
