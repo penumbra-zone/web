@@ -6,9 +6,12 @@ const baseUrl = process.env['NEXT_PUBLIC_BASE_URL'] ?? 'http://localhost:3000';
 
 export async function drawTournamentEarningsCanvas(
   canvas: HTMLCanvasElement,
-  { epoch, earnings, votingStreak, incentivePool, lpPool, delegatorPool }: TournamentParams,
+  params: TournamentParams,
+  landscape = false,
 ) {
   const ctx = canvas.getContext('2d');
+  const { epoch, earnings, votingStreak, incentivePool, lpPool, delegatorPool } = params;
+  console.log('TCL: params', params);
   if (!ctx) {
     console.error('Failed to get canvas context');
     return;
@@ -25,33 +28,52 @@ export async function drawTournamentEarningsCanvas(
 
     drawText(ctx, {
       text: `Liquidity Tournament #${epoch}`,
-      y: 60,
+      y: landscape ? 34 : 60,
       fontSize: theme.fontSize.textSm,
       fontFamily: theme.font.mono,
     });
 
     drawText(ctx, {
       text: "You've Earned",
-      y: 172,
+      y: landscape ? 90 : 172,
       fontSize: theme.fontSize.text3xl,
+      gradient: {
+        startColor: theme.color.primary.light,
+        endColor: theme.color.secondary.light,
+      },
     });
 
     drawText(ctx, {
       text: earnings.split(':').join(' '),
-      y: 220,
+      y: landscape ? 120 : 220,
       fontSize: theme.fontSize.text6xl,
     });
 
-    const boxesWidth = dpi(440);
+    const boxesWidth = landscape ? dpi(316) : dpi(440);
     const noOfBoxes = 4;
-    const boxesPadding = dpi(36);
+    const boxesPadding = landscape ? dpi(142) : dpi(36);
     const singleBoxWidth = boxesWidth / noOfBoxes;
 
     const boxData = [
-      { heading: 'Voting Streak', value: votingStreak.split(':').join(' ') },
-      { heading: 'Incentive Pool', value: incentivePool.split(':').join(' ') },
-      { heading: 'LP Pool', value: lpPool.split(':').join(' ') },
-      { heading: 'Delegator Pool', value: delegatorPool.split(':').join(' ') },
+      {
+        heading: 'Voting Streak',
+        value: votingStreak.split(':').join(' '),
+        color: theme.color.text.primary,
+      },
+      {
+        heading: 'Incentive Pool',
+        value: incentivePool.split(':').join(' '),
+        gradient: {
+          startColor: theme.color.primary.light,
+          endColor: theme.color.secondary.light,
+        },
+      },
+      { heading: 'LP Pool', value: lpPool.split(':').join(' '), color: theme.color.primary.light },
+      {
+        heading: 'Delegator Pool',
+        value: delegatorPool.split(':').join(' '),
+        color: theme.color.secondary.light,
+      },
     ];
 
     boxData.forEach((box, index) => {
@@ -66,26 +88,29 @@ export async function drawTournamentEarningsCanvas(
         fontSize: theme.fontSize.textBase,
         fontFamily: theme.font.mono,
         weight: 400,
-        color: theme.color.primary.light,
+        color: box.color,
+        gradient: box.gradient,
       };
 
       const xPos = boxesPadding + singleBoxWidth * index + singleBoxWidth / 2;
 
       drawText(ctx, {
         x: xPos - getTextWidth(ctx, headingProps) / 2,
-        y: 300,
+        y: landscape ? 184 : 300,
         ...headingProps,
       });
 
       drawText(ctx, {
         x: xPos - getTextWidth(ctx, valueProps) / 2,
-        y: 317,
+        y: landscape ? 198 : 317,
         ...valueProps,
       });
     });
   }
 
-  const bgImageSrc = `${baseUrl}/assets/lqt-social-rewards-bg-square.png`;
+  const bgImageSrc = landscape
+    ? `${baseUrl}/assets/lqt-social-rewards-bg-landscape.png`
+    : `${baseUrl}/assets/lqt-social-rewards-bg-square.png`;
   if (typeof window !== 'undefined') {
     const bgImage = new Image();
     bgImage.src = bgImageSrc;
