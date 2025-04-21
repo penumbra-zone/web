@@ -1,26 +1,26 @@
-import Image from 'next/image';
 import { Text } from '@penumbra-zone/ui/Text';
-import { round } from '@penumbra-zone/types/round';
 import { Skeleton } from '@penumbra-zone/ui/Skeleton';
+import { openToast } from '@penumbra-zone/ui/Toast';
 import { useCurrentEpoch } from '../../api/use-current-epoch';
 import { useTournamentSummary } from '../../api/use-tournament-summary';
+import { useEpochGauge } from '../../api/use-epoch-gauge';
 import { IncentivePool } from './incentive-pool';
+import { TournamentResults } from './results';
 
-export const Stats = ({
-  poolAmount,
-  results,
-}: {
-  poolAmount: number;
-  poolLPs: number;
-  poolDelegators: number;
-  symbol: string;
-  results: { symbol: string; amount: number; imgUrl: string }[];
-}) => {
-  const { epoch, isLoading: epochLoading } = useCurrentEpoch();
+export const Stats = () => {
   const { data: stats, isLoading } = useTournamentSummary({
     limit: 1,
     page: 1,
   });
+
+  const { epoch, isLoading: epochLoading } = useCurrentEpoch(newEpoch => {
+    openToast({
+      type: 'info',
+      message: `New epoch has started: ${newEpoch}. Vote for your favorite asset!`,
+    });
+  });
+
+  const { data: epochGauge, isLoading: epochGaugeLoading, isPending } = useEpochGauge(epoch);
 
   return (
     <>
@@ -42,33 +42,7 @@ export const Stats = ({
       </div>
 
       <IncentivePool summary={stats?.[0]} loading={isLoading} />
-
-      <div className='flex flex-col gap-4'>
-        <Text strong color='text.primary'>
-          Current Results
-        </Text>
-        {results.map(asset => (
-          <div key={asset.symbol} className='flex gap-3'>
-            <Image src={asset.imgUrl} alt={asset.symbol} width={32} height={32} />
-            <div className='flex w-full flex-col gap-2'>
-              <div className='flex justify-between w-full'>
-                <Text technical color='text.primary'>
-                  {asset.symbol}
-                </Text>
-                <Text technical color='text.secondary'>
-                  {round({ value: (asset.amount / poolAmount) * 100, decimals: 0 })}%
-                </Text>
-              </div>
-              <div className='flex w-full h-[6px] bg-other-tonalFill5 rounded-full'>
-                <div
-                  className='h-[6px] bg-secondary-light rounded-full'
-                  style={{ width: `calc(${(asset.amount / poolAmount) * 100}% - 1px)` }}
-                />
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+      <TournamentResults results={epochGauge ?? []} loading={isPending || epochGaugeLoading} />
     </>
   );
 };

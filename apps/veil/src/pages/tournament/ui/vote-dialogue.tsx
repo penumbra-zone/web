@@ -220,103 +220,99 @@ export const VoteDialogueSelector = observer(
      * @see https://github.com/penumbra-zone/web/issues/2192
      */
     return (
-      <div className='relative flex items-center gap-2 text-text-primary'>
-        <Dialog isOpen={isOpen} onClose={handleClose}>
-          <Dialog.Content title={`Vote in epoch #${epoch}`}>
-            <div className='[&_*:focus]:outline-none flex flex-col max-h-[120vh]'>
-              <div className='relative mb-4'>
-                <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5' />
-                <input
-                  type='text'
-                  placeholder='Search...'
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                  className='w-full py-3 pl-10 pr-3 bg-[#2a2c2e] text-white rounded-md border-none focus:ring-0'
-                />
-              </div>
+      <Dialog isOpen={isOpen} onClose={handleClose}>
+        <Dialog.Content title={`Vote in epoch #${epoch}`}>
+          <div className='[&_*:focus]:outline-none flex flex-col max-h-[120vh]'>
+            <div className='relative mb-4'>
+              <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5' />
+              <input
+                type='text'
+                placeholder='Search...'
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                className='w-full py-3 pl-10 pr-3 bg-[#2a2c2e] text-white rounded-md border-none focus:ring-0'
+              />
+            </div>
 
-              {showSearchResultsHeader && (
-                <Text small color='text.secondary'>
-                  Search Results
-                </Text>
-              )}
+            {showSearchResultsHeader && (
+              <Text small color='text.secondary'>
+                Search Results
+              </Text>
+            )}
 
-              <div className='overflow-y-auto flex-1 pr-1 mt-2'>
-                {hasResults ? (
-                  <>
-                    <AssetListGroup
-                      label='Above threshold (≥5%)'
-                      assets={aboveThreshold}
-                      selectedAssetId={selectedAsset}
-                      onSelect={setSelectedAsset}
-                    />
+            <div className='overflow-y-auto flex-1 pr-1 mt-2'>
+              {hasResults ? (
+                <>
+                  <AssetListGroup
+                    label='Above threshold (≥5%)'
+                    assets={aboveThreshold}
+                    selectedAssetId={selectedAsset}
+                    onSelect={setSelectedAsset}
+                  />
 
-                    <AssetListGroup
-                      label='Below threshold (<5%)'
-                      assets={belowThreshold}
-                      selectedAssetId={selectedAsset}
-                      onSelect={() => {}}
-                      disableSelection
-                    />
-                  </>
-                ) : (
-                  <div className='flex flex-col items-center justify-center py-16 text-text-secondary gap-2'>
-                    <Search className='w-8 h-8 text-text-secondary' />
-                    <Text variant='body' color='text.secondary'>
-                      No results
-                    </Text>
-                  </div>
-                )}
-              </div>
-
-              <div className='pt-6 flex flex-col gap-4'>
-                <Button
-                  onClick={() => {
-                    onClose();
-                    handleVoteSubmit().catch((err: unknown) => console.error(err));
-                  }}
-                  priority='primary'
-                  actionType='accent'
-                  disabled={!selectedAsset}
-                >
-                  {selectedAsset
-                    ? `Vote for ${selectedAsset.toUpperCase()}`
-                    : 'Select asset to vote'}
-                </Button>
-
-                <div className='flex items-center justify-center gap-2 mt-1'>
-                  <div className='rounded-sm bg-[#cc5500] w-5 h-5 flex items-center justify-center relative'>
-                    <input
-                      type='checkbox'
-                      id='reveal-vote'
-                      checked={revealVote}
-                      onChange={() => setRevealVote(!revealVote)}
-                      className='opacity-0 absolute w-full h-full cursor-pointer'
-                    />
-                    {revealVote && (
-                      <svg
-                        xmlns='http://www.w3.org/2000/svg'
-                        className='h-4 w-4 text-white'
-                        viewBox='0 0 20 20'
-                        fill='currentColor'
-                      >
-                        <path
-                          fillRule='evenodd'
-                          d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z'
-                          clipRule='evenodd'
-                        />
-                      </svg>
-                    )}
-                  </div>
-                  <label htmlFor='reveal-vote' className='text-white cursor-pointer'>
-                    Reveal my vote to the leaderboard
-                  </label>
+                  <AssetListGroup
+                    label='Below threshold (<5%)'
+                    assets={belowThreshold}
+                    selectedAssetId={selectedAsset}
+                    onSelect={() => {}}
+                    disableSelection
+                  />
+                </>
+              ) : (
+                <div className='flex flex-col items-center justify-center py-16 text-text-secondary gap-2'>
+                  <Search className='w-8 h-8 text-text-secondary' />
+                  <Text variant='body' color='text.secondary'>
+                    No results
+                  </Text>
                 </div>
+              )}
+            </div>
+
+            <div className='pt-6 flex flex-col gap-4'>
+              <Button
+                onClick={() => {
+                  onClose();
+                  handleVoteSubmit().catch((err: unknown) => console.error(err));
+                }}
+                priority='primary'
+                actionType='accent'
+                disabled={!selectedAsset}
+              >
+                {selectedAsset ? `Vote for ${selectedAsset.toUpperCase()}` : 'Select asset to vote'}
+              </Button>
+
+              <div className='flex items-center justify-center gap-2 mt-1'>
+                <div className='rounded-sm bg-[#cc5500] w-5 h-5 flex items-center justify-center relative'>
+                  <input
+                    type='checkbox'
+                    id='reveal-vote'
+                    checked={revealVote}
+                    onChange={() => setRevealVote(!revealVote)}
+                    className='opacity-0 absolute w-full h-full cursor-pointer'
+                  />
+                  {revealVote && (
+                    <svg
+                      xmlns='http://www.w3.org/2000/svg'
+                      className='h-4 w-4 text-white'
+                      viewBox='0 0 20 20'
+                      fill='currentColor'
+                    >
+                      <path
+                        fillRule='evenodd'
+                        d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z'
+                        clipRule='evenodd'
+                      />
+                    </svg>
+                  )}
+                </div>
+                <label htmlFor='reveal-vote' className='text-white cursor-pointer'>
+                  Reveal my vote to the leaderboard
+                </label>
               </div>
             </div>
-          </Dialog.Content>
-        </Dialog>
-      </div>
+          </div>
+        </Dialog.Content>
+      </Dialog>
     );
   },
 );
