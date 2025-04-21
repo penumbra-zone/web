@@ -1,19 +1,26 @@
-import { useQuery } from '@tanstack/react-query';
-import { apiFetch } from '@/shared/utils/api-fetch';
-import { useRefetchOnNewBlock } from '@/shared/api/compact-block';
-import type { CurrentEpochApiResponse } from '../server/current-epoch';
+import { useEffect, useRef } from 'react';
+import { useTournamentSummary } from './use-tournament-summary';
 
-export const useCurrentEpoch = () => {
-  const query = useQuery({
-    queryKey: ['current-epoch'],
-    staleTime: Infinity,
-    queryFn: async () => {
-      const res = await apiFetch<CurrentEpochApiResponse>('/api/tournament/current-epoch');
-      return res.epoch;
-    },
+export const useCurrentEpoch = (onChange?: (newEpoch: number) => void) => {
+  const { data: summary, isLoading } = useTournamentSummary({
+    limit: 1,
+    page: 1,
   });
 
-  useRefetchOnNewBlock('current-epoch', query);
+  const epoch = summary?.[0]?.epoch;
+  const prevEpoch = useRef(epoch);
 
-  return query;
-}
+  useEffect(() => {
+    if (epoch && !prevEpoch.current) {
+      prevEpoch.current = epoch;
+    } else if (epoch && prevEpoch.current !== epoch) {
+      prevEpoch.current = epoch;
+      onChange?.(epoch);
+    }
+  }, [epoch, onChange]);
+
+  return {
+    epoch: summary?.[0]?.epoch,
+    isLoading,
+  };
+};

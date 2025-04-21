@@ -164,7 +164,7 @@ export const VoteDialogueSelector = observer(
 
     // Fetch user's spendable voting notes for this epoch
     const { notes } = useLQTNotes(subaccount);
-    const { data: epochIndex } = useCurrentEpoch();
+    const { epoch } = useCurrentEpoch();
 
     const filteredAssets = searchQuery
       ? assets.filter(a => a.symbol.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -176,7 +176,7 @@ export const VoteDialogueSelector = observer(
 
     const handleVoteSubmit = async () => {
       if (selectedAsset) {
-        if (!epochIndex) {
+        if (!epoch) {
           throw new Error('Missing epoch index');
         }
 
@@ -190,7 +190,7 @@ export const VoteDialogueSelector = observer(
         await voteTournament({
           stakedNotes: stakedNotes,
           incentivized: selectedAsset,
-          epochIndex: epochIndex,
+          epochIndex: epoch,
           rewardsRecipient,
         });
 
@@ -222,7 +222,7 @@ export const VoteDialogueSelector = observer(
     return (
       <div className='relative flex items-center gap-2 text-text-primary'>
         <Dialog isOpen={isOpen} onClose={handleClose}>
-          <Dialog.Content title={`Vote in epoch #${epochIndex}`}>
+          <Dialog.Content title={`Vote in epoch #${epoch}`}>
             <div className='[&_*:focus]:outline-none flex flex-col max-h-[120vh]'>
               <div className='relative mb-4'>
                 <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5' />

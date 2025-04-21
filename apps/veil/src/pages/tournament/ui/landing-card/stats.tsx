@@ -1,15 +1,13 @@
 import Image from 'next/image';
 import { Text } from '@penumbra-zone/ui/Text';
-import { pnum } from '@penumbra-zone/types/pnum';
 import { round } from '@penumbra-zone/types/round';
 import { Skeleton } from '@penumbra-zone/ui/Skeleton';
 import { useCurrentEpoch } from '../../api/use-current-epoch';
+import { useTournamentSummary } from '../../api/use-tournament-summary';
+import { IncentivePool } from './incentive-pool';
 
 export const Stats = ({
   poolAmount,
-  poolLPs,
-  poolDelegators,
-  symbol,
   results,
 }: {
   poolAmount: number;
@@ -18,7 +16,11 @@ export const Stats = ({
   symbol: string;
   results: { symbol: string; amount: number; imgUrl: string }[];
 }) => {
-  const { data: epoch, isLoading } = useCurrentEpoch();
+  const { epoch, isLoading: epochLoading } = useCurrentEpoch();
+  const { data: stats, isLoading } = useTournamentSummary({
+    limit: 1,
+    page: 1,
+  });
 
   return (
     <>
@@ -27,63 +29,20 @@ export const Stats = ({
           Current Epoch
         </Text>
         <div className='flex items-center rounded-sm bg-base-blackAlt px-2'>
-          {isLoading ? (
+          {epochLoading ? (
             <div className='w-16 h-6'>
               <Skeleton />
             </div>
           ) : (
             <div className='text-transparent bg-clip-text [background-image:linear-gradient(90deg,rgb(244,156,67),rgb(83,174,168))]'>
-              <Text xxl>
-                #{epoch}
-              </Text>
+              <Text xxl>#{epoch}</Text>
             </div>
           )}
         </div>
       </div>
-      <div className='flex flex-col gap-2'>
-        <div className='flex justify-between'>
-          <Text strong color='text.primary'>
-            Incentive Pool
-          </Text>
-          <Text technical color='text.primary'>
-            {pnum(poolAmount).toFormattedString()} {symbol}
-          </Text>
-        </div>
-        <div className='flex w-full h-[6px] bg-base-blackAlt rounded-full justify-between'>
-          <div
-            className='h-[6px] bg-primary-light rounded-l-full'
-            style={{ width: `calc(${(poolLPs / poolAmount) * 100}% - 1px)` }}
-          />
-          <div
-            className='h-[6px] bg-secondary-light rounded-r-full'
-            style={{ width: `${(poolDelegators / poolAmount) * 100}%` }}
-          />
-        </div>
-        <div className='flex justify-between'>
-          <div className='flex gap-2'>
-            <Text technical color='text.primary'>
-              LPs
-            </Text>
-            <Text technical color='primary.light'>
-              {pnum(poolLPs).toFormattedString()} {symbol}
-            </Text>
-            <Text technical color='text.secondary'>
-              {round({ value: (poolLPs / poolAmount) * 100, decimals: 0 })}%
-            </Text>
-          </div>
-          <div className='flex gap-2'>
-            <Text technical color='text.primary'>
-              Delegators
-            </Text>
-            <Text technical color='secondary.light'>
-              {pnum(poolDelegators).toFormattedString()} {symbol}
-            </Text>
-            <Text technical color='text.secondary'>
-              {round({ value: (poolDelegators / poolAmount) * 100, decimals: 0 })}%
-            </Text>
-          </div>
-        </div>
-      </div>
+
+      <IncentivePool summary={stats?.[0]} loading={isLoading} />
+
       <div className='flex flex-col gap-4'>
         <Text strong color='text.primary'>
           Current Results
