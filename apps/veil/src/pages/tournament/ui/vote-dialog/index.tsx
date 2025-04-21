@@ -1,17 +1,17 @@
+import Image from 'next/image';
 import { useState } from 'react';
+import { Search } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 import { Dialog } from '@penumbra-zone/ui/Dialog';
 import { Text } from '@penumbra-zone/ui/Text';
 import { Button } from '@penumbra-zone/ui/Button';
-import { Search } from 'lucide-react';
-import Image from 'next/image';
 import { SpendableNoteRecord } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { useSubaccounts } from '@/widgets/header/api/subaccounts';
 import { connectionStore } from '@/shared/model/connection';
 import { getAddressIndex } from '@penumbra-zone/getters/address-view';
-import { useLQTNotes } from '../api/use-voting-notes';
-import { voteTournament } from '../api/vote';
-import { useCurrentEpoch } from '../api/use-current-epoch';
+import { useLQTNotes } from '../../api/use-voting-notes';
+import { voteTournament } from '../../api/vote';
+import { useCurrentEpoch } from '../../api/use-current-epoch';
 
 interface VoteDialogProps {
   defaultValue?: string;

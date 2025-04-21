@@ -13,7 +13,7 @@ import { useGetMetadata } from '@/shared/api/assets';
 import { PagePath } from '@/shared/const/pages';
 import { useLQTNotes } from '../api/use-voting-notes';
 import { useCurrentEpoch } from '../api/use-current-epoch';
-import { VoteDialogueSelector } from './vote-dialogue';
+import { VoteDialogueSelector } from './vote-dialog';
 import { checkIfAlreadyVoted } from '../api/vote';
 
 // TODO: use it for both landing and round page, apply all component states from Figma
