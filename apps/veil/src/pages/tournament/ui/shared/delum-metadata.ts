@@ -4,8 +4,8 @@ const GENERIC_DELUM_DENOM =
   'delegation_penumbravalid12s9lanucncnyasrsqgy6z532q7nwsw3aqzzeqas55kkpyf6lhsqs2w0zar';
 
 /**
- * This delUM metadata is only needed to render the asset in the UI.
- * Use it ONLY if you're sure the asset should be a delUM.
+ * TODO: remove this in favor of correct delUM—UM conversion
+ * https://github.com/penumbra-zone/web/pull/2269#pullrequestreview-2780489876
  */
 export const GENERIC_DELUM = new Metadata({
   denomUnits: [

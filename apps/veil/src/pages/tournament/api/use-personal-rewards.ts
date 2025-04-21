@@ -6,6 +6,9 @@ import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys
 
 /**
  * Retrieves voting rewards from the ViewService.
+ *
+ * TODO: update rewards calculation based on this comment:
+ * https://github.com/penumbra-zone/web/pull/2269#pullrequestreview-2780489876
  */
 export const usePersonalRewards = (epoch?: number) => {
   const { connected, subaccount } = connectionStore;
