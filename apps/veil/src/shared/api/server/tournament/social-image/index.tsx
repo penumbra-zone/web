@@ -2,25 +2,37 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createCanvas } from 'canvas';
 import { drawTournamentEarningsCanvas } from '@/pages/tournament/ui/shared/tournament-earnings-canvas';
 import { registerFonts } from '@/shared/ui/canvas-toolkit';
-import { TournamentParams, queryParamMap } from '@/pages/tournament/ui/join/page';
+import { TournamentParams } from '@/pages/tournament/ui/join/page';
+
+const queryParamMap = {
+  t: 'epoch',
+  e: 'earnings',
+  v: 'votingStreak',
+  i: 'incentivePool',
+  l: 'lpPool',
+  d: 'delegatorPool',
+};
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
+  console.log('TCL: GET -> searchParams', searchParams);
+  console.log('TCL: GET -> searchParams', searchParams.get('t'));
+  console.log('TCL: GET -> queryParamMap', queryParamMap);
   const params = Object.entries(queryParamMap).reduce(
     (acc, [shortKey, paramKey]) => ({
       ...acc,
-      [paramKey]: searchParams.get(shortKey) ?? '',
+      [paramKey]: searchParams.get(shortKey) ?? shortKey,
     }),
     {},
   ) as TournamentParams;
+  console.log('TCL: GET -> params', params);
 
   registerFonts();
-  const canvas = createCanvas(1200, 630);
-  await drawTournamentEarningsCanvas(canvas as unknown as HTMLCanvasElement, params);
+  // const canvas = createCanvas(1200, 630);
+  const canvas = createCanvas(600, 315);
+  await drawTournamentEarningsCanvas(canvas as unknown as HTMLCanvasElement, params, true);
 
-  const buffer = canvas.toBuffer('image/png');
-
-  return new NextResponse(buffer, {
+  return new NextResponse(canvas.toBuffer('image/png'), {
     status: 200,
     headers: {
       'Content-Type': 'image/png',
