@@ -158,11 +158,8 @@ export const VoteDialogueSelector = observer(
       account => getAddressIndex(account).account === subaccount,
     );
 
-    // TODO: change from temporarily hardcode the same account address as the reward recipient.
-    if (!valueAddress?.addressView.value?.address) {
-      throw new Error('Missing rewards recipient address');
-    }
-    const rewardsRecipient = valueAddress.addressView.value.address;
+    // Temporarily hardcode the same account address as the reward recipient.
+    const rewardsRecipient = valueAddress?.addressView.value?.address;
 
     // Fetch user's spendable voting notes for this epoch
     const { notes, epochIndex } = useLQTNotes(subaccount);

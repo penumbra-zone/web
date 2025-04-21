@@ -422,9 +422,6 @@ export type DB = Pick<
   | 'dex_ex_metadata'
   | 'dex_ex_block_summary'
   | 'dex_ex_transactions'
-  | 'lqt._finished_epochs'
-  | 'lqt._votes'
-  | 'lqt._delegator_rewards'
   | 'lqt.gauge'
   | 'lqt.delegator_summary'
 >;
