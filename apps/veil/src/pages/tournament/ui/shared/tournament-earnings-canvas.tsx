@@ -11,11 +11,22 @@ export async function drawTournamentEarningsCanvas(
 ) {
   const ctx = canvas.getContext('2d');
   const { epoch, earnings, votingStreak, incentivePool, lpPool, delegatorPool } = params;
-  console.log('TCL: params', params);
   if (!ctx) {
     console.error('Failed to get canvas context');
     return;
   }
+
+  const format = (value: string) => {
+    return value
+      .split(':')
+      .map((part, i) => {
+        if (i === 0) {
+          return Number(part).toLocaleString();
+        }
+        return part;
+      })
+      .join(' ');
+  };
 
   scaleCanvas(canvas);
   function draw(bgImage: CanvasImageSource) {
@@ -27,7 +38,7 @@ export async function drawTournamentEarningsCanvas(
     ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
 
     drawText(ctx, {
-      text: `Liquidity Tournament #${epoch}`,
+      text: `Tournament #${epoch}`,
       y: landscape ? 34 : 60,
       fontSize: theme.fontSize.textSm,
       fontFamily: theme.font.mono,
@@ -37,6 +48,7 @@ export async function drawTournamentEarningsCanvas(
       text: "You've Earned",
       y: landscape ? 90 : 172,
       fontSize: theme.fontSize.text3xl,
+      fontFamily: theme.font.heading,
       gradient: {
         startColor: theme.color.primary.light,
         endColor: theme.color.secondary.light,
@@ -44,9 +56,10 @@ export async function drawTournamentEarningsCanvas(
     });
 
     drawText(ctx, {
-      text: earnings.split(':').join(' '),
+      text: format(earnings),
       y: landscape ? 120 : 220,
       fontSize: theme.fontSize.text6xl,
+      fontFamily: theme.font.heading,
     });
 
     const boxesWidth = landscape ? dpi(316) : dpi(440);
@@ -57,21 +70,21 @@ export async function drawTournamentEarningsCanvas(
     const boxData = [
       {
         heading: 'Voting Streak',
-        value: votingStreak.split(':').join(' '),
+        value: format(votingStreak),
         color: theme.color.text.primary,
       },
       {
         heading: 'Incentive Pool',
-        value: incentivePool.split(':').join(' '),
+        value: format(incentivePool),
         gradient: {
           startColor: theme.color.primary.light,
           endColor: theme.color.secondary.light,
         },
       },
-      { heading: 'LP Pool', value: lpPool.split(':').join(' '), color: theme.color.primary.light },
+      { heading: 'LP Pool', value: format(lpPool), color: theme.color.primary.light },
       {
         heading: 'Delegator Pool',
-        value: delegatorPool.split(':').join(' '),
+        value: format(delegatorPool),
         color: theme.color.secondary.light,
       },
     ];

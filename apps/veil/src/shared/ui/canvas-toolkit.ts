@@ -9,7 +9,7 @@ export const dpi = (px: number) => px * scale;
 export const remToPx = (r: string) =>
   parseFloat(r) *
   parseFloat(
-    typeof window !== 'undefined' ? getComputedStyle(document.documentElement).fontSize : '10px',
+    typeof window !== 'undefined' ? getComputedStyle(document.documentElement).fontSize : '11px',
   );
 
 export const scaleCanvas = (canvas: HTMLCanvasElement) => {
@@ -106,5 +106,10 @@ export function registerFonts() {
     });
     registerFont(join(fontsDir, 'Poppins-Medium.ttf'), { family: 'Poppins', weight: 'medium' });
     registerFont(join(fontsDir, 'Poppins-Regular.ttf'), { family: 'Poppins' });
+    registerFont(join(fontsDir, 'WorkSans-Bold.ttf'), { family: 'Work Sans' });
+    registerFont(join(fontsDir, 'WorkSans-SemiBold.ttf'), {
+      family: 'Work Sans',
+      weight: 'medium',
+    });
   }
 }
