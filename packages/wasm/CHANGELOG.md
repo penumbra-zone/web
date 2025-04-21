@@ -1,5 +1,11 @@
 # @penumbra-zone/wasm
 
+## 45.1.0
+
+### Minor Changes
+
+- 43249b0: spends delegation notes in the wasm planner
+
 ## 45.0.2
 
 ## 45.0.1
