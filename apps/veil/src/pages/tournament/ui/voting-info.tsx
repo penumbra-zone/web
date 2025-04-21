@@ -113,8 +113,8 @@ export const VotingInfo = observer(() => {
             <Ban className='w-full h-full' />
           </div>
           <Text variant='small' color='text.secondary'>
-            You can’t vote in this epoch because you delegated UM after the epoch started. You’ll be
-            able to vote next epoch.
+            You can&#39;t vote in this epoch because you delegated your UM after the epoch started.
+            You&#39;ll be able to vote next epoch.
           </Text>
         </div>
         <div className='flex gap-2'>
@@ -164,7 +164,7 @@ export const VotingInfo = observer(() => {
               <Coins className='w-full h-full' />
             </div>
             <Text variant='small' color='text.secondary'>
-              You’ve delegated UM and are now eligible to vote in this epoch.
+              You&#39;ve delegated UM and can now vote with your delUM in this epoch.
             </Text>
             {firstNoteValueView && <ValueViewComponent valueView={firstNoteValueView} />}
           </div>

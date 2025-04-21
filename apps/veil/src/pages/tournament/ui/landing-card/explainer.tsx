@@ -18,11 +18,11 @@ export const Explainer = () => {
           />
           <div className='flex flex-col gap-2'>
             <Text variant='large' color='text.primary'>
-              Delegators
+              Delegate UM
             </Text>
             <Text variant='small' color='text.secondary'>
-              Stake UM to vote on which assets should receive incentives. Earn rewards for
-              participating, regardless of their vote choice.
+              Delegate UM using Prax to vote on which assets should receive incentives from the
+              protocol. Delegators receive rewards for participating in the voting process.
             </Text>
           </div>
         </div>
@@ -36,11 +36,11 @@ export const Explainer = () => {
           />
           <div className='flex flex-col gap-2'>
             <Text variant='large' color='text.primary'>
-              Liquidity Providers
+              Provide Liquidity
             </Text>
             <Text variant='small' color='text.secondary'>
-              Provide liquidity on Penumbra Veil to deepen liquidity for trading. Earn rewards from
-              trade volume in LPs that provide assets you vote on.
+              Provide the best liquidity in response to delegator votes in order to deepen what is
+              available for trading. LPs earn rewards based on how much their positions are used.
             </Text>
           </div>
         </div>
@@ -54,10 +54,10 @@ export const Explainer = () => {
           />
           <div className='flex flex-col gap-2'>
             <Text variant='large' color='text.primary'>
-              Automatic Rewards Distribution
+              Receive Rewards Automatically
             </Text>
             <Text variant='small' color='text.secondary'>
-              Delegators receive rewards directly to their balance, and Liquidity Providers get
+              Delegators receive rewards directly to their balance. Liquidity Providers receive
               rewards distributed to their LP reserves and can withdraw when managing positions.
             </Text>
           </div>
