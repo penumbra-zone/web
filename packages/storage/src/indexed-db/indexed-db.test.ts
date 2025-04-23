@@ -30,6 +30,7 @@ import {
   transactionId,
   mainAccount,
   firstSubaccount,
+  scanResultEpoch,
 } from './indexed-db.test-data.js';
 import { AddressIndex, WalletId } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import {
@@ -43,7 +44,6 @@ import {
   Metadata,
   Value,
 } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import type { IdbUpdate, PenumbraDb } from '@penumbra-zone/types/indexed-db';
 import {
   AuctionId,
   DutchAuctionDescription,
@@ -197,7 +197,7 @@ describe('IndexedDb', () => {
         newSwaps: [],
       };
 
-      await db.saveScanResult(scanResult);
+      await db.saveScanResult(scanResult, scanResultEpoch);
       expect(await db.getFullSyncHeight()).toBe(1000n);
 
       await db.clear();
@@ -239,7 +239,7 @@ describe('IndexedDb', () => {
     it('should be able to set/get', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
-      await db.saveScanResult(emptyScanResult);
+      await db.saveScanResult(emptyScanResult, scanResultEpoch);
       const savedLastBlock = await db.getFullSyncHeight();
 
       expect(emptyScanResult.height === savedLastBlock).toBeTruthy();
@@ -291,7 +291,7 @@ describe('IndexedDb', () => {
     it('should be able to set/get', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
-      await db.saveScanResult(scanResultWithSctUpdates);
+      await db.saveScanResult(scanResultWithSctUpdates, scanResultEpoch);
 
       const stateCommitmentTree = await db.getStateCommitmentTree();
 
@@ -374,7 +374,7 @@ describe('IndexedDb', () => {
     it('should be able to set/get all', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
-      await db.saveScanResult(scanResultWithNewSwaps);
+      await db.saveScanResult(scanResultWithNewSwaps, scanResultEpoch);
       const savedSwaps: SwapRecord[] = [];
       for await (const swap of db.iterateSwaps()) {
         savedSwaps.push(swap);
@@ -386,7 +386,7 @@ describe('IndexedDb', () => {
     it('should be able to set/get by nullifier', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
-      await db.saveScanResult(scanResultWithNewSwaps);
+      await db.saveScanResult(scanResultWithNewSwaps, scanResultEpoch);
       const swapByNullifier = await db.getSwapByNullifier(
         scanResultWithNewSwaps.newSwaps[0]!.nullifier!,
       );
@@ -397,7 +397,7 @@ describe('IndexedDb', () => {
     it('should be able to set/get by commitment', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
-      await db.saveScanResult(scanResultWithNewSwaps);
+      await db.saveScanResult(scanResultWithNewSwaps, scanResultEpoch);
       const swapByCommitment = await db.getSwapByCommitment(
         scanResultWithNewSwaps.newSwaps[0]!.swapCommitment!,
       );
