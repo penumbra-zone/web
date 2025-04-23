@@ -68,7 +68,7 @@ import type {
 import { IDBPDatabase, openDB, StoreNames } from 'idb';
 import { IDB_VERSION } from './config.js';
 import { IdbCursorSource, IdbUpdateSource } from './stream.js';
-import { sctPosition } from '../../../wasm/dist/tree.js';
+import { sctPosition } from '@penumbra-zone/wasm/tree';
 
 const assertBytes = (v?: Uint8Array, expect?: number, name = 'value'): v is Uint8Array => {
   if (expect !== undefined && v?.length !== expect) {
