@@ -1,12 +1,3 @@
-import { PartialMessage, PlainMessage } from '@bufbuild/protobuf';
-import { ChainRegistryClient } from '@penumbra-labs/registry';
-import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
-import { bech32mIdentityKey, identityKeyFromBech32m } from '@penumbra-zone/bech32m/penumbravalid';
-import { bech32mWalletId } from '@penumbra-zone/bech32m/penumbrawalletid';
-import { getAssetId } from '@penumbra-zone/getters/metadata';
-import { getAmountFromRecord } from '@penumbra-zone/getters/spendable-note-record';
-import { getIdentityKeyFromValidatorInfo } from '@penumbra-zone/getters/validator-info';
-import { typeRegistry } from '@penumbra-zone/protobuf';
 import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 import {
   AssetId,
@@ -14,10 +5,6 @@ import {
   Metadata,
   Value,
 } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import {
-  AuctionId,
-  DutchAuctionDescription,
-} from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
 import {
   Position,
   PositionId,
@@ -27,19 +14,11 @@ import {
 import { GasPrices } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
 import { Epoch, Nullifier } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
 import { FmdParameters } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
-import { ValidatorInfo } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 import {
   AddressIndex,
   IdentityKey,
   WalletId,
 } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
-import {
-  Transaction,
-  TransactionPerspective,
-  TransactionSummary,
-  TransactionView,
-} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
 import { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
 import {
@@ -48,8 +27,23 @@ import {
   SwapRecord,
   TransactionInfo,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { isZero } from '@penumbra-zone/types/amount';
 import { assetPatterns, PRICE_RELEVANCE_THRESHOLDS } from '@penumbra-zone/types/assets';
+import { IDBPDatabase, IDBPTransaction, openDB, StoreKey, StoreNames } from 'idb';
+
+import { IdbCursorSource, IdbStoreUpdateSource } from './stream.js';
+
+import { ValidatorInfo } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
+import {
+  Transaction,
+  TransactionPerspective,
+  TransactionSummary,
+  TransactionView,
+} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
+import { bech32mIdentityKey, identityKeyFromBech32m } from '@penumbra-zone/bech32m/penumbravalid';
+import { bech32mWalletId } from '@penumbra-zone/bech32m/penumbrawalletid';
+import { getAssetId } from '@penumbra-zone/getters/metadata';
+import { getIdentityKeyFromValidatorInfo } from '@penumbra-zone/getters/validator-info';
 import { base64ToUint8Array, uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import {
@@ -60,15 +54,23 @@ import {
   PenumbraDb,
 } from '@penumbra-zone/types/indexed-db';
 import type { Jsonified } from '@penumbra-zone/types/jsonified';
-import { addLoHi } from '@penumbra-zone/types/lo-hi';
 import type {
   ScanBlockResult,
   StateCommitmentTree,
 } from '@penumbra-zone/types/state-commitment-tree';
-import { IDBPDatabase, IDBPTransaction, openDB, StoreKey, StoreNames } from 'idb';
-import { IDB_VERSION } from './config.js';
-import { IdbCursorSource, IdbStoreUpdateSource } from './stream.js';
 import { sctPosition } from '@penumbra-zone/wasm/tree';
+import {
+  AuctionId,
+  DutchAuctionDescription,
+} from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
+import { ChainRegistryClient } from '@penumbra-labs/registry';
+import { PartialMessage, PlainMessage } from '@bufbuild/protobuf';
+import { getAmountFromRecord } from '@penumbra-zone/getters/spendable-note-record';
+import { isZero } from '@penumbra-zone/types/amount';
+import { IDB_VERSION } from './config.js';
+import { addLoHi } from '@penumbra-zone/types/lo-hi';
+import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import { typeRegistry } from '@penumbra-zone/protobuf';
 
 const assertBytes = (v?: Uint8Array, expect?: number, name = 'value'): v is Uint8Array => {
   if (expect !== undefined && v?.length !== expect) {
@@ -125,9 +127,7 @@ export class IndexedDb implements IndexedDbInterface {
     private readonly c: IdbConstants,
     private readonly chainId: string,
     readonly stakingTokenAssetId: AssetId,
-  ) {
-    this.db = db;
-  }
+  ) {}
 
   static async initialize({
     walletId,
