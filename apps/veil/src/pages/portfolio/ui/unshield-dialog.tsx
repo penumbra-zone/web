@@ -25,6 +25,7 @@ import { AssetSelector } from '@penumbra-zone/ui/AssetSelector';
 import { Density } from '@penumbra-zone/ui/Density';
 import { pnum } from '@penumbra-zone/types/pnum';
 import { ShieldOff, ShieldOffIcon } from 'lucide-react';
+import { useRegistry } from '@/shared/api/registry.ts';
 
 const APPROX_BLOCK_DURATION_MS = 5_500n;
 const MINUTE_MS = 60_000n;
@@ -142,6 +143,10 @@ export function UnshieldDialog({ asset }: { asset: ShieldedBalance }) {
   const [amount, setAmount] = useState(getAmount(asset.valueView));
   const [destAddress, setDestAddress] = useState('');
   const metadata = getMetadata(asset.valueView);
+  console.log(asset);
+  const { data: registry } = useRegistry();
+  const channelId = metadata.base.split('/')[1]!;
+  const destinationChain = registry?.ibcConnections.find(chain => chain.channelId === channelId);
   return (
     <form
       className='flex flex-col gap-4'
@@ -153,8 +158,9 @@ export function UnshieldDialog({ asset }: { asset: ShieldedBalance }) {
         Destination Chain
       </Text>
       <TextInput
+        /* TODO: can't use icon metadata here */
         startAdornment={<AssetIcon metadata={metadata} hideBadge={true} />}
-        value={'Osmosis'}
+        value={destinationChain.displayName ?? ''}
       />
       <Text variant={'detail'} color={'text.secondary'}>
         Unshielding can only be done to the asset’s source chain.
@@ -181,8 +187,9 @@ export function UnshieldDialog({ asset }: { asset: ShieldedBalance }) {
       <Text variant={'body'} color={'text.primary'}>
         Destination Address
       </Text>
+      {/* TODO: add my address button (gets address from cosmoskit) */}
       <TextInput onChange={val => setDestAddress(val)} />
-
+      {/* TODO: disallow withdrawing UM*/}
       <Button
         type='submit'
         actionType={'unshield'}
