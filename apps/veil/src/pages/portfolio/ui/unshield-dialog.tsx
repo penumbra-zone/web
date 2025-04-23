@@ -143,7 +143,6 @@ export function UnshieldDialog({ asset }: { asset: ShieldedBalance }) {
   const [amount, setAmount] = useState(getAmount(asset.valueView));
   const [destAddress, setDestAddress] = useState('');
   const metadata = getMetadata(asset.valueView);
-  console.log(asset);
   const { data: registry } = useRegistry();
   const channelId = metadata.base.split('/')[1]!;
   const destinationChain = registry?.ibcConnections.find(chain => chain.channelId === channelId);
@@ -158,9 +157,7 @@ export function UnshieldDialog({ asset }: { asset: ShieldedBalance }) {
         Destination Chain
       </Text>
       <TextInput
-        /* TODO: can't use icon metadata here  */
         startAdornment={
-          /* FIXME: startAdornment doesn't work React 19 here*/
           <Image
             width={24}
             height={24}
