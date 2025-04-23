@@ -7,15 +7,15 @@ const withBundleAnalyzer = bundleAnalyzer({
 const nextConfig = {
   experimental: {
     optimizePackageImports: ['@penumbra-zone/*'],
-    turbo: {
-      rules: {
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-          as: '*.js',
-        },
+    serverComponentsHmrCache: true,
+  },
+  turbopack: {
+    rules: {
+      '*.svg': {
+        loaders: ['@svgr/webpack'],
+        as: '*.js',
       },
     },
-    serverComponentsHmrCache: true,
   },
   webpack: config => {
     config.externals.push('pino-pretty');

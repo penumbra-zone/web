@@ -2,10 +2,10 @@ import { useBalances as useCosmosBalances } from '@/features/cosmos/use-augmente
 import { useRegistry } from '@/shared/api/registry';
 import { connectionStore } from '@/shared/model/connection';
 import {
-  getMetadataFromBalancesResponse,
   getBalanceView,
+  getMetadataFromBalancesResponse,
 } from '@penumbra-zone/getters/balances-response';
-import { ValueView, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { useMemo } from 'react';
 import { useAssetPrices } from './use-asset-prices.ts';
 import { useWallet } from '@cosmos-kit/react';
@@ -13,6 +13,7 @@ import { WalletStatus } from '@cosmos-kit/core';
 import { useBalances as usePenumbraBalances } from '@/shared/api/balances';
 import { pnum } from '@penumbra-zone/types/pnum';
 import { assetPatterns } from '@penumbra-zone/types/assets';
+import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 
 /**
  * Interface representing a unified asset with both shielded and public balances
@@ -23,11 +24,13 @@ export interface UnifiedAsset {
   metadata: Metadata; // Display metadata (name, icon, etc.)
 
   // Balances
-  shieldedBalances: {
-    valueView: ValueView; // Penumbra ValueView for consistent display
-  }[];
-
+  shieldedBalances: ShieldedBalance[];
   publicBalances: PublicBalance[];
+}
+
+export interface ShieldedBalance {
+  valueView: ValueView; // Penumbra ValueView for consistent display
+  balance: BalancesResponse;
 }
 
 export interface PublicBalance {
@@ -104,11 +107,7 @@ export const useUnifiedAssets = () => {
 
     return penumbraBalances
       .filter(balance => {
-        const isKnownAsset = balance.balanceView?.valueView.case === 'knownAssetId';
-        if (!isKnownAsset) {
-          return false;
-        }
-        return true;
+        return balance.balanceView?.valueView.case === 'knownAssetId';
       })
       .filter(balance => {
         const metadata = getMetadataFromBalancesResponse(balance);
@@ -119,13 +118,14 @@ export const useUnifiedAssets = () => {
           const metadata = getMetadataFromBalancesResponse(balance);
           const valueView = getBalanceView(balance);
 
-          // Create asset object with new structure
+          // Create an asset object with a new structure
           return {
             symbol: metadata.symbol,
             metadata,
             shieldedBalances: [
               {
                 valueView,
+                balance,
               },
             ],
             publicBalances: [],

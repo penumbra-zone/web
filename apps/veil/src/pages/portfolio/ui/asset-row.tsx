@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { UnifiedAsset } from '@/pages/portfolio/api/use-unified-assets.ts';
 import { pnum } from '@penumbra-zone/types/pnum';
-import { ShieldButton } from '@/pages/portfolio/ui/shield-unshield.tsx';
+import { ShieldButton, UnshieldButton } from '@/pages/portfolio/ui/shield-unshield.tsx';
 import { TableCell } from '@penumbra-zone/ui/TableCell';
 import { Text } from '@penumbra-zone/ui/Text';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
@@ -91,15 +91,14 @@ export const AssetRow = observer(
           <TableCell variant={variant}>
             <div className='flex items-center'>
               {hasShieldedBalance ? (
-                <>
+                <div className={'px-3'}>
                   <ValueViewComponent
                     valueView={totalShieldedBalanceValueView}
                     trailingZeros={false}
                     priority={'primary'}
                     context={'table'}
                   />
-                  {/* <UnshieldButton asset={asset} />*/}
-                </>
+                </div>
               ) : (
                 <Text variant={'smallTechnical'} color='text.secondary'>
                   -
@@ -190,11 +189,11 @@ export const AssetRow = observer(
                     <ValueViewComponent
                       valueView={bal.valueView}
                       trailingZeros={false}
-                      priority={'tertiary'}
-                      density={'slim'}
-                      context={'table'}
+                      priority='tertiary'
+                      density='slim'
+                      context='table'
                     />
-                    <Text color={'text.secondary'} small>
+                    <Text color='text.secondary' small>
                       on {bal.chainId}
                     </Text>
                   </div>
@@ -204,12 +203,12 @@ export const AssetRow = observer(
               <TableCell variant={'lastCell'}>
                 {price ? (
                   <div className='flex flex-col'>
-                    <Text variant={'smallTechnical'} color='text.secondary'>
+                    <Text variant='smallTechnical' color='text.secondary'>
                       {price.price.toFixed(4)} {price.quoteSymbol}
                     </Text>
                   </div>
                 ) : (
-                  <Text variant={'smallTechnical'} color='text.secondary'></Text>
+                  <Text variant='smallTechnical' color='text.secondary'></Text>
                 )}
               </TableCell>
               <TableCell variant={'lastCell'}>
@@ -246,7 +245,7 @@ export const AssetRow = observer(
                   <Text color={'text.secondary'} small>
                     on Penumbra
                   </Text>
-                  {/* <UnshieldButton asset={asset} />*/}
+                  <UnshieldButton asset={bal} />
                 </div>
               </TableCell>
               <TableCell variant={'lastCell'}>

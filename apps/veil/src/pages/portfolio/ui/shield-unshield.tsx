@@ -1,4 +1,4 @@
-import type { UnifiedAsset } from '@/pages/portfolio/api/use-unified-assets.ts';
+import type { ShieldedBalance, UnifiedAsset } from '@/pages/portfolio/api/use-unified-assets.ts';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Tooltip } from '@penumbra-zone/ui/Tooltip';
 import { Widget } from '@skip-go/widget';
@@ -7,6 +7,9 @@ import { X } from 'lucide-react';
 import { useRegistry } from '@/shared/api/registry.ts';
 import { getMetadata } from '@penumbra-zone/getters/value-view';
 import { theme as penumbraTheme } from '@penumbra-zone/ui/theme';
+import { UnshieldDialog } from '@/pages/portfolio/ui/unshield-dialog.tsx';
+import { Dialog } from '@penumbra-zone/ui/Dialog';
+
 /**
  * Computes the IBC denom hash for Penumbra-1
  * If the denom already starts with "ibc/", it's assumed to be already computed.
@@ -39,16 +42,19 @@ async function computeIbcDenom(denom: string, channelId: string): Promise<string
   return `ibc/${hashHex}`;
 }
 
-export function UnshieldButton({ asset }: { asset: UnifiedAsset }) {
-  const handleClick = () => {
-    console.warn('Unshield button clicked for asset:', asset.symbol);
-    // TODO: invoke dialog from minifront here or call unshielding function
-  };
-
+export function UnshieldButton({ asset }: { asset: ShieldedBalance }) {
   return (
-    <Button onClick={handleClick} disabled={asset.shieldedBalances.length === 0}>
-      Unshield
-    </Button>
+    <Dialog>
+      <Dialog.Trigger asChild>
+        <Button actionType='accent' density='slim' priority='secondary'>
+          Unshield
+        </Button>
+      </Dialog.Trigger>
+
+      <Dialog.Content title='Unshield'>
+        <UnshieldDialog asset={asset} />
+      </Dialog.Content>
+    </Dialog>
   );
 }
 
