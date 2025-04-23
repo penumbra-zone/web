@@ -47,11 +47,9 @@ export const Content = ({
                   {headerChildren}
                 </header>
 
-                <div className='flex flex-col gap-6 overflow-y-auto px-6 pb-8'>
-                  {children}
+                <div className='flex flex-col gap-6 overflow-y-auto px-6 pb-8'>{children}</div>
 
-                  {buttons && <div className='flex flex-col gap-2'>{buttons}</div>}
-                </div>
+                {buttons && <div className='flex flex-col gap-2'>{buttons}</div>}
 
                 {/**
                  * Opening the dialog focuses the first focusable element in the dialog. That's why the Close button
