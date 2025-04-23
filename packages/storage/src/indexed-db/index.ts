@@ -68,6 +68,7 @@ import type {
 import { IDBPDatabase, openDB, StoreNames } from 'idb';
 import { IDB_VERSION } from './config.js';
 import { IdbCursorSource, IdbUpdateSource } from './stream.js';
+import { sctPosition } from '../../../wasm/dist/tree.js';
 
 const assertBytes = (v?: Uint8Array, expect?: number, name = 'value'): v is Uint8Array => {
   if (expect !== undefined && v?.length !== expect) {
@@ -211,12 +212,10 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   // All updates must be atomic in order to prevent invalid tree state
-  public async saveScanResult({
-    sctUpdates,
-    height,
-    newNotes,
-    newSwaps,
-  }: ScanBlockResult): Promise<void> {
+  public async saveScanResult(
+    { sctUpdates, height, newNotes, newSwaps }: ScanBlockResult,
+    epoch: Epoch,
+  ): Promise<void> {
     const tx = this.db.transaction(
       [
         'FULL_SYNC_HEIGHT',
@@ -263,18 +262,14 @@ export class IndexedDb implements IndexedDbInterface {
 
     const swapStore = tx.objectStore('SWAPS');
 
-    // const position = sctUpdates.set_position !== 'Full' ? sctUpdates.set_position?.Position : undefined;
-    // eslint-disable-next-line no-bitwise -- using bitwise
-    // const sctPositionPrefix = position && (position.epoch << 32) | (position.block << 16) | position.commitment;
-
+    const sctPositionPrefix = sctPosition(height, epoch);
     for (const n of newSwaps) {
       if (!n.outputData) {
         throw new Error('No output data in swap record');
       }
 
       // Adds position prefix to swap record. Needed to make swap claims.
-      console.debug('sctPositionPrefix', n.outputData.sctPositionPrefix);
-      // n.outputData.sctPositionPrefix = sctPositionPrefix;
+      n.outputData.sctPositionPrefix = sctPositionPrefix;
 
       assertCommitment(n.swapCommitment);
       void swapStore.put(n.toJson() as Jsonified<SwapRecord>);
