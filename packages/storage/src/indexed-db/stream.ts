@@ -26,34 +26,32 @@ export class IdbCursorSource<N extends PenumbraStoreNames, T extends Message<T> 
 
 const isIdbStoreUpdate = <DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>>(
   item: unknown,
-  table: StoreName,
+  store: StoreName,
 ): item is IdbUpdate<DBTypes, StoreName> =>
   typeof item === 'object' &&
   item != null &&
-  'table' in item &&
-  'value' in item &&
-  typeof item.table === 'string' &&
-  item.table === table;
+  'store' in item &&
+  'key' in item &&
+  item.store === store;
 
-export class IdbStoreUpdateSource<
-  DBTypes extends PenumbraDb,
-  StoreName extends StoreNames<DBTypes>,
-> {
-  /** used to remove the update event listener when the source is cancelled */
+export class IdbStoreUpdateSource<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>>
+  implements UnderlyingDefaultSource<IdbUpdate<DBTypes, StoreName>>
+{
   private ac = new AbortController();
+  private listener?: EventListener;
 
   constructor(
     private readonly events: EventTarget,
-    private readonly table: StoreName,
+    private readonly store: StoreName,
   ) {}
 
   start(cont: ReadableStreamDefaultController<IdbUpdate<DBTypes, StoreName>>) {
-    const listener: EventListener = (event: Event) => {
-      if ('detail' in event && isIdbStoreUpdate(event.detail, this.table)) {
+    this.listener = (event: Event) => {
+      if ('detail' in event && isIdbStoreUpdate(event.detail, this.store)) {
         cont.enqueue(event.detail);
       }
     };
-    this.events.addEventListener('table-update', listener, { signal: this.ac.signal });
+    this.events.addEventListener('idb-update', this.listener, { signal: this.ac.signal });
   }
 
   cancel(reason: unknown) {

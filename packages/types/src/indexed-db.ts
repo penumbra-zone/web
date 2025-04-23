@@ -52,9 +52,8 @@ import type { Jsonified } from './jsonified.js';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 
 export interface IdbUpdate<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>> {
-  table: StoreName;
-  value: StoreValue<DBTypes, StoreName>;
-  key?: StoreKey<DBTypes, StoreName> | IDBKeyRange;
+  store: StoreName;
+  key: StoreKey<DBTypes, StoreName> | IDBKeyRange;
 }
 
 export interface IndexedDbInterface {
