@@ -16,7 +16,8 @@ const getLabelColor = (actionType: ActionType, disabled?: boolean): ThemeColor =
   return 'text.secondary';
 };
 
-export interface TextInputProps extends Omit<HTMLAttributes<HTMLInputElement>, 'onChange' | 'className'> {
+export interface TextInputProps
+  extends Omit<HTMLAttributes<HTMLInputElement>, 'onChange' | 'className'> {
   value?: string;
   onChange?: (value: string) => void;
   placeholder?: string;
