@@ -1,4 +1,4 @@
-import { forwardRef, ReactNode } from 'react';
+import { forwardRef, HTMLAttributes, ReactNode } from 'react';
 import { small } from '../utils/typography';
 import { ActionType, getFocusWithinOutlineColorByActionType } from '../utils/action-type';
 import { useDisabled } from '../utils/disabled-context';
@@ -16,7 +16,7 @@ const getLabelColor = (actionType: ActionType, disabled?: boolean): ThemeColor =
   return 'text.secondary';
 };
 
-export interface TextInputProps {
+export interface TextInputProps extends Omit<HTMLAttributes<HTMLInputElement>, 'onChange' | 'className'> {
   value?: string;
   onChange?: (value: string) => void;
   placeholder?: string;
@@ -58,6 +58,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
       endAdornment = null,
       max,
       min,
+      ...rest
     }: TextInputProps,
     ref,
   ) => (
@@ -88,6 +89,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
       )}
 
       <input
+        {...rest}
         value={value}
         onChange={e => onChange?.(e.target.value)}
         placeholder={placeholder}

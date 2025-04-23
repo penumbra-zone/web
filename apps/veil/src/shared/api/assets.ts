@@ -4,6 +4,7 @@ import { penumbra } from '@/shared/const/penumbra';
 import { connectionStore } from '@/shared/model/connection';
 import { useQuery } from '@tanstack/react-query';
 import { useRegistryAssets } from '@/shared/api/registry';
+import { filterAssets as filterUnswappableAssets } from '@penumbra-zone/ui/AssetSelector';
 import { AssetId, Metadata, Denom } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { useMemo } from 'react';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
@@ -14,7 +15,7 @@ const useViewServiceAssets = () =>
     enabled: connectionStore.connected,
     queryFn: async () => {
       const responses = await Array.fromAsync(penumbra.service(ViewService).assets({}));
-      return responses.map(getDenomMetadata);
+      return responses.map(getDenomMetadata).sort((a, b) => Number(b.priorityScore) - Number(a.priorityScore));
     },
   });
 
@@ -23,13 +24,25 @@ const useViewServiceAssets = () =>
  * If connected, it fetches the assets from the `ViewService`'s `assets` method.
  * Otherwise, it fetches the assets from the remote registry.
  *
+ * If `true` is passed as an argument, it filters out these assets: lp/auction nfts,
+ * voting receipts, delegation tokens.
+ *
  * Must be used within `observer` mobX HOC
  **/
-export const useAssets = () => {
+export const useAssets = (filterUnswappable?: boolean) => {
   const registryAssets = useRegistryAssets();
   const accountAssets = useViewServiceAssets();
 
-  return connectionStore.connected ? accountAssets : registryAssets;
+  const assets = connectionStore.connected ? accountAssets : registryAssets;
+
+  if (filterUnswappable) {
+    return {
+      ...assets,
+      data: assets.data && filterUnswappableAssets(assets.data),
+    };
+  }
+
+  return assets;
 };
 
 export type GetMetadata = (assetId?: AssetId | Denom) => Metadata | undefined;

@@ -5,6 +5,9 @@ import { observer } from 'mobx-react-lite';
 import { Dialog } from '@penumbra-zone/ui/Dialog';
 import { Text } from '@penumbra-zone/ui/Text';
 import { Button } from '@penumbra-zone/ui/Button';
+import { Checkbox } from '@penumbra-zone/ui/Checkbox';
+import { AssetIcon } from '@penumbra-zone/ui/AssetIcon';
+import { TextInput } from '@penumbra-zone/ui/TextInput';
 import { SpendableNoteRecord } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { useSubaccounts } from '@/widgets/header/api/subaccounts';
 import { connectionStore } from '@/shared/model/connection';
@@ -12,6 +15,8 @@ import { getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { useLQTNotes } from '../../api/use-voting-notes';
 import { voteTournament } from '../../api/vote';
 import { useCurrentEpoch } from '../../api/use-current-epoch';
+import { useEpochGauge } from '../../api/use-epoch-gauge';
+import { VoteDialogSearchResults } from '@/pages/tournament/ui/vote-dialog/search-results';
 
 interface VoteDialogProps {
   defaultValue?: string;
@@ -101,59 +106,16 @@ const AssetListGroup = ({
 
 export const VoteDialogueSelector = observer(
   ({ isOpen, onClose, defaultValue }: VoteDialogProps) => {
-    // TODO: replace this dummy static asset list with actual data from the API server.
-    const assets: Asset[] = [
-      {
-        id: 'transfer/channel-1/uusdc',
-        symbol: 'Phobos 3 USDC',
-        imgUrl:
-          'https://raw.githubusercontent.com/cosmos/chain-registry/master/cosmoshub/images/atom.png',
-        percentage: 60,
-      },
-      {
-        id: 'transfer/channel-37/uusdc',
-        symbol: 'USDC',
-        imgUrl:
-          'https://raw.githubusercontent.com/cosmos/chain-registry/master/cosmoshub/images/atom.png',
-        percentage: 50,
-      },
-      {
-        id: 'transfer/channel-34/uosmo',
-        symbol: 'OSMO',
-        imgUrl:
-          'https://raw.githubusercontent.com/cosmos/chain-registry/master/cosmoshub/images/atom.png',
-        percentage: 25,
-      },
-      {
-        id: 'transfer/channel-26/ustake',
-        symbol: 'STAKE',
-        imgUrl:
-          'https://raw.githubusercontent.com/cosmos/chain-registry/master/cosmoshub/images/atom.png',
-        percentage: 5,
-      },
-      {
-        id: 'transfer/channel-26/love',
-        symbol: 'LOVE',
-        imgUrl:
-          'https://raw.githubusercontent.com/cosmos/chain-registry/master/cosmoshub/images/atom.png',
-        percentage: 4.5,
-      },
-      {
-        id: 'transfer/channel-26/ausdy',
-        symbol: 'USDY',
-        imgUrl:
-          'https://raw.githubusercontent.com/cosmos/chain-registry/master/cosmoshub/images/atom.png',
-        percentage: 2.5,
-      },
-    ];
 
-    const [searchQuery, setSearchQuery] = useState('');
-    const [selectedAsset, setSelectedAsset] = useState<string | null>(
-      defaultValue ? (assets.find(asset => asset.symbol === defaultValue)?.symbol ?? null) : null,
-    );
+    // todo: default value
+    const [selectedAsset, setSelectedAsset] = useState<string | undefined>(defaultValue);
     const [revealVote, setRevealVote] = useState(false);
 
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+
     const { data: subaccounts } = useSubaccounts();
+
     const { subaccount } = connectionStore;
     const valueAddress = subaccounts?.find(
       account => getAddressIndex(account).account === subaccount,
@@ -165,14 +127,7 @@ export const VoteDialogueSelector = observer(
     // Fetch user's spendable voting notes for this epoch
     const { notes } = useLQTNotes(subaccount);
     const { epoch } = useCurrentEpoch();
-
-    const filteredAssets = searchQuery
-      ? assets.filter(a => a.symbol.toLowerCase().includes(searchQuery.toLowerCase()))
-      : assets;
-
-    const threshold = 5;
-    const aboveThreshold = filteredAssets.filter(a => a.percentage >= threshold);
-    const belowThreshold = filteredAssets.filter(a => a.percentage < threshold);
+    const { data: assets, isLoading } = useEpochGauge(epoch);
 
     const handleVoteSubmit = async () => {
       if (selectedAsset) {
@@ -202,63 +157,46 @@ export const VoteDialogueSelector = observer(
 
     const handleClose = () => {
       setSearchQuery('');
-      setSelectedAsset(null);
+      setSelectedAsset(undefined);
       setRevealVote(false);
       onClose();
     };
 
-    const hasResults = aboveThreshold.length > 0 || belowThreshold.length > 0;
-    const showSearchResultsHeader =
-      (searchQuery && !hasResults) ||
-      (!searchQuery &&
-        filteredAssets.length > 0 &&
-        filteredAssets.every(a => a.percentage < threshold));
-
-    /**
-     * TODO: update checkbox with updated UI component
-     *
-     * @see https://github.com/penumbra-zone/web/issues/2192
-     */
     return (
       <Dialog isOpen={isOpen} onClose={handleClose}>
-        <Dialog.Content title={`Vote in epoch #${epoch}`}>
-          <div className='[&_*:focus]:outline-none flex flex-col max-h-[120vh]'>
-            <div className='relative mb-4'>
-              <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5' />
-              <input
-                type='text'
-                placeholder='Search...'
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                className='w-full py-3 pl-10 pr-3 bg-[#2a2c2e] text-white rounded-md border-none focus:ring-0'
-              />
-            </div>
+        <Dialog.Content
+          title={`Vote in epoch #${epoch}`}
+          headerChildren={(
+            <>
+              {/* Focus catcher. If this button wouldn't exist, the focus would go to the first input, which is undesirable */}
+              <button type='button' className='w-full h-0 -mt-2 focus:outline-none' />
 
-            {showSearchResultsHeader && (
-              <Text small color='text.secondary'>
-                Search Results
+              <Text detail color='text.secondary'>
+                You can only vote for one asset in an epoch and can&#39;t change your vote afterwards.
               </Text>
+              <div className='mt-2 [&>label]:h-12'>
+                <TextInput
+                  value={searchQuery}
+                  placeholder='Search...'
+                  onChange={setSearchQuery}
+                  onFocus={() => setIsSearchOpen(true)}
+                  startAdornment={(
+                    <i className='flex items-center justify-center size-6'>
+                      <Search className='size-4 text-neutral-light' />
+                    </i>
+                  )}
+                />
+              </div>
+            </>
+          )}
+        >
+          <div className='flex flex-col pt-2'>
+            {isSearchOpen && (
+              <VoteDialogSearchResults gauge={assets ?? []} search={searchQuery} />
             )}
 
             <div className='overflow-y-auto flex-1 pr-1 mt-2'>
-              {hasResults ? (
-                <>
-                  <AssetListGroup
-                    label='Above threshold (≥5%)'
-                    assets={aboveThreshold}
-                    selectedAssetId={selectedAsset}
-                    onSelect={setSelectedAsset}
-                  />
-
-                  <AssetListGroup
-                    label='Below threshold (<5%)'
-                    assets={belowThreshold}
-                    selectedAssetId={selectedAsset}
-                    onSelect={() => {}}
-                    disableSelection
-                  />
-                </>
-              ) : (
+              {!isLoading && !assets?.length && (
                 <div className='flex flex-col items-center justify-center py-16 text-text-secondary gap-2'>
                   <Search className='w-8 h-8 text-text-secondary' />
                   <Text variant='body' color='text.secondary'>
@@ -266,9 +204,20 @@ export const VoteDialogueSelector = observer(
                   </Text>
                 </div>
               )}
+
+              <Dialog.RadioGroup>
+                {assets?.map(asset => (
+                  <Dialog.RadioItem
+                    key={asset.asset.base}
+                    title={asset.asset.symbol}
+                    value={asset.asset.base}
+                    startAdornment={<AssetIcon metadata={asset.asset} />}
+                  />
+                ))}
+              </Dialog.RadioGroup>
             </div>
 
-            <div className='pt-6 flex flex-col gap-4'>
+            <div className='pt-6 flex flex-col gap-4 [&>label]:justify-center [&>label>div]:grow-0'>
               <Button
                 onClick={() => {
                   onClose();
@@ -281,34 +230,12 @@ export const VoteDialogueSelector = observer(
                 {selectedAsset ? `Vote for ${selectedAsset.toUpperCase()}` : 'Select asset to vote'}
               </Button>
 
-              <div className='flex items-center justify-center gap-2 mt-1'>
-                <div className='rounded-sm bg-[#cc5500] w-5 h-5 flex items-center justify-center relative'>
-                  <input
-                    type='checkbox'
-                    id='reveal-vote'
-                    checked={revealVote}
-                    onChange={() => setRevealVote(!revealVote)}
-                    className='opacity-0 absolute w-full h-full cursor-pointer'
-                  />
-                  {revealVote && (
-                    <svg
-                      xmlns='http://www.w3.org/2000/svg'
-                      className='h-4 w-4 text-white'
-                      viewBox='0 0 20 20'
-                      fill='currentColor'
-                    >
-                      <path
-                        fillRule='evenodd'
-                        d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z'
-                        clipRule='evenodd'
-                      />
-                    </svg>
-                  )}
-                </div>
-                <label htmlFor='reveal-vote' className='text-white cursor-pointer'>
-                  Reveal my vote to the leaderboard
-                </label>
-              </div>
+              <Checkbox
+                title='Reveal my vote to the leaderboard.'
+                description='Voting each epoch grows your streak.'
+                checked={revealVote}
+                onChange={value => setRevealVote(value as boolean)}
+              />
             </div>
           </div>
         </Dialog.Content>
