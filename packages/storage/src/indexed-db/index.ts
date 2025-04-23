@@ -108,20 +108,6 @@ interface IndexedDbProps {
 }
 
 export class IndexedDb implements IndexedDbInterface {
-  private readonly updates = new EventTarget();
-
-  private readonly emitUpdate =
-    <N extends StoreNames<PenumbraDb>, K extends StoreKey<PenumbraDb, N>>(
-      store: N,
-      tx: null | IDBPTransaction<PenumbraDb, ArrayLike<StoreNames<PenumbraDb>>, 'readwrite'>,
-    ) =>
-    (key: K) => {
-      void Promise.resolve(tx?.done).then(() =>
-        this.updates.dispatchEvent(new CustomEvent('idb-update', { detail: { store, key } })),
-      );
-      return key;
-    };
-
   private constructor(
     private readonly db: IDBPDatabase<PenumbraDb>,
     private readonly c: IdbConstants,
@@ -205,7 +191,20 @@ export class IndexedDb implements IndexedDbInterface {
     return this.c;
   }
 
-  subscribe<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>>(
+  private readonly updates = new EventTarget();
+  private emitUpdate<N extends StoreNames<PenumbraDb>, K extends StoreKey<PenumbraDb, N>>(
+    store: N,
+    tx: null | IDBPTransaction<PenumbraDb, ArrayLike<StoreNames<PenumbraDb>>, 'readwrite'>,
+  ) {
+    return (key: K) => {
+      void Promise.resolve(tx?.done).then(() =>
+        this.updates.dispatchEvent(new CustomEvent('idb-update', { detail: { store, key } })),
+      );
+      return key;
+    };
+  }
+
+  public subscribe<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>>(
     store: StoreName,
   ): ReadableStream<IdbUpdate<DBTypes, StoreName>> {
     return new ReadableStream(new IdbStoreUpdateSource(this.updates, store));
