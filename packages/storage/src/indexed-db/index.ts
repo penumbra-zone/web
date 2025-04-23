@@ -1,3 +1,12 @@
+import { PartialMessage, PlainMessage } from '@bufbuild/protobuf';
+import { ChainRegistryClient } from '@penumbra-labs/registry';
+import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
+import { bech32mIdentityKey, identityKeyFromBech32m } from '@penumbra-zone/bech32m/penumbravalid';
+import { bech32mWalletId } from '@penumbra-zone/bech32m/penumbrawalletid';
+import { getAssetId } from '@penumbra-zone/getters/metadata';
+import { getAmountFromRecord } from '@penumbra-zone/getters/spendable-note-record';
+import { getIdentityKeyFromValidatorInfo } from '@penumbra-zone/getters/validator-info';
+import { typeRegistry } from '@penumbra-zone/protobuf';
 import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 import {
   AssetId,
@@ -5,6 +14,10 @@ import {
   Metadata,
   Value,
 } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import {
+  AuctionId,
+  DutchAuctionDescription,
+} from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
 import {
   Position,
   PositionId,
@@ -14,11 +27,19 @@ import {
 import { GasPrices } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
 import { Epoch, Nullifier } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
 import { FmdParameters } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
+import { ValidatorInfo } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
 import {
   AddressIndex,
   IdentityKey,
   WalletId,
 } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import {
+  Transaction,
+  TransactionPerspective,
+  TransactionSummary,
+  TransactionView,
+} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
 import { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
 import {
@@ -27,24 +48,8 @@ import {
   SwapRecord,
   TransactionInfo,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { isZero } from '@penumbra-zone/types/amount';
 import { assetPatterns, PRICE_RELEVANCE_THRESHOLDS } from '@penumbra-zone/types/assets';
-import { IDBPDatabase, openDB, StoreNames } from 'idb';
-import { IbdUpdater, IbdUpdates } from './updater.js';
-
-import { IdbCursorSource } from './stream.js';
-
-import { ValidatorInfo } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
-import {
-  Transaction,
-  TransactionPerspective,
-  TransactionSummary,
-  TransactionView,
-} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
-import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
-import { bech32mIdentityKey, identityKeyFromBech32m } from '@penumbra-zone/bech32m/penumbravalid';
-import { bech32mWalletId } from '@penumbra-zone/bech32m/penumbrawalletid';
-import { getAssetId } from '@penumbra-zone/getters/metadata';
-import { getIdentityKeyFromValidatorInfo } from '@penumbra-zone/getters/validator-info';
 import { base64ToUint8Array, uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import {
@@ -55,23 +60,14 @@ import {
   PenumbraDb,
 } from '@penumbra-zone/types/indexed-db';
 import type { Jsonified } from '@penumbra-zone/types/jsonified';
+import { addLoHi } from '@penumbra-zone/types/lo-hi';
 import type {
   ScanBlockResult,
   StateCommitmentTree,
 } from '@penumbra-zone/types/state-commitment-tree';
-import { sctPosition } from '@penumbra-zone/wasm/tree';
-import {
-  AuctionId,
-  DutchAuctionDescription,
-} from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
-import { ChainRegistryClient } from '@penumbra-labs/registry';
-import { PartialMessage, PlainMessage } from '@bufbuild/protobuf';
-import { getAmountFromRecord } from '@penumbra-zone/getters/spendable-note-record';
-import { isZero } from '@penumbra-zone/types/amount';
+import { IDBPDatabase, openDB, StoreNames } from 'idb';
 import { IDB_VERSION } from './config.js';
-import { addLoHi } from '@penumbra-zone/types/lo-hi';
-import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
-import { typeRegistry } from '@penumbra-zone/protobuf';
+import { IdbCursorSource, IdbUpdateSource } from './stream.js';
 
 const assertBytes = (v?: Uint8Array, expect?: number, name = 'value'): v is Uint8Array => {
   if (expect !== undefined && v?.length !== expect) {
@@ -109,9 +105,10 @@ interface IndexedDbProps {
 }
 
 export class IndexedDb implements IndexedDbInterface {
+  private readonly updates = new EventTarget();
+
   private constructor(
     private readonly db: IDBPDatabase<PenumbraDb>,
-    private readonly u: IbdUpdater,
     private readonly c: IdbConstants,
     private readonly chainId: string,
     readonly stakingTokenAssetId: AssetId,
@@ -179,13 +176,7 @@ export class IndexedDb implements IndexedDbInterface {
     } satisfies IdbConstants;
 
     const { stakingAssetId } = registryClient.bundled.globals();
-    const instance = new this(
-      db,
-      new IbdUpdater(db),
-      constants,
-      chainId,
-      new AssetId(stakingAssetId),
-    );
+    const instance = new this(db, constants, chainId, new AssetId(stakingAssetId));
     await instance.saveRegistryAssets(registryClient, chainId); // Pre-load asset metadata from registry
 
     return instance;
@@ -201,8 +192,8 @@ export class IndexedDb implements IndexedDbInterface {
 
   subscribe<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>>(
     table: StoreName,
-  ): AsyncGenerator<IdbUpdate<DBTypes, StoreName>, void> {
-    return this.u.subscribe(table);
+  ): ReadableStream<IdbUpdate<DBTypes, StoreName>> {
+    return new ReadableStream(new IdbUpdateSource(this.updates, table));
   }
 
   public async getStateCommitmentTree(): Promise<StateCommitmentTree> {
@@ -220,15 +211,80 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   // All updates must be atomic in order to prevent invalid tree state
-  public async saveScanResult(updates: ScanBlockResult): Promise<void> {
-    const txs = new IbdUpdates();
+  public async saveScanResult({
+    sctUpdates,
+    height,
+    newNotes,
+    newSwaps,
+  }: ScanBlockResult): Promise<void> {
+    const tx = this.db.transaction(
+      [
+        'FULL_SYNC_HEIGHT',
+        'SPENDABLE_NOTES',
+        'TRANSACTION_INFO',
+        'TREE_COMMITMENTS',
+        'TREE_HASHES',
+        'SWAPS',
+        'TREE_LAST_FORGOTTEN',
+        'TREE_LAST_POSITION',
+      ],
+      'readwrite',
+    );
 
-    this.addSctUpdates(txs, updates.sctUpdates);
-    this.addNewNotes(txs, updates.newNotes);
-    await this.addNewSwaps(txs, updates.newSwaps, updates.height);
-    txs.add({ table: 'FULL_SYNC_HEIGHT', value: updates.height, key: 'height' });
+    // sct updates
+    if (sctUpdates.set_position) {
+      const lastPositionStore = tx.objectStore('TREE_LAST_POSITION');
+      void lastPositionStore.put(sctUpdates.set_position, 'last_position');
+    }
 
-    await this.u.updateAll(txs);
+    if (sctUpdates.set_forgotten) {
+      void tx.objectStore('TREE_LAST_FORGOTTEN').put(sctUpdates.set_forgotten, 'last_forgotten');
+    }
+
+    for (const c of sctUpdates.store_commitments) {
+      assertCommitment({ inner: base64ToUint8Array(c.commitment.inner) });
+      const commitmentStore = tx.objectStore('TREE_COMMITMENTS');
+      void commitmentStore.put(c);
+    }
+
+    for (const h of sctUpdates.store_hashes) {
+      assertBytes(h.hash, 32);
+      const hashStore = tx.objectStore('TREE_HASHES');
+      void hashStore.put(h);
+    }
+    // TODO: What about updates.delete_ranges?
+
+    // add new notes
+    const noteStore = tx.objectStore('SPENDABLE_NOTES');
+    for (const n of newNotes) {
+      assertCommitment(n.noteCommitment);
+      void noteStore.put(n.toJson() as Jsonified<SpendableNoteRecord>);
+    }
+
+    const swapStore = tx.objectStore('SWAPS');
+
+    // const position = sctUpdates.set_position !== 'Full' ? sctUpdates.set_position?.Position : undefined;
+    // eslint-disable-next-line no-bitwise -- using bitwise
+    // const sctPositionPrefix = position && (position.epoch << 32) | (position.block << 16) | position.commitment;
+
+    for (const n of newSwaps) {
+      if (!n.outputData) {
+        throw new Error('No output data in swap record');
+      }
+
+      // Adds position prefix to swap record. Needed to make swap claims.
+      console.debug('sctPositionPrefix', n.outputData.sctPositionPrefix);
+      // n.outputData.sctPositionPrefix = sctPositionPrefix;
+
+      assertCommitment(n.swapCommitment);
+      void swapStore.put(n.toJson() as Jsonified<SwapRecord>);
+    }
+
+    // height
+    const heightStore = tx.objectStore('FULL_SYNC_HEIGHT');
+    void heightStore.put(height, 'height');
+
+    await tx.done;
   }
 
   async getFullSyncHeight() {
@@ -263,10 +319,10 @@ export class IndexedDb implements IndexedDbInterface {
     note: PlainMessage<SpendableNoteRecord> & { noteCommitment: PlainMessage<StateCommitment> },
   ) {
     assertCommitment(note.noteCommitment);
-    await this.u.update({
-      table: 'SPENDABLE_NOTES',
-      value: new SpendableNoteRecord(note).toJson() as Jsonified<SpendableNoteRecord>,
-    });
+    await this.db.put(
+      'SPENDABLE_NOTES',
+      new SpendableNoteRecord(note).toJson() as Jsonified<SpendableNoteRecord>,
+    );
   }
 
   /**
@@ -320,10 +376,7 @@ export class IndexedDb implements IndexedDbInterface {
 
   async saveAssetsMetadata(metadata: Required<PlainMessage<Metadata>>) {
     assertAssetId(metadata.penumbraAssetId);
-    await this.u.update({
-      table: 'ASSETS',
-      value: new Metadata(metadata).toJson() as Jsonified<Metadata>,
-    });
+    await this.db.put('ASSETS', new Metadata(metadata).toJson() as Jsonified<Metadata>);
   }
 
   // creates a local copy of the asset list from registry (https://github.com/prax-wallet/registry)
@@ -344,7 +397,7 @@ export class IndexedDb implements IndexedDbInterface {
         this.saveAssetsMetadata({ ...m, penumbraAssetId: getAssetId(m) }),
       );
       await Promise.all(saveLocalMetadata);
-      await this.u.update({ table: 'REGISTRY_VERSION', key: 'commit', value: remoteVersion });
+      await this.db.put('REGISTRY_VERSION', remoteVersion, 'commit');
     } catch (error) {
       console.error('Failed pre-population of assets from the registry', error);
     }
@@ -406,10 +459,7 @@ export class IndexedDb implements IndexedDbInterface {
       summary: summary.toJson({ typeRegistry }) as Jsonified<TransactionSummary>,
     };
 
-    await this.u.update({
-      table: 'TRANSACTION_INFO',
-      value,
-    });
+    await this.db.put('TRANSACTION_INFO', value);
   }
 
   async saveTransaction(
@@ -419,10 +469,7 @@ export class IndexedDb implements IndexedDbInterface {
   ): Promise<void> {
     assertTransactionId(id);
     const tx = new TransactionInfo({ id, height, transaction });
-    await this.u.update({
-      table: 'TRANSACTIONS',
-      value: tx.toJson({ typeRegistry }) as Jsonified<TransactionInfo>,
-    });
+    await this.db.put('TRANSACTIONS', tx.toJson({ typeRegistry }) as Jsonified<TransactionInfo>);
   }
 
   /**
@@ -533,10 +580,7 @@ export class IndexedDb implements IndexedDbInterface {
       subaccount,
     };
 
-    await this.u.update({
-      table: 'LQT_HISTORICAL_VOTES',
-      value: tournamentVote,
-    });
+    await this.db.put('LQT_HISTORICAL_VOTES', tournamentVote);
   }
 
   async getTransaction(txId: TransactionId): Promise<TransactionInfo | undefined> {
@@ -558,11 +602,7 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async saveFmdParams(fmd: FmdParameters): Promise<void> {
-    await this.u.update({
-      table: 'FMD_PARAMETERS',
-      value: fmd.toJson() as Jsonified<FmdParameters>,
-      key: 'params',
-    });
+    await this.db.put('FMD_PARAMETERS', fmd.toJson() as Jsonified<FmdParameters>, 'params');
   }
 
   async getAppParams(): Promise<AppParameters | undefined> {
@@ -583,11 +623,7 @@ export class IndexedDb implements IndexedDbInterface {
       this.db.close();
       throw new Error(`Mismatched chainId: idb ${this.chainId} but new ${app.chainId}`);
     }
-    await this.u.update({
-      table: 'APP_PARAMETERS',
-      value: app.toJson() as Jsonified<AppParameters>,
-      key: 'params',
-    });
+    await this.db.put('APP_PARAMETERS', app.toJson() as Jsonified<AppParameters>, 'params');
   }
 
   async *iterateSwaps() {
@@ -616,10 +652,7 @@ export class IndexedDb implements IndexedDbInterface {
     swap: PlainMessage<SwapRecord> & { swapCommitment: PlainMessage<StateCommitment> },
   ) {
     assertCommitment(swap.swapCommitment);
-    await this.u.update({
-      table: 'SWAPS',
-      value: new SwapRecord(swap).toJson() as Jsonified<SwapRecord>,
-    });
+    await this.db.put('SWAPS', new SwapRecord(swap).toJson() as Jsonified<SwapRecord>);
   }
 
   async getSwapByCommitment(commitment: StateCommitment): Promise<SwapRecord | undefined> {
@@ -667,10 +700,7 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async saveGasPrices(value: Required<PlainMessage<GasPrices>>): Promise<void> {
-    await this.u.update({
-      table: 'GAS_PRICES',
-      value: new GasPrices(value).toJson() as Jsonified<GasPrices>,
-    });
+    await this.db.put('GAS_PRICES', new GasPrices(value).toJson() as Jsonified<GasPrices>);
   }
 
   /**
@@ -780,7 +810,7 @@ export class IndexedDb implements IndexedDbInterface {
       position: position.toJson() as Jsonified<Position>,
       subaccount: subaccount && (subaccount.toJson() as Jsonified<AddressIndex>),
     };
-    await this.u.update({ table: 'POSITIONS', value: positionRecord });
+    await this.db.put('POSITIONS', positionRecord);
   }
 
   async updatePosition(
@@ -799,13 +829,10 @@ export class IndexedDb implements IndexedDbInterface {
     const position = Position.fromJson(positionRecord.position);
     position.state = newState;
 
-    await this.u.update({
-      table: 'POSITIONS',
-      value: {
-        id: positionId.toJson() as Jsonified<PositionId>,
-        position: position.toJson() as Jsonified<Position>,
-        subaccount: subaccount ? (subaccount.toJson() as Jsonified<AddressIndex>) : undefined,
-      },
+    await this.db.put('POSITIONS', {
+      id: positionId.toJson() as Jsonified<PositionId>,
+      position: position.toJson() as Jsonified<Position>,
+      subaccount: subaccount ? (subaccount.toJson() as Jsonified<AddressIndex>) : undefined,
     });
   }
 
@@ -828,10 +855,7 @@ export class IndexedDb implements IndexedDbInterface {
       index: index.toString(),
     };
 
-    await this.u.update({
-      table: 'EPOCHS',
-      value: newEpoch,
-    });
+    await this.db.put('EPOCHS', newEpoch);
   }
 
   /**
@@ -897,11 +921,11 @@ export class IndexedDb implements IndexedDbInterface {
     // bech32m conversion asserts length
     const identityKeyAsBech32 = bech32mIdentityKey(getIdentityKeyFromValidatorInfo(validatorInfo));
 
-    await this.u.update({
-      table: 'VALIDATOR_INFOS',
-      key: identityKeyAsBech32,
-      value: validatorInfo.toJson() as Jsonified<ValidatorInfo>,
-    });
+    await this.db.put(
+      'VALIDATOR_INFOS',
+      validatorInfo.toJson() as Jsonified<ValidatorInfo>,
+      identityKeyAsBech32,
+    );
   }
 
   /**
@@ -958,10 +982,7 @@ export class IndexedDb implements IndexedDbInterface {
       asOfHeight,
     });
 
-    await this.u.update({
-      table: 'PRICES',
-      value: estimatedPrice.toJson() as Jsonified<EstimatedPrice>,
-    });
+    await this.db.put('PRICES', estimatedPrice.toJson() as Jsonified<EstimatedPrice>);
   }
 
   /**
@@ -1013,68 +1034,6 @@ export class IndexedDb implements IndexedDbInterface {
     return PRICE_RELEVANCE_THRESHOLDS.default;
   }
 
-  private addSctUpdates(txs: IbdUpdates, sctUpdates: ScanBlockResult['sctUpdates']): void {
-    if (sctUpdates.set_position) {
-      txs.add({
-        table: 'TREE_LAST_POSITION',
-        value: sctUpdates.set_position,
-        key: 'last_position',
-      });
-    }
-
-    if (sctUpdates.set_forgotten) {
-      txs.add({
-        table: 'TREE_LAST_FORGOTTEN',
-        value: sctUpdates.set_forgotten,
-        key: 'last_forgotten',
-      });
-    }
-
-    for (const c of sctUpdates.store_commitments) {
-      assertCommitment({ inner: base64ToUint8Array(c.commitment.inner) });
-      txs.add({ table: 'TREE_COMMITMENTS', value: c });
-    }
-
-    for (const h of sctUpdates.store_hashes) {
-      assertBytes(h.hash, 32);
-      txs.add({ table: 'TREE_HASHES', value: h });
-    }
-
-    // TODO: What about updates.delete_ranges?
-  }
-
-  private addNewNotes(txs: IbdUpdates, notes: SpendableNoteRecord[]): void {
-    for (const n of notes) {
-      assertCommitment(n.noteCommitment);
-      txs.add({ table: 'SPENDABLE_NOTES', value: n.toJson() as Jsonified<SpendableNoteRecord> });
-    }
-  }
-
-  private async addNewSwaps(
-    txs: IbdUpdates,
-    swaps: SwapRecord[],
-    blockHeight: bigint,
-  ): Promise<void> {
-    if (!swaps.length) {
-      return;
-    }
-
-    const epoch =
-      (await this.getEpochByHeight(blockHeight)) ?? new Epoch({ startHeight: 0n, index: 0n });
-
-    for (const n of swaps) {
-      if (!n.outputData) {
-        throw new Error('No output data in swap record');
-      }
-
-      // Adds position prefix to swap record. Needed to make swap claims.
-      n.outputData.sctPositionPrefix = sctPosition(blockHeight, epoch);
-
-      assertCommitment(n.swapCommitment);
-      txs.add({ table: 'SWAPS', value: n.toJson() as Jsonified<SwapRecord> });
-    }
-  }
-
   // As more auction types are created, add them to T as a union type.
   async upsertAuction(
     auctionId: AuctionId,
@@ -1096,15 +1055,15 @@ export class IndexedDb implements IndexedDbInterface {
       existingRecord?.noteCommitment;
     const seqNum = value.seqNum ?? existingRecord?.seqNum;
 
-    await this.u.update({
-      table: 'AUCTIONS',
-      key,
-      value: {
+    await this.db.put(
+      'AUCTIONS',
+      {
         auction,
         noteCommitment,
         seqNum,
       },
-    });
+      key,
+    );
   }
 
   async getAuction(auctionId: AuctionId): Promise<{

@@ -5,6 +5,8 @@ use wasm_bindgen::prelude::wasm_bindgen;
 
 use crate::error::WasmResult;
 
+// all this does is
+//( (epoch  << 32) | (block << 16) | (commitment) )
 #[wasm_bindgen]
 pub fn sct_position(block_height: u64, epoch_bytes: &[u8]) -> WasmResult<u64> {
     let epoch = Epoch::decode(epoch_bytes)?;

@@ -62,7 +62,7 @@ export interface IndexedDbInterface {
 
   subscribe<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>>(
     table: StoreName,
-  ): AsyncGenerator<IdbUpdate<DBTypes, StoreName>, void>;
+  ): ReadableStream<IdbUpdate<DBTypes, StoreName>>;
   constants(): IdbConstants;
   clear(): Promise<void>;
   getFullSyncHeight(): Promise<bigint | undefined>;

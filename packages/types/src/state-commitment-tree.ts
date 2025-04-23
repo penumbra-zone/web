@@ -52,6 +52,7 @@ export const SctUpdatesSchema = z.object({
 export type SctUpdates = z.infer<typeof SctUpdatesSchema>;
 
 export interface ScanBlockResult {
+  sctPositionPrefix: bigint;
   height: bigint;
   sctUpdates: SctUpdates;
   newNotes: SpendableNoteRecord[];

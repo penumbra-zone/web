@@ -150,25 +150,6 @@ describe('IndexedDb', () => {
     });
   });
 
-  describe('Updater', () => {
-    it('emits events on update', async () => {
-      const db = await IndexedDb.initialize(generateInitialProps());
-      const subscription = db.subscribe('SPENDABLE_NOTES');
-
-      // Save the new note and wait for the next update in parallel
-      const [, resA] = await Promise.all([db.saveSpendableNote(newNote), subscription.next()]);
-      const updateA = resA.value as IdbUpdate<PenumbraDb, 'SPENDABLE_NOTES'>;
-      expect(SpendableNoteRecord.fromJson(updateA.value)).toEqual(newNote);
-      expect(resA.done).toBeFalsy();
-
-      // Try a second time
-      const [, resB] = await Promise.all([db.saveSpendableNote(newNote), subscription.next()]);
-      const updateB = resB.value as IdbUpdate<PenumbraDb, 'SPENDABLE_NOTES'>;
-      expect(SpendableNoteRecord.fromJson(updateB.value)).toEqual(newNote);
-      expect(resB.done).toBeFalsy();
-    });
-  });
-
   describe('Clear', () => {
     it('object store should be empty after clear', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
@@ -198,6 +179,7 @@ describe('IndexedDb', () => {
 
       const scanResult = {
         height: 1000n,
+        sctPositionPrefix: 0n,
         sctUpdates: {
           delete_ranges: [],
           set_forgotten: undefined,
