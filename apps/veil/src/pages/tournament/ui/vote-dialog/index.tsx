@@ -78,6 +78,7 @@ export const VoteDialogueSelector = observer(
       setSearchQuery('');
       setSelectedDenom(undefined);
       setSelectedAsset(undefined);
+      setIsSearchOpen(false);
       setRevealVote(DEFAULT_REVEAL_VOTE);
       onClose();
     };
