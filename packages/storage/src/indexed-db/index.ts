@@ -65,9 +65,9 @@ import type {
   ScanBlockResult,
   StateCommitmentTree,
 } from '@penumbra-zone/types/state-commitment-tree';
-import { IDBPDatabase, openDB, StoreNames } from 'idb';
+import { IDBPDatabase, IDBPTransaction, openDB, StoreKey, StoreNames } from 'idb';
 import { IDB_VERSION } from './config.js';
-import { IdbCursorSource, IdbUpdateSource } from './stream.js';
+import { IdbCursorSource, IdbStoreUpdateSource } from './stream.js';
 import { sctPosition } from '@penumbra-zone/wasm/tree';
 
 const assertBytes = (v?: Uint8Array, expect?: number, name = 'value'): v is Uint8Array => {
@@ -108,12 +108,26 @@ interface IndexedDbProps {
 export class IndexedDb implements IndexedDbInterface {
   private readonly updates = new EventTarget();
 
+  private readonly emitUpdate =
+    <N extends StoreNames<PenumbraDb>, K extends StoreKey<PenumbraDb, N>>(
+      store: N,
+      tx: null | IDBPTransaction<PenumbraDb, ArrayLike<StoreNames<PenumbraDb>>, 'readwrite'>,
+    ) =>
+    (key: K) => {
+      void Promise.resolve(tx?.done).then(() =>
+        this.updates.dispatchEvent(new CustomEvent('idb-update', { detail: { store, key } })),
+      );
+      return key;
+    };
+
   private constructor(
     private readonly db: IDBPDatabase<PenumbraDb>,
     private readonly c: IdbConstants,
     private readonly chainId: string,
     readonly stakingTokenAssetId: AssetId,
-  ) {}
+  ) {
+    this.db = db;
+  }
 
   static async initialize({
     walletId,
@@ -192,9 +206,9 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   subscribe<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>>(
-    table: StoreName,
+    store: StoreName,
   ): ReadableStream<IdbUpdate<DBTypes, StoreName>> {
-    return new ReadableStream(new IdbUpdateSource(this.updates, table));
+    return new ReadableStream(new IdbStoreUpdateSource(this.updates, store));
   }
 
   public async getStateCommitmentTree(): Promise<StateCommitmentTree> {
@@ -232,35 +246,38 @@ export class IndexedDb implements IndexedDbInterface {
 
     // sct updates
     if (sctUpdates.set_position) {
-      const lastPositionStore = tx.objectStore('TREE_LAST_POSITION');
-      void lastPositionStore.put(sctUpdates.set_position, 'last_position');
+      void tx
+        .objectStore('TREE_LAST_POSITION')
+        .put(sctUpdates.set_position, 'last_position')
+        .then(this.emitUpdate('TREE_LAST_POSITION', tx));
     }
 
     if (sctUpdates.set_forgotten) {
-      void tx.objectStore('TREE_LAST_FORGOTTEN').put(sctUpdates.set_forgotten, 'last_forgotten');
+      void tx
+        .objectStore('TREE_LAST_FORGOTTEN')
+        .put(sctUpdates.set_forgotten, 'last_forgotten')
+        .then(this.emitUpdate('TREE_LAST_FORGOTTEN', tx));
     }
 
     for (const c of sctUpdates.store_commitments) {
       assertCommitment({ inner: base64ToUint8Array(c.commitment.inner) });
-      const commitmentStore = tx.objectStore('TREE_COMMITMENTS');
-      void commitmentStore.put(c);
+      void tx.objectStore('TREE_COMMITMENTS').put(c).then(this.emitUpdate('TREE_COMMITMENTS', tx));
     }
 
     for (const h of sctUpdates.store_hashes) {
       assertBytes(h.hash, 32);
-      const hashStore = tx.objectStore('TREE_HASHES');
-      void hashStore.put(h);
+      void tx.objectStore('TREE_HASHES').put(h).then(this.emitUpdate('TREE_HASHES', tx));
     }
     // TODO: What about updates.delete_ranges?
 
     // add new notes
-    const noteStore = tx.objectStore('SPENDABLE_NOTES');
     for (const n of newNotes) {
       assertCommitment(n.noteCommitment);
-      void noteStore.put(n.toJson() as Jsonified<SpendableNoteRecord>);
+      void tx
+        .objectStore('SPENDABLE_NOTES')
+        .put(n.toJson() as Jsonified<SpendableNoteRecord>)
+        .then(this.emitUpdate('SPENDABLE_NOTES', tx));
     }
-
-    const swapStore = tx.objectStore('SWAPS');
 
     const sctPositionPrefix = sctPosition(height, epoch);
     for (const n of newSwaps) {
@@ -272,12 +289,17 @@ export class IndexedDb implements IndexedDbInterface {
       n.outputData.sctPositionPrefix = sctPositionPrefix;
 
       assertCommitment(n.swapCommitment);
-      void swapStore.put(n.toJson() as Jsonified<SwapRecord>);
+      void tx
+        .objectStore('SWAPS')
+        .put(n.toJson() as Jsonified<SwapRecord>)
+        .then(this.emitUpdate('SWAPS', tx));
     }
 
     // height
-    const heightStore = tx.objectStore('FULL_SYNC_HEIGHT');
-    void heightStore.put(height, 'height');
+    void tx
+      .objectStore('FULL_SYNC_HEIGHT')
+      .put(height, 'height')
+      .then(this.emitUpdate('FULL_SYNC_HEIGHT', tx));
 
     await tx.done;
   }
@@ -314,10 +336,12 @@ export class IndexedDb implements IndexedDbInterface {
     note: PlainMessage<SpendableNoteRecord> & { noteCommitment: PlainMessage<StateCommitment> },
   ) {
     assertCommitment(note.noteCommitment);
-    await this.db.put(
-      'SPENDABLE_NOTES',
-      new SpendableNoteRecord(note).toJson() as Jsonified<SpendableNoteRecord>,
-    );
+    await this.db
+      .put(
+        'SPENDABLE_NOTES',
+        new SpendableNoteRecord(note).toJson() as Jsonified<SpendableNoteRecord>,
+      )
+      .then(this.emitUpdate('SPENDABLE_NOTES', null));
   }
 
   /**
@@ -371,7 +395,9 @@ export class IndexedDb implements IndexedDbInterface {
 
   async saveAssetsMetadata(metadata: Required<PlainMessage<Metadata>>) {
     assertAssetId(metadata.penumbraAssetId);
-    await this.db.put('ASSETS', new Metadata(metadata).toJson() as Jsonified<Metadata>);
+    await this.db
+      .put('ASSETS', new Metadata(metadata).toJson() as Jsonified<Metadata>)
+      .then(this.emitUpdate('ASSETS', null));
   }
 
   // creates a local copy of the asset list from registry (https://github.com/prax-wallet/registry)
@@ -392,7 +418,9 @@ export class IndexedDb implements IndexedDbInterface {
         this.saveAssetsMetadata({ ...m, penumbraAssetId: getAssetId(m) }),
       );
       await Promise.all(saveLocalMetadata);
-      await this.db.put('REGISTRY_VERSION', remoteVersion, 'commit');
+      await this.db
+        .put('REGISTRY_VERSION', remoteVersion, 'commit')
+        .then(this.emitUpdate('REGISTRY_VERSION', null));
     } catch (error) {
       console.error('Failed pre-population of assets from the registry', error);
     }
@@ -454,7 +482,7 @@ export class IndexedDb implements IndexedDbInterface {
       summary: summary.toJson({ typeRegistry }) as Jsonified<TransactionSummary>,
     };
 
-    await this.db.put('TRANSACTION_INFO', value);
+    await this.db.put('TRANSACTION_INFO', value).then(this.emitUpdate('TRANSACTION_INFO', null));
   }
 
   async saveTransaction(
@@ -463,8 +491,14 @@ export class IndexedDb implements IndexedDbInterface {
     transaction: Transaction,
   ): Promise<void> {
     assertTransactionId(id);
-    const tx = new TransactionInfo({ id, height, transaction });
-    await this.db.put('TRANSACTIONS', tx.toJson({ typeRegistry }) as Jsonified<TransactionInfo>);
+    await this.db
+      .put(
+        'TRANSACTIONS',
+        new TransactionInfo({ id, height, transaction }).toJson({
+          typeRegistry,
+        }) as Jsonified<TransactionInfo>,
+      )
+      .then(this.emitUpdate('TRANSACTIONS', null));
   }
 
   /**
@@ -575,7 +609,9 @@ export class IndexedDb implements IndexedDbInterface {
       subaccount,
     };
 
-    await this.db.put('LQT_HISTORICAL_VOTES', tournamentVote);
+    await this.db
+      .put('LQT_HISTORICAL_VOTES', tournamentVote)
+      .then(this.emitUpdate('LQT_HISTORICAL_VOTES', null));
   }
 
   async getTransaction(txId: TransactionId): Promise<TransactionInfo | undefined> {
@@ -597,7 +633,9 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async saveFmdParams(fmd: FmdParameters): Promise<void> {
-    await this.db.put('FMD_PARAMETERS', fmd.toJson() as Jsonified<FmdParameters>, 'params');
+    await this.db
+      .put('FMD_PARAMETERS', fmd.toJson() as Jsonified<FmdParameters>, 'params')
+      .then(this.emitUpdate('FMD_PARAMETERS', null));
   }
 
   async getAppParams(): Promise<AppParameters | undefined> {
@@ -618,7 +656,9 @@ export class IndexedDb implements IndexedDbInterface {
       this.db.close();
       throw new Error(`Mismatched chainId: idb ${this.chainId} but new ${app.chainId}`);
     }
-    await this.db.put('APP_PARAMETERS', app.toJson() as Jsonified<AppParameters>, 'params');
+    await this.db
+      .put('APP_PARAMETERS', app.toJson() as Jsonified<AppParameters>, 'params')
+      .then(this.emitUpdate('APP_PARAMETERS', null));
   }
 
   async *iterateSwaps() {
@@ -647,7 +687,9 @@ export class IndexedDb implements IndexedDbInterface {
     swap: PlainMessage<SwapRecord> & { swapCommitment: PlainMessage<StateCommitment> },
   ) {
     assertCommitment(swap.swapCommitment);
-    await this.db.put('SWAPS', new SwapRecord(swap).toJson() as Jsonified<SwapRecord>);
+    await this.db
+      .put('SWAPS', new SwapRecord(swap).toJson() as Jsonified<SwapRecord>)
+      .then(this.emitUpdate('SWAPS', null));
   }
 
   async getSwapByCommitment(commitment: StateCommitment): Promise<SwapRecord | undefined> {
@@ -695,7 +737,9 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async saveGasPrices(value: Required<PlainMessage<GasPrices>>): Promise<void> {
-    await this.db.put('GAS_PRICES', new GasPrices(value).toJson() as Jsonified<GasPrices>);
+    await this.db
+      .put('GAS_PRICES', new GasPrices(value).toJson() as Jsonified<GasPrices>)
+      .then(this.emitUpdate('GAS_PRICES', null));
   }
 
   /**
@@ -805,7 +849,7 @@ export class IndexedDb implements IndexedDbInterface {
       position: position.toJson() as Jsonified<Position>,
       subaccount: subaccount && (subaccount.toJson() as Jsonified<AddressIndex>),
     };
-    await this.db.put('POSITIONS', positionRecord);
+    await this.db.put('POSITIONS', positionRecord).then(this.emitUpdate('POSITIONS', null));
   }
 
   async updatePosition(
@@ -824,11 +868,13 @@ export class IndexedDb implements IndexedDbInterface {
     const position = Position.fromJson(positionRecord.position);
     position.state = newState;
 
-    await this.db.put('POSITIONS', {
-      id: positionId.toJson() as Jsonified<PositionId>,
-      position: position.toJson() as Jsonified<Position>,
-      subaccount: subaccount ? (subaccount.toJson() as Jsonified<AddressIndex>) : undefined,
-    });
+    await this.db
+      .put('POSITIONS', {
+        id: positionId.toJson() as Jsonified<PositionId>,
+        position: position.toJson() as Jsonified<Position>,
+        subaccount: subaccount ? (subaccount.toJson() as Jsonified<AddressIndex>) : undefined,
+      })
+      .then(this.emitUpdate('POSITIONS', null));
   }
 
   /**
@@ -850,7 +896,7 @@ export class IndexedDb implements IndexedDbInterface {
       index: index.toString(),
     };
 
-    await this.db.put('EPOCHS', newEpoch);
+    await this.db.put('EPOCHS', newEpoch).then(this.emitUpdate('EPOCHS', null));
   }
 
   /**
@@ -916,11 +962,13 @@ export class IndexedDb implements IndexedDbInterface {
     // bech32m conversion asserts length
     const identityKeyAsBech32 = bech32mIdentityKey(getIdentityKeyFromValidatorInfo(validatorInfo));
 
-    await this.db.put(
-      'VALIDATOR_INFOS',
-      validatorInfo.toJson() as Jsonified<ValidatorInfo>,
-      identityKeyAsBech32,
-    );
+    await this.db
+      .put(
+        'VALIDATOR_INFOS',
+        validatorInfo.toJson() as Jsonified<ValidatorInfo>,
+        identityKeyAsBech32,
+      )
+      .then(this.emitUpdate('VALIDATOR_INFOS', null));
   }
 
   /**
@@ -977,7 +1025,9 @@ export class IndexedDb implements IndexedDbInterface {
       asOfHeight,
     });
 
-    await this.db.put('PRICES', estimatedPrice.toJson() as Jsonified<EstimatedPrice>);
+    await this.db
+      .put('PRICES', estimatedPrice.toJson() as Jsonified<EstimatedPrice>)
+      .then(this.emitUpdate('PRICES', null));
   }
 
   /**
@@ -1006,9 +1056,8 @@ export class IndexedDb implements IndexedDbInterface {
 
   async clearSwapBasedPrices(): Promise<void> {
     const tx = this.db.transaction('PRICES', 'readwrite');
-    const store = tx.objectStore('PRICES');
 
-    let cursor = await store.openCursor();
+    let cursor = await tx.objectStore('PRICES').openCursor();
     while (cursor) {
       const price = EstimatedPrice.fromJson(cursor.value);
       if (!price.numeraire?.equals(this.stakingTokenAssetId)) {
@@ -1050,15 +1099,17 @@ export class IndexedDb implements IndexedDbInterface {
       existingRecord?.noteCommitment;
     const seqNum = value.seqNum ?? existingRecord?.seqNum;
 
-    await this.db.put(
-      'AUCTIONS',
-      {
-        auction,
-        noteCommitment,
-        seqNum,
-      },
-      key,
-    );
+    await this.db
+      .put(
+        'AUCTIONS',
+        {
+          auction,
+          noteCommitment,
+          seqNum,
+        },
+        key,
+      )
+      .then(this.emitUpdate('AUCTIONS', null));
   }
 
   async getAuction(auctionId: AuctionId): Promise<{
@@ -1084,14 +1135,16 @@ export class IndexedDb implements IndexedDbInterface {
     value: { input: Value; output: Value },
   ): Promise<void> {
     assertAuctionId(auctionId);
-    await this.db.add(
-      'AUCTION_OUTSTANDING_RESERVES',
-      {
-        input: value.input.toJson() as Jsonified<Value>,
-        output: value.output.toJson() as Jsonified<Value>,
-      },
-      uint8ArrayToBase64(auctionId.inner),
-    );
+    await this.db
+      .add(
+        'AUCTION_OUTSTANDING_RESERVES',
+        {
+          input: value.input.toJson() as Jsonified<Value>,
+          output: value.output.toJson() as Jsonified<Value>,
+        },
+        uint8ArrayToBase64(auctionId.inner),
+      )
+      .then(this.emitUpdate('AUCTION_OUTSTANDING_RESERVES', null));
   }
 
   async deleteAuctionOutstandingReserves(auctionId: AuctionId): Promise<void> {

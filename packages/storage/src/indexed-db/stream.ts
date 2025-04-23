@@ -24,7 +24,7 @@ export class IdbCursorSource<N extends PenumbraStoreNames, T extends Message<T> 
   }
 }
 
-const isIdbUpdate = <DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>>(
+const isIdbStoreUpdate = <DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>>(
   item: unknown,
   table: StoreName,
 ): item is IdbUpdate<DBTypes, StoreName> =>
@@ -35,7 +35,11 @@ const isIdbUpdate = <DBTypes extends PenumbraDb, StoreName extends StoreNames<DB
   typeof item.table === 'string' &&
   item.table === table;
 
-export class IdbUpdateSource<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>> {
+export class IdbStoreUpdateSource<
+  DBTypes extends PenumbraDb,
+  StoreName extends StoreNames<DBTypes>,
+> {
+  /** used to remove the update event listener when the source is cancelled */
   private ac = new AbortController();
 
   constructor(
@@ -45,7 +49,7 @@ export class IdbUpdateSource<DBTypes extends PenumbraDb, StoreName extends Store
 
   start(cont: ReadableStreamDefaultController<IdbUpdate<DBTypes, StoreName>>) {
     const listener: EventListener = (event: Event) => {
-      if ('detail' in event && isIdbUpdate(event.detail, this.table)) {
+      if ('detail' in event && isIdbStoreUpdate(event.detail, this.table)) {
         cont.enqueue(event.detail);
       }
     };
