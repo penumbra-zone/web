@@ -1,4 +1,4 @@
-import { FC, forwardRef, MouseEventHandler, ReactNode } from 'react';
+import { FC, MouseEventHandler, ReactNode } from 'react';
 import { LucideIcon } from 'lucide-react';
 import cn from 'clsx';
 import { getOutlineColorByActionType, ActionType } from '../utils/action-type';
@@ -92,59 +92,58 @@ export type ButtonProps = BaseButtonProps & (IconOnlyProps | RegularProps);
  * (`<a />`) tag (or `<Link />`, if you're using e.g., React Router) and leave
  * `onClick` undefined.
  */
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    {
-      children,
-      disabled = false,
-      onClick,
-      icon: IconComponent,
-      iconOnly,
-      actionType = 'default',
-      type = 'button',
-      priority = 'primary',
-      density: densityProp,
-      ...attrs
-      // needed for the Radix's `asChild` prop to work correctly
-      // https://www.radix-ui.com/primitives/docs/guides/composition#composing-with-your-own-react-components
-    },
-    ref,
-  ) => {
-    const densityContext = useDensity();
-    const density = densityProp ?? densityContext;
-    const styleAttrs = { actionType, iconOnly, density, priority };
+export const Button = ({
+  ref,
+  children,
+  disabled = false,
+  onClick,
+  icon: IconComponent,
+  iconOnly,
+  actionType = 'default',
+  type = 'button',
+  priority = 'primary',
+  density: densityProp,
 
-    return (
-      <button
-        ref={ref}
-        type={type}
-        disabled={disabled}
-        onClick={onClick}
-        aria-label={iconOnly && typeof children === 'string' ? children : undefined}
-        title={iconOnly && typeof children === 'string' ? children : undefined}
-        {...attrs}
-        className={cn(
-          buttonBase,
-          getFont(styleAttrs),
-          getSize(styleAttrs),
-          getBackground(styleAttrs),
-          getOverlays(styleAttrs),
+  // needed for the Radix's `asChild` prop to work correctly
+  // https://www.radix-ui.com/primitives/docs/guides/composition#composing-with-your-own-react-components
+  ...attrs
+}: ButtonProps & {
+  ref: React.RefObject<HTMLButtonElement>;
+}) => {
+  const densityContext = useDensity();
+  const density = densityProp ?? densityContext;
+  const styleAttrs = { actionType, iconOnly, density, priority };
 
-          '-outline-offset-1 focus:outline-none',
-          priority === 'secondary' && 'outline outline-1',
-          priority === 'secondary' && getOutlineColorByActionType(actionType),
+  return (
+    <button
+      ref={ref}
+      type={type}
+      disabled={disabled}
+      onClick={onClick}
+      aria-label={iconOnly && typeof children === 'string' ? children : undefined}
+      title={iconOnly && typeof children === 'string' ? children : undefined}
+      {...attrs}
+      className={cn(
+        buttonBase,
+        getFont(styleAttrs),
+        getSize(styleAttrs),
+        getBackground(styleAttrs),
+        getOverlays(styleAttrs),
 
-          'relative',
-          'text-neutral-contrast',
-          'flex items-center justify-center',
-          density === 'sparse' ? 'gap-2' : 'gap-1',
-        )}
-      >
-        {IconComponent && <IconComponent size={getIconSize(density)} />}
+        '-outline-offset-1 focus:outline-none',
+        priority === 'secondary' && 'outline outline-1',
+        priority === 'secondary' && getOutlineColorByActionType(actionType),
 
-        {!iconOnly && children}
-      </button>
-    );
-  },
-);
+        'relative',
+        'text-neutral-contrast',
+        'flex items-center justify-center',
+        density === 'sparse' ? 'gap-2' : 'gap-1',
+      )}
+    >
+      {IconComponent && <IconComponent size={getIconSize(density)} />}
+
+      {!iconOnly && children}
+    </button>
+  );
+};
 Button.displayName = 'Button';

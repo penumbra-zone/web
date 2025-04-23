@@ -19,13 +19,13 @@ import { ClientState } from '@penumbra-zone/protobuf/ibc/lightclients/tendermint
 import { IbcChannelService, IbcClientService, IbcConnectionService } from '@penumbra-zone/protobuf';
 import { Height } from '@penumbra-zone/protobuf/ibc/core/client/v1/client_pb';
 import { TextInput } from '@penumbra-zone/ui/TextInput';
-import { AssetIcon } from '@penumbra-zone/ui/AssetIcon';
 import { WalletBalance } from '@penumbra-zone/ui/WalletBalance';
 import { AssetSelector } from '@penumbra-zone/ui/AssetSelector';
 import { Density } from '@penumbra-zone/ui/Density';
 import { pnum } from '@penumbra-zone/types/pnum';
-import { ShieldOff, ShieldOffIcon } from 'lucide-react';
+import { ShieldOff } from 'lucide-react';
 import { useRegistry } from '@/shared/api/registry.ts';
+import Image from 'next/image';
 
 const APPROX_BLOCK_DURATION_MS = 5_500n;
 const MINUTE_MS = 60_000n;
@@ -158,9 +158,17 @@ export function UnshieldDialog({ asset }: { asset: ShieldedBalance }) {
         Destination Chain
       </Text>
       <TextInput
-        /* TODO: can't use icon metadata here */
-        startAdornment={<AssetIcon metadata={metadata} hideBadge={true} />}
-        value={destinationChain.displayName ?? ''}
+        /* TODO: can't use icon metadata here  */
+        startAdornment={
+          /* FIXME: startAdornment doesn't work React 19 here*/
+          <Image
+            width={24}
+            height={24}
+            src={destinationChain?.images[0]?.png ?? ''}
+            alt={destinationChain?.displayName ?? ''}
+          />
+        }
+        value={destinationChain?.displayName ?? ''}
       />
       <Text variant={'detail'} color={'text.secondary'}>
         Unshielding can only be done to the asset’s source chain.
@@ -189,7 +197,7 @@ export function UnshieldDialog({ asset }: { asset: ShieldedBalance }) {
       </Text>
       {/* TODO: add my address button (gets address from cosmoskit) */}
       <TextInput onChange={val => setDestAddress(val)} />
-      {/* TODO: disallow withdrawing UM*/}
+      {/* TODO: disallow withdrawing UM? */}
       <Button
         type='submit'
         actionType={'unshield'}
