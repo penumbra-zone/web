@@ -2,16 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createCanvas } from 'canvas';
 import { drawTournamentEarningsCanvas } from '@/pages/tournament/ui/shared/tournament-earnings-canvas';
 import { registerFonts } from '@/shared/ui/canvas-toolkit';
-import { TournamentParams } from '@/pages/tournament/ui/join/page';
-
-export const queryParamMap = {
-  t: 'epoch',
-  e: 'earnings',
-  v: 'votingStreak',
-  i: 'incentivePool',
-  l: 'lpPool',
-  d: 'delegatorPool',
-};
+import { TournamentParams, queryParamMap } from '@/pages/tournament/ui/join/page';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
