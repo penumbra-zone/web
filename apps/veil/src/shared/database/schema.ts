@@ -357,6 +357,22 @@ export interface SupplyValidators {
   identity_key: string;
 }
 
+export interface Gauge {
+  epoch: number;
+  asset_id: Buffer;
+  votes: number;
+  portion: number;
+  missing_votes: bigint;
+}
+
+export interface DelegatorSummary {
+  address: Buffer;
+  epochs_voted_in: bigint;
+  total_rewards: number;
+  total_voting_power: number;
+  streak: number;
+}
+
 interface RawDB {
   _insights_shielded_pool_depositors: _InsightsShieldedPoolDepositors;
   _insights_validators: _InsightsValidators;
@@ -388,6 +404,8 @@ interface RawDB {
   supply_total_staked: SupplyTotalStaked;
   supply_total_unstaked: SupplyTotalUnstaked;
   supply_validators: SupplyValidators;
+  'lqt.gauge': Gauge;
+  'lqt.delegator_summary': DelegatorSummary;
 }
 
 export type DB = Pick<
@@ -404,4 +422,6 @@ export type DB = Pick<
   | 'dex_ex_metadata'
   | 'dex_ex_block_summary'
   | 'dex_ex_transactions'
+  | 'lqt.gauge'
+  | 'lqt.delegator_summary'
 >;

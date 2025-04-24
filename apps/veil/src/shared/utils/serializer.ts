@@ -8,6 +8,7 @@ import {
   ValueView,
 } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { DirectedTradingPair } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
+import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 interface SerializedProto {
   proto: string;
@@ -63,6 +64,7 @@ const ProtosByType = {
   'penumbra.core.asset.v1.Metadata': Metadata,
   'penumbra.core.asset.v1.Value': Value,
   'penumbra.core.asset.v1.AssetId': AssetId,
+  'penumbra.core.keys.v1.Address': Address,
   'penumbra.core.component.dex.v1.DirectedTradingPair': DirectedTradingPair,
 } as const;
 
