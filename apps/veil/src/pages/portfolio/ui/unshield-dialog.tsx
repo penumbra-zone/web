@@ -1,14 +1,16 @@
 import { Button } from '@penumbra-zone/ui/Button';
 import { ShieldedBalance } from '@/pages/portfolio/api/use-unified-assets.ts';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Text } from '@penumbra-zone/ui/Text';
 import { planBuildBroadcast } from '@/entities/transaction';
 import {
-  getAmount,
   getDisplayDenomExponentFromValueView,
   getMetadata,
 } from '@penumbra-zone/getters/value-view';
-import { TransactionPlannerRequest } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import {
+  BalancesResponse,
+  TransactionPlannerRequest,
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { toBaseUnit } from '@penumbra-zone/types/lo-hi';
 import { BigNumber } from 'bignumber.js';
 import { ViewService } from '@penumbra-zone/protobuf/penumbra/view/v1/view_connect';
@@ -26,6 +28,9 @@ import { pnum } from '@penumbra-zone/types/pnum';
 import { ShieldOff } from 'lucide-react';
 import { useRegistry } from '@/shared/api/registry.ts';
 import Image from 'next/image';
+import { bech32, bech32m } from 'bech32';
+import { Chain } from '@penumbra-labs/registry';
+import { fromValueView } from '@penumbra-zone/types/amount';
 
 const APPROX_BLOCK_DURATION_MS = 5_500n;
 const MINUTE_MS = 60_000n;
@@ -45,9 +50,7 @@ export const currentTimePlusTwoDaysRounded = (currentTimeMs: number): bigint => 
   const roundedTimeoutMs = twoDaysFromNowMs + tenMinsMs - (twoDaysFromNowMs % tenMinsMs);
 
   // 1 million nanoseconds per millisecond (converted to bigint)
-  const roundedTimeoutNs = BigInt(roundedTimeoutMs) * 1_000_000n;
-
-  return roundedTimeoutNs;
+  return BigInt(roundedTimeoutMs) * 1_000_000n;
 };
 
 const clientStateForChannel = async (channel?: Channel): Promise<ClientState> => {
@@ -112,9 +115,8 @@ async function getIbcOutPlan(asset: ShieldedBalance, amount: string, destAddress
     throw new Error('Error with generating IBC deposit address');
   }
 
-  // TODO: validate this is the correct way
   const denom = getMetadata(asset.valueView).base;
-  const channelId = denom.split('/')[1]!;
+  const channelId = denom.split('/')[1] ?? '';
   const { timeoutHeight, timeoutTime } = await getTimeout(channelId);
 
   const req = new TransactionPlannerRequest({
@@ -134,18 +136,71 @@ async function getIbcOutPlan(asset: ShieldedBalance, amount: string, destAddress
     ],
     source: addressIndex,
   });
-  const plan = await planBuildBroadcast('ics20Withdrawal', req);
-  return plan;
+  return await planBuildBroadcast('ics20Withdrawal', req);
+}
+
+/**
+ * Matches the given address to the chain's address prefix.
+ * We don't know what format foreign addresses are in, so this only checks:
+ * - it's valid bech32 OR valid bech32m
+ * - the prefix matches the chain
+ */
+function unknownAddrIsValid(chain: Chain | undefined, address: string): boolean {
+  if (!chain || address === '') {
+    return false;
+  }
+  const { prefix, words } =
+    bech32.decodeUnsafe(address, Infinity) ?? bech32m.decodeUnsafe(address, Infinity) ?? {};
+  return !!words && prefix === chain.addressPrefix;
+}
+
+export function amountMoreThanBalance(
+  asset: BalancesResponse,
+  /**
+   * The amount that a user types into the interface will always be in the
+   * display denomination -- e.g., in `penumbra`, not in `upenumbra`.
+   */
+  amountInDisplayDenom: string,
+): boolean {
+  if (!asset.balanceView) {
+    throw new Error('Missing balanceView');
+  }
+
+  const balanceAmt = fromValueView(asset.balanceView);
+  return Boolean(amountInDisplayDenom) && BigNumber(amountInDisplayDenom).gt(balanceAmt);
 }
 
 export function UnshieldDialog({ asset }: { asset: ShieldedBalance }) {
-  // FIXME: can't enter decimals
-  const [amount, setAmount] = useState(getAmount(asset.valueView));
+  const [amount, setAmount] = useState('');
   const [destAddress, setDestAddress] = useState('');
   const metadata = getMetadata(asset.valueView);
   const { data: registry } = useRegistry();
-  const channelId = metadata.base.split('/')[1]!;
+  const channelId = metadata.base.split('/')[1] ?? '';
   const destinationChain = registry?.ibcConnections.find(chain => chain.channelId === channelId);
+
+  const [isAddressValid, setIsAddressValid] = useState(true);
+  useEffect(() => {
+    if (destAddress !== '') {
+      setIsAddressValid(unknownAddrIsValid(destinationChain, destAddress));
+    }
+  }, [destAddress, destinationChain]);
+
+  const [isAmountValid, setIsAmountValid] = useState(true);
+  useEffect(() => {
+    setIsAmountValid(!amountMoreThanBalance(asset.balance, amount));
+  }, [amount, asset.balance]);
+  // const { client } = useWalletClient();
+
+  // useEffect(() => {
+  //   if (client && destinationChain) {
+  //     void client
+  //       .getAccount?.(destinationChain.chainId)
+  //       .then(acc => setConnectedAddress(acc.address));
+  //   } else {
+  //     setConnectedAddress(undefined);
+  //   }
+  // }, [client, destinationChain]);
+
   return (
     <form
       className='flex flex-col gap-4'
@@ -168,7 +223,7 @@ export function UnshieldDialog({ asset }: { asset: ShieldedBalance }) {
         value={destinationChain?.displayName ?? ''}
       />
       <Text variant={'detail'} color={'text.secondary'}>
-        Unshielding can only be done to the asset’s source chain.
+        Unshielding can only be done to the asset&apos;s source chain.
       </Text>
 
       <Text variant={'body'} color={'text.primary'}>
@@ -180,28 +235,55 @@ export function UnshieldDialog({ asset }: { asset: ShieldedBalance }) {
             <AssetSelector assets={[metadata]} actionType={'default'} value={metadata} />
           </Density>
         }
-        onChange={value =>
-          setAmount(pnum(value, getDisplayDenomExponentFromValueView(asset.valueView)).toAmount())
-        }
-        value={pnum(amount, getDisplayDenomExponentFromValueView(asset.valueView)).toString()}
+        onChange={value => setAmount(value)}
+        value={amount}
       />
+      {!isAmountValid && (
+        <Text variant={'detail'} color={'destructive.main'}>
+          Amount is greater than balance
+        </Text>
+      )}
       <WalletBalance
         balance={asset.balance}
-        onClick={() => setAmount(getAmount(asset.valueView))}
+        onClick={() => setAmount(pnum(asset.balance.balanceView).toString())}
       />
+
       <Text variant={'body'} color={'text.primary'}>
         Destination Address
       </Text>
-      {/* TODO: add my address button (gets address from cosmoskit) */}
-      <TextInput onChange={val => setDestAddress(val)} />
-      {/* TODO: disallow withdrawing UM? */}
+      <TextInput
+        actionType={isAddressValid ? 'default' : 'destructive'}
+        onChange={val => setDestAddress(val)}
+        // endAdornment={
+        //   <Button
+        //     onClick={() => {
+        //       setDestAddress(connectedAddress ?? '');
+        //     }}
+        //     disabled={!connectedAddress}
+        //     priority='secondary'
+        //     density='compact'
+        //   >
+        //     My address
+        //   </Button>
+        // }
+      />
+      {!isAddressValid && destAddress !== '' && (
+        <Text variant={'detail'} color={'destructive.main'}>
+          This address is not valid on the destination chain
+        </Text>
+      )}
+
       <Button
         type='submit'
         actionType={'unshield'}
         priority={'primary'}
         density={'sparse'}
         icon={ShieldOff}
+        disabled={!isAddressValid || !isAmountValid}
         onClick={() => {
+          if (destAddress === '') {
+            return;
+          }
           void getIbcOutPlan(
             asset,
             pnum(amount, getDisplayDenomExponentFromValueView(asset.valueView)).toString(),

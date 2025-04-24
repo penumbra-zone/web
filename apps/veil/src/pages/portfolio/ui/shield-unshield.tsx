@@ -9,6 +9,7 @@ import { getMetadata } from '@penumbra-zone/getters/value-view';
 import { theme as penumbraTheme } from '@penumbra-zone/ui/theme';
 import { UnshieldDialog } from '@/pages/portfolio/ui/unshield-dialog.tsx';
 import { Dialog } from '@penumbra-zone/ui/Dialog';
+import { IbcChainProvider } from '@/features/cosmos/chain-provider';
 
 /**
  * Computes the IBC denom hash for Penumbra-1
@@ -43,18 +44,24 @@ async function computeIbcDenom(denom: string, channelId: string): Promise<string
 }
 
 export function UnshieldButton({ asset }: { asset: ShieldedBalance }) {
+  const { data: registry } = useRegistry();
+  if (!registry) {
+    return;
+  }
   return (
-    <Dialog>
-      <Dialog.Trigger asChild>
-        <Button actionType='accent' density='slim' priority='secondary'>
-          Unshield
-        </Button>
-      </Dialog.Trigger>
+    <IbcChainProvider registry={registry}>
+      <Dialog>
+        <Dialog.Trigger asChild>
+          <Button actionType='accent' density='slim' priority='secondary'>
+            Unshield
+          </Button>
+        </Dialog.Trigger>
 
-      <Dialog.Content title='Unshield'>
-        <UnshieldDialog asset={asset} />
-      </Dialog.Content>
-    </Dialog>
+        <Dialog.Content title='Unshield'>
+          <UnshieldDialog asset={asset} />
+        </Dialog.Content>
+      </Dialog>
+    </IbcChainProvider>
   );
 }
 

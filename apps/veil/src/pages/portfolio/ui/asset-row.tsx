@@ -8,6 +8,7 @@ import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import { useState } from 'react';
+import { getMetadata } from '@penumbra-zone/getters/value-view';
 
 export const AssetRow = observer(
   ({
@@ -234,18 +235,22 @@ export const AssetRow = observer(
           asset.shieldedBalances.map(bal => (
             <div key={bal.valueView.toJsonString()} className={'col-span-6 grid grid-cols-subgrid'}>
               <TableCell variant={'lastCell'}>
-                <div className=''>
-                  <ValueViewComponent
-                    valueView={bal.valueView}
-                    trailingZeros={false}
-                    priority={'tertiary'}
-                    density={'slim'}
-                    context={'table'}
-                  />
-                  <Text color={'text.secondary'} small>
-                    on Penumbra
-                  </Text>
-                  <UnshieldButton asset={bal} />
+                <div className='flex items-center gap-3 justify-between w-full'>
+                  <div className={'py-3'}>
+                    <ValueViewComponent
+                      valueView={bal.valueView}
+                      trailingZeros={false}
+                      priority={'tertiary'}
+                      density={'slim'}
+                      context={'table'}
+                    />
+                    <Text color={'text.secondary'} small>
+                      on Penumbra
+                    </Text>
+                  </div>
+                  {getMetadata(bal.valueView).symbol.toLowerCase() !== 'um' && (
+                    <UnshieldButton asset={bal} />
+                  )}
                 </div>
               </TableCell>
               <TableCell variant={'lastCell'}>
