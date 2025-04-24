@@ -99,17 +99,17 @@ export function getTextWidth(
 export function registerFonts() {
   if (typeof window === 'undefined') {
     const fontsDir = join(process.cwd(), 'src', 'shared', 'assets', 'canvas-fonts');
-    registerFont(join(fontsDir, 'SGr-IosevkaTerm-Regular.ttc'), { family: 'Iosevka Term' });
     registerFont(join(fontsDir, 'SGr-IosevkaTerm-Medium.ttc'), {
       family: 'Iosevka Term',
       weight: 'medium',
     });
-    registerFont(join(fontsDir, 'Poppins-Medium.ttf'), { family: 'Poppins', weight: 'medium' });
-    registerFont(join(fontsDir, 'Poppins-Regular.ttf'), { family: 'Poppins' });
-    registerFont(join(fontsDir, 'WorkSans-Bold.ttf'), { family: 'Work Sans' });
-    registerFont(join(fontsDir, 'WorkSans-SemiBold.ttf'), {
+    registerFont(join(fontsDir, 'SGr-IosevkaTerm-Regular.ttc'), {
+      family: 'Iosevka Term',
+      weight: 'normal',
+    });
+    registerFont(join(fontsDir, 'Poppins-Medium.ttf'), { family: 'Poppins' });
+    registerFont(join(fontsDir, 'WorkSans-Medium.ttf'), {
       family: 'Work Sans',
-      weight: 'medium',
     });
   }
 }
