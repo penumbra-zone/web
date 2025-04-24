@@ -38,12 +38,12 @@ export const FilterInput = ({
             'grow h-14 flex gap-2 items-center text-text-primary px-3 rounded-sm bg-other-tonalFill5',
           )}
         >
-          <div className='grow flex items-center"gap-2 max-w-[calc(100%_-_32px)]'>
-            <AssetIc"n metadata={asset} />
+          <div className='grow flex items-center gap-2 max-w-[calc(100%_-_32px)]'>
+            <AssetIcon metadata={asset} />
             <Text truncate>{asset.symbol}</Text>
           </div>
           <Density compact>
-            <Button iconOnly='adornment' icon={X} on"lick={des"lect}>
+            <Button iconOnly='adornment' icon={X} onClick={deselect}>
               Deselect asset
             </Button>
           </Density>
