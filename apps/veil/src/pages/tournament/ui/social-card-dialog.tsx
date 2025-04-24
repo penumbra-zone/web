@@ -90,18 +90,26 @@ Join now 👇`;
 
     useEffect(() => {
       if (dontShowAgain) {
-        localStorage.setItem(dismissedKey, 'true');
+        const dismissed = localStorage.getItem(dismissedKey);
+        if (dismissed) {
+          localStorage.setItem(
+            dismissedKey,
+            JSON.stringify([...(JSON.parse(dismissed) as string[]), params.epoch]),
+          );
+        } else {
+          localStorage.setItem(dismissedKey, JSON.stringify([params.epoch]));
+        }
       }
-    }, [dontShowAgain]);
+    }, [dontShowAgain, params.epoch]);
 
     useEffect(() => {
       if (isOpenProp) {
         const dismissed = localStorage.getItem(dismissedKey);
-        if (dismissed !== 'true') {
+        if (!dismissed || !(JSON.parse(dismissed) as string[]).includes(params.epoch)) {
           setIsOpen(true);
         }
       }
-    }, [isOpenProp]);
+    }, [isOpenProp, params.epoch]);
 
     if (!isOpen) {
       return null;
