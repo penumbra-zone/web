@@ -31,6 +31,7 @@ import Image from 'next/image';
 import { bech32, bech32m } from 'bech32';
 import { Chain } from '@penumbra-labs/registry';
 import { fromValueView } from '@penumbra-zone/types/amount';
+import { Dialog } from '@penumbra-zone/ui/Dialog';
 
 const APPROX_BLOCK_DURATION_MS = 5_500n;
 const MINUTE_MS = 60_000n;
@@ -106,7 +107,7 @@ const getTimeout = async (
   };
 };
 
-async function getIbcOutPlan(asset: ShieldedBalance, amount: string, destAddress: string) {
+async function sendIbcOut(asset: ShieldedBalance, amount: string, destAddress: string) {
   const addressIndex = getAddressIndex(asset.balance);
   const { address: returnAddress } = await penumbra
     .service(ViewService)
@@ -189,6 +190,9 @@ export function UnshieldDialog({ asset }: { asset: ShieldedBalance }) {
   useEffect(() => {
     setIsAmountValid(!amountMoreThanBalance(asset.balance, amount));
   }, [amount, asset.balance]);
+
+  const [isIbcInProgress, setIsIbcInProgress] = useState(false);
+
   // const { client } = useWalletClient();
 
   // useEffect(() => {
@@ -202,97 +206,114 @@ export function UnshieldDialog({ asset }: { asset: ShieldedBalance }) {
   // }, [client, destinationChain]);
 
   return (
-    <form
-      className='flex flex-col gap-4'
-      onSubmit={e => {
-        e.preventDefault();
-      }}
-    >
-      <Text variant={'body'} color={'text.primary'}>
-        Destination Chain
-      </Text>
-      <TextInput
-        startAdornment={
-          <Image
-            width={24}
-            height={24}
-            src={destinationChain?.images[0]?.png ?? ''}
-            alt={destinationChain?.displayName ?? ''}
+    <Dialog modal={false}>
+      <Dialog.Trigger asChild>
+        <Button actionType='accent' density='slim' priority='secondary'>
+          Unshield
+        </Button>
+      </Dialog.Trigger>
+
+      <Dialog.Content title='Unshield'>
+        <form
+          className='flex flex-col gap-4'
+          onSubmit={e => {
+            e.preventDefault();
+          }}
+        >
+          <Text variant={'body'} color={'text.primary'}>
+            Destination Chain
+          </Text>
+          <TextInput
+            startAdornment={
+              <Image
+                width={24}
+                height={24}
+                src={destinationChain?.images[0]?.png ?? ''}
+                alt={destinationChain?.displayName ?? ''}
+              />
+            }
+            value={destinationChain?.displayName ?? ''}
           />
-        }
-        value={destinationChain?.displayName ?? ''}
-      />
-      <Text variant={'detail'} color={'text.secondary'}>
-        Unshielding can only be done to the asset&apos;s source chain.
-      </Text>
+          <Text variant={'detail'} color={'text.secondary'}>
+            Unshielding can only be done to the asset&apos;s source chain.
+          </Text>
 
-      <Text variant={'body'} color={'text.primary'}>
-        Amount
-      </Text>
-      <TextInput
-        endAdornment={
-          <Density compact>
-            <AssetSelector assets={[metadata]} actionType={'default'} value={metadata} />
-          </Density>
-        }
-        onChange={value => setAmount(value)}
-        value={amount}
-      />
-      {!isAmountValid && (
-        <Text variant={'detail'} color={'destructive.main'}>
-          Amount is greater than balance
-        </Text>
-      )}
-      <WalletBalance
-        balance={asset.balance}
-        onClick={() => setAmount(pnum(asset.balance.balanceView).toString())}
-      />
+          <Text variant={'body'} color={'text.primary'}>
+            Amount
+          </Text>
+          <TextInput
+            endAdornment={
+              <Density compact>
+                <AssetSelector assets={[metadata]} actionType={'default'} value={metadata} />
+              </Density>
+            }
+            onChange={value => setAmount(value)}
+            value={amount}
+          />
+          {!isAmountValid && (
+            <Text variant={'detail'} color={'destructive.main'}>
+              Amount is greater than balance
+            </Text>
+          )}
+          <WalletBalance
+            balance={asset.balance}
+            onClick={() => setAmount(pnum(asset.balance.balanceView).toString())}
+          />
 
-      <Text variant={'body'} color={'text.primary'}>
-        Destination Address
-      </Text>
-      <TextInput
-        actionType={isAddressValid ? 'default' : 'destructive'}
-        onChange={val => setDestAddress(val)}
-        // endAdornment={
-        //   <Button
-        //     onClick={() => {
-        //       setDestAddress(connectedAddress ?? '');
-        //     }}
-        //     disabled={!connectedAddress}
-        //     priority='secondary'
-        //     density='compact'
-        //   >
-        //     My address
-        //   </Button>
-        // }
-      />
-      {!isAddressValid && destAddress !== '' && (
-        <Text variant={'detail'} color={'destructive.main'}>
-          This address is not valid on the destination chain
-        </Text>
-      )}
+          <Text variant={'body'} color={'text.primary'}>
+            Destination Address
+          </Text>
+          <TextInput
+            actionType={isAddressValid ? 'default' : 'destructive'}
+            onChange={val => setDestAddress(val)}
+            // endAdornment={
+            //   <Button
+            //     onClick={() => {
+            //       setDestAddress(connectedAddress ?? '');
+            //     }}
+            //     disabled={!connectedAddress}
+            //     priority='secondary'
+            //     density='compact'
+            //   >
+            //     My address
+            //   </Button>
+            // }
+          />
+          {!isAddressValid && destAddress !== '' && (
+            <Text variant={'detail'} color={'destructive.main'}>
+              This address is not valid on the destination chain
+            </Text>
+          )}
 
-      <Button
-        type='submit'
-        actionType={'unshield'}
-        priority={'primary'}
-        density={'sparse'}
-        icon={ShieldOff}
-        disabled={!isAddressValid || !isAmountValid}
-        onClick={() => {
-          if (destAddress === '') {
-            return;
-          }
-          void getIbcOutPlan(
-            asset,
-            pnum(amount, getDisplayDenomExponentFromValueView(asset.valueView)).toString(),
-            destAddress,
-          );
-        }}
-      >
-        Unshield
-      </Button>
-    </form>
+          <Button
+            type='submit'
+            actionType={'unshield'}
+            priority={'primary'}
+            density={'sparse'}
+            icon={ShieldOff}
+            disabled={!isAddressValid || !isAmountValid || isIbcInProgress}
+            onClick={() => {
+              void (async () => {
+                if (destAddress === '') {
+                  return;
+                }
+                setIsIbcInProgress(true);
+                try {
+                  await sendIbcOut(
+                    asset,
+                    pnum(amount, getDisplayDenomExponentFromValueView(asset.valueView)).toString(),
+                    destAddress,
+                  );
+                } finally {
+                  setIsIbcInProgress(false);
+                }
+              })();
+            }}
+          >
+            Unshield
+          </Button>
+        </form>
+      </Dialog.Content>
+    </Dialog>
   );
 }
