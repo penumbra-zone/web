@@ -1,6 +1,6 @@
 import { renderTournamentEarningsCanvas } from './render-canvas';
 import { encodeParams, queryParamMap } from './utils';
-import { TournamentParams } from './types';
+import { TournamentParams, TournamentQueryParams } from './types';
 
 export { renderTournamentEarningsCanvas, encodeParams, queryParamMap };
-export type { TournamentParams };
+export type { TournamentParams, TournamentQueryParams };
