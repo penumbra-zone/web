@@ -1,6 +1,6 @@
 import cn from 'clsx';
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { ChevronRight } from 'lucide-react';
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
@@ -15,9 +15,9 @@ import { connectionStore } from '@/shared/model/connection';
 import { usePreviousEpochs, BASE_PAGE, BASE_LIMIT } from '../api/use-previous-epochs';
 import type { PreviousEpochData } from '../server/previous-epochs';
 import { useSortableTableHeaders } from './sortable-table-header';
-import { usePersonalRewards } from '../api/use-personal-rewards';
-import { GENERIC_DELUM } from './shared/delum-metadata';
 import { Vote } from './vote';
+import { usePersonalRewards } from '../api/use-personal-rewards';
+import { useStakingTokenMetadata } from '@/shared/api/registry';
 
 const TABLE_CLASSES = {
   table: {
@@ -38,26 +38,8 @@ interface PreviousEpochsRowProps {
 }
 
 const PreviousEpochsRow = ({ row, isLoading, className, connected }: PreviousEpochsRowProps) => {
-  const { data: rewards, isLoading: rewardsLoading } = usePersonalRewards(row.epoch);
-
-  const votingRewards = useMemo(() => {
-    const reward = rewards?.[0];
-    if (!reward?.reward) {
-      return '-';
-    }
-
-    const value = new ValueView({
-      valueView: {
-        case: 'knownAssetId',
-        value: {
-          amount: reward.reward.amount,
-          metadata: GENERIC_DELUM,
-        },
-      },
-    });
-
-    return <ValueViewComponent valueView={value} priority='tertiary' />;
-  }, [rewards]);
+  const { data: rewards, isLoading: rewardsLoading } = usePersonalRewards();
+  const { data: stakingToken } = useStakingTokenMetadata();
 
   return (
     <Link
@@ -97,7 +79,22 @@ const PreviousEpochsRow = ({ row, isLoading, className, connected }: PreviousEpo
       </TableCell>
       {connected && (
         <TableCell cell loading={isLoading || rewardsLoading}>
-          {votingRewards}
+          {rewards?.find(r => r.epochIndex === BigInt(row.epoch)) && stakingToken && (
+            <ValueViewComponent
+              valueView={
+                new ValueView({
+                  valueView: {
+                    case: 'knownAssetId',
+                    value: {
+                      amount: rewards.find(r => r.epochIndex === BigInt(row.epoch))!.total,
+                      metadata: stakingToken,
+                    },
+                  },
+                })
+              }
+              priority='tertiary'
+            />
+          )}
         </TableCell>
       )}
       <TableCell cell loading={isLoading}>

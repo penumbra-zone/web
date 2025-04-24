@@ -430,15 +430,16 @@ export class IndexedDb implements IndexedDbInterface {
    */
   async getLQTHistoricalVotesByEpoch(
     epoch: bigint,
-    subaccount?: AddressIndex,
+    _subaccount?: number,
   ): Promise<
     {
+      epoch: string;
       TransactionId: TransactionId;
       AssetMetadata: Metadata;
       VoteValue: Value;
       RewardValue: Amount | undefined;
       id: string | undefined;
-      subaccount?: AddressIndex;
+      subaccount?: number;
     }[]
   > {
     const tournamentVotes = await this.db.getAllFromIndex(
@@ -448,6 +449,7 @@ export class IndexedDb implements IndexedDbInterface {
     );
 
     return tournamentVotes.map(tournamentVote => ({
+      epoch: tournamentVote.epoch,
       TransactionId: TransactionId.fromJson(tournamentVote.TransactionId, { typeRegistry }),
       AssetMetadata: Metadata.fromJson(tournamentVote.AssetMetadata, { typeRegistry }),
       VoteValue: Value.fromJson(tournamentVote.VoteValue, { typeRegistry }),
@@ -455,9 +457,7 @@ export class IndexedDb implements IndexedDbInterface {
         ? Amount.fromJson(tournamentVote.RewardValue, { typeRegistry })
         : undefined,
       id: tournamentVote.id,
-      subaccount: subaccount
-        ? AddressIndex.fromJson(tournamentVote.subaccount!, { typeRegistry })
-        : undefined,
+      subaccount: tournamentVote.subaccount,
     }));
   }
 
@@ -465,27 +465,25 @@ export class IndexedDb implements IndexedDbInterface {
    * Streams tournament votes up to and including the specified epoch,
    * filtering only those that have a reward.
    */
-  async *getVotesThroughEpochInclusive(epoch?: bigint, subaccount?: AddressIndex) {
-    const bound = epoch !== undefined ? epoch.toString() : undefined;
-    const keyRange = bound !== undefined ? IDBKeyRange.upperBound(bound, true) : undefined;
+  async *getVotesThroughEpochInclusive(_epoch?: bigint, _subaccount?: number) {
+    // todo: add back in key range
 
     yield* new ReadableStream({
       start: async cont => {
         let cursor = await this.db
           .transaction('LQT_HISTORICAL_VOTES')
           .store.index('epoch')
-          .openCursor(keyRange);
+          .openCursor();
 
         while (cursor) {
           cont.enqueue({
+            epoch: cursor.value.epoch,
             TransactionId: TransactionId.fromJson(cursor.value.TransactionId, { typeRegistry }),
             AssetMetadata: Metadata.fromJson(cursor.value.AssetMetadata, { typeRegistry }),
             VoteValue: Value.fromJson(cursor.value.VoteValue, { typeRegistry }),
             RewardValue: Amount.fromJson(cursor.value.RewardValue, { typeRegistry }),
             id: cursor.value.id,
-            subaccount: subaccount
-              ? AddressIndex.fromJson(cursor.value.subaccount!, { typeRegistry })
-              : undefined,
+            subaccount: cursor.value.subaccount!,
           });
 
           cursor = await cursor.continue();
@@ -506,8 +504,9 @@ export class IndexedDb implements IndexedDbInterface {
     voteValue: Value,
     rewardValue?: Amount,
     id?: string,
-    subaccount?: AddressIndex,
+    subaccount?: number,
   ): Promise<void> {
+    console.log('subaccount in save: ', subaccount);
     assertTransactionId(transactionId);
 
     // This is a unique identifier to force unique primary keys. If the field isn't provided,
@@ -517,11 +516,13 @@ export class IndexedDb implements IndexedDbInterface {
     const tournamentVote = {
       epoch: epoch.toString(),
       TransactionId: transactionId.toJson({ typeRegistry }) as Jsonified<TransactionId>,
+      // TODO: saving the entire metadata is extraneous, experiment with changing
+      // in https://github.com/penumbra-zone/web/issues/2032.
       AssetMetadata: assetMetadata.toJson({ typeRegistry }) as Jsonified<Metadata>,
       VoteValue: voteValue.toJson({ typeRegistry }) as Jsonified<Value>,
       RewardValue: rewardValue ? (rewardValue.toJson({ typeRegistry }) as Jsonified<Amount>) : null,
       id: uniquePrimaryKey,
-      subaccount: subaccount ? (subaccount.toJson() as Jsonified<AddressIndex>) : undefined,
+      subaccount,
     };
 
     await this.u.update({

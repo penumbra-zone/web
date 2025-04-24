@@ -4,8 +4,9 @@ import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys
 import { ViewService } from '@penumbra-zone/protobuf';
 import { penumbra } from '@/shared/const/penumbra';
 import { statusStore } from '@/shared/model/status';
-import { TournamentVotesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { aggregateRewardsByEpoch } from '../ui/aggregate-rewards';
+import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 
 export interface LQTVote {
   percent: number;
@@ -22,7 +23,14 @@ export interface VotingReward {
   };
 }
 
-const fetchRewards = async (subaccount?: number): Promise<{ votes: TournamentVotesResponse[] }> => {
+const fetchRewards = async (
+  subaccount?: number,
+): Promise<
+  {
+    epochIndex: bigint;
+    total: Amount;
+  }[]
+> => {
   const accountFilter =
     typeof subaccount === 'undefined' ? undefined : new AddressIndex({ account: subaccount });
   const { latestKnownBlockHeight } = statusStore;
@@ -33,18 +41,17 @@ const fetchRewards = async (subaccount?: number): Promise<{ votes: TournamentVot
       .tournamentVotes({ accountFilter, blockHeight: latestKnownBlockHeight }),
   );
 
-  return { votes: responses };
+  const groupedRewards = await aggregateRewardsByEpoch(accountFilter!, { votes: responses });
+
+  return groupedRewards;
 };
 
 /**
  * Retrieves voting rewards from the ViewService.
- *
- * TODO: update rewards calculation based on this comment:
- * https://github.com/penumbra-zone/web/pull/2269#pullrequestreview-2780489876
  */
 export const usePersonalRewards = (subaccount?: number) => {
   const query = useQuery({
-    queryKey: ['personal-rewards', subaccount], // add epoch index here
+    queryKey: ['my-voting-rewards', subaccount], // add epoch index here
     staleTime: Infinity,
     enabled: connectionStore.connected,
     queryFn: async () => {
