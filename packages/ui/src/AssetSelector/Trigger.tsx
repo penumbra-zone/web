@@ -26,7 +26,7 @@ export const AssetSelectorTrigger = ({
   disabled,
   onClick,
 }: AssetSelectorTriggerProps & {
-  ref: React.RefObject<HTMLButtonElement>;
+  ref?: React.RefObject<HTMLButtonElement>;
 }) => {
   const density = useDensity();
 

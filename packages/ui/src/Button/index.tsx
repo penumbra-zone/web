@@ -108,7 +108,7 @@ export const Button = ({
   // https://www.radix-ui.com/primitives/docs/guides/composition#composing-with-your-own-react-components
   ...attrs
 }: ButtonProps & {
-  ref: React.RefObject<HTMLButtonElement>;
+  ref?: React.RefObject<HTMLButtonElement>;
 }) => {
   const densityContext = useDensity();
   const density = densityProp ?? densityContext;
