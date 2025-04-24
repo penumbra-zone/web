@@ -13,7 +13,12 @@ export const TournamentPage = () => {
 
   return (
     <section className='flex flex-col gap-6 p-4 max-w-[1168px] mx-auto'>
-      <button onClick={() => setIsSocialCardDialogOpen(true)}>Open Social Card Dialog</button>
+      <button
+        className='bg-accent-500 text-white px-4 py-2 rounded-md'
+        onClick={() => setIsSocialCardDialogOpen(true)}
+      >
+        Open Social Card Dialog
+      </button>
       <PenumbraWaves />
       <LandingCard />
       <DelegatorRewards />
