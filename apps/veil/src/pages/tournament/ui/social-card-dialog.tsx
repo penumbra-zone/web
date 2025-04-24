@@ -7,6 +7,8 @@ import { Button } from '@penumbra-zone/ui/Button';
 import { Copy } from 'lucide-react';
 import Xcom from '@/shared/assets/x.com.svg';
 import { drawTournamentEarningsCanvas } from './shared/tournament-earnings-canvas';
+import { TournamentParams, queryParamMap } from './join/page';
+import { openToast } from '@penumbra-zone/ui/Toast';
 
 export const dismissedKey = 'veil-tournament-social-card-dismissed';
 
@@ -16,7 +18,10 @@ async function copyImageToClipboard(imageUrl: string) {
   const clipboardItem = new ClipboardItem({ [blob.type]: blob });
   await navigator.clipboard.write([clipboardItem]);
 
-  alert('Image copied to clipboard!');
+  openToast({
+    type: 'success',
+    message: 'Image copied to clipboard!',
+  });
 }
 
 function shareToX(text: string, url: string) {
@@ -36,38 +41,44 @@ function shareToX(text: string, url: string) {
  *      - and is dismissable each epoch unless the delegator does not vote in the current
  *        epoch (this will be evident by whether or not their receive a rewards distribution).
  */
-const keyMap = {
-  tournamentEpoch: 't',
-  earnings: 'e',
-  votingStreak: 'v',
-  incentivePool: 'i',
-  lpPool: 'l',
-  delegatorPool: 'd',
-};
+function encodeParams(params: TournamentParams): string {
+  const keyMap = Object.fromEntries(
+    Object.entries(queryParamMap).map(([key, value]) => [value, key]),
+  ) as Record<string, string>;
 
-function encodeParams(obj: Record<string, string>) {
-  return Object.entries(obj)
-    .map(([key, value]) => `${keyMap[key as keyof typeof keyMap]}=${value}`)
+  return Object.entries(params)
+    .map(([key, value]) => `${keyMap[key]}=${value}`)
     .join('&');
 }
 
+const dummyParams: TournamentParams = {
+  epoch: '135',
+  earnings: '17280:UM',
+  votingStreak: '80000:UM',
+  incentivePool: '100000:UM',
+  lpPool: '100000:UM',
+  delegatorPool: '100000:UM',
+};
+
 export const SocialCardDialog = observer(
-  ({ isOpen: isOpenProp, onClose }: { isOpen: boolean; onClose: () => void }) => {
+  ({
+    isOpen: isOpenProp,
+    onClose,
+    params = dummyParams,
+  }: {
+    isOpen: boolean;
+    onClose: () => void;
+    params: TournamentParams;
+  }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [dontShowAgain, setDontShowAgain] = useState(false);
     const [isOpen, setIsOpen] = useState(isOpenProp);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- should be static
-    const params = {
-      epoch: '135',
-      earnings: '17280:UM',
-      votingStreak: '80000:UM',
-      incentivePool: '100000:UM',
-      lpPool: '100000:UM',
-      delegatorPool: '100000:UM',
-    };
+    const text = `🚨 Penumbra's Liquidity Tournament is LIVE 🚨
 
-    const text = 'Check out my latest win!';
+Provide liquidity. Climb the leaderboard. Win rewards.
+
+Join now 👇`;
     const url = `https://dex.penumbra.zone/tournament/join?${encodeParams(params)}`;
 
     useEffect(() => {

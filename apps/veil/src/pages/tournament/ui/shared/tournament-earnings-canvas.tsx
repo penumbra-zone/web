@@ -17,15 +17,15 @@ export async function drawTournamentEarningsCanvas(
   }
 
   const format = (value: string) => {
-    return value
-      .split(':')
-      .map((part, i) => {
-        if (i === 0) {
-          return Number(part).toLocaleString();
-        }
-        return part;
-      })
-      .join(' ');
+    const [amount, unit] = value.split(':');
+
+    // perhaps improve upon this later on
+    // for now just making sure the value stays inside the boxes
+    if (Number(amount) > 999999) {
+      return `999999+${unit}`;
+    }
+
+    return `${Number(amount).toLocaleString()} ${unit}`;
   };
 
   scaleCanvas(canvas);
@@ -38,7 +38,7 @@ export async function drawTournamentEarningsCanvas(
     ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
 
     drawText(ctx, {
-      text: `Tournament #${epoch}`,
+      text: landscape ? `Tournament #${epoch}` : `Liquidity Tournament #${epoch}`,
       y: landscape ? 34 : 60,
       fontSize: theme.fontSize.textSm,
       fontFamily: theme.font.mono,
@@ -124,6 +124,7 @@ export async function drawTournamentEarningsCanvas(
   const bgImageSrc = landscape
     ? `${baseUrl}/assets/lqt-social-rewards-bg-landscape.png`
     : `${baseUrl}/assets/lqt-social-rewards-bg-square.png`;
+
   if (typeof window !== 'undefined') {
     const bgImage = new Image();
     bgImage.src = bgImageSrc;

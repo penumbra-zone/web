@@ -4,7 +4,7 @@ import { drawTournamentEarningsCanvas } from '@/pages/tournament/ui/shared/tourn
 import { registerFonts } from '@/shared/ui/canvas-toolkit';
 import { TournamentParams } from '@/pages/tournament/ui/join/page';
 
-const queryParamMap = {
+export const queryParamMap = {
   t: 'epoch',
   e: 'earnings',
   v: 'votingStreak',
@@ -15,9 +15,6 @@ const queryParamMap = {
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  console.log('TCL: GET -> searchParams', searchParams);
-  console.log('TCL: GET -> searchParams', searchParams.get('t'));
-  console.log('TCL: GET -> queryParamMap', queryParamMap);
   const params = Object.entries(queryParamMap).reduce(
     (acc, [shortKey, paramKey]) => ({
       ...acc,
@@ -25,10 +22,8 @@ export async function GET(req: NextRequest) {
     }),
     {},
   ) as TournamentParams;
-  console.log('TCL: GET -> params', params);
 
   registerFonts();
-  // const canvas = createCanvas(1200, 630);
   const canvas = createCanvas(600, 315);
   await drawTournamentEarningsCanvas(canvas as unknown as HTMLCanvasElement, params, true);
 

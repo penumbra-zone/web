@@ -3,7 +3,7 @@
 import { PenumbraWaves } from '@/pages/explore/ui/waves';
 import { PagePath } from '@/shared/const/pages';
 import { redirect, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 // this serves to keep the url short
 // as we will use it in an x post
@@ -15,6 +15,15 @@ export const queryParamMap = {
   l: 'lpPool',
   d: 'delegatorPool',
 };
+
+export interface TournamentQueryParams {
+  t: string;
+  e: `${number}:${string}`;
+  v: `${number}:${string}`;
+  i: `${number}:${string}`;
+  l: `${number}:${string}`;
+  d: `${number}:${string}`;
+}
 
 export interface TournamentParams extends Record<string, string> {
   epoch: string;
@@ -30,7 +39,7 @@ export function TournamentJoinPage({
   searchParams,
 }: {
   imageUrl: string;
-  searchParams: Record<string, string>;
+  searchParams: TournamentQueryParams;
 }) {
   const router = useRouter();
   const [seconds, setSeconds] = useState(5);
