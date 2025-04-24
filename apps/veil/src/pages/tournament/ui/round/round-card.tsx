@@ -4,9 +4,9 @@ import { GradientCard } from '../shared/gradient-card';
 import { Icon } from '@penumbra-zone/ui/Icon';
 import { Text } from '@penumbra-zone/ui/Text';
 import { ArrowLeft } from 'lucide-react';
-import { pnum } from '@penumbra-zone/types/pnum';
-import { round } from '@penumbra-zone/types/round';
 import { PagePath } from '@/shared/const/pages';
+import { useTournamentSummary } from '../../api/use-tournament-summary';
+import { IncentivePool } from '../landing-card/incentive-pool';
 import { VotingInfo } from '../voting-info';
 
 export interface RoundCardProps {
@@ -14,12 +14,14 @@ export interface RoundCardProps {
 }
 
 export const RoundCard = observer(({ epoch }: RoundCardProps) => {
+  const { data: summary, isLoading } = useTournamentSummary({
+    limit: 1,
+    page: 1,
+    epoch,
+  });
+
   const startBlock = 123;
   const endBlock = 123;
-  const poolAmount = 123;
-  const poolLPs = 123;
-  const poolDelegators = 123;
-  const symbol = 'UM';
   const ended = false as boolean;
 
   return (
@@ -61,51 +63,10 @@ export const RoundCard = observer(({ epoch }: RoundCardProps) => {
               </Text>
             </div>
           </div>
-          <div className='flex flex-col gap-2'>
-            <div className='flex justify-between'>
-              <Text strong color='text.primary'>
-                Incentive Pool
-              </Text>
-              <Text technical color='text.primary'>
-                {pnum(poolAmount).toFormattedString()} {symbol}
-              </Text>
-            </div>
-            <div className='flex w-full h-[6px] bg-base-blackAlt rounded-full justify-between'>
-              <div
-                className='h-[6px] bg-primary-light rounded-l-full'
-                style={{ width: `calc(${(poolLPs / poolAmount) * 100}% - 1px)` }}
-              />
-              <div
-                className='h-[6px] bg-secondary-light rounded-r-full'
-                style={{ width: `${(poolDelegators / poolAmount) * 100}%` }}
-              />
-            </div>
-            <div className='flex justify-between'>
-              <div className='flex gap-2'>
-                <Text technical color='text.primary'>
-                  LPs
-                </Text>
-                <Text technical color='primary.light'>
-                  {pnum(poolLPs).toFormattedString()} {symbol}
-                </Text>
-                <Text technical color='text.secondary'>
-                  {round({ value: (poolLPs / poolAmount) * 100, decimals: 0 })}%
-                </Text>
-              </div>
-              <div className='flex gap-2'>
-                <Text technical color='text.primary'>
-                  Delegators
-                </Text>
-                <Text technical color='secondary.light'>
-                  {pnum(poolDelegators).toFormattedString()} {symbol}
-                </Text>
-                <Text technical color='text.secondary'>
-                  {round({ value: (poolDelegators / poolAmount) * 100, decimals: 0 })}%
-                </Text>
-              </div>
-            </div>
-          </div>
+
+          <IncentivePool summary={summary?.[0]} loading={isLoading} />
         </div>
+
         <div className='w-full h-[1px] md:w-[1px] md:h-auto bg-other-tonalStroke flex-shrink-0' />
         <div className='flex flex-col w-full md:w-1/2 md:justify-between gap-6 md:gap-0'>
           <Text variant='h4' color='text.primary'>
