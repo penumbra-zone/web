@@ -6,8 +6,11 @@ import { Checkbox } from '@penumbra-zone/ui/Checkbox';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Copy } from 'lucide-react';
 import Xcom from '@/shared/assets/x.com.svg';
-import { drawTournamentEarningsCanvas } from './shared/tournament-earnings-canvas';
-import { TournamentParams, queryParamMap } from './join/page';
+import {
+  TournamentParams,
+  renderTournamentEarningsCanvas,
+  encodeParams,
+} from '@/features/tournament-earnings-canvas';
 import { openToast } from '@penumbra-zone/ui/Toast';
 
 export const dismissedKey = 'veil-tournament-social-card-dismissed';
@@ -41,16 +44,6 @@ function shareToX(text: string, url: string) {
  *      - and is dismissable each epoch unless the delegator does not vote in the current
  *        epoch (this will be evident by whether or not their receive a rewards distribution).
  */
-function encodeParams(params: TournamentParams): string {
-  const keyMap = Object.fromEntries(
-    Object.entries(queryParamMap).map(([key, value]) => [value, key]),
-  ) as Record<string, string>;
-
-  return Object.entries(params)
-    .map(([key, value]) => `${keyMap[key]}=${value}`)
-    .join('&');
-}
-
 const dummyParams: TournamentParams = {
   epoch: '135',
   earnings: '17280:UM',
@@ -84,7 +77,7 @@ Join now 👇`;
     useEffect(() => {
       if (canvasRef.current) {
         const canvas = canvasRef.current;
-        void drawTournamentEarningsCanvas(canvas, params);
+        void renderTournamentEarningsCanvas(canvas, params, false);
       }
     }, [canvasRef, isOpen, params]);
 

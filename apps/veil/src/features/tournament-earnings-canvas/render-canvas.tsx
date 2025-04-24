@@ -1,10 +1,10 @@
 import { dpi, drawText, getTextWidth, scaleCanvas } from '@/shared/ui/canvas-toolkit';
 import { theme } from '@penumbra-zone/ui/theme';
-import { TournamentParams } from '@/pages/tournament/ui/join/page';
+import { TournamentParams } from './types';
 
 const baseUrl = process.env['NEXT_PUBLIC_BASE_URL'] ?? 'http://localhost:3000';
 
-export async function drawTournamentEarningsCanvas(
+export async function renderTournamentEarningsCanvas(
   canvas: HTMLCanvasElement,
   params: TournamentParams,
   landscape = false,
@@ -17,6 +17,9 @@ export async function drawTournamentEarningsCanvas(
   }
 
   const format = (value: string) => {
+    if (!value) {
+      return '-';
+    }
     const [amount, unit] = value.split(':');
 
     // perhaps improve upon this later on

@@ -3,36 +3,8 @@
 import { PenumbraWaves } from '@/pages/explore/ui/waves';
 import { PagePath } from '@/shared/const/pages';
 import { redirect, useRouter } from 'next/navigation';
-import { useState } from 'react';
-
-// this serves to keep the url short
-// as we will use it in an x post
-export const queryParamMap = {
-  t: 'epoch',
-  e: 'earnings',
-  v: 'votingStreak',
-  i: 'incentivePool',
-  l: 'lpPool',
-  d: 'delegatorPool',
-};
-
-export interface TournamentQueryParams {
-  t: string;
-  e: `${number}:${string}`;
-  v: `${number}:${string}`;
-  i: `${number}:${string}`;
-  l: `${number}:${string}`;
-  d: `${number}:${string}`;
-}
-
-export interface TournamentParams extends Record<string, string> {
-  epoch: string;
-  earnings: `${number}:${string}`;
-  votingStreak: `${number}:${string}`;
-  incentivePool: `${number}:${string}`;
-  lpPool: `${number}:${string}`;
-  delegatorPool: `${number}:${string}`;
-}
+import { useEffect, useState } from 'react';
+import { TournamentQueryParams } from '@/features/tournament-earnings-canvas/types';
 
 export function TournamentJoinPage({
   imageUrl,
@@ -48,14 +20,14 @@ export function TournamentJoinPage({
     redirect(PagePath.Tournament);
   }
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     if (seconds === 1) {
-  //       router.push(PagePath.Tournament);
-  //     }
-  //     setSeconds(seconds - 1);
-  //   }, 1000);
-  // }, [seconds, router]);
+  useEffect(() => {
+    setTimeout(() => {
+      if (seconds === 1) {
+        router.push(PagePath.Tournament);
+      }
+      setSeconds(seconds - 1);
+    }, 1000);
+  }, [seconds, router]);
 
   const url = `${imageUrl}?${new URLSearchParams(searchParams).toString()}`;
 
