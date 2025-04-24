@@ -24,7 +24,7 @@ export const TournamentRoundPage = () => {
     <section className='flex flex-col gap-6 p-4 max-w-[1168px] mx-auto'>
       <PenumbraWaves />
       <RoundCard epoch={epoch} />
-      <CurrentVotingResults />
+      <CurrentVotingResults epoch={epoch} />
       <LeaderboardTable startBlock={startBlock} endBlock={endBlock} />
     </section>
   );

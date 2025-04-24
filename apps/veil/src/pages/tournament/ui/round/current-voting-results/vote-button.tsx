@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Button } from '@penumbra-zone/ui/Button';
-import { VoteDialogueSelector } from '@/pages/tournament/ui/vote-dialog';
+import { MappedGauge } from '../../../server/previous-epochs';
+import { VoteDialogueSelector } from '../../vote-dialog';
 
 export interface VoteButtonProps {
-  /** A symbol to vote for */
-  value: string;
+  value: MappedGauge;
 }
 
 export const VoteButton = ({ value }: VoteButtonProps) => {
