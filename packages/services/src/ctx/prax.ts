@@ -3,9 +3,9 @@
  *  portable service implementations, should eventually be refactored.
  */
 
-import { ConnectError, createContextKey } from '@connectrpc/connect';
+import { createContextKey } from '@connectrpc/connect';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 
-export const servicesCtx = createContextKey<() => Promise<ServicesInterface>>(() =>
-  Promise.reject(new ConnectError('No prax services interface available')),
-);
+export const servicesCtx = createContextKey<() => Promise<ServicesInterface>>(null as never, {
+  description: 'A random collection of interfaces',
+});

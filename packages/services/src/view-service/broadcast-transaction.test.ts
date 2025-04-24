@@ -13,11 +13,6 @@ import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
 import { IndexedDbMock, MockServices, TendermintMock } from '../test-utils.js';
 
-const mockSha256 = vi.hoisted(() => vi.fn());
-vi.mock('@penumbra-zone/crypto-web/sha256', () => ({
-  sha256Hash: mockSha256,
-}));
-
 describe('BroadcastTransaction request handler', () => {
   let mockServices: MockServices;
   let mockCtx: HandlerContext;
@@ -28,8 +23,6 @@ describe('BroadcastTransaction request handler', () => {
 
   beforeEach(() => {
     vi.resetAllMocks();
-
-    mockSha256.mockImplementation(() => transactionIdData.inner);
 
     mockTendermint = {
       broadcastTx: vi.fn(),
