@@ -26,9 +26,7 @@ const fetchRewards = async (
     typeof subaccount === 'undefined' ? undefined : new AddressIndex({ account: subaccount });
 
   const responses = await Array.fromAsync(
-    penumbra
-      .service(ViewService)
-      .tournamentVotes({ accountFilter, epochIndex: BigInt(epoch) }),
+    penumbra.service(ViewService).tournamentVotes({ accountFilter, epochIndex: BigInt(epoch) }),
   );
 
   const groupedRewards = await aggregateRewardsByEpoch(accountFilter, { votes: responses });
