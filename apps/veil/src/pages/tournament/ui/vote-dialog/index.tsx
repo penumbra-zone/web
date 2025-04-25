@@ -42,13 +42,14 @@ export const VoteDialogueSelector = observer(
       account => getAddressIndex(account).account === subaccount,
     );
 
-    // Temporarily hardcode the same account address as the reward recipient.
     const rewardsRecipient = valueAddress?.addressView.value?.address;
 
     // Fetch user's spendable voting notes for this epoch
-    const { notes } = useLQTNotes(subaccount);
     const { epoch } = useCurrentEpoch();
+    const { data: notes } = useLQTNotes(subaccount, epoch);
+
     const { data: assets, isLoading } = useEpochGauge(epoch);
+    const isEmptyScreen = !isLoading && !!assets && !assets.length;
 
     const handleVoteSubmit = async () => {
       if (selectedDenom) {
@@ -146,7 +147,7 @@ export const VoteDialogueSelector = observer(
           }
         >
           <div className='flex flex-col pt-2'>
-            {!isSearchOpen && (
+            {!isSearchOpen && !isEmptyScreen && (
               <VotingAssetSelector
                 value={selectedDenom}
                 selectedAsset={selectedAsset}
@@ -156,7 +157,7 @@ export const VoteDialogueSelector = observer(
               />
             )}
 
-            {isSearchOpen && (
+            {(isSearchOpen || isEmptyScreen) && (
               <VoteDialogSearchResults
                 value={selectedDenom}
                 gauge={assets ?? []}

@@ -4,7 +4,6 @@ import { Text } from '@penumbra-zone/ui/Text';
 import type { MappedGauge } from '../../server/previous-epochs';
 import { LoadingVoteAsset } from './loading-vote-asset';
 import { VoteDialogAsset } from './vote-dialog-asset';
-import { VotingDialogNoResults } from './no-results';
 
 export interface VotingAssetSelectorProps {
   value: string | undefined;
@@ -34,8 +33,6 @@ export const VotingAssetSelector = ({
       <Text small color='text.secondary'>
         Select Asset
       </Text>
-
-      {!loading && !gaugeWithValue.length && <VotingDialogNoResults />}
 
       <Dialog.RadioGroup value={value}>
         <div className='flex flex-col gap-1'>
