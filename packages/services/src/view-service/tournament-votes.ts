@@ -18,7 +18,7 @@ export const tournamentVotes: Impl['tournamentVotes'] = async function* (req, ct
   if (req.epochIndex) {
     const tournamentVote = new TournamentVotesResponse();
 
-    const votes = await indexedDb.getLQTHistoricalVotes(req.epochIndex);
+    const votes = await indexedDb.getLQTHistoricalVotes(req.epochIndex, req.accountFilter?.account);
 
     if (votes.length > 0) {
       tournamentVote.votes = votes.map(
