@@ -25,7 +25,6 @@ import { useSortableTableHeaders } from './sortable-table-header';
 import { useIndexByAddress } from '../api/use-index-by-address';
 import { useStakingTokenMetadata } from '@/shared/api/registry';
 
-// TODO: extend generic delUM --> UM conversion to here.
 const LeaderboardRow = observer(
   ({ row, loading }: { row: DelegatorLeaderboardData; loading: boolean }) => {
     const { connected } = connectionStore;
@@ -78,7 +77,7 @@ const LeaderboardRow = observer(
           },
         },
       });
-    }, [loading, row.total_rewards]);
+    }, [loading, row.total_rewards, stakingToken]);
 
     return (
       <Link

@@ -54,7 +54,7 @@ describe('tournamentVotes request handler', () => {
     mockIndexedDb.iterateLQTVotes?.mockResolvedValueOnce([mockVote]);
 
     const res: TournamentVotesResponse_Vote[] = [];
-    const req = new TournamentVotesRequest({});
+    const req = new TournamentVotesRequest({ epochIndex: epoch.index });
 
     for await (const { votes } of tournamentVotes(req, mockCtx)) {
       if (votes) {
@@ -94,4 +94,5 @@ const mockVote = {
     lo: '500',
     hi: '0',
   }),
+  subaccount: 0,
 };

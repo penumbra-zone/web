@@ -41,7 +41,9 @@ export async function aggregateRewardsByEpoch(
       const amount = vote.reward?.amount;
       const assetId = vote.reward?.assetId;
 
-      if (!amount || !assetId) continue;
+      if (!amount || !assetId) {
+        continue;
+      }
 
       const rewardKey = `${amount.hi}:${amount.lo}:${Buffer.from(assetId.inner).toString('hex')}`;
 
@@ -50,10 +52,10 @@ export async function aggregateRewardsByEpoch(
         grouped.set(epochIndex, []);
       }
 
-      const epochSet = seen.get(epochIndex)!;
-      const epochArray = grouped.get(epochIndex)!;
+      const epochSet = seen.get(epochIndex);
+      const epochArray = grouped.get(epochIndex);
 
-      if (!epochSet.has(rewardKey)) {
+      if (epochSet && epochArray && !epochSet.has(rewardKey)) {
         epochSet.add(rewardKey);
         epochArray.push({ amount, assetId });
       }
@@ -127,7 +129,9 @@ export async function aggregateRewardsByEpoch(
 export function totalRewards(epochTotals?: { epochIndex: bigint; total: Amount }[]): Amount {
   let total = new Amount({ lo: 0n, hi: 0n });
 
-  if (!epochTotals || !Array.isArray(epochTotals)) return total;
+  if (!epochTotals) {
+    return total;
+  }
 
   for (const { total: amount } of epochTotals) {
     total = new Amount({

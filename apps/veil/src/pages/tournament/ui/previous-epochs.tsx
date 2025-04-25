@@ -86,7 +86,7 @@ const PreviousEpochsRow = ({ row, isLoading, className, connected }: PreviousEpo
                   valueView: {
                     case: 'knownAssetId',
                     value: {
-                      amount: rewards.find(r => r.epochIndex === BigInt(row.epoch))!.total,
+                      amount: rewards.find(r => r.epochIndex === BigInt(row.epoch))?.total,
                       metadata: stakingToken,
                     },
                   },

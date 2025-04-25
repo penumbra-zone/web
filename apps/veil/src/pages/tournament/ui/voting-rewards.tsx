@@ -15,59 +15,57 @@ export const VotingRewards = observer(() => {
   const { data: stakingToken } = useStakingTokenMetadata();
 
   return (
-    <>
-      <Density compact>
-        <div className='grid grid-cols-[auto_1fr_1fr_32px]'>
-          <div className='grid grid-cols-subgrid col-span-4'>
-            <TableCell heading>Epoch</TableCell>
-            <TableCell heading>Casted Vote</TableCell>
-            <TableCell heading>Reward</TableCell>
-            <TableCell heading> </TableCell>
-          </div>
-
-          {data?.length
-            ? data.map(({ epochIndex, total }, index) => {
-                const rewardView = new ValueView({
-                  valueView: {
-                    case: 'knownAssetId',
-                    value: {
-                      amount: total,
-                      metadata: stakingToken,
-                    },
-                  },
-                });
-
-                return (
-                  <div key={index} className='grid grid-cols-subgrid col-span-4'>
-                    <TableCell cell loading={isLoading}>
-                      Epoch #{epochIndex.toString()}
-                    </TableCell>
-
-                    <TableCell cell loading={isLoading}>
-                      -
-                    </TableCell>
-
-                    <TableCell cell loading={isLoading}>
-                      <ValueViewComponent valueView={rewardView} priority='tertiary' />
-                    </TableCell>
-
-                    <TableCell cell loading={isLoading}>
-                      <Density slim>
-                        <Button iconOnly icon={ChevronRight}>
-                          Go to voting reward information
-                        </Button>
-                      </Density>
-                    </TableCell>
-                  </div>
-                );
-              })
-            : !isLoading && (
-                <div className='col-span-4 text-sm text-muted-foreground py-4'>
-                  No voting rewards found for this account.
-                </div>
-              )}
+    <Density compact>
+      <div className='grid grid-cols-[auto_1fr_1fr_32px]'>
+        <div className='grid grid-cols-subgrid col-span-4'>
+          <TableCell heading>Epoch</TableCell>
+          <TableCell heading>Casted Vote</TableCell>
+          <TableCell heading>Reward</TableCell>
+          <TableCell heading> </TableCell>
         </div>
-      </Density>
-    </>
+
+        {data?.length
+          ? data.map(({ epochIndex, total }, index) => {
+              const rewardView = new ValueView({
+                valueView: {
+                  case: 'knownAssetId',
+                  value: {
+                    amount: total,
+                    metadata: stakingToken,
+                  },
+                },
+              });
+
+              return (
+                <div key={index} className='grid grid-cols-subgrid col-span-4'>
+                  <TableCell cell loading={isLoading}>
+                    Epoch #{epochIndex.toString()}
+                  </TableCell>
+
+                  <TableCell cell loading={isLoading}>
+                    -
+                  </TableCell>
+
+                  <TableCell cell loading={isLoading}>
+                    <ValueViewComponent valueView={rewardView} priority='tertiary' />
+                  </TableCell>
+
+                  <TableCell cell loading={isLoading}>
+                    <Density slim>
+                      <Button iconOnly icon={ChevronRight}>
+                        Go to voting reward information
+                      </Button>
+                    </Density>
+                  </TableCell>
+                </div>
+              );
+            })
+          : !isLoading && (
+              <div className='col-span-4 text-sm text-muted-foreground py-4'>
+                No voting rewards found for this account.
+              </div>
+            )}
+      </div>
+    </Density>
   );
 });
