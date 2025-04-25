@@ -95,7 +95,6 @@ export const useBalances = () => {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- chains without a valid address were filtered out above
           const balances = await fetchChainBalances(chain.address!, chain);
           return balances.map(coin => {
-            // TODO: NEEDS TO PASS THE WHOLE IBC TRACE HERE, INCLUDING CHANNEL, FOR LATER CALCULATIONS
             return {
               asset: augmentToAsset(coin.denom, chain.chainName),
               amount: coin.amount,

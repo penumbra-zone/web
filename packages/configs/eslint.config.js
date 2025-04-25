@@ -151,10 +151,6 @@ export default tseslint.config(
         { requireDefaultForNonUnion: true },
       ],
       eqeqeq: ['error', 'smart'],
-      'no-unused-vars': [
-        'error',
-        { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' },
-      ],
       '@typescript-eslint/no-unused-vars': [
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrors: 'none' },
