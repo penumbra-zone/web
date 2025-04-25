@@ -476,19 +476,21 @@ export class IndexedDb implements IndexedDbInterface {
           .openCursor();
 
         while (cursor) {
-          const voteEpoch = BigInt(cursor.value.epoch!);
-          const voteSubaccount = cursor.value.subaccount!;
+          const voteEpoch = BigInt(cursor.value.epoch);
+          const voteSubaccount = cursor.value.subaccount;
 
           if (voteEpoch < epoch && voteSubaccount === subaccount) {
-            cont.enqueue({
-              epoch: cursor.value.epoch,
-              TransactionId: TransactionId.fromJson(cursor.value.TransactionId, { typeRegistry }),
-              AssetMetadata: Metadata.fromJson(cursor.value.AssetMetadata, { typeRegistry }),
-              VoteValue: Value.fromJson(cursor.value.VoteValue, { typeRegistry }),
-              RewardValue: Amount.fromJson(cursor.value.RewardValue, { typeRegistry }),
-              id: cursor.value.id,
-              subaccount: cursor.value.subaccount!,
-            });
+            if (cursor.value.RewardValue) {
+              cont.enqueue({
+                epoch: cursor.value.epoch,
+                TransactionId: TransactionId.fromJson(cursor.value.TransactionId, { typeRegistry }),
+                AssetMetadata: Metadata.fromJson(cursor.value.AssetMetadata, { typeRegistry }),
+                VoteValue: Value.fromJson(cursor.value.VoteValue, { typeRegistry }),
+                RewardValue: Amount.fromJson(cursor.value.RewardValue, { typeRegistry }),
+                id: cursor.value.id,
+                subaccount: cursor.value.subaccount,
+              });
+            }
           }
 
           cursor = await cursor.continue();
