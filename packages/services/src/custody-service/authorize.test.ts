@@ -1,4 +1,4 @@
-import { PlainMessage } from '@bufbuild/protobuf';
+import { PartialMessage } from '@bufbuild/protobuf';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { CustodyService } from '@penumbra-zone/protobuf';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
@@ -23,7 +23,7 @@ describe('Authorize request handler', () => {
   let req: AuthorizeRequest;
 
   const mockFullViewingKeyCtx = vi.fn(() => Promise.resolve(testFullViewingKey));
-  const mockAuthorizeCtx = vi.fn(({ plan }: PlainMessage<AuthorizeRequest>) =>
+  const mockAuthorizeCtx = vi.fn(({ plan }: PartialMessage<AuthorizeRequest>) =>
     Promise.resolve(
       new AuthorizeResponse({ data: authorizePlan(testSpendKey, new TransactionPlan(plan)) }),
     ),
