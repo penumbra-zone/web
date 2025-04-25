@@ -448,19 +448,21 @@ export class IndexedDb implements IndexedDbInterface {
       epoch.toString(),
     );
 
-    return tournamentVotes
-      .filter(vote => vote.subaccount === subaccount)
-      .map(tournamentVote => ({
-        epoch: tournamentVote.epoch,
-        TransactionId: TransactionId.fromJson(tournamentVote.TransactionId, { typeRegistry }),
-        AssetMetadata: Metadata.fromJson(tournamentVote.AssetMetadata, { typeRegistry }),
-        VoteValue: Value.fromJson(tournamentVote.VoteValue, { typeRegistry }),
-        RewardValue: tournamentVote.RewardValue
-          ? Amount.fromJson(tournamentVote.RewardValue, { typeRegistry })
-          : undefined,
-        id: tournamentVote.id,
-        subaccount: tournamentVote.subaccount,
-      }));
+    const filtered = subaccount
+      ? tournamentVotes.filter(vote => vote.subaccount === subaccount)
+      : tournamentVotes;
+
+    return filtered.map(tournamentVote => ({
+      epoch: tournamentVote.epoch,
+      TransactionId: TransactionId.fromJson(tournamentVote.TransactionId, { typeRegistry }),
+      AssetMetadata: Metadata.fromJson(tournamentVote.AssetMetadata, { typeRegistry }),
+      VoteValue: Value.fromJson(tournamentVote.VoteValue, { typeRegistry }),
+      RewardValue: tournamentVote.RewardValue
+        ? Amount.fromJson(tournamentVote.RewardValue, { typeRegistry })
+        : undefined,
+      id: tournamentVote.id,
+      subaccount: tournamentVote.subaccount,
+    }));
   }
 
   /**
