@@ -8,10 +8,13 @@ import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { Button } from '@penumbra-zone/ui/Button';
 import { ChevronRight } from 'lucide-react';
 import { useStakingTokenMetadata } from '@/shared/api/registry';
+import { useCurrentEpoch } from '@/pages/tournament/api/use-current-epoch';
 
 export const VotingRewards = observer(() => {
   const { subaccount } = connectionStore;
-  const { data, isLoading } = usePersonalRewards(subaccount);
+
+  const { epoch } = useCurrentEpoch();
+  const { data, isLoading } = usePersonalRewards(subaccount, epoch);
   const { data: stakingToken } = useStakingTokenMetadata();
 
   return (

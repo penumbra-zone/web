@@ -3,30 +3,19 @@ import { connectionStore } from '@/shared/model/connection';
 import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { penumbra } from '@/shared/const/penumbra';
-import { statusStore } from '@/shared/model/status';
-import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { aggregateRewardsByEpoch } from '../ui/aggregate-rewards';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import { aggregateRewardsByEpoch } from '../ui/aggregate-rewards';
 
 export interface LQTVote {
   percent: number;
   asset: Metadata;
 }
 
-export interface VotingReward {
-  epoch: number;
-  reward: ValueView;
-  vote: LQTVote;
-  sort?: {
-    epoch: number;
-    reward: number;
-  };
-}
-
 // Retrieves voting rewards and aggregates them by epoch, structured as arrays of votes per epoch,
 // and estimates their value in the staking token by converting from delegation tokens.
 const fetchRewards = async (
-  subaccount?: number,
+  subaccount = 0,
+  epoch: number,
 ): Promise<
   {
     epochIndex: bigint;
@@ -35,12 +24,11 @@ const fetchRewards = async (
 > => {
   const accountFilter =
     typeof subaccount === 'undefined' ? undefined : new AddressIndex({ account: subaccount });
-  const { latestKnownBlockHeight } = statusStore;
 
   const responses = await Array.fromAsync(
     penumbra
       .service(ViewService)
-      .tournamentVotes({ accountFilter, blockHeight: latestKnownBlockHeight }),
+      .tournamentVotes({ accountFilter, epochIndex: BigInt(epoch) }),
   );
 
   const groupedRewards = await aggregateRewardsByEpoch(accountFilter, { votes: responses });
@@ -49,21 +37,14 @@ const fetchRewards = async (
 };
 
 // Retrieves voting rewards from the view service.
-export const usePersonalRewards = (subaccount?: number) => {
-  // TODO: pass the epoch index from the `useCurrentEpoch` hook into the query key
-  const query = useQuery({
-    queryKey: ['my-voting-rewards', subaccount],
+export const usePersonalRewards = (subaccount = 0, epoch?: number) => {
+  return useQuery({
+    queryKey: ['my-voting-rewards', subaccount, epoch],
     staleTime: Infinity,
-    enabled: connectionStore.connected,
+    enabled: connectionStore.connected && !!epoch,
     queryFn: async () => {
-      return await fetchRewards(subaccount);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- based on `enabled`, epoch is always defined
+      return await fetchRewards(connectionStore.subaccount, epoch!);
     },
   });
-
-  const { data, isLoading } = query;
-
-  return {
-    data,
-    isLoading,
-  };
 };

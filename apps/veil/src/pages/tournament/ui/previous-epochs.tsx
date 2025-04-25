@@ -12,12 +12,12 @@ import { Density } from '@penumbra-zone/ui/Density';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { connectionStore } from '@/shared/model/connection';
+import { useStakingTokenMetadata } from '@/shared/api/registry';
 import { usePreviousEpochs, BASE_PAGE, BASE_LIMIT } from '../api/use-previous-epochs';
 import type { PreviousEpochData } from '../server/previous-epochs';
 import { useSortableTableHeaders } from './sortable-table-header';
-import { Vote } from './vote';
 import { usePersonalRewards } from '../api/use-personal-rewards';
-import { useStakingTokenMetadata } from '@/shared/api/registry';
+import { Vote } from './vote';
 
 const TABLE_CLASSES = {
   table: {
@@ -37,9 +37,11 @@ interface PreviousEpochsRowProps {
   connected: boolean;
 }
 
-const PreviousEpochsRow = ({ row, isLoading, className, connected }: PreviousEpochsRowProps) => {
-  const { data: rewards, isLoading: rewardsLoading } = usePersonalRewards();
+const PreviousEpochsRow = observer(({ row, isLoading, className, connected }: PreviousEpochsRowProps) => {
+  const { subaccount } = connectionStore;
+  const { data: rewards, isLoading: rewardsLoading, isPending } = usePersonalRewards(subaccount, row.epoch);
   const { data: stakingToken } = useStakingTokenMetadata();
+  console.log('REW', row.epoch, rewards, rewardsLoading, isPending);
 
   return (
     <Link
@@ -106,7 +108,7 @@ const PreviousEpochsRow = ({ row, isLoading, className, connected }: PreviousEpo
       </TableCell>
     </Link>
   );
-};
+});
 
 export const PreviousEpochs = observer(() => {
   const [page, setPage] = useState(BASE_PAGE);
