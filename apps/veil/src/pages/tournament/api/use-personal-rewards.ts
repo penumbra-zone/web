@@ -23,6 +23,8 @@ export interface VotingReward {
   };
 }
 
+// Retrieves voting rewards and aggregates them by epoch, structured as arrays of votes per epoch,
+// and estimates their value in the staking token by converting from delegation tokens.
 const fetchRewards = async (
   subaccount?: number,
 ): Promise<
@@ -41,17 +43,16 @@ const fetchRewards = async (
       .tournamentVotes({ accountFilter, blockHeight: latestKnownBlockHeight }),
   );
 
-  const groupedRewards = await aggregateRewardsByEpoch(accountFilter!, { votes: responses });
+  const groupedRewards = await aggregateRewardsByEpoch(accountFilter, { votes: responses });
 
   return groupedRewards;
 };
 
-/**
- * Retrieves voting rewards from the ViewService.
- */
+// Retrieves voting rewards from the view service.
 export const usePersonalRewards = (subaccount?: number) => {
+  // TODO: pass the epoch index from the `useCurrentEpoch` hook into the query key
   const query = useQuery({
-    queryKey: ['my-voting-rewards', subaccount], // add epoch index here
+    queryKey: ['my-voting-rewards', subaccount],
     staleTime: Infinity,
     enabled: connectionStore.connected,
     queryFn: async () => {

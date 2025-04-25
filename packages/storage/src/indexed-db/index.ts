@@ -428,9 +428,9 @@ export class IndexedDb implements IndexedDbInterface {
   /**
    * Retrieves liquidity tournament votes and rewards for a given epoch.
    */
-  async getLQTHistoricalVotesByEpoch(
+  async getLQTHistoricalVotes(
     epoch: bigint,
-    _subaccount?: number,
+    subaccount?: number,
   ): Promise<
     {
       epoch: string;
@@ -448,26 +448,26 @@ export class IndexedDb implements IndexedDbInterface {
       epoch.toString(),
     );
 
-    return tournamentVotes.map(tournamentVote => ({
-      epoch: tournamentVote.epoch,
-      TransactionId: TransactionId.fromJson(tournamentVote.TransactionId, { typeRegistry }),
-      AssetMetadata: Metadata.fromJson(tournamentVote.AssetMetadata, { typeRegistry }),
-      VoteValue: Value.fromJson(tournamentVote.VoteValue, { typeRegistry }),
-      RewardValue: tournamentVote.RewardValue
-        ? Amount.fromJson(tournamentVote.RewardValue, { typeRegistry })
-        : undefined,
-      id: tournamentVote.id,
-      subaccount: tournamentVote.subaccount,
-    }));
+    return tournamentVotes
+      .filter(vote => vote.subaccount === subaccount)
+      .map(tournamentVote => ({
+        epoch: tournamentVote.epoch,
+        TransactionId: TransactionId.fromJson(tournamentVote.TransactionId, { typeRegistry }),
+        AssetMetadata: Metadata.fromJson(tournamentVote.AssetMetadata, { typeRegistry }),
+        VoteValue: Value.fromJson(tournamentVote.VoteValue, { typeRegistry }),
+        RewardValue: tournamentVote.RewardValue
+          ? Amount.fromJson(tournamentVote.RewardValue, { typeRegistry })
+          : undefined,
+        id: tournamentVote.id,
+        subaccount: tournamentVote.subaccount,
+      }));
   }
 
   /**
-   * Streams tournament votes up to and including the specified epoch,
+   * Streams tournament votes up to the specified epoch (exclusive),
    * filtering only those that have a reward.
    */
-  async *getVotesThroughEpochInclusive(_epoch?: bigint, _subaccount?: number) {
-    // todo: add back in key range
-
+  async *iterateLQTVotes(epoch: bigint, subaccount?: number) {
     yield* new ReadableStream({
       start: async cont => {
         let cursor = await this.db
@@ -476,15 +476,20 @@ export class IndexedDb implements IndexedDbInterface {
           .openCursor();
 
         while (cursor) {
-          cont.enqueue({
-            epoch: cursor.value.epoch,
-            TransactionId: TransactionId.fromJson(cursor.value.TransactionId, { typeRegistry }),
-            AssetMetadata: Metadata.fromJson(cursor.value.AssetMetadata, { typeRegistry }),
-            VoteValue: Value.fromJson(cursor.value.VoteValue, { typeRegistry }),
-            RewardValue: Amount.fromJson(cursor.value.RewardValue, { typeRegistry }),
-            id: cursor.value.id,
-            subaccount: cursor.value.subaccount!,
-          });
+          const voteEpoch = BigInt(cursor.value.epoch!);
+          const voteSubaccount = cursor.value.subaccount!;
+
+          if (voteEpoch < epoch && voteSubaccount === subaccount) {
+            cont.enqueue({
+              epoch: cursor.value.epoch,
+              TransactionId: TransactionId.fromJson(cursor.value.TransactionId, { typeRegistry }),
+              AssetMetadata: Metadata.fromJson(cursor.value.AssetMetadata, { typeRegistry }),
+              VoteValue: Value.fromJson(cursor.value.VoteValue, { typeRegistry }),
+              RewardValue: Amount.fromJson(cursor.value.RewardValue, { typeRegistry }),
+              id: cursor.value.id,
+              subaccount: cursor.value.subaccount!,
+            });
+          }
 
           cursor = await cursor.continue();
         }
@@ -506,18 +511,17 @@ export class IndexedDb implements IndexedDbInterface {
     id?: string,
     subaccount?: number,
   ): Promise<void> {
-    console.log('subaccount in save: ', subaccount);
     assertTransactionId(transactionId);
 
     // This is a unique identifier to force unique primary keys. If the field isn't provided,
     // a random one is generated and used to store an object.
     const uniquePrimaryKey = id ?? crypto.randomUUID();
 
+    // TODO: saving the entire metadata is extraneous, experiment with changing
+    // @see https://github.com/penumbra-zone/web/issues/2032.
     const tournamentVote = {
       epoch: epoch.toString(),
       TransactionId: transactionId.toJson({ typeRegistry }) as Jsonified<TransactionId>,
-      // TODO: saving the entire metadata is extraneous, experiment with changing
-      // in https://github.com/penumbra-zone/web/issues/2032.
       AssetMetadata: assetMetadata.toJson({ typeRegistry }) as Jsonified<Metadata>,
       VoteValue: voteValue.toJson({ typeRegistry }) as Jsonified<Value>,
       RewardValue: rewardValue ? (rewardValue.toJson({ typeRegistry }) as Jsonified<Amount>) : null,

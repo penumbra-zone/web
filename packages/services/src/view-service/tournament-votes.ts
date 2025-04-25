@@ -11,12 +11,14 @@ export const tournamentVotes: Impl['tournamentVotes'] = async function* (req, ct
   const services = await ctx.values.get(servicesCtx)();
   const { indexedDb } = await services.getWalletServices();
 
-  // Retrieve the vote cast in the liquidity tournament for the current epoch.
+  // If an epoch index is provided as a request parameter, retrieve the votes cast
+  // in the liquidity tournament for that specific epoch.
+  //
+  // Yields a group of votes for a specific epoch: [vote1, vote2, ...]
   if (req.epochIndex) {
     let tournamentVote = new TournamentVotesResponse() ?? undefined;
 
-    const votes = await indexedDb.getLQTHistoricalVotesByEpoch(req.epochIndex);
-    console.log('votes inside tournamentVotes: ', votes);
+    const votes = await indexedDb.getLQTHistoricalVotes(req.epochIndex);
 
     if (votes.length > 0) {
       tournamentVote.votes = votes.map(
@@ -39,22 +41,26 @@ export const tournamentVotes: Impl['tournamentVotes'] = async function* (req, ct
     yield tournamentVote;
   }
 
-  // Retrieve votes cast in the liquidity tournament up to specified block height's starting epoch.
+  // If a block height is provided as a request parameter, retrieve votes cast in the liquidity
+  // tournament up to specified block height's starting epoch.
+  //
+  // Yields grouped votes by epoch, structured as arrays of votes per epoch: [[vote1, vote2, ...],
+  // [vote1, vote2, ...], [...]]
   if (req.blockHeight) {
-    // todo: SCT query over indexedDB query instead
-    const epoch = await indexedDb.getEpochByHeight(req.blockHeight);
-
     let currentEpoch: string | undefined;
     let bucket: TournamentVotesResponse_Vote[] = [];
 
-    // logical groupings note
-    for await (const vote of indexedDb.getVotesThroughEpochInclusive(epoch!.index)) {
+    const epoch = await indexedDb.getEpochByHeight(req.blockHeight);
+
+    // IDB yields individual vote notes, which we transform into logical groupings by epoch index.
+    for await (const vote of indexedDb.iterateLQTVotes(epoch!.index, req.accountFilter?.account)) {
       const epochKey = vote.epoch;
 
       if (currentEpoch === undefined) {
         currentEpoch = epochKey;
       } else if (epochKey !== currentEpoch) {
-        // flush the previous epoch before switching
+        // Once we've collected all votes for a given epoch, determined by detecting a change in the
+        // next vote's epoch index, we flush the bucket and yield the grouped votes for that epoch.
         yield new TournamentVotesResponse({
           votes: bucket,
         });
@@ -62,7 +68,7 @@ export const tournamentVotes: Impl['tournamentVotes'] = async function* (req, ct
         currentEpoch = epochKey;
       }
 
-      // accumulate vote inside current epoch’s bucket
+      // Accumulate vote inside current epoch’s bucket (logical grouping of votes)
       bucket.push(
         new TournamentVotesResponse_Vote({
           transaction: vote.TransactionId,
@@ -82,6 +88,7 @@ export const tournamentVotes: Impl['tournamentVotes'] = async function* (req, ct
       );
     }
 
+    // Yield the final bucket of votes
     if (bucket.length) {
       yield new TournamentVotesResponse({
         votes: bucket,

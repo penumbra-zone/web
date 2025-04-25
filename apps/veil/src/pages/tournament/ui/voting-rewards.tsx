@@ -11,7 +11,6 @@ import { useStakingTokenMetadata } from '@/shared/api/registry';
 
 export const VotingRewards = observer(() => {
   const { subaccount } = connectionStore;
-
   const { data, isLoading } = usePersonalRewards(subaccount);
   const { data: stakingToken } = useStakingTokenMetadata();
 
@@ -41,7 +40,7 @@ export const VotingRewards = observer(() => {
                 return (
                   <div key={index} className='grid grid-cols-subgrid col-span-4'>
                     <TableCell cell loading={isLoading}>
-                      Epoch #{epochIndex}
+                      Epoch #{epochIndex.toString()}
                     </TableCell>
 
                     <TableCell cell loading={isLoading}>

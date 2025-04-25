@@ -194,7 +194,7 @@ export interface IndexedDbInterface {
     subaccount?: number,
   ): Promise<void>;
 
-  getLQTHistoricalVotesByEpoch(
+  getLQTHistoricalVotes(
     epoch: bigint,
     subaccount?: number,
   ): Promise<
@@ -209,7 +209,7 @@ export interface IndexedDbInterface {
     }[]
   >;
 
-  getVotesThroughEpochInclusive(
+  iterateLQTVotes(
     epoch: bigint,
     subaccount?: number,
   ): AsyncGenerator<
