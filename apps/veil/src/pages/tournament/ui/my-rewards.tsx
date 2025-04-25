@@ -20,6 +20,7 @@ import { VotingRewards } from './voting-rewards';
 export const MyRewards = observer(() => {
   const { connected } = connectionStore;
 
+  // TODO: accumulate total rewards and remove `useTotalRewards` API.
   const { data: total, isLoading } = useTotalRewards();
   const isTotalZero = total ? isZero(getAmount(total)) : true;
 

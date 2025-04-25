@@ -62,6 +62,9 @@ export async function aggregateRewardsByEpoch(
 
   // referencing https://github.com/penumbra-zone/web/pull/816, we multiply each delegation
   // note by its corresponding validator’s exchange rate to estimate the conversion to UM.
+  //
+  // TODO: plit this into a separate utility that can be externally used by other tables,
+  // such as delegation and previous epochs.
   for await (const response of penumbra.service(ViewService).delegationsByAddressIndex({
     addressIndex,
     filter: DelegationsByAddressIndexRequest_Filter.ALL,

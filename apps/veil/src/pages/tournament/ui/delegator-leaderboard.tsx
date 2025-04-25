@@ -31,6 +31,8 @@ const LeaderboardRow = observer(
     const { connected } = connectionStore;
     const { data: subaccountIndex, isLoading: indexLoading } = useIndexByAddress(row.address);
 
+    // TODO: Convert delUM to UM – we are currently using the staking token,
+    // but the conversion from delUM to UM has not been applied here yet.
     const { data: stakingToken } = useStakingTokenMetadata();
 
     const addressLink = useMemo(() => {
