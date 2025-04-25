@@ -10,6 +10,7 @@ import { useUnifiedAssets } from '../api/use-unified-assets.ts';
 import { useAssetPrices } from '../api/use-asset-prices.ts';
 import { CosmosConnectButton } from '@/features/cosmos/cosmos-connect-button.tsx';
 import { AssetRow } from '@/pages/portfolio/ui/asset-row.tsx';
+import { PortfolioCard } from '@/pages/portfolio/ui/portfolio-card.tsx';
 
 const LoadingState = () => {
   return (
@@ -119,40 +120,40 @@ export const AssetsTable = observer(() => {
   }
 
   return (
-    <Card>
-      <div className='p-3'>
-        <div className={'flex justify-between mb-4'}>
+    <PortfolioCard
+      title={
+        <div className={'flex justify-between'}>
           <Text as={'h4'} xxl color='text.primary'>
             Assets
           </Text>
           <CosmosConnectButton variant={'minimal'} actionType={'unshield'} />
         </div>
+      }
+    >
+      <Density compact>
+        <div className='grid grid-cols-[1fr_1fr_1fr_1fr_auto_auto_auto] overflow-y-auto overflow-x-auto'>
+          <TableCell heading>Shielded Balance</TableCell>
+          <TableCell heading>Public Balance</TableCell>
+          <TableCell heading>Price</TableCell>
+          <TableCell heading>Shielded Value</TableCell>
+          <TableCell heading>Public Value</TableCell>
+          <TableCell heading>Total Value</TableCell>
+          <TableCell heading>&nbsp;</TableCell>
 
-        <Density compact>
-          <div className='grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_1fr] overflow-y-auto overflow-x-auto'>
-            <TableCell heading>Shielded Balance</TableCell>
-            <TableCell heading>Public Balance</TableCell>
-            <TableCell heading>Price</TableCell>
-            <TableCell heading>Shielded Value</TableCell>
-            <TableCell heading>Public Value</TableCell>
-            <TableCell heading>Total Value</TableCell>
-            <TableCell heading>&nbsp;</TableCell>
-
-            {unifiedAssets.map((asset, index) => (
-              <AssetRow
-                key={asset.symbol}
-                asset={asset}
-                price={{
-                  price: prices[asset.symbol]?.price ?? 0,
-                  quoteSymbol: prices[asset.symbol]?.quoteSymbol ?? '-',
-                }}
-                isCosmosConnected={isCosmosConnected}
-                isLastRow={index === unifiedAssets.length - 1}
-              />
-            ))}
-          </div>
-        </Density>
-      </div>
-    </Card>
+          {unifiedAssets.map((asset, index) => (
+            <AssetRow
+              key={asset.symbol}
+              asset={asset}
+              price={{
+                price: prices[asset.symbol]?.price ?? 0,
+                quoteSymbol: prices[asset.symbol]?.quoteSymbol ?? '-',
+              }}
+              isCosmosConnected={isCosmosConnected}
+              isLastRow={index === unifiedAssets.length - 1}
+            />
+          ))}
+        </div>
+      </Density>
+    </PortfolioCard>
   );
 });
