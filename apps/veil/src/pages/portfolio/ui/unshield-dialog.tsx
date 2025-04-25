@@ -172,7 +172,7 @@ export function amountMoreThanBalance(
 }
 
 export function UnshieldDialog({ asset }: { asset: ShieldedBalance }) {
-  const [amount, setAmount] = useState('');
+  const [amount, setAmount] = useState(pnum(asset.valueView).toString());
   const [destAddress, setDestAddress] = useState('');
   const metadata = getMetadata(asset.valueView);
   const { data: registry } = useRegistry();
@@ -208,7 +208,7 @@ export function UnshieldDialog({ asset }: { asset: ShieldedBalance }) {
   return (
     <Dialog modal={false}>
       <Dialog.Trigger asChild>
-        <Button actionType='accent' density='slim' priority='secondary'>
+        <Button actionType='unshield' density='slim' priority='secondary'>
           Unshield
         </Button>
       </Dialog.Trigger>
@@ -255,11 +255,12 @@ export function UnshieldDialog({ asset }: { asset: ShieldedBalance }) {
               Amount is greater than balance
             </Text>
           )}
-          <WalletBalance
-            balance={asset.balance}
+          <div
+            className={'cursor-pointer w-fit'}
             onClick={() => setAmount(pnum(asset.balance.balanceView).toString())}
-          />
-
+          >
+            <WalletBalance balance={asset.balance} />
+          </div>
           <Text variant={'body'} color={'text.primary'}>
             Destination Address
           </Text>

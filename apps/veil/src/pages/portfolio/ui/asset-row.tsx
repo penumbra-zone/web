@@ -92,14 +92,12 @@ export const AssetRow = observer(
           <TableCell variant={variant}>
             <div className='flex items-center'>
               {hasShieldedBalance ? (
-                <div className={'px-3'}>
-                  <ValueViewComponent
-                    valueView={totalShieldedBalanceValueView}
-                    trailingZeros={false}
-                    priority={'primary'}
-                    context={'table'}
-                  />
-                </div>
+                <ValueViewComponent
+                  valueView={totalShieldedBalanceValueView}
+                  trailingZeros={false}
+                  priority={'tertiary'}
+                  density={'compact'}
+                />
               ) : (
                 <Text variant={'smallTechnical'} color='text.secondary'>
                   -
@@ -114,8 +112,9 @@ export const AssetRow = observer(
                   <ValueViewComponent
                     valueView={totalPublicBalanceValueView}
                     trailingZeros={false}
-                    priority={'primary'}
+                    priority={'tertiary'}
                     context={'table'}
+                    density={'compact'}
                   />
                 ) : (
                   <Text variant={'smallTechnical'} color='text.secondary'>
@@ -177,66 +176,11 @@ export const AssetRow = observer(
           </TableCell>
         </div>
         {isExpanded &&
-          asset.publicBalances.map(bal => (
-            <div key={bal.denom} className={`col-span-6 grid grid-cols-subgrid`}>
-              <TableCell variant={'lastCell'}>
-                <div className='flex items-center'>
-                  <Text variant={'smallTechnical'} color='text.secondary'></Text>
-                </div>
-              </TableCell>
-              <TableCell variant={'lastCell'}>
-                <div className='flex items-center gap-3 justify-between w-full'>
-                  <div className={'py-3'}>
-                    <ValueViewComponent
-                      valueView={bal.valueView}
-                      trailingZeros={false}
-                      priority='tertiary'
-                      density='slim'
-                      context='table'
-                    />
-                    <Text color='text.secondary' small>
-                      on {bal.chainId}
-                    </Text>
-                  </div>
-                  <ShieldButton asset={asset} />
-                </div>
-              </TableCell>
-              <TableCell variant={'lastCell'}>
-                {price ? (
-                  <div className='flex flex-col'>
-                    <Text variant='smallTechnical' color='text.secondary'>
-                      {price.price.toFixed(4)} {price.quoteSymbol}
-                    </Text>
-                  </div>
-                ) : (
-                  <Text variant='smallTechnical' color='text.secondary'></Text>
-                )}
-              </TableCell>
-              <TableCell variant={'lastCell'}>
-                <Text variant={'smallTechnical'} color='text.secondary'></Text>
-              </TableCell>
-              <TableCell variant={'lastCell'}>
-                {publicValue > 0 && price ? (
-                  <Text variant={'smallTechnical'} color='text.secondary'>
-                    {publicValue.toFixed(2)} {price.quoteSymbol}
-                  </Text>
-                ) : (
-                  <Text variant={'smallTechnical'} color='text.secondary'>
-                    -
-                  </Text>
-                )}
-              </TableCell>
-              <TableCell variant={'lastCell'}>
-                <Text variant={'smallTechnical'} color='text.secondary'></Text>
-              </TableCell>
-            </div>
-          ))}
-        {isExpanded &&
           asset.shieldedBalances.map(bal => (
             <div key={bal.valueView.toJsonString()} className={'col-span-6 grid grid-cols-subgrid'}>
               <TableCell variant={'lastCell'}>
                 <div className='flex items-center gap-3 justify-between w-full'>
-                  <div className={'py-3'}>
+                  <div className={'py-3 ml-2'}>
                     <ValueViewComponent
                       valueView={bal.valueView}
                       trailingZeros={false}
@@ -244,7 +188,7 @@ export const AssetRow = observer(
                       density={'slim'}
                       context={'table'}
                     />
-                    <Text color={'text.secondary'} small>
+                    <Text color={'text.secondary'} detail>
                       on Penumbra
                     </Text>
                   </div>
@@ -282,6 +226,61 @@ export const AssetRow = observer(
               </TableCell>
               <TableCell variant={'lastCell'}>
                 <Text variant={'smallTechnical'} color='text.secondary'></Text>
+              </TableCell>
+              <TableCell variant={'lastCell'}>
+                <Text variant={'smallTechnical'} color='text.secondary'></Text>
+              </TableCell>
+            </div>
+          ))}
+        {isExpanded &&
+          asset.publicBalances.map(bal => (
+            <div key={bal.denom} className={`col-span-6 grid grid-cols-subgrid`}>
+              <TableCell variant={'lastCell'}>
+                <div className='flex items-center'>
+                  <Text variant={'smallTechnical'} color='text.secondary'></Text>
+                </div>
+              </TableCell>
+              <TableCell variant={'lastCell'}>
+                <div className='flex items-center gap-3 justify-between w-full space-x-5'>
+                  <div className={'py-3'}>
+                    <ValueViewComponent
+                      valueView={bal.valueView}
+                      trailingZeros={false}
+                      priority='tertiary'
+                      density='slim'
+                      context='table'
+                    />
+                    <Text color='text.secondary' detail>
+                      on {bal.chainId}
+                    </Text>
+                  </div>
+                  <ShieldButton asset={asset} />
+                </div>
+              </TableCell>
+              <TableCell variant={'lastCell'}>
+                {price ? (
+                  <div className='flex flex-col'>
+                    <Text variant='smallTechnical' color='text.secondary'>
+                      {price.price.toFixed(4)} {price.quoteSymbol}
+                    </Text>
+                  </div>
+                ) : (
+                  <Text variant='smallTechnical' color='text.secondary'></Text>
+                )}
+              </TableCell>
+              <TableCell variant={'lastCell'}>
+                <Text variant={'smallTechnical'} color='text.secondary'></Text>
+              </TableCell>
+              <TableCell variant={'lastCell'}>
+                {publicValue > 0 && price ? (
+                  <Text variant={'smallTechnical'} color='text.secondary'>
+                    {publicValue.toFixed(2)} {price.quoteSymbol}
+                  </Text>
+                ) : (
+                  <Text variant={'smallTechnical'} color='text.secondary'>
+                    -
+                  </Text>
+                )}
               </TableCell>
               <TableCell variant={'lastCell'}>
                 <Text variant={'smallTechnical'} color='text.secondary'></Text>

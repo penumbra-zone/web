@@ -15,15 +15,15 @@ import { pnum } from '@penumbra-zone/types/pnum';
 type Context = 'default' | 'table';
 
 const ValueText = ({ children, density }: { children: ReactNode; density: Density }) => {
-  if (density === 'sparse') {
-    return <Text body>{children}</Text>;
-  }
-
   if (density === 'slim') {
     return <Text detailTechnical>{children}</Text>;
   }
 
-  return <Text detail>{children}</Text>;
+  if (density === 'compact') {
+    return <Text smallTechnical>{children}</Text>;
+  }
+
+  return <Text technical>{children}</Text>;
 };
 
 const getSignColor = (signed?: ValueViewComponentProps<Context>['signed']): string => {
@@ -192,5 +192,5 @@ const getIconSize = (density: Density) => {
   if (density === 'compact') {
     return 'md';
   }
-  return 'md';
+  return 'sm';
 };
