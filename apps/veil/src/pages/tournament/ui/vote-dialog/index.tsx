@@ -121,7 +121,7 @@ export const VoteDialogueSelector = observer(
           }
           buttons={
             !isSearchOpen && (
-              <div className='flex flex-col gap-6 px-6 pb-6 [&>label]:justify-center [&>label>div]:grow-0'>
+              <div className='flex flex-col gap-6 px-6 pb-6 pt-2 [&>label]:justify-center [&>label>div]:grow-0'>
                 <Button
                   onClick={() => {
                     onClose();
