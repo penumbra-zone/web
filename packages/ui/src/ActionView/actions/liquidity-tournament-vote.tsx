@@ -79,18 +79,18 @@ export const LiquidityTournamentVoteAction = ({
   }, [value]);
 
   const recipientAddress = useMemo(() => {
-    const receipient = vote?.body?.rewardsRecipient;
+    const recipient = vote?.body?.rewardsRecipient;
     const defaultAddress = new AddressView({
       addressView: {
         case: 'opaque',
         value: {
-          address: receipient,
+          address: recipient,
         },
       },
     });
 
     const visible = spendAddress?.addressView.value?.address;
-    if (visible && receipient && visible.equals(receipient)) {
+    if (visible && recipient && visible.equals(recipient)) {
       return spendAddress;
     }
 
