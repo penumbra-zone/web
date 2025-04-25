@@ -21,12 +21,13 @@ import { checkIfAlreadyVoted } from '../api/vote';
 export const VotingInfo = observer(() => {
   const { connected, subaccount } = connectionStore;
 
-  const { epoch = 0 } = useCurrentEpoch();
   const getMetadata = useGetMetadata();
-  const { notes } = useLQTNotes(subaccount);
+  const { epoch } = useCurrentEpoch();
+  const { data: notes } = useLQTNotes(subaccount, epoch);
 
   // Check if all notes have been used for voting in the current epoch.
   const allNotesVoted = checkIfAlreadyVoted({ votingNotes: notes });
+  const epochLink = epoch ? PagePath.TournamentRound.replace(':epoch', epoch.toString()) : '';
 
   const aggregatedNotes = useMemo(() => {
     const values = (notes ?? []).map(note => note.noteRecord?.note?.value).filter(item => !!item);
@@ -115,7 +116,7 @@ export const VotingInfo = observer(() => {
           <ConnectButton actionType='accent' variant='default'>
             Connect Prax Wallet
           </ConnectButton>
-          <Link href={PagePath.TournamentRound.replace(':epoch', epoch.toString())}>
+          <Link href={epochLink}>
             <Button actionType='default'>Details</Button>
           </Link>
         </div>
@@ -142,7 +143,7 @@ export const VotingInfo = observer(() => {
             </Button>
           </div>
           <div className='flex-1'>
-            <Link href={PagePath.TournamentRound.replace(':epoch', epoch.toString())}>
+            <Link href={epochLink}>
               <Button actionType='default'>Details</Button>
             </Link>
           </div>
@@ -165,7 +166,7 @@ export const VotingInfo = observer(() => {
           <ValueViewComponent valueView={valueView} />
         </div>
         <div className='flex gap-2'>
-          <Link href={PagePath.TournamentRound.replace(':epoch', epoch.toString())}>
+          <Link href={epochLink}>
             <Button actionType='default'>Details</Button>
           </Link>
         </div>
@@ -193,7 +194,7 @@ export const VotingInfo = observer(() => {
               </Button>
             </div>
             <div className='flex-1'>
-              <Link href={PagePath.TournamentRound.replace(':epoch', epoch.toString())}>
+              <Link href={epochLink}>
                 <Button actionType='default'>Details</Button>
               </Link>
             </div>
@@ -222,7 +223,7 @@ export const VotingInfo = observer(() => {
           </Button>
         </div>
         <div className='flex-1'>
-          <Link href={PagePath.TournamentRound.replace(':epoch', epoch.toString())}>
+          <Link href={epochLink}>
             <Button actionType='default'>Details</Button>
           </Link>
         </div>
