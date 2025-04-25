@@ -9,6 +9,8 @@ import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import { useState } from 'react';
 import { getMetadata } from '@penumbra-zone/getters/value-view';
+import { Button } from '@penumbra-zone/ui/Button';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 export const AssetRow = observer(
   ({
@@ -83,10 +85,12 @@ export const AssetRow = observer(
 
     return (
       <div
-        className={`grid grid-cols-subgrid col-span-6 rounded-sm ${isExpanded ? 'bg-other-tonalFill5' : ''} `}
+        className={`grid grid-cols-subgrid col-span-7 rounded-sm ${isExpanded ? 'bg-other-tonalFill5' : ''} `}
       >
         <div
-          className={'col-span-6 grid grid-cols-subgrid border-b border-b-other-tonalStroke'}
+          className={
+            'col-span-7 grid grid-cols-subgrid border-b border-b-other-tonalStroke hover:bg-action-hoverOverlay hover:cursor-pointer'
+          }
           onClick={() => setIsExpanded(prev => !prev)}
         >
           <TableCell variant={variant}>
@@ -174,10 +178,18 @@ export const AssetRow = observer(
               </Text>
             )}
           </TableCell>
+          <TableCell variant={variant}>
+            <Button iconOnly icon={isExpanded ? ChevronUp : ChevronDown}>
+              &nbsp;
+            </Button>
+          </TableCell>
         </div>
         {isExpanded &&
           asset.shieldedBalances.map(bal => (
-            <div key={bal.valueView.toJsonString()} className={'col-span-6 grid grid-cols-subgrid'}>
+            <div
+              key={bal.valueView.toJsonString()}
+              className={'col-span-7 grid grid-cols-subgrid hover:bg-action-hoverOverlay'}
+            >
               <TableCell variant={'lastCell'}>
                 <div className='flex items-center gap-3 justify-between w-full'>
                   <div className={'py-3 ml-2'}>
@@ -234,7 +246,10 @@ export const AssetRow = observer(
           ))}
         {isExpanded &&
           asset.publicBalances.map(bal => (
-            <div key={bal.denom} className={`col-span-6 grid grid-cols-subgrid`}>
+            <div
+              key={bal.denom}
+              className={`col-span-7 grid grid-cols-subgrid hover:bg-action-hoverOverlay`}
+            >
               <TableCell variant={'lastCell'}>
                 <div className='flex items-center'>
                   <Text variant={'smallTechnical'} color='text.secondary'></Text>

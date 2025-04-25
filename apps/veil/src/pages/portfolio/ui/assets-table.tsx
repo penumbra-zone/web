@@ -129,13 +129,14 @@ export const AssetsTable = observer(() => {
         </div>
 
         <Density compact>
-          <div className='grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr] overflow-y-auto overflow-x-auto'>
+          <div className='grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_1fr] overflow-y-auto overflow-x-auto'>
             <TableCell heading>Shielded Balance</TableCell>
             <TableCell heading>Public Balance</TableCell>
             <TableCell heading>Price</TableCell>
             <TableCell heading>Shielded Value</TableCell>
             <TableCell heading>Public Value</TableCell>
             <TableCell heading>Total Value</TableCell>
+            <TableCell heading>&nbsp;</TableCell>
 
             {unifiedAssets.map((asset, index) => (
               <AssetRow
