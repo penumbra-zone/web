@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@penumbra-zone/ui/Button';
-import { VoteDialogueSelector } from '@/pages/tournament/ui/vote-dialogue';
+import { VoteDialogueSelector } from '@/pages/tournament/ui/vote-dialog';
 
 export interface VoteButtonProps {
   /** A symbol to vote for */

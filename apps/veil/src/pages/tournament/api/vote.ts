@@ -18,7 +18,7 @@ export const voteTournament = async ({
   incentivized: string;
   rewardsRecipient: Address | undefined;
   stakedNotes: SpendableNoteRecord[];
-  epochIndex: bigint;
+  epochIndex: number;
 }): Promise<void> => {
   try {
     // Construct the asset denom from the selected asset symbol
@@ -32,7 +32,7 @@ export const voteTournament = async ({
         incentivized: denom,
         rewardsRecipient,
         stakedNotes,
-        epochIndex,
+        epochIndex: BigInt(epochIndex),
       },
     ];
 

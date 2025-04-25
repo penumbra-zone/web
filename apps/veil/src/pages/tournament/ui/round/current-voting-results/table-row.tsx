@@ -52,6 +52,7 @@ export const TableRow = ({
       </TableCell>
       {canVote && (
         <TableCell loading={loading}>
+          {/* TODO: change symbol to `base` after filling with real data */}
           <VoteButton value={item.symbol} />
         </TableCell>
       )}
