@@ -37,78 +37,79 @@ interface PreviousEpochsRowProps {
   connected: boolean;
 }
 
-const PreviousEpochsRow = observer(({ row, isLoading, className, connected }: PreviousEpochsRowProps) => {
-  const { subaccount } = connectionStore;
-  const { data: rewards, isLoading: rewardsLoading, isPending } = usePersonalRewards(subaccount, row.epoch);
-  const { data: stakingToken } = useStakingTokenMetadata();
-  console.log('REW', row.epoch, rewards, rewardsLoading, isPending);
+const PreviousEpochsRow = observer(
+  ({ row, isLoading, className, connected }: PreviousEpochsRowProps) => {
+    const { subaccount } = connectionStore;
+    const { data: rewards, isLoading: rewardsLoading } = usePersonalRewards(subaccount, row.epoch);
+    const { data: stakingToken } = useStakingTokenMetadata();
 
-  return (
-    <Link
-      href={isLoading ? '' : `/tournament/${row.epoch}`}
-      className={cn(
-        className,
-        'grid grid-cols-subgrid',
-        'hover:bg-action-hoverOverlay transition-colors cursor-pointer',
-      )}
-    >
-      <TableCell cell loading={isLoading}>
-        Epoch #{row.epoch}
-      </TableCell>
-      <TableCell cell loading={isLoading}>
-        {!isLoading && !row.gauge.length && '-'}
-        {!isLoading &&
-          row.gauge.slice(0, 3).map((vote, index) => (
-            <div key={index} className='flex items-center justify-start min-w-[88px] px-1'>
-              <Vote asset={vote.asset} percent={vote.portion} hideFor />
-            </div>
-          ))}
-        {!isLoading && row.gauge.length > 3 && (
-          <Tooltip
-            message={
-              <div className='flex flex-col gap-2'>
-                {row.gauge.slice(3).map((vote, index) => (
-                  <Vote key={index} asset={vote.asset} percent={vote.portion} hideFor />
-                ))}
-              </div>
-            }
-          >
-            <div className='flex items-center justify-start px-3 text-text-primary'>
-              <Text smallTechnical>+{row.gauge.length - 3}</Text>
-            </div>
-          </Tooltip>
+    return (
+      <Link
+        href={isLoading ? '' : `/tournament/${row.epoch}`}
+        className={cn(
+          className,
+          'grid grid-cols-subgrid',
+          'hover:bg-action-hoverOverlay transition-colors cursor-pointer',
         )}
-      </TableCell>
-      {connected && (
-        <TableCell cell loading={isLoading || rewardsLoading}>
-          {rewards?.find(r => r.epochIndex === BigInt(row.epoch)) && stakingToken && (
-            <ValueViewComponent
-              valueView={
-                new ValueView({
-                  valueView: {
-                    case: 'knownAssetId',
-                    value: {
-                      amount: rewards.find(r => r.epochIndex === BigInt(row.epoch))?.total,
-                      metadata: stakingToken,
-                    },
-                  },
-                })
+      >
+        <TableCell cell loading={isLoading}>
+          Epoch #{row.epoch}
+        </TableCell>
+        <TableCell cell loading={isLoading}>
+          {!isLoading && !row.gauge.length && '-'}
+          {!isLoading &&
+            row.gauge.slice(0, 3).map((vote, index) => (
+              <div key={index} className='flex items-center justify-start min-w-[88px] px-1'>
+                <Vote asset={vote.asset} percent={vote.portion} hideFor />
+              </div>
+            ))}
+          {!isLoading && row.gauge.length > 3 && (
+            <Tooltip
+              message={
+                <div className='flex flex-col gap-2'>
+                  {row.gauge.slice(3).map((vote, index) => (
+                    <Vote key={index} asset={vote.asset} percent={vote.portion} hideFor />
+                  ))}
+                </div>
               }
-              priority='tertiary'
-            />
+            >
+              <div className='flex items-center justify-start px-3 text-text-primary'>
+                <Text smallTechnical>+{row.gauge.length - 3}</Text>
+              </div>
+            </Tooltip>
           )}
         </TableCell>
-      )}
-      <TableCell cell loading={isLoading}>
-        <Density slim>
-          <Button iconOnly icon={ChevronRight}>
-            Go to voting reward information
-          </Button>
-        </Density>
-      </TableCell>
-    </Link>
-  );
-});
+        {connected && (
+          <TableCell cell loading={isLoading || rewardsLoading}>
+            {rewards?.find(r => r.epochIndex === BigInt(row.epoch)) && stakingToken && (
+              <ValueViewComponent
+                valueView={
+                  new ValueView({
+                    valueView: {
+                      case: 'knownAssetId',
+                      value: {
+                        amount: rewards.find(r => r.epochIndex === BigInt(row.epoch))?.total,
+                        metadata: stakingToken,
+                      },
+                    },
+                  })
+                }
+                priority='tertiary'
+              />
+            )}
+          </TableCell>
+        )}
+        <TableCell cell loading={isLoading}>
+          <Density slim>
+            <Button iconOnly icon={ChevronRight}>
+              Go to voting reward information
+            </Button>
+          </Density>
+        </TableCell>
+      </Link>
+    );
+  },
+);
 
 export const PreviousEpochs = observer(() => {
   const [page, setPage] = useState(BASE_PAGE);
