@@ -206,7 +206,7 @@ export function UnshieldDialog({ asset }: { asset: ShieldedBalance }) {
   // }, [client, destinationChain]);
 
   return (
-    <Dialog modal={false}>
+    <Dialog>
       <Dialog.Trigger asChild>
         <Button actionType='unshield' density='slim' priority='secondary'>
           Unshield
