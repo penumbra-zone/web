@@ -14,6 +14,7 @@ const DIRECTIONS = ['asc', 'desc'] as const;
 export type PreviousEpochsSortDirection = (typeof DIRECTIONS)[number];
 
 export interface PreviousEpochsRequest {
+  epoch?: number;
   limit: number;
   page: number;
   sortKey: PreviousEpochsSortKey;
@@ -41,6 +42,7 @@ export const getQueryParams = (req: NextRequest): PreviousEpochsRequest => {
 
   const limit = Number(searchParams.get('limit')) || DEFAULT_LIMIT;
   const page = Number(searchParams.get('page')) || 1;
+  const epoch = Number(searchParams.get('epoch')) || undefined;
 
   const sortKeyParam = searchParams.get('sortKey');
   const sortKey =
@@ -55,6 +57,7 @@ export const getQueryParams = (req: NextRequest): PreviousEpochsRequest => {
       : 'desc';
 
   return {
+    epoch,
     limit,
     page,
     sortKey,
@@ -62,7 +65,12 @@ export const getQueryParams = (req: NextRequest): PreviousEpochsRequest => {
   };
 };
 
-const previousEpochsQuery = async ({ limit, page, sortDirection }: PreviousEpochsRequest) => {
+const previousEpochsQuery = async ({
+  limit,
+  page,
+  sortDirection,
+  epoch,
+}: PreviousEpochsRequest) => {
   // 1. Take the 'gauge' table and sort it by 'epoch' and then by 'portion', map asset_id to base64
   const sortedGauge = pindexerDb
     .selectFrom('lqt.gauge as gauge')
@@ -85,6 +93,7 @@ const previousEpochsQuery = async ({ limit, page, sortDirection }: PreviousEpoch
       'epoch',
       sql<(Omit<Gauge, 'asset_id'> & { asset_id: string })[]>`json_agg(sorted_gauge.*)`.as('gauge'),
     ])
+    .$if(!!epoch, qb => (epoch ? qb.where('epoch', '=', epoch) : qb))
     .orderBy('epoch', sortDirection)
     .groupBy('epoch')
     .execute();

@@ -373,6 +373,17 @@ export interface DelegatorSummary {
   streak: number;
 }
 
+export interface LQTSummary {
+  epoch: number;
+  total_voting_power: number;
+  delegator_rewards: number;
+  lp_rewards: number;
+  total_rewards: number;
+  available_rewards: number;
+  available_delegator_rewards: number;
+  available_lp_rewards: number;
+}
+
 interface RawDB {
   _insights_shielded_pool_depositors: _InsightsShieldedPoolDepositors;
   _insights_validators: _InsightsValidators;
@@ -406,6 +417,7 @@ interface RawDB {
   supply_validators: SupplyValidators;
   'lqt.gauge': Gauge;
   'lqt.delegator_summary': DelegatorSummary;
+  'lqt.summary': LQTSummary;
 }
 
 export type DB = Pick<
@@ -424,4 +436,5 @@ export type DB = Pick<
   | 'dex_ex_transactions'
   | 'lqt.gauge'
   | 'lqt.delegator_summary'
+  | 'lqt.summary'
 >;

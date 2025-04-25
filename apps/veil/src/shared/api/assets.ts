@@ -14,7 +14,9 @@ const useViewServiceAssets = () =>
     enabled: connectionStore.connected,
     queryFn: async () => {
       const responses = await Array.fromAsync(penumbra.service(ViewService).assets({}));
-      return responses.map(getDenomMetadata);
+      return responses
+        .map(getDenomMetadata)
+        .sort((a, b) => Number(b.priorityScore) - Number(a.priorityScore));
     },
   });
 
