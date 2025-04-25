@@ -4,6 +4,7 @@ import { observer } from 'mobx-react-lite';
 import { Ban, Coins, Check, Wallet2, ExternalLink } from 'lucide-react';
 import { ValueView, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import { addAmounts } from '@penumbra-zone/types/amount';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
@@ -27,19 +28,36 @@ export const VotingInfo = observer(() => {
   // Check if all notes have been used for voting in the current epoch.
   const allNotesVoted = checkIfAlreadyVoted({ votingNotes: notes });
 
-  // TODO: create a utility to aggregate delegation note balances for use in the footer.
-  const firstNoteValueView = useMemo(() => {
-    const value = notes?.[0]?.noteRecord?.note?.value;
-    const metadata = value?.assetId && getMetadata(value.assetId);
-    if (!value || !metadata) {
+  const aggregatedNotes = useMemo(() => {
+    const values = (notes ?? []).map(note => note.noteRecord?.note?.value).filter(item => !!item);
+
+    const amount = values.reduce(
+      (accum, current) => {
+        if (current.amount) {
+          return addAmounts(accum, current.amount);
+        }
+        return accum;
+      },
+      new Amount({ lo: 0n, hi: 0n }),
+    );
+
+    const metadata = values[0]?.assetId && getMetadata(values[0].assetId);
+
+    if (!values.length || !metadata) {
       return undefined;
     }
+
     return new ValueView({
       valueView: {
         case: 'knownAssetId',
         value: {
-          amount: value.amount,
-          metadata,
+          amount,
+          metadata: {
+            ...metadata,
+            // noted can represent delUM from different validators,
+            // so this symbol hides the validator
+            symbol: 'delUM',
+          },
         },
       },
     });
@@ -166,7 +184,7 @@ export const VotingInfo = observer(() => {
             <Text variant='small' color='text.secondary'>
               You&#39;ve delegated UM and can now vote with your delUM in this epoch.
             </Text>
-            {firstNoteValueView && <ValueViewComponent valueView={firstNoteValueView} />}
+            {aggregatedNotes && <ValueViewComponent valueView={aggregatedNotes} />}
           </div>
           <div className='flex gap-2 w-full'>
             <div className='flex-1 max-w-[300px]'>
