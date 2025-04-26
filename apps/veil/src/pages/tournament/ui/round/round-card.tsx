@@ -58,7 +58,7 @@ export const RoundCard = observer(({ epoch }: RoundCardProps) => {
           <div className='flex gap-6'>
             <div className='flex w-1/2 flex-col items-center gap-2 bg-[rgba(250,250,250,0.05)] rounded-md p-3'>
               {blockInfoLoading || blockInfoPending ? (
-                <div className='w-16 h-4'>
+                <div className='w-16 h-5'>
                   <Skeleton />
                 </div>
               ) : (
@@ -73,7 +73,7 @@ export const RoundCard = observer(({ epoch }: RoundCardProps) => {
             </div>
             <div className='flex w-1/2 flex-col items-center gap-2 bg-[rgba(250,250,250,0.05)] rounded-md p-3'>
               {blockInfoLoading || blockInfoPending ? (
-                <div className='h-4 w-16'>
+                <div className='h-5 w-16'>
                   <Skeleton />
                 </div>
               ) : (

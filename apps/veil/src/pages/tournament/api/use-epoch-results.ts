@@ -4,26 +4,19 @@ import { useRefetchOnNewBlock } from '@/shared/api/compact-block';
 import { EpochResultsRequest, EpochResultsApiResponse } from '../server/epoch-results';
 
 export const useEpochResults = (
+  name: string,
   params: Partial<EpochResultsRequest>,
-  additionalKeys?: unknown[],
+  disabled?: boolean,
 ) => {
   const query = useQuery({
-    queryKey: [
-      'epoch-gauge',
-      params.epoch,
-      params.limit,
-      params.page,
-      params.sortKey,
-      params.sortDirection,
-      ...(additionalKeys ?? []),
-    ],
-    enabled: !!params.epoch,
+    queryKey: [name, params.epoch, params.limit, params.page, params.sortKey, params.sortDirection],
+    enabled: !!params.epoch && !disabled,
     queryFn: async () => {
       return apiFetch<EpochResultsApiResponse>('/api/tournament/epoch-results', params);
     },
   });
 
-  useRefetchOnNewBlock('epoch-gauge', query);
+  useRefetchOnNewBlock(name, query, disabled);
 
   return query;
 };

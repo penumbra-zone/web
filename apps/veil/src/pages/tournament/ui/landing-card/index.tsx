@@ -28,7 +28,7 @@ export const LandingCard = observer(() => {
     data: epochGauge,
     isLoading: epochGaugeLoading,
     isPending,
-  } = useEpochResults({
+  } = useEpochResults('epoch-results-landing', {
     epoch,
     limit: 5,
     page: 1,

@@ -48,11 +48,15 @@ export const VoteDialogueSelector = observer(
     // Fetch user's spendable voting notes for this epoch
     const { data: notes } = useLQTNotes(subaccount);
     const { epoch } = useCurrentEpoch();
-    const { data: assets, isLoading } = useEpochResults({
-      epoch,
-      limit: 30,
-      page: 1,
-    });
+    const { data: assets, isLoading } = useEpochResults(
+      'epoch-results-vote-dialog',
+      {
+        epoch,
+        limit: 30,
+        page: 1,
+      },
+      !isOpen,
+    );
 
     const handleVoteSubmit = async () => {
       if (!selectedAsset) {

@@ -42,12 +42,16 @@ const startBlockHeightStream = async (transport: Transport, signal: AbortSignal)
 
 const lastRefetchedBlockHeights = new Map<string, number>();
 
-export const useRefetchOnNewBlock = (queryKey: string, { refetch }: UseQueryResult) => {
+export const useRefetchOnNewBlock = (
+  queryKey: string,
+  { refetch }: UseQueryResult,
+  disabled?: boolean,
+) => {
   const { data: blockHeight } = useLatestBlockHeight();
   const queryKeyString = JSON.stringify(queryKey);
 
   useEffect(() => {
-    if (!blockHeight) {
+    if (!blockHeight || disabled) {
       return;
     }
 
@@ -56,7 +60,7 @@ export const useRefetchOnNewBlock = (queryKey: string, { refetch }: UseQueryResu
       lastRefetchedBlockHeights.set(queryKeyString, blockHeight);
       void refetch();
     }
-  }, [blockHeight, refetch, queryKeyString]);
+  }, [blockHeight, refetch, queryKeyString, disabled]);
 };
 
 export const LATEST_HEIGHT_QUERY_KEY = ['latestBlockHeight'];

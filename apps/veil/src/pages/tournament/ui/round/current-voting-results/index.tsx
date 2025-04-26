@@ -37,7 +37,7 @@ export const CurrentVotingResults = observer(({ epoch }: CurrentVotingResultsPro
   const { getTableHeader, sortBy } = useSortableTableHeaders<EpochResultsSortKey>();
 
   const { connected } = connectionStore;
-  const { data, isLoading } = useEpochResults({
+  const { data, isLoading } = useEpochResults('epoch-results-round', {
     epoch,
     limit,
     page,
@@ -114,7 +114,7 @@ export const CurrentVotingResults = observer(({ epoch }: CurrentVotingResultsPro
                 <TableRow key={item.asset.base} item={item} loading={false} canVote={canVote} />
               ))}
 
-            {!isLoading && total >= BASE_LIMIT && (
+            {!isLoading && total >= limit && (
               <div className={cn('pt-5', TABLE_CLASSES.row[tableKey])}>
                 <Pagination
                   totalItems={total}
