@@ -34,7 +34,10 @@ export interface CurrentVotingResultsProps {
 export const CurrentVotingResults = observer(({ epoch }: CurrentVotingResultsProps) => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(BASE_LIMIT);
-  const { getTableHeader, sortBy } = useSortableTableHeaders<EpochResultsSortKey>();
+  const { getTableHeader, sortBy } = useSortableTableHeaders<EpochResultsSortKey>(
+    'portion',
+    'desc',
+  );
 
   const { connected } = connectionStore;
   const { data, isLoading } = useEpochResults('epoch-results-round', {
