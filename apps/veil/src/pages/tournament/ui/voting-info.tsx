@@ -21,7 +21,6 @@ import { checkIfAlreadyVoted } from '../api/vote';
 export const VotingInfo = observer(() => {
   const { connected, subaccount } = connectionStore;
 
-  const { epoch = 0 } = useCurrentEpoch();
   const getMetadata = useGetMetadata();
   const { epoch } = useCurrentEpoch();
   const { data: notes } = useLQTNotes(subaccount, epoch);

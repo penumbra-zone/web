@@ -46,7 +46,7 @@ export const VoteDialogueSelector = observer(
     const rewardsRecipient = valueAddress?.addressView.value?.address;
 
     // Fetch user's spendable voting notes for this epoch
-    const { notes } = useLQTNotes(subaccount);
+    const { data: notes } = useLQTNotes(subaccount);
     const { epoch } = useCurrentEpoch();
     const { data: assets, isLoading } = useEpochResults({
       epoch,
