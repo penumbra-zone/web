@@ -6,5 +6,5 @@ import {
 } from '@penumbra-zone/protobuf/penumbra/custody/v1/custody_pb';
 
 export const authorizeCtx = createContextKey<
-  (req: PartialMessage<AuthorizeRequest>) => Promise<AuthorizeResponse>
+  (req: PartialMessage<AuthorizeRequest>, signal: AbortSignal) => Promise<AuthorizeResponse>
 >(undefined as never);

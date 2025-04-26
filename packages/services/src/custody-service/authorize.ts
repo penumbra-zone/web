@@ -14,10 +14,10 @@ export const authorize: Impl['authorize'] = async ({ plan, preAuthorizations }, 
 
   const actionCounts = assertValidActionPlans(fvk, plan && toPlainMessage(plan).actions);
 
-  const { data: authorizationData } = await ctx.values.get(authorizeCtx)({
-    plan,
-    preAuthorizations,
-  });
+  const { data: authorizationData } = await ctx.values.get(authorizeCtx)(
+    { plan, preAuthorizations },
+    ctx.signal,
+  );
 
   return {
     data: assertValidAuthorizationData(actionCounts, authorizationData),
