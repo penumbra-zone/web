@@ -1,12 +1,15 @@
 import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
-import { GradientCard } from '../shared/gradient-card';
+import { formatDistanceToNowStrict } from 'date-fns';
+import { Skeleton } from '@penumbra-zone/ui/Skeleton';
 import { Icon } from '@penumbra-zone/ui/Icon';
 import { Text } from '@penumbra-zone/ui/Text';
-import { ArrowLeft } from 'lucide-react';
 import { PagePath } from '@/shared/const/pages';
 import { useTournamentSummary } from '../../api/use-tournament-summary';
+import { useRoundBlockInfo } from '../../api/use-round-block-info';
 import { IncentivePool } from '../landing-card/incentive-pool';
+import { GradientCard } from '../shared/gradient-card';
 import { VotingInfo } from '../voting-info';
 
 export interface RoundCardProps {
@@ -20,9 +23,14 @@ export const RoundCard = observer(({ epoch }: RoundCardProps) => {
     epoch,
   });
 
-  const startBlock = 123;
-  const endBlock = 123;
-  const ended = false as boolean;
+  const {
+    data: blockInfo,
+    isLoading: blockInfoLoading,
+    isPending: blockInfoPending,
+  } = useRoundBlockInfo(epoch);
+
+  // TODO: update `useRoundBlockInfo` to take epoch into account, this should be fixed after
+  const ended = !!blockInfo?.endBlock;
 
   return (
     <GradientCard>
@@ -39,25 +47,41 @@ export const RoundCard = observer(({ epoch }: RoundCardProps) => {
                 Epoch #{epoch}
               </div>
             </div>
-            <div className='flex gap-2'>
-              <Text technical color='text.primary'>
-                Ends in ~12h
-              </Text>
-            </div>
+            {blockInfo?.nextEpoch && (
+              <div className='flex gap-2'>
+                <Text technical color='text.primary'>
+                  Ends in {formatDistanceToNowStrict(blockInfo.nextEpoch)}
+                </Text>
+              </div>
+            )}
           </div>
           <div className='flex gap-6'>
             <div className='flex w-1/2 flex-col items-center gap-2 bg-[rgba(250,250,250,0.05)] rounded-md p-3'>
-              <Text smallTechnical color='text.primary'>
-                {startBlock}
-              </Text>
+              {blockInfoLoading || blockInfoPending ? (
+                <div className='w-16 h-4'>
+                  <Skeleton />
+                </div>
+              ) : (
+                <Text smallTechnical color='text.primary'>
+                  {blockInfo?.startBlock.toString() ?? '–'}
+                </Text>
+              )}
+
               <Text detailTechnical color='text.secondary'>
                 Start Block
               </Text>
             </div>
             <div className='flex w-1/2 flex-col items-center gap-2 bg-[rgba(250,250,250,0.05)] rounded-md p-3'>
-              <Text smallTechnical color='text.primary'>
-                {endBlock}
-              </Text>
+              {blockInfoLoading || blockInfoPending ? (
+                <div className='h-4 w-16'>
+                  <Skeleton />
+                </div>
+              ) : (
+                <Text smallTechnical color='text.primary'>
+                  {blockInfo?.endBlock?.toString() ?? '–'}
+                </Text>
+              )}
+
               <Text detailTechnical color='text.secondary'>
                 End Block
               </Text>
