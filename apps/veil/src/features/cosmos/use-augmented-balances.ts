@@ -4,7 +4,7 @@ import { ChainWalletBase, WalletStatus } from '@cosmos-kit/core';
 import { useRegistry } from '@/shared/api/registry';
 
 import { Asset } from '@chain-registry/types';
-import { assets as cosmosAssetList } from 'chain-registry';
+import cosmosAssetList from 'chain-registry/mainnet/assets';
 import { Coin, StargateClient } from '@cosmjs/stargate';
 
 // Map of reliable RPC endpoints for different Cosmos chains
