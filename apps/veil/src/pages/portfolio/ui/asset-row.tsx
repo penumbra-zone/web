@@ -43,7 +43,7 @@ export const AssetRow = observer(
     const shieldedValue = totalShieldedBalance * (price?.price ?? 0);
 
     const totalPublicBalance =
-      hasShieldedBalance && price
+      hasPublicBalance && price
         ? asset.publicBalances.reduce((sum, balance) => {
             const numericAmount = pnum(balance.valueView).toNumber();
             return sum + numericAmount;
@@ -78,10 +78,6 @@ export const AssetRow = observer(
         },
       },
     });
-    /* TODO:
-            Implement withdrawals
-            add expand button
-            align styles to figma */
 
     return (
       <div
