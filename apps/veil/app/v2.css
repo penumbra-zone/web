@@ -24,7 +24,7 @@ body > section {
 }
 
 /* Fix for Prax notifications not showing above dialog backdrops */
-body > section[aria-live=polite] {
+body > section[aria-live='polite'] {
   z-index: 9999999999999;
 }
 
