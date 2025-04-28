@@ -18,22 +18,21 @@ export const tournamentVotes: Impl['tournamentVotes'] = async function* (req, ct
     const votes = await indexedDb.getLQTHistoricalVotes(req.epochIndex, req.accountFilter?.account);
 
     if (votes.length > 0) {
-      const firstVote = votes[0]!;
-
-      tournamentVote.votes = [
-        new TournamentVotesResponse_Vote({
-          transaction: firstVote.TransactionId,
-          incentivizedAsset: firstVote.AssetMetadata.penumbraAssetId,
-          votePower: firstVote.VoteValue.amount,
-          reward: firstVote.RewardValue
-            ? new Value({
-                amount: new Amount({ lo: firstVote.RewardValue.lo, hi: firstVote.RewardValue.hi }),
-                assetId: firstVote.VoteValue.assetId,
-              })
-            : undefined,
-          epochIndex: BigInt(firstVote.epoch),
-        }),
-      ];
+      tournamentVote.votes = votes.map(
+        vote =>
+          new TournamentVotesResponse_Vote({
+            transaction: vote.TransactionId,
+            incentivizedAsset: vote.AssetMetadata.penumbraAssetId,
+            votePower: vote.VoteValue.amount,
+            reward: vote.RewardValue
+              ? new Value({
+                  amount: new Amount({ lo: vote.RewardValue.lo, hi: vote.RewardValue.hi }),
+                  assetId: vote.VoteValue.assetId,
+                })
+              : undefined,
+            epochIndex: BigInt(vote.epoch),
+          }),
+      );
     }
 
     yield tournamentVote;
