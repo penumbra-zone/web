@@ -10,16 +10,19 @@ import { Button } from '@penumbra-zone/ui/Button';
 import { Density } from '@penumbra-zone/ui/Density';
 import { useLpRewards, BASE_LIMIT, BASE_PAGE, Reward } from '../api/use-lp-rewards';
 import { useSortableTableHeaders } from './sortable-table-header';
+import { connectionStore } from '@/shared/model/connection';
 
 export const LpRewards = observer(() => {
+  const { subaccount } = connectionStore;
   const [page, setPage] = useState(BASE_PAGE);
   const [limit, setLimit] = useState(BASE_LIMIT);
   const { getTableHeader, sortBy } = useSortableTableHeaders<keyof Required<Reward>['sort']>();
 
   const {
-    query: { data, isLoading },
+    query: { data = [], isLoading },
     total,
-  } = useLpRewards(page, limit, sortBy.key, sortBy.direction);
+  } = useLpRewards(subaccount, page, limit, sortBy.key, sortBy.direction);
+  console.log('TCL: LpRewards -> data', data);
 
   const loadingArr = new Array(5).fill({ positionId: {} }) as Reward[];
   const rewards = data ?? loadingArr;

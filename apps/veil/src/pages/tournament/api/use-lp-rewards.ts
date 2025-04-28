@@ -5,7 +5,6 @@ import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_
 import { bech32mPositionId } from '@penumbra-zone/bech32m/plpid';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
 import { getAmount } from '@penumbra-zone/getters/value-view';
-import { DUMMY_VALUE_VIEW, DUMMY_POSITION_ID } from './dummy';
 import { apiFetch } from '@/shared/utils/api-fetch';
 
 import {
@@ -14,6 +13,10 @@ import {
   LpRewardsSortKey,
   LpRewardsSortDirection,
 } from '@/shared/api/server/tournament/lp-rewards';
+import { penumbra } from '@/shared/const/penumbra';
+import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { ViewService } from '@penumbra-zone/protobuf/penumbra/view/v1/view_connect';
+import { useEffect, useState } from 'react';
 
 export const BASE_LIMIT = 10;
 export const BASE_PAGE = 1;
@@ -32,22 +35,45 @@ export interface Reward {
 }
 
 export const useLpRewards = (
+  subaccount: number,
   page = BASE_PAGE,
   limit = BASE_LIMIT,
   sortKey?: LpRewardsSortKey | '',
   sortDirection?: LpRewardsSortDirection,
 ) => {
-  const data = useQuery<Required<Reward>[]>({
-    queryKey: ['my-lp-rewards', page, limit, sortKey, sortDirection],
+  const [positionIds, setPositionIds] = useState<PositionId[]>([]);
+
+  useEffect(() => {
+    void Array.fromAsync(
+      penumbra.service(ViewService).ownedPositionIds({
+        subaccount: new AddressIndex({ account: subaccount }),
+      }),
+    ).then(ownedRes => {
+      const positionIds = ownedRes
+        .map(r => bech32mPositionId(r.positionId))
+        .filter(Boolean) as PositionId[];
+      setPositionIds(positionIds);
+    });
+  }, [subaccount]);
+
+  console.log('TCL: positionIds', positionIds);
+
+  const query = useQuery<Required<Reward>[]>({
+    queryKey: ['my-lp-rewards', positionIds, page, limit, sortKey, sortDirection],
     queryFn: async () => {
       return apiFetch<LpRewardsApiResponse>('/api/tournament/lp-rewards', {
+        positionIds,
         page,
         limit,
         sortKey,
         sortDirection,
       } satisfies Partial<LpRewardsRequest>);
     },
+    enabled: positionIds?.length > 0,
   });
 
-  return data;
+  return {
+    query,
+    total: 5,
+  };
 };
