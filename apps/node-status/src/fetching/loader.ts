@@ -1,7 +1,7 @@
 import { LoaderFunction } from 'react-router-dom';
 import { GetStatusResponse } from '@penumbra-zone/protobuf/penumbra/util/tendermint_proxy/v1/tendermint_proxy_pb';
-import { sha256HashStr } from '@penumbra-zone/crypto-web/sha256';
 import { tendermintClient } from '../clients/grpc';
+import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 
 export interface IndexLoaderResponse {
   status: GetStatusResponse;
@@ -22,4 +22,6 @@ export const IndexLoader: LoaderFunction = async (): Promise<IndexLoaderResponse
 };
 
 const getHash = async (uintArr?: Uint8Array): Promise<string | undefined> =>
-  uintArr ? sha256HashStr(uintArr) : undefined;
+  uintArr
+    ? uint8ArrayToHex(new Uint8Array(await crypto.subtle.digest('SHA-256', uintArr)))
+    : undefined;

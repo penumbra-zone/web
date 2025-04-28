@@ -6,10 +6,12 @@ import {
   PositionWithdrawal,
 } from '@/shared/api/server/position/timeline/types.ts';
 import { DexExPositionWithdrawals } from '@/shared/database/schema.ts';
-import { sha256HashStr } from '@penumbra-zone/crypto-web/sha256';
 import { PositionId } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { pindexer } from '@/shared/database';
 import { getAssetIdFromValue } from '@penumbra-zone/getters/value';
+
+const sha256HashStr = async (b: Buffer) =>
+  Buffer.from(await crypto.subtle.digest('SHA-256', b)).toString('hex');
 
 const addValue = async (
   raw: Selectable<DexExPositionWithdrawals>,

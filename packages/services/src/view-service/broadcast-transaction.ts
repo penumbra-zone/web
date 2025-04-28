@@ -2,7 +2,6 @@ import type { Impl } from './index.js';
 import { servicesCtx } from '../ctx/prax.js';
 import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
 import { Code, ConnectError } from '@connectrpc/connect';
-import { sha256Hash } from '@penumbra-zone/crypto-web/sha256';
 import { TransactionInfo } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 
@@ -16,7 +15,8 @@ export const broadcastTransaction: Impl['broadcastTransaction'] = async function
   // start subscription early to prevent race condition
   const subscription = indexedDb.subscribe('TRANSACTIONS');
 
-  const id = new TransactionId({ inner: await sha256Hash(req.transaction.toBinary()) });
+  const digest = await crypto.subtle.digest('SHA-256', req.transaction.toBinary());
+  const id = new TransactionId({ inner: new Uint8Array(digest) });
 
   const broadcastId = await querier.tendermint.broadcastTx(req.transaction);
   if (!id.equals(broadcastId)) {

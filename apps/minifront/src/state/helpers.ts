@@ -9,12 +9,10 @@ import {
   WitnessAndBuildResponse,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { ViewService } from '@penumbra-zone/protobuf';
-import { sha256Hash } from '@penumbra-zone/crypto-web/sha256';
 import {
   Transaction,
   TransactionPlan,
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
-import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
 import { PartialMessage } from '@bufbuild/protobuf';
 import { TransactionToast } from '@penumbra-zone/ui-deprecated/lib/toast/transaction-toast';
 import { TransactionClassification } from '@penumbra-zone/perspective/transaction/classification';
@@ -28,6 +26,7 @@ import {
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import { Client } from '@connectrpc/connect';
 import { penumbra } from '../penumbra';
+import { txToId } from './tx-to-id';
 
 /**
  * Handles the common use case of planning, building, and broadcasting a
@@ -64,8 +63,7 @@ export const planBuildBroadcast = async (
       toast.onBuildStatus(status),
     );
 
-    const txHash = uint8ArrayToHex((await txSha256(transaction)).inner);
-    toast.txHash(txHash);
+    toast.txHash(uint8ArrayToHex((await txToId(transaction)).inner));
 
     const { detectionHeight } = await broadcast({ transaction, awaitDetection: true }, status =>
       toast.onBroadcastStatus(status),
@@ -130,7 +128,7 @@ const broadcast = async (
   if (!transaction) {
     throw new Error('no transaction');
   }
-  const txId = await txSha256(transaction);
+  const txId = await txToId(transaction);
   const txHash = uint8ArrayToHex(txId.inner);
   onStatusUpdate(undefined);
   for await (const { status } of penumbra.service(ViewService).broadcastTransaction({
@@ -156,11 +154,6 @@ const broadcast = async (
   // TODO: detail broadcastSuccess status
   throw new Error('did not broadcast transaction');
 };
-
-const txSha256 = (tx: Transaction | PartialMessage<Transaction>) =>
-  sha256Hash(tx instanceof Transaction ? tx.toBinary() : new Transaction(tx).toBinary()).then(
-    inner => new TransactionId({ inner }),
-  );
 
 // We don't have ConnectError in this scope, so we only detect standard Error.
 // Any ConnectError code is named at the beginning of the message value.

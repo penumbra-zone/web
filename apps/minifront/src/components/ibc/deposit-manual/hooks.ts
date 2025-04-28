@@ -5,9 +5,9 @@ import { useQuery } from '@tanstack/react-query';
 import { augmentToAsset, toDisplayAmount } from './asset-utils';
 import { Asset } from '@chain-registry/types';
 import { useRegistry } from '../../../fetchers/registry.ts';
-import { sha256HashStr } from '@penumbra-zone/crypto-web/sha256';
 import { Chain } from '@penumbra-labs/registry';
 import { Coin, StargateClient } from '@cosmjs/stargate';
+import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 
 export const useChainConnector = () => {
   const { selectedChain } = useStore(ibcInSelector);
@@ -92,7 +92,9 @@ const generatePenumbraIbcDenoms = async (chains: Chain[]): Promise<string[]> => 
     const encoder = new TextEncoder();
     const encodedString = encoder.encode(ibcStr);
 
-    const hash = await sha256HashStr(encodedString);
+    const hash = uint8ArrayToHex(
+      new Uint8Array(await crypto.subtle.digest('SHA-256', encodedString)),
+    );
     ibcAddrs.push(`ibc/${hash.toUpperCase()}`);
   }
   return ibcAddrs;

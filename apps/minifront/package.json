@@ -25,7 +25,6 @@
     "@penumbra-labs/registry": "^12.6.0",
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/client": "workspace:*",
-    "@penumbra-zone/crypto-web": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
     "@penumbra-zone/perspective": "workspace:*",
     "@penumbra-zone/protobuf": "workspace:*",
