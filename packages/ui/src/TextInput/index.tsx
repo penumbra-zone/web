@@ -60,7 +60,7 @@ export const TextInput = ({
   min,
   ...rest
 }: TextInputProps & {
-  ref?: React.RefObject<HTMLInputElement>;
+  ref?: React.RefObject<HTMLInputElement | null>;
 }) => (
   <label
     className={cn(

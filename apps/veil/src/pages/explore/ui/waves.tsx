@@ -6,7 +6,9 @@ import cn from 'clsx';
 export const PenumbraWaves = () => {
   return (
     <Waves
-      className={cn('absolute scale-90 w-[1200px] top-[-800px] left-[25%]  z-[-30] opacity-90')}
+      className={cn(
+        'display-none absolute scale-90 w-[1200px] top-[-800px] left-[25%]  z-[-30] opacity-90',
+      )}
     />
   );
 };

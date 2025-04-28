@@ -37,7 +37,7 @@ export const OrderInput = ({
   min,
   disabled,
 }: OrderInputProps & {
-  ref: React.RefObject<HTMLInputElement>;
+  ref?: React.RefObject<HTMLInputElement>;
 }) => {
   const { ref: denomRef, width: denomWidth } = useComponentSize();
   const textRef = useRef<HTMLDivElement>(null);

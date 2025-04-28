@@ -23,7 +23,7 @@ export const FilterInput = ({
   value,
   placeholder,
 }: FilterInputProps & {
-  ref: React.RefObject<HTMLInputElement>;
+  ref?: React.RefObject<HTMLInputElement | null>;
 }) => {
   const deselect = () => {
     onChange('');
