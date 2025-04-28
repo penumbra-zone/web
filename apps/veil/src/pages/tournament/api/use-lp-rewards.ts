@@ -6,6 +6,14 @@ import { bech32mPositionId } from '@penumbra-zone/bech32m/plpid';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
 import { getAmount } from '@penumbra-zone/getters/value-view';
 import { DUMMY_VALUE_VIEW, DUMMY_POSITION_ID } from './dummy';
+import { apiFetch } from '@/shared/utils/api-fetch';
+
+import {
+  LpRewardsRequest,
+  LpRewardsApiResponse,
+  LpRewardsSortKey,
+  LpRewardsSortDirection,
+} from '@/shared/api/server/tournament/lp-rewards';
 
 export const BASE_LIMIT = 10;
 export const BASE_PAGE = 1;
@@ -23,54 +31,23 @@ export interface Reward {
   };
 }
 
-const DUMMY_LP_REWARDS: Reward[] = Array.from({ length: 55 }, (_, i) => {
-  return {
-    epoch: i + 1,
-    positionId: new PositionId({
-      inner: new Uint8Array([...DUMMY_POSITION_ID.inner.slice(0, -1), i + 1]),
-    }),
-    isWithdrawn: i % 2 === 0,
-    reward: DUMMY_VALUE_VIEW,
-  };
-});
-
-const addSortToRewards = (reward: Reward): Required<Reward> => {
-  const amount = getAmount.optional(reward.reward);
-  return {
-    ...reward,
-    sort: {
-      epoch: reward.epoch,
-      positionId: bech32mPositionId(reward.positionId),
-      reward: amount ? Number(joinLoHiAmount(amount)) : 0,
-    },
-  };
-};
-
 export const useLpRewards = (
   page = BASE_PAGE,
   limit = BASE_LIMIT,
-  sortKey?: keyof Required<Reward>['sort'] | '',
-  sortDirection?: 'asc' | 'desc',
+  sortKey?: LpRewardsSortKey | '',
+  sortDirection?: LpRewardsSortDirection,
 ) => {
-  const query = useQuery<Required<Reward>[]>({
+  const data = useQuery<Required<Reward>[]>({
     queryKey: ['my-lp-rewards', page, limit, sortKey, sortDirection],
     queryFn: async () => {
-      // TODO: use backend API to fetch, filter, and sort rewards
-      return new Promise(resolve => {
-        setTimeout(() => {
-          const data = DUMMY_LP_REWARDS;
-          const mapped = data.map(addSortToRewards);
-          const sorted =
-            sortKey && sortDirection ? orderBy(mapped, `sort.${sortKey}`, sortDirection) : mapped;
-          const limited = sorted.slice(limit * (page - 1), limit * page);
-          resolve(limited);
-        }, 1000);
-      });
+      return apiFetch<LpRewardsApiResponse>('/api/tournament/lp-rewards', {
+        page,
+        limit,
+        sortKey,
+        sortDirection,
+      } satisfies Partial<LpRewardsRequest>);
     },
   });
 
-  return {
-    query,
-    total: DUMMY_LP_REWARDS.length,
-  };
+  return data;
 };
