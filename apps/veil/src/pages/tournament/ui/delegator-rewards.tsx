@@ -14,14 +14,14 @@ import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { connectionStore } from '@/shared/model/connection';
 import { LpRewards } from './lp-rewards';
-import { VotingRewards } from './voting-rewards';
+import { VotingRewards } from './total-delegator-rewards';
 import { useCurrentEpoch } from '../api/use-current-epoch';
 import { usePersonalRewards } from '../api/use-personal-rewards';
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { pnum } from '@penumbra-zone/types/pnum';
 import { useStakingTokenMetadata } from '@/shared/api/registry';
 
-export const MyRewards = observer(() => {
+export const DelegatorRewards = observer(() => {
   const { connected, subaccount } = connectionStore;
 
   const { epoch } = useCurrentEpoch();

@@ -4,7 +4,7 @@ import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys
 import { ViewService } from '@penumbra-zone/protobuf';
 import { penumbra } from '@/shared/const/penumbra';
 import { statusStore } from '@/shared/model/status';
-import { TournamentDelegatorHistoryResponse } from '../server/delegator-history';
+import { TournamentDelegatorHistoryResponse } from '../../../shared/api/server/tournament/delegator-history';
 import { apiPostFetch } from '@/shared/utils/api-fetch';
 import { TournamentVotesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 
@@ -56,7 +56,7 @@ const fetchRewards = async (
   // sift through many delegators per epoch, whereas the block processor already
   // tracks rewards locally and could handle the conversion far more efficiently.
   // Consequently, we can always fall back to local-first reward processing
-  // if that becomes a performance bottleneck.
+  // if that becomes a performance bottleneck. 
   let delegatorHistory = await apiPostFetch<TournamentDelegatorHistoryResponse>(
     '/api/tournament/delegator-history',
     {
@@ -69,7 +69,7 @@ const fetchRewards = async (
 };
 
 /**
- * Retrieves every voting reward from the view service for each epoch in which the user cast a vote.
+ * Retrieves every vote from the view service for each epoch in which the user participated.
  */
 export const usePersonalRewards = (subaccount?: number, epoch?: number) => {
   return useQuery({
@@ -86,7 +86,7 @@ export const usePersonalRewards = (subaccount?: number, epoch?: number) => {
 };
 
 /**
- * Retrieves the user’s voting rewards for a single epoch.
+ * Retrieves the user’s vote for a single epoch.
  *
  * TODO: hook into `RoundCard` to surface incoming rewards.
  */
