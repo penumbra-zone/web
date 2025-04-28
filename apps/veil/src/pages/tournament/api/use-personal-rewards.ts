@@ -56,7 +56,7 @@ const fetchRewards = async (
   // sift through many delegators per epoch, whereas the block processor already
   // tracks rewards locally and could handle the conversion far more efficiently.
   // Consequently, we can always fall back to local-first reward processing
-  // if that becomes a performance bottleneck. 
+  // if that becomes a performance bottleneck.
   let delegatorHistory = await apiPostFetch<TournamentDelegatorHistoryResponse>(
     '/api/tournament/delegator-history',
     {

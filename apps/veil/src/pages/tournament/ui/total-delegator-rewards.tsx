@@ -19,6 +19,9 @@ export const VotingRewards = observer(() => {
   const { data, isLoading } = usePersonalRewards(subaccount, epoch);
   const { data: stakingToken } = useStakingTokenMetadata();
 
+  // TODO: “Cast Vote” still needs a pindexer query—calculate it by dividing the
+  // user’s voting power (from `delegator_history`) by the epoch’s total voting
+  // power (from `delegator_summary`).
   return (
     <Density compact>
       <div className='grid grid-cols-[auto_1fr_1fr_32px]'>
