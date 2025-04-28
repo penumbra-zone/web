@@ -165,7 +165,7 @@ export const DelegatorLeaderboard = observer(() => {
             <LeaderboardRow
               key={isLoading ? `loading-${index}` : row.place}
               row={row}
-              loading={isLoading}
+              loading={isLoading || !Object.keys(row).length}
             />
           ))}
         </div>

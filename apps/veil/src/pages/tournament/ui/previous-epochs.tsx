@@ -150,7 +150,7 @@ export const PreviousEpochs = observer(() => {
           {epochs.map(epoch => (
             <PreviousEpochsRow
               key={epoch.epoch}
-              isLoading={isLoading}
+              isLoading={isLoading || !epoch.gauge}
               row={epoch}
               connected={connected}
               className={TABLE_CLASSES.row[tableKey]}
