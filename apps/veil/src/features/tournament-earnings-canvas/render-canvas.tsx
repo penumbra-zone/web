@@ -125,8 +125,8 @@ export async function renderTournamentEarningsCanvas(
   }
 
   const bgImageSrc = landscape
-    ? `${baseUrl}/assets/lqt-social-rewards-bg-landscape.png`
-    : `${baseUrl}/assets/lqt-social-rewards-bg-square.png`;
+    ? `${baseUrl}/assets/lqt-social-rewards-bg-landscape.jpg`
+    : `${baseUrl}/assets/lqt-social-rewards-bg-square.jpg`;
 
   if (typeof window !== 'undefined') {
     const bgImage = new Image();
