@@ -19,7 +19,7 @@ import { connectionStore } from '@/shared/model/connection';
 import type {
   DelegatorLeaderboardSortKey,
   DelegatorLeaderboardData,
-} from '../server/delegator-leaderboard';
+} from '../../../shared/api/server/tournament/delegator-leaderboard';
 import { useDelegatorLeaderboard, BASE_PAGE, BASE_LIMIT } from '../api/use-delegator-leaderboard';
 import { useSortableTableHeaders } from './sortable-table-header';
 import { useIndexByAddress } from '../api/use-index-by-address';
@@ -29,9 +29,6 @@ const LeaderboardRow = observer(
   ({ row, loading }: { row: DelegatorLeaderboardData; loading: boolean }) => {
     const { connected } = connectionStore;
     const { data: subaccountIndex, isLoading: indexLoading } = useIndexByAddress(row.address);
-
-    // TODO: Convert delUM to UM – we are currently using the staking token,
-    // but the conversion from delUM to UM has not been applied here yet.
     const { data: stakingToken } = useStakingTokenMetadata();
 
     const addressLink = useMemo(() => {

@@ -1,7 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { apiFetch } from '@/shared/utils/api-fetch';
 import { useRefetchOnNewBlock } from '@/shared/api/compact-block';
-import type { TournamentSummaryRequest, TournamentSummaryApiResponse } from '../server/summary';
+import type {
+  TournamentSummaryRequest,
+  TournamentSummaryApiResponse,
+} from '../../../shared/api/server/tournament/summary';
 
 export const useTournamentSummary = (params?: Partial<TournamentSummaryRequest>) => {
   const query = useQuery({

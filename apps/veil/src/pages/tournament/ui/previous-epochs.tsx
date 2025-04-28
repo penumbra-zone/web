@@ -14,7 +14,7 @@ import { Text } from '@penumbra-zone/ui/Text';
 import { connectionStore } from '@/shared/model/connection';
 import { useStakingTokenMetadata } from '@/shared/api/registry';
 import { usePreviousEpochs, BASE_PAGE, BASE_LIMIT } from '../api/use-previous-epochs';
-import type { PreviousEpochData } from '../server/previous-epochs';
+import type { PreviousEpochData } from '../../../shared/api/server/tournament/previous-epochs';
 import { useSortableTableHeaders } from './sortable-table-header';
 import { usePersonalRewards } from '../api/use-personal-rewards';
 import { Vote } from './vote';

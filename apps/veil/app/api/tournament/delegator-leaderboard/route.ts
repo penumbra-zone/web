@@ -1,1 +1,1 @@
-export { GET } from '@/pages/tournament/server/delegator-leaderboard';
+export { GET } from '@/shared/api/server/tournament/delegator-leaderboard';

@@ -15,7 +15,7 @@ import { PagePath } from '@/shared/const/pages';
 import { useLQTNotes } from '../api/use-voting-notes';
 import { useCurrentEpoch } from '../api/use-current-epoch';
 import { VoteDialogueSelector } from './vote-dialog';
-import { checkIfAlreadyVoted } from '../api/vote';
+import { checkIfAlreadyVoted } from '../../../entities/tournament/api/vote';
 
 // TODO: use it for both landing and round page, apply all component states from Figma
 export const VotingInfo = observer(() => {

@@ -2,7 +2,7 @@ import cn from 'clsx';
 import { AssetIcon } from '@penumbra-zone/ui/AssetIcon';
 import { Dialog } from '@penumbra-zone/ui/Dialog';
 import { Text } from '@penumbra-zone/ui/Text';
-import type { MappedGauge } from '../../server/previous-epochs';
+import type { MappedGauge } from '../../../../shared/api/server/tournament/previous-epochs';
 
 const VOTING_THRESHOLD = 0.05;
 

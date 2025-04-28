@@ -2,7 +2,7 @@ import { round } from '@penumbra-zone/types/round';
 import { Text } from '@penumbra-zone/ui/Text';
 import { Skeleton } from '@penumbra-zone/ui/Skeleton';
 import { AssetIcon } from '@penumbra-zone/ui/AssetIcon';
-import type { MappedGauge } from '../../server/previous-epochs';
+import type { MappedGauge } from '../../../../shared/api/server/tournament/previous-epochs';
 
 export interface TournamentResultsProps {
   results: MappedGauge[];

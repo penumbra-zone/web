@@ -1,7 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { apiFetch } from '@/shared/utils/api-fetch';
-import type { PreviousEpochsApiResponse, PreviousEpochsRequest } from '../server/previous-epochs';
+import type {
+  PreviousEpochsApiResponse,
+  PreviousEpochsRequest,
+} from '../../../shared/api/server/tournament/previous-epochs';
 
 export const BASE_LIMIT = 10;
 export const BASE_PAGE = 1;
