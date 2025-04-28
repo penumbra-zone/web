@@ -1,11 +1,15 @@
 import { useQuery } from '@tanstack/react-query';
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { LQTVote } from './use-personal-rewards';
 import { apiFetch } from '@/shared/utils/api-fetch';
 import type { PreviousEpochsApiResponse, PreviousEpochsRequest } from '../server/previous-epochs';
 
 export const BASE_LIMIT = 10;
 export const BASE_PAGE = 1;
+
+export interface LQTVote {
+  percent: number;
+  asset: Metadata;
+}
 
 export interface EpochVote {
   epoch: number;

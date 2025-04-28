@@ -18,6 +18,7 @@ import type { PreviousEpochData } from '../server/previous-epochs';
 import { useSortableTableHeaders } from './sortable-table-header';
 import { usePersonalRewards } from '../api/use-personal-rewards';
 import { Vote } from './vote';
+import { pnum } from '@penumbra-zone/types/pnum';
 
 const TABLE_CLASSES = {
   table: {
@@ -81,14 +82,16 @@ const PreviousEpochsRow = observer(
         </TableCell>
         {connected && (
           <TableCell cell loading={isLoading || rewardsLoading}>
-            {rewards?.find(r => r.epochIndex === BigInt(row.epoch)) && stakingToken && (
+            {rewards?.data.find(r => BigInt(r.epoch) === BigInt(row.epoch)) && stakingToken && (
               <ValueViewComponent
                 valueView={
                   new ValueView({
                     valueView: {
                       case: 'knownAssetId',
                       value: {
-                        amount: rewards.find(r => r.epochIndex === BigInt(row.epoch))?.total,
+                        amount: pnum(
+                          rewards.data.find(r => BigInt(r.epoch) === BigInt(row.epoch))?.reward,
+                        ).toAmount(),
                         metadata: stakingToken,
                       },
                     },

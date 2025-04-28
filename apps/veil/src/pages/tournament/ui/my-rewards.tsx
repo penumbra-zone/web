@@ -13,16 +13,20 @@ import { Density } from '@penumbra-zone/ui/Density';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { connectionStore } from '@/shared/model/connection';
-import { useTotalRewards } from '../api/use-total-rewards';
 import { LpRewards } from './lp-rewards';
 import { VotingRewards } from './voting-rewards';
+import { useCurrentEpoch } from '../api/use-current-epoch';
+import { usePersonalRewards } from '../api/use-personal-rewards';
+import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { pnum } from '@penumbra-zone/types/pnum';
+import { useStakingTokenMetadata } from '@/shared/api/registry';
 
 export const MyRewards = observer(() => {
-  const { connected } = connectionStore;
+  const { connected, subaccount } = connectionStore;
 
-  // TODO: accumulate total rewards and remove `useTotalRewards` API.
-  const { data: total, isLoading } = useTotalRewards();
-  const isTotalZero = total ? isZero(getAmount(total)) : true;
+  const { epoch } = useCurrentEpoch();
+  const { data: total, isLoading } = usePersonalRewards(subaccount, epoch);
+  const { data: stakingToken } = useStakingTokenMetadata();
 
   const [parent] = useAutoAnimate();
   const [expanded, setExpanded] = useState(false);
@@ -33,6 +37,18 @@ export const MyRewards = observer(() => {
   if (!connected) {
     return null;
   }
+
+  const rewardView = new ValueView({
+    valueView: {
+      case: 'knownAssetId',
+      value: {
+        amount: pnum(total?.totalRewards).toAmount(),
+        metadata: stakingToken,
+      },
+    },
+  });
+
+  const isTotalZero = total ? isZero(getAmount(rewardView)) : true;
 
   return (
     <section ref={parent} className='p-6 rounded-lg bg-other-tonalFill5 backdrop-blur-lg'>
@@ -53,7 +69,7 @@ export const MyRewards = observer(() => {
         ) : (
           <div className='flex items-center gap-4 [&_span]:font-mono [&_span]:text-3xl'>
             <Density sparse>
-              <ValueViewComponent valueView={total} priority='tertiary' />
+              <ValueViewComponent valueView={rewardView} priority='tertiary' />
             </Density>
 
             <Density compact>

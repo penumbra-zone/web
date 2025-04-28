@@ -9,11 +9,13 @@ import { Button } from '@penumbra-zone/ui/Button';
 import { ChevronRight } from 'lucide-react';
 import { useStakingTokenMetadata } from '@/shared/api/registry';
 import { useCurrentEpoch } from '@/pages/tournament/api/use-current-epoch';
+import { pnum } from '@penumbra-zone/types/pnum';
 
 export const VotingRewards = observer(() => {
   const { subaccount } = connectionStore;
 
   const { epoch } = useCurrentEpoch();
+  // This represents a subsequent invocation of `usePersonalRewards` which will use useQuery's cache.
   const { data, isLoading } = usePersonalRewards(subaccount, epoch);
   const { data: stakingToken } = useStakingTokenMetadata();
 
@@ -27,13 +29,13 @@ export const VotingRewards = observer(() => {
           <TableCell heading> </TableCell>
         </div>
 
-        {data?.length
-          ? data.map(({ epochIndex, total }, index) => {
+        {data?.data.length
+          ? data.data.map(({ epoch, reward }, index) => {
               const rewardView = new ValueView({
                 valueView: {
                   case: 'knownAssetId',
                   value: {
-                    amount: total,
+                    amount: pnum(reward).toAmount(),
                     metadata: stakingToken,
                   },
                 },
@@ -42,7 +44,7 @@ export const VotingRewards = observer(() => {
               return (
                 <div key={index} className='grid grid-cols-subgrid col-span-4'>
                   <TableCell cell loading={isLoading}>
-                    Epoch #{epochIndex.toString()}
+                    Epoch #{epoch.toString()}
                   </TableCell>
 
                   <TableCell cell loading={isLoading}>

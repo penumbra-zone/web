@@ -11,41 +11,36 @@ export const tournamentVotes: Impl['tournamentVotes'] = async function* (req, ct
   const services = await ctx.values.get(servicesCtx)();
   const { indexedDb } = await services.getWalletServices();
 
-  // If an epoch index is provided as a request parameter, retrieve the votes cast
-  // in the liquidity tournament for that specific epoch.
-  //
-  // Yields a group of votes for a specific epoch: [vote1, vote2, ...]
+  // When an `epochIndex` is supplied, only votes from that epoch are fetched.
   if (req.epochIndex) {
     const tournamentVote = new TournamentVotesResponse();
 
     const votes = await indexedDb.getLQTHistoricalVotes(req.epochIndex, req.accountFilter?.account);
 
     if (votes.length > 0) {
-      tournamentVote.votes = votes.map(
-        vote =>
-          new TournamentVotesResponse_Vote({
-            transaction: vote.TransactionId,
-            incentivizedAsset: vote.AssetMetadata.penumbraAssetId,
-            votePower: vote.VoteValue.amount,
-            reward: vote.RewardValue
-              ? new Value({
-                  amount: new Amount({ lo: vote.RewardValue.lo, hi: vote.RewardValue.hi }),
-                  assetId: vote.VoteValue.assetId,
-                })
-              : undefined,
-            epochIndex: BigInt(vote.epoch),
-          }),
-      );
+      const firstVote = votes[0]!;
+
+      tournamentVote.votes = [
+        new TournamentVotesResponse_Vote({
+          transaction: firstVote.TransactionId,
+          incentivizedAsset: firstVote.AssetMetadata.penumbraAssetId,
+          votePower: firstVote.VoteValue.amount,
+          reward: firstVote.RewardValue
+            ? new Value({
+                amount: new Amount({ lo: firstVote.RewardValue.lo, hi: firstVote.RewardValue.hi }),
+                assetId: firstVote.VoteValue.assetId,
+              })
+            : undefined,
+          epochIndex: BigInt(firstVote.epoch),
+        }),
+      ];
     }
 
     yield tournamentVote;
   }
 
-  // If a block height is provided as a request parameter, retrieve votes cast in the liquidity
-  // tournament up to specified block height's starting epoch.
-  //
-  // Yields grouped votes by epoch, structured as arrays of votes per epoch: [[vote1, vote2, ...],
-  // [vote1, vote2, ...], [...]]
+  // When `blockHeight` is suppllied, retrieve votes cast in the liquidity tournament up to
+  // specified block height's starting epoch.
   if (req.blockHeight) {
     let currentEpoch: string | undefined;
     let bucket: TournamentVotesResponse_Vote[] = [];
@@ -88,7 +83,7 @@ export const tournamentVotes: Impl['tournamentVotes'] = async function* (req, ct
         );
       }
 
-      // Yield the final bucket of votes
+      // Yield the final bucket of votes.
       if (bucket.length) {
         yield new TournamentVotesResponse({
           votes: bucket,

@@ -3,46 +3,103 @@ import { connectionStore } from '@/shared/model/connection';
 import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { penumbra } from '@/shared/const/penumbra';
-import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
-import { aggregateRewardsByEpoch } from '../ui/aggregate-rewards';
+import { statusStore } from '@/shared/model/status';
+import { TournamentDelegatorHistoryResponse } from '../server/delegator-history';
+import { apiPostFetch } from '@/shared/utils/api-fetch';
+import { TournamentVotesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 
-export interface LQTVote {
-  percent: number;
-  asset: Metadata;
-}
-
-// Retrieves voting rewards and aggregates them by epoch, structured as arrays of votes per epoch,
-// and estimates their value in the staking token by converting from delegation tokens.
 const fetchRewards = async (
-  subaccount = 0,
-  epoch: number,
-): Promise<
-  {
-    epochIndex: bigint;
-    total: Amount;
-  }[]
-> => {
+  subaccount?: number,
+  epochOrHeight?: { type: 'epoch'; value: bigint } | { type: 'blockHeight'; value: bigint },
+): Promise<TournamentDelegatorHistoryResponse> => {
+  let votes: TournamentVotesResponse[];
   const accountFilter =
     typeof subaccount === 'undefined' ? undefined : new AddressIndex({ account: subaccount });
 
-  const responses = await Array.fromAsync(
-    penumbra.service(ViewService).tournamentVotes({ accountFilter, epochIndex: BigInt(epoch) }),
+  // `tournamentVotes` accepts either `blockHeight` or `epochIndex`:
+  //  * `blockHeight` – calls `iterateLQTVotes` to gather every vote up to the
+  //   epoch containing that height, grouping results by epoch.
+  //  * `epochIndex` – returns the votes for that single epoch, already grouped.
+
+  if (epochOrHeight?.type === 'epoch') {
+    votes = await Array.fromAsync(
+      penumbra
+        .service(ViewService)
+        .tournamentVotes({ accountFilter, epochIndex: epochOrHeight.value }),
+    );
+  } else if (epochOrHeight?.type === 'blockHeight') {
+    votes = await Array.fromAsync(
+      penumbra.service(ViewService).tournamentVotes({
+        accountFilter,
+        blockHeight: epochOrHeight.value,
+      }),
+    );
+  }
+
+  const { address } = await penumbra
+    .service(ViewService)
+    .addressByIndex({ addressIndex: { account: accountFilter?.account } });
+
+  const epochs = new Set<string>();
+  votes!.forEach(response => {
+    response.votes?.forEach(vote => {
+      if (vote.epochIndex !== undefined) {
+        epochs.add(vote.epochIndex.toString());
+      }
+    });
+  });
+
+  // We send the address plus a list of epochs to the server and ask for the
+  // matching delegator history. That’s not ideal. A better strategy would be to
+  // fetch validator exchange rates keyed by epoch and convert prices locally.
+  // As the liquidity tournament scales, this server-side query would force us to
+  // sift through many delegators per epoch, whereas the block processor already
+  // tracks rewards locally and could handle the conversion far more efficiently.
+  // Consequently, we can always fall back to local-first reward processing
+  // if that becomes a performance bottleneck. 
+  let delegatorHistory = await apiPostFetch<TournamentDelegatorHistoryResponse>(
+    '/api/tournament/delegator-history',
+    {
+      epochs: Array.from(epochs),
+      address: { inner: Array.from(address!.inner) },
+    },
   );
 
-  const groupedRewards = await aggregateRewardsByEpoch(accountFilter, { votes: responses });
-
-  return groupedRewards;
+  return delegatorHistory;
 };
 
-// Retrieves voting rewards from the view service.
-export const usePersonalRewards = (subaccount = 0, epoch?: number) => {
+/**
+ * Retrieves every voting reward from the view service for each epoch in which the user cast a vote.
+ */
+export const usePersonalRewards = (subaccount?: number, epoch?: number) => {
   return useQuery({
-    queryKey: ['my-voting-rewards', subaccount, epoch],
+    queryKey: ['total-voting-rewards', subaccount, epoch],
     staleTime: Infinity,
     enabled: connectionStore.connected && !!epoch,
     queryFn: async () => {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- based on `enabled`, epoch is always defined
-      return await fetchRewards(connectionStore.subaccount, epoch!);
+      return await fetchRewards(connectionStore.subaccount, {
+        type: 'blockHeight',
+        value: statusStore.latestKnownBlockHeight!,
+      });
+    },
+  });
+};
+
+/**
+ * Retrieves the user’s voting rewards for a single epoch.
+ *
+ * TODO: hook into `RoundCard` to surface incoming rewards.
+ */
+export const usePersonalRewardsForEpoch = (subaccount?: number, epoch?: number) => {
+  return useQuery({
+    queryKey: ['single-epoch-voting-rewards', subaccount, epoch],
+    staleTime: Infinity,
+    enabled: connectionStore.connected && !!epoch,
+    queryFn: async () => {
+      return await fetchRewards(connectionStore.subaccount, {
+        type: 'epoch',
+        value: BigInt(epoch!),
+      });
     },
   });
 };
