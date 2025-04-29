@@ -42,6 +42,7 @@ export const useRoundBlockInfo = (epoch?: number) => {
 
       const epochDifference = currentEpoch.epoch.startHeight - prevEpoch.epoch.startHeight;
 
+      // TODO: fetch all information from Pindexer and make sure the case of early epoch end is covered
       const [nextEpoch, currentStartTime, prevStartTime] = await Promise.all([
         sctService.epochByHeight({ height: currentEpoch.epoch.startHeight + epochDifference + 1n }),
         sctService.timestampByHeight({ height: currentEpoch.epoch.startHeight }),
