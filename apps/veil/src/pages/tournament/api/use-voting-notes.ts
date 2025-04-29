@@ -17,7 +17,7 @@ const fetchQuery = async (subaccount = 0, epoch: number): Promise<LqtVotingNotes
 /**
  * Must be used within the `observer` mobX HOC
  */
-export const useLQTNotes = (subaccount = 0, epoch?: number) => {
+export const useLQTNotes = (subaccount = 0, epoch?: number, disabled?: boolean) => {
   const lqtNotesQuery = useQuery({
     queryKey: ['lqt-notes', subaccount, epoch],
     staleTime: Infinity,
@@ -26,7 +26,7 @@ export const useLQTNotes = (subaccount = 0, epoch?: number) => {
     queryFn: () => fetchQuery(subaccount, epoch!),
   });
 
-  useRefetchOnNewBlock('lqt-notes', lqtNotesQuery);
+  useRefetchOnNewBlock('lqt-notes', lqtNotesQuery, disabled);
 
   return lqtNotesQuery;
 };
