@@ -191,16 +191,38 @@ export interface IndexedDbInterface {
     voteValue: Value,
     rewardValue?: Amount,
     id?: string,
+    subaccount?: number,
   ): Promise<void>;
 
-  getLQTHistoricalVotes(epoch: bigint): Promise<
+  getLQTHistoricalVotes(
+    epoch: bigint,
+    subaccount?: number,
+  ): Promise<
     {
+      epoch: string;
       TransactionId: TransactionId;
       AssetMetadata: Metadata;
       VoteValue: Value;
       RewardValue: Amount | undefined;
       id: string | undefined;
+      subaccount?: number;
     }[]
+  >;
+
+  iterateLQTVotes(
+    epoch: bigint,
+    subaccount?: number,
+  ): AsyncGenerator<
+    {
+      epoch: string;
+      TransactionId: TransactionId;
+      AssetMetadata: Metadata;
+      VoteValue: Value;
+      RewardValue: Amount;
+      id: string | undefined;
+      subaccount?: number;
+    },
+    void
   >;
 }
 
@@ -360,6 +382,7 @@ export interface PenumbraDb extends DBSchema {
       AssetMetadata: Jsonified<Metadata>;
       VoteValue: Jsonified<Value>;
       RewardValue: Jsonified<Amount> | null;
+      subaccount?: number;
     };
     indexes: {
       epoch: string;

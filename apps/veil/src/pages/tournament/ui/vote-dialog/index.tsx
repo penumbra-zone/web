@@ -12,7 +12,7 @@ import { useSubaccounts } from '@/widgets/header/api/subaccounts';
 import { connectionStore } from '@/shared/model/connection';
 import { getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { useLQTNotes } from '../../api/use-voting-notes';
-import { voteTournament } from '../../api/vote';
+import { voteTournament } from '../../../../entities/tournament/api/vote';
 import { useCurrentEpoch } from '../../api/use-current-epoch';
 import { useEpochResults } from '../../api/use-epoch-results';
 import { MappedGauge } from '../../server/previous-epochs';
