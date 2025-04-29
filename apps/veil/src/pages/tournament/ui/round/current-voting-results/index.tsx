@@ -1,45 +1,20 @@
-import orderBy from 'lodash/orderBy';
+import cn from 'clsx';
 import { observer } from 'mobx-react-lite';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Card } from '@penumbra-zone/ui/Card';
 import { Text } from '@penumbra-zone/ui/Text';
 import { TableCell } from '@penumbra-zone/ui/TableCell';
 import { Density } from '@penumbra-zone/ui/Density';
 import { Pagination } from '@penumbra-zone/ui/Pagination';
-import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
-import { pnum } from '@penumbra-zone/types/pnum';
 import { connectionStore } from '@/shared/model/connection';
 import { useSortableTableHeaders } from '../../sortable-table-header';
+import type { EpochResultsSortKey } from '../../../server/epoch-results';
+import type { MappedGauge } from '../../../server/previous-epochs';
+import { useEpochResults } from '../../../api/use-epoch-results';
 import { TableRow } from './table-row';
-import cn from 'clsx';
 
 const THRESHOLD = 0.05;
-
-const valueView = new ValueView({
-  valueView: {
-    value: {
-      amount: new Amount({ lo: 133700000n }),
-      metadata: new Metadata({
-        base: 'um',
-        display: 'um',
-        denomUnits: [
-          {
-            denom: 'um',
-            exponent: 6,
-          },
-        ],
-        symbol: 'um',
-        penumbraAssetId: { inner: new Uint8Array([1]) },
-        coingeckoId: 'um',
-        images: [],
-        name: 'um',
-        description: 'um',
-      }),
-    },
-    case: 'knownAssetId',
-  },
-});
+const BASE_LIMIT = 10;
 
 const TABLE_CLASSES = {
   table: {
@@ -52,82 +27,47 @@ const TABLE_CLASSES = {
   },
 };
 
-export const CurrentVotingResults = observer(() => {
-  const [isLoading, setIsLoading] = useState(true);
+export interface CurrentVotingResultsProps {
+  epoch: number;
+}
+
+export const CurrentVotingResults = observer(({ epoch }: CurrentVotingResultsProps) => {
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
-  const { getTableHeader, sortBy } = useSortableTableHeaders();
+  const [limit, setLimit] = useState(BASE_LIMIT);
+  const { getTableHeader, sortBy } = useSortableTableHeaders<EpochResultsSortKey>(
+    'portion',
+    'desc',
+  );
+
+  const { connected } = connectionStore;
+  const { data, isLoading } = useEpochResults('epoch-results-round', {
+    epoch,
+    limit,
+    page,
+    sortKey: sortBy.key as EpochResultsSortKey,
+    sortDirection: sortBy.direction,
+  });
 
   // TODO: `canVote` should be true when connected and has delUM for this epoch
-  const { connected: canVote } = connectionStore;
+  const canVote = connected;
   const tableKey = canVote ? 'canVote' : 'default';
+  const total = data?.total ?? 0;
 
-  useEffect(() => {
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-  }, []);
-
-  const totalPages = 100;
-  const totalVotes = 10000;
-
-  const data = [
-    {
-      symbol: 'USDC',
-      imgUrl:
-        'https://raw.githubusercontent.com/cosmos/chain-registry/master/cosmoshub/images/atom.png',
-      votes: 2777,
-      estimatedIncentive: valueView,
+  const loadingArr = new Array(10).fill({ votes: 0 }) as MappedGauge[];
+  const { above, below } = (data?.data ?? []).reduce<{
+    above: MappedGauge[];
+    below: MappedGauge[];
+  }>(
+    (accum, current) => {
+      if (current.portion >= THRESHOLD) {
+        accum.above.push(current);
+      } else {
+        accum.below.push(current);
+      }
+      return accum;
     },
-    {
-      symbol: 'OSMO',
-      imgUrl:
-        'https://raw.githubusercontent.com/cosmos/chain-registry/master/cosmoshub/images/atom.png',
-      votes: 1337,
-      estimatedIncentive: valueView,
-    },
-    {
-      symbol: 'ATOM',
-      imgUrl:
-        'https://raw.githubusercontent.com/cosmos/chain-registry/master/cosmoshub/images/atom.png',
-      votes: 1000,
-      estimatedIncentive: valueView,
-    },
-    {
-      symbol: 'USDC',
-      imgUrl:
-        'https://raw.githubusercontent.com/cosmos/chain-registry/master/cosmoshub/images/atom.png',
-      votes: 7,
-      estimatedIncentive: valueView,
-    },
-    {
-      symbol: 'OSMO',
-      imgUrl:
-        'https://raw.githubusercontent.com/cosmos/chain-registry/master/cosmoshub/images/atom.png',
-      votes: 3,
-      estimatedIncentive: valueView,
-    },
-    {
-      symbol: 'ATOM',
-      imgUrl:
-        'https://raw.githubusercontent.com/cosmos/chain-registry/master/cosmoshub/images/atom.png',
-      votes: 10,
-      estimatedIncentive: valueView,
-    },
-  ];
-
-  const loadingArr = new Array(10).fill({ votes: 0 });
-  const sortedData =
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- tmp
-    orderBy(
-      data.map(item => ({
-        ...item,
-        gaugeValue: item.votes / totalVotes,
-        estimatedIncentiveNumber: pnum(item.estimatedIncentive).toNumber(),
-      })),
-      sortBy.key || 'votes',
-      sortBy.direction,
-    ) ?? loadingArr;
+    { above: [], below: [] },
+  );
 
   return (
     <Card>
@@ -138,19 +78,30 @@ export const CurrentVotingResults = observer(() => {
         <Density compact>
           <div className={cn('grid h-auto overflow-auto', TABLE_CLASSES.table[tableKey])}>
             <div className={cn('grid grid-cols-subgrid', TABLE_CLASSES.row[tableKey])}>
-              {getTableHeader('symbol', 'Asset')}
-              {getTableHeader('gaugeValue', 'Percentage of Votes')}
+              <TableCell heading>Asset</TableCell>
+              {getTableHeader('portion', 'Percentage of Votes')}
               {getTableHeader('votes', 'Votes Cast')}
-              {getTableHeader('estimatedIncentiveNumber', 'Estimated Incentive')}
+              <TableCell heading>Estimated Incentive</TableCell>
               {canVote && <TableCell heading>Vote</TableCell>}
             </div>
 
-            {sortedData
-              .filter(item => item.votes / totalVotes >= THRESHOLD)
-              .map(item => (
-                <TableRow key={item.symbol} item={item} loading={isLoading} canVote={canVote} />
+            {isLoading &&
+              loadingArr.map((item, index) => (
+                <TableRow key={index} item={item} loading canVote={canVote} />
               ))}
-            {!isLoading && (
+
+            {!isLoading && total === 0 && (
+              <div className={TABLE_CLASSES.row[tableKey]}>
+                <TableCell lastCell>There are no votes in this epoch</TableCell>
+              </div>
+            )}
+
+            {!isLoading &&
+              above.map(item => (
+                <TableRow key={item.asset.base} item={item} loading={false} canVote={canVote} />
+              ))}
+
+            {!isLoading && !!below.length && (
               <div className={cn(TABLE_CLASSES.row[tableKey])}>
                 <TableCell>
                   <Text technical color='text.secondary'>
@@ -160,16 +111,17 @@ export const CurrentVotingResults = observer(() => {
                 </TableCell>
               </div>
             )}
-            {sortedData
-              .filter(item => item.votes / totalVotes < THRESHOLD)
-              .map(item => (
-                <TableRow key={item.symbol} item={item} loading={isLoading} canVote={canVote} />
+
+            {!isLoading &&
+              below.map(item => (
+                <TableRow key={item.asset.base} item={item} loading={false} canVote={canVote} />
               ))}
-            {!isLoading && (
+
+            {!isLoading && total >= limit && (
               <div className={cn('pt-5', TABLE_CLASSES.row[tableKey])}>
                 <Pagination
-                  totalItems={totalPages}
-                  visibleItems={5}
+                  totalItems={total}
+                  visibleItems={data?.data.length}
                   value={page}
                   limit={limit}
                   onChange={setPage}

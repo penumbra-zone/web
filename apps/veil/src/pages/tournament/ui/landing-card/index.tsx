@@ -4,7 +4,7 @@ import { Skeleton } from '@penumbra-zone/ui/Skeleton';
 import { openToast } from '@penumbra-zone/ui/Toast';
 import { useCurrentEpoch } from '../../api/use-current-epoch';
 import { useTournamentSummary } from '../../api/use-tournament-summary';
-import { useEpochGauge } from '../../api/use-epoch-gauge';
+import { useEpochResults } from '../../api/use-epoch-results';
 import { GradientCard } from '../shared/gradient-card';
 import { VotingInfo } from '../voting-info';
 import { IncentivePool } from './incentive-pool';
@@ -24,7 +24,15 @@ export const LandingCard = observer(() => {
     });
   });
 
-  const { data: epochGauge, isLoading: epochGaugeLoading, isPending } = useEpochGauge(epoch);
+  const {
+    data: epochGauge,
+    isLoading: epochGaugeLoading,
+    isPending,
+  } = useEpochResults('epoch-results-landing', {
+    epoch,
+    limit: 5,
+    page: 1,
+  });
 
   return (
     <GradientCard>
@@ -52,7 +60,10 @@ export const LandingCard = observer(() => {
           </div>
 
           <IncentivePool summary={stats?.[0]} loading={isLoading} />
-          <TournamentResults results={epochGauge ?? []} loading={isPending || epochGaugeLoading} />
+          <TournamentResults
+            results={epochGauge?.data ?? []}
+            loading={isPending || epochGaugeLoading}
+          />
           <VotingInfo />
         </div>
       </div>

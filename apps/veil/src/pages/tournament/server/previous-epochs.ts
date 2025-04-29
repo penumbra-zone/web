@@ -21,8 +21,9 @@ export interface PreviousEpochsRequest {
   sortDirection: PreviousEpochsSortDirection;
 }
 
-export interface MappedGauge extends Omit<Gauge, 'asset_id'> {
+export interface MappedGauge extends Omit<Gauge, 'asset_id' | 'missing_votes'> {
   asset: Metadata;
+  missing_votes: number;
 }
 
 export interface PreviousEpochData {
@@ -143,7 +144,7 @@ export async function GET(
           epoch: item.epoch,
           votes: item.votes,
           portion: item.portion,
-          missing_votes: item.missing_votes,
+          missing_votes: Number(item.missing_votes),
         };
       })
       .filter(Boolean) as MappedGauge[],
