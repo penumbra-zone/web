@@ -19,12 +19,10 @@ export const useTournamentVotes = (epoch?: number, disabled?: boolean) => {
       }
 
       const res = await Array.fromAsync(
-        penumbra
-          .service(ViewService)
-          .tournamentVotes({
-            accountFilter: new AddressIndex({ account: subaccount }),
-            epochIndex: BigInt(epoch),
-          }),
+        penumbra.service(ViewService).tournamentVotes({
+          accountFilter: new AddressIndex({ account: subaccount }),
+          epochIndex: BigInt(epoch),
+        }),
       );
 
       return res[0]?.votes ?? [];

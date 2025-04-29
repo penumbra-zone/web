@@ -1,10 +1,12 @@
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { Ban, Coins, Check, Wallet2, ExternalLink } from 'lucide-react';
+import { Ban, Coins, Check, Wallet2, ExternalLink, List } from 'lucide-react';
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { addAmounts } from '@penumbra-zone/types/amount';
+import { getMetadata as getMetadataFromValueView } from '@penumbra-zone/getters/value-view';
+import { Skeleton } from '@penumbra-zone/ui/Skeleton';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
@@ -16,7 +18,7 @@ import { useLQTNotes } from '../api/use-voting-notes';
 import { useCurrentEpoch } from '../api/use-current-epoch';
 import { useTournamentVotes } from '../api/use-tournament-votes';
 import { VoteDialogueSelector } from './vote-dialog';
-import { useAccountDelegations } from '@/pages/tournament/api/use-delegations';
+import { useAccountDelegations } from '../api/use-delegations';
 
 export const useVotingInfo = (defaultEpoch?: number) => {
   const { connected, subaccount } = connectionStore;
@@ -27,20 +29,14 @@ export const useVotingInfo = (defaultEpoch?: number) => {
   const isEnded = !currentEpoch || !epoch || epoch !== currentEpoch;
 
   const { data: notes, isLoading: loadingNotes } = useLQTNotes(subaccount, epoch, isEnded);
-  const {
-    data: votes,
-    isPending: pendingVotes,
-    isLoading: loadingVotes,
-  } = useTournamentVotes(epoch, isEnded);
+  const { data: votes, isLoading: loadingVotes } = useTournamentVotes(epoch, isEnded);
   const { data: delegations, isLoading: delegationsLoading } = useAccountDelegations(
     isEnded || !!notes?.length,
   );
 
-  const isLoading =
-    loadingEpoch || loadingNotes || pendingVotes || loadingVotes || delegationsLoading;
+  const isLoading = loadingEpoch || loadingNotes || loadingVotes || delegationsLoading;
   const isVoted = !!votes?.length;
   const isDelegated = !!delegations?.length;
-  console.log('VOTES', subaccount, notes, delegations, isDelegated);
 
   const votingNote = useMemo(() => {
     const values = (notes ?? []).map(note => note.noteRecord?.note?.value).filter(item => !!item);
@@ -107,15 +103,59 @@ export const useVotingInfo = (defaultEpoch?: number) => {
   };
 };
 
+const STAKING_LINK = 'https://app.penumbra.zone/#/staking';
+
 export interface VotingInfoProps {
   epoch?: number;
 }
 
 export const VotingInfo = observer(({ epoch: defaultEpoch }: VotingInfoProps) => {
-  const { epoch, isVoted, isEnded, isLoading, votedFor, connected, isDelegated, votingNote } =
-    useVotingInfo(defaultEpoch);
+  const {
+    epoch,
+    isVoted,
+    isEnded,
+    isLoading,
+    votedFor,
+    connected,
+    isDelegated,
+    votingNote,
+    currentEpoch,
+  } = useVotingInfo(defaultEpoch);
 
+  const isRoundPage = !!defaultEpoch;
   const epochLink = epoch ? PagePath.TournamentRound.replace(':epoch', epoch.toString()) : '';
+  const currentEpochLink = currentEpoch
+    ? PagePath.TournamentRound.replace(':epoch', currentEpoch.toString())
+    : PagePath.Tournament;
+  const tradeLink = useMemo(() => {
+    const metadata = getMetadataFromValueView.optional(votedFor);
+    if (!metadata) {
+      return PagePath.Trade;
+    }
+
+    return PagePath.TradePair.replace(
+      ':primary',
+      metadata.symbol === 'USDC' ? 'UM' : metadata.symbol,
+    ).replace(':numeraire', 'USDC');
+  }, [votedFor]);
+
+  const votedComponent = useMemo(() => {
+    if (!isVoted) {
+      return null;
+    }
+    return (
+      <div className='flex gap-4 color-text-secondary items-center'>
+        <div className='size-10 text-success-light'>
+          <Check className='w-full h-full' />
+        </div>
+        <Text variant='small' color='text.secondary'>
+          You have already voted in this epoch. Come back next epoch to vote again.
+        </Text>
+        {votedFor && <ValueViewComponent showValue={false} valueView={votedFor} />}
+      </div>
+    );
+  }, [isVoted, votedFor]);
+
   const [isVoteDialogueOpen, setIsVoteDialogOpen] = useState(false);
 
   const openVoteDialog = () => {
@@ -127,7 +167,16 @@ export const VotingInfo = observer(({ epoch: defaultEpoch }: VotingInfoProps) =>
   };
 
   if (isLoading) {
-    return null;
+    return (
+      <div className='flex flex-col gap-8'>
+        <div className='h-8 w-24'>
+          <Skeleton />
+        </div>
+        <div className='h-12 w-full rounded-sm overflow-hidden'>
+          <Skeleton />
+        </div>
+      </div>
+    );
   }
 
   if (!connected) {
@@ -142,12 +191,45 @@ export const VotingInfo = observer(({ epoch: defaultEpoch }: VotingInfoProps) =>
           </Text>
         </div>
         <div className='flex gap-2'>
-          <ConnectButton actionType='accent' variant='default'>
-            Connect Prax Wallet
-          </ConnectButton>
-          <Link href={epochLink}>
-            <Button actionType='default'>Details</Button>
-          </Link>
+          <div className='grow'>
+            <ConnectButton actionType='accent' variant='default' />
+          </div>
+          <div className='grow'>
+            <Link href={epochLink}>
+              <Button actionType='default'>Details</Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isRoundPage && isEnded) {
+    return (
+      <div className='flex flex-col gap-8'>
+        <div className='flex gap-4 color-text-secondary items-center'>
+          {isVoted ? (
+            votedComponent
+          ) : (
+            <div className='flex gap-4 items-center'>
+              <div className='size-8 text-neutral-light'>
+                <List className='w-full h-full' />
+              </div>
+              <Text small color='text.secondary'>
+                You haven&#39;t voted in this epoch.
+              </Text>
+            </div>
+          )}
+        </div>
+        <div className='flex gap-2'>
+          <div className='grow'>
+            <Link href={currentEpochLink}>
+              <Button actionType='default'>
+                Go To Current Epoch {currentEpoch && '#'}
+                {currentEpoch}
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -156,20 +238,24 @@ export const VotingInfo = observer(({ epoch: defaultEpoch }: VotingInfoProps) =>
   if (isVoted) {
     return (
       <div className='flex flex-col gap-8'>
-        <div className='flex gap-4 color-text-secondary items-center'>
-          <div className='size-10 text-success-light'>
-            <Check className='w-full h-full' />
+        {votedComponent}
+
+        {!isRoundPage && (
+          <div className='flex gap-2'>
+            <div className='grow'>
+              <Link href={epochLink}>
+                <Button actionType='default'>Details</Button>
+              </Link>
+            </div>
+            <div className='grow'>
+              <Link href={tradeLink}>
+                <Button actionType='default' priority='secondary'>
+                  Trade
+                </Button>
+              </Link>
+            </div>
           </div>
-          <Text variant='small' color='text.secondary'>
-            You have already voted in this epoch. Come back next epoch to vote again.
-          </Text>
-          {votedFor && <ValueViewComponent showValue={false} valueView={votedFor} />}
-        </div>
-        <div className='flex gap-2'>
-          <Link href={epochLink}>
-            <Button actionType='default'>Details</Button>
-          </Link>
-        </div>
+        )}
       </div>
     );
   }
@@ -246,9 +332,11 @@ export const VotingInfo = observer(({ epoch: defaultEpoch }: VotingInfoProps) =>
       </div>
       <div className='flex gap-2'>
         <div className='flex-1'>
-          <Button actionType='accent' icon={ExternalLink}>
-            Delegate
-          </Button>
+          <a href={STAKING_LINK} target='_blank' rel='noreferrer'>
+            <Button actionType='accent' icon={ExternalLink}>
+              Delegate
+            </Button>
+          </a>
         </div>
         <div className='flex-1'>
           <Link href={epochLink}>

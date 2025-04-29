@@ -16,12 +16,10 @@ export const useAccountDelegations = (disabled?: boolean) => {
     staleTime: Infinity,
     queryFn: async () => {
       const res = await Array.fromAsync(
-        penumbra
-          .service(ViewService)
-          .delegationsByAddressIndex({
-            addressIndex: new AddressIndex({ account: subaccount }),
-            filter: DelegationsByAddressIndexRequest_Filter.ALL_ACTIVE_WITH_NONZERO_BALANCES,
-          }),
+        penumbra.service(ViewService).delegationsByAddressIndex({
+          addressIndex: new AddressIndex({ account: subaccount }),
+          filter: DelegationsByAddressIndexRequest_Filter.ALL_ACTIVE_WITH_NONZERO_BALANCES,
+        }),
       );
 
       return res.map(item => item.valueView).filter(item => !!item);
