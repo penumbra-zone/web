@@ -10,9 +10,10 @@ import { ConnectButton } from '@/features/connect/connect-button';
 import { CosmosConnectButton } from '@/features/cosmos/cosmos-connect-button';
 import { useUnifiedAssets } from '../api/use-unified-assets';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { PortfolioCard } from './portfolio-card';
 
 export const dismissedKey = 'veil-portfolio-onboarding-dismissed';
-const isPhase2 = false;
+const isPhase2 = true;
 
 const OnboardingCard = ({
   title,
@@ -24,7 +25,7 @@ const OnboardingCard = ({
   footer?: React.ReactNode;
 }) => {
   return (
-    <div className='w-full sm:flex-1 p-4 border border-other-tonalStroke rounded-lg bg-other-tonalFill5'>
+    <div className='w-full sm:flex-1 p-4 border border-other-tonalStroke backdrop-blur-lg rounded-lg bg-other-tonalFill5'>
       <div className='mb-1'>
         <Text as='div' body color='text.primary'>
           {title}
@@ -60,7 +61,7 @@ export const Onboarding = observer(() => {
       localStorage.setItem(dismissedKey, 'false');
     } else {
       const storedValue = localStorage.getItem(dismissedKey);
-      setIsDismissed(storedValue === 'true' ? true : false);
+      setIsDismissed(storedValue === 'true');
     }
   }, [showOnboarding]);
 
@@ -71,7 +72,7 @@ export const Onboarding = observer(() => {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- temporary
   if (isPhase2) {
     return (
-      <Card>
+      <PortfolioCard>
         <div className='sm:p-3 p-1'>
           <div className='flex justify-between mb-4'>
             <div className='flex flex-col'>
@@ -148,7 +149,7 @@ export const Onboarding = observer(() => {
             />
           </div>
         </div>
-      </Card>
+      </PortfolioCard>
     );
   }
 

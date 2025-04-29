@@ -72,7 +72,7 @@ jobs:
 
   turbo-test:
     name: test
-    runs-on: buildjet-4vcpu-ubuntu-2204
+    runs-on: buildjet-8vcpu-ubuntu-2204
     needs: turbo-build
     steps:
       - uses: actions/checkout@v4

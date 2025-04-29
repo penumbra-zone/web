@@ -31,6 +31,7 @@ export const Content = ({
 
   return (
     <EmptyContent zIndex={zIndex}>
+      {/* TODO: this display breaks dialogs on large screens */}
       <Display>
         <Grid container>
           <Grid mobile={0} tablet={2} desktop={3} xl={4} />
