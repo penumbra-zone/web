@@ -57,7 +57,7 @@ export const VoteDialogSearchResults = ({
         epoch: 0,
         votes: 0,
         portion: 0,
-        missing_votes: 0n,
+        missing_votes: 0,
       };
     });
   }, [filteredAssets, gaugeMapByDenom]);
