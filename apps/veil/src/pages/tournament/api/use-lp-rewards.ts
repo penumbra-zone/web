@@ -12,7 +12,7 @@ import {
   LpRewardsApiResponse,
   LpRewardsSortKey,
   LpRewardsSortDirection,
-} from '@/shared/api/server/tournament/lp-rewards';
+} from '@/pages/tournament/server/lp-rewards';
 import { penumbra } from '@/shared/const/penumbra';
 import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { ViewService } from '@penumbra-zone/protobuf/penumbra/view/v1/view_connect';
@@ -41,7 +41,7 @@ export const useLpRewards = (
   sortKey?: LpRewardsSortKey | '',
   sortDirection?: LpRewardsSortDirection,
 ) => {
-  const [positionIds, setPositionIds] = useState<PositionId[]>([]);
+  const [positionIds, setPositionIds] = useState<string[]>([]);
 
   useEffect(() => {
     void Array.fromAsync(
@@ -50,8 +50,8 @@ export const useLpRewards = (
       }),
     ).then(ownedRes => {
       const positionIds = ownedRes
-        .map(r => bech32mPositionId(r.positionId))
-        .filter(Boolean) as PositionId[];
+        .map(r => r.positionId && bech32mPositionId(r.positionId))
+        .filter(Boolean) as string[];
       setPositionIds(positionIds);
     });
   }, [subaccount]);

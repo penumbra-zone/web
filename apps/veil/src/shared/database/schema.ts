@@ -384,6 +384,19 @@ export interface LQTSummary {
   available_lp_rewards: number;
 }
 
+export interface LQTLPs {
+  epoch: number;
+  position_id: string;
+  asset_id: string;
+  rewards: number;
+  executions: number;
+  um_volume: number;
+  asset_volume: number;
+  asset_fees: number;
+  points: number;
+  points_share: number;
+}
+
 interface RawDB {
   _insights_shielded_pool_depositors: _InsightsShieldedPoolDepositors;
   _insights_validators: _InsightsValidators;
@@ -418,6 +431,7 @@ interface RawDB {
   'lqt.gauge': Gauge;
   'lqt.delegator_summary': DelegatorSummary;
   'lqt.summary': LQTSummary;
+  'lqt.lps': LQTLPs;
 }
 
 export type DB = Pick<
@@ -437,4 +451,5 @@ export type DB = Pick<
   | 'lqt.gauge'
   | 'lqt.delegator_summary'
   | 'lqt.summary'
+  | 'lqt.lps'
 >;
