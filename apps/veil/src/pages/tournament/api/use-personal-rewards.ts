@@ -6,7 +6,10 @@ import { penumbra } from '@/shared/const/penumbra';
 import { statusStore } from '@/shared/model/status';
 import { TournamentDelegatorHistoryResponse } from '../server/delegator-history';
 import { apiPostFetch } from '@/shared/utils/api-fetch';
-import { AddressByIndexResponse, TournamentVotesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import {
+  AddressByIndexResponse,
+  TournamentVotesResponse,
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 
 const fetchRewards = async (
   epochOrHeight: { type: 'epoch'; value: bigint } | { type: 'blockHeight'; value: bigint },
@@ -36,11 +39,11 @@ const fetchRewards = async (
         );
     }
   })();
-  
+
   const addressPromise: Promise<AddressByIndexResponse> = penumbra
     .service(ViewService)
     .addressByIndex({ addressIndex: { account: accountFilter?.account } });
-  
+
   const [votes, { address }] = await Promise.all([votesPromise, addressPromise]);
 
   if (votes.length > 0) {
