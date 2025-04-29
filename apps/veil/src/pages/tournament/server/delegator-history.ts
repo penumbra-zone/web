@@ -13,6 +13,11 @@ export interface TournamentDelegatorHistoryRequest {
   epoch?: number;
 }
 
+export interface DelegatorHistoryRequest {
+  epochs: string[];
+  address: Address;
+}
+
 export interface TournamentDelegatorHistoryResponse {
   data: DelegatorHistory[];
   totalRewards: number;
@@ -34,11 +39,15 @@ const tournamentDelegatorHistoryQuery = async ({
   page,
   epoch,
 }: TournamentDelegatorHistoryRequest) => {
+  if (!epoch) {
+    throw new Error('Missing epoch value field');
+  }
+
   return pindexerDb
     .selectFrom('lqt.delegator_history')
     .orderBy('epoch', 'desc')
     .orderBy('power', 'desc')
-    .where('epoch', '=', epoch!)
+    .where('epoch', '=', epoch)
     .limit(limit)
     .offset(limit * (page - 1))
     .selectAll()
@@ -73,13 +82,13 @@ function processEpochResults(
       item => bech32mAddress(new Address({ inner: item.address })) === targetAddress,
     );
 
-    if (matches.length > 0) {
+    if (matches.length > 0 && matches[0]) {
       // Calculate total power for matches, and store first match's reward and asset_id.
       const totalPower = matches.reduce((sum, item) => sum + Number(item.power), 0);
       matchesByEpoch.set(epoch, {
         power: totalPower,
-        reward: Number(matches[0]!.reward),
-        assetId: matches[0]!.asset_id,
+        reward: Number(matches[0].reward),
+        assetId: matches[0].asset_id,
       });
     }
   }
@@ -90,7 +99,7 @@ function processEpochResults(
 
   for (const [epoch, match] of matchesByEpoch.entries()) {
     results.push({
-      address: Buffer.from(address.inner!),
+      address: Buffer.from(address.inner),
       epoch: parseInt(epoch, 10),
       power: match.power,
       asset_id: match.assetId,
@@ -108,14 +117,15 @@ export async function POST(
 ): Promise<NextResponse<Serialized<TournamentDelegatorHistoryResponse | { error: string }>>> {
   const params = getQueryParams(req);
 
-  const { epochs, address } = await req.json();
-  let targetAddress = bech32mAddress(address);
+  const data = (await req.json()) as DelegatorHistoryRequest;
+  const { epochs, address } = data;
+  const targetAddress = bech32mAddress(address);
 
   // Execute the queries for all epochs concurrently.
   const queryPromises = [...epochs].map(async epoch => {
     const data = await tournamentDelegatorHistoryQuery({
       ...params,
-      epoch,
+      epoch: Number(epoch),
       limit: 10,
     });
     return {
@@ -127,11 +137,7 @@ export async function POST(
   const epochResults = await Promise.all(queryPromises);
 
   // Return the delegator’s epoch history and the total reward accumulated across all epochs.
-  const { results, totalReward } = processEpochResults(
-    epochResults,
-    targetAddress,
-    address as Address,
-  );
+  const { results, totalReward } = processEpochResults(epochResults, targetAddress, address);
 
   return NextResponse.json({
     data: results,

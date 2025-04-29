@@ -4,7 +4,7 @@ import { assetPatterns } from '@penumbra-zone/types/assets';
 import { Dialog } from '@penumbra-zone/ui/Dialog';
 import { Text } from '@penumbra-zone/ui/Text';
 import { useRegistryAssets } from '@/shared/api/registry';
-import type { MappedGauge } from '../../../../shared/api/server/tournament/previous-epochs';
+import type { MappedGauge } from '../../server/previous-epochs';
 import { LoadingVoteAsset } from './loading-vote-asset';
 import { VoteDialogAsset } from './vote-dialog-asset';
 import { VotingDialogNoResults } from './no-results';

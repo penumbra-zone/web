@@ -19,7 +19,7 @@ import { connectionStore } from '@/shared/model/connection';
 import type {
   DelegatorLeaderboardSortKey,
   DelegatorLeaderboardData,
-} from '../../../shared/api/server/tournament/delegator-leaderboard';
+} from '../server/delegator-leaderboard';
 import { useDelegatorLeaderboard, BASE_PAGE, BASE_LIMIT } from '../api/use-delegator-leaderboard';
 import { useSortableTableHeaders } from './sortable-table-header';
 import { useIndexByAddress } from '../api/use-index-by-address';

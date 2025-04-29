@@ -3,7 +3,7 @@ import { apiFetch } from '@/shared/utils/api-fetch';
 import type {
   PreviousEpochsApiResponse,
   PreviousEpochsRequest,
-} from '@/shared/api/server/tournament/previous-epochs';
+} from '@/pages/tournament/server/previous-epochs';
 import { useRefetchOnNewBlock } from '@/shared/api/compact-block';
 
 export const useEpochGauge = (epoch?: number) => {

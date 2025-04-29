@@ -14,7 +14,7 @@ import { useLQTNotes } from '../../api/use-voting-notes';
 import { voteTournament } from '../../../../entities/tournament/api/vote';
 import { useCurrentEpoch } from '../../api/use-current-epoch';
 import { useEpochGauge } from '../../api/use-epoch-gauge';
-import { MappedGauge } from '../../../../shared/api/server/tournament/previous-epochs';
+import { MappedGauge } from '../../server/previous-epochs';
 import { VoteDialogSearchResults } from './search-results';
 import { VotingAssetSelector } from './asset-selector';
 

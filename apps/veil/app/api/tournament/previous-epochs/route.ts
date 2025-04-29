@@ -1,1 +1,1 @@
-export { GET } from '@/shared/api/server/tournament/previous-epochs';
+export { GET } from '@/pages/tournament/server/previous-epochs';

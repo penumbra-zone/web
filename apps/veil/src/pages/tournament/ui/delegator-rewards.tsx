@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { observer } from 'mobx-react-lite';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
@@ -22,33 +22,40 @@ import { pnum } from '@penumbra-zone/types/pnum';
 import { useStakingTokenMetadata } from '@/shared/api/registry';
 
 export const DelegatorRewards = observer(() => {
-  const { connected, subaccount } = connectionStore;
+  const { subaccount } = connectionStore;
 
   const { epoch } = useCurrentEpoch();
-  const { data: total, isLoading } = usePersonalRewards(subaccount, epoch);
-  const { data: stakingToken } = useStakingTokenMetadata();
+  const { data: total, isLoading: isRewardsLoading } = usePersonalRewards(subaccount, epoch);
+  const { data: stakingToken, isLoading: isTokenLoading } = useStakingTokenMetadata();
 
   const [parent] = useAutoAnimate();
   const [expanded, setExpanded] = useState(false);
   const toggleExpanded = () => setExpanded(prev => !prev);
-
   const [tab, setTab] = useState<'lp' | 'voting'>('lp');
 
-  if (!connected) {
-    return null;
-  }
+  // Check if we have all the data needed to display rewards
+  const isLoading = isRewardsLoading || isTokenLoading;
+  const hasCompleteData = !isLoading && total?.totalRewards !== undefined && stakingToken;
 
-  const rewardView = new ValueView({
-    valueView: {
-      case: 'knownAssetId',
-      value: {
-        amount: pnum(total?.totalRewards).toAmount(),
-        metadata: stakingToken,
+  // Memoize the reward view to prevent unnecessary recalculations
+  const rewardView = useMemo(() => {
+    if (!hasCompleteData) {
+      return undefined;
+    }
+
+    return new ValueView({
+      valueView: {
+        case: 'knownAssetId',
+        value: {
+          amount: pnum(total.totalRewards).toAmount(),
+          metadata: stakingToken,
+        },
       },
-    },
-  });
+    });
+  }, [hasCompleteData, total?.totalRewards, stakingToken]);
 
-  const isTotalZero = total ? isZero(getAmount(rewardView)) : true;
+  // Only check for zero when we have valid data
+  const isTotalZero = rewardView ? isZero(getAmount(rewardView)) : true;
 
   return (
     <section ref={parent} className='p-6 rounded-lg bg-other-tonalFill5 backdrop-blur-lg'>
@@ -62,16 +69,17 @@ export const DelegatorRewards = observer(() => {
           </Text>
         </div>
 
-        {isLoading || !total ? (
+        {!hasCompleteData ? (
           <div className='w-24 h-10'>
             <Skeleton />
           </div>
         ) : (
           <div className='flex items-center gap-4 [&_span]:font-mono [&_span]:text-3xl'>
-            <Density sparse>
-              <ValueViewComponent valueView={rewardView} priority='tertiary' />
-            </Density>
-
+            {rewardView && (
+              <Density sparse>
+                <ValueViewComponent valueView={rewardView} priority='tertiary' />
+              </Density>
+            )}
             <Density compact>
               {!isTotalZero && (
                 <Button
@@ -88,7 +96,7 @@ export const DelegatorRewards = observer(() => {
         )}
       </div>
 
-      {expanded && (
+      {expanded && hasCompleteData && (
         <div className='flex flex-col gap-4 mt-4'>
           <div className='[&_button]:grow'>
             <SegmentedControl value={tab} onChange={value => setTab(value as typeof tab)}>

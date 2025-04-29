@@ -1,1 +1,1 @@
-export { POST } from '@/shared/api/server/tournament/delegator-history';
+export { POST } from '@/pages/tournament/server/delegator-history';

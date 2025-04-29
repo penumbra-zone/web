@@ -4,7 +4,7 @@ import { useRefetchOnNewBlock } from '@/shared/api/compact-block';
 import type {
   TournamentSummaryRequest,
   TournamentSummaryApiResponse,
-} from '../../../shared/api/server/tournament/summary';
+} from '../server/summary';
 
 export const useTournamentSummary = (params?: Partial<TournamentSummaryRequest>) => {
   const query = useQuery({

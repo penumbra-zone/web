@@ -4,7 +4,7 @@ import type {
   DelegatorLeaderboardApiResponse,
   DelegatorLeaderboardRequest,
   DelegatorLeaderboardSortKey,
-} from '../../../shared/api/server/tournament/delegator-leaderboard';
+} from '../server/delegator-leaderboard';
 
 export const BASE_LIMIT = 10;
 export const BASE_PAGE = 1;
