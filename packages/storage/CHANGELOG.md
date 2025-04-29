@@ -1,5 +1,20 @@
 # @penumbra-zone/storage
 
+## 55.0.0
+
+### Minor Changes
+
+- 93f1d05: proto and storage changes to support querying tournament votes
+
+### Patch Changes
+
+- Updated dependencies [93f1d05]
+  - @penumbra-zone/protobuf@10.0.0
+  - @penumbra-zone/types@33.0.0
+  - @penumbra-zone/wasm@46.0.0
+  - @penumbra-zone/bech32m@16.0.0
+  - @penumbra-zone/getters@26.0.0
+
 ## 54.0.0
 
 ### Patch Changes
