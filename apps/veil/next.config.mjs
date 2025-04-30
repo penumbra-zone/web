@@ -44,6 +44,15 @@ const nextConfig = {
         },
       ],
     });
+    // Configuration for static fonts, for the social card feature.
+    config.module.rules.push({
+      test: /\.(ttf|ttc?)$/,
+      type: 'asset/resource',
+      generator: {
+        // where in .next/server/ it'll put them
+        filename: 'static/fonts/[name].[hash][ext]',
+      },
+    });
 
     config.experiments.asyncWebAssembly = true;
 
