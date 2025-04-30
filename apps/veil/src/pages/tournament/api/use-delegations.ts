@@ -15,6 +15,8 @@ export const useAccountDelegations = (disabled?: boolean) => {
     queryKey: ['delegations-by-address-index', subaccount],
     staleTime: Infinity,
     queryFn: async () => {
+      // TODO: revisit the method later as it's not super efficient and other method
+      //  could suit the case of checking for non-eligible LQT notes
       const res = await Array.fromAsync(
         penumbra.service(ViewService).delegationsByAddressIndex({
           addressIndex: new AddressIndex({ account: subaccount }),
