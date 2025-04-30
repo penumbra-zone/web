@@ -18,14 +18,15 @@ export const useTournamentVotes = (epoch?: number, disabled?: boolean) => {
         throw new Error('Epoch is required');
       }
 
-      const res = await Array.fromAsync(
-        penumbra.service(ViewService).tournamentVotes({
-          accountFilter: new AddressIndex({ account: subaccount }),
-          epochIndex: BigInt(epoch),
-        }),
-      );
+      // creates an iterable from the stream
+      const iterable = penumbra.service(ViewService).tournamentVotes({
+        accountFilter: new AddressIndex({ account: subaccount }),
+        epochIndex: BigInt(epoch),
+      });
 
-      return res[0]?.votes ?? [];
+      // breaks the loop after the first iteration
+      const result = await iterable[Symbol.asyncIterator]().next();
+      return result.done ? [] : result.value.votes;
     },
   });
 
