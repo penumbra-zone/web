@@ -110,6 +110,7 @@ const LeaderboardRow = observer(
           {row.streak}
         </TableCell>
         <TableCell cell loading={loading}>
+          {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- required to ensure staking token is loaded before rendering */}
           {row.total_rewards && stakingToken && !stakingLoading && (
             <ValueViewComponent valueView={totalRewards} priority='tertiary' />
           )}

@@ -18,8 +18,7 @@ export const useStakingTokenMetadata = () => {
       const { stakingAssetId } = chainRegistryClient.bundled.globals();
       const stakingAssetsMetadata = registry.getMetadata(stakingAssetId);
 
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- staking token exists in registry
-      return stakingAssetsMetadata!;
+      return stakingAssetsMetadata;
     },
     staleTime: Infinity,
   });
