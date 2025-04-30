@@ -98,13 +98,19 @@ export function getTextWidth(
 
 export function registerFonts() {
   if (typeof window === 'undefined') {
-    const fontsDir =
-      process.env.NODE_ENV === 'production'
-        ? // from .next/standalone/server.js
-          // but in prod we copy .next/standalone to ./
-          join(__dirname, 'public', 'assets', 'fonts')
-        : // from .next/server/app/api/tournament/social-image.png
-          join(__dirname, '..', '..', '..', '..', '..', '..', 'public', 'assets', 'fonts');
+    // from .next/server/app/api/tournament/social-image.png
+    const fontsDir = join(
+      __dirname,
+      '..',
+      '..',
+      '..',
+      '..',
+      '..',
+      '..',
+      'public',
+      'assets',
+      'fonts',
+    );
 
     registerFont(join(fontsDir, 'SGr-IosevkaTerm-Medium.ttc'), {
       family: 'Iosevka Term',
