@@ -24,6 +24,7 @@ import { useDelegatorLeaderboard, BASE_PAGE, BASE_LIMIT } from '../api/use-deleg
 import { useSortableTableHeaders } from './sortable-table-header';
 import { useIndexByAddress } from '../api/use-index-by-address';
 import { useStakingTokenMetadata } from '@/shared/api/registry';
+import { Skeleton } from '@penumbra-zone/ui/Skeleton';
 
 const LeaderboardRow = observer(
   ({ row, loading }: { row: DelegatorLeaderboardData; loading: boolean }) => {
@@ -110,9 +111,11 @@ const LeaderboardRow = observer(
           {row.streak}
         </TableCell>
         <TableCell cell loading={loading}>
-          {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- required to ensure staking token is loaded before rendering */}
-          {row.total_rewards && stakingToken && !stakingLoading && (
-            <ValueViewComponent valueView={totalRewards} priority='tertiary' />
+          {stakingLoading ? (
+            <Skeleton />
+          ) : (
+            row.total_rewards &&
+            stakingToken && <ValueViewComponent valueView={totalRewards} priority='tertiary' />
           )}
         </TableCell>
         <TableCell cell loading={loading}>
