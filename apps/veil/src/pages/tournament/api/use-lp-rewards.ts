@@ -5,7 +5,7 @@ import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_
 import { bech32mPositionId } from '@penumbra-zone/bech32m/plpid';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
 import { getAmount } from '@penumbra-zone/getters/value-view';
-import { apiFetch } from '@/shared/utils/api-fetch';
+import { apiPostFetch } from '@/shared/utils/api-fetch';
 
 import {
   LpRewardsRequest,
@@ -59,9 +59,10 @@ export const useLpRewards = (
   console.log('TCL: positionIds', positionIds);
 
   const query = useQuery<Required<Reward>[]>({
-    queryKey: ['my-lp-rewards', positionIds, page, limit, sortKey, sortDirection],
+    queryKey: ['lp-rewards', positionIds, page, limit, sortKey, sortDirection],
     queryFn: async () => {
-      return apiFetch<LpRewardsApiResponse>('/api/tournament/lp-rewards', {
+      console.log('TCL: positionIds', positionIds);
+      return apiPostFetch<LpRewardsApiResponse>('/api/tournament/lp-rewards', {
         positionIds,
         page,
         limit,
@@ -69,7 +70,7 @@ export const useLpRewards = (
         sortDirection,
       } satisfies Partial<LpRewardsRequest>);
     },
-    enabled: positionIds?.length > 0,
+    enabled: positionIds.length > 0,
   });
 
   return {

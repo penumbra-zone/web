@@ -16,7 +16,8 @@ export const LpRewards = observer(() => {
   const { subaccount } = connectionStore;
   const [page, setPage] = useState(BASE_PAGE);
   const [limit, setLimit] = useState(BASE_LIMIT);
-  const { getTableHeader, sortBy } = useSortableTableHeaders<keyof Required<Reward>['sort']>();
+  const { getTableHeader, sortBy } =
+    useSortableTableHeaders<keyof Required<Reward>['sort']>('epoch');
 
   const {
     query: { data = [], isLoading },
