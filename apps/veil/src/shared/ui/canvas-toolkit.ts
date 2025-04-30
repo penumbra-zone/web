@@ -1,6 +1,9 @@
 import { theme } from '@penumbra-zone/ui/theme';
 import { registerFont } from 'canvas';
-import path from 'path';
+import PoppinsMedium from '@/../public/assets/fonts/Poppins-Medium.ttf';
+import WorkSansMedium from '@/../public/assets/fonts/WorkSans-Medium.ttf';
+import IosevkaRegular from '@/../public/assets/fonts/SGr-IosevkaTerm-Regular.ttc';
+import IosevkaMedium from '@/../public/assets/fonts/SGr-IosevkaTerm-Medium.ttc';
 
 export const scale = typeof window !== 'undefined' ? window.devicePixelRatio : 2;
 
@@ -98,36 +101,17 @@ export function getTextWidth(
 
 export function registerFonts() {
   if (typeof window === 'undefined') {
-    try {
-      function findVeilRoot(startPath: string) {
-        const parts = path.resolve(startPath).split(path.sep);
-
-        const index = parts.lastIndexOf('veil');
-        if (index === -1) {
-          throw new Error(`Directory "veil" not found in path: ${startPath}`);
-        }
-
-        return parts.slice(0, index + 1).join(path.sep);
-      }
-
-      const fontsDir = `${findVeilRoot(process.cwd())}/public/assets/fonts`;
-      const resolveFont = (font: string) => `${fontsDir}/${font}`;
-
-      registerFont(resolveFont('SGr-IosevkaTerm-Medium.ttc'), {
-        family: 'Iosevka Term',
-        weight: 'medium',
-      });
-      registerFont(resolveFont('SGr-IosevkaTerm-Regular.ttc'), {
-        family: 'Iosevka Term',
-        weight: 'normal',
-      });
-      registerFont(resolveFont('Poppins-Medium.ttf'), { family: 'Poppins' });
-      registerFont(resolveFont('WorkSans-Medium.ttf'), {
-        family: 'Work Sans',
-      });
-    } catch (e) {
-      console.error('__dirname', __dirname);
-      console.error('Error registering fonts', e);
-    }
+    registerFont(IosevkaMedium, {
+      family: 'Iosevka Term',
+      weight: 'medium',
+    });
+    registerFont(IosevkaRegular, {
+      family: 'Iosevka Term',
+      weight: 'normal',
+    });
+    registerFont(PoppinsMedium, { family: 'Poppins' });
+    registerFont(WorkSansMedium, {
+      family: 'Work Sans',
+    });
   }
 }
