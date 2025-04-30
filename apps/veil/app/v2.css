@@ -23,6 +23,11 @@ body > section {
   z-index: 0;
 }
 
+/* Fix for Prax notifications not showing above dialog backdrops */
+body > section[aria-live='polite'] {
+  z-index: 9999999999999;
+}
+
 ::-webkit-scrollbar {
   width: 4px;
   height: 4px;

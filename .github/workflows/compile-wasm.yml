@@ -8,29 +8,28 @@ jobs:
     runs-on: buildjet-16vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
+
       - id: compiled
         uses: buildjet/cache@v4
         with:
           path: .turbo
           key: ${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-compiled
           restore-keys: ${{ hashFiles('**/Cargo.lock') }}
-      - uses: pnpm/action-setup@v4
-      - uses: buildjet/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm turbo telemetry disable
-      - uses: dtolnay/rust-toolchain@stable # rust only on buildjet
-        with:
-          targets: wasm32-unknown-unknown
-      - uses: jetli/wasm-pack-action@v0.4.0 # preinstall wasm-pack
-        with:
-          version: 'latest'
-      - run: pnpm turbo compile --cache-dir=.turbo # compile wasm
+
+      - name: setup nix
+        uses: ./.github/actions/setup-nix
+        # Optional: override default parameters
+        # with:
+        #   backend: 'github'
+
+      - name: compile wasm code
+        run: nix develop --command just wasm
+
       - name: Verify no unexpected file changes (like cargo.lock change)
         run: git diff --exit-code
         working-directory: packages/wasm/crate
-      - run: cargo tree --invert penumbra-wasm --edges features # debug tree
+
+      - name: dump rust dependencies for debugging, only on failure
+        run: nix develop --command cargo tree --invert penumbra-wasm --edges features
         if: failure()
         working-directory: packages/wasm/crate

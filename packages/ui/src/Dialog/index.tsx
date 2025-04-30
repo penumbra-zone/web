@@ -30,6 +30,7 @@ interface UncontrolledDialogProps {
 
 export type DialogProps = {
   children?: ReactNode;
+  modal?: boolean;
 } & (ControlledDialogProps | UncontrolledDialogProps);
 
 /**
@@ -123,13 +124,17 @@ export type DialogProps = {
  * );
  * ```
  */
-export const Dialog = ({ children, onClose, isOpen }: DialogProps) => {
+export const Dialog = ({ children, onClose, isOpen, modal = true }: DialogProps) => {
   const isControlledComponent = isOpen !== undefined;
   const showCloseButton = (isControlledComponent && !!onClose) || !isControlledComponent;
 
   return (
     <DialogContext.Provider value={{ showCloseButton }}>
-      <RadixDialog.Root open={isOpen} onOpenChange={value => onClose && !value && onClose()}>
+      <RadixDialog.Root
+        modal={modal}
+        open={isOpen}
+        onOpenChange={value => onClose && !value && onClose()}
+      >
         {children}
       </RadixDialog.Root>
     </DialogContext.Provider>
