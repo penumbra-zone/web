@@ -4,6 +4,7 @@ import { observer } from 'mobx-react-lite';
 import { Ban, Coins, Check, Wallet2, ExternalLink } from 'lucide-react';
 import { ValueView, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import { addAmounts } from '@penumbra-zone/types/amount';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
@@ -12,32 +13,52 @@ import { connectionStore } from '@/shared/model/connection';
 import { useGetMetadata } from '@/shared/api/assets';
 import { PagePath } from '@/shared/const/pages';
 import { useLQTNotes } from '../api/use-voting-notes';
-import { VoteDialogueSelector } from './vote-dialogue';
-import { checkIfAlreadyVoted } from '../api/vote';
+import { useCurrentEpoch } from '../api/use-current-epoch';
+import { VoteDialogueSelector } from './vote-dialog';
+import { checkIfAlreadyVoted } from '../../../entities/tournament/api/vote';
 
 // TODO: use it for both landing and round page, apply all component states from Figma
-export const VotingInfo = observer(({ epoch }: { epoch: number }) => {
+export const VotingInfo = observer(() => {
   const { connected, subaccount } = connectionStore;
 
   const getMetadata = useGetMetadata();
-  const { notes } = useLQTNotes(subaccount);
+  const { epoch } = useCurrentEpoch();
+  const { data: notes } = useLQTNotes(subaccount, epoch);
 
   // Check if all notes have been used for voting in the current epoch.
   const allNotesVoted = checkIfAlreadyVoted({ votingNotes: notes });
+  const epochLink = epoch ? PagePath.TournamentRound.replace(':epoch', epoch.toString()) : '';
 
-  // TODO: create a utility to aggregate delegation note balances for use in the footer.
-  const firstNoteValueView = useMemo(() => {
-    const value = notes?.[0]?.noteRecord?.note?.value;
-    const metadata = value?.assetId && getMetadata(value.assetId);
-    if (!value || !metadata) {
+  const aggregatedNotes = useMemo(() => {
+    const values = (notes ?? []).map(note => note.noteRecord?.note?.value).filter(item => !!item);
+
+    const amount = values.reduce(
+      (accum, current) => {
+        if (current.amount) {
+          return addAmounts(accum, current.amount);
+        }
+        return accum;
+      },
+      new Amount({ lo: 0n, hi: 0n }),
+    );
+
+    const metadata = values[0]?.assetId && getMetadata(values[0].assetId);
+
+    if (!values.length || !metadata) {
       return undefined;
     }
+
     return new ValueView({
       valueView: {
         case: 'knownAssetId',
         value: {
-          amount: value.amount,
-          metadata,
+          amount,
+          metadata: {
+            ...metadata,
+            // noted can represent delUM from different validators,
+            // so this symbol hides the validator
+            symbol: 'delUM',
+          },
         },
       },
     });
@@ -95,7 +116,7 @@ export const VotingInfo = observer(({ epoch }: { epoch: number }) => {
           <ConnectButton actionType='accent' variant='default'>
             Connect Prax Wallet
           </ConnectButton>
-          <Link href={PagePath.TournamentRound.replace(':epoch', epoch.toString())}>
+          <Link href={epochLink}>
             <Button actionType='default'>Details</Button>
           </Link>
         </div>
@@ -111,8 +132,8 @@ export const VotingInfo = observer(({ epoch }: { epoch: number }) => {
             <Ban className='w-full h-full' />
           </div>
           <Text variant='small' color='text.secondary'>
-            You can’t vote in this epoch because you delegated UM after the epoch started. You’ll be
-            able to vote next epoch.
+            You can&#39;t vote in this epoch because you delegated your UM after the epoch started.
+            You&#39;ll be able to vote next epoch.
           </Text>
         </div>
         <div className='flex gap-2'>
@@ -122,7 +143,7 @@ export const VotingInfo = observer(({ epoch }: { epoch: number }) => {
             </Button>
           </div>
           <div className='flex-1'>
-            <Link href={PagePath.TournamentRound.replace(':epoch', epoch.toString())}>
+            <Link href={epochLink}>
               <Button actionType='default'>Details</Button>
             </Link>
           </div>
@@ -145,7 +166,7 @@ export const VotingInfo = observer(({ epoch }: { epoch: number }) => {
           <ValueViewComponent valueView={valueView} />
         </div>
         <div className='flex gap-2'>
-          <Link href={PagePath.TournamentRound.replace(':epoch', epoch.toString())}>
+          <Link href={epochLink}>
             <Button actionType='default'>Details</Button>
           </Link>
         </div>
@@ -162,9 +183,9 @@ export const VotingInfo = observer(({ epoch }: { epoch: number }) => {
               <Coins className='w-full h-full' />
             </div>
             <Text variant='small' color='text.secondary'>
-              You’ve delegated UM and are now eligible to vote in this epoch.
+              You&#39;ve delegated UM and can now vote with your delUM in this epoch.
             </Text>
-            {firstNoteValueView && <ValueViewComponent valueView={firstNoteValueView} />}
+            {aggregatedNotes && <ValueViewComponent valueView={aggregatedNotes} />}
           </div>
           <div className='flex gap-2 w-full'>
             <div className='flex-1 max-w-[300px]'>
@@ -173,7 +194,7 @@ export const VotingInfo = observer(({ epoch }: { epoch: number }) => {
               </Button>
             </div>
             <div className='flex-1'>
-              <Link href={PagePath.TournamentRound.replace(':epoch', epoch.toString())}>
+              <Link href={epochLink}>
                 <Button actionType='default'>Details</Button>
               </Link>
             </div>
@@ -202,7 +223,7 @@ export const VotingInfo = observer(({ epoch }: { epoch: number }) => {
           </Button>
         </div>
         <div className='flex-1'>
-          <Link href={PagePath.TournamentRound.replace(':epoch', epoch.toString())}>
+          <Link href={epochLink}>
             <Button actionType='default'>Details</Button>
           </Link>
         </div>

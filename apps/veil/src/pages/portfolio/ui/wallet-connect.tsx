@@ -81,9 +81,9 @@ export const WalletConnect = observer(() => {
   }, [totalPublicValue]);
 
   return (
-    <div className='grid grid-cols-1 md:grid-cols-2 gap-6 mb-8'>
+    <div className='grid grid-cols-1 md:grid-cols-2 gap-6 '>
       {/* Shielded Assets Card */}
-      <div className='relative bg-accentRadialBackground rounded-2xl p-6 flex space-between'>
+      <div className='relative bg-accentRadialBackground backdrop-blur-lg rounded-2xl p-6 flex space-between'>
         <div className='absolute top-6 right-6'>
           <Shield className='text-white opacity-10 w-8 h-8' />
         </div>
@@ -124,7 +124,7 @@ export const WalletConnect = observer(() => {
       </div>
 
       {/* Public Assets Card */}
-      <div className='relative bg-unshieldRadialBackground rounded-2xl p-6 flex space-between'>
+      <div className='relative bg-unshieldRadialBackground backdrop-blur-lg rounded-2xl p-6 flex space-between'>
         <div className='absolute top-6 right-6'>
           <Eye className='text-white opacity-10 w-8 h-8' />
         </div>

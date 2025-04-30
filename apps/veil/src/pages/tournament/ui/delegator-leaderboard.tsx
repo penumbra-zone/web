@@ -23,12 +23,14 @@ import type {
 import { useDelegatorLeaderboard, BASE_PAGE, BASE_LIMIT } from '../api/use-delegator-leaderboard';
 import { useSortableTableHeaders } from './sortable-table-header';
 import { useIndexByAddress } from '../api/use-index-by-address';
-import { GENERIC_DELUM } from './shared/delum-metadata';
+import { useStakingTokenMetadata } from '@/shared/api/registry';
+import { Skeleton } from '@penumbra-zone/ui/Skeleton';
 
 const LeaderboardRow = observer(
   ({ row, loading }: { row: DelegatorLeaderboardData; loading: boolean }) => {
     const { connected } = connectionStore;
     const { data: subaccountIndex, isLoading: indexLoading } = useIndexByAddress(row.address);
+    const { data: stakingToken, isLoading: stakingLoading } = useStakingTokenMetadata();
 
     const addressLink = useMemo(() => {
       if (loading) {
@@ -60,7 +62,7 @@ const LeaderboardRow = observer(
     }, [row.address, subaccountIndex, connected]);
 
     const totalRewards = useMemo(() => {
-      if (loading) {
+      if (loading || stakingLoading || !stakingToken) {
         return undefined;
       }
 
@@ -69,11 +71,11 @@ const LeaderboardRow = observer(
           case: 'knownAssetId',
           value: {
             amount: splitLoHi(BigInt(row.total_rewards)),
-            metadata: GENERIC_DELUM,
+            metadata: stakingToken,
           },
         },
       });
-    }, [loading, row.total_rewards]);
+    }, [loading, stakingLoading, row.total_rewards, stakingToken]);
 
     return (
       <Link
@@ -88,7 +90,7 @@ const LeaderboardRow = observer(
           {row.place}
         </TableCell>
         <TableCell cell loading={loading || indexLoading}>
-          {!loading && !indexLoading && (
+          {!loading && !indexLoading && !stakingLoading && (
             <>
               <AddressViewComponent
                 truncate
@@ -109,7 +111,12 @@ const LeaderboardRow = observer(
           {row.streak}
         </TableCell>
         <TableCell cell loading={loading}>
-          {row.total_rewards && <ValueViewComponent valueView={totalRewards} priority='tertiary' />}
+          {stakingLoading ? (
+            <Skeleton />
+          ) : (
+            row.total_rewards &&
+            stakingToken && <ValueViewComponent valueView={totalRewards} priority='tertiary' />
+          )}
         </TableCell>
         <TableCell cell loading={loading}>
           <Density slim>

@@ -5,9 +5,10 @@ import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { txHash: string } },
+  { params }: { params: Promise<{ txHash: string }> },
 ): Promise<NextResponse<TransactionApiResponse>> {
-  const txHash = params.txHash;
+  const paramsValue = await params;
+  const txHash = paramsValue.txHash;
   if (!txHash) {
     return NextResponse.json({ error: 'txHash is required' }, { status: 400 });
   }

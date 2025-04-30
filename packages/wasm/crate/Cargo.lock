@@ -816,8 +816,8 @@ dependencies = [
 
 [[package]]
 name = "decaf377-fmd"
-version = "2.0.0-alpha.6"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=783aa7661fb11ad8248153d6b71475b89158c64d#783aa7661fb11ad8248153d6b71475b89158c64d"
+version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "ark-ff",
  "ark-serialize",
@@ -830,8 +830,8 @@ dependencies = [
 
 [[package]]
 name = "decaf377-ka"
-version = "2.0.0-alpha.6"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=783aa7661fb11ad8248153d6b71475b89158c64d#783aa7661fb11ad8248153d6b71475b89158c64d"
+version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "ark-ff",
  "decaf377",
@@ -1356,9 +1356,9 @@ dependencies = [
 
 [[package]]
 name = "ibc-types"
-version = "0.15.0"
+version = "0.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fd68e32f5bd94849131670d34e21b0fb66057e91bee8e451e7f4e216e71616d2"
+checksum = "2370a3055f69d9dfe7382080a509560d2dd412d9f9f2a44e3a68945e5ec46955"
 dependencies = [
  "ibc-types-core-channel",
  "ibc-types-core-client",
@@ -1374,9 +1374,9 @@ dependencies = [
 
 [[package]]
 name = "ibc-types-core-channel"
-version = "0.15.0"
+version = "0.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c57da64f7e945e7443035275cc279e0176c988ea625968c2526706aafcff1766"
+checksum = "06058daf96374a50364aac20de8dbf78e493a775dc10b8584830b59f71fc8522"
 dependencies = [
  "anyhow",
  "bytes",
@@ -1407,9 +1407,9 @@ dependencies = [
 
 [[package]]
 name = "ibc-types-core-client"
-version = "0.15.0"
+version = "0.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "108a89f64ffa39e04a7e29de9d9824523c3164f8518927716be870ad8a7aedf9"
+checksum = "f44e3d3c92c22dacd2c8ca0a88af6241c15826a09aa234aa194c93c877a7c62a"
 dependencies = [
  "anyhow",
  "bytes",
@@ -1434,9 +1434,9 @@ dependencies = [
 
 [[package]]
 name = "ibc-types-core-commitment"
-version = "0.15.0"
+version = "0.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8949e33fbb9c3f1ae49588f4829977e80439f3dfc1491b5a69492f5e4a036949"
+checksum = "f410ddb6af18ec45b05817cd31458566954bf7277172522514be6d8205b5361b"
 dependencies = [
  "anyhow",
  "bytes",
@@ -1469,9 +1469,9 @@ dependencies = [
 
 [[package]]
 name = "ibc-types-core-connection"
-version = "0.15.0"
+version = "0.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f63035288d11e5830daf20fd99507a671ab1cc03fa04752d75ef1c75e2786543"
+checksum = "eb38f6cbfad8ccad7b7549dff3ef741b81881963708e959429dbe31273f8421d"
 dependencies = [
  "anyhow",
  "bytes",
@@ -1499,9 +1499,9 @@ dependencies = [
 
 [[package]]
 name = "ibc-types-domain-type"
-version = "0.15.0"
+version = "0.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c2c543a23a77a5d814e0aeffd5a918964468a8b213f664897bc3f8c50cc7d5c1"
+checksum = "2dd7cacffb213747dfb9ab0e6cc3be15a8650310d424375518d780e1750ab92d"
 dependencies = [
  "anyhow",
  "bytes",
@@ -1510,9 +1510,9 @@ dependencies = [
 
 [[package]]
 name = "ibc-types-identifier"
-version = "0.15.0"
+version = "0.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b2ed2d7f06055bb2548564bf02c8c4b47561134f282adae61dc5c6ed722e1cde"
+checksum = "a5d6f619f4e7ccaf76140c907ca994a70f220ee6ad4b60e2dc12403cf4250ace"
 dependencies = [
  "displaydoc",
  "serde",
@@ -1521,9 +1521,9 @@ dependencies = [
 
 [[package]]
 name = "ibc-types-lightclients-tendermint"
-version = "0.15.0"
+version = "0.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "00fd846b7eedca1dfbb7babeb55e0d74fb0d09a7db63da93737d54a581a96371"
+checksum = "84c5f0e9ae4354c692476d527432f9157c499ff25b528e008e7d353b3d49f473"
 dependencies = [
  "anyhow",
  "bytes",
@@ -1558,9 +1558,9 @@ dependencies = [
 
 [[package]]
 name = "ibc-types-path"
-version = "0.15.0"
+version = "0.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0f4da80e010427aff50f227920cdc8f7879469ce2db181cbcf92dc228172a334"
+checksum = "753ca9e6a7c27356e4ed0ce6b290abd1c3d01645803d825b98f992ebd8bd6964"
 dependencies = [
  "bytes",
  "derive_more",
@@ -1581,9 +1581,9 @@ dependencies = [
 
 [[package]]
 name = "ibc-types-timestamp"
-version = "0.15.0"
+version = "0.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "748b2fbebe30ca799d31f6fc220d705b5180a608db842e29a3722671411d81a6"
+checksum = "0f024a20672250555fa537bf8fef31aba6f4ab8f86b272e8025338cc004c3edb"
 dependencies = [
  "bytes",
  "displaydoc",
@@ -1600,9 +1600,9 @@ dependencies = [
 
 [[package]]
 name = "ibc-types-transfer"
-version = "0.15.0"
+version = "0.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8fcb46fe34a87db49bc9bb20918d7f882871a20d741d866d217c52a5dbe16a72"
+checksum = "6684f2e9a5f0fc723e22a185852a22a02d3c6d20d8bf863c37fe5c814be5f7ef"
 dependencies = [
  "displaydoc",
  "serde",
@@ -2080,8 +2080,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-asset"
-version = "2.0.0-alpha.6"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=783aa7661fb11ad8248153d6b71475b89158c64d#783aa7661fb11ad8248153d6b71475b89158c64d"
+version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2119,8 +2119,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-auction"
-version = "2.0.0-alpha.6"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=783aa7661fb11ad8248153d6b71475b89158c64d#783aa7661fb11ad8248153d6b71475b89158c64d"
+version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2164,8 +2164,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-community-pool"
-version = "2.0.0-alpha.6"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=783aa7661fb11ad8248153d6b71475b89158c64d#783aa7661fb11ad8248153d6b71475b89158c64d"
+version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2194,8 +2194,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-compact-block"
-version = "2.0.0-alpha.6"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=783aa7661fb11ad8248153d6b71475b89158c64d#783aa7661fb11ad8248153d6b71475b89158c64d"
+version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2225,8 +2225,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-dex"
-version = "2.0.0-alpha.6"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=783aa7661fb11ad8248153d6b71475b89158c64d#783aa7661fb11ad8248153d6b71475b89158c64d"
+version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2278,8 +2278,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-distributions"
-version = "2.0.0-alpha.6"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=783aa7661fb11ad8248153d6b71475b89158c64d#783aa7661fb11ad8248153d6b71475b89158c64d"
+version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2294,8 +2294,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-fee"
-version = "2.0.0-alpha.6"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=783aa7661fb11ad8248153d6b71475b89158c64d#783aa7661fb11ad8248153d6b71475b89158c64d"
+version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2318,8 +2318,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-funding"
-version = "2.0.0-alpha.6"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=783aa7661fb11ad8248153d6b71475b89158c64d#783aa7661fb11ad8248153d6b71475b89158c64d"
+version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "anyhow",
  "ark-groth16",
@@ -2349,8 +2349,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-governance"
-version = "2.0.0-alpha.6"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=783aa7661fb11ad8248153d6b71475b89158c64d#783aa7661fb11ad8248153d6b71475b89158c64d"
+version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2398,8 +2398,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-ibc"
-version = "2.0.0-alpha.6"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=783aa7661fb11ad8248153d6b71475b89158c64d#783aa7661fb11ad8248153d6b71475b89158c64d"
+version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2433,8 +2433,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-keys"
-version = "2.0.0-alpha.6"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=783aa7661fb11ad8248153d6b71475b89158c64d#783aa7661fb11ad8248153d6b71475b89158c64d"
+version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "aes",
  "anyhow",
@@ -2477,8 +2477,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-num"
-version = "2.0.0-alpha.6"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=783aa7661fb11ad8248153d6b71475b89158c64d#783aa7661fb11ad8248153d6b71475b89158c64d"
+version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2513,8 +2513,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-proof-params"
-version = "2.0.0-alpha.6"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=783aa7661fb11ad8248153d6b71475b89158c64d#783aa7661fb11ad8248153d6b71475b89158c64d"
+version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "anyhow",
  "ark-ec",
@@ -2538,8 +2538,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-proto"
-version = "2.0.0-alpha.6"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=783aa7661fb11ad8248153d6b71475b89158c64d#783aa7661fb11ad8248153d6b71475b89158c64d"
+version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2565,8 +2565,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-sct"
-version = "2.0.0-alpha.6"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=783aa7661fb11ad8248153d6b71475b89158c64d#783aa7661fb11ad8248153d6b71475b89158c64d"
+version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2599,8 +2599,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-shielded-pool"
-version = "2.0.0-alpha.6"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=783aa7661fb11ad8248153d6b71475b89158c64d#783aa7661fb11ad8248153d6b71475b89158c64d"
+version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2650,8 +2650,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-stake"
-version = "2.0.0-alpha.6"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=783aa7661fb11ad8248153d6b71475b89158c64d#783aa7661fb11ad8248153d6b71475b89158c64d"
+version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2691,8 +2691,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-tct"
-version = "2.0.0-alpha.6"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=783aa7661fb11ad8248153d6b71475b89158c64d#783aa7661fb11ad8248153d6b71475b89158c64d"
+version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "ark-ed-on-bls12-377",
  "ark-ff",
@@ -2720,8 +2720,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-transaction"
-version = "2.0.0-alpha.6"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=783aa7661fb11ad8248153d6b71475b89158c64d#783aa7661fb11ad8248153d6b71475b89158c64d"
+version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2772,8 +2772,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-txhash"
-version = "2.0.0-alpha.6"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=783aa7661fb11ad8248153d6b71475b89158c64d#783aa7661fb11ad8248153d6b71475b89158c64d"
+version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "anyhow",
  "blake2b_simd 1.0.2",
@@ -3016,7 +3016,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d0f3e5beed80eb580c68e2c600937ac2c4eedabdfd5ef1e5b7ea4f3fba84497b"
 dependencies = [
  "heck 0.4.1",
- "itertools 0.10.5",
+ "itertools 0.13.0",
  "log",
  "multimap",
  "once_cell",
@@ -3036,7 +3036,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "157c5a9d7ea5c2ed2d9fb8f495b64759f7816c7eaea54ba3978f0d63000162e3"
 dependencies = [
  "anyhow",
- "itertools 0.10.5",
+ "itertools 0.13.0",
  "proc-macro2 1.0.86",
  "quote",
  "syn 2.0.79",
@@ -3582,9 +3582,9 @@ dependencies = [
 
 [[package]]
 name = "tendermint"
-version = "0.40.1"
+version = "0.40.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d9703e34d940c2a293804752555107f8dbe2b84ec4c6dd5203831235868105d2"
+checksum = "ab2972a56891bc9173eaebdd51290bc848e448aa281881f3a4712bd8fe1899b3"
 dependencies = [
  "bytes",
  "digest 0.10.7",
@@ -3610,9 +3610,9 @@ dependencies = [
 
 [[package]]
 name = "tendermint-light-client-verifier"
-version = "0.40.1"
+version = "0.40.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f0cda4a449fc70985a95f892a67286f13afa4e048d90b8d04a2bf6341e88d1c2"
+checksum = "58dc3c4ebd336efaf0b831b0cd4d2aca24ac624875fa514e18fe636da9ea98d5"
 dependencies = [
  "derive_more",
  "flex-error",
@@ -3623,9 +3623,9 @@ dependencies = [
 
 [[package]]
 name = "tendermint-proto"
-version = "0.40.1"
+version = "0.40.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9ae9e1705aa0fa5ecb2c6aa7fb78c2313c4a31158ea5f02048bf318f849352eb"
+checksum = "ca44b9eaaa98e8440fbafe5593b8a32a1c395c094ac566b3eb50497f8bd2bee0"
 dependencies = [
  "bytes",
  "flex-error",

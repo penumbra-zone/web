@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { observer } from 'mobx-react-lite';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
@@ -13,25 +13,59 @@ import { Density } from '@penumbra-zone/ui/Density';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { connectionStore } from '@/shared/model/connection';
-import { useTotalRewards } from '../api/use-total-rewards';
 import { LpRewards } from './lp-rewards';
-import { VotingRewards } from './voting-rewards';
+import { VotingRewards } from './total-delegator-rewards';
+import { useCurrentEpoch } from '../api/use-current-epoch';
+import { usePersonalRewards } from '../api/use-personal-rewards';
+import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { pnum } from '@penumbra-zone/types/pnum';
+import { useStakingTokenMetadata } from '@/shared/api/registry';
 
-export const MyRewards = observer(() => {
-  const { connected } = connectionStore;
+// Outer component that handles the connection check. If the wallet isn't connected,
+// the parent hook won't execute, and the component won't render.
+export const DelegatorRewards = observer(() => {
+  if (!connectionStore.connected) {
+    return null;
+  }
 
-  const { data: total, isLoading } = useTotalRewards();
-  const isTotalZero = total ? isZero(getAmount(total)) : true;
+  return <DelegatorTotalRewards />;
+});
+
+export const DelegatorTotalRewards = observer(() => {
+  const { subaccount } = connectionStore;
+
+  const { epoch } = useCurrentEpoch();
+  const { data: total, isLoading: isRewardsLoading } = usePersonalRewards(subaccount, epoch);
+  const { data: stakingToken, isLoading: isTokenLoading } = useStakingTokenMetadata();
 
   const [parent] = useAutoAnimate();
   const [expanded, setExpanded] = useState(false);
   const toggleExpanded = () => setExpanded(prev => !prev);
-
   const [tab, setTab] = useState<'lp' | 'voting'>('lp');
 
-  if (!connected) {
-    return null;
-  }
+  // Check if we have all the data needed to display rewards
+  const isLoading = isRewardsLoading || isTokenLoading;
+  const hasCompleteData = !isLoading && total?.totalRewards !== undefined && stakingToken;
+
+  // Memoize the reward view to prevent unnecessary recalculations
+  const rewardView = useMemo(() => {
+    if (!hasCompleteData) {
+      return undefined;
+    }
+
+    return new ValueView({
+      valueView: {
+        case: 'knownAssetId',
+        value: {
+          amount: pnum(total.totalRewards).toAmount(),
+          metadata: stakingToken,
+        },
+      },
+    });
+  }, [hasCompleteData, total?.totalRewards, stakingToken]);
+
+  // Only check for zero when we have valid data
+  const isTotalZero = rewardView ? isZero(getAmount(rewardView)) : true;
 
   return (
     <section ref={parent} className='p-6 rounded-lg bg-other-tonalFill5 backdrop-blur-lg'>
@@ -41,20 +75,21 @@ export const MyRewards = observer(() => {
             My Total Rewards
           </Text>
           <Text small color='text.secondary'>
-            Cumulative rewards (in UM) from all epochs, voting and LPs rewards
+            Cumulative rewards from all epochs, voting and LPs rewards
           </Text>
         </div>
 
-        {isLoading || !total ? (
+        {!hasCompleteData ? (
           <div className='w-24 h-10'>
             <Skeleton />
           </div>
         ) : (
           <div className='flex items-center gap-4 [&_span]:font-mono [&_span]:text-3xl'>
-            <Density sparse>
-              <ValueViewComponent valueView={total} priority='tertiary' />
-            </Density>
-
+            {rewardView && (
+              <Density sparse>
+                <ValueViewComponent valueView={rewardView} priority='tertiary' />
+              </Density>
+            )}
             <Density compact>
               {!isTotalZero && (
                 <Button
@@ -71,7 +106,7 @@ export const MyRewards = observer(() => {
         )}
       </div>
 
-      {expanded && (
+      {expanded && hasCompleteData && (
         <div className='flex flex-col gap-4 mt-4'>
           <div className='[&_button]:grow'>
             <SegmentedControl value={tab} onChange={value => setTab(value as typeof tab)}>

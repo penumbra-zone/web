@@ -1,12 +1,15 @@
 import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
-import { GradientCard } from '../shared/gradient-card';
+import { formatDistanceToNowStrict } from 'date-fns';
+import { Skeleton } from '@penumbra-zone/ui/Skeleton';
 import { Icon } from '@penumbra-zone/ui/Icon';
 import { Text } from '@penumbra-zone/ui/Text';
-import { ArrowLeft } from 'lucide-react';
-import { pnum } from '@penumbra-zone/types/pnum';
-import { round } from '@penumbra-zone/types/round';
 import { PagePath } from '@/shared/const/pages';
+import { useTournamentSummary } from '../../api/use-tournament-summary';
+import { useRoundBlockInfo } from '../../api/use-round-block-info';
+import { IncentivePool } from '../landing-card/incentive-pool';
+import { GradientCard } from '../shared/gradient-card';
 import { VotingInfo } from '../voting-info';
 
 export interface RoundCardProps {
@@ -14,13 +17,20 @@ export interface RoundCardProps {
 }
 
 export const RoundCard = observer(({ epoch }: RoundCardProps) => {
-  const startBlock = 123;
-  const endBlock = 123;
-  const poolAmount = 123;
-  const poolLPs = 123;
-  const poolDelegators = 123;
-  const symbol = 'UM';
-  const ended = false as boolean;
+  const { data: summary, isLoading } = useTournamentSummary({
+    limit: 1,
+    page: 1,
+    epoch,
+  });
+
+  const {
+    data: blockInfo,
+    isLoading: blockInfoLoading,
+    isPending: blockInfoPending,
+  } = useRoundBlockInfo(epoch);
+
+  // TODO: update `useRoundBlockInfo` to take epoch into account, this should be fixed after
+  const ended = !!blockInfo?.endBlock;
 
   return (
     <GradientCard>
@@ -37,81 +47,56 @@ export const RoundCard = observer(({ epoch }: RoundCardProps) => {
                 Epoch #{epoch}
               </div>
             </div>
-            <div className='flex gap-2'>
-              <Text technical color='text.primary'>
-                Ends in ~12h
-              </Text>
-            </div>
+            {blockInfo?.nextEpoch && (
+              <div className='flex gap-2'>
+                <Text technical color='text.primary'>
+                  Ends in {formatDistanceToNowStrict(blockInfo.nextEpoch)}
+                </Text>
+              </div>
+            )}
           </div>
           <div className='flex gap-6'>
             <div className='flex w-1/2 flex-col items-center gap-2 bg-[rgba(250,250,250,0.05)] rounded-md p-3'>
-              <Text smallTechnical color='text.primary'>
-                {startBlock}
-              </Text>
+              {blockInfoLoading || blockInfoPending ? (
+                <div className='w-16 h-5'>
+                  <Skeleton />
+                </div>
+              ) : (
+                <Text smallTechnical color='text.primary'>
+                  {blockInfo?.startBlock.toString() ?? '–'}
+                </Text>
+              )}
+
               <Text detailTechnical color='text.secondary'>
                 Start Block
               </Text>
             </div>
             <div className='flex w-1/2 flex-col items-center gap-2 bg-[rgba(250,250,250,0.05)] rounded-md p-3'>
-              <Text smallTechnical color='text.primary'>
-                {endBlock}
-              </Text>
+              {blockInfoLoading || blockInfoPending ? (
+                <div className='h-5 w-16'>
+                  <Skeleton />
+                </div>
+              ) : (
+                <Text smallTechnical color='text.primary'>
+                  {blockInfo?.endBlock?.toString() ?? '–'}
+                </Text>
+              )}
+
               <Text detailTechnical color='text.secondary'>
                 End Block
               </Text>
             </div>
           </div>
-          <div className='flex flex-col gap-2'>
-            <div className='flex justify-between'>
-              <Text strong color='text.primary'>
-                Incentive Pool
-              </Text>
-              <Text technical color='text.primary'>
-                {pnum(poolAmount).toFormattedString()} {symbol}
-              </Text>
-            </div>
-            <div className='flex w-full h-[6px] bg-base-blackAlt rounded-full justify-between'>
-              <div
-                className='h-[6px] bg-primary-light rounded-l-full'
-                style={{ width: `calc(${(poolLPs / poolAmount) * 100}% - 1px)` }}
-              />
-              <div
-                className='h-[6px] bg-secondary-light rounded-r-full'
-                style={{ width: `${(poolDelegators / poolAmount) * 100}%` }}
-              />
-            </div>
-            <div className='flex justify-between'>
-              <div className='flex gap-2'>
-                <Text technical color='text.primary'>
-                  LPs
-                </Text>
-                <Text technical color='primary.light'>
-                  {pnum(poolLPs).toFormattedString()} {symbol}
-                </Text>
-                <Text technical color='text.secondary'>
-                  {round({ value: (poolLPs / poolAmount) * 100, decimals: 0 })}%
-                </Text>
-              </div>
-              <div className='flex gap-2'>
-                <Text technical color='text.primary'>
-                  Delegators
-                </Text>
-                <Text technical color='secondary.light'>
-                  {pnum(poolDelegators).toFormattedString()} {symbol}
-                </Text>
-                <Text technical color='text.secondary'>
-                  {round({ value: (poolDelegators / poolAmount) * 100, decimals: 0 })}%
-                </Text>
-              </div>
-            </div>
-          </div>
+
+          <IncentivePool summary={summary?.[0]} loading={isLoading} />
         </div>
+
         <div className='w-full h-[1px] md:w-[1px] md:h-auto bg-other-tonalStroke flex-shrink-0' />
         <div className='flex flex-col w-full md:w-1/2 md:justify-between gap-6 md:gap-0'>
           <Text variant='h4' color='text.primary'>
             {ended ? 'This Epoch is Ended' : 'Cast Your Vote'}
           </Text>
-          <VotingInfo epoch={epoch} />
+          <VotingInfo />
         </div>
       </div>
     </GradientCard>

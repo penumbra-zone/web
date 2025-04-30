@@ -68,10 +68,7 @@ const previousEpochsQuery = async ({
   // 1. Create a virtual column "place" that ranks the delegators based on the amount of epochs they voted in
   const ranked = pindexerDb
     .selectFrom('lqt.delegator_summary')
-    .select([
-      'address',
-      sql<number>`ROW_NUMBER() OVER (ORDER BY epochs_voted_in DESC)`.as('place'),
-    ]);
+    .select(['address', sql<number>`ROW_NUMBER() OVER (ORDER BY streak DESC)`.as('place')]);
 
   // 2. Add place column to summary table with correct sorting and limits
   return pindexerDb
