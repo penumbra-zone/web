@@ -105,10 +105,12 @@ export const getUseHook = <
       return onUnmount;
     }, [fetchArgsMemo, useStore]);
 
-    const prevState = useRef<ZQueryState<DataType | ProcessedDataType, FetchArgs> | undefined>();
+    const prevState = useRef<ZQueryState<DataType | ProcessedDataType, FetchArgs> | undefined>(
+      undefined,
+    );
     const prevSelectedState = useRef<
       AbridgedZQueryState<ProcessedDataType | DataType> | SelectorReturnType
-    >();
+    >(undefined);
 
     const returnValue = useStore(state => {
       const newState: ZQueryState<DataType | ProcessedDataType, FetchArgs> = props.get(state);
