@@ -14,6 +14,7 @@ import { Onboarding } from './ui/onboarding';
 import { PortfolioPositionTabs } from './ui/position-tabs';
 import { AssetBars } from './ui/asset-bars';
 import { useUnifiedAssets } from '@/pages/portfolio/api/use-unified-assets';
+import { PenumbraWaves } from '@/pages/explore/ui/waves.tsx';
 
 interface PortfolioPageProps {
   isMobile: boolean;
@@ -72,18 +73,15 @@ function MobilePortfolioPage() {
 const DesktopPortfolioPage = observer(() => {
   const { isPenumbraConnected, isCosmosConnected } = useUnifiedAssets();
   return (
-    <div className='sm:container mx-auto py-8 flex flex-col gap-4'>
+    <div className='container max-w-[1136px] mx-auto py-8 flex flex-col gap-4'>
+      <PenumbraWaves />
+
       <Onboarding />
 
       <WalletConnect />
 
       {/* Asset Allocation Bars */}
-      {isPenumbraConnected ||
-        (isCosmosConnected && (
-          <div className='mb-8'>
-            <AssetBars />
-          </div>
-        ))}
+      {(isPenumbraConnected || isCosmosConnected) && <AssetBars />}
 
       <AssetsTable />
       <PortfolioPositionTabs />

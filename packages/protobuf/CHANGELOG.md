@@ -1,5 +1,11 @@
 # @penumbra-zone/protobuf
 
+## 10.0.0
+
+### Major Changes
+
+- 93f1d05: proto and storage changes to support querying tournament votes
+
 ## 9.0.0
 
 ### Major Changes

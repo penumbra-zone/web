@@ -21,7 +21,17 @@ import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_
 import { pnum } from '@penumbra-zone/types/pnum';
 import { useStakingTokenMetadata } from '@/shared/api/registry';
 
+// Outer component that handles the connection check. If the wallet isn't connected,
+// the parent hook won't execute, and the component won't render.
 export const DelegatorRewards = observer(() => {
+  if (!connectionStore.connected) {
+    return null;
+  }
+
+  return <DelegatorTotalRewards />;
+});
+
+export const DelegatorTotalRewards = observer(() => {
   const { subaccount } = connectionStore;
 
   const { epoch } = useCurrentEpoch();

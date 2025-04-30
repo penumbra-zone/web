@@ -8,6 +8,7 @@ import { Text } from '@penumbra-zone/ui/Text';
 import { PagePath } from '@/shared/const/pages';
 import { useTournamentSummary } from '../../api/use-tournament-summary';
 import { useRoundBlockInfo } from '../../api/use-round-block-info';
+import { useCurrentEpoch } from '../../api/use-current-epoch';
 import { IncentivePool } from '../landing-card/incentive-pool';
 import { GradientCard } from '../shared/gradient-card';
 import { VotingInfo } from '../voting-info';
@@ -17,6 +18,9 @@ export interface RoundCardProps {
 }
 
 export const RoundCard = observer(({ epoch }: RoundCardProps) => {
+  const { epoch: currentEpoch } = useCurrentEpoch();
+  const ended = !!currentEpoch && !!epoch && epoch !== currentEpoch;
+
   const { data: summary, isLoading } = useTournamentSummary({
     limit: 1,
     page: 1,
@@ -28,9 +32,6 @@ export const RoundCard = observer(({ epoch }: RoundCardProps) => {
     isLoading: blockInfoLoading,
     isPending: blockInfoPending,
   } = useRoundBlockInfo(epoch);
-
-  // TODO: update `useRoundBlockInfo` to take epoch into account, this should be fixed after
-  const ended = !!blockInfo?.endBlock;
 
   return (
     <GradientCard>
@@ -96,7 +97,7 @@ export const RoundCard = observer(({ epoch }: RoundCardProps) => {
           <Text variant='h4' color='text.primary'>
             {ended ? 'This Epoch is Ended' : 'Cast Your Vote'}
           </Text>
-          <VotingInfo />
+          <VotingInfo epoch={epoch} />
         </div>
       </div>
     </GradientCard>

@@ -1,5 +1,5 @@
 import { ChainProvider } from '@cosmos-kit/react';
-import { assets, chains } from 'chain-registry';
+import { assets, chains } from 'chain-registry/mainnet';
 import { SignerOptions, wallets } from 'cosmos-kit';
 import { ReactNode, useMemo } from 'react';
 import { Chain, Registry as PenumbraRegistry } from '@penumbra-labs/registry';
