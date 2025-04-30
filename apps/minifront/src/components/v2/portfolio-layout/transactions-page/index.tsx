@@ -12,7 +12,7 @@ export const TransactionsPage = () => {
   const deferredSummariesData = useAnimationDeferredValue(summaries.data);
 
   return (
-    <LayoutGroup id='dashboardContent'>
+    <LayoutGroup id='portfolioContent'>
       <Table tableLayout='fixed' motion={{ layoutId: 'table' }}>
         <Table.Thead>
           <Table.Tr>

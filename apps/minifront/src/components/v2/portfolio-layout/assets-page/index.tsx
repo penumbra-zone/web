@@ -47,7 +47,7 @@ export const AssetsPage = () => {
       // Only wrap the first table in the `<LayoutGroup />`, since that's the
       // only one that will be animating when transitioning to the assets table.
       if={index === 0}
-      then={children => <LayoutGroup id='dashboardContent'>{children}</LayoutGroup>}
+      then={children => <LayoutGroup id='portfolioContent'>{children}</LayoutGroup>}
     >
       <Table
         tableLayout='fixed'
