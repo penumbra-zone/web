@@ -134,9 +134,13 @@ export async function renderTournamentEarningsCanvas(
     bgImage.onload = () => draw(bgImage);
   } else {
     await import('canvas').then(async ({ loadImage }) => {
-      await loadImage(bgImageSrc).then(bgImage => {
-        draw(bgImage as unknown as CanvasImageSource);
-      });
+      await loadImage(bgImageSrc)
+        .then(bgImage => {
+          draw(bgImage as unknown as CanvasImageSource);
+        })
+        .catch((err: unknown) => {
+          console.error('Failed to load image', err);
+        });
     });
   }
 }

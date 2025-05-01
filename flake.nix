@@ -31,6 +31,7 @@
           pnpm_10
           nodejs_22
           postgresql
+          libuuid
           wasm-pack
 
           # for deployment/ci
@@ -43,6 +44,7 @@
           export RUST_SRC_PATH=${pkgs.rustPlatform.rustLibSrc} # Required for rust-analyzer
           export NEXT_TELEMETRY_DISABLED=1
           export TURBO_TELEMETRY_DISABLED=1
+          export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath [pkgs.libuuid]}:$LD_LIBRARY_PATH"
         '';
       in
       {
