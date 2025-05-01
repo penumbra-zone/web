@@ -1,6 +1,6 @@
 import { theme } from '@penumbra-zone/ui/theme';
 import { registerFont } from 'canvas';
-import path, { join } from 'path';
+import path from 'path';
 
 export const scale = typeof window !== 'undefined' ? window.devicePixelRatio : 2;
 
