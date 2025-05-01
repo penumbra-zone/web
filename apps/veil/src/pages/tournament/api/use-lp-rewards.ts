@@ -1,4 +1,3 @@
-import orderBy from 'lodash/orderBy';
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { PositionId } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
@@ -55,21 +54,25 @@ export const useLpRewards = (
       setPositionIds(positionIds);
     });
   }, [subaccount]);
-  console.log('TCL: positionIds', positionIds);
 
   const query = useQuery<Required<Reward>[]>({
-    queryKey: ['lp-rewards', positionIds, page, limit, sortKey, sortDirection],
+    queryKey: ['lp-rewards', ...positionIds, page, limit, sortKey, sortDirection],
+    staleTime: Infinity,
     queryFn: async () => {
-      return apiPostFetch<LpRewardsApiResponse>('/api/tournament/lp-rewards', {
+      const resp = await apiPostFetch('/api/tournament/lp-rewards', {
         positionIds,
         page,
         limit,
         sortKey,
         sortDirection,
-      } satisfies Partial<LpRewardsRequest>);
+      } satisfies LpRewardsRequest);
+      console.log('TCL: resp', resp);
+
+      return resp;
     },
     enabled: positionIds.length > 0,
   });
+  console.log('TCL: query', query);
 
   return query;
 };

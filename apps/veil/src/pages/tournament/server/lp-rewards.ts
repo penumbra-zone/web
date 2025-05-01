@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { serialize, Serialized } from '@/shared/utils/serializer';
 import { pindexerDb } from '@/shared/database/client';
-import { positionIdFromBech32 } from '@penumbra-zone/bech32m/plpid';
-import { bech32mPositionId } from '@penumbra-zone/bech32m/plpid';
+import { positionIdFromBech32, bech32mPositionId } from '@penumbra-zone/bech32m/plpid';
+import { PositionId } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
+import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { JsonObject } from '@bufbuild/protobuf';
 
 const SORT_KEYS = ['epoch', 'position_id', 'reward', ''] as const;
 export type LpRewardsSortKey = (typeof SORT_KEYS)[number];
@@ -10,7 +12,7 @@ export type LpRewardsSortKey = (typeof SORT_KEYS)[number];
 const DIRECTIONS = ['asc', 'desc'] as const;
 export type LpRewardsSortDirection = (typeof DIRECTIONS)[number];
 
-export interface LpRewardsRequest {
+export interface LpRewardsRequest extends JsonObject {
   positionIds: string[];
   limit: number;
   page: number;
@@ -20,19 +22,19 @@ export interface LpRewardsRequest {
 
 export interface LqtLp {
   epoch: number;
-  position_id: string;
-  asset_id: string;
+  positionId: string;
+  assetId: string;
   rewards: number;
   executions: number;
-  um_volume: number;
-  asset_volume: number;
-  asset_fees: number;
+  umVolume: number;
+  assetVolume: number;
+  assetFees: number;
   points: number;
-  points_share: number;
+  pointsShare: number;
 }
 
 export interface LpRewardsApiResponse {
-  data: LqtLp[];
+  lps: LqtLp[];
   total: number;
 }
 
@@ -64,15 +66,15 @@ export async function POST(
     serialize({
       data: lps.map(lp => ({
         epoch: lp.epoch,
-        position_id: bech32mPositionId(lp.position_id),
-        asset_id: lp.asset_id,
-        rewards: lp.reward,
+        positionId: new PositionId({ inner: lp.position_id }),
+        assetId: new AssetId({ inner: lp.asset_id }),
+        rewards: lp.amount,
         executions: lp.executions,
-        um_volume: lp.um_volume,
-        asset_volume: lp.asset_volume,
-        asset_fees: lp.asset_fees,
+        umVolume: lp.um_volume,
+        assetVolume: lp.asset_volume,
+        assetFees: lp.asset_fees,
         points: lp.points,
-        points_share: lp.points_share,
+        pointsShare: lp.points / 10,
       })),
       total: lps.length,
     }),

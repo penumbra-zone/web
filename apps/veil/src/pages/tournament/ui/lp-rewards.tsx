@@ -19,17 +19,12 @@ export const LpRewards = observer(() => {
   const { getTableHeader, sortBy } =
     useSortableTableHeaders<keyof Required<Reward>['sort']>('epoch');
 
-  const { data: { data, total } = { data: [], total: 0 }, isLoading } = useLpRewards(
-    subaccount,
-    page,
-    limit,
-    sortBy.key,
-    sortBy.direction,
-  );
+  const { data, isLoading } = useLpRewards(subaccount, page, limit, sortBy.key, sortBy.direction);
   console.log('TCL: LpRewards -> data', data);
+  console.log('TCL: LpRewards -> total', data?.total);
 
   const loadingArr = new Array(5).fill({ positionId: {} }) as Reward[];
-  const rewards = data ?? loadingArr;
+  const rewards = data?.data ?? loadingArr;
 
   const onLimitChange = (newLimit: number) => {
     setLimit(newLimit);
@@ -48,7 +43,7 @@ export const LpRewards = observer(() => {
             <TableCell heading> </TableCell>
           </div>
 
-          {data.map((lpReward, index) => (
+          {data?.data.map((lpReward, index) => (
             <Link
               href={`/inspect/lp/${isLoading ? index : bech32mPositionId(lpReward.positionId)}`}
               key={isLoading ? index : bech32mPositionId(lpReward.positionId)}
@@ -89,9 +84,9 @@ export const LpRewards = observer(() => {
         </div>
       </Density>
 
-      {!isLoading && total >= BASE_LIMIT && (
+      {!isLoading && data?.total >= BASE_LIMIT && (
         <Pagination
-          totalItems={total}
+          totalItems={data?.total}
           visibleItems={rewards.length}
           value={page}
           limit={limit}
