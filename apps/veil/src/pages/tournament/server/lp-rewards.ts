@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { serialize, Serialized } from '@/shared/utils/serializer';
 import { pindexerDb } from '@/shared/database/client';
-import { positionIdFromBech32, bech32mPositionId } from '@penumbra-zone/bech32m/plpid';
+import { positionIdFromBech32 } from '@penumbra-zone/bech32m/plpid';
 import { PositionId } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { JsonObject } from '@bufbuild/protobuf';
 
-const SORT_KEYS = ['epoch', 'position_id', 'reward', ''] as const;
+const SORT_KEYS = ['epoch', 'position_id', 'reward'] as const;
 export type LpRewardsSortKey = (typeof SORT_KEYS)[number];
 
 const DIRECTIONS = ['asc', 'desc'] as const;
@@ -22,8 +22,8 @@ export interface LpRewardsRequest extends JsonObject {
 
 export interface LqtLp {
   epoch: number;
-  positionId: string;
-  assetId: string;
+  positionId: PositionId;
+  assetId: AssetId;
   rewards: number;
   executions: number;
   umVolume: number;
@@ -34,7 +34,7 @@ export interface LqtLp {
 }
 
 export interface LpRewardsApiResponse {
-  lps: LqtLp[];
+  data: LqtLp[];
   total: number;
 }
 
@@ -44,8 +44,8 @@ async function queryLqtLps({ positionIds, sortKey, sortDirection, limit, page }:
   return pindexerDb
     .selectFrom('lqt._lp_rewards')
     .selectAll()
-    .where('position_id', 'in', positionIdsBytes)
-    .orderBy(sortKey ?? 'epoch', sortDirection)
+    .where('position_id', 'in', positionIdsBytes as Buffer<ArrayBufferLike>[])
+    .orderBy(sortKey === 'reward' ? 'amount' : sortKey, sortDirection)
     .offset(limit * (page - 1))
     .limit(limit)
     .execute();
@@ -54,11 +54,6 @@ async function queryLqtLps({ positionIds, sortKey, sortDirection, limit, page }:
 export async function POST(
   req: NextRequest,
 ): Promise<NextResponse<Serialized<LpRewardsApiResponse>>> {
-  const chainId = process.env['PENUMBRA_CHAIN_ID'];
-  if (!chainId) {
-    return NextResponse.json({ error: 'PENUMBRA_CHAIN_ID is not set' }, { status: 500 });
-  }
-
   const params = (await req.json()) as LpRewardsRequest;
   const lps = await queryLqtLps(params);
 

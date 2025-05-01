@@ -19,12 +19,12 @@ export const LpRewards = observer(() => {
   const { getTableHeader, sortBy } =
     useSortableTableHeaders<keyof Required<Reward>['sort']>('epoch');
 
-  const { data, isLoading } = useLpRewards(subaccount, page, limit, sortBy.key, sortBy.direction);
-  console.log('TCL: LpRewards -> data', data);
-  console.log('TCL: LpRewards -> total', data?.total);
-
+  const query = useLpRewards(subaccount, page, limit, sortBy.key, sortBy.direction);
+  const { data: queryData, isLoading, isFetched } = query;
+  const { data, total } = queryData ?? { data: [], total: 0 };
   const loadingArr = new Array(5).fill({ positionId: {} }) as Reward[];
-  const rewards = data?.data ?? loadingArr;
+  const rewards = data.length > 0 ? data : loadingArr;
+  const loading = isLoading || !isFetched;
 
   const onLimitChange = (newLimit: number) => {
     setLimit(newLimit);
@@ -43,17 +43,17 @@ export const LpRewards = observer(() => {
             <TableCell heading> </TableCell>
           </div>
 
-          {data?.data.map((lpReward, index) => (
+          {rewards.map((lpReward, index) => (
             <Link
-              href={`/inspect/lp/${isLoading ? index : bech32mPositionId(lpReward.positionId)}`}
-              key={isLoading ? index : bech32mPositionId(lpReward.positionId)}
+              href={`/inspect/lp/${loading ? index : bech32mPositionId(lpReward.positionId)}`}
+              key={loading ? index : bech32mPositionId(lpReward.positionId)}
               className='grid grid-cols-subgrid col-span-5 hover:bg-action-hoverOverlay transition-colors cursor-pointer'
             >
-              <TableCell cell loading={isLoading}>
+              <TableCell cell loading={loading}>
                 Epoch #{lpReward.epoch}
               </TableCell>
-              <TableCell cell loading={isLoading}>
-                {!isLoading && (
+              <TableCell cell loading={loading}>
+                {!loading && (
                   <>
                     <div className='max-w-full truncate'>
                       {bech32mPositionId(lpReward.positionId)}
@@ -62,17 +62,17 @@ export const LpRewards = observer(() => {
                   </>
                 )}
               </TableCell>
-              <TableCell cell loading={isLoading}>
+              <TableCell cell loading={loading}>
                 <ValueViewComponent valueView={lpReward.lpReward} priority='tertiary' />
               </TableCell>
-              <TableCell cell loading={isLoading}>
+              <TableCell cell loading={loading}>
                 <Density slim>
                   <Button priority='primary' disabled={lpReward.isWithdrawn}>
                     {lpReward.isWithdrawn ? 'Withdrawn' : 'Withdraw'}
                   </Button>
                 </Density>
               </TableCell>
-              <TableCell cell loading={isLoading}>
+              <TableCell cell loading={loading}>
                 <Density slim>
                   <Button iconOnly icon={ChevronRight}>
                     Go to position information page
@@ -84,9 +84,9 @@ export const LpRewards = observer(() => {
         </div>
       </Density>
 
-      {!isLoading && data?.total >= BASE_LIMIT && (
+      {!isLoading && total >= BASE_LIMIT && (
         <Pagination
-          totalItems={data?.total}
+          totalItems={total}
           visibleItems={rewards.length}
           value={page}
           limit={limit}
