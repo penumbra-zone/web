@@ -1,6 +1,6 @@
 import { theme } from '@penumbra-zone/ui/theme';
 import { registerFont } from 'canvas';
-import { join } from 'path';
+import path, { join } from 'path';
 
 export const scale = typeof window !== 'undefined' ? window.devicePixelRatio : 2;
 
@@ -99,30 +99,30 @@ export function getTextWidth(
 export function registerFonts() {
   if (typeof window === 'undefined') {
     try {
-      // from .next/server/app/api/tournament/social-image.png
-      const fontsDir = join(
-        __dirname,
-        '..',
-        '..',
-        '..',
-        '..',
-        '..',
-        '..',
-        'public',
-        'assets',
-        'fonts',
-      );
+      function findVeilRoot(startPath: string) {
+        const parts = path.resolve(startPath).split(path.sep);
 
-      registerFont(join(fontsDir, 'SGr-IosevkaTerm-Medium.ttc'), {
+        const index = parts.lastIndexOf('veil');
+        if (index === -1) {
+          throw new Error(`Directory "veil" not found in path: ${startPath}`);
+        }
+
+        return parts.slice(0, index + 1).join(path.sep);
+      }
+
+      const fontsDir = `${findVeilRoot(process.cwd())}/public/assets/fonts`;
+      const resolveFont = (font: string) => `${fontsDir}/${font}`;
+
+      registerFont(resolveFont('SGr-IosevkaTerm-Medium.ttc'), {
         family: 'Iosevka Term',
         weight: 'medium',
       });
-      registerFont(join(fontsDir, 'SGr-IosevkaTerm-Regular.ttc'), {
+      registerFont(resolveFont('SGr-IosevkaTerm-Regular.ttc'), {
         family: 'Iosevka Term',
         weight: 'normal',
       });
-      registerFont(join(fontsDir, 'Poppins-Medium.ttf'), { family: 'Poppins' });
-      registerFont(join(fontsDir, 'WorkSans-Medium.ttf'), {
+      registerFont(resolveFont('Poppins-Medium.ttf'), { family: 'Poppins' });
+      registerFont(resolveFont('WorkSans-Medium.ttf'), {
         family: 'Work Sans',
       });
     } catch (e) {
