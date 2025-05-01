@@ -98,31 +98,36 @@ export function getTextWidth(
 
 export function registerFonts() {
   if (typeof window === 'undefined') {
-    // from .next/server/app/api/tournament/social-image.png
-    const fontsDir = join(
-      __dirname,
-      '..',
-      '..',
-      '..',
-      '..',
-      '..',
-      '..',
-      'public',
-      'assets',
-      'fonts',
-    );
+    try {
+      // from .next/server/app/api/tournament/social-image.png
+      const fontsDir = join(
+        __dirname,
+        '..',
+        '..',
+        '..',
+        '..',
+        '..',
+        '..',
+        'public',
+        'assets',
+        'fonts',
+      );
 
-    registerFont(join(fontsDir, 'SGr-IosevkaTerm-Medium.ttc'), {
-      family: 'Iosevka Term',
-      weight: 'medium',
-    });
-    registerFont(join(fontsDir, 'SGr-IosevkaTerm-Regular.ttc'), {
-      family: 'Iosevka Term',
-      weight: 'normal',
-    });
-    registerFont(join(fontsDir, 'Poppins-Medium.ttf'), { family: 'Poppins' });
-    registerFont(join(fontsDir, 'WorkSans-Medium.ttf'), {
-      family: 'Work Sans',
-    });
+      registerFont(join(fontsDir, 'SGr-IosevkaTerm-Medium.ttc'), {
+        family: 'Iosevka Term',
+        weight: 'medium',
+      });
+      registerFont(join(fontsDir, 'SGr-IosevkaTerm-Regular.ttc'), {
+        family: 'Iosevka Term',
+        weight: 'normal',
+      });
+      registerFont(join(fontsDir, 'Poppins-Medium.ttf'), { family: 'Poppins' });
+      registerFont(join(fontsDir, 'WorkSans-Medium.ttf'), {
+        family: 'Work Sans',
+      });
+    } catch (e) {
+      console.error('__dirname', __dirname);
+      console.error('Error registering fonts', e);
+    }
   }
 }
