@@ -4,8 +4,13 @@ import { TournamentQueryParams } from '@/features/tournament-earnings-canvas';
 const baseUrl = process.env['NEXT_PUBLIC_BASE_URL'] ?? 'http://localhost:3000';
 const imageUrl = `${baseUrl}/api/tournament/social-image.png`;
 
-export default function Page({ searchParams }: { searchParams: TournamentQueryParams }) {
-  return <TournamentJoinPageComponent imageUrl={imageUrl} searchParams={searchParams} />;
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<TournamentQueryParams>;
+}) {
+  const params = await searchParams;
+  return <TournamentJoinPageComponent imageUrl={imageUrl} searchParams={params} />;
 }
 
 export async function generateMetadata({
