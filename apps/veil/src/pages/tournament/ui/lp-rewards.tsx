@@ -19,10 +19,13 @@ export const LpRewards = observer(() => {
   const { getTableHeader, sortBy } =
     useSortableTableHeaders<keyof Required<Reward>['sort']>('epoch');
 
-  const {
-    query: { data = [], isLoading },
-    total,
-  } = useLpRewards(subaccount, page, limit, sortBy.key, sortBy.direction);
+  const { data: { data, total } = { data: [], total: 0 }, isLoading } = useLpRewards(
+    subaccount,
+    page,
+    limit,
+    sortBy.key,
+    sortBy.direction,
+  );
   console.log('TCL: LpRewards -> data', data);
 
   const loadingArr = new Array(5).fill({ positionId: {} }) as Reward[];
@@ -45,32 +48,32 @@ export const LpRewards = observer(() => {
             <TableCell heading> </TableCell>
           </div>
 
-          {rewards.map((reward, index) => (
+          {data.map((lpReward, index) => (
             <Link
-              href={`/inspect/lp/${isLoading ? index : bech32mPositionId(reward.positionId)}`}
-              key={isLoading ? index : bech32mPositionId(reward.positionId)}
+              href={`/inspect/lp/${isLoading ? index : bech32mPositionId(lpReward.positionId)}`}
+              key={isLoading ? index : bech32mPositionId(lpReward.positionId)}
               className='grid grid-cols-subgrid col-span-5 hover:bg-action-hoverOverlay transition-colors cursor-pointer'
             >
               <TableCell cell loading={isLoading}>
-                Epoch #{reward.epoch}
+                Epoch #{lpReward.epoch}
               </TableCell>
               <TableCell cell loading={isLoading}>
                 {!isLoading && (
                   <>
                     <div className='max-w-full truncate'>
-                      {bech32mPositionId(reward.positionId)}
+                      {bech32mPositionId(lpReward.positionId)}
                     </div>
                     <ExternalLink className='size-3 min-w-3 text-neutral-light' />
                   </>
                 )}
               </TableCell>
               <TableCell cell loading={isLoading}>
-                <ValueViewComponent valueView={reward.reward} priority='tertiary' />
+                <ValueViewComponent valueView={lpReward.lpReward} priority='tertiary' />
               </TableCell>
               <TableCell cell loading={isLoading}>
                 <Density slim>
-                  <Button priority='primary' disabled={reward.isWithdrawn}>
-                    {reward.isWithdrawn ? 'Withdrawn' : 'Withdraw'}
+                  <Button priority='primary' disabled={lpReward.isWithdrawn}>
+                    {lpReward.isWithdrawn ? 'Withdrawn' : 'Withdraw'}
                   </Button>
                 </Density>
               </TableCell>
