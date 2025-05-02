@@ -126,10 +126,10 @@ export async function GET(
         epoch: item.epoch,
         votes: item.votes,
         portion: item.portion,
-        missing_votes: Number(item.missing_votes),
+        missing_votes: item.missing_votes,
       };
     })
-    .filter<MappedGauge>(item => !!item);
+    .filter((item): item is MappedGauge => !!item);
 
   return NextResponse.json({
     total: Number(total?.total ?? 0),

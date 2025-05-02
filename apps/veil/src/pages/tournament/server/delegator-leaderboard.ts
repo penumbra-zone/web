@@ -2,7 +2,7 @@ import { sql } from 'kysely';
 import { NextRequest, NextResponse } from 'next/server';
 import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { serialize, Serialized } from '@/shared/utils/serializer';
-import { DelegatorSummary } from '@/shared/database/schema';
+import { LqtDelegatorSummary } from '@/shared/database/schema';
 import { pindexerDb } from '@/shared/database/client';
 
 const SORT_KEYS = ['place', 'epochs_voted_in', 'streak', 'total_rewards'] as const;
@@ -19,7 +19,7 @@ export interface DelegatorLeaderboardRequest {
 }
 
 export interface DelegatorLeaderboardData
-  extends Omit<DelegatorSummary, 'address' | 'epochs_voted_in'> {
+  extends Omit<LqtDelegatorSummary, 'address' | 'epochs_voted_in'> {
   place: number;
   epochs_voted_in: number;
   address: Address;

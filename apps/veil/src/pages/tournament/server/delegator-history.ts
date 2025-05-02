@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Serialized } from '@/shared/utils/serializer';
 import { pindexerDb } from '@/shared/database/client';
-import { DelegatorHistory } from '@/shared/database/schema';
+import { LqtDelegatorHistory } from '@/shared/database/schema';
 import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 
@@ -19,7 +19,7 @@ export interface DelegatorHistoryRequest {
 }
 
 export interface TournamentDelegatorHistoryResponse {
-  data: DelegatorHistory[];
+  data: LqtDelegatorHistory[];
   totalRewards: number;
 }
 
@@ -68,13 +68,13 @@ const tournamentDelegatorHistoryQuery = async ({
 function processEpochResults(
   epochResults: {
     epoch: string;
-    data: { address: Buffer; epoch: number; power: number; asset_id: string; reward: number }[];
+    data: { address: Buffer; epoch: number; power: number; asset_id: Buffer; reward: number }[];
   }[],
   targetAddress: string,
   address: Address,
-): { results: DelegatorHistory[]; totalReward: number } {
+): { results: LqtDelegatorHistory[]; totalReward: number } {
   // Create accumulator map to track totals by epoch.
-  const matchesByEpoch = new Map<string, { power: number; reward: number; assetId: string }>();
+  const matchesByEpoch = new Map<string, { power: number; reward: number; assetId: Buffer }>();
 
   for (const { epoch, data } of epochResults) {
     // Find all matching items for this epoch.
@@ -94,7 +94,7 @@ function processEpochResults(
   }
 
   // Create result entries and calculate total reward.
-  const results: DelegatorHistory[] = [];
+  const results: LqtDelegatorHistory[] = [];
   let totalReward = 0;
 
   for (const [epoch, match] of matchesByEpoch.entries()) {
@@ -102,7 +102,7 @@ function processEpochResults(
       address: Buffer.from(address.inner),
       epoch: parseInt(epoch, 10),
       power: match.power,
-      asset_id: match.assetId,
+      asset_id: Buffer.from(match.assetId),
       reward: match.reward,
     });
 

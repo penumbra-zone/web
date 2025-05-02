@@ -357,50 +357,39 @@ export interface SupplyValidators {
   identity_key: string;
 }
 
-export interface Gauge {
+export interface LqtGauge {
   epoch: number;
   asset_id: Buffer;
   votes: number;
   portion: number;
-  missing_votes: bigint;
+  missing_votes: number;
 }
 
-export interface DelegatorSummary {
+export interface LqtDelegatorSummary {
   address: Buffer;
-  epochs_voted_in: bigint;
+  epochs_voted_in: number;
   total_rewards: number;
   total_voting_power: number;
   streak: number;
 }
 
-export interface DelegatorHistory {
+export interface LqtDelegatorHistory {
   address: Buffer;
   epoch: number;
   power: number;
-  asset_id: string;
+  asset_id: Buffer;
   reward: number;
 }
 
-export interface LQTSummary {
+export interface LqtSummary {
+  start_block: number;
+  end_block: number;
+  ends_in_s: number;
   epoch: number;
   total_voting_power: number;
   delegator_rewards: number;
   lp_rewards: number;
   total_rewards: number;
-  available_rewards: number;
-  available_delegator_rewards: number;
-  available_lp_rewards: number;
-}
-
-export interface LQTHistory {
-  epoch: number;
-  total_voting_power: number;
-  delegator_rewards: number;
-  lp_rewards: number;
-  total_rewards: number;
-  available_rewards: number;
-  available_delegator_rewards: number;
-  available_lp_rewards: number;
 }
 
 interface RawDB {
@@ -434,10 +423,10 @@ interface RawDB {
   supply_total_staked: SupplyTotalStaked;
   supply_total_unstaked: SupplyTotalUnstaked;
   supply_validators: SupplyValidators;
-  'lqt.gauge': Gauge;
-  'lqt.delegator_summary': DelegatorSummary;
-  'lqt.summary': LQTSummary;
-  'lqt.delegator_history': DelegatorHistory;
+  'lqt.gauge': LqtGauge;
+  'lqt.delegator_summary': LqtDelegatorSummary;
+  'lqt.summary': LqtSummary;
+  'lqt.delegator_history': LqtDelegatorHistory;
 }
 
 export type DB = Pick<

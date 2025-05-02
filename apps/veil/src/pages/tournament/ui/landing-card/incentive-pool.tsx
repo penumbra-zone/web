@@ -1,4 +1,4 @@
-import type { LQTSummary } from '@/shared/database/schema';
+import type { LqtSummary } from '@/shared/database/schema';
 import { pnum } from '@penumbra-zone/types/pnum';
 import { round } from '@penumbra-zone/types/round';
 import { Skeleton } from '@penumbra-zone/ui/Skeleton';
@@ -6,7 +6,7 @@ import { Text } from '@penumbra-zone/ui/Text';
 import { shortify } from '@penumbra-zone/types/shortify';
 
 export interface IncentivePoolProps {
-  summary?: LQTSummary;
+  summary?: LqtSummary;
   loading: boolean;
 }
 
@@ -26,7 +26,7 @@ export const IncentivePool = ({ summary, loading }: IncentivePoolProps) => {
           </div>
         ) : (
           <Text technical color='text.primary'>
-            {shortify(pnum(summary?.available_rewards).toNumber())} {symbol}
+            {shortify(pnum(summary?.total_rewards).toNumber())} {symbol}
           </Text>
         )}
       </div>
@@ -42,7 +42,7 @@ export const IncentivePool = ({ summary, loading }: IncentivePoolProps) => {
               className='h-full bg-primary-light'
               style={
                 summary && {
-                  width: `calc(${(summary.available_lp_rewards / summary.available_rewards) * 100}% - 1px)`,
+                  width: `calc(${(summary.lp_rewards / summary.total_rewards) * 100}% - 1px)`,
                 }
               }
             />
@@ -50,7 +50,7 @@ export const IncentivePool = ({ summary, loading }: IncentivePoolProps) => {
               className='h-full bg-secondary-light'
               style={
                 summary && {
-                  width: `${(summary.available_delegator_rewards / summary.available_rewards) * 100}%`,
+                  width: `${(summary.delegator_rewards / summary.total_rewards) * 100}%`,
                 }
               }
             />
@@ -70,12 +70,12 @@ export const IncentivePool = ({ summary, loading }: IncentivePoolProps) => {
           ) : (
             <>
               <Text technical color='primary.light'>
-                {shortify(pnum(summary?.available_lp_rewards).toNumber())} {symbol}
+                {shortify(pnum(summary?.lp_rewards).toNumber())} {symbol}
               </Text>
               <Text technical color='text.secondary'>
                 {summary &&
                   round({
-                    value: (summary.available_lp_rewards / summary.available_rewards) * 100,
+                    value: (summary.lp_rewards / summary.total_rewards) * 100,
                     decimals: 0,
                   })}
                 %
@@ -96,12 +96,12 @@ export const IncentivePool = ({ summary, loading }: IncentivePoolProps) => {
           ) : (
             <>
               <Text technical color='secondary.light'>
-                {shortify(pnum(summary?.available_delegator_rewards).toNumber())} {symbol}
+                {shortify(pnum(summary?.delegator_rewards).toNumber())} {symbol}
               </Text>
               <Text technical color='text.secondary'>
                 {summary &&
                   round({
-                    value: (summary.available_delegator_rewards / summary.available_rewards) * 100,
+                    value: (summary.delegator_rewards / summary.total_rewards) * 100,
                     decimals: 0,
                   })}
                 %
