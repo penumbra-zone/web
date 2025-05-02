@@ -15,6 +15,8 @@ import { openToast } from '@penumbra-zone/ui/Toast';
 
 export const dismissedKey = 'veil-tournament-social-card-dismissed';
 
+const baseUrl = process.env['NEXT_PUBLIC_BASE_URL'] ?? 'http://localhost:3000';
+
 async function copyImageToClipboard(imageUrl: string) {
   const response = await fetch(imageUrl);
   const blob = await response.blob();
@@ -72,7 +74,7 @@ export const SocialCardDialog = observer(
 Provide liquidity. Climb the leaderboard. Win rewards.
 
 Join now 👇`;
-    const url = `https://dex.penumbra.zone/tournament/join?${encodeParams(params)}`;
+    const url = `https://${baseUrl}/tournament/join?${encodeParams(params)}`;
 
     useEffect(() => {
       if (canvasRef.current) {
