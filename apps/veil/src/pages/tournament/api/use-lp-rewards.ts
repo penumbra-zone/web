@@ -59,6 +59,7 @@ async function enrichLpRewards(
     ...lp,
     position: positions[index],
     isWithdrawn: positions[index]?.state?.state === PositionState_PositionStateEnum.WITHDRAWN,
+    isWithdrawable: positions[index]?.state?.state === PositionState_PositionStateEnum.CLOSED,
   }));
 }
 
