@@ -26,6 +26,7 @@
         commonDevPackages = [
           fd
           file
+          firefox
           jq
           just
           nodejs_22
