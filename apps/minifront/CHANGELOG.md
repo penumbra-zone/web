@@ -1,5 +1,16 @@
 # minifront
 
+## 6.34.0
+
+### Minor Changes
+
+- 694319c: bump registry version
+
+### Patch Changes
+
+- Updated dependencies [4a51a46]
+  - @penumbra-zone/ui-deprecated@19.0.0
+
 ## 6.33.2
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @penumbra-zone/ui
 
+## 19.0.0
+
+### Major Changes
+
+- 4a51a46: Upgrade to React 19
+
 ## 18.0.0
 
 ### Patch Changes

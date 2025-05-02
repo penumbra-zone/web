@@ -1,5 +1,12 @@
 # @penumbra-zone/ui
 
+## 14.0.0
+
+### Major Changes
+
+- 4a51a46: Remove forwardRef that was deprecated in React 19
+- 4a51a46: Upgrade to React 19
+
 ## 13.18.0
 
 ### Minor Changes

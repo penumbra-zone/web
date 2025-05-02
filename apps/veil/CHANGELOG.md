@@ -1,5 +1,17 @@
 # penumbra-veil
 
+## 0.1.0
+
+### Minor Changes
+
+- 694319c: bump registry version
+
+### Patch Changes
+
+- Updated dependencies [4a51a46]
+- Updated dependencies [4a51a46]
+  - @penumbra-zone/ui@14.0.0
+
 ## 0.0.9
 
 ### Patch Changes
