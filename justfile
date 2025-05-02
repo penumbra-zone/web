@@ -14,6 +14,12 @@ wasm: install
 compile: install
   @just wasm
 
+# Remove all cached build artifacts
+clean:
+  rm -rf .turbo
+  fd -t d node_modules --no-ignore -X rm -r
+  fd -t d target --no-ignore -X rm -r
+
 # Wrapper for all linting targets
 lint:
   @just lint-turbo
@@ -28,9 +34,7 @@ lint-rust: install
   pnpm turbo lint:rust --cache-dir=.turbo
 
 # Build top-level debug container
-container:
-  fd -t d node_modules --no-ignore -X rm -r
-  fd -t d target --no-ignore -X rm -r
+container: clean
   @just veil-container
   podman image ls | rg veil
 
