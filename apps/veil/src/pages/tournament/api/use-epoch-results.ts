@@ -10,7 +10,7 @@ export const useEpochResults = (
 ) => {
   const query = useQuery({
     queryKey: [name, params.epoch, params.limit, params.page, params.sortKey, params.sortDirection],
-    enabled: !disabled,
+    enabled: !!params.epoch && !disabled,
     queryFn: async () => {
       return apiFetch<EpochResultsApiResponse>('/api/tournament/epoch-results', params);
     },
