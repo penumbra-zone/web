@@ -10,6 +10,7 @@ import { useCurrentEpoch } from '../../api/use-current-epoch';
 import { IncentivePool } from '../landing-card/incentive-pool';
 import { GradientCard } from '../shared/gradient-card';
 import { VotingInfo } from '../voting-info';
+import { formatTimeRemaining } from '@/shared/utils/format-time';
 
 export interface RoundCardProps {
   epoch: number;
@@ -25,7 +26,7 @@ export const RoundCard = observer(({ epoch }: RoundCardProps) => {
       page: 1,
       epoch,
     },
-    epochLoading,
+    ended || epochLoading,
   );
 
   return (
@@ -43,13 +44,17 @@ export const RoundCard = observer(({ epoch }: RoundCardProps) => {
                 Epoch #{epoch}
               </div>
             </div>
-            {
-              <div className='flex gap-2'>
+            {ended ? (
+              <Text technical color='text.secondary'>
+                Ended
+              </Text>
+            ) : (
+              summary?.[0]?.ends_in_s && (
                 <Text technical color='text.primary'>
-                  Ends in {summary?.[0]?.ends_in_s}s
+                  Ends in {formatTimeRemaining(summary[0].ends_in_s)}
                 </Text>
-              </div>
-            }
+              )
+            )}
           </div>
           <div className='flex gap-6'>
             <div className='flex w-1/2 flex-col items-center gap-2 bg-[rgba(250,250,250,0.05)] rounded-md p-3'>
