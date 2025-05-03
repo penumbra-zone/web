@@ -11,6 +11,8 @@ import { IncentivePool } from '../landing-card/incentive-pool';
 import { GradientCard } from '../shared/gradient-card';
 import { VotingInfo } from '../voting-info';
 import { formatTimeRemaining } from '@/shared/utils/format-time';
+import { useEffect, useRef } from 'react';
+import { LqtSummary } from '@/shared/database/schema';
 
 export interface RoundCardProps {
   epoch: number;
@@ -19,15 +21,26 @@ export interface RoundCardProps {
 export const RoundCard = observer(({ epoch }: RoundCardProps) => {
   const { epoch: currentEpoch, isLoading: epochLoading } = useCurrentEpoch();
   const ended = !!currentEpoch && !!epoch && epoch !== currentEpoch;
+  const initialDataRef = useRef<LqtSummary[] | null>(null);
 
-  const { data: summary, isLoading } = useTournamentSummary(
+  const { data: currentSummary, isLoading } = useTournamentSummary(
     {
       limit: 1,
       page: 1,
       epoch,
     },
-    ended || epochLoading,
+    epochLoading || ended,
   );
+
+  // This preserves the initial block values when an epoch ends. This check
+  // can probably more elegantly performed directly inside ReactQuery?
+  useEffect(() => {
+    if (!isLoading && currentSummary && !initialDataRef.current) {
+      initialDataRef.current = currentSummary;
+    }
+  }, [isLoading, currentSummary]);
+
+  const summary = ended && initialDataRef.current ? initialDataRef.current : currentSummary;
 
   return (
     <GradientCard>
