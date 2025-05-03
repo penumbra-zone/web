@@ -14,9 +14,9 @@ import { pnum } from '@penumbra-zone/types/pnum';
 export const VotingRewards = observer(() => {
   const { subaccount } = connectionStore;
 
-  const { epoch } = useCurrentEpoch();
+  const { epoch, isLoading: epochLoading } = useCurrentEpoch();
   // This represents a subsequent invocation of `usePersonalRewards` which will use useQuery's cache.
-  const { data, isLoading } = usePersonalRewards(subaccount, epoch);
+  const { data, isLoading } = usePersonalRewards(subaccount, epoch, epochLoading);
   const { data: stakingToken } = useStakingTokenMetadata();
 
   // TODO: “Cast Vote” still needs a pindexer query—calculate it by dividing the

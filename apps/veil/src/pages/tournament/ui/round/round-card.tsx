@@ -16,14 +16,17 @@ export interface RoundCardProps {
 }
 
 export const RoundCard = observer(({ epoch }: RoundCardProps) => {
-  const { epoch: currentEpoch } = useCurrentEpoch();
+  const { epoch: currentEpoch, isLoading: epochLoading } = useCurrentEpoch();
   const ended = !!currentEpoch && !!epoch && epoch !== currentEpoch;
 
-  const { data: summary, isLoading } = useTournamentSummary({
-    limit: 1,
-    page: 1,
-    epoch,
-  });
+  const { data: summary, isLoading } = useTournamentSummary(
+    {
+      limit: 1,
+      page: 1,
+      epoch,
+    },
+    epochLoading,
+  );
 
   return (
     <GradientCard>
@@ -40,13 +43,13 @@ export const RoundCard = observer(({ epoch }: RoundCardProps) => {
                 Epoch #{epoch}
               </div>
             </div>
-            {summary && (
+            {
               <div className='flex gap-2'>
                 <Text technical color='text.primary'>
                   Ends in {summary?.[0]?.ends_in_s}s
                 </Text>
               </div>
-            )}
+            }
           </div>
           <div className='flex gap-6'>
             <div className='flex w-1/2 flex-col items-center gap-2 bg-[rgba(250,250,250,0.05)] rounded-md p-3'>

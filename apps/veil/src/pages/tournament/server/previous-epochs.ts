@@ -120,7 +120,6 @@ export async function GET(
   const params = getQueryParams(req);
 
   const registryClient = new ChainRegistryClient();
-
   const [registry, results, total] = await Promise.all([
     registryClient.remote.get(chainId),
     previousEpochsQuery(params),

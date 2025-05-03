@@ -21,7 +21,7 @@ export const useLQTNotes = (subaccount: number, epoch?: number, disabled?: boole
   const lqtNotesQuery = useQuery({
     queryKey: ['lqt-notes', subaccount, epoch],
     staleTime: Infinity,
-    enabled: connectionStore.connected && !!epoch,
+    enabled: connectionStore.connected,
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- based on `enabled`, epoch is always defined
     queryFn: () => fetchQuery(subaccount, epoch!),
   });

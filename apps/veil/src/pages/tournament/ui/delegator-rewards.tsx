@@ -34,8 +34,12 @@ export const DelegatorRewards = observer(() => {
 export const DelegatorTotalRewards = observer(() => {
   const { subaccount } = connectionStore;
 
-  const { epoch } = useCurrentEpoch();
-  const { data: total, isLoading: isRewardsLoading } = usePersonalRewards(subaccount, epoch);
+  const { epoch, isLoading: epochLoading } = useCurrentEpoch();
+  const { data: total, isLoading: isRewardsLoading } = usePersonalRewards(
+    subaccount,
+    epoch,
+    epochLoading,
+  );
   const { data: stakingToken, isLoading: isTokenLoading } = useStakingTokenMetadata();
 
   const [parent] = useAutoAnimate();

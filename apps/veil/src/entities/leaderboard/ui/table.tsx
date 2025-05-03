@@ -35,12 +35,15 @@ export const LeaderboardTable = () => {
   const quoteAssetId = getAssetId(quote);
   const { getTableHeader, sortBy } = useSortableTableHeaders();
 
-  const { epoch: currentEpoch } = useCurrentEpoch();
-  const { data: summary } = useTournamentSummary({
-    limit: 1,
-    page: 1,
-    epoch: currentEpoch,
-  });
+  const { epoch, isLoading: epochLoading } = useCurrentEpoch();
+  const { data: summary } = useTournamentSummary(
+    {
+      limit: 1,
+      page: 1,
+      epoch,
+    },
+    epochLoading,
+  );
 
   const {
     data: leaderboard,

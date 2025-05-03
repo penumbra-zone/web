@@ -81,12 +81,12 @@ const fetchRewards = async (
 /**
  * Retrieves every vote from the view service for each epoch in which the user participated.
  */
-export const usePersonalRewards = (subaccount?: number, epoch?: number) => {
+export const usePersonalRewards = (subaccount?: number, epoch?: number, disabled?: boolean) => {
   const blockHeight = statusStore.latestKnownBlockHeight;
 
   return useQuery({
     queryKey: ['total-voting-rewards', subaccount],
-    enabled: connectionStore.connected && !!epoch && !!blockHeight,
+    enabled: connectionStore.connected && !!epoch && !!blockHeight && !disabled,
     queryFn: async () => {
       return await fetchRewards(
         {
