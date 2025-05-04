@@ -679,6 +679,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "cosmos-sdk-proto"
+version = "0.27.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "95ac39be7373404accccaede7cc1ec942ccef14f0ca18d209967a756bf1dbb1f"
+dependencies = [
+ "prost",
+ "tendermint-proto",
+]
+
+[[package]]
 name = "cpufeatures"
 version = "0.2.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -817,6 +827,7 @@ dependencies = [
 [[package]]
 name = "decaf377-fmd"
 version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "ark-ff",
  "ark-serialize",
@@ -830,6 +841,7 @@ dependencies = [
 [[package]]
 name = "decaf377-ka"
 version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "ark-ff",
  "decaf377",
@@ -1336,7 +1348,7 @@ checksum = "9b70f517162e74e2d35875b8b94bf4d1e45f2c69ef3de452dc855944455d33ca"
 dependencies = [
  "base64 0.22.1",
  "bytes",
- "cosmos-sdk-proto",
+ "cosmos-sdk-proto 0.26.1",
  "flex-error",
  "ics23",
  "informalsystems-pbjson",
@@ -1347,21 +1359,56 @@ dependencies = [
 ]
 
 [[package]]
+name = "ibc-proto"
+version = "0.52.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a650b51e384e54264b53974feb38e95e37aac70f7f2f9c07eb8022fe15eb8e20"
+dependencies = [
+ "base64 0.22.1",
+ "bytes",
+ "cosmos-sdk-proto 0.27.0",
+ "flex-error",
+ "ics23",
+ "informalsystems-pbjson",
+ "prost",
+ "subtle-encoding",
+ "tendermint-proto",
+]
+
+[[package]]
 name = "ibc-types"
 version = "0.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2370a3055f69d9dfe7382080a509560d2dd412d9f9f2a44e3a68945e5ec46955"
 dependencies = [
- "ibc-types-core-channel",
- "ibc-types-core-client",
- "ibc-types-core-commitment",
- "ibc-types-core-connection",
- "ibc-types-domain-type",
- "ibc-types-identifier",
- "ibc-types-lightclients-tendermint",
- "ibc-types-path",
- "ibc-types-timestamp",
- "ibc-types-transfer",
+ "ibc-types-core-channel 0.15.1",
+ "ibc-types-core-client 0.15.1",
+ "ibc-types-core-commitment 0.15.1",
+ "ibc-types-core-connection 0.15.1",
+ "ibc-types-domain-type 0.15.1",
+ "ibc-types-identifier 0.15.1",
+ "ibc-types-lightclients-tendermint 0.15.1",
+ "ibc-types-path 0.15.1",
+ "ibc-types-timestamp 0.15.1",
+ "ibc-types-transfer 0.15.1",
+]
+
+[[package]]
+name = "ibc-types"
+version = "0.16.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "15abe338362dfdaa5e75193cbcbeabe00c37cd324fcaf5fe3e552973d395365a"
+dependencies = [
+ "ibc-types-core-channel 0.16.0",
+ "ibc-types-core-client 0.16.0",
+ "ibc-types-core-commitment 0.16.0",
+ "ibc-types-core-connection 0.16.0",
+ "ibc-types-domain-type 0.16.0",
+ "ibc-types-identifier 0.16.0",
+ "ibc-types-lightclients-tendermint 0.16.0",
+ "ibc-types-path 0.16.0",
+ "ibc-types-timestamp 0.16.0",
+ "ibc-types-transfer 0.16.0",
 ]
 
 [[package]]
@@ -1374,13 +1421,13 @@ dependencies = [
  "bytes",
  "derive_more",
  "displaydoc",
- "ibc-proto",
- "ibc-types-core-client",
- "ibc-types-core-commitment",
- "ibc-types-core-connection",
- "ibc-types-domain-type",
- "ibc-types-identifier",
- "ibc-types-timestamp",
+ "ibc-proto 0.51.1",
+ "ibc-types-core-client 0.15.1",
+ "ibc-types-core-commitment 0.15.1",
+ "ibc-types-core-connection 0.15.1",
+ "ibc-types-domain-type 0.15.1",
+ "ibc-types-identifier 0.15.1",
+ "ibc-types-timestamp 0.15.1",
  "ics23",
  "num-traits",
  "proc-macro2 0.1.10",
@@ -1388,6 +1435,38 @@ dependencies = [
  "safe-regex",
  "serde",
  "serde_derive",
+ "serde_json",
+ "sha2 0.10.8",
+ "subtle-encoding",
+ "tendermint",
+ "tendermint-proto",
+ "time",
+ "tracing",
+]
+
+[[package]]
+name = "ibc-types-core-channel"
+version = "0.16.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5e8601bf05bf57b8cd6bea75ee0e2d0ee8f7a813f5e4773b3ac423d72b3b61e7"
+dependencies = [
+ "anyhow",
+ "bytes",
+ "derive_more",
+ "displaydoc",
+ "ibc-proto 0.52.0",
+ "ibc-types-core-client 0.16.0",
+ "ibc-types-core-commitment 0.16.0",
+ "ibc-types-core-connection 0.16.0",
+ "ibc-types-domain-type 0.16.0",
+ "ibc-types-identifier 0.16.0",
+ "ibc-types-timestamp 0.16.0",
+ "ics23",
+ "num-traits",
+ "proc-macro2 0.1.10",
+ "prost",
+ "safe-regex",
+ "serde",
  "serde_json",
  "sha2 0.10.8",
  "subtle-encoding",
@@ -1407,15 +1486,41 @@ dependencies = [
  "bytes",
  "derive_more",
  "displaydoc",
- "ibc-proto",
- "ibc-types-domain-type",
- "ibc-types-identifier",
- "ibc-types-timestamp",
+ "ibc-proto 0.51.1",
+ "ibc-types-domain-type 0.15.1",
+ "ibc-types-identifier 0.15.1",
+ "ibc-types-timestamp 0.15.1",
  "ics23",
  "num-traits",
  "prost",
  "serde",
  "serde_derive",
+ "serde_json",
+ "sha2 0.10.8",
+ "subtle-encoding",
+ "tendermint",
+ "tendermint-proto",
+ "time",
+]
+
+[[package]]
+name = "ibc-types-core-client"
+version = "0.16.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "52bec4c5ce4aee576fa2cfe26c38774ba83fac9f8e45ca93a998bf26fd175bd1"
+dependencies = [
+ "anyhow",
+ "bytes",
+ "derive_more",
+ "displaydoc",
+ "ibc-proto 0.52.0",
+ "ibc-types-domain-type 0.16.0",
+ "ibc-types-identifier 0.16.0",
+ "ibc-types-timestamp 0.16.0",
+ "ics23",
+ "num-traits",
+ "prost",
+ "serde",
  "serde_json",
  "sha2 0.10.8",
  "subtle-encoding",
@@ -1437,10 +1542,10 @@ dependencies = [
  "dyn-clone",
  "erased-serde",
  "hex",
- "ibc-proto",
- "ibc-types-domain-type",
- "ibc-types-identifier",
- "ibc-types-timestamp",
+ "ibc-proto 0.51.1",
+ "ibc-types-domain-type 0.15.1",
+ "ibc-types-identifier 0.15.1",
+ "ibc-types-timestamp 0.15.1",
  "ics23",
  "num-traits",
  "primitive-types",
@@ -1448,6 +1553,40 @@ dependencies = [
  "safe-regex",
  "serde",
  "serde_derive",
+ "serde_json",
+ "sha2 0.10.8",
+ "subtle-encoding",
+ "tendermint",
+ "tendermint-light-client-verifier",
+ "tendermint-proto",
+ "time",
+ "tracing",
+ "uint",
+]
+
+[[package]]
+name = "ibc-types-core-commitment"
+version = "0.16.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "047e8d8b450efcfc94872616c41d8a156dd2a91e1ea6dc93ecd24cdd7d13e212"
+dependencies = [
+ "anyhow",
+ "bytes",
+ "derive_more",
+ "displaydoc",
+ "dyn-clone",
+ "erased-serde",
+ "hex",
+ "ibc-proto 0.52.0",
+ "ibc-types-domain-type 0.16.0",
+ "ibc-types-identifier 0.16.0",
+ "ibc-types-timestamp 0.16.0",
+ "ics23",
+ "num-traits",
+ "primitive-types",
+ "prost",
+ "safe-regex",
+ "serde",
  "serde_json",
  "sha2 0.10.8",
  "subtle-encoding",
@@ -1469,18 +1608,47 @@ dependencies = [
  "bytes",
  "derive_more",
  "displaydoc",
- "ibc-proto",
- "ibc-types-core-client",
- "ibc-types-core-commitment",
- "ibc-types-domain-type",
- "ibc-types-identifier",
- "ibc-types-timestamp",
+ "ibc-proto 0.51.1",
+ "ibc-types-core-client 0.15.1",
+ "ibc-types-core-commitment 0.15.1",
+ "ibc-types-domain-type 0.15.1",
+ "ibc-types-identifier 0.15.1",
+ "ibc-types-timestamp 0.15.1",
  "ics23",
  "num-traits",
  "prost",
  "safe-regex",
  "serde",
  "serde_derive",
+ "serde_json",
+ "sha2 0.10.8",
+ "subtle-encoding",
+ "tendermint",
+ "tendermint-proto",
+ "time",
+]
+
+[[package]]
+name = "ibc-types-core-connection"
+version = "0.16.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4be4877af799ebbc3afce461708a9047dee327420d4bfd07234ece347e9a9352"
+dependencies = [
+ "anyhow",
+ "bytes",
+ "derive_more",
+ "displaydoc",
+ "ibc-proto 0.52.0",
+ "ibc-types-core-client 0.16.0",
+ "ibc-types-core-commitment 0.16.0",
+ "ibc-types-domain-type 0.16.0",
+ "ibc-types-identifier 0.16.0",
+ "ibc-types-timestamp 0.16.0",
+ "ics23",
+ "num-traits",
+ "prost",
+ "safe-regex",
+ "serde",
  "serde_json",
  "sha2 0.10.8",
  "subtle-encoding",
@@ -1501,6 +1669,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "ibc-types-domain-type"
+version = "0.16.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "935ab66bebae8e2268f7510efde0f0c8d8620056ac9c08f0ce00848c3b499b19"
+dependencies = [
+ "anyhow",
+ "bytes",
+ "prost",
+]
+
+[[package]]
 name = "ibc-types-identifier"
 version = "0.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1509,6 +1688,16 @@ dependencies = [
  "displaydoc",
  "serde",
  "serde_derive",
+]
+
+[[package]]
+name = "ibc-types-identifier"
+version = "0.16.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "70277054193bbdcd03adec8e31dda609aaded4b3206fa2ef4c78af4213b7b832"
+dependencies = [
+ "displaydoc",
+ "serde",
 ]
 
 [[package]]
@@ -1523,13 +1712,13 @@ dependencies = [
  "displaydoc",
  "dyn-clone",
  "erased-serde",
- "ibc-proto",
- "ibc-types-core-client",
- "ibc-types-core-commitment",
- "ibc-types-core-connection",
- "ibc-types-domain-type",
- "ibc-types-identifier",
- "ibc-types-timestamp",
+ "ibc-proto 0.51.1",
+ "ibc-types-core-client 0.15.1",
+ "ibc-types-core-commitment 0.15.1",
+ "ibc-types-core-connection 0.15.1",
+ "ibc-types-domain-type 0.15.1",
+ "ibc-types-identifier 0.15.1",
+ "ibc-types-timestamp 0.15.1",
  "ics23",
  "num-traits",
  "primitive-types",
@@ -1537,6 +1726,42 @@ dependencies = [
  "safe-regex",
  "serde",
  "serde_derive",
+ "serde_json",
+ "sha2 0.10.8",
+ "subtle-encoding",
+ "tendermint",
+ "tendermint-light-client-verifier",
+ "tendermint-proto",
+ "time",
+ "tracing",
+ "uint",
+]
+
+[[package]]
+name = "ibc-types-lightclients-tendermint"
+version = "0.16.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e94def4ff38149ac15871212fbc961958935e48ba3f15ea38a5dcdf0be8f2a56"
+dependencies = [
+ "anyhow",
+ "bytes",
+ "derive_more",
+ "displaydoc",
+ "dyn-clone",
+ "erased-serde",
+ "ibc-proto 0.52.0",
+ "ibc-types-core-client 0.16.0",
+ "ibc-types-core-commitment 0.16.0",
+ "ibc-types-core-connection 0.16.0",
+ "ibc-types-domain-type 0.16.0",
+ "ibc-types-identifier 0.16.0",
+ "ibc-types-timestamp 0.16.0",
+ "ics23",
+ "num-traits",
+ "primitive-types",
+ "prost",
+ "safe-regex",
+ "serde",
  "serde_json",
  "sha2 0.10.8",
  "subtle-encoding",
@@ -1557,13 +1782,35 @@ dependencies = [
  "bytes",
  "derive_more",
  "displaydoc",
- "ibc-types-core-channel",
- "ibc-types-core-client",
- "ibc-types-core-connection",
+ "ibc-types-core-channel 0.15.1",
+ "ibc-types-core-client 0.15.1",
+ "ibc-types-core-connection 0.15.1",
  "num-traits",
  "prost",
  "serde",
  "serde_derive",
+ "serde_json",
+ "subtle-encoding",
+ "tendermint",
+ "tendermint-proto",
+ "time",
+]
+
+[[package]]
+name = "ibc-types-path"
+version = "0.16.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3b4584008853ce3807b062b5b297aab8a2ab31c86065a4076789dcb00bcc3d03"
+dependencies = [
+ "bytes",
+ "derive_more",
+ "displaydoc",
+ "ibc-types-core-channel 0.16.0",
+ "ibc-types-core-client 0.16.0",
+ "ibc-types-core-connection 0.16.0",
+ "num-traits",
+ "prost",
+ "serde",
  "serde_json",
  "subtle-encoding",
  "tendermint",
@@ -1591,6 +1838,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "ibc-types-timestamp"
+version = "0.16.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7f6defa5b48f4eddd9778520089c6a54540bf7495dac390f02d14a6b14aa8ef9"
+dependencies = [
+ "bytes",
+ "displaydoc",
+ "num-traits",
+ "prost",
+ "serde",
+ "serde_json",
+ "subtle-encoding",
+ "tendermint",
+ "tendermint-proto",
+ "time",
+]
+
+[[package]]
 name = "ibc-types-transfer"
 version = "0.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1599,6 +1864,16 @@ dependencies = [
  "displaydoc",
  "serde",
  "serde_derive",
+]
+
+[[package]]
+name = "ibc-types-transfer"
+version = "0.16.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "04de6980ddd37ebdecce6b7860283f229431553fe59c270c558e4433e355cf1a"
+dependencies = [
+ "displaydoc",
+ "serde",
 ]
 
 [[package]]
@@ -1793,12 +2068,6 @@ checksum = "ecc2af9a1119c51f12a14607e783cb977bde58bc069ff0c3da1095e635d70654"
 dependencies = [
  "cpufeatures",
 ]
-
-[[package]]
-name = "lazy_static"
-version = "1.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bbd2bcb4c963f2ddae06a2efc7e9f3591312473c50c6685e1f298068316e66fe"
 
 [[package]]
 name = "libc"
@@ -2079,6 +2348,7 @@ dependencies = [
 [[package]]
 name = "penumbra-sdk-asset"
 version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2098,7 +2368,6 @@ dependencies = [
  "getrandom",
  "hex",
  "ibig",
- "lazy_static",
  "num-bigint",
  "once_cell",
  "pbjson-types",
@@ -2118,6 +2387,7 @@ dependencies = [
 [[package]]
 name = "penumbra-sdk-auction"
 version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2162,6 +2432,7 @@ dependencies = [
 [[package]]
 name = "penumbra-sdk-community-pool"
 version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2191,6 +2462,7 @@ dependencies = [
 [[package]]
 name = "penumbra-sdk-compact-block"
 version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2221,6 +2493,7 @@ dependencies = [
 [[package]]
 name = "penumbra-sdk-dex"
 version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2273,6 +2546,7 @@ dependencies = [
 [[package]]
 name = "penumbra-sdk-distributions"
 version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2288,6 +2562,7 @@ dependencies = [
 [[package]]
 name = "penumbra-sdk-fee"
 version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2311,6 +2586,7 @@ dependencies = [
 [[package]]
 name = "penumbra-sdk-funding"
 version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "anyhow",
  "ark-groth16",
@@ -2341,6 +2617,7 @@ dependencies = [
 [[package]]
 name = "penumbra-sdk-governance"
 version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2357,7 +2634,7 @@ dependencies = [
  "decaf377",
  "decaf377-rdsa",
  "futures",
- "ibc-types",
+ "ibc-types 0.15.1",
  "im",
  "metrics",
  "once_cell",
@@ -2389,6 +2666,7 @@ dependencies = [
 [[package]]
 name = "penumbra-sdk-ibc"
 version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2397,8 +2675,8 @@ dependencies = [
  "blake2b_simd 1.0.2",
  "futures",
  "hex",
- "ibc-proto",
- "ibc-types",
+ "ibc-proto 0.51.1",
+ "ibc-types 0.15.1",
  "ics23",
  "metrics",
  "num-traits",
@@ -2423,6 +2701,7 @@ dependencies = [
 [[package]]
 name = "penumbra-sdk-keys"
 version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "aes",
  "anyhow",
@@ -2466,6 +2745,7 @@ dependencies = [
 [[package]]
 name = "penumbra-sdk-num"
 version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2501,6 +2781,7 @@ dependencies = [
 [[package]]
 name = "penumbra-sdk-proof-params"
 version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "anyhow",
  "ark-ec",
@@ -2525,6 +2806,7 @@ dependencies = [
 [[package]]
 name = "penumbra-sdk-proto"
 version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2534,8 +2816,8 @@ dependencies = [
  "decaf377-rdsa",
  "futures",
  "hex",
- "ibc-proto",
- "ibc-types",
+ "ibc-proto 0.51.1",
+ "ibc-types 0.15.1",
  "ics23",
  "pbjson",
  "pbjson-types",
@@ -2551,6 +2833,7 @@ dependencies = [
 [[package]]
 name = "penumbra-sdk-sct"
 version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2584,6 +2867,7 @@ dependencies = [
 [[package]]
 name = "penumbra-sdk-shielded-pool"
 version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2604,8 +2888,8 @@ dependencies = [
  "decaf377-rdsa",
  "futures",
  "hex",
- "ibc-proto",
- "ibc-types",
+ "ibc-proto 0.51.1",
+ "ibc-types 0.15.1",
  "im",
  "metrics",
  "once_cell",
@@ -2634,6 +2918,7 @@ dependencies = [
 [[package]]
 name = "penumbra-sdk-stake"
 version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2674,6 +2959,7 @@ dependencies = [
 [[package]]
 name = "penumbra-sdk-tct"
 version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "ark-ed-on-bls12-377",
  "ark-ff",
@@ -2702,6 +2988,7 @@ dependencies = [
 [[package]]
 name = "penumbra-sdk-transaction"
 version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2717,8 +3004,8 @@ dependencies = [
  "decaf377-rdsa",
  "derivative",
  "hex",
- "ibc-proto",
- "ibc-types",
+ "ibc-proto 0.51.1",
+ "ibc-types 0.15.1",
  "num-bigint",
  "once_cell",
  "pbjson-types",
@@ -2753,6 +3040,7 @@ dependencies = [
 [[package]]
 name = "penumbra-sdk-txhash"
 version = "2.0.0-alpha.9"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.9#02e7203c4f7343972a15bb92ab240de63af19795"
 dependencies = [
  "anyhow",
  "blake2b_simd 1.0.2",
@@ -2770,9 +3058,11 @@ dependencies = [
  "anyhow",
  "ark-ff",
  "base64 0.22.1",
+ "bincode",
  "console_error_panic_hook",
  "decaf377",
  "hex",
+ "ibc-types 0.16.0",
  "indexed_db_futures",
  "penumbra-sdk-asset",
  "penumbra-sdk-auction",

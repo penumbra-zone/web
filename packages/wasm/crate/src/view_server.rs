@@ -3,7 +3,9 @@ use std::collections::BTreeMap;
 use indexed_db_futures::IdbDatabase;
 use penumbra_compact_block::{CompactBlock, StatePayload};
 use penumbra_keys::{Address, FullViewingKey};
+use penumbra_proto::crypto::tct::v1::MerkleRoot;
 use penumbra_proto::DomainType;
+use penumbra_proto::Message;
 use penumbra_sct::Nullifier;
 use penumbra_shielded_pool::note;
 use penumbra_tct as tct;
@@ -21,6 +23,9 @@ use crate::note_record::SpendableNoteRecord;
 use crate::storage::{init_idb_storage, Storage};
 use crate::swap_record::SwapRecord;
 use crate::utils;
+// use wasm_bindgen_test::console_log;
+// use ibc_types::core::commitment::MerkleProof;
+// use ibc_types::DomainType as _;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct StoredTree {
@@ -314,6 +319,44 @@ impl ViewServer {
 
         let address: Address = Address::decode(address)?;
         Ok(is_controlled_inner(&self.fvk, &address))
+    }
+
+    /// Checks if address is controlled by view server full viewing key
+    #[wasm_bindgen]
+    pub fn frontier(
+        &self,
+        compact_frontier: &[u8],
+        anchor: &[u8],
+        _height: u64,
+    ) -> Result<(), JsValue> {
+        utils::set_panic_hook();
+
+        // Try to deserialize using bincode
+        let _tree: Tree = match bincode::deserialize(compact_frontier) {
+            Ok(tree) => tree,
+            Err(e) => {
+                return Err(JsValue::from_str(&format!(
+                    "Failed to deserialize tree: {}",
+                    e
+                )))
+            }
+        };
+
+        let _anchor: MerkleRoot = match MerkleRoot::decode(anchor) {
+            Ok(anchor) => anchor,
+            Err(e) => {
+                return Err(JsValue::from_str(&format!(
+                    "Failed to decode anchor: {}",
+                    e
+                )))
+            }
+        };
+
+        // todo: verify merkle inclusion proof
+
+        // todo: store tree in view server state
+
+        Ok(())
     }
 }
 
