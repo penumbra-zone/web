@@ -1,5 +1,11 @@
 # @penumbra-zone/storage
 
+## 55.1.0
+
+### Minor Changes
+
+- 694319c: bump registry version
+
 ## 55.0.0
 
 ### Minor Changes
