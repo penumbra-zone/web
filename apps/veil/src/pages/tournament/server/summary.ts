@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Serialized } from '@/shared/utils/serializer';
 import { pindexerDb } from '@/shared/database/client';
-import { LQTSummary } from '@/shared/database/schema';
+import { LqtSummary } from '@/shared/database/schema';
 
 export interface TournamentSummaryRequest {
   limit: number;
@@ -27,7 +27,7 @@ export const getQueryParams = (req: NextRequest): TournamentSummaryRequest => {
 };
 
 export interface TournamentSummaryApiResponse {
-  data: LQTSummary[];
+  data: LqtSummary[];
 }
 
 const tournamentSummaryQuery = async ({ limit, page, epoch }: TournamentSummaryRequest) => {

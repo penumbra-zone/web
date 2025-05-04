@@ -14,14 +14,15 @@ import { pnum } from '@penumbra-zone/types/pnum';
 export const VotingRewards = observer(() => {
   const { subaccount } = connectionStore;
 
-  const { epoch } = useCurrentEpoch();
+  const { epoch, isLoading: epochLoading } = useCurrentEpoch();
   // This represents a subsequent invocation of `usePersonalRewards` which will use useQuery's cache.
-  const { data, isLoading } = usePersonalRewards(subaccount, epoch);
+  const { data, isLoading } = usePersonalRewards(subaccount, epoch, epochLoading);
   const { data: stakingToken } = useStakingTokenMetadata();
 
   // TODO: “Cast Vote” still needs a pindexer query—calculate it by dividing the
   // user’s voting power (from `delegator_history`) by the epoch’s total voting
   // power (from `delegator_summary`).
+
   return (
     <Density compact>
       <div className='grid grid-cols-[auto_1fr_1fr_32px]'>

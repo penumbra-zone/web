@@ -28,11 +28,15 @@ export const LandingCard = observer(() => {
     data: epochGauge,
     isLoading: epochGaugeLoading,
     isPending,
-  } = useEpochResults('epoch-results-landing', {
-    epoch,
-    limit: 5,
-    page: 1,
-  });
+  } = useEpochResults(
+    'epoch-results-landing',
+    {
+      epoch,
+      limit: 5,
+      page: 1,
+    },
+    epochLoading,
+  );
 
   return (
     <GradientCard>

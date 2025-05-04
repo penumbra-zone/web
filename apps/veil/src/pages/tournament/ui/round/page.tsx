@@ -12,9 +12,6 @@ export const TournamentRoundPage = () => {
   const router = useRouter();
   const epoch = Number(params?.epoch);
 
-  const startBlock = 1337;
-  const endBlock = 1337;
-
   if (!params?.epoch && !Number.isNaN(epoch)) {
     router.push(PagePath.Tournament);
     return null;
@@ -25,7 +22,7 @@ export const TournamentRoundPage = () => {
       <PenumbraWaves />
       <RoundCard epoch={epoch} />
       <CurrentVotingResults epoch={epoch} />
-      <LeaderboardTable startBlock={startBlock} endBlock={endBlock} />
+      <LeaderboardTable />
     </section>
   );
 };
