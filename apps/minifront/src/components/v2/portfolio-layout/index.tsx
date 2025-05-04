@@ -19,7 +19,7 @@ const TABS_OPTIONS = [
   { label: 'Transactions', value: getV2Link(PagePath.TRANSACTIONS) },
 ];
 
-export const DashboardLayout = () => {
+export const PortfolioLayout = () => {
   const pagePath = usePagePath();
   const navigate = useNavigate();
 
