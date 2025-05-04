@@ -321,7 +321,7 @@ impl ViewServer {
         Ok(is_controlled_inner(&self.fvk, &address))
     }
 
-    /// Checks if address is controlled by view server full viewing key
+    /// Decodes the compact frontrier and loads it into the view server
     #[wasm_bindgen]
     pub fn frontier(
         &self,
