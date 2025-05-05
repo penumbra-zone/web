@@ -130,8 +130,5 @@ jobs:
       - name: setup nix
         uses: ./.github/actions/setup-nix
 
-      - name: install firefox browser
-        uses: browser-actions/setup-firefox@v1
-
       - name: run rust tests
         run: nix develop --command just test-rust
