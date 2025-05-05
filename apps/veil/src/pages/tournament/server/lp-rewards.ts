@@ -39,12 +39,14 @@ export interface LpRewardsApiResponse {
 }
 
 async function queryLqtLps({ positionIds, sortKey, sortDirection, limit, page }: LpRewardsRequest) {
-  const positionIdsBytes = positionIds.map(positionId => positionIdFromBech32(positionId).inner);
+  const positionIdsBytes = positionIds
+    .map(positionId => positionIdFromBech32(positionId).inner)
+    .map(posIdInner => Buffer.from(posIdInner));
 
   return pindexerDb
     .selectFrom('lqt.lps')
     .selectAll()
-    .where('position_id', 'in', positionIdsBytes as Buffer<ArrayBufferLike>[])
+    .where('position_id', 'in', positionIdsBytes)
     .orderBy(sortKey, sortDirection)
     .offset(limit * (page - 1))
     .limit(limit)
