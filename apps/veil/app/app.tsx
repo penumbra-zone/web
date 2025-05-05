@@ -30,7 +30,9 @@ export const App = observer(({ children }: { children: ReactNode }) => {
           <Header />
           {children}
         </main>
-        <ToastProvider />
+        <div className='relative z-10'>
+          <ToastProvider />
+        </div>
       </TooltipProvider>
     </QueryClientProvider>
   );

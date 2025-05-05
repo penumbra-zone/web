@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { serialize, Serialized } from '@/shared/utils/serializer';
-import { Gauge } from '@/shared/database/schema';
+import { LqtGauge } from '@/shared/database/schema';
 import { pindexerDb } from '@/shared/database/client';
 import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 
@@ -21,8 +21,9 @@ export interface PreviousEpochsRequest {
   sortDirection: PreviousEpochsSortDirection;
 }
 
-export interface MappedGauge extends Omit<Gauge, 'asset_id'> {
+export interface MappedGauge extends Omit<LqtGauge, 'asset_id' | 'missing_votes'> {
   asset: Metadata;
+  missing_votes: number;
 }
 
 export interface PreviousEpochData {
@@ -91,7 +92,9 @@ const previousEpochsQuery = async ({
     .selectFrom(sortedGauge.as('sorted_gauge'))
     .select([
       'epoch',
-      sql<(Omit<Gauge, 'asset_id'> & { asset_id: string })[]>`json_agg(sorted_gauge.*)`.as('gauge'),
+      sql<(Omit<LqtGauge, 'asset_id'> & { asset_id: string })[]>`json_agg(sorted_gauge.*)`.as(
+        'gauge',
+      ),
     ])
     .$if(!!epoch, qb => (epoch ? qb.where('epoch', '=', epoch) : qb))
     .orderBy('epoch', sortDirection)
@@ -117,7 +120,6 @@ export async function GET(
   const params = getQueryParams(req);
 
   const registryClient = new ChainRegistryClient();
-
   const [registry, results, total] = await Promise.all([
     registryClient.remote.get(chainId),
     previousEpochsQuery(params),

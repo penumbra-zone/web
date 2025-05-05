@@ -74,3 +74,6 @@ packages/protobuf/gen
 packages/protobuf/proto
 
 scripts/private
+
+# LLM assistance files
+CURSOR_RULES.md

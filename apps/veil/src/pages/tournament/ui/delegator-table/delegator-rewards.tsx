@@ -6,7 +6,7 @@ import { SegmentedControl } from '@penumbra-zone/ui/SegmentedControl';
 import { Density } from '@penumbra-zone/ui/Density';
 import { useTotalRewards } from '../../api/use-total-rewards';
 import { LpRewards } from '../lp-rewards';
-import { VotingRewards } from '../voting-rewards';
+import { VotingRewards } from '../total-delegator-rewards';
 
 export const DelegatorRewards = () => {
   const { data: total, isLoading } = useTotalRewards();

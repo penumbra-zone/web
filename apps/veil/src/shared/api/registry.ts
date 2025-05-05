@@ -2,7 +2,6 @@ import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { useQuery } from '@tanstack/react-query';
 import { envQueryFn } from './env/env';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { getAssetMetadataById } from './metadata';
 
 export const chainRegistryClient = new ChainRegistryClient();
 
@@ -15,10 +14,11 @@ export const useStakingTokenMetadata = () => {
   return useQuery({
     queryKey: ['stakingTokenMetadata'],
     queryFn: async (): Promise<Metadata> => {
+      const registry = await registryQueryFn();
       const { stakingAssetId } = chainRegistryClient.bundled.globals();
-      const stakingAssetsMetadata = await getAssetMetadataById(stakingAssetId);
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- staking token exists in registry
-      return stakingAssetsMetadata!;
+      const stakingAssetsMetadata = registry.getMetadata(stakingAssetId);
+
+      return stakingAssetsMetadata;
     },
     staleTime: Infinity,
   });

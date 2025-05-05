@@ -1,0 +1,138 @@
+import { sql } from 'kysely';
+import { NextRequest, NextResponse } from 'next/server';
+import { ChainRegistryClient } from '@penumbra-labs/registry';
+import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { serialize, Serialized } from '@/shared/utils/serializer';
+import { pindexerDb } from '@/shared/database/client';
+import { base64ToUint8Array } from '@penumbra-zone/types/base64';
+import { MappedGauge } from './previous-epochs';
+
+const SORT_KEYS = ['portion', 'votes'] as const;
+export type EpochResultsSortKey = (typeof SORT_KEYS)[number];
+
+const DIRECTIONS = ['asc', 'desc'] as const;
+export type EpochResultsSortDirection = (typeof DIRECTIONS)[number];
+
+export interface EpochResultsRequest {
+  epoch: number;
+  limit: number;
+  page: number;
+  sortKey: EpochResultsSortKey;
+  sortDirection: EpochResultsSortDirection;
+}
+
+export interface EpochResultsApiResponse {
+  total: number;
+  data: MappedGauge[];
+}
+
+const DEFAULT_LIMIT = 10;
+
+export const getQueryParams = (req: NextRequest): EpochResultsRequest => {
+  const { searchParams } = new URL(req.url);
+
+  const limit = Number(searchParams.get('limit')) || DEFAULT_LIMIT;
+  const page = Number(searchParams.get('page')) || 1;
+  const epoch = Number(searchParams.get('epoch'));
+
+  const sortKeyParam = searchParams.get('sortKey');
+  const sortKey =
+    sortKeyParam && SORT_KEYS.includes(sortKeyParam as EpochResultsSortKey)
+      ? (sortKeyParam as EpochResultsSortKey)
+      : 'portion';
+
+  const sortDirectionParam = searchParams.get('sortDirection');
+  const sortDirection =
+    sortDirectionParam && DIRECTIONS.includes(sortDirectionParam as EpochResultsSortDirection)
+      ? (sortDirectionParam as EpochResultsSortDirection)
+      : 'desc';
+
+  return {
+    epoch,
+    limit,
+    page,
+    sortKey,
+    sortDirection,
+  };
+};
+
+const epochResultsQuery = async ({
+  limit,
+  page,
+  sortKey,
+  sortDirection,
+  epoch,
+}: EpochResultsRequest) => {
+  return pindexerDb
+    .selectFrom('lqt.gauge as gauge')
+    .select(exp => [
+      'epoch',
+      'votes',
+      'portion',
+      'missing_votes',
+      sql<string>`encode(${exp.ref('asset_id')}, 'base64')`.as('asset_id'),
+    ])
+    .where('epoch', '=', epoch)
+    .orderBy(sortKey, sortDirection)
+    .limit(limit)
+    .offset(limit * (page - 1))
+    .execute();
+};
+
+const totalEpochResultsQuery = async ({ epoch }: EpochResultsRequest) => {
+  return pindexerDb
+    .selectFrom('lqt.gauge')
+    .select(exp => [exp.fn.countAll().as('total')])
+    .where('epoch', '=', epoch)
+    .executeTakeFirst();
+};
+
+export async function GET(
+  req: NextRequest,
+): Promise<NextResponse<Serialized<EpochResultsApiResponse | { error: string }>>> {
+  const chainId = process.env['PENUMBRA_CHAIN_ID'];
+  if (!chainId) {
+    return NextResponse.json({ error: 'PENUMBRA_CHAIN_ID is not set' }, { status: 500 });
+  }
+
+  const params = getQueryParams(req);
+
+  if (!params.epoch || params.epoch < 0) {
+    return NextResponse.json({ error: 'Required query parameter: "epoch"' }, { status: 400 });
+  }
+
+  const registryClient = new ChainRegistryClient();
+
+  const [registry, results, total] = await Promise.all([
+    registryClient.remote.get(chainId),
+    epochResultsQuery(params),
+    totalEpochResultsQuery(params),
+  ]);
+
+  const mapped = results
+    .map<MappedGauge | undefined>(item => {
+      const asset = registry.tryGetMetadata(
+        new AssetId({
+          inner: base64ToUint8Array(item.asset_id),
+        }),
+      );
+
+      if (!asset) {
+        return undefined;
+      }
+
+      return {
+        asset,
+        epoch: item.epoch,
+        votes: item.votes,
+        portion: item.portion,
+        missing_votes: item.missing_votes,
+      };
+    })
+    .filter((item): item is MappedGauge => !!item);
+
+  return NextResponse.json({
+    total: Number(total?.total ?? 0),
+    data: serialize(mapped),
+  });
+}

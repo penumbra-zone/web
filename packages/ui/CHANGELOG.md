@@ -1,5 +1,28 @@
 # @penumbra-zone/ui
 
+## 14.0.0
+
+### Major Changes
+
+- 4a51a46: Remove forwardRef that was deprecated in React 19
+- 4a51a46: Upgrade to React 19
+
+## 13.18.0
+
+### Minor Changes
+
+- 93f1d05: proto and storage changes to support querying tournament votes
+
+### Patch Changes
+
+- 28a251c: Move `buttons` Dialog.Content's prop out of the scrollable area
+- Updated dependencies [93f1d05]
+  - @penumbra-zone/protobuf@10.0.0
+  - @penumbra-zone/types@33.0.0
+  - @penumbra-zone/bech32m@16.0.0
+  - @penumbra-zone/getters@26.0.0
+  - @penumbra-zone/perspective@55.0.0
+
 ## 13.17.4
 
 ### Patch Changes
