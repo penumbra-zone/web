@@ -12,8 +12,7 @@ const parseResponse = async <RES extends object>(response: Response) => {
     return jsonRes.map(deserialize) as RES;
   }
 
-  const deserialized = deserialize(jsonRes);
-  return deserialized;
+  return deserialize(jsonRes);
 };
 
 /**
