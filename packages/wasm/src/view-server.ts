@@ -23,6 +23,7 @@ interface ViewServerProps {
   fullViewingKey: FullViewingKey;
   getStoredTree: () => Promise<StateCommitmentTree>;
   idbConstants: IdbConstants;
+  compact_frontier: SctFrontierResponse;
 }
 
 interface FlushResult {
@@ -44,11 +45,14 @@ export class ViewServer implements ViewServerInterface {
     fullViewingKey,
     getStoredTree,
     idbConstants,
+    compact_frontier,
   }: ViewServerProps): Promise<ViewServer> {
+    
     const wvs = await WasmViewServer.new(
       fullViewingKey.toBinary(),
       await getStoredTree(),
       idbConstants,
+      compact_frontier ?? undefined,
     );
     return new this(wvs, fullViewingKey, getStoredTree, idbConstants);
   }
@@ -67,6 +71,7 @@ export class ViewServer implements ViewServerInterface {
       this.fullViewingKey.toBinary(),
       await this.getStoredTree(),
       this.idbConstants,
+      undefined
     );
   }
 
@@ -96,7 +101,7 @@ export class ViewServer implements ViewServerInterface {
 
   async getSctFrontier(frontier: SctFrontierResponse) {
     // `compactFrontier` already contains binary data that was serialized on the server side
-    return this.wasmViewServer.frontier(
+    return this.wasmViewServer.load_frontier(
       frontier.compactFrontier,
       frontier.anchor?.toBinary()!,
       frontier.height,

@@ -8,6 +8,7 @@ use penumbra_proto::DomainType;
 use penumbra_proto::Message;
 use penumbra_sct::Nullifier;
 use penumbra_shielded_pool::note;
+use penumbra_tct::structure;
 use penumbra_tct as tct;
 use penumbra_tct::Witness::*;
 use serde::{Deserialize, Serialize};
@@ -16,6 +17,7 @@ use tct::storage::{StoreCommitment, StoreHash, StoredPosition, Updates};
 use tct::{Forgotten, Tree};
 use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::JsValue;
+use wasm_bindgen_test::console_log;
 
 use crate::error::WasmResult;
 use crate::keys::is_controlled_inner;
@@ -23,7 +25,6 @@ use crate::note_record::SpendableNoteRecord;
 use crate::storage::{init_idb_storage, Storage};
 use crate::swap_record::SwapRecord;
 use crate::utils;
-// use wasm_bindgen_test::console_log;
 // use ibc_types::core::commitment::MerkleProof;
 // use ibc_types::DomainType as _;
 
@@ -59,6 +60,13 @@ impl ScanBlockResult {
     }
 }
 
+#[derive(Deserialize)]
+pub struct FrontierInput {
+    pub frontier: Vec<u8>,
+    pub anchor: Vec<u8>,
+    pub height: u64,
+}
+
 #[wasm_bindgen]
 pub struct ViewServer {
     latest_height: u64,
@@ -86,12 +94,37 @@ impl ViewServer {
         full_viewing_key: &[u8],
         stored_tree: JsValue,
         idb_constants: JsValue,
+        compact_frontier: JsValue,
+        // fresh_wallet: bool,
     ) -> WasmResult<ViewServer> {
         utils::set_panic_hook();
 
         let fvk: FullViewingKey = FullViewingKey::decode(full_viewing_key)?;
-        let stored_tree: StoredTree = serde_wasm_bindgen::from_value(stored_tree)?;
-        let tree = load_tree(stored_tree);
+        // let stored_tree: StoredTree = serde_wasm_bindgen::from_value(stored_tree)?;
+
+        console_log!("existing stored tree: {:?}", stored_tree);
+
+        let FrontierInput { frontier, anchor, height } = serde_wasm_bindgen::from_value(compact_frontier)?;
+
+        console_log!("anchor: {:?}", anchor);
+        console_log!("height: {:?}", height);
+
+
+        let tree: Tree = bincode::deserialize(&frontier).map_err(|e| {
+            JsValue::from_str(&format!("Failed to deserialize frontier: {}", e))
+        }).expect("msg");
+
+        console_log!("tree in new: {:?}", tree);
+        
+        // let tree = if fresh_wallet {
+        //     // Use the `load_frontier` function to initialize the tree
+        //     Self::load_frontier(compact_frontier, anchor_bytes, height)?
+        // } else {
+        //     // Reconstruct tree directly from stored state
+        //     load_tree(stored_tree)
+        // };
+
+        // let tree = load_tree(stored_tree);
         let constants = serde_wasm_bindgen::from_value(idb_constants)?;
         let view_server = Self {
             latest_height: u64::MAX,
@@ -323,40 +356,61 @@ impl ViewServer {
 
     /// Decodes the compact frontrier and loads it into the view server
     #[wasm_bindgen]
-    pub fn frontier(
+    pub fn load_frontier(
         &self,
         compact_frontier: &[u8],
         anchor: &[u8],
-        _height: u64,
-    ) -> Result<(), JsValue> {
+        height: u64,
+    ) -> () {
         utils::set_panic_hook();
 
         // Try to deserialize using bincode
-        let _tree: Tree = match bincode::deserialize(compact_frontier) {
-            Ok(tree) => tree,
-            Err(e) => {
-                return Err(JsValue::from_str(&format!(
-                    "Failed to deserialize tree: {}",
-                    e
-                )))
-            }
-        };
+        let tree: Tree = bincode::deserialize(compact_frontier).expect("deserialized tree");
 
-        let _anchor: MerkleRoot = match MerkleRoot::decode(anchor) {
-            Ok(anchor) => anchor,
-            Err(e) => {
-                return Err(JsValue::from_str(&format!(
-                    "Failed to decode anchor: {}",
-                    e
-                )))
-            }
-        };
+        let anchor: MerkleRoot = MerkleRoot::decode(anchor).expect("deserialized anchor");
+
+        console_log!("tree: {:?}", tree);
+        console_log!("anchor: {:?}", anchor);
+        console_log!("height: {:?}", height);
 
         // todo: verify merkle inclusion proof
 
-        // todo: store tree in view server state
 
-        Ok(())
+        // todo: store tree in view server state    
+        let stored_position: StoredPosition = tree.position().into();
+        
+        let mut add_commitments = Tree::load(
+            stored_position,
+            tree.forgotten().into(),
+        );
+
+        for store_commitment in tree.commitments().into_iter() {
+            add_commitments.insert(store_commitment.0, store_commitment.1)
+        }
+        let mut add_hashes = add_commitments.load_hashes();
+
+        let node = tree.structure();
+        let mut hashes = Vec::new();
+        for child_node in node.children() {
+            match node.kind() {
+                structure::Kind::Internal { .. } => {
+                    hashes.push(StoreHash {
+                        position: child_node.position(),
+                        height: child_node.height(),
+                        hash: child_node.hash().clone(),
+                        essential: false,
+                    });
+                }
+                // For leaf nodes, do nothing.
+                structure::Kind::Leaf { .. } => {},
+            }
+        }
+
+        for stored_hash in &hashes {
+            add_hashes.insert(stored_hash.position, stored_hash.height, stored_hash.hash);
+        }
+        
+        // add_hashes.finish()
     }
 }
 
