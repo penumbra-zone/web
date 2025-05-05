@@ -16,6 +16,7 @@ import { connectionStore } from '@/shared/model/connection';
 import { LpRewards } from './lp-rewards';
 import { VotingRewards } from './total-delegator-rewards';
 import { useCurrentEpoch } from '../api/use-current-epoch';
+import { useLpRewards } from '../api/use-lp-rewards';
 import { usePersonalRewards } from '../api/use-personal-rewards';
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { pnum } from '@penumbra-zone/types/pnum';
@@ -35,6 +36,14 @@ export const DelegatorTotalRewards = observer(() => {
   const { subaccount } = connectionStore;
 
   const { epoch, isLoading: epochLoading } = useCurrentEpoch();
+  const { data: lpRewards, isLoading: isLpRewardsLoading } = useLpRewards(
+    subaccount,
+    0,
+    Infinity,
+    'rewards',
+    'desc',
+  );
+
   const { data: total, isLoading: isRewardsLoading } = usePersonalRewards(
     subaccount,
     epoch,
@@ -48,8 +57,12 @@ export const DelegatorTotalRewards = observer(() => {
   const [tab, setTab] = useState<'lp' | 'voting'>('lp');
 
   // Check if we have all the data needed to display rewards
-  const isLoading = isRewardsLoading || isTokenLoading;
-  const hasCompleteData = !isLoading && total?.totalRewards !== undefined && stakingToken;
+  const isLoading = isLpRewardsLoading || isRewardsLoading || isTokenLoading;
+  const hasCompleteData =
+    !isLoading &&
+    lpRewards?.totalRewards !== undefined &&
+    total?.totalRewards !== undefined &&
+    stakingToken;
 
   // Memoize the reward view to prevent unnecessary recalculations
   const rewardView = useMemo(() => {
@@ -61,12 +74,12 @@ export const DelegatorTotalRewards = observer(() => {
       valueView: {
         case: 'knownAssetId',
         value: {
-          amount: pnum(total.totalRewards).toAmount(),
+          amount: pnum(lpRewards.totalRewards + total.totalRewards).toAmount(),
           metadata: stakingToken,
         },
       },
     });
-  }, [hasCompleteData, total?.totalRewards, stakingToken]);
+  }, [hasCompleteData, lpRewards?.totalRewards, total?.totalRewards, stakingToken]);
 
   // Only check for zero when we have valid data
   const isTotalZero = rewardView ? isZero(getAmount(rewardView)) : true;

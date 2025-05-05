@@ -36,6 +36,7 @@ export interface LqtLp {
 export interface LpRewardsApiResponse {
   data: LqtLp[];
   total: number;
+  totalRewards: number;
 }
 
 async function queryLqtLps({ positionIds, sortKey, sortDirection, limit, page }: LpRewardsRequest) {
@@ -43,14 +44,30 @@ async function queryLqtLps({ positionIds, sortKey, sortDirection, limit, page }:
     .map(positionId => positionIdFromBech32(positionId).inner)
     .map(posIdInner => Buffer.from(posIdInner));
 
-  return pindexerDb
-    .selectFrom('lqt.lps')
-    .selectAll()
-    .where('position_id', 'in', positionIdsBytes)
-    .orderBy(sortKey, sortDirection)
-    .offset(limit * (page - 1))
-    .limit(limit)
-    .execute();
+  const [totalStats, results] = await Promise.all([
+    pindexerDb
+      .selectFrom('lqt.lps')
+      .select(eb => [
+        eb.fn.sum('rewards').as('total_rewards'),
+        eb.fn.count('position_id').as('total_positions'),
+      ])
+      .where('position_id', 'in', positionIdsBytes)
+      .executeTakeFirst(),
+    pindexerDb
+      .selectFrom('lqt.lps')
+      .selectAll()
+      .where('position_id', 'in', positionIdsBytes)
+      .orderBy(sortKey, sortDirection)
+      .offset(limit * (page - 1))
+      .limit(limit)
+      .execute(),
+  ]);
+
+  return {
+    data: results,
+    total: Number(totalStats?.total_positions ?? 0),
+    totalRewards: Number(totalStats?.total_rewards ?? 0n),
+  };
 }
 
 export async function POST(
@@ -61,7 +78,7 @@ export async function POST(
 
   return NextResponse.json(
     serialize({
-      data: lps.map(lp => ({
+      data: lps.data.map(lp => ({
         epoch: lp.epoch,
         positionId: new PositionId({ inner: lp.position_id }),
         assetId: new AssetId({ inner: lp.asset_id }),
@@ -73,7 +90,8 @@ export async function POST(
         points: lp.points,
         pointsShare: lp.points_share,
       })),
-      total: lps.length,
+      total: lps.total,
+      totalRewards: lps.totalRewards,
     }),
   );
 }
