@@ -392,19 +392,6 @@ export interface LqtSummary {
   total_rewards: number;
 }
 
-export interface LQTLPRewards {
-  epoch: number;
-  position_id: Buffer;
-  asset_id: Buffer;
-  amount: number;
-  executions: number;
-  um_volume: number;
-  asset_volume: number;
-  um_fees: number;
-  asset_fees: number;
-  points: number;
-}
-
 export interface LQTLPs {
   epoch: number;
   position_id: Buffer;
@@ -454,7 +441,6 @@ interface RawDB {
   'lqt.delegator_summary': LqtDelegatorSummary;
   'lqt.summary': LqtSummary;
   'lqt.lps': LQTLPs;
-  'lqt._lp_rewards': LQTLPRewards;
 }
 
 export type DB = Pick<
@@ -476,5 +462,4 @@ export type DB = Pick<
   | 'lqt.delegator_summary'
   | 'lqt.summary'
   | 'lqt.lps'
-  | 'lqt._lp_rewards'
 >;
