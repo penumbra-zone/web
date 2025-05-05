@@ -1,11 +1,11 @@
 /// <reference path="./vite-plugin-node-stdlib-browser.d.ts" />
 
-import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
-import { commitInfoPlugin } from './src/utils/commit-info-vite-plugin';
+import url from 'node:url';
+import { defineConfig } from 'vite';
 import polyfillNode from 'vite-plugin-node-stdlib-browser';
 import svgr from 'vite-plugin-svgr';
-import url from 'node:url';
+import { commitInfoPlugin } from './src/utils/commit-info-vite-plugin';
 
 export default defineConfig(({ mode }) => ({
   define: { 'globalThis.__DEV__': mode !== 'production' },
