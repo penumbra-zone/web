@@ -7,28 +7,24 @@ import polyfillNode from 'vite-plugin-node-stdlib-browser';
 import svgr from 'vite-plugin-svgr';
 import url from 'node:url';
 
-export default defineConfig(({ mode }) => {
-  return {
-    define: { 'globalThis.__DEV__': mode !== 'production' },
-    clearScreen: false,
-    base: './',
-    resolve: {
-      alias: {
-        '@amplitude/analytics-browser': url.fileURLToPath(
-          import.meta.resolve('./amplitude-stub.js'),
-        ),
-      },
+export default defineConfig(({ mode }) => ({
+  define: { 'globalThis.__DEV__': mode !== 'production' },
+  clearScreen: false,
+  base: './',
+  resolve: {
+    alias: {
+      '@amplitude/analytics-browser': url.fileURLToPath(import.meta.resolve('./amplitude-stub.js')),
     },
-    plugins: [
-      polyfillNode(),
-      react(),
-      commitInfoPlugin(),
-      svgr({
-        include: '**/*.svg',
-        svgrOptions: {
-          exportType: 'default',
-        },
-      }),
-    ],
-  };
-});
+  },
+  plugins: [
+    polyfillNode(),
+    react(),
+    commitInfoPlugin(),
+    svgr({
+      include: '**/*.svg',
+      svgrOptions: {
+        exportType: 'default',
+      },
+    }),
+  ],
+}));
