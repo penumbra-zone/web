@@ -104,7 +104,7 @@ function LpRewardRow({
       <TableCell cell loading={loading}>
         <Density slim>
           <Button iconOnly icon={ChevronRight}>
-            Go to position information page
+            Go to position information
           </Button>
         </Density>
       </TableCell>
