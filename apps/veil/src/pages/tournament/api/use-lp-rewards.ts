@@ -1,10 +1,8 @@
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import {
   Position,
-  PositionId,
   PositionState_PositionStateEnum,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
-import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { bech32mPositionId } from '@penumbra-zone/bech32m/plpid';
 import { apiPostFetch } from '@/shared/utils/api-fetch';
 
@@ -13,6 +11,7 @@ import {
   LpRewardsApiResponse,
   LpRewardsSortKey,
   LpRewardsSortDirection,
+  LqtLp,
 } from '@/pages/tournament/server/lp-rewards';
 import { penumbra } from '@/shared/const/penumbra';
 import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
@@ -23,28 +22,19 @@ import { DexService } from '@penumbra-zone/protobuf';
 export const BASE_LIMIT = 10;
 export const BASE_PAGE = 1;
 
-export interface Reward {
-  epoch: number;
-  positionId: PositionId;
-  reward: ValueView;
+export interface LpReward extends LqtLp {
+  position: Position;
   isWithdrawn: boolean;
-  // Easily-sortable fields for the rewards table
-  sort?: {
-    positionId: string;
-    epoch: number;
-    reward: number;
-  };
+  isWithdrawable: boolean;
 }
 
 export interface LpRewardsResponse extends LpRewardsApiResponse {
-  data: (Required<Reward> & { position: Position | undefined; isWithdrawn: boolean })[];
+  data: LpReward[];
   total: number;
 }
 
 // get the position state for each lp reward
-async function enrichLpRewards(
-  data: Required<Reward>[],
-): Promise<(Required<Reward> & { position: Position | undefined })[]> {
+async function enrichLpRewards(data: LqtLp[]): Promise<LpReward[]> {
   if (data.length === 0) {
     return [];
   }
@@ -57,7 +47,7 @@ async function enrichLpRewards(
 
   return data.map((lp, index) => ({
     ...lp,
-    position: positions[index],
+    position: positions[index] as unknown as Position,
     isWithdrawn: positions[index]?.state?.state === PositionState_PositionStateEnum.WITHDRAWN,
     isWithdrawable: positions[index]?.state?.state === PositionState_PositionStateEnum.CLOSED,
   }));
@@ -85,7 +75,7 @@ export const useLpRewards = (
     });
   }, [subaccount]);
 
-  const query = useQuery<Required<Reward>[]>({
+  const query = useQuery({
     queryKey: ['lp-rewards', ...positionIds, page, limit, sortKey, sortDirection],
     staleTime: Infinity,
     queryFn: async () => {
@@ -95,9 +85,9 @@ export const useLpRewards = (
         limit,
         sortKey,
         sortDirection,
-      } satisfies LpRewardsRequest).then(async resp => ({
+      } as LpRewardsRequest).then(async resp => ({
         ...resp,
-        data: resp.data ? await enrichLpRewards(resp.data) : [],
+        data: resp.data.length ? await enrichLpRewards(resp.data) : [],
       }));
     },
     enabled: positionIds.length > 0,

@@ -6,7 +6,7 @@ import { PositionId } from '@penumbra-zone/protobuf/penumbra/core/component/dex/
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { JsonObject } from '@bufbuild/protobuf';
 
-const SORT_KEYS = ['epoch', 'position_id', 'reward'] as const;
+const SORT_KEYS = ['epoch', 'position_id', 'rewards'] as const;
 export type LpRewardsSortKey = (typeof SORT_KEYS)[number];
 
 const DIRECTIONS = ['asc', 'desc'] as const;
@@ -42,10 +42,10 @@ async function queryLqtLps({ positionIds, sortKey, sortDirection, limit, page }:
   const positionIdsBytes = positionIds.map(positionId => positionIdFromBech32(positionId).inner);
 
   return pindexerDb
-    .selectFrom('lqt._lp_rewards')
+    .selectFrom('lqt.lps')
     .selectAll()
     .where('position_id', 'in', positionIdsBytes as Buffer<ArrayBufferLike>[])
-    .orderBy(sortKey === 'reward' ? 'amount' : sortKey, sortDirection)
+    .orderBy(sortKey, sortDirection)
     .offset(limit * (page - 1))
     .limit(limit)
     .execute();
@@ -63,13 +63,13 @@ export async function POST(
         epoch: lp.epoch,
         positionId: new PositionId({ inner: lp.position_id }),
         assetId: new AssetId({ inner: lp.asset_id }),
-        rewards: lp.amount,
+        rewards: lp.rewards,
         executions: lp.executions,
         umVolume: lp.um_volume,
         assetVolume: lp.asset_volume,
         assetFees: lp.asset_fees,
         points: lp.points,
-        pointsShare: lp.points / 10,
+        pointsShare: lp.points_share,
       })),
       total: lps.length,
     }),
