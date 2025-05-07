@@ -25,6 +25,7 @@ export const useVotingInfo = (defaultEpoch?: number) => {
   const getMetadata = useGetMetadata();
 
   const { epoch: currentEpoch, isLoading: loadingEpoch } = useCurrentEpoch();
+  const isInitialLoading = loadingEpoch;
   const epoch = defaultEpoch ?? currentEpoch;
   const isEnded = !currentEpoch || !epoch || epoch !== currentEpoch || loadingEpoch;
 
@@ -95,6 +96,7 @@ export const useVotingInfo = (defaultEpoch?: number) => {
     connected,
     isEnded,
     isLoading,
+    isInitialLoading,
     isVoted,
     votedFor,
     isDelegated,
@@ -115,6 +117,7 @@ export const VotingInfo = observer(({ epoch: defaultEpoch }: VotingInfoProps) =>
     isVoted,
     isEnded,
     isLoading,
+    isInitialLoading,
     votedFor,
     connected,
     isDelegated,
@@ -166,7 +169,7 @@ export const VotingInfo = observer(({ epoch: defaultEpoch }: VotingInfoProps) =>
     setIsVoteDialogOpen(false);
   };
 
-  if (isLoading) {
+  if (isInitialLoading) {
     return (
       <div className='flex flex-col gap-8'>
         <div className='h-8 w-24'>
