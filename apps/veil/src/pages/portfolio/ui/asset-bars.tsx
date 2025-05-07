@@ -177,7 +177,7 @@ export const AssetBars: React.FC = () => {
 
                   return (
                     <div
-                      key={`shielded-${allocation.symbol}`}
+                      key={`shielded-${allocation.symbol}-${index}`}
                       className='absolute top-0 h-full rounded'
                       style={{
                         backgroundColor: barColor,
