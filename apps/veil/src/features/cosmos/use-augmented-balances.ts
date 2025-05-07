@@ -78,7 +78,13 @@ export const useBalances = () => {
   const { data: registry } = useRegistry();
   const result = useQueries({
     queries: chainWallets
-      .filter(chain => chain.address !== undefined)
+      .filter(
+        (
+          chain,
+        ): chain is ChainWalletBase & {
+          get address(): string;
+        } => chain.address !== undefined,
+      )
       .map(chain => ({
         queryKey: [
           'cosmos-balances',
@@ -92,8 +98,7 @@ export const useBalances = () => {
             return [];
           }
 
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- chains without a valid address were filtered out above
-          const balances = await fetchChainBalances(chain.address!, chain);
+          const balances = await fetchChainBalances(chain.address, chain);
           return balances.map(coin => {
             return {
               asset: augmentToAsset(coin.denom, chain.chainName),
