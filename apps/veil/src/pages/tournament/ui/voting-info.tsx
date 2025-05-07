@@ -34,7 +34,7 @@ export const useVotingInfo = (defaultEpoch?: number) => {
     isEnded || !!notes?.length,
   );
 
-  const isLoading = loadingEpoch || loadingNotes || loadingVotes || delegationsLoading;
+  const isLoading = loadingEpoch || loadingNotes || delegationsLoading;
   const isVoted = !!votes?.length;
   const isDelegated = !!delegations?.length;
 
@@ -95,6 +95,7 @@ export const useVotingInfo = (defaultEpoch?: number) => {
     connected,
     isEnded,
     isLoading,
+    loadingVotes,
     isVoted,
     votedFor,
     isDelegated,
