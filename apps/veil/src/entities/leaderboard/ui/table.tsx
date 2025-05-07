@@ -17,28 +17,42 @@ import { useAssets } from '@/shared/api/assets';
 import { useBalances } from '@/shared/api/balances';
 import { stateToString } from '@/entities/position/model/state-to-string';
 import { useSortableTableHeaders } from '@/pages/tournament/ui/sortable-table-header';
-import { getAssetId } from './utils';
-import { useTournamentSummary } from '@/pages/tournament/api/use-tournament-summary';
 import { useCurrentEpoch } from '@/pages/tournament/api/use-current-epoch';
 import { useLpLeaderboard } from '@/pages/tournament/api/use-lp-leaderboard';
 import { LpLeaderboardSortKey } from '@/pages/tournament/server/lp-leaderboard';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { pnum } from '@penumbra-zone/types/pnum';
+import { observer } from 'mobx-react-lite';
+import { connectionStore } from '@/shared/model/connection';
+import { useMyLpLeaderboard } from '@/pages/tournament/api/use-my-lp-leaderboard';
+import { round } from '@penumbra-zone/types/round';
 
-export const LeaderboardTable = () => {
+const Tabs = {
+  AllLPs: 'All LPs',
+  MyLPs: 'My LPs',
+} as const;
+
+type Tab = (typeof Tabs)[keyof typeof Tabs];
+
+export const LeaderboardTable = observer(() => {
+  const { connected, subaccount } = connectionStore;
   const totalRef = useRef<number>(0);
   const searchParams = useSearchParams();
   const page = Number(searchParams?.get('page') ?? 1);
   const [currentPage, setCurrentPage] = useState(page);
   const [parent] = useAutoAnimate();
   const [quote, setQuote] = useState<AssetSelectorValue>();
-  const [tab, setTab] = useState<'All LPs' | 'My LPs'>('All LPs');
+  const [tab, setTab] = useState<Tab>(Tabs.AllLPs);
   const [limit, setLimit] = useState(10);
-  const quoteAssetId = getAssetId(quote);
   const { getTableHeader, sortBy } = useSortableTableHeaders<LpLeaderboardSortKey>('epoch');
 
   const { data: assets } = useAssets();
+  const { data: balances } = useBalances();
+  const { epoch, isLoading: epochLoading } = useCurrentEpoch();
 
+  const umMetadata = useMemo(() => {
+    return assets?.find(asset => asset.symbol === 'UM');
+  }, [assets]);
   const getAssetMetadata = useCallback(
     (assetId: AssetId) => {
       return assets?.find(asset => asset.penumbraAssetId?.equals(assetId));
@@ -46,42 +60,36 @@ export const LeaderboardTable = () => {
     [assets],
   );
 
-  console.log('TCL: LeaderboardTable -> assets', assets);
-  const umMetadata = useMemo(() => {
-    return assets?.find(asset => asset.symbol === 'UM');
-  }, [assets]);
-
-  const { epoch, isLoading: epochLoading } = useCurrentEpoch();
-  const { data: summary } = useTournamentSummary(
-    {
-      limit: 1,
-      page: 1,
-      epoch,
-    },
-    epochLoading,
-  );
-
   const {
     data: leaderboard,
-    error,
-    isLoading,
-  } = useLpLeaderboard(1300, currentPage, limit, sortBy.key, sortBy.direction);
-  console.log('TCL: LeaderboardTable -> leaderboard', leaderboard);
+    error: leaderboardError,
+    isLoading: leaderboardLoading,
+  } = useLpLeaderboard({
+    epoch: 1761,
+    page: currentPage,
+    limit,
+    sortKey: sortBy.key,
+    sortDirection: sortBy.direction,
+  });
 
-  // const {
-  //   data: myLPs,
-  //   error: myLPsError,
-  //   isLoading: myLPsLoading,
-  // } = useMyLeaderboard({
-  //   limit,
-  //   offset: (currentPage - 1) * limit,
-  //   quote: quoteAssetId,
-  //   startBlock: summary?.[0]?.start_block,
-  //   endBlock: summary?.[0]?.end_block,
-  // });
+  const {
+    data: myLeaderboard,
+    error: myLeaderboardError,
+    isLoading: myLeaderboardLoading,
+  } = useMyLpLeaderboard({
+    subaccount,
+    epoch: 1761,
+    page: currentPage,
+    limit,
+    sortKey: sortBy.key,
+    sortDirection: sortBy.direction,
+  });
 
-  const { data: balances } = useBalances();
-  const { data: positions, total } = leaderboard ?? {};
+  const isMyTab = tab === Tabs.MyLPs;
+  const positions = isMyTab ? myLeaderboard?.data : leaderboard?.data;
+  const total = isMyTab ? myLeaderboard?.total : leaderboard?.total;
+  const error = isMyTab ? myLeaderboardError : leaderboardError;
+  const isLoading = epochLoading || isMyTab ? myLeaderboardLoading : leaderboardLoading;
   totalRef.current = total ?? totalRef.current;
 
   if (error) {
@@ -103,22 +111,27 @@ export const LeaderboardTable = () => {
           <AssetSelector assets={assets} balances={balances} value={quote} onChange={setQuote} />
         </div>
 
-        <div className='[&>*>*]:w-1/2 mb-4'>
-          <SegmentedControl value={tab} onChange={opt => setTab(opt as 'All LPs' | 'My LPs')}>
-            <SegmentedControl.Item
-              value='All LPs'
-              style={tab === 'All LPs' ? 'filled' : 'unfilled'}
-            >
-              All LPs
-            </SegmentedControl.Item>
-            <SegmentedControl.Item value='My LPs' style={tab === 'My LPs' ? 'filled' : 'unfilled'}>
-              My LPs
-            </SegmentedControl.Item>
-          </SegmentedControl>
-        </div>
+        {connected && (
+          <div className='[&>*>*]:w-1/2 mb-4'>
+            <SegmentedControl value={tab} onChange={opt => setTab(opt as 'All LPs' | 'My LPs')}>
+              <SegmentedControl.Item
+                value='All LPs'
+                style={tab === 'All LPs' ? 'filled' : 'unfilled'}
+              >
+                All LPs
+              </SegmentedControl.Item>
+              <SegmentedControl.Item
+                value='My LPs'
+                style={tab === 'My LPs' ? 'filled' : 'unfilled'}
+              >
+                My LPs
+              </SegmentedControl.Item>
+            </SegmentedControl>
+          </div>
+        )}
 
-        <div ref={parent} className='grid grid-cols-7 h-auto overflow-auto'>
-          <div className='grid grid-cols-subgrid col-span-8'>
+        <div ref={parent} className='grid grid-cols-6 h-auto overflow-auto'>
+          <div className='grid grid-cols-subgrid col-span-6'>
             {getTableHeader('positionId', 'Position ID')}
             {getTableHeader('executions', 'Execs')}
             {getTableHeader('points', 'Points')}
@@ -131,7 +144,7 @@ export const LeaderboardTable = () => {
 
           {isLoading ? (
             Array.from({ length: limit }).map((_, index) => (
-              <div className='grid grid-cols-subgrid col-span-8' key={index}>
+              <div className='grid grid-cols-subgrid col-span-6' key={index}>
                 <TableCell loading>&nbsp;</TableCell>
                 <TableCell loading>&nbsp;</TableCell>
                 <TableCell loading>&nbsp;</TableCell>
@@ -144,14 +157,14 @@ export const LeaderboardTable = () => {
             ))
           ) : (
             <>
-              {positions.length ? (
+              {positions?.length ? (
                 positions.map(position => {
                   return (
                     <Link
                       key={position.positionIdString}
                       href={`/inspect/lp/${position.positionIdString}`}
                       className={cn(
-                        'relative grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_1fr] col-span-7',
+                        'relative grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr] col-span-6',
                         'bg-transparent hover:bg-action-hoverOverlay transition-colors',
                         '[&>*]:h-auto',
                       )}
@@ -170,7 +183,7 @@ export const LeaderboardTable = () => {
                         {position.executions}
                       </TableCell>
                       <TableCell cell numeric loading={isLoading}>
-                        {Math.abs(position.pointsShare)}%
+                        {round({ value: position.pointsShare * 100, decimals: 0 })}%
                       </TableCell>
                       {/* <TableCell cell numeric loading={isLoading}>
                         <Text
@@ -228,4 +241,4 @@ export const LeaderboardTable = () => {
       </div>
     </Card>
   );
-};
+});

@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import {
   Position,
@@ -5,7 +6,6 @@ import {
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { bech32mPositionId } from '@penumbra-zone/bech32m/plpid';
 import { apiPostFetch } from '@/shared/utils/api-fetch';
-
 import {
   LpRewardsRequest,
   LpRewardsApiResponse,
@@ -16,7 +16,6 @@ import {
 import { penumbra } from '@/shared/const/penumbra';
 import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { ViewService } from '@penumbra-zone/protobuf/penumbra/view/v1/view_connect';
-import { useEffect, useState } from 'react';
 import { DexService } from '@penumbra-zone/protobuf';
 
 export const BASE_LIMIT = 10;
