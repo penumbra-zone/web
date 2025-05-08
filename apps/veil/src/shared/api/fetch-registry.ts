@@ -8,13 +8,10 @@ import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
  */
 export type JsonRegistry = ConstructorParameters<typeof Registry>[0];
 
-/**
- * @module fetch-registry
- *
- * This module provides utilities to fetch the raw JSON of a remote registry.
- */
-export async function fetchJsonRegistry(chainId: string): Promise<JsonRegistry> {
-  const registry = await new ChainRegistryClient().remote.getWithBundledBackup(chainId);
+const CLIENT = new ChainRegistryClient();
+
+async function fetchJsonRegistry(chainId: string): Promise<JsonRegistry> {
+  const registry = await CLIENT.remote.getWithBundledBackup(chainId);
   // We use type-foo because this type isn't exported.
   const assetById: JsonRegistry['assetById'] = {};
   for (const metadata of registry.getAllAssets()) {
@@ -24,15 +21,38 @@ export async function fetchJsonRegistry(chainId: string): Promise<JsonRegistry> 
       console.warn('Found a metadata entry with no asset ID', { chainId, metadata });
       continue;
     }
-    assetById[uint8ArrayToBase64(assetId.inner)] = {
-      ...metadata,
-      penumbraAssetId: { inner: uint8ArrayToBase64(assetId.inner) },
-    };
+    assetById[uint8ArrayToBase64(assetId.inner)] = JSON.parse(JSON.stringify(metadata));
   }
   return {
     chainId: registry.chainId,
     ibcConnections: registry.ibcConnections,
     numeraires: registry.numeraires.map(x => uint8ArrayToBase64(x.inner)),
     assetById,
+  };
+}
+
+/**
+ * A JSONified registry, along with the staking token.
+ *
+ * This is suitable for passing across an API boundary.
+ */
+export interface JsonRegistryWithGlobals {
+  stakingAssetIdBase64: string;
+  registry: JsonRegistry;
+}
+
+/**
+ * Fetch registry information, for a given chain id.
+ *
+ * This will make a fresh call to the remote registry.
+ */
+export async function fetchJsonRegistryWithGlobals(
+  chainId: string,
+): Promise<JsonRegistryWithGlobals> {
+  const registry = await fetchJsonRegistry(chainId);
+  const stakingAssetId = CLIENT.bundled.globals().stakingAssetId;
+  return {
+    registry,
+    stakingAssetIdBase64: uint8ArrayToBase64(stakingAssetId.inner),
   };
 }
