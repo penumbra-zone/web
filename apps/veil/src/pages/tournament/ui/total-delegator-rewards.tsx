@@ -2,12 +2,8 @@ import { observer } from 'mobx-react-lite';
 import { TableCell } from '@penumbra-zone/ui/TableCell';
 import { Density } from '@penumbra-zone/ui/Density';
 import { connectionStore } from '@/shared/model/connection';
-import {
-  usePersonalRewards,
-  BASE_LIMIT,
-  BASE_PAGE,
-  DelegatorHistorySortKey,
-} from '../api/use-personal-rewards';
+import { usePersonalRewards, BASE_LIMIT, BASE_PAGE } from '../api/use-personal-rewards';
+import { DelegatorHistorySortKey } from '../server/delegator-history';
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { Button } from '@penumbra-zone/ui/Button';

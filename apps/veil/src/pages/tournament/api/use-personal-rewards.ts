@@ -5,7 +5,11 @@ import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys
 import { ViewService } from '@penumbra-zone/protobuf';
 import { penumbra } from '@/shared/const/penumbra';
 import { statusStore } from '@/shared/model/status';
-import { TournamentDelegatorHistoryResponse } from '../server/delegator-history';
+import {
+  DelegatorHistorySortDirection,
+  DelegatorHistorySortKey,
+  TournamentDelegatorHistoryResponse,
+} from '../server/delegator-history';
 import { apiPostFetch } from '@/shared/utils/api-fetch';
 import {
   AddressByIndexResponse,
@@ -14,12 +18,6 @@ import {
 
 export const BASE_LIMIT = 10;
 export const BASE_PAGE = 1;
-
-export const SORT_KEYS = ['epoch', 'power', 'reward', ''] as const;
-export type DelegatorHistorySortKey = (typeof SORT_KEYS)[number];
-
-export const DIRECTIONS = ['asc', 'desc'] as const;
-export type DelegatorHistorySortDirection = (typeof DIRECTIONS)[number];
 
 const fetchRewards = async (
   epochOrHeight: { type: 'epoch'; value: bigint } | { type: 'blockHeight'; value: bigint },

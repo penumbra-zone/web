@@ -7,9 +7,7 @@ import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { chainRegistryClient } from '@/shared/api/registry';
-
-export const BASE_LIMIT = 10;
-export const BASE_PAGE = 1;
+import { BASE_LIMIT, BASE_PAGE } from '../api/use-personal-rewards';
 
 export const SORT_KEYS = ['epoch', 'power', 'reward', ''] as const;
 export type DelegatorHistorySortKey = (typeof SORT_KEYS)[number];
@@ -68,7 +66,7 @@ function processEpochResults(
   address: Address,
   limit: number,
   page: number,
-  sortKey: DelegatorHistorySortKey = 'epoch',
+  _sortKey: DelegatorHistorySortKey = 'epoch',
   sortDirection: DelegatorHistorySortDirection = 'desc',
 ): { paginatedResults: LqtDelegatorHistory[]; totalItems: number; totalReward: number } {
   // Create accumulator for results
@@ -111,13 +109,8 @@ function processEpochResults(
   // since we require the total count. This is the correct approach for
   // implementing server-side pagination while preserving accurate totals and sorting.
   results.sort((a, b) => {
-    if (sortKey === 'epoch') {
-      const comparison = a.epoch - b.epoch;
-      return sortDirection === 'asc' ? comparison : -comparison;
-    }
-
-    // fallback (no-op)
-    return 0;
+    const comparison = a.epoch - b.epoch;
+    return sortDirection === 'asc' ? comparison : -comparison;
   });
 
   const startIndex = (page - 1) * limit;
