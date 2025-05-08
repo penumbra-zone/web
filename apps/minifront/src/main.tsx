@@ -11,6 +11,8 @@ import { RouterProvider } from 'react-router-dom';
 import { rootRouter } from './components/root-router';
 import { PenumbraUIProvider } from '@penumbra-zone/ui-deprecated/PenumbraUIProvider';
 
+import '@penumbra-zone/ui/style.css';
+
 const Main = () => {
   const [queryClient] = useState(() => new QueryClient());
 

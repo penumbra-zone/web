@@ -8,6 +8,7 @@ import { AssetsCardTitle } from './assets-card-title';
 import { TransactionsCardTitle } from './transactions-card-title';
 import { motion } from 'framer-motion';
 import { getV2Link } from '../get-v2-link.ts';
+import { PortfolioBalance } from '@penumbra-zone/ui/PortfolioBalance';
 
 const CARD_TITLE_BY_PATH = {
   [getV2Link(PagePath.DASHBOARD)]: <AssetsCardTitle />,
@@ -23,29 +24,49 @@ export const PortfolioLayout = () => {
   const pagePath = usePagePath();
   const navigate = useNavigate();
 
+  // Mock data - this would come from Prax client state
+  const totalBalance = '4,567.678';
+  const currency = 'USDC';
+  
+  const handleInfoClick = () => {
+    console.log('Balance info clicked');
+  };
+
   return (
-    <Grid container>
-      <Grid mobile={0} tablet={2} desktop={3} xl={4} />
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+      <div style={{ width: '1136px', maxWidth: '100%' }}>
+        <PortfolioBalance 
+          balance={totalBalance} 
+          currency={currency} 
+          onInfoClick={handleInfoClick}
+        />
+        
+        <div className="mt-4">
+          <Grid container>
+            <Grid mobile={0} tablet={2} desktop={3} xl={4} />
 
-      <Grid tablet={8} desktop={6} xl={4}>
-        <Card
-          title={CARD_TITLE_BY_PATH[getV2Link(pagePath)]}
-          motion={{ layout: true, layoutId: 'main' }}
-        >
-          <motion.div layout>
-            <Tabs
-              value={getV2Link(pagePath)}
-              onChange={value => navigate(value)}
-              options={TABS_OPTIONS}
-              actionType='accent'
-            />
-          </motion.div>
+            <Grid tablet={8} desktop={6} xl={4}>
+              <Card
+                title={CARD_TITLE_BY_PATH[getV2Link(pagePath)]}
+                motion={{ layout: true, layoutId: 'main' }}
+              >
+                <motion.div layout>
+                  <Tabs
+                    value={getV2Link(pagePath)}
+                    onChange={value => navigate(value)}
+                    options={TABS_OPTIONS}
+                    actionType='accent'
+                  />
+                </motion.div>
 
-          <Outlet />
-        </Card>
-      </Grid>
+                <Outlet />
+              </Card>
+            </Grid>
 
-      <Grid mobile={0} tablet={2} desktop={3} xl={4} />
-    </Grid>
+            <Grid mobile={0} tablet={2} desktop={3} xl={4} />
+          </Grid>
+        </div>
+      </div>
+    </div>
   );
 };
