@@ -1,3 +1,4 @@
+// File: src/pages/tournament/api/use-personal-rewards.ts
 import { useQuery } from '@tanstack/react-query';
 import { connectionStore } from '@/shared/model/connection';
 import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
@@ -11,8 +12,21 @@ import {
   TournamentVotesResponse,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 
+export const BASE_LIMIT = 10;
+export const BASE_PAGE = 1;
+
+export const SORT_KEYS = ['epoch', 'power', 'reward', ''] as const;
+export type DelegatorHistorySortKey = (typeof SORT_KEYS)[number];
+
+export const DIRECTIONS = ['asc', 'desc'] as const;
+export type DelegatorHistorySortDirection = (typeof DIRECTIONS)[number];
+
 const fetchRewards = async (
   epochOrHeight: { type: 'epoch'; value: bigint } | { type: 'blockHeight'; value: bigint },
+  page: number = BASE_PAGE,
+  limit: number = BASE_LIMIT,
+  sortKey: DelegatorHistorySortKey = 'epoch',
+  sortDirection: DelegatorHistorySortDirection = 'desc',
   subaccount?: number,
 ): Promise<TournamentDelegatorHistoryResponse | undefined> => {
   const accountFilter =
@@ -69,6 +83,10 @@ const fetchRewards = async (
         epochs: Array.from(epochs),
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- address is defined
         address: { inner: Array.from(address!.inner) },
+        page,
+        limit,
+        sortKey,
+        sortDirection,
       },
     );
 
@@ -81,43 +99,86 @@ const fetchRewards = async (
 /**
  * Retrieves every vote from the view service for each epoch in which the user participated.
  */
-export const usePersonalRewards = (subaccount?: number, epoch?: number, disabled?: boolean) => {
+export const usePersonalRewards = (
+  subaccount?: number,
+  epoch?: number,
+  disabled?: boolean,
+  page: number = BASE_PAGE,
+  limit: number = BASE_LIMIT,
+  sortKey: DelegatorHistorySortKey = 'epoch',
+  sortDirection: DelegatorHistorySortDirection = 'desc',
+) => {
   const blockHeight = statusStore.latestKnownBlockHeight;
 
-  return useQuery({
-    queryKey: ['total-voting-rewards', subaccount],
+  const query = useQuery({
+    queryKey: ['total-voting-rewards', subaccount, page, limit, sortKey, sortDirection],
     enabled: connectionStore.connected && !!epoch && !!blockHeight && !disabled,
     queryFn: async () => {
       return await fetchRewards(
         {
           type: 'blockHeight',
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- based on `enabled`, blockHeight is always defined
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- block height parameter is always defined
           value: blockHeight!,
         },
+        page,
+        limit,
+        sortKey,
+        sortDirection,
         subaccount,
       );
     },
   });
+
+  return {
+    query,
+    data: query.data?.data,
+    total: query.data?.totalItems ?? 0,
+    totalRewards: query.data?.totalRewards ?? 0,
+  };
 };
 
 /**
  * Retrieves the user’s vote for a single epoch.
- *
- * TODO: hook into `RoundCard` to surface incoming rewards.
  */
-export const usePersonalRewardsForEpoch = (subaccount?: number, epoch?: number) => {
-  return useQuery({
-    queryKey: ['single-epoch-voting-rewards', subaccount, epoch],
+export const usePersonalRewardsForEpoch = (
+  subaccount?: number,
+  epoch?: number,
+  page: number = BASE_PAGE,
+  limit: number = BASE_LIMIT,
+  sortKey: DelegatorHistorySortKey = 'epoch',
+  sortDirection: DelegatorHistorySortDirection = 'desc',
+) => {
+  const query = useQuery({
+    queryKey: [
+      'single-epoch-voting-rewards',
+      subaccount,
+      epoch,
+      page,
+      limit,
+      sortKey,
+      sortDirection,
+    ],
     enabled: connectionStore.connected && !!epoch,
     queryFn: async () => {
       return await fetchRewards(
         {
           type: 'epoch',
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- based on `enabled`, epoch is always defined
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- epoch parameter is always defined
           value: BigInt(epoch!),
         },
+        page,
+        limit,
+        sortKey,
+        sortDirection,
         subaccount,
       );
     },
   });
+
+  return {
+    query,
+    data: query.data?.data,
+    total: query.data?.totalItems ?? 0,
+    totalRewards: query.data?.totalRewards ?? 0,
+  };
 };

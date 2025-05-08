@@ -41,7 +41,10 @@ interface PreviousEpochsRowProps {
 const PreviousEpochsRow = observer(
   ({ row, isLoading, className, connected }: PreviousEpochsRowProps) => {
     const { subaccount } = connectionStore;
-    const { data: rewards, isLoading: rewardsLoading } = usePersonalRewards(subaccount, row.epoch);
+    const {
+      data: rewards,
+      query: { isLoading: rewardsLoading },
+    } = usePersonalRewards(subaccount, row.epoch);
     const { data: stakingToken } = useStakingTokenMetadata();
 
     return (
@@ -82,7 +85,7 @@ const PreviousEpochsRow = observer(
         </TableCell>
         {connected && (
           <TableCell cell loading={isLoading || rewardsLoading}>
-            {rewards?.data.find(r => BigInt(r.epoch) === (row.epoch && BigInt(row.epoch))) &&
+            {rewards?.find(r => BigInt(r.epoch) === (row.epoch && BigInt(row.epoch))) &&
               stakingToken && (
                 <ValueViewComponent
                   valueView={
@@ -91,7 +94,7 @@ const PreviousEpochsRow = observer(
                         case: 'knownAssetId',
                         value: {
                           amount: pnum(
-                            rewards.data.find(r => BigInt(r.epoch) === BigInt(row.epoch))?.reward,
+                            rewards.find(r => BigInt(r.epoch) === BigInt(row.epoch))?.reward,
                           ).toAmount(),
                           metadata: stakingToken,
                         },

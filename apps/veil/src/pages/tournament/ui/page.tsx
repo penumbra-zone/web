@@ -12,7 +12,6 @@ export const TournamentPage = () => {
       <PenumbraWaves />
       <LandingCard />
       <DelegatorRewards />
-
       <DelegatorLeaderboard />
       <PreviousEpochs />
     </section>
