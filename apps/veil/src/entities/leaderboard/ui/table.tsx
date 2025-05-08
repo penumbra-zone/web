@@ -21,7 +21,6 @@ import { stateToString } from '@/entities/position/model/state-to-string';
 import { useSortableTableHeaders } from '@/pages/tournament/ui/sortable-table-header';
 import { formatAge, getAssetId } from './utils';
 import { useTournamentSummary } from '@/pages/tournament/api/use-tournament-summary';
-// import { useCurrentEpoch } from '@/pages/tournament/api/use-current-epoch';
 
 export const LeaderboardTable = () => {
   const totalCountRef = useRef<number>(0);

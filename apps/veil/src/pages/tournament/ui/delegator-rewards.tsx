@@ -37,7 +37,6 @@ export const DelegatorTotalRewards = observer(() => {
   const { epoch, isLoading: epochLoading } = useCurrentEpoch();
   const {
     totalRewards,
-    data: rewards,
     query: { isLoading: isRewardsLoading },
   } = usePersonalRewards(subaccount, epoch, epochLoading);
   const { data: stakingToken, isLoading: isTokenLoading } = useStakingTokenMetadata();
@@ -49,7 +48,7 @@ export const DelegatorTotalRewards = observer(() => {
 
   // Check if we have all the data needed to display rewards
   const isLoading = isRewardsLoading || isTokenLoading;
-  const hasCompleteData = !isLoading && rewards !== undefined && stakingToken;
+  const hasCompleteData = !isLoading && totalRewards !== undefined && stakingToken;
 
   // Memoize the reward view to prevent unnecessary recalculations
   const rewardView = useMemo(() => {

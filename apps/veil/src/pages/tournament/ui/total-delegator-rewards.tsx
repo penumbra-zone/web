@@ -126,7 +126,8 @@ export const VotingRewards = observer(() => {
                 <TableCell cell loading={isLoading || !hasVoteWeightData}>
                   {!isLoading &&
                     hasVoteWeightData &&
-                    (matchingSummary!.total_voting_power / rewardData.power).toFixed(2)}
+                    ((rewardData.power / matchingSummary!.total_voting_power) * 100).toFixed(3) +
+                      '%'}
                 </TableCell>
 
                 <TableCell cell loading={isLoading || !rewardView}>

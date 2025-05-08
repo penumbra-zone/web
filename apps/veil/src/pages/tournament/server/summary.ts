@@ -49,7 +49,6 @@ const tournamentSummaryQuery = async ({
   let query = pindexerDb.selectFrom('lqt.summary').orderBy('epoch', sortDirection);
 
   if (epochs && epochs.length > 0) {
-    console.log('Filtering by specific epochs:', epochs);
     query = query.where('epoch', 'in', epochs);
   }
 
