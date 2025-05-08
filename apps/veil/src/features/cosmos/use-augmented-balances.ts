@@ -1,7 +1,6 @@
 import { useWallet } from '@cosmos-kit/react';
 import { useQueries } from '@tanstack/react-query';
 import { ChainWalletBase, WalletStatus } from '@cosmos-kit/core';
-import { useRegistry } from '@/shared/api/registry';
 
 import { Asset } from '@chain-registry/types';
 import cosmosAssetList from 'chain-registry/mainnet/assets';
@@ -75,7 +74,6 @@ const fallbackAsset = (denom: string): Asset => {
 
 export const useBalances = () => {
   const { chainWallets, status } = useWallet();
-  const { data: registry } = useRegistry();
   const result = useQueries({
     queries: chainWallets
       .filter(
@@ -86,13 +84,7 @@ export const useBalances = () => {
         } => chain.address !== undefined,
       )
       .map(chain => ({
-        queryKey: [
-          'cosmos-balances',
-          status,
-          chain.chainId,
-          chain.address,
-          registry ? 'registry-available' : 'no-registry',
-        ],
+        queryKey: ['cosmos-balances', status, chain.chainId, chain.address],
         queryFn: async () => {
           if (status !== WalletStatus.Connected && chainWallets.length === 0) {
             return [];

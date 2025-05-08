@@ -26,7 +26,7 @@ import { AssetSelector } from '@penumbra-zone/ui/AssetSelector';
 import { Density } from '@penumbra-zone/ui/Density';
 import { pnum } from '@penumbra-zone/types/pnum';
 import { ShieldOff } from 'lucide-react';
-import { useRegistry } from '@/shared/api/registry.ts';
+import { useRegistry } from '@/shared/api/registry.tsx';
 import Image from 'next/image';
 import { bech32, bech32m } from 'bech32';
 import { Chain } from '@penumbra-labs/registry';
@@ -177,7 +177,7 @@ export function UnshieldDialog({ asset }: { asset: ShieldedBalance }) {
   const metadata = getMetadata(asset.valueView);
   const { data: registry } = useRegistry();
   const channelId = metadata.base.split('/')[1] ?? '';
-  const destinationChain = registry?.ibcConnections.find(chain => chain.channelId === channelId);
+  const destinationChain = registry.ibcConnections.find(chain => chain.channelId === channelId);
 
   const [isAddressValid, setIsAddressValid] = useState(true);
   useEffect(() => {

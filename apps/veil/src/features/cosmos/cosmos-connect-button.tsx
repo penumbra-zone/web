@@ -5,7 +5,7 @@ import { useChains } from '@cosmos-kit/react';
 import { Wallet2 } from 'lucide-react';
 import { Density } from '@penumbra-zone/ui/Density';
 import { chainsInPenumbraRegistry } from '@/features/cosmos/chain-provider.tsx';
-import { useRegistry } from '@/shared/api/registry.ts';
+import { useRegistry } from '@/shared/api/registry.tsx';
 
 interface CosmosConnectButtonProps {
   actionType?: ButtonProps['actionType'];
@@ -16,7 +16,7 @@ interface CosmosConnectButtonProps {
 const CosmosConnectButtonInner = observer(
   ({ actionType = 'accent', variant = 'default', children }: CosmosConnectButtonProps) => {
     const { data: registry } = useRegistry();
-    const penumbraIbcChains = chainsInPenumbraRegistry(registry?.ibcConnections ?? []).map(
+    const penumbraIbcChains = chainsInPenumbraRegistry(registry.ibcConnections).map(
       c => c.chain_name,
     );
     const chains = useChains(penumbraIbcChains);
