@@ -16,7 +16,7 @@ interface CosmosConnectButtonProps {
 const CosmosConnectButtonInner = observer(
   ({ actionType = 'accent', variant = 'default', children }: CosmosConnectButtonProps) => {
     const { data: registry } = useRegistry();
-    const penumbraIbcChains = chainsInPenumbraRegistry(registry?.ibcConnections ?? []).map(
+    const penumbraIbcChains = chainsInPenumbraRegistry(registry.ibcConnections).map(
       c => c.chain_name,
     );
     const chains = useChains(penumbraIbcChains);

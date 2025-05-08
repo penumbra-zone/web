@@ -105,8 +105,8 @@ export const ShieldButton = ({ asset }: { asset: UnifiedAsset }) => {
     setIsDisabled(true);
 
     const getIbcDenom = async () => {
-      // Skip if no registry or public balances or source denom
-      if (!registry || !firstBalance || !sourceDenom) {
+      // Skip if no public balances or source denom
+      if (!firstBalance || !sourceDenom) {
         return;
       }
 

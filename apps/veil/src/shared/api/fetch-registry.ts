@@ -10,8 +10,12 @@ export type JsonRegistry = ConstructorParameters<typeof Registry>[0];
 
 const CLIENT = new ChainRegistryClient();
 
+export async function fetchRegistry(chainId: string): Promise<Registry> {
+  return await CLIENT.remote.getWithBundledBackup(chainId);
+}
+
 async function fetchJsonRegistry(chainId: string): Promise<JsonRegistry> {
-  const registry = await CLIENT.remote.getWithBundledBackup(chainId);
+  const registry = await fetchRegistry(chainId);
   // We use type-foo because this type isn't exported.
   const assetById: JsonRegistry['assetById'] = {};
   for (const metadata of registry.getAllAssets()) {
@@ -21,7 +25,11 @@ async function fetchJsonRegistry(chainId: string): Promise<JsonRegistry> {
       console.warn('Found a metadata entry with no asset ID', { chainId, metadata });
       continue;
     }
-    assetById[uint8ArrayToBase64(assetId.inner)] = JSON.parse(JSON.stringify(metadata));
+    // Safe, assuming the upstream API is well-formed, but really we should add provisions
+    // to the registry to do this.
+    assetById[uint8ArrayToBase64(assetId.inner)] = JSON.parse(
+      JSON.stringify(metadata),
+    ) as JsonRegistry['assetById'][string];
   }
   return {
     chainId: registry.chainId,

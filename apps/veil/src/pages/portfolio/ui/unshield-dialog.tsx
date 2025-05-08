@@ -177,7 +177,7 @@ export function UnshieldDialog({ asset }: { asset: ShieldedBalance }) {
   const metadata = getMetadata(asset.valueView);
   const { data: registry } = useRegistry();
   const channelId = metadata.base.split('/')[1] ?? '';
-  const destinationChain = registry?.ibcConnections.find(chain => chain.channelId === channelId);
+  const destinationChain = registry.ibcConnections.find(chain => chain.channelId === channelId);
 
   const [isAddressValid, setIsAddressValid] = useState(true);
   useEffect(() => {

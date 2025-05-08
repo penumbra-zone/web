@@ -26,11 +26,11 @@ export const PortfolioPage = ({ isMobile }: PortfolioPageProps): React.ReactNode
     return <MobilePortfolioPage />;
   }
 
-  return data ? (
+  return (
     <IbcChainProvider registry={data}>
       <DesktopPortfolioPage />
     </IbcChainProvider>
-  ) : null;
+  );
 };
 
 function MobilePortfolioPage() {
