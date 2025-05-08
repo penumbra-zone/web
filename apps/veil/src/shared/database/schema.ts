@@ -402,7 +402,7 @@ export interface LQTLPs {
   asset_volume: number;
   asset_fees: number;
   points: number;
-  points_share: number;
+  point_share: number;
 }
 
 interface RawDB {

@@ -132,7 +132,7 @@ export const LeaderboardTable = observer(() => {
 
         <div ref={parent} className='grid grid-cols-6 h-auto overflow-auto'>
           <div className='grid grid-cols-subgrid col-span-6'>
-            {getTableHeader('positionId', 'Position ID')}
+            <TableCell heading>Position ID</TableCell>
             {getTableHeader('executions', 'Execs')}
             {getTableHeader('points', 'Points')}
             {/* {getTableHeader('pnlPercentage', 'PnL')} */}
@@ -169,9 +169,9 @@ export const LeaderboardTable = observer(() => {
                         '[&>*]:h-auto',
                       )}
                     >
-                      <TableCell cell numeric>
+                      <TableCell cell>
                         <div className='flex max-w-[104px]'>
-                          <Text as='div' detailTechnical color='text.primary' truncate>
+                          <Text smallTechnical color='text.primary' truncate>
                             {position.positionIdString}
                           </Text>
                           <span>
@@ -179,11 +179,13 @@ export const LeaderboardTable = observer(() => {
                           </span>
                         </div>
                       </TableCell>
-                      <TableCell cell numeric>
-                        {position.executions}
+                      <TableCell cell>
+                        <Text smallTechnical>{position.executions}</Text>
                       </TableCell>
-                      <TableCell cell numeric loading={isLoading}>
-                        {round({ value: position.pointsShare * 100, decimals: 0 })}%
+                      <TableCell cell loading={isLoading}>
+                        <Text smallTechnical>
+                          {round({ value: position.pointsShare * 100, decimals: 2 })}%
+                        </Text>
                       </TableCell>
                       {/* <TableCell cell numeric loading={isLoading}>
                         <Text
@@ -198,14 +200,14 @@ export const LeaderboardTable = observer(() => {
                       {/* <TableCell cell numeric>
                         {formatAge(position.openingTime)}
                       </TableCell> */}
-                      <TableCell cell numeric>
+                      <TableCell cell>
                         <ValueViewComponent
                           valueView={pnum(position.umVolume).toValueView(umMetadata)}
                           abbreviate={true}
                           density='slim'
                         />
                       </TableCell>
-                      <TableCell cell numeric>
+                      <TableCell cell>
                         <ValueViewComponent
                           valueView={pnum(position.assetFees).toValueView(
                             getAssetMetadata(position.assetId),
@@ -214,15 +216,19 @@ export const LeaderboardTable = observer(() => {
                           density='slim'
                         />
                       </TableCell>
-                      <TableCell cell numeric>
-                        {stateToString(position.position.state?.state)}
+                      <TableCell cell>
+                        <Text smallTechnical>{stateToString(position.position.state?.state)}</Text>
                       </TableCell>
                     </Link>
                   );
                 })
               ) : (
                 <div className='col-span-6'>
-                  <TableCell>There are no liquidity positions in this epoch.</TableCell>
+                  <TableCell>
+                    {tab === Tabs.AllLPs
+                      ? 'There are no liquidity positions in this epoch.'
+                      : 'You have no liquidity positions in this epoch.'}
+                  </TableCell>
                 </div>
               )}
             </>
