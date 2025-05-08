@@ -20,7 +20,6 @@ export const broadcastTransaction: Impl['broadcastTransaction'] = async function
 
   const broadcastId = await querier.tendermint.broadcastTx(req.transaction);
   if (!id.equals(broadcastId)) {
-    console.error('broadcast transaction id disagrees', id, broadcastId);
     throw new Error(
       `broadcast transaction id disagrees: expected ${uint8ArrayToHex(id.inner)} but tendermint ${uint8ArrayToHex(broadcastId.inner)}`,
     );
