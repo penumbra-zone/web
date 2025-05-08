@@ -85,25 +85,24 @@ const PreviousEpochsRow = observer(
         </TableCell>
         {connected && (
           <TableCell cell loading={isLoading || rewardsLoading}>
-            {rewards?.find(r => BigInt(r.epoch) === (row.epoch && BigInt(row.epoch))) &&
-              stakingToken && (
-                <ValueViewComponent
-                  valueView={
-                    new ValueView({
-                      valueView: {
-                        case: 'knownAssetId',
-                        value: {
-                          amount: pnum(
-                            rewards.find(r => BigInt(r.epoch) === BigInt(row.epoch))?.reward,
-                          ).toAmount(),
-                          metadata: stakingToken,
-                        },
+            {rewards?.data.find(r => BigInt(r.epoch) === (row.epoch && BigInt(row.epoch))) && (
+              <ValueViewComponent
+                valueView={
+                  new ValueView({
+                    valueView: {
+                      case: 'knownAssetId',
+                      value: {
+                        amount: pnum(
+                          rewards.data.find(r => BigInt(r.epoch) === BigInt(row.epoch))?.reward,
+                        ).toAmount(),
+                        metadata: stakingToken,
                       },
-                    })
-                  }
-                  priority='tertiary'
-                />
-              )}
+                    },
+                  })
+                }
+                priority='tertiary'
+              />
+            )}
           </TableCell>
         )}
         <TableCell cell loading={isLoading}>

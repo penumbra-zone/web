@@ -1,5 +1,4 @@
 import { useBalances as useCosmosBalances } from '@/features/cosmos/use-augmented-balances';
-import { useRegistry } from '@/shared/api/registry';
 import { connectionStore } from '@/shared/model/connection';
 import {
   getBalanceView,
@@ -71,7 +70,6 @@ export const useUnifiedAssets = () => {
   const { balances: cosmosBalances = [], isLoading: cosmosLoading } = useCosmosBalances();
   const { status: cosmosWalletStatus } = useWallet();
 
-  const { data: registry, isLoading: registryLoading } = useRegistry();
   const filteredAssetSymbols = [
     ...penumbraBalances
       .map(getMetadataFromBalancesResponse.optional)
@@ -94,7 +92,7 @@ export const useUnifiedAssets = () => {
   const { prices, isLoading: pricesLoading } = useAssetPrices(filteredAssetSymbols);
 
   // Determine if we're ready to process data
-  const isLoading = penumbraLoading || cosmosLoading || registryLoading || pricesLoading;
+  const isLoading = penumbraLoading || cosmosLoading || pricesLoading;
 
   // Check connection status
   const isPenumbraConnected = connectionStore.connected;
@@ -140,7 +138,7 @@ export const useUnifiedAssets = () => {
 
   // Create unified assets from Cosmos (public) balances
   const publicAssets = useMemo(() => {
-    if (!isCosmosConnected || !cosmosBalances.length || !registry) {
+    if (!isCosmosConnected || !cosmosBalances.length) {
       return [];
     }
 
@@ -189,7 +187,7 @@ export const useUnifiedAssets = () => {
         }
       })
       .filter(Boolean) as UnifiedAsset[];
-  }, [cosmosBalances, isCosmosConnected, registry]);
+  }, [cosmosBalances, isCosmosConnected]);
 
   // Merge shielded and public assets
   const unifiedAssets = useMemo(() => {
