@@ -75,7 +75,7 @@ export const VotingRewards = observer(() => {
 
   const displayData = isLoading ? loadingArr : (rewardsData ?? []);
 
-  // TODO: populate casted votes with metadata.
+  // TODO: populate casted votes with metadata when registry is fixed.
   return (
     <>
       <Density compact>

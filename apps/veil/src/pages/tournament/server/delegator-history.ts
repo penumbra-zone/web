@@ -6,7 +6,6 @@ import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
-import { chainRegistryClient } from '@/shared/api/registry';
 
 export const BASE_LIMIT = 10;
 export const BASE_PAGE = 1;
@@ -175,14 +174,8 @@ export async function POST(
   // Map only the paginated results with metadata
   const mapped = await Promise.all(
     paginatedResults.map(async item => {
-      // TODO: I'm not getting metadata for the assetId field associated with the user vote.
-      // Since the registry changed, the asset id used at the time of voting no longer exists
-      // in the current registry, and as a result the metadata is undefined. Until some kind of
-      // legacy support is added back in, we'll currently hardcode the metadata as the staking
-      // token to unblock testing.
-      const { stakingAssetId } = chainRegistryClient.bundled.globals();
       const asset_id = new AssetId({ inner: Uint8Array.from(item.asset_id) });
-      const metadata = registry.tryGetMetadata(stakingAssetId);
+      const metadata = registry.tryGetMetadata(asset_id);
 
       if (!metadata) return undefined;
 
