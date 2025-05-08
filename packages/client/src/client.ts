@@ -1,5 +1,5 @@
 import type { ServiceType } from '@bufbuild/protobuf';
-import { createClient, Client, Transport } from '@connectrpc/connect';
+import { Code, ConnectError, createClient, Client, Transport } from '@connectrpc/connect';
 import { jsonOptions } from '@penumbra-zone/protobuf';
 import {
   ChannelTransportOptions,
@@ -17,7 +17,6 @@ import {
 import { PenumbraManifest } from './manifest.js';
 import { PenumbraProvider } from './provider.js';
 import { PenumbraState } from './state.js';
-import { PenumbraRequestFailure } from './error.js';
 
 const isLegacyProvider = (
   provider: PenumbraProvider,
@@ -38,6 +37,17 @@ interface PenumbraClientAttachment {
   provider: PenumbraProvider;
   confirmManifest: Promise<PenumbraManifest>;
   manifest?: PenumbraManifest;
+}
+
+interface PenumbraServiceClientMap<S extends ServiceType = ServiceType> extends Map<S, Client<S>> {
+  get<G extends S>(service: G): Client<G> | undefined;
+  set<G extends S>(service: G, client: Client<G>): this;
+
+  forEach(
+    callbackFn: <G extends S>(value: Client<G>, key: G, map: PenumbraServiceClientMap<S>) => void,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- extending interface
+    thisArg?: any,
+  ): void;
 }
 
 /**
@@ -108,7 +118,7 @@ export class PenumbraClient {
 
   // instance features
 
-  private readonly serviceClients: Map<ServiceType, Client<ServiceType>>;
+  private readonly serviceClients: PenumbraServiceClientMap;
   private readonly stateListeners: Set<(detail: PenumbraEventDetail<'penumbrastate'>) => void>;
   private readonly providerEventListener: PenumbraEventListener;
 
@@ -129,6 +139,9 @@ export class PenumbraClient {
     this.stateListeners = new Set();
     this.providerEventListener = evt => {
       if (this.attached?.origin && isPenumbraStateEvent(evt, this.attached.origin)) {
+        if (evt.detail.state === PenumbraState.Disconnected) {
+          this.destroyConnection();
+        }
         this.stateListeners.forEach(listener => listener(evt.detail));
       }
     };
@@ -189,32 +202,12 @@ export class PenumbraClient {
       await this.attach(providerOrigin);
     }
     this.connection ??= this.createConnection();
-
-    // Connection timeouts, provider detachments, etc. appear similar to a connection denial.
-    // Explicitly handle denial errors and propagate them back to the caller. Without this,
-    // a denied connection would immediately trigger an attempt to re-establish the connection.
-    try {
-      await this.connection.port;
-    } catch (error) {
-      if (error instanceof Error && error.cause) {
-        if (error.cause === PenumbraRequestFailure.Denied) {
-          throw error;
-        }
-      }
-
-      // Clean up dangling connection resources and attempt to establish reconnection
-      this.destroyConnection();
-      this.connection = this.createConnection();
-      await this.connection.port;
-    }
+    await this.connection.port;
   }
 
-  /** Call `disconnect` on the associated provider to release connection
-   * approval, and destroy any present connection. */
+  /** Call `disconnect` on the associated provider to release approval. */
   public async disconnect(): Promise<void> {
-    const request = this.attached?.provider.disconnect();
-    this.destroyConnection();
-    await request;
+    return this.attached?.provider.disconnect();
   }
 
   /** Return a `PromiseClient<T>` for some `T extends ServiceType`, using this
@@ -224,8 +217,7 @@ export class PenumbraClient {
    * will throw.
    */
   public service<T extends ServiceType>(service: T): Client<T> {
-    // TODO: find a way to remove this type cast
-    let serviceClient = this.serviceClients.get(service) as Client<T> | undefined;
+    let serviceClient = this.serviceClients.get(service);
 
     if (!serviceClient) {
       serviceClient = createClient(service, this.assertConnected().transport);
@@ -329,6 +321,8 @@ export class PenumbraClient {
   private createConnection(): PenumbraClientConnection {
     const { confirmManifest, provider } = this.assertAttached();
 
+    const portClosed = new AbortController();
+
     // requestPort will resolve to the provider's message port if connection
     // is successful. this promise is not awaited so that this method may be
     // called synchronously.
@@ -336,15 +330,43 @@ export class PenumbraClient {
       if (isLegacyProvider(provider)) {
         await provider.request();
       }
-      return provider.connect();
+
+      const port = await provider.connect();
+
+      // the provider may close the port, which should destroy the connection.
+      port.addEventListener('message', evt => {
+        if (evt.data === false) {
+          portClosed.abort(ConnectError.from('Connection closed', Code.Unavailable));
+          this.destroyConnection();
+        }
+      });
+
+      return port;
     });
 
-    const connection: PenumbraClientConnection = {
-      port: requestPort,
-      transport: createChannelTransport({
+    // Re-use the same port, but check the connection status each time.
+    const getConnectedPort = async () => {
+      const port = await requestPort;
+      assertProviderConnected(this.attached?.origin);
+      return port;
+    };
+
+    // Create a new transport, re-using the same port.
+    const getConnectedTransport = () =>
+      createChannelTransport({
         ...this.options.transportOptions,
-        getPort: () => requestPort,
-      }),
+        getPort: getConnectedPort,
+      });
+
+    const connection: PenumbraClientConnection = {
+      get port() {
+        portClosed.signal.throwIfAborted();
+        return getConnectedPort();
+      },
+      get transport() {
+        portClosed.signal.throwIfAborted();
+        return getConnectedTransport();
+      },
     };
 
     return connection;
@@ -352,10 +374,6 @@ export class PenumbraClient {
 
   /** Destroy any active connection and discard existing clients. */
   private destroyConnection() {
-    void this.connection?.port.then(port => {
-      port.postMessage(false);
-      port.close();
-    });
     this.connection = undefined;
     this.serviceClients.clear();
   }
