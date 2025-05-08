@@ -18,13 +18,13 @@ import { useBalances } from '@/shared/api/balances';
 import { stateToString } from '@/entities/position/model/state-to-string';
 import { useSortableTableHeaders } from '@/pages/tournament/ui/sortable-table-header';
 import { useCurrentEpoch } from '@/pages/tournament/api/use-current-epoch';
-import { useLpLeaderboard } from '@/pages/tournament/api/use-lp-leaderboard';
-import { LpLeaderboardSortKey } from '@/pages/tournament/server/lp-leaderboard';
+import { useLpLeaderboard } from '@/entities/leaderboard/api/use-lp-leaderboard';
+import { LpLeaderboardSortKey } from '@/entities/leaderboard/api/utils';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { pnum } from '@penumbra-zone/types/pnum';
 import { observer } from 'mobx-react-lite';
 import { connectionStore } from '@/shared/model/connection';
-import { useMyLpLeaderboard } from '@/pages/tournament/api/use-my-lp-leaderboard';
+import { useMyLpLeaderboard } from '@/entities/leaderboard/api/use-my-lp-leaderboard';
 import { round } from '@penumbra-zone/types/round';
 
 const Tabs = {
@@ -135,6 +135,7 @@ export const LeaderboardTable = observer(() => {
             <TableCell heading>Position ID</TableCell>
             {getTableHeader('executions', 'Execs')}
             {getTableHeader('points', 'Points')}
+            {/* @TODO add age & pnlPercentage */}
             {/* {getTableHeader('pnlPercentage', 'PnL')} */}
             {/* {getTableHeader('age', 'Age')} */}
             <TableCell heading>Volume</TableCell>
@@ -148,6 +149,7 @@ export const LeaderboardTable = observer(() => {
                 <TableCell loading>&nbsp;</TableCell>
                 <TableCell loading>&nbsp;</TableCell>
                 <TableCell loading>&nbsp;</TableCell>
+                {/* @TODO add age & pnlPercentage */}
                 {/* <TableCell loading>&nbsp;</TableCell> */}
                 {/* <TableCell loading>&nbsp;</TableCell> */}
                 <TableCell loading>&nbsp;</TableCell>
@@ -187,6 +189,7 @@ export const LeaderboardTable = observer(() => {
                           {round({ value: position.pointsShare * 100, decimals: 2 })}%
                         </Text>
                       </TableCell>
+                      {/* @TODO add age & pnlPercentage */}
                       {/* <TableCell cell numeric loading={isLoading}>
                         <Text
                           smallTechnical

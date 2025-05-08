@@ -3,41 +3,8 @@ import { serialize, Serialized } from '@/shared/utils/serializer';
 import { pindexerDb } from '@/shared/database/client';
 import { PositionId } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { JsonObject } from '@bufbuild/protobuf';
 import { positionIdFromBech32 } from '@penumbra-zone/bech32m/plpid';
-
-const SORT_KEYS = ['executions', 'points'] as const;
-export type LpLeaderboardSortKey = (typeof SORT_KEYS)[number];
-
-const DIRECTIONS = ['asc', 'desc'] as const;
-export type LpLeaderboardSortDirection = (typeof DIRECTIONS)[number];
-
-export interface LpLeaderboardRequest extends JsonObject {
-  positionIds: string[];
-  epoch: number;
-  limit: number;
-  page: number;
-  sortKey: LpLeaderboardSortKey;
-  sortDirection: LpLeaderboardSortDirection;
-}
-
-export interface LqtLp {
-  epoch: number;
-  positionId: PositionId;
-  assetId: AssetId;
-  rewards: number;
-  executions: number;
-  umVolume: number;
-  assetVolume: number;
-  assetFees: number;
-  points: number;
-  pointsShare: number;
-}
-
-export interface LpLeaderboardApiResponse {
-  data: LqtLp[];
-  total: number;
-}
+import { LpLeaderboardRequest, LpLeaderboardApiResponse } from './utils';
 
 async function queryLqtLps({
   positionIds = [],

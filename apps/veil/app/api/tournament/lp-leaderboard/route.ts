@@ -1,1 +1,1 @@
-export { POST } from '@/pages/tournament/server/lp-leaderboard';
+export { POST } from '@/entities/leaderboard/server';

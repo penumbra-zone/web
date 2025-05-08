@@ -7,23 +7,15 @@ import {
   LpLeaderboardSortKey,
   LpLeaderboardSortDirection,
   LqtLp,
-} from '@/pages/tournament/server/lp-leaderboard';
+  LpLeaderboard,
+  LpLeaderboardResponse,
+} from '@/entities/leaderboard/api/utils';
 import { penumbra } from '@/shared/const/penumbra';
 import { DexService } from '@penumbra-zone/protobuf';
 import { bech32mPositionId } from '@penumbra-zone/bech32m/plpid';
 
 export const BASE_LIMIT = 10;
 export const BASE_PAGE = 1;
-
-export interface LpLeaderboard extends LqtLp {
-  position: Position;
-  positionIdString: string;
-}
-
-export interface LpLeaderboardResponse extends LpLeaderboardApiResponse {
-  data: LpLeaderboard[];
-  total: number;
-}
 
 // get the position state for each lp reward
 async function enrichLpLeaderboards(data: LqtLp[]): Promise<LpLeaderboard[]> {

@@ -9,7 +9,9 @@ import {
   LpLeaderboardSortKey,
   LpLeaderboardSortDirection,
   LqtLp,
-} from '@/pages/tournament/server/lp-leaderboard';
+  LpLeaderboard,
+  LpLeaderboardResponse,
+} from './utils';
 import { penumbra } from '@/shared/const/penumbra';
 import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { ViewService } from '@penumbra-zone/protobuf/penumbra/view/v1/view_connect';
@@ -17,16 +19,6 @@ import { DexService } from '@penumbra-zone/protobuf';
 
 export const BASE_LIMIT = 10;
 export const BASE_PAGE = 1;
-
-export interface LpLeaderboard extends LqtLp {
-  position: Position;
-  positionIdString: string;
-}
-
-export interface LpLeaderboardResponse extends LpLeaderboardApiResponse {
-  data: LpLeaderboard[];
-  total: number;
-}
 
 // get the position state for each lp reward
 async function enrichLpLeaderboards(data: LqtLp[]): Promise<LpLeaderboard[]> {
