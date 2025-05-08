@@ -59,7 +59,7 @@ const tournamentDelegatorHistoryQuery = async ({ epoch }: { epoch: number }) => 
  *
  * Finally, we aggregate the rewards earned by the address across all epochs.
  */
-async function processEpochResults(
+function processEpochResults(
   epochResults: {
     epoch: string;
     data: { address: Buffer; epoch: number; power: number; asset_id: Buffer; reward: number }[];
@@ -68,9 +68,9 @@ async function processEpochResults(
   address: Address,
   limit: number,
   page: number,
-  _sortKey: DelegatorHistorySortKey = 'epoch',
+  sortKey: DelegatorHistorySortKey = 'epoch',
   sortDirection: DelegatorHistorySortDirection = 'desc',
-): Promise<{ paginatedResults: LqtDelegatorHistory[]; totalItems: number; totalReward: number }> {
+): { paginatedResults: LqtDelegatorHistory[]; totalItems: number; totalReward: number } {
   // Create accumulator for results
   const matchesByEpoch = new Map<string, { power: number; reward: number; assetId: Buffer }>();
 
@@ -111,8 +111,13 @@ async function processEpochResults(
   // since we require the total count. This is the correct approach for
   // implementing server-side pagination while preserving accurate totals and sorting.
   results.sort((a, b) => {
-    const comparison = a.epoch - b.epoch;
-    return sortDirection === 'asc' ? comparison : -comparison;
+    if (sortKey === 'epoch') {
+      const comparison = a.epoch - b.epoch;
+      return sortDirection === 'asc' ? comparison : -comparison;
+    }
+
+    // fallback (no-op)
+    return 0;
   });
 
   const startIndex = (page - 1) * limit;
@@ -154,7 +159,7 @@ export async function POST(
   const epochResults = await Promise.all(queryPromises);
 
   // Return the delegator’s epoch history and the total reward accumulated across all epochs.
-  const { paginatedResults, totalItems, totalReward } = await processEpochResults(
+  const { paginatedResults, totalItems, totalReward } = processEpochResults(
     epochResults,
     targetAddress,
     address,
@@ -174,13 +179,15 @@ export async function POST(
 
   // Map only the paginated results with metadata
   const mapped = await Promise.all(
-    paginatedResults.map(async item => {
+    paginatedResults.map(item => {
       // TODO: remove hardcoded staking asset metadata when registry is fixed
       const { stakingAssetId } = chainRegistryClient.bundled.globals();
       const asset_id = new AssetId({ inner: Uint8Array.from(item.asset_id) });
       const metadata = registry.tryGetMetadata(stakingAssetId);
 
-      if (!metadata) return undefined;
+      if (!metadata) {
+        return undefined;
+      }
 
       return {
         address: new Address({ inner: item.address }),

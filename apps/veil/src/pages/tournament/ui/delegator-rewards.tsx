@@ -47,14 +47,11 @@ export const DelegatorTotalRewards = observer(() => {
   const toggleExpanded = () => setExpanded(prev => !prev);
   const [tab, setTab] = useState<'lp' | 'voting'>('lp');
 
-  // Check if we have all the data needed to display rewards
-  const isLoading = isRewardsLoading || isTokenLoading;
-  const hasCompleteData =
-    !isLoading && totalRewards !== undefined && rewards !== undefined && stakingToken;
+  const isReady = !isRewardsLoading && !isTokenLoading && totalRewards && rewards;
 
   // Memoize the reward view to prevent unnecessary recalculations
   const rewardView = useMemo(() => {
-    if (!hasCompleteData) {
+    if (!isReady) {
       return undefined;
     }
 
@@ -67,7 +64,7 @@ export const DelegatorTotalRewards = observer(() => {
         },
       },
     });
-  }, [hasCompleteData, totalRewards, stakingToken]);
+  }, [isReady, totalRewards, stakingToken]);
 
   // Only check for zero when we have valid data
   const isTotalZero = rewardView ? isZero(getAmount(rewardView)) : true;
@@ -84,7 +81,7 @@ export const DelegatorTotalRewards = observer(() => {
           </Text>
         </div>
 
-        {!hasCompleteData ? (
+        {!isReady ? (
           <div className='w-24 h-10'>
             <Skeleton />
           </div>
@@ -111,7 +108,7 @@ export const DelegatorTotalRewards = observer(() => {
         )}
       </div>
 
-      {expanded && hasCompleteData && (
+      {expanded && isReady && (
         <div className='flex flex-col gap-4 mt-4'>
           <div className='[&_button]:grow'>
             <SegmentedControl value={tab} onChange={value => setTab(value as typeof tab)}>

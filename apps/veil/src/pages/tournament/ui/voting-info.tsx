@@ -42,12 +42,7 @@ export const useVotingInfo = (defaultEpoch?: number) => {
     const values = (notes ?? []).map(note => note.noteRecord?.note?.value).filter(item => !!item);
 
     const amount = values.reduce(
-      (accum, current) => {
-        if (current.amount) {
-          return addAmounts(accum, current.amount);
-        }
-        return accum;
-      },
+      (accum, current) => (current.amount ? addAmounts(accum, current.amount) : accum),
       new Amount({ lo: 0n, hi: 0n }),
     );
 

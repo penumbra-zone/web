@@ -1,8 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { useRefetchOnNewBlock } from '@/shared/api/compact-block';
-import type { TournamentSummaryRequest, TournamentSummaryApiResponse } from '../server/summary';
+import { TournamentSummaryRequest, TournamentSummaryApiResponse } from '../server/summary';
 import { apiPostFetch } from '@/shared/utils/api-fetch';
 import { useMemo } from 'react';
+
+export const BASE_LIMIT = 10;
+export const BASE_PAGE = 1;
 
 export const useTournamentSummary = (
   params?: Partial<TournamentSummaryRequest>,
@@ -19,8 +22,8 @@ export const useTournamentSummary = (
     staleTime: Infinity,
     queryFn: async () => {
       const requestParams = {
-        limit: params?.limit!,
-        page: params?.page!,
+        limit: params?.limit ?? BASE_LIMIT,
+        page: params?.page ?? BASE_PAGE,
         ...(params?.epochs && params.epochs.length > 0 ? { epochs: params.epochs } : {}),
       };
 

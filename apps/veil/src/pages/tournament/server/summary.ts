@@ -3,6 +3,8 @@ import { Serialized, serialize } from '@/shared/utils/serializer';
 import { pindexerDb } from '@/shared/database/client';
 import { LqtSummary } from '@/shared/database/schema';
 
+const DEFAULT_LIMIT = 10;
+
 const DIRECTIONS = ['asc', 'desc'] as const;
 export type TournamentSummaryDirection = (typeof DIRECTIONS)[number];
 
@@ -13,14 +15,11 @@ export interface TournamentSummaryRequest {
   sortDirection?: TournamentSummaryDirection;
 }
 
-export const BASE_LIMIT = 10;
-export const BASE_PAGE = 1;
-
 export const getQueryParams = (req: NextRequest): TournamentSummaryRequest => {
   const { searchParams } = new URL(req.url);
 
-  const limit = Number(searchParams.get('limit')) || BASE_LIMIT;
-  const page = Number(searchParams.get('page')) || BASE_PAGE;
+  const limit = Number(searchParams.get('limit')) || DEFAULT_LIMIT;
+  const page = Number(searchParams.get('page')) || 1;
 
   const sortDirectionParam = searchParams.get('sortDirection');
   const sortDirection =

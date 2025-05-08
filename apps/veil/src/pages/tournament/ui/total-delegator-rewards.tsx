@@ -103,18 +103,17 @@ export const VotingRewards = observer(() => {
               matchingSummary?.total_voting_power && rewardData.power > 0,
             );
 
-            const rewardView =
-              !isLoading && rewardData.metadata && typeof rewardData.reward === 'number'
-                ? new ValueView({
-                    valueView: {
-                      case: 'knownAssetId',
-                      value: {
-                        amount: pnum(rewardData.reward).toAmount(),
-                        metadata: stakingToken,
-                      },
+            const rewardView = !isLoading
+              ? new ValueView({
+                  valueView: {
+                    case: 'knownAssetId',
+                    value: {
+                      amount: pnum(rewardData.reward).toAmount(),
+                      metadata: stakingToken,
                     },
-                  })
-                : undefined;
+                  },
+                })
+              : undefined;
 
             const rowKey = isLoading ? `loading-${index}` : `epoch-${rewardData.epoch}`;
 
@@ -126,8 +125,8 @@ export const VotingRewards = observer(() => {
 
                 <TableCell cell loading={isLoading || !hasVoteWeightData}>
                   {!isLoading &&
-                    hasVoteWeightData &&
-                    ((rewardData.power / matchingSummary!.total_voting_power) * 100).toFixed(3) +
+                    matchingSummary &&
+                    ((rewardData.power / matchingSummary.total_voting_power) * 100).toFixed(3) +
                       '%'}
                 </TableCell>
 
