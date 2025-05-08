@@ -5,9 +5,8 @@ import { LqtDelegatorHistory } from '@/shared/database/schema';
 import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { ChainRegistryClient } from '@penumbra-labs/registry';
-import { chainRegistryClient } from '@/shared/api/registry';
 import { BASE_LIMIT, BASE_PAGE } from '../api/use-personal-rewards';
+import { ChainRegistryClient } from '@penumbra-labs/registry';
 
 export const SORT_KEYS = ['epoch', 'power', 'reward', ''] as const;
 export type DelegatorHistorySortKey = (typeof SORT_KEYS)[number];
@@ -66,7 +65,6 @@ function processEpochResults(
   address: Address,
   limit: number,
   page: number,
-  _sortKey: DelegatorHistorySortKey = 'epoch',
   sortDirection: DelegatorHistorySortDirection = 'desc',
 ): { paginatedResults: LqtDelegatorHistory[]; totalItems: number; totalReward: number } {
   // Create accumulator for results
@@ -127,14 +125,7 @@ export async function POST(
   req: NextRequest,
 ): Promise<NextResponse<Serialized<TournamentDelegatorHistoryResponse | { error: string }>>> {
   const data = (await req.json()) as DelegatorHistoryRequest;
-  const {
-    epochs,
-    address,
-    limit = BASE_LIMIT,
-    page = BASE_PAGE,
-    sortKey = 'epoch',
-    sortDirection = 'desc',
-  } = data;
+  const { epochs, address, limit = BASE_LIMIT, page = BASE_PAGE, sortDirection = 'desc' } = data;
 
   const targetAddress = bech32mAddress(address);
 
@@ -158,7 +149,6 @@ export async function POST(
     address,
     limit,
     page,
-    sortKey,
     sortDirection,
   );
 
@@ -173,8 +163,8 @@ export async function POST(
   // Map only the paginated results with metadata
   const mapped = await Promise.all(
     paginatedResults.map(item => {
-      // TODO: remove hardcoded staking asset metadata when registry is fixed
-      const { stakingAssetId } = chainRegistryClient.bundled.globals();
+      // TODO: remove hardcoded staking asset metadata when registry is fixed.
+      const stakingAssetId = registryClient.bundled.globals().stakingAssetId;
       const asset_id = new AssetId({ inner: Uint8Array.from(item.asset_id) });
       const metadata = registry.tryGetMetadata(stakingAssetId);
 

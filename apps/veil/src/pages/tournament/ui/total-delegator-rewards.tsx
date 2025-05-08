@@ -3,7 +3,7 @@ import { TableCell } from '@penumbra-zone/ui/TableCell';
 import { Density } from '@penumbra-zone/ui/Density';
 import { connectionStore } from '@/shared/model/connection';
 import { usePersonalRewards, BASE_LIMIT, BASE_PAGE } from '../api/use-personal-rewards';
-import { DelegatorHistorySortKey } from '../server/delegator-history';
+import { DelegatorHistorySortKey, LqtDelegatorHistoryData } from '../server/delegator-history';
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { Button } from '@penumbra-zone/ui/Button';
@@ -14,7 +14,6 @@ import { pnum } from '@penumbra-zone/types/pnum';
 import { useTournamentSummary } from '../api/use-tournament-summary';
 import { useState, useMemo } from 'react';
 import { Pagination } from '@penumbra-zone/ui/Pagination';
-import { LqtDelegatorHistoryData } from '../server/delegator-history';
 import { useSortableTableHeaders } from './sortable-table-header';
 
 export const VotingRewards = observer(() => {
