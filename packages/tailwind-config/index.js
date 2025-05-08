@@ -3,9 +3,11 @@ import tailwindCssAnimatePlugin from 'tailwindcss-animate';
 
 // TODO: Replace the theme to v2 instead of partially using it
 import { tailwindConfig as v2TailwindConfig } from '@penumbra-zone/ui-deprecated/tailwind';
+// Attempting a relative path to diagnose resolution issues
+import { withPenumbra } from '../ui/dist/src/theme/index.js';
 
 /** @type {import('tailwindcss').Config} */
-export default {
+export default withPenumbra({
   content: [
     './pages/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
@@ -13,6 +15,8 @@ export default {
     './src/**/*.{ts,tsx}',
     '../../packages/ui-deprecated/components/**/*.{ts,tsx}',
     './node_modules/@penumbra-zone/ui-deprecated/components/**/*.{ts,tsx}',
+    '../../packages/ui/src/**/*.{ts,tsx}',
+    './node_modules/@penumbra-zone/ui/dist/**/*.{js,ts,jsx,tsx,mdx}',
     './shared/**/*.{ts,tsx}',
   ],
   theme: {
@@ -105,6 +109,13 @@ export default {
         brown: {
           DEFAULT: 'var(--brown)',
         },
+        // Add UI package text colors to ensure they're available for the Text component
+        text: {
+          primary: 'var(--text-primary, #FFFFFF)',
+          secondary: 'var(--text-secondary, rgba(255, 255, 255, 0.7))',
+          tertiary: 'var(--text-tertiary, rgba(255, 255, 255, 0.5))',
+          disabled: 'var(--text-disabled, rgba(255, 255, 255, 0.3))',
+        }
       },
       borderRadius: {
         lg: 'var(--radius)',
@@ -170,12 +181,22 @@ export default {
   plugins: [
     tailwindCssAnimatePlugin,
 
-    plugin(({ addUtilities }) => {
+    plugin(({ addUtilities, addBase, theme }) => {
       addUtilities({
         '.grid-std-spacing': {
           '@apply gap-6 md:gap-4 xl:gap-5': {},
         },
       });
+      
+      // Add CSS variables for UI package
+      addBase({
+        ':root': {
+          '--text-primary': '#FFFFFF',
+          '--text-secondary': 'rgba(255, 255, 255, 0.7)',
+          '--text-tertiary': 'rgba(255, 255, 255, 0.5)',
+          '--text-disabled': 'rgba(255, 255, 255, 0.3)',
+        },
+      });
     }),
   ],
-};
+});
