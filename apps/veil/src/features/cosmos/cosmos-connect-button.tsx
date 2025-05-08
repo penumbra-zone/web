@@ -5,7 +5,7 @@ import { useChains } from '@cosmos-kit/react';
 import { Wallet2 } from 'lucide-react';
 import { Density } from '@penumbra-zone/ui/Density';
 import { chainsInPenumbraRegistry } from '@/features/cosmos/chain-provider.tsx';
-import { useRegistry } from '@/shared/api/registry.ts';
+import { useRegistry } from '@/shared/api/registry.tsx';
 
 interface CosmosConnectButtonProps {
   actionType?: ButtonProps['actionType'];

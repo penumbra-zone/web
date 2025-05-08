@@ -3,7 +3,7 @@ import { Button } from '@penumbra-zone/ui/Button';
 import { Tooltip } from '@penumbra-zone/ui/Tooltip';
 import { useEffect, useState, useMemo, lazy, Suspense } from 'react';
 import { X } from 'lucide-react';
-import { useRegistry } from '@/shared/api/registry.ts';
+import { useRegistry } from '@/shared/api/registry.tsx';
 import { getMetadata } from '@penumbra-zone/getters/value-view';
 import { theme as penumbraTheme } from '@penumbra-zone/ui/theme';
 import { UnshieldDialog } from '@/pages/portfolio/ui/unshield-dialog.tsx';
