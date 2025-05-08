@@ -1,3 +1,9 @@
+// We want to be able to always fetch the registry, hence: dynamic.
+//
+// Now, we could optimize this a lot. However, we immediately hit App
+// which has "use client", so a lot more would need to be done to reap benefits here.
+export const dynamic = 'force-dynamic';
+
 import { ReactNode } from 'react';
 
 import './v2.css';
