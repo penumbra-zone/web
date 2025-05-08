@@ -6,6 +6,7 @@ import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
+import { chainRegistryClient } from '@/shared/api/registry';
 
 export const BASE_LIMIT = 10;
 export const BASE_PAGE = 1;
@@ -174,8 +175,10 @@ export async function POST(
   // Map only the paginated results with metadata
   const mapped = await Promise.all(
     paginatedResults.map(async item => {
+      // TODO: remove hardcoded staking asset metadata when registry is fixed
+      const { stakingAssetId } = chainRegistryClient.bundled.globals();
       const asset_id = new AssetId({ inner: Uint8Array.from(item.asset_id) });
-      const metadata = registry.tryGetMetadata(asset_id);
+      const metadata = registry.tryGetMetadata(stakingAssetId);
 
       if (!metadata) return undefined;
 

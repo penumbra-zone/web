@@ -45,6 +45,7 @@ export const VotingRewards = observer(() => {
     sortBy.key,
     sortBy.direction,
   );
+
   const { data: stakingToken, isLoading: stakingLoading } = useStakingTokenMetadata();
 
   // Extract epochs for summary lookup
