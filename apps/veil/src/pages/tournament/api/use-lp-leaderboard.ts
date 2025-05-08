@@ -17,6 +17,7 @@ export const BASE_PAGE = 1;
 
 export interface LpLeaderboard extends LqtLp {
   position: Position;
+  positionIdString: string;
 }
 
 export interface LpLeaderboardResponse extends LpLeaderboardApiResponse {

@@ -62,7 +62,6 @@ export const useMyLpLeaderboard = ({
   sortKey?: LpLeaderboardSortKey | '';
   sortDirection?: LpLeaderboardSortDirection;
 }): UseQueryResult<LpLeaderboardResponse> => {
-  console.log('TCL: subaccount', subaccount);
   const [positionIds, setPositionIds] = useState<string[]>([]);
 
   useEffect(() => {

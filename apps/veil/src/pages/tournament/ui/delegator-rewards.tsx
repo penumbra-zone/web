@@ -43,16 +43,13 @@ export const DelegatorTotalRewards = observer(() => {
     'rewards',
     'desc',
   );
-  console.log('TCL: DelegatorTotalRewards -> lpRewards', lpRewards);
 
   const { data: total, isLoading: isRewardsLoading } = usePersonalRewards(
     subaccount,
     epoch,
     epochLoading,
   );
-  console.log('TCL: DelegatorTotalRewards -> total', total);
   const { data: stakingToken, isLoading: isTokenLoading } = useStakingTokenMetadata();
-  console.log('TCL: DelegatorTotalRewards -> stakingToken', stakingToken);
 
   const [parent] = useAutoAnimate();
   const [expanded, setExpanded] = useState(false);

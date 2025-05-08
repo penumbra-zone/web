@@ -6,7 +6,7 @@ import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb
 import { JsonObject } from '@bufbuild/protobuf';
 import { positionIdFromBech32 } from '@penumbra-zone/bech32m/plpid';
 
-const SORT_KEYS = ['epoch', 'position_id', 'rewards'] as const;
+const SORT_KEYS = ['executions', 'points'] as const;
 export type LpLeaderboardSortKey = (typeof SORT_KEYS)[number];
 
 const DIRECTIONS = ['asc', 'desc'] as const;

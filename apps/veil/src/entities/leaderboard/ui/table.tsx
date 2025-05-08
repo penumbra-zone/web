@@ -44,7 +44,7 @@ export const LeaderboardTable = observer(() => {
   const [quote, setQuote] = useState<AssetSelectorValue>();
   const [tab, setTab] = useState<Tab>(Tabs.AllLPs);
   const [limit, setLimit] = useState(10);
-  const { getTableHeader, sortBy } = useSortableTableHeaders<LpLeaderboardSortKey>('epoch');
+  const { getTableHeader, sortBy } = useSortableTableHeaders<LpLeaderboardSortKey>('points');
 
   const { data: assets } = useAssets();
   const { data: balances } = useBalances();
@@ -65,7 +65,7 @@ export const LeaderboardTable = observer(() => {
     error: leaderboardError,
     isLoading: leaderboardLoading,
   } = useLpLeaderboard({
-    epoch: 1761,
+    epoch,
     page: currentPage,
     limit,
     sortKey: sortBy.key,
@@ -78,7 +78,7 @@ export const LeaderboardTable = observer(() => {
     isLoading: myLeaderboardLoading,
   } = useMyLpLeaderboard({
     subaccount,
-    epoch: 1761,
+    epoch,
     page: currentPage,
     limit,
     sortKey: sortBy.key,
