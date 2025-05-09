@@ -85,8 +85,13 @@ export const usePersonalRewards = (subaccount?: number, epoch?: number, disabled
   const blockHeight = statusStore.latestKnownBlockHeight;
 
   return useQuery({
-    queryKey: ['total-voting-rewards', subaccount],
-    enabled: connectionStore.connected && !!epoch && !!blockHeight && !disabled,
+    queryKey: ['total-voting-rewards', subaccount ?? -1],
+    enabled:
+      connectionStore.connected &&
+      !!epoch &&
+      !!blockHeight &&
+      !disabled &&
+      typeof subaccount === 'number',
     queryFn: async () => {
       return await fetchRewards(
         {
