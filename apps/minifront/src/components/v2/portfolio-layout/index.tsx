@@ -1,72 +1,37 @@
-import { Card } from '@penumbra-zone/ui-deprecated/Card';
-import { Outlet, useNavigate } from 'react-router-dom';
-import { Grid } from '@penumbra-zone/ui-deprecated/Grid';
-import { Tabs } from '@penumbra-zone/ui-deprecated/Tabs';
-import { usePagePath } from '../../../fetchers/page-path';
-import { PagePath } from '../../metadata/paths';
-import { AssetsCardTitle } from './assets-card-title';
-import { TransactionsCardTitle } from './transactions-card-title';
-import { motion } from 'framer-motion';
-import { getV2Link } from '../get-v2-link.ts';
+
 import { PortfolioBalance } from '@penumbra-zone/ui/PortfolioBalance';
-
-const CARD_TITLE_BY_PATH = {
-  [getV2Link(PagePath.DASHBOARD)]: <AssetsCardTitle />,
-  [getV2Link(PagePath.TRANSACTIONS)]: <TransactionsCardTitle />,
-};
-
-const TABS_OPTIONS = [
-  { label: 'Assets', value: getV2Link(PagePath.DASHBOARD) },
-  { label: 'Transactions', value: getV2Link(PagePath.TRANSACTIONS) },
-];
+import { Card } from '@penumbra-zone/ui/Card';
+import { AssetCard } from '@penumbra-zone/ui/AssetCard';
 
 export const PortfolioLayout = () => {
-  const pagePath = usePagePath();
-  const navigate = useNavigate();
+
 
   // Mock data - this would come from Prax client state
   const totalBalance = '4,567.678';
   const currency = 'USDC';
   
-  const handleInfoClick = () => {
-    console.log('Balance info clicked');
-  };
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-      <div style={{ width: '1136px', maxWidth: '100%' }}>
         <PortfolioBalance 
           balance={totalBalance} 
           currency={currency} 
-          onInfoClick={handleInfoClick}
         />
         
-        <div className="mt-4">
-          <Grid container>
-            <Grid mobile={0} tablet={2} desktop={3} xl={4} />
-
-            <Grid tablet={8} desktop={6} xl={4}>
-              <Card
-                title={CARD_TITLE_BY_PATH[getV2Link(pagePath)]}
-                motion={{ layout: true, layoutId: 'main' }}
-              >
-                <motion.div layout>
-                  <Tabs
-                    value={getV2Link(pagePath)}
-                    onChange={value => navigate(value)}
-                    options={TABS_OPTIONS}
-                    actionType='accent'
-                  />
-                </motion.div>
-
-                <Outlet />
+          <div className="flex flex-1 gap-4 w-full flex-col md:flex-row">
+            {/* Asset Card - use the Card component directly */}
+            <div className="flex-1">
+              <AssetCard />
+            </div>
+            
+            {/* Reserved space for Transactions, to be implemented later */}
+            <div className="flex-1">
+              <Card title="Your Recent Transactions">
+                <div className="flex justify-center items-center h-[400px] text-text-secondary">
+                  Transactions will be displayed here
+                </div>
               </Card>
-            </Grid>
-
-            <Grid mobile={0} tablet={2} desktop={3} xl={4} />
-          </Grid>
-        </div>
+            </div>
+          </div>
       </div>
-    </div>
   );
 };
