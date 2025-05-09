@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
@@ -37,8 +37,7 @@ export const DelegatorTotalRewards = observer(() => {
   const { epoch, isLoading: epochLoading } = useCurrentEpoch();
   const {
     totalRewards,
-    data: rewards,
-    query: { isLoading: isRewardsLoading },
+    query: { isLoading: isRewardsLoading, status },
   } = usePersonalRewards(subaccount, epoch, epochLoading);
   const { data: stakingToken, isLoading: isTokenLoading } = useStakingTokenMetadata();
 
@@ -47,7 +46,7 @@ export const DelegatorTotalRewards = observer(() => {
   const toggleExpanded = () => setExpanded(prev => !prev);
   const [tab, setTab] = useState<'lp' | 'voting'>('lp');
 
-  const isReady = !isRewardsLoading && !isTokenLoading && totalRewards && rewards;
+  const isReady = !isRewardsLoading && !isTokenLoading && status === 'success';
 
   // Memoize the reward view to prevent unnecessary recalculations
   const rewardView = useMemo(() => {
@@ -55,11 +54,13 @@ export const DelegatorTotalRewards = observer(() => {
       return undefined;
     }
 
+    const rewardsValue = typeof totalRewards === 'number' ? totalRewards : 0;
+
     return new ValueView({
       valueView: {
         case: 'knownAssetId',
         value: {
-          amount: pnum(totalRewards).toAmount(),
+          amount: pnum(rewardsValue).toAmount(),
           metadata: stakingToken,
         },
       },
@@ -67,7 +68,14 @@ export const DelegatorTotalRewards = observer(() => {
   }, [isReady, totalRewards, stakingToken]);
 
   // Only check for zero when we have valid data
-  const isTotalZero = rewardView ? isZero(getAmount(rewardView)) : true;
+  const isTotalZero = !rewardView || isZero(getAmount(rewardView));
+
+  // Close expanded panel if rewards are zero
+  useEffect(() => {
+    if (isTotalZero && expanded) {
+      setExpanded(false);
+    }
+  }, [isTotalZero, expanded]);
 
   return (
     <section ref={parent} className='p-6 rounded-lg bg-other-tonalFill5 backdrop-blur-lg'>
@@ -87,10 +95,14 @@ export const DelegatorTotalRewards = observer(() => {
           </div>
         ) : (
           <div className='flex items-center gap-4 [&_span]:font-mono [&_span]:text-3xl'>
-            {rewardView && (
+            {rewardView ? (
               <Density sparse>
                 <ValueViewComponent valueView={rewardView} priority='tertiary' />
               </Density>
+            ) : (
+              <Text xxl color='text.primary'>
+                0.00 UM
+              </Text>
             )}
             <Density compact>
               {!isTotalZero && (
@@ -108,7 +120,7 @@ export const DelegatorTotalRewards = observer(() => {
         )}
       </div>
 
-      {expanded && isReady && (
+      {expanded && isReady && !isTotalZero && (
         <div className='flex flex-col gap-4 mt-4'>
           <div className='[&_button]:grow'>
             <SegmentedControl value={tab} onChange={value => setTab(value as typeof tab)}>

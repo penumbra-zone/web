@@ -44,7 +44,7 @@ export const VotingRewards = observer(() => {
   const { data: stakingToken, isLoading: stakingLoading } = useStakingTokenMetadata();
 
   // Extract epochs for summary lookup
-  const epochs = useMemo(() => rewardsData?.map(r => r.epoch).filter(Boolean) ?? [], [rewardsData]);
+  const epochs = useMemo(() => rewardsData.map(r => r.epoch).filter(Boolean), [rewardsData]);
 
   const { data: summary, isLoading: summaryLoading } = useTournamentSummary(
     {
@@ -69,7 +69,7 @@ export const VotingRewards = observer(() => {
     reward: {},
   }) as LqtDelegatorHistoryData[];
 
-  const displayData = isLoading ? loadingArr : (rewardsData ?? []);
+  const displayData = isLoading ? loadingArr : rewardsData;
 
   // TODO: populate casted votes with metadata when registry is fixed.
   return (
@@ -82,12 +82,6 @@ export const VotingRewards = observer(() => {
             {getTableHeader('reward', 'Reward')}
             <TableCell heading> </TableCell>
           </div>
-
-          {!isLoading && (!rewardsData || rewardsData.length === 0) && (
-            <div className='col-span-4 text-sm text-muted-foreground py-4'>
-              No voting rewards found for this account.
-            </div>
-          )}
 
           {displayData.map((rewardData, index) => {
             const matchingSummary = !isLoading

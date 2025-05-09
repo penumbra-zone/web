@@ -85,7 +85,7 @@ const PreviousEpochsRow = observer(
         </TableCell>
         {connected && (
           <TableCell cell loading={isLoading || rewardsLoading}>
-            {rewards?.find(r => BigInt(r.epoch) === (row.epoch && BigInt(row.epoch))) && (
+            {rewards.find(r => BigInt(r.epoch) === (row.epoch && BigInt(row.epoch))) && (
               <ValueViewComponent
                 valueView={
                   new ValueView({

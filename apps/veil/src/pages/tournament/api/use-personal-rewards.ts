@@ -26,7 +26,7 @@ const fetchRewards = async (
   sortKey: DelegatorHistorySortKey = 'epoch',
   sortDirection: DelegatorHistorySortDirection = 'desc',
   subaccount?: number,
-): Promise<TournamentDelegatorHistoryResponse | undefined> => {
+): Promise<TournamentDelegatorHistoryResponse> => {
   const accountFilter =
     typeof subaccount === 'undefined' ? undefined : new AddressIndex({ account: subaccount });
 
@@ -34,37 +34,27 @@ const fetchRewards = async (
   //  * `blockHeight` – calls `iterateLQTVotes` to gather every vote up to the
   //   epoch containing that height, grouping results by epoch.
   //  * `epochIndex` – returns the votes for that single epoch, already grouped.
-  const votesPromise: Promise<TournamentVotesResponse[]> = (() => {
-    switch (epochOrHeight.type) {
-      case 'epoch':
-        return Array.fromAsync(
-          penumbra
-            .service(ViewService)
-            .tournamentVotes({ accountFilter, epochIndex: epochOrHeight.value }),
+  const service = penumbra.service(ViewService);
+  const votesPromise: Promise<TournamentVotesResponse[]> =
+    epochOrHeight.type === 'epoch'
+      ? Array.fromAsync(service.tournamentVotes({ accountFilter, epochIndex: epochOrHeight.value }))
+      : Array.fromAsync(
+          service.tournamentVotes({ accountFilter, blockHeight: epochOrHeight.value }),
         );
-      case 'blockHeight':
-        return Array.fromAsync(
-          penumbra.service(ViewService).tournamentVotes({
-            accountFilter,
-            blockHeight: epochOrHeight.value,
-          }),
-        );
-    }
-  })();
 
-  const addressPromise: Promise<AddressByIndexResponse> = penumbra
-    .service(ViewService)
-    .addressByIndex({ addressIndex: { account: accountFilter?.account } });
+  const addressPromise: Promise<AddressByIndexResponse> = service.addressByIndex({
+    addressIndex: { account: accountFilter?.account },
+  });
 
   const [votes, { address }] = await Promise.all([votesPromise, addressPromise]);
 
   if (votes.length > 0) {
     const epochs = new Set<string>();
-    votes.forEach(response => {
-      response.votes.forEach(vote => {
+    for (const response of votes) {
+      for (const vote of response.votes) {
         epochs.add(vote.epochIndex.toString());
-      });
-    });
+      }
+    }
 
     // We send the address plus a list of epochs to the server and ask for the
     // matching delegator history. That’s not ideal. A better strategy would be to
@@ -91,7 +81,11 @@ const fetchRewards = async (
     return delegatorHistory;
   }
 
-  return undefined;
+  return {
+    data: [],
+    totalItems: 0,
+    totalRewards: 0,
+  };
 };
 
 /**
@@ -111,8 +105,8 @@ export const usePersonalRewards = (
   const query = useQuery({
     queryKey: ['total-voting-rewards', subaccount, page, limit, sortKey, sortDirection],
     enabled: connectionStore.connected && !!epoch && !!blockHeight && !disabled,
-    queryFn: async () => {
-      return await fetchRewards(
+    queryFn: async () =>
+      fetchRewards(
         {
           type: 'blockHeight',
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- block height parameter is always defined
@@ -123,21 +117,17 @@ export const usePersonalRewards = (
         sortKey,
         sortDirection,
         subaccount,
-      );
-    },
+      ),
   });
 
   return {
     query,
-    data: query.data?.data,
+    data: query.data?.data ?? [],
     total: query.data?.totalItems ?? 0,
     totalRewards: query.data?.totalRewards ?? 0,
   };
 };
 
-/**
- * Retrieves the user’s vote for a single epoch.
- */
 export const usePersonalRewardsForEpoch = (
   subaccount?: number,
   epoch?: number,
@@ -157,8 +147,8 @@ export const usePersonalRewardsForEpoch = (
       sortDirection,
     ],
     enabled: connectionStore.connected && !!epoch,
-    queryFn: async () => {
-      return await fetchRewards(
+    queryFn: async () =>
+      fetchRewards(
         {
           type: 'epoch',
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- epoch parameter is always defined
@@ -169,13 +159,12 @@ export const usePersonalRewardsForEpoch = (
         sortKey,
         sortDirection,
         subaccount,
-      );
-    },
+      ),
   });
 
   return {
     query,
-    data: query.data?.data,
+    data: query.data?.data ?? [],
     total: query.data?.totalItems ?? 0,
     totalRewards: query.data?.totalRewards ?? 0,
   };
