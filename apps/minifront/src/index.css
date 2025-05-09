@@ -1,0 +1,33 @@
+/* apps/minifront/src/index.css */
+
+/* Import the prefixed CSS for v2 components */
+@import '@penumbra-zone/ui/style-prefixed.css';
+
+/* Tailwind directives for minifront's own styling */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Fix for border styling using the --light-brown variable */
+* {
+  border-color: var(--light-brown);
+}
+
+/* Apply borders to specific components in the swap interface */
+.speed, 
+[class*="trade"], 
+[class*="swap"],
+[class*="price-history"],
+.card,
+.panel {
+  border-width: 1px !important;
+  border-radius: 0.5rem !important;
+}
+
+/* Ensure borders are visible with proper contrast */
+input, 
+button, 
+select, 
+[role="button"] {
+  border-color: var(--light-brown);
+} 

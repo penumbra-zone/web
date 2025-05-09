@@ -1,13 +1,8 @@
 import plugin from 'tailwindcss/plugin';
 import tailwindCssAnimatePlugin from 'tailwindcss-animate';
 
-// TODO: Replace the theme to v2 instead of partially using it
-import { tailwindConfig as v2TailwindConfig } from '@penumbra-zone/ui-deprecated/tailwind';
-// Attempting a relative path to diagnose resolution issues
-import { withPenumbra } from '../ui/dist/src/theme/index.js';
-
 /** @type {import('tailwindcss').Config} */
-export default withPenumbra({
+export default {
   content: [
     './pages/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
@@ -15,8 +10,6 @@ export default withPenumbra({
     './src/**/*.{ts,tsx}',
     '../../packages/ui-deprecated/components/**/*.{ts,tsx}',
     './node_modules/@penumbra-zone/ui-deprecated/components/**/*.{ts,tsx}',
-    '../../packages/ui/src/**/*.{ts,tsx}',
-    './node_modules/@penumbra-zone/ui/dist/**/*.{js,ts,jsx,tsx,mdx}',
     './shared/**/*.{ts,tsx}',
   ],
   theme: {
@@ -31,11 +24,9 @@ export default withPenumbra({
       fontFamily: {
         body: ['Devanagari Sangam', 'sans-serif'],
         headline: ['Faktum', 'sans-serif'],
-        /* Using Iosevka Term rather than Iosevka ensures that all characters are really the same width, even weird unicode ones. */
         mono: ['Iosevka Term', 'monospace'],
       },
       colors: {
-        v2: v2TailwindConfig.theme.extend.colors,
         border: {
           DEFAULT: 'hsl(var(--border))',
           secondary: 'var(--border-secondary)',
@@ -109,7 +100,6 @@ export default withPenumbra({
         brown: {
           DEFAULT: 'var(--brown)',
         },
-        // Add UI package text colors to ensure they're available for the Text component
         text: {
           primary: 'var(--text-primary, #FFFFFF)',
           secondary: 'var(--text-secondary, rgba(255, 255, 255, 0.7))',
@@ -153,10 +143,6 @@ export default withPenumbra({
         },
       },
       backgroundImage: {
-        // The final `linear-gradient` is just to make a solid charcoal
-        // background color for the radial gradients to sit on top of. If
-        // there's a way to make a solid background color without
-        // `linear-gradient`, feel free to update this.
         'card-radial': `
           radial-gradient(33% 50% at 15% 44%, color-mix(in srgb, var(--rust) 20%, transparent), transparent),
           radial-gradient(33% 40% at 105% 42%, color-mix(in srgb, var(--teal) 20%, transparent), transparent),
@@ -180,23 +166,22 @@ export default withPenumbra({
   },
   plugins: [
     tailwindCssAnimatePlugin,
-
     plugin(({ addUtilities, addBase, theme }) => {
       addUtilities({
         '.grid-std-spacing': {
           '@apply gap-6 md:gap-4 xl:gap-5': {},
         },
       });
-      
-      // Add CSS variables for UI package
       addBase({
         ':root': {
           '--text-primary': '#FFFFFF',
           '--text-secondary': 'rgba(255, 255, 255, 0.7)',
           '--text-tertiary': 'rgba(255, 255, 255, 0.5)',
           '--text-disabled': 'rgba(255, 255, 255, 0.3)',
+          '--Other-Tonal-Fill-5': 'rgba(250, 250, 250, 0.05)',
+          '--Action-Hover-Overlay': 'rgba(83, 174, 168, 0.15)',
         },
       });
     }),
   ],
-});
+};
