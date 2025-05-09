@@ -46,6 +46,7 @@ const PreviousEpochsRow = observer(
       query: { isLoading: rewardsLoading },
     } = usePersonalRewards(subaccount, row.epoch);
     const { data: stakingToken } = useStakingTokenMetadata();
+    const reward = rewards.get(row.epoch);
 
     return (
       <Link
@@ -83,18 +84,16 @@ const PreviousEpochsRow = observer(
             </Tooltip>
           )}
         </TableCell>
-        {connected && (
+        {connected && (rewardsLoading || reward !== undefined) && (
           <TableCell cell loading={isLoading || rewardsLoading}>
-            {rewards.find(r => BigInt(r.epoch) === (row.epoch && BigInt(row.epoch))) && (
+            {
               <ValueViewComponent
                 valueView={
                   new ValueView({
                     valueView: {
                       case: 'knownAssetId',
                       value: {
-                        amount: pnum(
-                          rewards.find(r => BigInt(r.epoch) === BigInt(row.epoch))?.reward,
-                        ).toAmount(),
+                        amount: pnum(reward?.reward).toAmount(),
                         metadata: stakingToken,
                       },
                     },
@@ -102,7 +101,7 @@ const PreviousEpochsRow = observer(
                 }
                 priority='tertiary'
               />
-            )}
+            }
           </TableCell>
         )}
         <TableCell cell loading={isLoading}>

@@ -3,7 +3,7 @@ import { TableCell } from '@penumbra-zone/ui/TableCell';
 import { Density } from '@penumbra-zone/ui/Density';
 import { connectionStore } from '@/shared/model/connection';
 import { usePersonalRewards, BASE_LIMIT, BASE_PAGE } from '../api/use-personal-rewards';
-import { DelegatorHistorySortKey, LqtDelegatorHistoryData } from '../server/delegator-history';
+import { DelegatorHistorySortKey } from '../server/delegator-history';
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { Button } from '@penumbra-zone/ui/Button';
@@ -12,9 +12,29 @@ import { useStakingTokenMetadata } from '@/shared/api/registry';
 import { useCurrentEpoch } from '@/pages/tournament/api/use-current-epoch';
 import { pnum } from '@penumbra-zone/types/pnum';
 import { useTournamentSummary } from '../api/use-tournament-summary';
-import { useState, useMemo } from 'react';
+import { ReactNode, useState } from 'react';
 import { Pagination } from '@penumbra-zone/ui/Pagination';
 import { useSortableTableHeaders } from './sortable-table-header';
+
+interface LayoutProps {
+  getTableHeader: (key: 'epoch' | 'reward', label: string) => ReactNode;
+}
+
+const Layout = observer(({ getTableHeader, children }: React.PropsWithChildren<LayoutProps>) => {
+  return (
+    <Density compact>
+      <div className='grid grid-cols-[auto_1fr_1fr_32px]'>
+        <div className='grid grid-cols-subgrid col-span-4'>
+          {getTableHeader('epoch', 'Epoch')}
+          <TableCell heading>Casted Vote</TableCell>
+          {getTableHeader('reward', 'Reward')}
+          <TableCell heading> </TableCell>
+        </div>
+        {children}
+      </div>
+    </Density>
+  );
+});
 
 export const VotingRewards = observer(() => {
   const [page, setPage] = useState(BASE_PAGE);
@@ -26,131 +46,124 @@ export const VotingRewards = observer(() => {
 
   const { subaccount } = connectionStore;
 
-  const { epoch, isLoading: epochLoading } = useCurrentEpoch();
+  const { epoch, status: epochStatus } = useCurrentEpoch();
   const {
-    query: { isLoading: rewardsLoading },
+    query: { status: rewardsStatus },
     data: rewardsData,
     total,
   } = usePersonalRewards(
     subaccount,
     epoch,
-    epochLoading,
+    epochStatus !== 'success',
     page,
     limit,
     sortBy.key,
     sortBy.direction,
   );
 
-  const { data: stakingToken, isLoading: stakingLoading } = useStakingTokenMetadata();
+  const { data: stakingToken } = useStakingTokenMetadata();
 
   // Extract epochs for summary lookup
-  const epochs = useMemo(() => rewardsData.map(r => r.epoch).filter(Boolean), [rewardsData]);
+  const epochs = [...rewardsData.keys()];
 
-  const { data: summary, isLoading: summaryLoading } = useTournamentSummary(
+  const { data: rawSummary } = useTournamentSummary(
     {
       epochs: epochs.length > 0 ? epochs : undefined,
     },
-    epochLoading || rewardsLoading || !epochs.length,
+    epochs.length === 0,
   );
-
-  const isLoading = rewardsLoading || stakingLoading || summaryLoading || epochLoading;
+  if (epoch === undefined || rewardsStatus !== 'success' || rawSummary === undefined) {
+    return (
+      <Layout getTableHeader={getTableHeader}>
+        {new Array(5).map((_, i) => {
+          return (
+            <div key={`loading-${i}`} className='grid grid-cols-subgrid col-span-4'>
+              <TableCell cell loading={true}>
+                undefined
+              </TableCell>
+              <TableCell cell loading={true}>
+                undefined
+              </TableCell>
+              <TableCell cell loading={true}>
+                undefined
+              </TableCell>
+              <TableCell cell loading={true}>
+                <Density slim>
+                  <Button iconOnly icon={ChevronRight} disabled={true}>
+                    Go to voting reward information
+                  </Button>
+                </Density>
+              </TableCell>
+            </div>
+          );
+        })}
+      </Layout>
+    );
+  }
+  const summary = new Map(rawSummary.map(x => [x.epoch, x]));
 
   const onLimitChange = (newLimit: number) => {
     setLimit(newLimit);
     setPage(BASE_PAGE);
   };
 
-  const loadingArr = new Array(5).fill({
-    address: {},
-    asset_id: {},
-    metadata: {},
-    epoch: {},
-    power: {},
-    reward: {},
-  }) as LqtDelegatorHistoryData[];
-
-  const displayData = isLoading ? loadingArr : rewardsData;
-
-  // TODO: populate casted votes with metadata when registry is fixed.
   return (
     <>
-      <Density compact>
-        <div className='grid grid-cols-[auto_1fr_1fr_32px]'>
-          <div className='grid grid-cols-subgrid col-span-4'>
-            {getTableHeader('epoch', 'Epoch')}
-            <TableCell heading>Casted Vote</TableCell>
-            {getTableHeader('reward', 'Reward')}
-            <TableCell heading> </TableCell>
-          </div>
+      <Layout getTableHeader={getTableHeader}>
+        {Array.from(rewardsData.entries(), ([epoch, reward]) => {
+          const matchingSummary = summary.get(epoch);
+          if (!matchingSummary) {
+            throw new Error(`IMPOSSIBLE: no tournament summary at epoch: ${epoch}`);
+          }
 
-          {displayData.map((rewardData, index) => {
-            const matchingSummary = !isLoading
-              ? summary?.find(s => s.epoch === rewardData.epoch)
-              : undefined;
+          const rewardView = new ValueView({
+            valueView: {
+              case: 'knownAssetId',
+              value: {
+                amount: pnum(reward.reward).toAmount(),
+                metadata: stakingToken,
+              },
+            },
+          });
 
-            const hasVoteWeightData = Boolean(
-              matchingSummary?.total_voting_power && rewardData.power > 0,
-            );
+          const rowKey = `epoch-${epoch}`;
 
-            const rewardView = !isLoading
-              ? new ValueView({
-                  valueView: {
-                    case: 'knownAssetId',
-                    value: {
-                      amount: pnum(rewardData.reward).toAmount(),
-                      metadata: stakingToken,
-                    },
-                  },
-                })
-              : undefined;
+          return (
+            <div key={rowKey} className='grid grid-cols-subgrid col-span-4'>
+              <TableCell cell>{`Epoch #${epoch}`}</TableCell>
 
-            const rowKey = isLoading ? `loading-${index}` : `epoch-${rewardData.epoch}`;
+              <TableCell cell>
+                {((reward.power / matchingSummary.total_voting_power) * 100).toFixed(3) + '%'}
+              </TableCell>
 
-            return (
-              <div key={rowKey} className='grid grid-cols-subgrid col-span-4'>
-                <TableCell cell loading={isLoading}>
-                  {!isLoading && `Epoch #${rewardData.epoch.toString()}`}
-                </TableCell>
+              <TableCell cell>
+                <ValueViewComponent valueView={rewardView} priority='tertiary' />
+              </TableCell>
 
-                <TableCell cell loading={isLoading || !hasVoteWeightData}>
-                  {!isLoading &&
-                    matchingSummary &&
-                    ((rewardData.power / matchingSummary.total_voting_power) * 100).toFixed(3) +
-                      '%'}
-                </TableCell>
+              <TableCell cell>
+                <Density slim>
+                  <Button
+                    iconOnly
+                    icon={ChevronRight}
+                    onClick={() => (window.location.href = `/tournament/${epoch}`)}
+                  >
+                    Go to voting reward information
+                  </Button>
+                </Density>
+              </TableCell>
+            </div>
+          );
+        })}
+      </Layout>
 
-                <TableCell cell loading={isLoading || !rewardView}>
-                  {rewardView && <ValueViewComponent valueView={rewardView} priority='tertiary' />}
-                </TableCell>
-
-                <TableCell cell loading={isLoading}>
-                  <Density slim>
-                    <Button
-                      iconOnly
-                      icon={ChevronRight}
-                      disabled={isLoading}
-                      onClick={() => (window.location.href = `/tournament/${rewardData.epoch}`)}
-                    >
-                      Go to voting reward information
-                    </Button>
-                  </Density>
-                </TableCell>
-              </div>
-            );
-          })}
-        </div>
-      </Density>
-
-      {!isLoading && total >= BASE_LIMIT && (
-        <Pagination
-          totalItems={total}
-          visibleItems={displayData.length}
-          value={page}
-          limit={limit}
-          onChange={setPage}
-          onLimitChange={onLimitChange}
-        />
-      )}
+      <Pagination
+        totalItems={total}
+        visibleItems={rewardsData.size}
+        value={page}
+        limit={limit}
+        onChange={setPage}
+        onLimitChange={onLimitChange}
+      />
     </>
   );
 });

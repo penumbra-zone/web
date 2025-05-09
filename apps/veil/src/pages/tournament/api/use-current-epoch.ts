@@ -2,7 +2,11 @@ import { useEffect, useRef } from 'react';
 import { useTournamentSummary } from './use-tournament-summary';
 
 export const useCurrentEpoch = (onChange?: (newEpoch: number) => void) => {
-  const { data: summary, isLoading } = useTournamentSummary({
+  const {
+    data: summary,
+    isLoading,
+    status,
+  } = useTournamentSummary({
     limit: 1,
     page: 1,
   });
@@ -22,5 +26,6 @@ export const useCurrentEpoch = (onChange?: (newEpoch: number) => void) => {
   return {
     epoch: summary?.[0]?.epoch,
     isLoading,
+    status,
   };
 };

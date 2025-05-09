@@ -120,9 +120,11 @@ export const usePersonalRewards = (
       ),
   });
 
+  const data = query.data?.data ?? [];
+
   return {
     query,
-    data: query.data?.data ?? [],
+    data: new Map(data.map(x => [x.epoch, x])),
     total: query.data?.totalItems ?? 0,
     totalRewards: query.data?.totalRewards ?? 0,
   };
