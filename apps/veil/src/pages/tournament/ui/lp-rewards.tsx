@@ -119,7 +119,7 @@ export const LpRewards = observer(() => {
   const { getTableHeader, sortBy } = useSortableTableHeaders<keyof LpReward>('epoch');
   const { data: assets } = useAssets();
   const umMetadata = useMemo(() => {
-    return assets?.find(asset => asset.symbol === 'UM');
+    return assets.find(asset => asset.symbol === 'UM');
   }, [assets]);
 
   const query = useLpRewards(
