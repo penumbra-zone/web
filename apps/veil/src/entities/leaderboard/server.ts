@@ -1,1 +1,1 @@
-export { GET } from './api/get-leaderboard';
+export { POST } from './api/post-lp-leaderboard';
