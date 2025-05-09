@@ -1,5 +1,11 @@
 # @penumbra-zone/types
 
+## 33.1.0
+
+### Minor Changes
+
+- 085e855: use asset id instead of metadata in liquidity tournament idb table
+
 ## 33.0.0
 
 ### Minor Changes

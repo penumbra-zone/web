@@ -5,7 +5,7 @@ import { useChains } from '@cosmos-kit/react';
 import { Wallet2 } from 'lucide-react';
 import { Density } from '@penumbra-zone/ui/Density';
 import { chainsInPenumbraRegistry } from '@/features/cosmos/chain-provider.tsx';
-import { useRegistry } from '@/shared/api/registry.ts';
+import { useRegistry } from '@/shared/api/registry.tsx';
 
 interface CosmosConnectButtonProps {
   actionType?: ButtonProps['actionType'];
@@ -16,31 +16,28 @@ interface CosmosConnectButtonProps {
 const CosmosConnectButtonInner = observer(
   ({ actionType = 'accent', variant = 'default', children }: CosmosConnectButtonProps) => {
     const { data: registry } = useRegistry();
-    const penumbraIbcChains = chainsInPenumbraRegistry(registry?.ibcConnections ?? []).map(
+    const penumbraIbcChains = chainsInPenumbraRegistry(registry.ibcConnections).map(
       c => c.chain_name,
     );
     const chains = useChains(penumbraIbcChains);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Osmosis is always available
-    const { address, disconnect, openView, isWalletConnected } = (chains['osmosis'] ??
-      chains['osmosistestnet'])!;
 
-    const handleConnect = () => {
-      openView();
-    };
+    const availableChain = Object.keys(chains)[0];
+
+    const { address, disconnect, openView, isWalletConnected } = chains[availableChain ?? ''] ?? {};
 
     return (
       <Density variant={variant === 'default' ? 'sparse' : 'compact'}>
-        {isWalletConnected && address ? (
+        {isWalletConnected && address && availableChain ? (
           <Button
             icon={Wallet2}
             aria-description={address}
             actionType={actionType}
-            onClick={() => void disconnect()}
+            onClick={() => void disconnect?.()}
           >
             {`${address.slice(0, 8)}...${address.slice(-4)}`}
           </Button>
         ) : (
-          <Button icon={Wallet2} actionType={actionType} onClick={handleConnect}>
+          <Button icon={Wallet2} actionType={actionType} onClick={() => openView?.()}>
             {children ?? 'Connect Cosmos Wallet'}
           </Button>
         )}

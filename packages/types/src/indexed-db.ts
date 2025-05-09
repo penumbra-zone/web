@@ -185,9 +185,9 @@ export interface IndexedDbInterface {
   getPosition(positionId: PositionId): Promise<Position | undefined>;
 
   saveLQTHistoricalVote(
+    incentivizedAsset: AssetId,
     epoch: bigint,
     transactionId: TransactionId,
-    assetMetadata: Metadata,
     voteValue: Value,
     rewardValue?: Amount,
     id?: string,
@@ -199,9 +199,9 @@ export interface IndexedDbInterface {
     subaccount?: number,
   ): Promise<
     {
+      incentivizedAsset: AssetId;
       epoch: string;
       TransactionId: TransactionId;
-      AssetMetadata: Metadata;
       VoteValue: Value;
       RewardValue: Amount | undefined;
       id: string | undefined;
@@ -214,9 +214,9 @@ export interface IndexedDbInterface {
     subaccount?: number,
   ): AsyncGenerator<
     {
+      incentivizedAsset: AssetId;
       epoch: string;
       TransactionId: TransactionId;
-      AssetMetadata: Metadata;
       VoteValue: Value;
       RewardValue: Amount;
       id: string | undefined;
@@ -376,10 +376,10 @@ export interface PenumbraDb extends DBSchema {
   LQT_HISTORICAL_VOTES: {
     key: string;
     value: {
+      incentivizedAsset: Jsonified<AssetId>;
       id: string;
       epoch: string;
       TransactionId: Jsonified<TransactionId>;
-      AssetMetadata: Jsonified<Metadata>;
       VoteValue: Jsonified<Value>;
       RewardValue: Jsonified<Amount> | null;
       subaccount?: number;

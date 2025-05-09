@@ -22,7 +22,7 @@ export const VoteDialogSearchResults = ({
   search,
   onSelect,
 }: VoteDialogSearchResultsProps) => {
-  const { data: assets, isLoading } = useRegistryAssets();
+  const { data: assets } = useRegistryAssets();
 
   const gaugeMapByDenom = useMemo(
     () =>
@@ -34,15 +34,13 @@ export const VoteDialogSearchResults = ({
   );
 
   const filteredAssets = useMemo<Metadata[]>(() => {
-    return (
-      assets?.filter(asset => {
-        return (
-          assetPatterns.ibc.matches(asset.base) &&
-          (asset.symbol.toLowerCase().includes(search.toLowerCase()) ||
-            asset.description.toLowerCase().includes(search.toLowerCase()))
-        );
-      }) ?? []
-    );
+    return assets.filter(asset => {
+      return (
+        assetPatterns.ibc.matches(asset.base) &&
+        (asset.symbol.toLowerCase().includes(search.toLowerCase()) ||
+          asset.description.toLowerCase().includes(search.toLowerCase()))
+      );
+    });
   }, [assets, search]);
 
   const mappedAssets = useMemo<MappedGauge[]>(() => {
@@ -68,20 +66,21 @@ export const VoteDialogSearchResults = ({
         Search results
       </Text>
 
-      {!isLoading && !mappedAssets.length && <VotingDialogNoResults />}
+      {!mappedAssets.length && <VotingDialogNoResults />}
 
       <Dialog.RadioGroup value={value}>
         <div className='flex flex-col gap-1'>
-          {isLoading && new Array(5).fill({}).map((_, index) => <LoadingVoteAsset key={index} />)}
+          {new Array(5).fill({}).map((_, index) => (
+            <LoadingVoteAsset key={index} />
+          ))}
 
-          {!isLoading &&
-            mappedAssets.map(asset => (
-              <VoteDialogAsset
-                key={asset.asset.base}
-                asset={asset}
-                onSelect={() => onSelect(asset)}
-              />
-            ))}
+          {mappedAssets.map(asset => (
+            <VoteDialogAsset
+              key={asset.asset.base}
+              asset={asset}
+              onSelect={() => onSelect(asset)}
+            />
+          ))}
         </div>
       </Dialog.RadioGroup>
     </div>
