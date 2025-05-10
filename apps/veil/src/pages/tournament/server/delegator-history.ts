@@ -1,55 +1,46 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Serialized } from '@/shared/utils/serializer';
+import { Serialized, serialize } from '@/shared/utils/serializer';
 import { pindexerDb } from '@/shared/database/client';
 import { LqtDelegatorHistory } from '@/shared/database/schema';
 import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
+import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { BASE_LIMIT, BASE_PAGE } from '../api/use-personal-rewards';
+import { ChainRegistryClient } from '@penumbra-labs/registry';
 
-const DEFAULT_LIMIT = 10;
+export const SORT_KEYS = ['epoch', 'power', 'reward', ''] as const;
+export type DelegatorHistorySortKey = (typeof SORT_KEYS)[number];
 
-export interface TournamentDelegatorHistoryRequest {
-  limit: number;
-  page: number;
-  epoch?: number;
-}
+export const DIRECTIONS = ['asc', 'desc'] as const;
+export type DelegatorHistorySortDirection = (typeof DIRECTIONS)[number];
 
 export interface DelegatorHistoryRequest {
   epochs: string[];
   address: Address;
+  limit?: number;
+  page?: number;
+  sortKey?: DelegatorHistorySortKey;
+  sortDirection?: DelegatorHistorySortDirection;
 }
 
 export interface TournamentDelegatorHistoryResponse {
-  data: LqtDelegatorHistory[];
+  data: LqtDelegatorHistoryData[];
+  totalItems: number;
   totalRewards: number;
 }
 
-export const getQueryParams = (req: NextRequest): TournamentDelegatorHistoryRequest => {
-  const { searchParams } = new URL(req.url);
-  const limit = Number(searchParams.get('limit')) || DEFAULT_LIMIT;
-  const page = Number(searchParams.get('page')) || 1;
+export interface LqtDelegatorHistoryData extends Omit<LqtDelegatorHistory, 'address' | 'asset_id'> {
+  address: Address;
+  asset_id: AssetId;
+  metadata: Metadata;
+}
 
-  return {
-    limit,
-    page,
-  };
-};
-
-const tournamentDelegatorHistoryQuery = async ({
-  limit,
-  page,
-  epoch,
-}: TournamentDelegatorHistoryRequest) => {
-  if (!epoch) {
-    throw new Error('Missing epoch value field');
-  }
-
+const tournamentDelegatorHistoryQuery = async ({ epoch }: { epoch: number }) => {
   return pindexerDb
     .selectFrom('lqt.delegator_history')
     .orderBy('epoch', 'desc')
     .orderBy('power', 'desc')
     .where('epoch', '=', epoch)
-    .limit(limit)
-    .offset(limit * (page - 1))
     .selectAll()
     .execute();
 };
@@ -72,9 +63,16 @@ function processEpochResults(
   }[],
   targetAddress: string,
   address: Address,
-): { results: LqtDelegatorHistory[]; totalReward: number } {
-  // Create accumulator map to track totals by epoch.
+  limit: number,
+  page: number,
+  sortDirection: DelegatorHistorySortDirection = 'desc',
+): { paginatedResults: LqtDelegatorHistory[]; totalItems: number; totalReward: number } {
+  // Create accumulator for results
   const matchesByEpoch = new Map<string, { power: number; reward: number; assetId: Buffer }>();
+
+  // Create result entries and calculate total reward.
+  const results: LqtDelegatorHistory[] = [];
+  let totalReward = 0;
 
   for (const { epoch, data } of epochResults) {
     // Find all matching items for this epoch.
@@ -93,10 +91,6 @@ function processEpochResults(
     }
   }
 
-  // Create result entries and calculate total reward.
-  const results: LqtDelegatorHistory[] = [];
-  let totalReward = 0;
-
   for (const [epoch, match] of matchesByEpoch.entries()) {
     results.push({
       address: Buffer.from(address.inner),
@@ -109,24 +103,36 @@ function processEpochResults(
     totalReward += match.reward;
   }
 
-  return { results, totalReward };
+  // We need to perform pagination after fetching all data from pindexer,
+  // since we require the total count. This is the correct approach for
+  // implementing server-side pagination while preserving accurate totals and sorting.
+  results.sort((a, b) => {
+    const comparison = a.epoch - b.epoch;
+    return sortDirection === 'asc' ? comparison : -comparison;
+  });
+
+  const startIndex = (page - 1) * limit;
+  const paginatedResults = results.slice(startIndex, Math.min(startIndex + limit, results.length));
+
+  return {
+    paginatedResults,
+    totalItems: results.length,
+    totalReward,
+  };
 }
 
 export async function POST(
   req: NextRequest,
 ): Promise<NextResponse<Serialized<TournamentDelegatorHistoryResponse | { error: string }>>> {
-  const params = getQueryParams(req);
-
   const data = (await req.json()) as DelegatorHistoryRequest;
-  const { epochs, address } = data;
+  const { epochs, address, limit = BASE_LIMIT, page = BASE_PAGE, sortDirection = 'desc' } = data;
+
   const targetAddress = bech32mAddress(address);
 
-  // Execute the queries for all epochs concurrently.
+  // Execute the queries for all epochs concurrently
   const queryPromises = [...epochs].map(async epoch => {
     const data = await tournamentDelegatorHistoryQuery({
-      ...params,
       epoch: Number(epoch),
-      limit: 10,
     });
     return {
       epoch,
@@ -137,10 +143,51 @@ export async function POST(
   const epochResults = await Promise.all(queryPromises);
 
   // Return the delegator’s epoch history and the total reward accumulated across all epochs.
-  const { results, totalReward } = processEpochResults(epochResults, targetAddress, address);
+  const { paginatedResults, totalItems, totalReward } = processEpochResults(
+    epochResults,
+    targetAddress,
+    address,
+    limit,
+    page,
+    sortDirection,
+  );
+
+  const chainId = process.env['PENUMBRA_CHAIN_ID'];
+  if (!chainId) {
+    return NextResponse.json({ error: 'Error: PENUMBRA_CHAIN_ID is not set' }, { status: 500 });
+  }
+
+  const registryClient = new ChainRegistryClient();
+  const registry = await registryClient.remote.get(chainId);
+
+  // Map only the paginated results with metadata
+  const mapped = await Promise.all(
+    paginatedResults.map(item => {
+      // TODO: remove hardcoded staking asset metadata when registry is fixed.
+      const stakingAssetId = registryClient.bundled.globals().stakingAssetId;
+      const asset_id = new AssetId({ inner: Uint8Array.from(item.asset_id) });
+      const metadata = registry.tryGetMetadata(stakingAssetId);
+
+      if (!metadata) {
+        return undefined;
+      }
+
+      return {
+        address: new Address({ inner: item.address }),
+        epoch: item.epoch,
+        power: item.power,
+        asset_id,
+        reward: item.reward,
+        metadata,
+      };
+    }),
+  );
+
+  const filteredMapped = mapped.filter(Boolean) as LqtDelegatorHistoryData[];
 
   return NextResponse.json({
-    data: results,
-    totalRewards: totalReward,
+    data: serialize(filteredMapped),
+    totalItems: totalItems,
+    totalRewards: Number(totalReward),
   });
 }
