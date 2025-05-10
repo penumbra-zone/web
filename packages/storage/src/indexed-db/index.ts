@@ -231,6 +231,14 @@ export class IndexedDb implements IndexedDbInterface {
     await this.u.updateAll(txs);
   }
 
+  async saveFullSyncHeight(height: bigint) {
+    await this.u.update({
+      table: 'FULL_SYNC_HEIGHT',
+      value: height,
+      key: 'height',
+    });
+  }
+
   async getFullSyncHeight() {
     return this.db.get('FULL_SYNC_HEIGHT', 'height');
   }

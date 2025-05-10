@@ -66,6 +66,7 @@ export interface IndexedDbInterface {
   constants(): IdbConstants;
   clear(): Promise<void>;
   getFullSyncHeight(): Promise<bigint | undefined>;
+  saveFullSyncHeight(height: bigint): Promise<void>;
   getSpendableNoteByNullifier(nullifier: Nullifier): Promise<SpendableNoteRecord | undefined>;
   getSpendableNoteByCommitment(
     commitment: StateCommitment,
@@ -423,6 +424,7 @@ export const IDB_TABLES: Tables = {
   transactions: 'TRANSACTIONS',
   full_sync_height: 'FULL_SYNC_HEIGHT',
   tree_commitments: 'TREE_COMMITMENTS',
+  tree_hashes: 'TREE_HASHES',
   tree_last_position: 'TREE_LAST_POSITION',
   tree_last_forgotten: 'TREE_LAST_FORGOTTEN',
   lqt_historical_votes: 'LQT_HISTORICAL_VOTES',

@@ -85,9 +85,39 @@ impl ViewServer {
         utils::set_panic_hook();
 
         let fvk: FullViewingKey = FullViewingKey::decode(full_viewing_key)?;
+        let constants = serde_wasm_bindgen::from_value(idb_constants)?;
         let stored_tree: StoredTree = serde_wasm_bindgen::from_value(stored_tree)?;
         let tree = load_tree(stored_tree);
+
+        let view_server = Self {
+            latest_height: u64::MAX,
+            fvk,
+            notes: Default::default(),
+            sct: tree,
+            swaps: Default::default(),
+            storage: init_idb_storage(constants).await?,
+            last_position: None,
+            last_forgotten: None,
+        };
+        Ok(view_server)
+    }
+
+    /// Create new instances of `ViewServer` from SCT frontier snapshot.
+    #[wasm_bindgen]
+    pub async fn new_snapshot(
+        full_viewing_key: &[u8],
+        idb_constants: JsValue,
+        compact_frontier: &[u8],
+    ) -> WasmResult<ViewServer> {
+        utils::set_panic_hook();
+
+        let fvk: FullViewingKey = FullViewingKey::decode(full_viewing_key)?;
         let constants = serde_wasm_bindgen::from_value(idb_constants)?;
+
+        let tree: Tree = bincode::deserialize(&compact_frontier)
+            .map_err(|e| JsValue::from_str(&format!("Failed to deserialize frontier: {}", e)))
+            .expect("frontier snapshot");
+
         let view_server = Self {
             latest_height: u64::MAX,
             fvk,
@@ -108,11 +138,7 @@ impl ViewServer {
     /// Use `flush_updates()` to get the scan results
     /// Returns: `bool`
     #[wasm_bindgen]
-    pub async fn scan_block(
-        &mut self,
-        compact_block: &[u8],
-        skip_trial_decrypt: bool,
-    ) -> WasmResult<bool> {
+    pub async fn scan_block(&mut self, compact_block: &[u8]) -> WasmResult<bool> {
         utils::set_panic_hook();
 
         let block = CompactBlock::decode(compact_block)?;
@@ -128,20 +154,14 @@ impl ViewServer {
         for state_payload in &block.state_payloads {
             match state_payload {
                 StatePayload::Note { note: payload, .. } => {
-                    let note_opt = (!skip_trial_decrypt)
-                        .then(|| payload.trial_decrypt(&self.fvk))
-                        .flatten();
-                    if let Some(note) = note_opt {
+                    if let Some(note) = payload.trial_decrypt(&self.fvk) {
                         // It's safe to avoid recomputing the note commitment here because
                         // trial_decrypt checks that the decrypted data is consistent
                         note_advice.insert(payload.note_commitment, note);
                     }
                 }
                 StatePayload::Swap { swap: payload, .. } => {
-                    let swap_opt = (!skip_trial_decrypt)
-                        .then(|| payload.trial_decrypt(&self.fvk))
-                        .flatten();
-                    if let Some(swap) = swap_opt {
+                    if let Some(swap) = payload.trial_decrypt(&self.fvk) {
                         // It's safe to avoid recomputing the note commitment here because
                         // trial_decrypt checks that the decrypted data is consistent
                         swap_advice.insert(payload.commitment, swap);
