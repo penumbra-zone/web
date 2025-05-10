@@ -16,7 +16,6 @@ import {
 import { penumbra } from '@/shared/const/penumbra';
 import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { ViewService } from '@penumbra-zone/protobuf/penumbra/view/v1/view_connect';
-import { useEffect, useState } from 'react';
 import { DexService } from '@penumbra-zone/protobuf';
 
 export const BASE_LIMIT = 10;
@@ -60,23 +59,29 @@ export const useLpRewards = (
   sortKey?: LpRewardsSortKey | '',
   sortDirection?: LpRewardsSortDirection,
 ): UseQueryResult<LpRewardsResponse> => {
-  const [positionIds, setPositionIds] = useState<string[]>([]);
+  const { data: positionIds } = useQuery({
+    queryKey: ['owned-positions', subaccount],
+    queryFn: async () => {
+      const ids: string[] = [];
 
-  useEffect(() => {
-    void Array.fromAsync(
-      penumbra.service(ViewService).ownedPositionIds({
+      const result = penumbra.service(ViewService).ownedPositionIds({
         subaccount: new AddressIndex({ account: subaccount }),
-      }),
-    ).then(ownedRes => {
-      const positionIds = ownedRes
-        .map(r => r.positionId && bech32mPositionId(r.positionId))
-        .filter(Boolean) as string[];
-      setPositionIds(positionIds);
-    });
-  }, [subaccount]);
+      });
+      for await (const item of result) {
+        const id = item.positionId;
+        if (id) {
+          ids.push(bech32mPositionId(id));
+        }
+      }
+
+      return ids;
+    },
+  });
 
   const query = useQuery({
-    queryKey: ['lp-rewards', ...positionIds, page, limit, sortKey, sortDirection],
+    queryKey: ['lp-rewards', ...(positionIds ?? []), page, limit, sortKey, sortDirection],
+    // NOTE(@cronokirby): This is not quite correct, because a position may receive rewards at any time,
+    // but it's fine to let people reload the page to see that.
     staleTime: Infinity,
     queryFn: async () => {
       return apiPostFetch<LpRewardsApiResponse>('/api/tournament/lp-rewards', {
@@ -90,7 +95,8 @@ export const useLpRewards = (
         data: resp.data.length ? await enrichLpRewards(resp.data) : [],
       }));
     },
-    enabled: positionIds.length > 0,
+    // Also handles the case where we have an empty array
+    enabled: !!positionIds,
   });
 
   return query;
