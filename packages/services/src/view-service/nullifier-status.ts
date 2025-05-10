@@ -5,7 +5,7 @@ import { servicesCtx } from '../ctx/prax.js';
 import { Code, ConnectError } from '@connectrpc/connect';
 
 const watchStream = async <U>(
-  subscription: AsyncGenerator<U>,
+  subscription: AsyncIterable<U>,
   test: (x: U) => boolean,
 ): Promise<U> => {
   for await (const update of subscription) {

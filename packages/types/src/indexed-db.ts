@@ -52,9 +52,8 @@ import type { Jsonified } from './jsonified.js';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 
 export interface IdbUpdate<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>> {
-  table: StoreName;
-  value: StoreValue<DBTypes, StoreName>;
-  key?: StoreKey<DBTypes, StoreName> | IDBKeyRange;
+  store: StoreName;
+  key: StoreKey<DBTypes, StoreName> | IDBKeyRange;
 }
 
 export interface IndexedDbInterface {
@@ -62,7 +61,7 @@ export interface IndexedDbInterface {
 
   subscribe<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>>(
     table: StoreName,
-  ): AsyncGenerator<IdbUpdate<DBTypes, StoreName>, void>;
+  ): ReadableStream<IdbUpdate<DBTypes, StoreName>>;
   constants(): IdbConstants;
   clear(): Promise<void>;
   getFullSyncHeight(): Promise<bigint | undefined>;
@@ -81,7 +80,7 @@ export interface IndexedDbInterface {
   saveAssetsMetadata(metadata: Required<PlainMessage<Metadata>>): Promise<void>;
   iterateAssetsMetadata(): AsyncGenerator<Metadata, void>;
   getStateCommitmentTree(): Promise<StateCommitmentTree>;
-  saveScanResult(updates: ScanBlockResult): Promise<void>;
+  saveScanResult(updates: ScanBlockResult, epoch: Epoch): Promise<void>;
   getFmdParams(): Promise<FmdParameters | undefined>;
   saveFmdParams(params: FmdParameters): Promise<void>;
   getAppParams(): Promise<AppParameters | undefined>;

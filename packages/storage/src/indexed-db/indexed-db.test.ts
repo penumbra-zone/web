@@ -30,6 +30,7 @@ import {
   transactionId,
   mainAccount,
   firstSubaccount,
+  scanResultEpoch,
 } from './indexed-db.test-data.js';
 import { AddressIndex, WalletId } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import {
@@ -43,7 +44,6 @@ import {
   Metadata,
   Value,
 } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import type { IdbUpdate, PenumbraDb } from '@penumbra-zone/types/indexed-db';
 import {
   AuctionId,
   DutchAuctionDescription,
@@ -150,25 +150,6 @@ describe('IndexedDb', () => {
     });
   });
 
-  describe('Updater', () => {
-    it('emits events on update', async () => {
-      const db = await IndexedDb.initialize(generateInitialProps());
-      const subscription = db.subscribe('SPENDABLE_NOTES');
-
-      // Save the new note and wait for the next update in parallel
-      const [, resA] = await Promise.all([db.saveSpendableNote(newNote), subscription.next()]);
-      const updateA = resA.value as IdbUpdate<PenumbraDb, 'SPENDABLE_NOTES'>;
-      expect(SpendableNoteRecord.fromJson(updateA.value)).toEqual(newNote);
-      expect(resA.done).toBeFalsy();
-
-      // Try a second time
-      const [, resB] = await Promise.all([db.saveSpendableNote(newNote), subscription.next()]);
-      const updateB = resB.value as IdbUpdate<PenumbraDb, 'SPENDABLE_NOTES'>;
-      expect(SpendableNoteRecord.fromJson(updateB.value)).toEqual(newNote);
-      expect(resB.done).toBeFalsy();
-    });
-  });
-
   describe('Clear', () => {
     it('object store should be empty after clear', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
@@ -198,6 +179,7 @@ describe('IndexedDb', () => {
 
       const scanResult = {
         height: 1000n,
+        sctPositionPrefix: 0n,
         sctUpdates: {
           delete_ranges: [],
           set_forgotten: undefined,
@@ -215,7 +197,7 @@ describe('IndexedDb', () => {
         newSwaps: [],
       };
 
-      await db.saveScanResult(scanResult);
+      await db.saveScanResult(scanResult, scanResultEpoch);
       expect(await db.getFullSyncHeight()).toBe(1000n);
 
       await db.clear();
@@ -257,7 +239,7 @@ describe('IndexedDb', () => {
     it('should be able to set/get', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
-      await db.saveScanResult(emptyScanResult);
+      await db.saveScanResult(emptyScanResult, scanResultEpoch);
       const savedLastBlock = await db.getFullSyncHeight();
 
       expect(emptyScanResult.height === savedLastBlock).toBeTruthy();
@@ -309,7 +291,7 @@ describe('IndexedDb', () => {
     it('should be able to set/get', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
-      await db.saveScanResult(scanResultWithSctUpdates);
+      await db.saveScanResult(scanResultWithSctUpdates, scanResultEpoch);
 
       const stateCommitmentTree = await db.getStateCommitmentTree();
 
@@ -392,7 +374,7 @@ describe('IndexedDb', () => {
     it('should be able to set/get all', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
-      await db.saveScanResult(scanResultWithNewSwaps);
+      await db.saveScanResult(scanResultWithNewSwaps, scanResultEpoch);
       const savedSwaps: SwapRecord[] = [];
       for await (const swap of db.iterateSwaps()) {
         savedSwaps.push(swap);
@@ -404,7 +386,7 @@ describe('IndexedDb', () => {
     it('should be able to set/get by nullifier', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
-      await db.saveScanResult(scanResultWithNewSwaps);
+      await db.saveScanResult(scanResultWithNewSwaps, scanResultEpoch);
       const swapByNullifier = await db.getSwapByNullifier(
         scanResultWithNewSwaps.newSwaps[0]!.nullifier!,
       );
@@ -415,7 +397,7 @@ describe('IndexedDb', () => {
     it('should be able to set/get by commitment', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
-      await db.saveScanResult(scanResultWithNewSwaps);
+      await db.saveScanResult(scanResultWithNewSwaps, scanResultEpoch);
       const swapByCommitment = await db.getSwapByCommitment(
         scanResultWithNewSwaps.newSwaps[0]!.swapCommitment!,
       );

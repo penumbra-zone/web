@@ -55,6 +55,11 @@ export const scanResultWithSctUpdates: ScanBlockResult = {
   },
 };
 
+export const scanResultEpoch = new Epoch({
+  index: 10n,
+  startHeight: 999n,
+});
+
 export const scanResultWithNewSwaps: ScanBlockResult = {
   height: 1092n,
   newNotes: [],
