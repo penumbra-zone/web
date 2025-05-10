@@ -9,6 +9,10 @@ import {
   DutchAuction,
 } from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
 import { CompactBlock } from '@penumbra-zone/protobuf/penumbra/core/component/compact_block/v1/compact_block_pb';
+import {
+  CurrentGasPricesRequest,
+  CurrentGasPricesResponse,
+} from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
 import { LqtCheckNullifierResponse } from '@penumbra-zone/protobuf/penumbra/core/component/funding/v1/funding_pb';
 import {
   Nullifier,
@@ -92,4 +96,8 @@ export interface SctQuerierInterface {
 
 export interface FundingQuerierInterface {
   lqtCheckNullifier(epochIndex: bigint, nullifier: Nullifier): Promise<LqtCheckNullifierResponse>;
+}
+
+export interface FeeQuerierInterface {
+  currentGasPrices(req: CurrentGasPricesRequest): Promise<CurrentGasPricesResponse>;
 }

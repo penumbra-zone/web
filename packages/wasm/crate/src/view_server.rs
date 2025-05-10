@@ -3,9 +3,7 @@ use std::collections::BTreeMap;
 use indexed_db_futures::IdbDatabase;
 use penumbra_compact_block::{CompactBlock, StatePayload};
 use penumbra_keys::{Address, FullViewingKey};
-use penumbra_proto::crypto::tct::v1::MerkleRoot;
 use penumbra_proto::DomainType;
-use penumbra_proto::Message;
 use penumbra_sct::Nullifier;
 use penumbra_shielded_pool::note;
 use penumbra_tct as tct;
@@ -23,9 +21,6 @@ use crate::note_record::SpendableNoteRecord;
 use crate::storage::{init_idb_storage, Storage};
 use crate::swap_record::SwapRecord;
 use crate::utils;
-// use wasm_bindgen_test::console_log;
-// use ibc_types::core::commitment::MerkleProof;
-// use ibc_types::DomainType as _;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct StoredTree {
@@ -90,9 +85,39 @@ impl ViewServer {
         utils::set_panic_hook();
 
         let fvk: FullViewingKey = FullViewingKey::decode(full_viewing_key)?;
+        let constants = serde_wasm_bindgen::from_value(idb_constants)?;
         let stored_tree: StoredTree = serde_wasm_bindgen::from_value(stored_tree)?;
         let tree = load_tree(stored_tree);
+
+        let view_server = Self {
+            latest_height: u64::MAX,
+            fvk,
+            notes: Default::default(),
+            sct: tree,
+            swaps: Default::default(),
+            storage: init_idb_storage(constants).await?,
+            last_position: None,
+            last_forgotten: None,
+        };
+        Ok(view_server)
+    }
+
+    /// Create new instances of `ViewServer` from SCT frontier snapshot.
+    #[wasm_bindgen]
+    pub async fn new_snapshot(
+        full_viewing_key: &[u8],
+        idb_constants: JsValue,
+        compact_frontier: &[u8],
+    ) -> WasmResult<ViewServer> {
+        utils::set_panic_hook();
+
+        let fvk: FullViewingKey = FullViewingKey::decode(full_viewing_key)?;
         let constants = serde_wasm_bindgen::from_value(idb_constants)?;
+
+        let tree: Tree = bincode::deserialize(&compact_frontier)
+            .map_err(|e| JsValue::from_str(&format!("Failed to deserialize frontier: {}", e)))
+            .expect("frontier snapshot");
+
         let view_server = Self {
             latest_height: u64::MAX,
             fvk,
@@ -113,11 +138,7 @@ impl ViewServer {
     /// Use `flush_updates()` to get the scan results
     /// Returns: `bool`
     #[wasm_bindgen]
-    pub async fn scan_block(
-        &mut self,
-        compact_block: &[u8],
-        skip_trial_decrypt: bool,
-    ) -> WasmResult<bool> {
+    pub async fn scan_block(&mut self, compact_block: &[u8]) -> WasmResult<bool> {
         utils::set_panic_hook();
 
         let block = CompactBlock::decode(compact_block)?;
@@ -133,20 +154,14 @@ impl ViewServer {
         for state_payload in &block.state_payloads {
             match state_payload {
                 StatePayload::Note { note: payload, .. } => {
-                    let note_opt = (!skip_trial_decrypt)
-                        .then(|| payload.trial_decrypt(&self.fvk))
-                        .flatten();
-                    if let Some(note) = note_opt {
+                    if let Some(note) = payload.trial_decrypt(&self.fvk) {
                         // It's safe to avoid recomputing the note commitment here because
                         // trial_decrypt checks that the decrypted data is consistent
                         note_advice.insert(payload.note_commitment, note);
                     }
                 }
                 StatePayload::Swap { swap: payload, .. } => {
-                    let swap_opt = (!skip_trial_decrypt)
-                        .then(|| payload.trial_decrypt(&self.fvk))
-                        .flatten();
-                    if let Some(swap) = swap_opt {
+                    if let Some(swap) = payload.trial_decrypt(&self.fvk) {
                         // It's safe to avoid recomputing the note commitment here because
                         // trial_decrypt checks that the decrypted data is consistent
                         swap_advice.insert(payload.commitment, swap);
@@ -319,44 +334,6 @@ impl ViewServer {
 
         let address: Address = Address::decode(address)?;
         Ok(is_controlled_inner(&self.fvk, &address))
-    }
-
-    /// Decodes the compact frontrier and loads it into the view server
-    #[wasm_bindgen]
-    pub fn frontier(
-        &self,
-        compact_frontier: &[u8],
-        anchor: &[u8],
-        _height: u64,
-    ) -> Result<(), JsValue> {
-        utils::set_panic_hook();
-
-        // Try to deserialize using bincode
-        let _tree: Tree = match bincode::deserialize(compact_frontier) {
-            Ok(tree) => tree,
-            Err(e) => {
-                return Err(JsValue::from_str(&format!(
-                    "Failed to deserialize tree: {}",
-                    e
-                )))
-            }
-        };
-
-        let _anchor: MerkleRoot = match MerkleRoot::decode(anchor) {
-            Ok(anchor) => anchor,
-            Err(e) => {
-                return Err(JsValue::from_str(&format!(
-                    "Failed to decode anchor: {}",
-                    e
-                )))
-            }
-        };
-
-        // todo: verify merkle inclusion proof
-
-        // todo: store tree in view server state
-
-        Ok(())
     }
 }
 
