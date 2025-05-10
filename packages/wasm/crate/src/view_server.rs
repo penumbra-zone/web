@@ -138,7 +138,11 @@ impl ViewServer {
     /// Use `flush_updates()` to get the scan results
     /// Returns: `bool`
     #[wasm_bindgen]
-    pub async fn scan_block(&mut self, compact_block: &[u8]) -> WasmResult<bool> {
+    pub async fn scan_block(
+        &mut self,
+        compact_block: &[u8],
+        skip_trial_decrypt: bool,
+    ) -> WasmResult<bool> {
         utils::set_panic_hook();
 
         let block = CompactBlock::decode(compact_block)?;
@@ -154,14 +158,20 @@ impl ViewServer {
         for state_payload in &block.state_payloads {
             match state_payload {
                 StatePayload::Note { note: payload, .. } => {
-                    if let Some(note) = payload.trial_decrypt(&self.fvk) {
+                    let note_opt = (!skip_trial_decrypt)
+                        .then(|| payload.trial_decrypt(&self.fvk))
+                        .flatten();
+                    if let Some(note) = note_opt {
                         // It's safe to avoid recomputing the note commitment here because
                         // trial_decrypt checks that the decrypted data is consistent
                         note_advice.insert(payload.note_commitment, note);
                     }
                 }
                 StatePayload::Swap { swap: payload, .. } => {
-                    if let Some(swap) = payload.trial_decrypt(&self.fvk) {
+                    let swap_opt = (!skip_trial_decrypt)
+                        .then(|| payload.trial_decrypt(&self.fvk))
+                        .flatten();
+                    if let Some(swap) = swap_opt {
                         // It's safe to avoid recomputing the note commitment here because
                         // trial_decrypt checks that the decrypted data is consistent
                         swap_advice.insert(payload.commitment, swap);

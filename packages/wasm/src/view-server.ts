@@ -74,9 +74,9 @@ export class ViewServer implements ViewServerInterface {
   // Decrypts blocks with viewing key for notes, swaps, and updates revealed for user
   // Makes update to internal state-commitment-tree as a side effect.
   // Should extract updates via this.flushUpdates().
-  async scanBlock(compactBlock: CompactBlock): Promise<boolean> {
+  async scanBlock(compactBlock: CompactBlock, skipTrialDecrypt: boolean): Promise<boolean> {
     const block = compactBlock.toBinary();
-    return this.wasmViewServer.scan_block(block);
+    return this.wasmViewServer.scan_block(block, skipTrialDecrypt);
   }
 
   // Resets the state of the wasmViewServer to the one set in storage

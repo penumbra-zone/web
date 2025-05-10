@@ -4,7 +4,7 @@ import { MerkleRoot } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_p
 import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 export interface ViewServerInterface {
-  scanBlock(compactBlock: CompactBlock): Promise<boolean>;
+  scanBlock(compactBlock: CompactBlock, skipTrialDecrypt: boolean): Promise<boolean>;
 
   flushUpdates(): ScanBlockResult;
 
