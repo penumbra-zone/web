@@ -104,7 +104,12 @@ export const usePersonalRewards = (
 
   const query = useQuery({
     queryKey: ['total-voting-rewards', subaccount, page, limit, sortKey, sortDirection],
-    enabled: connectionStore.connected && !!epoch && !!blockHeight && !disabled,
+    enabled:
+      connectionStore.connected &&
+      !!epoch &&
+      !!blockHeight &&
+      subaccount !== undefined &&
+      !disabled,
     queryFn: async () =>
       fetchRewards(
         {
