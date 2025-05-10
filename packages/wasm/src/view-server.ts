@@ -19,10 +19,13 @@ declare global {
   var __DEV__: boolean | undefined;
 }
 
-interface ViewServerProps {
+interface BaseViewServerProps {
   fullViewingKey: FullViewingKey;
   getStoredTree: () => Promise<StateCommitmentTree>;
   idbConstants: IdbConstants;
+}
+
+interface SnapshotViewServerProps extends BaseViewServerProps {
   compact_frontier: SctFrontierResponse;
 }
 
@@ -45,14 +48,25 @@ export class ViewServer implements ViewServerInterface {
     fullViewingKey,
     getStoredTree,
     idbConstants,
-    compact_frontier,
-  }: ViewServerProps): Promise<ViewServer> {
-    
+  }: BaseViewServerProps): Promise<ViewServer> {
     const wvs = await WasmViewServer.new(
       fullViewingKey.toBinary(),
       await getStoredTree(),
       idbConstants,
-      compact_frontier ?? undefined,
+    );
+    return new this(wvs, fullViewingKey, getStoredTree, idbConstants);
+  }
+
+  static async initialize_from_snapshot({
+    fullViewingKey,
+    getStoredTree,
+    idbConstants,
+    compact_frontier,
+  }: SnapshotViewServerProps): Promise<ViewServer> {
+    const wvs = await WasmViewServer.new_snapshot(
+      fullViewingKey.toBinary(),
+      idbConstants,
+      compact_frontier.compactFrontier,
     );
     return new this(wvs, fullViewingKey, getStoredTree, idbConstants);
   }
@@ -60,9 +74,9 @@ export class ViewServer implements ViewServerInterface {
   // Decrypts blocks with viewing key for notes, swaps, and updates revealed for user
   // Makes update to internal state-commitment-tree as a side effect.
   // Should extract updates via this.flushUpdates().
-  async scanBlock(compactBlock: CompactBlock, skipTrialDecrypt: boolean): Promise<boolean> {
-    const res = compactBlock.toBinary();
-    return this.wasmViewServer.scan_block(res, skipTrialDecrypt);
+  async scanBlock(compactBlock: CompactBlock): Promise<boolean> {
+    const block = compactBlock.toBinary();
+    return this.wasmViewServer.scan_block(block);
   }
 
   // Resets the state of the wasmViewServer to the one set in storage
@@ -71,7 +85,6 @@ export class ViewServer implements ViewServerInterface {
       this.fullViewingKey.toBinary(),
       await this.getStoredTree(),
       this.idbConstants,
-      undefined
     );
   }
 
@@ -97,14 +110,5 @@ export class ViewServer implements ViewServerInterface {
 
   isControlledAddress(address: Address): boolean {
     return isControlledAddress(this.fullViewingKey, address);
-  }
-
-  async getSctFrontier(frontier: SctFrontierResponse) {
-    // `compactFrontier` already contains binary data that was serialized on the server side
-    return this.wasmViewServer.load_frontier(
-      frontier.compactFrontier,
-      frontier.anchor?.toBinary()!,
-      frontier.height,
-    );
   }
 }

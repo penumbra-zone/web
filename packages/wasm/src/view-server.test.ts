@@ -30,7 +30,7 @@ describe('wasmViewServer', () => {
       },
     };
 
-    const vsServer = ViewServer.new(fullViewingKey.toBinary(), storedTree, idbConstants, undefined);
+    const vsServer = ViewServer.new(fullViewingKey.toBinary(), storedTree, idbConstants);
     await expect(vsServer).resolves.not.toThrow();
   });
 });
