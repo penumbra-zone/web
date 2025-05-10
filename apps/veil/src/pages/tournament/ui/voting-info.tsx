@@ -39,23 +39,24 @@ export const useVotingInfo = (defaultEpoch?: number) => {
   const isDelegated = !!delegations?.length;
 
   const votingNote = useMemo(() => {
-    const values = (notes ?? []).map(note => note.noteRecord?.note?.value).filter(item => !!item);
-
-    const amount = values.reduce(
-      (accum, current) => {
-        if (current.amount) {
-          return addAmounts(accum, current.amount);
-        }
-        return accum;
-      },
-      new Amount({ lo: 0n, hi: 0n }),
-    );
-
-    const metadata = values[0]?.assetId && getMetadata(values[0].assetId);
-
-    if (!values.length || !metadata) {
+    if (!notes?.length) {
       return undefined;
     }
+
+    const values = notes.flatMap(n => n.noteRecord?.note?.value ?? []);
+    if (!values.length) {
+      return undefined;
+    }
+
+    const metadata = values[0]?.assetId && getMetadata(values[0].assetId);
+    if (!metadata) {
+      return undefined;
+    }
+
+    const amount = values.reduce(
+      (accum, current) => (current.amount ? addAmounts(accum, current.amount) : accum),
+      new Amount({ lo: 0n, hi: 0n }),
+    );
 
     return new ValueView({
       valueView: {
@@ -64,8 +65,7 @@ export const useVotingInfo = (defaultEpoch?: number) => {
           amount,
           metadata: {
             ...metadata,
-            // noted can represent delUM from different validators,
-            // so this symbol hides the validator
+            // notes may come from different validators, so hide the validator-specific symbol
             symbol: 'delUM',
           },
         },
