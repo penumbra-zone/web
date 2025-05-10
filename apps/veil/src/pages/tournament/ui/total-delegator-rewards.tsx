@@ -3,18 +3,19 @@ import { TableCell } from '@penumbra-zone/ui/TableCell';
 import { Density } from '@penumbra-zone/ui/Density';
 import { connectionStore } from '@/shared/model/connection';
 import { usePersonalRewards, BASE_LIMIT, BASE_PAGE } from '../api/use-personal-rewards';
-import { DelegatorHistorySortKey } from '../server/delegator-history';
-import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { DelegatorHistorySortKey, LqtDelegatorHistoryData } from '../server/delegator-history';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { Button } from '@penumbra-zone/ui/Button';
 import { ChevronRight } from 'lucide-react';
 import { useStakingTokenMetadata } from '@/shared/api/registry';
 import { useCurrentEpoch } from '@/pages/tournament/api/use-current-epoch';
-import { pnum } from '@penumbra-zone/types/pnum';
 import { useTournamentSummary } from '../api/use-tournament-summary';
 import { ReactNode, useState } from 'react';
 import { Pagination } from '@penumbra-zone/ui/Pagination';
 import { useSortableTableHeaders } from './sortable-table-header';
+import { LqtSummary } from '@/shared/database/schema';
+import { useGetMetadata } from '@/shared/api/assets';
+import { toValueView } from '@/shared/utils/value-view';
 
 interface LayoutProps {
   getTableHeader: (key: 'epoch' | 'reward', label: string) => ReactNode;
@@ -33,6 +34,25 @@ const Layout = observer(({ getTableHeader, children }: React.PropsWithChildren<L
         {children}
       </div>
     </Density>
+  );
+});
+
+interface RewardCellProps {
+  reward: LqtDelegatorHistoryData;
+  summary: LqtSummary;
+}
+
+const RewardCell = observer(({ reward, summary }: RewardCellProps) => {
+  const getMetadata = useGetMetadata();
+  const assetId = reward.asset_id;
+  const amount = reward.reward;
+  const metadata = getMetadata(assetId);
+  const valueView = toValueView(metadata ? { metadata, amount } : { assetId, amount });
+  return (
+    <TableCell cell>
+      <span className='font-mono'>{`${((reward.power / summary.total_voting_power) * 100).toFixed(3)}% for `}</span>
+      <ValueViewComponent showValue={false} valueView={valueView} />
+    </TableCell>
   );
 });
 
@@ -116,15 +136,7 @@ export const VotingRewards = observer(() => {
             throw new Error(`IMPOSSIBLE: no tournament summary at epoch: ${epoch}`);
           }
 
-          const rewardView = new ValueView({
-            valueView: {
-              case: 'knownAssetId',
-              value: {
-                amount: pnum(reward.reward).toAmount(),
-                metadata: stakingToken,
-              },
-            },
-          });
+          const rewardView = toValueView({ amount: reward.reward, metadata: stakingToken });
 
           const rowKey = `epoch-${epoch}`;
 
@@ -132,9 +144,7 @@ export const VotingRewards = observer(() => {
             <div key={rowKey} className='grid grid-cols-subgrid col-span-4'>
               <TableCell cell>{`Epoch #${epoch}`}</TableCell>
 
-              <TableCell cell>
-                {((reward.power / matchingSummary.total_voting_power) * 100).toFixed(3) + '%'}
-              </TableCell>
+              <RewardCell reward={reward} summary={matchingSummary} />
 
               <TableCell cell>
                 <ValueViewComponent valueView={rewardView} priority='tertiary' />
