@@ -32,14 +32,11 @@ function LpRewardRow({
   umMetadata: Metadata | undefined;
 }) {
   const router = useRouter();
-  const [isHoveringWithdraw, setIsHoveringWithdraw] = useState(false);
 
   return (
     <div
       onClick={() => {
-        if (!isHoveringWithdraw) {
-          router.push(`/inspect/lp/${bech32mPositionId(lpReward.positionId)}`);
-        }
+        router.push(`/inspect/lp/${bech32mPositionId(lpReward.positionId)}`);
       }}
       className='grid grid-cols-subgrid col-span-5 hover:bg-action-hoverOverlay transition-colors cursor-pointer'
     >
@@ -75,18 +72,14 @@ function LpRewardRow({
       <TableCell cell loading={loading}>
         {(lpReward.isWithdrawable || lpReward.isWithdrawn) && (
           <Density slim>
-            <div
-              onMouseEnter={lpReward.isWithdrawable ? () => setIsHoveringWithdraw(true) : undefined}
-              onMouseLeave={
-                lpReward.isWithdrawable ? () => setIsHoveringWithdraw(false) : undefined
-              }
-            >
+            <div>
               <Button
                 priority='primary'
                 disabled={!lpReward.isWithdrawable}
                 onClick={
                   lpReward.isWithdrawable
-                    ? () => {
+                    ? e => {
+                        e.stopPropagation();
                         void withdrawPositions([
                           { position: lpReward.position, id: lpReward.positionId },
                         ]);
