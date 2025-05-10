@@ -46,7 +46,7 @@ export const DelegatorTotalRewards = observer(() => {
 
   const {
     totalRewards,
-    query: { isLoading: isRewardsLoading, status },
+    query: { isLoading: isRewardsLoading },
   } = usePersonalRewards(subaccount, epoch, epochLoading);
 
   const { data: stakingToken, isLoading: isTokenLoading } = useStakingTokenMetadata();
@@ -58,12 +58,7 @@ export const DelegatorTotalRewards = observer(() => {
 
   // Check if we have all the data needed to display rewards
   const isLoading = isLpRewardsLoading || isRewardsLoading || isTokenLoading;
-  const hasCompleteData =
-    !isLoading &&
-    lpRewards?.totalRewards !== undefined &&
-    totalRewards !== undefined &&
-    stakingToken;
-  const isReady = !isRewardsLoading && !isTokenLoading && status === 'success';
+  const isReady = !isLoading && lpRewards?.totalRewards !== undefined && !isRewardsLoading;
 
   // Memoize the reward view to prevent unnecessary recalculations
   const rewardView = useMemo(() => {
@@ -77,12 +72,12 @@ export const DelegatorTotalRewards = observer(() => {
       valueView: {
         case: 'knownAssetId',
         value: {
-          amount: pnum(lpRewards?.totalRewards ?? 0 + rewardsValue).toAmount(),
+          amount: pnum(lpRewards.totalRewards + rewardsValue).toAmount(),
           metadata: stakingToken,
         },
       },
     });
-  }, [hasCompleteData, lpRewards?.totalRewards, totalRewards, stakingToken]);
+  }, [isReady, lpRewards?.totalRewards, totalRewards, stakingToken]);
 
   // Only check for zero when we have valid data
   const isTotalZero = !rewardView || isZero(getAmount(rewardView));
