@@ -1048,7 +1048,7 @@ export class IndexedDb implements IndexedDbInterface {
       txs.add({ table: 'TREE_HASHES', value: h });
     }
 
-    // TODO: What about updates.delete_ranges?
+    // TODO: What about updates.delete_ranges (https://github.com/penumbra-zone/web/issues/818)?
   }
 
   private addNewNotes(txs: IbdUpdates, notes: SpendableNoteRecord[]): void {
