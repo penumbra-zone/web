@@ -19,8 +19,11 @@
       "cache": false
     },
     "build": {
-      "dependsOn": ["compile", "proto", "^build"],
-      "outputs": ["dist/**", "*.tsbuildinfo"]
+      "dependsOn": ["compile", "proto", "^build", "^keys"],
+      "outputs": ["dist/**", "keys/*.bin", "*.tsbuildinfo", ".next/**"]
+    },
+    "keys": {
+      "outputs": ["keys/*.bin"]
     },
     "proto": {
       "dependsOn": ["^proto"],
@@ -32,6 +35,7 @@
       "dependsOn": ["//#clean:vitest-mjs"]
     },
     "compile": {
+      "dependsOn": ["^keys"],
       "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock"],
       "outputs": ["wasm/**"]
     },
@@ -44,7 +48,8 @@
       "persistent": true
     },
     "dev:pack": {
-      "dependsOn": ["build"],
+      "dependsOn": ["compile", "proto"],
+      "outputs": ["dist/**", "*.tsbuildinfo"],
       "persistent": true
     },
     "format": {
@@ -59,15 +64,15 @@
       "persistent": true
     },
     "lint": {
-      "dependsOn": ["//#lint:syncpack", "//#lint:prettier", "compile", "proto"],
+      "dependsOn": ["//#lint:syncpack", "//#lint:prettier", "build"],
       "inputs": ["components", "lib", "src", "wasm", "package.json"]
     },
     "lint:strict": {
-      "dependsOn": ["//#lint:syncpack", "//#lint:prettier", "compile", "proto"],
+      "dependsOn": ["//#lint:syncpack", "//#lint:prettier", "build"],
       "cache": false
     },
     "lint:fix": {
-      "dependsOn": ["compile", "proto"],
+      "dependsOn": ["build"],
       "cache": false
     },
     "lint:rust": {
@@ -76,13 +81,14 @@
     },
     "test": {
       "cache": false,
-      "dependsOn": ["compile", "proto"]
+      "dependsOn": ["build"]
     },
     "test:wasm": {
       "dependsOn": ["compile"],
       "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock", "crate/tests/**"]
     },
     "test:cargo": {
+      "dependsOn": ["^keys"],
       "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock", "crate/tests/**"]
     }
   }

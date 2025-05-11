@@ -1,5 +1,6 @@
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
 import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 
 const u8 = (length: number) => Uint8Array.from({ length }, () => Math.floor(Math.random() * 256));
 const validatorIk = { ik: u8(32) };
@@ -53,15 +54,78 @@ export const PENUMBRA_METADATA = new Metadata({
       svg: 'https://raw.githubusercontent.com/prax-wallet/registry/main/images/um.svg',
     },
   ],
+  badges: [
+    {
+      svg: 'https://raw.githubusercontent.com/prax-wallet/registry/refs/heads/main/images/full-moon-face.svg',
+    },
+  ],
+});
+
+export const USDC_METADATA = new Metadata({
+  description: 'USD Coin',
+  denomUnits: [
+    {
+      denom: 'transfer/channel-2/uusdc',
+    },
+    {
+      denom: 'transfer/channel-2/usdc',
+      exponent: 6,
+    },
+  ],
+  base: 'transfer/channel-2/uusdc',
+  display: 'transfer/channel-2/usdc',
+  name: 'USDC',
+  symbol: 'USDC',
+  penumbraAssetId: {
+    inner: base64ToUint8Array('drPksQaBNYwSOzgfkGOEdrd4kEDkeALeh58Ps+7cjQs='),
+  },
+  images: [
+    {
+      png: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/usdc.png',
+      svg: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/usdc.svg',
+      theme: {
+        primaryColorHex: '#2775CA',
+        circle: true,
+      },
+    },
+  ],
+  badges: [
+    {
+      svg: 'https://raw.githubusercontent.com/prax-wallet/registry/refs/heads/main/images/pizza.svg',
+    },
+  ],
+  priorityScore: 800000000100n,
+  coingeckoId: 'usd-coin',
 });
 
 export const OSMO_METADATA = new Metadata({
-  symbol: 'OSMO',
+  description: 'The native token of Osmosis',
+  denomUnits: [
+    {
+      denom: 'transfer/channel-4/uosmo',
+    },
+    {
+      denom: 'transfer/channel-4/osmo',
+      exponent: 6,
+    },
+  ],
+  base: 'transfer/channel-4/uosmo',
+  display: 'transfer/channel-4/osmo',
   name: 'Osmosis',
-  penumbraAssetId: new AssetId({ inner: u8(32) }),
-  base: 'uosmo',
-  display: 'osmo',
-  denomUnits: [{ denom: 'uosmo' }, { denom: 'osmo', exponent: 6 }],
+  symbol: 'OSMO',
+  penumbraAssetId: {
+    inner: base64ToUint8Array('KSOgqHs6JCHxZcyFPb9zqb2vtdoNlIVktgWcsCF8RAc='),
+  },
+  images: [
+    {
+      png: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/osmo.png',
+      svg: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/osmo.svg',
+      theme: {
+        primaryColorHex: '#760dbb',
+      },
+    },
+  ],
+  priorityScore: 800000000099n,
 });
 
 export const PIZZA_METADATA = new Metadata({
@@ -75,4 +139,24 @@ export const PIZZA_METADATA = new Metadata({
 
 export const UNKNOWN_TOKEN_METADATA = new Metadata({
   penumbraAssetId: { inner: new Uint8Array([]) },
+});
+
+export const LPNFT_METADATA = Metadata.fromJson({
+  name: '',
+  description: '',
+  base: 'lpnft_opened_plpid1m6ur4fdafnmv2fp65rvwxhx6gztm4pghczesxs4xy89se85gqn3qv4sdjp',
+  display: 'lpnft_opened_plpid1m6ur4fdafnmv2fp65rvwxhx6gztm4pghczesxs4xy89se85gqn3qv4sdjp',
+  symbol: 'lpNft:opened(m6ur4fdafnmv2fp65rvwxhx6gztm4pghczesxs4xy89se85gqn3qv4sdjp)',
+  images: [],
+  priorityScore: '30',
+  denomUnits: [
+    {
+      denom: 'lpnft_opened_plpid1m6ur4fdafnmv2fp65rvwxhx6gztm4pghczesxs4xy89se85gqn3qv4sdjp',
+      exponent: 0,
+      aliases: [],
+    },
+  ],
+  penumbraAssetId: {
+    inner: 'rtchIR1VaNZpAxSMh7+Wf2VU8Kfs9b5qDE+kMTGsRww=',
+  },
 });

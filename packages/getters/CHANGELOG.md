@@ -1,5 +1,57 @@
 # @penumbra-zone/getters
 
+## 26.0.0
+
+### Patch Changes
+
+- Updated dependencies [93f1d05]
+  - @penumbra-zone/protobuf@10.0.0
+  - @penumbra-zone/bech32m@16.0.0
+
+## 25.0.1
+
+### Patch Changes
+
+- 405b5b1: Fix swap ActionViews not rendering values correctly
+
+## 25.0.0
+
+### Patch Changes
+
+- Updated dependencies [15d768f]
+  - @penumbra-zone/protobuf@9.0.0
+  - @penumbra-zone/bech32m@15.0.0
+
+## 24.1.0
+
+### Minor Changes
+
+- d0cc2ee: Implement `SwapClaim` action view
+
+## 24.0.0
+
+### Patch Changes
+
+- Updated dependencies [49ae3ab]
+  - @penumbra-zone/protobuf@8.0.0
+  - @penumbra-zone/bech32m@14.0.0
+
+## 23.0.0
+
+### Patch Changes
+
+- Updated dependencies [68b8f36]
+  - @penumbra-zone/protobuf@7.2.0
+  - @penumbra-zone/bech32m@13.0.0
+
+## 22.0.0
+
+### Patch Changes
+
+- Updated dependencies [29dd11a]
+  - @penumbra-zone/protobuf@7.1.0
+  - @penumbra-zone/bech32m@12.0.0
+
 ## 21.0.0
 
 ### Patch Changes

@@ -16,8 +16,12 @@ import { transactionInfo } from './transaction-info.js';
 import { fvkCtx } from '../ctx/full-viewing-key.js';
 
 const mockTransactionInfo = vi.hoisted(() => vi.fn());
+const mockTransactionSummary = vi.hoisted(() => vi.fn());
+const mockSaveTransactionInfo = vi.hoisted(() => vi.fn());
 vi.mock('@penumbra-zone/wasm/transaction', () => ({
   generateTransactionInfo: mockTransactionInfo,
+  generateTransactionSummary: mockTransactionSummary,
+  saveTransactionInfo: mockSaveTransactionInfo,
 }));
 
 describe('TransactionInfo request handler', () => {
@@ -37,6 +41,12 @@ describe('TransactionInfo request handler', () => {
     mockIndexedDb = {
       iterateTransactions: () => mockIterateTransactionInfo,
       constants: vi.fn(),
+      getTransactionInfo: vi.fn().mockResolvedValue({
+        txp: {},
+        txv: {},
+        summary: {},
+      }),
+      saveTransactionInfo: vi.fn().mockResolvedValue(undefined),
     };
 
     mockServices = {
@@ -86,7 +96,7 @@ describe('TransactionInfo request handler', () => {
     for await (const res of transactionInfo(req, mockCtx)) {
       responses.push(new TransactionInfoResponse(res));
     }
-    expect(responses.length).toBe(3);
+    expect(responses.length).toBe(4);
   });
 
   test('should receive only transactions whose height is not less than startHeight', async () => {
@@ -95,7 +105,7 @@ describe('TransactionInfo request handler', () => {
     for await (const res of transactionInfo(req, mockCtx)) {
       responses.push(new TransactionInfoResponse(res));
     }
-    expect(responses.length).toBe(2);
+    expect(responses.length).toBe(4);
   });
 
   test('should receive only transactions whose height is between startHeight and endHeight inclusive', async () => {
@@ -105,7 +115,7 @@ describe('TransactionInfo request handler', () => {
     for await (const res of transactionInfo(req, mockCtx)) {
       responses.push(new TransactionInfoResponse(res));
     }
-    expect(responses.length).toBe(2);
+    expect(responses.length).toBe(4);
   });
 });
 

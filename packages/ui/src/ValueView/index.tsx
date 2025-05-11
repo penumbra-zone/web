@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { Plus, Minus } from 'lucide-react';
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getMetadata } from '@penumbra-zone/getters/value-view';
 import { ConditionalWrap } from '../ConditionalWrap';
@@ -14,15 +15,34 @@ import { pnum } from '@penumbra-zone/types/pnum';
 type Context = 'default' | 'table';
 
 const ValueText = ({ children, density }: { children: ReactNode; density: Density }) => {
-  if (density === 'sparse') {
-    return <Text body>{children}</Text>;
-  }
-
   if (density === 'slim') {
     return <Text detailTechnical>{children}</Text>;
   }
 
-  return <Text detail>{children}</Text>;
+  if (density === 'compact') {
+    return <Text smallTechnical>{children}</Text>;
+  }
+
+  return <Text technical>{children}</Text>;
+};
+
+const getSignColor = (signed?: ValueViewComponentProps<Context>['signed']): string => {
+  if (!signed) {
+    return '';
+  }
+  return signed === 'positive' ? 'text-success-light' : 'text-destructive-light';
+};
+
+const getSign = (signed: ValueViewComponentProps<Context>['signed']) => {
+  const classes = cn('inline size-3', getSignColor(signed));
+  return signed === 'positive' ? <Plus className={classes} /> : <Minus className={classes} />;
+};
+
+const getPosition = (density: Density, priority: PillProps['priority']): string => {
+  if (density === 'slim') {
+    return priority === 'tertiary' ? '' : '-ml-1';
+  }
+  return '-ml-2';
 };
 
 export interface ValueViewComponentProps<SelectedContext extends Context> {
@@ -39,6 +59,11 @@ export interface ValueViewComponentProps<SelectedContext extends Context> {
    * numeraire.
    */
   priority?: PillProps['priority'];
+  /**
+   * Renders the plus or minus sign in front of a number and colors it green or red depending on the sign.
+   * If `undefined`, renders in without a sign and in regular color.
+   */
+  signed?: 'positive' | 'negative';
   /**
    * If true, the asset icon will be visible.
    */
@@ -77,6 +102,7 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
   valueView,
   context,
   priority = 'primary',
+  signed,
   showIcon = true,
   showSymbol = true,
   abbreviate = false,
@@ -104,9 +130,7 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
       if={!context || context === 'default'}
       then={children => (
         <Pill priority={priority}>
-          <div className={cn('-ml-2', density === 'sparse' ? 'mt-0 mb-0' : '-mt-1 -mb-1')}>
-            {children}
-          </div>
+          <div className={getPosition(density, priority)}>{children}</div>
         </Pill>
       )}
       else={children => (
@@ -120,7 +144,7 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
       <span className={cn('flex w-max max-w-full items-center text-ellipsis', getGap(density))}>
         {showIcon && (
           <div className='shrink-0'>
-            <AssetIcon size={getIconSize(density)} metadata={metadata} />
+            <AssetIcon hideBadge size={getIconSize(density)} metadata={metadata} />
           </div>
         )}
 
@@ -131,15 +155,17 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
               priority === 'secondary' &&
               'border-b-2 border-dashed border-other-tonalStroke',
             getGap(density),
+            getSignColor(signed),
           )}
         >
           {showValue && (
-            <div className='shrink grow' title={formattedAmount}>
+            <div className='flex shrink grow items-center' title={formattedAmount}>
+              {signed && getSign(signed)}
               <ValueText density={density}>{formattedAmount}</ValueText>
             </div>
           )}
           {showSymbol && (
-            <div className='shrink grow truncate' title={symbol}>
+            <div className='max-w-24 shrink grow truncate' title={symbol}>
               <ValueText density={density}>{symbol}</ValueText>
             </div>
           )}

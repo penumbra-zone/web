@@ -151,6 +151,10 @@ export default tseslint.config(
         { requireDefaultForNonUnion: true },
       ],
       eqeqeq: ['error', 'smart'],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrors: 'none' },
+      ],
     },
   },
 
@@ -241,6 +245,15 @@ export default tseslint.config(
 
       'react/prop-types': 'off', // unecessary for typescript codebase
       'react/react-in-jsx-scope': 'off', // unecessary for modern react
+
+      // unnecessary if default case for switch is present
+      '@typescript-eslint/switch-exhaustiveness-check': 'off',
+
+      // false-positive on non-deprecated fields
+      '@typescript-eslint/no-deprecated': 'off',
+
+      // TODO: needs rework – important rule
+      '@typescript-eslint/no-base-to-string': 'off',
     },
   },
 

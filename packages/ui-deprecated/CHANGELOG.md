@@ -1,5 +1,150 @@
 # @penumbra-zone/ui
 
+## 19.0.1
+
+### Patch Changes
+
+- Updated dependencies [085e855]
+  - @penumbra-zone/types@33.1.0
+  - @penumbra-zone/perspective@56.0.0
+
+## 19.0.0
+
+### Major Changes
+
+- 4a51a46: Upgrade to React 19
+
+## 18.0.0
+
+### Patch Changes
+
+- Updated dependencies [93f1d05]
+  - @penumbra-zone/protobuf@10.0.0
+  - @penumbra-zone/types@33.0.0
+  - @penumbra-zone/bech32m@16.0.0
+  - @penumbra-zone/perspective@55.0.0
+
+## 17.1.6
+
+### Patch Changes
+
+- @penumbra-zone/perspective@54.0.0
+
+## 17.1.5
+
+### Patch Changes
+
+- @penumbra-zone/perspective@53.0.2
+
+## 17.1.4
+
+### Patch Changes
+
+- Updated dependencies [405b5b1]
+  - @penumbra-zone/types@32.2.1
+  - @penumbra-zone/perspective@53.0.1
+
+## 17.1.3
+
+### Patch Changes
+
+- Updated dependencies [ce4c43e]
+  - @penumbra-zone/types@32.2.0
+  - @penumbra-zone/perspective@53.0.0
+
+## 17.1.2
+
+### Patch Changes
+
+- 80148ae: Fix bugs related to transaction history and transaction/action views
+- Updated dependencies [a5e14e9]
+- Updated dependencies [b0e0eef]
+- Updated dependencies [5c45f2c]
+- Updated dependencies [85022e1]
+- Updated dependencies [3c48120]
+  - @penumbra-zone/perspective@52.0.0
+  - @penumbra-zone/types@32.1.0
+
+## 17.1.1
+
+### Patch Changes
+
+- @penumbra-zone/perspective@51.0.0
+
+## 17.1.0
+
+### Minor Changes
+
+- e272767: minimal reversion to disable t-addr support in minifront
+
+## 17.0.0
+
+### Patch Changes
+
+- 2dac6ab: detect genesis sync state more accurately
+- Updated dependencies [15d768f]
+- Updated dependencies [aaaa775]
+  - @penumbra-zone/protobuf@9.0.0
+  - @penumbra-zone/types@32.0.0
+  - @penumbra-zone/perspective@50.0.0
+  - @penumbra-zone/bech32m@15.0.0
+
+## 16.0.1
+
+### Patch Changes
+
+- @penumbra-zone/perspective@49.0.0
+- @penumbra-zone/types@31.0.0
+
+## 16.0.0
+
+### Minor Changes
+
+- 49ae3ab: LQT integration in web packages
+
+### Patch Changes
+
+- Updated dependencies [49ae3ab]
+  - @penumbra-zone/protobuf@8.0.0
+  - @penumbra-zone/types@30.0.0
+  - @penumbra-zone/perspective@48.0.0
+  - @penumbra-zone/bech32m@14.0.0
+
+## 15.0.1
+
+### Patch Changes
+
+- Updated dependencies [e51bc61]
+  - @penumbra-zone/types@29.1.0
+  - @penumbra-zone/perspective@47.0.0
+
+## 15.0.0
+
+### Patch Changes
+
+- Updated dependencies [68b8f36]
+  - @penumbra-zone/protobuf@7.2.0
+  - @penumbra-zone/bech32m@13.0.0
+  - @penumbra-zone/perspective@46.0.0
+  - @penumbra-zone/types@29.0.0
+
+## 14.0.0
+
+### Patch Changes
+
+- Updated dependencies [6869c52]
+- Updated dependencies [29dd11a]
+  - @penumbra-zone/types@28.0.0
+  - @penumbra-zone/protobuf@7.1.0
+  - @penumbra-zone/bech32m@12.0.0
+  - @penumbra-zone/perspective@45.0.0
+
+## 13.0.2
+
+### Patch Changes
+
+- @penumbra-zone/perspective@44.0.0
+
 ## 13.0.1
 
 ### Patch Changes

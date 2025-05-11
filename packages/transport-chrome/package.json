@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/transport-chrome",
-  "version": "8.0.1",
+  "version": "9.0.0",
   "license": "(MIT OR Apache-2.0)",
   "description": "Tools for adapting `@penumbra-zone/transport` to Chrome's extension runtime messaging API",
   "type": "module",
@@ -18,28 +18,24 @@
   },
   "files": [
     "dist",
-    "!dist/*.test.*"
+    "!dist/*.test.*",
+    "!dist/util/test"
   ],
   "exports": {
-    "./*": "./src/*.ts"
-  },
-  "publishConfig": {
-    "exports": {
-      "./*": {
-        "types": "./dist/*.d.ts",
-        "default": "./dist/*.js"
-      }
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "default": "./dist/*.js"
     }
   },
   "devDependencies": {
     "@bufbuild/protobuf": "^1.10.0",
-    "@connectrpc/connect": "^1.4.0",
+    "@connectrpc/connect": "^1.6.1",
     "@penumbra-zone/transport-dom": "workspace:*",
     "@types/chrome": "^0.0.268"
   },
   "peerDependencies": {
     "@bufbuild/protobuf": "^1.10.0",
-    "@connectrpc/connect": "^1.4.0",
+    "@connectrpc/connect": "^1.6.1",
     "@penumbra-zone/transport-dom": "workspace:*"
   }
 }

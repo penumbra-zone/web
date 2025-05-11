@@ -22,6 +22,7 @@ use penumbra_transaction::view::action_view::{
     ActionView, DelegatorVoteView, OutputView, SpendView,
 };
 use penumbra_transaction::Action;
+use penumbra_transaction::TransactionView as TransactionViewComponent;
 use penumbra_transaction::{AuthorizationData, Transaction, WitnessData};
 use prost::Message;
 use rand_core::OsRng;
@@ -77,6 +78,10 @@ pub fn witness_inner(plan: TransactionPlan, stored_tree: StoredTree) -> WasmResu
         )
         .chain(
             plan.delegator_vote_plans()
+                .map(|vote_plan| vote_plan.staked_note.commit()),
+        )
+        .chain(
+            plan.lqt_vote_plans()
                 .map(|vote_plan| vote_plan.staked_note.commit()),
         )
         .collect();
@@ -383,4 +388,12 @@ async fn add_swap_claim_txn_to_perspective(
     }
 
     Ok(())
+}
+
+#[wasm_bindgen]
+pub async fn transaction_summary(txv: &[u8]) -> WasmResult<Vec<u8>> {
+    let transaction_view = TransactionViewComponent::decode(txv)?;
+    let tx_summary = transaction_view.summary();
+
+    Ok(tx_summary.encode_to_vec())
 }

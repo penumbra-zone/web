@@ -1,5 +1,46 @@
 # @penumbra-zone/client
 
+## 27.0.0
+
+### Patch Changes
+
+- Updated dependencies [93f1d05]
+  - @penumbra-zone/protobuf@10.0.0
+
+## 26.0.0
+
+### Patch Changes
+
+- Updated dependencies [521caaa]
+- Updated dependencies [a51a752]
+- Updated dependencies [521caaa]
+- Updated dependencies [ca71c02]
+- Updated dependencies [a11bfe3]
+- Updated dependencies [15d768f]
+  - @penumbra-zone/transport-dom@7.5.1
+  - @penumbra-zone/protobuf@9.0.0
+
+## 25.0.0
+
+### Patch Changes
+
+- Updated dependencies [49ae3ab]
+  - @penumbra-zone/protobuf@8.0.0
+
+## 24.0.0
+
+### Patch Changes
+
+- Updated dependencies [68b8f36]
+  - @penumbra-zone/protobuf@7.2.0
+
+## 23.0.0
+
+### Patch Changes
+
+- Updated dependencies [29dd11a]
+  - @penumbra-zone/protobuf@7.1.0
+
 ## 22.0.0
 
 ### Patch Changes

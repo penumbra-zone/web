@@ -18,17 +18,23 @@ export const h3 = cn('font-heading text-text4xl font-medium leading-text4xl');
 
 export const h4 = cn('font-heading text-text3xl font-medium leading-text3xl');
 
+export const xxl = cn('font-default text-text2xl font-medium leading-text2xl');
+
 export const large = cn('font-default text-textLg font-medium leading-textLg');
 
 export const body = cn('font-default text-textBase font-normal leading-textBase');
 
-export const strong = cn('font-default text-textBase font-medium leading-textBase');
+export const bodyStrong = cn('font-default text-textBase font-medium leading-textBase');
 
-export const detail = cn('font-default text-textXs font-medium leading-textXs');
-
-export const detailTechnical = cn('font-mono text-textXs font-normal leading-textXs');
+export const bodyTechnical = cn('font-mono text-textBase font-normal leading-textBase');
 
 export const small = cn('font-default text-textSm font-normal leading-textXs');
+
+export const smallTechnical = cn('font-mono text-textSm font-normal leading-textSm');
+
+export const detail = cn('font-default text-textXs font-normal leading-textXs');
+
+export const detailTechnical = cn('font-mono text-textXs font-normal leading-textXs');
 
 export const xxs = cn('font-default text-textXxs font-normal leading-textXxs');
 
@@ -52,13 +58,11 @@ export const tableHeadingSmall = cn('font-default text-textXs font-medium leadin
 
 export const technical = cn('font-mono text-textBase font-medium leading-textBase');
 
-export const xxl = cn('font-default text-text2xl font-medium leading-text2xl');
-
 // equals to body with the bottom margin
 export const p = cn('font-default text-textBase font-normal leading-textBase mb-6 last:mb-0');
 
 export const button = cn('font-default text-textBase font-medium leading-textBase');
 
-export const buttonMedium = cn('font-default text-textBase font-medium leading-textBase');
+export const buttonMedium = cn('font-default text-textSm font-medium leading-textBase');
 
-export const buttonSmall = cn('font-default text-textSm font-medium leading-textBase');
+export const buttonSmall = cn('font-default text-textXs font-medium leading-textBase');

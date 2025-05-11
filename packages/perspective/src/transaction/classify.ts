@@ -1,88 +1,195 @@
-import { TransactionView } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import {
+  TransactionView,
+  ActionView,
+} from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
+import { MsgRecvPacket } from '@penumbra-zone/protobuf/ibc/core/channel/v1/tx_pb';
 import { TransactionClassification } from './classification.js';
 
-export const classifyTransaction = (txv?: TransactionView): TransactionClassification => {
+export interface ClassificationReturn {
+  /** A type of the main action that defines a transaction */
+  type: TransactionClassification;
+  /** A main action that defines the transaction */
+  action?: ActionView;
+}
+
+/**
+ * Takes a transaction view, finds the most relevant action that defines its type, and returns it.
+ */
+export const classifyTransaction = (txv?: TransactionView): ClassificationReturn => {
   // Check if 'txv' is undefined and return "Unknown" if it is.
   if (!txv) {
-    return 'unknown';
+    return {
+      type: 'unknown',
+    };
   }
 
-  const allActionCases = new Set(txv.bodyView?.actionViews.map(a => a.actionView.case));
+  const allActionCases = new Map(txv.bodyView?.actionViews.map(a => [a.actionView.case, a]));
 
   if (allActionCases.has('swap')) {
-    return 'swap';
+    const action = allActionCases.get('swap');
+    return {
+      type: 'swap',
+      action,
+    };
   }
   if (allActionCases.has('swapClaim')) {
-    return 'swapClaim';
+    return {
+      type: 'swapClaim',
+      action: allActionCases.get('swapClaim'),
+    };
   }
   if (allActionCases.has('delegate')) {
-    return 'delegate';
+    return {
+      type: 'delegate',
+      action: allActionCases.get('delegate'),
+    };
   }
   if (allActionCases.has('undelegate')) {
-    return 'undelegate';
+    return {
+      type: 'undelegate',
+      action: allActionCases.get('undelegate'),
+    };
   }
   if (allActionCases.has('undelegateClaim')) {
-    return 'undelegateClaim';
+    return {
+      type: 'undelegateClaim',
+      action: allActionCases.get('undelegateClaim'),
+    };
   }
   if (allActionCases.has('ics20Withdrawal')) {
-    return 'ics20Withdrawal';
+    return {
+      type: 'ics20Withdrawal',
+      action: allActionCases.get('ics20Withdrawal'),
+    };
   }
   if (allActionCases.has('actionDutchAuctionSchedule')) {
-    return 'dutchAuctionSchedule';
+    return {
+      type: 'dutchAuctionSchedule',
+      action: allActionCases.get('actionDutchAuctionSchedule'),
+    };
   }
   if (allActionCases.has('actionDutchAuctionEnd')) {
-    return 'dutchAuctionEnd';
+    return {
+      type: 'dutchAuctionEnd',
+      action: allActionCases.get('actionDutchAuctionEnd'),
+    };
   }
   if (allActionCases.has('actionDutchAuctionWithdraw')) {
-    return 'dutchAuctionWithdraw';
+    return {
+      type: 'dutchAuctionWithdraw',
+      action: allActionCases.get('actionDutchAuctionWithdraw'),
+    };
   }
   if (allActionCases.has('delegatorVote')) {
-    return 'delegatorVote';
+    return {
+      type: 'delegatorVote',
+      action: allActionCases.get('delegatorVote'),
+    };
   }
   if (allActionCases.has('validatorVote')) {
-    return 'validatorVote';
+    return {
+      type: 'validatorVote',
+      action: allActionCases.get('validatorVote'),
+    };
   }
   if (allActionCases.has('validatorDefinition')) {
-    return 'validatorDefinition';
+    return {
+      type: 'validatorDefinition',
+      action: allActionCases.get('validatorDefinition'),
+    };
   }
   if (allActionCases.has('ibcRelayAction')) {
-    return 'ibcRelayAction';
+    // IBC deposits usually output multiple ibcRelayActions, but the most important of them is MsgRecvPacket
+    const depositAction = txv.bodyView?.actionViews.find(
+      action =>
+        action.actionView.case === 'ibcRelayAction' &&
+        action.actionView.value.rawAction?.is(MsgRecvPacket.typeName),
+    );
+
+    return {
+      type: 'ibcRelayAction',
+      action: depositAction ?? allActionCases.get('ibcRelayAction'),
+    };
   }
   if (allActionCases.has('proposalSubmit')) {
-    return 'proposalSubmit';
+    return {
+      type: 'proposalSubmit',
+      action: allActionCases.get('proposalSubmit'),
+    };
   }
   if (allActionCases.has('proposalWithdraw')) {
-    return 'proposalWithdraw';
+    return {
+      type: 'proposalWithdraw',
+      action: allActionCases.get('proposalWithdraw'),
+    };
   }
   if (allActionCases.has('proposalDepositClaim')) {
-    return 'proposalDepositClaim';
+    return {
+      type: 'proposalDepositClaim',
+      action: allActionCases.get('proposalDepositClaim'),
+    };
   }
   if (allActionCases.has('positionOpen')) {
-    return 'positionOpen';
+    return {
+      type: 'positionOpen',
+      action: allActionCases.get('positionOpen'),
+    };
   }
   if (allActionCases.has('positionClose')) {
-    return 'positionClose';
+    return {
+      type: 'positionClose',
+      action: allActionCases.get('positionClose'),
+    };
   }
   if (allActionCases.has('positionWithdraw')) {
-    return 'positionWithdraw';
+    return {
+      type: 'positionWithdraw',
+      action: allActionCases.get('positionWithdraw'),
+    };
   }
   if (allActionCases.has('positionRewardClaim')) {
-    return 'positionRewardClaim';
+    return {
+      type: 'positionRewardClaim',
+      action: allActionCases.get('positionRewardClaim'),
+    };
   }
   if (allActionCases.has('communityPoolSpend')) {
-    return 'communityPoolSpend';
+    return {
+      type: 'communityPoolSpend',
+      action: allActionCases.get('communityPoolSpend'),
+    };
   }
   if (allActionCases.has('communityPoolDeposit')) {
-    return 'communityPoolDeposit';
+    return {
+      type: 'communityPoolDeposit',
+      action: allActionCases.get('communityPoolDeposit'),
+    };
   }
   if (allActionCases.has('communityPoolOutput')) {
-    return 'communityPoolOutput';
+    return {
+      type: 'communityPoolOutput',
+      action: allActionCases.get('communityPoolOutput'),
+    };
+  }
+  if (allActionCases.has('actionLiquidityTournamentVote')) {
+    return {
+      type: 'liquidityTournamentVote',
+      action: allActionCases.get('actionLiquidityTournamentVote'),
+    };
   }
 
   const hasOpaqueSpend = txv.bodyView?.actionViews.some(
     a => a.actionView.case === 'spend' && a.actionView.value.spendView.case === 'opaque',
   );
   const allSpendsVisible = !hasOpaqueSpend;
+
+  // A visible spend whose note is controlled by a visible address is a spend we do control.
+  const visibleSpendWithVisibleAddress = txv.bodyView?.actionViews.find(
+    a =>
+      a.actionView.case === 'spend' &&
+      a.actionView.value.spendView.case === 'visible' &&
+      a.actionView.value.spendView.value.note?.address?.addressView.case === 'decoded',
+  );
 
   const hasOpaqueOutput = txv.bodyView?.actionViews.some(
     a => a.actionView.case === 'output' && a.actionView.value.outputView.case === 'opaque',
@@ -97,8 +204,8 @@ export const classifyTransaction = (txv?: TransactionView): TransactionClassific
       a.actionView.value.outputView.value.note?.address?.addressView.case === 'opaque',
   );
 
-  // A visible output whose note is controlled by an opaque address is an output we do control.
-  const hasVisibleOutputWithVisibleAddress = txv.bodyView?.actionViews.some(
+  // A visible output whose note is controlled by a visible address is an output we do control.
+  const visibleOutputWithVisibleAddress = txv.bodyView?.actionViews.find(
     a =>
       a.actionView.case === 'output' &&
       a.actionView.value.outputView.case === 'visible' &&
@@ -116,26 +223,39 @@ export const classifyTransaction = (txv?: TransactionView): TransactionClassific
   // If the tx has only spends and outputs, then it's a transfer. What kind?
   if (isTransfer) {
     // If we can't see at least one spend, but we can see an output we control, it's a receive.
-    if (hasOpaqueSpend && hasVisibleOutputWithVisibleAddress) {
-      return 'receive';
+    if (hasOpaqueSpend && visibleOutputWithVisibleAddress) {
+      return {
+        type: 'receive',
+        action: visibleOutputWithVisibleAddress,
+      };
     }
     // If we can see all spends and outputs, it's a transaction we created...
     if (allSpendsVisible && allOutputsVisible) {
       // ... so it's either a send or an internal transfer, depending on whether there's an output we don't control.
       if (isInternal) {
-        return 'internalTransfer';
+        return {
+          type: 'internalTransfer',
+          action: visibleOutputWithVisibleAddress ?? visibleSpendWithVisibleAddress,
+        };
       } else {
-        return 'send';
+        return {
+          type: 'send',
+          action: visibleSpendWithVisibleAddress,
+        };
       }
     }
   }
 
   if (isInternal) {
-    return 'unknownInternal';
+    return {
+      type: 'unknownInternal',
+    };
   }
 
   // Fallthrough
-  return 'unknown';
+  return {
+    type: 'unknown',
+  };
 };
 
 export const TRANSACTION_LABEL_BY_CLASSIFICATION: Record<TransactionClassification, string> = {
@@ -167,7 +287,8 @@ export const TRANSACTION_LABEL_BY_CLASSIFICATION: Record<TransactionClassificati
   proposalSubmit: 'Proposal Submit',
   proposalWithdraw: 'Proposal Withdraw',
   validatorDefinition: 'Validator Definition',
+  liquidityTournamentVote: 'Liquidity Tournament Vote',
 };
 
 export const getTransactionClassificationLabel = (txv?: TransactionView): string =>
-  TRANSACTION_LABEL_BY_CLASSIFICATION[classifyTransaction(txv)];
+  TRANSACTION_LABEL_BY_CLASSIFICATION[classifyTransaction(txv).type];

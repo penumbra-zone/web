@@ -1,5 +1,184 @@
 # @penumbra-zone/storage
 
+## 56.0.0
+
+### Minor Changes
+
+- 085e855: use asset id instead of metadata in liquidity tournament idb table
+
+### Patch Changes
+
+- Updated dependencies [085e855]
+  - @penumbra-zone/types@33.1.0
+  - @penumbra-zone/wasm@47.0.0
+
+## 55.1.0
+
+### Minor Changes
+
+- 694319c: bump registry version
+
+## 55.0.0
+
+### Minor Changes
+
+- 93f1d05: proto and storage changes to support querying tournament votes
+
+### Patch Changes
+
+- Updated dependencies [93f1d05]
+  - @penumbra-zone/protobuf@10.0.0
+  - @penumbra-zone/types@33.0.0
+  - @penumbra-zone/wasm@46.0.0
+  - @penumbra-zone/bech32m@16.0.0
+  - @penumbra-zone/getters@26.0.0
+
+## 54.0.0
+
+### Patch Changes
+
+- Updated dependencies [43249b0]
+  - @penumbra-zone/wasm@45.1.0
+
+## 53.0.2
+
+### Patch Changes
+
+- @penumbra-zone/wasm@45.0.2
+
+## 53.0.1
+
+### Patch Changes
+
+- Updated dependencies [405b5b1]
+  - @penumbra-zone/getters@25.0.1
+  - @penumbra-zone/types@32.2.1
+  - @penumbra-zone/wasm@45.0.1
+
+## 53.0.0
+
+### Patch Changes
+
+- Updated dependencies [ce4c43e]
+  - @penumbra-zone/types@32.2.0
+  - @penumbra-zone/wasm@45.0.0
+
+## 52.0.0
+
+### Patch Changes
+
+- Updated dependencies [b0e0eef]
+- Updated dependencies [5c45f2c]
+- Updated dependencies [85022e1]
+- Updated dependencies [3c48120]
+  - @penumbra-zone/types@32.1.0
+  - @penumbra-zone/wasm@44.0.0
+
+## 51.0.0
+
+### Patch Changes
+
+- Updated dependencies [62a7767]
+  - @penumbra-zone/wasm@43.1.0
+
+## 50.0.0
+
+### Minor Changes
+
+- 15d768f: transaction summary support for transaction info rpc
+
+### Patch Changes
+
+- Updated dependencies [15d768f]
+  - @penumbra-zone/protobuf@9.0.0
+  - @penumbra-zone/types@32.0.0
+  - @penumbra-zone/wasm@43.0.0
+  - @penumbra-zone/bech32m@15.0.0
+  - @penumbra-zone/getters@25.0.0
+
+## 49.0.0
+
+### Patch Changes
+
+- Updated dependencies [d0cc2ee]
+  - @penumbra-zone/getters@24.1.0
+  - @penumbra-zone/types@31.0.0
+  - @penumbra-zone/wasm@42.0.0
+
+## 48.0.0
+
+### Major Changes
+
+- 49ae3ab: LQT integration in web packages
+
+### Patch Changes
+
+- Updated dependencies [49ae3ab]
+  - @penumbra-zone/protobuf@8.0.0
+  - @penumbra-zone/types@30.0.0
+  - @penumbra-zone/wasm@41.0.0
+  - @penumbra-zone/bech32m@14.0.0
+  - @penumbra-zone/getters@24.0.0
+
+## 47.0.1
+
+### Patch Changes
+
+- 4a883bf: bump registry versions in web packages
+
+## 47.0.0
+
+### Major Changes
+
+- e51bc61: transaction table indexes by height and save txp and txv in indexdb
+
+### Patch Changes
+
+- Updated dependencies [e51bc61]
+  - @penumbra-zone/types@29.1.0
+  - @penumbra-zone/wasm@40.0.0
+
+## 46.0.0
+
+### Patch Changes
+
+- Updated dependencies [68b8f36]
+  - @penumbra-zone/protobuf@7.2.0
+  - @penumbra-zone/bech32m@13.0.0
+  - @penumbra-zone/getters@23.0.0
+  - @penumbra-zone/types@29.0.0
+  - @penumbra-zone/wasm@39.0.0
+
+## 45.0.0
+
+### Major Changes
+
+- 29dd11a: - storage: add subaccount filter to `getOwnedPositionIds` method
+  - protobuf: sync latest changes in penumbra protobufs
+  - services: add subaccount filter to `ownedPositionIds` method in ViewService
+  - types: update indexedDB schema
+
+### Minor Changes
+
+- 6869c52: extend alternative fees to LPs
+
+### Patch Changes
+
+- Updated dependencies [6869c52]
+- Updated dependencies [29dd11a]
+  - @penumbra-zone/types@28.0.0
+  - @penumbra-zone/protobuf@7.1.0
+  - @penumbra-zone/wasm@38.0.0
+  - @penumbra-zone/bech32m@12.0.0
+  - @penumbra-zone/getters@22.0.0
+
+## 44.0.0
+
+### Patch Changes
+
+- Updated dependencies [fd4f34a]
+  - @penumbra-zone/wasm@37.1.0
+
 ## 43.0.0
 
 ### Patch Changes

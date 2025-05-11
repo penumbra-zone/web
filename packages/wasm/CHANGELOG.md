@@ -1,5 +1,127 @@
 # @penumbra-zone/wasm
 
+## 47.0.0
+
+### Patch Changes
+
+- Updated dependencies [085e855]
+  - @penumbra-zone/types@33.1.0
+
+## 46.0.0
+
+### Minor Changes
+
+- 93f1d05: proto and storage changes to support querying tournament votes
+
+### Patch Changes
+
+- Updated dependencies [93f1d05]
+  - @penumbra-zone/protobuf@10.0.0
+  - @penumbra-zone/types@33.0.0
+  - @penumbra-zone/bech32m@16.0.0
+
+## 45.1.0
+
+### Minor Changes
+
+- 43249b0: spends delegation notes in the wasm planner
+
+## 45.0.2
+
+## 45.0.1
+
+### Patch Changes
+
+- Updated dependencies [405b5b1]
+  - @penumbra-zone/types@32.2.1
+
+## 45.0.0
+
+### Patch Changes
+
+- Updated dependencies [ce4c43e]
+  - @penumbra-zone/types@32.2.0
+
+## 44.0.0
+
+### Patch Changes
+
+- Updated dependencies [b0e0eef]
+- Updated dependencies [5c45f2c]
+- Updated dependencies [85022e1]
+- Updated dependencies [3c48120]
+  - @penumbra-zone/types@32.1.0
+
+## 43.1.0
+
+### Minor Changes
+
+- 62a7767: bump wasm deps to latest tagged release
+
+## 43.0.0
+
+### Minor Changes
+
+- 15d768f: transaction summary support for transaction info rpc
+
+### Patch Changes
+
+- Updated dependencies [15d768f]
+  - @penumbra-zone/protobuf@9.0.0
+  - @penumbra-zone/types@32.0.0
+  - @penumbra-zone/bech32m@15.0.0
+
+## 42.0.0
+
+### Patch Changes
+
+- @penumbra-zone/types@31.0.0
+
+## 41.0.0
+
+### Minor Changes
+
+- 49ae3ab: LQT integration in web packages
+
+### Patch Changes
+
+- Updated dependencies [49ae3ab]
+  - @penumbra-zone/protobuf@8.0.0
+  - @penumbra-zone/types@30.0.0
+  - @penumbra-zone/bech32m@14.0.0
+
+## 40.0.0
+
+### Patch Changes
+
+- Updated dependencies [e51bc61]
+  - @penumbra-zone/types@29.1.0
+
+## 39.0.0
+
+### Patch Changes
+
+- Updated dependencies [68b8f36]
+  - @penumbra-zone/protobuf@7.2.0
+  - @penumbra-zone/bech32m@13.0.0
+  - @penumbra-zone/types@29.0.0
+
+## 38.0.0
+
+### Patch Changes
+
+- Updated dependencies [6869c52]
+- Updated dependencies [29dd11a]
+  - @penumbra-zone/types@28.0.0
+  - @penumbra-zone/protobuf@7.1.0
+  - @penumbra-zone/bech32m@12.0.0
+
+## 37.1.0
+
+### Minor Changes
+
+- fd4f34a: bump deps to v0.81.3
+
 ## 37.0.0
 
 ### Patch Changes

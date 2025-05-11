@@ -1,28 +1,26 @@
 import { ViewService } from '@penumbra-zone/protobuf';
 import { penumbra } from '../penumbra';
+import { CallOptions } from '@connectrpc/connect';
+import { PlainMessage, toPlainMessage } from '@bufbuild/protobuf';
+import {
+  StatusResponse,
+  StatusStreamResponse,
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 
-const getInitialStatus = () =>
-  penumbra
+export const getInitialStatus = async (opt?: CallOptions): Promise<PlainMessage<StatusResponse>> =>
+  toPlainMessage(await penumbra.service(ViewService).status({}, opt));
+
+/**
+ * Stream status updates. Default timeout of 15 seconds unless specified.
+ *
+ * @param opt connectrpc call options
+ */
+export async function* getStatusStream(
+  opt?: CallOptions,
+): AsyncGenerator<PlainMessage<StatusStreamResponse>> {
+  for await (const item of penumbra
     .service(ViewService)
-    .status({})
-    .then(status => ({
-      fullSyncHeight: status.fullSyncHeight,
-      latestKnownBlockHeight: status.catchingUp ? undefined : status.fullSyncHeight,
-    }));
-
-export async function* getStatusStream(): AsyncGenerator<{
-  fullSyncHeight?: bigint;
-  latestKnownBlockHeight?: bigint;
-}> {
-  // `statusStream` sends new data to stream only when a new block is detected.
-  // This can take up to 5 seconds (time of new block generated).
-  // Therefore, we need to do a unary request to start us off.
-  yield await getInitialStatus();
-
-  for await (const result of penumbra.service(ViewService).statusStream({})) {
-    yield {
-      fullSyncHeight: result.fullSyncHeight,
-      latestKnownBlockHeight: result.latestKnownBlockHeight,
-    };
+    .statusStream({}, { timeoutMs: 15_000, ...opt })) {
+    yield toPlainMessage(item);
   }
 }

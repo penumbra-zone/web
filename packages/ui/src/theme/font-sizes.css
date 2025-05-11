@@ -1,0 +1,190 @@
+/*
+  In Penumbra UI, text styles are responsive. It is measured in `rem` and
+  differ from screen to screen. For example, the base text size is 0.875rem for mobile,
+  1rem for desktop, and 1.125rem for xl screens.
+
+  This helps fit more data on respective screens while keeping the text readable.
+*/
+
+/* MOBILE AND TABLET SCREENS*/
+
+.text-textXs {
+  font-size: 0.6875rem;
+  line-height: 1rem;
+}
+
+.text-textSm {
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+}
+
+.text-textBase {
+  font-size: 0.875rem;
+  line-height: 1.5rem;
+}
+
+.text-textLg {
+  font-size: 1rem;
+  line-height: 1.75rem;
+}
+
+.text-textXl {
+  font-size: 1.125rem;
+  line-height: 2rem;
+}
+
+.text-text2xl {
+  font-size: 1.3125rem;
+  line-height: 2.25rem;
+}
+
+.text-text3xl {
+  font-size: 1.625rem;
+  line-height: 2.5rem;
+}
+
+.text-text4xl {
+  font-size: 2rem;
+  line-height: 2.75rem;
+}
+
+.text-text5xl {
+  font-size: 2.625rem;
+  line-height: 3.5rem;
+}
+
+.text-text6xl {
+  font-size: 3.25rem;
+  line-height: 4.25rem;
+}
+
+.text-text7xl {
+  font-size: 3.9375rem;
+  line-height: 5rem;
+}
+
+.text-text8xl {
+  font-size: 5.25rem;
+  line-height: 6.25rem;
+}
+
+.text-text9xl {
+  font-size: 7rem;
+  line-height: 8.25rem;
+}
+
+/* DESKTOP AND LARGE SCREENS */
+
+@screen desktop {
+  .text-textXs {
+    font-size: 0.75rem;
+  }
+
+  .text-textSm {
+    font-size: 0.875rem;
+  }
+
+  .text-textBase {
+    font-size: 1rem;
+  }
+
+  .text-textLg {
+    font-size: 1.125rem;
+  }
+
+  .text-textXl {
+    font-size: 1.25rem;
+  }
+
+  .text-text2xl {
+    font-size: 1.5rem;
+  }
+
+  .text-text3xl {
+    font-size: 1.875rem;
+  }
+
+  .text-text4xl {
+    font-size: 2.25rem;
+  }
+
+  .text-text5xl {
+    font-size: 3rem;
+  }
+
+  .text-text6xl {
+    font-size: 3.75rem;
+  }
+
+  .text-text7xl {
+    font-size: 4.5rem;
+  }
+
+  .text-text8xl {
+    font-size: 6rem;
+  }
+
+  .text-text9xl {
+    font-size: 8rem;
+  }
+}
+
+/* EXTRA LARGE SCREENS */
+
+/*
+  TODO: create a mechanism to turn font responsiveness on/off
+*/
+
+/*@screen xl {*/
+/*  .text-textXs {*/
+/*    font-size: 0.875rem;*/
+/*  }*/
+
+/*  .text-textSm {*/
+/*    font-size: 1rem;*/
+/*  }*/
+
+/*  .text-textBase {*/
+/*    font-size: 1.125rem;*/
+/*  }*/
+
+/*  .text-textLg {*/
+/*    font-size: 1.25rem;*/
+/*  }*/
+
+/*  .text-textXl {*/
+/*    font-size: 1.375rem;*/
+/*  }*/
+
+/*  .text-text2xl {*/
+/*    font-size: 1.6875rem;*/
+/*  }*/
+
+/*  .text-text3xl {*/
+/*    font-size: 2.125rem;*/
+/*  }*/
+
+/*  .text-text4xl {*/
+/*    font-size: 2.5rem;*/
+/*  }*/
+
+/*  .text-text5xl {*/
+/*    font-size: 3.375rem;*/
+/*  }*/
+
+/*  .text-text6xl {*/
+/*    font-size: 4.25rem;*/
+/*  }*/
+
+/*  .text-text7xl {*/
+/*    font-size: 5.0625rem;*/
+/*  }*/
+
+/*  .text-text8xl {*/
+/*    font-size: 6.75rem;*/
+/*  }*/
+
+/*  .text-text9xl {*/
+/*    font-size: 9rem;*/
+/*  }*/
+/*}*/

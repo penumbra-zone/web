@@ -1,5 +1,112 @@
 # @penumbra-zone/tailwind-config
 
+## 3.1.39
+
+### Patch Changes
+
+- @penumbra-zone/ui-deprecated@19.0.1
+
+## 3.1.38
+
+### Patch Changes
+
+- Updated dependencies [4a51a46]
+  - @penumbra-zone/ui-deprecated@19.0.0
+
+## 3.1.37
+
+### Patch Changes
+
+- @penumbra-zone/ui-deprecated@18.0.0
+
+## 3.1.36
+
+### Patch Changes
+
+- @penumbra-zone/ui-deprecated@17.1.6
+
+## 3.1.35
+
+### Patch Changes
+
+- @penumbra-zone/ui-deprecated@17.1.5
+
+## 3.1.34
+
+### Patch Changes
+
+- @penumbra-zone/ui-deprecated@17.1.4
+
+## 3.1.33
+
+### Patch Changes
+
+- @penumbra-zone/ui-deprecated@17.1.3
+
+## 3.1.32
+
+### Patch Changes
+
+- Updated dependencies [80148ae]
+  - @penumbra-zone/ui-deprecated@17.1.2
+
+## 3.1.31
+
+### Patch Changes
+
+- @penumbra-zone/ui-deprecated@17.1.1
+
+## 3.1.30
+
+### Patch Changes
+
+- Updated dependencies [e272767]
+  - @penumbra-zone/ui-deprecated@17.1.0
+
+## 3.1.29
+
+### Patch Changes
+
+- Updated dependencies [2dac6ab]
+  - @penumbra-zone/ui-deprecated@17.0.0
+
+## 3.1.28
+
+### Patch Changes
+
+- @penumbra-zone/ui-deprecated@16.0.1
+
+## 3.1.27
+
+### Patch Changes
+
+- Updated dependencies [49ae3ab]
+  - @penumbra-zone/ui-deprecated@16.0.0
+
+## 3.1.26
+
+### Patch Changes
+
+- @penumbra-zone/ui-deprecated@15.0.1
+
+## 3.1.25
+
+### Patch Changes
+
+- @penumbra-zone/ui-deprecated@15.0.0
+
+## 3.1.24
+
+### Patch Changes
+
+- @penumbra-zone/ui-deprecated@14.0.0
+
+## 3.1.23
+
+### Patch Changes
+
+- @penumbra-zone/ui-deprecated@13.0.2
+
 ## 3.1.22
 
 ### Patch Changes

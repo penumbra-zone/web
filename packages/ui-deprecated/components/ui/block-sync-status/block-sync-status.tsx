@@ -16,10 +16,10 @@ export const CondensedBlockSyncStatus = ({
   error?: unknown;
 }) => {
   if (error) {
-    return <BlockSyncErrorState error={error} />;
+    return <BlockSyncErrorState />;
   }
   if (!latestKnownBlockHeight || !fullSyncHeight) {
-    return <AwaitingSyncState genesisSyncing={!fullSyncHeight} />;
+    return <AwaitingSyncState genesisSyncing={!!latestKnownBlockHeight && !fullSyncHeight} />;
   }
 
   const isSyncing = latestKnownBlockHeight - fullSyncHeight > 10;
@@ -41,7 +41,7 @@ export const CondensedBlockSyncStatus = ({
   );
 };
 
-const BlockSyncErrorState = ({ error }: { error: unknown }) => {
+const BlockSyncErrorState = () => {
   const reload = () => {
     window.location.reload();
   };
@@ -56,7 +56,7 @@ const BlockSyncErrorState = ({ error }: { error: unknown }) => {
       <div className='absolute w-full px-2'>
         <div className='mt-[-5.5px] flex gap-2'>
           <span className='font-mono text-[10px] text-red-300'>
-            Block sync error: {String(error)}
+            Block sync error. Ensure your internet connection is stable.
           </span>
           <button
             type='button'

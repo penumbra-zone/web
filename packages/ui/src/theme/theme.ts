@@ -221,6 +221,8 @@ export const theme = {
       solidStroke: PALETTE.neutral['900'],
       dialogBackground: PALETTE.teal['700'] + hexOpacity(0.1),
       overlay: PALETTE.base.black + hexOpacity(0.5),
+      orangeOutline: PALETTE.orange['700'] + hexOpacity(0.85),
+      neutralOutline: PALETTE.neutral['700'] + hexOpacity(0.85),
     },
   },
   gradient: {
@@ -246,6 +248,7 @@ export const theme = {
     buttonDisabled: 'linear-gradient(0deg, rgba(10, 10, 10, 0.8) 0%, rgba(10, 10, 10, 0.8) 100%)',
     progressLoading:
       'linear-gradient(90deg,rgba(255, 255, 255, 0) 0%,#fff 50%,rgba(255, 255, 255, 0) 100%)',
+    shimmer: 'linear-gradient(90deg, rgba(250, 250, 250, 0.05) 0%, rgba(250, 250, 250, 0.10) 100%)',
   },
   font: {
     default: 'Poppins',
@@ -297,10 +300,15 @@ export const theme = {
       '0%': { left: '-20%' },
       '100%': { left: '100%' },
     },
+    shimmer: {
+      '0%': { left: '-50%' },
+      '100%': { left: '150%' },
+    },
   },
   animation: {
     scale: 'scale 0.15s ease-out',
     progress: 'progress 1s linear infinite',
+    shimmer: 'shimmer 2s infinite',
   },
 } as const;
 

@@ -3,7 +3,6 @@ import { ViewBox } from '../viewbox';
 import { ActionDetails } from './action-details';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
 import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
-import { bech32TransparentAddress } from '@penumbra-zone/bech32m/tpenumbra';
 
 // Converts nanoseconds timestamp to UTC timestamp string
 export const getUtcTime = (time: bigint) => {
@@ -38,15 +37,9 @@ export const Ics20WithdrawalComponent = ({ value }: { value: Ics20Withdrawal }) 
 
           {value.returnAddress && (
             <ActionDetails.Row label='Return Address'>
-              {value.useTransparentAddress
-                ? bech32TransparentAddress({ inner: value.returnAddress.inner.slice(0, 32) })
-                : bech32mAddress(value.returnAddress)}
+              {bech32mAddress(value.returnAddress)}
             </ActionDetails.Row>
           )}
-
-          <ActionDetails.Row label='Use Transparent Address'>
-            {value.useTransparentAddress ? 'TRUE' : 'FALSE'}
-          </ActionDetails.Row>
 
           {value.timeoutHeight && (
             <>

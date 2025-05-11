@@ -2,6 +2,11 @@ import { SwapClaimView } from '@penumbra-zone/protobuf/penumbra/core/component/d
 import { createGetter } from './utils/create-getter.js';
 import { getValue } from './note-view.js';
 
+export const getOutputData = createGetter(
+  (swapClaimView?: SwapClaimView) =>
+    swapClaimView?.swapClaimView.value?.swapClaim?.body?.outputData,
+);
+
 export const getOutput1 = createGetter((swapClaimView?: SwapClaimView) =>
   swapClaimView?.swapClaimView.case === 'visible'
     ? swapClaimView.swapClaimView.value.output1

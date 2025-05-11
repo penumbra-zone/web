@@ -71,7 +71,7 @@ const WalletButtonBase = ({ buttonText, isLoading, isDisabled, onClick }: BasePr
       />
       <div className='relative z-10 flex items-center justify-center gap-1 rounded p-2'>
         <WalletIcon />
-        <span className='font-bold'>{buttonText ? buttonText : 'Connect Wallet'}</span>
+        <span className='font-bold'>{buttonText ?? 'Connect Wallet'}</span>
       </div>
     </button>
   );

@@ -22,6 +22,10 @@ dist-ssr
 .env.development.local
 .env.test.local
 .env.production.local
+.direnv/
+.envrc
+./**/.envrc
+./**/.direnv/
 
 # turbo
 .turbo
@@ -70,3 +74,6 @@ packages/protobuf/gen
 packages/protobuf/proto
 
 scripts/private
+
+# LLM assistance files
+CURSOR_RULES.md

@@ -2,6 +2,7 @@ import cn from 'clsx';
 
 import {
   body,
+  bodyTechnical,
   detail,
   h1,
   h2,
@@ -9,8 +10,9 @@ import {
   h4,
   large,
   small,
+  smallTechnical,
   detailTechnical,
-  strong,
+  bodyStrong,
   technical,
   xxl,
   p,
@@ -134,13 +136,15 @@ const VARIANT_MAP: Record<TextVariant, { element: ElementType; classes: string }
   xxl: { element: 'span', classes: xxl },
   large: { element: 'span', classes: large },
   p: { element: 'p', classes: p },
-  strong: { element: 'span', classes: strong },
+  strong: { element: 'span', classes: bodyStrong },
   detail: { element: 'span', classes: detail },
   xxs: { element: 'span', classes: xxs },
   small: { element: 'span', classes: small },
+  smallTechnical: { element: 'span', classes: smallTechnical },
   detailTechnical: { element: 'span', classes: detailTechnical },
   technical: { element: 'span', classes: technical },
   body: { element: 'span', classes: body },
+  bodyTechnical: { element: 'span', classes: bodyTechnical },
   tableHeading: { element: 'span', classes: tableHeading },
   tableHeadingMedium: { element: 'span', classes: tableHeadingMedium },
   tableHeadingSmall: { element: 'span', classes: tableHeadingSmall },
@@ -189,7 +193,9 @@ export const Text = (props: TextProps) => {
 
   const variantKey: TextVariant =
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- the default fallback is necessary
-    (Object.keys(props).find(key => VARIANT_MAP[key as TextVariant]) as TextVariant) ?? 'body';
+    (Object.keys(props).find(key => VARIANT_MAP[key as TextVariant]) as TextVariant) ??
+    props.variant ??
+    'body';
   const variant = VARIANT_MAP[variantKey];
   const Element = props.as ?? variant.element;
 

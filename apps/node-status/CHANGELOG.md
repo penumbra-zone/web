@@ -1,5 +1,152 @@
 # node-status
 
+## 4.1.64
+
+### Patch Changes
+
+- Updated dependencies [085e855]
+  - @penumbra-zone/types@33.1.0
+  - @penumbra-zone/crypto-web@43.0.0
+  - @penumbra-zone/ui-deprecated@19.0.1
+
+## 4.1.63
+
+### Patch Changes
+
+- Updated dependencies [4a51a46]
+  - @penumbra-zone/ui-deprecated@19.0.0
+
+## 4.1.62
+
+### Patch Changes
+
+- Updated dependencies [93f1d05]
+  - @penumbra-zone/protobuf@10.0.0
+  - @penumbra-zone/types@33.0.0
+  - @penumbra-zone/ui-deprecated@18.0.0
+  - @penumbra-zone/crypto-web@42.0.0
+
+## 4.1.61
+
+### Patch Changes
+
+- @penumbra-zone/ui-deprecated@17.1.6
+
+## 4.1.60
+
+### Patch Changes
+
+- @penumbra-zone/ui-deprecated@17.1.5
+
+## 4.1.59
+
+### Patch Changes
+
+- Updated dependencies [405b5b1]
+  - @penumbra-zone/types@32.2.1
+  - @penumbra-zone/ui-deprecated@17.1.4
+  - @penumbra-zone/crypto-web@41.0.1
+
+## 4.1.58
+
+### Patch Changes
+
+- Updated dependencies [ce4c43e]
+  - @penumbra-zone/types@32.2.0
+  - @penumbra-zone/crypto-web@41.0.0
+  - @penumbra-zone/ui-deprecated@17.1.3
+
+## 4.1.57
+
+### Patch Changes
+
+- Updated dependencies [80148ae]
+- Updated dependencies [b0e0eef]
+- Updated dependencies [5c45f2c]
+- Updated dependencies [85022e1]
+- Updated dependencies [3c48120]
+  - @penumbra-zone/ui-deprecated@17.1.2
+  - @penumbra-zone/types@32.1.0
+  - @penumbra-zone/crypto-web@40.0.0
+
+## 4.1.56
+
+### Patch Changes
+
+- @penumbra-zone/ui-deprecated@17.1.1
+
+## 4.1.55
+
+### Patch Changes
+
+- Updated dependencies [e272767]
+  - @penumbra-zone/ui-deprecated@17.1.0
+
+## 4.1.54
+
+### Patch Changes
+
+- Updated dependencies [2dac6ab]
+- Updated dependencies [15d768f]
+  - @penumbra-zone/ui-deprecated@17.0.0
+  - @penumbra-zone/protobuf@9.0.0
+  - @penumbra-zone/types@32.0.0
+  - @penumbra-zone/crypto-web@39.0.0
+
+## 4.1.53
+
+### Patch Changes
+
+- @penumbra-zone/types@31.0.0
+- @penumbra-zone/ui-deprecated@16.0.1
+- @penumbra-zone/crypto-web@38.0.0
+
+## 4.1.52
+
+### Patch Changes
+
+- Updated dependencies [49ae3ab]
+  - @penumbra-zone/protobuf@8.0.0
+  - @penumbra-zone/types@30.0.0
+  - @penumbra-zone/ui-deprecated@16.0.0
+  - @penumbra-zone/crypto-web@37.0.0
+
+## 4.1.51
+
+### Patch Changes
+
+- Updated dependencies [e51bc61]
+  - @penumbra-zone/types@29.1.0
+  - @penumbra-zone/crypto-web@36.0.0
+  - @penumbra-zone/ui-deprecated@15.0.1
+
+## 4.1.50
+
+### Patch Changes
+
+- Updated dependencies [68b8f36]
+  - @penumbra-zone/protobuf@7.2.0
+  - @penumbra-zone/types@29.0.0
+  - @penumbra-zone/ui-deprecated@15.0.0
+  - @penumbra-zone/crypto-web@35.0.0
+
+## 4.1.49
+
+### Patch Changes
+
+- Updated dependencies [6869c52]
+- Updated dependencies [29dd11a]
+  - @penumbra-zone/types@28.0.0
+  - @penumbra-zone/protobuf@7.1.0
+  - @penumbra-zone/crypto-web@34.0.0
+  - @penumbra-zone/ui-deprecated@14.0.0
+
+## 4.1.48
+
+### Patch Changes
+
+- @penumbra-zone/ui-deprecated@13.0.2
+
 ## 4.1.47
 
 ### Patch Changes

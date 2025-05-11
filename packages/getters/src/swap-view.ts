@@ -76,6 +76,10 @@ export const getAsset1Metadata = createGetter((swapView?: SwapView) =>
     : undefined,
 );
 
+export const getTradingPair = createGetter(
+  (swapView?: SwapView) => swapView?.swapView.value?.swap?.body?.tradingPair,
+);
+
 // Generic getter function for 'Asset2Metadata'
 export const getAsset2Metadata = createGetter((swapView?: SwapView) =>
   swapView?.swapView.case === 'visible' || swapView?.swapView.case === 'opaque'

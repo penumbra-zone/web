@@ -7,21 +7,26 @@ import {
   UNBONDING_TOKEN_METADATA,
   UNKNOWN_TOKEN_METADATA,
   PIZZA_METADATA,
+  LPNFT_METADATA,
 } from '../utils/bufs';
 
+const OPTIONS = {
+  Penumbra: PENUMBRA_METADATA,
+  Pizza: PIZZA_METADATA,
+  'Delegation token': DELEGATION_TOKEN_METADATA,
+  'Unbonding token': UNBONDING_TOKEN_METADATA,
+  'LPNFT token': LPNFT_METADATA,
+  'Unknown asset': UNKNOWN_TOKEN_METADATA,
+};
+
 const meta: Meta<typeof AssetIcon> = {
+  title: 'AssetIcon/Single',
   component: AssetIcon,
   tags: ['autodocs', '!dev'],
   argTypes: {
     metadata: {
-      options: ['Penumbra', 'Pizza', 'Delegation token', 'Unbonding token', 'Unknown asset'],
-      mapping: {
-        Penumbra: PENUMBRA_METADATA,
-        Pizza: PIZZA_METADATA,
-        'Delegation token': DELEGATION_TOKEN_METADATA,
-        'Unbonding token': UNBONDING_TOKEN_METADATA,
-        'Unknown asset': UNKNOWN_TOKEN_METADATA,
-      },
+      options: Object.keys(OPTIONS),
+      mapping: OPTIONS,
     },
   },
 };

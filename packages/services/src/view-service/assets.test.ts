@@ -3,10 +3,11 @@ import { AssetsRequest, AssetsResponse } from '@penumbra-zone/protobuf/penumbra/
 import { ViewService } from '@penumbra-zone/protobuf';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
+import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { servicesCtx } from '../ctx/prax.js';
 import { assets } from './assets.js';
 import { IndexedDbMock, MockServices } from '../test-utils.js';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
+import { UM_METADATA } from './util/data.js';
 
 describe('Assets request handler', () => {
   let req: AssetsRequest;
@@ -187,21 +188,7 @@ const testData = [
       inner: 'IYAlwlH0ld1wsRLlnYyl4ItsVeukLp4e7/U/Z+6opxA=',
     },
   }),
-  Metadata.fromJson({
-    description: '',
-    denomUnits: [
-      { denom: 'penumbra', exponent: 6, aliases: [] },
-      { denom: 'mpenumbra', exponent: 3, aliases: [] },
-      { denom: 'upenumbra', exponent: 0, aliases: [] },
-    ],
-    base: 'upenumbra',
-    display: 'penumbra',
-    name: '',
-    symbol: '',
-    penumbraAssetId: {
-      inner: 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=',
-    },
-  }),
+  UM_METADATA,
   Metadata.fromJson({
     description: '',
     denomUnits: [

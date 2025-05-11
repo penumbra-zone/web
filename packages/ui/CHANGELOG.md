@@ -1,5 +1,203 @@
 # @penumbra-zone/ui
 
+## 14.0.1
+
+### Patch Changes
+
+- Updated dependencies [085e855]
+  - @penumbra-zone/types@33.1.0
+  - @penumbra-zone/perspective@56.0.0
+
+## 14.0.0
+
+### Major Changes
+
+- 4a51a46: Remove forwardRef that was deprecated in React 19
+- 4a51a46: Upgrade to React 19
+
+## 13.18.0
+
+### Minor Changes
+
+- 93f1d05: proto and storage changes to support querying tournament votes
+
+### Patch Changes
+
+- 28a251c: Move `buttons` Dialog.Content's prop out of the scrollable area
+- Updated dependencies [93f1d05]
+  - @penumbra-zone/protobuf@10.0.0
+  - @penumbra-zone/types@33.0.0
+  - @penumbra-zone/bech32m@16.0.0
+  - @penumbra-zone/getters@26.0.0
+  - @penumbra-zone/perspective@55.0.0
+
+## 13.17.4
+
+### Patch Changes
+
+- @penumbra-zone/perspective@54.0.0
+
+## 13.17.3
+
+### Patch Changes
+
+- @penumbra-zone/perspective@53.0.2
+
+## 13.17.2
+
+### Patch Changes
+
+- 405b5b1: Fix swap ActionViews not rendering values correctly
+- Updated dependencies [405b5b1]
+  - @penumbra-zone/getters@25.0.1
+  - @penumbra-zone/types@32.2.1
+  - @penumbra-zone/perspective@53.0.1
+
+## 13.17.1
+
+### Patch Changes
+
+- Updated dependencies [ce4c43e]
+  - @penumbra-zone/types@32.2.0
+  - @penumbra-zone/perspective@53.0.0
+
+## 13.17.0
+
+### Minor Changes
+
+- 8e6e60c: Add Checkbox UI component
+- 5c45f2c: Implement `IbcRelay` and `Ics20Withdrawal` ActionViews
+
+### Patch Changes
+
+- 80148ae: Fix bugs related to transaction history and transaction/action views
+- 3c48120: Fix Swap getters for ActionViews
+- Updated dependencies [a5e14e9]
+- Updated dependencies [b0e0eef]
+- Updated dependencies [5c45f2c]
+- Updated dependencies [85022e1]
+- Updated dependencies [3c48120]
+  - @penumbra-zone/perspective@52.0.0
+  - @penumbra-zone/types@32.1.0
+
+## 13.16.0
+
+### Minor Changes
+
+- b430e10: Implement `LiquidityTournamentVoteAction` ActionView component
+
+## 13.15.0
+
+### Minor Changes
+
+- 4adb7aa: Add Pagination UI component
+
+### Patch Changes
+
+- @penumbra-zone/perspective@51.0.0
+
+## 13.14.0
+
+### Minor Changes
+
+- aaaa775: perspective: update Transaction classification, implement `findRelevantAssets` function
+  ui: add `TransactionSummary` components
+
+### Patch Changes
+
+- fb5dcb6: Fix TransactionSummary component by improving transaction rendering related to positions and auctions
+- Updated dependencies [15d768f]
+- Updated dependencies [aaaa775]
+  - @penumbra-zone/protobuf@9.0.0
+  - @penumbra-zone/types@32.0.0
+  - @penumbra-zone/perspective@50.0.0
+  - @penumbra-zone/bech32m@15.0.0
+  - @penumbra-zone/getters@25.0.0
+
+## 13.13.0
+
+### Minor Changes
+
+- d0cc2ee: Implement `SwapClaim` action view
+- c286c09: Implement ActionViews related to positions
+
+### Patch Changes
+
+- Updated dependencies [d0cc2ee]
+  - @penumbra-zone/getters@24.1.0
+  - @penumbra-zone/types@31.0.0
+
+## 13.12.0
+
+### Minor Changes
+
+- 49ae3ab: LQT integration in web packages
+- 07aa2fe: Implement ActionView component
+- 28e2ccb: Create new `SegmentedControl` UI component
+
+### Patch Changes
+
+- Updated dependencies [49ae3ab]
+  - @penumbra-zone/protobuf@8.0.0
+  - @penumbra-zone/types@30.0.0
+  - @penumbra-zone/bech32m@14.0.0
+  - @penumbra-zone/getters@24.0.0
+
+## 13.11.0
+
+### Minor Changes
+
+- a6094b6: Change tabProps prop type
+
+## 13.10.0
+
+### Minor Changes
+
+- 8f89abd: Make Tabs component extensible
+
+## 13.9.4
+
+### Patch Changes
+
+- Updated dependencies [e51bc61]
+  - @penumbra-zone/types@29.1.0
+
+## 13.9.3
+
+### Patch Changes
+
+- Updated dependencies [68b8f36]
+  - @penumbra-zone/protobuf@7.2.0
+  - @penumbra-zone/bech32m@13.0.0
+  - @penumbra-zone/getters@23.0.0
+  - @penumbra-zone/types@29.0.0
+
+## 13.9.2
+
+### Patch Changes
+
+- Updated dependencies [6869c52]
+- Updated dependencies [29dd11a]
+  - @penumbra-zone/types@28.0.0
+  - @penumbra-zone/protobuf@7.1.0
+  - @penumbra-zone/bech32m@12.0.0
+  - @penumbra-zone/getters@22.0.0
+
+## 13.9.1
+
+### Patch Changes
+
+- f3ee52a: Stop XL screen size responsiveness
+
+## 13.9.0
+
+### Minor Changes
+
+- 62eff53: - Make Typography font sizes responsive
+  - Add `bodyTechnical` Text variant
+  - Add Skeleton component
+- cab203e: Add `TableCell` UI component
+
 ## 13.8.1
 
 ### Patch Changes

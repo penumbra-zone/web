@@ -1,9 +1,9 @@
 import { ReactNode } from 'react';
-import { body, technical, detail, detailTechnical } from '../utils/typography';
+import { detail, detailTechnical, small, smallTechnical } from '../utils/typography';
 import { Density, useDensity } from '../utils/density';
 import cn from 'clsx';
 
-type Priority = 'primary' | 'secondary';
+type Priority = 'primary' | 'secondary' | 'tertiary';
 type Context =
   | 'default'
   | 'technical-default'
@@ -12,21 +12,38 @@ type Context =
   | 'technical-destructive';
 
 const getFont = (context: Context, density: Density) => {
-  if (context === 'default') {
-    return density === 'sparse' ? body : detail;
+  if (density === 'slim') {
+    return context === 'default' ? detail : detailTechnical;
   }
-  return density === 'sparse' ? technical : detailTechnical;
+  if (density === 'compact') {
+    return context === 'default' ? detail : detailTechnical;
+  }
+  return context === 'default' ? small : smallTechnical;
 };
 
-const getXPadding = (priority: Priority, density: Density): string => {
+const getPadding = (priority: Priority, density: Density): string => {
+  // main padding minus 1px or 2px for border width
   if (priority === 'secondary') {
-    return density === 'sparse' ? 'pr-[10px] pl-[10px]' : 'pr-[6px] pl-[6px]';
+    if (density === 'slim') {
+      return 'pr-[3px] pl-[3px] py-0';
+    }
+    if (density === 'compact') {
+      return 'pr-[7px] pl-[7px] py-0';
+    }
+    return 'pr-[10px] pl-[10px] py-[2px]';
   }
-  return density === 'sparse' ? 'pr-3 pl-3' : 'pr-2 pl-2';
+
+  if (density === 'slim') {
+    return priority === 'tertiary' ? 'px-0 py-0' : 'pr-1 pl-1 py-0';
+  }
+  if (density === 'compact') {
+    return 'pr-2 pl-2 py-0';
+  }
+  return 'pr-3 pl-3 py-1';
 };
 
 const getBackgroundColor = (priority: Priority, context: Context) => {
-  if (priority === 'secondary') {
+  if (priority === 'secondary' || priority === 'tertiary') {
     return 'bg-transparent';
   }
 
@@ -72,12 +89,13 @@ export const Pill = ({ children, priority = 'primary', context = 'default' }: Pi
         getFont(context, density),
         getColor(priority, context),
         getBackgroundColor(priority, context),
-        'box-border inline-block max-w-full w-max rounded-full',
+        'box-border max-w-full w-max rounded-full',
+        'inline-flex items-center',
+        density !== 'slim' && 'gap-1',
         priority === 'secondary'
-          ? 'border-2 border-dashed border-other-tonalStroke'
+          ? `${density === 'sparse' ? 'border-2' : 'border'} border-dashed border-other-tonalStroke`
           : 'border-none',
-        priority === 'secondary' ? 'pt-[2px] pb-[2px]' : 'pt-1 pb-1',
-        getXPadding(priority, density),
+        getPadding(priority, density),
       )}
     >
       {children}

@@ -1,5 +1,135 @@
 # @penumbra-zone/perspective
 
+## 56.0.0
+
+### Patch Changes
+
+- @penumbra-zone/wasm@47.0.0
+
+## 55.0.0
+
+### Patch Changes
+
+- Updated dependencies [93f1d05]
+  - @penumbra-zone/protobuf@10.0.0
+  - @penumbra-zone/wasm@46.0.0
+  - @penumbra-zone/bech32m@16.0.0
+  - @penumbra-zone/getters@26.0.0
+
+## 54.0.0
+
+### Patch Changes
+
+- Updated dependencies [43249b0]
+  - @penumbra-zone/wasm@45.1.0
+
+## 53.0.2
+
+### Patch Changes
+
+- @penumbra-zone/wasm@45.0.2
+
+## 53.0.1
+
+### Patch Changes
+
+- Updated dependencies [405b5b1]
+  - @penumbra-zone/getters@25.0.1
+  - @penumbra-zone/wasm@45.0.1
+
+## 53.0.0
+
+### Patch Changes
+
+- @penumbra-zone/wasm@45.0.0
+
+## 52.0.0
+
+### Minor Changes
+
+- a5e14e9: Add an adapter from LQT Plan to ActionView
+
+### Patch Changes
+
+- @penumbra-zone/wasm@44.0.0
+
+## 51.0.0
+
+### Patch Changes
+
+- Updated dependencies [62a7767]
+  - @penumbra-zone/wasm@43.1.0
+
+## 50.0.0
+
+### Major Changes
+
+- aaaa775: perspective: update Transaction classification, implement `findRelevantAssets` function
+  ui: add `TransactionSummary` components
+
+### Patch Changes
+
+- Updated dependencies [15d768f]
+  - @penumbra-zone/protobuf@9.0.0
+  - @penumbra-zone/wasm@43.0.0
+  - @penumbra-zone/bech32m@15.0.0
+  - @penumbra-zone/getters@25.0.0
+
+## 49.0.0
+
+### Patch Changes
+
+- Updated dependencies [d0cc2ee]
+  - @penumbra-zone/getters@24.1.0
+  - @penumbra-zone/wasm@42.0.0
+
+## 48.0.0
+
+### Minor Changes
+
+- 49ae3ab: LQT integration in web packages
+
+### Patch Changes
+
+- Updated dependencies [49ae3ab]
+  - @penumbra-zone/protobuf@8.0.0
+  - @penumbra-zone/wasm@41.0.0
+  - @penumbra-zone/bech32m@14.0.0
+  - @penumbra-zone/getters@24.0.0
+
+## 47.0.0
+
+### Patch Changes
+
+- @penumbra-zone/wasm@40.0.0
+
+## 46.0.0
+
+### Patch Changes
+
+- Updated dependencies [68b8f36]
+  - @penumbra-zone/protobuf@7.2.0
+  - @penumbra-zone/bech32m@13.0.0
+  - @penumbra-zone/getters@23.0.0
+  - @penumbra-zone/wasm@39.0.0
+
+## 45.0.0
+
+### Patch Changes
+
+- Updated dependencies [29dd11a]
+  - @penumbra-zone/protobuf@7.1.0
+  - @penumbra-zone/wasm@38.0.0
+  - @penumbra-zone/bech32m@12.0.0
+  - @penumbra-zone/getters@22.0.0
+
+## 44.0.0
+
+### Patch Changes
+
+- Updated dependencies [fd4f34a]
+  - @penumbra-zone/wasm@37.1.0
+
 ## 43.0.0
 
 ### Patch Changes

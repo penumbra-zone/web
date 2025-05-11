@@ -11,6 +11,7 @@ import { Transaction } from '@penumbra-zone/protobuf/penumbra/core/transaction/v
 import type { ScanBlockResult } from '@penumbra-zone/types/state-commitment-tree';
 import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 import { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
+import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 const hash3312332298 = base64ToUint8Array('JbOzRkf0VKm4eIM0DS27N5igX8jxvPhAMpBWSr2bj/Q=');
 
@@ -717,3 +718,6 @@ export const epoch3 = new Epoch({
   index: 3n,
   startHeight: 300n,
 });
+
+export const mainAccount = new AddressIndex({ account: 0 });
+export const firstSubaccount = new AddressIndex({ account: 1 });

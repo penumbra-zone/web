@@ -39,7 +39,7 @@ repo, in which case they use turbo or the monorepo configuration.
 
 ## Tools used
 
-- **pnpm**: a package manger
+- **pnpm**: a package manager
   - pnpm's workspace feature is the foundation of the monorepo
 - **turborepo**: a monorepo scripting tool
   - parallelize script execution
@@ -90,7 +90,7 @@ https://excalidraw.com/#json=_3b4K0RpWFJWAtVCH5ymB,CHegLkto1X_NdKG67LNh2A
 ### Some critical details
 
 Prax and Minifront [share React components](./ui-library.md) and some other
-reuseable dependencies.
+reusable dependencies.
 
 Both Prax and Minifront manage running state with Zustand. For storage, Prax
 uses extension storage and idb. Minifront does not store anything.

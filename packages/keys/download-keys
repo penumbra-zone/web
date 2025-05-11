@@ -1,90 +1,29 @@
 #!/bin/sh
 set -e
 
-defaultKeysVersion="v0.78.0"
-
 scriptDir=$(dirname "$(readlink -f -- "$0")")
-cacheDir="$scriptDir/keys"
-scriptName=$(basename "$0")
-shaCmd=$(which sha256sum || which shasum || true)
+cacheDir="${scriptDir}/keys"
 
-[ -z $shaCmd ] && (
-    echo "No checksum tool found. $scriptName requires sha256sum or shasum in \$PATH."
-    exit 69 # EX_UNAVAILABLE
-)
+# arg or default
+keysVersion="$1"
+[ -z "$keysVersion" ] && keysVersion="v1.0.0"
 
-# usage <message>
-usage() {
-    echo "$1"
-    echo "Usage: $scriptName [output-path] [git tag] [sha256 manifest]"
-    exit 64 # EX_USAGE
-}
+# arg or default
+outDir="$2"
+[ -z "$outDir" ] && outDir="$cacheDir"
 
-# nearest_checksums <git tag>
-nearest_checksums() {
-    (
-        (
-            # generate list
-            echo "$1.zzzEND"           # version.zzzEND will sort after version.shasum
-            ls -1 "$scriptDir/shasums" # list known checksum manifests
-        ) |
-            # select nearest
-            sort --version-sort |                            # sort by version
-            grep --before-context=1 --max-count=1 "zzzEND" | # locate sentinel and previous item
-            grep -v "zzzEND"                                 # remove sentinel, leaving previous/nothing
-    ) || (
-        # if all of that fails, use latest
-        ls -1 "$scriptDir/shasums" | sort --version-sort | tail -n 1
-    )
-}
-
-# env var or arg or default
-outDir="$PENUMBRA_KEYS_OUT"                  # env var output path
-[ -z "$outDir" ] && outDir="$1"              # arg output path
-[ -z "$outDir" ] && outDir="$scriptDir/keys" # default
-[ -d "$outDir" ] || mkdir -p "$outDir"       # create output dir
-# resolve absolute
-outDir=$(readlink -f "$outDir" || usage "No output directory available")
-
-# env var or arg or default
-keysVersion=$PENUMBRA_KEYS_VERSION
-[ -z $keysVersion ] && keysVersion=$2
-[ -z $keysVersion ] && keysVersion=$defaultKeysVersion
-
-# env var or arg or default to nearest version
-shaFile="$PENUMBRA_KEYS_SHA256"
-[ -z "$shaFile"] && shaFile="$3"
-[ -z "$shaFile" ] && shaFile="$scriptDir/shasums/"$(nearest_checksums $keysVersion)
-# resolve absolute
-shaFile=$(readlink -f "$shaFile" || usage "No checksum manifest available")
-
-# check_keys <dir>
-check_keys() {
-    pwd=$(pwd) # save current dir
-    (
-        # cd, check, cd back
-        cd "$1" && $shaCmd -c "$shaFile" 2>/dev/null && cd "$pwd"
-    ) || (
-        # if that fails, cd back and fail
-        cd "$pwd" && false
-    )
-    # return failure
-    return $?
-}
+shaFile="${keysVersion}.shasum"
 
 ## main ##
 
-# if good keys exist, we're already done
-check_keys "$outDir" && exit 0
-
-if [ -z $PENUMBRA_KEYS_SKIP ]; then
-    keysUrl="https://github.com/penumbra-zone/penumbra/raw/$keysVersion/crates/crypto/proof-params/src/gen/"
+./check-keys "${shaFile}" || (
+    keysUrl="https://github.com/penumbra-zone/penumbra/raw/${keysVersion}/crates/crypto/proof-params/src/gen/"
     keysGlob="{convert,delegator_vote,nullifier_derivation,output,spend,swap,swapclaim}_pk.bin"
-    curl --output-dir "$outDir/$keysVersion" --continue-at - \
-        --parallel --create-dirs --location --remote-name \
-        "$keysUrl$keysGlob"
-fi
+    curl --location --parallel --remote-name \
+        --output-dir "${cacheDir}/${keysVersion}" --create-dirs \
+        "${keysUrl}${keysGlob}"
 
-cp -v "$cacheDir/$keysVersion/"*_pk.bin "$outDir"
+    cp -v "${cacheDir}/${keysVersion}/"*_pk.bin "$outDir"
+)
 
-check_keys "$outDir"
+echo "download-keys finished" >&2

@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/transport-dom",
-  "version": "7.5.0",
+  "version": "7.5.1",
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "engine": {
@@ -19,18 +19,13 @@
     "dist"
   ],
   "exports": {
-    "./*": "./src/*.ts"
-  },
-  "publishConfig": {
-    "exports": {
-      "./*": {
-        "types": "./dist/*.d.ts",
-        "default": "./dist/*.js"
-      }
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "default": "./dist/*.js"
     }
   },
   "dependencies": {
     "@bufbuild/protobuf": "^1.10.0",
-    "@connectrpc/connect": "^1.4.0"
+    "@connectrpc/connect": "^1.6.1"
   }
 }

@@ -19,12 +19,8 @@ const fetchMetadataForSwap = async (swap: SwapRecord): Promise<UnclaimedSwapsWit
   return {
     swap,
     // If no metadata, uses assetId for asset icon display
-    asset1: asset1Metadata
-      ? asset1Metadata
-      : new Metadata({ display: uint8ArrayToBase64(assetId1.inner) }),
-    asset2: asset2Metadata
-      ? asset2Metadata
-      : new Metadata({ display: uint8ArrayToBase64(assetId2.inner) }),
+    asset1: asset1Metadata ?? new Metadata({ display: uint8ArrayToBase64(assetId1.inner) }),
+    asset2: asset2Metadata ?? new Metadata({ display: uint8ArrayToBase64(assetId2.inner) }),
   };
 };
 

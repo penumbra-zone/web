@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/perspective",
-  "version": "43.0.0",
+  "version": "56.0.0",
   "license": "(MIT OR Apache-2.0)",
   "description": "Tools for assuming different perspectives of Penumbra transactions",
   "type": "module",
@@ -21,24 +21,21 @@
     "!dist/**/*.test.*"
   ],
   "exports": {
-    "./plan/*": "./src/plan/*.ts",
-    "./transaction/*": "./src/transaction/*.ts",
-    "./translators/*": "./src/translators/*.ts"
-  },
-  "publishConfig": {
-    "exports": {
-      "./plan/*": {
-        "types": "./dist/plan/*.d.ts",
-        "default": "./dist/plan/*.js"
-      },
-      "./transaction/*": {
-        "types": "./dist/transaction/*.d.ts",
-        "default": "./dist/transaction/*.js"
-      },
-      "./translators/*": {
-        "types": "./dist/translators/*.d.ts",
-        "default": "./dist/translators/*.js"
-      }
+    "./plan/*": {
+      "types": "./dist/plan/*.d.ts",
+      "default": "./dist/plan/*.js"
+    },
+    "./transaction/*": {
+      "types": "./dist/transaction/*.d.ts",
+      "default": "./dist/transaction/*.js"
+    },
+    "./translators/*": {
+      "types": "./dist/translators/*.d.ts",
+      "default": "./dist/translators/*.js"
+    },
+    "./action-view/*": {
+      "types": "./dist/action-view/*.d.ts",
+      "default": "./dist/action-view/*.js"
     }
   },
   "devDependencies": {

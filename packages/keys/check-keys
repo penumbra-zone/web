@@ -1,0 +1,9 @@
+#!/bin/sh
+set -e
+
+shaCmd=$(which sha256sum || which shasum) || (
+    echo "No checksum tool found. Requires sha256sum or shasum in \$PATH." >&2
+    exit 69 # EX_UNAVAILABLE
+)
+
+$shaCmd -c "${1}"

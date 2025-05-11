@@ -1,0 +1,24 @@
+{
+  "name": "@repo/mock-chrome",
+  "version": "0.1.0",
+  "private": true,
+  "license": "(MIT OR Apache-2.0)",
+  "type": "module",
+  "engine": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "lint:strict": "tsc --noEmit && eslint src --max-warnings 0",
+    "test": "vitest run"
+  },
+  "exports": {
+    "./*.mock": "./src/*.mock.ts",
+    "./runtime/*.mock": "./src/runtime/*.mock.ts",
+    "./runtime/connect": "./src/runtime/connect.api.ts"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.268"
+  }
+}

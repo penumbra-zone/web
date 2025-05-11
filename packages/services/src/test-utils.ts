@@ -34,6 +34,12 @@ export interface IndexedDbMock {
   upsertAuction?: Mock;
   hasTokenBalance?: Mock;
   saveGasPrices?: Mock;
+  saveTransactionInfo?: Mock;
+  getTransactionInfo?: Mock;
+  getBlockHeightByEpoch?: Mock;
+  saveLQTHistoricalVote?: Mock;
+  getLQTHistoricalVotes?: Mock;
+  iterateLQTVotes?: Mock;
 }
 
 export interface AuctionMock {
@@ -60,6 +66,11 @@ export interface MockQuerier {
   sct?: SctMock;
   shieldedPool?: ShieldedPoolMock;
   stake?: StakeMock;
+  funding?: FundingMock;
+}
+
+export interface FundingMock {
+  lqtCheckNullifier?: Mock;
 }
 
 export interface SctMock {

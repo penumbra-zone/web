@@ -1,16 +1,24 @@
 import { CondensedBlockSyncStatus } from '@penumbra-zone/ui-deprecated/components/ui/block-sync-status';
 import { IncompatibleBrowserBanner } from '@penumbra-zone/ui-deprecated/components/ui/incompatible-browser-banner';
 import { TestnetBanner } from '@penumbra-zone/ui-deprecated/components/ui/testnet-banner';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { getChainId } from '../../fetchers/chain-id';
-import { useStatus } from '../../state/status';
+import { statusStreamStateSelector, useInitialStatus, useStatus } from '../../state/status';
 import { PagePath } from '../metadata/paths';
 import { MenuBar } from './menu/menu';
+import { useStore } from '../../state';
 
 export const Header = () => {
-  const { data, error } = useStatus();
   const [chainId, setChainId] = useState<string | undefined>();
+  const initialStatus = useInitialStatus();
+  const status = useStatus();
+  const { error: streamError } = useStore(statusStreamStateSelector);
+
+  const syncData = useMemo(
+    () => ({ ...initialStatus.data, ...status.data }),
+    [initialStatus.data, status.data],
+  );
 
   useEffect(() => {
     void getChainId().then(id => setChainId(id));
@@ -21,9 +29,9 @@ export const Header = () => {
       <IncompatibleBrowserBanner />
       <TestnetBanner chainId={chainId} />
       <CondensedBlockSyncStatus
-        fullSyncHeight={data?.fullSyncHeight}
-        latestKnownBlockHeight={data?.latestKnownBlockHeight}
-        error={error}
+        fullSyncHeight={syncData.fullSyncHeight}
+        latestKnownBlockHeight={syncData.latestKnownBlockHeight}
+        error={streamError}
       />
       <div className='flex w-full flex-col items-center justify-between px-6 md:h-[82px] md:flex-row md:gap-12 md:px-12'>
         <HeaderLogo />

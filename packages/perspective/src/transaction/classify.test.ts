@@ -42,7 +42,7 @@ describe('classifyTransaction()', () => {
       },
     });
 
-    expect(classifyTransaction(transactionView)).toBe('receive');
+    expect(classifyTransaction(transactionView).type).toBe('receive');
   });
 
   it('returns `send` for transactions with visible spends but at least one opaque output', () => {
@@ -113,7 +113,7 @@ describe('classifyTransaction()', () => {
       },
     });
 
-    expect(classifyTransaction(transactionView)).toBe('send');
+    expect(classifyTransaction(transactionView).type).toBe('send');
   });
 
   it('returns `internalTransfer` for transactions with fully visible spends, outputs, and addresses', () => {
@@ -175,7 +175,7 @@ describe('classifyTransaction()', () => {
       },
     });
 
-    expect(classifyTransaction(transactionView)).toBe('internalTransfer');
+    expect(classifyTransaction(transactionView).type).toBe('internalTransfer');
   });
 
   it('returns `swap` for transactions with a `swap` action', () => {
@@ -204,7 +204,7 @@ describe('classifyTransaction()', () => {
       },
     });
 
-    expect(classifyTransaction(transactionView)).toBe('swap');
+    expect(classifyTransaction(transactionView).type).toBe('swap');
   });
 
   it('returns `swapClaim` for transactions with a `swapClaim` action', () => {
@@ -227,7 +227,7 @@ describe('classifyTransaction()', () => {
       },
     });
 
-    expect(classifyTransaction(transactionView)).toBe('swapClaim');
+    expect(classifyTransaction(transactionView).type).toBe('swapClaim');
   });
 
   it('returns `delegate` for transactions with a `delegate` action', () => {
@@ -256,7 +256,7 @@ describe('classifyTransaction()', () => {
       },
     });
 
-    expect(classifyTransaction(transactionView)).toBe('delegate');
+    expect(classifyTransaction(transactionView).type).toBe('delegate');
   });
 
   it('returns `undelegate` for transactions with an `undelegate` action', () => {
@@ -285,7 +285,7 @@ describe('classifyTransaction()', () => {
       },
     });
 
-    expect(classifyTransaction(transactionView)).toBe('undelegate');
+    expect(classifyTransaction(transactionView).type).toBe('undelegate');
   });
 
   it('returns `undelegateClaim` for transactions with an `undelegateClaim` action', () => {
@@ -314,7 +314,7 @@ describe('classifyTransaction()', () => {
       },
     });
 
-    expect(classifyTransaction(transactionView)).toBe('undelegateClaim');
+    expect(classifyTransaction(transactionView).type).toBe('undelegateClaim');
   });
 
   it('returns `dutchAuctionSchedule` for transactions with an `actionDutchAuctionSchedule` action', () => {
@@ -324,7 +324,7 @@ describe('classifyTransaction()', () => {
       },
     });
 
-    expect(classifyTransaction(transactionView)).toBe('dutchAuctionSchedule');
+    expect(classifyTransaction(transactionView).type).toBe('dutchAuctionSchedule');
   });
 
   it('returns `dutchAuctionEnd` for transactions with an `actionDutchAuctionEnd` action', () => {
@@ -334,7 +334,7 @@ describe('classifyTransaction()', () => {
       },
     });
 
-    expect(classifyTransaction(transactionView)).toBe('dutchAuctionEnd');
+    expect(classifyTransaction(transactionView).type).toBe('dutchAuctionEnd');
   });
 
   it('returns `dutchAuctionWithdraw` for transactions with an `actionDutchAuctionWithdraw` action', () => {
@@ -344,7 +344,7 @@ describe('classifyTransaction()', () => {
       },
     });
 
-    expect(classifyTransaction(transactionView)).toBe('dutchAuctionWithdraw');
+    expect(classifyTransaction(transactionView).type).toBe('dutchAuctionWithdraw');
   });
 
   it("returns `unknown` for transactions that don't fit the above categories", () => {
@@ -384,6 +384,6 @@ describe('classifyTransaction()', () => {
       },
     });
 
-    expect(classifyTransaction(transactionView)).toBe('unknown');
+    expect(classifyTransaction(transactionView).type).toBe('unknown');
   });
 });

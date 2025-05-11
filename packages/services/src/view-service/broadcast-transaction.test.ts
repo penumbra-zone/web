@@ -116,7 +116,6 @@ describe('BroadcastTransaction request handler', () => {
     mockTendermint.broadcastTx?.mockResolvedValue(new TransactionId());
     await expect(
       (async () => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         for await (const _ of broadcastTransaction(broadcastTransactionRequest, mockCtx)) {
           /* noop */
         }
@@ -128,7 +127,6 @@ describe('BroadcastTransaction request handler', () => {
     mockTendermint.broadcastTx?.mockRejectedValue(new Error('broadcast failed'));
     await expect(
       (async () => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         for await (const _ of broadcastTransaction(broadcastTransactionRequest, mockCtx)) {
           /* noop */
         }

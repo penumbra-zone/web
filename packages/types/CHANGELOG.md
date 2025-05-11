@@ -1,5 +1,115 @@
 # @penumbra-zone/types
 
+## 33.1.0
+
+### Minor Changes
+
+- 085e855: use asset id instead of metadata in liquidity tournament idb table
+
+## 33.0.0
+
+### Minor Changes
+
+- 93f1d05: proto and storage changes to support querying tournament votes
+
+### Patch Changes
+
+- Updated dependencies [93f1d05]
+  - @penumbra-zone/protobuf@10.0.0
+  - @penumbra-zone/bech32m@16.0.0
+  - @penumbra-zone/getters@26.0.0
+
+## 32.2.1
+
+### Patch Changes
+
+- 405b5b1: Fix swap ActionViews not rendering values correctly
+- Updated dependencies [405b5b1]
+  - @penumbra-zone/getters@25.0.1
+
+## 32.2.0
+
+### Minor Changes
+
+- ce4c43e: Add empty string case to round fn
+
+## 32.1.0
+
+### Minor Changes
+
+- b0e0eef: Add exponentialNotation to round fn
+- 85022e1: remove `getUnbondingStartHeight` export from assets regex module
+
+### Patch Changes
+
+- 5c45f2c: Fix `pnum` failing on `undefined` in denom exponent
+- 3c48120: Fix Swap getters for ActionViews
+
+## 32.0.0
+
+### Minor Changes
+
+- 15d768f: transaction summary support for transaction info rpc
+
+### Patch Changes
+
+- Updated dependencies [15d768f]
+  - @penumbra-zone/protobuf@9.0.0
+  - @penumbra-zone/bech32m@15.0.0
+  - @penumbra-zone/getters@25.0.0
+
+## 31.0.0
+
+### Patch Changes
+
+- Updated dependencies [d0cc2ee]
+  - @penumbra-zone/getters@24.1.0
+
+## 30.0.0
+
+### Major Changes
+
+- 49ae3ab: LQT integration in web packages
+
+### Patch Changes
+
+- Updated dependencies [49ae3ab]
+  - @penumbra-zone/protobuf@8.0.0
+  - @penumbra-zone/bech32m@14.0.0
+  - @penumbra-zone/getters@24.0.0
+
+## 29.1.0
+
+### Minor Changes
+
+- e51bc61: transaction table indexes by height and save txp and txv in indexdb
+
+## 29.0.0
+
+### Patch Changes
+
+- Updated dependencies [68b8f36]
+  - @penumbra-zone/protobuf@7.2.0
+  - @penumbra-zone/bech32m@13.0.0
+  - @penumbra-zone/getters@23.0.0
+
+## 28.0.0
+
+### Minor Changes
+
+- 6869c52: extend alternative fees to LPs
+- 29dd11a: - storage: add subaccount filter to `getOwnedPositionIds` method
+  - protobuf: sync latest changes in penumbra protobufs
+  - services: add subaccount filter to `ownedPositionIds` method in ViewService
+  - types: update indexedDB schema
+
+### Patch Changes
+
+- Updated dependencies [29dd11a]
+  - @penumbra-zone/protobuf@7.1.0
+  - @penumbra-zone/bech32m@12.0.0
+  - @penumbra-zone/getters@22.0.0
+
 ## 27.1.0
 
 ### Minor Changes

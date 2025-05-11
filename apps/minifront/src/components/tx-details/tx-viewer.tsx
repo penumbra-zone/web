@@ -29,7 +29,7 @@ const OPTIONS = [
 ];
 
 const getMetadata: MetadataFetchFn = async ({ assetId }) => {
-  const feeAssetId = assetId ? assetId : new ChainRegistryClient().bundled.globals().stakingAssetId;
+  const feeAssetId = assetId ?? new ChainRegistryClient().bundled.globals().stakingAssetId;
 
   const { denomMetadata } = await penumbra
     .service(ViewService)
@@ -41,7 +41,7 @@ export const TxViewer = ({ txInfo }: { txInfo?: TransactionInfo }) => {
   const [option, setOption] = useState(TxDetailsTab.PRIVATE);
 
   // classify the transaction type
-  const transactionClassification = classifyTransaction(txInfo?.view);
+  const transactionClassification = classifyTransaction(txInfo?.view).type;
 
   // filter for receiver view
   const showReceiverTransactionView = transactionClassification === 'send';

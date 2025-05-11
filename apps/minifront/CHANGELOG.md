@@ -1,5 +1,233 @@
 # minifront
 
+## 6.34.1
+
+### Patch Changes
+
+- 270def6: feat(minifront): Update v2 header navigation tabs (Portfolio, Shielding), refactor layout to match the minifront v2 layout, and fix active tab highlighting
+- Updated dependencies [085e855]
+  - @penumbra-zone/types@33.1.0
+  - @penumbra-zone/crypto-web@43.0.0
+  - @penumbra-zone/ui-deprecated@19.0.1
+  - @penumbra-zone/perspective@56.0.0
+
+## 6.34.0
+
+### Minor Changes
+
+- 694319c: bump registry version
+
+### Patch Changes
+
+- Updated dependencies [4a51a46]
+  - @penumbra-zone/ui-deprecated@19.0.0
+
+## 6.33.2
+
+### Patch Changes
+
+- Updated dependencies [93f1d05]
+  - @penumbra-zone/protobuf@10.0.0
+  - @penumbra-zone/types@33.0.0
+  - @penumbra-zone/bech32m@16.0.0
+  - @penumbra-zone/client@27.0.0
+  - @penumbra-zone/getters@26.0.0
+  - @penumbra-zone/perspective@55.0.0
+  - @penumbra-zone/ui-deprecated@18.0.0
+  - @penumbra-zone/crypto-web@42.0.0
+
+## 6.33.1
+
+### Patch Changes
+
+- @penumbra-zone/perspective@54.0.0
+- @penumbra-zone/ui-deprecated@17.1.6
+
+## 6.33.0
+
+### Minor Changes
+
+- 51516ba: addressing bug fixes with syncing modal
+
+### Patch Changes
+
+- @penumbra-zone/perspective@53.0.2
+- @penumbra-zone/ui-deprecated@17.1.5
+
+## 6.32.2
+
+### Patch Changes
+
+- Updated dependencies [405b5b1]
+  - @penumbra-zone/getters@25.0.1
+  - @penumbra-zone/types@32.2.1
+  - @penumbra-zone/perspective@53.0.1
+  - @penumbra-zone/ui-deprecated@17.1.4
+  - @penumbra-zone/crypto-web@41.0.1
+
+## 6.32.1
+
+### Patch Changes
+
+- Updated dependencies [ce4c43e]
+  - @penumbra-zone/types@32.2.0
+  - @penumbra-zone/crypto-web@41.0.0
+  - @penumbra-zone/ui-deprecated@17.1.3
+  - @penumbra-zone/perspective@53.0.0
+
+## 6.32.0
+
+### Minor Changes
+
+- 85022e1: fix unbonding penalty range calculation
+
+### Patch Changes
+
+- 80148ae: Fix bugs related to transaction history and transaction/action views
+- Updated dependencies [80148ae]
+- Updated dependencies [a5e14e9]
+- Updated dependencies [b0e0eef]
+- Updated dependencies [5c45f2c]
+- Updated dependencies [85022e1]
+- Updated dependencies [3c48120]
+  - @penumbra-zone/ui-deprecated@17.1.2
+  - @penumbra-zone/perspective@52.0.0
+  - @penumbra-zone/types@32.1.0
+  - @penumbra-zone/crypto-web@40.0.0
+
+## 6.31.2
+
+### Patch Changes
+
+- 3f8d59f: bump ski-go widget dep
+  - @penumbra-zone/perspective@51.0.0
+  - @penumbra-zone/ui-deprecated@17.1.1
+
+## 6.31.1
+
+### Patch Changes
+
+- 987547a: reduce status stream timeout
+
+## 6.31.0
+
+### Minor Changes
+
+- e272767: minimal reversion to disable t-addr support in minifront
+
+### Patch Changes
+
+- Updated dependencies [e272767]
+  - @penumbra-zone/ui-deprecated@17.1.0
+
+## 6.30.0
+
+### Minor Changes
+
+- 68a1cd5: reduce status stream timeout
+- 871eeba: re-request status stream when failed
+
+### Patch Changes
+
+- Updated dependencies [521caaa]
+- Updated dependencies [a51a752]
+- Updated dependencies [521caaa]
+- Updated dependencies [ca71c02]
+- Updated dependencies [a11bfe3]
+- Updated dependencies [2dac6ab]
+- Updated dependencies [15d768f]
+- Updated dependencies [aaaa775]
+  - @penumbra-zone/transport-dom@7.5.1
+  - @penumbra-zone/ui-deprecated@17.0.0
+  - @penumbra-zone/protobuf@9.0.0
+  - @penumbra-zone/types@32.0.0
+  - @penumbra-zone/perspective@50.0.0
+  - @penumbra-zone/client@26.0.0
+  - @penumbra-zone/bech32m@15.0.0
+  - @penumbra-zone/getters@25.0.0
+  - @penumbra-zone/crypto-web@39.0.0
+
+## 6.29.1
+
+### Patch Changes
+
+- Updated dependencies [d0cc2ee]
+  - @penumbra-zone/getters@24.1.0
+  - @penumbra-zone/perspective@49.0.0
+  - @penumbra-zone/types@31.0.0
+  - @penumbra-zone/ui-deprecated@16.0.1
+  - @penumbra-zone/crypto-web@38.0.0
+
+## 6.29.0
+
+### Minor Changes
+
+- 03597b7: bump skip widget to latest to fix penumbra noble transparent addresses issue
+
+### Patch Changes
+
+- Updated dependencies [49ae3ab]
+  - @penumbra-zone/protobuf@8.0.0
+  - @penumbra-zone/types@30.0.0
+  - @penumbra-zone/ui-deprecated@16.0.0
+  - @penumbra-zone/perspective@48.0.0
+  - @penumbra-zone/bech32m@14.0.0
+  - @penumbra-zone/client@25.0.0
+  - @penumbra-zone/getters@24.0.0
+  - @penumbra-zone/crypto-web@37.0.0
+
+## 6.28.5
+
+### Patch Changes
+
+- 4a883bf: bump registry versions in web packages
+
+## 6.28.4
+
+### Patch Changes
+
+- Updated dependencies [e51bc61]
+  - @penumbra-zone/types@29.1.0
+  - @penumbra-zone/crypto-web@36.0.0
+  - @penumbra-zone/ui-deprecated@15.0.1
+  - @penumbra-zone/perspective@47.0.0
+
+## 6.28.3
+
+### Patch Changes
+
+- Updated dependencies [68b8f36]
+  - @penumbra-zone/protobuf@7.2.0
+  - @penumbra-zone/bech32m@13.0.0
+  - @penumbra-zone/client@24.0.0
+  - @penumbra-zone/getters@23.0.0
+  - @penumbra-zone/perspective@46.0.0
+  - @penumbra-zone/types@29.0.0
+  - @penumbra-zone/ui-deprecated@15.0.0
+  - @penumbra-zone/crypto-web@35.0.0
+
+## 6.28.2
+
+### Patch Changes
+
+- Updated dependencies [6869c52]
+- Updated dependencies [29dd11a]
+  - @penumbra-zone/types@28.0.0
+  - @penumbra-zone/protobuf@7.1.0
+  - @penumbra-zone/crypto-web@34.0.0
+  - @penumbra-zone/ui-deprecated@14.0.0
+  - @penumbra-zone/bech32m@12.0.0
+  - @penumbra-zone/client@23.0.0
+  - @penumbra-zone/getters@22.0.0
+  - @penumbra-zone/perspective@45.0.0
+
+## 6.28.1
+
+### Patch Changes
+
+- @penumbra-zone/perspective@44.0.0
+- @penumbra-zone/ui-deprecated@13.0.2
+
 ## 6.28.0
 
 ### Minor Changes

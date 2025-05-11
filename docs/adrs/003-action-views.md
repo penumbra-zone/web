@@ -43,7 +43,7 @@ This specification is intended to inform what information should be comprehended
 - `BatchSwapOutputData`: <u>**_opaque_**</u> field since the BSOD in the TxP does not leak any information about the specific output notes that the view service computes for the swap using the BSOD. Computing the output notes already assumes decrypting the swap ciphertext. The BSOD contains the results of the batch swap and is emitted in an event.
 - `ValueView`: <u>**_opaque_**</u> field since the swap values are in the clear.
 - `Metadata`: <u>**_opaque_**</u> field and the metadata is reported on-chain.
-- `SwapPlaintext`: <u>**_visible_**</u> field since the decrypted swap ciphertext enables, alongside the BSOD, to retrieve output notes, which amonst other fields includes the private address controlling the note.
+- `SwapPlaintext`: <u>**_visible_**</u> field since the decrypted swap ciphertext enables, alongside the BSOD, to retrieve output notes, which amongst other fields includes the private address controlling the note.
 - `TransactionId`: <u>**_visible_**</u> field since it's associated with a commitment that will eventually be nullified, and since nullifiers are public, revealing the transaction ID creates a link between the commitment and the nullifier that commitment nullifies.
 - `NoteView`: <u>**_visible_**</u> field since it consists of sensitive fields like the claim address which should not be leaked.
 
@@ -87,7 +87,7 @@ This specification is intended to inform what information should be comprehended
 ## 8. [ActionDutchAuctionSchedule View](https://buf.build/penumbra-zone/penumbra/docs/78be1d64b1cb484ba4bc666d54dc76c5/penumbra.core.component.auction.v1alpha1#penumbra.core.component.auction.v1alpha1.ActionDutchAuctionSchedule)
 
 - `ActionDutchAuctionSchedule`
-  - `DutchAuctionDescription`: <u>**_opaque_**</u> field since the amounts and asset types can be public similiar to swaps.
+  - `DutchAuctionDescription`: <u>**_opaque_**</u> field since the amounts and asset types can be public similar to swaps.
   - `AuctionId`: <u>**_opaque_**</u> field since the unique identifier reveals no information about the auction.
   - `Metadata`: <u>**_opaque_**</u> field that augments the view with additional input and output metadata to assist clients in rendering its contents.
 

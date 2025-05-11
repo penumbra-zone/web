@@ -4,43 +4,46 @@ import { Button } from '@penumbra-zone/ui-deprecated/Button';
 import { Density } from '@penumbra-zone/ui-deprecated/Density';
 import { Pill } from '@penumbra-zone/ui-deprecated/Pill';
 import { Text } from '@penumbra-zone/ui-deprecated/Text';
-import { statusSelector, useStatus } from '../../../state/status.ts';
+import {
+  statusStreamStateSelector,
+  syncPercentSelector,
+  useStatus,
+} from '../../../state/status.ts';
 import { useMemo } from 'react';
+import { useStore } from '../../../state';
 
 export const StatusPopover = () => {
-  const status = useStatus({
-    select: statusSelector,
-  });
+  const sync = useStatus({ select: syncPercentSelector });
+  const { error: streamError } = useStore(statusStreamStateSelector);
 
   // a ReactNode displaying the sync status in form of a pill
   const pill = useMemo(() => {
-    // isCatchingUp is undefined when the status is not yet loaded
-    if (status?.isCatchingUp === undefined) {
+    if (sync?.percentSyncedNumber === undefined) {
       return null;
     }
 
-    if (status.error) {
+    if (streamError) {
       return <Pill context='technical-destructive'>Block Sync Error</Pill>;
     }
 
-    if (status.percentSyncedNumber === 1) {
+    if (sync.percentSyncedNumber === 1) {
       return <Pill context='technical-success'>Blocks Synced</Pill>;
     }
 
     return <Pill context='technical-caution'>Block Syncing</Pill>;
-  }, [status]);
+  }, [sync, streamError]);
 
   const popoverContext = useMemo<PopoverContext>(() => {
-    if (status?.isCatchingUp === undefined) {
+    if (sync?.percentSyncedNumber === undefined) {
       return 'default';
-    } else if (status.error) {
+    } else if (streamError) {
       return 'error';
-    } else if (status.percentSyncedNumber === 1) {
+    } else if (sync.percentSyncedNumber === 1) {
       return 'success';
     } else {
       return 'caution';
     }
-  }, [status]);
+  }, [sync, streamError]);
 
   return (
     <Popover>
@@ -49,21 +52,21 @@ export const StatusPopover = () => {
           Status
         </Button>
       </Popover.Trigger>
-      {status?.isCatchingUp !== undefined && (
+      {sync?.percentSyncedNumber !== undefined && (
         <Popover.Content context={popoverContext} align='end' side='bottom'>
           <Density compact>
             <div className='flex flex-col gap-4'>
               <div className='flex flex-col gap-2'>
                 <Text technical>Status</Text>
                 {pill}
-                {!!status.error && String(status.error)}
+                {!!streamError && String(streamError)}
               </div>
               <div className='flex flex-col gap-2'>
                 <Text technical>Block Height</Text>
                 <Pill context='technical-default'>
-                  {status.latestKnownBlockHeight !== status.fullSyncHeight
-                    ? `${status.fullSyncHeight} of ${status.latestKnownBlockHeight}`
-                    : `${status.latestKnownBlockHeight}`}
+                  {sync.data?.latestKnownBlockHeight !== sync.data?.fullSyncHeight
+                    ? `${sync.data?.fullSyncHeight} of ${sync.data?.latestKnownBlockHeight}`
+                    : `${sync.data?.latestKnownBlockHeight}`}
                 </Pill>
               </div>
             </div>
