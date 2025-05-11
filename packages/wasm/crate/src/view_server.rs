@@ -114,7 +114,7 @@ impl ViewServer {
         let fvk: FullViewingKey = FullViewingKey::decode(full_viewing_key)?;
         let constants = serde_wasm_bindgen::from_value(idb_constants)?;
 
-        let tree: Tree = bincode::deserialize(&compact_frontier)
+        let tree: Tree = bincode::deserialize(compact_frontier)
             .map_err(|e| JsValue::from_str(&format!("Failed to deserialize frontier: {}", e)))
             .expect("frontier snapshot");
 
