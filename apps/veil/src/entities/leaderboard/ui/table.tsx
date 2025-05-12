@@ -110,7 +110,8 @@ export const LeaderboardTable = observer(() => {
             LPs Leaderboard
           </Text>
 
-          <AssetSelector assets={assets} balances={balances} value={quote} onChange={setQuote} />
+          {/* @TODO convert volume & fees into selected asset */}
+          {/* <AssetSelector assets={assets} balances={balances} value={quote} onChange={setQuote} /> */}
         </div>
 
         {connected && (
