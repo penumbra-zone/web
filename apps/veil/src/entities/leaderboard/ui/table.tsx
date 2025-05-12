@@ -17,7 +17,6 @@ import { useAssets } from '@/shared/api/assets';
 import { useBalances } from '@/shared/api/balances';
 import { stateToString } from '@/entities/position/model/state-to-string';
 import { useSortableTableHeaders } from '@/pages/tournament/ui/sortable-table-header';
-<<<<<<< HEAD
 import { useCurrentEpoch } from '@/pages/tournament/api/use-current-epoch';
 import { useLpLeaderboard } from '@/entities/leaderboard/api/use-lp-leaderboard';
 import { LpLeaderboardSortKey } from '@/entities/leaderboard/api/utils';
@@ -27,10 +26,6 @@ import { observer } from 'mobx-react-lite';
 import { connectionStore } from '@/shared/model/connection';
 import { useMyLpLeaderboard } from '@/entities/leaderboard/api/use-my-lp-leaderboard';
 import { round } from '@penumbra-zone/types/round';
-=======
-import { formatAge, getAssetId } from './utils';
-import { useTournamentSummary } from '@/pages/tournament/api/use-tournament-summary';
->>>>>>> main
 
 const Tabs = {
   AllLPs: 'All LPs',
@@ -51,26 +46,19 @@ export const LeaderboardTable = observer(() => {
   const [limit, setLimit] = useState(10);
   const { getTableHeader, sortBy } = useSortableTableHeaders<LpLeaderboardSortKey>('points');
 
-<<<<<<< HEAD
   const { data: assets } = useAssets();
   const { data: balances } = useBalances();
   const { epoch, isLoading: epochLoading } = useCurrentEpoch();
 
   const umMetadata = useMemo(() => {
-    return assets?.find(asset => asset.symbol === 'UM');
+    return assets.find(asset => asset.symbol === 'UM');
   }, [assets]);
   const getAssetMetadata = useCallback(
     (assetId: AssetId) => {
-      return assets?.find(asset => asset.penumbraAssetId?.equals(assetId));
+      return assets.find(asset => asset.penumbraAssetId?.equals(assetId));
     },
     [assets],
   );
-=======
-  const { data: summary } = useTournamentSummary({
-    limit: 1,
-    page: 1,
-  });
->>>>>>> main
 
   const {
     data: leaderboard,

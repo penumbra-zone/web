@@ -5,6 +5,7 @@ import {
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { bech32mPositionId } from '@penumbra-zone/bech32m/plpid';
 import { apiPostFetch } from '@/shared/utils/api-fetch';
+
 import {
   LpRewardsRequest,
   LpRewardsApiResponse,
@@ -58,20 +59,24 @@ export const useLpRewards = (
   sortKey?: LpRewardsSortKey | '',
   sortDirection?: LpRewardsSortDirection,
 ): UseQueryResult<LpRewardsResponse> => {
-  const [positionIds, setPositionIds] = useState<string[]>([]);
+  const { data: positionIds } = useQuery({
+    queryKey: ['owned-positions', subaccount],
+    queryFn: async () => {
+      const ids: string[] = [];
 
-  useEffect(() => {
-    void Array.fromAsync(
-      penumbra.service(ViewService).ownedPositionIds({
+      const result = penumbra.service(ViewService).ownedPositionIds({
         subaccount: new AddressIndex({ account: subaccount }),
-      }),
-    ).then(ownedRes => {
-      const positionIds = ownedRes
-        .map(r => r.positionId && bech32mPositionId(r.positionId))
-        .filter(Boolean) as string[];
-      setPositionIds(positionIds);
-    });
-  }, [subaccount]);
+      });
+      for await (const item of result) {
+        const id = item.positionId;
+        if (id) {
+          ids.push(bech32mPositionId(id));
+        }
+      }
+
+      return ids;
+    },
+  });
 
   const query = useQuery({
     queryKey: ['lp-rewards', ...(positionIds ?? []), page, limit, sortKey, sortDirection],
