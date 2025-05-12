@@ -12,9 +12,7 @@ import { TableCell } from '@penumbra-zone/ui/TableCell';
 import { SegmentedControl } from '@penumbra-zone/ui/SegmentedControl';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { Pagination } from '@penumbra-zone/ui/Pagination';
-import { AssetSelector, AssetSelectorValue } from '@penumbra-zone/ui/AssetSelector';
 import { useAssets } from '@/shared/api/assets';
-import { useBalances } from '@/shared/api/balances';
 import { stateToString } from '@/entities/position/model/state-to-string';
 import { useSortableTableHeaders } from '@/pages/tournament/ui/sortable-table-header';
 import { useLpLeaderboard } from '@/entities/leaderboard/api/use-lp-leaderboard';
@@ -42,13 +40,10 @@ export const LeaderboardTable = observer(() => {
   const page = Number(searchParams?.get('page') ?? 1);
   const [currentPage, setCurrentPage] = useState(page);
   const [parent] = useAutoAnimate();
-  const [quote, setQuote] = useState<AssetSelectorValue>();
   const [tab, setTab] = useState<Tab>(Tabs.AllLPs);
   const [limit, setLimit] = useState(10);
   const { getTableHeader, sortBy } = useSortableTableHeaders<LpLeaderboardSortKey>('points');
-
   const { data: assets } = useAssets();
-  const { data: balances } = useBalances();
 
   const umMetadata = useMemo(() => {
     return assets.find(asset => asset.symbol === 'UM');
