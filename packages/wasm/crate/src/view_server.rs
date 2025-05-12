@@ -105,7 +105,7 @@ impl ViewServer {
 
     /// Scans a chunk of the genesis block for notes that can be trial decrypted with the viewing key.
     #[wasm_bindgen]
-    pub async fn trial_decrypt_genesis_chunk(
+    pub async fn scan_genesis_chunk(
         &mut self,
         start: u64,
         partial_compact_block: &[u8],
@@ -143,7 +143,7 @@ impl ViewServer {
     }
 
     /// Reconstructs the state commitment tree (SCT) from the full genesis block using
-    /// previously decrypted notes.
+    /// the genesis advice.
     #[wasm_bindgen]
     pub async fn genesis_advice(&mut self, full_compact_block: &[u8]) -> WasmResult<bool> {
         utils::set_panic_hook();

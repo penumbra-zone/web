@@ -53,13 +53,13 @@ export class ViewServer implements ViewServerInterface {
   }
 
   // Trial decrypts a chunk of state payloads in the genesis block.
-  async trialDecryptGenesisChunk(
+  async scanGenesisChunk(
     start: bigint,
     partialCompactBlock: CompactBlock,
     skipTrialDecrypt: boolean,
   ) {
     const res = partialCompactBlock.toBinary();
-    return this.wasmViewServer.trial_decrypt_genesis_chunk(start, res, skipTrialDecrypt);
+    return this.wasmViewServer.scan_genesis_chunk(start, res, skipTrialDecrypt);
   }
 
   // Processes accumulated genesis notes by constructing the state commitment tree (SCT).

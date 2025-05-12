@@ -6,7 +6,7 @@ import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 export interface ViewServerInterface {
   scanBlock(compactBlock: CompactBlock, skipTrialDecrypt: boolean): Promise<boolean>;
 
-  trialDecryptGenesisChunk(
+  scanGenesisChunk(
     start: bigint,
     partialCompactBlock: CompactBlock,
     skipTrialDecrypt: boolean,
