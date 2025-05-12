@@ -25,7 +25,7 @@ import { useStakingTokenMetadata } from '@/shared/api/registry';
 function LoadingRows() {
   return (
     <>
-      {new Array(5).map(x => (
+      {new Array(5).map((_, x) => (
         <div key={x}>
           <TableCell cell loading>
             null
