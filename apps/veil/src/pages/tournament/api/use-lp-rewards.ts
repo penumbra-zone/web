@@ -84,6 +84,9 @@ export const useLpRewards = (
     // but it's fine to let people reload the page to see that.
     staleTime: Infinity,
     queryFn: async () => {
+      if (!positionIds?.length) {
+        return { data: [], total: 0, totalRewards: 0 };
+      }
       return apiPostFetch<LpRewardsApiResponse>('/api/tournament/lp-rewards', {
         positionIds,
         page,
@@ -92,11 +95,10 @@ export const useLpRewards = (
         sortDirection,
       } as LpRewardsRequest).then(async resp => ({
         ...resp,
-        data: resp.data.length ? await enrichLpRewards(resp.data) : [],
+        data: await enrichLpRewards(resp.data),
       }));
     },
-    // Also handles the case where we have an empty array
-    enabled: !!positionIds,
+    enabled: positionIds !== undefined,
   });
 
   return query;
