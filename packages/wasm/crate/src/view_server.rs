@@ -99,6 +99,7 @@ impl ViewServer {
             storage: init_idb_storage(constants).await?,
             last_position: None,
             last_forgotten: None,
+            genesis_advice: None,
         };
         Ok(view_server)
     }
@@ -118,8 +119,6 @@ impl ViewServer {
         let tree: Tree = bincode::deserialize(compact_frontier)
             .map_err(|e| JsValue::from_str(&format!("Failed to deserialize frontier: {}", e)))
             .expect("frontier snapshot");
-
-        // TODO: optionally verify merkle inclusion proof against provided anchor before initializing view server.
 
         let view_server = Self {
             latest_height: u64::MAX,
