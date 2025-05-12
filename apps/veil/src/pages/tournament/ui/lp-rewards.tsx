@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { ChevronRight, ExternalLink } from 'lucide-react';
 import { bech32mPositionId } from '@penumbra-zone/bech32m/plpid';
@@ -19,18 +19,36 @@ import { connectionStore } from '@/shared/model/connection';
 import { useRouter } from 'next/navigation';
 import { LpRewardsSortKey } from '../server/lp-rewards';
 import { ValueView, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { useAssets } from '@/shared/api/assets';
 import { pnum } from '@penumbra-zone/types/pnum';
+import { useStakingTokenMetadata } from '@/shared/api/registry';
 
-function LpRewardRow({
-  lpReward,
-  loading,
-  umMetadata,
-}: {
-  lpReward: LpReward;
-  loading: boolean;
-  umMetadata: Metadata | undefined;
-}) {
+function LoadingRows() {
+  return (
+    <>
+      {new Array(5).map(x => (
+        <div key={x}>
+          <TableCell cell loading>
+            null
+          </TableCell>
+          <TableCell cell loading>
+            null
+          </TableCell>
+          <TableCell cell loading>
+            null
+          </TableCell>
+          <TableCell cell loading>
+            null
+          </TableCell>
+          <TableCell cell loading>
+            null
+          </TableCell>
+        </div>
+      ))}
+    </>
+  );
+}
+
+function LpRewardRow({ lpReward, umMetadata }: { lpReward: LpReward; umMetadata: Metadata }) {
   const router = useRouter();
 
   return (
@@ -40,36 +58,28 @@ function LpRewardRow({
       }}
       className='grid grid-cols-subgrid col-span-5 hover:bg-action-hoverOverlay transition-colors cursor-pointer'
     >
-      <TableCell cell loading={loading}>
-        #{lpReward.epoch}
+      <TableCell cell>#{lpReward.epoch}</TableCell>
+      <TableCell cell>
+        <div className='max-w-[370px] truncate'>{bech32mPositionId(lpReward.positionId)}</div>
+        <ExternalLink className='size-3 min-w-3 text-neutral-light' />
       </TableCell>
-      <TableCell cell loading={loading}>
-        {!loading && (
-          <>
-            <div className='max-w-[370px] truncate'>{bech32mPositionId(lpReward.positionId)}</div>
-            <ExternalLink className='size-3 min-w-3 text-neutral-light' />
-          </>
-        )}
-      </TableCell>
-      <TableCell cell loading={loading}>
-        {umMetadata && (
-          <ValueViewComponent
-            valueView={
-              new ValueView({
-                valueView: {
-                  case: 'knownAssetId',
-                  value: {
-                    amount: pnum(lpReward.rewards).toAmount(),
-                    metadata: umMetadata as unknown as Metadata,
-                  },
+      <TableCell cell>
+        <ValueViewComponent
+          valueView={
+            new ValueView({
+              valueView: {
+                case: 'knownAssetId',
+                value: {
+                  amount: pnum(lpReward.rewards).toAmount(),
+                  metadata: umMetadata,
                 },
-              })
-            }
-            priority='tertiary'
-          />
-        )}
+              },
+            })
+          }
+          priority='tertiary'
+        />
       </TableCell>
-      <TableCell cell loading={loading}>
+      <TableCell cell>
         {(lpReward.isWithdrawable || lpReward.isWithdrawn) && (
           <Density slim>
             <div>
@@ -94,7 +104,7 @@ function LpRewardRow({
           </Density>
         )}
       </TableCell>
-      <TableCell cell loading={loading}>
+      <TableCell cell>
         <Density slim>
           <Button iconOnly icon={ChevronRight}>
             Go to position information
@@ -110,10 +120,7 @@ export const LpRewards = observer(() => {
   const [page, setPage] = useState(BASE_PAGE);
   const [limit, setLimit] = useState(BASE_LIMIT);
   const { getTableHeader, sortBy } = useSortableTableHeaders<keyof LpReward>('epoch');
-  const { data: assets } = useAssets();
-  const umMetadata = useMemo(() => {
-    return assets.find(asset => asset.symbol === 'UM');
-  }, [assets]);
+  const { data: umMetadata } = useStakingTokenMetadata();
 
   const query = useLpRewards(
     subaccount,
@@ -122,11 +129,10 @@ export const LpRewards = observer(() => {
     sortBy.key as LpRewardsSortKey,
     sortBy.direction,
   );
-  const { data: queryData, isLoading, isFetched } = query;
+  const { data: queryData, isPending } = query;
   const { data, total } = queryData ?? { data: [], total: 0 };
-  const loadingArr = new Array(5).fill({ positionId: {} }) as LpReward[];
-  const rewards = data.length > 0 ? data : loadingArr;
-  const loading = isLoading || !isFetched;
+  const loading = isPending;
+  const rewards = data;
 
   const onLimitChange = (newLimit: number) => {
     setLimit(newLimit);
@@ -145,20 +151,17 @@ export const LpRewards = observer(() => {
             <TableCell heading> </TableCell>
           </div>
 
-          {rewards.map((lpReward, index) => (
-            <LpRewardRow
-              key={
-                loading ? index : String(lpReward.epoch) + bech32mPositionId(lpReward.positionId)
-              }
-              lpReward={lpReward}
-              umMetadata={umMetadata}
-              loading={loading}
-            />
-          ))}
+          {loading ? (
+            <LoadingRows />
+          ) : (
+            rewards.map((lpReward, index) => (
+              <LpRewardRow key={index} lpReward={lpReward} umMetadata={umMetadata} />
+            ))
+          )}
         </div>
       </Density>
 
-      {!isLoading && total >= BASE_LIMIT && (
+      {!loading && total >= BASE_LIMIT && (
         <Pagination
           totalItems={total}
           visibleItems={rewards.length}
