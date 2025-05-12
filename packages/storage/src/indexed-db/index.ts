@@ -231,6 +231,14 @@ export class IndexedDb implements IndexedDbInterface {
     await this.u.updateAll(txs);
   }
 
+  async saveFullSyncHeight(height: bigint) {
+    await this.u.update({
+      table: 'FULL_SYNC_HEIGHT',
+      value: height,
+      key: 'height',
+    });
+  }
+
   async getFullSyncHeight() {
     return this.db.get('FULL_SYNC_HEIGHT', 'height');
   }
@@ -1042,7 +1050,7 @@ export class IndexedDb implements IndexedDbInterface {
       txs.add({ table: 'TREE_HASHES', value: h });
     }
 
-    // TODO: What about updates.delete_ranges?
+    // TODO: What about updates.delete_ranges (https://github.com/penumbra-zone/web/issues/818)?
   }
 
   private addNewNotes(txs: IbdUpdates, notes: SpendableNoteRecord[]): void {

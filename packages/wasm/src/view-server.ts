@@ -12,16 +12,21 @@ import type { IdbConstants } from '@penumbra-zone/types/indexed-db';
 import type { ViewServerInterface } from '@penumbra-zone/types/servers';
 import { Address, FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { isControlledAddress } from './address.js';
+import { SctFrontierResponse } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
 
 declare global {
   // eslint-disable-next-line no-var -- TODO: explain
   var __DEV__: boolean | undefined;
 }
 
-interface ViewServerProps {
+interface BaseViewServerProps {
   fullViewingKey: FullViewingKey;
   getStoredTree: () => Promise<StateCommitmentTree>;
   idbConstants: IdbConstants;
+}
+
+interface SnapshotViewServerProps extends BaseViewServerProps {
+  compact_frontier: SctFrontierResponse;
 }
 
 interface FlushResult {
@@ -43,12 +48,27 @@ export class ViewServer implements ViewServerInterface {
     fullViewingKey,
     getStoredTree,
     idbConstants,
-  }: ViewServerProps): Promise<ViewServer> {
+  }: BaseViewServerProps): Promise<ViewServer> {
     const wvs = await WasmViewServer.new(
       fullViewingKey.toBinary(),
       await getStoredTree(),
       idbConstants,
     );
+    return new this(wvs, fullViewingKey, getStoredTree, idbConstants);
+  }
+
+  static async initialize_from_snapshot({
+    fullViewingKey,
+    getStoredTree,
+    idbConstants,
+    compact_frontier,
+  }: SnapshotViewServerProps): Promise<ViewServer> {
+    const wvs = await WasmViewServer.new_snapshot(
+      fullViewingKey.toBinary(),
+      idbConstants,
+      compact_frontier.compactFrontier,
+    );
+
     return new this(wvs, fullViewingKey, getStoredTree, idbConstants);
   }
 
@@ -72,8 +92,8 @@ export class ViewServer implements ViewServerInterface {
   // Makes update to internal state-commitment-tree as a side effect.
   // Should extract updates via this.flushUpdates().
   async scanBlock(compactBlock: CompactBlock, skipTrialDecrypt: boolean): Promise<boolean> {
-    const res = compactBlock.toBinary();
-    return this.wasmViewServer.scan_block(res, skipTrialDecrypt);
+    const block = compactBlock.toBinary();
+    return this.wasmViewServer.scan_block(block, skipTrialDecrypt);
   }
 
   // Resets the state of the wasmViewServer to the one set in storage

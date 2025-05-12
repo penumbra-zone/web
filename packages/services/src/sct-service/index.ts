@@ -5,7 +5,7 @@ import { timestampByHeight } from './timestamp-by-height.js';
 
 export type Impl = ServiceImpl<typeof SctService>;
 
-export const sctImpl: Omit<Impl, 'anchorByHeight'> = {
+export const sctImpl: Omit<Impl, 'anchorByHeight' | 'sctFrontier'> = {
   epochByHeight,
   timestampByHeight,
 };

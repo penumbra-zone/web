@@ -86,9 +86,40 @@ impl ViewServer {
         utils::set_panic_hook();
 
         let fvk: FullViewingKey = FullViewingKey::decode(full_viewing_key)?;
+        let constants = serde_wasm_bindgen::from_value(idb_constants)?;
         let stored_tree: StoredTree = serde_wasm_bindgen::from_value(stored_tree)?;
         let tree = load_tree(stored_tree);
+
+        let view_server = Self {
+            latest_height: u64::MAX,
+            fvk,
+            notes: Default::default(),
+            sct: tree,
+            swaps: Default::default(),
+            storage: init_idb_storage(constants).await?,
+            last_position: None,
+            last_forgotten: None,
+            genesis_advice: None,
+        };
+        Ok(view_server)
+    }
+
+    /// Create new instances of `ViewServer` from SCT frontier snapshot.
+    #[wasm_bindgen]
+    pub async fn new_snapshot(
+        full_viewing_key: &[u8],
+        idb_constants: JsValue,
+        compact_frontier: &[u8],
+    ) -> WasmResult<ViewServer> {
+        utils::set_panic_hook();
+
+        let fvk: FullViewingKey = FullViewingKey::decode(full_viewing_key)?;
         let constants = serde_wasm_bindgen::from_value(idb_constants)?;
+
+        let tree: Tree = bincode::deserialize(compact_frontier)
+            .map_err(|e| JsValue::from_str(&format!("Failed to deserialize frontier: {}", e)))
+            .expect("frontier snapshot");
+
         let view_server = Self {
             latest_height: u64::MAX,
             fvk,
