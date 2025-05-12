@@ -1,5 +1,20 @@
 # @penumbra-zone/wasm
 
+## 48.0.0
+
+### Minor Changes
+
+- dc1eb8b: tct frontier support for freshly generated wallets
+- f9cd9dd: chunk genesis syncing
+
+### Patch Changes
+
+- Updated dependencies [dc1eb8b]
+- Updated dependencies [f9cd9dd]
+  - @penumbra-zone/protobuf@10.1.0
+  - @penumbra-zone/types@34.0.0
+  - @penumbra-zone/bech32m@17.0.0
+
 ## 47.0.0
 
 ### Patch Changes
