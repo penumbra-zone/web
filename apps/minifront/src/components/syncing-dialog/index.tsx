@@ -62,28 +62,28 @@ export const SyncingDialog = () => {
       }
     }
 
-    let detail = 'This dialog should not be visible.';
+    let subheading = 'This dialog should not be visible.';
     if (!didClose) {
       if (isUnavailable) {
-        detail = 'Connection unavailable.';
+        subheading = 'Connection unavailable.';
       } else if (streamError) {
-        detail = 'Retrying...';
+        subheading = 'Retrying...';
       } else if (!initialStatus.data) {
-        detail = 'Querying local block height...';
+        subheading = 'Querying local block height...';
       } else if (!streamStatus.data) {
-        detail = 'Fetching remote block height...';
+        subheading = 'Fetching remote block height...';
       } else if (!isSynced) {
-        detail = 'Decrypting block stream...';
+        subheading = 'Decrypting block stream...';
       } else {
-        detail = 'Unknown state.';
+        subheading = 'Unknown state.';
       }
     }
 
-    const instructions = isUnavailable
-      ? 'Please reload the page.'
-      : 'You can click away, but your data may not be current.';
+    const text = 'All of your private data is local.';
 
-    return { title, error, detail, instructions };
+    const instructions = isUnavailable ? 'Please reload the page.' : 'You can leave this tab open';
+
+    return { title, error, subheading, text, instructions };
   }, [didClose, initialStatus.data, isSynced, isUnavailable, streamStatus.data, streamError]);
 
   // TODO: 'zIndex' is deprecated — update to use zIndex on buttons instead
@@ -102,7 +102,10 @@ export const SyncingDialog = () => {
 
         <div className='text-center'>
           <Text body as='p'>
-            {dialogText.detail}
+            {dialogText.subheading}
+          </Text>
+          <Text small as='p'>
+            {dialogText.text}
           </Text>
           <Text small as='p'>
             {dialogText.instructions}
