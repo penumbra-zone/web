@@ -41,8 +41,12 @@ interface PreviousEpochsRowProps {
 const PreviousEpochsRow = observer(
   ({ row, isLoading, className, connected }: PreviousEpochsRowProps) => {
     const { subaccount } = connectionStore;
-    const { data: rewards, isLoading: rewardsLoading } = usePersonalRewards(subaccount, row.epoch);
+    const {
+      data: rewards,
+      query: { isLoading: rewardsLoading },
+    } = usePersonalRewards(subaccount, row.epoch);
     const { data: stakingToken } = useStakingTokenMetadata();
+    const reward = rewards.get(row.epoch);
 
     return (
       <Link
@@ -80,27 +84,24 @@ const PreviousEpochsRow = observer(
             </Tooltip>
           )}
         </TableCell>
-        {connected && (
+        {connected && (rewardsLoading || reward !== undefined) && (
           <TableCell cell loading={isLoading || rewardsLoading}>
-            {rewards?.data.find(r => BigInt(r.epoch) === (row.epoch && BigInt(row.epoch))) &&
-              stakingToken && (
-                <ValueViewComponent
-                  valueView={
-                    new ValueView({
-                      valueView: {
-                        case: 'knownAssetId',
-                        value: {
-                          amount: pnum(
-                            rewards.data.find(r => BigInt(r.epoch) === BigInt(row.epoch))?.reward,
-                          ).toAmount(),
-                          metadata: stakingToken,
-                        },
+            {
+              <ValueViewComponent
+                valueView={
+                  new ValueView({
+                    valueView: {
+                      case: 'knownAssetId',
+                      value: {
+                        amount: pnum(reward?.reward).toAmount(),
+                        metadata: stakingToken,
                       },
-                    })
-                  }
-                  priority='tertiary'
-                />
-              )}
+                    },
+                  })
+                }
+                priority='tertiary'
+              />
+            }
           </TableCell>
         )}
         <TableCell cell loading={isLoading}>

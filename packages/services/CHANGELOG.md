@@ -1,5 +1,26 @@
 # @penumbra-zone/router
 
+## 63.0.0
+
+### Minor Changes
+
+- 085e855: use asset id instead of metadata in liquidity tournament idb table
+
+### Patch Changes
+
+- Updated dependencies [085e855]
+  - @penumbra-zone/storage@56.0.0
+  - @penumbra-zone/types@33.1.0
+  - @penumbra-zone/crypto-web@43.0.0
+  - @penumbra-zone/wasm@47.0.0
+
+## 62.0.0
+
+### Patch Changes
+
+- Updated dependencies [694319c]
+  - @penumbra-zone/storage@55.1.0
+
 ## 61.0.0
 
 ### Minor Changes

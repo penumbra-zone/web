@@ -441,9 +441,9 @@ export class IndexedDb implements IndexedDbInterface {
     subaccount?: number,
   ): Promise<
     {
+      incentivizedAsset: AssetId;
       epoch: string;
       TransactionId: TransactionId;
-      AssetMetadata: Metadata;
       VoteValue: Value;
       RewardValue: Amount | undefined;
       id: string | undefined;
@@ -461,9 +461,9 @@ export class IndexedDb implements IndexedDbInterface {
       : tournamentVotes;
 
     return filtered.map(tournamentVote => ({
+      incentivizedAsset: AssetId.fromJson(tournamentVote.incentivizedAsset, { typeRegistry }),
       epoch: tournamentVote.epoch,
       TransactionId: TransactionId.fromJson(tournamentVote.TransactionId, { typeRegistry }),
-      AssetMetadata: Metadata.fromJson(tournamentVote.AssetMetadata, { typeRegistry }),
       VoteValue: Value.fromJson(tournamentVote.VoteValue, { typeRegistry }),
       RewardValue: tournamentVote.RewardValue
         ? Amount.fromJson(tournamentVote.RewardValue, { typeRegistry })
@@ -492,9 +492,11 @@ export class IndexedDb implements IndexedDbInterface {
           if (voteEpoch < epoch && voteSubaccount === subaccount) {
             if (cursor.value.RewardValue) {
               cont.enqueue({
+                incentivizedAsset: AssetId.fromJson(cursor.value.incentivizedAsset, {
+                  typeRegistry,
+                }),
                 epoch: cursor.value.epoch,
                 TransactionId: TransactionId.fromJson(cursor.value.TransactionId, { typeRegistry }),
-                AssetMetadata: Metadata.fromJson(cursor.value.AssetMetadata, { typeRegistry }),
                 VoteValue: Value.fromJson(cursor.value.VoteValue, { typeRegistry }),
                 RewardValue: Amount.fromJson(cursor.value.RewardValue, { typeRegistry }),
                 id: cursor.value.id,
@@ -515,9 +517,9 @@ export class IndexedDb implements IndexedDbInterface {
    * Saves historical liquidity tournament votes and rewards for a given epoch.
    */
   async saveLQTHistoricalVote(
+    incentivizedAsset: AssetId,
     epoch: bigint,
     transactionId: TransactionId,
-    assetMetadata: Metadata,
     voteValue: Value,
     rewardValue?: Amount,
     id?: string,
@@ -532,9 +534,9 @@ export class IndexedDb implements IndexedDbInterface {
     // TODO: saving the entire metadata is extraneous, experiment with changing
     // @see https://github.com/penumbra-zone/web/issues/2032.
     const tournamentVote = {
+      incentivizedAsset: incentivizedAsset.toJson({ typeRegistry }) as Jsonified<AssetId>,
       epoch: epoch.toString(),
       TransactionId: transactionId.toJson({ typeRegistry }) as Jsonified<TransactionId>,
-      AssetMetadata: assetMetadata.toJson({ typeRegistry }) as Jsonified<Metadata>,
       VoteValue: voteValue.toJson({ typeRegistry }) as Jsonified<Value>,
       RewardValue: rewardValue ? (rewardValue.toJson({ typeRegistry }) as Jsonified<Amount>) : null,
       id: uniquePrimaryKey,

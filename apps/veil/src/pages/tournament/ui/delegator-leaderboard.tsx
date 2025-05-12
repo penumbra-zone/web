@@ -24,13 +24,12 @@ import { useDelegatorLeaderboard, BASE_PAGE, BASE_LIMIT } from '../api/use-deleg
 import { useSortableTableHeaders } from './sortable-table-header';
 import { useIndexByAddress } from '../api/use-index-by-address';
 import { useStakingTokenMetadata } from '@/shared/api/registry';
-import { Skeleton } from '@penumbra-zone/ui/Skeleton';
 
 const LeaderboardRow = observer(
   ({ row, loading }: { row: DelegatorLeaderboardData; loading: boolean }) => {
     const { connected } = connectionStore;
     const { data: subaccountIndex, isLoading: indexLoading } = useIndexByAddress(row.address);
-    const { data: stakingToken, isLoading: stakingLoading } = useStakingTokenMetadata();
+    const { data: stakingToken } = useStakingTokenMetadata();
 
     const addressLink = useMemo(() => {
       if (loading) {
@@ -62,7 +61,7 @@ const LeaderboardRow = observer(
     }, [row.address, subaccountIndex, connected]);
 
     const totalRewards = useMemo(() => {
-      if (loading || stakingLoading || !stakingToken) {
+      if (loading) {
         return undefined;
       }
 
@@ -75,7 +74,7 @@ const LeaderboardRow = observer(
           },
         },
       });
-    }, [loading, stakingLoading, row.total_rewards, stakingToken]);
+    }, [loading, row.total_rewards, stakingToken]);
 
     return (
       <Link
@@ -90,7 +89,7 @@ const LeaderboardRow = observer(
           {row.place}
         </TableCell>
         <TableCell cell loading={loading || indexLoading}>
-          {!loading && !indexLoading && !stakingLoading && (
+          {!loading && !indexLoading && (
             <>
               <AddressViewComponent
                 truncate
@@ -111,12 +110,7 @@ const LeaderboardRow = observer(
           {row.streak}
         </TableCell>
         <TableCell cell loading={loading}>
-          {stakingLoading ? (
-            <Skeleton />
-          ) : (
-            row.total_rewards &&
-            stakingToken && <ValueViewComponent valueView={totalRewards} priority='tertiary' />
-          )}
+          {row.total_rewards && <ValueViewComponent valueView={totalRewards} priority='tertiary' />}
         </TableCell>
         <TableCell cell loading={loading}>
           <Density slim>
@@ -172,7 +166,7 @@ export const DelegatorLeaderboard = observer(() => {
             <LeaderboardRow
               key={isLoading ? `loading-${index}` : row.place}
               row={row}
-              loading={isLoading}
+              loading={isLoading || !Object.keys(row).length}
             />
           ))}
         </div>

@@ -67,7 +67,7 @@ export const PairCard = ({ loading, summary }: PairCardProps) => {
   const yesterday = subDays(new Date(), 1);
 
   const { data: assets } = useRegistryAssets();
-  const usdcMetadata = assets?.find(asset => asset.symbol === 'USDC');
+  const usdcMetadata = assets.find(asset => asset.symbol === 'USDC');
 
   return (
     <Link

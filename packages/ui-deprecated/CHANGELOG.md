@@ -1,5 +1,19 @@
 # @penumbra-zone/ui
 
+## 19.0.1
+
+### Patch Changes
+
+- Updated dependencies [085e855]
+  - @penumbra-zone/types@33.1.0
+  - @penumbra-zone/perspective@56.0.0
+
+## 19.0.0
+
+### Major Changes
+
+- 4a51a46: Upgrade to React 19
+
 ## 18.0.0
 
 ### Patch Changes

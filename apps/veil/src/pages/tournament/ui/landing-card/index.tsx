@@ -12,7 +12,7 @@ import { TournamentResults } from './results';
 import { Explainer } from './explainer';
 
 export const LandingCard = observer(() => {
-  const { data: stats, isLoading } = useTournamentSummary({
+  const { data: summary, isLoading: summaryLoading } = useTournamentSummary({
     limit: 1,
     page: 1,
   });
@@ -28,11 +28,15 @@ export const LandingCard = observer(() => {
     data: epochGauge,
     isLoading: epochGaugeLoading,
     isPending,
-  } = useEpochResults('epoch-results-landing', {
-    epoch,
-    limit: 5,
-    page: 1,
-  });
+  } = useEpochResults(
+    'epoch-results-landing',
+    {
+      epoch,
+      limit: 5,
+      page: 1,
+    },
+    epochLoading,
+  );
 
   return (
     <GradientCard>
@@ -59,7 +63,7 @@ export const LandingCard = observer(() => {
             </div>
           </div>
 
-          <IncentivePool summary={stats?.[0]} loading={isLoading} />
+          <IncentivePool summary={summary?.[0]} loading={summaryLoading} />
           <TournamentResults
             results={epochGauge?.data ?? []}
             loading={isPending || epochGaugeLoading}

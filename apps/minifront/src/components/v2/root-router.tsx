@@ -2,9 +2,9 @@ import { redirect, RouteObject } from 'react-router-dom';
 import { Layout } from './layout';
 import { abortLoader } from '../../abort-loader';
 import { PagePath } from '../metadata/paths';
-import { DashboardLayout } from './dashboard-layout';
-import { AssetsPage } from './dashboard-layout/assets-page';
-import { TransactionsPage } from './dashboard-layout/transactions-page';
+import { PortfolioLayout } from './portfolio-layout';
+import { AssetsPage } from './portfolio-layout/assets-page';
+import { TransactionsPage } from './portfolio-layout/transactions-page';
 import { TransferLayout } from './transfer-layout';
 import { SendPage } from './transfer-layout/send-page';
 import { ReceivePage } from './transfer-layout/receive-page';
@@ -38,7 +38,7 @@ export const routes: RouteObject[] = temporarilyPrefixPathsWithV2([
       { index: true, loader: () => redirect(`/v2${PagePath.DASHBOARD}`) },
       {
         path: PagePath.DASHBOARD,
-        element: <DashboardLayout />,
+        element: <PortfolioLayout />,
         children: [
           {
             index: true,

@@ -1,5 +1,27 @@
 # minifront
 
+## 6.34.1
+
+### Patch Changes
+
+- 270def6: feat(minifront): Update v2 header navigation tabs (Portfolio, Shielding), refactor layout to match the minifront v2 layout, and fix active tab highlighting
+- Updated dependencies [085e855]
+  - @penumbra-zone/types@33.1.0
+  - @penumbra-zone/crypto-web@43.0.0
+  - @penumbra-zone/ui-deprecated@19.0.1
+  - @penumbra-zone/perspective@56.0.0
+
+## 6.34.0
+
+### Minor Changes
+
+- 694319c: bump registry version
+
+### Patch Changes
+
+- Updated dependencies [4a51a46]
+  - @penumbra-zone/ui-deprecated@19.0.0
+
 ## 6.33.2
 
 ### Patch Changes

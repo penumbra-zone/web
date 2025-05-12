@@ -68,7 +68,24 @@ export class ViewServer implements ViewServerInterface {
       idbConstants,
       compact_frontier.compactFrontier,
     );
+
     return new this(wvs, fullViewingKey, getStoredTree, idbConstants);
+  }
+
+  // Trial decrypts a chunk of state payloads in the genesis block.
+  async scanGenesisChunk(
+    start: bigint,
+    partialCompactBlock: CompactBlock,
+    skipTrialDecrypt: boolean,
+  ) {
+    const res = partialCompactBlock.toBinary();
+    return this.wasmViewServer.scan_genesis_chunk(start, res, skipTrialDecrypt);
+  }
+
+  // Processes accumulated genesis notes by constructing the state commitment tree (SCT).
+  async genesisAdvice(fullCompactBlock: CompactBlock) {
+    const res = fullCompactBlock.toBinary();
+    return this.wasmViewServer.genesis_advice(res);
   }
 
   // Decrypts blocks with viewing key for notes, swaps, and updates revealed for user

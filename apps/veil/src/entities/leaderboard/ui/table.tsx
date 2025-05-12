@@ -20,14 +20,9 @@ import { useLeaderboard } from '@/entities/leaderboard/api/use-leaderboard';
 import { stateToString } from '@/entities/position/model/state-to-string';
 import { useSortableTableHeaders } from '@/pages/tournament/ui/sortable-table-header';
 import { formatAge, getAssetId } from './utils';
+import { useTournamentSummary } from '@/pages/tournament/api/use-tournament-summary';
 
-export const LeaderboardTable = ({
-  startBlock,
-  endBlock,
-}: {
-  startBlock: number;
-  endBlock: number;
-}) => {
+export const LeaderboardTable = () => {
   const totalCountRef = useRef<number>(0);
   const searchParams = useSearchParams();
   const page = Number(searchParams?.get('page') ?? 1);
@@ -39,6 +34,11 @@ export const LeaderboardTable = ({
   const quoteAssetId = getAssetId(quote);
   const { getTableHeader, sortBy } = useSortableTableHeaders();
 
+  const { data: summary } = useTournamentSummary({
+    limit: 1,
+    page: 1,
+  });
+
   const {
     data: leaderboard,
     error,
@@ -47,8 +47,8 @@ export const LeaderboardTable = ({
     limit,
     offset: (currentPage - 1) * limit,
     quote: quoteAssetId,
-    startBlock,
-    endBlock,
+    startBlock: summary?.[0]?.start_block,
+    endBlock: summary?.[0]?.end_block,
   });
 
   const { data: assets } = useAssets();
@@ -133,11 +133,11 @@ export const LeaderboardTable = ({
           ) : (
             <>
               {sortedPositions.length ? (
-                sortedPositions.map(position => {
+                sortedPositions.map((position, index) => {
                   return (
                     <Link
                       href={`/inspect/lp/${position.positionId}`}
-                      key={position.positionId}
+                      key={`${position.positionId}-${index}`}
                       className={cn(
                         'relative grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr] col-span-8',
                         'bg-transparent hover:bg-action-hoverOverlay transition-colors',

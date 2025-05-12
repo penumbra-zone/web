@@ -1,37 +1,45 @@
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
-import { formatDistanceToNowStrict } from 'date-fns';
 import { Skeleton } from '@penumbra-zone/ui/Skeleton';
 import { Icon } from '@penumbra-zone/ui/Icon';
 import { Text } from '@penumbra-zone/ui/Text';
 import { PagePath } from '@/shared/const/pages';
 import { useTournamentSummary } from '../../api/use-tournament-summary';
-import { useRoundBlockInfo } from '../../api/use-round-block-info';
 import { useCurrentEpoch } from '../../api/use-current-epoch';
 import { IncentivePool } from '../landing-card/incentive-pool';
 import { GradientCard } from '../shared/gradient-card';
 import { VotingInfo } from '../voting-info';
+import { formatTimeRemaining } from '@/shared/utils/format-time';
+import { useEffect, useRef } from 'react';
+import { LqtSummary } from '@/shared/database/schema';
 
 export interface RoundCardProps {
   epoch: number;
 }
 
 export const RoundCard = observer(({ epoch }: RoundCardProps) => {
-  const { epoch: currentEpoch } = useCurrentEpoch();
+  const { epoch: currentEpoch, isLoading: epochLoading } = useCurrentEpoch();
   const ended = !!currentEpoch && !!epoch && epoch !== currentEpoch;
+  const initialDataRef = useRef<LqtSummary[] | null>(null);
 
-  const { data: summary, isLoading } = useTournamentSummary({
-    limit: 1,
-    page: 1,
-    epoch,
-  });
+  const { data: currentSummary, isLoading } = useTournamentSummary(
+    {
+      limit: 1,
+      page: 1,
+    },
+    epochLoading || ended,
+  );
 
-  const {
-    data: blockInfo,
-    isLoading: blockInfoLoading,
-    isPending: blockInfoPending,
-  } = useRoundBlockInfo(epoch);
+  // This preserves the initial block values when an epoch ends. This check
+  // can probably more elegantly performed directly inside ReactQuery?
+  useEffect(() => {
+    if (!isLoading && currentSummary && !initialDataRef.current) {
+      initialDataRef.current = currentSummary;
+    }
+  }, [isLoading, currentSummary]);
+
+  const summary = ended && initialDataRef.current ? initialDataRef.current : currentSummary;
 
   return (
     <GradientCard>
@@ -48,23 +56,27 @@ export const RoundCard = observer(({ epoch }: RoundCardProps) => {
                 Epoch #{epoch}
               </div>
             </div>
-            {blockInfo?.nextEpoch && (
-              <div className='flex gap-2'>
+            {ended ? (
+              <Text technical color='text.secondary'>
+                Ended
+              </Text>
+            ) : (
+              summary?.[0]?.ends_in_s && (
                 <Text technical color='text.primary'>
-                  Ends in {formatDistanceToNowStrict(blockInfo.nextEpoch)}
+                  Ends in {formatTimeRemaining(summary[0].ends_in_s)}
                 </Text>
-              </div>
+              )
             )}
           </div>
           <div className='flex gap-6'>
             <div className='flex w-1/2 flex-col items-center gap-2 bg-[rgba(250,250,250,0.05)] rounded-md p-3'>
-              {blockInfoLoading || blockInfoPending ? (
+              {isLoading ? (
                 <div className='w-16 h-5'>
                   <Skeleton />
                 </div>
               ) : (
                 <Text smallTechnical color='text.primary'>
-                  {blockInfo?.startBlock.toString() ?? '–'}
+                  {summary?.[0]?.start_block}
                 </Text>
               )}
 
@@ -73,13 +85,13 @@ export const RoundCard = observer(({ epoch }: RoundCardProps) => {
               </Text>
             </div>
             <div className='flex w-1/2 flex-col items-center gap-2 bg-[rgba(250,250,250,0.05)] rounded-md p-3'>
-              {blockInfoLoading || blockInfoPending ? (
+              {isLoading ? (
                 <div className='h-5 w-16'>
                   <Skeleton />
                 </div>
               ) : (
                 <Text smallTechnical color='text.primary'>
-                  {blockInfo?.endBlock?.toString() ?? '–'}
+                  {summary?.[0]?.end_block}
                 </Text>
               )}
 

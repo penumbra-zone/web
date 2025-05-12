@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { serialize, Serialized } from '@/shared/utils/serializer';
-import { Gauge } from '@/shared/database/schema';
+import { LqtGauge } from '@/shared/database/schema';
 import { pindexerDb } from '@/shared/database/client';
 import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 
@@ -14,14 +14,13 @@ const DIRECTIONS = ['asc', 'desc'] as const;
 export type PreviousEpochsSortDirection = (typeof DIRECTIONS)[number];
 
 export interface PreviousEpochsRequest {
-  epoch?: number;
   limit: number;
   page: number;
   sortKey: PreviousEpochsSortKey;
   sortDirection: PreviousEpochsSortDirection;
 }
 
-export interface MappedGauge extends Omit<Gauge, 'asset_id' | 'missing_votes'> {
+export interface MappedGauge extends Omit<LqtGauge, 'asset_id' | 'missing_votes'> {
   asset: Metadata;
   missing_votes: number;
 }
@@ -43,7 +42,6 @@ export const getQueryParams = (req: NextRequest): PreviousEpochsRequest => {
 
   const limit = Number(searchParams.get('limit')) || DEFAULT_LIMIT;
   const page = Number(searchParams.get('page')) || 1;
-  const epoch = Number(searchParams.get('epoch')) || undefined;
 
   const sortKeyParam = searchParams.get('sortKey');
   const sortKey =
@@ -58,7 +56,6 @@ export const getQueryParams = (req: NextRequest): PreviousEpochsRequest => {
       : 'desc';
 
   return {
-    epoch,
     limit,
     page,
     sortKey,
@@ -66,12 +63,7 @@ export const getQueryParams = (req: NextRequest): PreviousEpochsRequest => {
   };
 };
 
-const previousEpochsQuery = async ({
-  limit,
-  page,
-  sortDirection,
-  epoch,
-}: PreviousEpochsRequest) => {
+const previousEpochsQuery = async ({ limit, page, sortDirection }: PreviousEpochsRequest) => {
   // 1. Take the 'gauge' table and sort it by 'epoch' and then by 'portion', map asset_id to base64
   const sortedGauge = pindexerDb
     .selectFrom('lqt.gauge as gauge')
@@ -92,9 +84,10 @@ const previousEpochsQuery = async ({
     .selectFrom(sortedGauge.as('sorted_gauge'))
     .select([
       'epoch',
-      sql<(Omit<Gauge, 'asset_id'> & { asset_id: string })[]>`json_agg(sorted_gauge.*)`.as('gauge'),
+      sql<(Omit<LqtGauge, 'asset_id'> & { asset_id: string })[]>`json_agg(sorted_gauge.*)`.as(
+        'gauge',
+      ),
     ])
-    .$if(!!epoch, qb => (epoch ? qb.where('epoch', '=', epoch) : qb))
     .orderBy('epoch', sortDirection)
     .groupBy('epoch')
     .execute();
@@ -116,9 +109,7 @@ export async function GET(
   }
 
   const params = getQueryParams(req);
-
   const registryClient = new ChainRegistryClient();
-
   const [registry, results, total] = await Promise.all([
     registryClient.remote.get(chainId),
     previousEpochsQuery(params),
@@ -144,7 +135,7 @@ export async function GET(
           epoch: item.epoch,
           votes: item.votes,
           portion: item.portion,
-          missing_votes: Number(item.missing_votes),
+          missing_votes: item.missing_votes,
         };
       })
       .filter(Boolean) as MappedGauge[],
