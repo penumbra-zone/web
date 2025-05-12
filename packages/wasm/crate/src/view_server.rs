@@ -209,10 +209,10 @@ impl ViewServer {
                             .expect("inserting a commitment must succeed");
                     }
                 }
-
-                // End the block in the commitment tree
-                self.sct.end_block().expect("ending the block must succed");
             }
+
+            // End the block in the commitment tree
+            self.sct.end_block().expect("ending the block must succed");
         }
 
         self.latest_height = full_block.height;
