@@ -1,5 +1,16 @@
 # node-status
 
+## 4.1.65
+
+### Patch Changes
+
+- Updated dependencies [dc1eb8b]
+- Updated dependencies [f9cd9dd]
+  - @penumbra-zone/protobuf@10.1.0
+  - @penumbra-zone/types@34.0.0
+  - @penumbra-zone/ui-deprecated@20.0.0
+  - @penumbra-zone/crypto-web@44.0.0
+
 ## 4.1.64
 
 ### Patch Changes

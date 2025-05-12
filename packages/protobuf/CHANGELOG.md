@@ -1,5 +1,11 @@
 # @penumbra-zone/protobuf
 
+## 10.1.0
+
+### Minor Changes
+
+- dc1eb8b: tct frontier support for freshly generated wallets
+
 ## 10.0.0
 
 ### Major Changes

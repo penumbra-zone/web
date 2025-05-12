@@ -1,5 +1,23 @@
 # @penumbra-zone/router
 
+## 64.0.0
+
+### Major Changes
+
+- dc1eb8b: tct frontier support for freshly generated wallets
+
+### Patch Changes
+
+- Updated dependencies [dc1eb8b]
+- Updated dependencies [f9cd9dd]
+  - @penumbra-zone/protobuf@10.1.0
+  - @penumbra-zone/storage@57.0.0
+  - @penumbra-zone/types@34.0.0
+  - @penumbra-zone/wasm@48.0.0
+  - @penumbra-zone/bech32m@17.0.0
+  - @penumbra-zone/getters@27.0.0
+  - @penumbra-zone/crypto-web@44.0.0
+
 ## 63.0.0
 
 ### Minor Changes
