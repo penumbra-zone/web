@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import {
   Position,
@@ -75,9 +74,14 @@ export const useLpRewards = (
   }, [subaccount]);
 
   const query = useQuery({
-    queryKey: ['lp-rewards', ...positionIds, page, limit, sortKey, sortDirection],
+    queryKey: ['lp-rewards', ...(positionIds ?? []), page, limit, sortKey, sortDirection],
+    // NOTE(@cronokirby): This is not quite correct, because a position may receive rewards at any time,
+    // but it's fine to let people reload the page to see that.
     staleTime: Infinity,
     queryFn: async () => {
+      if (!positionIds?.length) {
+        return { data: [], total: 0, totalRewards: 0 };
+      }
       return apiPostFetch<LpRewardsApiResponse>('/api/tournament/lp-rewards', {
         positionIds,
         page,
@@ -86,10 +90,10 @@ export const useLpRewards = (
         sortDirection,
       } as LpRewardsRequest).then(async resp => ({
         ...resp,
-        data: resp.data.length ? await enrichLpRewards(resp.data) : [],
+        data: await enrichLpRewards(resp.data),
       }));
     },
-    enabled: positionIds.length > 0,
+    enabled: positionIds !== undefined,
   });
 
   return query;
