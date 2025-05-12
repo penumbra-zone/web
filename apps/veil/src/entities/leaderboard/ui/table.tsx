@@ -4,7 +4,7 @@ import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { useState, useMemo, useRef, useCallback } from 'react';
 import cn from 'clsx';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useParams } from 'next/navigation';
 import { SquareArrowOutUpRight } from 'lucide-react';
 import { Text } from '@penumbra-zone/ui/Text';
 import { Card } from '@penumbra-zone/ui/Card';
@@ -17,7 +17,6 @@ import { useAssets } from '@/shared/api/assets';
 import { useBalances } from '@/shared/api/balances';
 import { stateToString } from '@/entities/position/model/state-to-string';
 import { useSortableTableHeaders } from '@/pages/tournament/ui/sortable-table-header';
-import { useCurrentEpoch } from '@/pages/tournament/api/use-current-epoch';
 import { useLpLeaderboard } from '@/entities/leaderboard/api/use-lp-leaderboard';
 import { LpLeaderboardSortKey } from '@/entities/leaderboard/api/utils';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
@@ -37,6 +36,8 @@ type Tab = (typeof Tabs)[keyof typeof Tabs];
 export const LeaderboardTable = observer(() => {
   const { connected, subaccount } = connectionStore;
   const totalRef = useRef<number>(0);
+  const params = useParams<{ epoch: string }>();
+  const epoch = Number(params?.epoch);
   const searchParams = useSearchParams();
   const page = Number(searchParams?.get('page') ?? 1);
   const [currentPage, setCurrentPage] = useState(page);
@@ -48,7 +49,6 @@ export const LeaderboardTable = observer(() => {
 
   const { data: assets } = useAssets();
   const { data: balances } = useBalances();
-  const { epoch, isLoading: epochLoading } = useCurrentEpoch();
 
   const umMetadata = useMemo(() => {
     return assets.find(asset => asset.symbol === 'UM');
@@ -70,6 +70,7 @@ export const LeaderboardTable = observer(() => {
     limit,
     sortKey: sortBy.key,
     sortDirection: sortBy.direction,
+    isActive: tab === Tabs.AllLPs,
   });
 
   const {
@@ -83,13 +84,14 @@ export const LeaderboardTable = observer(() => {
     limit,
     sortKey: sortBy.key,
     sortDirection: sortBy.direction,
+    isActive: tab === Tabs.MyLPs,
   });
 
   const isMyTab = tab === Tabs.MyLPs;
   const positions = isMyTab ? myLeaderboard?.data : leaderboard?.data;
   const total = isMyTab ? myLeaderboard?.total : leaderboard?.total;
   const error = isMyTab ? myLeaderboardError : leaderboardError;
-  const isLoading = epochLoading || isMyTab ? myLeaderboardLoading : leaderboardLoading;
+  const isLoading = isMyTab ? myLeaderboardLoading : leaderboardLoading;
   totalRef.current = total ?? totalRef.current;
 
   if (error) {

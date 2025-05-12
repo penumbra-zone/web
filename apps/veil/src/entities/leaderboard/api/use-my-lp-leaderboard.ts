@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { Position } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { bech32mPositionId } from '@penumbra-zone/bech32m/plpid';
@@ -46,6 +45,7 @@ export const useMyLpLeaderboard = ({
   limit,
   sortKey,
   sortDirection,
+  isActive,
 }: {
   subaccount: number;
   epoch: number | undefined;
@@ -53,30 +53,43 @@ export const useMyLpLeaderboard = ({
   limit: number;
   sortKey?: LpLeaderboardSortKey | '';
   sortDirection?: LpLeaderboardSortDirection;
+  isActive: boolean;
 }): UseQueryResult<LpLeaderboardResponse> => {
-  const [positionIds, setPositionIds] = useState<string[]>([]);
+  const { data: positionIds } = useQuery({
+    queryKey: ['owned-positions', subaccount],
+    queryFn: async () => {
+      const ids: string[] = [];
 
-  useEffect(() => {
-    try {
-      void Array.fromAsync(
-        penumbra.service(ViewService).ownedPositionIds({
-          subaccount: new AddressIndex({ account: subaccount }),
-        }),
-      ).then(ownedRes => {
-        const positionIds = ownedRes
-          .map(r => r.positionId && bech32mPositionId(r.positionId))
-          .filter(Boolean) as string[];
-        setPositionIds(positionIds);
+      const result = penumbra.service(ViewService).ownedPositionIds({
+        subaccount: new AddressIndex({ account: subaccount }),
       });
-    } catch (err) {
-      console.error('Error fetching position ids', err);
-    }
-  }, [subaccount]);
+      for await (const item of result) {
+        const id = item.positionId;
+        if (id) {
+          ids.push(bech32mPositionId(id));
+        }
+      }
+
+      return ids;
+    },
+  });
 
   const query = useQuery({
-    queryKey: ['my-lp-leaderboard', ...positionIds, epoch, page, limit, sortKey, sortDirection],
+    queryKey: [
+      'my-lp-leaderboard',
+      ...(positionIds ?? []),
+      epoch,
+      page,
+      limit,
+      sortKey,
+      sortDirection,
+    ],
     staleTime: Infinity,
     queryFn: async () => {
+      if (!positionIds?.length) {
+        return { data: [], total: 0 };
+      }
+
       return apiPostFetch<LpLeaderboardApiResponse>('/api/tournament/lp-leaderboard', {
         positionIds,
         epoch,
@@ -86,10 +99,10 @@ export const useMyLpLeaderboard = ({
         sortDirection,
       } as LpLeaderboardRequest).then(async resp => ({
         ...resp,
-        data: resp.data.length ? await enrichLpLeaderboards(resp.data) : [],
+        data: await enrichLpLeaderboards(resp.data),
       }));
     },
-    enabled: typeof epoch === 'number' && positionIds.length > 0,
+    enabled: typeof epoch === 'number' && positionIds !== undefined && isActive,
   });
 
   return query;

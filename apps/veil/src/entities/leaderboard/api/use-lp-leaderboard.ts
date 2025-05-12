@@ -42,12 +42,14 @@ export const useLpLeaderboard = ({
   limit,
   sortKey,
   sortDirection,
+  isActive,
 }: {
   epoch: number | undefined;
   page: number;
   limit: number;
   sortKey?: LpLeaderboardSortKey | '';
   sortDirection?: LpLeaderboardSortDirection;
+  isActive: boolean;
 }): UseQueryResult<LpLeaderboardResponse> => {
   const query = useQuery({
     queryKey: ['lp-leaderboard', epoch, page, limit, sortKey, sortDirection],
@@ -61,10 +63,10 @@ export const useLpLeaderboard = ({
         sortDirection,
       } as LpLeaderboardRequest).then(async resp => ({
         ...resp,
-        data: resp.data.length ? await enrichLpLeaderboards(resp.data) : [],
+        data: await enrichLpLeaderboards(resp.data),
       }));
     },
-    enabled: typeof epoch === 'number',
+    enabled: typeof epoch === 'number' && isActive,
   });
 
   return query;
