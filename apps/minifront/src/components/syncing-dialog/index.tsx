@@ -81,9 +81,7 @@ export const SyncingDialog = () => {
 
     const text = 'All of your private data is local.';
 
-    const instructions = isUnavailable
-      ? 'Please reload the page.'
-      : 'You can leave this tab open to speed things up.';
+    const instructions = isUnavailable ? 'Please reload the page.' : 'You can leave this tab open';
 
     return { title, error, subheading, text, instructions };
   }, [didClose, initialStatus.data, isSynced, isUnavailable, streamStatus.data, streamError]);
