@@ -19,5 +19,5 @@ export const isDenom = (value?: Denom | AssetId): value is Denom =>
  */
 export const useGetMetadata = (): GetMetadata => {
   const registry = useRegistry().data;
-  return x => x && registry.getMetadata(x);
+  return x => x && registry.tryGetMetadata(x);
 };
