@@ -60,6 +60,7 @@ export const LeaderboardTable = observer(() => {
     isActive: tab === Tabs.AllLPs,
   });
 
+  const isMyTab = tab === Tabs.MyLPs;
   const {
     data: myLeaderboard,
     error: myLeaderboardError,
@@ -71,14 +72,12 @@ export const LeaderboardTable = observer(() => {
     limit,
     sortKey: sortBy.key,
     sortDirection: sortBy.direction,
-    isActive: tab === Tabs.MyLPs,
+    isActive: isMyTab,
   });
 
-  const isMyTab = tab === Tabs.MyLPs;
-  const positions = isMyTab ? myLeaderboard?.data : leaderboard?.data;
-  const total = isMyTab ? myLeaderboard?.total : leaderboard?.total;
-  const error = isMyTab ? myLeaderboardError : leaderboardError;
-  const isLoading = isMyTab ? myLeaderboardLoading : leaderboardLoading;
+  const [positions, total, error, isLoading] = isMyTab
+    ? [myLeaderboard?.data, myLeaderboard?.total, myLeaderboardError, myLeaderboardLoading]
+    : [leaderboard?.data, leaderboard?.total, leaderboardError, leaderboardLoading];
   totalRef.current = total ?? totalRef.current;
 
   if (error) {
