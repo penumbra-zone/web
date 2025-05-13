@@ -28,6 +28,7 @@ export interface LqtLp {
   executions: number;
   umVolume: number;
   assetVolume: number;
+  umFees: number;
   assetFees: number;
   points: number;
   pointsShare: number;

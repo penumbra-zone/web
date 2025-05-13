@@ -74,6 +74,7 @@ export async function POST(
         executions: lp.executions,
         umVolume: lp.um_volume,
         assetVolume: lp.asset_volume,
+        umFees: lp.um_fees,
         assetFees: lp.asset_fees,
         points: lp.points,
         pointsShare: lp.point_share,

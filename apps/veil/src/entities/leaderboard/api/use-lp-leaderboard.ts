@@ -13,6 +13,8 @@ import {
 import { penumbra } from '@/shared/const/penumbra';
 import { DexService } from '@penumbra-zone/protobuf';
 import { bech32mPositionId } from '@penumbra-zone/bech32m/plpid';
+import { statusStore } from '@/shared/model/status';
+import { useCurrentEpoch } from '@/pages/tournament/api/use-current-epoch';
 
 export const BASE_LIMIT = 10;
 export const BASE_PAGE = 1;
@@ -51,8 +53,19 @@ export const useLpLeaderboard = ({
   sortDirection?: LpLeaderboardSortDirection;
   isActive: boolean;
 }): UseQueryResult<LpLeaderboardResponse> => {
+  const { latestKnownBlockHeight } = statusStore;
+  const { epoch: currentEpoch } = useCurrentEpoch();
+
   const query = useQuery({
-    queryKey: ['lp-leaderboard', epoch, page, limit, sortKey, sortDirection],
+    queryKey: [
+      'lp-leaderboard',
+      epoch,
+      page,
+      limit,
+      sortKey,
+      sortDirection,
+      ...(epoch === currentEpoch ? [Number(latestKnownBlockHeight)] : []),
+    ],
     staleTime: Infinity,
     queryFn: async () => {
       return apiPostFetch<LpLeaderboardApiResponse>('/api/tournament/lp-leaderboard', {
@@ -66,7 +79,10 @@ export const useLpLeaderboard = ({
         data: await enrichLpLeaderboards(resp.data),
       }));
     },
-    enabled: typeof epoch === 'number' && isActive,
+    enabled:
+      typeof epoch === 'number' &&
+      isActive &&
+      (epoch === currentEpoch ? !!latestKnownBlockHeight : true),
   });
 
   return query;

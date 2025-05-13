@@ -15,6 +15,8 @@ import { penumbra } from '@/shared/const/penumbra';
 import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { ViewService } from '@penumbra-zone/protobuf/penumbra/view/v1/view_connect';
 import { DexService } from '@penumbra-zone/protobuf';
+import { statusStore } from '@/shared/model/status';
+import { useCurrentEpoch } from '@/pages/tournament/api/use-current-epoch';
 
 export const BASE_LIMIT = 10;
 export const BASE_PAGE = 1;
@@ -55,6 +57,9 @@ export const useMyLpLeaderboard = ({
   sortDirection?: LpLeaderboardSortDirection;
   isActive: boolean;
 }): UseQueryResult<LpLeaderboardResponse> => {
+  const { latestKnownBlockHeight } = statusStore;
+  const { epoch: currentEpoch } = useCurrentEpoch();
+
   const { data: positionIds } = useQuery({
     queryKey: ['owned-positions', subaccount],
     queryFn: async () => {
@@ -83,6 +88,7 @@ export const useMyLpLeaderboard = ({
       limit,
       sortKey,
       sortDirection,
+      ...(epoch === currentEpoch ? [Number(latestKnownBlockHeight)] : []),
     ],
     staleTime: Infinity,
     queryFn: async () => {
@@ -102,7 +108,11 @@ export const useMyLpLeaderboard = ({
         data: await enrichLpLeaderboards(resp.data),
       }));
     },
-    enabled: typeof epoch === 'number' && positionIds !== undefined && isActive,
+    enabled:
+      typeof epoch === 'number' &&
+      positionIds !== undefined &&
+      isActive &&
+      (epoch === currentEpoch ? !!latestKnownBlockHeight : true),
   });
 
   return query;
