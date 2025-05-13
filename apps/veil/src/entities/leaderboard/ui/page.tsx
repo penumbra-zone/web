@@ -1,3 +1,5 @@
+'use client';
+
 import { LeaderboardTable } from './table';
 import { PenumbraWaves } from '@/pages/explore/ui/waves';
 import { useCurrentEpoch } from '@/pages/tournament/api/use-current-epoch';
