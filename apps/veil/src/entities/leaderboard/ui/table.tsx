@@ -50,7 +50,7 @@ export const LeaderboardTable = observer(() => {
   const {
     data: leaderboard,
     error: leaderboardError,
-    isLoading: leaderboardLoading,
+    isPending: leaderboardLoading,
   } = useLpLeaderboard({
     epoch,
     page: currentPage,
@@ -64,7 +64,7 @@ export const LeaderboardTable = observer(() => {
   const {
     data: myLeaderboard,
     error: myLeaderboardError,
-    isLoading: myLeaderboardLoading,
+    isPending: myLeaderboardLoading,
   } = useMyLpLeaderboard({
     subaccount,
     epoch,
