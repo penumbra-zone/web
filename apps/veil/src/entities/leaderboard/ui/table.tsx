@@ -4,7 +4,7 @@ import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { useState, useRef } from 'react';
 import cn from 'clsx';
 import Link from 'next/link';
-import { useSearchParams, useParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { SquareArrowOutUpRight } from 'lucide-react';
 import { Text } from '@penumbra-zone/ui/Text';
 import { Card } from '@penumbra-zone/ui/Card';
