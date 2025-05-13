@@ -10,6 +10,7 @@ import { getAmount } from '@penumbra-zone/getters/value-view';
 import { Skeleton } from '@penumbra-zone/ui/Skeleton';
 import { isZero } from '@penumbra-zone/types/amount';
 import { Density } from '@penumbra-zone/ui/Density';
+import { Tooltip } from '@penumbra-zone/ui/Tooltip';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { connectionStore } from '@/shared/model/connection';
@@ -94,7 +95,7 @@ export const DelegatorTotalRewards = observer(() => {
       <div className='flex justify-between items-center'>
         <div className='flex flex-col gap-1'>
           <Text xxl color='text.primary'>
-            My Total Rewards
+            My Total Tournament Rewards
           </Text>
           <Text small color='text.secondary'>
             Cumulative rewards from all epochs, voting and LPs rewards
@@ -107,14 +108,16 @@ export const DelegatorTotalRewards = observer(() => {
           </div>
         ) : (
           <div className='flex items-center gap-4 [&_span]:font-mono [&_span]:text-3xl'>
-            {rewardView ? (
+            {rewardView && !isTotalZero ? (
               <Density sparse>
                 <ValueViewComponent valueView={rewardView} priority='tertiary' />
               </Density>
             ) : (
-              <Text xxl color='text.primary'>
-                0.00 UM
-              </Text>
+              <Tooltip message='Participate in the tournament to earn rewards'>
+                <Text xxl color='text.primary'>
+                  0.00 UM
+                </Text>
+              </Tooltip>
             )}
             <Density compact>
               {!isTotalZero && (
