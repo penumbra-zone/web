@@ -1,7 +1,7 @@
 'use client';
 
 import { useAutoAnimate } from '@formkit/auto-animate/react';
-import { useState, useMemo, useRef, useCallback } from 'react';
+import { useState, useRef } from 'react';
 import cn from 'clsx';
 import Link from 'next/link';
 import { useSearchParams, useParams } from 'next/navigation';
@@ -12,17 +12,17 @@ import { TableCell } from '@penumbra-zone/ui/TableCell';
 import { SegmentedControl } from '@penumbra-zone/ui/SegmentedControl';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { Pagination } from '@penumbra-zone/ui/Pagination';
-import { useAssets } from '@/shared/api/assets';
 import { stateToString } from '@/entities/position/model/state-to-string';
 import { useSortableTableHeaders } from '@/pages/tournament/ui/sortable-table-header';
 import { useLpLeaderboard } from '@/entities/leaderboard/api/use-lp-leaderboard';
 import { LpLeaderboardSortKey } from '@/entities/leaderboard/api/utils';
-import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { pnum } from '@penumbra-zone/types/pnum';
 import { observer } from 'mobx-react-lite';
 import { connectionStore } from '@/shared/model/connection';
 import { useMyLpLeaderboard } from '@/entities/leaderboard/api/use-my-lp-leaderboard';
 import { round } from '@penumbra-zone/types/round';
+import { useStakingTokenMetadata } from '@/shared/api/registry';
+import { useGetMetadata } from '@/shared/api/assets';
 
 const Tabs = {
   AllLPs: 'All LPs',
@@ -43,17 +43,9 @@ export const LeaderboardTable = observer(() => {
   const [tab, setTab] = useState<Tab>(Tabs.AllLPs);
   const [limit, setLimit] = useState(10);
   const { getTableHeader, sortBy } = useSortableTableHeaders<LpLeaderboardSortKey>('points');
-  const { data: assets } = useAssets();
 
-  const umMetadata = useMemo(() => {
-    return assets.find(asset => asset.symbol === 'UM');
-  }, [assets]);
-  const getAssetMetadata = useCallback(
-    (assetId: AssetId) => {
-      return assets.find(asset => asset.penumbraAssetId?.equals(assetId));
-    },
-    [assets],
-  );
+  const getAssetMetadata = useGetMetadata();
+  const { data: umMetadata } = useStakingTokenMetadata();
 
   const {
     data: leaderboard,
