@@ -11,10 +11,13 @@ import {
   LpLeaderboardResponse,
 } from '@/entities/leaderboard/api/utils';
 import { penumbra } from '@/shared/const/penumbra';
+import { createClient } from '@connectrpc/connect';
 import { DexService } from '@penumbra-zone/protobuf';
 import { bech32mPositionId } from '@penumbra-zone/bech32m/plpid';
 import { statusStore } from '@/shared/model/status';
 import { useCurrentEpoch } from '@/pages/tournament/api/use-current-epoch';
+import { connectionStore } from '@/shared/model/connection';
+import { getGrpcTransport } from '@/shared/api/transport';
 
 export const BASE_LIMIT = 10;
 export const BASE_PAGE = 1;
@@ -25,9 +28,12 @@ async function enrichLpLeaderboards(data: LqtLp[]): Promise<LpLeaderboard[]> {
     return [];
   }
 
-  const positionIds = data.map(lp => lp.positionId);
+  const grpc = !connectionStore.connected ? await getGrpcTransport() : undefined;
+  const payload = { positionId: data.map(lp => lp.positionId) };
   const positionsRes = await Array.fromAsync(
-    penumbra.service(DexService).liquidityPositionsById({ positionId: positionIds }),
+    grpc
+      ? createClient(DexService, grpc.transport).liquidityPositionsById(payload)
+      : penumbra.service(DexService).liquidityPositionsById(payload),
   );
   const positions = positionsRes.map(r => r.data).filter(Boolean) as Position[];
 
