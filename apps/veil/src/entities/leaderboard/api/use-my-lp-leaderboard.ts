@@ -1,44 +1,22 @@
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
-import { Position } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { bech32mPositionId } from '@penumbra-zone/bech32m/plpid';
 import { apiPostFetch } from '@/shared/utils/api-fetch';
+import { penumbra } from '@/shared/const/penumbra';
+import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { ViewService } from '@penumbra-zone/protobuf/penumbra/view/v1/view_connect';
+import { statusStore } from '@/shared/model/status';
+import { useCurrentEpoch } from '@/pages/tournament/api/use-current-epoch';
 import {
   LpLeaderboardRequest,
   LpLeaderboardApiResponse,
   LpLeaderboardSortKey,
   LpLeaderboardSortDirection,
-  LqtLp,
-  LpLeaderboard,
   LpLeaderboardResponse,
+  enrichLpLeaderboards,
 } from './utils';
-import { penumbra } from '@/shared/const/penumbra';
-import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { ViewService } from '@penumbra-zone/protobuf/penumbra/view/v1/view_connect';
-import { DexService } from '@penumbra-zone/protobuf';
-import { statusStore } from '@/shared/model/status';
-import { useCurrentEpoch } from '@/pages/tournament/api/use-current-epoch';
 
 export const BASE_LIMIT = 10;
 export const BASE_PAGE = 1;
-
-// get the position state for each lp reward
-async function enrichLpLeaderboards(data: LqtLp[]): Promise<LpLeaderboard[]> {
-  if (data.length === 0) {
-    return [];
-  }
-
-  const positionIds = data.map(lp => lp.positionId);
-  const positionsRes = await Array.fromAsync(
-    penumbra.service(DexService).liquidityPositionsById({ positionId: positionIds }),
-  );
-  const positions = positionsRes.map(r => r.data).filter(Boolean) as Position[];
-
-  return data.map((lp, index) => ({
-    ...lp,
-    positionIdString: bech32mPositionId(lp.positionId),
-    position: positions[index] as unknown as Position,
-  }));
-}
 
 export const useMyLpLeaderboard = ({
   subaccount,
