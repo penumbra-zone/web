@@ -707,6 +707,8 @@ export class IndexedDb implements IndexedDbInterface {
       }
     }
 
+    // console.log("delegationAssets: ", delegationAssets)
+
     const notesForVoting: NotesForVotingResponse[] = [];
 
     for await (const noteCursor of this.db.transaction('SPENDABLE_NOTES').store) {

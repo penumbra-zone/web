@@ -12,8 +12,14 @@ export const lqtVotingNotes: Impl['lqtVotingNotes'] = async function* (req, ctx)
   const services = await ctx.values.get(servicesCtx)();
   const { indexedDb, querier } = await services.getWalletServices();
 
+  // console.log("req.epochIndex used: ", req.epochIndex)
+
+  // const epochByHeight = await indexedDb.getEpochByHeight(471744n);
+  // console.log("epochByHeight!!: ", epochByHeight)
+
   // Get the starting block height for the corresponding epoch index.
   const epoch = await indexedDb.getBlockHeightByEpoch(req.epochIndex);
+  // console.log("epoch?.startHeight: ", epoch?.startHeight)
 
   // Retrieve SNRs from storage ('ASSETS' in IndexedDB) for the specified subaccount that are eligible for voting
   // at the start height of the current epoch. Alternatively, a wasm helper `get_voting_notes` can be used to
@@ -24,9 +30,12 @@ export const lqtVotingNotes: Impl['lqtVotingNotes'] = async function* (req, ctx)
   });
   const votingNotes = notesForVoting(notesForVotingRequest, ctx);
 
+  // console.log("votingNotes: ", votingNotes)
+
   // Iterate through each voting note and check if it has already been used for voting
   // by performing a nullifier point query against the rpc provided by the funding service.
   for await (const votingNote of votingNotes) {
+    // console.log("note: ", votingNote)
     if (!votingNote.noteRecord || !epoch?.index) {
       continue;
     }

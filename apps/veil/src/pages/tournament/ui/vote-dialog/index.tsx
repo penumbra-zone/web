@@ -18,6 +18,9 @@ import { useEpochResults } from '../../api/use-epoch-results';
 import { MappedGauge } from '../../server/previous-epochs';
 import { VoteDialogSearchResults } from './search-results';
 import { VotingAssetSelector } from './asset-selector';
+// import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+// import { ViewService } from '@penumbra-zone/protobuf';
+// import { penumbra } from '@/shared/const/penumbra';
 
 interface VoteDialogProps {
   defaultValue?: MappedGauge;
@@ -49,6 +52,8 @@ export const VoteDialogueSelector = observer(
     const { epoch, isLoading: epochLoading } = useCurrentEpoch();
 
     const { data: notes } = useLQTNotes(subaccount, epoch);
+    console.log("notes in VoteDialogueSelector: ", notes)
+
     const { data: assets, isLoading } = useEpochResults(
       'epoch-results-vote-dialog',
       {
@@ -60,6 +65,7 @@ export const VoteDialogueSelector = observer(
     );
 
     const handleVoteSubmit = async () => {
+      console.log("entered handleVoteSubmit!")
       if (!selectedAsset) {
         throw new Error('Please, select an asset to vote for');
       }
@@ -67,12 +73,23 @@ export const VoteDialogueSelector = observer(
       if (!epoch) {
         throw new Error('Missing epoch index');
       }
+      
+      // const accountFilter = new AddressIndex({ account: subaccount });
+
+      // console.log("BigInt(epoch): ", BigInt(epoch))
+
+      // let notes: LqtVotingNotesResponse[] = Array.fromAsync(
+      //   penumbra.service(ViewService).lqtVotingNotes({ accountFilter, epochIndex: BigInt(epoch) }),
+      // );
 
       const stakedNotes: SpendableNoteRecord[] = notes
-        ? Array.from(notes.values())
-            .map(res => res.noteRecord)
-            .filter((record): record is SpendableNoteRecord => !!record)
-        : [];
+      ? notes
+          .filter(n => !n.alreadyVoted)                 // not marked as voted *this* epoch
+          .map(n => n.noteRecord)
+          .filter(                                      // type-guard + spent check
+            (r): r is SpendableNoteRecord => !!r && r.heightSpent === 0n,
+          )
+      : [];
 
       // Craft LQT TPR and submit vote
       await voteTournament({

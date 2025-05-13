@@ -110,8 +110,13 @@ Join now 👇`;
       return null;
     }
 
+    const handleClose = () => {
+      setIsOpen(false);  
+      onClose();
+    };
+
     return (
-      <Dialog isOpen={isOpen} onClose={onClose}>
+      <Dialog isOpen={isOpen} onClose={handleClose}>
         <Dialog.Content
           title='Share your latest win!'
           buttons={
@@ -138,14 +143,12 @@ Join now 👇`;
             </div>
           }
         >
-          <div className='flex justify-center overflow-y-scroll'>
             <canvas
               ref={canvasRef}
               className='w-[512px] h-[512px] bg-other-tonalFill10'
               width={512}
               height={512}
             />
-          </div>
         </Dialog.Content>
       </Dialog>
     );

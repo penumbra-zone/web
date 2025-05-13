@@ -9,6 +9,8 @@ export async function renderTournamentEarningsCanvas(
   params: TournamentParams,
   landscape = false,
 ) {
+  scaleCanvas(canvas);
+
   const ctx = canvas.getContext('2d');
   const { epoch, earnings, votingStreak, incentivePool, lpPool, delegatorPool } = params;
   if (!ctx) {
@@ -31,7 +33,6 @@ export async function renderTournamentEarningsCanvas(
     return `${Number(amount).toLocaleString()} ${unit}`;
   };
 
-  scaleCanvas(canvas);
   function draw(bgImage: CanvasImageSource) {
     if (!ctx) {
       console.error('Failed to get canvas context');
