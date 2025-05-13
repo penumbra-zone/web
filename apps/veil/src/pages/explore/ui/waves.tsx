@@ -7,7 +7,8 @@ export const PenumbraWaves = () => {
   return (
     <Waves
       className={cn(
-        'display-none absolute scale-90 w-[1200px] top-[-800px] left-[25%]  z-[-30] opacity-90',
+        'w-screen h-[100vw] fixed top-0 left-0 -z-[1] -translate-y-[70%] scale-150 pointer-events-none',
+        'desktop:scale-100 desktop:w-[80vw] desktop:h-[80vw] desktop:-translate-y-3/4 desktop:left-[10vw]',
       )}
     />
   );
