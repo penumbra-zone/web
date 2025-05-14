@@ -1,29 +1,29 @@
-import { Button } from '@penumbra-zone/ui-deprecated/Button';
-import { CharacterTransition } from '@penumbra-zone/ui-deprecated/CharacterTransition';
-import { Dialog } from '@penumbra-zone/ui-deprecated/Dialog';
-import { Text } from '@penumbra-zone/ui-deprecated/Text';
-import { Info } from 'lucide-react';
-import { useId } from 'react';
+import React from 'react';
+import { InfoButton } from '@penumbra-zone/ui/InfoButton';
+import { ReactNode } from 'react';
 
-export const AssetsCardTitle = () => {
-  const layoutId = useId();
+export interface AssetsCardTitleProps {
+  /**
+   * Optional content to display at the end of the title row
+   */
+  endContent?: ReactNode;
+  /**
+   * Whether to show the InfoButton
+   */
+  showInfoButton?: boolean;
+}
+
+export const AssetsCardTitle: React.FC<AssetsCardTitleProps> = ({
+  endContent,
+  showInfoButton = true,
+}) => {
   return (
-    <div className='flex items-center gap-2'>
-      <CharacterTransition>Asset Balances</CharacterTransition>
-      <Dialog>
-        <Dialog.Trigger asChild>
-          <Button icon={Info} iconOnly='adornment' motion={{ layoutId }}>
-            Info
-          </Button>
-        </Dialog.Trigger>
-        <Dialog.Content title='Asset Balances' motion={{ layoutId }}>
-          <Text>
-            Your balances are shielded, and are known only to you. They are not visible on chain.
-            Each Penumbra wallet controls many numbered accounts, each with its own balance. Account
-            information is never revealed on-chain.
-          </Text>
-        </Dialog.Content>
-      </Dialog>
+    <div className="flex justify-between items-center">
+      <span>Your Assets</span>
+      <div className="flex items-center gap-2">
+        {endContent}
+        {showInfoButton && <InfoButton />}
+      </div>
     </div>
   );
 };

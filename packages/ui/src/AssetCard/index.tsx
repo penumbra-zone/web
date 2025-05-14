@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { Card } from '../Card';
 import { AssetList } from './AssetList';
 import { AccountMock, mockAccounts } from './mock';
