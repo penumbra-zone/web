@@ -26,6 +26,7 @@ export const useMyLpLeaderboard = ({
   sortKey,
   sortDirection,
   isActive,
+  assetId,
 }: {
   subaccount: number;
   epoch: number | undefined;
@@ -34,6 +35,7 @@ export const useMyLpLeaderboard = ({
   sortKey?: LpLeaderboardSortKey | '';
   sortDirection?: LpLeaderboardSortDirection;
   isActive: boolean;
+  assetId: string | undefined;
 }): UseQueryResult<LpLeaderboardResponse> => {
   const { latestKnownBlockHeight } = statusStore;
   const { epoch: currentEpoch } = useCurrentEpoch();
@@ -66,6 +68,7 @@ export const useMyLpLeaderboard = ({
       limit,
       sortKey,
       sortDirection,
+      assetId,
       ...(epoch === currentEpoch ? [Number(latestKnownBlockHeight)] : []),
     ],
     staleTime: Infinity,
@@ -81,6 +84,7 @@ export const useMyLpLeaderboard = ({
         limit,
         sortKey,
         sortDirection,
+        assetId,
       } as LpLeaderboardRequest).then(async resp => ({
         ...resp,
         data: await enrichLpLeaderboards(resp.data),

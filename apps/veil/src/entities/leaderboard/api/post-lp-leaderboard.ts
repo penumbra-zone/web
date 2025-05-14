@@ -5,6 +5,7 @@ import { PositionId } from '@penumbra-zone/protobuf/penumbra/core/component/dex/
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { positionIdFromBech32 } from '@penumbra-zone/bech32m/plpid';
 import { LpLeaderboardRequest, LpLeaderboardApiResponse } from './utils';
+import { hexToUint8Array } from '@penumbra-zone/types/hex';
 
 async function queryLqtLps({
   positionIds = [],
@@ -13,6 +14,7 @@ async function queryLqtLps({
   sortDirection,
   limit,
   page,
+  assetId,
 }: LpLeaderboardRequest) {
   const positionIdsBytes = positionIds
     .map(positionId => positionIdFromBech32(positionId).inner)
@@ -24,12 +26,18 @@ async function queryLqtLps({
           .selectFrom('lqt.lps')
           .select(eb => [eb.fn.count('position_id').as('total_positions')])
           .where('epoch', '=', epoch)
+          .$if(!!assetId, qb =>
+            qb.where('asset_id', '=', Buffer.from(hexToUint8Array(assetId ?? ''))),
+          )
           .where('position_id', 'in', positionIdsBytes)
           .executeTakeFirst(),
         pindexerDb
           .selectFrom('lqt.lps')
           .selectAll()
           .where('epoch', '=', epoch)
+          .$if(!!assetId, qb =>
+            qb.where('asset_id', '=', Buffer.from(hexToUint8Array(assetId ?? ''))),
+          )
           .where('position_id', 'in', positionIdsBytes)
           .orderBy(sortKey, sortDirection)
           .offset(limit * (page - 1))
@@ -41,11 +49,17 @@ async function queryLqtLps({
           .selectFrom('lqt.lps')
           .select(eb => [eb.fn.count('position_id').as('total_positions')])
           .where('epoch', '=', epoch)
+          .$if(!!assetId, qb =>
+            qb.where('asset_id', '=', Buffer.from(hexToUint8Array(assetId ?? ''))),
+          )
           .executeTakeFirst(),
         pindexerDb
           .selectFrom('lqt.lps')
           .selectAll()
           .where('epoch', '=', epoch)
+          .$if(!!assetId, qb =>
+            qb.where('asset_id', '=', Buffer.from(hexToUint8Array(assetId ?? ''))),
+          )
           .orderBy(sortKey, sortDirection)
           .offset(limit * (page - 1))
           .limit(limit)

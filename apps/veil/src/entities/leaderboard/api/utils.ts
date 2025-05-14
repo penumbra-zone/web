@@ -24,6 +24,7 @@ export interface LpLeaderboardRequest extends JsonObject {
   page: number;
   sortKey: LpLeaderboardSortKey;
   sortDirection: LpLeaderboardSortDirection;
+  assetId: string | null;
 }
 
 export interface LqtLp {
