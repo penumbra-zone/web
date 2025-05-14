@@ -1,86 +1,77 @@
 import { useState } from 'react';
 import { observer } from 'mobx-react-lite';
+import { useRouter } from 'next/navigation';
 import { ChevronRight, ExternalLink } from 'lucide-react';
 import { bech32mPositionId } from '@penumbra-zone/bech32m/plpid';
+import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { Pagination } from '@penumbra-zone/ui/Pagination';
 import { TableCell } from '@penumbra-zone/ui/TableCell';
-import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
-import { Button } from '@penumbra-zone/ui/Button';
 import { Density } from '@penumbra-zone/ui/Density';
-import { withdrawPositions } from '@/entities/position/api/withdraw-positions';
+import { Button } from '@penumbra-zone/ui/Button';
+import { pnum } from '@penumbra-zone/types/pnum';
+import { ValueView, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import {
   useLpRewards,
   BASE_LIMIT,
   BASE_PAGE,
   LpReward,
 } from '@/pages/tournament/api/use-lp-rewards';
-import { useSortableTableHeaders } from '@/pages/tournament/ui/sortable-table-header';
+import { withdrawPositions } from '@/entities/position/api/withdraw-positions';
 import { connectionStore } from '@/shared/model/connection';
-import { useRouter } from 'next/navigation';
-import { LpRewardsSortKey } from '../server/lp-rewards';
-import { ValueView, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { pnum } from '@penumbra-zone/types/pnum';
 import { useStakingTokenMetadata } from '@/shared/api/registry';
+import { LpRewardsSortKey } from '../server/lp-rewards';
+import { useSortableTableHeaders } from './sortable-table-header';
 
-function LoadingRows() {
-  return (
-    <>
-      {new Array(5).map((_, x) => (
-        <div key={x}>
-          <TableCell cell loading>
-            null
-          </TableCell>
-          <TableCell cell loading>
-            null
-          </TableCell>
-          <TableCell cell loading>
-            null
-          </TableCell>
-          <TableCell cell loading>
-            null
-          </TableCell>
-          <TableCell cell loading>
-            null
-          </TableCell>
-        </div>
-      ))}
-    </>
-  );
-}
-
-function LpRewardRow({ lpReward, umMetadata }: { lpReward: LpReward; umMetadata: Metadata }) {
+function LpRewardRow({
+  lpReward,
+  umMetadata,
+  loading,
+}: {
+  lpReward: LpReward;
+  umMetadata: Metadata;
+  loading?: boolean;
+}) {
   const router = useRouter();
+  const id = !loading ? bech32mPositionId(lpReward.positionId) : '';
 
   return (
     <div
       onClick={() => {
-        router.push(`/inspect/lp/${bech32mPositionId(lpReward.positionId)}`);
+        router.push(`/inspect/lp/${id}`);
       }}
       className='grid grid-cols-subgrid col-span-5 hover:bg-action-hoverOverlay transition-colors cursor-pointer'
     >
-      <TableCell cell>#{lpReward.epoch}</TableCell>
-      <TableCell cell>
-        <div className='max-w-[370px] truncate'>{bech32mPositionId(lpReward.positionId)}</div>
-        <ExternalLink className='size-3 min-w-3 text-neutral-light' />
+      <TableCell cell loading={loading}>
+        #{lpReward.epoch}
       </TableCell>
-      <TableCell cell>
-        <ValueViewComponent
-          valueView={
-            new ValueView({
-              valueView: {
-                case: 'knownAssetId',
-                value: {
-                  amount: pnum(lpReward.rewards).toAmount(),
-                  metadata: umMetadata,
+      <TableCell cell loading={loading}>
+        {!loading && (
+          <>
+            <div className='max-w-[370px] truncate'>{id}</div>
+            <ExternalLink className='size-3 min-w-3 text-neutral-light' />
+          </>
+        )}
+      </TableCell>
+      <TableCell cell loading={loading}>
+        {!loading && (
+          <ValueViewComponent
+            valueView={
+              new ValueView({
+                valueView: {
+                  case: 'knownAssetId',
+                  value: {
+                    amount: pnum(lpReward.rewards).toAmount(),
+                    metadata: umMetadata,
+                  },
                 },
-              },
-            })
-          }
-          priority='tertiary'
-        />
+              })
+            }
+            priority='tertiary'
+          />
+        )}
       </TableCell>
-      <TableCell cell>
-        {(lpReward.isWithdrawable || lpReward.isWithdrawn) && (
+      <TableCell cell loading={loading}>
+        {!loading && (lpReward.isWithdrawable || lpReward.isWithdrawn) && (
           <Density slim>
             <div>
               <Button
@@ -104,7 +95,7 @@ function LpRewardRow({ lpReward, umMetadata }: { lpReward: LpReward; umMetadata:
           </Density>
         )}
       </TableCell>
-      <TableCell cell>
+      <TableCell cell loading={loading}>
         <Density slim>
           <Button iconOnly icon={ChevronRight}>
             Go to position information
@@ -122,17 +113,18 @@ export const LpRewards = observer(() => {
   const { getTableHeader, sortBy } = useSortableTableHeaders<keyof LpReward>('epoch');
   const { data: umMetadata } = useStakingTokenMetadata();
 
-  const query = useLpRewards(
+  const { data, isPending } = useLpRewards(
     subaccount,
     page,
     limit,
     sortBy.key as LpRewardsSortKey,
     sortBy.direction,
   );
-  const { data: queryData, isPending } = query;
-  const { data, total } = queryData ?? { data: [], total: 0 };
+
   const loading = isPending;
-  const rewards = data;
+  const loadingArr = new Array(BASE_LIMIT).fill({}) as LpReward[];
+  const rewards = data?.data ?? loadingArr;
+  const total = data?.total ?? 0;
 
   const onLimitChange = (newLimit: number) => {
     setLimit(newLimit);
@@ -151,13 +143,20 @@ export const LpRewards = observer(() => {
             <TableCell heading> </TableCell>
           </div>
 
-          {loading ? (
-            <LoadingRows />
-          ) : (
-            rewards.map((lpReward, index) => (
-              <LpRewardRow key={index} lpReward={lpReward} umMetadata={umMetadata} />
-            ))
+          {!loading && !total && (
+            <div className='col-span-5 text-sm text-muted-foreground py-4'>
+              No LP rewards found for this account.
+            </div>
           )}
+
+          {rewards.map((lpReward, index) => (
+            <LpRewardRow
+              key={index}
+              lpReward={lpReward}
+              umMetadata={umMetadata}
+              loading={loading}
+            />
+          ))}
         </div>
       </Density>
 
