@@ -22,7 +22,10 @@ import { connectionStore } from '@/shared/model/connection';
 import { useMyLpLeaderboard } from '@/entities/leaderboard/api/use-my-lp-leaderboard';
 import { round } from '@penumbra-zone/types/round';
 import { useStakingTokenMetadata } from '@/shared/api/registry';
-import { useGetMetadata } from '@/shared/api/assets';
+import { useAssets, useGetMetadata } from '@/shared/api/assets';
+import { useBalances } from '@/shared/api/balances';
+import { AssetSelector, AssetSelectorValue } from '@penumbra-zone/ui/AssetSelector';
+import { getAssetId } from './utils';
 
 const Tabs = {
   AllLPs: 'All LPs',
@@ -41,9 +44,11 @@ export const LeaderboardTable = observer(({ epoch }: { epoch: number | undefined
   const [tab, setTab] = useState<Tab>(Tabs.AllLPs);
   const [limit, setLimit] = useState(10);
   const { getTableHeader, sortBy } = useSortableTableHeaders<LpLeaderboardSortKey>('points');
-
   const getAssetMetadata = useGetMetadata();
   const { data: umMetadata } = useStakingTokenMetadata();
+  const { data: balances } = useBalances();
+  const { data: assets } = useAssets();
+  const [selectedAsset, setSelectedAsset] = useState<AssetSelectorValue>();
 
   const {
     data: leaderboard,
@@ -55,6 +60,7 @@ export const LeaderboardTable = observer(({ epoch }: { epoch: number | undefined
     limit,
     sortKey: sortBy.key,
     sortDirection: sortBy.direction,
+    assetId: getAssetId(selectedAsset),
     isActive: tab === Tabs.AllLPs,
   });
 
@@ -70,6 +76,7 @@ export const LeaderboardTable = observer(({ epoch }: { epoch: number | undefined
     limit,
     sortKey: sortBy.key,
     sortDirection: sortBy.direction,
+    assetId: getAssetId(selectedAsset),
     isActive: isMyTab,
   });
 
@@ -86,8 +93,12 @@ export const LeaderboardTable = observer(({ epoch }: { epoch: number | undefined
             LPs Leaderboard
           </Text>
 
-          {/* @TODO convert volume & fees into selected asset */}
-          {/* <AssetSelector assets={assets} balances={balances} value={quote} onChange={setQuote} /> */}
+          <AssetSelector
+            assets={assets}
+            balances={balances}
+            value={selectedAsset}
+            onChange={setSelectedAsset}
+          />
         </div>
 
         {error ? (
