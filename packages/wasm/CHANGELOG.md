@@ -1,5 +1,46 @@
 # @penumbra-zone/wasm
 
+## 48.0.0
+
+### Minor Changes
+
+- dc1eb8b: tct frontier support for freshly generated wallets
+- f9cd9dd: chunk genesis syncing
+
+### Patch Changes
+
+- Updated dependencies [dc1eb8b]
+- Updated dependencies [f9cd9dd]
+  - @penumbra-zone/protobuf@10.1.0
+  - @penumbra-zone/types@34.0.0
+  - @penumbra-zone/bech32m@17.0.0
+
+## 47.0.0
+
+### Patch Changes
+
+- Updated dependencies [085e855]
+  - @penumbra-zone/types@33.1.0
+
+## 46.0.0
+
+### Minor Changes
+
+- 93f1d05: proto and storage changes to support querying tournament votes
+
+### Patch Changes
+
+- Updated dependencies [93f1d05]
+  - @penumbra-zone/protobuf@10.0.0
+  - @penumbra-zone/types@33.0.0
+  - @penumbra-zone/bech32m@16.0.0
+
+## 45.1.0
+
+### Minor Changes
+
+- 43249b0: spends delegation notes in the wasm planner
+
 ## 45.0.2
 
 ## 45.0.1

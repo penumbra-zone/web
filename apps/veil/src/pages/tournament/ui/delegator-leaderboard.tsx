@@ -1,49 +1,145 @@
 import cn from 'clsx';
-import { useState } from 'react';
+import Link from 'next/link';
+import { useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { ChevronRight, ExternalLink } from 'lucide-react';
 import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { getAddressIndex, getAddress } from '@penumbra-zone/getters/address-view';
-import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
+import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 import { AddressViewComponent } from '@penumbra-zone/ui/AddressView';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { Pagination } from '@penumbra-zone/ui/Pagination';
 import { TableCell } from '@penumbra-zone/ui/TableCell';
+import { splitLoHi } from '@penumbra-zone/types/lo-hi';
 import { Density } from '@penumbra-zone/ui/Density';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
-import {
-  useDelegatorLeaderboard,
-  BASE_PAGE,
-  BASE_LIMIT,
-  DelegatorLeaderboardInfo,
-} from '../api/use-delegator-leaderboard';
-import { useSortableTableHeaders } from './sortable-table-header';
-import Link from 'next/link';
 import { PagePath } from '@/shared/const/pages';
+import { connectionStore } from '@/shared/model/connection';
+import type {
+  DelegatorLeaderboardSortKey,
+  DelegatorLeaderboardData,
+} from '../server/delegator-leaderboard';
+import { useDelegatorLeaderboard, BASE_PAGE, BASE_LIMIT } from '../api/use-delegator-leaderboard';
+import { useSortableTableHeaders } from './sortable-table-header';
+import { useIndexByAddress } from '../api/use-index-by-address';
+import { useStakingTokenMetadata } from '@/shared/api/registry';
+
+const LeaderboardRow = observer(
+  ({ row, loading }: { row: DelegatorLeaderboardData; loading: boolean }) => {
+    const { connected } = connectionStore;
+    const { data: subaccountIndex, isLoading: indexLoading } = useIndexByAddress(row.address);
+    const { data: stakingToken } = useStakingTokenMetadata();
+
+    const addressLink = useMemo(() => {
+      if (loading) {
+        return '';
+      }
+      const encoded = encodeURIComponent(bech32mAddress(row.address));
+      return PagePath.TournamentDelegator.replace(':address', encoded);
+    }, [row.address, loading]);
+
+    const addressView = useMemo(() => {
+      return connected && subaccountIndex
+        ? new AddressView({
+            addressView: {
+              case: 'decoded',
+              value: {
+                address: row.address,
+                index: subaccountIndex,
+              },
+            },
+          })
+        : new AddressView({
+            addressView: {
+              case: 'opaque',
+              value: {
+                address: row.address,
+              },
+            },
+          });
+    }, [row.address, subaccountIndex, connected]);
+
+    const totalRewards = useMemo(() => {
+      if (loading) {
+        return undefined;
+      }
+
+      return new ValueView({
+        valueView: {
+          case: 'knownAssetId',
+          value: {
+            amount: splitLoHi(BigInt(row.total_rewards)),
+            metadata: stakingToken,
+          },
+        },
+      });
+    }, [loading, row.total_rewards, stakingToken]);
+
+    return (
+      <Link
+        href={addressLink}
+        className={cn(
+          'grid grid-cols-subgrid col-span-6',
+          'hover:bg-action-hoverOverlay transition-colors cursor-pointer',
+          !!subaccountIndex && 'bg-other-tonalFill5',
+        )}
+      >
+        <TableCell cell loading={loading}>
+          {row.place}
+        </TableCell>
+        <TableCell cell loading={loading || indexLoading}>
+          {!loading && !indexLoading && (
+            <>
+              <AddressViewComponent
+                truncate
+                copyable={false}
+                hideIcon={!subaccountIndex}
+                addressView={addressView}
+              />
+              <i className='flex items-center justify-center size-4 text-text-secondary'>
+                <ExternalLink className='size-3' />
+              </i>
+            </>
+          )}
+        </TableCell>
+        <TableCell cell loading={loading}>
+          {row.epochs_voted_in}
+        </TableCell>
+        <TableCell cell loading={loading}>
+          {row.streak}
+        </TableCell>
+        <TableCell cell loading={loading}>
+          {row.total_rewards && <ValueViewComponent valueView={totalRewards} priority='tertiary' />}
+        </TableCell>
+        <TableCell cell loading={loading}>
+          <Density slim>
+            <Button iconOnly icon={ChevronRight}>
+              Go to delegator vote information
+            </Button>
+          </Density>
+        </TableCell>
+      </Link>
+    );
+  },
+);
 
 export const DelegatorLeaderboard = observer(() => {
   const [page, setPage] = useState(BASE_PAGE);
   const [limit, setLimit] = useState(BASE_LIMIT);
-  const { getTableHeader, sortBy } =
-    useSortableTableHeaders<keyof Required<DelegatorLeaderboardInfo>['sort']>();
+  const { getTableHeader, sortBy } = useSortableTableHeaders<DelegatorLeaderboardSortKey>(
+    'place',
+    'asc',
+  );
 
   const {
-    query: { data, isLoading },
+    query: { isLoading },
+    data,
     total,
   } = useDelegatorLeaderboard(page, limit, sortBy.key, sortBy.direction);
 
-  const loadingArr = new Array(5).fill({}) as DelegatorLeaderboardInfo[];
+  const loadingArr = new Array(5).fill({}) as DelegatorLeaderboardData[];
   const leaderboard = data ?? loadingArr;
-
-  const getAddressString = (addressView: AddressView) => {
-    const address = getAddress.optional(addressView);
-    return address?.inner ? encodeURIComponent(uint8ArrayToBase64(address.inner)) : '';
-  };
-
-  const isExternal = (address: AddressView): boolean => {
-    return !getAddressIndex.optional(address);
-  };
 
   const onLimitChange = (newLimit: number) => {
     setLimit(newLimit);
@@ -57,64 +153,21 @@ export const DelegatorLeaderboard = observer(() => {
       </Text>
       <Density compact>
         <div className='grid grid-cols-[auto_200px_1fr_1fr_1fr_48px]'>
-          <div className='grid grid-cols-subgrid col-span-6'>
+          <div key='header' className='grid grid-cols-subgrid col-span-6'>
             {getTableHeader('place', 'Place')}
             <TableCell heading>Delegator Address</TableCell>
-            {getTableHeader('rounds', 'Rounds Participated')}
+            {getTableHeader('epochs_voted_in', 'Rounds Participated')}
             {getTableHeader('streak', 'Voting Streak')}
-            {getTableHeader('reward', 'Rewards Earned')}
+            {getTableHeader('total_rewards', 'Rewards Earned')}
             <TableCell heading> </TableCell>
           </div>
 
           {leaderboard.map((row, index) => (
-            <Link
-              href={
-                isLoading
-                  ? ''
-                  : PagePath.TournamentRound.replace(':address', getAddressString(row.address))
-              }
-              key={index}
-              className={cn(
-                'grid grid-cols-subgrid col-span-6',
-                'hover:bg-action-hoverOverlay transition-colors cursor-pointer',
-                !isExternal(row.address) && 'bg-other-tonalFill5',
-              )}
-            >
-              <TableCell cell loading={isLoading}>
-                {row.place}
-              </TableCell>
-              <TableCell cell loading={isLoading}>
-                {!isLoading && (
-                  <>
-                    <AddressViewComponent
-                      addressView={row.address}
-                      truncate
-                      hideIcon={isExternal(row.address)}
-                      copyable={false}
-                    />
-                    <i className='flex items-center justify-center size-4 text-text-secondary'>
-                      <ExternalLink className='size-3' />
-                    </i>
-                  </>
-                )}
-              </TableCell>
-              <TableCell cell loading={isLoading}>
-                {row.rounds}
-              </TableCell>
-              <TableCell cell loading={isLoading}>
-                {row.streak}
-              </TableCell>
-              <TableCell cell loading={isLoading}>
-                <ValueViewComponent valueView={row.reward} priority='tertiary' />
-              </TableCell>
-              <TableCell cell loading={isLoading}>
-                <Density slim>
-                  <Button iconOnly icon={ChevronRight}>
-                    Go to delegator vote information
-                  </Button>
-                </Density>
-              </TableCell>
-            </Link>
+            <LeaderboardRow
+              key={isLoading ? `loading-${index}` : row.place}
+              row={row}
+              loading={isLoading || !Object.keys(row).length}
+            />
           ))}
         </div>
       </Density>

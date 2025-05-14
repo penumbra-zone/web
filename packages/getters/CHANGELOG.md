@@ -1,5 +1,21 @@
 # @penumbra-zone/getters
 
+## 27.0.0
+
+### Patch Changes
+
+- Updated dependencies [dc1eb8b]
+  - @penumbra-zone/protobuf@10.1.0
+  - @penumbra-zone/bech32m@17.0.0
+
+## 26.0.0
+
+### Patch Changes
+
+- Updated dependencies [93f1d05]
+  - @penumbra-zone/protobuf@10.0.0
+  - @penumbra-zone/bech32m@16.0.0
+
 ## 25.0.1
 
 ### Patch Changes

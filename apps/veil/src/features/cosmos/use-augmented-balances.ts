@@ -1,10 +1,9 @@
 import { useWallet } from '@cosmos-kit/react';
 import { useQueries } from '@tanstack/react-query';
 import { ChainWalletBase, WalletStatus } from '@cosmos-kit/core';
-import { useRegistry } from '@/shared/api/registry';
 
 import { Asset } from '@chain-registry/types';
-import { assets as cosmosAssetList } from 'chain-registry';
+import cosmosAssetList from 'chain-registry/mainnet/assets';
 import { Coin, StargateClient } from '@cosmjs/stargate';
 
 // Map of reliable RPC endpoints for different Cosmos chains
@@ -39,7 +38,6 @@ export const fetchChainBalances = async (
           `Failed to use reliable endpoint for ${chain.chainName}, falling back to default RPC`,
           error,
         );
-        // Fall back to default RPC if reliable one fails
       }
     }
 
@@ -76,36 +74,38 @@ const fallbackAsset = (denom: string): Asset => {
 
 export const useBalances = () => {
   const { chainWallets, status } = useWallet();
-  const { data: registry } = useRegistry();
   const result = useQueries({
     queries: chainWallets
-      .filter(chain => chain.address !== undefined)
+      .filter(
+        (
+          chain,
+        ): chain is ChainWalletBase & {
+          get address(): string;
+        } => chain.address !== undefined,
+      )
       .map(chain => ({
-        queryKey: [
-          'cosmos-balances',
-          status,
-          chain.chainId,
-          chain.address,
-          registry ? 'registry-available' : 'no-registry',
-        ],
+        queryKey: ['cosmos-balances', status, chain.chainId, chain.address],
         queryFn: async () => {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- chains without a valid address were filtered out above
-          const balances = await fetchChainBalances(chain.address!, chain);
+          if (status !== WalletStatus.Connected && chainWallets.length === 0) {
+            return [];
+          }
+
+          const balances = await fetchChainBalances(chain.address, chain);
           return balances.map(coin => {
-            return { asset: augmentToAsset(coin.denom, chain.chainName), amount: coin.amount };
+            return {
+              asset: augmentToAsset(coin.denom, chain.chainName),
+              amount: coin.amount,
+              chainId: chain.chainId,
+            };
           });
         },
-        enabled: status === WalletStatus.Connected && chainWallets.length > 0,
-        retry: 3, // Retry failed requests 3 times
-        staleTime: 60000, // 1 minute stale time to reduce refetches
-        cacheTime: 300000, // 5 minutes cache time
       })),
     combine: results => {
       return {
         data: results
           .map(result => result.data)
           .flat(2)
-          .filter(Boolean) as { asset: Asset; amount: string }[],
+          .filter(Boolean) as { asset: Asset; amount: string; chainId: string }[],
         isLoading: results.some(result => result.isLoading),
         error: results.find(r => r.error !== null)?.error ?? null,
         refetch: () => Promise.all(results.map(result => result.refetch())),

@@ -66,14 +66,15 @@ export const getBatchSwapDisplayData =
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { height: string } },
+  { params }: { params: Promise<{ height: string }> },
 ): Promise<NextResponse<Serialized<BlockSummaryApiResponse>>> {
   const chainId = process.env['PENUMBRA_CHAIN_ID'];
   if (!chainId) {
     return NextResponse.json({ error: 'PENUMBRA_CHAIN_ID is not set' }, { status: 500 });
   }
 
-  const height = params.height;
+  const paramsValue = await params;
+  const height = paramsValue.height;
   if (!height) {
     return NextResponse.json({ error: 'height is required' }, { status: 400 });
   }

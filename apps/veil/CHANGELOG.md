@@ -1,5 +1,69 @@
 # penumbra-veil
 
+## 0.1.2
+
+### Patch Changes
+
+- Updated dependencies [dc1eb8b]
+- Updated dependencies [f9cd9dd]
+  - @penumbra-zone/protobuf@10.1.0
+  - @penumbra-zone/types@34.0.0
+  - @penumbra-zone/wasm@48.0.0
+  - @penumbra-zone/bech32m@17.0.0
+  - @penumbra-zone/client@28.0.0
+  - @penumbra-zone/getters@27.0.0
+  - @penumbra-zone/perspective@57.0.0
+  - @penumbra-zone/ui@14.0.2
+  - @penumbra-zone/crypto-web@44.0.0
+
+## 0.1.1
+
+### Patch Changes
+
+- Updated dependencies [085e855]
+  - @penumbra-zone/types@33.1.0
+  - @penumbra-zone/crypto-web@43.0.0
+  - @penumbra-zone/ui@14.0.1
+  - @penumbra-zone/wasm@47.0.0
+  - @penumbra-zone/perspective@56.0.0
+
+## 0.1.0
+
+### Minor Changes
+
+- 694319c: bump registry version
+
+### Patch Changes
+
+- Updated dependencies [4a51a46]
+- Updated dependencies [4a51a46]
+  - @penumbra-zone/ui@14.0.0
+
+## 0.0.9
+
+### Patch Changes
+
+- Updated dependencies [93f1d05]
+- Updated dependencies [28a251c]
+  - @penumbra-zone/protobuf@10.0.0
+  - @penumbra-zone/types@33.0.0
+  - @penumbra-zone/wasm@46.0.0
+  - @penumbra-zone/ui@13.18.0
+  - @penumbra-zone/bech32m@16.0.0
+  - @penumbra-zone/client@27.0.0
+  - @penumbra-zone/getters@26.0.0
+  - @penumbra-zone/perspective@55.0.0
+  - @penumbra-zone/crypto-web@42.0.0
+
+## 0.0.8
+
+### Patch Changes
+
+- Updated dependencies [43249b0]
+  - @penumbra-zone/wasm@45.1.0
+  - @penumbra-zone/perspective@54.0.0
+  - @penumbra-zone/ui@13.17.4
+
 ## 0.0.7
 
 ### Patch Changes

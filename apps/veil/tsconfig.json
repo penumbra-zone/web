@@ -6,6 +6,7 @@
     "noEmit": true,
     "target": "ESNext",
     "skipLibCheck": true,
+    "sourceMap": true,
     "plugins": [
       {
         "name": "next"

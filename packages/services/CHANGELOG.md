@@ -1,5 +1,69 @@
 # @penumbra-zone/router
 
+## 64.0.0
+
+### Major Changes
+
+- dc1eb8b: tct frontier support for freshly generated wallets
+
+### Patch Changes
+
+- Updated dependencies [dc1eb8b]
+- Updated dependencies [f9cd9dd]
+  - @penumbra-zone/protobuf@10.1.0
+  - @penumbra-zone/storage@57.0.0
+  - @penumbra-zone/types@34.0.0
+  - @penumbra-zone/wasm@48.0.0
+  - @penumbra-zone/bech32m@17.0.0
+  - @penumbra-zone/getters@27.0.0
+  - @penumbra-zone/crypto-web@44.0.0
+
+## 63.0.0
+
+### Minor Changes
+
+- 085e855: use asset id instead of metadata in liquidity tournament idb table
+
+### Patch Changes
+
+- Updated dependencies [085e855]
+  - @penumbra-zone/storage@56.0.0
+  - @penumbra-zone/types@33.1.0
+  - @penumbra-zone/crypto-web@43.0.0
+  - @penumbra-zone/wasm@47.0.0
+
+## 62.0.0
+
+### Patch Changes
+
+- Updated dependencies [694319c]
+  - @penumbra-zone/storage@55.1.0
+
+## 61.0.0
+
+### Minor Changes
+
+- 93f1d05: proto and storage changes to support querying tournament votes
+
+### Patch Changes
+
+- Updated dependencies [93f1d05]
+  - @penumbra-zone/protobuf@10.0.0
+  - @penumbra-zone/storage@55.0.0
+  - @penumbra-zone/types@33.0.0
+  - @penumbra-zone/wasm@46.0.0
+  - @penumbra-zone/bech32m@16.0.0
+  - @penumbra-zone/getters@26.0.0
+  - @penumbra-zone/crypto-web@42.0.0
+
+## 60.0.0
+
+### Patch Changes
+
+- Updated dependencies [43249b0]
+  - @penumbra-zone/wasm@45.1.0
+  - @penumbra-zone/storage@54.0.0
+
 ## 59.1.0
 
 ### Minor Changes

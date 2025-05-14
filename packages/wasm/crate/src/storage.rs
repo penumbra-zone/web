@@ -48,6 +48,7 @@ pub struct Tables {
     pub auctions: String,
     pub auction_outstanding_reserves: String,
     pub tree_commitments: String,
+    pub tree_hashes: String,
     pub tree_last_position: String,
     pub tree_last_forgotten: String,
 }

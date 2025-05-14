@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/ui",
-  "version": "13.17.3",
+  "version": "14.0.2",
   "license": "(MIT OR Apache-2.0)",
   "description": "UI components for Penumbra",
   "type": "module",
@@ -67,8 +67,8 @@
     "@storybook/test": "^8.4.2",
     "@storybook/theming": "^8.1.11",
     "@types/murmurhash3js": "^3.0.7",
-    "@types/react": "^18.3.14",
-    "@types/react-dom": "^18.3.2",
+    "@types/react": "19.0.12",
+    "@types/react-dom": "19.0.4",
     "@types/tinycolor2": "^1.4.6",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.49",

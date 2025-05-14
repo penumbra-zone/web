@@ -1,5 +1,4 @@
 import React from 'react';
-import { Card } from '@penumbra-zone/ui/Card';
 import { Text } from '@penumbra-zone/ui/Text';
 import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import {
@@ -17,6 +16,7 @@ import { Asset } from '@chain-registry/types';
 import { AssetPrice, useAssetPrices } from '@/pages/portfolio/api/use-asset-prices.ts';
 import { pnum } from '@penumbra-zone/types/pnum';
 import { shouldFilterAsset } from '@/pages/portfolio/api/use-unified-assets.ts';
+import { PortfolioCard } from '@/pages/portfolio/ui/portfolio-card.tsx';
 
 interface AssetAllocation {
   symbol: string;
@@ -60,7 +60,7 @@ export const AssetBars: React.FC = () => {
 
   if (!hasShieldedBalances && !hasPublicBalances) {
     return (
-      <Card>
+      <PortfolioCard>
         <div className='p-6'>
           <div className='flex justify-between items-center mb-4'>
             <Text as='h4' xxl color='text.primary'>
@@ -73,7 +73,7 @@ export const AssetBars: React.FC = () => {
             </Text>
           </div>
         </div>
-      </Card>
+      </PortfolioCard>
     );
   }
 
@@ -158,97 +158,86 @@ export const AssetBars: React.FC = () => {
   }
 
   return (
-    <Card>
-      <div className='p-6'>
-        <div className='flex justify-between items-center mb-4'>
-          <Text as='h4' large color='text.primary'>
-            Allocation
-          </Text>
+    <PortfolioCard title={'Allocation'}>
+      <div className='flex flex-col gap-4'>
+        {/* Shielded Assets Bar */}
+        <div className='flex items-center gap-2'>
+          <div className='w-16 text-neutral-400 text-xs font-normal'>Shielded</div>
+          <div className='relative h-1.5 flex-grow bg-neutral-800 rounded overflow-hidden'>
+            <div className='absolute left-0 top-0 h-full' style={{ width: `${shieldedBarWidth}%` }}>
+              {shieldedAllocations.length > 0 &&
+                shieldedAllocations.map((allocation, index) => {
+                  const prevWidth = shieldedAllocations
+                    .slice(0, index)
+                    .reduce((acc, item) => acc + (item.percentage / 100) * 100, 0);
+
+                  // Find the matching asset in displayAssets for consistent color
+                  const displayAsset = displayAssets.find(a => a.symbol === allocation.symbol);
+                  const barColor = displayAsset?.color ?? allocation.color;
+
+                  return (
+                    <div
+                      key={`shielded-${allocation.symbol}-${index}`}
+                      className='absolute top-0 h-full rounded'
+                      style={{
+                        backgroundColor: barColor,
+                        width: `${allocation.percentage}%`,
+                        left: `${prevWidth}%`,
+                      }}
+                    />
+                  );
+                })}
+            </div>
+          </div>
         </div>
 
-        <div className='flex flex-col gap-4'>
-          {/* Shielded Assets Bar */}
-          <div className='flex items-center gap-2'>
-            <div className='w-16 text-neutral-400 text-xs font-normal'>Shielded</div>
-            <div className='relative h-1.5 flex-grow bg-neutral-800 rounded overflow-hidden'>
-              <div
-                className='absolute left-0 top-0 h-full'
-                style={{ width: `${shieldedBarWidth}%` }}
-              >
-                {shieldedAllocations.length > 0 &&
-                  shieldedAllocations.map((allocation, index) => {
-                    const prevWidth = shieldedAllocations
-                      .slice(0, index)
-                      .reduce((acc, item) => acc + (item.percentage / 100) * 100, 0);
+        {/* Public Assets Bar */}
+        <div className='flex items-center gap-2'>
+          <div className='w-16 text-neutral-400 text-xs font-normal'>Public</div>
+          <div className='relative h-1.5 flex-grow bg-neutral-800 rounded overflow-hidden'>
+            <div className='absolute left-0 top-0 h-full' style={{ width: `${publicBarWidth}%` }}>
+              {publicAllocations.length > 0 &&
+                publicAllocations.map((allocation, index) => {
+                  const prevWidth = publicAllocations
+                    .slice(0, index)
+                    .reduce((acc, item) => acc + (item.percentage / 100) * 100, 0);
 
-                    // Find the matching asset in displayAssets for consistent color
-                    const displayAsset = displayAssets.find(a => a.symbol === allocation.symbol);
-                    const barColor = displayAsset?.color ?? allocation.color;
+                  // Find the matching asset in displayAssets for consistent color
+                  const displayAsset = displayAssets.find(a => a.symbol === allocation.symbol);
+                  const barColor = displayAsset?.color ?? allocation.color;
 
-                    return (
-                      <div
-                        key={`shielded-${allocation.symbol}`}
-                        className='absolute top-0 h-full rounded'
-                        style={{
-                          backgroundColor: barColor,
-                          width: `${allocation.percentage}%`,
-                          left: `${prevWidth}%`,
-                        }}
-                      />
-                    );
-                  })}
-              </div>
+                  return (
+                    <div
+                      key={`public-${allocation.symbol}`}
+                      className='absolute top-0 h-full rounded'
+                      style={{
+                        backgroundColor: barColor,
+                        width: `${allocation.percentage}%`,
+                        left: `${prevWidth}%`,
+                      }}
+                    />
+                  );
+                })}
             </div>
           </div>
+        </div>
 
-          {/* Public Assets Bar */}
-          <div className='flex items-center gap-2'>
-            <div className='w-16 text-neutral-400 text-xs font-normal'>Public</div>
-            <div className='relative h-1.5 flex-grow bg-neutral-800 rounded overflow-hidden'>
-              <div className='absolute left-0 top-0 h-full' style={{ width: `${publicBarWidth}%` }}>
-                {publicAllocations.length > 0 &&
-                  publicAllocations.map((allocation, index) => {
-                    const prevWidth = publicAllocations
-                      .slice(0, index)
-                      .reduce((acc, item) => acc + (item.percentage / 100) * 100, 0);
-
-                    // Find the matching asset in displayAssets for consistent color
-                    const displayAsset = displayAssets.find(a => a.symbol === allocation.symbol);
-                    const barColor = displayAsset?.color ?? allocation.color;
-
-                    return (
-                      <div
-                        key={`public-${allocation.symbol}`}
-                        className='absolute top-0 h-full rounded'
-                        style={{
-                          backgroundColor: barColor,
-                          width: `${allocation.percentage}%`,
-                          left: `${prevWidth}%`,
-                        }}
-                      />
-                    );
-                  })}
-              </div>
+        {/* Asset Legend */}
+        <div className='flex flex-wrap gap-4 pl-[72px] mt-2'>
+          {displayAssets.map(asset => (
+            <div key={asset.symbol} className='flex items-center gap-1'>
+              <div className='w-2 h-2 rounded-full' style={{ backgroundColor: asset.color }} />
+              <Text small color='text.primary'>
+                {asset.symbol}
+              </Text>
+              <Text small color='text.secondary'>
+                {Math.round(asset.percentage)}%
+              </Text>
             </div>
-          </div>
-
-          {/* Asset Legend */}
-          <div className='flex flex-wrap gap-4 pl-[72px] mt-2'>
-            {displayAssets.map(asset => (
-              <div key={asset.symbol} className='flex items-center gap-1'>
-                <div className='w-2 h-2 rounded-full' style={{ backgroundColor: asset.color }} />
-                <Text small color='text.primary'>
-                  {asset.symbol}
-                </Text>
-                <Text small color='text.secondary'>
-                  {Math.round(asset.percentage)}%
-                </Text>
-              </div>
-            ))}
-          </div>
+          ))}
         </div>
       </div>
-    </Card>
+    </PortfolioCard>
   );
 };
 
@@ -266,44 +255,38 @@ const SMALL_ASSET_THRESHOLD = 2;
 
 const LoadingBars = () => {
   return (
-    <Card>
-      <div className='p-6'>
-        <Text as='h4' large color='text.primary'>
-          Allocation
-        </Text>
-
-        {/* Asset distribution bar skeleton */}
-        <div className='flex flex-col gap-4 mt-4'>
-          <div className='flex items-center gap-2'>
-            <div className='w-16 text-neutral-400 text-xs'>Shielded</div>
-            <div className='w-full h-1.5'>
-              <Skeleton />
-            </div>
-          </div>
-
-          <div className='flex items-center gap-2'>
-            <div className='w-16 text-neutral-400 text-xs'>Public</div>
-            <div className='w-full h-1.5'>
-              <Skeleton />
-            </div>
-          </div>
-
-          {/* Legend skeleton */}
-          <div className='flex flex-wrap gap-4 pl-[72px] mt-2'>
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className='flex items-center gap-2'>
-                <div className='w-2 h-2'>
-                  <Skeleton />
-                </div>
-                <div className='w-20 h-4'>
-                  <Skeleton />
-                </div>
-              </div>
-            ))}
+    <PortfolioCard title={'Allocation'}>
+      {/* Asset distribution bar skeleton */}
+      <div className='flex flex-col gap-4 mt-4'>
+        <div className='flex items-center gap-2'>
+          <div className='w-16 text-neutral-400 text-xs'>Shielded</div>
+          <div className='w-full h-1.5'>
+            <Skeleton />
           </div>
         </div>
+
+        <div className='flex items-center gap-2'>
+          <div className='w-16 text-neutral-400 text-xs'>Public</div>
+          <div className='w-full h-1.5'>
+            <Skeleton />
+          </div>
+        </div>
+
+        {/* Legend skeleton */}
+        <div className='flex flex-wrap gap-4 pl-[72px] mt-2'>
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className='flex items-center gap-2'>
+              <div className='w-2 h-2'>
+                <Skeleton />
+              </div>
+              <div className='w-20 h-4'>
+                <Skeleton />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
-    </Card>
+    </PortfolioCard>
   );
 };
 

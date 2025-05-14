@@ -39,6 +39,7 @@ export interface IndexedDbMock {
   getBlockHeightByEpoch?: Mock;
   saveLQTHistoricalVote?: Mock;
   getLQTHistoricalVotes?: Mock;
+  iterateLQTVotes?: Mock;
 }
 
 export interface AuctionMock {
