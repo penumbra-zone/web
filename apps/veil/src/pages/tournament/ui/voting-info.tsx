@@ -29,7 +29,6 @@ export const useVotingInfo = (defaultEpoch?: number) => {
   const isEnded = !currentEpoch || !epoch || epoch !== currentEpoch || loadingEpoch;
 
   const { data: notes, isLoading: loadingNotes } = useLQTNotes(subaccount, epoch, isEnded);
-  console.log("notes in useVotingInfo: ", notes)
   const { data: votes, isLoading: loadingVotes } = useTournamentVotes(epoch, isEnded);
   const { data: delegations, isLoading: delegationsLoading } = useAccountDelegations(
     isEnded || !!notes?.length,

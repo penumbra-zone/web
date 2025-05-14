@@ -4,37 +4,27 @@ import path from 'path';
 
 export const scale = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 2;
 
-/** convert CSS px → device-pixel px */
 export const dpi = (px: number) => px * scale;
 
-/** convert REM → CSS px */
 export const remToPx = (rem: string) =>
   parseFloat(rem) *
   parseFloat(
-    typeof window !== 'undefined'
-      ? getComputedStyle(document.documentElement).fontSize
-      : '11px',
+    typeof window !== 'undefined' ? getComputedStyle(document.documentElement).fontSize : '11px',
   );
 
-/** Hi-DPI helper: enlarge the bitmap, keep the element the same size. */
-export function scaleCanvas(canvas: HTMLCanvasElement) {
+// TODO: this seems to be an issue...
+export const scaleCanvas = (canvas: HTMLCanvasElement) => {
   const ctx = canvas.getContext('2d');
-  if (!ctx) return;
+  if (!ctx) {
+    return;
+  }
 
-  // --- 1. read the *layout* size (CSS px) -------------------------------
-  const { width: cssW, height: cssH } = canvas.getBoundingClientRect();
-
-  // --- 2. set bitmap resolution -----------------------------------------
-  canvas.width  = cssW * scale;       // e.g. 512 × 2 = 1024
-  canvas.height = cssH * scale;
-
-  // --- 3. keep the element’s CSS box unchanged --------------------------
-  canvas.style.width  = `${cssW}px`;
-  canvas.style.height = `${cssH}px`;
-
-  // --- 4. map user space → CSS px ---------------------------------------
   ctx.scale(scale, scale);
-}
+  const canvasWidth = canvas.width;
+  const canvasHeight = canvas.height;
+  canvas.width = dpi(canvasWidth);
+  canvas.height = dpi(canvasHeight);
+};
 
 export function drawText(
   ctx: CanvasRenderingContext2D,

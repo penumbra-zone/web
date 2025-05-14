@@ -1,14 +1,15 @@
 import { useQuery } from '@tanstack/react-query';
 import { ViewService } from '@penumbra-zone/protobuf';
-import { LqtVotingNotesRequest, LqtVotingNotesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import {
+  LqtVotingNotesRequest,
+  LqtVotingNotesResponse,
+} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { useRefetchOnNewBlock } from '@/shared/api/compact-block';
 import { connectionStore } from '@/shared/model/connection';
 import { penumbra } from '@/shared/const/penumbra';
-LqtVotingNotesRequest
 
 const fetchQuery = async (subaccount: number, epoch: number): Promise<LqtVotingNotesResponse[]> => {
-  // console.log("epoch: ", epoch)
   const accountFilter = new AddressIndex({ account: subaccount });
 
   return Array.fromAsync(
@@ -20,7 +21,6 @@ const fetchQuery = async (subaccount: number, epoch: number): Promise<LqtVotingN
  * Must be used within the `observer` mobX HOC
  */
 export const useLQTNotes = (subaccount: number, epoch?: number, disabled?: boolean) => {
-  // console.log("epoch used in useLQTNotes: ", epoch)
   const lqtNotesQuery = useQuery({
     queryKey: ['lqt-notes', subaccount, epoch],
     staleTime: Infinity,

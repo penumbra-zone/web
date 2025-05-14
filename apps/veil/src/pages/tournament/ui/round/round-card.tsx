@@ -34,7 +34,6 @@ export const RoundCard = observer(({ epoch }: RoundCardProps) => {
     epochLoading || ended,
   );
 
-  // Preserve data at epoch end
   useEffect(() => {
     if (!isLoading && currentSummary && !initialDataRef.current) {
       initialDataRef.current = currentSummary;
@@ -44,6 +43,8 @@ export const RoundCard = observer(({ epoch }: RoundCardProps) => {
   const summary = ended && initialDataRef.current ? initialDataRef.current : currentSummary;
 
   // Trigger social card dialog when epoch ends
+  // TODO: currently, this always triggers. we need to add conditionals to check if user
+  // has both voted and recieved a reward in the current epoch to trigger the hook.
   useEffect(() => {
     if (!ended || !summary?.[0]) return;
 

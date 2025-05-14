@@ -111,7 +111,7 @@ Join now 👇`;
     }
 
     const handleClose = () => {
-      setIsOpen(false);  
+      setIsOpen(false);
       onClose();
     };
 
@@ -143,12 +143,12 @@ Join now 👇`;
             </div>
           }
         >
-            <canvas
-              ref={canvasRef}
-              className='w-[512px] h-[512px] bg-other-tonalFill10'
-              width={512}
-              height={512}
-            />
+          <canvas
+            ref={canvasRef}
+            className='w-[512px] h-[512px] bg-other-tonalFill10'
+            width={512}
+            height={512}
+          />
         </Dialog.Content>
       </Dialog>
     );
