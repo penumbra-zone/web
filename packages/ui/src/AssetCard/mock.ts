@@ -6,7 +6,7 @@ export interface AssetMock {
     name: string;
     symbol: string;
     amount: string;
-    value: string;
+    value: string | null;
     icon?: string;
   }
   
@@ -65,7 +65,7 @@ export interface AssetMock {
           name: 'Penumbra',
           symbol: 'UM',
           amount: '1,250.75',
-          value: '$6,253.75',
+          value: null,
           icon: 'https://raw.githubusercontent.com/prax-wallet/registry/main/images/um.svg',
         },
         {
@@ -73,7 +73,7 @@ export interface AssetMock {
           name: 'Ethereum',
           symbol: 'ETH',
           amount: '2.35',
-          value: '$4,582.50',
+          value: null,
           icon: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/eth-white.png',
         },
         {
@@ -81,7 +81,7 @@ export interface AssetMock {
           name: 'USD Coin',
           symbol: 'USDC',
           amount: '3,500.00',
-          value: '$3,500.00',
+          value: null,
           icon: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/axelar/images/usdc.png',
         },
         {
@@ -89,7 +89,7 @@ export interface AssetMock {
           name: 'Bitcoin',
           symbol: 'BTC',
           amount: '0.045',
-          value: '$2,745.30',
+          value: null,
           icon: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/bitcoin/images/btc.png',
         },
       ],
@@ -104,7 +104,7 @@ export interface AssetMock {
           name: 'Solana',
           symbol: 'SOL',
           amount: '85.25',
-          value: '$7,842.75',
+          value: null,
           icon: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/injective/images/nsol.png',
         },
         {
@@ -112,7 +112,7 @@ export interface AssetMock {
           name: 'Avalanche',
           symbol: 'AVAX',
           amount: '120.50',
-          value: '$3,254.75',
+          value: null,
           icon: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/avalanche/images/wavax.svg',
         },
       ],
@@ -127,7 +127,7 @@ export interface AssetMock {
           name: 'Polkadot',
           symbol: 'DOT',
           amount: '450.25',
-          value: '$3,152.50',
+          value: null,
           icon: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/polkadot/images/dot.png',
         },
         {
@@ -135,7 +135,7 @@ export interface AssetMock {
           name: 'Tether',
           symbol: 'USDT',
           amount: '1,000.00',
-          value: '$1,000.00',
+          value: null,
           icon: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/usdt.png',
         },
       ],

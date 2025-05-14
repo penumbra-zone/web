@@ -53,11 +53,12 @@ export const AssetListItem = ({ asset }: AssetListItemProps) => {
       </div>
       <div className="flex items-center gap-3">
         {/* Value with detail typography */}
-        <Text color="text.secondary" xs>
-          {asset.value}
-        </Text>
+        {!isNaN(Number(asset.value)) && (
+          <Text color="text.secondary" xs>
+            {asset.value}
+          </Text>
+        )}
       </div>
-      
       {/* Buttons group - absolutely positioned */}
       <div className="absolute right-3 top-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
         <Button 

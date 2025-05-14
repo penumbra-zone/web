@@ -23,9 +23,6 @@ export interface AssetCardProps {
    * alongside the title
    */
   /**
-   * Optional class name for the container
-   */
-  /**
    * Whether to show the InfoButton
    * When true, the InfoButton will be displayed next to the title
    */

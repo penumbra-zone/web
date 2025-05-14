@@ -133,16 +133,17 @@ export const Button = ({
         '-outline-offset-1 focus:outline-none',
         priority === 'secondary' && 'outline outline-1',
         priority === 'secondary' && getOutlineColorByActionType(actionType),
-
+        
         'relative',
         'text-neutral-contrast',
         'flex items-center justify-center',
         density === 'sparse' ? 'gap-2' : 'gap-1',
+        iconOnly && 'ps-0 pe-0',
       )}
     >
-      {IconComponent && <IconComponent size={getIconSize(density)} />}
+        {IconComponent && <IconComponent size={getIconSize(density)} />}
 
-      {!iconOnly && children}
+        {!iconOnly && children}
     </button>
   );
 };
