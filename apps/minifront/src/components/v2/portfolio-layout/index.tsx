@@ -10,6 +10,7 @@ import { pnum } from '@penumbra-zone/types/pnum';
 import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
+import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 // Define interfaces for our implementation
 interface AssetData {
@@ -25,7 +26,7 @@ interface AccountData {
   id: string;
   name: string;
   assets: AssetData[];
-  addressView?: any;
+  addressView?: AddressView;
 }
 
 export const PortfolioLayout = () => {
@@ -68,19 +69,9 @@ export const PortfolioLayout = () => {
     if (!balancesByAccount) return [];
     
     return balancesByAccount.map(account => {
-      // Create a mock address view structure similar to what's in the mock module
-      const addressView = {
-        addressView: {
-          case: 'decoded',
-          value: {
-            address: account.address,
-            index: {
-              account: account.account,
-              randomizer: new Uint8Array(3).fill(0) // Non-randomized address
-            }
-          }
-        }
-      };
+      // The addressView should be the AddressView protobuf message itself
+      const firstBalance = account.balances?.[0];
+      const addressView = firstBalance?.accountAddress;
       
       return {
         id: String(account.account),
@@ -146,7 +137,7 @@ export const PortfolioLayout = () => {
         {/* Asset Card with real data */}
         <div className="flex-1">
           <AssetCard 
-            accounts={accounts as any} 
+            accounts={accounts as any}
             showInfoButton={true}
           />
         </div>
