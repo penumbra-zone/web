@@ -331,8 +331,11 @@ export interface PenumbraDb extends DBSchema {
     value: PositionRecord;
   };
   EPOCHS: {
-    key: number; // auto-increment
+    key: number; // key path is 'index'
     value: Jsonified<Epoch>;
+    indexes: {
+      startHeight: number;
+    };
   };
   VALIDATOR_INFOS: {
     key: string; // bech32-encoded validator identity key
