@@ -7,15 +7,17 @@ export const PortfolioLayout = () => {
 
 
   // Mock data - this would come from Prax client state
-  const totalBalance = '4,567.678';
+  const totalBalance = null;
   const currency = 'USDC';
   
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+      {totalBalance && (
         <PortfolioBalance 
           balance={totalBalance} 
           currency={currency} 
         />
+      )}
         
           <div className="flex flex-1 gap-4 w-full flex-col md:flex-row">
             {/* Asset Card - use the Card component directly */}
