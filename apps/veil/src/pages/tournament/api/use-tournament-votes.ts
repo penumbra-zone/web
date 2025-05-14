@@ -4,12 +4,13 @@ import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys
 import { connectionStore } from '@/shared/model/connection';
 import { penumbra } from '@/shared/const/penumbra';
 import { useRefetchOnNewBlock } from '@/shared/api/compact-block';
+import { TournamentVotesResponse_Vote } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 
 export const useTournamentVotes = (epoch?: number, disabled?: boolean) => {
   const { connected, subaccount } = connectionStore;
   const enabled = connected && !!epoch;
 
-  const query = useQuery({
+  const query = useQuery<TournamentVotesResponse_Vote[]>({
     enabled,
     queryKey: ['tournament-votes', subaccount, epoch],
     staleTime: Infinity,

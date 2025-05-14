@@ -13,6 +13,7 @@ import type { MappedGauge } from '../../../server/previous-epochs';
 import { useEpochResults } from '../../../api/use-epoch-results';
 import { VOTING_THRESHOLD } from '../../vote-dialog/vote-dialog-asset';
 import { TableRow } from './table-row';
+import { useVotingInfo } from '@/pages/tournament/ui/voting-info.tsx';
 
 const BASE_LIMIT = 10;
 
@@ -48,8 +49,13 @@ export const CurrentVotingResults = observer(({ epoch }: CurrentVotingResultsPro
     sortDirection: sortBy.direction,
   });
 
-  // TODO: `canVote` should be true when connected and has delUM for this epoch
-  const canVote = connected;
+  const { isVoted, isDelegated, isEnded } = useVotingInfo();
+
+  /* A user can vote if they:
+   * - have enough delUM
+   * - epoch hasn't ended yet
+   * - user hasn't voted already for this epoch */
+  const canVote = connected && !isEnded && isDelegated && !isVoted;
   const tableKey = canVote ? 'canVote' : 'default';
   const total = data?.total ?? 0;
 
