@@ -104,7 +104,7 @@ export const VotingRewards = observer(() => {
     epochStatus !== 'success',
     page,
     limit,
-    sortBy.key,
+    sortBy.key as DelegatorHistorySortKey,
     sortBy.direction,
   );
 
