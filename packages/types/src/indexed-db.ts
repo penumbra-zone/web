@@ -112,7 +112,7 @@ export interface IndexedDbInterface {
     subaccount?: AddressIndex,
   ): Promise<void>;
   addEpoch(epoch: PlainMessage<Epoch>): Promise<void>;
-  getEpochByHeight(height: bigint): Promise<Epoch>;
+  getEpochByHeight(height: bigint): Promise<Epoch | undefined>;
   getBlockHeightByEpoch(epoch_index: bigint): Promise<Epoch | undefined>;
   upsertValidatorInfo(validatorInfo: ValidatorInfo): Promise<void>;
   iterateValidatorInfos(): AsyncGenerator<ValidatorInfo, void>;

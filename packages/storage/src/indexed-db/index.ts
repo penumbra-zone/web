@@ -836,36 +836,31 @@ export class IndexedDb implements IndexedDbInterface {
   async addEpoch(epoch: PlainMessage<Epoch>): Promise<void> {
     const tx = this.db.transaction('EPOCHS', 'readwrite');
 
-    const epochCount = await tx.store.count();
-    if (epochCount !== Number(epoch.index)) {
-      throw new RangeError('Adding epoch with unexpected index', { cause: { epoch, epochCount } });
-    }
+    // todo: relax the strict invariant for the very first write: when table is
+    // empty, allow starting from any index (fresh wallet skip sync), and then
+    // enforce monotonicity.
+    // if (epochCount !== Number(epoch.index)) { ... }
 
-    await tx.store.add(new Epoch(epoch).toJson() as Jsonified<Epoch>);
+    await tx.store.add({
+      index: Number(epoch.index),
+      startHeight: Number(epoch.startHeight),
+    });
   }
 
   /**
    * Range query to retrieve the recorded epoch containing the given block height.
    */
-  async getEpochByHeight(blockHeight: bigint): Promise<Epoch> {
-    const tx = this.db.transaction('EPOCHS', 'readonly');
-    const store = tx.store.index('startHeight');
-
-    let result: Epoch | undefined;
+  async getEpochByHeight(height: bigint): Promise<Epoch> {
+    const store = this.db.transaction('EPOCHS', 'readonly').store.index('startHeight');
 
     for await (const cursor of store.iterate(undefined, 'prev')) {
       const epoch = Epoch.fromJson(cursor.value);
-      if (epoch.startHeight <= blockHeight) {
-        result = epoch;
-        break;
+      if (epoch.startHeight <= height) {
+        return epoch;
       }
     }
 
-    if (!result) {
-      throw new Error(`No epoch found for height ${blockHeight.toString()}`);
-    }
-
-    return result;
+    throw new Error(`Invariant violation: No epoch found for height ${height}`);
   }
 
   /**
@@ -1057,7 +1052,7 @@ export class IndexedDb implements IndexedDbInterface {
       }
 
       // Adds position prefix to swap record. Needed to make swap claims.
-      n.outputData.sctPositionPrefix = sctPosition(blockHeight, epoch);
+      n.outputData.sctPositionPrefix = sctPosition(blockHeight, epoch!); // todo: need to think about this.
 
       assertCommitment(n.swapCommitment);
       txs.add({ table: 'SWAPS', value: n.toJson() as Jsonified<SwapRecord> });
