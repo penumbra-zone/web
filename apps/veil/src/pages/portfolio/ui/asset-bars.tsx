@@ -4,6 +4,7 @@ import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_
 import {
   getMetadataFromBalancesResponse,
   getBalanceView,
+  getValueViewCaseFromBalancesResponse,
 } from '@penumbra-zone/getters/balances-response';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import { formatAmount } from '@penumbra-zone/types/amount';
@@ -26,13 +27,17 @@ interface AssetAllocation {
   hasError: boolean;
 }
 
+const isKnown = (balancesResponse: BalancesResponse) =>
+  getValueViewCaseFromBalancesResponse.optional(balancesResponse) === 'knownAssetId';
+
 export const AssetBars: React.FC = () => {
   const { data: shieldedBalances, isLoading: isShieldedLoading } = useBalances();
   const { balances: publicBalances, isLoading: isPublicLoading } = useCosmosBalances();
 
   const { prices } = useAssetPrices(
     [
-      ...(shieldedBalances?.map(getMetadataFromBalancesResponse) ?? []),
+      /* We filter out unknown balances (voting receipts etc.) as they don't hold any value */
+      ...(shieldedBalances?.filter(bal => isKnown(bal)).map(getMetadataFromBalancesResponse) ?? []),
       ...publicBalances.map(
         ({ asset }) =>
           new Metadata({
@@ -177,7 +182,7 @@ export const AssetBars: React.FC = () => {
 
                   return (
                     <div
-                      key={`shielded-${allocation.symbol}`}
+                      key={`shielded-${allocation.symbol}-${index}`}
                       className='absolute top-0 h-full rounded'
                       style={{
                         backgroundColor: barColor,

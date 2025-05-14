@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
@@ -10,12 +10,14 @@ import { getAmount } from '@penumbra-zone/getters/value-view';
 import { Skeleton } from '@penumbra-zone/ui/Skeleton';
 import { isZero } from '@penumbra-zone/types/amount';
 import { Density } from '@penumbra-zone/ui/Density';
+import { Tooltip } from '@penumbra-zone/ui/Tooltip';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { connectionStore } from '@/shared/model/connection';
 import { LpRewards } from './lp-rewards';
 import { VotingRewards } from './total-delegator-rewards';
 import { useCurrentEpoch } from '../api/use-current-epoch';
+import { useLpRewards } from '../api/use-lp-rewards';
 import { usePersonalRewards } from '../api/use-personal-rewards';
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { pnum } from '@penumbra-zone/types/pnum';
@@ -35,11 +37,19 @@ export const DelegatorTotalRewards = observer(() => {
   const { subaccount } = connectionStore;
 
   const { epoch, isLoading: epochLoading } = useCurrentEpoch();
-  const { data: total, isLoading: isRewardsLoading } = usePersonalRewards(
+  const { data: lpRewards, isLoading: isLpRewardsLoading } = useLpRewards(
     subaccount,
-    epoch,
-    epochLoading,
+    0,
+    Infinity,
+    'rewards',
+    'desc',
   );
+
+  const {
+    totalRewards,
+    query: { isLoading: isRewardsLoading },
+  } = usePersonalRewards(subaccount, epoch, epochLoading);
+
   const { data: stakingToken, isLoading: isTokenLoading } = useStakingTokenMetadata();
 
   const [parent] = useAutoAnimate();
@@ -48,51 +58,66 @@ export const DelegatorTotalRewards = observer(() => {
   const [tab, setTab] = useState<'lp' | 'voting'>('lp');
 
   // Check if we have all the data needed to display rewards
-  const isLoading = isRewardsLoading || isTokenLoading;
-  const hasCompleteData = !isLoading && total?.totalRewards !== undefined && stakingToken;
+  const isLoading = isLpRewardsLoading || isRewardsLoading || isTokenLoading;
+  const isReady = !isLoading && lpRewards?.totalRewards !== undefined && !isRewardsLoading;
 
   // Memoize the reward view to prevent unnecessary recalculations
   const rewardView = useMemo(() => {
-    if (!hasCompleteData) {
+    if (!isReady) {
       return undefined;
     }
+
+    const rewardsValue = typeof totalRewards === 'number' ? totalRewards : 0;
 
     return new ValueView({
       valueView: {
         case: 'knownAssetId',
         value: {
-          amount: pnum(total.totalRewards).toAmount(),
+          amount: pnum(lpRewards.totalRewards + rewardsValue).toAmount(),
           metadata: stakingToken,
         },
       },
     });
-  }, [hasCompleteData, total?.totalRewards, stakingToken]);
+  }, [isReady, lpRewards?.totalRewards, totalRewards, stakingToken]);
 
   // Only check for zero when we have valid data
-  const isTotalZero = rewardView ? isZero(getAmount(rewardView)) : true;
+  const isTotalZero = !rewardView || isZero(getAmount(rewardView));
+
+  // Close expanded panel if rewards are zero
+  useEffect(() => {
+    if (isTotalZero && expanded) {
+      setExpanded(false);
+    }
+  }, [isTotalZero, expanded]);
 
   return (
     <section ref={parent} className='p-6 rounded-lg bg-other-tonalFill5 backdrop-blur-lg'>
       <div className='flex justify-between items-center'>
         <div className='flex flex-col gap-1'>
           <Text xxl color='text.primary'>
-            My Total Rewards
+            My Total Tournament Rewards
           </Text>
           <Text small color='text.secondary'>
             Cumulative rewards from all epochs, voting and LPs rewards
           </Text>
         </div>
 
-        {!hasCompleteData ? (
+        {!isReady ? (
           <div className='w-24 h-10'>
             <Skeleton />
           </div>
         ) : (
           <div className='flex items-center gap-4 [&_span]:font-mono [&_span]:text-3xl'>
-            {rewardView && (
+            {rewardView && !isTotalZero ? (
               <Density sparse>
                 <ValueViewComponent valueView={rewardView} priority='tertiary' />
               </Density>
+            ) : (
+              <Tooltip message='Participate in the tournament to earn rewards'>
+                <Text xxl color='text.primary'>
+                  0.00 UM
+                </Text>
+              </Tooltip>
             )}
             <Density compact>
               {!isTotalZero && (
@@ -110,7 +135,7 @@ export const DelegatorTotalRewards = observer(() => {
         )}
       </div>
 
-      {expanded && hasCompleteData && (
+      {expanded && isReady && !isTotalZero && (
         <div className='flex flex-col gap-4 mt-4'>
           <div className='[&_button]:grow'>
             <SegmentedControl value={tab} onChange={value => setTab(value as typeof tab)}>

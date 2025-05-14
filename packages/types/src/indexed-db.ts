@@ -66,6 +66,7 @@ export interface IndexedDbInterface {
   constants(): IdbConstants;
   clear(): Promise<void>;
   getFullSyncHeight(): Promise<bigint | undefined>;
+  saveFullSyncHeight(height: bigint): Promise<void>;
   getSpendableNoteByNullifier(nullifier: Nullifier): Promise<SpendableNoteRecord | undefined>;
   getSpendableNoteByCommitment(
     commitment: StateCommitment,
@@ -185,9 +186,9 @@ export interface IndexedDbInterface {
   getPosition(positionId: PositionId): Promise<Position | undefined>;
 
   saveLQTHistoricalVote(
+    incentivizedAsset: AssetId,
     epoch: bigint,
     transactionId: TransactionId,
-    assetMetadata: Metadata,
     voteValue: Value,
     rewardValue?: Amount,
     id?: string,
@@ -199,9 +200,9 @@ export interface IndexedDbInterface {
     subaccount?: number,
   ): Promise<
     {
+      incentivizedAsset: AssetId;
       epoch: string;
       TransactionId: TransactionId;
-      AssetMetadata: Metadata;
       VoteValue: Value;
       RewardValue: Amount | undefined;
       id: string | undefined;
@@ -214,9 +215,9 @@ export interface IndexedDbInterface {
     subaccount?: number,
   ): AsyncGenerator<
     {
+      incentivizedAsset: AssetId;
       epoch: string;
       TransactionId: TransactionId;
-      AssetMetadata: Metadata;
       VoteValue: Value;
       RewardValue: Amount;
       id: string | undefined;
@@ -376,10 +377,10 @@ export interface PenumbraDb extends DBSchema {
   LQT_HISTORICAL_VOTES: {
     key: string;
     value: {
+      incentivizedAsset: Jsonified<AssetId>;
       id: string;
       epoch: string;
       TransactionId: Jsonified<TransactionId>;
-      AssetMetadata: Jsonified<Metadata>;
       VoteValue: Jsonified<Value>;
       RewardValue: Jsonified<Amount> | null;
       subaccount?: number;
@@ -423,6 +424,7 @@ export const IDB_TABLES: Tables = {
   transactions: 'TRANSACTIONS',
   full_sync_height: 'FULL_SYNC_HEIGHT',
   tree_commitments: 'TREE_COMMITMENTS',
+  tree_hashes: 'TREE_HASHES',
   tree_last_position: 'TREE_LAST_POSITION',
   tree_last_forgotten: 'TREE_LAST_FORGOTTEN',
   lqt_historical_votes: 'LQT_HISTORICAL_VOTES',

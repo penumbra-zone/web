@@ -1,6 +1,6 @@
 import { useAssets } from '@/shared/api/assets';
 import { useParams } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
+import { useMemo } from 'react';
 
 interface PathParams {
   baseSymbol: string;
@@ -18,26 +18,16 @@ export const usePathSymbols = () => {
 
 // Converts symbol to Metadata
 export const usePathToMetadata = () => {
-  const { data, error, isLoading } = useAssets();
+  const { data } = useAssets();
   const { baseSymbol, quoteSymbol } = usePathSymbols();
 
-  const query = useQuery({
-    queryKey: ['pathToMetadata', data, baseSymbol, quoteSymbol],
-    queryFn: () => {
-      return {
-        baseAsset: data?.find(m => m.symbol.toLowerCase() === baseSymbol.toLowerCase()),
-        quoteAsset: data?.find(a => a.symbol.toLowerCase() === quoteSymbol.toLowerCase()),
-      };
-    },
-  });
-
-  return {
-    ...query,
-    baseSymbol,
-    quoteSymbol,
-    baseAsset: query.data?.baseAsset,
-    quoteAsset: query.data?.quoteAsset,
-    isLoading: isLoading || query.isLoading,
-    error: error ?? query.error,
-  };
+  return useMemo(
+    () => ({
+      baseSymbol,
+      quoteSymbol,
+      baseAsset: data.find(m => m.symbol.toLowerCase() === baseSymbol.toLowerCase()),
+      quoteAsset: data.find(a => a.symbol.toLowerCase() === quoteSymbol.toLowerCase()),
+    }),
+    [data, baseSymbol, quoteSymbol],
+  );
 };

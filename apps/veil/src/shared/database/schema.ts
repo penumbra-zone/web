@@ -392,6 +392,19 @@ export interface LqtSummary {
   total_rewards: number;
 }
 
+export interface LQTLPs {
+  epoch: number;
+  position_id: Buffer;
+  asset_id: Buffer;
+  rewards: number;
+  executions: number;
+  um_volume: number;
+  asset_volume: number;
+  asset_fees: number;
+  points: number;
+  points_share: number;
+}
+
 interface RawDB {
   _insights_shielded_pool_depositors: _InsightsShieldedPoolDepositors;
   _insights_validators: _InsightsValidators;
@@ -424,9 +437,10 @@ interface RawDB {
   supply_total_unstaked: SupplyTotalUnstaked;
   supply_validators: SupplyValidators;
   'lqt.gauge': LqtGauge;
+  'lqt.delegator_history': LqtDelegatorHistory;
   'lqt.delegator_summary': LqtDelegatorSummary;
   'lqt.summary': LqtSummary;
-  'lqt.delegator_history': LqtDelegatorHistory;
+  'lqt.lps': LQTLPs;
 }
 
 export type DB = Pick<
@@ -444,7 +458,8 @@ export type DB = Pick<
   | 'dex_ex_block_summary'
   | 'dex_ex_transactions'
   | 'lqt.gauge'
+  | 'lqt.delegator_history'
   | 'lqt.delegator_summary'
   | 'lqt.summary'
-  | 'lqt.delegator_history'
+  | 'lqt.lps'
 >;

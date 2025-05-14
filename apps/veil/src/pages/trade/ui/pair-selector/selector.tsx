@@ -20,7 +20,7 @@ import { FilterInput } from './filter-input';
 
 export const PairSelector = observer(() => {
   const router = useRouter();
-  const { baseAsset, quoteAsset, error, isLoading } = usePathToMetadata();
+  const { baseAsset, quoteAsset } = usePathToMetadata();
 
   const [isOpen, setIsOpen] = useState(false);
   const [baseFilter, setBaseFilter] = useState('');
@@ -89,19 +89,7 @@ export const PairSelector = observer(() => {
     }
   };
 
-  if (
-    error instanceof Error &&
-    ![
-      'ConnectError',
-      'PenumbraNotInstalledError',
-      'PenumbraProviderNotAvailableError',
-      'PenumbraProviderNotConnectedError',
-    ].includes(error.name)
-  ) {
-    return <div>Error loading pair selector: ${String(error)}</div>;
-  }
-
-  if (isLoading || !baseAsset || !quoteAsset) {
+  if (!baseAsset || !quoteAsset) {
     return (
       <div className='w-[200px]'>
         <Skeleton />

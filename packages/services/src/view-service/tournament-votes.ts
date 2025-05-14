@@ -22,7 +22,7 @@ export const tournamentVotes: Impl['tournamentVotes'] = async function* (req, ct
         vote =>
           new TournamentVotesResponse_Vote({
             transaction: vote.TransactionId,
-            incentivizedAsset: vote.AssetMetadata.penumbraAssetId,
+            incentivizedAsset: vote.incentivizedAsset,
             votePower: vote.VoteValue.amount,
             reward: vote.RewardValue
               ? new Value({
@@ -68,7 +68,7 @@ export const tournamentVotes: Impl['tournamentVotes'] = async function* (req, ct
         bucket.push(
           new TournamentVotesResponse_Vote({
             transaction: vote.TransactionId,
-            incentivizedAsset: vote.AssetMetadata.penumbraAssetId,
+            incentivizedAsset: vote.incentivizedAsset,
             votePower: vote.VoteValue.amount,
             reward: new Value({
               amount: new Amount({

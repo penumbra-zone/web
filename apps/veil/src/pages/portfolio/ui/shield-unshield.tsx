@@ -1,13 +1,15 @@
 import type { ShieldedBalance, UnifiedAsset } from '@/pages/portfolio/api/use-unified-assets.ts';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Tooltip } from '@penumbra-zone/ui/Tooltip';
-import { Widget } from '@skip-go/widget';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, lazy, Suspense } from 'react';
 import { X } from 'lucide-react';
-import { useRegistry } from '@/shared/api/registry.ts';
+import { useRegistry } from '@/shared/api/registry.tsx';
 import { getMetadata } from '@penumbra-zone/getters/value-view';
 import { theme as penumbraTheme } from '@penumbra-zone/ui/theme';
 import { UnshieldDialog } from '@/pages/portfolio/ui/unshield-dialog.tsx';
+
+// Use React.lazy for the Widget
+const LazySkipWidget = lazy(() => import('@skip-go/widget').then(mod => ({ default: mod.Widget })));
 
 /**
  * Computes the IBC denom hash for Penumbra-1
@@ -103,8 +105,8 @@ export const ShieldButton = ({ asset }: { asset: UnifiedAsset }) => {
     setIsDisabled(true);
 
     const getIbcDenom = async () => {
-      // Skip if no registry or public balances or source denom
-      if (!registry || !firstBalance || !sourceDenom) {
+      // Skip if no public balances or source denom
+      if (!firstBalance || !sourceDenom) {
         return;
       }
 
@@ -184,24 +186,26 @@ export const ShieldButton = ({ asset }: { asset: UnifiedAsset }) => {
             </button>
 
             {sourceChainId && sourceDenom && ibcDenom ? (
-              <Widget
-                key={`${sourceChainId}-${sourceDenom}-${ibcDenom}`}
-                defaultRoute={{
-                  srcChainId: sourceChainId,
-                  destChainId: 'penumbra-1',
-                  srcAssetDenom: sourceDenom,
-                  destAssetDenom: ibcDenom,
-                }}
-                filter={{
-                  destination: {
-                    'penumbra-1': undefined,
-                  },
-                  source: {
-                    [sourceChainId]: undefined,
-                  },
-                }}
-                theme={theme}
-              />
+              <Suspense fallback={<div className='text-center p-4'>Loading widget...</div>}>
+                <LazySkipWidget
+                  key={`${sourceChainId}-${sourceDenom}-${ibcDenom}`}
+                  defaultRoute={{
+                    srcChainId: sourceChainId,
+                    destChainId: 'penumbra-1',
+                    srcAssetDenom: sourceDenom,
+                    destAssetDenom: ibcDenom,
+                  }}
+                  filter={{
+                    destination: {
+                      'penumbra-1': undefined,
+                    },
+                    source: {
+                      [sourceChainId]: undefined,
+                    },
+                  }}
+                  theme={theme}
+                />
+              </Suspense>
             ) : (
               <div className='text-red-500 p-4 text-center'>
                 Error: Could not determine valid shielding route information.

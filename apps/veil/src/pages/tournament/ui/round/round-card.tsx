@@ -27,7 +27,6 @@ export const RoundCard = observer(({ epoch }: RoundCardProps) => {
     {
       limit: 1,
       page: 1,
-      epoch,
     },
     epochLoading || ended,
   );

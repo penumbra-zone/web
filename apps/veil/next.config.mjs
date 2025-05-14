@@ -6,7 +6,7 @@ const withBundleAnalyzer = bundleAnalyzer({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    optimizePackageImports: ['@penumbra-zone/ui', 'chain-registry', 'osmo-query'],
+    optimizePackageImports: ['@penumbra-zone/ui', 'chain-registry', 'osmo-query', 'cosmos-kit'],
     serverComponentsHmrCache: true,
   },
   turbopack: {

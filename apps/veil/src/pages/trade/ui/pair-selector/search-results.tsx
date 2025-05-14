@@ -71,7 +71,7 @@ export const SearchResults = observer(({ onSelect, onClear, search }: SearchResu
   const { data: assets } = useAssets();
   const { data: balances } = useBalances(subaccount);
 
-  const merged = mergeOptions(assets ?? [], balances ?? [], subaccount);
+  const merged = mergeOptions(assets, balances ?? [], subaccount);
   const filtered = useFilteredAssets(merged, search ?? '');
 
   const onClick = (asset: Metadata) => {
