@@ -8,11 +8,9 @@ import { statusStore } from '@/shared/model/status';
 import { useCurrentEpoch } from '@/pages/tournament/api/use-current-epoch';
 import {
   LpLeaderboardRequest,
-  LpLeaderboardApiResponse,
+  LpLeaderboardResponse,
   LpLeaderboardSortKey,
   LpLeaderboardSortDirection,
-  LpLeaderboardResponse,
-  enrichLpLeaderboards,
 } from './utils';
 
 export const BASE_LIMIT = 10;
@@ -77,7 +75,7 @@ export const useMyLpLeaderboard = ({
         return { data: [], total: 0 };
       }
 
-      return apiPostFetch<LpLeaderboardApiResponse>('/api/tournament/lp-leaderboard', {
+      return apiPostFetch<LpLeaderboardResponse>('/api/tournament/lp-leaderboard', {
         positionIds,
         epoch,
         page,
@@ -85,10 +83,7 @@ export const useMyLpLeaderboard = ({
         sortKey,
         sortDirection,
         assetId,
-      } as LpLeaderboardRequest).then(async resp => ({
-        ...resp,
-        data: await enrichLpLeaderboards(resp.data),
-      }));
+      } as LpLeaderboardRequest);
     },
     enabled:
       typeof epoch === 'number' &&

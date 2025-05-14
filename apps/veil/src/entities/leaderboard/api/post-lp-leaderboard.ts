@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { serialize, Serialized } from '@/shared/utils/serializer';
 import { pindexerDb } from '@/shared/database/client';
-import { PositionId } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
+import {
+  Position,
+  PositionId,
+} from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { positionIdFromBech32 } from '@penumbra-zone/bech32m/plpid';
-import { LpLeaderboardRequest, LpLeaderboardApiResponse } from './utils';
+import { bech32mPositionId, positionIdFromBech32 } from '@penumbra-zone/bech32m/plpid';
+import { LpLeaderboardRequest, LpLeaderboardResponse, LpLeaderboardErrorResponse } from './utils';
 import { hexToUint8Array } from '@penumbra-zone/types/hex';
+import { DexService } from '@penumbra-zone/protobuf';
+import { createClient } from '@/shared/utils/protos/utils.ts';
 
 async function queryLqtLps({
   positionIds = [],
@@ -74,24 +79,43 @@ async function queryLqtLps({
 
 export async function POST(
   req: NextRequest,
-): Promise<NextResponse<Serialized<LpLeaderboardApiResponse>>> {
+): Promise<NextResponse<Serialized<LpLeaderboardResponse> | LpLeaderboardErrorResponse>> {
+  const grpcEndpoint = process.env['PENUMBRA_GRPC_ENDPOINT'];
+  if (!grpcEndpoint) {
+    return NextResponse.json({ error: 'PENUMBRA_GRPC_ENDPOINT is not set' }, { status: 500 });
+  }
+
   const params = (await req.json()) as LpLeaderboardRequest;
   const lps = await queryLqtLps(params);
 
+  const lqtLps = lps.data.map(lp => ({
+    epoch: lp.epoch,
+    positionId: new PositionId({ inner: lp.position_id }),
+    assetId: new AssetId({ inner: lp.asset_id }),
+    rewards: lp.rewards,
+    executions: lp.executions,
+    umVolume: lp.um_volume,
+    assetVolume: lp.asset_volume,
+    umFees: lp.um_fees,
+    assetFees: lp.asset_fees,
+    points: lp.points,
+    pointsShare: lp.point_share,
+  }));
+
+  const client = createClient(grpcEndpoint, DexService);
+  const positionsRes = await Array.fromAsync(
+    client.liquidityPositionsById({
+      positionId: lqtLps.map(lp => lp.positionId),
+    }),
+  );
+  const positions = positionsRes.map(r => r.data).filter(Boolean) as Position[];
+
   return NextResponse.json(
     serialize({
-      data: lps.data.map(lp => ({
-        epoch: lp.epoch,
-        positionId: new PositionId({ inner: lp.position_id }),
-        assetId: new AssetId({ inner: lp.asset_id }),
-        rewards: lp.rewards,
-        executions: lp.executions,
-        umVolume: lp.um_volume,
-        assetVolume: lp.asset_volume,
-        umFees: lp.um_fees,
-        assetFees: lp.asset_fees,
-        points: lp.points,
-        pointsShare: lp.point_share,
+      data: lqtLps.map((lp, index) => ({
+        ...lp,
+        positionIdString: bech32mPositionId(lp.positionId),
+        position: positions[index] as unknown as Position,
       })),
       total: lps.total,
     }),
