@@ -88,7 +88,7 @@ export async function POST(
         assetVolume: lp.asset_volume,
         assetFees: lp.asset_fees,
         points: lp.points,
-        pointsShare: lp.points_share,
+        pointsShare: lp.point_share,
       })),
       total: lps.total,
       totalRewards: lps.totalRewards,
