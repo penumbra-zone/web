@@ -14,7 +14,7 @@ const registryRpcChoices = async () => {
     const chainRegistryClient = new ChainRegistryClient();
     const { rpcs } = await chainRegistryClient.remote.globals();
     return rpcs.map(r => r.url);
-  } else if (env.PENUMBRA_CHAIN_ID === 'penumbra-testnet-phobos-2') {
+  } else if (/testnet/i.test(env.PENUMBRA_CHAIN_ID)) {
     return ['https://testnet.plinfra.net'];
   } else {
     throw new Error(`No rpcs for chain id: ${env.PENUMBRA_CHAIN_ID}`);
