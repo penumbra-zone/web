@@ -19,7 +19,10 @@ export async function GET(req: NextRequest) {
 
   registerFonts();
   const canvas = createCanvas(600, 315);
-  await renderTournamentEarningsCanvas(canvas as unknown as HTMLCanvasElement, params, true);
+  await renderTournamentEarningsCanvas(canvas as unknown as HTMLCanvasElement, params, {
+    width: 600,
+    height: 315,
+  });
 
   return new NextResponse(canvas.toBuffer('image/png'), {
     status: 200,

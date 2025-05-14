@@ -7,16 +7,16 @@ const baseUrl = process.env['NEXT_PUBLIC_BASE_URL'] ?? 'http://localhost:3000';
 export async function renderTournamentEarningsCanvas(
   canvas: HTMLCanvasElement,
   params: TournamentParams,
-  landscape = false,
+  size: { width: number; height: number },
 ) {
-  scaleCanvas(canvas);
-
   const ctx = canvas.getContext('2d');
   const { epoch, earnings, votingStreak, incentivePool, lpPool, delegatorPool } = params;
   if (!ctx) {
     console.error('Failed to get canvas context');
     return;
   }
+
+  const landscape = size.width > size.height;
 
   const format = (value: string) => {
     if (!value) {
@@ -33,6 +33,7 @@ export async function renderTournamentEarningsCanvas(
     return `${Number(amount).toLocaleString()} ${unit}`;
   };
 
+  scaleCanvas(canvas, size);
   function draw(bgImage: CanvasImageSource) {
     if (!ctx) {
       console.error('Failed to get canvas context');

@@ -77,10 +77,22 @@ Join now 👇`;
     const url = `https://${baseUrl}/tournament/join?${encodeParams(params)}`;
 
     useEffect(() => {
-      if (canvasRef.current) {
-        const canvas = canvasRef.current;
-        void renderTournamentEarningsCanvas(canvas, params, false);
+      const canvas = canvasRef.current;
+      if (canvas && isOpen) {
+        void renderTournamentEarningsCanvas(canvas, params, {
+          width: 512,
+          height: 512,
+        });
       }
+
+      return () => {
+        if (canvas) {
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+          }
+        }
+      };
     }, [canvasRef, isOpen, params]);
 
     useEffect(() => {
@@ -116,41 +128,45 @@ Join now 👇`;
     };
 
     return (
-      <Dialog isOpen={isOpen} onClose={handleClose}>
-        <Dialog.Content
-          title='Share your latest win!'
-          buttons={
-            <div className='flex flex-col gap-4'>
-              <Button
-                actionType='default'
-                onClick={() => void copyImageToClipboard(canvasRef.current?.toDataURL() ?? '')}
-              >
-                <Icon IconComponent={Copy} size='sm' />
-                Copy Image
-              </Button>
-              <Button actionType='accent' onClick={() => shareToX(text, url)}>
-                {/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- Xcom */}
-                <Icon IconComponent={Xcom} size='sm' />
-                Share
-              </Button>
-              <div className='flex justify-center p-2'>
-                <Checkbox
-                  checked={dontShowAgain}
-                  onChange={() => setDontShowAgain(!dontShowAgain)}
-                  title="Don't show this again"
-                />
-              </div>
-            </div>
-          }
-        >
-          <canvas
-            ref={canvasRef}
-            className='w-[512px] h-[512px] bg-other-tonalFill10'
-            width={512}
-            height={512}
-          />
-        </Dialog.Content>
-      </Dialog>
+      <div className='max-w-[212px]'>
+        <Dialog isOpen={isOpen} onClose={handleClose}>
+          <div className='max-w-[212px]'>
+            <Dialog.Content
+              title='Share your latest win!'
+              buttons={
+                <div className='flex flex-col gap-4'>
+                  <Button
+                    actionType='default'
+                    onClick={() => void copyImageToClipboard(canvasRef.current?.toDataURL() ?? '')}
+                  >
+                    <Icon IconComponent={Copy} size='sm' />
+                    Copy Image
+                  </Button>
+                  <Button actionType='accent' onClick={() => shareToX(text, url)}>
+                    {/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- Xcom */}
+                    <Icon IconComponent={Xcom} size='sm' />
+                    Share
+                  </Button>
+                  <div className='flex justify-center p-2'>
+                    <Checkbox
+                      checked={dontShowAgain}
+                      onChange={() => setDontShowAgain(!dontShowAgain)}
+                      title="Don't show this again"
+                    />
+                  </div>
+                </div>
+              }
+            >
+              <canvas
+                ref={canvasRef}
+                className='w-[512px] h-[512px] bg-other-tonalFill10'
+                width={512}
+                height={512}
+              />
+            </Dialog.Content>
+          </div>
+        </Dialog>
+      </div>
     );
   },
 );

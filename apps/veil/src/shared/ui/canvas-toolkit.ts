@@ -13,17 +13,15 @@ export const remToPx = (rem: string) =>
   );
 
 // TODO: this seems to be an issue...
-export const scaleCanvas = (canvas: HTMLCanvasElement) => {
+export const scaleCanvas = (canvas: HTMLCanvasElement, size: { width: number; height: number }) => {
   const ctx = canvas.getContext('2d');
   if (!ctx) {
     return;
   }
 
   ctx.scale(scale, scale);
-  const canvasWidth = canvas.width;
-  const canvasHeight = canvas.height;
-  canvas.width = dpi(canvasWidth);
-  canvas.height = dpi(canvasHeight);
+  canvas.width = dpi(size.width);
+  canvas.height = dpi(size.height);
 };
 
 export function drawText(
