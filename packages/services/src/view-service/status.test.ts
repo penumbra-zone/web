@@ -3,22 +3,18 @@ import { StatusRequest, StatusResponse } from '@penumbra-zone/protobuf/penumbra/
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
-import { IndexedDbMock, MockServices, TendermintMock } from '../test-utils.js';
+import { mockIndexedDb, MockServices, TendermintMock } from '../test-utils.js';
 import { status } from './status.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 describe('Status request handler', () => {
   let mockServices: MockServices;
-  let mockIndexedDb: IndexedDbMock;
+
   let mockCtx: HandlerContext;
   let mockTendermint: TendermintMock;
 
   beforeEach(() => {
     vi.resetAllMocks();
-
-    mockIndexedDb = {
-      getFullSyncHeight: vi.fn(),
-    };
 
     mockTendermint = {
       latestBlockHeight: vi.fn(),
@@ -48,7 +44,7 @@ describe('Status request handler', () => {
   });
 
   test('should get status when view service is synchronized with last known block in tendermint', async () => {
-    mockIndexedDb.getFullSyncHeight?.mockResolvedValue(222n);
+    mockIndexedDb.getFullSyncHeight.mockResolvedValue(222n);
     mockTendermint.latestBlockHeight?.mockResolvedValue(222n);
     const statusResponse = new StatusResponse(await status(new StatusRequest(), mockCtx));
     expect(statusResponse.catchingUp).toBe(false);
@@ -56,7 +52,7 @@ describe('Status request handler', () => {
   });
 
   test('should receive status when view service synchronizes and lags behind last known block in tendermint', async () => {
-    mockIndexedDb.getFullSyncHeight?.mockResolvedValue(111n);
+    mockIndexedDb.getFullSyncHeight.mockResolvedValue(111n);
     mockTendermint.latestBlockHeight?.mockResolvedValue(222n);
     const statusResponse = new StatusResponse(await status(new StatusRequest(), mockCtx));
     expect(statusResponse.catchingUp).toBe(true);

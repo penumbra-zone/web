@@ -6,28 +6,20 @@ import {
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
-import { IndexedDbMock, MockServices } from '../test-utils.js';
+import { mockIndexedDb, MockServices } from '../test-utils.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { Epoch } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
 import { tournamentVotes } from './tournament-votes.js';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
-import { Value } from '@bufbuild/protobuf';
+import { AssetId, Value } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
 
 describe('tournamentVotes request handler', () => {
   let mockServices: MockServices;
-  let mockIndexedDb: IndexedDbMock;
   let mockCtx: HandlerContext;
 
   beforeEach(() => {
     vi.resetAllMocks();
-
-    mockIndexedDb = {
-      getLQTHistoricalVotes: vi.fn(),
-      iterateLQTVotes: vi.fn(),
-      saveLQTHistoricalVote: vi.fn(),
-      getEpochByIndex: vi.fn(),
-      getNotesForVoting: vi.fn(),
-    };
 
     mockServices = {
       getWalletServices: vi.fn(() =>
@@ -48,10 +40,11 @@ describe('tournamentVotes request handler', () => {
   });
 
   test('returns historical liquidity tournament votes that have been previously been saved to storage', async () => {
-    mockIndexedDb.getEpochByIndex?.mockResolvedValueOnce(epoch);
-    mockIndexedDb.saveLQTHistoricalVote?.mockResolvedValueOnce(mockVote);
-    mockIndexedDb.getLQTHistoricalVotes?.mockResolvedValueOnce([mockVote]);
-    mockIndexedDb.iterateLQTVotes?.mockResolvedValueOnce([mockVote]);
+    mockIndexedDb.getEpochByIndex.mockResolvedValueOnce(epoch);
+    mockIndexedDb.getLQTHistoricalVotes.mockResolvedValueOnce([mockVote]);
+    mockIndexedDb.iterateLQTVotes.mockImplementationOnce(async function* () {
+      yield* await Promise.resolve([mockVote]);
+    });
 
     const res: TournamentVotesResponse_Vote[] = [];
     const req = new TournamentVotesRequest({ epochIndex: epoch.index });
@@ -74,11 +67,12 @@ const epoch = new Epoch({
 });
 
 const mockVote = {
+  incentivizedAsset: new AssetId({}),
   id: 'test-uuid-or-any-string',
-  epoch: 100n,
-  TransactionId: {
+  epoch: '100',
+  TransactionId: new TransactionId({
     inner: new Uint8Array([1, 2, 3, 4]),
-  },
+  }),
   AssetMetadata: {
     penumbraAssetId: {
       inner: new Uint8Array(new Array(32).fill(1)),

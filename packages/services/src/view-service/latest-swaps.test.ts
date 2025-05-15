@@ -11,7 +11,7 @@ import {
   LatestSwapsResponse,
   SwapRecord,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { IndexedDbMock, MockServices, testFullViewingKey } from '../test-utils.js';
+import { mockIndexedDb, MockServices, testFullViewingKey } from '../test-utils.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { latestSwaps } from './latest-swaps.js';
 import { CommitmentSource } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
@@ -26,7 +26,7 @@ import { DirectedTradingPair } from '@penumbra-zone/protobuf/penumbra/core/compo
 describe('LatestSwaps request handler', () => {
   let mockServices: MockServices;
   let mockCtx: HandlerContext;
-  let mockIndexedDb: IndexedDbMock;
+
   let fillDB: (data: SwapRecord[]) => void;
 
   const request = async (req: LatestSwapsRequest): Promise<LatestSwapsResponse[]> => {
@@ -45,10 +45,6 @@ describe('LatestSwaps request handler', () => {
     const mockIterateSwaps = {
       next: vi.fn(),
       [Symbol.asyncIterator]: () => mockIterateSwaps,
-    };
-
-    mockIndexedDb = {
-      iterateSwaps: () => mockIterateSwaps,
     };
 
     mockServices = {
