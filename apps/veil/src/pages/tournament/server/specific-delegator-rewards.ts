@@ -10,7 +10,7 @@ import { AssetId, Value } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/a
 import { STAKING_TOKEN_ASSET_ID } from '@/shared/api/fetch-registry';
 import { pnum } from '@penumbra-zone/types/pnum';
 
-export type SortKey = 'epoch' | 'power';
+export type SortKey = 'epoch' | 'reward';
 
 export type SortDirection = 'desc' | 'asc';
 
@@ -73,8 +73,8 @@ async function fetchTotal(address: Address): Promise<{ total: Value; count: numb
     .where('address', '=', Buffer.from(address.inner))
     .executeTakeFirst();
   // For both of these, them being missing indicates them actually being 0.
-  const count = result?.count ?? 0;
-  const rawTotal = result?.total ?? 0;
+  const count = Number(result?.count ?? 0);
+  const rawTotal = Number(result?.total ?? 0);
   const total = new Value({
     assetId: STAKING_TOKEN_ASSET_ID,
     amount: pnum(rawTotal).toAmount(),
