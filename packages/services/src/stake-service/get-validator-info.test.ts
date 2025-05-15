@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
-import { IndexedDbMock, MockServices } from '../test-utils.js';
+import { mockIndexedDb, MockServices } from '../test-utils.js';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { StakeService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
@@ -13,7 +13,7 @@ import { getValidatorInfo } from './get-validator-info.js';
 
 describe('GetValidatorInfo request handler', () => {
   let mockServices: MockServices;
-  let mockIndexedDb: IndexedDbMock;
+
   let mockStakingQuerierValidatorInfo: Mock;
   let mockCtx: HandlerContext;
   let req: GetValidatorInfoRequest;
@@ -26,10 +26,6 @@ describe('GetValidatorInfo request handler', () => {
 
   beforeEach(() => {
     vi.resetAllMocks();
-
-    mockIndexedDb = {
-      getValidatorInfo: vi.fn(),
-    };
 
     mockStakingQuerierValidatorInfo = vi.fn();
 
@@ -66,7 +62,7 @@ describe('GetValidatorInfo request handler', () => {
   });
 
   it('should successfully return validator info when idb has them', async () => {
-    mockIndexedDb.getValidatorInfo?.mockResolvedValueOnce(
+    mockIndexedDb.getValidatorInfo.mockResolvedValueOnce(
       mockGetValidatorInfoResponse.validatorInfo,
     );
 

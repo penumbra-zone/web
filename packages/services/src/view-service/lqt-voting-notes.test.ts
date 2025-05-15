@@ -8,7 +8,7 @@ import {
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
-import { IndexedDbMock, MockQuerier, MockServices } from '../test-utils.js';
+import { mockIndexedDb, MockQuerier, MockServices } from '../test-utils.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { lqtVotingNotes } from './lqt-voting-notes.js';
 import { Epoch } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
@@ -17,19 +17,12 @@ import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/t
 
 describe('lqtVotingNotes request handler', () => {
   let mockServices: MockServices;
-  let mockIndexedDb: IndexedDbMock;
+
   let mockQuerier: MockQuerier;
   let mockCtx: HandlerContext;
 
   beforeEach(() => {
     vi.resetAllMocks();
-
-    mockIndexedDb = {
-      getLQTHistoricalVotes: vi.fn(),
-      iterateLQTVotes: vi.fn(),
-      getBlockHeightByEpoch: vi.fn(),
-      getNotesForVoting: vi.fn(),
-    };
 
     mockServices = {
       getWalletServices: vi.fn(() =>
@@ -52,8 +45,8 @@ describe('lqtVotingNotes request handler', () => {
   test('returns no voting notes if the nullifier has already been used for voting in the current epoch', async () => {
     // voting notes mocked with static data, and the mock bypasses the logic in the real implementation,
     // but that's fine.
-    mockIndexedDb.getNotesForVoting?.mockResolvedValueOnce(testData);
-    mockIndexedDb.getBlockHeightByEpoch?.mockResolvedValueOnce(epoch);
+    mockIndexedDb.getNotesForVoting.mockResolvedValueOnce(testData);
+    mockIndexedDb.getBlockHeightByEpoch.mockResolvedValueOnce(epoch);
 
     mockQuerier = {
       funding: {
@@ -87,8 +80,8 @@ describe('lqtVotingNotes request handler', () => {
   });
 
   test('returns voting notes when the nullifier has not been used for voting in the current epoch', async () => {
-    mockIndexedDb.getNotesForVoting?.mockResolvedValueOnce(testData);
-    mockIndexedDb.getBlockHeightByEpoch?.mockResolvedValueOnce(epoch);
+    mockIndexedDb.getNotesForVoting.mockResolvedValueOnce(testData);
+    mockIndexedDb.getBlockHeightByEpoch.mockResolvedValueOnce(epoch);
 
     mockQuerier = {
       funding: {

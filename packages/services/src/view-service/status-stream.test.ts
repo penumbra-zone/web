@@ -6,13 +6,12 @@ import {
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
-import { IndexedDbMock, MockServices, TendermintMock } from '../test-utils.js';
+import { mockIndexedDb, MockServices, TendermintMock } from '../test-utils.js';
 import { statusStream } from './status-stream.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 describe('Status stream request handler', () => {
   let mockServices: MockServices;
-  let mockIndexedDb: IndexedDbMock;
   let mockCtx: HandlerContext;
   let mockTendermint: TendermintMock;
   let lastBlockSubNext: Mock;
@@ -25,10 +24,6 @@ describe('Status stream request handler', () => {
     const mockLastBlockSubscription = {
       next: lastBlockSubNext,
       [Symbol.asyncIterator]: () => mockLastBlockSubscription,
-    };
-
-    mockIndexedDb = {
-      subscribe: () => mockLastBlockSubscription,
     };
 
     mockTendermint = {

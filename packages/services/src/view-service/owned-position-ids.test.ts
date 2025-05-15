@@ -9,7 +9,7 @@ import {
   OwnedPositionIdsRequest,
   OwnedPositionIdsResponse,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { IndexedDbMock, MockServices } from '../test-utils.js';
+import { mockIndexedDb, MockServices } from '../test-utils.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { PositionId } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { ownedPositionIds } from './owned-position-ids.js';
@@ -17,7 +17,6 @@ import { ownedPositionIds } from './owned-position-ids.js';
 describe('OwnedPositionIds request handler', () => {
   let mockServices: MockServices;
   let mockCtx: HandlerContext;
-  let mockIndexedDb: IndexedDbMock;
   let req: OwnedPositionIdsRequest;
 
   beforeEach(() => {
@@ -26,10 +25,6 @@ describe('OwnedPositionIds request handler', () => {
     const mockIteratePositions = {
       next: vi.fn(),
       [Symbol.asyncIterator]: () => mockIteratePositions,
-    };
-
-    mockIndexedDb = {
-      getOwnedPositionIds: () => mockIteratePositions,
     };
 
     mockServices = {
