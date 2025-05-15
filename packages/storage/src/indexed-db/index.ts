@@ -159,8 +159,6 @@ export class IndexedDb implements IndexedDbInterface {
         }).createIndex('nullifier', 'nullifier.inner');
         db.createObjectStore('GAS_PRICES', { keyPath: 'assetId.inner' });
         db.createObjectStore('POSITIONS', { keyPath: 'id.inner' });
-
-        /** @todo migrate to { autoIncrement: false }, and use Number(epoch.index) as key */
         const epochs = db.createObjectStore('EPOCHS', { keyPath: 'index', autoIncrement: false });
         epochs.createIndex('startHeight', 'startHeight', { unique: true });
 
@@ -836,12 +834,7 @@ export class IndexedDb implements IndexedDbInterface {
   async addEpoch(epoch: PlainMessage<Epoch>): Promise<void> {
     const tx = this.db.transaction('EPOCHS', 'readwrite');
 
-    // todo: relax the strict invariant for the very first write: when table is
-    // empty, allow starting from any index (fresh wallet skip sync), and then
-    // enforce monotonicity.
-    // if (epochCount !== Number(epoch.index)) { ... }
-
-    await tx.store.add({
+    await tx.store.put({
       index: Number(epoch.index),
       startHeight: Number(epoch.startHeight),
     });
@@ -1045,6 +1038,9 @@ export class IndexedDb implements IndexedDbInterface {
     }
 
     const epoch = await this.getEpochByHeight(blockHeight);
+    if (!epoch) {
+      throw new Error(`Invariant violation: no epoch recorded for swap height ${blockHeight}`);
+    }
 
     for (const n of swaps) {
       if (!n.outputData) {
@@ -1052,7 +1048,7 @@ export class IndexedDb implements IndexedDbInterface {
       }
 
       // Adds position prefix to swap record. Needed to make swap claims.
-      n.outputData.sctPositionPrefix = sctPosition(blockHeight, epoch!); // todo: need to think about this.
+      n.outputData.sctPositionPrefix = sctPosition(blockHeight, epoch!);
 
       assertCommitment(n.swapCommitment);
       txs.add({ table: 'SWAPS', value: n.toJson() as Jsonified<SwapRecord> });

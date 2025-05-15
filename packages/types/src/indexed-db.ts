@@ -332,7 +332,7 @@ export interface PenumbraDb extends DBSchema {
   };
   EPOCHS: {
     key: number; // key path is 'index'
-    value: Jsonified<Epoch>;
+    value: { index: number; startHeight: number };
     indexes: {
       startHeight: number;
     };
