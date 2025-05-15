@@ -51,7 +51,7 @@ const Layout = ({ totalChild, tableChild }: { totalChild: ReactNode; tableChild:
             Total Rewards Earned
           </Text>
           <Text small color='text.secondary'>
-            Cumulative from all epochs, and voting rewards
+            Cumulative voting rewards (in UM) from all epochs{' '}
           </Text>
         </div>
         {totalChild}
