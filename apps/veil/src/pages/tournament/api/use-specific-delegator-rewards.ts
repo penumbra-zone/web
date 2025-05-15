@@ -1,25 +1,38 @@
-import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { DelegatorReward } from '../model/rewards';
-import { specificDelegatorRewards } from '../server/specific-delegator-rewards';
+import {
+  specificDelegatorRewards,
+  SpecificDelegatorRewardsRequest,
+  SpecificDelegatorRewardsResponse,
+} from '../server/specific-delegator-rewards';
 import { deserialize, serialize } from '@/shared/utils/serializer';
 import { useQuery } from '@tanstack/react-query';
 import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 
+export type {
+  SpecificDelegatorRewardsRequest,
+  SpecificDelegatorRewardsResponse,
+  SortKey,
+  SortDirection,
+} from '../server/specific-delegator-rewards';
+
 async function querySpecificDelegatorRewards(
-  address: Address,
-  limit?: number,
-  page?: number,
-): Promise<DelegatorReward[]> {
-  return deserialize<DelegatorReward[]>(
-    await specificDelegatorRewards(serialize(address), limit, page),
+  request: SpecificDelegatorRewardsRequest,
+): Promise<SpecificDelegatorRewardsResponse> {
+  return deserialize<SpecificDelegatorRewardsResponse>(
+    await specificDelegatorRewards(serialize(request)),
   );
 }
 
-export const useSpecificDelegatorRewards = (address: Address, limit?: number, page?: number) => {
+export const useSpecificDelegatorRewards = (req: SpecificDelegatorRewardsRequest) => {
   return useQuery({
-    queryKey: [bech32mAddress(address), limit, page],
+    queryKey: [
+      bech32mAddress(req.address),
+      req.sortDirection ?? 'epoch',
+      req.sortKey ?? 'desc',
+      req.limit,
+      req.page,
+    ],
     queryFn: async () => {
-      return await querySpecificDelegatorRewards(address, limit, page);
+      return await querySpecificDelegatorRewards(req);
     },
   });
 };
