@@ -54,10 +54,9 @@ describe('Balances request handler', () => {
   beforeEach(() => {
     vi.resetAllMocks();
 
-    const mockIterateSpendableNotes = {
-      next: vi.fn(),
-      [Symbol.asyncIterator]: () => mockIterateSpendableNotes,
-    };
+    mockIndexedDb.iterateSpendableNotes.mockImplementationOnce(async function* () {
+      yield* await Promise.resolve(testData);
+    });
 
     const mockShieldedPool = {
       assetMetadata: vi.fn(),
@@ -89,15 +88,6 @@ describe('Balances request handler', () => {
       contextValues: createContextValues()
         .set(servicesCtx, () => Promise.resolve(mockServices as unknown as ServicesInterface))
         .set(fvkCtx, () => Promise.resolve(testFullViewingKey)),
-    });
-
-    for (const record of testData) {
-      mockIterateSpendableNotes.next.mockResolvedValueOnce({
-        value: record,
-      });
-    }
-    mockIterateSpendableNotes.next.mockResolvedValueOnce({
-      done: true,
     });
 
     mockIndexedDb.getAssetsMetadata.mockImplementation((assetId: AssetId) => {

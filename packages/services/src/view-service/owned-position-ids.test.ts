@@ -22,10 +22,9 @@ describe('OwnedPositionIds request handler', () => {
   beforeEach(() => {
     vi.resetAllMocks();
 
-    const mockIteratePositions = {
-      next: vi.fn(),
-      [Symbol.asyncIterator]: () => mockIteratePositions,
-    };
+    mockIndexedDb.getOwnedPositionIds.mockImplementationOnce(async function* () {
+      yield* await Promise.resolve(testData);
+    });
 
     mockServices = {
       getWalletServices: vi.fn(() =>
@@ -42,15 +41,6 @@ describe('OwnedPositionIds request handler', () => {
       contextValues: createContextValues().set(servicesCtx, () =>
         Promise.resolve(mockServices as unknown as ServicesInterface),
       ),
-    });
-
-    for (const record of testData) {
-      mockIteratePositions.next.mockResolvedValueOnce({
-        value: record,
-      });
-    }
-    mockIteratePositions.next.mockResolvedValueOnce({
-      done: true,
     });
     req = new OwnedPositionIdsRequest();
   });

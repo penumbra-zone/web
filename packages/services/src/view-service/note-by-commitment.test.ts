@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import {
   NoteByCommitmentRequest,
   NoteByCommitmentResponse,
@@ -7,26 +7,20 @@ import {
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
-import { mockIndexedDb, MockServices } from '../test-utils.js';
+import { mockIndexedDb, MockServices, mockSubscriptionData } from '../test-utils.js';
 import { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
 import { noteByCommitment } from './note-by-commitment.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
+import { JsonObject } from '@bufbuild/protobuf';
 
 describe('NoteByCommitment request handler', () => {
   let mockServices: MockServices;
 
   let mockCtx: HandlerContext;
   let request: NoteByCommitmentRequest;
-  let noteSubNext: Mock;
 
   beforeEach(() => {
     vi.resetAllMocks();
-
-    noteSubNext = vi.fn();
-    const mockNoteSubscription = {
-      next: noteSubNext,
-      [Symbol.asyncIterator]: () => mockNoteSubscription,
-    };
 
     mockServices = {
       getWalletServices: vi.fn(() =>
@@ -70,9 +64,15 @@ describe('NoteByCommitment request handler', () => {
   test('should get note if note is not found in idb, but awaitDetection is true, and has been detected', async () => {
     mockIndexedDb.getSpendableNoteByCommitment.mockResolvedValue(undefined);
     request.awaitDetection = true;
-    noteSubNext.mockResolvedValueOnce({
-      value: { value: testNote.toJson() },
+
+    mockIndexedDb.subscribe.mockImplementationOnce(async function* (table) {
+      if (table === 'SPENDABLE_NOTES') {
+        yield* mockSubscriptionData(table, [testNote.toJson()] as JsonObject[]);
+      } else {
+        expect.unreachable('Test should only subscribe to SPENDABLE_NOTES');
+      }
     });
+
     const noteByCommitmentResponse = new NoteByCommitmentResponse(
       await noteByCommitment(request, mockCtx),
     );
@@ -83,12 +83,14 @@ describe('NoteByCommitment request handler', () => {
     mockIndexedDb.getSpendableNoteByCommitment.mockResolvedValue(undefined);
     request.awaitDetection = true;
 
-    noteSubNext.mockResolvedValueOnce({
-      value: { value: noteWithAnotherCommitment.toJson() },
+    mockIndexedDb.subscribe.mockImplementationOnce(async function* (table) {
+      if (table === 'SPENDABLE_NOTES') {
+        yield* mockSubscriptionData(table, [noteWithAnotherCommitment.toJson()] as JsonObject[]);
+      } else {
+        expect.unreachable('Test should only subscribe to SPENDABLE_NOTES');
+      }
     });
-    noteSubNext.mockResolvedValueOnce({
-      done: true,
-    });
+
     await expect(noteByCommitment(request, mockCtx)).rejects.toThrow('Note not found');
   });
 });

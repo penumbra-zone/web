@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import {
   BroadcastTransactionRequest,
   BroadcastTransactionResponse,
@@ -11,7 +11,13 @@ import { Transaction } from '@penumbra-zone/protobuf/penumbra/core/transaction/v
 import { broadcastTransaction } from './broadcast-transaction.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
-import { mockIndexedDb, MockServices, TendermintMock } from '../test-utils.js';
+import {
+  mockIndexedDb,
+  MockServices,
+  mockSubscriptionData,
+  TendermintMock,
+} from '../test-utils.js';
+import { JsonObject } from '@bufbuild/protobuf';
 
 const mockSha256 = vi.hoisted(() => vi.fn());
 vi.mock('@penumbra-zone/crypto-web/sha256', () => ({
@@ -23,7 +29,6 @@ describe('BroadcastTransaction request handler', () => {
   let mockCtx: HandlerContext;
 
   let mockTendermint: TendermintMock;
-  let txSubNext: Mock;
   let broadcastTransactionRequest: BroadcastTransactionRequest;
 
   beforeEach(() => {
@@ -33,12 +38,6 @@ describe('BroadcastTransaction request handler', () => {
 
     mockTendermint = {
       broadcastTx: vi.fn(),
-    };
-
-    txSubNext = vi.fn();
-    const mockTransactionInfoSubscription = {
-      next: txSubNext,
-      [Symbol.asyncIterator]: () => mockTransactionInfoSubscription,
     };
 
     mockServices = {
@@ -88,8 +87,15 @@ describe('BroadcastTransaction request handler', () => {
     });
 
     mockTendermint.broadcastTx?.mockResolvedValue(transactionIdData);
-    txSubNext.mockResolvedValueOnce({
-      value: { value: txRecord.toJson(), table: 'TRANSACTIONS' },
+    mockIndexedDb.subscribe.mockImplementation(async function* (table) {
+      if (table === 'TRANSACTIONS') {
+        yield* mockSubscriptionData(table, [txRecord.toJson()] as JsonObject[]);
+
+        // don't end the stream
+        yield await new Promise<never>(() => {});
+      } else {
+        expect.unreachable('Test should only subscribe to TRANSACTIONS');
+      }
     });
 
     broadcastTransactionRequest.awaitDetection = true;

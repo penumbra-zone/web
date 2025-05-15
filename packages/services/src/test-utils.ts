@@ -1,85 +1,100 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call -- test utils */
+/* eslint-disable @typescript-eslint/no-unsafe-argument -- test utils */
 /* eslint-disable @typescript-eslint/no-explicit-any -- test utils */
 /* eslint-disable @typescript-eslint/require-await -- test utils */
-
-import { Mock, Mocked, vi } from 'vitest';
-import { FullViewingKey, SpendKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { fullViewingKeyFromBech32m } from '@penumbra-zone/bech32m/penumbrafullviewingkey';
-import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { FullViewingKey, SpendKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import {
+  IdbUpdate,
+  IndexedDbInterface,
+  PenumbraDb,
+  PenumbraStoreNames,
+} from '@penumbra-zone/types/indexed-db';
+import { expect, Mock, Mocked, vi } from 'vitest';
+
+export async function* mockSubscriptionData<T extends PenumbraStoreNames>(
+  table: T,
+  data: PenumbraDb[T]['value'][],
+): AsyncGenerator<IdbUpdate<PenumbraDb, T>> {
+  for (const value of data) {
+    yield { value, table };
+  }
+}
+
+const mockDisabled: any = () =>
+  expect.unreachable("Mock disabled! Use this mock's `mockImplementation` method to configure it.");
+
+export const mockStakingTokenAssetId = vi.fn(
+  (): AssetId =>
+    expect.unreachable(
+      'Test should not get stakingTokenAssetId. Import `mockStakingTokenAssetId.mockReturnedValue` to configure this mock.',
+    ),
+);
 
 export const mockIndexedDb: Mocked<IndexedDbInterface> = {
-  addAuctionOutstandingReserves: vi.fn(),
-  addEpoch: vi.fn(),
-  addPosition: vi.fn(),
-  clear: vi.fn(),
-  clearSwapBasedPrices: vi.fn(),
-  clearValidatorInfos: vi.fn(),
-  constants: vi.fn(),
-  deleteAuctionOutstandingReserves: vi.fn(),
-  getAltGasPrices: vi.fn(),
-  getAppParams: vi.fn(),
-  getAssetsMetadata: vi.fn(),
-  getAuction: vi.fn(),
-  getAuctionOutstandingReserves: vi.fn(),
-  getEpochByHeight: vi.fn(),
-  getEpochByIndex: vi.fn(),
-  getFmdParams: vi.fn(),
-  getFullSyncHeight: vi.fn(),
-  getLQTHistoricalVotes: vi.fn(),
-  getNativeGasPrices: vi.fn(),
-  getNotesForVoting: vi.fn(),
-  getOwnedPositionIds: vi.fn(async function* (..._) {
-    yield* [] as any[];
-  }),
-  getPosition: vi.fn(),
-  getPricesForAsset: vi.fn(),
-  getSpendableNoteByCommitment: vi.fn(),
-  getSpendableNoteByNullifier: vi.fn(),
-  getStateCommitmentTree: vi.fn(),
-  getSwapByCommitment: vi.fn(),
-  getSwapByNullifier: vi.fn(),
-  getTransaction: vi.fn(),
-  getTransactionInfo: vi.fn(),
-  getValidatorInfo: vi.fn(),
-  hasTokenBalance: vi.fn(),
-  iterateAssetsMetadata: vi.fn(async function* () {
-    yield* [] as any[];
-  }),
-  iterateLQTVotes: vi.fn(async function* (..._) {
-    yield* [] as any[];
-  }),
-  iterateSpendableNotes: vi.fn(async function* () {
-    yield* [] as any[];
-  }),
-  iterateSwaps: vi.fn(async function* () {
-    yield* [] as any[];
-  }),
-  iterateTransactions: vi.fn(async function* () {
-    yield* [] as any[];
-  }),
-  iterateValidatorInfos: vi.fn(async function* () {
-    yield* [] as any[];
-  }),
-  saveAppParams: vi.fn(),
-  saveAssetsMetadata: vi.fn(),
-  saveFmdParams: vi.fn(),
-  saveFullSyncHeight: vi.fn(),
-  saveGasPrices: vi.fn(),
-  saveLQTHistoricalVote: vi.fn(),
-  saveScanResult: vi.fn(),
-  saveSpendableNote: vi.fn(),
-  saveSwap: vi.fn(),
-  saveTransaction: vi.fn(),
-  saveTransactionInfo: vi.fn(),
-  stakingTokenAssetId: new AssetId({}),
+  get stakingTokenAssetId(): AssetId {
+    return mockStakingTokenAssetId();
+  },
+
   subscribe: vi.fn(async function* (_) {
-    yield* [] as any[];
+    yield mockDisabled();
   }),
-  totalNoteBalance: vi.fn(),
-  updatePosition: vi.fn(),
-  updatePrice: vi.fn(),
-  upsertAuction: vi.fn(),
-  upsertValidatorInfo: vi.fn(),
+
+  addAuctionOutstandingReserves: vi.fn(mockDisabled),
+  addEpoch: vi.fn(mockDisabled),
+  addPosition: vi.fn(mockDisabled),
+  clear: vi.fn(mockDisabled),
+  clearSwapBasedPrices: vi.fn(mockDisabled),
+  clearValidatorInfos: vi.fn(mockDisabled),
+  constants: vi.fn(mockDisabled),
+  deleteAuctionOutstandingReserves: vi.fn(mockDisabled),
+  getAltGasPrices: vi.fn(mockDisabled),
+  getAppParams: vi.fn(mockDisabled),
+  getAssetsMetadata: vi.fn(mockDisabled),
+  getAuction: vi.fn(mockDisabled),
+  getAuctionOutstandingReserves: vi.fn(mockDisabled),
+  getEpochByIndex: vi.fn(mockDisabled),
+  getEpochByHeight: vi.fn(mockDisabled),
+  getFmdParams: vi.fn(mockDisabled),
+  getFullSyncHeight: vi.fn(mockDisabled),
+  getLQTHistoricalVotes: vi.fn(mockDisabled),
+  getNativeGasPrices: vi.fn(mockDisabled),
+  getNotesForVoting: vi.fn(mockDisabled),
+  getOwnedPositionIds: vi.fn(mockDisabled),
+  getPosition: vi.fn(mockDisabled),
+  getPricesForAsset: vi.fn(mockDisabled),
+  getSpendableNoteByCommitment: vi.fn(mockDisabled),
+  getSpendableNoteByNullifier: vi.fn(mockDisabled),
+  getStateCommitmentTree: vi.fn(mockDisabled),
+  getSwapByCommitment: vi.fn(mockDisabled),
+  getSwapByNullifier: vi.fn(mockDisabled),
+  getTransaction: vi.fn(mockDisabled),
+  getTransactionInfo: vi.fn(mockDisabled),
+  getValidatorInfo: vi.fn(mockDisabled),
+  hasTokenBalance: vi.fn(mockDisabled),
+  iterateAssetsMetadata: vi.fn(mockDisabled),
+  iterateLQTVotes: vi.fn(mockDisabled),
+  iterateSpendableNotes: vi.fn(mockDisabled),
+  iterateSwaps: vi.fn(mockDisabled),
+  iterateTransactions: vi.fn(mockDisabled),
+  iterateValidatorInfos: vi.fn(mockDisabled),
+  saveAppParams: vi.fn(mockDisabled),
+  saveAssetsMetadata: vi.fn(mockDisabled),
+  saveFmdParams: vi.fn(mockDisabled),
+  saveFullSyncHeight: vi.fn(mockDisabled),
+  saveGasPrices: vi.fn(mockDisabled),
+  saveLQTHistoricalVote: vi.fn(mockDisabled),
+  saveScanResult: vi.fn(mockDisabled),
+  saveSpendableNote: vi.fn(mockDisabled),
+  saveSwap: vi.fn(mockDisabled),
+  saveTransaction: vi.fn(mockDisabled),
+  saveTransactionInfo: vi.fn(mockDisabled),
+  totalNoteBalance: vi.fn(mockDisabled),
+  updatePosition: vi.fn(mockDisabled),
+  updatePrice: vi.fn(mockDisabled),
+  upsertAuction: vi.fn(mockDisabled),
+  upsertValidatorInfo: vi.fn(mockDisabled),
 };
 
 export interface AuctionMock {

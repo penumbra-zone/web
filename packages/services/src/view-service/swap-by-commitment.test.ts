@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import {
   SwapByCommitmentRequest,
   SwapByCommitmentResponse,
@@ -7,25 +7,19 @@ import {
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
-import { mockIndexedDb, MockServices } from '../test-utils.js';
+import { mockIndexedDb, MockServices, mockSubscriptionData } from '../test-utils.js';
 import { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
 import { swapByCommitment } from './swap-by-commitment.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
+import { JsonObject } from '@bufbuild/protobuf';
 
 describe('SwapByCommitment request handler', () => {
   let mockServices: MockServices;
   let mockCtx: HandlerContext;
   let request: SwapByCommitmentRequest;
-  let swapSubNext: Mock;
 
   beforeEach(() => {
     vi.resetAllMocks();
-
-    swapSubNext = vi.fn();
-    const mockSwapSubscription = {
-      next: swapSubNext,
-      [Symbol.asyncIterator]: () => mockSwapSubscription,
-    };
 
     mockServices = {
       getWalletServices: vi.fn(() =>
@@ -69,9 +63,15 @@ describe('SwapByCommitment request handler', () => {
   test('should get swap if swap is not found in idb, but awaitDetection is true, and has been detected', async () => {
     mockIndexedDb.getSwapByCommitment.mockResolvedValue(undefined);
     request.awaitDetection = true;
-    swapSubNext.mockResolvedValueOnce({
-      value: { value: testSwap.toJson() },
+
+    mockIndexedDb.subscribe.mockImplementationOnce(async function* (table) {
+      if (table === 'SWAPS') {
+        yield* mockSubscriptionData(table, [testSwap.toJson()] as JsonObject[]);
+      } else {
+        expect.unreachable('Test should only subscribe to SWAPS');
+      }
     });
+
     const swapByCommitmentResponse = new SwapByCommitmentResponse(
       await swapByCommitment(request, mockCtx),
     );
@@ -82,12 +82,14 @@ describe('SwapByCommitment request handler', () => {
     mockIndexedDb.getSwapByCommitment.mockResolvedValue(undefined);
     request.awaitDetection = true;
 
-    swapSubNext.mockResolvedValueOnce({
-      value: { value: swapWithAnotherCommitment.toJson() },
+    mockIndexedDb.subscribe.mockImplementationOnce(async function* (table) {
+      if (table === 'SWAPS') {
+        yield* mockSubscriptionData(table, [swapWithAnotherCommitment.toJson()] as JsonObject[]);
+      } else {
+        expect.unreachable('Test should only subscribe to SWAPS');
+      }
     });
-    swapSubNext.mockResolvedValueOnce({
-      done: true,
-    });
+
     await expect(swapByCommitment(request, mockCtx)).rejects.toThrow('Swap not found');
   });
 });
