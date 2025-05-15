@@ -14,13 +14,12 @@ import {
   NotesResponse,
   SpendableNoteRecord,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { IndexedDbMock, MockServices } from '../test-utils.js';
+import { mockIndexedDb, MockServices } from '../test-utils.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 describe('Notes request handler', () => {
   let mockServices: MockServices;
   let mockCtx: HandlerContext;
-  let mockIndexedDb: IndexedDbMock;
 
   beforeEach(() => {
     vi.resetAllMocks();
@@ -28,10 +27,6 @@ describe('Notes request handler', () => {
     const mockIterateSpendableNotes = {
       next: vi.fn(),
       [Symbol.asyncIterator]: () => mockIterateSpendableNotes,
-    };
-
-    mockIndexedDb = {
-      iterateSpendableNotes: () => mockIterateSpendableNotes,
     };
 
     mockServices = {

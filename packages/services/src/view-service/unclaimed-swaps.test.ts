@@ -10,14 +10,13 @@ import {
   UnclaimedSwapsRequest,
   UnclaimedSwapsResponse,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { IndexedDbMock, MockServices } from '../test-utils.js';
+import { mockIndexedDb, MockServices } from '../test-utils.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { unclaimedSwaps } from './unclaimed-swaps.js';
 
 describe('UnclaimedSwaps request handler', () => {
   let mockServices: MockServices;
   let mockCtx: HandlerContext;
-  let mockIndexedDb: IndexedDbMock;
   let req: UnclaimedSwapsRequest;
 
   beforeEach(() => {
@@ -26,10 +25,6 @@ describe('UnclaimedSwaps request handler', () => {
     const mockIterateSwaps = {
       next: vi.fn(),
       [Symbol.asyncIterator]: () => mockIterateSwaps,
-    };
-
-    mockIndexedDb = {
-      iterateSwaps: () => mockIterateSwaps,
     };
 
     mockServices = {

@@ -11,7 +11,7 @@ import { Transaction } from '@penumbra-zone/protobuf/penumbra/core/transaction/v
 import { broadcastTransaction } from './broadcast-transaction.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
-import { IndexedDbMock, MockServices, TendermintMock } from '../test-utils.js';
+import { mockIndexedDb, MockServices, TendermintMock } from '../test-utils.js';
 
 const mockSha256 = vi.hoisted(() => vi.fn());
 vi.mock('@penumbra-zone/crypto-web/sha256', () => ({
@@ -21,7 +21,7 @@ vi.mock('@penumbra-zone/crypto-web/sha256', () => ({
 describe('BroadcastTransaction request handler', () => {
   let mockServices: MockServices;
   let mockCtx: HandlerContext;
-  let mockIndexedDb: IndexedDbMock;
+
   let mockTendermint: TendermintMock;
   let txSubNext: Mock;
   let broadcastTransactionRequest: BroadcastTransactionRequest;
@@ -41,14 +41,6 @@ describe('BroadcastTransaction request handler', () => {
       [Symbol.asyncIterator]: () => mockTransactionInfoSubscription,
     };
 
-    mockIndexedDb = {
-      subscribe: (table: string) => {
-        if (table === 'TRANSACTIONS') {
-          return mockTransactionInfoSubscription;
-        }
-        throw new Error('Table not supported');
-      },
-    };
     mockServices = {
       getWalletServices: vi.fn(() =>
         Promise.resolve({

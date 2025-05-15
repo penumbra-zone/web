@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { validatorInfo } from './validator-info.js';
-import { IndexedDbMock, MockServices } from '../test-utils.js';
+import { mockIndexedDb, MockServices } from '../test-utils.js';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { StakeService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
@@ -14,7 +14,7 @@ import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 describe('ValidatorInfo request handler', () => {
   let mockServices: MockServices;
-  let mockIndexedDb: IndexedDbMock;
+
   let mockCtx: HandlerContext;
   const mockValidatorInfoResponse1 = new ValidatorInfoResponse({
     validatorInfo: {
@@ -44,9 +44,6 @@ describe('ValidatorInfo request handler', () => {
     });
     mockIterateValidatorInfos.next.mockResolvedValueOnce({ done: true });
 
-    mockIndexedDb = {
-      iterateValidatorInfos: () => mockIterateValidatorInfos,
-    };
     mockServices = {
       getWalletServices: vi.fn(() =>
         Promise.resolve({ indexedDb: mockIndexedDb }),
