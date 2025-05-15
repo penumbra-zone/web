@@ -1,30 +1,23 @@
-import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
+import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
+import { ViewService } from '@penumbra-zone/protobuf';
 import {
   StatusStreamRequest,
   StatusStreamResponse,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
-import { ViewService } from '@penumbra-zone/protobuf';
+import type { ServicesInterface } from '@penumbra-zone/types/services';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { servicesCtx } from '../ctx/prax.js';
 import { mockIndexedDb, MockServices, TendermintMock } from '../test-utils.js';
 import { statusStream } from './status-stream.js';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 describe('Status stream request handler', () => {
   let mockServices: MockServices;
   let mockCtx: HandlerContext;
   let mockTendermint: TendermintMock;
-  let lastBlockSubNext: Mock;
   let request: StatusStreamRequest;
 
   beforeEach(() => {
     vi.resetAllMocks();
-
-    lastBlockSubNext = vi.fn();
-    const mockLastBlockSubscription = {
-      next: lastBlockSubNext,
-      [Symbol.asyncIterator]: () => mockLastBlockSubscription,
-    };
 
     mockTendermint = {
       latestBlockHeight: vi.fn(),
@@ -54,16 +47,14 @@ describe('Status stream request handler', () => {
 
     request = new StatusStreamRequest();
 
-    for (let i = 200; i < 222; i++) {
-      lastBlockSubNext.mockResolvedValueOnce({
-        value: {
-          value: BigInt(i),
-        },
-      });
-    }
-    // synchronization never ends, but the test can't last indefinitely, so we end the stream
-    lastBlockSubNext.mockResolvedValueOnce({
-      done: true,
+    mockIndexedDb.subscribe.mockImplementationOnce(async function* (table) {
+      if (table === 'FULL_SYNC_HEIGHT') {
+        for (let i = 200; i < 222; i++) {
+          yield await Promise.resolve({ table, value: BigInt(i) });
+        }
+      } else {
+        expect.unreachable('Test should only subscribe to FULL_SYNC_HEIGHT');
+      }
     });
   });
 

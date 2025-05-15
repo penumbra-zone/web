@@ -24,10 +24,9 @@ describe('Notes request handler', () => {
   beforeEach(() => {
     vi.resetAllMocks();
 
-    const mockIterateSpendableNotes = {
-      next: vi.fn(),
-      [Symbol.asyncIterator]: () => mockIterateSpendableNotes,
-    };
+    mockIndexedDb.iterateSpendableNotes.mockImplementationOnce(async function* () {
+      yield* await Promise.resolve(testData);
+    });
 
     mockServices = {
       getWalletServices: vi.fn(() =>
@@ -44,15 +43,6 @@ describe('Notes request handler', () => {
       contextValues: createContextValues().set(servicesCtx, () =>
         Promise.resolve(mockServices as unknown as ServicesInterface),
       ),
-    });
-
-    for (const record of testData) {
-      mockIterateSpendableNotes.next.mockResolvedValueOnce({
-        value: record,
-      });
-    }
-    mockIterateSpendableNotes.next.mockResolvedValueOnce({
-      done: true,
     });
   });
 

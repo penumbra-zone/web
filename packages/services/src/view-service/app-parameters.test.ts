@@ -1,31 +1,24 @@
-import { Mock, beforeEach, describe, expect, test, vi } from 'vitest';
+import { JsonObject } from '@bufbuild/protobuf';
+import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
+import { ViewService } from '@penumbra-zone/protobuf';
+import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 import {
   AppParametersRequest,
   AppParametersResponse,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
-import { ViewService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../ctx/prax.js';
-import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
-import { appParameters } from './app-parameters.js';
-import { mockIndexedDb, MockServices } from '../test-utils.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { servicesCtx } from '../ctx/prax.js';
+import { mockIndexedDb, MockServices, mockSubscriptionData } from '../test-utils.js';
+import { appParameters } from './app-parameters.js';
 
 describe('AppParameters request handler', () => {
   let mockServices: MockServices;
 
   let mockCtx: HandlerContext;
-  let apSubNext: Mock;
 
   beforeEach(() => {
     vi.resetAllMocks();
-
-    apSubNext = vi.fn();
-
-    const mockAppParametersSubscription = {
-      next: apSubNext,
-      [Symbol.asyncIterator]: () => mockAppParametersSubscription,
-    };
 
     mockServices = {
       getWalletServices: vi.fn(() =>
@@ -54,9 +47,15 @@ describe('AppParameters request handler', () => {
 
   test('should wait for appParameters when idb has none', async () => {
     mockIndexedDb.getAppParams.mockResolvedValue(undefined);
-    apSubNext.mockResolvedValueOnce({
-      value: { value: new AppParametersRequest(), table: 'APP_PARAMETERS' },
+
+    mockIndexedDb.subscribe.mockImplementationOnce(async function* (table) {
+      if (table === 'APP_PARAMETERS') {
+        yield* mockSubscriptionData(table, [new AppParametersRequest().toJson()] as JsonObject[]);
+      } else {
+        expect.unreachable('Test should only subscribe to APP_PARAMETERS');
+      }
     });
+
     await expect(appParameters(new AppParametersRequest(), mockCtx)).resolves.toBeTruthy();
   });
 });
