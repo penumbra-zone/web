@@ -83,7 +83,7 @@ export const planBuildBroadcast = async (
           description: shortenedTxHash,
         }),
     );
-    // console.debug('transactionClassification', transactionClassification); // User debug line, can be kept or removed by user
+
     let unfilledSwapsInfo = '';
     if (transactionClassification === 'swapClaim') {
       try {
