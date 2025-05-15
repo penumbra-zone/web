@@ -14,6 +14,7 @@ import { useGetMetadata } from '@/shared/api/assets';
 import { toValueView } from '@/shared/utils/value-view';
 import { Pagination } from '@penumbra-zone/ui/Pagination';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import Link from 'next/link';
 
 const BASE_PAGE = 0;
 const BASE_LIMIT = 10;
@@ -140,7 +141,11 @@ export const DelegatorRewards = ({ address }: { address: Address }) => {
           );
 
           return (
-            <div key={rowKey} className='grid grid-cols-subgrid col-span-4'>
+            <Link
+              key={rowKey}
+              className='grid grid-cols-subgrid col-span-4 hover:bg-action-hoverOverlay'
+              href={`/tournament/${epoch}`}
+            >
               <TableCell cell>{`Epoch #${epoch}`}</TableCell>
 
               <TableCell cell>
@@ -166,7 +171,7 @@ export const DelegatorRewards = ({ address }: { address: Address }) => {
                   </Button>
                 </Density>
               </TableCell>
-            </div>
+            </Link>
           );
         })}
       </TableLayout>
