@@ -44,7 +44,7 @@ const PreviousEpochsRow = observer(
     const {
       data: rewards,
       query: { isLoading: rewardsLoading },
-    } = usePersonalRewards(subaccount, row.epoch);
+    } = usePersonalRewards(subaccount, row.epoch, false, 1, 1);
     const { data: stakingToken } = useStakingTokenMetadata();
     const reward = rewards.get(row.epoch);
 
@@ -84,26 +84,27 @@ const PreviousEpochsRow = observer(
             </Tooltip>
           )}
         </TableCell>
-        {connected && (rewardsLoading || reward !== undefined) && (
-          <TableCell cell loading={isLoading || rewardsLoading}>
-            {
-              <ValueViewComponent
-                valueView={
-                  new ValueView({
-                    valueView: {
-                      case: 'knownAssetId',
-                      value: {
-                        amount: pnum(reward?.reward).toAmount(),
-                        metadata: stakingToken,
-                      },
+
+        <TableCell cell loading={isLoading || rewardsLoading}>
+          {connected && (rewardsLoading || reward !== undefined) ? (
+            <ValueViewComponent
+              valueView={
+                new ValueView({
+                  valueView: {
+                    case: 'knownAssetId',
+                    value: {
+                      amount: pnum(reward?.reward).toAmount(),
+                      metadata: stakingToken,
                     },
-                  })
-                }
-                priority='tertiary'
-              />
-            }
-          </TableCell>
-        )}
+                  },
+                })
+              }
+              priority='tertiary'
+            />
+          ) : (
+            <Text color='text.secondary'>–</Text>
+          )}
+        </TableCell>
         <TableCell cell loading={isLoading}>
           <Density slim>
             <Button iconOnly icon={ChevronRight}>
