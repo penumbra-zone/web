@@ -48,9 +48,7 @@ export const getBodyParams = async (
   const sortDirection =
     sortDirectionParam && DIRECTIONS.includes(sortDirectionParam) ? sortDirectionParam : 'desc';
 
-  const epochs = Array.isArray(body.epochs)
-    ? body.epochs.filter(epoch => typeof epoch === 'string')
-    : [];
+  const epochs = Array.isArray(body.epochs) ? body.epochs : [];
 
   if (!isAddress(body.address)) {
     return 'Invalid address';
