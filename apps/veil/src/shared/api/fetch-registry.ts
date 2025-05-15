@@ -1,4 +1,5 @@
 import { ChainRegistryClient, Registry } from '@penumbra-labs/registry';
+import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 
 /*
@@ -9,6 +10,9 @@ import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 export type JsonRegistry = ConstructorParameters<typeof Registry>[0];
 
 const CLIENT = new ChainRegistryClient();
+
+/** The staking token's asset id. */
+export const STAKING_TOKEN_ASSET_ID: AssetId = CLIENT.bundled.globals().stakingAssetId;
 
 export async function fetchRegistry(chainId: string): Promise<Registry> {
   return await CLIENT.remote.getWithBundledBackup(chainId);
