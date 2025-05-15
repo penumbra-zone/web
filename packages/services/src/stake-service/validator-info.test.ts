@@ -32,17 +32,12 @@ describe('ValidatorInfo request handler', () => {
   beforeEach(() => {
     vi.resetAllMocks();
 
-    const mockIterateValidatorInfos = {
-      next: vi.fn(),
-      [Symbol.asyncIterator]: () => mockIterateValidatorInfos,
-    };
-    mockIterateValidatorInfos.next.mockResolvedValueOnce({
-      value: mockValidatorInfoResponse1.validatorInfo,
+    mockIndexedDb.iterateValidatorInfos.mockImplementation(async function* () {
+      yield* await Promise.resolve([
+        mockValidatorInfoResponse1.validatorInfo!,
+        mockValidatorInfoResponse2.validatorInfo!,
+      ]);
     });
-    mockIterateValidatorInfos.next.mockResolvedValueOnce({
-      value: mockValidatorInfoResponse2.validatorInfo,
-    });
-    mockIterateValidatorInfos.next.mockResolvedValueOnce({ done: true });
 
     mockServices = {
       getWalletServices: vi.fn(() =>

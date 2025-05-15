@@ -6,7 +6,7 @@ import { servicesCtx } from '../ctx/prax.js';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 
-import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 
 import { Nullifier } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
 import {
@@ -14,29 +14,16 @@ import {
   SpendableNoteRecord,
   SwapRecord,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { mockIndexedDb, MockServices } from '../test-utils.js';
+import { mockIndexedDb, MockServices, mockSubscriptionData } from '../test-utils.js';
 import { stringToUint8Array } from '@penumbra-zone/types/string';
+import { JsonObject } from '@bufbuild/protobuf';
 
 describe('nullifierStatus', () => {
   let mockServices: MockServices;
   let mockCtx: HandlerContext;
-  let noteSubNext: Mock;
-  let swapSubNext: Mock;
 
   beforeEach(() => {
     vi.resetAllMocks();
-
-    noteSubNext = vi.fn();
-    const mockNoteSubscription = {
-      next: noteSubNext,
-      [Symbol.asyncIterator]: () => mockNoteSubscription,
-    };
-
-    swapSubNext = vi.fn();
-    const mockSwapSubscription = {
-      next: swapSubNext,
-      [Symbol.asyncIterator]: () => mockSwapSubscription,
-    };
 
     mockServices = {
       getWalletServices: vi.fn(() =>
@@ -146,29 +133,31 @@ describe('nullifierStatus', () => {
       nullifier: new Nullifier({ inner: stringToUint8Array('nope') }),
     });
 
-    // Incoming swaps with no matches
-    swapSubNext
-      .mockResolvedValueOnce({
-        value: { value: nonMatchingSwap.toJson(), table: 'SWAPS' },
-      })
-      .mockResolvedValueOnce({
-        value: { value: nonMatchingSwap.toJson(), table: 'SWAPS' },
-      })
-      .mockResolvedValueOnce({
-        value: { value: nonMatchingSwap.toJson(), table: 'SWAPS' },
-      });
+    mockIndexedDb.subscribe.mockImplementation(async function* (table) {
+      if (table === 'SWAPS') {
+        // Incoming swaps with no matches
+        yield* mockSubscriptionData(table, [
+          nonMatchingSwap.toJson(),
+          nonMatchingSwap.toJson(),
+          nonMatchingSwap.toJson(),
+        ] as JsonObject[]);
 
-    // Incoming notes with the last one being the match
-    noteSubNext
-      .mockResolvedValueOnce({
-        value: { value: nonMatchingNote.toJson(), table: 'SPENDABLE_NOTES' },
-      })
-      .mockResolvedValueOnce({
-        value: { value: matchingNoteNotSpent.toJson(), table: 'SPENDABLE_NOTES' },
-      })
-      .mockResolvedValueOnce({
-        value: { value: matchingNoteSpent.toJson(), table: 'SPENDABLE_NOTES' },
-      });
+        // don't end the stream
+        yield await new Promise<never>(() => {});
+      } else if (table === 'SPENDABLE_NOTES') {
+        // Incoming notes with the last one being the match
+        yield* mockSubscriptionData(table, [
+          nonMatchingNote.toJson(),
+          matchingNoteNotSpent.toJson(),
+          matchingNoteSpent.toJson(),
+        ] as JsonObject[]);
+
+        // don't end the stream
+        yield await new Promise<never>(() => {});
+      } else {
+        expect.unreachable('Test should only subscribe to SPENDABLE_NOTES or SWAPS');
+      }
+    });
 
     const req = new NullifierStatusRequest({
       nullifier: matchingNullifier,
@@ -198,39 +187,36 @@ describe('nullifierStatus', () => {
       heightClaimed: 10314n,
     });
 
-    // Incoming swaps with the last one being the match
-    swapSubNext
-      .mockResolvedValueOnce({
-        value: { value: nonMatchingSwap.toJson(), table: 'SWAPS' },
-      })
-      .mockResolvedValueOnce({
-        value: { value: matchingSwapNotSpent.toJson(), table: 'SWAPS' },
-      })
-      .mockResolvedValueOnce({
-        value: { value: matchingSwapSpent.toJson(), table: 'SWAPS' },
-      });
-
     const nonMatchingNote = new SpendableNoteRecord({
       nullifier: new Nullifier({ inner: stringToUint8Array('nope') }),
     });
 
-    // Incoming notes with no matches
-    noteSubNext
-      .mockResolvedValueOnce({
-        value: { value: nonMatchingNote.toJson(), table: 'SPENDABLE_NOTES' },
-      })
-      .mockResolvedValueOnce({
-        value: { value: nonMatchingNote.toJson(), table: 'SPENDABLE_NOTES' },
-      })
-      .mockResolvedValueOnce({
-        value: { value: nonMatchingNote.toJson(), table: 'SPENDABLE_NOTES' },
-      })
-      .mockResolvedValueOnce({
-        value: { value: nonMatchingNote.toJson(), table: 'SPENDABLE_NOTES' },
-      })
-      .mockResolvedValueOnce({
-        value: { value: nonMatchingNote.toJson(), table: 'SPENDABLE_NOTES' },
-      });
+    mockIndexedDb.subscribe.mockImplementation(async function* (table) {
+      if (table === 'SPENDABLE_NOTES') {
+        yield* mockSubscriptionData(table, [
+          // Incoming notes with no matches
+          nonMatchingNote.toJson(),
+          nonMatchingNote.toJson(),
+          nonMatchingNote.toJson(),
+          nonMatchingNote.toJson(),
+        ] as JsonObject[]);
+
+        // don't end the stream
+        yield await new Promise<never>(() => {});
+      } else if (table === 'SWAPS') {
+        // Incoming swaps with the last one being the match
+        yield* mockSubscriptionData(table, [
+          nonMatchingSwap.toJson(),
+          matchingSwapNotSpent.toJson(),
+          matchingSwapSpent.toJson(),
+        ] as JsonObject[]);
+
+        // don't end the stream
+        yield await new Promise<never>(() => {});
+      } else {
+        expect.unreachable('Test should only subscribe to SPENDABLE_NOTES or SWAPS');
+      }
+    });
 
     const req = new NullifierStatusRequest({
       nullifier: matchingNullifier,

@@ -22,10 +22,9 @@ describe('UnclaimedSwaps request handler', () => {
   beforeEach(() => {
     vi.resetAllMocks();
 
-    const mockIterateSwaps = {
-      next: vi.fn(),
-      [Symbol.asyncIterator]: () => mockIterateSwaps,
-    };
+    mockIndexedDb.iterateSwaps.mockImplementationOnce(async function* () {
+      yield* await Promise.resolve(testData);
+    });
 
     mockServices = {
       getWalletServices: vi.fn(() =>
@@ -42,15 +41,6 @@ describe('UnclaimedSwaps request handler', () => {
       contextValues: createContextValues().set(servicesCtx, () =>
         Promise.resolve(mockServices as unknown as ServicesInterface),
       ),
-    });
-
-    for (const record of testData) {
-      mockIterateSwaps.next.mockResolvedValueOnce({
-        value: record,
-      });
-    }
-    mockIterateSwaps.next.mockResolvedValueOnce({
-      done: true,
     });
     req = new UnclaimedSwapsRequest();
   });

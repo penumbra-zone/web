@@ -17,10 +17,9 @@ describe('Assets request handler', () => {
   beforeEach(() => {
     vi.resetAllMocks();
 
-    const mockIterateMetadata = {
-      next: vi.fn(),
-      [Symbol.asyncIterator]: () => mockIterateMetadata,
-    };
+    mockIndexedDb.iterateAssetsMetadata.mockImplementationOnce(async function* () {
+      yield* await Promise.resolve(testData);
+    });
 
     mockServices = {
       getWalletServices: vi.fn(() =>
@@ -37,15 +36,6 @@ describe('Assets request handler', () => {
       contextValues: createContextValues().set(servicesCtx, () =>
         Promise.resolve(mockServices as unknown as ServicesInterface),
       ),
-    });
-
-    for (const record of testData) {
-      mockIterateMetadata.next.mockResolvedValueOnce({
-        value: record,
-      });
-    }
-    mockIterateMetadata.next.mockResolvedValueOnce({
-      done: true,
     });
     req = new AssetsRequest({});
   });

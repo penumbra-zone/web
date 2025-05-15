@@ -15,11 +15,11 @@ import {
 } from '@penumbra-zone/protobuf/penumbra/core/component/auction/v1/auction_pb';
 import { extractAltFee } from './fees.js';
 import { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
+import { mockIndexedDb } from '../test-utils.js';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
 import { GasPrices } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
 import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { mockIndexedDb } from '../test-utils.js';
 
 describe('extractAltFee', () => {
   beforeEach(() => {
