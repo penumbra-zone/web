@@ -1,10 +1,14 @@
 import { ActionView } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { getAsset1Metadata, getAsset2Metadata } from '@penumbra-zone/getters/swap-view';
-import { getOutputData } from '@penumbra-zone/getters/swap-claim-view';
+import {
+  getAsset1Metadata,
+  getAsset2Metadata,
+  getDelta2IFromSwapView,
+} from '@penumbra-zone/getters/swap-view';
+import { getOutput1Value, getOutput2Value } from '@penumbra-zone/getters/swap-claim-view';
 import { getNote as getSpendNote } from '@penumbra-zone/getters/spend-view';
 import { getNote as getOutputNote } from '@penumbra-zone/getters/output-view';
-import { getMetadata } from '@penumbra-zone/getters/value-view';
+import { getMetadata, getAmount } from '@penumbra-zone/getters/value-view';
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
 
 export type RelevantAsset = AssetId | Metadata;
@@ -50,15 +54,32 @@ export const findRelevantAssets = (action?: ActionView): RelevantAsset[] => {
   }
 
   if (view.case === 'swap') {
-    return returnAssets([
-      getAsset1Metadata.optional(view.value),
-      getAsset2Metadata.optional(view.value),
-    ]);
+    // find correct swap sides
+    const metadata1 = getAsset1Metadata.optional(view.value);
+    const metadata2 = getAsset2Metadata.optional(view.value);
+    const delta2 = getDelta2IFromSwapView(view.value);
+    const isDelta2Zero = !(delta2.lo > 0n || delta2.hi > 0n);
+    const inputMetadata = isDelta2Zero ? metadata1 : metadata2;
+    const outputMetadata = isDelta2Zero ? metadata2 : metadata1;
+
+    return returnAssets([inputMetadata, outputMetadata]);
   }
 
   if (view.case === 'swapClaim') {
-    const bsod = getOutputData.optional(view.value);
-    return returnAssets([bsod?.tradingPair?.asset1, bsod?.tradingPair?.asset2]);
+    const value1 = getOutput1Value.optional(view.value);
+    const value2 = getOutput2Value.optional(view.value);
+    let inputMetadata = getMetadata.optional(value1);
+    let outputMetadata = getMetadata.optional(value2);
+
+    // find correct swap claim sides
+    const amount1 = getAmount.optional(value1);
+    const isAmount1NotZero = amount1 && (amount1.lo > 0n || amount1.hi > 0n);
+    if (isAmount1NotZero) {
+      inputMetadata = getMetadata.optional(value2);
+      outputMetadata = getMetadata.optional(value1);
+    }
+
+    return returnAssets([inputMetadata, outputMetadata]);
   }
 
   if (view.case === 'positionOpen') {
