@@ -843,7 +843,7 @@ export class IndexedDb implements IndexedDbInterface {
   /**
    * Range query to retrieve the recorded epoch containing the given block height.
    */
-  async getEpochByHeight(height: bigint): Promise<Epoch> {
+  async getEpochByHeight(height: bigint): Promise<Epoch | undefined> {
     const store = this.db.transaction('EPOCHS', 'readonly').store.index('startHeight');
 
     for await (const cursor of store.iterate(undefined, 'prev')) {
@@ -853,7 +853,7 @@ export class IndexedDb implements IndexedDbInterface {
       }
     }
 
-    throw new Error(`Invariant violation: No epoch found for height ${height}`);
+    return undefined;
   }
 
   /**
@@ -1048,7 +1048,7 @@ export class IndexedDb implements IndexedDbInterface {
       }
 
       // Adds position prefix to swap record. Needed to make swap claims.
-      n.outputData.sctPositionPrefix = sctPosition(blockHeight, epoch!);
+      n.outputData.sctPositionPrefix = sctPosition(blockHeight, epoch);
 
       assertCommitment(n.swapCommitment);
       txs.add({ table: 'SWAPS', value: n.toJson() as Jsonified<SwapRecord> });

@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
+ 
 import { FmdParameters } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 import {
   SpendableNoteRecord,
@@ -128,7 +128,10 @@ describe('IndexedDb', () => {
     value: async function (this: ThisIndexedDb, epoch: PartialMessage<Epoch>) {
       return this.db.put(
         'EPOCHS',
-        new Epoch(epoch).toJson() as Jsonified<Epoch>,
+        {
+          index: Number(epoch.index),
+          startHeight: Number(epoch.startHeight),
+        },
         Number(epoch.index),
       );
     },
