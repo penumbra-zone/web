@@ -146,6 +146,68 @@ export const planBuildBroadcast = async (
       }
     }
 
+    let unfilledSwapsInfo = '';
+    if (transactionClassification === 'swapClaim') {
+      try {
+        const txIdProto = new TransactionId({ inner: hexToUint8Array(txHash) });
+        const currentTxInfoResponse = await penumbra
+          .service(ViewService)
+          .transactionInfoByHash({ id: txIdProto });
+        const currentTxInfo: TransactionInfo | undefined = currentTxInfoResponse.txInfo;
+
+        if (currentTxInfo?.view?.bodyView?.actionViews) {
+          for (const actionViewItem of currentTxInfo.view.bodyView.actionViews) {
+            if (actionViewItem.actionView.case === 'swapClaim') {
+              const swapClaimView = actionViewItem.actionView.value; // This is SwapClaimView
+              if (swapClaimView.swapClaimView.case === 'visible') {
+                const originalSwapTxId = swapClaimView.swapClaimView.value.swapTx;
+                if (originalSwapTxId) {
+                  try {
+                    // Fetch the original swap transaction
+                    const originalTxInfoResponse = await penumbra
+                      .service(ViewService)
+                      .transactionInfoByHash({ id: originalSwapTxId });
+                    const originalTxInfo: TransactionInfo | undefined =
+                      originalTxInfoResponse.txInfo;
+
+                    if (originalTxInfo?.view?.bodyView?.actionViews) {
+                      for (const originalActionViewItem of originalTxInfo.view.bodyView
+                        .actionViews) {
+                        if (originalActionViewItem.actionView.case === 'swap') {
+                          const originalSwapView = originalActionViewItem.actionView.value; // This is SwapView
+                          const swapValues = getOneWaySwapValues(originalSwapView);
+                          const unfilledAmountValueView: ValueView | undefined =
+                            swapValues.unfilled;
+
+                          if (unfilledAmountValueView) {
+                            const formattedAmount =
+                              getFormattedAmtFromValueView(unfilledAmountValueView);
+                            const metadata =
+                              getMetadataFromValueView.optional(unfilledAmountValueView);
+                            const symbol = metadata?.symbol ?? 'Unknown asset';
+                            unfilledSwapsInfo += `Unfilled: ${formattedAmount} ${symbol}. `;
+                            break;
+                          }
+                        }
+                      }
+                    }
+                  } catch (fetchOriginalErr) {
+                    console.warn(
+                      'Could not fetch original swap transaction details:',
+                      fetchOriginalErr,
+                    );
+                  }
+                }
+              }
+              break;
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('Could not fetch current transaction details for swapClaim:', e);
+      }
+    }
+
     toast.update({
       type: 'success',
       message: `${label} transaction succeeded! 🎉`,
