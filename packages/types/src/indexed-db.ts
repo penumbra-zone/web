@@ -111,7 +111,7 @@ export interface IndexedDbInterface {
     newState: PositionState,
     subaccount?: AddressIndex,
   ): Promise<void>;
-  addEpoch(startHeight: bigint): Promise<void>;
+  addEpoch(epoch: PlainMessage<Epoch>): Promise<void>;
   getEpochByHeight(height: bigint): Promise<Epoch | undefined>;
   getBlockHeightByEpoch(epoch_index: bigint): Promise<Epoch | undefined>;
   upsertValidatorInfo(validatorInfo: ValidatorInfo): Promise<void>;
@@ -331,8 +331,11 @@ export interface PenumbraDb extends DBSchema {
     value: PositionRecord;
   };
   EPOCHS: {
-    key: number; // auto-increment
-    value: Jsonified<Epoch>;
+    key: number; // key path is 'index'
+    value: { index: number; startHeight: number };
+    indexes: {
+      startHeight: number;
+    };
   };
   VALIDATOR_INFOS: {
     key: string; // bech32-encoded validator identity key

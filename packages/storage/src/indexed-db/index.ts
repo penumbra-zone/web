@@ -109,7 +109,7 @@ interface IndexedDbProps {
 }
 
 export class IndexedDb implements IndexedDbInterface {
-  private constructor(
+  constructor(
     private readonly db: IDBPDatabase<PenumbraDb>,
     private readonly u: IbdUpdater,
     private readonly c: IdbConstants,
@@ -159,7 +159,9 @@ export class IndexedDb implements IndexedDbInterface {
         }).createIndex('nullifier', 'nullifier.inner');
         db.createObjectStore('GAS_PRICES', { keyPath: 'assetId.inner' });
         db.createObjectStore('POSITIONS', { keyPath: 'id.inner' });
-        db.createObjectStore('EPOCHS', { autoIncrement: true });
+        const epochs = db.createObjectStore('EPOCHS', { keyPath: 'index', autoIncrement: false });
+        epochs.createIndex('startHeight', 'startHeight', { unique: true });
+
         db.createObjectStore('VALIDATOR_INFOS');
         db.createObjectStore('PRICES', {
           keyPath: ['pricedAsset.inner', 'numeraire.inner'],
@@ -820,83 +822,49 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   /**
-   * Adds a new epoch with the given start height. Automatically sets the epoch
-   * index by finding the previous epoch index, and adding 1n.
+   * Adds a new epoch with the given start height.
+   *
+   * Epochs are zero-indexed, so the new epoch's index field is equal to the
+   * number of items counted in the table.
+   *
+   * Epoch duration is specified in appParameters, but the actual duration of
+   * any given epoch may vary. Calculations using that parameter must be treated
+   * as estimates.
    */
-  async addEpoch(startHeight: bigint): Promise<void> {
-    const cursor = await this.db.transaction('EPOCHS', 'readonly').store.openCursor(null, 'prev');
-    const previousEpoch = cursor?.value ? Epoch.fromJson(cursor.value) : undefined;
-    const index = previousEpoch?.index !== undefined ? previousEpoch.index + 1n : 0n;
+  async addEpoch(epoch: PlainMessage<Epoch>): Promise<void> {
+    const tx = this.db.transaction('EPOCHS', 'readwrite');
 
-    // avoid saving the same epoch twice
-    if (previousEpoch?.startHeight === startHeight) {
-      return;
-    }
-
-    const newEpoch = {
-      startHeight: startHeight.toString(),
-      index: index.toString(),
-    };
-
-    await this.u.update({
-      table: 'EPOCHS',
-      value: newEpoch,
+    await tx.store.put({
+      index: Number(epoch.index),
+      startHeight: Number(epoch.startHeight),
     });
   }
 
   /**
-   * Get the epoch that contains the given block height.
+   * Range query to retrieve the recorded epoch containing the given block height.
    */
-  async getEpochByHeight(
-    /**
-     * The block height to query by. Will return the epoch with the largest
-     * start height smaller than `height` -- that is, the epoch that contains
-     * this height.
-     */
-    height: bigint,
-  ): Promise<Epoch | undefined> {
-    let epoch: Epoch | undefined;
+  async getEpochByHeight(height: bigint): Promise<Epoch | undefined> {
+    const store = this.db.transaction('EPOCHS', 'readonly').store.index('startHeight');
 
-    /**
-     * Iterate over epochs and return the one with the largest start height
-     * smaller than `height`.
-     *
-     * Unfortunately, there doesn't appear to be a more efficient way of doing
-     * this. We tried using epochs' start heights as their key so that we could
-     * use a particular start height as a query bounds, but IndexedDB casts the
-     * `bigint` start height to a string, which messes up sorting (the string
-     * '11' is greater than the string '100', for example). For now, then, we
-     * have to just iterate over all epochs to find the correct starting height.
-     */
-    for await (const cursor of this.db.transaction('EPOCHS', 'readonly').store) {
-      const currentEpoch = Epoch.fromJson(cursor.value);
-
-      if (currentEpoch.startHeight <= height) {
-        epoch = currentEpoch;
-      } else if (currentEpoch.startHeight > height) {
-        break;
+    for await (const cursor of store.iterate(undefined, 'prev')) {
+      const epoch = Epoch.fromJson(cursor.value);
+      if (epoch.startHeight <= height) {
+        return epoch;
       }
     }
 
-    return epoch;
+    return undefined;
   }
 
   /**
    * Get the block height for the correspinding epoch index.
    */
   async getBlockHeightByEpoch(epoch_index: bigint): Promise<Epoch | undefined> {
-    let epoch: Epoch | undefined;
+    // Direct key lookup
+    const tx = this.db.transaction('EPOCHS', 'readonly');
+    const result = await tx.store.get(Number(epoch_index));
 
-    // Iterate over epochs and return the one with the matching epoch index.
-    for await (const cursor of this.db.transaction('EPOCHS', 'readonly').store) {
-      const currentEpoch = Epoch.fromJson(cursor.value);
-      if (currentEpoch.index === epoch_index) {
-        epoch = currentEpoch;
-        break;
-      }
-    }
-
-    return epoch;
+    return result ? Epoch.fromJson(result) : undefined;
   }
 
   /**
@@ -1069,8 +1037,10 @@ export class IndexedDb implements IndexedDbInterface {
       return;
     }
 
-    const epoch =
-      (await this.getEpochByHeight(blockHeight)) ?? new Epoch({ startHeight: 0n, index: 0n });
+    const epoch = await this.getEpochByHeight(blockHeight);
+    if (!epoch) {
+      throw new Error(`Invariant violation: no epoch recorded for swap height ${blockHeight}`);
+    }
 
     for (const n of swaps) {
       if (!n.outputData) {
