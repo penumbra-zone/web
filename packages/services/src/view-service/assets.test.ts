@@ -6,7 +6,7 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { servicesCtx } from '../ctx/prax.js';
 import { assets } from './assets.js';
-import { IndexedDbMock, MockServices } from '../test-utils.js';
+import { mockIndexedDb, MockServices } from '../test-utils.js';
 import { UM_METADATA } from './util/data.js';
 
 describe('Assets request handler', () => {
@@ -20,10 +20,6 @@ describe('Assets request handler', () => {
     const mockIterateMetadata = {
       next: vi.fn(),
       [Symbol.asyncIterator]: () => mockIterateMetadata,
-    };
-
-    const mockIndexedDb: IndexedDbMock = {
-      iterateAssetsMetadata: () => mockIterateMetadata,
     };
 
     mockServices = {
