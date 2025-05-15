@@ -820,6 +820,21 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   /**
+   * Adds a new remote epoch from full node with the given start height.
+   */
+  async addRemoteEpoch(startHeight: bigint, epochIndex: bigint): Promise<void> {
+    const remoteEpoch = {
+      startHeight: startHeight.toString(),
+      index: epochIndex.toString(),
+    };
+
+    await this.u.update({
+      table: 'EPOCHS',
+      value: remoteEpoch,
+    });
+  }
+
+  /**
    * Adds a new epoch with the given start height. Automatically sets the epoch
    * index by finding the previous epoch index, and adding 1n.
    */
