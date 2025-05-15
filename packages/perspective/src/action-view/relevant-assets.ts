@@ -1,6 +1,10 @@
 import { ActionView } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { getAsset1Metadata, getAsset2Metadata } from '@penumbra-zone/getters/swap-view';
+import {
+  getAsset1Metadata,
+  getAsset2Metadata,
+  getDelta2IFromSwapView,
+} from '@penumbra-zone/getters/swap-view';
 import { getOutputData } from '@penumbra-zone/getters/swap-claim-view';
 import { getNote as getSpendNote } from '@penumbra-zone/getters/spend-view';
 import { getNote as getOutputNote } from '@penumbra-zone/getters/output-view';
@@ -50,10 +54,15 @@ export const findRelevantAssets = (action?: ActionView): RelevantAsset[] => {
   }
 
   if (view.case === 'swap') {
-    return returnAssets([
-      getAsset1Metadata.optional(view.value),
-      getAsset2Metadata.optional(view.value),
-    ]);
+    // find correct swap sides
+    const metadata1 = getAsset1Metadata.optional(view.value);
+    const metadata2 = getAsset2Metadata.optional(view.value);
+    const delta2 = getDelta2IFromSwapView(view.value);
+    const isDelta2Zero = delta2.lo === 0n && delta2.hi === 0n;
+    const inputMetadata = isDelta2Zero ? metadata1 : metadata2;
+    const outputMetadata = isDelta2Zero ? metadata2 : metadata1;
+
+    return returnAssets([inputMetadata, outputMetadata]);
   }
 
   if (view.case === 'swapClaim') {
