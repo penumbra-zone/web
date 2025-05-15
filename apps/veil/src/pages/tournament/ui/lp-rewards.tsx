@@ -18,21 +18,14 @@ import {
 } from '@/pages/tournament/api/use-lp-rewards';
 import { withdrawPositions } from '@/entities/position/api/withdraw-positions';
 import { connectionStore } from '@/shared/model/connection';
+import { LoadingRow } from '@/shared/ui/loading-row';
 import { useStakingTokenMetadata } from '@/shared/api/registry';
 import { LpRewardsSortKey } from '../server/lp-rewards';
 import { useSortableTableHeaders } from './sortable-table-header';
 
-function LpRewardRow({
-  lpReward,
-  umMetadata,
-  loading,
-}: {
-  lpReward: LpReward;
-  umMetadata: Metadata;
-  loading?: boolean;
-}) {
+function LpRewardRow({ lpReward, umMetadata }: { lpReward: LpReward; umMetadata: Metadata }) {
   const router = useRouter();
-  const id = !loading ? bech32mPositionId(lpReward.positionId) : '';
+  const id = bech32mPositionId(lpReward.positionId);
 
   return (
     <div
@@ -41,37 +34,29 @@ function LpRewardRow({
       }}
       className='grid grid-cols-subgrid col-span-5 hover:bg-action-hoverOverlay transition-colors cursor-pointer'
     >
-      <TableCell cell loading={loading}>
-        #{lpReward.epoch}
+      <TableCell cell>#{lpReward.epoch}</TableCell>
+      <TableCell cell>
+        <div className='max-w-[370px] truncate'>{id}</div>
+        <ExternalLink className='size-3 min-w-3 text-neutral-light' />
       </TableCell>
-      <TableCell cell loading={loading}>
-        {!loading && (
-          <>
-            <div className='max-w-[370px] truncate'>{id}</div>
-            <ExternalLink className='size-3 min-w-3 text-neutral-light' />
-          </>
-        )}
-      </TableCell>
-      <TableCell cell loading={loading}>
-        {!loading && (
-          <ValueViewComponent
-            valueView={
-              new ValueView({
-                valueView: {
-                  case: 'knownAssetId',
-                  value: {
-                    amount: pnum(lpReward.rewards).toAmount(),
-                    metadata: umMetadata,
-                  },
+      <TableCell cell>
+        <ValueViewComponent
+          valueView={
+            new ValueView({
+              valueView: {
+                case: 'knownAssetId',
+                value: {
+                  amount: pnum(lpReward.rewards).toAmount(),
+                  metadata: umMetadata,
                 },
-              })
-            }
-            priority='tertiary'
-          />
-        )}
+              },
+            })
+          }
+          priority='tertiary'
+        />
       </TableCell>
-      <TableCell cell loading={loading}>
-        {!loading && (lpReward.isWithdrawable || lpReward.isWithdrawn) && (
+      <TableCell cell>
+        {(lpReward.isWithdrawable || lpReward.isWithdrawn) && (
           <Density slim>
             <div>
               <Button
@@ -95,7 +80,7 @@ function LpRewardRow({
           </Density>
         )}
       </TableCell>
-      <TableCell cell loading={loading}>
+      <TableCell cell>
         <Density slim>
           <Button iconOnly icon={ChevronRight}>
             Go to position information
@@ -122,8 +107,7 @@ export const LpRewards = observer(() => {
   );
 
   const loading = isPending;
-  const loadingArr = new Array(BASE_LIMIT).fill({}) as LpReward[];
-  const rewards = data?.data ?? loadingArr;
+  const rewards = data?.data;
   const total = data?.total ?? 0;
 
   const onLimitChange = (newLimit: number) => {
@@ -149,13 +133,11 @@ export const LpRewards = observer(() => {
             </div>
           )}
 
-          {rewards.map((lpReward, index) => (
-            <LpRewardRow
-              key={index}
-              lpReward={lpReward}
-              umMetadata={umMetadata}
-              loading={loading}
-            />
+          {loading &&
+            new Array(BASE_LIMIT).fill({}).map((_, index) => <LoadingRow cells={5} key={index} />)}
+
+          {rewards?.map((lpReward, index) => (
+            <LpRewardRow key={index} lpReward={lpReward} umMetadata={umMetadata} />
           ))}
         </div>
       </Density>
@@ -163,7 +145,7 @@ export const LpRewards = observer(() => {
       {!loading && total >= BASE_LIMIT && (
         <Pagination
           totalItems={total}
-          visibleItems={rewards.length}
+          visibleItems={rewards?.length}
           value={page}
           limit={limit}
           onChange={setPage}

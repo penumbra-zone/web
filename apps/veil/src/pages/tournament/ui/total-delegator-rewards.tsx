@@ -10,6 +10,7 @@ import { connectionStore } from '@/shared/model/connection';
 import { useStakingTokenMetadata } from '@/shared/api/registry';
 import { Pagination } from '@penumbra-zone/ui/Pagination';
 import { LqtSummary } from '@/shared/database/schema';
+import { LoadingRow } from '@/shared/ui/loading-row';
 import { useGetMetadata } from '@/shared/api/assets';
 import { toValueView } from '@/shared/utils/value-view';
 import { useCurrentEpoch } from '../api/use-current-epoch';
@@ -17,17 +18,6 @@ import { usePersonalRewards, BASE_LIMIT, BASE_PAGE } from '../api/use-personal-r
 import { DelegatorHistorySortKey, LqtDelegatorHistoryData } from '../server/delegator-history';
 import { useTournamentSummary } from '../api/use-tournament-summary';
 import { useSortableTableHeaders } from './sortable-table-header';
-
-const LoadingRow = () => {
-  return (
-    <div className='grid grid-cols-subgrid col-span-4'>
-      <TableCell loading>–</TableCell>
-      <TableCell loading>–</TableCell>
-      <TableCell loading>–</TableCell>
-      <TableCell loading>–</TableCell>
-    </div>
-  );
-};
 
 interface VotingRewardsRowProps {
   epoch: number;
@@ -113,6 +103,8 @@ export const VotingRewards = observer(() => {
   const { data: rawSummary } = useTournamentSummary(
     {
       epochs: epochs.length > 0 ? epochs : undefined,
+      limit,
+      page,
     },
     epochs.length === 0,
   );
@@ -136,7 +128,8 @@ export const VotingRewards = observer(() => {
             <TableCell heading> </TableCell>
           </div>
 
-          {loading && new Array(BASE_LIMIT).fill({}).map((_, index) => <LoadingRow key={index} />)}
+          {loading &&
+            new Array(BASE_LIMIT).fill({}).map((_, index) => <LoadingRow cells={4} key={index} />)}
 
           {!loading && !total && (
             <div className='col-span-4 text-sm text-muted-foreground py-4'>
