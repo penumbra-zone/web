@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import {
   StatusStreamRequest,
   StatusStreamResponse,
@@ -14,17 +14,10 @@ describe('Status stream request handler', () => {
   let mockServices: MockServices;
   let mockCtx: HandlerContext;
   let mockTendermint: TendermintMock;
-  let lastBlockSubNext: Mock;
   let request: StatusStreamRequest;
 
   beforeEach(() => {
     vi.resetAllMocks();
-
-    lastBlockSubNext = vi.fn();
-    const mockLastBlockSubscription = {
-      next: lastBlockSubNext,
-      [Symbol.asyncIterator]: () => mockLastBlockSubscription,
-    };
 
     mockTendermint = {
       latestBlockHeight: vi.fn(),
@@ -54,16 +47,14 @@ describe('Status stream request handler', () => {
 
     request = new StatusStreamRequest();
 
-    for (let i = 200; i < 222; i++) {
-      lastBlockSubNext.mockResolvedValueOnce({
-        value: {
-          value: BigInt(i),
-        },
-      });
-    }
-    // synchronization never ends, but the test can't last indefinitely, so we end the stream
-    lastBlockSubNext.mockResolvedValueOnce({
-      done: true,
+    mockIndexedDb.subscribe.mockImplementationOnce(async function* (table) {
+      if (table === 'FULL_SYNC_HEIGHT') {
+        for (let i = 200; i < 222; i++) {
+          yield await Promise.resolve({ table, value: BigInt(i) });
+        }
+      } else {
+        expect.unreachable('Test should only subscribe to FULL_SYNC_HEIGHT');
+      }
     });
   });
 

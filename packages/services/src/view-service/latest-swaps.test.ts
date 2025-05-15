@@ -27,8 +27,6 @@ describe('LatestSwaps request handler', () => {
   let mockServices: MockServices;
   let mockCtx: HandlerContext;
 
-  let fillDB: (data: SwapRecord[]) => void;
-
   const request = async (req: LatestSwapsRequest): Promise<LatestSwapsResponse[]> => {
     const responses: LatestSwapsResponse[] = [];
 
@@ -41,11 +39,6 @@ describe('LatestSwaps request handler', () => {
 
   beforeEach(() => {
     vi.resetAllMocks();
-
-    const mockIterateSwaps = {
-      next: vi.fn(),
-      [Symbol.asyncIterator]: () => mockIterateSwaps,
-    };
 
     mockServices = {
       getWalletServices: vi.fn(() =>
@@ -64,38 +57,35 @@ describe('LatestSwaps request handler', () => {
         .set(fvkCtx, () => Promise.resolve(testFullViewingKey)),
     });
 
-    fillDB = (data: SwapRecord[]) => {
-      for (const record of data) {
-        mockIterateSwaps.next.mockResolvedValueOnce({
-          value: record,
-        });
-      }
-      mockIterateSwaps.next.mockResolvedValueOnce({
-        done: true,
-      });
-    };
+    /*
+      mockIndexedDb.iterateSwaps.mockImplementationOnce(async function* () { yield* await Promise.resolve([
+
+      ]); });
+      */
   });
 
   it('collects swaps with "transaction" source only', async () => {
-    fillDB([
-      IRRELEVANT_SWAP,
-      getSwap({
-        height: 100,
-        account: 0,
-        from: UM_METADATA,
-        to: USDC_METADATA,
-        input: 100n,
-        output: 110n,
-      }),
-      getSwap({
-        height: 9,
-        account: 1,
-        from: UM_METADATA,
-        to: SHITMOS_METADATA,
-        input: 100n,
-        output: 110n,
-      }),
-    ]);
+    mockIndexedDb.iterateSwaps.mockImplementationOnce(async function* () {
+      yield* await Promise.resolve([
+        IRRELEVANT_SWAP,
+        getSwap({
+          height: 100,
+          account: 0,
+          from: UM_METADATA,
+          to: USDC_METADATA,
+          input: 100n,
+          output: 110n,
+        }),
+        getSwap({
+          height: 9,
+          account: 1,
+          from: UM_METADATA,
+          to: SHITMOS_METADATA,
+          input: 100n,
+          output: 110n,
+        }),
+      ]);
+    });
 
     const res = await request(new LatestSwapsRequest({}));
 
@@ -106,24 +96,26 @@ describe('LatestSwaps request handler', () => {
   });
 
   it('applies `responseLimit` filter correctly', async () => {
-    fillDB([
-      getSwap({
-        height: 100,
-        account: 0,
-        from: UM_METADATA,
-        to: USDC_METADATA,
-        input: 100n,
-        output: 110n,
-      }),
-      getSwap({
-        height: 9,
-        account: 1,
-        from: UM_METADATA,
-        to: SHITMOS_METADATA,
-        input: 100n,
-        output: 110n,
-      }),
-    ]);
+    mockIndexedDb.iterateSwaps.mockImplementationOnce(async function* () {
+      yield* await Promise.resolve([
+        getSwap({
+          height: 100,
+          account: 0,
+          from: UM_METADATA,
+          to: USDC_METADATA,
+          input: 100n,
+          output: 110n,
+        }),
+        getSwap({
+          height: 9,
+          account: 1,
+          from: UM_METADATA,
+          to: SHITMOS_METADATA,
+          input: 100n,
+          output: 110n,
+        }),
+      ]);
+    });
 
     const res = await request(
       new LatestSwapsRequest({
@@ -136,24 +128,26 @@ describe('LatestSwaps request handler', () => {
   });
 
   it('applies `afterHeight` filter correctly', async () => {
-    fillDB([
-      getSwap({
-        height: 100,
-        account: 0,
-        from: UM_METADATA,
-        to: USDC_METADATA,
-        input: 100n,
-        output: 110n,
-      }),
-      getSwap({
-        height: 9,
-        account: 1,
-        from: UM_METADATA,
-        to: SHITMOS_METADATA,
-        input: 100n,
-        output: 110n,
-      }),
-    ]);
+    mockIndexedDb.iterateSwaps.mockImplementationOnce(async function* () {
+      yield* await Promise.resolve([
+        getSwap({
+          height: 100,
+          account: 0,
+          from: UM_METADATA,
+          to: USDC_METADATA,
+          input: 100n,
+          output: 110n,
+        }),
+        getSwap({
+          height: 9,
+          account: 1,
+          from: UM_METADATA,
+          to: SHITMOS_METADATA,
+          input: 100n,
+          output: 110n,
+        }),
+      ]);
+    });
 
     const res = await request(
       new LatestSwapsRequest({
@@ -166,24 +160,26 @@ describe('LatestSwaps request handler', () => {
   });
 
   it('applies `accountFilter` filter correctly', async () => {
-    fillDB([
-      getSwap({
-        height: 100,
-        account: 0,
-        from: UM_METADATA,
-        to: USDC_METADATA,
-        input: 100n,
-        output: 110n,
-      }),
-      getSwap({
-        height: 9,
-        account: 1,
-        from: UM_METADATA,
-        to: SHITMOS_METADATA,
-        input: 100n,
-        output: 110n,
-      }),
-    ]);
+    mockIndexedDb.iterateSwaps.mockImplementationOnce(async function* () {
+      yield* await Promise.resolve([
+        getSwap({
+          height: 100,
+          account: 0,
+          from: UM_METADATA,
+          to: USDC_METADATA,
+          input: 100n,
+          output: 110n,
+        }),
+        getSwap({
+          height: 9,
+          account: 1,
+          from: UM_METADATA,
+          to: SHITMOS_METADATA,
+          input: 100n,
+          output: 110n,
+        }),
+      ]);
+    });
 
     const res = await request(
       new LatestSwapsRequest({
@@ -195,24 +191,26 @@ describe('LatestSwaps request handler', () => {
   });
 
   it('applies `pair` filter correctly', async () => {
-    fillDB([
-      getSwap({
-        height: 100,
-        account: 0,
-        from: UM_METADATA,
-        to: USDC_METADATA,
-        input: 100n,
-        output: 110n,
-      }),
-      getSwap({
-        height: 9,
-        account: 1,
-        from: UM_METADATA,
-        to: SHITMOS_METADATA,
-        input: 100n,
-        output: 110n,
-      }),
-    ]);
+    mockIndexedDb.iterateSwaps.mockImplementationOnce(async function* () {
+      yield* await Promise.resolve([
+        getSwap({
+          height: 100,
+          account: 0,
+          from: UM_METADATA,
+          to: USDC_METADATA,
+          input: 100n,
+          output: 110n,
+        }),
+        getSwap({
+          height: 9,
+          account: 1,
+          from: UM_METADATA,
+          to: SHITMOS_METADATA,
+          input: 100n,
+          output: 110n,
+        }),
+      ]);
+    });
 
     const res = await request(
       new LatestSwapsRequest({
@@ -229,49 +227,51 @@ describe('LatestSwaps request handler', () => {
   });
 
   it('applies all filters together correctly', async () => {
-    fillDB([
-      IRRELEVANT_SWAP,
-      getSwap({
-        height: 0,
-        account: 0,
-        from: UM_METADATA,
-        to: USDC_METADATA,
-        input: 100n,
-        output: 110n,
-      }),
-      getSwap({
-        height: 99,
-        account: 0,
-        from: UM_METADATA,
-        to: USDC_METADATA,
-        input: 100n,
-        output: 110n,
-      }),
-      getSwap({
-        height: 100,
-        account: 1,
-        from: UM_METADATA,
-        to: SHITMOS_METADATA,
-        input: 100n,
-        output: 110n,
-      }),
-      getSwap({
-        height: 101,
-        account: 1,
-        from: UM_METADATA,
-        to: USDC_METADATA,
-        input: 100n,
-        output: 110n,
-      }),
-      getSwap({
-        height: 102,
-        account: 1,
-        from: UM_METADATA,
-        to: USDC_METADATA,
-        input: 100n,
-        output: 110n,
-      }),
-    ]);
+    mockIndexedDb.iterateSwaps.mockImplementationOnce(async function* () {
+      yield* await Promise.resolve([
+        IRRELEVANT_SWAP,
+        getSwap({
+          height: 0,
+          account: 0,
+          from: UM_METADATA,
+          to: USDC_METADATA,
+          input: 100n,
+          output: 110n,
+        }),
+        getSwap({
+          height: 99,
+          account: 0,
+          from: UM_METADATA,
+          to: USDC_METADATA,
+          input: 100n,
+          output: 110n,
+        }),
+        getSwap({
+          height: 100,
+          account: 1,
+          from: UM_METADATA,
+          to: SHITMOS_METADATA,
+          input: 100n,
+          output: 110n,
+        }),
+        getSwap({
+          height: 101,
+          account: 1,
+          from: UM_METADATA,
+          to: USDC_METADATA,
+          input: 100n,
+          output: 110n,
+        }),
+        getSwap({
+          height: 102,
+          account: 1,
+          from: UM_METADATA,
+          to: USDC_METADATA,
+          input: 100n,
+          output: 110n,
+        }),
+      ]);
+    });
 
     const res = await request(
       new LatestSwapsRequest({

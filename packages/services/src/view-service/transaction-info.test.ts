@@ -32,10 +32,9 @@ describe('TransactionInfo request handler', () => {
   beforeEach(() => {
     vi.resetAllMocks();
 
-    const mockIterateTransactionInfo = {
-      next: vi.fn(),
-      [Symbol.asyncIterator]: () => mockIterateTransactionInfo,
-    };
+    mockIndexedDb.iterateTransactions.mockImplementationOnce(async function* () {
+      yield* await Promise.resolve(testData);
+    });
 
     mockServices = {
       getWalletServices: vi.fn(() =>
@@ -57,15 +56,6 @@ describe('TransactionInfo request handler', () => {
     mockTransactionInfo.mockReturnValue({
       txp: {},
       txv: {},
-    });
-
-    for (const record of testData) {
-      mockIterateTransactionInfo.next.mockResolvedValueOnce({
-        value: record,
-      });
-    }
-    mockIterateTransactionInfo.next.mockResolvedValueOnce({
-      done: true,
     });
     req = new TransactionInfoRequest();
   });
