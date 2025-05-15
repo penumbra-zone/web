@@ -79,7 +79,9 @@ export const DelegatorRewards = ({ address }: { address: Address }) => {
     sortKey: sortBy.key !== '' ? sortBy.key : undefined,
   });
   if (error) {
-    throw error;
+    return (
+      <Layout totalChild={null} tableChild={<div className='text-red-500'>{String(error)}</div>} />
+    );
   }
   if (isPending) {
     const totalChild = (
