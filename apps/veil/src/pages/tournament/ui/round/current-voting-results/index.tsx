@@ -11,9 +11,9 @@ import { useSortableTableHeaders } from '../../sortable-table-header';
 import type { EpochResultsSortKey } from '../../../server/epoch-results';
 import type { MappedGauge } from '../../../server/previous-epochs';
 import { useEpochResults } from '../../../api/use-epoch-results';
+import { VOTING_THRESHOLD } from '../../vote-dialog/vote-dialog-asset';
 import { TableRow } from './table-row';
 
-const THRESHOLD = 0.05;
 const BASE_LIMIT = 10;
 
 const TABLE_CLASSES = {
@@ -59,7 +59,7 @@ export const CurrentVotingResults = observer(({ epoch }: CurrentVotingResultsPro
     below: MappedGauge[];
   }>(
     (accum, current) => {
-      if (current.portion >= THRESHOLD) {
+      if (current.portion >= VOTING_THRESHOLD) {
         accum.above.push(current);
       } else {
         accum.below.push(current);
@@ -106,7 +106,7 @@ export const CurrentVotingResults = observer(({ epoch }: CurrentVotingResultsPro
                 <TableCell>
                   <Text technical color='text.secondary'>
                     Below threshold ({'<'}
-                    {THRESHOLD * 100}%)
+                    {VOTING_THRESHOLD * 100}%)
                   </Text>
                 </TableCell>
               </div>

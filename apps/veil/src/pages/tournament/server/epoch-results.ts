@@ -69,7 +69,6 @@ const epochResultsQuery = async ({
       'epoch',
       'votes',
       'portion',
-      'missing_votes',
       sql<string>`encode(${exp.ref('asset_id')}, 'base64')`.as('asset_id'),
     ])
     .where('epoch', '=', epoch)
@@ -126,7 +125,6 @@ export async function GET(
         epoch: item.epoch,
         votes: item.votes,
         portion: item.portion,
-        missing_votes: item.missing_votes,
       };
     })
     .filter((item): item is MappedGauge => !!item);
