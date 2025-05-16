@@ -111,8 +111,7 @@ export interface IndexedDbInterface {
     newState: PositionState,
     subaccount?: AddressIndex,
   ): Promise<void>;
-  addRemoteEpoch(startHeight: bigint, epochIndex: bigint): Promise<void>;
-  addEpoch(startHeight: bigint): Promise<void>;
+  addEpoch(startHeight: bigint, epochIndex: bigint): Promise<void>;
   getEpochByHeight(height: bigint): Promise<Epoch | undefined>;
   getBlockHeightByEpoch(epoch_index: bigint): Promise<Epoch | undefined>;
   upsertValidatorInfo(validatorInfo: ValidatorInfo): Promise<void>;
