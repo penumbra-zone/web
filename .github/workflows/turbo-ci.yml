@@ -82,17 +82,14 @@ jobs:
           key: ${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-test
           restore-keys: ${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-compiled
 
-      # TODO: update nix devshell to support playwright
-      - uses: pnpm/action-setup@v4
-      - uses: buildjet/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'pnpm'
+      - name: setup nix
+        uses: ./.github/actions/setup-nix
 
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm turbo telemetry disable
-      - run: pnpm playwright install --with-deps chromium
-      - run: pnpm turbo test --cache-dir=.turbo
+      - name: install playwright deps
+        run: nix develop --command just install-playwright
+
+      - name: run playwright tests
+        run: nix develop --command just test-turbo
 
   turbo-lint-rust:
     name: lint:rust
