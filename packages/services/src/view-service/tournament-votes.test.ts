@@ -40,7 +40,7 @@ describe('tournamentVotes request handler', () => {
   });
 
   test('returns historical liquidity tournament votes that have been previously been saved to storage', async () => {
-    mockIndexedDb.getBlockHeightByEpoch.mockResolvedValueOnce(epoch);
+    mockIndexedDb.getEpochByIndex.mockResolvedValueOnce(epoch);
     mockIndexedDb.getLQTHistoricalVotes.mockResolvedValueOnce([mockVote]);
     mockIndexedDb.iterateLQTVotes.mockImplementationOnce(async function* () {
       yield* await Promise.resolve([mockVote]);

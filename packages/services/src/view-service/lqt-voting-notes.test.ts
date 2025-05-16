@@ -46,7 +46,7 @@ describe('lqtVotingNotes request handler', () => {
     // voting notes mocked with static data, and the mock bypasses the logic in the real implementation,
     // but that's fine.
     mockIndexedDb.getNotesForVoting.mockResolvedValueOnce(testData);
-    mockIndexedDb.getBlockHeightByEpoch.mockResolvedValueOnce(epoch);
+    mockIndexedDb.getEpochByIndex.mockResolvedValueOnce(epoch);
 
     mockQuerier = {
       funding: {
@@ -81,7 +81,7 @@ describe('lqtVotingNotes request handler', () => {
 
   test('returns voting notes when the nullifier has not been used for voting in the current epoch', async () => {
     mockIndexedDb.getNotesForVoting.mockResolvedValueOnce(testData);
-    mockIndexedDb.getBlockHeightByEpoch.mockResolvedValueOnce(epoch);
+    mockIndexedDb.getEpochByIndex.mockResolvedValueOnce(epoch);
 
     mockQuerier = {
       funding: {

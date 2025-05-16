@@ -54,7 +54,7 @@ export const mockIndexedDb: Mocked<IndexedDbInterface> = {
   getAssetsMetadata: vi.fn(mockDisabled),
   getAuction: vi.fn(mockDisabled),
   getAuctionOutstandingReserves: vi.fn(mockDisabled),
-  getBlockHeightByEpoch: vi.fn(mockDisabled),
+  getEpochByIndex: vi.fn(mockDisabled),
   getEpochByHeight: vi.fn(mockDisabled),
   getFmdParams: vi.fn(mockDisabled),
   getFullSyncHeight: vi.fn(mockDisabled),

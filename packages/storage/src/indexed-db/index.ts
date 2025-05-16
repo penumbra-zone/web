@@ -59,7 +59,6 @@ import type {
   ScanBlockResult,
   StateCommitmentTree,
 } from '@penumbra-zone/types/state-commitment-tree';
-import { sctPosition } from '@penumbra-zone/wasm/tree';
 import {
   AuctionId,
   DutchAuctionDescription,
@@ -225,7 +224,7 @@ export class IndexedDb implements IndexedDbInterface {
 
     this.addSctUpdates(txs, updates.sctUpdates);
     this.addNewNotes(txs, updates.newNotes);
-    await this.addNewSwaps(txs, updates.newSwaps, updates.height);
+    this.addNewSwaps(txs, updates.newSwaps);
     txs.add({ table: 'FULL_SYNC_HEIGHT', value: updates.height, key: 'height' });
 
     await this.u.updateAll(txs);
@@ -820,98 +819,80 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   /**
-   * Adds a new remote epoch from full node with the given start height.
+   * Adds a new epoch.
    */
-  async addRemoteEpoch(startHeight: bigint, epochIndex: bigint): Promise<void> {
-    const remoteEpoch = {
-      startHeight: startHeight.toString(),
-      index: epochIndex.toString(),
-    };
-
-    await this.u.update({
+  async addEpoch(epoch: Epoch): Promise<void> {
+    await this.db.put('EPOCHS', {
       table: 'EPOCHS',
-      value: remoteEpoch,
+      value: epoch.toJson() as Jsonified<Epoch>,
+      key: Number(epoch.index),
     });
   }
 
   /**
-   * Adds a new epoch with the given start height. Automatically sets the epoch
-   * index by finding the previous epoch index, and adding 1n.
+   * Get the epoch that should contain the given block height.
+   *
+   * If the requested height is above the latest sync height, this will return
+   * undefined. Otherwise, it will scan the entire table, and possibly return
+   * undefined.
    */
-  async addEpoch(startHeight: bigint): Promise<void> {
-    const cursor = await this.db.transaction('EPOCHS', 'readonly').store.openCursor(null, 'prev');
-    const previousEpoch = cursor?.value ? Epoch.fromJson(cursor.value) : undefined;
-    const index = previousEpoch?.index !== undefined ? previousEpoch.index + 1n : 0n;
+  async getEpochByHeight(height: bigint): Promise<Epoch | undefined> {
+    if (height === 0n) {
+      return new Epoch({ startHeight: 0n, index: 0n });
+    }
 
-    // avoid saving the same epoch twice
-    if (previousEpoch?.startHeight === startHeight) {
+    const latestBlockHeight = await this.db.get('FULL_SYNC_HEIGHT', 'height');
+
+    // if not synced, or if block height is in the future, no epoch is in the database
+    if (latestBlockHeight ?? 0n < height) {
       return;
     }
 
-    const newEpoch = {
-      startHeight: startHeight.toString(),
-      index: index.toString(),
-    };
+    const epochDuration = await this.db
+      .get('APP_PARAMETERS', 'params')
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- must be present if FULL_SYNC_HEIGHT is present
+      .then(params => AppParameters.fromJson(params!).sctParams!.epochDuration);
 
-    await this.u.update({
-      table: 'EPOCHS',
-      value: newEpoch,
-    });
-  }
+    // a correct epoch is not older than this, but may be newer.
+    const earliestStart = height - epochDuration;
 
-  /**
-   * Get the epoch that contains the given block height.
-   */
-  async getEpochByHeight(
-    /**
-     * The block height to query by. Will return the epoch with the largest
-     * start height smaller than `height` -- that is, the epoch that contains
-     * this height.
-     */
-    height: bigint,
-  ): Promise<Epoch | undefined> {
-    let epoch: Epoch | undefined;
+    let nearestEpoch: Epoch | undefined;
 
-    /**
-     * Iterate over epochs and return the one with the largest start height
-     * smaller than `height`.
-     *
-     * Unfortunately, there doesn't appear to be a more efficient way of doing
-     * this. We tried using epochs' start heights as their key so that we could
-     * use a particular start height as a query bounds, but IndexedDB casts the
-     * `bigint` start height to a string, which messes up sorting (the string
-     * '11' is greater than the string '100', for example). For now, then, we
-     * have to just iterate over all epochs to find the correct starting height.
-     */
-    for await (const cursor of this.db.transaction('EPOCHS', 'readonly').store) {
-      const currentEpoch = Epoch.fromJson(cursor.value);
+    for await (const cursor of this.db.transaction('EPOCHS').store.iterate(null, 'prev')) {
+      const epoch = Epoch.fromJson(cursor.value);
 
-      if (currentEpoch.startHeight <= height) {
-        epoch = currentEpoch;
-      } else if (currentEpoch.startHeight > height) {
-        break;
+      if (epoch.startHeight < earliestStart) {
+        // this epoch is too old to be correct
+        continue;
+      }
+
+      if (epoch.startHeight > height) {
+        // this epoch is too new to be correct
+        continue;
+      }
+
+      if (nearestEpoch?.startHeight ?? 0n < epoch.startHeight) {
+        // found a nearer epoch
+        nearestEpoch = epoch;
       }
     }
 
-    return epoch;
+    // table is completely iterated
+    return nearestEpoch;
   }
 
   /**
-   * Get the block height for the correspinding epoch index.
+   * Get the epoch identified by the given epoch index.
    */
-  async getBlockHeightByEpoch(epoch_index: bigint): Promise<Epoch | undefined> {
-    let epoch: Epoch | undefined;
-
+  async getEpochByIndex(epochIndex: bigint): Promise<Epoch | undefined> {
     // Iterate over epochs and return the one with the matching epoch index.
-    for await (const cursor of this.db.transaction('EPOCHS', 'readonly').store) {
-      const currentEpoch = Epoch.fromJson(cursor.value);
-      if (currentEpoch.index === epoch_index) {
-        epoch = currentEpoch;
-        break;
+    for await (const cursor of this.db.transaction('EPOCHS').store.iterate(null, 'prev')) {
+      const epoch = Epoch.fromJson(cursor.value);
+      if (epoch.index === epochIndex) {
+        return epoch;
       }
     }
-
-    return epoch;
+    return;
   }
 
   /**
@@ -1068,35 +1049,20 @@ export class IndexedDb implements IndexedDbInterface {
     // TODO: What about updates.delete_ranges (https://github.com/penumbra-zone/web/issues/818)?
   }
 
-  private addNewNotes(txs: IbdUpdates, notes: SpendableNoteRecord[]): void {
-    for (const n of notes) {
-      assertCommitment(n.noteCommitment);
-      txs.add({ table: 'SPENDABLE_NOTES', value: n.toJson() as Jsonified<SpendableNoteRecord> });
+  private addNewNotes(txs: IbdUpdates, newNotes: SpendableNoteRecord[]): void {
+    for (const note of newNotes) {
+      assertCommitment(note.noteCommitment);
+      txs.add({ table: 'SPENDABLE_NOTES', value: note.toJson() as Jsonified<SpendableNoteRecord> });
     }
   }
 
-  private async addNewSwaps(
-    txs: IbdUpdates,
-    swaps: SwapRecord[],
-    blockHeight: bigint,
-  ): Promise<void> {
-    if (!swaps.length) {
-      return;
-    }
-
-    const epoch =
-      (await this.getEpochByHeight(blockHeight)) ?? new Epoch({ startHeight: 0n, index: 0n });
-
-    for (const n of swaps) {
-      if (!n.outputData) {
-        throw new Error('No output data in swap record');
+  private addNewSwaps(txs: IbdUpdates, newSwaps: SwapRecord[]) {
+    for (const swap of newSwaps) {
+      if (!swap.outputData?.sctPositionPrefix) {
+        throw new Error('No sctPositionPrefix in swap record');
       }
-
-      // Adds position prefix to swap record. Needed to make swap claims.
-      n.outputData.sctPositionPrefix = sctPosition(blockHeight, epoch);
-
-      assertCommitment(n.swapCommitment);
-      txs.add({ table: 'SWAPS', value: n.toJson() as Jsonified<SwapRecord> });
+      assertCommitment(swap.swapCommitment);
+      txs.add({ table: 'SWAPS', value: swap.toJson() as Jsonified<SwapRecord> });
     }
   }
 
