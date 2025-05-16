@@ -821,29 +821,14 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   /**
-   * Adds a new remote epoch from full node with the given start height.
-   */
-  async addRemoteEpoch(startHeight: bigint, epochIndex: bigint): Promise<void> {
-    const remoteEpoch = {
-      startHeight: startHeight.toString(),
-      index: epochIndex.toString(),
-    };
-
-    await this.u.update({
-      table: 'EPOCHS',
-      value: remoteEpoch,
-    });
-  }
-
-  /**
    * Adds a new epoch with start height and epoch index.
    */
-  async addEpoch(startHeight: bigint, epochIndex: bigint): Promise<void> {
+  async addEpoch(epoch: Epoch): Promise<void> {
     const tx = this.db.transaction('EPOCHS', 'readwrite');
 
     await tx.store.put({
-      startHeight: startHeight.toString(),
-      index: epochIndex.toString(),
+      startHeight: epoch.startHeight.toString(),
+      index: epoch.index.toString(),
     });
   }
 
