@@ -841,13 +841,10 @@ export class IndexedDb implements IndexedDbInterface {
   async addEpoch(startHeight: bigint, epochIndex: bigint): Promise<void> {
     const tx = this.db.transaction('EPOCHS', 'readwrite');
 
-    await tx.store.put(
-      {
-        startHeight: startHeight.toString(),
-        index: epochIndex.toString(),
-      },
-      Number(epochIndex),
-    );
+    await tx.store.put({
+      startHeight: startHeight.toString(),
+      index: epochIndex.toString(),
+    });
   }
 
   /**
