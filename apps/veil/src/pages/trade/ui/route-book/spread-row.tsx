@@ -2,7 +2,7 @@ import { Text } from '@penumbra-zone/ui/Text';
 import type { Trace } from '@/shared/api/server/book/types';
 import { calculateSpread } from '../../model/trace';
 import { usePathSymbols } from '../../model/use-path';
-import { formatNumber } from './utils';
+import { pnum } from '@penumbra-zone/types/pnum';
 
 export const SpreadRow = ({
   sellOrders,
@@ -21,13 +21,20 @@ export const SpreadRow = ({
   return (
     <div className='col-span-4 flex items-center h-full justify-center gap-2 px-3 py-3 text-xs border-b border-b-other-tonalStroke'>
       <Text detailTechnical color='success.light'>
-        {formatNumber(spreadInfo.midPrice, 7)}
+        {pnum(spreadInfo.midPrice).toFormattedString({
+          commas: false,
+          decimals: 7,
+        })}
       </Text>
       <Text detailTechnical color='text.secondary'>
         Spread:
       </Text>
       <Text detailTechnical color='text.primary'>
-        {formatNumber(spreadInfo.amount, 6)} {pair.quoteSymbol}
+        {pnum(spreadInfo.amount).toFormattedString({
+          commas: false,
+          decimals: 6,
+        })}{' '}
+        {pair.quoteSymbol}
       </Text>
       <Text detailTechnical color='text.secondary'>
         ({parseFloat(spreadInfo.percentage).toFixed(2)}%)
