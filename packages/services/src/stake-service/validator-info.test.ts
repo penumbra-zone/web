@@ -1,16 +1,16 @@
-import { PartialMessage } from '@bufbuild/protobuf';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { validatorInfo } from './validator-info.js';
+import { mockIndexedDb, MockServices } from '../test-utils.js';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { StakeService } from '@penumbra-zone/protobuf';
+import { servicesCtx } from '../ctx/prax.js';
 import {
   ValidatorInfoRequest,
   ValidatorInfoResponse,
   ValidatorState_ValidatorStateEnum,
 } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
+import { PartialMessage } from '@bufbuild/protobuf';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { servicesCtx } from '../ctx/prax.js';
-import { mockIndexedDb, MockServices } from '../test-utils.js';
-import { validatorInfo } from './validator-info.js';
 
 describe('ValidatorInfo request handler', () => {
   let mockServices: MockServices;

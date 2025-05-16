@@ -1,17 +1,17 @@
-import { JsonObject } from '@bufbuild/protobuf';
-import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
-import { ViewService } from '@penumbra-zone/protobuf';
-import { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import {
   SwapByCommitmentRequest,
   SwapByCommitmentResponse,
   SwapRecord,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
+import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
 import { mockIndexedDb, MockServices, mockSubscriptionData } from '../test-utils.js';
+import { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
 import { swapByCommitment } from './swap-by-commitment.js';
+import type { ServicesInterface } from '@penumbra-zone/types/services';
+import { JsonObject } from '@bufbuild/protobuf';
 
 describe('SwapByCommitment request handler', () => {
   let mockServices: MockServices;

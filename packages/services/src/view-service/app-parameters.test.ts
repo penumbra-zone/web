@@ -1,16 +1,16 @@
-import { JsonObject } from '@bufbuild/protobuf';
-import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
-import { ViewService } from '@penumbra-zone/protobuf';
-import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import {
   AppParametersRequest,
   AppParametersResponse,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
+import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
-import { mockIndexedDb, MockServices, mockSubscriptionData } from '../test-utils.js';
+import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 import { appParameters } from './app-parameters.js';
+import { mockIndexedDb, MockServices, mockSubscriptionData } from '../test-utils.js';
+import type { ServicesInterface } from '@penumbra-zone/types/services';
+import { JsonObject } from '@bufbuild/protobuf';
 
 describe('AppParameters request handler', () => {
   let mockServices: MockServices;

@@ -1,14 +1,17 @@
-import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
+import { servicesCtx } from '../ctx/prax.js';
+
+import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
+
+import { beforeEach, describe, expect, test, vi } from 'vitest';
+
 import {
   SwapRecord,
   UnclaimedSwapsRequest,
   UnclaimedSwapsResponse,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
-import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { servicesCtx } from '../ctx/prax.js';
 import { mockIndexedDb, MockServices } from '../test-utils.js';
+import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { unclaimedSwaps } from './unclaimed-swaps.js';
 
 describe('UnclaimedSwaps request handler', () => {

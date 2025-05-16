@@ -1,16 +1,19 @@
-import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
+import { servicesCtx } from '../ctx/prax.js';
+
+import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
+
+import { beforeEach, describe, expect, test, vi } from 'vitest';
+
 import {
   TransactionInfo,
   TransactionInfoRequest,
   TransactionInfoResponse,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
-import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { fvkCtx } from '../ctx/full-viewing-key.js';
-import { servicesCtx } from '../ctx/prax.js';
 import { mockIndexedDb, MockServices, testFullViewingKey } from '../test-utils.js';
+import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { transactionInfo } from './transaction-info.js';
+import { fvkCtx } from '../ctx/full-viewing-key.js';
 
 const mockTransactionInfo = vi.hoisted(() => vi.fn());
 const mockTransactionSummary = vi.hoisted(() => vi.fn());

@@ -1,33 +1,36 @@
-import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
-import { getAddressIndex } from '@penumbra-zone/getters/address-view';
-import {
-  getAmount,
-  getAssetIdFromValueView,
-  getEquivalentValues,
-  getMetadata,
-} from '@penumbra-zone/getters/value-view';
+import { servicesCtx } from '../ctx/prax.js';
+import { balances } from './balances.js';
+
 import { ViewService } from '@penumbra-zone/protobuf';
-import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
-import {
-  AssetId,
-  EquivalentValue,
-  EstimatedPrice,
-  Metadata,
-} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+
 import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import {
   BalancesRequest,
   BalancesResponse,
   SpendableNoteRecord,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { multiplyAmountByNumber } from '@penumbra-zone/types/amount';
-import { base64ToUint8Array } from '@penumbra-zone/types/base64';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
+
+import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { fvkCtx } from '../ctx/full-viewing-key.js';
-import { servicesCtx } from '../ctx/prax.js';
+import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { mockIndexedDb, MockServices, TendermintMock, testFullViewingKey } from '../test-utils.js';
-import { balances } from './balances.js';
+import {
+  AssetId,
+  EquivalentValue,
+  EstimatedPrice,
+  Metadata,
+} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import {
+  getAmount,
+  getAssetIdFromValueView,
+  getEquivalentValues,
+  getMetadata,
+} from '@penumbra-zone/getters/value-view';
+import { getAddressIndex } from '@penumbra-zone/getters/address-view';
+import { base64ToUint8Array } from '@penumbra-zone/types/base64';
+import { multiplyAmountByNumber } from '@penumbra-zone/types/amount';
+import { fvkCtx } from '../ctx/full-viewing-key.js';
+import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 
 const assertOnlyUniqueAssetIds = (responses: BalancesResponse[], accountId: number) => {
   const account0Res = responses.filter(
