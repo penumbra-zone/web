@@ -1,5 +1,17 @@
 # @penumbra-zone/storage
 
+## 59.0.0
+
+### Minor Changes
+
+- 6779599: don't specicy auto increment key
+
+### Patch Changes
+
+- Updated dependencies [cee8150]
+  - @penumbra-zone/types@34.2.0
+  - @penumbra-zone/wasm@50.0.0
+
 ## 58.0.0
 
 ### Minor Changes
