@@ -80,7 +80,12 @@ jobs:
         with:
           path: .turbo
           key: ${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-test
-          restore-keys: ${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-compiled
+
+      - id: playwright-deps
+        uses: buildjet/cache@v4
+        with:
+          path: /home/runner/.cache/ms-playwright/
+          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       # TODO: update nix devshell to support playwright
       - uses: pnpm/action-setup@v4
