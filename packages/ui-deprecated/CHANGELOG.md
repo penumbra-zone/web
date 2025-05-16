@@ -1,5 +1,14 @@
 # @penumbra-zone/ui
 
+## 20.0.1
+
+### Patch Changes
+
+- Updated dependencies [ec85373]
+- Updated dependencies [cba3daf]
+  - @penumbra-zone/types@34.1.0
+  - @penumbra-zone/perspective@58.0.0
+
 ## 20.0.0
 
 ### Patch Changes

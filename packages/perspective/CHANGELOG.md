@@ -1,5 +1,12 @@
 # @penumbra-zone/perspective
 
+## 58.0.0
+
+### Patch Changes
+
+- cba3daf: Fix transaction classification for swap and swap claim actions
+  - @penumbra-zone/wasm@49.0.0
+
 ## 57.0.0
 
 ### Patch Changes
