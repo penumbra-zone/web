@@ -3,4 +3,4 @@
 '@penumbra-zone/types': minor
 ---
 
-storage helper to save remote epoch
+update epoch methods on database interface
