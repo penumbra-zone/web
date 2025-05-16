@@ -1,5 +1,12 @@
 # @penumbra-zone/wasm
 
+## 50.0.0
+
+### Patch Changes
+
+- Updated dependencies [cee8150]
+  - @penumbra-zone/types@34.2.0
+
 ## 49.0.0
 
 ### Patch Changes
