@@ -2,12 +2,10 @@ import { redirect, RouteObject } from 'react-router-dom';
 import { Layout } from './layout';
 import { abortLoader } from '../../abort-loader';
 import { PagePath } from '../metadata/paths';
-import { PortfolioLayout } from './portfolio-layout';
-import { AssetsPage } from './portfolio-layout/assets-page';
-import { TransactionsPage } from './portfolio-layout/transactions-page';
-import { TransferLayout } from './transfer-layout';
-import { SendPage } from './transfer-layout/send-page';
-import { ReceivePage } from './transfer-layout/receive-page';
+import { PortfolioLayout } from './portfolio';
+import { TransactionsPage } from './portfolio/transactions';
+import { TransferLayout } from './transfer';
+import { SendPage } from './transfer/send-page';
 
 /** @todo: Delete this helper once we switch over to the v2 layout. */
 const temporarilyPrefixPathsWithV2 = (routes: RouteObject[]): RouteObject[] =>
@@ -41,10 +39,6 @@ export const routes: RouteObject[] = temporarilyPrefixPathsWithV2([
         element: <PortfolioLayout />,
         children: [
           {
-            index: true,
-            element: <AssetsPage />,
-          },
-          {
             path: PagePath.TRANSACTIONS,
             element: <TransactionsPage />,
           },
@@ -57,10 +51,6 @@ export const routes: RouteObject[] = temporarilyPrefixPathsWithV2([
           {
             index: true,
             element: <SendPage />,
-          },
-          {
-            path: PagePath.RECEIVE,
-            element: <ReceivePage />,
           },
         ],
       },

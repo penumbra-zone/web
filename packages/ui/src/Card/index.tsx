@@ -14,6 +14,15 @@ export interface CardProps {
    */
   as?: ElementType;
   title?: ReactNode;
+  /**
+   * Additional action element to display in the header next to the title
+   */
+  headerAction?: ReactNode;
+  /**
+   * Content to display at the end of the title row
+   * This will be positioned on the right side of the title
+   */
+  endContent?: ReactNode;
 }
 
 /**
@@ -51,12 +60,20 @@ export interface CardProps {
  * </Card>
  * ```
  */
-export const Card = ({ children, as: Wrapper = 'section', title }: CardProps) => {
+export const Card = ({ children, as: Wrapper = 'section', title, headerAction, endContent }: CardProps) => {
   return (
     <Wrapper>
-      {title && <h2 className={cn(large, 'text-base-white p-3')}>{title}</h2>}
+      {(title || headerAction || endContent) && (
+        <div className={cn('flex justify-between items-center p-3')}>
+          <div className="flex items-center gap-2 justify-between flex-1">
+            {title && <h2 className={cn(large, 'text-base-white')}>{title}</h2>}
+            {endContent && <div>{endContent}</div>}
+          </div>
+          {headerAction && <div>{headerAction}</div>}
+        </div>
+      )}
 
-      <div className='flex flex-col gap-4 rounded-xl bg-card p-3 backdrop-blur-lg'>{children}</div>
+      <div className='flex flex-col gap-4 rounded-xl bg-cardGradient p-3 backdrop-blur-lg'>{children}</div>
     </Wrapper>
   );
 };

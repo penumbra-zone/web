@@ -1,3 +1,4 @@
+import React from 'react';
 import type { Preview } from '@storybook/react';
 import penumbraTheme from './penumbra-theme';
 import { useState } from 'react';
@@ -52,6 +53,14 @@ const preview: Preview = {
   parameters: {
     docs: {
       theme: penumbraTheme,
+    },
+    backgrounds: {
+      default: 'dark',
+      values: [
+        { name: 'dark', value: '#121212' },
+        { name: 'black', value: '#000000' },
+        { name: 'light', value: '#ffffff' },
+      ],
     },
   },
   decorators: [
