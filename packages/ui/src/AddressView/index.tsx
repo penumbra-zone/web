@@ -7,6 +7,7 @@ import { AddressIcon } from './AddressIcon';
 import { Text } from '../Text';
 import { TextVariant } from '../Text/types';
 import { useDensity, Density as DensityType } from '../utils/density';
+import { isLqtAddressIndex } from '@penumbra-zone/types/address';
 import { Density } from '../Density';
 
 const textVariantByDensity = (density: DensityType): TextVariant => {
@@ -47,7 +48,8 @@ export const AddressViewComponent = ({
   const addressIndex = getAddressIndex.optional(addressView);
 
   // A randomized index has nonzero randomizer bytes
-  const isRandomized = addressIndex?.randomizer.some(v => v);
+  const isLqt = addressIndex && isLqtAddressIndex(addressIndex);
+  const isRandomized = !isLqt && addressIndex?.randomizer.some(v => v);
 
   const encodedAddress = external ? address.altBech32m : bech32mAddress(address);
 
@@ -67,6 +69,7 @@ export const AddressViewComponent = ({
         {addressIndex ? (
           <Text variant={textVariantByDensity(density)} truncate={truncate}>
             {isRandomized && 'IBC Deposit Address for '}
+            {isLqt && 'Tournament Address for '}
             {getAccountLabel(addressIndex.account)}
           </Text>
         ) : (
