@@ -87,6 +87,8 @@ export async function GET(req: NextRequest): Promise<NextResponse<RouteBookApiRe
     simulateTrade(client, buySideRequest),
     simulateTrade(client, sellSideRequest),
   ]);
+  console.log('TCL: buyRes', buyRes);
+  console.log('TCL: sellRes', sellRes);
   const buyMulti = processSimulation({ res: buyRes, registry, limit, quote_to_base: false });
   const sellMulti = processSimulation({ res: sellRes, registry, limit, quote_to_base: true });
 

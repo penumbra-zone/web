@@ -118,12 +118,15 @@ export const processSimulation = ({
     : sortedTraces.slice(-limit).reverse();
 
   let cumulativeTotal = new BigNumber(0);
+  console.log('TCL: cumulativeTotal', cumulativeTotal);
   // We want to return a collection of ordered traces, along with the cumulative amount of
   // inventory available at each price point (from the tip).
   return quote_to_base
     ? traces
         .map(trace => {
-          cumulativeTotal = cumulativeTotal.plus(trace.amount);
+          cumulativeTotal = cumulativeTotal.plus(trace.amount.replace(/,/g, ''));
+          console.log('TCL: quote_to_base trace.amount', trace.amount);
+          console.log('TCL: quote_to_base cumulativeTotal', cumulativeTotal);
           return {
             ...trace,
             total: removeTrailingZeros(cumulativeTotal.toString()),
@@ -131,7 +134,9 @@ export const processSimulation = ({
         })
         .reverse()
     : traces.map(trace => {
-        cumulativeTotal = cumulativeTotal.plus(trace.amount);
+        cumulativeTotal = cumulativeTotal.plus(trace.amount.replace(/,/g, ''));
+        console.log('TCL: trace.amount', trace.amount);
+        console.log('TCL: cumulativeTotal', cumulativeTotal);
         return {
           ...trace,
           total: removeTrailingZeros(cumulativeTotal.toString()),
