@@ -1,5 +1,11 @@
 # @penumbra-zone/types
 
+## 34.1.0
+
+### Minor Changes
+
+- ec85373: storage helper to save remote epoch
+
 ## 34.0.0
 
 ### Minor Changes

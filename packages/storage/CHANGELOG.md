@@ -1,5 +1,17 @@
 # @penumbra-zone/storage
 
+## 58.0.0
+
+### Minor Changes
+
+- ec85373: storage helper to save remote epoch
+
+### Patch Changes
+
+- Updated dependencies [ec85373]
+  - @penumbra-zone/types@34.1.0
+  - @penumbra-zone/wasm@49.0.0
+
 ## 57.0.0
 
 ### Minor Changes
