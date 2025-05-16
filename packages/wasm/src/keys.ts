@@ -21,8 +21,16 @@ export const generateSpendKey = (seedPhrase: string) =>
 export const getFullViewingKey = (spendKey: SpendKey) =>
   FullViewingKey.fromBinary(get_full_viewing_key(spendKey.toBinary()));
 
-export const getAddressByIndex = (fullViewingKey: FullViewingKey, index: number) => {
-  const bytes = get_address_by_index(fullViewingKey.toBinary(), index);
+export const getAddressByIndex = (
+  fullViewingKey: FullViewingKey,
+  account: number,
+  randomizer?: Uint8Array,
+) => {
+  const bytes = get_address_by_index(
+    fullViewingKey.toBinary(),
+    account,
+    randomizer ?? new Uint8Array(),
+  );
   return Address.fromBinary(bytes);
 };
 
