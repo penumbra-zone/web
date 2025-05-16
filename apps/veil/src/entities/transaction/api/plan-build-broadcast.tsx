@@ -17,13 +17,66 @@ import { getOneWaySwapValues } from '@penumbra-zone/types/swap';
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
 import { getMetadata as getMetadataFromValueView } from '@penumbra-zone/getters/value-view';
-
 import { txToId } from '../model/tx-to-id';
 import { getBroadcastStatusMessage, getBuildStatusDescription } from '../model/status';
 import { userDeniedTransaction, unauthenticated } from '../model/validations';
 import { planTransaction } from './plan';
 import { broadcastTransaction } from './broadcast';
 import { buildTransaction } from './build';
+
+async function fetchTransaction(
+  id: TransactionId,
+  message: string,
+): Promise<TransactionInfo | undefined> {
+  try {
+    const currentTxInfoResponse = await penumbra.service(ViewService).transactionInfoByHash({ id });
+    return currentTxInfoResponse.txInfo;
+  } catch (e) {
+    console.warn(message, e);
+    return undefined;
+  }
+}
+
+async function* swapTransactions(
+  tx?: TransactionInfo | undefined,
+): AsyncGenerator<TransactionInfo> {
+  if (!tx) {
+    return;
+  }
+  for (const { actionView } of tx.view?.bodyView?.actionViews ?? []) {
+    if (actionView.case !== 'swapClaim') {
+      continue;
+    }
+    const swapClaimView = actionView.value.swapClaimView;
+    if (swapClaimView.case !== 'visible') {
+      continue;
+    }
+    const swapTx = swapClaimView.value.swapTx;
+    if (!swapTx) {
+      continue;
+    }
+    const tx = await fetchTransaction(swapTx, 'Could not fetch original swap transaction details');
+    if (!tx) {
+      continue;
+    }
+    yield tx;
+  }
+}
+
+async function* unfilledSwaps(originalTx?: TransactionInfo | undefined): AsyncGenerator<ValueView> {
+  for await (const tx of swapTransactions(originalTx)) {
+    for (const { actionView } of tx.view?.bodyView?.actionViews ?? []) {
+      if (actionView.case !== 'swap') {
+        continue;
+      }
+      const { unfilled } = getOneWaySwapValues(actionView.value);
+      if (!unfilled) {
+        continue;
+      }
+      yield unfilled;
+    }
+  }
+}
 
 /**
  * Handles the common use case of planning, building, and broadcasting a
@@ -86,64 +139,19 @@ export const planBuildBroadcast = async (
 
     let unfilledSwapsInfo = '';
     if (transactionClassification === 'swapClaim') {
-      try {
-        const txIdProto = new TransactionId({ inner: hexToUint8Array(txHash) });
-        const currentTxInfoResponse = await penumbra
-          .service(ViewService)
-          .transactionInfoByHash({ id: txIdProto });
-        const currentTxInfo: TransactionInfo | undefined = currentTxInfoResponse.txInfo;
-
-        if (currentTxInfo?.view?.bodyView?.actionViews) {
-          for (const actionViewItem of currentTxInfo.view.bodyView.actionViews) {
-            if (actionViewItem.actionView.case === 'swapClaim') {
-              const swapClaimView = actionViewItem.actionView.value; // This is SwapClaimView
-              if (swapClaimView.swapClaimView.case === 'visible') {
-                const originalSwapTxId = swapClaimView.swapClaimView.value.swapTx;
-                if (originalSwapTxId) {
-                  try {
-                    // Fetch the original swap transaction
-                    const originalTxInfoResponse = await penumbra
-                      .service(ViewService)
-                      .transactionInfoByHash({ id: originalSwapTxId });
-                    const originalTxInfo: TransactionInfo | undefined =
-                      originalTxInfoResponse.txInfo;
-
-                    if (originalTxInfo?.view?.bodyView?.actionViews) {
-                      for (const originalActionViewItem of originalTxInfo.view.bodyView
-                        .actionViews) {
-                        if (originalActionViewItem.actionView.case === 'swap') {
-                          const originalSwapView = originalActionViewItem.actionView.value; // This is SwapView
-                          const swapValues = getOneWaySwapValues(originalSwapView);
-                          const unfilledAmountValueView: ValueView | undefined =
-                            swapValues.unfilled;
-
-                          if (unfilledAmountValueView) {
-                            const formattedAmount =
-                              getFormattedAmtFromValueView(unfilledAmountValueView);
-                            const metadata =
-                              getMetadataFromValueView.optional(unfilledAmountValueView);
-                            const symbol = metadata?.symbol ?? 'Unknown asset';
-                            unfilledSwapsInfo += `Unfilled: ${formattedAmount} ${symbol}. `;
-                            break;
-                          }
-                        }
-                      }
-                    }
-                  } catch (fetchOriginalErr) {
-                    console.warn(
-                      'Could not fetch original swap transaction details:',
-                      fetchOriginalErr,
-                    );
-                  }
-                }
-              }
-              break;
-            }
-          }
-        }
-      } catch (e) {
-        console.warn('Could not fetch current transaction details for swapClaim:', e);
-      }
+      const txIdProto = new TransactionId({ inner: hexToUint8Array(txHash) });
+      const tx = await fetchTransaction(
+        txIdProto,
+        'Could not fetch current transaction details for swapClaim:',
+      );
+      unfilledSwapsInfo = (await Array.fromAsync(unfilledSwaps(tx)))
+        .map(x => {
+          const formattedAmount = getFormattedAmtFromValueView(x);
+          const metadata = getMetadataFromValueView.optional(x);
+          const symbol = metadata?.symbol ?? 'Unknown asset';
+          return `Unfilled: ${formattedAmount} ${symbol}`;
+        })
+        .join('. ');
     }
 
     toast.update({
