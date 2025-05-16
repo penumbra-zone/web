@@ -49,7 +49,7 @@ export const CurrentVotingResults = observer(({ epoch }: CurrentVotingResultsPro
     sortDirection: sortBy.direction,
   });
 
-  const { isVoted, isDelegated, isEnded } = useVotingInfo();
+  const { isVoted, isDelegated, isEnded } = useVotingInfo(epoch);
 
   /* A user can vote if they:
    * - have enough delUM
