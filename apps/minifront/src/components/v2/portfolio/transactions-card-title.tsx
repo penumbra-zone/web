@@ -1,5 +1,5 @@
 import React from 'react';
-import { InfoButton } from '@penumbra-zone/ui/InfoButton';
+import { InfoButton } from '../shared/InfoButton';
 import { ReactNode } from 'react';
 
 export interface TransactionsCardTitleProps {

@@ -317,6 +317,9 @@ importers:
       '@eslint/compat':
         specifier: ^1.1.0
         version: 1.2.7(eslint@9.23.0(jiti@1.21.7))
+      '@storybook/react':
+        specifier: ^8.4.2
+        version: 8.6.9(@storybook/test@8.6.9(storybook@8.6.9(bufferutil@4.0.9)(prettier@3.5.3)(utf-8-validate@5.0.10)))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(storybook@8.6.9(bufferutil@4.0.9)(prettier@3.5.3)(utf-8-validate@5.0.10))(typescript@5.5.3)
       '@types/chrome':
         specifier: ^0.0.268
         version: 0.0.268

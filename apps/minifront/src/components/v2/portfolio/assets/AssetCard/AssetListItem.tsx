@@ -1,9 +1,9 @@
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { AssetIcon } from '../AssetIcon';
+import { AssetIcon } from '@penumbra-zone/ui';
 import { AssetMock } from './mock';
-import { Button } from '../Button';
+import { Button } from '@penumbra-zone/ui';
 import { ArrowUpFromDot, ArrowRightLeft, MoonStar } from 'lucide-react';
-import { Text } from '../Text';
+import { Text } from '@penumbra-zone/ui';
 
 export interface AssetListItemProps {
   /**

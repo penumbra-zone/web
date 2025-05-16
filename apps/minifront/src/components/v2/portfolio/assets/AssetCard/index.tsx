@@ -1,11 +1,11 @@
 import { ReactNode } from 'react';
-import { Card } from '../Card';
+import { Card } from '@penumbra-zone/ui'
 import { AssetList } from './AssetList';
 import { AccountMock, mockAccounts } from './mock';
-import { InfoButton } from '../InfoButton';
+import { InfoDialog } from '../InfoDialog'; 
 
 export interface AssetCardProps {
-  /**
+  /** 
    * Title of the card
    */
   title?: string;
@@ -42,7 +42,7 @@ export const AssetCard = ({
   showInfoButton = true,
 }: AssetCardProps) => {
   // Use InfoButton as endContent if showInfoButton is true and no custom endContent is provided
-  const finalEndContent = showInfoButton ? <InfoButton /> : undefined
+  const finalEndContent = showInfoButton ? <InfoDialog /> : undefined
 
 
   return (
@@ -56,3 +56,12 @@ export const AssetCard = ({
   );
 }; 
 
+// Re-export sub-components and types
+export { AssetList } from './AssetList';
+export type { AssetListProps } from './AssetList';
+export { AssetListItem } from './AssetListItem';
+export type { AssetListItemProps } from './AssetListItem';
+export { AccountSection } from './AccountSection';
+export type { AccountSectionProps } from './AccountSection';
+export type { AccountMock, AssetMock } from './mock';
+export { mockAccounts } from './mock';

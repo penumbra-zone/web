@@ -1,5 +1,5 @@
-import { Card } from '../Card';
-import { Text } from '../Text';
+import { Card } from '@penumbra-zone/ui';
+import { Text } from '@penumbra-zone/ui';
 
 export interface PortfolioBalanceProps {
   balance: string;
@@ -27,4 +27,4 @@ export const PortfolioBalance = ({ balance, currency }: PortfolioBalanceProps) =
       </div>
     </div>
   );
-};
+}; 

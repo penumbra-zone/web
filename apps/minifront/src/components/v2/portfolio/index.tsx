@@ -1,6 +1,6 @@
-import { PortfolioBalance } from '@penumbra-zone/ui/PortfolioBalance';
+import { PortfolioBalance } from './assets/PortfolioBalance';
 import { Card } from '@penumbra-zone/ui/Card';
-import { AssetCard } from '@penumbra-zone/ui/AssetCard';
+import { AssetCard } from './assets/AssetCard';
 import { BalancesByAccount, balancesByAccountSelector, useBalancesResponses } from '../../../state/shared';
 import { useMemo } from 'react';
 import { getBalanceView, getMetadataFromBalancesResponse } from '@penumbra-zone/getters/balances-response';

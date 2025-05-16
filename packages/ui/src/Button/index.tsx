@@ -138,7 +138,7 @@ export const Button = ({
         'text-neutral-contrast',
         'flex items-center justify-center',
         density === 'sparse' ? 'gap-2' : 'gap-1',
-        iconOnly && 'ps-0 pe-0',
+
       )}
     >
         {IconComponent && <IconComponent size={getIconSize(density)} />}
