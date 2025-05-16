@@ -1,13 +1,5 @@
 import type { Trace } from '@/shared/api/server/book/types';
 
-export const formatNumber = (value: string, totalDigits: number): string => {
-  const num = parseFloat(value);
-  const parts = num.toString().split('.');
-  const whole = parts[0] ?? '0';
-  const availableDecimals = Math.max(0, totalDigits - whole.length);
-  return num.toFixed(availableDecimals);
-};
-
 export const calculateRelativeSizes = (orders: Trace[]): Map<string, number> => {
   if (!orders.length) {
     return new Map();
