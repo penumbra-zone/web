@@ -7,7 +7,6 @@ import { useState } from 'react';
 import { Button } from '../Button';
 import { Tabs } from '../Tabs';
 import { Send, Coins, KeySquare, Shield } from 'lucide-react';
-import { InfoButton } from '../InfoButton';
 
 const meta: Meta<typeof Card> = {
   component: Card,
@@ -87,43 +86,22 @@ export const WithEndContent: Story = {
   args: {
     as: 'section',
     title: 'Your Assets',
+    endContent: 'info',
   },
-  render: function Render({ as, title }) {
-    const infoButton = (
-      <InfoButton
-        dialogTitle="Shielded Portfolio"
-        sections={[
-          {
-            title: 'Asset Balances',
-            icon: <Coins size={18} />,
-            content: 'Your balances are shielded, and are known only to you. They are not visible on chain. Each Penumbra wallet controls many numbered accounts, each with its own balance. Account information is never revealed on-chain.'
-          },
-          {
-            title: 'Key Management',
-            icon: <KeySquare size={18} />,
-            content: 'Your keys are stored securely and encrypted. They are used to verify transaction authenticity and access your shielded assets.'
-          },
-          {
-            title: 'Privacy Protection',
-            icon: <Shield size={18} />,
-            content: 'All transactions in Penumbra are private by default. Your transaction history and asset holdings are only visible to you and those you choose to share viewing access with.'
-          }
-        ]}
-      />
-    );
-
+  render: function Render({ as, title, endContent }) {
     return (
-      <Card as={as} title={title} endContent={infoButton}>
+      <Card as={as} title={title} endContent={endContent}>
         <Card.Stack>
           <Card.Section>
             <Text>
-              This card demonstrates the use of the InfoButton component in the endContent position. 
+              This card demonstrates the use of the InfoButton component in the endContent position.
               Click on the shield icon to see more information about your assets.
             </Text>
           </Card.Section>
           <Card.Section>
             <Text>
-              The endContent prop allows placing any content next to the title, creating a clean and consistent UI.
+              The endContent prop allows placing any content next to the title, creating a clean and
+              consistent UI.
             </Text>
           </Card.Section>
         </Card.Stack>

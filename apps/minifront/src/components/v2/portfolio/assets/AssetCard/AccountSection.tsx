@@ -1,6 +1,6 @@
 import { AssetListItem } from './AssetListItem';
 import { AccountMock } from './mock';
-import { AddressViewComponent } from '../AddressView';
+import { AddressViewComponent } from '@penumbra-zone/ui';
 
 export interface AccountSectionProps {
   /**

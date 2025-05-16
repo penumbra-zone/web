@@ -1,7 +1,5 @@
-import { ReactNode } from 'react';
-import { Button } from '../Button';
-import { Dialog } from '../Dialog';
-import { Text } from '../Text';
+import { ReactNode, useState } from 'react';
+import { Button, Dialog, Text } from '@penumbra-zone/ui';
 import { ShieldQuestion, Coins, Send, ShieldAlert } from 'lucide-react';
 
 export interface InfoButtonProps {
@@ -61,9 +59,11 @@ export const InfoButton = ({
   dialogTitle = 'Shielded Portfolio',
   className = '',
 }: InfoButtonProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <div className={`flex items-center ${className}`}>
-      <Dialog>
+      <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <Dialog.Trigger asChild>
           <Button 
             icon={ShieldQuestion} 
@@ -75,7 +75,12 @@ export const InfoButton = ({
             Information
           </Button>
         </Dialog.Trigger>
-        <Dialog.Content title={dialogTitle}>
+        <Dialog.Content 
+          title={dialogTitle}
+          headerChildren={null}
+          buttons={null}
+          zIndex={1000}
+        >
           <div className="flex flex-col gap-5">
             {sections.map((section, index) => (
               <div key={index} className="flex flex-col gap-2">
