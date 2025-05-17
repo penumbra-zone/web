@@ -88,6 +88,8 @@ const fetchRewards = async (
   };
 };
 
+// TODO: fix hardcoding block height here.
+
 /**
  * Retrieves every vote from the view service for each epoch in which the user participated.
  */
@@ -103,7 +105,7 @@ export const usePersonalRewards = (
   const blockHeight = statusStore.latestKnownBlockHeight;
 
   const query = useQuery({
-    queryKey: ['total-voting-rewards', subaccount, page, limit, sortKey, sortDirection],
+    queryKey: ['total-voting-rewards', subaccount, page, limit, sortKey, sortDirection, epoch],
     enabled:
       connectionStore.connected &&
       !!epoch &&

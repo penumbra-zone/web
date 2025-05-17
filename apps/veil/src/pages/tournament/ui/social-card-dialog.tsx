@@ -70,10 +70,9 @@ export const SocialCardDialog = observer(
     const [isOpen, setIsOpen] = useState(isOpenProp);
 
     const text = `🚨 Penumbra's Liquidity Tournament is LIVE 🚨
+    Provide liquidity. Climb the leaderboard. Win rewards.
+    Join now 👇`;
 
-Provide liquidity. Climb the leaderboard. Win rewards.
-
-Join now 👇`;
     const url = `https://${baseUrl}/tournament/join?${encodeParams(params)}`;
 
     useEffect(() => {
@@ -96,23 +95,22 @@ Join now 👇`;
     }, [canvasRef, isOpen, params]);
 
     useEffect(() => {
-      if (dontShowAgain) {
-        const dismissed = localStorage.getItem(dismissedKey);
-        if (dismissed) {
-          localStorage.setItem(
-            dismissedKey,
-            JSON.stringify([...(JSON.parse(dismissed) as string[]), params.epoch]),
-          );
-        } else {
-          localStorage.setItem(dismissedKey, JSON.stringify([params.epoch]));
-        }
+      if (!isOpen) return;
+
+      const highestSeen = Number(localStorage.getItem(dismissedKey) || 0);
+      const currentEpoch = Number(params.epoch);
+
+      if (currentEpoch > highestSeen) {
+        localStorage.setItem(dismissedKey, String(currentEpoch));
       }
-    }, [dontShowAgain, params.epoch]);
+    }, [isOpen, params.epoch]);
 
     useEffect(() => {
       if (isOpenProp) {
-        const dismissed = localStorage.getItem(dismissedKey);
-        if (!dismissed || !(JSON.parse(dismissed) as string[]).includes(params.epoch)) {
+        const highestSeen = Number(localStorage.getItem(dismissedKey) || 0);
+        const currentEpoch = Number(params.epoch);
+
+        if (currentEpoch > highestSeen) {
           setIsOpen(true);
         }
       }
@@ -157,12 +155,14 @@ Join now 👇`;
                 </div>
               }
             >
-              <canvas
-                ref={canvasRef}
-                className='w-[512px] h-[512px] bg-other-tonalFill10'
-                width={512}
-                height={512}
-              />
+              <div className='flex justify-center overflow-x-hidden'>
+                <canvas
+                  ref={canvasRef}
+                  className='w-[512px] h-[512px] bg-other-tonalFill10'
+                  width={512}
+                  height={512}
+                />
+              </div>
             </Dialog.Content>
           </div>
         </Dialog>

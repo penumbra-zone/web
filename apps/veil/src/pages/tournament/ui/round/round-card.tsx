@@ -42,14 +42,17 @@ export const RoundCard = observer(({ epoch }: RoundCardProps) => {
 
   const summary = ended && initialDataRef.current ? initialDataRef.current : currentSummary;
 
-  // Trigger social card dialog when epoch ends
   // TODO: currently, this always triggers. we need to add conditionals to check if user
   // has both voted and recieved a reward in the current epoch to trigger the hook.
   useEffect(() => {
-    if (!ended || !summary?.[0]) return;
+    if (!ended || !summary?.[0]) {
+      return;
+    }
 
-    const dismissed = JSON.parse(localStorage.getItem(dismissedKey) ?? '[]') as string[];
-    if (!dismissed.includes(String(epoch))) {
+    // Get latest observed epoch key from storage and check against current epoch
+    const highestSeen = Number(localStorage.getItem(dismissedKey) ?? 0);
+
+    if (epoch > highestSeen && summary?.[0].total_rewards) {
       setShowSocial(true);
     }
   }, [ended, summary, epoch]);
