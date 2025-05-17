@@ -1,11 +1,15 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { ViewService } from '@penumbra-zone/protobuf/penumbra/view/v1/view_connect';
 import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { connectionStore } from '@/shared/model/connection';
 import { penumbra } from '@/shared/const/penumbra';
 import { useRefetchOnNewBlock } from '@/shared/api/compact-block';
+import { TournamentVotesResponse_Vote } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 
-export const useTournamentVotes = (epoch?: number, disabled?: boolean) => {
+export const useTournamentVotes = (
+  epoch?: number,
+  disabled?: boolean,
+): UseQueryResult<TournamentVotesResponse_Vote[]> => {
   const { connected, subaccount } = connectionStore;
   const enabled = connected && !!epoch;
 
