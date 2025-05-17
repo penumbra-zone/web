@@ -1,5 +1,17 @@
 # @penumbra-zone/types
 
+## 34.2.0
+
+### Minor Changes
+
+- cee8150: don't specify auto-increment key
+
+## 34.1.0
+
+### Minor Changes
+
+- ec85373: storage helper to save remote epoch
+
 ## 34.0.0
 
 ### Minor Changes

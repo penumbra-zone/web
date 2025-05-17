@@ -22,7 +22,6 @@ export interface PreviousEpochsRequest {
 
 export interface MappedGauge extends Omit<LqtGauge, 'asset_id' | 'missing_votes'> {
   asset: Metadata;
-  missing_votes: number;
 }
 
 export interface PreviousEpochData {
@@ -71,7 +70,6 @@ const previousEpochsQuery = async ({ limit, page, sortDirection }: PreviousEpoch
       'gauge.epoch',
       'gauge.votes',
       'gauge.portion',
-      'gauge.missing_votes',
       sql<string>`encode(${exp.ref('gauge.asset_id')}, 'base64')`.as('asset_id'),
     ])
     .orderBy('epoch', sortDirection)
@@ -135,7 +133,6 @@ export async function GET(
           epoch: item.epoch,
           votes: item.votes,
           portion: item.portion,
-          missing_votes: item.missing_votes,
         };
       })
       .filter(Boolean) as MappedGauge[],

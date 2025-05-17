@@ -5,31 +5,54 @@ import {
   Value,
   ValueView,
 } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { splitLoHi } from '@penumbra-zone/types/lo-hi';
+import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
+import { pnum } from '@penumbra-zone/types/pnum';
 
 type ToValueViewProps =
-  | { amount: number; metadata: Metadata }
-  | { amount: number; assetId: AssetId };
+  | { amount: number | Amount; metadata: Metadata }
+  | { amount: number | Amount; assetId: AssetId }
+  | { value: Value; getMetadata: (asset: AssetId | undefined) => Metadata | undefined };
 
 export const toValueView = (props: ToValueViewProps) => {
-  const amount = splitLoHi(BigInt(props.amount));
-
   if ('metadata' in props) {
     return new ValueView({
       valueView: {
         case: 'knownAssetId',
         value: {
-          amount,
+          amount: pnum(props.amount).toAmount(),
           metadata: props.metadata,
         },
       },
     });
+  } else if ('getMetadata' in props) {
+    const metadata = props.getMetadata(props.value.assetId);
+    if (metadata) {
+      return new ValueView({
+        valueView: {
+          case: 'knownAssetId',
+          value: {
+            amount: pnum(props.value.amount).toAmount(),
+            metadata,
+          },
+        },
+      });
+    } else {
+      return new ValueView({
+        valueView: {
+          case: 'unknownAssetId',
+          value: {
+            amount: pnum(props.value.amount).toAmount(),
+            assetId: props.value.assetId,
+          },
+        },
+      });
+    }
   } else {
     return new ValueView({
       valueView: {
         case: 'unknownAssetId',
         value: {
-          amount,
+          amount: pnum(props.amount).toAmount(),
           assetId: props.assetId,
         },
       },

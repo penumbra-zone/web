@@ -1,5 +1,22 @@
 # @penumbra-zone/ui
 
+## 14.0.4
+
+### Patch Changes
+
+- Updated dependencies [cee8150]
+  - @penumbra-zone/types@34.2.0
+  - @penumbra-zone/perspective@59.0.0
+
+## 14.0.3
+
+### Patch Changes
+
+- Updated dependencies [ec85373]
+- Updated dependencies [cba3daf]
+  - @penumbra-zone/types@34.1.0
+  - @penumbra-zone/perspective@58.0.0
+
 ## 14.0.2
 
 ### Patch Changes

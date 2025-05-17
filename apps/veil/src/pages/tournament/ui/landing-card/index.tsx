@@ -25,7 +25,7 @@ export const LandingCard = observer(() => {
   });
 
   const {
-    data: epochGauge,
+    assetGauges,
     isLoading: epochGaugeLoading,
     isPending,
   } = useEpochResults(
@@ -65,7 +65,7 @@ export const LandingCard = observer(() => {
 
           <IncentivePool summary={summary?.[0]} loading={summaryLoading} />
           <TournamentResults
-            results={epochGauge?.data ?? []}
+            results={assetGauges.slice(0, 5)}
             loading={isPending || epochGaugeLoading}
           />
           <VotingInfo />

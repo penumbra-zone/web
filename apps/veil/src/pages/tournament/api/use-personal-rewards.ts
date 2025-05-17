@@ -15,6 +15,7 @@ import {
   AddressByIndexResponse,
   TournamentVotesResponse,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 
 export const BASE_LIMIT = 10;
 export const BASE_PAGE = 1;
@@ -69,8 +70,7 @@ const fetchRewards = async (
       '/api/tournament/delegator-history',
       {
         epochs: Array.from(epochs),
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- address is defined
-        address: { inner: Array.from(address!.inner) },
+        address: address ? bech32mAddress(address) : '',
         page,
         limit,
         sortKey,

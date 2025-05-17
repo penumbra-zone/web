@@ -9,6 +9,7 @@ import {
 } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import {
   DirectedTradingPair,
+  Position,
   PositionId,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
@@ -69,6 +70,7 @@ const ProtosByType = {
   'penumbra.core.asset.v1.AssetId': AssetId,
   'penumbra.core.keys.v1.Address': Address,
   'penumbra.core.component.dex.v1.PositionId': PositionId,
+  'penumbra.core.component.dex.v1.Position': Position,
   'penumbra.core.component.dex.v1.DirectedTradingPair': DirectedTradingPair,
 } as const;
 

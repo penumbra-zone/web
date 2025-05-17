@@ -529,6 +529,7 @@ export class IndexedDb implements IndexedDbInterface {
 
     // This is a unique identifier to force unique primary keys. If the field isn't provided,
     // a random one is generated and used to store an object.
+    // emulating unllifier uniqueness
     const uniquePrimaryKey = id ?? crypto.randomUUID();
 
     // TODO: saving the entire metadata is extraneous, experiment with changing
@@ -820,27 +821,14 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   /**
-   * Adds a new epoch with the given start height. Automatically sets the epoch
-   * index by finding the previous epoch index, and adding 1n.
+   * Adds a new epoch with start height and epoch index.
    */
-  async addEpoch(startHeight: bigint): Promise<void> {
-    const cursor = await this.db.transaction('EPOCHS', 'readonly').store.openCursor(null, 'prev');
-    const previousEpoch = cursor?.value ? Epoch.fromJson(cursor.value) : undefined;
-    const index = previousEpoch?.index !== undefined ? previousEpoch.index + 1n : 0n;
+  async addEpoch(epoch: Epoch): Promise<void> {
+    const tx = this.db.transaction('EPOCHS', 'readwrite');
 
-    // avoid saving the same epoch twice
-    if (previousEpoch?.startHeight === startHeight) {
-      return;
-    }
-
-    const newEpoch = {
-      startHeight: startHeight.toString(),
-      index: index.toString(),
-    };
-
-    await this.u.update({
-      table: 'EPOCHS',
-      value: newEpoch,
+    await tx.store.put({
+      startHeight: epoch.startHeight.toString(),
+      index: epoch.index.toString(),
     });
   }
 
@@ -882,21 +870,17 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   /**
-   * Get the block height for the correspinding epoch index.
+   * Get the epoch identified by the given epoch index.
    */
-  async getBlockHeightByEpoch(epoch_index: bigint): Promise<Epoch | undefined> {
-    let epoch: Epoch | undefined;
-
+  async getEpochByIndex(epochIndex: bigint): Promise<Epoch | undefined> {
     // Iterate over epochs and return the one with the matching epoch index.
-    for await (const cursor of this.db.transaction('EPOCHS', 'readonly').store) {
-      const currentEpoch = Epoch.fromJson(cursor.value);
-      if (currentEpoch.index === epoch_index) {
-        epoch = currentEpoch;
-        break;
+    for await (const cursor of this.db.transaction('EPOCHS').store.iterate(null, 'prev')) {
+      const epoch = Epoch.fromJson(cursor.value);
+      if (epoch.index === epochIndex) {
+        return epoch;
       }
     }
-
-    return epoch;
+    return;
   }
 
   /**

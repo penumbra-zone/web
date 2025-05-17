@@ -65,7 +65,9 @@ export const buildTrace = (
 
   return {
     price: removeTrailingZeros(price),
-    amount: pnum(baseValueView).toFormattedString(),
+    amount: pnum(baseValueView).toFormattedString({
+      commas: false,
+    }),
     total: 'TBD',
     hops: trace.value.map(v => getValueView(registry, v)),
   };

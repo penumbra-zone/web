@@ -1,5 +1,28 @@
 # penumbra-veil
 
+## 0.1.4
+
+### Patch Changes
+
+- Updated dependencies [cee8150]
+  - @penumbra-zone/types@34.2.0
+  - @penumbra-zone/crypto-web@46.0.0
+  - @penumbra-zone/ui@14.0.4
+  - @penumbra-zone/wasm@50.0.0
+  - @penumbra-zone/perspective@59.0.0
+
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies [ec85373]
+- Updated dependencies [cba3daf]
+  - @penumbra-zone/types@34.1.0
+  - @penumbra-zone/perspective@58.0.0
+  - @penumbra-zone/crypto-web@45.0.0
+  - @penumbra-zone/ui@14.0.3
+  - @penumbra-zone/wasm@49.0.0
+
 ## 0.1.2
 
 ### Patch Changes
