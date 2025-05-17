@@ -14,25 +14,19 @@ import {
   NotesResponse,
   SpendableNoteRecord,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { IndexedDbMock, MockServices } from '../test-utils.js';
+import { mockIndexedDb, MockServices } from '../test-utils.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 describe('Notes request handler', () => {
   let mockServices: MockServices;
   let mockCtx: HandlerContext;
-  let mockIndexedDb: IndexedDbMock;
 
   beforeEach(() => {
     vi.resetAllMocks();
 
-    const mockIterateSpendableNotes = {
-      next: vi.fn(),
-      [Symbol.asyncIterator]: () => mockIterateSpendableNotes,
-    };
-
-    mockIndexedDb = {
-      iterateSpendableNotes: () => mockIterateSpendableNotes,
-    };
+    mockIndexedDb.iterateSpendableNotes.mockImplementationOnce(async function* () {
+      yield* await Promise.resolve(testData);
+    });
 
     mockServices = {
       getWalletServices: vi.fn(() =>
@@ -49,15 +43,6 @@ describe('Notes request handler', () => {
       contextValues: createContextValues().set(servicesCtx, () =>
         Promise.resolve(mockServices as unknown as ServicesInterface),
       ),
-    });
-
-    for (const record of testData) {
-      mockIterateSpendableNotes.next.mockResolvedValueOnce({
-        value: record,
-      });
-    }
-    mockIterateSpendableNotes.next.mockResolvedValueOnce({
-      done: true,
     });
   });
 

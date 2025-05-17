@@ -16,7 +16,7 @@ import { ViewService } from '@penumbra-zone/protobuf';
 import { ServicesInterface } from '@penumbra-zone/types/services';
 import { HandlerContext, createContextValues, createHandlerContext } from '@connectrpc/connect';
 import { servicesCtx } from '../ctx/prax.js';
-import { IndexedDbMock, MockQuerier, MockServices } from '../test-utils.js';
+import { mockIndexedDb, MockQuerier, MockServices } from '../test-utils.js';
 import { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
 import { Value } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
@@ -119,19 +119,17 @@ const TEST_DATA = [
 
 describe('Auctions request handler', () => {
   let mockCtx: HandlerContext;
-  let mockIndexedDb: IndexedDbMock;
+
   let mockQuerier: MockQuerier;
 
   beforeEach(() => {
     vi.resetAllMocks();
 
-    mockIndexedDb = {
-      getAuction: vi.fn((auctionId: AuctionId) =>
-        Promise.resolve(TEST_DATA.find(({ id }) => id.equals(auctionId))?.value),
-      ),
-      getSpendableNoteByCommitment: vi.fn().mockResolvedValue(MOCK_SPENDABLE_NOTE_RECORD),
-      getAuctionOutstandingReserves: vi.fn().mockResolvedValue(undefined),
-    };
+    mockIndexedDb.getAuction.mockImplementation((auctionId: AuctionId) =>
+      Promise.resolve(TEST_DATA.find(({ id }) => id.equals(auctionId))!.value),
+    );
+    mockIndexedDb.getSpendableNoteByCommitment.mockResolvedValue(MOCK_SPENDABLE_NOTE_RECORD);
+    mockIndexedDb.getAuctionOutstandingReserves.mockResolvedValue(undefined);
 
     mockQuerier = {
       auction: {
@@ -219,16 +217,16 @@ describe('Auctions request handler', () => {
   it('includes the outstanding reserves if any exist in the database (i.e., for an ended auction)', async () => {
     expect.hasAssertions();
 
-    mockIndexedDb.getAuctionOutstandingReserves?.mockImplementation((auctionId: AuctionId) => {
-      if (auctionId.equals(AUCTION_ID_2)) {
-        return {
-          input: new Value({ amount: { hi: 0n, lo: 1234n } }),
-          output: new Value({ amount: { hi: 0n, lo: 5678n } }),
-        };
-      }
-
-      return undefined;
-    });
+    mockIndexedDb.getAuctionOutstandingReserves.mockImplementation(async (auctionId: AuctionId) =>
+      Promise.resolve(
+        auctionId.equals(AUCTION_ID_2)
+          ? {
+              input: new Value({ amount: { hi: 0n, lo: 1234n } }),
+              output: new Value({ amount: { hi: 0n, lo: 5678n } }),
+            }
+          : undefined,
+      ),
+    );
 
     const req = new AuctionsRequest({ includeInactive: true });
     const results = await Array.fromAsync(auctions(req, mockCtx));
