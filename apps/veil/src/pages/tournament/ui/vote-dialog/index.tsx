@@ -84,9 +84,10 @@ export const VoteDialogueSelector = observer(
       }
 
       const stakedNotes: SpendableNoteRecord[] = notes
-        ? Array.from(notes.values())
-            .map(res => res.noteRecord)
-            .filter((record): record is SpendableNoteRecord => !!record)
+        ? notes
+            .filter(n => !n.alreadyVoted)
+            .map(n => n.noteRecord)
+            .filter((r): r is SpendableNoteRecord => !!r && r.heightSpent === 0n)
         : [];
 
       // Craft LQT TPR and submit vote

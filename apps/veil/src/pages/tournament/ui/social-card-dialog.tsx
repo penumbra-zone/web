@@ -70,37 +70,47 @@ export const SocialCardDialog = observer(
     const [isOpen, setIsOpen] = useState(isOpenProp);
 
     const text = `🚨 Penumbra's Liquidity Tournament is LIVE 🚨
+    Provide liquidity. Climb the leaderboard. Win rewards.
+    Join now 👇`;
 
-Provide liquidity. Climb the leaderboard. Win rewards.
-
-Join now 👇`;
     const url = `https://${baseUrl}/tournament/join?${encodeParams(params)}`;
 
     useEffect(() => {
-      if (canvasRef.current) {
-        const canvas = canvasRef.current;
-        void renderTournamentEarningsCanvas(canvas, params, false);
+      const canvas = canvasRef.current;
+      if (canvas && isOpen) {
+        void renderTournamentEarningsCanvas(canvas, params, {
+          width: 512,
+          height: 512,
+        });
       }
+
+      return () => {
+        if (canvas) {
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+          }
+        }
+      };
     }, [canvasRef, isOpen, params]);
 
     useEffect(() => {
-      if (dontShowAgain) {
-        const dismissed = localStorage.getItem(dismissedKey);
-        if (dismissed) {
-          localStorage.setItem(
-            dismissedKey,
-            JSON.stringify([...(JSON.parse(dismissed) as string[]), params.epoch]),
-          );
-        } else {
-          localStorage.setItem(dismissedKey, JSON.stringify([params.epoch]));
-        }
+      if (!isOpen) return;
+
+      const highestSeen = Number(localStorage.getItem(dismissedKey) || 0);
+      const currentEpoch = Number(params.epoch);
+
+      if (currentEpoch > highestSeen) {
+        localStorage.setItem(dismissedKey, String(currentEpoch));
       }
-    }, [dontShowAgain, params.epoch]);
+    }, [isOpen, params.epoch]);
 
     useEffect(() => {
       if (isOpenProp) {
-        const dismissed = localStorage.getItem(dismissedKey);
-        if (!dismissed || !(JSON.parse(dismissed) as string[]).includes(params.epoch)) {
+        const highestSeen = Number(localStorage.getItem(dismissedKey) || 0);
+        const currentEpoch = Number(params.epoch);
+
+        if (currentEpoch > highestSeen) {
           setIsOpen(true);
         }
       }
@@ -110,44 +120,53 @@ Join now 👇`;
       return null;
     }
 
+    const handleClose = () => {
+      setIsOpen(false);
+      onClose();
+    };
+
     return (
-      <Dialog isOpen={isOpen} onClose={onClose}>
-        <Dialog.Content
-          title='Share your latest win!'
-          buttons={
-            <div className='flex flex-col gap-4'>
-              <Button
-                actionType='default'
-                onClick={() => void copyImageToClipboard(canvasRef.current?.toDataURL() ?? '')}
-              >
-                <Icon IconComponent={Copy} size='sm' />
-                Copy Image
-              </Button>
-              <Button actionType='accent' onClick={() => shareToX(text, url)}>
-                {/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- Xcom */}
-                <Icon IconComponent={Xcom} size='sm' />
-                Share
-              </Button>
-              <div className='flex justify-center p-2'>
-                <Checkbox
-                  checked={dontShowAgain}
-                  onChange={() => setDontShowAgain(!dontShowAgain)}
-                  title="Don't show this again"
+      <div className='max-w-[212px]'>
+        <Dialog isOpen={isOpen} onClose={handleClose}>
+          <div className='max-w-[212px]'>
+            <Dialog.Content
+              title='Share your latest win!'
+              buttons={
+                <div className='flex flex-col gap-4'>
+                  <Button
+                    actionType='default'
+                    onClick={() => void copyImageToClipboard(canvasRef.current?.toDataURL() ?? '')}
+                  >
+                    <Icon IconComponent={Copy} size='sm' />
+                    Copy Image
+                  </Button>
+                  <Button actionType='accent' onClick={() => shareToX(text, url)}>
+                    {/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- Xcom */}
+                    <Icon IconComponent={Xcom} size='sm' />
+                    Share
+                  </Button>
+                  <div className='flex justify-center p-2'>
+                    <Checkbox
+                      checked={dontShowAgain}
+                      onChange={() => setDontShowAgain(!dontShowAgain)}
+                      title="Don't show this again"
+                    />
+                  </div>
+                </div>
+              }
+            >
+              <div className='flex justify-center overflow-x-hidden'>
+                <canvas
+                  ref={canvasRef}
+                  className='w-[512px] h-[512px] bg-other-tonalFill10'
+                  width={512}
+                  height={512}
                 />
               </div>
-            </div>
-          }
-        >
-          <div className='flex justify-center overflow-y-scroll'>
-            <canvas
-              ref={canvasRef}
-              className='w-[512px] h-[512px] bg-other-tonalFill10'
-              width={512}
-              height={512}
-            />
+            </Dialog.Content>
           </div>
-        </Dialog.Content>
-      </Dialog>
+        </Dialog>
+      </div>
     );
   },
 );
