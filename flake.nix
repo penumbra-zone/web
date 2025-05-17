@@ -81,6 +81,8 @@
           fd
           file
           firefox
+          gum
+          hyperfine
           jq
           just
           nodejs_22

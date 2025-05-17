@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Developer script to benchmark running the test suite and gather some timing info,
+# to aid in optimizing CI runtimes. Running multiple times illustrates "warm cache"
+# behavior.
+set -euo pipefail
+
+
+# The lint task passes completely, or has at least once. Let's focus on tests for now.
+hyperfine --setup "pnpm install && pnpm build" --warmup 1 --runs 5 \
+  "just lint-rust" \
+  "just lint-turbo" \
+  "just test-rust" \
+  "just test-turbo"
+  "pnpm run all-check"
