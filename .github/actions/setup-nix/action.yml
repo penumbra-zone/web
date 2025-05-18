@@ -4,7 +4,7 @@ inputs:
   primary-key:
     description: Primary key for the cache
     required: false
-    default: nix-${{ runner.os }}-${{ hashFiles('**/*.nix') }}
+    default: nix-${{ runner.os }}-${{ hashFiles('flake.nix', 'flake.lock') }}
   restore-prefix:
     description: Restore prefix for the cache
     required: false
@@ -18,11 +18,16 @@ runs:
   using: composite
   steps:
     - name: Install Nix
-      uses: nixbuild/nix-quick-install-action@v28
+      uses: nixbuild/nix-quick-install-action@v30
 
     - name: Setup Nix Cache
-      uses: nix-community/cache-nix-action@v5
+      uses: nix-community/cache-nix-action@v6
       with:
         primary-key: ${{ inputs.primary-key }}
         restore-prefixes-first-match: ${{ inputs.restore-prefix }}
         backend: ${{ inputs.backend }}
+
+    - name: Pre-build development shell
+      shell: bash
+      run: |
+        nix develop --command echo "devshell built and cached"

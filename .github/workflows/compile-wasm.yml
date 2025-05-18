@@ -9,18 +9,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - id: compiled
-        uses: buildjet/cache@v4
-        with:
-          path: .turbo
-          key: ${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-compiled
-          restore-keys: ${{ hashFiles('**/Cargo.lock') }}
-
       - name: setup nix
         uses: ./.github/actions/setup-nix
         # Optional: override default parameters
         # with:
         #   backend: 'github'
+      #
+      - name: setup turbo
+        uses: ./.github/actions/setup-turbo
 
       - name: compile wasm code
         run: nix develop --command just wasm
