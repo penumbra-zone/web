@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { ChevronRight } from 'lucide-react';
-import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { Pagination } from '@penumbra-zone/ui/Pagination';
 import { TableCell } from '@penumbra-zone/ui/TableCell';
@@ -18,7 +17,7 @@ import type { PreviousEpochData } from '../server/previous-epochs';
 import { useSortableTableHeaders } from './sortable-table-header';
 import { usePersonalRewards } from '../api/use-personal-rewards';
 import { Vote } from './vote';
-import { pnum } from '@penumbra-zone/types/pnum';
+import { toValueView } from '@/shared/utils/value-view';
 
 const TABLE_CLASSES = {
   table: {
@@ -85,22 +84,16 @@ const PreviousEpochsRow = observer(
           )}
         </TableCell>
 
-        {connected && (rewardsLoading || reward !== undefined) && (
+        {connected && (
           <TableCell cell loading={isLoading || rewardsLoading}>
-            <ValueViewComponent
-              valueView={
-                new ValueView({
-                  valueView: {
-                    case: 'knownAssetId',
-                    value: {
-                      amount: pnum(reward?.reward).toAmount(),
-                      metadata: stakingToken,
-                    },
-                  },
-                })
-              }
-              priority='tertiary'
-            />
+            {reward !== undefined ? (
+              <ValueViewComponent
+                valueView={toValueView({ amount: reward.reward, metadata: stakingToken })}
+                priority='tertiary'
+              />
+            ) : (
+              '-'
+            )}
           </TableCell>
         )}
         <TableCell cell loading={isLoading}>
