@@ -66,7 +66,9 @@ const RewardCell = observer(({ reward, summary }: RewardCellProps) => {
   const valueView = toValueView(metadata ? { metadata, amount } : { assetId, amount });
   return (
     <TableCell cell>
-      <span className='font-mono'>{`${((reward.power / summary.total_voting_power) * 100).toFixed(3)}% for `}</span>
+      <span className='font-mono whitespace-pre'>
+        {`${((reward.power / summary.total_voting_power) * 100).toFixed(3).padStart(6, '\u00A0')}% for `}
+      </span>
       <ValueViewComponent showValue={false} valueView={valueView} />
     </TableCell>
   );
@@ -103,8 +105,6 @@ export const VotingRewards = observer(() => {
   const { data: rawSummary } = useTournamentSummary(
     {
       epochs: epochs.length > 0 ? epochs : undefined,
-      limit,
-      page,
     },
     epochs.length === 0,
   );
@@ -132,8 +132,8 @@ export const VotingRewards = observer(() => {
             new Array(BASE_LIMIT).fill({}).map((_, index) => <LoadingRow cells={4} key={index} />)}
 
           {!loading && !total && (
-            <div className='col-span-4 text-sm text-muted-foreground py-4'>
-              No voting rewards found for this account.
+            <div className='grid grid-cols-subgrid col-span-4'>
+              <TableCell cell>No voting rewards found for this account.</TableCell>
             </div>
           )}
 

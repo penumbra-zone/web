@@ -82,7 +82,13 @@ const tournamentDelegatorHistoryQuery = async ({
       epochs.map(epoch => Number(epoch)),
     );
 
-  // calculate the sum of power and rewards per each epoch and address
+  // calculate the sum of power and rewards per each epoch and address.
+  //
+  // although we're passing the address into pindexer here, it's acceptable because
+  // either the user has chosen to reveal in the leaderboard, or it's an ephermeral address
+  // that can't be linked back to them. Ideally, we would avoid sending addresses to pindexer
+  // to calculate things like personal rewards and instead perform this filtering on the
+  // client-side whenever possible.
   const groupedByEpoch = filteredQuery
     .groupBy(['epoch', 'address', 'asset_id'])
     .select(eb => [
