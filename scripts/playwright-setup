@@ -1,0 +1,139 @@
+#!/usr/bin/env bash
+# Build script to handle configuring Playwright for running integration tests.
+# By default this will run `pnpm exec playwright install` because that's the sane thing to do.
+# In a nix devshell, however, things are a bit more complicated, so we'll do some symlink
+# madness to get the browsers wired up appropriately.
+set -euo pipefail
+
+# This is a hardcoded value that matches exactly the path Playwright
+# will check within its browser cache dir. This value must be updated
+# whenever the `playwright` npm dependency is changed.
+_PLAYWRIGHT_CHROMIUM_HEADLESS_VERSION="1169"
+
+
+# If we're not in a nix shell, then just do the simple thing:
+# defer to playwright docs on default setup strategy.
+if [[ -z "${IN_NIX_SHELL:-}" ]] ; then
+  >&2 echo "Installing playwright..."
+  pnpm exec playwright install
+  exit 0
+fi
+
+# The nix devshell should export this env var; fail if not.
+if [[ -z "$_PLAYWRIGHT_BROWSERS_PATH" ]] ; then
+  gum log --level error "_PLAYWRIGHT_BROWSERS_PATH not set"
+  exit 1
+fi
+
+# Make sure we have a target browser to link Playwright to
+nix_chromium_dir="$(fd headless_shell "$_PLAYWRIGHT_BROWSERS_PATH" --follow -t d)"
+
+if [[ -z "$nix_chromium_dir" ]] ; then
+  gum log --level error "failed to find chromium headless installation in nix env"
+  exit 2
+fi
+
+# Playwright will *always* check this dir, regardless of env vars like PLAYWRIGHT_BROWSERS_PATH.
+playwright_cache_dir="${HOME:?}/.cache/ms-playwright"
+playwright_chromium_dir="${playwright_cache_dir}/chromium_headless_shell-${_PLAYWRIGHT_CHROMIUM_HEADLESS_VERSION}"
+
+# Create a textbox for displaying a readable message.
+# Also theme it kinda like Penumbra.
+function format_message() {
+  local s
+  s="${1:-}"
+  shift 1
+  gum style \
+    --background "#000000" \
+    --foreground "#FFFFFF" \
+    --border "rounded" \
+    --border-foreground "#FFA500" \
+    --padding "1 2" \
+    --align center \
+    --margin "1" \
+    "$s"
+}
+
+# Inform the user that there's pre-existing Playwright state
+# that we don't want to mess with.
+function display_user_warning() {
+    # Declare message as a heredoc, store it in a var.
+    msg="$(cat <<EOM
+
+Found pre-existing data in Playwright cache dir: $playwright_cache_dir
+The integration testing config for this repo will try to overwrite that content.
+If you don't care about prior Playwright browser cache, remove the directory and rerun the tests:
+
+  rm -r "$playwright_cache_dir"
+
+Otherwise, move the dir aside and re-run the tests:
+
+  mv "$playwright_cache_dir{,.bak}"
+
+Doing so will re-initialize Playwright for specifically this git repo.
+You'll need to remove the dir before setting up Playwright with a different project,
+via 'pnpm playwright install' or similar.
+
+EOM
+)"
+  format_message "$msg"
+}
+
+# Create symlink so that the browser path Playwright uses refers to a browser
+# within the nix-installed package store.
+function setup_playwright_symlink() {
+  gum log --level debug "Creating browser symlink for playwright to use a nix-managed browser"
+  mkdir -p "$playwright_cache_dir"
+  rm -f "$playwright_chromium_dir"
+  ln -sf "$nix_chromium_dir" -v "$playwright_chromium_dir"
+}
+
+# If we're in CI, it's OK to shove things around.
+if [[ -n "${CI:-}" ]] ; then
+  gum log --level=info "Detected CI environment, configuring Playwright for nix devshell"
+  # Clobber the local config
+  mkdir -p "$playwright_cache_dir"
+  gum log --level=debug "Linking '$nix_chromium_dir' -> '$playwright_chromium_dir'"
+  setup_playwright_symlink
+# Handle the Playwright cache dir gently, if we're on a developer machine.
+else
+  gum log --level=debug "'CI' env var not set; assuming developer workstation; proceeding carefully"
+  # If the cache dir exists
+  if [[ -e "$playwright_cache_dir" ]] ; then
+    # We check for what exactly matches our expectations:
+    # only one entry, and it's a symlink.
+    playwright_cache_dir_contents="$(fd . "$playwright_cache_dir")"
+    # If the playwright dir has only one entry, and it's a symlink
+    if [[ "$(wc -l <<< "$playwright_cache_dir_contents")" -eq 1 ]] && [[ -L "$playwright_cache_dir_contents" ]] ; then
+      # If we got this far, it's ok to manage and clobber.
+      # Check if anything needs to be done.
+      target="$(readlink "$playwright_cache_dir_contents")"
+      if [[ "$playwright_cache_dir_contents" = "$playwright_chromium_dir" ]] && [[ "$target" = "$nix_chromium_dir" ]] ; then
+        gum log --level debug "Playwright setup looks good, making no changes"
+        exit 0
+      else
+        gum log --level debug "Found pre-existing single symlink in playwright cache, clobbering"
+        setup_playwright_symlink
+      fi
+    # If the cache dir exists and has multiple entries, then prior Playwright initialization
+    #
+    # was performed, so let's preserve the state and warn.
+    else
+      display_user_warning
+      # Sleep briefly so as not to jerk the UX, given that a large message was displayed.
+      sleep 5
+      # Sleep to ensure warning is visible; presumably we're calling this script in dev tooling,
+      # immediately preceding a scrollback-destroyingly verbose test run.
+      sleep_duration_seconds="20"
+      for i in $(seq 0 "$sleep_duration_seconds") ; do
+          printf '\rResuming script in %s... ' "$(( sleep_duration_seconds - i ))"
+          sleep 1
+      done
+      gum log --level=warn "Resuming; integration tests may not work correctly!" 
+      exit 0
+    fi
+  # If no prior state was found, OK to set it up!
+  else
+    setup_playwright_symlink
+  fi
+fi

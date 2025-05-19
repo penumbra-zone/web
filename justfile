@@ -51,13 +51,12 @@ veil:
 veil-container:
   cd ./apps/veil && just container
 
-# Configure OS deps for Playwright tests
-install-playwright: install
-  test -n "$IN_NIX_SHELL" && echo "ERROR: playwright deps are already installed in the nix env" && exit 1
-  pnpm playwright install --with-deps chromium
+# Configure Playwright for current nix devshell
+playwright-setup:
+  ./scripts/playwright-setup
 
 # Run all test suites
-test:
+test: playwright-setup
   # Run rust tests
   @just test-rust
   # Run turbo playwright tests

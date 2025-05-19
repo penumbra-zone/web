@@ -109,11 +109,16 @@
           export TURBO_TELEMETRY_DISABLED=1
 
           # Override libpath so that builds succeed
-          export LD_LIBRARY_PATH="${uuidLibPath}:${playwrightLibPath}:$LD_LIBRARY_PATH"
+          # export LD_LIBRARY_PATH="${uuidLibPath}:${playwrightLibPath}:$LD_LIBRARY_PATH"
+          export LD_LIBRARY_PATH="${uuidLibPath}:$LD_LIBRARY_PATH"
 
-          # Playwright configuration
-          export PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
-          export PLAYWRIGHT_BROWSERS_PATH="${pkgs.playwright-driver.browsers}"
+          # Export the playwright browsers path, to aid in setting up CI.
+          export _PLAYWRIGHT_BROWSERS_PATH="${pkgs.playwright-driver.browsers}"
+
+          # If this is the first time activating the dev shell, install pnpm
+          if ! test -d node_modules ; then
+            >&2 echo "Local ./node_modules not found, run 'pnpm install'"
+          fi
         '';
       in
       {
