@@ -29,7 +29,7 @@ jobs:
 
   lint:
     runs-on: buildjet-8vcpu-ubuntu-2204
-    needs: turbo-build
+    # needs: turbo-build
     steps:
       - uses: actions/checkout@v4
 
@@ -45,7 +45,8 @@ jobs:
   test:
     name: test
     runs-on: buildjet-16vcpu-ubuntu-2204
-    needs: turbo-build
+    # TEMPORARY: dont wait on dependency step, just run it
+    # needs: turbo-build
     steps:
       - uses: actions/checkout@v4
 
