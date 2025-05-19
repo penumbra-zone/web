@@ -1,7 +1,7 @@
 import cn from 'clsx';
 import { useCallback, useState } from 'react';
 import { ChevronDown, ChevronUp, ChevronsUpDown } from 'lucide-react';
-import { TableCell } from '@penumbra-zone/ui/TableCell';
+import { TableCell, TableCellJustify } from '@penumbra-zone/ui/TableCell';
 import { Text } from '@penumbra-zone/ui/Text';
 
 export type SortDirection = 'asc' | 'desc';
@@ -12,6 +12,7 @@ export interface SortableTableHeaderProps<KEY extends string = string> {
   direction: SortDirection;
   onSort: (arg_1: { key: KEY; direction: SortDirection }) => void;
   active?: boolean;
+  justify?: TableCellJustify;
 }
 
 export const SortableTableHeader = <KEY extends string = string>({
@@ -20,9 +21,10 @@ export const SortableTableHeader = <KEY extends string = string>({
   direction,
   onSort,
   active,
+  justify,
 }: SortableTableHeaderProps<KEY>) => {
   return (
-    <TableCell heading>
+    <TableCell heading justify={justify}>
       <button
         className={cn(
           'flex bg-none border-none items-center gap-1',
@@ -70,9 +72,10 @@ export const useSortableTableHeaders = <KEY extends string = string>(
   });
 
   const getTableHeader = useCallback(
-    (key: KEY, label: string) => {
+    (key: KEY, label: string, props?: Partial<SortableTableHeaderProps<KEY>>) => {
       return (
         <SortableTableHeader
+          {...props}
           sortKey={key}
           label={label}
           direction={sortBy.direction}
