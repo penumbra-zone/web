@@ -80,14 +80,23 @@ pub fn get_wallet_id(full_viewing_key: &[u8]) -> WasmResult<Vec<u8>> {
 /// get address by index using FVK
 /// Arguments:
 ///     full_viewing_key: `byte representation inner FullViewingKey`
-///     index: `u32`
+///     account: `u32`
+///     randomizer: `12 bytes, with 0 bytes representing all 0s implicitly`
 /// Returns: `Uint8Array representing inner Address`
 #[wasm_bindgen]
-pub fn get_address_by_index(full_viewing_key: &[u8], index: u32) -> WasmResult<Vec<u8>> {
+pub fn get_address_by_index(
+    full_viewing_key: &[u8],
+    account: u32,
+    randomizer: &[u8],
+) -> WasmResult<Vec<u8>> {
     utils::set_panic_hook();
 
     let fvk: FullViewingKey = FullViewingKey::decode(full_viewing_key)?;
-    let (address, _dtk) = fvk.incoming().payment_address(index.into());
+    let randomizer: [u8; 12] = randomizer.try_into().unwrap_or_default();
+    let (address, _dtk) = fvk.incoming().payment_address(AddressIndex {
+        account,
+        randomizer,
+    });
     Ok(address.encode_to_vec())
 }
 

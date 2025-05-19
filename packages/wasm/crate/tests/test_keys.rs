@@ -51,7 +51,7 @@ fn generates_wallet_id() {
 fn gets_address_by_index() {
     let spend_key = generate_spend_key(TEST_SEED_PHRASE).unwrap();
     let fvk_bytes = get_full_viewing_key(spend_key.as_slice()).unwrap();
-    let address_bytes = get_address_by_index(fvk_bytes.as_slice(), 0).unwrap();
+    let address_bytes = get_address_by_index(fvk_bytes.as_slice(), 0, &[]).unwrap();
     let address = Address::decode(address_bytes.as_slice()).unwrap();
     assert_eq!(
         address.to_string(),
