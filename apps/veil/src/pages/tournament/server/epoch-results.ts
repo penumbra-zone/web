@@ -1,6 +1,6 @@
 import { sql } from 'kysely';
 import { NextRequest, NextResponse } from 'next/server';
-import { ChainRegistryClient, Registry } from '@penumbra-labs/registry';
+import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { serialize, Serialized } from '@/shared/utils/serializer';
 import { pindexerDb } from '@/shared/database/client';
@@ -86,29 +86,6 @@ const totalEpochResultsQuery = async ({ epoch }: EpochResultsRequest) => {
     .executeTakeFirst();
 };
 
-// Cache time-to-live for registry data (milliseconds)
-const REGISTRY_CACHE_TTL_MS = 5 * 60 * 1000;
-// In-memory cache for registry data per chainId
-const registryCache = new Map<string, { registry: Registry; expiresAt: number }>();
-
-// Helper to get cached registry data
-async function getCachedRegistry(chainId: string): Promise<Registry> {
-  const entry = registryCache.get(chainId);
-  const now = Date.now();
-  if (entry && entry.expiresAt > now) {
-    return entry.registry;
-  }
-  const client = new ChainRegistryClient();
-  try {
-    const registry = await client.remote.get(chainId);
-    registryCache.set(chainId, { registry, expiresAt: now + REGISTRY_CACHE_TTL_MS });
-    return registry;
-  } catch (err: unknown) {
-    registryCache.delete(chainId);
-    throw err;
-  }
-}
-
 export async function GET(
   req: NextRequest,
 ): Promise<NextResponse<Serialized<EpochResultsApiResponse | { error: string }>>> {
@@ -123,8 +100,13 @@ export async function GET(
     return NextResponse.json({ error: 'Required query parameter: "epoch"' }, { status: 400 });
   }
 
+  // Enable server-side caching by enabling 'force-cache'
+  const registryClient = new ChainRegistryClient({
+    nextjsServerSide: true,
+  });
+
   const [registry, results, total] = await Promise.all([
-    getCachedRegistry(chainId),
+    registryClient.remote.get(chainId),
     epochResultsQuery(params),
     totalEpochResultsQuery(params),
   ]);
