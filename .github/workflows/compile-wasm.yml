@@ -18,12 +18,11 @@ jobs:
       - name: setup turbo
         uses: ./.github/actions/setup-turbo
 
-      - name: compile wasm code
-        run: nix develop --command just wasm
+      - name: build the project
+        run: nix develop --command just build
 
       - name: Verify no unexpected file changes (like cargo.lock change)
         run: git diff --exit-code
-        working-directory: packages/wasm/crate
 
       - name: dump rust dependencies for debugging, only on failure
         run: nix develop --command cargo tree --invert penumbra-wasm --edges features

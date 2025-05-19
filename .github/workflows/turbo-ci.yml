@@ -24,28 +24,10 @@ concurrency:
 # rust cache only used in rust jobs
 
 jobs:
-  turbo-compile:
-    name: Compile
+  turbo-build:
     uses: ./.github/workflows/compile-wasm.yml
 
-  turbo-build:
-    name: Build
-    runs-on: buildjet-8vcpu-ubuntu-2204
-    needs: turbo-compile
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: setup nix
-        uses: ./.github/actions/setup-nix
-
-      - name: setup turbo
-        uses: ./.github/actions/setup-turbo
-
-      - name: run build
-        run: nix develop --command just build
-
-  turbo-lint:
-    name: Lint
+  lint:
     runs-on: buildjet-8vcpu-ubuntu-2204
     needs: turbo-build
     steps:
@@ -57,12 +39,12 @@ jobs:
       - name: setup turbo
         uses: ./.github/actions/setup-turbo
 
-      - name: lint turbo
-        run: nix develop --command just lint-turbo
+      - name: run all linters
+        run: nix develop --command just lint
 
-  turbo-test:
+  test:
     name: test
-    runs-on: buildjet-8vcpu-ubuntu-2204
+    runs-on: buildjet-16vcpu-ubuntu-2204
     needs: turbo-build
     steps:
       - uses: actions/checkout@v4
@@ -73,32 +55,20 @@ jobs:
       - name: setup turbo
         uses: ./.github/actions/setup-turbo
 
-      # - name: install playwright deps
-      #   run: nix develop --command just install-playwright
+      - name: setup playwright cache
+        uses: buildjet/cache@v4
+        with:
+          path: /home/runner/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+
+      - name: install playwright deps
+        run: nix develop --command just install-playwright
 
       - name: run playwright tests
-        run: nix develop --command just test-turbo
+        run: nix develop --command just test
 
-  turbo-lint-rust:
-    name: lint:rust
-    runs-on: buildjet-4vcpu-ubuntu-2204
-    needs: turbo-compile
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: setup nix
-        uses: ./.github/actions/setup-nix
-
-      - name: setup turbo
-        uses: ./.github/actions/setup-turbo
-
-      - name: lint rust
-        run: nix develop --command just lint-rust
-
-  turbo-test-rust:
-    name: test:wasm
+  all-check:
     runs-on: buildjet-16vcpu-ubuntu-2204
-    needs: turbo-compile
     steps:
       - uses: actions/checkout@v4
 
@@ -108,5 +78,5 @@ jobs:
       - name: setup turbo
         uses: ./.github/actions/setup-turbo
 
-      - name: run rust tests
-        run: nix develop --command just test-rust
+      - name: run all checks
+        run: nix develop --command pnpm all-check
