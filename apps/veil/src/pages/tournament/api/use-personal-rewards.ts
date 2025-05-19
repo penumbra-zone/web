@@ -88,8 +88,6 @@ const fetchRewards = async (
   };
 };
 
-// TODO: fix hardcoding block height here.
-
 /**
  * Retrieves every vote from the view service for each epoch in which the user participated.
  */
