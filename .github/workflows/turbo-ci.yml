@@ -9,7 +9,7 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 # this is pretty verbose and repetitive, but github workflows require it
 # the first action is commented, most of those comments apply to all actions
