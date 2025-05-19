@@ -100,7 +100,7 @@ export async function GET(
     return NextResponse.json({ error: 'Required query parameter: "epoch"' }, { status: 400 });
   }
 
-  // Enable server-side caching by enabling 'force-cache'
+  // Enable server-side caching by passing the 'force-cache' option in the config.
   const registryClient = new ChainRegistryClient({
     nextjsServerSide: true,
   });
