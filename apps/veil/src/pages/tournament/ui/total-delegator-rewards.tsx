@@ -104,7 +104,7 @@ export const VotingRewards = observer(() => {
   const epochs = [...rewardsData.keys()];
   const { data: rawSummary } = useTournamentSummary(
     {
-      epochs: epochs.length > 0 ? epochs : undefined,
+      epochs,
     },
     epochs.length === 0,
   );
