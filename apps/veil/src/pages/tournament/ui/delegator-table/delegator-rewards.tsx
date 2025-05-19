@@ -7,7 +7,7 @@ import { ReactNode, useState } from 'react';
 import { TableCell } from '@penumbra-zone/ui/TableCell';
 import { Button } from '@penumbra-zone/ui/Button';
 import { ChevronRight } from 'lucide-react';
-import { useSortableTableHeaders } from '../sortable-table-header';
+import { useSortableTableHeaders, GetTableHeader } from '../sortable-table-header';
 import { SortKey, useSpecificDelegatorRewards } from '../../api/use-specific-delegator-rewards';
 import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { useGetMetadata } from '@/shared/api/assets';
@@ -20,7 +20,7 @@ const BASE_PAGE = 0;
 const BASE_LIMIT = 10;
 
 interface LayoutProps {
-  getTableHeader: (key: SortKey, label: string) => ReactNode;
+  getTableHeader: GetTableHeader<SortKey>;
 }
 
 const TableLayout = observer(
@@ -28,11 +28,11 @@ const TableLayout = observer(
     return (
       <div className='flex flex-col gap-4 mt-4'>
         <Density compact>
-          <div className='grid grid-cols-[auto_1fr_1fr_32px]'>
+          <div className='grid grid-cols-[auto_1fr_1fr_48px]'>
             <div className='grid grid-cols-subgrid col-span-4'>
               {getTableHeader('epoch', 'Epoch')}
               <TableCell heading>Casted Vote</TableCell>
-              {getTableHeader('reward', 'Reward')}
+              {getTableHeader('reward', 'Reward', { justify: 'end' })}
               <TableCell heading> </TableCell>
             </div>
             {children}
@@ -153,10 +153,11 @@ export const DelegatorRewards = ({ address }: { address: Address }) => {
                 <ValueViewComponent showValue={false} valueView={valueView} />
               </TableCell>
 
-              <TableCell cell>
+              <TableCell cell justify='end'>
                 <ValueViewComponent
                   valueView={toValueView({ value, getMetadata })}
                   priority='tertiary'
+                  trailingZeros
                 />
               </TableCell>
 

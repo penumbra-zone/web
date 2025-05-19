@@ -39,8 +39,9 @@ function LpRewardRow({ lpReward, umMetadata }: { lpReward: LpReward; umMetadata:
         <div className='max-w-[370px] truncate'>{id}</div>
         <ExternalLink className='size-3 min-w-3 text-neutral-light' />
       </TableCell>
-      <TableCell cell>
+      <TableCell cell justify='end'>
         <ValueViewComponent
+          trailingZeros
           valueView={
             new ValueView({
               valueView: {
@@ -122,7 +123,7 @@ export const LpRewards = observer(() => {
           <div className='grid grid-cols-subgrid col-span-5'>
             {getTableHeader('epoch', 'Epoch')}
             <TableCell heading>Position ID</TableCell>
-            {getTableHeader('rewards', 'Reward')}
+            {getTableHeader('rewards', 'Reward', { justify: 'end' })}
             <TableCell heading> </TableCell>
             <TableCell heading> </TableCell>
           </div>

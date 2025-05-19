@@ -1,5 +1,5 @@
 import cn from 'clsx';
-import { useCallback, useState } from 'react';
+import { ReactNode, useCallback, useState } from 'react';
 import { ChevronDown, ChevronUp, ChevronsUpDown } from 'lucide-react';
 import { TableCell, TableCellJustify } from '@penumbra-zone/ui/TableCell';
 import { Text } from '@penumbra-zone/ui/Text';
@@ -59,6 +59,12 @@ export const SortableTableHeader = <KEY extends string = string>({
   );
 };
 
+export type GetTableHeader<KEY extends string = string> = (
+  key: KEY,
+  label: string,
+  props?: Partial<SortableTableHeaderProps<KEY>>,
+) => ReactNode;
+
 export const useSortableTableHeaders = <KEY extends string = string>(
   key: KEY | '' = '',
   direction: SortDirection = 'desc',
@@ -71,8 +77,8 @@ export const useSortableTableHeaders = <KEY extends string = string>(
     direction,
   });
 
-  const getTableHeader = useCallback(
-    (key: KEY, label: string, props?: Partial<SortableTableHeaderProps<KEY>>) => {
+  const getTableHeader = useCallback<GetTableHeader<KEY>>(
+    (key, label, props) => {
       return (
         <SortableTableHeader
           {...props}

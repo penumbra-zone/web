@@ -32,10 +32,11 @@ const VotingRewardsRow = ({ epoch, reward, stakingToken, summary }: VotingReward
     <div className='grid grid-cols-subgrid col-span-4'>
       <TableCell cell>{`Epoch #${epoch}`}</TableCell>
       <RewardCell reward={reward} summary={summary} />
-      <TableCell cell>
+      <TableCell cell justify='end'>
         <ValueViewComponent
           valueView={toValueView({ amount: reward.reward, metadata: stakingToken })}
           priority='tertiary'
+          trailingZeros
         />
       </TableCell>
       <TableCell cell>
@@ -124,7 +125,7 @@ export const VotingRewards = observer(() => {
           <div className='grid grid-cols-subgrid col-span-4'>
             {getTableHeader('epoch', 'Epoch')}
             <TableCell heading>Casted Vote</TableCell>
-            {getTableHeader('reward', 'Reward')}
+            {getTableHeader('reward', 'Reward', { justify: 'end' })}
             <TableCell heading> </TableCell>
           </div>
 

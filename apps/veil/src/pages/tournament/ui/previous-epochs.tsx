@@ -86,8 +86,9 @@ const PreviousEpochsRow = observer(
         </TableCell>
 
         {connected && (rewardsLoading || reward !== undefined) && (
-          <TableCell cell loading={isLoading || rewardsLoading}>
+          <TableCell cell loading={isLoading || rewardsLoading} justify='end'>
             <ValueViewComponent
+              trailingZeros
               valueView={
                 new ValueView({
                   valueView: {
@@ -147,7 +148,11 @@ export const PreviousEpochs = observer(() => {
           <div className={cn('grid grid-cols-subgrid', TABLE_CLASSES.row[tableKey])}>
             {getTableHeader('epoch', 'Epoch')}
             <TableCell heading>Votes Summary</TableCell>
-            {connected && <TableCell heading>My Voting Rewards</TableCell>}
+            {connected && (
+              <TableCell heading justify='end'>
+                My Voting Rewards
+              </TableCell>
+            )}
             <TableCell heading> </TableCell>
           </div>
 
