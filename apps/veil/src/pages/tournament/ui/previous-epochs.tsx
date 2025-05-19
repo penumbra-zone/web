@@ -85,8 +85,8 @@ const PreviousEpochsRow = observer(
           )}
         </TableCell>
 
-        <TableCell cell loading={isLoading || rewardsLoading}>
-          {connected && (rewardsLoading || reward !== undefined) ? (
+        {connected && (rewardsLoading || reward !== undefined) && (
+          <TableCell cell loading={isLoading || rewardsLoading}>
             <ValueViewComponent
               valueView={
                 new ValueView({
@@ -101,10 +101,8 @@ const PreviousEpochsRow = observer(
               }
               priority='tertiary'
             />
-          ) : (
-            <Text color='text.secondary'>–</Text>
-          )}
-        </TableCell>
+          </TableCell>
+        )}
         <TableCell cell loading={isLoading}>
           <Density slim>
             <Button iconOnly icon={ChevronRight}>
