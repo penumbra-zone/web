@@ -185,8 +185,8 @@ importers:
         specifier: ^1.26.1
         version: 1.26.3(@types/react@19.0.12)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@penumbra-labs/registry':
-        specifier: ^12.7.0
-        version: 12.7.0
+        specifier: ^12.8.0
+        version: 12.8.0
       '@penumbra-zone/bech32m':
         specifier: workspace:*
         version: link:../../packages/bech32m
@@ -433,8 +433,8 @@ importers:
         specifier: ^0.12.199
         version: 0.12.209(starknet@6.23.1)
       '@penumbra-labs/registry':
-        specifier: ^12.7.0
-        version: 12.7.0
+        specifier: ^12.8.0
+        version: 12.8.0
       '@penumbra-zone/bech32m':
         specifier: workspace:*
         version: link:../../packages/bech32m
@@ -830,8 +830,8 @@ importers:
         version: 8.0.2
     devDependencies:
       '@penumbra-labs/registry':
-        specifier: ^12.7.0
-        version: 12.7.0
+        specifier: ^12.8.0
+        version: 12.8.0
       '@penumbra-zone/protobuf':
         specifier: workspace:*
         version: link:../protobuf
@@ -3903,8 +3903,8 @@ packages:
     resolution: {integrity: sha512-IHnV6A+zxU7XwmKFinmYjUcwlyK9+xkG3/s9KcQhI9BjQKycrJ1JRO+FbNYPwZiPKW3je/DR0k7w8/gLa5eaxQ==}
     deprecated: 'The package is now available as "qr": npm install qr'
 
-  '@penumbra-labs/registry@12.7.0':
-    resolution: {integrity: sha512-KKnOd2wFk061WlanF8ONrQ7+wiRLDZemH4GeQBng86kiFNjwMx+z9TTs4fStd4FmCdrxdSBuio5Mdf9+bIK0ng==}
+  '@penumbra-labs/registry@12.8.0':
+    resolution: {integrity: sha512-M5RIjyJr8pKTaqJRYSTdVFXu4gwi+C5M1WT08jNVExe+yOuLlq1YavkUEfxVvsgo0uCobjNPAEjrhR7BRS0onQ==}
 
   '@penumbra-zone/bech32m@13.0.0':
     resolution: {integrity: sha512-d89AM78hoeqK2xtHku2jjbjJaMxpimo0qVXuOMM4doa7G31x61WktMAjWmsi1mjK9o9IXgzTRaaFkI1QpT0Vag==}
@@ -19477,7 +19477,7 @@ snapshots:
 
   '@paulmillr/qr@0.2.1': {}
 
-  '@penumbra-labs/registry@12.7.0': {}
+  '@penumbra-labs/registry@12.8.0': {}
 
   '@penumbra-zone/bech32m@13.0.0(@penumbra-zone/protobuf@7.2.0(@bufbuild/protobuf@1.10.0))':
     dependencies:
