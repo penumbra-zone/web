@@ -30,6 +30,10 @@ export function useTournamentSocialCard() {
 
   const ended = !!currentEpoch && !!epoch && epoch !== currentEpoch;
 
+  // TODO: need to add personal rewards to social dialogue card
+  const { subaccount } = connectionStore;
+  const { data: _rewards } = usePersonalRewards(subaccount, epoch, false, 1, 1);
+
   useEffect(() => {
     // q. should this check remain here?
     if (!ended) {
@@ -38,11 +42,6 @@ export function useTournamentSocialCard() {
     }
 
     const highestSeen = Number(localStorage.getItem(dismissedKey) ?? 0);
-
-    const { subaccount } = connectionStore;
-
-    // TODO: need to add personal rewards to social dialogue card
-    const { data: _rewards } = usePersonalRewards(subaccount, epoch, false, 1, 1);
 
     if (epoch > highestSeen) {
       setIsOpen(true);
