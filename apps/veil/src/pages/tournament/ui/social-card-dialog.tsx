@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
+import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import { Dialog } from '@penumbra-zone/ui/Dialog';
 import { Icon } from '@penumbra-zone/ui/Icon';
 import { Checkbox } from '@penumbra-zone/ui/Checkbox';
@@ -17,6 +18,7 @@ import { usePersonalRewards } from '../api/use-personal-rewards';
 import { connectionStore } from '@/shared/model/connection';
 import { useTournamentSummary } from '../api/use-tournament-summary';
 import { LqtDelegatorHistoryData } from '../server/delegator-history';
+import { useStakingTokenMetadata } from '@/shared/api/registry';
 
 export const dismissedKey = 'veil-tournament-social-card-dismissed';
 const baseUrl = process.env['NEXT_PUBLIC_BASE_URL'] ?? 'http://localhost:3000';
@@ -85,6 +87,7 @@ function shareToX(text: string, url: string) {
 export const SocialCardDialog = observer(
   ({ onClose, epoch }: { epoch: number; onClose: () => void }) => {
     const { subaccount } = connectionStore;
+    const { data: stakingToken } = useStakingTokenMetadata();
 
     const { data: summary, isLoading: loadingSummary } = useTournamentSummary({
       limit: 1,
@@ -111,10 +114,10 @@ export const SocialCardDialog = observer(
       // TODO: add query for voting streak.
       return {
         epoch: String(epoch),
-        reward: rewardData.reward,
+        rewarded: rewardData.reward > 0,
         earnings: `${rewardData.reward}:UM`,
         votingStreak: `${rewardData.power}:UM`,
-        incentivePool: `${summaryData.lp_rewards + summaryData.delegator_rewards}:UM`,
+        incentivePool: `${Number(summaryData.lp_rewards) + Number(summaryData.delegator_rewards)}:UM`,
         lpPool: `${summaryData.lp_rewards}:UM`,
         delegatorPool: `${summaryData.delegator_rewards}:UM`,
       };
@@ -134,8 +137,9 @@ export const SocialCardDialog = observer(
       }
 
       const canvas = canvasRef.current;
-      if (canvas) {
-        void renderTournamentEarningsCanvas(canvas, params, {
+      const exponent = getDisplayDenomExponent.optional(stakingToken);
+      if (canvas && exponent) {
+        void renderTournamentEarningsCanvas(canvas, params, exponent, {
           width: 512,
           height: 512,
         });
@@ -149,9 +153,9 @@ export const SocialCardDialog = observer(
           }
         }
       };
-    }, [params]);
+    }, [params, stakingToken]);
 
-    if (loading || !params?.reward) {
+    if (loading || !params?.rewarded) {
       return null;
     }
 

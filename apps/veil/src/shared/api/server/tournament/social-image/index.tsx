@@ -19,7 +19,9 @@ export async function GET(req: NextRequest) {
 
   registerFonts();
   const canvas = createCanvas(600, 315);
-  await renderTournamentEarningsCanvas(canvas as unknown as HTMLCanvasElement, params, {
+
+  // todo: use exponent from the staking token instead of hardcoding "6"
+  await renderTournamentEarningsCanvas(canvas as unknown as HTMLCanvasElement, params, 6, {
     width: 600,
     height: 315,
   });

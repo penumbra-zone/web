@@ -1,12 +1,15 @@
 import { dpi, drawText, getTextWidth, scaleCanvas } from '@/shared/ui/canvas-toolkit';
 import { theme } from '@penumbra-zone/ui/theme';
 import { TournamentParams } from './types';
+import { pnum } from '@penumbra-zone/types/pnum';
+import { shortify } from '@penumbra-zone/types/shortify';
 
 const baseUrl = process.env['NEXT_PUBLIC_BASE_URL'] ?? 'http://localhost:3000';
 
 export async function renderTournamentEarningsCanvas(
   canvas: HTMLCanvasElement,
   params: TournamentParams,
+  exponent: number,
   size: { width: number; height: number },
 ) {
   const ctx = canvas.getContext('2d');
@@ -22,15 +25,16 @@ export async function renderTournamentEarningsCanvas(
     if (!value) {
       return '-';
     }
-    const [amount, unit] = value.split(':');
+    const [num, unit] = value.split(':');
+    const amount = pnum(BigInt(Number(num)), { exponent });
 
     // perhaps improve upon this later on
     // for now just making sure the value stays inside the boxes
-    if (Number(amount) > 999999) {
-      return `999999+${unit}`;
+    if (amount.toNumber() > 999999) {
+      return `${shortify(amount.toNumber())} ${unit}`;
     }
 
-    return `${Number(amount).toLocaleString()} ${unit}`;
+    return `${Number(amount.toNumber()).toLocaleString()} ${unit}`;
   };
 
   scaleCanvas(canvas, size);
