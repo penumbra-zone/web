@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { Dialog } from '@penumbra-zone/ui/Dialog';
 import { Icon } from '@penumbra-zone/ui/Icon';
@@ -12,10 +12,50 @@ import {
   encodeParams,
 } from '@/features/tournament-earnings-canvas';
 import { openToast } from '@penumbra-zone/ui/Toast';
+import { useParams } from 'next/navigation';
+import { useCurrentEpoch } from '../api/use-current-epoch';
+import { usePersonalRewards } from '../api/use-personal-rewards';
+import { connectionStore } from '@/shared/model/connection';
 
 export const dismissedKey = 'veil-tournament-social-card-dismissed';
-
 const baseUrl = process.env['NEXT_PUBLIC_BASE_URL'] ?? 'http://localhost:3000';
+
+// Custom hook that consolidates all location storage operations.
+export function useTournamentSocialCard() {
+  const [isOpen, setIsOpen] = useState(false);
+  const params = useParams<{ epoch: string }>();
+  const epoch = Number(params?.epoch);
+
+  const { epoch: currentEpoch, isLoading: _epochLoading } = useCurrentEpoch();
+
+  const ended = !!currentEpoch && !!epoch && epoch !== currentEpoch;
+
+  useEffect(() => {
+    // q. should this check remain here?
+    if (!ended) {
+      setIsOpen(false);
+      return;
+    }
+
+    const highestSeen = Number(localStorage.getItem(dismissedKey) ?? 0);
+
+    const { subaccount } = connectionStore;
+
+    // TODO: need to add personal rewards to social dialogue card
+    const { data: _rewards } = usePersonalRewards(subaccount, epoch, false, 1, 1);
+
+    if (epoch > highestSeen) {
+      setIsOpen(true);
+    }
+  }, [epoch, ended]);
+
+  const close = useCallback(() => {
+    localStorage.setItem(dismissedKey, String(epoch));
+    setIsOpen(false);
+  }, [epoch]);
+
+  return { isOpen, close };
+}
 
 async function copyImageToClipboard(imageUrl: string) {
   const response = await fetch(imageUrl);
@@ -57,7 +97,7 @@ const dummyParams: TournamentParams = {
 
 export const SocialCardDialog = observer(
   ({
-    isOpen: isOpenProp,
+    isOpen: isOpen,
     onClose,
     params = dummyParams,
   }: {
@@ -67,7 +107,6 @@ export const SocialCardDialog = observer(
   }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [dontShowAgain, setDontShowAgain] = useState(false);
-    const [isOpen, setIsOpen] = useState(isOpenProp);
 
     const text = `🚨 Penumbra's Liquidity Tournament is LIVE 🚨
     Provide liquidity. Climb the leaderboard. Win rewards.
@@ -76,6 +115,10 @@ export const SocialCardDialog = observer(
     const url = `https://${baseUrl}/tournament/join?${encodeParams(params)}`;
 
     useEffect(() => {
+      if (!isOpen) {
+        return;
+      }
+
       const canvas = canvasRef.current;
       if (canvas && isOpen) {
         void renderTournamentEarningsCanvas(canvas, params, {
@@ -92,36 +135,9 @@ export const SocialCardDialog = observer(
           }
         }
       };
-    }, [canvasRef, isOpen, params]);
-
-    useEffect(() => {
-      if (!isOpen) return;
-
-      const highestSeen = Number(localStorage.getItem(dismissedKey) || 0);
-      const currentEpoch = Number(params.epoch);
-
-      if (currentEpoch > highestSeen) {
-        localStorage.setItem(dismissedKey, String(currentEpoch));
-      }
-    }, [isOpen, params.epoch]);
-
-    useEffect(() => {
-      if (isOpenProp) {
-        const highestSeen = Number(localStorage.getItem(dismissedKey) || 0);
-        const currentEpoch = Number(params.epoch);
-
-        if (currentEpoch > highestSeen) {
-          setIsOpen(true);
-        }
-      }
-    }, [isOpenProp, params.epoch]);
-
-    if (!isOpen) {
-      return null;
-    }
+    }, [isOpen, params]);
 
     const handleClose = () => {
-      setIsOpen(false);
       onClose();
     };
 

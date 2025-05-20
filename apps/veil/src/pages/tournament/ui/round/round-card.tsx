@@ -11,9 +11,12 @@ import { IncentivePool } from '../landing-card/incentive-pool';
 import { GradientCard } from '../shared/gradient-card';
 import { VotingInfo } from '../voting-info';
 import { formatTimeRemaining } from '@/shared/utils/format-time';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { LqtSummary } from '@/shared/database/schema';
-import { SocialCardDialog, dismissedKey } from '@/pages/tournament/ui/social-card-dialog';
+import {
+  SocialCardDialog,
+  useTournamentSocialCard,
+} from '@/pages/tournament/ui/social-card-dialog';
 import { TournamentParams } from '@/features/tournament-earnings-canvas';
 
 export interface RoundCardProps {
@@ -24,7 +27,6 @@ export const RoundCard = observer(({ epoch }: RoundCardProps) => {
   const { epoch: currentEpoch, isLoading: epochLoading } = useCurrentEpoch();
   const ended = !!currentEpoch && !!epoch && epoch !== currentEpoch;
   const initialDataRef = useRef<LqtSummary[] | null>(null);
-  const [showSocial, setShowSocial] = useState(false);
 
   const { data: currentSummary, isLoading } = useTournamentSummary(
     {
@@ -42,20 +44,7 @@ export const RoundCard = observer(({ epoch }: RoundCardProps) => {
 
   const summary = ended && initialDataRef.current ? initialDataRef.current : currentSummary;
 
-  // TODO: currently, this always triggers. we need to add conditionals to check if user
-  // has both voted and recieved a reward in the current epoch to trigger the hook.
-  useEffect(() => {
-    if (!ended || !summary?.[0]) {
-      return;
-    }
-
-    // Get latest observed epoch key from storage and check against current epoch
-    const highestSeen = Number(localStorage.getItem(dismissedKey) ?? 0);
-
-    if (epoch > highestSeen && summary?.[0].total_rewards) {
-      setShowSocial(true);
-    }
-  }, [ended, summary, epoch]);
+  const { isOpen: showSocial, close: hideSocial } = useTournamentSocialCard();
 
   // TODO: pass in proper rewards and summary info
   const tournamentParams: TournamentParams | undefined = summary?.[0]
@@ -142,11 +131,7 @@ export const RoundCard = observer(({ epoch }: RoundCardProps) => {
       </GradientCard>
 
       {tournamentParams && (
-        <SocialCardDialog
-          isOpen={showSocial}
-          onClose={() => setShowSocial(false)}
-          params={tournamentParams}
-        />
+        <SocialCardDialog isOpen={showSocial} onClose={hideSocial} params={tournamentParams} />
       )}
     </>
   );

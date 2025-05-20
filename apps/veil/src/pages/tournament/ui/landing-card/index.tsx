@@ -10,9 +10,10 @@ import { VotingInfo } from '../voting-info';
 import { IncentivePool } from './incentive-pool';
 import { TournamentResults } from './results';
 import { Explainer } from './explainer';
-import { useEffect, useRef, useState } from 'react';
-import { LqtSummary } from '@/shared/database/schema';
-import { SocialCardDialog, dismissedKey } from '@/pages/tournament/ui/social-card-dialog';
+import {
+  SocialCardDialog,
+  useTournamentSocialCard,
+} from '@/pages/tournament/ui/social-card-dialog';
 import { TournamentParams } from '@/features/tournament-earnings-canvas';
 
 export const LandingCard = observer(() => {
@@ -42,28 +43,7 @@ export const LandingCard = observer(() => {
     epochLoading,
   );
 
-  // TODO: currently, this always triggers. we need to add conditionals to check if user
-  // has both voted and recieved a reward in the current epoch to trigger the hook.
-  const initialDataRef = useRef<LqtSummary[] | null>(null);
-  const [showSocial, setShowSocial] = useState(false);
-
-  useEffect(() => {
-    if (!summaryLoading && summary && !initialDataRef.current) {
-      initialDataRef.current = summary;
-    }
-  }, [summaryLoading, summary]);
-
-  useEffect(() => {
-    if (!summary?.[0] || !epoch) {
-      return;
-    }
-
-    const highestSeen = Number(localStorage.getItem(dismissedKey) ?? 0);
-
-    if (epoch > highestSeen && summary[0].total_rewards) {
-      setShowSocial(true);
-    }
-  }, [summary, epoch]);
+  const { isOpen: showSocial, close: hideSocial } = useTournamentSocialCard();
 
   // TODO: pass in proper rewards and summary info
   const tournamentParams: TournamentParams | undefined = summary?.[0]
@@ -113,11 +93,7 @@ export const LandingCard = observer(() => {
         </div>
       </GradientCard>
       {tournamentParams && (
-        <SocialCardDialog
-          isOpen={showSocial}
-          onClose={() => setShowSocial(false)}
-          params={tournamentParams}
-        />
+        <SocialCardDialog isOpen={showSocial} onClose={hideSocial} params={tournamentParams} />
       )}
     </>
   );
