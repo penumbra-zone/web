@@ -42,7 +42,7 @@ export const LandingCard = observer(() => {
     epochLoading,
   );
 
-  const { isOpen: showSocial, close: hideSocial, tournamentParams } = useTournamentSocialCard();
+  const { isOpen: showSocial, close: hideSocial } = useTournamentSocialCard();
 
   return (
     <>
@@ -79,9 +79,8 @@ export const LandingCard = observer(() => {
           </div>
         </div>
       </GradientCard>
-      {tournamentParams && (
-        <SocialCardDialog isOpen={showSocial} onClose={hideSocial} params={tournamentParams} />
-      )}
+
+      {showSocial && epoch && <SocialCardDialog epoch={epoch} onClose={hideSocial} />}
     </>
   );
 });

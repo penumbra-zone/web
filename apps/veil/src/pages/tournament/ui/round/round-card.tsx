@@ -43,7 +43,7 @@ export const RoundCard = observer(({ epoch }: RoundCardProps) => {
 
   const summary = ended && initialDataRef.current ? initialDataRef.current : currentSummary;
 
-  const { isOpen: showSocial, close: hideSocial, tournamentParams } = useTournamentSocialCard();
+  const { isOpen: showSocial, close: hideSocial } = useTournamentSocialCard(epoch);
 
   return (
     <>
@@ -117,9 +117,7 @@ export const RoundCard = observer(({ epoch }: RoundCardProps) => {
         </div>
       </GradientCard>
 
-      {tournamentParams && (
-        <SocialCardDialog isOpen={showSocial} onClose={hideSocial} params={tournamentParams} />
-      )}
+      {showSocial && <SocialCardDialog epoch={epoch} onClose={hideSocial} />}
     </>
   );
 });

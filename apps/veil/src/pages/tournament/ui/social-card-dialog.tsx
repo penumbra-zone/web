@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { Dialog } from '@penumbra-zone/ui/Dialog';
 import { Icon } from '@penumbra-zone/ui/Icon';
+import { Skeleton } from '@penumbra-zone/ui/Skeleton';
 import { Checkbox } from '@penumbra-zone/ui/Checkbox';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Copy } from 'lucide-react';
@@ -12,34 +13,23 @@ import {
   encodeParams,
 } from '@/features/tournament-earnings-canvas';
 import { openToast } from '@penumbra-zone/ui/Toast';
-import { useParams } from 'next/navigation';
 import { useCurrentEpoch } from '../api/use-current-epoch';
 import { usePersonalRewards } from '../api/use-personal-rewards';
 import { connectionStore } from '@/shared/model/connection';
 import { useTournamentSummary } from '../api/use-tournament-summary';
 import { LqtDelegatorHistoryData } from '../server/delegator-history';
+import cn from 'clsx';
 
 export const dismissedKey = 'veil-tournament-social-card-dismissed';
 const baseUrl = process.env['NEXT_PUBLIC_BASE_URL'] ?? 'http://localhost:3000';
 
 // Custom hook that consolidates all location storage operations.
-export function useTournamentSocialCard() {
+export function useTournamentSocialCard(defaultEpoch?: number) {
   const [isOpen, setIsOpen] = useState(false);
-  const params = useParams<{ epoch: string }>();
-  const epoch = Number(params?.epoch);
 
-  const { epoch: currentEpoch, isLoading: _epochLoading } = useCurrentEpoch();
+  const { epoch: currentEpoch } = useCurrentEpoch();
+  const epoch = defaultEpoch ?? currentEpoch;
   const ended = !!currentEpoch && !!epoch && epoch !== currentEpoch;
-
-  const { subaccount } = connectionStore;
-  const { data: summary, isLoading: loadingSummary } = useTournamentSummary(
-    { limit: 1, page: 1 },
-    ended,
-  );
-  const {
-    data: rewards,
-    query: { isLoading: loadingRewards },
-  } = usePersonalRewards(subaccount, epoch, false, 1, 1);
 
   useEffect(() => {
     if (!ended) {
@@ -59,32 +49,7 @@ export function useTournamentSocialCard() {
     setIsOpen(false);
   }, [epoch]);
 
-  const tournamentParams: TournamentParams | undefined = useMemo(() => {
-    if (loadingSummary || loadingRewards) {
-      return undefined;
-    }
-
-    const summaryData = summary?.[0];
-
-    // TODo: properly extract reward data from rewards.
-    const rewardData: LqtDelegatorHistoryData = rewards?.entries().next().value?.[1];
-
-    if (!summaryData || !rewardData) {
-      return undefined;
-    }
-
-    // TODO: add query for voting streak.
-    return {
-      epoch: String(epoch),
-      earnings: `${rewardData.reward}:UM`,
-      votingStreak: `${rewardData.power}:UM`,
-      incentivePool: `${summaryData.lp_rewards + summaryData.delegator_rewards}:UM`,
-      lpPool: `${summaryData.lp_rewards}:UM`,
-      delegatorPool: `${summaryData.delegator_rewards}:UM`,
-    };
-  }, [epoch, summary, rewards, loadingSummary, loadingRewards]);
-
-  return { isOpen, close, tournamentParams };
+  return { isOpen, close };
 }
 
 // TODO: fix flickering image.
@@ -120,31 +85,57 @@ function shareToX(text: string, url: string) {
  */
 
 export const SocialCardDialog = observer(
-  ({
-    isOpen: isOpen,
-    onClose,
-    params,
-  }: {
-    isOpen: boolean;
-    onClose: () => void;
-    params: TournamentParams;
-  }) => {
+  ({ onClose, epoch }: { epoch: number; onClose: () => void }) => {
+    const { subaccount } = connectionStore;
+
+    const { data: summary, isLoading: loadingSummary } = useTournamentSummary({
+      limit: 1,
+      page: 1,
+    });
+    const {
+      data: rewards,
+      query: { isLoading: loadingRewards },
+    } = usePersonalRewards(subaccount, epoch, false, 1, 1);
+    const loading = loadingSummary || loadingRewards;
+
+    const params: TournamentParams | undefined = useMemo(() => {
+      if (loadingSummary || loadingRewards) {
+        return undefined;
+      }
+
+      const summaryData = summary?.[0];
+      const rewardData = rewards.values().next().value as LqtDelegatorHistoryData | undefined;
+
+      if (!summaryData || !rewardData) {
+        return undefined;
+      }
+
+      // TODO: add query for voting streak.
+      return {
+        epoch: String(epoch),
+        earnings: `${rewardData.reward}:UM`,
+        votingStreak: `${rewardData.power}:UM`,
+        incentivePool: `${summaryData.lp_rewards + summaryData.delegator_rewards}:UM`,
+        lpPool: `${summaryData.lp_rewards}:UM`,
+        delegatorPool: `${summaryData.delegator_rewards}:UM`,
+      };
+    }, [epoch, summary, rewards, loadingSummary, loadingRewards]);
+
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [dontShowAgain, setDontShowAgain] = useState(false);
 
     const text = `🚨 Penumbra's Liquidity Tournament is LIVE 🚨
     Provide liquidity. Climb the leaderboard. Win rewards.
     Join now 👇`;
-
-    const url = `https://${baseUrl}/tournament/join?${encodeParams(params)}`;
+    const url = params ? `https://${baseUrl}/tournament/join?${encodeParams(params)}` : '';
 
     useEffect(() => {
-      if (!isOpen) {
+      if (!params) {
         return;
       }
 
       const canvas = canvasRef.current;
-      if (canvas && isOpen) {
+      if (canvas) {
         void renderTournamentEarningsCanvas(canvas, params, {
           width: 512,
           height: 512,
@@ -159,54 +150,51 @@ export const SocialCardDialog = observer(
           }
         }
       };
-    }, [isOpen, params]);
-
-    const handleClose = () => {
-      onClose();
-    };
+    }, [params]);
 
     return (
-      <div className='max-w-[212px]'>
-        <Dialog isOpen={isOpen} onClose={handleClose}>
-          <div className='max-w-[212px]'>
-            <Dialog.Content
-              title='Share your latest win!'
-              buttons={
-                <div className='flex flex-col gap-4'>
-                  <Button
-                    actionType='default'
-                    onClick={() => void copyImageToClipboard(canvasRef.current?.toDataURL() ?? '')}
-                  >
-                    <Icon IconComponent={Copy} size='sm' />
-                    Copy Image
-                  </Button>
-                  <Button actionType='accent' onClick={() => shareToX(text, url)}>
-                    {/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- Xcom */}
-                    <Icon IconComponent={Xcom} size='sm' />
-                    Share
-                  </Button>
-                  <div className='flex justify-center p-2'>
-                    <Checkbox
-                      checked={dontShowAgain}
-                      onChange={() => setDontShowAgain(!dontShowAgain)}
-                      title="Don't show this again"
-                    />
-                  </div>
-                </div>
-              }
-            >
-              <div className='flex justify-center overflow-x-hidden'>
-                <canvas
-                  ref={canvasRef}
-                  className='w-[512px] h-[512px] bg-other-tonalFill10'
-                  width={512}
-                  height={512}
+      <Dialog isOpen onClose={onClose}>
+        <Dialog.Content
+          title='Share your latest win!'
+          buttons={
+            <div className='flex flex-col gap-4 px-6 pb-8'>
+              <Button
+                actionType='default'
+                onClick={() => void copyImageToClipboard(canvasRef.current?.toDataURL() ?? '')}
+              >
+                <Icon IconComponent={Copy} size='sm' />
+                Copy Image
+              </Button>
+              <Button actionType='accent' onClick={() => shareToX(text, url)}>
+                {/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- Xcom */}
+                <Icon IconComponent={Xcom} size='sm' />
+                Share
+              </Button>
+              <div className='flex justify-center p-2'>
+                <Checkbox
+                  checked={dontShowAgain}
+                  onChange={() => setDontShowAgain(!dontShowAgain)}
+                  title="Don't show this again"
                 />
               </div>
-            </Dialog.Content>
+            </div>
+          }
+        >
+          <div className='flex justify-center overflow-x-hidden'>
+            {loading && (
+              <div className='size-[512px]'>
+                <Skeleton />
+              </div>
+            )}
+            <canvas
+              ref={canvasRef}
+              className={cn('size-[512px] max-w-full bg-other-tonalFill10', loading && 'hidden')}
+              width={512}
+              height={512}
+            />
           </div>
-        </Dialog>
-      </div>
+        </Dialog.Content>
+      </Dialog>
     );
   },
 );
