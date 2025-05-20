@@ -17,7 +17,6 @@ import {
   SocialCardDialog,
   useTournamentSocialCard,
 } from '@/pages/tournament/ui/social-card-dialog';
-import { TournamentParams } from '@/features/tournament-earnings-canvas';
 
 export interface RoundCardProps {
   epoch: number;
@@ -44,19 +43,7 @@ export const RoundCard = observer(({ epoch }: RoundCardProps) => {
 
   const summary = ended && initialDataRef.current ? initialDataRef.current : currentSummary;
 
-  const { isOpen: showSocial, close: hideSocial } = useTournamentSocialCard();
-
-  // TODO: pass in proper rewards and summary info
-  const tournamentParams: TournamentParams | undefined = summary?.[0]
-    ? {
-        epoch: String(epoch),
-        earnings: `${summary[0].delegator_rewards}:UM`,
-        votingStreak: `${summary[0].total_voting_power}:UM`,
-        incentivePool: `${summary[0].lp_rewards + summary[0].delegator_rewards}:UM`,
-        lpPool: `${summary[0].lp_rewards}:UM`,
-        delegatorPool: `${summary[0].delegator_rewards}:UM`,
-      }
-    : undefined;
+  const { isOpen: showSocial, close: hideSocial, tournamentParams } = useTournamentSocialCard();
 
   return (
     <>

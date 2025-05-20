@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { Dialog } from '@penumbra-zone/ui/Dialog';
 import { Icon } from '@penumbra-zone/ui/Icon';
@@ -16,6 +16,8 @@ import { useParams } from 'next/navigation';
 import { useCurrentEpoch } from '../api/use-current-epoch';
 import { usePersonalRewards } from '../api/use-personal-rewards';
 import { connectionStore } from '@/shared/model/connection';
+import { useTournamentSummary } from '../api/use-tournament-summary';
+import { LqtDelegatorHistoryData } from '../server/delegator-history';
 
 export const dismissedKey = 'veil-tournament-social-card-dismissed';
 const baseUrl = process.env['NEXT_PUBLIC_BASE_URL'] ?? 'http://localhost:3000';
@@ -27,15 +29,19 @@ export function useTournamentSocialCard() {
   const epoch = Number(params?.epoch);
 
   const { epoch: currentEpoch, isLoading: _epochLoading } = useCurrentEpoch();
-
   const ended = !!currentEpoch && !!epoch && epoch !== currentEpoch;
 
-  // TODO: need to add personal rewards to social dialogue card
   const { subaccount } = connectionStore;
-  const { data: _rewards } = usePersonalRewards(subaccount, epoch, false, 1, 1);
+  const { data: summary, isLoading: loadingSummary } = useTournamentSummary(
+    { limit: 1, page: 1 },
+    ended,
+  );
+  const {
+    data: rewards,
+    query: { isLoading: loadingRewards },
+  } = usePersonalRewards(subaccount, epoch, false, 1, 1);
 
   useEffect(() => {
-    // q. should this check remain here?
     if (!ended) {
       setIsOpen(false);
       return;
@@ -53,9 +59,35 @@ export function useTournamentSocialCard() {
     setIsOpen(false);
   }, [epoch]);
 
-  return { isOpen, close };
+  const tournamentParams: TournamentParams | undefined = useMemo(() => {
+    if (loadingSummary || loadingRewards) {
+      return undefined;
+    }
+
+    const summaryData = summary?.[0];
+
+    // TODo: properly extract reward data from rewards.
+    const rewardData: LqtDelegatorHistoryData = rewards?.entries().next().value?.[1];
+
+    if (!summaryData || !rewardData) {
+      return undefined;
+    }
+
+    // TODO: add query for voting streak.
+    return {
+      epoch: String(epoch),
+      earnings: `${rewardData.reward}:UM`,
+      votingStreak: `${rewardData.power}:UM`,
+      incentivePool: `${summaryData.lp_rewards + summaryData.delegator_rewards}:UM`,
+      lpPool: `${summaryData.lp_rewards}:UM`,
+      delegatorPool: `${summaryData.delegator_rewards}:UM`,
+    };
+  }, [epoch, summary, rewards, loadingSummary, loadingRewards]);
+
+  return { isOpen, close, tournamentParams };
 }
 
+// TODO: fix flickering image.
 async function copyImageToClipboard(imageUrl: string) {
   const response = await fetch(imageUrl);
   const blob = await response.blob();
@@ -68,6 +100,7 @@ async function copyImageToClipboard(imageUrl: string) {
   });
 }
 
+// TODO: fix the x link url.
 function shareToX(text: string, url: string) {
   const tweetUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
   window.open(tweetUrl, '_blank');
@@ -85,20 +118,12 @@ function shareToX(text: string, url: string) {
  *      - and is dismissable each epoch unless the delegator does not vote in the current
  *        epoch (this will be evident by whether or not their receive a rewards distribution).
  */
-const dummyParams: TournamentParams = {
-  epoch: '135',
-  earnings: '17280:UM',
-  votingStreak: '80000:UM',
-  incentivePool: '100000:UM',
-  lpPool: '100000:UM',
-  delegatorPool: '100000:UM',
-};
 
 export const SocialCardDialog = observer(
   ({
     isOpen: isOpen,
     onClose,
-    params = dummyParams,
+    params,
   }: {
     isOpen: boolean;
     onClose: () => void;
