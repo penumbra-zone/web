@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { Dialog } from '@penumbra-zone/ui/Dialog';
 import { Icon } from '@penumbra-zone/ui/Icon';
-import { Skeleton } from '@penumbra-zone/ui/Skeleton';
 import { Checkbox } from '@penumbra-zone/ui/Checkbox';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Copy } from 'lucide-react';
@@ -18,7 +17,6 @@ import { usePersonalRewards } from '../api/use-personal-rewards';
 import { connectionStore } from '@/shared/model/connection';
 import { useTournamentSummary } from '../api/use-tournament-summary';
 import { LqtDelegatorHistoryData } from '../server/delegator-history';
-import cn from 'clsx';
 
 export const dismissedKey = 'veil-tournament-social-card-dismissed';
 const baseUrl = process.env['NEXT_PUBLIC_BASE_URL'] ?? 'http://localhost:3000';
@@ -113,6 +111,7 @@ export const SocialCardDialog = observer(
       // TODO: add query for voting streak.
       return {
         epoch: String(epoch),
+        reward: rewardData.reward,
         earnings: `${rewardData.reward}:UM`,
         votingStreak: `${rewardData.power}:UM`,
         incentivePool: `${summaryData.lp_rewards + summaryData.delegator_rewards}:UM`,
@@ -152,6 +151,10 @@ export const SocialCardDialog = observer(
       };
     }, [params]);
 
+    if (loading || !params?.reward) {
+      return null;
+    }
+
     return (
       <Dialog isOpen onClose={onClose}>
         <Dialog.Content
@@ -181,16 +184,11 @@ export const SocialCardDialog = observer(
           }
         >
           <div className='flex justify-center overflow-x-hidden'>
-            {loading && (
-              <div className='size-[512px]'>
-                <Skeleton />
-              </div>
-            )}
             <canvas
               ref={canvasRef}
-              className={cn('size-[512px] max-w-full bg-other-tonalFill10', loading && 'hidden')}
               width={512}
               height={512}
+              className='size-[512px] max-w-full bg-other-tonalFill10'
             />
           </div>
         </Dialog.Content>
