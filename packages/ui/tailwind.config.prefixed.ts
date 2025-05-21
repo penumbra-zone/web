@@ -6,4 +6,4 @@ export default {
   prefix: 'v2-',
   content: ['./src/**/*.{tsx,ts}'], // It scans the same source files (which use unprefixed classes)
   theme: tailwindConfig.theme,
-} satisfies Config; 
+} satisfies Config;

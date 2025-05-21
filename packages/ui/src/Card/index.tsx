@@ -60,12 +60,18 @@ export interface CardProps {
  * </Card>
  * ```
  */
-export const Card = ({ children, as: Wrapper = 'section', title, headerAction, endContent }: CardProps) => {
+export const Card = ({
+  children,
+  as: Wrapper = 'section',
+  title,
+  headerAction,
+  endContent,
+}: CardProps) => {
   return (
     <Wrapper>
-      {(title || headerAction || endContent) && (
-        <div className={cn('flex justify-between items-center p-3')}>
-          <div className="flex items-center gap-2 justify-between flex-1">
+      {(title ?? headerAction ?? endContent) && (
+        <div className={cn('flex items-center justify-between p-3')}>
+          <div className='flex flex-1 items-center justify-between gap-2'>
             {title && <h2 className={cn(large, 'text-base-white')}>{title}</h2>}
             {endContent && <div>{endContent}</div>}
           </div>
@@ -73,7 +79,9 @@ export const Card = ({ children, as: Wrapper = 'section', title, headerAction, e
         </div>
       )}
 
-      <div className='flex flex-col gap-4 rounded-xl bg-cardGradient p-3 backdrop-blur-lg'>{children}</div>
+      <div className='flex flex-col gap-4 rounded-xl bg-cardGradient p-3 backdrop-blur-lg'>
+        {children}
+      </div>
     </Wrapper>
   );
 };

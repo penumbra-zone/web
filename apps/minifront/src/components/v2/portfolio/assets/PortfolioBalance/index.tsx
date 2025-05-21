@@ -1,5 +1,4 @@
-import { Card } from '@penumbra-zone/ui';
-import { Text } from '@penumbra-zone/ui';
+import { Card, Text } from '@penumbra-zone/ui';
 
 export interface PortfolioBalanceProps {
   balance: string;
@@ -15,7 +14,7 @@ export const PortfolioBalance = ({ balance, currency }: PortfolioBalanceProps) =
     <div className='w-full'>
       <div className='flex flex-col py-3'>
         <Card title='Your Total Balance'>
-          <div className='flex h-14 gap-3 items-center'>
+          <div className='flex h-14 items-center gap-3'>
             <Text h4 color='text.primary'>
               ${balance}
             </Text>
@@ -27,4 +26,4 @@ export const PortfolioBalance = ({ balance, currency }: PortfolioBalanceProps) =
       </div>
     </div>
   );
-}; 
+};

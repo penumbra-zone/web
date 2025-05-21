@@ -19,7 +19,7 @@ export const DesktopNav = () => {
   };
 
   return (
-    <nav className='hidden rounded-full bg-v2-other-tonalFill5 px-4 py-1 backdrop-blur-xl lg:flex'>
+    <nav className='hidden lg:flex rounded-full bg-other-tonalFill5 px-4 py-1 backdrop-blur-xl'>
       <Density compact>
         <Tabs
           value={getActiveTabValue(pagePath)}

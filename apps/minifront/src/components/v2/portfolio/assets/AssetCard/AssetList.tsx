@@ -13,10 +13,10 @@ export interface AssetListProps {
  */
 export const AssetList = ({ accounts }: AssetListProps) => {
   return (
-    <div className="flex flex-col gap-3">
+    <div className='flex flex-col gap-3'>
       {accounts.map(account => (
         <AccountSection key={account.id} account={account} />
       ))}
     </div>
   );
-}; 
+};

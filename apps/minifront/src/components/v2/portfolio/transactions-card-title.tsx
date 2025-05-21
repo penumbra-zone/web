@@ -1,4 +1,3 @@
-import React from 'react';
 import { InfoButton } from '../shared/InfoButton';
 import { ReactNode } from 'react';
 
@@ -18,9 +17,9 @@ export const TransactionsCardTitle: React.FC<TransactionsCardTitleProps> = ({
   showInfoButton = true,
 }) => {
   return (
-    <div className="flex justify-between items-center">
+    <div className='flex items-center justify-between'>
       <span>Your Recent Transactions</span>
-      <div className="flex items-center gap-2">
+      <div className='flex items-center gap-2'>
         {endContent}
         {showInfoButton && <InfoButton />}
       </div>

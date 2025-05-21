@@ -11,14 +11,14 @@ export const Layout = () => (
     <HeadTag />
 
     <SyncBar />
-    
-    <div className="flex flex-col items-center w-full">
-      <div className="w-full max-w-[1136px] px-0 md:px-4">
+
+    <div className='flex w-full flex-col items-center'>
+      <div className='w-full max-w-[1136px] px-0 md:px-4'>
         <Header />
         <Outlet />
       </div>
     </div>
-    
+
     <SyncingDialog />
   </Display>
 );

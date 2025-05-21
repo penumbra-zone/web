@@ -6,7 +6,7 @@ import { Text } from '../Text';
 import { useState } from 'react';
 import { Button } from '../Button';
 import { Tabs } from '../Tabs';
-import { Send, Coins, KeySquare, Shield } from 'lucide-react';
+import { Send } from 'lucide-react';
 
 const meta: Meta<typeof Card> = {
   component: Card,

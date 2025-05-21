@@ -4,7 +4,13 @@ import { CopyToClipboard } from './copy-to-clipboard';
 /**
  * Wraps `CopyToClipboard` and passes in a `CopyIcon` as the label.
  */
-export const CopyToClipboardIconButton = ({ text }: { text: string }) => {
+export const CopyToClipboardIconButton = ({
+  text,
+  ref,
+}: {
+  text: string;
+  ref: React.Ref<HTMLButtonElement>;
+}) => {
   return (
     <CopyToClipboard
       text={text}
@@ -16,6 +22,7 @@ export const CopyToClipboardIconButton = ({ text }: { text: string }) => {
       }
       successLabel={null}
       className='size-4'
+      ref={ref}
     />
   );
 };

@@ -105,7 +105,7 @@ export default {
           secondary: 'var(--text-secondary, rgba(255, 255, 255, 0.7))',
           tertiary: 'var(--text-tertiary, rgba(255, 255, 255, 0.5))',
           disabled: 'var(--text-disabled, rgba(255, 255, 255, 0.3))',
-        }
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',

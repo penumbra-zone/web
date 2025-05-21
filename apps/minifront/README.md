@@ -99,7 +99,7 @@ pnpm dev
 Minifront uses a specialized architecture to handle two Tailwind themes simultaneously:
 
 1. **The Legacy Theme** - Defined in `packages/tailwind-config/index.js` and used by minifront
-2. **The V2 Theme** - Defined in `packages/ui/src/theme/tailwind-config.ts` 
+2. **The V2 Theme** - Defined in `packages/ui/src/theme/tailwind-config.ts`
 
 To prevent conflicts between these themes, we've implemented a build system that creates prefixed versions of all v2 styles:
 
@@ -133,6 +133,7 @@ The dual CSS generation is configured in `packages/ui/package.json`:
 The key files enabling this are:
 
 1. **`packages/ui/tailwind.config.ts`**: Standard configuration for normal usage
+
    ```typescript
    export default {
      content: ['./src/**/*.{tsx,ts}'],
@@ -141,6 +142,7 @@ The key files enabling this are:
    ```
 
 2. **`packages/ui/tailwind.config.prefixed.ts`**: Configuration adding a prefix to all classes
+
    ```typescript
    export default {
      prefix: 'v2-',
@@ -161,6 +163,7 @@ The key files enabling this are:
 In minifront, we handle both themes by:
 
 1. In `main.tsx`: Importing the unprefixed CSS for legacy minifront components
+
    ```typescript
    import '@penumbra-zone/ui/style.css';
    import './index.css';
@@ -185,11 +188,13 @@ The specific order of these imports is crucial for proper styling:
 ```
 
 This order ensures:
+
 - Legacy components initially get their styling from the unprefixed CSS
 - V2 components get their styling from the prefixed CSS
 - If there are any conflicts, minifront's own Tailwind styles (generated from directives) take final precedence due to CSS cascade rules
 
 This provides clear separation between:
+
 - Legacy components using unprefixed classes (e.g., `bg-primary`)
 - V2 components using their own styling through prefixed classes (e.g., `v2-bg-primary`)
 
@@ -201,7 +206,7 @@ When importing v2 components from `@penumbra-zone/ui`, no extra steps are needed
 // Example: Import and use a v2 component
 import { AssetCard } from '@penumbra-zone/ui/AssetCard';
 
-// The component uses classNames like "bg-primary" in its source 
+// The component uses classNames like "bg-primary" in its source
 // But the CSS is loaded with the v2- prefix, so no conflicts occur
 function MyComponent() {
   return <AssetCard asset={myAsset} />;

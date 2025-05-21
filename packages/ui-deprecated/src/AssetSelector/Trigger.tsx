@@ -1,4 +1,4 @@
-import { forwardRef, MouseEventHandler } from 'react';
+import { MouseEventHandler, Ref } from 'react';
 import { styled, css } from 'styled-components';
 import { ChevronsUpDownIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -83,46 +83,52 @@ export interface AssetSelectorTriggerProps {
   disabled?: boolean;
   onClick?: MouseEventHandler<HTMLButtonElement>;
   layoutId?: string;
+  ref?: Ref<HTMLButtonElement>;
 }
 
-export const AssetSelectorTrigger = forwardRef<HTMLButtonElement, AssetSelectorTriggerProps>(
-  ({ value, actionType = 'default', disabled, onClick, layoutId }, ref) => {
-    const density = useDensity();
+export const AssetSelectorTrigger = ({
+  value,
+  actionType = 'default',
+  disabled,
+  onClick,
+  layoutId,
+  ref,
+}: AssetSelectorTriggerProps) => {
+  const density = useDensity();
 
-    const metadata = isMetadata(value) ? value : getMetadataFromBalancesResponse.optional(value);
+  const metadata = isMetadata(value) ? value : getMetadataFromBalancesResponse.optional(value);
 
-    return (
-      <Dialog.Trigger asChild>
-        <Trigger
-          ref={ref}
-          layoutId={layoutId}
-          disabled={disabled}
-          {...asTransientProps({ density, actionType })}
-          onClick={onClick}
-        >
-          {!value ? (
-            <Text small color={color => (disabled ? color.text.muted : color.text.primary)}>
-              Asset
+  return (
+    <Dialog.Trigger asChild>
+      <Trigger
+        ref={ref}
+        layoutId={layoutId}
+        disabled={disabled}
+        {...asTransientProps({ density, actionType })}
+        onClick={onClick}
+      >
+        {!value ? (
+          <Text small color={color => (disabled ? color.text.muted : color.text.primary)}>
+            Asset
+          </Text>
+        ) : (
+          <Value {...asTransientProps({ density, actionType })}>
+            <AssetIcon metadata={metadata} size={density === 'sparse' ? 'lg' : 'md'} />
+            <Text color={color => (disabled ? color.text.muted : color.text.primary)}>
+              {metadata?.symbol ?? 'Unknown'}
             </Text>
-          ) : (
-            <Value {...asTransientProps({ density, actionType })}>
-              <AssetIcon metadata={metadata} size={density === 'sparse' ? 'lg' : 'md'} />
-              <Text color={color => (disabled ? color.text.muted : color.text.primary)}>
-                {metadata?.symbol ?? 'Unknown'}
-              </Text>
-            </Value>
-          )}
+          </Value>
+        )}
 
-          <IconAdornment $disabled={disabled}>
-            <Icon
-              IconComponent={ChevronsUpDownIcon}
-              size='sm'
-              color={color => (disabled ? color.text.muted : color.text.primary)}
-            />
-          </IconAdornment>
-        </Trigger>
-      </Dialog.Trigger>
-    );
-  },
-);
+        <IconAdornment $disabled={disabled}>
+          <Icon
+            IconComponent={ChevronsUpDownIcon}
+            size='sm'
+            color={color => (disabled ? color.text.muted : color.text.primary)}
+          />
+        </IconAdornment>
+      </Trigger>
+    </Dialog.Trigger>
+  );
+};
 AssetSelectorTrigger.displayName = 'AssetSelectorTrigger';

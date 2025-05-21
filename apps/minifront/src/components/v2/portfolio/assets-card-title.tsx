@@ -1,6 +1,5 @@
-import React from 'react';
-import { InfoButton } from '@penumbra-zone/ui/InfoButton';
 import { ReactNode } from 'react';
+import { InfoButton } from '../shared/InfoButton';
 
 export interface AssetsCardTitleProps {
   /**
@@ -18,9 +17,9 @@ export const AssetsCardTitle: React.FC<AssetsCardTitleProps> = ({
   showInfoButton = true,
 }) => {
   return (
-    <div className="flex justify-between items-center">
+    <div className='flex items-center justify-between'>
       <span>Your Assets</span>
-      <div className="flex items-center gap-2">
+      <div className='flex items-center gap-2'>
         {endContent}
         {showInfoButton && <InfoButton />}
       </div>
