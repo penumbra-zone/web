@@ -83,7 +83,6 @@ export const assertSpendMax = async (
     feeAssetId,
   );
   if (
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- Ensure strict equality for spend amount components, as spend request must have a defined amount.
     totalNoteBalance.lo !== req.spends[0]?.value?.amount?.lo ||
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- Ensure strict equality for spend amount components, as spend request must have a defined amount.
     totalNoteBalance.hi !== req.spends[0]?.value?.amount?.hi
