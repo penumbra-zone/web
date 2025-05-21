@@ -30,7 +30,7 @@
     "./style-prefixed.css": "./dist/style-prefixed.css",
     "./*": {
       "types": "./dist/src/*/index.d.ts",
-      "default": "./dist/*/index.js"
+      "default": "./dist/src/*/index.js"
     }
   },
   "dependencies": {
