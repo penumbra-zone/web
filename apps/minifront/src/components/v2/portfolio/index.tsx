@@ -1,4 +1,4 @@
-import { Card } from '@penumbra-zone/ui/Card';
+import { Card } from '@penumbra-zone/ui';
 import { AssetCard } from './assets/AssetCard';
 import {
   BalancesByAccount,

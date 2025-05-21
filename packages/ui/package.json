@@ -23,14 +23,14 @@
   ],
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
+      "types": "./dist/src/index.d.ts",
       "default": "./dist/index.js"
     },
     "./style.css": "./dist/style.css",
     "./style-prefixed.css": "./dist/style-prefixed.css",
     "./*": {
       "types": "./dist/src/*/index.d.ts",
-      "default": "./dist/src/*/index.js"
+      "default": "./dist/*/index.js"
     }
   },
   "dependencies": {
