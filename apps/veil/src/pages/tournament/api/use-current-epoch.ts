@@ -5,6 +5,7 @@ export const useCurrentEpoch = (onChange?: (newEpoch: number) => void) => {
   const {
     data: summary,
     isLoading,
+    isFetched,
     status,
   } = useTournamentSummary({
     limit: 1,
@@ -27,5 +28,6 @@ export const useCurrentEpoch = (onChange?: (newEpoch: number) => void) => {
     epoch: summary?.[0]?.epoch,
     isLoading,
     status,
+    isFetched,
   };
 };
