@@ -4,8 +4,8 @@ import * as React from 'react';
 import * as SwitchPrimitives from '@radix-ui/react-switch';
 import { cn } from '../../../lib/utils';
 
-interface SwitchProps extends React.ComponentPropsWithoutRef<typeof SwitchPrimitives.Root> {
-  ref?: React.Ref<React.ElementRef<typeof SwitchPrimitives.Root>>;
+export interface SwitchProps extends React.ComponentPropsWithoutRef<typeof SwitchPrimitives.Root> {
+  ref?: React.Ref<HTMLButtonElement>; // Switch root is a button
 }
 
 const Switch = ({ className, ref, ...props }: SwitchProps) => (

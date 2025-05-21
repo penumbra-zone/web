@@ -13,9 +13,9 @@ const Tooltip = TooltipPrimitive.Root;
 
 const TooltipTrigger = TooltipPrimitive.Trigger;
 
-interface TooltipContentProps
+export interface TooltipContentProps
   extends React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content> {
-  ref?: React.Ref<React.ElementRef<typeof TooltipPrimitive.Content>>;
+  ref?: React.Ref<HTMLDivElement>;
 }
 
 const TooltipContent = ({ className, sideOffset = 4, ref, ...props }: TooltipContentProps) => (

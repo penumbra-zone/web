@@ -10,7 +10,7 @@ export interface CopyToClipboardProps extends ButtonHTMLAttributes<HTMLButtonEle
   labelType?: 'text' | 'icon';
   label: ReactNode;
   successLabel?: ReactNode;
-  ref: Ref<HTMLButtonElement>;
+  ref?: Ref<HTMLButtonElement>;
 }
 
 const CopyToClipboard = ({

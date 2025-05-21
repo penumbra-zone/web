@@ -1,37 +1,33 @@
 import * as React from 'react';
 import { cn } from '../../../lib/utils';
 
-interface TableProps extends React.HTMLAttributes<HTMLTableElement> {
+export interface TableProps extends React.HTMLAttributes<HTMLTableElement> {
   ref?: React.Ref<HTMLTableElement>;
 }
-
 const Table = ({ className, ref, ...props }: TableProps) => (
   <table ref={ref} className={cn('w-full caption-bottom text-sm', className)} {...props} />
 );
 Table.displayName = 'Table';
 
-interface TableHeaderProps extends React.HTMLAttributes<HTMLTableSectionElement> {
+export interface TableHeaderProps extends React.HTMLAttributes<HTMLTableSectionElement> {
   ref?: React.Ref<HTMLTableSectionElement>;
 }
-
 const TableHeader = ({ className, ref, ...props }: TableHeaderProps) => (
   <thead ref={ref} className={cn('[&_tr]:border-b', className)} {...props} />
 );
 TableHeader.displayName = 'TableHeader';
 
-interface TableBodyProps extends React.HTMLAttributes<HTMLTableSectionElement> {
+export interface TableBodyProps extends React.HTMLAttributes<HTMLTableSectionElement> {
   ref?: React.Ref<HTMLTableSectionElement>;
 }
-
 const TableBody = ({ className, ref, ...props }: TableBodyProps) => (
   <tbody ref={ref} className={cn('[&_tr:last-child]:border-0', className)} {...props} />
 );
 TableBody.displayName = 'TableBody';
 
-interface TableFooterProps extends React.HTMLAttributes<HTMLTableSectionElement> {
+export interface TableFooterProps extends React.HTMLAttributes<HTMLTableSectionElement> {
   ref?: React.Ref<HTMLTableSectionElement>;
 }
-
 const TableFooter = ({ className, ref, ...props }: TableFooterProps) => (
   <tfoot
     ref={ref}
@@ -41,19 +37,17 @@ const TableFooter = ({ className, ref, ...props }: TableFooterProps) => (
 );
 TableFooter.displayName = 'TableFooter';
 
-interface TableRowProps extends React.HTMLAttributes<HTMLTableRowElement> {
+export interface TableRowProps extends React.HTMLAttributes<HTMLTableRowElement> {
   ref?: React.Ref<HTMLTableRowElement>;
 }
-
 const TableRow = ({ className, ref, ...props }: TableRowProps) => (
   <tr ref={ref} className={cn('border-b border-border-secondary', className)} {...props} />
 );
 TableRow.displayName = 'TableRow';
 
-interface TableHeadProps extends React.ThHTMLAttributes<HTMLTableCellElement> {
+export interface TableHeadProps extends React.ThHTMLAttributes<HTMLTableCellElement> {
   ref?: React.Ref<HTMLTableCellElement>;
 }
-
 const TableHead = ({ className, ref, ...props }: TableHeadProps) => (
   <th
     ref={ref}
@@ -66,10 +60,9 @@ const TableHead = ({ className, ref, ...props }: TableHeadProps) => (
 );
 TableHead.displayName = 'TableHead';
 
-interface TableCellProps extends React.TdHTMLAttributes<HTMLTableCellElement> {
+export interface TableCellProps extends React.TdHTMLAttributes<HTMLTableCellElement> {
   ref?: React.Ref<HTMLTableCellElement>;
 }
-
 const TableCell = ({ className, ref, ...props }: TableCellProps) => (
   <td
     ref={ref}
@@ -79,10 +72,9 @@ const TableCell = ({ className, ref, ...props }: TableCellProps) => (
 );
 TableCell.displayName = 'TableCell';
 
-interface TableCaptionProps extends React.HTMLAttributes<HTMLTableCaptionElement> {
+export interface TableCaptionProps extends React.HTMLAttributes<HTMLTableCaptionElement> {
   ref?: React.Ref<HTMLTableCaptionElement>;
 }
-
 const TableCaption = ({ className, ref, ...props }: TableCaptionProps) => (
   <caption ref={ref} className={cn('mt-4 text-sm text-muted-foreground', className)} {...props} />
 );

@@ -7,8 +7,8 @@ import { Search } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { Dialog, DialogContent } from '../dialog';
 
-interface CommandProps extends React.ComponentPropsWithoutRef<typeof CommandPrimitive> {
-  ref?: React.Ref<React.ElementRef<typeof CommandPrimitive>>;
+export interface CommandProps extends React.ComponentPropsWithoutRef<typeof CommandPrimitive> {
+  ref?: React.Ref<HTMLDivElement>;
 }
 
 const Command = ({ className, ref, ...props }: CommandProps) => (
@@ -37,8 +37,9 @@ const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
   );
 };
 
-interface CommandInputProps extends React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input> {
-  ref?: React.Ref<React.ElementRef<typeof CommandPrimitive.Input>>;
+export interface CommandInputProps
+  extends React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input> {
+  ref?: React.Ref<HTMLInputElement>;
 }
 
 const CommandInput = ({ className, ref, ...props }: CommandInputProps) => (
@@ -57,8 +58,9 @@ const CommandInput = ({ className, ref, ...props }: CommandInputProps) => (
 );
 CommandInput.displayName = CommandPrimitive.Input.displayName;
 
-interface CommandListProps extends React.ComponentPropsWithoutRef<typeof CommandPrimitive.List> {
-  ref?: React.Ref<React.ElementRef<typeof CommandPrimitive.List>>;
+export interface CommandListProps
+  extends React.ComponentPropsWithoutRef<typeof CommandPrimitive.List> {
+  ref?: React.Ref<HTMLDivElement>;
 }
 
 const CommandList = ({ className, ref, ...props }: CommandListProps) => (
@@ -70,17 +72,23 @@ const CommandList = ({ className, ref, ...props }: CommandListProps) => (
 );
 CommandList.displayName = CommandPrimitive.List.displayName;
 
-interface CommandEmptyProps extends React.ComponentPropsWithoutRef<typeof CommandPrimitive.Empty> {
-  ref?: React.Ref<React.ElementRef<typeof CommandPrimitive.Empty>>;
+export interface CommandEmptyProps
+  extends React.ComponentPropsWithoutRef<typeof CommandPrimitive.Empty> {
+  ref?: React.Ref<HTMLDivElement>;
 }
 
-const CommandEmpty = ({ ref, ...props }: CommandEmptyProps) => (
-  <CommandPrimitive.Empty ref={ref} className='py-6 text-center text-sm' {...props} />
+const CommandEmpty = ({ ref, className, ...props }: CommandEmptyProps & { className?: string }) => (
+  <CommandPrimitive.Empty
+    ref={ref}
+    className={cn('py-6 text-center text-sm', className)}
+    {...props}
+  />
 );
 CommandEmpty.displayName = CommandPrimitive.Empty.displayName;
 
-interface CommandGroupProps extends React.ComponentPropsWithoutRef<typeof CommandPrimitive.Group> {
-  ref?: React.Ref<React.ElementRef<typeof CommandPrimitive.Group>>;
+export interface CommandGroupProps
+  extends React.ComponentPropsWithoutRef<typeof CommandPrimitive.Group> {
+  ref?: React.Ref<HTMLDivElement>;
 }
 
 const CommandGroup = ({ className, ref, ...props }: CommandGroupProps) => (
@@ -95,9 +103,9 @@ const CommandGroup = ({ className, ref, ...props }: CommandGroupProps) => (
 );
 CommandGroup.displayName = CommandPrimitive.Group.displayName;
 
-interface CommandSeparatorProps
+export interface CommandSeparatorProps
   extends React.ComponentPropsWithoutRef<typeof CommandPrimitive.Separator> {
-  ref?: React.Ref<React.ElementRef<typeof CommandPrimitive.Separator>>;
+  ref?: React.Ref<HTMLDivElement>;
 }
 
 const CommandSeparator = ({ className, ref, ...props }: CommandSeparatorProps) => (
@@ -109,8 +117,9 @@ const CommandSeparator = ({ className, ref, ...props }: CommandSeparatorProps) =
 );
 CommandSeparator.displayName = CommandPrimitive.Separator.displayName;
 
-interface CommandItemProps extends React.ComponentPropsWithoutRef<typeof CommandPrimitive.Item> {
-  ref?: React.Ref<React.ElementRef<typeof CommandPrimitive.Item>>;
+export interface CommandItemProps
+  extends React.ComponentPropsWithoutRef<typeof CommandPrimitive.Item> {
+  ref?: React.Ref<HTMLDivElement>;
 }
 
 const CommandItem = ({ className, ref, ...props }: CommandItemProps) => (

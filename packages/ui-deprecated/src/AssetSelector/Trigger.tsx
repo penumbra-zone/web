@@ -1,4 +1,4 @@
-import { MouseEventHandler, Ref } from 'react';
+import { MouseEventHandler, Ref, FC } from 'react';
 import { styled, css } from 'styled-components';
 import { ChevronsUpDownIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -86,16 +86,15 @@ export interface AssetSelectorTriggerProps {
   ref?: Ref<HTMLButtonElement>;
 }
 
-export const AssetSelectorTrigger = ({
+export const AssetSelectorTrigger: FC<AssetSelectorTriggerProps> = ({
   value,
   actionType = 'default',
   disabled,
   onClick,
   layoutId,
   ref,
-}: AssetSelectorTriggerProps) => {
+}) => {
   const density = useDensity();
-
   const metadata = isMetadata(value) ? value : getMetadataFromBalancesResponse.optional(value);
 
   return (
@@ -119,7 +118,6 @@ export const AssetSelectorTrigger = ({
             </Text>
           </Value>
         )}
-
         <IconAdornment $disabled={disabled}>
           <Icon
             IconComponent={ChevronsUpDownIcon}

@@ -1,16 +1,15 @@
 import { CopyIcon } from 'lucide-react';
-import { CopyToClipboard } from './copy-to-clipboard';
+import { CopyToClipboard, CopyToClipboardProps } from './copy-to-clipboard';
+import * as React from 'react';
+
+export interface CopyToClipboardIconButtonProps extends Pick<CopyToClipboardProps, 'text'> {
+  ref?: React.Ref<HTMLButtonElement>;
+}
 
 /**
  * Wraps `CopyToClipboard` and passes in a `CopyIcon` as the label.
  */
-export const CopyToClipboardIconButton = ({
-  text,
-  ref,
-}: {
-  text: string;
-  ref: React.Ref<HTMLButtonElement>;
-}) => {
+export const CopyToClipboardIconButton = ({ text, ref }: CopyToClipboardIconButtonProps) => {
   return (
     <CopyToClipboard
       text={text}
@@ -26,3 +25,5 @@ export const CopyToClipboardIconButton = ({
     />
   );
 };
+
+CopyToClipboardIconButton.displayName = 'CopyToClipboardIconButton';

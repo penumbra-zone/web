@@ -2,7 +2,7 @@ import { styled } from 'styled-components';
 import { small } from '../utils/typography';
 import { ActionType, getOutlineColorByActionType } from '../utils/ActionType';
 import { useDisabled } from '../hooks/useDisabled';
-import { ReactNode } from 'react';
+import { ReactNode, Ref, FC } from 'react';
 
 const Wrapper = styled.div<{
   $hasStartAdornment: boolean;
@@ -97,7 +97,7 @@ export interface TextInputProps {
   endAdornment?: ReactNode;
   max?: string | number;
   min?: string | number;
-  ref?: React.Ref<HTMLInputElement>;
+  ref?: Ref<HTMLInputElement>;
 }
 
 /**
@@ -106,7 +106,7 @@ export interface TextInputProps {
  * Can be enriched with start and end adornments, which are markup that render
  * inside the text input's visual frame.
  */
-export const TextInput = ({
+export const TextInput: FC<TextInputProps> = ({
   value,
   onChange,
   placeholder,
@@ -118,7 +118,7 @@ export const TextInput = ({
   max,
   min,
   ref,
-}: TextInputProps) => (
+}) => (
   <Wrapper
     $actionType={actionType}
     $hasStartAdornment={!!startAdornment}

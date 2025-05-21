@@ -17,18 +17,19 @@ const SheetPortal = ({ ...props }: SheetPrimitive.DialogPortalProps) => (
 );
 SheetPortal.displayName = SheetPrimitive.Portal.displayName;
 
-interface SheetOverlayProps extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Overlay> {
-  ref?: React.Ref<React.ElementRef<typeof SheetPrimitive.Overlay>>;
+export interface SheetOverlayProps
+  extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Overlay> {
+  ref?: React.Ref<HTMLDivElement>;
 }
 
 const SheetOverlay = ({ className, ref, ...props }: SheetOverlayProps) => (
   <SheetPrimitive.Overlay
+    ref={ref}
     className={cn(
       'fixed inset-0 z-50 bg-background/80 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=open]:fill-mode-forwards data-[state=closed]:fill-mode-forwards',
       className,
     )}
     {...props}
-    ref={ref}
   />
 );
 SheetOverlay.displayName = SheetPrimitive.Overlay.displayName;
@@ -52,10 +53,10 @@ const sheetVariants = cva(
   },
 );
 
-interface SheetContentProps
+export interface SheetContentProps
   extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
     VariantProps<typeof sheetVariants> {
-  ref?: React.Ref<React.ElementRef<typeof SheetPrimitive.Content>>;
+  ref?: React.Ref<HTMLDivElement>;
 }
 
 const SheetContent = ({
@@ -98,8 +99,9 @@ const SheetFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElemen
 );
 SheetFooter.displayName = 'SheetFooter';
 
-interface SheetTitleProps extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Title> {
-  ref?: React.Ref<React.ElementRef<typeof SheetPrimitive.Title>>;
+export interface SheetTitleProps
+  extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Title> {
+  ref?: React.Ref<HTMLHeadingElement>;
 }
 
 const SheetTitle = ({ className, ref, ...props }: SheetTitleProps) => (
@@ -111,9 +113,9 @@ const SheetTitle = ({ className, ref, ...props }: SheetTitleProps) => (
 );
 SheetTitle.displayName = SheetPrimitive.Title.displayName;
 
-interface SheetDescriptionProps
+export interface SheetDescriptionProps
   extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Description> {
-  ref?: React.Ref<React.ElementRef<typeof SheetPrimitive.Description>>;
+  ref?: React.Ref<HTMLParagraphElement>;
 }
 
 const SheetDescription = ({ className, ref, ...props }: SheetDescriptionProps) => (

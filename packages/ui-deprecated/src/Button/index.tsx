@@ -1,4 +1,4 @@
-import { FC, MouseEventHandler, ReactNode } from 'react';
+import { FC, MouseEventHandler, ReactNode, Ref } from 'react';
 import { styled, css, DefaultTheme } from 'styled-components';
 import { asTransientProps } from '../utils/asTransientProps';
 import { Priority, focusOutline, overlays, buttonBase } from '../utils/button';
@@ -114,7 +114,7 @@ interface BaseButtonProps {
   disabled?: boolean;
   onClick?: MouseEventHandler<HTMLButtonElement>;
   priority?: Priority;
-  ref?: React.Ref<HTMLButtonElement>;
+  ref?: Ref<HTMLButtonElement>;
 }
 
 interface IconOnlyProps {
@@ -174,7 +174,7 @@ export type ButtonProps = BaseButtonProps & (IconOnlyProps | RegularProps) & Mot
  * (`<a />`) tag (or `<Link />`, if you're using e.g., React Router) and leave
  * `onClick` undefined.
  */
-export const Button = ({
+export const Button: FC<ButtonProps> = ({
   children,
   disabled = false,
   onClick,
@@ -185,10 +185,8 @@ export const Button = ({
   priority = 'primary',
   motion,
   ref,
-  // needed for the Radix's `asChild` prop to work correctly
-  // https://www.radix-ui.com/primitives/docs/guides/composition#composing-with-your-own-react-components
   ...props
-}: ButtonProps) => {
+}) => {
   const density = useDensity();
 
   return (

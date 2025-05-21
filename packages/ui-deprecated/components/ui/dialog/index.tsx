@@ -56,9 +56,9 @@ const DialogPortal = DialogPrimitive.Portal;
 
 const DialogClose = DialogPrimitive.Close;
 
-interface DialogOverlayProps
+export interface DialogOverlayProps
   extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay> {
-  ref?: React.Ref<React.ElementRef<typeof DialogPrimitive.Overlay>>;
+  ref?: React.Ref<HTMLDivElement>;
 }
 
 const DialogOverlay = ({ className, ref, ...props }: DialogOverlayProps) => (
@@ -113,10 +113,13 @@ const dialogContentVariants = cva(
     },
   },
 );
-interface DialogContentProps extends VariantProps<typeof dialogContentVariants> {
+
+export interface DialogContentProps
+  extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>,
+    VariantProps<typeof dialogContentVariants> {
   children?: React.ReactNode;
   layoutId?: string;
-  ref?: React.Ref<React.ElementRef<typeof DialogPrimitive.Content>>;
+  ref?: React.Ref<HTMLDivElement>;
 }
 
 const DialogContent = ({ children, size, layoutId, ref }: DialogContentProps) => (
@@ -164,13 +167,12 @@ const DialogFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivEleme
 );
 DialogFooter.displayName = 'DialogFooter';
 
-const DialogTitle = ({
-  className,
-  ref,
-  ...props
-}: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title> & {
-  ref?: React.Ref<React.ElementRef<typeof DialogPrimitive.Title>>;
-}) => (
+export interface DialogTitleProps
+  extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title> {
+  ref?: React.Ref<HTMLHeadingElement>;
+}
+
+const DialogTitle = ({ className, ref, ...props }: DialogTitleProps) => (
   <DialogPrimitive.Title
     ref={ref}
     className={cn('text-lg font-semibold leading-none tracking-tight', className)}
@@ -179,13 +181,12 @@ const DialogTitle = ({
 );
 DialogTitle.displayName = DialogPrimitive.Title.displayName;
 
-const DialogDescription = ({
-  className,
-  ref,
-  ...props
-}: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description> & {
-  ref?: React.Ref<React.ElementRef<typeof DialogPrimitive.Description>>;
-}) => (
+export interface DialogDescriptionProps
+  extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description> {
+  ref?: React.Ref<HTMLParagraphElement>;
+}
+
+const DialogDescription = ({ className, ref, ...props }: DialogDescriptionProps) => (
   <DialogPrimitive.Description
     ref={ref}
     className={cn('text-sm text-muted-foreground', className)}

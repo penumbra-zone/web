@@ -6,10 +6,9 @@ import { cn } from '../../../lib/utils';
 
 const Tabs = TabsPrimitive.Root;
 
-interface TabsListProps extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.List> {
-  ref?: React.Ref<React.ElementRef<typeof TabsPrimitive.List>>;
+export interface TabsListProps extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.List> {
+  ref?: React.Ref<HTMLDivElement>;
 }
-
 const TabsList = ({ className, ref, ...props }: TabsListProps) => (
   <TabsPrimitive.List
     ref={ref}
@@ -22,10 +21,10 @@ const TabsList = ({ className, ref, ...props }: TabsListProps) => (
 );
 TabsList.displayName = TabsPrimitive.List.displayName;
 
-interface TabsTriggerProps extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger> {
-  ref?: React.Ref<React.ElementRef<typeof TabsPrimitive.Trigger>>;
+export interface TabsTriggerProps
+  extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger> {
+  ref?: React.Ref<HTMLButtonElement>;
 }
-
 const TabsTrigger = ({ className, ref, ...props }: TabsTriggerProps) => (
   <TabsPrimitive.Trigger
     ref={ref}
@@ -38,10 +37,10 @@ const TabsTrigger = ({ className, ref, ...props }: TabsTriggerProps) => (
 );
 TabsTrigger.displayName = TabsPrimitive.Trigger.displayName;
 
-interface TabsContentProps extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content> {
-  ref?: React.Ref<React.ElementRef<typeof TabsPrimitive.Content>>;
+export interface TabsContentProps
+  extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content> {
+  ref?: React.Ref<HTMLDivElement>;
 }
-
 const TabsContent = ({ className, ref, ...props }: TabsContentProps) => (
   <TabsPrimitive.Content
     ref={ref}
