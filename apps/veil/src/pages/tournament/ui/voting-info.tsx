@@ -24,17 +24,30 @@ export const useVotingInfo = (defaultEpoch?: number) => {
   const { connected, subaccount } = connectionStore;
   const getMetadata = useGetMetadata();
 
-  const { epoch: currentEpoch, isLoading: loadingEpoch } = useCurrentEpoch();
+  const {
+    epoch: currentEpoch,
+    isLoading: loadingEpoch,
+    isFetched: epochFetched,
+  } = useCurrentEpoch();
   const epoch = defaultEpoch ?? currentEpoch;
   const isEnded = !currentEpoch || !epoch || epoch !== currentEpoch || loadingEpoch;
 
-  const { data: notes, isLoading: loadingNotes } = useLQTNotes(subaccount, epoch, isEnded);
+  const {
+    data: notes,
+    isLoading: loadingNotes,
+    isFetched: notesFetched,
+  } = useLQTNotes(subaccount, epoch, isEnded);
   const { data: votes, isLoading: loadingVotes } = useTournamentVotes(epoch, isEnded);
-  const { data: delegations, isLoading: delegationsLoading } = useAccountDelegations(
-    isEnded || !!notes?.length,
-  );
+  const {
+    data: delegations,
+    isLoading: delegationsLoading,
+    isFetched: delegationsFetched,
+  } = useAccountDelegations(isEnded || !!notes?.length);
 
-  const isLoading = loadingEpoch || loadingNotes || delegationsLoading;
+  const isLoading =
+    (loadingEpoch && !epochFetched) ||
+    (loadingNotes && !notesFetched) ||
+    (delegationsLoading && !delegationsFetched);
   const isVoted = !!votes?.length;
   const isDelegated = !!delegations?.length;
 
