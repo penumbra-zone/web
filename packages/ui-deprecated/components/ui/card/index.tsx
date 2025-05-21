@@ -8,15 +8,27 @@ export interface CardProps extends Omit<HTMLMotionProps<'div'>, 'ref'> {
   ref?: React.Ref<HTMLDivElement>;
 }
 
+const getCardBackgroundClass = (light?: boolean, gradient?: boolean): string => {
+  if (light) {
+    return 'bg-stone-300';
+  }
+  if (gradient) {
+    return 'bg-card-radial';
+  }
+  return 'bg-charcoal';
+};
+
 const Card = ({ className, gradient, light, children, layout, ref, ...rest }: CardProps) => {
   const baseClasses = 'rounded-lg shadow-sm p-[30px] overflow-hidden';
+  const backgroundClass = getCardBackgroundClass(light, gradient);
+
   return (
     <motion.div
       layout={layout} // layout prop from HTMLMotionProps
       ref={ref}
       className={cn(
         baseClasses,
-        light ? 'bg-stone-300' : gradient ? 'bg-card-radial' : 'bg-charcoal',
+        backgroundClass, // Use the determined background class
         className,
       )}
       {...rest}
