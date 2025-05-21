@@ -4,7 +4,6 @@ import { apiPostFetch } from '@/shared/utils/api-fetch';
 import { penumbra } from '@/shared/const/penumbra';
 import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { ViewService } from '@penumbra-zone/protobuf/penumbra/view/v1/view_connect';
-import { statusStore } from '@/shared/model/status';
 import { useCurrentEpoch } from '@/pages/tournament/api/use-current-epoch';
 import {
   LpLeaderboardRequest,
@@ -35,7 +34,6 @@ export const useMyLpLeaderboard = ({
   isActive: boolean;
   assetId: string | undefined;
 }): UseQueryResult<LpLeaderboardResponse> => {
-  const { latestKnownBlockHeight } = statusStore;
   const { epoch: currentEpoch } = useCurrentEpoch();
 
   const { data: positionIds } = useQuery({
@@ -67,7 +65,6 @@ export const useMyLpLeaderboard = ({
       sortKey,
       sortDirection,
       assetId,
-      ...(epoch === currentEpoch ? [Number(latestKnownBlockHeight)] : []),
     ],
     staleTime: Infinity,
     queryFn: async () => {
@@ -85,11 +82,8 @@ export const useMyLpLeaderboard = ({
         assetId,
       } as LpLeaderboardRequest);
     },
-    enabled:
-      typeof epoch === 'number' &&
-      positionIds !== undefined &&
-      isActive &&
-      (epoch === currentEpoch ? !!latestKnownBlockHeight : true),
+    enabled: typeof epoch === 'number' && positionIds !== undefined && isActive,
+    refetchInterval: epoch === currentEpoch ? 10000 : false,
   });
 
   return query;
