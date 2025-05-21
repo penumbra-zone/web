@@ -77,20 +77,17 @@ export const assertSpendMax = async (
   });
 
   // Constraint: validate the requested spend amount is equal to the accumulated note balance.
-  const spendValue = req.spends[0]?.value;
-  if (!spendValue || !spendValue.amount) {
-    throw new ConnectError('Invalid transaction: Missing value or amount in spend request.');
-  }
-
-  const { lo: spendLo, hi: spendHi } = spendValue.amount;
-
   const totalNoteBalance = await indexedDb.totalNoteBalance(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- already asserted source existence
     req.source!.account,
     feeAssetId,
   );
-
-  if (totalNoteBalance.lo !== spendLo || totalNoteBalance.hi !== spendHi) {
+  if (
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- Ensure strict equality for spend amount components, as spend request must have a defined amount.
+    totalNoteBalance.lo !== req.spends[0]?.value?.amount?.lo ||
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- Ensure strict equality for spend amount components, as spend request must have a defined amount.
+    totalNoteBalance.hi !== req.spends[0]?.value?.amount?.hi
+  ) {
     throw new ConnectError('Invalid transaction: Spend transaction was constructed improperly.');
   }
 

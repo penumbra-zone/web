@@ -106,6 +106,7 @@ export default {
           tertiary: 'var(--text-tertiary, rgba(255, 255, 255, 0.5))',
           disabled: 'var(--text-disabled, rgba(255, 255, 255, 0.3))',
         },
+        'other-tonalFill5': 'rgba(250, 250, 250, 0.05)',
       },
       borderRadius: {
         lg: 'var(--radius)',

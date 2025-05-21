@@ -1,4 +1,3 @@
-import { PortfolioBalance } from './assets/PortfolioBalance';
 import { Card } from '@penumbra-zone/ui/Card';
 import { AssetCard } from './assets/AssetCard';
 import {
@@ -40,7 +39,9 @@ export const Portfolio = () => {
   // Fetch real data from Prax client
   const balancesByAccount = useBalancesResponses({
     select: (state: AbridgedZQueryState<BalancesResponse[]>) => {
-      if (!state.data) return [];
+      if (!state.data) {
+        return [];
+      }
 
       return state.data
         .filter(shouldDisplay)
@@ -53,10 +54,14 @@ export const Portfolio = () => {
             error: null,
           });
 
-          if (!accounts.length) return acc;
+          if (!accounts.length) {
+            return acc;
+          }
 
           const account = accounts[0];
-          if (!account) return acc;
+          if (!account) {
+            return acc;
+          }
 
           const existingAccount = acc.find(a => a.account === account.account);
 
@@ -73,11 +78,13 @@ export const Portfolio = () => {
 
   // Transform balances data to format expected by AssetCard
   const accounts = useMemo(() => {
-    if (!balancesByAccount) return [];
+    if (!balancesByAccount) {
+      return [];
+    }
 
     return balancesByAccount.map(account => {
       // The addressView should be the AddressView protobuf message itself
-      const firstBalance = account.balances?.[0];
+      const firstBalance = account.balances[0];
       const addressView = firstBalance?.accountAddress;
 
       return {
@@ -89,7 +96,9 @@ export const Portfolio = () => {
             const valueView = getBalanceView.optional(balance);
             const metadata = getMetadataFromBalancesResponse.optional(balance);
 
-            if (!valueView || !metadata) return null;
+            if (!valueView || !metadata) {
+              return null;
+            }
 
             // Get the proper display exponent for this asset
             const displayExponent = getDisplayDenomExponent(metadata);
@@ -105,7 +114,7 @@ export const Portfolio = () => {
               : '0';
 
             // Get the proper metadata display values
-            const symbol = metadata.symbol || '';
+            const symbol = metadata.symbol;
 
             // Use metadata.name for proper display name (like "TestUSD" or "Penumbra")
             // Fallback to symbol if name is not available
@@ -119,6 +128,7 @@ export const Portfolio = () => {
               // Don't include the symbol in amount - the component will add it
               amount: displayAmount,
               value: null,
+              // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- empty string for icon path is valid and should not be coalesced to undefined, || is intentional here
               icon: metadata.images[0]?.png || metadata.images[0]?.svg || undefined,
             };
 
@@ -131,22 +141,21 @@ export const Portfolio = () => {
 
   // For now we don't have actual value calculation
   // In a future implementation, we would calculate a real total balance value here
-  const totalBalanceValue = null;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-      {totalBalanceValue && <PortfolioBalance balance={totalBalanceValue} currency='USDC' />}
+      {/* PortfolioBalance hidden until totalBalanceValue is implemented */}
 
-      <div className='flex flex-1 gap-4 w-full flex-col md:flex-row'>
+      <div className='flex w-full flex-1 flex-col gap-4 md:flex-row'>
         {/* Asset Card with real data */}
         <div className='flex-1'>
-          <AssetCard accounts={accounts as any} showInfoButton={true} />
+          <AssetCard accounts={accounts} showInfoButton={true} />
         </div>
 
         {/* Reserved space for Transactions, to be implemented later */}
         <div className='flex-1'>
           <Card title='Your Recent Transactions'>
-            <div className='flex justify-center items-center h-[400px] text-text-secondary'>
+            <div className='flex h-[400px] items-center justify-center text-text-secondary'>
               Transactions will be displayed here
             </div>
           </Card>

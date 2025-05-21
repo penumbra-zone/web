@@ -7,7 +7,7 @@ export interface InfoButtonProps {
    * Array of sections to display in the dialog.
    * Each section should have a title and content.
    */
-  sections?: Array<{
+  sections?: {
     /**
      * The title/header of this section
      */
@@ -20,7 +20,7 @@ export interface InfoButtonProps {
      * The content text of this section
      */
     content: string;
-  }>;
+  }[];
   /**
    * The title of the dialog
    */
@@ -83,7 +83,7 @@ export const InfoButton = ({
             {sections.map((section, index) => (
               <div key={index} className='flex flex-col gap-2'>
                 <div className='flex items-center gap-2'>
-                  {section.icon && <div className='text-primary-main'>{section.icon}</div>}
+                  {section.icon && <div className='text-primary'>{section.icon}</div>}
                   <Text color='text.primary' variant='strong'>
                     {section.title}
                   </Text>
