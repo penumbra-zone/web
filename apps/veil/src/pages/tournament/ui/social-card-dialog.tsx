@@ -69,6 +69,48 @@ function shareToX(text: string, url: string) {
   window.open(tweetUrl, '_blank');
 }
 
+const SocialCardCanvas = ({ params }: { params?: TournamentParams }) => {
+  const { data: stakingToken } = useStakingTokenMetadata();
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const hasDrawn = useRef(false);
+
+  useEffect(() => {
+    if (!params || hasDrawn.current) {
+      return;
+    }
+
+    const canvas = canvasRef.current;
+    const exponent = getDisplayDenomExponent.optional(stakingToken);
+
+    // Check canvas requirments before rendering
+    if (!canvas || exponent === undefined) {
+      return;
+    }
+
+    if (exponent) {
+      void renderTournamentEarningsCanvas(canvas, params, exponent, {
+        width: 512,
+        height: 512,
+      });
+      hasDrawn.current = true;
+    }
+
+    return () => {
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    };
+  }, [params, stakingToken]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className='w-full h-auto max-w-[512px] aspect-square bg-other-tonalFill10'
+    />
+  );
+};
+
 /**
  * - One time per epoch modal
  * - If you got a reward, this social card is displayed which can be shared on X
@@ -84,7 +126,6 @@ function shareToX(text: string, url: string) {
 export const SocialCardDialog = observer(
   ({ onClose, epoch }: { epoch: number; onClose: () => void }) => {
     const { subaccount } = connectionStore;
-    const { data: stakingToken } = useStakingTokenMetadata();
     const [initialParams, setInitialParams] = useState<TournamentParams | undefined>(undefined);
 
     const { data: summary, isLoading: loadingSummary } = useTournamentSummary({
@@ -123,7 +164,6 @@ export const SocialCardDialog = observer(
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [dontShowAgain, setDontShowAgain] = useState(false);
-    const hasDrawn = useRef(false);
 
     const text = `🚨 Penumbra's Liquidity Tournament is LIVE! 🚨
 
@@ -135,38 +175,7 @@ export const SocialCardDialog = observer(
 
     const url = initialParams ? `${baseUrl}/tournament/join?${encodeParams(initialParams)}` : '';
 
-    useEffect(() => {
-      if (!initialParams || hasDrawn.current) {
-        return;
-      }
-
-      const canvas = canvasRef.current;
-      const exponent = getDisplayDenomExponent.optional(stakingToken);
-
-      // Check canvas requirments before rendering
-      if (!canvas || exponent === undefined) {
-        return;
-      }
-
-      if (canvas && exponent) {
-        void renderTournamentEarningsCanvas(canvas, initialParams, exponent, {
-          width: 512,
-          height: 512,
-        });
-        hasDrawn.current = true;
-      }
-
-      return () => {
-        if (canvas) {
-          const ctx = canvas.getContext('2d');
-          if (ctx) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-          }
-        }
-      };
-    }, [initialParams, stakingToken]);
-
-    if (!initialParams || !initialParams.rewarded) {
+    if (!initialParams?.rewarded) {
       return null;
     }
 
@@ -203,10 +212,7 @@ export const SocialCardDialog = observer(
         >
           <div id='tournament-social-description'>
             <div className='flex justify-center overflow-x-hidden'>
-              <canvas
-                ref={canvasRef}
-                className='w-full h-auto max-w-[512px] aspect-square bg-other-tonalFill10'
-              />
+              <SocialCardCanvas params={initialParams} />
             </div>
           </div>
         </Dialog.Content>
