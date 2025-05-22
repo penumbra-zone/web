@@ -42,7 +42,7 @@ export const LandingCard = observer(() => {
     epochLoading,
   );
 
-  const { isOpen: showSocial, close: hideSocial } = useTournamentSocialCard();
+  const { isOpen: showSocial, close: hideSocial } = useTournamentSocialCard(epoch!);
 
   return (
     <>
