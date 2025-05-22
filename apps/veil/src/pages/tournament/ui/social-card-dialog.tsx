@@ -17,7 +17,6 @@ import { useCurrentEpoch } from '../api/use-current-epoch';
 import { usePersonalRewards } from '../api/use-personal-rewards';
 import { connectionStore } from '@/shared/model/connection';
 import { useTournamentSummary } from '../api/use-tournament-summary';
-import { LqtDelegatorHistoryData } from '../server/delegator-history';
 import { useStakingTokenMetadata } from '@/shared/api/registry';
 import { useSpecificDelegatorSummary } from '../api/use-specific-delegator-summary';
 
@@ -102,27 +101,26 @@ export const SocialCardDialog = observer(
       useSpecificDelegatorSummary(subaccount);
 
     const summaryData = summary?.[0];
-    const rewardData = rewards.values().next().value as LqtDelegatorHistoryData | undefined;
+    const rewardData = rewards.get(epoch);
 
     const loading = loadingSummary || loadingRewards || loadingDelegatorSummary;
-  
-    if (!summaryData || !rewardData) {
-      return undefined; 
-    }
 
     useEffect(() => {
-      if (!loading && !initialParams && summaryData && rewardData && delegatorSummary?.data) {
-        setInitialParams({
-          epoch: String(epoch),
-          rewarded: rewardData.reward > 0,
-          earnings: `${rewardData.reward}:UM`,
-          votingStreak: `${delegatorSummary.data.streak * 1e6}:`,
-          incentivePool: `${Math.ceil(Number(summaryData.lp_rewards) + Number(summaryData.delegator_rewards))}:UM`,
-          lpPool: `${Math.ceil(summaryData.lp_rewards)}:UM`,
-          delegatorPool: `${Math.ceil(summaryData.delegator_rewards)}:UM`,
-        });
+      if (loading || initialParams || !summaryData || !rewardData || !delegatorSummary?.data) {
+        return;
       }
+
+      setInitialParams({
+        epoch: String(epoch),
+        rewarded: rewardData.reward > 0,
+        earnings: `${rewardData.reward}:UM`,
+        votingStreak: `${delegatorSummary.data.streak * 1e6}:`,
+        incentivePool: `${Math.ceil(Number(summaryData.lp_rewards) + Number(summaryData.delegator_rewards))}:UM`,
+        lpPool: `${Math.ceil(summaryData.lp_rewards)}:UM`,
+        delegatorPool: `${Math.ceil(summaryData.delegator_rewards)}:UM`,
+      });
     }, [loading, summaryData, rewardData, delegatorSummary?.data, initialParams, epoch]);
+
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [dontShowAgain, setDontShowAgain] = useState(false);
     const hasDrawn = useRef(false);
@@ -138,7 +136,9 @@ export const SocialCardDialog = observer(
     const url = initialParams ? `${baseUrl}/tournament/join?${encodeParams(initialParams)}` : '';
 
     useEffect(() => {
-      if (!initialParams || hasDrawn.current) return;
+      if (!initialParams || hasDrawn.current) {
+        return;
+      }
 
       const canvas = canvasRef.current;
       const exponent = getDisplayDenomExponent.optional(stakingToken);
@@ -166,7 +166,7 @@ export const SocialCardDialog = observer(
       };
     }, [initialParams, stakingToken]);
 
-    if (!initialParams?.rewarded) {
+    if (!initialParams || !initialParams.rewarded) {
       return null;
     }
 
