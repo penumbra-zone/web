@@ -8,7 +8,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "build": "vite build && pnpm run build:css && pnpm run build:css:prefixed",
+    "build": "vite build && pnpm run build:css:prefixed",
     "build-storybook": "storybook build",
     "build:css": "pnpm exec tailwindcss -c ./tailwind.config.ts -i ./src/styles/main.css -o ./dist/style.css --minify",
     "build:css:prefixed": "pnpm exec tailwindcss -c ./tailwind.config.prefixed.ts -i ./src/styles/main.css -o ./dist/style-prefixed.css --minify",
