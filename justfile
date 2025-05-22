@@ -64,11 +64,11 @@ test:
   @just test-turbo
 
 # Run the turbo test suite
-test-turbo:
+test-turbo: playwright-setup
    pnpm turbo test
 
 # Run the Rust test suite
-test-rust:
+test-rust: playwright-setup
    pnpm turbo test:cargo
    pnpm turbo test:wasm
 
