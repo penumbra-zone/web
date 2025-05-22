@@ -42,6 +42,8 @@ export const LandingCard = observer(() => {
     epochLoading,
   );
 
+  // TODO: why isn't the social card currently triggers on the landing page,
+  // only the round page? We need to get the previous epoch.
   const { isOpen: showSocial, close: hideSocial } = useTournamentSocialCard(epoch!);
 
   return (

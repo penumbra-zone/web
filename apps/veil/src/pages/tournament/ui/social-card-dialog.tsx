@@ -170,10 +170,13 @@ export const SocialCardDialog = observer(
       return null;
     }
 
+    // TODO: fix rendering. merging main included dialogue component
+    // changes that broke the rendering.
     return (
       <Dialog isOpen onClose={onClose}>
         <Dialog.Content
           title='Share your latest win!'
+          aria-describedby='tournament-social-description'
           buttons={
             <div className='flex flex-col gap-4 px-6 pb-8'>
               <Button
@@ -198,11 +201,13 @@ export const SocialCardDialog = observer(
             </div>
           }
         >
-          <div className='flex justify-center overflow-x-hidden'>
-            <canvas
-              ref={canvasRef}
-              className='w-full h-auto max-w-[512px] aspect-square bg-other-tonalFill10'
-            />
+          <div id='tournament-social-description'>
+            <div className='flex justify-center overflow-x-hidden'>
+              <canvas
+                ref={canvasRef}
+                className='w-full h-auto max-w-[512px] aspect-square bg-other-tonalFill10'
+              />
+            </div>
           </div>
         </Dialog.Content>
       </Dialog>
