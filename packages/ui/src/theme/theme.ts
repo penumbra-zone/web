@@ -227,6 +227,8 @@ export const theme = {
   },
   gradient: {
     card: 'linear-gradient(136deg, rgba(250, 250, 250, 0.1) 6.32%, rgba(250, 250, 250, 0.01) 75.55%)',
+    cardGradient:
+      'linear-gradient(136deg, rgba(250, 250, 250, 0.1) 6.32%, rgba(250, 250, 250, 0.01) 75.55%)',
     neutralRadialGradient:
       'radial-gradient(50% 100% at 50% 100%, rgba(163, 163, 163, 0.35) 0%, rgba(163, 163, 163, 0.00) 95%)',
     accentRadialGradient:

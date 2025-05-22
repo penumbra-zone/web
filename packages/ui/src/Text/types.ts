@@ -15,6 +15,7 @@ export type TextVariant =
   | 'technical'
   | 'body'
   | 'bodyTechnical'
+  | 'xs'
   | 'tableHeading'
   | 'tableHeadingMedium'
   | 'tableHeadingSmall'

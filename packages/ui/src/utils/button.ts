@@ -69,11 +69,11 @@ export const getSize = ({ iconOnly, density }: ButtonStyleAttributes) => {
   }
 
   if (density === 'compact') {
-    return cn('rounded-full h-8 min-w-8 w-max', iconOnly ? 'pl-2 pr-2' : 'pl-4 pr-4');
+    return cn('rounded-full h-8 min-w-8 w-max', iconOnly ? 'pl-0 pr-0' : 'pl-4 pr-4');
   }
 
   if (density === 'slim') {
-    return cn('rounded-full h-6 min-w-6 w-max', iconOnly ? 'pl-1 pr-1' : 'pl-2 pr-2');
+    return cn('rounded-full h-6 min-w-6 w-max', iconOnly ? 'pl-0 pr-0' : 'pl-2 pr-2');
   }
 
   return cn('rounded-sm h-12', iconOnly ? 'w-12 min-w-12 pl-0 pr-0' : 'w-full pl-4 pr-4');
