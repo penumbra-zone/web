@@ -1,13 +1,13 @@
 import type { ServiceType } from '@bufbuild/protobuf';
-import { Code, ConnectError, createClient, Client, Transport } from '@connectrpc/connect';
-import { jsonOptions } from '@penumbra-zone/protobuf';
+import { Client, createClient, Transport } from '@connectrpc/connect';
+import { jsonOptions, PenumbraService } from '@penumbra-zone/protobuf';
 import {
   ChannelTransportOptions,
   createChannelTransport,
 } from '@penumbra-zone/transport-dom/create';
 import { assertProviderConnected, assertProviderRecord } from './assert.js';
-import { createPenumbraStateEvent, isPenumbraStateEvent, PenumbraEventDetail } from './event.js';
 import { PenumbraEventListener } from './event-listener.js';
+import { createPenumbraStateEvent, isPenumbraStateEvent, PenumbraEventDetail } from './event.js';
 import {
   getPenumbraGlobalUnsafe,
   getPenumbraManifest,
@@ -17,10 +17,6 @@ import {
 import { PenumbraManifest } from './manifest.js';
 import { PenumbraProvider } from './provider.js';
 import { PenumbraState } from './state.js';
-
-const isLegacyProvider = (
-  provider: PenumbraProvider,
-): provider is PenumbraProvider & { request: () => Promise<void> } => 'request' in provider;
 
 interface PenumbraClientOptions {
   /** Custom options for this client's `Transport`. */
@@ -39,12 +35,12 @@ interface PenumbraClientAttachment {
   manifest?: PenumbraManifest;
 }
 
-interface PenumbraServiceClientMap<S extends ServiceType = ServiceType> extends Map<S, Client<S>> {
+interface ServiceClientMap<S extends ServiceType = ServiceType> extends Map<S, Client<S>> {
   get<G extends S>(service: G): Client<G> | undefined;
   set<G extends S>(service: G, client: Client<G>): this;
 
   forEach(
-    callbackFn: <G extends S>(value: Client<G>, key: G, map: PenumbraServiceClientMap<S>) => void,
+    callbackFn: <G extends S>(value: Client<G>, key: G, map: ServiceClientMap<S>) => void,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- extending interface
     thisArg?: any,
   ): void;
@@ -118,7 +114,7 @@ export class PenumbraClient {
 
   // instance features
 
-  private readonly serviceClients: PenumbraServiceClientMap;
+  private readonly serviceClients: ServiceClientMap<PenumbraService>;
   private readonly stateListeners: Set<(detail: PenumbraEventDetail<'penumbrastate'>) => void>;
   private readonly providerEventListener: PenumbraEventListener;
 
@@ -216,7 +212,7 @@ export class PenumbraClient {
    * If you call this method while this client is not `Connected`, this method
    * will throw.
    */
-  public service<T extends ServiceType>(service: T): Client<T> {
+  public service<T extends PenumbraService>(service: T): Client<T> {
     let serviceClient = this.serviceClients.get(service);
 
     if (!serviceClient) {
@@ -327,16 +323,12 @@ export class PenumbraClient {
     // is successful. this promise is not awaited so that this method may be
     // called synchronously.
     const requestPort: Promise<MessagePort> = confirmManifest.then(async () => {
-      if (isLegacyProvider(provider)) {
-        await provider.request();
-      }
-
       const port = await provider.connect();
 
       // the provider may close the port, which should destroy the connection.
       port.addEventListener('message', evt => {
         if (evt.data === false) {
-          portClosed.abort(ConnectError.from('Connection closed', Code.Unavailable));
+          portClosed.abort();
           this.destroyConnection();
         }
       });
@@ -345,27 +337,24 @@ export class PenumbraClient {
     });
 
     // Re-use the same port, but check the connection status each time.
-    const getConnectedPort = async () => {
-      const port = await requestPort;
-      assertProviderConnected(this.attached?.origin);
-      return port;
-    };
-
-    // Create a new transport, re-using the same port.
-    const getConnectedTransport = () =>
-      createChannelTransport({
-        ...this.options.transportOptions,
-        getPort: getConnectedPort,
+    const getPort = () =>
+      requestPort.then(port => {
+        assertProviderConnected(this.attached?.origin);
+        return port;
       });
+
+    // Create a new transport, but check the connection status each time.
+    const getTransport = () =>
+      createChannelTransport({ ...this.options.transportOptions, getPort });
 
     const connection: PenumbraClientConnection = {
       get port() {
         portClosed.signal.throwIfAborted();
-        return getConnectedPort();
+        return getPort();
       },
       get transport() {
         portClosed.signal.throwIfAborted();
-        return getConnectedTransport();
+        return getTransport();
       },
     };
 
