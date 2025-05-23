@@ -6,9 +6,9 @@ set -euo pipefail
 
 
 # The lint task passes completely, or has at least once. Let's focus on tests for now.
-hyperfine --setup "pnpm install && pnpm build" --warmup 1 --runs 5 \
+hyperfine --setup "just clean && pnpm install && pnpm build" --warmup 1 --runs 5 \
   "just lint-rust" \
   "just lint-turbo" \
   "just test-rust" \
-  "just test-turbo"
+  "just test-turbo" \
   "pnpm run all-check"

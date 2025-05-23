@@ -22,8 +22,6 @@ clean:
   rm -rf .turbo
   fd -t d node_modules --no-ignore -X rm -r
   fd -t d target --no-ignore -X rm -r
-  fd -t f tsconfig.tsbuildinfo --no-ignore -X rm
-  fd -t d flake-inputs --no-ignore --hidden -X rm -r
 
 # Wrapper for all linting targets
 lint:
@@ -63,13 +61,13 @@ test:
   @just test-turbo
 
 # Run the turbo test suite
-test-turbo:
-   pnpm turbo test
+test-turbo: install
+   pnpm turbo test --cache-dir=.turbo
 
 # Run the Rust test suite
-test-rust:
-   pnpm turbo test:cargo
-   pnpm turbo test:wasm
+test-rust: install
+   pnpm turbo test:cargo --cache-dir=.turbo
+   pnpm turbo test:wasm --cache-dir=.turbo
 
 # Run test suites locally and gather timing information
 benchmark-tests:
