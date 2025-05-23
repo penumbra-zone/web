@@ -1,10 +1,12 @@
-import { Card } from '@penumbra-zone/ui-deprecated/Card';
 import { Outlet, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+
+import { Card } from '@penumbra-zone/ui-deprecated/Card';
 import { Grid } from '@penumbra-zone/ui-deprecated/Grid';
 import { Tabs } from '@penumbra-zone/ui-deprecated/Tabs';
+
 import { usePagePath } from '../../../fetchers/page-path';
 import { PagePath } from '../../metadata/paths';
-import { motion } from 'framer-motion';
 import { getV2Link } from '../get-v2-link.ts';
 
 const TABS_OPTIONS = [

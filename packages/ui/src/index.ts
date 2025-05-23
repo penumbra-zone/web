@@ -5,3 +5,5 @@ export * from './Card';
 export * from './Density';
 export * from './Dialog';
 export * from './Text';
+export * from './JsonViewer';
+export * from './TransactionView';

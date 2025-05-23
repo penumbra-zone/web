@@ -1,7 +1,10 @@
-import cn from 'clsx';
 import { ElementType, Fragment, ReactNode } from 'react';
+import cn from 'clsx';
 import { Dot, ArrowRight } from 'lucide-react';
+
+import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { TransactionInfo } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+
 import { GetMetadata } from '../ActionView/types';
 import { AddressViewComponent } from '../AddressView';
 import { AssetGroup } from '../AssetIcon';
@@ -20,11 +23,21 @@ export interface TransactionSummaryProps {
    * If omitted, some assets may be rendered as unknown or not rendered at all.
    */
   getMetadata?: GetMetadata;
+  /**
+   * Optional array of wallet address views to match transaction addresses with.
+   * When provided, if a transaction address matches one in this array, it will display
+   * the account name instead of the raw address.
+   */
+  walletAddressViews?: AddressView[];
   as?: ElementType;
   /** Doesn't work if `as` prop is not provided – add `as='button'`, and the component will become hoverable and clickable */
   onClick?: VoidFunction;
   /** Markup to render on the right side of the component */
   endAdornment?: ReactNode;
+  /** When `true`, will apply styles that 1) prevent text wrapping, 2) hide overflow, 3) add an ellipsis when the text overflows. */
+  truncate?: boolean;
+  /** If true, the memo will not be displayed. Defaults to false. */
+  hideMemo?: boolean;
 }
 
 /**
@@ -41,12 +54,20 @@ export interface TransactionSummaryProps {
 export const TransactionSummary = ({
   info,
   getMetadata,
+  walletAddressViews = [],
   onClick,
   endAdornment,
   as: Container = 'div',
+  truncate,
+  hideMemo = false,
 }: TransactionSummaryProps) => {
   const { label, assets, additionalText, address, memo, type, tickers, effects } =
     useClassification(info, getMetadata);
+
+  // Try to match the transaction address with a wallet address to display account name
+  const displayAddress = address
+    ? (findMatchingAddressView(address, walletAddressViews) ?? address)
+    : undefined;
 
   return (
     <Container
@@ -59,7 +80,7 @@ export const TransactionSummary = ({
     >
       <AssetGroup size='lg' assets={assets} />
 
-      <div className='flex grow flex-col'>
+      <div className='flex grow flex-col overflow-hidden'>
         <div className='flex items-center gap-1 text-text-secondary'>
           <Density slim>
             <Pill priority='primary' context='technical-default'>
@@ -77,12 +98,12 @@ export const TransactionSummary = ({
               ))}
             </Pill>
             {additionalText && <Text detailTechnical>{additionalText}</Text>}
-            {address && (
+            {displayAddress && (
               <div className='max-w-32'>
                 <AddressViewComponent
                   truncate
                   hideIcon
-                  addressView={address}
+                  addressView={displayAddress}
                   external={type === 'ibcRelayAction'}
                 />
               </div>
@@ -92,10 +113,12 @@ export const TransactionSummary = ({
 
         <SummaryEffects effects={effects} />
 
-        {memo && (
-          <Text as='em' color='text.secondary' detailTechnical>
-            {memo}
-          </Text>
+        {!hideMemo && memo && (
+          <div className='flex max-h-10 w-full overflow-hidden'>
+            <Text as='em' color='text.secondary' detailTechnical truncate={truncate}>
+              {memo}
+            </Text>
+          </div>
         )}
       </div>
 
@@ -107,3 +130,45 @@ export const TransactionSummary = ({
     </Container>
   );
 };
+
+// Helper function to find a matching AddressView from wallet addresses
+function findMatchingAddressView(
+  transactionAddress: AddressView,
+  walletAddresses: AddressView[],
+): AddressView | undefined {
+  // Short circuit if empty wallet addresses
+  if (!walletAddresses.length) {
+    return undefined;
+  }
+
+  // For matching: if transactionAddress has a raw address, try to match with any wallet address
+  try {
+    for (const walletAddress of walletAddresses) {
+      // Check if wallet address has decoded information with an address and index
+      if (
+        walletAddress.addressView.case === 'decoded' &&
+        walletAddress.addressView.value.address &&
+        transactionAddress.addressView.case === 'decoded' &&
+        transactionAddress.addressView.value.address
+      ) {
+        // Compare the address inner bytes
+        const walletInner = walletAddress.addressView.value.address.inner;
+        const transactionInner = transactionAddress.addressView.value.address.inner;
+
+        if (
+          walletInner.length === transactionInner.length &&
+          walletInner.every((byte, i) => byte === transactionInner[i])
+        ) {
+          return walletAddress;
+        }
+      }
+
+      // Also try to match opaque addresses if necessary
+      // (implementation depends on how opaque addresses are structured)
+    }
+  } catch (error) {
+    console.error('Error comparing addresses:', error);
+  }
+
+  return undefined;
+}

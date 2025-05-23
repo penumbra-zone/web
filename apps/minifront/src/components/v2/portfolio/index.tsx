@@ -1,22 +1,24 @@
-import { Card } from '@penumbra-zone/ui';
-import { AssetCard } from './assets/AssetCard';
+import { useMemo } from 'react';
+
+import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
+import {
+  getBalanceView,
+  getMetadataFromBalancesResponse,
+} from '@penumbra-zone/getters/balances-response';
+import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { pnum } from '@penumbra-zone/types/pnum';
+import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
+
 import {
   BalancesByAccount,
   balancesByAccountSelector,
   useBalancesResponses,
 } from '../../../state/shared';
-import { useMemo } from 'react';
-import {
-  getBalanceView,
-  getMetadataFromBalancesResponse,
-} from '@penumbra-zone/getters/balances-response';
 import { shouldDisplay } from '../../../fetchers/balances/should-display';
 import { sortByPriorityScore } from '../../../fetchers/balances/by-priority-score';
-import { pnum } from '@penumbra-zone/types/pnum';
-import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
-import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
-import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { AssetCard } from './assets/AssetCard';
+import { TransactionCard } from './transactions/TransactionCard';
 
 // Define interfaces for our implementation
 interface AssetData {
@@ -143,22 +145,18 @@ export const Portfolio = () => {
   // In a future implementation, we would calculate a real total balance value here
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+    <div className='flex w-full flex-col items-center'>
       {/* PortfolioBalance hidden until totalBalanceValue is implemented */}
 
-      <div className='flex w-full flex-1 flex-col gap-4 md:flex-row'>
+      <div className='grid w-full flex-1 grid-cols-1 gap-4 md:grid-cols-2'>
         {/* Asset Card with real data */}
-        <div className='flex-1'>
+        <div>
           <AssetCard accounts={accounts} showInfoButton={true} />
         </div>
 
         {/* Reserved space for Transactions, to be implemented later */}
-        <div className='flex-1'>
-          <Card title='Your Recent Transactions'>
-            <div className='flex h-[400px] items-center justify-center text-text-secondary'>
-              Transactions will be displayed here
-            </div>
-          </Card>
+        <div>
+          <TransactionCard />
         </div>
       </div>
     </div>

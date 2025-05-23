@@ -19,6 +19,8 @@ const useClipboardButton = (text: string) => {
   return { onClick, icon, label };
 };
 
+export type CopyToClipboardButtonVariant = 'sparse' | 'compact' | 'slim';
+
 export interface CopyToClipboardButtonProps {
   /**
    * The text that should be copied to the clipboard when the user presses this
@@ -26,17 +28,29 @@ export interface CopyToClipboardButtonProps {
    */
   text: string;
   disabled?: boolean;
+  variant?: CopyToClipboardButtonVariant;
 }
 
 /**
  * A simple icon button for copying some text to the clipboard. Use it alongside
  * text that the user may want to copy.
  */
-export const CopyToClipboardButton = ({ text, disabled = false }: CopyToClipboardButtonProps) => {
+export const CopyToClipboardButton = ({
+  text,
+  disabled = false,
+  variant,
+}: CopyToClipboardButtonProps) => {
   const { onClick, icon, label } = useClipboardButton(text);
 
   return (
-    <Button type='button' iconOnly='adornment' icon={icon} onClick={onClick} disabled={disabled}>
+    <Button
+      type='button'
+      iconOnly='adornment'
+      icon={icon}
+      onClick={onClick}
+      disabled={disabled}
+      density={variant === 'slim' ? 'compact' : variant}
+    >
       {label}
     </Button>
   );

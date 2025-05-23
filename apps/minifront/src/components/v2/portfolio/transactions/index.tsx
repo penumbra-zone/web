@@ -1,11 +1,13 @@
-import { Table } from '@penumbra-zone/ui-deprecated/Table';
-import { useSummaries } from '../../../../state/transactions';
-import { Text } from '@penumbra-zone/ui-deprecated/Text';
 import { Link } from 'react-router-dom';
+import { LayoutGroup } from 'framer-motion';
 import { SquareArrowOutUpRight } from 'lucide-react';
+
 import { Button } from '@penumbra-zone/ui-deprecated/Button';
 import { useAnimationDeferredValue } from '@penumbra-zone/ui-deprecated/hooks/useAnimationDeferredValue';
-import { LayoutGroup } from 'framer-motion';
+import { Table } from '@penumbra-zone/ui-deprecated/Table';
+import { Text } from '@penumbra-zone/ui-deprecated/Text';
+
+import { useSummaries } from '../../../../state/transactions';
 
 export const TransactionsPage = () => {
   const summaries = useSummaries();
