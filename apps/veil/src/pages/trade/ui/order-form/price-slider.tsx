@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ScaleLinear, scaleLinear } from 'd3-scale';
+import { Text } from '@penumbra-zone/ui';
 
 interface ThumbProps {
   left?: boolean;
@@ -83,11 +84,12 @@ const Thumb: React.FC<ThumbProps> = ({ left, right, value, scale, max, onMove })
       className={`
         absolute top-[-32px] flex h-[40px] w-[8px] cursor-ew-resize items-center justify-center bg-transparent
         ${left ? 'left-[-4px]' : 'right-[-4px]'}
+        hover:bg-other-tonalFill10
       `}
       onMouseDown={handlePointerDown}
       onTouchStart={handlePointerDown}
     >
-      <div className='h-[40px] w-[1px] bg-neutral-500 mr-[1px]' />
+      <div className='h-[40px] w-[1px] bg-neutral-light mr-[1px]' />
       {/* <div className='h-3 w-[1.5px] bg-neutral-500' /> */}
     </button>
   );
@@ -132,21 +134,32 @@ export const ControlSlider: React.FC<ControlSliderProps> = ({ min, max, value, o
   return (
     <div className='px-1'>
       <div className='h-[32px]'></div>
-      <div ref={ref} className='relative h-[8px] w-full rounded-md bg-tonalFill10'>
-        {scaleLoaded && scale && (
-          <div
-            className='absolute h-[8px] bg-primary-main'
-            style={{
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-call -- safe
-              left: Math.max(0, scale(leftValue)),
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- safe
-              right: Math.min(width, width - scale(rightValue)),
-            }}
-          >
-            <Thumb left value={value} scale={scale} max={max} onMove={onInput} />
-            <Thumb right value={value} scale={scale} max={max} onMove={onInput} />
-          </div>
-        )}
+      <div ref={ref} className='relative h-[32px] w-full'>
+        <div className='h-[8px] w-full rounded-md bg-other-tonalFill10'>
+          {scaleLoaded && scale && (
+            <div
+              className='absolute h-[8px] bg-primary-main'
+              style={{
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-call -- safe
+                left: Math.max(0, scale(leftValue)),
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- safe
+                right: Math.min(width, width - scale(rightValue)),
+              }}
+            >
+              <Thumb left value={value} scale={scale} max={max} onMove={onInput} />
+              <Thumb right value={value} scale={scale} max={max} onMove={onInput} />
+            </div>
+          )}
+        </div>
+        <div className='absolute z-10 left-1/2 h-[16px] w-[1px] bg-neutral-light' />
+        <div className='absolute z-10 left-1/2 top-[16px] transform -translate-x-1/2 flex items-center gap-1 p-1 bg-other-tonalFill10 rounded-sm'>
+          <Text detail color='text.secondary'>
+            Current Price:
+          </Text>
+          <Text detail color='text.primary'>
+            0.50
+          </Text>
+        </div>
       </div>
     </div>
   );
