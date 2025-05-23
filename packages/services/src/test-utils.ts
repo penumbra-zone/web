@@ -36,7 +36,7 @@ export interface IndexedDbMock {
   saveGasPrices?: Mock;
   saveTransactionInfo?: Mock;
   getTransactionInfo?: Mock;
-  getBlockHeightByEpoch?: Mock;
+  getEpochByIndex?: Mock;
   saveLQTHistoricalVote?: Mock;
   getLQTHistoricalVotes?: Mock;
   iterateLQTVotes?: Mock;

@@ -1,4 +1,4 @@
-import { FC, forwardRef, MouseEventHandler, ReactNode } from 'react';
+import { FC, MouseEventHandler, ReactNode, Ref } from 'react';
 import { styled, css, DefaultTheme } from 'styled-components';
 import { asTransientProps } from '../utils/asTransientProps';
 import { Priority, focusOutline, overlays, buttonBase } from '../utils/button';
@@ -114,6 +114,7 @@ interface BaseButtonProps {
   disabled?: boolean;
   onClick?: MouseEventHandler<HTMLButtonElement>;
   priority?: Priority;
+  ref?: Ref<HTMLButtonElement>;
 }
 
 interface IconOnlyProps {
@@ -173,52 +174,46 @@ export type ButtonProps = BaseButtonProps & (IconOnlyProps | RegularProps) & Mot
  * (`<a />`) tag (or `<Link />`, if you're using e.g., React Router) and leave
  * `onClick` undefined.
  */
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    {
-      children,
-      disabled = false,
-      onClick,
-      icon: IconComponent,
-      iconOnly,
-      actionType = 'default',
-      type = 'button',
-      priority = 'primary',
-      motion,
-      // needed for the Radix's `asChild` prop to work correctly
-      // https://www.radix-ui.com/primitives/docs/guides/composition#composing-with-your-own-react-components
-      ...props
-    },
-    ref,
-  ) => {
-    const density = useDensity();
+export const Button: FC<ButtonProps> = ({
+  children,
+  disabled = false,
+  onClick,
+  icon: IconComponent,
+  iconOnly,
+  actionType = 'default',
+  type = 'button',
+  priority = 'primary',
+  motion,
+  ref,
+  ...props
+}) => {
+  const density = useDensity();
 
-    return (
-      <StyledButton
-        {...props}
-        {...motion}
-        {...asTransientProps({ iconOnly, density, actionType, priority })}
-        ref={ref}
-        type={type}
-        disabled={disabled}
-        onClick={onClick}
-        aria-label={iconOnly && typeof children === 'string' ? children : undefined}
-        title={iconOnly && typeof children === 'string' ? children : undefined}
-        $getFocusOutlineColor={theme => theme.color.action[outlineColorByActionType[actionType]]}
-        $getFocusOutlineOffset={() => (iconOnly === 'adornment' ? '0px' : undefined)}
-        $getBorderRadius={theme =>
-          density === 'sparse' && iconOnly !== 'adornment'
-            ? theme.borderRadius.sm
-            : theme.borderRadius.full
-        }
-      >
-        {IconComponent && (
-          <IconComponent size={density === 'sparse' && iconOnly === true ? 24 : 16} />
-        )}
+  return (
+    <StyledButton
+      {...props}
+      {...motion}
+      {...asTransientProps({ iconOnly, density, actionType, priority })}
+      ref={ref}
+      type={type}
+      disabled={disabled}
+      onClick={onClick}
+      aria-label={iconOnly && typeof children === 'string' ? children : undefined}
+      title={iconOnly && typeof children === 'string' ? children : undefined}
+      $getFocusOutlineColor={theme => theme.color.action[outlineColorByActionType[actionType]]}
+      $getFocusOutlineOffset={() => (iconOnly === 'adornment' ? '0px' : undefined)}
+      $getBorderRadius={theme =>
+        density === 'sparse' && iconOnly !== 'adornment'
+          ? theme.borderRadius.sm
+          : theme.borderRadius.full
+      }
+    >
+      {IconComponent && (
+        <IconComponent size={density === 'sparse' && iconOnly === true ? 24 : 16} />
+      )}
 
-        {!iconOnly && children}
-      </StyledButton>
-    );
-  },
-);
+      {!iconOnly && children}
+    </StyledButton>
+  );
+};
 Button.displayName = 'Button';

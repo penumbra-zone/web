@@ -9,7 +9,7 @@ import InputToken from '../../shared/input-token';
 import { GasFee } from '../../shared/gas-fee';
 import { useBalancesResponses, useStakingTokenMetadata } from '../../../state/shared';
 import { transferableBalancesResponsesSelector } from '../../../state/send/helpers';
-import { useRefreshFee } from '../../v2/transfer-layout/send-page/use-refresh-fee';
+import { useRefreshFee } from '../../v2/transfer/send-page/use-refresh-fee';
 
 export const SendForm = () => {
   // Retrieve the staking token metadata and gas prices from the zustand

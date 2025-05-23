@@ -6,10 +6,10 @@ import { cn } from '../../../lib/utils';
 
 const Tabs = TabsPrimitive.Root;
 
-const TabsList = React.forwardRef<
-  React.ElementRef<typeof TabsPrimitive.List>,
-  React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>
->(({ className, ...props }, ref) => (
+export interface TabsListProps extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.List> {
+  ref?: React.Ref<HTMLDivElement>;
+}
+const TabsList = ({ className, ref, ...props }: TabsListProps) => (
   <TabsPrimitive.List
     ref={ref}
     className={cn(
@@ -18,13 +18,14 @@ const TabsList = React.forwardRef<
     )}
     {...props}
   />
-));
+);
 TabsList.displayName = TabsPrimitive.List.displayName;
 
-const TabsTrigger = React.forwardRef<
-  React.ElementRef<typeof TabsPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>
->(({ className, ...props }, ref) => (
+export interface TabsTriggerProps
+  extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger> {
+  ref?: React.Ref<HTMLButtonElement>;
+}
+const TabsTrigger = ({ className, ref, ...props }: TabsTriggerProps) => (
   <TabsPrimitive.Trigger
     ref={ref}
     className={cn(
@@ -33,13 +34,14 @@ const TabsTrigger = React.forwardRef<
     )}
     {...props}
   />
-));
+);
 TabsTrigger.displayName = TabsPrimitive.Trigger.displayName;
 
-const TabsContent = React.forwardRef<
-  React.ElementRef<typeof TabsPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>
->(({ className, ...props }, ref) => (
+export interface TabsContentProps
+  extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content> {
+  ref?: React.Ref<HTMLDivElement>;
+}
+const TabsContent = ({ className, ref, ...props }: TabsContentProps) => (
   <TabsPrimitive.Content
     ref={ref}
     className={cn(
@@ -48,7 +50,7 @@ const TabsContent = React.forwardRef<
     )}
     {...props}
   />
-));
+);
 TabsContent.displayName = TabsPrimitive.Content.displayName;
 
 export { Tabs, TabsList, TabsTrigger, TabsContent };

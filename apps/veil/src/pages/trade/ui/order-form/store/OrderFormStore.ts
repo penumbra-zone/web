@@ -389,10 +389,7 @@ export const useOrderFormStore = () => {
       orderFormStore.setSubAccountIndex(addressIndex);
       orderFormStore.setAddress(address);
 
-      let umAsset: AssetInfo | undefined;
-      if (registryUM) {
-        umAsset = AssetInfo.fromMetadata(registryUM);
-      }
+      const umAsset = AssetInfo.fromMetadata(registryUM);
 
       if (umAsset && orderFormStore.feeAsset?.symbol !== umAsset.symbol) {
         orderFormStore.setFeeAsset(umAsset);

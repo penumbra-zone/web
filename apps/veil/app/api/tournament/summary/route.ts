@@ -1,1 +1,1 @@
-export { GET } from '@/pages/tournament/server/summary';
+export { POST } from '@/pages/tournament/server/summary';

@@ -69,7 +69,6 @@ const epochResultsQuery = async ({
       'epoch',
       'votes',
       'portion',
-      'missing_votes',
       sql<string>`encode(${exp.ref('asset_id')}, 'base64')`.as('asset_id'),
     ])
     .where('epoch', '=', epoch)
@@ -101,7 +100,10 @@ export async function GET(
     return NextResponse.json({ error: 'Required query parameter: "epoch"' }, { status: 400 });
   }
 
-  const registryClient = new ChainRegistryClient();
+  // Enable server-side caching by passing the 'force-cache' option in the config.
+  const registryClient = new ChainRegistryClient({
+    nextjsServerSide: true,
+  });
 
   const [registry, results, total] = await Promise.all([
     registryClient.remote.get(chainId),
@@ -126,7 +128,6 @@ export async function GET(
         epoch: item.epoch,
         votes: item.votes,
         portion: item.portion,
-        missing_votes: item.missing_votes,
       };
     })
     .filter((item): item is MappedGauge => !!item);

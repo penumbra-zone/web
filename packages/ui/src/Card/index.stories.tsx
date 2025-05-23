@@ -81,3 +81,31 @@ export const Basic: Story = {
     );
   },
 };
+
+export const WithEndContent: Story = {
+  args: {
+    as: 'section',
+    title: 'Your Assets',
+    endContent: 'info',
+  },
+  render: function Render({ as, title, endContent }) {
+    return (
+      <Card as={as} title={title} endContent={endContent}>
+        <Card.Stack>
+          <Card.Section>
+            <Text>
+              This card demonstrates the use of the InfoButton component in the endContent position.
+              Click on the shield icon to see more information about your assets.
+            </Text>
+          </Card.Section>
+          <Card.Section>
+            <Text>
+              The endContent prop allows placing any content next to the title, creating a clean and
+              consistent UI.
+            </Text>
+          </Card.Section>
+        </Card.Stack>
+      </Card>
+    );
+  },
+};

@@ -1,4 +1,4 @@
-import { HTMLAttributes, ReactNode } from 'react';
+import { HTMLAttributes, ReactNode, Ref } from 'react';
 import { small } from '../utils/typography';
 import { ActionType, getFocusWithinOutlineColorByActionType } from '../utils/action-type';
 import { useDisabled } from '../utils/disabled-context';
@@ -37,6 +37,7 @@ export interface TextInputProps
   endAdornment?: ReactNode;
   max?: string | number;
   min?: string | number;
+  ref?: Ref<HTMLInputElement>;
 }
 
 /**
@@ -46,7 +47,6 @@ export interface TextInputProps
  * inside the text input's visual frame.
  */
 export const TextInput = ({
-  ref,
   label,
   value,
   onChange,
@@ -58,10 +58,9 @@ export const TextInput = ({
   endAdornment = null,
   max,
   min,
+  ref,
   ...rest
-}: TextInputProps & {
-  ref?: React.RefObject<HTMLInputElement | null>;
-}) => (
+}: TextInputProps) => (
   <label
     className={cn(
       'h-14 flex items-center gap-2 bg-other-tonalFill5 rounded-sm py-3 pl-3 pr-2 border-none',

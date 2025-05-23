@@ -11,9 +11,10 @@ import { useSortableTableHeaders } from '../../sortable-table-header';
 import type { EpochResultsSortKey } from '../../../server/epoch-results';
 import type { MappedGauge } from '../../../server/previous-epochs';
 import { useEpochResults } from '../../../api/use-epoch-results';
+import { VOTING_THRESHOLD } from '../../vote-dialog/vote-dialog-asset';
 import { TableRow } from './table-row';
+import { useVotingInfo } from '@/pages/tournament/ui/voting-info.tsx';
 
-const THRESHOLD = 0.05;
 const BASE_LIMIT = 10;
 
 const TABLE_CLASSES = {
@@ -48,8 +49,13 @@ export const CurrentVotingResults = observer(({ epoch }: CurrentVotingResultsPro
     sortDirection: sortBy.direction,
   });
 
-  // TODO: `canVote` should be true when connected and has delUM for this epoch
-  const canVote = connected;
+  const { isVoted, isDelegated, isEnded } = useVotingInfo(epoch);
+
+  /* A user can vote if they:
+   * - have enough delUM
+   * - epoch hasn't ended yet
+   * - user hasn't voted already for this epoch */
+  const canVote = connected && !isEnded && isDelegated && !isVoted;
   const tableKey = canVote ? 'canVote' : 'default';
   const total = data?.total ?? 0;
 
@@ -59,7 +65,7 @@ export const CurrentVotingResults = observer(({ epoch }: CurrentVotingResultsPro
     below: MappedGauge[];
   }>(
     (accum, current) => {
-      if (current.portion >= THRESHOLD) {
+      if (current.portion >= VOTING_THRESHOLD) {
         accum.above.push(current);
       } else {
         accum.below.push(current);
@@ -106,7 +112,7 @@ export const CurrentVotingResults = observer(({ epoch }: CurrentVotingResultsPro
                 <TableCell>
                   <Text technical color='text.secondary'>
                     Below threshold ({'<'}
-                    {THRESHOLD * 100}%)
+                    {VOTING_THRESHOLD * 100}%)
                   </Text>
                 </TableCell>
               </div>

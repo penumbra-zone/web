@@ -30,19 +30,19 @@ const toggleVariants = cva(
 export interface ToggleProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof toggleVariants>,
-    RadixToggleProps {}
+    RadixToggleProps {
+  ref?: React.Ref<HTMLButtonElement>;
+}
 
-const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
-  ({ className, variant, size, ...props }, ref) => {
-    return (
-      <TogglePrimitive.Root
-        ref={ref}
-        className={cn(toggleVariants({ variant, size, className }))}
-        {...props}
-      />
-    );
-  },
-);
+const Toggle = ({ className, variant, size, ref, ...props }: ToggleProps) => {
+  return (
+    <TogglePrimitive.Root
+      ref={ref}
+      className={cn(toggleVariants({ variant, size, className }))}
+      {...props}
+    />
+  );
+};
 
 Toggle.displayName = 'Toggle';
 

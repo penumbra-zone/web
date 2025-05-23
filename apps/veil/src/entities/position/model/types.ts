@@ -8,7 +8,6 @@ import {
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
-import { BigNumber } from 'bignumber.js';
 
 export interface DisplayPosition {
   id: PositionId;

@@ -74,7 +74,7 @@ export const ExploreStats = () => {
         )}
       </InfoCard>
       <InfoCard title='Largest Trading Pair (24h volume)' loading={isLoading}>
-        {registry && stats?.largestPair ? (
+        {stats?.largestPair ? (
           <>
             <DirectedTradingPairText registry={registry} pair={stats.largestPair.pair} />
             <GreenValueText value={stats.largestPair.volume} />

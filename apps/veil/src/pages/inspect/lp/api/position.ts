@@ -15,8 +15,9 @@ import {
   VolumeAndFeesAll,
 } from '@/pages/inspect/lp/api/types.ts';
 import { Registry } from '@penumbra-labs/registry';
-import { registryQueryFn } from '@/shared/api/registry.ts';
 import { getValueView } from '@/shared/api/server/book/helpers.ts';
+import { fetchRegistry } from '@/shared/api/fetch-registry';
+import { getClientSideEnv } from '@/shared/api/env/getClientSideEnv';
 
 const positionsStateAddVV = (res: PositionStateResponse, registry: Registry): PositionStateVV => {
   return {
@@ -100,7 +101,8 @@ const timelineFetch = async (id: string): Promise<PositionTimelineResponseVV> =>
     `/api/position/timeline?positionId=${id}`,
   );
 
-  const registry = await registryQueryFn();
+  // TODO: process this client side.
+  const registry = await fetchRegistry(getClientSideEnv().PENUMBRA_CHAIN_ID);
 
   return {
     state: positionsStateAddVV(result.state, registry),

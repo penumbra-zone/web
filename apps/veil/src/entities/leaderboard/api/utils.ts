@@ -1,60 +1,50 @@
-import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { PositionState_PositionStateEnum } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
+import { JsonObject } from '@bufbuild/protobuf';
+import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import {
+  Position,
+  PositionId,
+} from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 
-export const INTERVAL_FILTER = ['1h', '6h', '24h', '7d', '30d'] as const;
-export type LeaderboardIntervalFilter = (typeof INTERVAL_FILTER)[number];
-export const intervalFilterToSQL: Record<LeaderboardIntervalFilter, string> = {
-  '1h': '1 hour',
-  '6h': '6 hours',
-  '24h': '1 day',
-  '7d': '1 week',
-  '30d': '1 month',
-};
+const SORT_KEYS = ['executions', 'points'] as const;
+export type LpLeaderboardSortKey = (typeof SORT_KEYS)[number];
 
-export const DEFAULT_INTERVAL: LeaderboardIntervalFilter = '7d';
-export const DEFAULT_LIMIT = 30;
+const DIRECTIONS = ['asc', 'desc'] as const;
+export type LpLeaderboardSortDirection = (typeof DIRECTIONS)[number];
 
-export interface LeaderboardSearchParams {
+export interface LpLeaderboardRequest extends JsonObject {
+  positionIds: string[];
+  epoch: number;
   limit: number;
-  offset: number;
-  quote: string | undefined;
-  startBlock: number;
-  endBlock: number;
+  page: number;
+  sortKey: LpLeaderboardSortKey;
+  sortDirection: LpLeaderboardSortDirection;
+  assetId: string | null;
 }
 
-export interface LeaderboardData {
-  asset1: Metadata;
-  asset2: Metadata;
-  positionId: string;
-  volume1: ValueView;
-  volume2: ValueView;
-  fees1: ValueView;
-  fees2: ValueView;
+export interface LqtLp {
+  epoch: number;
+  positionId: PositionId;
+  assetId: AssetId;
+  rewards: number;
   executions: number;
-  openingTime: number;
-  closingTime: number | null;
-  state: PositionState_PositionStateEnum;
-  pnlPercentage: number;
+  umVolume: number;
+  assetVolume: number;
+  umFees: number;
+  assetFees: number;
+  points: number;
+  pointsShare: number;
 }
 
-export interface LeaderboardPageInfo {
-  data: LeaderboardData[];
-  filters: LeaderboardSearchParams;
-  totalCount: number;
+export interface LpLeaderboard extends LqtLp {
+  position: Position;
+  positionIdString: string;
 }
 
-export const getURLParams = (searchParams: URLSearchParams): LeaderboardSearchParams => {
-  const limit = Number(searchParams.get('limit')) || DEFAULT_LIMIT;
-  const offset = Number(searchParams.get('offset')) || 0;
-  const quote = searchParams.get('quote') ?? undefined;
-  const startBlock = Number(searchParams.get('startBlock')) || 0;
-  const endBlock = Number(searchParams.get('endBlock')) || 0;
+export interface LpLeaderboardResponse {
+  data: LpLeaderboard[];
+  total: number;
+}
 
-  return {
-    limit,
-    offset,
-    quote,
-    startBlock,
-    endBlock,
-  };
-};
+export interface LpLeaderboardErrorResponse {
+  error: string;
+}

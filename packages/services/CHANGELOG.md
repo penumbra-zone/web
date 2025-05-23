@@ -1,5 +1,58 @@
 # @penumbra-zone/router
 
+## 66.0.0
+
+### Patch Changes
+
+- Updated dependencies [6779599]
+- Updated dependencies [cee8150]
+  - @penumbra-zone/storage@59.0.0
+  - @penumbra-zone/types@34.2.0
+  - @penumbra-zone/crypto-web@46.0.0
+  - @penumbra-zone/wasm@50.0.0
+
+## 65.0.0
+
+### Patch Changes
+
+- Updated dependencies [ec85373]
+  - @penumbra-zone/storage@58.0.0
+  - @penumbra-zone/types@34.1.0
+  - @penumbra-zone/crypto-web@45.0.0
+  - @penumbra-zone/wasm@49.0.0
+
+## 64.0.0
+
+### Major Changes
+
+- dc1eb8b: tct frontier support for freshly generated wallets
+
+### Patch Changes
+
+- Updated dependencies [dc1eb8b]
+- Updated dependencies [f9cd9dd]
+  - @penumbra-zone/protobuf@10.1.0
+  - @penumbra-zone/storage@57.0.0
+  - @penumbra-zone/types@34.0.0
+  - @penumbra-zone/wasm@48.0.0
+  - @penumbra-zone/bech32m@17.0.0
+  - @penumbra-zone/getters@27.0.0
+  - @penumbra-zone/crypto-web@44.0.0
+
+## 63.0.0
+
+### Minor Changes
+
+- 085e855: use asset id instead of metadata in liquidity tournament idb table
+
+### Patch Changes
+
+- Updated dependencies [085e855]
+  - @penumbra-zone/storage@56.0.0
+  - @penumbra-zone/types@33.1.0
+  - @penumbra-zone/crypto-web@43.0.0
+  - @penumbra-zone/wasm@47.0.0
+
 ## 62.0.0
 
 ### Patch Changes

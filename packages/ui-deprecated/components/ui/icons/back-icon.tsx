@@ -3,17 +3,21 @@ import { ArrowLeftIcon } from '@radix-ui/react-icons';
 import { IconProps } from '@radix-ui/react-icons/dist/types';
 import { cn } from '../../../lib/utils';
 
-export type BackIconProps = IconProps & React.RefAttributes<SVGSVGElement>;
+// RefAttributes is for the type system to know it can receive a ref,
+// the actual ref prop comes from IconProps if it extends SVGAttributes
+export type BackIconProps = IconProps & { ref?: React.Ref<SVGSVGElement> };
 
-const BackIcon = React.forwardRef<SVGSVGElement, BackIconProps>(({ className, ...props }, ref) => {
+const BackIcon = (
+  { className, ref, ...props }: BackIconProps, // Destructure ref from props
+) => {
   return (
     <ArrowLeftIcon
       className={cn('h-6 w-6 cursor-pointer text-muted-foreground hover:text-white', className)}
-      ref={ref}
+      ref={ref} // Pass ref to ArrowLeftIcon
       {...props}
     ></ArrowLeftIcon>
   );
-});
+};
 
 BackIcon.displayName = 'BackIcon';
 

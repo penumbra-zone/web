@@ -6,13 +6,24 @@ import {
 } from '@radix-ui/react-dialog';
 import { styled } from 'styled-components';
 
-const Overlay = styled(RadixDialogOverlay)`
+// Create a version that explicitly handles ref
+const StyledOverlay = styled(RadixDialogOverlay)`
   backdrop-filter: blur(${props => props.theme.blur.xs});
   background-color: ${props => props.theme.color.other.overlay};
   position: fixed;
   inset: 0;
   z-index: auto;
 `;
+
+// Accept ref as a prop instead of using forwardRef
+const Overlay = ({
+  ref,
+  ...props
+}: React.ComponentProps<typeof RadixDialogOverlay> & {
+  ref?: React.Ref<HTMLDivElement>;
+}) => {
+  return <StyledOverlay {...props} ref={ref} />;
+};
 
 /**
  * We make a full-screen wrapper around the dialog's content so that we can
@@ -32,6 +43,16 @@ const DialogContent = styled.div<{ $zIndex?: number }>`
   ${props => props.$zIndex && `z-index: ${props.$zIndex};`}
 `;
 
+// Accept ref as a prop instead of using forwardRef
+const Content = ({
+  ref,
+  ...props
+}: React.ComponentProps<typeof RadixDialogContent> & {
+  ref?: React.Ref<HTMLDivElement>;
+}) => {
+  return <RadixDialogContent {...props} ref={ref} />;
+};
+
 export interface DialogEmptyContentProps {
   children?: ReactNode;
   /** @deprecated this prop will be removed in the future */
@@ -43,9 +64,9 @@ export const EmptyContent = ({ children, zIndex }: DialogEmptyContentProps) => {
     <RadixDialogPortal>
       <Overlay />
 
-      <RadixDialogContent>
+      <Content>
         <DialogContent $zIndex={zIndex}>{children}</DialogContent>
-      </RadixDialogContent>
+      </Content>
     </RadixDialogPortal>
   );
 };

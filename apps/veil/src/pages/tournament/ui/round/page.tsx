@@ -22,7 +22,7 @@ export const TournamentRoundPage = () => {
       <PenumbraWaves />
       <RoundCard epoch={epoch} />
       <CurrentVotingResults epoch={epoch} />
-      <LeaderboardTable />
+      <LeaderboardTable epoch={epoch} />
     </section>
   );
 };

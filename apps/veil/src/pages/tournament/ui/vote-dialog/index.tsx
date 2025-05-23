@@ -8,16 +8,18 @@ import { Density } from '@penumbra-zone/ui/Density';
 import { Checkbox } from '@penumbra-zone/ui/Checkbox';
 import { TextInput } from '@penumbra-zone/ui/TextInput';
 import { SpendableNoteRecord } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { useSubaccounts } from '@/widgets/header/api/subaccounts';
+import { lqtAddressIndex } from '@penumbra-zone/types/address';
+import { voteTournament } from '@/entities/tournament/api/vote';
 import { connectionStore } from '@/shared/model/connection';
-import { getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { useLQTNotes } from '../../api/use-voting-notes';
-import { voteTournament } from '../../../../entities/tournament/api/vote';
 import { useCurrentEpoch } from '../../api/use-current-epoch';
 import { useEpochResults } from '../../api/use-epoch-results';
 import { MappedGauge } from '../../server/previous-epochs';
 import { VoteDialogSearchResults } from './search-results';
 import { VotingAssetSelector } from './asset-selector';
+import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { penumbra } from '@/shared/const/penumbra';
+import { ViewService } from '@penumbra-zone/protobuf';
 
 interface VoteDialogProps {
   defaultValue?: MappedGauge;
@@ -35,21 +37,17 @@ export const VoteDialogueSelector = observer(
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
 
-    const { data: subaccounts } = useSubaccounts();
-
     const { subaccount } = connectionStore;
-    const valueAddress = subaccounts?.find(
-      account => getAddressIndex(account).account === subaccount,
-    );
-
-    // Temporarily hardcode the same account address as the reward recipient.
-    const rewardsRecipient = valueAddress?.addressView.value?.address;
 
     // Fetch user's spendable voting notes for this epoch
     const { epoch, isLoading: epochLoading } = useCurrentEpoch();
 
     const { data: notes } = useLQTNotes(subaccount, epoch);
-    const { data: assets, isLoading } = useEpochResults(
+    const {
+      data: assetsData,
+      isLoading,
+      assetGauges,
+    } = useEpochResults(
       'epoch-results-vote-dialog',
       {
         epoch,
@@ -57,7 +55,18 @@ export const VoteDialogueSelector = observer(
         page: 1,
       },
       !isOpen && epochLoading,
+      searchQuery,
     );
+
+    // Collect an array of minium 5 items. If there are more than 5 voted assets, return all of them.
+    // If less than 5, firstly return all voted assets, and then fill the rest with non-voted assets.
+    const assets = assetsData?.data ?? [];
+    const selectorAssets = [
+      ...assets,
+      ...((assets.length || 5) < 5
+        ? assetGauges.slice(assets.length, assets.length + 5 - assets.length)
+        : []),
+    ];
 
     const handleVoteSubmit = async () => {
       if (!selectedAsset) {
@@ -73,6 +82,19 @@ export const VoteDialogueSelector = observer(
             .map(res => res.noteRecord)
             .filter((record): record is SpendableNoteRecord => !!record)
         : [];
+
+      let rewardsRecipient: Address | undefined;
+      if (revealVote) {
+        const res = await penumbra
+          .service(ViewService)
+          .addressByIndex({ addressIndex: lqtAddressIndex(subaccount) });
+        rewardsRecipient = res.address;
+      } else {
+        const res = await penumbra
+          .service(ViewService)
+          .ephemeralAddress({ addressIndex: { account: subaccount } });
+        rewardsRecipient = res.address;
+      }
 
       // Craft LQT TPR and submit vote
       await voteTournament({
@@ -161,7 +183,7 @@ export const VoteDialogueSelector = observer(
               <VotingAssetSelector
                 selectedAsset={selectedAsset}
                 loading={isLoading}
-                gauge={assets?.data ?? []}
+                gauge={selectorAssets}
                 onSelect={onSearchSelect}
               />
             )}
@@ -169,8 +191,7 @@ export const VoteDialogueSelector = observer(
             {isSearchOpen && (
               <VoteDialogSearchResults
                 value={selectedAsset?.asset.base}
-                gauge={assets?.data ?? []}
-                search={searchQuery}
+                gauge={assetGauges}
                 onSelect={onSearchSelect}
               />
             )}

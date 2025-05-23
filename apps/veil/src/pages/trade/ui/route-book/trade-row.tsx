@@ -5,7 +5,7 @@ import { getSymbolFromValueView } from '@penumbra-zone/getters/value-view';
 import { Text } from '@penumbra-zone/ui/Text';
 import { Trace } from '@/shared/api/server/book/types.ts';
 import { pluralize } from '@/shared/utils/pluralize';
-import { formatNumber } from './utils';
+import { pnum } from '@penumbra-zone/types/pnum';
 
 const SELL_BG_COLOR = 'rgba(175, 38, 38, 0.24)';
 
@@ -34,13 +34,22 @@ export const TradeRow = ({
       )}
     >
       <Text detailTechnical color={isSell ? 'destructive.light' : 'success.light'}>
-        {formatNumber(trace.price, 7)}
+        {pnum(trace.price).toFormattedString({
+          commas: false,
+          decimals: 7,
+        })}
       </Text>
       <Text detailTechnical align='right' color='text.primary'>
-        {formatNumber(trace.amount, 6)}
+        {pnum(trace.amount).toFormattedString({
+          commas: false,
+          decimals: 6,
+        })}
       </Text>
       <Text detailTechnical align='right' color='text.primary'>
-        {formatNumber(trace.total, 6)}
+        {pnum(trace.total).toFormattedString({
+          commas: false,
+          decimals: 6,
+        })}
       </Text>
       <Text
         tableItemSmall

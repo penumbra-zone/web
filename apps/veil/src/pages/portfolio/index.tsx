@@ -3,12 +3,10 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { XCircle } from 'lucide-react';
-import { Button } from '@penumbra-zone/ui/Button';
-import { Text } from '@penumbra-zone/ui/Text';
-import { Density } from '@penumbra-zone/ui/Density';
+import { Button, Text, Density } from '@penumbra-zone/ui';
 import { AssetsTable } from './ui/assets-table';
 import { WalletConnect } from './ui/wallet-connect';
-import { useRegistry } from '@/shared/api/registry.ts';
+import { useRegistry } from '@/shared/api/registry.tsx';
 import { IbcChainProvider } from '@/features/cosmos/chain-provider.tsx';
 import { Onboarding } from './ui/onboarding';
 import { PortfolioPositionTabs } from './ui/position-tabs';
@@ -26,11 +24,11 @@ export const PortfolioPage = ({ isMobile }: PortfolioPageProps): React.ReactNode
     return <MobilePortfolioPage />;
   }
 
-  return data ? (
+  return (
     <IbcChainProvider registry={data}>
       <DesktopPortfolioPage />
     </IbcChainProvider>
-  ) : null;
+  );
 };
 
 function MobilePortfolioPage() {

@@ -28,7 +28,7 @@ export const useFee = (txv?: TransactionView) => {
 
   useEffect(() => {
     const assetId = txv?.bodyView?.transactionParameters?.fee?.assetId;
-    const metadata = assetId ? registry?.tryGetMetadata(assetId) : stakingToken;
+    const metadata = assetId ? registry.tryGetMetadata(assetId) : stakingToken;
     setFeeValueView(
       metadata
         ? new ValueView({

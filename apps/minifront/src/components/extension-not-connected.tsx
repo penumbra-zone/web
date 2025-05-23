@@ -63,7 +63,7 @@ export const ExtensionNotConnected = () => {
   const connect = async (provider: string) => {
     try {
       await penumbra.connect(provider);
-      navigate('/');
+      navigate(0);
     } catch (e) {
       handleErr(e);
     } finally {

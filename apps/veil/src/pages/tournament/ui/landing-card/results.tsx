@@ -1,13 +1,21 @@
-import { round } from '@penumbra-zone/types/round';
 import { Text } from '@penumbra-zone/ui/Text';
 import { Skeleton } from '@penumbra-zone/ui/Skeleton';
-import { AssetIcon } from '@penumbra-zone/ui/AssetIcon';
 import type { MappedGauge } from '../../server/previous-epochs';
+import { VoteAssetIcon, VoteAssetContent } from '../vote-dialog/vote-dialog-asset';
 
 export interface TournamentResultsProps {
   results: MappedGauge[];
   loading: boolean;
 }
+
+const TournamentResultsAsset = ({ asset }: { asset: MappedGauge }) => {
+  return (
+    <div key={asset.asset.symbol} className='flex gap-3'>
+      <VoteAssetIcon asset={asset} />
+      <VoteAssetContent asset={asset} />
+    </div>
+  );
+};
 
 export const TournamentResults = ({ loading, results }: TournamentResultsProps) => {
   if (!loading && !results.length) {
@@ -32,28 +40,7 @@ export const TournamentResults = ({ loading, results }: TournamentResultsProps) 
               <Skeleton />
             </div>
           ))
-        : results.map(asset => (
-            <div key={asset.asset.symbol} className='flex gap-3'>
-              <AssetIcon metadata={asset.asset} size='lg' />
-
-              <div className='flex w-full flex-col gap-2'>
-                <div className='flex justify-between w-full'>
-                  <Text technical color='text.primary'>
-                    {asset.asset.symbol}
-                  </Text>
-                  <Text technical color='text.secondary'>
-                    {round({ value: asset.portion * 100, decimals: 0 })}%
-                  </Text>
-                </div>
-                <div className='flex w-full h-[6px] bg-other-tonalFill5 rounded-full overflow-hidden'>
-                  <div
-                    className='h-full bg-secondary-light'
-                    style={{ width: `calc(${asset.portion * 100}% - 1px)` }}
-                  />
-                </div>
-              </div>
-            </div>
-          ))}
+        : results.map(asset => <TournamentResultsAsset asset={asset} key={asset.asset.base} />)}
     </div>
   );
 };

@@ -25,7 +25,7 @@ describe('tournamentVotes request handler', () => {
       getLQTHistoricalVotes: vi.fn(),
       iterateLQTVotes: vi.fn(),
       saveLQTHistoricalVote: vi.fn(),
-      getBlockHeightByEpoch: vi.fn(),
+      getEpochByIndex: vi.fn(),
       getNotesForVoting: vi.fn(),
     };
 
@@ -48,7 +48,7 @@ describe('tournamentVotes request handler', () => {
   });
 
   test('returns historical liquidity tournament votes that have been previously been saved to storage', async () => {
-    mockIndexedDb.getBlockHeightByEpoch?.mockResolvedValueOnce(epoch);
+    mockIndexedDb.getEpochByIndex?.mockResolvedValueOnce(epoch);
     mockIndexedDb.saveLQTHistoricalVote?.mockResolvedValueOnce(mockVote);
     mockIndexedDb.getLQTHistoricalVotes?.mockResolvedValueOnce([mockVote]);
     mockIndexedDb.iterateLQTVotes?.mockResolvedValueOnce([mockVote]);
