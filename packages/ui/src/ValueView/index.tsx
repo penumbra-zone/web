@@ -81,9 +81,18 @@ export interface ValueViewComponentProps<SelectedContext extends Context> {
    */
   showValue?: boolean;
   /**
-   * If true, the amount will have trailing zeros.
+   * If true, the amount will have trailing zeros. The length of the decimal number part
+   * will become the exponent of the passed token.
    */
   trailingZeros?: boolean;
+  /**
+   * Add "figure space &numsp;" characters to the formatted amount until this length is reached,
+   * useful for aligning numbers in a table.
+   *
+   * For example, if the formatted amount is "1,000.23" (length 8) and `padStart` is 10, the resulting
+   * string will be "  1,000.23" (length 10).
+   */
+  padStart?: number;
   /**
    * The density to use for the component. If not provided, the density will be
    * determined by the `Density` context.
@@ -103,6 +112,7 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
   context,
   priority = 'primary',
   signed,
+  padStart,
   showIcon = true,
   showSymbol = true,
   abbreviate = false,
@@ -120,6 +130,11 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
   const formattedAmount = abbreviate
     ? shortify(pnum(valueView).toNumber())
     : pnum(valueView).toFormattedString({ trailingZeros });
+
+  const figureSpace = ' '; // figure space characted, not a regular space
+  const padString = padStart
+    ? figureSpace.repeat(Math.max(0, padStart - formattedAmount.length))
+    : '';
 
   const metadata = getMetadata.optional(valueView);
   // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- possibly empty string
@@ -161,7 +176,10 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
           {showValue && (
             <div className='flex shrink grow items-center' title={formattedAmount}>
               {signed && getSign(signed)}
-              <ValueText density={density}>{formattedAmount}</ValueText>
+              <ValueText density={density}>
+                {padString}
+                {formattedAmount}
+              </ValueText>
             </div>
           )}
           {showSymbol && (
