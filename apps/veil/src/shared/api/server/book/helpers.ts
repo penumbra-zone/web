@@ -110,7 +110,7 @@ export const processSimulation = ({
   const sortedTraces = Array.from(tracesByPrice.values()).sort((a, b) => {
     const priceA = new BigNumber(a.price);
     const priceB = new BigNumber(b.price);
-    return priceA.comparedTo(priceB);
+    return priceA.comparedTo(priceB) ?? 0;
   });
 
   // If we are going from quote to base, we want to get the lowest prices first in ascending order.

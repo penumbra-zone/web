@@ -2,7 +2,7 @@ import { styled } from 'styled-components';
 import { small } from '../utils/typography';
 import { ActionType, getOutlineColorByActionType } from '../utils/ActionType';
 import { useDisabled } from '../hooks/useDisabled';
-import { forwardRef, ReactNode } from 'react';
+import { ReactNode, Ref, FC } from 'react';
 
 const Wrapper = styled.div<{
   $hasStartAdornment: boolean;
@@ -97,6 +97,7 @@ export interface TextInputProps {
   endAdornment?: ReactNode;
   max?: string | number;
   min?: string | number;
+  ref?: Ref<HTMLInputElement>;
 }
 
 /**
@@ -105,45 +106,40 @@ export interface TextInputProps {
  * Can be enriched with start and end adornments, which are markup that render
  * inside the text input's visual frame.
  */
-// eslint-disable-next-line react/display-name -- exotic component
-export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
-  (
-    {
-      value,
-      onChange,
-      placeholder,
-      actionType = 'default',
-      disabled,
-      type = 'text',
-      startAdornment = null,
-      endAdornment = null,
-      max,
-      min,
-    }: TextInputProps,
-    ref,
-  ) => (
-    <Wrapper
+export const TextInput: FC<TextInputProps> = ({
+  value,
+  onChange,
+  placeholder,
+  actionType = 'default',
+  disabled,
+  type = 'text',
+  startAdornment = null,
+  endAdornment = null,
+  max,
+  min,
+  ref,
+}) => (
+  <Wrapper
+    $actionType={actionType}
+    $hasStartAdornment={!!startAdornment}
+    $hasEndAdornment={!!endAdornment}
+  >
+    {startAdornment}
+
+    <StyledInput
+      value={value}
+      onChange={e => onChange?.(e.target.value)}
+      placeholder={placeholder}
+      disabled={useDisabled(disabled)}
+      type={type}
+      max={max}
+      min={min}
+      ref={ref}
       $actionType={actionType}
       $hasStartAdornment={!!startAdornment}
       $hasEndAdornment={!!endAdornment}
-    >
-      {startAdornment}
+    />
 
-      <StyledInput
-        value={value}
-        onChange={e => onChange?.(e.target.value)}
-        placeholder={placeholder}
-        disabled={useDisabled(disabled)}
-        type={type}
-        max={max}
-        min={min}
-        ref={ref}
-        $actionType={actionType}
-        $hasStartAdornment={!!startAdornment}
-        $hasEndAdornment={!!endAdornment}
-      />
-
-      {endAdornment}
-    </Wrapper>
-  ),
+    {endAdornment}
+  </Wrapper>
 );

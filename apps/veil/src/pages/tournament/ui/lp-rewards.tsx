@@ -129,8 +129,8 @@ export const LpRewards = observer(() => {
           </div>
 
           {!loading && !total && (
-            <div className='col-span-5 text-sm text-muted-foreground py-4'>
-              No LP rewards found for this account.
+            <div className='grid grid-cols-subgrid col-span-4'>
+              <TableCell cell>No LP rewards found for this account.</TableCell>
             </div>
           )}
 
