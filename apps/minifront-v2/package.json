@@ -5,14 +5,7 @@
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "scripts": {
-    "build": "cross-env NODE_OPTIONS=--max-old-space-size=8192 vite build",
-    "clean": "rm -rfv dist *.tsbuildinfo",
-    "dev:app": "vite --port 5173",
-    "lint": "eslint src",
-    "lint:fix": "eslint src --fix",
-    "lint:strict": "tsc --noEmit && eslint src --max-warnings 0",
-    "preview": "vite preview",
-    "test": "vitest run"
+    "dev:app": "vite --port 5173"
   },
   "dependencies": {
     "@bufbuild/protobuf": "^1.10.0",

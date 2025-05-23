@@ -19,6 +19,9 @@ export default defineConfig(({ mode }) => {
         '@app': path.resolve(__dirname, 'app'),
         '@pages': path.resolve(__dirname, 'pages'),
         '@shared': path.resolve(__dirname, 'shared'),
+        '@entities': path.resolve(__dirname, 'entities'),
+        '@features': path.resolve(__dirname, 'features'),
+        '@widgets': path.resolve(__dirname, 'widgets'),
       },
     },
     plugins: [

@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { InfoButton } from '../shared/InfoButton';
+import { InfoButton } from '../../shared/ui/info-button';
 
 export interface AssetsCardTitleProps {
   /**

@@ -9,6 +9,9 @@
     "paths": {
       "@app/*": ["./app/*"],
       "@pages/*": ["./pages/*"],
+      "@entities/*": ["./entities/*"],
+      "@widgets/*": ["./widgets/*"],
+      "@features/*": ["./features/*"],
       "@shared/*": ["./shared/*"]
     }
   },

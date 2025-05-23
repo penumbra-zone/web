@@ -1,10 +1,10 @@
-import { Table } from '@penumbra-zone/ui-deprecated/Table';
-import { useSummaries } from '../../../../state/transactions';
-import { Text } from '@penumbra-zone/ui-deprecated/Text';
+import { Table } from '../../../../../packages/ui-deprecated/src/Table';
+import { useSummaries } from '../../../../minifront/src/state/transactions';
+import { Text } from '../../../../../packages/ui-deprecated/src/Text';
 import { Link } from 'react-router-dom';
 import { SquareArrowOutUpRight } from 'lucide-react';
-import { Button } from '@penumbra-zone/ui-deprecated/Button';
-import { useAnimationDeferredValue } from '@penumbra-zone/ui-deprecated/hooks/useAnimationDeferredValue';
+import { Button } from '../../../../../packages/ui-deprecated/src/Button';
+import { useAnimationDeferredValue } from '../../../../../packages/ui-deprecated/src/hooks/useAnimationDeferredValue';
 import { LayoutGroup } from 'framer-motion';
 
 export const TransactionsPage = () => {

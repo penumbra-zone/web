@@ -4,17 +4,17 @@ import {
   BalancesByAccount,
   balancesByAccountSelector,
   useBalancesResponses,
-} from '../../../state/shared';
+} from '../../../minifront/src/state/shared';
 import { useMemo } from 'react';
 import {
   getBalanceView,
   getMetadataFromBalancesResponse,
 } from '@penumbra-zone/getters/balances-response';
-import { shouldDisplay } from '../../../fetchers/balances/should-display';
-import { sortByPriorityScore } from '../../../fetchers/balances/by-priority-score';
+import { shouldDisplay } from '../../../minifront/src/fetchers/balances/should-display';
+import { sortByPriorityScore } from '../../../minifront/src/fetchers/balances/by-priority-score';
 import { pnum } from '@penumbra-zone/types/pnum';
 import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
+import { AbridgedZQueryState } from '../../../../packages/zquery/src/types';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 

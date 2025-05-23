@@ -1,4 +1,4 @@
-import { InfoButton } from '../shared/InfoButton';
+import { InfoButton } from '../../shared/ui/info-button';
 import { ReactNode } from 'react';
 
 export interface TransactionsCardTitleProps {

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { AllSlices } from '../../../../state';
-import { useStoreShallow } from '../../../../utils/use-store-shallow';
+import { AllSlices } from '../../../state';
+import { useStoreShallow } from '../../../utils/use-store-shallow';
 
 const DEBOUNCE_MS = 500;
 
