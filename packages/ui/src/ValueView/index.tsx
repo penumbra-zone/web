@@ -90,7 +90,7 @@ export interface ValueViewComponentProps<SelectedContext extends Context> {
    * useful for aligning numbers in a table.
    *
    * For example, if the formatted amount is "1,000.23" (length 8) and `padStart` is 10, the resulting
-   * string will be "  1,000.23" (length 10).
+   * string will be "  1,000.23" (length 10).
    */
   padStart?: number;
   /**
@@ -131,7 +131,7 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
     ? shortify(pnum(valueView).toNumber())
     : pnum(valueView).toFormattedString({ trailingZeros });
 
-  const figureSpace = ' '; // figure space characted, not a regular space
+  const figureSpace = ' '; // figure space character, not a regular space
   const padString = padStart
     ? figureSpace.repeat(Math.max(0, padStart - formattedAmount.length))
     : '';
