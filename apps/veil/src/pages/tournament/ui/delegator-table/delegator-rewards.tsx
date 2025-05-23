@@ -32,7 +32,7 @@ const TableLayout = observer(
             <div className='grid grid-cols-subgrid col-span-4'>
               {getTableHeader('epoch', 'Epoch')}
               <TableCell heading>Casted Vote</TableCell>
-              {getTableHeader('reward', 'Reward', { justify: 'end' })}
+              {getTableHeader('reward', 'Reward')}
               <TableCell heading> </TableCell>
             </div>
             {children}
@@ -153,7 +153,7 @@ export const DelegatorRewards = ({ address }: { address: Address }) => {
                 <ValueViewComponent showValue={false} valueView={valueView} />
               </TableCell>
 
-              <TableCell cell justify='end'>
+              <TableCell cell>
                 <ValueViewComponent
                   valueView={toValueView({ value, getMetadata })}
                   priority='tertiary'

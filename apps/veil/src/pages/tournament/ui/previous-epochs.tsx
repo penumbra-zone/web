@@ -88,6 +88,7 @@ const PreviousEpochsRow = observer(
           <TableCell cell loading={isLoading || rewardsLoading}>
             {reward !== undefined ? (
               <ValueViewComponent
+                trailingZeros
                 valueView={toValueView({ amount: reward.reward, metadata: stakingToken })}
                 priority='tertiary'
               />

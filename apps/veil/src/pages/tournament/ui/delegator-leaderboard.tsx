@@ -109,7 +109,7 @@ const LeaderboardRow = observer(
         <TableCell cell loading={loading}>
           {row.streak}
         </TableCell>
-        <TableCell cell loading={loading} justify='end'>
+        <TableCell cell loading={loading}>
           {row.total_rewards && (
             <ValueViewComponent valueView={totalRewards} priority='tertiary' trailingZeros={true} />
           )}
@@ -160,7 +160,7 @@ export const DelegatorLeaderboard = observer(() => {
             <TableCell heading>Delegator Address</TableCell>
             {getTableHeader('epochs_voted_in', 'Rounds Participated')}
             {getTableHeader('streak', 'Voting Streak')}
-            {getTableHeader('total_rewards', 'Rewards Earned', { justify: 'end' })}
+            {getTableHeader('total_rewards', 'Rewards Earned')}
             <TableCell heading> </TableCell>
           </div>
 
