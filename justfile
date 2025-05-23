@@ -16,9 +16,14 @@ compile: install
 
 # Remove all cached build artifacts
 clean:
+  pnpm clean
+  pnpm clean:modules
+  pnpm clean:vitest-mjs
   rm -rf .turbo
   fd -t d node_modules --no-ignore -X rm -r
   fd -t d target --no-ignore -X rm -r
+  fd -t f tsconfig.tsbuildinfo --no-ignore -X rm
+  fd -t d flake-inputs --no-ignore --hidden -X rm -r
 
 # Wrapper for all linting targets
 lint:
@@ -46,15 +51,26 @@ veil:
 veil-container:
   cd ./apps/veil && just container
 
-# Configure OS deps for Playwright tests
-install-playwright: install
-  pnpm playwright install --with-deps chromium
+# Configure Playwright for current nix devshell
+playwright-setup:
+  ./scripts/playwright-setup
+
+# Run all test suites
+test:
+  # Run rust tests
+  @just test-rust
+  # Run turbo playwright tests
+  @just test-turbo
 
 # Run the turbo test suite
-test-turbo: install
-   pnpm turbo test --cache-dir=.turbo
+test-turbo:
+   pnpm turbo test
 
 # Run the Rust test suite
-test-rust: install
-   pnpm turbo test:wasm --cache-dir=.turbo
-   pnpm turbo test:cargo --cache-dir=.turbo
+test-rust:
+   pnpm turbo test:cargo
+   pnpm turbo test:wasm
+
+# Run test suites locally and gather timing information
+benchmark-tests:
+  ./scripts/benchmark-tests

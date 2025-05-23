@@ -27,7 +27,7 @@
     "lint:strict": "turbo lint:strict",
     "lint:syncpack": "syncpack lint",
     "postinstall": "syncpack list-mismatches",
-    "pretest": "playwright install",
+    "pretest": "./scripts/playwright-setup",
     "test": "turbo test",
     "test:wasm": "turbo test:wasm"
   },
