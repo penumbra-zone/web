@@ -7,37 +7,22 @@ on:
     branches:
       - main
 jobs:
-  turbo-compile:
-    name: Compile
-    uses: ./.github/workflows/compile-wasm.yml
-
   build_and_deploy:
-    needs: turbo-compile
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - id: built
-        uses: buildjet/cache@v4
-        with:
-          path: .turbo
-          key: ${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-built
-          restore-keys: ${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-compiled
 
-      - uses: pnpm/action-setup@v4
+      - name: setup nix
+        uses: ./.github/actions/setup-nix
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: 'pnpm'
+      - name: setup turbo
+        uses: ./.github/actions/setup-turbo
 
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Build all packages that UI depends on
-        run: pnpm exec turbo build --cache-dir=.turbo --filter=./packages/ui
+      - name: build all packages, including ui
+        run: nix develop --command just build
 
       - name: Build static site
-        run: pnpm build-storybook
+        run: nix develop --command pnpm build-storybook
         working-directory: packages/ui
 
       - uses: FirebaseExtended/action-hosting-deploy@v0

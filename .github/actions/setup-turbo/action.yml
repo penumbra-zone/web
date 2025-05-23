@@ -1,0 +1,32 @@
+name: 'Setup Turbo'
+description: 'Handles cache-wrangling for turborepo setup, including node and rust deps'
+inputs:
+  primary-key:
+    description: Primary key for the cache
+    required: false
+    default: turbo-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+  restore-prefix:
+    description: Restore prefix for the cache
+    required: false
+    default: turbo-${{ runner.os }}-
+  backend:
+    description: Backend to use for caching
+    required: false
+    default: buildjet
+
+runs:
+  using: composite
+  steps:
+    - name: Setup turbo cache
+      uses: buildjet/cache@v4
+      with:
+        path: |
+          .turbo
+          node_modules
+        key: ${{ inputs.primary-key }}
+
+    - name: Install node deps
+      shell: bash
+      # We assume that the "setup-nix" step has already been run,
+      # so that `pnpm` is on the path.
+      run: nix develop --command just install
