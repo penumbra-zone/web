@@ -56,6 +56,7 @@
     "clsx": "^2.1.1",
     "configs": "github:prax-wallet/configs#main",
     "cosmos-kit": "^2.21.1",
+    "d3-scale": "^4.0.2",
     "date-fns": "^4.1.0",
     "kysely": "^0.27.5",
     "lightweight-charts": "^4.2.2",

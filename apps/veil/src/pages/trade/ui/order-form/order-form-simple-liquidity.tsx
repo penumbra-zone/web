@@ -9,11 +9,15 @@ import { AmountInput } from './amount-input';
 import { InfoRow } from './info-row';
 import { InfoRowGasFee } from './info-row-gas-fee';
 import { OrderFormStore } from './store/OrderFormStore';
+import { ControlSlider } from './price-slider';
+import { useState } from 'react';
 
 export const SimpleLiquidityOrderForm = observer(
   ({ parentStore }: { parentStore: OrderFormStore }) => {
     const { connected } = connectionStore;
     const { defaultDecimals, rangeForm: store } = parentStore;
+
+    const [priceRange, setPriceRange] = useState<[number, number]>([0.45, 0.55]);
 
     return (
       <div className='p-4'>
@@ -57,6 +61,14 @@ export const SimpleLiquidityOrderForm = observer(
               }}
             />
           </div>
+        </div>
+        <div className='mb-4'>
+          <div className='leading-6 mb-4'>
+            <Text small color='text.secondary'>
+              Price Range
+            </Text>
+          </div>
+          <ControlSlider min={0.4} max={0.6} value={priceRange} onInput={setPriceRange} />
         </div>
         <div className='mb-4'>
           <InfoRow label='LQT Rewards' value='Eligible' />
