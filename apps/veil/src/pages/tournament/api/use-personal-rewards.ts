@@ -9,16 +9,22 @@ import {
   DelegatorHistorySortDirection,
   DelegatorHistorySortKey,
   TournamentDelegatorHistoryResponse,
+  LqtDelegatorHistoryData,
 } from '../server/delegator-history';
 import { apiPostFetch } from '@/shared/utils/api-fetch';
 import {
   AddressByIndexResponse,
   TournamentVotesResponse,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 
 export const BASE_LIMIT = 10;
 export const BASE_PAGE = 1;
+
+export interface PersonalRewardsData {
+  data: LqtDelegatorHistoryData[];
+  totalItems: number;
+  totalRewards: number;
+}
 
 const fetchRewards = async (
   epochOrHeight: { type: 'epoch'; value: bigint } | { type: 'blockHeight'; value: bigint },
@@ -27,7 +33,7 @@ const fetchRewards = async (
   sortKey: DelegatorHistorySortKey = 'epoch',
   sortDirection: DelegatorHistorySortDirection = 'desc',
   subaccount?: number,
-): Promise<TournamentDelegatorHistoryResponse> => {
+): Promise<PersonalRewardsData> => {
   const accountFilter =
     typeof subaccount === 'undefined' ? undefined : new AddressIndex({ account: subaccount });
 
@@ -66,11 +72,10 @@ const fetchRewards = async (
     // Consequently, we can always fall back to local-first reward processing
     // if that becomes a performance bottleneck.
 
-    const delegatorHistory = await apiPostFetch<TournamentDelegatorHistoryResponse>(
+    const delegatorHistory = await apiPostFetch<TournamentDelegatorHistoryResponse[]>(
       '/api/tournament/delegator-history',
       {
         epochs: Array.from(epochs),
-        address: address ? bech32mAddress(address) : '',
         page,
         limit,
         sortKey,
@@ -78,7 +83,13 @@ const fetchRewards = async (
       },
     );
 
-    return delegatorHistory;
+    const delegatorHistoryByAddress = delegatorHistory.find(item => item.address.equals(address));
+
+    return {
+      data: delegatorHistoryByAddress?.data ?? [],
+      totalItems: delegatorHistoryByAddress?.total_items ?? 0,
+      totalRewards: delegatorHistoryByAddress?.total_rewards ?? 0,
+    };
   }
 
   return {
