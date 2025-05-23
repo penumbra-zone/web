@@ -1,5 +1,17 @@
 # @penumbra-zone/ui
 
+## 15.0.0
+
+### Major Changes
+
+- dcfbe8a: Upgrade to React 19 and address forwardRef deprecation across the repo
+
+### Patch Changes
+
+- dcfbe8a: feat(ui): Added v2 Portfolio Page layout including PortfolioBalance and AssetCard components. Setup dual-theme build process to avoid tailwind conflicts in minifront app (legacy vs. v2).
+- 2066c86: Fix styles build
+  - @penumbra-zone/perspective@60.0.0
+
 ## 14.0.4
 
 ### Patch Changes
