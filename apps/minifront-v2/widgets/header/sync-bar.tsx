@@ -2,9 +2,9 @@ import {
   statusStreamStateSelector,
   syncPercentSelector,
   useStatus,
-} from '../../../state/status.ts';
-import { Progress } from '@penumbra-zone/ui-deprecated/Progress';
-import { useStore } from '../../../state';
+} from '../../../minifront/src/state/status.ts';
+import { Progress } from '../../../../packages/ui-deprecated/src/Progress';
+import { useStore } from '../../../minifront/src/state';
 
 export const SyncBar = () => {
   const sync = useStatus({ select: syncPercentSelector });

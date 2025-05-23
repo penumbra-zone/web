@@ -1,8 +1,8 @@
 import { Menu, X } from 'lucide-react';
-import { Button } from '@penumbra-zone/ui-deprecated/Button';
-import { Dialog } from '@penumbra-zone/ui-deprecated/Dialog';
-import { Display } from '@penumbra-zone/ui-deprecated/Display';
-import { MenuItem } from '@penumbra-zone/ui-deprecated/MenuItem';
+import { Button } from '../../../../packages/ui-deprecated/src/Button';
+import { Dialog } from '../../../../packages/ui-deprecated/src/Dialog';
+import { Display } from '../../../../packages/ui-deprecated/src/Display';
+import { MenuItem } from '../../../../packages/ui-deprecated/src/MenuItem';
 import { StatusPopover } from './status-popover.tsx';
 import { ProviderPopover } from './provider-popover.tsx';
 import { HeaderLogo } from './logo.tsx';

@@ -1,16 +1,16 @@
 import { Blocks } from 'lucide-react';
-import { Popover, PopoverContext } from '@penumbra-zone/ui-deprecated/Popover';
-import { Button } from '@penumbra-zone/ui-deprecated/Button';
-import { Density } from '@penumbra-zone/ui-deprecated/Density';
-import { Pill } from '@penumbra-zone/ui-deprecated/Pill';
-import { Text } from '@penumbra-zone/ui-deprecated/Text';
+import { Popover, PopoverContext } from '../../../../packages/ui-deprecated/src/Popover';
+import { Button } from '../../../../packages/ui-deprecated/src/Button';
+import { Density } from '../../../../packages/ui-deprecated/src/Density';
+import { Pill } from '../../../../packages/ui-deprecated/src/Pill';
+import { Text } from '../../../../packages/ui-deprecated/src/Text';
 import {
   statusStreamStateSelector,
   syncPercentSelector,
   useStatus,
-} from '../../../state/status.ts';
+} from '../../../minifront/src/state/status.ts';
 import { useMemo } from 'react';
-import { useStore } from '../../../state';
+import { useStore } from '../../../minifront/src/state';
 
 export const StatusPopover = () => {
   const sync = useStatus({ select: syncPercentSelector });

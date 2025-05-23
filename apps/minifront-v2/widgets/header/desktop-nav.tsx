@@ -1,10 +1,10 @@
 import { useNavigate } from 'react-router-dom';
-import { Tabs } from '@penumbra-zone/ui-deprecated/Tabs';
-import { Density } from '@penumbra-zone/ui-deprecated/Density';
-import { getV2Link } from '../get-v2-link.ts';
-import { usePagePath } from '../../../fetchers/page-path.ts';
+import { Tabs } from '../../../../packages/ui-deprecated/src/Tabs';
+import { Density } from '../../../../packages/ui-deprecated/src/Density';
+import { getV2Link } from '../../../minifront/src/components/v2/get-v2-link.ts';
+import { usePagePath } from '../../../minifront/src/fetchers/page-path.ts';
 import { HEADER_LINKS } from './links.ts';
-import { PagePath } from '../../metadata/paths.ts';
+import { PagePath } from '../../../minifront/src/components/metadata/paths.ts';
 
 export const DesktopNav = () => {
   const pagePath = usePagePath();

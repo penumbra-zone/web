@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link2Off } from 'lucide-react';
-import { Popover } from '@penumbra-zone/ui-deprecated/Popover';
-import { Button } from '@penumbra-zone/ui-deprecated/Button';
-import { Text } from '@penumbra-zone/ui-deprecated/Text';
-import { penumbra } from '../../../penumbra.ts';
+import { Popover } from '../../../../packages/ui-deprecated/src/Popover';
+import { Button } from '../../../../packages/ui-deprecated/src/Button';
+import { Text } from '../../../../packages/ui-deprecated/src/Text';
+import { penumbra } from '../../../minifront/src/penumbra.ts';
 import { PenumbraManifest } from '@penumbra-zone/client';
 
 const usePenumbraManifest = (): PenumbraManifest | undefined => {
