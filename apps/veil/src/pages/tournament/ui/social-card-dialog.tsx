@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
+import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import { Dialog } from '@penumbra-zone/ui/Dialog';
 import { Icon } from '@penumbra-zone/ui/Icon';
 import { Checkbox } from '@penumbra-zone/ui/Checkbox';
@@ -12,10 +13,44 @@ import {
   encodeParams,
 } from '@/features/tournament-earnings-canvas';
 import { openToast } from '@penumbra-zone/ui/Toast';
+import { useCurrentEpoch } from '../api/use-current-epoch';
+import { usePersonalRewards } from '../api/use-personal-rewards';
+import { connectionStore } from '@/shared/model/connection';
+import { useTournamentSummary } from '../api/use-tournament-summary';
+import { useStakingTokenMetadata } from '@/shared/api/registry';
+import { useSpecificDelegatorSummary } from '../api/use-specific-delegator-summary';
 
 export const dismissedKey = 'veil-tournament-social-card-dismissed';
-
 const baseUrl = process.env['NEXT_PUBLIC_BASE_URL'] ?? 'http://localhost:3000';
+
+// Custom hook that consolidates all location storage operations.
+export function useTournamentSocialCard(defaultEpoch: number) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const { epoch: currentEpoch } = useCurrentEpoch();
+  const epoch = defaultEpoch ?? currentEpoch;
+  const ended = !!currentEpoch && !!epoch && epoch !== currentEpoch;
+
+  useEffect(() => {
+    if (!ended) {
+      setIsOpen(false);
+      return;
+    }
+
+    const highestSeen = Number(localStorage.getItem(dismissedKey) ?? 0);
+
+    if (epoch > highestSeen) {
+      setIsOpen(true);
+    }
+  }, [epoch, ended]);
+
+  const close = useCallback(() => {
+    localStorage.setItem(dismissedKey, String(epoch));
+    setIsOpen(false);
+  }, [epoch]);
+
+  return { isOpen, close };
+}
 
 async function copyImageToClipboard(imageUrl: string) {
   const response = await fetch(imageUrl);
@@ -34,6 +69,48 @@ function shareToX(text: string, url: string) {
   window.open(tweetUrl, '_blank');
 }
 
+const SocialCardCanvas = ({ params }: { params?: TournamentParams }) => {
+  const { data: stakingToken } = useStakingTokenMetadata();
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const hasDrawn = useRef(false);
+
+  useEffect(() => {
+    if (!params || hasDrawn.current) {
+      return;
+    }
+
+    const canvas = canvasRef.current;
+    const exponent = getDisplayDenomExponent.optional(stakingToken);
+
+    // Check canvas requirments before rendering
+    if (!canvas || exponent === undefined) {
+      return;
+    }
+
+    if (exponent) {
+      void renderTournamentEarningsCanvas(canvas, params, exponent, {
+        width: 512,
+        height: 512,
+      });
+      hasDrawn.current = true;
+    }
+
+    return () => {
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    };
+  }, [params, stakingToken]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className='w-full h-auto max-w-[512px] aspect-square bg-other-tonalFill10'
+    />
+  );
+};
+
 /**
  * - One time per epoch modal
  * - If you got a reward, this social card is displayed which can be shared on X
@@ -46,76 +123,71 @@ function shareToX(text: string, url: string) {
  *      - and is dismissable each epoch unless the delegator does not vote in the current
  *        epoch (this will be evident by whether or not their receive a rewards distribution).
  */
-const dummyParams: TournamentParams = {
-  epoch: '135',
-  earnings: '17280:UM',
-  votingStreak: '80000:UM',
-  incentivePool: '100000:UM',
-  lpPool: '100000:UM',
-  delegatorPool: '100000:UM',
-};
-
 export const SocialCardDialog = observer(
-  ({
-    isOpen: isOpenProp,
-    onClose,
-    params = dummyParams,
-  }: {
-    isOpen: boolean;
-    onClose: () => void;
-    params: TournamentParams;
-  }) => {
+  ({ onClose, epoch }: { epoch: number; onClose: () => void }) => {
+    const { subaccount } = connectionStore;
+    const [initialParams, setInitialParams] = useState<TournamentParams | undefined>(undefined);
+
+    const { data: summary, isLoading: loadingSummary } = useTournamentSummary({
+      limit: 1,
+      page: 1,
+    });
+
+    const {
+      data: rewards,
+      query: { isLoading: loadingRewards },
+    } = usePersonalRewards(subaccount, epoch, false, 1, 1);
+
+    const { data: delegatorSummary, isLoading: loadingDelegatorSummary } =
+      useSpecificDelegatorSummary(subaccount);
+
+    const summaryData = summary?.[0];
+    const rewardData = rewards.get(epoch);
+
+    const loading = loadingSummary || loadingRewards || loadingDelegatorSummary;
+
+    useEffect(() => {
+      if (loading || initialParams || !summaryData || !rewardData || !delegatorSummary?.data) {
+        return;
+      }
+
+      setInitialParams({
+        epoch: String(epoch),
+        rewarded: rewardData.reward > 0,
+        earnings: `${rewardData.reward}:UM`,
+        votingStreak: `${delegatorSummary.data.streak * 1e6}:`,
+        incentivePool: `${Math.ceil(Number(summaryData.lp_rewards) + Number(summaryData.delegator_rewards))}:UM`,
+        lpPool: `${Math.ceil(summaryData.lp_rewards)}:UM`,
+        delegatorPool: `${Math.ceil(summaryData.delegator_rewards)}:UM`,
+      });
+    }, [loading, summaryData, rewardData, delegatorSummary?.data, initialParams, epoch]);
+
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [dontShowAgain, setDontShowAgain] = useState(false);
-    const [isOpen, setIsOpen] = useState(isOpenProp);
 
-    const text = `🚨 Penumbra's Liquidity Tournament is LIVE 🚨
+    const text = `🚨 Penumbra's Liquidity Tournament is LIVE! 🚨
 
-Provide liquidity. Climb the leaderboard. Win rewards.
+    💧 Provide liquidity  
+    📈 Climb the leaderboard  
+    🏆 Win rewards
 
-Join now 👇`;
-    const url = `https://${baseUrl}/tournament/join?${encodeParams(params)}`;
+    👇 Join now:`;
 
-    useEffect(() => {
-      if (canvasRef.current) {
-        const canvas = canvasRef.current;
-        void renderTournamentEarningsCanvas(canvas, params, false);
-      }
-    }, [canvasRef, isOpen, params]);
+    const url = initialParams ? `${baseUrl}/tournament/join?${encodeParams(initialParams)}` : '';
 
-    useEffect(() => {
-      if (dontShowAgain) {
-        const dismissed = localStorage.getItem(dismissedKey);
-        if (dismissed) {
-          localStorage.setItem(
-            dismissedKey,
-            JSON.stringify([...(JSON.parse(dismissed) as string[]), params.epoch]),
-          );
-        } else {
-          localStorage.setItem(dismissedKey, JSON.stringify([params.epoch]));
-        }
-      }
-    }, [dontShowAgain, params.epoch]);
-
-    useEffect(() => {
-      if (isOpenProp) {
-        const dismissed = localStorage.getItem(dismissedKey);
-        if (!dismissed || !(JSON.parse(dismissed) as string[]).includes(params.epoch)) {
-          setIsOpen(true);
-        }
-      }
-    }, [isOpenProp, params.epoch]);
-
-    if (!isOpen) {
+    if (!initialParams?.rewarded) {
       return null;
     }
 
+    // TODO: fix rendering. merging main included dialogue component
+    // changes that broke the rendering.
     return (
-      <Dialog isOpen={isOpen} onClose={onClose}>
+      <Dialog isOpen onClose={onClose}>
         <Dialog.Content
           title='Share your latest win!'
+          aria-describedby='tournament-social-description'
           buttons={
-            <div className='flex flex-col gap-4'>
+            <div className='flex flex-col gap-4 px-6 pb-8'>
               <Button
                 actionType='default'
                 onClick={() => void copyImageToClipboard(canvasRef.current?.toDataURL() ?? '')}
@@ -137,13 +209,10 @@ Join now 👇`;
             </div>
           }
         >
-          <div className='flex justify-center overflow-y-scroll'>
-            <canvas
-              ref={canvasRef}
-              className='w-[512px] h-[512px] bg-other-tonalFill10'
-              width={512}
-              height={512}
-            />
+          <div id='tournament-social-description'>
+            <div className='flex justify-center overflow-x-hidden'>
+              <SocialCardCanvas params={initialParams} />
+            </div>
           </div>
         </Dialog.Content>
       </Dialog>
