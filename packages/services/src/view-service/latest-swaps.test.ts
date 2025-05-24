@@ -56,12 +56,6 @@ describe('LatestSwaps request handler', () => {
         .set(servicesCtx, () => Promise.resolve(mockServices as unknown as ServicesInterface))
         .set(fvkCtx, () => Promise.resolve(testFullViewingKey)),
     });
-
-    /*
-      mockIndexedDb.iterateSwaps.mockImplementationOnce(async function* () { yield* await Promise.resolve([
-
-      ]); });
-      */
   });
 
   it('collects swaps with "transaction" source only', async () => {
