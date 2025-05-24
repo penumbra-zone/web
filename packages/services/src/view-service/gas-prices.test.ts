@@ -6,23 +6,19 @@ import {
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
-import { IndexedDbMock, MockServices } from '../test-utils.js';
+import { mockIndexedDb, MockServices } from '../test-utils.js';
 import { GasPrices } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
 import { gasPrices } from './gas-prices.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 describe('GasPrices request handler', () => {
   let mockServices: MockServices;
-  let mockIndexedDb: IndexedDbMock;
+
   let mockCtx: HandlerContext;
 
   beforeEach(() => {
     vi.resetAllMocks();
 
-    mockIndexedDb = {
-      getNativeGasPrices: vi.fn(),
-      getAltGasPrices: vi.fn(),
-    };
     mockServices = {
       getWalletServices: vi.fn(() =>
         Promise.resolve({ indexedDb: mockIndexedDb }),
@@ -41,7 +37,7 @@ describe('GasPrices request handler', () => {
   });
 
   test('should successfully get gas prices when idb has them', async () => {
-    mockIndexedDb.getNativeGasPrices?.mockResolvedValue(testData);
+    mockIndexedDb.getNativeGasPrices.mockResolvedValue(testData);
     const gasPricesResponse = new GasPricesResponse(
       await gasPrices(new GasPricesRequest(), mockCtx),
     );
@@ -49,7 +45,7 @@ describe('GasPrices request handler', () => {
   });
 
   test('should fail to get gas prices when idb has none', async () => {
-    mockIndexedDb.getNativeGasPrices?.mockResolvedValue(undefined);
+    mockIndexedDb.getNativeGasPrices.mockResolvedValue(undefined);
     await expect(gasPrices(new GasPricesRequest(), mockCtx)).rejects.toThrow(
       'Gas prices is not available',
     );

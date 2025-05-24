@@ -6,7 +6,7 @@ import {
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../../ctx/prax.js';
-import { IndexedDbMock, MockServices, testFullViewingKey } from '../../test-utils.js';
+import { mockIndexedDb, MockServices, testFullViewingKey } from '../../test-utils.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { FmdParameters } from '@penumbra-zone/protobuf/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
@@ -24,20 +24,11 @@ vi.mock('@penumbra-zone/wasm/planner', () => ({
 }));
 describe('TransactionPlanner request handler', () => {
   let mockServices: MockServices;
-  let mockIndexedDb: IndexedDbMock;
   let mockCtx: HandlerContext;
   let req: TransactionPlannerRequest;
 
   beforeEach(() => {
     vi.resetAllMocks();
-
-    mockIndexedDb = {
-      getFmdParams: vi.fn(),
-      getAppParams: vi.fn(),
-      getNativeGasPrices: vi.fn(),
-      constants: vi.fn(),
-      hasTokenBalance: vi.fn(),
-    };
 
     mockServices = {
       getWalletServices: vi.fn(() =>
@@ -78,13 +69,13 @@ describe('TransactionPlanner request handler', () => {
   });
 
   test('should create a transaction plan if all necessary data exists in indexed-db', async () => {
-    mockIndexedDb.getFmdParams?.mockResolvedValueOnce(
+    mockIndexedDb.getFmdParams.mockResolvedValueOnce(
       new FmdParameters({
         precisionBits: 12,
         asOfBlockHeight: 2n,
       }),
     );
-    mockIndexedDb.getAppParams?.mockResolvedValueOnce(
+    mockIndexedDb.getAppParams.mockResolvedValueOnce(
       new AppParameters({
         chainId: 'penumbra-testnet-mock',
         sctParams: new SctParameters({
@@ -92,7 +83,7 @@ describe('TransactionPlanner request handler', () => {
         }),
       }),
     );
-    mockIndexedDb.getNativeGasPrices?.mockResolvedValueOnce(
+    mockIndexedDb.getNativeGasPrices.mockResolvedValueOnce(
       new GasPrices({
         verificationPrice: 22n,
         executionPrice: 222n,
@@ -101,8 +92,7 @@ describe('TransactionPlanner request handler', () => {
       }),
     );
 
-    mockIndexedDb.stakingTokenAssetId?.mockResolvedValueOnce(true);
-    mockIndexedDb.hasTokenBalance?.mockResolvedValueOnce(true);
+    mockIndexedDb.hasTokenBalance.mockResolvedValueOnce(true);
 
     mockPlanTransaction.mockResolvedValueOnce(
       new TransactionPlan({

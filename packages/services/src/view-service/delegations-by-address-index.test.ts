@@ -225,41 +225,19 @@ describe('DelegationsByAddressIndex request handler', () => {
   };
   let mockCtx: HandlerContext;
 
-  const mockBalancesResponse = {
-    next: vi.fn(),
-    [Symbol.asyncIterator]: () => mockBalancesResponse,
-  };
-
-  const mockAllValidatorInfosResponse = {
-    next: vi.fn(),
-    [Symbol.asyncIterator]: () => mockAllValidatorInfosResponse,
-  };
-
-  const mockActiveValidatorInfosResponse = {
-    next: vi.fn(),
-    [Symbol.asyncIterator]: () => mockActiveValidatorInfosResponse,
-  };
-
   describe('only active/inactive responses', () => {
     beforeEach(() => {
       vi.resetAllMocks();
-      mockBalances.mockReturnValue(mockBalancesResponse);
-      MOCK_BALANCES.forEach(value => mockBalancesResponse.next.mockResolvedValueOnce({ value }));
-      mockBalancesResponse.next.mockResolvedValueOnce({ done: true });
 
-      // Miniature mock staking client that actually switches what response it
-      // gives based on `req.showInactive`.
-      mockStakeClient.validatorInfo.mockImplementation((req: ValidatorInfoRequest) =>
-        req.showInactive ? mockAllValidatorInfosResponse : mockActiveValidatorInfosResponse,
-      );
-      MOCK_ALL_VALIDATOR_INFOS.forEach(value =>
-        mockAllValidatorInfosResponse.next.mockResolvedValueOnce({ value }),
-      );
-      mockAllValidatorInfosResponse.next.mockResolvedValueOnce({ done: true });
-      MOCK_ACTIVE_VALIDATOR_INFOS.forEach(value =>
-        mockActiveValidatorInfosResponse.next.mockResolvedValueOnce({ value }),
-      );
-      mockActiveValidatorInfosResponse.next.mockResolvedValueOnce({ done: true });
+      mockBalances.mockImplementation(async function* () {
+        yield* await Promise.resolve(MOCK_BALANCES);
+      });
+
+      mockStakeClient.validatorInfo.mockImplementation(async function* (req: ValidatorInfoRequest) {
+        yield* await Promise.resolve(
+          req.showInactive ? MOCK_ALL_VALIDATOR_INFOS : MOCK_ACTIVE_VALIDATOR_INFOS,
+        );
+      });
 
       mockCtx = createHandlerContext({
         service: ViewService,
@@ -393,18 +371,14 @@ describe('DelegationsByAddressIndex request handler', () => {
   describe('when user has a jailed validator it its balances', () => {
     beforeEach(() => {
       vi.resetAllMocks();
-      mockBalances.mockReturnValue(mockBalancesResponse);
-      [...MOCK_BALANCES, jailedValidatorBalancesResponse].forEach(value =>
-        mockBalancesResponse.next.mockResolvedValueOnce({ value }),
-      );
-      mockBalancesResponse.next.mockResolvedValueOnce({ done: true });
 
-      mockStakeClient.validatorInfo.mockReturnValue(mockAllValidatorInfosResponse);
+      mockBalances.mockImplementation(async function* () {
+        yield* await Promise.resolve([...MOCK_BALANCES, jailedValidatorBalancesResponse]);
+      });
 
-      [...MOCK_ALL_VALIDATOR_INFOS, jailedValidatorInfoResponse].forEach(value =>
-        mockAllValidatorInfosResponse.next.mockResolvedValueOnce({ value }),
-      );
-      mockAllValidatorInfosResponse.next.mockResolvedValueOnce({ done: true });
+      mockStakeClient.validatorInfo.mockImplementation(async function* () {
+        yield* await Promise.resolve([...MOCK_ALL_VALIDATOR_INFOS, jailedValidatorInfoResponse]);
+      });
 
       mockCtx = createHandlerContext({
         service: ViewService,
