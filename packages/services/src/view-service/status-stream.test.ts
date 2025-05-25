@@ -6,7 +6,7 @@ import {
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
-import { mockIndexedDb, MockServices, TendermintMock } from '../test-utils.js';
+import { createUpdates, mockIndexedDb, MockServices, TendermintMock } from '../test-utils.js';
 import { statusStream } from './status-stream.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 
@@ -48,12 +48,15 @@ describe('Status stream request handler', () => {
     request = new StatusStreamRequest();
 
     mockIndexedDb.subscribe.mockImplementationOnce(async function* (table) {
-      if (table === 'FULL_SYNC_HEIGHT') {
-        for (let i = 200; i < 222; i++) {
-          yield await Promise.resolve({ table, value: BigInt(i) });
-        }
-      } else {
-        expect.unreachable('Test should only subscribe to FULL_SYNC_HEIGHT');
+      switch (table) {
+        case 'FULL_SYNC_HEIGHT':
+          yield* createUpdates(
+            table,
+            new Array(23).fill(200n).map((_, i) => 200n + BigInt(i)),
+          );
+          break;
+        default:
+          expect.unreachable(`Test should not subscribe to ${table}`);
       }
     });
   });

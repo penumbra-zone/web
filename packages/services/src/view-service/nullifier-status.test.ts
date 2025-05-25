@@ -14,9 +14,8 @@ import {
   SpendableNoteRecord,
   SwapRecord,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { mockIndexedDb, MockServices, mockSubscriptionData } from '../test-utils.js';
+import { mockIndexedDb, MockServices, createUpdates } from '../test-utils.js';
 import { stringToUint8Array } from '@penumbra-zone/types/string';
-import { JsonObject } from '@bufbuild/protobuf';
 
 describe('nullifierStatus', () => {
   let mockServices: MockServices;
@@ -134,28 +133,29 @@ describe('nullifierStatus', () => {
     });
 
     mockIndexedDb.subscribe.mockImplementation(async function* (table) {
-      if (table === 'SWAPS') {
-        // Incoming swaps with no matches
-        yield* mockSubscriptionData(table, [
-          nonMatchingSwap.toJson(),
-          nonMatchingSwap.toJson(),
-          nonMatchingSwap.toJson(),
-        ] as JsonObject[]);
-
-        // don't end the stream
-        yield await new Promise<never>(() => {});
-      } else if (table === 'SPENDABLE_NOTES') {
-        // Incoming notes with the last one being the match
-        yield* mockSubscriptionData(table, [
-          nonMatchingNote.toJson(),
-          matchingNoteNotSpent.toJson(),
-          matchingNoteSpent.toJson(),
-        ] as JsonObject[]);
-
-        // don't end the stream
-        yield await new Promise<never>(() => {});
-      } else {
-        expect.unreachable('Test should only subscribe to SPENDABLE_NOTES or SWAPS');
+      switch (table) {
+        case 'SWAPS':
+          // Incoming swaps with no matches
+          yield* createUpdates(table, [
+            nonMatchingSwap.toJson(),
+            nonMatchingSwap.toJson(),
+            nonMatchingSwap.toJson(),
+          ]);
+          // don't end the stream
+          yield await new Promise<never>(() => {});
+          break;
+        case 'SPENDABLE_NOTES':
+          // Incoming notes with the last one being the match
+          yield* createUpdates(table, [
+            nonMatchingNote.toJson(),
+            matchingNoteNotSpent.toJson(),
+            matchingNoteSpent.toJson(),
+          ]);
+          // don't end the stream
+          yield await new Promise<never>(() => {});
+          break;
+        default:
+          expect.unreachable(`Test should not subscribe to ${table}`);
       }
     });
 
@@ -192,29 +192,26 @@ describe('nullifierStatus', () => {
     });
 
     mockIndexedDb.subscribe.mockImplementation(async function* (table) {
-      if (table === 'SPENDABLE_NOTES') {
-        yield* mockSubscriptionData(table, [
-          // Incoming notes with no matches
-          nonMatchingNote.toJson(),
-          nonMatchingNote.toJson(),
-          nonMatchingNote.toJson(),
-          nonMatchingNote.toJson(),
-        ] as JsonObject[]);
-
-        // don't end the stream
-        yield await new Promise<never>(() => {});
-      } else if (table === 'SWAPS') {
-        // Incoming swaps with the last one being the match
-        yield* mockSubscriptionData(table, [
-          nonMatchingSwap.toJson(),
-          matchingSwapNotSpent.toJson(),
-          matchingSwapSpent.toJson(),
-        ] as JsonObject[]);
-
-        // don't end the stream
-        yield await new Promise<never>(() => {});
-      } else {
-        expect.unreachable('Test should only subscribe to SPENDABLE_NOTES or SWAPS');
+      switch (table) {
+        case 'SPENDABLE_NOTES':
+          yield* createUpdates(table, [
+            // Incoming notes with no matches
+            nonMatchingNote.toJson(),
+            nonMatchingNote.toJson(),
+            nonMatchingNote.toJson(),
+            nonMatchingNote.toJson(),
+          ]);
+          break;
+        case 'SWAPS':
+          // Incoming swaps with the last one being the match
+          yield* createUpdates(table, [
+            nonMatchingSwap.toJson(),
+            matchingSwapNotSpent.toJson(),
+            matchingSwapSpent.toJson(),
+          ]);
+          break;
+        default:
+          expect.unreachable(`Test should not subscribe to ${table}`);
       }
     });
 

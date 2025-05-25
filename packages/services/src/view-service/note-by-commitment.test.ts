@@ -7,11 +7,10 @@ import {
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
-import { mockIndexedDb, MockServices, mockSubscriptionData } from '../test-utils.js';
+import { mockIndexedDb, MockServices, createUpdates } from '../test-utils.js';
 import { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
 import { noteByCommitment } from './note-by-commitment.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
-import { JsonObject } from '@bufbuild/protobuf';
 
 describe('NoteByCommitment request handler', () => {
   let mockServices: MockServices;
@@ -66,10 +65,12 @@ describe('NoteByCommitment request handler', () => {
     request.awaitDetection = true;
 
     mockIndexedDb.subscribe.mockImplementationOnce(async function* (table) {
-      if (table === 'SPENDABLE_NOTES') {
-        yield* mockSubscriptionData(table, [testNote.toJson()] as JsonObject[]);
-      } else {
-        expect.unreachable('Test should only subscribe to SPENDABLE_NOTES');
+      switch (table) {
+        case 'SPENDABLE_NOTES':
+          yield* createUpdates(table, [testNote.toJson()]);
+          break;
+        default:
+          expect.unreachable(`Test should not subscribe to ${table}`);
       }
     });
 
@@ -84,10 +85,12 @@ describe('NoteByCommitment request handler', () => {
     request.awaitDetection = true;
 
     mockIndexedDb.subscribe.mockImplementationOnce(async function* (table) {
-      if (table === 'SPENDABLE_NOTES') {
-        yield* mockSubscriptionData(table, [noteWithAnotherCommitment.toJson()] as JsonObject[]);
-      } else {
-        expect.unreachable('Test should only subscribe to SPENDABLE_NOTES');
+      switch (table) {
+        case 'SPENDABLE_NOTES':
+          yield* createUpdates(table, [noteWithAnotherCommitment.toJson()]);
+          break;
+        default:
+          expect.unreachable(`Test should not subscribe to ${table}`);
       }
     });
 

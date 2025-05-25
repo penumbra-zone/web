@@ -8,9 +8,8 @@ import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
 import { AppParameters } from '@penumbra-zone/protobuf/penumbra/core/app/v1/app_pb';
 import { appParameters } from './app-parameters.js';
-import { mockIndexedDb, MockServices, mockSubscriptionData } from '../test-utils.js';
+import { mockIndexedDb, MockServices, createUpdates } from '../test-utils.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
-import { JsonObject } from '@bufbuild/protobuf';
 
 describe('AppParameters request handler', () => {
   let mockServices: MockServices;
@@ -49,10 +48,12 @@ describe('AppParameters request handler', () => {
     mockIndexedDb.getAppParams.mockResolvedValue(undefined);
 
     mockIndexedDb.subscribe.mockImplementationOnce(async function* (table) {
-      if (table === 'APP_PARAMETERS') {
-        yield* mockSubscriptionData(table, [new AppParametersRequest().toJson()] as JsonObject[]);
-      } else {
-        expect.unreachable('Test should only subscribe to APP_PARAMETERS');
+      switch (table) {
+        case 'APP_PARAMETERS':
+          yield* createUpdates(table, [new AppParametersRequest().toJson()]);
+          break;
+        default:
+          expect.unreachable(`Test should not subscribe to ${table}`);
       }
     });
 

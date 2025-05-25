@@ -7,11 +7,10 @@ import {
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
-import { mockIndexedDb, MockServices, mockSubscriptionData } from '../test-utils.js';
+import { mockIndexedDb, MockServices, createUpdates } from '../test-utils.js';
 import { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
 import { swapByCommitment } from './swap-by-commitment.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
-import { JsonObject } from '@bufbuild/protobuf';
 
 describe('SwapByCommitment request handler', () => {
   let mockServices: MockServices;
@@ -65,10 +64,12 @@ describe('SwapByCommitment request handler', () => {
     request.awaitDetection = true;
 
     mockIndexedDb.subscribe.mockImplementationOnce(async function* (table) {
-      if (table === 'SWAPS') {
-        yield* mockSubscriptionData(table, [testSwap.toJson()] as JsonObject[]);
-      } else {
-        expect.unreachable('Test should only subscribe to SWAPS');
+      switch (table) {
+        case 'SWAPS':
+          yield* createUpdates(table, [testSwap.toJson()]);
+          break;
+        default:
+          expect.unreachable(`Test should not subscribe to ${table}`);
       }
     });
 
@@ -83,10 +84,12 @@ describe('SwapByCommitment request handler', () => {
     request.awaitDetection = true;
 
     mockIndexedDb.subscribe.mockImplementationOnce(async function* (table) {
-      if (table === 'SWAPS') {
-        yield* mockSubscriptionData(table, [swapWithAnotherCommitment.toJson()] as JsonObject[]);
-      } else {
-        expect.unreachable('Test should only subscribe to SWAPS');
+      switch (table) {
+        case 'SWAPS':
+          yield* createUpdates(table, [swapWithAnotherCommitment.toJson()]);
+          break;
+        default:
+          expect.unreachable(`Test should not subscribe to ${table}`);
       }
     });
 

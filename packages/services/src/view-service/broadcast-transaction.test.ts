@@ -11,13 +11,7 @@ import { Transaction } from '@penumbra-zone/protobuf/penumbra/core/transaction/v
 import { broadcastTransaction } from './broadcast-transaction.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
-import {
-  mockIndexedDb,
-  MockServices,
-  mockSubscriptionData,
-  TendermintMock,
-} from '../test-utils.js';
-import { JsonObject } from '@bufbuild/protobuf';
+import { mockIndexedDb, MockServices, createUpdates, TendermintMock } from '../test-utils.js';
 
 const mockSha256 = vi.hoisted(() => vi.fn());
 vi.mock('@penumbra-zone/crypto-web/sha256', () => ({
@@ -88,13 +82,14 @@ describe('BroadcastTransaction request handler', () => {
 
     mockTendermint.broadcastTx?.mockResolvedValue(transactionIdData);
     mockIndexedDb.subscribe.mockImplementation(async function* (table) {
-      if (table === 'TRANSACTIONS') {
-        yield* mockSubscriptionData(table, [txRecord.toJson()] as JsonObject[]);
-
-        // don't end the stream
-        yield await new Promise<never>(() => {});
-      } else {
-        expect.unreachable('Test should only subscribe to TRANSACTIONS');
+      switch (table) {
+        case 'TRANSACTIONS':
+          yield* createUpdates(table, [txRecord.toJson()]);
+          // don't end the stream
+          yield await new Promise<never>(() => {});
+          break;
+        default:
+          expect.unreachable(`Test should not subscribe to ${table}`);
       }
     });
 

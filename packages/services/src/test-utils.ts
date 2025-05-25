@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument -- test utils */
 /* eslint-disable @typescript-eslint/no-explicit-any -- test utils */
 /* eslint-disable @typescript-eslint/require-await -- test utils */
+import { JsonObject, JsonValue } from '@bufbuild/protobuf';
 import { fullViewingKeyFromBech32m } from '@penumbra-zone/bech32m/penumbrafullviewingkey';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { FullViewingKey, SpendKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
@@ -13,12 +14,20 @@ import {
 } from '@penumbra-zone/types/indexed-db';
 import { expect, Mock, Mocked, vi } from 'vitest';
 
-export async function* mockSubscriptionData<T extends PenumbraStoreNames>(
-  table: T,
-  data: PenumbraDb[T]['value'][],
-): AsyncGenerator<IdbUpdate<PenumbraDb, T>> {
-  for (const value of data) {
-    yield { value, table };
+/**
+ * Simple utility to create a `yield*`-able async iterator of subscription
+ * updates, for use with `mockIndexedDb.subscribe.mockImplementation`.
+ *
+ * For convenience, it allows `JsonObject` values to be satisfied by
+ * `JsonValue`, the return type of `Message.toJson()`. This is technically
+ * inaccurate, but that's a schema issue.
+ */
+export async function* createUpdates<
+  T extends PenumbraStoreNames,
+  V extends PenumbraDb[T]['value'] extends JsonObject ? JsonValue : PenumbraDb[T]['value'],
+>(table: T, data: Iterable<V> | AsyncIterable<V>): AsyncGenerator<IdbUpdate<PenumbraDb, T>> {
+  for await (const value of data) {
+    yield { value: value as PenumbraDb[T]['value'], table };
   }
 }
 
