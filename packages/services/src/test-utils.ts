@@ -29,6 +29,8 @@ export async function* createUpdates<
   for await (const value of data) {
     yield { value: value as PenumbraDb[T]['value'], table };
   }
+  // subscriptions don't end
+  yield await new Promise<never>(() => void null);
 }
 
 const mockDisabled: any = () =>

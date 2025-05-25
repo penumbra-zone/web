@@ -141,8 +141,6 @@ describe('nullifierStatus', () => {
             nonMatchingSwap.toJson(),
             nonMatchingSwap.toJson(),
           ]);
-          // don't end the stream
-          yield await new Promise<never>(() => {});
           break;
         case 'SPENDABLE_NOTES':
           // Incoming notes with the last one being the match
@@ -151,8 +149,6 @@ describe('nullifierStatus', () => {
             matchingNoteNotSpent.toJson(),
             matchingNoteSpent.toJson(),
           ]);
-          // don't end the stream
-          yield await new Promise<never>(() => {});
           break;
         default:
           expect.unreachable(`Test should not subscribe to ${table}`);

@@ -59,14 +59,14 @@ describe('SwapByCommitment request handler', () => {
     await expect(swapByCommitment(request, mockCtx)).rejects.toThrow('Swap not found');
   });
 
-  test('should get swap if swap is not found in idb, but awaitDetection is true, and has been detected', async () => {
+  test('should get swap if swap is not found in idb, but awaitDetection is true, and then it is detected', async () => {
     mockIndexedDb.getSwapByCommitment.mockResolvedValue(undefined);
     request.awaitDetection = true;
 
     mockIndexedDb.subscribe.mockImplementationOnce(async function* (table) {
       switch (table) {
         case 'SWAPS':
-          yield* createUpdates(table, [testSwap.toJson()]);
+          yield* createUpdates(table, [swapWithAnotherCommitment.toJson(), testSwap.toJson()]);
           break;
         default:
           expect.unreachable(`Test should not subscribe to ${table}`);
@@ -77,23 +77,6 @@ describe('SwapByCommitment request handler', () => {
       await swapByCommitment(request, mockCtx),
     );
     expect(swapByCommitmentResponse.swap?.equals(testSwap)).toBeTruthy();
-  });
-
-  test('should throw error if swap is not found in idb, and has not been detected', async () => {
-    mockIndexedDb.getSwapByCommitment.mockResolvedValue(undefined);
-    request.awaitDetection = true;
-
-    mockIndexedDb.subscribe.mockImplementationOnce(async function* (table) {
-      switch (table) {
-        case 'SWAPS':
-          yield* createUpdates(table, [swapWithAnotherCommitment.toJson()]);
-          break;
-        default:
-          expect.unreachable(`Test should not subscribe to ${table}`);
-      }
-    });
-
-    await expect(swapByCommitment(request, mockCtx)).rejects.toThrow('Swap not found');
   });
 });
 

@@ -60,14 +60,14 @@ describe('NoteByCommitment request handler', () => {
     await expect(noteByCommitment(request, mockCtx)).rejects.toThrow('Note not found');
   });
 
-  test('should get note if note is not found in idb, but awaitDetection is true, and has been detected', async () => {
+  test('should get note if note is not found in idb, but awaitDetection is true, and then it is detected', async () => {
     mockIndexedDb.getSpendableNoteByCommitment.mockResolvedValue(undefined);
     request.awaitDetection = true;
 
     mockIndexedDb.subscribe.mockImplementationOnce(async function* (table) {
       switch (table) {
         case 'SPENDABLE_NOTES':
-          yield* createUpdates(table, [testNote.toJson()]);
+          yield* createUpdates(table, [noteWithAnotherCommitment.toJson(), testNote.toJson()]);
           break;
         default:
           expect.unreachable(`Test should not subscribe to ${table}`);
@@ -78,23 +78,6 @@ describe('NoteByCommitment request handler', () => {
       await noteByCommitment(request, mockCtx),
     );
     expect(noteByCommitmentResponse.spendableNote?.equals(testNote)).toBeTruthy();
-  });
-
-  test('should throw error if note is not found in idb, and has not been detected', async () => {
-    mockIndexedDb.getSpendableNoteByCommitment.mockResolvedValue(undefined);
-    request.awaitDetection = true;
-
-    mockIndexedDb.subscribe.mockImplementationOnce(async function* (table) {
-      switch (table) {
-        case 'SPENDABLE_NOTES':
-          yield* createUpdates(table, [noteWithAnotherCommitment.toJson()]);
-          break;
-        default:
-          expect.unreachable(`Test should not subscribe to ${table}`);
-      }
-    });
-
-    await expect(noteByCommitment(request, mockCtx)).rejects.toThrow('Note not found');
   });
 });
 

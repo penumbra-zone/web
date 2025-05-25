@@ -85,8 +85,6 @@ describe('BroadcastTransaction request handler', () => {
       switch (table) {
         case 'TRANSACTIONS':
           yield* createUpdates(table, [txRecord.toJson()]);
-          // don't end the stream
-          yield await new Promise<never>(() => {});
           break;
         default:
           expect.unreachable(`Test should not subscribe to ${table}`);
