@@ -6,21 +6,18 @@ import {
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
-import { IndexedDbMock, MockServices } from '../test-utils.js';
+import { mockIndexedDb, MockServices } from '../test-utils.js';
 import { notesForVoting } from './notes-for-voting.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 describe('NotesForVoting request handler', () => {
   let mockServices: MockServices;
-  let mockIndexedDb: IndexedDbMock;
+
   let mockCtx: HandlerContext;
 
   beforeEach(() => {
     vi.resetAllMocks();
 
-    mockIndexedDb = {
-      getNotesForVoting: vi.fn(),
-    };
     mockServices = {
       getWalletServices: vi.fn(() =>
         Promise.resolve({ indexedDb: mockIndexedDb }),
@@ -39,7 +36,7 @@ describe('NotesForVoting request handler', () => {
   });
 
   test('should successfully get notes for voting', async () => {
-    mockIndexedDb.getNotesForVoting?.mockResolvedValueOnce(testData);
+    mockIndexedDb.getNotesForVoting.mockResolvedValueOnce(testData);
     const responses: NotesForVotingResponse[] = [];
     const req = new NotesForVotingRequest({});
     for await (const res of notesForVoting(req, mockCtx)) {

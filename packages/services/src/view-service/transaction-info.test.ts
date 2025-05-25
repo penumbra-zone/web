@@ -10,7 +10,7 @@ import {
   TransactionInfoRequest,
   TransactionInfoResponse,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { IndexedDbMock, MockServices, testFullViewingKey } from '../test-utils.js';
+import { mockIndexedDb, MockServices, testFullViewingKey } from '../test-utils.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { transactionInfo } from './transaction-info.js';
 import { fvkCtx } from '../ctx/full-viewing-key.js';
@@ -27,27 +27,14 @@ vi.mock('@penumbra-zone/wasm/transaction', () => ({
 describe('TransactionInfo request handler', () => {
   let mockServices: MockServices;
   let mockCtx: HandlerContext;
-  let mockIndexedDb: IndexedDbMock;
   let req: TransactionInfoRequest;
 
   beforeEach(() => {
     vi.resetAllMocks();
 
-    const mockIterateTransactionInfo = {
-      next: vi.fn(),
-      [Symbol.asyncIterator]: () => mockIterateTransactionInfo,
-    };
-
-    mockIndexedDb = {
-      iterateTransactions: () => mockIterateTransactionInfo,
-      constants: vi.fn(),
-      getTransactionInfo: vi.fn().mockResolvedValue({
-        txp: {},
-        txv: {},
-        summary: {},
-      }),
-      saveTransactionInfo: vi.fn().mockResolvedValue(undefined),
-    };
+    mockIndexedDb.iterateTransactions.mockImplementationOnce(async function* () {
+      yield* await Promise.resolve(testData);
+    });
 
     mockServices = {
       getWalletServices: vi.fn(() =>
@@ -69,15 +56,6 @@ describe('TransactionInfo request handler', () => {
     mockTransactionInfo.mockReturnValue({
       txp: {},
       txv: {},
-    });
-
-    for (const record of testData) {
-      mockIterateTransactionInfo.next.mockResolvedValueOnce({
-        value: record,
-      });
-    }
-    mockIterateTransactionInfo.next.mockResolvedValueOnce({
-      done: true,
     });
     req = new TransactionInfoRequest();
   });
