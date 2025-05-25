@@ -5,16 +5,16 @@ import { PagePath } from '@/shared/const/pages';
 export const HEADER_LINKS = [
   {
     as: Link,
-    tabProps: { href: PagePath.Explore },
-    label: 'Explore',
-    value: PagePath.Explore,
+    tabProps: { href: PagePath.Portfolio },
+    label: 'Portfolio',
+    value: PagePath.Portfolio,
     icon: Coins,
   },
   {
     as: Link,
-    tabProps: { href: PagePath.Portfolio },
-    label: 'Portfolio',
-    value: PagePath.Portfolio,
+    tabProps: { href: PagePath.Explore },
+    label: 'Explore',
+    value: PagePath.Explore,
     icon: Coins,
   },
   {
