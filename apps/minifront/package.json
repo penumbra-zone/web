@@ -8,6 +8,7 @@
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=8192 vite build",
     "clean": "rm -rfv dist *.tsbuildinfo",
     "dev:app": "vite --port 5173",
+    "dev:build": "pnpm --filter @penumbra-zone/ui run build",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "lint:strict": "tsc --noEmit && eslint src --max-warnings 0",
