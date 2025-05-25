@@ -6,14 +6,14 @@ import {
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
-import { IndexedDbMock, MockServices, ShieldedPoolMock } from '../test-utils.js';
+import { mockIndexedDb, MockServices, ShieldedPoolMock } from '../test-utils.js';
 import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { assetMetadataById } from './asset-metadata-by-id.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 describe('AssetMetadataById request handler', () => {
   let mockServices: MockServices;
-  let mockIndexedDb: IndexedDbMock;
+
   let mockCtx: HandlerContext;
   let mockShieldedPool: ShieldedPoolMock;
   let request: AssetMetadataByIdRequest;
@@ -21,10 +21,6 @@ describe('AssetMetadataById request handler', () => {
   beforeEach(() => {
     vi.resetAllMocks();
 
-    mockIndexedDb = {
-      getAssetsMetadata: vi.fn(),
-      saveAssetsMetadata: vi.fn(),
-    };
     mockShieldedPool = {
       assetMetadataById: vi.fn(),
     };
@@ -55,7 +51,7 @@ describe('AssetMetadataById request handler', () => {
   });
 
   test('should successfully respond with metadata when idb record is present', async () => {
-    mockIndexedDb.getAssetsMetadata?.mockResolvedValue(metadataFromIdb);
+    mockIndexedDb.getAssetsMetadata.mockResolvedValue(metadataFromIdb);
     const metadataByIdResponse = new AssetMetadataByIdResponse(
       await assetMetadataById(request, mockCtx),
     );
@@ -63,7 +59,7 @@ describe('AssetMetadataById request handler', () => {
   });
 
   test('should successfully respond with metadata when idb record is absent, but metadata is available from remote rpc', async () => {
-    mockIndexedDb.getAssetsMetadata?.mockResolvedValue(undefined);
+    mockIndexedDb.getAssetsMetadata.mockResolvedValue(undefined);
     mockShieldedPool.assetMetadataById.mockResolvedValueOnce(metadataFromNode);
     const metadataByIdResponse = new AssetMetadataByIdResponse(
       await assetMetadataById(request, mockCtx),
@@ -72,7 +68,7 @@ describe('AssetMetadataById request handler', () => {
   });
 
   test('should customize symbols', async () => {
-    mockIndexedDb.getAssetsMetadata?.mockResolvedValue(undefined);
+    mockIndexedDb.getAssetsMetadata.mockResolvedValue(undefined);
     mockShieldedPool.assetMetadataById.mockResolvedValueOnce(delegationMetadata);
     const metadataByIdResponse = new AssetMetadataByIdResponse(
       await assetMetadataById(request, mockCtx),
@@ -83,7 +79,7 @@ describe('AssetMetadataById request handler', () => {
   });
 
   test('should successfully respond even when no metadata is available', async () => {
-    mockIndexedDb.getAssetsMetadata?.mockResolvedValue(undefined);
+    mockIndexedDb.getAssetsMetadata.mockResolvedValue(undefined);
     mockShieldedPool.assetMetadataById.mockResolvedValueOnce(undefined);
     const metadataByIdResponse = new AssetMetadataByIdResponse(
       await assetMetadataById(request, mockCtx),

@@ -13,7 +13,7 @@ import {
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
-import { IndexedDbMock, MockServices, TendermintMock, testFullViewingKey } from '../test-utils.js';
+import { mockIndexedDb, MockServices, TendermintMock, testFullViewingKey } from '../test-utils.js';
 import {
   AssetId,
   EquivalentValue,
@@ -48,24 +48,15 @@ describe('Balances request handler', () => {
   let req: BalancesRequest;
   let mockServices: MockServices;
   let mockCtx: HandlerContext;
-  let mockIndexedDb: IndexedDbMock;
+
   let mockTendermint: TendermintMock;
 
   beforeEach(() => {
     vi.resetAllMocks();
 
-    const mockIterateSpendableNotes = {
-      next: vi.fn(),
-      [Symbol.asyncIterator]: () => mockIterateSpendableNotes,
-    };
-
-    mockIndexedDb = {
-      getAppParams: vi.fn(),
-      getAssetsMetadata: vi.fn(),
-      getPricesForAsset: vi.fn(),
-      getFullSyncHeight: vi.fn(() => Promise.resolve()),
-      iterateSpendableNotes: () => mockIterateSpendableNotes,
-    };
+    mockIndexedDb.iterateSpendableNotes.mockImplementationOnce(async function* () {
+      yield* await Promise.resolve(testData);
+    });
 
     const mockShieldedPool = {
       assetMetadata: vi.fn(),
@@ -99,16 +90,7 @@ describe('Balances request handler', () => {
         .set(fvkCtx, () => Promise.resolve(testFullViewingKey)),
     });
 
-    for (const record of testData) {
-      mockIterateSpendableNotes.next.mockResolvedValueOnce({
-        value: record,
-      });
-    }
-    mockIterateSpendableNotes.next.mockResolvedValueOnce({
-      done: true,
-    });
-
-    mockIndexedDb.getAssetsMetadata?.mockImplementation((assetId: AssetId) => {
+    mockIndexedDb.getAssetsMetadata.mockImplementation((assetId: AssetId) => {
       return Promise.resolve(
         new Metadata({
           penumbraAssetId: assetId,
@@ -116,7 +98,7 @@ describe('Balances request handler', () => {
       );
     });
 
-    mockIndexedDb.getPricesForAsset?.mockImplementation(() => Promise.resolve([]));
+    mockIndexedDb.getPricesForAsset.mockImplementation(() => Promise.resolve([]));
     req = new BalancesRequest();
   });
 
@@ -175,7 +157,7 @@ describe('Balances request handler', () => {
     const pricedAsset = new AssetId({ inner: new Uint8Array([5, 6, 7, 8]) });
     const mockNumerairePerUnit = 2.5;
 
-    mockIndexedDb.getAppParams?.mockResolvedValue(
+    mockIndexedDb.getAppParams.mockResolvedValue(
       new AppParameters({
         sctParams: {
           epochDuration: 719n,
@@ -184,7 +166,7 @@ describe('Balances request handler', () => {
     );
     // We'll just mock the same response for every call -- we're just testing
     // that the equivalent prices get included in the RPC response.
-    mockIndexedDb.getPricesForAsset?.mockResolvedValue([
+    mockIndexedDb.getPricesForAsset.mockResolvedValue([
       new EstimatedPrice({
         asOfHeight: 123n,
         numerairePerUnit: mockNumerairePerUnit,
