@@ -85,9 +85,9 @@ const fetchRewards = async (
 
     // Converts each TournamentDelegatorHistoryResponse to PersonalRewardsData
     return historyByAddress.map(item => ({
-      data: item.data ?? [],
-      totalItems: item.total_items ?? 0,
-      totalRewards: item.total_rewards ?? 0,
+      data: item.data,
+      totalItems: item.total_items,
+      totalRewards: item.total_rewards,
     }));
   }
 
@@ -132,18 +132,18 @@ export const usePersonalRewards = (
   });
 
   const allDelegatorRewards = query.data?.flatMap(item => item.data) ?? [];
-  const totalItems = query.data?.reduce((sum, item) => sum + item.totalItems, 0) ?? 0;
   const totalRewards = query.data?.reduce((sum, item) => sum + item.totalRewards, 0) ?? 0;
 
+  const sortFunctions: Record<
+    DelegatorHistorySortKey,
+    (a: LqtDelegatorHistoryData, b: LqtDelegatorHistoryData) => number
+  > = {
+    epoch: (a, b) => Number(a.epoch) - Number(b.epoch),
+    reward: (a, b) => Number(a.reward) - Number(b.reward),
+  };
+
   const sortedDelegatorRewards = allDelegatorRewards.sort((a, b) => {
-    let comparison = 0;
-
-    if (sortKey === 'epoch') {
-      comparison = Number(a.epoch) - Number(b.epoch);
-    } else if (sortKey === 'reward') {
-      comparison = Number(a.reward || 0) - Number(b.reward || 0);
-    }
-
+    const comparison = sortFunctions[sortKey](a, b);
     return sortDirection === 'desc' ? -comparison : comparison;
   });
 
@@ -152,7 +152,7 @@ export const usePersonalRewards = (
   const endIndex = startIndex + limit;
   const paginatedData = sortedDelegatorRewards.slice(startIndex, endIndex);
 
-  const sortedMap = new Map();
+  const sortedMap = new Map<number, LqtDelegatorHistoryData>();
   paginatedData.forEach(item => {
     sortedMap.set(item.epoch, item);
   });
@@ -160,7 +160,7 @@ export const usePersonalRewards = (
   return {
     query,
     data: sortedMap,
-    total: totalItems,
+    total: sortedDelegatorRewards.length,
     totalRewards: totalRewards,
   };
 };
