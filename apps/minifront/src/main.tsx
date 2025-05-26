@@ -10,11 +10,7 @@ import { useState } from 'react';
 import { RouterProvider } from 'react-router-dom';
 import { rootRouter } from './components/root-router';
 import { PenumbraUIProvider } from '@penumbra-zone/ui-deprecated/PenumbraUIProvider';
-
-// Add back the unprefixed CSS import that was working for the header
 import '@penumbra-zone/ui/style.css';
-// Then also import our custom CSS which contains the prefixed CSS import for v2 components
-import './index.css';
 
 const Main = () => {
   const [queryClient] = useState(() => new QueryClient());
