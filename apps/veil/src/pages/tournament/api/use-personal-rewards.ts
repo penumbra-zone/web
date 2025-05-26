@@ -30,13 +30,9 @@ const fetchRewards = async (
   sortKey: DelegatorHistorySortKey = 'epoch',
   sortDirection: DelegatorHistorySortDirection = 'desc',
   subaccount?: number,
-): Promise<PersonalRewardsData> => {
+): Promise<PersonalRewardsData[]> => {
   if (typeof subaccount === 'undefined') {
-    return {
-      data: [],
-      totalItems: 0,
-      totalRewards: 0,
-    };
+    return [];
   }
 
   const accountFilter = new AddressIndex({ account: subaccount });
@@ -77,29 +73,25 @@ const fetchRewards = async (
       },
     );
 
-    // filter the history by address – find user's subaccount index
-    const historyByAddress = await Promise.any<TournamentDelegatorHistoryResponse | undefined>(
-      delegatorHistory.map(async item => {
-        const index = await getIndexByAddress(item.address);
-        if (!index || index.account !== subaccount) {
-          throw new Error('Address index does not match');
-        }
-        return item;
-      }),
+    const pairs = await Promise.all(
+      delegatorHistory.map(item =>
+        getIndexByAddress(item.address).then(index => ({ item, index })),
+      ),
     );
 
-    return {
-      data: historyByAddress?.data ?? [],
-      totalItems: historyByAddress?.total_items ?? 0,
-      totalRewards: historyByAddress?.total_rewards ?? 0,
-    };
+    const historyByAddress: TournamentDelegatorHistoryResponse[] = pairs
+      .filter(({ index }) => index?.account === subaccount)
+      .map(({ item }) => item);
+
+    // Converts each TournamentDelegatorHistoryResponse to PersonalRewardsData
+    return historyByAddress.map(item => ({
+      data: item.data ?? [],
+      totalItems: item.total_items ?? 0,
+      totalRewards: item.total_rewards ?? 0,
+    }));
   }
 
-  return {
-    data: [],
-    totalItems: 0,
-    totalRewards: 0,
-  };
+  return [];
 };
 
 /**
@@ -139,12 +131,36 @@ export const usePersonalRewards = (
       ),
   });
 
-  const data = query.data?.data ?? [];
+  const allDelegatorRewards = query.data?.flatMap(item => item.data) ?? [];
+  const totalItems = query.data?.reduce((sum, item) => sum + item.totalItems, 0) ?? 0;
+  const totalRewards = query.data?.reduce((sum, item) => sum + item.totalRewards, 0) ?? 0;
+
+  const sortedDelegatorRewards = allDelegatorRewards.sort((a, b) => {
+    let comparison = 0;
+
+    if (sortKey === 'epoch') {
+      comparison = Number(a.epoch) - Number(b.epoch);
+    } else if (sortKey === 'reward') {
+      comparison = Number(a.reward || 0) - Number(b.reward || 0);
+    }
+
+    return sortDirection === 'desc' ? -comparison : comparison;
+  });
+
+  // Apply client-side pagination and create map from paginated sorted entries
+  const startIndex = (page - 1) * limit;
+  const endIndex = startIndex + limit;
+  const paginatedData = sortedDelegatorRewards.slice(startIndex, endIndex);
+
+  const sortedMap = new Map();
+  paginatedData.forEach(item => {
+    sortedMap.set(item.epoch, item);
+  });
 
   return {
     query,
-    data: new Map(data.map(x => [x.epoch, x])),
-    total: query.data?.totalItems ?? 0,
-    totalRewards: query.data?.totalRewards ?? 0,
+    data: sortedMap,
+    total: totalItems,
+    totalRewards: totalRewards,
   };
 };
