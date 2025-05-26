@@ -45,7 +45,7 @@ export const AssetsTable = () => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className='w-[100px]'>Denom</TableHead>
+            <TableHead className='w-[100px]'>Asset</TableHead>
             <TableHead className='text-right'>Amount</TableHead>
           </TableRow>
         </TableHeader>
