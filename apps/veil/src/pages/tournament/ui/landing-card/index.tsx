@@ -14,8 +14,12 @@ import {
   SocialCardDialog,
   useTournamentSocialCard,
 } from '@/pages/tournament/ui/social-card-dialog';
+import { connectionStore } from '@/shared/model/connection';
+import { usePersonalRewards } from '../../api/use-personal-rewards';
 
 export const LandingCard = observer(() => {
+  const { subaccount } = connectionStore;
+
   const { data: summary, isLoading: summaryLoading } = useTournamentSummary({
     limit: 1,
     page: 1,
@@ -42,9 +46,10 @@ export const LandingCard = observer(() => {
     epochLoading,
   );
 
-  // TODO: why isn't the social card currently triggers on the landing page,
-  // only the round page? We need to get the previous epoch.
-  const { isOpen: showSocial, close: hideSocial } = useTournamentSocialCard(epoch!);
+  const { data: rewards } = usePersonalRewards(subaccount, epoch, false, 1, 1);
+  const latestReward = rewards?.values?.().next().value;
+
+  const { isOpen: showSocial, close: hideSocial } = useTournamentSocialCard(latestReward?.epoch);
 
   return (
     <>

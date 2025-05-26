@@ -24,7 +24,7 @@ export const dismissedKey = 'veil-tournament-social-card-dismissed';
 const baseUrl = process.env['NEXT_PUBLIC_BASE_URL'] ?? 'http://localhost:3000';
 
 // Custom hook that consolidates all location storage operations.
-export function useTournamentSocialCard(defaultEpoch: number) {
+export function useTournamentSocialCard(defaultEpoch: number | undefined) {
   const [isOpen, setIsOpen] = useState(false);
 
   const { epoch: currentEpoch } = useCurrentEpoch();
@@ -112,16 +112,12 @@ const SocialCardCanvas = ({ params }: { params?: TournamentParams }) => {
 };
 
 /**
- * - One time per epoch modal
- * - If you got a reward, this social card is displayed which can be shared on X
+ * Displays a shareable social card once per epoch if:
+ * - The user voted in the previous delegation event
+ * - A reward was received
+ * - The modal hasn’t been dismissed for this epoch
  *
- * 1. When would this happen
- *    - This would happen specifically the first time that someone opens Veil if
- *      - having voted in a recent delegation event
- *      - and has not dismissed the social card modal
- *    - It should be triggered by the delegator address receiving a rewards distribution,
- *      - and is dismissable each epoch unless the delegator does not vote in the current
- *        epoch (this will be evident by whether or not their receive a rewards distribution).
+ * Shown only on first Veil open per epoch.
  */
 export const SocialCardDialog = observer(
   ({ onClose, epoch }: { epoch: number; onClose: () => void }) => {

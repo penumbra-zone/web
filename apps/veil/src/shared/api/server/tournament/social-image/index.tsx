@@ -6,6 +6,8 @@ import {
   queryParamMap,
 } from '@/features/tournament-earnings-canvas';
 import { registerFonts } from '@/shared/ui/canvas-toolkit';
+import { useStakingTokenMetadata } from '@/shared/api/registry';
+import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -20,8 +22,10 @@ export async function GET(req: NextRequest) {
   registerFonts();
   const canvas = createCanvas(600, 315);
 
-  // todo: use exponent from the staking token instead of hardcoding "6"
-  await renderTournamentEarningsCanvas(canvas as unknown as HTMLCanvasElement, params, 6, {
+  const { data: stakingToken } = useStakingTokenMetadata();
+  const exponent = getDisplayDenomExponent(stakingToken);
+
+  await renderTournamentEarningsCanvas(canvas as unknown as HTMLCanvasElement, params, exponent, {
     width: 600,
     height: 315,
   });

@@ -12,7 +12,6 @@ export const remToPx = (rem: string) =>
     typeof window !== 'undefined' ? getComputedStyle(document.documentElement).fontSize : '11px',
   );
 
-// TODO: this seems to be an issue...
 export const scaleCanvas = (canvas: HTMLCanvasElement, size: { width: number; height: number }) => {
   const ctx = canvas.getContext('2d');
   if (!ctx) {
