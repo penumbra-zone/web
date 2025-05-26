@@ -87,6 +87,8 @@ const tournamentDelegatorHistoryQuery = async ({
     .orderBy(sortKey, sortDirection)
     .orderBy('power', 'desc');
 
+  // group by delegator address and calculate total items and rewards, so that frontend only needs
+  // to filter the resulting array by address to find their own history.
   const aggregated = pindexerDb
     .selectFrom(grouped.as('grouped'))
     .groupBy('address')
@@ -94,6 +96,7 @@ const tournamentDelegatorHistoryQuery = async ({
       'address',
       eb.fn.countAll().as('total_items'),
       eb.fn.sum('reward').as('total_rewards'),
+      // all rows for each address are aggregated into a single array
       sql<LqtDelegatorHistory[]>`json_agg(grouped.*)`.as('data'),
     ]);
 

@@ -5,17 +5,14 @@ import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys
 import { ViewService } from '@penumbra-zone/protobuf';
 import { penumbra } from '@/shared/const/penumbra';
 import { statusStore } from '@/shared/model/status';
-import {
+import { apiPostFetch } from '@/shared/utils/api-fetch';
+import type {
   DelegatorHistorySortDirection,
   DelegatorHistorySortKey,
   TournamentDelegatorHistoryResponse,
   LqtDelegatorHistoryData,
 } from '../server/delegator-history';
-import { apiPostFetch } from '@/shared/utils/api-fetch';
-import {
-  AddressByIndexResponse,
-  TournamentVotesResponse,
-} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { getIndexByAddress } from './use-index-by-address';
 
 export const BASE_LIMIT = 10;
 export const BASE_PAGE = 1;
@@ -34,26 +31,29 @@ const fetchRewards = async (
   sortDirection: DelegatorHistorySortDirection = 'desc',
   subaccount?: number,
 ): Promise<PersonalRewardsData> => {
-  const accountFilter =
-    typeof subaccount === 'undefined' ? undefined : new AddressIndex({ account: subaccount });
+  if (typeof subaccount === 'undefined') {
+    return {
+      data: [],
+      totalItems: 0,
+      totalRewards: 0,
+    };
+  }
+
+  const accountFilter = new AddressIndex({ account: subaccount });
 
   // `tournamentVotes` accepts either `blockHeight` or `epochIndex`:
   //  * `blockHeight` – calls `iterateLQTVotes` to gather every vote up to the
   //   epoch containing that height, grouping results by epoch.
   //  * `epochIndex` – returns the votes for that single epoch, already grouped.
   const service = penumbra.service(ViewService);
-  const votesPromise: Promise<TournamentVotesResponse[]> =
+  const votes =
     epochOrHeight.type === 'epoch'
-      ? Array.fromAsync(service.tournamentVotes({ accountFilter, epochIndex: epochOrHeight.value }))
-      : Array.fromAsync(
+      ? await Array.fromAsync(
+          service.tournamentVotes({ accountFilter, epochIndex: epochOrHeight.value }),
+        )
+      : await Array.fromAsync(
           service.tournamentVotes({ accountFilter, blockHeight: epochOrHeight.value }),
         );
-
-  const addressPromise: Promise<AddressByIndexResponse> = service.addressByIndex({
-    addressIndex: { account: accountFilter?.account },
-  });
-
-  const [votes, { address }] = await Promise.all([votesPromise, addressPromise]);
 
   if (votes.length > 0) {
     const epochs = new Set<string>();
@@ -63,15 +63,9 @@ const fetchRewards = async (
       }
     }
 
-    // We send the address plus a list of epochs to the server and ask for the
-    // matching delegator history. That’s not ideal. A better strategy would be to
-    // fetch validator exchange rates keyed by epoch and convert prices locally.
-    // As the liquidity tournament scales, this server-side query would force us to
-    // sift through many delegators per epoch, whereas the block processor already
-    // tracks rewards locally and could handle the conversion far more efficiently.
-    // Consequently, we can always fall back to local-first reward processing
-    // if that becomes a performance bottleneck.
-
+    // Send a list of epochs to the server, – it sends back a list of delegators with their history
+    // of matched epochs. Then we filter the results by subaccount. This doesn't leak privacy as
+    // the address filtering happens on the client side.
     const delegatorHistory = await apiPostFetch<TournamentDelegatorHistoryResponse[]>(
       '/api/tournament/delegator-history',
       {
@@ -83,12 +77,21 @@ const fetchRewards = async (
       },
     );
 
-    const delegatorHistoryByAddress = delegatorHistory.find(item => item.address.equals(address));
+    // filter the history by address – find user's subaccount index
+    const historyByAddress = await Promise.any<TournamentDelegatorHistoryResponse | undefined>(
+      delegatorHistory.map(async item => {
+        const index = await getIndexByAddress(item.address);
+        if (!index || index.account !== subaccount) {
+          throw new Error('Address index does not match');
+        }
+        return item;
+      }),
+    );
 
     return {
-      data: delegatorHistoryByAddress?.data ?? [],
-      totalItems: delegatorHistoryByAddress?.total_items ?? 0,
-      totalRewards: delegatorHistoryByAddress?.total_rewards ?? 0,
+      data: historyByAddress?.data ?? [],
+      totalItems: historyByAddress?.total_items ?? 0,
+      totalRewards: historyByAddress?.total_rewards ?? 0,
     };
   }
 
