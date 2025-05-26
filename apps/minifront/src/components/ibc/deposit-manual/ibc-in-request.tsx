@@ -53,7 +53,7 @@ export const IbcInRequest = () => {
           <SelectContent className='max-w-52 bg-white text-stone-700'>
             {data.map(b => (
               <SelectItem value={b.displayDenom} key={b.displayDenom}>
-                <div className='flex items-center gap-2 text-stone-700 max-w-[180px]'>
+                <div className='flex max-w-[180px] items-center gap-2 text-stone-700'>
                   <Avatar className='size-6'>
                     <AvatarImage src={getIconWithUmFallback(b)} />
                     <Identicon uniqueIdentifier={b.displayDenom} type='gradient' size={22} />
