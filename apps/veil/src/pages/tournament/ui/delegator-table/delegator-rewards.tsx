@@ -168,11 +168,7 @@ export const DelegatorRewards = ({ address }: { address: Address }) => {
 
             <TableCell cell>
               <Density slim>
-                <Button
-                  iconOnly
-                  icon={ChevronRight}
-                  onClick={() => (window.location.href = `/tournament/${row.epoch}`)}
-                >
+                <Button iconOnly icon={ChevronRight}>
                   Go to voting reward information
                 </Button>
               </Density>

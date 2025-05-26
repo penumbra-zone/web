@@ -41,7 +41,10 @@ const LeaderboardRow = observer(
     loading: boolean;
   }) => {
     const { connected } = connectionStore;
-    const { data: subaccountIndex, isLoading: indexLoading } = useIndexByAddress(row.address);
+    const { data: subaccountIndex, isPending: indexLoading } = useIndexByAddress(
+      row.address,
+      loading,
+    );
 
     const addressLink = useMemo(() => {
       if (loading) {
