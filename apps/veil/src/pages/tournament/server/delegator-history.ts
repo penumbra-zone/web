@@ -63,8 +63,6 @@ const tournamentDelegatorHistoryQuery = async ({
   epochs,
   sortKey,
   sortDirection,
-  limit,
-  page,
 }: Required<DelegatorHistoryRequest>) => {
   // take all rows from delegator history in a set of epochs
   const filteredQuery = pindexerDb
@@ -91,9 +89,7 @@ const tournamentDelegatorHistoryQuery = async ({
           .selectFrom(filteredQuery.as('delegators'))
           .selectAll()
           .whereRef('delegators.address', '=', 'grouped.address')
-          .orderBy(sortKey, sortDirection)
-          .limit(limit)
-          .offset(limit * (page - 1)),
+          .orderBy(sortKey, sortDirection),
       ).as('data'),
     ]);
 
@@ -119,7 +115,7 @@ export async function POST(
           epoch: item.epoch,
           power: Number(item.power),
           reward: Number(item.reward),
-          address: new Address({ inner: item.address }),
+          address: new Address({ inner: historyByAddress.address }),
           asset_id: new AssetId({ inner: Uint8Array.from(item.asset_id) }),
         })),
       };
