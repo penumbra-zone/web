@@ -23,12 +23,14 @@
   },
   "extends": ["@tsconfig/strictest/tsconfig.json", "@tsconfig/vite-react/tsconfig.json"],
   "include": [
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "global.d.ts",
     "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx",
     "styles/styles.d.ts",
-    "global.d.ts"
+    ".next/types/**/*.ts"
   ],
   "exclude": ["node_modules"]
 }

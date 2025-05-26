@@ -24,12 +24,27 @@ import { useDelegatorLeaderboard, BASE_PAGE, BASE_LIMIT } from '../api/use-deleg
 import { useSortableTableHeaders } from './sortable-table-header';
 import { useIndexByAddress } from '../api/use-index-by-address';
 import { useStakingTokenMetadata } from '@/shared/api/registry';
+import { getValueViewLength } from '@/shared/utils/get-max-padstart';
+
+interface DelegatorLeaderboardRow extends DelegatorLeaderboardData {
+  reward?: ValueView;
+}
 
 const LeaderboardRow = observer(
-  ({ row, loading }: { row: DelegatorLeaderboardData; loading: boolean }) => {
+  ({
+    row,
+    padStart,
+    loading,
+  }: {
+    row: DelegatorLeaderboardRow;
+    padStart?: number;
+    loading: boolean;
+  }) => {
     const { connected } = connectionStore;
-    const { data: subaccountIndex, isLoading: indexLoading } = useIndexByAddress(row.address);
-    const { data: stakingToken } = useStakingTokenMetadata();
+    const { data: subaccountIndex, isPending: indexLoading } = useIndexByAddress(
+      row.address,
+      loading,
+    );
 
     const addressLink = useMemo(() => {
       if (loading) {
@@ -59,22 +74,6 @@ const LeaderboardRow = observer(
             },
           });
     }, [row.address, subaccountIndex, connected]);
-
-    const totalRewards = useMemo(() => {
-      if (loading) {
-        return undefined;
-      }
-
-      return new ValueView({
-        valueView: {
-          case: 'knownAssetId',
-          value: {
-            amount: splitLoHi(BigInt(row.total_rewards)),
-            metadata: stakingToken,
-          },
-        },
-      });
-    }, [loading, row.total_rewards, stakingToken]);
 
     return (
       <Link
@@ -110,7 +109,14 @@ const LeaderboardRow = observer(
           {row.streak}
         </TableCell>
         <TableCell cell loading={loading}>
-          {row.total_rewards && <ValueViewComponent valueView={totalRewards} priority='tertiary' />}
+          {row.total_rewards && (
+            <ValueViewComponent
+              valueView={row.reward}
+              priority='tertiary'
+              trailingZeros={true}
+              padStart={padStart}
+            />
+          )}
         </TableCell>
         <TableCell cell loading={loading}>
           <Density slim>
@@ -132,14 +138,42 @@ export const DelegatorLeaderboard = observer(() => {
     'asc',
   );
 
+  const { data: stakingToken } = useStakingTokenMetadata();
   const {
     query: { isLoading },
     data,
     total,
   } = useDelegatorLeaderboard(page, limit, sortBy.key, sortBy.direction);
 
-  const loadingArr = new Array(5).fill({}) as DelegatorLeaderboardData[];
-  const leaderboard = data ?? loadingArr;
+  const mappedData = useMemo(() => {
+    return data?.reduce<{ rows: DelegatorLeaderboardRow[]; padStart: number }>(
+      (accum, row) => {
+        if (row.total_rewards) {
+          const reward = new ValueView({
+            valueView: {
+              case: 'knownAssetId',
+              value: {
+                amount: splitLoHi(BigInt(row.total_rewards)),
+                metadata: stakingToken,
+              },
+            },
+          });
+
+          accum.padStart = Math.max(accum.padStart, getValueViewLength(reward));
+          accum.rows.push({
+            ...row,
+            reward,
+          });
+        }
+
+        return accum;
+      },
+      { rows: [], padStart: 0 },
+    );
+  }, [data, stakingToken]);
+
+  const loadingArr = new Array(5).fill({}) as DelegatorLeaderboardRow[];
+  const leaderboard = mappedData?.rows ?? loadingArr;
 
   const onLimitChange = (newLimit: number) => {
     setLimit(newLimit);
@@ -165,6 +199,7 @@ export const DelegatorLeaderboard = observer(() => {
           {leaderboard.map((row, index) => (
             <LeaderboardRow
               key={isLoading ? `loading-${index}` : row.place}
+              padStart={mappedData?.padStart}
               row={row}
               loading={isLoading || !Object.keys(row).length}
             />

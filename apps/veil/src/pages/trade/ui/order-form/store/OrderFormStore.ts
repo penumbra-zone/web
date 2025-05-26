@@ -344,7 +344,7 @@ export const useOrderFormStore = () => {
         return false;
       }
 
-      return isMetadataEqual(metadata, asset) && addressIndex.equals(address);
+      return isMetadataEqual(metadata, asset) && addressIndex.account === address.account;
     },
     [addressIndex],
   );

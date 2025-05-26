@@ -3,7 +3,7 @@ import { WitnessRequest, WitnessResponse } from '@penumbra-zone/protobuf/penumbr
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
-import { IndexedDbMock, MockServices } from '../test-utils.js';
+import { mockIndexedDb, MockServices } from '../test-utils.js';
 import { witness } from './witness.js';
 import {
   TransactionPlan,
@@ -13,16 +13,12 @@ import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 describe('Witness request handler', () => {
   let mockServices: MockServices;
-  let mockIndexedDb: IndexedDbMock;
   let mockCtx: HandlerContext;
   let req: WitnessRequest;
 
   beforeEach(() => {
     vi.resetAllMocks();
 
-    mockIndexedDb = {
-      getStateCommitmentTree: vi.fn(),
-    };
     mockServices = {
       getWalletServices: vi.fn(() =>
         Promise.resolve({ indexedDb: mockIndexedDb }),
@@ -44,7 +40,7 @@ describe('Witness request handler', () => {
   });
 
   test('should successfully create witness data', async () => {
-    mockIndexedDb.getStateCommitmentTree?.mockResolvedValue(testSct);
+    mockIndexedDb.getStateCommitmentTree.mockResolvedValue(testSct);
     const witnessResponse = new WitnessResponse(await witness(req, mockCtx));
     expect(witnessResponse.witnessData).instanceof(WitnessData);
   });

@@ -1,12 +1,13 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import {
+  TransactionInfo,
   TransactionInfoByHashRequest,
   TransactionInfoByHashResponse,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
-import { IndexedDbMock, MockServices, TendermintMock, testFullViewingKey } from '../test-utils.js';
+import { mockIndexedDb, MockServices, TendermintMock, testFullViewingKey } from '../test-utils.js';
 import { transactionInfoByHash } from './transaction-info-by-hash.js';
 import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
@@ -24,17 +25,12 @@ vi.mock('@penumbra-zone/wasm/transaction', () => ({
 }));
 describe('TransactionInfoByHash request handler', () => {
   let mockServices: MockServices;
-  let mockIndexedDb: IndexedDbMock;
   let mockCtx: HandlerContext;
   let mockTendermint: TendermintMock;
 
   beforeEach(() => {
     vi.resetAllMocks();
 
-    mockIndexedDb = {
-      getTransaction: vi.fn(),
-      constants: vi.fn(),
-    };
     mockTendermint = {
       getTransaction: vi.fn(),
     };
@@ -66,11 +62,13 @@ describe('TransactionInfoByHash request handler', () => {
   });
 
   test('should get TransactionInfo from indexed-db if there is a record in indexed-db', async () => {
-    mockIndexedDb.getTransaction?.mockResolvedValue({
-      height: 22n,
-      id: transactionId,
-      transaction,
-    });
+    mockIndexedDb.getTransaction.mockResolvedValue(
+      new TransactionInfo({
+        height: 22n,
+        id: transactionId,
+        transaction,
+      }),
+    );
     const txInfoByHashResponse = new TransactionInfoByHashResponse(
       await transactionInfoByHash(new TransactionInfoByHashRequest({ id: transactionId }), mockCtx),
     );
@@ -79,7 +77,7 @@ describe('TransactionInfoByHash request handler', () => {
   });
 
   test('should get TransactionInfo from tendermint if  record is not found in indexed-db', async () => {
-    mockIndexedDb.getTransaction?.mockResolvedValue(undefined);
+    mockIndexedDb.getTransaction.mockResolvedValue(undefined);
     mockTendermint.getTransaction?.mockResolvedValue({
       height: 22n,
       transaction: transaction,

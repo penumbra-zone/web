@@ -192,7 +192,6 @@ export const SocialCardDialog = observer(
                 Copy Image
               </Button>
               <Button actionType='accent' onClick={() => shareToX(text, url)}>
-                {/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- Xcom */}
                 <Icon IconComponent={Xcom} size='sm' />
                 Share
               </Button>

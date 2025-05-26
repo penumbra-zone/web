@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "exactOptionalPropertyTypes": false,
+    "lib": ["ESNext", "DOM", "DOM.Iterable", "DOM.AsyncIterable"],
+    "noEmit": true,
+    "target": "ESNext",
+    "types": ["vitest/globals", "chrome", "@testing-library/jest-dom"],
+    "paths": {
+      "@app/*": ["./app/*"],
+      "@pages/*": ["./pages/*"],
+      "@entities/*": ["./entities/*"],
+      "@widgets/*": ["./widgets/*"],
+      "@features/*": ["./features/*"],
+      "@shared/*": ["./shared/*"]
+    }
+  },
+  "extends": ["@tsconfig/strictest/tsconfig.json", "@tsconfig/vite-react/tsconfig.json"],
+  "include": ["app", "pages", "shared", "widgets", "entities", "features", "vite.config.ts"]
+}
