@@ -48,6 +48,7 @@
   "devDependencies": {
     "@chain-registry/types": "^0.50.93",
     "@eslint/compat": "^1.1.0",
+    "@repo/stubs": "workspace:*",
     "@storybook/react": "^8.4.2",
     "@types/chrome": "^0.0.268",
     "@types/lodash": "^4.17.13",

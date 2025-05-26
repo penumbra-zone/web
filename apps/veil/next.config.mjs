@@ -20,6 +20,9 @@ const nextConfig = {
   webpack: config => {
     config.externals.push('pino-pretty');
 
+    config.resolve.alias['@amplitude/analytics-browser'] =
+      '@repo/stubs/amplitude-analytics-browser';
+
     config.module.rules.push({
       test: /\.svg$/i,
       issuer: /\.[jt]sx?$/,

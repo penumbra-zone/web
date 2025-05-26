@@ -35,7 +35,8 @@
     "overrides": {
       "typescript": "5.5.3",
       "cosmos-kit": "^2.21.1",
-      "@hexxagon/feather.js": "npm:@terra-money/feather.js@1.0.9"
+      "@hexxagon/feather.js": "npm:@terra-money/feather.js@1.0.9",
+      "@amplitude/analytics-browser": "./packages/stubs"
     }
   },
   "devDependencies": {
