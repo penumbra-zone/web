@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { jsonArrayFrom } from 'kysely/helpers/postgres';
 import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { Serialized, serialize } from '@/shared/utils/serializer';
 import { pindexerDb } from '@/shared/database/client';
 import { LqtDelegatorHistory } from '@/shared/database/schema';
 import { BASE_LIMIT, BASE_PAGE } from '../api/use-personal-rewards';
-import { sql } from 'kysely';
 
 export const SORT_KEYS = ['epoch', 'reward'] as const;
 export type DelegatorHistorySortKey = (typeof SORT_KEYS)[number];
@@ -63,41 +63,38 @@ const tournamentDelegatorHistoryQuery = async ({
   epochs,
   sortKey,
   sortDirection,
-  // todo: apply limit and page to the aggregated query below - probably needs a lateral join or a partition by
-  // limit,
-  // page,
+  limit,
+  page,
 }: Required<DelegatorHistoryRequest>) => {
   // take all rows from delegator history in a set of epochs
-  const filteredQuery = pindexerDb.selectFrom('lqt.delegator_history').where(
-    'epoch',
-    'in',
-    epochs.map(epoch => Number(epoch)),
-  );
-
-  // calculate the sum of power and rewards per each epoch and address.
-  const grouped = filteredQuery
-    .groupBy(['epoch', 'address', 'asset_id'])
-    .select(eb => [
+  const filteredQuery = pindexerDb
+    .selectFrom('lqt.delegator_history')
+    .selectAll()
+    .where(
       'epoch',
-      'address',
-      'asset_id',
-      eb.fn.sum('power').as('power'),
-      eb.fn.sum('reward').as('reward'),
-    ])
-    .orderBy(sortKey, sortDirection)
-    .orderBy('power', 'desc');
+      'in',
+      epochs.map(epoch => Number(epoch)),
+    );
 
   // group by delegator address and calculate total items and rewards, so that frontend only needs
   // to filter the resulting array by address to find their own history.
   const aggregated = pindexerDb
-    .selectFrom(grouped.as('grouped'))
+    .selectFrom(filteredQuery.as('grouped'))
     .groupBy('address')
     .select(eb => [
       'address',
       eb.fn.countAll().as('total_items'),
       eb.fn.sum('reward').as('total_rewards'),
-      // all rows for each address are aggregated into a single array
-      sql<LqtDelegatorHistory[]>`json_agg(grouped.*)`.as('data'),
+      // all rows for each address are aggregated into a single array with correct ordering and limits
+      jsonArrayFrom(
+        eb
+          .selectFrom(filteredQuery.as('delegators'))
+          .selectAll()
+          .whereRef('delegators.address', '=', 'grouped.address')
+          .orderBy(sortKey, sortDirection)
+          .limit(limit)
+          .offset(limit * (page - 1)),
+      ).as('data'),
     ]);
 
   return aggregated.execute();
