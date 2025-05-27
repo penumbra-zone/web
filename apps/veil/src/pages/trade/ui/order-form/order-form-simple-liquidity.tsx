@@ -9,15 +9,20 @@ import { AmountInput } from './amount-input';
 import { InfoRow } from './info-row';
 import { InfoRowGasFee } from './info-row-gas-fee';
 import { OrderFormStore } from './store/OrderFormStore';
-import { ControlSlider } from './price-slider';
+import { PriceSlider } from './price-slider';
 import { useState } from 'react';
 
 export const SimpleLiquidityOrderForm = observer(
   ({ parentStore }: { parentStore: OrderFormStore }) => {
     const { connected } = connectionStore;
     const { defaultDecimals, rangeForm: store } = parentStore;
+    console.log('TCL: store', store);
 
-    const [priceRange, setPriceRange] = useState<[number, number]>([0.45, 0.55]);
+    const deviation = 0.05;
+    const [priceRange, setPriceRange] = useState<[number, number]>([
+      store.marketPrice * (1 - deviation),
+      store.marketPrice * (1 + deviation),
+    ]);
 
     return (
       <div className='p-4'>
@@ -68,7 +73,15 @@ export const SimpleLiquidityOrderForm = observer(
               Price Range
             </Text>
           </div>
-          <ControlSlider min={0.4} max={0.6} value={priceRange} onInput={setPriceRange} />
+          <PriceSlider
+            min={0}
+            max={store.marketPrice * 2}
+            value={priceRange}
+            onInput={setPriceRange}
+            marketPrice={store.marketPrice}
+            quoteAsset={store.quoteAsset}
+            baseAsset={store.baseAsset}
+          />
         </div>
         <div className='mb-4'>
           <InfoRow label='LQT Rewards' value='Eligible' />

@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
+import cn from 'clsx';
 import { ScaleLinear, scaleLinear } from 'd3-scale';
 import { Text } from '@penumbra-zone/ui';
+import { round } from '@penumbra-zone/types/round';
 
 interface ThumbProps {
   left?: boolean;
@@ -25,6 +27,16 @@ interface DeltaState {
 
 const Thumb: React.FC<ThumbProps> = ({ left, right, value, scale, max, onMove }) => {
   const deltaRef = useRef<DeltaState | null>(null);
+  const textRef = useRef<HTMLDivElement>(null);
+  const [textWidth, setTextWidth] = useState(0);
+  console.log('TCL: textWidth', textWidth);
+
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      // useComponentSize doesnt set width correctly on updates
+      setTextWidth(textRef.current?.offsetWidth ?? 0);
+    });
+  }, [value]);
 
   const handleMouseMove = (event: MouseEvent | TouchEvent) => {
     if (!deltaRef.current) {
@@ -37,14 +49,15 @@ const Thumb: React.FC<ThumbProps> = ({ left, right, value, scale, max, onMove })
     deltaRef.current.deltaX = clientX - deltaRef.current.initX;
     const dx = deltaRef.current.deltaX;
 
+    let nextValue: number;
     if (left) {
       const nextX = Math.min(Math.max(0, scale(value[0]) + dx), scale(max));
-      const nextValue = scale.invert(nextX);
+      nextValue = scale.invert(nextX);
 
       onMove(nextValue < value[1] ? [nextValue, value[1]] : [value[1], nextValue]);
     } else {
       const nextX = Math.min(Math.max(0, scale(value[1]) + dx), scale(max));
-      const nextValue = scale.invert(nextX);
+      nextValue = scale.invert(nextX);
 
       onMove(nextValue > value[0] ? [value[0], nextValue] : [nextValue, value[0]]);
     }
@@ -64,6 +77,7 @@ const Thumb: React.FC<ThumbProps> = ({ left, right, value, scale, max, onMove })
 
     // Prevent scrolling while dragging
     document.body.style.overflow = 'hidden';
+    document.body.style.marginRight = '4px';
 
     const moveHandler = (e: MouseEvent | TouchEvent) => handleMouseMove(e);
     const upHandler = () => {
@@ -71,6 +85,7 @@ const Thumb: React.FC<ThumbProps> = ({ left, right, value, scale, max, onMove })
       document.removeEventListener(isTouch ? 'touchend' : 'pointerup', upHandler);
       deltaRef.current = null;
       document.body.style.overflow = '';
+      document.body.style.marginRight = '';
     };
 
     document.addEventListener(isTouch ? 'touchmove' : 'mousemove', moveHandler);
@@ -82,20 +97,44 @@ const Thumb: React.FC<ThumbProps> = ({ left, right, value, scale, max, onMove })
       type='button'
       aria-label={`Slider Thumb ${left ? 'Lower' : 'Upper'}`}
       className={`
-        absolute top-[-32px] flex h-[40px] w-[8px] cursor-ew-resize items-center justify-center bg-transparent
+        absolute top-0 flex h-[44px] w-[8px] cursor-ew-resize items-center justify-center bg-transparent
         ${left ? 'left-[-4px]' : 'right-[-4px]'}
         hover:bg-other-tonalFill10
       `}
       onMouseDown={handlePointerDown}
       onTouchStart={handlePointerDown}
     >
-      <div className='h-[40px] w-[1px] bg-neutral-light mr-[1px]' />
-      {/* <div className='h-3 w-[1.5px] bg-neutral-500' /> */}
+      <div className={`h-[44px] w-[1px] bg-primary-main ${left ? 'mr-[1px]' : 'ml-[1px]'}`} />
+      <div
+        className={`h-[20px] w-[4px] bg-primary-main absolute top-[12px] ${left ? 'left-[-4px]' : 'right-[-4px]'} rounded-sm`}
+      />
+      <div
+        ref={textRef}
+        className={cn(
+          'absolute top-[12px] h-[20px] [line-height:20px_!important] bg-other-tonalFill10 rounded-sm px-2',
+        )}
+        style={{
+          left: left ? `-${textWidth + 8}px` : undefined,
+          right: left ? undefined : `-${textWidth + 8}px`,
+        }}
+      >
+        <Text detail color='text.primary'>
+          30%
+        </Text>
+      </div>
     </button>
   );
 };
 
-export const ControlSlider: React.FC<ControlSliderProps> = ({ min, max, value, onInput }) => {
+export const PriceSlider: React.FC<ControlSliderProps> = ({
+  min,
+  max,
+  value,
+  onInput,
+  marketPrice,
+  baseAsset,
+  quoteAsset,
+}) => {
   const ref = useRef<HTMLDivElement>(null);
   const scaleRef = useRef<ScaleLinear<number, number> | null>(null);
   const [scaleLoaded, setScaleLoaded] = useState(false);
@@ -132,34 +171,42 @@ export const ControlSlider: React.FC<ControlSliderProps> = ({ min, max, value, o
   const scale = scaleRef.current;
 
   return (
-    <div className='px-1'>
-      <div className='h-[32px]'></div>
-      <div ref={ref} className='relative h-[32px] w-full'>
-        <div className='h-[8px] w-full rounded-md bg-other-tonalFill10'>
-          {scaleLoaded && scale && (
-            <div
-              className='absolute h-[8px] bg-primary-main'
-              style={{
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-call -- safe
-                left: Math.max(0, scale(leftValue)),
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- safe
-                right: Math.min(width, width - scale(rightValue)),
-              }}
-            >
-              <Thumb left value={value} scale={scale} max={max} onMove={onInput} />
-              <Thumb right value={value} scale={scale} max={max} onMove={onInput} />
-            </div>
-          )}
-        </div>
-        <div className='absolute z-10 left-1/2 h-[16px] w-[1px] bg-neutral-light' />
-        <div className='absolute z-10 left-1/2 top-[16px] transform -translate-x-1/2 flex items-center gap-1 p-1 bg-other-tonalFill10 rounded-sm'>
-          <Text detail color='text.secondary'>
-            Current Price:
-          </Text>
-          <Text detail color='text.primary'>
-            0.50
-          </Text>
-        </div>
+    <div>
+      <div className='flex w-full justify-center gap-1 mb-4'>
+        <Text detail color='text.secondary'>
+          Market Price
+        </Text>
+        <Text detail color='text.primary'>
+          {marketPrice}
+        </Text>
+        <Text detail color='text.secondary'>
+          {baseAsset?.symbol} per {quoteAsset?.symbol}
+        </Text>
+      </div>
+      <div ref={ref} className='relative z-0 h-[44px] w-full border-b border-other-tonalFill10'>
+        <div className='absolute z-10 top-0 left-1/2 h-[44px] w-[1px] border-dashed border-neutral-contrast' />
+        {scaleLoaded && scale && (
+          <div
+            className='absolute z-0 top-0 h-[44px] bg-primary-main/10'
+            style={{
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-call -- safe
+              left: Math.max(0, scale(leftValue)),
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- safe
+              right: Math.min(width, width - scale(rightValue)),
+            }}
+          >
+            <Thumb left value={value} scale={scale} max={max} onMove={onInput} />
+            <Thumb right value={value} scale={scale} max={max} onMove={onInput} />
+          </div>
+        )}
+      </div>
+      <div className='flex w-full justify-between gap-1'>
+        <Text detail color='text.secondary'>
+          {round({ value: leftValue, decimals: quoteAsset?.decimals ?? 6 })}
+        </Text>
+        <Text detail color='text.secondary'>
+          {round({ value: rightValue, decimals: quoteAsset?.decimals ?? 6 })}
+        </Text>
       </div>
     </div>
   );
