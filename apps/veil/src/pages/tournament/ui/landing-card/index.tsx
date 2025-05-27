@@ -16,6 +16,7 @@ import {
 } from '@/pages/tournament/ui/social-card-dialog';
 import { connectionStore } from '@/shared/model/connection';
 import { usePersonalRewards } from '../../api/use-personal-rewards';
+import { LqtDelegatorHistoryData } from '../../server/delegator-history';
 
 export const LandingCard = observer(() => {
   const { data: summary, isLoading: summaryLoading } = useTournamentSummary({
@@ -46,7 +47,7 @@ export const LandingCard = observer(() => {
 
   const { subaccount } = connectionStore;
   const { data: rewards } = usePersonalRewards(subaccount, epoch, false, 1, 1);
-  const latestReward = rewards?.values?.().next().value;
+  const latestReward = rewards.values().next().value as LqtDelegatorHistoryData | undefined;
 
   // We want to pass the most recent epoch with rewards to trigger the social card dialogue.
   const { isOpen: showSocial, close: hideSocial } = useTournamentSocialCard(latestReward?.epoch);
@@ -88,7 +89,7 @@ export const LandingCard = observer(() => {
       </GradientCard>
 
       {showSocial && latestReward?.epoch && (
-        <SocialCardDialog epoch={latestReward?.epoch} onClose={hideSocial} />
+        <SocialCardDialog epoch={latestReward.epoch} onClose={hideSocial} />
       )}
     </>
   );

@@ -19,6 +19,7 @@ import {
 } from '@/pages/tournament/ui/social-card-dialog';
 import { usePersonalRewards } from '../../api/use-personal-rewards';
 import { connectionStore } from '@/shared/model/connection';
+import type { LqtDelegatorHistoryData } from '../../server/delegator-history';
 
 export interface RoundCardProps {
   epoch: number;
@@ -47,7 +48,7 @@ export const RoundCard = observer(({ epoch }: RoundCardProps) => {
 
   const { subaccount } = connectionStore;
   const { data: rewards } = usePersonalRewards(subaccount, currentEpoch, false, 1, 1);
-  const latestReward = rewards?.values?.().next().value;
+  const latestReward = rewards.values().next().value as LqtDelegatorHistoryData | undefined;
 
   // We want to pass the most recent epoch with rewards to trigger the social card dialogue.
   const { isOpen: showSocial, close: hideSocial } = useTournamentSocialCard(latestReward?.epoch);
@@ -68,15 +69,18 @@ export const RoundCard = observer(({ epoch }: RoundCardProps) => {
                   Epoch #{epoch}
                 </div>
               </div>
-              {ended ? (
+
+              {ended && (
                 <Text technical color='text.secondary'>
                   Ended
                 </Text>
-              ) : summary?.[0]?.ends_in_s ? (
+              )}
+
+              {!ended && summary?.[0]?.ends_in_s && (
                 <Text technical color='text.primary'>
                   Ends in {formatTimeRemaining(summary[0].ends_in_s)}
                 </Text>
-              ) : null}
+              )}
             </div>
             <div className='flex gap-6'>
               <div className='flex w-1/2 flex-col items-center gap-2 bg-[rgba(250,250,250,0.05)] rounded-md p-3'>
@@ -125,7 +129,7 @@ export const RoundCard = observer(({ epoch }: RoundCardProps) => {
       </GradientCard>
 
       {showSocial && latestReward?.epoch && (
-        <SocialCardDialog epoch={latestReward?.epoch} onClose={hideSocial} />
+        <SocialCardDialog epoch={latestReward.epoch} onClose={hideSocial} />
       )}
     </>
   );

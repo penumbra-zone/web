@@ -1,9 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { ViewService } from '@penumbra-zone/protobuf';
-import {
-  LqtVotingNotesRequest,
-  LqtVotingNotesResponse,
-} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { LqtVotingNotesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { useRefetchOnNewBlock } from '@/shared/api/compact-block';
 import { connectionStore } from '@/shared/model/connection';

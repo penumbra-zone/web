@@ -19,6 +19,7 @@ import { useTournamentSummary } from '../api/use-tournament-summary';
 import { useStakingTokenMetadata } from '@/shared/api/registry';
 import { useSpecificDelegatorSummary } from '../api/use-specific-delegator-summary';
 import { useCurrentEpoch } from '../api/use-current-epoch';
+import { LqtDelegatorHistoryData } from '../server/delegator-history';
 
 export const dismissedKey = 'veil-tournament-social-card-dismissed';
 const baseUrl = process.env['NEXT_PUBLIC_BASE_URL'] ?? 'http://localhost:3000';
@@ -142,12 +143,12 @@ export const SocialCardDialog = observer(
       useSpecificDelegatorSummary(subaccount);
 
     const summaryData = summary?.[0];
-    const latestReward = rewards?.values?.().next().value;
+    const latestReward = rewards.values().next().value as LqtDelegatorHistoryData | undefined;
 
     const loading = loadingSummary || loadingRewards || loadingDelegatorSummary;
 
     useEffect(() => {
-      if (loading || initialParams || !summaryData || !latestReward || !delegatorSummary?.data) {
+      if (loading || (initialParams ?? !summaryData) || !latestReward || !delegatorSummary?.data) {
         return;
       }
 
