@@ -26,7 +26,7 @@ const NotConnectedState = () => {
   const { connectWallet } = useConnectWallet();
 
   return (
-    <Card title="Assets">
+    <Card title='Assets'>
       <div className='flex flex-col items-center justify-center min-h-[250px] gap-4'>
         <div className='size-8 text-text-secondary'>
           <Wallet2 className='w-full h-full' />
@@ -35,11 +35,7 @@ const NotConnectedState = () => {
           Connect wallet to see your assets
         </Text>
         <div className='w-fit'>
-          <Button 
-            actionType='default' 
-            density='compact'
-            onClick={connectWallet}
-          >
+          <Button actionType='default' density='compact' onClick={connectWallet}>
             Connect wallet
           </Button>
         </div>
@@ -50,13 +46,14 @@ const NotConnectedState = () => {
 
 const NoAssetsState = () => {
   return (
-    <Card title="Assets">
+    <Card title='Assets'>
       <div className='flex flex-col items-center justify-center h-[250px] gap-4'>
         <div className='size-8 text-neutral-light'>
           <Coins className='w-full h-full' />
         </div>
         <Text color='text.secondary' small>
-          You have no assets yet. Deposit or receive any assets first to your wallet. They will appear here.
+          You have no assets yet. Deposit or receive any assets first to your wallet. They will
+          appear here.
         </Text>
       </div>
     </Card>
@@ -122,18 +119,14 @@ export const AssetCard = observer(() => {
   }
 
   return (
-    <Card title="Assets">
+    <Card title='Assets'>
       <div className='space-y-2'>
         {assetItems.map((asset: AssetItem | null, index: number) => (
           <div key={asset?.id || index} className='p-3 rounded-lg bg-other-tonalFill5'>
             <div className='flex justify-between items-center'>
               <div className='flex items-center gap-3'>
                 {asset?.icon && (
-                  <img 
-                    src={asset.icon} 
-                    alt={asset.symbol} 
-                    className='w-6 h-6 rounded-full'
-                  />
+                  <img src={asset.icon} alt={asset.symbol} className='w-6 h-6 rounded-full' />
                 )}
                 <div>
                   <Text small color='text.primary'>
@@ -153,4 +146,4 @@ export const AssetCard = observer(() => {
       </div>
     </Card>
   );
-}); 
+});

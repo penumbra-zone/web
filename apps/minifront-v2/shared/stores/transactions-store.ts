@@ -46,13 +46,13 @@ export class TransactionsStore {
     try {
       const txInfos: TransactionInfo[] = [];
       const txInfoStream = this.rootStore.penumbraService.getTransactionInfoStream({});
-      
+
       for await (const txInfoResponse of txInfoStream) {
         if (txInfoResponse.txInfo) {
           txInfos.push(txInfoResponse.txInfo);
         }
       }
-      
+
       // Sort by height (newest first)
       txInfos.sort((a, b) => Number(b.height) - Number(a.height));
 

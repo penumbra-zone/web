@@ -16,7 +16,9 @@ export const AssetList = ({ accounts }: AssetListProps) => {
     return (
       <div className='flex min-h-[120px] flex-col items-center justify-center p-6 text-center text-muted-foreground'>
         <p className='text-sm'>You have no assets yet.</p>
-        <p className='text-xs mt-1'>Deposit or receive any assets first to your wallet. They will appear here.</p>
+        <p className='text-xs mt-1'>
+          Deposit or receive any assets first to your wallet. They will appear here.
+        </p>
       </div>
     );
   }

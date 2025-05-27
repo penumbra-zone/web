@@ -1,7 +1,6 @@
 'use client';
 
 import React, { FC, useCallback, useState, Suspense } from 'react';
-import cn from 'clsx';
 import { ThemeKeys } from '@microlink/react-json-view';
 
 // Dynamically import @microlink/react-json-view using React.lazy
@@ -65,11 +64,10 @@ export interface JsonViewerProps {
 
 export const JsonViewer: FC<JsonViewerProps> = ({
   data,
-  collapsed = 1,
-  theme = 'rjv-default',
-  backgroundColor = '#ffffff',
+  collapsed = true,
+  theme = 'flat',
+  backgroundColor = 'transparent',
   loadingFallback = <div>Loading JSON Viewer...</div>,
-  modernStyle = true,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -81,11 +79,8 @@ export const JsonViewer: FC<JsonViewerProps> = ({
 
   return (
     <div
-      className={cn(
-        'rounded-lg p-4 font-mono text-sm font-normal break-all',
-        modernStyle ? 'bg-white border border-gray-200 shadow-sm' : 'bg-neutral-900/50',
-      )}
       onClick={handleViewClick}
+      className='overflow-hidden text-ellipsis whitespace-nowrap w-full max-w-full'
     >
       <Suspense fallback={loadingFallback}>
         <ReactJsonView
@@ -95,7 +90,7 @@ export const JsonViewer: FC<JsonViewerProps> = ({
           style={{
             background: backgroundColor,
             fontFamily:
-              'ui-monospace, SFMono-Regular, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace',
+              '"Iosevka Term", monospace, SFMono-Regular, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace',
             fontSize: '14px',
             lineHeight: '1.5',
           }}

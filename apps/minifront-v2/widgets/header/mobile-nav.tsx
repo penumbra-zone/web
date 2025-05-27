@@ -18,9 +18,10 @@ export const MobileNav = () => {
   };
 
   const getCurrentValue = () => {
-    const currentLink = HEADER_LINKS.find(link => 
-      location.pathname === link.value || 
-      (link.value === '/portfolio' && location.pathname.startsWith('/portfolio'))
+    const currentLink = HEADER_LINKS.find(
+      link =>
+        location.pathname === link.value ||
+        (link.value === '/portfolio' && location.pathname.startsWith('/portfolio')),
     );
     return currentLink?.value || '/portfolio';
   };
@@ -46,15 +47,13 @@ export const MobileNav = () => {
             {HEADER_LINKS.map(link => {
               const Icon = link.icon;
               const isActive = currentPath === link.value;
-              
+
               return (
                 <button
                   key={link.value}
                   onClick={() => handleNavClick(link.value)}
                   className={`flex items-center gap-3 p-3 rounded-lg text-left transition-colors ${
-                    isActive 
-                      ? 'bg-accent text-accent-foreground' 
-                      : 'hover:bg-accent/50'
+                    isActive ? 'bg-accent text-accent-foreground' : 'hover:bg-accent/50'
                   }`}
                 >
                   <Icon size={20} />

@@ -49,8 +49,7 @@ const Trigger = styled(motion.button)<{ $density: Density; $actionType: ActionTy
   }
 
   &:disabled {
-    background:
-      linear-gradient(
+    background: linear-gradient(
         0deg,
         ${props => props.theme.color.action.disabledOverlay} 0%,
         ${props => props.theme.color.action.disabledOverlay} 100%

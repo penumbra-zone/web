@@ -4,6 +4,8 @@ import { Address, AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys
 import { AddressViewComponent } from '../AddressView';
 import { DetailRow } from './DetailRow';
 import { SectionComponentProps } from './TransactionView';
+import { Text } from '../Text';
+import { IncognitoIcon } from '../ActionView/actions/incognito-icon';
 
 const findMatchingAddressView = (
   transactionAddressView: AddressView,
@@ -77,18 +79,22 @@ export const TransactionMemo: React.FC<SectionComponentProps> = ({
       );
     }
   } else if (memoViewData?.case === 'opaque') {
-    memoText = '(Memo content is opaque)';
+    // For opaque memo, display like an action with just icon and "Memo" text
+    return (
+      <div className='flex h-10 w-full items-center justify-between gap-1 rounded-sm bg-other-tonalFill5 px-3 py-2'>
+        <i className='block text-neutral-light'>
+          <IncognitoIcon />
+        </i>
+        <div className='flex grow items-center truncate'>
+          <Text variant='detailTechnical' color='text.primary' truncate>
+            Memo
+          </Text>
+        </div>
+      </div>
+    );
   }
 
-  let addressViewForDisplay: AddressView | undefined;
-  if (finalReturnAddressViewToDisplay?.addressView.value?.address) {
-    addressViewForDisplay = new AddressView({
-      addressView: {
-        case: 'opaque',
-        value: { address: finalReturnAddressViewToDisplay.addressView.value.address },
-      },
-    });
-  }
+  const addressViewForDisplay = finalReturnAddressViewToDisplay;
 
   if (!addressViewForDisplay && !memoText) {
     return (
@@ -113,7 +119,7 @@ export const TransactionMemo: React.FC<SectionComponentProps> = ({
           }
         />
       )}
-      {memoText && <DetailRow label='Memo Text' value={memoText} truncateValue={false} />}
+      {memoText && <DetailRow label='Memo' value={memoText} truncateValue={false} />}
     </div>
   );
 };

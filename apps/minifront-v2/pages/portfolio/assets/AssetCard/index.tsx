@@ -47,7 +47,7 @@ export const AssetCard = ({
 }: AssetCardProps) => {
   const isConnected = useIsConnected();
   const { connectWallet } = useConnectWallet();
-  
+
   // Use InfoButton as endContent if showInfoButton is true and no custom endContent is provided
   const finalEndContent = showInfoButton ? <InfoDialog /> : undefined;
 
@@ -63,11 +63,7 @@ export const AssetCard = ({
             Connect wallet to see your assets
           </Text>
           <div className='w-fit'>
-            <Button 
-              actionType='default' 
-              density='compact'
-              onClick={connectWallet}
-            >
+            <Button actionType='default' density='compact' onClick={connectWallet}>
               Connect wallet
             </Button>
           </div>

@@ -162,11 +162,7 @@ export const TransactionCard = observer(
                 Connect wallet to see your transactions
               </Text>
               <div className='w-fit'>
-                <Button 
-                  actionType='default' 
-                  density='compact'
-                  onClick={connectWallet}
-                >
+                <Button actionType='default' density='compact' onClick={connectWallet}>
                   Connect wallet
                 </Button>
               </div>
@@ -200,12 +196,7 @@ export const TransactionCard = observer(
                         as='button'
                         onClick={() => navigate(`${PagePath.Transactions}?tx=${txHash}`)}
                         endAdornment={
-                          <Button
-                            actionType='accent'
-                            density='compact'
-                            iconOnly
-                            icon={FileSearch}
-                          >
+                          <Button actionType='accent' density='compact' iconOnly icon={FileSearch}>
                             View Details
                           </Button>
                         }
@@ -215,7 +206,9 @@ export const TransactionCard = observer(
                 ) : (
                   <div className='flex min-h-[120px] flex-col items-center justify-center p-6 text-center text-muted-foreground'>
                     <p className='text-sm'>You have no transactions yet.</p>
-                    <p className='text-xs mt-1'>Send, receive, or trade assets to see your transaction history here.</p>
+                    <p className='text-xs mt-1'>
+                      Send, receive, or trade assets to see your transaction history here.
+                    </p>
                   </div>
                 )}
               </>

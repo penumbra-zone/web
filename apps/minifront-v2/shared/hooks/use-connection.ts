@@ -9,29 +9,24 @@ export const useIsConnected = (): boolean => {
     const checkConnection = () => {
       // More robust check: must have both connected state AND manifest
       const isConnected = (penumbra.connected ?? false) && !!penumbra.manifest;
-      console.log('useIsConnected - penumbra.connected:', penumbra.connected);
-      console.log('useIsConnected - penumbra.manifest:', !!penumbra.manifest);
-      console.log('useIsConnected - final connected state:', isConnected);
       return isConnected;
     };
 
     setConnected(checkConnection());
-    
+
     penumbra.onConnectionStateChange(() => {
       const newConnected = checkConnection();
       console.log('useIsConnected - connection state changed to:', newConnected);
       setConnected(newConnected);
     });
   }, []);
-
-  console.log('useIsConnected - returning:', connected);
   return connected;
 };
 
 export const useConnectWallet = () => {
   const connectWallet = async () => {
     const availableProviders = Object.keys(PenumbraClient.getProviders());
-    
+
     if (availableProviders.length === 0) {
       // No wallet installed, redirect to install
       window.open('https://praxwallet.com/', '_blank', 'noopener,noreferrer');
@@ -56,4 +51,4 @@ export const useConnectWallet = () => {
   };
 
   return { connectWallet };
-}; 
+};

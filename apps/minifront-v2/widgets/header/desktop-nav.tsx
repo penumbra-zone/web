@@ -10,9 +10,10 @@ export const DesktopNav = () => {
 
   const getCurrentValue = () => {
     // Check if current path matches any header link
-    const currentLink = HEADER_LINKS.find(link => 
-      location.pathname === link.value || 
-      (link.value === PagePath.Portfolio && location.pathname.startsWith('/portfolio'))
+    const currentLink = HEADER_LINKS.find(
+      link =>
+        location.pathname === link.value ||
+        (link.value === PagePath.Portfolio && location.pathname.startsWith('/portfolio')),
     );
     return currentLink?.value || PagePath.Portfolio;
   };

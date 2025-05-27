@@ -185,7 +185,7 @@ export const TransactionView: React.FC<TransactionViewProps> = ({
         </Button>
       </div>
       {txHashToDisplay && (
-        <Text variant='small' color='text.secondary' break='all'>
+        <Text variant='technical' color='text.secondary' break='all'>
           {txHashToDisplay}
         </Text>
       )}

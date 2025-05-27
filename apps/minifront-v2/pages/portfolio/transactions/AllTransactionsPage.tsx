@@ -6,7 +6,7 @@ import { getMetadataFromBalancesResponse } from '@penumbra-zone/getters/balances
 import { Metadata, AssetId, Denom } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
-import { useBalancesStore } from '@shared/stores/store-context';                
+import { useBalancesStore } from '@shared/stores/store-context';
 import { useIsConnected, useConnectWallet } from '@shared/hooks/use-connection';
 import { PagePath } from '@shared/const/page';
 import { Card } from '@penumbra-zone/ui/Card';
@@ -118,7 +118,7 @@ export const AllTransactionsPage = observer(() => {
           <div className='flex items-center justify-between px-3 py-4'>
             <BreadCrumb items={breadcrumbItems} />
           </div>
-          <Card title="Your Transactions">
+          <Card title='Your Transactions'>
             <div className='flex flex-col items-center justify-center min-h-[400px] gap-4'>
               <div className='size-8 text-text-secondary'>
                 <Wallet2 className='w-full h-full' />
@@ -127,11 +127,7 @@ export const AllTransactionsPage = observer(() => {
                 Connect wallet to see your transactions
               </Text>
               <div className='w-fit'>
-                <Button 
-                  actionType='default' 
-                  density='compact'
-                  onClick={connectWallet}
-                >
+                <Button actionType='default' density='compact' onClick={connectWallet}>
                   Connect wallet
                 </Button>
               </div>

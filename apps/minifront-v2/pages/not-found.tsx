@@ -10,12 +10,8 @@ export const NotFoundPage = () => {
       <div className='max-w-md text-center space-y-6'>
         {/* 404 Number */}
         <div className='space-y-2'>
-          <div className='text-6xl md:text-8xl font-bold text-text-muted'>
-            404
-          </div>
-          <Text h2>
-            Page Not Found
-          </Text>
+          <div className='text-6xl md:text-8xl font-bold text-text-muted'>404</div>
+          <Text h2>Page Not Found</Text>
         </div>
 
         {/* Description */}
@@ -24,25 +20,19 @@ export const NotFoundPage = () => {
             The page you're looking for doesn't exist or hasn't been implemented yet.
           </Text>
           <Text detail color='text.muted'>
-            Minifront v2 is currently under development. Some features from the original minifront are still being migrated.
+            Minifront v2 is currently under development. Some features from the original minifront
+            are still being migrated.
           </Text>
         </div>
 
         {/* Action Buttons */}
         <div className='flex flex-col sm:flex-row gap-3 justify-center'>
-          <Button
-            onClick={() => window.history.back()}
-            actionType='default'
-            icon={ArrowLeft}
-          >
+          <Button onClick={() => window.history.back()} actionType='default' icon={ArrowLeft}>
             Go Back
           </Button>
-          
+
           <Link to={PagePath.Portfolio}>
-            <Button
-              actionType='accent'
-              icon={Home}
-            >
+            <Button actionType='accent' icon={Home}>
               Go to Portfolio
             </Button>
           </Link>
@@ -71,4 +61,4 @@ export const NotFoundPage = () => {
       </div>
     </div>
   );
-}; 
+};

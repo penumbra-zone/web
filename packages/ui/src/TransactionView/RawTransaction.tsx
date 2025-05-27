@@ -15,5 +15,5 @@ export const RawTransaction: React.FC<SectionComponentProps> = ({ transactionToD
     typeRegistry,
   }) as Jsonified<PbTransactionView>;
 
-  return <JsonViewer data={jsonToDisplay} collapsed={2} />;
+  return <JsonViewer data={jsonToDisplay} collapsed={true} />;
 };

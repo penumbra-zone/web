@@ -51,4 +51,4 @@ export const BreadCrumb = ({ items }: BreadCrumbProps) => {
       </ol>
     </nav>
   );
-}; 
+};

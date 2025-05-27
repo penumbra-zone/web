@@ -50,9 +50,9 @@ export const DetailRow: React.FC<DetailRowProps> = ({
   const renderValue = () => {
     if (isUrl(value)) {
       return (
-        <div className='max-w-[250px] font-mono'>
+        <div className='max-w-[250px] font-mono text-sm'>
           <a href={value} target='_blank' rel='noopener noreferrer' className='hover:underline'>
-            <Text truncate variant='technical' color='text.secondary'>
+            <Text truncate variant='detailTechnical' color='text.secondary'>
               {value}
             </Text>
           </a>
@@ -62,11 +62,11 @@ export const DetailRow: React.FC<DetailRowProps> = ({
       const shouldTruncate = truncateValue === undefined || truncateValue;
       return (
         <div
-          className={`flex ${shouldTruncate ? 'items-center' : 'items-start'} gap-1 font-mono ${shouldTruncate ? 'max-w-[250px]' : ''}`}
+          className={`flex ${shouldTruncate ? 'items-center' : 'items-start'} gap-1 font-mono text-sm ${shouldTruncate ? 'max-w-[250px]' : ''}`}
         >
           <Text
             truncate={shouldTruncate}
-            variant='technical'
+            variant='detailTechnical'
             color='text.secondary'
             whitespace={shouldTruncate ? undefined : 'pre-wrap'}
           >
@@ -75,17 +75,17 @@ export const DetailRow: React.FC<DetailRowProps> = ({
         </div>
       );
     }
-    return <div className='flex items-center gap-1 text-right'>{value}</div>;
+    return <div className='flex items-center gap-1 text-right text-sm'>{value}</div>;
   };
 
   const rawValueToCopy = getRawTextForCopy(value);
 
-  const labelTextProps: TextProps = { color: 'text.secondary' };
+  const labelTextProps: TextProps = { color: 'text.secondary', variant: 'detailTechnical' };
 
   return (
     <div className='flex items-start justify-between text-sm'>
       <div className='pt-0.5'>
-        <Text as='span' {...labelTextProps} variant='technical'>
+        <Text as='span' {...labelTextProps}>
           {label}
         </Text>
       </div>

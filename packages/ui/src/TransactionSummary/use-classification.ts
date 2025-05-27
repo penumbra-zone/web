@@ -62,12 +62,20 @@ const CLASSIFICATION_LABEL_MAP: Record<TransactionClassification, string> = {
 /**
  * A hook that prepares data from TransactionInfo to be rendered in TransactionSummary.
  */
-export const useClassification = (info: TransactionInfo, getMetadataByAssetId?: GetMetadata) => {
+export const useClassification = (
+  info: TransactionInfo,
+  getMetadataByAssetId?: GetMetadata,
+  walletAddressViews?: AddressView[],
+) => {
   // classify the transaction and extract the main action
   const { type, action } = classifyTransaction(info.view);
 
   // categorize and sum up transaction summary effects
-  const effects = adaptEffects(info.summary?.effects ?? [], getMetadataByAssetId);
+  const effects = adaptEffects(
+    info.summary?.effects ?? [],
+    getMetadataByAssetId,
+    walletAddressViews,
+  );
 
   // extract the assets from the main transaction action
   const relevantAssets = findRelevantAssets(action);
@@ -94,15 +102,22 @@ export const useClassification = (info: TransactionInfo, getMetadataByAssetId?: 
   };
 
   if (type === 'send') {
+    // For send transactions, look at the effects to find the recipient address
+    // The recipient is typically the account with positive balance changes
+    const recipientEffect = effects.find(
+      effect => effect.balances.some(balance => !balance.negative) && effect.address,
+    );
+
     data = {
       ...data,
-      address,
+      address: recipientEffect?.address || address,
       memo: memoText || DEFAULT_MEMO,
       additionalText: 'to',
     };
   }
 
   if (type === 'receive') {
+    // For receive transactions, the address from memo is typically the sender
     data = {
       ...data,
       address,
@@ -156,6 +171,23 @@ export const useClassification = (info: TransactionInfo, getMetadataByAssetId?: 
           },
         },
       }),
+    };
+  }
+
+  if (type === 'internalTransfer') {
+    // For internal transfers, find the source and destination accounts
+    const sourceEffect = effects.find(
+      effect => effect.balances.some(balance => balance.negative) && effect.address,
+    );
+    const destinationEffect = effects.find(
+      effect => effect.balances.some(balance => !balance.negative) && effect.address,
+    );
+
+    data = {
+      ...data,
+      address: destinationEffect?.address || sourceEffect?.address,
+      memo: memoText || DEFAULT_MEMO,
+      additionalText: destinationEffect?.address ? 'to' : 'from',
     };
   }
 

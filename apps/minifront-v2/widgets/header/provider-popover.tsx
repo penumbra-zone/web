@@ -7,7 +7,11 @@ import { Density } from '@penumbra-zone/ui/Density';
 import { Text } from '@penumbra-zone/ui/Text';
 import { penumbra } from '@shared/lib/penumbra';
 import { PenumbraManifest, PenumbraClient } from '@penumbra-zone/client';
-import { useAppParametersStore, useBalancesStore, useTransactionsStore } from '@shared/stores/store-context';
+import {
+  useAppParametersStore,
+  useBalancesStore,
+  useTransactionsStore,
+} from '@shared/stores/store-context';
 import { useIsConnected } from '@shared/hooks/use-connection';
 
 const usePenumbraManifest = (): PenumbraManifest | undefined => {
@@ -33,10 +37,10 @@ const useAvailableProviders = () => {
     };
 
     updateProviders();
-    
+
     // Check periodically for new providers
     const interval = setInterval(updateProviders, 1000);
-    
+
     return () => clearInterval(interval);
   }, []);
 
@@ -55,10 +59,10 @@ export const ProviderPopover = observer(() => {
     const icons = manifest?.icons;
     const blob = icons?.['32'] ?? icons?.['128'];
     if (!blob) return null;
-    
+
     return (
-      <img 
-        src={URL.createObjectURL(blob)} 
+      <img
+        src={URL.createObjectURL(blob)}
         alt={`${manifest?.name} Icon`}
         className='w-6 h-6 max-w-none grayscale' // Smaller size and black/white
       />
@@ -77,7 +81,7 @@ export const ProviderPopover = observer(() => {
         await Promise.all([
           appParametersStore.refresh(),
           balancesStore.loadBalances(),
-          transactionsStore.loadTransactions()
+          transactionsStore.loadTransactions(),
         ]);
       } catch (error) {
         console.error('Failed to connect wallet:', error);
@@ -91,7 +95,7 @@ export const ProviderPopover = observer(() => {
         await Promise.all([
           appParametersStore.refresh(),
           balancesStore.loadBalances(),
-          transactionsStore.loadTransactions()
+          transactionsStore.loadTransactions(),
         ]);
       } catch (error) {
         console.error('Failed to connect wallet:', error);
@@ -106,12 +110,7 @@ export const ProviderPopover = observer(() => {
   // If wallet is installed but not connected
   if (availableProviders.length > 0 && !isConnected) {
     return (
-      <Button 
-        actionType='default'
-        density='compact'
-        icon={Wallet2}
-        onClick={connectWallet}
-      >
+      <Button actionType='default' density='compact' icon={Wallet2} onClick={connectWallet}>
         <span className='text-sm'>Connect Wallet</span>
       </Button>
     );
@@ -120,12 +119,7 @@ export const ProviderPopover = observer(() => {
   // If no wallet is installed
   if (availableProviders.length === 0) {
     return (
-      <Button 
-        actionType='default'
-        density='compact'
-        icon={Download}
-        onClick={installWallet}
-      >
+      <Button actionType='default' density='compact' icon={Download} onClick={installWallet}>
         <span className='text-sm'>Install Wallet</span>
       </Button>
     );
@@ -138,7 +132,7 @@ export const ProviderPopover = observer(() => {
     return (
       <Popover>
         <Popover.Trigger>
-          <Button 
+          <Button
             actionType='default'
             density='compact'
             iconOnly
@@ -163,11 +157,7 @@ export const ProviderPopover = observer(() => {
                 </Text>
               </div>
 
-              <Button 
-                onClick={disconnect} 
-                actionType='destructive' 
-                icon={Link2Off}
-              >
+              <Button onClick={disconnect} actionType='destructive' icon={Link2Off}>
                 Disconnect
               </Button>
             </div>
@@ -179,12 +169,7 @@ export const ProviderPopover = observer(() => {
 
   // Fallback: show connect wallet
   return (
-    <Button 
-      actionType='default'
-      density='compact'
-      icon={Wallet2}
-      onClick={connectWallet}
-    >
+    <Button actionType='default' density='compact' icon={Wallet2} onClick={connectWallet}>
       <span className='text-sm'>Connect Wallet</span>
     </Button>
   );

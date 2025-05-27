@@ -23,8 +23,7 @@ const Root = styled(motion.button)<{
     outline 0.15s;
 
   &:hover {
-    background:
-      linear-gradient(
+    background: linear-gradient(
         0deg,
         ${props => props.theme.color.action.hoverOverlay} 0%,
         ${props => props.theme.color.action.hoverOverlay} 100%
@@ -33,8 +32,7 @@ const Root = styled(motion.button)<{
   }
 
   &:focus {
-    background:
-      linear-gradient(
+    background: linear-gradient(
         0deg,
         ${props => props.theme.color.action.hoverOverlay} 0%,
         ${props => props.theme.color.action.hoverOverlay} 100%
@@ -48,8 +46,7 @@ const Root = styled(motion.button)<{
   }
 
   &:disabled {
-    background:
-      linear-gradient(
+    background: linear-gradient(
         0deg,
         ${props => props.theme.color.action.disabledOverlay} 0%,
         ${props => props.theme.color.action.disabledOverlay} 100%

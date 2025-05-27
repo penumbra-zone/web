@@ -58,23 +58,22 @@ export const TransactionSummary = ({
   onClick,
   endAdornment,
   as: Container = 'div',
-  truncate,
   hideMemo = false,
 }: TransactionSummaryProps) => {
   const { label, assets, additionalText, address, memo, type, tickers, effects } =
-    useClassification(info, getMetadata);
+    useClassification(info, getMetadata, walletAddressViews);
 
-  // Try to match the transaction address with a wallet address to display account name
-  const displayAddress = address
-    ? (findMatchingAddressView(address, walletAddressViews) ?? address)
-    : undefined;
+  // Calculate total rows: 1 (main info) + effects count + memo (if present)
+  const totalRows = 1 + effects.length + (memo && !hideMemo ? 1 : 0);
+  const hasMoreThanThreeRows = totalRows > 3;
 
   return (
     <Container
       className={cn(
-        'group h-[72px] w-full px-3  rounded-sm flex items-center gap-2 text-text-primary',
+        'group w-full px-3 rounded-sm flex items-center gap-2 text-text-primary',
         'bg-other-tonalFill5 transition-colors',
         onClick && 'hover:bg-action-hoverOverlay cursor-pointer',
+        hasMoreThanThreeRows ? 'h-fit py-3' : 'h-[72px]',
       )}
       onClick={onClick}
     >
@@ -98,12 +97,12 @@ export const TransactionSummary = ({
               ))}
             </Pill>
             {additionalText && <Text detailTechnical>{additionalText}</Text>}
-            {displayAddress && (
+            {address && (
               <div className='max-w-32'>
                 <AddressViewComponent
                   truncate
                   hideIcon
-                  addressView={displayAddress}
+                  addressView={address}
                   external={type === 'ibcRelayAction'}
                 />
               </div>
@@ -115,7 +114,7 @@ export const TransactionSummary = ({
 
         {!hideMemo && memo && (
           <div className='flex max-h-10 w-full overflow-hidden'>
-            <Text as='em' color='text.secondary' detailTechnical truncate={truncate}>
+            <Text as='em' color='text.secondary' detailTechnical truncate>
               {memo}
             </Text>
           </div>
@@ -130,45 +129,3 @@ export const TransactionSummary = ({
     </Container>
   );
 };
-
-// Helper function to find a matching AddressView from wallet addresses
-function findMatchingAddressView(
-  transactionAddress: AddressView,
-  walletAddresses: AddressView[],
-): AddressView | undefined {
-  // Short circuit if empty wallet addresses
-  if (!walletAddresses.length) {
-    return undefined;
-  }
-
-  // For matching: if transactionAddress has a raw address, try to match with any wallet address
-  try {
-    for (const walletAddress of walletAddresses) {
-      // Check if wallet address has decoded information with an address and index
-      if (
-        walletAddress.addressView.case === 'decoded' &&
-        walletAddress.addressView.value.address &&
-        transactionAddress.addressView.case === 'decoded' &&
-        transactionAddress.addressView.value.address
-      ) {
-        // Compare the address inner bytes
-        const walletInner = walletAddress.addressView.value.address.inner;
-        const transactionInner = transactionAddress.addressView.value.address.inner;
-
-        if (
-          walletInner.length === transactionInner.length &&
-          walletInner.every((byte, i) => byte === transactionInner[i])
-        ) {
-          return walletAddress;
-        }
-      }
-
-      // Also try to match opaque addresses if necessary
-      // (implementation depends on how opaque addresses are structured)
-    }
-  } catch (error) {
-    console.error('Error comparing addresses:', error);
-  }
-
-  return undefined;
-}

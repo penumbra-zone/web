@@ -18,7 +18,7 @@ const NotConnectedState = () => {
   const { connectWallet } = useConnectWallet();
 
   return (
-    <Card title="Recent Transactions">
+    <Card title='Recent Transactions'>
       <div className='flex flex-col items-center justify-center min-h-[250px] gap-4'>
         <div className='size-8 text-text-secondary'>
           <Wallet2 className='w-full h-full' />
@@ -27,11 +27,7 @@ const NotConnectedState = () => {
           Connect wallet to see your transactions
         </Text>
         <div className='w-fit'>
-          <Button 
-            actionType='default' 
-            density='compact'
-            onClick={connectWallet}
-          >
+          <Button actionType='default' density='compact' onClick={connectWallet}>
             Connect wallet
           </Button>
         </div>
@@ -42,13 +38,14 @@ const NotConnectedState = () => {
 
 const NoTransactionsState = () => {
   return (
-    <Card title="Recent Transactions">
+    <Card title='Recent Transactions'>
       <div className='flex flex-col items-center justify-center h-[250px] gap-4'>
         <div className='size-8 text-neutral-light'>
           <List className='w-full h-full' />
         </div>
         <Text color='text.secondary' small>
-          You have no transactions yet. Send, receive, or trade assets to see your transaction history here.
+          You have no transactions yet. Send, receive, or trade assets to see your transaction
+          history here.
         </Text>
       </div>
     </Card>
@@ -61,7 +58,10 @@ export const TransactionCard = observer(() => {
 
   // Debug logging
   console.log('TransactionCard - isConnected:', isConnected);
-  console.log('TransactionCard - transactions length:', transactionsStore.sortedTransactions.length);
+  console.log(
+    'TransactionCard - transactions length:',
+    transactionsStore.sortedTransactions.length,
+  );
 
   // If wallet is not connected, show connect wallet message
   if (!isConnected) {
@@ -98,4 +98,4 @@ export const TransactionCard = observer(() => {
       </div>
     </Card>
   );
-}); 
+});
