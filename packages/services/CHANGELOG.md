@@ -1,5 +1,22 @@
 # @penumbra-zone/router
 
+## 67.0.0
+
+### Patch Changes
+
+- 6de12ea: Make the view service request for mapping indices to addresses take the randomizer into account.
+
+  The WASM package has a breaking change in that the `get_address_by_index` function now
+  _requires_ you to pass a randomizer.
+  This can be an empty slice, indicating a randomizer consistent of all 0s.
+  Clients should upgrade by adding a `&[]` parameter, which will preserve their current behavior.
+
+- 15e5380: use type-correct mock in tests
+- Updated dependencies [6de12ea]
+- Updated dependencies [61270de]
+  - @penumbra-zone/wasm@51.0.0
+  - @penumbra-zone/storage@60.0.0
+
 ## 66.0.0
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @penumbra-zone/ui
 
+## 21.0.0
+
+### Major Changes
+
+- dcfbe8a: Upgrade to React 19 and address forwardRef deprecation across the repo
+
+### Patch Changes
+
+- @penumbra-zone/perspective@60.0.0
+
 ## 20.0.2
 
 ### Patch Changes
