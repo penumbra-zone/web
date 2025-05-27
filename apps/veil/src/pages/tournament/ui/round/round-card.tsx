@@ -17,6 +17,8 @@ import {
   SocialCardDialog,
   useTournamentSocialCard,
 } from '@/pages/tournament/ui/social-card-dialog';
+import { usePersonalRewards } from '../../api/use-personal-rewards';
+import { connectionStore } from '@/shared/model/connection';
 
 export interface RoundCardProps {
   epoch: number;
@@ -43,7 +45,12 @@ export const RoundCard = observer(({ epoch }: RoundCardProps) => {
 
   const summary = ended && initialDataRef.current ? initialDataRef.current : currentSummary;
 
-  const { isOpen: showSocial, close: hideSocial } = useTournamentSocialCard(epoch);
+  const { subaccount } = connectionStore;
+  const { data: rewards } = usePersonalRewards(subaccount, currentEpoch, false, 1, 1);
+  const latestReward = rewards?.values?.().next().value;
+
+  // We want to pass the most recent epoch with rewards to trigger the social card dialogue.
+  const { isOpen: showSocial, close: hideSocial } = useTournamentSocialCard(latestReward?.epoch);
 
   return (
     <>
@@ -117,7 +124,9 @@ export const RoundCard = observer(({ epoch }: RoundCardProps) => {
         </div>
       </GradientCard>
 
-      {showSocial && <SocialCardDialog epoch={epoch} onClose={hideSocial} />}
+      {showSocial && latestReward?.epoch && (
+        <SocialCardDialog epoch={latestReward?.epoch} onClose={hideSocial} />
+      )}
     </>
   );
 });

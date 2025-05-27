@@ -13,27 +13,23 @@ import {
   encodeParams,
 } from '@/features/tournament-earnings-canvas';
 import { openToast } from '@penumbra-zone/ui/Toast';
-import { useCurrentEpoch } from '../api/use-current-epoch';
 import { usePersonalRewards } from '../api/use-personal-rewards';
 import { connectionStore } from '@/shared/model/connection';
 import { useTournamentSummary } from '../api/use-tournament-summary';
 import { useStakingTokenMetadata } from '@/shared/api/registry';
 import { useSpecificDelegatorSummary } from '../api/use-specific-delegator-summary';
+import { useCurrentEpoch } from '../api/use-current-epoch';
 
 export const dismissedKey = 'veil-tournament-social-card-dismissed';
 const baseUrl = process.env['NEXT_PUBLIC_BASE_URL'] ?? 'http://localhost:3000';
 
 // Custom hook that consolidates all location storage operations.
-export function useTournamentSocialCard(defaultEpoch: number | undefined) {
+export function useTournamentSocialCard(epoch: number | undefined) {
   const [isOpen, setIsOpen] = useState(false);
-
   const { epoch: currentEpoch } = useCurrentEpoch();
-  const epoch = defaultEpoch ?? currentEpoch;
-  const ended = !!currentEpoch && !!epoch && epoch !== currentEpoch;
 
   useEffect(() => {
-    if (!ended) {
-      setIsOpen(false);
+    if (!epoch || !currentEpoch) {
       return;
     }
 
@@ -41,8 +37,10 @@ export function useTournamentSocialCard(defaultEpoch: number | undefined) {
 
     if (epoch > highestSeen) {
       setIsOpen(true);
+    } else {
+      setIsOpen(false);
     }
-  }, [epoch, ended]);
+  }, [epoch, currentEpoch]);
 
   const close = useCallback(() => {
     localStorage.setItem(dismissedKey, String(epoch));
@@ -120,13 +118,19 @@ const SocialCardCanvas = ({ params }: { params?: TournamentParams }) => {
  * Shown only on first Veil open per epoch.
  */
 export const SocialCardDialog = observer(
-  ({ onClose, epoch }: { epoch: number; onClose: () => void }) => {
+  ({ onClose, epoch }: { epoch: number | undefined; onClose: () => void }) => {
+    // Return early if epoch is undefined.
+    if (!epoch) {
+      return;
+    }
+
     const { subaccount } = connectionStore;
     const [initialParams, setInitialParams] = useState<TournamentParams | undefined>(undefined);
 
     const { data: summary, isLoading: loadingSummary } = useTournamentSummary({
       limit: 1,
       page: 1,
+      epochs: [epoch],
     });
 
     const {
@@ -138,25 +142,25 @@ export const SocialCardDialog = observer(
       useSpecificDelegatorSummary(subaccount);
 
     const summaryData = summary?.[0];
-    const rewardData = rewards.get(epoch);
+    const latestReward = rewards?.values?.().next().value;
 
     const loading = loadingSummary || loadingRewards || loadingDelegatorSummary;
 
     useEffect(() => {
-      if (loading || initialParams || !summaryData || !rewardData || !delegatorSummary?.data) {
+      if (loading || initialParams || !summaryData || !latestReward || !delegatorSummary?.data) {
         return;
       }
 
       setInitialParams({
         epoch: String(epoch),
-        rewarded: rewardData.reward > 0,
-        earnings: `${rewardData.reward}:UM`,
+        rewarded: latestReward.reward > 0,
+        earnings: `${latestReward.reward}:UM`,
         votingStreak: `${delegatorSummary.data.streak * 1e6}:`,
         incentivePool: `${Math.ceil(Number(summaryData.lp_rewards) + Number(summaryData.delegator_rewards))}:UM`,
         lpPool: `${Math.ceil(summaryData.lp_rewards)}:UM`,
         delegatorPool: `${Math.ceil(summaryData.delegator_rewards)}:UM`,
       });
-    }, [loading, summaryData, rewardData, delegatorSummary?.data, initialParams, epoch]);
+    }, [loading, summaryData, latestReward, delegatorSummary?.data, initialParams, epoch]);
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [dontShowAgain, setDontShowAgain] = useState(false);

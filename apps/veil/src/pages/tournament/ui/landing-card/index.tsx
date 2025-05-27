@@ -18,8 +18,6 @@ import { connectionStore } from '@/shared/model/connection';
 import { usePersonalRewards } from '../../api/use-personal-rewards';
 
 export const LandingCard = observer(() => {
-  const { subaccount } = connectionStore;
-
   const { data: summary, isLoading: summaryLoading } = useTournamentSummary({
     limit: 1,
     page: 1,
@@ -46,9 +44,11 @@ export const LandingCard = observer(() => {
     epochLoading,
   );
 
+  const { subaccount } = connectionStore;
   const { data: rewards } = usePersonalRewards(subaccount, epoch, false, 1, 1);
   const latestReward = rewards?.values?.().next().value;
 
+  // We want to pass the most recent epoch with rewards to trigger the social card dialogue.
   const { isOpen: showSocial, close: hideSocial } = useTournamentSocialCard(latestReward?.epoch);
 
   return (
@@ -87,7 +87,9 @@ export const LandingCard = observer(() => {
         </div>
       </GradientCard>
 
-      {showSocial && epoch && <SocialCardDialog epoch={epoch} onClose={hideSocial} />}
+      {showSocial && latestReward?.epoch && (
+        <SocialCardDialog epoch={latestReward?.epoch} onClose={hideSocial} />
+      )}
     </>
   );
 });
