@@ -128,6 +128,13 @@ export const SocialCardDialog = observer(
     const { subaccount } = connectionStore;
     const [initialParams, setInitialParams] = useState<TournamentParams | undefined>(undefined);
 
+    const { data: stakingToken, isLoading: stakingTokenLoading } = useStakingTokenMetadata();
+    const exponent = getDisplayDenomExponent.optional(stakingToken);
+
+    if (exponent === undefined) {
+      return;
+    }
+
     const { data: summary, isLoading: loadingSummary } = useTournamentSummary({
       limit: 1,
       page: 1,
@@ -145,7 +152,8 @@ export const SocialCardDialog = observer(
     const summaryData = summary?.[0];
     const latestReward = rewards.values().next().value as LqtDelegatorHistoryData | undefined;
 
-    const loading = loadingSummary || loadingRewards || loadingDelegatorSummary;
+    const loading =
+      loadingSummary || loadingRewards || loadingDelegatorSummary || stakingTokenLoading;
 
     useEffect(() => {
       if (loading || (initialParams ?? !summaryData) || !latestReward || !delegatorSummary?.data) {
@@ -156,10 +164,10 @@ export const SocialCardDialog = observer(
         epoch: String(epoch),
         rewarded: latestReward.reward > 0,
         earnings: `${latestReward.reward}:UM`,
-        votingStreak: `${delegatorSummary.data.streak * 1e6}:`,
-        incentivePool: `${Math.ceil(Number(summaryData.lp_rewards) + Number(summaryData.delegator_rewards))}:UM`,
-        lpPool: `${Math.ceil(summaryData.lp_rewards)}:UM`,
-        delegatorPool: `${Math.ceil(summaryData.delegator_rewards)}:UM`,
+        votingStreak: `${delegatorSummary.data.streak * 10 ** exponent}:`,
+        incentivePool: `${Math.ceil(Number(summaryData.lp_rewards) + Number(summaryData.delegator_rewards)) * 10 ** exponent}:UM`,
+        lpPool: `${Math.ceil(summaryData.lp_rewards) * 10 ** exponent}:UM`,
+        delegatorPool: `${Math.ceil(summaryData.delegator_rewards) * 10 ** exponent}:UM`,
       });
     }, [loading, summaryData, latestReward, delegatorSummary?.data, initialParams, epoch]);
 
@@ -186,7 +194,7 @@ export const SocialCardDialog = observer(
           title='Share your latest win!'
           aria-describedby='tournament-social-description'
           buttons={
-            <div className='max-w-[515px] mx-auto w-full flex flex-col gap-1'>
+            <div className='max-w-[475px] mx-auto w-full flex flex-col gap-1'>
               <Button
                 actionType='default'
                 onClick={() => void copyImageToClipboard(canvasRef.current?.toDataURL() ?? '')}
