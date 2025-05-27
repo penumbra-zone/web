@@ -83,9 +83,7 @@ export const JsonViewer: FC<JsonViewerProps> = ({
     <div
       className={cn(
         'rounded-lg p-4 font-mono text-sm font-normal break-all',
-        modernStyle 
-          ? 'bg-white border border-gray-200 shadow-sm' 
-          : 'bg-neutral-900/50'
+        modernStyle ? 'bg-white border border-gray-200 shadow-sm' : 'bg-neutral-900/50',
       )}
       onClick={handleViewClick}
     >
@@ -94,11 +92,12 @@ export const JsonViewer: FC<JsonViewerProps> = ({
           src={data}
           collapsed={isExpanded ? 2 : collapsed}
           enableClipboard={false}
-          style={{ 
+          style={{
             background: backgroundColor,
-            fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace',
+            fontFamily:
+              'ui-monospace, SFMono-Regular, "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace',
             fontSize: '14px',
-            lineHeight: '1.5'
+            lineHeight: '1.5',
           }}
           theme={theme}
           displayDataTypes={false}

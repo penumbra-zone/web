@@ -1,57 +1,70 @@
+import { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
-import { Button } from '../../../../packages/ui-deprecated/src/Button';
-import { Dialog } from '../../../../packages/ui-deprecated/src/Dialog';
-import { Display } from '../../../../packages/ui-deprecated/src/Display';
-import { MenuItem } from '../../../../packages/ui-deprecated/src/MenuItem';
+import { Button } from '@penumbra-zone/ui/Button';
+import { HEADER_LINKS } from './links';
 import { StatusPopover } from './status-popover.tsx';
 import { ProviderPopover } from './provider-popover.tsx';
 import { HeaderLogo } from './logo.tsx';
-import { useState } from 'react';
-import { HEADER_LINKS } from './links.ts';
-import { useNavigate } from 'react-router-dom';
 
 export const MobileNav = () => {
-  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const onNavigate = (link: string) => {
-    navigate(link);
+  const handleNavClick = (path: string) => {
+    navigate(path);
     setIsOpen(false);
   };
 
+  const getCurrentValue = () => {
+    const currentLink = HEADER_LINKS.find(link => 
+      location.pathname === link.value || 
+      (link.value === '/portfolio' && location.pathname.startsWith('/portfolio'))
+    );
+    return currentLink?.value || '/portfolio';
+  };
+
+  const currentPath = getCurrentValue();
+
   return (
-    <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)}>
-      <Button iconOnly icon={Menu} onClick={() => setIsOpen(true)}>
-        Menu
-      </Button>
-      <Dialog.EmptyContent>
-        <div className='pointer-events-auto h-full overflow-hidden bg-black'>
-          <Display>
-            <nav className='flex items-center justify-between py-5'>
-              <HeaderLogo />
+    <>
+      <div className='lg:hidden'>
+        <Button
+          actionType='default'
+          density='compact'
+          onClick={() => setIsOpen(!isOpen)}
+          aria-label='Toggle menu'
+        >
+          {isOpen ? <X size={20} /> : <Menu size={20} />}
+        </Button>
+      </div>
 
-              <div className='flex gap-2'>
-                <StatusPopover />
-                <ProviderPopover />
-                <Button iconOnly icon={X} onClick={() => setIsOpen(false)}>
-                  Close
-                </Button>
-              </div>
-            </nav>
-
-            <div className='flex flex-col gap-4'>
-              {HEADER_LINKS.map(link => (
-                <MenuItem
+      {isOpen && (
+        <div className='absolute left-0 top-full z-50 w-full bg-background/95 backdrop-blur-sm lg:hidden'>
+          <div className='flex flex-col p-4 space-y-2'>
+            {HEADER_LINKS.map(link => {
+              const Icon = link.icon;
+              const isActive = currentPath === link.value;
+              
+              return (
+                <button
                   key={link.value}
-                  label={link.label}
-                  icon={link.icon}
-                  onClick={() => onNavigate(link.value)}
-                />
-              ))}
-            </div>
-          </Display>
+                  onClick={() => handleNavClick(link.value)}
+                  className={`flex items-center gap-3 p-3 rounded-lg text-left transition-colors ${
+                    isActive 
+                      ? 'bg-accent text-accent-foreground' 
+                      : 'hover:bg-accent/50'
+                  }`}
+                >
+                  <Icon size={20} />
+                  <span className='font-medium'>{link.label}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </Dialog.EmptyContent>
-    </Dialog>
+      )}
+    </>
   );
 };

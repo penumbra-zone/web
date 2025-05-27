@@ -1,22 +1,40 @@
 import { useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { observer } from 'mobx-react-lite';
 
 import { getMetadataFromBalancesResponse } from '@penumbra-zone/getters/balances-response';
 import { Metadata, AssetId, Denom } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
-import { useBalancesResponses } from '../../../../state/shared';
-import { compareUint8Arrays } from '../../../../hooks/v2/transactions-v2';
-import { PagePath } from '../../../metadata/paths';
-import { BreadCrumb, BreadcrumbItem } from '../../shared/BreadCrumb';
+import { useBalancesStore } from '@shared/stores/store-context';                
+import { useIsConnected, useConnectWallet } from '@shared/hooks/use-connection';
+import { PagePath } from '@shared/const/page';
+import { Card } from '@penumbra-zone/ui/Card';
+import { Button } from '@penumbra-zone/ui/Button';
+import { Text } from '@penumbra-zone/ui/Text';
+import { Wallet2 } from 'lucide-react';
+
+// Utility function to compare Uint8Arrays
+const compareUint8Arrays = (a: Uint8Array, b: Uint8Array): boolean => {
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== b[i]) return false;
+  }
+  return true;
+};
+
+import { BreadCrumb, BreadcrumbItem } from '@shared/ui/breadcrumb';
 import { InfoDialog } from '../assets/InfoDialog';
 import { TransactionView } from './TransactionView';
 import { TransactionCard } from './TransactionCard';
 
-export const AllTransactionsPage = () => {
-  const { data: balancesResponses } = useBalancesResponses(); // Still needed for getTxMetadata if passed down
+export const AllTransactionsPage = observer(() => {
+  const balancesStore = useBalancesStore();
+  const balancesResponses = balancesStore.balancesResponses;
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedTx = searchParams.get('tx');
+  const isConnected = useIsConnected();
+  const { connectWallet } = useConnectWallet();
 
   // Extract wallet address views from balances responses (similar to TransactionCard)
   const walletAddressViews = useMemo((): AddressView[] => {
@@ -79,7 +97,7 @@ export const AllTransactionsPage = () => {
   };
 
   const breadcrumbItems: BreadcrumbItem[] = [
-    { label: 'Portfolio', path: PagePath.V2_PORTFOLIO },
+    { label: 'Portfolio', path: PagePath.Portfolio },
     { label: 'Your Transactions' },
   ];
 
@@ -92,10 +110,42 @@ export const AllTransactionsPage = () => {
     });
   };
 
+  // If wallet is not connected, show connect wallet message
+  if (!isConnected) {
+    return (
+      <div className='flex w-full flex-col items-center'>
+        <div className='flex w-full flex-col' style={{ maxWidth: '752px' }}>
+          <div className='flex items-center justify-between px-3 py-4'>
+            <BreadCrumb items={breadcrumbItems} />
+          </div>
+          <Card title="Your Transactions">
+            <div className='flex flex-col items-center justify-center min-h-[400px] gap-4'>
+              <div className='size-8 text-text-secondary'>
+                <Wallet2 className='w-full h-full' />
+              </div>
+              <Text color='text.secondary' small>
+                Connect wallet to see your transactions
+              </Text>
+              <div className='w-fit'>
+                <Button 
+                  actionType='default' 
+                  density='compact'
+                  onClick={connectWallet}
+                >
+                  Connect wallet
+                </Button>
+              </div>
+            </div>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className='flex w-full flex-col items-center'>
       <div className='flex w-full flex-col' style={{ maxWidth: `${maxWidth}px` }}>
-        <div className='flex items-center justify-between px-3 py-1'>
+        <div className='flex items-center justify-between px-3 py-4'>
           <BreadCrumb items={breadcrumbItems} />
           {!selectedTx && <InfoDialog />}
         </div>
@@ -123,4 +173,4 @@ export const AllTransactionsPage = () => {
       </div>
     </div>
   );
-};
+});

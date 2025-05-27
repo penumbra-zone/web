@@ -1,33 +1,41 @@
-import { useNavigate } from 'react-router-dom';
-import { Tabs } from '../../../../packages/ui-deprecated/src/Tabs';
-import { Density } from '../../../../packages/ui-deprecated/src/Density';
-import { getV2Link } from '../../../minifront/src/components/v2/get-v2-link.ts';
-import { usePagePath } from '../../../minifront/src/fetchers/page-path.ts';
-import { HEADER_LINKS } from './links.ts';
-import { PagePath } from '../../../minifront/src/components/metadata/paths.ts';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Tabs } from '@penumbra-zone/ui/Tabs';
+import { Density } from '@penumbra-zone/ui/Density';
+import { PagePath } from '@shared/const/page';
+import { HEADER_LINKS } from './links';
 
 export const DesktopNav = () => {
-  const pagePath = usePagePath();
+  const location = useLocation();
   const navigate = useNavigate();
 
-  // Use Portfolio tab value for both Dashboard and Transactions pages
-  const getActiveTabValue = (path: PagePath) => {
-    if (path === PagePath.TRANSACTIONS) {
-      return getV2Link(PagePath.DASHBOARD);
-    }
-    return getV2Link(path);
+  const getCurrentValue = () => {
+    // Check if current path matches any header link
+    const currentLink = HEADER_LINKS.find(link => 
+      location.pathname === link.value || 
+      (link.value === PagePath.Portfolio && location.pathname.startsWith('/portfolio'))
+    );
+    return currentLink?.value || PagePath.Portfolio;
   };
 
+  const currentPath = getCurrentValue();
+
+  const tabOptions = HEADER_LINKS.map(link => ({
+    value: link.value,
+    label: link.label,
+  }));
+
   return (
-    <nav className='hidden rounded-full bg-other-tonalFill5 px-4 py-1 backdrop-blur-xl lg:flex'>
-      <Density compact>
-        <Tabs
-          value={getActiveTabValue(pagePath)}
-          onChange={value => navigate(value)}
-          options={HEADER_LINKS}
-          actionType='accent'
-        />
-      </Density>
-    </nav>
+    <div className='hidden lg:flex'>
+      <nav className='rounded-full bg-other-tonalFill5 px-4 py-1 backdrop-blur-xl'>
+        <Density slim>
+          <Tabs
+            value={currentPath}
+            onChange={value => navigate(value)}
+            options={tabOptions}
+            actionType='accent'
+          />
+        </Density>
+      </nav>
+    </div>
   );
 };

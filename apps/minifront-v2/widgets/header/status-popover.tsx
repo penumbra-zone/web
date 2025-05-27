@@ -1,49 +1,32 @@
-import { Blocks } from 'lucide-react';
-import { Popover, PopoverContext } from '../../../../packages/ui-deprecated/src/Popover';
-import { Button } from '../../../../packages/ui-deprecated/src/Button';
-import { Density } from '../../../../packages/ui-deprecated/src/Density';
-import { Pill } from '../../../../packages/ui-deprecated/src/Pill';
-import { Text } from '../../../../packages/ui-deprecated/src/Text';
-import {
-  statusStreamStateSelector,
-  syncPercentSelector,
-  useStatus,
-} from '../../../minifront/src/state/status.ts';
 import { useMemo } from 'react';
-import { useStore } from '../../../minifront/src/state';
+import { Blocks } from 'lucide-react';
+import { observer } from 'mobx-react-lite';
+import { Popover } from '@penumbra-zone/ui/Popover';
+import { Button } from '@penumbra-zone/ui/Button';
+import { Density } from '@penumbra-zone/ui/Density';
+import { Pill } from '@penumbra-zone/ui/Pill';
+import { Text } from '@penumbra-zone/ui/Text';
+import { useAppParametersStore } from '@shared/stores/store-context';
 
-export const StatusPopover = () => {
-  const sync = useStatus({ select: syncPercentSelector });
-  const { error: streamError } = useStore(statusStreamStateSelector);
+export const StatusPopover = observer(() => {
+  const appParametersStore = useAppParametersStore();
+  const status = appParametersStore.status;
 
-  // a ReactNode displaying the sync status in form of a pill
   const pill = useMemo(() => {
-    if (sync?.percentSyncedNumber === undefined) {
-      return null;
+    if (!status) {
+      return <Pill context='technical-caution'>Loading...</Pill>;
     }
 
-    if (streamError) {
-      return <Pill context='technical-destructive'>Block Sync Error</Pill>;
-    }
-
-    if (sync.percentSyncedNumber === 1) {
+    if (
+      status.syncHeight &&
+      status.latestKnownBlockHeight &&
+      status.syncHeight >= status.latestKnownBlockHeight
+    ) {
       return <Pill context='technical-success'>Blocks Synced</Pill>;
     }
 
     return <Pill context='technical-caution'>Block Syncing</Pill>;
-  }, [sync, streamError]);
-
-  const popoverContext = useMemo<PopoverContext>(() => {
-    if (sync?.percentSyncedNumber === undefined) {
-      return 'default';
-    } else if (streamError) {
-      return 'error';
-    } else if (sync.percentSyncedNumber === 1) {
-      return 'success';
-    } else {
-      return 'caution';
-    }
-  }, [sync, streamError]);
+  }, [status]);
 
   return (
     <Popover>
@@ -52,27 +35,26 @@ export const StatusPopover = () => {
           Status
         </Button>
       </Popover.Trigger>
-      {sync?.percentSyncedNumber !== undefined && (
-        <Popover.Content context={popoverContext} align='end' side='bottom'>
-          <Density compact>
-            <div className='flex flex-col gap-4'>
-              <div className='flex flex-col gap-2'>
-                <Text technical>Status</Text>
-                {pill}
-                {!!streamError && String(streamError)}
-              </div>
+      <Popover.Content align='end' side='bottom'>
+        <Density compact>
+          <div className='flex flex-col gap-4 text-text-primary'>
+            <div className='flex flex-col gap-2'>
+              <Text technical>Status</Text>
+              {pill}
+            </div>
+            {status && (
               <div className='flex flex-col gap-2'>
                 <Text technical>Block Height</Text>
                 <Pill context='technical-default'>
-                  {sync.data?.latestKnownBlockHeight !== sync.data?.fullSyncHeight
-                    ? `${sync.data?.fullSyncHeight} of ${sync.data?.latestKnownBlockHeight}`
-                    : `${sync.data?.latestKnownBlockHeight}`}
+                  {status.latestKnownBlockHeight !== status.syncHeight
+                    ? `${status.syncHeight}${status.latestKnownBlockHeight ? ` of ${status.latestKnownBlockHeight}` : ''}`
+                    : `${status.latestKnownBlockHeight}`}
                 </Pill>
               </div>
-            </div>
-          </Density>
-        </Popover.Content>
-      )}
+            )}
+          </div>
+        </Density>
+      </Popover.Content>
     </Popover>
   );
-};
+});

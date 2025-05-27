@@ -1,22 +1,21 @@
-import {
-  statusStreamStateSelector,
-  syncPercentSelector,
-  useStatus,
-} from '../../../minifront/src/state/status.ts';
-import { Progress } from '../../../../packages/ui-deprecated/src/Progress';
-import { useStore } from '../../../minifront/src/state';
+import { observer } from 'mobx-react-lite';
+import { Progress } from '@penumbra-zone/ui/Progress';
+import { useAppParametersStore } from '@shared/stores/store-context';
 
-export const SyncBar = () => {
-  const sync = useStatus({ select: syncPercentSelector });
-  const { error: streamError } = useStore(statusStreamStateSelector);
+export const SyncBar = observer(() => {
+  const appParametersStore = useAppParametersStore();
+  const status = appParametersStore.status;
+
+  const calculateSyncPercent = () => {
+    if (!status?.syncHeight || !status?.latestKnownBlockHeight) {
+      return 0;
+    }
+    return Math.min(status.syncHeight / status.latestKnownBlockHeight, 1) * 100;
+  };
 
   return (
     <div className='fixed left-0 top-0 h-1 w-full'>
-      {sync?.percentSyncedNumber !== undefined ? (
-        <Progress value={sync.percentSyncedNumber} />
-      ) : (
-        <Progress value={0} loading={sync?.loading} error={Boolean(streamError)} />
-      )}
+      <Progress value={calculateSyncPercent()} />
     </div>
   );
-};
+});

@@ -16,5 +16,14 @@
     }
   },
   "extends": ["@tsconfig/strictest/tsconfig.json", "@tsconfig/vite-react/tsconfig.json"],
-  "include": ["app", "pages", "shared", "widgets", "entities", "features", "vite.config.ts"]
+  "include": [
+    "app",
+    "pages",
+    "shared",
+    "widgets",
+    "entities",
+    "features",
+    "vite.config.ts",
+    "../../packages/ui-deprecated/src/**/*"
+  ]
 }

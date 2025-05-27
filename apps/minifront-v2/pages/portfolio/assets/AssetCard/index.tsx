@@ -1,8 +1,12 @@
 import { ReactNode } from 'react';
 import { Card } from '@penumbra-zone/ui';
+import { Text } from '@penumbra-zone/ui/Text';
+import { Button } from '@penumbra-zone/ui/Button';
+import { Wallet2 } from 'lucide-react';
 import { AssetList } from './AssetList';
 import { AccountMock, mockAccounts } from './mock';
 import { InfoDialog } from '../InfoDialog';
+import { useIsConnected, useConnectWallet } from '@shared/hooks/use-connection';
 
 export interface AssetCardProps {
   /**
@@ -41,8 +45,36 @@ export const AssetCard = ({
   headerAction,
   showInfoButton = true,
 }: AssetCardProps) => {
+  const isConnected = useIsConnected();
+  const { connectWallet } = useConnectWallet();
+  
   // Use InfoButton as endContent if showInfoButton is true and no custom endContent is provided
   const finalEndContent = showInfoButton ? <InfoDialog /> : undefined;
+
+  // If wallet is not connected, show connect wallet message
+  if (!isConnected) {
+    return (
+      <Card title={title} headerAction={headerAction} endContent={finalEndContent}>
+        <div className='flex flex-col items-center justify-center min-h-[250px] gap-4'>
+          <div className='size-8 text-text-secondary'>
+            <Wallet2 className='w-full h-full' />
+          </div>
+          <Text color='text.secondary' small>
+            Connect wallet to see your assets
+          </Text>
+          <div className='w-fit'>
+            <Button 
+              actionType='default' 
+              density='compact'
+              onClick={connectWallet}
+            >
+              Connect wallet
+            </Button>
+          </div>
+        </div>
+      </Card>
+    );
+  }
 
   return (
     <Card title={title} headerAction={headerAction} endContent={finalEndContent}>

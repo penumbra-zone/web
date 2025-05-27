@@ -1,22 +1,16 @@
+import { observer } from 'mobx-react-lite';
 import { useMemo } from 'react';
-
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import {
   getBalanceView,
   getMetadataFromBalancesResponse,
 } from '@penumbra-zone/getters/balances-response';
 import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { pnum } from '@penumbra-zone/types/pnum';
-import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
 
-import {
-  BalancesByAccount,
-  balancesByAccountSelector,
-  useBalancesResponses,
-} from '../../../minifront/src/state/shared';
-import { shouldDisplay } from '../../../minifront/src/fetchers/balances/should-display';
-import { sortByPriorityScore } from '../../../minifront/src/fetchers/balances/by-priority-score';
+import { useBalancesStore } from '@shared/stores/store-context';
+import { BalancesByAccount } from '@shared/stores/balances-store';
+import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { AssetCard } from './assets/AssetCard';
 import { TransactionCard } from './transactions/TransactionCard';
 
@@ -37,54 +31,16 @@ interface AccountData {
   addressView?: AddressView;
 }
 
-export const Portfolio = () => {
-  // Fetch real data from Prax client
-  const balancesByAccount = useBalancesResponses({
-    select: (state: AbridgedZQueryState<BalancesResponse[]>) => {
-      if (!state.data) {
-        return [];
-      }
-
-      return state.data
-        .filter(shouldDisplay)
-        .sort(sortByPriorityScore)
-        .reduce((acc: BalancesByAccount[], curr: BalancesResponse) => {
-          // Group balances by account
-          const accounts = balancesByAccountSelector({
-            data: [curr],
-            loading: false,
-            error: null,
-          });
-
-          if (!accounts.length) {
-            return acc;
-          }
-
-          const account = accounts[0];
-          if (!account) {
-            return acc;
-          }
-
-          const existingAccount = acc.find(a => a.account === account.account);
-
-          if (existingAccount) {
-            existingAccount.balances.push(...account.balances);
-          } else {
-            acc.push(account);
-          }
-
-          return acc;
-        }, []);
-    },
-  });
+export const Portfolio = observer(() => {
+  const balancesStore = useBalancesStore();
 
   // Transform balances data to format expected by AssetCard
   const accounts = useMemo(() => {
-    if (!balancesByAccount) {
+    if (balancesStore.loading || !balancesStore.balancesByAccount.length) {
       return [];
     }
 
-    return balancesByAccount.map(account => {
+    return balancesStore.balancesByAccount.map((account: BalancesByAccount) => {
       // The addressView should be the AddressView protobuf message itself
       const firstBalance = account.balances[0];
       const addressView = firstBalance?.accountAddress;
@@ -94,7 +50,7 @@ export const Portfolio = () => {
         name: account.account === 0 ? 'Main Account' : `Sub-Account #${account.account}`,
         addressView,
         assets: account.balances
-          .map(balance => {
+          .map((balance: BalancesResponse) => {
             const valueView = getBalanceView.optional(balance);
             const metadata = getMetadataFromBalancesResponse.optional(balance);
 
@@ -136,10 +92,10 @@ export const Portfolio = () => {
 
             return asset;
           })
-          .filter((asset): asset is AssetData => asset !== null),
+          .filter((asset: AssetData | null): asset is AssetData => asset !== null),
       } as AccountData;
     });
-  }, [balancesByAccount]);
+  }, [balancesStore.balancesByAccount]);
 
   // For now we don't have actual value calculation
   // In a future implementation, we would calculate a real total balance value here
@@ -161,4 +117,4 @@ export const Portfolio = () => {
       </div>
     </div>
   );
-};
+});
