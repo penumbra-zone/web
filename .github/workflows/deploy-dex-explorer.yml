@@ -65,19 +65,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: install nix
-        uses: nixbuild/nix-quick-install-action@v28
-
-      - name: setup nix cache
-        uses: nix-community/cache-nix-action@v5
-        with:
-          primary-key: nix-${{ runner.os }}-${{ hashFiles('**/*.nix') }}
-          restore-prefixes-first-match: nix-${{ runner.os }}-
-          backend: buildjet
-
-      # Confirm that the nix devshell is buildable and runs at all.
-      - name: validate nix env
-        run: nix develop --command echo hello
+      - name: setup nix
+        uses: ./.github/actions/setup-nix
 
       - name: save DigitalOcean kubeconfig with short-lived credentials
         run: >
