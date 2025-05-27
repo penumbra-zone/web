@@ -1,53 +1,53 @@
-// File: src/pages/tournament/api/use-personal-rewards.ts
+import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { connectionStore } from '@/shared/model/connection';
 import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { penumbra } from '@/shared/const/penumbra';
 import { statusStore } from '@/shared/model/status';
-import {
+import { apiPostFetch } from '@/shared/utils/api-fetch';
+import type {
   DelegatorHistorySortDirection,
   DelegatorHistorySortKey,
   TournamentDelegatorHistoryResponse,
+  LqtDelegatorHistoryData,
 } from '../server/delegator-history';
-import { apiPostFetch } from '@/shared/utils/api-fetch';
-import {
-  AddressByIndexResponse,
-  TournamentVotesResponse,
-} from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
+import { getIndexByAddress } from './use-index-by-address';
 
 export const BASE_LIMIT = 10;
 export const BASE_PAGE = 1;
 
+export interface PersonalRewardsData {
+  data: LqtDelegatorHistoryData[];
+  totalItems: number;
+  totalRewards: number;
+}
+
 const fetchRewards = async (
   epochOrHeight: { type: 'epoch'; value: bigint } | { type: 'blockHeight'; value: bigint },
-  page: number = BASE_PAGE,
-  limit: number = BASE_LIMIT,
   sortKey: DelegatorHistorySortKey = 'epoch',
   sortDirection: DelegatorHistorySortDirection = 'desc',
   subaccount?: number,
-): Promise<TournamentDelegatorHistoryResponse> => {
-  const accountFilter =
-    typeof subaccount === 'undefined' ? undefined : new AddressIndex({ account: subaccount });
+): Promise<PersonalRewardsData[]> => {
+  if (typeof subaccount === 'undefined') {
+    return [];
+  }
+
+  const accountFilter = new AddressIndex({ account: subaccount });
 
   // `tournamentVotes` accepts either `blockHeight` or `epochIndex`:
   //  * `blockHeight` – calls `iterateLQTVotes` to gather every vote up to the
   //   epoch containing that height, grouping results by epoch.
   //  * `epochIndex` – returns the votes for that single epoch, already grouped.
   const service = penumbra.service(ViewService);
-  const votesPromise: Promise<TournamentVotesResponse[]> =
+  const votes =
     epochOrHeight.type === 'epoch'
-      ? Array.fromAsync(service.tournamentVotes({ accountFilter, epochIndex: epochOrHeight.value }))
-      : Array.fromAsync(
+      ? await Array.fromAsync(
+          service.tournamentVotes({ accountFilter, epochIndex: epochOrHeight.value }),
+        )
+      : await Array.fromAsync(
           service.tournamentVotes({ accountFilter, blockHeight: epochOrHeight.value }),
         );
-
-  const addressPromise: Promise<AddressByIndexResponse> = service.addressByIndex({
-    addressIndex: { account: accountFilter?.account },
-  });
-
-  const [votes, { address }] = await Promise.all([votesPromise, addressPromise]);
 
   if (votes.length > 0) {
     const epochs = new Set<string>();
@@ -57,35 +57,37 @@ const fetchRewards = async (
       }
     }
 
-    // We send the address plus a list of epochs to the server and ask for the
-    // matching delegator history. That’s not ideal. A better strategy would be to
-    // fetch validator exchange rates keyed by epoch and convert prices locally.
-    // As the liquidity tournament scales, this server-side query would force us to
-    // sift through many delegators per epoch, whereas the block processor already
-    // tracks rewards locally and could handle the conversion far more efficiently.
-    // Consequently, we can always fall back to local-first reward processing
-    // if that becomes a performance bottleneck.
-
-    const delegatorHistory = await apiPostFetch<TournamentDelegatorHistoryResponse>(
+    // Send a list of epochs to the server, – it sends back a list of delegators with their history
+    // of matched epochs. Then we filter the results by subaccount. This doesn't leak privacy as
+    // the address filtering happens on the client side.
+    const delegatorHistory = await apiPostFetch<TournamentDelegatorHistoryResponse[]>(
       '/api/tournament/delegator-history',
       {
         epochs: Array.from(epochs),
-        address: address ? bech32mAddress(address) : '',
-        page,
-        limit,
         sortKey,
         sortDirection,
       },
     );
 
-    return delegatorHistory;
+    const pairs = await Promise.all(
+      delegatorHistory.map(item =>
+        getIndexByAddress(item.address).then(index => ({ item, index })),
+      ),
+    );
+
+    const historyByAddress: TournamentDelegatorHistoryResponse[] = pairs
+      .filter(({ index }) => index?.account === subaccount)
+      .map(({ item }) => item);
+
+    // Converts each TournamentDelegatorHistoryResponse to PersonalRewardsData
+    return historyByAddress.map(item => ({
+      data: item.data,
+      totalItems: item.total_items,
+      totalRewards: item.total_rewards,
+    }));
   }
 
-  return {
-    data: [],
-    totalItems: 0,
-    totalRewards: 0,
-  };
+  return [];
 };
 
 /**
@@ -103,7 +105,7 @@ export const usePersonalRewards = (
   const blockHeight = statusStore.latestKnownBlockHeight;
 
   const query = useQuery({
-    queryKey: ['total-voting-rewards', subaccount, page, limit, sortKey, sortDirection],
+    queryKey: ['total-voting-rewards', subaccount, sortKey, sortDirection],
     enabled:
       connectionStore.connected &&
       !!epoch &&
@@ -117,20 +119,52 @@ export const usePersonalRewards = (
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- block height parameter is always defined
           value: blockHeight!,
         },
-        page,
-        limit,
         sortKey,
         sortDirection,
         subaccount,
       ),
   });
 
-  const data = query.data?.data ?? [];
+  const totalRewards = useMemo(() => {
+    return query.data?.reduce((sum, item) => sum + item.totalRewards, 0) ?? 0;
+  }, [query.data]);
+
+  const { rewards, totalItems } = useMemo(() => {
+    const allDelegatorRewards = query.data?.flatMap(item => item.data) ?? [];
+
+    const sortFunctions: Record<
+      DelegatorHistorySortKey,
+      (a: LqtDelegatorHistoryData, b: LqtDelegatorHistoryData) => number
+    > = {
+      epoch: (a, b) => Number(a.epoch) - Number(b.epoch),
+      reward: (a, b) => Number(a.reward) - Number(b.reward),
+    };
+
+    const sortedDelegatorRewards = allDelegatorRewards.sort((a, b) => {
+      const comparison = sortFunctions[sortKey](a, b);
+      return sortDirection === 'desc' ? -comparison : comparison;
+    });
+
+    // Apply client-side pagination and create map from paginated sorted entries
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedData = sortedDelegatorRewards.slice(startIndex, endIndex);
+
+    const sortedMap = new Map<number, LqtDelegatorHistoryData>();
+    paginatedData.forEach(item => {
+      sortedMap.set(item.epoch, item);
+    });
+
+    return {
+      rewards: sortedMap,
+      totalItems: sortedDelegatorRewards.length,
+    };
+  }, [limit, page, query.data, sortDirection, sortKey]);
 
   return {
     query,
-    data: new Map(data.map(x => [x.epoch, x])),
-    total: query.data?.totalItems ?? 0,
-    totalRewards: query.data?.totalRewards ?? 0,
+    data: rewards,
+    total: totalItems,
+    totalRewards: totalRewards,
   };
 };
