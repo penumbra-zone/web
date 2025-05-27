@@ -106,7 +106,6 @@ export const usePersonalRewards = (
 
   const query = useQuery({
     queryKey: ['total-voting-rewards', subaccount, page, limit, sortKey, sortDirection, epoch],
-    staleTime: Infinity,
     enabled:
       connectionStore.connected &&
       !!epoch &&
