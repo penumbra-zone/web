@@ -187,7 +187,7 @@ export const SocialCardDialog = observer(
           title='Share your latest win!'
           aria-describedby='tournament-social-description'
           buttons={
-            <div className='flex flex-col gap-4 px-6 pb-8'>
+            <div className='max-w-[515px] mx-auto w-full flex flex-col gap-1'>
               <Button
                 actionType='default'
                 onClick={() => void copyImageToClipboard(canvasRef.current?.toDataURL() ?? '')}
@@ -209,7 +209,7 @@ export const SocialCardDialog = observer(
             </div>
           }
         >
-          <div id='tournament-social-description'>
+          <div id='tournament-social-description' className='flex-1 overflow-hidden'>
             <div className='flex justify-center overflow-x-hidden'>
               <SocialCardCanvas params={initialParams} />
             </div>
