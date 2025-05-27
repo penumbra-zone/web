@@ -1,34 +1,38 @@
-import { deserialize, serialize } from '@/shared/utils/serializer';
+import { deserialize } from '@/shared/utils/serializer';
 import { useQuery } from '@tanstack/react-query';
 import {
   specificDelegatorSummary,
-  SpecificDelegatorSummaryResponse,
+  DelegatorStreaksResponse,
 } from '../server/specific-delegator-summary';
-import { penumbra } from '@/shared/const/penumbra';
+import { lqtAddressIndex } from '@penumbra-zone/types/address';
 import { ViewService } from '@penumbra-zone/protobuf';
-import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { penumbra } from '@/shared/const/penumbra';
 
-async function querySpecificDelegatorSummary(
-  address: Address,
-): Promise<SpecificDelegatorSummaryResponse> {
-  return deserialize<SpecificDelegatorSummaryResponse>(
-    await specificDelegatorSummary(serialize({ address })),
-  );
-}
-
-export const useSpecificDelegatorSummary = (subaccount?: number) => {
+export const useSpecificDelegatorSummary = (subaccount: number) => {
   return useQuery({
     queryKey: ['delegator-summary', subaccount],
     staleTime: Infinity,
     queryFn: async () => {
-      const service = penumbra.service(ViewService);
-      const { address } = await service.addressByIndex({
-        addressIndex: { account: subaccount },
-      });
+      const revealedAddress = await penumbra
+        .service(ViewService)
+        .addressByIndex({ addressIndex: lqtAddressIndex(subaccount) });
 
-      if (!address) throw new Error('address not found');
+      const allDelegatorSummaries = deserialize<DelegatorStreaksResponse>(
+        await specificDelegatorSummary(),
+      );
 
-      return querySpecificDelegatorSummary(address);
+      // Importantly, we only retrieve the voting streak for the specific address the user
+      // chose to reveal for their subaccount. If the user didn't choose to reveal their
+      // subaccount, the voting streak will be zero. We could probably do something
+      // more sophisticated to reveal votes across subaccounts and then determine the
+      // voting streak that way.
+      const matchingDelegatorSummary = allDelegatorSummaries.data.find(item =>
+        item.address.equals(revealedAddress.address),
+      );
+
+      return {
+        data: matchingDelegatorSummary,
+      };
     },
   });
 };

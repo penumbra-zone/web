@@ -171,7 +171,7 @@ export const VoteDialogueSelector = observer(
 
                 <Checkbox
                   title='Reveal my vote to the leaderboard.'
-                  description='Voting each epoch grows your streak.'
+                  description='Voting in each epoch grows your streak.'
                   checked={revealVote}
                   onChange={value => setRevealVote(value as boolean)}
                 />
