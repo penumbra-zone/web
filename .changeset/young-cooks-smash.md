@@ -2,4 +2,4 @@
 '@penumbra-zone/client': minor
 ---
 
-revert client connection handling
+clean up client connection handling
