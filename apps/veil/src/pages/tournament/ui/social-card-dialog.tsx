@@ -169,7 +169,15 @@ export const SocialCardDialog = observer(
         lpPool: `${Math.ceil(summaryData.lp_rewards) * 10 ** exponent}:UM`,
         delegatorPool: `${Math.ceil(summaryData.delegator_rewards) * 10 ** exponent}:UM`,
       });
-    }, [loading, summaryData, latestReward, delegatorSummary?.data, initialParams, epoch]);
+    }, [
+      loading,
+      summaryData,
+      latestReward,
+      delegatorSummary?.data,
+      initialParams,
+      epoch,
+      exponent,
+    ]);
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [dontShowAgain, setDontShowAgain] = useState(false);
