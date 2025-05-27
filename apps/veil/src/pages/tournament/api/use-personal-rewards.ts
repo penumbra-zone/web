@@ -1,4 +1,4 @@
-// File: src/pages/tournament/api/use-personal-rewards.ts
+import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { connectionStore } from '@/shared/model/connection';
 import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
@@ -25,8 +25,6 @@ export interface PersonalRewardsData {
 
 const fetchRewards = async (
   epochOrHeight: { type: 'epoch'; value: bigint } | { type: 'blockHeight'; value: bigint },
-  page: number = BASE_PAGE,
-  limit: number = BASE_LIMIT,
   sortKey: DelegatorHistorySortKey = 'epoch',
   sortDirection: DelegatorHistorySortDirection = 'desc',
   subaccount?: number,
@@ -66,8 +64,6 @@ const fetchRewards = async (
       '/api/tournament/delegator-history',
       {
         epochs: Array.from(epochs),
-        page,
-        limit,
         sortKey,
         sortDirection,
       },
@@ -109,7 +105,7 @@ export const usePersonalRewards = (
   const blockHeight = statusStore.latestKnownBlockHeight;
 
   const query = useQuery({
-    queryKey: ['total-voting-rewards', subaccount, page, limit, sortKey, sortDirection],
+    queryKey: ['total-voting-rewards', subaccount, sortKey, sortDirection],
     enabled:
       connectionStore.connected &&
       !!epoch &&
@@ -123,44 +119,52 @@ export const usePersonalRewards = (
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- block height parameter is always defined
           value: blockHeight!,
         },
-        page,
-        limit,
         sortKey,
         sortDirection,
         subaccount,
       ),
   });
 
-  const allDelegatorRewards = query.data?.flatMap(item => item.data) ?? [];
-  const totalRewards = query.data?.reduce((sum, item) => sum + item.totalRewards, 0) ?? 0;
+  const totalRewards = useMemo(() => {
+    return query.data?.reduce((sum, item) => sum + item.totalRewards, 0) ?? 0;
+  }, [query.data]);
 
-  const sortFunctions: Record<
-    DelegatorHistorySortKey,
-    (a: LqtDelegatorHistoryData, b: LqtDelegatorHistoryData) => number
-  > = {
-    epoch: (a, b) => Number(a.epoch) - Number(b.epoch),
-    reward: (a, b) => Number(a.reward) - Number(b.reward),
-  };
+  const { rewards, totalItems } = useMemo(() => {
+    const allDelegatorRewards = query.data?.flatMap(item => item.data) ?? [];
 
-  const sortedDelegatorRewards = allDelegatorRewards.sort((a, b) => {
-    const comparison = sortFunctions[sortKey](a, b);
-    return sortDirection === 'desc' ? -comparison : comparison;
-  });
+    const sortFunctions: Record<
+      DelegatorHistorySortKey,
+      (a: LqtDelegatorHistoryData, b: LqtDelegatorHistoryData) => number
+    > = {
+      epoch: (a, b) => Number(a.epoch) - Number(b.epoch),
+      reward: (a, b) => Number(a.reward) - Number(b.reward),
+    };
 
-  // Apply client-side pagination and create map from paginated sorted entries
-  const startIndex = (page - 1) * limit;
-  const endIndex = startIndex + limit;
-  const paginatedData = sortedDelegatorRewards.slice(startIndex, endIndex);
+    const sortedDelegatorRewards = allDelegatorRewards.sort((a, b) => {
+      const comparison = sortFunctions[sortKey](a, b);
+      return sortDirection === 'desc' ? -comparison : comparison;
+    });
 
-  const sortedMap = new Map<number, LqtDelegatorHistoryData>();
-  paginatedData.forEach(item => {
-    sortedMap.set(item.epoch, item);
-  });
+    // Apply client-side pagination and create map from paginated sorted entries
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedData = sortedDelegatorRewards.slice(startIndex, endIndex);
+
+    const sortedMap = new Map<number, LqtDelegatorHistoryData>();
+    paginatedData.forEach(item => {
+      sortedMap.set(item.epoch, item);
+    });
+
+    return {
+      rewards: sortedMap,
+      totalItems: sortedDelegatorRewards.length,
+    };
+  }, [limit, page, query.data, sortDirection, sortKey]);
 
   return {
     query,
-    data: sortedMap,
-    total: sortedDelegatorRewards.length,
+    data: rewards,
+    total: totalItems,
     totalRewards: totalRewards,
   };
 };
