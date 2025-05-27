@@ -93,12 +93,14 @@ export const LeaderboardTable = observer(({ epoch }: { epoch: number | undefined
             LPs Leaderboard
           </Text>
 
-          <AssetSelector
-            assets={assets}
-            balances={balances}
-            value={selectedAsset}
-            onChange={setSelectedAsset}
-          />
+          <div className='rounded-full overflow-hidden'>
+            <AssetSelector
+              assets={assets}
+              balances={balances}
+              value={selectedAsset}
+              onChange={setSelectedAsset}
+            />
+          </div>
         </div>
 
         {error ? (
@@ -241,11 +243,15 @@ export const LeaderboardTable = observer(({ epoch }: { epoch: number | undefined
                     })
                   ) : (
                     <div className='col-span-6'>
-                      <TableCell>
-                        {tab === Tabs.AllLPs
-                          ? 'There are no liquidity positions in this epoch.'
-                          : 'You have no liquidity positions in this epoch.'}
-                      </TableCell>
+                      <div className='grid grid-cols-subgrid col-span-4'>
+                        <TableCell cell>
+                          <span className='!text-sm'>
+                            {tab === Tabs.AllLPs
+                              ? 'There are no liquidity positions in this epoch.'
+                              : 'You have no liquidity positions in this epoch.'}
+                          </span>
+                        </TableCell>
+                      </div>
                     </div>
                   )}
                 </>
