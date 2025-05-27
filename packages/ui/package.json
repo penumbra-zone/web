@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/ui",
-  "version": "14.0.4",
+  "version": "15.0.0",
   "license": "(MIT OR Apache-2.0)",
   "description": "UI components for Penumbra",
   "type": "module",
@@ -8,7 +8,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "build": "vite build && pnpm run build:css && pnpm run build:css:prefixed",
+    "build": "vite build && pnpm run build:css:prefixed",
     "build-storybook": "storybook build",
     "build:css": "pnpm exec tailwindcss -c ./tailwind.config.ts -i ./src/styles/main.css -o ./dist/style.css --minify",
     "build:css:prefixed": "pnpm exec tailwindcss -c ./tailwind.config.prefixed.ts -i ./src/styles/main.css -o ./dist/style-prefixed.css --minify",

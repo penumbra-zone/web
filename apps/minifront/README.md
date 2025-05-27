@@ -74,10 +74,11 @@ Prerequisites:
 - Install [pnpm](https://pnpm.io/installation)
 
 ```shell
-pnpm install
-pnpm dev
-# Will be live at https://localhost:5173/
+pnpm install && pnpm dev:build && pnpm dev:app
 ```
+
+You now have a local copy of Minifront available at
+[`https://localhost:5173`](https://localhost:5173).
 
 ## Technologies Used
 

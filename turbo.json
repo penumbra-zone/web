@@ -84,10 +84,12 @@
       "dependsOn": ["build"]
     },
     "test:wasm": {
+      "cache": false,
       "dependsOn": ["compile"],
       "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock", "crate/tests/**"]
     },
     "test:cargo": {
+      "cache": false,
       "dependsOn": ["^keys"],
       "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock", "crate/tests/**"]
     }
