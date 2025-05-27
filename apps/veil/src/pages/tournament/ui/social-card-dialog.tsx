@@ -179,8 +179,6 @@ export const SocialCardDialog = observer(
       return null;
     }
 
-    // TODO: fix rendering. merging main included dialogue component
-    // changes that broke the rendering.
     return (
       <Dialog isOpen onClose={onClose}>
         <Dialog.Content
