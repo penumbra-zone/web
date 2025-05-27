@@ -7,8 +7,9 @@ export interface TournamentQueryParams extends Record<string, string> {
   d: `${number}:${string}`;
 }
 
-export interface TournamentParams extends Record<string, string> {
+export interface TournamentParams extends Record<string, string | boolean> {
   epoch: string;
+  rewarded: boolean;
   earnings: `${number}:${string}`;
   votingStreak: `${number}:${string}`;
   incentivePool: `${number}:${string}`;

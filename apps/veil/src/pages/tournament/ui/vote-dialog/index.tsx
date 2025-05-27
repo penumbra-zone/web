@@ -78,9 +78,10 @@ export const VoteDialogueSelector = observer(
       }
 
       const stakedNotes: SpendableNoteRecord[] = notes
-        ? Array.from(notes.values())
-            .map(res => res.noteRecord)
-            .filter((record): record is SpendableNoteRecord => !!record)
+        ? notes
+            .filter(n => !n.alreadyVoted)
+            .map(n => n.noteRecord)
+            .filter((r): r is SpendableNoteRecord => !!r && r.heightSpent === 0n)
         : [];
 
       let rewardsRecipient: Address | undefined;
@@ -170,7 +171,7 @@ export const VoteDialogueSelector = observer(
 
                 <Checkbox
                   title='Reveal my vote to the leaderboard.'
-                  description='Voting each epoch grows your streak.'
+                  description='Voting in each epoch grows your streak.'
                   checked={revealVote}
                   onChange={value => setRevealVote(value as boolean)}
                 />
