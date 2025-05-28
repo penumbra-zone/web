@@ -10,8 +10,6 @@ import {
   AppParametersResponse,
   GasPricesResponse,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { getChainId, getStakeParams } from '@penumbra-zone/getters/app-parameters-response';
-import { getAllGasPrices } from '@penumbra-zone/getters/gas-prices-response';
 import { RootStore } from './root-store';
 
 export class AppParametersStore {
@@ -84,14 +82,14 @@ export class AppParametersStore {
    * Get chain ID
    */
   get chainId(): string {
-    return getChainId.optional(this.appParameters ?? undefined) ?? '';
+    return this.appParameters?.parameters?.chainId ?? '';
   }
 
   /**
    * Get staking token metadata
    */
   get stakingToken() {
-    return getStakeParams.optional(this.appParameters ?? undefined);
+    return this.appParameters?.parameters?.stakeParams;
   }
 
   /**
@@ -108,10 +106,15 @@ export class AppParametersStore {
     const map = new Map<string, bigint>();
 
     if (this.gasPrices) {
-      const allGasPrices = getAllGasPrices(this.gasPrices);
+      // Add gas prices from both gasPrices and altGasPrices
+      const allGasPrices = [
+        ...(this.gasPrices.gasPrices ? [this.gasPrices.gasPrices] : []),
+        ...(this.gasPrices.altGasPrices ?? []),
+      ];
+
       for (const gasPrice of allGasPrices) {
         if (gasPrice.assetId && gasPrice.blockSpacePrice) {
-          const assetId = gasPrice.assetId.inner.toString();
+          const assetId = Array.from(gasPrice.assetId.inner).toString();
           map.set(assetId, gasPrice.blockSpacePrice);
         }
       }
