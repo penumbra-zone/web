@@ -8,10 +8,9 @@
     "node": ">=22"
   },
   "scripts": {
-    "build": "vite build && pnpm run build:css:prefixed",
+    "build": "vite build && pnpm run build:css",
     "build-storybook": "storybook build",
     "build:css": "pnpm exec tailwindcss -c ./tailwind.config.ts -i ./src/styles/main.css -o ./dist/style.css --minify",
-    "build:css:prefixed": "pnpm exec tailwindcss -c ./tailwind.config.prefixed.ts -i ./src/styles/main.css -o ./dist/style-prefixed.css --minify",
     "dev:pack": "vite build --watch",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
@@ -27,7 +26,6 @@
       "default": "./dist/index.js"
     },
     "./style.css": "./dist/style.css",
-    "./style-prefixed.css": "./dist/style-prefixed.css",
     "./*": {
       "types": "./dist/src/*/index.d.ts",
       "default": "./dist/src/*/index.js"

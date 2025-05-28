@@ -215,9 +215,6 @@ importers:
       '@penumbra-zone/types':
         specifier: workspace:*
         version: link:../../packages/types
-      '@penumbra-zone/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
       '@penumbra-zone/ui-deprecated':
         specifier: workspace:*
         version: link:../../packages/ui-deprecated
@@ -2195,7 +2192,6 @@ packages:
   '@bufbuild/buf-darwin-arm64@1.54.0':
     resolution: {integrity: sha512-MkwlxcuHH8YO2wyQ2nGAv5SwBRCR4PtA8zcQb7AR6q93Cgy314ac8blGjfpenprjI3kAAhxc9BQK4t+/hkIS/A==}
     engines: {node: '>=12'}
-    cpu: [arm64]
     os: [darwin]
 
   '@bufbuild/buf-darwin-x64@1.54.0':
