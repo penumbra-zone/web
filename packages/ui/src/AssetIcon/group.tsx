@@ -49,17 +49,34 @@ export const AssetGroup = ({
   variant = 'overlay',
   hideBadge,
 }: AssetGroupProps) => {
+  // Helper function to check if an asset is a delegation token
+  const isDelegationToken = (metadata?: Metadata): boolean => {
+    if (!metadata?.symbol) return false;
+    // Check for cleaned delegation token symbol (delUM) or original pattern
+    return metadata.symbol === 'delUM' || metadata.symbol.startsWith('delUM(');
+  };
+
   if (variant === 'split') {
     return (
       <Container className={cn('relative flex items-center gap-[1px]', sizeMap[size])}>
         {assets?.[0] && (
           <div className={cn(SPLIT_SIZE_MAP[size], LEFT_BADGE_SIZE_MAP[size], RIGHT_CLIP_PATH)}>
-            <AssetIcon hideBadge={hideBadge} metadata={assets[0]} size={size} />
+            <AssetIcon
+              hideBadge={hideBadge}
+              isDelegated={isDelegationToken(assets[0])}
+              metadata={assets[0]}
+              size={size}
+            />
           </div>
         )}
         {assets?.[1] && (
           <div className={cn(SPLIT_SIZE_MAP[size], MARGIN_SIZE_MAP[size], LEFT_CLIP_PATH)}>
-            <AssetIcon hideBadge={hideBadge} metadata={assets[1]} size={size} />
+            <AssetIcon
+              hideBadge={hideBadge}
+              isDelegated={isDelegationToken(assets[1])}
+              metadata={assets[1]}
+              size={size}
+            />
           </div>
         )}
       </Container>
@@ -71,6 +88,7 @@ export const AssetGroup = ({
       {assets?.map((asset, index) => (
         <AssetIcon
           hideBadge={hideBadge}
+          isDelegated={isDelegationToken(asset)}
           metadata={asset}
           key={index}
           size={size}

@@ -1,11 +1,11 @@
 import { AccountSection } from './AccountSection';
-import { AccountMock } from './mock';
+import { AccountData } from './types';
 
 export interface AssetListProps {
   /**
    * Accounts with their assets to display
    */
-  accounts: AccountMock[];
+  accounts: AccountData[];
 }
 
 /**

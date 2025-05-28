@@ -16,7 +16,7 @@ export const Section: React.FC<SectionProps> = ({
   layout = 'boxed',
   titleAdornment,
 }) => (
-  <section className={`flex flex-col gap-0  ${className}`}>
+  <section className={`flex flex-col gap-1  ${className}`}>
     {sectionTitle && (
       <div className='flex items-center'>
         <Text color='text.primary' xs>
@@ -26,7 +26,7 @@ export const Section: React.FC<SectionProps> = ({
       </div>
     )}
     {layout === 'boxed' ? (
-      <div className='rounded-lg bg-other-tonalFill5 p-3'>{children}</div>
+      <div className='rounded-sm bg-other-tonalFill5 p-3 py-2'>{children}</div>
     ) : (
       <div>{children}</div>
     )}

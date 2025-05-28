@@ -13,6 +13,7 @@ import { Card } from '@penumbra-zone/ui/Card';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { Wallet2 } from 'lucide-react';
+import { createEnhancedMetadata } from '@shared/utils/clean-asset-symbol';
 
 // Utility function to compare Uint8Arrays
 const compareUint8Arrays = (a: Uint8Array, b: Uint8Array): boolean => {
@@ -65,35 +66,41 @@ export const AllTransactionsPage = observer(() => {
     if (!assetId || !balancesResponses) {
       return undefined;
     }
+    let metadata: Metadata | undefined;
+
     // Check for AssetId first
     if (assetId instanceof AssetId) {
       for (const res of balancesResponses) {
-        const metadata = getMetadataFromBalancesResponse.optional(res);
+        const meta = getMetadataFromBalancesResponse.optional(res);
         if (
-          metadata?.penumbraAssetId?.inner &&
-          compareUint8Arrays(metadata.penumbraAssetId.inner, assetId.inner)
+          meta?.penumbraAssetId?.inner &&
+          compareUint8Arrays(meta.penumbraAssetId.inner, assetId.inner)
         ) {
-          return metadata;
+          metadata = meta;
+          break;
         }
       }
     } else {
       // Must be Denom or string
       const denomToFind = typeof assetId === 'string' ? assetId : assetId.denom;
       for (const res of balancesResponses) {
-        const metadata = getMetadataFromBalancesResponse.optional(res);
-        if (metadata) {
+        const meta = getMetadataFromBalancesResponse.optional(res);
+        if (meta) {
           if (
-            metadata.base === denomToFind ||
-            metadata.display === denomToFind ||
-            metadata.symbol === denomToFind
+            meta.base === denomToFind ||
+            meta.display === denomToFind ||
+            meta.symbol === denomToFind
           ) {
-            return metadata;
+            metadata = meta;
+            break;
           }
-          return metadata;
+          metadata = meta;
         }
       }
     }
-    return undefined;
+
+    // Create enhanced metadata with proper icon and badge
+    return metadata ? createEnhancedMetadata(metadata) : undefined;
   };
 
   const breadcrumbItems: BreadcrumbItem[] = [
@@ -114,11 +121,11 @@ export const AllTransactionsPage = observer(() => {
   if (!isConnected) {
     return (
       <div className='flex w-full flex-col items-center'>
-        <div className='flex w-full flex-col' style={{ maxWidth: '752px' }}>
+        <div className="flex w-full flex-col max-w-[752px]">
           <div className='flex items-center justify-between px-3 py-4'>
             <BreadCrumb items={breadcrumbItems} />
           </div>
-          <Card title='Your Transactions'>
+          <Card>
             <div className='flex flex-col items-center justify-center min-h-[400px] gap-4'>
               <div className='size-8 text-text-secondary'>
                 <Wallet2 className='w-full h-full' />

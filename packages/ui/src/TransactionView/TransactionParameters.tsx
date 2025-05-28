@@ -3,6 +3,7 @@ import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_
 import { ValueViewComponent } from '../ValueView'; // Updated path
 import { DetailRow } from './DetailRow';
 import { SectionComponentProps } from './TransactionView';
+import { Text } from '../Text';
 
 export const TransactionParameters: React.FC<SectionComponentProps> = ({
   transactionToDisplay,
@@ -34,12 +35,18 @@ export const TransactionParameters: React.FC<SectionComponentProps> = ({
 
   return (
     <div className='flex flex-col gap-1'>
-      {feeValueView && (
-        <DetailRow
-          label='Transaction Fee'
-          value={<ValueViewComponent valueView={feeValueView} showValue showIcon={false} />}
-        />
-      )}
+      <DetailRow
+        label='Transaction Fee'
+        value={
+          feeValueView ? (
+            <ValueViewComponent valueView={feeValueView} context='table' abbreviate={false} />
+          ) : (
+            <Text variant='smallTechnical' color='text.secondary'>
+              No fee
+            </Text>
+          )
+        }
+      />
       {chainId && <DetailRow label='Chain ID' value={chainId} />}
     </div>
   );

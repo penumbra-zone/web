@@ -5,7 +5,6 @@ import {
   getBalanceView,
   getMetadataFromBalancesResponse,
 } from '@penumbra-zone/getters/balances-response';
-import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { pnum } from '@penumbra-zone/types/pnum';
 
 import { useBalancesStore } from '@shared/stores/store-context';
@@ -13,23 +12,8 @@ import { BalancesByAccount } from '@shared/stores/balances-store';
 import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { AssetCard } from './assets/AssetCard';
 import { TransactionCard } from './transactions/TransactionCard';
-
-// Define interfaces for our implementation
-interface AssetData {
-  id: string;
-  name: string;
-  symbol: string;
-  amount: string;
-  value: string | null;
-  icon?: string;
-}
-
-interface AccountData {
-  id: string;
-  name: string;
-  assets: AssetData[];
-  addressView?: AddressView;
-}
+import { getEnhancedAssetInfo } from '@shared/utils/clean-asset-symbol';
+import { AssetData, AccountData } from './assets/AssetCard/types';
 
 export const Portfolio = observer(() => {
   const balancesStore = useBalancesStore();
@@ -58,6 +42,9 @@ export const Portfolio = observer(() => {
               return null;
             }
 
+            // Get enhanced asset information with icon and badge data
+            const enhancedInfo = getEnhancedAssetInfo(metadata.symbol);
+
             // Get the proper display exponent for this asset
             const displayExponent = getDisplayDenomExponent(metadata);
 
@@ -71,23 +58,24 @@ export const Portfolio = observer(() => {
                 })
               : '0';
 
-            // Get the proper metadata display values
-            const symbol = metadata.symbol;
-
-            // Use metadata.name for proper display name (like "TestUSD" or "Penumbra")
-            // Fallback to symbol if name is not available
-            const displayName = metadata.name || symbol;
+            // Use enhanced asset info for display
+            const displayName = enhancedInfo.displayName ?? metadata.name ?? enhancedInfo.symbol;
 
             const asset: AssetData = {
               id: metadata.penumbraAssetId?.inner.toString() ?? '',
-              // Use proper display name for the asset - typically metadata.name
+              // Use proper display name for the asset
               name: displayName,
-              symbol,
+              symbol: enhancedInfo.symbol,
               // Don't include the symbol in amount - the component will add it
               amount: displayAmount,
               value: null,
-              // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- empty string for icon path is valid and should not be coalesced to undefined, || is intentional here
-              icon: metadata.images[0]?.png || metadata.images[0]?.svg || undefined,
+              // Use enhanced asset icon if available, otherwise fall back to metadata images
+              icon:
+                enhancedInfo.icon ??
+                metadata.images[0]?.png ??
+                metadata.images[0]?.svg ??
+                undefined,
+              // No longer need badge in data since AssetIcon handles it with isDelegated prop
             };
 
             return asset;
@@ -95,22 +83,14 @@ export const Portfolio = observer(() => {
           .filter((asset: AssetData | null): asset is AssetData => asset !== null),
       } as AccountData;
     });
-  }, [balancesStore.balancesByAccount]);
-
-  // For now we don't have actual value calculation
-  // In a future implementation, we would calculate a real total balance value here
+  }, [balancesStore.balancesByAccount, balancesStore.loading]);
 
   return (
     <div className='flex w-full flex-col items-center'>
-      {/* PortfolioBalance hidden until totalBalanceValue is implemented */}
-
       <div className='grid w-full flex-1 grid-cols-1 gap-4 md:grid-cols-2'>
-        {/* Asset Card with real data */}
         <div>
           <AssetCard accounts={accounts} showInfoButton={true} />
         </div>
-
-        {/* Reserved space for Transactions, to be implemented later */}
         <div>
           <TransactionCard />
         </div>

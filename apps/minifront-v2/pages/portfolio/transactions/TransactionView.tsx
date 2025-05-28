@@ -2,8 +2,10 @@ import { AssetId, Denom, Metadata } from '@penumbra-zone/protobuf/penumbra/core/
 import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { TransactionView as UiTransactionView } from '@penumbra-zone/ui';
 import { observer } from 'mobx-react-lite';
+import { useEffect, useState } from 'react';
 
 import { useTransactionsStore } from '@shared/stores/store-context';
+import { penumbraService } from '@shared/services/penumbra-service';
 
 export interface TransactionViewProps {
   txHash: string;
@@ -20,6 +22,23 @@ export const TransactionView: React.FC<TransactionViewProps> = observer(
     const fullTxInfoData = transactionsStore.getTransactionByHash(txHash);
     const loading = transactionsStore.loading;
     const error = null; // TODO: Add error handling to store
+    const [blockTimestamp, setBlockTimestamp] = useState<Date | undefined>();
+
+    // Fetch the block timestamp when we have transaction info with height
+    useEffect(() => {
+      const fetchTimestamp = async () => {
+        if (fullTxInfoData?.height) {
+          try {
+            const timestamp = await penumbraService.getBlockTimestamp(fullTxInfoData.height);
+            setBlockTimestamp(timestamp);
+          } catch (err) {
+            console.error('Failed to fetch block timestamp:', err);
+          }
+        }
+      };
+
+      void fetchTimestamp();
+    }, [fullTxInfoData?.height]);
 
     return (
       <UiTransactionView
@@ -30,6 +49,7 @@ export const TransactionView: React.FC<TransactionViewProps> = observer(
         getTxMetadata={getTxMetadata}
         walletAddressViews={walletAddressViews}
         onDeselectTransaction={onDeselectTransaction}
+        blockTimestamp={blockTimestamp}
       />
     );
   },

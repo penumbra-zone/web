@@ -6,7 +6,7 @@
  * making it easy to use throughout the application.
  */
 
-import { ViewService } from '@penumbra-zone/protobuf';
+import { ViewService, SctService } from '@penumbra-zone/protobuf';
 import {
   BalancesRequest,
   TransactionInfoRequest,
@@ -15,6 +15,7 @@ import {
   GasPricesRequest,
   TransactionInfoByHashRequest,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { TimestampByHeightRequest } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
 import { penumbra } from '../lib/penumbra';
 
 export class PenumbraService {
@@ -92,6 +93,17 @@ export class PenumbraService {
    */
   getViewClient() {
     return penumbra.service(ViewService);
+  }
+
+  /**
+   * Get the timestamp for a specific block height
+   * @param height - The block height to get timestamp for
+   * @returns Promise of Date object or undefined
+   */
+  async getBlockTimestamp(height: bigint): Promise<Date | undefined> {
+    const request = new TimestampByHeightRequest({ height });
+    const { timestamp } = await penumbra.service(SctService).timestampByHeight(request);
+    return timestamp?.toDate();
   }
 }
 

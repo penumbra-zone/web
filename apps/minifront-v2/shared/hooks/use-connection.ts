@@ -16,7 +16,6 @@ export const useIsConnected = (): boolean => {
 
     penumbra.onConnectionStateChange(() => {
       const newConnected = checkConnection();
-      console.log('useIsConnected - connection state changed to:', newConnected);
       setConnected(newConnected);
     });
   }, []);

@@ -1,5 +1,5 @@
 import { AssetListItem } from './AssetListItem';
-import { AccountMock } from './mock';
+import { AccountData } from './types';
 import { AddressViewComponent } from '@penumbra-zone/ui';
 import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
@@ -7,7 +7,7 @@ export interface AccountSectionProps {
   /**
    * Account with its assets to display
    */
-  account: Omit<AccountMock, 'addressView'> & { addressView?: AddressView };
+  account: Omit<AccountData, 'addressView'> & { addressView?: AddressView };
 }
 
 /**

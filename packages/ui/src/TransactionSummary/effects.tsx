@@ -24,7 +24,6 @@ export const SummaryEffects = ({ effects }: SummaryEffectsProps) => {
     <div className='flex flex-col'>
       {/* Visible effect rows */}
       {visibleEffects.map((effect, index) => {
-        console.log('DEBUG: Rendering effect address:', effect.address);
         return (
           <div key={index} className='flex items-center gap-2'>
             {/* Balance changes for this account */}

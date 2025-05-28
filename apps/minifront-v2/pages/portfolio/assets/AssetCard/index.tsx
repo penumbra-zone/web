@@ -4,9 +4,9 @@ import { Text } from '@penumbra-zone/ui/Text';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Wallet2 } from 'lucide-react';
 import { AssetList } from './AssetList';
-import { AccountMock, mockAccounts } from './mock';
 import { InfoDialog } from '../InfoDialog';
 import { useIsConnected, useConnectWallet } from '@shared/hooks/use-connection';
+import { AccountData } from './types';
 
 export interface AssetCardProps {
   /**
@@ -16,7 +16,7 @@ export interface AssetCardProps {
   /**
    * List of accounts with assets
    */
-  accounts?: AccountMock[];
+  accounts?: AccountData[];
   /**
    * Optional header action component
    */
@@ -41,7 +41,7 @@ export interface AssetCardProps {
  */
 export const AssetCard = ({
   title = 'Your Assets',
-  accounts = mockAccounts,
+  accounts = [],
   headerAction,
   showInfoButton = true,
 }: AssetCardProps) => {
@@ -86,5 +86,4 @@ export { AssetListItem } from './AssetListItem';
 export type { AssetListItemProps } from './AssetListItem';
 export { AccountSection } from './AccountSection';
 export type { AccountSectionProps } from './AccountSection';
-export type { AccountMock, AssetMock } from './mock';
-export { mockAccounts } from './mock';
+export type { AccountData, AssetData } from './types';

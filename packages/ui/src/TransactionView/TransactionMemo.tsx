@@ -6,6 +6,7 @@ import { DetailRow } from './DetailRow';
 import { SectionComponentProps } from './TransactionView';
 import { Text } from '../Text';
 import { IncognitoIcon } from '../ActionView/actions/incognito-icon';
+import { Density } from '../Density';
 
 const findMatchingAddressView = (
   transactionAddressView: AddressView,
@@ -81,12 +82,12 @@ export const TransactionMemo: React.FC<SectionComponentProps> = ({
   } else if (memoViewData?.case === 'opaque') {
     // For opaque memo, display like an action with just icon and "Memo" text
     return (
-      <div className='flex h-10 w-full items-center justify-between gap-1 rounded-sm bg-other-tonalFill5 px-3 py-2'>
+      <div className='flex h-10 w-full items-center justify-between gap-1 rounded-sm'>
         <i className='block text-neutral-light'>
           <IncognitoIcon />
         </i>
         <div className='flex grow items-center truncate'>
-          <Text variant='detailTechnical' color='text.primary' truncate>
+          <Text variant='smallTechnical' color='text.secondary' truncate>
             Memo
           </Text>
         </div>
@@ -98,9 +99,9 @@ export const TransactionMemo: React.FC<SectionComponentProps> = ({
 
   if (!addressViewForDisplay && !memoText) {
     return (
-      <div className='py-1 text-sm italic text-gray-500'>
+      <Text variant='smallTechnical' color='text.secondary' truncate>
         No memo or return address for this transaction.
-      </div>
+      </Text>
     );
   }
 
@@ -110,12 +111,14 @@ export const TransactionMemo: React.FC<SectionComponentProps> = ({
         <DetailRow
           label='Return Address'
           value={
-            <AddressViewComponent
-              addressView={addressViewForDisplay}
-              truncate={true}
-              external={false}
-              copyable={isUsersReturnAddress}
-            />
+            <Density slim>
+              <AddressViewComponent
+                addressView={addressViewForDisplay}
+                truncate={true}
+                external={false}
+                copyable={isUsersReturnAddress}
+              />
+            </Density>
           }
         />
       )}

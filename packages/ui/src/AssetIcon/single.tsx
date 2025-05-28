@@ -1,5 +1,5 @@
 import cn from 'clsx';
-import { ReactNode, useMemo } from 'react';
+import { ReactNode } from 'react';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getDisplay } from '@penumbra-zone/getters/metadata';
 import { assetPatterns } from '@penumbra-zone/types/assets';
@@ -28,9 +28,17 @@ export interface AssetIconProps {
   hideBadge?: boolean;
   /** Technical property, needed for `AssetGroup` component only */
   zIndex?: number;
+  /** When true, shows a delegation badge regardless of metadata badges */
+  isDelegated?: boolean;
 }
 
-export const AssetIcon = ({ metadata, size = 'md', hideBadge, zIndex }: AssetIconProps) => {
+export const AssetIcon = ({
+  metadata,
+  size = 'md',
+  hideBadge,
+  zIndex,
+  isDelegated,
+}: AssetIconProps) => {
   // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- possibly empty string
   const icon = metadata?.images[0]?.png || metadata?.images[0]?.svg;
   const display = getDisplay.optional(metadata);
@@ -39,10 +47,20 @@ export const AssetIcon = ({ metadata, size = 'md', hideBadge, zIndex }: AssetIco
   const isPositionToken = display ? assetPatterns.lpNft.matches(display) : false;
   const isAuctionToken = display ? assetPatterns.auctionNft.matches(display) : false;
 
+  // Consider both the pattern match and the isDelegated prop
+  const shouldShowAsDelegation = isDelegationToken || isDelegated;
+
   let assetIcon: ReactNode;
-  if (icon) {
+
+  // For delegation tokens (isDelegated=true), always prioritize the icon from enhanced metadata
+  if (isDelegated && icon) {
+    // Enhanced delegation tokens should use the Penumbra icon from metadata
     assetIcon = <img src={icon} className='block rounded-full' alt='Asset icon' />;
-  } else if (isDelegationToken) {
+  } else if (icon) {
+    // Regular assets with icons
+    assetIcon = <img src={icon} className='block rounded-full' alt='Asset icon' />;
+  } else if (isDelegationToken && display) {
+    // Original delegation tokens with display denom pattern
     assetIcon = <DelegationTokenIcon displayDenom={display} />;
   } else if (isUnbondingToken) {
     /**
@@ -58,13 +76,17 @@ export const AssetIcon = ({ metadata, size = 'md', hideBadge, zIndex }: AssetIco
     assetIcon = <Identicon uniqueIdentifier={metadata?.symbol ?? '?'} type='solid' />;
   }
 
-  const badge = useMemo(() => {
-    if (!metadata?.badges.length) {
-      return undefined;
-    }
-    const badge = metadata.badges[0];
-    return badge?.svg ?? badge?.png;
-  }, [metadata]);
+  // Custom delegation badge component
+  const DelegationBadge = () => (
+    <div
+      className={cn(
+        badgeSizeMap[size],
+        'absolute flex items-center justify-center rounded-full bg-[#8D5728] shadow-sm w-3 h-3 text-white text-[10px] font-bold',
+      )}
+    >
+      D
+    </div>
+  );
 
   return (
     <div
@@ -77,9 +99,7 @@ export const AssetIcon = ({ metadata, size = 'md', hideBadge, zIndex }: AssetIco
       title={metadata?.symbol}
     >
       {assetIcon}
-      {!hideBadge && badge && (
-        <img src={badge} data-badge='true' alt='' className={cn(badgeSizeMap[size], 'absolute')} />
-      )}
+      {!hideBadge && <>{shouldShowAsDelegation && <DelegationBadge />}</>}
     </div>
   );
 };

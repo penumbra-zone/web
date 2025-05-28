@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { TransactionClassification } from '@penumbra-zone/perspective/transaction/classification';
-import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { Metadata, AssetImage } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { TransactionInfo } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { classifyTransaction } from '@penumbra-zone/perspective/transaction/classify';
@@ -59,6 +59,31 @@ const CLASSIFICATION_LABEL_MAP: Record<TransactionClassification, string> = {
   liquidityTournamentVote: 'Liquidity Tournament Vote',
 };
 
+// Helper function to enhance metadata for delegation tokens (same as in adaptEffects)
+const enhanceMetadataIfNeeded = (metadata: Metadata): Metadata => {
+  if (!metadata?.symbol) return metadata;
+
+  // Check if this is a delegation token that needs enhancement
+  // Check both the original pattern and the cleaned symbol
+  if (metadata.symbol.startsWith('delUM(') || metadata.symbol === 'delUM') {
+    // Create enhanced metadata with clean symbol and Penumbra icon
+    const enhanced = metadata.clone();
+    enhanced.symbol = 'delUM';
+    enhanced.name = 'Delegated Penumbra';
+
+    // Set Penumbra icon
+    enhanced.images = [
+      new AssetImage({
+        svg: 'https://raw.githubusercontent.com/prax-wallet/registry/main/images/um.svg',
+      }),
+    ];
+
+    return enhanced;
+  }
+
+  return metadata;
+};
+
 /**
  * A hook that prepares data from TransactionInfo to be rendered in TransactionSummary.
  */
@@ -80,14 +105,17 @@ export const useClassification = (
   // extract the assets from the main transaction action
   const relevantAssets = findRelevantAssets(action);
   const assets = useMemo(() => {
-    return relevantAssets
+    const processedAssets = relevantAssets
       .map(asset => {
         if (isMetadata(asset)) {
-          return asset;
+          return enhanceMetadataIfNeeded(asset);
         }
-        return getMetadataByAssetId?.(asset);
+        const metadata = getMetadataByAssetId?.(asset);
+        return metadata ? enhanceMetadataIfNeeded(metadata) : undefined;
       })
       .filter(Boolean) as Metadata[];
+
+    return processedAssets;
   }, [getMetadataByAssetId, relevantAssets]);
 
   const memo = info.view?.bodyView?.memoView?.memoView;

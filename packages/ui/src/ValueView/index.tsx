@@ -159,7 +159,12 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
       <span className={cn('flex w-max max-w-full items-center text-ellipsis', getGap(density))}>
         {showIcon && (
           <div className='shrink-0'>
-            <AssetIcon hideBadge size={getIconSize(density)} metadata={metadata} />
+            <AssetIcon
+              hideBadge={!symbol.startsWith('delUM')}
+              isDelegated={symbol.startsWith('delUM')}
+              size={getIconSize(density)}
+              metadata={metadata}
+            />
           </div>
         )}
 

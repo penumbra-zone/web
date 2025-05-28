@@ -52,7 +52,7 @@ export const DetailRow: React.FC<DetailRowProps> = ({
       return (
         <div className='max-w-[250px] font-mono text-sm'>
           <a href={value} target='_blank' rel='noopener noreferrer' className='hover:underline'>
-            <Text truncate variant='detailTechnical' color='text.secondary'>
+            <Text truncate variant='smallTechnical' color='text.secondary'>
               {value}
             </Text>
           </a>
@@ -66,7 +66,7 @@ export const DetailRow: React.FC<DetailRowProps> = ({
         >
           <Text
             truncate={shouldTruncate}
-            variant='detailTechnical'
+            variant='smallTechnical'
             color='text.secondary'
             whitespace={shouldTruncate ? undefined : 'pre-wrap'}
           >
@@ -80,7 +80,7 @@ export const DetailRow: React.FC<DetailRowProps> = ({
 
   const rawValueToCopy = getRawTextForCopy(value);
 
-  const labelTextProps: TextProps = { color: 'text.secondary', variant: 'detailTechnical' };
+  const labelTextProps: TextProps = { color: 'text.secondary', variant: 'smallTechnical' };
 
   return (
     <div className='flex items-start justify-between text-sm'>

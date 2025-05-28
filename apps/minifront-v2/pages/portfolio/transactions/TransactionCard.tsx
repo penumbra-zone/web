@@ -18,6 +18,7 @@ import { useTransactionsStore, useBalancesStore } from '@shared/stores/store-con
 import { useIsConnected, useConnectWallet } from '@shared/hooks/use-connection';
 import { PagePath } from '@shared/const/page';
 import { InfoDialog } from '../assets/InfoDialog';
+import { createEnhancedMetadata } from '@shared/utils/clean-asset-symbol';
 
 // Utility function to compare Uint8Arrays
 const compareUint8Arrays = (a: Uint8Array, b: Uint8Array): boolean => {
@@ -85,35 +86,41 @@ export const TransactionCard = observer(
       if (!assetId || !balancesResponses) {
         return undefined;
       }
+      let metadata: Metadata | undefined;
+
       // Check for AssetId first
       if (assetId instanceof AssetId) {
         for (const res of balancesResponses) {
-          const metadata = getMetadataFromBalancesResponse.optional(res);
+          const meta = getMetadataFromBalancesResponse.optional(res);
           if (
-            metadata?.penumbraAssetId?.inner &&
-            compareUint8Arrays(metadata.penumbraAssetId.inner, assetId.inner)
+            meta?.penumbraAssetId?.inner &&
+            compareUint8Arrays(meta.penumbraAssetId.inner, assetId.inner)
           ) {
-            return metadata;
+            metadata = meta;
+            break;
           }
         }
       } else {
         // Must be Denom or string
         const denomToFind = typeof assetId === 'string' ? assetId : assetId.denom;
         for (const res of balancesResponses) {
-          const metadata = getMetadataFromBalancesResponse.optional(res);
-          if (metadata) {
+          const meta = getMetadataFromBalancesResponse.optional(res);
+          if (meta) {
             if (
-              metadata.base === denomToFind ||
-              metadata.display === denomToFind ||
-              metadata.symbol === denomToFind
+              meta.base === denomToFind ||
+              meta.display === denomToFind ||
+              meta.symbol === denomToFind
             ) {
-              return metadata;
+              metadata = meta;
+              break;
             }
-            return metadata;
+            metadata = meta;
           }
         }
       }
-      return undefined;
+
+      // Create enhanced metadata with proper icon and badge
+      return metadata ? createEnhancedMetadata(metadata) : undefined;
     };
 
     const infoButton = showInfoButton ? <InfoDialog /> : null;

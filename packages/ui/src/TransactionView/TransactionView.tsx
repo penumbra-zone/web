@@ -34,6 +34,7 @@ export interface TransactionViewProps {
   getTxMetadata: (assetId: AssetId | Denom | undefined) => Metadata | undefined;
   walletAddressViews?: AddressView[];
   onDeselectTransaction?: () => void;
+  blockTimestamp?: Date;
 }
 
 export interface SectionComponentProps {
@@ -41,6 +42,7 @@ export interface SectionComponentProps {
   fullTxInfo?: GrpcTransactionInfo;
   getTxMetadata: (assetId: AssetId | Denom | undefined) => Metadata | undefined;
   walletAddressViews?: AddressView[];
+  blockTimestamp?: Date;
 }
 
 export const TransactionView: React.FC<TransactionViewProps> = ({
@@ -50,6 +52,7 @@ export const TransactionView: React.FC<TransactionViewProps> = ({
   getTxMetadata,
   walletAddressViews = [],
   onDeselectTransaction,
+  blockTimestamp,
 }) => {
   const [activeTab, setActiveTab] = useState<TxViewTab>(TxViewTab.MY_VIEW);
   const [displayedTransactionView, setDisplayedTransactionView] = useState<
@@ -149,6 +152,7 @@ export const TransactionView: React.FC<TransactionViewProps> = ({
     fullTxInfo: fullTxInfoFromMinifront,
     getTxMetadata,
     walletAddressViews,
+    blockTimestamp,
   };
 
   const getBackgroundClass = (tab: TxViewTab): string => {
