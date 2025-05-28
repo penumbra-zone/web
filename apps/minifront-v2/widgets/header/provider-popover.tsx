@@ -58,13 +58,15 @@ export const ProviderPopover = observer(() => {
   const icon = useMemo(() => {
     const icons = manifest?.icons;
     const blob = icons?.['32'] ?? icons?.['128'];
-    if (!blob) return null;
+    if (!blob) {
+      return null;
+    }
 
     return (
       <img
         src={URL.createObjectURL(blob)}
         alt={`${manifest?.name} Icon`}
-        className='w-6 h-6 max-w-none grayscale' // Smaller size and black/white
+        className='size-6 max-w-none grayscale' // Smaller size and black/white
       />
     );
   }, [manifest]);
@@ -76,7 +78,7 @@ export const ProviderPopover = observer(() => {
   const connectWallet = async () => {
     if (availableProviders.length === 1 && availableProviders[0]) {
       try {
-        await penumbra.connect(availableProviders[0]);
+        await penumbra.connect(availableProviders[0] ?? '');
         // Refresh all stores after successful connection
         await Promise.all([
           appParametersStore.refresh(),
@@ -90,13 +92,16 @@ export const ProviderPopover = observer(() => {
       // TODO: Show provider selection dialog
       // For now, just connect to the first one
       try {
-        await penumbra.connect(availableProviders[0]!);
-        // Refresh all stores after successful connection
-        await Promise.all([
-          appParametersStore.refresh(),
-          balancesStore.loadBalances(),
-          transactionsStore.loadTransactions(),
-        ]);
+        const firstProvider = availableProviders[0];
+        if (firstProvider) {
+          await penumbra.connect(firstProvider);
+          // Refresh all stores after successful connection
+          await Promise.all([
+            appParametersStore.refresh(),
+            balancesStore.loadBalances(),
+            transactionsStore.loadTransactions(),
+          ]);
+        }
       } catch (error) {
         console.error('Failed to connect wallet:', error);
       }
@@ -110,7 +115,7 @@ export const ProviderPopover = observer(() => {
   // If wallet is installed but not connected
   if (availableProviders.length > 0 && !isConnected) {
     return (
-      <Button actionType='default' density='compact' icon={Wallet2} onClick={connectWallet}>
+      <Button actionType='default' density='compact' icon={Wallet2} onClick={() => void connectWallet()}>
         <span className='text-sm'>Connect Wallet</span>
       </Button>
     );
@@ -144,8 +149,8 @@ export const ProviderPopover = observer(() => {
         </Popover.Trigger>
         <Popover.Content align='end' side='bottom'>
           <Density compact>
-            <div className='flex flex-col gap-4 text-text-primary min-w-60 w-full'>
-              <div className='flex flex-col gap-2 ml-4'>
+            <div className='flex w-full min-w-60 flex-col gap-4 text-text-primary'>
+              <div className='ml-4 flex flex-col gap-2'>
                 <Text h4>
                   {manifest.name} {manifest.version}
                 </Text>
@@ -169,7 +174,7 @@ export const ProviderPopover = observer(() => {
 
   // Fallback: show connect wallet
   return (
-    <Button actionType='default' density='compact' icon={Wallet2} onClick={connectWallet}>
+    <Button actionType='default' density='compact' icon={Wallet2} onClick={() => void connectWallet()}>
       <span className='text-sm'>Connect Wallet</span>
     </Button>
   );

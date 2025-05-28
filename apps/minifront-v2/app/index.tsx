@@ -15,7 +15,9 @@ const StoreInitializer = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     // Initialize all stores when the app starts
-    rootStore.initialize().catch(console.error);
+    rootStore.initialize().catch((error: unknown) => {
+      console.error(error);
+    });
 
     // Cleanup function to dispose stores when app unmounts
     return () => {

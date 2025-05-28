@@ -73,8 +73,6 @@ export const getEnhancedAssetInfo = (symbol: string): EnhancedAssetInfo => {
  * @returns Enhanced metadata with correct icon, badge, and clean symbol for delegation tokens
  */
 export const createEnhancedMetadata = (metadata: Metadata): Metadata => {
-  if (!metadata) return metadata;
-
   const enhancedInfo = getEnhancedAssetInfo(metadata.symbol);
 
   // Create a copy of the metadata to avoid mutating the original

@@ -59,6 +59,7 @@ export const Portfolio = observer(() => {
               : '0';
 
             // Use enhanced asset info for display
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- displayName can be null per interface but TypeScript can't infer it
             const displayName = enhancedInfo.displayName ?? metadata.name ?? enhancedInfo.symbol;
 
             const asset: AssetData = {
@@ -75,7 +76,6 @@ export const Portfolio = observer(() => {
                 metadata.images[0]?.png ??
                 metadata.images[0]?.svg ??
                 undefined,
-              // No longer need badge in data since AssetIcon handles it with isDelegated prop
             };
 
             return asset;

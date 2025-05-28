@@ -70,7 +70,7 @@ export class AssetsStore {
   get allAssets(): Metadata[] {
     return this.assetsResponses
       .map(response => getDenomMetadata(response))
-      .filter((metadata): metadata is Metadata => metadata !== undefined);
+      .filter((metadata): metadata is Metadata => Boolean(metadata));
   }
 
   /**

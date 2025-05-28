@@ -13,9 +13,9 @@ export const DesktopNav = () => {
     const currentLink = HEADER_LINKS.find(
       link =>
         location.pathname === link.value ||
-        (link.value === PagePath.Portfolio && location.pathname.startsWith('/portfolio')),
+        (link.value === PagePath.Portfolio.toString() && location.pathname.startsWith('/portfolio')),
     );
-    return currentLink?.value || PagePath.Portfolio;
+    return currentLink?.value ?? PagePath.Portfolio;
   };
 
   const currentPath = getCurrentValue();

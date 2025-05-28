@@ -55,15 +55,15 @@ export const AssetCard = ({
   if (!isConnected) {
     return (
       <Card title={title} headerAction={headerAction} endContent={finalEndContent}>
-        <div className='flex flex-col items-center justify-center min-h-[250px] gap-4'>
+        <div className='flex min-h-[250px] flex-col items-center justify-center gap-4'>
           <div className='size-8 text-text-secondary'>
-            <Wallet2 className='w-full h-full' />
+            <Wallet2 className='size-full' />
           </div>
           <Text color='text.secondary' small>
             Connect wallet to see your assets
           </Text>
           <div className='w-fit'>
-            <Button actionType='default' density='compact' onClick={connectWallet}>
+            <Button actionType='default' density='compact' onClick={() => void connectWallet()}>
               Connect wallet
             </Button>
           </div>

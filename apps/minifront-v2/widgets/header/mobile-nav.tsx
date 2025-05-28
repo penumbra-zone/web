@@ -2,10 +2,8 @@ import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@penumbra-zone/ui/Button';
+import { PagePath } from '@shared/const/page';
 import { HEADER_LINKS } from './links';
-import { StatusPopover } from './status-popover.tsx';
-import { ProviderPopover } from './provider-popover.tsx';
-import { HeaderLogo } from './logo.tsx';
 
 export const MobileNav = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,9 +19,9 @@ export const MobileNav = () => {
     const currentLink = HEADER_LINKS.find(
       link =>
         location.pathname === link.value ||
-        (link.value === '/portfolio' && location.pathname.startsWith('/portfolio')),
+        (link.value === PagePath.Portfolio.toString() && location.pathname.startsWith('/portfolio')),
     );
-    return currentLink?.value || '/portfolio';
+    return currentLink?.value ?? PagePath.Portfolio;
   };
 
   const currentPath = getCurrentValue();
@@ -43,7 +41,7 @@ export const MobileNav = () => {
 
       {isOpen && (
         <div className='absolute left-0 top-full z-50 w-full bg-background/95 backdrop-blur-sm lg:hidden'>
-          <div className='flex flex-col p-4 space-y-2'>
+          <div className='flex flex-col space-y-2 p-4'>
             {HEADER_LINKS.map(link => {
               const Icon = link.icon;
               const isActive = currentPath === link.value;
@@ -52,7 +50,7 @@ export const MobileNav = () => {
                 <button
                   key={link.value}
                   onClick={() => handleNavClick(link.value)}
-                  className={`flex items-center gap-3 p-3 rounded-lg text-left transition-colors ${
+                  className={`flex items-center gap-3 rounded-lg p-3 text-left transition-colors ${
                     isActive ? 'bg-accent text-accent-foreground' : 'hover:bg-accent/50'
                   }`}
                 >

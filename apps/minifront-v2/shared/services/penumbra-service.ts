@@ -19,17 +19,13 @@ import { TimestampByHeightRequest } from '@penumbra-zone/protobuf/penumbra/core/
 import { penumbra } from '../lib/penumbra';
 
 export class PenumbraService {
-  constructor() {
-    // Service is initialized with the global penumbra client
-  }
-
   /**
    * Get a stream of balance responses
    * @param params - Optional parameters to filter balances
    * @returns Async iterable of balance responses
    */
   getBalancesStream(params?: Partial<BalancesRequest>) {
-    const request = new BalancesRequest(params || {});
+    const request = new BalancesRequest(params ?? {});
     return penumbra.service(ViewService).balances(request);
   }
 
@@ -39,7 +35,7 @@ export class PenumbraService {
    * @returns Async iterable of transaction info responses
    */
   getTransactionInfoStream(params?: Partial<TransactionInfoRequest>) {
-    const request = new TransactionInfoRequest(params || {});
+    const request = new TransactionInfoRequest(params ?? {});
     return penumbra.service(ViewService).transactionInfo(request);
   }
 
@@ -50,7 +46,7 @@ export class PenumbraService {
    */
   async getTransactionInfoByHash(hash: string) {
     // Convert hex string to Uint8Array
-    const hashBytes = new Uint8Array(hash.match(/.{1,2}/g)?.map(byte => parseInt(byte, 16)) || []);
+    const hashBytes = new Uint8Array(hash.match(/.{1,2}/g)?.map(byte => parseInt(byte, 16)) ?? []);
 
     const request = new TransactionInfoByHashRequest({
       id: { inner: hashBytes },
@@ -65,7 +61,7 @@ export class PenumbraService {
    * @returns Async iterable of assets responses
    */
   getAssetsStream(params?: Partial<AssetsRequest>) {
-    const request = new AssetsRequest(params || {});
+    const request = new AssetsRequest(params ?? {});
     return penumbra.service(ViewService).assets(request);
   }
 

@@ -42,7 +42,10 @@ export const useConnectWallet = () => {
       // Multiple providers - connect to first one for now
       // TODO: Show provider selection dialog
       try {
-        await penumbra.connect(availableProviders[0]!);
+        const firstProvider = availableProviders[0];
+        if (firstProvider) {
+          await penumbra.connect(firstProvider);
+        }
       } catch (error) {
         console.error('Failed to connect wallet:', error);
       }

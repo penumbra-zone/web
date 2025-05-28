@@ -22,9 +22,13 @@ import { createEnhancedMetadata } from '@shared/utils/clean-asset-symbol';
 
 // Utility function to compare Uint8Arrays
 const compareUint8Arrays = (a: Uint8Array, b: Uint8Array): boolean => {
-  if (a.length !== b.length) return false;
+  if (a.length !== b.length) {
+    return false;
+  }
   for (let i = 0; i < a.length; i++) {
-    if (a[i] !== b[i]) return false;
+    if (a[i] !== b[i]) {
+      return false;
+    }
   }
   return true;
 };
@@ -60,10 +64,6 @@ export const TransactionCard = observer(
 
     // Extract wallet address views from balances responses
     const walletAddressViews = useMemo((): AddressView[] => {
-      if (!balancesResponses) {
-        return [];
-      }
-
       const addressMap = new Map<string | number, AddressView>();
 
       for (const response of balancesResponses) {
@@ -83,7 +83,7 @@ export const TransactionCard = observer(
     }, [balancesResponses]);
 
     const getTxMetadata = (assetId?: AssetId | Denom | string): Metadata | undefined => {
-      if (!assetId || !balancesResponses) {
+      if (!assetId) {
         return undefined;
       }
       let metadata: Metadata | undefined;
@@ -161,15 +161,15 @@ export const TransactionCard = observer(
       return (
         <div>
           <Card title={cardTitle} headerAction={headerAction} endContent={headerContent}>
-            <div className='flex flex-col items-center justify-center min-h-[250px] gap-4'>
+            <div className='flex min-h-[250px] flex-col items-center justify-center gap-4'>
               <div className='size-8 text-text-secondary'>
-                <Wallet2 className='w-full h-full' />
+                <Wallet2 className='size-full' />
               </div>
               <Text color='text.secondary' small>
                 Connect wallet to see your transactions
               </Text>
               <div className='w-fit'>
-                <Button actionType='default' density='compact' onClick={connectWallet}>
+                <Button actionType='default' density='compact' onClick={() => void connectWallet()}>
                   Connect wallet
                 </Button>
               </div>
@@ -213,7 +213,7 @@ export const TransactionCard = observer(
                 ) : (
                   <div className='flex min-h-[120px] flex-col items-center justify-center p-6 text-center text-muted-foreground'>
                     <p className='text-sm'>You have no transactions yet.</p>
-                    <p className='text-xs mt-1'>
+                    <p className='mt-1 text-xs'>
                       Send, receive, or trade assets to see your transaction history here.
                     </p>
                   </div>

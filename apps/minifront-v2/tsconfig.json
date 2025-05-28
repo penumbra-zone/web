@@ -24,6 +24,7 @@
     "entities",
     "features",
     "vite.config.ts",
+    "tailwind.config.ts",
     "../../packages/ui-deprecated/src/**/*"
   ]
 }

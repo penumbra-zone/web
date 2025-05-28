@@ -7,15 +7,12 @@
 
 import { makeAutoObservable, runInAction } from 'mobx';
 import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { AddressView, AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { Metadata, AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import {
-  getBalanceView,
   getMetadataFromBalancesResponse,
   getAddressIndex,
 } from '@penumbra-zone/getters/balances-response';
-import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { RootStore } from './root-store';
 
 export interface BalancesByAccount {
@@ -112,8 +109,10 @@ export class BalancesStore {
     const accountMap = new Map<number, BalancesByAccount>();
 
     for (const response of this.balancesResponses) {
-      const addressIndex = getAddressIndex(response);
-      if (addressIndex === undefined) continue;
+      const addressIndex = getAddressIndex.optional(response);
+      if (addressIndex === undefined) {
+        continue;
+      }
 
       const account = addressIndex.account;
       if (!accountMap.has(account)) {
@@ -124,7 +123,10 @@ export class BalancesStore {
         });
       }
 
-      accountMap.get(account)!.balances.push(response);
+      const accountData = accountMap.get(account);
+      if (accountData) {
+        accountData.balances.push(response);
+      }
     }
 
     return Array.from(accountMap.values()).sort((a, b) => a.account - b.account);
@@ -138,7 +140,7 @@ export class BalancesStore {
 
     for (const response of this.balancesResponses) {
       const metadata = getMetadataFromBalancesResponse(response);
-      if (metadata && metadata.penumbraAssetId) {
+      if (metadata.penumbraAssetId) {
         const assetId = metadata.penumbraAssetId.inner.toString();
         if (!assetMap.has(assetId)) {
           assetMap.set(assetId, metadata);
@@ -152,18 +154,15 @@ export class BalancesStore {
   /**
    * Get total value across all accounts (placeholder for future implementation)
    */
-  get totalValue(): number {
-    // TODO: Implement when we have price data
-    return 0;
-  }
+  readonly totalValue = 0;
 
   /**
    * Check if a specific account has any balances
    */
   hasBalances(account: number): boolean {
     return this.balancesResponses.some(response => {
-      const addressIndex = getAddressIndex(response);
-      return addressIndex?.account === account;
+      const addressIndex = getAddressIndex.optional(response);
+      return addressIndex !== undefined && addressIndex.account === account;
     });
   }
 
@@ -173,7 +172,7 @@ export class BalancesStore {
   getBalancesByAsset(assetId: string): BalancesResponse[] {
     return this.balancesResponses.filter(response => {
       const metadata = getMetadataFromBalancesResponse(response);
-      return metadata?.penumbraAssetId?.inner.toString() === assetId;
+      return metadata.penumbraAssetId?.inner.toString() === assetId;
     });
   }
 }
