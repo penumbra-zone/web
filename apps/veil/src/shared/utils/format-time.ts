@@ -1,7 +1,6 @@
 import { pluralize } from '@/shared/utils/pluralize';
 
 export const formatTimeRemaining = (seconds: number): string => {
-  // Convert to switch state to include hour and day states
   if (seconds < 60) {
     return pluralize(seconds, 'second', 'seconds');
   } else if (seconds < 3600) {
