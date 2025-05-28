@@ -5,7 +5,7 @@
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "scripts": {
-    "dev:app": "vite --port 5173"
+    "dev:app": "vite --port 5175"
   },
   "dependencies": {
     "@bufbuild/protobuf": "^1.10.0",
