@@ -72,7 +72,7 @@ export const SummaryEffects = ({ effects }: SummaryEffectsProps) => {
                           </Density>
                         )}
                         {/* Balance changes */}
-                        <div className='flex items-center gap-1 flex-wrap'>
+                        <div className='flex flex-wrap items-center gap-1'>
                           {effect.balances.map((balance, balanceIndex) => (
                             <SummaryBalance key={balanceIndex} balance={balance} />
                           ))}

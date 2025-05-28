@@ -61,7 +61,9 @@ const CLASSIFICATION_LABEL_MAP: Record<TransactionClassification, string> = {
 
 // Helper function to enhance metadata for delegation tokens (same as in adaptEffects)
 const enhanceMetadataIfNeeded = (metadata: Metadata): Metadata => {
-  if (!metadata?.symbol) return metadata;
+  if (!metadata.symbol) {
+    return metadata;
+  }
 
   // Check if this is a delegation token that needs enhancement
   // Check both the original pattern and the cleaned symbol
@@ -138,7 +140,7 @@ export const useClassification = (
 
     data = {
       ...data,
-      address: recipientEffect?.address || address,
+      address: recipientEffect?.address ?? address,
       memo: memoText || DEFAULT_MEMO,
       additionalText: 'to',
     };
@@ -213,7 +215,7 @@ export const useClassification = (
 
     data = {
       ...data,
-      address: destinationEffect?.address || sourceEffect?.address,
+      address: destinationEffect?.address ?? sourceEffect?.address,
       memo: memoText || DEFAULT_MEMO,
       additionalText: destinationEffect?.address ? 'to' : 'from',
     };

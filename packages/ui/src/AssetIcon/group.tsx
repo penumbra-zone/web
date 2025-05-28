@@ -51,7 +51,9 @@ export const AssetGroup = ({
 }: AssetGroupProps) => {
   // Helper function to check if an asset is a delegation token
   const isDelegationToken = (metadata?: Metadata): boolean => {
-    if (!metadata?.symbol) return false;
+    if (!metadata?.symbol) {
+      return false;
+    }
     // Check for cleaned delegation token symbol (delUM) or original pattern
     return metadata.symbol === 'delUM' || metadata.symbol.startsWith('delUM(');
   };

@@ -8,7 +8,9 @@ import { Text } from '../Text';
 import { Density } from '../Density';
 
 const formatTxHash = (hash: string): string => {
-  if (hash.length <= 16) return hash;
+  if (hash.length <= 16) {
+    return hash;
+  }
   return `${hash.slice(0, 8)}...${hash.slice(-8)}`;
 };
 
@@ -50,7 +52,7 @@ export const TransactionInfo: React.FC<SectionComponentProps> = ({
         </div>
         <div className='mx-2 grow border-b border-dashed border-other-tonalStroke pt-3'></div>
         <div className='flex items-center gap-1'>
-          <div className='flex items-center gap-1 max-w-[250px]'>
+          <div className='flex max-w-[250px] items-center gap-1'>
             <Text variant='smallTechnical' truncate color={textColorClass}>
               {fullTxHash ? formatTxHash(fullTxHash) : undefined}
             </Text>

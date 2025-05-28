@@ -2,7 +2,7 @@ declare module '@microlink/react-json-view' {
   export type ThemeKeys = string;
 
   interface ReactJsonViewProps {
-    src: any;
+    src: unknown;
     collapsed?: boolean | number;
     enableClipboard?: boolean;
     style?: React.CSSProperties;

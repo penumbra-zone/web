@@ -78,10 +78,7 @@ export const JsonViewer: FC<JsonViewerProps> = ({
   }, [isExpanded]);
 
   return (
-    <div
-      onClick={handleViewClick}
-      className='overflow-hidden text-ellipsis whitespace-nowrap w-full max-w-full'
-    >
+    <div onClick={handleViewClick} className='w-full max-w-full truncate'>
       <Suspense fallback={loadingFallback}>
         <ReactJsonView
           src={data}

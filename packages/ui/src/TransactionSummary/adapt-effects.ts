@@ -86,17 +86,16 @@ export const adaptEffects = (
     // Try to find a matching wallet address that has the addressIndex information
     let enhancedAddress = effect.address;
     if (effect.address && walletAddressViews) {
+      const effectAddress = effect.address; // Store in const for type narrowing
       // Look for a wallet address that matches this effect address
       const matchingWallet = walletAddressViews.find(walletAddr => {
-        if (!walletAddr || !effect.address) return false;
-
         // Compare addresses - both should have the same address data
         if (
           walletAddr.addressView.case === 'decoded' &&
-          effect.address.addressView.case === 'decoded'
+          effectAddress.addressView.case === 'decoded'
         ) {
           const walletInner = walletAddr.addressView.value.address?.inner;
-          const effectInner = effect.address.addressView.value.address?.inner;
+          const effectInner = effectAddress.addressView.value.address?.inner;
 
           if (
             walletInner &&
@@ -111,10 +110,10 @@ export const adaptEffects = (
         // Also check opaque addresses
         if (
           walletAddr.addressView.case === 'opaque' &&
-          effect.address.addressView.case === 'opaque'
+          effectAddress.addressView.case === 'opaque'
         ) {
           const walletOpaque = walletAddr.addressView.value.address;
-          const effectOpaque = effect.address.addressView.value.address;
+          const effectOpaque = effectAddress.addressView.value.address;
 
           // First try altBech32m comparison if both have it
           if (walletOpaque?.altBech32m && effectOpaque?.altBech32m) {
@@ -140,10 +139,10 @@ export const adaptEffects = (
         // Cross-format comparison: wallet decoded vs effect opaque
         if (
           walletAddr.addressView.case === 'decoded' &&
-          effect.address.addressView.case === 'opaque'
+          effectAddress.addressView.case === 'opaque'
         ) {
           const walletInner = walletAddr.addressView.value.address?.inner;
-          const effectInner = effect.address.addressView.value.address?.inner;
+          const effectInner = effectAddress.addressView.value.address?.inner;
 
           if (
             walletInner &&
@@ -173,7 +172,9 @@ export const adaptEffects = (
 
 // Helper function to enhance metadata for delegation tokens
 const enhanceMetadataIfNeeded = (metadata: Metadata): Metadata => {
-  if (!metadata?.symbol) return metadata;
+  if (!metadata.symbol) {
+    return metadata;
+  }
 
   // Check if this is a delegation token that needs enhancement
   // Check both the original pattern and the cleaned symbol

@@ -83,7 +83,7 @@ export const DelegateAction = ({ value }: DelegateActionProps) => {
         </>
       }
     >
-      <div className='flex flex-row gap-1 items-center'>
+      <div className='flex flex-row items-center gap-1'>
         <Density slim>
           {delegationAmountView && (
             <div className='flex flex-col gap-1'>
