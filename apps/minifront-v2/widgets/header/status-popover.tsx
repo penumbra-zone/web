@@ -11,7 +11,9 @@ import { useAppParametersStore } from '@shared/stores/store-context';
 export const StatusPopover = observer(() => {
   const appParametersStore = useAppParametersStore();
   // @ts-expect-error status property access
-  const status = appParametersStore.status as { syncHeight?: number; latestKnownBlockHeight?: number } | undefined;
+  const status = appParametersStore.status as
+    | { syncHeight?: number; latestKnownBlockHeight?: number }
+    | undefined;
 
   const pill = useMemo(() => {
     if (!status) {

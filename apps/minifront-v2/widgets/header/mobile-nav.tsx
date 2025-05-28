@@ -19,7 +19,8 @@ export const MobileNav = () => {
     const currentLink = HEADER_LINKS.find(
       link =>
         location.pathname === link.value ||
-        (link.value === PagePath.Portfolio.toString() && location.pathname.startsWith('/portfolio')),
+        (link.value === PagePath.Portfolio.toString() &&
+          location.pathname.startsWith('/portfolio')),
     );
     return currentLink?.value ?? PagePath.Portfolio;
   };

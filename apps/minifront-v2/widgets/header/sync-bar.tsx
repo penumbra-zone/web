@@ -3,8 +3,10 @@ import { useAppParametersStore } from '@shared/stores/store-context';
 
 export const SyncBar = observer(() => {
   const appParametersStore = useAppParametersStore();
-  // @ts-expect-error status property access  
-  const status = appParametersStore.status as { syncHeight?: number; latestKnownBlockHeight?: number } | undefined;
+  // @ts-expect-error status property access
+  const status = appParametersStore.status as
+    | { syncHeight?: number; latestKnownBlockHeight?: number }
+    | undefined;
 
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- status can be undefined despite type assertion
   if (!status?.syncHeight || !status?.latestKnownBlockHeight) {

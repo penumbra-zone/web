@@ -115,7 +115,12 @@ export const ProviderPopover = observer(() => {
   // If wallet is installed but not connected
   if (availableProviders.length > 0 && !isConnected) {
     return (
-      <Button actionType='default' density='compact' icon={Wallet2} onClick={() => void connectWallet()}>
+      <Button
+        actionType='default'
+        density='compact'
+        icon={Wallet2}
+        onClick={() => void connectWallet()}
+      >
         <span className='text-sm'>Connect Wallet</span>
       </Button>
     );
@@ -174,7 +179,12 @@ export const ProviderPopover = observer(() => {
 
   // Fallback: show connect wallet
   return (
-    <Button actionType='default' density='compact' icon={Wallet2} onClick={() => void connectWallet()}>
+    <Button
+      actionType='default'
+      density='compact'
+      icon={Wallet2}
+      onClick={() => void connectWallet()}
+    >
       <span className='text-sm'>Connect Wallet</span>
     </Button>
   );
