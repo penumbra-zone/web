@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import cn from 'clsx';
 import { ScaleLinear, scaleLinear } from 'd3-scale';
 import { Text } from '@penumbra-zone/ui';
 import { round } from '@penumbra-zone/types/round';
@@ -27,16 +26,6 @@ interface DeltaState {
 
 const Thumb: React.FC<ThumbProps> = ({ left, right, x, value, scale, max, onMove }) => {
   const deltaRef = useRef<DeltaState | null>(null);
-  const textRef = useRef<HTMLDivElement>(null);
-  const [textWidth, setTextWidth] = useState(0);
-  console.log('TCL: textWidth', textWidth);
-
-  useEffect(() => {
-    requestAnimationFrame(() => {
-      // useComponentSize doesnt set width correctly on updates
-      setTextWidth(textRef.current?.offsetWidth ?? 0);
-    });
-  }, [value]);
 
   const handleMouseMove = (event: MouseEvent | TouchEvent) => {
     if (!deltaRef.current) {
@@ -93,53 +82,83 @@ const Thumb: React.FC<ThumbProps> = ({ left, right, x, value, scale, max, onMove
   };
 
   return (
-    <>
-      <div
-        ref={textRef}
-        className={`
-          absolute z-10 top-0 h-[20px] [line-height:20px_!important] bg-other-tonalFill10 rounded-sm px-2
-        `}
-        style={{
-          left: x,
-        }}
-      >
-        <Text detail color='text.primary'>
-          30%
-        </Text>
-      </div>
-      <div
-        className={`
+    <div
+      className={`
         absolute top-0 flex h-[78px] w-[8px] items-center justify-center bg-transparent
         ${left ? 'left-0' : 'right-0'}
       `}
+    >
+      <div
+        className={`absolute z-0 w-[1px] top-[20px] h-[58px] bg-primary-main ${left ? 'left-0' : 'right-0'}`}
+      />
+      <button
+        type='button'
+        aria-label={`Slider Thumb ${left ? 'Lower' : 'Upper'}`}
+        className={`w-[12px] h-[20px] bg-primary-main absolute top-[32px] cursor-ew-resize rounded-[4px] ${left ? 'left-[-6px]' : 'right-[-6px]'} `}
+        onMouseDown={handlePointerDown}
+        onTouchStart={handlePointerDown}
       >
-        <div
-          className={`absolute z-0 w-[1px] top-[20px] h-[58px] bg-primary-main ${left ? 'left-0' : 'right-0'}`}
-        />
-        <button
-          type='button'
-          aria-label={`Slider Thumb ${left ? 'Lower' : 'Upper'}`}
-          className={`w-[12px] h-[20px] bg-primary-main absolute top-[32px] cursor-ew-resize rounded-[4px] ${left ? 'left-[-6px]' : 'right-[-6px]'} `}
-          onMouseDown={handlePointerDown}
-          onTouchStart={handlePointerDown}
-        >
-          <div className='absolute top-[4px] left-[4px] w-[1px] h-[12px] bg-neutral-contrast' />
-          <div className='absolute top-[4px] right-[4px] w-[1px] h-[12px] bg-neutral-contrast' />
-        </button>
-        <div
-          ref={textRef}
-          className={`
-          absolute z-10 top-[78px] h-[20px] [line-height:20px_!important]
-          ${left ? 'left-0' : 'right-0'}
-          ${left ? 'translate-x-[-50%]' : 'translate-x-[50%]'}
-        `}
-        >
-          <Text detail color='text.primary'>
-            {round({ value: value[left ? 0 : 1], decimals: 6 })}
-          </Text>
-        </div>
-      </div>
-    </>
+        <div className='absolute top-[4px] left-[4px] w-[1px] h-[12px] bg-neutral-contrast' />
+        <div className='absolute top-[4px] right-[4px] w-[1px] h-[12px] bg-neutral-contrast' />
+      </button>
+    </div>
+  );
+};
+
+const PercentageInput = ({ leftX, rightX, value, onInput }) => {
+  const textRef = useRef<HTMLDivElement>(null);
+  const [textWidth, setTextWidth] = useState(0);
+
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      // useComponentSize doesnt set width correctly on updates
+      setTextWidth(textRef.current?.offsetWidth ?? 0);
+    });
+  }, [value]);
+
+  return (
+    <div
+      ref={textRef}
+      className={`
+  absolute z-10 top-0 h-[20px] [line-height:20px_!important] bg-other-tonalFill10 rounded-sm px-2
+`}
+      style={{
+        left: Math.max(0, leftX - textWidth / 2),
+        right: Math.max(0, rightX - textWidth / 2),
+      }}
+    >
+      <Text detail color='text.primary'>
+        30%
+      </Text>
+    </div>
+  );
+};
+
+const ValueInput = ({ leftX, rightX, value }) => {
+  const textRef = useRef<HTMLDivElement>(null);
+  const [textWidth, setTextWidth] = useState(0);
+  console.log('TCL: textWidth', textWidth);
+
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      // useComponentSize doesnt set width correctly on updates
+      setTextWidth(textRef.current?.offsetWidth ?? 0);
+    });
+  }, [value]);
+
+  return (
+    <div
+      ref={textRef}
+      className={`absolute z-10 top-[78px] h-[20px] [line-height:20px_!important]`}
+      style={{
+        left: Math.max(0, leftX - textWidth / 2),
+        right: Math.max(0, rightX - textWidth / 2),
+      }}
+    >
+      <Text detail color='text.primary'>
+        {round({ value, decimals: 6 })}
+      </Text>
+    </div>
   );
 };
 
@@ -186,6 +205,8 @@ export const PriceSlider: React.FC<ControlSliderProps> = ({
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- safe to use
   const scale = scaleRef.current;
+  const leftX = scaleLoaded && scale ? Math.max(0, scale(leftValue)) : undefined;
+  const rightX = scaleLoaded && scale ? Math.min(width, width - scale(rightValue)) : undefined;
 
   return (
     <div>
@@ -198,44 +219,37 @@ export const PriceSlider: React.FC<ControlSliderProps> = ({
         </Text>
       </div>
       <div ref={ref} className='relative z-0 h-[98px] w-full border-b border-other-tonalFill10'>
+        {/* midprice line */}
         <div className='absolute z-10 top-0 left-1/2 h-[70px] w-0 border-l border-dashed border-neutral-contrast' />
+        {/* slider bg gradient */}
         {scaleLoaded && scale && (
           <div
             className='absolute z-0 top-0 h-[70px] bg-gradient-to-b from-[rgba(186,77,20,0)] to-primary-main/10'
             style={{
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-call -- safe
-              left: Math.max(0, scale(leftValue)),
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- safe
-              right: Math.min(width, width - scale(rightValue)),
+              left: leftX,
+              right: rightX,
             }}
           >
-            <Thumb
-              left
-              x={Math.max(0, scale(leftValue))}
-              value={value}
-              scale={scale}
-              max={max}
-              onMove={onInput}
-            />
-            <Thumb
-              right
-              x={Math.min(width, width - scale(rightValue))}
-              value={value}
-              scale={scale}
-              max={max}
-              onMove={onInput}
-            />
+            <Thumb left x={leftX} value={value} scale={scale} max={max} onMove={onInput} />
+            <Thumb right x={rightX} value={value} scale={scale} max={max} onMove={onInput} />
           </div>
         )}
+
+        <PercentageInput leftX={leftX} value={value} />
+        <PercentageInput rightX={rightX} value={value} />
+
+        <ValueInput leftX={leftX} value={leftValue} />
+        <ValueInput rightX={rightX} value={rightValue} />
+
+        {/* slider track bg */}
         <div className='absolute z-10 top-[62px] left-0 w-full h-[6px] bg-other-tonalFill10 rounded-xs' />
+        {/* filled slider track */}
         {scaleLoaded && scale && (
           <div
             className='absolute z-20 top-[62px] h-[6px] bg-primary-main'
             style={{
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-call -- safe
-              left: Math.max(0, scale(leftValue)),
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- safe
-              right: Math.min(width, width - scale(rightValue)),
+              left: leftX,
+              right: rightX,
             }}
           />
         )}
