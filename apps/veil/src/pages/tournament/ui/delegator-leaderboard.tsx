@@ -41,10 +41,7 @@ const LeaderboardRow = observer(
     loading: boolean;
   }) => {
     const { connected } = connectionStore;
-    const { data: subaccountIndex, isPending: indexLoading } = useIndexByAddress(
-      row.address,
-      loading,
-    );
+    const { data: subaccountIndex } = useIndexByAddress(row.address, loading);
 
     const addressLink = useMemo(() => {
       if (loading) {
@@ -87,8 +84,8 @@ const LeaderboardRow = observer(
         <TableCell cell loading={loading}>
           {row.place}
         </TableCell>
-        <TableCell cell loading={loading || indexLoading}>
-          {!loading && !indexLoading && (
+        <TableCell cell loading={loading}>
+          {!loading && (
             <>
               <AddressViewComponent
                 truncate
