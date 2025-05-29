@@ -1,6 +1,6 @@
+import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { useRouter } from 'next/navigation';
 import { ChevronRight, ExternalLink } from 'lucide-react';
 import { bech32mPositionId } from '@penumbra-zone/bech32m/plpid';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
@@ -30,15 +30,12 @@ interface LpRewardRowData extends LpReward {
 }
 
 function LpRewardRow({ lpReward, padStart }: { lpReward: LpRewardRowData; padStart?: number }) {
-  const router = useRouter();
   const id = bech32mPositionId(lpReward.positionId);
 
   return (
-    <div
-      onClick={() => {
-        router.push(`/inspect/lp/${id}`);
-      }}
+    <Link
       className='grid grid-cols-subgrid col-span-5 hover:bg-action-hoverOverlay transition-colors cursor-pointer'
+      href={`/inspect/lp/${id}`}
     >
       <TableCell cell>#{lpReward.epoch}</TableCell>
       <TableCell cell>
@@ -85,7 +82,7 @@ function LpRewardRow({ lpReward, padStart }: { lpReward: LpRewardRowData; padSta
           </Button>
         </Density>
       </TableCell>
-    </div>
+    </Link>
   );
 }
 

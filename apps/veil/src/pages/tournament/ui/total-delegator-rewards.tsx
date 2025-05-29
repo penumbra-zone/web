@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { ChevronRight } from 'lucide-react';
@@ -34,7 +35,10 @@ interface VotingRewardsRowProps {
 
 const VotingRewardsRow = ({ row, padStart }: VotingRewardsRowProps) => {
   return (
-    <div className='grid grid-cols-subgrid col-span-4'>
+    <Link
+      className='grid grid-cols-subgrid col-span-4 hover:bg-action-hoverOverlay'
+      href={`/tournament/${row.epoch}`}
+    >
       <TableCell cell>{`Epoch #${row.epoch}`}</TableCell>
       <TableCell cell>
         <span className='font-mono whitespace-pre'>
@@ -65,7 +69,7 @@ const VotingRewardsRow = ({ row, padStart }: VotingRewardsRowProps) => {
           </Button>
         </Density>
       </TableCell>
-    </div>
+    </Link>
   );
 };
 
@@ -149,7 +153,7 @@ export const VotingRewards = observer(() => {
   return (
     <>
       <Density compact>
-        <div className='grid grid-cols-[auto_1fr_1fr_32px]'>
+        <div className='grid grid-cols-[auto_1fr_1fr_48px]'>
           <div className='grid grid-cols-subgrid col-span-4'>
             {getTableHeader('epoch', 'Epoch')}
             <TableCell heading>Casted Vote</TableCell>
