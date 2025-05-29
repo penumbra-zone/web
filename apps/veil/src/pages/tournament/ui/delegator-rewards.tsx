@@ -93,7 +93,7 @@ export const DelegatorTotalRewards = observer(() => {
 
   return (
     <section ref={parent} className='p-6 rounded-lg bg-other-tonalFill5 backdrop-blur-lg'>
-      <div className='flex justify-between items-center'>
+      <div className='flex flex-col desktop:flex-row gap-2 justify-between items-start desktop:items-center'>
         <div className='flex flex-col gap-1'>
           <Text xxl color='text.primary'>
             My Total Tournament Rewards
@@ -108,7 +108,7 @@ export const DelegatorTotalRewards = observer(() => {
             <Skeleton />
           </div>
         ) : (
-          <div className='flex items-center gap-4 [&_span]:font-mono [&_span]:text-3xl'>
+          <div className='flex items-center w-full desktop:w-auto justify-between gap-4 [&_span]:font-mono desktop:[&_span]:text-3xl'>
             {rewardView && !isTotalZero ? (
               <Density sparse>
                 <ValueViewComponent valueView={rewardView} priority='tertiary' />

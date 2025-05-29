@@ -137,7 +137,7 @@ export const PreviousEpochs = observer(() => {
         Previous epochs
       </Text>
       <Density compact>
-        <div className={cn('grid', TABLE_CLASSES.table[tableKey])}>
+        <div className={cn('grid max-w-full overflow-x-auto', TABLE_CLASSES.table[tableKey])}>
           <div className={cn('grid grid-cols-subgrid', TABLE_CLASSES.row[tableKey])}>
             {getTableHeader('epoch', 'Epoch')}
             <TableCell heading>Votes Summary</TableCell>

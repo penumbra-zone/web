@@ -186,7 +186,7 @@ export const DelegatorLeaderboard = observer(() => {
         Delegators Leaderboard
       </Text>
       <Density compact>
-        <div className='grid grid-cols-[auto_200px_1fr_1fr_1fr_48px]'>
+        <div className='grid grid-cols-[auto_200px_1fr_1fr_1fr_48px] max-w-full overflow-x-auto'>
           <div key='header' className='grid grid-cols-subgrid col-span-6'>
             {getTableHeader('place', 'Place')}
             <TableCell heading>Delegator Address</TableCell>

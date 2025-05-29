@@ -134,7 +134,7 @@ export const LpRewards = observer(() => {
   return (
     <>
       <Density compact>
-        <div className='grid grid-cols-[auto_1fr_1fr_100px_48px]'>
+        <div className='grid grid-cols-[auto_1fr_1fr_100px_48px] max-w-full overflow-x-auto'>
           <div className='grid grid-cols-subgrid col-span-5'>
             {getTableHeader('epoch', 'Epoch')}
             <TableCell heading>Position ID</TableCell>
