@@ -14,6 +14,7 @@ interface ButtonStyleAttributes {
   iconOnly?: boolean | 'adornment';
   actionType: ActionType;
   priority: Priority;
+  rounded?: boolean;
 }
 
 /** Shared styles to use for any `<button />` */
@@ -30,16 +31,22 @@ export const getFont = ({ density }: ButtonStyleAttributes): string => {
 };
 
 /** Adds overlays to a button for when it's hovered, active, or disabled. */
-export const getOverlays = ({ actionType, density }: ButtonStyleAttributes): string =>
-  cn(
+export const getOverlays = ({ actionType, density, rounded }: ButtonStyleAttributes): string => {
+  return cn(
     'relative',
     'before:content-[""] before:absolute before:inset-0 before:z-[1] before:outline-[1.5] before:outline before:outline-transparent duration-150 before:transition-[background-color,outline-color]',
     'hover:before:bg-action-hoverOverlay',
     'active:before:bg-action-activeOverlay',
     'disabled:before:cursor-not-allowed disabled:before:bg-action-disabledOverlay',
     getBeforeOutlineColorByActionType(actionType),
-    density === 'sparse' ? 'before:rounded-sm' : 'before:rounded-full',
+    // Apply overlay border radius to match button border radius
+    rounded
+      ? 'before:rounded-full'
+      : density === 'sparse'
+        ? 'before:rounded-sm'
+        : 'before:rounded-full',
   );
+};
 
 export const getBackground = ({
   priority,
@@ -59,24 +66,42 @@ export const getBackground = ({
   }
 };
 
-export const getSize = ({ iconOnly, density }: ButtonStyleAttributes) => {
+export const getSize = ({ iconOnly, density, rounded }: ButtonStyleAttributes) => {
   if (iconOnly === 'adornment' && density === 'compact') {
-    return cn('rounded-full size-6 min-w-6 p-1');
+    return cn(
+      'size-6 min-w-6 p-1',
+      rounded ? 'rounded-full' : 'rounded-full', // adornment is always rounded
+    );
   }
 
   if (iconOnly === 'adornment' && density === 'slim') {
-    return cn('rounded-full size-4 min-w-4 p-[2px]');
+    return cn(
+      'size-4 min-w-4 p-[2px]',
+      rounded ? 'rounded-full' : 'rounded-full', // adornment is always rounded
+    );
   }
 
   if (density === 'compact') {
-    return cn('rounded-full h-8 min-w-8 w-max', iconOnly ? 'pl-0 pr-0' : 'pl-4 pr-4');
+    return cn(
+      'h-8 min-w-8 w-max',
+      iconOnly ? 'pl-0 pr-0' : 'pl-4 pr-4',
+      rounded ? 'rounded-full' : 'rounded-full', // compact is always rounded
+    );
   }
 
   if (density === 'slim') {
-    return cn('rounded-full h-6 min-w-6 w-max', iconOnly ? 'pl-0 pr-0' : 'pl-2 pr-2');
+    return cn(
+      'h-6 min-w-6 w-max',
+      iconOnly ? 'pl-0 pr-0' : 'pl-2 pr-2',
+      rounded ? 'rounded-full' : 'rounded-full', // slim is always rounded
+    );
   }
 
-  return cn('rounded-sm h-12', iconOnly ? 'w-12 min-w-12 pl-0 pr-0' : 'w-full pl-4 pr-4');
+  return cn(
+    'h-12',
+    iconOnly ? 'w-12 min-w-12 pl-0 pr-0' : 'w-full pl-4 pr-4',
+    rounded ? 'rounded-full' : 'rounded-sm', // sparse uses rounded-sm by default, rounded-full when requested
+  );
 };
 
 export const getIconSize = (density: Density): number => {

@@ -98,6 +98,11 @@ export interface ValueViewComponentProps<SelectedContext extends Context> {
    * determined by the `Density` context.
    */
   density?: Density;
+  /**
+   * Custom text color for the value and symbol. When provided, overrides default colors.
+   * Accepts the same color values as the Text component (e.g., 'destructive.light', 'text.secondary').
+   */
+  textColor?: string;
 }
 
 /**
@@ -119,6 +124,7 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
   showValue = true,
   trailingZeros = false,
   density: densityProps,
+  textColor,
 }: ValueViewComponentProps<SelectedContext>) => {
   const densityContext = useDensity();
   const density = densityProps ?? densityContext;
@@ -150,7 +156,10 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
       )}
       else={children => (
         <span
-          className={cn(density === 'sparse' ? technical : detailTechnical, 'text-text-primary')}
+          className={cn(
+            density === 'sparse' ? technical : detailTechnical, 
+            textColor ? `text-${textColor}` : 'text-text-primary'
+          )}
         >
           {children}
         </span>
@@ -175,7 +184,7 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
               priority === 'secondary' &&
               'border-b-2 border-dashed border-other-tonalStroke',
             getGap(density),
-            getSignColor(signed),
+            textColor ? `text-${textColor}` : getSignColor(signed),
           )}
         >
           {showValue && (
