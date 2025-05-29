@@ -1,7 +1,9 @@
+import { sql } from 'kysely';
 import { NextRequest, NextResponse } from 'next/server';
 import { jsonArrayFrom } from 'kysely/helpers/postgres';
 import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 import { Serialized, serialize } from '@/shared/utils/serializer';
 import { pindexerDb } from '@/shared/database/client';
 import { LqtDelegatorHistory } from '@/shared/database/schema';
@@ -87,7 +89,13 @@ const tournamentDelegatorHistoryQuery = async ({
       jsonArrayFrom(
         eb
           .selectFrom(filteredQuery.as('delegators'))
-          .selectAll()
+          .select(exp => [
+            'epoch',
+            'power',
+            'reward',
+            'address',
+            sql<string>`encode(${exp.ref('asset_id')}, 'base64')`.as('asset_id'),
+          ])
           .whereRef('delegators.address', '=', 'grouped.address')
           .orderBy(sortKey, sortDirection),
       ).as('data'),
@@ -116,7 +124,9 @@ export async function POST(
           power: Number(item.power),
           reward: Number(item.reward),
           address: new Address({ inner: historyByAddress.address }),
-          asset_id: new AssetId({ inner: Uint8Array.from(item.asset_id) }),
+          asset_id: new AssetId({
+            inner: base64ToUint8Array(item.asset_id),
+          }),
         })),
       };
     }),
