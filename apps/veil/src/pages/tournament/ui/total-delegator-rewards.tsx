@@ -6,6 +6,7 @@ import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { TableCell } from '@penumbra-zone/ui/TableCell';
 import { Density } from '@penumbra-zone/ui/Density';
 import { Button } from '@penumbra-zone/ui/Button';
+import { round } from '@penumbra-zone/types/round';
 import { connectionStore } from '@/shared/model/connection';
 import { useStakingTokenMetadata } from '@/shared/api/registry';
 import { getValueViewLength } from '@/shared/utils/get-max-padstart';
@@ -22,6 +23,7 @@ import { useSortableTableHeaders } from './sortable-table-header';
 
 interface VotingRewardData extends LqtDelegatorHistoryData {
   rewardView?: ValueView;
+  castedVoteView: ValueView;
   summary: LqtSummary;
 }
 
@@ -34,7 +36,16 @@ const VotingRewardsRow = ({ row, padStart }: VotingRewardsRowProps) => {
   return (
     <div className='grid grid-cols-subgrid col-span-4'>
       <TableCell cell>{`Epoch #${row.epoch}`}</TableCell>
-      <RewardCell reward={row} />
+      <TableCell cell>
+        <span className='font-mono whitespace-pre'>
+          {round({
+            value: (row.power / row.summary.total_voting_power) * 100,
+            decimals: 2,
+          }).padStart(6, '\u00A0')}
+          % for
+        </span>
+        <ValueViewComponent showValue={false} valueView={row.castedVoteView} />
+      </TableCell>
       <TableCell cell>
         <ValueViewComponent
           padStart={padStart}
@@ -58,33 +69,18 @@ const VotingRewardsRow = ({ row, padStart }: VotingRewardsRowProps) => {
   );
 };
 
-const RewardCell = observer(({ reward }: { reward: VotingRewardData }) => {
-  const getMetadata = useGetMetadata();
-  const assetId = reward.asset_id;
-  const amount = reward.reward;
-  const metadata = getMetadata(assetId);
-  const valueView = toValueView(metadata ? { metadata, amount } : { assetId, amount });
-  return (
-    <TableCell cell>
-      <span className='font-mono whitespace-pre'>
-        {`${((reward.power / reward.summary.total_voting_power) * 100).toFixed(3).padStart(6, '\u00A0')}% for `}
-      </span>
-      <ValueViewComponent showValue={false} valueView={valueView} />
-    </TableCell>
-  );
-});
-
 export const VotingRewards = observer(() => {
   const { subaccount } = connectionStore;
   const [page, setPage] = useState(BASE_PAGE);
   const [limit, setLimit] = useState(BASE_LIMIT);
+  const getMetadata = useGetMetadata();
+  const { data: stakingToken } = useStakingTokenMetadata();
 
   const { getTableHeader, sortBy } = useSortableTableHeaders<DelegatorHistorySortKey>(
     'epoch',
     'desc',
   );
 
-  const { data: stakingToken } = useStakingTokenMetadata();
   const { epoch, status: epochStatus } = useCurrentEpoch();
   const {
     query: { status: rewardsStatus },
@@ -123,10 +119,19 @@ export const VotingRewards = observer(() => {
         }
 
         const rewardView = toValueView({ amount: row.reward, metadata: stakingToken });
+
+        const voteMetadata = getMetadata(row.asset_id);
+        const voteView = toValueView(
+          voteMetadata
+            ? { metadata: voteMetadata, amount: row.reward }
+            : { assetId: row.asset_id, amount: row.reward },
+        );
+
         accum.padStart = Math.max(accum.padStart, getValueViewLength(rewardView));
         accum.rows.push({
           ...row,
           rewardView,
+          castedVoteView: voteView,
           summary: matchingSummary,
         });
 
@@ -134,7 +139,7 @@ export const VotingRewards = observer(() => {
       },
       { rows: [], padStart: 0 },
     );
-  }, [rewardsData, stakingToken, summary]);
+  }, [rewardsData, stakingToken, summary, getMetadata]);
 
   const onLimitChange = (newLimit: number) => {
     setLimit(newLimit);
