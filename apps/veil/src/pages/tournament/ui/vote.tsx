@@ -14,7 +14,7 @@ export const Vote = ({ asset, percent, hideFor }: VoteProps) => {
     <div className='flex items-center gap-1'>
       <AssetIcon metadata={asset} />
       <Text smallTechnical color='text.primary'>
-        {round({ value: percent * 100, decimals: 2 })}% {hideFor ? '' : 'for'}
+        {round({ value: percent * 100, decimals: 3 })}% {hideFor ? '' : 'for'}
       </Text>
       <Text smallTechnical color='text.secondary'>
         {asset.symbol}

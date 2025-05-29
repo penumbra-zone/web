@@ -44,7 +44,7 @@ const VotingRewardsRow = ({ row, padStart }: VotingRewardsRowProps) => {
         <span className='font-mono whitespace-pre'>
           {round({
             value: (row.power / row.summary.total_voting_power) * 100,
-            decimals: 2,
+            decimals: 3,
           }).padStart(6, '\u00A0')}
           % for
         </span>
