@@ -51,6 +51,11 @@ export const useAppParametersStore = () => {
   return rootStore.appParametersStore;
 };
 
+export const useTransferStore = () => {
+  const rootStore = useRootStore();
+  return rootStore.transferStore;
+};
+
 // Hook for the Penumbra service
 export const usePenumbraService = () => {
   const rootStore = useRootStore();

@@ -71,7 +71,9 @@ export const MobileNav = ({ children }: MobileNavProps) => {
   }, [isOpen]);
 
   return (
-    <MobileNavContext.Provider value={{ isOpen: isAnimating, isAnimating, setIsOpen: handleSetIsOpen }}>
+    <MobileNavContext.Provider
+      value={{ isOpen: isAnimating, isAnimating, setIsOpen: handleSetIsOpen }}
+    >
       {children({ isOpen, isAnimating })}
     </MobileNavContext.Provider>
   );
@@ -120,11 +122,11 @@ const Content = () => {
   const currentPath = getCurrentValue();
 
   return (
-    <div className={`transition-all duration-300 ease-out space-y-6 ${
-      isAnimating 
-        ? 'opacity-100 translate-y-0' 
-        : 'opacity-0 -translate-y-4'
-    }`}>
+    <div
+      className={`transition-all duration-300 ease-out space-y-6 ${
+        isAnimating ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
+      }`}
+    >
       {/* Navigation links section */}
       <div>
         <nav>
@@ -138,9 +140,7 @@ const Content = () => {
                   key={link.value}
                   onClick={() => handleNavClick(link.value)}
                   className={`flex items-center gap-3 rounded-lg p-4 text-left transition-all duration-200 transform hover:scale-[1.02] ${
-                    isActive
-                      ? 'text-primary-light'
-                      : 'hover:text-text-primary'
+                    isActive ? 'text-primary-light' : 'hover:text-text-primary'
                   }`}
                   style={{
                     animationDelay: isAnimating ? `${index * 50}ms` : '0ms',

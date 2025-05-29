@@ -157,8 +157,8 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
       else={children => (
         <span
           className={cn(
-            density === 'sparse' ? technical : detailTechnical, 
-            textColor ? `text-${textColor}` : 'text-text-primary'
+            density === 'sparse' ? technical : detailTechnical,
+            textColor ? `text-${textColor}` : 'text-text-primary',
           )}
         >
           {children}

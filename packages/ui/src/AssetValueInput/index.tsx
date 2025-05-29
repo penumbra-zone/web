@@ -100,8 +100,12 @@ export const AssetValueInput = ({
       {showBalance && selectedAsset?.balanceView && (
         <div className='flex flex-col gap-1'>
           <div className='flex items-center gap-2'>
-            <div className={`bg-other-tonalFill5 px-2 py-1 rounded-sm ${errors.insufficientFunds ? 'text-destructive-light' : ''}`}>
-              <WalletMinimal className={`w-4 h-4 ${errors.insufficientFunds ? 'text-destructive-light' : 'text-text-secondary'}`} />
+            <div
+              className={`bg-other-tonalFill5 px-2 py-1 rounded-sm ${errors.insufficientFunds ? 'text-destructive-light' : ''}`}
+            >
+              <WalletMinimal
+                className={`w-4 h-4 ${errors.insufficientFunds ? 'text-destructive-light' : 'text-text-secondary'}`}
+              />
             </div>
             <div className={errors.insufficientFunds ? '' : 'opacity-50'}>
               <ValueViewComponent
@@ -114,7 +118,7 @@ export const AssetValueInput = ({
               />
             </div>
           </div>
-          
+
           {/* Insufficient funds error underneath balance */}
           {errors.insufficientFunds && (
             <Text small color='destructive.light'>

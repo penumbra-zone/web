@@ -9,7 +9,7 @@ export const Header = () => {
   return (
     <MobileNav>
       {({ isOpen }) => (
-        <header 
+        <header
           className={`flex items-start justify-between py-5 transition-all duration-300 ease-in-out ${
             isOpen ? 'min-h-screen bg-background backdrop-blur-xl' : ''
           }`}

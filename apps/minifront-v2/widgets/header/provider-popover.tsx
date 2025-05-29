@@ -154,20 +154,20 @@ export const ProviderPopover = observer(() => {
         </Popover.Trigger>
         <Popover.Content align='end' side='bottom'>
           <Density compact>
-            <div className='flex w-full min-w-60 flex-col gap-4 text-text-primary'>
-              <div className='ml-4 flex flex-col gap-2'>
-                <Text h4>
-                  {manifest.name} {manifest.version}
+            <div className='flex w-full min-w-[220px] flex-col gap-3'>
+              <div className='flex flex-col gap-2'>
+                <Text h4 color='text.primary'>
+                  {manifest.name}
                 </Text>
-                <Text detail color='text.muted'>
+                <Text detail color='text.secondary'>
                   Chain: {chainId}
                 </Text>
-                <Text detail color='text.muted'>
+                <Text detail color='text.secondary'>
                   {manifest.description}
                 </Text>
               </div>
 
-              <Button onClick={disconnect} actionType='destructive' icon={Link2Off}>
+              <Button onClick={disconnect} actionType='accent' icon={Link2Off}>
                 Disconnect
               </Button>
             </div>

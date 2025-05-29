@@ -2,6 +2,7 @@ import { createHashRouter, redirect, type RouteObject } from 'react-router-dom';
 import { PagePath } from '@shared/const/page';
 import { Portfolio } from '@pages/portfolio';
 import { AllTransactionsPage } from '@pages/portfolio/transactions/AllTransactionsPage';
+import { Transfer } from '@pages/transfer';
 import { NotFoundPage } from '@pages/not-found';
 import { Layout } from '@app/layout';
 
@@ -18,6 +19,10 @@ const routes: RouteObject[] = [
       {
         path: PagePath.Transactions,
         element: <AllTransactionsPage />,
+      },
+      {
+        path: PagePath.Transfer,
+        element: <Transfer />,
       },
       {
         path: '*',
