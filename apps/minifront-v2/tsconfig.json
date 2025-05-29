@@ -25,6 +25,7 @@
     "features",
     "vite.config.ts",
     "tailwind.config.ts",
+    "svg.d.ts",
     "../../packages/ui-deprecated/src/**/*"
   ]
 }

@@ -66,7 +66,7 @@ export const ProviderPopover = observer(() => {
       <img
         src={URL.createObjectURL(blob)}
         alt={`${manifest?.name} Icon`}
-        className='size-6 max-w-none grayscale' // Smaller size and black/white
+        className='size-4 max-w-none grayscale' // Smaller size and black/white
       />
     );
   }, [manifest]);
