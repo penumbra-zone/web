@@ -49,8 +49,10 @@ export const Toggle = ({
   const isDisabled = useDisabled(disabled);
 
   const handleToggle = useCallback(
-    (e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement>) => {
-      if (isDisabled) return;
+    (_e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement>) => {
+      if (isDisabled) {
+        return;
+      }
       const newSelected = !selected;
       setSelected(newSelected);
       onChange?.(newSelected);

@@ -45,6 +45,10 @@ const getPosition = (density: Density, priority: PillProps['priority']): string 
   return '-ml-2';
 };
 
+const getTextColor = (textColor?: string, fallback = 'text-text-primary'): string => {
+  return textColor && textColor.trim().length > 0 ? `text-${textColor}` : fallback;
+};
+
 export interface ValueViewComponentProps<SelectedContext extends Context> {
   valueView?: ValueView;
   /**
@@ -158,7 +162,7 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
         <span
           className={cn(
             density === 'sparse' ? technical : detailTechnical,
-            textColor ? `text-${textColor}` : 'text-text-primary',
+            getTextColor(textColor),
           )}
         >
           {children}
@@ -184,7 +188,7 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
               priority === 'secondary' &&
               'border-b-2 border-dashed border-other-tonalStroke',
             getGap(density),
-            textColor ? `text-${textColor}` : getSignColor(signed),
+            getTextColor(textColor, getSignColor(signed)),
           )}
         >
           {showValue && (

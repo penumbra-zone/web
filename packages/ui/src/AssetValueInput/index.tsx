@@ -3,7 +3,7 @@ import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_p
 import { TextInput } from '../TextInput';
 import { AssetSelector, AssetSelectorValue } from '../AssetSelector';
 import { Text } from '../Text';
-import { AlertCircle, WalletMinimal, Info } from 'lucide-react';
+import { WalletMinimal, Info } from 'lucide-react';
 import { Density } from '../Density';
 import { ValueViewComponent } from '../ValueView';
 
@@ -60,12 +60,15 @@ export const AssetValueInput = ({
   showBalance = true,
   disabled = false,
 }: AssetValueInputProps) => {
-  const hasError = errors.amountError || errors.exponentError || errors.insufficientFunds;
+  const hasError =
+    (errors.amountError ?? false) ||
+    (errors.exponentError ?? false) ||
+    (errors.insufficientFunds ?? false);
 
   const handleAssetSelectorChange = (value: AssetSelectorValue) => {
     // AssetSelector can return Metadata or BalancesResponse
     if ('balanceView' in value) {
-      onAssetChange(value as BalancesResponse);
+      onAssetChange(value);
     }
   };
 
@@ -101,10 +104,10 @@ export const AssetValueInput = ({
         <div className='flex flex-col gap-1'>
           <div className='flex items-center gap-2'>
             <div
-              className={`bg-other-tonalFill5 px-2 py-1 rounded-sm ${errors.insufficientFunds ? 'text-destructive-light' : ''}`}
+              className={`rounded-sm bg-other-tonalFill5 px-2 py-1 ${errors.insufficientFunds ? 'text-destructive-light' : ''}`}
             >
               <WalletMinimal
-                className={`w-4 h-4 ${errors.insufficientFunds ? 'text-destructive-light' : 'text-text-secondary'}`}
+                className={`size-4 ${errors.insufficientFunds ? 'text-destructive-light' : 'text-text-secondary'}`}
               />
             </div>
             <div className={errors.insufficientFunds ? '' : 'opacity-50'}>
@@ -114,6 +117,7 @@ export const AssetValueInput = ({
                 showIcon={false}
                 abbreviate={true}
                 density='compact'
+                priority={errors.insufficientFunds ? 'primary' : 'secondary'}
                 textColor={errors.insufficientFunds ? 'destructive-light' : undefined}
               />
             </div>
@@ -123,8 +127,8 @@ export const AssetValueInput = ({
           {errors.insufficientFunds && (
             <Text small color='destructive.light'>
               <div className='flex items-center gap-1'>
-                <Info className='w-3 h-3' />
-                {errorMessages.insufficientFunds}
+                <Info className='size-3' />
+                {errorMessages.insufficientFunds ?? 'Insufficient funds'}
               </div>
             </Text>
           )}
@@ -135,8 +139,8 @@ export const AssetValueInput = ({
       {errors.exponentError && (
         <Text small color='destructive.light'>
           <div className='flex items-center gap-1'>
-            <Info className='w-3 h-3' />
-            {errorMessages.exponentError}
+            <Info className='size-3' />
+            {errorMessages.exponentError ?? 'Invalid decimal length'}
           </div>
         </Text>
       )}
@@ -144,8 +148,8 @@ export const AssetValueInput = ({
       {errors.amountError && !errors.insufficientFunds && !errors.exponentError && (
         <Text small color='destructive.light'>
           <div className='flex items-center gap-1'>
-            <Info className='w-3 h-3' />
-            {errorMessages.amountError}
+            <Info className='size-3' />
+            {errorMessages.amountError ?? 'Invalid amount'}
           </div>
         </Text>
       )}

@@ -32,9 +32,11 @@ export const AccountSelector = ({
   canGoPrevious = true,
   canGoNext = true,
   disabled,
-  getDisplayValue = index => `Account ${index}`,
+  getDisplayValue,
   label,
 }: AccountSelectorProps) => {
+  const displayValue = getDisplayValue ? getDisplayValue(value) : `Account ${value}`;
+
   const handlePrevious = () => {
     if (canGoPrevious && value > 0) {
       onChange(value - 1);
@@ -50,7 +52,7 @@ export const AccountSelector = ({
   return (
     <TextInput
       type='text'
-      value={getDisplayValue(value)}
+      value={displayValue}
       label={label}
       disabled={disabled}
       endAdornment={
@@ -59,7 +61,7 @@ export const AccountSelector = ({
             icon={ArrowLeft}
             iconOnly
             onClick={handlePrevious}
-            disabled={disabled || !canGoPrevious || value === 0}
+            disabled={(disabled ?? false) || !canGoPrevious || value === 0}
             actionType='default'
             priority='secondary'
             rounded
@@ -71,7 +73,7 @@ export const AccountSelector = ({
             icon={ArrowRight}
             iconOnly
             onClick={handleNext}
-            disabled={disabled || !canGoNext}
+            disabled={(disabled ?? false) || !canGoNext}
             actionType='default'
             priority='secondary'
             rounded

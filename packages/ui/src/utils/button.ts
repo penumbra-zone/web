@@ -32,6 +32,15 @@ export const getFont = ({ density }: ButtonStyleAttributes): string => {
 
 /** Adds overlays to a button for when it's hovered, active, or disabled. */
 export const getOverlays = ({ actionType, density, rounded }: ButtonStyleAttributes): string => {
+  let borderRadius: string;
+  if (rounded) {
+    borderRadius = 'before:rounded-full';
+  } else if (density === 'sparse') {
+    borderRadius = 'before:rounded-sm';
+  } else {
+    borderRadius = 'before:rounded-full';
+  }
+
   return cn(
     'relative',
     'before:content-[""] before:absolute before:inset-0 before:z-[1] before:outline-[1.5] before:outline before:outline-transparent duration-150 before:transition-[background-color,outline-color]',
@@ -40,11 +49,7 @@ export const getOverlays = ({ actionType, density, rounded }: ButtonStyleAttribu
     'disabled:before:cursor-not-allowed disabled:before:bg-action-disabledOverlay',
     getBeforeOutlineColorByActionType(actionType),
     // Apply overlay border radius to match button border radius
-    rounded
-      ? 'before:rounded-full'
-      : density === 'sparse'
-        ? 'before:rounded-sm'
-        : 'before:rounded-full',
+    borderRadius,
   );
 };
 
