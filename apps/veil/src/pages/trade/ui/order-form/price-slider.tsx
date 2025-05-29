@@ -25,7 +25,7 @@ interface DeltaState {
   deltaX: number;
 }
 
-const Thumb: React.FC<ThumbProps> = ({ left, right, value, scale, max, onMove }) => {
+const Thumb: React.FC<ThumbProps> = ({ left, right, x, value, scale, max, onMove }) => {
   const deltaRef = useRef<DeltaState | null>(null);
   const textRef = useRef<HTMLDivElement>(null);
   const [textWidth, setTextWidth] = useState(0);
@@ -93,36 +93,53 @@ const Thumb: React.FC<ThumbProps> = ({ left, right, value, scale, max, onMove })
   };
 
   return (
-    <button
-      type='button'
-      aria-label={`Slider Thumb ${left ? 'Lower' : 'Upper'}`}
-      className={`
-        absolute top-0 flex h-[44px] w-[8px] cursor-ew-resize items-center justify-center bg-transparent
-        ${left ? 'left-[-4px]' : 'right-[-4px]'}
-        hover:bg-other-tonalFill10
-      `}
-      onMouseDown={handlePointerDown}
-      onTouchStart={handlePointerDown}
-    >
-      <div className={`h-[44px] w-[1px] bg-primary-main ${left ? 'mr-[1px]' : 'ml-[1px]'}`} />
-      <div
-        className={`h-[20px] w-[4px] bg-primary-main absolute top-[12px] ${left ? 'left-[-4px]' : 'right-[-4px]'} rounded-sm`}
-      />
+    <>
       <div
         ref={textRef}
-        className={cn(
-          'absolute top-[12px] h-[20px] [line-height:20px_!important] bg-other-tonalFill10 rounded-sm px-2',
-        )}
+        className={`
+          absolute z-10 top-0 h-[20px] [line-height:20px_!important] bg-other-tonalFill10 rounded-sm px-2
+        `}
         style={{
-          left: left ? `-${textWidth + 8}px` : undefined,
-          right: left ? undefined : `-${textWidth + 8}px`,
+          left: x,
         }}
       >
         <Text detail color='text.primary'>
           30%
         </Text>
       </div>
-    </button>
+      <div
+        className={`
+        absolute top-0 flex h-[78px] w-[8px] items-center justify-center bg-transparent
+        ${left ? 'left-0' : 'right-0'}
+      `}
+      >
+        <div
+          className={`absolute z-0 w-[1px] top-[20px] h-[58px] bg-primary-main ${left ? 'left-0' : 'right-0'}`}
+        />
+        <button
+          type='button'
+          aria-label={`Slider Thumb ${left ? 'Lower' : 'Upper'}`}
+          className={`w-[12px] h-[20px] bg-primary-main absolute top-[32px] cursor-ew-resize rounded-[4px] ${left ? 'left-[-6px]' : 'right-[-6px]'} `}
+          onMouseDown={handlePointerDown}
+          onTouchStart={handlePointerDown}
+        >
+          <div className='absolute top-[4px] left-[4px] w-[1px] h-[12px] bg-neutral-contrast' />
+          <div className='absolute top-[4px] right-[4px] w-[1px] h-[12px] bg-neutral-contrast' />
+        </button>
+        <div
+          ref={textRef}
+          className={`
+          absolute z-10 top-[78px] h-[20px] [line-height:20px_!important]
+          ${left ? 'left-0' : 'right-0'}
+          ${left ? 'translate-x-[-50%]' : 'translate-x-[50%]'}
+        `}
+        >
+          <Text detail color='text.primary'>
+            {round({ value: value[left ? 0 : 1], decimals: 6 })}
+          </Text>
+        </div>
+      </div>
+    </>
   );
 };
 
@@ -174,20 +191,17 @@ export const PriceSlider: React.FC<ControlSliderProps> = ({
     <div>
       <div className='flex w-full justify-center gap-1 mb-4'>
         <Text detail color='text.secondary'>
-          Market Price
+          1 {quoteAsset?.symbol} =
         </Text>
         <Text detail color='text.primary'>
-          {marketPrice}
-        </Text>
-        <Text detail color='text.secondary'>
-          {baseAsset?.symbol} per {quoteAsset?.symbol}
+          {marketPrice} {baseAsset?.symbol}
         </Text>
       </div>
-      <div ref={ref} className='relative z-0 h-[44px] w-full border-b border-other-tonalFill10'>
-        <div className='absolute z-10 top-0 left-1/2 h-[44px] w-[1px] border-dashed border-neutral-contrast' />
+      <div ref={ref} className='relative z-0 h-[98px] w-full border-b border-other-tonalFill10'>
+        <div className='absolute z-10 top-0 left-1/2 h-[70px] w-0 border-l border-dashed border-neutral-contrast' />
         {scaleLoaded && scale && (
           <div
-            className='absolute z-0 top-0 h-[44px] bg-primary-main/10'
+            className='absolute z-0 top-0 h-[70px] bg-gradient-to-b from-[rgba(186,77,20,0)] to-primary-main/10'
             style={{
               // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-call -- safe
               left: Math.max(0, scale(leftValue)),
@@ -195,19 +209,45 @@ export const PriceSlider: React.FC<ControlSliderProps> = ({
               right: Math.min(width, width - scale(rightValue)),
             }}
           >
-            <Thumb left value={value} scale={scale} max={max} onMove={onInput} />
-            <Thumb right value={value} scale={scale} max={max} onMove={onInput} />
+            <Thumb
+              left
+              x={Math.max(0, scale(leftValue))}
+              value={value}
+              scale={scale}
+              max={max}
+              onMove={onInput}
+            />
+            <Thumb
+              right
+              x={Math.min(width, width - scale(rightValue))}
+              value={value}
+              scale={scale}
+              max={max}
+              onMove={onInput}
+            />
           </div>
         )}
+        <div className='absolute z-10 top-[62px] left-0 w-full h-[6px] bg-other-tonalFill10 rounded-xs' />
+        {scaleLoaded && scale && (
+          <div
+            className='absolute z-20 top-[62px] h-[6px] bg-primary-main'
+            style={{
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-call -- safe
+              left: Math.max(0, scale(leftValue)),
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- safe
+              right: Math.min(width, width - scale(rightValue)),
+            }}
+          />
+        )}
       </div>
-      <div className='flex w-full justify-between gap-1'>
+      {/* <div className='flex w-full justify-between gap-1'>
         <Text detail color='text.secondary'>
           {round({ value: leftValue, decimals: quoteAsset?.decimals ?? 6 })}
         </Text>
         <Text detail color='text.secondary'>
           {round({ value: rightValue, decimals: quoteAsset?.decimals ?? 6 })}
         </Text>
-      </div>
+      </div> */}
     </div>
   );
 };
