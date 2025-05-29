@@ -1,6 +1,7 @@
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { AssetIcon } from '@penumbra-zone/ui/AssetIcon';
 import { Text } from '@penumbra-zone/ui/Text';
+import { round } from '@penumbra-zone/types/round';
 
 export interface VoteProps {
   asset: Metadata;
@@ -13,7 +14,7 @@ export const Vote = ({ asset, percent, hideFor }: VoteProps) => {
     <div className='flex items-center gap-1'>
       <AssetIcon metadata={asset} />
       <Text smallTechnical color='text.primary'>
-        {percent * 100}% {hideFor ? '' : 'for'}
+        {round({ value: percent * 100, decimals: 2 })}% {hideFor ? '' : 'for'}
       </Text>
       <Text smallTechnical color='text.secondary'>
         {asset.symbol}
