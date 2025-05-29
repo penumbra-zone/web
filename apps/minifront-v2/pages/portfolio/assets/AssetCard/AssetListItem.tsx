@@ -2,7 +2,7 @@ import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_p
 import { AssetIcon, Button, Text } from '@penumbra-zone/ui';
 import type { AssetData } from './types';
 import { ArrowUpFromDot, ArrowRightLeft, MoonStar } from 'lucide-react';
-import { cleanAssetSymbol } from '../../../../shared/utils/clean-asset-symbol';
+import { centralEnhanceMetadata, isDelegationToken } from '@shared/utils/metadata-enhancement';
 
 export interface AssetListItemProps {
   /**
@@ -15,16 +15,17 @@ export interface AssetListItemProps {
  * AssetListItem component renders an individual asset with its details and action buttons
  */
 export const AssetListItem = ({ asset }: AssetListItemProps) => {
-  // Create a mock metadata for the asset icon
-  const mockMetadata = new Metadata({
+  let metadataForIcon = new Metadata({
     symbol: asset.symbol,
-    // Use provided icon or leave empty for default identicon
+    name: asset.name,
     images: asset.icon ? [{ png: asset.icon }] : [],
-    // No longer need to pass badges through metadata
   });
 
-  // Check if this is a delegation token using the utility function
-  const { isDelegation } = cleanAssetSymbol(asset.symbol);
+  // Enhance the metadata using the centralized function
+  metadataForIcon = centralEnhanceMetadata(metadataForIcon) ?? metadataForIcon;
+
+  // Determine if it's a delegation token using the helper function
+  const isDelegated = isDelegationToken(metadataForIcon.symbol);
 
   // Action handlers
   const handleSend = () => {
@@ -44,19 +45,19 @@ export const AssetListItem = ({ asset }: AssetListItemProps) => {
       <div className='flex items-center gap-2'>
         <AssetIcon
           size='md'
-          metadata={mockMetadata}
+          metadata={metadataForIcon}
           hideBadge={false}
           zIndex={undefined}
-          isDelegated={isDelegation}
+          isDelegated={isDelegated}
         />
         <div className='flex flex-col'>
           {/* Amount and symbol with body typography */}
           <Text color='text.primary' body>
-            {asset.amount} {asset.symbol}
+            {asset.amount} {metadataForIcon.symbol}
           </Text>
           {/* Asset name with detail typography */}
           <Text color='text.secondary' xs truncate>
-            {asset.name}
+            {metadataForIcon.name}
           </Text>
         </div>
       </div>

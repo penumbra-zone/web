@@ -1,12 +1,7 @@
 import cn from 'clsx';
 import { ReactNode } from 'react';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { getDisplay } from '@penumbra-zone/getters/metadata';
-import { assetPatterns } from '@penumbra-zone/types/assets';
 import { Identicon } from '../Identicon';
-import { DelegationTokenIcon } from './delegation-token';
-import { UnbondingTokenIcon } from './unbonding-token';
-import { CharacterIcon } from './character-icon';
 
 export type Size = 'lg' | 'md' | 'sm';
 
@@ -26,57 +21,31 @@ export interface AssetIconProps {
   size?: Size;
   metadata?: Metadata;
   hideBadge?: boolean;
-  /** Technical property, needed for `AssetGroup` component only */
   zIndex?: number;
-  /** When true, shows a delegation badge regardless of metadata badges */
   isDelegated?: boolean;
 }
 
 export const AssetIcon = ({
   metadata,
   size = 'md',
-  hideBadge,
+  hideBadge = false,
   zIndex,
-  isDelegated,
+  isDelegated = false,
 }: AssetIconProps) => {
-  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- possibly empty string
-  const icon = metadata?.images[0]?.png || metadata?.images[0]?.svg;
-  const display = getDisplay.optional(metadata);
-  const isDelegationToken = display ? assetPatterns.delegationToken.matches(display) : false;
-  const isUnbondingToken = display ? assetPatterns.unbondingToken.matches(display) : false;
-  const isPositionToken = display ? assetPatterns.lpNft.matches(display) : false;
-  const isAuctionToken = display ? assetPatterns.auctionNft.matches(display) : false;
+  const pngUrl = metadata?.images[0]?.png;
+  const svgUrl = metadata?.images[0]?.svg;
+  const iconUrl = pngUrl?.trim() ? pngUrl : svgUrl;
 
-  // Consider both the pattern match and the isDelegated prop
-  const shouldShowAsDelegation = isDelegationToken || isDelegated;
+  let assetIconElement: ReactNode;
 
-  let assetIcon: ReactNode;
-
-  // For delegation tokens (isDelegated=true), always prioritize the icon from enhanced metadata
-  if (isDelegated && icon) {
-    // Enhanced delegation tokens should use the Penumbra icon from metadata
-    assetIcon = <img src={icon} className='block rounded-full' alt='Asset icon' />;
-  } else if (icon) {
-    // Regular assets with icons
-    assetIcon = <img src={icon} className='block rounded-full' alt='Asset icon' />;
-  } else if (isDelegationToken && display) {
-    // Original delegation tokens with display denom pattern
-    assetIcon = <DelegationTokenIcon displayDenom={display} />;
-  } else if (isUnbondingToken) {
-    /**
-     * @todo: Render a custom unbonding token for validators that have a
-     * logo -- e.g., with the validator ID superimposed over the validator logo.
-     */
-    assetIcon = <UnbondingTokenIcon displayDenom={display} />;
-  } else if (isPositionToken) {
-    assetIcon = <CharacterIcon character='P' />;
-  } else if (isAuctionToken) {
-    assetIcon = <CharacterIcon character='A' />;
+  if (iconUrl) {
+    assetIconElement = (
+      <img src={iconUrl} className='block rounded-full' alt={metadata?.symbol ?? 'Asset icon'} />
+    );
   } else {
-    assetIcon = <Identicon uniqueIdentifier={metadata?.symbol ?? '?'} type='solid' />;
+    assetIconElement = <Identicon uniqueIdentifier={metadata?.symbol ?? '?'} type='solid' />;
   }
 
-  // Custom delegation badge component
   const DelegationBadge = () => (
     <div
       className={cn(
@@ -98,8 +67,8 @@ export const AssetIcon = ({
       )}
       title={metadata?.symbol}
     >
-      {assetIcon}
-      {!hideBadge && <>{shouldShowAsDelegation && <DelegationBadge />}</>}
+      {assetIconElement}
+      {!hideBadge && isDelegated && <DelegationBadge />}
     </div>
   );
 };

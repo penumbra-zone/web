@@ -49,23 +49,17 @@ export const AssetGroup = ({
   variant = 'overlay',
   hideBadge,
 }: AssetGroupProps) => {
-  // Helper function to check if an asset is a delegation token
-  const isDelegationToken = (metadata?: Metadata): boolean => {
-    if (!metadata?.symbol) {
-      return false;
-    }
-    // Check for cleaned delegation token symbol (delUM) or original pattern
-    return metadata.symbol === 'delUM' || metadata.symbol.startsWith('delUM(');
-  };
-
   if (variant === 'split') {
+    const firstAssetIsDelegated = assets?.[0]?.symbol === 'delUM';
+    const secondAssetIsDelegated = assets?.[1]?.symbol === 'delUM';
+
     return (
       <Container className={cn('relative flex items-center gap-[1px]', sizeMap[size])}>
         {assets?.[0] && (
           <div className={cn(SPLIT_SIZE_MAP[size], LEFT_BADGE_SIZE_MAP[size], RIGHT_CLIP_PATH)}>
             <AssetIcon
               hideBadge={hideBadge}
-              isDelegated={isDelegationToken(assets[0])}
+              isDelegated={firstAssetIsDelegated}
               metadata={assets[0]}
               size={size}
             />
@@ -75,7 +69,7 @@ export const AssetGroup = ({
           <div className={cn(SPLIT_SIZE_MAP[size], MARGIN_SIZE_MAP[size], LEFT_CLIP_PATH)}>
             <AssetIcon
               hideBadge={hideBadge}
-              isDelegated={isDelegationToken(assets[1])}
+              isDelegated={secondAssetIsDelegated}
               metadata={assets[1]}
               size={size}
             />
@@ -87,16 +81,19 @@ export const AssetGroup = ({
 
   return (
     <Container className={cn('relative flex items-center', OVERLAY_SIZE_MAP[size])}>
-      {assets?.map((asset, index) => (
-        <AssetIcon
-          hideBadge={hideBadge}
-          isDelegated={isDelegationToken(asset)}
-          metadata={asset}
-          key={index}
-          size={size}
-          zIndex={assets.length - index}
-        />
-      ))}
+      {assets?.map((asset, index) => {
+        const isAssetDelegated = asset?.symbol === 'delUM';
+        return (
+          <AssetIcon
+            hideBadge={hideBadge}
+            isDelegated={isAssetDelegated}
+            metadata={asset}
+            key={index}
+            size={size}
+            zIndex={assets.length - index}
+          />
+        );
+      })}
     </Container>
   );
 };

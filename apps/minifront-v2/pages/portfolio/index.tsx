@@ -12,8 +12,8 @@ import { BalancesByAccount } from '@shared/stores/balances-store';
 import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { AssetCard } from './assets/AssetCard';
 import { TransactionCard } from './transactions/TransactionCard';
-import { getEnhancedAssetInfo } from '@shared/utils/clean-asset-symbol';
 import { AssetData, AccountData } from './assets/AssetCard/types';
+import { centralEnhanceMetadata } from '@shared/utils/metadata-enhancement';
 
 export const Portfolio = observer(() => {
   const balancesStore = useBalancesStore();
@@ -42,11 +42,11 @@ export const Portfolio = observer(() => {
               return null;
             }
 
-            // Get enhanced asset information with icon and badge data
-            const enhancedInfo = getEnhancedAssetInfo(metadata.symbol);
+            // Enhance the metadata using the centralized function
+            const enhancedMetadata = centralEnhanceMetadata(metadata) ?? metadata;
 
             // Get the proper display exponent for this asset
-            const displayExponent = getDisplayDenomExponent(metadata);
+            const displayExponent = getDisplayDenomExponent(enhancedMetadata);
 
             // Convert amount to display format with proper commas for large numbers
             const amount = valueView.valueView.value?.amount;
@@ -58,24 +58,19 @@ export const Portfolio = observer(() => {
                 })
               : '0';
 
-            // Use enhanced asset info for display
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- displayName can be null per interface but TypeScript can't infer it
-            const displayName = enhancedInfo.displayName ?? metadata.name ?? enhancedInfo.symbol;
+            // Use enhanced metadata for display
+            const displayName = enhancedMetadata.name ?? enhancedMetadata.symbol;
 
             const asset: AssetData = {
-              id: metadata.penumbraAssetId?.inner.toString() ?? '',
+              id: enhancedMetadata.penumbraAssetId?.inner.toString() ?? '',
               // Use proper display name for the asset
               name: displayName,
-              symbol: enhancedInfo.symbol,
+              symbol: enhancedMetadata.symbol,
               // Don't include the symbol in amount - the component will add it
               amount: displayAmount,
               value: null,
-              // Use enhanced asset icon if available, otherwise fall back to metadata images
-              icon:
-                enhancedInfo.icon ??
-                metadata.images[0]?.png ??
-                metadata.images[0]?.svg ??
-                undefined,
+              // Use enhanced metadata images (centralEnhanceMetadata sets proper icons for UM/delUM)
+              icon: enhancedMetadata.images[0]?.png ?? enhancedMetadata.images[0]?.svg ?? undefined,
             };
 
             return asset;

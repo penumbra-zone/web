@@ -1,9 +1,5 @@
 import { TransactionSummary_Effects } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
-import {
-  ValueView,
-  Metadata,
-  AssetImage,
-} from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { assetPatterns } from '@penumbra-zone/types/assets';
 import { GetMetadata } from '../ActionView/types';
@@ -26,14 +22,15 @@ export const adaptEffects = (
   getMetadataByAssetId?: GetMetadata,
   walletAddressViews?: AddressView[],
 ) => {
-  return effects.map<SummaryEffect>(effect => {
+  const result = effects.map<SummaryEffect>(effect => {
     const reduced = (effect.balance?.values ?? []).reduce<SummaryEffect['balances']>(
       (accum, balance) => {
-        const asset = balance.value?.assetId && getMetadataByAssetId?.(balance.value.assetId);
+        const assetMetadata =
+          balance.value?.assetId && getMetadataByAssetId?.(balance.value.assetId);
         const isNegative = !balance.negated;
 
         // if the asset is unknown, don't sum it up, show simply as unknown
-        if (!asset?.penumbraAssetId?.inner) {
+        if (!assetMetadata?.penumbraAssetId?.inner) {
           accum.push({
             negative: isNegative,
             view: new ValueView({
@@ -49,10 +46,10 @@ export const adaptEffects = (
           return accum;
         }
 
-        // filter out the LpNFT and AuctionNFT assets
+        // filter out the LpNFT and AuctionNFT assets based on display name from metadata
         if (
-          assetPatterns.lpNft.matches(asset.display) ||
-          assetPatterns.auctionNft.matches(asset.display)
+          assetPatterns.lpNft.matches(assetMetadata.display) ||
+          assetPatterns.auctionNft.matches(assetMetadata.display)
         ) {
           return accum;
         }
@@ -63,7 +60,7 @@ export const adaptEffects = (
             valueView: {
               case: 'knownAssetId',
               value: {
-                metadata: enhanceMetadataIfNeeded(asset),
+                metadata: assetMetadata,
                 amount: balance.value?.amount,
               },
             },
@@ -87,6 +84,7 @@ export const adaptEffects = (
     let enhancedAddress = effect.address;
     if (effect.address && walletAddressViews) {
       const effectAddress = effect.address; // Store in const for type narrowing
+
       // Look for a wallet address that matches this effect address
       const matchingWallet = walletAddressViews.find(walletAddr => {
         // Compare addresses - both should have the same address data
@@ -160,6 +158,57 @@ export const adaptEffects = (
       // If we found a matching wallet address, use it instead as it has the addressIndex
       if (matchingWallet) {
         enhancedAddress = matchingWallet;
+      } else {
+        // Special handling for IBC deposit forwarding addresses
+        // These are privacy addresses that don't match user's account addresses
+        // but the funds still go to a user account (usually Main Account)
+        if (effectAddress.addressView.case === 'opaque') {
+          const opaqueAddress = effectAddress.addressView.value.address;
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- altBech32m can be undefined despite type inference
+          if (opaqueAddress?.altBech32m?.startsWith('penumbra1')) {
+            // Additional check for address length to identify forwarding addresses
+            if (opaqueAddress.altBech32m.length > 100) {
+              // For positive balances (deposits), try to find the Main Account (index 0)
+              // This is a reasonable fallback since most IBC deposits go to Main Account
+              const hasPositiveBalance = reduced.some(balance => !balance.negative);
+
+              if (hasPositiveBalance) {
+                // Find main account (index 0) - refactored to avoid optional chaining issues
+                const mainAccount = walletAddressViews.find(addr => {
+                  if (addr.addressView.case !== 'decoded') {
+                    return false;
+                  }
+                  const decodedView = addr.addressView.value;
+                  // Check if index exists and has account property equal to 0
+                  return (
+                    decodedView.index &&
+                    'account' in decodedView.index &&
+                    decodedView.index.account === 0
+                  );
+                });
+
+                if (mainAccount) {
+                  enhancedAddress = mainAccount;
+                } else {
+                  // If we can't find main account, use the first available account
+                  const firstAccount = walletAddressViews.find(addr => {
+                    if (addr.addressView.case !== 'decoded') {
+                      return false;
+                    }
+                    const decodedView = addr.addressView.value;
+                    // Check if index exists (is defined and not null)
+                    return decodedView.index != null;
+                  });
+
+                  if (firstAccount) {
+                    enhancedAddress = firstAccount;
+                  }
+                  // If still no match, keep the original forwarding address
+                }
+              }
+            }
+          }
+        }
       }
     }
 
@@ -168,31 +217,6 @@ export const adaptEffects = (
       address: enhancedAddress,
     };
   });
-};
 
-// Helper function to enhance metadata for delegation tokens
-const enhanceMetadataIfNeeded = (metadata: Metadata): Metadata => {
-  if (!metadata.symbol) {
-    return metadata;
-  }
-
-  // Check if this is a delegation token that needs enhancement
-  // Check both the original pattern and the cleaned symbol
-  if (metadata.symbol.startsWith('delUM(') || metadata.symbol === 'delUM') {
-    // Create enhanced metadata with clean symbol and Penumbra icon
-    const enhanced = metadata.clone();
-    enhanced.symbol = 'delUM';
-    enhanced.name = 'Delegated Penumbra';
-
-    // Set Penumbra icon
-    enhanced.images = [
-      new AssetImage({
-        svg: 'https://raw.githubusercontent.com/prax-wallet/registry/main/images/um.svg',
-      }),
-    ];
-
-    return enhanced;
-  }
-
-  return metadata;
+  return result;
 };

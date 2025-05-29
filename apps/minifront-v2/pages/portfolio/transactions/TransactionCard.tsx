@@ -13,12 +13,12 @@ import { Skeleton } from '@penumbra-zone/ui/Skeleton';
 import { TransactionSummary } from '@penumbra-zone/ui/TransactionSummary';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import { getMetadataFromBalancesResponse } from '@penumbra-zone/getters/balances-response';
+import { centralEnhanceMetadata } from '@shared/utils/metadata-enhancement';
 
 import { useTransactionsStore, useBalancesStore } from '@shared/stores/store-context';
 import { useIsConnected, useConnectWallet } from '@shared/hooks/use-connection';
 import { PagePath } from '@shared/const/page';
 import { InfoDialog } from '../assets/InfoDialog';
-import { createEnhancedMetadata } from '@shared/utils/clean-asset-symbol';
 
 // Utility function to compare Uint8Arrays
 const compareUint8Arrays = (a: Uint8Array, b: Uint8Array): boolean => {
@@ -86,7 +86,7 @@ export const TransactionCard = observer(
       if (!assetId) {
         return undefined;
       }
-      let metadata: Metadata | undefined;
+      let rawMetadata: Metadata | undefined;
 
       // Check for AssetId first
       if (assetId instanceof AssetId) {
@@ -96,7 +96,7 @@ export const TransactionCard = observer(
             meta?.penumbraAssetId?.inner &&
             compareUint8Arrays(meta.penumbraAssetId.inner, assetId.inner)
           ) {
-            metadata = meta;
+            rawMetadata = meta;
             break;
           }
         }
@@ -111,16 +111,15 @@ export const TransactionCard = observer(
               meta.display === denomToFind ||
               meta.symbol === denomToFind
             ) {
-              metadata = meta;
+              rawMetadata = meta;
               break;
             }
-            metadata = meta;
           }
         }
       }
 
-      // Create enhanced metadata with proper icon and badge
-      return metadata ? createEnhancedMetadata(metadata) : undefined;
+      // Enhance metadata using the centralized function
+      return centralEnhanceMetadata(rawMetadata);
     };
 
     const infoButton = showInfoButton ? <InfoDialog /> : null;
@@ -194,20 +193,29 @@ export const TransactionCard = observer(
                 {transactionsToDisplay.length > 0 ? (
                   transactionsToDisplay.map((transaction: TransactionInfo) => {
                     const txHash = getTxHash(transaction);
+
                     return (
-                      <TransactionSummary
+                      <div
                         key={txHash}
-                        info={transaction}
-                        getMetadata={getTxMetadata}
-                        walletAddressViews={walletAddressViews}
-                        as='button'
+                        className='cursor-pointer'
                         onClick={() => navigate(`${PagePath.Transactions}?tx=${txHash}`)}
-                        endAdornment={
-                          <Button actionType='accent' density='compact' iconOnly icon={FileSearch}>
-                            View Details
-                          </Button>
-                        }
-                      />
+                      >
+                        <TransactionSummary
+                          info={transaction}
+                          getMetadata={getTxMetadata}
+                          walletAddressViews={walletAddressViews}
+                          endAdornment={
+                            <Button
+                              actionType='accent'
+                              density='compact'
+                              iconOnly
+                              icon={FileSearch}
+                            >
+                              View Details
+                            </Button>
+                          }
+                        />
+                      </div>
                     );
                   })
                 ) : (

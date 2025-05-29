@@ -13,11 +13,11 @@ import { Wallet2 } from 'lucide-react';
 import { useBalancesStore } from '@shared/stores/store-context';
 import { useIsConnected, useConnectWallet } from '@shared/hooks/use-connection';
 import { PagePath } from '@shared/const/page';
-import { createEnhancedMetadata } from '@shared/utils/clean-asset-symbol';
 import { BreadCrumb, BreadcrumbItem } from '@shared/ui/breadcrumb';
 import { InfoDialog } from '../assets/InfoDialog';
 import { TransactionView } from './TransactionView';
 import { TransactionCard } from './TransactionCard';
+import { centralEnhanceMetadata } from '@shared/utils/metadata-enhancement';
 
 // Utility function to compare Uint8Arrays
 const compareUint8Arrays = (a: Uint8Array, b: Uint8Array): boolean => {
@@ -65,7 +65,7 @@ export const AllTransactionsPage = observer(() => {
     if (!assetId) {
       return undefined;
     }
-    let metadata: Metadata | undefined;
+    let rawMetadata: Metadata | undefined;
 
     // Check for AssetId first
     if (assetId instanceof AssetId) {
@@ -75,7 +75,7 @@ export const AllTransactionsPage = observer(() => {
           meta?.penumbraAssetId?.inner &&
           compareUint8Arrays(meta.penumbraAssetId.inner, assetId.inner)
         ) {
-          metadata = meta;
+          rawMetadata = meta;
           break;
         }
       }
@@ -90,16 +90,15 @@ export const AllTransactionsPage = observer(() => {
             meta.display === denomToFind ||
             meta.symbol === denomToFind
           ) {
-            metadata = meta;
+            rawMetadata = meta;
             break;
           }
-          metadata = meta;
         }
       }
     }
 
-    // Create enhanced metadata with proper icon and badge
-    return metadata ? createEnhancedMetadata(metadata) : undefined;
+    // Enhance metadata using the centralized function
+    return centralEnhanceMetadata(rawMetadata);
   };
 
   const breadcrumbItems: BreadcrumbItem[] = [
