@@ -10,7 +10,7 @@ import { useState } from 'react';
 import { RouterProvider } from 'react-router-dom';
 import { rootRouter } from './components/root-router';
 import { PenumbraUIProvider } from '@penumbra-zone/ui-deprecated/PenumbraUIProvider';
-import '@penumbra-zone/ui/style.css';
+import '@penumbra-zone/ui-deprecated/styles/globals.css';
 
 const Main = () => {
   const [queryClient] = useState(() => new QueryClient());
