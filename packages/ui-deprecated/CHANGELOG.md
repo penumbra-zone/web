@@ -1,5 +1,11 @@
 # @penumbra-zone/ui
 
+## 21.0.1
+
+### Patch Changes
+
+- 36e68f4: Fix background color of minifront, connections issues and z-index for SegmentPicker
+
 ## 21.0.0
 
 ### Major Changes

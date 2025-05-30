@@ -1,5 +1,14 @@
 # minifront-v2
 
+## 7.0.2
+
+### Patch Changes
+
+- Updated dependencies [c770cd5]
+- Updated dependencies [91eb242]
+  - @penumbra-zone/ui@15.0.1
+  - @penumbra-zone/client@28.1.0
+
 ## 7.0.1
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # minifront
 
+## 6.34.6
+
+### Patch Changes
+
+- 36e68f4: Fix background color of minifront, connections issues and z-index for SegmentPicker
+- Updated dependencies [c770cd5]
+- Updated dependencies [36e68f4]
+- Updated dependencies [91eb242]
+  - @penumbra-zone/ui@15.0.1
+  - @penumbra-zone/ui-deprecated@21.0.1
+  - @penumbra-zone/client@28.1.0
+
 ## 6.34.5
 
 ### Patch Changes

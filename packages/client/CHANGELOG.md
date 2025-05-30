@@ -1,5 +1,11 @@
 # @penumbra-zone/client
 
+## 28.1.0
+
+### Minor Changes
+
+- 91eb242: clean up client connection handling
+
 ## 28.0.0
 
 ### Patch Changes
