@@ -21,7 +21,7 @@ jobs:
         uses: ./.github/actions/setup-turbo
 
       - name: build the packages
-        run: nix develop --command just build --filter "./packages/*"
+        run: nix develop --command just build -- --filter "./packages/*"
 
       # If there are changesets, this action will create a PR on the repo to version packages
       # If there are none, it will publish newer-versioned public packages to npm
