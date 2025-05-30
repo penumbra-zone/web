@@ -128,6 +128,7 @@ export const TableCell = ({
         classesByDensity[density],
         justify && classesByAlignment[justify],
         type === 'heading' ? headingFont[density] : defaultFont[density],
+        type === 'heading' && 'whitespace-nowrap',
         numeric && 'font-mono tabular-nums',
       )}
     >

@@ -1,3 +1,5 @@
+import { Code, ConnectError } from '@connectrpc/connect';
+import { PenumbraProviderNotConnectedError } from '@penumbra-zone/client/error';
 import { Dialog } from '@penumbra-zone/ui-deprecated/Dialog';
 import { Text } from '@penumbra-zone/ui-deprecated/Text';
 import { useMemo, useState } from 'react';
@@ -6,7 +8,6 @@ import { statusStreamStateSelector, useInitialStatus, useStatus } from '../../st
 import { BlockProgress } from './block-progress';
 import { RemainingTime } from './remaining-time';
 import { SyncAnimation } from './sync-animation';
-import { Code, ConnectError } from '@connectrpc/connect';
 
 export const SyncingDialog = () => {
   const initialStatus = useInitialStatus();
@@ -27,7 +28,9 @@ export const SyncingDialog = () => {
   );
 
   const isUnavailable = useMemo(
-    () => streamError instanceof ConnectError && streamError.code === Code.Unavailable,
+    () =>
+      streamError instanceof PenumbraProviderNotConnectedError ||
+      (streamError instanceof ConnectError && streamError.code === Code.Unavailable),
     [streamError],
   );
 
