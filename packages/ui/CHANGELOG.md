@@ -1,5 +1,11 @@
 # @penumbra-zone/ui
 
+## 15.0.1
+
+### Patch Changes
+
+- c770cd5: Add `whitespace-nowrap` class to all heading TableCells
+
 ## 15.0.0
 
 ### Major Changes
