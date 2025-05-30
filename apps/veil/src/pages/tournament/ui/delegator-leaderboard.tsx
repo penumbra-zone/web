@@ -28,7 +28,7 @@ import { getValueViewLength } from '@/shared/utils/get-max-padstart';
 
 interface DelegatorLeaderboardRow extends DelegatorLeaderboardData {
   reward?: ValueView;
-  addressString: string;
+  displayAddress: string;
 }
 
 const LeaderboardRow = observer(
@@ -50,9 +50,9 @@ const LeaderboardRow = observer(
       }
       return PagePath.TournamentDelegator.replace(
         ':address',
-        encodeURIComponent(row.addressString),
+        encodeURIComponent(row.displayAddress),
       );
-    }, [row.addressString, loading]);
+    }, [row.displayAddress, loading]);
 
     const addressView = useMemo(() => {
       return connected && subaccountIndex
@@ -157,7 +157,7 @@ export const DelegatorLeaderboard = observer(() => {
           accum.rows.push({
             ...row,
             reward,
-            addressString: bech32mAddress(row.address),
+            displayAddress: bech32mAddress(row.address),
           });
         }
 
@@ -192,7 +192,7 @@ export const DelegatorLeaderboard = observer(() => {
 
           {leaderboard.map((row, index) => (
             <LeaderboardRow
-              key={isLoading ? `loading-${index}` : row.addressString}
+              key={isLoading ? `loading-${index}` : row.displayAddress}
               padStart={mappedData?.padStart}
               row={row}
               loading={isLoading || !Object.keys(row).length}
