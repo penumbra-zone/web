@@ -107,7 +107,7 @@ const Thumb: React.FC<ThumbProps> = ({ x, value, scale, max, onMove, elevate, on
   );
 };
 
-const PercentageInput = ({ x, value, elevate }) => {
+const PercentageInput = ({ x, value, maxWidth, elevate }) => {
   const textRef = useRef<HTMLDivElement>(null);
   const [textWidth, setTextWidth] = useState(0);
 
@@ -126,7 +126,7 @@ const PercentageInput = ({ x, value, elevate }) => {
         ${elevate ? 'z-20' : 'z-10'}
       `}
       style={{
-        left: Math.max(0, x - textWidth / 2),
+        left: Math.min(maxWidth - textWidth, Math.max(0, x - textWidth / 2)),
       }}
     >
       <Text detail color='text.primary'>
@@ -136,7 +136,7 @@ const PercentageInput = ({ x, value, elevate }) => {
   );
 };
 
-const ValueInput = ({ x, value, elevate }) => {
+const ValueInput = ({ x, value, maxWidth, elevate }) => {
   const textRef = useRef<HTMLDivElement>(null);
   const [textWidth, setTextWidth] = useState(0);
 
@@ -155,7 +155,7 @@ const ValueInput = ({ x, value, elevate }) => {
         ${elevate ? 'z-20' : 'z-10'}
       `}
       style={{
-        left: Math.max(0, x - textWidth / 2),
+        left: Math.min(maxWidth - textWidth, Math.max(0, x - textWidth / 2)),
       }}
     >
       <Text detail color='text.primary'>
@@ -246,14 +246,15 @@ export const PriceSlider: React.FC<ControlSliderProps> = ({
                     value={value}
                     scale={scale}
                     max={max}
+                    maxWidth={width}
                     onMove={nextValue =>
                       onInput(i === 0 ? [nextValue, values[1]] : [values[0], nextValue])
                     }
                     elevate={elevate}
                     onPointerDown={() => setElevateThumb(i)}
                   />
-                  <PercentageInput x={x} value={value} elevate={elevate} />
-                  <ValueInput x={x} value={value} elevate={elevate} />
+                  <PercentageInput x={x} maxWidth={width} value={value} elevate={elevate} />
+                  <ValueInput x={x} maxWidth={width} value={value} elevate={elevate} />
                 </React.Fragment>
               );
             })}

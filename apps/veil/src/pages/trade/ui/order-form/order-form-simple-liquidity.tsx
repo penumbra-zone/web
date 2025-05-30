@@ -1,7 +1,6 @@
 import { observer } from 'mobx-react-lite';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
-import { Slider as PenumbraSlider } from '@penumbra-zone/ui/Slider';
 import { round } from '@penumbra-zone/types/round';
 import { connectionStore } from '@/shared/model/connection';
 import { ConnectButton } from '@/features/connect/connect-button';
