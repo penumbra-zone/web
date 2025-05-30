@@ -1,3 +1,7 @@
+# The full URL of the site where veil will be hosted,
+# e.g. `https://dex.penumbra.zone`.
+ARG BASE_URL="http://localhost:3000"
+
 # Container image for Veil, a block explorer for Penumbra.
 ARG NODE_MAJOR_VERSION=22
 FROM docker.io/library/node:${NODE_MAJOR_VERSION} AS base
@@ -37,6 +41,10 @@ RUN pnpm install --frozen-lockfile
 # build command. TODO: use `prebuild` steps in the dep packages
 # to ensure a clean dependency graph.
 RUN pnpm build
+
+# Reference the build arg to set NEXT_PUBLIC_BASE_URL, which the NextJS build process
+# will respect, and bake into the emitted docroot.
+ENV NEXT_PUBLIC_BASE_URL=$BASE_URL
 
 # Build the veil app, filtering for relevant dependencies.
 RUN pnpm -r --filter "penumbra-veil..." build
