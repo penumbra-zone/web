@@ -76,14 +76,11 @@ const LeaderboardRow = observer(
       <Link
         href={addressLink}
         className={cn(
-          'grid grid-cols-subgrid col-span-6',
+          'grid grid-cols-subgrid col-span-5',
           'hover:bg-action-hoverOverlay transition-colors cursor-pointer',
           !!subaccountIndex && 'bg-other-tonalFill5',
         )}
       >
-        <TableCell cell loading={loading}>
-          {row.place}
-        </TableCell>
         <TableCell cell loading={loading}>
           {!loading && (
             <>
@@ -130,10 +127,7 @@ const LeaderboardRow = observer(
 export const DelegatorLeaderboard = observer(() => {
   const [page, setPage] = useState(BASE_PAGE);
   const [limit, setLimit] = useState(BASE_LIMIT);
-  const { getTableHeader, sortBy } = useSortableTableHeaders<DelegatorLeaderboardSortKey>(
-    'place',
-    'asc',
-  );
+  const { getTableHeader, sortBy } = useSortableTableHeaders<DelegatorLeaderboardSortKey>();
 
   const { data: stakingToken } = useStakingTokenMetadata();
   const {
@@ -183,9 +177,8 @@ export const DelegatorLeaderboard = observer(() => {
         Delegators Leaderboard
       </Text>
       <Density compact>
-        <div className='grid grid-cols-[auto_200px_1fr_1fr_1fr_48px] max-w-full overflow-x-auto'>
-          <div key='header' className='grid grid-cols-subgrid col-span-6'>
-            {getTableHeader('place', 'Place')}
+        <div className='grid grid-cols-[200px_1fr_1fr_1fr_48px] max-w-full overflow-x-auto'>
+          <div key='header' className='grid grid-cols-subgrid col-span-5'>
             <TableCell heading>Delegator Address</TableCell>
             {getTableHeader('epochs_voted_in', 'Rounds Participated')}
             {getTableHeader('streak', 'Voting Streak')}
