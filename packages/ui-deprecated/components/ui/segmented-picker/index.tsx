@@ -30,7 +30,7 @@ const ActiveSegmentIndicator = ({
   <motion.div
     layout
     layoutId={layoutId}
-    className={cn('absolute inset-0 z-10 bg-teal', roundedClasses)}
+    className={cn('absolute inset-0 z-0 bg-teal', roundedClasses)}
   />
 );
 
@@ -94,7 +94,7 @@ export const SegmentedPicker = <ValueType extends { toString: () => string }>({
             />
           )}
 
-          <div className='absolute inset-0 z-10 flex items-center justify-center'>
+          <div className='absolute inset-0 z-0 flex items-center justify-center'>
             {option.label}
           </div>
 
