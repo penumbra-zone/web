@@ -128,7 +128,10 @@ export const LeaderboardTable = observer(({ epoch }: { epoch: number | undefined
               </div>
             )}
 
-            <div ref={parent} className='grid grid-cols-6 h-auto overflow-auto'>
+            <div
+              ref={parent}
+              className='grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr] h-auto overflow-auto'
+            >
               <div className='grid grid-cols-subgrid col-span-6'>
                 <TableCell heading>Position ID</TableCell>
                 {getTableHeader('executions', 'Execs')}

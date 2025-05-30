@@ -37,7 +37,7 @@ const TableLayout = observer(
     return (
       <div className='flex flex-col gap-4 mt-4'>
         <Density compact>
-          <div className='grid grid-cols-[auto_1fr_1fr_48px]'>
+          <div className='grid grid-cols-[auto_1fr_1fr_48px] max-w-full overflow-x-auto'>
             <div className='grid grid-cols-subgrid col-span-4'>
               {getTableHeader('epoch', 'Epoch')}
               <TableCell heading>Casted Vote</TableCell>
@@ -55,7 +55,7 @@ const TableLayout = observer(
 const Layout = ({ totalChild, tableChild }: { totalChild: ReactNode; tableChild: ReactNode }) => {
   return (
     <div className='flex flex-col gap-4 p-6 rounded-lg bg-other-tonalFill5 backdrop-blur-lg'>
-      <div className='flex justify-between items-center'>
+      <div className='flex flex-col gap-2 desktop:flex-row justify-between items-start desktop:items-center'>
         <div className='flex flex-col gap-1'>
           <Text xxl color='text.primary'>
             Total Rewards Earned
@@ -112,7 +112,7 @@ export const DelegatorRewards = ({ address }: { address: Address }) => {
 
   const total = toValueView({ value: data.total, getMetadata });
   const totalChild = (
-    <div className='flex items-center gap-4 [&_span]:font-mono [&_span]:text-3xl'>
+    <div className='flex items-center gap-4 [&_span]:font-mono desktop:[&_span]:text-3xl'>
       <Density sparse>
         <ValueViewComponent valueView={total} priority='tertiary' />
       </Density>
