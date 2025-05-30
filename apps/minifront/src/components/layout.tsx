@@ -4,7 +4,6 @@ import { Header } from './header/header';
 import { Toaster } from '@penumbra-zone/ui-deprecated/components/ui/toaster';
 import { Footer } from './footer/footer';
 import { SyncingDialog } from './syncing-dialog';
-import '@penumbra-zone/ui-deprecated/styles/globals.css';
 
 export const Layout = () => {
   return (

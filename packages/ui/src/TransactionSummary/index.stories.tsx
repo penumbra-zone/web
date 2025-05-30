@@ -19,6 +19,14 @@ const meta: Meta<typeof TransactionSummary> = {
       options: Object.keys(OPTIONS),
       mapping: OPTIONS,
     },
+    hideMemo: {
+      control: 'boolean',
+      defaultValue: false,
+    },
+    truncate: {
+      control: 'boolean',
+      defaultValue: false,
+    },
   },
 };
 export default meta;
@@ -29,5 +37,7 @@ export const Basic: Story = {
   args: {
     info: TxSwap,
     getMetadata: registry.tryGetMetadata,
+    hideMemo: false,
+    truncate: false,
   },
 };

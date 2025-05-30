@@ -20,8 +20,10 @@ export interface DisplayProps {
  */
 export const Display = ({ children }: DisplayProps) => {
   return (
-    <section className='px-4 py-0 desktop:px-8'>
-      <div className='max-w-screen-xl'>{children}</div>
+    <section className='flex flex-col items-center justify-start px-4 py-0 desktop:px-8'>
+      <div className='flex w-full max-w-screen-xl flex-col items-center justify-start'>
+        {children}
+      </div>
     </section>
   );
 };

@@ -45,6 +45,10 @@ const getPosition = (density: Density, priority: PillProps['priority']): string 
   return '-ml-2';
 };
 
+const getTextColor = (textColor?: string, fallback = 'text-text-primary'): string => {
+  return textColor && textColor.trim().length > 0 ? `text-${textColor}` : fallback;
+};
+
 export interface ValueViewComponentProps<SelectedContext extends Context> {
   valueView?: ValueView;
   /**
@@ -98,6 +102,11 @@ export interface ValueViewComponentProps<SelectedContext extends Context> {
    * determined by the `Density` context.
    */
   density?: Density;
+  /**
+   * Custom text color for the value and symbol. When provided, overrides default colors.
+   * Accepts the same color values as the Text component (e.g., 'destructive.light', 'text.secondary').
+   */
+  textColor?: string;
 }
 
 /**
@@ -119,6 +128,7 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
   showValue = true,
   trailingZeros = false,
   density: densityProps,
+  textColor,
 }: ValueViewComponentProps<SelectedContext>) => {
   const densityContext = useDensity();
   const density = densityProps ?? densityContext;
@@ -150,7 +160,10 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
       )}
       else={children => (
         <span
-          className={cn(density === 'sparse' ? technical : detailTechnical, 'text-text-primary')}
+          className={cn(
+            density === 'sparse' ? technical : detailTechnical,
+            getTextColor(textColor),
+          )}
         >
           {children}
         </span>
@@ -159,7 +172,12 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
       <span className={cn('flex w-max max-w-full items-center text-ellipsis', getGap(density))}>
         {showIcon && (
           <div className='shrink-0'>
-            <AssetIcon hideBadge size={getIconSize(density)} metadata={metadata} />
+            <AssetIcon
+              hideBadge={!symbol.startsWith('delUM')}
+              isDelegated={symbol.startsWith('delUM')}
+              size={getIconSize(density)}
+              metadata={metadata}
+            />
           </div>
         )}
 
@@ -170,7 +188,7 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
               priority === 'secondary' &&
               'border-b-2 border-dashed border-other-tonalStroke',
             getGap(density),
-            getSignColor(signed),
+            getTextColor(textColor, getSignColor(signed)),
           )}
         >
           {showValue && (

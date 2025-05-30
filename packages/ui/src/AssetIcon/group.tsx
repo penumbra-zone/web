@@ -50,16 +50,29 @@ export const AssetGroup = ({
   hideBadge,
 }: AssetGroupProps) => {
   if (variant === 'split') {
+    const firstAssetIsDelegated = assets?.[0]?.symbol === 'delUM';
+    const secondAssetIsDelegated = assets?.[1]?.symbol === 'delUM';
+
     return (
       <Container className={cn('relative flex items-center gap-[1px]', sizeMap[size])}>
         {assets?.[0] && (
           <div className={cn(SPLIT_SIZE_MAP[size], LEFT_BADGE_SIZE_MAP[size], RIGHT_CLIP_PATH)}>
-            <AssetIcon hideBadge={hideBadge} metadata={assets[0]} size={size} />
+            <AssetIcon
+              hideBadge={hideBadge}
+              isDelegated={firstAssetIsDelegated}
+              metadata={assets[0]}
+              size={size}
+            />
           </div>
         )}
         {assets?.[1] && (
           <div className={cn(SPLIT_SIZE_MAP[size], MARGIN_SIZE_MAP[size], LEFT_CLIP_PATH)}>
-            <AssetIcon hideBadge={hideBadge} metadata={assets[1]} size={size} />
+            <AssetIcon
+              hideBadge={hideBadge}
+              isDelegated={secondAssetIsDelegated}
+              metadata={assets[1]}
+              size={size}
+            />
           </div>
         )}
       </Container>
@@ -68,15 +81,19 @@ export const AssetGroup = ({
 
   return (
     <Container className={cn('relative flex items-center', OVERLAY_SIZE_MAP[size])}>
-      {assets?.map((asset, index) => (
-        <AssetIcon
-          hideBadge={hideBadge}
-          metadata={asset}
-          key={index}
-          size={size}
-          zIndex={assets.length - index}
-        />
-      ))}
+      {assets?.map((asset, index) => {
+        const isAssetDelegated = asset?.symbol === 'delUM';
+        return (
+          <AssetIcon
+            hideBadge={hideBadge}
+            isDelegated={isAssetDelegated}
+            metadata={asset}
+            key={index}
+            size={size}
+            zIndex={assets.length - index}
+          />
+        );
+      })}
     </Container>
   );
 };
