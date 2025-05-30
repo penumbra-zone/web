@@ -70,7 +70,7 @@ export const ReceiveForm = observer(() => {
           </div>
           <Toggle
             label='IBC Deposit'
-            defaultSelected={receiveState.ibcDepositEnabled}
+            value={receiveState.ibcDepositEnabled}
             onChange={handleToggleIbcDeposit}
           />
         </div>

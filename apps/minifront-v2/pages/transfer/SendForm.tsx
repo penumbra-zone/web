@@ -149,7 +149,6 @@ export const SendForm = observer(() => {
                     valueView={feeValueView}
                     showIcon={true}
                     showSymbol={true}
-                    abbreviate={true}
                     density='compact'
                   />
                 </Density>
