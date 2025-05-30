@@ -23,6 +23,7 @@ export const SimpleLiquidityOrderForm = observer(
       store.marketPrice * (1 - deviation),
       store.marketPrice * (1 + deviation),
     ]);
+    console.log('TCL: priceRange', priceRange[0], priceRange[1]);
 
     return (
       <div className='p-4'>
@@ -74,9 +75,9 @@ export const SimpleLiquidityOrderForm = observer(
             </Text>
           </div>
           <PriceSlider
-            min={0}
-            max={store.marketPrice * 2}
-            value={priceRange}
+            min={store.marketPrice * 0.5}
+            max={store.marketPrice * 1.5}
+            values={priceRange}
             onInput={setPriceRange}
             marketPrice={store.marketPrice}
             quoteAsset={store.quoteAsset}

@@ -24,7 +24,7 @@ interface DeltaState {
   deltaX: number;
 }
 
-const Thumb: React.FC<ThumbProps> = ({ left, right, x, value, scale, max, onMove }) => {
+const Thumb: React.FC<ThumbProps> = ({ x, value, scale, max, onMove, elevate, onPointerDown }) => {
   const deltaRef = useRef<DeltaState | null>(null);
 
   const handleMouseMove = (event: MouseEvent | TouchEvent) => {
@@ -38,18 +38,8 @@ const Thumb: React.FC<ThumbProps> = ({ left, right, x, value, scale, max, onMove
     deltaRef.current.deltaX = clientX - deltaRef.current.initX;
     const dx = deltaRef.current.deltaX;
 
-    let nextValue: number;
-    if (left) {
-      const nextX = Math.min(Math.max(0, scale(value[0]) + dx), scale(max));
-      nextValue = scale.invert(nextX);
-
-      onMove(nextValue < value[1] ? [nextValue, value[1]] : [value[1], nextValue]);
-    } else {
-      const nextX = Math.min(Math.max(0, scale(value[1]) + dx), scale(max));
-      nextValue = scale.invert(nextX);
-
-      onMove(nextValue > value[0] ? [value[0], nextValue] : [nextValue, value[0]]);
-    }
+    const nextX = Math.min(Math.max(0, scale(value) + dx), scale(max));
+    onMove(scale.invert(nextX));
 
     // Clear any text selection
     window.getSelection()?.removeAllRanges();
@@ -57,7 +47,9 @@ const Thumb: React.FC<ThumbProps> = ({ left, right, x, value, scale, max, onMove
 
   const handlePointerDown = (event: React.MouseEvent | React.TouchEvent) => {
     const isTouch = event instanceof TouchEvent;
-    const clientX = isTouch ? event.touches[0].clientX : (event as React.MouseEvent).clientX;
+    const clientX = isTouch
+      ? (event.touches[0]?.clientX ?? 0)
+      : (event as React.MouseEvent).clientX;
 
     deltaRef.current = {
       initX: clientX,
@@ -67,6 +59,7 @@ const Thumb: React.FC<ThumbProps> = ({ left, right, x, value, scale, max, onMove
     // Prevent scrolling while dragging
     document.body.style.overflow = 'hidden';
     document.body.style.marginRight = '4px';
+    onPointerDown();
 
     const moveHandler = (e: MouseEvent | TouchEvent) => handleMouseMove(e);
     const upHandler = () => {
@@ -75,6 +68,8 @@ const Thumb: React.FC<ThumbProps> = ({ left, right, x, value, scale, max, onMove
       deltaRef.current = null;
       document.body.style.overflow = '';
       document.body.style.marginRight = '';
+
+      // onPointerUp();
     };
 
     document.addEventListener(isTouch ? 'touchmove' : 'mousemove', moveHandler);
@@ -83,18 +78,25 @@ const Thumb: React.FC<ThumbProps> = ({ left, right, x, value, scale, max, onMove
 
   return (
     <div
+      // ${left ? 'left-0' : 'right-0'}
       className={`
         absolute top-0 flex h-[78px] w-[8px] items-center justify-center bg-transparent
-        ${left ? 'left-0' : 'right-0'}
+        ${elevate ? 'z-20' : 'z-10'}
       `}
+      style={{
+        left: x,
+      }}
     >
       <div
-        className={`absolute z-0 w-[1px] top-[20px] h-[58px] bg-primary-main ${left ? 'left-0' : 'right-0'}`}
+        // className={`absolute z-0 w-[1px] top-[20px] h-[58px] bg-primary-main ${left ? 'left-0' : 'right-0'}`}
+        className={`absolute z-0 w-[1px] top-[20px] h-[58px] bg-primary-main left-0`}
       />
       <button
         type='button'
-        aria-label={`Slider Thumb ${left ? 'Lower' : 'Upper'}`}
-        className={`w-[12px] h-[20px] bg-primary-main absolute top-[32px] cursor-ew-resize rounded-[4px] ${left ? 'left-[-6px]' : 'right-[-6px]'} `}
+        // aria-label={`Slider Thumb ${left ? 'Lower' : 'Upper'}`}
+        aria-label='Slider Thumb'
+        // className={`w-[12px] h-[20px] bg-primary-main absolute top-[32px] cursor-ew-resize rounded-[4px] ${left ? 'left-[-6px]' : 'right-[-6px]'} `}
+        className={`w-[12px] h-[20px] bg-primary-main absolute top-[32px] cursor-ew-resize rounded-[4px] left-[-6px]`}
         onMouseDown={handlePointerDown}
         onTouchStart={handlePointerDown}
       >
@@ -105,7 +107,7 @@ const Thumb: React.FC<ThumbProps> = ({ left, right, x, value, scale, max, onMove
   );
 };
 
-const PercentageInput = ({ leftX, rightX, value, onInput }) => {
+const PercentageInput = ({ x, value, elevate }) => {
   const textRef = useRef<HTMLDivElement>(null);
   const [textWidth, setTextWidth] = useState(0);
 
@@ -120,11 +122,11 @@ const PercentageInput = ({ leftX, rightX, value, onInput }) => {
     <div
       ref={textRef}
       className={`
-  absolute z-10 top-0 h-[20px] [line-height:20px_!important] bg-other-tonalFill10 rounded-sm px-2
-`}
+        absolute top-0 h-[20px] [line-height:20px_!important] bg-[#2A2725] rounded-sm px-2
+        ${elevate ? 'z-20' : 'z-10'}
+      `}
       style={{
-        left: Math.max(0, leftX - textWidth / 2),
-        right: Math.max(0, rightX - textWidth / 2),
+        left: Math.max(0, x - textWidth / 2),
       }}
     >
       <Text detail color='text.primary'>
@@ -134,10 +136,9 @@ const PercentageInput = ({ leftX, rightX, value, onInput }) => {
   );
 };
 
-const ValueInput = ({ leftX, rightX, value }) => {
+const ValueInput = ({ x, value, elevate }) => {
   const textRef = useRef<HTMLDivElement>(null);
   const [textWidth, setTextWidth] = useState(0);
-  console.log('TCL: textWidth', textWidth);
 
   useEffect(() => {
     requestAnimationFrame(() => {
@@ -149,10 +150,12 @@ const ValueInput = ({ leftX, rightX, value }) => {
   return (
     <div
       ref={textRef}
-      className={`absolute z-10 top-[78px] h-[20px] [line-height:20px_!important]`}
+      className={`
+        absolute top-[78px] h-[20px] [line-height:20px_!important] bg-black rounded-sm px-2
+        ${elevate ? 'z-20' : 'z-10'}
+      `}
       style={{
-        left: Math.max(0, leftX - textWidth / 2),
-        right: Math.max(0, rightX - textWidth / 2),
+        left: Math.max(0, x - textWidth / 2),
       }}
     >
       <Text detail color='text.primary'>
@@ -165,7 +168,7 @@ const ValueInput = ({ leftX, rightX, value }) => {
 export const PriceSlider: React.FC<ControlSliderProps> = ({
   min,
   max,
-  value,
+  values,
   onInput,
   marketPrice,
   baseAsset,
@@ -175,7 +178,7 @@ export const PriceSlider: React.FC<ControlSliderProps> = ({
   const scaleRef = useRef<ScaleLinear<number, number> | null>(null);
   const [scaleLoaded, setScaleLoaded] = useState(false);
   const [width, setWidth] = useState(0);
-  const [leftValue, rightValue] = value;
+  const [elevateThumb, setElevateThumb] = useState(null);
 
   useEffect(() => {
     if (!ref.current) {
@@ -205,8 +208,9 @@ export const PriceSlider: React.FC<ControlSliderProps> = ({
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- safe to use
   const scale = scaleRef.current;
-  const leftX = scaleLoaded && scale ? Math.max(0, scale(leftValue)) : undefined;
-  const rightX = scaleLoaded && scale ? Math.min(width, width - scale(rightValue)) : undefined;
+  const leftX = scaleLoaded && scale ? Math.max(0, scale(values[0])) : undefined;
+  const leftX1 = scaleLoaded && scale ? Math.max(0, scale(values[1])) : undefined;
+  const rightX = scaleLoaded && scale ? Math.min(width, width - scale(values[1])) : undefined;
 
   return (
     <div>
@@ -220,26 +224,41 @@ export const PriceSlider: React.FC<ControlSliderProps> = ({
       </div>
       <div ref={ref} className='relative z-0 h-[98px] w-full border-b border-other-tonalFill10'>
         {/* midprice line */}
-        <div className='absolute z-10 top-0 left-1/2 h-[70px] w-0 border-l border-dashed border-neutral-contrast' />
+        <div className='absolute z-30 top-0 left-1/2 h-[70px] w-0 border-l border-dashed border-neutral-contrast' />
         {/* slider bg gradient */}
         {scaleLoaded && scale && (
-          <div
-            className='absolute z-0 top-0 h-[70px] bg-gradient-to-b from-[rgba(186,77,20,0)] to-primary-main/10'
-            style={{
-              left: leftX,
-              right: rightX,
-            }}
-          >
-            <Thumb left x={leftX} value={value} scale={scale} max={max} onMove={onInput} />
-            <Thumb right x={rightX} value={value} scale={scale} max={max} onMove={onInput} />
-          </div>
+          <>
+            <div
+              className='absolute z-0 top-0 h-[70px] bg-gradient-to-b from-[rgba(186,77,20,0)] to-primary-main/10'
+              style={{
+                left: leftX,
+                right: rightX,
+              }}
+            />
+            {values.map((value, i) => {
+              const elevate = i === 0 ? elevateThumb === 0 : elevateThumb === 1;
+              const x = i === 0 ? leftX : leftX1;
+
+              return (
+                <React.Fragment key={i}>
+                  <Thumb
+                    x={x}
+                    value={value}
+                    scale={scale}
+                    max={max}
+                    onMove={nextValue =>
+                      onInput(i === 0 ? [nextValue, values[1]] : [values[0], nextValue])
+                    }
+                    elevate={elevate}
+                    onPointerDown={() => setElevateThumb(i)}
+                  />
+                  <PercentageInput x={x} value={value} elevate={elevate} />
+                  <ValueInput x={x} value={value} elevate={elevate} />
+                </React.Fragment>
+              );
+            })}
+          </>
         )}
-
-        <PercentageInput leftX={leftX} value={value} />
-        <PercentageInput rightX={rightX} value={value} />
-
-        <ValueInput leftX={leftX} value={leftValue} />
-        <ValueInput rightX={rightX} value={rightValue} />
 
         {/* slider track bg */}
         <div className='absolute z-10 top-[62px] left-0 w-full h-[6px] bg-other-tonalFill10 rounded-xs' />
@@ -254,14 +273,6 @@ export const PriceSlider: React.FC<ControlSliderProps> = ({
           />
         )}
       </div>
-      {/* <div className='flex w-full justify-between gap-1'>
-        <Text detail color='text.secondary'>
-          {round({ value: leftValue, decimals: quoteAsset?.decimals ?? 6 })}
-        </Text>
-        <Text detail color='text.secondary'>
-          {round({ value: rightValue, decimals: quoteAsset?.decimals ?? 6 })}
-        </Text>
-      </div> */}
     </div>
   );
 };
