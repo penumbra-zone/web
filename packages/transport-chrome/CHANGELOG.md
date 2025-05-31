@@ -1,5 +1,13 @@
 # @penumbra-zone/transport-chrome
 
+## 9.0.1
+
+### Patch Changes
+
+- 82d034e: fix publish workflow
+- Updated dependencies [82d034e]
+  - @penumbra-zone/transport-dom@7.5.2
+
 ## 9.0.0
 
 ### Major Changes
