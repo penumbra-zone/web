@@ -2,9 +2,13 @@
 install:
   pnpm install
 
-# Build the apps via turbo
+# Build everything via turbo
 build:
   pnpm turbo build
+
+# Build just the packages via turbo
+build-packages:
+  pnpm turbo build --filter "./packages/*"
 
 # Compile the WASM dependencies via turbo
 wasm:
