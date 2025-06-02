@@ -5,11 +5,6 @@ import { round } from '@penumbra-zone/types/round';
 import { useWidth } from '@/shared/utils/use-width';
 import { AssetInfo } from '../../model/AssetInfo';
 
-interface DeltaState {
-  initX: number;
-  deltaX: number;
-}
-
 const Thumb = ({
   x,
   value,
@@ -27,7 +22,10 @@ const Thumb = ({
   elevate: boolean;
   onPointerDown: () => void;
 }) => {
-  const deltaRef = useRef<DeltaState | null>(null);
+  const deltaRef = useRef<{
+    initX: number;
+    deltaX: number;
+  } | null>(null);
 
   const handleMouseMove = (event: React.MouseEvent | React.TouchEvent) => {
     if (!deltaRef.current) {
@@ -188,32 +186,14 @@ export const PriceSlider = ({
   quoteAsset: AssetInfo;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
+  const width = useWidth(ref, []);
   const scaleRef = useRef<ScaleLinear<number, number> | null>(null);
   const [scaleLoaded, setScaleLoaded] = useState(false);
-  const [width, setWidth] = useState(0);
   const [elevateThumb, setElevateThumb] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (!ref.current) {
-      return;
-    }
-
-    const updateWidth = () => {
-      if (ref.current) {
-        setWidth(ref.current.offsetWidth);
-      }
-    };
-
-    updateWidth();
-    window.addEventListener('resize', updateWidth);
-
-    return () => window.removeEventListener('resize', updateWidth);
-  }, []);
 
   useEffect(() => {
     if (width) {
       scaleRef.current = scaleLinear().domain([min, max]).range([0, width]);
-
       setScaleLoaded(true);
     }
   }, [min, max, width]);
@@ -227,10 +207,10 @@ export const PriceSlider = ({
     <div>
       <div className='flex w-full justify-center gap-1 mb-4'>
         <Text detail color='text.secondary'>
-          1 {quoteAsset?.symbol} =
+          1 {quoteAsset.symbol} =
         </Text>
         <Text detail color='text.primary'>
-          {marketPrice} {baseAsset?.symbol}
+          {marketPrice} {baseAsset.symbol}
         </Text>
       </div>
       <div ref={ref} className='relative z-0 h-[98px] w-full border-b border-other-tonalFill10'>

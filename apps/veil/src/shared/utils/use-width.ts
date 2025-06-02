@@ -7,9 +7,18 @@ export const useWidth = (
   const [width, setWidth] = useState(0);
 
   useEffect(() => {
-    requestAnimationFrame(() => {
-      setWidth(ref.current?.offsetWidth ?? 0);
-    });
+    const updateWidth = () => {
+      if (ref.current) {
+        requestAnimationFrame(() => {
+          setWidth(ref.current?.offsetWidth ?? 0);
+        });
+      }
+    };
+
+    updateWidth();
+    window.addEventListener('resize', updateWidth);
+
+    return () => window.removeEventListener('resize', updateWidth);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- spread deps into useEffect
   }, [ref, ...deps]);
 
