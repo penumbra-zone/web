@@ -33,11 +33,12 @@ import { isMetadataEqual } from '@/shared/utils/is-metadata-equal';
 import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getAssetMetadataById } from '@/shared/api/metadata';
 import { updatePositionsQuery } from '@/entities/position';
+import { SimpleLPFormStore } from './SimpleLPFormStore';
 
-export type WhichForm = 'Market' | 'Limit' | 'Range';
+export type WhichForm = 'Market' | 'Limit' | 'Range' | 'SimpleLP';
 
 export const isWhichForm = (x: string): x is WhichForm => {
-  return x === 'Market' || x === 'Limit' || x === 'Range';
+  return x === 'Market' || x === 'Limit' || x === 'Range' || x === 'SimpleLP';
 };
 
 const GAS_DEBOUNCE_MS = 320;
@@ -46,6 +47,7 @@ export class OrderFormStore {
   private _market = new MarketOrderFormStore();
   private _limit = new LimitOrderFormStore();
   private _range = new RangeOrderFormStore();
+  private _simpleLP = new SimpleLPFormStore();
   private _whichForm: WhichForm = 'Market';
   private _submitting = false;
   private _marketPrice: number | undefined = undefined;
@@ -157,12 +159,14 @@ export class OrderFormStore {
     this._market.setAssets(base, quote, unsetInputs);
     this._limit.setAssets(base, quote, unsetInputs);
     this._range.setAssets(base, quote, unsetInputs);
+    this._simpleLP.setAssets(base, quote, unsetInputs);
   }
 
   setMarketPrice(price: number) {
     this._marketPrice = price;
     this._range.marketPrice = price;
     this._limit.marketPrice = price;
+    this._simpleLP.marketPrice = price;
   }
 
   get marketPrice(): number | undefined {
@@ -187,6 +191,10 @@ export class OrderFormStore {
 
   get rangeForm() {
     return this._range;
+  }
+
+  get simpleLPForm() {
+    return this._simpleLP;
   }
 
   get plan(): undefined | TransactionPlannerRequest {
@@ -215,7 +223,8 @@ export class OrderFormStore {
         source: this.subAccountIndex,
       });
     }
-    const plan = this._range.plan;
+
+    const plan = this._whichForm === 'Range' ? this._range.plan : this._simpleLP.plan;
     if (!plan) {
       this.resetGasFee();
       return undefined;

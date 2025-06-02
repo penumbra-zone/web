@@ -26,7 +26,7 @@ export const FormTabs = observer(() => {
             options={[
               { value: 'Market', label: 'Market' },
               { value: 'Limit', label: 'Limit' },
-              { value: 'Range', label: 'Provide Liquidity' },
+              { value: 'SimpleLP', label: 'Provide Liquidity' },
             ]}
           />
         </Density>
