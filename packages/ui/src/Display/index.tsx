@@ -21,7 +21,7 @@ export interface DisplayProps {
 export const Display = ({ children }: DisplayProps) => {
   return (
     <section className='px-4 py-0 desktop:px-8'>
-      <div className='max-w-screen-xl'>{children}</div>
+      <div className='mx-auto max-w-screen-xl'>{children}</div>
     </section>
   );
 };
