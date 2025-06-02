@@ -18,6 +18,7 @@ export const SimpleLiquidityOrderForm = observer(
     console.log('TCL: store', store);
 
     const deviation = 0.05;
+    const sliderRange = 0.3;
     const [priceRange, setPriceRange] = useState<[number, number]>([
       store.marketPrice * (1 - deviation),
       store.marketPrice * (1 + deviation),
@@ -74,8 +75,8 @@ export const SimpleLiquidityOrderForm = observer(
             </Text>
           </div>
           <PriceSlider
-            min={store.marketPrice * 0.5}
-            max={store.marketPrice * 1.5}
+            min={store.marketPrice * (1 - sliderRange)}
+            max={store.marketPrice * (1 + sliderRange)}
             values={priceRange}
             onInput={setPriceRange}
             marketPrice={store.marketPrice}

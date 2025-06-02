@@ -2,38 +2,42 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ScaleLinear, scaleLinear } from 'd3-scale';
 import { Text } from '@penumbra-zone/ui';
 import { round } from '@penumbra-zone/types/round';
-
-interface ThumbProps {
-  left?: boolean;
-  right?: boolean;
-  value: [number, number];
-  scale: ScaleLinear<number, number>;
-  max: number;
-  onMove: (value: [number, number]) => void;
-}
-
-interface ControlSliderProps {
-  min: number;
-  max: number;
-  value: [number, number];
-  onInput: (value: [number, number]) => void;
-}
+import { useWidth } from '@/shared/utils/use-width';
+import { AssetInfo } from '../../model/AssetInfo';
 
 interface DeltaState {
   initX: number;
   deltaX: number;
 }
 
-const Thumb: React.FC<ThumbProps> = ({ x, value, scale, max, onMove, elevate, onPointerDown }) => {
+const Thumb = ({
+  x,
+  value,
+  scale,
+  max,
+  onMove,
+  elevate,
+  onPointerDown,
+}: {
+  x: number;
+  value: number;
+  scale: ScaleLinear<number, number>;
+  max: number;
+  onMove: (value: number) => void;
+  elevate: boolean;
+  onPointerDown: () => void;
+}) => {
   const deltaRef = useRef<DeltaState | null>(null);
 
-  const handleMouseMove = (event: MouseEvent | TouchEvent) => {
+  const handleMouseMove = (event: React.MouseEvent | React.TouchEvent) => {
     if (!deltaRef.current) {
       return;
     }
 
     const isTouch = event instanceof TouchEvent;
-    const clientX = isTouch ? event.touches[0].clientX : (event as MouseEvent).clientX;
+    const clientX = isTouch
+      ? (event.touches[0]?.clientX ?? 0)
+      : (event as React.MouseEvent).clientX;
 
     deltaRef.current.deltaX = clientX - deltaRef.current.initX;
     const dx = deltaRef.current.deltaX;
@@ -68,8 +72,6 @@ const Thumb: React.FC<ThumbProps> = ({ x, value, scale, max, onMove, elevate, on
       deltaRef.current = null;
       document.body.style.overflow = '';
       document.body.style.marginRight = '';
-
-      // onPointerUp();
     };
 
     document.addEventListener(isTouch ? 'touchmove' : 'mousemove', moveHandler);
@@ -78,7 +80,6 @@ const Thumb: React.FC<ThumbProps> = ({ x, value, scale, max, onMove, elevate, on
 
   return (
     <div
-      // ${left ? 'left-0' : 'right-0'}
       className={`
         absolute top-0 flex h-[78px] w-[8px] items-center justify-center bg-transparent
         ${elevate ? 'z-20' : 'z-10'}
@@ -93,9 +94,7 @@ const Thumb: React.FC<ThumbProps> = ({ x, value, scale, max, onMove, elevate, on
       />
       <button
         type='button'
-        // aria-label={`Slider Thumb ${left ? 'Lower' : 'Upper'}`}
         aria-label='Slider Thumb'
-        // className={`w-[12px] h-[20px] bg-primary-main absolute top-[32px] cursor-ew-resize rounded-[4px] ${left ? 'left-[-6px]' : 'right-[-6px]'} `}
         className={`w-[12px] h-[20px] bg-primary-main absolute top-[32px] cursor-ew-resize rounded-[4px] left-[-6px]`}
         onMouseDown={handlePointerDown}
         onTouchStart={handlePointerDown}
@@ -107,16 +106,19 @@ const Thumb: React.FC<ThumbProps> = ({ x, value, scale, max, onMove, elevate, on
   );
 };
 
-const PercentageInput = ({ x, value, maxWidth, elevate }) => {
+const PercentageInput = ({
+  x,
+  value,
+  maxWidth,
+  elevate,
+}: {
+  x: number;
+  value: number;
+  maxWidth: number;
+  elevate: boolean;
+}) => {
   const textRef = useRef<HTMLDivElement>(null);
-  const [textWidth, setTextWidth] = useState(0);
-
-  useEffect(() => {
-    requestAnimationFrame(() => {
-      // useComponentSize doesnt set width correctly on updates
-      setTextWidth(textRef.current?.offsetWidth ?? 0);
-    });
-  }, [value]);
+  const textWidth = useWidth(textRef, [value]);
 
   return (
     <div
@@ -130,22 +132,25 @@ const PercentageInput = ({ x, value, maxWidth, elevate }) => {
       }}
     >
       <Text detail color='text.primary'>
-        30%
+        {round({ value, decimals: 1 })}%
       </Text>
     </div>
   );
 };
 
-const ValueInput = ({ x, value, maxWidth, elevate }) => {
+const ValueInput = ({
+  x,
+  value,
+  maxWidth,
+  elevate,
+}: {
+  x: number;
+  value: number;
+  maxWidth: number;
+  elevate: boolean;
+}) => {
   const textRef = useRef<HTMLDivElement>(null);
-  const [textWidth, setTextWidth] = useState(0);
-
-  useEffect(() => {
-    requestAnimationFrame(() => {
-      // useComponentSize doesnt set width correctly on updates
-      setTextWidth(textRef.current?.offsetWidth ?? 0);
-    });
-  }, [value]);
+  const textWidth = useWidth(textRef, [value]);
 
   return (
     <div
@@ -165,7 +170,7 @@ const ValueInput = ({ x, value, maxWidth, elevate }) => {
   );
 };
 
-export const PriceSlider: React.FC<ControlSliderProps> = ({
+export const PriceSlider = ({
   min,
   max,
   values,
@@ -173,12 +178,20 @@ export const PriceSlider: React.FC<ControlSliderProps> = ({
   marketPrice,
   baseAsset,
   quoteAsset,
+}: {
+  min: number;
+  max: number;
+  values: [number, number];
+  onInput: (value: [number, number]) => void;
+  marketPrice: number;
+  baseAsset: AssetInfo;
+  quoteAsset: AssetInfo;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const scaleRef = useRef<ScaleLinear<number, number> | null>(null);
   const [scaleLoaded, setScaleLoaded] = useState(false);
   const [width, setWidth] = useState(0);
-  const [elevateThumb, setElevateThumb] = useState(null);
+  const [elevateThumb, setElevateThumb] = useState<number | null>(null);
 
   useEffect(() => {
     if (!ref.current) {
@@ -199,14 +212,12 @@ export const PriceSlider: React.FC<ControlSliderProps> = ({
 
   useEffect(() => {
     if (width) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access -- safe to use
       scaleRef.current = scaleLinear().domain([min, max]).range([0, width]);
 
       setScaleLoaded(true);
     }
   }, [min, max, width]);
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- safe to use
   const scale = scaleRef.current;
   const leftX = scaleLoaded && scale ? Math.max(0, scale(values[0])) : undefined;
   const leftX1 = scaleLoaded && scale ? Math.max(0, scale(values[1])) : undefined;
@@ -225,9 +236,9 @@ export const PriceSlider: React.FC<ControlSliderProps> = ({
       <div ref={ref} className='relative z-0 h-[98px] w-full border-b border-other-tonalFill10'>
         {/* midprice line */}
         <div className='absolute z-30 top-0 left-1/2 h-[70px] w-0 border-l border-dashed border-neutral-contrast' />
-        {/* slider bg gradient */}
         {scaleLoaded && scale && (
           <>
+            {/* slider bg gradient */}
             <div
               className='absolute z-0 top-0 h-[70px] bg-gradient-to-b from-[rgba(186,77,20,0)] to-primary-main/10'
               style={{
@@ -235,8 +246,9 @@ export const PriceSlider: React.FC<ControlSliderProps> = ({
                 right: rightX,
               }}
             />
+            {/* left & right handles */}
             {values.map((value, i) => {
-              const elevate = i === 0 ? elevateThumb === 0 : elevateThumb === 1;
+              const elevate = elevateThumb === i;
               const x = i === 0 ? leftX : leftX1;
 
               return (
@@ -253,7 +265,12 @@ export const PriceSlider: React.FC<ControlSliderProps> = ({
                     elevate={elevate}
                     onPointerDown={() => setElevateThumb(i)}
                   />
-                  <PercentageInput x={x} maxWidth={width} value={value} elevate={elevate} />
+                  <PercentageInput
+                    x={x}
+                    maxWidth={width}
+                    value={((value - marketPrice) / marketPrice) * 100}
+                    elevate={elevate}
+                  />
                   <ValueInput x={x} maxWidth={width} value={value} elevate={elevate} />
                 </React.Fragment>
               );
