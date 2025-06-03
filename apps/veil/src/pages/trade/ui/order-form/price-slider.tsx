@@ -7,7 +7,8 @@ import { AssetInfo } from '../../model/AssetInfo';
 
 const Thumb = ({
   x,
-  value,
+  i,
+  values,
   scale,
   max,
   onMove,
@@ -15,7 +16,8 @@ const Thumb = ({
   onPointerDown,
 }: {
   x: number;
-  value: number;
+  i: number;
+  values: [number, number];
   scale: ScaleLinear<number, number>;
   max: number;
   onMove: (value: number) => void;
@@ -27,20 +29,23 @@ const Thumb = ({
     deltaX: number;
   } | null>(null);
 
-  const handleMouseMove = (event: React.MouseEvent | React.TouchEvent) => {
+  const value = values[i];
+  const otherValue = values[i === 0 ? 1 : 0];
+
+  const moveHandler = (event: MouseEvent | TouchEvent) => {
     if (!deltaRef.current) {
       return;
     }
 
     const isTouch = event instanceof TouchEvent;
-    const clientX = isTouch
-      ? (event.touches[0]?.clientX ?? 0)
-      : (event as React.MouseEvent).clientX;
+    const clientX = isTouch ? (event.touches[0]?.clientX ?? 0) : event.clientX;
 
     deltaRef.current.deltaX = clientX - deltaRef.current.initX;
     const dx = deltaRef.current.deltaX;
 
-    const nextX = Math.min(Math.max(0, scale(value) + dx), scale(max));
+    const minX = i === 0 ? 0 : scale(otherValue);
+    const maxX = i === 1 ? scale(max) : scale(otherValue);
+    const nextX = Math.min(Math.max(minX, scale(value) + dx), maxX);
     onMove(scale.invert(nextX));
 
     // Clear any text selection
@@ -63,10 +68,8 @@ const Thumb = ({
     document.body.style.marginRight = '4px';
     onPointerDown();
 
-    const moveHandler = (e: MouseEvent | TouchEvent) => handleMouseMove(e);
     const upHandler = () => {
       document.removeEventListener(isTouch ? 'touchmove' : 'mousemove', moveHandler);
-      document.removeEventListener(isTouch ? 'touchend' : 'pointerup', upHandler);
       deltaRef.current = null;
       document.body.style.overflow = '';
       document.body.style.marginRight = '';
@@ -235,7 +238,8 @@ export const PriceSlider = ({
                 <React.Fragment key={i}>
                   <Thumb
                     x={x}
-                    value={value}
+                    i={i}
+                    values={values}
                     scale={scale}
                     max={max}
                     maxWidth={width}
