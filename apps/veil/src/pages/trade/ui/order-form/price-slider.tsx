@@ -109,64 +109,88 @@ const Thumb = ({
 
 const PercentageInput = ({
   x,
+  i,
   value,
   maxWidth,
   elevate,
+  textsRef,
 }: {
   x: number;
+  i: number;
   value: number;
   maxWidth: number;
   elevate: boolean;
+  textsRef: [number, number][];
 }) => {
   const textRef = useRef<HTMLDivElement>(null);
   const textWidth = useWidth(textRef, [value]);
+  textsRef[i] = [x - textWidth / 2, x + textWidth / 2];
+
+  let left = Math.min(maxWidth - textWidth, Math.max(0, x - textWidth / 2));
+
+  if (i === 0 && textsRef[0][1] > textsRef[1][0]) {
+    const overlapPx = textsRef[0][1] - textsRef[1][0];
+    left = left - overlapPx / 2;
+  } else if (i === 1 && textsRef[1][0] < textsRef[0][1]) {
+    const overlapPx = textsRef[0][1] - textsRef[1][0];
+    left = left + overlapPx / 2;
+  }
 
   return (
     <div
       ref={textRef}
       className={`
-        absolute top-0 h-[20px] [line-height:20px_!important] bg-[#2A2725] rounded-sm px-2
+        absolute top-0 h-[20px] [line-height:20px_!important] bg-[#2A2725] rounded-sm px-1
+        font-default text-textXs font-normal text-text-primary
         ${elevate ? 'z-20' : 'z-10'}
       `}
-      style={{
-        left: Math.min(maxWidth - textWidth, Math.max(0, x - textWidth / 2)),
-      }}
+      style={{ left }}
     >
-      <Text detail color='text.primary'>
-        {round({ value, decimals: 1 })}%
-      </Text>
+      {round({ value, decimals: 1 })}%{/* </Text> */}
     </div>
   );
 };
 
 const ValueInput = ({
   x,
+  i,
   value,
   maxWidth,
   elevate,
+  textsRef,
 }: {
   x: number;
+  i: number;
   value: number;
   maxWidth: number;
   elevate: boolean;
+  textsRef: [number, number][];
 }) => {
   const textRef = useRef<HTMLDivElement>(null);
   const textWidth = useWidth(textRef, [value]);
+  textsRef[i] = [x - textWidth / 2, x + textWidth / 2];
+
+  let left = Math.min(maxWidth - textWidth, Math.max(0, x - textWidth / 2));
+
+  if (i === 0 && textsRef[0][1] > textsRef[1][0]) {
+    const overlapPx = textsRef[0][1] - textsRef[1][0];
+    left = left - overlapPx / 2;
+  } else if (i === 1 && textsRef[1][0] < textsRef[0][1]) {
+    const overlapPx = textsRef[0][1] - textsRef[1][0];
+    left = left + overlapPx / 2;
+  }
 
   return (
     <div
       ref={textRef}
       className={`
-        absolute top-[78px] h-[20px] [line-height:20px_!important] bg-black rounded-sm px-2
+        absolute top-[78px] h-[20px] [line-height:20px_!important] bg-black rounded-sm px-1
+        font-default text-textXs font-normal text-text-primary
         ${elevate ? 'z-20' : 'z-10'}
       `}
-      style={{
-        left: Math.min(maxWidth - textWidth, Math.max(0, x - textWidth / 2)),
-      }}
+      style={{ left }}
     >
-      <Text detail color='text.primary'>
-        {round({ value, decimals: 6 })}
-      </Text>
+      {round({ value, decimals: 6 })}
     </div>
   );
 };
@@ -189,6 +213,19 @@ export const PriceSlider = ({
   quoteAsset: AssetInfo | undefined;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
+  const textsRef = useRef<{
+    input: [number, number][];
+    percentage: [number, number][];
+  }>({
+    input: [
+      [0, 0],
+      [Infinity, Infinity],
+    ],
+    percentage: [
+      [0, 0],
+      [Infinity, Infinity],
+    ],
+  });
   const width = useWidth(ref, []);
   const scaleRef = useRef<ScaleLinear<number, number> | null>(null);
   const [scaleLoaded, setScaleLoaded] = useState(false);
@@ -251,11 +288,20 @@ export const PriceSlider = ({
                   />
                   <PercentageInput
                     x={x}
+                    i={i}
+                    textsRef={textsRef.current.percentage}
                     maxWidth={width}
                     value={((value - marketPrice) / marketPrice) * 100}
                     elevate={elevate}
                   />
-                  <ValueInput x={x} maxWidth={width} value={value} elevate={elevate} />
+                  <ValueInput
+                    x={x}
+                    i={i}
+                    textsRef={textsRef.current.input}
+                    maxWidth={width}
+                    value={value}
+                    elevate={elevate}
+                  />
                 </React.Fragment>
               );
             })}
