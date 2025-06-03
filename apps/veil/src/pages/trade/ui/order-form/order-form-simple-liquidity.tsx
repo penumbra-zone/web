@@ -8,6 +8,7 @@ import { AmountInput } from './amount-input';
 import { InfoRow } from './info-row';
 import { InfoRowGasFee } from './info-row-gas-fee';
 import { OrderFormStore } from './store/OrderFormStore';
+import { DEFAULT_PRICE_RANGE, DEFAULT_PRICE_SPREAD } from './store/SimpleLPFormStore';
 import { PriceSlider } from './price-slider';
 import { useState } from 'react';
 
@@ -17,13 +18,13 @@ export const SimpleLiquidityOrderForm = observer(
     const { defaultDecimals, rangeForm: store } = parentStore;
     console.log('TCL: store', store);
 
-    const deviation = 0.05;
-    const sliderRange = 0.3;
-    const [priceRange, setPriceRange] = useState<[number, number]>([
-      store.marketPrice * (1 - deviation),
-      store.marketPrice * (1 + deviation),
+    const priceSpread = DEFAULT_PRICE_SPREAD;
+    const priceRange = DEFAULT_PRICE_RANGE;
+    const [priceRanges, setPriceRanges] = useState<[number, number]>([
+      store.marketPrice * (1 - priceSpread),
+      store.marketPrice * (1 + priceSpread),
     ]);
-    console.log('TCL: priceRange', priceRange[0], priceRange[1]);
+    console.log('TCL: priceRange', priceRanges[0], priceRanges[1]);
 
     return (
       <div className='p-4'>
@@ -75,10 +76,10 @@ export const SimpleLiquidityOrderForm = observer(
             </Text>
           </div>
           <PriceSlider
-            min={store.marketPrice * (1 - sliderRange)}
-            max={store.marketPrice * (1 + sliderRange)}
-            values={priceRange}
-            onInput={setPriceRange}
+            min={store.marketPrice * (1 - priceRange)}
+            max={store.marketPrice * (1 + priceRange)}
+            values={priceRanges}
+            onInput={setPriceRanges}
             marketPrice={store.marketPrice}
             quoteAsset={store.quoteAsset}
             baseAsset={store.baseAsset}
@@ -99,7 +100,7 @@ export const SimpleLiquidityOrderForm = observer(
               disabled={!parentStore.canSubmit}
               onClick={() => void parentStore.submit()}
             >
-              Open {store.positionCount ?? 'Several'} Positions
+              Add Liquidity
             </Button>
           ) : (
             <ConnectButton actionType='default' />

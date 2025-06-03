@@ -21,10 +21,11 @@ const extractAmount = (positions: Position[], asset: AssetInfo): number => {
 };
 
 const DEFAULT_POSITION_COUNT = 10;
-const DEFAULT_PRICE_SPREAD = 0.05;
-const STABLE_PRICE_SPREAD = 0.01;
-const DEFAULT_PRICE_RANGE = 0.3;
-const STABLE_PRICE_RANGE = 0.1;
+export const DEFAULT_PRICE_SPREAD = 0.05;
+export const STABLE_PRICE_SPREAD = 0.01;
+export const DEFAULT_PRICE_RANGE = 0.3;
+export const STABLE_PRICE_RANGE = 0.1;
+const DEFAULT_FEE_TIER_PERCENT = 0.1;
 
 export class SimpleLPFormStore {
   private _baseAsset?: AssetInfo;
@@ -32,7 +33,7 @@ export class SimpleLPFormStore {
   liquidityTargetInput = '';
   upperPriceInput = '';
   lowerPriceInput = '';
-  feeTierPercentInput = '';
+  feeTierPercentInput = String(DEFAULT_FEE_TIER_PERCENT);
   marketPrice = 1;
 
   constructor() {
@@ -59,22 +60,16 @@ export class SimpleLPFormStore {
     return parseNumber(this.upperPriceInput);
   }
 
-  setUpperPriceInput = (x: string, fromOption = false) => {
+  setUpperPriceInput = (x: string) => {
     this.upperPriceInput = x;
-    if (!fromOption) {
-      this.upperPriceInputOption = undefined;
-    }
   };
 
   get lowerPrice(): number | undefined {
     return parseNumber(this.lowerPriceInput);
   }
 
-  setLowerPriceInput = (x: string, fromOption = false) => {
+  setLowerPriceInput = (x: string) => {
     this.lowerPriceInput = x;
-    if (!fromOption) {
-      this.lowerPriceInputOption = undefined;
-    }
   };
 
   // Treat fees that don't parse as 0
@@ -82,16 +77,8 @@ export class SimpleLPFormStore {
     return Math.max(0, Math.min(parseNumber(this.feeTierPercentInput) ?? 0, 50));
   }
 
-  setFeeTierPercentInput = (x: string, fromOption = false) => {
+  setFeeTierPercentInput = (x: string) => {
     this.feeTierPercentInput = x;
-    if (!fromOption) {
-      this.feeTierPercentInputOption = undefined;
-    }
-  };
-
-  setFeeTierPercentInputOption = (option: FeeTierOptions) => {
-    this.feeTierPercentInputOption = option;
-    this.setFeeTierPercentInput(option.replace('%', ''), true);
   };
 
   get plan(): Position[] | undefined {
@@ -100,8 +87,7 @@ export class SimpleLPFormStore {
       !this._quoteAsset ||
       this.liquidityTarget === undefined ||
       this.upperPrice === undefined ||
-      this.lowerPrice === undefined ||
-      this.positionCount === undefined
+      this.lowerPrice === undefined
     ) {
       return undefined;
     }
@@ -113,7 +99,7 @@ export class SimpleLPFormStore {
       lowerPrice: this.lowerPrice,
       marketPrice: this.marketPrice,
       feeBps: this.feeTierPercent * 100,
-      positions: this.positionCount,
+      positions: DEFAULT_POSITION_COUNT,
     });
   }
 
@@ -141,12 +127,7 @@ export class SimpleLPFormStore {
     if (resetInputs) {
       this.liquidityTargetInput = '';
       this.upperPriceInput = '';
-      this.upperPriceInputOption = undefined;
       this.lowerPriceInput = '';
-      this.lowerPriceInputOption = undefined;
-      this.feeTierPercentInput = '';
-      this._positionCountInput = '10';
-      this._positionCountSlider = 10;
     }
   }
 }

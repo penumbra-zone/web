@@ -35,10 +35,10 @@ import { getAssetMetadataById } from '@/shared/api/metadata';
 import { updatePositionsQuery } from '@/entities/position';
 import { SimpleLPFormStore } from './SimpleLPFormStore';
 
-export type WhichForm = 'Market' | 'Limit' | 'Range' | 'SimpleLP';
+export type WhichForm = 'Market' | 'Limit' | 'RangeLP' | 'SimpleLP';
 
 export const isWhichForm = (x: string): x is WhichForm => {
-  return x === 'Market' || x === 'Limit' || x === 'Range' || x === 'SimpleLP';
+  return x === 'Market' || x === 'Limit' || x === 'RangeLP' || x === 'SimpleLP';
 };
 
 const GAS_DEBOUNCE_MS = 320;
@@ -224,7 +224,7 @@ export class OrderFormStore {
       });
     }
 
-    const plan = this._whichForm === 'Range' ? this._range.plan : this._simpleLP.plan;
+    const plan = this._whichForm === 'RangeLP' ? this._range.plan : this._simpleLP.plan;
     if (!plan) {
       this.resetGasFee();
       return undefined;
@@ -374,7 +374,8 @@ export const useOrderFormStore = () => {
       const storeMapping = {
         Market: orderFormStore.marketForm,
         Limit: orderFormStore.limitForm,
-        Range: orderFormStore.rangeForm,
+        RangeLP: orderFormStore.rangeForm,
+        SimpleLP: orderFormStore.simpleLPForm,
       };
       const childStore = storeMapping[orderFormStore.whichForm];
       const prevBaseAssetInfo = childStore.baseAsset;

@@ -182,8 +182,8 @@ export const PriceSlider = ({
   values: [number, number];
   onInput: (value: [number, number]) => void;
   marketPrice: number;
-  baseAsset: AssetInfo;
-  quoteAsset: AssetInfo;
+  baseAsset: AssetInfo | undefined;
+  quoteAsset: AssetInfo | undefined;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const width = useWidth(ref, []);
@@ -207,10 +207,10 @@ export const PriceSlider = ({
     <div>
       <div className='flex w-full justify-center gap-1 mb-4'>
         <Text detail color='text.secondary'>
-          1 {quoteAsset.symbol} =
+          1 {quoteAsset?.symbol} =
         </Text>
         <Text detail color='text.primary'>
-          {marketPrice} {baseAsset.symbol}
+          {marketPrice} {baseAsset?.symbol}
         </Text>
       </div>
       <div ref={ref} className='relative z-0 h-[98px] w-full border-b border-other-tonalFill10'>
@@ -220,7 +220,7 @@ export const PriceSlider = ({
           <>
             {/* slider bg gradient */}
             <div
-              className='absolute z-0 top-0 h-[70px] bg-gradient-to-b from-[rgba(186,77,20,0)] to-primary-main/10'
+              className='absolute z-10 top-0 h-[70px] bg-gradient-to-b from-[rgba(186,77,20,0)] from-10% to-[rgba(186,77,20,0.35)]'
               style={{
                 left: leftX,
                 right: rightX,

@@ -3,6 +3,7 @@ import { Tabs } from '@penumbra-zone/ui/Tabs';
 import { Density } from '@penumbra-zone/ui/Density';
 import { MarketOrderForm } from './order-form/order-form-market';
 import { LimitOrderForm } from './order-form/order-form-limit';
+import { RangeLiquidityOrderForm } from './order-form/order-form-range-liquidity';
 import { SimpleLiquidityOrderForm } from './order-form/order-form-simple-liquidity';
 import { isWhichForm, useOrderFormStore } from './order-form/store/OrderFormStore';
 import { observer } from 'mobx-react-lite';
@@ -34,7 +35,8 @@ export const FormTabs = observer(() => {
       <div className='overflow-y-auto'>
         {store.whichForm === 'Market' && <MarketOrderForm parentStore={store} />}
         {store.whichForm === 'Limit' && <LimitOrderForm parentStore={store} />}
-        {store.whichForm === 'Range' && <SimpleLiquidityOrderForm parentStore={store} />}
+        {store.whichForm === 'RangeLP' && <RangeLiquidityOrderForm parentStore={store} />}
+        {store.whichForm === 'SimpleLP' && <SimpleLiquidityOrderForm parentStore={store} />}
       </div>
     </div>
   );
