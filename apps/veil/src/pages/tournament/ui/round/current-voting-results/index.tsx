@@ -55,7 +55,7 @@ export const CurrentVotingResults = observer(({ epoch }: CurrentVotingResultsPro
    * - have enough delUM
    * - epoch hasn't ended yet
    * - user hasn't voted already for this epoch */
-  const canVote = connected && !isEnded && votingNote && !isVoted;
+  const canVote = connected && !isEnded && !!votingNote && !isVoted;
   const tableKey = canVote ? 'canVote' : 'default';
   const total = data?.total ?? 0;
 
