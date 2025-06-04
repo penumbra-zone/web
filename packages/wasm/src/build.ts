@@ -25,6 +25,9 @@ export const getWitness = (txPlan: TransactionPlan, sct: StateCommitmentTree): W
   return WitnessData.fromBinary(result);
 };
 
+// TODO: implement helper method to call into wasm and retrieve serialized public inputs, 
+// and matrices, and witness. 
+
 export const buildParallel = (
   batchActions: Action[],
   txPlan: TransactionPlan,
