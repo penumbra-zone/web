@@ -49,13 +49,13 @@ export const CurrentVotingResults = observer(({ epoch }: CurrentVotingResultsPro
     sortDirection: sortBy.direction,
   });
 
-  const { isVoted, isDelegated, isEnded } = useVotingInfo(epoch);
+  const { isVoted, isEnded, votingNote } = useVotingInfo(epoch);
 
   /* A user can vote if they:
    * - have enough delUM
    * - epoch hasn't ended yet
    * - user hasn't voted already for this epoch */
-  const canVote = connected && !isEnded && isDelegated && !isVoted;
+  const canVote = connected && !isEnded && votingNote && !isVoted;
   const tableKey = canVote ? 'canVote' : 'default';
   const total = data?.total ?? 0;
 
