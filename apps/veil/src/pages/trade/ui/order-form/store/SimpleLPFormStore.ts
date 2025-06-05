@@ -1,6 +1,7 @@
 import { scaleLinear } from 'd3-scale';
+import { openToast } from '@penumbra-zone/ui/Toast';
 import { AssetInfo } from '@/pages/trade/model/AssetInfo';
-import { Asset, rangeLiquidityPositions } from '@/shared/math/position';
+import { simpleLiquidityPositions } from '@/shared/math/position';
 import { parseNumber } from '@/shared/utils/num';
 import { Position } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { pnum } from '@penumbra-zone/types/pnum';
@@ -33,8 +34,8 @@ export class SimpleLPFormStore {
   private _quoteAsset?: AssetInfo;
   private lastTouchedInput: 'base' | 'quote' | null = null;
 
-  baseInput: number | null = 0;
-  quoteInput: number | null = 0;
+  baseInput = '';
+  quoteInput = '';
   upperPriceInput: number | null = null;
   lowerPriceInput: number | null = null;
   feeTierPercentInput = String(DEFAULT_FEE_TIER_PERCENT);
@@ -53,75 +54,101 @@ export class SimpleLPFormStore {
     return this._quoteAsset;
   }
 
-  setBaseInput = (x: string) => {
-    this.baseInput = Number(x);
-    this.lastTouchedInput = 'base';
-
+  /**
+   * Visualization & explanation of the scale and logic:
+   * - If the price is lower than the market price, then offer base
+   * - If the price is higher than the market price, then offer quote
+   * - The scale is used to calculate the amount of opposite asset we want to offer
+   *
+   * Asset to Offer:         quote       base
+   * Scale:           |---|----------|----------|---|
+   * Domain (prices):   lower      market     upper
+   * Range (amounts):     10         0          10
+   */
+  updateOppositeInput = () => {
     if (this.lowerPriceInput === null || this.upperPriceInput === null) {
       return;
     }
 
-    // Visualization & explanation of the scale and logic:
-    // - When the price is lower than the market price, then offer base
-    // - When the price is higher than the market price, then offer quote
-    // - The scale is used to calculate the amount of opposite asset we want to offer
-    // Asset to Offer:         quote       base
-    // Scale:           |---|----------|----------|---|
-    // Domain (prices):   lower      market     upper
-    // Range (amounts):     10         0         -10
+    if (this.lastTouchedInput === 'quote' && this.quoteInput !== '') {
+      const scale = scaleLinear()
+        .domain([this.lowerPriceInput, this.marketPrice])
+        // explicitly set a negative value to get a positive output
+        .range([-this.quoteInput, 0]);
 
-    const scale = scaleLinear()
-      .domain([this.marketPrice, this.upperPriceInput])
-      .range([0, -this.baseInput]);
+      // extrapolate the value based on the inputs above
+      const valueInQuote = scale(this.upperPriceInput);
 
-    const valueInBase = scale(this.lowerPriceInput);
-    console.log('TCL: SimpleLPFormStore -> setBaseInput -> valueInBase', valueInBase);
-    console.log('TCL: SimpleLPFormStore -> setBaseInput -> this.marketPrice', this.marketPrice);
+      // convert the value to the equivalent base asset amount
+      this.baseInput = String(Math.max(0, valueInQuote * this.marketPrice));
+    } else if (this.lastTouchedInput === 'base' && this.baseInput !== '') {
+      const scale = scaleLinear()
+        .domain([this.marketPrice, this.upperPriceInput])
+        // explicitly set a negative value to get a positive output
+        .range([0, -this.baseInput]);
 
-    this.quoteInput = valueInBase / this.marketPrice;
+      // extrapolate the value based on the inputs above
+      const valueInBase = scale(this.lowerPriceInput);
+
+      // convert the value to the equivalent quote asset amount
+      this.quoteInput = String(Math.max(0, valueInBase / this.marketPrice));
+    }
+  };
+
+  setBaseInput = (x: string) => {
+    this.baseInput = String(Math.max(0, Number(x)));
+    this.lastTouchedInput = 'base';
+
+    this.updateOppositeInput();
   };
 
   setQuoteInput = (x: string) => {
-    this.quoteInput = Number(x);
-
+    this.quoteInput = String(Math.max(0, Number(x)));
     this.lastTouchedInput = 'quote';
 
-    if (this.lowerPriceInput === null || this.upperPriceInput === null) {
-      return;
-    }
-
-    // Visualization & explanation of the scale and logic:
-    // - When the price is lower than the market price, then offer base
-    // - When the price is higher than the market price, then offer quote
-    // - The scale is used to calculate the amount of opposite asset we want to offer
-    // Asset to Offer:         quote       base
-    // Scale:           |---|----------|----------|---|
-    // Domain (prices):   lower      market     upper
-    // Range (amounts):    -10         0          10
-
-    const scale = scaleLinear()
-      .domain([this.lowerPriceInput, this.marketPrice])
-      .range([-this.quoteInput, 0]);
-
-    const valueInQuote = scale(this.upperPriceInput);
-
-    this.baseInput = valueInQuote * this.marketPrice;
+    this.updateOppositeInput();
   };
 
-  get lowerPrice(): number | undefined {
+  get lowerPrice(): number | null {
     return this.lowerPriceInput;
   }
 
   setLowerPriceInput = (x: number) => {
     this.lowerPriceInput = x;
+
+    if (this.lastTouchedInput === 'quote' && this.lowerPriceInput > this.marketPrice) {
+      if (this.quoteInput !== '') {
+        openToast({
+          type: 'warning',
+          message: `You cannot provide ${this._quoteAsset?.symbol} when the lower price range is higher than the market price.`,
+        });
+      }
+
+      this.quoteInput = '';
+    }
+
+    this.updateOppositeInput();
   };
 
-  get upperPrice(): number | undefined {
+  get upperPrice(): number | null {
     return this.upperPriceInput;
   }
 
   setUpperPriceInput = (x: number) => {
     this.upperPriceInput = x;
+
+    if (this.lastTouchedInput === 'base' && this.upperPriceInput < this.marketPrice) {
+      if (this.baseInput !== '') {
+        openToast({
+          type: 'warning',
+          message: `You cannot provide ${this._baseAsset?.symbol} when the higher price range is lower than the market price.`,
+        });
+      }
+
+      this.baseInput = '';
+    }
+
+    this.updateOppositeInput();
   };
 
   // Treat fees that don't parse as 0
@@ -139,26 +166,29 @@ export class SimpleLPFormStore {
       !this._quoteAsset ||
       this.quoteInput === '' ||
       this.baseInput === '' ||
-      this.upperPrice === undefined ||
-      this.lowerPrice === undefined
+      this.upperPrice === null ||
+      this.lowerPrice === null
     ) {
       return undefined;
     }
-    return rangeLiquidityPositions({
+
+    return simpleLiquidityPositions({
       baseAsset: this._baseAsset,
       quoteAsset: this._quoteAsset,
-      targetLiquidity: Number(this.quoteInput) + Number(this.baseInput),
+      baseLiquidity: Number(this.baseInput),
+      quoteLiquidity: Number(this.quoteInput),
       upperPrice: this.upperPrice,
       lowerPrice: this.lowerPrice,
       marketPrice: this.marketPrice,
       feeBps: this.feeTierPercent * 100,
-      positions: DEFAULT_POSITION_COUNT,
+      positions: this.positions,
     });
   }
 
   get baseAssetAmount(): string | undefined {
     const baseAsset = this._baseAsset;
     const plan = this.plan;
+    console.log('TCL: SimpleLPFormStore -> plan', plan);
     if (!plan || !baseAsset) {
       return undefined;
     }
@@ -178,9 +208,10 @@ export class SimpleLPFormStore {
     this._baseAsset = base;
     this._quoteAsset = quote;
     if (resetInputs) {
-      this.liquidityTargetInput = '';
-      this.upperPriceInput = '';
-      this.lowerPriceInput = '';
+      this.upperPriceInput = null;
+      this.lowerPriceInput = null;
+      this.baseInput = '';
+      this.quoteInput = '';
     }
   }
 }
