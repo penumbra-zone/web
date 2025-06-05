@@ -89,10 +89,7 @@ const Thumb = ({
         left: x,
       }}
     >
-      <div
-        // className={`absolute z-0 w-[1px] top-[20px] h-[58px] bg-primary-main ${left ? 'left-0' : 'right-0'}`}
-        className={`absolute z-0 w-[1px] top-[20px] h-[58px] bg-primary-main left-0`}
-      />
+      <div className='absolute z-0 w-[1px] top-[20px] h-[58px] bg-primary-main left-0' />
       <button
         type='button'
         aria-label='Slider Thumb'
