@@ -207,9 +207,7 @@ export const simpleLiquidityPositions = (plan: SimpleLiquidityPlan): Position[] 
 
   // Calculate number of positions for each range, ensuring at least 1 position per range
   const lowerPositionsAmount = Math.max(1, Math.floor(plan.positions * marketPosition));
-  console.log('TCL: lowerPositionsAmount', lowerPositionsAmount);
   const upperPositionsAmount = Math.max(1, plan.positions - lowerPositionsAmount);
-  console.log('TCL: upperPositionsAmount', upperPositionsAmount);
 
   // Calculate step widths for each range
   const lowerStepWidth = (plan.marketPrice - plan.lowerPrice) / lowerPositionsAmount;

@@ -120,7 +120,7 @@ export class SimpleLPFormStore {
       if (this.quoteInput !== '') {
         openToast({
           type: 'warning',
-          message: `You cannot provide ${this._quoteAsset?.symbol} when the lower price range is higher than the market price.`,
+          message: `You cannot provide ${this._quoteAsset?.symbol} when the price range is higher than the market price.`,
         });
       }
 
@@ -141,7 +141,7 @@ export class SimpleLPFormStore {
       if (this.baseInput !== '') {
         openToast({
           type: 'warning',
-          message: `You cannot provide ${this._baseAsset?.symbol} when the higher price range is lower than the market price.`,
+          message: `You cannot provide ${this._baseAsset?.symbol} when the price range is lower than the market price.`,
         });
       }
 
@@ -175,7 +175,7 @@ export class SimpleLPFormStore {
     return simpleLiquidityPositions({
       baseAsset: this._baseAsset,
       quoteAsset: this._quoteAsset,
-      baseLiquidity: Number(this.baseInput),
+      baseLiquidity: Number(this.baseInput) / this.marketPrice,
       quoteLiquidity: Number(this.quoteInput),
       upperPrice: this.upperPrice,
       lowerPrice: this.lowerPrice,
@@ -188,7 +188,6 @@ export class SimpleLPFormStore {
   get baseAssetAmount(): string | undefined {
     const baseAsset = this._baseAsset;
     const plan = this.plan;
-    console.log('TCL: SimpleLPFormStore -> plan', plan);
     if (!plan || !baseAsset) {
       return undefined;
     }
