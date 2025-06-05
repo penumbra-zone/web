@@ -11,6 +11,7 @@ import cn from 'clsx';
 import { shortify } from '@penumbra-zone/types/shortify';
 import { detailTechnical, technical } from '../utils/typography.ts';
 import { pnum } from '@penumbra-zone/types/pnum';
+import { ThemeColor, getThemeColorClass } from '../utils/color';
 
 type Context = 'default' | 'table';
 
@@ -43,10 +44,6 @@ const getPosition = (density: Density, priority: PillProps['priority']): string 
     return priority === 'tertiary' ? '' : '-ml-1';
   }
   return '-ml-2';
-};
-
-const getTextColor = (textColor?: string, fallback = 'text-text-primary'): string => {
-  return textColor && textColor.trim().length > 0 ? `text-${textColor}` : fallback;
 };
 
 export interface ValueViewComponentProps<SelectedContext extends Context> {
@@ -104,9 +101,9 @@ export interface ValueViewComponentProps<SelectedContext extends Context> {
   density?: Density;
   /**
    * Custom text color for the value and symbol. When provided, overrides default colors.
-   * Accepts the same color values as the Text component (e.g., 'destructive.light', 'text.secondary').
+   * Accepts theme color values like 'destructive.light', 'text.secondary', etc.
    */
-  textColor?: string;
+  textColor?: ThemeColor;
 }
 
 /**
@@ -162,7 +159,7 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
         <span
           className={cn(
             density === 'sparse' ? technical : detailTechnical,
-            getTextColor(textColor),
+            textColor ? getThemeColorClass(textColor).text : '',
           )}
         >
           {children}
@@ -183,7 +180,7 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
               priority === 'secondary' &&
               'border-b-2 border-dashed border-other-tonalStroke',
             getGap(density),
-            getTextColor(textColor, getSignColor(signed)),
+            textColor ? getThemeColorClass(textColor).text : getSignColor(signed),
           )}
         >
           {showValue && (

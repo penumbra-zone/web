@@ -118,7 +118,7 @@ export const AssetValueInput = ({
                 abbreviate={true}
                 density='compact'
                 priority={errors.insufficientFunds ? 'primary' : 'secondary'}
-                textColor={errors.insufficientFunds ? 'destructive-light' : undefined}
+                textColor={errors.insufficientFunds ? 'destructive.light' : undefined}
               />
             </div>
           </div>
