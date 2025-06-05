@@ -15,7 +15,7 @@ const Thumb = ({
   elevate,
   onPointerDown,
 }: {
-  x: number;
+  x: number | undefined;
   i: number;
   values: [number, number];
   scale: ScaleLinear<number, number>;
@@ -29,7 +29,7 @@ const Thumb = ({
     deltaX: number;
   } | null>(null);
 
-  const value = values[i];
+  const value = values[i] ?? 0;
   const otherValue = values[i === 0 ? 1 : 0];
 
   const moveHandler = (event: MouseEvent | TouchEvent) => {
@@ -115,7 +115,7 @@ const PercentageInput = ({
   elevate,
   textsXPosRef,
 }: {
-  x: number;
+  x: number | undefined;
   i: number;
   value: number;
   maxWidth: number;
@@ -124,6 +124,11 @@ const PercentageInput = ({
 }) => {
   const textRef = useRef<HTMLDivElement>(null);
   const textWidth = useWidth(textRef, [value]);
+
+  if (x === undefined) {
+    return null;
+  }
+
   textsXPosRef[i] = [x - textWidth / 2, x + textWidth / 2];
 
   let left = Math.min(maxWidth - textWidth, Math.max(0, x - textWidth / 2));
@@ -159,7 +164,7 @@ const ValueInput = ({
   elevate,
   textsXPosRef,
 }: {
-  x: number;
+  x: number | undefined;
   i: number;
   value: number;
   maxWidth: number;
@@ -168,6 +173,11 @@ const ValueInput = ({
 }) => {
   const textRef = useRef<HTMLDivElement>(null);
   const textWidth = useWidth(textRef, [value]);
+
+  if (x === undefined) {
+    return null;
+  }
+
   textsXPosRef[i] = [x - textWidth / 2, x + textWidth / 2];
 
   let left = Math.min(maxWidth - textWidth, Math.max(0, x - textWidth / 2));
@@ -279,7 +289,6 @@ export const PriceSlider = ({
                     values={values}
                     scale={scale}
                     max={max}
-                    maxWidth={width}
                     onMove={nextValue =>
                       onInput(i === 0 ? [nextValue, values[1]] : [values[0], nextValue])
                     }
