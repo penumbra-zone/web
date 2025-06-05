@@ -1,5 +1,20 @@
 # @penumbra-zone/client
 
+## 28.1.1
+
+### Patch Changes
+
+- 82d034e: fix publish workflow
+- Updated dependencies [82d034e]
+  - @penumbra-zone/protobuf@10.1.1
+  - @penumbra-zone/transport-dom@7.5.2
+
+## 28.1.0
+
+### Minor Changes
+
+- 91eb242: clean up client connection handling
+
 ## 28.0.0
 
 ### Patch Changes

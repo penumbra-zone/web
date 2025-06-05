@@ -47,7 +47,7 @@ const throwIfProviderNotInstalled = () => {
  */
 export const abortLoader = async (): Promise<null> => {
   throwIfProviderNotInstalled();
-  await retry(() => Boolean(penumbra.connected));
+  await retry(() => Boolean(penumbra.connected), 500);
   throwIfProviderNotConnected();
 
   // Loaders are required to return a value, even if it's null. By returning

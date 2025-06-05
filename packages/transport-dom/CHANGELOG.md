@@ -1,5 +1,11 @@
 # @penumbra-zone/transport-dom
 
+## 7.5.2
+
+### Patch Changes
+
+- 82d034e: fix publish workflow
+
 ## 7.5.1
 
 ### Patch Changes
