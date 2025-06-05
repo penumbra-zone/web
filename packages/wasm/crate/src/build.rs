@@ -3,10 +3,59 @@ use crate::utils;
 use penumbra_keys::FullViewingKey;
 use penumbra_proto::DomainType;
 use penumbra_transaction::{
+    action::ActionCircuit,
+    constraints::generate_and_serialize_circuit,
     plan::{ActionPlan, TransactionPlan},
     Action, AuthorizationData, Transaction, WitnessData,
 };
+
+use serde::{Deserialize, Serialize};
 use wasm_bindgen::{prelude::wasm_bindgen, JsValue};
+use wasm_bindgen_test::console_log;
+
+#[wasm_bindgen]
+#[derive(Serialize, Deserialize)]
+pub struct CircuitArtifacts {
+    witness: Vec<u8>,
+    matrices: Vec<u8>,
+}
+
+/// Builds neccessary witness and matrices
+/// for delegated proving.
+pub fn build_delegated_proving_inputs(action_circuit: &[u8]) -> Result<CircuitArtifacts, JsValue> {
+    utils::set_panic_hook();
+
+    let inputs = ActionCircuit::decode(action_circuit).expect("msg");
+    let constraints_and_matrices = generate_and_serialize_circuit(inputs).expect("msg");
+
+    Ok(CircuitArtifacts {
+        witness: constraints_and_matrices.0,
+        matrices: constraints_and_matrices.1,
+    })
+}
+
+/// Builds neccessary witness and matrices
+/// for delegated proving.
+#[wasm_bindgen]
+pub fn build_circuit_inputs(
+    action_plan: &[u8],
+    full_viewing_key: &[u8],
+    witness_data: &[u8],
+) -> WasmResult<Vec<u8>> {
+    utils::set_panic_hook();
+
+    let witness = WitnessData::decode(witness_data)?;
+    let action_plan = ActionPlan::decode(action_plan)?;
+    let full_viewing_key = FullViewingKey::decode(full_viewing_key)?;
+
+    // TODO; remove this and pass circuit inputs (from dedicated helper) into `build_action_inner`.
+    let circuit_inputs =
+        ActionPlan::circuit_inputs(action_plan.clone(), &full_viewing_key, &witness)
+            .ok()
+            .expect("msg");
+
+    Ok(circuit_inputs.encode_to_vec())
+}
 
 /// Builds a planned [`Action`] specified by
 /// the [`ActionPlan`] in a [`TransactionPlan`].
@@ -42,7 +91,17 @@ pub fn build_action_inner(
 ) -> WasmResult<Action> {
     let memo_key = transaction_plan.memo.map(|memo_plan| memo_plan.key);
 
-    let action = ActionPlan::build_unauth(action_plan, &full_viewing_key, &witness, memo_key)?;
+    // TODO; remove this and pass circuit inputs (from dedicated helper) into `build_action_inner`.
+    let circuit_inputs =
+        ActionPlan::circuit_inputs(action_plan.clone(), &full_viewing_key, &witness).ok();
+
+    let action: Action = ActionPlan::build_unauth(
+        action_plan,
+        &full_viewing_key,
+        &witness,
+        memo_key,
+        circuit_inputs,
+    )?;
 
     Ok(action)
 }
