@@ -113,26 +113,26 @@ const PercentageInput = ({
   value,
   maxWidth,
   elevate,
-  textsRef,
+  textsXPosRef,
 }: {
   x: number;
   i: number;
   value: number;
   maxWidth: number;
   elevate: boolean;
-  textsRef: [number, number][];
+  textsXPosRef: [[number, number], [number, number]];
 }) => {
   const textRef = useRef<HTMLDivElement>(null);
   const textWidth = useWidth(textRef, [value]);
-  textsRef[i] = [x - textWidth / 2, x + textWidth / 2];
+  textsXPosRef[i] = [x - textWidth / 2, x + textWidth / 2];
 
   let left = Math.min(maxWidth - textWidth, Math.max(0, x - textWidth / 2));
 
-  if (i === 0 && textsRef[0][1] > textsRef[1][0]) {
-    const overlapPx = textsRef[0][1] - textsRef[1][0];
+  if (i === 0 && textsXPosRef[0][1] > textsXPosRef[1][0]) {
+    const overlapPx = textsXPosRef[0][1] - textsXPosRef[1][0];
     left = left - overlapPx / 2;
-  } else if (i === 1 && textsRef[1][0] < textsRef[0][1]) {
-    const overlapPx = textsRef[0][1] - textsRef[1][0];
+  } else if (i === 1 && textsXPosRef[1][0] < textsXPosRef[0][1]) {
+    const overlapPx = textsXPosRef[0][1] - textsXPosRef[1][0];
     left = left + overlapPx / 2;
   }
 
@@ -146,7 +146,7 @@ const PercentageInput = ({
       `}
       style={{ left }}
     >
-      {round({ value, decimals: 1 })}%{/* </Text> */}
+      {round({ value, decimals: 1 })}%
     </div>
   );
 };
@@ -157,26 +157,26 @@ const ValueInput = ({
   value,
   maxWidth,
   elevate,
-  textsRef,
+  textsXPosRef,
 }: {
   x: number;
   i: number;
   value: number;
   maxWidth: number;
   elevate: boolean;
-  textsRef: [number, number][];
+  textsXPosRef: [[number, number], [number, number]];
 }) => {
   const textRef = useRef<HTMLDivElement>(null);
   const textWidth = useWidth(textRef, [value]);
-  textsRef[i] = [x - textWidth / 2, x + textWidth / 2];
+  textsXPosRef[i] = [x - textWidth / 2, x + textWidth / 2];
 
   let left = Math.min(maxWidth - textWidth, Math.max(0, x - textWidth / 2));
 
-  if (i === 0 && textsRef[0][1] > textsRef[1][0]) {
-    const overlapPx = textsRef[0][1] - textsRef[1][0];
+  if (i === 0 && textsXPosRef[0][1] > textsXPosRef[1][0]) {
+    const overlapPx = textsXPosRef[0][1] - textsXPosRef[1][0];
     left = left - overlapPx / 2;
-  } else if (i === 1 && textsRef[1][0] < textsRef[0][1]) {
-    const overlapPx = textsRef[0][1] - textsRef[1][0];
+  } else if (i === 1 && textsXPosRef[1][0] < textsXPosRef[0][1]) {
+    const overlapPx = textsXPosRef[0][1] - textsXPosRef[1][0];
     left = left + overlapPx / 2;
   }
 
@@ -213,9 +213,9 @@ export const PriceSlider = ({
   quoteAsset: AssetInfo | undefined;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const textsRef = useRef<{
-    input: [number, number][];
-    percentage: [number, number][];
+  const textsXPosRef = useRef<{
+    input: [[number, number], [number, number]];
+    percentage: [[number, number], [number, number]];
   }>({
     input: [
       [0, 0],
@@ -289,7 +289,7 @@ export const PriceSlider = ({
                   <PercentageInput
                     x={x}
                     i={i}
-                    textsRef={textsRef.current.percentage}
+                    textsXPosRef={textsXPosRef.current.percentage}
                     maxWidth={width}
                     value={((value - marketPrice) / marketPrice) * 100}
                     elevate={elevate}
@@ -297,7 +297,7 @@ export const PriceSlider = ({
                   <ValueInput
                     x={x}
                     i={i}
-                    textsRef={textsRef.current.input}
+                    textsXPosRef={textsXPosRef.current.input}
                     maxWidth={width}
                     value={value}
                     elevate={elevate}

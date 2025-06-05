@@ -10,13 +10,12 @@ import { InfoRowGasFee } from './info-row-gas-fee';
 import { OrderFormStore } from './store/OrderFormStore';
 import { DEFAULT_PRICE_RANGE, DEFAULT_PRICE_SPREAD } from './store/SimpleLPFormStore';
 import { PriceSlider } from './price-slider';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export const SimpleLiquidityOrderForm = observer(
   ({ parentStore }: { parentStore: OrderFormStore }) => {
     const { connected } = connectionStore;
-    const { defaultDecimals, rangeForm: store } = parentStore;
-    console.log('TCL: store', store);
+    const { defaultDecimals, simpleLPForm: store } = parentStore;
 
     const priceSpread = DEFAULT_PRICE_SPREAD;
     const priceRange = DEFAULT_PRICE_RANGE;
@@ -24,7 +23,12 @@ export const SimpleLiquidityOrderForm = observer(
       store.marketPrice * (1 - priceSpread),
       store.marketPrice * (1 + priceSpread),
     ]);
-    console.log('TCL: priceRange', priceRanges[0], priceRanges[1]);
+
+    // values flow from local state to form store to keep ui smooth
+    useEffect(() => {
+      store.setLowerPriceInput(priceRanges[0]);
+      store.setUpperPriceInput(priceRanges[1]);
+    }, [store, priceRanges]);
 
     return (
       <div className='p-4'>
@@ -37,16 +41,16 @@ export const SimpleLiquidityOrderForm = observer(
           <div className='mb-1'>
             <AmountInput
               value={round({
-                value: 100,
-                decimals: 2,
+                value: store.baseInput,
+                decimals: store.baseAsset?.exponent ?? defaultDecimals,
               })}
-              onChange={() => {}}
-              asset={store.quoteAsset}
-              balance={store.quoteAsset?.formatBalance()}
+              onChange={store.setBaseInput}
+              asset={store.baseAsset}
+              balance={store.baseAsset?.formatBalance()}
               onBalanceClick={() => {
-                const target = store.quoteAsset?.balance?.toString();
+                const target = store.baseAsset?.balance?.toString();
                 if (target) {
-                  store.setLiquidityTargetInput(target);
+                  store.setBaseInput(target);
                 }
               }}
             />
@@ -54,16 +58,16 @@ export const SimpleLiquidityOrderForm = observer(
           <div className='mb-1'>
             <AmountInput
               value={round({
-                value: 100,
-                decimals: 2,
+                value: store.quoteInput,
+                decimals: store.quoteAsset?.exponent ?? defaultDecimals,
               })}
-              onChange={() => {}}
-              asset={store.baseAsset}
-              balance={store.baseAsset?.formatBalance()}
+              onChange={store.setQuoteInput}
+              asset={store.quoteAsset}
+              balance={store.quoteAsset?.formatBalance()}
               onBalanceClick={() => {
                 const target = store.quoteAsset?.balance?.toString();
                 if (target) {
-                  store.setLiquidityTargetInput(target);
+                  store.setQuoteInput(target);
                 }
               }}
             />

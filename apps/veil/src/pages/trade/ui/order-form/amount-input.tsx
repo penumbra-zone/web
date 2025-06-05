@@ -10,7 +10,7 @@ import Image from 'next/image';
 
 export interface AmountInputProps {
   id?: string;
-  asset: AssetInfo;
+  asset?: AssetInfo;
   balance?: string;
   onBalanceClick?: () => void;
   isEstimating?: boolean;
@@ -103,13 +103,13 @@ export const AmountInput = ({
             )}
           </>
         )}
-        {asset.symbol && (
+        {asset?.symbol && (
           <div
             ref={denomRef}
             className='flex items-center gap-1 absolute top-0 right-3 pointer-events-none z-[1] font-default text-textSm font-normal leading-textXs text-text-secondary !leading-[44px]'
           >
             {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- its necessary */}
-            {asset.metadata?.images?.[0]?.svg && (
+            {asset?.metadata?.images?.[0]?.svg && (
               <Image
                 className='w-4 h-4 rounded-full'
                 src={asset.metadata.images[0].svg}
@@ -129,7 +129,7 @@ export const AmountInput = ({
           onClick={onBalanceClick}
         >
           <div className='bg-other-tonalFill5 rounded-full w-[28px] h-[20px] flex items-center justify-center'>
-            <Icon IconComponent={WalletMinimal} size='xs' color='text.secondary' />
+            <Icon IconComponent={WalletMinimal} size='sm' color='text.secondary' />
           </div>
           {balance}
         </button>

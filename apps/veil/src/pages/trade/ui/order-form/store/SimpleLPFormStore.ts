@@ -1,5 +1,6 @@
+import { scaleLinear } from 'd3-scale';
 import { AssetInfo } from '@/pages/trade/model/AssetInfo';
-import { rangeLiquidityPositions } from '@/shared/math/position';
+import { Asset, rangeLiquidityPositions } from '@/shared/math/position';
 import { parseNumber } from '@/shared/utils/num';
 import { Position } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { pnum } from '@penumbra-zone/types/pnum';
@@ -30,11 +31,15 @@ const DEFAULT_FEE_TIER_PERCENT = 0.1;
 export class SimpleLPFormStore {
   private _baseAsset?: AssetInfo;
   private _quoteAsset?: AssetInfo;
-  liquidityTargetInput = '';
-  upperPriceInput = '';
-  lowerPriceInput = '';
+  private lastTouchedInput: 'base' | 'quote' | null = null;
+
+  baseInput: number | null = 0;
+  quoteInput: number | null = 0;
+  upperPriceInput: number | null = null;
+  lowerPriceInput: number | null = null;
   feeTierPercentInput = String(DEFAULT_FEE_TIER_PERCENT);
   marketPrice = 1;
+  positions = DEFAULT_POSITION_COUNT;
 
   constructor() {
     makeAutoObservable(this);
@@ -48,28 +53,75 @@ export class SimpleLPFormStore {
     return this._quoteAsset;
   }
 
-  get liquidityTarget(): number | undefined {
-    return parseNumber(this.liquidityTargetInput);
-  }
+  setBaseInput = (x: string) => {
+    this.baseInput = Number(x);
+    this.lastTouchedInput = 'base';
 
-  setLiquidityTargetInput = (x: string) => {
-    this.liquidityTargetInput = x;
+    if (this.lowerPriceInput === null || this.upperPriceInput === null) {
+      return;
+    }
+
+    // Visualization & explanation of the scale and logic:
+    // - When the price is lower than the market price, then offer base
+    // - When the price is higher than the market price, then offer quote
+    // - The scale is used to calculate the amount of opposite asset we want to offer
+    // Asset to Offer:         quote       base
+    // Scale:           |---|----------|----------|---|
+    // Domain (prices):   lower      market     upper
+    // Range (amounts):     10         0         -10
+
+    const scale = scaleLinear()
+      .domain([this.marketPrice, this.upperPriceInput])
+      .range([0, -this.baseInput]);
+
+    const valueInBase = scale(this.lowerPriceInput);
+    console.log('TCL: SimpleLPFormStore -> setBaseInput -> valueInBase', valueInBase);
+    console.log('TCL: SimpleLPFormStore -> setBaseInput -> this.marketPrice', this.marketPrice);
+
+    this.quoteInput = valueInBase / this.marketPrice;
   };
 
-  get upperPrice(): number | undefined {
-    return parseNumber(this.upperPriceInput);
-  }
+  setQuoteInput = (x: string) => {
+    this.quoteInput = Number(x);
 
-  setUpperPriceInput = (x: string) => {
-    this.upperPriceInput = x;
+    this.lastTouchedInput = 'quote';
+
+    if (this.lowerPriceInput === null || this.upperPriceInput === null) {
+      return;
+    }
+
+    // Visualization & explanation of the scale and logic:
+    // - When the price is lower than the market price, then offer base
+    // - When the price is higher than the market price, then offer quote
+    // - The scale is used to calculate the amount of opposite asset we want to offer
+    // Asset to Offer:         quote       base
+    // Scale:           |---|----------|----------|---|
+    // Domain (prices):   lower      market     upper
+    // Range (amounts):    -10         0          10
+
+    const scale = scaleLinear()
+      .domain([this.lowerPriceInput, this.marketPrice])
+      .range([-this.quoteInput, 0]);
+
+    const valueInQuote = scale(this.upperPriceInput);
+
+    this.baseInput = valueInQuote * this.marketPrice;
   };
 
   get lowerPrice(): number | undefined {
-    return parseNumber(this.lowerPriceInput);
+    return this.lowerPriceInput;
   }
 
-  setLowerPriceInput = (x: string) => {
+  setLowerPriceInput = (x: number) => {
     this.lowerPriceInput = x;
+  };
+
+  get upperPrice(): number | undefined {
+    return this.upperPriceInput;
+  }
+
+  setUpperPriceInput = (x: number) => {
+    this.upperPriceInput = x;
   };
 
   // Treat fees that don't parse as 0
@@ -85,7 +137,8 @@ export class SimpleLPFormStore {
     if (
       !this._baseAsset ||
       !this._quoteAsset ||
-      this.liquidityTarget === undefined ||
+      this.quoteInput === '' ||
+      this.baseInput === '' ||
       this.upperPrice === undefined ||
       this.lowerPrice === undefined
     ) {
@@ -94,7 +147,7 @@ export class SimpleLPFormStore {
     return rangeLiquidityPositions({
       baseAsset: this._baseAsset,
       quoteAsset: this._quoteAsset,
-      targetLiquidity: this.liquidityTarget,
+      targetLiquidity: Number(this.quoteInput) + Number(this.baseInput),
       upperPrice: this.upperPrice,
       lowerPrice: this.lowerPrice,
       marketPrice: this.marketPrice,

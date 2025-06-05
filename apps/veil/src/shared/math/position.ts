@@ -187,6 +187,41 @@ export const rangeLiquidityPositions = (plan: RangeLiquidityPlan): Position[] =>
   });
 };
 
+// /** Given a plan for providing simple liquidity, create all the necessary positions to accomplish the plan. */
+// export const simpleLiquidityPositions = (plan: SimpleLiquidityPlan): Position[] => {
+//   // The step width is positions-1 because it's between the endpoints
+//   // |---|---|---|---|
+//   // 0   1   2   3   4
+//   //   0   1   2   3
+//   const stepWidth = (plan.upperPrice - plan.lowerPrice) / plan.positions;
+//   return Array.from({ length: plan.positions }, (_, i) => {
+//     const price = plan.lowerPrice + i * stepWidth;
+
+//     let baseReserves: number;
+//     let quoteReserves: number;
+//     if (price < plan.marketPrice) {
+//       // If the price is < market price, then people *paying* that price are getting a good deal,
+//       // and receiving the base asset in exchange, so we don't want to offer them any of that.
+//       baseReserves = 0;
+//       quoteReserves = plan.targetLiquidity / plan.positions;
+//     } else {
+//       // Conversely, when price > market price, then the people that are selling the base asset,
+//       // receiving the quote asset in exchange are getting a good deal, so we don't want to offer that.
+//       baseReserves = plan.targetLiquidity / plan.positions / price;
+//       quoteReserves = 0;
+//     }
+
+//     return planToPosition({
+//       baseAsset: plan.baseAsset,
+//       quoteAsset: plan.quoteAsset,
+//       feeBps: plan.feeBps,
+//       price,
+//       baseReserves,
+//       quoteReserves,
+//     });
+//   });
+// };
+
 /** A limit order plan attempts to buy or sell the baseAsset at a given price.
  *
  * This price is always in terms of quoteAsset / baseAsset.
