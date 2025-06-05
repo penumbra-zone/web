@@ -1,5 +1,11 @@
 # @penumbra-zone/ui
 
+## 15.0.3
+
+### Patch Changes
+
+- 14a8ccd: Fix dialog component placement for XL screens
+
 ## 15.0.2
 
 ### Patch Changes
