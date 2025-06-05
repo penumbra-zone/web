@@ -75,6 +75,45 @@ export const TransactionView: React.FC<TransactionViewProps> = ({
     return TAB_OPTIONS.filter(tab => tab.value !== TxViewTab.RECEIVER_VIEW);
   }, [transactionType]);
 
+  // Combine wallet addresses with transaction-specific addresses (same logic as TransactionCard)
+  const combinedWalletAddressViews = useMemo(() => {
+    const transactionAddressViews = fullTxInfoFromMinifront?.perspective?.addressViews ?? [];
+    const combined = [...walletAddressViews];
+
+    // Add transaction addresses that aren't already in wallet addresses
+    for (const txAddr of transactionAddressViews) {
+      const isDuplicate = combined.some(walletAddr => {
+        // Compare by inner bytes
+        let txInner: Uint8Array | null = null;
+        if (txAddr.addressView.case === 'decoded') {
+          txInner = txAddr.addressView.value.address?.inner ?? null;
+        } else if (txAddr.addressView.case === 'opaque') {
+          txInner = txAddr.addressView.value.address?.inner ?? null;
+        }
+
+        let walletInner: Uint8Array | null = null;
+        if (walletAddr.addressView.case === 'decoded') {
+          walletInner = walletAddr.addressView.value.address?.inner ?? null;
+        } else if (walletAddr.addressView.case === 'opaque') {
+          walletInner = walletAddr.addressView.value.address?.inner ?? null;
+        }
+
+        return (
+          txInner &&
+          walletInner &&
+          txInner.length === walletInner.length &&
+          txInner.every((byte, i) => byte === walletInner[i])
+        );
+      });
+
+      if (!isDuplicate) {
+        combined.push(txAddr);
+      }
+    }
+
+    return combined;
+  }, [walletAddressViews, fullTxInfoFromMinifront?.perspective?.addressViews]);
+
   useEffect(() => {
     const privateView = fullTxInfoFromMinifront?.view;
     if (!privateView) {
@@ -218,7 +257,7 @@ export const TransactionView: React.FC<TransactionViewProps> = ({
             <UiTransactionSummary
               info={fullTxInfoFromMinifront}
               getMetadata={getTxMetadata}
-              walletAddressViews={walletAddressViews}
+              walletAddressViews={combinedWalletAddressViews}
               hideMemo={true}
             />
           </Section>

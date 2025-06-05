@@ -13,7 +13,6 @@ import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_
 import { AssetCard } from './assets/AssetCard';
 import { TransactionCard } from './transactions/TransactionCard';
 import { AssetData, AccountData } from './assets/AssetCard/types';
-import { centralEnhanceMetadata } from '@shared/utils/metadata-enhancement';
 
 export const Portfolio = observer(() => {
   const balancesStore = useBalancesStore();
@@ -42,11 +41,11 @@ export const Portfolio = observer(() => {
               return null;
             }
 
-            // Enhance the metadata using the centralized function
-            const enhancedMetadata = centralEnhanceMetadata(metadata) ?? metadata;
+            // Use original metadata without enhancement
+            const originalMetadata = metadata;
 
             // Get the proper display exponent for this asset
-            const displayExponent = getDisplayDenomExponent(enhancedMetadata);
+            const displayExponent = getDisplayDenomExponent(originalMetadata);
 
             // Convert amount to display format with proper commas for large numbers
             const amount = valueView.valueView.value?.amount;
@@ -58,19 +57,21 @@ export const Portfolio = observer(() => {
                 })
               : '0';
 
-            // Use enhanced metadata for display
-            const displayName = enhancedMetadata.name ?? enhancedMetadata.symbol;
+            // Use original metadata for display
+            const displayName = originalMetadata.name ?? originalMetadata.symbol;
 
             const asset: AssetData = {
-              id: enhancedMetadata.penumbraAssetId?.inner.toString() ?? '',
+              id: originalMetadata.penumbraAssetId?.inner.toString() ?? '',
               // Use proper display name for the asset
               name: displayName,
-              symbol: enhancedMetadata.symbol,
+              symbol: originalMetadata.symbol,
               // Don't include the symbol in amount - the component will add it
               amount: displayAmount,
               value: null,
-              // Use enhanced metadata images (centralEnhanceMetadata sets proper icons for UM/delUM)
-              icon: enhancedMetadata.images[0]?.png ?? enhancedMetadata.images[0]?.svg ?? undefined,
+              // Use original metadata images without enhancement
+              icon: originalMetadata.images[0]?.png ?? originalMetadata.images[0]?.svg ?? undefined,
+              // Include original metadata for AssetIcon to use
+              originalMetadata,
             };
 
             return asset;

@@ -1,7 +1,7 @@
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { TextInput } from '../TextInput';
 import { Button } from '../Button';
-import { Density } from '../utils/density';
+import { useDensity } from '../utils/density';
 
 export interface AccountSelectorProps {
   /** The current account index */
@@ -18,13 +18,52 @@ export interface AccountSelectorProps {
   getDisplayValue?: (index: number) => string;
   /** Label for the input */
   label?: string;
-  /** Density for the navigation buttons */
-  density?: Density;
 }
 
 /**
  * A component for selecting account indexes with navigation buttons.
  * Uses TextInput with endAdornment for iconOnly next/previous buttons.
+ *
+ * The component automatically manages account navigation with proper boundary checks
+ * and provides customizable display formatting through the `getDisplayValue` prop.
+ *
+ * Density variants are supported via the `useDensity()` hook. To control density,
+ * wrap the component in a `<Density />` provider:
+ *
+ * @example
+ * ```tsx
+ * // Basic usage
+ * <AccountSelector
+ *   value={currentAccount}
+ *   onChange={setCurrentAccount}
+ * />
+ *
+ * // With custom display formatting
+ * <AccountSelector
+ *   value={accountIndex}
+ *   onChange={setAccountIndex}
+ *   getDisplayValue={(index) => `Wallet ${index + 1}`}
+ *   label="Select Account"
+ * />
+ *
+ * // With density control
+ * <Density compact>
+ *   <AccountSelector
+ *     value={currentAccount}
+ *     onChange={setCurrentAccount}
+ *     canGoNext={accountIndex < maxAccounts - 1}
+ *     canGoPrevious={accountIndex > 0}
+ *   />
+ * </Density>
+ * ```
+ *
+ * @param value - The current account index (0-based)
+ * @param onChange - Callback fired when the account index changes
+ * @param canGoPrevious - Whether navigation to previous account is allowed (defaults to true)
+ * @param canGoNext - Whether navigation to next account is allowed (defaults to true)
+ * @param disabled - Whether the entire component is disabled
+ * @param getDisplayValue - Custom formatter for the display value (defaults to "Account {index}")
+ * @param label - Optional label for the input field
  */
 export const AccountSelector = ({
   value,
@@ -35,6 +74,7 @@ export const AccountSelector = ({
   getDisplayValue,
   label,
 }: AccountSelectorProps) => {
+  const density = useDensity();
   const displayValue = getDisplayValue ? getDisplayValue(value) : `Account ${value}`;
 
   const handlePrevious = () => {
@@ -65,7 +105,7 @@ export const AccountSelector = ({
             actionType='default'
             priority='secondary'
             rounded
-            density='compact'
+            density={density}
           >
             Previous Account
           </Button>
@@ -77,7 +117,7 @@ export const AccountSelector = ({
             actionType='default'
             priority='secondary'
             rounded
-            density='compact'
+            density={density}
           >
             Next Account
           </Button>

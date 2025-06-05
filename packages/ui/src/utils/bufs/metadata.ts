@@ -160,3 +160,24 @@ export const LPNFT_METADATA = Metadata.fromJson({
     inner: 'rtchIR1VaNZpAxSMh7+Wf2VU8Kfs9b5qDE+kMTGsRww=',
   },
 });
+
+// Delegate action specific metadata for testing/storybook
+export const DELEGATE_ACTION_VALIDATOR_ID =
+  'penumbravalid19caff39080amxlupcjutnhcm7vh8rjfevza0hpx33pn7lnwe6vyqpekzlw';
+export const DELEGATE_ACTION_DELEGATION_DENOM = `udelegation_${DELEGATE_ACTION_VALIDATOR_ID}`;
+
+export const DELEGATE_ACTION_DELEGATION_METADATA = new Metadata({
+  display: `delegation_${DELEGATE_ACTION_VALIDATOR_ID}`,
+  base: DELEGATE_ACTION_DELEGATION_DENOM,
+  denomUnits: [
+    { denom: DELEGATE_ACTION_DELEGATION_DENOM },
+    { denom: `delegation_${DELEGATE_ACTION_VALIDATOR_ID}`, exponent: 6 },
+  ],
+  name: 'Delegated Penumbra',
+  symbol: 'delUM',
+  images: [
+    {
+      svg: 'https://raw.githubusercontent.com/prax-wallet/registry/main/images/um.svg',
+    },
+  ],
+});

@@ -17,7 +17,6 @@ import { BreadCrumb, BreadcrumbItem } from '@shared/ui/breadcrumb';
 import { InfoDialog } from '../assets/InfoDialog';
 import { TransactionView } from './TransactionView';
 import { TransactionCard } from './TransactionCard';
-import { centralEnhanceMetadata } from '@shared/utils/metadata-enhancement';
 
 // Utility function to compare Uint8Arrays
 const compareUint8Arrays = (a: Uint8Array, b: Uint8Array): boolean => {
@@ -97,8 +96,8 @@ export const AllTransactionsPage = observer(() => {
       }
     }
 
-    // Enhance metadata using the centralized function
-    return centralEnhanceMetadata(rawMetadata);
+    // Return raw metadata without enhancement
+    return rawMetadata;
   };
 
   const breadcrumbItems: BreadcrumbItem[] = [

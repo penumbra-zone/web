@@ -34,8 +34,6 @@ export interface TransactionSummaryProps {
   onClick?: VoidFunction;
   /** Markup to render on the right side of the component */
   endAdornment?: ReactNode;
-  /** When `true`, will apply styles that 1) prevent text wrapping, 2) hide overflow, 3) add an ellipsis when the text overflows. */
-  truncate?: boolean;
   /** If true, the memo will not be displayed. Defaults to false. */
   hideMemo?: boolean;
 }

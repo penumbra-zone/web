@@ -2,64 +2,70 @@ import { Delegate } from '@penumbra-zone/protobuf/penumbra/core/component/stake/
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
 import { ActionWrapper } from '../shared/wrapper';
 import { ActionRow } from '../shared/action-row';
-import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { base64ToUint8Array } from '@penumbra-zone/types/base64';
+import { ValueView, Denom } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { ValueViewComponent } from '../../ValueView';
 import { Density } from '../../Density';
 import { shorten } from '@penumbra-zone/types/string';
 import { ArrowRight } from 'lucide-react';
+import { ActionViewBaseProps } from '../types';
 
-export interface DelegateActionProps {
+export interface DelegateActionProps extends ActionViewBaseProps {
   value: Delegate;
 }
 
-// UM metadata for displaying delegation amounts
-const UM_METADATA = new Metadata({
-  denomUnits: [
-    {
-      denom: 'penumbra',
-      exponent: 6,
-    },
-    {
-      denom: 'upenumbra',
-      exponent: 0,
-    },
-  ],
-  base: 'upenumbra',
-  display: 'penumbra',
-  symbol: 'UM',
-  penumbraAssetId: {
-    inner: base64ToUint8Array('KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA='),
-  },
-  images: [
-    {
-      svg: 'https://raw.githubusercontent.com/prax-wallet/registry/main/images/um.svg',
-    },
-  ],
-});
+export const DelegateAction = ({ value, getMetadata }: DelegateActionProps) => {
+  // Try to get UM metadata from the metadata service
+  const umMetadata = getMetadata?.(new Denom({ denom: 'upenumbra' }));
 
-export const DelegateAction = ({ value }: DelegateActionProps) => {
-  const delegationAmountView = value.delegationAmount
+  // Try to get delegation token metadata from the metadata service
+  const delegationMetadata = (() => {
+    if (value.validatorIdentity && getMetadata) {
+      const validatorIdStr = bech32mIdentityKey(value.validatorIdentity);
+      const delegationDenom = `udelegation_${validatorIdStr}`;
+      return getMetadata(new Denom({ denom: delegationDenom }));
+    }
+    return undefined;
+  })();
+
+  // Input: unbondedAmount (UM being delegated)
+  const inputAmountView = value.unbondedAmount
     ? new ValueView({
-        valueView: {
-          case: 'knownAssetId',
-          value: {
-            amount: value.delegationAmount,
-            metadata: UM_METADATA,
-          },
-        },
+        valueView: umMetadata
+          ? {
+              case: 'knownAssetId',
+              value: {
+                amount: value.unbondedAmount,
+                metadata: umMetadata,
+              },
+            }
+          : {
+              case: 'unknownAssetId',
+              value: {
+                amount: value.unbondedAmount,
+                assetId: undefined,
+              },
+            },
       })
     : undefined;
 
-  const unbondedAmountView = value.unbondedAmount
+  // Output: delegationAmount (delUM tokens received)
+  const outputAmountView = value.delegationAmount
     ? new ValueView({
-        valueView: {
-          case: 'knownAssetId',
-          value: {
-            amount: value.unbondedAmount,
-            metadata: UM_METADATA,
-          },
-        },
+        valueView: delegationMetadata
+          ? {
+              case: 'knownAssetId',
+              value: {
+                amount: value.delegationAmount,
+                metadata: delegationMetadata,
+              },
+            }
+          : {
+              case: 'unknownAssetId',
+              value: {
+                amount: value.delegationAmount,
+                assetId: undefined,
+              },
+            },
       })
     : undefined;
 
@@ -85,15 +91,15 @@ export const DelegateAction = ({ value }: DelegateActionProps) => {
     >
       <div className='flex flex-row items-center gap-1'>
         <Density slim>
-          {delegationAmountView && (
+          {inputAmountView && (
             <div className='flex flex-col gap-1'>
-              <ValueViewComponent valueView={delegationAmountView} />
+              <ValueViewComponent signed='negative' valueView={inputAmountView} />
             </div>
           )}
-          <ArrowRight size={10} />
-          {unbondedAmountView && (
+          <ArrowRight size={10} className='text-text-primary' />
+          {outputAmountView && (
             <div className='flex flex-col gap-1'>
-              <ValueViewComponent valueView={unbondedAmountView} />
+              <ValueViewComponent signed='positive' valueView={outputAmountView} />
             </div>
           )}
         </Density>

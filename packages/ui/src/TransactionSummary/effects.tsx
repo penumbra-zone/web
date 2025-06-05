@@ -1,90 +1,115 @@
-import { useState } from 'react';
 import { CircleEllipsis } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { AddressViewComponent } from '../AddressView';
-import { Popover } from '../Popover';
 import { Button } from '../Button';
 import { SummaryBalance } from './balance';
 import { Density } from '../Density';
+import { Popover } from '../Popover';
 import { SummaryEffect } from './adapt-effects';
 
 export interface SummaryEffectsProps {
   effects: SummaryEffect[];
 }
 
-const MAX_VISIBLE_EFFECTS = 2; // Show max 2 rows before showing ellipsis
-
 export const SummaryEffects = ({ effects }: SummaryEffectsProps) => {
-  const [isTooltipOpen, setIsTooltipOpen] = useState(false);
-
-  const visibleEffects = effects.slice(0, MAX_VISIBLE_EFFECTS);
-  const hiddenEffects = effects.slice(MAX_VISIBLE_EFFECTS);
-  const hasHiddenEffects = hiddenEffects.length > 0;
-
   return (
     <div className='flex flex-col'>
-      {/* Visible effect rows */}
-      {visibleEffects.map((effect, index) => {
-        return (
-          <div key={index} className='flex items-center gap-2'>
-            {/* Balance changes for this account */}
-            <div className='flex items-center gap-1'>
-              {effect.balances.map((balance, balanceIndex) => (
-                <SummaryBalance key={balanceIndex} balance={balance} />
-              ))}
-            </div>
+      {effects.map((effect, effectIndex) => (
+        <EffectRow key={effectIndex} effect={effect} />
+      ))}
+    </div>
+  );
+};
 
-            {/* Account address */}
-            {effect.address && (
-              <Density slim>
-                <div className='max-w-32'>
-                  <AddressViewComponent truncate hideIcon addressView={effect.address} />
-                </div>
-              </Density>
-            )}
+interface EffectRowProps {
+  effect: SummaryEffect;
+}
+
+const EffectRow = ({ effect }: EffectRowProps) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [visibleCount, setVisibleCount] = useState(effect.balances.length);
+  const firstBalance = effect.balances[0];
+
+  useEffect(() => {
+    if (!containerRef.current) { return };
+
+    const measureWidth = () => {
+      const container = containerRef.current;
+      if (!container) { return };
+
+      // Get available width (account for address and gaps)
+      const totalWidth = container.offsetWidth;
+      const addressWidth = effect.address ? 140 : 0;
+      const ellipsisWidth = 32;
+      const availableWidth = totalWidth - addressWidth - ellipsisWidth - 16;
+
+      // Estimate how many balance changes can fit
+      const estimatedBalanceWidth = 70;
+      const maxVisible = Math.floor(availableWidth / estimatedBalanceWidth);
+      const newVisibleCount = Math.max(1, Math.min(maxVisible, effect.balances.length));
+
+      setVisibleCount(newVisibleCount);
+    };
+
+    measureWidth();
+    const resizeObserver = new ResizeObserver(measureWidth);
+    resizeObserver.observe(containerRef.current);
+
+    return () => resizeObserver.disconnect();
+  }, [effect.balances.length, effect.address]);
+
+  if (!firstBalance) {
+    return null;
+  }
+
+  const visibleBalances = effect.balances.slice(0, visibleCount);
+  const hasHiddenBalances = visibleCount < effect.balances.length;
+
+  return (
+    <div ref={containerRef} className='flex items-center gap-1'>
+      {/* Balance changes for this account */}
+      <div className='flex min-w-0 items-center gap-1'>
+        {visibleBalances.map((balance, balanceIndex) => (
+          <div key={balanceIndex} className='flex truncate'>
+            <SummaryBalance balance={balance} />
           </div>
-        );
-      })}
+        ))}
 
-      {/* Show ellipsis button if there are hidden effects */}
-      {hasHiddenEffects && (
-        <div className='flex items-center gap-2'>
+        {/* Show ellipsis popover only when there are hidden balances */}
+        {hasHiddenBalances && (
           <Density slim>
-            <Popover isOpen={isTooltipOpen} onClose={() => setIsTooltipOpen(false)}>
+            <Popover>
               <Popover.Trigger>
                 <Button
                   type='button'
-                  iconOnly='adornment'
+                  iconOnly={'adornment'}
                   icon={CircleEllipsis}
-                  onClick={() => setIsTooltipOpen(true)}
+                  priority='secondary'
+                  density='slim'
                 >
-                  Show {hiddenEffects.length} more
+                  Show {effect.balances.length - visibleCount} more balance changes
                 </Button>
               </Popover.Trigger>
-              <Popover.Content>
-                <div className='flex flex-col gap-2 p-2'>
-                  {hiddenEffects.map((effect, index) => {
-                    return (
-                      <div key={index} className='flex flex-col gap-1'>
-                        {/* Account address */}
-                        {effect.address && (
-                          <Density slim>
-                            <AddressViewComponent truncate hideIcon addressView={effect.address} />
-                          </Density>
-                        )}
-                        {/* Balance changes */}
-                        <div className='flex flex-wrap items-center gap-1'>
-                          {effect.balances.map((balance, balanceIndex) => (
-                            <SummaryBalance key={balanceIndex} balance={balance} />
-                          ))}
-                        </div>
-                      </div>
-                    );
-                  })}
+
+              <Popover.Content side='top' align='start'>
+                <div className='flex w-fit min-w-0 max-w-none flex-col'>
+                  {effect.balances.map((balance, balanceIndex) => (
+                    <SummaryBalance key={balanceIndex} balance={balance} />
+                  ))}
                 </div>
               </Popover.Content>
             </Popover>
           </Density>
-        </div>
+        )}
+      </div>
+
+      {/* Account address */}
+      {effect.address && (
+        <Density slim>
+          <div className='max-w-32 shrink-0'>
+            <AddressViewComponent truncate hideIcon addressView={effect.address} />
+          </div>
+        </Density>
       )}
     </div>
   );

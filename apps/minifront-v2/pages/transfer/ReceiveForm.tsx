@@ -5,6 +5,7 @@ import { Text } from '@penumbra-zone/ui/Text';
 import { Toggle } from '@penumbra-zone/ui/Toggle';
 import { AccountSelector } from '@penumbra-zone/ui';
 import { Copy } from 'lucide-react';
+import { Density } from '@penumbra-zone/ui';
 
 export const ReceiveForm = observer(() => {
   const transferStore = useTransferStore();
@@ -36,13 +37,15 @@ export const ReceiveForm = observer(() => {
         {/* Account Selector */}
         <div className='flex flex-col gap-2 '>
           <Text strong>Account</Text>
-          <AccountSelector
-            value={receiveState.selectedAccountIndex}
-            onChange={handleAccountChange}
-            canGoPrevious={receiveState.selectedAccountIndex > 0}
-            canGoNext={true}
-            getDisplayValue={getAccountDisplayName}
-          />
+          <Density compact>
+            <AccountSelector
+              value={receiveState.selectedAccountIndex}
+              onChange={handleAccountChange}
+              canGoPrevious={receiveState.selectedAccountIndex > 0}
+              canGoNext={true}
+              getDisplayValue={getAccountDisplayName}
+            />
+          </Density>
         </div>
 
         {/* Address Display */}

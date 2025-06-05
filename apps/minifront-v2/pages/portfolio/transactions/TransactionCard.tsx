@@ -13,7 +13,6 @@ import { Skeleton } from '@penumbra-zone/ui/Skeleton';
 import { TransactionSummary } from '@penumbra-zone/ui/TransactionSummary';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import { getMetadataFromBalancesResponse } from '@penumbra-zone/getters/balances-response';
-import { centralEnhanceMetadata } from '@shared/utils/metadata-enhancement';
 
 import { useTransactionsStore, useBalancesStore } from '@shared/stores/store-context';
 import { useIsConnected, useConnectWallet } from '@shared/hooks/use-connection';
@@ -79,7 +78,9 @@ export const TransactionCard = observer(
         }
       }
 
-      return Array.from(addressMap.values());
+      const addressViews = Array.from(addressMap.values());
+
+      return addressViews;
     }, [balancesResponses]);
 
     const getTxMetadata = (assetId?: AssetId | Denom | string): Metadata | undefined => {
@@ -118,8 +119,8 @@ export const TransactionCard = observer(
         }
       }
 
-      // Enhance metadata using the centralized function
-      return centralEnhanceMetadata(rawMetadata);
+      // Return raw metadata without enhancement
+      return rawMetadata;
     };
 
     const infoButton = showInfoButton ? <InfoDialog /> : null;
@@ -194,6 +195,40 @@ export const TransactionCard = observer(
                   transactionsToDisplay.map((transaction: TransactionInfo) => {
                     const txHash = getTxHash(transaction);
 
+                    // For this transaction, combine wallet addresses with transaction-specific addresses
+                    const transactionAddressViews = transaction.perspective?.addressViews || [];
+                    const combinedWalletAddressViews = [...walletAddressViews];
+
+                    // Add transaction addresses that aren't already in wallet addresses
+                    for (const txAddr of transactionAddressViews) {
+                      const isDuplicate = combinedWalletAddressViews.some(walletAddr => {
+                        // Compare by inner bytes
+                        const txInner =
+                          txAddr.addressView.case === 'decoded'
+                            ? txAddr.addressView.value.address?.inner
+                            : txAddr.addressView.case === 'opaque'
+                              ? txAddr.addressView.value.address?.inner
+                              : null;
+                        const walletInner =
+                          walletAddr.addressView.case === 'decoded'
+                            ? walletAddr.addressView.value.address?.inner
+                            : walletAddr.addressView.case === 'opaque'
+                              ? walletAddr.addressView.value.address?.inner
+                              : null;
+
+                        return (
+                          txInner &&
+                          walletInner &&
+                          txInner.length === walletInner.length &&
+                          txInner.every((byte, i) => byte === walletInner[i])
+                        );
+                      });
+
+                      if (!isDuplicate) {
+                        combinedWalletAddressViews.push(txAddr);
+                      }
+                    }
+
                     return (
                       <div
                         key={txHash}
@@ -203,7 +238,7 @@ export const TransactionCard = observer(
                         <TransactionSummary
                           info={transaction}
                           getMetadata={getTxMetadata}
-                          walletAddressViews={walletAddressViews}
+                          walletAddressViews={combinedWalletAddressViews}
                           endAdornment={
                             <Button
                               actionType='accent'

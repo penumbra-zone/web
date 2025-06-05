@@ -28,10 +28,6 @@ const meta: Meta<typeof AssetIcon> = {
       options: Object.keys(OPTIONS),
       mapping: OPTIONS,
     },
-    isDelegated: {
-      control: 'boolean',
-      description: 'When true, shows a delegation badge with "D" indicator',
-    },
   },
 };
 export default meta;
@@ -45,43 +41,46 @@ export const Basic: Story = {
   },
 };
 
-export const WithDelegationBadge: Story = {
+export const DelegationToken: Story = {
   args: {
     size: 'md',
-    metadata: PENUMBRA_METADATA,
-    isDelegated: true,
+    metadata: DELEGATION_TOKEN_METADATA,
   },
   parameters: {
     docs: {
       description: {
         story:
-          'Shows an asset icon with a delegation badge. The badge displays a "D" indicator in the bottom-right corner.',
+          'Shows a delegation token with its custom icon. Delegation tokens are automatically recognized by their display denomination and show a delegation-specific icon.',
       },
     },
   },
 };
 
-export const DelegationBadgeSizes: Story = {
+export const AllTokenTypes: Story = {
   render: () => (
     <div className='flex items-center gap-4'>
       <div className='flex flex-col items-center gap-2'>
-        <AssetIcon size='sm' metadata={PENUMBRA_METADATA} isDelegated={true} />
-        <span className='text-xs'>Small</span>
+        <AssetIcon size='md' metadata={PENUMBRA_METADATA} />
+        <span className='text-xs'>Penumbra</span>
       </div>
       <div className='flex flex-col items-center gap-2'>
-        <AssetIcon size='md' metadata={PENUMBRA_METADATA} isDelegated={true} />
-        <span className='text-xs'>Medium</span>
+        <AssetIcon size='md' metadata={DELEGATION_TOKEN_METADATA} />
+        <span className='text-xs'>Delegation</span>
       </div>
       <div className='flex flex-col items-center gap-2'>
-        <AssetIcon size='lg' metadata={PENUMBRA_METADATA} isDelegated={true} />
-        <span className='text-xs'>Large</span>
+        <AssetIcon size='md' metadata={UNBONDING_TOKEN_METADATA} />
+        <span className='text-xs'>Unbonding</span>
+      </div>
+      <div className='flex flex-col items-center gap-2'>
+        <AssetIcon size='md' metadata={LPNFT_METADATA} />
+        <span className='text-xs'>Position</span>
       </div>
     </div>
   ),
   parameters: {
     docs: {
       description: {
-        story: 'Shows delegation badges at different sizes to demonstrate proper scaling.',
+        story: 'Shows different token types with their respective icons and automatic recognition.',
       },
     },
   },
