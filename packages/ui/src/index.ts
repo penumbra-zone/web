@@ -9,4 +9,3 @@ export * from './Dialog';
 export * from './Text';
 export * from './Toggle';
 export * from './JsonViewer';
-export * from './TransactionView';
