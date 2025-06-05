@@ -31,11 +31,15 @@ const EffectRow = ({ effect }: EffectRowProps) => {
   const firstBalance = effect.balances[0];
 
   useEffect(() => {
-    if (!containerRef.current) { return };
+    if (!containerRef.current) {
+      return;
+    }
 
     const measureWidth = () => {
       const container = containerRef.current;
-      if (!container) { return };
+      if (!container) {
+        return;
+      }
 
       // Get available width (account for address and gaps)
       const totalWidth = container.offsetWidth;

@@ -107,6 +107,8 @@ export class TransferStore {
 
   toggleIbcDeposit() {
     this.receiveState.ibcDepositEnabled = !this.receiveState.ibcDepositEnabled;
+    // Reload address when toggle changes
+    this.loadAccountAddress();
   }
 
   setActiveTab(tab: 'send' | 'receive') {
@@ -438,15 +440,28 @@ export class TransferStore {
 
   private async loadAccountAddress() {
     try {
-      // Get address for the selected account index
-      const response = await penumbra.service(ViewService).addressByIndex({
-        addressIndex: { account: this.receiveState.selectedAccountIndex },
-      });
-
-      if (response.address) {
-        runInAction(() => {
-          this.receiveState.accountAddress = bech32mAddress(response.address!);
+      if (this.receiveState.ibcDepositEnabled) {
+        // Generate randomized IBC deposit address
+        const response = await penumbra.service(ViewService).ephemeralAddress({
+          addressIndex: { account: this.receiveState.selectedAccountIndex },
         });
+
+        if (response.address) {
+          runInAction(() => {
+            this.receiveState.accountAddress = bech32mAddress(response.address!);
+          });
+        }
+      } else {
+        // Get regular address for the selected account index
+        const response = await penumbra.service(ViewService).addressByIndex({
+          addressIndex: { account: this.receiveState.selectedAccountIndex },
+        });
+
+        if (response.address) {
+          runInAction(() => {
+            this.receiveState.accountAddress = bech32mAddress(response.address!);
+          });
+        }
       }
     } catch (error) {
       console.error('Error loading account address:', error);

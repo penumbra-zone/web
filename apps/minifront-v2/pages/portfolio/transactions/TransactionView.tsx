@@ -1,6 +1,6 @@
 import { AssetId, Denom, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { TransactionView as UiTransactionView } from '@penumbra-zone/ui';
+import { TransactionView as UiTransactionView } from '@shared/ui/transaction-view';
 import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
 

@@ -4,7 +4,8 @@ import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { Toggle } from '@penumbra-zone/ui/Toggle';
 import { AccountSelector } from '@penumbra-zone/ui';
-import { Copy } from 'lucide-react';
+import { Popover } from '@penumbra-zone/ui/Popover';
+import { Copy, Info } from 'lucide-react';
 import { Density } from '@penumbra-zone/ui';
 
 export const ReceiveForm = observer(() => {
@@ -28,6 +29,11 @@ export const ReceiveForm = observer(() => {
 
   // Get the display name for the account
   const getAccountDisplayName = (index: number) => {
+    if (receiveState.ibcDepositEnabled) {
+      return index === 0
+        ? 'IBC Deposit Address for Main Account'
+        : `IBC Deposit Address for Sub-Account# ${index}`;
+    }
     return index === 0 ? 'Main Account' : `Sub-Account# ${index}`;
   };
 
@@ -65,11 +71,20 @@ export const ReceiveForm = observer(() => {
             <Text color='text.secondary' xs>
               IBC Deposit
             </Text>
-            <div className='w-4 h-4 rounded-full border border-other-tonalStroke flex items-center justify-center'>
-              <Text xxs color='text.secondary'>
-                i
-              </Text>
-            </div>
+            <Popover>
+              <Popover.Trigger>
+                <div className='w-4 h-4 rounded-full border border-other-tonalStroke flex items-center justify-center hover:bg-other-tonalFill10 cursor-pointer transition-colors'>
+                  <Info size={10} className='text-text-secondary' />
+                </div>
+              </Popover.Trigger>
+              <Popover.Content side='top' align='start'>
+                <Text xs>
+                  IBC transfers into Penumbra post the destination address in public on the source
+                  chain. Use this randomized IBC deposit address to preserve privacy when
+                  transferring funds into Penumbra.
+                </Text>
+              </Popover.Content>
+            </Popover>
           </div>
           <Toggle
             label='IBC Deposit'
