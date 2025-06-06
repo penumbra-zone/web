@@ -14,7 +14,6 @@ import {
   PIZZA_METADATA,
   USDC_METADATA,
 } from '../utils/bufs/metadata';
-import { pnum } from '@penumbra-zone/types/pnum';
 import { Text } from '../Text';
 
 const balanceOptions: BalancesResponse[] = [
@@ -24,30 +23,6 @@ const balanceOptions: BalancesResponse[] = [
 ];
 
 const assetOptions = [PENUMBRA_METADATA, OSMO_METADATA, PIZZA_METADATA, USDC_METADATA];
-
-// Helper function to validate if amount exceeds balance
-const validateAmount = (amount: string, selectedAsset?: BalancesResponse) => {
-  if (!amount || !selectedAsset?.balanceView) return {};
-  
-  const numericAmount = parseFloat(amount);
-  if (isNaN(numericAmount)) {
-    return { amountError: true };
-  }
-
-  // Check decimal places (assuming max 6 for most tokens)
-  const decimalPlaces = amount.includes('.') ? amount.split('.')[1]?.length || 0 : 0;
-  if (decimalPlaces > 6) {
-    return { exponentError: true };
-  }
-
-  // Get balance value and compare
-  const balance = pnum(selectedAsset.balanceView).toNumber();
-  if (numericAmount > balance) {
-    return { insufficientFunds: true };
-  }
-
-  return {};
-};
 
 const meta: Meta<typeof AssetValueInput> = {
   component: AssetValueInput,
@@ -59,6 +34,7 @@ const meta: Meta<typeof AssetValueInput> = {
     showBalance: { control: 'boolean' },
     amountPlaceholder: { control: 'text' },
     assetDialogTitle: { control: 'text' },
+    error: { control: 'text' },
   },
   args: {
     balances: balanceOptions,
@@ -67,11 +43,6 @@ const meta: Meta<typeof AssetValueInput> = {
     assetDialogTitle: 'Select Asset',
     showBalance: true,
     disabled: false,
-    errorMessages: {
-      amountError: 'Invalid amount',
-      exponentError: 'Invalid decimal length',
-      insufficientFunds: 'Insufficient funds',
-    },
   },
 };
 export default meta;
@@ -79,7 +50,7 @@ export default meta;
 type Story = StoryObj<typeof AssetValueInput>;
 
 /**
- * Basic usage with live validation. Try entering amounts higher than the available balance (123 UM) to see error states.
+ * Basic usage with automatic validation. The component will automatically validate amount format, decimal places, and balance.
  */
 export const Basic: Story = {
   args: {
@@ -89,30 +60,14 @@ export const Basic: Story = {
   render: function Render(props) {
     const [amount, setAmount] = useState('');
     const [selectedAsset, setSelectedAsset] = useState<BalancesResponse>(PENUMBRA_BALANCE);
-    const [errors, setErrors] = useState({});
-
-    const handleAmountChange = (newAmount: string) => {
-      setAmount(newAmount);
-      // Validate in real-time
-      const validationErrors = validateAmount(newAmount, selectedAsset);
-      setErrors(validationErrors);
-    };
-
-    const handleAssetChange = (asset: BalancesResponse) => {
-      setSelectedAsset(asset);
-      // Re-validate with new asset
-      const validationErrors = validateAmount(amount, asset);
-      setErrors(validationErrors);
-    };
 
     return (
       <AssetValueInput
         {...props}
         amount={amount}
         selectedAsset={selectedAsset}
-        onAmountChange={handleAmountChange}
-        onAssetChange={handleAssetChange}
-        errors={errors}
+        onAmountChange={setAmount}
+        onAssetChange={setSelectedAsset}
       />
     );
   },
@@ -121,7 +76,7 @@ export const Basic: Story = {
     docs: {
       description: {
         story:
-          'Interactive example with live validation. The balance shown is 123 UM. Try entering an amount larger than 123 to see the insufficient funds error.',
+          'Basic usage with automatic validation. Try entering invalid amounts, too many decimals, or amounts larger than the balance (123 UM) to see automatic error handling.',
       },
     },
   },
@@ -138,45 +93,25 @@ export const WithValue: Story = {
   render: function Render(props) {
     const [amount, setAmount] = useState('100.50');
     const [selectedAsset, setSelectedAsset] = useState<BalancesResponse>(OSMO_BALANCE);
-    const [errors, setErrors] = useState({});
-
-    const handleAmountChange = (newAmount: string) => {
-      setAmount(newAmount);
-      const validationErrors = validateAmount(newAmount, selectedAsset);
-      setErrors(validationErrors);
-    };
-
-    const handleAssetChange = (asset: BalancesResponse) => {
-      setSelectedAsset(asset);
-      const validationErrors = validateAmount(amount, asset);
-      setErrors(validationErrors);
-    };
 
     return (
       <AssetValueInput
         {...props}
         amount={amount}
         selectedAsset={selectedAsset}
-        onAmountChange={handleAmountChange}
-        onAssetChange={handleAssetChange}
-        errors={errors}
+        onAmountChange={setAmount}
+        onAssetChange={setSelectedAsset}
       />
     );
   },
 };
 
 /**
- * Demonstrates the insufficient funds error state with custom styling.
+ * Demonstrates the insufficient funds error state.
  */
 export const InsufficientFunds: Story = {
   args: {
     amount: '999999',
-    errors: {
-      insufficientFunds: true,
-    },
-    errorMessages: {
-      insufficientFunds: 'You do not have enough tokens to complete this transaction',
-    },
   },
 
   render: function Render(props) {
@@ -198,36 +133,19 @@ export const InsufficientFunds: Story = {
     docs: {
       description: {
         story:
-          'Shows the error state when the entered amount exceeds the available balance. The balance display is highlighted in red and an error message appears below.',
+          'Shows the automatic error state when the entered amount exceeds the available balance. The balance display is highlighted in red and an error message appears below.',
       },
     },
   },
 };
 
 /**
- * Interactive example showing all validation types. Try different inputs to trigger different errors.
+ * Interactive example with automatic validation feedback.
  */
 export const InteractiveValidation: Story = {
   render: () => {
     const [amount, setAmount] = useState('');
     const [selectedAsset, setSelectedAsset] = useState<BalancesResponse>(PENUMBRA_BALANCE);
-    const [errors, setErrors] = useState({});
-
-    const handleAmountChange = (newAmount: string) => {
-      setAmount(newAmount);
-      const validationErrors = validateAmount(newAmount, selectedAsset);
-      setErrors(validationErrors);
-    };
-
-    const handleAssetChange = (asset: BalancesResponse) => {
-      setSelectedAsset(asset);
-      const validationErrors = validateAmount(amount, asset);
-      setErrors(validationErrors);
-    };
-
-    const currentBalance = selectedAsset?.balanceView 
-      ? pnum(selectedAsset.balanceView).toNumber() 
-      : 0;
 
     return (
       <div className='flex flex-col gap-4'>
@@ -235,23 +153,17 @@ export const InteractiveValidation: Story = {
           <Text detail color='text.secondary'><Text as='span' detail color='text.primary'>Try these examples:</Text></Text>
           <ul className='list-disc list-inside space-y-1 text-text-secondary text-sm'>
             <li>Enter "123.1234567" for a decimal places error</li>
-            <li>Enter "{currentBalance + 1}" for insufficient funds (current balance: {currentBalance})</li>
+            <li>Enter "999" for insufficient funds (current balance: 123)</li>
           </ul>
         </div>
         
         <AssetValueInput
           amount={amount}
           selectedAsset={selectedAsset}
-          onAmountChange={handleAmountChange}
-          onAssetChange={handleAssetChange}
-          errors={errors}
+          onAmountChange={setAmount}
+          onAssetChange={setSelectedAsset}
           balances={balanceOptions}
           assets={assetOptions}
-          errorMessages={{
-            amountError: 'Please enter a valid number',
-            exponentError: 'Too many decimal places (max 6)',
-            insufficientFunds: `Amount exceeds available balance of ${currentBalance}`,
-          }}
         />
       </div>
     );
@@ -261,14 +173,14 @@ export const InteractiveValidation: Story = {
     docs: {
       description: {
         story:
-          'Interactive example with live validation feedback. Try the suggested inputs to see different error states in action.',
+          'Interactive example with automatic validation feedback. The component validates automatically based on the amount and selected asset.',
       },
     },
   },
 };
 
 /**
- * Shows various validation error states.
+ * Shows various validation error states with preset values.
  */
 export const ValidationErrors: Story = {
   render: () => (
@@ -282,8 +194,6 @@ export const ValidationErrors: Story = {
           onAssetChange={() => {}}
           balances={balanceOptions}
           assets={assetOptions}
-          errors={{ amountError: true }}
-          errorMessages={{ amountError: 'Please enter a valid number' }}
         />
       </div>
 
@@ -296,8 +206,6 @@ export const ValidationErrors: Story = {
           onAssetChange={() => {}}
           balances={balanceOptions}
           assets={assetOptions}
-          errors={{ exponentError: true }}
-          errorMessages={{ exponentError: 'Too many decimal places (max 6)' }}
         />
       </div>
 
@@ -310,8 +218,19 @@ export const ValidationErrors: Story = {
           onAssetChange={() => {}}
           balances={balanceOptions}
           assets={assetOptions}
-          errors={{ insufficientFunds: true }}
-          errorMessages={{ insufficientFunds: 'Not enough balance' }}
+        />
+      </div>
+
+      <div className='flex flex-col gap-2'>
+        <Text large color='text.primary'>Custom Error</Text>
+        <AssetValueInput
+          amount='50'
+          onAmountChange={() => {}}
+          selectedAsset={PENUMBRA_BALANCE}
+          onAssetChange={() => {}}
+          balances={balanceOptions}
+          assets={assetOptions}
+          error="This is a custom validation error from the parent component"
         />
       </div>
     </div>
@@ -321,7 +240,7 @@ export const ValidationErrors: Story = {
     docs: {
       description: {
         story:
-          'Demonstrates all possible validation error states: invalid amount format, too many decimal places, and insufficient funds.',
+          'Demonstrates both automatic validation errors and custom error messages. The last example shows how to override automatic validation with a custom error.',
       },
     },
   },
