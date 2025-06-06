@@ -3,7 +3,7 @@ import { ComponentProps, FC } from 'react';
 import { ThemeColor, getThemeColorClass } from '../utils/color';
 import cn from 'clsx';
 
-export type IconSize = 'sm' | 'md' | 'lg';
+export type IconSize = 'xs' | 'sm' | 'md' | 'lg';
 
 export interface IconProps {
   /**
@@ -26,6 +26,10 @@ export interface IconProps {
 }
 
 const PROPS_BY_SIZE: Record<IconSize, ComponentProps<LucideIcon>> = {
+  xs: {
+    size: 10,
+    strokeWidth: 1,
+  },
   sm: {
     size: 16,
     strokeWidth: 1,
