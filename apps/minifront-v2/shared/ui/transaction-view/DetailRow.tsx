@@ -5,6 +5,7 @@ import { CopyToClipboardButton } from '@penumbra-zone/ui/CopyToClipboardButton';
 import { Text, TextProps } from '@penumbra-zone/ui/Text';
 import { Link as LinkIcon } from 'lucide-react';
 import { Button } from '@penumbra-zone/ui/Button';
+import { Density } from '@penumbra-zone/ui/Density';
 
 export interface DetailRowProps {
   label: string;
@@ -100,10 +101,14 @@ export const DetailRow: React.FC<DetailRowProps> = ({
           </a>
         )}
         {showCopy && !isUrl(value) && rawValueToCopy && (
-          <CopyToClipboardButton text={rawValueToCopy} variant={'slim'} />
+          <Density slim>
+            <CopyToClipboardButton text={rawValueToCopy} />
+          </Density>
         )}
         {React.isValidElement(value) && value.type === AddressViewComponent && rawValueToCopy && (
-          <CopyToClipboardButton text={rawValueToCopy} variant={'slim'} />
+          <Density slim>
+            <CopyToClipboardButton text={rawValueToCopy} />
+          </Density>
         )}
       </div>
     </div>

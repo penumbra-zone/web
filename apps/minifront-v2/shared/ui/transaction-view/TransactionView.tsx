@@ -25,6 +25,7 @@ import { TabControl, TxViewTab, TAB_OPTIONS } from './TabControl';
 import { TransactionInfo } from './TransactionInfo';
 import { TransactionMemo } from './TransactionMemo';
 import { TransactionParameters } from './TransactionParameters';
+import { Density } from '@penumbra-zone/ui/Density';
 
 export interface TransactionViewProps {
   txHash?: string;
@@ -281,10 +282,15 @@ export const TransactionView: React.FC<TransactionViewProps> = ({
             sectionTitle='Raw JSON'
             titleAdornment={
               displayedTransactionView && (
-                <CopyToClipboardButton
-                  text={JSON.stringify(displayedTransactionView.toJson({ typeRegistry }), null, 2)}
-                  variant='slim'
-                />
+                <Density slim>
+                  <CopyToClipboardButton
+                    text={JSON.stringify(
+                      displayedTransactionView.toJson({ typeRegistry }),
+                      null,
+                      2,
+                    )}
+                  />
+                </Density>
               )
             }
           >

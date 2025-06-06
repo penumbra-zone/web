@@ -16,11 +16,7 @@ import {
 } from '../utils/bufs/metadata';
 import { Text } from '../Text';
 
-const balanceOptions: BalancesResponse[] = [
-  PENUMBRA_BALANCE,
-  PENUMBRA2_BALANCE,
-  OSMO_BALANCE,
-];
+const balanceOptions: BalancesResponse[] = [PENUMBRA_BALANCE, PENUMBRA2_BALANCE, OSMO_BALANCE];
 
 const assetOptions = [PENUMBRA_METADATA, OSMO_METADATA, PIZZA_METADATA, USDC_METADATA];
 
@@ -150,13 +146,17 @@ export const InteractiveValidation: Story = {
     return (
       <div className='flex flex-col gap-4'>
         <div>
-          <Text detail color='text.secondary'><Text as='span' detail color='text.primary'>Try these examples:</Text></Text>
+          <Text detail color='text.secondary'>
+            <Text as='span' detail color='text.primary'>
+              Try these examples:
+            </Text>
+          </Text>
           <ul className='list-disc list-inside space-y-1 text-text-secondary text-sm'>
             <li>Enter "123.1234567" for a decimal places error</li>
             <li>Enter "999" for insufficient funds (current balance: 123)</li>
           </ul>
         </div>
-        
+
         <AssetValueInput
           amount={amount}
           selectedAsset={selectedAsset}
@@ -186,7 +186,9 @@ export const ValidationErrors: Story = {
   render: () => (
     <div className='flex flex-col gap-8'>
       <div className='flex flex-col gap-2'>
-        <Text large color='text.primary'>Amount Error</Text>
+        <Text large color='text.primary'>
+          Amount Error
+        </Text>
         <AssetValueInput
           amount='invalid-amount'
           onAmountChange={() => {}}
@@ -198,7 +200,9 @@ export const ValidationErrors: Story = {
       </div>
 
       <div className='flex flex-col gap-2'>
-        <Text large color='text.primary'>Exponent Error</Text>
+        <Text large color='text.primary'>
+          Exponent Error
+        </Text>
         <AssetValueInput
           amount='123.1234567'
           onAmountChange={() => {}}
@@ -210,7 +214,9 @@ export const ValidationErrors: Story = {
       </div>
 
       <div className='flex flex-col gap-2'>
-        <Text large color='text.primary'>Insufficient Funds</Text>
+        <Text large color='text.primary'>
+          Insufficient Funds
+        </Text>
         <AssetValueInput
           amount='99999999'
           onAmountChange={() => {}}
@@ -222,7 +228,9 @@ export const ValidationErrors: Story = {
       </div>
 
       <div className='flex flex-col gap-2'>
-        <Text large color='text.primary'>Custom Error</Text>
+        <Text large color='text.primary'>
+          Custom Error
+        </Text>
         <AssetValueInput
           amount='50'
           onAmountChange={() => {}}
@@ -230,7 +238,7 @@ export const ValidationErrors: Story = {
           onAssetChange={() => {}}
           balances={balanceOptions}
           assets={assetOptions}
-          error="This is a custom validation error from the parent component"
+          error='This is a custom validation error from the parent component'
         />
       </div>
     </div>
@@ -345,4 +353,4 @@ export const CustomLabels: Story = {
       },
     },
   },
-}; 
+};

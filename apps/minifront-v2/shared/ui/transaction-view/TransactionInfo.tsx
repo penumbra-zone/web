@@ -60,7 +60,7 @@ export const TransactionInfo: React.FC<SectionComponentProps> = ({
           {fullTxHash && (
             <Density slim>
               {' '}
-              <CopyToClipboardButton text={fullTxHash} variant={'slim'} />
+              <CopyToClipboardButton text={fullTxHash} />
             </Density>
           )}
         </div>

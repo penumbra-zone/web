@@ -41,7 +41,7 @@ export interface AssetValueInputProps {
 // Internal validation logic
 const validateAmount = (amount: string, selectedAsset?: BalancesResponse) => {
   if (!amount.trim()) return null;
-  
+
   const numericAmount = parseFloat(amount);
   if (isNaN(numericAmount) || numericAmount < 0) {
     return 'Please enter a valid amount';
@@ -52,7 +52,7 @@ const validateAmount = (amount: string, selectedAsset?: BalancesResponse) => {
     const metadata = getMetadata.optional(selectedAsset.balanceView);
     const maxDecimals = getDisplayDenomExponent.optional(metadata) ?? 6;
     const decimalPlaces = amount.includes('.') ? amount.split('.')[1]?.length || 0 : 0;
-    
+
     if (decimalPlaces > maxDecimals) {
       return `Too many decimal places (max ${maxDecimals})`;
     }
@@ -69,26 +69,26 @@ const validateAmount = (amount: string, selectedAsset?: BalancesResponse) => {
 
 /**
  * A combined input component for entering both an amount and selecting an asset.
- * 
+ *
  * This component integrates a numeric input field with an asset selector, providing
  * a unified interface for amount and asset selection. It includes built-in validation
  * for amount format, decimal places, and insufficient funds.
- * 
+ *
  * ## Features
- * 
+ *
  * - **Integrated Asset Selection**: Uses AssetSelector as an end adornment
  * - **Balance Display**: Shows user's current balance for selected asset
  * - **Built-in Validation**: Automatic validation for amount format, decimals, and balance
  * - **Custom Errors**: Support for custom error messages via the error prop
  * - **Accessibility**: Proper error states and visual feedback
  * - **Responsive**: Works with the density system for different layouts
- * 
+ *
  * ## Usage
- * 
+ *
  * ```tsx
  * const [amount, setAmount] = useState('');
  * const [selectedAsset, setSelectedAsset] = useState<BalancesResponse>();
- * 
+ *
  * <AssetValueInput
  *   amount={amount}
  *   onAmountChange={setAmount}
@@ -99,7 +99,7 @@ const validateAmount = (amount: string, selectedAsset?: BalancesResponse) => {
  *   showBalance={true}
  * />
  * ```
- * 
+ *
  * @example
  * // With custom error
  * <AssetValueInput
@@ -126,11 +126,11 @@ export const AssetValueInput = ({
 }: AssetValueInputProps) => {
   // Calculate internal validation error
   const internalError = validateAmount(amount, selectedAsset);
-  
+
   // Use custom error if provided, otherwise use internal validation
   const displayError = error || internalError;
   const hasError = !!displayError;
-  
+
   // Check if error is specifically insufficient funds for special styling
   const isInsufficientFunds = displayError?.toLowerCase().includes('insufficient');
 
