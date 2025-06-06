@@ -1,5 +1,13 @@
 # @penumbra-zone/crypto-web
 
+## 46.0.1
+
+### Patch Changes
+
+- 82d034e: fix publish workflow
+- Updated dependencies [82d034e]
+  - @penumbra-zone/types@34.2.1
+
 ## 46.0.0
 
 ### Patch Changes

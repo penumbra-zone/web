@@ -24,20 +24,35 @@ import { useDelegatorLeaderboard, BASE_PAGE, BASE_LIMIT } from '../api/use-deleg
 import { useSortableTableHeaders } from './sortable-table-header';
 import { useIndexByAddress } from '../api/use-index-by-address';
 import { useStakingTokenMetadata } from '@/shared/api/registry';
+import { getValueViewLength } from '@/shared/utils/get-max-padstart';
+
+interface DelegatorLeaderboardRow extends DelegatorLeaderboardData {
+  reward?: ValueView;
+  displayAddress: string;
+}
 
 const LeaderboardRow = observer(
-  ({ row, loading }: { row: DelegatorLeaderboardData; loading: boolean }) => {
+  ({
+    row,
+    padStart,
+    loading,
+  }: {
+    row: DelegatorLeaderboardRow;
+    padStart?: number;
+    loading: boolean;
+  }) => {
     const { connected } = connectionStore;
-    const { data: subaccountIndex, isLoading: indexLoading } = useIndexByAddress(row.address);
-    const { data: stakingToken } = useStakingTokenMetadata();
+    const { data: subaccountIndex } = useIndexByAddress(row.address, loading);
 
     const addressLink = useMemo(() => {
       if (loading) {
         return '';
       }
-      const encoded = encodeURIComponent(bech32mAddress(row.address));
-      return PagePath.TournamentDelegator.replace(':address', encoded);
-    }, [row.address, loading]);
+      return PagePath.TournamentDelegator.replace(
+        ':address',
+        encodeURIComponent(row.displayAddress),
+      );
+    }, [row.displayAddress, loading]);
 
     const addressView = useMemo(() => {
       return connected && subaccountIndex
@@ -60,36 +75,17 @@ const LeaderboardRow = observer(
           });
     }, [row.address, subaccountIndex, connected]);
 
-    const totalRewards = useMemo(() => {
-      if (loading) {
-        return undefined;
-      }
-
-      return new ValueView({
-        valueView: {
-          case: 'knownAssetId',
-          value: {
-            amount: splitLoHi(BigInt(row.total_rewards)),
-            metadata: stakingToken,
-          },
-        },
-      });
-    }, [loading, row.total_rewards, stakingToken]);
-
     return (
       <Link
         href={addressLink}
         className={cn(
-          'grid grid-cols-subgrid col-span-6',
+          'grid grid-cols-subgrid col-span-5',
           'hover:bg-action-hoverOverlay transition-colors cursor-pointer',
           !!subaccountIndex && 'bg-other-tonalFill5',
         )}
       >
         <TableCell cell loading={loading}>
-          {row.place}
-        </TableCell>
-        <TableCell cell loading={loading || indexLoading}>
-          {!loading && !indexLoading && (
+          {!loading && (
             <>
               <AddressViewComponent
                 truncate
@@ -110,7 +106,14 @@ const LeaderboardRow = observer(
           {row.streak}
         </TableCell>
         <TableCell cell loading={loading}>
-          {row.total_rewards && <ValueViewComponent valueView={totalRewards} priority='tertiary' />}
+          {row.total_rewards && (
+            <ValueViewComponent
+              valueView={row.reward}
+              priority='tertiary'
+              trailingZeros={true}
+              padStart={padStart}
+            />
+          )}
         </TableCell>
         <TableCell cell loading={loading}>
           <Density slim>
@@ -127,19 +130,45 @@ const LeaderboardRow = observer(
 export const DelegatorLeaderboard = observer(() => {
   const [page, setPage] = useState(BASE_PAGE);
   const [limit, setLimit] = useState(BASE_LIMIT);
-  const { getTableHeader, sortBy } = useSortableTableHeaders<DelegatorLeaderboardSortKey>(
-    'place',
-    'asc',
-  );
+  const { getTableHeader, sortBy } = useSortableTableHeaders<DelegatorLeaderboardSortKey>();
 
+  const { data: stakingToken } = useStakingTokenMetadata();
   const {
     query: { isLoading },
     data,
     total,
   } = useDelegatorLeaderboard(page, limit, sortBy.key, sortBy.direction);
 
-  const loadingArr = new Array(5).fill({}) as DelegatorLeaderboardData[];
-  const leaderboard = data ?? loadingArr;
+  const mappedData = useMemo(() => {
+    return data?.reduce<{ rows: DelegatorLeaderboardRow[]; padStart: number }>(
+      (accum, row) => {
+        if (row.total_rewards) {
+          const reward = new ValueView({
+            valueView: {
+              case: 'knownAssetId',
+              value: {
+                amount: splitLoHi(BigInt(row.total_rewards)),
+                metadata: stakingToken,
+              },
+            },
+          });
+
+          accum.padStart = Math.max(accum.padStart, getValueViewLength(reward));
+          accum.rows.push({
+            ...row,
+            reward,
+            displayAddress: bech32mAddress(row.address),
+          });
+        }
+
+        return accum;
+      },
+      { rows: [], padStart: 0 },
+    );
+  }, [data, stakingToken]);
+
+  const loadingArr = new Array(5).fill({}) as DelegatorLeaderboardRow[];
+  const leaderboard = mappedData?.rows ?? loadingArr;
 
   const onLimitChange = (newLimit: number) => {
     setLimit(newLimit);
@@ -152,9 +181,8 @@ export const DelegatorLeaderboard = observer(() => {
         Delegators Leaderboard
       </Text>
       <Density compact>
-        <div className='grid grid-cols-[auto_200px_1fr_1fr_1fr_48px]'>
-          <div key='header' className='grid grid-cols-subgrid col-span-6'>
-            {getTableHeader('place', 'Place')}
+        <div className='grid grid-cols-[200px_1fr_1fr_1fr_48px] max-w-full overflow-x-auto'>
+          <div key='header' className='grid grid-cols-subgrid col-span-5'>
             <TableCell heading>Delegator Address</TableCell>
             {getTableHeader('epochs_voted_in', 'Rounds Participated')}
             {getTableHeader('streak', 'Voting Streak')}
@@ -164,7 +192,8 @@ export const DelegatorLeaderboard = observer(() => {
 
           {leaderboard.map((row, index) => (
             <LeaderboardRow
-              key={isLoading ? `loading-${index}` : row.place}
+              key={isLoading ? `loading-${index}` : row.displayAddress}
+              padStart={mappedData?.padStart}
               row={row}
               loading={isLoading || !Object.keys(row).length}
             />

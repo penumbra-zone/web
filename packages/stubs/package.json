@@ -1,0 +1,21 @@
+{
+  "name": "@repo/stubs",
+  "version": "1.0.0",
+  "private": true,
+  "license": "(MIT OR Apache-2.0)",
+  "description": "Stubs for some third-party packages",
+  "type": "module",
+  "scripts": {
+    "build": "tsc --build --verbose",
+    "clean": "rm -rfv dist *.tsbuildinfo",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "lint:strict": "tsc --noEmit && eslint src --max-warnings 0"
+  },
+  "exports": {
+    "./amplitude-analytics-browser": {
+      "types": "./dist/amplitude-analytics-browser.d.cts",
+      "default": "./dist/amplitude-analytics-browser.cjs"
+    }
+  }
+}

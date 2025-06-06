@@ -209,9 +209,13 @@ export const VotingInfo = observer(({ epoch: defaultEpoch }: VotingInfoProps) =>
             <ConnectButton actionType='accent' variant='default' />
           </div>
           <div className='grow'>
-            <Link href={epochLink}>
-              <Button actionType='default'>Details</Button>
-            </Link>
+            {!isRoundPage && (
+              <div className='flex-1'>
+                <Link href={epochLink}>
+                  <Button actionType='default'>Details</Button>
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -288,15 +292,25 @@ export const VotingInfo = observer(({ epoch: defaultEpoch }: VotingInfoProps) =>
             <ValueViewComponent valueView={votingNote} />
           </div>
           <div className='flex gap-2 w-full'>
-            <div className='flex-1 max-w-[300px]'>
+            {!isRoundPage ? (
+              <div className='flex-1 max-w-[300px]'>
+                <Button actionType='accent' onClick={openVoteDialog}>
+                  Vote Now
+                </Button>
+              </div>
+            ) : (
               <Button actionType='accent' onClick={openVoteDialog}>
                 Vote Now
               </Button>
-            </div>
+            )}
             <div className='flex-1'>
-              <Link href={epochLink}>
-                <Button actionType='default'>Details</Button>
-              </Link>
+              {!isRoundPage && (
+                <div className='flex-1'>
+                  <Link href={epochLink}>
+                    <Button actionType='default'>Details</Button>
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -320,14 +334,26 @@ export const VotingInfo = observer(({ epoch: defaultEpoch }: VotingInfoProps) =>
         </div>
         <div className='flex gap-2'>
           <div className='flex-1'>
-            <Button actionType='accent' disabled>
-              Vote Now
-            </Button>
+            {!isRoundPage ? (
+              <div className='flex-1 max-w-[300px]'>
+                <Button actionType='accent' disabled>
+                  Vote Now
+                </Button>
+              </div>
+            ) : (
+              <Button actionType='accent' disabled>
+                Vote Now
+              </Button>
+            )}
           </div>
           <div className='flex-1'>
-            <Link href={epochLink}>
-              <Button actionType='default'>Details</Button>
-            </Link>
+            {!isRoundPage && (
+              <div className='flex-1'>
+                <Link href={epochLink}>
+                  <Button actionType='default'>Details</Button>
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -347,16 +373,26 @@ export const VotingInfo = observer(({ epoch: defaultEpoch }: VotingInfoProps) =>
       <div className='flex gap-2'>
         <div className='flex-1'>
           <a href={STAKING_LINK} target='_blank' rel='noreferrer'>
-            <Button actionType='accent' icon={ExternalLink}>
-              Delegate
-            </Button>
+            {!isRoundPage ? (
+              <div className='flex-1 max-w-[300px]'>
+                <Button actionType='accent' icon={ExternalLink}>
+                  Delegate
+                </Button>
+              </div>
+            ) : (
+              <Button actionType='accent' icon={ExternalLink}>
+                Delegate
+              </Button>
+            )}
           </a>
         </div>
-        <div className='flex-1'>
-          <Link href={epochLink}>
-            <Button actionType='default'>Details</Button>
-          </Link>
-        </div>
+        {!isRoundPage && (
+          <div className='flex-1'>
+            <Link href={epochLink}>
+              <Button actionType='default'>Details</Button>
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );

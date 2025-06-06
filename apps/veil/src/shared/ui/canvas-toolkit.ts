@@ -2,26 +2,25 @@ import { theme } from '@penumbra-zone/ui/theme';
 import { registerFont } from 'canvas';
 import path from 'path';
 
-export const scale = typeof window !== 'undefined' ? window.devicePixelRatio : 2;
+export const scale = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 2;
 
 export const dpi = (px: number) => px * scale;
 
-export const remToPx = (r: string) =>
-  parseFloat(r) *
+export const remToPx = (rem: string) =>
+  parseFloat(rem) *
   parseFloat(
     typeof window !== 'undefined' ? getComputedStyle(document.documentElement).fontSize : '11px',
   );
 
-export const scaleCanvas = (canvas: HTMLCanvasElement) => {
+export const scaleCanvas = (canvas: HTMLCanvasElement, size: { width: number; height: number }) => {
   const ctx = canvas.getContext('2d');
   if (!ctx) {
     return;
   }
+
   ctx.scale(scale, scale);
-  const canvasWidth = canvas.width;
-  const canvasHeight = canvas.height;
-  canvas.width = dpi(canvasWidth);
-  canvas.height = dpi(canvasHeight);
+  canvas.width = dpi(size.width);
+  canvas.height = dpi(size.height);
 };
 
 export function drawText(

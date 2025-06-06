@@ -1,7 +1,9 @@
+import { sql } from 'kysely';
 import { NextRequest, NextResponse } from 'next/server';
+import { jsonArrayFrom } from 'kysely/helpers/postgres';
 import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { isAddress, addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 import { Serialized, serialize } from '@/shared/utils/serializer';
 import { pindexerDb } from '@/shared/database/client';
 import { LqtDelegatorHistory } from '@/shared/database/schema';
@@ -15,7 +17,6 @@ export type DelegatorHistorySortDirection = (typeof DIRECTIONS)[number];
 
 export interface DelegatorHistoryRequest {
   epochs: string[];
-  address: string;
   limit?: number;
   page?: number;
   sortKey?: DelegatorHistorySortKey;
@@ -23,9 +24,10 @@ export interface DelegatorHistoryRequest {
 }
 
 export interface TournamentDelegatorHistoryResponse {
+  address: Address;
+  total_items: number;
+  total_rewards: number;
   data: LqtDelegatorHistoryData[];
-  totalItems: number;
-  totalRewards: number;
 }
 
 export interface LqtDelegatorHistoryData extends Omit<LqtDelegatorHistory, 'address' | 'asset_id'> {
@@ -50,17 +52,12 @@ export const getBodyParams = async (
 
   const epochs = Array.isArray(body.epochs) ? body.epochs : [];
 
-  if (!isAddress(body.address)) {
-    return 'Invalid address';
-  }
-
   return {
     limit,
     page,
     sortKey,
     sortDirection,
     epochs,
-    address: body.address,
   };
 };
 
@@ -68,85 +65,72 @@ const tournamentDelegatorHistoryQuery = async ({
   epochs,
   sortKey,
   sortDirection,
-  address,
-  limit,
-  page,
 }: Required<DelegatorHistoryRequest>) => {
-  // take all rows from delegator history corresponding to a given address and a list of epochs
+  // take all rows from delegator history in a set of epochs
   const filteredQuery = pindexerDb
     .selectFrom('lqt.delegator_history')
-    .where('address', '=', Buffer.from(addressFromBech32m(address).inner))
+    .selectAll()
     .where(
       'epoch',
       'in',
       epochs.map(epoch => Number(epoch)),
     );
 
-  // calculate the sum of power and rewards per each epoch and address.
-  //
-  // although we're passing the address into pindexer here, it's acceptable because
-  // either the user has chosen to reveal in the leaderboard, or it's an ephermeral address
-  // that can't be linked back to them. Ideally, we would avoid sending addresses to pindexer
-  // to calculate things like personal rewards and instead perform this filtering on the
-  // client-side whenever possible.
-  const groupedByEpoch = filteredQuery
-    .groupBy(['epoch', 'address', 'asset_id'])
+  // group by delegator address and calculate total items and rewards, so that frontend only needs
+  // to filter the resulting array by address to find their own history.
+  const aggregated = pindexerDb
+    .selectFrom(filteredQuery.as('grouped'))
+    .groupBy('address')
     .select(eb => [
-      'epoch',
       'address',
-      'asset_id',
-      eb.fn.sum('power').as('power'),
-      eb.fn.sum('reward').as('reward'),
+      eb.fn.countAll().as('total_items'),
+      eb.fn.sum('reward').as('total_rewards'),
+      // all rows for each address are aggregated into a single array with correct ordering and limits
+      jsonArrayFrom(
+        eb
+          .selectFrom(filteredQuery.as('delegators'))
+          .select(exp => [
+            'epoch',
+            'power',
+            'reward',
+            'address',
+            sql<string>`encode(${exp.ref('asset_id')}, 'base64')`.as('asset_id'),
+          ])
+          .whereRef('delegators.address', '=', 'grouped.address')
+          .orderBy(sortKey, sortDirection),
+      ).as('data'),
     ]);
 
-  // sort and limit the list correctly
-  const sorted = groupedByEpoch
-    .orderBy(sortKey, sortDirection)
-    .orderBy('power', 'desc')
-    .limit(limit)
-    .offset(limit * (page - 1));
-
-  // calculate the total amount of all items in the filtered table with a sum of all rewards
-  const totalQuery = pindexerDb
-    .selectFrom(groupedByEpoch.as('rewards'))
-    .select(eb => [eb.fn.countAll().as('total_items'), eb.fn.sum('reward').as('total_reward')]);
-
-  const [delegatorHistory, total] = await Promise.all([
-    sorted.execute(),
-    totalQuery.executeTakeFirst(),
-  ]);
-
-  return {
-    delegatorHistory,
-    totalRewards: Number(total?.total_reward) || 0,
-    totalItems: Number(total?.total_items) || 0,
-  };
+  return aggregated.execute();
 };
 
 export async function POST(
   req: NextRequest,
-): Promise<NextResponse<Serialized<TournamentDelegatorHistoryResponse | { error: string }>>> {
+): Promise<NextResponse<Serialized<TournamentDelegatorHistoryResponse[] | { error: string }>>> {
   const params = await getBodyParams(req);
   if (typeof params === 'string') {
     return NextResponse.json({ error: params }, { status: 400 });
   }
 
-  const { delegatorHistory, totalRewards, totalItems } =
-    await tournamentDelegatorHistoryQuery(params);
+  const result = await tournamentDelegatorHistoryQuery(params);
+  const history = await Promise.all(
+    result.map(historyByAddress => {
+      return {
+        address: new Address({ inner: historyByAddress.address }),
+        total_items: Number(historyByAddress.total_items),
+        total_rewards: Number(historyByAddress.total_rewards),
+        data: historyByAddress.data.map<LqtDelegatorHistoryData>(item => ({
+          epoch: item.epoch,
+          power: Number(item.power),
+          reward: Number(item.reward),
+          address: new Address({ inner: historyByAddress.address }),
+          asset_id: new AssetId({
+            inner: base64ToUint8Array(item.asset_id),
+          }),
+        })),
+      };
+    }),
+  );
 
-  const history = delegatorHistory.map<LqtDelegatorHistoryData>(item => {
-    return {
-      epoch: item.epoch,
-      power: Number(item.power),
-      reward: Number(item.reward),
-      address: new Address({ inner: item.address }),
-      asset_id: new AssetId({ inner: Uint8Array.from(item.asset_id) }),
-    };
-  });
-
-  return NextResponse.json({
-    data: serialize(history),
-    totalItems: totalItems,
-    totalRewards: totalRewards,
-  });
+  return NextResponse.json(serialize(history));
 }

@@ -1,5 +1,11 @@
 # @penumbra-zone/keys
 
+## 4.2.3
+
+### Patch Changes
+
+- 82d034e: fix publish workflow
+
 ## 4.2.2
 
 ### Patch Changes

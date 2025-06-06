@@ -71,7 +71,7 @@ export const ChainDropdown = () => {
               <span className='mt-0.5'>{selected?.label}</span>
             </div>
           ) : (
-            'Shield assets from'
+            'Select Source Chain'
           )}
           <ChevronsUpDown className='ml-2 size-4 shrink-0 opacity-50' />
         </Button>

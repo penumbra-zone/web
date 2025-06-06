@@ -1,5 +1,37 @@
 # @penumbra-zone/ui
 
+## 15.0.2
+
+### Patch Changes
+
+- 82d034e: fix publish workflow
+- Updated dependencies [82d034e]
+  - @penumbra-zone/bech32m@17.0.1
+  - @penumbra-zone/getters@27.0.1
+  - @penumbra-zone/perspective@60.0.1
+  - @penumbra-zone/protobuf@10.1.1
+  - @penumbra-zone/types@34.2.1
+
+## 15.0.1
+
+### Patch Changes
+
+- c770cd5: Add `whitespace-nowrap` class to all heading TableCells
+
+## 15.0.0
+
+### Major Changes
+
+- dcfbe8a: Upgrade to React 19 and address forwardRef deprecation across the repo
+
+### Patch Changes
+
+- 78e36b8: Add `padStart` prop to `ValueViewComponent`
+- 78e36b8: TableCell: add `justify` prop for content alignment
+- dcfbe8a: feat(ui): Added v2 Portfolio Page layout including PortfolioBalance and AssetCard components. Setup dual-theme build process to avoid tailwind conflicts in minifront app (legacy vs. v2).
+- 2066c86: Fix styles build
+  - @penumbra-zone/perspective@60.0.0
+
 ## 14.0.4
 
 ### Patch Changes

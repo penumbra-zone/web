@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/wasm",
-  "version": "50.0.0",
+  "version": "51.0.1",
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "engine": {
@@ -18,7 +18,7 @@
     "lint:fix": "eslint src --fix",
     "lint:rust": "cd crate && cargo fmt --all -- --check && cargo clippy -- -D warnings && cargo clippy --tests -- -D warnings",
     "lint:strict": "tsc --noEmit && eslint src --max-warnings 0",
-    "postcompile": "touch ./wasm/.npmignore",
+    "postcompile": "mkdir -p ./wasm && touch ./wasm/.npmignore",
     "test": "vitest run",
     "test:cargo": "cd crate && cargo test --release",
     "test:wasm": "cd crate && wasm-pack test --headless --firefox -- --target wasm32-unknown-unknown --release"

@@ -1,5 +1,24 @@
 # @penumbra-zone/perspective
 
+## 60.0.1
+
+### Patch Changes
+
+- 82d034e: fix publish workflow
+- Updated dependencies [82d034e]
+  - @penumbra-zone/bech32m@17.0.1
+  - @penumbra-zone/getters@27.0.1
+  - @penumbra-zone/protobuf@10.1.1
+  - @penumbra-zone/wasm@51.0.1
+
+## 60.0.0
+
+### Patch Changes
+
+- Updated dependencies [6de12ea]
+- Updated dependencies [61270de]
+  - @penumbra-zone/wasm@51.0.0
+
 ## 59.0.0
 
 ### Patch Changes

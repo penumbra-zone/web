@@ -1,6 +1,6 @@
 {
   "name": "minifront",
-  "version": "6.34.4",
+  "version": "6.34.7",
   "private": true,
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
@@ -8,6 +8,7 @@
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=8192 vite build",
     "clean": "rm -rfv dist *.tsbuildinfo",
     "dev:app": "vite --port 5173",
+    "dev:build": "pnpm --filter @penumbra-zone/ui run build",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "lint:strict": "tsc --noEmit && eslint src --max-warnings 0",
@@ -68,6 +69,7 @@
   "devDependencies": {
     "@chain-registry/types": "^0.50.93",
     "@eslint/compat": "^1.1.0",
+    "@repo/stubs": "workspace:*",
     "@storybook/react": "^8.4.2",
     "@types/chrome": "^0.0.268",
     "@types/lodash": "^4.17.13",

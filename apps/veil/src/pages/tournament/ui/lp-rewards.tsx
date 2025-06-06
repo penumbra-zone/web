@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import Link from 'next/link';
+import { useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { useRouter } from 'next/navigation';
 import { ChevronRight, ExternalLink } from 'lucide-react';
 import { bech32mPositionId } from '@penumbra-zone/bech32m/plpid';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
@@ -9,13 +9,15 @@ import { TableCell } from '@penumbra-zone/ui/TableCell';
 import { Density } from '@penumbra-zone/ui/Density';
 import { Button } from '@penumbra-zone/ui/Button';
 import { pnum } from '@penumbra-zone/types/pnum';
-import { ValueView, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import {
   useLpRewards,
   BASE_LIMIT,
   BASE_PAGE,
   LpReward,
 } from '@/pages/tournament/api/use-lp-rewards';
+import { toValueView } from '@/shared/utils/value-view';
+import { getValueViewLength } from '@/shared/utils/get-max-padstart';
 import { withdrawPositions } from '@/entities/position/api/withdraw-positions';
 import { connectionStore } from '@/shared/model/connection';
 import { LoadingRow } from '@/shared/ui/loading-row';
@@ -23,16 +25,17 @@ import { useStakingTokenMetadata } from '@/shared/api/registry';
 import { LpRewardsSortKey } from '../server/lp-rewards';
 import { useSortableTableHeaders } from './sortable-table-header';
 
-function LpRewardRow({ lpReward, umMetadata }: { lpReward: LpReward; umMetadata: Metadata }) {
-  const router = useRouter();
+interface LpRewardRowData extends LpReward {
+  rewardView?: ValueView;
+}
+
+function LpRewardRow({ lpReward, padStart }: { lpReward: LpRewardRowData; padStart?: number }) {
   const id = bech32mPositionId(lpReward.positionId);
 
   return (
-    <div
-      onClick={() => {
-        router.push(`/inspect/lp/${id}`);
-      }}
+    <Link
       className='grid grid-cols-subgrid col-span-5 hover:bg-action-hoverOverlay transition-colors cursor-pointer'
+      href={`/inspect/lp/${id}`}
     >
       <TableCell cell>#{lpReward.epoch}</TableCell>
       <TableCell cell>
@@ -41,17 +44,9 @@ function LpRewardRow({ lpReward, umMetadata }: { lpReward: LpReward; umMetadata:
       </TableCell>
       <TableCell cell>
         <ValueViewComponent
-          valueView={
-            new ValueView({
-              valueView: {
-                case: 'knownAssetId',
-                value: {
-                  amount: pnum(lpReward.rewards).toAmount(),
-                  metadata: umMetadata,
-                },
-              },
-            })
-          }
+          trailingZeros
+          padStart={padStart}
+          valueView={lpReward.rewardView}
           priority='tertiary'
         />
       </TableCell>
@@ -87,7 +82,7 @@ function LpRewardRow({ lpReward, umMetadata }: { lpReward: LpReward; umMetadata:
           </Button>
         </Density>
       </TableCell>
-    </div>
+    </Link>
   );
 }
 
@@ -107,8 +102,26 @@ export const LpRewards = observer(() => {
   );
 
   const loading = isPending;
-  const rewards = data?.data;
   const total = data?.total ?? 0;
+
+  const mappedData = useMemo(() => {
+    return data?.data.reduce<{ rows: LpRewardRowData[]; padStart: number }>(
+      (accum, row) => {
+        const rewardView = toValueView({
+          amount: pnum(row.rewards).toAmount(),
+          metadata: umMetadata,
+        });
+        accum.padStart = Math.max(accum.padStart, getValueViewLength(rewardView));
+        accum.rows.push({
+          ...row,
+          rewardView,
+        });
+
+        return accum;
+      },
+      { rows: [], padStart: 0 },
+    );
+  }, [data, umMetadata]);
 
   const onLimitChange = (newLimit: number) => {
     setLimit(newLimit);
@@ -118,7 +131,7 @@ export const LpRewards = observer(() => {
   return (
     <>
       <Density compact>
-        <div className='grid grid-cols-[auto_1fr_1fr_100px_48px]'>
+        <div className='grid grid-cols-[auto_1fr_1fr_100px_48px] max-w-full overflow-x-auto'>
           <div className='grid grid-cols-subgrid col-span-5'>
             {getTableHeader('epoch', 'Epoch')}
             <TableCell heading>Position ID</TableCell>
@@ -136,8 +149,8 @@ export const LpRewards = observer(() => {
           {loading &&
             new Array(BASE_LIMIT).fill({}).map((_, index) => <LoadingRow cells={5} key={index} />)}
 
-          {rewards?.map((lpReward, index) => (
-            <LpRewardRow key={index} lpReward={lpReward} umMetadata={umMetadata} />
+          {mappedData?.rows.map((lpReward, index) => (
+            <LpRewardRow key={index} lpReward={lpReward} padStart={mappedData.padStart} />
           ))}
         </div>
       </Density>
@@ -145,7 +158,7 @@ export const LpRewards = observer(() => {
       {!loading && total >= BASE_LIMIT && (
         <Pagination
           totalItems={total}
-          visibleItems={rewards?.length}
+          visibleItems={mappedData?.rows.length}
           value={page}
           limit={limit}
           onChange={setPage}

@@ -5,20 +5,29 @@ import { ViewService } from '@penumbra-zone/protobuf';
 import { connectionStore } from '@/shared/model/connection';
 import { penumbra } from '@/shared/const/penumbra';
 
+export const getIndexByAddress = async (address: Address) => {
+  const res = await penumbra.service(ViewService).indexByAddress({ address });
+  return res.addressIndex;
+};
+
 /**
  * Takes and address and checks if it belongs to user
  */
-export const useIndexByAddress = (address?: Address) => {
+export const useIndexByAddress = (address?: Address, disabled = false) => {
   const { connected } = connectionStore;
   const addressString = address ? uint8ArrayToBase64(address.inner) : undefined;
 
   return useQuery({
-    enabled: connected && !!addressString,
+    enabled: connected && !!addressString && !disabled,
     queryKey: ['index-by-address', addressString],
     staleTime: Infinity,
     queryFn: async () => {
-      const res = await penumbra.service(ViewService).indexByAddress({ address });
-      return res.addressIndex ?? null;
+      if (!address) {
+        return null;
+      }
+
+      const index = await getIndexByAddress(address);
+      return index ?? null;
     },
   });
 };

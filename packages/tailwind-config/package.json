@@ -1,6 +1,6 @@
 {
   "name": "@repo/tailwind-config",
-  "version": "3.1.42",
+  "version": "3.1.45",
   "private": true,
   "license": "(MIT OR Apache-2.0)",
   "main": "index.js",

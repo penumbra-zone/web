@@ -1,5 +1,14 @@
 # @penumbra-zone/getters
 
+## 27.0.1
+
+### Patch Changes
+
+- 82d034e: fix publish workflow
+- Updated dependencies [82d034e]
+  - @penumbra-zone/bech32m@17.0.1
+  - @penumbra-zone/protobuf@10.1.1
+
 ## 27.0.0
 
 ### Patch Changes

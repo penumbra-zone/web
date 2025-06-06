@@ -1,4 +1,4 @@
-# DEX explorer for Penumbra
+# Veil
 
 A DEX explorer for [Penumbra](https://penumbra.zone/).
 
@@ -53,9 +53,19 @@ you'll want to set are:
 - `PENUMBRA_CHAIN_ID`: the chain id for the network being indexed, controls asset-registry lookups
 - `PENUMBRA_CUILOA_URL`: the URL for a block-explorer application, for generating URLs for more block/transaction info
 
-## Name
+## Build locally
 
-It'd be nice to have a cool name for the DEX explorer. We don't have one yet.
+Prerequisites:
+
+- Install [nodejs](https://nodejs.org/)
+- Install [pnpm](https://pnpm.io/installation)
+
+```shell
+pnpm install && pnpm dev
+```
+
+You now have a local copy of Veil available at
+[`https://localhost:3000`](https://localhost:3000).
 
 ## Proto Generation
 

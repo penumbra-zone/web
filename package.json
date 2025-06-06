@@ -27,7 +27,7 @@
     "lint:strict": "turbo lint:strict",
     "lint:syncpack": "syncpack lint",
     "postinstall": "syncpack list-mismatches",
-    "pretest": "playwright install",
+    "pretest": "./scripts/playwright-setup",
     "test": "turbo test",
     "test:wasm": "turbo test:wasm"
   },
@@ -35,12 +35,14 @@
     "overrides": {
       "typescript": "5.5.3",
       "cosmos-kit": "^2.21.1",
-      "@hexxagon/feather.js": "npm:@terra-money/feather.js@1.0.9"
+      "@hexxagon/feather.js": "npm:@terra-money/feather.js@1.0.9",
+      "@amplitude/analytics-browser": "./packages/stubs"
     }
   },
   "devDependencies": {
     "@buf/connectrpc_eliza.bufbuild_es": "1.10.0-20230913231627-233fca715f49.1",
     "@buf/connectrpc_eliza.connectrpc_es": "1.4.0-20230913231627-233fca715f49.3",
+    "@bufbuild/buf-darwin-arm64": "^1.54.0",
     "@changesets/cli": "^2.27.3",
     "@eslint-community/eslint-plugin-eslint-comments": "^4.4.0",
     "@eslint/compat": "^1.1.0",

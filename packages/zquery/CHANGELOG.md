@@ -1,5 +1,11 @@
 # @penumbra-zone/zquery
 
+## 3.0.2
+
+### Patch Changes
+
+- 82d034e: fix publish workflow
+
 ## 3.0.1
 
 ### Patch Changes

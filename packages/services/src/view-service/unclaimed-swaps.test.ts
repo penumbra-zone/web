@@ -10,27 +10,21 @@ import {
   UnclaimedSwapsRequest,
   UnclaimedSwapsResponse,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { IndexedDbMock, MockServices } from '../test-utils.js';
+import { mockIndexedDb, MockServices } from '../test-utils.js';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { unclaimedSwaps } from './unclaimed-swaps.js';
 
 describe('UnclaimedSwaps request handler', () => {
   let mockServices: MockServices;
   let mockCtx: HandlerContext;
-  let mockIndexedDb: IndexedDbMock;
   let req: UnclaimedSwapsRequest;
 
   beforeEach(() => {
     vi.resetAllMocks();
 
-    const mockIterateSwaps = {
-      next: vi.fn(),
-      [Symbol.asyncIterator]: () => mockIterateSwaps,
-    };
-
-    mockIndexedDb = {
-      iterateSwaps: () => mockIterateSwaps,
-    };
+    mockIndexedDb.iterateSwaps.mockImplementationOnce(async function* () {
+      yield* await Promise.resolve(testData);
+    });
 
     mockServices = {
       getWalletServices: vi.fn(() =>
@@ -47,15 +41,6 @@ describe('UnclaimedSwaps request handler', () => {
       contextValues: createContextValues().set(servicesCtx, () =>
         Promise.resolve(mockServices as unknown as ServicesInterface),
       ),
-    });
-
-    for (const record of testData) {
-      mockIterateSwaps.next.mockResolvedValueOnce({
-        value: record,
-      });
-    }
-    mockIterateSwaps.next.mockResolvedValueOnce({
-      done: true,
     });
     req = new UnclaimedSwapsRequest();
   });

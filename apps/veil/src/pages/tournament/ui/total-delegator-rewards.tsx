@@ -1,13 +1,16 @@
-import { useState } from 'react';
+import Link from 'next/link';
+import { useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { ChevronRight } from 'lucide-react';
-import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { TableCell } from '@penumbra-zone/ui/TableCell';
 import { Density } from '@penumbra-zone/ui/Density';
 import { Button } from '@penumbra-zone/ui/Button';
+import { round } from '@penumbra-zone/types/round';
 import { connectionStore } from '@/shared/model/connection';
 import { useStakingTokenMetadata } from '@/shared/api/registry';
+import { getValueViewLength } from '@/shared/utils/get-max-padstart';
 import { Pagination } from '@penumbra-zone/ui/Pagination';
 import { LqtSummary } from '@/shared/database/schema';
 import { LoadingRow } from '@/shared/ui/loading-row';
@@ -19,23 +22,40 @@ import { DelegatorHistorySortKey, LqtDelegatorHistoryData } from '../server/dele
 import { useTournamentSummary } from '../api/use-tournament-summary';
 import { useSortableTableHeaders } from './sortable-table-header';
 
-interface VotingRewardsRowProps {
-  epoch: number;
-  reward: LqtDelegatorHistoryData;
-  stakingToken: Metadata;
+interface VotingRewardData extends LqtDelegatorHistoryData {
+  rewardView?: ValueView;
+  castedVoteView: ValueView;
   summary: LqtSummary;
-  loading?: boolean;
 }
 
-const VotingRewardsRow = ({ epoch, reward, stakingToken, summary }: VotingRewardsRowProps) => {
+interface VotingRewardsRowProps {
+  row: VotingRewardData;
+  padStart?: number;
+}
+
+const VotingRewardsRow = ({ row, padStart }: VotingRewardsRowProps) => {
   return (
-    <div className='grid grid-cols-subgrid col-span-4'>
-      <TableCell cell>{`Epoch #${epoch}`}</TableCell>
-      <RewardCell reward={reward} summary={summary} />
+    <Link
+      className='grid grid-cols-subgrid col-span-4 hover:bg-action-hoverOverlay'
+      href={`/tournament/${row.epoch}`}
+    >
+      <TableCell cell>{`Epoch #${row.epoch}`}</TableCell>
+      <TableCell cell>
+        <span className='font-mono whitespace-pre'>
+          {round({
+            value: (row.power / row.summary.total_voting_power) * 100,
+            decimals: 3,
+          }).padStart(6, '\u00A0')}
+          % for
+        </span>
+        <ValueViewComponent showValue={false} valueView={row.castedVoteView} />
+      </TableCell>
       <TableCell cell>
         <ValueViewComponent
-          valueView={toValueView({ amount: reward.reward, metadata: stakingToken })}
+          padStart={padStart}
+          valueView={row.rewardView}
           priority='tertiary'
+          trailingZeros
         />
       </TableCell>
       <TableCell cell>
@@ -43,48 +63,28 @@ const VotingRewardsRow = ({ epoch, reward, stakingToken, summary }: VotingReward
           <Button
             iconOnly
             icon={ChevronRight}
-            onClick={() => (window.location.href = `/tournament/${epoch}`)}
+            onClick={() => (window.location.href = `/tournament/${row.epoch}`)}
           >
             Go to voting reward information
           </Button>
         </Density>
       </TableCell>
-    </div>
+    </Link>
   );
 };
-
-interface RewardCellProps {
-  reward: LqtDelegatorHistoryData;
-  summary: LqtSummary;
-}
-
-const RewardCell = observer(({ reward, summary }: RewardCellProps) => {
-  const getMetadata = useGetMetadata();
-  const assetId = reward.asset_id;
-  const amount = reward.reward;
-  const metadata = getMetadata(assetId);
-  const valueView = toValueView(metadata ? { metadata, amount } : { assetId, amount });
-  return (
-    <TableCell cell>
-      <span className='font-mono whitespace-pre'>
-        {`${((reward.power / summary.total_voting_power) * 100).toFixed(3).padStart(6, '\u00A0')}% for `}
-      </span>
-      <ValueViewComponent showValue={false} valueView={valueView} />
-    </TableCell>
-  );
-});
 
 export const VotingRewards = observer(() => {
   const { subaccount } = connectionStore;
   const [page, setPage] = useState(BASE_PAGE);
   const [limit, setLimit] = useState(BASE_LIMIT);
+  const getMetadata = useGetMetadata();
+  const { data: stakingToken } = useStakingTokenMetadata();
 
   const { getTableHeader, sortBy } = useSortableTableHeaders<DelegatorHistorySortKey>(
     'epoch',
     'desc',
   );
 
-  const { data: stakingToken } = useStakingTokenMetadata();
   const { epoch, status: epochStatus } = useCurrentEpoch();
   const {
     query: { status: rewardsStatus },
@@ -112,7 +112,38 @@ export const VotingRewards = observer(() => {
   );
 
   const loading = epoch === undefined || rewardsStatus !== 'success' || rawSummary === undefined;
-  const summary = new Map((rawSummary ?? []).map(x => [x.epoch, x]));
+  const summary = useMemo(() => new Map((rawSummary ?? []).map(x => [x.epoch, x])), [rawSummary]);
+
+  const mappedData = useMemo(() => {
+    return Array.from(rewardsData.entries()).reduce<{ rows: VotingRewardData[]; padStart: number }>(
+      (accum, [epoch, row]) => {
+        const matchingSummary = summary.get(epoch);
+        if (!matchingSummary) {
+          return accum;
+        }
+
+        const rewardView = toValueView({ amount: row.reward, metadata: stakingToken });
+
+        const voteMetadata = getMetadata(row.asset_id);
+        const voteView = toValueView(
+          voteMetadata
+            ? { metadata: voteMetadata, amount: row.reward }
+            : { assetId: row.asset_id, amount: row.reward },
+        );
+
+        accum.padStart = Math.max(accum.padStart, getValueViewLength(rewardView));
+        accum.rows.push({
+          ...row,
+          rewardView,
+          castedVoteView: voteView,
+          summary: matchingSummary,
+        });
+
+        return accum;
+      },
+      { rows: [], padStart: 0 },
+    );
+  }, [rewardsData, stakingToken, summary, getMetadata]);
 
   const onLimitChange = (newLimit: number) => {
     setLimit(newLimit);
@@ -122,7 +153,7 @@ export const VotingRewards = observer(() => {
   return (
     <>
       <Density compact>
-        <div className='grid grid-cols-[auto_1fr_1fr_32px]'>
+        <div className='grid grid-cols-[auto_1fr_1fr_48px] max-w-full overflow-x-auto'>
           <div className='grid grid-cols-subgrid col-span-4'>
             {getTableHeader('epoch', 'Epoch')}
             <TableCell heading>Casted Vote</TableCell>
@@ -140,22 +171,13 @@ export const VotingRewards = observer(() => {
           )}
 
           {!loading &&
-            Array.from(rewardsData.entries(), ([epoch, reward]) => {
-              const matchingSummary = summary.get(epoch);
-              if (!matchingSummary) {
-                return null;
-              }
-
-              return (
-                <VotingRewardsRow
-                  key={`epoch-${epoch}`}
-                  epoch={epoch}
-                  reward={reward}
-                  summary={matchingSummary}
-                  stakingToken={stakingToken}
-                />
-              );
-            })}
+            mappedData.rows.map(row => (
+              <VotingRewardsRow
+                key={`epoch-${row.epoch}`}
+                padStart={mappedData.padStart}
+                row={row}
+              />
+            ))}
         </div>
       </Density>
 
