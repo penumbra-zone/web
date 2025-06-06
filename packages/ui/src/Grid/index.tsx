@@ -153,7 +153,7 @@ export type GridProps = PropsWithChildren<GridContainerProps | GridItemProps>;
  */
 export const Grid = ({ container, children, as: Container = 'div', ...props }: GridProps) =>
   container ? (
-    <Container className='grid grid-cols-12 gap-5'>{children}</Container>
+    <Container className='grid w-full grid-cols-12 gap-5'>{children}</Container>
   ) : (
     <Container
       className={cn(

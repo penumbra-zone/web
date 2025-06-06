@@ -40,3 +40,48 @@ export const Basic: Story = {
     metadata: PENUMBRA_METADATA,
   },
 };
+
+export const DelegationToken: Story = {
+  args: {
+    size: 'md',
+    metadata: DELEGATION_TOKEN_METADATA,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Shows a delegation token with its custom icon. Delegation tokens are automatically recognized by their display denomination and show a delegation-specific icon.',
+      },
+    },
+  },
+};
+
+export const AllTokenTypes: Story = {
+  render: () => (
+    <div className='flex items-center gap-4'>
+      <div className='flex flex-col items-center gap-2'>
+        <AssetIcon size='md' metadata={PENUMBRA_METADATA} />
+        <span className='text-xs'>Penumbra</span>
+      </div>
+      <div className='flex flex-col items-center gap-2'>
+        <AssetIcon size='md' metadata={DELEGATION_TOKEN_METADATA} />
+        <span className='text-xs'>Delegation</span>
+      </div>
+      <div className='flex flex-col items-center gap-2'>
+        <AssetIcon size='md' metadata={UNBONDING_TOKEN_METADATA} />
+        <span className='text-xs'>Unbonding</span>
+      </div>
+      <div className='flex flex-col items-center gap-2'>
+        <AssetIcon size='md' metadata={LPNFT_METADATA} />
+        <span className='text-xs'>Position</span>
+      </div>
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: 'Shows different token types with their respective icons and automatic recognition.',
+      },
+    },
+  },
+};

@@ -25,6 +25,7 @@ import {
   Ics20WithdrawalAction,
   LiquidityTournamentVoteAction,
   LiquidityTournamentVoteActionOpaque,
+  DelegateAction,
 } from '../utils/bufs';
 
 const OPTIONS: Record<string, ActionViewMessage> = {
@@ -32,6 +33,7 @@ const OPTIONS: Record<string, ActionViewMessage> = {
   Output: OutputAction,
   Swap: SwapAction,
   SwapClaim: SwapClaimAction,
+  Delegate: DelegateAction,
   PositionOpen: PositionOpenAction,
   PositionClose: PositionCloseAction,
   PositionWithdraw: PositionWithdrawAction,

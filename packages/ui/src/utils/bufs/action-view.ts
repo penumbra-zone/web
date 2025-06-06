@@ -12,6 +12,8 @@ import {
   SwapClaimView,
   SwapView,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
+import { Delegate } from '@penumbra-zone/protobuf/penumbra/core/component/stake/v1/stake_pb';
+import { IdentityKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { ADDRESS_VIEW_DECODED } from './address-view';
 import {
   DELEGATION_TOKEN_VALUE,
@@ -38,6 +40,7 @@ import {
 import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 import { Packet } from '@penumbra-zone/protobuf/ibc/core/channel/v1/channel_pb';
 import { Denom } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 
 export const SpendAction = new ActionView({
   actionView: {
@@ -487,6 +490,27 @@ export const LiquidityTournamentVoteActionOpaque = new ActionView({
           vote: LQT_VOTE,
         },
       },
+    }),
+  },
+});
+
+//
+// Staking actions
+//
+
+// Sample validator identity key for delegation action
+const VALIDATOR_IDENTITY_KEY = new IdentityKey({
+  ik: base64ToUint8Array('LjqUxK87+7N/gcS4ud8b8y5xyTlguvuE0Yhn783Z0wg='),
+});
+
+export const DelegateAction = new ActionView({
+  actionView: {
+    case: 'delegate',
+    value: new Delegate({
+      validatorIdentity: VALIDATOR_IDENTITY_KEY,
+      epochIndex: 123n,
+      unbondedAmount: new Amount({ hi: 0n, lo: 1_000_000n }), // 1 UM input
+      delegationAmount: new Amount({ hi: 0n, lo: 975_147n }), // 0.975147 delUM output
     }),
   },
 });

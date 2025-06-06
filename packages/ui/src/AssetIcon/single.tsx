@@ -1,5 +1,5 @@
 import cn from 'clsx';
-import { ReactNode, useMemo } from 'react';
+import { ReactNode } from 'react';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getDisplay } from '@penumbra-zone/getters/metadata';
 import { assetPatterns } from '@penumbra-zone/types/assets';
@@ -16,21 +16,14 @@ export const sizeMap: Record<Size, string> = {
   sm: cn('size-4'),
 };
 
-const badgeSizeMap: Record<Size, string> = {
-  lg: cn('size-4 -bottom-[3px] -right-[3px]'),
-  md: cn('size-3 -bottom-[2px] -right-[2px]'),
-  sm: cn('size-2 -bottom-[1px] -right-[1px]'),
-};
-
 export interface AssetIconProps {
   size?: Size;
   metadata?: Metadata;
-  hideBadge?: boolean;
   /** Technical property, needed for `AssetGroup` component only */
   zIndex?: number;
 }
 
-export const AssetIcon = ({ metadata, size = 'md', hideBadge, zIndex }: AssetIconProps) => {
+export const AssetIcon = ({ metadata, size = 'md', zIndex }: AssetIconProps) => {
   // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- possibly empty string
   const icon = metadata?.images[0]?.png || metadata?.images[0]?.svg;
   const display = getDisplay.optional(metadata);
@@ -58,14 +51,6 @@ export const AssetIcon = ({ metadata, size = 'md', hideBadge, zIndex }: AssetIco
     assetIcon = <Identicon uniqueIdentifier={metadata?.symbol ?? '?'} type='solid' />;
   }
 
-  const badge = useMemo(() => {
-    if (!metadata?.badges.length) {
-      return undefined;
-    }
-    const badge = metadata.badges[0];
-    return badge?.svg ?? badge?.png;
-  }, [metadata]);
-
   return (
     <div
       style={{ zIndex }}
@@ -77,9 +62,6 @@ export const AssetIcon = ({ metadata, size = 'md', hideBadge, zIndex }: AssetIco
       title={metadata?.symbol}
     >
       {assetIcon}
-      {!hideBadge && badge && (
-        <img src={badge} data-badge='true' alt='' className={cn(badgeSizeMap[size], 'absolute')} />
-      )}
     </div>
   );
 };

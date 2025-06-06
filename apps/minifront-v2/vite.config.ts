@@ -2,7 +2,6 @@ import path from 'path';
 import { defineConfig } from 'vite';
 import { fileURLToPath } from 'url';
 import react from '@vitejs/plugin-react-swc';
-import polyfillNode from 'vite-plugin-node-stdlib-browser';
 import svgr from 'vite-plugin-svgr';
 import url from 'node:url';
 
@@ -29,7 +28,6 @@ export default defineConfig(({ mode }) => {
       },
     },
     plugins: [
-      polyfillNode(),
       react(),
       svgr({
         include: '**/*.svg',

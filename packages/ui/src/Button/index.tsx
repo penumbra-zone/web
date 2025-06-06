@@ -33,6 +33,11 @@ interface BaseButtonProps {
   onClick?: MouseEventHandler<HTMLButtonElement>;
   priority?: Priority;
   density?: Density;
+  /**
+   * Whether the button should be fully rounded.
+   * When true, applies rounded-full class for circular buttons.
+   */
+  rounded?: boolean;
 }
 
 interface IconOnlyProps {
@@ -103,6 +108,7 @@ export const Button = ({
   type = 'button',
   priority = 'primary',
   density: densityProp,
+  rounded,
 
   // needed for the Radix's `asChild` prop to work correctly
   // https://www.radix-ui.com/primitives/docs/guides/composition#composing-with-your-own-react-components
@@ -112,7 +118,7 @@ export const Button = ({
 }) => {
   const densityContext = useDensity();
   const density = densityProp ?? densityContext;
-  const styleAttrs = { actionType, iconOnly, density, priority };
+  const styleAttrs = { actionType, iconOnly, density, priority, rounded };
 
   return (
     <button

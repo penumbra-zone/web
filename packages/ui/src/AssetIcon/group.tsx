@@ -8,7 +8,6 @@ export interface AssetGroupProps {
   as?: ElementType;
   size?: Size;
   variant?: 'overlay' | 'split';
-  hideBadge?: boolean;
 }
 
 const OVERLAY_SIZE_MAP: Record<Size, string> = {
@@ -47,19 +46,18 @@ export const AssetGroup = ({
   as: Container = 'div',
   size = 'md',
   variant = 'overlay',
-  hideBadge,
 }: AssetGroupProps) => {
   if (variant === 'split') {
     return (
       <Container className={cn('relative flex items-center gap-[1px]', sizeMap[size])}>
         {assets?.[0] && (
           <div className={cn(SPLIT_SIZE_MAP[size], LEFT_BADGE_SIZE_MAP[size], RIGHT_CLIP_PATH)}>
-            <AssetIcon hideBadge={hideBadge} metadata={assets[0]} size={size} />
+            <AssetIcon metadata={assets[0]} size={size} />
           </div>
         )}
         {assets?.[1] && (
           <div className={cn(SPLIT_SIZE_MAP[size], MARGIN_SIZE_MAP[size], LEFT_CLIP_PATH)}>
-            <AssetIcon hideBadge={hideBadge} metadata={assets[1]} size={size} />
+            <AssetIcon metadata={assets[1]} size={size} />
           </div>
         )}
       </Container>
@@ -69,13 +67,7 @@ export const AssetGroup = ({
   return (
     <Container className={cn('relative flex items-center', OVERLAY_SIZE_MAP[size])}>
       {assets?.map((asset, index) => (
-        <AssetIcon
-          hideBadge={hideBadge}
-          metadata={asset}
-          key={index}
-          size={size}
-          zIndex={assets.length - index}
-        />
+        <AssetIcon metadata={asset} key={index} size={size} zIndex={assets.length - index} />
       ))}
     </Container>
   );

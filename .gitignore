@@ -77,3 +77,6 @@ scripts/private
 
 # LLM assistance files
 CURSOR_RULES.md
+
+# Cursor IDE
+.cursor

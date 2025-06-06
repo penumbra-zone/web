@@ -5,12 +5,19 @@ import {
 import { Balance, Value } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { TransactionInfo } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { ADDRESS1_VIEW_DECODED, ADDRESS_VIEW_DECODED } from './address-view';
-import { LPNFT_METADATA, PENUMBRA_METADATA, USDC_METADATA } from './metadata';
+import {
+  LPNFT_METADATA,
+  PENUMBRA_METADATA,
+  USDC_METADATA,
+  OSMO_METADATA,
+  DELEGATION_TOKEN_METADATA,
+} from './metadata';
 import { AMOUNT_123_456_789, AMOUNT_999 } from './amount';
 import {
   SwapAction,
   IbcRelayMsgUpdateClientAction,
   OsmoIbcRelayMsgRecvPacketAction,
+  DelegateAction,
 } from './action-view';
 import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 import { PENUMBRA_VALUE_VIEW, USDC_VALUE_VIEW } from './value-view';
@@ -42,14 +49,150 @@ export const TxSummary = new TransactionSummary({
   ],
 });
 
-// Swap: 999 uUSDC -> 0 Penumbra
+// Swap
 export const TxSwap = new TransactionInfo({
   view: new TransactionView({
     bodyView: {
       actionViews: [SwapAction],
     },
   }),
-  summary: TxSummary,
+  summary: new TransactionSummary({
+    effects: [
+      {
+        address: ADDRESS_VIEW_DECODED,
+        balance: new Balance({
+          values: [
+            {
+              negated: true, // Spent USDC
+              value: new Value({
+                amount: { lo: 50000000000n, hi: 0n }, // 50 USDC
+                assetId: USDC_METADATA.penumbraAssetId,
+              }),
+            },
+            {
+              negated: false, // Received UM
+              value: new Value({
+                amount: { lo: 12500000n, hi: 0n }, // 12.5 UM
+                assetId: PENUMBRA_METADATA.penumbraAssetId,
+              }),
+            },
+          ],
+        }),
+      },
+    ],
+  }),
+});
+
+// Delegation transaction
+export const TxDelegate = new TransactionInfo({
+  view: new TransactionView({
+    bodyView: {
+      actionViews: [DelegateAction],
+    },
+  }),
+  summary: new TransactionSummary({
+    effects: [
+      {
+        address: ADDRESS_VIEW_DECODED,
+        balance: new Balance({
+          values: [
+            {
+              negated: false, // Will show as negative UM (spent for delegation)
+              value: new Value({
+                amount: { lo: 10000000000n, hi: 0n }, // -10 UM
+                assetId: PENUMBRA_METADATA.penumbraAssetId,
+              }),
+            },
+            {
+              negated: true, // Will show as positive delUM (received delegation tokens)
+              value: new Value({
+                amount: { lo: 9950000000n, hi: 0n }, // +9.95 delUM (slightly less due to fees/slashing protection)
+                assetId: DELEGATION_TOKEN_METADATA.penumbraAssetId,
+              }),
+            },
+          ],
+        }),
+      },
+    ],
+  }),
+});
+
+// Multi-asset transaction with address grouping
+export const TxMultiAsset = new TransactionInfo({
+  view: new TransactionView({
+    bodyView: {
+      actionViews: [SwapAction],
+    },
+  }),
+  summary: new TransactionSummary({
+    effects: [
+      // First address - multiple assets
+      {
+        address: ADDRESS_VIEW_DECODED,
+        balance: new Balance({
+          values: [
+            {
+              negated: false,
+              value: new Value({
+                amount: { lo: 25000000n, hi: 0n }, // -25 USDC
+                assetId: USDC_METADATA.penumbraAssetId,
+              }),
+            },
+            {
+              negated: false,
+              value: new Value({
+                amount: { lo: 150000000n, hi: 0n }, // -150 OSMO
+                assetId: OSMO_METADATA.penumbraAssetId,
+              }),
+            },
+            {
+              negated: true,
+              value: new Value({
+                amount: { lo: 5000000000n, hi: 0n }, // +5 UM
+                assetId: PENUMBRA_METADATA.penumbraAssetId,
+              }),
+            },
+            {
+              negated: true,
+              value: new Value({
+                amount: { lo: 2500000000n, hi: 0n }, // +2.5 delUM
+                assetId: DELEGATION_TOKEN_METADATA.penumbraAssetId,
+              }),
+            },
+          ],
+        }),
+      },
+      // Second address - different assets (also >2 for ellipsis)
+      {
+        address: ADDRESS1_VIEW_DECODED,
+        balance: new Balance({
+          values: [
+            {
+              negated: true,
+              value: new Value({
+                amount: { lo: 10000000n, hi: 0n }, // -10 USDC
+                assetId: USDC_METADATA.penumbraAssetId,
+              }),
+            },
+            {
+              negated: false,
+              value: new Value({
+                amount: { lo: 75000000n, hi: 0n }, // +75 OSMO
+                assetId: OSMO_METADATA.penumbraAssetId,
+              }),
+            },
+            {
+              negated: false,
+              value: new Value({
+                amount: { lo: 1000000000n, hi: 0n }, // +1 UM
+                assetId: PENUMBRA_METADATA.penumbraAssetId,
+              }),
+            },
+          ],
+        }),
+      },
+    ],
+  }),
 });
 
 // IBC deposit: 0.5 OSMO

@@ -1,7 +1,10 @@
-import cn from 'clsx';
 import { ElementType, Fragment, ReactNode } from 'react';
+import cn from 'clsx';
 import { Dot, ArrowRight } from 'lucide-react';
+
+import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { TransactionInfo } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+
 import { GetMetadata } from '../ActionView/types';
 import { AddressViewComponent } from '../AddressView';
 import { AssetGroup } from '../AssetIcon';
@@ -20,11 +23,19 @@ export interface TransactionSummaryProps {
    * If omitted, some assets may be rendered as unknown or not rendered at all.
    */
   getMetadata?: GetMetadata;
+  /**
+   * Optional array of wallet address views to match transaction addresses with.
+   * When provided, if a transaction address matches one in this array, it will display
+   * the account name instead of the raw address.
+   */
+  walletAddressViews?: AddressView[];
   as?: ElementType;
   /** Doesn't work if `as` prop is not provided – add `as='button'`, and the component will become hoverable and clickable */
   onClick?: VoidFunction;
   /** Markup to render on the right side of the component */
   endAdornment?: ReactNode;
+  /** If true, the memo will not be displayed. Defaults to false. */
+  hideMemo?: boolean;
 }
 
 /**
@@ -41,25 +52,32 @@ export interface TransactionSummaryProps {
 export const TransactionSummary = ({
   info,
   getMetadata,
+  walletAddressViews = [],
   onClick,
   endAdornment,
   as: Container = 'div',
+  hideMemo = false,
 }: TransactionSummaryProps) => {
   const { label, assets, additionalText, address, memo, type, tickers, effects } =
-    useClassification(info, getMetadata);
+    useClassification(info, getMetadata, walletAddressViews);
+
+  // Calculate total rows: 1 (main info) + effects count + memo (if present)
+  const totalRows = 1 + effects.length + (memo && !hideMemo ? 1 : 0);
+  const hasMoreThanThreeRows = totalRows > 3;
 
   return (
     <Container
       className={cn(
-        'group h-[72px] w-full px-3  rounded-sm flex items-center gap-2 text-text-primary',
+        'group w-full px-3 rounded-sm flex items-center gap-2 text-text-primary',
         'bg-other-tonalFill5 transition-colors',
         onClick && 'hover:bg-action-hoverOverlay cursor-pointer',
+        hasMoreThanThreeRows ? 'h-fit py-3' : 'h-[72px]',
       )}
       onClick={onClick}
     >
       <AssetGroup size='lg' assets={assets} />
 
-      <div className='flex grow flex-col'>
+      <div className='flex grow flex-col overflow-hidden'>
         <div className='flex items-center gap-1 text-text-secondary'>
           <Density slim>
             <Pill priority='primary' context='technical-default'>
@@ -92,10 +110,12 @@ export const TransactionSummary = ({
 
         <SummaryEffects effects={effects} />
 
-        {memo && (
-          <Text as='em' color='text.secondary' detailTechnical>
-            {memo}
-          </Text>
+        {!hideMemo && memo && (
+          <div className='flex max-h-10 w-full overflow-hidden'>
+            <Text as='em' color='text.secondary' detailTechnical truncate>
+              {memo}
+            </Text>
+          </div>
         )}
       </div>
 
