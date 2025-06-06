@@ -7,41 +7,96 @@ import { WalletMinimal, Info } from 'lucide-react';
 import { Density } from '../Density';
 import { ValueViewComponent } from '../ValueView';
 
+/**
+ * Props for the AssetValueInput component.
+ */
 export interface AssetValueInputProps {
-  /** The amount value */
+  /** The amount value entered by the user */
   amount: string;
-  /** Callback when amount changes */
+  /** Callback fired when the amount value changes */
   onAmountChange: (amount: string) => void;
-  /** The selected asset */
+  /** The currently selected asset (BalancesResponse) */
   selectedAsset?: BalancesResponse;
-  /** Callback when asset selection changes */
+  /** Callback fired when the asset selection changes */
   onAssetChange: (asset: BalancesResponse) => void;
-  /** Available balance responses for selection */
+  /** Available balance responses for asset selection */
   balances?: BalancesResponse[];
-  /** Available assets metadata */
+  /** Available assets metadata for selection when no balance is available */
   assets?: Metadata[];
-  /** Amount input placeholder */
+  /** Placeholder text for the amount input field */
   amountPlaceholder?: string;
-  /** Asset selector dialog title */
+  /** Title for the asset selector dialog */
   assetDialogTitle?: string;
-  /** Error states */
+  /** Error states for different validation scenarios */
   errors?: {
+    /** Whether the amount format is invalid */
     amountError?: boolean;
+    /** Whether the decimal places exceed the allowed exponent */
     exponentError?: boolean;
+    /** Whether the amount exceeds available balance */
     insufficientFunds?: boolean;
   };
-  /** Error messages */
+  /** Custom error messages for each error type */
   errorMessages?: {
+    /** Message to display when amount format is invalid */
     amountError?: string;
+    /** Message to display when decimal places are invalid */
     exponentError?: string;
+    /** Message to display when insufficient funds */
     insufficientFunds?: string;
   };
-  /** Whether to show balance */
+  /** Whether to show the balance display below the input */
   showBalance?: boolean;
-  /** Disabled state */
+  /** Whether the component is disabled */
   disabled?: boolean;
 }
 
+/**
+ * A combined input component for entering both an amount and selecting an asset.
+ * 
+ * This component integrates a numeric input field with an asset selector, providing
+ * a unified interface for amount and asset selection. It includes built-in validation
+ * states, balance display, and error handling.
+ * 
+ * ## Features
+ * 
+ * - **Integrated Asset Selection**: Uses AssetSelector as an end adornment
+ * - **Balance Display**: Shows user's current balance for selected asset
+ * - **Error Handling**: Built-in support for amount, exponent, and insufficient funds errors
+ * - **Accessibility**: Proper error states and visual feedback
+ * - **Responsive**: Works with the density system for different layouts
+ * 
+ * ## Usage
+ * 
+ * ```tsx
+ * const [amount, setAmount] = useState('');
+ * const [selectedAsset, setSelectedAsset] = useState<BalancesResponse>();
+ * const [errors, setErrors] = useState({});
+ * 
+ * <AssetValueInput
+ *   amount={amount}
+ *   onAmountChange={setAmount}
+ *   selectedAsset={selectedAsset}
+ *   onAssetChange={setSelectedAsset}
+ *   balances={userBalances}
+ *   assets={availableAssets}
+ *   errors={errors}
+ *   showBalance={true}
+ * />
+ * ```
+ * 
+ * @example
+ * // Basic usage with error handling
+ * <AssetValueInput
+ *   amount="100"
+ *   onAmountChange={handleAmountChange}
+ *   selectedAsset={penumbraBalance}
+ *   onAssetChange={handleAssetChange}
+ *   balances={[penumbraBalance, osmoBalance]}
+ *   errors={{ insufficientFunds: true }}
+ *   errorMessages={{ insufficientFunds: "Not enough tokens" }}
+ * />
+ */
 export const AssetValueInput = ({
   amount,
   onAmountChange,

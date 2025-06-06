@@ -15,16 +15,27 @@ import { ThemeColor, getThemeColorClass } from '../utils/color';
 
 type Context = 'default' | 'table';
 
-const ValueText = ({ children, density }: { children: ReactNode; density: Density }) => {
+const ValueText = ({ 
+  children, 
+  density, 
+  textColor 
+}: { 
+  children: ReactNode; 
+  density: Density; 
+  textColor?: ThemeColor;
+}) => {
+  // Use text.primary as the default color when no textColor is provided
+  const effectiveColor = textColor || 'text.primary';
+  
   if (density === 'slim') {
-    return <Text detailTechnical>{children}</Text>;
+    return <Text detailTechnical color={effectiveColor}>{children}</Text>;
   }
 
   if (density === 'compact') {
-    return <Text smallTechnical>{children}</Text>;
+    return <Text smallTechnical color={effectiveColor}>{children}</Text>;
   }
 
-  return <Text technical>{children}</Text>;
+  return <Text technical color={effectiveColor}>{children}</Text>;
 };
 
 const getSignColor = (signed?: ValueViewComponentProps<Context>['signed']): string => {
@@ -186,7 +197,7 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
           {showValue && (
             <div className='flex shrink grow items-center' title={formattedAmount}>
               {signed && getSign(signed)}
-              <ValueText density={density}>
+              <ValueText density={density} textColor={textColor}>
                 {padString}
                 {formattedAmount}
               </ValueText>
@@ -194,7 +205,7 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
           )}
           {showSymbol && (
             <div className='max-w-24 shrink grow truncate' title={symbol}>
-              <ValueText density={density}>{symbol}</ValueText>
+              <ValueText density={density} textColor={textColor}>{symbol}</ValueText>
             </div>
           )}
         </div>
