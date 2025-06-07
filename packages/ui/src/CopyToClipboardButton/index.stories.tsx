@@ -26,21 +26,21 @@ export const DensityVariants: Story = {
   render: args => (
     <div className='flex flex-col gap-4'>
       <div className='flex items-center gap-2'>
-        <span className='text-text-secondary text-sm w-16'>Sparse:</span>
+        <span className='w-16 text-sm text-text-secondary'>Sparse:</span>
         <Density sparse>
           <CopyToClipboardButton {...args} />
         </Density>
       </div>
 
       <div className='flex items-center gap-2'>
-        <span className='text-text-secondary text-sm w-16'>Compact:</span>
+        <span className='w-16 text-sm text-text-secondary'>Compact:</span>
         <Density compact>
           <CopyToClipboardButton {...args} />
         </Density>
       </div>
 
       <div className='flex items-center gap-2'>
-        <span className='text-text-secondary text-sm w-16'>Slim:</span>
+        <span className='w-16 text-sm text-text-secondary'>Slim:</span>
         <Density slim>
           <CopyToClipboardButton {...args} />
         </Density>

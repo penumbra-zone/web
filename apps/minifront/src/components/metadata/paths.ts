@@ -11,6 +11,4 @@ export enum PagePath {
   WITHDRAW = '/withdraw',
   NFTS = '/dashboard/nfts',
   TRANSACTION_DETAILS = '/tx/:hash',
-  V2_PORTFOLIO = '/v2/portfolio',
-  V2_TRANSACTIONS_FULL = '/v2/portfolio/transactions',
 }

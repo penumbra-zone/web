@@ -12,7 +12,7 @@ import {
 } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { ActionView as CoreActionView } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { AddressViewComponent } from '@penumbra-zone/ui/AddressView';
-import { SectionComponentProps } from '@penumbra-zone/ui/TransactionView';
+import { SectionComponentProps } from '@shared/ui/transaction-view/TransactionView';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 
 import { SwapViewComponent } from './actions/SwapViewComponent';

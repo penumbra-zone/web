@@ -2,7 +2,6 @@ import { ElementType, Fragment, ReactNode } from 'react';
 import cn from 'clsx';
 import { Dot, ArrowRight } from 'lucide-react';
 
-import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { TransactionInfo } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 
 import { GetMetadata } from '../ActionView/types';
@@ -23,12 +22,6 @@ export interface TransactionSummaryProps {
    * If omitted, some assets may be rendered as unknown or not rendered at all.
    */
   getMetadata?: GetMetadata;
-  /**
-   * Optional array of wallet address views to match transaction addresses with.
-   * When provided, if a transaction address matches one in this array, it will display
-   * the account name instead of the raw address.
-   */
-  walletAddressViews?: AddressView[];
   as?: ElementType;
   /** Doesn't work if `as` prop is not provided – add `as='button'`, and the component will become hoverable and clickable */
   onClick?: VoidFunction;
@@ -52,14 +45,13 @@ export interface TransactionSummaryProps {
 export const TransactionSummary = ({
   info,
   getMetadata,
-  walletAddressViews = [],
   onClick,
   endAdornment,
   as: Container = 'div',
   hideMemo = false,
 }: TransactionSummaryProps) => {
   const { label, assets, additionalText, address, memo, type, tickers, effects } =
-    useClassification(info, getMetadata, walletAddressViews);
+    useClassification(info, getMetadata);
 
   // Calculate total rows: 1 (main info) + effects count + memo (if present)
   const totalRows = 1 + effects.length + (memo && !hideMemo ? 1 : 0);
@@ -96,14 +88,12 @@ export const TransactionSummary = ({
             </Pill>
             {additionalText && <Text detailTechnical>{additionalText}</Text>}
             {address && (
-              <div className='max-w-32'>
-                <AddressViewComponent
-                  truncate
-                  hideIcon
-                  addressView={address}
-                  external={type === 'ibcRelayAction'}
-                />
-              </div>
+              <AddressViewComponent
+                truncate
+                hideIcon
+                addressView={address}
+                external={type === 'ibcRelayAction'}
+              />
             )}
           </Density>
         </div>

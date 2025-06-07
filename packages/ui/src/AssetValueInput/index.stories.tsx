@@ -151,9 +151,9 @@ export const InteractiveValidation: Story = {
               Try these examples:
             </Text>
           </Text>
-          <ul className='list-disc list-inside space-y-1 text-text-secondary text-sm'>
-            <li>Enter "123.1234567" for a decimal places error</li>
-            <li>Enter "999" for insufficient funds (current balance: 123)</li>
+          <ul className='list-inside list-disc space-y-1 text-sm text-text-secondary'>
+            <li>Enter &quot;123.1234567&quot; for a decimal places error</li>
+            <li>Enter &quot;999&quot; for insufficient funds (current balance: 123)</li>
           </ul>
         </div>
 

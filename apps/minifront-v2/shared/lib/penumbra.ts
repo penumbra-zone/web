@@ -16,4 +16,5 @@ const reconnect = async () => {
     /* no-op */
   }
 };
+
 void reconnect();

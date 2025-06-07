@@ -11,6 +11,8 @@ import {
   GasPricesResponse,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { RootStore } from './root-store';
+import { penumbra } from '../lib/penumbra';
+import { PenumbraState } from '@penumbra-zone/client';
 
 export class AppParametersStore {
   // Observable state
@@ -21,12 +23,24 @@ export class AppParametersStore {
 
   constructor(private rootStore: RootStore) {
     makeAutoObservable(this);
+
+    // Listen for connection state changes to retry loading
+    penumbra.onConnectionStateChange(event => {
+      if (event.state === PenumbraState.Connected) {
+        void this.initialize();
+      }
+    });
   }
 
   /**
    * Initialize the store and load initial data
    */
   async initialize() {
+    if (!penumbra.connected) {
+      // Connection not ready yet, will retry when connection is established
+      return;
+    }
+
     await Promise.all([this.loadAppParameters(), this.loadGasPrices()]);
   }
 
@@ -44,6 +58,10 @@ export class AppParametersStore {
    * Load app parameters from the service
    */
   async loadAppParameters() {
+    if (!penumbra.connected) {
+      return;
+    }
+
     this.loading = true;
     this.error = null;
 
@@ -66,6 +84,10 @@ export class AppParametersStore {
    * Load gas prices from the service
    */
   async loadGasPrices() {
+    if (!penumbra.connected) {
+      return;
+    }
+
     try {
       const response = await this.rootStore.penumbraService.getGasPrices();
 

@@ -71,20 +71,12 @@ const CLASSIFICATION_LABEL_MAP: Record<TransactionClassification, string> = {
 /**
  * A hook that prepares data from TransactionInfo to be rendered in TransactionSummary.
  */
-export const useClassification = (
-  info: TransactionInfo,
-  getMetadataByAssetId?: GetMetadata,
-  walletAddressViews?: AddressView[],
-) => {
+export const useClassification = (info: TransactionInfo, getMetadataByAssetId?: GetMetadata) => {
   // classify the transaction and extract the main action
   const { type, action } = classifyTransaction(info.view);
 
   // categorize and sum up transaction summary effects
-  const effects = adaptEffects(
-    info.summary?.effects ?? [],
-    getMetadataByAssetId,
-    walletAddressViews,
-  );
+  const effects = adaptEffects(info.summary?.effects ?? [], getMetadataByAssetId);
 
   // Special handling for deposit transactions that may not have summary effects
   let enhancedEffects = effects;
@@ -95,97 +87,86 @@ export const useClassification = (
     );
 
     if (ibcRelayActions.length > 0) {
-      // Create TransactionSummary_Effects objects that can be processed by adaptEffects
       const depositEffects: TransactionSummary_Effects[] = [];
 
       for (const ibcAction of ibcRelayActions) {
-        if (ibcAction.actionView.case === 'ibcRelayAction') {
-          const ibcRelay = ibcAction.actionView.value;
+        try {
+          const unpacked = unpackIbcRelay(ibcAction.actionView.value as IbcRelay);
+          if (unpacked?.tokenData && unpacked.packet) {
+            const receiverAddress = unpacked.tokenData.receiver;
 
-          let receiverAddressView: AddressView | undefined;
-
-          try {
-            const unpacked = unpackIbcRelay(ibcRelay);
-
-            if (unpacked?.tokenData && unpacked.packet) {
-              // Extract receiver address for the account information
-              if (unpacked.tokenData.receiver) {
-                try {
-                  const address = addressFromBech32m(unpacked.tokenData.receiver);
-                  receiverAddressView = new AddressView({
-                    addressView: {
-                      case: 'opaque',
-                      value: {
-                        address: {
-                          ...address,
-                          altBech32m: unpacked.tokenData.receiver, // Preserve the original bech32m for address matching
-                        },
-                      },
+            // Try to parse the receiver address to create AddressView
+            let receiverAddressView: AddressView | undefined;
+            try {
+              if (receiverAddress) {
+                const parsedAddress = addressFromBech32m(receiverAddress);
+                receiverAddressView = new AddressView({
+                  addressView: {
+                    case: 'opaque',
+                    value: {
+                      address: parsedAddress,
                     },
-                  });
-                } catch (error) {
-                  // console.log('Error parsing receiver address:', error);
-                }
+                  },
+                });
+              }
+            } catch (error) {
+              console.warn('Failed to parse receiver address:', error);
+            }
+
+            const amount = fromString(unpacked.tokenData.amount);
+            let assetDenom = unpacked.tokenData.denom;
+
+            // Try to get metadata by denom first
+            let asset = getMetadataByAssetId?.(new Denom({ denom: assetDenom }));
+
+            if (!asset) {
+              // Sometimes denom comes in form of "uosmo", and sometimes as "transfer/channel-4/uosmo",
+              // where "transfer" is `sourcePort` and "channel-4" is `sourceChannel`.
+              // Extract the denom part and merge it with destination data.
+              // Penumbra is the only asset that doesn't have "transfer" in the denom – hardcode it here.
+              const denomMatch = /\/([^/]+)$/.exec(unpacked.tokenData.denom);
+              assetDenom = `${unpacked.packet.destinationPort}/${unpacked.packet.destinationChannel}/${denomMatch?.[1] ?? unpacked.tokenData.denom}`;
+              if (unpacked.tokenData.denom === 'upenumbra' || denomMatch?.[1] === 'upenumbra') {
+                assetDenom = 'upenumbra';
               }
 
-              // Extract amount and denom from the token data
-              const amount = fromString(unpacked.tokenData.amount);
-              let assetDenom = unpacked.tokenData.denom;
+              asset = getMetadataByAssetId?.(new Denom({ denom: assetDenom }));
+            }
 
-              // Try to find metadata using the original denom first
-              let asset: Metadata | undefined = getMetadataByAssetId?.(
-                new Denom({ denom: assetDenom }),
-              );
+            // Create a TransactionSummary_Effects object
+            if ((asset || assetDenom) && receiverAddressView) {
+              const effectValues = [];
 
-              if (!asset) {
-                // Sometimes denom comes in form of "uosmo", and sometimes as "transfer/channel-4/uosmo",
-                // where "transfer" is `sourcePort` and "channel-4" is `sourceChannel`.
-                // Extract the denom part and merge it with destination data.
-                // Penumbra is the only asset that doesn't have "transfer" in the denom – hardcode it here.
-                const denomMatch = /\/([^/]+)$/.exec(unpacked.tokenData.denom);
-                assetDenom = `${unpacked.packet.destinationPort}/${unpacked.packet.destinationChannel}/${denomMatch?.[1] ?? unpacked.tokenData.denom}`;
-                if (unpacked.tokenData.denom === 'upenumbra' || denomMatch?.[1] === 'upenumbra') {
-                  assetDenom = 'upenumbra';
-                }
-
-                asset = getMetadataByAssetId?.(new Denom({ denom: assetDenom }));
+              if (asset?.penumbraAssetId) {
+                effectValues.push({
+                  negated: true, // true means positive (adaptEffects uses !balance.negated)
+                  value: new Value({
+                    amount: amount,
+                    assetId: asset.penumbraAssetId,
+                  }),
+                });
               }
 
-              // Create a TransactionSummary_Effects object
-              if ((asset || assetDenom) && receiverAddressView) {
-                const effectValues = [];
-
-                if (asset?.penumbraAssetId) {
-                  effectValues.push({
-                    negated: true, // true means positive (adaptEffects uses !balance.negated)
-                    value: new Value({
-                      amount: amount,
-                      assetId: asset.penumbraAssetId,
+              if (effectValues.length > 0) {
+                depositEffects.push(
+                  new TransactionSummary_Effects({
+                    address: receiverAddressView,
+                    balance: new Balance({
+                      values: effectValues,
                     }),
-                  });
-                }
-
-                if (effectValues.length > 0) {
-                  depositEffects.push(
-                    new TransactionSummary_Effects({
-                      address: receiverAddressView,
-                      balance: new Balance({
-                        values: effectValues,
-                      }),
-                    }),
-                  );
-                }
+                  }),
+                );
               }
             }
-          } catch (error) {
-            // console.log('Error unpacking IBC relay:', error);
           }
+        } catch (error) {
+          // console.log('Error unpacking IBC relay:', error);
         }
       }
 
       // Process the deposit effects through adaptEffects to get proper address resolution
       if (depositEffects.length > 0) {
-        enhancedEffects = adaptEffects(depositEffects, getMetadataByAssetId, walletAddressViews);
+        enhancedEffects = adaptEffects(depositEffects, getMetadataByAssetId);
       }
     }
   }

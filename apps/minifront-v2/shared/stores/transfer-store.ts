@@ -152,20 +152,28 @@ export class TransferStore {
     const balance = selectedAsset.balanceView?.valueView?.value?.amount;
     if (!balance) return false;
 
-    const exponent = getDisplayDenomExponentFromValueView.optional(selectedAsset.balanceView);
-    const amountInBaseUnit = toBaseUnit(BigNumber(amount), exponent);
+    try {
+      const exponent = getDisplayDenomExponentFromValueView.optional(selectedAsset.balanceView);
+      const amountInBaseUnit = toBaseUnit(BigNumber(amount), exponent);
 
-    // toBaseUnit returns a LoHi object, we need to compare as BigNumber
-    const amountBigNumber = new BigNumber(amountInBaseUnit.lo.toString()).plus(
-      new BigNumber((amountInBaseUnit.hi || 0).toString()).shiftedBy(32),
-    );
+      // toBaseUnit returns a LoHi object, we need to compare as BigNumber
+      const amountBigNumber = new BigNumber(amountInBaseUnit.lo.toString()).plus(
+        new BigNumber((amountInBaseUnit.hi || 0).toString()).shiftedBy(32),
+      );
 
-    // Convert balance to BigNumber for comparison
-    const balanceBigNumber = new BigNumber(balance.lo.toString()).plus(
-      new BigNumber(balance.hi.toString()).shiftedBy(32),
-    );
+      // Convert balance to BigNumber for comparison
+      const balanceBigNumber = new BigNumber(balance.lo.toString()).plus(
+        new BigNumber(balance.hi.toString()).shiftedBy(32),
+      );
 
-    return amountBigNumber.gt(balanceBigNumber);
+      return amountBigNumber.gt(balanceBigNumber);
+    } catch (error) {
+      // If conversion fails (e.g., due to decimals that can't be converted to BigInt),
+      // return false to avoid crashing the app. The AssetValueInput validation will
+      // handle showing appropriate error messages to the user.
+      console.warn('TransferStore: Error converting amount for balance comparison:', error);
+      return false;
+    }
   }
 
   private hasIncorrectDecimal(): boolean {
@@ -439,6 +447,10 @@ export class TransferStore {
   }
 
   private async loadAccountAddress() {
+    if (!penumbra.connected) {
+      return;
+    }
+
     try {
       if (this.receiveState.ibcDepositEnabled) {
         // Generate randomized IBC deposit address
@@ -479,6 +491,11 @@ export class TransferStore {
   }
 
   async initialize() {
+    if (!penumbra.connected) {
+      // Connection not ready yet, will be called again when connected
+      return;
+    }
+
     // Load initial account address for receive tab
     await this.loadAccountAddress();
   }

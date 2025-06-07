@@ -14,6 +14,8 @@ import {
   getAddressIndex,
 } from '@penumbra-zone/getters/balances-response';
 import { RootStore } from './root-store';
+import { penumbra } from '../lib/penumbra';
+import { PenumbraState } from '@penumbra-zone/client';
 
 export interface BalancesByAccount {
   account: number;
@@ -33,12 +35,24 @@ export class BalancesStore {
 
   constructor(private rootStore: RootStore) {
     makeAutoObservable(this);
+
+    // Listen for connection state changes to retry loading
+    penumbra.onConnectionStateChange(event => {
+      if (event.state === PenumbraState.Connected) {
+        void this.loadBalances();
+      }
+    });
   }
 
   /**
    * Initialize the store and load initial data
    */
   async initialize() {
+    if (!penumbra.connected) {
+      // Connection not ready yet, will retry when connection is established
+      return;
+    }
+
     await this.loadBalances();
   }
 
@@ -55,6 +69,10 @@ export class BalancesStore {
    * Load balances from the service
    */
   async loadBalances() {
+    if (!penumbra.connected) {
+      return;
+    }
+
     this.loading = true;
     this.error = null;
 

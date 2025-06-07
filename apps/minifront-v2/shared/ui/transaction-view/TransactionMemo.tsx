@@ -6,25 +6,7 @@ import { DetailRow } from './DetailRow';
 import { SectionComponentProps } from './TransactionView';
 import { Text } from '@penumbra-zone/ui/Text';
 import { Density } from '@penumbra-zone/ui/Density';
-
-// Simple IncognitoIcon component since it's not exported from the UI package properly
-const IncognitoIcon = () => (
-  <svg
-    width='16'
-    height='16'
-    viewBox='0 0 16 16'
-    fill='none'
-    xmlns='http://www.w3.org/2000/svg'
-    className='opacity-50'
-  >
-    <path
-      fillRule='evenodd'
-      clipRule='evenodd'
-      d='M8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12Zm-1.5-6a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm6 0a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z'
-      fill='currentColor'
-    />
-  </svg>
-);
+import { IncognitoIcon } from '@shared/components/icons';
 
 const findMatchingAddressView = (
   transactionAddressView: AddressView,
@@ -100,7 +82,7 @@ export const TransactionMemo: React.FC<SectionComponentProps> = ({
   } else if (memoViewData?.case === 'opaque') {
     // For opaque memo, display like an action with just icon and "Memo" text
     return (
-      <div className='flex h-10 w-full items-center justify-between gap-1 rounded-sm'>
+      <div className='flex w-full items-center justify-between gap-1 rounded-sm'>
         <i className='block text-neutral-light'>
           <IncognitoIcon />
         </i>
@@ -124,7 +106,7 @@ export const TransactionMemo: React.FC<SectionComponentProps> = ({
   }
 
   return (
-    <div className='flex flex-col gap-1'>
+    <div className='flex flex-col'>
       {addressViewForDisplay && (
         <DetailRow
           label='Return Address'

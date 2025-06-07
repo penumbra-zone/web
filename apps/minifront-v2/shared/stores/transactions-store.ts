@@ -9,6 +9,8 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import { TransactionInfo } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import { RootStore } from './root-store';
+import { penumbra } from '../lib/penumbra';
+import { PenumbraState } from '@penumbra-zone/client';
 
 export class TransactionsStore {
   // Observable state
@@ -18,12 +20,24 @@ export class TransactionsStore {
 
   constructor(private rootStore: RootStore) {
     makeAutoObservable(this);
+
+    // Listen for connection state changes to retry loading
+    penumbra.onConnectionStateChange(event => {
+      if (event.state === PenumbraState.Connected) {
+        void this.loadTransactions();
+      }
+    });
   }
 
   /**
    * Initialize the store and load initial data
    */
   async initialize() {
+    if (!penumbra.connected) {
+      // Connection not ready yet, will retry when connection is established
+      return;
+    }
+
     await this.loadTransactions();
   }
 
@@ -40,6 +54,10 @@ export class TransactionsStore {
    * Load transactions from the service using the same pattern as transactions-v2.ts
    */
   async loadTransactions() {
+    if (!penumbra.connected) {
+      return;
+    }
+
     this.loading = true;
     this.error = null;
 

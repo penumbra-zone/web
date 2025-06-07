@@ -42,7 +42,7 @@ export const TransactionInfo: React.FC<SectionComponentProps> = ({
   const textColorClass = 'text.secondary';
 
   return (
-    <div className='flex flex-col gap-1'>
+    <div className='flex flex-col w-full'>
       <Density></Density>
       <div className='flex items-start justify-between text-sm'>
         <div className='pt-0.5'>

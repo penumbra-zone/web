@@ -50,8 +50,8 @@ const componentMap = {
   actionLiquidityTournamentVote: LiquidityTournamentVoteAction,
   ibcRelayAction: IbcRelayAction,
   ics20Withdrawal: Ics20WithdrawalAction,
-  // TODO: Implement the actions below
   delegate: DelegateAction,
+  // TODO: Implement the actions below
   delegatorVote: DelegatorVoteAction,
   undelegate: UndelegateAction,
   undelegateClaim: UndelegateClaimAction,

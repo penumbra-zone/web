@@ -24,12 +24,9 @@ const ValueText = ({
   density: Density;
   textColor?: ThemeColor;
 }) => {
-  // Use text.primary as the default color when no textColor is provided
-  const effectiveColor = textColor || 'text.primary';
-
   if (density === 'slim') {
     return (
-      <Text detailTechnical color={effectiveColor}>
+      <Text detailTechnical color={textColor}>
         {children}
       </Text>
     );
@@ -37,14 +34,14 @@ const ValueText = ({
 
   if (density === 'compact') {
     return (
-      <Text smallTechnical color={effectiveColor}>
+      <Text smallTechnical color={textColor}>
         {children}
       </Text>
     );
   }
 
   return (
-    <Text technical color={effectiveColor}>
+    <Text technical color={textColor}>
       {children}
     </Text>
   );

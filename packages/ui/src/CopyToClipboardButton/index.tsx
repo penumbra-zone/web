@@ -53,7 +53,7 @@ export const CopyToClipboardButton = ({ text, disabled = false }: CopyToClipboar
       icon={icon}
       onClick={onClick}
       disabled={disabled}
-      density={density === 'slim' ? 'compact' : density}
+      density={density}
     >
       {label}
     </Button>

@@ -235,21 +235,22 @@ export const TransactionCard = observer(
                         className='cursor-pointer'
                         onClick={() => navigate(`${PagePath.Transactions}?tx=${txHash}`)}
                       >
-                        <TransactionSummary
-                          info={transaction}
-                          getMetadata={getTxMetadata}
-                          walletAddressViews={combinedWalletAddressViews}
-                          endAdornment={
-                            <Button
-                              actionType='accent'
-                              density='compact'
-                              iconOnly
-                              icon={FileSearch}
-                            >
-                              View Details
-                            </Button>
-                          }
-                        />
+                        <div className='[&>div]:hover:bg-gradient-to-b [&>div]:hover:from-[rgba(83,174,168,0.15)] [&>div]:hover:to-[rgba(83,174,168,0.15)] [&>div]:hover:bg-[rgba(250,250,250,0.05)] [&>div]:hover:bg-blend-overlay'>
+                          <TransactionSummary
+                            info={transaction}
+                            getMetadata={getTxMetadata}
+                            endAdornment={
+                              <Button
+                                actionType='accent'
+                                density='compact'
+                                iconOnly
+                                icon={FileSearch}
+                              >
+                                View Details
+                              </Button>
+                            }
+                          />
+                        </div>
                       </div>
                     );
                   })

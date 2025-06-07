@@ -10,6 +10,8 @@ import { AssetsResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getDenomMetadata } from '@penumbra-zone/getters/assets-response';
 import { RootStore } from './root-store';
+import { penumbra } from '../lib/penumbra';
+import { PenumbraState } from '@penumbra-zone/client';
 
 export class AssetsStore {
   // Observable state
@@ -19,12 +21,24 @@ export class AssetsStore {
 
   constructor(private rootStore: RootStore) {
     makeAutoObservable(this);
+
+    // Listen for connection state changes to retry loading
+    penumbra.onConnectionStateChange(event => {
+      if (event.state === PenumbraState.Connected) {
+        void this.loadAssets();
+      }
+    });
   }
 
   /**
    * Initialize the store and load initial data
    */
   async initialize() {
+    if (!penumbra.connected) {
+      // Connection not ready yet, will retry when connection is established
+      return;
+    }
+
     await this.loadAssets();
   }
 
@@ -41,19 +55,23 @@ export class AssetsStore {
    * Load assets from the service
    */
   async loadAssets() {
+    if (!penumbra.connected) {
+      return;
+    }
+
     this.loading = true;
     this.error = null;
 
     try {
-      const responses: AssetsResponse[] = [];
-      const stream = this.rootStore.penumbraService.getAssetsStream();
+      const assetsStream = this.rootStore.penumbraService.getAssetsStream();
+      const newAssets: AssetsResponse[] = [];
 
-      for await (const response of stream) {
-        responses.push(response);
+      for await (const response of assetsStream) {
+        newAssets.push(response);
       }
 
       runInAction(() => {
-        this.assetsResponses = responses;
+        this.assetsResponses = newAssets;
         this.loading = false;
       });
     } catch (error) {

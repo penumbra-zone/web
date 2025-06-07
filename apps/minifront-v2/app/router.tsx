@@ -5,11 +5,15 @@ import { AllTransactionsPage } from '@pages/portfolio/transactions/AllTransactio
 import { Transfer } from '@pages/transfer';
 import { NotFoundPage } from '@pages/not-found';
 import { Layout } from '@app/layout';
+import { abortLoader } from '@shared/lib/abort-loader';
+import { ErrorBoundary } from '@shared/components/error-boundary';
 
 const routes: RouteObject[] = [
   {
     path: '/',
     element: <Layout />,
+    errorElement: <ErrorBoundary />,
+    loader: abortLoader,
     children: [
       { index: true, loader: () => redirect(PagePath.Portfolio) },
       {

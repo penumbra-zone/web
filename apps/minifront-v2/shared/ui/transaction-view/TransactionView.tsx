@@ -256,15 +256,15 @@ export const TransactionView: React.FC<TransactionViewProps> = ({
           <Section sectionTitle='Memo'>
             <TransactionMemo {...sectionProps} transactionToDisplay={displayedTransactionView} />
           </Section>
-          <Section sectionTitle='Summary' layout='transparent'>
-            <UiTransactionSummary
-              info={fullTxInfoFromMinifront}
-              getMetadata={getTxMetadata}
-              walletAddressViews={combinedWalletAddressViews}
-              hideMemo={true}
-            />
-          </Section>
-
+          {activeTab === TxViewTab.MY_VIEW && (
+            <Section sectionTitle='Summary' layout='transparent'>
+              <UiTransactionSummary
+                info={fullTxInfoFromMinifront}
+                getMetadata={getTxMetadata}
+                hideMemo={true}
+              />
+            </Section>
+          )}
           <Section sectionTitle='Actions' layout='transparent'>
             <ActionHistory
               actionViews={displayedTransactionView?.bodyView?.actionViews}

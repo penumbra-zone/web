@@ -90,16 +90,6 @@ export const SendForm = observer(() => {
             assets={assetsStore.allAssets}
             amountPlaceholder='Amount to send...'
             assetDialogTitle='Select Asset'
-            errors={{
-              amountError: sendValidation.amountError,
-              exponentError: sendValidation.exponentError,
-              insufficientFunds: sendValidation.amountError, // Map insufficient funds to amountError for now
-            }}
-            errorMessages={{
-              amountError: 'Insufficient funds',
-              exponentError: 'Invalid decimal length',
-              insufficientFunds: 'Insufficient funds',
-            }}
             showBalance={true}
           />
         </div>

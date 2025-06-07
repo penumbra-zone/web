@@ -55,12 +55,4 @@ export const metadata: Record<PagePath, PageMetadata> = {
     title: 'Transaction',
     description: 'More details about transaction',
   },
-  [PagePath.V2_PORTFOLIO]: {
-    title: 'Portfolio',
-    description: 'View your v2 portfolio assets and recent activity.',
-  },
-  [PagePath.V2_TRANSACTIONS_FULL]: {
-    title: 'All Transactions',
-    description: 'View all your account transactions.',
-  },
 };

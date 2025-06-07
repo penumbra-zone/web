@@ -40,7 +40,9 @@ export interface AssetValueInputProps {
 
 // Internal validation logic
 const validateAmount = (amount: string, selectedAsset?: BalancesResponse) => {
-  if (!amount.trim()) return null;
+  if (!amount.trim()) {
+    return null;
+  }
 
   const numericAmount = parseFloat(amount);
   if (isNaN(numericAmount) || numericAmount < 0) {
@@ -51,7 +53,7 @@ const validateAmount = (amount: string, selectedAsset?: BalancesResponse) => {
   if (selectedAsset?.balanceView) {
     const metadata = getMetadata.optional(selectedAsset.balanceView);
     const maxDecimals = getDisplayDenomExponent.optional(metadata) ?? 6;
-    const decimalPlaces = amount.includes('.') ? amount.split('.')[1]?.length || 0 : 0;
+    const decimalPlaces = amount.includes('.') ? (amount.split('.')[1]?.length ?? 0) : 0;
 
     if (decimalPlaces > maxDecimals) {
       return `Too many decimal places (max ${maxDecimals})`;
@@ -128,7 +130,7 @@ export const AssetValueInput = ({
   const internalError = validateAmount(amount, selectedAsset);
 
   // Use custom error if provided, otherwise use internal validation
-  const displayError = error || internalError;
+  const displayError = error ?? internalError;
   const hasError = !!displayError;
 
   // Check if error is specifically insufficient funds for special styling

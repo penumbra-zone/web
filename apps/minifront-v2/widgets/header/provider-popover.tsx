@@ -1,17 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link2Off, Wallet2, Download } from 'lucide-react';
+
+import { Link2Off } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 import { Popover } from '@penumbra-zone/ui/Popover';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Density } from '@penumbra-zone/ui/Density';
 import { Text } from '@penumbra-zone/ui/Text';
 import { penumbra } from '@shared/lib/penumbra';
-import { PenumbraManifest, PenumbraClient } from '@penumbra-zone/client';
-import {
-  useAppParametersStore,
-  useBalancesStore,
-  useTransactionsStore,
-} from '@shared/stores/store-context';
+import { PenumbraManifest } from '@penumbra-zone/client';
+import { useAppParametersStore } from '@shared/stores/store-context';
 import { useIsConnected } from '@shared/hooks/use-connection';
 
 const usePenumbraManifest = (): PenumbraManifest | undefined => {
@@ -19,41 +16,19 @@ const usePenumbraManifest = (): PenumbraManifest | undefined => {
 
   useEffect(() => {
     setManifest(penumbra.manifest);
-    penumbra.onConnectionStateChange(() => {
+    const unsubscribe = penumbra.onConnectionStateChange(() => {
       setManifest(penumbra.manifest);
     });
+    return unsubscribe;
   }, []);
 
   return manifest;
 };
 
-const useAvailableProviders = () => {
-  const [providers, setProviders] = useState<string[]>([]);
-
-  useEffect(() => {
-    const updateProviders = () => {
-      const availableProviders = Object.keys(PenumbraClient.getProviders());
-      setProviders(availableProviders);
-    };
-
-    updateProviders();
-
-    // Check periodically for new providers
-    const interval = setInterval(updateProviders, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  return providers;
-};
-
 export const ProviderPopover = observer(() => {
   const manifest = usePenumbraManifest();
   const isConnected = useIsConnected();
-  const availableProviders = useAvailableProviders();
   const appParametersStore = useAppParametersStore();
-  const balancesStore = useBalancesStore();
-  const transactionsStore = useTransactionsStore();
 
   const icon = useMemo(() => {
     const icons = manifest?.icons;
@@ -66,7 +41,7 @@ export const ProviderPopover = observer(() => {
       <img
         src={URL.createObjectURL(blob)}
         alt={`${manifest?.name} Icon`}
-        className='size-4 max-w-none grayscale' // Smaller size and black/white
+        className='size-4 max-w-none grayscale'
       />
     );
   }, [manifest]);
@@ -74,66 +49,6 @@ export const ProviderPopover = observer(() => {
   const disconnect = () => {
     void penumbra.disconnect().then(() => window.location.reload());
   };
-
-  const connectWallet = async () => {
-    if (availableProviders.length === 1 && availableProviders[0]) {
-      try {
-        await penumbra.connect(availableProviders[0] ?? '');
-        // Refresh all stores after successful connection
-        await Promise.all([
-          appParametersStore.refresh(),
-          balancesStore.loadBalances(),
-          transactionsStore.loadTransactions(),
-        ]);
-      } catch (error) {
-        console.error('Failed to connect wallet:', error);
-      }
-    } else if (availableProviders.length > 1) {
-      // TODO: Show provider selection dialog
-      // For now, just connect to the first one
-      try {
-        const firstProvider = availableProviders[0];
-        if (firstProvider) {
-          await penumbra.connect(firstProvider);
-          // Refresh all stores after successful connection
-          await Promise.all([
-            appParametersStore.refresh(),
-            balancesStore.loadBalances(),
-            transactionsStore.loadTransactions(),
-          ]);
-        }
-      } catch (error) {
-        console.error('Failed to connect wallet:', error);
-      }
-    }
-  };
-
-  const installWallet = () => {
-    window.open('https://praxwallet.com/', '_blank', 'noopener,noreferrer');
-  };
-
-  // If wallet is installed but not connected
-  if (availableProviders.length > 0 && !isConnected) {
-    return (
-      <Button
-        actionType='default'
-        density='compact'
-        icon={Wallet2}
-        onClick={() => void connectWallet()}
-      >
-        <span className='text-sm'>Connect Wallet</span>
-      </Button>
-    );
-  }
-
-  // If no wallet is installed
-  if (availableProviders.length === 0) {
-    return (
-      <Button actionType='default' density='compact' icon={Download} onClick={installWallet}>
-        <span className='text-sm'>Install Wallet</span>
-      </Button>
-    );
-  }
 
   // If connected and have manifest, show the full popover
   if (isConnected && manifest) {
@@ -177,15 +92,7 @@ export const ProviderPopover = observer(() => {
     );
   }
 
-  // Fallback: show connect wallet
-  return (
-    <Button
-      actionType='default'
-      density='compact'
-      icon={Wallet2}
-      onClick={() => void connectWallet()}
-    >
-      <span className='text-sm'>Connect Wallet</span>
-    </Button>
-  );
+  // If not connected, the router will handle showing the connection screen
+  // This component should not render in that case
+  return null;
 });
