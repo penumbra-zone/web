@@ -95,6 +95,7 @@ class ConnectionStateStore {
 
     try {
       await penumbra.disconnect();
+      localStorage.removeItem(SUBACCOUNT_LS_KEY);
     } catch (error) {
       console.error(error);
     } finally {
