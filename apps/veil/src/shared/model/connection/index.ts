@@ -10,6 +10,8 @@ import { penumbra } from '@/shared/const/penumbra';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { envQueryFn } from '@/shared/api/env/env';
 
+const SUBACCOUNT_LS_KEY = 'veil-connection-subaccount';
+
 class ConnectionStateStore {
   connected = false;
   manifest: PenumbraManifest | undefined;
@@ -30,7 +32,15 @@ class ConnectionStateStore {
   }
 
   setSubaccount = (subaccount: string) => {
-    this.subaccount = parseInt(subaccount, 10);
+    this.subaccount = parseInt(subaccount, 10) || 0;
+    localStorage.setItem(SUBACCOUNT_LS_KEY, subaccount);
+  };
+
+  setPreferredSubaccount = () => {
+    const subaccount = localStorage.getItem(SUBACCOUNT_LS_KEY);
+    if (subaccount) {
+      this.setSubaccount(subaccount);
+    }
   };
 
   async reconnect() {
@@ -47,6 +57,7 @@ class ConnectionStateStore {
       await penumbra.connect(connected);
       this.setConnected(true);
       await this.checkWrongChain();
+      this.setPreferredSubaccount();
     } catch (error) {
       /* no-op */
     }
@@ -56,6 +67,7 @@ class ConnectionStateStore {
     try {
       await penumbra.connect(provider);
       await this.checkWrongChain();
+      this.setPreferredSubaccount();
     } catch (error) {
       if (error instanceof Error && error.cause) {
         if (error.cause === PenumbraRequestFailure.Denied) {
