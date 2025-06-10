@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import { observer } from 'mobx-react-lite';
 import { Text } from '@penumbra-zone/ui/Text';
 import { Icon } from '@penumbra-zone/ui/Icon';
@@ -10,7 +11,7 @@ interface InfoRowProps {
   isLoading?: boolean;
   value?: string | number;
   valueColor?: 'success' | 'error';
-  toolTip?: string;
+  toolTip?: ReactNode;
 }
 
 const getValueColor = (valueColor: InfoRowProps['valueColor']) => {

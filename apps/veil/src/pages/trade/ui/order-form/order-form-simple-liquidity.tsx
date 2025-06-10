@@ -1,21 +1,26 @@
+import Image from 'next/image';
 import { observer } from 'mobx-react-lite';
+import { WalletMinimal, InfoIcon } from 'lucide-react';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
+import { TextInput } from '@penumbra-zone/ui/TextInput';
 import { round } from '@penumbra-zone/types/round';
 import { connectionStore } from '@/shared/model/connection';
 import { ConnectButton } from '@/features/connect/connect-button';
-import { AmountInput } from './amount-input';
+import { Tooltip } from '@penumbra-zone/ui/Tooltip';
 import { InfoRow } from './info-row';
 import { InfoRowGasFee } from './info-row-gas-fee';
 import { OrderFormStore } from './store/OrderFormStore';
 import { DEFAULT_PRICE_RANGE, DEFAULT_PRICE_SPREAD } from './store/SimpleLPFormStore';
 import { PriceSlider } from './price-slider';
 import { useEffect, useState } from 'react';
+import { Icon } from '@penumbra-zone/ui/Icon';
 
 export const SimpleLiquidityOrderForm = observer(
   ({ parentStore }: { parentStore: OrderFormStore }) => {
     const { connected } = connectionStore;
     const { defaultDecimals, simpleLPForm: store } = parentStore;
+    const isLQTEligible = true;
 
     const priceSpread = DEFAULT_PRICE_SPREAD;
     const priceRange = DEFAULT_PRICE_RANGE;
@@ -33,51 +38,132 @@ export const SimpleLiquidityOrderForm = observer(
     return (
       <div className='p-4'>
         <div className='mb-4'>
-          <div className='leading-6'>
+          <div className=' leading-6 flex items-center gap-1'>
             <Text small color='text.secondary'>
               Enter Amounts
             </Text>
+            <Tooltip message='Specify the token amounts for your liquidity contribution. They adjust based on the selected price range.'>
+              <Icon IconComponent={InfoIcon} size='sm' color='text.secondary' />
+            </Tooltip>
           </div>
-          <div className='mb-1'>
-            <AmountInput
+          <div className='mb-2'>
+            <TextInput
+              type='number'
+              typography='large'
+              density='compact'
+              blurOnWheel
               value={round({
                 value: store.baseInput,
                 decimals: store.baseAsset?.exponent ?? defaultDecimals,
               })}
               onChange={store.setBaseInput}
-              asset={store.baseAsset}
-              balance={store.baseAsset?.formatBalance()}
-              onBalanceClick={() => {
-                const target = store.baseAsset?.balance?.toString();
-                if (target) {
-                  store.setBaseInput(target);
-                }
-              }}
+              endAdornment={
+                store.baseAsset?.symbol && (
+                  <div className='flex items-center gap-1 font-default text-textSm font-normal leading-textXs text-text-secondary'>
+                    {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- its necessary */}
+                    {store.baseAsset?.metadata?.images?.[0]?.svg && (
+                      <Image
+                        className='w-4 h-4 rounded-full'
+                        src={store.baseAsset.metadata.images[0].svg}
+                        alt={store.baseAsset.symbol}
+                        width={16}
+                        height={16}
+                      />
+                    )}
+                    {store.baseAsset.symbol}
+                  </div>
+                )
+              }
             />
+            {store.baseAsset?.formatBalance() && (
+              <button
+                type='button'
+                className='flex items-center gap-1 font-mono text-textXs font-normal leading-textXs text-text-secondary my-1'
+                onClick={() => {
+                  const target = store.baseAsset?.balance?.toString();
+                  if (target) {
+                    store.setBaseInput(target);
+                  }
+                }}
+              >
+                <div className='bg-other-tonalFill5 rounded-full w-[28px] h-[20px] flex items-center justify-center'>
+                  <Icon IconComponent={WalletMinimal} size='xs' color='text.secondary' />
+                </div>
+                {store.baseAsset.formatBalance()}
+              </button>
+            )}
           </div>
-          <div className='mb-1'>
-            <AmountInput
+          <div className='mb-2'>
+            <TextInput
+              type='number'
+              typography='large'
+              density='compact'
+              blurOnWheel
               value={round({
                 value: store.quoteInput,
                 decimals: store.quoteAsset?.exponent ?? defaultDecimals,
               })}
               onChange={store.setQuoteInput}
-              asset={store.quoteAsset}
-              balance={store.quoteAsset?.formatBalance()}
-              onBalanceClick={() => {
-                const target = store.quoteAsset?.balance?.toString();
-                if (target) {
-                  store.setQuoteInput(target);
-                }
-              }}
+              endAdornment={
+                store.quoteAsset?.symbol && (
+                  <div className='flex items-center gap-1 font-default text-textSm font-normal leading-textXs text-text-secondary'>
+                    {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- its necessary */}
+                    {store.quoteAsset?.metadata?.images?.[0]?.svg && (
+                      <Image
+                        className='w-4 h-4 rounded-full'
+                        src={store.quoteAsset.metadata.images[0].svg}
+                        alt={store.quoteAsset.symbol}
+                        width={16}
+                        height={16}
+                      />
+                    )}
+                    {store.quoteAsset.symbol}
+                  </div>
+                )
+              }
             />
+            {store.quoteAsset?.formatBalance() && (
+              <button
+                type='button'
+                className='flex items-center gap-1 font-mono text-textXs font-normal leading-textXs text-text-secondary my-1'
+                onClick={() => {
+                  const target = store.quoteAsset?.balance?.toString();
+                  if (target) {
+                    store.setQuoteInput(target);
+                  }
+                }}
+              >
+                <div className='bg-other-tonalFill5 rounded-full w-[28px] h-[20px] flex items-center justify-center'>
+                  <Icon IconComponent={WalletMinimal} size='xs' color='text.secondary' />
+                </div>
+                {store.quoteAsset.formatBalance()}
+              </button>
+            )}
           </div>
         </div>
         <div className='mb-4'>
-          <div className='leading-6 mb-4'>
-            <Text small color='text.secondary'>
-              Price Range
-            </Text>
+          <div className='flex justify-between leading-6 mb-4'>
+            <div className='flex items-center gap-1'>
+              <Text small color='text.secondary'>
+                Price Range
+              </Text>
+              <Tooltip message='Defines the range of prices where your liquidity will be active. You earn fees only when trades happen within this range.'>
+                <Icon IconComponent={InfoIcon} size='sm' color='text.secondary' />
+              </Tooltip>
+            </div>
+            <Button
+              actionType='default'
+              priority='secondary'
+              density='compact'
+              onClick={() => {
+                setPriceRanges([
+                  store.marketPrice * (1 - priceSpread),
+                  store.marketPrice * (1 + priceSpread),
+                ]);
+              }}
+            >
+              Reset
+            </Button>
           </div>
           <PriceSlider
             min={store.marketPrice * (1 - priceRange)}
@@ -90,7 +176,25 @@ export const SimpleLiquidityOrderForm = observer(
           />
         </div>
         <div className='mb-4'>
-          <InfoRow label='LQT Rewards' value='Eligible' />
+          <InfoRow
+            label='LQT Rewards'
+            value={isLQTEligible ? 'Eligible' : 'Not Eligible'}
+            valueColor={isLQTEligible ? 'success' : 'error'}
+            toolTip={
+              isLQTEligible ? (
+                <>
+                  This pair qualifies for LQT rewards. By providing liquidity, you earn additional
+                  protocol incentives.{' '}
+                  <a href='https://penumbra-zone.webflow.io/tournament'>Learn More.</a>
+                </>
+              ) : (
+                <>
+                  This pair is not currently eligible for LQT rewards. Explore other pairs or{' '}
+                  <a href='https://penumbra-zone.webflow.io/tournament'>Learn More.</a>
+                </>
+              )
+            }
+          />
           <InfoRowGasFee
             gasFee={parentStore.gasFee.display}
             symbol={parentStore.gasFee.symbol}
