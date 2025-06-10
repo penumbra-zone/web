@@ -1,6 +1,6 @@
 import type { Impl } from './index.js';
 import { servicesCtx } from '../ctx/prax.js';
-import { optimisticBuild } from './util/build-tx.js';
+import { optimsiticDelegatedBuild } from './util/build-tx.js';
 import { custodyAuthorize } from './util/custody-authorize.js';
 import { getWitness } from '@penumbra-zone/wasm/build';
 import { Code, ConnectError } from '@connectrpc/connect';
@@ -10,6 +10,8 @@ export const authorizeAndBuild: Impl['authorizeAndBuild'] = async function* (
   { transactionPlan },
   ctx,
 ) {
+  console.log('entered authorizeAndBuild!');
+
   const services = await ctx.values.get(servicesCtx)();
   if (!transactionPlan) {
     throw new ConnectError('No tx plan in request', Code.InvalidArgument);
@@ -21,10 +23,28 @@ export const authorizeAndBuild: Impl['authorizeAndBuild'] = async function* (
   const sct = await indexedDb.getStateCommitmentTree();
   const witnessData = getWitness(transactionPlan, sct);
 
-  yield* optimisticBuild(
+  const startTime = performance.now();
+
+  yield* optimsiticDelegatedBuild(
     transactionPlan,
     witnessData,
     custodyAuthorize(ctx, transactionPlan),
     await fvk(),
   );
+
+  const finalTime = performance.now();
+  const totalDuration = finalTime - startTime;
+
+  console.log('optimsiticDelegatedBuild completed', {
+    totalDurationMs: totalDuration,
+    startTime,
+    endTime: finalTime,
+  });
+
+  // yield* optimisticBuild(
+  //   transactionPlan,
+  //   witnessData,
+  //   custodyAuthorize(ctx, transactionPlan),
+  //   await fvk(),
+  // );
 };
