@@ -1,13 +1,14 @@
+import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
 import { useEffect } from 'react';
-import '@penumbra-zone/ui/style.css';
-import './v2.css';
-
 import { TooltipProvider } from '@penumbra-zone/ui/Tooltip';
 import { ToastProvider } from '@penumbra-zone/ui/Toast';
 import { router } from './router';
-import { StoreProvider, useRootStore } from '@/shared/stores/store-context';
+import { StoreProvider, useRootStore } from '../shared/stores/store-context';
+
+import '@penumbra-zone/ui/style.css';
+import './global.css';
 
 // Component to initialize stores
 const StoreInitializer = ({ children }: { children: React.ReactNode }) => {
@@ -33,10 +34,10 @@ const Main = () => {
     <StoreProvider>
       <TooltipProvider delayDuration={0}>
         <StoreInitializer>
-          <main className='relative z-0'>
+          <main className='z-0 py-4'>
             <RouterProvider router={router} />
           </main>
-          <div className='relative z-10'>
+          <div className='absolute bottom-0 right-0 z-10'>
             <ToastProvider />
           </div>
         </StoreInitializer>

@@ -23,6 +23,7 @@ export default defineConfig(({ mode }) => {
         '@/entities': path.resolve(__dirname, 'src/entities'),
         '@/features': path.resolve(__dirname, 'src/features'),
         '@/widgets': path.resolve(__dirname, 'src/widgets'),
+        '@ui': path.resolve(__dirname, '../../packages/ui/src'),
         '@amplitude/analytics-browser': url.fileURLToPath(
           import.meta.resolve('@repo/stubs/amplitude-analytics-browser'),
         ),
