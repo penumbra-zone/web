@@ -15,12 +15,15 @@ import { DEFAULT_PRICE_RANGE, DEFAULT_PRICE_SPREAD } from './store/SimpleLPFormS
 import { PriceSlider } from './price-slider';
 import { useEffect, useState } from 'react';
 import { Icon } from '@penumbra-zone/ui/Icon';
+import { assetPatterns } from '@penumbra-zone/types/assets';
 
 export const SimpleLiquidityOrderForm = observer(
   ({ parentStore }: { parentStore: OrderFormStore }) => {
     const { connected } = connectionStore;
     const { defaultDecimals, simpleLPForm: store } = parentStore;
-    const isLQTEligible = true;
+    const isLQTEligible =
+      (store.baseAsset && assetPatterns.ibc.matches(store.baseAsset.metadata.base)) ??
+      (store.quoteAsset && assetPatterns.ibc.matches(store.quoteAsset.metadata.base));
 
     const priceSpread = DEFAULT_PRICE_SPREAD;
     const priceRange = DEFAULT_PRICE_RANGE;
@@ -179,18 +182,22 @@ export const SimpleLiquidityOrderForm = observer(
           <InfoRow
             label='LQT Rewards'
             value={isLQTEligible ? 'Eligible' : 'Not Eligible'}
-            valueColor={isLQTEligible ? 'success' : 'error'}
+            valueColor={isLQTEligible ? 'success' : undefined}
             toolTip={
               isLQTEligible ? (
                 <>
                   This pair qualifies for LQT rewards. By providing liquidity, you earn additional
                   protocol incentives.{' '}
-                  <a href='https://penumbra-zone.webflow.io/tournament'>Learn More.</a>
+                  <a href='https://penumbra-zone.webflow.io/tournament' className='underline'>
+                    Learn More.
+                  </a>
                 </>
               ) : (
                 <>
                   This pair is not currently eligible for LQT rewards. Explore other pairs or{' '}
-                  <a href='https://penumbra-zone.webflow.io/tournament'>Learn More.</a>
+                  <a href='https://penumbra-zone.webflow.io/tournament' className='underline'>
+                    Learn More.
+                  </a>
                 </>
               )
             }
