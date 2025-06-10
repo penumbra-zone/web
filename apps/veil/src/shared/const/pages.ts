@@ -6,7 +6,6 @@ export enum PagePath {
   Trade = '/trade',
   Inspect = '/inspect',
   Portfolio = '/portfolio',
-  Transactions = '/transactions',
   Tournament = '/tournament',
   TournamentRound = '/tournament/:epoch',
   TournamentDelegator = '/tournament/delegator/:address',
