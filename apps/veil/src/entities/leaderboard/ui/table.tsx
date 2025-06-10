@@ -22,10 +22,10 @@ import { connectionStore } from '@/shared/model/connection';
 import { useMyLpLeaderboard } from '@/entities/leaderboard/api/use-my-lp-leaderboard';
 import { round } from '@penumbra-zone/types/round';
 import { useStakingTokenMetadata } from '@/shared/api/registry';
-import { useAssets, useGetMetadata } from '@/shared/api/assets';
-import { useBalances } from '@/shared/api/balances';
+import { useGetMetadata } from '@/shared/api/assets';
 import { AssetSelector, AssetSelectorValue } from '@penumbra-zone/ui/AssetSelector';
 import { getAssetId } from './utils';
+import { useEpochResults } from '@/pages/tournament/api/use-epoch-results';
 
 const Tabs = {
   AllLPs: 'All LPs',
@@ -46,8 +46,6 @@ export const LeaderboardTable = observer(({ epoch }: { epoch: number | undefined
   const { getTableHeader, sortBy } = useSortableTableHeaders<LpLeaderboardSortKey>('points');
   const getAssetMetadata = useGetMetadata();
   const { data: umMetadata } = useStakingTokenMetadata();
-  const { data: balances } = useBalances();
-  const { data: assets } = useAssets();
   const [selectedAsset, setSelectedAsset] = useState<AssetSelectorValue>();
 
   const {
@@ -80,6 +78,28 @@ export const LeaderboardTable = observer(({ epoch }: { epoch: number | undefined
     isActive: isMyTab,
   });
 
+  const {
+    data: assetsData,
+    isLoading: { isLoadingGauge },
+    assetGauges,
+  } = useEpochResults('epoch-results-vote-dialog', {
+    epoch,
+    limit: 30,
+    page: 1,
+  });
+
+  // Collect an array of minium 5 items. If there are more than 5 voted assets, return all of them.
+  // If less than 5, firstly return all voted assets, and then fill the rest with non-voted assets.
+  const assetsGauge = assetsData?.data ?? [];
+  const selectorAssets = [
+    ...assetsGauge,
+    ...(assetsGauge.length < 5
+      ? assetGauges.slice(assetsGauge.length, assetsGauge.length + 5 - assetsGauge.length)
+      : []),
+  ];
+
+  const metadataAssets = selectorAssets.map(g => g.asset);
+
   const [positions, total, error, isLoading] = isMyTab
     ? [myLeaderboard?.data, myLeaderboard?.total, myLeaderboardError, myLeaderboardLoading]
     : [leaderboard?.data, leaderboard?.total, leaderboardError, leaderboardLoading];
@@ -94,12 +114,16 @@ export const LeaderboardTable = observer(({ epoch }: { epoch: number | undefined
           </Text>
 
           <div className='rounded-full overflow-hidden'>
-            <AssetSelector
-              assets={assets}
-              balances={balances}
-              value={selectedAsset}
-              onChange={setSelectedAsset}
-            />
+            {isLoadingGauge ? (
+              <div className='h-10 w-48 animate-pulse rounded-full bg-neutral-light' />
+            ) : (
+              <AssetSelector
+                assets={metadataAssets}
+                balances={undefined}
+                value={selectedAsset}
+                onChange={setSelectedAsset}
+              />
+            )}
           </div>
         </div>
 
@@ -251,7 +275,7 @@ export const LeaderboardTable = observer(({ epoch }: { epoch: number | undefined
                           <span className='!text-sm'>
                             {tab === Tabs.AllLPs
                               ? 'There are no liquidity positions in this epoch.'
-                              : 'You have no liquidity positions in this epoch.'}
+                              : 'Your LPs have not received any rewards during this epoch.'}
                           </span>
                         </TableCell>
                       </div>
