@@ -6,6 +6,7 @@ import { Text } from '@penumbra-zone/ui/Text';
 import { round } from '@penumbra-zone/types/round';
 import { pnum } from '@penumbra-zone/types/pnum';
 import { getTradePairPath } from '@/shared/const/pages';
+import { useStakingTokenMetadata } from '@/shared/api/registry';
 import type { MappedGauge } from '../../../server/previous-epochs';
 import { VoteButton } from './vote-button';
 import Link from 'next/link';
@@ -19,7 +20,8 @@ export const TableRow = ({
   canVote: boolean;
   loading: boolean;
 }) => {
-  const link = getTradePairPath(item.asset.symbol === 'USDC' ? 'UM' : item.asset.symbol, 'USDC', {
+  const umMetadata = useStakingTokenMetadata();
+  const link = getTradePairPath(umMetadata.data.symbol, item.asset.symbol, {
     highlight: 'liquidity',
   });
 
