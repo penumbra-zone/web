@@ -7,24 +7,25 @@ import { TableCell } from '@penumbra-zone/ui/TableCell';
 import { Density } from '@penumbra-zone/ui/Density';
 import { Pagination } from '@penumbra-zone/ui/Pagination';
 import { connectionStore } from '@/shared/model/connection';
+import { LoadingRow } from '@/shared/ui/loading-row';
 import { useSortableTableHeaders } from '../../sortable-table-header';
 import type { EpochResultsSortKey } from '../../../server/epoch-results';
 import type { MappedGauge } from '../../../server/previous-epochs';
 import { useEpochResults } from '../../../api/use-epoch-results';
 import { VOTING_THRESHOLD } from '../../vote-dialog/vote-dialog-asset';
+import { useVotingInfo } from '../../voting-info.tsx';
 import { TableRow } from './table-row';
-import { useVotingInfo } from '@/pages/tournament/ui/voting-info.tsx';
 
 const BASE_LIMIT = 10;
 
 const TABLE_CLASSES = {
   table: {
-    default: cn('grid-cols-[1fr_1fr_1fr_1fr]'),
-    canVote: cn('grid-cols-[1fr_1fr_1fr_1fr_72px]'),
+    default: cn('grid-cols-[1fr_1fr_1fr_1fr_136px]'),
+    canVote: cn('grid-cols-[1fr_1fr_1fr_1fr_72px_136px]'),
   },
   row: {
-    default: cn('col-span-4'),
-    canVote: cn('col-span-5'),
+    default: cn('col-span-5'),
+    canVote: cn('col-span-6'),
   },
 };
 
@@ -59,7 +60,6 @@ export const CurrentVotingResults = observer(({ epoch }: CurrentVotingResultsPro
   const tableKey = canVote ? 'canVote' : 'default';
   const total = data?.total ?? 0;
 
-  const loadingArr = new Array(10).fill({ votes: 0 }) as MappedGauge[];
   const { above, below } = (data?.data ?? []).reduce<{
     above: MappedGauge[];
     below: MappedGauge[];
@@ -89,12 +89,13 @@ export const CurrentVotingResults = observer(({ epoch }: CurrentVotingResultsPro
               {getTableHeader('votes', 'Votes Cast')}
               <TableCell heading>Estimated Incentive</TableCell>
               {canVote && <TableCell heading>Vote</TableCell>}
+              <TableCell heading>Trade</TableCell>
             </div>
 
             {isLoading &&
-              loadingArr.map((item, index) => (
-                <TableRow key={index} item={item} loading canVote={canVote} />
-              ))}
+              new Array(10)
+                .fill({ votes: 0 })
+                .map((_, index) => <LoadingRow key={`loading-${index}`} cells={canVote ? 6 : 5} />)}
 
             {!isLoading && total === 0 && (
               <div className={TABLE_CLASSES.row[tableKey]}>

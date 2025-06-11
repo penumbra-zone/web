@@ -7,14 +7,23 @@
     "target": "ESNext",
     "types": ["vitest/globals", "chrome", "@testing-library/jest-dom"],
     "paths": {
-      "@app/*": ["./app/*"],
-      "@pages/*": ["./pages/*"],
-      "@entities/*": ["./entities/*"],
-      "@widgets/*": ["./widgets/*"],
-      "@features/*": ["./features/*"],
-      "@shared/*": ["./shared/*"]
+      "@/*": ["./src/*"],
+      "@/app/*": ["./src/app/*"],
+      "@/pages/*": ["./src/pages/*"],
+      "@/entities/*": ["./src/entities/*"],
+      "@/widgets/*": ["./src/widgets/*"],
+      "@/features/*": ["./src/features/*"],
+      "@/shared/*": ["./src/shared/*"]
     }
   },
   "extends": ["@tsconfig/strictest/tsconfig.json", "@tsconfig/vite-react/tsconfig.json"],
-  "include": ["app", "pages", "shared", "widgets", "entities", "features", "vite.config.ts"]
+  "include": [
+    "app",
+    "pages",
+    "src",
+    "vite.config.ts",
+    "tailwind.config.ts",
+    "svg.d.ts",
+    "../../packages/ui-deprecated/src/**/*"
+  ]
 }

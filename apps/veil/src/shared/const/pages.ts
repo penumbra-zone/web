@@ -30,3 +30,13 @@ export const useBasePath = (): PagePath => {
   }
   return path;
 };
+
+export const getTradePairPath = (
+  primary: string,
+  numeraire: string,
+  options: { highlight?: 'liquidity' } = {},
+): string => {
+  const route = PagePath.TradePair.replace(':primary', primary).replace(':numeraire', numeraire);
+  const query = options.highlight ? `?highlight=${options.highlight}` : '';
+  return `${route}${query}`;
+};

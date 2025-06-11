@@ -30,6 +30,7 @@ export default {
         border: {
           DEFAULT: 'hsl(var(--border))',
           secondary: 'var(--border-secondary)',
+          otherTonalStroke: 'rgba(250, 250, 250, 0.15)',
         },
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
@@ -38,10 +39,16 @@ export default {
         primary: {
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))',
+          light: 'rgba(244, 156, 67, 0.25)',
+          main: '#BA4D14',
         },
         secondary: {
           DEFAULT: 'hsl(var(--secondary))',
           foreground: 'hsl(var(--secondary-foreground))',
+        },
+        unshield: {
+          light: 'rgba(193, 166, 204, 0.25)',
+          main: '#705279',
         },
         destructive: {
           DEFAULT: 'hsl(var(--destructive))',
@@ -107,11 +114,12 @@ export default {
           disabled: 'var(--text-disabled, rgba(255, 255, 255, 0.3))',
         },
         'other-tonalFill5': 'rgba(250, 250, 250, 0.05)',
+        actionHoverOverlay: 'rgba(83, 174, 168, 0.15)',
       },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)',
+        sm: 'var(--radius)',
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -162,6 +170,16 @@ export default {
           ),
           url('penumbra-logo.svg')
         `,
+        gradientAccentRadial:
+          'radial-gradient(100% 100% at 0% 0%, var(--primary-light) 0%, rgba(244, 156, 67, 0.03) 100%)',
+        gradientUnshieldRadial:
+          'radial-gradient(100% 100% at 0% 0%, var(--unshield-light) 0%, rgba(193, 166, 204, 0.03) 100%)',
+        actionHoverOverlayImage:
+          'linear-gradient(0deg, var(--Action-Hover-Overlay) 0%, var(--Action-Hover-Overlay) 100%)',
+        'gradient-accent-radial-background':
+          'radial-gradient(100% 100% at 0% 0%, var(--Primary-Light, rgba(244, 156, 67, 0.25)) 0%, rgba(244, 156, 67, 0.03) 100%)',
+        'gradient-unshield-radial-background':
+          'radial-gradient(100% 100% at 0% 0%, var(--Unshield-Light, rgba(193, 166, 204, 0.25)) 0%, rgba(193, 166, 204, 0.03) 100%)',
       },
     },
   },
@@ -181,6 +199,8 @@ export default {
           '--text-disabled': 'rgba(255, 255, 255, 0.3)',
           '--Other-Tonal-Fill-5': 'rgba(250, 250, 250, 0.05)',
           '--Action-Hover-Overlay': 'rgba(83, 174, 168, 0.15)',
+          '--primary-light': 'rgba(244, 156, 67, 0.25)',
+          '--unshield-light': 'rgba(193, 166, 204, 0.25)',
         },
       });
     }),

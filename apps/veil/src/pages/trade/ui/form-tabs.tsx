@@ -7,13 +7,20 @@ import { RangeLiquidityOrderForm } from './order-form/order-form-range-liquidity
 import { SimpleLiquidityOrderForm } from './order-form/order-form-simple-liquidity';
 import { isWhichForm, useOrderFormStore } from './order-form/store/OrderFormStore';
 import { observer } from 'mobx-react-lite';
+import cn from 'clsx';
 
 export const FormTabs = observer(() => {
   const [parent] = useAutoAnimate();
   const store = useOrderFormStore();
 
   return (
-    <div ref={parent} className='flex flex-col'>
+    <div
+      ref={parent}
+      className={cn(
+        'flex flex-col transition-colors duration-500',
+        store.highlight && 'bg-action-hoverOverlay',
+      )}
+    >
       <div className='px-4 lg:pt-2 border-b border-b-other-solidStroke'>
         <Density compact>
           <Tabs

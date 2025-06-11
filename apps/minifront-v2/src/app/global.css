@@ -1,0 +1,26 @@
+@import '@ui/theme/fonts.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  background: #0d0d0d;
+  color: #fafafa;
+}
+
+body {
+  @apply font-default text-text-primary;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Fix for Prax notifications not showing above dialog backdrops */
+body > section[aria-live='polite'] {
+  z-index: 9999999999999;
+}

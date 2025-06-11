@@ -13,7 +13,7 @@ import {
   AddressIndex,
   AddressView,
 } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { usePathToMetadata } from '@/pages/trade/model/use-path';
+import { usePathQuery, usePathToMetadata } from '@/pages/trade/model/use-path';
 import { useBalances } from '@/shared/api/balances';
 import { connectionStore } from '@/shared/model/connection';
 import { useSubaccounts } from '@/widgets/header/api/subaccounts';
@@ -57,6 +57,7 @@ export class OrderFormStore {
   private _gasFee: { symbol: string; display: string } = { symbol: 'UM', display: '--' };
   private _gasFeeLoading = false;
   defaultDecimals = 6;
+  highlight = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -175,6 +176,15 @@ export class OrderFormStore {
 
   setWhichForm(x: WhichForm) {
     this._whichForm = x;
+  }
+
+  setHighlight(x: boolean) {
+    this.highlight = x;
+    if (x) {
+      setTimeout(() => {
+        this.highlight = false;
+      }, 3000);
+    }
   }
 
   get whichForm(): WhichForm {
@@ -342,6 +352,7 @@ export const useOrderFormStore = () => {
   const { address, addressIndex } = getAccountAddress(subAccounts);
   const { data: balances } = useBalances(addressIndex?.account ?? subaccount);
   const { baseAsset, quoteAsset } = usePathToMetadata();
+  const { highlight } = usePathQuery();
   const marketPrice = useMarketPrice();
 
   // Finds a balance by given asset metadata and selected sub-account
@@ -357,6 +368,14 @@ export const useOrderFormStore = () => {
     },
     [addressIndex],
   );
+
+  // if the page sets query param `highlight`, set correct tab and highlight it for 3 seconds
+  useEffect(() => {
+    if (highlight === 'liquidity') {
+      orderFormStore.setWhichForm('Range');
+      orderFormStore.setHighlight(true);
+    }
+  }, [highlight]);
 
   useEffect(() => {
     if (

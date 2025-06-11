@@ -21,14 +21,15 @@ export const adaptEffects = (
   effects: TransactionSummary_Effects[],
   getMetadataByAssetId?: GetMetadata,
 ) => {
-  return effects.map<SummaryEffect>(effect => {
+  const result = effects.map<SummaryEffect>(effect => {
     const reduced = (effect.balance?.values ?? []).reduce<SummaryEffect['balances']>(
       (accum, balance) => {
-        const asset = balance.value?.assetId && getMetadataByAssetId?.(balance.value.assetId);
+        const assetMetadata =
+          balance.value?.assetId && getMetadataByAssetId?.(balance.value.assetId);
         const isNegative = !balance.negated;
 
         // if the asset is unknown, don't sum it up, show simply as unknown
-        if (!asset?.penumbraAssetId?.inner) {
+        if (!assetMetadata?.penumbraAssetId?.inner) {
           accum.push({
             negative: isNegative,
             view: new ValueView({
@@ -44,10 +45,10 @@ export const adaptEffects = (
           return accum;
         }
 
-        // filter out the LpNFT and AuctionNFT assets
+        // filter out the LpNFT and AuctionNFT assets based on display name from metadata
         if (
-          assetPatterns.lpNft.matches(asset.display) ||
-          assetPatterns.auctionNft.matches(asset.display)
+          assetPatterns.lpNft.matches(assetMetadata.display) ||
+          assetPatterns.auctionNft.matches(assetMetadata.display)
         ) {
           return accum;
         }
@@ -58,7 +59,7 @@ export const adaptEffects = (
             valueView: {
               case: 'knownAssetId',
               value: {
-                metadata: asset,
+                metadata: assetMetadata,
                 amount: balance.value?.amount,
               },
             },
@@ -83,4 +84,6 @@ export const adaptEffects = (
       address: effect.address,
     };
   });
+
+  return result;
 };

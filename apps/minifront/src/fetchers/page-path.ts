@@ -14,20 +14,25 @@ export const usePagePath = <T extends PagePath>() => {
 };
 
 export const matchPagePath = (str: string): PagePath => {
-  /** @todo: Remove next line after we switch to v2 layout */
-  const strFixed = str.replace('/v2', '');
   const pathValues = Object.values(PagePath);
 
-  if (pathValues.includes(strFixed as PagePath)) {
-    return strFixed as PagePath;
+  // 1. Try direct match with the raw path (e.g., /v2/portfolio, or /send if PagePath.SEND is '/send')
+  if (pathValues.includes(str as PagePath)) {
+    return str as PagePath;
   }
 
+  // 2. Handle dynamic paths.
+  // The PagePath value itself should define the full path, including /v2 if applicable (e.g., /v2/tx/:hash)
   for (const pathValue of pathValues) {
     if (pathValue.includes(':')) {
-      const regex = new RegExp('^' + pathValue.replace(/:(\w+)/g, '([^/]+)') + '$');
-      const match = strFixed.match(regex);
+      // Create a regex from the pathValue (e.g., '/v2/tx/:hash' becomes /^\/v2\/tx\/([^/]+)$/)
+      // Escape regex special characters in the pathValue string first
+      const escapedPathValue = pathValue.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&');
+      const regexPattern = '^' + escapedPathValue.replace(/:(\w+)/g, '([^/]+)') + '$';
+      const regex = new RegExp(regexPattern);
+      const match = str.match(regex);
       if (match) {
-        return pathValue as PagePath;
+        return pathValue as PagePath; // Return the enum value itself (e.g., PagePath.V2_TRANSACTION_DETAILS)
       }
     }
   }

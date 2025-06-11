@@ -40,7 +40,7 @@ export const AssetSelectorTrigger = ({
         disabled={disabled}
         onClick={onClick}
         className={cn(
-          'flex items-center justify-between gap-1 min-w-20 rounded-none bg-other-tonalFill5',
+          'flex items-center justify-between gap-1 min-w-20 rounded-xs bg-other-tonalFill5',
           'transition-[background-color,outline-color] duration-150 outline outline-2 outline-transparent',
           density === 'sparse' ? 'h-12 py-0 px-3' : 'h-8 py-0 px-2',
           'hover:bg-action-hoverOverlay disabled:bg-buttonDisabled',
