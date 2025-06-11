@@ -78,11 +78,7 @@ export const LeaderboardTable = observer(({ epoch }: { epoch: number | undefined
     isActive: isMyTab,
   });
 
-  const {
-    data: assetsData,
-    isLoading: isLoadingGauge,
-    assetGauges,
-  } = useEpochResults('epoch-results-vote-dialog', {
+  const { data: assetsData, assetGauges } = useEpochResults('epoch-results-vote-dialog', {
     epoch,
     limit: 30,
     page: 1,
@@ -114,16 +110,12 @@ export const LeaderboardTable = observer(({ epoch }: { epoch: number | undefined
           </Text>
 
           <div className='rounded-full overflow-hidden'>
-            {isLoadingGauge ? (
-              <div className='h-10 w-48 animate-pulse rounded-full bg-neutral-light' />
-            ) : (
-              <AssetSelector
-                assets={metadataAssets}
-                balances={undefined}
-                value={selectedAsset}
-                onChange={setSelectedAsset}
-              />
-            )}
+            <AssetSelector
+              assets={metadataAssets}
+              balances={undefined}
+              value={selectedAsset}
+              onChange={setSelectedAsset}
+            />
           </div>
         </div>
 
