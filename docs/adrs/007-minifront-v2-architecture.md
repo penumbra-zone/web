@@ -3,6 +3,7 @@
 Building upon the foundational architecture decisions outlined in [ADR 002: Client-side rendering + hash routing](./002-framework.md), minifront-v2 represents a significant architectural evolution while preserving the core privacy and deployment principles that guided the original design.
 
 The original minifront established key principles:
+
 - **Privacy preserving**: Maximally client-side to protect user privacy
 - **Deployable by PD nodes**: Statically rendered without special server configuration
 - **Hash routing**: Enabling deployment on generic static file servers
@@ -38,6 +39,7 @@ src/
 ```
 
 **Benefits:**
+
 - Clear separation of concerns by abstraction level
 - Improved scalability for larger feature sets
 - Better code organization and discoverability
@@ -59,7 +61,7 @@ export const useBalancesStore = create<BalancesSlice>((set, get) => ({
 export class BalancesStore {
   @observable balances: Balance[] = [];
   @observable loading = false;
-  
+
   @computed get balancesByAccount() {
     // Automatically memoized computed values
   }
@@ -67,6 +69,7 @@ export class BalancesStore {
 ```
 
 **Benefits:**
+
 - **Performance**: Granular reactivity - only components observing changed data re-render
 - **Developer Experience**: Direct state mutations with automatic change detection
 - **Type Safety**: Full TypeScript inference without boilerplate
@@ -87,7 +90,7 @@ export class PenumbraService {
 // Stores handle state management
 export class BalancesStore {
   constructor(private service: PenumbraService) {}
-  
+
   async loadBalances() {
     this.balances = await this.service.getBalances();
   }
@@ -95,6 +98,7 @@ export class BalancesStore {
 ```
 
 **Benefits:**
+
 - Clean separation between data access and state management
 - Improved testability through dependency injection
 - Reusable business logic across stores
@@ -108,7 +112,7 @@ export class BalancesStore {
 export class RootStore {
   readonly balancesStore: BalancesStore;
   readonly transactionsStore: TransactionsStore;
-  
+
   constructor(private penumbraService: PenumbraService) {
     this.balancesStore = new BalancesStore(this, penumbraService);
     this.transactionsStore = new TransactionsStore(this, penumbraService);
@@ -117,6 +121,7 @@ export class RootStore {
 ```
 
 **Benefits:**
+
 - Centralized configuration and initialization
 - Cross-store communication through shared root
 - Easier testing with mock services
@@ -124,16 +129,16 @@ export class RootStore {
 
 ### Technical Stack Evolution
 
-| Aspect | Original Minifront | Minifront v2 | Reasoning |
-|--------|-------------------|--------------|-----------|
-| **Routing** | React Router (hash) | React Router (hash) | ✅ **Parity**: Maintains deployment flexibility |
-| **Build Tool** | Vite | Vite | ✅ **Parity**: Continues fast development experience |
-| **State Management** | Zustand + TanStack Query | MobX | 🔄 **Evolution**: Better performance & DX |
-| **Architecture** | Component-based | Feature-Sliced Design | 🔄 **Evolution**: Improved scalability |
-| **Services** | Direct in components | Dedicated service layer | ➕ **Addition**: Better separation of concerns |
-| **UI Library** | @penumbra-zone/ui-deprecated | @penumbra-zone/ui | 🔄 **Migration**: Complete UI library change |
-| **CSS Framework** | Tailwind | Tailwind | ✅ **Parity**: Consistent styling approach |
-| **TypeScript** | TypeScript | TypeScript | ✅ **Parity**: Type safety maintained |
+| Aspect               | Original Minifront           | Minifront v2            | Reasoning                                            |
+| -------------------- | ---------------------------- | ----------------------- | ---------------------------------------------------- |
+| **Routing**          | React Router (hash)          | React Router (hash)     | ✅ **Parity**: Maintains deployment flexibility      |
+| **Build Tool**       | Vite                         | Vite                    | ✅ **Parity**: Continues fast development experience |
+| **State Management** | Zustand + TanStack Query     | MobX                    | 🔄 **Evolution**: Better performance & DX            |
+| **Architecture**     | Component-based              | Feature-Sliced Design   | 🔄 **Evolution**: Improved scalability               |
+| **Services**         | Direct in components         | Dedicated service layer | ➕ **Addition**: Better separation of concerns       |
+| **UI Library**       | @penumbra-zone/ui-deprecated | @penumbra-zone/ui       | 🔄 **Migration**: Complete UI library change         |
+| **CSS Framework**    | Tailwind                     | Tailwind                | ✅ **Parity**: Consistent styling approach           |
+| **TypeScript**       | TypeScript                   | TypeScript              | ✅ **Parity**: Type safety maintained                |
 
 ### UI Component Strategy
 
@@ -224,6 +229,7 @@ This represents a **complete UI library migration**, not preservation of existin
 ### Current State (Phase 1)
 
 **✅ Architecturally Complete:**
+
 - Hash routing implemented (`createHashRouter`)
 - Client-side only rendering (no SSR)
 - No code-splitting or dynamic imports
@@ -231,6 +237,7 @@ This represents a **complete UI library migration**, not preservation of existin
 - Feature-Sliced Design structure in place
 
 **❌ Deployment Incomplete:**
+
 - **Missing production build configuration** - no `build` script in package.json
 - Cannot currently be deployed by PD nodes (build process not configured)
 - Development-only setup (only `dev:app` script available)
@@ -238,6 +245,7 @@ This represents a **complete UI library migration**, not preservation of existin
 ### Remaining Work
 
 1. **Phase 1 Completion**: Add production build configuration
+
    - Configure `vite build` script
    - Ensure static output works with PD node deployment
    - Verify privacy constraints are maintained in production build
@@ -248,6 +256,6 @@ This represents a **complete UI library migration**, not preservation of existin
 
 ## Important Note
 
-While this ADR documents the architectural *intent* and *design* of minifront-v2, **the application is not yet production-ready**. The core privacy-preserving principles are architecturally sound, but the deployment guarantees outlined in ADR 002 cannot be fulfilled until the production build process is completed.
+While this ADR documents the architectural _intent_ and _design_ of minifront-v2, **the application is not yet production-ready**. The core privacy-preserving principles are architecturally sound, but the deployment guarantees outlined in ADR 002 cannot be fulfilled until the production build process is completed.
 
-This architecture decision establishes the foundation for maintaining Penumbra's privacy-preserving and deployment-friendly principles while modernizing the development experience and application architecture. 
+This architecture decision establishes the foundation for maintaining Penumbra's privacy-preserving and deployment-friendly principles while modernizing the development experience and application architecture.
