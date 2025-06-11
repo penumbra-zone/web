@@ -8,9 +8,10 @@
     "node": ">=22"
   },
   "scripts": {
-    "build": "vite build && pnpm run build:css",
+    "build": "vite build && pnpm run build:css && pnpm run copy:fonts",
     "build-storybook": "storybook build",
     "build:css": "pnpm exec tailwindcss -c ./tailwind.config.ts -i ./src/styles/main.css -o ./dist/style.css --minify",
+    "copy:fonts": "mkdir -p dist/fonts && cp src/theme/fonts/*.woff2 dist/fonts/",
     "dev:pack": "vite build --watch",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",

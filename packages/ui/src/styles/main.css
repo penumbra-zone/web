@@ -1,3 +1,8 @@
+/* Explicitly load fonts so that generated CSS contains the necessary font-face declarations.
+ * The explicit import must precede the tailwind declarations.
+ * */
+@import '../theme/fonts.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
