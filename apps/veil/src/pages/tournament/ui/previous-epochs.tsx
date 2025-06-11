@@ -134,7 +134,7 @@ export const PreviousEpochs = observer(() => {
   return (
     <div className='flex flex-col gap-6 p-6 w-full rounded-lg bg-other-tonalFill5 backdrop-blur-lg'>
       <Text xxl color='text.primary'>
-        Previous epochs
+        Previous Epochs
       </Text>
       <Density compact>
         <div className={cn('grid max-w-full overflow-x-auto', TABLE_CLASSES.table[tableKey])}>

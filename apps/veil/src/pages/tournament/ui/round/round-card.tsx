@@ -121,7 +121,7 @@ export const RoundCard = observer(({ epoch }: RoundCardProps) => {
           <div className='w-full h-[1px] md:w-[1px] md:h-auto bg-other-tonalStroke flex-shrink-0' />
           <div className='flex flex-col w-full md:w-1/2 md:justify-between gap-6 md:gap-0'>
             <Text variant='h4' color='text.primary'>
-              {ended ? 'This Epoch is Ended' : 'Cast Your Vote'}
+              {ended ? 'This Epoch has Ended' : 'Cast Your Vote'}
             </Text>
             <VotingInfo epoch={epoch} />
           </div>
