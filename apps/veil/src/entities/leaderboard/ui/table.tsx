@@ -172,107 +172,105 @@ export const LeaderboardTable = observer(({ epoch }: { epoch: number | undefined
                   </div>
                 ))
               ) : (
-                <>
-                  <div ref={parent} className='contents col-span-6'>
-                    {positions?.length ? (
-                      positions.map(position => {
-                        return (
-                          <Link
-                            key={position.positionIdString}
-                            href={`/inspect/lp/${position.positionIdString}`}
-                            className={cn(
-                              'relative grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr] col-span-6',
-                              'bg-transparent hover:bg-action-hoverOverlay transition-colors',
-                              '[&>*]:h-auto',
-                            )}
-                          >
-                            <TableCell cell>
-                              <div className='flex max-w-[104px]'>
-                                <Text smallTechnical color='text.primary' truncate>
-                                  {position.positionIdString}
-                                </Text>
-                                <span>
-                                  <SquareArrowOutUpRight className='w-4 h-4 text-text-secondary' />
-                                </span>
-                              </div>
-                            </TableCell>
-                            <TableCell cell>
-                              <Text smallTechnical>{position.executions}</Text>
-                            </TableCell>
-                            <TableCell cell loading={isLoading}>
-                              <Text smallTechnical>
-                                {round({ value: position.pointsShare * 100, decimals: 2 })}%
-                              </Text>
-                            </TableCell>
-                            {/* @TODO add age & pnlPercentage */}
-                            {/* <TableCell cell numeric loading={isLoading}>
-                        <Text
-                          smallTechnical
-                          color={
-                            position.pnlPercentage >= 0 ? 'success.light' : 'destructive.light'
-                          }
+                <div ref={parent} className='contents col-span-6'>
+                  {positions?.length ? (
+                    positions.map(position => {
+                      return (
+                        <Link
+                          key={position.positionIdString}
+                          href={`/inspect/lp/${position.positionIdString}`}
+                          className={cn(
+                            'relative grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr] col-span-6',
+                            'bg-transparent hover:bg-action-hoverOverlay transition-colors',
+                            '[&>*]:h-auto',
+                          )}
                         >
-                          {position.pnlPercentage}%
-                        </Text>
-                      </TableCell> */}
-                            {/* <TableCell cell numeric>
-                        {formatAge(position.openingTime)}
-                      </TableCell> */}
-                            <TableCell cell>
-                              <div className='flex gap-1 flex-col'>
-                                <ValueViewComponent
-                                  valueView={pnum(position.umVolume).toValueView(umMetadata)}
-                                  abbreviate={true}
-                                  density='slim'
-                                />
-                                <ValueViewComponent
-                                  valueView={pnum(position.assetVolume).toValueView(
-                                    getAssetMetadata(position.assetId),
-                                  )}
-                                  abbreviate={true}
-                                  density='slim'
-                                />
-                              </div>
-                            </TableCell>
-                            <TableCell cell>
-                              <div className='flex gap-1 flex-col'>
-                                <ValueViewComponent
-                                  valueView={pnum(position.umFees).toValueView(umMetadata)}
-                                  abbreviate={true}
-                                  density='slim'
-                                />
-                                <ValueViewComponent
-                                  valueView={pnum(position.assetFees).toValueView(
-                                    getAssetMetadata(position.assetId),
-                                  )}
-                                  abbreviate={true}
-                                  density='slim'
-                                />
-                              </div>
-                            </TableCell>
-                            <TableCell cell>
-                              <Text smallTechnical>
-                                {stateToString(position.position.state?.state)}
-                              </Text>
-                            </TableCell>
-                          </Link>
-                        );
-                      })
-                    ) : (
-                      <div className='col-span-6'>
-                        <div className='grid grid-cols-subgrid col-span-4'>
                           <TableCell cell>
-                            <span className='!text-sm'>
-                              {tab === Tabs.AllLPs
-                                ? 'There are no liquidity positions in this epoch.'
-                                : 'Your LPs have not received any rewards during this epoch.'}
-                            </span>
+                            <div className='flex max-w-[104px]'>
+                              <Text smallTechnical color='text.primary' truncate>
+                                {position.positionIdString}
+                              </Text>
+                              <span>
+                                <SquareArrowOutUpRight className='w-4 h-4 text-text-secondary' />
+                              </span>
+                            </div>
                           </TableCell>
-                        </div>
+                          <TableCell cell>
+                            <Text smallTechnical>{position.executions}</Text>
+                          </TableCell>
+                          <TableCell cell loading={isLoading}>
+                            <Text smallTechnical>
+                              {round({ value: position.pointsShare * 100, decimals: 2 })}%
+                            </Text>
+                          </TableCell>
+                          {/* @TODO add age & pnlPercentage */}
+                          {/* <TableCell cell numeric loading={isLoading}>
+                      <Text
+                        smallTechnical
+                        color={
+                          position.pnlPercentage >= 0 ? 'success.light' : 'destructive.light'
+                        }
+                      >
+                        {position.pnlPercentage}%
+                      </Text>
+                    </TableCell> */}
+                          {/* <TableCell cell numeric>
+                      {formatAge(position.openingTime)}
+                    </TableCell> */}
+                          <TableCell cell>
+                            <div className='flex gap-1 flex-col'>
+                              <ValueViewComponent
+                                valueView={pnum(position.umVolume).toValueView(umMetadata)}
+                                abbreviate={true}
+                                density='slim'
+                              />
+                              <ValueViewComponent
+                                valueView={pnum(position.assetVolume).toValueView(
+                                  getAssetMetadata(position.assetId),
+                                )}
+                                abbreviate={true}
+                                density='slim'
+                              />
+                            </div>
+                          </TableCell>
+                          <TableCell cell>
+                            <div className='flex gap-1 flex-col'>
+                              <ValueViewComponent
+                                valueView={pnum(position.umFees).toValueView(umMetadata)}
+                                abbreviate={true}
+                                density='slim'
+                              />
+                              <ValueViewComponent
+                                valueView={pnum(position.assetFees).toValueView(
+                                  getAssetMetadata(position.assetId),
+                                )}
+                                abbreviate={true}
+                                density='slim'
+                              />
+                            </div>
+                          </TableCell>
+                          <TableCell cell>
+                            <Text smallTechnical>
+                              {stateToString(position.position.state?.state)}
+                            </Text>
+                          </TableCell>
+                        </Link>
+                      );
+                    })
+                  ) : (
+                    <div className='col-span-6'>
+                      <div className='grid grid-cols-subgrid col-span-4'>
+                        <TableCell cell>
+                          <span className='!text-sm'>
+                            {tab === Tabs.AllLPs
+                              ? 'There are no liquidity positions in this epoch.'
+                              : 'Your LPs have not received any rewards during this epoch.'}
+                          </span>
+                        </TableCell>
                       </div>
-                    )}
-                  </div>
-                </>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
 
