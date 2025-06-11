@@ -5,7 +5,7 @@ import { useDisabled } from '../utils/disabled-context';
 import cn from 'clsx';
 import { Text } from '../Text';
 import { ThemeColor } from '../utils/color';
-import { Density } from '../utils/density';
+import { Density, useDensity } from '../utils/density';
 
 const getLabelColor = (actionType: ActionType, disabled?: boolean): ThemeColor => {
   if (disabled) {
@@ -27,7 +27,6 @@ export interface TextInputProps
   label?: string;
   type?: 'email' | 'number' | 'password' | 'tel' | 'text' | 'url';
   typography?: 'small' | 'body' | 'large';
-  density?: Density;
   /**
    * Markup to render inside the text input's visual frame, before the text
    * input itself.
@@ -41,6 +40,10 @@ export interface TextInputProps
   max?: string | number;
   min?: string | number;
   ref?: Ref<HTMLInputElement>;
+  /**
+   * Incase of type number, scrolling while the input is focused will change the
+   * value. This prop will prevent that if set to true.
+   */
   blurOnWheel?: boolean;
 }
 
@@ -65,9 +68,10 @@ export const TextInput = ({
   blurOnWheel = false,
   ref,
   typography = 'small',
-  density = 'sparse',
   ...rest
 }: TextInputProps) => {
+  const density = useDensity();
+
   let typographyCn = small;
   if (typography === 'large') {
     typographyCn = large;
@@ -124,7 +128,7 @@ export const TextInput = ({
         className={cn(
           typographyCn,
           disabled ? 'text-text-muted' : 'text-text-primary',
-          'box-border grow appearance-none border-none bg-base-transparent py-2',
+          'box-border grow min-w-0 w-full flex-shrink appearance-none border-none bg-base-transparent py-2',
           'placeholder:text-text-secondary',
           'disabled:cursor-not-allowed disabled:placeholder:text-text-muted',
           'focus:outline-0',
@@ -134,7 +138,7 @@ export const TextInput = ({
       {endAdornment && (
         <div
           className={cn(
-            'flex items-center gap-2',
+            'flex flex-shrink-0 items-center gap-2',
             disabled ? 'text-text-muted' : 'text-neutral-light',
           )}
         >

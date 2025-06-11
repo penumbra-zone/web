@@ -16,6 +16,7 @@ import { PriceSlider } from './price-slider';
 import { useEffect, useState } from 'react';
 import { Icon } from '@penumbra-zone/ui/Icon';
 import { assetPatterns } from '@penumbra-zone/types/assets';
+import { Density } from '@penumbra-zone/ui';
 
 export const SimpleLiquidityOrderForm = observer(
   ({ parentStore }: { parentStore: OrderFormStore }) => {
@@ -50,34 +51,35 @@ export const SimpleLiquidityOrderForm = observer(
             </Tooltip>
           </div>
           <div className='mb-2'>
-            <TextInput
-              type='number'
-              typography='large'
-              density='compact'
-              blurOnWheel
-              value={round({
-                value: store.baseInput,
-                decimals: store.baseAsset?.exponent ?? defaultDecimals,
-              })}
-              onChange={store.setBaseInput}
-              endAdornment={
-                store.baseAsset?.symbol && (
-                  <div className='flex items-center gap-1 font-default text-textSm font-normal leading-textXs text-text-secondary'>
-                    {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- its necessary */}
-                    {store.baseAsset?.metadata?.images?.[0]?.svg && (
-                      <Image
-                        className='w-4 h-4 rounded-full'
-                        src={store.baseAsset.metadata.images[0].svg}
-                        alt={store.baseAsset.symbol}
-                        width={16}
-                        height={16}
-                      />
-                    )}
-                    {store.baseAsset.symbol}
-                  </div>
-                )
-              }
-            />
+            <Density compact>
+              <TextInput
+                type='number'
+                typography='large'
+                blurOnWheel
+                value={round({
+                  value: store.baseInput,
+                  decimals: store.baseAsset?.exponent ?? defaultDecimals,
+                })}
+                onChange={store.setBaseInput}
+                endAdornment={
+                  store.baseAsset?.symbol && (
+                    <div className='flex flex-shrink-0 items-center gap-1 font-default text-textSm font-normal leading-textXs text-text-secondary'>
+                      {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- its necessary */}
+                      {store.baseAsset?.metadata?.images?.[0]?.svg && (
+                        <Image
+                          className='w-4 h-4 rounded-full'
+                          src={store.baseAsset.metadata.images[0].svg}
+                          alt={store.baseAsset.symbol}
+                          width={16}
+                          height={16}
+                        />
+                      )}
+                      <div>{store.baseAsset.symbol}</div>
+                    </div>
+                  )
+                }
+              />
+            </Density>
             {store.baseAsset?.formatBalance() && (
               <button
                 type='button'
@@ -97,34 +99,35 @@ export const SimpleLiquidityOrderForm = observer(
             )}
           </div>
           <div className='mb-2'>
-            <TextInput
-              type='number'
-              typography='large'
-              density='compact'
-              blurOnWheel
-              value={round({
-                value: store.quoteInput,
-                decimals: store.quoteAsset?.exponent ?? defaultDecimals,
-              })}
-              onChange={store.setQuoteInput}
-              endAdornment={
-                store.quoteAsset?.symbol && (
-                  <div className='flex items-center gap-1 font-default text-textSm font-normal leading-textXs text-text-secondary'>
-                    {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- its necessary */}
-                    {store.quoteAsset?.metadata?.images?.[0]?.svg && (
-                      <Image
-                        className='w-4 h-4 rounded-full'
-                        src={store.quoteAsset.metadata.images[0].svg}
-                        alt={store.quoteAsset.symbol}
-                        width={16}
-                        height={16}
-                      />
-                    )}
-                    {store.quoteAsset.symbol}
-                  </div>
-                )
-              }
-            />
+            <Density compact>
+              <TextInput
+                type='number'
+                typography='large'
+                blurOnWheel
+                value={round({
+                  value: store.quoteInput,
+                  decimals: store.quoteAsset?.exponent ?? defaultDecimals,
+                })}
+                onChange={store.setQuoteInput}
+                endAdornment={
+                  store.quoteAsset?.symbol && (
+                    <div className='flex flex-shrink-0 items-center gap-1 font-default text-textSm font-normal leading-textXs text-text-secondary'>
+                      {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- its necessary */}
+                      {store.quoteAsset?.metadata?.images?.[0]?.svg && (
+                        <Image
+                          className='w-4 h-4 rounded-full'
+                          src={store.quoteAsset.metadata.images[0].svg}
+                          alt={store.quoteAsset.symbol}
+                          width={16}
+                          height={16}
+                        />
+                      )}
+                      <div>{store.quoteAsset.symbol}</div>
+                    </div>
+                  )
+                }
+              />
+            </Density>
             {store.quoteAsset?.formatBalance() && (
               <button
                 type='button'
