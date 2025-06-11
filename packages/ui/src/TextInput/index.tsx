@@ -5,7 +5,7 @@ import { useDisabled } from '../utils/disabled-context';
 import cn from 'clsx';
 import { Text } from '../Text';
 import { ThemeColor } from '../utils/color';
-import { Density, useDensity } from '../utils/density';
+import { useDensity } from '../utils/density';
 
 const getLabelColor = (actionType: ActionType, disabled?: boolean): ThemeColor => {
   if (disabled) {
