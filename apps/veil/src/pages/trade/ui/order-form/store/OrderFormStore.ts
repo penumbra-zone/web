@@ -372,7 +372,7 @@ export const useOrderFormStore = () => {
   // if the page sets query param `highlight`, set correct tab and highlight it for 3 seconds
   useEffect(() => {
     if (highlight === 'liquidity') {
-      orderFormStore.setWhichForm('Range');
+      orderFormStore.setWhichForm('SimpleLP');
       orderFormStore.setHighlight(true);
     }
   }, [highlight]);
