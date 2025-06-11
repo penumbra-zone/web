@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import { Text } from '@penumbra-zone/ui/Text';
 import { Eye, ShieldCheckIcon } from 'lucide-react';
 import { ConnectButton } from '@/features/connect/connect-button';
