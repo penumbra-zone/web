@@ -91,11 +91,11 @@ export function GenericShieldButton() {
       </Button>
       {isOpen &&
         createPortal(
-          <div className='fixed inset-0 z-[1000] flex items-center justify-center bg-black/50'>
+          <div className='fixed inset-0 flex items-center justify-center bg-black/50'>
             <div className='relative mx-4 w-full max-w-2xl rounded-lg bg-[#1E1E1E] p-6'>
               <button
                 onClick={() => setIsOpen(false)}
-                className='absolute right-4 top-4 text-white hover:text-gray-300'
+                className='absolute right-4 top-4 text-white hover:text-gray-300 z-10 p-2'
               >
                 <X size={24} />
               </button>
@@ -225,7 +225,7 @@ export const ShieldButton = ({ asset }: { asset: UnifiedAsset }) => {
 
       {isOpen &&
         createPortal(
-          <div className='fixed inset-0 z-[1000] flex items-center justify-center bg-black/50'>
+          <div className='fixed inset-0 flex items-center justify-center bg-black/50'>
             <div className='relative mx-4 w-full max-w-2xl rounded-lg bg-[#1E1E1E] p-6'>
               <button
                 onClick={() => setIsOpen(false)}
