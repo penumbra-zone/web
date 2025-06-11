@@ -11,10 +11,18 @@ interface CosmosConnectButtonProps {
   actionType?: ButtonProps['actionType'];
   variant?: 'default' | 'minimal';
   children?: React.ReactNode;
+  iconOnly?: boolean;
+  noIcon?: boolean;
 }
 
 const CosmosConnectButtonInner = observer(
-  ({ actionType = 'accent', variant = 'default', children }: CosmosConnectButtonProps) => {
+  ({
+    actionType = 'accent',
+    variant = 'default',
+    children,
+    iconOnly = false,
+    noIcon = false,
+  }: CosmosConnectButtonProps) => {
     const { data: registry } = useRegistry();
     const penumbraIbcChains = chainsInPenumbraRegistry(registry.ibcConnections).map(
       c => c.chain_name,
@@ -29,15 +37,19 @@ const CosmosConnectButtonInner = observer(
       <Density variant={variant === 'default' ? 'sparse' : 'compact'}>
         {isWalletConnected && address && availableChain ? (
           <Button
-            icon={Wallet2}
+            icon={noIcon ? undefined : Wallet2}
             aria-description={address}
             actionType={actionType}
             onClick={() => void disconnect?.()}
           >
-            {`${address.slice(0, 8)}...${address.slice(-4)}`}
+            {iconOnly ? null : `${address.slice(0, 8)}...${address.slice(-4)}`}
           </Button>
         ) : (
-          <Button icon={Wallet2} actionType={actionType} onClick={() => openView?.()}>
+          <Button
+            icon={noIcon ? undefined : Wallet2}
+            actionType={actionType}
+            onClick={() => openView?.()}
+          >
             {children ?? 'Connect Cosmos Wallet'}
           </Button>
         )}

@@ -126,7 +126,6 @@ export const AssetsTable = observer(() => {
           <Text as={'h4'} xxl color='text.primary'>
             Assets
           </Text>
-          <CosmosConnectButton variant={'minimal'} actionType={'unshield'} />
         </div>
       }
     >

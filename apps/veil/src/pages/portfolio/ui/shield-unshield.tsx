@@ -75,6 +75,51 @@ const theme = {
   },
 };
 
+export function GenericShieldButton() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <>
+      <Button
+        actionType='accent'
+        density='compact'
+        priority='primary'
+        onClick={() => setIsOpen(true)}
+      >
+        Shield Assets
+      </Button>
+      {isOpen && (
+        <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50 top-0 left-0'>
+          <div className='bg-[#1E1E1E] rounded-lg p-6 max-w-2xl w-full mx-4 relative'>
+            <button
+              onClick={() => setIsOpen(false)}
+              className='absolute top-4 right-4 text-white hover:text-gray-300'
+            >
+              <X size={24} />
+            </button>
+
+            <Suspense
+              fallback={<div className='text-center p-4 text-white'>Loading widget...</div>}
+            >
+              <LazySkipWidget
+                defaultRoute={{
+                  destChainId: 'penumbra-1',
+                }}
+                filter={{
+                  destination: {
+                    'penumbra-1': undefined,
+                  },
+                }}
+                theme={theme}
+              />
+            </Suspense>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 export const ShieldButton = ({ asset }: { asset: UnifiedAsset }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [ibcDenom, setIbcDenom] = useState<string | null>(null);
