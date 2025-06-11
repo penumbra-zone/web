@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Copy, Check, LucideIcon } from 'lucide-react';
 import { Button } from '../Button';
+import { useDensity } from '../utils/density';
 
 const useClipboardButton = (text: string) => {
   const [icon, setIcon] = useState<LucideIcon>(Copy);
@@ -31,12 +32,29 @@ export interface CopyToClipboardButtonProps {
 /**
  * A simple icon button for copying some text to the clipboard. Use it alongside
  * text that the user may want to copy.
+ *
+ * The button's size is determined by the current density context. Use the `<Density />`
+ * component to control the density:
+ *
+ * ```tsx
+ * <Density compact>
+ *   <CopyToClipboardButton text="Copy this text" />
+ * </Density>
+ * ```
  */
 export const CopyToClipboardButton = ({ text, disabled = false }: CopyToClipboardButtonProps) => {
   const { onClick, icon, label } = useClipboardButton(text);
+  const density = useDensity();
 
   return (
-    <Button type='button' iconOnly='adornment' icon={icon} onClick={onClick} disabled={disabled}>
+    <Button
+      type='button'
+      iconOnly='adornment'
+      icon={icon}
+      onClick={onClick}
+      disabled={disabled}
+      density={density}
+    >
       {label}
     </Button>
   );

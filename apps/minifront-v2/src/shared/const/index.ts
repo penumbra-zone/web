@@ -1,0 +1,1 @@
+export { PagePath } from './page';

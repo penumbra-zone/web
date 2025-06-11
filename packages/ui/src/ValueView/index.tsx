@@ -11,19 +11,40 @@ import cn from 'clsx';
 import { shortify } from '@penumbra-zone/types/shortify';
 import { detailTechnical, technical } from '../utils/typography.ts';
 import { pnum } from '@penumbra-zone/types/pnum';
+import { ThemeColor, getThemeColorClass } from '../utils/color';
 
 type Context = 'default' | 'table';
 
-const ValueText = ({ children, density }: { children: ReactNode; density: Density }) => {
+const ValueText = ({
+  children,
+  density,
+  textColor,
+}: {
+  children: ReactNode;
+  density: Density;
+  textColor?: ThemeColor;
+}) => {
   if (density === 'slim') {
-    return <Text detailTechnical>{children}</Text>;
+    return (
+      <Text detailTechnical color={textColor}>
+        {children}
+      </Text>
+    );
   }
 
   if (density === 'compact') {
-    return <Text smallTechnical>{children}</Text>;
+    return (
+      <Text smallTechnical color={textColor}>
+        {children}
+      </Text>
+    );
   }
 
-  return <Text technical>{children}</Text>;
+  return (
+    <Text technical color={textColor}>
+      {children}
+    </Text>
+  );
 };
 
 const getSignColor = (signed?: ValueViewComponentProps<Context>['signed']): string => {
@@ -98,6 +119,11 @@ export interface ValueViewComponentProps<SelectedContext extends Context> {
    * determined by the `Density` context.
    */
   density?: Density;
+  /**
+   * Custom text color for the value and symbol. When provided, overrides default colors.
+   * Accepts theme color values like 'destructive.light', 'text.secondary', etc.
+   */
+  textColor?: ThemeColor;
 }
 
 /**
@@ -119,6 +145,7 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
   showValue = true,
   trailingZeros = false,
   density: densityProps,
+  textColor,
 }: ValueViewComponentProps<SelectedContext>) => {
   const densityContext = useDensity();
   const density = densityProps ?? densityContext;
@@ -150,7 +177,10 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
       )}
       else={children => (
         <span
-          className={cn(density === 'sparse' ? technical : detailTechnical, 'text-text-primary')}
+          className={cn(
+            density === 'sparse' ? technical : detailTechnical,
+            textColor ? getThemeColorClass(textColor).text : '',
+          )}
         >
           {children}
         </span>
@@ -159,7 +189,7 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
       <span className={cn('flex w-max max-w-full items-center text-ellipsis', getGap(density))}>
         {showIcon && (
           <div className='shrink-0'>
-            <AssetIcon hideBadge size={getIconSize(density)} metadata={metadata} />
+            <AssetIcon size={getIconSize(density)} metadata={metadata} />
           </div>
         )}
 
@@ -170,13 +200,13 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
               priority === 'secondary' &&
               'border-b-2 border-dashed border-other-tonalStroke',
             getGap(density),
-            getSignColor(signed),
+            textColor ? getThemeColorClass(textColor).text : getSignColor(signed),
           )}
         >
           {showValue && (
             <div className='flex shrink grow items-center' title={formattedAmount}>
               {signed && getSign(signed)}
-              <ValueText density={density}>
+              <ValueText density={density} textColor={textColor}>
                 {padString}
                 {formattedAmount}
               </ValueText>
@@ -184,7 +214,9 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
           )}
           {showSymbol && (
             <div className='max-w-24 shrink grow truncate' title={symbol}>
-              <ValueText density={density}>{symbol}</ValueText>
+              <ValueText density={density} textColor={textColor}>
+                {symbol}
+              </ValueText>
             </div>
           )}
         </div>
