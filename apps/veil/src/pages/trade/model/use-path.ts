@@ -1,11 +1,15 @@
 import { useAssets } from '@/shared/api/assets';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { useMemo } from 'react';
 
 interface PathParams {
   baseSymbol: string;
   quoteSymbol: string;
   [key: string]: string; // required for useParams signature
+}
+
+interface PathQueryParams {
+  highlight?: 'liquidity';
 }
 
 export const usePathSymbols = () => {
@@ -30,4 +34,13 @@ export const usePathToMetadata = () => {
     }),
     [data, baseSymbol, quoteSymbol],
   );
+};
+
+export const usePathQuery = (): PathQueryParams => {
+  const searchParams = useSearchParams();
+  const highlight = searchParams?.get('highlight') as PathQueryParams['highlight'];
+
+  return {
+    highlight,
+  };
 };
