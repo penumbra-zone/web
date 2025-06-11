@@ -26,6 +26,7 @@ clean:
   rm -rf .turbo
   fd -t d node_modules --no-ignore -X rm -r
   fd -t d target --no-ignore -X rm -r
+  fd -t f tsconfig.tsbuildinfo --no-ignore -X rm
 
 # Wrapper for all linting targets
 lint:
