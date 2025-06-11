@@ -1,11 +1,14 @@
 import cn from 'clsx';
 import { TableCell } from '@penumbra-zone/ui/TableCell';
 import { AssetIcon } from '@penumbra-zone/ui/AssetIcon';
+import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { round } from '@penumbra-zone/types/round';
 import { pnum } from '@penumbra-zone/types/pnum';
+import { getTradePairPath } from '@/shared/const/pages';
 import type { MappedGauge } from '../../../server/previous-epochs';
 import { VoteButton } from './vote-button';
+import Link from 'next/link';
 
 export const TableRow = ({
   item,
@@ -16,8 +19,12 @@ export const TableRow = ({
   canVote: boolean;
   loading: boolean;
 }) => {
+  const link = getTradePairPath(item.asset.symbol === 'USDC' ? 'UM' : item.asset.symbol, 'USDC', {
+    highlight: 'liquidity',
+  });
+
   return (
-    <div className={cn('grid grid-cols-subgrid', canVote ? 'col-span-5' : 'col-span-4')}>
+    <div className={cn('grid grid-cols-subgrid', canVote ? 'col-span-6' : 'col-span-5')}>
       <TableCell loading={loading}>
         {!loading && (
           <div className='flex items-center gap-1'>
@@ -53,6 +60,14 @@ export const TableRow = ({
       {canVote && (
         <TableCell loading={loading}>{!loading && <VoteButton value={item} />}</TableCell>
       )}
+
+      <TableCell loading={loading}>
+        <Link href={link}>
+          <Button actionType='default' density='slim'>
+            Provide Liquidity
+          </Button>
+        </Link>
+      </TableCell>
     </div>
   );
 };
