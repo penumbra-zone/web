@@ -18,6 +18,10 @@ import { AssetPrice, useAssetPrices } from '@/pages/portfolio/api/use-asset-pric
 import { pnum } from '@penumbra-zone/types/pnum';
 import { shouldFilterAsset } from '@/pages/portfolio/api/use-unified-assets.ts';
 import { PortfolioCard } from '@/pages/portfolio/ui/portfolio-card.tsx';
+import { observer } from 'mobx-react-lite';
+import { connectionStore } from '@/shared/model/connection';
+import { useWallet } from '@cosmos-kit/react';
+import { WalletStatus } from '@cosmos-kit/core';
 
 interface AssetAllocation {
   symbol: string;
@@ -64,22 +68,7 @@ export const AssetBars: React.FC = () => {
   const hasPublicBalances = publicBalances.length > 0;
 
   if (!hasShieldedBalances && !hasPublicBalances) {
-    return (
-      <PortfolioCard>
-        <div className='p-6'>
-          <div className='flex justify-between items-center mb-4'>
-            <Text as='h4' xxl color='text.primary'>
-              Allocation
-            </Text>
-          </div>
-          <div className='flex flex-col h-24 justify-center items-center'>
-            <Text color='text.secondary'>
-              No assets found. Connect your wallets to see your asset allocation.
-            </Text>
-          </div>
-        </div>
-      </PortfolioCard>
-    );
+    return <ConnectedButEmpty />;
   }
 
   // Calculate values independently regardless of other wallet's state
@@ -491,3 +480,40 @@ function calculatePublicAssetAllocations(
     }))
     .sort((a, b) => b.value - a.value);
 }
+
+const ConnectedButEmpty: React.FC = observer(() => {
+  const { status } = useWallet();
+  const isCosmosWalletConnected = status === WalletStatus.Connected;
+  const isShieldedWalletConnected = connectionStore.connected;
+
+  const rows: React.ReactNode[] = [];
+
+  if (isShieldedWalletConnected) {
+    rows.push(
+      <div key='shielded' className='flex items-center gap-2'>
+        <div className='w-16 text-neutral-400 text-xs font-normal'>Shielded</div>
+        <div className='h-1.5 flex-grow rounded bg-gradient-to-r from-[#fafafa0d] to-[#fafafa1a]' />
+      </div>,
+    );
+  }
+
+  if (isCosmosWalletConnected) {
+    rows.push(
+      <div key='public' className='flex items-center gap-2'>
+        <div className='w-16 text-neutral-400 text-xs font-normal'>Public</div>
+        <div className='h-1.5 flex-grow rounded bg-gradient-to-r from-[#fafafa0d] to-[#fafafa1a]' />
+      </div>,
+    );
+  }
+
+  // Safety check: if no wallets connected, render nothing (parent shouldn't mount component)
+  if (rows.length === 0) {
+    return null;
+  }
+
+  return (
+    <PortfolioCard title={'Allocation'}>
+      <div className='flex flex-col gap-4 p-6'>{rows}</div>
+    </PortfolioCard>
+  );
+});
