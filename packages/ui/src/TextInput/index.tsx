@@ -1,10 +1,11 @@
 import { HTMLAttributes, ReactNode, Ref } from 'react';
-import { small } from '../utils/typography';
+import { small, body, large } from '../utils/typography';
 import { ActionType, getFocusWithinOutlineColorByActionType } from '../utils/action-type';
 import { useDisabled } from '../utils/disabled-context';
 import cn from 'clsx';
 import { Text } from '../Text';
 import { ThemeColor } from '../utils/color';
+import { useDensity } from '../utils/density';
 
 const getLabelColor = (actionType: ActionType, disabled?: boolean): ThemeColor => {
   if (disabled) {
@@ -25,6 +26,7 @@ export interface TextInputProps
   disabled?: boolean;
   label?: string;
   type?: 'email' | 'number' | 'password' | 'tel' | 'text' | 'url';
+  typography?: 'small' | 'body' | 'large';
   /**
    * Markup to render inside the text input's visual frame, before the text
    * input itself.
@@ -38,6 +40,11 @@ export interface TextInputProps
   max?: string | number;
   min?: string | number;
   ref?: Ref<HTMLInputElement>;
+  /**
+   * Incase of type number, scrolling while the input is focused will change the
+   * value. This prop will prevent that if set to true.
+   */
+  blurOnWheel?: boolean;
 }
 
 /**
@@ -58,63 +65,87 @@ export const TextInput = ({
   endAdornment = null,
   max,
   min,
+  blurOnWheel = false,
   ref,
+  typography = 'small',
   ...rest
-}: TextInputProps) => (
-  <label
-    className={cn(
-      'h-14 flex items-center gap-2 bg-other-tonalFill5 rounded-sm py-3 pl-3 pr-2 border-none',
-      'cursor-text outline outline-2 outline-transparent',
-      'hover:bg-action-hoverOverlay',
-      'transition-[background-color,outline-color] duration-150',
-      getFocusWithinOutlineColorByActionType(actionType),
-    )}
-  >
-    {startAdornment && (
-      <div
-        className={cn(
-          'flex items-center gap-2',
-          disabled ? 'text-text-muted' : 'text-neutral-light',
-        )}
-      >
-        {startAdornment}
-      </div>
-    )}
-    {label && (
-      <Text body color={getLabelColor(actionType, disabled)}>
-        {label}
-      </Text>
-    )}
-    <input
-      {...rest}
-      value={value}
-      onChange={e => onChange?.(e.target.value)}
-      placeholder={placeholder}
-      disabled={useDisabled(disabled)}
-      type={type}
-      max={max}
-      min={min}
-      ref={ref}
+}: TextInputProps) => {
+  const density = useDensity();
+
+  let typographyCn = small;
+  if (typography === 'large') {
+    typographyCn = large;
+  } else if (typography === 'body') {
+    typographyCn = body;
+  }
+
+  return (
+    <label
       className={cn(
-        small,
-        disabled ? 'text-text-muted' : 'text-text-primary',
-        'box-border grow appearance-none border-none bg-base-transparent py-2',
-        'placeholder:text-text-secondary',
-        'disabled:cursor-not-allowed disabled:placeholder:text-text-muted',
-        'focus:outline-0',
-        '[&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
+        density === 'sparse' && 'h-14',
+        density === 'compact' && 'h-11',
+        density === 'slim' && 'h-8',
+        'flex items-center gap-2 bg-other-tonalFill5 rounded-sm px-3 border-none',
+        'cursor-text outline outline-2 outline-transparent',
+        'hover:bg-action-hoverOverlay',
+        'transition-[background-color,outline-color] duration-150',
+        getFocusWithinOutlineColorByActionType(actionType),
       )}
-    />
-    {endAdornment && (
-      <div
+    >
+      {startAdornment && (
+        <div
+          className={cn(
+            'flex items-center gap-2',
+            disabled ? 'text-text-muted' : 'text-neutral-light',
+          )}
+        >
+          {startAdornment}
+        </div>
+      )}
+      {label && (
+        <Text body color={getLabelColor(actionType, disabled)}>
+          {label}
+        </Text>
+      )}
+      <input
+        {...rest}
+        value={value}
+        onChange={e => onChange?.(e.target.value)}
+        onWheel={
+          blurOnWheel
+            ? e => {
+                // Remove focus to prevent scroll changes
+                (e.target as HTMLInputElement).blur();
+              }
+            : undefined
+        }
+        placeholder={placeholder}
+        disabled={useDisabled(disabled)}
+        type={type}
+        max={max}
+        min={min}
+        ref={ref}
         className={cn(
-          'flex items-center gap-2',
-          disabled ? 'text-text-muted' : 'text-neutral-light',
+          typographyCn,
+          disabled ? 'text-text-muted' : 'text-text-primary',
+          'box-border grow min-w-0 w-full flex-shrink appearance-none border-none bg-base-transparent py-2',
+          'placeholder:text-text-secondary',
+          'disabled:cursor-not-allowed disabled:placeholder:text-text-muted',
+          'focus:outline-0',
+          '[&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
         )}
-      >
-        {endAdornment}
-      </div>
-    )}
-  </label>
-);
+      />
+      {endAdornment && (
+        <div
+          className={cn(
+            'flex flex-shrink-0 items-center gap-2',
+            disabled ? 'text-text-muted' : 'text-neutral-light',
+          )}
+        >
+          {endAdornment}
+        </div>
+      )}
+    </label>
+  );
+};
 TextInput.displayName = 'TextInput';

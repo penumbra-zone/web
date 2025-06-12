@@ -152,6 +152,18 @@ interface RangeLiquidityPlan {
   positions: number;
 }
 
+interface SimpleLiquidityPlan {
+  baseAsset: Asset;
+  quoteAsset: Asset;
+  baseLiquidity: number;
+  quoteLiquidity: number;
+  upperPrice: number;
+  lowerPrice: number;
+  marketPrice: number;
+  feeBps: number;
+  positions: number;
+}
+
 /** Given a plan for providing range liquidity, create all the necessary positions to accomplish the plan. */
 export const rangeLiquidityPositions = (plan: RangeLiquidityPlan): Position[] => {
   // The step width is positions-1 because it's between the endpoints
@@ -185,6 +197,49 @@ export const rangeLiquidityPositions = (plan: RangeLiquidityPlan): Position[] =>
       quoteReserves,
     });
   });
+};
+
+/** Given a plan for providing simple liquidity, create all the necessary positions to accomplish the plan. */
+export const simpleLiquidityPositions = (plan: SimpleLiquidityPlan): Position[] => {
+  // Calculate how many positions should be in each range based on market price position
+  const totalRange = plan.upperPrice - plan.lowerPrice;
+  const marketPosition = (plan.marketPrice - plan.lowerPrice) / totalRange;
+
+  // Calculate number of positions for each range, ensuring at least 1 position per range
+  const lowerPositionsAmount = Math.max(1, Math.floor(plan.positions * marketPosition));
+  const upperPositionsAmount = Math.max(1, plan.positions - lowerPositionsAmount);
+
+  // Calculate step widths for each range
+  const lowerStepWidth = (plan.marketPrice - plan.lowerPrice) / lowerPositionsAmount;
+  const upperStepWidth = (plan.upperPrice - plan.marketPrice) / upperPositionsAmount;
+
+  // Generate positions for lower range (quote liquidity)
+  const lowerPositions = Array.from({ length: lowerPositionsAmount }, (_, i) => {
+    const price = plan.lowerPrice + i * lowerStepWidth;
+    return planToPosition({
+      baseAsset: plan.baseAsset,
+      quoteAsset: plan.quoteAsset,
+      feeBps: plan.feeBps,
+      price,
+      baseReserves: 0,
+      quoteReserves: plan.quoteLiquidity / lowerPositionsAmount,
+    });
+  });
+
+  // Generate positions for upper range (base liquidity)
+  const upperPositions = Array.from({ length: upperPositionsAmount }, (_, i) => {
+    const price = plan.marketPrice + i * upperStepWidth;
+    return planToPosition({
+      baseAsset: plan.baseAsset,
+      quoteAsset: plan.quoteAsset,
+      feeBps: plan.feeBps,
+      price,
+      baseReserves: plan.baseLiquidity / upperPositionsAmount,
+      quoteReserves: 0,
+    });
+  });
+
+  return [...lowerPositions, ...upperPositions];
 };
 
 /** A limit order plan attempts to buy or sell the baseAsset at a given price.
