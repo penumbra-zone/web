@@ -1,7 +1,7 @@
 'use client';
 
 import { useAutoAnimate } from '@formkit/auto-animate/react';
-import { useState, useRef } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import cn from 'clsx';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -48,6 +48,10 @@ export const LeaderboardTable = observer(({ epoch }: { epoch: number | undefined
   const { data: umMetadata } = useStakingTokenMetadata();
   const [selectedAsset, setSelectedAsset] = useState<AssetSelectorValue>();
 
+  const handleAssetChange = (next?: AssetSelectorValue) => {
+    setSelectedAsset(prev => (getAssetId(prev) === getAssetId(next) ? undefined : next));
+  };
+
   const {
     data: leaderboard,
     error: leaderboardError,
@@ -86,15 +90,13 @@ export const LeaderboardTable = observer(({ epoch }: { epoch: number | undefined
 
   // Collect an array of minium 5 items. If there are more than 5 voted assets, return all of them.
   // If less than 5, firstly return all voted assets, and then fill the rest with non-voted assets.
-  const assetsGauge = assetsData?.data ?? [];
-  const selectorAssets = [
-    ...assetsGauge,
-    ...(assetsGauge.length < 5
-      ? assetGauges.slice(assetsGauge.length, assetsGauge.length + 5 - assetsGauge.length)
-      : []),
-  ];
+  const metadataAssets = useMemo(() => {
+    const base = assetsData?.data ?? [];
+    const extra =
+      base.length < 5 ? assetGauges.slice(base.length, base.length + 5 - base.length) : [];
 
-  const metadataAssets = selectorAssets.map(g => g.asset);
+    return [...base, ...extra].map(g => g.asset);
+  }, [assetsData?.data, assetGauges]);
 
   const [positions, total, error, isLoading] = isMyTab
     ? [myLeaderboard?.data, myLeaderboard?.total, myLeaderboardError, myLeaderboardLoading]
@@ -114,7 +116,7 @@ export const LeaderboardTable = observer(({ epoch }: { epoch: number | undefined
               assets={metadataAssets}
               balances={undefined}
               value={selectedAsset}
-              onChange={setSelectedAsset}
+              onChange={handleAssetChange}
             />
           </div>
         </div>
