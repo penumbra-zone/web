@@ -105,7 +105,7 @@ const SocialCardCanvas = ({
         ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
     };
-  }, [params, stakingToken]);
+  }, [params, stakingToken, canvasRef]);
 
   return (
     <canvas
