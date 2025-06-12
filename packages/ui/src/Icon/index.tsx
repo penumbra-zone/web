@@ -61,7 +61,6 @@ const PROPS_BY_SIZE: Record<IconSize, ComponentProps<LucideIcon>> = {
 export const Icon = ({ IconComponent, size = 'sm', color }: IconProps) => {
   return (
     <IconComponent
-      absoluteStrokeWidth
       className={cn(color && getThemeColorClass(color).text)}
       color={!color ? 'currentColor' : undefined}
       {...PROPS_BY_SIZE[size]}
