@@ -53,6 +53,46 @@ export const optimisticBuild = async function* (
   } satisfies PartialMessage<AuthorizeAndBuildResponse | WitnessAndBuildResponse>;
 };
 
+export const optimsiticDelegatedBuild = async function* (
+  transactionPlan: TransactionPlan,
+  witnessData: WitnessData,
+  authorizationRequest: PromiseLike<AuthorizationData>,
+  fvk: FullViewingKey,
+) {
+  console.log('entered optimsiticDelegatedBuild!');
+
+  // a promise that rejects if auth denies. raced with build tasks to cancel.
+  // if we raced auth directly, approval would complete the race.
+  const cancel = new Promise<never>(
+    (_, reject) =>
+      void Promise.resolve(authorizationRequest).catch((r: unknown) =>
+        reject(ConnectError.from(r)),
+      ),
+  );
+
+  // kick off the parallel actions build
+  const offscreenTasks = offscreenClient.buildDelegatedProvingInputs(
+    transactionPlan,
+    witnessData,
+    fvk,
+    cancel,
+  );
+
+  // status updates
+  yield* progressStream(offscreenTasks, cancel);
+
+  const completedTasks = await Promise.all(offscreenTasks);
+  console.log('Completed offscreen tasks results:', completedTasks);
+
+  yield {
+    status: {
+      case: 'complete',
+      value: {},
+    },
+    // TODO: satisfies type parameter?
+  } satisfies PartialMessage<AuthorizeAndBuildResponse | WitnessAndBuildResponse>;
+};
+
 const progressStream = async function* <T>(tasks: PromiseLike<T>[], cancel: PromiseLike<never>) {
   // deliberately not a 'map' - tasks and promises have no direct relationship.
   const tasksRemaining = Array.from(tasks, () => Promise.withResolvers<void>());

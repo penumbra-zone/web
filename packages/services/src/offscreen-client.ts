@@ -99,4 +99,52 @@ const buildActions = (
   return buildTasks;
 };
 
-export const offscreenClient = { buildActions };
+/**
+ * Build delegated proving inputs in parallel, in an offscreen window where we can run wasm.
+ * @param cancel Promise that rejects if the build should be cancelled, usually auth denial.
+ * @returns An independently-promised list of action build results.
+ */
+const buildDelegatedProvingInputs = (
+  transactionPlan: TransactionPlan,
+  witness: WitnessData,
+  fullViewingKey: FullViewingKey,
+  cancel: PromiseLike<never>,
+): Promise<{ witness: Uint8Array; matrices: Uint8Array }>[] => {
+  const activation = activateOffscreen();
+
+  // this json serialization involves a lot of binary -> base64 which is slow,
+  // so just do it once and reuse
+  const partialRequest = {
+    transactionPlan: transactionPlan.toJson() as Jsonified<TransactionPlan>,
+    witness: witness.toJson() as Jsonified<WitnessData>,
+    fullViewingKey: fullViewingKey.toJson() as Jsonified<FullViewingKey>,
+  };
+
+  const buildTasks = transactionPlan.actions.map(async (_, actionPlanIndex) => {
+    const buildReq: InternalRequest<ActionBuildMessage> = {
+      type: 'BUILD_ACTION',
+      request: {
+        ...partialRequest,
+        actionPlanIndex,
+      },
+    };
+
+    // wait for offscreen to finish standing up
+    await activation;
+
+    const buildRes = await sendOffscreenMessage(buildReq);
+
+    // Return the circuit artifacts directly
+    return buildRes as unknown as { witness: Uint8Array; matrices: Uint8Array };
+  });
+
+  void Promise.race([Promise.all(buildTasks), cancel])
+    // suppress 'unhandled promise' logs - real failures are already conveyed by the individual promises.
+    .catch()
+    // this build is done with offscreen. it may shut down
+    .finally(() => void releaseOffscreen());
+
+  return buildTasks;
+};
+
+export const offscreenClient = { buildActions, buildDelegatedProvingInputs };

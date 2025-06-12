@@ -11,7 +11,7 @@ dependencies = [
  "macroific",
  "proc-macro2 1.0.86",
  "quote",
- "syn 2.0.79",
+ "syn 2.0.87",
 ]
 
 [[package]]
@@ -343,7 +343,7 @@ checksum = "c7c24de15d275a1ecfd47a380fb4d5ec9bfe0933f309ed5e705b775596a3574d"
 dependencies = [
  "proc-macro2 1.0.86",
  "quote",
- "syn 2.0.79",
+ "syn 2.0.87",
 ]
 
 [[package]]
@@ -354,7 +354,7 @@ checksum = "721cae7de5c34fbb2acd27e21e6d2cf7b886dce0c27388d46c4e6c47ea4318dd"
 dependencies = [
  "proc-macro2 1.0.86",
  "quote",
- "syn 2.0.79",
+ "syn 2.0.87",
 ]
 
 [[package]]
@@ -562,9 +562,9 @@ dependencies = [
 
 [[package]]
 name = "cc"
-version = "1.1.24"
+version = "1.2.25"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "812acba72f0a070b003d3697490d2b55b837230ae7c6c6497f05cc2ddbb8d938"
+checksum = "d0fc897dc1e865cc67c0e05a836d9d3f1df3cbe442aa4a9473b18e12624a4951"
 dependencies = [
  "shlex",
 ]
@@ -784,7 +784,7 @@ dependencies = [
  "proc-macro2 1.0.86",
  "quote",
  "strsim",
- "syn 2.0.79",
+ "syn 2.0.87",
 ]
 
 [[package]]
@@ -795,7 +795,7 @@ checksum = "d336a2a514f6ccccaa3e09b02d41d35330c07ddf03a62165fcec10bb561c7806"
 dependencies = [
  "darling_core",
  "quote",
- "syn 2.0.79",
+ "syn 2.0.87",
 ]
 
 [[package]]
@@ -826,8 +826,8 @@ dependencies = [
 
 [[package]]
 name = "decaf377-fmd"
-version = "2.0.0-alpha.11"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.11#3884141d4c167af2166bce7c090b84bed4d8a4e1"
+version = "2.0.0-alpha.10"
+source = "git+https://github.com/penumbra-zone/penumbra.git?branch=taceo-integration#9941d2e4d2b4737f0b1f98f6a1ab1d0159b5a1e7"
 dependencies = [
  "ark-ff",
  "ark-serialize",
@@ -840,8 +840,8 @@ dependencies = [
 
 [[package]]
 name = "decaf377-ka"
-version = "2.0.0-alpha.11"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.11#3884141d4c167af2166bce7c090b84bed4d8a4e1"
+version = "2.0.0-alpha.10"
+source = "git+https://github.com/penumbra-zone/penumbra.git?branch=taceo-integration#9941d2e4d2b4737f0b1f98f6a1ab1d0159b5a1e7"
 dependencies = [
  "ark-ff",
  "decaf377",
@@ -879,7 +879,7 @@ dependencies = [
  "macroific",
  "proc-macro2 1.0.86",
  "quote",
- "syn 2.0.79",
+ "syn 2.0.87",
 ]
 
 [[package]]
@@ -921,7 +921,7 @@ checksum = "5f33878137e4dafd7fa914ad4e259e18a4e8e532b9617a2d0150262bf53abfce"
 dependencies = [
  "proc-macro2 1.0.86",
  "quote",
- "syn 2.0.79",
+ "syn 2.0.87",
 ]
 
 [[package]]
@@ -953,7 +953,7 @@ checksum = "97369cbbc041bc366949bc74d34658d6cda5621039731c6310521892a3a20ae0"
 dependencies = [
  "proc-macro2 1.0.86",
  "quote",
- "syn 2.0.79",
+ "syn 2.0.87",
 ]
 
 [[package]]
@@ -1071,7 +1071,7 @@ dependencies = [
  "macroific",
  "proc-macro2 1.0.86",
  "quote",
- "syn 2.0.79",
+ "syn 2.0.87",
 ]
 
 [[package]]
@@ -1185,7 +1185,7 @@ checksum = "87750cf4b7a4c0625b1529e4c543c2182106e4dedc60a2a6455e00d212c489ac"
 dependencies = [
  "proc-macro2 1.0.86",
  "quote",
- "syn 2.0.79",
+ "syn 2.0.87",
 ]
 
 [[package]]
@@ -2041,10 +2041,11 @@ checksum = "49f1f14873335454500d59611f1cf4a4b0f786f9ac11f4312a78e4cf2566695b"
 
 [[package]]
 name = "js-sys"
-version = "0.3.70"
+version = "0.3.77"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1868808506b929d7b0cfa8f75951347aa71bb21144b7791bae35d9bccfcfe37a"
+checksum = "1cfaf33c695fc6e08064efbc1f72ec937429614f25eef83af942d0e227c3a28f"
 dependencies = [
+ "once_cell",
  "wasm-bindgen",
 ]
 
@@ -2077,9 +2078,9 @@ checksum = "bbd2bcb4c963f2ddae06a2efc7e9f3591312473c50c6685e1f298068316e66fe"
 
 [[package]]
 name = "libc"
-version = "0.2.159"
+version = "0.2.172"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "561d97a539a36e26a9a5fad1ea11a3039a67714694aaa379433e580854bc3dc5"
+checksum = "d750af042f7ef4f724306de029d18836c26c1765a54a6a3f094cbd23a7267ffa"
 
 [[package]]
 name = "linux-raw-sys"
@@ -2123,7 +2124,7 @@ dependencies = [
  "cfg-if",
  "proc-macro2 1.0.86",
  "quote",
- "syn 2.0.79",
+ "syn 2.0.87",
 ]
 
 [[package]]
@@ -2134,7 +2135,7 @@ checksum = "13198c120864097a565ccb3ff947672d969932b7975ebd4085732c9f09435e55"
 dependencies = [
  "proc-macro2 1.0.86",
  "quote",
- "syn 2.0.79",
+ "syn 2.0.87",
 ]
 
 [[package]]
@@ -2147,7 +2148,7 @@ dependencies = [
  "macroific_core",
  "proc-macro2 1.0.86",
  "quote",
- "syn 2.0.79",
+ "syn 2.0.87",
 ]
 
 [[package]]
@@ -2353,8 +2354,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-asset"
-version = "2.0.0-alpha.11"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.11#3884141d4c167af2166bce7c090b84bed4d8a4e1"
+version = "2.0.0-alpha.10"
+source = "git+https://github.com/penumbra-zone/penumbra.git?branch=taceo-integration#9941d2e4d2b4737f0b1f98f6a1ab1d0159b5a1e7"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2393,8 +2394,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-auction"
-version = "2.0.0-alpha.11"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.11#3884141d4c167af2166bce7c090b84bed4d8a4e1"
+version = "2.0.0-alpha.10"
+source = "git+https://github.com/penumbra-zone/penumbra.git?branch=taceo-integration#9941d2e4d2b4737f0b1f98f6a1ab1d0159b5a1e7"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2438,8 +2439,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-community-pool"
-version = "2.0.0-alpha.11"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.11#3884141d4c167af2166bce7c090b84bed4d8a4e1"
+version = "2.0.0-alpha.10"
+source = "git+https://github.com/penumbra-zone/penumbra.git?branch=taceo-integration#9941d2e4d2b4737f0b1f98f6a1ab1d0159b5a1e7"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2468,8 +2469,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-compact-block"
-version = "2.0.0-alpha.11"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.11#3884141d4c167af2166bce7c090b84bed4d8a4e1"
+version = "2.0.0-alpha.10"
+source = "git+https://github.com/penumbra-zone/penumbra.git?branch=taceo-integration#9941d2e4d2b4737f0b1f98f6a1ab1d0159b5a1e7"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2499,8 +2500,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-dex"
-version = "2.0.0-alpha.11"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.11#3884141d4c167af2166bce7c090b84bed4d8a4e1"
+version = "2.0.0-alpha.10"
+source = "git+https://github.com/penumbra-zone/penumbra.git?branch=taceo-integration#9941d2e4d2b4737f0b1f98f6a1ab1d0159b5a1e7"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2552,8 +2553,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-distributions"
-version = "2.0.0-alpha.11"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.11#3884141d4c167af2166bce7c090b84bed4d8a4e1"
+version = "2.0.0-alpha.10"
+source = "git+https://github.com/penumbra-zone/penumbra.git?branch=taceo-integration#9941d2e4d2b4737f0b1f98f6a1ab1d0159b5a1e7"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2568,8 +2569,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-fee"
-version = "2.0.0-alpha.11"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.11#3884141d4c167af2166bce7c090b84bed4d8a4e1"
+version = "2.0.0-alpha.10"
+source = "git+https://github.com/penumbra-zone/penumbra.git?branch=taceo-integration#9941d2e4d2b4737f0b1f98f6a1ab1d0159b5a1e7"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2592,8 +2593,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-funding"
-version = "2.0.0-alpha.11"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.11#3884141d4c167af2166bce7c090b84bed4d8a4e1"
+version = "2.0.0-alpha.10"
+source = "git+https://github.com/penumbra-zone/penumbra.git?branch=taceo-integration#9941d2e4d2b4737f0b1f98f6a1ab1d0159b5a1e7"
 dependencies = [
  "anyhow",
  "ark-groth16",
@@ -2623,8 +2624,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-governance"
-version = "2.0.0-alpha.11"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.11#3884141d4c167af2166bce7c090b84bed4d8a4e1"
+version = "2.0.0-alpha.10"
+source = "git+https://github.com/penumbra-zone/penumbra.git?branch=taceo-integration#9941d2e4d2b4737f0b1f98f6a1ab1d0159b5a1e7"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2672,8 +2673,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-ibc"
-version = "2.0.0-alpha.11"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.11#3884141d4c167af2166bce7c090b84bed4d8a4e1"
+version = "2.0.0-alpha.10"
+source = "git+https://github.com/penumbra-zone/penumbra.git?branch=taceo-integration#9941d2e4d2b4737f0b1f98f6a1ab1d0159b5a1e7"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2707,8 +2708,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-keys"
-version = "2.0.0-alpha.11"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.11#3884141d4c167af2166bce7c090b84bed4d8a4e1"
+version = "2.0.0-alpha.10"
+source = "git+https://github.com/penumbra-zone/penumbra.git?branch=taceo-integration#9941d2e4d2b4737f0b1f98f6a1ab1d0159b5a1e7"
 dependencies = [
  "aes",
  "anyhow",
@@ -2751,8 +2752,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-num"
-version = "2.0.0-alpha.11"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.11#3884141d4c167af2166bce7c090b84bed4d8a4e1"
+version = "2.0.0-alpha.10"
+source = "git+https://github.com/penumbra-zone/penumbra.git?branch=taceo-integration#9941d2e4d2b4737f0b1f98f6a1ab1d0159b5a1e7"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2787,8 +2788,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-proof-params"
-version = "2.0.0-alpha.11"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.11#3884141d4c167af2166bce7c090b84bed4d8a4e1"
+version = "2.0.0-alpha.10"
+source = "git+https://github.com/penumbra-zone/penumbra.git?branch=taceo-integration#9941d2e4d2b4737f0b1f98f6a1ab1d0159b5a1e7"
 dependencies = [
  "anyhow",
  "ark-ec",
@@ -2812,8 +2813,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-proto"
-version = "2.0.0-alpha.11"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.11#3884141d4c167af2166bce7c090b84bed4d8a4e1"
+version = "2.0.0-alpha.10"
+source = "git+https://github.com/penumbra-zone/penumbra.git?branch=taceo-integration#9941d2e4d2b4737f0b1f98f6a1ab1d0159b5a1e7"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2839,8 +2840,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-sct"
-version = "2.0.0-alpha.11"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.11#3884141d4c167af2166bce7c090b84bed4d8a4e1"
+version = "2.0.0-alpha.10"
+source = "git+https://github.com/penumbra-zone/penumbra.git?branch=taceo-integration#9941d2e4d2b4737f0b1f98f6a1ab1d0159b5a1e7"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2873,8 +2874,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-shielded-pool"
-version = "2.0.0-alpha.11"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.11#3884141d4c167af2166bce7c090b84bed4d8a4e1"
+version = "2.0.0-alpha.10"
+source = "git+https://github.com/penumbra-zone/penumbra.git?branch=taceo-integration#9941d2e4d2b4737f0b1f98f6a1ab1d0159b5a1e7"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2924,8 +2925,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-stake"
-version = "2.0.0-alpha.11"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.11#3884141d4c167af2166bce7c090b84bed4d8a4e1"
+version = "2.0.0-alpha.10"
+source = "git+https://github.com/penumbra-zone/penumbra.git?branch=taceo-integration#9941d2e4d2b4737f0b1f98f6a1ab1d0159b5a1e7"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2965,8 +2966,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-tct"
-version = "2.0.0-alpha.11"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.11#3884141d4c167af2166bce7c090b84bed4d8a4e1"
+version = "2.0.0-alpha.10"
+source = "git+https://github.com/penumbra-zone/penumbra.git?branch=taceo-integration#9941d2e4d2b4737f0b1f98f6a1ab1d0159b5a1e7"
 dependencies = [
  "ark-ed-on-bls12-377",
  "ark-ff",
@@ -2994,15 +2995,17 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-transaction"
-version = "2.0.0-alpha.11"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.11#3884141d4c167af2166bce7c090b84bed4d8a4e1"
+version = "2.0.0-alpha.10"
+source = "git+https://github.com/penumbra-zone/penumbra.git?branch=taceo-integration#9941d2e4d2b4737f0b1f98f6a1ab1d0159b5a1e7"
 dependencies = [
  "anyhow",
  "ark-ff",
+ "ark-relations",
  "ark-serialize",
  "base64 0.21.7",
  "bech32",
  "blake2b_simd 1.0.2",
+ "byteorder",
  "bytes",
  "chacha20poly1305",
  "decaf377",
@@ -3046,8 +3049,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sdk-txhash"
-version = "2.0.0-alpha.11"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v2.0.0-alpha.11#3884141d4c167af2166bce7c090b84bed4d8a4e1"
+version = "2.0.0-alpha.10"
+source = "git+https://github.com/penumbra-zone/penumbra.git?branch=taceo-integration#9941d2e4d2b4737f0b1f98f6a1ab1d0159b5a1e7"
 dependencies = [
  "anyhow",
  "blake2b_simd 1.0.2",
@@ -3127,7 +3130,7 @@ checksum = "2f38a4412a78282e09a2cf38d195ea5420d15ba0602cb375210efbc877243965"
 dependencies = [
  "proc-macro2 1.0.86",
  "quote",
- "syn 2.0.79",
+ "syn 2.0.87",
 ]
 
 [[package]]
@@ -3233,7 +3236,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "479cf940fbbb3426c32c5d5176f62ad57549a0bb84773423ba8be9d089f5faba"
 dependencies = [
  "proc-macro2 1.0.86",
- "syn 2.0.79",
+ "syn 2.0.87",
 ]
 
 [[package]]
@@ -3301,7 +3304,7 @@ dependencies = [
  "prost",
  "prost-types",
  "regex",
- "syn 2.0.79",
+ "syn 2.0.87",
  "tempfile",
 ]
 
@@ -3315,7 +3318,7 @@ dependencies = [
  "itertools 0.13.0",
  "proc-macro2 1.0.86",
  "quote",
- "syn 2.0.79",
+ "syn 2.0.87",
 ]
 
 [[package]]
@@ -3493,6 +3496,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "rustversion"
+version = "1.0.21"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8a0d197bd2c9dc6e53b84da9556a69ba4cdfab8619eb41a8bd1cc2027a0f6b1d"
+
+[[package]]
 name = "ryu"
 version = "1.0.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3622,7 +3631,7 @@ checksum = "243902eda00fad750862fc144cea25caca5e20d615af0a81bee94ca738f1df1f"
 dependencies = [
  "proc-macro2 1.0.86",
  "quote",
- "syn 2.0.79",
+ "syn 2.0.87",
 ]
 
 [[package]]
@@ -3645,7 +3654,7 @@ checksum = "6c64451ba24fc7a6a2d60fc75dd9c83c90903b19028d4eff35e88fc1e86564e9"
 dependencies = [
  "proc-macro2 1.0.86",
  "quote",
- "syn 2.0.79",
+ "syn 2.0.87",
 ]
 
 [[package]]
@@ -3664,7 +3673,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3f1b15838534b38fb67ffe60033fe3ffad48f916c175e8baa0400e0cdb958dec"
 dependencies = [
  "quote",
- "syn 2.0.79",
+ "syn 2.0.87",
 ]
 
 [[package]]
@@ -3694,7 +3703,7 @@ dependencies = [
  "darling",
  "proc-macro2 1.0.86",
  "quote",
- "syn 2.0.79",
+ "syn 2.0.87",
 ]
 
 [[package]]
@@ -3828,9 +3837,9 @@ dependencies = [
 
 [[package]]
 name = "syn"
-version = "2.0.79"
+version = "2.0.87"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "89132cd0bf050864e1d38dc3bbc07a0eb8e7530af26344d3d2bbbef83499f590"
+checksum = "25aa4ce346d03a6dcd68dd8b4010bcb74e54e62c90c573f394c46eae99aba32d"
 dependencies = [
  "proc-macro2 1.0.86",
  "quote",
@@ -3929,7 +3938,7 @@ checksum = "08904e7672f5eb876eaaf87e0ce17857500934f4981c4a0ab2b4aa98baac7fc3"
 dependencies = [
  "proc-macro2 1.0.86",
  "quote",
- "syn 2.0.79",
+ "syn 2.0.87",
 ]
 
 [[package]]
@@ -4044,7 +4053,7 @@ checksum = "34704c8d6ebcbc939824180af020566b01a7c01f80641264eba0999f6c2b6be7"
 dependencies = [
  "proc-macro2 1.0.86",
  "quote",
- "syn 2.0.79",
+ "syn 2.0.87",
 ]
 
 [[package]]
@@ -4146,27 +4155,27 @@ checksum = "9c8d87e72b64a3b4db28d11ce29237c246188f4f51057d65a7eab63b7987e423"
 
 [[package]]
 name = "wasm-bindgen"
-version = "0.2.93"
+version = "0.2.100"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a82edfc16a6c469f5f44dc7b571814045d60404b55a0ee849f9bcfa2e63dd9b5"
+checksum = "1edc8929d7499fc4e8f0be2262a241556cfc54a0bea223790e71446f2aab1ef5"
 dependencies = [
  "cfg-if",
  "once_cell",
+ "rustversion",
  "wasm-bindgen-macro",
 ]
 
 [[package]]
 name = "wasm-bindgen-backend"
-version = "0.2.93"
+version = "0.2.100"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9de396da306523044d3302746f1208fa71d7532227f15e347e2d93e4145dd77b"
+checksum = "2f0a0651a5c2bc21487bde11ee802ccaf4c51935d0d3d42a6101f98161700bc6"
 dependencies = [
  "bumpalo",
  "log",
- "once_cell",
  "proc-macro2 1.0.86",
  "quote",
- "syn 2.0.79",
+ "syn 2.0.87",
  "wasm-bindgen-shared",
 ]
 
@@ -4184,9 +4193,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-macro"
-version = "0.2.93"
+version = "0.2.100"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "585c4c91a46b072c92e908d99cb1dcdf95c5218eeb6f3bf1efa991ee7a68cccf"
+checksum = "7fe63fc6d09ed3792bd0897b314f53de8e16568c2b3f7982f468c0bf9bd0b407"
 dependencies = [
  "quote",
  "wasm-bindgen-macro-support",
@@ -4194,22 +4203,25 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-macro-support"
-version = "0.2.93"
+version = "0.2.100"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "afc340c74d9005395cf9dd098506f7f44e38f2b4a21c6aaacf9a105ea5e1e836"
+checksum = "8ae87ea40c9f689fc23f209965b6fb8a99ad69aeeb0231408be24920604395de"
 dependencies = [
  "proc-macro2 1.0.86",
  "quote",
- "syn 2.0.79",
+ "syn 2.0.87",
  "wasm-bindgen-backend",
  "wasm-bindgen-shared",
 ]
 
 [[package]]
 name = "wasm-bindgen-shared"
-version = "0.2.93"
+version = "0.2.100"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c62a0a307cb4a311d3a07867860911ca130c3494e8c2719593806c08bc5d0484"
+checksum = "1a05d73b933a847d6cccdda8f838a22ff101ad9bf93e33684f39c1f5f0eece3d"
+dependencies = [
+ "unicode-ident",
+]
 
 [[package]]
 name = "wasm-bindgen-test"
@@ -4234,14 +4246,14 @@ checksum = "4b8220be1fa9e4c889b30fd207d4906657e7e90b12e0e6b0c8b8d8709f5de021"
 dependencies = [
  "proc-macro2 1.0.86",
  "quote",
- "syn 2.0.79",
+ "syn 2.0.87",
 ]
 
 [[package]]
 name = "web-sys"
-version = "0.3.70"
+version = "0.3.77"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "26fdeaafd9bd129f65e7c031593c24d62186301e0c72c8978fa1678be7d532c0"
+checksum = "33b6dd2ef9186f1f2072e409e99cd22a975331a6b3591b12c764e0e55c60d5d2"
 dependencies = [
  "js-sys",
  "wasm-bindgen",
@@ -4383,7 +4395,7 @@ checksum = "fa4f8080344d4671fb4e831a13ad1e68092748387dfc4f55e356242fae12ce3e"
 dependencies = [
  "proc-macro2 1.0.86",
  "quote",
- "syn 2.0.79",
+ "syn 2.0.87",
 ]
 
 [[package]]
@@ -4403,5 +4415,5 @@ checksum = "ce36e65b0d2999d2aafac989fb249189a141aee1f53c612c1f37d72631959f69"
 dependencies = [
  "proc-macro2 1.0.86",
  "quote",
- "syn 2.0.79",
+ "syn 2.0.87",
 ]

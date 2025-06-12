@@ -9,6 +9,7 @@ import type { StateCommitmentTree } from '@penumbra-zone/types/state-commitment-
 import {
   authorize,
   build_action,
+  build_delegated_proving_inputs,
   build_parallel,
   load_proving_key,
   witness,
@@ -64,6 +65,30 @@ export const buildActionParallel = async (
   );
 
   return Action.fromBinary(result);
+};
+
+export const buildDelegatedProving = async (
+  txPlan: TransactionPlan,
+  witnessData: WitnessData,
+  fullViewingKey: FullViewingKey,
+  actionId: number,
+): Promise<{ witness: Uint8Array; matrices: Uint8Array }> => {
+  const actionPlan = txPlan.actions[actionId];
+  if (!actionPlan?.action.case) {
+    throw new Error('No action key provided');
+  }
+
+  const result = build_delegated_proving_inputs(
+    actionPlan.toBinary(),
+    fullViewingKey.toBinary(),
+    witnessData.toBinary(),
+  );
+
+  // 'CircuitArtifacts' object with witness and matrices properties
+  return {
+    witness: result.witness,
+    matrices: result.matrices,
+  };
 };
 
 const loadProvingKey = async (

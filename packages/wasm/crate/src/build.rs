@@ -3,10 +3,60 @@ use crate::utils;
 use penumbra_keys::FullViewingKey;
 use penumbra_proto::DomainType;
 use penumbra_transaction::{
+    constraints::generate_and_serialize_circuit,
     plan::{ActionPlan, TransactionPlan},
     Action, AuthorizationData, Transaction, WitnessData,
 };
+
+use serde::{Deserialize, Serialize};
 use wasm_bindgen::{prelude::wasm_bindgen, JsValue};
+
+#[wasm_bindgen]
+#[derive(Serialize, Deserialize)]
+pub struct CircuitArtifacts {
+    witness: Vec<u8>,
+    matrices: Vec<u8>,
+}
+
+#[wasm_bindgen]
+impl CircuitArtifacts {
+    #[wasm_bindgen(getter)]
+    pub fn witness(&self) -> Vec<u8> {
+        self.witness.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn matrices(&self) -> Vec<u8> {
+        self.matrices.clone()
+    }
+}
+
+/// Builds neccessary witness and matrices
+/// for delegated proving.
+#[wasm_bindgen]
+pub fn build_delegated_proving_inputs(
+    action_plan: &[u8],
+    full_viewing_key: &[u8],
+    witness_data: &[u8],
+) -> WasmResult<CircuitArtifacts> {
+    utils::set_panic_hook();
+
+    let witness = WitnessData::decode(witness_data)?;
+    let action_plan = ActionPlan::decode(action_plan)?;
+    let full_viewing_key = FullViewingKey::decode(full_viewing_key)?;
+
+    let circuit_inputs =
+        ActionPlan::circuit_inputs(action_plan.clone(), &full_viewing_key, &witness)
+            .ok()
+            .expect("circuit inputs");
+
+    let constraints_and_matrices = generate_and_serialize_circuit(circuit_inputs)?;
+
+    Ok(CircuitArtifacts {
+        witness: constraints_and_matrices.0,
+        matrices: constraints_and_matrices.1,
+    })
+}
 
 /// Builds a planned [`Action`] specified by
 /// the [`ActionPlan`] in a [`TransactionPlan`].
@@ -42,7 +92,16 @@ pub fn build_action_inner(
 ) -> WasmResult<Action> {
     let memo_key = transaction_plan.memo.map(|memo_plan| memo_plan.key);
 
-    let action = ActionPlan::build_unauth(action_plan, &full_viewing_key, &witness, memo_key)?;
+    let circuit_inputs =
+        ActionPlan::circuit_inputs(action_plan.clone(), &full_viewing_key, &witness).ok();
+
+    let action: Action = ActionPlan::build_unauth(
+        action_plan,
+        &full_viewing_key,
+        &witness,
+        memo_key,
+        circuit_inputs,
+    )?;
 
     Ok(action)
 }
