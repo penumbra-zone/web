@@ -1,7 +1,7 @@
 'use client';
 
 import { useAutoAnimate } from '@formkit/auto-animate/react';
-import { useState, useRef } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import cn from 'clsx';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -22,10 +22,10 @@ import { connectionStore } from '@/shared/model/connection';
 import { useMyLpLeaderboard } from '@/entities/leaderboard/api/use-my-lp-leaderboard';
 import { round } from '@penumbra-zone/types/round';
 import { useStakingTokenMetadata } from '@/shared/api/registry';
-import { useAssets, useGetMetadata } from '@/shared/api/assets';
-import { useBalances } from '@/shared/api/balances';
+import { useGetMetadata } from '@/shared/api/assets';
 import { AssetSelector, AssetSelectorValue } from '@penumbra-zone/ui/AssetSelector';
 import { getAssetId } from './utils';
+import { useEpochResults } from '@/pages/tournament/api/use-epoch-results';
 
 const Tabs = {
   AllLPs: 'All LPs',
@@ -46,9 +46,11 @@ export const LeaderboardTable = observer(({ epoch }: { epoch: number | undefined
   const { getTableHeader, sortBy } = useSortableTableHeaders<LpLeaderboardSortKey>('points');
   const getAssetMetadata = useGetMetadata();
   const { data: umMetadata } = useStakingTokenMetadata();
-  const { data: balances } = useBalances();
-  const { data: assets } = useAssets();
   const [selectedAsset, setSelectedAsset] = useState<AssetSelectorValue>();
+
+  const handleAssetChange = (next?: AssetSelectorValue) => {
+    setSelectedAsset(prev => (getAssetId(prev) === getAssetId(next) ? undefined : next));
+  };
 
   const {
     data: leaderboard,
@@ -80,6 +82,22 @@ export const LeaderboardTable = observer(({ epoch }: { epoch: number | undefined
     isActive: isMyTab,
   });
 
+  const { data: assetsData, assetGauges } = useEpochResults('epoch-results-vote-dialog', {
+    epoch,
+    limit: 30,
+    page: 1,
+  });
+
+  // Collect an array of minium 5 items. If there are more than 5 voted assets, return all of them.
+  // If less than 5, firstly return all voted assets, and then fill the rest with non-voted assets.
+  const metadataAssets = useMemo(() => {
+    const base = assetsData?.data ?? [];
+    const extra =
+      base.length < 5 ? assetGauges.slice(base.length, base.length + 5 - base.length) : [];
+
+    return [...base, ...extra].map(g => g.asset);
+  }, [assetsData?.data, assetGauges]);
+
   const [positions, total, error, isLoading] = isMyTab
     ? [myLeaderboard?.data, myLeaderboard?.total, myLeaderboardError, myLeaderboardLoading]
     : [leaderboard?.data, leaderboard?.total, leaderboardError, leaderboardLoading];
@@ -95,10 +113,10 @@ export const LeaderboardTable = observer(({ epoch }: { epoch: number | undefined
 
           <div className='rounded-full overflow-hidden'>
             <AssetSelector
-              assets={assets}
-              balances={balances}
+              assets={metadataAssets}
+              balances={undefined}
               value={selectedAsset}
-              onChange={setSelectedAsset}
+              onChange={handleAssetChange}
             />
           </div>
         </div>
@@ -128,10 +146,7 @@ export const LeaderboardTable = observer(({ epoch }: { epoch: number | undefined
               </div>
             )}
 
-            <div
-              ref={parent}
-              className='grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr] h-auto overflow-auto'
-            >
+            <div className='grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr] h-auto overflow-auto'>
               <div className='grid grid-cols-subgrid col-span-6'>
                 <TableCell heading>Position ID</TableCell>
                 {getTableHeader('executions', 'Execs')}
@@ -159,7 +174,7 @@ export const LeaderboardTable = observer(({ epoch }: { epoch: number | undefined
                   </div>
                 ))
               ) : (
-                <>
+                <div ref={parent} className='contents col-span-6'>
                   {positions?.length ? (
                     positions.map(position => {
                       return (
@@ -192,18 +207,18 @@ export const LeaderboardTable = observer(({ epoch }: { epoch: number | undefined
                           </TableCell>
                           {/* @TODO add age & pnlPercentage */}
                           {/* <TableCell cell numeric loading={isLoading}>
-                        <Text
-                          smallTechnical
-                          color={
-                            position.pnlPercentage >= 0 ? 'success.light' : 'destructive.light'
-                          }
-                        >
-                          {position.pnlPercentage}%
-                        </Text>
-                      </TableCell> */}
+                      <Text
+                        smallTechnical
+                        color={
+                          position.pnlPercentage >= 0 ? 'success.light' : 'destructive.light'
+                        }
+                      >
+                        {position.pnlPercentage}%
+                      </Text>
+                    </TableCell> */}
                           {/* <TableCell cell numeric>
-                        {formatAge(position.openingTime)}
-                      </TableCell> */}
+                      {formatAge(position.openingTime)}
+                    </TableCell> */}
                           <TableCell cell>
                             <div className='flex gap-1 flex-col'>
                               <ValueViewComponent
@@ -251,13 +266,13 @@ export const LeaderboardTable = observer(({ epoch }: { epoch: number | undefined
                           <span className='!text-sm'>
                             {tab === Tabs.AllLPs
                               ? 'There are no liquidity positions in this epoch.'
-                              : 'You have no liquidity positions in this epoch.'}
+                              : 'Your LPs have not received any rewards during this epoch.'}
                           </span>
                         </TableCell>
                       </div>
                     </div>
                   )}
-                </>
+                </div>
               )}
             </div>
 
