@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import { Dialog } from '@penumbra-zone/ui/Dialog';
@@ -68,9 +68,14 @@ function shareToX(text: string, url: string) {
   window.open(tweetUrl, '_blank');
 }
 
-const SocialCardCanvas = ({ params }: { params?: TournamentParams }) => {
+const SocialCardCanvas = ({
+  params,
+  canvasRef,
+}: {
+  params?: TournamentParams;
+  canvasRef: RefObject<HTMLCanvasElement | null>;
+}) => {
   const { data: stakingToken } = useStakingTokenMetadata();
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const hasDrawn = useRef(false);
 
   useEffect(() => {
@@ -119,12 +124,7 @@ const SocialCardCanvas = ({ params }: { params?: TournamentParams }) => {
  * Shown only on first Veil open per epoch.
  */
 export const SocialCardDialog = observer(
-  ({ onClose, epoch }: { epoch: number | undefined; onClose: () => void }) => {
-    // Return early if epoch is undefined.
-    if (!epoch) {
-      return;
-    }
-
+  ({ onClose, epoch }: { epoch: number; onClose: () => void }) => {
     const { subaccount } = connectionStore;
     const [initialParams, setInitialParams] = useState<TournamentParams | undefined>(undefined);
 
@@ -224,10 +224,8 @@ export const SocialCardDialog = observer(
             </div>
           }
         >
-          <div id='tournament-social-description' className='flex-1 overflow-hidden'>
-            <div className='flex justify-center overflow-x-hidden'>
-              <SocialCardCanvas params={initialParams} />
-            </div>
+          <div id='tournament-social-description' className='flex justify-center'>
+            <SocialCardCanvas canvasRef={canvasRef} params={initialParams} />
           </div>
         </Dialog.Content>
       </Dialog>
