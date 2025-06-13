@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import cn from 'clsx';
 import { observer } from 'mobx-react-lite';
 import { WalletMinimal, InfoIcon } from 'lucide-react';
 import { Button } from '@penumbra-zone/ui/Button';
