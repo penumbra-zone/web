@@ -5,6 +5,7 @@ import { DelegatorRewards } from './delegator-rewards';
 import { LandingCard } from './landing-card';
 import { DelegatorLeaderboard } from './delegator-leaderboard';
 import { PreviousEpochs } from './previous-epochs';
+import { LPLeaderboard } from '@/entities/leaderboard/ui/table';
 
 export const TournamentPage = () => {
   return (
@@ -12,6 +13,7 @@ export const TournamentPage = () => {
       <PenumbraWaves />
       <LandingCard />
       <DelegatorRewards />
+      <LPLeaderboard showEpoch />
       <DelegatorLeaderboard />
       <PreviousEpochs />
     </section>
