@@ -147,6 +147,11 @@ export const SocialCardDialog = observer(
       epochs: [epoch],
     });
 
+    const { data: currentEpochSummary } = useTournamentSummary({
+      limit: 1,
+      page: 1,
+    });
+
     const {
       data: rewards,
       query: { isLoading: loadingRewards },
@@ -190,7 +195,7 @@ export const SocialCardDialog = observer(
 
     const text = `Just won ${latestReward?.reward} UM from the @penumbrazone Liquidity Tournament
 Delegated UM. Voted. Earned. All without giving up privacy.
-${summaryData?.ends_in_s ? `Next round starts in ${formatTimeRemaining(summaryData.ends_in_s)}` : ''}`;
+${currentEpochSummary?.[0]?.ends_in_s ? `Next round starts in ${formatTimeRemaining(currentEpochSummary[0].ends_in_s)}` : ''}`;
 
     const url = initialParams ? `${baseUrl}/tournament/join?${encodeParams(initialParams)}` : '';
 
