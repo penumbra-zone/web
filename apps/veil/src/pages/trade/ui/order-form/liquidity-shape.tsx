@@ -45,25 +45,24 @@ export const LiquidityShape = ({
   onClick: () => void;
   selected: boolean;
 }) => {
-  const { text, default: Default, hover, selected: Selected, disabled } = shapeMapping[shape];
+  const {
+    text,
+    default: Default,
+    hover: Hover,
+    selected: Selected,
+    disabled,
+  } = shapeMapping[shape];
   const [isHovered, setIsHovered] = useState(false);
 
   if (disabled) {
     return null;
   }
 
-  let Icon = isHovered ? hover : Default;
-
-  // override the icon if the shape is selected
-  if (selected) {
-    Icon = Selected;
-  }
-
   return (
     <button
       key={shape}
       className={cn(
-        'p-3 rounded-sm flex-1 min-h-10 border flex flex-col items-center justify-center',
+        'p-3 rounded-sm flex-1 min-h-10 border flex flex-col items-center justify-center active:opacity-80 active:duration-[0.1s]',
         selected ? 'bg-other-tonalFill5' : undefined,
         selected ? 'border-primary-main' : 'border-transparent',
       )}
@@ -71,8 +70,22 @@ export const LiquidityShape = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <Icon className='mb-1' />
-      <Text small color='text.secondary'>
+      <div className='relative flex justify-center w-full mb-1'>
+        <Default />
+        <Hover
+          className={cn(
+            'absolute z-10 inset-0 w-full h-full transition-opacity duration-200',
+            isHovered && !selected ? 'opacity-100' : 'opacity-0',
+          )}
+        />
+        <Selected
+          className={cn(
+            'absolute z-20 inset-0 w-full h-full transition-opacity duration-200',
+            selected ? 'opacity-100' : 'opacity-0',
+          )}
+        />
+      </div>
+      <Text detail color='text.secondary'>
         {text}
       </Text>
     </button>
