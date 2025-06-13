@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import { Dialog } from '@penumbra-zone/ui/Dialog';
@@ -20,6 +20,7 @@ import { useStakingTokenMetadata } from '@/shared/api/registry';
 import { useSpecificDelegatorSummary } from '../api/use-specific-delegator-summary';
 import { useCurrentEpoch } from '../api/use-current-epoch';
 import { LqtDelegatorHistoryData } from '../server/delegator-history';
+import { formatTimeRemaining } from '@/shared/utils/format-time';
 
 export const dismissedKey = 'veil-tournament-social-card-dismissed';
 const baseUrl = process.env['NEXT_PUBLIC_BASE_URL'] ?? 'http://localhost:3000';
@@ -68,9 +69,14 @@ function shareToX(text: string, url: string) {
   window.open(tweetUrl, '_blank');
 }
 
-const SocialCardCanvas = ({ params }: { params?: TournamentParams }) => {
+const SocialCardCanvas = ({
+  params,
+  canvasRef,
+}: {
+  params?: TournamentParams;
+  canvasRef: RefObject<HTMLCanvasElement | null>;
+}) => {
   const { data: stakingToken } = useStakingTokenMetadata();
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const hasDrawn = useRef(false);
 
   useEffect(() => {
@@ -100,7 +106,7 @@ const SocialCardCanvas = ({ params }: { params?: TournamentParams }) => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
     };
-  }, [params, stakingToken]);
+  }, [params, stakingToken, canvasRef]);
 
   return (
     <canvas
@@ -122,7 +128,7 @@ export const SocialCardDialog = observer(
   ({ onClose, epoch }: { epoch: number | undefined; onClose: () => void }) => {
     // Return early if epoch is undefined.
     if (!epoch) {
-      return;
+      return null;
     }
 
     const { subaccount } = connectionStore;
@@ -139,6 +145,11 @@ export const SocialCardDialog = observer(
       limit: 1,
       page: 1,
       epochs: [epoch],
+    });
+
+    const { data: currentEpochSummary } = useTournamentSummary({
+      limit: 1,
+      page: 1,
     });
 
     const {
@@ -182,13 +193,9 @@ export const SocialCardDialog = observer(
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [dontShowAgain, setDontShowAgain] = useState(false);
 
-    const text = `🚨 Penumbra's Liquidity Tournament is LIVE! 🚨
-
-    💧 Provide liquidity  
-    📈 Climb the leaderboard  
-    🏆 Win rewards
-
-    👇 Join now:`;
+    const text = `Just won ${latestReward?.reward} UM from the @penumbrazone Liquidity Tournament
+Delegated UM. Voted. Earned. All without giving up privacy.
+${currentEpochSummary?.[0]?.ends_in_s ? `Next round starts in ${formatTimeRemaining(currentEpochSummary[0].ends_in_s)}` : ''}`;
 
     const url = initialParams ? `${baseUrl}/tournament/join?${encodeParams(initialParams)}` : '';
 
@@ -224,10 +231,8 @@ export const SocialCardDialog = observer(
             </div>
           }
         >
-          <div id='tournament-social-description' className='flex-1 overflow-hidden'>
-            <div className='flex justify-center overflow-x-hidden'>
-              <SocialCardCanvas params={initialParams} />
-            </div>
+          <div id='tournament-social-description' className='flex justify-center'>
+            <SocialCardCanvas canvasRef={canvasRef} params={initialParams} />
           </div>
         </Dialog.Content>
       </Dialog>
