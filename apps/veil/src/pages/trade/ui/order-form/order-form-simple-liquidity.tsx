@@ -154,7 +154,7 @@ export const SimpleLiquidityOrderForm = observer(
             <Text small color='text.secondary'>
               Liquidity Shape
             </Text>
-            <Tooltip message='Defines the distribution of liquidity across the price range.'>
+            <Tooltip message='Select how your liquidity is distributed across the price range.'>
               <Icon IconComponent={InfoIcon} size='sm' color='text.secondary' />
             </Tooltip>
           </div>
