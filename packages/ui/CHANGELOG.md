@@ -1,5 +1,18 @@
 # @penumbra-zone/ui
 
+## 15.1.0
+
+### Minor Changes
+
+- 23d578b: Add additional props to Icon & TextInput
+- d3b1d78: feat: establish minifront-v2 app with Transactions UI and Transfer Page
+
+### Patch Changes
+
+- 82700e9: Fix style export
+- 14a8ccd: Fix dialog component placement for XL screens
+- 044daa9: Remove absoluteStrokeWidth prop from Icon
+
 ## 15.0.2
 
 ### Patch Changes
