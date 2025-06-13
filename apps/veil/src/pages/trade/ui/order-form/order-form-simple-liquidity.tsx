@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import cn from 'clsx';
 import { observer } from 'mobx-react-lite';
 import { WalletMinimal, InfoIcon } from 'lucide-react';
 import { Button } from '@penumbra-zone/ui/Button';
@@ -17,6 +18,8 @@ import { useEffect, useState } from 'react';
 import { Icon } from '@penumbra-zone/ui/Icon';
 import { assetPatterns } from '@penumbra-zone/types/assets';
 import { Density } from '@penumbra-zone/ui';
+import { LiquidityDistributionShape } from '@/shared/math/position';
+import { LiquidityShape } from './liquidity-shape';
 
 export const SimpleLiquidityOrderForm = observer(
   ({ parentStore }: { parentStore: OrderFormStore }) => {
@@ -145,6 +148,26 @@ export const SimpleLiquidityOrderForm = observer(
                 {store.quoteAsset.formatBalance()}
               </button>
             )}
+          </div>
+        </div>
+        <div className='mb-4'>
+          <div className='flex items-center gap-1 mb-2'>
+            <Text small color='text.secondary'>
+              Liquidity Shape
+            </Text>
+            <Tooltip message='Defines the distribution of liquidity across the price range.'>
+              <Icon IconComponent={InfoIcon} size='sm' color='text.secondary' />
+            </Tooltip>
+          </div>
+          <div className='flex w-full gap-2'>
+            {Object.values(LiquidityDistributionShape).map(shape => (
+              <LiquidityShape
+                key={shape}
+                shape={shape}
+                selected={store.liquidityShape === shape}
+                onClick={() => store.setLiquidityShape(shape)}
+              />
+            ))}
           </div>
         </div>
         <div className='mb-4'>

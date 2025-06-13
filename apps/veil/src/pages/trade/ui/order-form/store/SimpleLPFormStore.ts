@@ -1,7 +1,7 @@
 import { scaleLinear } from 'd3-scale';
 import { openToast } from '@penumbra-zone/ui/Toast';
 import { AssetInfo } from '@/pages/trade/model/AssetInfo';
-import { simpleLiquidityPositions } from '@/shared/math/position';
+import { LiquidityDistributionShape, simpleLiquidityPositions } from '@/shared/math/position';
 import { parseNumber } from '@/shared/utils/num';
 import { Position } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { pnum } from '@penumbra-zone/types/pnum';
@@ -41,6 +41,7 @@ export class SimpleLPFormStore {
   feeTierPercentInput = String(DEFAULT_FEE_TIER_PERCENT);
   marketPrice = 1;
   positions = DEFAULT_POSITION_COUNT;
+  liquidityShape: LiquidityDistributionShape = LiquidityDistributionShape.PYRAMID;
 
   constructor() {
     makeAutoObservable(this);
@@ -214,4 +215,8 @@ export class SimpleLPFormStore {
       this.quoteInput = '';
     }
   }
+
+  setLiquidityShape = (shape: LiquidityDistributionShape) => {
+    this.liquidityShape = shape;
+  };
 }
