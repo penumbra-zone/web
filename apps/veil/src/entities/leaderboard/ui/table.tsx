@@ -35,7 +35,7 @@ const Tabs = {
 
 type Tab = (typeof Tabs)[keyof typeof Tabs];
 
-export const LeaderboardTable = observer(
+export const LPLeaderboard = observer(
   ({ epoch: propEpoch, showEpoch }: { epoch?: number; showEpoch?: boolean }) => {
     const { connected, subaccount } = connectionStore;
     const totalRef = useRef<number>(0);

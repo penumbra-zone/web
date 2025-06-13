@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { PenumbraWaves } from '@/pages/explore/ui/waves';
-import { LeaderboardTable } from '@/entities/leaderboard/ui/table';
+import { LPLeaderboard } from '@/entities/leaderboard/ui/table';
 import { PagePath } from '@/shared/const/pages';
 import { CurrentVotingResults } from './current-voting-results';
 import { RoundCard } from './round-card';
@@ -22,7 +22,7 @@ export const TournamentRoundPage = () => {
       <PenumbraWaves />
       <RoundCard epoch={epoch} />
       <CurrentVotingResults epoch={epoch} />
-      <LeaderboardTable epoch={epoch} />
+      <LPLeaderboard epoch={epoch} />
     </section>
   );
 };
