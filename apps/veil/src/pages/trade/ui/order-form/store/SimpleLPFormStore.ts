@@ -56,14 +56,15 @@ export class SimpleLPFormStore {
 
   /**
    * Visualization & explanation of the scale and logic:
-   * - If the price is lower than the market price, then offer base
-   * - If the price is higher than the market price, then offer quote
+   * - If the price is lower than the market price, then offer quote
+   * - If the price is higher than the market price, then offer base
    * - The scale is used to calculate the amount of opposite asset we want to offer
    *
    * Asset to Offer:         quote       base
    * Scale:           |---|----------|----------|---|
    * Domain (prices):   lower      market     upper
-   * Range (amounts):     10         0          10
+   * Range (amounts):    -10         0          10
+   *            (or):     10         0         -10
    */
   updateOppositeInput = () => {
     if (this.lowerPriceInput === null || this.upperPriceInput === null) {
