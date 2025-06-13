@@ -20,6 +20,7 @@ import { useStakingTokenMetadata } from '@/shared/api/registry';
 import { useSpecificDelegatorSummary } from '../api/use-specific-delegator-summary';
 import { useCurrentEpoch } from '../api/use-current-epoch';
 import { LqtDelegatorHistoryData } from '../server/delegator-history';
+import { formatTimeRemaining } from '@/shared/utils/format-time';
 
 export const dismissedKey = 'veil-tournament-social-card-dismissed';
 const baseUrl = process.env['NEXT_PUBLIC_BASE_URL'] ?? 'http://localhost:3000';
@@ -182,13 +183,9 @@ export const SocialCardDialog = observer(
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [dontShowAgain, setDontShowAgain] = useState(false);
 
-    const text = `🚨 Penumbra's Liquidity Tournament is LIVE! 🚨
-
-    💧 Provide liquidity  
-    📈 Climb the leaderboard  
-    🏆 Win rewards
-
-    👇 Join now:`;
+    const text = `Just won ${latestReward?.reward} UM from the @penumbrazone Liquidity Tournament
+Delegated UM. Voted. Earned. All without giving up privacy.
+${summaryData?.ends_in_s ? `Next round starts in ${formatTimeRemaining(summaryData.ends_in_s)}` : ''}`;
 
     const url = initialParams ? `${baseUrl}/tournament/join?${encodeParams(initialParams)}` : '';
 
