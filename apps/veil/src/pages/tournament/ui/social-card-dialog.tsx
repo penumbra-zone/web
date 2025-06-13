@@ -125,7 +125,12 @@ const SocialCardCanvas = ({
  * Shown only on first Veil open per epoch.
  */
 export const SocialCardDialog = observer(
-  ({ onClose, epoch }: { epoch: number; onClose: () => void }) => {
+  ({ onClose, epoch }: { epoch: number | undefined; onClose: () => void }) => {
+    // Return early if epoch is undefined.
+    if (!epoch) {
+      return null;
+    }
+
     const { subaccount } = connectionStore;
     const [initialParams, setInitialParams] = useState<TournamentParams | undefined>(undefined);
 
