@@ -5,24 +5,12 @@ import {
   TransactionPlan,
   WitnessData,
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
-import type { StateCommitmentTree } from '@penumbra-zone/types/state-commitment-tree';
-import {
-  authorize,
-  build_action,
-  build_parallel,
-  load_proving_key,
-  witness,
-} from '../wasm/index.js';
+import { authorize, build_action, build_parallel, load_proving_key } from '../wasm/index.js';
 import { FullViewingKey, SpendKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 export const authorizePlan = (spendKey: SpendKey, txPlan: TransactionPlan): AuthorizationData => {
   const result = authorize(spendKey.toBinary(), txPlan.toBinary());
   return AuthorizationData.fromBinary(result);
-};
-
-export const getWitness = (txPlan: TransactionPlan, sct: StateCommitmentTree): WitnessData => {
-  const result = witness(txPlan.toBinary(), sct);
-  return WitnessData.fromBinary(result);
 };
 
 export const buildParallel = (

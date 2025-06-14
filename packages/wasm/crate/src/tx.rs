@@ -2,7 +2,6 @@ use crate::error::{WasmError, WasmResult};
 use crate::storage::Storage;
 use crate::storage::{init_idb_storage, DbConstants};
 use crate::utils;
-use crate::view_server::{load_tree, StoredTree};
 use anyhow::anyhow;
 use indexed_db_futures::IdbDatabase;
 use penumbra_auction::auction::dutch::actions::view::{
@@ -15,7 +14,7 @@ use penumbra_keys::FullViewingKey;
 use penumbra_proto::core::transaction::v1::{TransactionPerspective, TransactionView};
 use penumbra_proto::DomainType;
 use penumbra_sct::{CommitmentSource, Nullifier};
-use penumbra_tct::{Position, Proof, StateCommitment};
+use penumbra_tct::{Position, StateCommitment};
 use penumbra_transaction::plan::TransactionPlan;
 use penumbra_transaction::txhash::TransactionId;
 use penumbra_transaction::view::action_view::{
@@ -23,7 +22,7 @@ use penumbra_transaction::view::action_view::{
 };
 use penumbra_transaction::Action;
 use penumbra_transaction::TransactionView as TransactionViewComponent;
-use penumbra_transaction::{AuthorizationData, Transaction, WitnessData};
+use penumbra_transaction::{AuthorizationData, Transaction};
 use prost::Message;
 use rand_core::OsRng;
 use std::collections::{BTreeMap, BTreeSet};
@@ -45,81 +44,6 @@ pub fn authorize(spend_key: &[u8], transaction_plan: &[u8]) -> WasmResult<Vec<u8
 
     let auth_data: AuthorizationData = plan.authorize(OsRng, &spend_key)?;
     Ok(auth_data.encode_to_vec())
-}
-
-/// Get witness data
-/// Obtaining witness data is directly related to SCT so we need to pass the tree data
-/// Arguments:
-///     transaction_plan: `pb::TransactionPlan`
-///     stored_tree: `StoredTree`
-/// Returns: `pb::WitnessData`
-#[wasm_bindgen]
-pub fn witness(transaction_plan: &[u8], stored_tree: JsValue) -> WasmResult<Vec<u8>> {
-    utils::set_panic_hook();
-
-    let plan = TransactionPlan::decode(transaction_plan)?;
-    let stored_tree = serde_wasm_bindgen::from_value(stored_tree)?;
-
-    let witness_data = witness_inner(plan, stored_tree)?;
-
-    Ok(witness_data.encode_to_vec())
-}
-
-pub fn witness_inner(plan: TransactionPlan, stored_tree: StoredTree) -> WasmResult<WitnessData> {
-    let sct = load_tree(stored_tree);
-
-    let note_commitments: Vec<StateCommitment> = plan
-        .spend_plans()
-        .filter(|plan| plan.note.amount() != 0u64.into())
-        .map(|spend| spend.note.commit())
-        .chain(
-            plan.swap_claim_plans()
-                .map(|swap_claim| swap_claim.swap_plaintext.swap_commitment()),
-        )
-        .chain(
-            plan.delegator_vote_plans()
-                .map(|vote_plan| vote_plan.staked_note.commit()),
-        )
-        .chain(
-            plan.lqt_vote_plans()
-                .map(|vote_plan| vote_plan.staked_note.commit()),
-        )
-        .collect();
-
-    let anchor = sct.root();
-
-    // Obtain an auth path for each requested note commitment
-    let auth_paths = note_commitments
-        .iter()
-        .map(|nc| {
-            sct.witness(*nc)
-                .ok_or(anyhow!("note commitment is in the SCT"))
-        })
-        .collect::<Result<Vec<Proof>, anyhow::Error>>()?;
-
-    // Release the read lock on the SCT
-    drop(sct);
-
-    // Construct witness data
-    let mut witness_data = WitnessData {
-        anchor,
-        state_commitment_proofs: auth_paths
-            .into_iter()
-            .map(|proof| (proof.commitment(), proof))
-            .collect(),
-    };
-
-    // Now we need to augment the witness data with dummy proofs such that
-    // note commitments corresponding to dummy spends also have proofs.
-    for nc in plan
-        .spend_plans()
-        .filter(|plan| plan.note.amount() == 0u64.into())
-        .map(|plan| plan.note.commit())
-    {
-        witness_data.add_proof(nc, Proof::dummy(&mut OsRng, nc));
-    }
-
-    Ok(witness_data)
 }
 
 #[wasm_bindgen(getter_with_clone)]

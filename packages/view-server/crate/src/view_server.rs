@@ -6,14 +6,14 @@ use penumbra_keys::{Address, FullViewingKey};
 use penumbra_proto::DomainType;
 use penumbra_sct::Nullifier;
 use penumbra_shielded_pool::{note, Note};
+use penumbra_tct::storage::{StoreCommitment, StoreHash, StoredPosition, Updates};
 use penumbra_tct::Witness::*;
-use penumbra_tct::{self as tct, StateCommitment};
+use penumbra_tct::{Forgotten, Tree};
 use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen::Serializer;
-use tct::storage::{StoreCommitment, StoreHash, StoredPosition, Updates};
-use tct::{Forgotten, Tree};
 use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::JsValue;
+use web_sys::js_sys::BigInt;
 
 use crate::error::WasmResult;
 use crate::keys::is_controlled_inner;
@@ -21,14 +21,6 @@ use crate::note_record::SpendableNoteRecord;
 use crate::storage::{init_idb_storage, Storage};
 use crate::swap_record::SwapRecord;
 use crate::utils;
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct StoredTree {
-    pub last_position: Option<StoredPosition>,
-    pub last_forgotten: Option<Forgotten>,
-    pub hashes: Vec<StoreHash>,
-    pub commitments: Vec<StoreCommitment>,
-}
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ScanBlockResult {
@@ -59,12 +51,12 @@ pub struct ViewServer {
     latest_height: u64,
     fvk: FullViewingKey,
     notes: BTreeMap<note::StateCommitment, SpendableNoteRecord>,
-    swaps: BTreeMap<tct::StateCommitment, SwapRecord>,
+    swaps: BTreeMap<penumbra_tct::StateCommitment, SwapRecord>,
     sct: Tree,
     storage: Storage<IdbDatabase>,
     last_position: Option<StoredPosition>,
     last_forgotten: Option<Forgotten>,
-    genesis_advice: Option<BTreeMap<StateCommitment, Note>>,
+    genesis_advice: Option<BTreeMap<penumbra_tct::StateCommitment, Note>>,
 }
 
 #[wasm_bindgen]
@@ -80,15 +72,35 @@ impl ViewServer {
     #[wasm_bindgen]
     pub async fn new(
         full_viewing_key: &[u8],
-        stored_tree: JsValue,
+        stored_position: Option<BigInt>,
+        stored_forgotten: Option<BigInt>,
+        stored_hashes: Vec<JsValue>,
+        stored_commitments: Vec<JsValue>,
         idb_constants: JsValue,
     ) -> WasmResult<ViewServer> {
         utils::set_panic_hook();
 
         let fvk: FullViewingKey = FullViewingKey::decode(full_viewing_key)?;
         let constants = serde_wasm_bindgen::from_value(idb_constants)?;
-        let stored_tree: StoredTree = serde_wasm_bindgen::from_value(stored_tree)?;
-        let tree = load_tree(stored_tree);
+
+        let last_position: Option<StoredPosition> = stored_position
+            .map(|p| p.try_into().unwrap())
+            .map(|x: u64| penumbra_tct::storage::StoredPosition::Position(x.into()));
+
+        let last_forgotten: Option<Forgotten> = stored_forgotten
+            .map(|p| p.try_into().unwrap())
+            .map(|x: u64| x.into());
+
+        let hashes: Vec<StoreHash> = stored_hashes
+            .into_iter()
+            .map(|js_hash| serde_wasm_bindgen::from_value(js_hash).unwrap())
+            .collect();
+        let commitments: Vec<StoreCommitment> = stored_commitments
+            .into_iter()
+            .map(|js_comm| serde_wasm_bindgen::from_value(js_comm).unwrap())
+            .collect();
+
+        let tree = load_tree(last_position, last_forgotten, hashes, commitments);
 
         let view_server = Self {
             latest_height: u64::MAX,
@@ -236,7 +248,7 @@ impl ViewServer {
                         // it doesn't matter what kind of payload it was either.
                         // Just insert and forget
                         self.sct
-                            .insert(tct::Witness::Forget, *payload.commitment())
+                            .insert(penumbra_tct::Witness::Forget, *payload.commitment())
                             .expect("inserting a commitment must succeed");
                     }
                 }
@@ -393,7 +405,7 @@ impl ViewServer {
                         // it doesn't matter what kind of payload it was either.
                         // Just insert and forget
                         self.sct
-                            .insert(tct::Witness::Forget, *payload.commitment())
+                            .insert(penumbra_tct::Witness::Forget, *payload.commitment())
                             .expect("inserting a commitment must succeed");
                     }
                     (Some(_), Some(_)) => unreachable!("swap and note commitments are distinct"),
@@ -467,19 +479,21 @@ impl ViewServer {
     }
 }
 
-pub fn load_tree(stored_tree: StoredTree) -> Tree {
-    let stored_position: StoredPosition = stored_tree.last_position.unwrap_or_default();
-    let mut add_commitments = Tree::load(
-        stored_position,
-        stored_tree.last_forgotten.unwrap_or_default(),
-    );
+pub fn load_tree(
+    last_position: Option<StoredPosition>,
+    last_forgotten: Option<Forgotten>,
+    hashes: Vec<StoreHash>,
+    commitments: Vec<StoreCommitment>,
+) -> Tree {
+    let stored_position = last_position.unwrap_or_default();
+    let mut add_commitments = Tree::load(stored_position, last_forgotten.unwrap_or_default());
 
-    for store_commitment in &stored_tree.commitments {
+    for store_commitment in &commitments {
         add_commitments.insert(store_commitment.position, store_commitment.commitment)
     }
     let mut add_hashes = add_commitments.load_hashes();
 
-    for stored_hash in &stored_tree.hashes {
+    for stored_hash in &hashes {
         add_hashes.insert(stored_hash.position, stored_hash.height, stored_hash.hash);
     }
     add_hashes.finish()

@@ -1,4 +1,4 @@
 flake.lock
 pnpm-lock.yaml
-packages/wasm/crate
-packages/wasm/wasm
+packages/*/crate
+packages/*/wasm

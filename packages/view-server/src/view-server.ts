@@ -11,8 +11,17 @@ import {
 import type { IdbConstants } from '@penumbra-zone/types/indexed-db';
 import type { ViewServerInterface } from '@penumbra-zone/types/servers';
 import { Address, FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { isControlledAddress } from './address.js';
 import { SctFrontierResponse } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
+
+const position_u64 = (pos: { epoch: number; block: number; commitment: number }) => {
+  // eslint-disable-next-line no-bitwise -- yes, bitwise!
+  const epoch = BigInt(pos.epoch) << 32n;
+  // eslint-disable-next-line no-bitwise -- yes, bitwise!
+  const block = BigInt(pos.block) << 16n;
+  const commitment = BigInt(pos.commitment);
+  // eslint-disable-next-line no-bitwise -- yes, bitwise!
+  return epoch & block & commitment;
+};
 
 declare global {
   // eslint-disable-next-line no-var -- TODO: explain
@@ -49,9 +58,17 @@ export class ViewServer implements ViewServerInterface {
     getStoredTree,
     idbConstants,
   }: BaseViewServerProps): Promise<ViewServer> {
+    const storedTree = await getStoredTree();
+    const positionNumber =
+      storedTree.last_position !== 'Full'
+        ? position_u64(storedTree.last_position.Position)
+        : undefined;
     const wvs = await WasmViewServer.new(
       fullViewingKey.toBinary(),
-      await getStoredTree(),
+      positionNumber,
+      storedTree.last_forgotten,
+      storedTree.hashes,
+      storedTree.commitments,
       idbConstants,
     );
     return new this(wvs, fullViewingKey, getStoredTree, idbConstants);
@@ -98,9 +115,17 @@ export class ViewServer implements ViewServerInterface {
 
   // Resets the state of the wasmViewServer to the one set in storage
   async resetTreeToStored() {
+    const storedTree = await this.getStoredTree();
+    const positionNumber =
+      storedTree.last_position !== 'Full'
+        ? position_u64(storedTree.last_position.Position)
+        : undefined;
     this.wasmViewServer = await WasmViewServer.new(
       this.fullViewingKey.toBinary(),
-      await this.getStoredTree(),
+      positionNumber,
+      storedTree.last_forgotten,
+      storedTree.hashes,
+      storedTree.commitments,
       this.idbConstants,
     );
   }
@@ -126,6 +151,7 @@ export class ViewServer implements ViewServerInterface {
   }
 
   isControlledAddress(address: Address): boolean {
-    return isControlledAddress(this.fullViewingKey, address);
+    const bytes = this.wasmViewServer.is_controlled_address(address.toBinary());
+    return bytes;
   }
 }
