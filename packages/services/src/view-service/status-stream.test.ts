@@ -67,7 +67,8 @@ describe('Status stream request handler', () => {
 
   test('should stream status updates while catching up and and passing initial latest', async () => {
     const highest = mockHeights.at(-1)!;
-    const later = mockHeights.at(-((mockHeights.length * Math.random()) / 2))!;
+    const later = mockHeights.at(mockHeights.length * 0.666)!;
+    expect(later).toBeLessThan(highest);
     mockTendermint.latestBlockHeight?.mockResolvedValue(later);
 
     let reachedLater = false;
