@@ -89,6 +89,7 @@
     "vite-plugin-svgr": "^4.2.0",
     "vite-plugin-top-level-await": "^1.4.1",
     "vite-plugin-wasm": "^3.3.0",
-    "vitest": "^1.6.0"
+    "vitest": "^1.6.0",
+    "@taceo/proof-api-client": "file:../proof-client/js/taceo-proof-api-client"
   }
 }

@@ -91,6 +91,8 @@ export const optimsiticDelegatedBuild = async function* (
     },
     // TODO: satisfies type parameter?
   } satisfies PartialMessage<AuthorizeAndBuildResponse | WitnessAndBuildResponse>;
+
+  return completedTasks
 };
 
 const progressStream = async function* <T>(tasks: PromiseLike<T>[], cancel: PromiseLike<never>) {

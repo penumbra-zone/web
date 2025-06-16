@@ -5,6 +5,7 @@ import { custodyAuthorize } from './util/custody-authorize.js';
 import { getWitness } from '@penumbra-zone/wasm/build';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { fvkCtx } from '../ctx/full-viewing-key.js';
+import { delegateProof } from '../delegated-proving.js';
 
 export const authorizeAndBuild: Impl['authorizeAndBuild'] = async function* (
   { transactionPlan },
@@ -25,7 +26,7 @@ export const authorizeAndBuild: Impl['authorizeAndBuild'] = async function* (
 
   const startTime = performance.now();
 
-  yield* optimsiticDelegatedBuild(
+  let completedTasks = yield* optimsiticDelegatedBuild(
     transactionPlan,
     witnessData,
     custodyAuthorize(ctx, transactionPlan),
@@ -40,6 +41,11 @@ export const authorizeAndBuild: Impl['authorizeAndBuild'] = async function* (
     startTime,
     endTime: finalTime,
   });
+
+  console.log("completedTasks: ", completedTasks)
+
+  const witnesses = completedTasks.map(task => task.witness);
+  await delegateProof(witnesses);
 
   // yield* optimisticBuild(
   //   transactionPlan,

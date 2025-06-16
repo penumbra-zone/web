@@ -50,6 +50,9 @@ importers:
       '@storybook/react-vite':
         specifier: ^8.4.2
         version: 8.6.14(@storybook/test@8.6.14(storybook@8.6.14(bufferutil@4.0.9)(prettier@3.5.3)(utf-8-validate@5.0.10)))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rollup@4.41.0)(storybook@8.6.14(bufferutil@4.0.9)(prettier@3.5.3)(utf-8-validate@5.0.10))(typescript@5.5.3)(vite@5.4.19(@types/node@22.15.21)(terser@5.39.2))
+      '@taceo/proof-api-client':
+        specifier: file:../proof-client/js/taceo-proof-api-client
+        version: file:../proof-client/js/taceo-proof-api-client
       '@testing-library/jest-dom':
         specifier: ^6.4.5
         version: 6.6.3
@@ -6147,6 +6150,9 @@ packages:
 
   '@swc/types@0.1.21':
     resolution: {integrity: sha512-2YEtj5HJVbKivud9N4bpPBAyZhj4S2Ipe5LkUG94alTpr7in/GU/EARgPAd3BwU+YOmFVJC2+kjqhGRi3r0ZpQ==}
+
+  '@taceo/proof-api-client@file:../proof-client/js/taceo-proof-api-client':
+    resolution: {directory: ../proof-client/js/taceo-proof-api-client, type: directory}
 
   '@tanstack/query-core@4.35.0':
     resolution: {integrity: sha512-4GMcKQuLZQi6RFBiBZNsLhl+hQGYScRZ5ZoVq8QAzfqz9M7vcGin/2YdSESwl7WaV+Qzsb5CZOAbMBes4lNTnA==}
@@ -20860,6 +20866,8 @@ snapshots:
   '@swc/types@0.1.21':
     dependencies:
       '@swc/counter': 0.1.3
+
+  '@taceo/proof-api-client@file:../proof-client/js/taceo-proof-api-client': {}
 
   '@tanstack/query-core@4.35.0': {}
 

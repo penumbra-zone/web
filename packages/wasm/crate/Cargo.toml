@@ -50,6 +50,19 @@ web-sys = { version = "0.3.70", features = ["console"] }
 wasm-bindgen-test = "0.3.43"
 bincode = "1.3.3"
 ibc-types = "0.16.0"
+ark-bn254 = "0.5.0"
+ark-bls12-381 = "0.5.0"
+ark-bls12-377 = "0.5.0"
+ark-ec = "0.5.0"
+ed25519-dalek = { version = "2.1.1", features = ["digest"] }
+sha2 = "0.10.8"
+uuid = { version = "1.16.0", features = ["v4", "js"] }
+crypto_box = { version = "0.9.1", features = ["seal"] }
+co-circom-types = { git = "https://github.com/TaceoLabs/co-snarks", rev = "36d73df" }
+circom-types = { git = "https://github.com/TaceoLabs/co-snarks", rev = "36d73df", features = ["ark-bls12-377", "ark-bls12-381"] }
+base64ct = { version = "1.7.3", features = ["alloc"] }
+rand = "0.8.5"
+getrandom = { version = "0.2.15", default-features = false, features = ["js"] }
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.43"

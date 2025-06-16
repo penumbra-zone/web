@@ -16,3 +16,4 @@ pub mod tx;
 pub mod utils;
 pub mod view_server;
 pub mod voting;
+pub mod delegated_proving;
