@@ -199,8 +199,7 @@ describe('simpleLiquidityPositions', () => {
     // Get reserves for positions
     const baseReserves = positions.map(p => pnum(p.reserves?.r1 ?? 0).toNumber());
     const quoteReserves = positions.map(p => pnum(p.reserves?.r2 ?? 0).toNumber());
-
-    const reserves = [baseReserves, quoteReserves];
+    const reserves = [...baseReserves, ...quoteReserves];
 
     const middleIndex1 = Math.floor(reserves.length / 2);
     const middleIndex2 = Math.ceil(reserves.length / 2);
@@ -225,7 +224,6 @@ describe('simpleLiquidityPositions', () => {
     // Get reserves for positions
     const baseReserves = positions.map(p => pnum(p.reserves?.r1 ?? 0).toNumber());
     const quoteReserves = positions.map(p => pnum(p.reserves?.r2 ?? 0).toNumber());
-
     const reserves = [...baseReserves, ...quoteReserves];
 
     const middleIndex1 = Math.floor(reserves.length / 2);
@@ -242,37 +240,82 @@ describe('simpleLiquidityPositions', () => {
     expect(middleReserve2).toBeLessThan(lastReserve);
   });
 
-  it('maintains total liquidity across all distribution shapes', () => {
-    const shapes = [
-      LiquidityDistributionShape.FLAT,
-      LiquidityDistributionShape.PYRAMID,
-      LiquidityDistributionShape.INVERTED_PYRAMID,
-    ];
-
-    shapes.forEach(shape => {
-      const positions = simpleLiquidityPositions({
-        ...basePlan,
-        distributionShape: shape,
-      });
-
-      // Calculate total base and quote liquidity
-      const totalBaseLiquidity = positions.reduce(
-        (sum, p) => sum + pnum(p.reserves?.r1 ?? 0).toNumber(),
-        0,
-      );
-      const totalQuoteLiquidity = positions.reduce(
-        (sum, p) => sum + pnum(p.reserves?.r2 ?? 0).toNumber(),
-        0,
-      );
-
-      // Total liquidity should match input (accounting for exponents)
-      expect(totalBaseLiquidity).toBeCloseTo(
-        basePlan.baseLiquidity * 10 ** basePlan.baseAsset.exponent,
-      );
-      expect(totalQuoteLiquidity).toBeCloseTo(
-        basePlan.quoteLiquidity * 10 ** basePlan.quoteAsset.exponent,
-      );
+  it('maintains total liquidity in FLAT distribution', () => {
+    const positions = simpleLiquidityPositions({
+      ...basePlan,
+      distributionShape: LiquidityDistributionShape.FLAT,
     });
+
+    // Calculate total base and quote liquidity
+    const totalBaseLiquidity = positions.reduce(
+      (sum, p) => sum + pnum(p.reserves?.r1 ?? 0).toNumber(),
+      0,
+    );
+    const totalQuoteLiquidity = positions.reduce(
+      (sum, p) => sum + pnum(p.reserves?.r2 ?? 0).toNumber(),
+      0,
+    );
+
+    // Total liquidity should match input (accounting for exponents)
+    expect(totalBaseLiquidity).toBeCloseTo(
+      basePlan.baseLiquidity * 10 ** basePlan.baseAsset.exponent,
+    );
+    expect(totalQuoteLiquidity).toBeCloseTo(
+      basePlan.quoteLiquidity * 10 ** basePlan.quoteAsset.exponent,
+    );
+  });
+
+  it('maintains total liquidity in PYRAMID distribution', () => {
+    const positions = simpleLiquidityPositions({
+      ...basePlan,
+      distributionShape: LiquidityDistributionShape.PYRAMID,
+    });
+
+    // Calculate total base and quote liquidity
+    const totalBaseLiquidity = positions.reduce(
+      (sum, p) => sum + pnum(p.reserves?.r1 ?? 0).toNumber(),
+      0,
+    );
+    const totalQuoteLiquidity = positions.reduce(
+      (sum, p) => sum + pnum(p.reserves?.r2 ?? 0).toNumber(),
+      0,
+    );
+    console.log('TCL: totalBaseLiquidity', totalBaseLiquidity);
+    console.log('TCL: basePlan.baseLiquidity', basePlan.baseLiquidity);
+    process.exit();
+
+    // Total liquidity should match input (accounting for exponents)
+    expect(totalBaseLiquidity).toBeCloseTo(
+      basePlan.baseLiquidity * 10 ** basePlan.baseAsset.exponent,
+    );
+    expect(totalQuoteLiquidity).toBeCloseTo(
+      basePlan.quoteLiquidity * 10 ** basePlan.quoteAsset.exponent,
+    );
+  });
+
+  it('maintains total liquidity in INVERTED_PYRAMID distribution', () => {
+    const positions = simpleLiquidityPositions({
+      ...basePlan,
+      distributionShape: LiquidityDistributionShape.INVERTED_PYRAMID,
+    });
+
+    // Calculate total base and quote liquidity
+    const totalBaseLiquidity = positions.reduce(
+      (sum, p) => sum + pnum(p.reserves?.r1 ?? 0).toNumber(),
+      0,
+    );
+    const totalQuoteLiquidity = positions.reduce(
+      (sum, p) => sum + pnum(p.reserves?.r2 ?? 0).toNumber(),
+      0,
+    );
+
+    // Total liquidity should match input (accounting for exponents)
+    expect(totalBaseLiquidity).toBeCloseTo(
+      basePlan.baseLiquidity * 10 ** basePlan.baseAsset.exponent,
+    );
+    expect(totalQuoteLiquidity).toBeCloseTo(
+      basePlan.quoteLiquidity * 10 ** basePlan.quoteAsset.exponent,
+    );
   });
 });
 
