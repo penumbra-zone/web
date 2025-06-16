@@ -1,15 +1,12 @@
 import cn from 'clsx';
 import { TableCell } from '@penumbra-zone/ui/TableCell';
 import { AssetIcon } from '@penumbra-zone/ui/AssetIcon';
-import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { round } from '@penumbra-zone/types/round';
 import { pnum } from '@penumbra-zone/types/pnum';
-import { getTradePairPath } from '@/shared/const/pages';
-import { useStakingTokenMetadata } from '@/shared/api/registry';
 import type { MappedGauge } from '../../../server/previous-epochs';
+import { ProvideLiquidityButton } from '../../shared/provide-liquidity-button';
 import { VoteButton } from './vote-button';
-import Link from 'next/link';
 
 export const TableRow = ({
   item,
@@ -20,11 +17,6 @@ export const TableRow = ({
   canVote: boolean;
   loading: boolean;
 }) => {
-  const umMetadata = useStakingTokenMetadata();
-  const link = getTradePairPath(umMetadata.data.symbol, item.asset.symbol, {
-    highlight: 'liquidity',
-  });
-
   return (
     <div className={cn('grid grid-cols-subgrid', canVote ? 'col-span-6' : 'col-span-5')}>
       <TableCell loading={loading}>
@@ -64,11 +56,7 @@ export const TableRow = ({
       )}
 
       <TableCell loading={loading}>
-        <Link href={link}>
-          <Button actionType='default' density='slim'>
-            Provide Liquidity
-          </Button>
-        </Link>
+        <ProvideLiquidityButton symbol={item.asset.symbol} />
       </TableCell>
     </div>
   );
