@@ -96,7 +96,6 @@ export const useUnifiedAssets = () => {
   ];
   const { prices, isLoading: pricesLoading } = useAssetPrices(filteredAssetSymbols);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- `isPenumbraConnected` comes from a reactive store; we still include it in the deps array to satisfy lint rules
   const shieldedAssets = useMemo(() => {
     if (!isPenumbraConnected || !penumbraBalances.length) {
       return [];
@@ -135,7 +134,6 @@ export const useUnifiedAssets = () => {
       .filter(Boolean) as UnifiedAsset[];
   }, [isPenumbraConnected, penumbraBalances]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- `isCosmosConnected` is a derived boolean; included in deps for clarity
   const publicAssets = useMemo(() => {
     if (!isCosmosConnected || !cosmosBalances.length) {
       return [];
@@ -188,7 +186,6 @@ export const useUnifiedAssets = () => {
       .filter(Boolean) as UnifiedAsset[];
   }, [cosmosBalances, isCosmosConnected]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- depends on connection status for merging logic
   const unifiedAssets = useMemo(() => {
     const assetMap = new Map<string, UnifiedAsset>();
 
