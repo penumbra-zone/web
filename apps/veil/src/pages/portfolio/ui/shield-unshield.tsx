@@ -8,6 +8,8 @@ import { getMetadata } from '@penumbra-zone/getters/value-view';
 import { theme as penumbraTheme } from '@penumbra-zone/ui/theme';
 import { UnshieldDialog } from '@/pages/portfolio/ui/unshield-dialog.tsx';
 import { createPortal } from 'react-dom';
+import Image from 'next/image';
+import { Skeleton } from '@/shared/ui/skeleton';
 
 // Use React.lazy for the Widget
 const LazySkipWidget = lazy(() => import('@skip-go/widget').then(mod => ({ default: mod.Widget })));
@@ -50,30 +52,6 @@ export function UnshieldButton({ asset }: { asset: ShieldedBalance }) {
 
 const theme = {
   brandColor: penumbraTheme.color.primary.main,
-  primary: {
-    background: {
-      normal: penumbraTheme.gradient.accentRadialBackground,
-      transparent: penumbraTheme.color.base.transparent,
-    },
-    text: {
-      normal: penumbraTheme.color.text.primary,
-      lowContrast: penumbraTheme.color.text.primary,
-      ultraLowContrast: penumbraTheme.color.text.primary,
-    },
-    ghostButtonHover: penumbraTheme.color.primary.main,
-  },
-
-  success: {
-    text: penumbraTheme.color.success.main,
-  },
-  warning: {
-    background: penumbraTheme.color.caution.main,
-    text: penumbraTheme.color.text.primary,
-  },
-  error: {
-    background: penumbraTheme.color.destructive.main,
-    text: penumbraTheme.color.text.primary,
-  },
 };
 
 export function GenericShieldButton() {
@@ -91,8 +69,18 @@ export function GenericShieldButton() {
       </Button>
       {isOpen &&
         createPortal(
-          <div className='fixed inset-0 flex items-center justify-center bg-black/50'>
-            <div className='relative mx-4 w-full max-w-2xl rounded-lg bg-[#1E1E1E] p-6'>
+          <div className='fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-[32px]'>
+            <Image
+              src='/assets/shield-backdrop.svg'
+              alt='Shield backdrop'
+              width={1600}
+              height={1080}
+              className='absolute inset-0 w-full h-full opacity-15 object-cover'
+              onClick={() => setIsOpen(false)}
+            />
+            <div
+              className={`relative mx-4 w-full max-w-2xl rounded-[20px] backdrop-blur-[32px] border border-[rgba(250,250,250,0.02)] p-6`}
+            >
               <button
                 onClick={() => setIsOpen(false)}
                 className='absolute right-4 top-4 text-white hover:text-gray-300 z-10 p-2'
@@ -101,7 +89,11 @@ export function GenericShieldButton() {
               </button>
 
               <Suspense
-                fallback={<div className='p-4 text-center text-white'>Loading widget...</div>}
+                fallback={
+                  <div className='p-4 flex items-center justify-center h-[300px] w-full'>
+                    <Skeleton />
+                  </div>
+                }
               >
                 <LazySkipWidget
                   defaultRoute={{
@@ -225,17 +217,33 @@ export const ShieldButton = ({ asset }: { asset: UnifiedAsset }) => {
 
       {isOpen &&
         createPortal(
-          <div className='fixed inset-0 flex items-center justify-center bg-black/50'>
-            <div className='relative mx-4 w-full max-w-2xl rounded-lg bg-[#1E1E1E] p-6'>
+          <div className='fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-[32px]'>
+            <Image
+              src='/assets/shield-backdrop.svg'
+              alt='Shield backdrop'
+              width={1600}
+              height={1080}
+              className='absolute inset-0 w-full h-full opacity-15 object-cover'
+              onClick={() => setIsOpen(false)}
+            />
+            <div
+              className={`relative mx-4 w-full max-w-2xl rounded-[20px] backdrop-blur-[32px] border border-[rgba(250,250,250,0.02)] p-6`}
+            >
               <button
                 onClick={() => setIsOpen(false)}
-                className='absolute right-4 top-4 text-white hover:text-gray-300'
+                className='absolute right-4 top-4 text-white hover:text-gray-300 z-10 p-2'
               >
                 <X size={24} />
               </button>
 
               {sourceChainId && sourceDenom && ibcDenom ? (
-                <Suspense fallback={<div className='p-4 text-center'>Loading widget...</div>}>
+                <Suspense
+                  fallback={
+                    <div className='p-4 flex items-center justify-center h-[300px] w-full'>
+                      <Skeleton />
+                    </div>
+                  }
+                >
                   <LazySkipWidget
                     key={`${sourceChainId}-${sourceDenom}-${ibcDenom}`}
                     defaultRoute={{
