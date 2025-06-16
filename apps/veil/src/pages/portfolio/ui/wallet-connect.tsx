@@ -1,11 +1,12 @@
 import React, { useMemo } from 'react';
 import { Text } from '@penumbra-zone/ui/Text';
-import { Eye, ShieldCheckIcon } from 'lucide-react';
+import { Eye, ShieldCheckIcon, Info } from 'lucide-react';
 import { ConnectButton } from '@/features/connect/connect-button';
 import { observer } from 'mobx-react-lite';
 import { CosmosConnectButton } from '@/features/cosmos/cosmos-connect-button.tsx';
 import { useUnifiedAssets } from '../api/use-unified-assets.ts';
 import { GenericShieldButton } from './shield-unshield.tsx';
+import { Tooltip } from '@penumbra-zone/ui/Tooltip';
 
 export const WalletConnect = observer(() => {
   const { isPenumbraConnected, isCosmosConnected, totalPublicValue, totalShieldedValue } =
@@ -41,7 +42,14 @@ export const WalletConnect = observer(() => {
         <div
           className={`flex flex-col items-start ${!isConnected ? 'gap-6' : 'gap-2'} h-full justify-between`}
         >
-          <Text color='text.secondary'>Shielded Assets</Text>
+          <div className='flex items-center gap-1'>
+            <Text color='text.secondary'>Shielded Assets</Text>
+            {isPenumbraConnected && (
+              <Tooltip message='Shield your public assets into Penumbra to start trading'>
+                <Info className='w-4 h-4 text-neutral-400' />
+              </Tooltip>
+            )}
+          </div>
 
           {isPenumbraConnected ? (
             // Show total asset value when connected
@@ -81,7 +89,14 @@ export const WalletConnect = observer(() => {
           <Eye className='text-white opacity-10 w-8 h-8' />
         </div>
         <div className='flex flex-col gap-2 h-full justify-between w-full'>
-          <Text color='text.secondary'>Public Assets</Text>
+          <div className='flex items-center gap-1'>
+            <Text color='text.secondary'>Public Assets</Text>
+            {isCosmosConnected && (
+              <Tooltip message='Connect your Cosmos Wallet to manage your public assets'>
+                <Info className='w-4 h-4 text-neutral-400' />
+              </Tooltip>
+            )}
+          </div>
 
           {isCosmosConnected ? (
             // Show total public asset value when connected
