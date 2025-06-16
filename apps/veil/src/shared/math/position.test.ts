@@ -1,6 +1,11 @@
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { describe, expect, it } from 'vitest';
-import { planToPosition, simpleLiquidityPositions, LiquidityDistributionShape } from './position';
+import {
+  planToPosition,
+  simpleLiquidityPositions,
+  LiquidityDistributionShape,
+  getPositionWeights,
+} from './position';
 import { pnum } from '@penumbra-zone/types/pnum';
 import { Position } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 
@@ -158,6 +163,7 @@ describe('simpleLiquidityPositions', () => {
     marketPrice: 1.5,
     feeBps: 100,
     positions: 20,
+    distributionShape: LiquidityDistributionShape.FLAT,
   };
 
   it('creates correct number of positions', () => {
@@ -194,33 +200,20 @@ describe('simpleLiquidityPositions', () => {
     const baseReserves = positions.map(p => pnum(p.reserves?.r1 ?? 0).toNumber());
     const quoteReserves = positions.map(p => pnum(p.reserves?.r2 ?? 0).toNumber());
 
-    // For base reserves (upper range), check that middle positions have more liquidity
-    const upperRangeBaseReserves = baseReserves.filter(r => r > 0);
-    if (upperRangeBaseReserves.length > 0) {
-      const middleIndex = Math.floor(upperRangeBaseReserves.length / 2);
-      const middleBaseReserve = upperRangeBaseReserves[middleIndex];
-      const firstBaseReserve = upperRangeBaseReserves[0];
-      const lastBaseReserve = upperRangeBaseReserves[upperRangeBaseReserves.length - 1];
+    const reserves = [baseReserves, quoteReserves];
 
-      if (firstBaseReserve !== undefined && lastBaseReserve !== undefined) {
-        expect(middleBaseReserve).toBeGreaterThan(firstBaseReserve);
-        expect(middleBaseReserve).toBeGreaterThan(lastBaseReserve);
-      }
-    }
+    const middleIndex1 = Math.floor(reserves.length / 2);
+    const middleIndex2 = Math.ceil(reserves.length / 2);
 
-    // For quote reserves (lower range), check that middle positions have more liquidity
-    const lowerRangeQuoteReserves = quoteReserves.filter(r => r > 0);
-    if (lowerRangeQuoteReserves.length > 0) {
-      const middleIndex = Math.floor(lowerRangeQuoteReserves.length / 2);
-      const middleQuoteReserve = lowerRangeQuoteReserves[middleIndex];
-      const firstQuoteReserve = lowerRangeQuoteReserves[0];
-      const lastQuoteReserve = lowerRangeQuoteReserves[lowerRangeQuoteReserves.length - 1];
+    const middleReserve1 = reserves[middleIndex1]!;
+    const middleReserve2 = reserves[middleIndex2]!;
+    const firstReserve = reserves[0]!;
+    const lastReserve = reserves[reserves.length - 1]!;
 
-      if (firstQuoteReserve !== undefined && lastQuoteReserve !== undefined) {
-        expect(middleQuoteReserve).toBeGreaterThan(firstQuoteReserve);
-        expect(middleQuoteReserve).toBeGreaterThan(lastQuoteReserve);
-      }
-    }
+    expect(middleReserve1).toBeGreaterThan(firstReserve);
+    expect(middleReserve1).toBeGreaterThan(lastReserve);
+    expect(middleReserve2).toBeGreaterThan(firstReserve);
+    expect(middleReserve2).toBeGreaterThan(lastReserve);
   });
 
   it('creates inverted pyramid distribution in INVERTED_PYRAMID mode', () => {
@@ -233,33 +226,20 @@ describe('simpleLiquidityPositions', () => {
     const baseReserves = positions.map(p => pnum(p.reserves?.r1 ?? 0).toNumber());
     const quoteReserves = positions.map(p => pnum(p.reserves?.r2 ?? 0).toNumber());
 
-    // For base reserves (upper range), check that edge positions have more liquidity
-    const upperRangeBaseReserves = baseReserves.filter(r => r > 0);
-    if (upperRangeBaseReserves.length > 0) {
-      const middleIndex = Math.floor(upperRangeBaseReserves.length / 2);
-      const middleBaseReserve = upperRangeBaseReserves[middleIndex];
-      const firstBaseReserve = upperRangeBaseReserves[0];
-      const lastBaseReserve = upperRangeBaseReserves[upperRangeBaseReserves.length - 1];
+    const reserves = [...baseReserves, ...quoteReserves];
 
-      if (firstBaseReserve !== undefined && lastBaseReserve !== undefined) {
-        expect(middleBaseReserve).toBeLessThan(firstBaseReserve);
-        expect(middleBaseReserve).toBeLessThan(lastBaseReserve);
-      }
-    }
+    const middleIndex1 = Math.floor(reserves.length / 2);
+    const middleIndex2 = Math.ceil(reserves.length / 2);
 
-    // For quote reserves (lower range), check that edge positions have more liquidity
-    const lowerRangeQuoteReserves = quoteReserves.filter(r => r > 0);
-    if (lowerRangeQuoteReserves.length > 0) {
-      const middleIndex = Math.floor(lowerRangeQuoteReserves.length / 2);
-      const middleQuoteReserve = lowerRangeQuoteReserves[middleIndex];
-      const firstQuoteReserve = lowerRangeQuoteReserves[0];
-      const lastQuoteReserve = lowerRangeQuoteReserves[lowerRangeQuoteReserves.length - 1];
+    const middleReserve1 = reserves[middleIndex1]!;
+    const middleReserve2 = reserves[middleIndex2]!;
+    const firstReserve = reserves[0]!;
+    const lastReserve = reserves[reserves.length - 1]!;
 
-      if (firstQuoteReserve !== undefined && lastQuoteReserve !== undefined) {
-        expect(middleQuoteReserve).toBeLessThan(firstQuoteReserve);
-        expect(middleQuoteReserve).toBeLessThan(lastQuoteReserve);
-      }
-    }
+    expect(middleReserve1).toBeLessThan(firstReserve);
+    expect(middleReserve1).toBeLessThan(lastReserve);
+    expect(middleReserve2).toBeLessThan(firstReserve);
+    expect(middleReserve2).toBeLessThan(lastReserve);
   });
 
   it('maintains total liquidity across all distribution shapes', () => {
@@ -292,6 +272,78 @@ describe('simpleLiquidityPositions', () => {
       expect(totalQuoteLiquidity).toBeCloseTo(
         basePlan.quoteLiquidity * 10 ** basePlan.quoteAsset.exponent,
       );
+    });
+  });
+});
+
+describe('getPositionWeights', () => {
+  const testCases = [
+    { positions: 1, shape: LiquidityDistributionShape.FLAT },
+    { positions: 1, shape: LiquidityDistributionShape.PYRAMID },
+    { positions: 1, shape: LiquidityDistributionShape.INVERTED_PYRAMID },
+    { positions: 2, shape: LiquidityDistributionShape.FLAT },
+    { positions: 2, shape: LiquidityDistributionShape.PYRAMID },
+    { positions: 2, shape: LiquidityDistributionShape.INVERTED_PYRAMID },
+    { positions: 5, shape: LiquidityDistributionShape.FLAT },
+    { positions: 5, shape: LiquidityDistributionShape.PYRAMID },
+    { positions: 5, shape: LiquidityDistributionShape.INVERTED_PYRAMID },
+    { positions: 10, shape: LiquidityDistributionShape.FLAT },
+    { positions: 10, shape: LiquidityDistributionShape.PYRAMID },
+    { positions: 10, shape: LiquidityDistributionShape.INVERTED_PYRAMID },
+  ];
+
+  testCases.forEach(({ positions, shape }) => {
+    it(`weights sum to 1 for ${positions} positions with ${shape} distribution`, () => {
+      const weights = getPositionWeights(positions, shape);
+      const sum = weights.reduce((acc, weight) => acc + weight, 0);
+      expect(sum).toBeCloseTo(1, 10); // Using 10 decimal places for precision
+    });
+  });
+
+  it('ensures minimum weight of 0.02 for PYRAMID distribution', () => {
+    const positions = 10;
+    const weights = getPositionWeights(positions, LiquidityDistributionShape.PYRAMID);
+    weights.forEach(weight => {
+      expect(weight).toBeGreaterThanOrEqual(0.02);
+    });
+  });
+
+  it('returns correct number of weights', () => {
+    const positions = 5;
+    const weights = getPositionWeights(positions, LiquidityDistributionShape.FLAT);
+    expect(weights).toHaveLength(positions);
+  });
+
+  it('returns [1] for single position', () => {
+    const weights = getPositionWeights(1, LiquidityDistributionShape.FLAT);
+    expect(weights).toEqual([1]);
+  });
+
+  it('maintains relative proportions in PYRAMID distribution', () => {
+    const positions = 5;
+    const weights = getPositionWeights(positions, LiquidityDistributionShape.PYRAMID);
+
+    // Middle position should have highest weight
+    const middleIndex = Math.floor(positions / 2);
+    const middleWeight = weights[middleIndex]!;
+    weights.forEach((weight, i) => {
+      if (i !== middleIndex) {
+        expect(middleWeight).toBeGreaterThan(weight);
+      }
+    });
+  });
+
+  it('maintains relative proportions in INVERTED_PYRAMID distribution', () => {
+    const positions = 5;
+    const weights = getPositionWeights(positions, LiquidityDistributionShape.INVERTED_PYRAMID);
+
+    // Edge positions should have higher weights than middle
+    const middleIndex = Math.floor(positions / 2);
+    const middleWeight = weights[middleIndex]!;
+    weights.forEach((weight, i) => {
+      if (i === 0 || i === positions - 1) {
+        expect(weight).toBeGreaterThan(middleWeight);
+      }
     });
   });
 });

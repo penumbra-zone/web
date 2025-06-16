@@ -174,17 +174,21 @@ interface SimpleLiquidityPlan {
   marketPrice: number;
   feeBps: number;
   positions: number;
-  distributionShape?: LiquidityDistributionShape;
+  distributionShape: LiquidityDistributionShape;
 }
 
 /**
  * Calculate the weight for a position based on its index and the distribution shape
  */
-const calculatePositionWeight = (
+export const calculatePositionWeight = (
   index: number,
   totalPositions: number,
   shape: LiquidityDistributionShape,
 ): number => {
+  if (totalPositions === 1) {
+    return 1;
+  }
+
   // Normalize index to [0, 1] range
   const normalizedIndex = index / (totalPositions - 1);
 
@@ -192,14 +196,44 @@ const calculatePositionWeight = (
     case LiquidityDistributionShape.FLAT:
       return 1;
     case LiquidityDistributionShape.PYRAMID:
-      // Creates a pyramid shape with peak at middle
-      return 1 - Math.abs(normalizedIndex - 0.5) * 2;
+      // Creates a pyramid shape with peak at middle, with minimum 10% weight at edges
+      return 0.1 + 0.9 * (1 - Math.abs(normalizedIndex - 0.5) * 2);
     case LiquidityDistributionShape.INVERTED_PYRAMID:
       // Creates an inverted pyramid with peaks at edges
       return Math.abs(normalizedIndex - 0.5) * 2;
     default:
       return 1;
   }
+};
+
+export const getPositionWeights = (
+  positions: number,
+  shape: LiquidityDistributionShape,
+): number[] => {
+  if (positions === 1) {
+    return [1];
+  }
+
+  // Calculate raw weights for each position
+  const rawWeights = Array.from({ length: positions }, (_, i) => {
+    const normalizedIndex = i / (positions - 1);
+    switch (shape) {
+      case LiquidityDistributionShape.FLAT:
+        return 1;
+      case LiquidityDistributionShape.PYRAMID:
+        // Creates a pyramid shape with peak at middle
+        return 0.1 + 0.9 * (1 - Math.abs(normalizedIndex - 0.5) * 2);
+      case LiquidityDistributionShape.INVERTED_PYRAMID:
+        // Creates an inverted pyramid with peaks at edges
+        return Math.abs(normalizedIndex - 0.5) * 2;
+      default:
+        return 1;
+    }
+  });
+
+  // Normalize weights to sum to 1, so that it can be used as a percentage
+  const sum = rawWeights.reduce((acc, weight) => acc + weight, 0);
+  return rawWeights.map(weight => weight / sum);
 };
 
 /** Given a plan for providing range liquidity, create all the necessary positions to accomplish the plan. */
@@ -239,7 +273,7 @@ export const rangeLiquidityPositions = (plan: RangeLiquidityPlan): Position[] =>
 
 /** Given a plan for providing simple liquidity, create all the necessary positions to accomplish the plan. */
 export const simpleLiquidityPositions = (plan: SimpleLiquidityPlan): Position[] => {
-  const distributionShape = plan.distributionShape ?? LiquidityDistributionShape.FLAT;
+  console.log('TCL: plan', plan);
 
   // Calculate how many positions should be in each range based on market price position
   const totalRange = plan.upperPrice - plan.lowerPrice;
@@ -247,28 +281,25 @@ export const simpleLiquidityPositions = (plan: SimpleLiquidityPlan): Position[] 
 
   // Calculate number of positions for each range, ensuring at least 1 position per range
   const lowerPositionsAmount = Math.max(1, Math.floor(plan.positions * marketPosition));
+  console.log('TCL: lowerPositionsAmount', lowerPositionsAmount);
   const upperPositionsAmount = Math.max(1, plan.positions - lowerPositionsAmount);
+  console.log('TCL: upperPositionsAmount', upperPositionsAmount);
 
   // Calculate step widths for each range
   const lowerStepWidth = (plan.marketPrice - plan.lowerPrice) / lowerPositionsAmount;
   const upperStepWidth = (plan.upperPrice - plan.marketPrice) / upperPositionsAmount;
 
   // Calculate total weights for normalization
-  const lowerWeights = Array.from({ length: lowerPositionsAmount }, (_, i) =>
-    calculatePositionWeight(i, lowerPositionsAmount, distributionShape),
+  const weights = getPositionWeights(
+    lowerPositionsAmount + upperPositionsAmount,
+    plan.distributionShape,
   );
-  const upperWeights = Array.from({ length: upperPositionsAmount }, (_, i) =>
-    calculatePositionWeight(i, upperPositionsAmount, distributionShape),
-  );
-
-  const lowerWeightSum = lowerWeights.reduce((sum, w) => sum + w, 0);
-  const upperWeightSum = upperWeights.reduce((sum, w) => sum + w, 0);
+  console.log('TCL: weights', weights);
 
   // Generate positions for lower range (quote liquidity)
   const lowerPositions = Array.from({ length: lowerPositionsAmount }, (_, i) => {
     const price = plan.lowerPrice + i * lowerStepWidth;
-    // We know these arrays are created with the same length as the loop
-    const weight = (lowerWeights[i] ?? 0) / lowerWeightSum;
+    const weight = weights[i] ?? 0;
     return planToPosition({
       baseAsset: plan.baseAsset,
       quoteAsset: plan.quoteAsset,
@@ -282,8 +313,7 @@ export const simpleLiquidityPositions = (plan: SimpleLiquidityPlan): Position[] 
   // Generate positions for upper range (base liquidity)
   const upperPositions = Array.from({ length: upperPositionsAmount }, (_, i) => {
     const price = plan.marketPrice + i * upperStepWidth;
-    // We know these arrays are created with the same length as the loop
-    const weight = (upperWeights[i] ?? 0) / upperWeightSum;
+    const weight = weights[i + lowerPositionsAmount] ?? 0;
     return planToPosition({
       baseAsset: plan.baseAsset,
       quoteAsset: plan.quoteAsset,

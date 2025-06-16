@@ -184,6 +184,7 @@ export class SimpleLPFormStore {
       marketPrice: this.marketPrice,
       feeBps: this.feeTierPercent * 100,
       positions: this.positions,
+      distributionShape: this.liquidityShape,
     });
   }
 
