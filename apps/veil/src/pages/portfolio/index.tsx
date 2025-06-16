@@ -8,7 +8,6 @@ import { AssetsTable } from './ui/assets-table';
 import { WalletConnect } from './ui/wallet-connect';
 import { useRegistry } from '@/shared/api/registry.tsx';
 import { IbcChainProvider } from '@/features/cosmos/chain-provider.tsx';
-import { Onboarding } from './ui/onboarding';
 import { PortfolioPositionTabs } from './ui/position-tabs';
 import { AssetBars } from './ui/asset-bars';
 import { useUnifiedAssets } from '@/pages/portfolio/api/use-unified-assets';
@@ -73,8 +72,6 @@ const DesktopPortfolioPage = observer(() => {
   return (
     <div className='container max-w-[1136px] mx-auto py-8 flex flex-col gap-4'>
       <PenumbraWaves />
-
-      <Onboarding />
 
       <WalletConnect />
 
