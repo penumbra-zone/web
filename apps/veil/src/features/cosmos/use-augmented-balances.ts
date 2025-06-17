@@ -3,7 +3,7 @@ import { useQueries } from '@tanstack/react-query';
 import { ChainWalletBase, WalletStatus } from '@cosmos-kit/core';
 
 import { Asset } from '@chain-registry/types';
-import cosmosAssetList from 'chain-registry/mainnet/assets';
+import cosmosAssetList from 'chain-registry/assets';
 import { Coin, StargateClient } from '@cosmjs/stargate';
 
 // Map of reliable RPC endpoints for different Cosmos chains
