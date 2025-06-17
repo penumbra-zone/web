@@ -177,35 +177,6 @@ interface SimpleLiquidityPlan {
   distributionShape: LiquidityDistributionShape;
 }
 
-/**
- * Calculate the weight for a position based on its index and the distribution shape
- */
-export const calculatePositionWeight = (
-  index: number,
-  totalPositions: number,
-  shape: LiquidityDistributionShape,
-): number => {
-  if (totalPositions === 1) {
-    return 1;
-  }
-
-  // Normalize index to [0, 1] range
-  const normalizedIndex = index / (totalPositions - 1);
-
-  switch (shape) {
-    case LiquidityDistributionShape.FLAT:
-      return 1;
-    case LiquidityDistributionShape.PYRAMID:
-      // Creates a pyramid shape with peak at middle, with minimum 10% weight at edges
-      return 0.1 + 0.9 * (1 - Math.abs(normalizedIndex - 0.5) * 2);
-    case LiquidityDistributionShape.INVERTED_PYRAMID:
-      // Creates an inverted pyramid with peaks at edges
-      return Math.abs(normalizedIndex - 0.5) * 2;
-    default:
-      return 1;
-  }
-};
-
 export const getPositionWeights = (
   positions: number,
   shape: LiquidityDistributionShape,
