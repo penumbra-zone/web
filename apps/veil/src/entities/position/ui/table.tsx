@@ -28,20 +28,21 @@ import { ActionButton } from './action-button';
 import { Dash } from './dash';
 import { useObserver } from '@/shared/utils/use-observer';
 import SpinnerIcon from '@/shared/assets/spinner-icon.svg';
+import { PositionState_PositionStateEnum } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 
 export interface PositionsTableProps {
   base?: Metadata;
   quote?: Metadata;
-  showInactive: boolean;
+  stateFilter?: PositionState_PositionStateEnum[];
 }
 
-export const PositionsTable = observer(({ base, quote, showInactive }: PositionsTableProps) => {
+export const PositionsTable = observer(({ base, quote, stateFilter }: PositionsTableProps) => {
   const { connected, subaccount } = connectionStore;
   const getMetadata = useGetMetadata();
 
   const { data, isLoading, isRefetching, isFetchingNextPage, fetchNextPage, error } = usePositions(
     subaccount,
-    !showInactive,
+    stateFilter,
   );
   const displayPositions = getDisplayPositions({
     positions: data?.pages,

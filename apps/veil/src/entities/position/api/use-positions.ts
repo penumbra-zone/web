@@ -22,13 +22,9 @@ const BASE_PAGE = 0;
 const fetchQuery = async (
   subaccount = 0,
   page = BASE_PAGE,
-  activeStatus = true,
+  stateFilter?: PositionState_PositionStateEnum[],
 ): Promise<Map<string, Position>> => {
-  const states = activeStatus
-    ? [PositionState_PositionStateEnum.OPENED, PositionState_PositionStateEnum.CLOSED].map(
-        state => new PositionState({ state }),
-      )
-    : [undefined];
+  const states = stateFilter?.map(state => new PositionState({ state })) ?? [undefined];
 
   const res = await Promise.all(
     states.map(state =>
@@ -75,14 +71,14 @@ const fetchQuery = async (
 /**
  * Must be used within the `observer` mobX HOC
  */
-export const usePositions = (subaccount = 0, activeStatus = true) => {
+export const usePositions = (subaccount = 0, stateFilter?: PositionState_PositionStateEnum[]) => {
   return useInfiniteQuery<Map<string, Position>>({
-    queryKey: ['positions', subaccount, activeStatus],
+    queryKey: ['positions', subaccount, stateFilter],
     initialPageParam: BASE_PAGE,
     getNextPageParam: (lastPage, _, lastPageParam) => {
       return lastPage.size ? (lastPageParam as number) + 1 : undefined;
     },
-    queryFn: ({ pageParam }) => fetchQuery(subaccount, pageParam as number, activeStatus),
+    queryFn: ({ pageParam }) => fetchQuery(subaccount, pageParam as number, stateFilter),
     enabled: connectionStore.connected,
   });
 };
