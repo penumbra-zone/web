@@ -33,7 +33,7 @@ export const PortfolioPositionTabs = () => {
 
       {tab === PortfolioTab.OpenPositions && <PositionsTable showInactive={false} />}
 
-      {tab === PortfolioTab.ClosedPositions && <PositionsTable showInactive />}
+      {tab === PortfolioTab.ClosedPositions && <PositionsTable showInactive={true} />}
 
       {tab === PortfolioTab.History && <PortfolioTransactions />}
     </PortfolioCard>
