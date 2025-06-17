@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { Tabs } from '@penumbra-zone/ui/Tabs';
 import { Density } from '@penumbra-zone/ui/Density';
-import { PortfolioOpenPositions } from './open-positions';
-import { PortfolioClosedPositions } from './closed-positions';
 import { PortfolioTransactions } from './transactions';
 import { PortfolioCard } from '@/pages/portfolio/ui/portfolio-card.tsx';
+import { PositionsTable } from '@/entities/position';
 
 enum PortfolioTab {
   OpenPositions = 'Open Positions',
@@ -32,9 +31,9 @@ export const PortfolioPositionTabs = () => {
         </Density>
       </div>
 
-      {tab === PortfolioTab.OpenPositions && <PortfolioOpenPositions />}
+      {tab === PortfolioTab.OpenPositions && <PositionsTable showInactive={false} />}
 
-      {tab === PortfolioTab.ClosedPositions && <PortfolioClosedPositions />}
+      {tab === PortfolioTab.ClosedPositions && <PositionsTable showInactive />}
 
       {tab === PortfolioTab.History && <PortfolioTransactions />}
     </PortfolioCard>
