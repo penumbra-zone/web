@@ -164,17 +164,7 @@ export function GenericShieldButton() {
       </Button>
       <ShieldDialog isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <Suspense fallback={<SkeletonFallback />}>
-          <LazySkipWidget
-            defaultRoute={{
-              destChainId: 'penumbra-1',
-            }}
-            filter={{
-              destination: {
-                'penumbra-1': undefined,
-              },
-            }}
-            theme={theme}
-          />
+          <LazySkipWidget theme={theme} />
         </Suspense>
       </ShieldDialog>
     </>
