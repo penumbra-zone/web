@@ -194,7 +194,6 @@ export interface GetDisplayPositionsArgs {
   getMetadata: GetMetadata;
   asset1Filter?: Metadata;
   asset2Filter?: Metadata;
-  stateFilter?: PositionState_PositionStateEnum[];
 }
 
 /**
@@ -206,7 +205,6 @@ export const getDisplayPositions = ({
   getMetadata,
   asset1Filter,
   asset2Filter,
-  stateFilter,
 }: GetDisplayPositionsArgs): DisplayPosition[] => {
   // take the array of Map and reduce it to an array of entries
   const entries =
@@ -220,10 +218,6 @@ export const getDisplayPositions = ({
     const { component, pair } = phi;
     const assetId1 = pair.asset1;
     const assetId2 = pair.asset2;
-
-    if (stateFilter?.length && !stateFilter.some(filter => filter === state.state)) {
-      return undefined;
-    }
 
     if (
       asset1Filter?.penumbraAssetId &&

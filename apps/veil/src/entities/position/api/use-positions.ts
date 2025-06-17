@@ -5,6 +5,8 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import {
   Position,
   PositionId,
+  PositionState,
+  PositionState_PositionStateEnum,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { bech32mPositionId } from '@penumbra-zone/bech32m/plpid';
@@ -17,25 +19,45 @@ const BASE_PAGE = 0;
 // 1) Query prax to get position ids
 // 2) Take those position ids and get position info from the node
 // Context on two-step fetching process: https://github.com/penumbra-zone/penumbra/pull/4837
-const fetchQuery = async (subaccount = 0, page = BASE_PAGE): Promise<Map<string, Position>> => {
-  const ownedRes = await Array.fromAsync(
-    limitAsync(
-      penumbra.service(ViewService).ownedPositionIds({
-        subaccount: new AddressIndex({ account: subaccount }),
-      }),
-      BASE_LIMIT,
-      BASE_LIMIT * page,
+const fetchQuery = async (
+  subaccount = 0,
+  page = BASE_PAGE,
+  activeStatus = true,
+): Promise<Map<string, Position>> => {
+  const states = activeStatus
+    ? [PositionState_PositionStateEnum.OPENED, PositionState_PositionStateEnum.CLOSED].map(
+        state => new PositionState({ state }),
+      )
+    : [undefined];
+
+  const res = await Promise.all(
+    states.map(state =>
+      Array.fromAsync(
+        limitAsync(
+          penumbra.service(ViewService).ownedPositionIds({
+            subaccount: new AddressIndex({ account: subaccount }),
+            positionState: state,
+          }),
+          BASE_LIMIT,
+          BASE_LIMIT * page,
+        ),
+      ),
     ),
   );
 
-  const positionIds = ownedRes.map(r => r.positionId).filter(Boolean) as PositionId[];
+  const positionIds = res
+    .flat()
+    .map(item => item.positionId)
+    .filter(Boolean) as PositionId[];
 
   const positionsRes = await Array.fromAsync(
     penumbra.service(DexService).liquidityPositionsById({ positionId: positionIds }),
   );
-  if (positionsRes.length !== ownedRes.length) {
+
+  if (positionsRes.length !== positionIds.length) {
     throw new Error('owned id array does not match the length of the positions response');
   }
+
   const positions = positionsRes.map(r => r.data).filter(Boolean) as Position[];
 
   const positionsById = new Map<string, Position>();
@@ -53,14 +75,14 @@ const fetchQuery = async (subaccount = 0, page = BASE_PAGE): Promise<Map<string,
 /**
  * Must be used within the `observer` mobX HOC
  */
-export const usePositions = (subaccount = 0) => {
+export const usePositions = (subaccount = 0, activeStatus = true) => {
   return useInfiniteQuery<Map<string, Position>>({
-    queryKey: ['positions', subaccount],
+    queryKey: ['positions', subaccount, activeStatus],
     initialPageParam: BASE_PAGE,
     getNextPageParam: (lastPage, _, lastPageParam) => {
       return lastPage.size ? (lastPageParam as number) + 1 : undefined;
     },
-    queryFn: ({ pageParam }) => fetchQuery(subaccount, pageParam as number),
+    queryFn: ({ pageParam }) => fetchQuery(subaccount, pageParam as number, activeStatus),
     enabled: connectionStore.connected,
   });
 };
