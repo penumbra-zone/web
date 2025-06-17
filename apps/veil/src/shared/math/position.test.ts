@@ -177,17 +177,12 @@ describe('simpleLiquidityPositions', () => {
       distributionShape: LiquidityDistributionShape.FLAT,
     });
 
-    // Check that all positions have equal liquidity
-    const baseReserves = positions.map(p => pnum(p.reserves?.r1).toNumber());
-    const quoteReserves = positions.map(p => pnum(p.reserves?.r2).toNumber());
+    const baseReserves = positions.map(p => pnum(p.reserves?.r1).toNumber()).filter(Boolean);
+    const quoteReserves = positions.map(p => pnum(p.reserves?.r2).toNumber()).filter(Boolean);
+    const reserves = [...quoteReserves, ...baseReserves];
 
-    // All non-zero base reserves should be equal
-    const nonZeroBaseReserves = baseReserves.filter(r => r > 0);
-    expect(nonZeroBaseReserves.every(r => r === nonZeroBaseReserves[0])).toBe(true);
-
-    // All non-zero quote reserves should be equal
-    const nonZeroQuoteReserves = quoteReserves.filter(r => r > 0);
-    expect(nonZeroQuoteReserves.every(r => r === nonZeroQuoteReserves[0])).toBe(true);
+    // All reserves should be equal
+    expect(reserves.every(r => r === reserves[0])).toBe(true);
   });
 
   it('creates pyramid distribution in PYRAMID mode', () => {
@@ -196,10 +191,9 @@ describe('simpleLiquidityPositions', () => {
       distributionShape: LiquidityDistributionShape.PYRAMID,
     });
 
-    // Get reserves for positions
-    const baseReserves = positions.map(p => pnum(p.reserves?.r1 ?? 0).toNumber());
-    const quoteReserves = positions.map(p => pnum(p.reserves?.r2 ?? 0).toNumber());
-    const reserves = [...baseReserves, ...quoteReserves];
+    const baseReserves = positions.map(p => pnum(p.reserves?.r1).toNumber()).filter(Boolean);
+    const quoteReserves = positions.map(p => pnum(p.reserves?.r2).toNumber()).filter(Boolean);
+    const reserves = [...quoteReserves, ...baseReserves];
 
     const middleIndex1 = Math.floor(reserves.length / 2);
     const middleIndex2 = Math.ceil(reserves.length / 2);
@@ -221,10 +215,9 @@ describe('simpleLiquidityPositions', () => {
       distributionShape: LiquidityDistributionShape.INVERTED_PYRAMID,
     });
 
-    // Get reserves for positions
-    const baseReserves = positions.map(p => pnum(p.reserves?.r1 ?? 0).toNumber());
-    const quoteReserves = positions.map(p => pnum(p.reserves?.r2 ?? 0).toNumber());
-    const reserves = [...baseReserves, ...quoteReserves];
+    const baseReserves = positions.map(p => pnum(p.reserves?.r1).toNumber()).filter(Boolean);
+    const quoteReserves = positions.map(p => pnum(p.reserves?.r2).toNumber()).filter(Boolean);
+    const reserves = [...quoteReserves, ...baseReserves];
 
     const middleIndex1 = Math.floor(reserves.length / 2);
     const middleIndex2 = Math.ceil(reserves.length / 2);
@@ -248,21 +241,17 @@ describe('simpleLiquidityPositions', () => {
 
     // Calculate total base and quote liquidity
     const totalBaseLiquidity = positions.reduce(
-      (sum, p) => sum + pnum(p.reserves?.r1 ?? 0).toNumber(),
+      (sum, p) => sum + pnum(p.reserves?.r1 ?? 0, basePlan.baseAsset.exponent).toNumber(),
       0,
     );
     const totalQuoteLiquidity = positions.reduce(
-      (sum, p) => sum + pnum(p.reserves?.r2 ?? 0).toNumber(),
+      (sum, p) => sum + pnum(p.reserves?.r2 ?? 0, basePlan.quoteAsset.exponent).toNumber(),
       0,
     );
 
     // Total liquidity should match input (accounting for exponents)
-    expect(totalBaseLiquidity).toBeCloseTo(
-      basePlan.baseLiquidity * 10 ** basePlan.baseAsset.exponent,
-    );
-    expect(totalQuoteLiquidity).toBeCloseTo(
-      basePlan.quoteLiquidity * 10 ** basePlan.quoteAsset.exponent,
-    );
+    expect(totalBaseLiquidity).toBeCloseTo(basePlan.baseLiquidity);
+    expect(totalQuoteLiquidity).toBeCloseTo(basePlan.quoteLiquidity);
   });
 
   it('maintains total liquidity in PYRAMID distribution', () => {
@@ -273,24 +262,17 @@ describe('simpleLiquidityPositions', () => {
 
     // Calculate total base and quote liquidity
     const totalBaseLiquidity = positions.reduce(
-      (sum, p) => sum + pnum(p.reserves?.r1 ?? 0).toNumber(),
+      (sum, p) => sum + pnum(p.reserves?.r1 ?? 0, basePlan.baseAsset.exponent).toNumber(),
       0,
     );
     const totalQuoteLiquidity = positions.reduce(
-      (sum, p) => sum + pnum(p.reserves?.r2 ?? 0).toNumber(),
+      (sum, p) => sum + pnum(p.reserves?.r2 ?? 0, basePlan.quoteAsset.exponent).toNumber(),
       0,
     );
-    console.log('TCL: totalBaseLiquidity', totalBaseLiquidity);
-    console.log('TCL: basePlan.baseLiquidity', basePlan.baseLiquidity);
-    process.exit();
 
     // Total liquidity should match input (accounting for exponents)
-    expect(totalBaseLiquidity).toBeCloseTo(
-      basePlan.baseLiquidity * 10 ** basePlan.baseAsset.exponent,
-    );
-    expect(totalQuoteLiquidity).toBeCloseTo(
-      basePlan.quoteLiquidity * 10 ** basePlan.quoteAsset.exponent,
-    );
+    expect(totalBaseLiquidity).toBeCloseTo(basePlan.baseLiquidity);
+    expect(totalQuoteLiquidity).toBeCloseTo(basePlan.quoteLiquidity);
   });
 
   it('maintains total liquidity in INVERTED_PYRAMID distribution', () => {
@@ -301,48 +283,21 @@ describe('simpleLiquidityPositions', () => {
 
     // Calculate total base and quote liquidity
     const totalBaseLiquidity = positions.reduce(
-      (sum, p) => sum + pnum(p.reserves?.r1 ?? 0).toNumber(),
+      (sum, p) => sum + pnum(p.reserves?.r1 ?? 0, basePlan.baseAsset.exponent).toNumber(),
       0,
     );
     const totalQuoteLiquidity = positions.reduce(
-      (sum, p) => sum + pnum(p.reserves?.r2 ?? 0).toNumber(),
+      (sum, p) => sum + pnum(p.reserves?.r2 ?? 0, basePlan.quoteAsset.exponent).toNumber(),
       0,
     );
 
     // Total liquidity should match input (accounting for exponents)
-    expect(totalBaseLiquidity).toBeCloseTo(
-      basePlan.baseLiquidity * 10 ** basePlan.baseAsset.exponent,
-    );
-    expect(totalQuoteLiquidity).toBeCloseTo(
-      basePlan.quoteLiquidity * 10 ** basePlan.quoteAsset.exponent,
-    );
+    expect(totalBaseLiquidity).toBeCloseTo(basePlan.baseLiquidity);
+    expect(totalQuoteLiquidity).toBeCloseTo(basePlan.quoteLiquidity);
   });
 });
 
 describe('getPositionWeights', () => {
-  const testCases = [
-    { positions: 1, shape: LiquidityDistributionShape.FLAT },
-    { positions: 1, shape: LiquidityDistributionShape.PYRAMID },
-    { positions: 1, shape: LiquidityDistributionShape.INVERTED_PYRAMID },
-    { positions: 2, shape: LiquidityDistributionShape.FLAT },
-    { positions: 2, shape: LiquidityDistributionShape.PYRAMID },
-    { positions: 2, shape: LiquidityDistributionShape.INVERTED_PYRAMID },
-    { positions: 5, shape: LiquidityDistributionShape.FLAT },
-    { positions: 5, shape: LiquidityDistributionShape.PYRAMID },
-    { positions: 5, shape: LiquidityDistributionShape.INVERTED_PYRAMID },
-    { positions: 10, shape: LiquidityDistributionShape.FLAT },
-    { positions: 10, shape: LiquidityDistributionShape.PYRAMID },
-    { positions: 10, shape: LiquidityDistributionShape.INVERTED_PYRAMID },
-  ];
-
-  testCases.forEach(({ positions, shape }) => {
-    it(`weights sum to 1 for ${positions} positions with ${shape} distribution`, () => {
-      const weights = getPositionWeights(positions, shape);
-      const sum = weights.reduce((acc, weight) => acc + weight, 0);
-      expect(sum).toBeCloseTo(1, 10); // Using 10 decimal places for precision
-    });
-  });
-
   it('ensures minimum weight of 0.02 for PYRAMID distribution', () => {
     const positions = 10;
     const weights = getPositionWeights(positions, LiquidityDistributionShape.PYRAMID);
