@@ -178,7 +178,7 @@ export const DelegatorLeaderboard = observer(() => {
   return (
     <section className='p-6 rounded-lg bg-other-tonalFill5 backdrop-blur-lg flex flex-col gap-4'>
       <Text xxl color='text.primary'>
-        Delegators Leaderboard
+        Delegator Leaderboard
       </Text>
       <Density compact>
         <div className='grid grid-cols-[200px_1fr_1fr_1fr_48px] max-w-full overflow-x-auto'>

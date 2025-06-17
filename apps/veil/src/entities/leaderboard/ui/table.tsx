@@ -114,7 +114,7 @@ export const LPLeaderboard = observer(
           <div className='flex gap-3 items-center mb-4'>
             <div className='flex flex-col gap-1'>
               <Text xxl color='text.primary'>
-                LPs Leaderboard
+                LP Leaderboard
                 {showEpoch && !!epoch && (
                   <div className='desktop:ml-3 inline-flex items-center rounded-sm bg-base-blackAlt px-2'>
                     <div className='text-transparent bg-clip-text [background-image:linear-gradient(90deg,rgb(244,156,67),rgb(83,174,168))]'>
