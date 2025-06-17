@@ -145,9 +145,9 @@ export const PreviousEpochs = observer(() => {
             <TableCell heading> </TableCell>
           </div>
 
-          {epochs.map((epoch, index) => (
+          {epochs.map((epoch) => (
             <PreviousEpochsRow
-              key={isLoading ? index : epoch.epoch}
+              key={epoch.epoch}
               isLoading={isLoading}
               row={epoch}
               connected={connected}
