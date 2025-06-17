@@ -1,18 +1,55 @@
-::-webkit-scrollbar {
-  width: 4px;
+/**
+  Utility classes for scroll management.
+  - Use `.scroll-area-page` for page-level scroll areas, usually on `body` element.
+  - Use `.scroll-area-component` for component-level scroll areas. It is applied, for example, in Dialog component.
+
+  Note that the styles can work only in webkit browsers (like Chrome, Safari, Edge).
+  Even though these styles have a `transition` property, it isn't supported in any of the browsers.
+ */
+.scroll-area-page::-webkit-scrollbar {
+  width: 10px;
 }
 
-/* Track */
-::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.25);
+.scroll-area-page::-webkit-scrollbar-track {
+  background: transparent;
+  backdrop-filter: blur(16px);
 }
 
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: #888;
+.scroll-area-page::-webkit-scrollbar-thumb {
+  background-color: #fafafa1a;
+  border-left: 1px solid transparent;
+  border-right: 1px solid transparent;
+  background-clip: content-box;
+  border-radius: 7px;
+  transition: all 0.3s ease;
 }
 
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
+.scroll-area-page::-webkit-scrollbar-thumb:hover {
+  background-color: #a3a3a3;
+  border-left: none;
+  border-right: none;
+}
+
+.scroll-area-component::-webkit-scrollbar {
+  width: 10px;
+}
+
+.scroll-area-component::-webkit-scrollbar-track {
+  background: transparent;
+  backdrop-filter: blur(16px);
+}
+
+.scroll-area-component::-webkit-scrollbar-thumb {
+  background-color: #fafafa1a;
+  border-left: 2px solid transparent;
+  border-right: 2px solid transparent;
+  background-clip: content-box;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+.scroll-area-component::-webkit-scrollbar-thumb:hover {
+  background-color: #a3a3a3;
+  border-left: 1px solid transparent;
+  border-right: 1px solid transparent;
 }

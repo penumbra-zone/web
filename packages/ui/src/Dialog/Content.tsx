@@ -47,7 +47,9 @@ export const Content = ({
                   {headerChildren}
                 </header>
 
-                <div className='flex flex-col gap-6 overflow-y-auto px-6 pb-8'>{children}</div>
+                <div className='scroll-area-component flex flex-col gap-6 overflow-y-auto px-6 pb-8'>
+                  {children}
+                </div>
 
                 {buttons && <div className='flex flex-col gap-2'>{buttons}</div>}
 

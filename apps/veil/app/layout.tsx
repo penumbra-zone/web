@@ -18,7 +18,7 @@ const RootLayout = async ({ children }: { children: ReactNode }) => {
   const jsonRegistryWithGlobals = await fetchJsonRegistryWithGlobals(PENUMBRA_CHAIN_ID);
   return (
     <html lang='en'>
-      <body>
+      <body className='scroll-area-page'>
         <App jsonRegistryWithGlobals={jsonRegistryWithGlobals}>{children}</App>
       </body>
     </html>
