@@ -45,7 +45,7 @@ export const WalletConnect = observer(() => {
           <div className='flex items-center gap-1'>
             <Text color='text.secondary'>Shielded Assets</Text>
             {isPenumbraConnected && (
-              <Tooltip message='Shield your public assets into Penumbra to start trading'>
+              <Tooltip message='Connect your Prax Wallet to access shielded assets'>
                 <Info className='w-4 h-4 text-neutral-400' />
               </Tooltip>
             )}
@@ -92,7 +92,7 @@ export const WalletConnect = observer(() => {
           <div className='flex items-center gap-1'>
             <Text color='text.secondary'>Public Assets</Text>
             {isCosmosConnected && (
-              <Tooltip message='Connect your Cosmos Wallet to manage your public assets'>
+              <Tooltip message='Fund your Cosmos Wallet in order to shield assets into Penumbra'>
                 <Info className='w-4 h-4 text-neutral-400' />
               </Tooltip>
             )}
