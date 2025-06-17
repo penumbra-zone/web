@@ -1,15 +1,13 @@
 import { useAutoAnimate } from '@formkit/auto-animate/react';
 import type { ReactNode } from 'react';
 import { Text } from '@penumbra-zone/ui/Text';
-import { Skeleton } from '@/shared/ui/skeleton';
 
 export interface InfoCardProps {
   title: string;
   children: ReactNode;
-  loading?: boolean;
 }
 
-export const InfoCard = ({ title, children, loading }: InfoCardProps) => {
+export const InfoCard = ({ title, children }: InfoCardProps) => {
   const [parent] = useAutoAnimate();
 
   return (
@@ -18,13 +16,7 @@ export const InfoCard = ({ title, children, loading }: InfoCardProps) => {
         {title}
       </Text>
       <div ref={parent} className='flex items-baseline justify-start gap-2 max-h-7 overflow-hidden'>
-        {!loading ? (
-          children
-        ) : (
-          <div className='w-24 h-7 py-[2px]'>
-            <Skeleton />
-          </div>
-        )}
+        {children}
       </div>
     </div>
   );
