@@ -202,102 +202,105 @@ export function UnshieldDialog({ asset }: { asset: ShieldedBalance }) {
       </Dialog.Trigger>
 
       <Dialog.Content title='Unshield'>
-        <div className="relative rounded-[20px] p-6 backdrop-blur-[32px] overflow-hidden">
+        <div className='relative rounded-[20px] p-6 backdrop-blur-[32px] overflow-hidden'>
           <Image
             priority
-            src="/assets/unshield-backdrop.svg"
-            alt="Unshield backdrop"
+            src='/assets/unshield-backdrop.svg'
+            alt='Unshield backdrop'
             fill
-            className="object-cover opacity-30 -z-10 pointer-events-none"
+            className='object-cover opacity-30 -z-10 pointer-events-none'
           />
-        <form
-          className='flex flex-col gap-4'
-          onSubmit={e => {
-            e.preventDefault();
-          }}
-        >
-          <Text variant={'body'} color={'text.primary'}>
-            Destination Chain
-          </Text>
-          <TextInput
-            startAdornment={
-              <Image
-                width={24}
-                height={24}
-                src={destinationChain?.images[0]?.png ?? ''}
-                alt={destinationChain?.displayName ?? ''}
-              />
-            }
-            value={destinationChain?.displayName ?? ''}
-          />
-          <Text variant={'detail'} color={'text.secondary'}>
-            Unshielding can only be done to the asset&apos;s source chain.
-          </Text>
-
-          <Text variant={'body'} color={'text.primary'}>
-            Amount
-          </Text>
-          <TextInput
-            endAdornment={
-              <Density compact>
-                <AssetSelector assets={[metadata]} actionType={'default'} value={metadata} />
-              </Density>
-            }
-            onChange={value => setAmount(value)}
-            value={amount}
-          />
-          {!isAmountValid && (
-            <Text variant={'detail'} color={'destructive.main'}>
-              Amount is greater than balance
-            </Text>
-          )}
-          <div
-            className={'cursor-pointer w-fit'}
-            onClick={() => setAmount(pnum(asset.balance.balanceView).toString())}
-          >
-            <WalletBalance balance={asset.balance} />
-          </div>
-          <Text variant={'body'} color={'text.primary'}>
-            Destination Address
-          </Text>
-          <TextInput
-            actionType={isAddressValid ? 'default' : 'destructive'}
-            onChange={val => setDestAddress(val)}
-          />
-          {!isAddressValid && destAddress !== '' && (
-            <Text variant={'detail'} color={'destructive.main'}>
-              This address is not valid on the destination chain
-            </Text>
-          )}
-
-          <Button
-            type='submit'
-            actionType={'unshield'}
-            priority={'primary'}
-            density={'sparse'}
-            icon={ShieldOff}
-            disabled={!isAddressValid || !isAmountValid || isIbcInProgress}
-            onClick={() => {
-              void (async () => {
-                if (destAddress === '') {
-                  return;
-                }
-                setIsIbcInProgress(true);
-                try {
-                  await sendIbcOut(
-                    asset,
-                    pnum(amount, getDisplayDenomExponentFromValueView(asset.valueView)).toString(),
-                    destAddress,
-                  );
-                } finally {
-                  setIsIbcInProgress(false);
-                }
-              })();
+          <form
+            className='flex flex-col gap-4'
+            onSubmit={e => {
+              e.preventDefault();
             }}
           >
-            Unshield
-          </Button>
-        </form>
+            <Text variant={'body'} color={'text.primary'}>
+              Destination Chain
+            </Text>
+            <TextInput
+              startAdornment={
+                <Image
+                  width={24}
+                  height={24}
+                  src={destinationChain?.images[0]?.png ?? ''}
+                  alt={destinationChain?.displayName ?? ''}
+                />
+              }
+              value={destinationChain?.displayName ?? ''}
+            />
+            <Text variant={'detail'} color={'text.secondary'}>
+              Unshielding can only be done to the asset&apos;s source chain.
+            </Text>
+
+            <Text variant={'body'} color={'text.primary'}>
+              Amount
+            </Text>
+            <TextInput
+              endAdornment={
+                <Density compact>
+                  <AssetSelector assets={[metadata]} actionType={'default'} value={metadata} />
+                </Density>
+              }
+              onChange={value => setAmount(value)}
+              value={amount}
+            />
+            {!isAmountValid && (
+              <Text variant={'detail'} color={'destructive.main'}>
+                Amount is greater than balance
+              </Text>
+            )}
+            <div
+              className={'cursor-pointer w-fit'}
+              onClick={() => setAmount(pnum(asset.balance.balanceView).toString())}
+            >
+              <WalletBalance balance={asset.balance} />
+            </div>
+            <Text variant={'body'} color={'text.primary'}>
+              Destination Address
+            </Text>
+            <TextInput
+              actionType={isAddressValid ? 'default' : 'destructive'}
+              onChange={val => setDestAddress(val)}
+            />
+            {!isAddressValid && destAddress !== '' && (
+              <Text variant={'detail'} color={'destructive.main'}>
+                This address is not valid on the destination chain
+              </Text>
+            )}
+
+            <Button
+              type='submit'
+              actionType={'unshield'}
+              priority={'primary'}
+              density={'sparse'}
+              icon={ShieldOff}
+              disabled={!isAddressValid || !isAmountValid || isIbcInProgress}
+              onClick={() => {
+                void (async () => {
+                  if (destAddress === '') {
+                    return;
+                  }
+                  setIsIbcInProgress(true);
+                  try {
+                    await sendIbcOut(
+                      asset,
+                      pnum(
+                        amount,
+                        getDisplayDenomExponentFromValueView(asset.valueView),
+                      ).toString(),
+                      destAddress,
+                    );
+                  } finally {
+                    setIsIbcInProgress(false);
+                  }
+                })();
+              }}
+            >
+              Unshield
+            </Button>
+          </form>
         </div>
       </Dialog.Content>
     </Dialog>
