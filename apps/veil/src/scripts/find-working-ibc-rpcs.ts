@@ -15,6 +15,7 @@ import { ChainRegistryClient } from '@penumbra-labs/registry';
 import chainsData from 'chain-registry';
 
 interface ChainEntry {
+  chain_id?: string;
   chain_name: string;
   apis?: {
     rpc?: { address: string }[];
@@ -83,48 +84,63 @@ async function main(): Promise<void> {
     exit(1);
   }
 
-  const ibcConnections = (registry as { ibcConnections: { chain_name: string }[] }).ibcConnections;
+  const ibcConnections =
+    (registry as { ibcConnections?: { chain_name: string }[] } | undefined)?.ibcConnections ?? [];
+  console.debug('IBC Connections:', ibcConnections);
 
   if (!Array.isArray(ibcConnections) || ibcConnections.length === 0) {
     console.error('No IBC connections found in registry');
     exit(1);
   }
 
-  const ibcChainNames = new Set(
-    ibcConnections.map(c => {
-      const dir = (c as { cosmosRegistryDir?: string }).cosmosRegistryDir;
-      if (dir) {
-        return dir.toLowerCase();
-      }
-      const cid =
-        (c as { chain_name?: string; chainId?: string }).chain_name ??
-        (c as { chainId?: string }).chainId;
-      return cid?.split('-')[0]?.toLowerCase() ?? '';
-    }),
-  );
-  console.debug(`Found ${ibcChainNames.size} IBC-connected chains`);
+  // Gather the exact counter-party chain IDs we are interested in.
+  const targetChainIds = new Set<string>();
+
+  for (const conn of ibcConnections) {
+    const cid = (conn as { chainId?: string }).chainId;
+    if (cid) {
+      targetChainIds.add(cid.toLowerCase());
+    }
+  }
+
+  console.debug('Target chain IDs:', Array.from(targetChainIds));
+  console.debug(`Will test RPCs for ${targetChainIds.size} chain(s)`);
 
   const endpointChecks: { chain: string; address: string }[] = [];
 
   for (const chain of chainsData.chains as ChainEntry[]) {
-    if (!ibcChainNames.has(chain.chain_name.toLowerCase())) {
+    const chainIdEntry = chain.chain_id?.toLowerCase();
+
+    if (!chainIdEntry || !targetChainIds.has(chainIdEntry)) {
       continue;
     }
 
+    console.debug('Matched chain:', chainIdEntry, '|', chain.chain_name);
+
     const rpcApis = chain.apis?.rpc ?? [];
+    console.debug('RPC APIs:', rpcApis);
     for (const { address } of rpcApis) {
-      if (!address.startsWith('http')) {
+      if (!address) {
+        console.debug('Skipping entry with missing address');
         continue;
       }
+
+      if (!address.startsWith('http')) {
+        console.debug('Skipping non-HTTP address:', address);
+        continue;
+      }
+
       endpointChecks.push({ chain: chain.chain_name, address });
     }
   }
 
+  console.debug('Endpoint checks to perform:', endpointChecks);
   console.debug(`Testing ${endpointChecks.length} RPC endpoints in parallel…`);
 
   const checkResults = await Promise.all(
     endpointChecks.map(async ({ chain, address }) => {
       const ok = await isEndpointAlive(address);
+      console.debug(`Endpoint ${address} for chain ${chain} is ${ok ? 'alive' : 'not alive'}`);
       return { chain, address, ok } as const;
     }),
   );
@@ -133,17 +149,15 @@ async function main(): Promise<void> {
 
   for (const { chain, address, ok } of checkResults) {
     if (!ok) {
+      console.debug(`Skipping non-working endpoint for chain ${chain}: ${address}`);
       continue;
     }
-    if (!results[chain]) {
-      results[chain] = [];
-    }
-    results[chain].push(address);
+    (results[chain] ??= []).push(address);
   }
 
   // Logging summary
   for (const chain of Object.keys(results).sort()) {
-    console.debug(`✅ ${chain}: ${results[chain]?.length} working endpoint(s)`);
+    console.debug(`✅ ${chain}: ${(results[chain] ?? []).length} working endpoint(s)`);
   }
 
   await writeFile('working-ibc-rpcs.json', JSON.stringify(results, null, 2));

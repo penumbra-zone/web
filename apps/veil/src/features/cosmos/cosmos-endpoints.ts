@@ -1,6 +1,10 @@
 // Multiple RPC endpoints for each chain for failover
 export const RPC_ENDPOINTS: Record<string, string[]> = {
-  axelar: [
+  // ====================
+  //  Mainnets
+  // ====================
+  // Axelar mainnet (axelar-dojo-1)
+  'axelar-dojo-1': [
     'https://rpc-axelar.imperator.co:443',
     'https://axelar-rpc.pops.one:443',
     'https://axelar-rpc.qubelabs.io:443',
@@ -15,6 +19,7 @@ export const RPC_ENDPOINTS: Record<string, string[]> = {
     'https://axelar-rpc.publicnode.com:443',
     'https://axelar.drpc.org',
   ],
+  // Celestia mainnet (celestia)
   celestia: [
     'https://public-celestia-rpc.numia.xyz',
     'https://rpc.lunaroasis.net',
@@ -34,7 +39,8 @@ export const RPC_ENDPOINTS: Record<string, string[]> = {
     'https://celestia-rpc.stakeandrelax.net',
     'https://rpc.celestia.node75.org',
   ],
-  cosmoshub: [
+  // Cosmos Hub mainnet (cosmoshub-4)
+  'cosmoshub-4': [
     'https://cosmoshub.tendermintrpc.lava.build:443',
     'https://rpc-cosmoshub.ecostake.com',
     'https://cosmos-rpc.polkachu.com',
@@ -56,18 +62,21 @@ export const RPC_ENDPOINTS: Record<string, string[]> = {
     'https://cosmos-rpc.ibs.team',
     'https://rpc.cosmoshub-4-archive.citizenweb3.com:443',
   ],
-  dydx: [
+  // dYdX mainnet (dydx-mainnet-1)
+  'dydx-mainnet-1': [
     'https://dydx-rpc.kingnodes.com:443',
     'https://dydx-dao-rpc.polkachu.com',
     'https://rpc-dydx.ecostake.com:443',
     'https://dydx-rpc.publicnode.com:443',
   ],
-  injective: [
+  // Injective mainnet (injective-1)
+  'injective-1': [
     'https://injective-rpc.polkachu.com',
     'https://rpc-injective-01.stakeflow.io',
     'https://injective-rpc.publicnode.com:443',
   ],
-  neutron: [
+  // Neutron mainnet (neutron-1)
+  'neutron-1': [
     'https://rpc-lb.neutron.org',
     'https://rpc-vertexa.neutron-1.neutron.org',
     'https://rpc-voidara.neutron-1.neutron.org',
@@ -75,8 +84,10 @@ export const RPC_ENDPOINTS: Record<string, string[]> = {
     'https://neutron-rpc.publicnode.com:443',
     'https://rpc.neutron.quokkastake.io',
   ],
-  noble: ['https://noble-rpc.polkachu.com', 'https://noble-rpc.owallet.io'],
-  osmosis: [
+  // Noble mainnet (noble-1)
+  'noble-1': ['https://noble-rpc.polkachu.com', 'https://noble-rpc.owallet.io'],
+  // Osmosis mainnet (osmosis-1)
+  'osmosis-1': [
     'https://rpc-osmosis.ecostake.com',
     'https://osmosis-rpc.polkachu.com',
     'https://osmosis.rpc.stakin-nodes.com',
@@ -91,7 +102,8 @@ export const RPC_ENDPOINTS: Record<string, string[]> = {
     'https://osmosis.drpc.org',
     'https://osmosis-rpc.chainroot.io',
   ],
-  stride: [
+  // Stride mainnet (stride-1)
+  'stride-1': [
     'https://stride-rpc.polkachu.com/',
     'https://stride.rpc.kjnodes.com',
     'https://rpc-stride-01.stakeflow.io',
@@ -101,4 +113,12 @@ export const RPC_ENDPOINTS: Record<string, string[]> = {
     'https://stride-rpc.ibs.team',
     'https://stride.rpc.quasarstaking.ai:443',
   ],
+
+  // ====================
+  //  Testnets
+  // ====================
+  // Noble testnet (grand-1)
+  'grand-1': ['https://noble-testnet-rpc.polkachu.com'],
+  // Osmosis testnet (osmo-test-5)
+  'osmo-test-5': ['https://rpc.osmotest5.osmosis.zone/'],
 };

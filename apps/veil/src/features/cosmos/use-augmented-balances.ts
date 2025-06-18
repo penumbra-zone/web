@@ -30,9 +30,9 @@ const markEndpointFailed = (endpoint: string): void => {
   failedEndpoints.set(endpoint, Date.now());
 };
 
-const getHealthyEndpoints = (chainName: string): string[] => {
-  const lowerChainName = chainName.toLowerCase();
-  const endpoints = RPC_ENDPOINTS[lowerChainName] ?? [];
+const getHealthyEndpoints = (chainId: string): string[] => {
+  const key = chainId.toLowerCase();
+  const endpoints = RPC_ENDPOINTS[key] ?? [];
   return endpoints.filter(isEndpointHealthy);
 };
 
@@ -62,8 +62,8 @@ export const fetchChainBalances = async (
   address: string,
   chain: ChainWalletBase,
 ): Promise<readonly Coin[]> => {
-  const chainName = chain.chainName;
-  const healthyEndpoints = getHealthyEndpoints(chainName);
+  const { chainId } = chain;
+  const healthyEndpoints = getHealthyEndpoints(chainId);
 
   // Try our reliable endpoints first
   for (const endpoint of healthyEndpoints) {
@@ -73,7 +73,9 @@ export const fetchChainBalances = async (
       return balances;
     } catch (error) {
       markEndpointFailed(endpoint);
-      console.warn(`RPC endpoint failed for ${chainName}: ${endpoint}. Trying next endpoint...`);
+      console.warn(
+        `RPC endpoint failed for ${chain.chainName} (${chainId}): ${endpoint}. Trying next endpoint...`,
+      );
     }
   }
 
@@ -106,7 +108,7 @@ export const fetchChainBalances = async (
 
   // All endpoints failed
   console.error(
-    `All RPC endpoints failed for ${chainName}. Retrying will be attempted after cooldown period.`,
+    `All RPC endpoints failed for ${chain.chainName} (${chainId}). Retrying will be attempted after cooldown period.`,
   );
 
   return [];
