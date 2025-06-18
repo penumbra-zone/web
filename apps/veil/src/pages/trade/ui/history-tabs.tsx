@@ -6,6 +6,7 @@ import { Toggle } from '@penumbra-zone/ui/Toggle';
 import { Text } from '@penumbra-zone/ui/Text';
 import { PositionsTable } from '@/entities/position';
 import { usePathToMetadata } from '../model/use-path';
+import { PositionState_PositionStateEnum as State } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 
 enum PositionsTabsType {
   MY_POSITIONS = 'MY_POSITIONS',
@@ -36,7 +37,15 @@ export const HistoryTabs = () => {
       </div>
 
       <div className='p-4'>
-        <PositionsTable base={baseAsset} quote={quoteAsset} showInactive={showInactive} />
+        <PositionsTable
+          base={baseAsset}
+          quote={quoteAsset}
+          stateFilter={
+            showInactive
+              ? [State.OPENED, State.CLOSED, State.WITHDRAWN]
+              : [State.OPENED, State.CLOSED]
+          }
+        />
       </div>
     </div>
   );
