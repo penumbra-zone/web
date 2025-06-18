@@ -152,6 +152,12 @@ export function UnshieldButton({ asset }: { asset: ShieldedBalance }) {
 export function GenericShieldButton() {
   const [isOpen, setIsOpen] = useState(false);
 
+  const defaultRoute = {
+    srcChainId: 'noble-1',
+    srcAssetDenom: 'uusdc',
+    destChainId: 'penumbra-1',
+  };
+
   return (
     <>
       <Button
@@ -164,7 +170,16 @@ export function GenericShieldButton() {
       </Button>
       <ShieldDialog isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <Suspense fallback={<SkeletonFallback />}>
-          <LazySkipWidget theme={theme} />
+          <LazySkipWidget
+            defaultRoute={defaultRoute}
+            filter={{
+              destination: {
+                'penumbra-1': undefined,
+              },
+            }}
+            theme={theme}
+            enableAmplitudeAnalytics={false}
+          />
         </Suspense>
       </ShieldDialog>
     </>
@@ -221,6 +236,7 @@ export const ShieldButton = ({ asset }: { asset: UnifiedAsset }) => {
                 },
               }}
               theme={theme}
+              enableAmplitudeAnalytics={false}
             />
           </Suspense>
         ) : (

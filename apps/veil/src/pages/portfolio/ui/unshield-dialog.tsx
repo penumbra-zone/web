@@ -193,18 +193,6 @@ export function UnshieldDialog({ asset }: { asset: ShieldedBalance }) {
 
   const [isIbcInProgress, setIsIbcInProgress] = useState(false);
 
-  // const { client } = useWalletClient();
-
-  // useEffect(() => {
-  //   if (client && destinationChain) {
-  //     void client
-  //       .getAccount?.(destinationChain.chainId)
-  //       .then(acc => setConnectedAddress(acc.address));
-  //   } else {
-  //     setConnectedAddress(undefined);
-  //   }
-  // }, [client, destinationChain]);
-
   return (
     <Dialog>
       <Dialog.Trigger asChild>
@@ -214,6 +202,14 @@ export function UnshieldDialog({ asset }: { asset: ShieldedBalance }) {
       </Dialog.Trigger>
 
       <Dialog.Content title='Unshield'>
+        <div className="relative rounded-[20px] p-6 backdrop-blur-[32px] overflow-hidden">
+          <Image
+            priority
+            src="/assets/unshield-backdrop.svg"
+            alt="Unshield backdrop"
+            fill
+            className="object-cover opacity-30 -z-10 pointer-events-none"
+          />
         <form
           className='flex flex-col gap-4'
           onSubmit={e => {
@@ -267,18 +263,6 @@ export function UnshieldDialog({ asset }: { asset: ShieldedBalance }) {
           <TextInput
             actionType={isAddressValid ? 'default' : 'destructive'}
             onChange={val => setDestAddress(val)}
-            // endAdornment={
-            //   <Button
-            //     onClick={() => {
-            //       setDestAddress(connectedAddress ?? '');
-            //     }}
-            //     disabled={!connectedAddress}
-            //     priority='secondary'
-            //     density='compact'
-            //   >
-            //     My address
-            //   </Button>
-            // }
           />
           {!isAddressValid && destAddress !== '' && (
             <Text variant={'detail'} color={'destructive.main'}>
@@ -314,6 +298,7 @@ export function UnshieldDialog({ asset }: { asset: ShieldedBalance }) {
             Unshield
           </Button>
         </form>
+        </div>
       </Dialog.Content>
     </Dialog>
   );
