@@ -5,11 +5,15 @@ const withBundleAnalyzer = bundleAnalyzer({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  serverExternalPackages: ['pino-pretty'],
   experimental: {
     optimizePackageImports: ['@penumbra-zone/ui', 'chain-registry', 'osmo-query', 'cosmos-kit'],
     serverComponentsHmrCache: true,
   },
   turbopack: {
+    resolveAlias: {
+      '@amplitude/analytics-browser': '@repo/stubs/amplitude-analytics-browser',
+    },
     rules: {
       '*.svg': {
         loaders: ['@svgr/webpack'],

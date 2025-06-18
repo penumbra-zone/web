@@ -1,23 +1,33 @@
 import type { ShieldedBalance, UnifiedAsset } from '@/pages/portfolio/api/use-unified-assets.ts';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Tooltip } from '@penumbra-zone/ui/Tooltip';
-import { useEffect, useState, useMemo, lazy, Suspense } from 'react';
-import { X } from 'lucide-react';
+import { useEffect, useState, useMemo, useCallback, lazy, Suspense } from 'react';
 import { useRegistry } from '@/shared/api/registry.tsx';
 import { getMetadata } from '@penumbra-zone/getters/value-view';
 import { theme as penumbraTheme } from '@penumbra-zone/ui/theme';
 import { UnshieldDialog } from '@/pages/portfolio/ui/unshield-dialog.tsx';
+import { Skeleton } from '@/shared/ui/skeleton';
+import { ShieldDialog } from '@/pages/portfolio/ui/shield-dialog.tsx';
 
-// Use React.lazy for the Widget
+/** Lazily-loaded Skip widget */
 const LazySkipWidget = lazy(() => import('@skip-go/widget').then(mod => ({ default: mod.Widget })));
 
+/** Cache for previously-computed IBC denoms to avoid redundant hashing */
+const ibcDenomCache = new Map<string, string>();
+
 /**
- * Computes the IBC denom hash for Penumbra-1
- * If the denom already starts with "ibc/", it's assumed to be already computed.
- * If the denom starts with "transfer/", it's assumed to be a full trace path.
- * Otherwise, constructs the trace path using channelId and denom.
+ * Returns a canonical IBC denom of the form `ibc/<SHA256>`.
+ * The result is memoised in `ibcDenomCache`.
+ * @param denom base or trace-path denom (e.g. `uatom` or `transfer/channel-0/uatom`)
+ * @param channelId IBC channel when a trace-path needs to be constructed
  */
 async function computeIbcDenom(denom: string, channelId: string): Promise<string> {
+  const cacheKey = `${channelId}:${denom}`;
+  const cached = ibcDenomCache.get(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
   // Check if denom is already an IBC hash
   if (denom.startsWith('ibc/')) {
     return denom;
@@ -40,45 +50,24 @@ async function computeIbcDenom(denom: string, channelId: string): Promise<string
     .toUpperCase();
 
   // Return in ibc/HASH format
-  return `ibc/${hashHex}`;
+  const ibc = `ibc/${hashHex}`;
+  ibcDenomCache.set(cacheKey, ibc);
+  return ibc;
 }
 
-export function UnshieldButton({ asset }: { asset: ShieldedBalance }) {
-  return <UnshieldDialog asset={asset} />;
-}
+/** Fallback skeleton displayed while the Skip widget loads */
+const SkeletonFallback = () => (
+  <div className='flex h-[300px] w-full items-center justify-center p-4'>
+    <Skeleton />
+  </div>
+);
 
-const theme = {
-  brandColor: penumbraTheme.color.primary.main,
-  primary: {
-    background: {
-      normal: penumbraTheme.gradient.accentRadialBackground,
-      transparent: penumbraTheme.color.base.transparent,
-    },
-    text: {
-      normal: penumbraTheme.color.text.primary,
-      lowContrast: penumbraTheme.color.text.primary,
-      ultraLowContrast: penumbraTheme.color.text.primary,
-    },
-    ghostButtonHover: penumbraTheme.color.primary.main,
-  },
-
-  success: {
-    text: penumbraTheme.color.success.main,
-  },
-  warning: {
-    background: penumbraTheme.color.caution.main,
-    text: penumbraTheme.color.text.primary,
-  },
-  error: {
-    background: penumbraTheme.color.destructive.main,
-    text: penumbraTheme.color.text.primary,
-  },
-};
-
-export const ShieldButton = ({ asset }: { asset: UnifiedAsset }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [ibcDenom, setIbcDenom] = useState<string | null>(null);
-  const [isDisabled, setIsDisabled] = useState(true);
+/**
+ * Resolves the IBC denom required to shield a given asset.
+ * Handles Penumbra native assets, registry lookup and memoised hashing.
+ * @returns ibcDenom (null while unresolved), sourceChainId, sourceDenom, error
+ */
+function useIbcDenom(asset: UnifiedAsset) {
   const { data: registry } = useRegistry();
 
   // Use the first public balance for the shielding operation
@@ -91,38 +80,37 @@ export const ShieldButton = ({ asset }: { asset: UnifiedAsset }) => {
       return undefined;
     }
 
-    // Try using the denom property directly
-    if (firstBalance.denom) {
-      return firstBalance.denom;
-    }
-
-    return getMetadata(firstBalance.valueView).base;
+    /* Prefer denom property when truthy; otherwise fall back to metadata base */
+    return firstBalance.denom ? firstBalance.denom : getMetadata(firstBalance.valueView).base;
   }, [firstBalance]);
 
+  const [ibcDenom, setIbcDenom] = useState<string | null>(null);
+  const [error, setError] = useState<Error | null>(null);
+
   useEffect(() => {
-    // Reset state on asset change
+    // reset when asset changes
     setIbcDenom(null);
-    setIsDisabled(true);
+    setError(null);
 
     const getIbcDenom = async () => {
-      // Skip if no public balances or source denom
       if (!firstBalance || !sourceDenom) {
         return;
       }
 
       try {
-        // Use base denom if available, otherwise try to get from denomUnits
-        const originDenom = asset.metadata.base || (asset.metadata.denomUnits[0]?.denom ?? '');
+        // Prefer `asset.metadata.base`, otherwise fall back to first denomUnit
+        const originDenom =
+          asset.metadata.base !== ''
+            ? asset.metadata.base
+            : (asset.metadata.denomUnits[0]?.denom ?? '');
 
         if (!originDenom) {
-          console.error('ShieldButton: Missing origin denom for asset:', asset.symbol);
-          return;
+          throw new Error('Missing origin denom for asset');
         }
 
         // Native Penumbra asset doesn't need IBC calculation
         if (originDenom === 'upenumbra') {
           setIbcDenom('upenumbra');
-          setIsDisabled(false);
           return;
         }
 
@@ -130,29 +118,82 @@ export const ShieldButton = ({ asset }: { asset: UnifiedAsset }) => {
         const connection = registry.ibcConnections.find(chain => chain.chainId === sourceChainId);
 
         if (!connection?.channelId) {
-          console.error(
-            `ShieldButton: Missing IBC channelId for source chain ${sourceChainId} for asset:`,
-            asset.symbol,
-          );
-          return;
+          throw new Error(`Missing IBC channelId for source chain ${sourceChainId}`);
         }
 
-        // Calculate the IBC denom
-        const calculatedDenom = await computeIbcDenom(originDenom, connection.channelId);
-        setIbcDenom(calculatedDenom);
-        setIsDisabled(false);
-      } catch (error) {
-        console.error(
-          'ShieldButton: Failed to compute IBC denom for asset:',
-          asset.symbol,
-          'Error:',
-          error,
-        );
+        // Calculate (or retrieve cached) IBC denom
+        const calculated = await computeIbcDenom(originDenom, connection.channelId);
+        setIbcDenom(calculated);
+      } catch (err) {
+        setError(err as Error);
+        console.error('useIbcDenom error:', err);
       }
     };
 
     void getIbcDenom();
-  }, [asset.symbol, asset.metadata, sourceChainId, registry, firstBalance, sourceDenom]);
+  }, [asset.metadata, asset.symbol, firstBalance, sourceDenom, sourceChainId, registry]);
+
+  return { ibcDenom, sourceChainId, sourceDenom, error } as const;
+}
+
+/**
+ * Theme object passed to Skip widget.
+ * Wrapped in `Object.freeze` so its reference remains stable across renders,
+ * preventing unnecessary re-mounts in `LazySkipWidget`.
+ */
+const theme = Object.freeze({
+  brandColor: penumbraTheme.color.primary.main,
+});
+
+export function UnshieldButton({ asset }: { asset: ShieldedBalance }) {
+  return <UnshieldDialog asset={asset} />;
+}
+
+export function GenericShieldButton() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const defaultRoute = {
+    srcChainId: 'noble-1',
+    srcAssetDenom: 'uusdc',
+    destChainId: 'penumbra-1',
+  };
+
+  return (
+    <>
+      <Button
+        actionType='accent'
+        density='compact'
+        priority='primary'
+        onClick={() => setIsOpen(true)}
+      >
+        Shield Assets
+      </Button>
+      <ShieldDialog isOpen={isOpen} onClose={() => setIsOpen(false)}>
+        <Suspense fallback={<SkeletonFallback />}>
+          <LazySkipWidget
+            defaultRoute={defaultRoute}
+            filter={{
+              destination: {
+                'penumbra-1': undefined,
+              },
+            }}
+            theme={theme}
+            enableAmplitudeAnalytics={false}
+          />
+        </Suspense>
+      </ShieldDialog>
+    </>
+  );
+}
+
+export const ShieldButton = ({ asset }: { asset: UnifiedAsset }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const { ibcDenom, sourceChainId, sourceDenom } = useIbcDenom(asset);
+
+  const disabled = ibcDenom == null;
+
+  const handleClose = useCallback(() => setIsOpen(false), []);
 
   // Button with tooltip if needed
   const buttonElement = (
@@ -161,7 +202,7 @@ export const ShieldButton = ({ asset }: { asset: UnifiedAsset }) => {
       density='slim'
       priority='secondary'
       onClick={() => setIsOpen(true)}
-      disabled={isDisabled}
+      disabled={disabled}
     >
       Shield
     </Button>
@@ -169,51 +210,41 @@ export const ShieldButton = ({ asset }: { asset: UnifiedAsset }) => {
 
   return (
     <>
-      {isDisabled ? (
+      {disabled ? (
         <Tooltip message='Cannot determine IBC path for shielding'>{buttonElement}</Tooltip>
       ) : (
         buttonElement
       )}
 
-      {isOpen && (
-        <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50'>
-          <div className='bg-[#1E1E1E] rounded-lg p-6 max-w-2xl w-full mx-4 relative'>
-            <button
-              onClick={() => setIsOpen(false)}
-              className='absolute top-4 right-4 text-white hover:text-gray-300'
-            >
-              <X size={24} />
-            </button>
-
-            {sourceChainId && sourceDenom && ibcDenom ? (
-              <Suspense fallback={<div className='text-center p-4'>Loading widget...</div>}>
-                <LazySkipWidget
-                  key={`${sourceChainId}-${sourceDenom}-${ibcDenom}`}
-                  defaultRoute={{
-                    srcChainId: sourceChainId,
-                    destChainId: 'penumbra-1',
-                    srcAssetDenom: sourceDenom,
-                    destAssetDenom: ibcDenom,
-                  }}
-                  filter={{
-                    destination: {
-                      'penumbra-1': undefined,
-                    },
-                    source: {
-                      [sourceChainId]: undefined,
-                    },
-                  }}
-                  theme={theme}
-                />
-              </Suspense>
-            ) : (
-              <div className='text-red-500 p-4 text-center'>
-                Error: Could not determine valid shielding route information.
-              </div>
-            )}
+      <ShieldDialog isOpen={isOpen} onClose={handleClose}>
+        {sourceChainId && sourceDenom && ibcDenom ? (
+          <Suspense fallback={<SkeletonFallback />}>
+            <LazySkipWidget
+              key={`${sourceChainId}-${sourceDenom}-${ibcDenom}`}
+              defaultRoute={{
+                srcChainId: sourceChainId,
+                destChainId: 'penumbra-1',
+                srcAssetDenom: sourceDenom,
+                destAssetDenom: ibcDenom,
+              }}
+              filter={{
+                destination: {
+                  'penumbra-1': undefined,
+                },
+                source: {
+                  [sourceChainId]: undefined,
+                },
+              }}
+              theme={theme}
+              enableAmplitudeAnalytics={false}
+            />
+          </Suspense>
+        ) : (
+          <div className='p-4 text-center text-red-500'>
+            Error: Could not determine valid shielding route information.
           </div>
-        </div>
-      )}
+        )}
+      </ShieldDialog>
     </>
   );
 };

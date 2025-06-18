@@ -8,7 +8,6 @@ import { Skeleton } from '@/shared/ui/skeleton';
 import { observer } from 'mobx-react-lite';
 import { useUnifiedAssets } from '../api/use-unified-assets.ts';
 import { useAssetPrices } from '../api/use-asset-prices.ts';
-import { CosmosConnectButton } from '@/features/cosmos/cosmos-connect-button.tsx';
 import { AssetRow } from '@/pages/portfolio/ui/asset-row.tsx';
 import { PortfolioCard } from '@/pages/portfolio/ui/portfolio-card.tsx';
 
@@ -126,7 +125,6 @@ export const AssetsTable = observer(() => {
           <Text as={'h4'} xxl color='text.primary'>
             Assets
           </Text>
-          <CosmosConnectButton variant={'minimal'} actionType={'unshield'} />
         </div>
       }
     >
