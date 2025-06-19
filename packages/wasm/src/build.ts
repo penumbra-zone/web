@@ -10,6 +10,7 @@ import {
   authorize,
   build_action,
   build_parallel,
+  build_witness,
   load_proving_key,
   witness,
 } from '../wasm/index.js';
@@ -64,6 +65,30 @@ export const buildActionParallel = async (
   );
 
   return Action.fromBinary(result);
+};
+
+export const buildWitnessParallel = async (
+  txPlan: TransactionPlan,
+  witnessData: WitnessData,
+  fullViewingKey: FullViewingKey,
+  actionId: number,
+): Promise<{ witness: Uint8Array; public_inputs: number }> => {
+  const actionPlan = txPlan.actions[actionId];
+  if (!actionPlan?.action.case) {
+    throw new Error('No action key provided');
+  }
+
+  const result = build_witness(
+    actionPlan.toBinary(),
+    fullViewingKey.toBinary(),
+    witnessData.toBinary(),
+  );
+
+  // 'CircuitArtifacts' object with witness and matrices properties
+  return {
+    witness: result.witness,
+    public_inputs: result.public_inputs,
+  };
 };
 
 const loadProvingKey = async (

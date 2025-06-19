@@ -3,10 +3,59 @@ use crate::utils;
 use penumbra_keys::FullViewingKey;
 use penumbra_proto::DomainType;
 use penumbra_transaction::{
+    constraints::generate_and_serialize_circuit,
     plan::{ActionPlan, TransactionPlan},
     Action, AuthorizationData, Transaction, WitnessData,
 };
+
+use serde::{Deserialize, Serialize};
 use wasm_bindgen::{prelude::wasm_bindgen, JsValue};
+
+#[wasm_bindgen]
+#[derive(Serialize, Deserialize)]
+pub struct CircuitArtifacts {
+    witness: Vec<u8>,
+    public_inputs: usize,
+}
+
+#[wasm_bindgen]
+impl CircuitArtifacts {
+    #[wasm_bindgen(getter)]
+    pub fn witness(&self) -> Vec<u8> {
+        self.witness.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn public_inputs(&self) -> usize {
+        self.public_inputs
+    }
+}
+
+/// Builds neccessary witness and public inputs for delegated proving.
+#[wasm_bindgen]
+pub fn build_witness(
+    action_plan: &[u8],
+    full_viewing_key: &[u8],
+    witness_data: &[u8],
+) -> WasmResult<CircuitArtifacts> {
+    utils::set_panic_hook();
+
+    let witness = WitnessData::decode(witness_data)?;
+    let action_plan = ActionPlan::decode(action_plan)?;
+    let full_viewing_key = FullViewingKey::decode(full_viewing_key)?;
+
+    let circuit_inputs =
+        ActionPlan::circuit_inputs(action_plan.clone(), &full_viewing_key, &witness)
+            .ok()
+            .expect("circuit inputs");
+
+    let circuit_synthesis = generate_and_serialize_circuit(circuit_inputs)?;
+
+    Ok(CircuitArtifacts {
+        witness: circuit_synthesis.0,
+        public_inputs: circuit_synthesis.1,
+    })
+}
 
 /// Builds a planned [`Action`] specified by
 /// the [`ActionPlan`] in a [`TransactionPlan`].
@@ -42,7 +91,16 @@ pub fn build_action_inner(
 ) -> WasmResult<Action> {
     let memo_key = transaction_plan.memo.map(|memo_plan| memo_plan.key);
 
-    let action = ActionPlan::build_unauth(action_plan, &full_viewing_key, &witness, memo_key)?;
+    let circuit_inputs =
+        ActionPlan::circuit_inputs(action_plan.clone(), &full_viewing_key, &witness).ok();
+
+    let action: Action = ActionPlan::build_unauth(
+        action_plan,
+        &full_viewing_key,
+        &witness,
+        memo_key,
+        circuit_inputs,
+    )?;
 
     Ok(action)
 }

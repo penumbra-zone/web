@@ -10,11 +10,11 @@ use penumbra_auction::auction::dutch::{
     ActionDutchAuctionEnd, ActionDutchAuctionSchedule, DutchAuctionDescription,
 };
 use penumbra_auction::auction::{AuctionId, AuctionNft};
-use penumbra_dex::lp::plan::PositionWithdrawPlan;
+use penumbra_dex::lp::plan::{PositionOpenPlan, PositionWithdrawPlan};
 use penumbra_dex::swap_claim::SwapClaimPlan;
 use penumbra_dex::{
     swap::{SwapPlaintext, SwapPlan},
-    PositionClose, PositionOpen, TradingPair,
+    PositionClose, TradingPair,
 };
 use penumbra_fee::FeeTier;
 use penumbra_funding::liquidity_tournament::ActionLiquidityTournamentVotePlan;
@@ -411,11 +411,13 @@ pub async fn plan_transaction_inner<Db: Database>(
         actions_list.push(ActionPlan::Ics20Withdrawal(ics20_withdrawal.try_into()?));
     }
 
-    for tpr::PositionOpen { position } in request.position_opens {
-        actions_list.push(ActionPlan::PositionOpen(PositionOpen {
+    // Temporarily stub encrypted position metadata field for compilation purposes.
+    for tpr::PositionOpen { position, .. } in request.position_opens {
+        actions_list.push(ActionPlan::PositionOpen(PositionOpenPlan {
             position: position
                 .ok_or_else(|| anyhow!("missing position in PositionOpen"))?
                 .try_into()?,
+            metadata: None,
         }));
     }
 

@@ -30,5 +30,6 @@ export const witnessAndBuild: Impl['witnessAndBuild'] = async function* (
     witnessData,
     Promise.resolve(authorizationData ?? new AuthorizationData()),
     await fvk(),
+    'client',
   );
 };

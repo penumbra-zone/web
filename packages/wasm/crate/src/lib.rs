@@ -8,6 +8,7 @@ pub mod keys;
 pub mod metadata;
 pub mod note_record;
 pub mod planner;
+pub mod secret_sharing;
 pub mod stake;
 pub mod storage;
 pub mod swap_record;

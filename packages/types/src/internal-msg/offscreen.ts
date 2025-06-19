@@ -22,6 +22,7 @@ export interface ActionBuildRequest {
   witness: Jsonified<WitnessData>;
   fullViewingKey: Jsonified<FullViewingKey>;
   actionPlanIndex: number;
+  workload: string;
 }
 export type ActionBuildResponse = Jsonified<Action>;
 
@@ -39,7 +40,9 @@ export const isActionBuildRequest = (req: unknown): req is ActionBuildRequest =>
   'fullViewingKey' in req &&
   typeof req.fullViewingKey === 'object' &&
   'actionPlanIndex' in req &&
-  typeof req.actionPlanIndex === 'number';
+  typeof req.actionPlanIndex === 'number' &&
+  'workload' in req &&
+  typeof req.workload === 'string';
 
 export const isOffscreenRequest = (req: unknown): req is OffscreenRequest =>
   req != null &&
