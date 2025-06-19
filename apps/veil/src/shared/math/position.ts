@@ -152,6 +152,18 @@ interface RangeLiquidityPlan {
   positions: number;
 }
 
+/**
+ * Defines how liquidity should be distributed across the price range
+ */
+export enum LiquidityDistributionShape {
+  /** Equal distribution across all positions */
+  FLAT = 'FLAT',
+  /** Higher liquidity near market price, decreasing towards range edges */
+  PYRAMID = 'PYRAMID',
+  /** Lower liquidity near market price, increasing towards range edges */
+  INVERTED_PYRAMID = 'INVERTED_PYRAMID',
+}
+
 interface SimpleLiquidityPlan {
   baseAsset: Asset;
   quoteAsset: Asset;
@@ -162,7 +174,33 @@ interface SimpleLiquidityPlan {
   marketPrice: number;
   feeBps: number;
   positions: number;
+  distributionShape: LiquidityDistributionShape;
 }
+
+export const getPositionWeights = (
+  positions: number,
+  shape: LiquidityDistributionShape,
+): number[] => {
+  if (positions === 1) {
+    return [1];
+  }
+
+  return Array.from({ length: positions }, (_, i) => {
+    const normalizedIndex = i / (positions - 1);
+    switch (shape) {
+      case LiquidityDistributionShape.FLAT:
+        return 1;
+      case LiquidityDistributionShape.PYRAMID:
+        // Creates a pyramid shape with peak at middle
+        return 0.1 + 0.9 * (1 - Math.abs(normalizedIndex - 0.5) * 2);
+      case LiquidityDistributionShape.INVERTED_PYRAMID:
+        // Creates an inverted pyramid with peaks at edges
+        return Math.abs(normalizedIndex - 0.5) * 2;
+      default:
+        return 1;
+    }
+  });
+};
 
 /** Given a plan for providing range liquidity, create all the necessary positions to accomplish the plan. */
 export const rangeLiquidityPositions = (plan: RangeLiquidityPlan): Position[] => {
@@ -213,28 +251,44 @@ export const simpleLiquidityPositions = (plan: SimpleLiquidityPlan): Position[] 
   const lowerStepWidth = (plan.marketPrice - plan.lowerPrice) / lowerPositionsAmount;
   const upperStepWidth = (plan.upperPrice - plan.marketPrice) / upperPositionsAmount;
 
+  // Calculate weights for ALL positions together to maintain the distribution shape
+  const weights = getPositionWeights(
+    lowerPositionsAmount + upperPositionsAmount,
+    plan.distributionShape,
+  );
+
+  // Calculate the total weight for each range to properly scale the liquidity
+  const lowerRangeTotalWeight = weights
+    .slice(0, lowerPositionsAmount)
+    .reduce((sum, w) => sum + w, 0);
+  const upperRangeTotalWeight = weights.slice(lowerPositionsAmount).reduce((sum, w) => sum + w, 0);
+
   // Generate positions for lower range (quote liquidity)
   const lowerPositions = Array.from({ length: lowerPositionsAmount }, (_, i) => {
     const price = plan.lowerPrice + i * lowerStepWidth;
+    // Scale the weight by the range's total weight to maintain proper liquidity distribution
+    const weight = (weights[i] ?? 0) / (lowerRangeTotalWeight || 1);
     return planToPosition({
       baseAsset: plan.baseAsset,
       quoteAsset: plan.quoteAsset,
       feeBps: plan.feeBps,
       price,
       baseReserves: 0,
-      quoteReserves: plan.quoteLiquidity / lowerPositionsAmount,
+      quoteReserves: plan.quoteLiquidity * weight,
     });
   });
 
   // Generate positions for upper range (base liquidity)
   const upperPositions = Array.from({ length: upperPositionsAmount }, (_, i) => {
     const price = plan.marketPrice + i * upperStepWidth;
+    // Scale the weight by the range's total weight to maintain proper liquidity distribution
+    const weight = (weights[i + lowerPositionsAmount] ?? 0) / (upperRangeTotalWeight || 1);
     return planToPosition({
       baseAsset: plan.baseAsset,
       quoteAsset: plan.quoteAsset,
       feeBps: plan.feeBps,
       price,
-      baseReserves: plan.baseLiquidity / upperPositionsAmount,
+      baseReserves: plan.baseLiquidity * weight,
       quoteReserves: 0,
     });
   });
