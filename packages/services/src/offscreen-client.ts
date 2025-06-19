@@ -14,6 +14,8 @@ const OFFSCREEN_DOCUMENT_PATH = '/offscreen.html';
 
 let active = 0;
 
+type BuildResultKind = 'action' | 'witness';
+
 const activateOffscreen = async () => {
   const noOffscreen = chrome.runtime
     .getContexts({
@@ -54,16 +56,17 @@ const sendOffscreenMessage = async <T extends OffscreenMessage>(req: InternalReq
   });
 
 /**
- * Build actions in parallel, in an offscreen window where we can run wasm.
+ * Build in parallel, in an offscreen window where we can run wasm.
  * @param cancel Promise that rejects if the build should be cancelled, usually auth denial.
  * @returns An independently-promised list of action build results.
  */
-const buildActions = (
+const buildOffscreen = <T>(
   transactionPlan: TransactionPlan,
   witness: WitnessData,
   fullViewingKey: FullViewingKey,
+  workload: BuildResultKind,
   cancel: PromiseLike<never>,
-): Promise<Action>[] => {
+): Promise<T>[] => {
   const activation = activateOffscreen();
 
   // this json serialization involves a lot of binary -> base64 which is slow,
@@ -72,6 +75,7 @@ const buildActions = (
     transactionPlan: transactionPlan.toJson() as Jsonified<TransactionPlan>,
     witness: witness.toJson() as Jsonified<WitnessData>,
     fullViewingKey: fullViewingKey.toJson() as Jsonified<FullViewingKey>,
+    workload,
   };
 
   const buildTasks = transactionPlan.actions.map(async (_, actionPlanIndex) => {
@@ -86,8 +90,9 @@ const buildActions = (
     // wait for offscreen to finish standing up
     await activation;
 
-    const buildRes = await sendOffscreenMessage(buildReq);
-    return Action.fromJson(buildRes);
+    const res = await sendOffscreenMessage(buildReq);
+
+    return workload === 'action' ? (Action.fromJson(res) as T) : (res as unknown as T);
   });
 
   void Promise.race([Promise.all(buildTasks), cancel])
@@ -99,52 +104,25 @@ const buildActions = (
   return buildTasks;
 };
 
-/**
- * Build delegated proving inputs in parallel, in an offscreen window where we can run wasm.
- * @param cancel Promise that rejects if the build should be cancelled, usually auth denial.
- * @returns An independently-promised list of action build results.
- */
-const buildDelegatedProvingInputs = (
-  transactionPlan: TransactionPlan,
-  witness: WitnessData,
-  fullViewingKey: FullViewingKey,
-  cancel: PromiseLike<never>,
-): Promise<{ witness: Uint8Array; matrices: Uint8Array }>[] => {
-  const activation = activateOffscreen();
+export const offscreenClient = {
+  buildActions: (
+    transactionPlan: TransactionPlan,
+    witness: WitnessData,
+    fullViewingKey: FullViewingKey,
+    cancel: PromiseLike<never>,
+  ) => buildOffscreen<Action>(transactionPlan, witness, fullViewingKey, 'action', cancel),
 
-  // this json serialization involves a lot of binary -> base64 which is slow,
-  // so just do it once and reuse
-  const partialRequest = {
-    transactionPlan: transactionPlan.toJson() as Jsonified<TransactionPlan>,
-    witness: witness.toJson() as Jsonified<WitnessData>,
-    fullViewingKey: fullViewingKey.toJson() as Jsonified<FullViewingKey>,
-  };
-
-  const buildTasks = transactionPlan.actions.map(async (_, actionPlanIndex) => {
-    const buildReq: InternalRequest<ActionBuildMessage> = {
-      type: 'BUILD_ACTION',
-      request: {
-        ...partialRequest,
-        actionPlanIndex,
-      },
-    };
-
-    // wait for offscreen to finish standing up
-    await activation;
-
-    const buildRes = await sendOffscreenMessage(buildReq);
-
-    // Return the circuit artifacts directly
-    return buildRes as unknown as { witness: Uint8Array; matrices: Uint8Array };
-  });
-
-  void Promise.race([Promise.all(buildTasks), cancel])
-    // suppress 'unhandled promise' logs - real failures are already conveyed by the individual promises.
-    .catch()
-    // this build is done with offscreen. it may shut down
-    .finally(() => void releaseOffscreen());
-
-  return buildTasks;
+  buildCircuitInputs: (
+    transactionPlan: TransactionPlan,
+    witness: WitnessData,
+    fullViewingKey: FullViewingKey,
+    cancel: PromiseLike<never>,
+  ) =>
+    buildOffscreen<{ witness: Uint8Array; public_inputs: number }>(
+      transactionPlan,
+      witness,
+      fullViewingKey,
+      'witness',
+      cancel,
+    ),
 };
-
-export const offscreenClient = { buildActions, buildDelegatedProvingInputs };

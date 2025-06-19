@@ -15,7 +15,7 @@ use wasm_bindgen::{prelude::wasm_bindgen, JsValue};
 #[derive(Serialize, Deserialize)]
 pub struct CircuitArtifacts {
     witness: Vec<u8>,
-    matrices: Vec<u8>,
+    public_inputs: usize,
 }
 
 #[wasm_bindgen]
@@ -26,15 +26,14 @@ impl CircuitArtifacts {
     }
 
     #[wasm_bindgen(getter)]
-    pub fn matrices(&self) -> Vec<u8> {
-        self.matrices.clone()
+    pub fn public_inputs(&self) -> usize {
+        self.public_inputs
     }
 }
 
-/// Builds neccessary witness and matrices
-/// for delegated proving.
+/// Builds neccessary witness and public inputs for delegated proving.
 #[wasm_bindgen]
-pub fn build_delegated_proving_inputs(
+pub fn build_witness(
     action_plan: &[u8],
     full_viewing_key: &[u8],
     witness_data: &[u8],
@@ -50,11 +49,11 @@ pub fn build_delegated_proving_inputs(
             .ok()
             .expect("circuit inputs");
 
-    let constraints_and_matrices = generate_and_serialize_circuit(circuit_inputs)?;
+    let circuit_synthesis = generate_and_serialize_circuit(circuit_inputs)?;
 
     Ok(CircuitArtifacts {
-        witness: constraints_and_matrices.0,
-        matrices: constraints_and_matrices.1,
+        witness: circuit_synthesis.0,
+        public_inputs: circuit_synthesis.1,
     })
 }
 

@@ -15,13 +15,17 @@ import { ConnectError } from '@connectrpc/connect';
 
 import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
+type BuildMode = 'client' | 'delegated';
+
+// Generalized builder with client and delegated proving modes.
 export const optimisticBuild = async function* (
   transactionPlan: TransactionPlan,
   witnessData: WitnessData,
   authorizationRequest: PromiseLike<AuthorizationData>,
   fvk: FullViewingKey,
+  mode: BuildMode,
 ) {
-  // a promise that rejects if auth denies. raced with build tasks to cancel.
+  // A promise that rejects if auth denies. raced with build tasks to cancel.
   // if we raced auth directly, approval would complete the race.
   const cancel = new Promise<never>(
     (_, reject) =>
@@ -30,69 +34,48 @@ export const optimisticBuild = async function* (
       ),
   );
 
-  // kick off the parallel actions build
-  const offscreenTasks = offscreenClient.buildActions(transactionPlan, witnessData, fvk, cancel);
+  if (mode === 'client') {
+    const offscreenTasks = offscreenClient.buildActions(transactionPlan, witnessData, fvk, cancel);
 
-  // status updates
-  yield* progressStream(offscreenTasks, cancel);
+    yield* progressStream(offscreenTasks, cancel);
 
-  // final build is synchronous
-  const transaction: Transaction = buildParallel(
-    await Promise.all(offscreenTasks),
-    transactionPlan,
-    witnessData,
-    await authorizationRequest,
-  );
+    // Final client-side build is synchronous
+    const transaction: Transaction = buildParallel(
+      await Promise.all(offscreenTasks),
+      transactionPlan,
+      witnessData,
+      await authorizationRequest,
+    );
 
-  yield {
-    status: {
-      case: 'complete',
-      value: { transaction },
-    },
-    // TODO: satisfies type parameter?
-  } satisfies PartialMessage<AuthorizeAndBuildResponse | WitnessAndBuildResponse>;
-};
+    yield {
+      status: {
+        case: 'complete',
+        value: { transaction },
+      },
+    } satisfies PartialMessage<AuthorizeAndBuildResponse | WitnessAndBuildResponse>;
 
-export const optimsiticDelegatedBuild = async function* (
-  transactionPlan: TransactionPlan,
-  witnessData: WitnessData,
-  authorizationRequest: PromiseLike<AuthorizationData>,
-  fvk: FullViewingKey,
-) {
-  console.log('entered optimsiticDelegatedBuild!');
+    return undefined;
+  } else {
+    const offscreenTasks = offscreenClient.buildCircuitInputs(
+      transactionPlan,
+      witnessData,
+      fvk,
+      cancel,
+    );
 
-  // a promise that rejects if auth denies. raced with build tasks to cancel.
-  // if we raced auth directly, approval would complete the race.
-  const cancel = new Promise<never>(
-    (_, reject) =>
-      void Promise.resolve(authorizationRequest).catch((r: unknown) =>
-        reject(ConnectError.from(r)),
-      ),
-  );
+    yield* progressStream(offscreenTasks, cancel);
 
-  // kick off the parallel actions build
-  const offscreenTasks = offscreenClient.buildDelegatedProvingInputs(
-    transactionPlan,
-    witnessData,
-    fvk,
-    cancel,
-  );
+    const completedTasks = await Promise.all(offscreenTasks);
 
-  // status updates
-  yield* progressStream(offscreenTasks, cancel);
+    yield {
+      status: {
+        case: 'complete',
+        value: {},
+      },
+    } satisfies PartialMessage<AuthorizeAndBuildResponse | WitnessAndBuildResponse>;
 
-  const completedTasks = await Promise.all(offscreenTasks);
-  console.log('Completed offscreen tasks results:', completedTasks);
-
-  yield {
-    status: {
-      case: 'complete',
-      value: {},
-    },
-    // TODO: satisfies type parameter?
-  } satisfies PartialMessage<AuthorizeAndBuildResponse | WitnessAndBuildResponse>;
-
-  return completedTasks
+    return completedTasks;
+  }
 };
 
 const progressStream = async function* <T>(tasks: PromiseLike<T>[], cancel: PromiseLike<never>) {
@@ -111,7 +94,6 @@ const progressStream = async function* <T>(tasks: PromiseLike<T>[], cancel: Prom
         // +1 to represent the final build step, which we aren't handling here
         value: { progress: (tasks.length - tasksRemaining.length) / (tasks.length + 1) },
       },
-      // TODO: satisfies type parameter?
     } satisfies PartialMessage<AuthorizeAndBuildResponse | WitnessAndBuildResponse>;
   }
 };

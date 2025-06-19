@@ -52,6 +52,7 @@
     "@repo/mock-chrome": "workspace:*",
     "@repo/tailwind-config": "workspace:*",
     "@storybook/react-vite": "^8.4.2",
+    "@taceo/proof-api-client": "file:../proof-client/js/taceo-proof-api-client",
     "@testing-library/jest-dom": "^6.4.5",
     "@testing-library/react": "^15.0.7",
     "@tsconfig/strictest": "2.0.5",
@@ -89,7 +90,6 @@
     "vite-plugin-svgr": "^4.2.0",
     "vite-plugin-top-level-await": "^1.4.1",
     "vite-plugin-wasm": "^3.3.0",
-    "vitest": "^1.6.0",
-    "@taceo/proof-api-client": "file:../proof-client/js/taceo-proof-api-client"
+    "vitest": "^1.6.0"
   }
 }

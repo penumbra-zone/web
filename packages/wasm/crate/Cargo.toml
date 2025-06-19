@@ -14,22 +14,22 @@ default = ["console_error_panic_hook"]
 mock-database = []
 
 [dependencies]
-penumbra-auction = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "taceo-integration", package = "penumbra-sdk-auction", default-features = false }
-penumbra-asset = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "taceo-integration", package = "penumbra-sdk-asset" }
-penumbra-compact-block = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "taceo-integration", package = "penumbra-sdk-compact-block", default-features = false }
-penumbra-dex = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "taceo-integration", package = "penumbra-sdk-dex", default-features = false }
-penumbra-fee = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "taceo-integration", package = "penumbra-sdk-fee", default-features = false }
-penumbra-governance = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "taceo-integration", package = "penumbra-sdk-governance", default-features = false }
-penumbra-keys = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "taceo-integration", package = "penumbra-sdk-keys" }
-penumbra-num = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "taceo-integration", package = "penumbra-sdk-num" }
-penumbra-proof-params = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "taceo-integration", package = "penumbra-sdk-proof-params", default-features = false }
-penumbra-proto = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "taceo-integration", package = "penumbra-sdk-proto", default-features = false }
-penumbra-sct = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "taceo-integration", package = "penumbra-sdk-sct", default-features = false }
-penumbra-shielded-pool = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "taceo-integration", package = "penumbra-sdk-shielded-pool", default-features = false }
-penumbra-stake = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "taceo-integration", package = "penumbra-sdk-stake", default-features = false }
-penumbra-tct = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "taceo-integration", package = "penumbra-sdk-tct" }
-penumbra-transaction = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "taceo-integration", package = "penumbra-sdk-transaction", default-features = false }
-penumbra-funding = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "taceo-integration", package = "penumbra-sdk-funding", default-features = false }
+penumbra-auction = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "delegated-proving-support", package = "penumbra-sdk-auction", default-features = false }
+penumbra-asset = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "delegated-proving-support", package = "penumbra-sdk-asset" }
+penumbra-compact-block = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "delegated-proving-support", package = "penumbra-sdk-compact-block", default-features = false }
+penumbra-dex = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "delegated-proving-support", package = "penumbra-sdk-dex", default-features = false }
+penumbra-fee = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "delegated-proving-support", package = "penumbra-sdk-fee", default-features = false }
+penumbra-governance = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "delegated-proving-support", package = "penumbra-sdk-governance", default-features = false }
+penumbra-keys = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "delegated-proving-support", package = "penumbra-sdk-keys" }
+penumbra-num = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "delegated-proving-support", package = "penumbra-sdk-num" }
+penumbra-proof-params = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "delegated-proving-support", package = "penumbra-sdk-proof-params", default-features = false }
+penumbra-proto = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "delegated-proving-support", package = "penumbra-sdk-proto", default-features = false }
+penumbra-sct = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "delegated-proving-support", package = "penumbra-sdk-sct", default-features = false }
+penumbra-shielded-pool = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "delegated-proving-support", package = "penumbra-sdk-shielded-pool", default-features = false }
+penumbra-stake = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "delegated-proving-support", package = "penumbra-sdk-stake", default-features = false }
+penumbra-tct = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "delegated-proving-support", package = "penumbra-sdk-tct" }
+penumbra-transaction = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "delegated-proving-support", package = "penumbra-sdk-transaction", default-features = false }
+penumbra-funding = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "delegated-proving-support", package = "penumbra-sdk-funding", default-features = false }
 
 anyhow = "1.0.89"
 ark-ff = { version = "0.4.2", features = ["std"] }

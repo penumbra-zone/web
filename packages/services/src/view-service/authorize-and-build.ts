@@ -1,18 +1,16 @@
 import type { Impl } from './index.js';
 import { servicesCtx } from '../ctx/prax.js';
-import { optimsiticDelegatedBuild } from './util/build-tx.js';
 import { custodyAuthorize } from './util/custody-authorize.js';
 import { getWitness } from '@penumbra-zone/wasm/build';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { fvkCtx } from '../ctx/full-viewing-key.js';
-import { delegateProof } from '../delegated-proving.js';
+import { scheduleDelegatedProof } from '../delegated-proving.js';
+import { optimisticBuild } from './util/build-tx.js';
 
 export const authorizeAndBuild: Impl['authorizeAndBuild'] = async function* (
   { transactionPlan },
   ctx,
 ) {
-  console.log('entered authorizeAndBuild!');
-
   const services = await ctx.values.get(servicesCtx)();
   if (!transactionPlan) {
     throw new ConnectError('No tx plan in request', Code.InvalidArgument);
@@ -24,33 +22,21 @@ export const authorizeAndBuild: Impl['authorizeAndBuild'] = async function* (
   const sct = await indexedDb.getStateCommitmentTree();
   const witnessData = getWitness(transactionPlan, sct);
 
-  const startTime = performance.now();
-
-  let completedTasks = yield* optimsiticDelegatedBuild(
+  // 1. Build witnesses for every action in the plan
+  let initialTasks = yield* optimisticBuild(
     transactionPlan,
     witnessData,
     custodyAuthorize(ctx, transactionPlan),
     await fvk(),
+    'delegated',
   );
 
-  const finalTime = performance.now();
-  const totalDuration = finalTime - startTime;
+  const witnesses = initialTasks!.map(task => task.witness);
+  const public_inputs = initialTasks!.map(task => task.public_inputs);
 
-  console.log('optimsiticDelegatedBuild completed', {
-    totalDurationMs: totalDuration,
-    startTime,
-    endTime: finalTime,
-  });
+  // 2. Kick off delegated (remote) proof generation
+  await scheduleDelegatedProof(witnesses, public_inputs);
 
-  console.log("completedTasks: ", completedTasks)
-
-  const witnesses = completedTasks.map(task => task.witness);
-  await delegateProof(witnesses);
-
-  // yield* optimisticBuild(
-  //   transactionPlan,
-  //   witnessData,
-  //   custodyAuthorize(ctx, transactionPlan),
-  //   await fvk(),
-  // );
+  // 3. (todo) instead of awaiting the remote proof, launch a local `optimisticBuild`
+  // in parallel and race the two promises, keeping whichever proof finishes first.
 };
