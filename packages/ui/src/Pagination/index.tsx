@@ -166,6 +166,16 @@ export const Pagination = ({
     onChange(value + 1 >= pages ? pages : value + 1);
   };
 
+  const onChangeValue = (newValue: number) => {
+    if (newValue < 1) {
+      onChange(1);
+    } else if (newValue > pages) {
+      onChange(pages);
+    } else {
+      onChange(newValue);
+    }
+  };
+
   const onSelect: ChangeEventHandler<HTMLSelectElement> = event => {
     onLimitChange?.(parseInt(event.target.value));
   };
@@ -209,7 +219,7 @@ export const Pagination = ({
                 key={index}
                 value={key}
                 active={value === key}
-                onClick={() => typeof key === 'number' && onChange(key)}
+                onClick={onChangeValue}
               />
             ))}
           </div>
