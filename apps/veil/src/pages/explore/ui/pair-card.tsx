@@ -15,7 +15,7 @@ import { PreviewChart } from './preview-chart';
 import { SummaryWithPrices } from '@/shared/api/server/summary';
 import { useGetMetadata } from '@/shared/api/assets';
 import { toValueView } from '@/shared/utils/value-view';
-import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
+import { convertPriceToDisplay } from '@/shared/math/price';
 
 const getTextSign = (change: number): ReactNode => {
   if (change > 0) {
@@ -85,10 +85,7 @@ export const PairCard = ({ summary }: PairCardProps) => {
         <>
           <Text color='text.primary'>
             {round({
-              value:
-                summary.price *
-                10 **
-                  (getDisplayDenomExponent(startMetadata) - getDisplayDenomExponent(endMetadata)),
+              value: convertPriceToDisplay(summary.price, startMetadata, endMetadata),
               decimals: 6,
             })}
           </Text>

@@ -5,16 +5,20 @@ import { AssetId, Value } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/a
 import { sql } from 'kysely';
 import { indexingAsset } from './indexing-asset';
 import { pnum } from '@penumbra-zone/types/pnum';
-import { serialize, Serialized } from '@/shared/utils/serializer';
+import { deserialize, serialize, Serialized } from '@/shared/utils/serializer';
 import { fetchRegistry } from '../fetch-registry';
 import { getClientSideEnv } from '../env/getClientSideEnv';
 import { Registry } from '@penumbra-labs/registry';
 import { compareAssetId } from '@/shared/math/position';
+import { DurationWindow } from '@/shared/utils/duration';
 
 export interface Summary {
   price: number;
+  high: number;
+  low: number;
   liquidity: Value;
   volume: Value;
+  priceDelta: number;
   priceChangePercent: number;
 }
 
@@ -53,14 +57,10 @@ function orderedCorrectly(registry: Registry, start: AssetId, end: AssetId): boo
   return false;
 }
 
-/** Fetch summaries for all pairs over the past day. */
-export async function fetchDaySummaries(): Promise<Serialized<SummaryWithPrices[]>> {
-  // Kick off the fetching of the indexing asset.
-  const indexingAssetP = indexingAsset();
-  const registryP = fetchRegistry(getClientSideEnv().PENUMBRA_CHAIN_ID);
-  const data = await pindexerDb
+function basicQuery(window: DurationWindow) {
+  return pindexerDb
     .with('summary', db =>
-      db.selectFrom('dex_ex_pairs_summary').selectAll().where('the_window', '=', '1d'),
+      db.selectFrom('dex_ex_pairs_summary').selectAll().where('the_window', '=', window),
     )
     .with('prices', db =>
       db
@@ -132,7 +132,44 @@ export async function fetchDaySummaries(): Promise<Serialized<SummaryWithPrices[
       'recent_dates',
       'd.price',
       'd.price_then',
-    ])
+      'd.high',
+      'd.low',
+    ]);
+}
+
+export async function fetchSummary(
+  startAsset: Serialized<AssetId>,
+  endAsset: Serialized<AssetId>,
+  theWindow: DurationWindow,
+): Promise<Serialized<Summary>> {
+  const start = deserialize<AssetId>(startAsset);
+  const end = deserialize<AssetId>(endAsset);
+  const indexingAssetP = indexingAsset();
+  const data = await basicQuery(theWindow)
+    .where('d.asset_start', '=', Buffer.from(start.inner))
+    .where('d.asset_end', '=', Buffer.from(end.inner))
+    .executeTakeFirstOrThrow();
+  const theIndexingAsset = await indexingAssetP;
+  return serialize({
+    liquidity: new Value({
+      amount: pnum(data.liquidity ?? 0.0).toAmount(),
+      assetId: theIndexingAsset,
+    }),
+    volume: new Value({ amount: pnum(data.volume ?? 0.0).toAmount(), assetId: theIndexingAsset }),
+    price: data.price,
+    priceDelta: data.price - data.price_then,
+    priceChangePercent: 100 * (data.price / data.price_then - 1.0),
+    high: data.high,
+    low: data.low,
+  });
+}
+
+/** Fetch summaries for all pairs over the past day. */
+export async function fetchDaySummaries(): Promise<Serialized<SummaryWithPrices[]>> {
+  // Kick off the fetching of the indexing asset.
+  const indexingAssetP = indexingAsset();
+  const registryP = fetchRegistry(getClientSideEnv().PENUMBRA_CHAIN_ID);
+  const data = await basicQuery('1d')
     .orderBy('liquidity', 'desc')
     .orderBy('volume', 'desc')
     .execute();
@@ -150,6 +187,7 @@ export async function fetchDaySummaries(): Promise<Serialized<SummaryWithPrices[
         volume: new Value({ amount: pnum(x.volume ?? 0.0).toAmount(), assetId: theIndexingAsset }),
         price: x.price,
         priceChangePercent: 100 * (x.price / x.price_then - 1.0),
+        priceDelta: x.price - x.price_then,
         recentPrices: (x.recent_prices ?? []).flatMap((p, i) => {
           const startTime = (x.recent_dates ?? [])[i];
           if (!startTime) {
@@ -157,6 +195,8 @@ export async function fetchDaySummaries(): Promise<Serialized<SummaryWithPrices[
           }
           return [[startTime, p] as [Date, number]];
         }),
+        high: x.high,
+        low: x.low,
       }))
       .filter(x => orderedCorrectly(registry, x.start, x.end)),
   );
