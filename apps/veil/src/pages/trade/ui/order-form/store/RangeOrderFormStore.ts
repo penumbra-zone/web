@@ -1,5 +1,9 @@
 import { AssetInfo } from '@/pages/trade/model/AssetInfo';
-import { rangeLiquidityPositions } from '@/shared/math/position';
+import {
+  LiquidityDistributionShape,
+  PositionedLiquidity,
+  rangeLiquidityPositions,
+} from '@/shared/math/position';
 import { parseNumber } from '@/shared/utils/num';
 import { Position } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { pnum } from '@penumbra-zone/types/pnum';
@@ -75,8 +79,11 @@ export class RangeOrderFormStore {
   private _positionCountInput = '10';
   private _positionCountSlider = 10;
   marketPrice = 1;
+  _liquidityShape: LiquidityDistributionShape = LiquidityDistributionShape.FLAT;
 
   constructor() {
+    this._liquidityShape = LiquidityDistributionShape.FLAT;
+
     makeAutoObservable(this);
   }
 
@@ -184,7 +191,7 @@ export class RangeOrderFormStore {
     return parseNumber(this._positionCountInput);
   }
 
-  get plan(): Position[] | undefined {
+  get plan(): PositionedLiquidity[] | undefined {
     if (
       !this._baseAsset ||
       !this._quoteAsset ||
@@ -204,6 +211,7 @@ export class RangeOrderFormStore {
       marketPrice: this.marketPrice,
       feeBps: this.feeTierPercent * 100,
       positions: this.positionCount,
+      distributionShape: this._liquidityShape,
     });
   }
 
@@ -213,7 +221,9 @@ export class RangeOrderFormStore {
     if (!plan || !baseAsset) {
       return undefined;
     }
-    return baseAsset.formatDisplayAmount(extractAmount(plan, baseAsset));
+    const positions: Position[] = plan.map(p => p.position);
+
+    return baseAsset.formatDisplayAmount(extractAmount(positions, baseAsset));
   }
 
   get quoteAssetAmount(): string | undefined {
@@ -222,7 +232,9 @@ export class RangeOrderFormStore {
     if (!plan || !quoteAsset) {
       return undefined;
     }
-    return quoteAsset.formatDisplayAmount(extractAmount(plan, quoteAsset));
+    const positions: Position[] = plan.map(p => p.position);
+
+    return quoteAsset.formatDisplayAmount(extractAmount(positions, quoteAsset));
   }
 
   setAssets(base: AssetInfo, quote: AssetInfo, resetInputs = false) {
