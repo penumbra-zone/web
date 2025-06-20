@@ -164,6 +164,17 @@ export enum LiquidityDistributionShape {
   INVERTED_PYRAMID = 'INVERTED_PYRAMID',
 }
 
+/**
+ * Defines associative numeric encoding of `LiquidityDistributionShape` representing the strategy tag
+ */
+export enum LiquidityDistributionStrategy {
+  SKIP = 1,
+  ARBITRARY = 2,
+  FLAT = 3,
+  PYRAMID = 4,
+  INVERTED_PYRAMID = 5,
+}
+
 interface SimpleLiquidityPlan {
   baseAsset: Asset;
   quoteAsset: Asset;
