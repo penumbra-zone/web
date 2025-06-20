@@ -413,9 +413,9 @@ pub async fn plan_transaction_inner<Db: Database>(
         actions_list.push(ActionPlan::Ics20Withdrawal(ics20_withdrawal.try_into()?));
     }
 
-    // Note: during action creation, a convinience method exists that generates the `PositionMetadatakey`
+    // Note: during action creation, a convenience method is invoked that generates the `PositionMetadatakey`
     // derived from the outgoing viewing key (OVK), and encrypt the plaintext `PositionMetadata`
-    // with the PositionMetadatakey.
+    // with the `PositionMetadatakey`.
     for tpr::PositionOpen {
         position,
         position_meta,
