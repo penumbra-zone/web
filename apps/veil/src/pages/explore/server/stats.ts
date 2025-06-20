@@ -1,5 +1,6 @@
 // The code in this file will run on the server.
 'use server';
+import { indexingAsset } from '@/shared/api/server/indexing-asset';
 import { pindexerDb } from '@/shared/database/client';
 import { serialize, Serialized } from '@/shared/utils/serializer';
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
@@ -31,14 +32,6 @@ export interface Stats {
   largestTradingPairByVolume: { pair: DirectedTradingPair; volume: Amount };
   /** The pair with the largest move in price. */
   topPriceMover: { pair: DirectedTradingPair; changePercent: number };
-}
-
-async function indexingAsset(): Promise<AssetId> {
-  const { quote_asset_id } = await pindexerDb
-    .selectFrom('dex_ex_metadata')
-    .select('quote_asset_id')
-    .executeTakeFirstOrThrow();
-  return new AssetId({ inner: quote_asset_id });
 }
 
 export async function fetchStats(): Promise<Serialized<Stats>> {

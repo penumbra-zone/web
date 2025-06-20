@@ -13,6 +13,7 @@ import {
   PositionId,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { Address } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 
 interface SerializedProto {
   proto: string;
@@ -30,7 +31,7 @@ export type Serialized<T> =
         : T;
 
 /** Serializes an object with Protobuf values, turning them into `JsonValue` */
-export const serialize = <VAL>(value: VAL): Serialized<VAL> => {
+export const serialize = <VAL,>(value: VAL): Serialized<VAL> => {
   if (typeof value !== 'object' || value === null) {
     return value as Serialized<VAL>;
   }
@@ -68,10 +69,11 @@ const ProtosByType = {
   'penumbra.core.asset.v1.Metadata': Metadata,
   'penumbra.core.asset.v1.Value': Value,
   'penumbra.core.asset.v1.AssetId': AssetId,
-  'penumbra.core.keys.v1.Address': Address,
   'penumbra.core.component.dex.v1.PositionId': PositionId,
   'penumbra.core.component.dex.v1.Position': Position,
   'penumbra.core.component.dex.v1.DirectedTradingPair': DirectedTradingPair,
+  'penumbra.core.keys.v1.Address': Address,
+  'penumbra.core.num.v1.Amount': Amount,
 } as const;
 
 const deserializeProto = (value: SerializedProto): Message<any> => {
@@ -89,7 +91,7 @@ const isSerializedProto = (value: unknown): value is SerializedProto => {
   return !!(value as SerializedProto | undefined)?.proto;
 };
 
-export const deserialize = <VAL>(value: Serialized<VAL>): VAL => {
+export const deserialize = <VAL,>(value: Serialized<VAL>): VAL => {
   if (typeof value !== 'object' || value === null) {
     return value as VAL;
   }
