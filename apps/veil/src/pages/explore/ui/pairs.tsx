@@ -16,21 +16,27 @@ interface ExplorePairsProps {
 }
 
 export const ExplorePairs = ({ summaries }: ExplorePairsProps) => {
-  const deserialized = useMemo(() => deserialize<SummaryWithPrices[]>(summaries), [summaries]);
-  const [rawSearch, setSearch] = useState('');
   const getMetadata = useGetMetadata();
-  const search = useDebounce(rawSearch, 400);
-  const filteredSummaries = !search
-    ? deserialized
-    : deserialized.filter(x => {
-        if (getMetadata(x.start)?.symbol === search) {
-          return true;
-        }
-        if (getMetadata(x.end)?.symbol === search) {
-          return true;
-        }
-        return false;
-      });
+  const augmentedSummaries = useMemo(() => {
+    const deserialized = deserialize<SummaryWithPrices[]>(summaries);
+    const out: [SummaryWithPrices, string, string][] = deserialized.map(x => [
+      x,
+      getMetadata(x.start)?.symbol?.toUpperCase() ?? '',
+      getMetadata(x.end)?.symbol?.toUpperCase() ?? '',
+    ]);
+    return out;
+  }, [summaries]);
+  const [rawSearch, setSearch] = useState('');
+  const search = useDebounce(rawSearch, 200);
+  const filteredSummaries = useMemo(() => {
+    if (!search) {
+      return augmentedSummaries.map(x => x[0]);
+    }
+    const target = search.toUpperCase();
+    return augmentedSummaries
+      .filter(x => x[1].includes(target) || x[2].includes(target))
+      .map(x => x[0]);
+  }, [augmentedSummaries, search]);
 
   return (
     <div className='w-full flex flex-col gap-4'>
@@ -39,7 +45,7 @@ export const ExplorePairs = ({ summaries }: ExplorePairsProps) => {
           Trading Pairs
         </Text>
         <TextInput
-          value={search}
+          value={rawSearch}
           placeholder='Search pair'
           startAdornment={<Icon size='md' IconComponent={Search} />}
           onChange={setSearch}
