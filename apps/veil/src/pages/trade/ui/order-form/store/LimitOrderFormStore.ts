@@ -1,4 +1,3 @@
-import { Position } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { PriceLinkedInputs } from './PriceLinkedInputs';
 import {
   limitOrderPosition,
