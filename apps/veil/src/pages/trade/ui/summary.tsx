@@ -7,8 +7,10 @@ import { useSummary } from '../api/use-summary';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { round } from '@penumbra-zone/types/round';
 import { Density } from '@penumbra-zone/ui/Density';
-import { SummaryData } from '@/shared/api/server/summary/types.ts';
 import { BlockchainError } from '@/shared/ui/blockchain-error';
+import { useGetMetadata } from '@/shared/api/assets';
+import { convertPriceToDisplay } from '@/shared/math/price';
+import { toValueView } from '@/shared/utils/value-view';
 
 const SummaryCard = ({
   title,
@@ -45,7 +47,8 @@ const SummaryCard = ({
 };
 
 export const Summary = () => {
-  const { data, isLoading, error } = useSummary('1d');
+  const { data, isPending: isLoading, error } = useSummary('1d');
+  const getMetadata = useGetMetadata();
 
   if (error) {
     return (
@@ -56,27 +59,25 @@ export const Summary = () => {
   }
 
   return (
-    <div className='flex flex-wrap items-center gap-x-4 gap-y-2'>
+    <div className='flex flex-wrap items-center gap-x-4 gap-y-2 text-text-primary'>
       <SummaryCard title='Last price' loading={isLoading}>
         <Text detail color='text.primary'>
-          {data && 'price' in data ? round({ value: data.price, decimals: 6 }) : '-'}
+          {data ? round({ value: data.price, decimals: 6 }) : '-'}
         </Text>
       </SummaryCard>
       <SummaryCard title='24h Change' loading={isLoading}>
-        {data && 'noData' in data && (
-          <Text detail color='text.primary'>
-            -
-          </Text>
-        )}
-        {data && 'change' in data && (
-          <div className={cn('flex items-center gap-1', getColor(data, false))}>
-            <Text detail>{round({ value: data.change.value, decimals: 6 })}</Text>
+        {data && (
+          <div className={cn('flex items-center gap-1', getColor(data.priceDelta, false))}>
+            <Text detail>{round({ value: data.priceDelta, decimals: 6 })}</Text>
             <span
-              className={cn('flex h-4 px-1 rounded-full text-success-dark', getColor(data, true))}
+              className={cn(
+                'flex h-4 px-1 rounded-full text-success-dark',
+                getColor(data.priceChangePercent, true),
+              )}
             >
               <Text detail>
-                {getTextSign(data)}
-                {data.change.percent}%
+                {getTextSign(data.priceChangePercent)}
+                {data.priceChangePercent.toFixed(2)}%
               </Text>
             </span>
           </div>
@@ -84,18 +85,26 @@ export const Summary = () => {
       </SummaryCard>
       <SummaryCard title='24h High' loading={isLoading}>
         <Text detail color='text.primary'>
-          {data && 'high' in data ? round({ value: data.high, decimals: 6 }) : '-'}
+          {data
+            ? round({ value: convertPriceToDisplay(data.high, data.start, data.end), decimals: 6 })
+            : '-'}
         </Text>
       </SummaryCard>
       <SummaryCard title='24h Low' loading={isLoading}>
         <Text detail color='text.primary'>
-          {data && 'low' in data ? round({ value: data.low, decimals: 6 }) : '-'}
+          {data
+            ? round({ value: convertPriceToDisplay(data.low, data.start, data.end), decimals: 6 })
+            : '-'}
         </Text>
       </SummaryCard>
       <SummaryCard title='24h Volume' loading={isLoading}>
-        {data && 'directVolume' in data ? (
+        {data ? (
           <Density compact>
-            <ValueViewComponent valueView={data.directVolume} context='table' abbreviate />
+            <ValueViewComponent
+              valueView={toValueView({ value: data.volume, getMetadata })}
+              context='table'
+              abbreviate
+            />
           </Density>
         ) : (
           <Text detail color='text.primary'>
@@ -107,21 +116,21 @@ export const Summary = () => {
   );
 };
 
-const getTextSign = (res: SummaryData) => {
-  if (res.change.sign === 'positive') {
+const getTextSign = (x: number) => {
+  if (x > 0.0) {
     return '+';
   }
-  if (res.change.sign === 'negative') {
+  if (x < 0.0) {
     return '-';
   }
   return '';
 };
 
-const getColor = (res: SummaryData, isBg = false): string => {
-  if (res.change.sign === 'positive') {
+const getColor = (x: number, isBg = false): string => {
+  if (x > 0.0) {
     return isBg ? 'bg-success-light' : 'text-success-light';
   }
-  if (res.change.sign === 'negative') {
+  if (x < 0.0) {
     return isBg ? 'bg-destructive-light' : 'text-destructive-light';
   }
   return isBg ? 'bg-neutral-light' : 'text-neutral-light';

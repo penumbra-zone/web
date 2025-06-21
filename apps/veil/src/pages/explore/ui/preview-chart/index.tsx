@@ -3,24 +3,24 @@ import { adaptData, PreviewChartAdapterOptions } from './adapter';
 import { useId } from 'react';
 
 export interface PreviewChartProps extends PreviewChartAdapterOptions {
-  sign: 'positive' | 'negative' | 'neutral';
+  sign: number;
 }
 
 const getGradientColor = (sign: PreviewChartProps['sign']) => {
-  if (sign === 'positive') {
+  if (sign > 0.0) {
     return theme.color.success.main;
   }
-  if (sign === 'negative') {
+  if (sign < 0.0) {
     return theme.color.destructive.main;
   }
   return theme.color.neutral.main;
 };
 
 const getColor = (sign: PreviewChartProps['sign']) => {
-  if (sign === 'positive') {
+  if (sign > 0.0) {
     return theme.color.success.light;
   }
-  if (sign === 'negative') {
+  if (sign < 0.0) {
     return theme.color.destructive.light;
   }
   return theme.color.neutral.light;
