@@ -48,11 +48,11 @@ export const PairCard = ({ summary }: PairCardProps) => {
   const getMetadata = useGetMetadata();
   const startMetadata = getMetadata(summary.start);
   if (!startMetadata) {
-    throw new Error(`unknown asset: ${summary.start}`);
+    throw new Error(`unknown asset: ${summary.start.toJsonString()}`);
   }
   const endMetadata = getMetadata(summary.end);
   if (!endMetadata) {
-    throw new Error(`unknown asset: ${summary.end}`);
+    throw new Error(`unknown asset: ${summary.end.toJsonString()}`);
   }
   const liquidityMetadata = getMetadata(summary.liquidity.assetId);
   const volumeMetadata = getMetadata(summary.volume.assetId);
@@ -82,17 +82,15 @@ export const PairCard = ({ summary }: PairCardProps) => {
       </div>
 
       <div className='h-10 flex flex-col items-end justify-center'>
-        <>
-          <Text color='text.primary'>
-            {round({
-              value: convertPriceToDisplay(summary.price, startMetadata, endMetadata),
-              decimals: 6,
-            })}
-          </Text>
-          <Text detail color='text.secondary'>
-            {endMetadata.symbol}
-          </Text>
-        </>
+        <Text color='text.primary'>
+          {round({
+            value: convertPriceToDisplay(summary.price, startMetadata, endMetadata),
+            decimals: 6,
+          })}
+        </Text>
+        <Text detail color='text.secondary'>
+          {endMetadata.symbol}
+        </Text>
       </div>
 
       <div className='h-10 flex flex-col items-end justify-center'>
@@ -128,13 +126,7 @@ export const PairCard = ({ summary }: PairCardProps) => {
         </div>
 
         <PreviewChart
-          sign={
-            summary.priceChangePercent > 0
-              ? 'positive'
-              : summary.priceChangePercent < 0
-                ? 'negative'
-                : 'neutral'
-          }
+          sign={summary.priceChangePercent}
           values={summary.recentPrices.map(x => x[1])}
           dates={summary.recentPrices.map(x => x[0])}
           intervals={24}

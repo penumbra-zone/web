@@ -178,8 +178,8 @@ export async function fetchDaySummaries(): Promise<Serialized<SummaryWithPrices[
   return serialize(
     data
       .map(x => ({
-        start: new AssetId({ inner: x.asset_start ?? undefined }),
-        end: new AssetId({ inner: x.asset_end ?? undefined }),
+        start: new AssetId({ inner: x.asset_start }),
+        end: new AssetId({ inner: x.asset_end }),
         liquidity: new Value({
           amount: pnum(x.liquidity ?? 0.0).toAmount(),
           assetId: theIndexingAsset,

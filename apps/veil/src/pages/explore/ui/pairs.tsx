@@ -21,11 +21,11 @@ export const ExplorePairs = ({ summaries }: ExplorePairsProps) => {
     const deserialized = deserialize<SummaryWithPrices[]>(summaries);
     const out: [SummaryWithPrices, string, string][] = deserialized.map(x => [
       x,
-      getMetadata(x.start)?.symbol?.toUpperCase() ?? '',
-      getMetadata(x.end)?.symbol?.toUpperCase() ?? '',
+      getMetadata(x.start)?.symbol.toUpperCase() ?? '',
+      getMetadata(x.end)?.symbol.toUpperCase() ?? '',
     ]);
     return out;
-  }, [summaries]);
+  }, [summaries, getMetadata]);
   const [rawSearch, setSearch] = useState('');
   const search = useDebounce(rawSearch, 200);
   const filteredSummaries = useMemo(() => {
