@@ -31,7 +31,7 @@ export type Serialized<T> =
         : T;
 
 /** Serializes an object with Protobuf values, turning them into `JsonValue` */
-export const serialize = <VAL,>(value: VAL): Serialized<VAL> => {
+export const serialize = <VAL>(value: VAL): Serialized<VAL> => {
   if (typeof value !== 'object' || value === null) {
     return value as Serialized<VAL>;
   }
@@ -91,7 +91,7 @@ const isSerializedProto = (value: unknown): value is SerializedProto => {
   return !!(value as SerializedProto | undefined)?.proto;
 };
 
-export const deserialize = <VAL,>(value: Serialized<VAL>): VAL => {
+export const deserialize = <VAL>(value: Serialized<VAL>): VAL => {
   if (typeof value !== 'object' || value === null) {
     return value as VAL;
   }
