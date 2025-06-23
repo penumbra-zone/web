@@ -5,11 +5,8 @@ import {
   PositionId,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 
-const SORT_KEYS = ['executions', 'points'] as const;
-export type LpLeaderboardSortKey = (typeof SORT_KEYS)[number];
-
-const DIRECTIONS = ['asc', 'desc'] as const;
-export type LpLeaderboardSortDirection = (typeof DIRECTIONS)[number];
+export type LpLeaderboardSortKey = 'executions' | 'points';
+export type LpLeaderboardSortDirection = 'asc' | 'desc';
 
 export interface LpLeaderboardRequest extends JsonObject {
   positionIds: string[];

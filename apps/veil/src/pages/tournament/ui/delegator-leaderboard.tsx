@@ -137,7 +137,7 @@ export const DelegatorLeaderboard = observer(() => {
     query: { isLoading },
     data,
     total,
-  } = useDelegatorLeaderboard(page, limit, sortBy.key, sortBy.direction);
+  } = useDelegatorLeaderboard(page, limit, sortBy.key || undefined, sortBy.direction);
 
   const mappedData = useMemo(() => {
     return data?.reduce<{ rows: DelegatorLeaderboardRow[]; padStart: number }>(

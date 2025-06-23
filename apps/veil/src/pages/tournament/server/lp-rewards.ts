@@ -6,11 +6,8 @@ import { PositionId } from '@penumbra-zone/protobuf/penumbra/core/component/dex/
 import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { JsonObject } from '@bufbuild/protobuf';
 
-const SORT_KEYS = ['epoch', 'position_id', 'rewards'] as const;
-export type LpRewardsSortKey = (typeof SORT_KEYS)[number];
-
-const DIRECTIONS = ['asc', 'desc'] as const;
-export type LpRewardsSortDirection = (typeof DIRECTIONS)[number];
+export type LpRewardsSortKey = 'epoch' | 'position_id' | 'rewards';
+export type LpRewardsSortDirection = 'asc' | 'desc';
 
 export interface LpRewardsRequest extends JsonObject {
   positionIds: string[];

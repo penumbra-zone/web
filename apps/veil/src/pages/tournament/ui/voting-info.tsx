@@ -76,11 +76,7 @@ export const useVotingInfo = (defaultEpoch?: number) => {
         case: 'knownAssetId',
         value: {
           amount,
-          metadata: {
-            ...metadata,
-            // notes may come from different validators, so hide the validator-specific symbol
-            symbol: 'delUM',
-          },
+          metadata: Object.assign(metadata, { symbol: 'delUM' }),
         },
       },
     });
