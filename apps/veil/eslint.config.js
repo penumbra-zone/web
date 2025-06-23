@@ -1,7 +1,12 @@
-import eslintConfig from 'configs/eslint';
+import createConfig from '@penumbra-zone/configs/tailwind-eslint';
 import { FlatCompat } from '@eslint/eslintrc';
 import { fileURLToPath } from 'url';
 import path from 'path';
+import { createRequire } from 'node:module';
+
+const eslintConfig = createConfig(
+  createRequire(import.meta.url).resolve('@penumbra-zone/ui/theme.css'),
+);
 
 // mimic CommonJS variables -- not needed if using CommonJS
 const __filename = fileURLToPath(import.meta.url);

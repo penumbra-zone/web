@@ -7,6 +7,7 @@
   "type": "module",
   "exports": {
     "./eslint": "./eslint.config.js",
+    "./tailwind-eslint": "./tailwind-eslint.js",
     "./prettier": "./prettier.config.js"
   },
   "author": "Penumbra Labs",
