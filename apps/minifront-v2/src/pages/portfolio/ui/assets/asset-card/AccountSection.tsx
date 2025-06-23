@@ -1,6 +1,6 @@
 import { AssetListItem } from './AssetListItem';
 import { AccountData } from './types';
-import { AddressViewComponent } from '@penumbra-zone/ui';
+import { AddressViewComponent } from '@penumbra-zone/ui/AddressView';
 import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 
 export interface AccountSectionProps {

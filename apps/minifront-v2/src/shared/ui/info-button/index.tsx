@@ -1,7 +1,8 @@
 import { ReactNode, useState } from 'react';
 import { ShieldQuestion, Coins, Send, ShieldAlert } from 'lucide-react';
-
-import { Button, Dialog, Text } from '@penumbra-zone/ui';
+import { Button } from '@penumbra-zone/ui/Button';
+import { Dialog } from '@penumbra-zone/ui/Dialog';
+import { Text } from '@penumbra-zone/ui/Text';
 
 export interface InfoButtonProps {
   /**

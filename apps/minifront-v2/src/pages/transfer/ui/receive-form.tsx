@@ -4,10 +4,10 @@ import { useTransferStore } from '@/shared/stores/store-context';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { Toggle } from '@penumbra-zone/ui/Toggle';
-import { AccountSelector } from '@penumbra-zone/ui';
+import { AccountSelector } from '@penumbra-zone/ui/AccountSelector';
 import { Popover } from '@penumbra-zone/ui/Popover';
 import { Copy, Info } from 'lucide-react';
-import { Density } from '@penumbra-zone/ui';
+import { Density } from '@penumbra-zone/ui/Density';
 
 export const ReceiveForm = observer(() => {
   const transferStore = useTransferStore();

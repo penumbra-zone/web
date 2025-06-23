@@ -20,10 +20,6 @@
     "dist"
   ],
   "exports": {
-    ".": {
-      "types": "./dist/src/index.d.ts",
-      "default": "./dist/index.js"
-    },
     "./style.css": "./dist/style.css",
     "./*": {
       "types": "./dist/src/*/index.d.ts",

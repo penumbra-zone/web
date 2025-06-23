@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ScaleLinear, scaleLinear } from 'd3-scale';
-import { Text } from '@penumbra-zone/ui';
+import { Text } from '@penumbra-zone/ui/Text';
 import { round } from '@penumbra-zone/types/round';
 import { useWidth } from '@/shared/utils/use-width';
 import { AssetInfo } from '../../model/AssetInfo';

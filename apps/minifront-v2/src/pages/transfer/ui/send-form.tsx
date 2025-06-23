@@ -10,7 +10,7 @@ import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_
 import { FeeTier_Tier } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
 import { Send, AlertCircle, Fuel } from 'lucide-react';
 import { useMemo, useEffect } from 'react';
-import { Density } from '@penumbra-zone/ui';
+import { Density } from '@penumbra-zone/ui/Density';
 
 export const SendForm = observer(() => {
   const transferStore = useTransferStore();

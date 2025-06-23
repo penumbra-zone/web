@@ -1,5 +1,7 @@
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { AssetIcon, Button, Text } from '@penumbra-zone/ui';
+import { AssetIcon } from '@penumbra-zone/ui/AssetIcon';
+import { Button } from '@penumbra-zone/ui/Button';
+import { Text } from '@penumbra-zone/ui/Text';
 import type { AssetData } from './types';
 import { ArrowUpFromDot, ArrowRightLeft, MoonStar } from 'lucide-react';
 import { assetPatterns } from '@penumbra-zone/types/assets';

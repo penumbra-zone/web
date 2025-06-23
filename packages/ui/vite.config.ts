@@ -46,10 +46,7 @@ export default defineConfig({
   build: {
     emptyOutDir: true,
     lib: {
-      entry: {
-        index: resolve(__dirname, 'src/index.ts'),
-        ...getAllEntries(),
-      },
+      entry: getAllEntries(),
       formats: ['es'],
       name: '@penumbra-zone/ui',
     },

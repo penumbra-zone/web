@@ -16,7 +16,7 @@ import { PriceSlider } from './price-slider';
 import { useEffect, useState } from 'react';
 import { Icon } from '@penumbra-zone/ui/Icon';
 import { assetPatterns } from '@penumbra-zone/types/assets';
-import { Density } from '@penumbra-zone/ui';
+import { Density } from '@penumbra-zone/ui/Density';
 
 export const SimpleLiquidityOrderForm = observer(
   ({ parentStore }: { parentStore: OrderFormStore }) => {

@@ -3,7 +3,9 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { XCircle } from 'lucide-react';
-import { Button, Text, Density } from '@penumbra-zone/ui';
+import { Button } from '@penumbra-zone/ui/Button';
+import { Text } from '@penumbra-zone/ui/Text';
+import { Density } from '@penumbra-zone/ui/Density';
 import { AssetsTable } from './ui/assets-table';
 import { WalletConnect } from './ui/wallet-connect';
 import { useRegistry } from '@/shared/api/registry.tsx';

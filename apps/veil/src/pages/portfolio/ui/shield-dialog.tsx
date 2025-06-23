@@ -3,7 +3,7 @@ import { ReactNode } from 'react';
 import { X } from 'lucide-react';
 import Image from 'next/image';
 import { Text } from '@penumbra-zone/ui/Text';
-import { Button } from '@penumbra-zone/ui';
+import { Button } from '@penumbra-zone/ui/Button';
 
 interface ShieldDialogProps {
   isOpen: boolean;
