@@ -1,11 +1,10 @@
-import React from 'react';
 import type { Preview } from '@storybook/react';
 import penumbraTheme from './penumbra-theme';
 import { useState } from 'react';
 import { Density } from '../src/Density';
 import { Tabs } from '../src/Tabs';
 
-import './tailwind.css';
+import '../src/theme/theme.css';
 import '../src/theme/fonts.css';
 import '../src/theme/font-sizes.css';
 import '../src/theme/globals.css';
