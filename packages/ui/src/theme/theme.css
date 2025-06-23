@@ -119,85 +119,85 @@
   --backdrop-blur-xl: 64px;
 
   --background-image-card: linear-gradient(
-      136deg,
-      rgba(250, 250, 250, 0.1) 6.32%,
-      rgba(250, 250, 250, 0.01) 75.55%
+    136deg,
+    rgba(250, 250, 250, 0.1) 6.32%,
+    rgba(250, 250, 250, 0.01) 75.55%
   );
   --background-image-card-gradient: linear-gradient(
-      136deg,
-      rgba(250, 250, 250, 0.1) 6.32%,
-      rgba(250, 250, 250, 0.01) 75.55%
+    136deg,
+    rgba(250, 250, 250, 0.1) 6.32%,
+    rgba(250, 250, 250, 0.01) 75.55%
   );
   --background-image-neutral-radial-gradient: radial-gradient(
-      50% 100% at 50% 100%,
-      rgba(163, 163, 163, 0.35) 0%,
-      rgba(163, 163, 163, 0) 95%
+    50% 100% at 50% 100%,
+    rgba(163, 163, 163, 0.35) 0%,
+    rgba(163, 163, 163, 0) 95%
   );
   --background-image-accent-radial-gradient: radial-gradient(
-      50% 100% at 50% 100%,
-      rgba(186, 77, 20, 0.35) 0%,
-      rgba(186, 77, 20, 0) 95%
+    50% 100% at 50% 100%,
+    rgba(186, 77, 20, 0.35) 0%,
+    rgba(186, 77, 20, 0) 95%
   );
   --background-image-unshield-radial-gradient: radial-gradient(
-      50% 100% at 50% 100%,
-      rgba(112, 82, 121, 0.35) 0%,
-      rgba(112, 82, 121, 0) 95%
+    50% 100% at 50% 100%,
+    rgba(112, 82, 121, 0.35) 0%,
+    rgba(112, 82, 121, 0) 95%
   );
   --background-image-accent-radial-background: radial-gradient(
-      100% 100% at 0% 0%,
-      rgba(244, 156, 67, 0.25) 0%,
-      rgba(244, 156, 67, 0.03) 100%
+    100% 100% at 0% 0%,
+    rgba(244, 156, 67, 0.25) 0%,
+    rgba(244, 156, 67, 0.03) 100%
   );
   --background-image-unshield-radial-background: radial-gradient(
-      100% 100% at 0% 0%,
-      rgba(193, 166, 204, 0.25) 0%,
-      rgba(193, 166, 204, 0.03) 100%
+    100% 100% at 0% 0%,
+    rgba(193, 166, 204, 0.25) 0%,
+    rgba(193, 166, 204, 0.03) 100%
   );
   --background-image-secondary-radial-background: radial-gradient(
-      100% 100% at 0% 0%,
-      rgba(83, 174, 168, 0.25) 0%,
-      rgba(83, 174, 168, 0.03) 100%
+    100% 100% at 0% 0%,
+    rgba(83, 174, 168, 0.25) 0%,
+    rgba(83, 174, 168, 0.03) 100%
   );
   --background-image-caution-radial-background: radial-gradient(
-      100% 100% at 0% 0%,
-      rgba(153, 97, 15, 0.25) 0%,
-      rgba(153, 97, 15, 0.03) 100%
+    100% 100% at 0% 0%,
+    rgba(153, 97, 15, 0.25) 0%,
+    rgba(153, 97, 15, 0.03) 100%
   );
   --background-image-destructive-radial-background: radial-gradient(
-      100% 100% at 0% 0%,
-      rgba(175, 38, 38, 0.25) 0%,
-      rgba(175, 38, 38, 0.03) 100%
+    100% 100% at 0% 0%,
+    rgba(175, 38, 38, 0.25) 0%,
+    rgba(175, 38, 38, 0.03) 100%
   );
   --background-image-button-hover: linear-gradient(
-      0deg,
-      rgba(83, 174, 168, 0.15) 0%,
-      rgba(83, 174, 168, 0.15) 100%
+    0deg,
+    rgba(83, 174, 168, 0.15) 0%,
+    rgba(83, 174, 168, 0.15) 100%
   );
   --background-image-button-disabled: linear-gradient(
-      0deg,
-      rgba(10, 10, 10, 0.8) 0%,
-      rgba(10, 10, 10, 0.8) 100%
+    0deg,
+    rgba(10, 10, 10, 0.8) 0%,
+    rgba(10, 10, 10, 0.8) 100%
   );
   --background-image-progress-loading: linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0) 0%,
-      #fff 50%,
-      rgba(255, 255, 255, 0) 100%
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    #fff 50%,
+    rgba(255, 255, 255, 0) 100%
   );
   --background-image-shimmer: linear-gradient(
-      90deg,
-      rgba(250, 250, 250, 0.05) 0%,
-      rgba(250, 250, 250, 0.1) 100%
+    90deg,
+    rgba(250, 250, 250, 0.05) 0%,
+    rgba(250, 250, 250, 0.1) 100%
   );
   --background-image-gradient-accent-radial: radial-gradient(
-      100% 100% at 0% 0%,
-      rgba(244, 156, 67, 0.25) 0%,
-      rgba(244, 156, 67, 0.03) 100%
+    100% 100% at 0% 0%,
+    rgba(244, 156, 67, 0.25) 0%,
+    rgba(244, 156, 67, 0.03) 100%
   );
   --background-image-gradient-unshield-radial: radial-gradient(
-      100% 100% at 0% 0%,
-      rgba(193, 166, 204, 0.25) 0%,
-      rgba(193, 166, 204, 0.03) 100%
+    100% 100% at 0% 0%,
+    rgba(193, 166, 204, 0.25) 0%,
+    rgba(193, 166, 204, 0.03) 100%
   );
 
   --animate-scale: scale 0.15s ease-out;

@@ -18,7 +18,7 @@ interface ButtonStyleAttributes {
 }
 
 /** Shared styles to use for any `<button />` */
-export const buttonBase = cn('appearance-none border-none text-inherit cursor-pointer p-0');
+export const buttonBase = cn('appearance-none border-none text-inherit cursor-pointer');
 
 export const getFont = ({ density }: ButtonStyleAttributes): string => {
   if (density === 'compact') {

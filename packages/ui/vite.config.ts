@@ -34,10 +34,7 @@ const getAllEntries = (): Record<string, string> => {
 };
 
 export default defineConfig({
-  plugins: [
-    tailwindcss(),
-    dts(),
-  ],
+  plugins: [tailwindcss(), dts()],
   resolve: {
     alias: {
       '@repo/tailwind-config': path.resolve(__dirname, '../', 'tailwind-config'),

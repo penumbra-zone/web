@@ -199,7 +199,8 @@ export const Pagination = ({
       <nav
         className={cn(
           'flex items-center justify-center gap-1 tablet:gap-3',
-          'col-span-2 row-start-2 tablet:col-span-1 tablet:col-start-2 tablet:row-start-1',
+          'col-start-1 col-end-3 row-start-2', // mobile
+          'tablet:col-start-2 tablet:row-start-1', // tablet/desktop
         )}
       >
         <Density compact>

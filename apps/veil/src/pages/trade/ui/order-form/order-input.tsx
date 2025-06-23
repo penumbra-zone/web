@@ -65,7 +65,9 @@ export const OrderInput = ({
           <div className='flex items-center h-6 mr-1'>
             <SpinnerIcon className='animate-spin' />
           </div>
-          <span className='font-default text-text-sm font-normal leading-text-xs'>Estimating...</span>
+          <span className='font-default text-text-sm font-normal leading-text-xs'>
+            Estimating...
+          </span>
         </div>
       ) : (
         <>

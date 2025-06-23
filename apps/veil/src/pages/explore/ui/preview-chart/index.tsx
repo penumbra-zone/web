@@ -86,7 +86,12 @@ export const PreviewChart = (props: PreviewChartProps) => {
 
       <polygon strokeLinecap='round' points={areaPoints} fill={`url(#${gradientId})`} />
 
-      <polyline fill='none' strokeWidth='1.5' style={{ stroke: getColor(sign) }} points={linePoints} />
+      <polyline
+        fill='none'
+        strokeWidth='1.5'
+        style={{ stroke: getColor(sign) }}
+        points={linePoints}
+      />
     </svg>
   );
 };
