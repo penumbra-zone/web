@@ -16,6 +16,7 @@ import { SummaryWithPrices } from '@/shared/api/server/summary';
 import { useGetMetadata } from '@/shared/api/assets';
 import { toValueView } from '@/shared/utils/value-view';
 import { convertPriceToDisplay } from '@/shared/math/price';
+import { getTradePairPath } from '@/shared/const/pages';
 
 const getTextSign = (change: number): ReactNode => {
   if (change > 0) {
@@ -59,7 +60,7 @@ export const PairCard = ({ summary }: PairCardProps) => {
 
   return (
     <Link
-      href={`/trade/${startMetadata.symbol}/${endMetadata.symbol}`}
+      href={getTradePairPath(startMetadata.symbol, endMetadata.symbol)}
       className='grid grid-cols-subgrid col-span-6 p-3 rounded-sm cursor-pointer transition-colors hover:bg-action-hoverOverlay'
     >
       <div className='relative h-10 flex items-center gap-2 text-text-primary'>
