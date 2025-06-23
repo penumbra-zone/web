@@ -11,7 +11,7 @@ import { pnum } from '@penumbra-zone/types/pnum';
 type ToValueViewProps =
   | { amount: number | Amount; metadata: Metadata }
   | { amount: number | Amount; assetId: AssetId }
-  | { value: Value; getMetadata: (asset: AssetId | undefined) => Metadata | undefined };
+  | { value: Value; getMetadata: (asset: AssetId) => Metadata | undefined };
 
 export const toValueView = (props: ToValueViewProps) => {
   if ('metadata' in props) {
@@ -25,7 +25,7 @@ export const toValueView = (props: ToValueViewProps) => {
       },
     });
   } else if ('getMetadata' in props) {
-    const metadata = props.getMetadata(props.value.assetId);
+    const metadata = props.value.assetId ? props.getMetadata(props.value.assetId) : undefined;
     if (metadata) {
       return new ValueView({
         valueView: {
