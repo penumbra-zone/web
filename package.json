@@ -77,7 +77,6 @@
     "playwright": "^1.44.0",
     "prettier": "^3.4.2",
     "syncpack": "^12.3.2",
-    "tailwindcss": "^4.1.10",
     "tailwindcss-animate": "^1.0.7",
     "tsc-watch": "^6.2.0",
     "turbo": "^2.0.12",
