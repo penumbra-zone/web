@@ -21,6 +21,7 @@
   ],
   "exports": {
     "./style.css": "./dist/style.css",
+    "./theme.css": "./src/theme/theme.css",
     "./*": {
       "types": "./dist/src/*/index.d.ts",
       "default": "./dist/src/*/index.js"
@@ -74,8 +75,6 @@
     "@types/react": "19.0.12",
     "@types/react-dom": "19.0.4",
     "@types/tinycolor2": "^1.4.6",
-    "autoprefixer": "^10.4.20",
-    "postcss": "^8.4.49",
     "storybook": "^8.4.2",
     "tailwindcss": "^4.1.10",
     "typescript": "5.5.3",

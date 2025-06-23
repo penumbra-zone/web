@@ -1,6 +1,8 @@
 @import 'tailwindcss';
 
 @theme {
+  --spacing: 4px;
+
   --radius-none: 0px;
   --radius-xs: 4px;
   --radius-sm: 8px;
@@ -68,13 +70,14 @@
   --color-other-tonal-stroke: #fafafa26;
   --color-other-tonal-fill5: #fafafa0d;
   --color-other-tonal-fill10: #fafafa1a;
+  --color-other-tonal-fill15: #fafafa26;
   --color-other-solid-stroke: #171717;
   --color-other-dialog-background: #2263621a;
   --color-other-overlay: #00000080;
   --color-other-orange-outline: #ba4d14d9;
   --color-other-neutral-outline: #404040d9;
 
-  --font-default: Poppins;
+  --font-default: Poppins, sans-serif;
   --font-mono: Iosevka Term, monospace;
   --font-heading: Work Sans;
 
@@ -267,9 +270,4 @@ body {
 
 * {
   box-sizing: border-box;
-}
-
-/* Fix for Prax notifications not showing above dialog backdrops */
-body > section[aria-live='polite'] {
-  z-index: 9999999999999;
 }

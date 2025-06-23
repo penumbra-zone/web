@@ -141,7 +141,7 @@
     "@penumbra-zone/protobuf": "workspace:*",
     "framer-motion": "^11.13.1",
     "lucide-react": "^0.468.0",
-    "postcss": "^8.4.49",
+    "postcss": "^8.5.6",
     "react": "^19.0.0",
     "styled-components": "^6.1.13",
     "tailwindcss": "3.4.17"

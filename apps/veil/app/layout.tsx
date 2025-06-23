@@ -6,8 +6,9 @@ export const dynamic = 'force-dynamic';
 
 import { ReactNode } from 'react';
 
-import './v2.css';
+import '@penumbra-zone/ui/theme.css';
 import '@penumbra-zone/ui/style.css';
+import './v2.css';
 
 import { App } from './app';
 import { fetchJsonRegistryWithGlobals } from '@/shared/api/fetch-registry';
