@@ -37,8 +37,8 @@ export type TableCellProps = TableCellPropType & {
 
 const classesByVariant: Record<TableCellVariant, string> = {
   title: cn('text-text-primary'),
-  heading: cn('text-text-secondary border-b border-b-other-tonal-stroke'),
-  cell: cn('text-text-primary border-b border-b-other-tonal-stroke'),
+  heading: cn('border-b border-b-other-tonal-stroke text-text-secondary'),
+  cell: cn('border-b border-b-other-tonal-stroke text-text-primary'),
   lastCell: cn('text-text-primary'),
   footer: cn('text-text-secondary'),
 };

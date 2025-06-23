@@ -63,11 +63,11 @@ export const WalletBalance = ({
         onClick={onClick}
         className={cn(
           'peer',
-          'flex items-center gap-1 py-1 px-2',
+          'flex items-center gap-1 px-2 py-1',
           'transition-colors duration-150',
-          'border-none rounded-full bg-other-tonal-fill5',
+          'rounded-full border-none bg-other-tonal-fill5',
           'hover:bg-action-hover-overlay',
-          'outline-0 focus:outline-solid focus:bg-other-tonal-fill5 focus:outline-2',
+          'outline-0 focus:bg-other-tonal-fill5 focus:outline-2 focus:outline-solid',
           getOutlineColorByActionType(actionType),
         )}
       >

@@ -60,9 +60,9 @@ export const TransactionSummary = ({
   return (
     <Container
       className={cn(
-        'group w-full px-3 rounded-sm flex items-center gap-2 text-text-primary',
+        'group flex w-full items-center gap-2 rounded-sm px-3 text-text-primary',
         'bg-other-tonal-fill5 transition-colors',
-        onClick && 'hover:bg-action-hover-overlay cursor-pointer',
+        onClick && 'cursor-pointer hover:bg-action-hover-overlay',
         hasMoreThanThreeRows ? 'h-fit py-3' : 'h-[72px]',
       )}
       onClick={onClick}

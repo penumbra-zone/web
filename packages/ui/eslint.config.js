@@ -20,7 +20,14 @@ config.push({
       entryPoint: resolve('./src/theme/theme.css'),
     },
   },
-  rules: eslintPluginBetterTailwindcss.configs['recommended-warn'].rules,
+  rules: {
+    ...eslintPluginBetterTailwindcss.configs['recommended-error'].rules,
+    'better-tailwindcss/enforce-consistent-line-wrapping': 0,
+    'better-tailwindcss/no-unregistered-classes': [
+      'error',
+      { ignore: ['scroll-area-page', 'scroll-area-component'] },
+    ],
+  },
 });
 
 export default config;
