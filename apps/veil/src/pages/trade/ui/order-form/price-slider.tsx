@@ -254,10 +254,10 @@ export const PriceSlider = ({
     <div>
       <div className='flex w-full justify-center gap-1 mb-4'>
         <Text detail color='text.secondary'>
-          1 {quoteAsset?.symbol} =
+          1 {baseAsset?.symbol} =
         </Text>
         <Text detail color='text.primary'>
-          {marketPrice} {baseAsset?.symbol}
+          {marketPrice} {quoteAsset?.symbol}
         </Text>
       </div>
       <div ref={ref} className='relative z-0 h-[98px] w-full border-b border-other-tonalFill10'>
