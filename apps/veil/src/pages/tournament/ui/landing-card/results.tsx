@@ -11,7 +11,7 @@ export interface TournamentResultsProps {
 
 const TournamentResultsAsset = ({ asset }: { asset: MappedGauge }) => {
   return (
-    <div key={asset.asset.symbol} className='flex gap-3 items-center'>
+    <div key={asset.asset.symbol} className='flex items-center gap-3'>
       <VoteAssetIcon asset={asset} />
       <VoteAssetContent asset={asset} />
       <ProvideLiquidityButton symbol={asset.asset.symbol} />
@@ -38,7 +38,7 @@ export const TournamentResults = ({ loading, results }: TournamentResultsProps) 
 
       {loading
         ? new Array(5).fill({}).map((_, index) => (
-            <div key={index} className='w-full h-8 rounded'>
+            <div key={index} className='h-8 w-full rounded'>
               <Skeleton />
             </div>
           ))

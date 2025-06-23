@@ -19,7 +19,7 @@ import {
 
 const Execution = ({ execution: e }: { execution: PositionExecutionVV }) => {
   return (
-    <div className='grid grid-cols-6 items-center mb-4'>
+    <div className='mb-4 grid grid-cols-6 items-center'>
       <div className='col-span-2'>
         <TimeDisplay dateStr={e.time} height={e.height} />
       </div>
@@ -50,7 +50,7 @@ const Execution = ({ execution: e }: { execution: PositionExecutionVV }) => {
                   </Text>
                 </div>
               </div>
-              <div className='flex justify-between items-end gap-2'>
+              <div className='flex items-end justify-between gap-2'>
                 <div className='flex items-center gap-2'>
                   <Text color='text.secondary' small>
                     Routing
@@ -117,7 +117,7 @@ const DataBody = ({
         </div>
       ))}
       {executions.skipped > 0 && (
-        <div className='grid grid-cols-6 items-center mb-4'>
+        <div className='mb-4 grid grid-cols-6 items-center'>
           <div className='col-span-2'></div>
           <div className='col-span-4'>
             <Card>
@@ -139,13 +139,13 @@ const LoadingState = () => {
   return (
     <div className='flex flex-col gap-2'>
       {[...Array<undefined>(skeletonRows)].map((_, index) => (
-        <div key={index} className='grid grid-cols-6 items-center mb-4'>
+        <div key={index} className='mb-4 grid grid-cols-6 items-center'>
           <div className='col-span-2'>
             <div className='flex flex-col gap-1'>
-              <div className='w-24 h-5' aria-hidden='true'>
+              <div className='h-5 w-24' aria-hidden='true'>
                 <Skeleton />
               </div>
-              <div className='w-16 h-4' aria-hidden='true'>
+              <div className='h-4 w-16' aria-hidden='true'>
                 <Skeleton />
               </div>
             </div>
@@ -155,54 +155,54 @@ const LoadingState = () => {
               <div className='flex flex-col gap-4'>
                 <div className='flex items-end gap-8'>
                   <div className='flex flex-col gap-1'>
-                    <div className='w-32 h-6' aria-hidden='true'>
+                    <div className='h-6 w-32' aria-hidden='true'>
                       <Skeleton />
                     </div>
-                    <div className='w-16 h-3' aria-hidden='true'>
-                      <Skeleton />
-                    </div>
-                  </div>
-                  <div className='flex flex-col gap-1'>
-                    <div className='w-32 h-6' aria-hidden='true'>
-                      <Skeleton />
-                    </div>
-                    <div className='w-16 h-3' aria-hidden='true'>
+                    <div className='h-3 w-16' aria-hidden='true'>
                       <Skeleton />
                     </div>
                   </div>
                   <div className='flex flex-col gap-1'>
-                    <div className='w-32 h-6' aria-hidden='true'>
+                    <div className='h-6 w-32' aria-hidden='true'>
                       <Skeleton />
                     </div>
-                    <div className='w-16 h-3' aria-hidden='true'>
+                    <div className='h-3 w-16' aria-hidden='true'>
+                      <Skeleton />
+                    </div>
+                  </div>
+                  <div className='flex flex-col gap-1'>
+                    <div className='h-6 w-32' aria-hidden='true'>
+                      <Skeleton />
+                    </div>
+                    <div className='h-3 w-16' aria-hidden='true'>
                       <Skeleton />
                     </div>
                   </div>
                 </div>
-                <div className='flex justify-between items-end'>
+                <div className='flex items-end justify-between'>
                   <div className='flex items-center gap-2'>
-                    <div className='w-16 h-4' aria-hidden='true'>
+                    <div className='h-4 w-16' aria-hidden='true'>
                       <Skeleton />
                     </div>
-                    <div className='w-8 h-8 rounded-full' aria-hidden='true'>
+                    <div className='h-8 w-8 rounded-full' aria-hidden='true'>
                       <Skeleton />
                     </div>
-                    <div className='w-4 h-4' aria-hidden='true'>
+                    <div className='h-4 w-4' aria-hidden='true'>
                       <Skeleton />
                     </div>
-                    <div className='w-8 h-8 rounded-full' aria-hidden='true'>
+                    <div className='h-8 w-8 rounded-full' aria-hidden='true'>
                       <Skeleton />
                     </div>
                   </div>
                   <div className='flex flex-col items-end gap-1'>
-                    <div className='w-20 h-3' aria-hidden='true'>
+                    <div className='h-3 w-20' aria-hidden='true'>
                       <Skeleton />
                     </div>
                     <div className='flex gap-2'>
-                      <div className='w-32 h-6' aria-hidden='true'>
+                      <div className='h-6 w-32' aria-hidden='true'>
                         <Skeleton />
                       </div>
-                      <div className='w-32 h-6' aria-hidden='true'>
+                      <div className='h-6 w-32' aria-hidden='true'>
                         <Skeleton />
                       </div>
                     </div>

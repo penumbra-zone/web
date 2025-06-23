@@ -7,7 +7,7 @@ export interface BreadcrumbsProps {
 
 export const Breadcrumbs = ({ items }: BreadcrumbsProps) => {
   return (
-    <div className='flex items-center gap-2 flex-wrap overflow-hidden'>
+    <div className='flex flex-wrap items-center gap-2 overflow-hidden'>
       {items.map((item, index) => (
         <Fragment key={index}>
           {index !== 0 && <ChevronRight className='size-6 text-neutral-light' />}

@@ -111,13 +111,13 @@ export const LPLeaderboard = observer(
     return (
       <Card>
         <div className='px-2'>
-          <div className='flex gap-3 items-center mb-4'>
+          <div className='mb-4 flex items-center gap-3'>
             <div className='flex flex-col gap-1'>
               <Text xxl color='text.primary'>
                 LP Leaderboard
                 {showEpoch && !!epoch && (
-                  <div className='desktop:ml-3 inline-flex items-center rounded-sm bg-base-black-alt px-2'>
-                    <div className='text-transparent bg-clip-text bg-[linear-gradient(90deg,rgb(244,156,67),rgb(83,174,168))]'>
+                  <div className='inline-flex items-center rounded-sm bg-base-black-alt px-2 desktop:ml-3'>
+                    <div className='bg-[linear-gradient(90deg,rgb(244,156,67),rgb(83,174,168))] bg-clip-text text-transparent'>
                       <Text xxl>Epoch #{epoch}</Text>
                     </div>
                   </div>
@@ -128,7 +128,7 @@ export const LPLeaderboard = observer(
               </Text>
             </div>
 
-            <div className='min-w-[80px] ml-auto rounded-full overflow-hidden'>
+            <div className='ml-auto min-w-[80px] overflow-hidden rounded-full'>
               <AssetSelector
                 assets={metadataAssets}
                 balances={undefined}
@@ -145,7 +145,7 @@ export const LPLeaderboard = observer(
           ) : (
             <>
               {connected && (
-                <div className='[&>*>*]:w-1/2 mb-4'>
+                <div className='mb-4 [&>*>*]:w-1/2'>
                   <SegmentedControl
                     value={tab}
                     onChange={opt => setTab(opt as 'All LPs' | 'My LPs')}
@@ -166,8 +166,8 @@ export const LPLeaderboard = observer(
                 </div>
               )}
 
-              <div className='grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr] h-auto overflow-auto'>
-                <div className='grid grid-cols-subgrid col-span-6'>
+              <div className='grid h-auto grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr] overflow-auto'>
+                <div className='col-span-6 grid grid-cols-subgrid'>
                   <TableCell heading>Position ID</TableCell>
                   {getTableHeader('executions', 'Execs')}
                   {getTableHeader('points', 'Points')}
@@ -181,7 +181,7 @@ export const LPLeaderboard = observer(
 
                 {isLoading ? (
                   Array.from({ length: limit }).map((_, index) => (
-                    <div className='grid grid-cols-subgrid col-span-6' key={index}>
+                    <div className='col-span-6 grid grid-cols-subgrid' key={index}>
                       <TableCell loading>&nbsp;</TableCell>
                       <TableCell loading>&nbsp;</TableCell>
                       <TableCell loading>&nbsp;</TableCell>
@@ -194,7 +194,7 @@ export const LPLeaderboard = observer(
                     </div>
                   ))
                 ) : (
-                  <div ref={parent} className='contents col-span-6'>
+                  <div ref={parent} className='col-span-6 contents'>
                     {positions?.length ? (
                       positions.map(position => {
                         return (
@@ -202,8 +202,8 @@ export const LPLeaderboard = observer(
                             key={position.positionIdString}
                             href={`/inspect/lp/${position.positionIdString}`}
                             className={cn(
-                              'relative grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr] col-span-6',
-                              'bg-transparent hover:bg-action-hover-overlay transition-colors',
+                              'relative col-span-6 grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr]',
+                              'bg-transparent transition-colors hover:bg-action-hover-overlay',
                               '*:h-auto',
                             )}
                           >
@@ -213,7 +213,7 @@ export const LPLeaderboard = observer(
                                   {position.positionIdString}
                                 </Text>
                                 <span>
-                                  <SquareArrowOutUpRight className='w-4 h-4 text-text-secondary' />
+                                  <SquareArrowOutUpRight className='h-4 w-4 text-text-secondary' />
                                 </span>
                               </div>
                             </TableCell>
@@ -240,7 +240,7 @@ export const LPLeaderboard = observer(
                       {formatAge(position.openingTime)}
                     </TableCell> */}
                             <TableCell cell>
-                              <div className='flex gap-1 flex-col'>
+                              <div className='flex flex-col gap-1'>
                                 <ValueViewComponent
                                   valueView={pnum(position.umVolume).toValueView(umMetadata)}
                                   abbreviate={true}
@@ -256,7 +256,7 @@ export const LPLeaderboard = observer(
                               </div>
                             </TableCell>
                             <TableCell cell>
-                              <div className='flex gap-1 flex-col'>
+                              <div className='flex flex-col gap-1'>
                                 <ValueViewComponent
                                   valueView={pnum(position.umFees).toValueView(umMetadata)}
                                   abbreviate={true}
@@ -281,7 +281,7 @@ export const LPLeaderboard = observer(
                       })
                     ) : (
                       <div className='col-span-6'>
-                        <div className='grid grid-cols-subgrid col-span-4'>
+                        <div className='col-span-4 grid grid-cols-subgrid'>
                           <TableCell cell>
                             <span className='text-sm!'>
                               {tab === Tabs.AllLPs

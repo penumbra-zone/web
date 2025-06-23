@@ -92,8 +92,8 @@ export const DelegatorTotalRewards = observer(() => {
   }, [isTotalZero, expanded]);
 
   return (
-    <section ref={parent} className='p-6 rounded-lg bg-other-tonal-fill5 backdrop-blur-lg'>
-      <div className='flex flex-col desktop:flex-row gap-2 justify-between items-start desktop:items-center'>
+    <section ref={parent} className='rounded-lg bg-other-tonal-fill5 p-6 backdrop-blur-lg'>
+      <div className='flex flex-col items-start justify-between gap-2 desktop:flex-row desktop:items-center'>
         <div className='flex flex-col gap-1'>
           <Text xxl color='text.primary'>
             My Total Tournament Rewards
@@ -104,11 +104,11 @@ export const DelegatorTotalRewards = observer(() => {
         </div>
 
         {!isReady ? (
-          <div className='w-24 h-10'>
+          <div className='h-10 w-24'>
             <Skeleton />
           </div>
         ) : (
-          <div className='flex items-center w-full desktop:w-auto justify-between gap-4 [&_span]:font-mono desktop:[&_span]:text-3xl'>
+          <div className='flex w-full items-center justify-between gap-4 desktop:w-auto desktop:[&_span]:text-3xl [&_span]:font-mono'>
             {rewardView && !isTotalZero ? (
               <Density sparse>
                 <ValueViewComponent valueView={rewardView} priority='tertiary' />
@@ -137,7 +137,7 @@ export const DelegatorTotalRewards = observer(() => {
       </div>
 
       {expanded && isReady && !isTotalZero && (
-        <div className='flex flex-col gap-4 mt-4'>
+        <div className='mt-4 flex flex-col gap-4'>
           <div className='[&_button]:grow'>
             <SegmentedControl value={tab} onChange={value => setTab(value as typeof tab)}>
               <SegmentedControl.Item style='filled' value='lp'>

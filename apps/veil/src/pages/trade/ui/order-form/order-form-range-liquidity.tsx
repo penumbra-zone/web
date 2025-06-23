@@ -37,13 +37,13 @@ export const RangeLiquidityOrderForm = observer(
               denominator={store.quoteAsset?.symbol}
             />
           </div>
-          <div className='w-full flex flex-row flex-wrap items-start justify-between py-1'>
+          <div className='flex w-full flex-row flex-wrap items-start justify-between py-1'>
             <div className='leading-6'>
               <Text small color='text.secondary'>
                 Available Balances
               </Text>
             </div>
-            <div className='flex flex-wrap flex-col items-end'>
+            <div className='flex flex-col flex-wrap items-end'>
               <div>
                 <Text small color='text.primary' whitespace='nowrap'>
                   {store.baseAsset?.formatBalance() ?? `-- ${store.baseAsset?.symbol}`}
@@ -51,7 +51,6 @@ export const RangeLiquidityOrderForm = observer(
               </div>
               <button
                 type='button'
-                className='text-primary'
                 onClick={() => {
                   const target = store.quoteAsset?.balance?.toString();
                   if (target) {

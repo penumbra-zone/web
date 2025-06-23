@@ -158,9 +158,9 @@ export const VotingInfo = observer(({ epoch: defaultEpoch }: VotingInfoProps) =>
       return null;
     }
     return (
-      <div className='flex gap-4 color-text-secondary items-center'>
+      <div className='flex items-center gap-4'>
         <div className='size-10 text-success-light'>
-          <Check className='w-full h-full' />
+          <Check className='h-full w-full' />
         </div>
         <Text variant='small' color='text.secondary'>
           You have already voted in this epoch. Come back next epoch to vote again.
@@ -186,7 +186,7 @@ export const VotingInfo = observer(({ epoch: defaultEpoch }: VotingInfoProps) =>
         <div className='h-8 w-24'>
           <Skeleton />
         </div>
-        <div className='h-12 w-full rounded-sm overflow-hidden'>
+        <div className='h-12 w-full overflow-hidden rounded-sm'>
           <Skeleton />
         </div>
       </div>
@@ -196,9 +196,9 @@ export const VotingInfo = observer(({ epoch: defaultEpoch }: VotingInfoProps) =>
   if (!connected) {
     return (
       <div className='flex flex-col gap-8'>
-        <div className='flex gap-4 color-text-secondary items-center'>
+        <div className='flex items-center gap-4'>
           <div className='size-8 text-text-secondary'>
-            <Wallet2 className='w-full h-full' />
+            <Wallet2 className='h-full w-full' />
           </div>
           <Text variant='small' color='text.secondary'>
             Connect Prax Wallet to vote in this epoch and see your rewards from participating.
@@ -225,13 +225,13 @@ export const VotingInfo = observer(({ epoch: defaultEpoch }: VotingInfoProps) =>
   if (isRoundPage && isEnded) {
     return (
       <div className='flex flex-col gap-8'>
-        <div className='flex gap-4 color-text-secondary items-center'>
+        <div className='flex items-center gap-4'>
           {isVoted ? (
             votedComponent
           ) : (
-            <div className='flex gap-4 items-center'>
+            <div className='flex items-center gap-4'>
               <div className='size-8 text-neutral-light'>
-                <List className='w-full h-full' />
+                <List className='h-full w-full' />
               </div>
               <Text small color='text.secondary'>
                 You haven&#39;t voted in this epoch.
@@ -282,18 +282,18 @@ export const VotingInfo = observer(({ epoch: defaultEpoch }: VotingInfoProps) =>
     return (
       <>
         <div className='flex flex-col gap-8'>
-          <div className='flex gap-4 color-text-secondary items-center'>
+          <div className='flex items-center gap-4'>
             <div className='size-10 text-text-secondary'>
-              <Coins className='w-full h-full' />
+              <Coins className='h-full w-full' />
             </div>
             <Text variant='small' color='text.secondary'>
               You&#39;ve delegated UM and can now vote with your delUM in this epoch.
             </Text>
             <ValueViewComponent valueView={votingNote} />
           </div>
-          <div className='flex gap-2 w-full'>
+          <div className='flex w-full gap-2'>
             {!isRoundPage ? (
-              <div className='flex-1 max-w-[300px]'>
+              <div className='max-w-[300px] flex-1'>
                 <Button actionType='accent' onClick={openVoteDialog}>
                   Vote Now
                 </Button>
@@ -323,9 +323,9 @@ export const VotingInfo = observer(({ epoch: defaultEpoch }: VotingInfoProps) =>
   if (isDelegated) {
     return (
       <div className='flex flex-col gap-8'>
-        <div className='flex gap-4 color-text-secondary items-center'>
+        <div className='flex items-center gap-4'>
           <div className='size-14 text-destructive-light'>
-            <Ban className='w-full h-full' />
+            <Ban className='h-full w-full' />
           </div>
           <Text variant='small' color='text.secondary'>
             You can&#39;t vote in this epoch because you delegated your UM after the epoch started.
@@ -335,7 +335,7 @@ export const VotingInfo = observer(({ epoch: defaultEpoch }: VotingInfoProps) =>
         <div className='flex gap-2'>
           <div className='flex-1'>
             {!isRoundPage ? (
-              <div className='flex-1 max-w-[300px]'>
+              <div className='max-w-[300px] flex-1'>
                 <Button actionType='accent' disabled>
                   Vote Now
                 </Button>
@@ -362,9 +362,9 @@ export const VotingInfo = observer(({ epoch: defaultEpoch }: VotingInfoProps) =>
 
   return (
     <div className='flex flex-col gap-8'>
-      <div className='flex gap-4 color-text-secondary items-center'>
+      <div className='flex items-center gap-4'>
         <div className='size-10 text-text-secondary'>
-          <Coins className='w-full h-full' />
+          <Coins className='h-full w-full' />
         </div>
         <Text variant='small' color='text.secondary'>
           Delegate UM to vote and influence how incentives are distributed in this epoch.
@@ -374,7 +374,7 @@ export const VotingInfo = observer(({ epoch: defaultEpoch }: VotingInfoProps) =>
         <div className='flex-1'>
           <a href={STAKING_LINK} target='_blank' rel='noreferrer'>
             {!isRoundPage ? (
-              <div className='flex-1 max-w-[300px]'>
+              <div className='max-w-[300px] flex-1'>
                 <Button actionType='accent' icon={ExternalLink}>
                   Delegate
                 </Button>

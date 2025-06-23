@@ -35,10 +35,10 @@ interface LayoutProps {
 const TableLayout = observer(
   ({ getTableHeader, children }: React.PropsWithChildren<LayoutProps>) => {
     return (
-      <div className='flex flex-col gap-4 mt-4'>
+      <div className='mt-4 flex flex-col gap-4'>
         <Density compact>
-          <div className='grid grid-cols-[auto_1fr_1fr_48px] max-w-full overflow-x-auto'>
-            <div className='grid grid-cols-subgrid col-span-4'>
+          <div className='grid max-w-full grid-cols-[auto_1fr_1fr_48px] overflow-x-auto'>
+            <div className='col-span-4 grid grid-cols-subgrid'>
               {getTableHeader('epoch', 'Epoch')}
               <TableCell heading>Casted Vote</TableCell>
               {getTableHeader('reward', 'Reward')}
@@ -54,8 +54,8 @@ const TableLayout = observer(
 
 const Layout = ({ totalChild, tableChild }: { totalChild: ReactNode; tableChild: ReactNode }) => {
   return (
-    <div className='flex flex-col gap-4 p-6 rounded-lg bg-other-tonal-fill5 backdrop-blur-lg'>
-      <div className='flex flex-col gap-2 desktop:flex-row justify-between items-start desktop:items-center'>
+    <div className='flex flex-col gap-4 rounded-lg bg-other-tonal-fill5 p-6 backdrop-blur-lg'>
+      <div className='flex flex-col items-start justify-between gap-2 desktop:flex-row desktop:items-center'>
         <div className='flex flex-col gap-1'>
           <Text xxl color='text.primary'>
             Total Rewards Earned
@@ -96,7 +96,7 @@ export const DelegatorRewards = ({ address }: { address: Address }) => {
   }
   if (isPending) {
     const totalChild = (
-      <div className='w-24 h-10'>
+      <div className='h-10 w-24'>
         <Skeleton />
       </div>
     );
@@ -147,7 +147,7 @@ export const DelegatorRewards = ({ address }: { address: Address }) => {
         {rows.map(row => (
           <Link
             key={`epoch-${row.epoch}`}
-            className='grid grid-cols-subgrid col-span-4 hover:bg-action-hover-overlay'
+            className='col-span-4 grid grid-cols-subgrid hover:bg-action-hover-overlay'
             href={`/tournament/${row.epoch}`}
           >
             <TableCell cell>{`Epoch #${row.epoch}`}</TableCell>

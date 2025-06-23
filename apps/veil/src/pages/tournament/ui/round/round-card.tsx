@@ -56,16 +56,16 @@ export const RoundCard = observer(({ epoch }: RoundCardProps) => {
   return (
     <>
       <GradientCard>
-        <div className='flex flex-col md:flex-row gap-4 md:gap-6 lg:gap-12 p-4 md:p-6 lg:p-12'>
-          <div className='flex flex-col w-full md:w-1/2 gap-6'>
-            <div className='flex justify-between items-center'>
-              <div className='flex gap-4 items-center'>
+        <div className='flex flex-col gap-4 p-4 lg:gap-12 lg:p-12 md:flex-row md:gap-6 md:p-6'>
+          <div className='flex w-full flex-col gap-6 md:w-1/2'>
+            <div className='flex items-center justify-between'>
+              <div className='flex items-center gap-4'>
                 <Link href={PagePath.Tournament}>
-                  <button className='w-8 h-8 rounded-full bg-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.15)] flex items-center justify-center transition-colors duration-200'>
+                  <button className='flex h-8 w-8 items-center justify-center rounded-full bg-[rgba(255,255,255,0.1)] transition-colors duration-200 hover:bg-[rgba(255,255,255,0.15)]'>
                     <Icon IconComponent={ArrowLeft} size='sm' color='primary.contrast' />
                   </button>
                 </Link>
-                <div className='font-heading text-text4xl font-medium leading-text4xl text-transparent bg-clip-text bg-[linear-gradient(90deg,rgb(244,156,67),rgb(83,174,168))]'>
+                <div className='bg-[linear-gradient(90deg,rgb(244,156,67),rgb(83,174,168))] bg-clip-text font-heading text-text4xl leading-text4xl font-medium text-transparent'>
                   Epoch #{epoch}
                 </div>
               </div>
@@ -83,9 +83,9 @@ export const RoundCard = observer(({ epoch }: RoundCardProps) => {
               )}
             </div>
             <div className='flex gap-6'>
-              <div className='flex w-1/2 flex-col items-center gap-2 bg-[rgba(250,250,250,0.05)] rounded-md p-3'>
+              <div className='flex w-1/2 flex-col items-center gap-2 rounded-md bg-[rgba(250,250,250,0.05)] p-3'>
                 {isLoading ? (
-                  <div className='w-16 h-5'>
+                  <div className='h-5 w-16'>
                     <Skeleton />
                   </div>
                 ) : (
@@ -98,7 +98,7 @@ export const RoundCard = observer(({ epoch }: RoundCardProps) => {
                   Start Block
                 </Text>
               </div>
-              <div className='flex w-1/2 flex-col items-center gap-2 bg-[rgba(250,250,250,0.05)] rounded-md p-3'>
+              <div className='flex w-1/2 flex-col items-center gap-2 rounded-md bg-[rgba(250,250,250,0.05)] p-3'>
                 {isLoading ? (
                   <div className='h-5 w-16'>
                     <Skeleton />
@@ -118,8 +118,8 @@ export const RoundCard = observer(({ epoch }: RoundCardProps) => {
             <IncentivePool summary={summary?.[0]} loading={isLoading} />
           </div>
 
-          <div className='w-full h-px md:w-px md:h-auto bg-other-tonal-stroke shrink-0' />
-          <div className='flex flex-col w-full md:w-1/2 md:justify-between gap-6 md:gap-0'>
+          <div className='h-px w-full shrink-0 bg-other-tonal-stroke md:h-auto md:w-px' />
+          <div className='flex w-full flex-col gap-6 md:w-1/2 md:justify-between md:gap-0'>
             <Text variant='h4' color='text.primary'>
               {ended ? 'This Epoch has Ended' : 'Cast Your Vote'}
             </Text>

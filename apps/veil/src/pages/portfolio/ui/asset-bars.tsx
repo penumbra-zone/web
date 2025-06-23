@@ -156,9 +156,9 @@ export const AssetBars: React.FC = () => {
       <div className='flex flex-col gap-4'>
         {/* Shielded Assets Bar */}
         <div className='flex items-center gap-2'>
-          <div className='w-16 text-neutral-400 text-xs font-normal'>Shielded</div>
-          <div className='relative h-1.5 grow bg-neutral-800 rounded overflow-hidden'>
-            <div className='absolute left-0 top-0 h-full' style={{ width: `${shieldedBarWidth}%` }}>
+          <div className='w-16 text-xs font-normal text-neutral-400'>Shielded</div>
+          <div className='relative h-1.5 grow overflow-hidden rounded bg-neutral-800'>
+            <div className='absolute top-0 left-0 h-full' style={{ width: `${shieldedBarWidth}%` }}>
               {shieldedAllocations.length > 0 &&
                 shieldedAllocations.map((allocation, index) => {
                   const prevWidth = shieldedAllocations
@@ -187,9 +187,9 @@ export const AssetBars: React.FC = () => {
 
         {/* Public Assets Bar */}
         <div className='flex items-center gap-2'>
-          <div className='w-16 text-neutral-400 text-xs font-normal'>Public</div>
-          <div className='relative h-1.5 grow bg-neutral-800 rounded overflow-hidden'>
-            <div className='absolute left-0 top-0 h-full' style={{ width: `${publicBarWidth}%` }}>
+          <div className='w-16 text-xs font-normal text-neutral-400'>Public</div>
+          <div className='relative h-1.5 grow overflow-hidden rounded bg-neutral-800'>
+            <div className='absolute top-0 left-0 h-full' style={{ width: `${publicBarWidth}%` }}>
               {publicAllocations.length > 0 &&
                 publicAllocations.map((allocation, index) => {
                   const prevWidth = publicAllocations
@@ -217,10 +217,10 @@ export const AssetBars: React.FC = () => {
         </div>
 
         {/* Asset Legend */}
-        <div className='flex flex-wrap gap-4 pl-[72px] mt-2'>
+        <div className='mt-2 flex flex-wrap gap-4 pl-[72px]'>
           {displayAssets.map(asset => (
             <div key={asset.symbol} className='flex items-center gap-1'>
-              <div className='w-2 h-2 rounded-full' style={{ backgroundColor: asset.color }} />
+              <div className='h-2 w-2 rounded-full' style={{ backgroundColor: asset.color }} />
               <Text small color='text.primary'>
                 {asset.symbol}
               </Text>
@@ -251,29 +251,29 @@ const LoadingBars = () => {
   return (
     <PortfolioCard title={'Allocation'}>
       {/* Asset distribution bar skeleton */}
-      <div className='flex flex-col gap-4 mt-4'>
+      <div className='mt-4 flex flex-col gap-4'>
         <div className='flex items-center gap-2'>
-          <div className='w-16 text-neutral-400 text-xs'>Shielded</div>
-          <div className='w-full h-1.5'>
+          <div className='w-16 text-xs text-neutral-400'>Shielded</div>
+          <div className='h-1.5 w-full'>
             <Skeleton />
           </div>
         </div>
 
         <div className='flex items-center gap-2'>
-          <div className='w-16 text-neutral-400 text-xs'>Public</div>
-          <div className='w-full h-1.5'>
+          <div className='w-16 text-xs text-neutral-400'>Public</div>
+          <div className='h-1.5 w-full'>
             <Skeleton />
           </div>
         </div>
 
         {/* Legend skeleton */}
-        <div className='flex flex-wrap gap-4 pl-[72px] mt-2'>
+        <div className='mt-2 flex flex-wrap gap-4 pl-[72px]'>
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className='flex items-center gap-2'>
-              <div className='w-2 h-2'>
+              <div className='h-2 w-2'>
                 <Skeleton />
               </div>
-              <div className='w-20 h-4'>
+              <div className='h-4 w-20'>
                 <Skeleton />
               </div>
             </div>
@@ -491,7 +491,7 @@ const ConnectedButEmpty: React.FC = observer(() => {
   if (isShieldedWalletConnected) {
     rows.push(
       <div key='shielded' className='flex items-center gap-2'>
-        <div className='w-16 text-neutral-400 text-xs font-normal'>Shielded</div>
+        <div className='w-16 text-xs font-normal text-neutral-400'>Shielded</div>
         <div className='h-1.5 grow rounded bg-linear-to-r from-other-tonal-fill5 to-other-tonal-fill10' />
       </div>,
     );
@@ -500,7 +500,7 @@ const ConnectedButEmpty: React.FC = observer(() => {
   if (isCosmosWalletConnected) {
     rows.push(
       <div key='public' className='flex items-center gap-2'>
-        <div className='w-16 text-neutral-400 text-xs font-normal'>Public</div>
+        <div className='w-16 text-xs font-normal text-neutral-400'>Public</div>
         <div className='h-1.5 grow rounded bg-linear-to-r from-other-tonal-fill5 to-other-tonal-fill10' />
       </div>,
     );

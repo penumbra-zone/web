@@ -37,9 +37,7 @@ async function fetchTransaction(
   }
 }
 
-async function* swapTransactions(
-  tx?: TransactionInfo | undefined,
-): AsyncGenerator<TransactionInfo> {
+async function* swapTransactions(tx?: TransactionInfo): AsyncGenerator<TransactionInfo> {
   if (!tx) {
     return;
   }
@@ -63,7 +61,7 @@ async function* swapTransactions(
   }
 }
 
-async function* unfilledSwaps(originalTx?: TransactionInfo | undefined): AsyncGenerator<ValueView> {
+async function* unfilledSwaps(originalTx?: TransactionInfo): AsyncGenerator<ValueView> {
   for await (const tx of swapTransactions(originalTx)) {
     for (const { actionView } of tx.view?.bodyView?.actionViews ?? []) {
       if (actionView.case !== 'swap') {

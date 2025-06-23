@@ -18,7 +18,7 @@ export const TournamentRoundPage = () => {
   }
 
   return (
-    <section className='flex flex-col gap-6 p-4 max-w-[1168px] mx-auto'>
+    <section className='mx-auto flex max-w-[1168px] flex-col gap-6 p-4'>
       <PenumbraWaves />
       <RoundCard epoch={epoch} />
       <CurrentVotingResults epoch={epoch} />

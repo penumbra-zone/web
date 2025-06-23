@@ -129,7 +129,7 @@ export const VoteDialogueSelector = observer(
           headerChildren={
             <>
               {/* Focus catcher. If this button wouldn't exist, the focus would go to the first input, which is undesirable */}
-              <button type='button' className='w-full h-0 -mt-2 focus:outline-hidden' />
+              <button type='button' className='-mt-2 h-0 w-full focus:outline-hidden' />
 
               <Text detail color='text.secondary'>
                 You can only vote for one asset in an epoch and can&#39;t change your vote
@@ -142,7 +142,7 @@ export const VoteDialogueSelector = observer(
                   onChange={setSearchQuery}
                   onFocus={() => setIsSearchOpen(true)}
                   startAdornment={
-                    <i className='flex items-center justify-center size-6'>
+                    <i className='flex size-6 items-center justify-center'>
                       <Search className='size-4 text-neutral-light' />
                     </i>
                   }

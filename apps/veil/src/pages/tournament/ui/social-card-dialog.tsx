@@ -111,7 +111,7 @@ const SocialCardCanvas = ({
   return (
     <canvas
       ref={canvasRef}
-      className='w-full h-auto max-w-[512px] aspect-square bg-other-tonal-fill10'
+      className='aspect-square h-auto w-full max-w-[512px] bg-other-tonal-fill10'
     />
   );
 };
@@ -209,7 +209,7 @@ ${currentEpochSummary?.[0]?.ends_in_s ? `Next round starts in ${formatTimeRemain
           title='Share your latest win!'
           aria-describedby='tournament-social-description'
           buttons={
-            <div className='max-w-[475px] mx-auto w-full flex flex-col gap-1'>
+            <div className='mx-auto flex w-full max-w-[475px] flex-col gap-1'>
               <Button
                 actionType='default'
                 onClick={() => void copyImageToClipboard(canvasRef.current?.toDataURL() ?? '')}

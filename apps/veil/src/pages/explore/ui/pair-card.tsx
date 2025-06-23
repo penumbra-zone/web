@@ -22,10 +22,10 @@ import { useRegistryAssets } from '@/shared/api/registry';
 const ShimmeringBars = () => {
   return (
     <>
-      <div className='w-16 h-4 my-1'>
+      <div className='my-1 h-4 w-16'>
         <Skeleton />
       </div>
-      <div className='w-10 h-4'>
+      <div className='h-4 w-10'>
         <Skeleton />
       </div>
     </>
@@ -34,10 +34,10 @@ const ShimmeringBars = () => {
 
 const getTextSign = (summary: SummaryData): ReactNode => {
   if (summary.change.sign === 'positive') {
-    return <ChevronDown className='size-3 rotate-180 inline-block' />;
+    return <ChevronDown className='inline-block size-3 rotate-180' />;
   }
   if (summary.change.sign === 'negative') {
-    return <ChevronDown className='size-3 inline-block' />;
+    return <ChevronDown className='inline-block size-3' />;
   }
   return null;
 };
@@ -72,9 +72,9 @@ export const PairCard = ({ loading, summary }: PairCardProps) => {
   return (
     <Link
       href={loading ? `/trade` : `/trade/${summary.baseAsset.symbol}/${summary.quoteAsset.symbol}`}
-      className='grid grid-cols-subgrid col-span-6 p-3 rounded-sm cursor-pointer transition-colors hover:bg-action-hover-overlay'
+      className='col-span-6 grid cursor-pointer grid-cols-subgrid rounded-sm p-3 transition-colors hover:bg-action-hover-overlay'
     >
-      <div className='relative h-10 flex items-center gap-2 text-text-primary'>
+      <div className='relative flex h-10 items-center gap-2 text-text-primary'>
         {loading ? (
           <div className='h-6 w-20'>
             <Skeleton />
@@ -101,7 +101,7 @@ export const PairCard = ({ loading, summary }: PairCardProps) => {
         )}
       </div>
 
-      <div className='h-10 flex flex-col items-end justify-center'>
+      <div className='flex h-10 flex-col items-end justify-center'>
         {loading ? (
           <ShimmeringBars />
         ) : (
@@ -114,7 +114,7 @@ export const PairCard = ({ loading, summary }: PairCardProps) => {
         )}
       </div>
 
-      <div className='h-10 flex flex-col items-end justify-center'>
+      <div className='flex h-10 flex-col items-end justify-center'>
         {loading ? (
           <ShimmeringBars />
         ) : (
@@ -129,7 +129,7 @@ export const PairCard = ({ loading, summary }: PairCardProps) => {
         )}
       </div>
 
-      <div className='h-10 flex flex-col items-end justify-center'>
+      <div className='flex h-10 flex-col items-end justify-center'>
         {loading ? (
           <ShimmeringBars />
         ) : (
@@ -144,11 +144,11 @@ export const PairCard = ({ loading, summary }: PairCardProps) => {
         )}
       </div>
 
-      <div className='h-10 flex items-center justify-end gap-2'>
+      <div className='flex h-10 items-center justify-end gap-2'>
         {loading ? (
           <>
-            <div className='w-10 h-4 bg-shimmer rounded-xs' />
-            <SparklineChart className='w-14 h-8' />
+            <div className='h-4 w-10 rounded-xs bg-shimmer' />
+            <SparklineChart className='h-8 w-14' />
           </>
         ) : (
           <>
@@ -169,7 +169,7 @@ export const PairCard = ({ loading, summary }: PairCardProps) => {
         )}
       </div>
 
-      <div className='h-10 flex flex-col items-end justify-center'>
+      <div className='flex h-10 flex-col items-end justify-center'>
         <Density compact>
           <Button icon={CandlestickChart} iconOnly>
             Actions

@@ -15,8 +15,8 @@ export const RouteTabs = () => {
   const [tab, setTab] = useState<RouteTabsType>(RouteTabsType.Book);
 
   return (
-    <div ref={parent} className='flex flex-col h-full'>
-      <div className='flex justify-between gap-2 px-4 lg:pt-2 border-b border-b-other-solid-stroke'>
+    <div ref={parent} className='flex h-full flex-col'>
+      <div className='flex justify-between gap-2 border-b border-b-other-solid-stroke px-4 lg:pt-2'>
         <Density compact>
           <Tabs
             value={tab}

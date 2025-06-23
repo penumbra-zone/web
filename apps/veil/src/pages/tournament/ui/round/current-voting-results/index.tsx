@@ -77,7 +77,7 @@ export const CurrentVotingResults = observer(({ epoch }: CurrentVotingResultsPro
 
   return (
     <Card>
-      <div className='flex flex-col p-3 gap-4'>
+      <div className='flex flex-col gap-4 p-3'>
         <Text xxl color='text.primary'>
           Current Voting Results
         </Text>

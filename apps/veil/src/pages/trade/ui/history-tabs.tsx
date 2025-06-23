@@ -19,8 +19,8 @@ export const HistoryTabs = () => {
   const { baseAsset, quoteAsset } = usePathToMetadata();
 
   return (
-    <div ref={parent} className='flex flex-col w-screen desktop:w-auto'>
-      <div className='flex justify-between gap-2 px-4 border-b border-b-other-solid-stroke'>
+    <div ref={parent} className='flex w-screen flex-col desktop:w-auto'>
+      <div className='flex justify-between gap-2 border-b border-b-other-solid-stroke px-4'>
         <Density compact>
           <Tabs
             value={tab}
@@ -30,7 +30,7 @@ export const HistoryTabs = () => {
           />
         </Density>
 
-        <label className='flex gap-2 h-[42px] items-center py-2 text-text-secondary cursor-pointer'>
+        <label className='flex h-[42px] cursor-pointer items-center gap-2 py-2 text-text-secondary'>
           <Text small>Show Inactive</Text>
           <Toggle label='Show Inactive' value={showInactive} onChange={setshowInactive} />
         </label>

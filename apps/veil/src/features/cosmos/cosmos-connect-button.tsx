@@ -61,9 +61,9 @@ const CosmosConnectButtonInner = observer(
               )}
             </Popover.Trigger>
             <Popover.Content align='end' side='bottom'>
-              <div className='flex flex-col gap-4 text-text-primary items-start'>
+              <div className='flex flex-col items-start gap-4 text-text-primary'>
                 <span className='font-semibold'>{walletName ?? 'Wallet'}</span>
-                <span className='font-mono break-all text-xs text-neutral-300'>
+                <span className='font-mono text-xs break-all text-neutral-300'>
                   {truncatedAddress}
                 </span>
                 <Button actionType='unshield' onClick={() => void disconnect?.()}>

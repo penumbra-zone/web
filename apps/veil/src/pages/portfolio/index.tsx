@@ -34,10 +34,10 @@ export const PortfolioPage = ({ isMobile }: PortfolioPageProps): React.ReactNode
 
 function MobilePortfolioPage() {
   return (
-    <section className='absolute inset-0 h-screen flex flex-col items-center justify-between p-4 gap-3 border-t border-neutral-800'>
-      <div className='flex flex-col justify-center items-center p-0 gap-4 w-full grow'>
+    <section className='absolute inset-0 flex h-screen flex-col items-center justify-between gap-3 border-t border-neutral-800 p-4'>
+      <div className='flex w-full grow flex-col items-center justify-center gap-4 p-0'>
         <div className='relative'>
-          <XCircle className='text-neutral-light w-8 h-8' />
+          <XCircle className='h-8 w-8 text-neutral-light' />
         </div>
 
         <Text color={'text.secondary'} align={'center'} small={true}>
@@ -72,7 +72,7 @@ function MobilePortfolioPage() {
 const DesktopPortfolioPage = observer(() => {
   const { isPenumbraConnected, isCosmosConnected } = useUnifiedAssets();
   return (
-    <div className='container max-w-[1136px] mx-auto py-8 flex flex-col gap-4'>
+    <div className='container mx-auto flex max-w-[1136px] flex-col gap-4 py-8'>
       <PenumbraWaves />
 
       <WalletConnect />

@@ -81,11 +81,11 @@ export const AssetRow = observer(
 
     return (
       <div
-        className={`grid grid-cols-subgrid col-span-7 rounded-sm ${isExpanded ? 'bg-other-tonal-fill5' : ''} `}
+        className={`col-span-7 grid grid-cols-subgrid rounded-sm ${isExpanded ? 'bg-other-tonal-fill5' : ''}`}
       >
         <div
           className={
-            'col-span-7 grid grid-cols-subgrid border-b border-b-other-tonal-stroke hover:bg-action-hover-overlay hover:cursor-pointer'
+            'col-span-7 grid grid-cols-subgrid border-b border-b-other-tonal-stroke hover:cursor-pointer hover:bg-action-hover-overlay'
           }
           onClick={() => setIsExpanded(prev => !prev)}
         >
@@ -107,7 +107,7 @@ export const AssetRow = observer(
           </TableCell>
           <TableCell variant={variant}>
             {isCosmosConnected ? (
-              <div className='flex items-center gap-3 justify-between w-full'>
+              <div className='flex w-full items-center justify-between gap-3'>
                 {hasPublicBalance ? (
                   <ValueViewComponent
                     valueView={totalPublicBalanceValueView}
@@ -187,8 +187,8 @@ export const AssetRow = observer(
               className={'col-span-7 grid grid-cols-subgrid hover:bg-action-hover-overlay'}
             >
               <TableCell variant={'lastCell'}>
-                <div className='flex items-center gap-3 justify-between w-full'>
-                  <div className={'py-3 ml-2'}>
+                <div className='flex w-full items-center justify-between gap-3'>
+                  <div className={'ml-2 py-3'}>
                     <ValueViewComponent
                       valueView={bal.valueView}
                       trailingZeros={false}
@@ -252,7 +252,7 @@ export const AssetRow = observer(
                 </div>
               </TableCell>
               <TableCell variant={'lastCell'}>
-                <div className='flex items-center gap-3 justify-between w-full space-x-5'>
+                <div className='flex w-full items-center justify-between gap-3 space-x-5'>
                   <div className={'py-3'}>
                     <ValueViewComponent
                       valueView={bal.valueView}

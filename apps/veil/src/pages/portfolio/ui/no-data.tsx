@@ -7,7 +7,7 @@ export interface NoDataProps {
 
 export const NoData = ({ label }: NoDataProps) => {
   return (
-    <div className='flex flex-col items-center justify-center min-h-[250px] pt-5'>
+    <div className='flex min-h-[250px] flex-col items-center justify-center pt-5'>
       <List className='size-8 text-neutral-light' />
       <Text small color='text.secondary'>
         {label}
