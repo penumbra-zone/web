@@ -1,20 +1,26 @@
 // eslint-disable-next-line -- ignore
 import config from '../../eslint.config.js';
-import tailwindcss from 'eslint-plugin-tailwindcss';
+import eslintPluginBetterTailwindcss from 'eslint-plugin-better-tailwindcss';
 import { resolve } from 'node:path';
 
 config.push({
   name: 'custom:tailwindcss-config',
-  plugins: { tailwindcss },
-  settings: {
-    tailwindcss: {
-      config: resolve('tailwind.config.ts'),
+  languageOptions: {
+    parserOptions: {
+      ecmaFeatures: {
+        jsx: true,
+      },
     },
   },
-  rules: {
-    ...tailwindcss.configs.recommended.rules,
-    'tailwindcss/no-custom-classname': ['error', { callees: ['cn', 'cva', 'clsx'] }],
+  plugins: {
+    'better-tailwindcss': eslintPluginBetterTailwindcss,
   },
+  settings: {
+    'better-tailwindcss': {
+      entryPoint: resolve('./src/theme/theme.css'),
+    },
+  },
+  rules: eslintPluginBetterTailwindcss.configs['recommended-warn'].rules,
 });
 
 export default config;
