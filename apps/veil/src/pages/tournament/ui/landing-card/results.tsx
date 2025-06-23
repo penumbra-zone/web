@@ -2,6 +2,7 @@ import { Text } from '@penumbra-zone/ui/Text';
 import { Skeleton } from '@penumbra-zone/ui/Skeleton';
 import type { MappedGauge } from '../../server/previous-epochs';
 import { VoteAssetIcon, VoteAssetContent } from '../vote-dialog/vote-dialog-asset';
+import { ProvideLiquidityButton } from '../shared/provide-liquidity-button';
 
 export interface TournamentResultsProps {
   results: MappedGauge[];
@@ -10,9 +11,10 @@ export interface TournamentResultsProps {
 
 const TournamentResultsAsset = ({ asset }: { asset: MappedGauge }) => {
   return (
-    <div key={asset.asset.symbol} className='flex gap-3'>
+    <div key={asset.asset.symbol} className='flex gap-3 items-center'>
       <VoteAssetIcon asset={asset} />
       <VoteAssetContent asset={asset} />
+      <ProvideLiquidityButton symbol={asset.asset.symbol} />
     </div>
   );
 };

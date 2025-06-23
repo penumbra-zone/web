@@ -65,10 +65,15 @@ const getPublicBalanceKey = (chainId: string, denom: string): string => {
  */
 export const useUnifiedAssets = () => {
   const { subaccount: penumbraAccountIndex } = connectionStore;
+  const { status: cosmosWalletStatus } = useWallet();
+
   const { data: penumbraBalances = [], isLoading: penumbraLoading } =
     usePenumbraBalances(penumbraAccountIndex);
   const { balances: cosmosBalances = [], isLoading: cosmosLoading } = useCosmosBalances();
-  const { status: cosmosWalletStatus } = useWallet();
+
+  // Check connection status (must be calculated before hooks below use it)
+  const isPenumbraConnected = connectionStore.connected;
+  const isCosmosConnected = cosmosWalletStatus === WalletStatus.Connected;
 
   const filteredAssetSymbols = [
     ...penumbraBalances
@@ -90,13 +95,6 @@ export const useUnifiedAssets = () => {
     ),
   ];
   const { prices, isLoading: pricesLoading } = useAssetPrices(filteredAssetSymbols);
-
-  // Determine if we're ready to process data
-  const isLoading = penumbraLoading || cosmosLoading || pricesLoading;
-
-  // Check connection status
-  const isPenumbraConnected = connectionStore.connected;
-  const isCosmosConnected = cosmosWalletStatus === WalletStatus.Connected;
 
   const shieldedAssets = useMemo(() => {
     if (!isPenumbraConnected || !penumbraBalances.length) {
@@ -128,7 +126,7 @@ export const useUnifiedAssets = () => {
             ],
             publicBalances: [],
           } as UnifiedAsset;
-        } catch (error) {
+        } catch (error: unknown) {
           console.error('Error processing Penumbra balance', error);
           return null;
         }
@@ -136,7 +134,6 @@ export const useUnifiedAssets = () => {
       .filter(Boolean) as UnifiedAsset[];
   }, [isPenumbraConnected, penumbraBalances]);
 
-  // Create unified assets from Cosmos (public) balances
   const publicAssets = useMemo(() => {
     if (!isCosmosConnected || !cosmosBalances.length) {
       return [];
@@ -181,7 +178,7 @@ export const useUnifiedAssets = () => {
               },
             ],
           } as UnifiedAsset;
-        } catch (error) {
+        } catch (error: unknown) {
           console.error('Error processing Cosmos balance', error);
           return null;
         }
@@ -189,7 +186,6 @@ export const useUnifiedAssets = () => {
       .filter(Boolean) as UnifiedAsset[];
   }, [cosmosBalances, isCosmosConnected]);
 
-  // Merge shielded and public assets
   const unifiedAssets = useMemo(() => {
     const assetMap = new Map<string, UnifiedAsset>();
 
@@ -265,6 +261,25 @@ export const useUnifiedAssets = () => {
   const totalValue = useMemo(() => {
     return totalShieldedValue + totalPublicValue;
   }, [totalShieldedValue, totalPublicValue]);
+
+  // -------------------------------------------------------------
+  // Loading state handling
+  // -------------------------------------------------------------
+  // We want to avoid showing the global loading placeholder once
+  // we already have some data to render (e.g. Penumbra assets).
+  // Therefore, the hook reports `isLoading` **only** when we have
+  // no unified assets yet *and* at least one of the underlying
+  // queries is still in flight. This prevents the UI from
+  // temporarily switching back to the loading skeleton when a
+  // secondary data-source (like Cosmos balances) starts fetching
+  // after the initial Penumbra data has been rendered.
+  //
+  // Note: `isLoading` must be defined after `unifiedAssets` so we
+  // can rely on its length to determine whether we already have
+  // something to display.
+  // -------------------------------------------------------------
+  const isLoading =
+    unifiedAssets.length === 0 && (penumbraLoading || cosmosLoading || pricesLoading);
 
   return {
     unifiedAssets,

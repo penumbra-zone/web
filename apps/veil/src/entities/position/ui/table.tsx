@@ -17,7 +17,7 @@ import { connectionStore } from '@/shared/model/connection';
 import { useGetMetadata } from '@/shared/api/assets';
 import { usePositions } from '../api/use-positions';
 import { stateToString } from '../model/state-to-string';
-import { getDisplayPositions, GetDisplayPositionsArgs } from '../model/get-display-positions';
+import { getDisplayPositions } from '../model/get-display-positions';
 import { DisplayPosition } from '../model/types';
 import { PositionsCurrentValue } from './positions-current-value';
 import { NotConnectedNotice } from './not-connected-notice';
@@ -28,24 +28,26 @@ import { ActionButton } from './action-button';
 import { Dash } from './dash';
 import { useObserver } from '@/shared/utils/use-observer';
 import SpinnerIcon from '@/shared/assets/spinner-icon.svg';
+import { PositionState_PositionStateEnum } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 
 export interface PositionsTableProps {
   base?: Metadata;
   quote?: Metadata;
-  stateFilter?: GetDisplayPositionsArgs['stateFilter'];
+  stateFilter?: PositionState_PositionStateEnum[];
 }
 
 export const PositionsTable = observer(({ base, quote, stateFilter }: PositionsTableProps) => {
   const { connected, subaccount } = connectionStore;
   const getMetadata = useGetMetadata();
 
-  const { data, isLoading, isRefetching, isFetchingNextPage, fetchNextPage, error } =
-    usePositions(subaccount);
+  const { data, isLoading, isRefetching, isFetchingNextPage, fetchNextPage, error } = usePositions(
+    subaccount,
+    stateFilter,
+  );
   const displayPositions = getDisplayPositions({
     positions: data?.pages,
     asset1Filter: base,
     asset2Filter: quote,
-    stateFilter,
     getMetadata,
   });
 
