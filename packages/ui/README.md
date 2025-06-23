@@ -16,24 +16,29 @@ First, install the library:
 npm install @penumbra-zone/ui
 ```
 
-Then, extend the Tailwind config of your app to include Penumbra UI's Tailwind config:
+Then, import library styles in your project and use the components:
 
-```ts
-import { withPenumbra } from '@penumbra-zone/ui/theme';
+```tsx
+import { withPenumbra } from '@penumbra-zone/ui/style.css';
+import { Text } from '@penumbra-zone/ui/Text';
+import { TextInput } from '@penumbra-zone/ui/TextInput';
 
-// Provide your own theme and plugins inside the `withPenumbra` hook
-export default withPenumbra({
-  content: ['./src/**/*.{js,ts,jsx,tsx,mdx,css}'],
-  theme: {},
-  plugins: [],
-});
+function App() {
+  const [input, setInput] = useState('');
+
+  return (
+    <section>
+      <Text xxl color='success.light'>
+        Hello from Penumbra!
+      </Text>
+      <TextInput title='Who are you?' value={input} onChange={setInput} />
+    </section>
+  );
+}
 ```
 
-In your main file, import Penumbra UI global styles:
-
-```ts
-import '@penumbra-zone/ui/style.css';
-```
+If you wish to use the library with Tailwind v4, you can additionally import `'@penumbra-zone/ui/theme.css'` – it
+would extend the Tailwind theme with brand colors, fonts, and other styles used in Penumbra UI components.
 
 ## Usage
 
