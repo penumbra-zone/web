@@ -2,7 +2,7 @@ import { Skeleton } from '@/shared/ui/skeleton';
 
 export const LoadingAsset = () => {
   return (
-    <div className='flex gap-2 justify-between items-center w-full h-16 p-3 bg-other-tonalFill5 rounded-sm'>
+    <div className='flex gap-2 justify-between items-center w-full h-16 p-3 bg-other-tonal-fill5 rounded-sm'>
       <div className='size-8 rounded-full overflow-hidden'>
         <Skeleton />
       </div>

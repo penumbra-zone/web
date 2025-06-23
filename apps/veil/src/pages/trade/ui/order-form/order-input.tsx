@@ -53,10 +53,10 @@ export const OrderInput = ({
   }, [value]);
 
   return (
-    <div className='relative h-16 bg-gradient-to-r from-other-tonalFill5 to-other-tonalFill10 rounded-sm'>
+    <div className='relative h-16 bg-linear-to-r from-other-tonal-fill5 to-other-tonal-fill10 rounded-sm'>
       <label
         htmlFor={id}
-        className='absolute top-2 left-3 z-[1] font-default text-textSm font-normal leading-textXs text-text-secondary'
+        className='absolute top-2 left-3 z-1 font-default text-text-sm font-normal leading-text-xs text-text-secondary'
       >
         {label}
       </label>
@@ -65,13 +65,13 @@ export const OrderInput = ({
           <div className='flex items-center h-6 mr-1'>
             <SpinnerIcon className='animate-spin' />
           </div>
-          <span className='font-default text-textSm font-normal leading-textXs'>Estimating...</span>
+          <span className='font-default text-text-sm font-normal leading-text-xs'>Estimating...</span>
         </div>
       ) : (
         <>
           <div
             ref={textRef}
-            className='font-default text-textLg font-medium leading-textLg invisible absolute'
+            className='font-default text-text-lg font-medium leading-text-lg invisible absolute'
           >
             {value}
           </div>
@@ -81,9 +81,9 @@ export const OrderInput = ({
               'rounded-sm text-text-primary transition-colors duration-150',
               'p-2 pt-7',
               isApproximately && value ? 'pl-7' : 'pl-3',
-              'font-default text-textLg font-medium leading-textLg',
+              'font-default text-text-lg font-medium leading-text-lg',
               !disabled &&
-                'hover:bg-other-tonalFill5 focus:outline-none focus:bg-other-tonalFill10',
+                'hover:bg-other-tonal-fill5 focus:outline-hidden focus:bg-other-tonal-fill10',
               disabled && 'cursor-not-allowed',
               '[&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
               "[&[type='number']]:[-moz-appearance:textfield]",
@@ -105,7 +105,7 @@ export const OrderInput = ({
           />
           {isApproximately && value && (
             <>
-              <span className='absolute top-[27px] left-3 font-default text-textLg font-medium leading-textLg text-secondary-light'>
+              <span className='absolute top-[27px] left-3 font-default text-text-lg font-medium leading-text-lg text-secondary-light'>
                 ≈
               </span>
               <div className='absolute top-[31px]' style={{ left: textWidth + 8 * 4 }}>
@@ -120,7 +120,7 @@ export const OrderInput = ({
       {denominator && (
         <div
           ref={denomRef}
-          className='absolute top-0 right-3 pointer-events-none z-[1] font-default text-textSm font-normal leading-textXs text-text-secondary !leading-[64px]'
+          className='absolute top-0 right-3 pointer-events-none z-1 font-default text-text-sm font-normal leading-text-xs text-text-secondary leading-[64px]!'
         >
           {denominator}
         </div>

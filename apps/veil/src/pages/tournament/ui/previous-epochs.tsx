@@ -53,7 +53,7 @@ const PreviousEpochsRow = observer(
         className={cn(
           className,
           'grid grid-cols-subgrid',
-          'hover:bg-action-hoverOverlay transition-colors cursor-pointer',
+          'hover:bg-action-hover-overlay transition-colors cursor-pointer',
         )}
       >
         <TableCell cell loading={isLoading}>
@@ -132,7 +132,7 @@ export const PreviousEpochs = observer(() => {
   };
 
   return (
-    <div className='flex flex-col gap-6 p-6 w-full rounded-lg bg-other-tonalFill5 backdrop-blur-lg'>
+    <div className='flex flex-col gap-6 p-6 w-full rounded-lg bg-other-tonal-fill5 backdrop-blur-lg'>
       <Text xxl color='text.primary'>
         Previous Epochs
       </Text>

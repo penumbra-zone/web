@@ -28,7 +28,7 @@ export const TradeRow = ({
       }}
       className={cn(
         'relative grid grid-cols-subgrid col-span-4 h-full items-center px-4 border-b border-border-faded',
-        'after:hidden after:content-[""] after:absolute after:left-0 after:right-0 after:h-full after:bg-other-tonalFill5',
+        'after:hidden after:content-[""] after:absolute after:left-0 after:right-0 after:h-full after:bg-other-tonal-fill5',
         'group [&:hover>span:not(:last-child)]:invisible hover:after:block',
         'text-xs tabular-nums', // makes all numbers monospaced
       )}

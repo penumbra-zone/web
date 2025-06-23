@@ -26,7 +26,7 @@ export const Section: React.FC<SectionProps> = ({
       </div>
     )}
     {layout === 'boxed' ? (
-      <div className='flex w-full min-h-10 rounded-sm bg-other-tonalFill5 px-3 py-2'>
+      <div className='flex w-full min-h-10 rounded-sm bg-other-tonal-fill5 px-3 py-2'>
         <div className='flex-1 w-full'>{children}</div>
       </div>
     ) : (

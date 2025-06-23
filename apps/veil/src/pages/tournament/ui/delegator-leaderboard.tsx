@@ -80,8 +80,8 @@ const LeaderboardRow = observer(
         href={addressLink}
         className={cn(
           'grid grid-cols-subgrid col-span-5',
-          'hover:bg-action-hoverOverlay transition-colors cursor-pointer',
-          !!subaccountIndex && 'bg-other-tonalFill5',
+          'hover:bg-action-hover-overlay transition-colors cursor-pointer',
+          !!subaccountIndex && 'bg-other-tonal-fill5',
         )}
       >
         <TableCell cell loading={loading}>
@@ -176,7 +176,7 @@ export const DelegatorLeaderboard = observer(() => {
   };
 
   return (
-    <section className='p-6 rounded-lg bg-other-tonalFill5 backdrop-blur-lg flex flex-col gap-4'>
+    <section className='p-6 rounded-lg bg-other-tonal-fill5 backdrop-blur-lg flex flex-col gap-4'>
       <Text xxl color='text.primary'>
         Delegator Leaderboard
       </Text>

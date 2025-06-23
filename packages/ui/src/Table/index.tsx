@@ -133,7 +133,7 @@ const Th = ({
       colSpan={colSpan}
       style={{ width, textAlign: hAlign, verticalAlign: vAlign }}
       className={cn(
-        'border-b border-solid border-other-tonalStroke',
+        'border-b border-solid border-other-tonal-stroke',
         'text-left text-text-secondary',
         tableHeading,
         getCell(density),
@@ -170,7 +170,7 @@ const Td = ({
       colSpan={colSpan}
       style={{ width, textAlign: hAlign, verticalAlign: vAlign }}
       className={cn(
-        'text-text-primary border-b border-solid border-other-tonalStroke',
+        'text-text-primary border-b border-solid border-other-tonal-stroke',
         tableItem,
         getCell(density),
       )}

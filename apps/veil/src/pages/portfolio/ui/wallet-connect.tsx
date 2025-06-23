@@ -32,7 +32,7 @@ export const WalletConnect = observer(() => {
     <div className='grid grid-cols-1 md:grid-cols-2 gap-6 '>
       {/* Shielded Assets Card */}
       <div
-        className={`relative bg-accentRadialBackground backdrop-blur-lg rounded-2xl p-6 flex space-between ${
+        className={`relative bg-accent-radial-background backdrop-blur-lg rounded-2xl p-6 flex space-between ${
           isConnected ? 'h-[160px]' : 'h-[420px]'
         }`}
       >
@@ -81,7 +81,7 @@ export const WalletConnect = observer(() => {
 
       {/* Public Assets Card */}
       <div
-        className={`relative bg-unshieldRadialBackground backdrop-blur-lg rounded-2xl p-6 flex space-between ${
+        className={`relative bg-unshield-radial-background backdrop-blur-lg rounded-2xl p-6 flex space-between ${
           isConnected ? 'h-[160px]' : 'h-[420px]'
         }`}
       >

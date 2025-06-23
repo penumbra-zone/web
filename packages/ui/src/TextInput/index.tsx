@@ -85,9 +85,9 @@ export const TextInput = ({
         density === 'sparse' && 'h-14',
         density === 'compact' && 'h-11',
         density === 'slim' && 'h-8',
-        'flex items-center gap-2 bg-other-tonalFill5 rounded-sm px-3 border-none',
-        'cursor-text outline outline-2 outline-transparent',
-        'hover:bg-action-hoverOverlay',
+        'flex items-center gap-2 bg-other-tonal-fill5 rounded-sm px-3 border-none',
+        'cursor-text outline-solid outline-2 outline-transparent',
+        'hover:bg-action-hover-overlay',
         'transition-[background-color,outline-color] duration-150',
         getFocusWithinOutlineColorByActionType(actionType),
       )}
@@ -128,7 +128,7 @@ export const TextInput = ({
         className={cn(
           typographyCn,
           disabled ? 'text-text-muted' : 'text-text-primary',
-          'box-border grow min-w-0 w-full flex-shrink appearance-none border-none bg-base-transparent py-2',
+          'box-border grow min-w-0 w-full shrink appearance-none border-none bg-base-transparent py-2',
           'placeholder:text-text-secondary',
           'disabled:cursor-not-allowed disabled:placeholder:text-text-muted',
           'focus:outline-0',
@@ -138,7 +138,7 @@ export const TextInput = ({
       {endAdornment && (
         <div
           className={cn(
-            'flex flex-shrink-0 items-center gap-2',
+            'flex shrink-0 items-center gap-2',
             disabled ? 'text-text-muted' : 'text-neutral-light',
           )}
         >

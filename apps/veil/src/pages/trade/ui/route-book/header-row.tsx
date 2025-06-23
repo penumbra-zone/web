@@ -7,7 +7,7 @@ export interface OrderBookHeaderProps {
 
 export const RouteBookHeader = ({ base, quote }: OrderBookHeaderProps) => {
   return (
-    <div className='grid grid-cols-subgrid col-span-4 text-xs text-text-secondary px-4 border-b border-b-other-tonalStroke'>
+    <div className='grid grid-cols-subgrid col-span-4 text-xs text-text-secondary px-4 border-b border-b-other-tonal-stroke'>
       <div className='py-2 text-left'>
         <Text tableItemSmall>Price({quote})</Text>
       </div>

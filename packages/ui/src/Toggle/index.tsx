@@ -22,7 +22,7 @@ export const Toggle = ({ label, value, onChange, disabled }: ToggleProps) => {
       onPressedChange={onChange}
       disabled={useDisabled(disabled)}
       className={cn(
-        'border border-solid border-other-tonalStroke rounded-full transition-colors cursor-pointer',
+        'border border-solid border-other-tonal-stroke rounded-full transition-colors cursor-pointer',
         value ? 'bg-primary-main' : 'bg-base-transparent',
         density === 'sparse' ? 'w-12' : 'w-8',
       )}

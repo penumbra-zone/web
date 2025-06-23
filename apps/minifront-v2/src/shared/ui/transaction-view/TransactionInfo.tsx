@@ -50,7 +50,7 @@ export const TransactionInfo: React.FC<SectionComponentProps> = ({
             Transaction Hash
           </Text>
         </div>
-        <div className='mx-2 grow border-b border-dashed border-other-tonalStroke pt-3'></div>
+        <div className='mx-2 grow border-b border-dashed border-other-tonal-stroke pt-3'></div>
         <div className='flex items-center gap-1'>
           <div className='flex max-w-[250px] items-center gap-1'>
             <Text variant='smallTechnical' truncate color={textColorClass}>
@@ -72,7 +72,7 @@ export const TransactionInfo: React.FC<SectionComponentProps> = ({
             Block Height
           </Text>
         </div>
-        <div className='mx-2 grow border-b border-dashed border-other-tonalStroke pt-3'></div>
+        <div className='mx-2 grow border-b border-dashed border-other-tonal-stroke pt-3'></div>
         <div className='flex items-center gap-1'>
           <a
             href={`https://penumbra.zone/block/${blockHeight}`}
@@ -97,7 +97,7 @@ export const TransactionInfo: React.FC<SectionComponentProps> = ({
               Time
             </Text>
           </div>
-          <div className='mx-2 grow border-b border-dashed border-other-tonalStroke pt-3'></div>
+          <div className='mx-2 grow border-b border-dashed border-other-tonal-stroke pt-3'></div>
           <div className='flex items-center gap-1'>
             <Text variant='smallTechnical' color={textColorClass}>
               {formatTimestamp(blockTimestamp)}

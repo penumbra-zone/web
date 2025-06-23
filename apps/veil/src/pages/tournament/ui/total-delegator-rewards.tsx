@@ -36,7 +36,7 @@ interface VotingRewardsRowProps {
 const VotingRewardsRow = ({ row, padStart }: VotingRewardsRowProps) => {
   return (
     <Link
-      className='grid grid-cols-subgrid col-span-4 hover:bg-action-hoverOverlay'
+      className='grid grid-cols-subgrid col-span-4 hover:bg-action-hover-overlay'
       href={`/tournament/${row.epoch}`}
     >
       <TableCell cell>{`Epoch #${row.epoch}`}</TableCell>

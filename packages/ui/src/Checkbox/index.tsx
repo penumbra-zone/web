@@ -36,10 +36,10 @@ export const Checkbox = ({
         defaultChecked={defaultChecked}
         className={cn(
           'relative flex size-5 appearance-none items-center justify-center rounded-xs',
-          'outline outline-[1.5px]  outline-other-tonalStroke bg-transparent transition-[background-color,outline-color]',
-          'focus:outline-action-primaryFocusOutline aria-checked:bg-primary-main data-[state=indeterminate]:bg-neutral-main data-[state=indeterminate]:outline-other-neutralOutline aria-checked:outline-other-orangeOutline aria-checked:focus:outline-action-primaryFocusOutline',
-          'before:content-[""] before:size-[23px] before:absolute before:top-1/2 before:left-1/2 before:-translate-y-1/2 before:-translate-x-1/2 before:rounded-xs before:z-[1]',
-          'before:transition-colors hover:before:bg-action-hoverOverlay disabled:before:bg-action-disabledOverlay',
+          'outline-solid outline-[1.5px]  outline-other-tonal-stroke bg-transparent transition-[background-color,outline-color]',
+          'focus:outline-action-primary-focus-outline aria-checked:bg-primary-main data-[state=indeterminate]:bg-neutral-main data-[state=indeterminate]:outline-other-neutral-outline aria-checked:outline-other-orange-outline aria-checked:focus:outline-action-primary-focus-outline',
+          'before:content-[""] before:size-[23px] before:absolute before:top-1/2 before:left-1/2 before:-translate-y-1/2 before:-translate-x-1/2 before:rounded-xs before:z-1',
+          'before:transition-colors hover:before:bg-action-hover-overlay disabled:before:bg-action-disabled-overlay',
         )}
       >
         <CheckboxIndicator>

@@ -81,11 +81,11 @@ export const AssetRow = observer(
 
     return (
       <div
-        className={`grid grid-cols-subgrid col-span-7 rounded-sm ${isExpanded ? 'bg-other-tonalFill5' : ''} `}
+        className={`grid grid-cols-subgrid col-span-7 rounded-sm ${isExpanded ? 'bg-other-tonal-fill5' : ''} `}
       >
         <div
           className={
-            'col-span-7 grid grid-cols-subgrid border-b border-b-other-tonalStroke hover:bg-action-hoverOverlay hover:cursor-pointer'
+            'col-span-7 grid grid-cols-subgrid border-b border-b-other-tonal-stroke hover:bg-action-hover-overlay hover:cursor-pointer'
           }
           onClick={() => setIsExpanded(prev => !prev)}
         >
@@ -184,7 +184,7 @@ export const AssetRow = observer(
           asset.shieldedBalances.map(bal => (
             <div
               key={bal.valueView.toJsonString()}
-              className={'col-span-7 grid grid-cols-subgrid hover:bg-action-hoverOverlay'}
+              className={'col-span-7 grid grid-cols-subgrid hover:bg-action-hover-overlay'}
             >
               <TableCell variant={'lastCell'}>
                 <div className='flex items-center gap-3 justify-between w-full'>
@@ -244,7 +244,7 @@ export const AssetRow = observer(
           asset.publicBalances.map(bal => (
             <div
               key={bal.denom}
-              className={`col-span-7 grid grid-cols-subgrid hover:bg-action-hoverOverlay`}
+              className={`col-span-7 grid grid-cols-subgrid hover:bg-action-hover-overlay`}
             >
               <TableCell variant={'lastCell'}>
                 <div className='flex items-center'>

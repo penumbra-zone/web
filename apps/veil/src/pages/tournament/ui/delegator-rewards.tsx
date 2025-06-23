@@ -92,7 +92,7 @@ export const DelegatorTotalRewards = observer(() => {
   }, [isTotalZero, expanded]);
 
   return (
-    <section ref={parent} className='p-6 rounded-lg bg-other-tonalFill5 backdrop-blur-lg'>
+    <section ref={parent} className='p-6 rounded-lg bg-other-tonal-fill5 backdrop-blur-lg'>
       <div className='flex flex-col desktop:flex-row gap-2 justify-between items-start desktop:items-center'>
         <div className='flex flex-col gap-1'>
           <Text xxl color='text.primary'>

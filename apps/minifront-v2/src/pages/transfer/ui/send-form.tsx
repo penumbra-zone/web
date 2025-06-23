@@ -62,7 +62,7 @@ export const SendForm = observer(() => {
     <div className='p-4rounded-sm'>
       <form onSubmit={handleSubmit} className='flex flex-col gap-1'>
         {/* Recipient Address */}
-        <div className='flex flex-col gap-1 p-3 bg-other-tonalFill5 rounded-sm'>
+        <div className='flex flex-col gap-1 p-3 bg-other-tonal-fill5 rounded-sm'>
           <Text strong>Recipient</Text>
           <TextInput
             value={sendState.recipient}
@@ -80,7 +80,7 @@ export const SendForm = observer(() => {
         </div>
 
         {/* Amount and Asset Selection */}
-        <div className='flex flex-col gap-1 p-3 bg-other-tonalFill5 rounded-sm'>
+        <div className='flex flex-col gap-1 p-3 bg-other-tonal-fill5 rounded-sm'>
           <Text strong>Amount</Text>
           <AssetValueInput
             amount={sendState.amount}
@@ -96,7 +96,7 @@ export const SendForm = observer(() => {
         </div>
 
         {/* Fee Tier Selection */}
-        <div className='flex flex-col gap-1 p-3 bg-other-tonalFill5 rounded-sm'>
+        <div className='flex flex-col gap-1 p-3 bg-other-tonal-fill5 rounded-sm'>
           <div className='flex items-center justify-between'>
             <Text strong>Fee Tier</Text>
           </div>
@@ -153,7 +153,7 @@ export const SendForm = observer(() => {
         </div>
 
         {/* Memo */}
-        <div className='flex flex-col gap-1 p-3 bg-other-tonalFill5 rounded-sm'>
+        <div className='flex flex-col gap-1 p-3 bg-other-tonal-fill5 rounded-sm'>
           <Text strong>Memo</Text>
           <TextInput
             value={sendState.memo}

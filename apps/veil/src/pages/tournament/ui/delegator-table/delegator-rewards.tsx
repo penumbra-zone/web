@@ -54,7 +54,7 @@ const TableLayout = observer(
 
 const Layout = ({ totalChild, tableChild }: { totalChild: ReactNode; tableChild: ReactNode }) => {
   return (
-    <div className='flex flex-col gap-4 p-6 rounded-lg bg-other-tonalFill5 backdrop-blur-lg'>
+    <div className='flex flex-col gap-4 p-6 rounded-lg bg-other-tonal-fill5 backdrop-blur-lg'>
       <div className='flex flex-col gap-2 desktop:flex-row justify-between items-start desktop:items-center'>
         <div className='flex flex-col gap-1'>
           <Text xxl color='text.primary'>
@@ -147,7 +147,7 @@ export const DelegatorRewards = ({ address }: { address: Address }) => {
         {rows.map(row => (
           <Link
             key={`epoch-${row.epoch}`}
-            className='grid grid-cols-subgrid col-span-4 hover:bg-action-hoverOverlay'
+            className='grid grid-cols-subgrid col-span-4 hover:bg-action-hover-overlay'
             href={`/tournament/${row.epoch}`}
           >
             <TableCell cell>{`Epoch #${row.epoch}`}</TableCell>

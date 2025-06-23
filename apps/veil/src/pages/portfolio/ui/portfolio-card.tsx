@@ -7,7 +7,7 @@ interface PortfolioCardProps {
 
 export function PortfolioCard({ title, children }: PortfolioCardProps) {
   return (
-    <div className='gap-4 p-6 flex flex-col items-stretch self-stretch rounded-lg bg-other-tonalFill5 backdrop-blur-lg'>
+    <div className='gap-4 p-6 flex flex-col items-stretch self-stretch rounded-lg bg-other-tonal-fill5 backdrop-blur-lg'>
       {title && (
         <Text xxl color={'text.primary'}>
           {title}

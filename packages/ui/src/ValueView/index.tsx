@@ -198,7 +198,7 @@ export const ValueViewComponent = <SelectedContext extends Context = 'default'>(
             'grow shrink flex items-center overflow-hidden',
             context === 'table' &&
               priority === 'secondary' &&
-              'border-b-2 border-dashed border-other-tonalStroke',
+              'border-b-2 border-dashed border-other-tonal-stroke',
             getGap(density),
             textColor ? getThemeColorClass(textColor).text : getSignColor(signed),
           )}

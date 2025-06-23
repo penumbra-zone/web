@@ -111,7 +111,7 @@ const SocialCardCanvas = ({
   return (
     <canvas
       ref={canvasRef}
-      className='w-full h-auto max-w-[512px] aspect-square bg-other-tonalFill10'
+      className='w-full h-auto max-w-[512px] aspect-square bg-other-tonal-fill10'
     />
   );
 };

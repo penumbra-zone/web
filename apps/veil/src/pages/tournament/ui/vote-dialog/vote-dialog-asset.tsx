@@ -46,7 +46,7 @@ export const VoteAssetContent = ({ asset }: { asset: MappedGauge }) => {
         </Text>
       </div>
 
-      <div className='flex w-full h-1 bg-other-tonalFill5 rounded-full'>
+      <div className='flex w-full h-1 bg-other-tonal-fill5 rounded-full'>
         <div
           className={cn(
             'h-full rounded-full',

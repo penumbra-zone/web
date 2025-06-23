@@ -28,7 +28,7 @@ const SummaryCard = ({
           <div className='h-4 w-10'>
             <Skeleton />
           </div>
-          <div className='h-4 w-[4.5rem]'>
+          <div className='h-4 w-18'>
             <Skeleton />
           </div>
         </>

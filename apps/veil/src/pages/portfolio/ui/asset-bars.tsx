@@ -157,7 +157,7 @@ export const AssetBars: React.FC = () => {
         {/* Shielded Assets Bar */}
         <div className='flex items-center gap-2'>
           <div className='w-16 text-neutral-400 text-xs font-normal'>Shielded</div>
-          <div className='relative h-1.5 flex-grow bg-neutral-800 rounded overflow-hidden'>
+          <div className='relative h-1.5 grow bg-neutral-800 rounded overflow-hidden'>
             <div className='absolute left-0 top-0 h-full' style={{ width: `${shieldedBarWidth}%` }}>
               {shieldedAllocations.length > 0 &&
                 shieldedAllocations.map((allocation, index) => {
@@ -188,7 +188,7 @@ export const AssetBars: React.FC = () => {
         {/* Public Assets Bar */}
         <div className='flex items-center gap-2'>
           <div className='w-16 text-neutral-400 text-xs font-normal'>Public</div>
-          <div className='relative h-1.5 flex-grow bg-neutral-800 rounded overflow-hidden'>
+          <div className='relative h-1.5 grow bg-neutral-800 rounded overflow-hidden'>
             <div className='absolute left-0 top-0 h-full' style={{ width: `${publicBarWidth}%` }}>
               {publicAllocations.length > 0 &&
                 publicAllocations.map((allocation, index) => {
@@ -492,7 +492,7 @@ const ConnectedButEmpty: React.FC = observer(() => {
     rows.push(
       <div key='shielded' className='flex items-center gap-2'>
         <div className='w-16 text-neutral-400 text-xs font-normal'>Shielded</div>
-        <div className='h-1.5 flex-grow rounded bg-gradient-to-r from-[#fafafa0d] to-[#fafafa1a]' />
+        <div className='h-1.5 grow rounded bg-linear-to-r from-other-tonal-fill5 to-other-tonal-fill10' />
       </div>,
     );
   }
@@ -501,7 +501,7 @@ const ConnectedButEmpty: React.FC = observer(() => {
     rows.push(
       <div key='public' className='flex items-center gap-2'>
         <div className='w-16 text-neutral-400 text-xs font-normal'>Public</div>
-        <div className='h-1.5 flex-grow rounded bg-gradient-to-r from-[#fafafa0d] to-[#fafafa1a]' />
+        <div className='h-1.5 grow rounded bg-linear-to-r from-other-tonal-fill5 to-other-tonal-fill10' />
       </div>,
     );
   }

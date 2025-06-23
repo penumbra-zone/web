@@ -56,8 +56,8 @@ export const Tooltip = ({ title, message, children }: TooltipProps) => (
       <RadixTooltip.Content
         sideOffset={4}
         className={cn(
-          'w-[200px] p-2 border border-other-tonalStroke rounded-sm backdrop-blur-xl',
-          'bg-other-dialogBackground text-text-primary origin-[--radix-tooltip-content-transform-origin]',
+          'w-[200px] p-2 border border-other-tonal-stroke rounded-sm backdrop-blur-xl',
+          'bg-other-dialog-background text-text-primary origin-(--radix-tooltip-content-transform-origin)',
           'animate-scale',
         )}
       >

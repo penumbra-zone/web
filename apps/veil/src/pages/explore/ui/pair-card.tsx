@@ -72,7 +72,7 @@ export const PairCard = ({ loading, summary }: PairCardProps) => {
   return (
     <Link
       href={loading ? `/trade` : `/trade/${summary.baseAsset.symbol}/${summary.quoteAsset.symbol}`}
-      className='grid grid-cols-subgrid col-span-6 p-3 rounded-sm cursor-pointer transition-colors hover:bg-action-hoverOverlay'
+      className='grid grid-cols-subgrid col-span-6 p-3 rounded-sm cursor-pointer transition-colors hover:bg-action-hover-overlay'
     >
       <div className='relative h-10 flex items-center gap-2 text-text-primary'>
         {loading ? (

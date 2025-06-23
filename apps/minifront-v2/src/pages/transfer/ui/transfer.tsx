@@ -30,7 +30,7 @@ export const Transfer = observer((): React.ReactNode => {
                 ]}
                 actionType='accent'
               />
-              <div className='border-b border-1 border-other-tonalStroke'></div>
+              <div className='border-b border border-other-tonal-stroke'></div>
 
               <div className='mt-4'>
                 {transferStore.activeTab === 'send' ? <SendForm /> : <ReceiveForm />}

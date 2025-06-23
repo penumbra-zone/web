@@ -47,7 +47,7 @@ export const PaginationButton = ({ value, onClick, active, disabled }: Paginatio
   };
 
   let color = active
-    ? cn('text-text-primary bg-other-tonalFill10')
+    ? cn('text-text-primary bg-other-tonal-fill10')
     : cn('text-text-secondary hover:text-text-primary focus:text-text-primary');
   if (isEllipsis) {
     color = cn('text-text-muted');
@@ -63,9 +63,9 @@ export const PaginationButton = ({ value, onClick, active, disabled }: Paginatio
         onKeyDown={onKeyDown}
         onInput={event => setInputValue(event.currentTarget.value)}
         className={cn(
-          'w-12 h-8 px-2 rounded-sm bg-other-tonalFill5 text-textSm font-normal',
-          'transition-[background-color,outline-color] duration-150 outline outline-2 outline-transparent',
-          'hover:bg-action-hoverOverlay focus:outline-action-neutralFocusOutline',
+          'w-12 h-8 px-2 rounded-sm bg-other-tonal-fill5 text-text-sm font-normal',
+          'transition-[background-color,outline-color] duration-150 outline-solid outline-2 outline-transparent',
+          'hover:bg-action-hover-overlay focus:outline-action-neutral-focus-outline',
           '[&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
           disabled ? 'text-text-muted' : 'text-text-primary',
         )}
@@ -79,7 +79,7 @@ export const PaginationButton = ({ value, onClick, active, disabled }: Paginatio
       onClick={handleClick}
       disabled={disabled}
       className={cn(
-        'size-8 min-w-8 rounded-full border-none transition-colors focus:outline-none focus-visible:outline-2 focus-visible:outline-action-neutralFocusOutline',
+        'size-8 min-w-8 rounded-full border-none transition-colors focus:outline-hidden focus-visible:outline-2 focus-visible:outline-action-neutral-focus-outline',
         color,
       )}
     >

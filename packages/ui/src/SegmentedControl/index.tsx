@@ -32,12 +32,12 @@ const getItemClassesByDensity = (density: Density): string => {
 const getItemClassesByStyle = (style: SegmentedControlItemProps['style']): string => {
   if (style === 'red') {
     return cn(
-      'aria-checked:bg-destructive-main aria-checked:border-transparent aria-checked:focus:outline-action-destructiveFocusOutline',
+      'aria-checked:bg-destructive-main aria-checked:border-transparent aria-checked:focus:outline-action-destructive-focus-outline',
     );
   }
   if (style === 'green') {
     return cn(
-      'aria-checked:bg-success-main aria-checked:border-transparent aria-checked:focus:outline-action-successFocusOutline',
+      'aria-checked:bg-success-main aria-checked:border-transparent aria-checked:focus:outline-action-success-focus-outline',
     );
   }
   if (style === 'filled') {
@@ -63,20 +63,20 @@ export const SegmentedControlItem = ({
       className={cn(
         'flex items-center justify-center overflow-hidden relative',
         'text-text-secondary aria-checked:text-text-primary',
-        'bg-transparent border border-other-tonalStroke',
+        'bg-transparent border border-other-tonal-stroke',
         'transition-colors',
         getItemClassesByDensity(density),
         getItemClassesByStyle(style),
         // Hover style
-        '[&:not(:disabled)]:hover:border-neutral-light after:content-[""] after:absolute after:inset-0 after:bg-transparent after:pointer-events-none [&:not(:disabled)]:hover:after:bg-action-hoverOverlay after:transition-colors',
+        'not-disabled:hover:border-neutral-light after:content-[""] after:absolute after:inset-0 after:bg-transparent after:pointer-events-none not-disabled:hover:after:bg-action-hover-overlay after:transition-colors',
         // Focus style
-        'outline outline-2 outline-transparent focus:outline-action-neutralFocusOutline',
+        'outline-solid outline-2 outline-transparent focus:outline-action-neutral-focus-outline',
         // Disabled style
-        'disabled:cursor-not-allowed before:content-[""] before:absolute before:inset-0 before:bg-transparent before:pointer-events-none disabled:before:bg-action-disabledOverlay before:transition-colors',
+        'disabled:cursor-not-allowed before:content-[""] before:absolute before:inset-0 before:bg-transparent before:pointer-events-none disabled:before:bg-action-disabled-overlay before:transition-colors',
         // Correctly round and hide borders based on the item position
         'only:rounded-full first:rounded-l-full last:rounded-r-full',
-        '[&:not(:last-child)]:border-r-0 [&[aria-checked="true"]:not(:last-child)]:border-r-[1px] [&[aria-checked="true"]:not(:last-child)+*]:border-l-0',
-        '[&:hover:not(:last-child)]:border-r-[1px] [&:hover:not(:last-child)+*]:border-l-0',
+        'not-last:border-r-0 [&[aria-checked="true"]:not(:last-child)]:border-r [&[aria-checked="true"]:not(:last-child)+*]:border-l-0',
+        '[&:hover:not(:last-child)]:border-r [&:hover:not(:last-child)+*]:border-l-0',
       )}
     >
       <Container>{children ?? value}</Container>

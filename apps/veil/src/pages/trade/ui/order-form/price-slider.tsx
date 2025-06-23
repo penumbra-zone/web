@@ -89,16 +89,16 @@ const Thumb = ({
         left: x,
       }}
     >
-      <div className='absolute z-0 w-[1px] top-[20px] h-[58px] bg-primary-main left-0' />
+      <div className='absolute z-0 w-px top-[20px] h-[58px] bg-primary-main left-0' />
       <button
         type='button'
         aria-label='Slider Thumb'
-        className={`w-[12px] h-[20px] bg-primary-main absolute top-[32px] cursor-ew-resize rounded-[4px] left-[-6px]`}
+        className={`w-[12px] h-[20px] bg-primary-main absolute top-[32px] cursor-ew-resize rounded-xs left-[-6px]`}
         onMouseDown={handlePointerDown}
         onTouchStart={handlePointerDown}
       >
-        <div className='absolute top-[4px] left-[4px] w-[1px] h-[12px] bg-neutral-contrast' />
-        <div className='absolute top-[4px] right-[4px] w-[1px] h-[12px] bg-neutral-contrast' />
+        <div className='absolute top-[4px] left-[4px] w-px h-[12px] bg-neutral-contrast' />
+        <div className='absolute top-[4px] right-[4px] w-px h-[12px] bg-neutral-contrast' />
       </button>
     </div>
   );
@@ -143,7 +143,7 @@ const PercentageInput = ({
       ref={textRef}
       className={`
         absolute top-0 h-[20px] [line-height:20px_!important] bg-[#2A2725] rounded-sm px-1
-        font-default text-textXs font-normal text-text-primary
+        font-default text-text-xs font-normal text-text-primary
         ${elevate ? 'z-20' : 'z-10'}
       `}
       style={{ left }}
@@ -192,7 +192,7 @@ const ValueInput = ({
       ref={textRef}
       className={`
         absolute top-[78px] h-[20px] [line-height:20px_!important] bg-black rounded-sm px-1
-        font-default text-textXs font-normal text-text-primary
+        font-default text-text-xs font-normal text-text-primary
         ${elevate ? 'z-20' : 'z-10'}
       `}
       style={{ left }}
@@ -260,14 +260,14 @@ export const PriceSlider = ({
           {marketPrice} {baseAsset?.symbol}
         </Text>
       </div>
-      <div ref={ref} className='relative z-0 h-[98px] w-full border-b border-other-tonalFill10'>
+      <div ref={ref} className='relative z-0 h-[98px] w-full border-b border-other-tonal-fill10'>
         {/* midprice line */}
         <div className='absolute z-30 top-0 left-1/2 h-[70px] w-0 border-l border-dashed border-neutral-contrast' />
         {scaleLoaded && scale && (
           <>
             {/* slider bg gradient */}
             <div
-              className='absolute z-10 top-0 h-[70px] bg-gradient-to-b from-[rgba(186,77,20,0)] from-10% to-[rgba(186,77,20,0.35)]'
+              className='absolute z-10 top-0 h-[70px] bg-linear-to-b from-[rgba(186,77,20,0)] from-10% to-[rgba(186,77,20,0.35)]'
               style={{
                 left: leftX,
                 right: rightX,
@@ -315,7 +315,7 @@ export const PriceSlider = ({
         )}
 
         {/* slider track bg */}
-        <div className='absolute z-10 top-[62px] left-0 w-full h-[6px] bg-other-tonalFill10 rounded-xs' />
+        <div className='absolute z-10 top-[62px] left-0 w-full h-[6px] bg-other-tonal-fill10 rounded-xs' />
         {/* filled slider track */}
         {scaleLoaded && scale && (
           <div

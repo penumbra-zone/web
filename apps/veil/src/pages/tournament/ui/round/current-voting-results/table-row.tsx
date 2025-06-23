@@ -33,7 +33,7 @@ export const TableRow = ({
       <TableCell loading={loading}>
         {!loading && (
           <div className='flex items-center gap-2'>
-            <div className='flex w-[64px] md:w-[106px] h-[6px] bg-other-tonalFill5 rounded-full'>
+            <div className='flex w-[64px] md:w-[106px] h-[6px] bg-other-tonal-fill5 rounded-full'>
               <div
                 className='h-[6px] bg-secondary-light rounded-full'
                 style={{ width: `${item.portion * 100}%` }}

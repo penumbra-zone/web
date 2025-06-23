@@ -24,7 +24,7 @@ export const FallbackPage = ({
         <div className='absolute top-0 left-0 w-full z-5 bg-caution-light'>
           <div className='flex items-center gap-3 px-6 py-3'>
             <AlertTriangle
-              className='w-6 h-6 mt-0.5 flex-shrink-0 text-caution-dark'
+              className='w-6 h-6 mt-0.5 shrink-0 text-caution-dark'
               aria-hidden='true'
             />
             <div className='flex flex-col gap-1 text-left'>

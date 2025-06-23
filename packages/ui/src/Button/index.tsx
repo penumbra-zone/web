@@ -136,8 +136,8 @@ export const Button = ({
         getBackground(styleAttrs),
         getOverlays(styleAttrs),
 
-        '-outline-offset-1 focus:outline-none',
-        priority === 'secondary' && 'outline outline-1',
+        '-outline-offset-1 focus:outline-hidden',
+        priority === 'secondary' && 'outline-solid outline-1',
         priority === 'secondary' && getOutlineColorByActionType(actionType),
 
         'relative',

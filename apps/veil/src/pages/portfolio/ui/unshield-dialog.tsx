@@ -202,7 +202,7 @@ export function UnshieldDialog({ asset }: { asset: ShieldedBalance }) {
       </Dialog.Trigger>
 
       <Dialog.Content title='Unshield'>
-        <div className='relative rounded-[20px] p-6 backdrop-blur-[32px] overflow-hidden'>
+        <div className='relative rounded-xl p-6 backdrop-blur-lg overflow-hidden'>
           <Image
             priority
             src='/assets/unshield-backdrop.svg'

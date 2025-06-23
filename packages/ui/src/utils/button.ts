@@ -43,10 +43,10 @@ export const getOverlays = ({ actionType, density, rounded }: ButtonStyleAttribu
 
   return cn(
     'relative',
-    'before:content-[""] before:absolute before:inset-0 before:z-[1] before:outline-[1.5] before:outline before:outline-transparent duration-150 before:transition-[background-color,outline-color]',
-    'hover:before:bg-action-hoverOverlay',
-    'active:before:bg-action-activeOverlay',
-    'disabled:before:cursor-not-allowed disabled:before:bg-action-disabledOverlay',
+    'before:content-[""] before:absolute before:inset-0 before:z-1 before:outline-[1.5] before:outline-solid before:outline-transparent duration-150 before:transition-[background-color,outline-color]',
+    'hover:before:bg-action-hover-overlay',
+    'active:before:bg-action-active-overlay',
+    'disabled:before:cursor-not-allowed disabled:before:bg-action-disabled-overlay',
     getBeforeOutlineColorByActionType(actionType),
     // Apply overlay border radius to match button border radius
     borderRadius,
@@ -64,7 +64,7 @@ export const getBackground = ({
 
   switch (actionType) {
     case 'default':
-      return cn('bg-other-tonalFill10');
+      return cn('bg-other-tonal-fill10');
 
     default:
       return getBackgroundColorByActionType(actionType);

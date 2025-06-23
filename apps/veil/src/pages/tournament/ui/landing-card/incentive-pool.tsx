@@ -31,7 +31,7 @@ export const IncentivePool = ({ summary, loading }: IncentivePoolProps) => {
         )}
       </div>
 
-      <div className='flex w-full h-[6px] bg-base-blackAlt rounded-full justify-between overflow-hidden'>
+      <div className='flex w-full h-[6px] bg-base-black-alt rounded-full justify-between overflow-hidden'>
         {loading ? (
           <div className='w-full h-full'>
             <Skeleton />

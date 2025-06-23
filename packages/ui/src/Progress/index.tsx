@@ -31,7 +31,7 @@ export const Progress = ({ value, loading, error = false }: ProgressProps) => (
     max={1}
     className={cn(
       'relative w-full h-1 overflow-hidden transition-colors',
-      error ? 'bg-destructive-light' : 'bg-other-tonalFill5',
+      error ? 'bg-destructive-light' : 'bg-other-tonal-fill5',
     )}
   >
     <ProgressPrimitive.Indicator asChild>
@@ -47,7 +47,7 @@ export const Progress = ({ value, loading, error = false }: ProgressProps) => (
           <div
             className={cn(
               'absolute top-0 -left-[20%] w-1/5 h-full blur-[2px]',
-              'animate-progress bg-progressLoading',
+              'animate-progress bg-progress-loading',
             )}
           />
         )}

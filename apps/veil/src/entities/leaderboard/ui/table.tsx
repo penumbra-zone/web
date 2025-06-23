@@ -116,8 +116,8 @@ export const LPLeaderboard = observer(
               <Text xxl color='text.primary'>
                 LP Leaderboard
                 {showEpoch && !!epoch && (
-                  <div className='desktop:ml-3 inline-flex items-center rounded-sm bg-base-blackAlt px-2'>
-                    <div className='text-transparent bg-clip-text [background-image:linear-gradient(90deg,rgb(244,156,67),rgb(83,174,168))]'>
+                  <div className='desktop:ml-3 inline-flex items-center rounded-sm bg-base-black-alt px-2'>
+                    <div className='text-transparent bg-clip-text bg-[linear-gradient(90deg,rgb(244,156,67),rgb(83,174,168))]'>
                       <Text xxl>Epoch #{epoch}</Text>
                     </div>
                   </div>
@@ -203,8 +203,8 @@ export const LPLeaderboard = observer(
                             href={`/inspect/lp/${position.positionIdString}`}
                             className={cn(
                               'relative grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr] col-span-6',
-                              'bg-transparent hover:bg-action-hoverOverlay transition-colors',
-                              '[&>*]:h-auto',
+                              'bg-transparent hover:bg-action-hover-overlay transition-colors',
+                              '*:h-auto',
                             )}
                           >
                             <TableCell cell>
@@ -283,7 +283,7 @@ export const LPLeaderboard = observer(
                       <div className='col-span-6'>
                         <div className='grid grid-cols-subgrid col-span-4'>
                           <TableCell cell>
-                            <span className='!text-sm'>
+                            <span className='text-sm!'>
                               {tab === Tabs.AllLPs
                                 ? 'There are no liquidity positions in this epoch.'
                                 : 'Your LPs have not received any rewards during this epoch.'}

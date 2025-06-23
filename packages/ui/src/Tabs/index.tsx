@@ -8,22 +8,22 @@ type LimitedActionType = Exclude<ActionType, 'destructive'>;
 
 const getIndicatorColor = (actionType: LimitedActionType): string => {
   if (actionType === 'accent') {
-    return cn('bg-accentRadialGradient');
+    return cn('bg-accent-radial-gradient');
   }
   if (actionType === 'unshield') {
-    return cn('bg-unshieldRadialGradient');
+    return cn('bg-unshield-radial-gradient');
   }
-  return cn('bg-neutralRadialGradient');
+  return cn('bg-neutral-radial-gradient');
 };
 
 const getBorderColor = (actionType: LimitedActionType): string => {
   if (actionType === 'accent') {
-    return cn('border-action-primaryFocusOutline');
+    return cn('border-action-primary-focus-outline');
   }
   if (actionType === 'unshield') {
-    return cn('border-action-unshieldFocusOutline');
+    return cn('border-action-unshield-focus-outline');
   }
-  return cn('border-action-neutralFocusOutline');
+  return cn('border-action-neutral-focus-outline');
 };
 
 const getDensityClasses = (density: Density): string => {
@@ -105,8 +105,8 @@ export const Tabs = ({ value, onChange, options, actionType = 'default' }: TabsP
                     value === option.value ? 'text-text-primary' : 'text-text-secondary',
                     getDensityItemClasses(density),
                     getFocusOutlineColorByActionType(actionType),
-                    'focus-visible:outline focus-visible:outline-2',
-                    'hover:bg-action-hoverOverlay',
+                    'focus-visible:outline-solid focus-visible:outline-2',
+                    'hover:bg-action-hover-overlay',
                   )}
                   {...(option.tabProps ?? {})}
                 >

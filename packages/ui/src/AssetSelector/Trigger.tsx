@@ -40,11 +40,11 @@ export const AssetSelectorTrigger = ({
         disabled={disabled}
         onClick={onClick}
         className={cn(
-          'flex items-center justify-between gap-1 min-w-20 rounded-xs bg-other-tonalFill5',
-          'transition-[background-color,outline-color] duration-150 outline outline-2 outline-transparent',
+          'flex items-center justify-between gap-1 min-w-20 rounded-xs bg-other-tonal-fill5',
+          'transition-[background-color,outline-color] duration-150 outline-solid outline-2 outline-transparent',
           density === 'sparse' ? 'h-12 py-0 px-3' : 'h-8 py-0 px-2',
-          'hover:bg-action-hoverOverlay disabled:bg-buttonDisabled',
-          'focus:text-text-secondary focus:bg-other-tonalFill5',
+          'hover:bg-action-hover-overlay disabled:bg-button-disabled',
+          'focus:text-text-secondary focus:bg-other-tonal-fill5',
           getFocusOutlineColorByActionType(actionType),
         )}
       >
@@ -64,7 +64,7 @@ export const AssetSelectorTrigger = ({
         <i
           className={cn(
             'flex items-center justify-center p-1 size-6 rounded-full',
-            disabled ? 'bg-action-disabledOverlay' : 'bg-transparent',
+            disabled ? 'bg-action-disabled-overlay' : 'bg-transparent',
           )}
         >
           <Icon

@@ -509,7 +509,7 @@ export const DarkModeUsage: Story = {
         <Text h4 color='text.primary'>
           Transparent background - Inherits container styling
         </Text>
-        <div className='rounded bg-other-tonalFill5 p-4'>
+        <div className='rounded bg-other-tonal-fill5 p-4'>
           <JsonViewer {...args} data={penumbraPositionData} backgroundColor='transparent' />
         </div>
       </div>
@@ -590,7 +590,7 @@ export const CustomLoading: Story = {
   args: {
     data: realisticPenumbraTransaction,
     loadingFallback: (
-      <div className='flex items-center justify-center rounded bg-other-tonalFill5 p-8'>
+      <div className='flex items-center justify-center rounded bg-other-tonal-fill5 p-8'>
         <Text detail color='text.secondary'>
           🔄 Loading Penumbra transaction data...
         </Text>

@@ -63,7 +63,7 @@ export const SimpleLiquidityOrderForm = observer(
                 onChange={store.setBaseInput}
                 endAdornment={
                   store.baseAsset?.symbol && (
-                    <div className='flex flex-shrink-0 items-center gap-1 font-default text-textSm font-normal leading-textXs text-text-secondary'>
+                    <div className='flex shrink-0 items-center gap-1 font-default text-text-sm font-normal leading-text-xs text-text-secondary'>
                       {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- its necessary */}
                       {store.baseAsset?.metadata?.images?.[0]?.svg && (
                         <Image
@@ -83,7 +83,7 @@ export const SimpleLiquidityOrderForm = observer(
             {store.baseAsset?.formatBalance() && (
               <button
                 type='button'
-                className='flex items-center gap-1 font-mono text-textXs font-normal leading-textXs text-text-secondary my-1'
+                className='flex items-center gap-1 font-mono text-text-xs font-normal leading-text-xs text-text-secondary my-1'
                 onClick={() => {
                   const target = store.baseAsset?.balance?.toString();
                   if (target) {
@@ -91,7 +91,7 @@ export const SimpleLiquidityOrderForm = observer(
                   }
                 }}
               >
-                <div className='bg-other-tonalFill5 rounded-full w-[28px] h-[20px] flex items-center justify-center'>
+                <div className='bg-other-tonal-fill5 rounded-full w-[28px] h-[20px] flex items-center justify-center'>
                   <Icon IconComponent={WalletMinimal} size='xs' color='text.secondary' />
                 </div>
                 {store.baseAsset.formatBalance()}
@@ -111,7 +111,7 @@ export const SimpleLiquidityOrderForm = observer(
                 onChange={store.setQuoteInput}
                 endAdornment={
                   store.quoteAsset?.symbol && (
-                    <div className='flex flex-shrink-0 items-center gap-1 font-default text-textSm font-normal leading-textXs text-text-secondary'>
+                    <div className='flex shrink-0 items-center gap-1 font-default text-text-sm font-normal leading-text-xs text-text-secondary'>
                       {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- its necessary */}
                       {store.quoteAsset?.metadata?.images?.[0]?.svg && (
                         <Image
@@ -131,7 +131,7 @@ export const SimpleLiquidityOrderForm = observer(
             {store.quoteAsset?.formatBalance() && (
               <button
                 type='button'
-                className='flex items-center gap-1 font-mono text-textXs font-normal leading-textXs text-text-secondary my-1'
+                className='flex items-center gap-1 font-mono text-text-xs font-normal leading-text-xs text-text-secondary my-1'
                 onClick={() => {
                   const target = store.quoteAsset?.balance?.toString();
                   if (target) {
@@ -139,7 +139,7 @@ export const SimpleLiquidityOrderForm = observer(
                   }
                 }}
               >
-                <div className='bg-other-tonalFill5 rounded-full w-[28px] h-[20px] flex items-center justify-center'>
+                <div className='bg-other-tonal-fill5 rounded-full w-[28px] h-[20px] flex items-center justify-center'>
                   <Icon IconComponent={WalletMinimal} size='xs' color='text.secondary' />
                 </div>
                 {store.quoteAsset.formatBalance()}

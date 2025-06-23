@@ -75,7 +75,7 @@ export const Slider: React.FC<SliderProps> = ({
         onValueChange={handleValueChange}
         disabled={disabled}
       >
-        <RadixSlider.Track className='relative h-2 w-full rounded-full bg-other-tonalFill10 px-2'>
+        <RadixSlider.Track className='relative h-2 w-full rounded-full bg-other-tonal-fill10 px-2'>
           {showFill && (
             <RadixSlider.Range className='absolute h-full rounded-full bg-primary-main' />
           )}
@@ -102,15 +102,15 @@ export const Slider: React.FC<SliderProps> = ({
         <RadixSlider.Thumb
           className={cn(
             'block w-4 h-4 rounded-full bg-neutral-contrast',
-            !disabled && 'cursor-grab hover:bg-neutral-contrast focus:outline focus:outline-2',
+            !disabled && 'cursor-grab hover:bg-neutral-contrast focus:outline-solid focus:outline-2',
             !disabled && `focus:outline-primary-main`,
             disabled &&
-              "after:content-[''] after:absolute after:inset-0 after:bg-action-disabledOverlay",
+              "after:content-[''] after:absolute after:inset-0 after:bg-action-disabled-overlay",
           )}
         />
       </RadixSlider.Root>
       {showValue && (
-        <div className='mt-4 flex rounded-sm border border-other-tonalStroke px-3 py-2 text-text-primary'>
+        <div className='mt-4 flex rounded-sm border border-other-tonal-stroke px-3 py-2 text-text-primary'>
           <Text as='div' detail color='text.primary'>
             {value}
           </Text>

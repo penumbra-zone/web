@@ -16,7 +16,7 @@ export const RouteTabs = () => {
 
   return (
     <div ref={parent} className='flex flex-col h-full'>
-      <div className='flex justify-between gap-2 px-4 lg:pt-2 border-b border-b-other-solidStroke'>
+      <div className='flex justify-between gap-2 px-4 lg:pt-2 border-b border-b-other-solid-stroke'>
         <Density compact>
           <Tabs
             value={tab}

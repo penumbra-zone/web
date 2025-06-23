@@ -40,7 +40,7 @@ export const ReceiveForm = observer(() => {
 
   return (
     <div className='flex flex-col gap-6 '>
-      <div className='flex flex-col gap-2 p-3 bg-other-tonalFill5 rounded-md'>
+      <div className='flex flex-col gap-2 p-3 bg-other-tonal-fill5 rounded-md'>
         {/* Account Selector */}
         <div className='flex flex-col gap-2 '>
           <Text strong>Account</Text>
@@ -58,7 +58,7 @@ export const ReceiveForm = observer(() => {
         {/* Address Display */}
         <div className='flex flex-col gap-2'>
           <div
-            className={`font-mono text-sm break-all p-2 border border-other-tonalStroke rounded-sm ${
+            className={`font-mono text-sm break-all p-2 border border-other-tonal-stroke rounded-sm ${
               receiveState.ibcDepositEnabled ? 'text-primary-light' : 'text-text-secondary'
             }`}
           >
@@ -74,7 +74,7 @@ export const ReceiveForm = observer(() => {
             </Text>
             <Popover>
               <Popover.Trigger>
-                <div className='w-4 h-4 rounded-full border border-other-tonalStroke flex items-center justify-center hover:bg-other-tonalFill10 cursor-pointer transition-colors'>
+                <div className='w-4 h-4 rounded-full border border-other-tonal-stroke flex items-center justify-center hover:bg-other-tonal-fill10 cursor-pointer transition-colors'>
                   <Info size={10} className='text-text-secondary' />
                 </div>
               </Popover.Trigger>

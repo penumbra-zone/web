@@ -18,10 +18,10 @@ export const FormTabs = observer(() => {
       ref={parent}
       className={cn(
         'flex flex-col transition-colors duration-500',
-        store.highlight && 'bg-action-hoverOverlay',
+        store.highlight && 'bg-action-hover-overlay',
       )}
     >
-      <div className='px-4 lg:pt-2 border-b border-b-other-solidStroke'>
+      <div className='px-4 lg:pt-2 border-b border-b-other-solid-stroke'>
         <Density compact>
           <Tabs
             value={store.whichForm}

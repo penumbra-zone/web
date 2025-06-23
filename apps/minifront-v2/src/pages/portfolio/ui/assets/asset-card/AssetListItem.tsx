@@ -76,7 +76,7 @@ export const AssetListItem = ({ asset }: AssetListItemProps) => {
   };
 
   return (
-    <div className='group relative flex h-16 items-center justify-between rounded-sm bg-other-tonalFill5 p-3 hover:bg-[rgba(250,250,250,0.05)] hover:bg-gradient-to-b hover:from-[rgba(83,174,168,0.15)] hover:to-[rgba(83,174,168,0.15)]'>
+    <div className='group relative flex h-16 items-center justify-between rounded-sm bg-other-tonal-fill5 p-3 hover:bg-[rgba(250,250,250,0.05)] hover:bg-linear-to-b hover:from-[rgba(83,174,168,0.15)] hover:to-[rgba(83,174,168,0.15)]'>
       <div className='flex items-center gap-2 min-w-0 flex-1 pr-32'>
         <AssetIcon size='md' metadata={metadataForIcon} zIndex={undefined} />
         <div className='flex flex-col min-w-0 flex-1'>

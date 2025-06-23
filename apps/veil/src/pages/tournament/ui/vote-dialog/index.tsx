@@ -129,7 +129,7 @@ export const VoteDialogueSelector = observer(
           headerChildren={
             <>
               {/* Focus catcher. If this button wouldn't exist, the focus would go to the first input, which is undesirable */}
-              <button type='button' className='w-full h-0 -mt-2 focus:outline-none' />
+              <button type='button' className='w-full h-0 -mt-2 focus:outline-hidden' />
 
               <Text detail color='text.secondary'>
                 You can only vote for one asset in an epoch and can&#39;t change your vote

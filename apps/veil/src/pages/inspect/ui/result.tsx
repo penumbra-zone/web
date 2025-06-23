@@ -31,10 +31,10 @@ export const LpInspectResult = () => {
   }
 
   return (
-    <section className='w-full border-t border-t-other-solidStroke overflow-x-hidden'>
-      <div className='grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-other-solidStroke border-l border-other-solidStroke'>
+    <section className='w-full border-t border-t-other-solid-stroke overflow-x-hidden'>
+      <div className='grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-other-solid-stroke border-l border-other-solid-stroke'>
         {/* First Column */}
-        <div className='flex flex-col divide-y divide-other-solidStroke'>
+        <div className='flex flex-col divide-y divide-other-solid-stroke'>
           <div className='p-4 w-full'>
             <StateDetails />
           </div>
@@ -49,7 +49,7 @@ export const LpInspectResult = () => {
         </div>
 
         {/* Second Column */}
-        <div className='flex flex-col divide-y divide-other-solidStroke'>
+        <div className='flex flex-col divide-y divide-other-solid-stroke'>
           <div className='p-4 w-full'>
             <VolumeAndFeesTable />
           </div>
@@ -57,7 +57,7 @@ export const LpInspectResult = () => {
       </div>
 
       {/* DebugView at the bottom for smaller screens */}
-      <div className='mt-4 border-t border-t-other-solidStroke pt-4 lg:hidden'>
+      <div className='mt-4 border-t border-t-other-solid-stroke pt-4 lg:hidden'>
         <DebugView />
       </div>
     </section>

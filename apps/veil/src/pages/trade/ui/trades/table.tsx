@@ -103,7 +103,7 @@ export const TradesTable = ({ error, data, isLoading }: TradesTableProps) => {
             <div
               className={cn(
                 'hidden group-hover:flex justify-center items-center gap-1',
-                'absolute left-0 right-0 w-full h-full px-4 z-30 select-none border-b border-b-other-tonalStroke',
+                'absolute left-0 right-0 w-full h-full px-4 z-30 select-none border-b border-b-other-tonal-stroke',
               )}
             >
               {trade.hops.map((token, index) => (

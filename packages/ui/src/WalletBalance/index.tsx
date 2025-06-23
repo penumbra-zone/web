@@ -65,9 +65,9 @@ export const WalletBalance = ({
           'peer',
           'flex items-center gap-1 py-1 px-2',
           'transition-colors duration-150',
-          'border-none rounded-full bg-other-tonalFill5',
-          'hover:bg-action-hoverOverlay',
-          'outline-0 focus:outline focus:bg-other-tonalFill5 focus:outline-2',
+          'border-none rounded-full bg-other-tonal-fill5',
+          'hover:bg-action-hover-overlay',
+          'outline-0 focus:outline-solid focus:bg-other-tonal-fill5 focus:outline-2',
           getOutlineColorByActionType(actionType),
         )}
       >

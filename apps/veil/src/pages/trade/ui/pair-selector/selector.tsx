@@ -106,10 +106,10 @@ export const PairSelector = observer(() => {
 
         <Dialog.Content title='Select pair'>
           {/* Focus catcher. If this button wouldn't exist, the focus would go to the first input, which is undesirable */}
-          <button type='button' className='w-full h-0 -mt-6 focus:outline-none' />
+          <button type='button' className='w-full h-0 -mt-6 focus:outline-hidden' />
 
           <Density sparse>
-            <div className='grid grid-cols-[minmax(0,1fr),16px,minmax(0,1fr)] [&_input]:max-w-[calc(100%_-_32px)] gap-2 pt-[2px] items-center'>
+            <div className='grid grid-cols-[minmax(0,1fr)_16px_minmax(0,1fr)] [&_input]:max-w-[calc(100%-32px)] gap-2 pt-[2px] items-center'>
               <FilterInput
                 ref={baseRef}
                 value={baseFilter}

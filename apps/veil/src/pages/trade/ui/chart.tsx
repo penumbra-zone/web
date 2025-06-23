@@ -236,7 +236,7 @@ export const Chart = observer(() => {
 
   return (
     <div className='flex flex-col h-full min-h-0'>
-      <div className='flex px-3 border-b border-b-other-solidStroke'>
+      <div className='flex px-3 border-b border-b-other-solid-stroke'>
         {durationWindows.map(w => (
           <button
             key={w}

@@ -13,7 +13,7 @@ export const InfoCard = ({ title, children, loading }: InfoCardProps) => {
   const [parent] = useAutoAnimate();
 
   return (
-    <div className='flex flex-col justify-center items-start w-full p-3 desktop:p-6 rounded-lg bg-other-tonalFill5 backdrop-blur-lg'>
+    <div className='flex flex-col justify-center items-start w-full p-3 desktop:p-6 rounded-lg bg-other-tonal-fill5 backdrop-blur-lg'>
       <Text detail color='text.secondary'>
         {title}
       </Text>

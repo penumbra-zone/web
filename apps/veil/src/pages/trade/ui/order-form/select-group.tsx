@@ -14,7 +14,7 @@ export const SelectGroup: React.FC<{
           key={option}
           onClick={() => onChange(option)}
           className={cn(
-            'rounded-lg border border-other-tonalStroke px-2',
+            'rounded-lg border border-other-tonal-stroke px-2',
             value === option ? 'text-text-primary' : 'text-text-secondary',
             value === option && 'bg-neutral-main text-text-primary',
           )}

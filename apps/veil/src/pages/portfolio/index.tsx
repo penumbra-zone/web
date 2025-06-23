@@ -33,7 +33,7 @@ export const PortfolioPage = ({ isMobile }: PortfolioPageProps): React.ReactNode
 function MobilePortfolioPage() {
   return (
     <section className='absolute inset-0 h-screen flex flex-col items-center justify-between p-4 gap-3 border-t border-neutral-800'>
-      <div className='flex flex-col justify-center items-center p-0 gap-4 w-full flex-grow'>
+      <div className='flex flex-col justify-center items-center p-0 gap-4 w-full grow'>
         <div className='relative'>
           <XCircle className='text-neutral-light w-8 h-8' />
         </div>

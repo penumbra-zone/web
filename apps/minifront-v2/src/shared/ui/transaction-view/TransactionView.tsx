@@ -204,7 +204,7 @@ export const TransactionView: React.FC<TransactionViewProps> = ({
     if (tab === TxViewTab.PUBLIC_VIEW) {
       return 'bg-gradientUnshieldRadial';
     }
-    return 'bg-cardGradient'; // Default for RECEIVER_VIEW or other tabs
+    return 'bg-card-gradient'; // Default for RECEIVER_VIEW or other tabs
   };
 
   const backgroundClass = getBackgroundClass(activeTab);
@@ -215,7 +215,7 @@ export const TransactionView: React.FC<TransactionViewProps> = ({
 
   return (
     <div
-      className={`flex w-full flex-col gap-4 rounded-xl border border-other-tonalStroke p-6 ${backgroundClass}`}
+      className={`flex w-full flex-col gap-4 rounded-xl border border-other-tonal-stroke p-6 ${backgroundClass}`}
     >
       <div className='flex items-center justify-between'>
         <Text variant='body'>Transaction View</Text>

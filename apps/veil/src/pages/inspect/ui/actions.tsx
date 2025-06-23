@@ -22,7 +22,7 @@ export const PositionClosed = ({
       <div className='col-span-4'>
         <Card title='Position Closed'>
           <div className='flex justify-between items-center'>
-            <div className='flex flex-col gap-2 flex-shrink min-w-0'>
+            <div className='flex flex-col gap-2 shrink min-w-0'>
               {closingTx && (
                 <Text color='text.secondary' truncate>
                   Tx:{' '}
@@ -33,7 +33,7 @@ export const PositionClosed = ({
               )}
             </div>
 
-            <div className='ml-4 flex-shrink-0'></div>
+            <div className='ml-4 shrink-0'></div>
           </div>
         </Card>
       </div>
@@ -50,7 +50,7 @@ export const PositionWithdraw = ({ withdrawal }: { withdrawal: PositionWithdrawa
       <div className='col-span-4'>
         <Card title='Position Withdraw'>
           <div className='flex justify-between items-center'>
-            <div className='flex flex-col gap-2 flex-shrink min-w-0'>
+            <div className='flex flex-col gap-2 shrink min-w-0'>
               <div className='flex items-center gap-2'>
                 <ValueViewComponent valueView={withdrawal.reserves1} abbreviate={false} />
                 <ValueViewComponent valueView={withdrawal.reserves2} abbreviate={false} />
@@ -79,7 +79,7 @@ export const PositionOpen = ({ state }: { state: PositionStateVV }) => {
       <div className='col-span-4'>
         <Card title='Position Open'>
           <div className='flex justify-between items-center'>
-            <div className='flex flex-col gap-2 flex-shrink min-w-0'>
+            <div className='flex flex-col gap-2 shrink min-w-0'>
               <div className='flex items-center gap-2'>
                 <ValueViewComponent valueView={state.openingReserves1} abbreviate={false} />
                 <ValueViewComponent valueView={state.openingReserves2} abbreviate={false} />
@@ -134,7 +134,7 @@ const LoadingState = ({ count = 2 }: { count?: number }) => {
       {withdrawalSkeletons.map((_, index) => (
         <Card key={index}>
           <div className='flex justify-between items-center'>
-            <div className='flex flex-col gap-2 flex-shrink min-w-0'>
+            <div className='flex flex-col gap-2 shrink min-w-0'>
               <div className='flex items-center gap-2'>
                 {/* Skeletons for ValueViewComponents */}
                 <div className='w-24 h-6'>
@@ -148,7 +148,7 @@ const LoadingState = ({ count = 2 }: { count?: number }) => {
                 <Skeleton />
               </div>
             </div>
-            <div className='ml-4 flex-shrink-0'>
+            <div className='ml-4 shrink-0'>
               <div className='w-20 h-4'>
                 <Skeleton />
               </div>

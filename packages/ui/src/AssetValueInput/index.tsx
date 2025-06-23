@@ -175,7 +175,7 @@ export const AssetValueInput = ({
         <div className='flex flex-col gap-1'>
           <div className='flex items-center gap-2'>
             <div
-              className={`rounded-sm bg-other-tonalFill5 px-2 py-1 ${isInsufficientFunds ? 'text-destructive-light' : ''}`}
+              className={`rounded-sm bg-other-tonal-fill5 px-2 py-1 ${isInsufficientFunds ? 'text-destructive-light' : ''}`}
             >
               <WalletMinimal
                 className={`size-4 ${isInsufficientFunds ? 'text-destructive-light' : 'text-text-secondary'}`}

@@ -58,20 +58,20 @@ export const LandingCard = observer(() => {
         <div className='flex flex-col md:flex-row gap-4 md:gap-6 lg:gap-12 p-4 md:p-6 lg:p-12'>
           <Explainer />
 
-          <div className='w-full h-[1px] md:w-[1px] md:h-auto bg-other-tonalStroke flex-shrink-0' />
+          <div className='w-full h-px md:w-px md:h-auto bg-other-tonal-stroke shrink-0' />
 
           <div className='flex flex-col w-full md:w-1/2 gap-8'>
             <div className='flex justify-between'>
               <Text variant='h3' color='text.primary'>
                 Current Epoch
               </Text>
-              <div className='flex items-center rounded-sm bg-base-blackAlt px-2'>
+              <div className='flex items-center rounded-sm bg-base-black-alt px-2'>
                 {epochLoading ? (
                   <div className='w-16 h-6'>
                     <Skeleton />
                   </div>
                 ) : (
-                  <div className='text-transparent bg-clip-text [background-image:linear-gradient(90deg,rgb(244,156,67),rgb(83,174,168))]'>
+                  <div className='text-transparent bg-clip-text bg-[linear-gradient(90deg,rgb(244,156,67),rgb(83,174,168))]'>
                     <Text xxl>#{epoch}</Text>
                   </div>
                 )}

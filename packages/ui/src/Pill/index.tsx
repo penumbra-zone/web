@@ -48,8 +48,8 @@ const getBackgroundColor = (priority: Priority, context: Context) => {
   }
 
   const colorMap: Record<Context, string> = {
-    default: cn('bg-other-tonalFill10'),
-    'technical-default': cn('bg-other-tonalFill10'),
+    default: cn('bg-other-tonal-fill10'),
+    'technical-default': cn('bg-other-tonal-fill10'),
     'technical-success': cn('bg-secondary-light'),
     'technical-caution': cn('bg-caution-light'),
     'technical-destructive': cn('bg-destructive-light'),
@@ -93,7 +93,7 @@ export const Pill = ({ children, priority = 'primary', context = 'default' }: Pi
         'inline-flex items-center',
         density !== 'slim' && 'gap-1',
         priority === 'secondary'
-          ? `${density === 'sparse' ? 'border-2' : 'border'} border-dashed border-other-tonalStroke`
+          ? `${density === 'sparse' ? 'border-2' : 'border'} border-dashed border-other-tonal-stroke`
           : 'border-none',
         getPadding(priority, density),
       )}
