@@ -26,7 +26,7 @@ export const BreadCrumb = ({ items }: BreadCrumbProps) => {
       <ol className='flex items-center'>
         {items.map((item, index) => (
           <Fragment key={index}>
-            {index > 0 && <ChevronRight size={16} className='mx-1 text-muted-foreground' />}
+            {index > 0 && <ChevronRight size={16} className='text-muted-foreground mx-1' />}
             <li>
               {item.path ? (
                 <Link to={item.path}>

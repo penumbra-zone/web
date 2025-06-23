@@ -22,7 +22,7 @@ export const SwapViewComponent: React.FC<SwapViewComponentProps> = ({
   getTxMetadata /* , walletAddressViews */,
 }) => {
   if (!swapView?.swapView) {
-    return <div className='text-xs text-muted-foreground'>Swap data unavailable.</div>;
+    return <div className='text-muted-foreground text-xs'>Swap data unavailable.</div>;
   }
 
   const swapViewData = swapView.swapView; // This is the oneof field
@@ -75,7 +75,7 @@ export const SwapViewComponent: React.FC<SwapViewComponentProps> = ({
     // For now, it assumes one of them is the primary output of the swap.
 
     return (
-      <div className='flex items-center justify-between border-b border-charcoal-secondary py-1 text-sm last:border-b-0'>
+      <div className='border-charcoal-secondary flex items-center justify-between border-b py-1 text-sm last:border-b-0'>
         <span className='text-light-brown'>Swap</span>
         <div className='flex items-center gap-2'>
           {renderValue(valueIn)}
@@ -88,14 +88,14 @@ export const SwapViewComponent: React.FC<SwapViewComponentProps> = ({
   } else if (swapViewData.case === 'opaque') {
     // const opaqueSwap = swapViewData.value; // Type SwapView_Opaque
     return (
-      <div className='flex items-center justify-between border-b border-charcoal-secondary py-1 text-sm last:border-b-0'>
+      <div className='border-charcoal-secondary flex items-center justify-between border-b py-1 text-sm last:border-b-0'>
         <span className='text-light-brown'>Swap</span>
-        <span className='text-xs text-muted-foreground'>(Opaque)</span>
+        <span className='text-muted-foreground text-xs'>(Opaque)</span>
       </div>
     );
   }
 
   return (
-    <div className='text-xs text-muted-foreground'>Unknown swap view type: {swapViewData.case}</div>
+    <div className='text-muted-foreground text-xs'>Unknown swap view type: {swapViewData.case}</div>
   );
 };

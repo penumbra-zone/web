@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { observer } from 'mobx-react-lite';
-import { useMemo } from 'react';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import {
   getBalanceView,

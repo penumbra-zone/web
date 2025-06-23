@@ -8,7 +8,7 @@ import { SectionComponentProps } from './TransactionView';
 // Use SectionComponentProps
 export const RawTransaction: React.FC<SectionComponentProps> = ({ transactionToDisplay }) => {
   if (!transactionToDisplay) {
-    return <div className='py-1 text-sm italic text-gray-500'>Raw JSON data unavailable.</div>;
+    return <div className='py-1 text-sm text-gray-500 italic'>Raw JSON data unavailable.</div>;
   }
 
   const jsonToDisplay = transactionToDisplay.toJson({

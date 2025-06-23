@@ -76,7 +76,9 @@ export class TransferStore {
 
   setSendAmount(amount: string) {
     // Prevent negative amounts
-    if (Number(amount) < 0) return;
+    if (Number(amount) < 0) {
+      return;
+    }
     this.sendState.amount = amount;
     this.refreshFee();
   }
@@ -147,10 +149,14 @@ export class TransferStore {
   // Helper methods
   private isAmountMoreThanBalance(): boolean {
     const { selectedAsset, amount } = this.sendState;
-    if (!selectedAsset || !amount) return false;
+    if (!selectedAsset || !amount) {
+      return false;
+    }
 
     const balance = selectedAsset.balanceView?.valueView?.value?.amount;
-    if (!balance) return false;
+    if (!balance) {
+      return false;
+    }
 
     try {
       const exponent = getDisplayDenomExponentFromValueView.optional(selectedAsset.balanceView);
@@ -178,7 +184,9 @@ export class TransferStore {
 
   private hasIncorrectDecimal(): boolean {
     const { selectedAsset, amount } = this.sendState;
-    if (!selectedAsset || !amount) return false;
+    if (!selectedAsset || !amount) {
+      return false;
+    }
 
     const exponent = getDisplayDenomExponentFromValueView.optional(selectedAsset.balanceView);
     const decimals = amount.split('.')[1]?.length ?? 0;
@@ -387,7 +395,9 @@ export class TransferStore {
   }
 
   async sendTransaction() {
-    if (!this.canSend) return;
+    if (!this.canSend) {
+      return;
+    }
 
     runInAction(() => {
       this.sendState.isLoading = true;
@@ -399,7 +409,9 @@ export class TransferStore {
 
       // Plan the transaction
       const { plan } = await penumbra.service(ViewService).transactionPlanner(request);
-      if (!plan) throw new Error('No plan in planner response');
+      if (!plan) {
+        throw new Error('No plan in planner response');
+      }
 
       // Build the transaction with user authorization
       const buildStream = penumbra
@@ -414,7 +426,9 @@ export class TransferStore {
         }
       }
 
-      if (!transaction) throw new Error('Failed to build transaction');
+      if (!transaction) {
+        throw new Error('Failed to build transaction');
+      }
 
       // Broadcast the transaction
       const broadcastStream = penumbra.service(ViewService).broadcastTransaction({
@@ -481,7 +495,9 @@ export class TransferStore {
   }
 
   async copyAddress() {
-    if (!this.receiveState.accountAddress) return;
+    if (!this.receiveState.accountAddress) {
+      return;
+    }
 
     try {
       await navigator.clipboard.writeText(this.receiveState.accountAddress);
