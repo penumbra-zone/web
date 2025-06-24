@@ -5,11 +5,13 @@ import { Density } from '@penumbra-zone/ui/Density';
 import { Toggle } from '@penumbra-zone/ui/Toggle';
 import { Text } from '@penumbra-zone/ui/Text';
 import { PositionsTable } from '@/entities/position';
+import { LiquidityTable } from '@/entities/liquidity';
 import { usePathToMetadata } from '../model/use-path';
 import { PositionState_PositionStateEnum as State } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 
 enum PositionsTabsType {
   MY_POSITIONS = 'MY_POSITIONS',
+  MANAGE_LIQUIDITY = 'MANAGE_LIQUIDITY',
 }
 
 export const HistoryTabs = () => {
@@ -26,7 +28,10 @@ export const HistoryTabs = () => {
             value={tab}
             actionType='accent'
             onChange={value => setTab(value as PositionsTabsType)}
-            options={[{ value: PositionsTabsType.MY_POSITIONS, label: 'My Positions' }]}
+            options={[
+              { value: PositionsTabsType.MY_POSITIONS, label: 'My Positions' },
+              { value: PositionsTabsType.MANAGE_LIQUIDITY, label: 'Manage Liquidity' },
+            ]}
           />
         </Density>
 
@@ -37,15 +42,18 @@ export const HistoryTabs = () => {
       </div>
 
       <div className='p-4'>
-        <PositionsTable
-          base={baseAsset}
-          quote={quoteAsset}
-          stateFilter={
-            showInactive
-              ? [State.OPENED, State.CLOSED, State.WITHDRAWN]
-              : [State.OPENED, State.CLOSED]
-          }
-        />
+        {tab === PositionsTabsType.MY_POSITIONS && (
+          <PositionsTable
+            base={baseAsset}
+            quote={quoteAsset}
+            stateFilter={
+              showInactive
+                ? [State.OPENED, State.CLOSED, State.WITHDRAWN]
+                : [State.OPENED, State.CLOSED]
+            }
+          />
+        )}
+        {tab === PositionsTabsType.MANAGE_LIQUIDITY && <LiquidityTable />}
       </div>
     </div>
   );
