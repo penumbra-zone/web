@@ -30,6 +30,7 @@ import {
   transactionId,
   mainAccount,
   firstSubaccount,
+  positionMetadata,
 } from './indexed-db.test-data.js';
 import { AddressIndex, WalletId } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import {
@@ -508,7 +509,12 @@ describe('IndexedDb', () => {
     it('position should be added and their state should change', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
-      await db.addPosition(positionIdGmPenumbraBuy, positionGmPenumbraBuy, mainAccount);
+      await db.addPosition(
+        positionIdGmPenumbraBuy,
+        positionGmPenumbraBuy,
+        positionMetadata,
+        mainAccount,
+      );
       await db.updatePosition(
         positionIdGmPenumbraBuy,
         new PositionState({ state: PositionState_PositionStateEnum.CLOSED }),
@@ -533,9 +539,19 @@ describe('IndexedDb', () => {
 
     it('should get all position ids', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
-      await db.addPosition(positionIdGmPenumbraBuy, positionGmPenumbraBuy, mainAccount);
-      await db.addPosition(positionIdGnPenumbraSell, positionGnPenumbraSell, mainAccount);
-      await db.addPosition(positionIdGmGnSell, positionGmGnSell, firstSubaccount);
+      await db.addPosition(
+        positionIdGmPenumbraBuy,
+        positionGmPenumbraBuy,
+        positionMetadata,
+        mainAccount,
+      );
+      await db.addPosition(
+        positionIdGnPenumbraSell,
+        positionGnPenumbraSell,
+        positionMetadata,
+        mainAccount,
+      );
+      await db.addPosition(positionIdGmGnSell, positionGmGnSell, positionMetadata, firstSubaccount);
 
       const ownedPositions: PositionId[] = [];
       for await (const positionId of db.getOwnedPositionIds(undefined, undefined, undefined)) {
@@ -546,9 +562,19 @@ describe('IndexedDb', () => {
 
     it('should get all position with given position state', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
-      await db.addPosition(positionIdGmPenumbraBuy, positionGmPenumbraBuy, mainAccount);
-      await db.addPosition(positionIdGnPenumbraSell, positionGnPenumbraSell, mainAccount);
-      await db.addPosition(positionIdGmGnSell, positionGmGnSell, firstSubaccount);
+      await db.addPosition(
+        positionIdGmPenumbraBuy,
+        positionGmPenumbraBuy,
+        positionMetadata,
+        mainAccount,
+      );
+      await db.addPosition(
+        positionIdGnPenumbraSell,
+        positionGnPenumbraSell,
+        positionMetadata,
+        mainAccount,
+      );
+      await db.addPosition(positionIdGmGnSell, positionGmGnSell, positionMetadata, firstSubaccount);
 
       const ownedPositions: PositionId[] = [];
       for await (const positionId of db.getOwnedPositionIds(
@@ -563,9 +589,19 @@ describe('IndexedDb', () => {
 
     it('should get all position with given trading pair', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
-      await db.addPosition(positionIdGmPenumbraBuy, positionGmPenumbraBuy, mainAccount);
-      await db.addPosition(positionIdGnPenumbraSell, positionGnPenumbraSell, mainAccount);
-      await db.addPosition(positionIdGmGnSell, positionGmGnSell, firstSubaccount);
+      await db.addPosition(
+        positionIdGmPenumbraBuy,
+        positionGmPenumbraBuy,
+        positionMetadata,
+        mainAccount,
+      );
+      await db.addPosition(
+        positionIdGnPenumbraSell,
+        positionGnPenumbraSell,
+        positionMetadata,
+        mainAccount,
+      );
+      await db.addPosition(positionIdGmGnSell, positionGmGnSell, positionMetadata, firstSubaccount);
 
       const ownedPositions: PositionId[] = [];
       for await (const positionId of db.getOwnedPositionIds(
@@ -580,9 +616,19 @@ describe('IndexedDb', () => {
 
     it('should get all position with given subaccount index', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
-      await db.addPosition(positionIdGmPenumbraBuy, positionGmPenumbraBuy, mainAccount);
-      await db.addPosition(positionIdGnPenumbraSell, positionGnPenumbraSell, mainAccount);
-      await db.addPosition(positionIdGmGnSell, positionGmGnSell, firstSubaccount);
+      await db.addPosition(
+        positionIdGmPenumbraBuy,
+        positionGmPenumbraBuy,
+        positionMetadata,
+        mainAccount,
+      );
+      await db.addPosition(
+        positionIdGnPenumbraSell,
+        positionGnPenumbraSell,
+        positionMetadata,
+        mainAccount,
+      );
+      await db.addPosition(positionIdGmGnSell, positionGmGnSell, positionMetadata, firstSubaccount);
 
       const ownedPositions: PositionId[] = [];
       for await (const positionId of db.getOwnedPositionIds(undefined, undefined, mainAccount)) {
@@ -593,9 +639,19 @@ describe('IndexedDb', () => {
 
     it('should filter positions correctly when all filters applied together', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
-      await db.addPosition(positionIdGmPenumbraBuy, positionGmPenumbraBuy, mainAccount);
-      await db.addPosition(positionIdGnPenumbraSell, positionGnPenumbraSell, mainAccount);
-      await db.addPosition(positionIdGmGnSell, positionGmGnSell, firstSubaccount);
+      await db.addPosition(
+        positionIdGmPenumbraBuy,
+        positionGmPenumbraBuy,
+        positionMetadata,
+        mainAccount,
+      );
+      await db.addPosition(
+        positionIdGnPenumbraSell,
+        positionGnPenumbraSell,
+        positionMetadata,
+        mainAccount,
+      );
+      await db.addPosition(positionIdGmGnSell, positionGmGnSell, positionMetadata, firstSubaccount);
 
       const ownedPositions: PositionId[] = [];
       for await (const positionId of db.getOwnedPositionIds(
