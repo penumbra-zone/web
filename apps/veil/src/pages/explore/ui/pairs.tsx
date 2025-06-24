@@ -1,26 +1,42 @@
 'use client';
 
-import { useState } from 'react';
-import { useAutoAnimate } from '@formkit/auto-animate/react';
+import { useMemo, useState } from 'react';
 import { Search } from 'lucide-react';
 import { Text } from '@penumbra-zone/ui/Text';
 import { TextInput } from '@penumbra-zone/ui/TextInput';
 import { Icon } from '@penumbra-zone/ui/Icon';
 import { PairCard } from '@/pages/explore/ui/pair-card';
-import { useSummaries } from '@/pages/explore/api/use-summaries';
-import SpinnerIcon from '@/shared/assets/spinner-icon.svg';
-import { useObserver } from '@/shared/utils/use-observer';
+import type { SummaryWithPrices } from '@/shared/api/server/summary';
+import { useDebounce } from '@/shared/utils/use-debounce';
+import { useGetMetadata } from '@/shared/api/assets';
+import { deserialize, Serialized } from '@/shared/utils/serializer';
 
-export const ExplorePairs = () => {
-  const [parent] = useAutoAnimate();
+interface ExplorePairsProps {
+  summaries: Serialized<SummaryWithPrices[]>;
+}
 
-  const [search, setSearch] = useState('');
-
-  const { data, isLoading, isRefetching, isFetchingNextPage, fetchNextPage } = useSummaries(search);
-
-  const { observerEl } = useObserver(isLoading || isRefetching || isFetchingNextPage, () => {
-    void fetchNextPage();
-  });
+export const ExplorePairs = ({ summaries }: ExplorePairsProps) => {
+  const getMetadata = useGetMetadata();
+  const augmentedSummaries = useMemo(() => {
+    const deserialized = deserialize<SummaryWithPrices[]>(summaries);
+    const out: [SummaryWithPrices, string, string][] = deserialized.map(x => [
+      x,
+      getMetadata(x.start)?.symbol.toUpperCase() ?? '',
+      getMetadata(x.end)?.symbol.toUpperCase() ?? '',
+    ]);
+    return out;
+  }, [summaries, getMetadata]);
+  const [rawSearch, setSearch] = useState('');
+  const search = useDebounce(rawSearch, 200);
+  const filteredSummaries = useMemo(() => {
+    if (!search) {
+      return augmentedSummaries.map(x => x[0]);
+    }
+    const target = search.toUpperCase();
+    return augmentedSummaries
+      .filter(x => x[1].includes(target) || x[2].includes(target))
+      .map(x => x[0]);
+  }, [augmentedSummaries, search]);
 
   return (
     <div className='flex w-full flex-col gap-4'>
@@ -29,18 +45,15 @@ export const ExplorePairs = () => {
           Trading Pairs
         </Text>
         <TextInput
-          value={search}
+          value={rawSearch}
           placeholder='Search pair'
           startAdornment={<Icon size='md' IconComponent={Search} />}
           onChange={setSearch}
         />
       </div>
 
-      <div
-        ref={parent}
-        className='grid grid-cols-[1fr_1fr_1fr_1fr_128px_56px] gap-2 overflow-x-auto overflow-y-auto desktop:overflow-x-hidden'
-      >
-        <div className='col-span-6 grid grid-cols-subgrid px-3 py-2'>
+      <div className='grid grid-cols-[1fr_1fr_1fr_1fr_128px_56px] gap-2 overflow-y-auto overflow-x-auto desktop:overflow-x-hidden'>
+        <div className='grid grid-cols-subgrid col-span-6 py-2 px-3'>
           <Text detail color='text.secondary' align='left'>
             Pair
           </Text>
@@ -61,37 +74,19 @@ export const ExplorePairs = () => {
           </Text>
         </div>
 
-        {isLoading && (
-          <>
-            <PairCard loading summary={undefined} />
-            <PairCard loading summary={undefined} />
-          </>
-        )}
-
-        {!isLoading && data?.pages[0]?.length === 0 && (
-          <div className='col-span-5 py-5 text-text-secondary'>
+        {filteredSummaries.length === 0 && (
+          <div className='py-5 col-span-5 text-text-secondary'>
             <Text small>No pairs found matching your search</Text>
           </div>
         )}
 
-        {data?.pages.map(page =>
-          page.map(summary => (
-            <PairCard
-              loading={false}
-              summary={summary}
-              key={`${summary.baseAsset.symbol}/${summary.quoteAsset.symbol}`}
-            />
-          )),
-        )}
+        {filteredSummaries.map(summary => (
+          <PairCard
+            summary={summary}
+            key={`${summary.start.toJsonString()}${summary.end.toJsonString()}`}
+          />
+        ))}
       </div>
-
-      {isFetchingNextPage && (
-        <div className='my-1 flex h-6 items-center justify-center'>
-          <SpinnerIcon className='animate-spin' />
-        </div>
-      )}
-
-      <div className='h-1 w-full' ref={observerEl} />
     </div>
   );
 };

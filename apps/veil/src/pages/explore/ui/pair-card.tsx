@@ -3,7 +3,6 @@ import { Star, CandlestickChart } from 'lucide-react';
 import cn from 'clsx';
 import { subDays } from 'date-fns';
 import Link from 'next/link';
-
 import { shortify } from '@penumbra-zone/types/shortify';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
 import { round } from '@penumbra-zone/types/round';
@@ -11,162 +10,130 @@ import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { Density } from '@penumbra-zone/ui/Density';
 import { AssetIcon } from '@penumbra-zone/ui/AssetIcon';
-
-import { SummaryData } from '@/shared/api/server/summary/types';
-import { Skeleton } from '@/shared/ui/skeleton';
-import SparklineChart from './sparkline-chart.svg';
 import ChevronDown from './chevron-down.svg';
 import { PreviewChart } from './preview-chart';
-import { useRegistryAssets } from '@/shared/api/registry';
+import { SummaryWithPrices } from '@/shared/api/server/summary';
+import { useGetMetadata } from '@/shared/api/assets';
+import { toValueView } from '@/shared/utils/value-view';
+import { convertPriceToDisplay } from '@/shared/math/price';
+import { getTradePairPath } from '@/shared/const/pages';
 
-const ShimmeringBars = () => {
-  return (
-    <>
-      <div className='my-1 h-4 w-16'>
-        <Skeleton />
-      </div>
-      <div className='h-4 w-10'>
-        <Skeleton />
-      </div>
-    </>
-  );
-};
-
-const getTextSign = (summary: SummaryData): ReactNode => {
-  if (summary.change.sign === 'positive') {
-    return <ChevronDown className='inline-block size-3 rotate-180' />;
+const getTextSign = (change: number): ReactNode => {
+  if (change > 0) {
+    return <ChevronDown className='size-3 rotate-180 inline-block' />;
   }
-  if (summary.change.sign === 'negative') {
-    return <ChevronDown className='inline-block size-3' />;
+  if (change < 0) {
+    return <ChevronDown className='size-3 inline-block' />;
   }
   return null;
 };
 
-const getColor = (summary: SummaryData): string => {
-  if (summary.change.sign === 'positive') {
+const getColor = (change: number): string => {
+  if (change > 0) {
     return 'text-success-light';
   }
-  if (summary.change.sign === 'negative') {
+  if (change < 0) {
     return 'text-destructive-light';
   }
   return 'text-neutral-light';
 };
 
-export type PairCardProps =
-  | {
-      loading: true;
-      summary: undefined;
-    }
-  | {
-      loading: false;
-      summary: SummaryData;
-    };
+export interface PairCardProps {
+  summary: SummaryWithPrices;
+}
 
-export const PairCard = ({ loading, summary }: PairCardProps) => {
+export const PairCard = ({ summary }: PairCardProps) => {
   const today = new Date();
   const yesterday = subDays(new Date(), 1);
 
-  const { data: assets } = useRegistryAssets();
-  const usdcMetadata = assets.find(asset => asset.symbol === 'USDC');
+  const getMetadata = useGetMetadata();
+  const startMetadata = getMetadata(summary.start);
+  if (!startMetadata) {
+    throw new Error(`unknown asset: ${summary.start.toJsonString()}`);
+  }
+  const endMetadata = getMetadata(summary.end);
+  if (!endMetadata) {
+    throw new Error(`unknown asset: ${summary.end.toJsonString()}`);
+  }
+  const liquidityMetadata = getMetadata(summary.liquidity.assetId);
+  const volumeMetadata = getMetadata(summary.volume.assetId);
 
   return (
     <Link
-      href={loading ? `/trade` : `/trade/${summary.baseAsset.symbol}/${summary.quoteAsset.symbol}`}
-      className='col-span-6 grid cursor-pointer grid-cols-subgrid rounded-sm p-3 transition-colors hover:bg-action-hover-overlay'
+      href={getTradePairPath(startMetadata.symbol, endMetadata.symbol)}
+      className='grid grid-cols-subgrid col-span-6 p-3 rounded-sm cursor-pointer transition-colors hover:bg-action-hoverOverlay'
     >
-      <div className='relative flex h-10 items-center gap-2 text-text-primary'>
-        {loading ? (
-          <div className='h-6 w-20'>
-            <Skeleton />
-          </div>
-        ) : (
-          <>
-            <Density compact>
-              <Button icon={Star} iconOnly>
-                Favorite
-              </Button>
-            </Density>
+      <div className='relative h-10 flex items-center gap-2 text-text-primary'>
+        <Density compact>
+          <Button icon={Star} iconOnly>
+            Favorite
+          </Button>
+        </Density>
 
-            <div className='z-10'>
-              <AssetIcon metadata={summary.baseAsset} size='lg' />
-            </div>
-            <div className='-ml-4'>
-              <AssetIcon metadata={summary.quoteAsset} size='lg' />
-            </div>
+        <div className='z-10'>
+          <AssetIcon metadata={startMetadata} size='lg' />
+        </div>
+        <div className='-ml-4'>
+          <AssetIcon metadata={endMetadata} size='lg' />
+        </div>
 
-            <Text body>
-              {summary.baseAsset.symbol}/{summary.quoteAsset.symbol}
-            </Text>
-          </>
-        )}
+        <Text body>
+          {startMetadata.symbol}/{endMetadata.symbol}
+        </Text>
       </div>
 
-      <div className='flex h-10 flex-col items-end justify-center'>
-        {loading ? (
-          <ShimmeringBars />
-        ) : (
-          <>
-            <Text color='text.primary'>{round({ value: summary.price, decimals: 6 })}</Text>
-            <Text detail color='text.secondary'>
-              {summary.quoteAsset.symbol}
-            </Text>
-          </>
-        )}
+      <div className='h-10 flex flex-col items-end justify-center'>
+        <Text color='text.primary'>
+          {round({
+            value: convertPriceToDisplay(summary.price, startMetadata, endMetadata),
+            decimals: 6,
+          })}
+        </Text>
+        <Text detail color='text.secondary'>
+          {endMetadata.symbol}
+        </Text>
       </div>
 
-      <div className='flex h-10 flex-col items-end justify-center'>
-        {loading ? (
-          <ShimmeringBars />
-        ) : (
-          <>
-            <Text color='text.primary'>
-              {shortify(Number(getFormattedAmtFromValueView(summary.liquidity)))}
-            </Text>
-            <Text detail color='text.secondary'>
-              {usdcMetadata?.symbol}
-            </Text>
-          </>
-        )}
+      <div className='h-10 flex flex-col items-end justify-center'>
+        <Text color='text.primary'>
+          {shortify(
+            Number(
+              getFormattedAmtFromValueView(toValueView({ value: summary.liquidity, getMetadata })),
+            ),
+          )}
+        </Text>
+        <Text detail color='text.secondary'>
+          {liquidityMetadata?.symbol}
+        </Text>
       </div>
 
-      <div className='flex h-10 flex-col items-end justify-center'>
-        {loading ? (
-          <ShimmeringBars />
-        ) : (
-          <>
-            <Text color='text.primary'>
-              {shortify(Number(getFormattedAmtFromValueView(summary.directVolume)))}
-            </Text>
-            <Text detail color='text.secondary'>
-              {usdcMetadata?.symbol}
-            </Text>
-          </>
-        )}
+      <div className='h-10 flex flex-col items-end justify-center'>
+        <Text color='text.primary'>
+          {shortify(
+            Number(
+              getFormattedAmtFromValueView(toValueView({ value: summary.volume, getMetadata })),
+            ),
+          )}
+        </Text>
+        <Text detail color='text.secondary'>
+          {volumeMetadata?.symbol}
+        </Text>
       </div>
 
-      <div className='flex h-10 items-center justify-end gap-2'>
-        {loading ? (
-          <>
-            <div className='h-4 w-10 rounded-xs bg-shimmer' />
-            <SparklineChart className='h-8 w-14' />
-          </>
-        ) : (
-          <>
-            <div className={cn('flex items-center', getColor(summary))}>
-              {getTextSign(summary)}
-              <Text>{summary.change.percent}%</Text>
-            </div>
+      <div className='h-10 flex items-center justify-end gap-2'>
+        <div className={cn('flex items-center', getColor(summary.priceChangePercent))}>
+          {getTextSign(summary.priceChangePercent)}
+          <Text>{summary.priceChangePercent.toFixed(2)}%</Text>
+        </div>
 
-            <PreviewChart
-              sign={summary.change.sign}
-              values={summary.candles ?? []}
-              dates={summary.candleTimes ?? []}
-              intervals={24}
-              from={yesterday}
-              to={today}
-            />
-          </>
-        )}
+        <PreviewChart
+          sign={summary.priceChangePercent}
+          values={summary.recentPrices.map(x => x[1])}
+          dates={summary.recentPrices.map(x => x[0])}
+          intervals={24}
+          from={yesterday}
+          to={today}
+        />
       </div>
 
       <div className='flex h-10 flex-col items-end justify-center'>
