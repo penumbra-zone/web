@@ -27,18 +27,18 @@ const LoadingState = () => {
                 <div className='flex-1 px-2' key={colIndex}>
                   {colIndex === 0 ? (
                     <div className='flex items-center gap-4'>
-                      <div className='w-8 h-8 rounded-full' aria-hidden='true'>
+                      <div className='h-8 w-8 rounded-full' aria-hidden='true'>
                         <Skeleton />
                       </div>
-                      <div className='w-4 h-4' aria-hidden='true'>
+                      <div className='h-4 w-4' aria-hidden='true'>
                         <Skeleton />
                       </div>
-                      <div className='w-8 h-8 rounded-full' aria-hidden='true'>
+                      <div className='h-8 w-8 rounded-full' aria-hidden='true'>
                         <Skeleton />
                       </div>
                     </div>
                   ) : (
-                    <div className='w-2/3 h-8' aria-hidden='true'>
+                    <div className='h-8 w-2/3' aria-hidden='true'>
                       <Skeleton />
                     </div>
                   )}

@@ -79,8 +79,8 @@ const LeaderboardRow = observer(
       <Link
         href={addressLink}
         className={cn(
-          'grid grid-cols-subgrid col-span-5',
-          'hover:bg-action-hover-overlay transition-colors cursor-pointer',
+          'col-span-5 grid grid-cols-subgrid',
+          'cursor-pointer transition-colors hover:bg-action-hover-overlay',
           !!subaccountIndex && 'bg-other-tonal-fill5',
         )}
       >
@@ -93,7 +93,7 @@ const LeaderboardRow = observer(
                 hideIcon={!subaccountIndex}
                 addressView={addressView}
               />
-              <i className='flex items-center justify-center size-4 text-text-secondary'>
+              <i className='flex size-4 items-center justify-center text-text-secondary'>
                 <ExternalLink className='size-3' />
               </i>
             </>
@@ -137,7 +137,7 @@ export const DelegatorLeaderboard = observer(() => {
     query: { isLoading },
     data,
     total,
-  } = useDelegatorLeaderboard(page, limit, sortBy.key, sortBy.direction);
+  } = useDelegatorLeaderboard(page, limit, sortBy.key || undefined, sortBy.direction);
 
   const mappedData = useMemo(() => {
     return data?.reduce<{ rows: DelegatorLeaderboardRow[]; padStart: number }>(
@@ -176,13 +176,13 @@ export const DelegatorLeaderboard = observer(() => {
   };
 
   return (
-    <section className='p-6 rounded-lg bg-other-tonal-fill5 backdrop-blur-lg flex flex-col gap-4'>
+    <section className='flex flex-col gap-4 rounded-lg bg-other-tonal-fill5 p-6 backdrop-blur-lg'>
       <Text xxl color='text.primary'>
         Delegator Leaderboard
       </Text>
       <Density compact>
-        <div className='grid grid-cols-[200px_1fr_1fr_1fr_48px] max-w-full overflow-x-auto'>
-          <div key='header' className='grid grid-cols-subgrid col-span-5'>
+        <div className='grid max-w-full grid-cols-[200px_1fr_1fr_1fr_48px] overflow-x-auto'>
+          <div key='header' className='col-span-5 grid grid-cols-subgrid'>
             <TableCell heading>Delegator Address</TableCell>
             {getTableHeader('epochs_voted_in', 'Rounds Participated')}
             {getTableHeader('streak', 'Voting Streak')}

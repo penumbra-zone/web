@@ -57,7 +57,7 @@ export const AssetIcon = ({ metadata, size = 'md', zIndex }: AssetIconProps) => 
       className={cn(
         sizeMap[size],
         'relative rounded-full',
-        '[&>*:first-child]:w-full [&>*:first-child]:h-full',
+        '[&>*:first-child]:h-full [&>*:first-child]:w-full',
       )}
       title={metadata?.symbol}
     >

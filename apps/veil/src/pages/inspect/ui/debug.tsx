@@ -7,17 +7,17 @@ import { Skeleton } from '@/shared/ui/skeleton.tsx';
 const LoadingState = () => {
   return (
     <div className='flex flex-col gap-4'>
-      <div className='p-4 space-y-2'>
-        <div className='w-full h-4' aria-hidden='true'>
+      <div className='space-y-2 p-4'>
+        <div className='h-4 w-full' aria-hidden='true'>
           <Skeleton />
         </div>
-        <div className='w-full h-4' aria-hidden='true'>
+        <div className='h-4 w-full' aria-hidden='true'>
           <Skeleton />
         </div>
-        <div className='w-full h-4' aria-hidden='true'>
+        <div className='h-4 w-full' aria-hidden='true'>
           <Skeleton />
         </div>
-        <div className='w-full h-4' aria-hidden='true'>
+        <div className='h-4 w-full' aria-hidden='true'>
           <Skeleton />
         </div>
       </div>

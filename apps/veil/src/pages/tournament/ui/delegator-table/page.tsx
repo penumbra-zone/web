@@ -38,7 +38,7 @@ export const DelegatorTablePage = () => {
   });
 
   return (
-    <section className='flex flex-col gap-6 p-4 max-w-[1168px] mx-auto'>
+    <section className='mx-auto flex max-w-[1168px] flex-col gap-6 p-4'>
       <PenumbraWaves />
 
       <Breadcrumbs
@@ -46,7 +46,7 @@ export const DelegatorTablePage = () => {
           <Link
             key='link'
             href='/tournament'
-            className='decoration-0 text-text-secondary hover:text-text-primary transition-colors'
+            className='text-text-secondary decoration-0 transition-colors hover:text-text-primary'
           >
             <Text h4>Tournament</Text>
           </Link>,

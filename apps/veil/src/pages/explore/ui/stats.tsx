@@ -62,7 +62,7 @@ export const ExploreStats = () => {
   }
 
   return (
-    <div className='grid grid-cols-1 tablet:grid-cols-2 desktop:grid-cols-3 gap-2'>
+    <div className='grid grid-cols-1 gap-2 tablet:grid-cols-2 desktop:grid-cols-3'>
       <InfoCard title='Total Trading Volume (24h)' loading={isLoading}>
         {stats && <GreenValueText value={stats.volume} />}
       </InfoCard>

@@ -12,7 +12,7 @@ export interface TriggerProps {
 export const Trigger = ({ onClick, pair }: TriggerProps) => {
   return (
     <Dialog.Trigger asChild>
-      <button type='button' className='flex items-center gap-1 cursor-pointer' onClick={onClick}>
+      <button type='button' className='flex cursor-pointer items-center gap-1' onClick={onClick}>
         <div className='z-10'>
           <AssetIcon metadata={pair.base} size='lg' />
         </div>

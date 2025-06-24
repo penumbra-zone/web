@@ -10,7 +10,7 @@ export const PositionsCurrentValue = ({ order }: { order: DisplayPosition['order
 
   if (!marketPrice) {
     return (
-      <div className='w-12 h-4'>
+      <div className='h-4 w-12'>
         <Skeleton />
       </div>
     );
@@ -29,7 +29,7 @@ export const PositionsCurrentValue = ({ order }: { order: DisplayPosition['order
   const computedValue = baseAsset.amount.toNumber() * marketPrice;
   if (!Number.isFinite(computedValue)) {
     return (
-      <div className='w-12 h-4'>
+      <div className='h-4 w-12'>
         <Skeleton />
       </div>
     );

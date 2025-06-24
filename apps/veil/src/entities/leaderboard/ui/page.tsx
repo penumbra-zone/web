@@ -8,7 +8,7 @@ export const LeaderboardPage = () => {
   const { epoch: currentEpoch } = useCurrentEpoch();
 
   return (
-    <section className='flex flex-col gap-6 p-4 max-w-[1062px] mx-auto'>
+    <section className='mx-auto flex max-w-[1062px] flex-col gap-6 p-4'>
       <PenumbraWaves />
       <LPLeaderboard epoch={currentEpoch} />
     </section>

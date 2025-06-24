@@ -27,7 +27,7 @@ export const Checkbox = ({
   description,
 }: CheckboxProps) => {
   return (
-    <label className={cn('flex gap-3 items-start')}>
+    <label className={cn('flex items-start gap-3')}>
       <Root
         checked={checked}
         required={required}
@@ -36,9 +36,9 @@ export const Checkbox = ({
         defaultChecked={defaultChecked}
         className={cn(
           'relative flex size-5 appearance-none items-center justify-center rounded-xs',
-          'outline-solid outline-[1.5px]  outline-other-tonal-stroke bg-transparent transition-[background-color,outline-color]',
-          'focus:outline-action-primary-focus-outline aria-checked:bg-primary-main data-[state=indeterminate]:bg-neutral-main data-[state=indeterminate]:outline-other-neutral-outline aria-checked:outline-other-orange-outline aria-checked:focus:outline-action-primary-focus-outline',
-          'before:content-[""] before:size-[23px] before:absolute before:top-1/2 before:left-1/2 before:-translate-y-1/2 before:-translate-x-1/2 before:rounded-xs before:z-1',
+          'bg-transparent outline-[1.5px] outline-other-tonal-stroke transition-[background-color,outline-color] outline-solid',
+          'focus:outline-action-primary-focus-outline aria-checked:bg-primary-main aria-checked:outline-other-orange-outline aria-checked:focus:outline-action-primary-focus-outline data-[state=indeterminate]:bg-neutral-main data-[state=indeterminate]:outline-other-neutral-outline',
+          'before:absolute before:top-1/2 before:left-1/2 before:z-1 before:size-[23px] before:-translate-x-1/2 before:-translate-y-1/2 before:rounded-xs before:content-[""]',
           'before:transition-colors hover:before:bg-action-hover-overlay disabled:before:bg-action-disabled-overlay',
         )}
       >

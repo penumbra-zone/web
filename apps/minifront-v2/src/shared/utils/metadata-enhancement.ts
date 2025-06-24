@@ -64,6 +64,8 @@ export const centralEnhanceMetadata = (metadata: Metadata | undefined): Metadata
  * @returns true if the asset is a delegation token
  */
 export const isDelegationToken = (symbol?: string): boolean => {
-  if (!symbol) return false;
+  if (!symbol) {
+    return false;
+  }
   return symbol === 'delUM' || symbol.startsWith('delUM(');
 };

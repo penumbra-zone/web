@@ -16,24 +16,24 @@ export function InspectBlock() {
       <div className='mb-4'>
         {isError ? (
           <Card title={`Couldn’t fetch transaction.`}>
-            <div className='w-[840px] min-h-[300px] text-white p-2'>
+            <div className='min-h-[300px] w-[840px] p-2 text-white'>
               Something went wrong while fetching the transaction.
             </div>
           </Card>
         ) : (
           <Card title={`Block #${blockheight}`}>
-            <div className='w-[840px] min-h-[300px] text-white p-2'>
+            <div className='min-h-[300px] w-[840px] p-2 text-white'>
               {blockSummary ? (
                 <BlockSummary blockSummary={blockSummary} />
               ) : (
                 <div>
-                  <div className='w-[822px] h-8 mb-2'>
+                  <div className='mb-2 h-8 w-[822px]'>
                     <Skeleton />
                   </div>
-                  <div className='w-[722px] h-6 mb-2'>
+                  <div className='mb-2 h-6 w-[722px]'>
                     <Skeleton />
                   </div>
-                  <div className='w-[422px] h-4'>
+                  <div className='h-4 w-[422px]'>
                     <Skeleton />
                   </div>
                 </div>

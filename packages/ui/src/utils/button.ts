@@ -18,7 +18,7 @@ interface ButtonStyleAttributes {
 }
 
 /** Shared styles to use for any `<button />` */
-export const buttonBase = cn('appearance-none border-none text-inherit cursor-pointer');
+export const buttonBase = cn('cursor-pointer appearance-none border-none text-inherit');
 
 export const getFont = ({ density }: ButtonStyleAttributes): string => {
   if (density === 'compact') {
@@ -43,7 +43,7 @@ export const getOverlays = ({ actionType, density, rounded }: ButtonStyleAttribu
 
   return cn(
     'relative',
-    'before:content-[""] before:absolute before:inset-0 before:z-1 before:outline-[1.5] before:outline-solid before:outline-transparent duration-150 before:transition-[background-color,outline-color]',
+    'duration-150 before:absolute before:inset-0 before:z-1 before:outline-[1.5] before:outline-transparent before:transition-[background-color,outline-color] before:content-[""] before:outline-solid',
     'hover:before:bg-action-hover-overlay',
     'active:before:bg-action-active-overlay',
     'disabled:before:cursor-not-allowed disabled:before:bg-action-disabled-overlay',
@@ -88,23 +88,23 @@ export const getSize = ({ iconOnly, density, rounded }: ButtonStyleAttributes) =
 
   if (density === 'compact') {
     return cn(
-      'h-8 min-w-8 w-max',
-      iconOnly ? 'pl-0 pr-0' : 'pl-4 pr-4',
+      'h-8 w-max min-w-8',
+      iconOnly ? 'pr-0 pl-0' : 'pr-4 pl-4',
       rounded ? 'rounded-full' : 'rounded-full', // compact is always rounded
     );
   }
 
   if (density === 'slim') {
     return cn(
-      'h-6 min-w-6 w-max',
-      iconOnly ? 'pl-0 pr-0' : 'pl-2 pr-2',
+      'h-6 w-max min-w-6',
+      iconOnly ? 'pr-0 pl-0' : 'pr-2 pl-2',
       rounded ? 'rounded-full' : 'rounded-full', // slim is always rounded
     );
   }
 
   return cn(
     'h-12',
-    iconOnly ? 'w-12 min-w-12 pl-0 pr-0' : 'w-full pl-4 pr-4',
+    iconOnly ? 'w-12 min-w-12 pr-0 pl-0' : 'w-full pr-4 pl-4',
     rounded ? 'rounded-full' : 'rounded-sm', // sparse uses rounded-sm by default, rounded-full when requested
   );
 };

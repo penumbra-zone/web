@@ -16,9 +16,9 @@ const OUTLINE_COLOR_MAP: Record<ActionType, string> = {
 
 export const getMenuItem = (actionType: ActionType): string =>
   cn(
-    'w-full flex items-center gap-1 h-8 py-1 px-2 cursor-pointer',
-    'border-none rounded-sm bg-transparent transition-colors duration-150',
-    '[&:focus:not(:disabled)]:bg-action-hover-overlay [&:focus:not(:disabled)]:outline-solid [&:focus:not(:disabled)]:outline-2',
+    'flex h-8 w-full cursor-pointer items-center gap-1 px-2 py-1',
+    'rounded-sm border-none bg-transparent transition-colors duration-150',
+    '[&:focus:not(:disabled)]:bg-action-hover-overlay [&:focus:not(:disabled)]:outline-2 [&:focus:not(:disabled)]:outline-solid',
     getColorByActionType(actionType),
     OUTLINE_COLOR_MAP[actionType],
     'disabled:text-text-muted aria-disabled:text-text-muted',

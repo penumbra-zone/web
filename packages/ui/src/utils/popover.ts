@@ -17,8 +17,8 @@ const getPopoverBackground = (context: PopoverContext): string => {
 
 export const getPopoverContent = (context: PopoverContext): string =>
   cn(
-    'flex flex-col w-[240px] max-w-[320px] p-3',
-    'border border-solid border-other-tonal-stroke rounded-sm backdrop-blur-lg',
+    'flex w-[240px] max-w-[320px] flex-col p-3',
+    'rounded-sm border border-solid border-other-tonal-stroke backdrop-blur-lg',
     'origin-(--radix-popper-transform-origin) animate-scale',
     getPopoverBackground(context),
   );

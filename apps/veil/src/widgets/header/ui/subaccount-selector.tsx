@@ -27,7 +27,7 @@ export const SubaccountSelector = observer(({ mobile }: SubaccountSelectorProps)
       <DropdownMenu.Trigger>
         <Button>
           {isLoading ? (
-            <div className='min-w-[142px] flex justify-center'>
+            <div className='flex min-w-[142px] justify-center'>
               <SpinnerIcon className='animate-spin' />
             </div>
           ) : (

@@ -3,12 +3,12 @@ import { Text } from '@penumbra-zone/ui/Text';
 
 export const Explainer = () => {
   return (
-    <div className='flex flex-col w-full md:w-1/2 gap-12'>
+    <div className='flex w-full flex-col gap-12 md:w-1/2'>
       <Text variant='h1' color='text.primary'>
         Liquidity Tournament
       </Text>
       <div className='flex flex-col gap-10'>
-        <div className='flex gap-2 items-start'>
+        <div className='flex items-start gap-2'>
           <Image
             src='/assets/lqt-delegators.svg'
             alt='Delegators'
@@ -26,7 +26,7 @@ export const Explainer = () => {
             </Text>
           </div>
         </div>
-        <div className='flex gap-2 items-start'>
+        <div className='flex items-start gap-2'>
           <Image
             src='/assets/lqt-lps.svg'
             alt='Liquidity Providers'
@@ -44,7 +44,7 @@ export const Explainer = () => {
             </Text>
           </div>
         </div>
-        <div className='flex gap-2 items-start'>
+        <div className='flex items-start gap-2'>
           <Image
             src='/assets/lqt-rewards.svg'
             alt='Automatic Rewards Distribution'

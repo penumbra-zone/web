@@ -18,7 +18,7 @@ const DataBody = ({ state }: { state: PositionStateVV }) => {
         </div>
       </div>
 
-      <div className='flex justify-between items-start gap-8'>
+      <div className='flex items-start justify-between gap-8'>
         {/* Column 1: Current Reserves */}
         <div className='flex flex-col gap-2'>
           <Text color='text.secondary'>Current Reserves</Text>
@@ -92,36 +92,36 @@ const LoadingState = () => {
   return (
     <>
       {/* Fee Tier Section */}
-      <div className='flex items-start justify-between gap-4 w-full max-w-[1000px] mx-auto mb-6'>
-        <div className='w-1/3 h-6' aria-hidden='true'>
+      <div className='mx-auto mb-6 flex w-full max-w-[1000px] items-start justify-between gap-4'>
+        <div className='h-6 w-1/3' aria-hidden='true'>
           <Skeleton />
         </div>
       </div>
 
       {/* Main Content Sections */}
-      <div className='flex justify-between items-start gap-12 w-full max-w-[1000px] mx-auto'>
+      <div className='mx-auto flex w-full max-w-[1000px] items-start justify-between gap-12'>
         {/* Column 1: Current Reserves */}
-        <div className='flex flex-col gap-4 flex-1'>
+        <div className='flex flex-1 flex-col gap-4'>
           {/* Skeleton for "Current Reserves" Label */}
-          <div className='w-1/2 h-6' aria-hidden='true'>
+          <div className='h-6 w-1/2' aria-hidden='true'>
             <Skeleton />
           </div>
 
           <div className='flex flex-col gap-8'>
             {/* Skeletons for Reserves Values */}
-            <div className='w-full h-8' aria-hidden='true'>
+            <div className='h-8 w-full' aria-hidden='true'>
               <Skeleton />
             </div>
-            <div className='w-full h-8' aria-hidden='true'>
+            <div className='h-8 w-full' aria-hidden='true'>
               <Skeleton />
             </div>
           </div>
         </div>
 
         {/* Column 2: Sell Offers */}
-        <div className='flex flex-col gap-4 flex-1'>
+        <div className='flex flex-1 flex-col gap-4'>
           {/* Skeleton for "Sell Offer" Label */}
-          <div className='w-1/2 h-6' aria-hidden='true'>
+          <div className='h-6 w-1/2' aria-hidden='true'>
             <Skeleton />
           </div>
 
@@ -129,22 +129,22 @@ const LoadingState = () => {
             {/* Sell Offer Rows */}
             <div className='flex items-center gap-4'>
               {/* Skeleton for Icon */}
-              <div className='w-8 h-8 rounded-full' aria-hidden='true'>
+              <div className='h-8 w-8 rounded-full' aria-hidden='true'>
                 <Skeleton />
               </div>
 
               {/* Skeleton for Offer Value */}
-              <div className='flex-1 h-8' aria-hidden='true'>
+              <div className='h-8 flex-1' aria-hidden='true'>
                 <Skeleton />
               </div>
             </div>
 
             <div className='flex items-center gap-4'>
-              <div className='w-8 h-8 rounded-full' aria-hidden='true'>
+              <div className='h-8 w-8 rounded-full' aria-hidden='true'>
                 <Skeleton />
               </div>
 
-              <div className='flex-1 h-8' aria-hidden='true'>
+              <div className='h-8 flex-1' aria-hidden='true'>
                 <Skeleton />
               </div>
             </div>
@@ -152,9 +152,9 @@ const LoadingState = () => {
         </div>
 
         {/* Column 3: Prices */}
-        <div className='flex flex-col gap-4 flex-1'>
+        <div className='flex flex-1 flex-col gap-4'>
           {/* Skeleton for "Prices" Label */}
-          <div className='w-1/3 h-6' aria-hidden='true'>
+          <div className='h-6 w-1/3' aria-hidden='true'>
             <Skeleton />
           </div>
 
@@ -162,31 +162,31 @@ const LoadingState = () => {
             {/* Price Sets */}
             <div className='flex items-center gap-4'>
               {/* Skeleton for Unit */}
-              <div className='flex-1 h-8' aria-hidden='true'>
+              <div className='h-8 flex-1' aria-hidden='true'>
                 <Skeleton />
               </div>
 
               {/* Skeleton for Equal Sign */}
-              <div className='w-6 h-6' aria-hidden='true'>
+              <div className='h-6 w-6' aria-hidden='true'>
                 <Skeleton />
               </div>
 
               {/* Skeleton for Price Reference */}
-              <div className='flex-1 h-8' aria-hidden='true'>
+              <div className='h-8 flex-1' aria-hidden='true'>
                 <Skeleton />
               </div>
             </div>
 
-            <div className='flex items-center gap-4 mt-4'>
-              <div className='flex-1 h-8' aria-hidden='true'>
+            <div className='mt-4 flex items-center gap-4'>
+              <div className='h-8 flex-1' aria-hidden='true'>
                 <Skeleton />
               </div>
 
-              <div className='w-6 h-6' aria-hidden='true'>
+              <div className='h-6 w-6' aria-hidden='true'>
                 <Skeleton />
               </div>
 
-              <div className='flex-1 h-8' aria-hidden='true'>
+              <div className='h-8 flex-1' aria-hidden='true'>
                 <Skeleton />
               </div>
             </div>

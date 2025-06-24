@@ -32,11 +32,11 @@ export function TournamentJoinPage({
   const url = `${imageUrl}?${new URLSearchParams(searchParams).toString()}`;
 
   return (
-    <section className='flex flex-col gap-6 p-4 max-w-[1168px] mx-auto'>
+    <section className='mx-auto flex max-w-[1168px] flex-col gap-6 p-4'>
       <PenumbraWaves />
       <div className='flex w-full justify-center'>
         {/* eslint-disable-next-line @next/next/no-img-element -- allow img */}
-        <img src={url} alt='Tournament Share Image' className='w-[600px] h-[315px]' />
+        <img src={url} alt='Tournament Share Image' className='h-[315px] w-[600px]' />
       </div>
       <p className='text-center text-sm text-text-secondary'>Redirecting in {seconds} seconds...</p>
     </section>

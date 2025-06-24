@@ -27,7 +27,7 @@ const matchPagePath = (str: string): PagePath => {
   return PagePath.Home;
 };
 
-export const usePagePath = <T extends PagePath>() => {
+export const usePagePath = () => {
   const pathname = usePathname();
-  return matchPagePath(removeTrailingSlash(pathname ?? '')) as T;
+  return matchPagePath(removeTrailingSlash(pathname ?? ''));
 };

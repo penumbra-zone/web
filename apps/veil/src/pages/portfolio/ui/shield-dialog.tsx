@@ -27,8 +27,8 @@ export function ShieldDialog({ isOpen, onClose, children }: ShieldDialogProps) {
         className='absolute inset-0 h-full w-full object-cover opacity-40'
         onClick={onClose}
       />
-      <div className='relative min-h-[411px] w-full bg-accent-radial-background max-w-2xl rounded-xl p-6 backdrop-blur-lg'>
-        <div className='flex justify-between items-center'>
+      <div className='relative min-h-[411px] w-full max-w-2xl rounded-xl bg-accent-radial-background p-6 backdrop-blur-lg'>
+        <div className='flex items-center justify-between'>
           <Text color='text.primary' xxl>
             Shield
           </Text>

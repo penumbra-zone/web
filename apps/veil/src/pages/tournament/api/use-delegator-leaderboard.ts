@@ -12,7 +12,7 @@ export const BASE_PAGE = 1;
 export const useDelegatorLeaderboard = (
   page = BASE_PAGE,
   limit = BASE_LIMIT,
-  sortKey?: DelegatorLeaderboardSortKey | '',
+  sortKey?: DelegatorLeaderboardSortKey,
   sortDirection?: 'asc' | 'desc',
 ) => {
   const query = useQuery({
@@ -22,7 +22,7 @@ export const useDelegatorLeaderboard = (
         limit,
         page,
         sortDirection,
-        sortKey: sortKey ? sortKey : undefined,
+        sortKey: sortKey ?? undefined,
       } satisfies Partial<DelegatorLeaderboardRequest>);
     },
   });

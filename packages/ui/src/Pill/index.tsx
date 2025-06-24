@@ -89,7 +89,7 @@ export const Pill = ({ children, priority = 'primary', context = 'default' }: Pi
         getFont(context, density),
         getColor(priority, context),
         getBackgroundColor(priority, context),
-        'box-border max-w-full w-max rounded-full',
+        'box-border w-max max-w-full rounded-full',
         'inline-flex items-center',
         density !== 'slim' && 'gap-1',
         priority === 'secondary'

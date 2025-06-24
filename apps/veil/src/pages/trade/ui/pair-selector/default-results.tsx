@@ -20,8 +20,8 @@ export const DefaultResults = observer(({ onSelect }: DefaultResultsProps) => {
 
   if (isLoading) {
     return (
-      <div className='flex flex-col gap-2 mt-4'>
-        <div className='w-24 min-h-5 h-5'>
+      <div className='mt-4 flex flex-col gap-2'>
+        <div className='h-5 min-h-5 w-24'>
           <Skeleton />
         </div>
 
@@ -36,8 +36,8 @@ export const DefaultResults = observer(({ onSelect }: DefaultResultsProps) => {
 
   if (error) {
     return (
-      <div className='grow flex flex-col items-center justify-center gap-2 py-4 text-text-secondary'>
-        <Ban className='text-destructive-light size-8' />
+      <div className='flex grow flex-col items-center justify-center gap-2 py-4 text-text-secondary'>
+        <Ban className='size-8 text-destructive-light' />
         <Text small>An error occurred when loading data from the blockchain</Text>
         {/* TODO: add details button  */}
       </div>
@@ -46,7 +46,7 @@ export const DefaultResults = observer(({ onSelect }: DefaultResultsProps) => {
 
   if (!starred.length && !suggested?.length) {
     return (
-      <div className='grow flex flex-col items-center justify-center gap-2 py-4 text-text-secondary'>
+      <div className='flex grow flex-col items-center justify-center gap-2 py-4 text-text-secondary'>
         <Search className='size-8' />
         <Text small>No results</Text>
       </div>
@@ -66,7 +66,7 @@ export const DefaultResults = observer(({ onSelect }: DefaultResultsProps) => {
                   key={`starred-${base.symbol}/${quote.symbol}`}
                   value={`${base.symbol}/${quote.symbol}`}
                   title={
-                    <div className='flex items-center h-10'>
+                    <div className='flex h-10 items-center'>
                       <Text color='text.primary'>
                         {base.symbol}/{quote.symbol}
                       </Text>

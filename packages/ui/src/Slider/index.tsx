@@ -88,7 +88,7 @@ export const Slider: React.FC<SliderProps> = ({
                     <div
                       key={left}
                       className={cn(
-                        'absolute w-1 h-2 -translate-x-1/2',
+                        'absolute h-2 w-1 -translate-x-1/2',
                         getThemeColorClass(trackGapBackground).bg,
                       )}
                       style={{
@@ -101,12 +101,12 @@ export const Slider: React.FC<SliderProps> = ({
         </RadixSlider.Track>
         <RadixSlider.Thumb
           className={cn(
-            'block w-4 h-4 rounded-full bg-neutral-contrast',
+            'block h-4 w-4 rounded-full bg-neutral-contrast',
             !disabled &&
-              'cursor-grab hover:bg-neutral-contrast focus:outline-solid focus:outline-2',
+              'cursor-grab hover:bg-neutral-contrast focus:outline-2 focus:outline-solid',
             !disabled && `focus:outline-primary-main`,
             disabled &&
-              "after:content-[''] after:absolute after:inset-0 after:bg-action-disabled-overlay",
+              "after:absolute after:inset-0 after:bg-action-disabled-overlay after:content-['']",
           )}
         />
       </RadixSlider.Root>

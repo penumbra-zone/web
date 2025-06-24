@@ -53,7 +53,7 @@ const PreviousEpochsRow = observer(
         className={cn(
           className,
           'grid grid-cols-subgrid',
-          'hover:bg-action-hover-overlay transition-colors cursor-pointer',
+          'cursor-pointer transition-colors hover:bg-action-hover-overlay',
         )}
       >
         <TableCell cell loading={isLoading}>
@@ -63,7 +63,7 @@ const PreviousEpochsRow = observer(
           {!isLoading && !row.gauge.length && '-'}
           {!isLoading &&
             row.gauge.slice(0, 3).map((vote, index) => (
-              <div key={index} className='flex items-center justify-start min-w-[88px] px-1'>
+              <div key={index} className='flex min-w-[88px] items-center justify-start px-1'>
                 <Vote asset={vote.asset} percent={vote.portion} hideFor />
               </div>
             ))}
@@ -132,7 +132,7 @@ export const PreviousEpochs = observer(() => {
   };
 
   return (
-    <div className='flex flex-col gap-6 p-6 w-full rounded-lg bg-other-tonal-fill5 backdrop-blur-lg'>
+    <div className='flex w-full flex-col gap-6 rounded-lg bg-other-tonal-fill5 p-6 backdrop-blur-lg'>
       <Text xxl color='text.primary'>
         Previous Epochs
       </Text>

@@ -21,7 +21,7 @@ export const FormTabs = observer(() => {
         store.highlight && 'bg-action-hover-overlay',
       )}
     >
-      <div className='px-4 lg:pt-2 border-b border-b-other-solid-stroke'>
+      <div className='border-b border-b-other-solid-stroke px-4 lg:pt-2'>
         <Density compact>
           <Tabs
             value={store.whichForm}

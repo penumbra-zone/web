@@ -90,7 +90,7 @@ export const TxViewer = observer(({ txInfo }: { txInfo?: TransactionInfo }) => {
         </div>
       )}
 
-      <div className='flex flex-col gap-1 p-3 rounded-sm bg-other-tonal-fill5 text-text-secondary'>
+      <div className='flex flex-col gap-1 rounded-sm bg-other-tonal-fill5 p-3 text-text-secondary'>
         {txId && <InfoRow label='Transaction Hash' info={shorten(txId, 8)} copyText={txId} />}
         {!!txInfo?.height && (
           <InfoRow
@@ -111,7 +111,7 @@ export const TxViewer = observer(({ txInfo }: { txInfo?: TransactionInfo }) => {
           <Text small color='text.primary'>
             Memo
           </Text>
-          <div className='flex flex-col gap-1 p-3 rounded-sm bg-other-tonal-fill5 text-text-secondary'>
+          <div className='flex flex-col gap-1 rounded-sm bg-other-tonal-fill5 p-3 text-text-secondary'>
             {txv.bodyView.memoView.memoView.case === 'visible' &&
             txv.bodyView.memoView.memoView.value.plaintext?.returnAddress ? (
               <InfoRow
@@ -161,7 +161,7 @@ export const TxViewer = observer(({ txInfo }: { txInfo?: TransactionInfo }) => {
         <Text small color='text.primary'>
           Parameters
         </Text>
-        <div className='flex flex-col gap-1 p-3 rounded-sm bg-other-tonal-fill5 text-text-secondary'>
+        <div className='flex flex-col gap-1 rounded-sm bg-other-tonal-fill5 p-3 text-text-secondary'>
           <InfoRow
             label='Transaction Fee'
             info={

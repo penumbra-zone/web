@@ -42,7 +42,7 @@ export const SimpleLiquidityOrderForm = observer(
     return (
       <div className='p-4'>
         <div className='mb-4'>
-          <div className=' leading-6 flex items-center gap-1'>
+          <div className='flex items-center gap-1 leading-6'>
             <Text small color='text.secondary'>
               Enter Amounts
             </Text>
@@ -63,11 +63,11 @@ export const SimpleLiquidityOrderForm = observer(
                 onChange={store.setBaseInput}
                 endAdornment={
                   store.baseAsset?.symbol && (
-                    <div className='flex shrink-0 items-center gap-1 font-default text-text-sm font-normal leading-text-xs text-text-secondary'>
+                    <div className='flex shrink-0 items-center gap-1 font-default text-text-sm leading-text-xs font-normal text-text-secondary'>
                       {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- its necessary */}
                       {store.baseAsset?.metadata?.images?.[0]?.svg && (
                         <Image
-                          className='w-4 h-4 rounded-full'
+                          className='h-4 w-4 rounded-full'
                           src={store.baseAsset.metadata.images[0].svg}
                           alt={store.baseAsset.symbol}
                           width={16}
@@ -83,7 +83,7 @@ export const SimpleLiquidityOrderForm = observer(
             {store.baseAsset?.formatBalance() && (
               <button
                 type='button'
-                className='flex items-center gap-1 font-mono text-text-xs font-normal leading-text-xs text-text-secondary my-1'
+                className='my-1 flex items-center gap-1 font-mono text-text-xs leading-text-xs font-normal text-text-secondary'
                 onClick={() => {
                   const target = store.baseAsset?.balance?.toString();
                   if (target) {
@@ -91,7 +91,7 @@ export const SimpleLiquidityOrderForm = observer(
                   }
                 }}
               >
-                <div className='bg-other-tonal-fill5 rounded-full w-[28px] h-[20px] flex items-center justify-center'>
+                <div className='flex h-[20px] w-[28px] items-center justify-center rounded-full bg-other-tonal-fill5'>
                   <Icon IconComponent={WalletMinimal} size='xs' color='text.secondary' />
                 </div>
                 {store.baseAsset.formatBalance()}
@@ -111,11 +111,11 @@ export const SimpleLiquidityOrderForm = observer(
                 onChange={store.setQuoteInput}
                 endAdornment={
                   store.quoteAsset?.symbol && (
-                    <div className='flex shrink-0 items-center gap-1 font-default text-text-sm font-normal leading-text-xs text-text-secondary'>
+                    <div className='flex shrink-0 items-center gap-1 font-default text-text-sm leading-text-xs font-normal text-text-secondary'>
                       {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- its necessary */}
                       {store.quoteAsset?.metadata?.images?.[0]?.svg && (
                         <Image
-                          className='w-4 h-4 rounded-full'
+                          className='h-4 w-4 rounded-full'
                           src={store.quoteAsset.metadata.images[0].svg}
                           alt={store.quoteAsset.symbol}
                           width={16}
@@ -131,7 +131,7 @@ export const SimpleLiquidityOrderForm = observer(
             {store.quoteAsset?.formatBalance() && (
               <button
                 type='button'
-                className='flex items-center gap-1 font-mono text-text-xs font-normal leading-text-xs text-text-secondary my-1'
+                className='my-1 flex items-center gap-1 font-mono text-text-xs leading-text-xs font-normal text-text-secondary'
                 onClick={() => {
                   const target = store.quoteAsset?.balance?.toString();
                   if (target) {
@@ -139,7 +139,7 @@ export const SimpleLiquidityOrderForm = observer(
                   }
                 }}
               >
-                <div className='bg-other-tonal-fill5 rounded-full w-[28px] h-[20px] flex items-center justify-center'>
+                <div className='flex h-[20px] w-[28px] items-center justify-center rounded-full bg-other-tonal-fill5'>
                   <Icon IconComponent={WalletMinimal} size='xs' color='text.secondary' />
                 </div>
                 {store.quoteAsset.formatBalance()}
@@ -148,7 +148,7 @@ export const SimpleLiquidityOrderForm = observer(
           </div>
         </div>
         <div className='mb-4'>
-          <div className='flex justify-between leading-6 mb-4'>
+          <div className='mb-4 flex justify-between leading-6'>
             <div className='flex items-center gap-1'>
               <Text small color='text.secondary'>
                 Price Range

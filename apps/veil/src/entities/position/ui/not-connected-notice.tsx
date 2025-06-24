@@ -4,9 +4,9 @@ import { Text } from '@penumbra-zone/ui/Text';
 
 export const NotConnectedNotice = () => {
   return (
-    <div className='flex flex-col items-center justify-center min-h-screen gap-4'>
+    <div className='flex min-h-screen flex-col items-center justify-center gap-4'>
       <div className='size-8 text-text-secondary'>
-        <Wallet2 className='w-full h-full' />
+        <Wallet2 className='h-full w-full' />
       </div>
       <Text color='text.secondary' small>
         Connect wallet to see your positions

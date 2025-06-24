@@ -42,7 +42,7 @@ export const TabControl: React.FC<TabControlProps> = ({ value, onChange, options
       {options.map(option => (
         <button
           key={option.value}
-          className={`flex-1 whitespace-nowrap px-4 py-2 text-center transition-colors ${getButtonClassName(
+          className={`flex-1 px-4 py-2 text-center whitespace-nowrap transition-colors ${getButtonClassName(
             option.value,
             value === option.value,
           )}`}

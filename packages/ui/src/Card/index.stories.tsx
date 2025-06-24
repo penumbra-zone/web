@@ -14,7 +14,7 @@ const meta: Meta<typeof Card> = {
   decorators: [
     Story => (
       <div
-        className='text-text-primary -before:z-[1] before:bg-[url("https://images.unsplash.com/photo-1517405404692-6eddc8fb975f?q=80&w=2970&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D")] relative p-20 before:absolute before:inset-0 before:bg-caution-main before:opacity-60 before:blur-xs before:content-[""]'
+        className='relative p-20 text-text-primary before:absolute before:inset-0 before:-z-1 before:bg-caution-main before:bg-[url("https://images.unsplash.com/photo-1517405404692-6eddc8fb975f?q=80&w=2970&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D")] before:opacity-60 before:blur-xs before:content-[""]'
         style={{}}
       >
         <Story />

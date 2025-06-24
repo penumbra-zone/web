@@ -6,32 +6,32 @@ export interface RouteBookLoadingRowProps {
 
 export const RouteBookLoadingRow = ({ isSpread }: RouteBookLoadingRowProps) =>
   isSpread ? (
-    <div className='col-span-4 flex items-center justify-center gap-2 px-3 py-3 text-xs border-b border-b-other-tonal-stroke'>
-      <div className='w-[78px] h-[16px]'>
+    <div className='col-span-4 flex items-center justify-center gap-2 border-b border-b-other-tonal-stroke px-3 py-3 text-xs'>
+      <div className='h-[16px] w-[78px]'>
         <Skeleton />
       </div>
-      <div className='w-[54px] h-[16px]'>
+      <div className='h-[16px] w-[54px]'>
         <Skeleton />
       </div>
-      <div className='w-[69px] h-[16px]'>
+      <div className='h-[16px] w-[69px]'>
         <Skeleton />
       </div>
-      <div className='w-[39px] h-[16px]'>
+      <div className='h-[16px] w-[39px]'>
         <Skeleton />
       </div>
     </div>
   ) : (
-    <div className='grid grid-cols-subgrid col-span-4 items-center group relative border-b border-b-other-tonal-stroke px-4'>
-      <div className='w-[56px] h-[16px]'>
+    <div className='group relative col-span-4 grid grid-cols-subgrid items-center border-b border-b-other-tonal-stroke px-4'>
+      <div className='h-[16px] w-[56px]'>
         <Skeleton />
       </div>
-      <div className='w-[56px] h-[16px] ml-auto'>
+      <div className='ml-auto h-[16px] w-[56px]'>
         <Skeleton />
       </div>
-      <div className='w-[56px] h-[16px] ml-auto'>
+      <div className='ml-auto h-[16px] w-[56px]'>
         <Skeleton />
       </div>
-      <div className='w-[24px] h-[16px] ml-auto'>
+      <div className='ml-auto h-[16px] w-[24px]'>
         <Skeleton />
       </div>
     </div>

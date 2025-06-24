@@ -72,7 +72,7 @@ export const Summary = () => {
           <div className={cn('flex items-center gap-1', getColor(data, false))}>
             <Text detail>{round({ value: data.change.value, decimals: 6 })}</Text>
             <span
-              className={cn('flex h-4 px-1 rounded-full text-success-dark', getColor(data, true))}
+              className={cn('flex h-4 rounded-full px-1 text-success-dark', getColor(data, true))}
             >
               <Text detail>
                 {getTextSign(data)}

@@ -53,9 +53,9 @@ export const InspectSearch = () => {
 
   return (
     <Density compact>
-      <div className='flex justify-center mt-4'>
-        <div className='max-w-[600px] w-full mx-4 flex gap-2 flex-col'>
-          <form onSubmit={handleSearch} className='flex gap-2 items-center'>
+      <div className='mt-4 flex justify-center'>
+        <div className='mx-4 flex w-full max-w-[600px] flex-col gap-2'>
+          <form onSubmit={handleSearch} className='flex items-center gap-2'>
             <div className='w-full'>
               <TextInput
                 type='text'
@@ -75,7 +75,7 @@ export const InspectSearch = () => {
               </Button>
             </div>
           </form>
-          {loading && <LoaderCircle className='animate-spin text-white self-center' />}
+          {loading && <LoaderCircle className='animate-spin self-center text-white' />}
         </div>
       </div>
     </Density>

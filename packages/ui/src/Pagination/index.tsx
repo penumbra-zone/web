@@ -183,9 +183,9 @@ export const Pagination = ({
   return (
     <Container
       className={cn(
-        'w-full grid items-center gap-x-6 gap-y-2 text-text-secondary',
-        'grid-rows-2 grid-cols-2',
-        'tablet:grid-rows-1 tablet:grid-cols-[auto_1fr_auto]',
+        'grid w-full items-center gap-x-6 gap-y-2 text-text-secondary',
+        'grid-cols-2 grid-rows-2',
+        'tablet:grid-cols-[auto_1fr_auto] tablet:grid-rows-1',
       )}
     >
       <div className='col-start-1 row-start-1 whitespace-nowrap'>
@@ -256,7 +256,7 @@ export const Pagination = ({
               id={selectId}
               value={limit}
               onChange={onSelect}
-              className='invisible absolute left-0 top-0'
+              className='invisible absolute top-0 left-0'
             >
               {limitOptionsSet.map(option => (
                 <option key={option.toString()} value={option}>

@@ -17,7 +17,7 @@ export const HelpPopover = observer(() => {
       <Popover.Content align='end' side='bottom'>
         <NextLink
           href='/portfolio?showOnboarding=true'
-          className='flex px-3 py-2 gap-3 text-text-primary'
+          className='flex gap-3 px-3 py-2 text-text-primary'
         >
           <Icon IconComponent={CircleHelp} size='md' />
           <Text small align='left'>
@@ -28,7 +28,7 @@ export const HelpPopover = observer(() => {
           href='https://guide.penumbra.zone/dex'
           target='_blank'
           rel='noopener noreferrer'
-          className='flex px-3 py-2 gap-3 text-text-primary'
+          className='flex gap-3 px-3 py-2 text-text-primary'
         >
           <Icon IconComponent={BookOpenText} size='md' />
           <Text small align='left'>
@@ -39,7 +39,7 @@ export const HelpPopover = observer(() => {
           href='https://discord.gg/4dYRd2vgkF'
           target='_blank'
           rel='noopener noreferrer'
-          className='flex px-3 py-2 gap-3 text-text-primary'
+          className='flex gap-3 px-3 py-2 text-text-primary'
         >
           <Icon IconComponent={MessageCircleHeart} size='md' />
           <Text small align='left'>
@@ -50,7 +50,7 @@ export const HelpPopover = observer(() => {
           href='https://penumbra.zone/'
           target='_blank'
           rel='noopener noreferrer'
-          className='flex px-3 py-2 gap-3 text-text-primary'
+          className='flex gap-3 px-3 py-2 text-text-primary'
         >
           <Icon IconComponent={Info} size='md' />
           <Text small align='left'>

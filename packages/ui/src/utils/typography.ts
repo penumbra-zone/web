@@ -10,61 +10,61 @@ import { getThemeColorClass, ThemeColor } from './color';
 export const getTextBase = (color?: ThemeColor) =>
   cn('m-0 transition-colors duration-150', color ? getThemeColorClass(color).text : '');
 
-export const h1 = cn('font-heading text-text6xl font-medium leading-text6xl');
+export const h1 = cn('font-heading text-text6xl leading-text6xl font-medium');
 
-export const h2 = cn('font-heading text-text5xl font-medium leading-text5xl');
+export const h2 = cn('font-heading text-text5xl leading-text5xl font-medium');
 
-export const h3 = cn('font-heading text-text4xl font-medium leading-text4xl');
+export const h3 = cn('font-heading text-text4xl leading-text4xl font-medium');
 
-export const h4 = cn('font-heading text-text3xl font-medium leading-text3xl');
+export const h4 = cn('font-heading text-text3xl leading-text3xl font-medium');
 
-export const xxl = cn('font-default text-text2xl font-medium leading-text2xl');
+export const xxl = cn('font-default text-text2xl leading-text2xl font-medium');
 
-export const large = cn('font-default text-text-lg font-medium leading-text-lg');
+export const large = cn('font-default text-text-lg leading-text-lg font-medium');
 
-export const body = cn('font-default text-text-base font-normal leading-text-base');
+export const body = cn('font-default text-text-base leading-text-base font-normal');
 
-export const bodyStrong = cn('font-default text-text-base font-medium leading-text-base');
+export const bodyStrong = cn('font-default text-text-base leading-text-base font-medium');
 
-export const bodyTechnical = cn('font-mono text-text-base font-normal leading-text-base');
+export const bodyTechnical = cn('font-mono text-text-base leading-text-base font-normal');
 
-export const small = cn('font-default text-text-sm font-normal leading-text-xs');
+export const small = cn('font-default text-text-sm leading-text-xs font-normal');
 
-export const smallTechnical = cn('font-mono text-text-sm font-normal leading-text-sm');
+export const smallTechnical = cn('font-mono text-text-sm leading-text-sm font-normal');
 
-export const xs = cn('font-default text-text-xs font-normal leading-text-xs');
+export const xs = cn('font-default text-text-xs leading-text-xs font-normal');
 
-export const detail = cn('font-default text-text-xs font-normal leading-text-xs');
+export const detail = cn('font-default text-text-xs leading-text-xs font-normal');
 
-export const detailTechnical = cn('font-mono text-text-xs font-normal leading-text-xs');
+export const detailTechnical = cn('font-mono text-text-xs leading-text-xs font-normal');
 
-export const xxs = cn('font-default text-text-xxs font-normal leading-text-xxs');
+export const xxs = cn('font-default text-text-xxs leading-text-xxs font-normal');
 
-export const tab = cn('font-default text-text-lg font-normal leading-text-lg');
+export const tab = cn('font-default text-text-lg leading-text-lg font-normal');
 
-export const tabSmall = cn('font-default text-text-sm font-medium leading-text-sm');
+export const tabSmall = cn('font-default text-text-sm leading-text-sm font-medium');
 
-export const tabMedium = cn('font-default text-text-sm font-medium leading-text-lg');
+export const tabMedium = cn('font-default text-text-sm leading-text-lg font-medium');
 
-export const tableItem = cn('font-default text-text-base font-normal leading-text-base');
+export const tableItem = cn('font-default text-text-base leading-text-base font-normal');
 
-export const tableItemMedium = cn('font-default text-text-sm font-normal leading-text-sm');
+export const tableItemMedium = cn('font-default text-text-sm leading-text-sm font-normal');
 
-export const tableItemSmall = cn('font-default text-text-xs font-normal leading-text-xs');
+export const tableItemSmall = cn('font-default text-text-xs leading-text-xs font-normal');
 
-export const tableHeading = cn('font-default text-text-base font-medium leading-text-base');
+export const tableHeading = cn('font-default text-text-base leading-text-base font-medium');
 
-export const tableHeadingMedium = cn('font-default text-text-sm font-medium leading-text-sm');
+export const tableHeadingMedium = cn('font-default text-text-sm leading-text-sm font-medium');
 
-export const tableHeadingSmall = cn('font-default text-text-xs font-medium leading-text-xs');
+export const tableHeadingSmall = cn('font-default text-text-xs leading-text-xs font-medium');
 
-export const technical = cn('font-mono text-text-base font-medium leading-text-base');
+export const technical = cn('font-mono text-text-base leading-text-base font-medium');
 
 // equals to body with the bottom margin
-export const p = cn('font-default text-text-base font-normal leading-text-base mb-6 last:mb-0');
+export const p = cn('mb-6 font-default text-text-base leading-text-base font-normal last:mb-0');
 
-export const button = cn('font-default text-text-base font-medium leading-text-base');
+export const button = cn('font-default text-text-base leading-text-base font-medium');
 
-export const buttonMedium = cn('font-default text-text-sm font-medium leading-text-base');
+export const buttonMedium = cn('font-default text-text-sm leading-text-base font-medium');
 
-export const buttonSmall = cn('font-default text-text-xs font-medium leading-text-base');
+export const buttonSmall = cn('font-default text-text-xs leading-text-base font-medium');

@@ -30,7 +30,7 @@ export const Progress = ({ value, loading, error = false }: ProgressProps) => (
     value={value}
     max={1}
     className={cn(
-      'relative w-full h-1 overflow-hidden transition-colors',
+      'relative h-1 w-full overflow-hidden transition-colors',
       error ? 'bg-destructive-light' : 'bg-other-tonal-fill5',
     )}
   >
@@ -46,7 +46,7 @@ export const Progress = ({ value, loading, error = false }: ProgressProps) => (
         {loading && (
           <div
             className={cn(
-              'absolute top-0 -left-[20%] w-1/5 h-full blur-[2px]',
+              'absolute top-0 -left-[20%] h-full w-1/5 blur-[2px]',
               'animate-progress bg-progress-loading',
             )}
           />

@@ -65,7 +65,7 @@ export const PortfolioTransactions = observer(() => {
         ))}
 
       {!isLoading && !!error && (
-        <div className='min-h-[250px] flex items-center'>
+        <div className='flex min-h-[250px] items-center'>
           <BlockchainError direction='column' message={String(error)} hideDetails />
         </div>
       )}

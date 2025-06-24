@@ -8,7 +8,7 @@ export const SelectGroup: React.FC<{
   onChange: (option: string) => void;
 }> = ({ value, options, onChange }) => {
   return (
-    <div className='flex gap-1 mb-4'>
+    <div className='mb-4 flex gap-1'>
       {options.map(option => (
         <button
           key={option}

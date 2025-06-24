@@ -235,7 +235,7 @@ export const TransactionCard = observer(
                         className='cursor-pointer'
                         onClick={() => navigate(`${PagePath.Transactions}?tx=${txHash}`)}
                       >
-                        <div className='hover:[&>div]:bg-linear-to-b hover:[&>div]:from-[rgba(83,174,168,0.15)] hover:[&>div]:to-[rgba(83,174,168,0.15)] hover:[&>div]:bg-[rgba(250,250,250,0.05)] hover:[&>div]:bg-blend-overlay'>
+                        <div className='hover:[&>div]:bg-[rgba(250,250,250,0.05)] hover:[&>div]:bg-linear-to-b hover:[&>div]:from-[rgba(83,174,168,0.15)] hover:[&>div]:to-[rgba(83,174,168,0.15)] hover:[&>div]:bg-blend-overlay'>
                           <TransactionSummary
                             info={transaction}
                             getMetadata={getTxMetadata}
@@ -255,7 +255,7 @@ export const TransactionCard = observer(
                     );
                   })
                 ) : (
-                  <div className='flex min-h-[120px] flex-col items-center justify-center p-6 text-center text-muted-foreground'>
+                  <div className='text-muted-foreground flex min-h-[120px] flex-col items-center justify-center p-6 text-center'>
                     <p className='text-sm'>You have no transactions yet.</p>
                     <p className='mt-1 text-xs'>
                       Send, receive, or trade assets to see your transaction history here.

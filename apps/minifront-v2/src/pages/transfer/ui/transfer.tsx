@@ -10,7 +10,7 @@ export const Transfer = observer((): React.ReactNode => {
   const transferStore = useTransferStore();
 
   return (
-    <div className='flex flex-col items-center justify-start min-h-[calc(100vh-8rem)] px-4'>
+    <div className='flex min-h-[calc(100vh-8rem)] flex-col items-center justify-start px-4'>
       <div className='w-full max-w-[560px]'>
         <Card.Stack>
           <Card
@@ -30,7 +30,7 @@ export const Transfer = observer((): React.ReactNode => {
                 ]}
                 actionType='accent'
               />
-              <div className='border-b border border-other-tonal-stroke'></div>
+              <div className='border border-b border-other-tonal-stroke'></div>
 
               <div className='mt-4'>
                 {transferStore.activeTab === 'send' ? <SendForm /> : <ReceiveForm />}

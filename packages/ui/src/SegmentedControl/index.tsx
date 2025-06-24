@@ -32,16 +32,16 @@ const getItemClassesByDensity = (density: Density): string => {
 const getItemClassesByStyle = (style: SegmentedControlItemProps['style']): string => {
   if (style === 'red') {
     return cn(
-      'aria-checked:bg-destructive-main aria-checked:border-transparent aria-checked:focus:outline-action-destructive-focus-outline',
+      'aria-checked:border-transparent aria-checked:bg-destructive-main aria-checked:focus:outline-action-destructive-focus-outline',
     );
   }
   if (style === 'green') {
     return cn(
-      'aria-checked:bg-success-main aria-checked:border-transparent aria-checked:focus:outline-action-success-focus-outline',
+      'aria-checked:border-transparent aria-checked:bg-success-main aria-checked:focus:outline-action-success-focus-outline',
     );
   }
   if (style === 'filled') {
-    return cn('aria-checked:bg-neutral-main aria-checked:border-transparent');
+    return cn('aria-checked:border-transparent aria-checked:bg-neutral-main');
   }
   return cn('aria-checked:border-neutral-light');
 };
@@ -61,20 +61,20 @@ export const SegmentedControlItem = ({
       asChild
       disabled={disabled}
       className={cn(
-        'flex items-center justify-center overflow-hidden relative',
+        'relative flex items-center justify-center overflow-hidden',
         'text-text-secondary aria-checked:text-text-primary',
-        'bg-transparent border border-other-tonal-stroke',
+        'border border-other-tonal-stroke bg-transparent',
         'transition-colors',
         getItemClassesByDensity(density),
         getItemClassesByStyle(style),
         // Hover style
-        'not-disabled:hover:border-neutral-light after:content-[""] after:absolute after:inset-0 after:bg-transparent after:pointer-events-none not-disabled:hover:after:bg-action-hover-overlay after:transition-colors',
+        'after:pointer-events-none after:absolute after:inset-0 after:bg-transparent after:transition-colors after:content-[""] not-disabled:hover:border-neutral-light not-disabled:hover:after:bg-action-hover-overlay',
         // Focus style
-        'outline-solid outline-2 outline-transparent focus:outline-action-neutral-focus-outline',
+        'outline-2 outline-transparent outline-solid focus:outline-action-neutral-focus-outline',
         // Disabled style
-        'disabled:cursor-not-allowed before:content-[""] before:absolute before:inset-0 before:bg-transparent before:pointer-events-none disabled:before:bg-action-disabled-overlay before:transition-colors',
+        'before:pointer-events-none before:absolute before:inset-0 before:bg-transparent before:transition-colors before:content-[""] disabled:cursor-not-allowed disabled:before:bg-action-disabled-overlay',
         // Correctly round and hide borders based on the item position
-        'only:rounded-full first:rounded-l-full last:rounded-r-full',
+        'first:rounded-l-full last:rounded-r-full only:rounded-full',
         'not-last:border-r-0 [&[aria-checked="true"]:not(:last-child)]:border-r [&[aria-checked="true"]:not(:last-child)+*]:border-l-0',
         '[&:hover:not(:last-child)]:border-r [&:hover:not(:last-child)+*]:border-l-0',
       )}

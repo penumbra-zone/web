@@ -6,7 +6,7 @@ export const SyncBar = observer(() => {
   const { loading, error, syncPercent, updating } = statusStore;
 
   return (
-    <div className='fixed left-0 top-0 h-1 w-full z-100'>
+    <div className='fixed top-0 left-0 z-100 h-1 w-full'>
       {loading ? (
         <Progress value={0} loading error={Boolean(error)} />
       ) : (
