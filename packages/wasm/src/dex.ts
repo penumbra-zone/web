@@ -23,8 +23,8 @@ export const getLpNftMetadata = (
 
 export const decryptPositionMetadata = (
   fullViewingKey: FullViewingKey,
-  position_metadata: PositionMetadata,
+  position_metadata: Uint8Array,
 ): PositionMetadata => {
-  const bytes = decrypt_position_metadata(fullViewingKey.toBinary(), position_metadata.toBinary());
+  const bytes = decrypt_position_metadata(fullViewingKey.toBinary(), position_metadata);
   return PositionMetadata.fromBinary(bytes);
 };
