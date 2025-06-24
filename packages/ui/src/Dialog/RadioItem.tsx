@@ -76,11 +76,11 @@ export const RadioItem = ({
         onClick={handleClick}
         onKeyDown={handleKeyDown}
         className={cn(
-          'flex justify-between items-center text-left transition-all duration-150',
-          'rounded-sm bg-other-tonalFill5 p-3',
-          'outline outline-2 outline-transparent',
-          'hover:bg-buttonHover focus:bg-buttonHover',
-          'disabled:bg-buttonDisabled',
+          'flex items-center justify-between text-left transition-all duration-150',
+          'rounded-sm bg-other-tonal-fill5 p-3',
+          'outline-2 outline-transparent outline-solid',
+          'hover:bg-button-hover focus:bg-button-hover',
+          'disabled:bg-button-disabled',
           getFocusOutlineColorByActionType(actionType),
           getAriaCheckedOutlineColorByActionType(actionType),
         )}

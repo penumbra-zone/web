@@ -18,9 +18,6 @@ const ChartLoadingState = () => {
             from { opacity: 0; }
             to { opacity: 1; }
           }
-          .chart-loading-fade-in {
-            animation: fadeIn 0.5s ease-in-out;
-          }
         `}
       </style>
       <svg
@@ -31,7 +28,7 @@ const ChartLoadingState = () => {
         preserveAspectRatio='xMidYMid meet'
         fill='none'
         xmlns='http://www.w3.org/2000/svg'
-        className='chart-loading-fade-in'
+        style={{ animation: 'fadeIn 0.5s ease-in-out' }}
       >
         <defs>
           <linearGradient
@@ -235,15 +232,15 @@ export const Chart = observer(() => {
   const { data, isLoading, error } = useCandles(duration);
 
   return (
-    <div className='flex flex-col h-full min-h-0'>
-      <div className='flex px-3 border-b border-b-other-solidStroke'>
+    <div className='flex h-full min-h-0 flex-col'>
+      <div className='flex border-b border-b-other-solid-stroke px-3'>
         {durationWindows.map(w => (
           <button
             key={w}
             type='button'
             className={cn(
-              'flex items-center px-1.5 py-3 rounded hover:text-text-primary hover:bg-other-hover transition-colors',
-              w === duration ? 'text-text-primary bg-other-active' : 'text-text-secondary',
+              'flex items-center rounded px-1.5 py-3 transition-colors hover:bg-action-hover-overlay hover:text-text-primary',
+              w === duration ? 'bg-action-active-overlay text-text-primary' : 'text-text-secondary',
             )}
             onClick={() => setDuration(w)}
           >
@@ -252,7 +249,7 @@ export const Chart = observer(() => {
         ))}
       </div>
 
-      <div className='grow flex items-center justify-center min-h-0'>
+      <div className='flex min-h-0 grow items-center justify-center'>
         {error && <BlockchainError direction='column' />}
         {!error && isLoading && <ChartLoadingState />}
         {!error && !isLoading && data && <ChartData candles={data} />}

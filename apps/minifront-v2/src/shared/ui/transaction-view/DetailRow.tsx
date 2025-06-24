@@ -90,7 +90,7 @@ export const DetailRow: React.FC<DetailRowProps> = ({
           {label}
         </Text>
       </div>
-      <div className='mx-2 grow border-b border-dashed border-other-tonalStroke pt-3'></div>
+      <div className='mx-2 grow border-b border-dashed border-other-tonal-stroke pt-3'></div>
       <div className='flex items-center gap-1'>
         {renderValue()}
         {isUrl(value) && (showLink === undefined || showLink) && (

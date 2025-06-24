@@ -11,11 +11,11 @@ export const InfoCard = ({ title, children }: InfoCardProps) => {
   const [parent] = useAutoAnimate();
 
   return (
-    <div className='flex flex-col justify-center items-start w-full p-3 desktop:p-6 rounded-lg bg-other-tonalFill5 backdrop-blur-lg'>
+    <div className='flex w-full flex-col items-start justify-center rounded-lg bg-other-tonal-fill5 p-3 backdrop-blur-lg desktop:p-6'>
       <Text detail color='text.secondary'>
         {title}
       </Text>
-      <div ref={parent} className='flex items-baseline justify-start gap-2 max-h-7 overflow-hidden'>
+      <div ref={parent} className='flex max-h-7 items-baseline justify-start gap-2 overflow-hidden'>
         {children}
       </div>
     </div>

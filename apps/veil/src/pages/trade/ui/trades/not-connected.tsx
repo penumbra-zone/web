@@ -4,9 +4,9 @@ import { Text } from '@penumbra-zone/ui/Text';
 
 export const NotConnected = () => {
   return (
-    <div className='flex flex-col items-center justify-center h-52 gap-4'>
+    <div className='flex h-52 flex-col items-center justify-center gap-4'>
       <div className='size-8 text-text-secondary'>
-        <Wallet2 className='w-full h-full' />
+        <Wallet2 className='h-full w-full' />
       </div>
       <Text color='text.secondary' small>
         Connect wallet to see your trades

@@ -35,10 +35,10 @@ export const FilterInput = ({
       {asset && (
         <div
           className={cn(
-            'grow h-14 flex gap-2 items-center text-text-primary px-3 rounded-sm bg-other-tonalFill5',
+            'flex h-14 grow items-center gap-2 rounded-sm bg-other-tonal-fill5 px-3 text-text-primary',
           )}
         >
-          <div className='grow flex items-center gap-2 max-w-[calc(100%_-_32px)]'>
+          <div className='flex max-w-[calc(100%-32px)] grow items-center gap-2'>
             <AssetIcon metadata={asset} />
             <Text truncate>{asset.symbol}</Text>
           </div>

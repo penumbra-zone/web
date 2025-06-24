@@ -19,12 +19,12 @@ export const FallbackPage = ({
   errorDetails,
 }: FallbackPageProps) => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-8 bg-[url('/assets/background/shield-background.svg')] lg:scale-100 scale-125 bg-cover bg-center bg-no-repeat ">
-      <div className='md:hidden flex flex-col items-center justify-center'>
-        <div className='absolute top-0 left-0 w-full z-5 bg-caution-light'>
+    <div className="flex min-h-screen scale-125 flex-col items-center justify-center bg-[url('/assets/background/shield-background.svg')] bg-cover bg-center bg-no-repeat p-8 lg:scale-100">
+      <div className='flex flex-col items-center justify-center md:hidden'>
+        <div className='absolute top-0 left-0 z-5 w-full bg-caution-light'>
           <div className='flex items-center gap-3 px-6 py-3'>
             <AlertTriangle
-              className='w-6 h-6 mt-0.5 flex-shrink-0 text-caution-dark'
+              className='mt-0.5 h-6 w-6 shrink-0 text-caution-dark'
               aria-hidden='true'
             />
             <div className='flex flex-col gap-1 text-left'>
@@ -38,9 +38,9 @@ export const FallbackPage = ({
           </div>
         </div>
       </div>
-      <div className='max-w-xl w-full'>
+      <div className='w-full max-w-xl'>
         <Card>
-          <div className='flex flex-col items-center text-center gap-3 p-3'>
+          <div className='flex flex-col items-center gap-3 p-3 text-center'>
             <Text h4 color='text.primary' align='center'>
               {title}
             </Text>
@@ -50,9 +50,9 @@ export const FallbackPage = ({
               </Text>
             </div>
             {errorDetails && (
-              <div className='text-sm text-text-error font-mono'>{errorDetails}</div>
+              <div className='text-text-error font-mono text-sm'>{errorDetails}</div>
             )}
-            <div className='flex w-full mt-4'>
+            <div className='mt-4 flex w-full'>
               <Button
                 actionType='accent'
                 priority='primary'
@@ -64,7 +64,7 @@ export const FallbackPage = ({
             </div>
           </div>
         </Card>
-        <div className='flex px-3 lg:px-6 mt-4'>
+        <div className='mt-4 flex px-3 lg:px-6'>
           <Text detail color='text.secondary' align='center'>
             Minifront is a minimal frontend for interacting with the Penumbra blockchain—embedded
             into every Penumbra RPC endpoint.

@@ -34,7 +34,7 @@ function LpRewardRow({ lpReward, padStart }: { lpReward: LpRewardRowData; padSta
 
   return (
     <Link
-      className='grid grid-cols-subgrid col-span-5 hover:bg-action-hoverOverlay transition-colors cursor-pointer'
+      className='col-span-5 grid cursor-pointer grid-cols-subgrid transition-colors hover:bg-action-hover-overlay'
       href={`/inspect/lp/${id}`}
     >
       <TableCell cell>#{lpReward.epoch}</TableCell>
@@ -131,8 +131,8 @@ export const LpRewards = observer(() => {
   return (
     <>
       <Density compact>
-        <div className='grid grid-cols-[auto_1fr_1fr_100px_48px] max-w-full overflow-x-auto'>
-          <div className='grid grid-cols-subgrid col-span-5'>
+        <div className='grid max-w-full grid-cols-[auto_1fr_1fr_100px_48px] overflow-x-auto'>
+          <div className='col-span-5 grid grid-cols-subgrid'>
             {getTableHeader('epoch', 'Epoch')}
             <TableCell heading>Position ID</TableCell>
             {getTableHeader('rewards', 'Reward')}
@@ -141,7 +141,7 @@ export const LpRewards = observer(() => {
           </div>
 
           {!loading && !total && (
-            <div className='grid grid-cols-subgrid col-span-4'>
+            <div className='col-span-4 grid grid-cols-subgrid'>
               <TableCell cell>No LP rewards found for this account.</TableCell>
             </div>
           )}

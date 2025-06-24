@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ScaleLinear, scaleLinear } from 'd3-scale';
-import { Text } from '@penumbra-zone/ui';
+import { Text } from '@penumbra-zone/ui/Text';
 import { round } from '@penumbra-zone/types/round';
 import { useWidth } from '@/shared/utils/use-width';
 import { AssetInfo } from '../../model/AssetInfo';
@@ -89,16 +89,16 @@ const Thumb = ({
         left: x,
       }}
     >
-      <div className='absolute z-0 w-[1px] top-[20px] h-[58px] bg-primary-main left-0' />
+      <div className='absolute top-[20px] left-0 z-0 h-[58px] w-px bg-primary-main' />
       <button
         type='button'
         aria-label='Slider Thumb'
-        className={`w-[12px] h-[20px] bg-primary-main absolute top-[32px] cursor-ew-resize rounded-[4px] left-[-6px]`}
+        className={`absolute top-[32px] left-[-6px] h-[20px] w-[12px] cursor-ew-resize rounded-xs bg-primary-main`}
         onMouseDown={handlePointerDown}
         onTouchStart={handlePointerDown}
       >
-        <div className='absolute top-[4px] left-[4px] w-[1px] h-[12px] bg-neutral-contrast' />
-        <div className='absolute top-[4px] right-[4px] w-[1px] h-[12px] bg-neutral-contrast' />
+        <div className='absolute top-[4px] left-[4px] h-[12px] w-px bg-neutral-contrast' />
+        <div className='absolute top-[4px] right-[4px] h-[12px] w-px bg-neutral-contrast' />
       </button>
     </div>
   );
@@ -142,8 +142,8 @@ const PercentageInput = ({
     <div
       ref={textRef}
       className={`
-        absolute top-0 h-[20px] [line-height:20px_!important] bg-[#2A2725] rounded-sm px-1
-        font-default text-textXs font-normal text-text-primary
+        absolute top-0 h-[20px] rounded-sm bg-[#2A2725] px-1 font-default
+        text-text-xs font-normal text-text-primary [line-height:20px_!important]
         ${elevate ? 'z-20' : 'z-10'}
       `}
       style={{ left }}
@@ -191,8 +191,8 @@ const ValueInput = ({
     <div
       ref={textRef}
       className={`
-        absolute top-[78px] h-[20px] [line-height:20px_!important] bg-black rounded-sm px-1
-        font-default text-textXs font-normal text-text-primary
+        absolute top-[78px] h-[20px] rounded-sm bg-black px-1 font-default
+        text-text-xs font-normal text-text-primary [line-height:20px_!important]
         ${elevate ? 'z-20' : 'z-10'}
       `}
       style={{ left }}
@@ -252,7 +252,7 @@ export const PriceSlider = ({
 
   return (
     <div>
-      <div className='flex w-full justify-center gap-1 mb-4'>
+      <div className='mb-4 flex w-full justify-center gap-1'>
         <Text detail color='text.secondary'>
           1 {baseAsset?.symbol} =
         </Text>
@@ -260,14 +260,14 @@ export const PriceSlider = ({
           {marketPrice} {quoteAsset?.symbol}
         </Text>
       </div>
-      <div ref={ref} className='relative z-0 h-[98px] w-full border-b border-other-tonalFill10'>
+      <div ref={ref} className='relative z-0 h-[98px] w-full border-b border-other-tonal-fill10'>
         {/* midprice line */}
-        <div className='absolute z-30 top-0 left-1/2 h-[70px] w-0 border-l border-dashed border-neutral-contrast' />
+        <div className='absolute top-0 left-1/2 z-30 h-[70px] w-0 border-l border-dashed border-neutral-contrast' />
         {scaleLoaded && scale && (
           <>
             {/* slider bg gradient */}
             <div
-              className='absolute z-10 top-0 h-[70px] bg-gradient-to-b from-[rgba(186,77,20,0)] from-10% to-[rgba(186,77,20,0.35)]'
+              className='absolute top-0 z-10 h-[70px] bg-linear-to-b from-[rgba(186,77,20,0)] from-10% to-[rgba(186,77,20,0.35)]'
               style={{
                 left: leftX,
                 right: rightX,
@@ -315,11 +315,11 @@ export const PriceSlider = ({
         )}
 
         {/* slider track bg */}
-        <div className='absolute z-10 top-[62px] left-0 w-full h-[6px] bg-other-tonalFill10 rounded-xs' />
+        <div className='absolute top-[62px] left-0 z-10 h-[6px] w-full rounded-xs bg-other-tonal-fill10' />
         {/* filled slider track */}
         {scaleLoaded && scale && (
           <div
-            className='absolute z-20 top-[62px] h-[6px] bg-primary-main'
+            className='absolute top-[62px] z-20 h-[6px] bg-primary-main'
             style={{
               left: leftX,
               right: rightX,

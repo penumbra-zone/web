@@ -15,7 +15,7 @@ export const InfoRow = ({ label, copyText, info }: InfoRowProps) => {
     <div className={cn('flex items-center gap-2 text-text-secondary')}>
       {typeof label === 'string' ? <Text detailTechnical>{label}</Text> : label}
 
-      <div className='h-px grow border-t border-dashed border-other-tonalStroke stroke-1' />
+      <div className='h-px grow border-t border-dashed border-other-tonal-stroke stroke-1' />
 
       {typeof info === 'string' ? <Text detailTechnical>{info}</Text> : info}
 

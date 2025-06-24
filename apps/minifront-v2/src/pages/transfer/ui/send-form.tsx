@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useTransferStore, useBalancesStore, useAssetsStore } from '@/shared/stores/store-context';
 import { TextInput } from '@penumbra-zone/ui/TextInput';
@@ -9,8 +9,7 @@ import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { FeeTier_Tier } from '@penumbra-zone/protobuf/penumbra/core/component/fee/v1/fee_pb';
 import { Send, AlertCircle, Fuel } from 'lucide-react';
-import { useMemo, useEffect } from 'react';
-import { Density } from '@penumbra-zone/ui';
+import { Density } from '@penumbra-zone/ui/Density';
 
 export const SendForm = observer(() => {
   const transferStore = useTransferStore();
@@ -34,7 +33,9 @@ export const SendForm = observer(() => {
 
   // Create fee ValueView for display
   const feeValueView = useMemo(() => {
-    if (!sendState.fee?.amount || !sendState.feeAssetMetadata) return undefined;
+    if (!sendState.fee?.amount || !sendState.feeAssetMetadata) {
+      return undefined;
+    }
 
     return new ValueView({
       valueView: {
@@ -62,7 +63,7 @@ export const SendForm = observer(() => {
     <div className='p-4rounded-sm'>
       <form onSubmit={handleSubmit} className='flex flex-col gap-1'>
         {/* Recipient Address */}
-        <div className='flex flex-col gap-1 p-3 bg-other-tonalFill5 rounded-sm'>
+        <div className='flex flex-col gap-1 rounded-sm bg-other-tonal-fill5 p-3'>
           <Text strong>Recipient</Text>
           <TextInput
             value={sendState.recipient}
@@ -72,7 +73,7 @@ export const SendForm = observer(() => {
           {sendValidation.recipientError && (
             <Text small color='destructive.light'>
               <div className='flex items-center gap-1'>
-                <AlertCircle className='w-3 h-3' />
+                <AlertCircle className='h-3 w-3' />
                 Invalid address
               </div>
             </Text>
@@ -80,7 +81,7 @@ export const SendForm = observer(() => {
         </div>
 
         {/* Amount and Asset Selection */}
-        <div className='flex flex-col gap-1 p-3 bg-other-tonalFill5 rounded-sm'>
+        <div className='flex flex-col gap-1 rounded-sm bg-other-tonal-fill5 p-3'>
           <Text strong>Amount</Text>
           <AssetValueInput
             amount={sendState.amount}
@@ -96,11 +97,11 @@ export const SendForm = observer(() => {
         </div>
 
         {/* Fee Tier Selection */}
-        <div className='flex flex-col gap-1 p-3 bg-other-tonalFill5 rounded-sm'>
+        <div className='flex flex-col gap-1 rounded-sm bg-other-tonal-fill5 p-3'>
           <div className='flex items-center justify-between'>
             <Text strong>Fee Tier</Text>
           </div>
-          <div className='flex flex-row gap-1 justify-between'>
+          <div className='flex flex-row justify-between gap-1'>
             <div className='flex gap-1'>
               <Density slim>
                 <Button
@@ -128,7 +129,7 @@ export const SendForm = observer(() => {
             </div>
             <div className='flex items-center gap-2'>
               <div className=''>
-                <Fuel className='w-3 h-3 text-text-secondary' />
+                <Fuel className='h-3 w-3 text-text-secondary' />
               </div>
               {sendState.isFeeLoading ? (
                 <Text small color='text.secondary'>
@@ -153,7 +154,7 @@ export const SendForm = observer(() => {
         </div>
 
         {/* Memo */}
-        <div className='flex flex-col gap-1 p-3 bg-other-tonalFill5 rounded-sm'>
+        <div className='flex flex-col gap-1 rounded-sm bg-other-tonal-fill5 p-3'>
           <Text strong>Memo</Text>
           <TextInput
             value={sendState.memo}
@@ -163,13 +164,13 @@ export const SendForm = observer(() => {
           {sendValidation.memoError && (
             <Text small color='destructive.light'>
               <div className='flex items-center gap-1'>
-                <AlertCircle className='w-3 h-3' />
+                <AlertCircle className='h-3 w-3' />
                 Memo too long
               </div>
             </Text>
           )}
           <div className='flex items-center gap-1'>
-            <AlertCircle className='w-4 h-4 text-text-secondary' />
+            <AlertCircle className='h-4 w-4 text-text-secondary' />
             <Text small color='text.secondary'>
               Memo's are required.
             </Text>
@@ -178,7 +179,7 @@ export const SendForm = observer(() => {
 
         {/* Error message */}
         {sendState.error && (
-          <div className='p-3 rounded-lg bg-destructive/10 border border-destructive/20'>
+          <div className='bg-destructive/10 border-destructive/20 rounded-lg border p-3'>
             <Text color='destructive.light' small>
               {sendState.error}
             </Text>

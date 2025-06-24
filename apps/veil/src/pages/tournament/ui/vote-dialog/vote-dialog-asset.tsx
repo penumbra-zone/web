@@ -36,7 +36,7 @@ export const VoteAssetContent = ({ asset }: { asset: MappedGauge }) => {
   }, [asset]);
 
   return (
-    <div className='grow flex flex-col gap-1 ml-1'>
+    <div className='ml-1 flex grow flex-col gap-1'>
       <div className='flex w-full justify-between gap-1'>
         <Text technical color='text.primary'>
           {asset.asset.symbol}
@@ -46,7 +46,7 @@ export const VoteAssetContent = ({ asset }: { asset: MappedGauge }) => {
         </Text>
       </div>
 
-      <div className='flex w-full h-1 bg-other-tonalFill5 rounded-full'>
+      <div className='flex h-1 w-full rounded-full bg-other-tonal-fill5'>
         <div
           className={cn(
             'h-full rounded-full',

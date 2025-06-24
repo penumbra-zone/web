@@ -31,7 +31,7 @@ export const ErrorBoundary = () => {
 
   return (
     <div
-      className='flex flex-col items-center justify-center min-h-screen p-8'
+      className='flex min-h-screen flex-col items-center justify-center p-8'
       style={{
         backgroundImage: `url('/assets/background/shield-background.svg')`,
         backgroundSize: 'cover',
@@ -39,9 +39,9 @@ export const ErrorBoundary = () => {
         backgroundRepeat: 'no-repeat',
       }}
     >
-      <div className='max-w-md w-full'>
+      <div className='w-full max-w-md'>
         <Card>
-          <div className='flex flex-col items-center text-center space-y-6'>
+          <div className='flex flex-col items-center space-y-6 text-center'>
             <Text h4 color='text.primary'>
               Error
             </Text>
@@ -64,7 +64,7 @@ export const ErrorBoundary = () => {
         </Card>
       </div>
 
-      <div className='flex px-3 mt-8'>
+      <div className='mt-8 flex px-3'>
         <Text detail>
           Minifront is a minimal frontend for interacting with the Penumbra blockchain—embedded into
           every Penumbra RPC endpoint.
@@ -76,7 +76,7 @@ export const ErrorBoundary = () => {
 
 const NotFound = () => (
   <div
-    className='flex flex-col items-center justify-center min-h-screen p-8'
+    className='flex min-h-screen flex-col items-center justify-center p-8'
     style={{
       backgroundImage: `url('/assets/background/shield-background.svg')`,
       backgroundSize: 'cover',
@@ -84,9 +84,9 @@ const NotFound = () => (
       backgroundRepeat: 'no-repeat',
     }}
   >
-    <div className='max-w-md w-full'>
+    <div className='w-full max-w-md'>
       <Card>
-        <div className='flex flex-col items-center text-center space-y-6'>
+        <div className='flex flex-col items-center space-y-6 text-center'>
           <Text h4 color='text.primary'>
             404 - Page Not Found
           </Text>
@@ -105,7 +105,7 @@ const NotFound = () => (
       </Card>
     </div>
 
-    <div className='flex px-3 mt-8'>
+    <div className='mt-8 flex px-3'>
       <Text detail>
         Minifront is a minimal frontend for interacting with the Penumbra blockchain—embedded into
         every Penumbra RPC endpoint.

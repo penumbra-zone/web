@@ -30,7 +30,7 @@ export const TabControl: React.FC<TabControlProps> = ({ value, onChange, options
         return 'bg-primary-main text-white';
       }
       if (optionValue === 'receiver') {
-        return 'bg-other-tonalFill5 text-white';
+        return 'bg-other-tonal-fill5 text-white';
       }
       return 'bg-unshield-main text-white'; // Default for 'public' or other active tabs
     }
@@ -38,11 +38,11 @@ export const TabControl: React.FC<TabControlProps> = ({ value, onChange, options
   };
 
   return (
-    <div className='flex overflow-hidden rounded-full border border-other-tonalStroke'>
+    <div className='flex overflow-hidden rounded-full border border-other-tonal-stroke'>
       {options.map(option => (
         <button
           key={option.value}
-          className={`flex-1 whitespace-nowrap px-4 py-2 text-center transition-colors ${getButtonClassName(
+          className={`flex-1 px-4 py-2 text-center whitespace-nowrap transition-colors ${getButtonClassName(
             option.value,
             value === option.value,
           )}`}

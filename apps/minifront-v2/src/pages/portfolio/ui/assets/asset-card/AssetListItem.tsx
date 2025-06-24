@@ -1,5 +1,7 @@
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { AssetIcon, Button, Text } from '@penumbra-zone/ui';
+import { AssetIcon } from '@penumbra-zone/ui/AssetIcon';
+import { Button } from '@penumbra-zone/ui/Button';
+import { Text } from '@penumbra-zone/ui/Text';
 import type { AssetData } from './types';
 import { ArrowUpFromDot, ArrowRightLeft, MoonStar } from 'lucide-react';
 import { assetPatterns } from '@penumbra-zone/types/assets';
@@ -53,7 +55,7 @@ export const AssetListItem = ({ asset }: AssetListItemProps) => {
 
     // If we couldn't get from display, try from symbol
     if (!validatorId && asset.originalMetadata.symbol?.startsWith('delUM(')) {
-      const match = asset.originalMetadata.symbol.match(/delUM\(([^)]+)\)/);
+      const match = /delUM\(([^)]+)\)/.exec(asset.originalMetadata.symbol);
       if (match?.[1]) {
         validatorId = match[1]; // Use full ID from symbol
       }
@@ -76,10 +78,10 @@ export const AssetListItem = ({ asset }: AssetListItemProps) => {
   };
 
   return (
-    <div className='group relative flex h-16 items-center justify-between rounded-sm bg-other-tonalFill5 p-3 hover:bg-[rgba(250,250,250,0.05)] hover:bg-gradient-to-b hover:from-[rgba(83,174,168,0.15)] hover:to-[rgba(83,174,168,0.15)]'>
-      <div className='flex items-center gap-2 min-w-0 flex-1 pr-32'>
+    <div className='group relative flex h-16 items-center justify-between rounded-sm bg-other-tonal-fill5 p-3 hover:bg-[rgba(250,250,250,0.05)] hover:bg-linear-to-b hover:from-[rgba(83,174,168,0.15)] hover:to-[rgba(83,174,168,0.15)]'>
+      <div className='flex min-w-0 flex-1 items-center gap-2 pr-32'>
         <AssetIcon size='md' metadata={metadataForIcon} zIndex={undefined} />
-        <div className='flex flex-col min-w-0 flex-1'>
+        <div className='flex min-w-0 flex-1 flex-col'>
           {/* Amount and symbol with body typography */}
           <Text color='text.primary' body>
             {asset.amount} {displaySymbol}
@@ -90,7 +92,7 @@ export const AssetListItem = ({ asset }: AssetListItemProps) => {
           </Text>
         </div>
       </div>
-      <div className='flex items-center gap-3 shrink-0'>
+      <div className='flex shrink-0 items-center gap-3'>
         {/* Value with detail typography */}
         {!isNaN(Number(asset.value)) && (
           <Text color='text.secondary' xs>
@@ -99,7 +101,7 @@ export const AssetListItem = ({ asset }: AssetListItemProps) => {
         )}
       </div>
       {/* Buttons group - absolutely positioned */}
-      <div className='absolute right-3 top-4 flex items-center gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100'>
+      <div className='absolute top-4 right-3 flex items-center gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100'>
         <Button
           iconOnly
           icon={ArrowUpFromDot}

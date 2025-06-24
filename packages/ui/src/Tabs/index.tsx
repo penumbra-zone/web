@@ -8,22 +8,22 @@ type LimitedActionType = Exclude<ActionType, 'destructive'>;
 
 const getIndicatorColor = (actionType: LimitedActionType): string => {
   if (actionType === 'accent') {
-    return cn('bg-accentRadialGradient');
+    return cn('bg-accent-radial-gradient');
   }
   if (actionType === 'unshield') {
-    return cn('bg-unshieldRadialGradient');
+    return cn('bg-unshield-radial-gradient');
   }
-  return cn('bg-neutralRadialGradient');
+  return cn('bg-neutral-radial-gradient');
 };
 
 const getBorderColor = (actionType: LimitedActionType): string => {
   if (actionType === 'accent') {
-    return cn('border-action-primaryFocusOutline');
+    return cn('border-action-primary-focus-outline');
   }
   if (actionType === 'unshield') {
-    return cn('border-action-unshieldFocusOutline');
+    return cn('border-action-unshield-focus-outline');
   }
-  return cn('border-action-neutralFocusOutline');
+  return cn('border-action-neutral-focus-outline');
 };
 
 const getDensityClasses = (density: Density): string => {
@@ -41,9 +41,9 @@ const getDensityItemClasses = (density: Density): string => {
     return cn(tabMedium, 'p-2');
   }
   if (density === 'slim') {
-    return cn(tabSmall, 'py-1 px-2');
+    return cn(tabSmall, 'px-2 py-1');
   }
-  return cn(tab, 'grow shrink basis-0 p-2');
+  return cn(tab, 'shrink grow basis-0 p-2');
 };
 
 export interface TabsTab {
@@ -85,7 +85,7 @@ export const Tabs = ({ value, onChange, options, actionType = 'default' }: TabsP
   return (
     <RadixTabs.Root value={value} onValueChange={onChange}>
       <RadixTabs.List asChild>
-        <div className={cn(getDensityClasses(density), 'flex items-stretch box-border')}>
+        <div className={cn(getDensityClasses(density), 'box-border flex items-stretch')}>
           {options.map(option => {
             const Component = option.as ?? 'button';
             return (
@@ -99,21 +99,21 @@ export const Tabs = ({ value, onChange, options, actionType = 'default' }: TabsP
                   onClick={() => onChange(option.value)}
                   disabled={option.disabled}
                   className={cn(
-                    'appearance-none border-none text-inherit cursor-pointer',
-                    'h-full relative whitespace-nowrap rounded-t-xs',
+                    'cursor-pointer appearance-none border-none text-inherit',
+                    'relative h-full rounded-t-xs whitespace-nowrap',
                     'transition-[background-color,outline-color,color] duration-150',
                     value === option.value ? 'text-text-primary' : 'text-text-secondary',
                     getDensityItemClasses(density),
                     getFocusOutlineColorByActionType(actionType),
-                    'focus-visible:outline focus-visible:outline-2',
-                    'hover:bg-action-hoverOverlay',
+                    'focus-visible:outline-2 focus-visible:outline-solid',
+                    'hover:bg-action-hover-overlay',
                   )}
                   {...(option.tabProps ?? {})}
                 >
                   <div
                     className={cn(
                       value === option.value ? 'opacity-100' : 'opacity-0',
-                      'absolute inset-0 transition-opacity pointer-events-none',
+                      'pointer-events-none absolute inset-0 transition-opacity',
                       'border-b-2 border-solid',
                       getIndicatorColor(actionType),
                       getBorderColor(actionType),

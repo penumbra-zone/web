@@ -55,23 +55,23 @@ export const LandingCard = observer(() => {
   return (
     <>
       <GradientCard>
-        <div className='flex flex-col md:flex-row gap-4 md:gap-6 lg:gap-12 p-4 md:p-6 lg:p-12'>
+        <div className='flex flex-col gap-4 p-4 lg:gap-12 lg:p-12 md:flex-row md:gap-6 md:p-6'>
           <Explainer />
 
-          <div className='w-full h-[1px] md:w-[1px] md:h-auto bg-other-tonalStroke flex-shrink-0' />
+          <div className='h-px w-full shrink-0 bg-other-tonal-stroke md:h-auto md:w-px' />
 
-          <div className='flex flex-col w-full md:w-1/2 gap-8'>
+          <div className='flex w-full flex-col gap-8 md:w-1/2'>
             <div className='flex justify-between'>
               <Text variant='h3' color='text.primary'>
                 Current Epoch
               </Text>
-              <div className='flex items-center rounded-sm bg-base-blackAlt px-2'>
+              <div className='flex items-center rounded-sm bg-base-black-alt px-2'>
                 {epochLoading ? (
-                  <div className='w-16 h-6'>
+                  <div className='h-6 w-16'>
                     <Skeleton />
                   </div>
                 ) : (
-                  <div className='text-transparent bg-clip-text [background-image:linear-gradient(90deg,rgb(244,156,67),rgb(83,174,168))]'>
+                  <div className='bg-[linear-gradient(90deg,rgb(244,156,67),rgb(83,174,168))] bg-clip-text text-transparent'>
                     <Text xxl>#{epoch}</Text>
                   </div>
                 )}

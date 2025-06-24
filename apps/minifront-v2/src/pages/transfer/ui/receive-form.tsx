@@ -4,10 +4,10 @@ import { useTransferStore } from '@/shared/stores/store-context';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { Toggle } from '@penumbra-zone/ui/Toggle';
-import { AccountSelector } from '@penumbra-zone/ui';
+import { AccountSelector } from '@penumbra-zone/ui/AccountSelector';
 import { Popover } from '@penumbra-zone/ui/Popover';
 import { Copy, Info } from 'lucide-react';
-import { Density } from '@penumbra-zone/ui';
+import { Density } from '@penumbra-zone/ui/Density';
 
 export const ReceiveForm = observer(() => {
   const transferStore = useTransferStore();
@@ -39,10 +39,10 @@ export const ReceiveForm = observer(() => {
   };
 
   return (
-    <div className='flex flex-col gap-6 '>
-      <div className='flex flex-col gap-2 p-3 bg-other-tonalFill5 rounded-md'>
+    <div className='flex flex-col gap-6'>
+      <div className='flex flex-col gap-2 rounded-md bg-other-tonal-fill5 p-3'>
         {/* Account Selector */}
-        <div className='flex flex-col gap-2 '>
+        <div className='flex flex-col gap-2'>
           <Text strong>Account</Text>
           <Density compact>
             <AccountSelector
@@ -58,7 +58,7 @@ export const ReceiveForm = observer(() => {
         {/* Address Display */}
         <div className='flex flex-col gap-2'>
           <div
-            className={`font-mono text-sm break-all p-2 border border-other-tonalStroke rounded-sm ${
+            className={`rounded-sm border border-other-tonal-stroke p-2 font-mono text-sm break-all ${
               receiveState.ibcDepositEnabled ? 'text-primary-light' : 'text-text-secondary'
             }`}
           >
@@ -74,7 +74,7 @@ export const ReceiveForm = observer(() => {
             </Text>
             <Popover>
               <Popover.Trigger>
-                <div className='w-4 h-4 rounded-full border border-other-tonalStroke flex items-center justify-center hover:bg-other-tonalFill10 cursor-pointer transition-colors'>
+                <div className='flex h-4 w-4 cursor-pointer items-center justify-center rounded-full border border-other-tonal-stroke transition-colors hover:bg-other-tonal-fill10'>
                   <Info size={10} className='text-text-secondary' />
                 </div>
               </Popover.Trigger>

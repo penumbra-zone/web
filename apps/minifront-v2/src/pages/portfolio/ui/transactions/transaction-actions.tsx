@@ -107,7 +107,7 @@ const ActionDisplay: React.FC<ActionDisplayProps> = ({
             ? addressViewFromNote.addressView.value.address
             : undefined;
         return (
-          <div className='flex items-center justify-between border-b border-charcoal-secondary py-1 text-sm last:border-b-0'>
+          <div className='border-charcoal-secondary flex items-center justify-between border-b py-1 text-sm last:border-b-0'>
             <span className='text-light-brown'>Spend</span>
             <div className='flex items-center gap-2'>
               {renderValue(note?.value)}
@@ -118,9 +118,9 @@ const ActionDisplay: React.FC<ActionDisplayProps> = ({
         );
       } else {
         return (
-          <div className='flex items-center justify-between border-b border-charcoal-secondary py-1 text-sm last:border-b-0'>
+          <div className='border-charcoal-secondary flex items-center justify-between border-b py-1 text-sm last:border-b-0'>
             <span className='text-light-brown'>Spend</span>
-            <span className='text-xs text-muted-foreground'>(Opaque)</span>
+            <span className='text-muted-foreground text-xs'>(Opaque)</span>
           </div>
         );
       }
@@ -135,7 +135,7 @@ const ActionDisplay: React.FC<ActionDisplayProps> = ({
             ? addressViewFromNote.addressView.value.address
             : undefined;
         return (
-          <div className='flex items-center justify-between border-b border-charcoal-secondary py-1 text-sm last:border-b-0'>
+          <div className='border-charcoal-secondary flex items-center justify-between border-b py-1 text-sm last:border-b-0'>
             <span className='text-light-brown'>Output</span>
             <div className='flex items-center gap-2'>
               {renderValue(note?.value)}
@@ -146,9 +146,9 @@ const ActionDisplay: React.FC<ActionDisplayProps> = ({
         );
       } else {
         return (
-          <div className='flex items-center justify-between border-b border-charcoal-secondary py-1 text-sm last:border-b-0'>
+          <div className='border-charcoal-secondary flex items-center justify-between border-b py-1 text-sm last:border-b-0'>
             <span className='text-light-brown'>Output</span>
-            <span className='text-xs text-muted-foreground'>(Opaque)</span>
+            <span className='text-muted-foreground text-xs'>(Opaque)</span>
           </div>
         );
       }
@@ -166,7 +166,7 @@ const ActionDisplay: React.FC<ActionDisplayProps> = ({
     default: {
       const caseDisplay = typeof currentActionCase === 'string' ? currentActionCase : 'unknown';
       return (
-        <div className='py-1 text-xs text-muted-foreground'>
+        <div className='text-muted-foreground py-1 text-xs'>
           Action type: {caseDisplay} (Display not yet implemented)
         </div>
       );
@@ -183,7 +183,7 @@ export const TransactionActions: React.FC<SectionComponentProps> = ({
 
   if (!actions || actions.length === 0) {
     return (
-      <div className='py-1 text-sm italic text-muted-foreground'>
+      <div className='text-muted-foreground py-1 text-sm italic'>
         No actions in this transaction.
       </div>
     );

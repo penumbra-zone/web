@@ -46,7 +46,7 @@ export const ActionWrapper = (props: ActionWrapperProps) => {
 
   if (!infoRows) {
     return (
-      <div className='flex h-10 w-full items-center justify-between gap-1 rounded-sm bg-other-tonalFill5 px-3 py-2'>
+      <div className='flex h-10 w-full items-center justify-between gap-1 rounded-sm bg-other-tonal-fill5 px-3 py-2'>
         <ActionWrapperHeader density={density} {...props} />
       </div>
     );
@@ -55,7 +55,7 @@ export const ActionWrapper = (props: ActionWrapperProps) => {
   return (
     <div
       className={cn(
-        'flex flex-col rounded-sm bg-other-tonalFill5 px-3 py-2',
+        'flex flex-col rounded-sm bg-other-tonal-fill5 px-3 py-2',
         density === 'sparse' ? 'gap-2' : 'gap-1',
       )}
     >

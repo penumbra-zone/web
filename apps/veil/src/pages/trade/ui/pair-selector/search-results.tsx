@@ -81,7 +81,7 @@ export const SearchResults = observer(({ onSelect, onClear, search }: SearchResu
 
   if (!filtered.length) {
     return (
-      <div className='grow flex flex-col items-center justify-center gap-2 py-4 text-text-secondary'>
+      <div className='flex grow flex-col items-center justify-center gap-2 py-4 text-text-secondary'>
         <Search className='size-8' />
         <Text small>No results</Text>
       </div>
@@ -101,7 +101,7 @@ export const SearchResults = observer(({ onSelect, onClear, search }: SearchResu
                   value={`${asset.symbol}-${asset.display}`}
                   startAdornment={<AssetIcon metadata={asset} size='lg' />}
                   title={
-                    <div className={asset.name ? '' : 'h-10 flex items-center'}>
+                    <div className={asset.name ? '' : 'flex h-10 items-center'}>
                       <Text color='text.primary'>{asset.symbol}</Text>
                     </div>
                   }
@@ -153,7 +153,7 @@ export const SearchResults = observer(({ onSelect, onClear, search }: SearchResu
                     )
                   }
                   title={
-                    <div className={asset.name ? '' : 'h-10 flex items-center'}>
+                    <div className={asset.name ? '' : 'flex h-10 items-center'}>
                       <Text color='text.primary'>{asset.symbol}</Text>
                     </div>
                   }
@@ -174,7 +174,7 @@ export const SearchResults = observer(({ onSelect, onClear, search }: SearchResu
         </Dialog.RadioGroup>
       </div>
 
-      <div className='flex flex-col gap-4 sticky bottom-0 w-full rounded-sm z-10'>
+      <div className='sticky bottom-0 z-10 flex w-full flex-col gap-4 rounded-sm'>
         <div className='bg-neutral-dark'>
           <Button onClick={onClear} priority='primary'>
             Clear

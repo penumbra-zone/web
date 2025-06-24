@@ -43,7 +43,7 @@ const Slider = observer(
           <Text small color='text.secondary'>
             Available Balance
           </Text>
-          <button type='button' className='text-primary' onClick={() => setBalanceFraction(1.0)}>
+          <button type='button' onClick={() => setBalanceFraction(1.0)}>
             <Text small color='text.primary'>
               {balanceDisplay ?? '--'}
             </Text>

@@ -14,7 +14,7 @@ export interface AssetListProps {
 export const AssetList = ({ accounts }: AssetListProps) => {
   if (accounts.length === 0) {
     return (
-      <div className='flex min-h-[120px] flex-col items-center justify-center p-6 text-center text-muted-foreground'>
+      <div className='text-muted-foreground flex min-h-[120px] flex-col items-center justify-center p-6 text-center'>
         <p className='text-sm'>You have no assets yet.</p>
         <p className='mt-1 text-xs'>
           Deposit or receive any assets first to your wallet. They will appear here.

@@ -20,7 +20,7 @@ export const RouteBook = observer(() => {
 
   if (bookErr) {
     return (
-      <div className='flex items-center justify-center p-4 min-h-[600px]'>
+      <div className='flex min-h-[600px] items-center justify-center p-4'>
         <BlockchainError
           message='An error occurred while loading data from the blockchain'
           direction='column'
@@ -31,7 +31,7 @@ export const RouteBook = observer(() => {
 
   if (isLoading || !multiHops) {
     return (
-      <div className='mt-2 w-full grid grid-cols-[1fr_1fr_1fr_1fr] gap-x-2 auto-rows-[32px]'>
+      <div className='mt-2 grid w-full auto-rows-[32px] grid-cols-[1fr_1fr_1fr_1fr] gap-x-2'>
         <RouteBookHeader quote={pair.quoteSymbol} base={pair.baseSymbol} />
         {Array(17)
           .fill(1)
@@ -43,7 +43,7 @@ export const RouteBook = observer(() => {
   }
 
   return (
-    <div className='mt-2 w-full grid grid-cols-[1fr_1fr_1fr_1fr] gap-x-2 auto-rows-[32px] items-center'>
+    <div className='mt-2 grid w-full auto-rows-[32px] grid-cols-[1fr_1fr_1fr_1fr] items-center gap-x-2'>
       <RouteBookHeader quote={pair.quoteSymbol} base={pair.baseSymbol} />
 
       {multiHops.sell.map((trace, idx) => (

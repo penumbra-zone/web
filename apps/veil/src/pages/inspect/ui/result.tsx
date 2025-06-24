@@ -31,33 +31,33 @@ export const LpInspectResult = () => {
   }
 
   return (
-    <section className='w-full border-t border-t-other-solidStroke overflow-x-hidden'>
-      <div className='grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-other-solidStroke border-l border-other-solidStroke'>
+    <section className='w-full overflow-x-hidden border-t border-t-other-solid-stroke'>
+      <div className='grid grid-cols-1 divide-y divide-other-solid-stroke border-l border-other-solid-stroke lg:grid-cols-2 lg:divide-x lg:divide-y-0'>
         {/* First Column */}
-        <div className='flex flex-col divide-y divide-other-solidStroke'>
-          <div className='p-4 w-full'>
+        <div className='flex flex-col divide-y divide-other-solid-stroke'>
+          <div className='w-full p-4'>
             <StateDetails />
           </div>
-          <div className='p-4 w-full'>
+          <div className='w-full p-4'>
             <Timeline />
           </div>
 
           {/* DebugView only on larger screens */}
-          <div className='hidden lg:block p-4 w-full'>
+          <div className='hidden w-full p-4 lg:block'>
             <DebugView />
           </div>
         </div>
 
         {/* Second Column */}
-        <div className='flex flex-col divide-y divide-other-solidStroke'>
-          <div className='p-4 w-full'>
+        <div className='flex flex-col divide-y divide-other-solid-stroke'>
+          <div className='w-full p-4'>
             <VolumeAndFeesTable />
           </div>
         </div>
       </div>
 
       {/* DebugView at the bottom for smaller screens */}
-      <div className='mt-4 border-t border-t-other-solidStroke pt-4 lg:hidden'>
+      <div className='mt-4 border-t border-t-other-solid-stroke pt-4 lg:hidden'>
         <DebugView />
       </div>
     </section>

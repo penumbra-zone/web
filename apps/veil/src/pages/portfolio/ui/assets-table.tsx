@@ -20,7 +20,7 @@ const LoadingState = () => {
         </Text>
 
         <Density compact>
-          <div className='grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr] overflow-y-auto overflow-x-auto'>
+          <div className='grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr] overflow-x-auto overflow-y-auto'>
             <TableCell heading>Shielded Balance</TableCell>
             <TableCell heading>Public Balance</TableCell>
             <TableCell heading>Price</TableCell>
@@ -29,39 +29,39 @@ const LoadingState = () => {
             <TableCell heading>Total Value</TableCell>
 
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className='grid grid-cols-subgrid col-span-6'>
+              <div key={i} className='col-span-6 grid grid-cols-subgrid'>
                 <TableCell loading>
                   <div className='flex items-center gap-2'>
-                    <div className='w-6 h-6 rounded-full overflow-hidden'>
+                    <div className='h-6 w-6 overflow-hidden rounded-full'>
                       <Skeleton />
                     </div>
-                    <div className='w-20 h-5'>
+                    <div className='h-5 w-20'>
                       <Skeleton />
                     </div>
                   </div>
                 </TableCell>
                 <TableCell loading>
-                  <div className='w-24 h-5'>
+                  <div className='h-5 w-24'>
                     <Skeleton />
                   </div>
                 </TableCell>
                 <TableCell loading>
-                  <div className='w-24 h-5'>
+                  <div className='h-5 w-24'>
                     <Skeleton />
                   </div>
                 </TableCell>
                 <TableCell loading>
-                  <div className='w-24 h-5'>
+                  <div className='h-5 w-24'>
                     <Skeleton />
                   </div>
                 </TableCell>
                 <TableCell loading>
-                  <div className='w-24 h-5'>
+                  <div className='h-5 w-24'>
                     <Skeleton />
                   </div>
                 </TableCell>
                 <TableCell loading>
-                  <div className='w-24 h-5'>
+                  <div className='h-5 w-24'>
                     <Skeleton />
                   </div>
                 </TableCell>
@@ -78,7 +78,7 @@ const NotConnectedNotice = () => {
   return (
     <div className='m-4 sm:m-0'>
       <Card>
-        <div className='flex flex-col items-center justify-center h-[400px] gap-4'>
+        <div className='flex h-[400px] flex-col items-center justify-center gap-4'>
           <Text color='text.secondary' small>
             Connect wallet to see your assets
           </Text>
@@ -92,7 +92,7 @@ const NoAssetsNotice = () => {
   return (
     <div className='m-4 sm:m-0'>
       <Card>
-        <div className='flex flex-col items-center justify-center h-[400px] gap-4'>
+        <div className='flex h-[400px] flex-col items-center justify-center gap-4'>
           <Text color='text.secondary' small>
             No assets found in your connected wallets
           </Text>
@@ -129,7 +129,7 @@ export const AssetsTable = observer(() => {
       }
     >
       <Density compact>
-        <div className='grid grid-cols-[1fr_1fr_1fr_1fr_auto_auto_auto] overflow-y-auto overflow-x-auto'>
+        <div className='grid grid-cols-[1fr_1fr_1fr_1fr_auto_auto_auto] overflow-x-auto overflow-y-auto'>
           <TableCell heading>Shielded Balance</TableCell>
           <TableCell heading>Public Balance</TableCell>
           <TableCell heading>Price</TableCell>

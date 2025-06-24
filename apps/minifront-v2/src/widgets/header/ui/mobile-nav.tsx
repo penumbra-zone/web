@@ -123,8 +123,8 @@ const Content = () => {
 
   return (
     <div
-      className={`transition-all duration-300 ease-out space-y-6 ${
-        isAnimating ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
+      className={`space-y-6 transition-all duration-300 ease-out ${
+        isAnimating ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'
       }`}
     >
       {/* Navigation links section */}
@@ -139,7 +139,7 @@ const Content = () => {
                 <button
                   key={link.value}
                   onClick={() => handleNavClick(link.value)}
-                  className={`flex items-center gap-3 rounded-lg p-4 text-left transition-all duration-200 transform hover:scale-[1.02] ${
+                  className={`flex transform items-center gap-3 rounded-lg p-4 text-left transition-all duration-200 hover:scale-[1.02] ${
                     isActive ? 'text-primary-light' : 'hover:text-text-primary'
                   }`}
                   style={{

@@ -79,7 +79,7 @@ export const Card = ({
         </div>
       )}
 
-      <div className='flex flex-col gap-4 rounded-xl bg-cardGradient p-3 backdrop-blur-lg'>
+      <div className='flex flex-col gap-4 rounded-xl bg-card-gradient p-3 backdrop-blur-lg'>
         {children}
       </div>
     </Wrapper>
@@ -92,6 +92,6 @@ const Stack = ({ children }: { children?: ReactNode }) => {
 Card.Stack = Stack;
 
 const Section = ({ children }: { children?: ReactNode }) => (
-  <div className='bg-other-tonalFill5 p-3'>{children}</div>
+  <div className='bg-other-tonal-fill5 p-3'>{children}</div>
 );
 Card.Section = Section;

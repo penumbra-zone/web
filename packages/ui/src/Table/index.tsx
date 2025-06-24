@@ -76,7 +76,7 @@ export const Table = ({
       cellPadding={0}
       className={cn(
         getThemeColorClass(bgColor).bg,
-        'w-full pl-3 pr-3 rounded-sm',
+        'w-full rounded-sm pr-3 pl-3',
         tableLayout === 'fixed' ? 'table-fixed' : 'table-auto',
       )}
     >
@@ -133,7 +133,7 @@ const Th = ({
       colSpan={colSpan}
       style={{ width, textAlign: hAlign, verticalAlign: vAlign }}
       className={cn(
-        'border-b border-solid border-other-tonalStroke',
+        'border-b border-solid border-other-tonal-stroke',
         'text-left text-text-secondary',
         tableHeading,
         getCell(density),
@@ -170,7 +170,7 @@ const Td = ({
       colSpan={colSpan}
       style={{ width, textAlign: hAlign, verticalAlign: vAlign }}
       className={cn(
-        'text-text-primary border-b border-solid border-other-tonalStroke',
+        'border-b border-solid border-other-tonal-stroke text-text-primary',
         tableItem,
         getCell(density),
       )}

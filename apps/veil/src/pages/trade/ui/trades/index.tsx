@@ -26,7 +26,7 @@ export const TradesTabs = ({ withChart = false }: { withChart?: boolean }) => {
 
   return (
     <div ref={parent} className='flex flex-col'>
-      <div className='flex justify-between items-center px-4 border-b border-b-other-solidStroke'>
+      <div className='flex items-center justify-between border-b border-b-other-solid-stroke px-4'>
         <Density compact>
           <Tabs
             value={tab}

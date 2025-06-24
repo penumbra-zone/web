@@ -36,7 +36,7 @@ interface VotingRewardsRowProps {
 const VotingRewardsRow = ({ row, padStart }: VotingRewardsRowProps) => {
   return (
     <Link
-      className='grid grid-cols-subgrid col-span-4 hover:bg-action-hoverOverlay'
+      className='col-span-4 grid grid-cols-subgrid hover:bg-action-hover-overlay'
       href={`/tournament/${row.epoch}`}
     >
       <TableCell cell>{`Epoch #${row.epoch}`}</TableCell>
@@ -153,8 +153,8 @@ export const VotingRewards = observer(() => {
   return (
     <>
       <Density compact>
-        <div className='grid grid-cols-[auto_1fr_1fr_48px] max-w-full overflow-x-auto'>
-          <div className='grid grid-cols-subgrid col-span-4'>
+        <div className='grid max-w-full grid-cols-[auto_1fr_1fr_48px] overflow-x-auto'>
+          <div className='col-span-4 grid grid-cols-subgrid'>
             {getTableHeader('epoch', 'Epoch')}
             <TableCell heading>Casted Vote</TableCell>
             {getTableHeader('reward', 'Reward')}
@@ -165,7 +165,7 @@ export const VotingRewards = observer(() => {
             new Array(BASE_LIMIT).fill({}).map((_, index) => <LoadingRow cells={4} key={index} />)}
 
           {!loading && !total && (
-            <div className='grid grid-cols-subgrid col-span-4'>
+            <div className='col-span-4 grid grid-cols-subgrid'>
               <TableCell cell>No voting rewards found for this account.</TableCell>
             </div>
           )}

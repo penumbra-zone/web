@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { Card } from '@penumbra-zone/ui';
+import { Card } from '@penumbra-zone/ui/Card';
 import { Text } from '@penumbra-zone/ui/Text';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Wallet2 } from 'lucide-react';

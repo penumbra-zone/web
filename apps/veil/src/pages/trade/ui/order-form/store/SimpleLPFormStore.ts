@@ -75,7 +75,7 @@ export class SimpleLPFormStore {
     if (this.lastTouchedInput === 'quote' && this.quoteInput !== '') {
       const scale = scaleLinear()
         .domain([this.lowerPriceInput, this.marketPrice])
-        // explicitly set a negative value to get a positive output
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-unary-minus -- explicitly set a negative value to get a positive output
         .range([-this.quoteInput, 0]);
 
       // extrapolate the value based on the inputs above
@@ -86,7 +86,7 @@ export class SimpleLPFormStore {
     } else if (this.lastTouchedInput === 'base' && this.baseInput !== '') {
       const scale = scaleLinear()
         .domain([this.marketPrice, this.upperPriceInput])
-        // explicitly set a negative value to get a positive output
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-unary-minus -- explicitly set a negative value to get a positive output
         .range([0, -this.baseInput]);
 
       // extrapolate the value based on the inputs above

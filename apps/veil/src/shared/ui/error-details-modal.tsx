@@ -19,7 +19,7 @@ export function ErrorDetailsModal({ isOpen, onClose }: ErrorDetailsModalProps) {
             can occur due to various factors, such as:
           </Text>
 
-          <ul className='list-disc pl-6 flex flex-col gap-2 [&>li]:marker:text-text-secondary'>
+          <ul className='flex list-disc flex-col gap-2 pl-6 [&>li]:marker:text-text-secondary'>
             <li>
               <Text color='text.secondary'>
                 Network Congestion: High traffic on the blockchain network may delay data retrieval.

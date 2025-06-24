@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { Button, Dialog, Text } from '@penumbra-zone/ui';
+import { Button } from '@penumbra-zone/ui/Button';
+import { Dialog } from '@penumbra-zone/ui/Dialog';
+import { Text } from '@penumbra-zone/ui/Text';
 import { ShieldQuestion, Coins, KeySquare, Lock } from 'lucide-react';
 
 export interface InfoDialogProps {
@@ -51,7 +53,7 @@ export const InfoDialog = ({ className = '' }: InfoDialogProps) => {
           buttons={null}
           zIndex={1000}
         >
-          <div className='flex flex-col gap-5 px-1 pb-4 pt-2'>
+          <div className='flex flex-col gap-5 px-1 pt-2 pb-4'>
             {sections.map((section, index) => (
               <div key={index} className='flex items-start gap-3'>
                 <div className='mt-0.5'>{section.icon}</div>

@@ -8,8 +8,8 @@ export const NotFoundPage = () => {
     <div>
       <PenumbraWaves />
 
-      <section className='h-[calc(100dvh_-_80px)] max-w-[1062px] flex flex-col items-center justify-center desktop:justify-start gap-6 pt-8 px-4 mx-auto text-neutral-light'>
-        <div className='flex flex-col gap-4 grow justify-center items-center desktop:justify-start desktop:grow-0'>
+      <section className='mx-auto flex h-[calc(100dvh-80px)] max-w-[1062px] flex-col items-center justify-center gap-6 px-4 pt-8 text-neutral-light desktop:justify-start'>
+        <div className='flex grow flex-col items-center justify-center gap-4 desktop:grow-0 desktop:justify-start'>
           <XCircle className='size-12' />
           <Text large>Page not found</Text>
         </div>

@@ -28,7 +28,7 @@ export const DesktopNav = () => {
 
   return (
     <div className='hidden lg:flex'>
-      <nav className='rounded-full bg-other-tonalFill5 px-4 py-1 backdrop-blur-xl'>
+      <nav className='rounded-full bg-other-tonal-fill5 px-4 py-1 backdrop-blur-xl'>
         <Density slim>
           <Tabs
             value={currentPath}

@@ -40,8 +40,8 @@ export const TradesTable = ({ error, data, isLoading }: TradesTableProps) => {
 
   return (
     <Density slim>
-      <div ref={parent} className='grid grid-cols-4 pt-4 px-4 pb-0 h-auto overflow-auto'>
-        <div className='grid grid-cols-subgrid col-span-4'>
+      <div ref={parent} className='grid h-auto grid-cols-4 overflow-auto px-4 pt-4 pb-0'>
+        <div className='col-span-4 grid grid-cols-subgrid'>
           <TableCell heading>Price</TableCell>
           <TableCell heading>Amount</TableCell>
           <TableCell heading>Time</TableCell>
@@ -54,7 +54,7 @@ export const TradesTable = ({ error, data, isLoading }: TradesTableProps) => {
           <div
             key={data ? trade.timestamp + trade.amount + trade.kind : index}
             className={cn(
-              'relative grid grid-cols-subgrid col-span-4',
+              'relative col-span-4 grid grid-cols-subgrid',
               'group [&:hover>div:not(:last-child)]:invisible',
             )}
           >
@@ -102,13 +102,13 @@ export const TradesTable = ({ error, data, isLoading }: TradesTableProps) => {
             {/* Route display that shows on hover */}
             <div
               className={cn(
-                'hidden group-hover:flex justify-center items-center gap-1',
-                'absolute left-0 right-0 w-full h-full px-4 z-30 select-none border-b border-b-other-tonalStroke',
+                'hidden items-center justify-center gap-1 group-hover:flex',
+                'absolute right-0 left-0 z-30 h-full w-full border-b border-b-other-tonal-stroke px-4 select-none',
               )}
             >
               {trade.hops.map((token, index) => (
                 <Fragment key={index}>
-                  {index > 0 && <ChevronRight className='w-3 h-3 text-neutral-light text-xs' />}
+                  {index > 0 && <ChevronRight className='h-3 w-3 text-xs text-neutral-light' />}
                   <Text tableItemSmall color='text.primary'>
                     {token}
                   </Text>

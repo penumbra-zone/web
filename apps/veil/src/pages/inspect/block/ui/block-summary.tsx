@@ -12,7 +12,7 @@ export function BlockSummary({ blockSummary }: { blockSummary: BlockSummaryApiRe
 
   return (
     <div>
-      <div className='grid grid-cols-1 tablet:grid-cols-2 desktop:grid-cols-3 gap-2 mb-8'>
+      <div className='mb-8 grid grid-cols-1 gap-2 tablet:grid-cols-2 desktop:grid-cols-3'>
         <InfoCard title='Total Transactions'>
           <Text large color='text.primary'>
             {blockSummary.numTxs}
@@ -51,7 +51,7 @@ export function BlockSummary({ blockSummary }: { blockSummary: BlockSummaryApiRe
           </Text>
         </div>
         <div className='grid grid-cols-4'>
-          <div className='grid grid-cols-subgrid col-span-4'>
+          <div className='col-span-4 grid grid-cols-subgrid'>
             <TableCell heading>From</TableCell>
             <TableCell heading>To</TableCell>
             <TableCell heading>Price</TableCell>
@@ -59,7 +59,7 @@ export function BlockSummary({ blockSummary }: { blockSummary: BlockSummaryApiRe
           </div>
           {blockSummary.batchSwaps.length ? (
             blockSummary.batchSwaps.map(swap => (
-              <div className='grid grid-cols-subgrid col-span-4' key={JSON.stringify(swap)}>
+              <div className='col-span-4 grid grid-cols-subgrid' key={JSON.stringify(swap)}>
                 <TableCell>
                   <ValueViewComponent
                     valueView={pnum(swap.startInput).toValueView(swap.startAsset)}
@@ -83,7 +83,7 @@ export function BlockSummary({ blockSummary }: { blockSummary: BlockSummaryApiRe
               </div>
             ))
           ) : (
-            <div className='grid grid-cols-subgrid col-span-4'>
+            <div className='col-span-4 grid grid-cols-subgrid'>
               <TableCell>--</TableCell>
               <TableCell>--</TableCell>
               <TableCell>--</TableCell>

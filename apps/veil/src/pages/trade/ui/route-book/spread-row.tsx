@@ -19,7 +19,7 @@ export const SpreadRow = ({
   }
 
   return (
-    <div className='col-span-4 flex items-center h-full justify-center gap-2 px-3 py-3 text-xs border-b border-b-other-tonalStroke'>
+    <div className='col-span-4 flex h-full items-center justify-center gap-2 border-b border-b-other-tonal-stroke px-3 py-3 text-xs'>
       <Text detailTechnical color='success.light'>
         {pnum(spreadInfo.midPrice).toFormattedString({
           commas: false,

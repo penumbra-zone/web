@@ -18,7 +18,7 @@ export const Header = () => {
       </div>
 
       <div className='flex items-center justify-end gap-2'>
-        <div className='hidden lg:flex items-center gap-2'>
+        <div className='hidden items-center gap-2 lg:flex'>
           <Density sparse>
             <StatusPopover />
             <HelpPopover />
@@ -26,7 +26,7 @@ export const Header = () => {
           </Density>
         </div>
 
-        <div className='flex lg:hidden items-center gap-2'>
+        <div className='flex items-center gap-2 lg:hidden'>
           <Density compact>
             <StatusPopover />
             <HelpPopover />

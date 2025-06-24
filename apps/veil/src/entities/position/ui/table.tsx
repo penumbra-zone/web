@@ -73,7 +73,7 @@ export const PositionsTable = observer(({ base, quote, stateFilter }: PositionsT
         <TableCell heading>
           <button
             className={cn(
-              'flex bg-none border-none',
+              'flex border-none bg-none',
               sortBy.key === sortKey ? 'text-text-primary' : 'text-text-secondary',
             )}
             onClick={() => {
@@ -89,9 +89,9 @@ export const PositionsTable = observer(({ base, quote, stateFilter }: PositionsT
             {sortKey === sortBy.key && (
               <>
                 {sortBy.direction === 'asc' ? (
-                  <ChevronUp className='w-4 h-4' />
+                  <ChevronUp className='h-4 w-4' />
                 ) : (
-                  <ChevronDown className='w-4 h-4' />
+                  <ChevronDown className='h-4 w-4' />
                 )}
               </>
             )}
@@ -130,11 +130,11 @@ export const PositionsTable = observer(({ base, quote, stateFilter }: PositionsT
 
   return (
     <div
-      className='grid grid-cols-[80px_1fr_1fr_80px_1fr_1fr_1fr_1fr] overflow-y-auto overflow-x-auto'
+      className='grid grid-cols-[80px_1fr_1fr_80px_1fr_1fr_1fr_1fr] overflow-x-auto overflow-y-auto'
       style={{ overflowAnchor: 'none' }}
     >
       <Density slim>
-        <div className='grid grid-cols-subgrid col-span-8'>
+        <div className='col-span-8 grid grid-cols-subgrid'>
           <SortableTableHeader sortKey='type'>Type</SortableTableHeader>
           <SortableTableHeader sortKey='tradeAmount'>Trade Amount</SortableTableHeader>
           <SortableTableHeader sortKey='effectivePrice'>Effective Price</SortableTableHeader>
@@ -158,7 +158,7 @@ export const PositionsTable = observer(({ base, quote, stateFilter }: PositionsT
                 const variant = isLastCell ? 'lastCell' : 'cell';
 
                 return (
-                  <div key={orderIndex} className='grid grid-cols-subgrid col-span-8 [&>div]:h-10'>
+                  <div key={orderIndex} className='col-span-8 grid grid-cols-subgrid [&>div]:h-10'>
                     <TableCell loading={isLoading} variant={variant}>
                       {position.isOpened ? (
                         <Text
@@ -248,7 +248,7 @@ export const PositionsTable = observer(({ base, quote, stateFilter }: PositionsT
                           {position.idString}
                         </Text>
                         <Link href={`/inspect/lp/${position.idString}`}>
-                          <SquareArrowOutUpRight className='w-4 h-4 text-text-secondary' />
+                          <SquareArrowOutUpRight className='h-4 w-4 text-text-secondary' />
                         </Link>
                       </div>
                     </TableCell>
@@ -264,7 +264,7 @@ export const PositionsTable = observer(({ base, quote, stateFilter }: PositionsT
       </Density>
 
       {isFetchingNextPage && (
-        <div className='flex grid-cols-subgrid col-span-8 items-center justify-center h-6 my-1'>
+        <div className='col-span-8 my-1 flex h-6 grid-cols-subgrid items-center justify-center'>
           <SpinnerIcon className='animate-spin' />
         </div>
       )}

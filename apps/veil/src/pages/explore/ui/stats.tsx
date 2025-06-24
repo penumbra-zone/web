@@ -115,7 +115,7 @@ const NumberOfActivePairs = ({ stats }: CardProps) => {
 
 export const ExploreStats = ({ registry, stats }: { registry: Registry; stats: Stats }) => {
   return (
-    <div className='grid grid-cols-1 tablet:grid-cols-2 desktop:grid-cols-3 gap-2'>
+    <div className='grid grid-cols-1 gap-2 tablet:grid-cols-2 desktop:grid-cols-3'>
       <TotalTradingVolume registry={registry} stats={stats} />
       <NumberOfTrades registry={registry} stats={stats} />
       <LargestTradingPair registry={registry} stats={stats} />

@@ -24,7 +24,7 @@ export function BlockchainError({
       <Density compact>
         <div
           className={cn(
-            'flex items-center w-full justify-center gap-4',
+            'flex w-full items-center justify-center gap-4',
             direction === 'column' ? 'flex-col' : 'flex-row flex-wrap',
           )}
         >

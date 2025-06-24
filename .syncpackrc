@@ -36,6 +36,17 @@
   ],
   "versionGroups": [
     {
+      "label": "Use Tailwind v3 for older applications",
+      "dependencies": ["tailwindcss"],
+      "pinVersion": "3.4.17",
+      "packages": [
+        "@penumbra-zone/ui-deprecated",
+        "@repo/tailwind-config",
+        "minifront",
+        "node-status"
+      ]
+    },
+    {
       "label": "Use workspace protocol for local packages",
       "dependencies": [
         "$LOCAL"

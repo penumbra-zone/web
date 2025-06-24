@@ -3,7 +3,7 @@ import { ReactNode } from 'react';
 import { X } from 'lucide-react';
 import Image from 'next/image';
 import { Text } from '@penumbra-zone/ui/Text';
-import { Button } from '@penumbra-zone/ui';
+import { Button } from '@penumbra-zone/ui/Button';
 
 interface ShieldDialogProps {
   isOpen: boolean;
@@ -17,7 +17,7 @@ export function ShieldDialog({ isOpen, onClose, children }: ShieldDialogProps) {
   }
 
   return createPortal(
-    <div className='fixed inset-0 flex items-center justify-center backdrop-blur-[16px]'>
+    <div className='fixed inset-0 flex items-center justify-center backdrop-blur-md'>
       <Image
         priority
         src='/assets/shield-backdrop.svg'
@@ -27,8 +27,8 @@ export function ShieldDialog({ isOpen, onClose, children }: ShieldDialogProps) {
         className='absolute inset-0 h-full w-full object-cover opacity-40'
         onClick={onClose}
       />
-      <div className='relative min-h-[411px] w-full bg-accentRadialBackground max-w-2xl rounded-[20px] p-6 backdrop-blur-[32px]'>
-        <div className='flex justify-between items-center'>
+      <div className='relative min-h-[411px] w-full max-w-2xl rounded-xl bg-accent-radial-background p-6 backdrop-blur-lg'>
+        <div className='flex items-center justify-between'>
           <Text color='text.primary' xxl>
             Shield
           </Text>

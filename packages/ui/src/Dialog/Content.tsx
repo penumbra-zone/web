@@ -37,8 +37,8 @@ export const Content = ({
 
           <Grid mobile={12} tablet={8} desktop={6} xl={4}>
             <div className='relative flex h-full max-h-lvh min-h-svh items-center'>
-              <div className='pointer-events-auto relative box-border flex max-h-[75%] w-full flex-col rounded-xl border border-solid border-other-tonalStroke bg-other-dialogBackground backdrop-blur-xl'>
-                <header className='sticky top-0 flex flex-col gap-2 px-6 pb-6 pt-8 text-text-primary'>
+              <div className='pointer-events-auto relative box-border flex max-h-[75%] w-full flex-col rounded-xl border border-solid border-other-tonal-stroke bg-other-dialog-background backdrop-blur-xl'>
+                <header className='sticky top-0 flex flex-col gap-2 px-6 pt-8 pb-6 text-text-primary'>
                   <RadixDialogTitle asChild>
                     <Text xxl as='h2'>
                       {title}
@@ -60,7 +60,7 @@ export const Content = ({
                 {showCloseButton && (
                   <Density compact>
                     <RadixDialogClose asChild>
-                      <div className='absolute right-6 top-8'>
+                      <div className='absolute top-8 right-6'>
                         <Button icon={X} iconOnly priority='secondary'>
                           Close
                         </Button>

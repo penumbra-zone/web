@@ -69,8 +69,8 @@ export const LiquidityShape = ({
     <button
       key={shape}
       className={cn(
-        'p-3 rounded-sm flex-1 min-h-10 border flex flex-col items-center justify-center active:opacity-80 active:duration-[0.1s]',
-        selected ? 'bg-other-tonalFill5' : undefined,
+        'flex min-h-10 flex-1 flex-col items-center justify-center rounded-sm border p-3 active:opacity-80 active:duration-[0.1s]',
+        selected ? 'bg-other-tonal-fill5' : undefined,
         selected ? 'border-primary-main' : 'border-transparent',
       )}
       onClick={onClick}
@@ -78,17 +78,17 @@ export const LiquidityShape = ({
       onMouseLeave={() => setIsHovered(false)}
     >
       <Tooltip message={tooltipMessage}>
-        <div className='relative flex justify-center w-full mb-1'>
+        <div className='relative mb-1 flex w-full justify-center'>
           <Default />
           <Hover
             className={cn(
-              'absolute z-10 inset-0 w-full h-full transition-opacity duration-200',
+              'absolute inset-0 z-10 h-full w-full transition-opacity duration-200',
               isHovered && !selected ? 'opacity-100' : 'opacity-0',
             )}
           />
           <Selected
             className={cn(
-              'absolute z-20 inset-0 w-full h-full transition-opacity duration-200',
+              'absolute inset-0 z-20 h-full w-full transition-opacity duration-200',
               selected ? 'opacity-100' : 'opacity-0',
             )}
           />

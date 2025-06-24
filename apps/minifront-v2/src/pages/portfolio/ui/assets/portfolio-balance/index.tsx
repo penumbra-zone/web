@@ -1,4 +1,5 @@
-import { Card, Text } from '@penumbra-zone/ui';
+import { Card } from '@penumbra-zone/ui/Card';
+import { Text } from '@penumbra-zone/ui/Text';
 
 export interface PortfolioBalanceProps {
   balance: string;

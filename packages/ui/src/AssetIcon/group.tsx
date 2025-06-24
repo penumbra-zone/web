@@ -25,7 +25,7 @@ const SPLIT_SIZE_MAP: Record<Size, string> = {
 const LEFT_BADGE_SIZE_MAP: Record<Size, string> = {
   lg: '[&_*[data-badge="true"]]:-left-[3px] right-unset',
   md: '[&_*[data-badge="true"]]:-left-[2px] right-unset',
-  sm: '[&_*[data-badge="true"]]:-left-[1px] right-unset',
+  sm: '[&_*[data-badge="true"]]:-left-px right-unset',
 };
 
 const MARGIN_SIZE_MAP: Record<Size, string> = {
@@ -49,7 +49,7 @@ export const AssetGroup = ({
 }: AssetGroupProps) => {
   if (variant === 'split') {
     return (
-      <Container className={cn('relative flex items-center gap-[1px]', sizeMap[size])}>
+      <Container className={cn('relative flex items-center gap-px', sizeMap[size])}>
         {assets?.[0] && (
           <div className={cn(SPLIT_SIZE_MAP[size], LEFT_BADGE_SIZE_MAP[size], RIGHT_CLIP_PATH)}>
             <AssetIcon metadata={assets[0]} size={size} />

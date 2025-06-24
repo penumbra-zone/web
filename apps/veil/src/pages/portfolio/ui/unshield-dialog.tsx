@@ -202,13 +202,13 @@ export function UnshieldDialog({ asset }: { asset: ShieldedBalance }) {
       </Dialog.Trigger>
 
       <Dialog.Content title='Unshield'>
-        <div className='relative rounded-[20px] p-6 backdrop-blur-[32px] overflow-hidden'>
+        <div className='relative overflow-hidden rounded-xl p-6 backdrop-blur-lg'>
           <Image
             priority
             src='/assets/unshield-backdrop.svg'
             alt='Unshield backdrop'
             fill
-            className='object-cover opacity-30 -z-10 pointer-events-none'
+            className='pointer-events-none -z-10 object-cover opacity-30'
           />
           <form
             className='flex flex-col gap-4'
@@ -252,7 +252,7 @@ export function UnshieldDialog({ asset }: { asset: ShieldedBalance }) {
               </Text>
             )}
             <div
-              className={'cursor-pointer w-fit'}
+              className={'w-fit cursor-pointer'}
               onClick={() => setAmount(pnum(asset.balance.balanceView).toString())}
             >
               <WalletBalance balance={asset.balance} />

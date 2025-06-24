@@ -96,7 +96,7 @@ const EffectRow = ({ effect }: EffectRowProps) => {
               </Popover.Trigger>
 
               <Popover.Content side='top' align='start'>
-                <div className='flex w-fit min-w-0 max-w-none flex-col'>
+                <div className='flex w-fit max-w-none min-w-0 flex-col'>
                   {effect.balances.map((balance, balanceIndex) => (
                     <SummaryBalance key={balanceIndex} balance={balance} />
                   ))}

@@ -3,7 +3,7 @@ import { resolve, join } from 'path';
 import { readdirSync, existsSync } from 'fs';
 import dts from 'vite-plugin-dts';
 import path from 'node:path';
-import tailwindcss from 'tailwindcss';
+import tailwindcss from '@tailwindcss/vite';
 
 /**
  * Returns an object with keys as resulting component build paths and values as
@@ -34,24 +34,16 @@ const getAllEntries = (): Record<string, string> => {
 };
 
 export default defineConfig({
-  plugins: [dts()],
+  plugins: [tailwindcss(), dts()],
   resolve: {
     alias: {
       '@repo/tailwind-config': path.resolve(__dirname, '../', 'tailwind-config'),
     },
   },
-  css: {
-    postcss: {
-      plugins: [tailwindcss],
-    },
-  },
   build: {
     emptyOutDir: true,
     lib: {
-      entry: {
-        index: resolve(__dirname, 'src/index.ts'),
-        ...getAllEntries(),
-      },
+      entry: getAllEntries(),
       formats: ['es'],
       name: '@penumbra-zone/ui',
     },

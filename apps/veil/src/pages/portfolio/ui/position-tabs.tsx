@@ -17,7 +17,7 @@ export const PortfolioPositionTabs = () => {
 
   return (
     <PortfolioCard>
-      <div className='w-full mb-4 border-b border-b-other-tonalStroke'>
+      <div className='mb-4 w-full border-b border-b-other-tonal-stroke'>
         <Density compact>
           <Tabs
             value={tab}

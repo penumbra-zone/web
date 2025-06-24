@@ -18,11 +18,11 @@ export const PositionClosed = ({
   closingTx?: string;
 }) => {
   return (
-    <div className='grid grid-cols-6 items-center mb-4'>
+    <div className='mb-4 grid grid-cols-6 items-center'>
       <div className='col-span-4'>
         <Card title='Position Closed'>
-          <div className='flex justify-between items-center'>
-            <div className='flex flex-col gap-2 flex-shrink min-w-0'>
+          <div className='flex items-center justify-between'>
+            <div className='flex min-w-0 shrink flex-col gap-2'>
               {closingTx && (
                 <Text color='text.secondary' truncate>
                   Tx:{' '}
@@ -33,7 +33,7 @@ export const PositionClosed = ({
               )}
             </div>
 
-            <div className='ml-4 flex-shrink-0'></div>
+            <div className='ml-4 shrink-0'></div>
           </div>
         </Card>
       </div>
@@ -46,11 +46,11 @@ export const PositionClosed = ({
 
 export const PositionWithdraw = ({ withdrawal }: { withdrawal: PositionWithdrawalVV }) => {
   return (
-    <div className='grid grid-cols-6 items-center mb-4'>
+    <div className='mb-4 grid grid-cols-6 items-center'>
       <div className='col-span-4'>
         <Card title='Position Withdraw'>
-          <div className='flex justify-between items-center'>
-            <div className='flex flex-col gap-2 flex-shrink min-w-0'>
+          <div className='flex items-center justify-between'>
+            <div className='flex min-w-0 shrink flex-col gap-2'>
               <div className='flex items-center gap-2'>
                 <ValueViewComponent valueView={withdrawal.reserves1} abbreviate={false} />
                 <ValueViewComponent valueView={withdrawal.reserves2} abbreviate={false} />
@@ -75,11 +75,11 @@ export const PositionWithdraw = ({ withdrawal }: { withdrawal: PositionWithdrawa
 
 export const PositionOpen = ({ state }: { state: PositionStateVV }) => {
   return (
-    <div className='grid grid-cols-6 items-center mb-4'>
+    <div className='mb-4 grid grid-cols-6 items-center'>
       <div className='col-span-4'>
         <Card title='Position Open'>
-          <div className='flex justify-between items-center'>
-            <div className='flex flex-col gap-2 flex-shrink min-w-0'>
+          <div className='flex items-center justify-between'>
+            <div className='flex min-w-0 shrink flex-col gap-2'>
               <div className='flex items-center gap-2'>
                 <ValueViewComponent valueView={state.openingReserves1} abbreviate={false} />
                 <ValueViewComponent valueView={state.openingReserves2} abbreviate={false} />
@@ -110,7 +110,7 @@ const DataBody = ({
   withdrawals: PositionWithdrawalVV[];
 }) => {
   return (
-    <div className='flex flex-col gap-4 justify-center'>
+    <div className='flex flex-col justify-center gap-4'>
       {withdrawals.map((w, i) => (
         <PositionWithdraw key={i} withdrawal={w} />
       ))}
@@ -133,23 +133,23 @@ const LoadingState = ({ count = 2 }: { count?: number }) => {
     <div className='flex flex-col gap-4'>
       {withdrawalSkeletons.map((_, index) => (
         <Card key={index}>
-          <div className='flex justify-between items-center'>
-            <div className='flex flex-col gap-2 flex-shrink min-w-0'>
+          <div className='flex items-center justify-between'>
+            <div className='flex min-w-0 shrink flex-col gap-2'>
               <div className='flex items-center gap-2'>
                 {/* Skeletons for ValueViewComponents */}
-                <div className='w-24 h-6'>
+                <div className='h-6 w-24'>
                   <Skeleton />
                 </div>
-                <div className='w-24 h-6'>
+                <div className='h-6 w-24'>
                   <Skeleton />
                 </div>
               </div>
-              <div className='w-32 h-4'>
+              <div className='h-4 w-32'>
                 <Skeleton />
               </div>
             </div>
-            <div className='ml-4 flex-shrink-0'>
-              <div className='w-20 h-4'>
+            <div className='ml-4 shrink-0'>
+              <div className='h-4 w-20'>
                 <Skeleton />
               </div>
             </div>

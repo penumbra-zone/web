@@ -9,7 +9,7 @@ export const NotFoundPage = (): React.ReactNode => {
       <div className='max-w-md space-y-6 text-center'>
         {/* 404 Number */}
         <div className='space-y-2'>
-          <div className='text-6xl font-bold text-muted md:text-8xl'>404</div>
+          <div className='text-muted text-6xl font-bold md:text-8xl'>404</div>
           <Text h2>Page Not Found</Text>
         </div>
 
