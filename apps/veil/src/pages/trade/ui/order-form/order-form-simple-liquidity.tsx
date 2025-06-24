@@ -150,7 +150,7 @@ export const SimpleLiquidityOrderForm = observer(
           </div>
         </div>
         <div className='mb-4'>
-          <div className='flex items-center gap-1 mb-2'>
+          <div className='mb-2 flex items-center gap-1'>
             <Text small color='text.secondary'>
               Liquidity Shape
             </Text>

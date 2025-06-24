@@ -15,7 +15,7 @@ export const InfoCard = ({ title, children }: InfoCardProps) => {
       <Text detail color='text.secondary'>
         {title}
       </Text>
-      <div ref={parent} className='flex items-baseline justify-start gap-2 max-h-7 overflow-hidden'>
+      <div ref={parent} className='flex max-h-7 items-baseline justify-start gap-2 overflow-hidden'>
         {children}
       </div>
     </div>

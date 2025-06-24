@@ -20,10 +20,10 @@ import { getTradePairPath } from '@/shared/const/pages';
 
 const getTextSign = (change: number): ReactNode => {
   if (change > 0) {
-    return <ChevronDown className='size-3 rotate-180 inline-block' />;
+    return <ChevronDown className='inline-block size-3 rotate-180' />;
   }
   if (change < 0) {
-    return <ChevronDown className='size-3 inline-block' />;
+    return <ChevronDown className='inline-block size-3' />;
   }
   return null;
 };
@@ -61,9 +61,9 @@ export const PairCard = ({ summary }: PairCardProps) => {
   return (
     <Link
       href={getTradePairPath(startMetadata.symbol, endMetadata.symbol)}
-      className='grid grid-cols-subgrid col-span-6 p-3 rounded-sm cursor-pointer transition-colors hover:bg-action-hoverOverlay'
+      className='col-span-6 grid cursor-pointer grid-cols-subgrid rounded-sm p-3 transition-colors hover:bg-action-hover-overlay'
     >
-      <div className='relative h-10 flex items-center gap-2 text-text-primary'>
+      <div className='relative flex h-10 items-center gap-2 text-text-primary'>
         <Density compact>
           <Button icon={Star} iconOnly>
             Favorite
@@ -82,7 +82,7 @@ export const PairCard = ({ summary }: PairCardProps) => {
         </Text>
       </div>
 
-      <div className='h-10 flex flex-col items-end justify-center'>
+      <div className='flex h-10 flex-col items-end justify-center'>
         <Text color='text.primary'>
           {round({
             value: convertPriceToDisplay(summary.price, startMetadata, endMetadata),
@@ -94,7 +94,7 @@ export const PairCard = ({ summary }: PairCardProps) => {
         </Text>
       </div>
 
-      <div className='h-10 flex flex-col items-end justify-center'>
+      <div className='flex h-10 flex-col items-end justify-center'>
         <Text color='text.primary'>
           {shortify(
             Number(
@@ -107,7 +107,7 @@ export const PairCard = ({ summary }: PairCardProps) => {
         </Text>
       </div>
 
-      <div className='h-10 flex flex-col items-end justify-center'>
+      <div className='flex h-10 flex-col items-end justify-center'>
         <Text color='text.primary'>
           {shortify(
             Number(
@@ -120,7 +120,7 @@ export const PairCard = ({ summary }: PairCardProps) => {
         </Text>
       </div>
 
-      <div className='h-10 flex items-center justify-end gap-2'>
+      <div className='flex h-10 items-center justify-end gap-2'>
         <div className={cn('flex items-center', getColor(summary.priceChangePercent))}>
           {getTextSign(summary.priceChangePercent)}
           <Text>{summary.priceChangePercent.toFixed(2)}%</Text>

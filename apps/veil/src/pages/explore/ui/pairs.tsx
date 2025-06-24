@@ -52,8 +52,8 @@ export const ExplorePairs = ({ summaries }: ExplorePairsProps) => {
         />
       </div>
 
-      <div className='grid grid-cols-[1fr_1fr_1fr_1fr_128px_56px] gap-2 overflow-y-auto overflow-x-auto desktop:overflow-x-hidden'>
-        <div className='grid grid-cols-subgrid col-span-6 py-2 px-3'>
+      <div className='grid grid-cols-[1fr_1fr_1fr_1fr_128px_56px] gap-2 overflow-x-auto overflow-y-auto desktop:overflow-x-hidden'>
+        <div className='col-span-6 grid grid-cols-subgrid px-3 py-2'>
           <Text detail color='text.secondary' align='left'>
             Pair
           </Text>
@@ -75,7 +75,7 @@ export const ExplorePairs = ({ summaries }: ExplorePairsProps) => {
         </div>
 
         {filteredSummaries.length === 0 && (
-          <div className='py-5 col-span-5 text-text-secondary'>
+          <div className='col-span-5 py-5 text-text-secondary'>
             <Text small>No pairs found matching your search</Text>
           </div>
         )}

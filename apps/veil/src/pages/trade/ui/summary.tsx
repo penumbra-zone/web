@@ -71,7 +71,7 @@ export const Summary = () => {
             <Text detail>{round({ value: data.priceDelta, decimals: 6 })}</Text>
             <span
               className={cn(
-                'flex h-4 px-1 rounded-full text-success-dark',
+                'flex h-4 rounded-full px-1 text-success-dark',
                 getColor(data.priceChangePercent, true),
               )}
             >
