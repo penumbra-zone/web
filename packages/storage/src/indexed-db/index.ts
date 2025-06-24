@@ -8,6 +8,7 @@ import {
 import {
   Position,
   PositionId,
+  PositionMetadata,
   PositionState,
   TradingPair,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
@@ -53,6 +54,7 @@ import {
   IdbUpdate,
   IndexedDbInterface,
   PenumbraDb,
+  PositionRecord,
 } from '@penumbra-zone/types/indexed-db';
 import type { Jsonified } from '@penumbra-zone/types/jsonified';
 import type {
@@ -158,7 +160,10 @@ export class IndexedDb implements IndexedDbInterface {
           keyPath: 'swapCommitment.inner',
         }).createIndex('nullifier', 'nullifier.inner');
         db.createObjectStore('GAS_PRICES', { keyPath: 'assetId.inner' });
-        db.createObjectStore('POSITIONS', { keyPath: 'id.inner' });
+
+        const positionsStore = db.createObjectStore('POSITIONS', { keyPath: 'id.inner' });
+        positionsStore.createIndex('strategy', 'positionMetadata.strategy');
+
         db.createObjectStore('EPOCHS', { autoIncrement: true });
         db.createObjectStore('VALIDATOR_INFOS');
         db.createObjectStore('PRICES', {
@@ -780,9 +785,28 @@ export class IndexedDb implements IndexedDbInterface {
     });
   }
 
+  async *getPositionsByStrategyStream(subaccount: AddressIndex, strategy: number) {
+    yield* new ReadableStream({
+      start: async cont => {
+        const store = this.db.transaction('POSITIONS').store;
+        let cursor = await store.index('strategy').openCursor(strategy);
+
+        while (cursor) {
+          const record = cursor.value as PositionRecord;
+          if (record.subaccount && subaccount.equals(AddressIndex.fromJson(record.subaccount))) {
+            cont.enqueue(record);
+          }
+          cursor = await cursor.continue();
+        }
+        cont.close();
+      },
+    });
+  }
+
   async addPosition(
     positionId: PositionId,
     position: Position,
+    positionMetadata?: PositionMetadata,
     subaccount?: AddressIndex,
   ): Promise<void> {
     assertPositionId(positionId);
@@ -790,6 +814,9 @@ export class IndexedDb implements IndexedDbInterface {
       id: positionId.toJson() as Jsonified<PositionId>,
       position: position.toJson() as Jsonified<Position>,
       subaccount: subaccount && (subaccount.toJson() as Jsonified<AddressIndex>),
+      positionMetadata: positionMetadata
+        ? (positionMetadata.toJson() as Jsonified<PositionMetadata>)
+        : undefined,
     };
     await this.u.update({ table: 'POSITIONS', value: positionRecord });
   }
