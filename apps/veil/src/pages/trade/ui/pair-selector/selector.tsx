@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useRouter } from 'next/navigation';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
@@ -78,16 +78,31 @@ export const PairSelector = observer(() => {
     setTimeout(() => quoteRef.current?.focus(), 0);
   };
 
-  const showConfirm =
-    !!selectedBase &&
-    !!selectedQuote &&
-    (selectedBase.symbol !== baseAsset?.symbol || selectedQuote.symbol !== quoteAsset?.symbol);
-
   const onConfirm = () => {
     if (selectedBase && selectedQuote) {
       onSelect(selectedBase, selectedQuote);
     }
   };
+
+  const showConfirm =
+    !!selectedBase &&
+    !!selectedQuote &&
+    (selectedBase.symbol !== baseAsset?.symbol || selectedQuote.symbol !== quoteAsset?.symbol);
+
+  let dialogButton: ReactNode = null;
+  if (showConfirm) {
+    dialogButton = (
+      <Button onClick={onConfirm} priority='primary' actionType='accent'>
+        Confirm
+      </Button>
+    );
+  } else if (focusedType) {
+    dialogButton = (
+      <Button onClick={onClear} priority='primary'>
+        Clear
+      </Button>
+    );
+  }
 
   if (!baseAsset || !quoteAsset) {
     return (
@@ -104,7 +119,10 @@ export const PairSelector = observer(() => {
       <Dialog isOpen={isOpen} onClose={onClose}>
         <Trigger onClick={() => setIsOpen(true)} pair={{ base: baseAsset, quote: quoteAsset }} />
 
-        <Dialog.Content title='Select pair'>
+        <Dialog.Content
+          title='Select pair'
+          buttons={dialogButton && <div className='p-6'>{dialogButton}</div>}
+        >
           {/* Focus catcher. If this button wouldn't exist, the focus would go to the first input, which is undesirable */}
           <button type='button' className='-mt-6 h-0 w-full focus:outline-hidden' />
 
@@ -137,7 +155,6 @@ export const PairSelector = observer(() => {
           {focusedType === 'base' && (
             <SearchResults
               search={baseFilter}
-              onClear={onClear}
               onSelect={asset => {
                 setSelectedBase(asset);
                 if (!selectedQuote) {
@@ -152,7 +169,6 @@ export const PairSelector = observer(() => {
           {focusedType === 'quote' && (
             <SearchResults
               search={quoteFilter}
-              onClear={onClear}
               onSelect={asset => {
                 setSelectedQuote(asset);
                 if (!selectedBase) {
@@ -165,14 +181,6 @@ export const PairSelector = observer(() => {
           )}
 
           {!focusedType && <DefaultResults onSelect={pair => onSelect(pair.base, pair.quote)} />}
-
-          {showConfirm && (
-            <div className='sticky bottom-0 z-10 flex w-full flex-col gap-4 rounded-sm'>
-              <Button onClick={onConfirm} priority='primary' actionType='accent'>
-                Confirm
-              </Button>
-            </div>
-          )}
         </Dialog.Content>
       </Dialog>
     </div>

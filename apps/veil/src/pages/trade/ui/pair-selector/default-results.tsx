@@ -1,18 +1,69 @@
 import { Search, Ban } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
+import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
 import { Text } from '@penumbra-zone/ui/Text';
 import { Dialog } from '@penumbra-zone/ui/Dialog';
+import { Tooltip } from '@penumbra-zone/ui/Tooltip';
 import { AssetIcon } from '@penumbra-zone/ui/AssetIcon';
-import { Pair, StarButton, starStore } from '@/features/star-pair';
 import { usePairs } from '@/pages/trade/api/use-pairs';
 import { shortify } from '@penumbra-zone/types/shortify';
-import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
 import { Skeleton } from '@/shared/ui/skeleton';
+import { isLqtEligible } from '@/shared/utils/is-lqt-eligible';
+import { Pair, StarButton, starStore } from '@/features/star-pair';
 import { LoadingAsset } from './loading-asset';
 
 export interface DefaultResultsProps {
   onSelect: (pair: Pair) => void;
 }
+
+const TOURNAMENT_DETAILS_URL = 'https://penumbra.zone/tournament';
+
+const StartAdornment = ({ base, quote }: { base: Metadata; quote: Metadata }) => {
+  return (
+    <>
+      <div className='z-10'>
+        <AssetIcon metadata={base} size='lg' />
+      </div>
+      <div className='-ml-4'>
+        <AssetIcon metadata={quote} size='lg' />
+      </div>
+    </>
+  );
+};
+
+const EndAdornment = ({ base, quote }: { base: Metadata; quote: Metadata }) => {
+  const isLQTEligible = isLqtEligible(base, quote);
+
+  return (
+    <div className='flex items-center gap-2'>
+      {isLQTEligible && (
+        <Tooltip
+          message={
+            <>
+              Providing liquidity to these pairs earns you additional rewards as part of the
+              Liquidity Tournament.
+              <br />
+              <span className='text-secondary-light underline'>
+                <a href={TOURNAMENT_DETAILS_URL} target='_blank' rel='noreferrer' className=''>
+                  Learn More
+                </a>
+              </span>
+            </>
+          }
+        >
+          <div className='flex items-center rounded-xs bg-secondary-dark px-1.5 py-1'>
+            <span className='text-textXs bg-gradient-to-r from-primary-light to-secondary-light bg-clip-text font-default text-transparent'>
+              Rewards
+            </span>
+          </div>
+        </Tooltip>
+      )}
+
+      <StarButton adornment pair={{ base, quote }} />
+    </div>
+  );
+};
 
 export const DefaultResults = observer(({ onSelect }: DefaultResultsProps) => {
   const { pairs: starred } = starStore;
@@ -72,17 +123,8 @@ export const DefaultResults = observer(({ onSelect }: DefaultResultsProps) => {
                       </Text>
                     </div>
                   }
-                  endAdornment={<StarButton adornment pair={{ base, quote }} />}
-                  startAdornment={
-                    <>
-                      <div className='z-10'>
-                        <AssetIcon metadata={base} size='lg' />
-                      </div>
-                      <div className='-ml-4'>
-                        <AssetIcon metadata={quote} size='lg' />
-                      </div>
-                    </>
-                  }
+                  endAdornment={<EndAdornment base={base} quote={quote} />}
+                  startAdornment={<StartAdornment base={base} quote={quote} />}
                   onSelect={() => onSelect({ base, quote })}
                 />
               ))}
@@ -112,17 +154,8 @@ export const DefaultResults = observer(({ onSelect }: DefaultResultsProps) => {
                     </Text>
                   </div>
                 }
-                endAdornment={<StarButton adornment pair={{ base, quote }} />}
-                startAdornment={
-                  <>
-                    <div className='z-10'>
-                      <AssetIcon metadata={base} size='lg' />
-                    </div>
-                    <div className='-ml-4'>
-                      <AssetIcon metadata={quote} size='lg' />
-                    </div>
-                  </>
-                }
+                endAdornment={<EndAdornment base={base} quote={quote} />}
+                startAdornment={<StartAdornment base={base} quote={quote} />}
                 onSelect={() => onSelect({ base, quote })}
               />
             ))}
