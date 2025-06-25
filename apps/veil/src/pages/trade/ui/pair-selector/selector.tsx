@@ -155,7 +155,6 @@ export const PairSelector = observer(() => {
           {focusedType === 'base' && (
             <SearchResults
               search={baseFilter}
-              onClear={onClear}
               onSelect={asset => {
                 setSelectedBase(asset);
                 if (!selectedQuote) {
@@ -170,7 +169,6 @@ export const PairSelector = observer(() => {
           {focusedType === 'quote' && (
             <SearchResults
               search={quoteFilter}
-              onClear={onClear}
               onSelect={asset => {
                 setSelectedQuote(asset);
                 if (!selectedBase) {
