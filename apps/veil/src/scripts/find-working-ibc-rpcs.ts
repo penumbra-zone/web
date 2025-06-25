@@ -64,7 +64,7 @@ async function isEndpointAlive(endpoint: string): Promise<boolean> {
 
 async function main(): Promise<void> {
   const { chainId } = parseArgs();
-  console.debug(`Fetching Penumbra registry for chain-id: ${chainId}`);
+  console.info(`Fetching Penumbra registry for chain-id: ${chainId}`);
   let registry: unknown;
 
   try {
@@ -86,7 +86,6 @@ async function main(): Promise<void> {
 
   const ibcConnections =
     (registry as { ibcConnections?: { chain_name: string }[] } | undefined)?.ibcConnections ?? [];
-  console.debug('IBC Connections:', ibcConnections);
 
   if (!Array.isArray(ibcConnections) || ibcConnections.length === 0) {
     console.error('No IBC connections found in registry');
@@ -103,8 +102,7 @@ async function main(): Promise<void> {
     }
   }
 
-  console.debug('Target chain IDs:', Array.from(targetChainIds));
-  console.debug(`Will test RPCs for ${targetChainIds.size} chain(s)`);
+  console.info(`Will test RPCs for ${targetChainIds.size} chain(s)`);
 
   const endpointChecks: { chain: string; address: string }[] = [];
 
@@ -115,18 +113,14 @@ async function main(): Promise<void> {
       continue;
     }
 
-    console.debug('Matched chain:', chainIdEntry, '|', chain.chain_name);
-
     const rpcApis = chain.apis?.rpc ?? [];
-    console.debug('RPC APIs:', rpcApis);
+
     for (const { address } of rpcApis) {
       if (!address) {
-        console.debug('Skipping entry with missing address');
         continue;
       }
 
       if (!address.startsWith('http')) {
-        console.debug('Skipping non-HTTP address:', address);
         continue;
       }
 
@@ -134,13 +128,11 @@ async function main(): Promise<void> {
     }
   }
 
-  console.debug('Endpoint checks to perform:', endpointChecks);
-  console.debug(`Testing ${endpointChecks.length} RPC endpoints in parallel…`);
+  console.info(`Testing ${endpointChecks.length} RPC endpoints in parallel…`);
 
   const checkResults = await Promise.all(
     endpointChecks.map(async ({ chain, address }) => {
       const ok = await isEndpointAlive(address);
-      console.debug(`Endpoint ${address} for chain ${chain} is ${ok ? 'alive' : 'not alive'}`);
       return { chain, address, ok } as const;
     }),
   );
@@ -149,7 +141,6 @@ async function main(): Promise<void> {
 
   for (const { chain, address, ok } of checkResults) {
     if (!ok) {
-      console.debug(`Skipping non-working endpoint for chain ${chain}: ${address}`);
       continue;
     }
     (results[chain] ??= []).push(address);
@@ -157,11 +148,11 @@ async function main(): Promise<void> {
 
   // Logging summary
   for (const chain of Object.keys(results).sort()) {
-    console.debug(`✅ ${chain}: ${(results[chain] ?? []).length} working endpoint(s)`);
+    console.info(`✅ ${chain}: ${(results[chain] ?? []).length} working endpoint(s)`);
   }
 
   await writeFile('working-ibc-rpcs.json', JSON.stringify(results, null, 2));
-  console.debug('Saved results to working-ibc-rpcs.json');
+  console.info('Saved results to working-ibc-rpcs.json');
 }
 
 await main();
