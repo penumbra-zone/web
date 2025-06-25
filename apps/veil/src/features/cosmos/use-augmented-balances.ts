@@ -5,51 +5,113 @@ import { ChainWalletBase, WalletStatus } from '@cosmos-kit/core';
 import { Asset } from '@chain-registry/types';
 import cosmosAssetList from 'chain-registry/assets';
 import { Coin, StargateClient } from '@cosmjs/stargate';
+import { RPC_ENDPOINTS } from './cosmos-endpoints';
 
-// Map of reliable RPC endpoints for different Cosmos chains
-const RELIABLE_RPC_ENDPOINTS: Record<string, string> = {
-  cosmoshub: 'https://cosmos-rpc.publicnode.com:443',
-  osmosis: 'https://rpc.osmosis.zone',
-  neutron: 'https://neutron-rpc.publicnode.com:443',
-  axelar: 'https://rpc-axelar.imperator.co:443',
-  noble: 'https://noble-rpc.polkachu.com',
-  celestia: 'https://celestia-rpc.publicnode.com:443',
-  stride: 'https://stride-rpc.publicnode.com:443',
+/** @var failedEndpoints is a map of endpoint -> timestamp of last failure */
+const failedEndpoints = new Map<string, number>();
+const FAILURE_COOLDOWN = 5 * 60 * 1000; // 5 minutes
+
+const isEndpointHealthy = (endpoint: string): boolean => {
+  const failureTime = failedEndpoints.get(endpoint);
+  if (!failureTime) {
+    return true;
+  }
+
+  const now = Date.now();
+  if (now - failureTime > FAILURE_COOLDOWN) {
+    failedEndpoints.delete(endpoint); // Remove from failed list after cooldown
+    return true;
+  }
+
+  return false;
 };
 
-const getReliableRpcEndpoint = (chainName: string): string | null => {
-  const lowerChainName = chainName.toLowerCase();
-  return RELIABLE_RPC_ENDPOINTS[lowerChainName] ?? null;
+const markEndpointFailed = (endpoint: string): void => {
+  failedEndpoints.set(endpoint, Date.now());
+};
+
+const getHealthyEndpoints = (chainId: string): string[] => {
+  const key = chainId.toLowerCase();
+  const endpoints = RPC_ENDPOINTS[key] ?? [];
+  return endpoints.filter(isEndpointHealthy);
+};
+
+const sleep = (ms: number): Promise<void> =>
+  new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
+
+const tryConnectWithRetry = async (endpoint: string, retries = 2): Promise<StargateClient> => {
+  // exponential backoff
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const client = await StargateClient.connect(endpoint);
+      return client;
+    } catch (error) {
+      if (attempt === retries) {
+        throw error;
+      }
+      await sleep(1000 * Math.pow(2, attempt));
+    }
+  }
+
+  throw new Error('Max retries exceeded');
 };
 
 export const fetchChainBalances = async (
   address: string,
   chain: ChainWalletBase,
 ): Promise<readonly Coin[]> => {
-  try {
-    // First try to use our reliable endpoints
-    const reliableEndpoint = getReliableRpcEndpoint(chain.chainName);
-    if (reliableEndpoint) {
-      try {
-        const client = await StargateClient.connect(reliableEndpoint);
-        return await client.getAllBalances(address);
-      } catch (error) {
-        console.warn(
-          `Failed to use reliable endpoint for ${chain.chainName}, falling back to default RPC`,
-          error,
-        );
-      }
-    }
+  const { chainId } = chain;
+  const healthyEndpoints = getHealthyEndpoints(chainId);
 
-    console.warn(`No reliable endpoint found for ${chain.chainName}`);
-    // Fall back to the default RPC from chainWalletBase
-    const endpoint = await chain.getRpcEndpoint();
-    const client = await StargateClient.connect(endpoint);
-    return await client.getAllBalances(address);
-  } catch (error) {
-    console.error(`Failed to fetch balances for ${chain.chainName}:`, error);
-    return [];
+  // Try our reliable endpoints first
+  for (const endpoint of healthyEndpoints) {
+    try {
+      const client = await tryConnectWithRetry(endpoint);
+      const balances = await client.getAllBalances(address);
+      return balances;
+    } catch (error) {
+      markEndpointFailed(endpoint);
+      console.warn(
+        `RPC endpoint failed for ${chain.chainName} (${chainId}): ${endpoint}. Trying next endpoint...`,
+      );
+    }
   }
+
+  // Fall back to the default RPC from chainWalletBase if all our endpoints failed
+  try {
+    const defaultEndpoint = await chain.getRpcEndpoint();
+    const defaultEndpointString =
+      typeof defaultEndpoint === 'string' ? defaultEndpoint : defaultEndpoint.url;
+
+    // Check if the default endpoint is different from our known endpoints
+    if (
+      !healthyEndpoints.includes(defaultEndpointString) &&
+      isEndpointHealthy(defaultEndpointString)
+    ) {
+      const client = await tryConnectWithRetry(defaultEndpointString);
+      const balances = await client.getAllBalances(address);
+      return balances;
+    }
+  } catch (error) {
+    // Mark default endpoint as failed too
+    try {
+      const defaultEndpoint = await chain.getRpcEndpoint();
+      const defaultEndpointString =
+        typeof defaultEndpoint === 'string' ? defaultEndpoint : defaultEndpoint.url;
+      markEndpointFailed(defaultEndpointString);
+    } catch {
+      // Ignore error getting default endpoint
+    }
+  }
+
+  // All endpoints failed
+  console.error(
+    `All RPC endpoints failed for ${chain.chainName} (${chainId}). Retrying will be attempted after cooldown period.`,
+  );
+
+  return [];
 };
 
 // Searches for corresponding denom in asset registry and returns the metadata
@@ -98,7 +160,9 @@ export const useBalances = () => {
               chainId: chain.chainId,
             };
           });
-        },
+        }, // Cap at 30s
+        staleTime: 30 * 1000, // Consider data stale after 30 seconds
+        gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
       })),
     combine: results => {
       return {
