@@ -64,6 +64,7 @@ const fetchQuery = async (
       positionsById.set(bech32mPositionId(positionId), position);
     }
   });
+  console.log('TCL: positionsById', positionsById);
 
   return positionsById;
 };

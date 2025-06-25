@@ -1,16 +1,35 @@
 'use client';
 
-import { Fragment } from 'react';
+import { Fragment, useState, useMemo } from 'react';
 import { observer } from 'mobx-react-lite';
+import orderBy from 'lodash/orderBy';
 import { useSortableTableHeaders } from '@/pages/tournament/ui/sortable-table-header';
 import { Density } from '@penumbra-zone/ui/Density';
 import { TableCell } from '@penumbra-zone/ui/TableCell';
 import { connectionStore } from '@/shared/model/connection';
+import { useLps } from '../api/use-lps';
+import { getDisplayLPs, DisplayLPs } from '../model/get-display-lps';
 
 export const LiquidityTable = observer(() => {
   const { connected, subaccount } = connectionStore;
   const { getTableHeader, sortBy } = useSortableTableHeaders('date');
-  const sortedLPs = [];
+
+  const { data, isLoading } = useLps(subaccount);
+  const displayPositions = getDisplayLPs({
+    positionBundles: data,
+  });
+
+  const [sortBy, setSortBy] = useState<{
+    key: string;
+    direction: 'desc' | 'asc';
+  }>({
+    key: 'effectivePrice',
+    direction: 'desc',
+  });
+
+  const sortedPositions = useMemo<DisplayPosition[]>(() => {
+    return orderBy([...displayPositions], `sortValues.${sortBy.key}`, sortBy.direction);
+  }, [displayPositions, sortBy]);
 
   return (
     <div
