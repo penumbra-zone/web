@@ -25,8 +25,8 @@ export const SimpleLiquidityOrderForm = observer(
     const { connected } = connectionStore;
     const { defaultDecimals, simpleLPForm: store } = parentStore;
     const isLQTEligible =
-      (store.baseAsset && assetPatterns.ibc.matches(store.baseAsset.metadata.base)) ??
-      (store.quoteAsset && assetPatterns.ibc.matches(store.quoteAsset.metadata.base));
+      (!!store.baseAsset && assetPatterns.ibc.matches(store.baseAsset.metadata.base)) ||
+      (!!store.quoteAsset && assetPatterns.ibc.matches(store.quoteAsset.metadata.base));
 
     const priceSpread = DEFAULT_PRICE_SPREAD;
     const priceRange = DEFAULT_PRICE_RANGE;
