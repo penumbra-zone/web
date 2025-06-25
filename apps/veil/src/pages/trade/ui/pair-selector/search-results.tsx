@@ -16,7 +16,6 @@ import {
   isBalancesResponse,
   filterAssets as filterUnswappableAssets,
 } from '@penumbra-zone/ui/AssetSelector';
-import { Button } from '@penumbra-zone/ui/Button';
 import { useAssets } from '@/shared/api/assets';
 import { useBalances } from '@/shared/api/balances';
 import { connectionStore } from '@/shared/model/connection';
@@ -25,7 +24,6 @@ import { recentPairsStore } from './store';
 
 export interface SearchResultsProps {
   onSelect: (asset: Metadata) => void;
-  onClear: VoidFunction;
   search?: string;
 }
 
@@ -64,7 +62,7 @@ const mergeOptions = (
   return [...balancesPerAccount, ...filteredAssets];
 };
 
-export const SearchResults = observer(({ onSelect, onClear, search }: SearchResultsProps) => {
+export const SearchResults = observer(({ onSelect, search }: SearchResultsProps) => {
   const { recent, add } = recentPairsStore;
   const { subaccount } = connectionStore;
 
@@ -172,14 +170,6 @@ export const SearchResults = observer(({ onSelect, onClear, search }: SearchResu
             })}
           </div>
         </Dialog.RadioGroup>
-      </div>
-
-      <div className='sticky bottom-0 z-10 flex w-full flex-col gap-4 rounded-sm'>
-        <div className='bg-neutral-dark'>
-          <Button onClick={onClear} priority='primary'>
-            Clear
-          </Button>
-        </div>
       </div>
     </>
   );
