@@ -15,8 +15,8 @@ import { DEFAULT_PRICE_RANGE, DEFAULT_PRICE_SPREAD } from './store/SimpleLPFormS
 import { PriceSlider } from './price-slider';
 import { useEffect, useState } from 'react';
 import { Icon } from '@penumbra-zone/ui/Icon';
-import { assetPatterns } from '@penumbra-zone/types/assets';
 import { Density } from '@penumbra-zone/ui/Density';
+import { isLqtEligible } from '@/shared/utils/is-lqt-eligible';
 import { LiquidityDistributionShape } from '@/shared/math/position';
 import { LiquidityShape } from './liquidity-shape';
 
@@ -24,9 +24,7 @@ export const SimpleLiquidityOrderForm = observer(
   ({ parentStore }: { parentStore: OrderFormStore }) => {
     const { connected } = connectionStore;
     const { defaultDecimals, simpleLPForm: store } = parentStore;
-    const isLQTEligible =
-      (!!store.baseAsset && assetPatterns.ibc.matches(store.baseAsset.metadata.base)) ||
-      (!!store.quoteAsset && assetPatterns.ibc.matches(store.quoteAsset.metadata.base));
+    const isLQTEligible = isLqtEligible(store.baseAsset?.metadata, store.quoteAsset?.metadata);
 
     const priceSpread = DEFAULT_PRICE_SPREAD;
     const priceRange = DEFAULT_PRICE_RANGE;
