@@ -38,7 +38,7 @@ export const SimpleLiquidityOrderForm = observer(
           store.marketPrice * (1 + priceSpread),
         ]);
       }
-    }, [store.marketPrice, priceRanges]);
+    }, [store.marketPrice, priceSpread, priceRanges]);
 
     // values flow from local state to form store to keep ui smooth
     useEffect(() => {
