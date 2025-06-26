@@ -175,7 +175,7 @@ export const SocialCardDialog = observer(
         epoch: String(epoch),
         rewarded: latestReward.reward > 0,
         earnings: `${latestReward.reward}:UM`,
-        votingStreak: `${delegatorSummary.data.streak * 10 ** exponent}:`,
+        votingStreak: `${delegatorSummary.data.streak}:`,
         incentivePool: `${Math.ceil(Number(summaryData.lp_rewards) + Number(summaryData.delegator_rewards)) * 10 ** exponent}:UM`,
         lpPool: `${Math.ceil(summaryData.lp_rewards) * 10 ** exponent}:UM`,
         delegatorPool: `${Math.ceil(summaryData.delegator_rewards) * 10 ** exponent}:UM`,

@@ -12,10 +12,12 @@ export const TableRow = ({
   item,
   loading,
   canVote,
+  exponent,
 }: {
   item: MappedGauge;
   canVote: boolean;
   loading: boolean;
+  exponent: number;
 }) => {
   return (
     <div className={cn('grid grid-cols-subgrid', canVote ? 'col-span-6' : 'col-span-5')}>
@@ -46,7 +48,9 @@ export const TableRow = ({
         )}
       </TableCell>
 
-      <TableCell loading={loading}>{pnum(item.votes).toFormattedString()}</TableCell>
+      <TableCell loading={loading}>
+        {pnum(item.votes / 10 ** exponent).toFormattedString()}
+      </TableCell>
 
       {/* TODO: implement "estimated incentive" */}
       <TableCell loading={loading}>-</TableCell>
