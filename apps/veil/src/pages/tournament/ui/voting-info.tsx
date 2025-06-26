@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { Ban, Coins, Check, Wallet2, ExternalLink, List } from 'lucide-react';
-import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { addAmounts } from '@penumbra-zone/types/amount';
 import { getMetadata as getMetadataFromValueView } from '@penumbra-zone/getters/value-view';
@@ -46,6 +46,12 @@ export const useVotingInfo = (defaultEpoch?: number) => {
   } = useAccountDelegations(isEnded || !!notes?.length);
   const { data: stakingTokenMetadata } = useStakingTokenMetadata();
 
+  const delUMMetadata = useMemo(() => {
+    const cloned = stakingTokenMetadata.clone();
+    cloned.symbol = 'delUM';
+    return cloned;
+  }, [stakingTokenMetadata]);
+
   const isLoading =
     (loadingEpoch && !epochFetched) ||
     (loadingNotes && !notesFetched) ||
@@ -73,11 +79,11 @@ export const useVotingInfo = (defaultEpoch?: number) => {
         case: 'knownAssetId',
         value: {
           amount,
-          metadata: new Metadata({ ...stakingTokenMetadata, symbol: 'delUM' }),
+          metadata: delUMMetadata,
         },
       },
     });
-  }, [getMetadata, notes]);
+  }, [delUMMetadata, notes]);
 
   const votedFor = useMemo(() => {
     const vote = votes?.[0];
