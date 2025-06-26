@@ -19,6 +19,7 @@ import { useCurrentEpoch } from '../api/use-current-epoch';
 import { useTournamentVotes } from '../api/use-tournament-votes';
 import { VoteDialogueSelector } from './vote-dialog';
 import { useAccountDelegations } from '../api/use-delegations';
+import { GENERIC_DELUM } from '@/shared/ui/delum-metadata';
 
 export const useVotingInfo = (defaultEpoch?: number) => {
   const { connected, subaccount } = connectionStore;
@@ -37,6 +38,7 @@ export const useVotingInfo = (defaultEpoch?: number) => {
     isLoading: loadingNotes,
     isFetched: notesFetched,
   } = useLQTNotes(subaccount, epoch, isEnded);
+
   const { data: votes, isLoading: loadingVotes } = useTournamentVotes(epoch, isEnded);
   const {
     data: delegations,
@@ -61,11 +63,6 @@ export const useVotingInfo = (defaultEpoch?: number) => {
       return undefined;
     }
 
-    const metadata = values[0]?.assetId && getMetadata(values[0].assetId);
-    if (!metadata) {
-      return undefined;
-    }
-
     const amount = values.reduce(
       (accum, current) => (current.amount ? addAmounts(accum, current.amount) : accum),
       new Amount({ lo: 0n, hi: 0n }),
@@ -76,7 +73,7 @@ export const useVotingInfo = (defaultEpoch?: number) => {
         case: 'knownAssetId',
         value: {
           amount,
-          metadata: Object.assign(metadata, { symbol: 'delUM' }),
+          metadata: GENERIC_DELUM,
         },
       },
     });
