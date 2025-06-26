@@ -66,7 +66,7 @@ export const LiquidityShape = ({
   }
 
   return (
-    <button
+    <div
       key={shape}
       className={cn(
         'flex min-h-10 flex-1 flex-col items-center justify-center rounded-sm border p-3 active:opacity-80 active:duration-[0.1s]',
@@ -97,6 +97,6 @@ export const LiquidityShape = ({
           {text}
         </Text>
       </Tooltip>
-    </button>
+    </div>
   );
 };

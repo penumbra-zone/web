@@ -39,7 +39,7 @@ export class SimpleLPFormStore {
   upperPriceInput: number | null = null;
   lowerPriceInput: number | null = null;
   feeTierPercentInput = String(DEFAULT_FEE_TIER_PERCENT);
-  marketPrice = 1;
+  marketPrice: number | null = null;
   positions = DEFAULT_POSITION_COUNT;
   liquidityShape: LiquidityDistributionShape = LiquidityDistributionShape.PYRAMID;
 
@@ -118,7 +118,11 @@ export class SimpleLPFormStore {
   setLowerPriceInput = (x: number) => {
     this.lowerPriceInput = x;
 
-    if (this.lastTouchedInput === 'quote' && this.lowerPriceInput > this.marketPrice) {
+    if (
+      this.lastTouchedInput === 'quote' &&
+      this.marketPrice &&
+      this.lowerPriceInput > this.marketPrice
+    ) {
       if (this.quoteInput !== '') {
         openToast({
           type: 'warning',
@@ -139,7 +143,11 @@ export class SimpleLPFormStore {
   setUpperPriceInput = (x: number) => {
     this.upperPriceInput = x;
 
-    if (this.lastTouchedInput === 'base' && this.upperPriceInput < this.marketPrice) {
+    if (
+      this.lastTouchedInput === 'base' &&
+      this.marketPrice &&
+      this.upperPriceInput < this.marketPrice
+    ) {
       if (this.baseInput !== '') {
         openToast({
           type: 'warning',

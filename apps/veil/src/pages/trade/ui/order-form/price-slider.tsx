@@ -213,7 +213,7 @@ export const PriceSlider = ({
 }: {
   min: number;
   max: number;
-  values: [number, number];
+  values: [number | undefined, number | undefined];
   onInput: (value: [number, number]) => void;
   marketPrice: number;
   baseAsset: AssetInfo | undefined;
@@ -243,12 +243,13 @@ export const PriceSlider = ({
       scaleRef.current = scaleLinear().domain([min, max]).range([0, width]);
       setScaleLoaded(true);
     }
-  }, [min, max, width]);
+  }, [min, max, width, values]);
 
   const scale = scaleRef.current;
-  const leftX = scaleLoaded && scale ? Math.max(0, scale(values[0])) : undefined;
-  const leftX1 = scaleLoaded && scale ? Math.max(0, scale(values[1])) : undefined;
-  const rightX = scaleLoaded && scale ? Math.min(width, width - scale(values[1])) : undefined;
+  const leftX = scaleLoaded && scale && values[0] ? Math.max(0, scale(values[0])) : undefined;
+  const leftX1 = scaleLoaded && scale && values[1] ? Math.max(0, scale(values[1])) : undefined;
+  const rightX =
+    scaleLoaded && scale && values[1] ? Math.min(width, width - scale(values[1])) : undefined;
 
   return (
     <div>
@@ -274,43 +275,45 @@ export const PriceSlider = ({
               }}
             />
             {/* left & right handles */}
-            {values.map((value, i) => {
-              const elevate = elevateThumb === i;
-              const x = i === 0 ? leftX : leftX1;
+            {values[0] &&
+              values[1] &&
+              values.map((value, i) => {
+                const elevate = elevateThumb === i;
+                const x = i === 0 ? leftX : leftX1;
 
-              return (
-                <React.Fragment key={i}>
-                  <Thumb
-                    x={x}
-                    i={i}
-                    values={values}
-                    scale={scale}
-                    max={max}
-                    onMove={nextValue =>
-                      onInput(i === 0 ? [nextValue, values[1]] : [values[0], nextValue])
-                    }
-                    elevate={elevate}
-                    onPointerDown={() => setElevateThumb(i)}
-                  />
-                  <PercentageInput
-                    x={x}
-                    i={i}
-                    textsXPosRef={textsXPosRef.current.percentage}
-                    maxWidth={width}
-                    value={((value - marketPrice) / marketPrice) * 100}
-                    elevate={elevate}
-                  />
-                  <ValueInput
-                    x={x}
-                    i={i}
-                    textsXPosRef={textsXPosRef.current.input}
-                    maxWidth={width}
-                    value={value}
-                    elevate={elevate}
-                  />
-                </React.Fragment>
-              );
-            })}
+                return (
+                  <React.Fragment key={i}>
+                    <Thumb
+                      x={x}
+                      i={i}
+                      values={values}
+                      scale={scale}
+                      max={max}
+                      onMove={nextValue =>
+                        onInput(i === 0 ? [nextValue, values[1]] : [values[0], nextValue])
+                      }
+                      elevate={elevate}
+                      onPointerDown={() => setElevateThumb(i)}
+                    />
+                    <PercentageInput
+                      x={x}
+                      i={i}
+                      textsXPosRef={textsXPosRef.current.percentage}
+                      maxWidth={width}
+                      value={((value - marketPrice) / marketPrice) * 100}
+                      elevate={elevate}
+                    />
+                    <ValueInput
+                      x={x}
+                      i={i}
+                      textsXPosRef={textsXPosRef.current.input}
+                      maxWidth={width}
+                      value={value}
+                      elevate={elevate}
+                    />
+                  </React.Fragment>
+                );
+              })}
           </>
         )}
 

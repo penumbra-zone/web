@@ -28,15 +28,24 @@ export const SimpleLiquidityOrderForm = observer(
 
     const priceSpread = DEFAULT_PRICE_SPREAD;
     const priceRange = DEFAULT_PRICE_RANGE;
-    const [priceRanges, setPriceRanges] = useState<[number, number]>([
-      store.marketPrice * (1 - priceSpread),
-      store.marketPrice * (1 + priceSpread),
-    ]);
+    const [priceRanges, setPriceRanges] = useState<[number | undefined, number | undefined]>([]);
+
+    // set price ranges once the market price is available
+    useEffect(() => {
+      if (store.marketPrice && !priceRanges[0] && !priceRanges[1]) {
+        setPriceRanges([
+          store.marketPrice * (1 - priceSpread),
+          store.marketPrice * (1 + priceSpread),
+        ]);
+      }
+    }, [store.marketPrice, priceRanges]);
 
     // values flow from local state to form store to keep ui smooth
     useEffect(() => {
-      store.setLowerPriceInput(priceRanges[0]);
-      store.setUpperPriceInput(priceRanges[1]);
+      if (priceRanges[0] && priceRanges[1]) {
+        store.setLowerPriceInput(priceRanges[0]);
+        store.setUpperPriceInput(priceRanges[1]);
+      }
     }, [store, priceRanges]);
 
     return (
