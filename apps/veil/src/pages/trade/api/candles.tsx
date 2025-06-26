@@ -1,29 +1,29 @@
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { useRefetchOnNewBlock } from '@/shared/api/compact-block.ts';
-import { CandleApiResponse } from '@/shared/api/server/candles/types.ts';
 import { usePathSymbols } from '@/pages/trade/model/use-path.ts';
 import { DurationWindow } from '@/shared/utils/duration.ts';
 import { CandleWithVolume } from '@/shared/api/server/candles/utils.ts';
+import { apiFetch } from '@/shared/utils/api-fetch';
+
+const CANDLES_LIMIT = 100;
 
 export const useCandles = (durationWindow: DurationWindow) => {
   const { baseSymbol, quoteSymbol } = usePathSymbols();
 
-  const query = useQuery({
+  const query = useInfiniteQuery<CandleWithVolume[]>({
     queryKey: ['candles', baseSymbol, quoteSymbol, durationWindow],
-    queryFn: async (): Promise<CandleWithVolume[]> => {
-      const paramsObj = {
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, _, lastPageParam) => {
+      return (lastPage as CandleWithVolume[]).length ? lastPageParam + 1 : undefined;
+    },
+    queryFn: async ({ pageParam }): Promise<CandleWithVolume[]> => {
+      return apiFetch<CandleWithVolume[]>('/api/candles', {
         baseAsset: baseSymbol,
         quoteAsset: quoteSymbol,
+        page: pageParam,
+        limit: CANDLES_LIMIT,
         durationWindow,
-      };
-      const baseUrl = '/api/candles';
-      const urlParams = new URLSearchParams(paramsObj).toString();
-      const res = await fetch(`${baseUrl}?${urlParams}`);
-      const jsonRes = (await res.json()) as CandleApiResponse;
-      if ('error' in jsonRes) {
-        throw new Error(jsonRes.error);
-      }
-      return jsonRes;
+      });
     },
   });
 

@@ -17,8 +17,6 @@ import {
 import { pindexerDb } from './client';
 import { hexToUint8Array } from '@penumbra-zone/types/hex';
 
-const MAINNET_CHAIN_ID = 'penumbra-1';
-
 export interface ExecutionWithReserves {
   execution: Selectable<DexExPositionExecutions>;
   reserves: Selectable<DexExPositionReserves>;
@@ -78,33 +76,6 @@ class Pindexer {
       .orderBy('direct_volume_indexing_denom_over_window', 'desc')
       .limit(15)
       .execute();
-  }
-
-  async candles({
-    baseAsset,
-    quoteAsset,
-    window,
-    chainId,
-  }: {
-    baseAsset: AssetId;
-    quoteAsset: AssetId;
-    window: DurationWindow;
-    chainId: string;
-  }) {
-    let query = this.db
-      .selectFrom('dex_ex_price_charts')
-      .select(['start_time', 'open', 'close', 'low', 'high', 'swap_volume', 'direct_volume'])
-      .where('the_window', '=', window)
-      .where('asset_start', '=', Buffer.from(baseAsset.inner))
-      .where('asset_end', '=', Buffer.from(quoteAsset.inner))
-      .orderBy('start_time', 'asc');
-
-    // Due to a lot of price volatility at the launch of the chain, manually setting start date a few days later
-    if (chainId === MAINNET_CHAIN_ID) {
-      query = query.where('start_time', '>=', new Date('2024-08-06'));
-    }
-
-    return query.execute();
   }
 
   // Paginated pair summaries

@@ -1,9 +1,45 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
-import { pindexer } from '@/shared/database';
-import { CandleApiResponse } from '@/shared/api/server/candles/types.ts';
+import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { DurationWindow, durationWindows, isDurationWindow } from '@/shared/utils/duration.ts';
 import { dbCandleToOhlc, insertEmptyCandles } from '@/shared/api/server/candles/utils.ts';
-import { durationWindows, isDurationWindow } from '@/shared/utils/duration.ts';
+import { CandleApiResponse } from '@/shared/api/server/candles/types.ts';
+import { pindexerDb } from '@/shared/database/client';
+
+const MAINNET_CHAIN_ID = 'penumbra-1';
+
+const getCandles = async ({
+  baseAsset,
+  quoteAsset,
+  window,
+  chainId,
+  page,
+  limit,
+}: {
+  baseAsset: AssetId;
+  quoteAsset: AssetId;
+  window: DurationWindow;
+  limit?: number;
+  page?: number;
+  chainId: string;
+}) => {
+  return (
+    pindexerDb
+      .selectFrom('dex_ex_price_charts')
+      .select(['start_time', 'open', 'close', 'low', 'high', 'swap_volume', 'direct_volume'])
+      .where('the_window', '=', window)
+      .where('asset_start', '=', Buffer.from(baseAsset.inner))
+      .where('asset_end', '=', Buffer.from(quoteAsset.inner))
+      .orderBy('start_time', 'asc')
+      // Due to a lot of price volatility at the launch of the chain, manually setting start date a few days later
+      .$if(chainId === MAINNET_CHAIN_ID, qb => qb.where('start_time', '>=', new Date('2024-08-06')))
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Kysely limitation
+      .$if(limit !== undefined, qb => qb.limit(limit!))
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Kyseley limitation
+      .$if(page !== undefined && limit !== undefined, qb => qb.offset(page! * limit!))
+      .execute()
+  );
+};
 
 export async function GET(req: NextRequest): Promise<NextResponse<CandleApiResponse>> {
   const grpcEndpoint = process.env['PENUMBRA_GRPC_ENDPOINT'];
@@ -18,6 +54,9 @@ export async function GET(req: NextRequest): Promise<NextResponse<CandleApiRespo
   const { searchParams } = new URL(req.url);
   const baseAssetSymbol = searchParams.get('baseAsset');
   const quoteAssetSymbol = searchParams.get('quoteAsset');
+  const limit = Number(searchParams.get('limit')) || undefined;
+  const page = Number(searchParams.get('page')) || undefined;
+
   if (!baseAssetSymbol || !quoteAssetSymbol) {
     return NextResponse.json(
       { error: 'Missing required baseAsset or quoteAsset' },
@@ -51,11 +90,13 @@ export async function GET(req: NextRequest): Promise<NextResponse<CandleApiRespo
   }
 
   // Need to query both directions and aggregate results
-  const candles = await pindexer.candles({
+  const candles = await getCandles({
     baseAsset: baseAssetMetadata.penumbraAssetId,
     quoteAsset: quoteAssetMetadata.penumbraAssetId,
     window: durationWindow,
     chainId,
+    limit,
+    page,
   });
 
   const displayAdjusted = candles.map(c =>
