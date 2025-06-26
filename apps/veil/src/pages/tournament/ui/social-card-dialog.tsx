@@ -176,9 +176,9 @@ export const SocialCardDialog = observer(
         rewarded: latestReward.reward > 0,
         earnings: `${latestReward.reward}:UM`,
         votingStreak: `${delegatorSummary.data.streak}:`,
-        incentivePool: `${Math.ceil(Number(summaryData.lp_rewards) + Number(summaryData.delegator_rewards)) * 10 ** exponent}:UM`,
-        lpPool: `${Math.ceil(summaryData.lp_rewards) * 10 ** exponent}:UM`,
-        delegatorPool: `${Math.ceil(summaryData.delegator_rewards) * 10 ** exponent}:UM`,
+        incentivePool: `${Math.floor(Number(summaryData.lp_rewards) + Number(summaryData.delegator_rewards)) / 10 ** exponent}:UM`,
+        lpPool: `${Math.floor(summaryData.lp_rewards) / 10 ** exponent}:UM`,
+        delegatorPool: `${Math.floor(summaryData.delegator_rewards) / 10 ** exponent}:UM`,
       });
     }, [
       loading,
