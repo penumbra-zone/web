@@ -19,14 +19,6 @@ export const LiquidityTable = observer(() => {
     positionBundles: data,
   });
 
-  const [sortBy, setSortBy] = useState<{
-    key: string;
-    direction: 'desc' | 'asc';
-  }>({
-    key: 'effectivePrice',
-    direction: 'desc',
-  });
-
   const sortedPositions = useMemo<DisplayPosition[]>(() => {
     return orderBy([...displayPositions], `sortValues.${sortBy.key}`, sortBy.direction);
   }, [displayPositions, sortBy]);
