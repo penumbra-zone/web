@@ -5,7 +5,7 @@ import {
   createContextValues,
   createHandlerContext,
   HandlerContext,
-  PromiseClient,
+  Client,
 } from '@connectrpc/connect';
 import { stakeClientCtx } from '../ctx/stake-client.js';
 import {
@@ -247,7 +247,7 @@ describe('DelegationsByAddressIndex request handler', () => {
         url: '/mock',
         contextValues: createContextValues().set(
           stakeClientCtx,
-          mockStakeClient as unknown as PromiseClient<typeof StakeService>,
+          mockStakeClient as unknown as Client<typeof StakeService>,
         ),
       });
     });
@@ -388,7 +388,7 @@ describe('DelegationsByAddressIndex request handler', () => {
         url: '/mock',
         contextValues: createContextValues().set(
           stakeClientCtx,
-          mockStakeClient as unknown as PromiseClient<typeof StakeService>,
+          mockStakeClient as unknown as Client<typeof StakeService>,
         ),
       });
     });
