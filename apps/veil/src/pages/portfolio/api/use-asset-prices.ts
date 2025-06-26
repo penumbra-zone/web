@@ -23,18 +23,42 @@ export const useAssetPrices = (assets: Metadata[] = []) => {
   const { data, isLoading, error } = useQuery({
     queryKey: ['asset-prices', symbols],
     queryFn: async () => {
-      // If no assets, return empty array
       if (symbols.length === 0) {
         return [];
       }
 
-      // Fetch from summaries API
-      return apiFetch<SummaryData[]>('/api/summaries', {
-        search: '',
-        limit: '200',
-        offset: '0',
-        durationWindow: '1d',
+      // Fetch last candle for each symbol vs USDC to derive price.
+      const promises = symbols.map(async sym => {
+        if (sym.toUpperCase() === 'USDC') {
+          return {
+            baseAsset: { symbol: sym } as Metadata,
+            quoteAsset: { symbol: 'USDC' } as Metadata,
+            price: 1,
+          } as SummaryData;
+        }
+        try {
+          const candles = await apiFetch<any[]>('/api/candles', {
+            baseAsset: sym,
+            quoteAsset: 'USDC',
+            durationWindow: '1h',
+          });
+          const last =
+            Array.isArray(candles) && candles.length > 0 ? candles[candles.length - 1] : undefined;
+          if (last && 'ohlc' in last) {
+            return {
+              baseAsset: { symbol: sym } as Metadata,
+              quoteAsset: { symbol: 'USDC' } as Metadata,
+              price: (last as any).ohlc.close,
+            } as SummaryData;
+          }
+        } catch (_) {
+          // This can fail if the pair doesn't exist, which is expected.
+          // We can ignore this error and just won't have a price for this asset.
+        }
+        return undefined;
       });
+      const results = (await Promise.all(promises)).filter(Boolean) as SummaryData[];
+      return results;
     },
     staleTime: 60000, // 1 minute
     enabled: symbols.length > 0,
