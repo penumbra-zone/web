@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { Ban, Coins, Check, Wallet2, ExternalLink, List } from 'lucide-react';
-import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { addAmounts } from '@penumbra-zone/types/amount';
 import { getMetadata as getMetadataFromValueView } from '@penumbra-zone/getters/value-view';
@@ -19,6 +19,7 @@ import { useCurrentEpoch } from '../api/use-current-epoch';
 import { useTournamentVotes } from '../api/use-tournament-votes';
 import { VoteDialogueSelector } from './vote-dialog';
 import { useAccountDelegations } from '../api/use-delegations';
+import { useStakingTokenMetadata } from '@/shared/api/registry';
 
 export const useVotingInfo = (defaultEpoch?: number) => {
   const { connected, subaccount } = connectionStore;
@@ -43,6 +44,7 @@ export const useVotingInfo = (defaultEpoch?: number) => {
     isLoading: delegationsLoading,
     isFetched: delegationsFetched,
   } = useAccountDelegations(isEnded || !!notes?.length);
+  const { data: stakingTokenMetadata } = useStakingTokenMetadata();
 
   const isLoading =
     (loadingEpoch && !epochFetched) ||
@@ -61,11 +63,6 @@ export const useVotingInfo = (defaultEpoch?: number) => {
       return undefined;
     }
 
-    const metadata = values[0]?.assetId && getMetadata(values[0].assetId);
-    if (!metadata) {
-      return undefined;
-    }
-
     const amount = values.reduce(
       (accum, current) => (current.amount ? addAmounts(accum, current.amount) : accum),
       new Amount({ lo: 0n, hi: 0n }),
@@ -76,7 +73,7 @@ export const useVotingInfo = (defaultEpoch?: number) => {
         case: 'knownAssetId',
         value: {
           amount,
-          metadata: Object.assign(metadata, { symbol: 'delUM' }),
+          metadata: new Metadata({ ...stakingTokenMetadata, symbol: 'delUM' }),
         },
       },
     });
