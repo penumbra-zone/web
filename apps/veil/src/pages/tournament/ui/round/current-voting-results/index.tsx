@@ -15,6 +15,8 @@ import { useEpochResults } from '../../../api/use-epoch-results';
 import { VOTING_THRESHOLD } from '../../vote-dialog/vote-dialog-asset';
 import { useVotingInfo } from '../../voting-info.tsx';
 import { TableRow } from './table-row';
+import { useStakingTokenMetadata } from '@/shared/api/registry.tsx';
+import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 
 const BASE_LIMIT = 10;
 
@@ -40,6 +42,9 @@ export const CurrentVotingResults = observer(({ epoch }: CurrentVotingResultsPro
     'portion',
     'desc',
   );
+
+  const { data: stakingToken } = useStakingTokenMetadata();
+  const exponent = getDisplayDenomExponent.optional(stakingToken) ?? 6;
 
   const { connected } = connectionStore;
   const { data, isLoading } = useEpochResults('epoch-results-round', {
@@ -105,7 +110,13 @@ export const CurrentVotingResults = observer(({ epoch }: CurrentVotingResultsPro
 
             {!isLoading &&
               above.map(item => (
-                <TableRow key={item.asset.base} item={item} loading={false} canVote={canVote} />
+                <TableRow
+                  key={item.asset.base}
+                  item={item}
+                  loading={false}
+                  canVote={canVote}
+                  exponent={exponent}
+                />
               ))}
 
             {!isLoading && !!below.length && (
@@ -121,7 +132,13 @@ export const CurrentVotingResults = observer(({ epoch }: CurrentVotingResultsPro
 
             {!isLoading &&
               below.map(item => (
-                <TableRow key={item.asset.base} item={item} loading={false} canVote={canVote} />
+                <TableRow
+                  key={item.asset.base}
+                  item={item}
+                  loading={false}
+                  canVote={canVote}
+                  exponent={exponent}
+                />
               ))}
 
             {!isLoading && total >= limit && (

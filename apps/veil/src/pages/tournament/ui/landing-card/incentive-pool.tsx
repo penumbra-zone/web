@@ -4,6 +4,8 @@ import { round } from '@penumbra-zone/types/round';
 import { Skeleton } from '@penumbra-zone/ui/Skeleton';
 import { Text } from '@penumbra-zone/ui/Text';
 import { shortify } from '@penumbra-zone/types/shortify';
+import { useStakingTokenMetadata } from '@/shared/api/registry';
+import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 
 export interface IncentivePoolProps {
   summary?: LqtSummary;
@@ -12,6 +14,9 @@ export interface IncentivePoolProps {
 
 export const IncentivePool = ({ summary, loading }: IncentivePoolProps) => {
   const symbol = 'UM';
+
+  const { data: stakingToken } = useStakingTokenMetadata();
+  const exponent = getDisplayDenomExponent.optional(stakingToken) ?? 6;
 
   return (
     <div className='flex flex-col gap-2'>
@@ -26,7 +31,7 @@ export const IncentivePool = ({ summary, loading }: IncentivePoolProps) => {
           </div>
         ) : (
           <Text technical color='text.primary'>
-            {shortify(pnum(summary?.total_rewards).toNumber())} {symbol}
+            {shortify(pnum(summary?.total_rewards).toNumber() / 10 ** exponent)} {symbol}
           </Text>
         )}
       </div>
@@ -70,7 +75,7 @@ export const IncentivePool = ({ summary, loading }: IncentivePoolProps) => {
           ) : (
             <>
               <Text technical color='primary.light'>
-                {shortify(pnum(summary?.lp_rewards).toNumber())} {symbol}
+                {shortify(pnum(summary?.lp_rewards).toNumber() / 10 ** exponent)} {symbol}
               </Text>
               <Text technical color='text.secondary'>
                 {summary &&
@@ -96,7 +101,7 @@ export const IncentivePool = ({ summary, loading }: IncentivePoolProps) => {
           ) : (
             <>
               <Text technical color='secondary.light'>
-                {shortify(pnum(summary?.delegator_rewards).toNumber())} {symbol}
+                {shortify(pnum(summary?.delegator_rewards).toNumber() / 10 ** exponent)} {symbol}
               </Text>
               <Text technical color='text.secondary'>
                 {summary &&
