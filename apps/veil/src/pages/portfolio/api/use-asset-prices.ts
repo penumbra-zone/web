@@ -27,6 +27,7 @@ export const useAssetPrices = (assets: Metadata[] = []) => {
         return [];
       }
 
+      // TODO: This is inefficient. A batch endpoint should be created to fetch prices for multiple assets at once.
       // Fetch last candle for each symbol vs USDC to derive price.
       const promises = symbols.map(async sym => {
         if (sym.toUpperCase() === 'USDC') {
