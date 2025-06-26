@@ -105,7 +105,7 @@ const TotalLiquidity = ({ registry, stats }: CardProps) => {
 
 const NumberOfActivePairs = ({ stats }: CardProps) => {
   return (
-    <InfoCard title='Number of Trades (24h)'>
+    <InfoCard title='Number of Active Pairs (24h)'>
       <Text large color='text.primary'>
         {pluralizeAndShortify(stats.activePairs, 'pair', 'pairs')}
       </Text>
