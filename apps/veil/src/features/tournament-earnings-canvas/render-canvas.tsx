@@ -1,10 +1,45 @@
 import { dpi, drawText, getTextWidth, scaleCanvas } from '@/shared/ui/canvas-toolkit';
-import { theme } from '@penumbra-zone/ui/theme';
 import { TournamentParams } from './types';
 import { pnum } from '@penumbra-zone/types/pnum';
 import { shortify } from '@penumbra-zone/types/shortify';
 
 const baseUrl = process.env['NEXT_PUBLIC_BASE_URL'] ?? 'http://localhost:3000';
+
+const theme = {
+  font: {
+    default: 'Poppins',
+    mono: 'Iosevka Term, monospace',
+    heading: 'Work Sans',
+  },
+  fontSize: {
+    text9xl: '8rem',
+    text8xl: '6rem',
+    text7xl: '4.5rem',
+    text6xl: '3.75rem',
+    text5xl: '3rem',
+    text4xl: '2.25rem',
+    text3xl: '1.875rem',
+    text2xl: '1.5rem',
+    textXl: '1.25rem',
+    textLg: '1.125rem',
+    textBase: '1rem',
+    textSm: '0.875rem',
+    textXs: '0.75rem',
+    textXxs: '0.6875rem',
+  },
+  color: {
+    primary: {
+      light: '#f49c43',
+    },
+    secondary: {
+      light: '#53aea8',
+    },
+    text: {
+      primary: '#fafafa',
+      secondary: '#a3a3a3',
+    },
+  },
+};
 
 export async function renderTournamentEarningsCanvas(
   canvas: HTMLCanvasElement,
@@ -26,7 +61,7 @@ export async function renderTournamentEarningsCanvas(
       return '-';
     }
     const [num, unit] = value.split(':');
-    const amount = pnum(BigInt(Number(num)), { exponent });
+    const amount = pnum(num, exponent);
 
     // perhaps improve upon this later on
     // for now just making sure the value stays inside the boxes
