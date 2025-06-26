@@ -40,6 +40,13 @@ const config = [
       '@next/next/no-duplicate-head': 'off',
     },
   },
+  // Allow console logging in the scripts directory.
+  {
+    files: ['src/scripts/*.ts'],
+    rules: {
+      'no-console': 'off',
+    },
+  },
 ];
 
 /**
