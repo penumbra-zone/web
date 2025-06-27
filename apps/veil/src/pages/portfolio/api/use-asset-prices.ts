@@ -1,8 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
-import { apiFetch } from '@/shared/utils/api-fetch';
-import { SummaryData } from '@/shared/api/server/summary/types';
+import { PriceEntry, fetchAssetPrices } from '@/shared/api/server/candles/prices';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { useMemo } from 'react';
+import { deserialize } from '@/shared/utils/serializer';
+import { assetPatterns } from '@penumbra-zone/types/assets';
 
 export interface AssetPrice {
   symbol: string;
@@ -16,29 +17,48 @@ export interface AssetPrice {
  * Only returns prices denominated in USDC
  */
 export const useAssetPrices = (assets: Metadata[] = []) => {
-  // Get symbols for searching
-  const symbols = useMemo(() => assets.map(asset => asset.symbol).filter(Boolean), [assets]);
+  // Helper that returns true if the symbol should be ignored for pricing purposes
+  const shouldIgnore = (symbol: string): boolean => {
+    return [
+      assetPatterns.lpNft,
+      assetPatterns.lpNftOpened,
+      assetPatterns.lpNftClosed,
+      assetPatterns.lpNftWithdrawn,
+      assetPatterns.auctionNft,
+      assetPatterns.proposalNft,
+      assetPatterns.votingReceipt,
+      assetPatterns.delegationToken,
+      assetPatterns.unbondingToken,
+    ].some(pattern => pattern.matches(symbol));
+  };
+
+  // Get symbols for searching, filtering out extraneous asset types
+  const symbols = useMemo(
+    () =>
+      assets
+        .map(asset => asset.symbol)
+        .filter(Boolean)
+        .filter(sym => !shouldIgnore(sym)),
+    [assets],
+  );
 
   // Query summaries API for price data
   const { data, isLoading, error } = useQuery({
     queryKey: ['asset-prices', symbols],
     queryFn: async () => {
-      // If no assets, return empty array
       if (symbols.length === 0) {
         return [];
       }
 
-      // Fetch from summaries API
-      return apiFetch<SummaryData[]>('/api/summaries', {
-        search: '',
-        limit: '200',
-        offset: '0',
-        durationWindow: '1d',
-      });
+      // Use the new batch server function to fetch prices.
+      const raw = await fetchAssetPrices(symbols);
+      return deserialize<PriceEntry[]>(raw);
     },
     staleTime: 60000, // 1 minute
     enabled: symbols.length > 0,
   });
+
+  const upperSymbols = useMemo(() => symbols.map(s => s.toUpperCase()), [symbols]);
 
   // TODO: this needs a rework to support any numeraire, not just USDC and USDY.
   // Process data to map symbols to prices
@@ -57,8 +77,8 @@ export const useAssetPrices = (assets: Metadata[] = []) => {
     // Process USDC pairs to extract price information
     usdcPairs.forEach(summary => {
       if (summary.baseAsset.symbol) {
-        prices[summary.baseAsset.symbol] = {
-          symbol: summary.baseAsset.symbol,
+        prices[summary.baseAsset.symbol.toUpperCase()] = {
+          symbol: summary.baseAsset.symbol.toUpperCase(),
           price: summary.price,
           quoteSymbol: 'USDC',
         };
@@ -66,7 +86,7 @@ export const useAssetPrices = (assets: Metadata[] = []) => {
     });
 
     // If we have USDC in the data directly (as a base asset), it should have a price of 1 USDC
-    if (!prices['USDC'] && symbols.includes('USDC')) {
+    if (!prices['USDC'] && upperSymbols.includes('USDC')) {
       prices['USDC'] = {
         symbol: 'USDC',
         price: 1,
@@ -93,9 +113,9 @@ export const useAssetPrices = (assets: Metadata[] = []) => {
     // For assets without direct USDC prices, try to use stablecoin pairs
     // Assuming most USD-pegged stablecoins are ~1 USD
     stablePairs.forEach(summary => {
-      if (summary.baseAsset.symbol && !prices[summary.baseAsset.symbol]) {
-        prices[summary.baseAsset.symbol] = {
-          symbol: summary.baseAsset.symbol,
+      if (summary.baseAsset.symbol && !prices[summary.baseAsset.symbol.toUpperCase()]) {
+        prices[summary.baseAsset.symbol.toUpperCase()] = {
+          symbol: summary.baseAsset.symbol.toUpperCase(),
           price: summary.price,
           quoteSymbol: summary.quoteAsset.symbol || 'USD',
         };
@@ -128,7 +148,7 @@ export const useAssetPrices = (assets: Metadata[] = []) => {
     }
 
     return prices;
-  }, [data, symbols]);
+  }, [data, upperSymbols]);
 
   return {
     prices: assetPrices,

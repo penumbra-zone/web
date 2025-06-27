@@ -157,7 +157,11 @@ export const AssetBars: React.FC = () => {
         {/* Shielded Assets Bar */}
         <div className='flex items-center gap-2'>
           <div className='w-16 text-xs font-normal text-neutral-400'>Shielded</div>
-          <div className='relative h-1.5 grow overflow-hidden rounded bg-neutral-800'>
+          <div
+            className={`relative h-1.5 grow overflow-hidden rounded ${
+              shieldedAllocations.length === 0 ? 'bg-neutral-800' : ''
+            }`}
+          >
             <div className='absolute top-0 left-0 h-full' style={{ width: `${shieldedBarWidth}%` }}>
               {shieldedAllocations.length > 0 &&
                 shieldedAllocations.map((allocation, index) => {
@@ -168,6 +172,7 @@ export const AssetBars: React.FC = () => {
                   // Find the matching asset in displayAssets for consistent color
                   const displayAsset = displayAssets.find(a => a.symbol === allocation.symbol);
                   const barColor = displayAsset?.color ?? allocation.color;
+                  const isLast = index === shieldedAllocations.length - 1;
 
                   return (
                     <div
@@ -175,8 +180,8 @@ export const AssetBars: React.FC = () => {
                       className='absolute top-0 h-full rounded'
                       style={{
                         backgroundColor: barColor,
-                        width: `${allocation.percentage}%`,
-                        left: `${prevWidth}%`,
+                        width: `calc(${allocation.percentage}% - ${isLast ? '0px' : '4px'})`,
+                        left: `calc(${prevWidth}% + ${index * 4}px)`,
                       }}
                     />
                   );
@@ -188,7 +193,11 @@ export const AssetBars: React.FC = () => {
         {/* Public Assets Bar */}
         <div className='flex items-center gap-2'>
           <div className='w-16 text-xs font-normal text-neutral-400'>Public</div>
-          <div className='relative h-1.5 grow overflow-hidden rounded bg-neutral-800'>
+          <div
+            className={`relative h-1.5 grow overflow-hidden rounded ${
+              publicAllocations.length === 0 ? 'bg-neutral-800' : ''
+            }`}
+          >
             <div className='absolute top-0 left-0 h-full' style={{ width: `${publicBarWidth}%` }}>
               {publicAllocations.length > 0 &&
                 publicAllocations.map((allocation, index) => {
@@ -199,6 +208,7 @@ export const AssetBars: React.FC = () => {
                   // Find the matching asset in displayAssets for consistent color
                   const displayAsset = displayAssets.find(a => a.symbol === allocation.symbol);
                   const barColor = displayAsset?.color ?? allocation.color;
+                  const isLast = index === publicAllocations.length - 1;
 
                   return (
                     <div
@@ -206,8 +216,8 @@ export const AssetBars: React.FC = () => {
                       className='absolute top-0 h-full rounded'
                       style={{
                         backgroundColor: barColor,
-                        width: `${allocation.percentage}%`,
-                        left: `${prevWidth}%`,
+                        width: `calc(${allocation.percentage}% - ${isLast ? '0px' : '4px'})`,
+                        left: `calc(${prevWidth}% + ${index * 4}px)`,
                       }}
                     />
                   );
