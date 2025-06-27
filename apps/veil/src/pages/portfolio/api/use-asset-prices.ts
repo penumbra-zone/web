@@ -4,6 +4,12 @@ import { SummaryData } from '@/shared/api/server/summary/types';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { useMemo } from 'react';
 
+interface Candle {
+  ohlc: {
+    close: number;
+  };
+}
+
 export interface AssetPrice {
   symbol: string;
   price: number;
@@ -38,18 +44,18 @@ export const useAssetPrices = (assets: Metadata[] = []) => {
           } as SummaryData;
         }
         try {
-          const candles = await apiFetch<any[]>('/api/candles', {
+          const candles = await apiFetch<Candle[]>('/api/candles', {
             baseAsset: sym,
             quoteAsset: 'USDC',
             durationWindow: '1h',
           });
           const last =
             Array.isArray(candles) && candles.length > 0 ? candles[candles.length - 1] : undefined;
-          if (last && 'ohlc' in last) {
+          if (last?.ohlc) {
             return {
               baseAsset: { symbol: sym } as Metadata,
               quoteAsset: { symbol: 'USDC' } as Metadata,
-              price: (last as any).ohlc.close,
+              price: last.ohlc.close,
             } as SummaryData;
           }
         } catch (_) {
