@@ -4,7 +4,7 @@ import { theme } from '@penumbra-zone/ui/theme';
 import { CandleWithVolume } from '@/shared/api/server/candles/utils';
 
 // if `high` / `open` ratio is greater than this value, the chart will limit `high` to `open * RATIO`
-const SUPER_CANDLE_RATION = 5;
+const SUPER_CANDLE_RATIO = 3;
 
 export const useChartConfig = (
   loadMore: () => Promise<void>,
@@ -21,8 +21,8 @@ export const useChartConfig = (
         ...candle.ohlc,
         // prevent extreme candle values from breaking the chart
         high:
-          candle.ohlc.high / candle.ohlc.open > SUPER_CANDLE_RATION
-            ? candle.ohlc.open * SUPER_CANDLE_RATION
+          candle.ohlc.high / candle.ohlc.open > SUPER_CANDLE_RATIO
+            ? candle.ohlc.open * SUPER_CANDLE_RATIO
             : candle.ohlc.high,
       })),
     );
