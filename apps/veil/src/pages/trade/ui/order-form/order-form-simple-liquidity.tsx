@@ -28,7 +28,10 @@ export const SimpleLiquidityOrderForm = observer(
 
     const priceSpread = DEFAULT_PRICE_SPREAD;
     const priceRange = DEFAULT_PRICE_RANGE;
-    const [priceRanges, setPriceRanges] = useState<[number | undefined, number | undefined]>([]);
+    const [priceRanges, setPriceRanges] = useState<[number | undefined, number | undefined]>([
+      undefined,
+      undefined,
+    ]);
 
     // set price ranges once the market price is available
     useEffect(() => {
@@ -191,18 +194,20 @@ export const SimpleLiquidityOrderForm = observer(
               priority='secondary'
               density='compact'
               onClick={() => {
-                setPriceRanges([
-                  store.marketPrice * (1 - priceSpread),
-                  store.marketPrice * (1 + priceSpread),
-                ]);
+                if (store.marketPrice) {
+                  setPriceRanges([
+                    store.marketPrice * (1 - priceSpread),
+                    store.marketPrice * (1 + priceSpread),
+                  ]);
+                }
               }}
             >
               Reset
             </Button>
           </div>
           <PriceSlider
-            min={store.marketPrice * (1 - priceRange)}
-            max={store.marketPrice * (1 + priceRange)}
+            min={store.marketPrice ? store.marketPrice * (1 - priceRange) : 0}
+            max={store.marketPrice ? store.marketPrice * (1 + priceRange) : Infinity}
             values={priceRanges}
             onInput={setPriceRanges}
             marketPrice={store.marketPrice}

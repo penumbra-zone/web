@@ -68,7 +68,11 @@ export class SimpleLPFormStore {
    *            (or):     10         0         -10
    */
   updateOppositeInput = () => {
-    if (this.lowerPriceInput === null || this.upperPriceInput === null) {
+    if (
+      this.marketPrice === null ||
+      this.lowerPriceInput === null ||
+      this.upperPriceInput === null
+    ) {
       return;
     }
 
@@ -177,7 +181,8 @@ export class SimpleLPFormStore {
       this.quoteInput === '' ||
       this.baseInput === '' ||
       this.upperPrice === null ||
-      this.lowerPrice === null
+      this.lowerPrice === null ||
+      this.marketPrice === null
     ) {
       return undefined;
     }

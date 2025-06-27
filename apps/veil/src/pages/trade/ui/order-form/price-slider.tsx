@@ -5,6 +5,13 @@ import { round } from '@penumbra-zone/types/round';
 import { useWidth } from '@/shared/utils/use-width';
 import { AssetInfo } from '../../model/AssetInfo';
 
+// Type guard to ensure both values are defined
+const areValuesDefined = (
+  values: [number | undefined, number | undefined],
+): values is [number, number] => {
+  return values[0] !== undefined && values[1] !== undefined;
+};
+
 const Thumb = ({
   x,
   i,
@@ -215,7 +222,7 @@ export const PriceSlider = ({
   max: number;
   values: [number | undefined, number | undefined];
   onInput: (value: [number, number]) => void;
-  marketPrice: number;
+  marketPrice: number | null;
   baseAsset: AssetInfo | undefined;
   quoteAsset: AssetInfo | undefined;
 }) => {
@@ -275,8 +282,7 @@ export const PriceSlider = ({
               }}
             />
             {/* left & right handles */}
-            {values[0] &&
-              values[1] &&
+            {areValuesDefined(values) &&
               values.map((value, i) => {
                 const elevate = elevateThumb === i;
                 const x = i === 0 ? leftX : leftX1;
@@ -300,7 +306,7 @@ export const PriceSlider = ({
                       i={i}
                       textsXPosRef={textsXPosRef.current.percentage}
                       maxWidth={width}
-                      value={((value - marketPrice) / marketPrice) * 100}
+                      value={marketPrice ? ((value - marketPrice) / marketPrice) * 100 : 0}
                       elevate={elevate}
                     />
                     <ValueInput
