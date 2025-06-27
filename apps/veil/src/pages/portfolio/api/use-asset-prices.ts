@@ -58,6 +58,8 @@ export const useAssetPrices = (assets: Metadata[] = []) => {
     enabled: symbols.length > 0,
   });
 
+  const upperSymbols = useMemo(() => symbols.map(s => s.toUpperCase()), [symbols]);
+
   // TODO: this needs a rework to support any numeraire, not just USDC and USDY.
   // Process data to map symbols to prices
   const assetPrices: Record<string, AssetPrice> = useMemo(() => {
@@ -75,8 +77,8 @@ export const useAssetPrices = (assets: Metadata[] = []) => {
     // Process USDC pairs to extract price information
     usdcPairs.forEach(summary => {
       if (summary.baseAsset.symbol) {
-        prices[summary.baseAsset.symbol] = {
-          symbol: summary.baseAsset.symbol,
+        prices[summary.baseAsset.symbol.toUpperCase()] = {
+          symbol: summary.baseAsset.symbol.toUpperCase(),
           price: summary.price,
           quoteSymbol: 'USDC',
         };
@@ -84,7 +86,7 @@ export const useAssetPrices = (assets: Metadata[] = []) => {
     });
 
     // If we have USDC in the data directly (as a base asset), it should have a price of 1 USDC
-    if (!prices['USDC'] && symbols.includes('USDC')) {
+    if (!prices['USDC'] && upperSymbols.includes('USDC')) {
       prices['USDC'] = {
         symbol: 'USDC',
         price: 1,
@@ -111,9 +113,9 @@ export const useAssetPrices = (assets: Metadata[] = []) => {
     // For assets without direct USDC prices, try to use stablecoin pairs
     // Assuming most USD-pegged stablecoins are ~1 USD
     stablePairs.forEach(summary => {
-      if (summary.baseAsset.symbol && !prices[summary.baseAsset.symbol]) {
-        prices[summary.baseAsset.symbol] = {
-          symbol: summary.baseAsset.symbol,
+      if (summary.baseAsset.symbol && !prices[summary.baseAsset.symbol.toUpperCase()]) {
+        prices[summary.baseAsset.symbol.toUpperCase()] = {
+          symbol: summary.baseAsset.symbol.toUpperCase(),
           price: summary.price,
           quoteSymbol: summary.quoteAsset.symbol || 'USD',
         };
@@ -146,7 +148,7 @@ export const useAssetPrices = (assets: Metadata[] = []) => {
     }
 
     return prices;
-  }, [data, symbols]);
+  }, [data, upperSymbols]);
 
   return {
     prices: assetPrices,
