@@ -28,15 +28,27 @@ export const SimpleLiquidityOrderForm = observer(
 
     const priceSpread = DEFAULT_PRICE_SPREAD;
     const priceRange = DEFAULT_PRICE_RANGE;
-    const [priceRanges, setPriceRanges] = useState<[number, number]>([
-      store.marketPrice * (1 - priceSpread),
-      store.marketPrice * (1 + priceSpread),
+    const [priceRanges, setPriceRanges] = useState<[number | undefined, number | undefined]>([
+      undefined,
+      undefined,
     ]);
+
+    // set price ranges once the market price is available
+    useEffect(() => {
+      if (store.marketPrice && !priceRanges[0] && !priceRanges[1]) {
+        setPriceRanges([
+          store.marketPrice * (1 - priceSpread),
+          store.marketPrice * (1 + priceSpread),
+        ]);
+      }
+    }, [store.marketPrice, priceSpread, priceRanges]);
 
     // values flow from local state to form store to keep ui smooth
     useEffect(() => {
-      store.setLowerPriceInput(priceRanges[0]);
-      store.setUpperPriceInput(priceRanges[1]);
+      if (priceRanges[0] && priceRanges[1]) {
+        store.setLowerPriceInput(priceRanges[0]);
+        store.setUpperPriceInput(priceRanges[1]);
+      }
     }, [store, priceRanges]);
 
     return (
@@ -182,18 +194,20 @@ export const SimpleLiquidityOrderForm = observer(
               priority='secondary'
               density='compact'
               onClick={() => {
-                setPriceRanges([
-                  store.marketPrice * (1 - priceSpread),
-                  store.marketPrice * (1 + priceSpread),
-                ]);
+                if (store.marketPrice) {
+                  setPriceRanges([
+                    store.marketPrice * (1 - priceSpread),
+                    store.marketPrice * (1 + priceSpread),
+                  ]);
+                }
               }}
             >
               Reset
             </Button>
           </div>
           <PriceSlider
-            min={store.marketPrice * (1 - priceRange)}
-            max={store.marketPrice * (1 + priceRange)}
+            min={store.marketPrice ? store.marketPrice * (1 - priceRange) : 0}
+            max={store.marketPrice ? store.marketPrice * (1 + priceRange) : Infinity}
             values={priceRanges}
             onInput={setPriceRanges}
             marketPrice={store.marketPrice}
