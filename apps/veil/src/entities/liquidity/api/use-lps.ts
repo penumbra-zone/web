@@ -12,8 +12,8 @@
 // import { bech32mPositionId } from '@penumbra-zone/bech32m/plpid';
 // import { queryClient } from '@/shared/const/queryClient';
 // import { limitAsync } from '@/shared/utils/limit-async';
+// import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
-import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import {
   TradingPair,
   // PositionMetadata,
@@ -22,7 +22,8 @@ import {
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 // import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
+import { UseQueryResult } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
 
 export interface LpPositionBundleResponse {
   entries: LpPositionBundleResponseEntry[];
@@ -50,30 +51,19 @@ export interface LpPositionBundleResponseEntry {
  * Must be used within the `observer` mobX HOC
  */
 export const useLps = (subaccount = 0): UseQueryResult<LpPositionBundleResponse['entries']> => {
-  // @TODO use ViewService to get position bundles
+  const [isLoading, setLoading] = useState(false);
+
+  useEffect(() => {
+    // @TODO use ViewService to get position bundles
+    if (!Number.isNaN(subaccount)) {
+      setTimeout(() => {
+        setLoading(true);
+      }, 1000);
+    }
+  }, [subaccount]);
 
   return {
-    isLoading: false,
-    data: [
-      {
-        date: '2025-06-25T18:25:23.656Z',
-        liquidityShape: 'Locally Stable',
-        tradingPair: new TradingPair({
-          asset1: new AssetId({
-            inner: new Uint8Array([1]),
-          }),
-          asset2: new AssetId({
-            inner: new Uint8Array([2]),
-          }),
-        }),
-        status: 'active',
-        minPrice: '1000',
-        maxPrice: '1000',
-        currentValue: '1000',
-        volume: '1000',
-        feesEarned: '1000',
-        pnl: '1000',
-      },
-    ],
+    isLoading,
+    data: [],
   };
 };

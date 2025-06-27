@@ -8,18 +8,27 @@ import { Density } from '@penumbra-zone/ui/Density';
 import { TableCell } from '@penumbra-zone/ui/TableCell';
 import { connectionStore } from '@/shared/model/connection';
 import { useLps } from '../api/use-lps';
-import { getDisplayLPs, DisplayLPs } from '../model/get-display-lps';
+import { getDisplayLPs, DisplayLP } from '../model/get-display-lps';
+import { useRegistry } from '@/shared/api/registry';
+import { useGetMetadata } from '@/shared/api/assets';
+import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 
 export const LiquidityTable = observer(() => {
   const { connected, subaccount } = connectionStore;
-  const { getTableHeader, sortBy } = useSortableTableHeaders('date');
+  const { getTableHeader, sortBy } = useSortableTableHeaders<keyof DisplayLP>('date');
 
   const { data, isLoading } = useLps(subaccount);
+  const { data: registry } = useRegistry();
+  const usdc = Object.values(registry?.assetById).find(asset => asset?.symbol === 'USDC');
+  const usdcMetadata = useGetMetadata()(usdc?.penumbraAssetId);
+  console.log('TCL: LiquidityTable -> usdcMetadata', usdcMetadata);
   const displayPositions = getDisplayLPs({
+    usdcMetadata,
     positionBundles: data,
   });
+  console.log('TCL: LiquidityTable -> displayPositions', displayPositions);
 
-  const sortedPositions = useMemo<DisplayPosition[]>(() => {
+  const sortedLPs = useMemo<DisplayLP[]>(() => {
     return orderBy([...displayPositions], `sortValues.${sortBy.key}`, sortBy.direction);
   }, [displayPositions, sortBy]);
 
@@ -42,8 +51,28 @@ export const LiquidityTable = observer(() => {
           <TableCell heading>&nbsp;</TableCell>
         </div>
 
-        {sortedLPs.map((position, index) => (
-          <Fragment key={`${position.idString}${index}`}>asd</Fragment>
+        {sortedLPs.map((lp, index) => (
+          <div key={`${lp.date}${index}`} className='col-span-10 grid grid-cols-subgrid'>
+            <TableCell>{lp.date}</TableCell>
+            <TableCell>{lp.liquidityShape}</TableCell>
+            <TableCell>{lp.status}</TableCell>
+            <TableCell>
+              <ValueViewComponent valueView={lp.minPrice} />
+            </TableCell>
+            <TableCell>
+              <ValueViewComponent valueView={lp.maxPrice} />
+            </TableCell>
+            <TableCell>
+              <ValueViewComponent valueView={lp.currentValue} />
+            </TableCell>
+            <TableCell>
+              <ValueViewComponent valueView={lp.volume} />
+            </TableCell>
+            <TableCell>
+              <ValueViewComponent valueView={lp.feesEarned} />
+            </TableCell>
+            <TableCell>{lp.pnl}</TableCell>
+          </div>
         ))}
       </Density>
     </div>
