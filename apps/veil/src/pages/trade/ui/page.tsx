@@ -3,7 +3,7 @@
 import cn from 'clsx';
 import { useViewport } from '@/shared/utils/use-viewport';
 import { PairInfo } from './pair-info';
-import { Chart } from './chart';
+import { Chart } from './chart/chart';
 import { RouteTabs } from './route-tabs';
 import { TradesTabs } from './trades';
 import { HistoryTabs } from './history-tabs';

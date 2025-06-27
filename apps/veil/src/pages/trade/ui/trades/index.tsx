@@ -4,7 +4,7 @@ import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { Tabs } from '@penumbra-zone/ui/Tabs';
 import { Density } from '@penumbra-zone/ui/Density';
 import { Button } from '@penumbra-zone/ui/Button';
-import { Chart } from '../chart';
+import { Chart } from '../chart/chart';
 import { MarketTrades } from './market-trades';
 import { MyTrades } from '@/pages/trade/ui/trades/my-trades';
 
