@@ -1,8 +1,8 @@
 'use client';
 
-import { Fragment, useState, useMemo } from 'react';
-import { observer } from 'mobx-react-lite';
 import orderBy from 'lodash/orderBy';
+import { useMemo, useState } from 'react';
+import { observer } from 'mobx-react-lite';
 import { useSortableTableHeaders } from '@/pages/tournament/ui/sortable-table-header';
 import { Density } from '@penumbra-zone/ui/Density';
 import { TableCell } from '@penumbra-zone/ui/TableCell';
@@ -11,32 +11,39 @@ import { useLps } from '../api/use-lps';
 import { getDisplayLPs, DisplayLP } from '../model/get-display-lps';
 import { useRegistry } from '@/shared/api/registry';
 import { useGetMetadata } from '@/shared/api/assets';
-import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
+import { LiquidityRow } from './liquidity-row';
+import { GroupedLiquidityRow } from './grouped-liquidity-row';
 
 export const LiquidityTable = observer(() => {
-  const { connected, subaccount } = connectionStore;
+  const { subaccount } = connectionStore;
   const { getTableHeader, sortBy } = useSortableTableHeaders<keyof DisplayLP>('date');
 
-  const { data, isLoading } = useLps(subaccount);
+  const { data } = useLps(subaccount);
   const { data: registry } = useRegistry();
-  const usdc = Object.values(registry?.assetById).find(asset => asset?.symbol === 'USDC');
+  const usdc = Object.values(registry?.assetById ?? {}).find(
+    (asset: { symbol?: string }) => asset?.symbol === 'USDC',
+  );
   const usdcMetadata = useGetMetadata()(usdc?.penumbraAssetId);
-  console.log('TCL: LiquidityTable -> usdcMetadata', usdcMetadata);
   const displayPositions = getDisplayLPs({
     usdcMetadata,
-    positionBundles: data,
   });
-  console.log('TCL: LiquidityTable -> displayPositions', displayPositions);
 
   const sortedLPs = useMemo<DisplayLP[]>(() => {
     return orderBy([...displayPositions], `sortValues.${sortBy.key}`, sortBy.direction);
   }, [displayPositions, sortBy]);
 
+  // Group LPs by directedPair using reduce
+  const sortedLPsByPair = sortedLPs.reduce<Record<string, DisplayLP[]>>(
+    (lpsByPair, displayLP) => ({
+      ...lpsByPair,
+      [displayLP.directedPair]: [...(lpsByPair[displayLP.directedPair] ?? []), displayLP],
+    }),
+    {},
+  );
+  console.log('TCL: sortedLPsByPair', sortedLPsByPair);
+
   return (
-    <div
-      className='grid grid-cols-[80px_1fr_1fr_80px_1fr_1fr_1fr_1fr_1fr_1fr] overflow-x-auto overflow-y-auto'
-      style={{ overflowAnchor: 'none' }}
-    >
+    <div className='grid grid-cols-[80px_1fr_1fr_80px_1fr_1fr_1fr_1fr_1fr_1fr] overflow-x-auto overflow-y-auto'>
       <Density slim>
         <div className='col-span-10 grid grid-cols-subgrid'>
           {getTableHeader('date', 'Date')}
@@ -51,29 +58,12 @@ export const LiquidityTable = observer(() => {
           <TableCell heading>&nbsp;</TableCell>
         </div>
 
-        {sortedLPs.map((lp, index) => (
-          <div key={`${lp.date}${index}`} className='col-span-10 grid grid-cols-subgrid'>
-            <TableCell>{lp.date}</TableCell>
-            <TableCell>{lp.liquidityShape}</TableCell>
-            <TableCell>{lp.status}</TableCell>
-            <TableCell>
-              <ValueViewComponent valueView={lp.minPrice} />
-            </TableCell>
-            <TableCell>
-              <ValueViewComponent valueView={lp.maxPrice} />
-            </TableCell>
-            <TableCell>
-              <ValueViewComponent valueView={lp.currentValue} />
-            </TableCell>
-            <TableCell>
-              <ValueViewComponent valueView={lp.volume} />
-            </TableCell>
-            <TableCell>
-              <ValueViewComponent valueView={lp.feesEarned} />
-            </TableCell>
-            <TableCell>{lp.pnl}</TableCell>
-          </div>
-        ))}
+        {/* Show LPs directly when there's only one group */}
+        {Object.keys(sortedLPsByPair).length === 1
+          ? sortedLPs.map((lp, index) => <LiquidityRow key={`${lp.date}${index}`} lp={lp} />)
+          : Object.entries(sortedLPsByPair).map(([pair, lps]) => (
+              <GroupedLiquidityRow key={pair} pair={pair} lps={lps} />
+            ))}
       </Density>
     </div>
   );

@@ -1,10 +1,10 @@
 import sample from 'lodash/sample';
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { pnum } from '@penumbra-zone/types/pnum';
-import { useRegistry } from '@/shared/api/registry';
 
 export interface DisplayLP {
   date: string;
+  directedPair: string;
   liquidityShape: string;
   status: string;
   minPrice: ValueView;
@@ -23,13 +23,13 @@ export const getDisplayLPs = ({
   // positionBundles: LpPositionBundleResponse[];
 }): DisplayLP[] => {
   const displayLPs = [];
-
   const exponent = usdcMetadata.denomUnits.find(x => x.denom === usdcMetadata.display)?.exponent;
   const statuses = ['In range', 'Out of range', 'Closed'];
 
   for (let i = 0; i < 10; i++) {
     displayLPs.push({
       date: '06-20 09:12:43',
+      directedPair: i % 2 === 0 ? 'BTC/USDC' : 'UM/USDC',
       liquidityShape: i % 2 === 0 ? 'Locally Stable' : 'Volatile',
       status: sample(statuses),
       minPrice: pnum(0.45, exponent).toValueView(usdcMetadata),
