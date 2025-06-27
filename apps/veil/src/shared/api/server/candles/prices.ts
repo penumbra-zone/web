@@ -4,7 +4,6 @@ import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { pindexerDb } from '@/shared/database/client';
 import { serialize, Serialized } from '@/shared/utils/serializer';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { dbCandleToOhlc } from '@/shared/api/server/candles/utils';
 
 export interface PriceEntry {
   baseAsset: Metadata;
@@ -33,33 +32,24 @@ export async function fetchAssetPrices(symbols: string[]): Promise<Serialized<Pr
   const registry = await registryClient.remote.get(chainId);
   const allAssets = registry.getAllAssets();
 
-  // Locate the canonical USDC metadata once.
-  const usdcMeta = allAssets.find(a => a.symbol?.toUpperCase() === 'USDC');
-  if (!usdcMeta?.penumbraAssetId) {
-    throw new Error('USDC asset not found in registry');
-  }
-
   const out: PriceEntry[] = [];
 
-  // First, always include USDC at price 1 if requested
-  if (symbols.some(s => s.toUpperCase() === 'USDC')) {
-    out.push({
-      baseAsset: { symbol: 'USDC' } as Metadata,
-      quoteAsset: usdcMeta,
-      price: 1,
-    });
-  }
+  // Helper: classify if an asset is considered a stablecoin (USD-pegged or basket)
+  const isStable = (sym: string): boolean => /USD|USDT|USDC|USDY|DAI|CDT|allUSD/i.test(sym);
 
-  // Map symbols to metadata and AssetIds upfront
+  // Quick look-up helpers
+  const metaBySymbol = new Map<string, Metadata>();
+  allAssets.forEach(a => {
+    if (a.symbol) {
+      metaBySymbol.set(a.symbol.toUpperCase(), a);
+    }
+  });
+
   const metaByIdHex = new Map<string, Metadata>();
   const assetIds: Buffer[] = [];
 
   for (const sym of symbols) {
-    if (sym.toUpperCase() === 'USDC') {
-      // already handled above
-      continue;
-    }
-    const meta = allAssets.find(a => a.symbol?.toUpperCase() === sym.toUpperCase());
+    const meta = metaBySymbol.get(sym.toUpperCase());
     if (!meta?.penumbraAssetId) {
       continue;
     }
@@ -68,30 +58,78 @@ export async function fetchAssetPrices(symbols: string[]): Promise<Serialized<Pr
     assetIds.push(buf);
   }
 
-  if (assetIds.length === 0) {
-    return serialize(out);
-  }
-
-  // Single query to summary table for the latest price (1-minute window gives near-real-time close)
-  const rows = await pindexerDb
-    .selectFrom('dex_ex_pairs_summary')
-    .select(['asset_start', 'price'])
-    .where('the_window', '=', '1m')
-    .where('asset_end', '=', Buffer.from(usdcMeta.penumbraAssetId.inner))
-    .where('asset_start', 'in', assetIds)
-    .execute();
-
-  rows.forEach(row => {
-    // Look up metadata via captured map
-    const meta = metaByIdHex.get(Buffer.from(row.asset_start).toString('hex'));
+  // ------------------------------------------------------------------
+  // 1) Return price = 1 for stablecoins themselves
+  // ------------------------------------------------------------------
+  const usdcMeta = metaBySymbol.get('USDC');
+  symbols.forEach(sym => {
+    if (!isStable(sym)) {
+      return;
+    }
+    const meta = metaBySymbol.get(sym.toUpperCase());
     if (!meta) {
       return;
     }
-    out.push({
-      baseAsset: meta,
-      quoteAsset: usdcMeta,
-      price: typeof row.price === 'string' ? Number(row.price) : (row.price as number),
+    out.push({ baseAsset: meta, quoteAsset: usdcMeta ?? meta, price: 1 });
+  });
+
+  if (assetIds.length === 0) {
+    // No non-stable assets requested; we are done.
+    return serialize(out);
+  }
+
+  const rows = await pindexerDb
+    .selectFrom('dex_ex_pairs_summary')
+    .select(['asset_start', 'asset_end', 'price'])
+    .where('the_window', '=', '1m')
+    .where('asset_start', 'in', assetIds.length ? assetIds : [Buffer.alloc(0)]) // prevent empty IN ()
+    .execute();
+
+  // Choose the best stable-quote per base asset (priority list)
+  const priority: Record<string, number> = { USDC: 6, USDY: 5, USDT: 4, DAI: 3, CDT: 2 };
+
+  const bestByAsset = new Map<string, { quote: Metadata; price: number }>();
+
+  rows.forEach(row => {
+    const baseMeta = metaByIdHex.get(Buffer.from(row.asset_start).toString('hex'));
+    if (!baseMeta) {
+      return;
+    }
+
+    const quoteMeta = allAssets.find(m => {
+      if (!m.penumbraAssetId) {
+        return false;
+      }
+      return Buffer.from(m.penumbraAssetId.inner).equals(row.asset_end);
     });
+    if (!quoteMeta?.penumbraAssetId) {
+      return;
+    }
+
+    if (!baseMeta.symbol) {
+      return;
+    }
+    const baseKey = baseMeta.symbol.toUpperCase();
+    const quoteKey = quoteMeta.symbol.toUpperCase();
+
+    const incomingPrio = priority[quoteKey] ?? 1;
+    const existing = bestByAsset.get(baseKey);
+    const currentPrio = existing ? (priority[existing.quote.symbol.toUpperCase()] ?? 1) : -1;
+
+    if (incomingPrio > currentPrio) {
+      bestByAsset.set(baseKey, {
+        quote: quoteMeta,
+        price: typeof row.price === 'string' ? Number(row.price) : row.price,
+      });
+    }
+  });
+
+  bestByAsset.forEach(({ quote, price }, baseKey) => {
+    const baseMeta = metaBySymbol.get(baseKey);
+    if (!baseMeta) {
+      return;
+    }
+    out.push({ baseAsset: baseMeta, quoteAsset: quote, price });
   });
 
   return serialize(out);
