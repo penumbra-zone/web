@@ -1,9 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
-import { apiFetch } from '@/shared/utils/api-fetch';
-import { SummaryData } from '@/shared/api/server/summary/types';
+import { PriceEntry } from '@/shared/api/server/candles/prices';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { useMemo } from 'react';
-import { CandleWithVolume } from '@/shared/api/server/candles/utils';
+import { deserialize } from '@/shared/utils/serializer';
+import { fetchAssetPrices } from '@/shared/api/server/candles/prices';
+import { assetPatterns } from '@penumbra-zone/types/assets';
 
 export interface AssetPrice {
   symbol: string;
@@ -17,8 +18,30 @@ export interface AssetPrice {
  * Only returns prices denominated in USDC
  */
 export const useAssetPrices = (assets: Metadata[] = []) => {
-  // Get symbols for searching
-  const symbols = useMemo(() => assets.map(asset => asset.symbol).filter(Boolean), [assets]);
+  // Helper that returns true if the symbol should be ignored for pricing purposes
+  const shouldIgnore = (symbol: string): boolean => {
+    return [
+      assetPatterns.lpNft,
+      assetPatterns.lpNftOpened,
+      assetPatterns.lpNftClosed,
+      assetPatterns.lpNftWithdrawn,
+      assetPatterns.auctionNft,
+      assetPatterns.proposalNft,
+      assetPatterns.votingReceipt,
+      assetPatterns.delegationToken,
+      assetPatterns.unbondingToken,
+    ].some(pattern => pattern.matches(symbol));
+  };
+
+  // Get symbols for searching, filtering out extraneous asset types
+  const symbols = useMemo(
+    () =>
+      assets
+        .map(asset => asset.symbol)
+        .filter(Boolean)
+        .filter(sym => !shouldIgnore(sym)),
+    [assets],
+  );
 
   // Query summaries API for price data
   const { data, isLoading, error } = useQuery({
@@ -28,39 +51,9 @@ export const useAssetPrices = (assets: Metadata[] = []) => {
         return [];
       }
 
-      // TODO: This is inefficient. A batch endpoint should be created to fetch prices for multiple assets at once.
-      // Fetch last candle for each symbol vs USDC to derive price.
-      const promises = symbols.map(async sym => {
-        if (sym.toUpperCase() === 'USDC') {
-          return {
-            baseAsset: { symbol: sym } as Metadata,
-            quoteAsset: { symbol: 'USDC' } as Metadata,
-            price: 1,
-          } as SummaryData;
-        }
-        try {
-          const candles = await apiFetch<CandleWithVolume[]>('/api/candles', {
-            baseAsset: sym,
-            quoteAsset: 'USDC',
-            durationWindow: '1h',
-          });
-          const last =
-            Array.isArray(candles) && candles.length > 0 ? candles[candles.length - 1] : undefined;
-          if (last?.ohlc) {
-            return {
-              baseAsset: { symbol: sym } as Metadata,
-              quoteAsset: { symbol: 'USDC' } as Metadata,
-              price: last.ohlc.close,
-            } as SummaryData;
-          }
-        } catch (_) {
-          // This can fail if the pair doesn't exist, which is expected.
-          // We can ignore this error and just won't have a price for this asset.
-        }
-        return undefined;
-      });
-      const results = (await Promise.all(promises)).filter(Boolean) as SummaryData[];
-      return results;
+      // Use the new batch server function to fetch prices.
+      const raw = await fetchAssetPrices(symbols);
+      return deserialize<PriceEntry[]>(raw);
     },
     staleTime: 60000, // 1 minute
     enabled: symbols.length > 0,
