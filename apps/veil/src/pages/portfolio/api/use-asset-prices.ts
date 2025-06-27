@@ -1,9 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
-import { PriceEntry } from '@/shared/api/server/candles/prices';
+import { PriceEntry, fetchAssetPrices } from '@/shared/api/server/candles/prices';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { useMemo } from 'react';
 import { deserialize } from '@/shared/utils/serializer';
-import { fetchAssetPrices } from '@/shared/api/server/candles/prices';
 import { assetPatterns } from '@penumbra-zone/types/assets';
 
 export interface AssetPrice {

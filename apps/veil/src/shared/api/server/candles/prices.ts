@@ -1,7 +1,7 @@
 'use server';
 
 import { ChainRegistryClient } from '@penumbra-labs/registry';
-import { pindexer } from '@/shared/database';
+import { pindexerDb } from '@/shared/database/client';
 import { serialize, Serialized } from '@/shared/utils/serializer';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { dbCandleToOhlc } from '@/shared/api/server/candles/utils';
@@ -40,44 +40,59 @@ export async function fetchAssetPrices(symbols: string[]): Promise<Serialized<Pr
   }
 
   const out: PriceEntry[] = [];
-  for (const sym of symbols) {
-    // Handle USDC itself explicitly – price is always 1.
-    if (sym.toUpperCase() === 'USDC') {
-      out.push({
-        baseAsset: { symbol: sym } as Metadata,
-        quoteAsset: { symbol: 'USDC' } as Metadata,
-        price: 1,
-      });
-      continue;
-    }
 
-    const baseMeta = allAssets.find(a => a.symbol?.toUpperCase() === sym.toUpperCase());
-    if (!baseMeta?.penumbraAssetId) {
-      // Skip assets we can't resolve.
-      continue;
-    }
-
-    // Fetch the last candle for the pair base/USDC over the 1h window.
-    const candles = await pindexer.candles({
-      baseAsset: baseMeta.penumbraAssetId,
-      quoteAsset: usdcMeta.penumbraAssetId,
-      window: '1h',
-      chainId,
-    });
-
-    if (candles.length === 0) {
-      continue;
-    }
-
-    const last = candles[candles.length - 1];
-    const priceData = dbCandleToOhlc(last, baseMeta, usdcMeta);
-
+  // First, always include USDC at price 1 if requested
+  if (symbols.some(s => s.toUpperCase() === 'USDC')) {
     out.push({
-      baseAsset: baseMeta,
+      baseAsset: { symbol: 'USDC' } as Metadata,
       quoteAsset: usdcMeta,
-      price: priceData.ohlc.close,
+      price: 1,
     });
   }
+
+  // Map symbols to metadata and AssetIds upfront
+  const metaByIdHex = new Map<string, Metadata>();
+  const assetIds: Buffer[] = [];
+
+  for (const sym of symbols) {
+    if (sym.toUpperCase() === 'USDC') {
+      // already handled above
+      continue;
+    }
+    const meta = allAssets.find(a => a.symbol?.toUpperCase() === sym.toUpperCase());
+    if (!meta?.penumbraAssetId) {
+      continue;
+    }
+    const buf = Buffer.from(meta.penumbraAssetId.inner);
+    metaByIdHex.set(buf.toString('hex'), meta);
+    assetIds.push(buf);
+  }
+
+  if (assetIds.length === 0) {
+    return serialize(out);
+  }
+
+  // Single query to summary table for the latest price (1-minute window gives near-real-time close)
+  const rows = await pindexerDb
+    .selectFrom('dex_ex_pairs_summary')
+    .select(['asset_start', 'price'])
+    .where('the_window', '=', '1m')
+    .where('asset_end', '=', Buffer.from(usdcMeta.penumbraAssetId.inner))
+    .where('asset_start', 'in', assetIds)
+    .execute();
+
+  rows.forEach(row => {
+    // Look up metadata via captured map
+    const meta = metaByIdHex.get(Buffer.from(row.asset_start).toString('hex'));
+    if (!meta) {
+      return;
+    }
+    out.push({
+      baseAsset: meta,
+      quoteAsset: usdcMeta,
+      price: typeof row.price === 'string' ? Number(row.price) : (row.price as number),
+    });
+  });
 
   return serialize(out);
 }
