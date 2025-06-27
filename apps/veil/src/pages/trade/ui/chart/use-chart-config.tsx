@@ -1,12 +1,45 @@
-import { useCallback, useRef } from 'react';
-import { CandlestickData, createChart, HistogramData, IChartApi } from 'lightweight-charts';
+import { RefObject, useCallback, useRef } from 'react';
+import { createChart, IChartApi } from 'lightweight-charts';
 import { theme } from '@penumbra-zone/ui/theme';
+import { CandleWithVolume } from '@/shared/api/server/candles/utils';
 
-export const useChartConfig = (loadMore: VoidFunction, loadingDisabled: boolean) => {
+// if `high` / `open` ratio is greater than this value, the chart will limit `high` to `open * RATIO`
+const SUPER_CANDLE_RATION = 5;
+
+export const useChartConfig = (
+  loadMore: () => Promise<void>,
+  loadingDisabled: RefObject<boolean>,
+) => {
   const chartElRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi>(undefined);
   const seriesRef = useRef<ReturnType<IChartApi['addCandlestickSeries']>>(undefined);
   const volumeSeriesRef = useRef<ReturnType<IChartApi['addHistogramSeries']>>(undefined);
+
+  const setCandlesData = (candles: CandleWithVolume[] = []) => {
+    seriesRef.current?.setData(
+      candles.map(candle => ({
+        ...candle.ohlc,
+        // prevent extreme candle values from breaking the chart
+        high:
+          candle.ohlc.high / candle.ohlc.open > SUPER_CANDLE_RATION
+            ? candle.ohlc.open * SUPER_CANDLE_RATION
+            : candle.ohlc.high,
+      })),
+    );
+  };
+
+  const setVolumeData = (candles: CandleWithVolume[] = []) => {
+    volumeSeriesRef.current?.setData(
+      candles.map(candle => ({
+        time: candle.ohlc.time,
+        value: candle.volume,
+        color:
+          candle.ohlc.close >= candle.ohlc.open
+            ? theme.color.success.light + '80'
+            : theme.color.destructive.light + '80',
+      })),
+    );
+  };
 
   const setChartRef = useCallback((node: HTMLDivElement | null) => {
     // unmount when node is null
@@ -20,7 +53,6 @@ export const useChartConfig = (loadMore: VoidFunction, loadingDisabled: boolean)
     // if the element is assigned, create the chart
     if (!chartElRef.current) {
       chartElRef.current = node;
-      console.log('Node assigned:', node);
 
       chartRef.current = createChart(node, {
         autoSize: true,
@@ -80,25 +112,14 @@ export const useChartConfig = (loadMore: VoidFunction, loadingDisabled: boolean)
 
       // subscribe to users scrolling left and right the price chart
       chartRef.current.timeScale().subscribeVisibleLogicalRangeChange(logicalRange => {
-        // `from=10` parameter means the leftmost visible candle is the 10th candle
-        if (!loadingDisabled && logicalRange?.from && logicalRange.from < 10) {
-          // todo: stop too-many loads.
-          // todo: stop fetching page >1 on each new block
-          // todo: add throttle
-          console.log('Visible time range changed:', logicalRange);
-          loadMore();
+        // `from=-10` parameter means there needs to be at least 10 empty candles in the left of the chart
+        if (!loadingDisabled.current && logicalRange?.from && logicalRange.from < -10) {
+          void loadMore();
         }
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- dependent data is called from the function using current data
   }, []);
-
-  const setCandlesData = (candles: CandlestickData[]) => {
-    seriesRef.current?.setData(candles);
-  };
-
-  const setVolumeData = (volume: HistogramData[]) => {
-    volumeSeriesRef.current?.setData(volume);
-  };
 
   return {
     chartRef: setChartRef,

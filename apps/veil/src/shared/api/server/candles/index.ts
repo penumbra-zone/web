@@ -23,22 +23,26 @@ const getCandles = async ({
   page?: number;
   chainId: string;
 }) => {
-  return (
-    pindexerDb
-      .selectFrom('dex_ex_price_charts')
-      .select(['start_time', 'open', 'close', 'low', 'high', 'swap_volume', 'direct_volume'])
-      .where('the_window', '=', window)
-      .where('asset_start', '=', Buffer.from(baseAsset.inner))
-      .where('asset_end', '=', Buffer.from(quoteAsset.inner))
-      .orderBy('start_time', 'asc')
-      // Due to a lot of price volatility at the launch of the chain, manually setting start date a few days later
-      .$if(chainId === MAINNET_CHAIN_ID, qb => qb.where('start_time', '>=', new Date('2024-08-06')))
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Kysely limitation
-      .$if(limit !== undefined, qb => qb.limit(limit!))
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Kyseley limitation
-      .$if(page !== undefined && limit !== undefined, qb => qb.offset(page! * limit!))
-      .execute()
-  );
+  const filteredCandles = pindexerDb
+    .selectFrom('dex_ex_price_charts')
+    .select(['start_time', 'open', 'close', 'low', 'high', 'swap_volume', 'direct_volume'])
+    .where('the_window', '=', window)
+    .where('asset_start', '=', Buffer.from(baseAsset.inner))
+    .where('asset_end', '=', Buffer.from(quoteAsset.inner))
+    .orderBy('start_time', 'desc')
+    // Due to a lot of price volatility at the launch of the chain, manually setting start date a few days later
+    .$if(chainId === MAINNET_CHAIN_ID, qb => qb.where('start_time', '>=', new Date('2024-08-06')))
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Kysely limitation
+    .$if(limit !== undefined, qb => qb.limit(limit!))
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Kyseley limitation
+    .$if(page !== undefined && limit !== undefined, qb => qb.offset(limit! * (page! - 1)));
+
+  // data needs to be ordered in asc order for the chart to parse it
+  return pindexerDb
+    .selectFrom(filteredCandles.as('candles'))
+    .selectAll()
+    .orderBy('start_time', 'asc')
+    .execute();
 };
 
 export async function GET(req: NextRequest): Promise<NextResponse<CandleApiResponse>> {

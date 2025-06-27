@@ -1,41 +1,48 @@
 import cn from 'clsx';
 import { observer } from 'mobx-react-lite';
-import { useEffect, useState } from 'react';
-import { theme } from '@penumbra-zone/ui/theme';
+import { useEffect, useRef, useState } from 'react';
 import { Text } from '@penumbra-zone/ui/Text';
 import { DurationWindow, durationWindows } from '@/shared/utils/duration.ts';
 import { BlockchainError } from '@/shared/ui/blockchain-error';
-import { useCandles } from '../../api/candles';
+import { useInfiniteCandles } from '../../api/infinite-candles';
+import { useLatestCandles } from '../../api/latest-candles';
 import { ChartLoadingState } from './loading-chart';
 import { useChartConfig } from './use-chart-config';
 
 export const Chart = observer(() => {
   const [duration, setDuration] = useState<DurationWindow>('1d');
-  const { data, isLoading, error, fetchNextPage, isFetchingNextPage } = useCandles(duration);
-  const candles = data?.pages.flat();
 
-  const { chartRef, setVolumeData, setCandlesData } = useChartConfig(
-    fetchNextPage,
-    isFetchingNextPage,
-  );
+  // we need two queries to avoid overfetching. if we leave only the infinite query, it will
+  // be requested PAGE times on each block, causing many unnecessary requests.
+  const { data: latestCandles } = useLatestCandles(duration);
+  const { data: historyCandles, isLoading, error, fetchNextPage } = useInfiniteCandles(duration);
+
+  const isFetching = useRef(false);
+  const fetchNext = async () => {
+    isFetching.current = true;
+    await fetchNextPage();
+    isFetching.current = false;
+  };
+
+  const { chartRef, setVolumeData, setCandlesData } = useChartConfig(fetchNext, isFetching);
 
   useEffect(() => {
-    if (!candles?.length) {
+    if (!latestCandles?.length) {
+      return;
+    }
+    setCandlesData(latestCandles);
+  }, [latestCandles, setCandlesData]);
+
+  useEffect(() => {
+    if (!historyCandles?.pages.length) {
       return;
     }
 
-    setCandlesData(candles.map(c => c.ohlc));
-    setVolumeData(
-      candles.map(candle => ({
-        time: candle.ohlc.time,
-        value: candle.volume,
-        color:
-          candle.ohlc.close >= candle.ohlc.open
-            ? theme.color.success.light + '80'
-            : theme.color.destructive.light + '80',
-      })),
-    );
-  }, [candles, setCandlesData, setVolumeData]);
+    // pages need to be reversed, so that data is always in ASC order
+    const candles = historyCandles.pages.toReversed().flat();
+    setCandlesData(candles);
+    setVolumeData(candles);
+  }, [historyCandles, setCandlesData, setVolumeData]);
 
   return (
     <div className='flex h-full min-h-0 flex-col'>
@@ -58,7 +65,7 @@ export const Chart = observer(() => {
       <div className='flex min-h-0 grow items-center justify-center'>
         {error && <BlockchainError direction='column' />}
         {!error && isLoading && <ChartLoadingState />}
-        {!error && !isLoading && candles && <div className='h-full w-full' ref={chartRef} />}
+        {!error && !isLoading && historyCandles && <div className='h-full w-full' ref={chartRef} />}
       </div>
     </div>
   );
