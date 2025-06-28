@@ -174,7 +174,7 @@ export const SocialCardDialog = observer(
       setInitialParams({
         epoch: String(epoch),
         rewarded: latestReward.reward > 0,
-        earnings: `${latestReward.reward}:UM`,
+        earnings: `${Math.floor(latestReward.reward) / 10 ** exponent}:UM`,
         votingStreak: `${delegatorSummary.data.streak}:`,
         incentivePool: `${Math.floor(Number(summaryData.lp_rewards) + Number(summaryData.delegator_rewards)) / 10 ** exponent}:UM`,
         lpPool: `${Math.floor(summaryData.lp_rewards) / 10 ** exponent}:UM`,
