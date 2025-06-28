@@ -52,8 +52,6 @@ export const LandingCard = observer(() => {
   // We want to pass the most recent epoch with rewards to trigger the social card dialogue.
   const { isOpen: showSocial, close: hideSocial } = useTournamentSocialCard(latestReward?.epoch);
 
-  const nonZeroGauges = assetGauges.filter(g => g.votes > 0);
-
   return (
     <>
       <GradientCard>
@@ -81,12 +79,10 @@ export const LandingCard = observer(() => {
             </div>
 
             <IncentivePool summary={summary?.[0]} loading={summaryLoading} />
-            {nonZeroGauges.length > 0 && (
-              <TournamentResults
-                results={nonZeroGauges.slice(0, 5)}
-                loading={isPending || epochGaugeLoading}
-              />
-            )}
+            <TournamentResults
+              results={assetGauges.slice(0, 5)}
+              loading={isPending || epochGaugeLoading}
+            />
             <VotingInfo />
           </div>
         </div>
