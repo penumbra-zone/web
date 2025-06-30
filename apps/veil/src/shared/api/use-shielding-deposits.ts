@@ -13,7 +13,7 @@ export const useShieldingDeposits = (limit = 100) => {
       const serialized = await fetchShieldingDeposits(limit);
       return deserialize<ShieldingDepositWithMeta[]>(serialized);
     },
-    refetchInterval: 1000, // Poll every 1 second
-    staleTime: 3000, // Consider data stale after 3 seconds
+    refetchInterval: 5000,
+    staleTime: 5000,
   });
 };
