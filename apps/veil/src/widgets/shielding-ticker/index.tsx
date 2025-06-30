@@ -4,16 +4,41 @@ import { useState } from 'react';
 import { Card } from '@penumbra-zone/ui/Card';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { Text } from '@penumbra-zone/ui/Text';
-import { AssetIcon } from '@penumbra-zone/ui/AssetIcon';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { useShieldingDeposits } from '@/shared/api/use-shielding-deposits';
+import { useRegistry } from '@/shared/api/registry';
 import { toValueView } from '@/shared/utils/value-view';
+import { Chain, Registry } from '@penumbra-labs/registry';
+import { bech32, bech32m } from 'bech32';
 import cn from 'clsx';
+import Image from 'next/image';
+
+const getChainFromForeignAddress = (
+  foreignAddr: string,
+  registry: Registry | undefined,
+): Chain | null => {
+  if (!registry) {
+    return null;
+  }
+
+  // Decode the bech32/bech32m address to get the prefix
+  const decoded =
+    bech32.decodeUnsafe(foreignAddr, Infinity) ?? bech32m.decodeUnsafe(foreignAddr, Infinity);
+  if (!decoded?.prefix) {
+    return null;
+  }
+
+  // Find the chain that matches this address prefix
+  const chain = registry.ibcConnections.find(c => c.addressPrefix === decoded.prefix);
+  return chain ?? null;
+};
 
 export const ShieldingTicker = () => {
   const [collapsed, setCollapsed] = useState(false);
   const { data: deposits, isLoading } = useShieldingDeposits(100);
+  const { data: registry } = useRegistry();
 
+  // Prepare deposit items upfront
   const depositItems = deposits?.map(deposit => {
     const valueView = deposit.metadata
       ? toValueView({
@@ -22,16 +47,26 @@ export const ShieldingTicker = () => {
         })
       : null;
 
+    const chain = getChainFromForeignAddress(deposit.foreignAddr, registry);
+    const firstImage = chain?.images[0];
+    const chainIconUrl = firstImage ? (firstImage.png ?? firstImage.svg) : undefined;
+
     return (
       <div
         key={deposit.id}
         className='flex items-center gap-3 rounded-lg border border-gray-700/50 bg-gray-800/30 p-3 transition-colors hover:bg-gray-800/50'
       >
         <div className='flex-shrink-0'>
-          {deposit.metadata ? (
-            <AssetIcon metadata={deposit.metadata} size='sm' />
+          {chainIconUrl ? (
+            <Image
+              src={chainIconUrl}
+              alt={`${chain?.displayName} chain`}
+              className='h-[24px] w-[24px] rounded-full'
+              width={24}
+              height={24}
+            />
           ) : (
-            <div className='flex h-8 w-8 items-center justify-center rounded-full bg-gray-600'>
+            <div className='flex h-[24px] w-[24px] items-center justify-center rounded-full bg-gray-600'>
               <Text detail>?</Text>
             </div>
           )}
@@ -44,9 +79,9 @@ export const ShieldingTicker = () => {
             </Text>
             {valueView ? (
               <ValueViewComponent
+                density='compact'
                 valueView={valueView}
                 priority='primary'
-                context='table'
                 abbreviate={false}
               />
             ) : (
@@ -56,7 +91,7 @@ export const ShieldingTicker = () => {
             )}
           </div>
           <Text detail color='text.secondary' truncate>
-            from {deposit.foreignAddr.substring(0, 12)}...
+            from {deposit.foreignAddr.substring(0, 15)}...
           </Text>
         </div>
 
@@ -69,6 +104,7 @@ export const ShieldingTicker = () => {
     );
   });
 
+  // Prepare loading skeleton items
   const loadingItems = Array.from({ length: 3 }).map((_, i) => (
     <div key={i} className='flex animate-pulse items-center gap-3 rounded-lg bg-gray-800/30 p-3'>
       <div className='h-8 w-8 rounded-full bg-gray-600'></div>
