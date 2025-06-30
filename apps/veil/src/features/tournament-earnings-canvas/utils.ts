@@ -12,11 +12,14 @@ export const queryParamMap = {
 };
 
 export function encodeParams(params: TournamentParams): string {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- discard the rewarded param
+  const { rewarded, ...shortParams } = params;
+
   const keyMap = Object.fromEntries(
     Object.entries(queryParamMap).map(([key, value]) => [value, key]),
   ) as Record<string, string>;
 
-  return Object.entries(params)
+  return Object.entries(shortParams)
     .map(([key, value]) => `${keyMap[key]}=${value}`)
     .join('&');
 }
