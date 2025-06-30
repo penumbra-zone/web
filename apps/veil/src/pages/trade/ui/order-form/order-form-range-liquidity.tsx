@@ -2,7 +2,6 @@ import { observer } from 'mobx-react-lite';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { Slider as PenumbraSlider } from '@penumbra-zone/ui/Slider';
-import { round } from '@penumbra-zone/types/round';
 import { connectionStore } from '@/shared/model/connection';
 import { ConnectButton } from '@/features/connect/connect-button';
 import { OrderInput } from './order-input';
@@ -28,11 +27,10 @@ export const RangeLiquidityOrderForm = observer(
         <div className='mb-4'>
           <div className='mb-1'>
             <OrderInput
+              round
               label='Liquidity Target'
-              value={round({
-                value: store.liquidityTargetInput,
-                decimals: store.quoteAsset?.exponent ?? defaultDecimals,
-              })}
+              value={store.liquidityTargetInput}
+              decimals={store.quoteAsset?.exponent ?? defaultDecimals}
               onChange={store.setLiquidityTargetInput}
               denominator={store.quoteAsset?.symbol}
             />
@@ -68,11 +66,10 @@ export const RangeLiquidityOrderForm = observer(
         <div className='mb-4'>
           <div className='mb-2'>
             <OrderInput
+              round
               label='Upper Price Bound'
-              value={round({
-                value: store.upperPriceInput,
-                decimals: store.quoteAsset?.exponent ?? defaultDecimals,
-              })}
+              value={store.upperPriceInput}
+              decimals={store.quoteAsset?.exponent ?? defaultDecimals}
               onChange={price => store.setUpperPriceInput(price)}
               denominator={store.quoteAsset?.symbol}
             />
@@ -86,11 +83,10 @@ export const RangeLiquidityOrderForm = observer(
         <div className='mb-4'>
           <div className='mb-2'>
             <OrderInput
+              round
               label='Lower Price Bound'
-              value={round({
-                value: store.lowerPriceInput,
-                decimals: store.quoteAsset?.exponent ?? defaultDecimals,
-              })}
+              value={store.lowerPriceInput}
+              decimals={store.quoteAsset?.exponent ?? defaultDecimals}
               onChange={price => store.setLowerPriceInput(price)}
               denominator={store.quoteAsset?.symbol}
             />

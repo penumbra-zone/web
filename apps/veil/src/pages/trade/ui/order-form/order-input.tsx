@@ -1,5 +1,6 @@
-import { useId, useEffect, useState, useRef } from 'react';
+import { useId, useEffect, useState, useRef, KeyboardEvent } from 'react';
 import { useComponentSize } from 'react-use-size';
+import { round } from '@penumbra-zone/types/round';
 import { Icon } from '@penumbra-zone/ui/Icon';
 import { InfoIcon } from 'lucide-react';
 import { Tooltip } from '@penumbra-zone/ui/Tooltip';
@@ -18,6 +19,8 @@ export interface OrderInputProps {
   max?: string | number;
   min?: string | number;
   disabled?: boolean;
+  decimals?: number;
+  round?: boolean;
 }
 
 /**
@@ -36,21 +39,40 @@ export const OrderInput = ({
   max,
   min,
   disabled,
+  decimals,
+  round: roundValue = false,
 }: OrderInputProps & {
   ref?: React.RefObject<HTMLInputElement>;
 }) => {
   const { ref: denomRef, width: denomWidth } = useComponentSize();
   const textRef = useRef<HTMLDivElement>(null);
   const [textWidth, setTextWidth] = useState(0);
+  const [isFocused, setIsFocused] = useState(false);
   const reactId = useId();
   const id = idProp ?? reactId;
+  const roundedValue =
+    roundValue && !isFocused
+      ? round({
+          value,
+          decimals: decimals ?? 0,
+        })
+      : value;
+
+  // prevent input from exceeding the specified number of decimals
+  const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    const key = parseInt(event.key);
+    const decimalPart = roundedValue.split('.')[1] ?? '';
+    if (!isNaN(key) && typeof decimals !== 'undefined' && decimalPart.length >= decimals) {
+      event.preventDefault();
+    }
+  };
 
   useEffect(() => {
     requestAnimationFrame(() => {
       // useComponentSize doesnt set width correctly on updates
       setTextWidth(textRef.current?.offsetWidth ?? 0);
     });
-  }, [value]);
+  }, [roundedValue]);
 
   return (
     <div className='relative h-16 rounded-sm bg-linear-to-r from-other-tonal-fill5 to-other-tonal-fill10'>
@@ -75,14 +97,14 @@ export const OrderInput = ({
             ref={textRef}
             className='invisible absolute font-default text-text-lg leading-text-lg font-medium'
           >
-            {value}
+            {roundedValue}
           </div>
           <input
             className={cn(
               'w-full appearance-none border-none bg-transparent',
               'rounded-sm text-text-primary transition-colors duration-150',
               'p-2 pt-7',
-              isApproximately && value ? 'pl-7' : 'pl-3',
+              isApproximately && roundedValue ? 'pl-7' : 'pl-3',
               'font-default text-text-lg leading-text-lg font-medium',
               !disabled &&
                 'hover:bg-other-tonal-fill5 focus:bg-other-tonal-fill10 focus:outline-hidden',
@@ -91,9 +113,12 @@ export const OrderInput = ({
               "[&[type='number']]:[-moz-appearance:textfield]",
             )}
             style={{ paddingRight: denomWidth + 20 }}
-            value={value}
+            value={roundedValue}
             disabled={disabled}
             onChange={e => onChange?.(e.target.value)}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            onKeyDown={onKeyDown}
             onWheel={e => {
               // Remove focus to prevent scroll changes
               (e.target as HTMLInputElement).blur();
@@ -105,7 +130,7 @@ export const OrderInput = ({
             ref={ref}
             id={id}
           />
-          {isApproximately && value && (
+          {isApproximately && roundedValue && (
             <>
               <span className='absolute top-[27px] left-3 font-default text-text-lg leading-text-lg font-medium text-secondary-light'>
                 ≈
