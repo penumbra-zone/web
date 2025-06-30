@@ -458,6 +458,7 @@ export type DB = Pick<
   | 'dex_ex_metadata'
   | 'dex_ex_block_summary'
   | 'dex_ex_transactions'
+  | 'ibc_transfer'
   | 'lqt.gauge'
   | 'lqt.delegator_history'
   | 'lqt.delegator_summary'
