@@ -4,7 +4,6 @@ import { WalletMinimal, InfoIcon } from 'lucide-react';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { TextInput } from '@penumbra-zone/ui/TextInput';
-import { round } from '@penumbra-zone/types/round';
 import { connectionStore } from '@/shared/model/connection';
 import { ConnectButton } from '@/features/connect/connect-button';
 import { Tooltip } from '@penumbra-zone/ui/Tooltip';
@@ -68,10 +67,8 @@ export const SimpleLiquidityOrderForm = observer(
                 type='number'
                 typography='large'
                 blurOnWheel
-                value={round({
-                  value: store.baseInput,
-                  decimals: store.baseAsset?.exponent ?? defaultDecimals,
-                })}
+                value={store.baseInput}
+                maxDecimals={store.quoteAsset?.exponent ?? defaultDecimals}
                 onChange={store.setBaseInput}
                 endAdornment={
                   store.baseAsset?.symbol && (
@@ -116,10 +113,8 @@ export const SimpleLiquidityOrderForm = observer(
                 type='number'
                 typography='large'
                 blurOnWheel
-                value={round({
-                  value: store.quoteInput,
-                  decimals: store.quoteAsset?.exponent ?? defaultDecimals,
-                })}
+                value={store.quoteInput}
+                maxDecimals={store.quoteAsset?.exponent ?? defaultDecimals}
                 onChange={store.setQuoteInput}
                 endAdornment={
                   store.quoteAsset?.symbol && (

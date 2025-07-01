@@ -1,7 +1,6 @@
 import { observer } from 'mobx-react-lite';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
-import { round } from '@penumbra-zone/types/round';
 import { connectionStore } from '@/shared/model/connection';
 import { ConnectButton } from '@/features/connect/connect-button';
 import { OrderInput } from './order-input';
@@ -25,11 +24,10 @@ export const LimitOrderForm = observer(({ parentStore }: { parentStore: OrderFor
       <div className='mb-4'>
         <div className='mb-2'>
           <OrderInput
+            round
             label={`When ${store.baseAsset?.symbol} is`}
-            value={round({
-              value: store.priceInput,
-              decimals: store.quoteAsset?.exponent ?? defaultDecimals,
-            })}
+            value={store.priceInput}
+            decimals={store.quoteAsset?.exponent ?? defaultDecimals}
             onChange={price => store.setPriceInput(price)}
             denominator={store.quoteAsset?.symbol}
           />
@@ -44,22 +42,20 @@ export const LimitOrderForm = observer(({ parentStore }: { parentStore: OrderFor
       </div>
       <div className='mb-4'>
         <OrderInput
+          round
           label={isBuy ? 'Buy' : 'Sell'}
-          value={round({
-            value: store.baseInput,
-            decimals: store.baseAsset?.exponent ?? defaultDecimals,
-          })}
+          value={store.baseInput}
+          decimals={store.baseAsset?.exponent ?? defaultDecimals}
           onChange={store.setBaseInput}
           denominator={store.baseAsset?.symbol}
         />
       </div>
       <div className='mb-4'>
         <OrderInput
+          round
           label={isBuy ? 'Pay with' : 'Receive'}
-          value={round({
-            value: store.quoteInput,
-            decimals: store.quoteAsset?.exponent ?? defaultDecimals,
-          })}
+          value={store.quoteInput}
+          decimals={store.quoteAsset?.exponent ?? defaultDecimals}
           onChange={store.setQuoteInput}
           denominator={store.quoteAsset?.symbol}
         />

@@ -1,8 +1,8 @@
-import { HTMLAttributes, ReactNode, Ref } from 'react';
+import cn from 'clsx';
+import { HTMLAttributes, ReactNode, Ref, KeyboardEvent } from 'react';
 import { small, body, large } from '../utils/typography';
 import { ActionType, getFocusWithinOutlineColorByActionType } from '../utils/action-type';
 import { useDisabled } from '../utils/disabled-context';
-import cn from 'clsx';
 import { Text } from '../Text';
 import { ThemeColor } from '../utils/color';
 import { useDensity } from '../utils/density';
@@ -45,6 +45,11 @@ export interface TextInputProps
    * value. This prop will prevent that if set to true.
    */
   blurOnWheel?: boolean;
+  /**
+   * Prevent the input from entering more decimals than a given number.
+   * Useful for entering amounts or prices of tokens.
+   */
+  maxDecimals?: number;
 }
 
 /**
@@ -68,6 +73,7 @@ export const TextInput = ({
   blurOnWheel = false,
   ref,
   typography = 'small',
+  maxDecimals,
   ...rest
 }: TextInputProps) => {
   const density = useDensity();
@@ -78,6 +84,15 @@ export const TextInput = ({
   } else if (typography === 'body') {
     typographyCn = body;
   }
+
+  // prevent input from exceeding the specified number of decimals
+  const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    const key = parseInt(event.key);
+    const decimalPart = value?.split('.')[1] ?? '';
+    if (!isNaN(key) && typeof maxDecimals !== 'undefined' && decimalPart.length >= maxDecimals) {
+      event.preventDefault();
+    }
+  };
 
   return (
     <label
@@ -110,6 +125,7 @@ export const TextInput = ({
       <input
         {...rest}
         value={value}
+        onKeyDown={onKeyDown}
         onChange={e => onChange?.(e.target.value)}
         onWheel={
           blurOnWheel

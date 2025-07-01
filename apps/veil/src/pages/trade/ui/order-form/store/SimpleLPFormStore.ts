@@ -6,6 +6,7 @@ import { parseNumber } from '@/shared/utils/num';
 import { Position } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { pnum } from '@penumbra-zone/types/pnum';
 import { makeAutoObservable } from 'mobx';
+import { round } from '@penumbra-zone/types/round';
 
 const extractAmount = (positions: Position[], asset: AssetInfo): number => {
   let out = 0.0;
@@ -76,7 +77,9 @@ export class SimpleLPFormStore {
       return;
     }
 
-    if (this.lastTouchedInput === 'quote' && this.quoteInput !== '') {
+    if (this.lastTouchedInput === 'quote' && this.quoteInput === '') {
+      this.baseInput = '';
+    } else if (this.lastTouchedInput === 'quote' && this.quoteInput !== '') {
       const scale = scaleLinear()
         .domain([this.lowerPriceInput, this.marketPrice])
         // eslint-disable-next-line @typescript-eslint/no-unsafe-unary-minus -- explicitly set a negative value to get a positive output
@@ -86,7 +89,14 @@ export class SimpleLPFormStore {
       const valueInQuote = scale(this.upperPriceInput);
 
       // convert the value to the equivalent base asset amount
-      this.baseInput = String(Math.max(0, valueInQuote * this.marketPrice));
+      this.baseInput = round({
+        value: String(Math.max(0, valueInQuote * this.marketPrice)) || '',
+        decimals: this.baseAsset?.exponent ?? 6,
+      });
+    }
+
+    if (this.lastTouchedInput === 'base' && this.baseInput === '') {
+      this.quoteInput = '';
     } else if (this.lastTouchedInput === 'base' && this.baseInput !== '') {
       const scale = scaleLinear()
         .domain([this.marketPrice, this.upperPriceInput])
@@ -97,19 +107,22 @@ export class SimpleLPFormStore {
       const valueInBase = scale(this.lowerPriceInput);
 
       // convert the value to the equivalent quote asset amount
-      this.quoteInput = String(Math.max(0, valueInBase / this.marketPrice));
+      this.quoteInput = round({
+        value: String(Math.max(0, valueInBase / this.marketPrice)) || '',
+        decimals: this.quoteAsset?.exponent ?? 6,
+      });
     }
   };
 
   setBaseInput = (x: string) => {
-    this.baseInput = String(Math.max(0, Number(x)));
+    this.baseInput = x.replace(/[^0-9.,]/g, '');
     this.lastTouchedInput = 'base';
 
     this.updateOppositeInput();
   };
 
   setQuoteInput = (x: string) => {
-    this.quoteInput = String(Math.max(0, Number(x)));
+    this.quoteInput = x.replace(/[^0-9.,]/g, '');
     this.lastTouchedInput = 'quote';
 
     this.updateOppositeInput();

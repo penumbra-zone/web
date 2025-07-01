@@ -2,7 +2,6 @@ import { observer } from 'mobx-react-lite';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { Slider as PenumbraSlider } from '@penumbra-zone/ui/Slider';
-import { round } from '@penumbra-zone/types/round';
 import { connectionStore } from '@/shared/model/connection';
 import { ConnectButton } from '@/features/connect/connect-button';
 import { OrderInput } from './order-input';
@@ -65,11 +64,10 @@ export const MarketOrderForm = observer(({ parentStore }: { parentStore: OrderFo
       <SegmentedControl direction={store.direction} setDirection={store.setDirection} />
       <div className='mb-4'>
         <OrderInput
+          round
+          value={store.baseInput}
+          decimals={store.baseAsset?.exponent ?? defaultDecimals}
           label={isBuy ? 'Buy' : 'Sell'}
-          value={round({
-            value: store.baseInput,
-            decimals: store.baseAsset?.exponent ?? defaultDecimals,
-          })}
           onChange={store.setBaseInput}
           isEstimating={store.baseEstimating}
           isApproximately={isBuy && store.baseInputAmount !== 0}
@@ -78,11 +76,10 @@ export const MarketOrderForm = observer(({ parentStore }: { parentStore: OrderFo
       </div>
       <div className='mb-4'>
         <OrderInput
+          round
           label={isBuy ? 'Pay with' : 'Receive'}
-          value={round({
-            value: store.quoteInput,
-            decimals: store.quoteAsset?.exponent ?? defaultDecimals,
-          })}
+          value={store.quoteInput}
+          decimals={store.quoteAsset?.exponent ?? defaultDecimals}
           onChange={store.setQuoteInput}
           isEstimating={store.quoteEstimating}
           isApproximately={!isBuy && store.quoteInputAmount !== 0}
