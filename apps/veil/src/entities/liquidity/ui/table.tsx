@@ -6,6 +6,7 @@ import { observer } from 'mobx-react-lite';
 import { useSortableTableHeaders } from '@/pages/tournament/ui/sortable-table-header';
 import { Density } from '@penumbra-zone/ui/Density';
 import { TableCell } from '@penumbra-zone/ui/TableCell';
+import { Text } from '@penumbra-zone/ui/Text';
 import { connectionStore } from '@/shared/model/connection';
 import { useLps } from '../api/use-lps';
 import { getDisplayLPs, DisplayLP } from '../model/get-display-lps';
@@ -43,14 +44,18 @@ export const LiquidityTable = observer(() => {
   console.log('TCL: sortedLPsByPair', sortedLPsByPair);
 
   return (
-    <div className='grid grid-cols-[80px_1fr_1fr_80px_1fr_1fr_1fr_1fr_1fr_1fr] overflow-x-auto overflow-y-auto'>
+    <div className='grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr] overflow-x-auto overflow-y-auto'>
       <Density slim>
         <div className='col-span-10 grid grid-cols-subgrid'>
           {getTableHeader('date', 'Date')}
           {getTableHeader('liquidityShape', 'Liquidity Shape')}
           {getTableHeader('status', 'Status')}
-          <TableCell heading>Min Price</TableCell>
-          <TableCell heading>Max Price</TableCell>
+          <TableCell heading>
+            <Text tableHeadingMedium>Min Price</Text>
+          </TableCell>
+          <TableCell heading>
+            <Text tableHeadingMedium>Max Price</Text>
+          </TableCell>
           {getTableHeader('currentValue', 'Current Value')}
           {getTableHeader('volume', 'Volume')}
           {getTableHeader('feesEarned', 'Fees Earned')}
