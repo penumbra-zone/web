@@ -29,6 +29,7 @@ import { Dash } from './dash';
 import { useObserver } from '@/shared/utils/use-observer';
 import SpinnerIcon from '@/shared/assets/spinner-icon.svg';
 import { PositionState_PositionStateEnum } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
+import { fullyWithdrawn } from '@/shared/utils/position';
 
 export interface PositionsTableProps {
   base?: Metadata;
@@ -239,7 +240,11 @@ export const PositionsTable = observer(({ base, quote, stateFilter }: PositionsT
                     </TableCell>
 
                     <TableCell loading={isLoading} variant={variant}>
-                      {position.isWithdrawn ? <Dash /> : <PositionsCurrentValue order={order} />}
+                      {fullyWithdrawn(position.position) ? (
+                        <Dash />
+                      ) : (
+                        <PositionsCurrentValue order={order} />
+                      )}
                     </TableCell>
 
                     <TableCell loading={isLoading} variant={variant}>
