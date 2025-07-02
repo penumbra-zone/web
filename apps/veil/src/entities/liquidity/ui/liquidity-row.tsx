@@ -1,7 +1,7 @@
 import { TableCell } from '@penumbra-zone/ui/TableCell';
 import { Text } from '@penumbra-zone/ui/Text';
 import { Button } from '@penumbra-zone/ui/Button';
-import { ChevronUp, ChevronDown } from 'lucide-react';
+import { ChevronUp, ChevronDown, ArrowBigDownIcon, X } from 'lucide-react';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { DisplayLP } from '../model/get-display-lps';
 import { useState } from 'react';
@@ -59,16 +59,34 @@ export const LiquidityRow = ({ lp }: LiquidityRowProps) => {
         <Text
           xs
           whitespace='nowrap'
-          color={
-            Number(lp.pnl.replace(/^(-+)/, '').replace(/%$/, '')) >= 0
-              ? 'success.light'
-              : 'destructive.light'
-          }
+          color={lp.pnlPercentage >= 0 ? 'success.light' : 'destructive.light'}
         >
-          {lp.pnl}
+          {lp.pnlPercentage > 0 ? '+' : ''}
+          {lp.pnlPercentage}%
         </Text>
       </TableCell>
       <TableCell justify='end'>
+        {lp.status === 'Closed' ? (
+          <Button
+            iconOnly
+            icon={ArrowBigDownIcon}
+            actionType='success'
+            priority='secondary'
+            onClick={toggleExpanded}
+          >
+            &nbsp;
+          </Button>
+        ) : (
+          <Button
+            iconOnly
+            icon={X}
+            actionType='destructive'
+            priority='secondary'
+            onClick={toggleExpanded}
+          >
+            &nbsp;
+          </Button>
+        )}
         <Button iconOnly icon={isExpanded ? ChevronUp : ChevronDown} onClick={toggleExpanded}>
           &nbsp;
         </Button>

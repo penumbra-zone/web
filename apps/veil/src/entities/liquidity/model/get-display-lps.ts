@@ -12,7 +12,7 @@ export interface DisplayLP {
   currentValue: ValueView;
   volume: ValueView;
   feesEarned: ValueView;
-  pnl: string;
+  pnlPercentage: number;
 }
 
 export const getDisplayLPs = ({
@@ -37,7 +37,7 @@ export const getDisplayLPs = ({
       currentValue: pnum(220.0, exponent).toValueView(usdcMetadata),
       volume: pnum(2000.0, exponent).toValueView(usdcMetadata),
       feesEarned: pnum(20.0, exponent).toValueView(usdcMetadata),
-      pnl: '+8.65%',
+      pnlPercentage: i % 3 === 0 ? 8.65 : -1.23,
     });
   }
 
