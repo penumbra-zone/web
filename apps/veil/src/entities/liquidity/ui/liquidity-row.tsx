@@ -11,6 +11,12 @@ interface LiquidityRowProps {
   isIndented?: boolean;
 }
 
+const statusColorMapping = {
+  'In range': 'success.light',
+  'Out of range': 'destructive.light',
+  Closed: 'text.secondary',
+};
+
 export const LiquidityRow = ({ lp }: LiquidityRowProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const toggleExpanded = () => setIsExpanded(!isExpanded);
@@ -30,7 +36,7 @@ export const LiquidityRow = ({ lp }: LiquidityRowProps) => {
         </Text>
       </TableCell>
       <TableCell cell>
-        <Text xs whitespace='nowrap'>
+        <Text xs whitespace='nowrap' color={statusColorMapping[lp.status]}>
           {lp.status}
         </Text>
       </TableCell>
@@ -50,7 +56,15 @@ export const LiquidityRow = ({ lp }: LiquidityRowProps) => {
         <ValueViewComponent valueView={lp.feesEarned} />
       </TableCell>
       <TableCell cell>
-        <Text xs whitespace='nowrap'>
+        <Text
+          xs
+          whitespace='nowrap'
+          color={
+            Number(lp.pnl.replace(/^(-+)/, '').replace(/%$/, '')) >= 0
+              ? 'success.light'
+              : 'destructive.light'
+          }
+        >
           {lp.pnl}
         </Text>
       </TableCell>
