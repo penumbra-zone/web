@@ -7,20 +7,26 @@ import type { MappedGauge } from '../../../server/previous-epochs';
 import { ProvideLiquidityButton } from '../../shared/provide-liquidity-button';
 import { VoteButton } from './vote-button';
 import { formatPercentage, VOTING_THRESHOLD } from '../../vote-dialog/vote-dialog-asset';
+import { VotingInfo } from '@/pages/tournament/api/use-voting-info';
 
 export const TableRow = ({
   item,
   loading,
-  canVote,
+  votingInfo,
   exponent,
 }: {
   item: MappedGauge;
-  canVote: boolean;
+  votingInfo: VotingInfo;
   loading: boolean;
   exponent: number;
 }) => {
   return (
-    <div className={cn('grid grid-cols-subgrid', canVote ? 'col-span-6' : 'col-span-5')}>
+    <div
+      className={cn(
+        'grid grid-cols-subgrid',
+        votingInfo.case === 'can-vote' ? 'col-span-6' : 'col-span-5',
+      )}
+    >
       <TableCell loading={loading}>
         {!loading && (
           <div className='flex items-center gap-1'>
@@ -58,8 +64,10 @@ export const TableRow = ({
       {/* TODO: implement "estimated incentive" */}
       <TableCell loading={loading}>-</TableCell>
 
-      {canVote && (
-        <TableCell loading={loading}>{!loading && <VoteButton value={item} />}</TableCell>
+      {votingInfo.case === 'can-vote' && (
+        <TableCell loading={loading}>
+          {!loading && <VoteButton ability={votingInfo.ability} value={item} />}
+        </TableCell>
       )}
 
       <TableCell loading={loading}>

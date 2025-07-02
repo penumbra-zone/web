@@ -1,120 +1,17 @@
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { Ban, Coins, Check, Wallet2, ExternalLink, List } from 'lucide-react';
-import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
-import { addAmounts } from '@penumbra-zone/types/amount';
 import { getMetadata as getMetadataFromValueView } from '@penumbra-zone/getters/value-view';
 import { Skeleton } from '@penumbra-zone/ui/Skeleton';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { ConnectButton } from '@/features/connect/connect-button';
-import { connectionStore } from '@/shared/model/connection';
-import { useGetMetadata } from '@/shared/api/assets';
 import { PagePath } from '@/shared/const/pages';
-import { useLQTNotes } from '../api/use-voting-notes';
-import { useCurrentEpoch } from '../api/use-current-epoch';
-import { useTournamentVotes } from '../api/use-tournament-votes';
 import { VoteDialogueSelector } from './vote-dialog';
-import { useAccountDelegations } from '../api/use-delegations';
-import { useStakingTokenMetadata } from '@/shared/api/registry';
-
-export const useVotingInfo = (defaultEpoch?: number) => {
-  const { connected, subaccount } = connectionStore;
-  const getMetadata = useGetMetadata();
-
-  const {
-    epoch: currentEpoch,
-    isLoading: loadingEpoch,
-    isFetched: epochFetched,
-  } = useCurrentEpoch();
-  const epoch = defaultEpoch ?? currentEpoch;
-  const isEnded = !currentEpoch || !epoch || epoch !== currentEpoch || loadingEpoch;
-
-  const {
-    data: notes,
-    isLoading: loadingNotes,
-    isFetched: notesFetched,
-  } = useLQTNotes(subaccount, epoch, isEnded);
-  const { data: votes, isLoading: loadingVotes } = useTournamentVotes(epoch, isEnded);
-  const {
-    data: delegations,
-    isLoading: delegationsLoading,
-    isFetched: delegationsFetched,
-  } = useAccountDelegations(isEnded || !!notes?.length);
-  const { data: stakingTokenMetadata } = useStakingTokenMetadata();
-
-  const delUMMetadata = useMemo(() => {
-    const cloned = stakingTokenMetadata.clone();
-    cloned.symbol = 'delUM';
-    return cloned;
-  }, [stakingTokenMetadata]);
-
-  const isLoading =
-    (loadingEpoch && !epochFetched) ||
-    (loadingNotes && !notesFetched) ||
-    (delegationsLoading && !delegationsFetched);
-  const isVoted = !!votes?.length;
-  const isDelegated = !!delegations?.length;
-
-  const votingNote = useMemo(() => {
-    if (!notes?.length) {
-      return undefined;
-    }
-
-    const values = notes.flatMap(n => n.noteRecord?.note?.value ?? []);
-    if (!values.length) {
-      return undefined;
-    }
-
-    const amount = values.reduce(
-      (accum, current) => (current.amount ? addAmounts(accum, current.amount) : accum),
-      new Amount({ lo: 0n, hi: 0n }),
-    );
-
-    return new ValueView({
-      valueView: {
-        case: 'knownAssetId',
-        value: {
-          amount,
-          metadata: delUMMetadata,
-        },
-      },
-    });
-  }, [delUMMetadata, notes]);
-
-  const votedFor = useMemo(() => {
-    const vote = votes?.[0];
-    const metadata = getMetadata(vote?.incentivizedAsset);
-    if (!metadata) {
-      return undefined;
-    }
-    return new ValueView({
-      valueView: {
-        case: 'knownAssetId',
-        value: {
-          amount: new Amount({ lo: 0n, hi: 0n }),
-          metadata,
-        },
-      },
-    });
-  }, [getMetadata, votes]);
-
-  return {
-    epoch,
-    connected,
-    isEnded,
-    isLoading,
-    loadingVotes,
-    isVoted,
-    votedFor,
-    isDelegated,
-    currentEpoch,
-    votingNote,
-  };
-};
+import { useVotingInfo } from '../api/use-voting-info';
+import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
 const STAKING_LINK = 'https://app.penumbra.zone/#/staking';
 
@@ -122,52 +19,25 @@ export interface VotingInfoProps {
   epoch?: number;
 }
 
-export const VotingInfo = observer(({ epoch: defaultEpoch }: VotingInfoProps) => {
-  const {
-    epoch,
-    isVoted,
-    isEnded,
-    isLoading,
-    votedFor,
-    connected,
-    isDelegated,
-    votingNote,
-    currentEpoch,
-  } = useVotingInfo(defaultEpoch);
-
-  const isRoundPage = !!defaultEpoch;
-  const epochLink = epoch ? PagePath.TournamentRound.replace(':epoch', epoch.toString()) : '';
-  const currentEpochLink = currentEpoch
-    ? PagePath.TournamentRound.replace(':epoch', currentEpoch.toString())
-    : PagePath.Tournament;
-  const tradeLink = useMemo(() => {
-    const metadata = getMetadataFromValueView.optional(votedFor);
-    if (!metadata) {
-      return PagePath.Trade;
-    }
-
-    return PagePath.TradePair.replace(
-      ':primary',
-      metadata.symbol === 'USDC' ? 'UM' : metadata.symbol,
-    ).replace(':numeraire', 'USDC');
-  }, [votedFor]);
-
-  const votedComponent = useMemo(() => {
-    if (!isVoted) {
-      return null;
-    }
-    return (
-      <div className='flex items-center gap-4'>
-        <div className='size-10 text-success-light'>
-          <Check className='h-full w-full' />
-        </div>
-        <Text variant='small' color='text.secondary'>
-          You have already voted in this epoch. Come back next epoch to vote again.
-        </Text>
-        {votedFor && <ValueViewComponent showValue={false} valueView={votedFor} />}
+export const VotedFor = ({ votedFor }: { votedFor: ValueView }) => {
+  return (
+    <div className='flex items-center gap-4'>
+      <div className='size-10 text-success-light'>
+        <Check className='h-full w-full' />
       </div>
-    );
-  }, [isVoted, votedFor]);
+      <Text variant='small' color='text.secondary'>
+        You have already voted in this epoch. Come back next epoch to vote again.
+      </Text>
+      <ValueViewComponent showValue={false} valueView={votedFor} />
+    </div>
+  );
+};
+
+export const VotingInfo = observer(({ epoch }: VotingInfoProps) => {
+  const votingInfo = useVotingInfo(epoch);
+
+  const isRoundPage = !!epoch;
+  const epochLink = epoch ? PagePath.TournamentRound.replace(':epoch', epoch.toString()) : '';
 
   const [isVoteDialogueOpen, setIsVoteDialogOpen] = useState(false);
 
@@ -179,7 +49,7 @@ export const VotingInfo = observer(({ epoch: defaultEpoch }: VotingInfoProps) =>
     setIsVoteDialogOpen(false);
   };
 
-  if (isLoading) {
+  if (votingInfo.case === 'loading') {
     return (
       <div className='flex flex-col gap-8'>
         <div className='h-8 w-24'>
@@ -192,7 +62,7 @@ export const VotingInfo = observer(({ epoch: defaultEpoch }: VotingInfoProps) =>
     );
   }
 
-  if (!connected) {
+  if (votingInfo.case === 'not-connected') {
     return (
       <div className='flex flex-col gap-8'>
         <div className='flex items-center gap-4'>
@@ -221,12 +91,16 @@ export const VotingInfo = observer(({ epoch: defaultEpoch }: VotingInfoProps) =>
     );
   }
 
-  if (isRoundPage && isEnded) {
+  if (isRoundPage && votingInfo.case === 'ended') {
+    const currentEpoch = votingInfo.currentEpoch;
+    const currentEpochLink = currentEpoch
+      ? PagePath.TournamentRound.replace(':epoch', currentEpoch.toString())
+      : PagePath.Tournament;
     return (
       <div className='flex flex-col gap-8'>
         <div className='flex items-center gap-4'>
-          {isVoted ? (
-            votedComponent
+          {votingInfo.votedFor ? (
+            <VotedFor votedFor={votingInfo.votedFor} />
           ) : (
             <div className='flex items-center gap-4'>
               <div className='size-8 text-neutral-light'>
@@ -252,11 +126,18 @@ export const VotingInfo = observer(({ epoch: defaultEpoch }: VotingInfoProps) =>
     );
   }
 
-  if (isVoted) {
+  if (votingInfo.case === 'already-voted') {
+    const votedFor = votingInfo.votedFor;
+    const metadata = getMetadataFromValueView.optional(votedFor);
+    const tradeLink = metadata
+      ? PagePath.TradePair.replace(
+          ':primary',
+          metadata.symbol === 'USDC' ? 'UM' : metadata.symbol,
+        ).replace(':numeraire', 'USDC')
+      : PagePath.Trade;
     return (
       <div className='flex flex-col gap-8'>
-        {votedComponent}
-
+        <VotedFor votedFor={votingInfo.votedFor} />
         {!isRoundPage && (
           <div className='flex gap-2'>
             <div className='grow'>
@@ -277,7 +158,7 @@ export const VotingInfo = observer(({ epoch: defaultEpoch }: VotingInfoProps) =>
     );
   }
 
-  if (votingNote) {
+  if (votingInfo.case === 'can-vote') {
     return (
       <>
         <div className='flex flex-col gap-8'>
@@ -288,7 +169,7 @@ export const VotingInfo = observer(({ epoch: defaultEpoch }: VotingInfoProps) =>
             <Text variant='small' color='text.secondary'>
               You&#39;ve delegated UM and can now vote with your delUM in this epoch.
             </Text>
-            <ValueViewComponent valueView={votingNote} />
+            <ValueViewComponent valueView={votingInfo.power} />
           </div>
           <div className='flex w-full gap-2'>
             {!isRoundPage ? (
@@ -314,12 +195,16 @@ export const VotingInfo = observer(({ epoch: defaultEpoch }: VotingInfoProps) =>
           </div>
         </div>
 
-        <VoteDialogueSelector isOpen={isVoteDialogueOpen} onClose={closeVoteDialog} />
+        <VoteDialogueSelector
+          ability={votingInfo.ability}
+          isOpen={isVoteDialogueOpen}
+          onClose={closeVoteDialog}
+        />
       </>
     );
   }
 
-  if (isDelegated) {
+  if (votingInfo.case === 'delegated-after-start') {
     return (
       <div className='flex flex-col gap-8'>
         <div className='flex items-center gap-4'>

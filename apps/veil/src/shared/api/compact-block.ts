@@ -43,7 +43,7 @@ const startBlockHeightStream = async (transport: Transport, signal: AbortSignal)
 const lastRefetchedBlockHeights = new Map<string, number>();
 
 export const useRefetchOnNewBlock = (
-  queryKey: string,
+  queryKey: unknown,
   { refetch }: UseQueryResult,
   disabled?: boolean,
 ) => {
