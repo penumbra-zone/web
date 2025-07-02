@@ -25,9 +25,7 @@ export default function TransactionTable() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {summaries.data?.map(summary => (
-          <Row key={summary.hash} summary={summary} />
-        ))}
+        {summaries.data?.map(summary => <Row key={summary.hash} summary={summary} />)}
       </TableBody>
     </Table>
   );
