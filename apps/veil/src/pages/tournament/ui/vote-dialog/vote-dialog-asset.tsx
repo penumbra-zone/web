@@ -22,18 +22,21 @@ export const VoteAssetIcon = ({ asset }: { asset: MappedGauge }) => {
   );
 };
 
+export const formatPercentage = (portion: number): string => {
+  if (portion < 0.01) {
+    return '<1';
+  }
+  if (portion === 0) {
+    return '0';
+  }
+
+  return round({ value: portion * 100, decimals: 0 });
+};
+
 export const VoteAssetContent = ({ asset }: { asset: MappedGauge }) => {
   const isSecondary = asset.portion < VOTING_THRESHOLD;
 
-  const percentage = useMemo(() => {
-    if (asset.portion < 0.01) {
-      return '<1';
-    }
-    if (asset.portion === 0) {
-      return '0';
-    }
-    return round({ value: asset.portion * 100, decimals: 0 });
-  }, [asset]);
+  const percentage = useMemo(() => formatPercentage(asset.portion), [asset.portion]);
 
   return (
     <div className='ml-1 flex grow flex-col gap-1'>

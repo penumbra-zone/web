@@ -19,13 +19,23 @@ export const VotingAssetSelector = ({
   gauge,
   onSelect,
 }: VotingAssetSelectorProps) => {
+  const uniqueGauge = useMemo(() => {
+    const seen = new Set<string>();
+    return gauge.filter(g => {
+      if (seen.has(g.asset.base)) {
+        return false;
+      }
+      seen.add(g.asset.base);
+      return true;
+    });
+  }, [gauge]);
+
   const gaugeWithValue = useMemo(() => {
     if (!selectedAsset) {
-      return gauge;
+      return uniqueGauge;
     }
-
-    return [selectedAsset, ...gauge.filter(asset => asset.asset.base !== selectedAsset.asset.base)];
-  }, [selectedAsset, gauge]);
+    return [selectedAsset, ...uniqueGauge.filter(a => a.asset.base !== selectedAsset.asset.base)];
+  }, [selectedAsset, uniqueGauge]);
 
   return (
     <div className='flex flex-col gap-2'>
@@ -40,9 +50,9 @@ export const VotingAssetSelector = ({
           {loading && new Array(5).fill({}).map((_, index) => <LoadingVoteAsset key={index} />)}
 
           {!loading &&
-            gaugeWithValue.map(asset => (
+            gaugeWithValue.map((asset, idx) => (
               <VoteDialogAsset
-                key={asset.asset.base}
+                key={`${asset.asset.base}-${idx}`}
                 asset={asset}
                 onSelect={() => onSelect(asset)}
               />

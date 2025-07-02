@@ -162,20 +162,21 @@ export const SocialCardDialog = observer(
 
     const summaryData = summary?.[0];
     const latestReward = rewards.values().next().value as LqtDelegatorHistoryData | undefined;
+    const earnings = latestReward?.reward && Math.floor(latestReward.reward) / 10 ** exponent;
 
     const loading =
       loadingSummary || loadingRewards || loadingDelegatorSummary || stakingTokenLoading;
 
     useEffect(() => {
-      if (loading || (initialParams ?? !summaryData) || !latestReward || !delegatorSummary?.data) {
+      if (loading || (initialParams ?? !summaryData) || !latestReward) {
         return;
       }
 
       setInitialParams({
         epoch: String(epoch),
         rewarded: latestReward.reward > 0,
-        earnings: `${latestReward.reward}:UM`,
-        votingStreak: `${delegatorSummary.data.streak}:`,
+        earnings: `${Math.floor(latestReward.reward) / 10 ** exponent}:UM`,
+        votingStreak: `${delegatorSummary?.data?.streak ?? 1}:`,
         incentivePool: `${Math.floor(Number(summaryData.lp_rewards) + Number(summaryData.delegator_rewards)) / 10 ** exponent}:UM`,
         lpPool: `${Math.floor(summaryData.lp_rewards) / 10 ** exponent}:UM`,
         delegatorPool: `${Math.floor(summaryData.delegator_rewards) / 10 ** exponent}:UM`,
@@ -193,7 +194,7 @@ export const SocialCardDialog = observer(
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [dontShowAgain, setDontShowAgain] = useState(false);
 
-    const text = `Just won ${latestReward?.reward} UM from the @penumbrazone Liquidity Tournament
+    const text = `Just won ${earnings} UM from the @penumbrazone Liquidity Tournament
 Delegated UM. Voted. Earned. All without giving up privacy.
 ${currentEpochSummary?.[0]?.ends_in_s ? `Next round starts in ${formatTimeRemaining(currentEpochSummary[0].ends_in_s)}` : ''}`;
 

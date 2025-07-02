@@ -9,6 +9,7 @@ import {
 import { withdrawPositions } from '../api/withdraw-positions';
 import { closePositions } from '../api/close-positions';
 import { Dash } from './dash';
+import { fullyWithdrawn } from '@/shared/utils/position';
 
 export const ActionButton = observer(({ id, position }: { id: PositionId; position: Position }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -33,7 +34,7 @@ export const ActionButton = observer(({ id, position }: { id: PositionId; positi
         Close
       </Button>
     );
-  } else if (state?.state === PositionState_PositionStateEnum.CLOSED) {
+  } else if (!fullyWithdrawn(position)) {
     return (
       <Button disabled={isLoading} onClick={() => void withdraw()}>
         Withdraw

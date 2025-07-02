@@ -2,11 +2,11 @@ import cn from 'clsx';
 import { TableCell } from '@penumbra-zone/ui/TableCell';
 import { AssetIcon } from '@penumbra-zone/ui/AssetIcon';
 import { Text } from '@penumbra-zone/ui/Text';
-import { round } from '@penumbra-zone/types/round';
 import { pnum } from '@penumbra-zone/types/pnum';
 import type { MappedGauge } from '../../../server/previous-epochs';
 import { ProvideLiquidityButton } from '../../shared/provide-liquidity-button';
 import { VoteButton } from './vote-button';
+import { formatPercentage, VOTING_THRESHOLD } from '../../vote-dialog/vote-dialog-asset';
 
 export const TableRow = ({
   item,
@@ -41,8 +41,11 @@ export const TableRow = ({
                 style={{ width: `${item.portion * 100}%` }}
               />
             </div>
-            <Text technical color='text.secondary'>
-              {round({ value: item.portion * 100, decimals: 0 })}%
+            <Text
+              technical
+              color={item.portion < VOTING_THRESHOLD ? 'text.secondary' : 'text.primary'}
+            >
+              {formatPercentage(item.portion)}%
             </Text>
           </div>
         )}
