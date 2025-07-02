@@ -1,26 +1,8 @@
-// import { DexService, ViewService } from '@penumbra-zone/protobuf';
-// import { penumbra } from '@/shared/const/penumbra';
-// import { connectionStore } from '@/shared/model/connection';
-// import { useInfiniteQuery } from '@tanstack/react-query';
-// import {
-//   Position,
-//   PositionId,
-//   PositionState,
-//   PositionState_PositionStateEnum,
-// } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
-// import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
-// import { bech32mPositionId } from '@penumbra-zone/bech32m/plpid';
-// import { queryClient } from '@/shared/const/queryClient';
-// import { limitAsync } from '@/shared/utils/limit-async';
-// import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-
 import {
   TradingPair,
-  // PositionMetadata,
   PositionState,
   PositionId,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
-// import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { AddressIndex } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { UseQueryResult } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
@@ -64,6 +46,6 @@ export const useLps = (subaccount = 0): UseQueryResult<LpPositionBundleResponse[
 
   return {
     isLoading,
-    data: [],
-  };
+    data: undefined,
+  } as UseQueryResult<LpPositionBundleResponse['entries']>;
 };

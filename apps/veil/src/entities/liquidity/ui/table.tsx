@@ -4,6 +4,7 @@ import orderBy from 'lodash/orderBy';
 import { useMemo } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useSortableTableHeaders } from '@/pages/tournament/ui/sortable-table-header';
+import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { Density } from '@penumbra-zone/ui/Density';
 import { TableCell } from '@penumbra-zone/ui/TableCell';
 import { Text } from '@penumbra-zone/ui/Text';
