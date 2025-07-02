@@ -13,10 +13,12 @@ interface GroupedLiquidityRowProps {
 }
 
 export const GroupedLiquidityRow = ({ pair, lps }: GroupedLiquidityRowProps) => {
-  const { baseSymbol, quoteSymbol } = useParams<{
+  const params = useParams<{
     baseSymbol: string;
     quoteSymbol: string;
   }>();
+  const baseSymbol = params?.baseSymbol ?? '';
+  const quoteSymbol = params?.quoteSymbol ?? '';
   const [isExpanded, setIsExpanded] = useState(false);
   const toggleExpanded = () => setIsExpanded(!isExpanded);
 

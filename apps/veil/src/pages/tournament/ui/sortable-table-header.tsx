@@ -12,6 +12,7 @@ export interface SortableTableHeaderProps<KEY extends string = string> {
   direction: SortDirection;
   onSort: (arg_1: { key: KEY; direction: SortDirection }) => void;
   active?: boolean;
+  typography: 'tableHeadingMedium' | 'tableHeadingSmall';
 }
 
 export const SortableTableHeader = <KEY extends string = string>({
@@ -20,6 +21,7 @@ export const SortableTableHeader = <KEY extends string = string>({
   direction,
   onSort,
   active,
+  typography,
 }: SortableTableHeaderProps<KEY>) => {
   return (
     <TableCell heading>
@@ -35,7 +37,7 @@ export const SortableTableHeader = <KEY extends string = string>({
           });
         }}
       >
-        <Text tableHeadingMedium whitespace='nowrap'>
+        <Text whitespace='nowrap' {...{ [typography]: true }}>
           {label}
         </Text>
 
@@ -62,6 +64,7 @@ export type GetTableHeader<KEY extends string = string> = (key: KEY, label: stri
 export const useSortableTableHeaders = <KEY extends string = string>(
   key: KEY | '' = '',
   direction: SortDirection = 'desc',
+  typography: 'tableHeadingMedium' | 'tableHeadingSmall' = 'tableHeadingMedium',
 ) => {
   const [sortBy, setSortBy] = useState<{
     key: KEY | '';
@@ -80,10 +83,11 @@ export const useSortableTableHeaders = <KEY extends string = string>(
           direction={sortBy.direction}
           onSort={setSortBy}
           active={sortBy.key === key}
+          typography={typography}
         />
       );
     },
-    [sortBy],
+    [sortBy, typography],
   );
 
   return {

@@ -1,5 +1,5 @@
 import sample from 'lodash/sample';
-import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { ValueView, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { pnum } from '@penumbra-zone/types/pnum';
 
 export interface DisplayLP {
@@ -15,13 +15,7 @@ export interface DisplayLP {
   pnlPercentage: number;
 }
 
-export const getDisplayLPs = ({
-  usdcMetadata,
-  // positionBundles,
-}: {
-  usdcMetadata: Metadata;
-  // positionBundles: LpPositionBundleResponse[];
-}): DisplayLP[] => {
+export const getDisplayLPs = ({ usdcMetadata }: { usdcMetadata: Metadata }): DisplayLP[] => {
   const displayLPs = [];
   const exponent = usdcMetadata.denomUnits.find(x => x.denom === usdcMetadata.display)?.exponent;
   const statuses = ['In range', 'Out of range', 'Closed'];
@@ -31,7 +25,7 @@ export const getDisplayLPs = ({
       date: '06-20 09:12:43',
       directedPair: i % 2 === 0 ? 'BTC/USDC' : 'UM/USDC',
       liquidityShape: i % 2 === 0 ? 'Locally Stable' : 'Volatile',
-      status: sample(statuses),
+      status: sample(statuses) ?? 'Closed',
       minPrice: pnum(0.45, exponent).toValueView(usdcMetadata),
       maxPrice: pnum(0.55, exponent).toValueView(usdcMetadata),
       currentValue: pnum(220.0, exponent).toValueView(usdcMetadata),

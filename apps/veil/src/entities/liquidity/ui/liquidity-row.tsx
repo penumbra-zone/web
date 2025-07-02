@@ -1,8 +1,9 @@
+import { ChevronUp, ChevronDown, ArrowBigDownIcon, X } from 'lucide-react';
 import { TableCell } from '@penumbra-zone/ui/TableCell';
 import { Text } from '@penumbra-zone/ui/Text';
 import { Button } from '@penumbra-zone/ui/Button';
-import { ChevronUp, ChevronDown, ArrowBigDownIcon, X } from 'lucide-react';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
+import { ThemeColor } from '@penumbra-zone/ui/theme';
 import { DisplayLP } from '../model/get-display-lps';
 import { useState } from 'react';
 
@@ -11,10 +12,14 @@ interface LiquidityRowProps {
   isIndented?: boolean;
 }
 
-const statusColorMapping = {
+const statusColorMapping: Record<string, ThemeColor> = {
   'In range': 'success.light',
   'Out of range': 'destructive.light',
   Closed: 'text.secondary',
+};
+
+const getStatusColor = (status: string): ThemeColor => {
+  return statusColorMapping[status] ?? 'text.secondary';
 };
 
 export const LiquidityRow = ({ lp }: LiquidityRowProps) => {
@@ -36,7 +41,7 @@ export const LiquidityRow = ({ lp }: LiquidityRowProps) => {
         </Text>
       </TableCell>
       <TableCell cell>
-        <Text xs whitespace='nowrap' color={statusColorMapping[lp.status]}>
+        <Text xs whitespace='nowrap' color={getStatusColor(lp.status)}>
           {lp.status}
         </Text>
       </TableCell>
