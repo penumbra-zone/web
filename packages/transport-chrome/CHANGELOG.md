@@ -13,7 +13,6 @@
 ### Major Changes
 
 - de2fe5c: significant updates to sessions:
-
   - improvement of session-client
   - session-client can now be terminated by static method
   - improvement of session-manager
@@ -24,7 +23,6 @@
 ### Minor Changes
 
 - de2fe5c: Transport session reliability improvements.
-
   - No external API change.
   - Remove singleton restriction of `CRSessionClient`.
   - Don't retain port reference to respect object transfer rules.

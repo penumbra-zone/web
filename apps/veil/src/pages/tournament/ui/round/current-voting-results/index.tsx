@@ -6,17 +6,16 @@ import { Text } from '@penumbra-zone/ui/Text';
 import { TableCell } from '@penumbra-zone/ui/TableCell';
 import { Density } from '@penumbra-zone/ui/Density';
 import { Pagination } from '@penumbra-zone/ui/Pagination';
-import { connectionStore } from '@/shared/model/connection';
 import { LoadingRow } from '@/shared/ui/loading-row';
 import { useSortableTableHeaders } from '../../sortable-table-header';
 import type { EpochResultsSortKey } from '../../../server/epoch-results';
 import type { MappedGauge } from '../../../server/previous-epochs';
 import { useEpochResults } from '../../../api/use-epoch-results';
 import { VOTING_THRESHOLD } from '../../vote-dialog/vote-dialog-asset';
-import { useVotingInfo } from '../../voting-info.tsx';
 import { TableRow } from './table-row';
 import { useStakingTokenMetadata } from '@/shared/api/registry.tsx';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
+import { useVotingInfo } from '@/pages/tournament/api/use-voting-info';
 
 const BASE_LIMIT = 10;
 
@@ -46,7 +45,6 @@ export const CurrentVotingResults = observer(({ epoch }: CurrentVotingResultsPro
   const { data: stakingToken } = useStakingTokenMetadata();
   const exponent = getDisplayDenomExponent.optional(stakingToken) ?? 6;
 
-  const { connected } = connectionStore;
   const { data, isLoading } = useEpochResults('epoch-results-round', {
     epoch,
     limit,
@@ -54,14 +52,13 @@ export const CurrentVotingResults = observer(({ epoch }: CurrentVotingResultsPro
     sortKey: sortBy.key as EpochResultsSortKey,
     sortDirection: sortBy.direction,
   });
-
-  const { isVoted, isEnded, votingNote } = useVotingInfo(epoch);
+  const votingInfo = useVotingInfo(epoch);
 
   /* A user can vote if they:
    * - have enough delUM
    * - epoch hasn't ended yet
    * - user hasn't voted already for this epoch */
-  const canVote = connected && !isEnded && !!votingNote && !isVoted;
+  const canVote = votingInfo.case === 'can-vote';
   const tableKey = canVote ? 'canVote' : 'default';
   const total = data?.total ?? 0;
 
@@ -114,7 +111,7 @@ export const CurrentVotingResults = observer(({ epoch }: CurrentVotingResultsPro
                   key={item.asset.base}
                   item={item}
                   loading={false}
-                  canVote={canVote}
+                  votingInfo={votingInfo}
                   exponent={exponent}
                 />
               ))}
@@ -136,7 +133,7 @@ export const CurrentVotingResults = observer(({ epoch }: CurrentVotingResultsPro
                   key={item.asset.base}
                   item={item}
                   loading={false}
-                  canVote={canVote}
+                  votingInfo={votingInfo}
                   exponent={exponent}
                 />
               ))}
