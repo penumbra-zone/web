@@ -29,6 +29,7 @@
     "@penumbra-zone/ui-deprecated": "workspace:*",
     "@penumbra-zone/zquery": "workspace:*",
     "@skip-go/widget": "^3.4.1",
+    "@tailwindcss/vite": "^4.1.10",
     "@tanstack/react-query": "5.62.7",
     "bech32": "^2.0.0",
     "bignumber.js": "^9.1.2",
