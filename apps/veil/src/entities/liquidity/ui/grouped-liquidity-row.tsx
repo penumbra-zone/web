@@ -84,7 +84,7 @@ export const GroupedLiquidityRow = ({ pair, lps }: GroupedLiquidityRowProps) => 
         <TableCell>&nbsp;</TableCell>
         <TableCell justify='end'>
           <Button iconOnly icon={isExpanded ? ChevronUp : ChevronDown} onClick={toggleExpanded}>
-            &nbsp;
+            {isExpanded ? 'Collapse' : 'Expand'}
           </Button>
         </TableCell>
       </div>

@@ -81,7 +81,7 @@ export const LiquidityRow = ({ lp }: LiquidityRowProps) => {
               priority='secondary'
               onClick={toggleExpanded}
             >
-              &nbsp;
+              Download
             </Button>
           ) : (
             <Button
@@ -91,11 +91,11 @@ export const LiquidityRow = ({ lp }: LiquidityRowProps) => {
               priority='secondary'
               onClick={toggleExpanded}
             >
-              &nbsp;
+              Close
             </Button>
           )}
           <Button iconOnly icon={isExpanded ? ChevronUp : ChevronDown} onClick={toggleExpanded}>
-            &nbsp;
+            {isExpanded ? 'Collapse' : 'Expand'}
           </Button>
         </TableCell>
       </div>

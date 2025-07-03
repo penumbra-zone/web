@@ -37,7 +37,7 @@ export const SortableTableHeader = <KEY extends string = string>({
           });
         }}
       >
-        <Text whitespace='nowrap' {...{ [typography]: true }}>
+        <Text whitespace='nowrap' variant={typography}>
           {label}
         </Text>
 
