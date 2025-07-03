@@ -43,11 +43,7 @@ export const VoteDialogueSelector = observer(
     const { epoch, isLoading: epochLoading } = useCurrentEpoch();
 
     const { data: notes } = useLQTNotes(subaccount, epoch);
-    const {
-      data: assetsData,
-      isLoading,
-      assetGauges,
-    } = useEpochResults(
+    const { isLoading, assetGauges } = useEpochResults(
       'epoch-results-vote-dialog',
       {
         epoch,
@@ -57,16 +53,6 @@ export const VoteDialogueSelector = observer(
       !isOpen && epochLoading,
       searchQuery,
     );
-
-    // Collect an array of minium 5 items. If there are more than 5 voted assets, return all of them.
-    // If less than 5, firstly return all voted assets, and then fill the rest with non-voted assets.
-    const assets = assetsData?.data ?? [];
-    const selectorAssets = [
-      ...assets,
-      ...((assets.length || 5) < 5
-        ? assetGauges.slice(assets.length, assets.length + 5 - assets.length)
-        : []),
-    ];
 
     const handleVoteSubmit = async () => {
       if (!selectedAsset) {
@@ -184,7 +170,7 @@ export const VoteDialogueSelector = observer(
               <VotingAssetSelector
                 selectedAsset={selectedAsset}
                 loading={isLoading}
-                gauge={selectorAssets}
+                gauge={assetGauges}
                 onSelect={onSearchSelect}
               />
             )}

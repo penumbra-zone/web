@@ -54,19 +54,21 @@ export const useEpochResults = (
 
   // adapts filtered assets to the gauges
   const assetGauges = useMemo<MappedGauge[]>(() => {
-    return filteredAssets.map(asset => {
-      const fromGauge = gaugeMapByDenom.get(asset.base);
-      if (fromGauge) {
-        return fromGauge;
-      }
+    return filteredAssets
+      .map(asset => {
+        const fromGauge = gaugeMapByDenom.get(asset.base);
+        if (fromGauge) {
+          return fromGauge;
+        }
 
-      return {
-        asset,
-        epoch: 0,
-        votes: 0,
-        portion: 0,
-      };
-    });
+        return {
+          asset,
+          epoch: 0,
+          votes: 0,
+          portion: 0,
+        };
+      })
+      .sort((a, b) => b.votes - a.votes);
   }, [filteredAssets, gaugeMapByDenom]);
 
   return {
