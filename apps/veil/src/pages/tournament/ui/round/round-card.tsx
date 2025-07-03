@@ -1,9 +1,11 @@
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
+import { addSeconds, format } from 'date-fns';
 import { Skeleton } from '@penumbra-zone/ui/Skeleton';
 import { Icon } from '@penumbra-zone/ui/Icon';
 import { Text } from '@penumbra-zone/ui/Text';
+import { Tooltip } from '@penumbra-zone/ui/Tooltip';
 import { PagePath } from '@/shared/const/pages';
 import { useTournamentSummary } from '../../api/use-tournament-summary';
 import { useCurrentEpoch } from '../../api/use-current-epoch';
@@ -11,8 +13,7 @@ import { IncentivePool } from '../landing-card/incentive-pool';
 import { GradientCard } from '../shared/gradient-card';
 import { VotingInfo } from '../voting-info';
 import { formatTimeRemaining } from '@/shared/utils/format-time';
-import { useEffect, useRef } from 'react';
-import { LqtSummary } from '@/shared/database/schema';
+import { useRef } from 'react';
 import {
   SocialCardDialog,
   useTournamentSocialCard,
@@ -26,25 +27,24 @@ export interface RoundCardProps {
 }
 
 export const RoundCard = observer(({ epoch }: RoundCardProps) => {
-  const { epoch: currentEpoch, isLoading: epochLoading } = useCurrentEpoch();
-  const ended = !!currentEpoch && !!epoch && epoch !== currentEpoch;
-  const initialDataRef = useRef<LqtSummary[] | null>(null);
+  // prevents the card from jumping to a newer epoch
+  const initialEpoch = useRef(epoch);
 
-  const { data: currentSummary, isLoading } = useTournamentSummary(
+  const { epoch: currentEpoch } = useCurrentEpoch();
+  const ended = !!currentEpoch && !!epoch && epoch !== currentEpoch;
+
+  const { data: summary, isLoading } = useTournamentSummary(
     {
+      epochs: [initialEpoch.current],
       limit: 1,
       page: 1,
     },
-    epochLoading || ended,
+    ended,
   );
 
-  useEffect(() => {
-    if (!isLoading && currentSummary && !initialDataRef.current) {
-      initialDataRef.current = currentSummary;
-    }
-  }, [isLoading, currentSummary]);
-
-  const summary = ended && initialDataRef.current ? initialDataRef.current : currentSummary;
+  const endingTime = summary?.[0]?.ends_in_s
+    ? format(addSeconds(new Date(), summary[0].ends_in_s), 'MMM d, yyyy, hh:mm aa OOO')
+    : undefined;
 
   const { subaccount } = connectionStore;
   const { data: rewards } = usePersonalRewards(subaccount, currentEpoch, false, 1, 1);
@@ -77,9 +77,11 @@ export const RoundCard = observer(({ epoch }: RoundCardProps) => {
               )}
 
               {!ended && summary?.[0]?.ends_in_s && (
-                <Text technical color='text.primary'>
-                  Ends in {formatTimeRemaining(summary[0].ends_in_s)}
-                </Text>
+                <Tooltip message={endingTime}>
+                  <Text technical color='text.primary'>
+                    Ends in {formatTimeRemaining(summary[0].ends_in_s)}
+                  </Text>
+                </Tooltip>
               )}
             </div>
             <div className='flex gap-6'>
