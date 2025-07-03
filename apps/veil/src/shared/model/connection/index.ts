@@ -14,6 +14,7 @@ const SUBACCOUNT_LS_KEY = 'veil-connection-subaccount';
 
 class ConnectionStateStore {
   connected = false;
+  connectedLoading = true;
   manifest: PenumbraManifest | undefined;
 
   /** Index of the selected subaccount */
@@ -59,6 +60,7 @@ class ConnectionStateStore {
       await this.checkWrongChain();
       this.setPreferredSubaccount();
     } catch (error) {
+      console.warn(error);
       /* no-op */
     }
   }
@@ -121,16 +123,17 @@ class ConnectionStateStore {
     }
   }
 
-  setup() {
+  async setup() {
     this.setManifest(penumbra.manifest);
-
-    // If Prax is connected on page load, reconnect to ensure the connection is still active
-    void this.reconnect();
 
     penumbra.onConnectionStateChange(event => {
       this.setManifest(penumbra.manifest);
       this.setConnected(event.state === PenumbraState.Connected);
     });
+
+    // If Prax is connected on page load, reconnect to ensure the connection is still active
+    await this.reconnect();
+    this.connectedLoading = false;
   }
 }
 

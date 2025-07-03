@@ -125,7 +125,7 @@ async function query(
 export function useVotingInfo(epoch?: number): VotingInfo {
   const getMetadata = useGetMetadata();
   const { data: stakingTokenMetadata } = useStakingTokenMetadata();
-  const { connected, subaccount: account } = connectionStore;
+  const { connectedLoading, connected, subaccount: account } = connectionStore;
   const { epoch: currentEpoch, isLoading: epochLoading } = useCurrentEpoch();
   const theEpoch = epoch ?? currentEpoch;
   const votingQuery = useQuery({
@@ -140,10 +140,11 @@ export function useVotingInfo(epoch?: number): VotingInfo {
     enabled: connected && theEpoch !== undefined,
   });
   useRefetchOnNewBlock(['voting-info', theEpoch, account], votingQuery, !connected || !theEpoch);
-  if (!connected) {
+  if (!connectedLoading && !connected) {
     return { case: 'not-connected' };
   }
   if (
+    connectedLoading ||
     theEpoch === undefined ||
     currentEpoch === undefined ||
     epochLoading ||
