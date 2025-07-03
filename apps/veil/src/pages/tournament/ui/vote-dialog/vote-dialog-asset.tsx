@@ -14,9 +14,8 @@ export interface VoteDialogAssetProps {
 }
 
 export const VoteAssetIcon = ({ asset }: { asset: MappedGauge }) => {
-  const isSecondary = asset.portion < VOTING_THRESHOLD;
   return (
-    <div className={cn('min-w-8', isSecondary && 'grayscale')}>
+    <div className={cn('min-w-8')}>
       <AssetIcon size='lg' metadata={asset.asset} />
     </div>
   );

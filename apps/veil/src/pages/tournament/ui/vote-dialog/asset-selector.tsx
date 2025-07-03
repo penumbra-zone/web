@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
+import { Skeleton } from '@penumbra-zone/ui/Skeleton';
 import { Dialog } from '@penumbra-zone/ui/Dialog';
 import { Text } from '@penumbra-zone/ui/Text';
 import type { MappedGauge } from '../../server/previous-epochs';
 import { LoadingVoteAsset } from './loading-vote-asset';
-import { VoteDialogAsset } from './vote-dialog-asset';
+import { VoteDialogAsset, VOTING_THRESHOLD } from './vote-dialog-asset';
 import { VotingDialogNoResults } from './no-results';
 
 export interface VotingAssetSelectorProps {
@@ -19,46 +20,106 @@ export const VotingAssetSelector = ({
   gauge,
   onSelect,
 }: VotingAssetSelectorProps) => {
-  const uniqueGauge = useMemo(() => {
-    const seen = new Set<string>();
-    return gauge.filter(g => {
-      if (seen.has(g.asset.base)) {
-        return false;
-      }
-      seen.add(g.asset.base);
-      return true;
-    });
-  }, [gauge]);
-
+  // split gauges into two groups based on the voting threshold, remove duplicates
   const gaugeWithValue = useMemo(() => {
-    if (!selectedAsset) {
-      return uniqueGauge;
-    }
-    return [selectedAsset, ...uniqueGauge.filter(a => a.asset.base !== selectedAsset.asset.base)];
-  }, [selectedAsset, uniqueGauge]);
+    const seen = new Set<string>();
+    const withValue = selectedAsset ? [selectedAsset, ...gauge] : gauge;
 
-  return (
-    <div className='flex flex-col gap-2'>
-      <Text small color='text.secondary'>
-        Select Asset
-      </Text>
+    return withValue.reduce<{ above: MappedGauge[]; below: MappedGauge[] }>(
+      (accum, current) => {
+        if (seen.has(current.asset.base)) {
+          return accum;
+        }
 
-      {!loading && !gaugeWithValue.length && <VotingDialogNoResults />}
+        seen.add(current.asset.base);
+        if (current.portion >= VOTING_THRESHOLD) {
+          accum.above.push(current);
+        } else {
+          accum.below.push(current);
+        }
 
-      <Dialog.RadioGroup value={selectedAsset?.asset.base}>
+        return accum;
+      },
+      { above: [], below: [] },
+    );
+  }, [selectedAsset, gauge]);
+
+  if (loading) {
+    return (
+      <div className='flex flex-col gap-2'>
+        <div className='h-4 w-20'>
+          <Skeleton />
+        </div>
         <div className='flex flex-col gap-1'>
-          {loading && new Array(5).fill({}).map((_, index) => <LoadingVoteAsset key={index} />)}
+          {new Array(5).fill({}).map((_, index) => (
+            <LoadingVoteAsset key={index} />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
-          {!loading &&
-            gaugeWithValue.map((asset, idx) => (
+  if (!gaugeWithValue.above.length) {
+    return (
+      <div className='flex flex-col gap-2'>
+        <Text small color='text.secondary'>
+          Select Asset
+        </Text>
+
+        {!gaugeWithValue.below.length && <VotingDialogNoResults />}
+
+        <Dialog.RadioGroup value={selectedAsset?.asset.base}>
+          <div className='flex flex-col gap-1'>
+            {gaugeWithValue.below.slice(0, 10).map((asset, idx) => (
               <VoteDialogAsset
                 key={`${asset.asset.base}-${idx}`}
                 asset={asset}
                 onSelect={() => onSelect(asset)}
               />
             ))}
-        </div>
-      </Dialog.RadioGroup>
+          </div>
+        </Dialog.RadioGroup>
+      </div>
+    );
+  }
+
+  return (
+    <div className='flex flex-col gap-4'>
+      <div className='flex flex-col gap-2'>
+        <Text small color='text.secondary'>
+          Above threshold (≥5%)
+        </Text>
+
+        <Dialog.RadioGroup value={selectedAsset?.asset.base}>
+          <div className='flex flex-col gap-1'>
+            {gaugeWithValue.above.map((asset, idx) => (
+              <VoteDialogAsset
+                key={`${asset.asset.base}-${idx}`}
+                asset={asset}
+                onSelect={() => onSelect(asset)}
+              />
+            ))}
+          </div>
+        </Dialog.RadioGroup>
+      </div>
+
+      <div className='flex flex-col gap-2'>
+        <Text small color='text.secondary'>
+          Below threshold ({'<'}5%)
+        </Text>
+
+        <Dialog.RadioGroup value={selectedAsset?.asset.base}>
+          <div className='flex flex-col gap-1'>
+            {gaugeWithValue.below.slice(0, 10).map((asset, idx) => (
+              <VoteDialogAsset
+                key={`${asset.asset.base}-${idx}`}
+                asset={asset}
+                onSelect={() => onSelect(asset)}
+              />
+            ))}
+          </div>
+        </Dialog.RadioGroup>
+      </div>
     </div>
   );
 };
