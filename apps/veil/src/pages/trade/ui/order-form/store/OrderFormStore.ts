@@ -429,7 +429,8 @@ export const useOrderFormStore = () => {
 
   useEffect(() => {
     if (marketPrice) {
-      orderFormStore.setMarketPrice(marketPrice);
+      // orderFormStore.setMarketPrice(marketPrice);
+      orderFormStore.setMarketPrice(0.000003);
     }
   }, [marketPrice]);
 
