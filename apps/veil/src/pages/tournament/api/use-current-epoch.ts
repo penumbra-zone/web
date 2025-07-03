@@ -4,7 +4,7 @@ import { useTournamentSummary } from './use-tournament-summary';
 export const useCurrentEpoch = (onChange?: (newEpoch: number) => void) => {
   const {
     data: summary,
-    isLoading,
+    isPending: isLoading,
     isFetched,
     status,
   } = useTournamentSummary({

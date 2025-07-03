@@ -5,3 +5,4 @@ import './font-sizes.css';
 import './globals.css';
 
 export { theme, type Color, type ColorVariant, type TextColorVariant } from './theme';
+export { type ThemeColor } from '../utils/color';

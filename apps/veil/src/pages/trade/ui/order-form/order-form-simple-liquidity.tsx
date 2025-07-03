@@ -22,7 +22,7 @@ import { LiquidityShape } from './liquidity-shape';
 export const SimpleLiquidityOrderForm = observer(
   ({ parentStore }: { parentStore: OrderFormStore }) => {
     const { connected } = connectionStore;
-    const { defaultDecimals, simpleLPForm: store } = parentStore;
+    const { simpleLPForm: store } = parentStore;
     const isLQTEligible = isLqtEligible(store.baseAsset?.metadata, store.quoteAsset?.metadata);
 
     const priceSpread = DEFAULT_PRICE_SPREAD;
@@ -68,7 +68,6 @@ export const SimpleLiquidityOrderForm = observer(
                 typography='large'
                 blurOnWheel
                 value={store.baseInput}
-                maxDecimals={store.quoteAsset?.exponent ?? defaultDecimals}
                 onChange={store.setBaseInput}
                 endAdornment={
                   store.baseAsset?.symbol && (
@@ -114,7 +113,6 @@ export const SimpleLiquidityOrderForm = observer(
                 typography='large'
                 blurOnWheel
                 value={store.quoteInput}
-                maxDecimals={store.quoteAsset?.exponent ?? defaultDecimals}
                 onChange={store.setQuoteInput}
                 endAdornment={
                   store.quoteAsset?.symbol && (

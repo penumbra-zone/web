@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { Button } from '@penumbra-zone/ui/Button';
 import { MappedGauge } from '../../../server/previous-epochs';
 import { VoteDialogueSelector } from '../../vote-dialog';
+import { VotingAbility } from '@/pages/tournament/api/use-voting-info';
 
 export interface VoteButtonProps {
   value: MappedGauge;
+  ability: VotingAbility;
 }
 
-export const VoteButton = ({ value }: VoteButtonProps) => {
+export const VoteButton = ({ value, ability }: VoteButtonProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const open = () => {
@@ -24,7 +26,12 @@ export const VoteButton = ({ value }: VoteButtonProps) => {
         Vote
       </Button>
 
-      <VoteDialogueSelector defaultValue={value} isOpen={isOpen} onClose={close} />
+      <VoteDialogueSelector
+        ability={ability}
+        defaultValue={value}
+        isOpen={isOpen}
+        onClose={close}
+      />
     </>
   );
 };
