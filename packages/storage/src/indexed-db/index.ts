@@ -785,15 +785,22 @@ export class IndexedDb implements IndexedDbInterface {
     });
   }
 
-  async *getPositionsByStrategyStream(subaccount: AddressIndex, strategy: number) {
+  async *getPositionsByStrategyStream(subaccount: AddressIndex, positionMetadata: PositionMetadata, positionState?: PositionState, tradingPair?: TradingPair) {
     yield* new ReadableStream({
       start: async cont => {
         const store = this.db.transaction('POSITIONS').store;
-        let cursor = await store.index('strategy').openCursor(strategy);
+        let cursor = await store.index('strategy').openCursor(positionMetadata.strategy);
 
         while (cursor) {
           const record = cursor.value as PositionRecord;
-          if (record.subaccount && subaccount.equals(AddressIndex.fromJson(record.subaccount))) {
+          const position = Position.fromJson(cursor.value.position);
+          if (
+            (!positionState || positionState.equals(position.state)) &&
+            (!tradingPair || tradingPair.equals(position.phi?.pair)) &&
+            (!subaccount ||
+              (cursor.value.subaccount &&
+                subaccount.equals(AddressIndex.fromJson(cursor.value.subaccount))))
+          ) {
             cont.enqueue(record);
           }
           cursor = await cursor.continue();

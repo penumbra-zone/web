@@ -231,6 +231,8 @@ export interface IndexedDbInterface {
     },
     void
   >;
+
+  getPositionsByStrategyStream(subaccount: AddressIndex, positionMetadata: PositionMetadata, positionState?: PositionState, tradingPair?: TradingPair): AsyncGenerator<PositionRecord, void>;
 }
 
 export interface PenumbraDb extends DBSchema {
