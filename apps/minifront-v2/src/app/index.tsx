@@ -8,6 +8,7 @@ import { router } from './router';
 import { StoreProvider, useRootStore } from '../shared/stores/store-context';
 
 import '@penumbra-zone/ui/style.css';
+import '@penumbra-zone/ui/theme.css';
 import './global.css';
 
 // Component to initialize stores
@@ -34,7 +35,7 @@ const Main = () => {
     <StoreProvider>
       <TooltipProvider delayDuration={0}>
         <StoreInitializer>
-          <main className='z-0 py-4'>
+          <main className='z-0'>
             <RouterProvider router={router} />
           </main>
           <div className='absolute bottom-0 right-0 z-10'>
