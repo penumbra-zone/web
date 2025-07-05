@@ -27,18 +27,20 @@ This document describes the ephemeral deployment system for Veil pull requests u
 ### Repository Configuration
 
 1. **GitHub Secrets Required**:
+
    - `FLY_API_TOKEN`: Authentication token for Fly.io API
    - `PENUMBRA_INDEXER_ENDPOINT`: PostgreSQL connection string
    - `PENUMBRA_INDEXER_CA_CERT`: Database certificate content
 
 2. **Fly.io Account Setup**:
+
    ```bash
    # Install Fly CLI
    curl -L https://fly.io/install.sh | sh
-   
+
    # Authenticate
    fly auth login
-   
+
    # Create API token
    fly tokens create deploy-token
    ```
@@ -73,6 +75,7 @@ fly apps destroy veil-pr-123 --yes
 ### Environment Variables
 
 Production configuration from `prod.sh`:
+
 - `PENUMBRA_GRPC_ENDPOINT`: Remote node endpoint
 - `PENUMBRA_INDEXER_ENDPOINT`: Database connection (set via secrets)
 - `PENUMBRA_INDEXER_CA_CERT`: SSL certificate (set via secrets)
@@ -97,11 +100,13 @@ Production configuration from `prod.sh`:
 ### Common Issues
 
 1. **Deployment Fails**
+
    - Verify GitHub secrets are correctly set
    - Check Fly.io API token validity
    - Review build logs for compilation errors
 
 2. **Application Not Accessible**
+
    - Confirm deployment completed successfully
    - Check Fly.io application logs: `fly logs --app veil-pr-{number}`
    - Verify health check endpoint responds

@@ -1,6 +1,4 @@
-# Fly.io application configuration for Veil PR deployments
-
-app = "veil-pr"
+app = "veil-ci"
 primary_region = "iad"
 
 [build]
