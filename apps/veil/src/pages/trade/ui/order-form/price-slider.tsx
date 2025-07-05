@@ -167,6 +167,7 @@ const ValueInput = ({
   maxWidth,
   elevate,
   textsXPosRef,
+  exponent,
 }: {
   x: number | undefined;
   i: number;
@@ -174,6 +175,7 @@ const ValueInput = ({
   maxWidth: number;
   elevate: boolean;
   textsXPosRef: [[number, number], [number, number]];
+  exponent: number | undefined;
 }) => {
   const textRef = useRef<HTMLDivElement>(null);
   const textWidth = useWidth(textRef, [value]);
@@ -204,7 +206,7 @@ const ValueInput = ({
       `}
       style={{ left }}
     >
-      {round({ value, decimals: 6 })}
+      {round({ value, decimals: exponent ?? 6, exponentialNotation: false })}
     </div>
   );
 };
@@ -316,6 +318,7 @@ export const PriceSlider = ({
                       maxWidth={width}
                       value={value}
                       elevate={elevate}
+                      exponent={quoteAsset?.exponent}
                     />
                   </React.Fragment>
                 );
