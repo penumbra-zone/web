@@ -14,6 +14,7 @@ import { PortfolioPositionTabs } from './ui/position-tabs';
 import { AssetBars } from './ui/asset-bars';
 import { useUnifiedAssets } from '@/pages/portfolio/api/use-unified-assets';
 import { PenumbraWaves } from '@/pages/explore/ui/waves.tsx';
+import { ShieldingTicker } from '@/widgets/shielding-ticker';
 
 interface PortfolioPageProps {
   isMobile: boolean;
@@ -82,6 +83,7 @@ const DesktopPortfolioPage = observer(() => {
 
       <AssetsTable />
       <PortfolioPositionTabs />
+      <ShieldingTicker />
     </div>
   );
 });
