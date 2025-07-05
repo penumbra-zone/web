@@ -1,5 +1,26 @@
 # minifront-v2
 
+## 7.1.0
+
+### Minor Changes
+
+- f529714: Completing the tailwind-v4 ugprade within minifront-v2. Previous in-complete upgrade broke the app and required minor adaptions.
+- d3b1d78: feat: establish minifront-v2 app with Transactions UI and Transfer Page
+
+### Patch Changes
+
+- Updated dependencies [ad72bd1]
+- Updated dependencies [82700e9]
+- Updated dependencies [54543d9]
+- Updated dependencies [23d578b]
+- Updated dependencies [9658941]
+- Updated dependencies [14a8ccd]
+- Updated dependencies [a42b5c2]
+- Updated dependencies [d3b1d78]
+- Updated dependencies [044daa9]
+  - @penumbra-zone/ui@16.0.0
+  - @penumbra-zone/ui-deprecated@21.1.0
+
 ## 7.0.3
 
 ### Patch Changes
