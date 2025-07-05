@@ -6,7 +6,7 @@ primary_region = "iad"
 
 [env]
   NODE_ENV = "production"
-  PENUMBRA_GRPC_ENDPOINT = "https://penumbra.crouton.digital"
+  PENUMBRA_GRPC_ENDPOINT = "https://penumbra.crouton.digital/"
   PENUMBRA_CHAIN_ID = "penumbra-1"
 
 [http_service]
