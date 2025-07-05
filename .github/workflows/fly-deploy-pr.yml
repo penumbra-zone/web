@@ -10,7 +10,6 @@ jobs:
       github.event.issue.pull_request && 
       github.event.comment.body == '/deploy'
     runs-on: ubuntu-latest
-    
     steps:
       - name: Get PR details
         id: pr
@@ -70,18 +69,18 @@ jobs:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
         run: |
           cd apps/veil
-          
+
           # Create fly app if it doesn't exist
           if ! flyctl apps list | grep -q "${{ steps.app_name.outputs.name }}"; then
             flyctl apps create "${{ steps.app_name.outputs.name }}" --org personal
           fi
-          
+
           # Set secrets
           echo "${{ secrets.PENUMBRA_INDEXER_CA_CERT }}" | flyctl secrets set PENUMBRA_INDEXER_CA_CERT --app "${{ steps.app_name.outputs.name }}" --stdin
-          
+
           # Set environment variable for database connection
           flyctl secrets set PENUMBRA_INDEXER_ENDPOINT="${{ secrets.PENUMBRA_INDEXER_ENDPOINT }}" --app "${{ steps.app_name.outputs.name }}"
-          
+
           # Deploy with custom build args
           flyctl deploy --app "${{ steps.app_name.outputs.name }}" \
             --build-arg BASE_URL="https://${{ steps.app_name.outputs.name }}.fly.dev" \
@@ -94,16 +93,16 @@ jobs:
           script: |
             const url = `https://${{ steps.app_name.outputs.name }}.fly.dev`;
             const comment = `### Deployment Successful
-            
+
             Application deployed to: ${url}
-            
+
             This deployment will be automatically removed:
             - When this PR is merged or closed
             - After 12 hours
-            
+
             Deployed by: @${context.payload.comment.user.login}
             Deployment time: ${new Date().toISOString()}`;
-            
+
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,

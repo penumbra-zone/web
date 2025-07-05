@@ -11,7 +11,7 @@ jobs:
   cleanup-on-close:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Set up Fly.io
         uses: superfly/flyctl-actions/setup-flyctl@master
@@ -21,7 +21,7 @@ jobs:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
         run: |
           APP_NAME="veil-pr-${{ github.event.pull_request.number }}"
-          
+
           # Check if app exists before attempting deletion
           if flyctl apps list | grep -q "$APP_NAME"; then
             echo "Deleting app: $APP_NAME"
@@ -35,12 +35,12 @@ jobs:
         with:
           script: |
             const comment = `### Deployment Cleaned Up
-            
+
             The Fly.io deployment for this PR has been removed.
-            
+
             Reason: PR closed
             Cleanup time: ${new Date().toISOString()}`;
-            
+
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -51,7 +51,7 @@ jobs:
   cleanup-scheduled:
     if: github.event_name == 'schedule'
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Set up Fly.io
         uses: superfly/flyctl-actions/setup-flyctl@master
@@ -63,10 +63,10 @@ jobs:
         run: |
           # Get all veil-pr-* apps
           APPS=$(flyctl apps list --json | jq -r '.[] | select(.Name | startswith("veil-pr-")) | .Name')
-          
+
           CURRENT_TIME=$(date +%s)
           TWELVE_HOURS=$((12 * 60 * 60))
-          
+
           for APP in $APPS; do
             echo "Checking app: $APP"
             
