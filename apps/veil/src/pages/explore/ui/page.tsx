@@ -1,25 +1,16 @@
-import { ExploreStats } from './stats';
-import { ExplorePairs } from './pairs';
-import { PenumbraWaves } from './waves';
-import { fetchRegistry } from '@/shared/api/fetch-registry';
-import { getClientSideEnv } from '@/shared/api/env/getClientSideEnv';
-import { fetchStats, Stats } from '../server/stats';
-import { deserialize } from '@/shared/utils/serializer';
-import { fetchDaySummaries } from '@/shared/api/server/summary';
-
 export const ExplorePage = async () => {
-  const statsP = (async () => {
-    const raw = await fetchStats();
-    return deserialize<Stats>(raw);
-  })();
-  const summariesP = fetchDaySummaries();
-  const registryP = fetchRegistry(getClientSideEnv().PENUMBRA_CHAIN_ID);
-  const [stats, summaries, registry] = await Promise.all([statsP, summariesP, registryP]);
   return (
     <section className='mx-auto flex max-w-[1062px] flex-col gap-6 p-4'>
-      <PenumbraWaves />
-      <ExploreStats stats={stats} registry={registry} />
-      <ExplorePairs summaries={summaries} />
+      <div className='relative w-full' style={{ paddingBottom: '56.25%' }}>
+        <iframe
+          className='absolute top-0 left-0 w-full h-full'
+          src='https://www.youtube.com/embed/9t1IK_9apWs'
+          title='indepednence day!!'
+          frameBorder='0'
+          allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+          allowFullScreen
+        />
+      </div>
     </section>
   );
 };
