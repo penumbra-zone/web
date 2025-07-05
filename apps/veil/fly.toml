@@ -1,8 +1,7 @@
 app = "veil-ci"
 primary_region = "iad"
 
-[build]
-  dockerfile = "Dockerfile"
+# fly autodetect using nixpack
 
 [env]
   NODE_ENV = "production"
