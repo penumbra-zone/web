@@ -1,4 +1,7 @@
-import { Position, PositionId } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
+import {
+  Position,
+  PositionId,
+} from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 
 /**
  * Native crypto utilities to replace WASM dependencies

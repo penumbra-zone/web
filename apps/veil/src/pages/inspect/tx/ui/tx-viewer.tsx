@@ -34,7 +34,6 @@ export const TxViewer = observer(({ txInfo }: { txInfo?: TransactionInfo }) => {
         {txId && <Text technical>{txId}</Text>}
       </div>
 
-
       <div className='flex flex-col gap-1 rounded-sm bg-other-tonal-fill5 p-3 text-text-secondary'>
         {txId && <InfoRow label='Transaction Hash' info={shorten(txId, 8)} copyText={txId} />}
         {!!txInfo?.height && (
