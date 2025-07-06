@@ -75,10 +75,7 @@ jobs:
             flyctl apps create "${{ steps.app_name.outputs.name }}" --org penumbra-labs
           fi
 
-          # Set secrets
-          echo "${{ secrets.PENUMBRA_INDEXER_CA_CERT }}" | flyctl secrets set PENUMBRA_INDEXER_CA_CERT --app "${{ steps.app_name.outputs.name }}" --stdin
-
-          # Set environment variable for database connection
+          flyctl secrets set PENUMBRA_INDEXER_CA_CERT="${{ secrets.PENUMBRA_INDEXER_CA_CERT }}" --app "${{ steps.app_name.outputs.name }}"
           flyctl secrets set PENUMBRA_INDEXER_ENDPOINT="${{ secrets.PENUMBRA_INDEXER_ENDPOINT }}" --app "${{ steps.app_name.outputs.name }}"
 
           # Deploy with custom build args
