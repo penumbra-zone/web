@@ -10,6 +10,9 @@
 !.npmrc
 !.syncpackrc
 
+# allow ca
+!ci/cert/ca-certificate.crt
+
 # allow all in-repo packages
 !packages/
 
@@ -27,3 +30,10 @@
 /**/target/
 /**/node_modules/
 /**/.next/
+
+*.pk 
+*.vk
+*.bin
+
+# TEMPORARILY 
+!*.svg

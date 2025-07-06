@@ -72,7 +72,7 @@ jobs:
 
           # Create fly app if it doesn't exist
           if ! flyctl apps list | grep -q "${{ steps.app_name.outputs.name }}"; then
-            flyctl apps create "${{ steps.app_name.outputs.name }}" --org personal
+            flyctl apps create "${{ steps.app_name.outputs.name }}" --org penumbra-labs
           fi
 
           # Set secrets
