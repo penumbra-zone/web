@@ -91,7 +91,7 @@ importers:
         version: 3.4.0(eslint@9.27.0(jiti@2.4.2))(tailwindcss@4.1.10)
       eslint-plugin-import:
         specifier: ^2.29.1
-        version: 2.31.0(@typescript-eslint/parser@8.32.1(eslint@9.27.0(jiti@2.4.2))(typescript@5.5.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.27.0(jiti@2.4.2))
+        version: 2.31.0(eslint-import-resolver-typescript@3.10.1)(eslint@9.27.0(jiti@2.4.2))
       eslint-plugin-import-x:
         specifier: ^0.5.3
         version: 0.5.3(eslint@9.27.0(jiti@2.4.2))(typescript@5.5.3)
@@ -112,7 +112,7 @@ importers:
         version: 2.5.3(eslint@9.27.0(jiti@2.4.2))(turbo@2.5.3)
       eslint-plugin-vitest:
         specifier: ^0.5.4
-        version: 0.5.4(eslint@9.27.0(jiti@2.4.2))(typescript@5.5.3)(vitest@1.6.1)
+        version: 0.5.4(eslint@9.27.0(jiti@2.4.2))(typescript@5.5.3)(vitest@1.6.1(@types/node@22.15.21)(@vitest/browser@1.6.1)(jsdom@24.1.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))(lightningcss@1.30.1)(terser@5.39.2))
       jsdom:
         specifier: ^24.0.0
         version: 24.1.3(bufferutil@4.0.9)(canvas@3.1.0)(utf-8-validate@5.0.10)
@@ -178,7 +178,7 @@ importers:
         version: 2.16.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@cosmos-kit/react':
         specifier: ^2.20.1
-        version: 2.22.0(@cosmjs/proto-signing@0.32.4)(@interchain-ui/react@1.26.3(@types/react@19.0.12)(babel-plugin-macros@3.1.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(@types/react-dom@19.0.4(@types/react@19.0.12))(@types/react@19.0.12)(bufferutil@4.0.9)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(utf-8-validate@5.0.10)
+        version: 2.22.0(@cosmjs/amino@0.33.1)(@cosmjs/proto-signing@0.32.4)(@interchain-ui/react@1.26.3(@types/react@19.0.12)(babel-plugin-macros@3.1.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(@types/react-dom@19.0.4(@types/react@19.0.12))(@types/react@19.0.12)(bufferutil@4.0.9)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(utf-8-validate@5.0.10)
       '@interchain-ui/react':
         specifier: ^1.26.1
         version: 1.26.3(@types/react@19.0.12)(babel-plugin-macros@3.1.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -365,7 +365,7 @@ importers:
         version: 2.16.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@cosmos-kit/react':
         specifier: ^2.20.1
-        version: 2.22.0(@cosmjs/amino@0.33.1)(@cosmjs/proto-signing@0.32.4)(@interchain-ui/react@1.26.3(@types/react@19.0.12)(babel-plugin-macros@3.1.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(@types/react-dom@19.0.4(@types/react@19.0.12))(@types/react@19.0.12)(bufferutil@4.0.9)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(utf-8-validate@5.0.10)
+        version: 2.22.0(@cosmjs/proto-signing@0.32.4)(@interchain-ui/react@1.26.3(@types/react@19.0.12)(babel-plugin-macros@3.1.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(@types/react-dom@19.0.4(@types/react@19.0.12))(@types/react@19.0.12)(bufferutil@4.0.9)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(utf-8-validate@5.0.10)
       '@interchain-ui/react':
         specifier: ^1.26.1
         version: 1.26.3(@types/react@19.0.12)(babel-plugin-macros@3.1.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -407,7 +407,7 @@ importers:
         version: link:../../packages/zquery
       '@skip-go/widget':
         specifier: ^3.4.1
-        version: 3.10.2(@bufbuild/protobuf@1.10.1)(@connectrpc/connect@1.6.1(@bufbuild/protobuf@1.10.1))(@solana/wallet-adapter-base@0.9.26(@solana/web3.js@1.98.2(bufferutil@4.0.9)(typescript@5.5.3)(utf-8-validate@5.0.10)))(@tanstack/react-query@5.62.7(react@19.1.0))(@types/react@19.0.12)(bufferutil@4.0.9)(eslint@9.27.0(jiti@2.4.2))(fastestsmallesttextencoderdecoder@1.0.22)(immer@10.1.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rollup@4.41.0)(starknet@6.24.1)(typescript@5.5.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(viem@2.30.0(bufferutil@4.0.9)(typescript@5.5.3)(utf-8-validate@5.0.10)(zod@3.25.17))(wagmi@2.15.4(@tanstack/query-core@5.76.0)(@tanstack/react-query@5.62.7(react@19.1.0))(@types/react@19.0.12)(bufferutil@4.0.9)(immer@10.1.1)(react@19.1.0)(typescript@5.5.3)(utf-8-validate@5.0.10)(viem@2.30.0(bufferutil@4.0.9)(typescript@5.5.3)(utf-8-validate@5.0.10)(zod@3.25.17))(zod@3.25.17))
+        version: 3.10.2(@bufbuild/protobuf@1.10.1)(@connectrpc/connect@1.6.1(@bufbuild/protobuf@1.10.1))(@solana/wallet-adapter-base@0.9.26(@solana/web3.js@1.98.2(bufferutil@4.0.9)(typescript@5.5.3)(utf-8-validate@5.0.10)))(@tanstack/react-query@5.62.7(react@19.1.0))(@types/react@19.0.12)(bufferutil@4.0.9)(eslint@9.27.0(jiti@2.4.2))(fastestsmallesttextencoderdecoder@1.0.22)(immer@10.1.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rollup@4.41.0)(starknet@6.24.1)(typescript@5.5.3)(use-sync-external-store@1.5.0(react@19.1.0))(utf-8-validate@5.0.10)(viem@2.30.0(bufferutil@4.0.9)(typescript@5.5.3)(utf-8-validate@5.0.10)(zod@3.25.17))(wagmi@2.15.4(@tanstack/query-core@5.76.0)(@tanstack/react-query@5.62.7(react@19.1.0))(@types/react@19.0.12)(bufferutil@4.0.9)(immer@10.1.1)(react@19.1.0)(typescript@5.5.3)(utf-8-validate@5.0.10)(viem@2.30.0(bufferutil@4.0.9)(typescript@5.5.3)(utf-8-validate@5.0.10)(zod@3.25.17))(zod@3.25.17))
       '@tailwindcss/vite':
         specifier: ^4.1.10
         version: 4.1.10(vite@5.4.19(@types/node@22.15.21)(lightningcss@1.30.1)(terser@5.39.2))
@@ -510,7 +510,7 @@ importers:
         version: 5.4.19(@types/node@22.15.21)(lightningcss@1.30.1)(terser@5.39.2)
       vitest:
         specifier: ^1.6.0
-        version: 1.6.1(@types/node@22.15.21)(@vitest/browser@1.6.1)(jsdom@24.1.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))(lightningcss@1.30.1)(terser@5.39.2)
+        version: 1.6.1(@types/node@22.15.21)(@vitest/browser@1.6.1)(jsdom@24.1.3(bufferutil@4.0.9)(canvas@3.1.0)(utf-8-validate@5.0.10))(lightningcss@1.30.1)(terser@5.39.2)
 
   apps/node-status:
     dependencies:
@@ -614,15 +614,9 @@ importers:
       '@penumbra-zone/client':
         specifier: workspace:*
         version: link:../../packages/client
-      '@penumbra-zone/crypto-web':
-        specifier: workspace:*
-        version: link:../../packages/crypto
       '@penumbra-zone/getters':
         specifier: workspace:*
         version: link:../../packages/getters
-      '@penumbra-zone/perspective':
-        specifier: workspace:*
-        version: link:../../packages/perspective
       '@penumbra-zone/protobuf':
         specifier: workspace:*
         version: link:../../packages/protobuf
@@ -635,9 +629,6 @@ importers:
       '@penumbra-zone/ui':
         specifier: workspace:*
         version: link:../../packages/ui
-      '@penumbra-zone/wasm':
-        specifier: workspace:*
-        version: link:../../packages/wasm
       '@radix-ui/react-icons':
         specifier: ^1.3.2
         version: 1.3.2(react@19.1.0)
@@ -670,7 +661,7 @@ importers:
         version: 2.1.1
       configs:
         specifier: github:prax-wallet/configs#main
-        version: prax-configs@https://codeload.github.com/prax-wallet/configs/tar.gz/28bb663aa5d042781e714288f28bf15a7075a990(@types/eslint@9.6.1)(@typescript-eslint/parser@7.18.0(eslint@9.27.0(jiti@2.4.2))(typescript@5.5.3))(jiti@2.4.2)(prettier@3.5.3)(tailwindcss@4.1.10)(turbo@2.5.3)(typescript@5.5.3)(vitest@1.6.1)
+        version: prax-configs@https://codeload.github.com/prax-wallet/configs/tar.gz/28bb663aa5d042781e714288f28bf15a7075a990(@types/eslint@9.6.1)(@typescript-eslint/parser@7.18.0(eslint@9.27.0(jiti@2.4.2))(typescript@5.5.3))(jiti@2.4.2)(prettier@3.5.3)(tailwindcss@4.1.10)(turbo@2.5.3)(typescript@5.5.3)(vitest@1.6.1(@types/node@22.15.21)(@vitest/browser@1.6.1)(jsdom@24.1.3(bufferutil@4.0.9)(canvas@3.1.0)(utf-8-validate@5.0.10))(lightningcss@1.30.1)(terser@5.39.2))
       cosmos-kit:
         specifier: ^2.21.1
         version: 2.24.0(@cosmjs/amino@0.33.1)(@cosmjs/crypto@0.33.1)(@cosmjs/encoding@0.33.1)(@cosmjs/proto-signing@0.32.4)(@walletconnect/sign-client@2.20.3(bufferutil@4.0.9)(typescript@5.5.3)(utf-8-validate@5.0.10)(zod@3.25.17))(@walletconnect/types@2.20.3)(axios@1.9.0)(bufferutil@4.0.9)(cosmjs-types@0.9.0)(react@19.1.0)(starknet@6.24.1)(typescript@5.5.3)(utf-8-validate@5.0.10)(zod@3.25.17)
@@ -856,7 +847,7 @@ importers:
         version: 3.10.1(eslint-plugin-import-x@0.5.3(eslint@9.27.0(jiti@2.4.2))(typescript@5.5.3))(eslint-plugin-import@2.31.0)(eslint@9.27.0(jiti@2.4.2))
       eslint-plugin-import:
         specifier: ^2.29.1
-        version: 2.31.0(@typescript-eslint/parser@8.32.1(eslint@9.27.0(jiti@2.4.2))(typescript@5.5.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.27.0(jiti@2.4.2))
+        version: 2.31.0(eslint-import-resolver-typescript@3.10.1)(eslint@9.27.0(jiti@2.4.2))
       eslint-plugin-import-x:
         specifier: ^0.5.3
         version: 0.5.3(eslint@9.27.0(jiti@2.4.2))(typescript@5.5.3)
@@ -877,7 +868,7 @@ importers:
         version: 2.5.3(eslint@9.27.0(jiti@2.4.2))(turbo@2.5.3)
       eslint-plugin-vitest:
         specifier: ^0.5.4
-        version: 0.5.4(eslint@9.27.0(jiti@2.4.2))(typescript@5.5.3)(vitest@1.6.1)
+        version: 0.5.4(eslint@9.27.0(jiti@2.4.2))(typescript@5.5.3)(vitest@1.6.1(@types/node@22.15.21)(@vitest/browser@1.6.1)(jsdom@24.1.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))(lightningcss@1.30.1)(terser@5.39.2))
     devDependencies:
       prettier:
         specifier: ^3.4.2
@@ -2202,7 +2193,6 @@ packages:
   '@bufbuild/buf-darwin-arm64@1.54.0':
     resolution: {integrity: sha512-MkwlxcuHH8YO2wyQ2nGAv5SwBRCR4PtA8zcQb7AR6q93Cgy314ac8blGjfpenprjI3kAAhxc9BQK4t+/hkIS/A==}
     engines: {node: '>=12'}
-    cpu: [arm64]
     os: [darwin]
 
   '@bufbuild/buf-darwin-x64@1.54.0':
@@ -22190,7 +22180,7 @@ snapshots:
       '@vitest/utils': 1.6.1
       magic-string: 0.30.17
       sirv: 2.0.4
-      vitest: 1.6.1(@types/node@22.15.21)(@vitest/browser@1.6.1)(jsdom@24.1.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))(lightningcss@1.30.1)(terser@5.39.2)
+      vitest: 1.6.1(@types/node@22.15.21)(@vitest/browser@1.6.1)(jsdom@24.1.3(bufferutil@4.0.9)(canvas@3.1.0)(utf-8-validate@5.0.10))(lightningcss@1.30.1)(terser@5.39.2)
     optionalDependencies:
       playwright: 1.52.0
 
@@ -25414,7 +25404,7 @@ snapshots:
       tinyglobby: 0.2.13
       unrs-resolver: 1.7.2
     optionalDependencies:
-      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.32.1(eslint@9.27.0(jiti@2.4.2))(typescript@5.5.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.27.0(jiti@2.4.2))
+      eslint-plugin-import: 2.31.0(eslint-import-resolver-typescript@3.10.1)(eslint@9.27.0(jiti@2.4.2))
       eslint-plugin-import-x: 0.5.3(eslint@9.27.0(jiti@2.4.2))(typescript@5.5.3)
     transitivePeerDependencies:
       - supports-color
@@ -25528,6 +25518,33 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
+  eslint-plugin-import@2.31.0(eslint-import-resolver-typescript@3.10.1)(eslint@9.27.0(jiti@2.4.2)):
+    dependencies:
+      '@rtsao/scc': 1.1.0
+      array-includes: 3.1.8
+      array.prototype.findlastindex: 1.2.6
+      array.prototype.flat: 1.3.3
+      array.prototype.flatmap: 1.3.3
+      debug: 3.2.7
+      doctrine: 2.1.0
+      eslint: 9.27.0(jiti@2.4.2)
+      eslint-import-resolver-node: 0.3.9
+      eslint-module-utils: 2.12.0(@typescript-eslint/parser@7.18.0(eslint@9.27.0(jiti@2.4.2))(typescript@5.5.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import-x@0.5.3(eslint@9.27.0(jiti@2.4.2))(typescript@5.5.3))(eslint-plugin-import@2.31.0)(eslint@9.27.0(jiti@2.4.2)))(eslint@9.27.0(jiti@2.4.2))
+      hasown: 2.0.2
+      is-core-module: 2.16.1
+      is-glob: 4.0.3
+      minimatch: 3.1.2
+      object.fromentries: 2.0.8
+      object.groupby: 1.0.3
+      object.values: 1.2.1
+      semver: 6.3.1
+      string.prototype.trimend: 1.0.9
+      tsconfig-paths: 3.15.0
+    transitivePeerDependencies:
+      - eslint-import-resolver-typescript
+      - eslint-import-resolver-webpack
+      - supports-color
+
   eslint-plugin-jsx-a11y@6.10.2(eslint@9.27.0(jiti@2.4.2)):
     dependencies:
       aria-query: 5.3.2
@@ -25613,7 +25630,7 @@ snapshots:
       eslint: 9.27.0(jiti@2.4.2)
       turbo: 2.5.3
 
-  eslint-plugin-vitest@0.5.4(eslint@9.27.0(jiti@2.4.2))(typescript@5.5.3)(vitest@1.6.1):
+  eslint-plugin-vitest@0.5.4(eslint@9.27.0(jiti@2.4.2))(typescript@5.5.3)(vitest@1.6.1(@types/node@22.15.21)(@vitest/browser@1.6.1)(jsdom@24.1.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))(lightningcss@1.30.1)(terser@5.39.2)):
     dependencies:
       '@typescript-eslint/utils': 7.18.0(eslint@9.27.0(jiti@2.4.2))(typescript@5.5.3)
       eslint: 9.27.0(jiti@2.4.2)
@@ -26987,35 +27004,6 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  jsdom@24.1.3(bufferutil@4.0.9)(utf-8-validate@5.0.10):
-    dependencies:
-      cssstyle: 4.3.1
-      data-urls: 5.0.0
-      decimal.js: 10.5.0
-      form-data: 4.0.2
-      html-encoding-sniffer: 4.0.0
-      http-proxy-agent: 7.0.2
-      https-proxy-agent: 7.0.6
-      is-potential-custom-element-name: 1.0.1
-      nwsapi: 2.2.20
-      parse5: 7.3.0
-      rrweb-cssom: 0.7.1
-      saxes: 6.0.0
-      symbol-tree: 3.2.4
-      tough-cookie: 4.1.4
-      w3c-xmlserializer: 5.0.0
-      webidl-conversions: 7.0.0
-      whatwg-encoding: 3.1.1
-      whatwg-mimetype: 4.0.0
-      whatwg-url: 14.2.0
-      ws: 8.18.2(bufferutil@4.0.9)(utf-8-validate@5.0.10)
-      xml-name-validator: 5.0.0
-    transitivePeerDependencies:
-      - bufferutil
-      - supports-color
-      - utf-8-validate
-    optional: true
-
   jsesc@3.0.2: {}
 
   jsesc@3.1.0: {}
@@ -28261,7 +28249,7 @@ snapshots:
 
   postgres-range@1.1.4: {}
 
-  prax-configs@https://codeload.github.com/prax-wallet/configs/tar.gz/28bb663aa5d042781e714288f28bf15a7075a990(@types/eslint@9.6.1)(@typescript-eslint/parser@7.18.0(eslint@9.27.0(jiti@2.4.2))(typescript@5.5.3))(jiti@2.4.2)(prettier@3.5.3)(tailwindcss@4.1.10)(turbo@2.5.3)(typescript@5.5.3)(vitest@1.6.1):
+  prax-configs@https://codeload.github.com/prax-wallet/configs/tar.gz/28bb663aa5d042781e714288f28bf15a7075a990(@types/eslint@9.6.1)(@typescript-eslint/parser@7.18.0(eslint@9.27.0(jiti@2.4.2))(typescript@5.5.3))(jiti@2.4.2)(prettier@3.5.3)(tailwindcss@4.1.10)(turbo@2.5.3)(typescript@5.5.3)(vitest@1.6.1(@types/node@22.15.21)(@vitest/browser@1.6.1)(jsdom@24.1.3(bufferutil@4.0.9)(canvas@3.1.0)(utf-8-validate@5.0.10))(lightningcss@1.30.1)(terser@5.39.2)):
     dependencies:
       '@eslint-community/eslint-plugin-eslint-comments': 4.5.0(eslint@9.27.0(jiti@2.4.2))
       '@eslint/compat': 1.2.9(eslint@9.27.0(jiti@2.4.2))
@@ -28278,7 +28266,7 @@ snapshots:
       eslint-plugin-storybook: 0.9.0--canary.156.ed236ca.0(eslint@9.27.0(jiti@2.4.2))(typescript@5.5.3)
       eslint-plugin-tailwindcss: 3.18.0(tailwindcss@4.1.10)
       eslint-plugin-turbo: 2.5.3(eslint@9.27.0(jiti@2.4.2))(turbo@2.5.3)
-      eslint-plugin-vitest: 0.5.4(eslint@9.27.0(jiti@2.4.2))(typescript@5.5.3)(vitest@1.6.1)
+      eslint-plugin-vitest: 0.5.4(eslint@9.27.0(jiti@2.4.2))(typescript@5.5.3)(vitest@1.6.1(@types/node@22.15.21)(@vitest/browser@1.6.1)(jsdom@24.1.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))(lightningcss@1.30.1)(terser@5.39.2))
       typescript-eslint: 7.18.0(eslint@9.27.0(jiti@2.4.2))(typescript@5.5.3)
     transitivePeerDependencies:
       - '@types/eslint'
@@ -30344,42 +30332,6 @@ snapshots:
       '@types/node': 22.15.21
       '@vitest/browser': 1.6.1(playwright@1.52.0)(vitest@1.6.1)
       jsdom: 24.1.3(bufferutil@4.0.9)(canvas@3.1.0)(utf-8-validate@5.0.10)
-    transitivePeerDependencies:
-      - less
-      - lightningcss
-      - sass
-      - sass-embedded
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-
-  vitest@1.6.1(@types/node@22.15.21)(@vitest/browser@1.6.1)(jsdom@24.1.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))(lightningcss@1.30.1)(terser@5.39.2):
-    dependencies:
-      '@vitest/expect': 1.6.1
-      '@vitest/runner': 1.6.1
-      '@vitest/snapshot': 1.6.1
-      '@vitest/spy': 1.6.1
-      '@vitest/utils': 1.6.1
-      acorn-walk: 8.3.4
-      chai: 4.5.0
-      debug: 4.4.1
-      execa: 8.0.1
-      local-pkg: 0.5.1
-      magic-string: 0.30.17
-      pathe: 1.1.2
-      picocolors: 1.1.1
-      std-env: 3.9.0
-      strip-literal: 2.1.1
-      tinybench: 2.9.0
-      tinypool: 0.8.4
-      vite: 5.4.19(@types/node@22.15.21)(lightningcss@1.30.1)(terser@5.39.2)
-      vite-node: 1.6.1(@types/node@22.15.21)(lightningcss@1.30.1)(terser@5.39.2)
-      why-is-node-running: 2.3.0
-    optionalDependencies:
-      '@types/node': 22.15.21
-      '@vitest/browser': 1.6.1(playwright@1.52.0)(vitest@1.6.1)
-      jsdom: 24.1.3(bufferutil@4.0.9)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - less
       - lightningcss
