@@ -35,7 +35,7 @@ RUN pnpm run postinstall || echo "Syncpack completed with warnings"
 RUN pnpm rebuild canvas
 RUN pnpm rebuild || echo "Some rebuilds failed but continuing..."
 
-ENV NODE_OPTIONS=--max-old-space-size=4096
+ENV NODE_OPTIONS=--max-old-space-size=8192
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN echo "=== Building veil ===" && \
     pnpm --filter "penumbra-veil..." run build 2>&1
