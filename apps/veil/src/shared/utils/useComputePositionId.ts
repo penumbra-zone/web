@@ -3,12 +3,12 @@ import {
   Position,
   PositionId,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
+import { computePositionId } from '@/shared/utils/crypto';
 
 export const useComputePositionId = () => {
   return useQuery({
     queryKey: [],
-    queryFn: async (): Promise<(position: Position) => PositionId> => {
-      const { computePositionId } = await import('@penumbra-zone/wasm/dex');
+    queryFn: async (): Promise<(position: Position) => Promise<PositionId>> => {
       return computePositionId;
     },
   });

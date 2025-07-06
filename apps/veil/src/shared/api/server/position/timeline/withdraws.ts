@@ -6,7 +6,7 @@ import {
   PositionWithdrawal,
 } from '@/shared/api/server/position/timeline/types.ts';
 import { DexExPositionWithdrawals } from '@/shared/database/schema.ts';
-import { sha256HashStr } from '@penumbra-zone/crypto-web/sha256';
+import { sha256HashStr } from '@/shared/utils/crypto';
 import { PositionId } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { pindexer } from '@/shared/database';
 import { getAssetIdFromValue } from '@penumbra-zone/getters/value';

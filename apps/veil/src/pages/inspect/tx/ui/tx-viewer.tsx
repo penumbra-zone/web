@@ -1,73 +1,31 @@
-import { Fragment, useEffect, useMemo, useState } from 'react';
+import { Fragment } from 'react';
 import { observer } from 'mobx-react-lite';
 import Link from 'next/link';
 import { JsonViewer } from '@textea/json-viewer';
-import { asPublicTransactionView } from '@penumbra-zone/perspective/translators/transaction-view';
-import { classifyTransaction } from '@penumbra-zone/perspective/transaction/classify';
 import { TransactionInfo } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import type { Jsonified } from '@penumbra-zone/types/jsonified';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import { typeRegistry } from '@penumbra-zone/protobuf';
 import { Text } from '@penumbra-zone/ui/Text';
 import { Density } from '@penumbra-zone/ui/Density';
-import { SegmentedControl } from '@penumbra-zone/ui/SegmentedControl';
 import { AddressViewComponent } from '@penumbra-zone/ui/AddressView';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { ActionView } from '@penumbra-zone/ui/ActionView';
 import { shorten } from '@penumbra-zone/types/string';
 import { connectionStore } from '@/shared/model/connection';
 import { useGetMetadata } from '@/shared/api/assets';
-import { useReceiverView } from '../api/use-receiver-view';
 import { useFee } from '../api/use-fee';
 import { InfoRow } from './info-row';
-
-export enum TxDetailsTab {
-  PUBLIC = 'public',
-  RECEIVER = 'receiver',
-  PRIVATE = 'private',
-}
-
-const OPTIONS = [
-  { label: 'My View', value: TxDetailsTab.PRIVATE },
-  { label: 'Receiver View', value: TxDetailsTab.RECEIVER },
-  { label: 'Public View', value: TxDetailsTab.PUBLIC },
-];
 
 export const TxViewer = observer(({ txInfo }: { txInfo?: TransactionInfo }) => {
   const { connected } = connectionStore;
   const getMetadata = useGetMetadata();
 
-  // classify the transaction type
-  const transactionClassification = classifyTransaction(txInfo?.view);
   const txId = txInfo?.id && uint8ArrayToHex(txInfo.id.inner);
   const fee = useFee(txInfo?.view);
 
-  // prepare options for SegmentedControl
-  const [option, setOption] = useState(connected ? TxDetailsTab.PRIVATE : TxDetailsTab.PUBLIC);
-  const showReceiverTransactionView = transactionClassification.type === 'send';
-  const filteredOptions = showReceiverTransactionView
-    ? OPTIONS
-    : OPTIONS.filter(option => option.value !== TxDetailsTab.RECEIVER);
-
-  useEffect(() => {
-    setOption(connected ? TxDetailsTab.PRIVATE : TxDetailsTab.PUBLIC);
-  }, [connected]);
-
-  // load receiver view if this tab is available to user
-  const { data: receiverView } = useReceiverView(
-    connected && showReceiverTransactionView && !!txInfo,
-    txInfo,
-  );
-
-  const txv = useMemo(() => {
-    if (option === TxDetailsTab.RECEIVER) {
-      return receiverView;
-    }
-    if (option === TxDetailsTab.PUBLIC) {
-      return asPublicTransactionView(txInfo?.view);
-    }
-    return txInfo?.view;
-  }, [option, receiverView, txInfo?.view]);
+  // Use the transaction view directly
+  const txv = txInfo?.view;
 
   return (
     <div className='flex flex-col gap-4'>
@@ -76,19 +34,6 @@ export const TxViewer = observer(({ txInfo }: { txInfo?: TransactionInfo }) => {
         {txId && <Text technical>{txId}</Text>}
       </div>
 
-      {connected && (
-        <div className='flex justify-center'>
-          <Density sparse>
-            <SegmentedControl value={option} onChange={opt => setOption(opt as TxDetailsTab)}>
-              {filteredOptions.map(option => (
-                <SegmentedControl.Item key={option.value} value={option.value} style='filled'>
-                  {option.label}
-                </SegmentedControl.Item>
-              ))}
-            </SegmentedControl>
-          </Density>
-        </div>
-      )}
 
       <div className='flex flex-col gap-1 rounded-sm bg-other-tonal-fill5 p-3 text-text-secondary'>
         {txId && <InfoRow label='Transaction Hash' info={shorten(txId, 8)} copyText={txId} />}
@@ -176,7 +121,7 @@ export const TxViewer = observer(({ txInfo }: { txInfo?: TransactionInfo }) => {
         </div>
       </div>
 
-      {option === TxDetailsTab.PRIVATE && txInfo && (
+      {connected && txInfo && (
         <div className='flex flex-col gap-2'>
           <Text small color='text.primary'>
             Raw JSON

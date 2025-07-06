@@ -1,6 +1,6 @@
 import { Transaction } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import { PartialMessage } from '@bufbuild/protobuf';
-import { sha256Hash } from '@penumbra-zone/crypto-web/sha256';
+import { sha256Hash } from '@/shared/utils/crypto';
 import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
 
 /**
