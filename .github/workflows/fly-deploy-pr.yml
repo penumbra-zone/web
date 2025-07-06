@@ -68,8 +68,6 @@ jobs:
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
         run: |
-          cd apps/veil
-
           # Create fly app if it doesn't exist
           if ! flyctl apps list | grep -q "${{ steps.app_name.outputs.name }}"; then
             flyctl apps create "${{ steps.app_name.outputs.name }}" --org penumbra-labs
