@@ -8,8 +8,8 @@ import { computePositionId } from '@/shared/utils/crypto';
 export const useComputePositionId = () => {
   return useQuery({
     queryKey: [],
-    queryFn: async (): Promise<(position: Position) => Promise<PositionId>> => {
-      return computePositionId;
+    queryFn: (): Promise<(position: Position) => Promise<PositionId>> => {
+      return Promise.resolve(computePositionId);
     },
   });
 };
