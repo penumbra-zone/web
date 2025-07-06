@@ -2,7 +2,12 @@ app = "veil-ci"
 primary_region = "iad"
 
 [build]
-  dockerfile = "Dockerfile"
+  dockerfile = "ci/containerfiles/Containerfile-veil-fly"
+  [build.args]
+  BUILDKIT_STEP_LOG_MAX_SIZE = "50000000"
+
+  [build.settings]
+    size = "shared-cpu-8x"
 
 [env]
   NODE_ENV = "production"
@@ -33,6 +38,3 @@ primary_region = "iad"
   memory = "512mb"
   cpu_kind = "shared"
   cpus = 1
-
-[processes]
-  app = "node apps/veil/server.js"
