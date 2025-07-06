@@ -66,6 +66,8 @@ const componentMap = {
   communityPoolDeposit: CommunityPoolDepositAction,
   communityPoolOutput: CommunityPoolOutputAction,
   communityPoolSpend: CommunityPoolSpendAction,
+  // Temporarily Map `positionOpenView` to `PositionOpenAction` for compilation purposes.
+  positionOpenView: PositionOpenAction,
   unknown: UnknownAction,
 } as const satisfies Record<ActionViewType | 'unknown', unknown>;
 

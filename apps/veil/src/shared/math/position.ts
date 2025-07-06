@@ -9,6 +9,11 @@ import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { pnum } from '@penumbra-zone/types/pnum';
 import BigNumber from 'bignumber.js';
 
+export type PositionedLiquidity = {
+  position: Position;
+  shape: LiquidityDistributionShape;
+};
+
 export const compareAssetId = (a: AssetId, b: AssetId): number => {
   // The asset ids are serialized using LE, so this is checking the MSB.
   for (let i = 31; i >= 0; --i) {
@@ -88,7 +93,10 @@ const priceToPQ = (
  * Try using `rangeLiquidityPositions` or `limitOrderPosition` instead, with this method existing
  * as an escape hatch in case any of those use cases aren't sufficient.
  */
-export const planToPosition = (plan: PositionPlan): Position => {
+export const planToPosition = (
+  plan: PositionPlan,
+  shape: LiquidityDistributionShape,
+): PositionedLiquidity => {
   const { p: rawP, q: rawQ } = priceToPQ(
     plan.price,
     plan.baseAsset.exponent,
@@ -112,7 +120,7 @@ export const planToPosition = (plan: PositionPlan): Position => {
         [rawA2, rawA1],
       ];
 
-  return new Position({
+  const position = new Position({
     phi: {
       component: {
         fee: plan.feeBps,
@@ -129,6 +137,8 @@ export const planToPosition = (plan: PositionPlan): Position => {
     reserves: { r1, r2 },
     closeOnFill: false,
   });
+
+  return { position, shape };
 };
 
 /**
@@ -140,6 +150,8 @@ export const planToPosition = (plan: PositionPlan): Position => {
  * asset, to positions that buy the quote asset.
  *
  * All prices are in terms of quoteAsset / baseAsset, in display units.
+ *
+ * TODO: validate this is superfluous in light of `SimpleLiquidityPlan`?
  */
 interface RangeLiquidityPlan {
   baseAsset: Asset;
@@ -150,6 +162,7 @@ interface RangeLiquidityPlan {
   marketPrice: number;
   feeBps: number;
   positions: number;
+  distributionShape: LiquidityDistributionShape;
 }
 
 /**
@@ -164,6 +177,17 @@ export enum LiquidityDistributionShape {
   INVERTED_PYRAMID = 'INVERTED_PYRAMID',
 }
 
+/**
+ * Defines associative numeric encoding of `LiquidityDistributionShape` representing the strategy tag
+ */
+export enum LiquidityDistributionStrategy {
+  SKIP = 1,
+  ARBITRARY = 2,
+  FLAT = 3,
+  PYRAMID = 4,
+  INVERTED_PYRAMID = 5,
+}
+
 interface SimpleLiquidityPlan {
   baseAsset: Asset;
   quoteAsset: Asset;
@@ -175,6 +199,21 @@ interface SimpleLiquidityPlan {
   feeBps: number;
   positions: number;
   distributionShape: LiquidityDistributionShape;
+}
+
+export function encodeLiquidityShape(
+  shape: LiquidityDistributionShape,
+): LiquidityDistributionStrategy {
+  switch (shape) {
+    case LiquidityDistributionShape.FLAT:
+      return LiquidityDistributionStrategy.FLAT;
+    case LiquidityDistributionShape.PYRAMID:
+      return LiquidityDistributionStrategy.PYRAMID;
+    case LiquidityDistributionShape.INVERTED_PYRAMID:
+      return LiquidityDistributionStrategy.INVERTED_PYRAMID;
+    default:
+      throw new Error(`Unknown shape: ${shape}`);
+  }
 }
 
 export const getPositionWeights = (
@@ -203,7 +242,7 @@ export const getPositionWeights = (
 };
 
 /** Given a plan for providing range liquidity, create all the necessary positions to accomplish the plan. */
-export const rangeLiquidityPositions = (plan: RangeLiquidityPlan): Position[] => {
+export const rangeLiquidityPositions = (plan: RangeLiquidityPlan): PositionedLiquidity[] => {
   // The step width is positions-1 because it's between the endpoints
   // |---|---|---|---|
   // 0   1   2   3   4
@@ -226,19 +265,22 @@ export const rangeLiquidityPositions = (plan: RangeLiquidityPlan): Position[] =>
       quoteReserves = 0;
     }
 
-    return planToPosition({
-      baseAsset: plan.baseAsset,
-      quoteAsset: plan.quoteAsset,
-      feeBps: plan.feeBps,
-      price,
-      baseReserves,
-      quoteReserves,
-    });
+    return planToPosition(
+      {
+        baseAsset: plan.baseAsset,
+        quoteAsset: plan.quoteAsset,
+        feeBps: plan.feeBps,
+        price,
+        baseReserves,
+        quoteReserves,
+      },
+      plan.distributionShape,
+    );
   });
 };
 
 /** Given a plan for providing simple liquidity, create all the necessary positions to accomplish the plan. */
-export const simpleLiquidityPositions = (plan: SimpleLiquidityPlan): Position[] => {
+export const simpleLiquidityPositions = (plan: SimpleLiquidityPlan): PositionedLiquidity[] => {
   // Calculate how many positions should be in each range based on market price position
   const totalRange = plan.upperPrice - plan.lowerPrice;
   const marketPosition = (plan.marketPrice - plan.lowerPrice) / totalRange;
@@ -268,14 +310,17 @@ export const simpleLiquidityPositions = (plan: SimpleLiquidityPlan): Position[] 
     const price = plan.lowerPrice + i * lowerStepWidth;
     // Scale the weight by the range's total weight to maintain proper liquidity distribution
     const weight = (weights[i] ?? 0) / (lowerRangeTotalWeight || 1);
-    return planToPosition({
-      baseAsset: plan.baseAsset,
-      quoteAsset: plan.quoteAsset,
-      feeBps: plan.feeBps,
-      price,
-      baseReserves: 0,
-      quoteReserves: plan.quoteLiquidity * weight,
-    });
+    return planToPosition(
+      {
+        baseAsset: plan.baseAsset,
+        quoteAsset: plan.quoteAsset,
+        feeBps: plan.feeBps,
+        price,
+        baseReserves: 0,
+        quoteReserves: plan.quoteLiquidity * weight,
+      },
+      plan.distributionShape,
+    );
   });
 
   // Generate positions for upper range (base liquidity)
@@ -283,14 +328,17 @@ export const simpleLiquidityPositions = (plan: SimpleLiquidityPlan): Position[] 
     const price = plan.marketPrice + i * upperStepWidth;
     // Scale the weight by the range's total weight to maintain proper liquidity distribution
     const weight = (weights[i + lowerPositionsAmount] ?? 0) / (upperRangeTotalWeight || 1);
-    return planToPosition({
-      baseAsset: plan.baseAsset,
-      quoteAsset: plan.quoteAsset,
-      feeBps: plan.feeBps,
-      price,
-      baseReserves: plan.baseLiquidity * weight,
-      quoteReserves: 0,
-    });
+    return planToPosition(
+      {
+        baseAsset: plan.baseAsset,
+        quoteAsset: plan.quoteAsset,
+        feeBps: plan.feeBps,
+        price,
+        baseReserves: plan.baseLiquidity * weight,
+        quoteReserves: 0,
+      },
+      plan.distributionShape,
+    );
   });
 
   return [...lowerPositions, ...upperPositions];
@@ -308,9 +356,10 @@ interface LimitOrderPlan {
   input: number;
   baseAsset: Asset;
   quoteAsset: Asset;
+  distributionShape: LiquidityDistributionShape;
 }
 
-export const limitOrderPosition = (plan: LimitOrderPlan): Position => {
+export const limitOrderPosition = (plan: LimitOrderPlan): PositionedLiquidity => {
   let baseReserves: number;
   let quoteReserves: number;
   if (plan.buy === 'buy') {
@@ -320,14 +369,17 @@ export const limitOrderPosition = (plan: LimitOrderPlan): Position => {
     baseReserves = plan.input;
     quoteReserves = 0;
   }
-  const pos = planToPosition({
-    baseAsset: plan.baseAsset,
-    quoteAsset: plan.quoteAsset,
-    feeBps: 0,
-    price: plan.price,
-    baseReserves,
-    quoteReserves,
-  });
-  pos.closeOnFill = true;
+  const pos = planToPosition(
+    {
+      baseAsset: plan.baseAsset,
+      quoteAsset: plan.quoteAsset,
+      feeBps: 0,
+      price: plan.price,
+      baseReserves,
+      quoteReserves,
+    },
+    plan.distributionShape,
+  );
+  pos.position.closeOnFill = true;
   return pos;
 };

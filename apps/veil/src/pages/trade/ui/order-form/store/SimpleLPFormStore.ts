@@ -1,7 +1,11 @@
 import { scaleLinear } from 'd3-scale';
 import { openToast } from '@penumbra-zone/ui/Toast';
 import { AssetInfo } from '@/pages/trade/model/AssetInfo';
-import { LiquidityDistributionShape, simpleLiquidityPositions } from '@/shared/math/position';
+import {
+  LiquidityDistributionShape,
+  PositionedLiquidity,
+  simpleLiquidityPositions,
+} from '@/shared/math/position';
 import { parseNumber } from '@/shared/utils/num';
 import { Position } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { pnum } from '@penumbra-zone/types/pnum';
@@ -187,7 +191,7 @@ export class SimpleLPFormStore {
     this.feeTierPercentInput = x;
   };
 
-  get plan(): Position[] | undefined {
+  get plan(): PositionedLiquidity[] | undefined {
     if (
       !this._baseAsset ||
       !this._quoteAsset ||
@@ -220,7 +224,9 @@ export class SimpleLPFormStore {
     if (!plan || !baseAsset) {
       return undefined;
     }
-    return baseAsset.formatDisplayAmount(extractAmount(plan, baseAsset));
+    const positions: Position[] = plan.map(p => p.position);
+
+    return baseAsset.formatDisplayAmount(extractAmount(positions, baseAsset));
   }
 
   get quoteAssetAmount(): string | undefined {
@@ -229,7 +235,9 @@ export class SimpleLPFormStore {
     if (!plan || !quoteAsset) {
       return undefined;
     }
-    return quoteAsset.formatDisplayAmount(extractAmount(plan, quoteAsset));
+    const positions: Position[] = plan.map(p => p.position);
+
+    return quoteAsset.formatDisplayAmount(extractAmount(positions, quoteAsset));
   }
 
   setAssets(base: AssetInfo, quote: AssetInfo, resetInputs = false) {
