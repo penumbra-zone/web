@@ -1,5 +1,6 @@
 use penumbra_dex::lp::position::{Id, Position, State};
 use penumbra_dex::lp::LpNft;
+use penumbra_keys::{FullViewingKey, PositionMetadataKey};
 use penumbra_proto::DomainType;
 use wasm_bindgen::prelude::wasm_bindgen;
 
@@ -31,4 +32,26 @@ pub fn get_lpnft_asset(position_id: &[u8], position_state: &[u8]) -> WasmResult<
     let lp_nft = LpNft::new(position_id, position_state);
     let denom = lp_nft.denom();
     Ok(denom.encode_to_vec())
+}
+
+/// decrypt position metadata
+/// Arguments:
+///     full viewing key,
+///     position metadata: `Uint8Array representing an `PositionMetadata` ciphertext object`
+/// Returns: ` Uint8Array representing decrypted position metadata`
+#[wasm_bindgen]
+pub fn decrypt_position_metadata(
+    full_viewing_key: &[u8],
+    position_metadata: &[u8],
+) -> WasmResult<Vec<u8>> {
+    utils::set_panic_hook();
+
+    let fvk: FullViewingKey = FullViewingKey::decode(full_viewing_key)?;
+    let ovk = fvk.outgoing();
+    let pmk = PositionMetadataKey::derive(ovk);
+    let plaintext = pmk
+        .decrypt(position_metadata)
+        .expect("Failed to decrypt position metadata with derived PMK");
+
+    Ok(plaintext)
 }
