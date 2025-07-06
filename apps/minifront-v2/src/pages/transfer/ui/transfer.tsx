@@ -10,7 +10,7 @@ export const Transfer = observer((): React.ReactNode => {
   const transferStore = useTransferStore();
 
   return (
-    <div className='flex min-h-[calc(100vh-8rem)] flex-col items-center justify-start px-4'>
+    <div className='flex min-h-[calc(100vh-8rem)] flex-col items-center justify-start'>
       <div className='w-full max-w-[560px]'>
         <Card.Stack>
           <Card

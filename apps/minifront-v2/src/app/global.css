@@ -11,3 +11,12 @@
 body > section[aria-live='polite'] {
   z-index: 9999999999999;
 }
+
+/* Custom background classes for shielding page */
+.bg-shield-background {
+  background-image: url('/assets/background/shield-background.svg');
+}
+
+.bg-unshield-background {
+  background-image: url('/assets/background/unshield-background.svg');
+}

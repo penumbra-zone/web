@@ -139,7 +139,7 @@ const Content = () => {
                 <button
                   key={link.value}
                   onClick={() => handleNavClick(link.value)}
-                  className={`flex transform items-center gap-3 rounded-lg p-4 text-left transition-all duration-200 hover:scale-[1.02] ${
+                  className={`flex transform items-center gap-3 rounded-lg py-4 text-left transition-all duration-200 hover:scale-[1.02]  cursor-pointer ${
                     isActive ? 'text-primary-light' : 'hover:text-text-primary'
                   }`}
                   style={{

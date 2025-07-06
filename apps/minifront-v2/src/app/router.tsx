@@ -3,6 +3,7 @@ import { PagePath } from '@/shared/const/page';
 import { Portfolio } from '@/pages/portfolio';
 import { AllTransactionsPage } from '@/pages/portfolio/ui/transactions/all-transactions-page';
 import { Transfer } from '@/pages/transfer';
+import { Shielding } from '@/pages/shielding';
 import { NotFoundPage } from '@/pages/not-found';
 import { Layout } from './layout';
 import { abortLoader } from '@/shared/lib/abort-loader';
@@ -27,6 +28,10 @@ const routes: RouteObject[] = [
       {
         path: PagePath.Transfer,
         element: <Transfer />,
+      },
+      {
+        path: PagePath.Shielding,
+        element: <Shielding />,
       },
       {
         path: '*',
