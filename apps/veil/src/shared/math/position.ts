@@ -183,7 +183,7 @@ export enum LiquidityDistributionShape {
 export enum LiquidityDistributionStrategy {
   SKIP = 1,
   ARBITRARY = 2,
-  FLAT = 3,       
+  FLAT = 3,
   PYRAMID = 4,
   INVERTED_PYRAMID = 5,
 }
