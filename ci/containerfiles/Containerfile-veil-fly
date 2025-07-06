@@ -9,6 +9,7 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/* && \
     && rm -rf /var/lib/apt/lists/*
 
 RUN npm install -g pnpm@9.7.0
+RUN npm install -g turbo
 
 COPY ci/cert/ca-certificate.crt /app/ca-certificate.crt
 
@@ -27,8 +28,8 @@ COPY packages packages/
 # link workspace packages
 RUN pnpm install --prefer-offline --ignore-scripts
 
-RUN pnpm --filter "./packages/protobuf*" run build
-RUN pnpm --filter "./packages/*" run build || echo "Some package builds failed, continuing..."
+# generate protobuf files (creates gen/ directory)
+RUN pnpm exec turbo run proto
 
 RUN pnpm run postinstall || echo "Syncpack completed with warnings"
 
@@ -38,7 +39,8 @@ RUN pnpm rebuild || echo "Some rebuilds failed but continuing..."
 ENV NODE_OPTIONS=--max-old-space-size=8192
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN echo "=== Building veil ===" && \
-    pnpm --filter "penumbra-veil..." run build 2>&1
+     pnpm --filter "penumbra-veil..." --filter "!@penumbra-zone/wasm" \
+     run build 2>&1
 
 FROM node:22-slim AS runner
 WORKDIR /app
