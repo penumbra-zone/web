@@ -17,9 +17,7 @@ export const ExplorePage = async () => {
   const [stats, summaries, registry] = await Promise.all([statsP, summariesP, registryP]);
   return (
     <section className='mx-auto flex max-w-[1062px] flex-col gap-6 p-4'>
-      <PenumbraWaves />
       <ExploreStats stats={stats} registry={registry} />
-      <ExplorePairs summaries={summaries} />
     </section>
   );
 };
