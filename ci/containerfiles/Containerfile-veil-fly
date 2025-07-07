@@ -52,13 +52,13 @@ RUN mkdir -p packages/perspective/src/wasm-stubs && \
 RUN sed -i "s|from '@penumbra-zone/wasm/address'|from '../wasm-stubs/address.js'|" packages/perspective/src/plan/get-address-view.ts && \
     sed -i "s|from '@penumbra-zone/wasm/auction'|from '../wasm-stubs/auction.js'|" packages/perspective/src/plan/view-action-plan.ts
 
+ENV NODE_OPTIONS=--max-old-space-size=8192
+ENV NEXT_TELEMETRY_DISABLED=1
+
 RUN pnpm run postinstall || echo "Syncpack completed with warnings"
 
 RUN pnpm rebuild canvas
 RUN pnpm rebuild || echo "Some rebuilds failed but continuing..."
-
-ENV NODE_OPTIONS=--max-old-space-size=8192
-ENV NEXT_TELEMETRY_DISABLED=1
 RUN echo "=== Building veil ===" && \
      pnpm --filter "penumbra-veil..." --filter "!@penumbra-zone/wasm" \
      run build 2>&1
