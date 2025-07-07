@@ -413,10 +413,9 @@ pub async fn plan_transaction_inner<Db: Database>(
         actions_list.push(ActionPlan::Ics20Withdrawal(ics20_withdrawal.try_into()?));
     }
 
-    // Generate a shared bundle_identifier for positions actions. The Relationship here is 
+    // Generate a shared bundle_identifier for positions actions. The Relationship here is
     // that all positions with the same `bundle_id` must share the same `strategy_tag`.
-    let bundle_identifier = NonZeroU32::new(OsRng.next_u32())
-        .expect("randomizer for identifier");
+    let bundle_identifier = NonZeroU32::new(OsRng.next_u32()).expect("randomizer for identifier");
 
     // Note: during action creation, a convenience method is invoked that generates the `PositionMetadatakey`
     // derived from the outgoing viewing key (OVK), and encrypt the plaintext `PositionMetadata`
