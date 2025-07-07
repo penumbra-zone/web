@@ -9,10 +9,10 @@ import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { pnum } from '@penumbra-zone/types/pnum';
 import BigNumber from 'bignumber.js';
 
-export type PositionedLiquidity = {
+export interface PositionedLiquidity {
   position: Position;
   shape: LiquidityDistributionShape;
-};
+}
 
 export const compareAssetId = (a: AssetId, b: AssetId): number => {
   // The asset ids are serialized using LE, so this is checking the MSB.
@@ -204,16 +204,7 @@ interface SimpleLiquidityPlan {
 export function encodeLiquidityShape(
   shape: LiquidityDistributionShape,
 ): LiquidityDistributionStrategy {
-  switch (shape) {
-    case LiquidityDistributionShape.FLAT:
-      return LiquidityDistributionStrategy.FLAT;
-    case LiquidityDistributionShape.PYRAMID:
-      return LiquidityDistributionStrategy.PYRAMID;
-    case LiquidityDistributionShape.INVERTED_PYRAMID:
-      return LiquidityDistributionStrategy.INVERTED_PYRAMID;
-    default:
-      throw new Error(`Unknown shape: ${shape}`);
-  }
+  return LiquidityDistributionStrategy[shape];
 }
 
 export const getPositionWeights = (

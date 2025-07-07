@@ -242,15 +242,13 @@ export class OrderFormStore {
       this.resetGasFee();
       return undefined;
     }
-    let LpPlan = new TransactionPlannerRequest({
+    const LpPlan = new TransactionPlannerRequest({
       positionOpens: plan.map(x => ({
         position: x.position,
         positionMeta: { strategy: encodeLiquidityShape(x.shape) },
       })),
       source: this.subAccountIndex,
     });
-
-    console.log('LpPlan: ', LpPlan);
 
     return LpPlan;
   }
