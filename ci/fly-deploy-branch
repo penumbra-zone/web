@@ -1,0 +1,36 @@
+#!/bin/bash
+# CI script to deploy Veil from current git branch to a public fly.io URL.
+set -euo pipefail
+
+# Check args
+if [[ -z "${FLY_API_TOKEN:-}" ]]; then
+  >&2 echo "ERROR: FLY_API_TOKEN not found"
+  exit 1
+fi
+PENUMBRA_INDEXER_CA_CERT="${PENUMBRA_INDEXER_CA_CERT:?}"
+PENUMBRA_INDEXER_ENDPOINT="${PENUMBRA_INDEXER_ENDPOINT:?}"
+APP_NAME="${APP_NAME:-}"
+if [[ -z "$APP_NAME" ]] ; then
+  APP_NAME="$(git branch --show-current)"
+fi
+
+# Run the `flyctl` commands from the repo root, an easy way of ensuring
+# that the `fly.toml` config is picked up.
+repo_root="$(git rev-parse --show-toplevel)"
+cd "$repo_root" || exit 2
+
+# Create fly app if it doesn't exist
+if ! flyctl apps list --json | jq '.[].Name' -r | grep -q "^${APP_NAME}\$" ; then
+  flyctl apps create "$APP_NAME" --org penumbra-labs
+fi
+
+# Configure secrets from env. TODO: reuse across deployments.
+flyctl secrets set PENUMBRA_INDEXER_CA_CERT="$PENUMBRA_INDEXER_CA_CERT" --app "$APP_NAME"
+flyctl secrets set PENUMBRA_INDEXER_ENDPOINT="$PENUMBRA_INDEXER_ENDPOINT" --app "$APP_NAME"
+
+# Deploy with custom build args
+flyctl deploy --app "$APP_NAME" \
+  --build-arg BASE_URL="https://${APP_NAME}.fly.dev" \
+  --env BASE_URL="https://${APP_NAME}.fly.dev" \
+  --ha=false \
+  --strategy immediate
