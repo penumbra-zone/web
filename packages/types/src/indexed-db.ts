@@ -242,7 +242,7 @@ export interface IndexedDbInterface {
       id: PositionId;
       position: Position;
       subaccount?: AddressIndex;
-      positionMetdata?: PositionMetadata;
+      positionMetadata?: PositionMetadata;
     },
     void
   >;
@@ -420,7 +420,7 @@ export interface PositionRecord {
   id: Jsonified<PositionId>; // PositionId (must be JsonValue because ['id']['inner'] is a key )
   position: Jsonified<Position>; // Position
   subaccount?: Jsonified<AddressIndex>; // Position AddressIndex
-  positionMetdata?: Jsonified<PositionMetadata>;
+  positionMetadata?: Jsonified<PositionMetadata>;
 }
 
 export type Tables = Record<string, StoreNames<PenumbraDb>>;

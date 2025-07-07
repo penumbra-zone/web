@@ -27,7 +27,7 @@ export const lpStrategyCatalog: Impl['lpStrategyCatalog'] = async function* (req
       //  * Step 2: Use those position IDs to fetch position details from the full node.
       tradingPair: new TradingPair({}),
       subaccount: req.subaccount,
-      positionMetadata: positionBundle.positionMetdata,
+      positionMetadata: positionBundle.positionMetadata,
     });
 
     strategies.push(entry);
