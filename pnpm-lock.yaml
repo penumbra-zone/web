@@ -917,6 +917,10 @@ importers:
         version: 0.0.268
 
   packages/perspective:
+    optionalDependencies:
+      '@penumbra-zone/wasm':
+        specifier: workspace:*
+        version: link:../wasm
     devDependencies:
       '@bufbuild/protobuf':
         specifier: ^1.10.0
@@ -930,9 +934,6 @@ importers:
       '@penumbra-zone/protobuf':
         specifier: workspace:*
         version: link:../protobuf
-      '@penumbra-zone/wasm':
-        specifier: workspace:*
-        version: link:../wasm
 
   packages/protobuf:
     devDependencies:
