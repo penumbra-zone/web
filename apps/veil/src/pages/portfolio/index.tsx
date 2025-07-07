@@ -73,17 +73,19 @@ function MobilePortfolioPage() {
 const DesktopPortfolioPage = observer(() => {
   const { isPenumbraConnected, isCosmosConnected } = useUnifiedAssets();
   return (
-    <div className='container mx-auto flex max-w-[1136px] flex-col gap-4 py-8'>
-      <PenumbraWaves />
-
-      <WalletConnect />
-
-      {/* Asset Allocation Bars */}
-      {(isPenumbraConnected || isCosmosConnected) && <AssetBars />}
-
-      <AssetsTable />
-      <PortfolioPositionTabs />
+    <>
       <ShieldingTicker />
-    </div>
+      <div className='container mx-auto flex max-w-[1136px] flex-col gap-4 py-8'>
+        <PenumbraWaves />
+
+        <WalletConnect />
+
+        {/* Asset Allocation Bars */}
+        {(isPenumbraConnected || isCosmosConnected) && <AssetBars />}
+
+        <AssetsTable />
+        <PortfolioPositionTabs />
+      </div>
+    </>
   );
 });
