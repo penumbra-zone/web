@@ -9,6 +9,10 @@ export const lpStrategyCatalog: Impl['lpStrategyCatalog'] = async function* (req
   const services = await ctx.values.get(servicesCtx)();
   const { indexedDb } = await services.getWalletServices();
 
+  if (!req.subaccount) {
+    throw new Error('Missing required subaccount field');
+  }
+
   const strategies: LpStrategyCatalogResponse_StrategyEntry[] | undefined = [];
   for await (const lpStrategyCatalog of indexedDb.getPositionsByStrategyStream(
     req.subaccount,
