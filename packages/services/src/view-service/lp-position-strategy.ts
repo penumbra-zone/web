@@ -14,7 +14,6 @@ export const lpPositionBundle: Impl['lpPositionBundle'] = async function* (req, 
     throw new Error('Missing required fields: subaccount or positionMetadata');
   }
 
-  const entries: LpPositionBundleResponse_Entry[] | undefined = [];
   for await (const positionBundle of indexedDb.getPositionsByStrategyStream(
     req.subaccount,
     req.positionMetadata,
@@ -32,8 +31,6 @@ export const lpPositionBundle: Impl['lpPositionBundle'] = async function* (req, 
       positionId: [positionBundle.id],
     });
 
-    entries.push(entry);
+    yield new LpPositionBundleResponse({ entries: [entry] });
   }
-
-  yield new LpPositionBundleResponse({ entries });
 };
