@@ -9,8 +9,8 @@ export const lpPositionBundle: Impl['lpPositionBundle'] = async function* (req, 
   const services = await ctx.values.get(servicesCtx)();
   const { indexedDb } = await services.getWalletServices();
 
-  if (!req.subaccount || !req.positionMetadata) {
-    throw new Error('Missing required fields: subaccount or positionMetadata');
+  if (!req.subaccount) {
+    throw new Error('Missing required subaccount field');
   }
 
   const entries: LpPositionBundleResponse_Entry[] | undefined = [];

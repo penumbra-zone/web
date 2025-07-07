@@ -234,7 +234,7 @@ export interface IndexedDbInterface {
 
   getPositionsByStrategyStream(
     subaccount: AddressIndex,
-    positionMetadata: PositionMetadata,
+    positionMetadata?: PositionMetadata,
     positionState?: PositionState,
     tradingPair?: TradingPair,
   ): AsyncGenerator<
