@@ -270,14 +270,25 @@ export const PriceSlider = ({
     onInput([roundToDecimals(value1, quoteExponent), roundToDecimals(value2, quoteExponent)]);
   };
 
-  const setInputValue = (i: number, value: string) => {
-    const value1 = i === 0 ? value : (values[0]?.toString() ?? '');
-    const value2 = i === 1 ? value : (values[1]?.toString() ?? '');
+  const setInputValue = (index: number, value: string) => {
+    const value1 = index === 0 ? value : (values[0]?.toString() ?? '');
+    const value2 = index === 1 ? value : (values[1]?.toString() ?? '');
     changeValues(Number(value1), Number(value2));
     setInputValues([value1, value2]);
   };
 
-  const clearInputValues = () => setInputValues(undefined);
+  const clearInputValues = () => {
+    setInputValues(undefined);
+    if (!values[0] || !values[1]) {
+      return;
+    }
+
+    if (values[0] > values[1]) {
+      changeValues(values[1], values[1]);
+    } else if (values[1] < values[0]) {
+      changeValues(values[0], values[1]);
+    }
+  };
 
   useEffect(() => {
     if (width) {
