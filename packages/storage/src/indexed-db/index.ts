@@ -54,7 +54,6 @@ import {
   IdbUpdate,
   IndexedDbInterface,
   PenumbraDb,
-  PositionRecord,
 } from '@penumbra-zone/types/indexed-db';
 import type { Jsonified } from '@penumbra-zone/types/jsonified';
 import type {
@@ -792,8 +791,8 @@ export class IndexedDb implements IndexedDbInterface {
         let cursor = await store.index('strategy').openCursor(positionMetadata.strategy);
 
         while (cursor) {
-          const record = cursor.value as PositionRecord;
           const position = Position.fromJson(cursor.value.position);
+
           if (
             (!positionState || positionState.equals(position.state)) &&
             (!tradingPair || tradingPair.equals(position.phi?.pair)) &&
@@ -801,7 +800,12 @@ export class IndexedDb implements IndexedDbInterface {
               (cursor.value.subaccount &&
                 subaccount.equals(AddressIndex.fromJson(cursor.value.subaccount))))
           ) {
-            cont.enqueue(record);
+            cont.enqueue({
+              id: PositionId.fromJson(cursor.value.id),
+              position,
+              subaccount,
+              positionMetadata,
+            });
           }
           cursor = await cursor.continue();
         }
