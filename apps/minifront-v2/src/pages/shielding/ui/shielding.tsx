@@ -5,59 +5,16 @@ import { Tabs } from '@penumbra-zone/ui/Tabs';
 import { Density } from '@penumbra-zone/ui/Density';
 import { useBackground } from '@/shared/contexts/background-context';
 import { ShieldingInfoDialog } from './shielding-info-dialog';
-
-// Tab types
-type ShieldingTab = 'skip-deposit' | 'deposit' | 'withdraw';
+import { SkipDepositTab } from './skip-deposit-tab';
 
 // Tab configuration
 const SHIELDING_TABS = [
-  { label: 'Skip Deposit', value: 'skip-deposit' as const },
-  { label: 'Deposit', value: 'deposit' as const },
-  { label: 'Withdraw', value: 'withdraw' as const },
+  { value: 'skip-deposit', label: 'Skip Deposit', title: 'Shielding Assets' },
+  { value: 'deposit', label: 'Deposit', title: 'Shielding Assets' },
+  { value: 'withdraw', label: 'Withdraw', title: 'Unshielding Assets' },
 ];
 
-// Placeholder components for each tab
-const SkipDepositTab = () => (
-  <div className='flex h-96 items-center justify-center'>
-    <Text color='text.secondary'>
-      {/* TODO: Implement Skip Deposit functionality */}
-      Skip Deposit tab content will be implemented here
-    </Text>
-  </div>
-);
-
-const DepositTab = () => (
-  <div className='flex h-96 items-center justify-center'>
-    <Text color='text.secondary'>
-      {/* TODO: Implement Deposit functionality */}
-      Deposit tab content will be implemented here
-    </Text>
-  </div>
-);
-
-const WithdrawTab = () => (
-  <div className='flex h-96 items-center justify-center'>
-    <Text color='text.secondary'>
-      {/* TODO: Implement Withdraw functionality */}
-      Withdraw tab content will be implemented here
-    </Text>
-  </div>
-);
-
-// Recent Activity Component
-const RecentShieldingActivity = () => (
-  <div className='space-y-4'>
-
-    <Card title='Your Recent Shielding Activity'>
-      <div className='flex h-32 items-center justify-center'>
-        <Text color='text.secondary'>
-          {/* TODO: Implement activity list with real data */}
-          Recent shielding activity will be displayed here
-        </Text>
-      </div>
-    </Card>
-  </div>
-);
+type ShieldingTab = 'skip-deposit' | 'deposit' | 'withdraw';
 
 export const Shielding = () => {
   const [activeTab, setActiveTab] = useState<ShieldingTab>('skip-deposit');
@@ -70,39 +27,64 @@ export const Shielding = () => {
     } else {
       setBackground('shield');
     }
+
+    // Cleanup on unmount
+    return () => setBackground('default');
   }, [activeTab, setBackground]);
 
-  // Reset background when component unmounts
-  useEffect(() => {
-    return () => {
-      setBackground('default');
-    };
-  }, [setBackground]);
+  // Get current tab title
+  const currentTab = SHIELDING_TABS.find(tab => tab.value === activeTab);
+  const title = currentTab?.title ?? 'Shielding';
 
+  // Render tab content based on active tab
   const renderTabContent = () => {
     switch (activeTab) {
       case 'skip-deposit':
         return <SkipDepositTab />;
       case 'deposit':
-        return <DepositTab />;
+        return (
+          <div className='p-6'>
+            <div className='flex h-96 items-center justify-center'>
+              <Text color='text.secondary'>
+                {/* TODO: Implement Deposit functionality */}
+                Deposit tab content will be implemented here
+              </Text>
+            </div>
+          </div>
+        );
       case 'withdraw':
-        return <WithdrawTab />;
+        return (
+          <div className='p-6'>
+            <div className='flex h-96 items-center justify-center'>
+              <Text color='text.secondary'>
+                {/* TODO: Implement Withdraw functionality */}
+                Withdraw tab content will be implemented here
+              </Text>
+            </div>
+          </div>
+        );
       default:
         return <SkipDepositTab />;
     }
   };
 
   return (
-    <>
-        <div className='flex w-full flex-col mx-auto max-w-[560px] space-y-8'>
-          {/* Main Container */}
-          <Card
-            title={activeTab === 'withdraw' ? 'Unshielding Assets' : 'Shielding Assets'}
-            endContent={<ShieldingInfoDialog />}
-          >
-            {/* Tabs */}
+    <div className='mx-auto w-full max-w-xl space-y-6'>
+      <div className='flex flex-col items-center justify-between'>
+        {/* Title  */}
+        <div className='flex w-full items-center justify-between p-3'>
+          <Text large color='text.primary'>
+            {title}
+          </Text>
+          <ShieldingInfoDialog />
+        </div>
+
+        {/* Main Content Card */}
+        <div className='w-full'>
+          <Card>
+            {/* Tab Navigation */}
             <Density sparse>
-              <div className='border-b-2 border-other-tonal-stroke '>
+              <div className='border-b border-other-tonal-stroke'>
                 <Tabs
                   value={activeTab}
                   onChange={value => setActiveTab(value as ShieldingTab)}
@@ -111,14 +93,23 @@ export const Shielding = () => {
                 />
               </div>
             </Density>
-
-            {/* Tab Content */}
-            <div className='px-6 pb-6'>{renderTabContent()}</div>
+            <div className='flex min-h-48 items-center justify-center'>
+              {/* Tab Content */}
+              {renderTabContent()}
+            </div>
           </Card>
-
-          {/* Recent Activity Section */}
-          <RecentShieldingActivity />
         </div>
-    </>
+      </div>
+
+      {/* Recent Activity Section */}
+      <Card title='Your Recent Shielding Activity'>
+        <div className='flex min-h-32 items-center justify-center'>
+          <Text color='text.secondary'>
+            {/* TODO: Implement recent activity list */}
+            Recent activity will be displayed here
+          </Text>
+        </div>
+      </Card>
+    </div>
   );
 };

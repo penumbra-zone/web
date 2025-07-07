@@ -15,8 +15,16 @@ body > section[aria-live='polite'] {
 /* Custom background classes for shielding page */
 .bg-shield-background {
   background-image: url('/assets/background/shield-background.svg');
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-attachment: fixed !important;
 }
 
 .bg-unshield-background {
   background-image: url('/assets/background/unshield-background.svg');
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-attachment: fixed !important;
 }

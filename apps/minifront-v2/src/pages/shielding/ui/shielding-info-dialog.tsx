@@ -16,13 +16,13 @@ export const ShieldingInfoDialog = ({ className = '' }: ShieldingInfoDialogProps
       icon: <Shield size={20} className='text-primary-light' />,
       title: 'Shield Assets',
       content:
-        'Shielding moves your assets from transparent chains (like Ethereum, Cosmos Hub) into Penumbra\'s shielded pool, where they become private and can be used for private transactions, swaps, and staking.',
+        "Shielding moves your assets from transparent chains (like Ethereum, Cosmos Hub) into Penumbra's shielded pool, where they become private and can be used for private transactions, swaps, and staking.",
     },
     {
       icon: <ShieldOff size={20} className='text-unshield-light' />,
       title: 'Unshield Assets',
       content:
-        'Unshielding moves your assets from Penumbra\'s shielded pool back to transparent chains. This makes your assets visible on the destination chain and allows you to use them in transparent DeFi protocols.',
+        "Unshielding moves your assets from Penumbra's shielded pool back to transparent chains. This makes your assets visible on the destination chain and allows you to use them in transparent DeFi protocols.",
     },
     {
       icon: <ShieldAlert size={20} className='text-text-primary' />,
@@ -47,11 +47,7 @@ export const ShieldingInfoDialog = ({ className = '' }: ShieldingInfoDialogProps
             Information
           </Button>
         </Dialog.Trigger>
-        <Dialog.Content
-          title='Shielding Assets'
-          headerChildren={null}
-          buttons={null}
-        >
+        <Dialog.Content title='Shielding Assets' headerChildren={null} buttons={null}>
           <div className='flex flex-col gap-5 px-1 pt-2 pb-4'>
             {sections.map((section, index) => (
               <div key={index} className='flex items-start gap-3'>
@@ -72,4 +68,4 @@ export const ShieldingInfoDialog = ({ className = '' }: ShieldingInfoDialogProps
       </Dialog>
     </div>
   );
-}; 
+};

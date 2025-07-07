@@ -1,3 +1,5 @@
+/// <reference path="./vite-plugin-node-stdlib-browser.d.ts" />
+
 import path from 'path';
 import { defineConfig } from 'vite';
 import { fileURLToPath } from 'url';
@@ -5,6 +7,7 @@ import react from '@vitejs/plugin-react-swc';
 import svgr from 'vite-plugin-svgr';
 import url from 'node:url';
 import tailwindcss from '@tailwindcss/vite';
+import polyfillNode from 'vite-plugin-node-stdlib-browser';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -31,6 +34,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     plugins: [
+      polyfillNode(),
       tailwindcss(),
       react(),
       svgr({

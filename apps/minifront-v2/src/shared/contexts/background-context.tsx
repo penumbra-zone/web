@@ -29,4 +29,4 @@ export const BackgroundProvider = ({ children }: BackgroundProviderProps) => {
       {children}
     </BackgroundContext.Provider>
   );
-}; 
+};

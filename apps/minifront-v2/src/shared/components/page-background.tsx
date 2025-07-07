@@ -7,31 +7,22 @@ export const PageBackground = () => {
   useEffect(() => {
     const body = document.body;
     const html = document.documentElement;
-    
+
     // Remove existing background classes
-    const backgroundClasses = [
-      'bg-shield-background',
-      'bg-unshield-background', 
-      'bg-cover',
-      'bg-center',
-      'bg-no-repeat',
-      'bg-fixed'
-    ];
-    
+    const backgroundClasses = ['bg-shield-background', 'bg-unshield-background'];
+
     body.classList.remove(...backgroundClasses);
     html.classList.remove(...backgroundClasses);
 
-    // Apply background based on current state using Tailwind classes
+    // Apply background based on current state
     if (background === 'shield') {
       // Apply to both html and body to prevent scroll issues
-      const shieldClasses = ['bg-shield-background', 'bg-cover', 'bg-center', 'bg-no-repeat', 'bg-fixed'];
-      body.classList.add(...shieldClasses);
-      html.classList.add(...shieldClasses);
+      body.classList.add('bg-shield-background');
+      html.classList.add('bg-shield-background');
     } else if (background === 'unshield') {
-      // Apply to both html and body to prevent scroll issues  
-      const unshieldClasses = ['bg-unshield-background', 'bg-cover', 'bg-center', 'bg-no-repeat', 'bg-fixed'];
-      body.classList.add(...unshieldClasses);
-      html.classList.add(...unshieldClasses);
+      // Apply to both html and body to prevent scroll issues
+      body.classList.add('bg-unshield-background');
+      html.classList.add('bg-unshield-background');
     }
 
     // Cleanup function to remove background when component unmounts
@@ -43,4 +34,4 @@ export const PageBackground = () => {
 
   // This component doesn't render anything visible
   return null;
-}; 
+};
