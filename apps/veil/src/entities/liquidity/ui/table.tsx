@@ -14,6 +14,7 @@ import { useGetMetadata } from '@/shared/api/assets';
 import { LiquidityRow } from './liquidity-row';
 import { GroupedLiquidityRow } from './grouped-liquidity-row';
 import { useLps } from '../api/use-lps';
+import { connectionStore } from '@/shared/model/connection';
 
 export const LiquidityTable = observer(() => {
   const { getTableHeader, sortBy } = useSortableTableHeaders<keyof DisplayLP>(
@@ -22,13 +23,15 @@ export const LiquidityTable = observer(() => {
     'tableHeadingSmall',
   );
 
+  const { subaccount } = connectionStore;
   const { data: registry } = useRegistry();
   const usdc = registry.getAllAssets().find((asset: { symbol: string }) => asset.symbol === 'USDC');
   const usdcMetadata = useGetMetadata()(usdc?.penumbraAssetId) as unknown as Metadata;
   const displayPositions = getDisplayLPs({
     usdcMetadata,
   });
-  let positions = useLps({ subaccount: 0 })
+
+  let positionMetadata = useLps({ subaccount });
 
   const sortedLPs = useMemo<DisplayLP[]>(() => {
     return orderBy([...displayPositions], `sortValues.${sortBy.key}`, sortBy.direction);

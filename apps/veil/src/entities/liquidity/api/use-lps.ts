@@ -38,17 +38,17 @@ export const useLps = ({ subaccount }: { subaccount: number }) => {
   const { data: strategyBundles } = useQuery({
     queryKey: ['lp-position-bundle', subaccount],
     queryFn: async () => {
-      const result = penumbra.service(ViewService).lpPositionBundle({
+      const stream = penumbra.service(ViewService).lpPositionBundle({
         subaccount: new AddressIndex({ account: subaccount }),
         positionMetadata: new PositionMetadata({ strategy: 4, identifier: 0 }),
       });
-      for await (const item of result) {
-        console.log("item: ", item)
-      }
 
-      return result;
+      return stream;
     },
   });
 
-  console.log("strategyBundles: ", strategyBundles)
+  // Append trading pair information from the full node to the local position
+  // data fetched from prax. TODO: modify the `usePositions` hook to work here.
+
+  return strategyBundles;
 };
