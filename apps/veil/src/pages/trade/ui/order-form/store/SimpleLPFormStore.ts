@@ -92,6 +92,7 @@ export class SimpleLPFormStore {
       this.baseInput = round({
         value: String(Math.max(0, valueInQuote * this.marketPrice)) || '',
         decimals: this.baseAsset?.exponent ?? 6,
+        exponentialNotation: false,
       });
     }
 
@@ -110,6 +111,7 @@ export class SimpleLPFormStore {
       this.quoteInput = round({
         value: String(Math.max(0, valueInBase / this.marketPrice)) || '',
         decimals: this.quoteAsset?.exponent ?? 6,
+        exponentialNotation: false,
       });
     }
   };
