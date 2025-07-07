@@ -10,7 +10,6 @@ import { useRegistry } from '@/shared/api/registry';
 import { toValueView } from '@/shared/utils/value-view';
 import { Chain, Registry } from '@penumbra-labs/registry';
 import { bech32, bech32m } from 'bech32';
-import cn from 'clsx';
 import Image from 'next/image';
 
 const getChainFromForeignAddress = (
@@ -118,7 +117,7 @@ export const ShieldingTicker = () => {
   const hasDeposits = deposits && deposits.length > 0;
 
   return (
-    <div className={cn('fixed bottom-4 left-4 z-50', collapsed && 'pointer-events-none')}>
+    <div className='fixed bottom-4 left-4 z-50'>
       <Card>
         <div className='relative overflow-hidden'>
           <button
@@ -154,12 +153,15 @@ export const ShieldingTicker = () => {
           )}
 
           {collapsed && (
-            <div className='p-3 text-center'>
+            <button
+              onClick={() => setCollapsed(false)}
+              className='w-full p-3 pr-10 text-center transition-colors hover:bg-white/10'
+            >
               <div className='flex items-center justify-center gap-2'>
                 <div className='h-2 w-2 animate-pulse rounded-full bg-green-400'></div>
-                <Text small>🛡️ Shielding Activity</Text>
+                <Text small>Shielding Activity</Text>
               </div>
-            </div>
+            </button>
           )}
         </div>
       </Card>
