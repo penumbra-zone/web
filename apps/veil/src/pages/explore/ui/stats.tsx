@@ -32,7 +32,7 @@ export const ExploreStats = ({ stats }: { stats: Stats }) => {
   return (
     <div className='flex flex-wrap items-center gap-x-6 gap-y-2 text-sm' style={{ fontFamily: 'Inter, -apple-system, system-ui, sans-serif' }}>
       <div className='flex items-center gap-2'>
-        <span className='text-text-secondary'>24h Volume:</span>
+        <span className='text-text-secondary'>24h Trading Volume:</span>
         <span className='text-text-primary font-medium' style={{ fontVariantNumeric: 'tabular-nums' }}>
           {shortify(Number(getFormattedAmtFromValueView(volumeValue)))} {volumeValue.valueView.case === 'knownAssetId' ? volumeValue.valueView.value.metadata?.symbol : ''}
         </span>
@@ -41,13 +41,13 @@ export const ExploreStats = ({ stats }: { stats: Stats }) => {
       <span className='text-text-secondary/30 hidden tablet:inline'>•</span>
       
       <div className='flex items-center gap-2'>
-        <span className='text-text-secondary'>Trades:</span>
+        <span className='text-text-secondary'>Privacy Set 24h Volume:</span>
         <span className='text-text-primary font-medium' style={{ fontVariantNumeric: 'tabular-nums' }}>
-          {stats.trades.toLocaleString()}
+          $1.1M
         </span>
       </div>
       
-      <span className='text-text-secondary/30 hidden desktop:inline'>•</span>
+      <span className='text-text-secondary/30 hidden tablet:inline'>•</span>
       
       <div className='hidden desktop:flex items-center gap-2'>
         <span className='text-text-secondary'>Top Pair:</span>

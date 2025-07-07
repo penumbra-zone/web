@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
-import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 
 export const ListPairCTA = () => {
@@ -25,16 +24,12 @@ export const ListPairCTA = () => {
             </button>
           )}
         </div>
-        <Button 
-          onClick={() => {
-            // TODO: Implement provide liquidity functionality
-            console.log('Provide liquidity clicked');
-          }}
-          priority='secondary'
-          size='sm'
+        <a 
+          href='/trade/UM/USDC'
+          className='text-xs text-text-secondary underline hover:text-text-primary transition-colors'
         >
           Provide liquidity
-        </Button>
+        </a>
       </div>
       
       {showDetails && (
