@@ -60,47 +60,5 @@ jobs:
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          # Get all veil-pr-* apps
-          APPS=$(flyctl apps list --json | jq -r '.[] | select(.Name | startswith("veil-pr-")) | .Name')
-
-          CURRENT_TIME=$(date +%s)
-          TWELVE_HOURS=$((12 * 60 * 60))
-
-          for APP in $APPS; do
-            echo "Checking app: $APP"
-            
-            # Get deployment metadata
-            METADATA=$(flyctl apps show "$APP" --json | jq -r '.Metadata // {}')
-            DEPLOYED_AT=$(echo "$METADATA" | jq -r '.DEPLOYED_AT // ""')
-            PR_NUMBER=$(echo "$METADATA" | jq -r '.PR_NUMBER // ""')
-            
-            if [ -n "$DEPLOYED_AT" ]; then
-              # Convert deployment time to seconds
-              DEPLOY_TIME=$(date -d "$DEPLOYED_AT" +%s 2>/dev/null || date -j -f "%Y-%m-%dT%H:%M:%SZ" "$DEPLOYED_AT" +%s 2>/dev/null || echo 0)
-              
-              if [ $DEPLOY_TIME -gt 0 ]; then
-                TIME_DIFF=$((CURRENT_TIME - DEPLOY_TIME))
-                
-                if [ $TIME_DIFF -gt $TWELVE_HOURS ]; then
-                  echo "App $APP is older than 12 hours, deleting..."
-                  flyctl apps destroy "$APP" --yes
-                  
-                  # Comment on PR if PR number is available
-                  if [ -n "$PR_NUMBER" ] && [ "$PR_NUMBER" != "null" ]; then
-                    curl -X POST \
-                      -H "Authorization: token $GITHUB_TOKEN" \
-                      -H "Accept: application/vnd.github.v3+json" \
-                      "https://api.github.com/repos/${{ github.repository }}/issues/$PR_NUMBER/comments" \
-                      -d "{\"body\":\"### Deployment Cleaned Up\\n\\nThe Fly.io deployment for this PR has been automatically removed.\\n\\nReason: Deployment exceeded 12-hour limit\\nApp name: $APP\\nCleanup time: $(date -u +%Y-%m-%dT%H:%M:%SZ)\"}"
-                  fi
-                else
-                  echo "App $APP is only $((TIME_DIFF / 3600)) hours old, keeping..."
-                fi
-              else
-                echo "Could not parse deployment time for $APP"
-              fi
-            else
-              echo "No metadata found for $APP"
-            fi
-          done
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: ./ci/fly-cleanup-pr-deployments
