@@ -1,31 +1,13 @@
-import { Fragment } from 'react';
 import { observer } from 'mobx-react-lite';
-import Link from 'next/link';
-import { JsonViewer } from '@textea/json-viewer';
 import { TransactionInfo } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import type { Jsonified } from '@penumbra-zone/types/jsonified';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
-import { typeRegistry } from '@penumbra-zone/protobuf';
 import { Text } from '@penumbra-zone/ui/Text';
-import { Density } from '@penumbra-zone/ui/Density';
-import { AddressViewComponent } from '@penumbra-zone/ui/AddressView';
-import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
-import { ActionView } from '@penumbra-zone/ui/ActionView';
-import { shorten } from '@penumbra-zone/types/string';
-import { connectionStore } from '@/shared/model/connection';
-import { useGetMetadata } from '@/shared/api/assets';
-import { useFee } from '../api/use-fee';
-import { InfoRow } from './info-row';
+import { Button } from '@penumbra-zone/ui/Button';
+import { ExternalLink } from 'lucide-react';
 
 export const TxViewer = observer(({ txInfo }: { txInfo?: TransactionInfo }) => {
-  const { connected } = connectionStore;
-  const getMetadata = useGetMetadata();
-
   const txId = txInfo?.id && uint8ArrayToHex(txInfo.id.inner);
-  const fee = useFee(txInfo?.view);
-
-  // Use the transaction view directly
-  const txv = txInfo?.view;
+  const explorerUrl = txId ? `https://explorer.penumbra.zone/tx/${txId}` : null;
 
   return (
     <div className='flex flex-col gap-4'>
@@ -34,112 +16,28 @@ export const TxViewer = observer(({ txInfo }: { txInfo?: TransactionInfo }) => {
         {txId && <Text technical>{txId}</Text>}
       </div>
 
-      <div className='flex flex-col gap-1 rounded-sm bg-other-tonal-fill5 p-3 text-text-secondary'>
-        {txId && <InfoRow label='Transaction Hash' info={shorten(txId, 8)} copyText={txId} />}
-        {!!txInfo?.height && (
-          <InfoRow
-            label='Block Height'
-            info={
-              <Text detailTechnical decoration='underline'>
-                <Link href={`/inspect/block/${txInfo.height.toString()}`}>
-                  {txInfo.height.toString()}
-                </Link>
-              </Text>
-            }
-          />
+      <div className='flex flex-col gap-4 rounded-sm bg-other-tonal-fill5 p-6 text-text-secondary'>
+        <Text>
+          View this transaction on the Penumbra Explorer for detailed information including actions,
+          memos, and parameters.
+        </Text>
+
+        {explorerUrl && (
+          <div>
+            <Button
+              as='a'
+              href={explorerUrl}
+              target='_blank'
+              rel='noopener noreferrer'
+              priority='primary'
+              iconOnly={false}
+            >
+              <ExternalLink className='mr-2 h-4 w-4' />
+              View on Explorer
+            </Button>
+          </div>
         )}
       </div>
-
-      {txv?.bodyView?.memoView?.memoView && (
-        <div className='flex flex-col gap-2'>
-          <Text small color='text.primary'>
-            Memo
-          </Text>
-          <div className='flex flex-col gap-1 rounded-sm bg-other-tonal-fill5 p-3 text-text-secondary'>
-            {txv.bodyView.memoView.memoView.case === 'visible' &&
-            txv.bodyView.memoView.memoView.value.plaintext?.returnAddress ? (
-              <InfoRow
-                label='Return Address'
-                info={
-                  <Density slim>
-                    <AddressViewComponent
-                      truncate
-                      addressView={txv.bodyView.memoView.memoView.value.plaintext.returnAddress}
-                    />
-                  </Density>
-                }
-              />
-            ) : (
-              <InfoRow label='Return Address' info='Incognito' />
-            )}
-            {txv.bodyView.memoView.memoView.case === 'visible' &&
-              txv.bodyView.memoView.memoView.value.plaintext?.text && (
-                <InfoRow
-                  label='Message'
-                  info={txv.bodyView.memoView.memoView.value.plaintext.text}
-                />
-              )}
-          </div>
-        </div>
-      )}
-
-      <div className='flex flex-col gap-2'>
-        <Text small color='text.primary'>
-          Actions
-        </Text>
-        <div className='flex flex-col'>
-          {txv?.bodyView?.actionViews.map((action, index) => (
-            <Fragment key={index}>
-              <ActionView action={action} getMetadata={getMetadata} />
-              {index !== (txv.bodyView?.actionViews.length ?? 1) - 1 && (
-                <div className='h-2 w-full px-5'>
-                  <div className='h-full w-px border-l border-solid border-l-other-tonal-stroke' />
-                </div>
-              )}
-            </Fragment>
-          ))}
-        </div>
-      </div>
-
-      <div className='flex flex-col gap-2'>
-        <Text small color='text.primary'>
-          Parameters
-        </Text>
-        <div className='flex flex-col gap-1 rounded-sm bg-other-tonal-fill5 p-3 text-text-secondary'>
-          <InfoRow
-            label='Transaction Fee'
-            info={
-              <Density slim>
-                <ValueViewComponent valueView={fee} />
-              </Density>
-            }
-          />
-          {txv?.bodyView?.transactionParameters?.chainId && (
-            <InfoRow label='Chain ID' info={txv.bodyView.transactionParameters.chainId} />
-          )}
-        </div>
-      </div>
-
-      {connected && txInfo && (
-        <div className='flex flex-col gap-2'>
-          <Text small color='text.primary'>
-            Raw JSON
-          </Text>
-          <div>
-            <JsonViewer
-              value={txInfo.toJson({ typeRegistry }) as Jsonified<TransactionInfo>}
-              theme='dark'
-              className='p-3'
-              style={{ backgroundColor: '#fafafa0d' }}
-              enableClipboard
-              defaultInspectDepth={0}
-              displayDataTypes={false}
-              rootName={false}
-              quotesOnKeys={false}
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 });
