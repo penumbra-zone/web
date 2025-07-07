@@ -758,6 +758,24 @@ export class IndexedDb implements IndexedDbInterface {
     return Promise.resolve(notesForVoting);
   }
 
+  async getPositionMetadataById(
+    positionId: PositionId,
+  ): Promise<{ positionMetadata?: PositionMetadata } | undefined> {
+    assertPositionId(positionId);
+    const key = uint8ArrayToBase64(positionId.inner);
+    const positionRecord = await this.db.get('POSITIONS', key);
+
+    if (!positionRecord) {
+      throw new Error('Position record not found when trying to retrieve its state');
+    }
+
+    return {
+      positionMetadata: positionRecord.positionMetadata
+        ? PositionMetadata.fromJson(positionRecord.positionMetadata)
+        : undefined,
+    };
+  }
+
   async *getOwnedPositionIds(
     positionState: PositionState | undefined,
     tradingPair: TradingPair | undefined,
@@ -846,6 +864,7 @@ export class IndexedDb implements IndexedDbInterface {
     positionId: PositionId,
     newState: PositionState,
     subaccount?: AddressIndex,
+    positionMetadata?: PositionMetadata,
   ): Promise<void> {
     assertPositionId(positionId);
     const key = uint8ArrayToBase64(positionId.inner);
@@ -864,6 +883,9 @@ export class IndexedDb implements IndexedDbInterface {
         id: positionId.toJson() as Jsonified<PositionId>,
         position: position.toJson() as Jsonified<Position>,
         subaccount: subaccount ? (subaccount.toJson() as Jsonified<AddressIndex>) : undefined,
+        positionMetadata: positionMetadata
+          ? (positionMetadata.toJson() as Jsonified<PositionMetadata>)
+          : undefined,
       },
     });
   }

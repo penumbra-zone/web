@@ -107,6 +107,7 @@ export const mockIndexedDb: Mocked<IndexedDbInterface> = {
   upsertAuction: vi.fn(mockDisabled),
   upsertValidatorInfo: vi.fn(mockDisabled),
   getPositionsByStrategyStream: vi.fn(mockDisabled),
+  getPositionMetadataById: vi.fn(mockDisabled),
 };
 
 export interface AuctionMock {

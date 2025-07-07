@@ -116,6 +116,7 @@ export interface IndexedDbInterface {
     positionId: PositionId,
     newState: PositionState,
     subaccount?: AddressIndex,
+    positionMetadata?: PositionMetadata,
   ): Promise<void>;
   addEpoch(epoch: Epoch): Promise<void>;
   getEpochByHeight(height: bigint): Promise<Epoch | undefined>;
@@ -246,6 +247,10 @@ export interface IndexedDbInterface {
     },
     void
   >;
+
+  getPositionMetadataById(
+    positionId: PositionId,
+  ): Promise<{ positionMetadata?: PositionMetadata } | undefined>;
 }
 
 export interface PenumbraDb extends DBSchema {
