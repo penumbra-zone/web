@@ -13,6 +13,7 @@ import { useRegistry } from '@/shared/api/registry';
 import { useGetMetadata } from '@/shared/api/assets';
 import { LiquidityRow } from './liquidity-row';
 import { GroupedLiquidityRow } from './grouped-liquidity-row';
+import { useLps } from '../api/use-lps';
 
 export const LiquidityTable = observer(() => {
   const { getTableHeader, sortBy } = useSortableTableHeaders<keyof DisplayLP>(
@@ -27,6 +28,7 @@ export const LiquidityTable = observer(() => {
   const displayPositions = getDisplayLPs({
     usdcMetadata,
   });
+  let positions = useLps({ subaccount: 0 })
 
   const sortedLPs = useMemo<DisplayLP[]>(() => {
     return orderBy([...displayPositions], `sortValues.${sortBy.key}`, sortBy.direction);

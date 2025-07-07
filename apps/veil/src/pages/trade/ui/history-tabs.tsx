@@ -30,8 +30,7 @@ export const HistoryTabs = () => {
             onChange={value => setTab(value as PositionsTabsType)}
             options={[
               { value: PositionsTabsType.MY_POSITIONS, label: 'My Positions' },
-              /* TODO: uncomment manage liquidity tab */
-              // { value: PositionsTabsType.MANAGE_LIQUIDITY, label: 'Manage Liquidity' },
+              { value: PositionsTabsType.MANAGE_LIQUIDITY, label: 'Manage Liquidity' },
             ]}
           />
         </Density>
