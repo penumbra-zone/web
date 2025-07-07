@@ -13,7 +13,7 @@ export const useShieldingDeposits = (limit = 100) => {
       const serialized = await fetchShieldingDeposits(limit);
       return deserialize<ShieldingDepositWithMeta[]>(serialized);
     },
-    refetchInterval: 5000,
+    refetchInterval: 1000,
     staleTime: 5000,
   });
 };

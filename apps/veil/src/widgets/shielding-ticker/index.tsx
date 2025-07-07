@@ -32,6 +32,21 @@ const getChainFromForeignAddress = (
   return chain ?? null;
 };
 
+const getTimeAgo = (timestamp: number): string => {
+  const now = Date.now();
+  const diffMs = now - timestamp;
+  const diffSec = Math.floor(diffMs / 1000);
+  const diffMin = Math.floor(diffSec / 60);
+  const diffHrs = Math.floor(diffMin / 60);
+  const diffDays = Math.floor(diffHrs / 24);
+
+  if (diffSec < 60) return `${diffSec}s ago`;
+  if (diffMin < 60) return `${diffMin}m ago`;
+  if (diffHrs < 24) return `${diffHrs}h ago`;
+  return `${diffDays}d ago`;
+};
+
+
 export const ShieldingTicker = () => {
   const [collapsed, setCollapsed] = useState(false);
   const { data: deposits, isLoading } = useShieldingDeposits(100);
@@ -96,7 +111,7 @@ export const ShieldingTicker = () => {
 
         <div className='flex-shrink-0 text-right'>
           <Text detail color='text.secondary'>
-            #{deposit.height}
+            {getTimeAgo(deposit.timestamp)}
           </Text>
         </div>
       </div>

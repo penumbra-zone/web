@@ -12,6 +12,7 @@ export interface ShieldingDeposit {
   assetId: AssetId;
   foreignAddr: string;
   kind: string;
+  timestamp: number;
 }
 
 export interface ShieldingDepositWithMeta extends ShieldingDeposit {
@@ -33,12 +34,21 @@ export async function fetchShieldingDeposits(
   const registryClient = new ChainRegistryClient();
   const registry = await registryClient.remote.get(chainId);
 
-  // Query the pindexer database for recent inbound IBC transfers
+  // Query the pindexer database for recent inbound IBC transfers with timestamps
   const rows = await pindexerDb
     .selectFrom('ibc_transfer')
-    .select(['id', 'height', 'amount', 'asset', 'foreign_addr', 'kind'])
-    .where('kind', '=', 'inbound')
-    .orderBy('height', 'desc')
+    .innerJoin('block_details', 'ibc_transfer.height', 'block_details.height')
+    .select([
+      'ibc_transfer.id',
+      'ibc_transfer.height',
+      'ibc_transfer.amount',
+      'ibc_transfer.asset',
+      'ibc_transfer.foreign_addr',
+      'ibc_transfer.kind',
+      'block_details.timestamp',
+    ])
+    .where('ibc_transfer.kind', '=', 'inbound')
+    .orderBy('ibc_transfer.height', 'desc')
     .limit(Math.min(limit, 100))
     .execute();
 
@@ -57,6 +67,7 @@ export async function fetchShieldingDeposits(
       assetId,
       foreignAddr: row.foreign_addr,
       kind: row.kind,
+      timestamp: row.timestamp.getTime(),
       metadata,
     };
   });
