@@ -24,17 +24,11 @@ export const TxViewer = observer(({ txInfo }: { txInfo?: TransactionInfo }) => {
 
         {explorerUrl && (
           <div>
-            <Button
-              as='a'
-              href={explorerUrl}
-              target='_blank'
-              rel='noopener noreferrer'
-              priority='primary'
-              iconOnly={false}
-            >
-              <ExternalLink className='mr-2 h-4 w-4' />
-              View on Explorer
-            </Button>
+            <a href={explorerUrl} target='_blank' rel='noopener noreferrer'>
+              <Button priority='primary' icon={ExternalLink}>
+                View on Explorer
+              </Button>
+            </a>
           </div>
         )}
       </div>
