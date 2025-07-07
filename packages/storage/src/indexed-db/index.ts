@@ -786,19 +786,25 @@ export class IndexedDb implements IndexedDbInterface {
 
   async *getPositionsByStrategyStream(
     subaccount: AddressIndex,
-    positionMetadata: PositionMetadata,
+    positionMetadata?: PositionMetadata,
     positionState?: PositionState,
     tradingPair?: TradingPair,
   ) {
     yield* new ReadableStream({
       start: async cont => {
         const store = this.db.transaction('POSITIONS').store;
-        let cursor = await store.index('strategy').openCursor(positionMetadata.strategy);
+        let cursor = await store.index('strategy').openCursor();
 
         while (cursor) {
           const position = Position.fromJson(cursor.value.position);
 
+          let metadata: PositionMetadata | undefined;
+          if (cursor.value.positionMetadata) {
+            metadata = PositionMetadata.fromJson(cursor.value.positionMetadata);
+          }
+          
           if (
+            (!positionMetadata || positionMetadata.equals(metadata)) &&
             (!positionState || positionState.equals(position.state)) &&
             (!tradingPair || tradingPair.equals(position.phi?.pair)) &&
             cursor.value.subaccount &&
@@ -808,7 +814,7 @@ export class IndexedDb implements IndexedDbInterface {
               id: PositionId.fromJson(cursor.value.id),
               position,
               subaccount,
-              positionMetadata,
+              positionMetadata: metadata,
             });
           }
           cursor = await cursor.continue();
