@@ -802,7 +802,7 @@ export class IndexedDb implements IndexedDbInterface {
           if (cursor.value.positionMetadata) {
             metadata = PositionMetadata.fromJson(cursor.value.positionMetadata);
           }
-          
+
           if (
             (!positionMetadata || positionMetadata.equals(metadata)) &&
             (!positionState || positionState.equals(position.state)) &&
