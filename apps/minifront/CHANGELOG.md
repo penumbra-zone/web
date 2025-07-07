@@ -1,5 +1,16 @@
 # minifront
 
+## 6.35.0
+
+### Minor Changes
+
+- d3b1d78: feat: establish minifront-v2 app with Transactions UI and Transfer Page
+
+### Patch Changes
+
+- Updated dependencies [d3b1d78]
+  - @penumbra-zone/ui-deprecated@21.1.0
+
 ## 6.34.7
 
 ### Patch Changes

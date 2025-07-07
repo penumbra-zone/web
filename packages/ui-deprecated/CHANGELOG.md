@@ -1,5 +1,11 @@
 # @penumbra-zone/ui
 
+## 21.1.0
+
+### Minor Changes
+
+- d3b1d78: feat: establish minifront-v2 app with Transactions UI and Transfer Page
+
 ## 21.0.2
 
 ### Patch Changes
