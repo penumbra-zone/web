@@ -42,14 +42,15 @@
     "@bufbuild/protobuf": "^1.10.0",
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
-    "@penumbra-zone/protobuf": "workspace:*",
+    "@penumbra-zone/protobuf": "workspace:*"
+  },
+  "optionalDependencies": {
     "@penumbra-zone/wasm": "workspace:*"
   },
   "peerDependencies": {
     "@bufbuild/protobuf": "^1.10.0",
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
-    "@penumbra-zone/protobuf": "workspace:*",
-    "@penumbra-zone/wasm": "workspace:*"
+    "@penumbra-zone/protobuf": "workspace:*"
   }
 }
