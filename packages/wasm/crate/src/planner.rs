@@ -1,6 +1,6 @@
 use std::collections::BTreeMap;
 use std::mem;
-use std::num::NonZeroU32;
+use std::num::{NonZero, NonZeroU32};
 
 use anyhow::anyhow;
 use decaf377::{Fq, Fr};
@@ -413,6 +413,11 @@ pub async fn plan_transaction_inner<Db: Database>(
         actions_list.push(ActionPlan::Ics20Withdrawal(ics20_withdrawal.try_into()?));
     }
 
+    // Generate a shared bundle_identifier for positions actions. The Relationship here is 
+    // that all positions with the same `bundle_id` must share the same `strategy_tag`.
+    let bundle_identifier = NonZeroU32::new(OsRng.next_u32())
+        .expect("randomizer for identifier");
+
     // Note: during action creation, a convenience method is invoked that generates the `PositionMetadatakey`
     // derived from the outgoing viewing key (OVK), and encrypt the plaintext `PositionMetadata`
     // with the `PositionMetadatakey`.
@@ -421,23 +426,18 @@ pub async fn plan_transaction_inner<Db: Database>(
         position_meta,
     } in request.position_opens
     {
-        // Relationship here is that all positions with the same `bundle_id` must share the same `strategy_tag`.
-        let bundle_identifier = NonZeroU32::new(OsRng.next_u32());
-        let mut position_metadata: Option<PositionMetadata> = position_meta
-            .map(TryInto::try_into)
-            .transpose()
-            .expect("invalid or malformed position metadata");
-
-        if let Some(ref mut metadata) = position_metadata {
-            metadata.identifier =
-                bundle_identifier.expect("invalid or malformed position metadata identifier");
-        }
+        let metadata = position_meta.expect("invalid or malformed position metadata");
+        let strategy = NonZero::new(metadata.strategy).unwrap();
+        let metadata_reconstructed = PositionMetadata {
+            identifier: bundle_identifier,
+            strategy,
+        };
 
         actions_list.push(ActionPlan::PositionOpen(PositionOpenPlan {
             position: position
                 .ok_or_else(|| anyhow!("missing position in PositionOpenPlan"))?
                 .try_into()?,
-            metadata: position_metadata,
+            metadata: Some(metadata_reconstructed),
         }));
     }
 

@@ -250,8 +250,6 @@ export class OrderFormStore {
       source: this.subAccountIndex,
     });
 
-    console.log('LpPlan: ', LpPlan);
-
     return LpPlan;
   }
 
