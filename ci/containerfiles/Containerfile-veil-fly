@@ -31,6 +31,27 @@ RUN pnpm install --prefer-offline --ignore-scripts
 # generate protobuf files (creates gen/ directory)
 RUN pnpm exec turbo run proto
 
+# ⣿⣿⣿⣿⣿⣿⡟⠁⠄⠄⠄⠄⣠⣤⣴⣶⣶⣶⣶⣤⡀⠈⠙⢿⣿⣿⣿⣿⣿
+# ⣿⣿⣿⣿⣿⡟⠄⠄⠄⠄⠄⣸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣆⠄⠈⣿⣿⣿⣿⣿
+# ⣿⣿⣿⣿⣿⠁⠄⠄⠄⢀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠄⠄⢺⣿⣿⣿⣿
+# ⣿⣿⣿⣿⣿⡄⠄⠄⠄⠙⠻⠿⣿⣿⣿⣿⠿⠿⠛⠛⠻⣿⡄⠄⣾⣿⣿⣿⣿ and now...
+# ⣿⣿⣿⣿⣿⡇⠄⠄⠁👁️ ⠄⢹⣿⡗⠄ 👁️ ⢄⡀⣾⢀⣿⣿⣿ check this out!
+# ⣿⣿⣿⣿⣿⡇⠘⠄⠄⠄⢀⡀⠄⣿⣿⣷⣤⣤⣾⣿⣿⣿⣧⢸⣿⣿⣿⣿⣿
+# ⣿⣿⣿⣿⣿⡇⠄⣰⣿⡿⠟⠃⠄⣿⣿⣿⣿⣿⡛⠿⢿⣿⣷⣾⣿⣿⣿⣿⣿
+# ⣿⣿⣿⣿⣿⣿⡄⠈⠁⠄⠄⠄⠄⠻⠿⢛⣿⣿⠿⠂⠄⢹⢹⣿⣿⣿⣿⣿⣿
+# ⣿⣿⣿⣿⣿⣿⣿⡐⠐⠄⠄⣠⣀⣀⣚⣯⣵⣶⠆⣰⠄⠞⣾⣿⣿⣿⣿⣿⣿
+# ⣿⣿⣿⣿⣿⣿⣿⣷⡄⠄⠄⠈⠛⠿⠿⠿⣻⡏⢠⣿⣎⣾⣿⣿⣿⣿⣿⣿⣿
+# ⣿⣿⣿⣿⣿⣿⡿⠟⠛⠄⠄⠄⠄⠙⣛⣿⣿⣵⣿⡿⢹⡟⣿⣿⣿⣿⣿
+
+# Create stub implementations for wasm functions
+RUN mkdir -p packages/perspective/src/wasm-stubs && \
+    echo "export const getAddressIndexByAddress = (_fullViewingKey: any, _address: any): any => undefined;" > packages/perspective/src/wasm-stubs/address.ts && \
+    echo "export const getAuctionId = (_schedule: any): any => ({});" > packages/perspective/src/wasm-stubs/auction.ts
+
+# Patch perspective source files to use stubs instead of wasm (only for Docker build)
+RUN sed -i "s|from '@penumbra-zone/wasm/address'|from '../wasm-stubs/address.js'|" packages/perspective/src/plan/get-address-view.ts && \
+    sed -i "s|from '@penumbra-zone/wasm/auction'|from '../wasm-stubs/auction.js'|" packages/perspective/src/plan/view-action-plan.ts
+
 RUN pnpm run postinstall || echo "Syncpack completed with warnings"
 
 RUN pnpm rebuild canvas
