@@ -232,12 +232,20 @@ export interface IndexedDbInterface {
     void
   >;
 
-  getPositionsByStrategyStream(subaccount: AddressIndex, positionMetadata: PositionMetadata, positionState?: PositionState, tradingPair?: TradingPair): AsyncGenerator<{
+  getPositionsByStrategyStream(
+    subaccount: AddressIndex,
+    positionMetadata: PositionMetadata,
+    positionState?: PositionState,
+    tradingPair?: TradingPair,
+  ): AsyncGenerator<
+    {
       id: PositionId;
       position: Position;
       subaccount?: AddressIndex;
       positionMetdata?: PositionMetadata;
-    }, void>;
+    },
+    void
+  >;
 }
 
 export interface PenumbraDb extends DBSchema {

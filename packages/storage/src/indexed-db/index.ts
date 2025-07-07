@@ -784,7 +784,12 @@ export class IndexedDb implements IndexedDbInterface {
     });
   }
 
-  async *getPositionsByStrategyStream(subaccount: AddressIndex, positionMetadata: PositionMetadata, positionState?: PositionState, tradingPair?: TradingPair) {
+  async *getPositionsByStrategyStream(
+    subaccount: AddressIndex,
+    positionMetadata: PositionMetadata,
+    positionState?: PositionState,
+    tradingPair?: TradingPair,
+  ) {
     yield* new ReadableStream({
       start: async cont => {
         const store = this.db.transaction('POSITIONS').store;
@@ -796,9 +801,8 @@ export class IndexedDb implements IndexedDbInterface {
           if (
             (!positionState || positionState.equals(position.state)) &&
             (!tradingPair || tradingPair.equals(position.phi?.pair)) &&
-            (!subaccount ||
-              (cursor.value.subaccount &&
-                subaccount.equals(AddressIndex.fromJson(cursor.value.subaccount))))
+            cursor.value.subaccount &&
+            subaccount.equals(AddressIndex.fromJson(cursor.value.subaccount))
           ) {
             cont.enqueue({
               id: PositionId.fromJson(cursor.value.id),
