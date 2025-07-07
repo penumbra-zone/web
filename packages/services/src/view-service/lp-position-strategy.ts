@@ -4,7 +4,6 @@ import {
   LpPositionBundleResponse,
   LpPositionBundleResponse_Entry,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { TradingPair } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 
 export const lpPositionBundle: Impl['lpPositionBundle'] = async function* (req, ctx) {
   const services = await ctx.values.get(servicesCtx)();
@@ -22,11 +21,8 @@ export const lpPositionBundle: Impl['lpPositionBundle'] = async function* (req, 
     req.tradingPair,
   )) {
     const entry = new LpPositionBundleResponse_Entry({
-      // Placeholder: trading pair to be filled in by the caller using a full node query.
-      //  * Step 1: Query prax to retrieve position IDs.
-      //  * Step 2: Use those position IDs to fetch position details from the full node.
-      tradingPair: new TradingPair({}),
-      subaccount: req.subaccount,
+      tradingPair: positionBundle.position.phi?.pair,
+      subaccount: positionBundle.subaccount,
       positionMetadata: positionBundle.positionMetadata,
       positionState: positionBundle.position.state,
       positionId: [positionBundle.id],
