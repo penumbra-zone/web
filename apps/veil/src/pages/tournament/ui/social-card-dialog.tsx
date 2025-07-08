@@ -21,12 +21,9 @@ import { useSpecificDelegatorSummary } from '../api/use-specific-delegator-summa
 import { useCurrentEpoch } from '../api/use-current-epoch';
 import { LqtDelegatorHistoryData } from '../server/delegator-history';
 import { formatTimeRemaining } from '@/shared/utils/format-time';
+import { useClientEnv } from '@/shared/api/env';
 
 export const dismissedKey = 'veil-tournament-social-card-dismissed';
-
-// We hardcode the URL to Veil to be the prod instance, rather than testing instances.
-// This value is used for generated a URL to the LQT, for sharing on social media sites.
-const baseUrl = 'https://dex.penumbra.zone';
 
 // Custom hook that consolidates all location storage operations.
 export function useTournamentSocialCard(epoch: number | undefined) {
@@ -196,6 +193,7 @@ export const SocialCardDialog = observer(
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [dontShowAgain, setDontShowAgain] = useState(false);
+    const { BASE_URL: baseUrl } = useClientEnv();
 
     const text = `Just won ${earnings} UM from the @penumbrazone Liquidity Tournament
 Delegated UM. Voted. Earned. All without giving up privacy.

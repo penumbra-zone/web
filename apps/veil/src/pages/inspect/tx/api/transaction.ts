@@ -1,17 +1,20 @@
 import { useQuery } from '@tanstack/react-query';
 import { createClient } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
-import { getGrpcTransport } from '@/shared/api/transport';
+import { useGrpcTransport } from '@/shared/api/transport';
 import { TransactionInfo } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { TransactionId } from '@penumbra-zone/protobuf/penumbra/core/txhash/v1/txhash_pb';
 import { hexToUint8Array } from '@penumbra-zone/types/hex';
 
 export const useTransactionInfo = (txHash: string, connected: boolean) => {
+  const { data: grpc } = useGrpcTransport();
   return useQuery({
     queryKey: ['transaction', txHash, connected],
     retry: 1,
     queryFn: async () => {
-      const grpc = await getGrpcTransport();
+      if (!grpc) {
+        throw new Error("Impossible: useTransactionInfo's query is broken");
+      }
       const hash = hexToUint8Array(txHash);
 
       if (connected) {
@@ -30,6 +33,6 @@ export const useTransactionInfo = (txHash: string, connected: boolean) => {
         id: new TransactionId({ inner: hash }),
       });
     },
-    enabled: !!txHash,
+    enabled: !!txHash && !!grpc,
   });
 };
