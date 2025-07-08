@@ -93,7 +93,7 @@ const previousEpochsQuery = async ({ limit, page, sortDirection }: PreviousEpoch
 
 const totalEpochsQuery = async () => {
   return pindexerDb
-    .selectFrom(pindexerDb.selectFrom('lqt.gauge').select('epoch').groupBy('epoch'))
+    .selectFrom(pindexerDb.selectFrom('lqt.gauge').select('epoch').groupBy('epoch').as('gauge'))
     .select(exp => [exp.fn.countAll().as('total')])
     .executeTakeFirst();
 };
