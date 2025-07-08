@@ -8,13 +8,14 @@ import { makeAutoObservable } from 'mobx';
 import { openToast } from '@penumbra-zone/ui/Toast';
 import { penumbra } from '@/shared/const/penumbra';
 import { ViewService } from '@penumbra-zone/protobuf';
-import { envQueryFn } from '@/shared/api/env/env';
+import { ClientEnv } from '@/shared/api/env/types';
 
 const SUBACCOUNT_LS_KEY = 'veil-connection-subaccount';
 
 class ConnectionStateStore {
   connected = false;
   connectedLoading = true;
+  clientEnv: ClientEnv | undefined;
   manifest: PenumbraManifest | undefined;
 
   /** Index of the selected subaccount */
@@ -107,15 +108,12 @@ class ConnectionStateStore {
 
   // Checks if the connected wallet's chainId is the same as DEX's chainId. Disconnects if not.
   async checkWrongChain() {
-    const [parameters, env] = await Promise.all([
-      penumbra.service(ViewService).appParameters({}),
-      await envQueryFn(),
-    ]);
+    const [parameters] = await Promise.all([penumbra.service(ViewService).appParameters({})]);
 
     const walletChainId = parameters.parameters?.chainId;
-    const dexChainId = env.PENUMBRA_CHAIN_ID;
+    const dexChainId = this.clientEnv?.PENUMBRA_CHAIN_ID;
 
-    if (!walletChainId || walletChainId !== dexChainId) {
+    if (!walletChainId || (dexChainId && walletChainId !== dexChainId)) {
       alert(
         `Connection denied. Your wallet is connected to the wrong chain "${walletChainId}". Please connect to "${dexChainId}".`,
       );
@@ -123,7 +121,8 @@ class ConnectionStateStore {
     }
   }
 
-  async setup() {
+  async setup(clientEnv: ClientEnv) {
+    this.clientEnv = clientEnv;
     this.setManifest(penumbra.manifest);
 
     penumbra.onConnectionStateChange(event => {
