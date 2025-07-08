@@ -1,5 +1,9 @@
 import Image from 'next/image';
+import { ExternalLink } from 'lucide-react';
 import { Text } from '@penumbra-zone/ui/Text';
+import { Button } from '@penumbra-zone/ui/Button';
+
+const LQT_MARKETING_URL = 'https://penumbra.zone/tournament';
 
 export const Explainer = () => {
   return (
@@ -62,6 +66,13 @@ export const Explainer = () => {
             </Text>
           </div>
         </div>
+
+        {/* eslint-disable-next-line react/jsx-no-target-blank -- we want analytics to see referrers */}
+        <a href={LQT_MARKETING_URL} target='_blank'>
+          <Button icon={ExternalLink} priority='primary'>
+            Learn More
+          </Button>
+        </a>
       </div>
     </div>
   );
