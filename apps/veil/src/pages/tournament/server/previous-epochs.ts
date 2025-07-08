@@ -73,9 +73,7 @@ const previousEpochsQuery = async ({ limit, page, sortDirection }: PreviousEpoch
       sql<string>`encode(${exp.ref('gauge.asset_id')}, 'base64')`.as('asset_id'),
     ])
     .orderBy('epoch', sortDirection)
-    .orderBy('portion', 'desc')
-    .limit(limit)
-    .offset(limit * (page - 1));
+    .orderBy('portion', 'desc');
 
   // 2. group by 'epoch' and aggregate the results into a JSON array
   return pindexerDb
@@ -88,12 +86,14 @@ const previousEpochsQuery = async ({ limit, page, sortDirection }: PreviousEpoch
     ])
     .orderBy('epoch', sortDirection)
     .groupBy('epoch')
+    .limit(limit)
+    .offset(limit * (page - 1))
     .execute();
 };
 
 const totalEpochsQuery = async () => {
   return pindexerDb
-    .selectFrom('lqt.gauge')
+    .selectFrom(pindexerDb.selectFrom('lqt.gauge').select('epoch').groupBy('epoch'))
     .select(exp => [exp.fn.countAll().as('total')])
     .executeTakeFirst();
 };
