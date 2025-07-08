@@ -1,5 +1,26 @@
 # penumbra-veil
 
+## 0.2.0
+
+### Minor Changes
+
+- 23d578b: Add additional props to Icon & TextInput
+
+### Patch Changes
+
+- d3b1d78: feat: establish minifront-v2 app with Transactions UI and Transfer Page
+- 044daa9: Remove absoluteStrokeWidth prop from Icon
+- Updated dependencies [ad72bd1]
+- Updated dependencies [82700e9]
+- Updated dependencies [54543d9]
+- Updated dependencies [23d578b]
+- Updated dependencies [9658941]
+- Updated dependencies [14a8ccd]
+- Updated dependencies [a42b5c2]
+- Updated dependencies [d3b1d78]
+- Updated dependencies [044daa9]
+  - @penumbra-zone/ui@16.0.0
+
 ## 0.1.7
 
 ### Patch Changes

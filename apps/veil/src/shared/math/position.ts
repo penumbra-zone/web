@@ -243,9 +243,9 @@ export const simpleLiquidityPositions = (plan: SimpleLiquidityPlan): Position[] 
   const totalRange = plan.upperPrice - plan.lowerPrice;
   const marketPosition = (plan.marketPrice - plan.lowerPrice) / totalRange;
 
-  // Calculate number of positions for each range, ensuring at least 1 position per range
-  const lowerPositionsAmount = Math.max(1, Math.floor(plan.positions * marketPosition));
-  const upperPositionsAmount = Math.max(1, plan.positions - lowerPositionsAmount);
+  // Calculate number of positions for each range
+  const lowerPositionsAmount = Math.max(0, Math.floor(plan.positions * marketPosition));
+  const upperPositionsAmount = Math.max(0, plan.positions - lowerPositionsAmount);
 
   // Calculate step widths for each range
   const lowerStepWidth = (plan.marketPrice - plan.lowerPrice) / lowerPositionsAmount;

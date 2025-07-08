@@ -1,5 +1,12 @@
 # node-status
 
+## 4.1.71
+
+### Patch Changes
+
+- Updated dependencies [d3b1d78]
+  - @penumbra-zone/ui-deprecated@21.1.0
+
 ## 4.1.70
 
 ### Patch Changes

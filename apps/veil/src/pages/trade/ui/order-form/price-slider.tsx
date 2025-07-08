@@ -187,8 +187,8 @@ const ValueInput = ({
   value: number;
   maxWidth: number;
   elevate: boolean;
-  exponent: number;
   textsXPosRef: [[number, number], [number, number]];
+  exponent: number | undefined;
 }) => {
   const textRef = useRef<HTMLDivElement>(null);
   const textWidth = useWidth(textRef, [value]);
@@ -219,7 +219,7 @@ const ValueInput = ({
       `}
       style={{ left }}
     >
-      {round({ value, decimals: exponent })}
+      {round({ value, decimals: exponent ?? 6, exponentialNotation: false })}
     </div>
   );
 };

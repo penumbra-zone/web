@@ -62,7 +62,7 @@ export const SimpleLiquidityOrderForm = observer(
     return (
       <div className='p-4'>
         <div className='mb-4'>
-          <div className='flex items-center gap-1 leading-6'>
+          <div className='mb-2 flex items-center gap-1 leading-6'>
             <Text small color='text.secondary'>
               Enter Amounts
             </Text>
