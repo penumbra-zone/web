@@ -39,8 +39,8 @@ export const Explainer = () => {
               Provide Liquidity
             </Text>
             <Text variant='small' color='text.secondary'>
-              Provide the best liquidity in response to delegator votes in order to deepen what is
-              available for trading. LPs earn rewards based on how much their positions are used.
+              Provide quality liquidity on the UM pair for incentivized assets, as voted for by
+              delegators. LPs earn rewards based on how much their positions are used.
             </Text>
           </div>
         </div>
