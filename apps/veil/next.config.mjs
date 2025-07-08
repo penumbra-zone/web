@@ -1,10 +1,42 @@
 import bundleAnalyzer from '@next/bundle-analyzer';
+import { execSync } from 'child_process';
+
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
 });
 
+// Look up the specific git commit for the app, to include in the footer.
+const getCommitInfo = () => {
+  try {
+    const commitHash = execSync('git rev-parse HEAD').toString().trim();
+    const commitDate = execSync('git log -1 --format=%cI').toString().trim();
+    let gitOriginUrl = execSync('git remote get-url origin')
+      .toString()
+      .trim()
+      .replace(/\.git$/, '');
+
+    if (gitOriginUrl.startsWith('git@github.com:')) {
+      gitOriginUrl = gitOriginUrl.replace('git@github.com:', 'https://github.com/');
+    }
+
+    return {
+      COMMIT_HASH: commitHash,
+      COMMIT_DATE: commitDate,
+      GIT_ORIGIN_URL: gitOriginUrl,
+    };
+  } catch (error) {
+    console.warn('Failed to get commit info:', error);
+    return {
+      COMMIT_HASH: 'unknown',
+      COMMIT_DATE: 'unknown',
+      GIT_ORIGIN_URL: 'unknown',
+    };
+  }
+};
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  env: getCommitInfo(),
   serverExternalPackages: ['pino-pretty'],
   experimental: {
     optimizePackageImports: ['@penumbra-zone/ui', 'chain-registry', 'osmo-query', 'cosmos-kit'],
