@@ -51,11 +51,17 @@ export const AddressViewComponent = ({
   const isLqt = addressIndex && isLqtAddressIndex(addressIndex);
   const isRandomized = !isLqt && addressIndex?.randomizer.some(v => v);
 
-  const encodedAddress = external ? address.altBech32m : bech32mAddress(address);
+  let indexLabel = '';
+  if (addressIndex) {
+    indexLabel =
+      addressIndex.account === 0 ? 'Main Account' : `Sub-Account ${addressIndex.account}`;
+  }
 
-  // Sub-account selector logic
-  const getAccountLabel = (index: number) =>
-    index === 0 ? 'Main Account' : `Sub-Account ${index}`;
+  const randomizedLabel = isRandomized ? 'IBC Deposit Address for' : '';
+  const lqtLabel = isLqt ? 'My Tournament Address for' : '';
+  const accountLabel = `${randomizedLabel}${lqtLabel} ${indexLabel}`;
+
+  const encodedAddress = external ? address.altBech32m : bech32mAddress(address);
 
   return (
     <div className={'flex items-center gap-2 text-text-primary'}>
@@ -65,12 +71,13 @@ export const AddressViewComponent = ({
         </div>
       )}
 
-      <div className={cn('flex items-center', truncate && 'max-w-[150px] truncate')}>
+      <div
+        className={cn('flex items-center', truncate && 'max-w-[150px] truncate')}
+        title={addressIndex ? accountLabel : encodedAddress}
+      >
         {addressIndex ? (
           <Text variant={textVariantByDensity(density)} truncate={truncate}>
-            {isRandomized && 'IBC Deposit Address for '}
-            {isLqt && 'Tournament Address for '}
-            {getAccountLabel(addressIndex.account)}
+            {accountLabel}
           </Text>
         ) : (
           <Text variant={textVariantByDensity(density)} truncate={truncate}>
