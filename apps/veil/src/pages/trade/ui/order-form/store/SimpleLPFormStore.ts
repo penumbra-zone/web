@@ -205,7 +205,7 @@ export class SimpleLPFormStore {
     return simpleLiquidityPositions({
       baseAsset: this._baseAsset,
       quoteAsset: this._quoteAsset,
-      baseLiquidity: Number(this.baseInput) / this.marketPrice,
+      baseLiquidity: Number(this.baseInput),
       quoteLiquidity: Number(this.quoteInput),
       upperPrice: this.upperPrice,
       lowerPrice: this.lowerPrice,
