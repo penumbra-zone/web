@@ -9,7 +9,7 @@ export const VeilVersion = () => {
 
   const shortHash = commitHash.substring(0, 7);
   const formattedDate =
-    commitDate !== 'unknown' ? format(new Date(commitDate), 'MMM d, yyyy') : 'unknown';
+    commitDate !== 'unknown' ? format(new Date(commitDate), "MMM dd yyyy HH:mm:ss 'GMT'x") : 'unknown';
 
   const commitUrl = gitOriginUrl !== 'unknown' ? `${gitOriginUrl}/commit/${commitHash}` : '#';
 
