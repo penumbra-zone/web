@@ -37,7 +37,7 @@ export const VotedFor = ({ votedFor }: { votedFor: ValueView }) => {
 export const VotingInfo = observer(({ epoch, identifier }: VotingInfoProps) => {
   const votingInfo = useVotingInfo(epoch);
 
-  const isRoundPage = identifier == 'round-card';
+  const isRoundPage = identifier === 'round-card';
   const epochLink = epoch ? PagePath.TournamentRound.replace(':epoch', epoch.toString()) : '';
 
   const [isVoteDialogueOpen, setIsVoteDialogOpen] = useState(false);
