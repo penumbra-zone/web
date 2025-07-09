@@ -125,7 +125,7 @@ export const RoundCard = observer(({ epoch }: RoundCardProps) => {
             <Text variant='h4' color='text.primary'>
               {ended ? 'This Epoch has Ended' : 'Cast Your Vote'}
             </Text>
-            <VotingInfo epoch={epoch} />
+            <VotingInfo epoch={epoch} identifier='round-card' />
           </div>
         </div>
       </GradientCard>
