@@ -29,7 +29,7 @@ const DepositItem = ({ deposit }: DepositItemProps) => {
   const assetIconUrl = assetImage?.png ?? assetImage?.svg;
 
   return (
-    <div className='grid grid-cols-[2.5rem_1fr] grid-rows-2 gap-x-3 gap-y-1 rounded-lg bg-other-tonal-fill10 px-4 py-2 whitespace-nowrap'>
+    <div className='grid h-[48px] grid-cols-[2.5rem_1fr] grid-rows-2 gap-x-3 gap-y-1 rounded-sm bg-other-tonal-fill10 p-2 whitespace-nowrap backdrop-blur-lg'>
       {/* Asset icon spanning two rows - centered vertically */}
       <div className='row-span-2 flex items-center justify-center'>
         {assetIconUrl ? (
@@ -105,7 +105,7 @@ export const ShieldingTicker = () => {
       }
     };
 
-    const interval = setInterval(scroll, 30); // Faster scroll for smoother animation
+    const interval = setInterval(scroll, 10); // Faster scroll for smoother animation
     return () => clearInterval(interval);
   }, [hasDeposits, isHovered]);
 
