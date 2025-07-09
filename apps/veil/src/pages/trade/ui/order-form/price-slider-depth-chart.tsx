@@ -7,6 +7,8 @@ import { useBook } from '../../api/book';
 import { Trace } from '@/shared/api/server/book/types';
 import { scaleCanvas, drawFilledPath } from '@/shared/ui/canvas-toolkit';
 
+const bgColor = 'rgba(250, 250, 250, 0.05)';
+
 function DepthChartRenderer({
   scale,
   width,
@@ -79,7 +81,7 @@ function DepthChartRenderer({
           // draw a line from the left of the chart to the first buy coordinate
           [0, buyCoordinates[0]?.y0 ?? 0],
         ] as [number, number][],
-        'rgba(250, 250, 250, 0.05)',
+        bgColor,
       );
 
       drawFilledPath(
@@ -96,7 +98,7 @@ function DepthChartRenderer({
           // draw a line from the bottom of the chart to the first sell coordinate
           [sellCoordinates[0]?.x0 ?? width, height],
         ] as [number, number][],
-        'rgba(250, 250, 250, 0.05)',
+        bgColor,
       );
     }
   }, [data, width, height, scale]);

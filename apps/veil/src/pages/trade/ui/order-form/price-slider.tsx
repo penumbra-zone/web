@@ -278,7 +278,7 @@ export const PriceSlider = ({
         <div className='absolute top-0 left-1/2 z-30 h-[70px] w-0 border-l border-dashed border-neutral-contrast' />
         {!!scaleLoaded && scale && (
           <>
-            <DepthChart scale={scale} width={width} height={70} />
+            <DepthChart scale={scale} width={width} height={62} />
             {/* slider bg gradient */}
             <div
               className='absolute top-0 z-10 h-[70px] bg-linear-to-b from-[rgba(186,77,20,0)] from-10% to-[rgba(186,77,20,0.35)]'
