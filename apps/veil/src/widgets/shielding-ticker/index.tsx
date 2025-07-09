@@ -6,7 +6,8 @@ import { Text } from '@penumbra-zone/ui/Text';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { Button } from '@penumbra-zone/ui/Button';
 import { useShieldingDeposits } from '@/shared/api/use-shielding-deposits';
-
+import { useRegistry } from '@/shared/api/registry';
+import { Chain, Registry } from '@penumbra-labs/registry';
 import { toValueView } from '@/shared/utils/value-view';
 
 import Image from 'next/image';
@@ -16,7 +17,28 @@ interface DepositItemProps {
   deposit: ShieldingDepositWithMeta;
 }
 
+// Helper function to get source chain from asset metadata
+const getSourceChainFromMetadata = (
+  metadata: ShieldingDepositWithMeta['metadata'],
+  registry: Registry,
+): Chain | null => {
+  if (!metadata?.base) {
+    return null;
+  }
+
+  // Extract channel ID from IBC path (format: transfer/channel-X/denom)
+  const parts = metadata.base.split('/');
+  if (parts.length >= 2 && parts[0] === 'transfer') {
+    const channelId = parts[1];
+    return registry.ibcConnections.find((chain: Chain) => chain.channelId === channelId) ?? null;
+  }
+
+  return null;
+};
+
 const DepositItem = ({ deposit }: DepositItemProps) => {
+  const { data: registry } = useRegistry();
+
   const valueView = deposit.metadata
     ? toValueView({
         amount: Number(deposit.amount),
@@ -28,21 +50,51 @@ const DepositItem = ({ deposit }: DepositItemProps) => {
   const assetImage = deposit.metadata?.images[0];
   const assetIconUrl = assetImage?.png ?? assetImage?.svg;
 
+  // Get source chain information
+  const sourceChain = getSourceChainFromMetadata(deposit.metadata, registry);
+  const chainIconUrl = sourceChain?.images[0]?.png ?? sourceChain?.images[0]?.svg;
+
   return (
     <div className='grid h-[48px] grid-cols-[2.5rem_1fr] grid-rows-2 gap-x-3 gap-y-1 rounded-sm bg-other-tonal-fill10 p-2 whitespace-nowrap backdrop-blur-lg'>
-      {/* Asset icon spanning two rows - centered vertically */}
-      <div className='row-span-2 flex items-center justify-center'>
+      {/* Asset icon spanning two rows - centered vertically with chain overlay */}
+      <div className='relative row-span-2 flex items-center justify-center'>
         {assetIconUrl ? (
-          <Image
-            src={assetIconUrl}
-            alt={`${deposit.metadata?.symbol ?? 'Asset'} icon`}
-            className='h-8 w-8 rounded-full object-cover'
-            width={32}
-            height={32}
-          />
+          <>
+            <Image
+              src={assetIconUrl}
+              alt={`${deposit.metadata?.symbol ?? 'Asset'} icon`}
+              className='h-8 w-8 rounded-full object-cover'
+              width={32}
+              height={32}
+            />
+            {/* Source chain overlay icon */}
+            {chainIconUrl && (
+              <div className='absolute -right-1 -bottom-1'>
+                <Image
+                  src={chainIconUrl}
+                  alt={`${sourceChain?.displayName ?? 'Chain'} icon`}
+                  className='h-4 w-4 rounded-full border border-other-tonal-fill10 bg-other-tonal-fill10 object-cover'
+                  width={16}
+                  height={16}
+                />
+              </div>
+            )}
+          </>
         ) : (
-          <div className='flex h-8 w-8 items-center justify-center rounded-full bg-neutral-600'>
-            <Text detail>{deposit.metadata?.symbol.charAt(0) ?? '?'}</Text>
+          <div className='relative flex h-8 w-8 items-center justify-center rounded-full bg-neutral-600'>
+            <Text detail>{deposit.metadata?.symbol ? deposit.metadata.symbol.charAt(0) : '?'}</Text>
+            {/* Source chain overlay for fallback icon */}
+            {chainIconUrl && (
+              <div className='absolute -right-1 -bottom-1'>
+                <Image
+                  src={chainIconUrl}
+                  alt={`${sourceChain?.displayName ?? 'Chain'} icon`}
+                  className='h-4 w-4 rounded-full border border-other-tonal-fill10 bg-other-tonal-fill10 object-cover'
+                  width={16}
+                  height={16}
+                />
+              </div>
+            )}
           </div>
         )}
       </div>
