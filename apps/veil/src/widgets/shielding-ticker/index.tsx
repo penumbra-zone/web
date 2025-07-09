@@ -5,6 +5,7 @@ import { X } from 'lucide-react';
 import { Text } from '@penumbra-zone/ui/Text';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
 import { Button } from '@penumbra-zone/ui/Button';
+import { AssetIcon } from '@penumbra-zone/ui/AssetIcon';
 import { useShieldingDeposits } from '@/shared/api/use-shielding-deposits';
 import { useRegistry } from '@/shared/api/registry';
 import { Chain, Registry } from '@penumbra-labs/registry';
@@ -17,23 +18,44 @@ interface DepositItemProps {
   deposit: ShieldingDepositWithMeta;
 }
 
-// Helper function to get source chain from asset metadata
-const getSourceChainFromMetadata = (
-  metadata: ShieldingDepositWithMeta['metadata'],
+// Helper function to get source chain from asset metadata and foreign address
+const getSourceChainFromDeposit = (
+  deposit: ShieldingDepositWithMeta,
   registry: Registry,
 ): Chain | null => {
-  if (!metadata?.base) {
-    return null;
+  // First try the metadata.base approach for IBC path format
+  if (deposit.metadata?.base) {
+    const parts = deposit.metadata.base.split('/');
+    if (parts.length >= 2 && parts[0] === 'transfer') {
+      const channelId = parts[1];
+      const chainFromChannel = registry.ibcConnections.find(
+        (chain: Chain) => chain.channelId === channelId,
+      );
+      if (chainFromChannel) {
+        return chainFromChannel;
+      }
+    }
   }
 
-  // Extract channel ID from IBC path (format: transfer/channel-X/denom)
-  const parts = metadata.base.split('/');
-  if (parts.length >= 2 && parts[0] === 'transfer') {
-    const channelId = parts[1];
-    return registry.ibcConnections.find((chain: Chain) => chain.channelId === channelId) ?? null;
+  // Fallback: Use foreign address prefix to determine source chain
+  const addressPrefix = deposit.foreignAddr.split('1')[0]; // Extract prefix before '1'
+
+  // Temporary debugging
+  if (deposit.metadata?.symbol === 'UM') {
+    console.debug('🔍 Using address prefix approach for UM:');
+    console.debug('foreignAddr:', deposit.foreignAddr);
+    console.debug('extracted addressPrefix:', addressPrefix);
   }
 
-  return null;
+  const chainFromAddress = registry.ibcConnections.find(
+    (chain: Chain) => chain.addressPrefix === addressPrefix,
+  );
+
+  if (deposit.metadata?.symbol === 'UM') {
+    console.debug('found chain from address:', chainFromAddress);
+  }
+
+  return chainFromAddress ?? null;
 };
 
 const DepositItem = ({ deposit }: DepositItemProps) => {
@@ -46,55 +68,25 @@ const DepositItem = ({ deposit }: DepositItemProps) => {
       })
     : null;
 
-  // Get asset icon from metadata images
-  const assetImage = deposit.metadata?.images[0];
-  const assetIconUrl = assetImage?.png ?? assetImage?.svg;
-
-  // Get source chain information
-  const sourceChain = getSourceChainFromMetadata(deposit.metadata, registry);
+  // Get source chain information using the updated function
+  const sourceChain = getSourceChainFromDeposit(deposit, registry);
   const chainIconUrl = sourceChain?.images[0]?.png ?? sourceChain?.images[0]?.svg;
 
   return (
     <div className='grid h-[48px] grid-cols-[2.5rem_1fr] grid-rows-2 gap-x-3 gap-y-1 rounded-sm bg-other-tonal-fill10 p-2 whitespace-nowrap backdrop-blur-lg'>
       {/* Asset icon spanning two rows - centered vertically with chain overlay */}
       <div className='relative row-span-2 flex items-center justify-center'>
-        {assetIconUrl ? (
-          <>
+        <AssetIcon metadata={deposit.metadata} size='lg' />
+        {/* Source chain overlay icon */}
+        {chainIconUrl && (
+          <div className='absolute -right-1 -bottom-1'>
             <Image
-              src={assetIconUrl}
-              alt={`${deposit.metadata?.symbol ?? 'Asset'} icon`}
-              className='h-8 w-8 rounded-full object-cover'
-              width={32}
-              height={32}
+              src={chainIconUrl}
+              alt={`${sourceChain?.displayName ?? 'Chain'} icon`}
+              className='h-4 w-4 rounded-full border border-other-tonal-fill10 bg-other-tonal-fill10 object-cover'
+              width={16}
+              height={16}
             />
-            {/* Source chain overlay icon */}
-            {chainIconUrl && (
-              <div className='absolute -right-1 -bottom-1'>
-                <Image
-                  src={chainIconUrl}
-                  alt={`${sourceChain?.displayName ?? 'Chain'} icon`}
-                  className='h-4 w-4 rounded-full border border-other-tonal-fill10 bg-other-tonal-fill10 object-cover'
-                  width={16}
-                  height={16}
-                />
-              </div>
-            )}
-          </>
-        ) : (
-          <div className='relative flex h-8 w-8 items-center justify-center rounded-full bg-neutral-600'>
-            <Text detail>{deposit.metadata?.symbol ? deposit.metadata.symbol.charAt(0) : '?'}</Text>
-            {/* Source chain overlay for fallback icon */}
-            {chainIconUrl && (
-              <div className='absolute -right-1 -bottom-1'>
-                <Image
-                  src={chainIconUrl}
-                  alt={`${sourceChain?.displayName ?? 'Chain'} icon`}
-                  className='h-4 w-4 rounded-full border border-other-tonal-fill10 bg-other-tonal-fill10 object-cover'
-                  width={16}
-                  height={16}
-                />
-              </div>
-            )}
           </div>
         )}
       </div>
