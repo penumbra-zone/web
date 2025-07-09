@@ -27,14 +27,14 @@ export interface VotingAbility {
 }
 
 export type VotingInfo =
-  | { case: 'loading'; epoch: number | undefined }
-  | { case: 'not-connected'; epoch: number | undefined }
+  | { case: 'loading'; epoch: number }
+  | { case: 'not-connected'; epoch: number }
   | { case: 'already-voted'; epoch: number; votedFor: ValueView }
   | { case: 'needs-to-delegate'; epoch: number }
   | { case: 'can-vote'; epoch: number; ability: VotingAbility; power: ValueView }
   | { case: 'ended'; epoch: number; currentEpoch: number; votedFor?: ValueView }
   | { case: 'delegated-after-start'; epoch: number }
-  | { case: 'error'; epoch: number | undefined; error: Error };
+  | { case: 'error'; epoch: number; error: Error };
 
 async function votedFor(
   getMetadata: GetMetadata,
@@ -122,7 +122,7 @@ async function query(
   return { case: 'needs-to-delegate', epoch };
 }
 
-export function useVotingInfo(epoch?: number): VotingInfo {
+export function useVotingInfo(epoch: number): VotingInfo {
   const getMetadata = useGetMetadata();
   const { data: stakingTokenMetadata } = useStakingTokenMetadata();
   const { connectedLoading, connected, subaccount: account } = connectionStore;
