@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { X } from 'lucide-react';
 import { Text } from '@penumbra-zone/ui/Text';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
@@ -10,6 +10,7 @@ import { useShieldingDeposits } from '@/shared/api/use-shielding-deposits';
 import { useRegistry } from '@/shared/api/registry';
 import { Chain, Registry } from '@penumbra-labs/registry';
 import { toValueView } from '@/shared/utils/value-view';
+import Marquee from 'react-fast-marquee';
 
 import Image from 'next/image';
 import type { ShieldingDepositWithMeta } from '@/shared/api/server/shielding-deposits';
@@ -40,20 +41,9 @@ const getSourceChainFromDeposit = (
   // Fallback: Use foreign address prefix to determine source chain
   const addressPrefix = deposit.foreignAddr.split('1')[0]; // Extract prefix before '1'
 
-  // Temporary debugging
-  if (deposit.metadata?.symbol === 'UM') {
-    console.debug('🔍 Using address prefix approach for UM:');
-    console.debug('foreignAddr:', deposit.foreignAddr);
-    console.debug('extracted addressPrefix:', addressPrefix);
-  }
-
   const chainFromAddress = registry.ibcConnections.find(
     (chain: Chain) => chain.addressPrefix === addressPrefix,
   );
-
-  if (deposit.metadata?.symbol === 'UM') {
-    console.debug('found chain from address:', chainFromAddress);
-  }
 
   return chainFromAddress ?? null;
 };
@@ -73,7 +63,7 @@ const DepositItem = ({ deposit }: DepositItemProps) => {
   const chainIconUrl = sourceChain?.images[0]?.png ?? sourceChain?.images[0]?.svg;
 
   return (
-    <div className='grid h-[48px] grid-cols-[2.5rem_1fr] grid-rows-2 gap-x-3 gap-y-1 rounded-sm bg-other-tonal-fill10 p-2 whitespace-nowrap backdrop-blur-lg'>
+    <div className='mx-3 grid h-[48px] grid-cols-[2.5rem_1fr] grid-rows-2 gap-x-3 gap-y-1 rounded-sm bg-other-tonal-fill10 p-2 whitespace-nowrap backdrop-blur-lg'>
       {/* Asset icon spanning two rows - centered vertically with chain overlay */}
       <div className='relative row-span-2 flex items-center justify-center'>
         <AssetIcon metadata={deposit.metadata} size='lg' />
@@ -122,36 +112,10 @@ const DepositItem = ({ deposit }: DepositItemProps) => {
 
 export const ShieldingTicker = () => {
   const [isVisible, setIsVisible] = useState(true);
-  const [isHovered, setIsHovered] = useState(false);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const { data: deposits, isLoading } = useShieldingDeposits(50);
 
   const hasDeposits = deposits && deposits.length > 0;
-
-  // Auto-scroll animation
-  useEffect(() => {
-    if (!hasDeposits || isHovered) {
-      return;
-    }
-
-    const container = scrollContainerRef.current;
-    if (!container) {
-      return;
-    }
-
-    const scroll = () => {
-      // Reset to beginning when we've scrolled through the first set of items
-      if (container.scrollLeft >= container.scrollWidth / 3) {
-        container.scrollLeft = 0;
-      } else {
-        container.scrollLeft += 1;
-      }
-    };
-
-    const interval = setInterval(scroll, 10); // Faster scroll for smoother animation
-    return () => clearInterval(interval);
-  }, [hasDeposits, isHovered]);
 
   if (!isVisible) {
     return null;
@@ -191,27 +155,12 @@ export const ShieldingTicker = () => {
       </div>
 
       {/* Full-width marquee area */}
-      <div
-        className='relative w-full overflow-hidden'
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        <div
-          ref={scrollContainerRef}
-          className='flex gap-6 overflow-x-auto py-3 [&::-webkit-scrollbar]:hidden'
-          style={{
-            scrollBehavior: isHovered ? 'auto' : 'smooth',
-            msOverflowStyle: 'none',
-            scrollbarWidth: 'none',
-          }}
-        >
-          {/* Duplicate deposits multiple times for seamless scrolling */}
-          {Array.from({ length: 3 }, (_, index) =>
-            deposits.map(deposit => (
-              <DepositItem key={`${deposit.id}-${index}`} deposit={deposit} />
-            )),
-          )}
-        </div>
+      <div className='relative w-full py-3'>
+        <Marquee pauseOnHover={true} speed={30} gradient={false} autoFill={true}>
+          {deposits.map(deposit => (
+            <DepositItem key={deposit.id} deposit={deposit} />
+          ))}
+        </Marquee>
       </div>
     </div>
   );
