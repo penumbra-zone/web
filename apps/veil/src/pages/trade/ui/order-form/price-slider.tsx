@@ -245,13 +245,15 @@ export const PriceSlider = ({
   });
   const width = useWidth(ref, []);
   const scaleRef = useRef<ScaleLinear<number, number> | null>(null);
-  const [scaleLoaded, setScaleLoaded] = useState(false);
+  const [scaleLoaded, setScaleLoaded] = useState(0);
   const [elevateThumb, setElevateThumb] = useState<number | null>(null);
 
   useEffect(() => {
     if (width) {
       scaleRef.current = scaleLinear().domain([min, max]).range([0, width]);
-      setScaleLoaded(true);
+
+      // update scaleLoaded to trigger re-render
+      setScaleLoaded(prev => prev + 1);
     }
   }, [min, max, width, values]);
 
@@ -274,7 +276,7 @@ export const PriceSlider = ({
       <div ref={ref} className='relative z-0 h-[98px] w-full border-b border-other-tonal-fill10'>
         {/* midprice line */}
         <div className='absolute top-0 left-1/2 z-30 h-[70px] w-0 border-l border-dashed border-neutral-contrast' />
-        {scaleLoaded && scale && (
+        {!!scaleLoaded && scale && (
           <>
             <DepthChart scale={scale} width={width} height={70} />
             {/* slider bg gradient */}
@@ -331,7 +333,7 @@ export const PriceSlider = ({
         {/* slider track bg */}
         <div className='absolute top-[62px] left-0 z-10 h-[6px] w-full rounded-xs bg-other-tonal-fill10' />
         {/* filled slider track */}
-        {scaleLoaded && scale && (
+        {!!scaleLoaded && scale && (
           <div
             className='absolute top-[62px] z-20 h-[6px] bg-primary-main'
             style={{

@@ -27,6 +27,11 @@ export const SimpleLiquidityOrderForm = observer(
 
     const priceSpread = DEFAULT_PRICE_SPREAD;
     const priceRange = DEFAULT_PRICE_RANGE;
+
+    // simple absolute zoom adjustment in steps of 0.05
+    const [zoomAdjustment, setZoomAdjustment] = useState(0);
+    const adjustedPriceRange = priceRange + zoomAdjustment;
+
     const [priceRanges, setPriceRanges] = useState<[number | undefined, number | undefined]>([
       undefined,
       undefined,
@@ -182,25 +187,47 @@ export const SimpleLiquidityOrderForm = observer(
                 <Icon IconComponent={InfoIcon} size='sm' color='text.secondary' />
               </Tooltip>
             </div>
-            <Button
-              actionType='default'
-              priority='secondary'
-              density='compact'
-              onClick={() => {
-                if (store.marketPrice) {
-                  setPriceRanges([
-                    store.marketPrice * (1 - priceSpread),
-                    store.marketPrice * (1 + priceSpread),
-                  ]);
-                }
-              }}
-            >
-              Reset
-            </Button>
+            <div className='flex items-center gap-1'>
+              <Button
+                actionType='default'
+                priority='secondary'
+                density='compact'
+                onClick={() => {
+                  setZoomAdjustment(prev => Math.max(-0.25, prev - 0.05));
+                }}
+              >
+                +
+              </Button>
+              <Button
+                actionType='default'
+                priority='secondary'
+                density='compact'
+                onClick={() => {
+                  setZoomAdjustment(prev => Math.min(0.25, prev + 0.05));
+                }}
+              >
+                -
+              </Button>
+              <Button
+                actionType='default'
+                priority='secondary'
+                density='compact'
+                onClick={() => {
+                  if (store.marketPrice) {
+                    setPriceRanges([
+                      store.marketPrice * (1 - priceSpread),
+                      store.marketPrice * (1 + priceSpread),
+                    ]);
+                  }
+                }}
+              >
+                Reset
+              </Button>
+            </div>
           </div>
           <PriceSlider
-            min={store.marketPrice ? store.marketPrice * (1 - priceRange) : 0}
-            max={store.marketPrice ? store.marketPrice * (1 + priceRange) : Infinity}
+            min={store.marketPrice ? store.marketPrice * (1 - adjustedPriceRange) : 0}
+            max={store.marketPrice ? store.marketPrice * (1 + adjustedPriceRange) : Infinity}
             values={priceRanges}
             onInput={setPriceRanges}
             marketPrice={store.marketPrice}

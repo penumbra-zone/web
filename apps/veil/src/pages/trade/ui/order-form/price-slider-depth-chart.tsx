@@ -1,8 +1,11 @@
 import maxBy from 'lodash/maxBy';
+import orderBy from 'lodash/orderBy';
+import last from 'lodash/last';
 import { useRef, useEffect } from 'react';
 import { scaleLinear, ScaleLinear } from 'd3-scale';
 import { useBook } from '../../api/book';
 import { Trace } from '@/shared/api/server/book/types';
+import { scaleCanvas, drawFilledPath } from '@/shared/ui/canvas-toolkit';
 
 function DepthChartRenderer({
   scale,
@@ -15,20 +18,22 @@ function DepthChartRenderer({
 }) {
   const deptchChartRef = useRef<HTMLCanvasElement>(null);
   const { data } = useBook();
-  console.log('TCL: data', data);
 
   useEffect(() => {
     if (deptchChartRef.current) {
+      scaleCanvas(deptchChartRef.current, { width, height });
+
       const ctx = deptchChartRef.current.getContext('2d');
       if (!ctx) {
         return;
       }
+
       ctx.clearRect(0, 0, width, height);
 
       const maxBuyTotal = maxBy(data?.multiHops.buy ?? [], order => Number(order.total))?.total;
       const maxSellTotal = maxBy(data?.multiHops.sell ?? [], order => Number(order.total))?.total;
       const maxTotal = Math.max(Number(maxBuyTotal), Number(maxSellTotal));
-      const totalScale = scaleLinear().domain([0, maxTotal]).range([0, height]);
+      const totalScale = scaleLinear().domain([0, maxTotal]).range([height, 0]);
 
       function getCoordinates(orders: Trace[], isBuySide: boolean) {
         return orders.map((order, index) => {
@@ -51,43 +56,45 @@ function DepthChartRenderer({
         });
       }
 
-      function drawFilledPath(coordinates: [number, number][], fillStyle: string) {
-        if (!ctx) {
-          return;
-        }
+      const buyCoordinates = getCoordinates(
+        orderBy(data?.multiHops.buy ?? [], 'price', 'asc'),
+        true,
+      );
+      const sellCoordinates = getCoordinates(
+        orderBy(data?.multiHops.sell ?? [], 'price', 'asc'),
+        false,
+      );
 
-        ctx.beginPath();
-        ctx.fillStyle = fillStyle;
-
-        coordinates.forEach(([x, y]) => {
-          // https://stackoverflow.com/questions/8696631/canvas-drawings-like-lines-are-blurry
-          // the 0.5 is necessary to avoid blurry lines
-          ctx.lineTo(x + 0.5, y + 0.5);
-        });
-
-        ctx.fill();
-        ctx.closePath();
-        ctx.restore();
-      }
-
-      const buyCoordinates = getCoordinates(data?.multiHops.buy ?? [], true);
-      const sellCoordinates = getCoordinates(data?.multiHops.sell ?? [], false);
-
-      console.log('TCL: buyCoordinates', buyCoordinates);
-      console.log('TCL: sellCoordinates', sellCoordinates);
       drawFilledPath(
+        ctx,
         [
-          ...buyCoordinates.map(({ x0, y0 }) => [x0, y0]),
-          [buyCoordinates[buyCoordinates.length - 1].x1, 0],
-          [buyCoordinates[0].x0, 0],
-          [buyCoordinates[0].x0, height],
+          ...(buyCoordinates.flatMap(({ x0, y0, x1, y1 }) => [
+            [x0, y0],
+            [x1, y1],
+          ]) as [number, number][],
+          [last(buyCoordinates)?.x1, height],
+          [0, height],
+          [0, buyCoordinates[0]?.y0 ?? 0],
+        ],
+        'rgba(250, 250, 250, 0.05)',
+      );
+
+      drawFilledPath(
+        ctx,
+        [
+          ...(sellCoordinates.flatMap(({ x0, y0, x1, y1 }) => [
+            [x0, y0],
+            [x1, y1],
+          ]) as [number, number][],
+          [width, last(sellCoordinates)?.y1],
+          [width, sellCoordinates[0]?.y0 ?? 0],
         ],
         'rgba(250, 250, 250, 0.05)',
       );
     }
-  }, [data, height, scale]);
+  }, [data, width, height, scale]);
 
-  return <canvas ref={deptchChartRef} style={{ width, height }} />;
+  return <canvas ref={deptchChartRef} />;
 }
 
 export default DepthChartRenderer;

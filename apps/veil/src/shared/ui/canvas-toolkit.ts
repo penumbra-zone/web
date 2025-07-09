@@ -74,6 +74,54 @@ export function drawText(
   ctx.restore();
 }
 
+export function drawFilledPath(
+  ctx: CanvasRenderingContext2D,
+  coordinates: [number, number][],
+  fillStyle: string,
+) {
+  ctx.beginPath();
+  ctx.fillStyle = fillStyle;
+
+  coordinates.forEach(([x, y]) => {
+    // https://stackoverflow.com/questions/8696631/canvas-drawings-like-lines-are-blurry
+    // the 0.5 is necessary to avoid blurry lines
+    ctx.lineTo(x + 0.5, y + 0.5);
+  });
+
+  ctx.fill();
+  ctx.closePath();
+  ctx.restore();
+}
+
+export function drawLine(
+  ctx: CanvasRenderingContext2D,
+  coordinates: [number, number][],
+  color: string,
+  lineDash = [],
+) {
+  ctx.beginPath();
+  ctx.setLineDash(lineDash);
+  ctx.lineWidth = dpi(1);
+  ctx.strokeStyle = color;
+
+  coordinates.forEach(([x, y]) => {
+    // https://stackoverflow.com/questions/8696631/canvas-drawings-like-lines-are-blurry
+    // the 0.5 is necessary to avoid blurry lines
+    ctx.lineTo(x + 0.5, y + 0.5);
+  });
+
+  ctx.stroke();
+  ctx.restore();
+}
+
+export function drawDashedLine(
+  ctx: CanvasRenderingContext2D,
+  coordinates: [number, number][],
+  color: string,
+) {
+  drawLine(ctx, coordinates, color, [3, 4]);
+}
+
 export function getTextWidth(
   ctx: CanvasRenderingContext2D,
   {
