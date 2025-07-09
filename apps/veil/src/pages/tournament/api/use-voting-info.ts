@@ -27,14 +27,14 @@ export interface VotingAbility {
 }
 
 export type VotingInfo =
-  | { case: 'loading' }
-  | { case: 'not-connected' }
-  | { case: 'already-voted'; votedFor: ValueView }
-  | { case: 'needs-to-delegate' }
-  | { case: 'can-vote'; ability: VotingAbility; power: ValueView }
-  | { case: 'ended'; currentEpoch: number; votedFor?: ValueView }
-  | { case: 'delegated-after-start' }
-  | { case: 'error'; error: Error };
+  | { case: 'loading'; epoch: number | undefined }
+  | { case: 'not-connected'; epoch: number | undefined }
+  | { case: 'already-voted'; epoch: number; votedFor: ValueView }
+  | { case: 'needs-to-delegate'; epoch: number }
+  | { case: 'can-vote'; epoch: number; ability: VotingAbility; power: ValueView }
+  | { case: 'ended'; epoch: number; currentEpoch: number; votedFor?: ValueView }
+  | { case: 'delegated-after-start'; epoch: number }
+  | { case: 'error'; epoch: number | undefined; error: Error };
 
 async function votedFor(
   getMetadata: GetMetadata,
@@ -103,7 +103,7 @@ async function query(
     hasDelegatedP,
   ]);
   if (votedForR) {
-    return { case: 'already-voted', votedFor: votedForR };
+    return { case: 'already-voted', epoch, votedFor: votedForR };
   }
   if (votingNotesR.length > 0) {
     const amount = votingNotesR.reduce(
@@ -113,13 +113,13 @@ async function query(
     const clonedMeta = stakingTokenMetadata.clone();
     clonedMeta.symbol = 'delUM';
     const power = toValueView({ amount, metadata: clonedMeta });
-    return { case: 'can-vote', ability: { notes: votingNotesR, epoch, account }, power };
+    return { case: 'can-vote', epoch, ability: { notes: votingNotesR, epoch, account }, power };
   }
   if (hasDelegatedR) {
-    return { case: 'delegated-after-start' };
+    return { case: 'delegated-after-start', epoch };
   }
 
-  return { case: 'needs-to-delegate' };
+  return { case: 'needs-to-delegate', epoch };
 }
 
 export function useVotingInfo(epoch?: number): VotingInfo {
@@ -141,7 +141,7 @@ export function useVotingInfo(epoch?: number): VotingInfo {
   });
   useRefetchOnNewBlock(['voting-info', theEpoch, account], votingQuery, !connected || !theEpoch);
   if (!connectedLoading && !connected) {
-    return { case: 'not-connected' };
+    return { case: 'not-connected', epoch: theEpoch };
   }
   if (
     connectedLoading ||
@@ -150,14 +150,15 @@ export function useVotingInfo(epoch?: number): VotingInfo {
     epochLoading ||
     votingQuery.isPending
   ) {
-    return { case: 'loading' };
+    return { case: 'loading', epoch: theEpoch };
   }
   if (votingQuery.error) {
-    return { case: 'error', error: votingQuery.error };
+    return { case: 'error', epoch: theEpoch, error: votingQuery.error };
   }
   if (currentEpoch > theEpoch) {
     return {
       case: 'ended',
+      epoch: theEpoch,
       currentEpoch,
       votedFor: votingQuery.data.case === 'already-voted' ? votingQuery.data.votedFor : undefined,
     };
