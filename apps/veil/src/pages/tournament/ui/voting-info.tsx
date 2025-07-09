@@ -78,15 +78,15 @@ export const VotingInfo = observer(({ epoch, identifier }: VotingInfoProps) => {
           <div className='grow'>
             <ConnectButton actionType='accent' variant='default' />
           </div>
-          <div className='grow'>
-            {!isRoundPage && (
+          {!isRoundPage && (
+            <div className='grow'>
               <div className='flex-1'>
                 <Link href={epochLink}>
                   <Button actionType='default'>Details</Button>
                 </Link>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     );
