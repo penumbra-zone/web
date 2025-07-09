@@ -16,7 +16,7 @@ import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_
 const STAKING_LINK = 'https://app.penumbra.zone/#/staking';
 
 export interface VotingInfoProps {
-  epoch: number;
+  epoch?: number;
   identifier: string;
 }
 
