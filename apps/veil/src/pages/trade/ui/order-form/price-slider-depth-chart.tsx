@@ -72,8 +72,11 @@ function DepthChartRenderer({
             [x0, y0],
             [x1, y1],
           ]),
+          // draw a line from the last buy coordinate to the bottom of the chart
           [last(buyCoordinates)?.x1, height],
+          // draw a line from the bottom of the chart to the left of the chart
           [0, height],
+          // draw a line from the left of the chart to the first buy coordinate
           [0, buyCoordinates[0]?.y0 ?? 0],
         ] as [number, number][],
         'rgba(250, 250, 250, 0.05)',
@@ -86,8 +89,12 @@ function DepthChartRenderer({
             [x0, y0],
             [x1, y1],
           ]),
+          // draw a line from the last sell coordinate to the right of the chart
           [width, last(sellCoordinates)?.y1],
-          [width, sellCoordinates[0]?.y0 ?? 0],
+          // draw a line from the right of the chart to the bottom of the chart
+          [width, height],
+          // draw a line from the bottom of the chart to the first sell coordinate
+          [sellCoordinates[0]?.x0 ?? width, height],
         ] as [number, number][],
         'rgba(250, 250, 250, 0.05)',
       );
