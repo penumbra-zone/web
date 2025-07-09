@@ -163,5 +163,5 @@ export function useVotingInfo(epoch?: number): VotingInfo {
       votedFor: votingQuery.data.case === 'already-voted' ? votingQuery.data.votedFor : undefined,
     };
   }
-  return votingQuery.data;
+  return { ...votingQuery.data, epoch: theEpoch };
 }

@@ -37,7 +37,9 @@ export const VotingInfo = observer(({ epoch }: VotingInfoProps) => {
   const votingInfo = useVotingInfo(epoch);
 
   const isRoundPage = !!epoch;
-  const epochLink = epoch ? PagePath.TournamentRound.replace(':epoch', epoch.toString()) : '';
+  const epochLink = votingInfo.epoch
+    ? PagePath.TournamentRound.replace(':epoch', votingInfo.epoch.toString())
+    : '';
 
   const [isVoteDialogueOpen, setIsVoteDialogOpen] = useState(false);
 
