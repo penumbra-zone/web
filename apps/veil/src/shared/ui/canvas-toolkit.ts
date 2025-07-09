@@ -97,7 +97,7 @@ export function drawLine(
   ctx: CanvasRenderingContext2D,
   coordinates: [number, number][],
   color: string,
-  lineDash = [],
+  lineDash: number[] = [],
 ) {
   ctx.beginPath();
   ctx.setLineDash(lineDash);

@@ -68,27 +68,27 @@ function DepthChartRenderer({
       drawFilledPath(
         ctx,
         [
-          ...(buyCoordinates.flatMap(({ x0, y0, x1, y1 }) => [
+          ...buyCoordinates.flatMap(({ x0, y0, x1, y1 }) => [
             [x0, y0],
             [x1, y1],
-          ]) as [number, number][],
+          ]),
           [last(buyCoordinates)?.x1, height],
           [0, height],
           [0, buyCoordinates[0]?.y0 ?? 0],
-        ],
+        ] as [number, number][],
         'rgba(250, 250, 250, 0.05)',
       );
 
       drawFilledPath(
         ctx,
         [
-          ...(sellCoordinates.flatMap(({ x0, y0, x1, y1 }) => [
+          ...sellCoordinates.flatMap(({ x0, y0, x1, y1 }) => [
             [x0, y0],
             [x1, y1],
-          ]) as [number, number][],
+          ]),
           [width, last(sellCoordinates)?.y1],
           [width, sellCoordinates[0]?.y0 ?? 0],
-        ],
+        ] as [number, number][],
         'rgba(250, 250, 250, 0.05)',
       );
     }
