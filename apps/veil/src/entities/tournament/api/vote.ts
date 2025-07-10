@@ -7,6 +7,7 @@ import { connectionStore } from '@/shared/model/connection';
 import { planBuildBroadcast } from '@/entities/transaction';
 import { openToast } from '@penumbra-zone/ui/Toast';
 import { Denom } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
 export const voteTournament = async ({
   incentivized,
@@ -14,7 +15,7 @@ export const voteTournament = async ({
   stakedNotes,
   epochIndex,
 }: {
-  incentivized: string;
+  incentivized: Metadata;
   rewardsRecipient: Address | undefined;
   stakedNotes: SpendableNoteRecord[];
   epochIndex: number;
@@ -22,7 +23,7 @@ export const voteTournament = async ({
   try {
     // Construct the asset denom from the selected asset symbol
     const denom = new Denom({
-      denom: incentivized.toLowerCase(),
+      denom: incentivized.base,
     });
 
     // Construct the LQT voting actions
