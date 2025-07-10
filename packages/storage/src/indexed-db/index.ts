@@ -803,7 +803,7 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async *getPositionsByStrategyStream(
-    subaccount: AddressIndex,
+    subaccount?: AddressIndex,
     positionMetadata?: PositionMetadata,
     positionState?: PositionState,
     tradingPair?: TradingPair,
@@ -825,8 +825,9 @@ export class IndexedDb implements IndexedDbInterface {
             (!positionMetadata || positionMetadata.equals(metadata)) &&
             (!positionState || positionState.equals(position.state)) &&
             (!tradingPair || tradingPair.equals(position.phi?.pair)) &&
-            cursor.value.subaccount &&
-            subaccount.equals(AddressIndex.fromJson(cursor.value.subaccount))
+            (!subaccount ||
+              (cursor.value.subaccount &&
+                subaccount.equals(AddressIndex.fromJson(cursor.value.subaccount))))
           ) {
             cont.enqueue({
               id: PositionId.fromJson(cursor.value.id),

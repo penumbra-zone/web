@@ -234,7 +234,7 @@ export interface IndexedDbInterface {
   >;
 
   getPositionsByStrategyStream(
-    subaccount: AddressIndex,
+    subaccount?: AddressIndex,
     positionMetadata?: PositionMetadata,
     positionState?: PositionState,
     tradingPair?: TradingPair,
