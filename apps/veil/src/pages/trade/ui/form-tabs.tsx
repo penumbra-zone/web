@@ -39,7 +39,7 @@ export const FormTabs = observer(() => {
           />
         </Density>
       </div>
-      <div className='overflow-x-hidden overflow-y-auto'>
+      <div className='overflow-y-auto'>
         {store.whichForm === 'Market' && <MarketOrderForm parentStore={store} />}
         {store.whichForm === 'Limit' && <LimitOrderForm parentStore={store} />}
         {store.whichForm === 'RangeLP' && <RangeLiquidityOrderForm parentStore={store} />}
