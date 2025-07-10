@@ -1,12 +1,13 @@
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { assetPatterns } from '@penumbra-zone/types/assets';
 import { apiFetch } from '@/shared/utils/api-fetch';
 import { useRegistryAssets } from '@/shared/api/registry';
 import { useRefetchOnNewBlock } from '@/shared/api/compact-block';
+import type { MappedGauge } from '../server/previous-epochs';
 import { EpochResultsRequest, EpochResultsApiResponse } from '../server/epoch-results';
-import type { MappedGauge } from '@/pages/tournament/server/previous-epochs';
-import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { assetPatterns } from '@penumbra-zone/types/assets';
+import { useMappedGauge } from './use-previous-epochs';
 
 /**
  * Requests voting results of a given epoch. Returns percentages of each
@@ -19,13 +20,19 @@ export const useEpochResults = (
   disabled?: boolean,
   search = '',
 ) => {
+  const getMappedGauge = useMappedGauge();
   const { data: assets } = useRegistryAssets();
 
   const query = useQuery({
     queryKey: [name, params.epoch, params.limit, params.page, params.sortKey, params.sortDirection],
     enabled: !!params.epoch && !disabled,
     queryFn: async () => {
-      return apiFetch<EpochResultsApiResponse>('/api/tournament/epoch-results', params);
+      const res = await apiFetch<EpochResultsApiResponse>('/api/tournament/epoch-results', params);
+
+      return {
+        total: res.total,
+        data: res.data.map(getMappedGauge),
+      };
     },
   });
 

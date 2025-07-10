@@ -17,7 +17,7 @@ export const Vote = ({ asset, percent, hideFor }: VoteProps) => {
         {round({ value: percent * 100, decimals: 3 })}% {hideFor ? '' : 'for'}
       </Text>
       <Text smallTechnical color='text.secondary'>
-        {asset.symbol}
+        {asset.symbol || 'Unknown'}
       </Text>
     </div>
   );

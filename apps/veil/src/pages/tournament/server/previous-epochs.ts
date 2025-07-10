@@ -1,11 +1,9 @@
 import { sql } from 'kysely';
 import { NextRequest, NextResponse } from 'next/server';
-import { ChainRegistryClient } from '@penumbra-labs/registry';
-import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { serialize, Serialized } from '@/shared/utils/serializer';
 import { LqtGauge } from '@/shared/database/schema';
 import { pindexerDb } from '@/shared/database/client';
-import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 
 const SORT_KEYS = ['epoch', 'lpReward', 'votingReward', ''] as const;
 export type PreviousEpochsSortKey = (typeof SORT_KEYS)[number];
@@ -24,9 +22,13 @@ export interface MappedGauge extends Omit<LqtGauge, 'asset_id' | 'missing_votes'
   asset: Metadata;
 }
 
+export interface ApiGauge extends Omit<LqtGauge, 'asset_id' | 'missing_votes'> {
+  asset_id: string;
+}
+
 export interface PreviousEpochData {
   epoch: number;
-  gauge: MappedGauge[];
+  gauge: ApiGauge[];
 }
 
 export interface PreviousEpochsApiResponse {
@@ -107,35 +109,11 @@ export async function GET(
   }
 
   const params = getQueryParams(req);
-  const registryClient = new ChainRegistryClient();
-  const [registry, results, total] = await Promise.all([
-    registryClient.remote.get(chainId),
-    previousEpochsQuery(params),
-    totalEpochsQuery(),
-  ]);
+  const [results, total] = await Promise.all([previousEpochsQuery(params), totalEpochsQuery()]);
 
   const mapped = results.map<PreviousEpochData>(result => ({
     epoch: result.epoch,
-    gauge: result.gauge
-      .map(item => {
-        const asset = registry.tryGetMetadata(
-          new AssetId({
-            inner: base64ToUint8Array(item.asset_id),
-          }),
-        );
-
-        if (!asset) {
-          return undefined;
-        }
-
-        return {
-          asset,
-          epoch: item.epoch,
-          votes: item.votes,
-          portion: item.portion,
-        };
-      })
-      .filter(Boolean) as MappedGauge[],
+    gauge: result.gauge,
   }));
 
   return NextResponse.json({
