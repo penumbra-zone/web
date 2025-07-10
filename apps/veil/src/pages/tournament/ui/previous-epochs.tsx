@@ -12,8 +12,12 @@ import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { connectionStore } from '@/shared/model/connection';
 import { useStakingTokenMetadata } from '@/shared/api/registry';
-import { usePreviousEpochs, BASE_PAGE, BASE_LIMIT } from '../api/use-previous-epochs';
-import type { PreviousEpochData } from '../server/previous-epochs';
+import {
+  usePreviousEpochs,
+  UsePreviousEpochsData,
+  BASE_PAGE,
+  BASE_LIMIT,
+} from '../api/use-previous-epochs';
 import { useSortableTableHeaders } from './sortable-table-header';
 import { usePersonalRewards } from '../api/use-personal-rewards';
 import { Vote } from './vote';
@@ -31,7 +35,7 @@ const TABLE_CLASSES = {
 };
 
 interface PreviousEpochsRowProps {
-  row: PreviousEpochData;
+  row: UsePreviousEpochsData;
   isLoading: boolean;
   className: string;
   connected: boolean;
@@ -123,7 +127,7 @@ export const PreviousEpochs = observer(() => {
     total,
   } = usePreviousEpochs(connected, page, limit, sortBy.key, sortBy.direction);
 
-  const loadingArr = new Array(10).fill({ votes: [] }) as PreviousEpochData[];
+  const loadingArr = new Array(10).fill({ gauge: [] }) as UsePreviousEpochsData[];
   const epochs = data ?? loadingArr;
 
   const onLimitChange = (newLimit: number) => {

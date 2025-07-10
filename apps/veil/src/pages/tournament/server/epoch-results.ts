@@ -1,11 +1,8 @@
 import { sql } from 'kysely';
 import { NextRequest, NextResponse } from 'next/server';
-import { ChainRegistryClient } from '@penumbra-labs/registry';
-import { AssetId } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { serialize, Serialized } from '@/shared/utils/serializer';
 import { pindexerDb } from '@/shared/database/client';
-import { base64ToUint8Array } from '@penumbra-zone/types/base64';
-import { MappedGauge } from './previous-epochs';
+import { ApiGauge } from './previous-epochs';
 
 const SORT_KEYS = ['portion', 'votes'] as const;
 export type EpochResultsSortKey = (typeof SORT_KEYS)[number];
@@ -23,7 +20,7 @@ export interface EpochResultsRequest {
 
 export interface EpochResultsApiResponse {
   total: number;
-  data: MappedGauge[];
+  data: ApiGauge[];
 }
 
 const DEFAULT_LIMIT = 10;
@@ -100,40 +97,13 @@ export async function GET(
     return NextResponse.json({ error: 'Required query parameter: "epoch"' }, { status: 400 });
   }
 
-  // Enable server-side caching by passing the 'force-cache' option in the config.
-  const registryClient = new ChainRegistryClient({
-    nextjsServerSide: true,
-  });
-
-  const [registry, results, total] = await Promise.all([
-    registryClient.remote.get(chainId),
+  const [results, total] = await Promise.all([
     epochResultsQuery(params),
     totalEpochResultsQuery(params),
   ]);
 
-  const mapped = results
-    .map<MappedGauge | undefined>(item => {
-      const asset = registry.tryGetMetadata(
-        new AssetId({
-          inner: base64ToUint8Array(item.asset_id),
-        }),
-      );
-
-      if (!asset) {
-        return undefined;
-      }
-
-      return {
-        asset,
-        epoch: item.epoch,
-        votes: item.votes,
-        portion: item.portion,
-      };
-    })
-    .filter((item): item is MappedGauge => !!item);
-
   return NextResponse.json({
     total: Number(total?.total ?? 0),
-    data: serialize(mapped),
+    data: serialize(results),
   });
 }

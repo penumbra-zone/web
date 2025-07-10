@@ -32,7 +32,7 @@ export const TableRow = ({
           <div className='flex items-center gap-1'>
             <AssetIcon metadata={item.asset} size='md' />
             <Text smallTechnical color='text.primary'>
-              {item.asset.symbol}
+              {item.asset.symbol || 'Unknown Asset'}
             </Text>
           </div>
         )}
