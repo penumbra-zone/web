@@ -183,9 +183,8 @@ export enum LiquidityDistributionShape {
 export enum LiquidityDistributionStrategy {
   SKIP = 1,
   ARBITRARY = 2,
-  FLAT = 3,
-  PYRAMID = 4,
-  INVERTED_PYRAMID = 5,
+  PYRAMID = 3,
+  INVERTED_PYRAMID = 4,
 }
 
 interface SimpleLiquidityPlan {
@@ -204,7 +203,17 @@ interface SimpleLiquidityPlan {
 export function encodeLiquidityShape(
   shape: LiquidityDistributionShape,
 ): LiquidityDistributionStrategy {
-  return LiquidityDistributionStrategy[shape];
+  switch (shape) {
+    // maps `FLAT` liquidity shape (limit orders) to `ARBITRARY` strategy tag.
+    case LiquidityDistributionShape.FLAT:
+      return LiquidityDistributionStrategy.ARBITRARY;
+    case LiquidityDistributionShape.PYRAMID:
+      return LiquidityDistributionStrategy.PYRAMID;
+    case LiquidityDistributionShape.INVERTED_PYRAMID:
+      return LiquidityDistributionStrategy.INVERTED_PYRAMID;
+    default:
+      return LiquidityDistributionStrategy.ARBITRARY;
+  }
 }
 
 export const getPositionWeights = (
