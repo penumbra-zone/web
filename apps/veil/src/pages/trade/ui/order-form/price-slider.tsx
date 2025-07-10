@@ -84,16 +84,11 @@ const Thumb = ({
       deltaX: 0,
     };
 
-    // Prevent scrolling while dragging
-    document.body.style.overflow = 'hidden';
-    document.body.style.marginRight = '4px';
     onPointerDown();
 
     const upHandler = () => {
       document.removeEventListener(isTouch ? 'touchmove' : 'mousemove', moveHandler);
       deltaRef.current = null;
-      document.body.style.overflow = '';
-      document.body.style.marginRight = '';
     };
 
     document.addEventListener(isTouch ? 'touchmove' : 'mousemove', moveHandler);
