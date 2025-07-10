@@ -9,7 +9,7 @@ import { AssetIcon } from '@penumbra-zone/ui/AssetIcon';
 import { usePairs } from '@/pages/trade/api/use-pairs';
 import { shortify } from '@penumbra-zone/types/shortify';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { isLqtEligible } from '@/shared/utils/is-lqt-eligible';
+import { useIsLqtEligible } from '@/shared/utils/is-lqt-eligible';
 import { Pair, StarButton, starStore } from '@/features/star-pair';
 import { LoadingAsset } from './loading-asset';
 
@@ -33,7 +33,7 @@ const StartAdornment = ({ base, quote }: { base: Metadata; quote: Metadata }) =>
 };
 
 const EndAdornment = ({ base, quote }: { base: Metadata; quote: Metadata }) => {
-  const isLQTEligible = isLqtEligible(base, quote);
+  const isLQTEligible = useIsLqtEligible(base, quote);
 
   return (
     <div className='flex items-center gap-2'>

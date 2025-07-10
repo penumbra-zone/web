@@ -62,7 +62,7 @@ export const Summary = () => {
     <div className='flex flex-wrap items-center gap-x-4 gap-y-2 text-text-primary'>
       <SummaryCard title='Last price' loading={isLoading}>
         <Text detail color='text.primary'>
-          {data ? round({ value: data.price, decimals: 6 }) : '-'}
+          {data?.price ? round({ value: data.price, decimals: 6 }) : '-'}
         </Text>
       </SummaryCard>
       <SummaryCard title='24h Change' loading={isLoading}>

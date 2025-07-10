@@ -90,7 +90,7 @@ export class SimpleLPFormStore {
 
       // convert the value to the equivalent base asset amount
       this.baseInput = round({
-        value: String(Math.max(0, valueInQuote * this.marketPrice)) || '',
+        value: String(Math.max(0, valueInQuote / this.marketPrice)) || '',
         decimals: this.baseAsset?.exponent ?? 6,
         exponentialNotation: false,
       });
@@ -109,7 +109,7 @@ export class SimpleLPFormStore {
 
       // convert the value to the equivalent quote asset amount
       this.quoteInput = round({
-        value: String(Math.max(0, valueInBase / this.marketPrice)) || '',
+        value: String(Math.max(0, valueInBase * this.marketPrice)) || '',
         decimals: this.quoteAsset?.exponent ?? 6,
         exponentialNotation: false,
       });
@@ -205,7 +205,7 @@ export class SimpleLPFormStore {
     return simpleLiquidityPositions({
       baseAsset: this._baseAsset,
       quoteAsset: this._quoteAsset,
-      baseLiquidity: Number(this.baseInput) / this.marketPrice,
+      baseLiquidity: Number(this.baseInput),
       quoteLiquidity: Number(this.quoteInput),
       upperPrice: this.upperPrice,
       lowerPrice: this.lowerPrice,

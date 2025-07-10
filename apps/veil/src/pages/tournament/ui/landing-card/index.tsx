@@ -83,7 +83,7 @@ export const LandingCard = observer(() => {
               results={assetGauges.slice(0, 5)}
               loading={isPending || epochGaugeLoading}
             />
-            <VotingInfo />
+            <VotingInfo epoch={epoch} identifier='landing-card' />
           </div>
         </div>
       </GradientCard>

@@ -11,19 +11,19 @@ import { InfoRow } from './info-row';
 import { InfoRowGasFee } from './info-row-gas-fee';
 import { OrderFormStore } from './store/OrderFormStore';
 import { DEFAULT_PRICE_RANGE, DEFAULT_PRICE_SPREAD } from './store/SimpleLPFormStore';
-import { PriceSlider } from './price-slider';
-import { useEffect, useState } from 'react';
+import { PriceSlider, roundToDecimals } from './price-slider';
+import { useCallback, useEffect, useState } from 'react';
 import { Icon } from '@penumbra-zone/ui/Icon';
 import { Density } from '@penumbra-zone/ui/Density';
-import { isLqtEligible } from '@/shared/utils/is-lqt-eligible';
+import { useIsLqtEligible } from '@/shared/utils/is-lqt-eligible';
 import { LiquidityDistributionShape } from '@/shared/math/position';
 import { LiquidityShape } from './liquidity-shape';
 
 export const SimpleLiquidityOrderForm = observer(
   ({ parentStore }: { parentStore: OrderFormStore }) => {
     const { connected } = connectionStore;
-    const { simpleLPForm: store } = parentStore;
-    const isLQTEligible = isLqtEligible(store.baseAsset?.metadata, store.quoteAsset?.metadata);
+    const { simpleLPForm: store, defaultDecimals } = parentStore;
+    const isLQTEligible = useIsLqtEligible(store.baseAsset?.metadata, store.quoteAsset?.metadata);
 
     const priceSpread = DEFAULT_PRICE_SPREAD;
     const priceRange = DEFAULT_PRICE_RANGE;
@@ -37,15 +37,24 @@ export const SimpleLiquidityOrderForm = observer(
       undefined,
     ]);
 
+    const setRanges = useCallback(() => {
+      if (!store.marketPrice) {
+        return;
+      }
+
+      const exponent = store.quoteAsset?.exponent ?? defaultDecimals;
+      setPriceRanges([
+        roundToDecimals(store.marketPrice * (1 - priceSpread), exponent),
+        roundToDecimals(store.marketPrice * (1 + priceSpread), exponent),
+      ]);
+    }, [defaultDecimals, priceSpread, store.marketPrice, store.quoteAsset?.exponent]);
+
     // set price ranges once the market price is available
     useEffect(() => {
       if (store.marketPrice && !priceRanges[0] && !priceRanges[1]) {
-        setPriceRanges([
-          store.marketPrice * (1 - priceSpread),
-          store.marketPrice * (1 + priceSpread),
-        ]);
+        setRanges();
       }
-    }, [store.marketPrice, priceSpread, priceRanges]);
+    }, [store.marketPrice, priceSpread, priceRanges, setRanges]);
 
     // values flow from local state to form store to keep ui smooth
     useEffect(() => {
@@ -73,6 +82,7 @@ export const SimpleLiquidityOrderForm = observer(
                 typography='large'
                 blurOnWheel
                 value={store.baseInput}
+                maxDecimals={store.quoteAsset?.exponent ?? defaultDecimals}
                 onChange={store.setBaseInput}
                 endAdornment={
                   store.baseAsset?.symbol && (
@@ -118,6 +128,7 @@ export const SimpleLiquidityOrderForm = observer(
                 typography='large'
                 blurOnWheel
                 value={store.quoteInput}
+                maxDecimals={store.quoteAsset?.exponent ?? defaultDecimals}
                 onChange={store.setQuoteInput}
                 endAdornment={
                   store.quoteAsset?.symbol && (
@@ -230,6 +241,7 @@ export const SimpleLiquidityOrderForm = observer(
             max={store.marketPrice ? store.marketPrice * (1 + adjustedPriceRange) : Infinity}
             values={priceRanges}
             onInput={setPriceRanges}
+            quoteExponent={store.quoteAsset?.exponent ?? defaultDecimals}
             marketPrice={store.marketPrice}
             quoteAsset={store.quoteAsset}
             baseAsset={store.baseAsset}
