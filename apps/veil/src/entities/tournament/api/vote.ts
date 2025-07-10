@@ -6,8 +6,7 @@ import { AddressIndex, Address } from '@penumbra-zone/protobuf/penumbra/core/key
 import { connectionStore } from '@/shared/model/connection';
 import { planBuildBroadcast } from '@/entities/transaction';
 import { openToast } from '@penumbra-zone/ui/Toast';
-import { Denom } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
+import { Denom, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 
 export const voteTournament = async ({
   incentivized,
