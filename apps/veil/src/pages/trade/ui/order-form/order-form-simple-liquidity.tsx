@@ -29,7 +29,7 @@ export const SimpleLiquidityOrderForm = observer(
     const priceRange = DEFAULT_PRICE_RANGE;
 
     // simple absolute zoom adjustment in steps of 0.05
-    const [zoomAdjustment, setZoomAdjustment] = useState(0);
+    const [zoomAdjustment /* setZoomAdjustment */] = useState(0);
     const adjustedPriceRange = priceRange + zoomAdjustment;
 
     const [priceRanges, setPriceRanges] = useState<[number | undefined, number | undefined]>([
@@ -39,6 +39,7 @@ export const SimpleLiquidityOrderForm = observer(
 
     const setRanges = useCallback(() => {
       if (!store.marketPrice) {
+        setPriceRanges([undefined, undefined]);
         return;
       }
 
@@ -49,9 +50,15 @@ export const SimpleLiquidityOrderForm = observer(
       ]);
     }, [defaultDecimals, priceSpread, store.marketPrice, store.quoteAsset?.exponent]);
 
-    // set price ranges once the market price is available
     useEffect(() => {
+      // set price ranges once the market price is available
       if (store.marketPrice && !priceRanges[0] && !priceRanges[1]) {
+        setRanges();
+      }
+
+      // unset price ranges once the market price is unavailable
+      // due to switching of asset pairs
+      if (!store.marketPrice && priceRanges[0] && priceRanges[1]) {
         setRanges();
       }
     }, [store.marketPrice, priceSpread, priceRanges, setRanges]);
@@ -199,7 +206,9 @@ export const SimpleLiquidityOrderForm = observer(
               </Tooltip>
             </div>
             <div className='flex items-center gap-1'>
-              <Button
+              {/* Jason note: this is pending designs, but needed the
+               /* ability to zoom to test the depth chart */}
+              {/* <Button
                 actionType='default'
                 priority='secondary'
                 density='compact'
@@ -218,19 +227,12 @@ export const SimpleLiquidityOrderForm = observer(
                 }}
               >
                 -
-              </Button>
+              </Button> */}
               <Button
                 actionType='default'
                 priority='secondary'
                 density='compact'
-                onClick={() => {
-                  if (store.marketPrice) {
-                    setPriceRanges([
-                      store.marketPrice * (1 - priceSpread),
-                      store.marketPrice * (1 + priceSpread),
-                    ]);
-                  }
-                }}
+                onClick={setRanges}
               >
                 Reset
               </Button>
