@@ -1,5 +1,11 @@
 # @penumbra-zone/ui
 
+## 16.0.1
+
+### Patch Changes
+
+- cda1a99: Update text in AddressView component
+
 ## 16.0.0
 
 ### Major Changes
