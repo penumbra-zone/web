@@ -52,8 +52,13 @@ export const buildActionParallel = async (
   if (!actionPlan?.action.case) {
     throw new Error('No action key provided');
   }
+
+  // Remapping only for the proving-key loader
+  const actionCase =
+    actionPlan.action.case === 'positionOpenPlan' ? 'positionOpen' : actionPlan.action.case;
+
   if (keyPath) {
-    await loadProvingKey(actionPlan.action.case, keyPath);
+    await loadProvingKey(actionCase, keyPath);
   }
 
   const result = build_action(

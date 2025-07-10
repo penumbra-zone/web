@@ -34,6 +34,7 @@ import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v
 import { getAssetMetadataById } from '@/shared/api/metadata';
 import { updatePositionsQuery } from '@/entities/position';
 import { SimpleLPFormStore } from './SimpleLPFormStore';
+import { encodeLiquidityShape } from '@/shared/math/position';
 
 export type WhichForm = 'Market' | 'Limit' | 'RangeLP' | 'SimpleLP';
 
@@ -229,7 +230,9 @@ export class OrderFormStore {
         return undefined;
       }
       return new TransactionPlannerRequest({
-        positionOpens: [{ position: plan }],
+        positionOpens: [
+          { position: plan.position, positionMeta: { strategy: encodeLiquidityShape(plan.shape) } },
+        ],
         source: this.subAccountIndex,
       });
     }
@@ -239,10 +242,15 @@ export class OrderFormStore {
       this.resetGasFee();
       return undefined;
     }
-    return new TransactionPlannerRequest({
-      positionOpens: plan.map(x => ({ position: x })),
+    const LpPlan = new TransactionPlannerRequest({
+      positionOpens: plan.map(x => ({
+        position: x.position,
+        positionMeta: { strategy: encodeLiquidityShape(x.shape) },
+      })),
       source: this.subAccountIndex,
     });
+
+    return LpPlan;
   }
 
   get canSubmit(): boolean {

@@ -18,131 +18,149 @@ const getPrice = (position: Position): number => {
 
 describe('planToPosition', () => {
   it('works for plans with no exponent', () => {
-    const position = planToPosition({
-      baseAsset: {
-        id: ASSET_A,
-        exponent: 0,
+    const position = planToPosition(
+      {
+        baseAsset: {
+          id: ASSET_A,
+          exponent: 0,
+        },
+        quoteAsset: {
+          id: ASSET_B,
+          exponent: 0,
+        },
+        price: 20.5,
+        feeBps: 100,
+        baseReserves: 1000,
+        quoteReserves: 2000,
       },
-      quoteAsset: {
-        id: ASSET_B,
-        exponent: 0,
-      },
-      price: 20.5,
-      feeBps: 100,
-      baseReserves: 1000,
-      quoteReserves: 2000,
-    });
-    expect(position.phi?.component?.fee).toEqual(100);
-    expect(getPrice(position)).toEqual(20.5);
-    expect(pnum(position.reserves?.r1).toNumber()).toEqual(1000);
-    expect(pnum(position.reserves?.r2).toNumber()).toEqual(2000);
+      LiquidityDistributionShape.FLAT,
+    );
+    expect(position.position.phi?.component?.fee).toEqual(100);
+    expect(getPrice(position.position)).toEqual(20.5);
+    expect(pnum(position.position.reserves?.r1).toNumber()).toEqual(1000);
+    expect(pnum(position.position.reserves?.r2).toNumber()).toEqual(2000);
   });
 
   it('works for plans with identical exponent', () => {
-    const position = planToPosition({
-      baseAsset: {
-        id: ASSET_A,
-        exponent: 6,
+    const position = planToPosition(
+      {
+        baseAsset: {
+          id: ASSET_A,
+          exponent: 6,
+        },
+        quoteAsset: {
+          id: ASSET_B,
+          exponent: 6,
+        },
+        price: 12.34,
+        feeBps: 100,
+        baseReserves: 5,
+        quoteReserves: 7,
       },
-      quoteAsset: {
-        id: ASSET_B,
-        exponent: 6,
-      },
-      price: 12.34,
-      feeBps: 100,
-      baseReserves: 5,
-      quoteReserves: 7,
-    });
-    expect(position.phi?.component?.fee).toEqual(100);
-    expect(getPrice(position)).toEqual(12.34);
-    expect(pnum(position.reserves?.r1).toNumber()).toEqual(5e6);
-    expect(pnum(position.reserves?.r2).toNumber()).toEqual(7e6);
+      LiquidityDistributionShape.FLAT,
+    );
+    expect(position.position.phi?.component?.fee).toEqual(100);
+    expect(getPrice(position.position)).toEqual(12.34);
+    expect(pnum(position.position.reserves?.r1).toNumber()).toEqual(5e6);
+    expect(pnum(position.position.reserves?.r2).toNumber()).toEqual(7e6);
   });
 
   it('works for plans with different exponents', () => {
-    const position = planToPosition({
-      baseAsset: {
-        id: ASSET_A,
-        exponent: 6,
+    const position = planToPosition(
+      {
+        baseAsset: {
+          id: ASSET_A,
+          exponent: 6,
+        },
+        quoteAsset: {
+          id: ASSET_B,
+          exponent: 8,
+        },
+        price: 12.34,
+        feeBps: 100,
+        baseReserves: 5,
+        quoteReserves: 7,
       },
-      quoteAsset: {
-        id: ASSET_B,
-        exponent: 8,
-      },
-      price: 12.34,
-      feeBps: 100,
-      baseReserves: 5,
-      quoteReserves: 7,
-    });
-    expect(position.phi?.component?.fee).toEqual(100);
-    expect(getPrice(position) * 10 ** (6 - 8)).toEqual(12.34);
-    expect(pnum(position.reserves?.r1).toNumber()).toEqual(5e6);
-    expect(pnum(position.reserves?.r2).toNumber()).toEqual(7e8);
+      LiquidityDistributionShape.FLAT,
+    );
+    expect(position.position.phi?.component?.fee).toEqual(100);
+    expect(getPrice(position.position) * 10 ** (6 - 8)).toEqual(12.34);
+    expect(pnum(position.position.reserves?.r1).toNumber()).toEqual(5e6);
+    expect(pnum(position.position.reserves?.r2).toNumber()).toEqual(7e8);
   });
 });
 
 describe('renderPositions', () => {
   it('works for plans with no exponent', () => {
-    const position = planToPosition({
-      baseAsset: {
-        id: ASSET_A,
-        exponent: 0,
+    const position = planToPosition(
+      {
+        baseAsset: {
+          id: ASSET_A,
+          exponent: 0,
+        },
+        quoteAsset: {
+          id: ASSET_B,
+          exponent: 0,
+        },
+        price: 20.5,
+        feeBps: 100,
+        baseReserves: 1000,
+        quoteReserves: 2000,
       },
-      quoteAsset: {
-        id: ASSET_B,
-        exponent: 0,
-      },
-      price: 20.5,
-      feeBps: 100,
-      baseReserves: 1000,
-      quoteReserves: 2000,
-    });
-    expect(position.phi?.component?.fee).toEqual(100);
-    expect(getPrice(position)).toEqual(20.5);
-    expect(pnum(position.reserves?.r1).toNumber()).toEqual(1000);
-    expect(pnum(position.reserves?.r2).toNumber()).toEqual(2000);
+      LiquidityDistributionShape.FLAT,
+    );
+    expect(position.position.phi?.component?.fee).toEqual(100);
+    expect(getPrice(position.position)).toEqual(20.5);
+    expect(pnum(position.position.reserves?.r1).toNumber()).toEqual(1000);
+    expect(pnum(position.position.reserves?.r2).toNumber()).toEqual(2000);
   });
 
   it('works for plans with identical exponent', () => {
-    const position = planToPosition({
-      baseAsset: {
-        id: ASSET_A,
-        exponent: 6,
+    const position = planToPosition(
+      {
+        baseAsset: {
+          id: ASSET_A,
+          exponent: 6,
+        },
+        quoteAsset: {
+          id: ASSET_B,
+          exponent: 6,
+        },
+        price: 12.34,
+        feeBps: 100,
+        baseReserves: 5,
+        quoteReserves: 7,
       },
-      quoteAsset: {
-        id: ASSET_B,
-        exponent: 6,
-      },
-      price: 12.34,
-      feeBps: 100,
-      baseReserves: 5,
-      quoteReserves: 7,
-    });
-    expect(position.phi?.component?.fee).toEqual(100);
-    expect(getPrice(position)).toEqual(12.34);
-    expect(pnum(position.reserves?.r1).toNumber()).toEqual(5e6);
-    expect(pnum(position.reserves?.r2).toNumber()).toEqual(7e6);
+      LiquidityDistributionShape.FLAT,
+    );
+    expect(position.position.phi?.component?.fee).toEqual(100);
+    expect(getPrice(position.position)).toEqual(12.34);
+    expect(pnum(position.position.reserves?.r1).toNumber()).toEqual(5e6);
+    expect(pnum(position.position.reserves?.r2).toNumber()).toEqual(7e6);
   });
 
   it('works for plans with different exponents', () => {
-    const position = planToPosition({
-      baseAsset: {
-        id: ASSET_A,
-        exponent: 6,
+    const position = planToPosition(
+      {
+        baseAsset: {
+          id: ASSET_A,
+          exponent: 6,
+        },
+        quoteAsset: {
+          id: ASSET_B,
+          exponent: 8,
+        },
+        price: 12.34,
+        feeBps: 100,
+        baseReserves: 5,
+        quoteReserves: 7,
       },
-      quoteAsset: {
-        id: ASSET_B,
-        exponent: 8,
-      },
-      price: 12.34,
-      feeBps: 100,
-      baseReserves: 5,
-      quoteReserves: 7,
-    });
-    expect(position.phi?.component?.fee).toEqual(100);
-    expect(getPrice(position) * 10 ** (6 - 8)).toEqual(12.34);
-    expect(pnum(position.reserves?.r1).toNumber()).toEqual(5e6);
-    expect(pnum(position.reserves?.r2).toNumber()).toEqual(7e8);
+      LiquidityDistributionShape.FLAT,
+    );
+    expect(position.position.phi?.component?.fee).toEqual(100);
+    expect(getPrice(position.position) * 10 ** (6 - 8)).toEqual(12.34);
+    expect(pnum(position.position.reserves?.r1).toNumber()).toEqual(5e6);
+    expect(pnum(position.position.reserves?.r2).toNumber()).toEqual(7e8);
   });
 });
 
@@ -177,8 +195,12 @@ describe('simpleLiquidityPositions', () => {
       distributionShape: LiquidityDistributionShape.FLAT,
     });
 
-    const baseReserves = positions.map(p => pnum(p.reserves?.r1).toNumber()).filter(Boolean);
-    const quoteReserves = positions.map(p => pnum(p.reserves?.r2).toNumber()).filter(Boolean);
+    const baseReserves = positions
+      .map(p => pnum(p.position.reserves?.r1).toNumber())
+      .filter(Boolean);
+    const quoteReserves = positions
+      .map(p => pnum(p.position.reserves?.r2).toNumber())
+      .filter(Boolean);
     const reserves = [...quoteReserves, ...baseReserves];
 
     // All reserves should be equal
@@ -191,8 +213,12 @@ describe('simpleLiquidityPositions', () => {
       distributionShape: LiquidityDistributionShape.PYRAMID,
     });
 
-    const baseReserves = positions.map(p => pnum(p.reserves?.r1).toNumber()).filter(Boolean);
-    const quoteReserves = positions.map(p => pnum(p.reserves?.r2).toNumber()).filter(Boolean);
+    const baseReserves = positions
+      .map(p => pnum(p.position.reserves?.r1).toNumber())
+      .filter(Boolean);
+    const quoteReserves = positions
+      .map(p => pnum(p.position.reserves?.r2).toNumber())
+      .filter(Boolean);
     const reserves = [...quoteReserves, ...baseReserves];
 
     const middleIndex1 = Math.floor(reserves.length / 2);
@@ -215,8 +241,12 @@ describe('simpleLiquidityPositions', () => {
       distributionShape: LiquidityDistributionShape.INVERTED_PYRAMID,
     });
 
-    const baseReserves = positions.map(p => pnum(p.reserves?.r1).toNumber()).filter(Boolean);
-    const quoteReserves = positions.map(p => pnum(p.reserves?.r2).toNumber()).filter(Boolean);
+    const baseReserves = positions
+      .map(p => pnum(p.position.reserves?.r1).toNumber())
+      .filter(Boolean);
+    const quoteReserves = positions
+      .map(p => pnum(p.position.reserves?.r2).toNumber())
+      .filter(Boolean);
     const reserves = [...quoteReserves, ...baseReserves];
 
     const middleIndex1 = Math.floor(reserves.length / 2);
@@ -241,11 +271,11 @@ describe('simpleLiquidityPositions', () => {
 
     // Calculate total base and quote liquidity
     const totalBaseLiquidity = positions.reduce(
-      (sum, p) => sum + pnum(p.reserves?.r1 ?? 0, basePlan.baseAsset.exponent).toNumber(),
+      (sum, p) => sum + pnum(p.position.reserves?.r1 ?? 0, basePlan.baseAsset.exponent).toNumber(),
       0,
     );
     const totalQuoteLiquidity = positions.reduce(
-      (sum, p) => sum + pnum(p.reserves?.r2 ?? 0, basePlan.quoteAsset.exponent).toNumber(),
+      (sum, p) => sum + pnum(p.position.reserves?.r2 ?? 0, basePlan.quoteAsset.exponent).toNumber(),
       0,
     );
 
@@ -262,11 +292,11 @@ describe('simpleLiquidityPositions', () => {
 
     // Calculate total base and quote liquidity
     const totalBaseLiquidity = positions.reduce(
-      (sum, p) => sum + pnum(p.reserves?.r1 ?? 0, basePlan.baseAsset.exponent).toNumber(),
+      (sum, p) => sum + pnum(p.position.reserves?.r1 ?? 0, basePlan.baseAsset.exponent).toNumber(),
       0,
     );
     const totalQuoteLiquidity = positions.reduce(
-      (sum, p) => sum + pnum(p.reserves?.r2 ?? 0, basePlan.quoteAsset.exponent).toNumber(),
+      (sum, p) => sum + pnum(p.position.reserves?.r2 ?? 0, basePlan.quoteAsset.exponent).toNumber(),
       0,
     );
 
@@ -283,11 +313,11 @@ describe('simpleLiquidityPositions', () => {
 
     // Calculate total base and quote liquidity
     const totalBaseLiquidity = positions.reduce(
-      (sum, p) => sum + pnum(p.reserves?.r1 ?? 0, basePlan.baseAsset.exponent).toNumber(),
+      (sum, p) => sum + pnum(p.position.reserves?.r1 ?? 0, basePlan.baseAsset.exponent).toNumber(),
       0,
     );
     const totalQuoteLiquidity = positions.reduce(
-      (sum, p) => sum + pnum(p.reserves?.r2 ?? 0, basePlan.quoteAsset.exponent).toNumber(),
+      (sum, p) => sum + pnum(p.position.reserves?.r2 ?? 0, basePlan.quoteAsset.exponent).toNumber(),
       0,
     );
 
