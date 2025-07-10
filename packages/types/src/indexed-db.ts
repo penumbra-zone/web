@@ -22,6 +22,7 @@ import {
 import {
   Position,
   PositionId,
+  PositionMetadata,
   PositionState,
   TradingPair,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
@@ -105,11 +106,17 @@ export interface IndexedDbInterface {
     tradingPair: TradingPair | undefined,
     subaccount: AddressIndex | undefined,
   ): AsyncGenerator<PositionId, void>;
-  addPosition(positionId: PositionId, position: Position, subaccount?: AddressIndex): Promise<void>;
+  addPosition(
+    positionId: PositionId,
+    position: Position,
+    positionMetadata?: PositionMetadata,
+    subaccount?: AddressIndex,
+  ): Promise<void>;
   updatePosition(
     positionId: PositionId,
     newState: PositionState,
     subaccount?: AddressIndex,
+    positionMetadata?: PositionMetadata,
   ): Promise<void>;
   addEpoch(epoch: Epoch): Promise<void>;
   getEpochByHeight(height: bigint): Promise<Epoch | undefined>;
@@ -225,6 +232,25 @@ export interface IndexedDbInterface {
     },
     void
   >;
+
+  getPositionsByStrategyStream(
+    subaccount?: AddressIndex,
+    positionMetadata?: PositionMetadata,
+    positionState?: PositionState,
+    tradingPair?: TradingPair,
+  ): AsyncGenerator<
+    {
+      id: PositionId;
+      position: Position;
+      subaccount?: AddressIndex;
+      positionMetadata?: PositionMetadata;
+    },
+    void
+  >;
+
+  getPositionMetadataById(
+    positionId: PositionId,
+  ): Promise<{ positionMetadata?: PositionMetadata } | undefined>;
 }
 
 export interface PenumbraDb extends DBSchema {
@@ -329,6 +355,9 @@ export interface PenumbraDb extends DBSchema {
   POSITIONS: {
     key: string; // base64 PositionRecord['id']['inner'];
     value: PositionRecord;
+    indexes: {
+      strategy: number;
+    };
   };
   EPOCHS: {
     key: number; // auto-increment
@@ -396,6 +425,7 @@ export interface PositionRecord {
   id: Jsonified<PositionId>; // PositionId (must be JsonValue because ['id']['inner'] is a key )
   position: Jsonified<Position>; // Position
   subaccount?: Jsonified<AddressIndex>; // Position AddressIndex
+  positionMetadata?: Jsonified<PositionMetadata>;
 }
 
 export type Tables = Record<string, StoreNames<PenumbraDb>>;

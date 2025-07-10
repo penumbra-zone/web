@@ -8,6 +8,7 @@ import {
 import {
   Position,
   PositionId,
+  PositionMetadata,
   PositionState,
   TradingPair,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
@@ -158,7 +159,10 @@ export class IndexedDb implements IndexedDbInterface {
           keyPath: 'swapCommitment.inner',
         }).createIndex('nullifier', 'nullifier.inner');
         db.createObjectStore('GAS_PRICES', { keyPath: 'assetId.inner' });
-        db.createObjectStore('POSITIONS', { keyPath: 'id.inner' });
+
+        const positionsStore = db.createObjectStore('POSITIONS', { keyPath: 'id.inner' });
+        positionsStore.createIndex('strategy', 'positionMetadata.strategy');
+
         db.createObjectStore('EPOCHS', { autoIncrement: true });
         db.createObjectStore('VALIDATOR_INFOS');
         db.createObjectStore('PRICES', {
@@ -754,6 +758,24 @@ export class IndexedDb implements IndexedDbInterface {
     return Promise.resolve(notesForVoting);
   }
 
+  async getPositionMetadataById(
+    positionId: PositionId,
+  ): Promise<{ positionMetadata?: PositionMetadata } | undefined> {
+    assertPositionId(positionId);
+    const key = uint8ArrayToBase64(positionId.inner);
+    const positionRecord = await this.db.get('POSITIONS', key);
+
+    if (!positionRecord) {
+      throw new Error('Position record not found when trying to retrieve its state');
+    }
+
+    return {
+      positionMetadata: positionRecord.positionMetadata
+        ? PositionMetadata.fromJson(positionRecord.positionMetadata)
+        : undefined,
+    };
+  }
+
   async *getOwnedPositionIds(
     positionState: PositionState | undefined,
     tradingPair: TradingPair | undefined,
@@ -780,9 +802,51 @@ export class IndexedDb implements IndexedDbInterface {
     });
   }
 
+  async *getPositionsByStrategyStream(
+    subaccount?: AddressIndex,
+    positionMetadata?: PositionMetadata,
+    positionState?: PositionState,
+    tradingPair?: TradingPair,
+  ) {
+    yield* new ReadableStream({
+      start: async cont => {
+        const store = this.db.transaction('POSITIONS').store;
+        let cursor = await store.index('strategy').openCursor();
+
+        while (cursor) {
+          const position = Position.fromJson(cursor.value.position);
+
+          let metadata: PositionMetadata | undefined;
+          if (cursor.value.positionMetadata) {
+            metadata = PositionMetadata.fromJson(cursor.value.positionMetadata);
+          }
+
+          if (
+            (!positionMetadata || positionMetadata.equals(metadata)) &&
+            (!positionState || positionState.equals(position.state)) &&
+            (!tradingPair || tradingPair.equals(position.phi?.pair)) &&
+            (!subaccount ||
+              (cursor.value.subaccount &&
+                subaccount.equals(AddressIndex.fromJson(cursor.value.subaccount))))
+          ) {
+            cont.enqueue({
+              id: PositionId.fromJson(cursor.value.id),
+              position,
+              subaccount,
+              positionMetadata: metadata,
+            });
+          }
+          cursor = await cursor.continue();
+        }
+        cont.close();
+      },
+    });
+  }
+
   async addPosition(
     positionId: PositionId,
     position: Position,
+    positionMetadata?: PositionMetadata,
     subaccount?: AddressIndex,
   ): Promise<void> {
     assertPositionId(positionId);
@@ -790,6 +854,9 @@ export class IndexedDb implements IndexedDbInterface {
       id: positionId.toJson() as Jsonified<PositionId>,
       position: position.toJson() as Jsonified<Position>,
       subaccount: subaccount && (subaccount.toJson() as Jsonified<AddressIndex>),
+      positionMetadata: positionMetadata
+        ? (positionMetadata.toJson() as Jsonified<PositionMetadata>)
+        : undefined,
     };
     await this.u.update({ table: 'POSITIONS', value: positionRecord });
   }
@@ -798,6 +865,7 @@ export class IndexedDb implements IndexedDbInterface {
     positionId: PositionId,
     newState: PositionState,
     subaccount?: AddressIndex,
+    positionMetadata?: PositionMetadata,
   ): Promise<void> {
     assertPositionId(positionId);
     const key = uint8ArrayToBase64(positionId.inner);
@@ -816,6 +884,9 @@ export class IndexedDb implements IndexedDbInterface {
         id: positionId.toJson() as Jsonified<PositionId>,
         position: position.toJson() as Jsonified<Position>,
         subaccount: subaccount ? (subaccount.toJson() as Jsonified<AddressIndex>) : undefined,
+        positionMetadata: positionMetadata
+          ? (positionMetadata.toJson() as Jsonified<PositionMetadata>)
+          : undefined,
       },
     });
   }

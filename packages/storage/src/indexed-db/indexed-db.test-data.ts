@@ -3,6 +3,7 @@ import { SpendableNoteRecord, SwapRecord } from '@penumbra-zone/protobuf/penumbr
 import {
   Position,
   PositionId,
+  PositionMetadata,
   TradingPair,
 } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { Epoch } from '@penumbra-zone/protobuf/penumbra/core/component/sct/v1/sct_pb';
@@ -651,6 +652,10 @@ export const transaction = Transaction.fromJson({
   },
 });
 
+export const positionMetadata = PositionMetadata.fromJson({
+  strategy: 1,
+  identifier: 42,
+});
 export const positionGmPenumbraBuy = Position.fromJson({
   phi: {
     component: { p: { lo: '1000000' }, q: { lo: '1000000' } },
