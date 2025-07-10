@@ -67,7 +67,7 @@ export const VoteDialogueSelector = observer(
       // Craft LQT TPR and submit vote
       await voteTournament({
         stakedNotes: notes,
-        incentivized: selectedAsset.asset.base,
+        incentivized: selectedAsset.asset,
         epochIndex: epoch,
         rewardsRecipient,
       });
