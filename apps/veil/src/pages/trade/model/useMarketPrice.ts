@@ -1,10 +1,23 @@
 import { useBook } from '../api/book';
 import { calculateSpread } from './trace';
+import { usePathSymbols } from '@/pages/trade/model/use-path.ts';
 
-export const useMarketPrice = (baseSymbol?: string, quoteSymbol?: string) => {
-  const { data: book } = useBook(baseSymbol, quoteSymbol);
+export const useMarketPrice = (
+  baseSymbol?: string,
+  quoteSymbol?: string,
+): { marketPrice: number | undefined; symbols: { base: string; quote: string } } => {
+  const pathSymbols = usePathSymbols();
+  const symbols = {
+    base: baseSymbol ?? pathSymbols.baseSymbol,
+    quote: quoteSymbol ?? pathSymbols.quoteSymbol,
+  };
+
+  const { data: book } = useBook(symbols.base, symbols.quote);
   if (!book?.multiHops) {
-    return undefined;
+    return {
+      marketPrice: undefined,
+      symbols,
+    };
   }
 
   const { buy: buyOrders, sell: sellOrders } = book.multiHops;
@@ -13,5 +26,10 @@ export const useMarketPrice = (baseSymbol?: string, quoteSymbol?: string) => {
   const spreadInfo = calculateSpread(sellOrders, buyOrders);
 
   // Return the midprice from spread calculation
-  return spreadInfo ? parseFloat(spreadInfo.midPrice) : undefined;
+  const marketPrice = spreadInfo ? parseFloat(spreadInfo.midPrice) : undefined;
+
+  return {
+    marketPrice,
+    symbols,
+  };
 };

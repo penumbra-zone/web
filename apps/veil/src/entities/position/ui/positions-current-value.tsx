@@ -6,7 +6,7 @@ import { DisplayPosition } from '../model/types';
 
 export const PositionsCurrentValue = ({ order }: { order: DisplayPosition['orders'][number] }) => {
   const { baseAsset, quoteAsset } = order;
-  const marketPrice = useMarketPrice(baseAsset.asset.symbol, quoteAsset.asset.symbol);
+  const { marketPrice } = useMarketPrice(baseAsset.asset.symbol, quoteAsset.asset.symbol);
 
   if (!marketPrice) {
     return (
