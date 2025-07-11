@@ -16,8 +16,7 @@ import {
 } from '@/pages/inspect/lp/api/types.ts';
 import { Registry } from '@penumbra-labs/registry';
 import { getValueView } from '@/shared/api/server/book/helpers.ts';
-import { fetchRegistry } from '@/shared/api/fetch-registry';
-import { envQueryFn } from '@/shared/api/env/env.ts';
+import { useRegistry } from '@/shared/api/registry';
 
 const positionsStateAddVV = (res: PositionStateResponse, registry: Registry): PositionStateVV => {
   return {
@@ -96,15 +95,13 @@ const volumeAddVV = (res: VolumeAndFeesResponse, registry: Registry): VolumeAndF
   };
 };
 
-const timelineFetch = async (id: string): Promise<PositionTimelineResponseVV> => {
+const timelineFetch = async (
+  registry: Registry,
+  id: string,
+): Promise<PositionTimelineResponseVV> => {
   const result = await apiFetch<PositionTimelineResponse>(
     `/api/position/timeline?positionId=${id}`,
   );
-
-  const env = await envQueryFn();
-
-  // TODO: process this client side.
-  const registry = await fetchRegistry(env.PENUMBRA_CHAIN_ID);
 
   return {
     state: positionsStateAddVV(result.state, registry),
@@ -115,9 +112,10 @@ const timelineFetch = async (id: string): Promise<PositionTimelineResponseVV> =>
 };
 
 export const useLpPosition = (id: string) => {
+  const { data: registry } = useRegistry();
   return useQuery({
     queryKey: ['lpPosition', id],
     retry: 1,
-    queryFn: () => timelineFetch(id),
+    queryFn: () => timelineFetch(registry, id),
   });
 };

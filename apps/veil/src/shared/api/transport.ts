@@ -2,14 +2,13 @@ import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { sample } from 'lodash';
 import { useQuery } from '@tanstack/react-query';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
-import { envQueryFn } from '@/shared/api/env/env.ts';
 import { penumbra } from '@/shared/const/penumbra.ts';
 import { connectionStore } from '@/shared/model/connection';
 import { queryClient } from '@/shared/const/queryClient';
+import { useClientEnv } from './env';
+import { ClientEnv } from './env/types';
 
-const registryRpcChoices = async () => {
-  const env = await envQueryFn();
-
+const registryRpcChoices = async (env: ClientEnv) => {
   if (env.PENUMBRA_CHAIN_ID === 'penumbra-1') {
     const chainRegistryClient = new ChainRegistryClient();
     const { rpcs } = await chainRegistryClient.remote.globals();
@@ -26,12 +25,12 @@ enum TransportType {
   GRPC_WEB,
 }
 
-const grpcTransportQueryFn = async () => {
+const grpcTransportQueryFn = async (env: ClientEnv) => {
   if (connectionStore.connected && penumbra.transport) {
     return { transport: penumbra.transport, type: TransportType.PRAX };
   }
 
-  const rpcChoices = await registryRpcChoices();
+  const rpcChoices = await registryRpcChoices(env);
   const randomRpc = sample(rpcChoices);
   if (!randomRpc) {
     throw new Error('No rpcs in remote globals');
@@ -45,16 +44,17 @@ const grpcTransportQueryFn = async () => {
   };
 };
 
-const getGrpcQueryOptions = () => ({
+const getGrpcQueryOptions = (env: ClientEnv) => ({
   queryKey: ['grpcTransport', connectionStore.connected],
-  queryFn: grpcTransportQueryFn,
+  queryFn: () => grpcTransportQueryFn(env),
   staleTime: Infinity,
 });
 
-export const getGrpcTransport = () => {
-  return queryClient.fetchQuery(getGrpcQueryOptions());
+export const getGrpcTransport = (env: ClientEnv) => {
+  return queryClient.fetchQuery(getGrpcQueryOptions(env));
 };
 
 export const useGrpcTransport = () => {
-  return useQuery(getGrpcQueryOptions());
+  const env = useClientEnv();
+  return useQuery(getGrpcQueryOptions(env));
 };
