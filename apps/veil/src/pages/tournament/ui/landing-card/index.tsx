@@ -17,6 +17,10 @@ import {
 import { connectionStore } from '@/shared/model/connection';
 import { usePersonalRewards } from '../../api/use-personal-rewards';
 import { LqtDelegatorHistoryData } from '../../server/delegator-history';
+import { formatTimeRemaining } from '@/shared/utils/format-time';
+import { addSeconds, format } from 'date-fns';
+import { Tooltip } from '@penumbra-zone/ui/Tooltip';
+import { Hourglass } from 'lucide-react';
 
 export const LandingCard = observer(() => {
   const { data: summary, isLoading: summaryLoading } = useTournamentSummary({
@@ -49,8 +53,11 @@ export const LandingCard = observer(() => {
   const { data: rewards } = usePersonalRewards(subaccount, epoch, false, 1, 1);
   const latestReward = rewards.values().next().value as LqtDelegatorHistoryData | undefined;
 
-  // We want to pass the most recent epoch with rewards to trigger the social card dialogue.
   const { isOpen: showSocial, close: hideSocial } = useTournamentSocialCard(latestReward?.epoch);
+  const epochEndsIn = summary?.[0]?.ends_in_s;
+  const endingTime = epochEndsIn
+    ? format(addSeconds(new Date(), epochEndsIn), 'MMM d, yyyy, hh:mm aa OOO')
+    : undefined;
 
   return (
     <>
@@ -61,21 +68,31 @@ export const LandingCard = observer(() => {
           <div className='h-px w-full shrink-0 bg-other-tonal-stroke md:h-auto md:w-px' />
 
           <div className='flex w-full flex-col gap-8 md:w-1/2'>
-            <div className='flex justify-between'>
-              <Text variant='h3' color='text.primary'>
-                Current Epoch
-              </Text>
-              <div className='flex items-center rounded-sm bg-base-black-alt px-2'>
-                {epochLoading ? (
-                  <div className='h-6 w-16'>
-                    <Skeleton />
-                  </div>
-                ) : (
-                  <div className='bg-[linear-gradient(90deg,rgb(244,156,67),rgb(83,174,168))] bg-clip-text text-transparent'>
-                    <Text xxl>#{epoch}</Text>
-                  </div>
-                )}
-              </div>
+            <div className='flex items-center justify-between'>
+              {epochLoading ? (
+                <Skeleton />
+              ) : (
+                <Text variant='h3' color='text.primary'>
+                  <span className='bg-gradient-to-r from-orange-400 to-teal-400 bg-clip-text text-transparent'>
+                    <span>Current Epoch </span>#{epoch}
+                  </span>
+                </Text>
+              )}
+
+              {epochEndsIn && epochEndsIn <= 0 ? (
+                <Text technical color='text.secondary'>
+                  Ended
+                </Text>
+              ) : (
+                typeof epochEndsIn === 'number' && (
+                  <Tooltip message={endingTime}>
+                    <div className='flex items-center gap-2'>
+                      <Hourglass className='h-5 w-5 text-white/80' />
+                      <Text>Ends in {formatTimeRemaining(epochEndsIn)}</Text>
+                    </div>
+                  </Tooltip>
+                )
+              )}
             </div>
 
             <IncentivePool summary={summary?.[0]} loading={summaryLoading} />
