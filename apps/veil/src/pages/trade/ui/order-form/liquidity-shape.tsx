@@ -23,7 +23,7 @@ const shapeMapping = {
     disabled: true,
   },
   [LiquidityDistributionShape.PYRAMID]: {
-    text: 'Locally stable',
+    text: 'Concentrated',
     default: StablekindDefault,
     hover: StablekindHover,
     selected: StablekindSelected,
