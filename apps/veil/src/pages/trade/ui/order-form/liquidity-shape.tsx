@@ -42,6 +42,12 @@ const shapeMapping = {
   },
 };
 
+const isSupportedShape = (
+  shape: LiquidityDistributionShape,
+): shape is keyof typeof shapeMapping => {
+  return shape in shapeMapping;
+};
+
 export const LiquidityShape = ({
   shape,
   onClick,
@@ -51,6 +57,10 @@ export const LiquidityShape = ({
   onClick: () => void;
   selected: boolean;
 }) => {
+  if (!isSupportedShape(shape)) {
+    return null;
+  }
+
   const {
     text,
     default: Default,

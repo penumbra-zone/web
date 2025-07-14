@@ -169,6 +169,8 @@ interface RangeLiquidityPlan {
  * Defines how liquidity should be distributed across the price range
  */
 export enum LiquidityDistributionShape {
+  /** Distribution shape alloted to limit orders (single position) */
+  LIMIT = 'LIMIT',
   /** Equal distribution across all positions */
   FLAT = 'FLAT',
   /** Higher liquidity near market price, decreasing towards range edges */
@@ -183,6 +185,7 @@ export enum LiquidityDistributionShape {
 export enum LiquidityDistributionStrategy {
   SKIP = 1,
   ARBITRARY = 2,
+  FLAT = 3,
   PYRAMID = 3,
   INVERTED_PYRAMID = 4,
 }
@@ -204,15 +207,17 @@ export function encodeLiquidityShape(
   shape: LiquidityDistributionShape,
 ): LiquidityDistributionStrategy {
   switch (shape) {
-    // maps `FLAT` liquidity shape (limit orders) to `ARBITRARY` strategy tag.
     case LiquidityDistributionShape.FLAT:
-      return LiquidityDistributionStrategy.ARBITRARY;
+      return LiquidityDistributionStrategy.FLAT;
     case LiquidityDistributionShape.PYRAMID:
       return LiquidityDistributionStrategy.PYRAMID;
     case LiquidityDistributionShape.INVERTED_PYRAMID:
       return LiquidityDistributionStrategy.INVERTED_PYRAMID;
-    default:
+    // maps `LIMIT` liquidity shape (identifier for limit orders) to an `ARBITRARY` strategy tag.
+    case LiquidityDistributionShape.LIMIT:
       return LiquidityDistributionStrategy.ARBITRARY;
+    default:
+      return LiquidityDistributionStrategy.SKIP;
   }
 }
 
