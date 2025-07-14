@@ -186,8 +186,8 @@ export enum LiquidityDistributionStrategy {
   SKIP = 1,
   ARBITRARY = 2,
   FLAT = 3,
-  PYRAMID = 3,
-  INVERTED_PYRAMID = 4,
+  PYRAMID = 4,
+  INVERTED_PYRAMID = 5,
 }
 
 interface SimpleLiquidityPlan {
