@@ -23,7 +23,10 @@ import { LqtDelegatorHistoryData } from '../server/delegator-history';
 import { formatTimeRemaining } from '@/shared/utils/format-time';
 
 export const dismissedKey = 'veil-tournament-social-card-dismissed';
-const baseUrl = process.env['NEXT_PUBLIC_BASE_URL'] ?? 'http://localhost:3000';
+
+// We hardcode the URL to Veil to be the prod instance, rather than testing instances.
+// This value is used for generated a URL to the LQT, for sharing on social media sites.
+const baseUrl = 'https://dex.penumbra.zone';
 
 // Custom hook that consolidates all location storage operations.
 export function useTournamentSocialCard(epoch: number | undefined) {
