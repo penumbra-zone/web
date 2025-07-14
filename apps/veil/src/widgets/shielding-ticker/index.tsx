@@ -15,6 +15,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 import Image from 'next/image';
 import type { ShieldingDepositWithMeta } from '@/shared/api/server/shielding-deposits';
+import { getPortfolioPath, QueryParams } from '@/shared/const/pages';
 
 interface DepositItemProps {
   deposit: ShieldingDepositWithMeta;
@@ -133,7 +134,7 @@ export const ShieldingTicker = () => {
   const [isVisible, setIsVisible] = useState(true);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const showShieldingTicker = searchParams?.get('showShieldingTicker');
+  const showShieldingTicker = searchParams?.get(QueryParams.PortfolioShowShieldingTicker);
 
   const { data: deposits, isLoading } = useShieldingDeposits(50);
 
@@ -167,7 +168,7 @@ export const ShieldingTicker = () => {
             iconOnly
             icon={X}
             onClick={() => {
-              router.push('/portfolio?showShieldingTicker=false');
+              router.push(getPortfolioPath({ showShieldingTicker: false }));
             }}
           >
             Dismiss
@@ -192,7 +193,7 @@ export const ShieldingTicker = () => {
           iconOnly
           icon={X}
           onClick={() => {
-            router.push('/portfolio?showShieldingTicker=false');
+            router.push(getPortfolioPath({ showShieldingTicker: false }));
           }}
         >
           Dismiss

@@ -13,6 +13,7 @@ import { Text } from '@penumbra-zone/ui/Text';
 import { Icon } from '@penumbra-zone/ui/Icon';
 import { observer } from 'mobx-react-lite';
 import { useState } from 'react';
+import { getPortfolioPath } from '@/shared/const/pages';
 
 const HelpPopoverItem = ({
   href,
@@ -61,7 +62,10 @@ export const HelpPopover = observer(() => {
         <HelpPopoverItem href='https://penumbra.zone/' IconComponent={Info}>
           About Penumbra
         </HelpPopoverItem>
-        <HelpPopoverItem href='/portfolio?showShieldingTicker=true' IconComponent={Shield}>
+        <HelpPopoverItem
+          href={getPortfolioPath({ showShieldingTicker: true })}
+          IconComponent={Shield}
+        >
           Show Shielding Activity
         </HelpPopoverItem>
       </Popover.Content>

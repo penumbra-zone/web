@@ -20,6 +20,11 @@ const basePath: Partial<Record<PagePath, PagePath>> = {
   '/tournament/:epoch': PagePath.Tournament,
 };
 
+// predefined query params for pages
+export enum QueryParams {
+  PortfolioShowShieldingTicker = 'showShieldingTicker',
+}
+
 // Used for dynamic routing when wanting to exclude the dynamic elements
 export const useBasePath = (): PagePath => {
   const path = usePagePath();
@@ -38,5 +43,20 @@ export const getTradePairPath = (
 ): string => {
   const route = PagePath.TradePair.replace(':primary', primary).replace(':numeraire', numeraire);
   const query = options.highlight ? `?highlight=${options.highlight}` : '';
+  return `${route}${query}`;
+};
+
+export const getPortfolioPath = (options: { showShieldingTicker?: boolean } = {}): string => {
+  const route = PagePath.Portfolio;
+  let query = '';
+
+  if (options.showShieldingTicker === true) {
+    query = `?${QueryParams.PortfolioShowShieldingTicker}=true`;
+  }
+
+  if (options.showShieldingTicker === false) {
+    query = `?${QueryParams.PortfolioShowShieldingTicker}=false`;
+  }
+
   return `${route}${query}`;
 };
