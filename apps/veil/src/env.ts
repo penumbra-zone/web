@@ -24,30 +24,45 @@ const processEnv = {
   PENUMBRA_INDEXER_CA_CERT: process.env['PENUMBRA_INDEXER_CA_CERT'],
 };
 
-const parsed = schema.safeParse(processEnv);
+// Skip validation during build time (CI or local builds)
+const isBuildTime =
+  process.env['NODE_ENV'] === 'production' && !process.env['PENUMBRA_GRPC_ENDPOINT'];
+const isNextJsBuild = process.env['NEXT_PHASE'] === 'phase-production-build';
 
-if (!parsed.success) {
-  console.error('❌ Invalid environment variables. Aborting startup.');
-  parsed.error.issues.forEach(issue => {
-    const varName = issue.path[0] as keyof typeof processEnv;
-    const value = processEnv[varName];
+let envData: z.infer<typeof schema>;
 
-    let expected = 'a valid value';
-    if (issue.code === 'invalid_type') {
-      expected = `a ${issue.expected}`;
-    } else if (issue.code === 'too_small') {
-      expected = `at least ${issue.minimum} characters`;
-    }
+if (isBuildTime || isNextJsBuild) {
+  // During build time, use unvalidated environment for type compatibility
+  envData = processEnv as z.infer<typeof schema>;
+} else {
+  // Runtime validation
+  const parsed = schema.safeParse(processEnv);
 
-    console.error(`\n- Variable: ${varName}`);
-    if (issue.code !== 'invalid_string') {
-      console.error(`  - Expected: ${expected}`);
-    }
-    console.error(`  - Received: ${JSON.stringify(value)}`);
-    console.error(`  - Issue: ${issue.message}`);
-  });
+  if (!parsed.success) {
+    console.error('❌ Invalid environment variables. Aborting startup.');
+    parsed.error.issues.forEach(issue => {
+      const varName = issue.path[0] as keyof typeof processEnv;
+      const value = processEnv[varName];
 
-  throw new Error('Invalid environment variables');
+      let expected = 'a valid value';
+      if (issue.code === 'invalid_type') {
+        expected = `a ${issue.expected}`;
+      } else if (issue.code === 'too_small') {
+        expected = `at least ${issue.minimum} characters`;
+      }
+
+      console.error(`\n- Variable: ${varName}`);
+      if (issue.code !== 'invalid_string') {
+        console.error(`  - Expected: ${expected}`);
+      }
+      console.error(`  - Received: ${JSON.stringify(value)}`);
+      console.error(`  - Issue: ${issue.message}`);
+    });
+
+    throw new Error('Invalid environment variables');
+  }
+
+  envData = parsed.data;
 }
 
-export const env = parsed.data;
+export const env = envData;
