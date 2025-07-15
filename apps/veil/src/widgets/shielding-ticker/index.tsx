@@ -64,8 +64,10 @@ const DepositItem = ({ deposit }: DepositItemProps) => {
   const sourceChain = getSourceChainFromDeposit(deposit, registry);
   const chainIconUrl = sourceChain?.images[0]?.png ?? sourceChain?.images[0]?.svg;
 
-  // Construct the Noctis block URL
-  const noctisUrl = `https://explorer.penumbra.zone/block/${deposit.height}`;
+  // Construct the Noctis URL - use transaction hash if available, otherwise fallback to block
+  const noctisUrl = deposit.txHash
+    ? `https://explorer.penumbra.zone/tx/${deposit.txHash}`
+    : `https://explorer.penumbra.zone/block/${deposit.height}`;
 
   return (
     <a
