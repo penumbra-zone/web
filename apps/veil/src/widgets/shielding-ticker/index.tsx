@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, ExternalLink } from 'lucide-react';
 import { Text } from '@penumbra-zone/ui/Text';
 import { ValueViewComponent } from '@penumbra-zone/ui/ValueView';
@@ -11,9 +11,11 @@ import { useRegistry } from '@/shared/api/registry';
 import { Chain, Registry } from '@penumbra-labs/registry';
 import { toValueView } from '@/shared/utils/value-view';
 import Marquee from 'react-fast-marquee';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import Image from 'next/image';
 import type { ShieldingDepositWithMeta } from '@/shared/api/server/shielding-deposits';
+import { getPortfolioPath, QueryParams } from '@/shared/const/pages';
 
 interface DepositItemProps {
   deposit: ShieldingDepositWithMeta;
@@ -130,10 +132,22 @@ const DepositItem = ({ deposit }: DepositItemProps) => {
 
 export const ShieldingTicker = () => {
   const [isVisible, setIsVisible] = useState(true);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const showShieldingTicker = searchParams?.get(QueryParams.PortfolioShowShieldingTicker);
 
   const { data: deposits, isLoading } = useShieldingDeposits(50);
 
   const hasDeposits = deposits && deposits.length > 0;
+
+  useEffect(() => {
+    if (showShieldingTicker === 'true') {
+      setIsVisible(true);
+    }
+    if (showShieldingTicker === 'false') {
+      setIsVisible(false);
+    }
+  }, [showShieldingTicker]);
 
   if (!isVisible) {
     return null;
@@ -149,7 +163,14 @@ export const ShieldingTicker = () => {
               {isLoading ? 'Loading shielding activity...' : 'No recent shielding activity'}
             </Text>
           </div>
-          <Button density='compact' iconOnly icon={X} onClick={() => setIsVisible(false)}>
+          <Button
+            density='compact'
+            iconOnly
+            icon={X}
+            onClick={() => {
+              router.push(getPortfolioPath({ showShieldingTicker: false }));
+            }}
+          >
             Dismiss
           </Button>
         </div>
@@ -167,7 +188,14 @@ export const ShieldingTicker = () => {
             Live Shielding Activity
           </Text>
         </div>
-        <Button density='compact' iconOnly icon={X} onClick={() => setIsVisible(false)}>
+        <Button
+          density='compact'
+          iconOnly
+          icon={X}
+          onClick={() => {
+            router.push(getPortfolioPath({ showShieldingTicker: false }));
+          }}
+        >
           Dismiss
         </Button>
       </div>

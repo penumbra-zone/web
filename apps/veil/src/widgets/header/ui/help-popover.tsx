@@ -1,10 +1,48 @@
 import NextLink from 'next/link';
-import { CircleHelp, MessageCircleHeart, BookOpenText, Info } from 'lucide-react';
+import {
+  CircleHelp,
+  MessageCircleHeart,
+  BookOpenText,
+  Info,
+  Shield,
+  LucideIcon,
+} from 'lucide-react';
 import { Popover } from '@penumbra-zone/ui/Popover';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { Icon } from '@penumbra-zone/ui/Icon';
 import { observer } from 'mobx-react-lite';
+import { useState } from 'react';
+import { getPortfolioPath } from '@/shared/const/pages';
+
+const HelpPopoverItem = ({
+  href,
+  IconComponent,
+  children,
+}: {
+  href: string;
+  IconComponent: LucideIcon;
+  children: React.ReactNode;
+}) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const Link = href.startsWith('http') ? 'a' : NextLink;
+
+  return (
+    <Link
+      href={href}
+      target={href.startsWith('http') ? '_blank' : undefined}
+      rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
+      className='flex gap-3 px-3 py-2 text-text-primary'
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <Icon IconComponent={IconComponent} size='sm' color='text.secondary' />
+      <Text small align='left' color={isHovered ? 'text.primary' : 'text.secondary'}>
+        {children}
+      </Text>
+    </Link>
+  );
+};
 
 export const HelpPopover = observer(() => {
   return (
@@ -15,48 +53,21 @@ export const HelpPopover = observer(() => {
         </Button>
       </Popover.Trigger>
       <Popover.Content align='end' side='bottom'>
-        <NextLink
-          href='/portfolio?showOnboarding=true'
-          className='flex gap-3 px-3 py-2 text-text-primary'
+        <HelpPopoverItem href='https://guide.penumbra.zone/dex' IconComponent={BookOpenText}>
+          How Veil works
+        </HelpPopoverItem>
+        <HelpPopoverItem href='https://discord.gg/4dYRd2vgkF' IconComponent={MessageCircleHeart}>
+          Provide feedback
+        </HelpPopoverItem>
+        <HelpPopoverItem href='https://penumbra.zone/' IconComponent={Info}>
+          About Penumbra
+        </HelpPopoverItem>
+        <HelpPopoverItem
+          href={getPortfolioPath({ showShieldingTicker: true })}
+          IconComponent={Shield}
         >
-          <Icon IconComponent={CircleHelp} size='md' />
-          <Text small align='left'>
-            Show getting started guide
-          </Text>
-        </NextLink>
-        <a
-          href='https://guide.penumbra.zone/dex'
-          target='_blank'
-          rel='noopener noreferrer'
-          className='flex gap-3 px-3 py-2 text-text-primary'
-        >
-          <Icon IconComponent={BookOpenText} size='md' />
-          <Text small align='left'>
-            How Veil works
-          </Text>
-        </a>
-        <a
-          href='https://discord.gg/4dYRd2vgkF'
-          target='_blank'
-          rel='noopener noreferrer'
-          className='flex gap-3 px-3 py-2 text-text-primary'
-        >
-          <Icon IconComponent={MessageCircleHeart} size='md' />
-          <Text small align='left'>
-            Provide feedback
-          </Text>
-        </a>
-        <a
-          href='https://penumbra.zone/'
-          target='_blank'
-          rel='noopener noreferrer'
-          className='flex gap-3 px-3 py-2 text-text-primary'
-        >
-          <Icon IconComponent={Info} size='md' />
-          <Text small align='left'>
-            About Penumbra
-          </Text>
-        </a>
+          Show Shielding Activity
+        </HelpPopoverItem>
       </Popover.Content>
     </Popover>
   );
