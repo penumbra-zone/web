@@ -1,7 +1,7 @@
 import { TournamentJoinPage as TournamentJoinPageComponent } from '@/pages/tournament/ui/join/page';
 import { TournamentQueryParams } from '@/features/tournament-earnings-canvas';
 
-const baseUrl = process.env['NEXT_PUBLIC_BASE_URL'] ?? 'http://localhost:3000';
+const baseUrl = process.env['BASE_URL'] ?? 'http://localhost:3000';
 const imageUrl = `${baseUrl}/api/tournament/social-image.png`;
 
 export default async function Page({
