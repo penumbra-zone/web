@@ -1,5 +1,22 @@
 # minifront-v2
 
+## 7.1.1
+
+### Patch Changes
+
+- Updated dependencies [bdb700d]
+- Updated dependencies [cda1a99]
+- Updated dependencies [f1e701a]
+  - @penumbra-zone/types@35.0.0
+  - @penumbra-zone/ui@16.0.1
+  - @penumbra-zone/protobuf@11.0.0
+  - @penumbra-zone/crypto-web@47.0.0
+  - @penumbra-zone/ui-deprecated@22.0.0
+  - @penumbra-zone/bech32m@18.0.0
+  - @penumbra-zone/client@29.0.0
+  - @penumbra-zone/getters@28.0.0
+  - @penumbra-zone/perspective@61.0.0
+
 ## 7.1.0
 
 ### Minor Changes

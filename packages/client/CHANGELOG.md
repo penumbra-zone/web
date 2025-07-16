@@ -1,5 +1,12 @@
 # @penumbra-zone/client
 
+## 29.0.0
+
+### Patch Changes
+
+- Updated dependencies [f1e701a]
+  - @penumbra-zone/protobuf@11.0.0
+
 ## 28.1.1
 
 ### Patch Changes

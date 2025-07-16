@@ -1,5 +1,23 @@
 # @penumbra-zone/router
 
+## 68.0.0
+
+### Major Changes
+
+- f1e701a: storage and wasm support for encrypted LP metadata
+
+### Patch Changes
+
+- Updated dependencies [bdb700d]
+- Updated dependencies [f1e701a]
+  - @penumbra-zone/types@35.0.0
+  - @penumbra-zone/protobuf@11.0.0
+  - @penumbra-zone/storage@61.0.0
+  - @penumbra-zone/wasm@52.0.0
+  - @penumbra-zone/crypto-web@47.0.0
+  - @penumbra-zone/bech32m@18.0.0
+  - @penumbra-zone/getters@28.0.0
+
 ## 67.0.1
 
 ### Patch Changes

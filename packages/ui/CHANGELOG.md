@@ -1,5 +1,18 @@
 # @penumbra-zone/ui
 
+## 16.0.1
+
+### Patch Changes
+
+- cda1a99: Update text in AddressView component
+- Updated dependencies [bdb700d]
+- Updated dependencies [f1e701a]
+  - @penumbra-zone/types@35.0.0
+  - @penumbra-zone/protobuf@11.0.0
+  - @penumbra-zone/bech32m@18.0.0
+  - @penumbra-zone/getters@28.0.0
+  - @penumbra-zone/perspective@61.0.0
+
 ## 16.0.0
 
 ### Major Changes
