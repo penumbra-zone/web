@@ -23,7 +23,7 @@ const shapeMapping = {
     disabled: true,
   },
   [LiquidityDistributionShape.PYRAMID]: {
-    text: 'Locally stable',
+    text: 'Concentrated',
     default: StablekindDefault,
     hover: StablekindHover,
     selected: StablekindSelected,
@@ -42,6 +42,12 @@ const shapeMapping = {
   },
 };
 
+const isSupportedShape = (
+  shape: LiquidityDistributionShape,
+): shape is keyof typeof shapeMapping => {
+  return shape in shapeMapping;
+};
+
 export const LiquidityShape = ({
   shape,
   onClick,
@@ -51,6 +57,12 @@ export const LiquidityShape = ({
   onClick: () => void;
   selected: boolean;
 }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  if (!isSupportedShape(shape)) {
+    return null;
+  }
+
   const {
     text,
     default: Default,
@@ -59,7 +71,6 @@ export const LiquidityShape = ({
     disabled,
     tooltipMessage,
   } = shapeMapping[shape];
-  const [isHovered, setIsHovered] = useState(false);
 
   if (disabled) {
     return null;

@@ -411,6 +411,15 @@ export const viewActionPlan =
           actionView: actionPlan.action,
         });
 
+      case 'positionOpenPlan': {
+        return new ActionView({
+          actionView: {
+            case: 'positionOpen',
+            value: actionPlan.action.value,
+          },
+        });
+      }
+
       case 'positionClose':
         return new ActionView({
           actionView: actionPlan.action,
