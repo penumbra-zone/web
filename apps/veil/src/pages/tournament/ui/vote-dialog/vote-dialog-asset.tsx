@@ -40,7 +40,7 @@ export const VoteAssetContent = ({ asset }: { asset: MappedGauge }) => {
   return (
     <div className='ml-1 flex grow flex-col gap-1'>
       <div className='flex w-full justify-between gap-1'>
-        <Text technical color='text.primary'>
+        <Text technical color={isSecondary ? 'text.secondary' : 'text.primary'}>
           {asset.asset.symbol}
         </Text>
         <Text technical color={isSecondary ? 'neutral.light' : 'text.primary'}>

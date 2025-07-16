@@ -21,8 +21,8 @@ const BASE_LIMIT = 10;
 
 const TABLE_CLASSES = {
   table: {
-    default: cn('grid-cols-[1fr_1fr_1fr_1fr_136px]'),
-    canVote: cn('grid-cols-[1fr_1fr_1fr_1fr_72px_136px]'),
+    default: cn('grid-cols-[1fr_1fr_1fr_1fr_144px]'),
+    canVote: cn('grid-cols-[1fr_1fr_1fr_1fr_72px_144px]'),
   },
   row: {
     default: cn('col-span-5'),

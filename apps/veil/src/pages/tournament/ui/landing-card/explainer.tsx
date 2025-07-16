@@ -11,7 +11,7 @@ export const Explainer = () => {
       <Text variant='h1' color='text.primary'>
         Liquidity Tournament
       </Text>
-      <div className='flex flex-col gap-10'>
+      <div className='flex h-full flex-col gap-10'>
         <div className='flex items-start gap-2'>
           <Image
             src='/assets/lqt-delegators.svg'
@@ -68,7 +68,7 @@ export const Explainer = () => {
         </div>
 
         {/* eslint-disable-next-line react/jsx-no-target-blank -- we want analytics to see referrers */}
-        <a href={LQT_MARKETING_URL} target='_blank'>
+        <a href={LQT_MARKETING_URL} target='_blank' className='mt-auto'>
           <Button icon={ExternalLink} priority='primary'>
             Learn More
           </Button>
