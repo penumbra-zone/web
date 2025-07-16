@@ -74,6 +74,13 @@
           harfbuzz
         ];
 
+        # CI and deployment tooling
+        deploymentTools = with pkgs; [
+          doctl
+          flyctl
+          kubectl
+        ];
+
       in with pkgs; with pkgs.lib; let
         # Common development packages for all shells
         commonDevPackages = [
@@ -89,11 +96,7 @@
           pnpm_10
           postgresql
           wasm-pack
-
-          # for deployment/ci
-          doctl
-          kubectl
-        ] ++ playwrightPackages;
+        ] ++ playwrightPackages ++ deploymentTools;
 
         # The uuid lib is required for social card support.
         uuidLibPath = pkgs.lib.makeLibraryPath [pkgs.libuuid];

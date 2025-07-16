@@ -66,21 +66,13 @@ jobs:
 
       - name: Build and deploy
         env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          FLY_API_TOKEN: "${{ secrets.FLY_API_TOKEN }}"
+          PENUMBRA_INDEXER_CA_CERT: "${{ secrets.PENUMBRA_INDEXER_CA_CERT }}"
+          PENUMBRA_INDEXER_ENDPOINT: "${{ secrets.PENUMBRA_INDEXER_ENDPOINT }}"
+          APP_NAME: "${{ steps.app_name.outputs.name }}"
         run: |
           # Create fly app if it doesn't exist
-          if ! flyctl apps list | grep -q "${{ steps.app_name.outputs.name }}"; then
-            flyctl apps create "${{ steps.app_name.outputs.name }}" --org penumbra-labs
-          fi
-
-          flyctl secrets set PENUMBRA_INDEXER_CA_CERT="${{ secrets.PENUMBRA_INDEXER_CA_CERT }}" --app "${{ steps.app_name.outputs.name }}"
-          flyctl secrets set PENUMBRA_INDEXER_ENDPOINT="${{ secrets.PENUMBRA_INDEXER_ENDPOINT }}" --app "${{ steps.app_name.outputs.name }}"
-
-          # Deploy with custom build args
-          flyctl deploy --app "${{ steps.app_name.outputs.name }}" \
-            --build-arg BASE_URL="https://${{ steps.app_name.outputs.name }}.fly.dev" \
-            --ha=false \
-            --strategy immediate
+          ./ci/fly-deploy-branch "$APP_NAME"
 
       - name: Comment deployment URL
         uses: actions/github-script@v7
