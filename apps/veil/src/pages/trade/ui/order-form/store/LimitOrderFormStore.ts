@@ -50,12 +50,12 @@ export class LimitOrderFormStore {
   marketPrice = 1.0;
   private _priceInput = '';
   private _priceInputOption: SellLimitOrderOptions | BuyLimitOrderOptions | undefined;
-  _liquidityShape: LiquidityDistributionShape = LiquidityDistributionShape.FLAT;
+  _liquidityShape: LiquidityDistributionShape = LiquidityDistributionShape.LIMIT;
 
   constructor() {
     makeAutoObservable(this);
 
-    this._liquidityShape = LiquidityDistributionShape.FLAT;
+    this._liquidityShape = LiquidityDistributionShape.LIMIT;
 
     reaction(() => [this.direction], this._resetInputs);
   }

@@ -1,7 +1,3 @@
-use std::collections::BTreeMap;
-use std::mem;
-use std::num::{NonZero, NonZeroU32};
-
 use anyhow::anyhow;
 use decaf377::{Fq, Fr};
 use penumbra_asset::asset::{Denom, Id, Metadata};
@@ -40,6 +36,9 @@ use penumbra_transaction::memo::MemoPlaintext;
 use penumbra_transaction::{plan::MemoPlan, ActionPlan, TransactionParameters};
 use penumbra_transaction::{ActionList, TransactionPlan};
 use rand_core::{OsRng, RngCore};
+use std::collections::BTreeMap;
+use std::mem;
+use std::num::{NonZero, NonZeroU32};
 use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::JsValue;
 

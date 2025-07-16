@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+# CI script to manage historical deploys to fly.io,
+# and delete any stale deployments, e.g. anything deployed from a now-closed PR.
+# The cut-off time is ~12h since last update.
+set -euo pipefail
+
+
+# Set up vars for comparison.
+CURRENT_TIME="$(date +%s)"
+TWELVE_HOURS="$((12 * 60 * 60))"
+# Set name of github repo, for API access.
+GITHUB_REPOSITORY="${GITHUB_REPOSITORY:-penumbra-zone/web}"
+
+# Get all veil-pr-* apps
+APPS="$(flyctl apps list --json | jq -r '.[] | select(.Name | startswith("veil-pr-")) | .Name')"
+
+if [[ -z "$APPS" ]] ; then
+  >&2 echo "No stale apps found, taking no action"
+  exit 0
+fi
+
+# Inspect each deployed app, to check whether it's stale enough to be cleaned up.
+for APP in $APPS; do
+  echo "Checking app: $APP"
+
+  # Get app status with machine info
+  STATUS="$(flyctl status --app "$APP" --json 2>/dev/null || echo '{}')"
+
+  if [[ "$STATUS" = '{}' ]]; then
+    >&2 echo "WARN: could not get status for $APP, skipping..."
+    continue
+  fi
+
+  # Get the most recent updated_at time from all machines
+  LATEST_UPDATE=$(echo "$STATUS" | jq -r '.Machines[]?.updated_at // empty' | sort -r | head -n1)
+
+  if [[ -z "$LATEST_UPDATE" || "$LATEST_UPDATE" = "null" ]]; then
+    >&2 echo "WARN: no updated_at timestamp found for $APP, skipping..."
+    continue
+  fi
+
+  # Convert update time to seconds
+  UPDATE_TIME="$(date -d "$LATEST_UPDATE" +%s 2>/dev/null || date -j -f "%Y-%m-%dT%H:%M:%SZ" "$LATEST_UPDATE" +%s 2>/dev/null || echo 0)"
+
+  if [[ "$UPDATE_TIME" -gt 0 ]]; then
+    TIME_DIFF="$((CURRENT_TIME - UPDATE_TIME))"
+
+    if [[ $TIME_DIFF -gt $TWELVE_HOURS ]]; then
+      echo "App $APP hasn't been updated in $((TIME_DIFF / 3600)) hours, deleting..."
+      flyctl apps destroy "$APP" --yes
+
+      # Extract PR number from app name (veil-pr-123 -> 123)
+      if [[ "$APP" =~ ^veil-pr-([0-9]+) ]]; then
+        PR_NUMBER="${BASH_REMATCH[1]}"
+
+        # Comment on PR if PR number is available and GITHUB_TOKEN is set
+        if [[ -n "${GITHUB_TOKEN:-}" ]]; then
+          curl -X POST \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/$PR_NUMBER/comments" \
+            -d "{\"body\":\"### Deployment Cleaned Up\\n\\nThe Fly.io deployment for this PR has been automatically removed.\\n\\nReason: Deployment exceeded 12-hour limit\\nApp name: $APP\\nCleanup time: $(date -u +%Y-%m-%dT%H:%M:%SZ)\"}" \
+            2>/dev/null || echo "Failed to comment on PR #$PR_NUMBER"
+        fi
+      fi
+    else
+      echo "App $APP was updated $((TIME_DIFF / 3600)) hours ago, keeping..."
+    fi
+  else
+    echo "Could not parse update time for $APP: $LATEST_UPDATE"
+  fi
+done

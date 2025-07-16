@@ -9,6 +9,7 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/* && \
     && rm -rf /var/lib/apt/lists/*
 
 RUN npm install -g pnpm@9.7.0
+RUN npm install -g turbo
 
 COPY ci/cert/ca-certificate.crt /app/ca-certificate.crt
 
@@ -27,17 +28,40 @@ COPY packages packages/
 # link workspace packages
 RUN pnpm install --prefer-offline --ignore-scripts
 
-RUN pnpm --filter "./packages/*" run build || echo "Some package builds failed, continuing..."
+# generate protobuf files (creates gen/ directory)
+RUN pnpm exec turbo run proto
+
+# ⣿⣿⣿⣿⣿⣿⡟⠁⠄⠄⠄⠄⣠⣤⣴⣶⣶⣶⣶⣤⡀⠈⠙⢿⣿⣿⣿⣿⣿
+# ⣿⣿⣿⣿⣿⡟⠄⠄⠄⠄⠄⣸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣆⠄⠈⣿⣿⣿⣿⣿
+# ⣿⣿⣿⣿⣿⠁⠄⠄⠄⢀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠄⠄⢺⣿⣿⣿⣿
+# ⣿⣿⣿⣿⣿⡄⠄⠄⠄⠙⠻⠿⣿⣿⣿⣿⠿⠿⠛⠛⠻⣿⡄⠄⣾⣿⣿⣿⣿ and now...
+# ⣿⣿⣿⣿⣿⡇⠄⠄⠁👁️ ⠄⢹⣿⡗⠄ 👁️ ⢄⡀⣾⢀⣿⣿⣿ check this out!
+# ⣿⣿⣿⣿⣿⡇⠘⠄⠄⠄⢀⡀⠄⣿⣿⣷⣤⣤⣾⣿⣿⣿⣧⢸⣿⣿⣿⣿⣿
+# ⣿⣿⣿⣿⣿⡇⠄⣰⣿⡿⠟⠃⠄⣿⣿⣿⣿⣿⡛⠿⢿⣿⣷⣾⣿⣿⣿⣿⣿
+# ⣿⣿⣿⣿⣿⣿⡄⠈⠁⠄⠄⠄⠄⠻⠿⢛⣿⣿⠿⠂⠄⢹⢹⣿⣿⣿⣿⣿⣿
+# ⣿⣿⣿⣿⣿⣿⣿⡐⠐⠄⠄⣠⣀⣀⣚⣯⣵⣶⠆⣰⠄⠞⣾⣿⣿⣿⣿⣿⣿
+# ⣿⣿⣿⣿⣿⣿⣿⣷⡄⠄⠄⠈⠛⠿⠿⠿⣻⡏⢠⣿⣎⣾⣿⣿⣿⣿⣿⣿⣿
+# ⣿⣿⣿⣿⣿⣿⡿⠟⠛⠄⠄⠄⠄⠙⣛⣿⣿⣵⣿⡿⢹⡟⣿⣿⣿⣿⣿
+
+# Create stub implementations for wasm functions
+RUN mkdir -p packages/perspective/src/wasm-stubs && \
+    echo "export const getAddressIndexByAddress = (_fullViewingKey: any, _address: any): any => undefined;" > packages/perspective/src/wasm-stubs/address.ts && \
+    echo "export const getAuctionId = (_schedule: any): any => ({});" > packages/perspective/src/wasm-stubs/auction.ts
+
+# Patch perspective source files to use stubs instead of wasm (only for Docker build)
+RUN sed -i "s|from '@penumbra-zone/wasm/address'|from '../wasm-stubs/address.js'|" packages/perspective/src/plan/get-address-view.ts && \
+    sed -i "s|from '@penumbra-zone/wasm/auction'|from '../wasm-stubs/auction.js'|" packages/perspective/src/plan/view-action-plan.ts
+
+ENV NODE_OPTIONS=--max-old-space-size=8192
+ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN pnpm run postinstall || echo "Syncpack completed with warnings"
 
 RUN pnpm rebuild canvas
 RUN pnpm rebuild || echo "Some rebuilds failed but continuing..."
-
-ENV NODE_OPTIONS=--max-old-space-size=4096
-ENV NEXT_TELEMETRY_DISABLED=1
 RUN echo "=== Building veil ===" && \
-    pnpm --filter "penumbra-veil..." run build 2>&1
+     pnpm --filter "penumbra-veil..." --filter "!@penumbra-zone/wasm" \
+     run build 2>&1
 
 FROM node:22-slim AS runner
 WORKDIR /app

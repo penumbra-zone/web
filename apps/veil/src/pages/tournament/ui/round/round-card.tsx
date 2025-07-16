@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Hourglass } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 import { addSeconds, format } from 'date-fns';
 import { Skeleton } from '@penumbra-zone/ui/Skeleton';
@@ -78,9 +78,12 @@ export const RoundCard = observer(({ epoch }: RoundCardProps) => {
 
               {!ended && summary?.[0]?.ends_in_s && (
                 <Tooltip message={endingTime}>
-                  <Text technical color='text.primary'>
-                    Ends in {formatTimeRemaining(summary[0].ends_in_s)}
-                  </Text>
+                  <div className='flex items-center gap-2'>
+                    <Hourglass className='h-5 w-5 text-white/80' />
+                    <Text technical color='text.primary'>
+                      Ends in {formatTimeRemaining(summary[0].ends_in_s)}
+                    </Text>
+                  </div>
                 </Tooltip>
               )}
             </div>
@@ -125,7 +128,7 @@ export const RoundCard = observer(({ epoch }: RoundCardProps) => {
             <Text variant='h4' color='text.primary'>
               {ended ? 'This Epoch has Ended' : 'Cast Your Vote'}
             </Text>
-            <VotingInfo epoch={epoch} />
+            <VotingInfo epoch={epoch} identifier='round-card' />
           </div>
         </div>
       </GradientCard>

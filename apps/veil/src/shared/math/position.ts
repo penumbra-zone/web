@@ -169,6 +169,8 @@ interface RangeLiquidityPlan {
  * Defines how liquidity should be distributed across the price range
  */
 export enum LiquidityDistributionShape {
+  /** Distribution shape alloted to limit orders (single position) */
+  LIMIT = 'LIMIT',
   /** Equal distribution across all positions */
   FLAT = 'FLAT',
   /** Higher liquidity near market price, decreasing towards range edges */
@@ -204,7 +206,19 @@ interface SimpleLiquidityPlan {
 export function encodeLiquidityShape(
   shape: LiquidityDistributionShape,
 ): LiquidityDistributionStrategy {
-  return LiquidityDistributionStrategy[shape];
+  switch (shape) {
+    case LiquidityDistributionShape.FLAT:
+      return LiquidityDistributionStrategy.FLAT;
+    case LiquidityDistributionShape.PYRAMID:
+      return LiquidityDistributionStrategy.PYRAMID;
+    case LiquidityDistributionShape.INVERTED_PYRAMID:
+      return LiquidityDistributionStrategy.INVERTED_PYRAMID;
+    // maps `LIMIT` liquidity shape (identifier for limit orders) to an `ARBITRARY` strategy tag.
+    case LiquidityDistributionShape.LIMIT:
+      return LiquidityDistributionStrategy.ARBITRARY;
+    default:
+      return LiquidityDistributionStrategy.SKIP;
+  }
 }
 
 export const getPositionWeights = (
@@ -276,9 +290,9 @@ export const simpleLiquidityPositions = (plan: SimpleLiquidityPlan): PositionedL
   const totalRange = plan.upperPrice - plan.lowerPrice;
   const marketPosition = (plan.marketPrice - plan.lowerPrice) / totalRange;
 
-  // Calculate number of positions for each range, ensuring at least 1 position per range
-  const lowerPositionsAmount = Math.max(1, Math.floor(plan.positions * marketPosition));
-  const upperPositionsAmount = Math.max(1, plan.positions - lowerPositionsAmount);
+  // Calculate number of positions for each range
+  const lowerPositionsAmount = Math.max(0, Math.floor(plan.positions * marketPosition));
+  const upperPositionsAmount = Math.max(0, plan.positions - lowerPositionsAmount);
 
   // Calculate step widths for each range
   const lowerStepWidth = (plan.marketPrice - plan.lowerPrice) / lowerPositionsAmount;
