@@ -1,5 +1,11 @@
 # @penumbra-zone/protobuf
 
+## 11.0.0
+
+### Major Changes
+
+- f1e701a: storage and wasm support for encrypted LP metadata
+
 ## 10.1.1
 
 ### Patch Changes
