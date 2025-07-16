@@ -17,9 +17,7 @@ for APP in $APPS; do
   echo "Checking app: $APP"
 
   # Get deployment metadata
-  METADATA=$(flyctl apps show "$APP" --json | jq -r '.Metadata // {}')
-  DEPLOYED_AT=$(echo "$METADATA" | jq -r '.DEPLOYED_AT // ""')
-  PR_NUMBER=$(echo "$METADATA" | jq -r '.PR_NUMBER // ""')
+  METADATA=$(flyctl status --app "$APP" --json | jq -r '.Metadata // {}')
 
   if [ -n "$DEPLOYED_AT" ]; then
     # Convert deployment time to seconds
