@@ -57,6 +57,8 @@ export const LiquidityShape = ({
   onClick: () => void;
   selected: boolean;
 }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
   if (!isSupportedShape(shape)) {
     return null;
   }
@@ -69,7 +71,6 @@ export const LiquidityShape = ({
     disabled,
     tooltipMessage,
   } = shapeMapping[shape];
-  const [isHovered, setIsHovered] = useState(false);
 
   if (disabled) {
     return null;
