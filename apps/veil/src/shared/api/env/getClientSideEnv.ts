@@ -1,23 +1,18 @@
+import { env } from '@/env';
 import { ClientEnv } from './types';
 
-const defaults = {
-  PENUMBRA_CHAIN_ID: 'penumbra-1',
-  PENUMBRA_CUILOA_URL: 'https://cuiloa.testnet.penumbra.zone',
-  PENUMBRA_GRPC_ENDPOINT: 'https://testnet.plinfra.net',
-};
+const whitelist: (keyof ClientEnv)[] = [
+  'PENUMBRA_CHAIN_ID',
+  'PENUMBRA_CUILOA_URL',
+  'PENUMBRA_GRPC_ENDPOINT',
+];
 
 export function getClientSideEnv(): ClientEnv {
-  const whitelist: string[] = [
-    'PENUMBRA_CHAIN_ID',
-    'PENUMBRA_CUILOA_URL',
-    'PENUMBRA_GRPC_ENDPOINT',
-  ];
+  const initial: Partial<ClientEnv> = {};
+  const clientEnv = whitelist.reduce((acc, key) => {
+    acc[key] = env[key];
+    return acc;
+  }, initial);
 
-  return whitelist.reduce(
-    (env, key) => ({
-      ...env,
-      [key]: process.env[key] ?? '',
-    }),
-    defaults,
-  );
+  return clientEnv as ClientEnv;
 }
