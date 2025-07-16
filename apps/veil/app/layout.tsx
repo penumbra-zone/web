@@ -14,12 +14,14 @@ import './v2.css';
 export const dynamic = 'force-dynamic';
 
 const RootLayout = async ({ children }: { children: ReactNode }) => {
-  const { PENUMBRA_CHAIN_ID } = getClientSideEnv();
-  const jsonRegistryWithGlobals = await fetchJsonRegistryWithGlobals(PENUMBRA_CHAIN_ID);
+  const clientEnv = getClientSideEnv();
+  const jsonRegistryWithGlobals = await fetchJsonRegistryWithGlobals(clientEnv.PENUMBRA_CHAIN_ID);
   return (
     <html lang='en'>
       <body className='scroll-area-page'>
-        <App jsonRegistryWithGlobals={jsonRegistryWithGlobals}>{children}</App>
+        <App clientEnv={clientEnv} jsonRegistryWithGlobals={jsonRegistryWithGlobals}>
+          {children}
+        </App>
       </body>
     </html>
   );

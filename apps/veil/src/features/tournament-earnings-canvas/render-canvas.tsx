@@ -3,7 +3,7 @@ import { TournamentParams } from './types';
 import { pnum } from '@penumbra-zone/types/pnum';
 import { shortify } from '@penumbra-zone/types/shortify';
 
-const baseUrl = process.env['NEXT_PUBLIC_BASE_URL'] ?? 'http://localhost:3000';
+const baseUrl = process.env['BASE_URL'] ?? 'http://localhost:3000';
 
 const theme = {
   font: {
