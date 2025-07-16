@@ -76,6 +76,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@amplitude/analytics-browser": "link:packages/stubs",
     "@eslint/js": "^9.16.0",
     "@next/bundle-analyzer": "15.2.4",
     "@repo/stubs": "workspace:*",
