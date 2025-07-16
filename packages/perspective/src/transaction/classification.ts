@@ -27,6 +27,7 @@ export type TransactionClassification =
   | 'proposalWithdraw'
   | 'proposalDepositClaim'
   | 'positionOpen'
+  | 'positionOpenView'
   | 'positionClose'
   | 'positionWithdraw'
   | 'positionRewardClaim'
