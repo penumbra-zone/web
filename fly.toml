@@ -32,7 +32,7 @@ primary_region = "iad"
   interval = "15s"
   method = "GET"
   timeout = "10s"
-  path = "/api/env"
+  path = "/explore"
 
 [[vm]]
   memory = "512mb"
