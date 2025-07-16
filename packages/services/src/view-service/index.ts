@@ -33,6 +33,8 @@ import { transparentAddress } from './transparent-address.js';
 import { latestSwaps } from './latest-swaps.js';
 import { lqtVotingNotes } from './lqt-voting-notes.js';
 import { tournamentVotes } from './tournament-votes.js';
+import { lpPositionBundle } from './lp-position-strategy.js';
+import { lpStrategyCatalog } from './lp-strategy-catalog.js';
 
 export type Impl = ServiceImpl<typeof ViewService>;
 
@@ -70,4 +72,6 @@ export const viewImpl: Impl = {
   latestSwaps,
   lqtVotingNotes,
   tournamentVotes,
+  lpPositionBundle,
+  lpStrategyCatalog,
 };
