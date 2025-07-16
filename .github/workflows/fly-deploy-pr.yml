@@ -66,10 +66,10 @@ jobs:
 
       - name: Build and deploy
         env:
-          FLY_API_TOKEN: "${{ secrets.FLY_API_TOKEN }}"
-          PENUMBRA_INDEXER_CA_CERT: "${{ secrets.PENUMBRA_INDEXER_CA_CERT }}"
-          PENUMBRA_INDEXER_ENDPOINT: "${{ secrets.PENUMBRA_INDEXER_ENDPOINT }}"
-          APP_NAME: "${{ steps.app_name.outputs.name }}"
+          FLY_API_TOKEN: '${{ secrets.FLY_API_TOKEN }}'
+          PENUMBRA_INDEXER_CA_CERT: '${{ secrets.PENUMBRA_INDEXER_CA_CERT }}'
+          PENUMBRA_INDEXER_ENDPOINT: '${{ secrets.PENUMBRA_INDEXER_ENDPOINT }}'
+          APP_NAME: '${{ steps.app_name.outputs.name }}'
         run: |
           # Create fly app if it doesn't exist
           ./ci/fly-deploy-branch "$APP_NAME"

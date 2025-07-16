@@ -11,7 +11,7 @@ PENUMBRA_INDEXER_CA_CERT="${PENUMBRA_INDEXER_CA_CERT:?}"
 PENUMBRA_INDEXER_ENDPOINT="${PENUMBRA_INDEXER_ENDPOINT:?}"
 APP_NAME="${APP_NAME:-}"
 if [[ -z "$APP_NAME" ]] ; then
-  APP_NAME="$(git branch --show-current)"
+  APP_NAME="$(git branch --show-current | sed 's/[^a-zA-Z0-9-]/-/g')"
 fi
 
 # Run the `flyctl` commands from the repo root, an easy way of ensuring
