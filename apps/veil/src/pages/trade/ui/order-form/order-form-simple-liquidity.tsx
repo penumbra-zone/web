@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { observer } from 'mobx-react-lite';
-import { WalletMinimal, InfoIcon } from 'lucide-react';
+import { WalletMinimal, InfoIcon, ZoomIn, ZoomOut } from 'lucide-react';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { TextInput } from '@penumbra-zone/ui/TextInput';
@@ -29,7 +29,7 @@ export const SimpleLiquidityOrderForm = observer(
     const priceRange = DEFAULT_PRICE_RANGE;
 
     // simple absolute zoom adjustment in steps of 0.05
-    const [zoomAdjustment /* setZoomAdjustment */] = useState(0);
+    const [zoomAdjustment, setZoomAdjustment] = useState(0);
     const adjustedPriceRange = priceRange + zoomAdjustment;
 
     const [priceRanges, setPriceRanges] = useState<[number | undefined, number | undefined]>([
@@ -206,34 +206,31 @@ export const SimpleLiquidityOrderForm = observer(
               </Tooltip>
             </div>
             <div className='flex items-center gap-1'>
-              {/* Jason note: this is pending designs, but needed the
-               /* ability to zoom to test the depth chart */}
-              {/* <Button
+              <Button
                 actionType='default'
                 priority='secondary'
-                density='compact'
+                density='slim'
                 onClick={() => {
-                  setZoomAdjustment(prev => Math.max(-0.25, prev - 0.05));
+                  setZoomAdjustment(prev => Math.min(0.25, prev + 0.05));
                 }}
+                icon={ZoomOut}
+                iconOnly
               >
-                +
+                Zoom Out
               </Button>
               <Button
                 actionType='default'
                 priority='secondary'
-                density='compact'
+                density='slim'
                 onClick={() => {
-                  setZoomAdjustment(prev => Math.min(0.25, prev + 0.05));
+                  setZoomAdjustment(prev => Math.max(-0.25, prev - 0.05));
                 }}
+                icon={ZoomIn}
+                iconOnly
               >
-                -
-              </Button> */}
-              <Button
-                actionType='default'
-                priority='secondary'
-                density='compact'
-                onClick={setRanges}
-              >
+                Zoom In
+              </Button>
+              <Button actionType='default' priority='secondary' density='slim' onClick={setRanges}>
                 Reset
               </Button>
             </div>
