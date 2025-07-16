@@ -1,6 +1,9 @@
-import { Position } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { PriceLinkedInputs } from './PriceLinkedInputs';
-import { limitOrderPosition } from '@/shared/math/position';
+import {
+  limitOrderPosition,
+  LiquidityDistributionShape,
+  PositionedLiquidity,
+} from '@/shared/math/position';
 import { makeAutoObservable, reaction } from 'mobx';
 import { AssetInfo } from '@/pages/trade/model/AssetInfo';
 import { parseNumber } from '@/shared/utils/num';
@@ -47,9 +50,12 @@ export class LimitOrderFormStore {
   marketPrice = 1.0;
   private _priceInput = '';
   private _priceInputOption: SellLimitOrderOptions | BuyLimitOrderOptions | undefined;
+  _liquidityShape: LiquidityDistributionShape = LiquidityDistributionShape.LIMIT;
 
   constructor() {
     makeAutoObservable(this);
+
+    this._liquidityShape = LiquidityDistributionShape.LIMIT;
 
     reaction(() => [this.direction], this._resetInputs);
   }
@@ -126,7 +132,7 @@ export class LimitOrderFormStore {
     return parseNumber(this._priceInput);
   }
 
-  get plan(): Position | undefined {
+  get plan(): PositionedLiquidity | undefined {
     const input =
       this.direction === 'buy' ? parseNumber(this.quoteInput) : parseNumber(this.baseInput);
     if (!input || !this._baseAsset || !this._quoteAsset || !this.price) {
@@ -138,6 +144,7 @@ export class LimitOrderFormStore {
       input,
       baseAsset: this._baseAsset,
       quoteAsset: this._quoteAsset,
+      distributionShape: this._liquidityShape,
     });
   }
 
