@@ -42,7 +42,7 @@ lint-rust:
   pnpm turbo lint:rust
 
 # Build top-level debug container
-container: clean
+container:
   @just veil-container
   podman image ls | rg veil
 
