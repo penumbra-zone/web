@@ -59,6 +59,7 @@ const CLASSIFICATION_LABEL_MAP: Record<TransactionClassification, string> = {
   communityPoolSpend: 'Community Pool Spend',
   positionClose: 'Close Position',
   positionOpen: 'Open Position',
+  positionOpenView: 'Open Position View',
   positionWithdraw: 'Withdraw Position',
   positionRewardClaim: 'Claim Position Reward',
   proposalDepositClaim: 'Proposal Deposit Claim',

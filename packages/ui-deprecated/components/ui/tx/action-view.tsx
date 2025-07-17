@@ -19,6 +19,7 @@ import { PositionCloseComponent } from './actions-views/position-close.tsx';
 import { PositionWithdrawComponent } from './actions-views/position-withdraw.tsx';
 import { IbcRelayComponent } from './actions-views/ibc-relay.tsx';
 import { LiquidityTournamentVoteComponent } from './actions-views/liquidity-tournament-vote.tsx';
+import { PositionOpenViewComponent } from './actions-views/position-open-view.tsx';
 
 type Case = Exclude<ActionView['actionView']['case'], undefined>;
 
@@ -31,7 +32,7 @@ const CASE_TO_LABEL: Record<Case, string> = {
   ics20Withdrawal: 'ICS20 Withdrawal',
   positionClose: 'Position Close',
   positionOpen: 'Position Open',
-  positionOpenView: 'Position Open View',
+  positionOpenView: 'Position Open',
   positionRewardClaim: 'Position Reward Claim',
   positionWithdraw: 'Position Withdraw',
   proposalDepositClaim: 'Proposal Deposit Claim',
@@ -131,7 +132,7 @@ export const ActionViewComponent = ({
       return <PositionOpenComponent value={actionView.value} />;
 
     case 'positionOpenView':
-      return <UnimplementedView label='Position Open View' />;
+      return <PositionOpenViewComponent value={actionView.value} />;
 
     case 'positionClose':
       return <PositionCloseComponent value={actionView.value} />;
