@@ -18,6 +18,7 @@ import { useSortableTableHeaders } from './sortable-table-header';
 import { usePersonalRewards } from '../api/use-personal-rewards';
 import { Vote } from './vote';
 import { toValueView } from '@/shared/utils/value-view';
+import { EpochBug } from '@/pages/tournament/ui/shared/bug';
 
 const TABLE_CLASSES = {
   table: {
@@ -58,6 +59,7 @@ const PreviousEpochsRow = observer(
       >
         <TableCell cell loading={isLoading}>
           Epoch #{row.epoch}
+          <EpochBug epoch={row.epoch} small />
         </TableCell>
         <TableCell cell loading={isLoading}>
           {!isLoading && !row.gauge.length && '-'}
