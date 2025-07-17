@@ -21,6 +21,9 @@ COPY packages/*/package.json packages/
 # install dependencies, skip postinstall.
 RUN pnpm install --frozen-lockfile --ignore-scripts
 
+# Copy in git dir, for displaying Veil version info
+COPY .git .git
+# Copy in Veil app code
 COPY apps/veil apps/veil/
 
 COPY packages packages/
