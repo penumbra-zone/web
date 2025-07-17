@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { observer } from 'mobx-react-lite';
-import { WalletMinimal, InfoIcon } from 'lucide-react';
+import { WalletMinimal, InfoIcon, ZoomIn, ZoomOut } from 'lucide-react';
 import { Button } from '@penumbra-zone/ui/Button';
 import { Text } from '@penumbra-zone/ui/Text';
 import { TextInput } from '@penumbra-zone/ui/TextInput';
@@ -27,6 +27,11 @@ export const SimpleLiquidityOrderForm = observer(
 
     const priceSpread = DEFAULT_PRICE_SPREAD;
     const priceRange = DEFAULT_PRICE_RANGE;
+
+    // simple absolute zoom adjustment in steps of 0.05
+    const [zoomAdjustment, setZoomAdjustment] = useState(0);
+    const adjustedPriceRange = priceRange + zoomAdjustment;
+
     const [priceRanges, setPriceRanges] = useState<[number | undefined, number | undefined]>([
       undefined,
       undefined,
@@ -34,6 +39,7 @@ export const SimpleLiquidityOrderForm = observer(
 
     const setRanges = useCallback(() => {
       if (!store.marketPrice) {
+        setPriceRanges([undefined, undefined]);
         return;
       }
 
@@ -44,9 +50,15 @@ export const SimpleLiquidityOrderForm = observer(
       ]);
     }, [defaultDecimals, priceSpread, store.marketPrice, store.quoteAsset?.exponent]);
 
-    // set price ranges once the market price is available
     useEffect(() => {
+      // set price ranges once the market price is available
       if (store.marketPrice && !priceRanges[0] && !priceRanges[1]) {
+        setRanges();
+      }
+
+      // unset price ranges once the market price is unavailable
+      // due to switching of asset pairs
+      if (!store.marketPrice && priceRanges[0] && priceRanges[1]) {
         setRanges();
       }
     }, [store.marketPrice, priceSpread, priceRanges, setRanges]);
@@ -193,13 +205,39 @@ export const SimpleLiquidityOrderForm = observer(
                 <Icon IconComponent={InfoIcon} size='sm' color='text.secondary' />
               </Tooltip>
             </div>
-            <Button actionType='default' priority='secondary' density='compact' onClick={setRanges}>
-              Reset
-            </Button>
+            <div className='flex items-center gap-1'>
+              <Button
+                actionType='default'
+                priority='secondary'
+                density='slim'
+                onClick={() => {
+                  setZoomAdjustment(prev => Math.min(0.25, prev + 0.05));
+                }}
+                icon={ZoomOut}
+                iconOnly
+              >
+                Zoom Out
+              </Button>
+              <Button
+                actionType='default'
+                priority='secondary'
+                density='slim'
+                onClick={() => {
+                  setZoomAdjustment(prev => Math.max(-0.25, prev - 0.05));
+                }}
+                icon={ZoomIn}
+                iconOnly
+              >
+                Zoom In
+              </Button>
+              <Button actionType='default' priority='secondary' density='slim' onClick={setRanges}>
+                Reset
+              </Button>
+            </div>
           </div>
           <PriceSlider
-            min={store.marketPrice ? store.marketPrice * (1 - priceRange) : 0}
-            max={store.marketPrice ? store.marketPrice * (1 + priceRange) : Infinity}
+            min={store.marketPrice ? store.marketPrice * (1 - adjustedPriceRange) : 0}
+            max={store.marketPrice ? store.marketPrice * (1 + adjustedPriceRange) : Infinity}
             values={priceRanges}
             onInput={setPriceRanges}
             quoteExponent={store.quoteAsset?.exponent ?? defaultDecimals}
