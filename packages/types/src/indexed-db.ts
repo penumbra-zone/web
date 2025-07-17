@@ -423,8 +423,8 @@ export interface PenumbraDb extends DBSchema {
 // need to store PositionId and Position in the same table
 export interface PositionRecord {
   id: Jsonified<PositionId>; // PositionId (must be JsonValue because ['id']['inner'] is a key )
-  position: Jsonified<Position>;
-  subaccount?: Jsonified<AddressIndex>;
+  position: Jsonified<Position>; // Position
+  subaccount?: Jsonified<AddressIndex>; // Position AddressIndex
   positionMetadata?: Jsonified<PositionMetadata>;
 }
 
