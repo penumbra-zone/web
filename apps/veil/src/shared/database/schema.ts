@@ -267,6 +267,7 @@ export interface IbcTransfer {
   id: Generated<number>;
   kind: string;
   penumbra_addr: Buffer;
+  tx_hash: Buffer | null;
 }
 
 export interface IndexWatermarks {
