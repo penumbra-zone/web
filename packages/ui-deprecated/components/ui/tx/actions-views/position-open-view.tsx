@@ -11,53 +11,50 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../
 import { InfoIcon } from 'lucide-react';
 
 export const PositionOpenViewComponent = ({ value }: { value: PositionOpenView }) => {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- positionOpenView is present for action rendering.
+  const position = value.positionOpenView.value!.action!.position!;
+
   return (
     <ViewBox
       label='Position Open'
       visibleContent={
         <ActionDetails>
           <ActionDetails.Row label='State'>
-            {stateToString(value.positionOpenView.value?.action?.position?.state?.state)}
+            {stateToString(position.state?.state)}
           </ActionDetails.Row>
 
           <ActionDetails.Row label='Sequence'>
-            {value.positionOpenView.value?.action?.position?.state?.sequence
-              ? value.positionOpenView.value?.action?.position.state.sequence.toString()
-              : '0'}
+            {position.state?.sequence ? position.state.sequence.toString() : '0'}
           </ActionDetails.Row>
 
-          {!!value.positionOpenView.value?.action?.position?.phi?.pair?.asset1 && (
+          {!!position.phi?.pair?.asset1 && (
             <ActionDetails.Row label='Asset 1'>
               <ActionDetails.TruncatedText>
-                {bech32mAssetId(value.positionOpenView.value?.action?.position.phi.pair.asset1)}
+                {bech32mAssetId(position.phi.pair.asset1)}
               </ActionDetails.TruncatedText>
             </ActionDetails.Row>
           )}
 
-          {!!value.positionOpenView.value?.action?.position?.phi?.pair?.asset2 && (
+          {!!position.phi?.pair?.asset2 && (
             <ActionDetails.Row label='Asset 2'>
               <ActionDetails.TruncatedText>
-                {bech32mAssetId(value.positionOpenView.value?.action?.position.phi.pair.asset2)}
+                {bech32mAssetId(position.phi.pair.asset2)}
               </ActionDetails.TruncatedText>
             </ActionDetails.Row>
           )}
 
-          {!!value.positionOpenView.value?.action?.position?.phi?.component?.fee && (
-            <ActionDetails.Row label='fee'>
-              {value.positionOpenView.value?.action?.position.phi.component.fee}
-            </ActionDetails.Row>
+          {!!position.phi?.component?.fee && (
+            <ActionDetails.Row label='fee'>{position.phi.component.fee}</ActionDetails.Row>
           )}
 
-          {value.positionOpenView.value?.action?.position?.nonce && (
-            <ActionDetails.Row label='Nonce'>
-              <ActionDetails.TruncatedText>
-                {uint8ArrayToBase64(value.positionOpenView.value?.action?.position.nonce)}
-              </ActionDetails.TruncatedText>
-            </ActionDetails.Row>
-          )}
+          <ActionDetails.Row label='Nonce'>
+            <ActionDetails.TruncatedText>
+              {uint8ArrayToBase64(position.nonce)}
+            </ActionDetails.TruncatedText>
+          </ActionDetails.Row>
 
           <ActionDetails.Row label='Close on fill'>
-            {value.positionOpenView.value?.action?.position?.closeOnFill ? 'true' : 'false'}
+            {position.closeOnFill ? 'true' : 'false'}
           </ActionDetails.Row>
 
           <div className='flex gap-2'>
@@ -77,35 +74,27 @@ export const PositionOpenViewComponent = ({ value }: { value: PositionOpenView }
             </TooltipProvider>
           </div>
 
-          {value.positionOpenView.value?.action?.position?.phi?.component?.p && (
+          {position.phi?.component?.p && (
             <ActionDetails.Row label='p'>
-              {joinLoHiAmount(
-                value.positionOpenView.value?.action?.position.phi.component.p,
-              ).toString()}
+              {joinLoHiAmount(position.phi.component.p).toString()}
             </ActionDetails.Row>
           )}
 
-          {value.positionOpenView.value?.action?.position?.phi?.component?.q && (
+          {position.phi?.component?.q && (
             <ActionDetails.Row label='q'>
-              {joinLoHiAmount(
-                value.positionOpenView.value?.action?.position.phi.component.q,
-              ).toString()}
+              {joinLoHiAmount(position.phi.component.q).toString()}
             </ActionDetails.Row>
           )}
 
-          {value.positionOpenView.value?.action?.position?.reserves?.r1 && (
+          {position.reserves?.r1 && (
             <ActionDetails.Row label='r1'>
-              {joinLoHiAmount(
-                value.positionOpenView.value?.action?.position.reserves.r1,
-              ).toString()}
+              {joinLoHiAmount(position.reserves.r1).toString()}
             </ActionDetails.Row>
           )}
 
-          {value.positionOpenView.value?.action?.position?.reserves?.r2 && (
+          {position.reserves?.r2 && (
             <ActionDetails.Row label='r2'>
-              {joinLoHiAmount(
-                value.positionOpenView.value?.action?.position.reserves.r2,
-              ).toString()}
+              {joinLoHiAmount(position.reserves.r2).toString()}
             </ActionDetails.Row>
           )}
         </ActionDetails>
