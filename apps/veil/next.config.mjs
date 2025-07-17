@@ -25,12 +25,21 @@ const getCommitInfo = () => {
       GIT_ORIGIN_URL: gitOriginUrl,
     };
   } catch (error) {
-    console.warn('Failed to get commit info:', error);
-    return {
-      COMMIT_HASH: 'unknown',
-      COMMIT_DATE: 'unknown',
-      GIT_ORIGIN_URL: 'unknown',
-    };
+    const errorMessage = `Failed to get git commit info for version footer. This is likely because:
+1. Git is not installed in the container
+2. The .git directory is not available (missing from Docker context)
+3. The git repository is not properly initialized
+4. Permission issues accessing git commands
+
+Original error: ${error.message}
+
+To fix this in production containers, ensure:
+- Git is installed in the container
+- The .git directory is included in the Docker build context
+- The container has proper permissions to run git commands`;
+
+    console.error(errorMessage);
+    throw new Error(errorMessage);
   }
 };
 
