@@ -1,5 +1,11 @@
 # penumbra-veil
 
+## 0.2.2
+
+### Patch Changes
+
+- @penumbra-zone/ui@16.0.2
+
 ## 0.2.1
 
 ### Patch Changes

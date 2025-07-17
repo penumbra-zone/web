@@ -1,5 +1,11 @@
 # @penumbra-zone/perspective
 
+## 61.1.0
+
+### Minor Changes
+
+- cca1b0f: add action view for encrypted LP metadata
+
 ## 61.0.0
 
 ### Patch Changes

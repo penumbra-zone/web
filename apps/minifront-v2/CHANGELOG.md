@@ -1,5 +1,14 @@
 # minifront-v2
 
+## 7.1.2
+
+### Patch Changes
+
+- Updated dependencies [cca1b0f]
+  - @penumbra-zone/perspective@61.1.0
+  - @penumbra-zone/ui@16.0.2
+  - @penumbra-zone/ui-deprecated@22.0.1
+
 ## 7.1.1
 
 ### Patch Changes

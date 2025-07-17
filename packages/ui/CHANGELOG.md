@@ -1,5 +1,12 @@
 # @penumbra-zone/ui
 
+## 16.0.2
+
+### Patch Changes
+
+- Updated dependencies [cca1b0f]
+  - @penumbra-zone/perspective@61.1.0
+
 ## 16.0.1
 
 ### Patch Changes
