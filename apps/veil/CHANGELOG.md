@@ -1,5 +1,14 @@
 # penumbra-veil
 
+## 0.2.3
+
+### Patch Changes
+
+- 4657582: import `BigNumber` correctly
+- Updated dependencies [4657582]
+  - @penumbra-zone/types@36.0.0
+  - @penumbra-zone/ui@16.0.3
+
 ## 0.2.2
 
 ### Patch Changes

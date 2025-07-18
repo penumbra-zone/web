@@ -1,5 +1,14 @@
 # @penumbra-zone/ui
 
+## 22.0.2
+
+### Patch Changes
+
+- 4657582: import `BigNumber` correctly
+- Updated dependencies [4657582]
+  - @penumbra-zone/types@36.0.0
+  - @penumbra-zone/perspective@61.1.1
+
 ## 22.0.1
 
 ### Patch Changes
