@@ -6,6 +6,7 @@ import { Density } from '@penumbra-zone/ui/Density';
 import { round } from '@penumbra-zone/types/round';
 import { useWidth } from '@/shared/utils/use-width';
 import { AssetInfo } from '../../model/AssetInfo';
+import DepthChart from './price-slider-depth-chart';
 
 // Usually, `round` from `@penumbra-zone/types/round` is sufficient, but here we need number to be returned, not formatted string.
 export const roundToDecimals = (num: number, decimals: number) => {
@@ -83,16 +84,11 @@ const Thumb = ({
       deltaX: 0,
     };
 
-    // Prevent scrolling while dragging
-    document.body.style.overflow = 'hidden';
-    document.body.style.marginRight = '4px';
     onPointerDown();
 
     const upHandler = () => {
       document.removeEventListener(isTouch ? 'touchmove' : 'mousemove', moveHandler);
       deltaRef.current = null;
-      document.body.style.overflow = '';
-      document.body.style.marginRight = '';
     };
 
     document.addEventListener(isTouch ? 'touchmove' : 'mousemove', moveHandler);
@@ -259,7 +255,7 @@ export const PriceSlider = ({
   });
   const width = useWidth(ref, []);
   const scaleRef = useRef<ScaleLinear<number, number> | null>(null);
-  const [scaleLoaded, setScaleLoaded] = useState(false);
+  const [scaleLoaded, setScaleLoaded] = useState(0);
   const [elevateThumb, setElevateThumb] = useState<number | null>(null);
 
   // necessary data structure to allow entering string values into inputs before parsing them as numbers.
@@ -293,7 +289,9 @@ export const PriceSlider = ({
   useEffect(() => {
     if (width) {
       scaleRef.current = scaleLinear().domain([min, max]).range([0, width]);
-      setScaleLoaded(true);
+
+      // update scaleLoaded to trigger re-render
+      setScaleLoaded(prev => prev + 1);
     }
   }, [min, max, width, values]);
 
@@ -316,8 +314,9 @@ export const PriceSlider = ({
       <div ref={ref} className='relative z-0 h-[98px] w-full'>
         {/* midprice line */}
         <div className='absolute top-0 left-1/2 z-30 h-[70px] w-0 border-l border-dashed border-neutral-contrast' />
-        {scaleLoaded && scale && (
+        {!!scaleLoaded && scale && (
           <>
+            <DepthChart scale={scale} width={width} height={62} />
             {/* slider bg gradient */}
             <div
               className='absolute top-0 z-10 h-[70px] bg-linear-to-b from-[rgba(186,77,20,0)] from-10% to-[rgba(186,77,20,0.35)]'
@@ -374,7 +373,7 @@ export const PriceSlider = ({
         {/* slider track bg */}
         <div className='absolute top-[62px] left-0 z-10 h-[6px] w-full rounded-xs bg-other-tonal-fill10' />
         {/* filled slider track */}
-        {scaleLoaded && scale && (
+        {!!scaleLoaded && scale && (
           <div
             className='absolute top-[62px] z-20 h-[6px] bg-primary-main'
             style={{
