@@ -67,39 +67,43 @@ function DepthChartRenderer({
         false,
       );
 
-      drawFilledPath(
-        ctx,
-        [
-          ...buyCoordinates.flatMap(({ x0, y0, x1, y1 }) => [
-            [x0, y0],
-            [x1, y1],
-          ]),
-          // draw a line from the last buy coordinate to the bottom of the chart
-          [last(buyCoordinates)?.x1, height],
-          // draw a line from the bottom of the chart to the left of the chart
-          [0, height],
-          // draw a line from the left of the chart to the first buy coordinate
-          [0, buyCoordinates[0]?.y0 ?? 0],
-        ] as [number, number][],
-        bgColor,
-      );
+      if (buyCoordinates.length) {
+        drawFilledPath(
+          ctx,
+          [
+            ...buyCoordinates.flatMap(({ x0, y0, x1, y1 }) => [
+              [x0, y0],
+              [x1, y1],
+            ]),
+            // draw a line from the last buy coordinate to the bottom of the chart
+            [last(buyCoordinates)?.x1, height],
+            // draw a line from the bottom of the chart to the left of the chart
+            [0, height],
+            // draw a line from the left of the chart to the first buy coordinate
+            [0, buyCoordinates[0]?.y0 ?? 0],
+          ] as [number, number][],
+          bgColor,
+        );
+      }
 
-      drawFilledPath(
-        ctx,
-        [
-          ...sellCoordinates.flatMap(({ x0, y0, x1, y1 }) => [
-            [x0, y0],
-            [x1, y1],
-          ]),
-          // draw a line from the last sell coordinate to the right of the chart
-          [width, last(sellCoordinates)?.y1],
-          // draw a line from the right of the chart to the bottom of the chart
-          [width, height],
-          // draw a line from the bottom of the chart to the first sell coordinate
-          [sellCoordinates[0]?.x0 ?? width, height],
-        ] as [number, number][],
-        bgColor,
-      );
+      if (sellCoordinates.length) {
+        drawFilledPath(
+          ctx,
+          [
+            ...sellCoordinates.flatMap(({ x0, y0, x1, y1 }) => [
+              [x0, y0],
+              [x1, y1],
+            ]),
+            // draw a line from the last sell coordinate to the right of the chart
+            [width, last(sellCoordinates)?.y1],
+            // draw a line from the right of the chart to the bottom of the chart
+            [width, height],
+            // draw a line from the bottom of the chart to the first sell coordinate
+            [sellCoordinates[0]?.x0 ?? width, height],
+          ] as [number, number][],
+          bgColor,
+        );
+      }
     }
   }, [data, width, height, scale]);
 
