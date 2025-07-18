@@ -7,7 +7,7 @@ import {
   Value,
   ValueView,
 } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import { getAddressByIndex } from '../../fetchers/address';
 import { StateCommitment } from '@penumbra-zone/protobuf/penumbra/crypto/tct/v1/tct_pb';
 import { errorToast } from '@penumbra-zone/ui-deprecated/lib/toast/presets';

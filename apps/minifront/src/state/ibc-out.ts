@@ -3,7 +3,7 @@ import {
   BalancesResponse,
   TransactionPlannerRequest,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import { ClientState } from '@penumbra-zone/protobuf/ibc/lightclients/tendermint/v1/tendermint_pb';
 import { Height } from '@penumbra-zone/protobuf/ibc/core/client/v1/client_pb';
 import {

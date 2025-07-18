@@ -12,7 +12,7 @@ import {
   getMetadata,
 } from '@penumbra-zone/getters/value-view';
 import { toBaseUnit } from '@penumbra-zone/types/lo-hi';
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import { SwapSlice } from '.';
 import { assetPatterns } from '@penumbra-zone/types/assets';
 import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';

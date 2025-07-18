@@ -1,6 +1,6 @@
 import { assets as cosmosAssetList } from 'chain-registry';
 import { Asset, DenomUnit } from '@chain-registry/types';
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import { CosmosAssetBalance } from './hooks.ts';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { bigNumConfig } from '@penumbra-zone/types/lo-hi';

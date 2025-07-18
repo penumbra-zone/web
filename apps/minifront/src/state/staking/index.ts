@@ -9,7 +9,7 @@ import {
   TransactionPlannerRequest,
   UnbondingTokensByAddressIndexResponse,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import { assembleUndelegateClaimRequest } from './assemble-undelegate-claim-request';
 import throttle from 'lodash/throttle';
 import {

@@ -1,7 +1,7 @@
 /* eslint-disable no-bitwise -- expected bitwise operations */
 import { describe, expect, it } from 'vitest';
 import { addLoHi, fromBaseUnit, joinLoHi, splitLoHi, toBaseUnit } from './lo-hi.js';
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 
 describe('lo-hi', () => {
   describe('splitLoHi', () => {
