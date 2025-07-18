@@ -20,7 +20,7 @@ import { TransactionToast } from '@penumbra-zone/ui-deprecated/lib/toast/transac
 import { TransactionClassification } from '@penumbra-zone/perspective/transaction/classification';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import { fromValueView } from '@penumbra-zone/types/amount';
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import {
   getMetadataFromBalancesResponse,
   getValueViewCaseFromBalancesResponse,

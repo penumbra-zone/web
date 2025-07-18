@@ -3,7 +3,7 @@ import { SwapExecution_Trace } from '@penumbra-zone/protobuf/penumbra/core/compo
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import { formatAmount } from '@penumbra-zone/types/amount';
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import { removeTrailingZeros } from '@penumbra-zone/types/shortify';
 
 export const Price = ({

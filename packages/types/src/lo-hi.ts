@@ -1,6 +1,6 @@
 /* eslint-disable no-bitwise -- expected bitwise operations */
 
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 
 export const bigNumConfig: BigNumber.Config = {
   EXPONENTIAL_AT: [-20, 20],
