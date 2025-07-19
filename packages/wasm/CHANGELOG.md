@@ -1,5 +1,12 @@
 # @penumbra-zone/wasm
 
+## 53.0.0
+
+### Patch Changes
+
+- Updated dependencies [4657582]
+  - @penumbra-zone/types@36.0.0
+
 ## 52.0.0
 
 ### Major Changes

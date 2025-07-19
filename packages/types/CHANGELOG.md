@@ -1,5 +1,11 @@
 # @penumbra-zone/types
 
+## 36.0.0
+
+### Major Changes
+
+- 4657582: import `BigNumber` correctly
+
 ## 35.0.0
 
 ### Major Changes

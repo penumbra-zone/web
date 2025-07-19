@@ -1,5 +1,14 @@
 # node-status
 
+## 4.1.74
+
+### Patch Changes
+
+- Updated dependencies [4657582]
+  - @penumbra-zone/types@36.0.0
+  - @penumbra-zone/ui-deprecated@22.0.2
+  - @penumbra-zone/crypto-web@48.0.0
+
 ## 4.1.73
 
 ### Patch Changes
