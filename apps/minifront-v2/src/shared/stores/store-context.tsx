@@ -56,6 +56,11 @@ export const useTransferStore = () => {
   return rootStore.transferStore;
 };
 
+export const useDepositStore = () => {
+  const rootStore = useRootStore();
+  return rootStore.depositStore;
+};
+
 // Hook for the Penumbra service
 export const usePenumbraService = () => {
   const rootStore = useRootStore();

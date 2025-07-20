@@ -60,7 +60,7 @@ export const Item = ({ value, disabled, actionType = 'default' }: AssetSelectorI
               {getFormattedAmtFromValueView(balance.valueView, true)}{' '}
             </Text>
           )}
-          <span className='inline-block max-w-[100px] tablet:max-w-[300px] lg:max-w-[400px]'>
+          <span className='inline-block max-w-[50%] truncate'>
             <Text body truncate color='text.primary'>
               {metadata?.symbol ?? 'Unknown'}
             </Text>

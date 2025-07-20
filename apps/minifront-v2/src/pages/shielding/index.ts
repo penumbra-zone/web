@@ -1,1 +1,1 @@
-export { Shielding } from './ui/shielding';
+export { Shielding } from './ui/shared/shielding';

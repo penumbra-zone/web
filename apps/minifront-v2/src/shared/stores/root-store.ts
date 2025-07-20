@@ -12,6 +12,7 @@ import { TransactionsStore } from './transactions-store';
 import { AssetsStore } from './assets-store';
 import { AppParametersStore } from './app-parameters-store';
 import { TransferStore } from './transfer-store';
+import { DepositStore } from './deposit-store';
 import { PenumbraService } from '../services/penumbra-service';
 
 export class RootStore {
@@ -24,6 +25,7 @@ export class RootStore {
   assetsStore: AssetsStore;
   appParametersStore: AppParametersStore;
   transferStore: TransferStore;
+  depositStore: DepositStore;
 
   constructor() {
     makeAutoObservable(this);
@@ -37,6 +39,7 @@ export class RootStore {
     this.assetsStore = new AssetsStore(this);
     this.appParametersStore = new AppParametersStore(this);
     this.transferStore = new TransferStore(this);
+    this.depositStore = new DepositStore(this);
   }
 
   /**
@@ -52,6 +55,7 @@ export class RootStore {
       this.transactionsStore.initialize(),
       this.assetsStore.initialize(),
       this.transferStore.initialize(),
+      this.depositStore.initialize(),
     ]);
   }
 
@@ -64,6 +68,7 @@ export class RootStore {
     this.assetsStore.dispose();
     this.appParametersStore.dispose();
     this.transferStore.dispose();
+    this.depositStore.dispose();
   }
 }
 
@@ -71,5 +76,11 @@ export class RootStore {
 export const rootStore = new RootStore();
 
 // Export for easier access in components
-export const { balancesStore, transactionsStore, assetsStore, appParametersStore, transferStore } =
-  rootStore;
+export const {
+  balancesStore,
+  transactionsStore,
+  assetsStore,
+  appParametersStore,
+  transferStore,
+  depositStore,
+} = rootStore;

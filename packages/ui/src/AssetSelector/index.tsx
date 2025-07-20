@@ -124,16 +124,16 @@ export const AssetSelector = ({
               ))}
             </div>
           ))}
-
           {!!filteredAssets.length && (
             <Text small color='text.secondary'>
               All Tokens
             </Text>
           )}
-
-          {filteredAssets.map(asset => (
-            <Item key={getKeyHash(asset)} value={asset} />
-          ))}
+          <div className='flex flex-col mt-2 gap-1'>
+            {filteredAssets.map(asset => (
+              <Item key={getKeyHash(asset)} value={asset} />
+            ))}
+          </div>
         </div>
       )}
     </AssetSelectorCustom>

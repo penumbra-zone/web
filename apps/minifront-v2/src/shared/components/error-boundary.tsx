@@ -41,7 +41,7 @@ export const ErrorBoundary = () => {
     >
       <div className='w-full max-w-md'>
         <Card>
-          <div className='flex flex-col items-center space-y-6 text-center'>
+          <div className='flex flex-col items-center gap-2 text-center'>
             <Text h4 color='text.primary'>
               Error
             </Text>
@@ -64,7 +64,7 @@ export const ErrorBoundary = () => {
         </Card>
       </div>
 
-      <div className='mt-8 flex px-3'>
+      <div className='mt-8 flex px-3 max-w-md text-center'>
         <Text detail>
           Minifront is a minimal frontend for interacting with the Penumbra blockchain—embedded into
           every Penumbra RPC endpoint.

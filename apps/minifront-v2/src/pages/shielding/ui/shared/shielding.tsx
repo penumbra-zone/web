@@ -5,7 +5,8 @@ import { Tabs } from '@penumbra-zone/ui/Tabs';
 import { Density } from '@penumbra-zone/ui/Density';
 import { useBackground } from '@/shared/contexts/background-context';
 import { ShieldingInfoDialog } from './shielding-info-dialog';
-import { SkipDepositTab } from './skip-deposit-tab';
+import { SkipDepositTab } from '../skip-deposit/skip-deposit-form';
+import { DepositForm } from '@/pages/shielding/ui/deposit/deposit-form';
 
 // Tab configuration
 const SHIELDING_TABS = [
@@ -14,7 +15,7 @@ const SHIELDING_TABS = [
   { value: 'withdraw', label: 'Withdraw', title: 'Unshielding Assets' },
 ];
 
-type ShieldingTab = 'skip-deposit' | 'deposit' | 'withdraw';
+type ShieldingTab = 'skip-deposit' | 'deposit' | 'deposit-dev' | 'withdraw';
 
 export const Shielding = () => {
   const [activeTab, setActiveTab] = useState<ShieldingTab>('skip-deposit');
@@ -42,16 +43,7 @@ export const Shielding = () => {
       case 'skip-deposit':
         return <SkipDepositTab />;
       case 'deposit':
-        return (
-          <div className='p-6'>
-            <div className='flex h-96 items-center justify-center'>
-              <Text color='text.secondary'>
-                {/* TODO: Implement Deposit functionality */}
-                Deposit tab content will be implemented here
-              </Text>
-            </div>
-          </div>
-        );
+        return <DepositForm />;
       case 'withdraw':
         return (
           <div className='p-6'>

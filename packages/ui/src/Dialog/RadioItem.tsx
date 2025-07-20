@@ -60,9 +60,11 @@ export const RadioItem = ({
 
     if (typeof description === 'string') {
       return (
-        <Text detail color='text.secondary' as='div'>
-          {description}
-        </Text>
+        <div className='truncate max-w-[50%]'>
+          <Text detail color='text.secondary' as='div'>
+            {description}
+          </Text>
+        </div>
       );
     }
 
