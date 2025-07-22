@@ -23,7 +23,7 @@ export const IbcChainProvider = ({ registry, children }: IbcChainProviderProps) 
       assetLists={assets}
       // Not using mobile wallets as WalletConnect is a centralized service that requires an account
       wallets={wallets.extension}
-      modalTheme={{ defaultTheme: 'light' }}
+      modalTheme={{ defaultTheme: 'dark' }}
       logLevel={'NONE'}
     >
       {children}

@@ -30,11 +30,11 @@ const DepositFormInternal = observer(() => {
   const { depositState, walletState, validation, canDeposit, availableChains } = depositStore;
 
   // Use unified assets (now safely within ChainProvider context)
-  const { unifiedAssets, isLoading: assetsLoading, isCosmosConnected } = useUnifiedAssets();
+  const { unifiedAssets, isLoading: assetsLoading } = useUnifiedAssets();
 
   // Get cosmos-kit chain connection for the selected chain
   const selectedChainName = depositState.selectedChain?.chainName || 'osmosis';
-  const { connect, disconnect, address, status } = useChain(selectedChainName);
+  const { connect, disconnect, address, status, getSigningStargateClient } = useChain(selectedChainName);
 
   // Check connection status from cosmos-kit
   const isConnected = status === 'Connected';
@@ -180,7 +180,13 @@ const DepositFormInternal = observer(() => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    void depositStore.initiateDeposit();
+
+    if (!getSigningStargateClient || !address) {
+      depositStore.onWalletConnectionError('Wallet not ready to sign');
+      return;
+    }
+
+    void depositStore.initiateDeposit(getSigningStargateClient, address);
   };
 
   const getAccountDisplayName = (index: number) => {
@@ -208,6 +214,49 @@ const DepositFormInternal = observer(() => {
     // fallback to first available
     return assetBalances[0];
   }, [assetBalances, depositState.selectedAsset]);
+
+  // NEW: When we have a fallback selected asset (derived from balances) but the
+  // store has not yet been updated, sync it so validation can succeed.
+  useEffect(() => {
+    if (!depositState.selectedAsset && selectedAssetBalance && depositState.selectedChain) {
+      // Locate the unified asset that matches the selected balance so we can
+      // convert it into the ExternalAssetBalance shape expected by the store.
+      const matchingUnified = availableAssets.find(ua => {
+        const publicBalance = ua.publicBalances.find(
+          b => b.chainId === depositState.selectedChain!.chainId,
+        );
+        if (!publicBalance) return false;
+
+        const meta =
+          selectedAssetBalance.balanceView?.valueView.case === 'knownAssetId'
+            ? selectedAssetBalance.balanceView.valueView.value?.metadata
+            : undefined;
+        return meta?.symbol === ua.metadata.symbol;
+      });
+
+      if (matchingUnified) {
+        const publicBalance = matchingUnified.publicBalances.find(
+          b => b.chainId === depositState.selectedChain!.chainId,
+        );
+        if (publicBalance) {
+          const externalAsset = {
+            denom: publicBalance.denom,
+            amount: pnum(publicBalance.valueView).toAmount().toString(),
+            displayDenom: matchingUnified.metadata.display || matchingUnified.metadata.symbol,
+            displayAmount: pnum(publicBalance.valueView).toNumber().toString(),
+            metadata: matchingUnified.metadata,
+          } as const;
+          depositStore.setSelectedAsset(externalAsset);
+        }
+      }
+    }
+  }, [
+    depositState.selectedAsset,
+    selectedAssetBalance,
+    depositState.selectedChain,
+    availableAssets,
+    depositStore,
+  ]);
 
   // Handle asset change from AssetValueInput
   const handleAssetValueInputChange = (asset: Metadata | BalancesResponse) => {
@@ -358,7 +407,7 @@ const DepositFormInternal = observer(() => {
               }
             />
 
-            {/* Show no assets message with explanation */}
+            {/* Show no assets message */}
             {!assetsLoading &&
               isConnected &&
               depositState.selectedChain &&
@@ -367,7 +416,7 @@ const DepositFormInternal = observer(() => {
                   <div className='flex items-center gap-1'>
                     <Info className='h-3 w-3 text-text-secondary' />
                     <Text detail color='text.secondary'>
-                      Only assets registered in the Penumbra registry can be shielded via IBC.
+                      No assets found on this chain
                     </Text>
                   </div>
                 </div>
@@ -391,9 +440,9 @@ const DepositFormInternal = observer(() => {
 
           {/* Error Display */}
           {depositState.error && (
-            <div className='bg-destructive/10 border-destructive/20 rounded-lg border p-3'>
+            <div className='rounded-lg p-3'>
               <Text color='destructive.light' small>
-                {depositState.error}
+                Failed: {depositState.error}
               </Text>
             </div>
           )}

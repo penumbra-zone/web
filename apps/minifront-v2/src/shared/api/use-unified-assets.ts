@@ -68,25 +68,12 @@ export const useUnifiedAssets = () => {
 
   const publicAssets = useMemo(() => {
     if (!isCosmosConnected || !cosmosBalances.length) {
-      console.log('❌ No cosmos connection or balances:', {
-        isCosmosConnected,
-        cosmosBalancesLength: cosmosBalances.length,
-      });
       return [];
     }
-
-    console.log('🌐 Processing cosmos balances:', cosmosBalances.length, cosmosBalances);
 
     return cosmosBalances
       .map(({ asset, amount, chainId }: CosmosBalance) => {
         try {
-          console.log('🔄 Processing cosmos asset:', {
-            symbol: asset.symbol,
-            amount,
-            chainId,
-            asset,
-          });
-
           const metadata = new Metadata({
             base: asset.base,
             display: asset.display,
@@ -122,12 +109,6 @@ export const useUnifiedAssets = () => {
               },
             ],
           } as UnifiedAsset;
-
-          console.log('✅ Created unified asset:', {
-            symbol: unifiedAsset.symbol,
-            metadata: unifiedAsset.metadata,
-            publicBalances: unifiedAsset.publicBalances.length,
-          });
           return unifiedAsset;
         } catch (error: unknown) {
           console.error('❌ Error processing Cosmos balance', error, { asset, amount, chainId });
