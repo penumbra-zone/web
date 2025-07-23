@@ -12,8 +12,11 @@ import { serializeResponse } from '@/shared/api/server/book/serialization.ts';
 import { SimulationService } from '@penumbra-zone/protobuf';
 import { Client } from '@connectrpc/connect';
 import { createClient } from '@/shared/utils/protos/utils.ts';
+import { toBaseUnit } from '@penumbra-zone/types/lo-hi';
+import { BigNumber } from 'bignumber.js';
+import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 
-export const VERY_HIGH_AMOUNT = new Amount({ hi: 10000n }); // Used as default to generate sufficient amount of traces
+export const SIMULATION_UNITS = 5000; // Simulate with 5k units instead of infinite
 export const TRACE_LIMIT_DEFAULT = 8;
 
 export type RouteBookApiResponse = RouteBookResponseJson | { error: string };
@@ -58,17 +61,25 @@ export async function GET(req: NextRequest): Promise<NextResponse<RouteBookApiRe
     );
   }
 
-  // We use the simulate trade queries with an absurd amount of input
-  // to exhaust the liquidity at every price point. The RPC will return
+  // Calculate the proper amount based on the asset's decimals
+  // For example, USDC has 6 decimals, so 10000 USDC = 10000 * 10^6 base units
+  const baseAssetExponent = getDisplayDenomExponent(baseAssetMetadata);
+  const quoteAssetExponent = getDisplayDenomExponent(quoteAssetMetadata);
+
+  const baseAssetAmount = toBaseUnit(BigNumber(SIMULATION_UNITS), baseAssetExponent);
+  const quoteAssetAmount = toBaseUnit(BigNumber(SIMULATION_UNITS), quoteAssetExponent);
+
+  // We use the simulate trade queries with a reasonable amount of input
+  // to discover liquidity at various price points. The RPC will return
   // a stack of traces that will let us represent the amount of inventory
-  // available at every price relevant price point.
+  // available at every relevant price point.
   //
-  // To do this, we simulate two large trades in opposite directions.
+  // To do this, we simulate two trades in opposite directions.
   const buySideRequest = new SimulateTradeRequest({
     input: new Value({
       // We sell the base asset, to discover traces of the buy side (quote asset).
       assetId: baseAssetMetadata.penumbraAssetId,
-      amount: VERY_HIGH_AMOUNT,
+      amount: baseAssetAmount,
     }),
     output: quoteAssetMetadata.penumbraAssetId,
   });
@@ -77,7 +88,7 @@ export async function GET(req: NextRequest): Promise<NextResponse<RouteBookApiRe
     input: new Value({
       // We simulate a buy of the base asset, to discover traces of the sell side.
       assetId: quoteAssetMetadata.penumbraAssetId,
-      amount: VERY_HIGH_AMOUNT,
+      amount: quoteAssetAmount,
     }),
     output: baseAssetMetadata.penumbraAssetId,
   });
