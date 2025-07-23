@@ -16,7 +16,7 @@ export const VeilVersion = () => {
   const commitUrl = gitOriginUrl !== 'unknown' ? `${gitOriginUrl}/commit/${commitHash}` : '#';
 
   return (
-    <div className='text-xs text-other-tonalStroke opacity-50'>
+    <div className='text-xs text-text-secondary opacity-50'>
       <a href={commitUrl} target='_blank' rel='noopener noreferrer' className='hover:underline'>
         {shortHash}
       </a>

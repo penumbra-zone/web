@@ -1,8 +1,7 @@
 'use client';
 
 import { VeilVersion } from './veil-version';
-import { useBasePath } from '@/shared/const/pages';
-import { PagePath } from '@/shared/const/pages';
+import { useBasePath, PagePath } from '@/shared/const/pages';
 
 export const Footer = () => {
   const currentPath = useBasePath();
