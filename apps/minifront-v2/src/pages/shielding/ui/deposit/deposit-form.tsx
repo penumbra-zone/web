@@ -34,7 +34,8 @@ const DepositFormInternal = observer(() => {
 
   // Get cosmos-kit chain connection for the selected chain
   const selectedChainName = depositState.selectedChain?.chainName || 'osmosis';
-  const { connect, disconnect, address, status, getSigningStargateClient } = useChain(selectedChainName);
+  const { connect, disconnect, address, status, getSigningStargateClient } =
+    useChain(selectedChainName);
 
   // Check connection status from cosmos-kit
   const isConnected = status === 'Connected';

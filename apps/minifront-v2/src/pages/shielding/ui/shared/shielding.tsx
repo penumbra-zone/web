@@ -7,6 +7,7 @@ import { useBackground } from '@/shared/contexts/background-context';
 import { ShieldingInfoDialog } from './shielding-info-dialog';
 import { SkipDepositTab } from '../skip-deposit/skip-deposit-form';
 import { DepositForm } from '@/pages/shielding/ui/deposit/deposit-form';
+import { WithdrawForm } from '@/pages/shielding/ui/withdraw/withdraw-form';
 
 // Tab configuration
 const SHIELDING_TABS = [
@@ -45,16 +46,7 @@ export const Shielding = () => {
       case 'deposit':
         return <DepositForm />;
       case 'withdraw':
-        return (
-          <div className='p-6'>
-            <div className='flex h-96 items-center justify-center'>
-              <Text color='text.secondary'>
-                {/* TODO: Implement Withdraw functionality */}
-                Withdraw tab content will be implemented here
-              </Text>
-            </div>
-          </div>
-        );
+        return <WithdrawForm />;
       default:
         return <SkipDepositTab />;
     }

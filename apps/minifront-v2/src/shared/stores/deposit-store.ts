@@ -3,8 +3,6 @@ import { RootStore } from './root-store';
 import { Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { chains } from 'chain-registry';
-// Static import for MsgTransfer (IBC)
-import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
 import { EncodeObject } from '@cosmjs/proto-signing';
 import { StdFee, GasPrice, calculateFee, SigningStargateClient } from '@cosmjs/stargate';
 import { ChainWalletContext } from '@cosmos-kit/core';
@@ -126,25 +124,22 @@ export class DepositStore {
   }
 
   /**
-   * Generate Penumbra address for the selected account - exactly like original minifront
+   * Generate Penumbra address for the selected account
    */
-  private async getPenumbraAddress(
-    account: number,
-    chainId?: string,
-  ): Promise<string | undefined> {
+  private async getPenumbraAddress(account: number, chainId?: string): Promise<string | undefined> {
     if (!chainId) {
       return undefined;
     }
-    
+
     try {
-      const { address } = await penumbra.service(ViewService).addressByIndex({ 
-        addressIndex: { account } 
+      const { address } = await penumbra.service(ViewService).addressByIndex({
+        addressIndex: { account },
       });
-      
+
       if (!address) {
         throw new Error('Address not in addressByIndex response');
       }
-      
+
       return bech32mAddress(address);
     } catch (error) {
       console.error('Failed to generate Penumbra address:', error);
@@ -152,7 +147,7 @@ export class DepositStore {
     }
   }
 
-  // Wallet connection actions - now uses cosmos-kit via component hooks
+  // Wallet connection actions
   async connectWallet() {
     runInAction(() => {
       this.walletState = {
@@ -162,12 +157,10 @@ export class DepositStore {
       };
     });
 
-    // Note: The actual connection logic will be handled by cosmos-kit hooks
-    // in the component. This method is called from the UI to trigger the modal.
-    // The component using useChain will handle the actual connection.
+    // Note: Actual connection is handled by cosmos-kit in the component
   }
 
-  // Called by the component after successful cosmos-kit connection
+  // Called after successful wallet connection
   onWalletConnected(address: string, chainId: string) {
     runInAction(() => {
       this.walletState = {
@@ -180,10 +173,10 @@ export class DepositStore {
       };
     });
 
-    // Assets are now loaded by the unified assets hook
+    // Assets loaded by unified assets hook
   }
 
-  // Called by the component when cosmos-kit connection fails
+  // Called when wallet connection fails
   onWalletConnectionError(error: string) {
     runInAction(() => {
       this.walletState = {
@@ -380,8 +373,11 @@ export class DepositStore {
 
     try {
       const { selectedChain, destinationAccount } = this.depositState;
-      const penumbraAddress = await this.getPenumbraAddress(destinationAccount, selectedChain?.chainId);
-      
+      const penumbraAddress = await this.getPenumbraAddress(
+        destinationAccount,
+        selectedChain?.chainId,
+      );
+
       if (penumbraAddress) {
         runInAction(() => {
           this.depositState = {
@@ -396,7 +392,7 @@ export class DepositStore {
   }
 
   /**
-   * Get the counterparty channel ID for IBC transfers - exactly like original minifront
+   * Get the counterparty channel ID for IBC transfers
    */
   private async getCounterpartyChannelId(
     counterpartyChain: ChainInfo,
@@ -408,7 +404,7 @@ export class DepositStore {
     const counterpartyChannelId = registry.ibcConnections.find(
       c => c.chainId === counterpartyChain.chainId,
     )?.counterpartyChannelId;
-    
+
     if (!counterpartyChannelId) {
       throw new Error(
         `Counterparty channel could not be found in registry for chain id: ${counterpartyChain.chainId}`,
@@ -419,7 +415,7 @@ export class DepositStore {
   }
 
   /**
-   * Estimate fee for IBC transfer - exactly like original minifront
+   * Estimate fee for IBC transfer
    */
   private async estimateFee({
     chainId,
@@ -434,7 +430,7 @@ export class DepositStore {
   }): Promise<StdFee> {
     const feeToken = chains.find(({ chain_id }) => chain_id === chainId)?.fees?.fee_tokens[0];
     const avgGasPrice = feeToken?.average_gas_price;
-    
+
     if (!feeToken) {
       throw new Error(`Fee token not found in registry for ${chainId}`);
     }
@@ -443,13 +439,13 @@ export class DepositStore {
     }
 
     const estimatedGas = await client.simulate(signerAddress, [message], '');
-    const gasLimit = Math.round(estimatedGas * 1.5); // Give some padding to the limit due to fluctuations
-    const gasPrice = GasPrice.fromString(`${feeToken.average_gas_price}${feeToken.denom}`); // e.g. 132uosmo
+    const gasLimit = Math.round(estimatedGas * 1.5);
+    const gasPrice = GasPrice.fromString(`${feeToken.average_gas_price}${feeToken.denom}`);
     return calculateFee(gasLimit, gasPrice);
   }
 
   /**
-   * Initiate a shield deposit via IBC transfer - following original minifront pattern exactly
+   * Initiate a shield deposit via IBC transfer
    *
    * @param getStargateClient  The cosmos-kit getSigningStargateClient function
    * @param senderAddress     The bech32 address of the connected wallet
@@ -471,7 +467,7 @@ export class DepositStore {
     });
 
     try {
-      // --- Build MsgTransfer exactly like original minifront ---
+      // Build MsgTransfer
       const { selectedAsset, amount, selectedChain, destinationAccount } = this.depositState;
 
       if (!selectedAsset || !selectedChain) {
@@ -484,8 +480,11 @@ export class DepositStore {
         throw new Error('Penumbra chain id could not be retrieved');
       }
 
-      // Generate the actual Penumbra address like original minifront
-      const penumbraAddress = await this.getPenumbraAddress(destinationAccount, selectedChain.chainId);
+      // Generate the Penumbra address
+      const penumbraAddress = await this.getPenumbraAddress(
+        destinationAccount,
+        selectedChain.chainId,
+      );
       if (!penumbraAddress) {
         throw new Error('Penumbra address not available');
       }
@@ -493,37 +492,33 @@ export class DepositStore {
       // Get the correct channel ID from registry
       const sourceChannel = await this.getCounterpartyChannelId(selectedChain, penumbraChainId);
 
-      // Fallback exponent 6 until asset metadata parsing is added
+      // Use default exponent
       const exponent = 6;
       const scaledAmount = BigInt(Math.floor(parseFloat(amount) * 10 ** exponent)).toString();
 
-      const timeout = BigInt(Math.floor(Date.now() / 1000 + 600) * 1_000_000_000); // +10m ns
+      const timeout = BigInt(Math.floor(Date.now() / 1000 + 600) * 1_000_000_000);
 
-      // Create timeout height like original minifront
       const timeoutHeight = {
-        revisionNumber: BigInt(1), // Default revision number
-        revisionHeight: BigInt(Math.floor(Date.now() / 1000) + 3600), // +1 hour in seconds  
+        revisionNumber: BigInt(1),
+        revisionHeight: BigInt(Math.floor(Date.now() / 1000) + 3600),
       };
 
-      // Create MsgTransfer params exactly like original minifront
       const params = {
         sourcePort: 'transfer',
-        sourceChannel, // Use the correct channel from registry
+        sourceChannel,
         sender: senderAddress,
-        receiver: penumbraAddress, // Use the dynamically generated address
+        receiver: penumbraAddress,
         token: { denom: selectedAsset.denom, amount: scaledAmount },
         timeoutHeight,
         timeoutTimestamp: timeout,
         memo: '',
       };
 
-      // Use osmo-query to create the properly formatted message like original minifront
-      const ibcTransferMsg = ibc.applications.transfer.v1.MessageComposer.withTypeUrl.transfer(params);
+      const ibcTransferMsg =
+        ibc.applications.transfer.v1.MessageComposer.withTypeUrl.transfer(params);
 
-      // Get the signing client like original minifront
       const client = await getStargateClient();
 
-      // Estimate fee properly like original minifront
       const fee = await this.estimateFee({
         chainId: selectedChain.chainId,
         client,
@@ -531,11 +526,8 @@ export class DepositStore {
         message: ibcTransferMsg,
       });
 
-      // Sign and broadcast manually like original minifront
       const signedTx = await client.sign(senderAddress, [ibcTransferMsg], fee, '');
       const result = await client.broadcastTx(cosmos.tx.v1beta1.TxRaw.encode(signedTx).finish());
-
-      // Check transaction result like original minifront
       if (result.code !== 0) {
         throw new Error(`Tendermint error: ${result.code}`);
       }

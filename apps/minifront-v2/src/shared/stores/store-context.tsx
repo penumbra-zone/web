@@ -30,7 +30,7 @@ export const useRootStore = (): RootStore => {
   return store;
 };
 
-// Convenience hooks for individual stores
+// Hook to use individual stores
 export const useBalancesStore = () => {
   const rootStore = useRootStore();
   return rootStore.balancesStore;
@@ -59,6 +59,11 @@ export const useTransferStore = () => {
 export const useDepositStore = () => {
   const rootStore = useRootStore();
   return rootStore.depositStore;
+};
+
+export const useWithdrawStore = () => {
+  const rootStore = useRootStore();
+  return rootStore.withdrawStore;
 };
 
 // Hook for the Penumbra service

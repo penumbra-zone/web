@@ -5,16 +5,24 @@ import { Dialog } from '@penumbra-zone/ui/Dialog';
 import { IconAdornment } from '@penumbra-zone/ui/IconAdornment';
 import { Text } from '@penumbra-zone/ui/Text';
 import { ChevronsUpDown, Search } from 'lucide-react';
-import { ChainInfo } from '@/shared/stores/deposit-store';
 import { Icon } from '@penumbra-zone/ui/Icon';
 
-export interface ChainSelectorProps {
+// Base interface that both ChainInfo types must implement
+interface BaseChainInfo {
+  chainId: string;
+  chainName: string;
+  displayName: string;
+  icon?: string;
+  isConnected?: boolean;
+}
+
+export interface ChainSelectorProps<T extends BaseChainInfo = BaseChainInfo> {
   /** The currently selected chain */
-  selectedChain?: ChainInfo;
+  selectedChain?: T;
   /** Available chains to select from */
-  availableChains: ChainInfo[];
+  availableChains: T[];
   /** Callback when a chain is selected */
-  onSelectChain: (chain: ChainInfo) => void;
+  onSelectChain: (chain: T) => void;
   /** Whether the selector is disabled */
   disabled?: boolean;
   /** Placeholder text for when no chain is selected */
@@ -22,13 +30,13 @@ export interface ChainSelectorProps {
 }
 
 export const ChainSelector = observer(
-  ({
+  <T extends BaseChainInfo>({
     selectedChain,
     availableChains,
     onSelectChain,
     disabled = false,
-    placeholder = 'Select Source Chain...',
-  }: ChainSelectorProps) => {
+    placeholder = 'Select Chain...',
+  }: ChainSelectorProps<T>) => {
     const [isOpen, setIsOpen] = useState(false);
     const [searchValue, setSearchValue] = useState('');
 
@@ -39,7 +47,7 @@ export const ChainSelector = observer(
         chain.chainName.toLowerCase().includes(searchValue.toLowerCase()),
     );
 
-    const handleChainSelect = (chain: ChainInfo) => {
+    const handleChainSelect = (chain: T) => {
       onSelectChain(chain);
       setIsOpen(false);
       setSearchValue('');
@@ -97,12 +105,12 @@ export const ChainSelector = observer(
   },
 );
 
-interface ChainItemProps {
-  chain: ChainInfo;
-  onSelect: (chain: ChainInfo) => void;
+interface ChainItemProps<T extends BaseChainInfo> {
+  chain: T;
+  onSelect: (chain: T) => void;
 }
 
-const ChainItem = observer(({ chain, onSelect }: ChainItemProps) => {
+const ChainItem = observer(<T extends BaseChainInfo>({ chain, onSelect }: ChainItemProps<T>) => {
   return (
     <button
       onClick={() => onSelect(chain)}

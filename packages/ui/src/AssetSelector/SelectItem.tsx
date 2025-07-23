@@ -56,11 +56,11 @@ export const Item = ({ value, disabled, actionType = 'default' }: AssetSelectorI
       title={
         <>
           {balance?.valueView && (
-            <Text body truncate color='text.primary'>
+            <Text body color='text.primary'>
               {getFormattedAmtFromValueView(balance.valueView, true)}{' '}
             </Text>
           )}
-          <span className='inline-block max-w-[50%] truncate'>
+          <span className='inline-flex w-full truncate'>
             <Text body truncate color='text.primary'>
               {metadata?.symbol ?? 'Unknown'}
             </Text>

@@ -51,7 +51,11 @@ export const AddressViewComponent = ({
   const isLqt = addressIndex && isLqtAddressIndex(addressIndex);
   const isRandomized = !isLqt && addressIndex?.randomizer.some(v => v);
 
-  const encodedAddress = external ? address.altBech32m : bech32mAddress(address);
+  const encodedAddress =
+    // If caller sets external, OR inner bytes are missing or not 80 bytes, use altBech32m.
+    external || ((address.inner?.length ?? 0) !== 80 && !!address.altBech32m)
+      ? address.altBech32m
+      : bech32mAddress(address);
 
   // Sub-account selector logic
   const getAccountLabel = (index: number) =>

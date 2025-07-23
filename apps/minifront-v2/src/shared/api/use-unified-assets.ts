@@ -1,13 +1,17 @@
 import { useCosmosBalances, CosmosBalance } from './use-cosmos-balances';
 import { Metadata, ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { useWallet } from '@cosmos-kit/react';
 import { WalletStatus } from '@cosmos-kit/core';
 import { pnum } from '@penumbra-zone/types/pnum';
 import { assetPatterns } from '@penumbra-zone/types/assets';
 import { BalancesResponse } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
+import { useBalancesStore } from '../stores/store-context';
+import {
+  getMetadataFromBalancesResponse,
+  getBalanceView,
+} from '@penumbra-zone/getters/balances-response';
 
-// Use simple interfaces like Veil
 export interface ShieldedBalance {
   valueView: ValueView;
   balance: BalancesResponse;
@@ -20,11 +24,8 @@ export interface PublicBalance {
 }
 
 export interface UnifiedAsset {
-  // Common asset information
   symbol: string;
-  metadata: Metadata; // Display metadata (name, icon, etc.)
-
-  // Balances
+  metadata: Metadata;
   shieldedBalances: ShieldedBalance[];
   publicBalances: PublicBalance[];
 }
@@ -50,21 +51,84 @@ export const shouldFilterAsset = (symbol: string): boolean => {
 
 /**
  * Hook that combines Penumbra (shielded) and Cosmos (public) balances into a unified asset structure.
- * Based on Veil's useUnifiedAssets approach but simplified for minifront-v2.
  */
 export const useUnifiedAssets = () => {
   const { status: cosmosWalletStatus } = useWallet();
 
-  // For now, we'll focus on Cosmos balances since Penumbra balances are handled elsewhere
-  // TODO: Add Penumbra balances integration when needed
-  const penumbraBalances: BalancesResponse[] = [];
-  const penumbraLoading = false;
+  const balancesStore = useBalancesStore();
+  const penumbraBalances = balancesStore.balancesResponses;
+  const penumbraLoading = balancesStore.loading;
 
   const { balances: cosmosBalances = [], isLoading: cosmosLoading } = useCosmosBalances();
 
-  // Check connection status
-  const isPenumbraConnected = false; // TODO: Get from Penumbra connection store
+  useEffect(() => {
+    if (penumbraBalances.length === 0 && !penumbraLoading) {
+      void balancesStore.loadAllAccountBalances();
+    }
+  }, [balancesStore, penumbraBalances.length, penumbraLoading]);
+
+  const isPenumbraConnected = penumbraBalances.length > 0 || !penumbraLoading;
   const isCosmosConnected = cosmosWalletStatus === WalletStatus.Connected;
+
+  const shouldFilterAsset = (symbol: string): boolean => {
+    return [
+      assetPatterns.lpNft,
+      assetPatterns.auctionNft,
+      assetPatterns.unbondingToken,
+      assetPatterns.votingReceipt,
+      assetPatterns.proposalNft,
+      assetPatterns.delegationToken,
+    ].some(pattern => pattern.matches(symbol));
+  };
+
+  const shieldedAssets = useMemo(() => {
+    if (!isPenumbraConnected || !penumbraBalances.length) {
+      return [];
+    }
+
+    const assetMap = new Map<string, UnifiedAsset>();
+
+    penumbraBalances
+      .filter(balance => {
+        return balance.balanceView?.valueView.case === 'knownAssetId';
+      })
+      .filter(balance => {
+        const metadata = getMetadataFromBalancesResponse(balance);
+        return !shouldFilterAsset(metadata.symbol);
+      })
+      .forEach(balance => {
+        try {
+          const metadata = getMetadataFromBalancesResponse(balance);
+          const valueView = getBalanceView(balance);
+          const symbol = metadata.symbol;
+
+          const existingAsset = assetMap.get(symbol);
+          if (existingAsset) {
+            existingAsset.shieldedBalances.push({
+              valueView,
+              balance,
+            });
+          } else {
+            const newAsset: UnifiedAsset = {
+              symbol,
+              metadata,
+              shieldedBalances: [
+                {
+                  valueView,
+                  balance,
+                },
+              ],
+              publicBalances: [],
+            };
+            assetMap.set(symbol, newAsset);
+          }
+        } catch (error: unknown) {
+          console.error('Error processing Penumbra balance', error);
+        }
+      });
+
+    return Array.from(assetMap.values());
+  }, [isPenumbraConnected, penumbraBalances]);
 
   const publicAssets = useMemo(() => {
     if (!isCosmosConnected || !cosmosBalances.length) {
@@ -111,7 +175,7 @@ export const useUnifiedAssets = () => {
           } as UnifiedAsset;
           return unifiedAsset;
         } catch (error: unknown) {
-          console.error('❌ Error processing Cosmos balance', error, { asset, amount, chainId });
+          console.error('Error processing Cosmos balance', error, { asset, amount, chainId });
           return null;
         }
       })
@@ -121,22 +185,23 @@ export const useUnifiedAssets = () => {
   const unifiedAssets = useMemo(() => {
     const assetMap = new Map<string, UnifiedAsset>();
 
-    // Process public assets (cosmos balances)
+    shieldedAssets.forEach(asset => {
+      const key = normalizeSymbol(asset.symbol);
+      assetMap.set(key, asset);
+    });
+
     if (isCosmosConnected) {
       publicAssets.forEach(asset => {
         const key = normalizeSymbol(asset.symbol);
         const existing = assetMap.get(key);
 
         if (existing) {
-          // Merge with existing asset by combining the public balances
           const balanceKeys = new Set<string>();
 
-          // Add keys for existing balances
           existing.publicBalances.forEach(balance => {
             balanceKeys.add(getPublicBalanceKey(balance.chainId, balance.denom));
           });
 
-          // Only add public balances that don't already exist
           asset.publicBalances.forEach(balance => {
             const balanceKey = getPublicBalanceKey(balance.chainId, balance.denom);
             if (!balanceKeys.has(balanceKey)) {
@@ -145,17 +210,18 @@ export const useUnifiedAssets = () => {
             }
           });
         } else {
-          // Add new public-only asset
           assetMap.set(key, asset);
         }
       });
+    } else {
+      assetMap.forEach(asset => {
+        asset.publicBalances = [];
+      });
     }
 
-    // Convert to array
     return Array.from(assetMap.values());
-  }, [publicAssets, isCosmosConnected]);
+  }, [shieldedAssets, publicAssets, isCosmosConnected]);
 
-  // Calculate totals (simplified for now)
   const totalShieldedValue = useMemo(() => {
     return 0; // TODO: Implement when prices are available
   }, []);
@@ -168,7 +234,6 @@ export const useUnifiedAssets = () => {
     return totalShieldedValue + totalPublicValue;
   }, [totalShieldedValue, totalPublicValue]);
 
-  // Loading state - only show loading when we have no data and something is loading
   const isLoading = unifiedAssets.length === 0 && (penumbraLoading || cosmosLoading);
 
   return {
