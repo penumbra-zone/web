@@ -311,7 +311,7 @@ export const PriceSlider = ({
           {marketPrice} {quoteAsset?.symbol}
         </Text>
       </div>
-      <div ref={ref} className='relative z-0 h-[98px] w-full'>
+      <div ref={ref} className='relative z-0 h-[98px] w-full overflow-hidden'>
         {/* midprice line */}
         <div className='absolute top-0 left-1/2 z-30 h-[70px] w-0 border-l border-dashed border-neutral-contrast' />
         {!!scaleLoaded && scale && (
@@ -333,20 +333,34 @@ export const PriceSlider = ({
 
                 return (
                   <React.Fragment key={i}>
-                    <Thumb
-                      x={x}
-                      i={i}
-                      values={values}
-                      scale={scale}
-                      max={max}
-                      elevate={elevate}
-                      onPointerDown={() => setElevateThumb(i)}
-                      onMove={nextValue =>
-                        i === 0
-                          ? changeValues(nextValue, values[1])
-                          : changeValues(values[0], nextValue)
-                      }
-                    />
+                    {x !== undefined && x > 0 && x < width ? (
+                      <Thumb
+                        x={x}
+                        i={i}
+                        values={values}
+                        scale={scale}
+                        max={max}
+                        elevate={elevate}
+                        onPointerDown={() => setElevateThumb(i)}
+                        onMove={nextValue =>
+                          i === 0
+                            ? changeValues(Math.max(scale.invert(1), nextValue), values[1])
+                            : changeValues(values[0], Math.min(scale.invert(width - 1), nextValue))
+                        }
+                      />
+                    ) : (
+                      <div
+                        className={`absolute top-6 z-20 ${i === 0 ? 'left-0 text-left' : 'right-0 text-right'}`}
+                      >
+                        <Text color='primary.light' detailTechnical>
+                          <span className='inline-block leading-text-xs'>
+                            Range out
+                            <br />
+                            of view
+                          </span>
+                        </Text>
+                      </div>
+                    )}
                     <PercentageInput
                       x={x}
                       i={i}
