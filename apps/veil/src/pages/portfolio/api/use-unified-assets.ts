@@ -280,6 +280,8 @@ export const useUnifiedAssets = () => {
   // -------------------------------------------------------------
   const isLoading =
     unifiedAssets.length === 0 && (penumbraLoading || cosmosLoading || pricesLoading);
+  const isConnectionLoading =
+    connectionStore.connectedLoading || cosmosWalletStatus === WalletStatus.Connecting;
 
   return {
     unifiedAssets,
@@ -287,6 +289,7 @@ export const useUnifiedAssets = () => {
     totalPublicValue,
     totalValue,
     isLoading,
+    isConnectionLoading,
     isPenumbraConnected,
     isCosmosConnected,
   };
