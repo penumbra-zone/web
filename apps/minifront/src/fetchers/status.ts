@@ -20,7 +20,7 @@ export async function* getStatusStream(
 ): AsyncGenerator<PlainMessage<StatusStreamResponse>> {
   for await (const item of penumbra
     .service(ViewService)
-    .statusStream({}, { timeoutMs: 15_000, ...opt })) {
+    .statusStream({}, { timeoutMs: 60_000, ...opt })) {
     yield toPlainMessage(item);
   }
 }
