@@ -308,11 +308,6 @@ export class DepositStore {
         };
       });
 
-      console.log(
-        `Loaded ${registryChains.length} chains from registry for deposits:`,
-        registryChains.map(c => c.chainId),
-      );
-
       runInAction(() => {
         this.availableChains = registryChains;
       });

@@ -9,10 +9,8 @@ import { PagePath } from '@/shared/const/page';
 export const ShieldingTransactionCard = observer(() => {
   const transactionsStore = useTransactionsStore();
 
-  // Use the filtered shielding transactions from the store
-  const filteredTransactions = useMemo(() => {
-    return transactionsStore.shieldingTransactions;
-  }, [transactionsStore.shieldingTransactions]);
+  // Directly use the observable list so MobX re-renders on change
+  const filteredTransactions = transactionsStore.shieldingTransactions;
 
   // Create a custom header action for shielding context
   const headerAction = useMemo(

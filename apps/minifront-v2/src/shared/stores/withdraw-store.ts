@@ -128,6 +128,11 @@ export class WithdrawStore {
   }
 
   setDestinationAddress(address: string) {
+    if (!this.withdrawState) {
+      console.error('WithdrawStore.withdrawState is undefined in setDestinationAddress');
+      return;
+    }
+
     runInAction(() => {
       this.withdrawState = {
         ...this.withdrawState,
@@ -277,11 +282,6 @@ export class WithdrawStore {
           return isValid;
         });
 
-      console.log(
-        `Loaded ${registryChains.length} chains from registry:`,
-        registryChains.map(c => c.chainId),
-      );
-
       runInAction(() => {
         this.availableChains = registryChains;
       });
@@ -374,6 +374,18 @@ export class WithdrawStore {
 
     const addressIndex = getAddressIndex(selectedAsset.accountAddress);
 
+    // Normalise the randomizer: if it is all-zero but shorter than 12 bytes (e.g. Uint8Array(3)),
+    // treat it as "not present" by setting an empty Uint8Array. The planner service
+    // rejects non-empty randomizers with length ≠ 12.
+    if (
+      addressIndex &&
+      addressIndex.randomizer &&
+      addressIndex.randomizer.length > 0 &&
+      addressIndex.randomizer.every(b => b === 0)
+    ) {
+      addressIndex.randomizer = new Uint8Array();
+    }
+
     const { address: returnAddress } = await penumbra.service(ViewService).ephemeralAddress({
       addressIndex,
     });
@@ -387,25 +399,36 @@ export class WithdrawStore {
     const baseAmount = toBaseUnit(BigNumber(amount), exponent);
 
     const denom = metadata.base;
-    const channelId = denom.split('/')[1] ?? '';
+    let channelId: string | undefined;
+
+    if (denom.startsWith('transfer/')) {
+      // IBC voucher coming *into* Penumbra – channel encoded in denom
+      channelId = denom.split('/')[1];
+    } else {
+      // Native Penumbra asset – use the channel configured for the destination chain
+      channelId = selectedChain.channelId;
+    }
+
     if (!channelId) {
-      throw new Error(`Could not extract channel ID from asset denom: ${denom}`);
+      throw new Error(
+        `Could not determine channel ID for withdrawal. Asset denom: ${denom}, destination chain: ${selectedChain.chainName}`,
+      );
     }
 
     const { timeoutHeight, timeoutTime } = await this.getTimeout(channelId);
 
+    const withdrawalData = {
+      amount: baseAmount,
+      denom: { denom },
+      destinationChainAddress: destinationAddress,
+      returnAddress,
+      timeoutHeight,
+      timeoutTime,
+      sourceChannel: channelId,
+    };
+
     return new TransactionPlannerRequest({
-      ics20Withdrawals: [
-        {
-          amount: baseAmount,
-          denom: { denom },
-          destinationChainAddress: destinationAddress,
-          returnAddress,
-          timeoutHeight,
-          timeoutTime,
-          sourceChannel: channelId,
-        },
-      ],
+      ics20Withdrawals: [withdrawalData],
       source: addressIndex,
     });
   }
@@ -425,12 +448,10 @@ export class WithdrawStore {
 
     try {
       const request = await this.buildTransactionRequest();
-
       const { plan } = await penumbra.service(ViewService).transactionPlanner(request);
       if (!plan) {
         throw new Error('No plan in planner response');
       }
-
       const buildStream = penumbra.service(ViewService).authorizeAndBuild({
         transactionPlan: plan,
       });
@@ -446,7 +467,6 @@ export class WithdrawStore {
       if (!transaction) {
         throw new Error('Failed to build transaction');
       }
-
       const broadcastStream = penumbra.service(ViewService).broadcastTransaction({
         transaction,
         awaitDetection: true,
@@ -468,8 +488,22 @@ export class WithdrawStore {
       });
 
       await this.rootStore.balancesStore.loadBalances();
+
+      // Reload transactions so UI (Recent Shielding Activity) reflects the new withdrawal
+      void this.rootStore.transactionsStore.loadTransactions();
     } catch (error) {
-      console.error('Withdrawal error:', error);
+      console.error('🔍 Full withdrawal error details:', {
+        error,
+        errorMessage: error instanceof Error ? error.message : 'Unknown error',
+        errorStack: error instanceof Error ? error.stack : undefined,
+        errorCode: (error as any)?.code,
+        errorDetails: (error as any)?.details,
+        withdrawalParams: {
+          chainName: this.withdrawState.selectedChain?.chainName,
+          destinationAddress: this.withdrawState.destinationAddress,
+          amount: this.withdrawState.amount,
+        }
+      });
       runInAction(() => {
         this.withdrawState = {
           ...this.withdrawState,

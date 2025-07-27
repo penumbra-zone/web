@@ -14,10 +14,10 @@ import { ChainSelector } from '../chain-selector';
 import { AssetValueInput } from '@penumbra-zone/ui/AssetValueInput';
 import { Density } from '@penumbra-zone/ui/Density';
 import { LogOut } from 'lucide-react';
-import { Wallet2 } from 'lucide-react';
 import { TextInput } from '@penumbra-zone/ui/TextInput';
 import { assetPatterns } from '@penumbra-zone/types/assets';
 import { useChain } from '@cosmos-kit/react';
+import { Wallet2 } from 'lucide-react';
 
 const NATIVE_TRANSFERS_ONLY_CHAIN_IDS = ['celestia'];
 
@@ -273,8 +273,8 @@ const WithdrawFormInternal: React.FC = observer(() => {
                 : 'Select a chain first'
             }
             value={withdrawState.destinationAddress}
-            onChange={withdrawStore.setDestinationAddress}
-            disabled={isFormDisabled || !withdrawState.selectedChain}
+            onChange={value => withdrawStore.setDestinationAddress(value)}
+            disabled={isFormDisabled}
             endAdornment={
               <Button
                 type='button'
