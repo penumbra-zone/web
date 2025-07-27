@@ -78,45 +78,6 @@ export const TransactionView: React.FC<TransactionViewProps> = ({
     );
   }, [transactionType]);
 
-  // Combine wallet addresses with transaction-specific addresses (same logic as TransactionCard)
-  const combinedWalletAddressViews = useMemo(() => {
-    const transactionAddressViews = fullTxInfoFromMinifront?.perspective?.addressViews ?? [];
-    const combined = [...walletAddressViews];
-
-    // Add transaction addresses that aren't already in wallet addresses
-    for (const txAddr of transactionAddressViews) {
-      const isDuplicate = combined.some(walletAddr => {
-        // Compare by inner bytes
-        let txInner: Uint8Array | null = null;
-        if (txAddr.addressView.case === 'decoded') {
-          txInner = txAddr.addressView.value.address?.inner ?? null;
-        } else if (txAddr.addressView.case === 'opaque') {
-          txInner = txAddr.addressView.value.address?.inner ?? null;
-        }
-
-        let walletInner: Uint8Array | null = null;
-        if (walletAddr.addressView.case === 'decoded') {
-          walletInner = walletAddr.addressView.value.address?.inner ?? null;
-        } else if (walletAddr.addressView.case === 'opaque') {
-          walletInner = walletAddr.addressView.value.address?.inner ?? null;
-        }
-
-        return (
-          txInner &&
-          walletInner &&
-          txInner.length === walletInner.length &&
-          txInner.every((byte, i) => byte === walletInner[i])
-        );
-      });
-
-      if (!isDuplicate) {
-        combined.push(txAddr);
-      }
-    }
-
-    return combined;
-  }, [walletAddressViews, fullTxInfoFromMinifront?.perspective?.addressViews]);
-
   useEffect(() => {
     const privateView = fullTxInfoFromMinifront?.view;
     if (!privateView) {
@@ -199,12 +160,12 @@ export const TransactionView: React.FC<TransactionViewProps> = ({
 
   const getBackgroundClass = (tab: TxViewTab): string => {
     if (tab === TxViewTab.MY_VIEW) {
-      return 'bg-gradientAccentRadial';
+      return 'bg-gradient-accent-radial';
     }
     if (tab === TxViewTab.PUBLIC_VIEW) {
-      return 'bg-gradientUnshieldRadial';
+      return 'bg-gradient-unshield-radial';
     }
-    return 'bg-card-gradient'; // Default for RECEIVER_VIEW or other tabs
+    return 'bg-gradient-card'; // Default for RECEIVER_VIEW or other tabs
   };
 
   const backgroundClass = getBackgroundClass(activeTab);

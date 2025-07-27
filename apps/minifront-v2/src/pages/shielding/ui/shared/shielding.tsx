@@ -8,6 +8,7 @@ import { ShieldingInfoDialog } from './shielding-info-dialog';
 import { SkipDepositTab } from '../skip-deposit/skip-deposit-form';
 import { DepositForm } from '@/pages/shielding/ui/deposit/deposit-form';
 import { WithdrawForm } from '@/pages/shielding/ui/withdraw/withdraw-form';
+import { ShieldingTransactionCard } from './shielding-transaction-card';
 
 // Tab configuration
 const SHIELDING_TABS = [
@@ -86,14 +87,7 @@ export const Shielding = () => {
       </div>
 
       {/* Recent Activity Section */}
-      <Card title='Your Recent Shielding Activity'>
-        <div className='flex min-h-32 items-center justify-center'>
-          <Text color='text.secondary'>
-            {/* TODO: Implement recent activity list */}
-            Recent activity will be displayed here
-          </Text>
-        </div>
-      </Card>
+      <ShieldingTransactionCard />
     </div>
   );
 };
