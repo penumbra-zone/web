@@ -502,7 +502,7 @@ export class WithdrawStore {
           chainName: this.withdrawState.selectedChain?.chainName,
           destinationAddress: this.withdrawState.destinationAddress,
           amount: this.withdrawState.amount,
-        }
+        },
       });
       runInAction(() => {
         this.withdrawState = {
