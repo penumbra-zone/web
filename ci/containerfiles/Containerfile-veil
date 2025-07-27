@@ -42,10 +42,6 @@ RUN pnpm install --frozen-lockfile
 # to ensure a clean dependency graph.
 RUN pnpm build
 
-# Reference the build arg to set NEXT_PUBLIC_BASE_URL, which the NextJS build process
-# will respect, and bake into the emitted docroot.
-ENV NEXT_PUBLIC_BASE_URL=$BASE_URL
-
 # Build the veil app, filtering for relevant dependencies.
 RUN pnpm -r --filter "penumbra-veil..." build
 

@@ -29,7 +29,10 @@ export const estimateAmount = async (
   direction: Direction,
 ): Promise<EstimationResult | undefined> => {
   try {
-    const grpc = !connectionStore.connected ? await getGrpcTransport() : undefined;
+    const grpc =
+      !connectionStore.connected && connectionStore.clientEnv
+        ? await getGrpcTransport(connectionStore.clientEnv)
+        : undefined;
 
     const req = new SimulateTradeRequest({
       input: from.value(input),

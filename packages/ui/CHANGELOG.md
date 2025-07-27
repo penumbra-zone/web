@@ -1,5 +1,53 @@
 # @penumbra-zone/ui
 
+## 16.0.3
+
+### Patch Changes
+
+- Updated dependencies [4657582]
+  - @penumbra-zone/types@36.0.0
+  - @penumbra-zone/perspective@61.1.1
+
+## 16.0.2
+
+### Patch Changes
+
+- Updated dependencies [cca1b0f]
+  - @penumbra-zone/perspective@61.1.0
+
+## 16.0.1
+
+### Patch Changes
+
+- cda1a99: Update text in AddressView component
+- Updated dependencies [bdb700d]
+- Updated dependencies [f1e701a]
+  - @penumbra-zone/types@35.0.0
+  - @penumbra-zone/protobuf@11.0.0
+  - @penumbra-zone/bech32m@18.0.0
+  - @penumbra-zone/getters@28.0.0
+  - @penumbra-zone/perspective@61.0.0
+
+## 16.0.0
+
+### Major Changes
+
+- a42b5c2: Upgrade to Tailwind v4. Check UI package Readme file for more details.
+
+### Minor Changes
+
+- 54543d9: Update global.css style file with two new classes controlling the look of a scrollbar
+- 23d578b: Add additional props to Icon & TextInput
+- d3b1d78: feat: establish minifront-v2 app with Transactions UI and Transfer Page
+
+### Patch Changes
+
+- ad72bd1: Export ThemeColor
+- 82700e9: Fix style export
+- 9658941: Add input component into Pagination
+- 14a8ccd: Fix dialog component placement for XL screens
+- 044daa9: Remove absoluteStrokeWidth prop from Icon
+
 ## 15.0.2
 
 ### Patch Changes

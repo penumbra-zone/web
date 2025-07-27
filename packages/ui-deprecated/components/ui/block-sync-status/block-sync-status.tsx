@@ -1,5 +1,5 @@
 import { CheckIcon } from '@radix-ui/react-icons';
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import { motion } from 'framer-motion';
 import { LineWave } from 'react-loader-spinner';
 import { cn } from '../../../lib/utils';

@@ -42,7 +42,7 @@ lint-rust:
   pnpm turbo lint:rust
 
 # Build top-level debug container
-container: clean
+container:
   @just veil-container
   podman image ls | rg veil
 
@@ -77,3 +77,7 @@ test-rust: playwright-setup
 # Run test suites locally and gather timing information
 benchmark-tests:
   ./scripts/benchmark-tests
+
+# Deploy Veil from current branch to fly.io
+deploy:
+  ./ci/fly-deploy-branch

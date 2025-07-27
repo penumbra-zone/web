@@ -1,7 +1,11 @@
 import { scaleLinear } from 'd3-scale';
 import { openToast } from '@penumbra-zone/ui/Toast';
 import { AssetInfo } from '@/pages/trade/model/AssetInfo';
-import { LiquidityDistributionShape, simpleLiquidityPositions } from '@/shared/math/position';
+import {
+  LiquidityDistributionShape,
+  PositionedLiquidity,
+  simpleLiquidityPositions,
+} from '@/shared/math/position';
 import { parseNumber } from '@/shared/utils/num';
 import { Position } from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
 import { pnum } from '@penumbra-zone/types/pnum';
@@ -90,8 +94,9 @@ export class SimpleLPFormStore {
 
       // convert the value to the equivalent base asset amount
       this.baseInput = round({
-        value: String(Math.max(0, valueInQuote * this.marketPrice)) || '',
+        value: String(Math.max(0, valueInQuote / this.marketPrice)) || '',
         decimals: this.baseAsset?.exponent ?? 6,
+        exponentialNotation: false,
       });
     }
 
@@ -108,8 +113,9 @@ export class SimpleLPFormStore {
 
       // convert the value to the equivalent quote asset amount
       this.quoteInput = round({
-        value: String(Math.max(0, valueInBase / this.marketPrice)) || '',
+        value: String(Math.max(0, valueInBase * this.marketPrice)) || '',
         decimals: this.quoteAsset?.exponent ?? 6,
+        exponentialNotation: false,
       });
     }
   };
@@ -187,7 +193,7 @@ export class SimpleLPFormStore {
     this.feeTierPercentInput = x;
   };
 
-  get plan(): Position[] | undefined {
+  get plan(): PositionedLiquidity[] | undefined {
     if (
       !this._baseAsset ||
       !this._quoteAsset ||
@@ -203,7 +209,7 @@ export class SimpleLPFormStore {
     return simpleLiquidityPositions({
       baseAsset: this._baseAsset,
       quoteAsset: this._quoteAsset,
-      baseLiquidity: Number(this.baseInput) / this.marketPrice,
+      baseLiquidity: Number(this.baseInput),
       quoteLiquidity: Number(this.quoteInput),
       upperPrice: this.upperPrice,
       lowerPrice: this.lowerPrice,
@@ -220,7 +226,9 @@ export class SimpleLPFormStore {
     if (!plan || !baseAsset) {
       return undefined;
     }
-    return baseAsset.formatDisplayAmount(extractAmount(plan, baseAsset));
+    const positions: Position[] = plan.map(p => p.position);
+
+    return baseAsset.formatDisplayAmount(extractAmount(positions, baseAsset));
   }
 
   get quoteAssetAmount(): string | undefined {
@@ -229,7 +237,9 @@ export class SimpleLPFormStore {
     if (!plan || !quoteAsset) {
       return undefined;
     }
-    return quoteAsset.formatDisplayAmount(extractAmount(plan, quoteAsset));
+    const positions: Position[] = plan.map(p => p.position);
+
+    return quoteAsset.formatDisplayAmount(extractAmount(positions, quoteAsset));
   }
 
   setAssets(base: AssetInfo, quote: AssetInfo, resetInputs = false) {

@@ -34,6 +34,7 @@ import { AssetId, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v
 import { getAssetMetadataById } from '@/shared/api/metadata';
 import { updatePositionsQuery } from '@/entities/position';
 import { SimpleLPFormStore } from './SimpleLPFormStore';
+import { encodeLiquidityShape } from '@/shared/math/position';
 
 export type WhichForm = 'Market' | 'Limit' | 'RangeLP' | 'SimpleLP';
 
@@ -163,11 +164,19 @@ export class OrderFormStore {
     this._simpleLP.setAssets(base, quote, unsetInputs);
   }
 
-  setMarketPrice(price: number) {
+  setMarketPrice(price: number | undefined) {
     this._marketPrice = price;
-    this._range.marketPrice = price;
-    this._limit.marketPrice = price;
-    this._simpleLP.marketPrice = price;
+
+    if (price) {
+      this._range.marketPrice = price;
+      this._limit.marketPrice = price;
+      this._simpleLP.marketPrice = price;
+    }
+
+    // explicitly set to null to reset the lp price sliders
+    if (price === undefined) {
+      this._simpleLP.marketPrice = null;
+    }
   }
 
   get marketPrice(): number | undefined {
@@ -229,7 +238,9 @@ export class OrderFormStore {
         return undefined;
       }
       return new TransactionPlannerRequest({
-        positionOpens: [{ position: plan }],
+        positionOpens: [
+          { position: plan.position, positionMeta: { strategy: encodeLiquidityShape(plan.shape) } },
+        ],
         source: this.subAccountIndex,
       });
     }
@@ -239,10 +250,15 @@ export class OrderFormStore {
       this.resetGasFee();
       return undefined;
     }
-    return new TransactionPlannerRequest({
-      positionOpens: plan.map(x => ({ position: x })),
+    const LpPlan = new TransactionPlannerRequest({
+      positionOpens: plan.map(x => ({
+        position: x.position,
+        positionMeta: { strategy: encodeLiquidityShape(x.shape) },
+      })),
       source: this.subAccountIndex,
     });
+
+    return LpPlan;
   }
 
   get canSubmit(): boolean {
@@ -353,7 +369,7 @@ export const useOrderFormStore = () => {
   const { data: balances } = useBalances(addressIndex?.account ?? subaccount);
   const { baseAsset, quoteAsset } = usePathToMetadata();
   const { highlight } = usePathQuery();
-  const marketPrice = useMarketPrice();
+  const { marketPrice, symbols: marketPriceSymbols } = useMarketPrice();
 
   // Finds a balance by given asset metadata and selected sub-account
   const balanceFinder = useCallback(
@@ -428,10 +444,16 @@ export const useOrderFormStore = () => {
   }, [address, addressIndex, registryUM]);
 
   useEffect(() => {
-    if (marketPrice) {
+    if (
+      marketPrice &&
+      marketPriceSymbols.base === baseAsset?.symbol &&
+      marketPriceSymbols.quote === quoteAsset?.symbol
+    ) {
       orderFormStore.setMarketPrice(marketPrice);
+    } else {
+      orderFormStore.setMarketPrice(undefined);
     }
-  }, [marketPrice]);
+  }, [marketPrice, marketPriceSymbols, baseAsset?.symbol, quoteAsset?.symbol]);
 
   return orderFormStore;
 };

@@ -1,6 +1,3 @@
-use std::collections::BTreeMap;
-use std::mem;
-
 use anyhow::anyhow;
 use decaf377::{Fq, Fr};
 use penumbra_asset::asset::{Denom, Id, Metadata};
@@ -10,11 +7,12 @@ use penumbra_auction::auction::dutch::{
     ActionDutchAuctionEnd, ActionDutchAuctionSchedule, DutchAuctionDescription,
 };
 use penumbra_auction::auction::{AuctionId, AuctionNft};
-use penumbra_dex::lp::plan::PositionWithdrawPlan;
+use penumbra_dex::lp::plan::{PositionOpenPlan, PositionWithdrawPlan};
+use penumbra_dex::lp::PositionMetadata;
 use penumbra_dex::swap_claim::SwapClaimPlan;
 use penumbra_dex::{
     swap::{SwapPlaintext, SwapPlan},
-    PositionClose, PositionOpen, TradingPair,
+    PositionClose, TradingPair,
 };
 use penumbra_fee::FeeTier;
 use penumbra_funding::liquidity_tournament::ActionLiquidityTournamentVotePlan;
@@ -38,6 +36,9 @@ use penumbra_transaction::memo::MemoPlaintext;
 use penumbra_transaction::{plan::MemoPlan, ActionPlan, TransactionParameters};
 use penumbra_transaction::{ActionList, TransactionPlan};
 use rand_core::{OsRng, RngCore};
+use std::collections::BTreeMap;
+use std::mem;
+use std::num::{NonZero, NonZeroU32};
 use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::JsValue;
 
@@ -411,11 +412,30 @@ pub async fn plan_transaction_inner<Db: Database>(
         actions_list.push(ActionPlan::Ics20Withdrawal(ics20_withdrawal.try_into()?));
     }
 
-    for tpr::PositionOpen { position } in request.position_opens {
-        actions_list.push(ActionPlan::PositionOpen(PositionOpen {
+    // Generate a shared bundle_identifier for positions actions. The Relationship here is
+    // that all positions with the same `bundle_id` must share the same `strategy_tag`.
+    let bundle_identifier = NonZeroU32::new(OsRng.next_u32()).expect("randomizer for identifier");
+
+    // Note: during action creation, a convenience method is invoked that generates the `PositionMetadatakey`
+    // derived from the outgoing viewing key (OVK), and encrypt the plaintext `PositionMetadata`
+    // with the `PositionMetadatakey`.
+    for tpr::PositionOpen {
+        position,
+        position_meta,
+    } in request.position_opens
+    {
+        let metadata = position_meta.expect("invalid or malformed position metadata");
+        let strategy = NonZero::new(metadata.strategy).unwrap();
+        let metadata_reconstructed = PositionMetadata {
+            identifier: bundle_identifier,
+            strategy,
+        };
+
+        actions_list.push(ActionPlan::PositionOpen(PositionOpenPlan {
             position: position
-                .ok_or_else(|| anyhow!("missing position in PositionOpen"))?
+                .ok_or_else(|| anyhow!("missing position in PositionOpenPlan"))?
                 .try_into()?,
+            metadata: Some(metadata_reconstructed),
         }));
     }
 

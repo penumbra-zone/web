@@ -135,6 +135,12 @@ export const classifyTransaction = (txv?: TransactionView): ClassificationReturn
       action: allActionCases.get('positionOpen'),
     };
   }
+  if (allActionCases.has('positionOpenView')) {
+    return {
+      type: 'positionOpenView',
+      action: allActionCases.get('positionOpenView'),
+    };
+  }
   if (allActionCases.has('positionClose')) {
     return {
       type: 'positionClose',
@@ -281,6 +287,7 @@ export const TRANSACTION_LABEL_BY_CLASSIFICATION: Record<TransactionClassificati
   ibcRelayAction: 'IBC Relay Action',
   positionClose: 'Position Close',
   positionOpen: 'Position Open',
+  positionOpenView: 'Position Open',
   positionRewardClaim: 'Position Reward Claim',
   positionWithdraw: 'Position Withdraw',
   proposalDepositClaim: 'Proposal Deposit Claim',

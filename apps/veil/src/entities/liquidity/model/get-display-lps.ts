@@ -24,7 +24,7 @@ export const getDisplayLPs = ({ usdcMetadata }: { usdcMetadata: Metadata }): Dis
     displayLPs.push({
       date: '06-20 09:12:43',
       directedPair: i % 2 === 0 ? 'BTC/USDC' : 'UM/USDC',
-      liquidityShape: i % 2 === 0 ? 'Locally Stable' : 'Volatile',
+      liquidityShape: i % 2 === 0 ? 'Concentrated' : 'Volatile',
       status: sample(statuses) ?? 'Closed',
       minPrice: pnum(0.45, exponent).toValueView(usdcMetadata),
       maxPrice: pnum(0.55, exponent).toValueView(usdcMetadata),

@@ -20,6 +20,8 @@ export const TableRow = ({
   loading: boolean;
   exponent: number;
 }) => {
+  const isSecondary = item.portion < VOTING_THRESHOLD;
+
   return (
     <div
       className={cn(
@@ -31,7 +33,7 @@ export const TableRow = ({
         {!loading && (
           <div className='flex items-center gap-1'>
             <AssetIcon metadata={item.asset} size='md' />
-            <Text smallTechnical color='text.primary'>
+            <Text smallTechnical color={isSecondary ? 'text.secondary' : 'text.primary'}>
               {item.asset.symbol}
             </Text>
           </div>
@@ -43,14 +45,14 @@ export const TableRow = ({
           <div className='flex items-center gap-2'>
             <div className='flex h-[6px] w-[64px] rounded-full bg-other-tonal-fill5 md:w-[106px]'>
               <div
-                className='h-[6px] rounded-full bg-secondary-light'
+                className={cn(
+                  'h-[6px] rounded-full',
+                  isSecondary ? 'bg-neutral-light' : 'bg-secondary-light',
+                )}
                 style={{ width: `${item.portion * 100}%` }}
               />
             </div>
-            <Text
-              technical
-              color={item.portion < VOTING_THRESHOLD ? 'text.secondary' : 'text.primary'}
-            >
+            <Text technical color={isSecondary ? 'text.secondary' : 'text.primary'}>
               {formatPercentage(item.portion)}%
             </Text>
           </div>
@@ -58,7 +60,9 @@ export const TableRow = ({
       </TableCell>
 
       <TableCell loading={loading}>
-        {pnum(item.votes / 10 ** exponent).toFormattedString()}
+        <Text smallTechnical color={isSecondary ? 'text.secondary' : 'text.primary'}>
+          {pnum(item.votes / 10 ** exponent).toFormattedString()}
+        </Text>
       </TableCell>
 
       {/* TODO: implement "estimated incentive" */}
@@ -71,7 +75,7 @@ export const TableRow = ({
       )}
 
       <TableCell loading={loading}>
-        <ProvideLiquidityButton symbol={item.asset.symbol} />
+        <ProvideLiquidityButton symbol={item.asset.symbol} primary={!isSecondary} />
       </TableCell>
     </div>
   );

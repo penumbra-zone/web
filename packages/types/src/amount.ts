@@ -1,6 +1,6 @@
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import { fromBaseUnit, joinLoHi, splitLoHi, toBaseUnit } from './lo-hi.js';
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import { ValueView } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { getAmount, getDisplayDenomExponentFromValueView } from '@penumbra-zone/getters/value-view';
 import { removeTrailingZeros } from './shortify.js';

@@ -12,7 +12,7 @@ import { BLOCKS_PER_MINUTE } from '../../constants';
 import { timeUntilNextEvent } from './time-until-next-event';
 import { splitLoHi } from '@penumbra-zone/types/lo-hi';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import { SwapSlice } from '..';
 import { penumbra } from '../../../penumbra';
 

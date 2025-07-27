@@ -1,5 +1,50 @@
 # minifront
 
+## 6.35.3
+
+### Patch Changes
+
+- 4657582: import `BigNumber` correctly
+- Updated dependencies [4657582]
+  - @penumbra-zone/types@36.0.0
+  - @penumbra-zone/ui-deprecated@22.0.2
+  - @penumbra-zone/crypto-web@48.0.0
+  - @penumbra-zone/perspective@61.1.1
+
+## 6.35.2
+
+### Patch Changes
+
+- Updated dependencies [cca1b0f]
+  - @penumbra-zone/perspective@61.1.0
+  - @penumbra-zone/ui-deprecated@22.0.1
+
+## 6.35.1
+
+### Patch Changes
+
+- Updated dependencies [bdb700d]
+- Updated dependencies [f1e701a]
+  - @penumbra-zone/types@35.0.0
+  - @penumbra-zone/protobuf@11.0.0
+  - @penumbra-zone/crypto-web@47.0.0
+  - @penumbra-zone/ui-deprecated@22.0.0
+  - @penumbra-zone/bech32m@18.0.0
+  - @penumbra-zone/client@29.0.0
+  - @penumbra-zone/getters@28.0.0
+  - @penumbra-zone/perspective@61.0.0
+
+## 6.35.0
+
+### Minor Changes
+
+- d3b1d78: feat: establish minifront-v2 app with Transactions UI and Transfer Page
+
+### Patch Changes
+
+- Updated dependencies [d3b1d78]
+  - @penumbra-zone/ui-deprecated@21.1.0
+
 ## 6.34.7
 
 ### Patch Changes

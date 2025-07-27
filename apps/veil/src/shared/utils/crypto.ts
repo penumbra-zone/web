@@ -1,8 +1,3 @@
-import {
-  Position,
-  PositionId,
-} from '@penumbra-zone/protobuf/penumbra/core/component/dex/v1/dex_pb';
-
 /**
  * Native crypto utilities to replace WASM dependencies
  */
@@ -29,13 +24,4 @@ export async function sha256HashStr(input: string | Buffer): Promise<string> {
   const hashBuffer = await crypto.subtle.digest('SHA-256', data);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
-/**
- * Computes a position ID by taking SHA-256 hash of the serialized position
- */
-export async function computePositionId(position: Position): Promise<PositionId> {
-  const positionBytes = position.toBinary();
-  const hash = await sha256Hash(positionBytes);
-  return new PositionId({ inner: hash });
 }

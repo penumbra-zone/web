@@ -1,5 +1,25 @@
 # @penumbra-zone/types
 
+## 36.0.0
+
+### Major Changes
+
+- 4657582: import `BigNumber` correctly
+
+## 35.0.0
+
+### Major Changes
+
+- f1e701a: storage and wasm support for encrypted LP metadata
+
+### Patch Changes
+
+- bdb700d: Fix pnum case of NaN input
+- Updated dependencies [f1e701a]
+  - @penumbra-zone/protobuf@11.0.0
+  - @penumbra-zone/bech32m@18.0.0
+  - @penumbra-zone/getters@28.0.0
+
 ## 34.2.1
 
 ### Patch Changes

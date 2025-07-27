@@ -1,5 +1,38 @@
 # @penumbra-zone/ui
 
+## 22.0.2
+
+### Patch Changes
+
+- 4657582: import `BigNumber` correctly
+- Updated dependencies [4657582]
+  - @penumbra-zone/types@36.0.0
+  - @penumbra-zone/perspective@61.1.1
+
+## 22.0.1
+
+### Patch Changes
+
+- Updated dependencies [cca1b0f]
+  - @penumbra-zone/perspective@61.1.0
+
+## 22.0.0
+
+### Patch Changes
+
+- Updated dependencies [bdb700d]
+- Updated dependencies [f1e701a]
+  - @penumbra-zone/types@35.0.0
+  - @penumbra-zone/protobuf@11.0.0
+  - @penumbra-zone/bech32m@18.0.0
+  - @penumbra-zone/perspective@61.0.0
+
+## 21.1.0
+
+### Minor Changes
+
+- d3b1d78: feat: establish minifront-v2 app with Transactions UI and Transfer Page
+
 ## 21.0.2
 
 ### Patch Changes

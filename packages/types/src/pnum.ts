@@ -1,4 +1,4 @@
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import { round } from '@penumbra-zone/types/round';
 import { LoHi, joinLoHi, splitLoHi } from '@penumbra-zone/types/lo-hi';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
@@ -32,7 +32,12 @@ function pnum(
     typeof optionsOrExponent === 'number' ? optionsOrExponent : (optionsOrExponent.exponent ?? 0);
 
   if (typeof input === 'string' || typeof input === 'number') {
-    value = new BigNumber(input).shiftedBy(exponent);
+    if (Number.isNaN(input)) {
+      console.error('pnum input is NaN', input);
+      value = new BigNumber(0);
+    } else {
+      value = new BigNumber(input).shiftedBy(exponent);
+    }
   } else if (typeof input === 'bigint') {
     value = new BigNumber(input.toString());
   } else if (

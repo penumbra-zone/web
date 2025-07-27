@@ -1,5 +1,35 @@
 # @penumbra-zone/tailwind-config
 
+## 3.2.3
+
+### Patch Changes
+
+- Updated dependencies [4657582]
+  - @penumbra-zone/ui-deprecated@22.0.2
+
+## 3.2.2
+
+### Patch Changes
+
+- @penumbra-zone/ui-deprecated@22.0.1
+
+## 3.2.1
+
+### Patch Changes
+
+- @penumbra-zone/ui-deprecated@22.0.0
+
+## 3.2.0
+
+### Minor Changes
+
+- d3b1d78: feat: establish minifront-v2 app with Transactions UI and Transfer Page
+
+### Patch Changes
+
+- Updated dependencies [d3b1d78]
+  - @penumbra-zone/ui-deprecated@21.1.0
+
 ## 3.1.45
 
 ### Patch Changes

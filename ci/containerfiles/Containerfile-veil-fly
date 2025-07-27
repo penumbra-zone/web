@@ -2,13 +2,14 @@ FROM node:22-bookworm AS builder
 WORKDIR /app
 
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* && \
-    apt-get update --allow-insecure-repositories && \
-    apt-get install -y --allow-unauthenticated \
+    apt-get update && \
+    apt-get install -y \
     build-essential libcairo2-dev libpango1.0-dev \
     libjpeg-dev libgif-dev librsvg2-dev git-lfs curl \
     && rm -rf /var/lib/apt/lists/*
 
 RUN npm install -g pnpm@9.7.0
+RUN npm install -g turbo
 
 COPY ci/cert/ca-certificate.crt /app/ca-certificate.crt
 
@@ -20,6 +21,9 @@ COPY packages/*/package.json packages/
 # install dependencies, skip postinstall.
 RUN pnpm install --frozen-lockfile --ignore-scripts
 
+# Copy in git dir, for displaying Veil version info
+COPY .git .git
+# Copy in Veil app code
 COPY apps/veil apps/veil/
 
 COPY packages packages/
@@ -27,18 +31,40 @@ COPY packages packages/
 # link workspace packages
 RUN pnpm install --prefer-offline --ignore-scripts
 
-RUN pnpm --filter "./packages/protobuf*" run build
-RUN pnpm --filter "./packages/*" run build || echo "Some package builds failed, continuing..."
+# generate protobuf files (creates gen/ directory)
+RUN pnpm exec turbo run proto
+
+# ⣿⣿⣿⣿⣿⣿⡟⠁⠄⠄⠄⠄⣠⣤⣴⣶⣶⣶⣶⣤⡀⠈⠙⢿⣿⣿⣿⣿⣿
+# ⣿⣿⣿⣿⣿⡟⠄⠄⠄⠄⠄⣸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣆⠄⠈⣿⣿⣿⣿⣿
+# ⣿⣿⣿⣿⣿⠁⠄⠄⠄⢀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠄⠄⢺⣿⣿⣿⣿
+# ⣿⣿⣿⣿⣿⡄⠄⠄⠄⠙⠻⠿⣿⣿⣿⣿⠿⠿⠛⠛⠻⣿⡄⠄⣾⣿⣿⣿⣿ and now...
+# ⣿⣿⣿⣿⣿⡇⠄⠄⠁👁️ ⠄⢹⣿⡗⠄ 👁️ ⢄⡀⣾⢀⣿⣿⣿ check this out!
+# ⣿⣿⣿⣿⣿⡇⠘⠄⠄⠄⢀⡀⠄⣿⣿⣷⣤⣤⣾⣿⣿⣿⣧⢸⣿⣿⣿⣿⣿
+# ⣿⣿⣿⣿⣿⡇⠄⣰⣿⡿⠟⠃⠄⣿⣿⣿⣿⣿⡛⠿⢿⣿⣷⣾⣿⣿⣿⣿⣿
+# ⣿⣿⣿⣿⣿⣿⡄⠈⠁⠄⠄⠄⠄⠻⠿⢛⣿⣿⠿⠂⠄⢹⢹⣿⣿⣿⣿⣿⣿
+# ⣿⣿⣿⣿⣿⣿⣿⡐⠐⠄⠄⣠⣀⣀⣚⣯⣵⣶⠆⣰⠄⠞⣾⣿⣿⣿⣿⣿⣿
+# ⣿⣿⣿⣿⣿⣿⣿⣷⡄⠄⠄⠈⠛⠿⠿⠿⣻⡏⢠⣿⣎⣾⣿⣿⣿⣿⣿⣿⣿
+# ⣿⣿⣿⣿⣿⣿⡿⠟⠛⠄⠄⠄⠄⠙⣛⣿⣿⣵⣿⡿⢹⡟⣿⣿⣿⣿⣿
+
+# Create stub implementations for wasm functions
+RUN mkdir -p packages/perspective/src/wasm-stubs && \
+    echo "export const getAddressIndexByAddress = (_fullViewingKey: any, _address: any): any => undefined;" > packages/perspective/src/wasm-stubs/address.ts && \
+    echo "export const getAuctionId = (_schedule: any): any => ({});" > packages/perspective/src/wasm-stubs/auction.ts
+
+# Patch perspective source files to use stubs instead of wasm (only for Docker build)
+RUN sed -i "s|from '@penumbra-zone/wasm/address'|from '../wasm-stubs/address.js'|" packages/perspective/src/plan/get-address-view.ts && \
+    sed -i "s|from '@penumbra-zone/wasm/auction'|from '../wasm-stubs/auction.js'|" packages/perspective/src/plan/view-action-plan.ts
+
+ENV NODE_OPTIONS=--max-old-space-size=8192
+ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN pnpm run postinstall || echo "Syncpack completed with warnings"
 
 RUN pnpm rebuild canvas
 RUN pnpm rebuild || echo "Some rebuilds failed but continuing..."
-
-ENV NODE_OPTIONS=--max-old-space-size=8192
-ENV NEXT_TELEMETRY_DISABLED=1
 RUN echo "=== Building veil ===" && \
-    pnpm --filter "penumbra-veil..." run build 2>&1
+     pnpm --filter "penumbra-veil..." --filter "!@penumbra-zone/wasm" \
+     run build 2>&1
 
 FROM node:22-slim AS runner
 WORKDIR /app

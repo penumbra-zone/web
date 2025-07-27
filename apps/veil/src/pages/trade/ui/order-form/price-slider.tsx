@@ -1,9 +1,23 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ScaleLinear, scaleLinear } from 'd3-scale';
 import { Text } from '@penumbra-zone/ui/Text';
+import { TextInput } from '@penumbra-zone/ui/TextInput';
+import { Density } from '@penumbra-zone/ui/Density';
 import { round } from '@penumbra-zone/types/round';
 import { useWidth } from '@/shared/utils/use-width';
 import { AssetInfo } from '../../model/AssetInfo';
+import DepthChart from './price-slider-depth-chart';
+
+// Usually, `round` from `@penumbra-zone/types/round` is sufficient, but here we need number to be returned, not formatted string.
+export const roundToDecimals = (num: number, decimals: number) => {
+  const decimalLength = num.toString().split('.')[1]?.length ?? 0;
+  if (decimalLength <= decimals) {
+    return num;
+  }
+
+  const pow = Math.pow(10, decimals);
+  return Math.round(num * pow) / pow;
+};
 
 // Type guard to ensure both values are defined
 const areValuesDefined = (
@@ -70,16 +84,11 @@ const Thumb = ({
       deltaX: 0,
     };
 
-    // Prevent scrolling while dragging
-    document.body.style.overflow = 'hidden';
-    document.body.style.marginRight = '4px';
     onPointerDown();
 
     const upHandler = () => {
       document.removeEventListener(isTouch ? 'touchmove' : 'mousemove', moveHandler);
       deltaRef.current = null;
-      document.body.style.overflow = '';
-      document.body.style.marginRight = '';
     };
 
     document.addEventListener(isTouch ? 'touchmove' : 'mousemove', moveHandler);
@@ -167,6 +176,7 @@ const ValueInput = ({
   maxWidth,
   elevate,
   textsXPosRef,
+  exponent,
 }: {
   x: number | undefined;
   i: number;
@@ -174,6 +184,7 @@ const ValueInput = ({
   maxWidth: number;
   elevate: boolean;
   textsXPosRef: [[number, number], [number, number]];
+  exponent: number | undefined;
 }) => {
   const textRef = useRef<HTMLDivElement>(null);
   const textWidth = useWidth(textRef, [value]);
@@ -204,7 +215,7 @@ const ValueInput = ({
       `}
       style={{ left }}
     >
-      {round({ value, decimals: 6 })}
+      {round({ value, decimals: exponent ?? 6, exponentialNotation: false })}
     </div>
   );
 };
@@ -217,6 +228,7 @@ export const PriceSlider = ({
   marketPrice,
   baseAsset,
   quoteAsset,
+  quoteExponent,
 }: {
   min: number;
   max: number;
@@ -225,6 +237,7 @@ export const PriceSlider = ({
   marketPrice: number | null;
   baseAsset: AssetInfo | undefined;
   quoteAsset: AssetInfo | undefined;
+  quoteExponent: number;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const textsXPosRef = useRef<{
@@ -242,13 +255,43 @@ export const PriceSlider = ({
   });
   const width = useWidth(ref, []);
   const scaleRef = useRef<ScaleLinear<number, number> | null>(null);
-  const [scaleLoaded, setScaleLoaded] = useState(false);
+  const [scaleLoaded, setScaleLoaded] = useState(0);
   const [elevateThumb, setElevateThumb] = useState<number | null>(null);
+
+  // necessary data structure to allow entering string values into inputs before parsing them as numbers.
+  // after blurring the inputs, `values` start controlling them instead of `inputValues`
+  const [inputValues, setInputValues] = useState<[string, string]>();
+
+  const changeValues = (value1: number, value2: number) => {
+    onInput([roundToDecimals(value1, quoteExponent), roundToDecimals(value2, quoteExponent)]);
+  };
+
+  const setInputValue = (index: number, value: string) => {
+    const value1 = index === 0 ? value : (values[0]?.toString() ?? '');
+    const value2 = index === 1 ? value : (values[1]?.toString() ?? '');
+    changeValues(Number(value1), Number(value2));
+    setInputValues([value1, value2]);
+  };
+
+  const clearInputValues = () => {
+    setInputValues(undefined);
+    if (!values[0] || !values[1]) {
+      return;
+    }
+
+    if (values[0] > values[1]) {
+      changeValues(values[1], values[1]);
+    } else if (values[1] < values[0]) {
+      changeValues(values[0], values[1]);
+    }
+  };
 
   useEffect(() => {
     if (width) {
       scaleRef.current = scaleLinear().domain([min, max]).range([0, width]);
-      setScaleLoaded(true);
+
+      // update scaleLoaded to trigger re-render
+      setScaleLoaded(prev => prev + 1);
     }
   }, [min, max, width, values]);
 
@@ -260,7 +303,7 @@ export const PriceSlider = ({
 
   return (
     <div>
-      <div className='mb-4 flex w-full justify-center gap-1'>
+      <div className='flex w-full justify-center gap-1'>
         <Text detail color='text.secondary'>
           1 {baseAsset?.symbol} =
         </Text>
@@ -268,11 +311,12 @@ export const PriceSlider = ({
           {marketPrice} {quoteAsset?.symbol}
         </Text>
       </div>
-      <div ref={ref} className='relative z-0 h-[98px] w-full border-b border-other-tonal-fill10'>
+      <div ref={ref} className='relative z-0 h-[98px] w-full'>
         {/* midprice line */}
         <div className='absolute top-0 left-1/2 z-30 h-[70px] w-0 border-l border-dashed border-neutral-contrast' />
-        {scaleLoaded && scale && (
+        {!!scaleLoaded && scale && (
           <>
+            <DepthChart scale={scale} width={width} height={62} />
             {/* slider bg gradient */}
             <div
               className='absolute top-0 z-10 h-[70px] bg-linear-to-b from-[rgba(186,77,20,0)] from-10% to-[rgba(186,77,20,0.35)]'
@@ -295,11 +339,13 @@ export const PriceSlider = ({
                       values={values}
                       scale={scale}
                       max={max}
-                      onMove={nextValue =>
-                        onInput(i === 0 ? [nextValue, values[1]] : [values[0], nextValue])
-                      }
                       elevate={elevate}
                       onPointerDown={() => setElevateThumb(i)}
+                      onMove={nextValue =>
+                        i === 0
+                          ? changeValues(nextValue, values[1])
+                          : changeValues(values[0], nextValue)
+                      }
                     />
                     <PercentageInput
                       x={x}
@@ -316,6 +362,7 @@ export const PriceSlider = ({
                       maxWidth={width}
                       value={value}
                       elevate={elevate}
+                      exponent={quoteExponent}
                     />
                   </React.Fragment>
                 );
@@ -326,7 +373,7 @@ export const PriceSlider = ({
         {/* slider track bg */}
         <div className='absolute top-[62px] left-0 z-10 h-[6px] w-full rounded-xs bg-other-tonal-fill10' />
         {/* filled slider track */}
-        {scaleLoaded && scale && (
+        {!!scaleLoaded && scale && (
           <div
             className='absolute top-[62px] z-20 h-[6px] bg-primary-main'
             style={{
@@ -335,6 +382,30 @@ export const PriceSlider = ({
             }}
           />
         )}
+      </div>
+
+      <div className='mt-1 flex items-center justify-between gap-2'>
+        <Density compact>
+          <TextInput
+            type='number'
+            blurOnWheel
+            maxDecimals={quoteExponent}
+            onBlur={clearInputValues}
+            value={inputValues?.[0] ?? values[0]?.toString() ?? ''}
+            onChange={value => setInputValue(0, value)}
+          />
+          <Text detail color='text.secondary'>
+            —
+          </Text>
+          <TextInput
+            type='number'
+            blurOnWheel
+            maxDecimals={quoteExponent}
+            onBlur={clearInputValues}
+            value={inputValues?.[1] ?? values[1]?.toString() ?? ''}
+            onChange={value => setInputValue(1, value)}
+          />
+        </Density>
       </div>
     </div>
   );

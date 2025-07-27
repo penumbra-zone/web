@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { pnum } from './pnum.js';
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import { Amount } from '@penumbra-zone/protobuf/penumbra/core/num/v1/num_pb';
 import {
   DenomUnit,

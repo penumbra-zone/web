@@ -15,14 +15,15 @@ import { VOTING_THRESHOLD } from '../../vote-dialog/vote-dialog-asset';
 import { TableRow } from './table-row';
 import { useStakingTokenMetadata } from '@/shared/api/registry.tsx';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
-import { useVotingInfo } from '@/pages/tournament/api/use-voting-info';
+import { useVotingInfo } from '../../../api/use-voting-info';
+import { EpochBug } from '../../shared/bug';
 
 const BASE_LIMIT = 10;
 
 const TABLE_CLASSES = {
   table: {
-    default: cn('grid-cols-[1fr_1fr_1fr_1fr_136px]'),
-    canVote: cn('grid-cols-[1fr_1fr_1fr_1fr_72px_136px]'),
+    default: cn('grid-cols-[1fr_1fr_1fr_1fr_144px]'),
+    canVote: cn('grid-cols-[1fr_1fr_1fr_1fr_72px_144px]'),
   },
   row: {
     default: cn('col-span-5'),
@@ -80,9 +81,13 @@ export const CurrentVotingResults = observer(({ epoch }: CurrentVotingResultsPro
   return (
     <Card>
       <div className='flex flex-col gap-4 p-3'>
-        <Text xxl color='text.primary'>
-          Current Voting Results
-        </Text>
+        <div className='flex w-full items-center justify-between gap-2'>
+          <Text xxl color='text.primary'>
+            Current Voting Results
+          </Text>
+          <EpochBug epoch={epoch} />
+        </div>
+
         <Density compact>
           <div className={cn('grid h-auto overflow-auto', TABLE_CLASSES.table[tableKey])}>
             <div className={cn('grid grid-cols-subgrid', TABLE_CLASSES.row[tableKey])}>

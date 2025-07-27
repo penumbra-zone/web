@@ -12,7 +12,7 @@ import {
   TransactionPlannerRequest,
 } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
 import { toBaseUnit } from '@penumbra-zone/types/lo-hi';
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import { ViewService } from '@penumbra-zone/protobuf/penumbra/view/v1/view_connect';
 import { penumbra } from '@/shared/const/penumbra';
 import { getAddressIndex } from '@penumbra-zone/getters/balances-response';

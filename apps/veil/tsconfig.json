@@ -30,6 +30,7 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     "styles/styles.d.ts",
+    "types/**/*.d.ts",
     ".next/types/**/*.ts"
   ],
   "exclude": ["node_modules"]

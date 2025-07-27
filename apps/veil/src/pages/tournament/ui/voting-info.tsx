@@ -17,6 +17,7 @@ const STAKING_LINK = 'https://app.penumbra.zone/#/staking';
 
 export interface VotingInfoProps {
   epoch?: number;
+  identifier: string;
 }
 
 export const VotedFor = ({ votedFor }: { votedFor: ValueView }) => {
@@ -33,10 +34,10 @@ export const VotedFor = ({ votedFor }: { votedFor: ValueView }) => {
   );
 };
 
-export const VotingInfo = observer(({ epoch }: VotingInfoProps) => {
+export const VotingInfo = observer(({ epoch, identifier }: VotingInfoProps) => {
   const votingInfo = useVotingInfo(epoch);
 
-  const isRoundPage = !!epoch;
+  const isRoundPage = identifier === 'round-card';
   const epochLink = epoch ? PagePath.TournamentRound.replace(':epoch', epoch.toString()) : '';
 
   const [isVoteDialogueOpen, setIsVoteDialogOpen] = useState(false);
@@ -77,15 +78,15 @@ export const VotingInfo = observer(({ epoch }: VotingInfoProps) => {
           <div className='grow'>
             <ConnectButton actionType='accent' variant='default' />
           </div>
-          <div className='grow'>
-            {!isRoundPage && (
+          {!isRoundPage && (
+            <div className='grow'>
               <div className='flex-1'>
                 <Link href={epochLink}>
                   <Button actionType='default'>Details</Button>
                 </Link>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     );
