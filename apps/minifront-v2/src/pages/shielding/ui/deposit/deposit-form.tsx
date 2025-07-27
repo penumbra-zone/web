@@ -29,7 +29,7 @@ const DepositFormInternal = observer(() => {
   const depositStore = useDepositStore();
   const { depositState, walletState, validation, canDeposit, availableChains } = depositStore;
 
-  // Use unified assets (now safely within ChainProvider context)
+  // Use unified assets
   const { unifiedAssets, isLoading: assetsLoading } = useUnifiedAssets();
 
   // Get cosmos-kit chain connection for the selected chain
@@ -41,21 +41,35 @@ const DepositFormInternal = observer(() => {
   const isConnected = status === 'Connected';
   const isConnecting = status === 'Connecting';
 
-  // Filter assets to only those from the selected chain and with non-zero amounts
+  // Initialize the deposit store to load available chains
+  useEffect(() => {
+    void depositStore.initialize();
+  }, [depositStore]);
+
+  // Filter assets to only those from the selected chain, with non-zero amounts,
+  // and exclude assets whose symbol starts with "ibc/" or "gamm/"
   const availableAssets = useMemo(() => {
     if (!depositState.selectedChain) {
       return [];
     }
 
-    const filtered = unifiedAssets.filter(
-      asset =>
+    const filtered = unifiedAssets.filter(asset => {
+      // Exclude assets whose symbol starts with "ibc/" or "gamm/"
+      const symbol = asset.metadata?.symbol ?? '';
+      if (symbol.startsWith('ibc/') || symbol.startsWith('gamm/')) {
+        return false;
+      }
+
+      // Only include assets with balances on the selected chain and non-zero amount
+      return (
         asset.publicBalances.length > 0 &&
         asset.publicBalances.some(balance => {
           const amount = pnum(balance.valueView).toNumber();
           const isFromSelectedChain = balance.chainId === depositState.selectedChain?.chainId;
           return amount > 0 && isFromSelectedChain;
-        }),
-    );
+        })
+      );
+    });
 
     return filtered;
   }, [unifiedAssets, depositState.selectedChain]);
@@ -395,7 +409,7 @@ const DepositFormInternal = observer(() => {
                     : assetsLoading
                       ? 'Loading supported assets...'
                       : availableAssets.length === 0
-                        ? 'No supported shieldable assets found on this chain...'
+                        ? 'Nothing to deposit...'
                         : 'Amount to shield...'
               }
               assetDialogTitle='Select Shieldable Asset'

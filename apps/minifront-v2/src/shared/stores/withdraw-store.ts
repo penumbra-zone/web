@@ -230,10 +230,8 @@ export class WithdrawStore {
     try {
       const chainId = this.rootStore.appParametersStore.chainId;
       if (!chainId) {
-        console.warn('Chain ID not available yet, using fallback chains');
-        runInAction(() => {
-          this.availableChains = this.getFallbackChains();
-        });
+        console.warn('Chain ID not available yet, will retry when available');
+        // Don't set fallback chains, just wait for chainId
         return;
       }
 
@@ -241,25 +239,37 @@ export class WithdrawStore {
       const registry = await registryClient.remote.get(chainId);
       const ibcConnections = registry.ibcConnections;
 
+      // Accept ALL chains from the registry that have valid IBC connections
+      // No filtering - let the cosmos-kit provider handle wallet support
       const registryChains: ChainInfo[] = ibcConnections
         .map(chain => {
           const chainData = chain as any;
           const chainRegistryInfo = chains.find(c => c.chain_id === chainData.chainId);
 
+          // Use consistent naming logic across both deposit and withdraw stores
+          const chainName =
+            chainRegistryInfo?.chain_name || chainData.chainId.split('-')[0] || chainData.chainId;
+          const displayName =
+            chainRegistryInfo?.pretty_name ||
+            (chainRegistryInfo?.chain_name
+              ? chainRegistryInfo.chain_name.charAt(0).toUpperCase() +
+                chainRegistryInfo.chain_name.slice(1)
+              : chainData.chainId);
+
           return {
             chainId: chainData.chainId,
-            chainName:
-              chainRegistryInfo?.chain_name || chainData.chainId.split('-')[0] || chainData.chainId,
-            displayName: chainRegistryInfo?.pretty_name || chainData.chainId,
+            chainName: chainName,
+            displayName: displayName,
             addressPrefix:
               chainRegistryInfo?.bech32_prefix || chainData.chainId.split('-')[0] || 'cosmos',
             channelId: chainData.channelId,
             icon:
               chainRegistryInfo?.images?.[0]?.png ||
-              `https://raw.githubusercontent.com/cosmos/chain-registry/master/${chainRegistryInfo?.chain_name || 'cosmos'}/images/${chainRegistryInfo?.chain_name || 'atom'}.png`,
+              `https://raw.githubusercontent.com/cosmos/chain-registry/master/${chainName}/images/${chainName}.png`,
           };
         })
         .filter(chain => {
+          // Only basic validation - has required fields
           const isValid = chain.chainId && chain.channelId && chain.addressPrefix;
           if (!isValid) {
             console.warn('Skipping invalid chain:', chain);
@@ -267,70 +277,25 @@ export class WithdrawStore {
           return isValid;
         });
 
+      console.log(
+        `Loaded ${registryChains.length} chains from registry:`,
+        registryChains.map(c => c.chainId),
+      );
+
       runInAction(() => {
-        this.availableChains =
-          registryChains.length > 0 ? registryChains : this.getFallbackChains();
+        this.availableChains = registryChains;
       });
     } catch (error) {
       console.error('Failed to load available chains from registry:', error);
+      // Don't set fallback - let the error surface so we can debug
       runInAction(() => {
-        this.availableChains = this.getFallbackChains();
+        this.availableChains = [];
       });
     }
   }
 
-  private getFallbackChains(): ChainInfo[] {
-    return [
-      {
-        chainId: 'cosmoshub-4',
-        chainName: 'cosmoshub',
-        displayName: 'Cosmos Hub',
-        addressPrefix: 'cosmos',
-        channelId: 'channel-0',
-        icon: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/cosmoshub/images/atom.png',
-      },
-      {
-        chainId: 'injective-1',
-        chainName: 'injective',
-        displayName: 'Injective',
-        addressPrefix: 'inj',
-        channelId: 'channel-1',
-        icon: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/injective/images/inj.png',
-      },
-      {
-        chainId: 'neutron-1',
-        chainName: 'neutron',
-        displayName: 'Neutron',
-        addressPrefix: 'neutron',
-        channelId: 'channel-2',
-        icon: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/neutron/images/ntrn.png',
-      },
-      {
-        chainId: 'noble-1',
-        chainName: 'noble',
-        displayName: 'Noble',
-        addressPrefix: 'noble',
-        channelId: 'channel-3',
-        icon: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/noble/images/stake.png',
-      },
-      {
-        chainId: 'osmosis-1',
-        chainName: 'osmosis',
-        displayName: 'Osmosis',
-        addressPrefix: 'osmo',
-        channelId: 'channel-4',
-        icon: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/osmo.png',
-      },
-      {
-        chainId: 'stride-1',
-        chainName: 'stride',
-        displayName: 'Stride',
-        addressPrefix: 'strd',
-        channelId: 'channel-5',
-        icon: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/stride/images/strd.png',
-      },
-    ];
-  }
+  // Removed getFallbackChains - we now rely entirely on the registry
+  // This prevents artificial limitations on supported chains
 
   private async getTimeout(
     channelId: string,

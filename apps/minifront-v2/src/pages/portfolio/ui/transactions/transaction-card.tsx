@@ -12,12 +12,15 @@ import { Skeleton } from '@penumbra-zone/ui/Skeleton';
 import { TransactionSummary } from '@penumbra-zone/ui/TransactionSummary';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 
-import { useTransactionsStore, useBalancesStore, useAssetsStore } from '@/shared/stores/store-context';
+import {
+  useTransactionsStore,
+  useBalancesStore,
+  useAssetsStore,
+} from '@/shared/stores/store-context';
 import { useIsConnected, useConnectWallet } from '@/shared/hooks/use-connection';
 import { PagePath } from '@/shared/const/page';
 import { InfoDialog } from '../assets/info-dialog';
 import { createGetTxMetadata } from '@/shared/utils/get-tx-metadata';
-
 
 export interface TransactionCardProps {
   title?: string | null;
@@ -76,7 +79,6 @@ export const TransactionCard = observer(
 
       return addressViews;
     }, [balancesResponses]);
-
 
     const infoButton = showInfoButton ? <InfoDialog /> : null;
     const seeAllLink = showSeeAllLink ? (

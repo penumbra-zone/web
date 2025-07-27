@@ -8,27 +8,27 @@ import { PagePath } from '@/shared/const/page';
 
 export const ShieldingTransactionCard = observer(() => {
   const transactionsStore = useTransactionsStore();
-  
+
   // Use the filtered shielding transactions from the store
   const filteredTransactions = useMemo(() => {
     return transactionsStore.shieldingTransactions;
   }, [transactionsStore.shieldingTransactions]);
 
   // Create a custom header action for shielding context
-  const headerAction = useMemo(() => (
-    <Link to={PagePath.Transactions}>
-      <Button 
-        actionType="default" 
-        density="slim"
-      >
-        View All Transactions
-      </Button>
-    </Link>
-  ), []);
+  const headerAction = useMemo(
+    () => (
+      <Link to={PagePath.Transactions}>
+        <Button actionType='default' density='slim'>
+          View All
+        </Button>
+      </Link>
+    ),
+    [],
+  );
 
   return (
     <TransactionCard
-      title="Your Recent Shielding Activity"
+      title='Your Recent Shielding Activity'
       showInfoButton={false}
       showSeeAllLink={false}
       maxItems={5}
@@ -36,4 +36,4 @@ export const ShieldingTransactionCard = observer(() => {
       filteredTransactions={filteredTransactions}
     />
   );
-}); 
+});

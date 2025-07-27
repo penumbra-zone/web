@@ -13,6 +13,7 @@ import { getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { ChainSelector } from '../chain-selector';
 import { AssetValueInput } from '@penumbra-zone/ui/AssetValueInput';
 import { Density } from '@penumbra-zone/ui/Density';
+import { LogOut } from 'lucide-react';
 import { Wallet2 } from 'lucide-react';
 import { TextInput } from '@penumbra-zone/ui/TextInput';
 import { assetPatterns } from '@penumbra-zone/types/assets';
@@ -33,7 +34,7 @@ const WithdrawFormInternal: React.FC = observer(() => {
   const { withdrawState, availableChains, validation, canWithdraw } = withdrawStore;
 
   const selectedChainName = withdrawState.selectedChain?.chainName || 'osmosis';
-  const { connect, address: walletAddress, status } = useChain(selectedChainName);
+  const { connect, disconnect, address: walletAddress, status } = useChain(selectedChainName);
 
   const isWalletConnected = status === 'Connected';
   const isWalletConnecting = status === 'Connecting';
@@ -154,17 +155,37 @@ const WithdrawFormInternal: React.FC = observer(() => {
     void withdrawStore.executeWithdrawal();
   };
 
+  const handleConnectWallet = async () => {
+    try {
+      await connect();
+    } catch (error) {
+      console.error('Failed to connect wallet:', error);
+
+      // Show user-friendly error message instead of crashing
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      if (errorMessage.includes('not provided')) {
+        console.warn(
+          `Wallet support not available for ${withdrawState.selectedChain?.displayName}`,
+        );
+      }
+    }
+  };
+
+  const handleDisconnectWallet = async () => {
+    try {
+      await disconnect();
+    } catch (error) {
+      console.error('Failed to disconnect wallet:', error);
+    }
+  };
+
   const handleMyAddressClick = async () => {
     if (!withdrawState.selectedChain) {
       return;
     }
 
     if (!isWalletConnected) {
-      try {
-        await connect();
-      } catch (error) {
-        console.error('Failed to connect wallet:', error);
-      }
+      await handleConnectWallet();
     } else if (walletAddress) {
       withdrawStore.setDestinationAddress(walletAddress);
       addressInputRef.current?.focus();
@@ -177,6 +198,37 @@ const WithdrawFormInternal: React.FC = observer(() => {
   return (
     <div className='flex w-full flex-col rounded-sm'>
       <form onSubmit={handleSubmit} className='flex flex-col gap-3'>
+        {/* External Wallet Connection Section */}
+        {!isWalletConnected && (
+          <Button actionType='default' onClick={handleConnectWallet} disabled={isWalletConnecting}>
+            {isWalletConnecting ? 'Connecting...' : 'Connect External Wallet'}
+          </Button>
+        )}
+
+        {/* Connected Wallet Info */}
+        {isWalletConnected && walletAddress && (
+          <div className='flex items-center justify-between p-3 bg-other-tonal-fill5 rounded-sm'>
+            <div className='flex flex-col gap-1'>
+              <Text detail color='text.secondary'>
+                Connected to {withdrawState.selectedChain?.displayName || 'External Chain'}
+              </Text>
+              <Text small>
+                {walletAddress.slice(0, 20)}...{walletAddress.slice(-10)}
+              </Text>
+            </div>
+            <Button
+              actionType='default'
+              density='compact'
+              onClick={handleDisconnectWallet}
+              icon={LogOut}
+              iconOnly
+              aria-label='Disconnect wallet'
+            >
+              Disconnect
+            </Button>
+          </div>
+        )}
+
         <div className={firstSectionClasses}>
           <Text color={sectionTitleColor}>Destination Chain</Text>
           <ChainSelector
