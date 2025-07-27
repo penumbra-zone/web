@@ -80,7 +80,7 @@ export const IconAdornment = ({
       disabled={disabled}
       className={cn(
         // Base styles
-        'relative flex items-center justify-center rounded-full border border-transparent focus:border-action-focus-outline transition-colors duration-150',
+        'relative flex items-center justify-center rounded-full border border-transparent transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-neutral-light',
 
         // Size-specific styles
         getSizeClasses(size),

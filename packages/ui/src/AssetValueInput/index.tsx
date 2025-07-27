@@ -145,7 +145,9 @@ export const AssetValueInput = ({
 
   // When user clicks the balance row, fill the input with the full balance
   const handleBalanceClick = () => {
-    if (disabled) return;
+    if (disabled) {
+      return;
+    }
     if (selectedAsset?.balanceView) {
       const max = pnum(selectedAsset.balanceView).toNumber().toString();
       onAmountChange(max);
