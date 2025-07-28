@@ -62,8 +62,9 @@ export const AddressViewComponent = ({
   const accountLabel = `${randomizedLabel}${lqtLabel} ${indexLabel}`;
 
   // Treat addresses whose `inner` component is missing or incorrect length as external
-  const autoExternal = !address.inner || address.inner.length !== 80;
-  const encodedAddress = (external || autoExternal) ? address.altBech32m : bech32mAddress(address);
+  const autoExternal = address.inner.length !== 80;
+  const encodedAddress =
+    external || autoExternal ? address.altBech32m || 'External Address' : bech32mAddress(address);
 
   return (
     <div className={'flex items-center gap-2 text-text-primary'}>
