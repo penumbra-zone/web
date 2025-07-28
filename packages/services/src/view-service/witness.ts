@@ -1,8 +1,5 @@
 import type { Impl } from './index.js';
 import { servicesCtx } from '../ctx/prax.js';
-
-import { getWitness } from '@penumbra-zone/wasm/build';
-
 import { Code, ConnectError } from '@connectrpc/connect';
 
 export const witness: Impl['witness'] = async (req, ctx) => {
@@ -12,10 +9,9 @@ export const witness: Impl['witness'] = async (req, ctx) => {
     throw new ConnectError('No tx plan in request', Code.InvalidArgument);
   }
 
-  const { indexedDb } = await services.getWalletServices();
-  const sct = await indexedDb.getStateCommitmentTree();
+  const { viewServer } = await services.getWalletServices();
 
-  const witnessData = getWitness(req.transactionPlan, sct);
+  const witnessData = await viewServer.getWitnessData(req.transactionPlan);
 
   return { witnessData };
 };

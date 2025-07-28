@@ -3085,6 +3085,7 @@ dependencies = [
  "penumbra-sdk-tct",
  "penumbra-sdk-transaction",
  "prost",
+ "rand_core",
  "serde",
  "serde-wasm-bindgen",
  "serde_json",

@@ -7,8 +7,9 @@ use penumbra_proto::DomainType;
 use penumbra_sct::Nullifier;
 use penumbra_shielded_pool::{note, Note};
 use penumbra_tct::storage::{StoreCommitment, StoreHash, StoredPosition, Updates};
-use penumbra_tct::Witness::*;
-use penumbra_tct::{Forgotten, Tree};
+use penumbra_tct::{Forgotten, StateCommitment, Tree};
+use penumbra_tct::{Proof, Witness::*};
+use penumbra_transaction::{TransactionPlan, WitnessData};
 use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen::Serializer;
 use wasm_bindgen::prelude::wasm_bindgen;
@@ -21,6 +22,8 @@ use crate::note_record::SpendableNoteRecord;
 use crate::storage::{init_idb_storage, Storage};
 use crate::swap_record::SwapRecord;
 use crate::utils;
+
+use rand_core::OsRng;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ScanBlockResult {
@@ -114,6 +117,59 @@ impl ViewServer {
             genesis_advice: None,
         };
         Ok(view_server)
+    }
+
+    pub async fn get_witness_data(&self, plan: &[u8]) -> WasmResult<Vec<u8>> {
+        let plan = TransactionPlan::decode(plan)?;
+
+        let note_commitments: Vec<StateCommitment> = plan
+            .spend_plans()
+            .filter(|plan| plan.note.amount() != 0u64.into())
+            .map(|spend| spend.note.commit())
+            .chain(
+                plan.swap_claim_plans()
+                    .map(|swap_claim| swap_claim.swap_plaintext.swap_commitment()),
+            )
+            .chain(
+                plan.delegator_vote_plans()
+                    .map(|vote_plan| vote_plan.staked_note.commit()),
+            )
+            .chain(
+                plan.lqt_vote_plans()
+                    .map(|vote_plan| vote_plan.staked_note.commit()),
+            )
+            .collect();
+
+        let anchor = self.sct.root();
+
+        let auth_paths = note_commitments
+            .iter()
+            .map(|nc| {
+                self.sct
+                    .witness(*nc)
+                    .ok_or(anyhow::anyhow!("note commitment is in the SCT"))
+            })
+            .collect::<Result<Vec<Proof>, anyhow::Error>>()?;
+
+        let mut witness_data = WitnessData {
+            anchor,
+            state_commitment_proofs: auth_paths
+                .into_iter()
+                .map(|proof| (proof.commitment(), proof))
+                .collect(),
+        };
+
+        // Now we need to augment the witness data with dummy proofs such that
+        // note commitments corresponding to dummy spends also have proofs.
+        for nc in plan
+            .spend_plans()
+            .filter(|plan| plan.note.amount() == 0u64.into())
+            .map(|plan| plan.note.commit())
+        {
+            witness_data.add_proof(nc, Proof::dummy(&mut OsRng, nc));
+        }
+
+        Ok(witness_data.encode_to_vec())
     }
 
     /// Create new instances of `ViewServer` from SCT frontier snapshot.
