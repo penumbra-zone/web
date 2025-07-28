@@ -1,10 +1,9 @@
-import { ReactNode, useMemo } from 'react';
+import { ReactNode, useMemo, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
-import { FileSearch, Wallet2 } from 'lucide-react';
+import { Wallet2 } from 'lucide-react';
 
 import { TransactionInfo } from '@penumbra-zone/protobuf/penumbra/view/v1/view_pb';
-import { AssetId, Denom, Metadata } from '@penumbra-zone/protobuf/penumbra/core/asset/v1/asset_pb';
 import { AddressView } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
 import { Card } from '@penumbra-zone/ui/Card';
 import { Button } from '@penumbra-zone/ui/Button';
@@ -12,25 +11,16 @@ import { Text } from '@penumbra-zone/ui/Text';
 import { Skeleton } from '@penumbra-zone/ui/Skeleton';
 import { TransactionSummary } from '@penumbra-zone/ui/TransactionSummary';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
-import { getMetadataFromBalancesResponse } from '@penumbra-zone/getters/balances-response';
 
-import { useTransactionsStore, useBalancesStore } from '@/shared/stores/store-context';
+import {
+  useTransactionsStore,
+  useBalancesStore,
+  useAssetsStore,
+} from '@/shared/stores/store-context';
 import { useIsConnected, useConnectWallet } from '@/shared/hooks/use-connection';
 import { PagePath } from '@/shared/const/page';
 import { InfoDialog } from '../assets/info-dialog';
-
-// Utility function to compare Uint8Arrays
-const compareUint8Arrays = (a: Uint8Array, b: Uint8Array): boolean => {
-  if (a.length !== b.length) {
-    return false;
-  }
-  for (let i = 0; i < a.length; i++) {
-    if (a[i] !== b[i]) {
-      return false;
-    }
-  }
-  return true;
-};
+import { createGetTxMetadata } from '@/shared/utils/get-tx-metadata';
 
 export interface TransactionCardProps {
   title?: string | null;
@@ -38,6 +28,7 @@ export interface TransactionCardProps {
   showSeeAllLink?: boolean;
   maxItems?: number;
   headerAction?: ReactNode;
+  filteredTransactions?: TransactionInfo[];
 }
 
 export const TransactionCard = observer(
@@ -47,19 +38,25 @@ export const TransactionCard = observer(
     showSeeAllLink = true,
     maxItems,
     headerAction,
+    filteredTransactions,
   }: TransactionCardProps) => {
     const transactionsStore = useTransactionsStore();
     const balancesStore = useBalancesStore();
+    const assetsStore = useAssetsStore();
     const navigate = useNavigate();
     const isConnected = useIsConnected();
     const { connectWallet } = useConnectWallet();
 
-    const allTransactions = transactionsStore.sortedTransactions;
+    // Use filtered transactions if provided, otherwise use all transactions
+    const allTransactions = filteredTransactions ?? transactionsStore.sortedTransactions;
     const loadingTransactions = transactionsStore.loading;
     const balancesResponses = balancesStore.balancesResponses;
 
     const transactionsToDisplay =
       maxItems && allTransactions.length > 0 ? allTransactions.slice(0, maxItems) : allTransactions;
+
+    // Create getTxMetadata function using centralized utility
+    const getTxMetadata = createGetTxMetadata(balancesResponses);
 
     // Extract wallet address views from balances responses
     const walletAddressViews = useMemo((): AddressView[] => {
@@ -82,46 +79,6 @@ export const TransactionCard = observer(
 
       return addressViews;
     }, [balancesResponses]);
-
-    const getTxMetadata = (assetId?: AssetId | Denom | string): Metadata | undefined => {
-      if (!assetId) {
-        return undefined;
-      }
-      let rawMetadata: Metadata | undefined;
-
-      // Check for AssetId first
-      if (assetId instanceof AssetId) {
-        for (const res of balancesResponses) {
-          const meta = getMetadataFromBalancesResponse.optional(res);
-          if (
-            meta?.penumbraAssetId?.inner &&
-            compareUint8Arrays(meta.penumbraAssetId.inner, assetId.inner)
-          ) {
-            rawMetadata = meta;
-            break;
-          }
-        }
-      } else {
-        // Must be Denom or string
-        const denomToFind = typeof assetId === 'string' ? assetId : assetId.denom;
-        for (const res of balancesResponses) {
-          const meta = getMetadataFromBalancesResponse.optional(res);
-          if (meta) {
-            if (
-              meta.base === denomToFind ||
-              meta.display === denomToFind ||
-              meta.symbol === denomToFind
-            ) {
-              rawMetadata = meta;
-              break;
-            }
-          }
-        }
-      }
-
-      // Return raw metadata without enhancement
-      return rawMetadata;
-    };
 
     const infoButton = showInfoButton ? <InfoDialog /> : null;
     const seeAllLink = showSeeAllLink ? (
@@ -155,6 +112,13 @@ export const TransactionCard = observer(
       }
       return transactionsToDisplay.length;
     };
+
+    useEffect(() => {
+      if (isConnected && loadingTransactions) {
+        void balancesStore.loadBalances();
+        void assetsStore.loadAssets();
+      }
+    }, [isConnected, loadingTransactions, balancesStore, assetsStore]);
 
     // If wallet is not connected, show connect wallet message
     if (!isConnected) {
@@ -239,16 +203,7 @@ export const TransactionCard = observer(
                           <TransactionSummary
                             info={transaction}
                             getMetadata={getTxMetadata}
-                            endAdornment={
-                              <Button
-                                actionType='accent'
-                                density='compact'
-                                iconOnly
-                                icon={FileSearch}
-                              >
-                                View Details
-                              </Button>
-                            }
+                            hideMemo={true}
                           />
                         </div>
                       </div>

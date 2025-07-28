@@ -143,6 +143,17 @@ export const AssetValueInput = ({
     }
   };
 
+  // When user clicks the balance row, fill the input with the full balance
+  const handleBalanceClick = () => {
+    if (disabled) {
+      return;
+    }
+    if (selectedAsset?.balanceView) {
+      const max = pnum(selectedAsset.balanceView).toNumber().toString();
+      onAmountChange(max);
+    }
+  };
+
   // Determine the action type based on error state
   const actionType = hasError ? 'destructive' : 'default';
 
@@ -181,7 +192,11 @@ export const AssetValueInput = ({
                 className={`size-4 ${isInsufficientFunds ? 'text-destructive-light' : 'text-text-secondary'}`}
               />
             </div>
-            <div className={isInsufficientFunds ? '' : 'opacity-50'}>
+            <div
+              role='button'
+              onClick={handleBalanceClick}
+              className={`${isInsufficientFunds ? '' : 'opacity-50'} cursor-pointer`}
+            >
               <ValueViewComponent
                 valueView={selectedAsset.balanceView}
                 context='table'

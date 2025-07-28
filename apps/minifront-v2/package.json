@@ -11,6 +11,7 @@
     "@bufbuild/protobuf": "^1.10.0",
     "@connectrpc/connect": "^1.6.1",
     "@connectrpc/connect-web": "^1.6.1",
+    "@cosmjs/cosmwasm-stargate": "^0.34.0",
     "@cosmjs/proto-signing": "^0.32.4",
     "@cosmjs/stargate": "^0.32.4",
     "@cosmos-kit/core": "^2.15.0",
@@ -64,6 +65,7 @@
     "@types/react-helmet": "^6.1.11",
     "cross-env": "^7.0.3",
     "vite": "^5.2.11",
+    "vite-plugin-node-stdlib-browser": "^0.2.1",
     "vitest": "^1.6.0"
   }
 }

@@ -52,7 +52,6 @@ export const SendForm = observer(() => {
   useEffect(() => {
     // Trigger initial fee estimation after a brief delay to ensure stores are loaded
     const timer = setTimeout(() => {
-      console.log('SendForm: Triggering initial fee estimation...');
       transferStore.estimateFee();
     }, 100);
 

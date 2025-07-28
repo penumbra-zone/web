@@ -12,6 +12,8 @@ import { TransactionsStore } from './transactions-store';
 import { AssetsStore } from './assets-store';
 import { AppParametersStore } from './app-parameters-store';
 import { TransferStore } from './transfer-store';
+import { DepositStore } from './deposit-store';
+import { WithdrawStore } from './withdraw-store';
 import { PenumbraService } from '../services/penumbra-service';
 
 export class RootStore {
@@ -24,6 +26,8 @@ export class RootStore {
   assetsStore: AssetsStore;
   appParametersStore: AppParametersStore;
   transferStore: TransferStore;
+  depositStore: DepositStore;
+  withdrawStore: WithdrawStore;
 
   constructor() {
     makeAutoObservable(this);
@@ -37,26 +41,31 @@ export class RootStore {
     this.assetsStore = new AssetsStore(this);
     this.appParametersStore = new AppParametersStore(this);
     this.transferStore = new TransferStore(this);
+    this.depositStore = new DepositStore(this);
+    this.withdrawStore = new WithdrawStore(this);
   }
 
   /**
-   * Initialize all stores - called when the app starts
+   * Initialize all stores
    */
   async initialize() {
-    // Initialize app parameters first as other stores may depend on it
-    await this.appParametersStore.initialize();
-
-    // Initialize other stores in parallel
-    await Promise.all([
-      this.balancesStore.initialize(),
-      this.transactionsStore.initialize(),
-      this.assetsStore.initialize(),
-      this.transferStore.initialize(),
-    ]);
+    try {
+      // Initialize stores that need async setup
+      await Promise.all([
+        this.balancesStore.initialize(),
+        this.assetsStore.initialize(),
+        this.appParametersStore.initialize(),
+        this.transferStore.initialize(),
+        this.depositStore.initialize(),
+        this.withdrawStore.initialize(),
+      ]);
+    } catch (error) {
+      console.error('Failed to initialize stores:', error);
+    }
   }
 
   /**
-   * Clean up all stores - called when the app unmounts
+   * Dispose all stores and cleanup resources
    */
   dispose() {
     this.balancesStore.dispose();
@@ -64,12 +73,21 @@ export class RootStore {
     this.assetsStore.dispose();
     this.appParametersStore.dispose();
     this.transferStore.dispose();
+    this.depositStore.dispose();
+    this.withdrawStore.dispose();
   }
 }
 
-// Create a singleton instance
+// Create and export a singleton instance
 export const rootStore = new RootStore();
 
 // Export for easier access in components
-export const { balancesStore, transactionsStore, assetsStore, appParametersStore, transferStore } =
-  rootStore;
+export const {
+  balancesStore,
+  transactionsStore,
+  assetsStore,
+  appParametersStore,
+  transferStore,
+  depositStore,
+  withdrawStore,
+} = rootStore;
