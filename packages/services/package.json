@@ -39,6 +39,7 @@
     "@penumbra-zone/transport-dom": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
     "@penumbra-zone/wasm": "workspace:*",
+    "@penumbra-zone/view-server": "workspace:*",
     "@types/chrome": "^0.0.268"
   },
   "peerDependencies": {

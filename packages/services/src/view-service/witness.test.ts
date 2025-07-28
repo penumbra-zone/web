@@ -3,16 +3,19 @@ import { WitnessRequest, WitnessResponse } from '@penumbra-zone/protobuf/penumbr
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax.js';
-import { mockIndexedDb, MockServices } from '../test-utils.js';
+import { mockIndexedDb } from '../test-utils.js';
 import { witness } from './witness.js';
 import {
   TransactionPlan,
   WitnessData,
 } from '@penumbra-zone/protobuf/penumbra/core/transaction/v1/transaction_pb';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
+import { FullViewingKey } from '@penumbra-zone/protobuf/penumbra/core/keys/v1/keys_pb';
+import { ViewServer } from '@penumbra-zone/view-server';
+import { IDB_TABLES } from '@penumbra-zone/types/indexed-db';
 
 describe('Witness request handler', () => {
-  let mockServices: MockServices;
+  let mockServices: ServicesInterface;
   let mockCtx: HandlerContext;
   let req: WitnessRequest;
 
@@ -20,9 +23,14 @@ describe('Witness request handler', () => {
     vi.resetAllMocks();
 
     mockServices = {
-      getWalletServices: vi.fn(() =>
-        Promise.resolve({ indexedDb: mockIndexedDb }),
-      ) as MockServices['getWalletServices'],
+      getWalletServices: (async () => ({
+        indexedDb: mockIndexedDb,
+        viewServer: await ViewServer.initialize({
+          fullViewingKey: new FullViewingKey({ inner: new Uint8Array(64) }),
+          getStoredTree: () => Promise.resolve(testSct),
+          idbConstants: { name: 'mock', version: 1, tables: IDB_TABLES },
+        }),
+      })) as unknown as ServicesInterface['getWalletServices'],
     };
     mockCtx = createHandlerContext({
       service: ViewService,

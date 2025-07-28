@@ -30,9 +30,9 @@
     "!dist/*.test.*"
   ],
   "exports": {
-    "./*": {
-      "types": "./dist/*.d.ts",
-      "default": "./dist/*.js"
+    ".": {
+      "types": "./dist/view-server.d.ts",
+      "default": "./dist/view-server.js"
     }
   },
   "devDependencies": {

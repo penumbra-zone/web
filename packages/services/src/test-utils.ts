@@ -12,6 +12,7 @@ import {
   PenumbraDb,
   PenumbraStoreNames,
 } from '@penumbra-zone/types/indexed-db';
+import { ViewServerInterface } from '@penumbra-zone/types/servers';
 import { expect, Mock, Mocked, vi } from 'vitest';
 
 /**
@@ -150,7 +151,7 @@ export interface StakeMock {
 
 interface MockServicesInner {
   indexedDb?: Mocked<IndexedDbInterface>;
-  viewServer?: ViewServerMock;
+  viewServer?: ViewServerInterface;
   querier?: MockQuerier;
 }
 

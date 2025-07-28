@@ -986,6 +986,9 @@ importers:
       '@penumbra-zone/types':
         specifier: workspace:*
         version: link:../types
+      '@penumbra-zone/view-server':
+        specifier: workspace:*
+        version: link:../view-server
       '@penumbra-zone/wasm':
         specifier: workspace:*
         version: link:../wasm
