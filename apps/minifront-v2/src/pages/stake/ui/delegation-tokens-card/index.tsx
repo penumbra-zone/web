@@ -71,11 +71,20 @@ export const DelegationTokensCard = observer(
     if (stakingStore.validatorsLoading) {
       return (
         <Card title={title} endContent={finalEndContent}>
-          <div className='flex flex-col gap-2 p-4'>
-            {Array.from({ length: 10 }, (_, index) => (
-              <ValidatorRowSkeleton key={index} />
-            ))}
-          </div>
+          <Card.Section variant='transparent' title='Your Delegations'>
+            <div className='flex flex-col gap-1'>
+              {Array.from({ length: 2 }, (_, index) => (
+                <ValidatorRowSkeleton key={index} />
+              ))}
+            </div>
+          </Card.Section>
+          <Card.Section variant='transparent' title='Available to Delegate'>
+            <div className='flex flex-col gap-1'>
+              {Array.from({ length: 10 }, (_, index) => (
+                <ValidatorRowSkeleton key={index} />
+              ))}
+            </div>
+          </Card.Section>
         </Card>
       );
     }

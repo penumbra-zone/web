@@ -86,87 +86,92 @@ export const ValidatorRow = observer(
     const canUndelegate = stakingStore.canUndelegate(validatorInfo);
 
     return (
-      <div className='group relative flex h-16 items-center justify-between rounded-sm bg-other-tonal-fill5 p-3 hover:bg-action hover:bg-action-hover-overlay'>
-        <div className={`flex w-full items-center justify-between gap-2`}>
-          <div className='flex items-center gap-2 flex-shrink-0'>
+      <div className='group relative flex h-16 items-center rounded-sm bg-other-tonal-fill5 p-3 hover:bg-action hover:bg-action-hover-overlay'>
+        {/* Left side - validator info (can shrink) */}
+        <div className='flex min-w-0 flex-1 items-center gap-2 overflow-hidden'>
+          <div className='flex-shrink-0'>
             <AssetIcon size='lg' metadata={iconMetadata} zIndex={undefined} />
-            <div className='flex flex-col flex-1 min-w-0 flex-shrink-0'>
-              {/* Validator name and voting power */}
-              <div className='flex items-center gap-2'>
-                <Text color='text.primary' detail>
-                  {validatorName}
-                </Text>
-                {votingPower > 0 && (
+          </div>
+          <div className='flex min-w-0 flex-1 flex-col overflow-hidden'>
+            {/* Validator name and voting power */}
+            <div className='flex min-w-0 items-center justify-start gap-2 overflow-hidden'>
+              <Text color='text.primary' detail truncate>
+                {validatorName}
+              </Text>
+              {votingPower > 0 && (
+                <div className='flex-shrink-0'>
                   <Text color='text.secondary' xs>
                     VP: {votingPower}%
                   </Text>
-                )}
-                {votingPower > 0 && (
+                </div>
+              )}
+              {votingPower > 0 && (
+                <div className='flex-shrink-0'>
                   <Text color='text.secondary' xs>
                     Com: {votingPower}%
                   </Text>
-                )}
-              </div>
-              {/* Validator ID (truncated) */}
-              <div className='flex items-center w-full min-w-0 flex-shrink-0'>
-                <Text color='text.primary' truncate detailTechnical>
-                  {validatorId}
-                </Text>
-                {/* Copy-to-clipboard button for validator identity key */}
+                </div>
+              )}
+            </div>
+            {/* Validator ID (truncated) */}
+            <div className='flex min-w-0 items-center gap-1 overflow-hidden'>
+              <Text color='text.primary' truncate detailTechnical>
+                {validatorId}
+              </Text>
+              {/* Copy-to-clipboard button for validator identity key */}
+              <div className='flex-shrink-0'>
                 <Density slim>
                   <CopyToClipboardButton text={validatorId} />
                 </Density>
               </div>
             </div>
           </div>
-          {/* Delegation amount if present */}
-          <div className='flex items-center gap-2'>
-            {delegationValueView && !compact && (
-              <div className='flex items-center gap-3'>
-                <div className='flex items-center gap-2'>
-                  <Density slim>
-                    <ValueViewComponent
-                      valueView={delegationValueView}
-                      priority='primary'
-                      showSymbol={false}
-                    />
-                    {equivalentUmValue && (
-                      <ValueViewComponent
-                        valueView={equivalentUmValue}
-                        priority='secondary'
-                        showSymbol={false}
-                      />
-                    )}
-                  </Density>
-                </div>
-              </div>
-            )}
-            {/* Action buttons - absolutely positioned */}
-            {!compact && (
-              <div className='flex items-center gap-2'>
-                <Button
-                  actionType='accent'
-                  density='compact'
-                  onClick={handleDelegate}
-                  disabled={stakingStore.loading}
-                >
-                  Delegate
-                </Button>
-                {delegation && (
-                  <Button
-                    actionType='default'
-                    priority='secondary'
-                    density='compact'
-                    onClick={handleUndelegate}
-                    disabled={!canUndelegate || stakingStore.loading}
-                  >
-                    Undelegate
-                  </Button>
-                )}
-              </div>
+        </div>
+
+        {/* Right side - delegation amounts (fixed width, never shrinks) */}
+        {delegationValueView && !compact && (
+          <div className='flex flex-shrink-0 items-center gap-2 ml-2'>
+            <Density slim>
+              <ValueViewComponent
+                valueView={delegationValueView}
+                priority='primary'
+                showSymbol={false}
+              />
+              {equivalentUmValue && (
+                <ValueViewComponent
+                  valueView={equivalentUmValue}
+                  priority='secondary'
+                  showSymbol={false}
+                />
+              )}
+            </Density>
+          </div>
+        )}
+
+        {/* Action buttons */}
+        {!compact && (
+          <div className='flex items-center gap-2 ml-2'>
+            <Button
+              actionType='accent'
+              density='compact'
+              onClick={handleDelegate}
+              disabled={stakingStore.loading}
+            >
+              Delegate
+            </Button>
+            {delegation && (
+              <Button
+                actionType='default'
+                priority='secondary'
+                density='compact'
+                onClick={handleUndelegate}
+                disabled={!canUndelegate || stakingStore.loading}
+              >
+                Undelegate
+              </Button>
             )}
           </div>
-        </div>
+        )}
       </div>
     );
   },

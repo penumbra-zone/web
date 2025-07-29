@@ -34,6 +34,13 @@ export const AssetListItem = ({ asset }: AssetListItemProps) => {
     (asset.originalMetadata &&
       assetPatterns.delegationToken.matches(getDisplay.optional(asset.originalMetadata) || ''));
 
+  // Check if this is an unbonding token and format accordingly
+  const isUnbondingToken =
+    asset.originalMetadata?.symbol?.startsWith('unbondUM(') ||
+    asset.originalMetadata?.symbol?.startsWith('unbondUMat') ||
+    (asset.originalMetadata &&
+      assetPatterns.unbondingToken.matches(getDisplay.optional(asset.originalMetadata) || ''));
+
   // Format display for delegation tokens
   let displaySymbol = asset.symbol;
   let displayName = asset.name;
@@ -62,6 +69,30 @@ export const AssetListItem = ({ asset }: AssetListItemProps) => {
     }
 
     displayName = validatorId ? `Delegated Penumbra (${validatorId})` : 'Delegated Penumbra';
+  } else if (isUnbondingToken && asset.originalMetadata) {
+    // Show clean "unbondUM" symbol
+    displaySymbol = 'unbondUM';
+
+    // Extract validator ID and unbonding details for the name
+    let validatorId = '';
+    const display = getDisplay.optional(asset.originalMetadata);
+    if (display) {
+      const unbondingMatch = assetPatterns.unbondingToken.capture(display);
+      if (unbondingMatch?.id) {
+        validatorId = unbondingMatch.id;
+      }
+    }
+
+    // If we couldn't get from display, try from symbol
+    if (!validatorId && asset.originalMetadata.symbol?.startsWith('unbondUMat')) {
+      // Extract from "unbondUMat6146964(9gvk7d09tqurgmy0ef2j3dj8x5nzzt0..."
+      const match = /unbondUMat\d+\(([^)]+)\)/.exec(asset.originalMetadata.symbol);
+      if (match?.[1]) {
+        validatorId = match[1];
+      }
+    }
+
+    displayName = validatorId ? `Unbonding Penumbra (${validatorId})` : 'Unbonding Penumbra';
   }
 
   // Action handlers

@@ -135,6 +135,14 @@ export const DelegateDialog = observer(() => {
   const isFormValid = !!selectedAsset && amount && parseFloat(amount) > 0;
   const actionLabel = action === 'delegate' ? 'Delegate' : 'Undelegate';
 
+  // Button text logic for different states
+  const getButtonText = () => {
+    if (stakingStore.loading) {
+      return 'Review Prax';
+    }
+    return actionLabel;
+  };
+
   if (!isOpen || !validator) {
     return null;
   }
@@ -212,7 +220,7 @@ export const DelegateDialog = observer(() => {
               onClick={handleSubmit}
               disabled={!isFormValid || stakingStore.loading}
             >
-              {stakingStore.loading ? 'Sign Transaction' : actionLabel}
+              {getButtonText()}
             </Button>
           </div>
         </div>

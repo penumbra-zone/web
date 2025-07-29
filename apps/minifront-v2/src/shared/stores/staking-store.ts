@@ -347,11 +347,16 @@ export class StakingStore {
   setCurrentAccount = (account: number) => {
     if (this.currentAccount !== account) {
       this.currentAccount = account;
-      // Manually reload data when account changes - validators first, then delegations
-      void this.loadValidators().then(() => {
-        void this.loadDelegations();
+      // Manually reload data when account changes
+      // Reload balances first (without loading state), then validators and delegations
+      void Promise.all([
+        this.rootStore.balancesStore.loadAllAccountBalances(),
+        this.loadUnbondings(),
+      ]).then(() => {
+        void this.loadValidators().then(() => {
+          void this.loadDelegations();
+        });
       });
-      void this.loadUnbondings();
     }
   };
 
@@ -450,7 +455,6 @@ export class StakingStore {
     try {
       // Ensure balances are loaded first
       if (this.rootStore.balancesStore.balancesByAccount.length === 0) {
-        console.log('Balances not loaded yet, loading balances first...');
         await this.rootStore.balancesStore.loadBalances();
       }
 
