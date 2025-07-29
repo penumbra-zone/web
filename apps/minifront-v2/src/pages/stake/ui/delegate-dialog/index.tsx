@@ -208,15 +208,16 @@ export const DelegateDialog = observer(() => {
           {/* Buttons */}
           <div className='flex gap-2'>
             <Button
-              actionType='default'
-              priority='secondary'
+              actionType={showCautionBanner ? 'accent' : 'default'}
+              priority={showCautionBanner ? 'primary' : 'secondary'}
               onClick={handleClose}
               disabled={stakingStore.loading}
             >
               Choose another
             </Button>
             <Button
-              actionType='accent'
+              actionType={showCautionBanner ? 'default' : 'accent'}
+              priority={showCautionBanner ? 'secondary' : 'primary'}
               onClick={handleSubmit}
               disabled={!isFormValid || stakingStore.loading}
             >
